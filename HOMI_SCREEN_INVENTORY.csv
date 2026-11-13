@@ -1,0 +1,386 @@
+type_ligne,zone,route,fichier,role,outils_catalogue,composants_partages,couleurs_en_dur,animated_rn_herite,statut_refonte,outil_id,outil_cle,libelle_fr,theme,type_outil,parcours_entree,parcours_saisie,parcours_resultat,parcours_historique,ecrans_refondus,commandes_adaptees,transition_implementee,parcours_verifie
+ecran,Accueil,/,src/app/(tabs)/index.tsx,liste,,Screen IconButton Banner ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Auth / entrée,/,src/app/index.tsx,scène,,,0,non,fait,,,,,,,,,,,,,
+ecran,Admin,/admin,src/app/admin/index.tsx,réglage,,Screen Card Field Button Banner SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Admin,/admin/feedback,src/app/admin/feedback.tsx,réglage,,Screen Card Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Admin,/admin/import-recipes,src/app/admin/import-recipes.tsx,réglage,,Screen Card Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Admin,/admin/languages,src/app/admin/languages.tsx,réglage,,Screen Card Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Admin,/admin/products,src/app/admin/products.tsx,réglage,,Screen Card Field Button Banner Chip SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Admin,/admin/recipes,src/app/admin/recipes.tsx,réglage,,Screen Card Field Button Banner Chip SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Admin,/admin/resources,src/app/admin/resources.tsx,réglage,,Screen Card Field Button Chip SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/agenda,src/app/(tabs)/agenda.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/appointments,src/app/appointments.tsx,formulaire,appointments,Screen Card GlassSurface Sheet Field Button Banner Chip Segmented Toggle SectionTitle ErrorView,1,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/article/[slug],src/app/article/[slug].tsx,détail,,Screen Card Button Banner EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/ask,src/app/(tabs)/ask.tsx,liste,ask,Screen Card Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/assistant/chat,src/app/assistant/chat.tsx,liste,,Screen Card Button IconButton Chip Toggle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/assistant/local,src/app/assistant/local.tsx,liste,local_ai,Screen GlassSurface IconButton Banner Chip Skeleton,4,non,à faire,,,,,,,,,,,,,
+ecran,Auth / entrée,/auth/callback,src/app/auth/callback.tsx,détail,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
+ecran,Auth / entrée,/auth/forgot,src/app/auth/forgot.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
+ecran,Auth / entrée,/auth/reset,src/app/auth/reset.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
+ecran,Auth / entrée,/auth/sign-in,src/app/auth/sign-in.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
+ecran,Auth / entrée,/auth/sign-up,src/app/auth/sign-up.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
+ecran,Bébé et enfant,/baby,src/app/(tabs)/baby.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle,src/app/bottle/index.tsx,liste,,Screen Button SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle/[childId],src/app/bottle/[childId].tsx,détail,pp_bottle,Screen Card Sheet Field Button Banner Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle/history,src/app/bottle/history.tsx,historique,baby_bottle_history,Screen Card Sheet Button IconButton Chip Segmented SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/bottle/scoops,src/app/bottle/scoops.tsx,détail,bottle_scoops,Screen Card Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/calendar,src/app/calendar.tsx,formulaire,family_calendar,Screen Card Sheet Field Button IconButton Banner Chip Segmented Toggle SectionTitle ErrorView Skeleton,0,oui,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id],src/app/child/[id].tsx,détail,kid_profile kid_milestones,Screen Button IconButton EmptyState ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/album,src/app/child/[id]/album.tsx,historique,,Screen Card Sheet Field Button Banner Segmented SectionTitle EmptyState ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/card,src/app/child/[id]/card.tsx,résultat,kid_card,Screen Card Field Button Banner ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/discoveries,src/app/child/[id]/discoveries.tsx,formulaire,baby_foods,Screen GlassSurface Sheet Field Button IconButton Banner Chip SectionTitle EmptyState ErrorView Skeleton,25,oui,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/foods,src/app/child/[id]/foods.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/grow,src/app/child/[id]/grow.tsx,liste,kid_grow,Screen GlassSurface Sheet Field Button Banner Chip SectionTitle EmptyState ErrorView Skeleton,13,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/growth,src/app/child/[id]/growth.tsx,détail,kid_growth,,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/health-tracking,src/app/child/[id]/health-tracking.tsx,formulaire,kid_health,Screen Card Sheet Field Button Banner Chip Segmented Toggle ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/needs,src/app/child/[id]/needs.tsx,formulaire,kid_treatments kid_needs,Screen Card Sheet Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/school,src/app/child/[id]/school.tsx,liste,,Screen Card Field ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/steps,src/app/child/[id]/steps.tsx,liste,kid_steps,Screen Card Button Banner EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/vaccines,src/app/child/[id]/vaccines.tsx,formulaire,kid_vaccines,Screen Card GlassSurface Sheet Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/wellbeing,src/app/child/[id]/wellbeing.tsx,liste,kid_mood,Screen Card Field Button Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Auth / entrée,/cinematic,src/app/cinematic.tsx,scène,,,0,non,fait,,,,,,,,,,,,,
+ecran,Communauté,/community,src/app/(tabs)/community.tsx,liste,community,Screen Card Field Button IconButton Banner Chip EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/activity,src/app/community/activity.tsx,historique,,Screen Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/album/[id],src/app/community/album/[id].tsx,détail,,Screen Card Sheet Field Button IconButton Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/albums,src/app/community/albums.tsx,historique,,Screen Card Sheet Field Button SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/blocked,src/app/community/blocked.tsx,réglage,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/events,src/app/community/events.tsx,liste,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/following,src/app/community/following.tsx,liste,,Screen Card Chip SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/group/[id],src/app/community/group/[id].tsx,détail,,Screen Card Sheet Field Button IconButton Banner SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/groups,src/app/community/groups.tsx,liste,,Screen Card Sheet Field Button ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/new,src/app/community/new.tsx,formulaire,,Screen Card Field Button Banner Chip Segmented ErrorView Skeleton,4,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/notifications,src/app/community/notifications.tsx,liste,,Screen Card Button Chip ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/post/[id],src/app/community/post/[id].tsx,détail,,Screen Card Sheet Field Button Banner Chip EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/profile,src/app/community/profile.tsx,formulaire,,Screen Card Field Button Banner Chip Segmented Toggle SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/rules,src/app/community/rules.tsx,réglage,,Screen Card Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/saved,src/app/community/saved.tsx,historique,,Screen EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/u/[handle],src/app/community/u/[handle].tsx,détail,,Screen Button Banner EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/consult/questions,src/app/consult/questions.tsx,formulaire,consult_questions,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception,src/app/contraception/index.tsx,liste,avoid_contraception,Screen Card Button Banner ListRow SectionTitle EmptyState ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/consultation,src/app/contraception/consultation.tsx,formulaire,avoid_consult,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/emergency,src/app/contraception/emergency.tsx,liste,avoid_emergency,Screen Card Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/history,src/app/contraception/history.tsx,historique,,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/journal,src/app/contraception/journal.tsx,historique,contraception_journal,Screen Card Field Button Banner Chip ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/log,src/app/contraception/log.tsx,historique,,Screen Banner SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/methods,src/app/contraception/methods.tsx,liste,avoid_methods,Screen Card Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/contraception/reminders,src/app/contraception/reminders.tsx,réglage,avoid_reminders,Screen Card Sheet Field Button Chip Toggle ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle,src/app/cycle/index.tsx,formulaire,avoid_cycle,Screen Field Button Chip Segmented ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/advice,src/app/cycle/advice.tsx,liste,,Screen Banner Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/bleeding,src/app/cycle/bleeding.tsx,liste,,Screen Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/calendar,src/app/cycle/calendar.tsx,liste,avoid_fertile,Screen Sheet Button IconButton ListRow ErrorView Skeleton,0,oui,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/discharge,src/app/cycle/discharge/index.tsx,liste,,Screen EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/discharge/[id],src/app/cycle/discharge/[id].tsx,formulaire,,Screen Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/emergency,src/app/cycle/emergency.tsx,détail,,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/export,src/app/cycle/export.tsx,résultat,,Screen Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/guides,src/app/cycle/guides/index.tsx,liste,cycle_guides,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/guides/[slug],src/app/cycle/guides/[slug].tsx,détail,,Screen Button EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/home-card,src/app/cycle/home-card.tsx,réglage,,Screen Button IconButton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/intimacy,src/app/cycle/intimacy.tsx,formulaire,,Screen Field Button Banner ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/journal,src/app/cycle/journal.tsx,historique,cycle_journal,Screen Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/kit,src/app/cycle/kit.tsx,liste,cycle_kit,Screen Card Button Banner ListRow,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/month,src/app/cycle/month.tsx,résultat,,Screen Card Button IconButton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/pain,src/app/cycle/pain.tsx,liste,,Screen Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/privacy,src/app/cycle/privacy.tsx,réglage,,Screen Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/professional,src/app/cycle/professional.tsx,liste,,Screen Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/recap,src/app/cycle/recap.tsx,historique,,Screen Button Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/risk,src/app/cycle/risk.tsx,résultat,,Screen Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/share,src/app/cycle/share.tsx,résultat,,Screen Card Button Banner Toggle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/stats,src/app/cycle/stats.tsx,résultat,cycle_stats,Screen Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/cycle/symptoms,src/app/cycle/symptoms.tsx,liste,cycle_symptoms,Screen Field Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/documents,src/app/documents/index.tsx,liste,documents,Screen Card GlassSurface Sheet Field Button Banner Chip SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/documents/[id],src/app/documents/[id].tsx,formulaire,,Screen Card Sheet Field Button IconButton Banner Segmented Toggle SectionTitle EmptyState ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/documents/book,src/app/documents/book.tsx,liste,,Screen Card Banner Chip SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/documents/export,src/app/documents/export.tsx,résultat,,Screen Card Button Banner Toggle SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/documents/scan,src/app/documents/scan.tsx,formulaire,,Screen Card Field Button IconButton Banner Segmented Toggle,3,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/emergency,src/app/emergency.tsx,détail,emergency,Screen Card Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family,src/app/family/index.tsx,liste,family_tasks,Screen Card Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/brain-dump,src/app/family/brain-dump.tsx,formulaire,brain_dump,Screen Card Field Button IconButton Banner Chip,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/couple,src/app/family/couple.tsx,formulaire,couple_week,Screen Card Field Button ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/custody,src/app/family/custody.tsx,formulaire,custody,Screen Card Sheet Field Button Banner Chip ListRow SectionTitle EmptyState,4,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/difficult,src/app/family/difficult.tsx,liste,family_difficult,Screen Card Button Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/domains,src/app/family/domains.tsx,liste,family_domains,Screen Card Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/exhausted,src/app/family/exhausted.tsx,liste,exhaustion_check,Screen Card Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/history,src/app/family/history.tsx,historique,family_history,Screen Card ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/kid-routine/[id],src/app/family/kid-routine/[id].tsx,détail,,Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/kid-routines,src/app/family/kid-routines.tsx,liste,kid_routines,Screen Card Sheet Field Button IconButton Banner Chip SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/load,src/app/family/load.tsx,liste,mental_load,Screen Card Button Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/me-time,src/app/family/me-time.tsx,formulaire,family_metime,Screen Card Field Button Segmented ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions,src/app/family/missions/index.tsx,liste,,Screen Button Segmented EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/[id],src/app/family/missions/[id].tsx,formulaire,,Screen Card Field Button Banner Chip EmptyState Skeleton Cascade DetailEnter,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/new,src/app/family/missions/new.tsx,formulaire,,Screen Card Field Button Banner Chip Segmented Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/responsibilities,src/app/family/missions/responsibilities.tsx,liste,,Screen Card Button Chip Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/nights,src/app/family/nights.tsx,formulaire,family_nights,Screen Card GlassSurface Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/notebook,src/app/family/notebook.tsx,liste,house_notebook,Screen Card Sheet Field Button Banner Chip ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/offduty,src/app/family/offduty.tsx,liste,offduty,Screen Card Field Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/papers,src/app/family/papers.tsx,liste,family_papers,Screen Card Sheet Field Button Banner Chip ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/prep,src/app/family/prep.tsx,liste,family_prep,Screen Card Button Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/review,src/app/family/review.tsx,résultat,family_review,Screen Card ListRow SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/routines,src/app/family/routines.tsx,formulaire,family_routines,Screen Card Sheet Field Button Chip ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/solo,src/app/family/solo.tsx,formulaire,solo_parent,Screen Card Sheet Field Button Banner Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/sos,src/app/family/sos.tsx,liste,family_sos,,2,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/stocks,src/app/family/stocks/index.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/stocks/[id],src/app/family/stocks/[id].tsx,détail,,Screen Card Button Banner Chip EmptyState Skeleton Cascade DetailEnter,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/stocks/baby,src/app/family/stocks/baby.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/stocks/new,src/app/family/stocks/new.tsx,formulaire,,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/urgent,src/app/family/urgent.tsx,liste,family_urgent,,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/feedback,src/app/feedback.tsx,liste,,Screen Card Field Button IconButton Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility,src/app/fertility/index.tsx,liste,ttc_cycle,Screen Card Button Banner SectionTitle ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/body,src/app/fertility/body.tsx,formulaire,ttc_temperature,Screen Card Field IconButton Banner Chip ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/calendar,src/app/fertility/calendar.tsx,liste,,Screen Card Button Banner SectionTitle ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/compatible,src/app/fertility/compatible.tsx,liste,,Screen Card Banner SectionTitle,1,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/consultation,src/app/fertility/consultation.tsx,formulaire,ttc_consult,Screen Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/exams,src/app/fertility/exams.tsx,liste,ttc_exams,Screen Card Button Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/history,src/app/fertility/history.tsx,historique,,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/intimacy,src/app/fertility/intimacy.tsx,détail,ttc_intimacy,,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/log,src/app/fertility/log.tsx,historique,ttc_tests,Screen SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/mucus,src/app/fertility/mucus.tsx,liste,ttc_mucus,Screen Card Field Button IconButton Banner Chip ListRow SectionTitle ErrorView Skeleton,7,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/pma,src/app/fertility/pma.tsx,formulaire,pma_tracker,Screen Card Sheet Field Button Banner Chip Toggle ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/reminders,src/app/fertility/reminders.tsx,réglage,ttc_reminders,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/test/[kind],src/app/fertility/test/[kind].tsx,formulaire,,Screen Card Field Button Banner Chip Segmented SectionTitle,1,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/fertility/understand,src/app/fertility/understand.tsx,liste,ttc_understand,Screen Card Banner Toggle SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/guide/[topic],src/app/guide/[topic].tsx,détail,guide_loss guide_couple guide_pma guide_work guide_firstaid guide_neonat guide_kidfood guide_kidsleep guide_hygiene guide_activities guide_toddler guide_illnesses guide_school guide_sport guide_behaviour,Screen Card Banner ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/health,src/app/(tabs)/health.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/household,src/app/(tabs)/household.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Auth / entrée,/intro,src/app/intro.tsx,scène,,Button,0,oui,tranche,,,,,,,,,,,,,
+ecran,Accueil,/journal,src/app/journal.tsx,historique,,Screen Card Field Button IconButton Chip Segmented ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/journeys,src/app/journeys/index.tsx,liste,journeys,Screen Card Sheet Button Banner ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/journeys/[id],src/app/journeys/[id].tsx,détail,,Screen Card Button Banner ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/journeys/blocked,src/app/journeys/blocked.tsx,réglage,,Screen Button Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/legal/[doc],src/app/legal/[doc].tsx,détail,,Screen Card,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/library,src/app/library.tsx,liste,library ttc_articles preg_birth_prep preg_articles preg_intimacy,Screen Card GlassSurface Field Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/lists,src/app/lists.tsx,liste,preg_lists,Screen Card Sheet Field Button IconButton Banner ListRow SectionTitle EmptyState ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/me,src/app/me/index.tsx,liste,,Screen Card GlassSurface Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/me/diary,src/app/me/diary.tsx,historique,,Screen Card Field Button Banner Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/me/mood,src/app/me/mood.tsx,liste,mood,Screen Card Field Button Banner Chip Toggle ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/me/sleep,src/app/me/sleep.tsx,liste,sleep,Screen Card Sheet Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals,src/app/meals/index.tsx,liste,meals,Screen Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/[slug],src/app/meals/[slug].tsx,détail,,Screen Card Sheet Button IconButton Banner Chip SectionTitle EmptyState Skeleton,1,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/menu,src/app/meals/menu.tsx,liste,,Screen Card Sheet Button IconButton Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/new,src/app/meals/new.tsx,formulaire,,Screen Card Field IconButton Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/pantry,src/app/meals/pantry.tsx,liste,,Screen Field Button Chip SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/rankings,src/app/meals/rankings.tsx,résultat,meal_rankings,Screen Button Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/settings,src/app/meals/settings.tsx,réglage,,Screen Card Field Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/meals/shopping,src/app/meals/shopping.tsx,formulaire,,Screen Card Field Button Banner Chip SectionTitle EmptyState Skeleton Cascade,1,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/medications,src/app/medications.tsx,liste,,Screen Card Banner Chip SectionTitle,1,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/moi,src/app/(tabs)/moi.tsx,liste,,Screen Card Sheet Button Banner Segmented ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/names,src/app/names.tsx,liste,preg_names,Screen Card Field Button IconButton Banner Chip Segmented SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/nearby,src/app/nearby.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/night,src/app/night/index.tsx,scène,kid_sleep,Button Chip Toggle ErrorView Skeleton,8,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/night/help,src/app/night/help.tsx,liste,baby_night_help,Screen Card Field Button Banner Chip SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/notifications,src/app/notifications.tsx,liste,notifications,Screen IconButton Chip SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Auth / entrée,/onboarding,src/app/onboarding.tsx,formulaire,,Screen Card Field Button IconButton Banner Chip Toggle FocalMark,0,non,tranche,,,,,,,,,,,,,
+ecran,Santé,/outings,src/app/outings.tsx,liste,nearby,Screen GlassSurface Button Banner Chip Segmented SectionTitle Skeleton,9,non,à faire,,,,,,,,,,,,,
+ecran,Cycle et fertilité,/partner/cycle,src/app/partner/cycle.tsx,liste,,Screen Card Button Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum,src/app/postpartum/index.tsx,liste,pp_recovery,Screen Card Field Button Banner Toggle ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/checkin,src/app/postpartum/checkin.tsx,formulaire,pp_checkin,Screen Card Field Button Chip Toggle SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/history,src/app/postpartum/history.tsx,historique,,Screen Card Button ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/partner,src/app/postpartum/partner.tsx,liste,pp_partner,Screen Card Banner ListRow SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/recovery,src/app/postpartum/recovery.tsx,liste,pp_body,Screen Card Banner ListRow,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/sharing,src/app/postpartum/sharing.tsx,liste,,Screen Card Field Button Banner Chip Toggle ListRow SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/support,src/app/postpartum/support.tsx,formulaire,pp_support,Screen Card Sheet Field Button IconButton Banner Chip Segmented ListRow SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/postpartum/understand,src/app/postpartum/understand.tsx,liste,pp_mental,Screen Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy,src/app/pregnancy/index.tsx,liste,preg_evolution,Screen Card GlassSurface Field Button Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton,5,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/calendar,src/app/pregnancy/calendar.tsx,liste,preg_calendar,Screen Card Button Banner SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/eat,src/app/pregnancy/eat.tsx,liste,preg_eat,Screen Card Button Banner Chip SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/edit,src/app/pregnancy/edit.tsx,formulaire,preg_edit,Screen Card Button Banner SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/end,src/app/pregnancy/end.tsx,formulaire,preg_end,Screen Card Field Button Banner Chip EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/feel,src/app/pregnancy/feel.tsx,formulaire,preg_feel,Screen Card Field Button Banner Chip Toggle SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/moves,src/app/pregnancy/moves.tsx,liste,preg_moves,Screen Card Field Button Banner Chip ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/start,src/app/pregnancy/start.tsx,formulaire,ttc_start_pregnancy,Screen Card Field Button Banner Segmented,0,non,à faire,,,,,,,,,,,,,
+ecran,Grossesse et post-partum,/pregnancy/weight,src/app/pregnancy/weight.tsx,liste,preg_weight,Screen Card Field Button Banner Toggle ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/premium,src/app/premium.tsx,détail,,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/products,src/app/products/index.tsx,liste,kid_products,Screen Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/products/[id],src/app/products/[id].tsx,détail,,Screen Card Button Banner SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/products/compare,src/app/products/compare.tsx,résultat,,Screen Card Chip EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/profile,src/app/(tabs)/profile.tsx,liste,,Screen Card Button Chip ListRow SectionTitle ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/profiles/new,src/app/profiles/new.tsx,formulaire,,Screen Card Button Banner Segmented ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner,src/app/scanner/index.tsx,liste,,Screen Card GlassSurface Button Banner ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/avoid,src/app/scanner/avoid.tsx,formulaire,scan_avoid,Screen Card Field IconButton Banner ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/compare,src/app/scanner/compare.tsx,résultat,scan_compare,Screen Card Button Banner Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/food,src/app/scanner/food.tsx,détail,scan_food,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/history,src/app/scanner/history.tsx,historique,scan_history,Screen Button IconButton Chip EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/product,src/app/scanner/product.tsx,détail,scan_product,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/recalls,src/app/scanner/recalls.tsx,liste,recall_alerts,Screen Card Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner/result/[id],src/app/scanner/result/[id].tsx,résultat,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings,src/app/settings/index.tsx,réglage,settings,Screen Card Field Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/account,src/app/settings/account.tsx,réglage,,Screen Card Sheet Field Button Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen GlowCard Button Banner Chip Segmented Toggle SectionTitle CompletionCheck,1,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/family,src/app/settings/family.tsx,réglage,,Screen Card Field Button Banner Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/home,src/app/settings/home.tsx,réglage,home_settings,Screen Card Button IconButton Chip Toggle SectionTitle Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/language,src/app/settings/language.tsx,réglage,,Screen Card Banner SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/notifications,src/app/settings/notifications.tsx,réglage,,Screen Card Button Banner Chip ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/privacy,src/app/settings/privacy.tsx,réglage,,Screen Card Sheet Field Button Banner Chip Toggle SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/reminders,src/app/settings/reminders.tsx,réglage,reminders,Screen Card Sheet Field Button Banner Chip Segmented Toggle SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/services,src/app/settings/services.tsx,réglage,,Screen Card Banner SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/subscription,src/app/settings/subscription.tsx,réglage,,Screen Card Button Banner SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/sync,src/app/settings/sync.tsx,réglage,,Screen Card Button IconButton Banner ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/sleep/[childId],src/app/sleep/[childId].tsx,formulaire,kid_sleep_rhythm,Screen Card Field Button IconButton Banner Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/sleep/difficult/[childId],src/app/sleep/difficult/[childId].tsx,détail,,EmptyState ErrorView Skeleton,9,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/sleep/help/[childId],src/app/sleep/help/[childId].tsx,détail,,Screen Card Button Banner Chip SectionTitle EmptyState ErrorView Skeleton,4,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/sleep/tonight,src/app/sleep/tonight.tsx,scène,,Chip,6,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/sources,src/app/sources.tsx,liste,sources,Screen Card Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/story,src/app/story.tsx,scène,,Screen Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/summary,src/app/summary/index.tsx,résultat,summary family_summary,Screen Card Button Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/teeth,src/app/teeth.tsx,liste,kid_teeth,Screen Card Sheet Field Button Banner Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/today,src/app/today.tsx,liste,,Screen Card Button Segmented,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/tools,src/app/(tabs)/tools.tsx,liste,,Screen Field Button Chip EmptyState ErrorView Skeleton ToolCard,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/track,src/app/(tabs)/track.tsx,liste,baby_daily,Screen Card Button Banner Segmented ListRow SectionTitle ErrorView Skeleton,5,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/track/[kind],src/app/track/[kind].tsx,formulaire,pp_feeding baby_bottle baby_diaper,Screen Field Button Banner Chip Segmented EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/tutos,src/app/tutos.tsx,détail,video_tutos,,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/videos,src/app/videos.tsx,liste,official_videos,Screen Card Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Auth / entrée,/welcome,src/app/welcome.tsx,scène,,Button IconButton FocalMark,0,non,fait,,,,,,,,,,,,,
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=avoid,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Accueil,/me/sleep,,,,,,,,sleep:/me/sleep,sleep,Mon sommeil,sleep,suivi/mesures,/me/sleep,feuille dans l’écran,,/me/diary /me/mood,non,non,non,non
+outil,Santé,/appointments,,,,,,,,health:/appointments,appointments,Rendez-vous et examens,health,tâches/planning,/appointments,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/documents,,,,,,,,health:/documents,documents,Documents,health,formulaire/assistant,/documents,/documents/[id] /documents/scan,/documents/export,/documents/book,non,non,non,non
+outil,Santé,/emergency,,,,,,,,health:/emergency,emergency,Urgences,health,formulaire/assistant,/emergency,,,,non,non,non,non
+outil,Santé,/consult/questions,,,,,,,,health:/consult/questions,consult_questions,Mes questions pour le rendez-vous,health,formulaire/assistant,/consult/questions,dans l’écran,,,non,non,non,non
+outil,Accueil,/me/mood,,,,,,,,mood:/me/mood,mood,Mon humeur,mood,humeur/journal,/me/mood,,,/me/diary /me/sleep,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,mood:/guide/loss,guide_loss,Après une perte,mood,autre,/guide/[topic],,,,non,non,non,non
+outil,Famille,/family/exhausted,,,,,,,,mood:/family/exhausted,exhaustion_check,Je suis à bout,mood,formulaire/assistant,/family/exhausted,,,,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/start,,,,,,,,pregnancy:/pregnancy/start,ttc_start_pregnancy,J’ai un test positif,pregnancy,formulaire/assistant,/pregnancy/start,/pregnancy/edit /pregnancy/end /pregnancy/feel,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Cycle et fertilité,/cycle,,,,,,,,cycle:/cycle,avoid_cycle,Cycle et règles,cycle,suivi/mesures,/cycle,dans l’écran,,,non,non,non,non
+outil,Cycle et fertilité,/contraception,,,,,,,,cycle:/contraception,avoid_contraception,Contraception,cycle,autre,/contraception,/contraception/consultation,,/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods,non,non,non,non
+outil,Cycle et fertilité,/contraception/methods,,,,,,,,cycle:/contraception/methods,avoid_methods,Comparer les moyens,cycle,formulaire/assistant,/contraception/methods,/contraception/consultation,,/contraception/emergency /contraception/history /contraception/journal /contraception/log,non,non,non,non
+outil,Cycle et fertilité,/contraception/emergency,,,,,,,,cycle:/contraception/emergency,avoid_emergency,Contraception d’urgence,cycle,formulaire/assistant,/contraception/emergency,/contraception/consultation,,/contraception/history /contraception/journal /contraception/log /contraception/methods,non,non,non,non
+outil,Cycle et fertilité,/cycle/calendar,,,,,,,,cycle:/cycle/calendar,avoid_fertile,Calendrier du cycle,cycle,suivi/mesures,/cycle/calendar,feuille dans l’écran,,,non,non,non,non
+outil,Cycle et fertilité,/cycle/symptoms,,,,,,,,cycle:/cycle/symptoms,cycle_symptoms,Symptômes,cycle,suivi/mesures,/cycle/symptoms,,,,non,non,non,non
+outil,Cycle et fertilité,/contraception/consultation,,,,,,,,cycle:/contraception/consultation,avoid_consult,Préparer une consultation,cycle,formulaire/assistant,/contraception/consultation,dans l’écran,,/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods,non,non,non,non
+outil,Cycle et fertilité,/cycle/stats,,,,,,,,cycle:/cycle/stats,cycle_stats,Statistiques du cycle,cycle,suivi/mesures,/cycle/stats,,,,non,non,non,non
+outil,Cycle et fertilité,/contraception/journal,,,,,,,,cycle:/contraception/journal,contraception_journal,Journal de ma contraception,cycle,humeur/journal,/contraception/journal,/contraception/consultation,,/contraception/emergency /contraception/history /contraception/log /contraception/methods,non,non,non,non
+outil,Santé,/scanner/product,,,,,,,,scanner:/scanner/product,scan_product,Scanner un produit,scanner,formulaire/assistant,/scanner/product,/scanner/avoid,/scanner/compare /scanner/food /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
+outil,Santé,/scanner/food,,,,,,,,scanner:/scanner/food,scan_food,Scanner un aliment,scanner,formulaire/assistant,/scanner/food,/scanner/avoid,/scanner/compare /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
+outil,Santé,/scanner/history,,,,,,,,scanner:/scanner/history,scan_history,Historique et favoris,scanner,suivi/mesures,/scanner/history,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/recalls,non,non,non,non
+outil,Santé,/scanner/compare,,,,,,,,scanner:/scanner/compare,scan_compare,Comparer deux produits,scanner,formulaire/assistant,/scanner/compare,/scanner/avoid,/scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
+outil,Santé,/scanner/avoid,,,,,,,,scanner:/scanner/avoid,scan_avoid,Produits à éviter,scanner,suivi/mesures,/scanner/avoid,dans l’écran,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
+outil,Santé,/scanner/recalls,,,,,,,,scanner:/scanner/recalls,recall_alerts,Alertes produits rappelés,scanner,suivi/mesures,/scanner/recalls,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history,non,non,non,non
+outil,Accueil,/calendar,,,,,,,,calendar:/calendar,family_calendar,Agenda familial,calendar,tâches/planning,/calendar,feuille dans l’écran,,,non,non,non,non
+outil,Famille,/family/prep,,,,,,,,calendar:/family/prep,family_prep,Échéances préparées,calendar,tâches/planning,/family/prep,,,,non,non,non,non
+outil,Famille,/family,,,,,,,,tasks:/family,family_tasks,Organisation familiale,tasks,tâches/planning,/family,,,,non,non,non,non
+outil,Famille,/family/routines,,,,,,,,tasks:/family/routines,family_routines,Routines,tasks,tâches/planning,/family/routines,feuille dans l’écran,,,non,non,non,non
+outil,Famille,/family/brain-dump,,,,,,,,tasks:/family/brain-dump,brain_dump,Vider ma tête,tasks,humeur/journal,/family/brain-dump,dans l’écran,,,non,non,non,non
+outil,Famille,/family/domains,,,,,,,,tasks:/family/domains,family_domains,Confier un domaine,tasks,famille/partage/communauté,/family/domains,,,,non,non,non,non
+outil,Famille,/family/notebook,,,,,,,,tasks:/family/notebook,house_notebook,Carnet de la maison,tasks,humeur/journal,/family/notebook,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,relay:/guide/couple,guide_couple,À deux,relay,famille/partage/communauté,/guide/[topic],,,,non,non,non,non
+outil,Famille,/family/load,,,,,,,,relay:/family/load,mental_load,Qui y pense ?,relay,famille/partage/communauté,/family/load,,,,non,non,non,non
+outil,Famille,/family/couple,,,,,,,,relay:/family/couple,couple_week,Point de couple,relay,famille/partage/communauté,/family/couple,dans l’écran,,,non,non,non,non
+outil,Famille,/family/me-time,,,,,,,,metime:/family/me-time,family_metime,Temps pour soi,metime,tâches/planning,/family/me-time,dans l’écran,,,non,non,non,non
+outil,Famille,/family/offduty,,,,,,,,metime:/family/offduty,offduty,Je décroche,metime,minuteur/session,/family/offduty,,,,non,non,non,non
+outil,Famille,/family/difficult,,,,,,,,prevention:/family/difficult,family_difficult,Journée difficile,prevention,formulaire/assistant,/family/difficult,,,,non,non,non,non
+outil,Réglages,/settings/reminders,,,,,,,,reminders:/settings/reminders,reminders,Rappels,reminders,tâches/planning,/settings/reminders,feuille dans l’écran,,,non,non,non,non
+outil,Réglages,/notifications,,,,,,,,reminders:/notifications,notifications,Notifications,reminders,tâches/planning,/notifications,,,,non,non,non,non
+outil,Réglages,/settings/home,,,,,,,,reminders:/settings/home,home_settings,Personnaliser l’accueil,reminders,formulaire/assistant,/settings/home,,,,non,non,non,non
+outil,Réglages,/settings,,,,,,,,reminders:/settings,settings,Réglages,reminders,formulaire/assistant,/settings,,,,non,non,non,non
+outil,Réglages,/journeys,,,,,,,,reminders:/journeys,journeys,Modifier mon parcours,reminders,formulaire/assistant,/journeys,feuille dans l’écran,/journeys/[id],,non,non,non,non
+outil,Cycle et fertilité,/contraception/reminders,,,,,,,,reminders:/contraception/reminders,avoid_reminders,Rappels de contraception,reminders,tâches/planning,/contraception/reminders,/contraception/consultation,,/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods,non,non,non,non
+outil,Cycle et fertilité,/cycle/kit,,,,,,,,reminders:/cycle/kit,cycle_kit,Trousse règles,reminders,tâches/planning,/cycle/kit,,,,non,non,non,non
+outil,Accueil,/ask,,,,,,,,resources:/(tabs)/ask,ask,Assistant,resources,formulaire/assistant,/ask,,,,non,non,non,non
+outil,Accueil,/assistant/local,,,,,,,,resources:/assistant/local,local_ai,Assistant des articles,resources,formulaire/assistant,/assistant/local,,,/assistant/chat,non,non,non,non
+outil,Santé,/outings,,,,,,,,resources:/outings,nearby,Sorties près de chez moi,resources,autre,/outings,,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=eviter-grossesse,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Santé,/library,,,,,,,,resources:/library,library,Bibliothèque,resources,autre,/library,,,,non,non,non,non
+outil,Santé,/sources,,,,,,,,resources:/sources,sources,Sources et lectures,resources,autre,/sources,,,,non,non,non,non
+outil,Cycle et fertilité,/cycle/guides,,,,,,,,resources:/cycle/guides,cycle_guides,Guides,resources,autre,/cycle/guides,,,,non,non,non,non
+outil,Santé,/tutos,,,,,,,,resources:/tutos,video_tutos,Tutos vidéo,resources,autre,/tutos,,,,non,non,non,non
+outil,Santé,/videos,,,,,,,,resources:/videos,official_videos,Vidéos & articles,resources,autre,/videos,,,,non,non,non,non
+outil,Famille,/family/solo,,,,,,,,resources:/family/solo,solo_parent,Maman solo,resources,famille/partage/communauté,/family/solo,feuille dans l’écran,,,non,non,non,non
+outil,Famille,/family/papers,,,,,,,,resources:/family/papers,family_papers,Papiers de la famille,resources,formulaire/assistant,/family/papers,feuille dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=ttc,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Cycle et fertilité,/fertility/exams,,,,,,,,health:/fertility/exams,ttc_exams,Examens,health,suivi/mesures,/fertility/exams,,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/consultation,,,,,,,,health:/fertility/consultation,ttc_consult,Préparer une consultation,health,formulaire/assistant,/fertility/consultation,dans l’écran,,,non,non,non,non
+outil,Grossesse et post-partum,/names,,,,,,,,pregnancy:/names,preg_names,Idées de prénoms,pregnancy,humeur/journal,/names,,,,non,non,non,non
+outil,Cycle et fertilité,/fertility,,,,,,,,cycle:/fertility,ttc_cycle,Cycle et période fertile,cycle,suivi/mesures,/fertility,,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/log,,,,,,,,cycle:/fertility/log,ttc_tests,Tests d’ovulation et de grossesse,cycle,suivi/mesures,/fertility/log,,,/fertility/log,non,non,non,non
+outil,Cycle et fertilité,/fertility/mucus,,,,,,,,cycle:/fertility/mucus,ttc_mucus,Glaire cervicale,cycle,suivi/mesures,/fertility/mucus,,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/body,,,,,,,,cycle:/fertility/body,ttc_temperature,Température (facultatif),cycle,suivi/mesures,/fertility/body,dans l’écran,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/intimacy,,,,,,,,cycle:/fertility/intimacy,ttc_intimacy,"Rapports (facultatif, privé)",cycle,suivi/mesures,/fertility/intimacy,,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/understand,,,,,,,,cycle:/fertility/understand,ttc_understand,Comprendre mon cycle,cycle,autre,/fertility/understand,,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,cycle:/guide/pma,guide_pma,Parcours PMA,cycle,autre,/guide/[topic],,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/pma,,,,,,,,cycle:/fertility/pma,pma_tracker,Suivi PMA,cycle,suivi/mesures,/fertility/pma,feuille dans l’écran,,,non,non,non,non
+outil,Cycle et fertilité,/fertility/reminders,,,,,,,,reminders:/fertility/reminders,ttc_reminders,Rappels,reminders,tâches/planning,/fertility/reminders,,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=projet-bebe,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Santé,/library,,,,,,,,resources:/library?q=conception,ttc_articles,Articles sur la conception,resources,autre,/library,,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,resources:/guide/work,guide_work,Mes droits au travail,resources,autre,/guide/[topic],,,,non,non,non,non
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=cycle,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Cycle et fertilité,/cycle/journal,,,,,,,,cycle:/cycle/journal,cycle_journal,Journal du cycle,cycle,humeur/journal,/cycle/journal,,,/cycle/journal,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=fertilite,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=none,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,health:/guide/firstaid,guide_firstaid,Urgences et premiers secours,health,autre,/guide/[topic],,,,non,non,non,non
+outil,Santé,/products,,,,,,,,prevention:/products,kid_products,Produits enfants,prevention,autre,/products,,/products/[id] /products/compare,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/eat,,,,,,,,feeding:/pregnancy/eat,preg_eat,Bien manger enceinte,feeding,autre,/pregnancy/eat,/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start,,/pregnancy/calendar /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Santé,/appointments,,,,,,,,health:/appointments?for=pregnancy,appointments,Rendez-vous et examens,health,tâches/planning,/appointments,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/documents,,,,,,,,health:/documents?for=pregnancy,documents,Documents,health,formulaire/assistant,/documents,/documents/[id] /documents/scan,/documents/export,/documents/book,non,non,non,non
+outil,Santé,/consult/questions,,,,,,,,health:/consult/questions?for=pregnancy,consult_questions,Mes questions pour le rendez-vous,health,formulaire/assistant,/consult/questions,dans l’écran,,,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy,,,,,,,,pregnancy:/pregnancy,preg_evolution,Évolution du bébé,pregnancy,suivi/mesures,/pregnancy,/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/weight,,,,,,,,pregnancy:/pregnancy/weight,preg_weight,Suivi du poids,pregnancy,suivi/mesures,/pregnancy/weight,/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/feel,,,,,,,,pregnancy:/pregnancy/feel,preg_feel,Comment je me sens aujourd’hui ?,pregnancy,humeur/journal,/pregnancy/feel,/pregnancy/edit /pregnancy/end /pregnancy/start,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Santé,/library,,,,,,,,pregnancy:/library?q=accouchement,preg_birth_prep,Préparation à l’accouchement,pregnancy,autre,/library,,,,non,non,non,non
+outil,Grossesse et post-partum,/lists,,,,,,,,pregnancy:/lists,preg_lists,Listes,pregnancy,tâches/planning,/lists,feuille dans l’écran,,,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/edit,,,,,,,,pregnancy:/pregnancy/edit,preg_edit,Modifier la grossesse,pregnancy,formulaire/assistant,/pregnancy/edit,/pregnancy/end /pregnancy/feel /pregnancy/start,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/end,,,,,,,,pregnancy:/pregnancy/end,preg_end,Terminer la grossesse,pregnancy,formulaire/assistant,/pregnancy/end,/pregnancy/edit /pregnancy/feel /pregnancy/start,,/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/moves,,,,,,,,pregnancy:/pregnancy/moves,preg_moves,Mouvements de bébé,pregnancy,minuteur/session,/pregnancy/moves,/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start,,/pregnancy/calendar /pregnancy/eat /pregnancy/weight,non,non,non,non
+outil,Grossesse et post-partum,/pregnancy/calendar,,,,,,,,calendar:/pregnancy/calendar,preg_calendar,Mon calendrier de grossesse,calendar,tâches/planning,/pregnancy/calendar,/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start,,/pregnancy/eat /pregnancy/moves /pregnancy/weight,non,non,non,non
+outil,Famille,/family/nights,,,,,,,,relay:/family/nights,family_nights,Relais de nuit,relay,famille/partage/communauté,/family/nights,dans l’écran,,,non,non,non,non
+outil,Accueil,/summary,,,,,,,,resources:/summary,summary,Résumés,resources,autre,/summary,,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=grossesse,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Santé,/library,,,,,,,,resources:/library?journey=pregnant,preg_articles,Articles et vidéos,resources,autre,/library,,,,non,non,non,non
+outil,Santé,/library,,,,,,,,resources:/library?cat=sexualite,preg_intimacy,Sexualité pendant la grossesse,resources,autre,/library,,,,non,non,non,non
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=postpartum,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Accueil,/track/[kind],,,,,,,,feeding:/track/breastfeed?child=:id,pp_feeding,Allaitement,feeding,minuteur/session,/track/[kind],dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/bottle/[childId],,,,,,,,feeding:/bottle/:id,pp_bottle,Biberon,feeding,minuteur/session,/bottle/[childId],feuille dans l’écran,/bottle/scoops,/bottle/history,non,non,non,non
+outil,Bébé et enfant,/bottle/scoops,,,,,,,,feeding:/bottle/scoops,bottle_scoops,Compteur de mesurettes,feeding,minuteur/session,/bottle/scoops,,/bottle/[childId],/bottle/history,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,health:/guide/neonat?child=:id,guide_neonat,Mon bébé en néonat,health,autre,/guide/[topic],,,,non,non,non,non
+outil,Grossesse et post-partum,/postpartum,,,,,,,,mood:/postpartum,pp_recovery,Récupération,mood,suivi/mesures,/postpartum,/postpartum/checkin /postpartum/support,,/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand,non,non,non,non
+outil,Grossesse et post-partum,/postpartum/checkin,,,,,,,,mood:/postpartum/checkin,pp_checkin,Point du jour,mood,humeur/journal,/postpartum/checkin,/postpartum/support,,/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand,non,non,non,non
+outil,Grossesse et post-partum,/postpartum/recovery,,,,,,,,mood:/postpartum/recovery,pp_body,Cicatrisation et rééducation,mood,suivi/mesures,/postpartum/recovery,/postpartum/checkin /postpartum/support,,/postpartum/history /postpartum/partner /postpartum/sharing /postpartum/understand,non,non,non,non
+outil,Grossesse et post-partum,/postpartum/understand,,,,,,,,mood:/postpartum/understand,pp_mental,Baby blues et dépression du post-partum,mood,autre,/postpartum/understand,/postpartum/checkin /postpartum/support,,/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing,non,non,non,non
+outil,Grossesse et post-partum,/postpartum/support,,,,,,,,mood:/postpartum/support,pp_support,Santé mentale : trouver de l’aide,mood,autre,/postpartum/support,/postpartum/checkin,,/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand,non,non,non,non
+outil,Grossesse et post-partum,/postpartum/partner,,,,,,,,mood:/postpartum/partner,pp_partner,Espace du conjoint,mood,famille/partage/communauté,/postpartum/partner,/postpartum/checkin /postpartum/support,,/postpartum/history /postpartum/recovery /postpartum/sharing /postpartum/understand,non,non,non,non
+outil,Famille,/family/urgent,,,,,,,,prevention:/family/urgent,family_urgent,Mode urgence organisation,prevention,formulaire/assistant,/family/urgent,,,,non,non,non,non
+outil,Famille,/family/sos,,,,,,,,prevention:/family/sos,family_sos,Je craque,prevention,formulaire/assistant,/family/sos,,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=post-partum,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=baby&child=:id,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Bébé et enfant,/meals/rankings,,,,,,,,feeding:/meals/rankings,meal_rankings,Classements des recettes,feeding,autre,/meals/rankings,/meals/new /meals/shopping,/meals/[slug],/meals/menu /meals/pantry,non,non,non,non
+outil,Accueil,/track/[kind],,,,,,,,feeding:/track/bottle?child=:id,baby_bottle,Biberons,feeding,minuteur/session,/track/[kind],dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/bottle/history,,,,,,,,feeding:/bottle/history?child=:id,baby_bottle_history,Historique des biberons,feeding,suivi/mesures,/bottle/history,feuille dans l’écran,/bottle/[childId] /bottle/scoops,/bottle/history,non,non,non,non
+outil,Bébé et enfant,/child/[id]/discoveries,,,,,,,,feeding:/child/:id/discoveries,baby_foods,Ses découvertes,feeding,humeur/journal,/child/[id]/discoveries,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,feeding:/guide/kidfood,guide_kidfood,Alimentation 1–10 ans,feeding,autre,/guide/[topic],,,,non,non,non,non
+outil,Bébé et enfant,/night,,,,,,,,sleep:/night?child=:id,kid_sleep,Sommeil,sleep,minuteur/session,/night,,,/night/help,non,non,non,non
+outil,Bébé et enfant,/sleep/[childId],,,,,,,,sleep:/sleep/c1,kid_sleep_rhythm,Planning de sommeil,sleep,suivi/mesures,/sleep/[childId],dans l’écran,/sleep/difficult/[childId] /sleep/help/[childId],,non,non,non,non
+outil,Bébé et enfant,/night/help,,,,,,,,sleep:/night/help?child=:id,baby_night_help,Aide pour la nuit,sleep,minuteur/session,/night/help,,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,sleep:/guide/kidsleep,guide_kidsleep,Sommeil de l’enfant,sleep,autre,/guide/[topic],,,,non,non,non,non
+outil,Accueil,/track/[kind],,,,,,,,diapers:/track/diaper?child=:id,baby_diaper,Couches,diapers,minuteur/session,/track/[kind],dans l’écran,,,non,non,non,non
+outil,Accueil,/track,,,,,,,,diapers:/(tabs)/track,baby_daily,Suivi de la journée,diapers,suivi/mesures,/track,/track/[kind],,,non,non,non,non
+outil,Santé,/teeth,,,,,,,,teeth:/teeth?child=:id,kid_teeth,Dents,teeth,suivi/mesures,/teeth,feuille dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/child/[id],,,,,,,,growth:/child/:id,kid_profile,Sa fiche,growth,formulaire/assistant,/child/[id],,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/growth,,,,,,,,growth:/child/:id/growth,kid_growth,Croissance,growth,suivi/mesures,/child/[id]/growth,,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/grow,,,,,,,,growth:/child/:id/grow,kid_grow,Je grandis,growth,humeur/journal,/child/[id]/grow,feuille dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/child/[id],,,,,,,,growth:/child/:id?tab=etapes,kid_milestones,Journal,growth,humeur/journal,/child/[id],,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,growth:/guide/hygiene,guide_hygiene,Hygiène et soins,growth,autre,/guide/[topic],,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,growth:/guide/activities,guide_activities,Activités par âge,growth,autre,/guide/[topic],,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,growth:/guide/toddler,guide_toddler,Grandir de 1 à 3 ans,growth,autre,/guide/[topic],,,,non,non,non,non
+outil,Santé,/appointments,,,,,,,,health:/appointments?child=:id,appointments,Rendez-vous et examens,health,tâches/planning,/appointments,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/documents,,,,,,,,health:/documents?child=:id,documents,Documents,health,formulaire/assistant,/documents,/documents/[id] /documents/scan,/documents/export,/documents/book,non,non,non,non
+outil,Bébé et enfant,/child/[id]/vaccines,,,,,,,,health:/child/:id/vaccines,kid_vaccines,Vaccins,health,suivi/mesures,/child/[id]/vaccines,feuille dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/health-tracking,,,,,,,,health:/child/:id/health-tracking,kid_health,Suivi santé,health,suivi/mesures,/child/[id]/health-tracking,feuille dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/needs,,,,,,,,health:/child/:id/needs?tab=treatments,kid_treatments,Traitements prescrits,health,suivi/mesures,/child/[id]/needs,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,health:/guide/illnesses,guide_illnesses,Maladies de l’enfance,health,autre,/guide/[topic],,,,non,non,non,non
+outil,Santé,/consult/questions,,,,,,,,health:/consult/questions?child=:id,consult_questions,Mes questions pour le rendez-vous,health,formulaire/assistant,/consult/questions,dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/card,,,,,,,,health:/child/:id/card,kid_card,Fiche de mon enfant,health,formulaire/assistant,/child/[id]/card,,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/wellbeing,,,,,,,,mood:/child/:id/wellbeing,kid_mood,Humeur et émotions,mood,humeur/journal,/child/[id]/wellbeing,,,,non,non,non,non
+outil,Famille,/family/custody,,,,,,,,calendar:/family/custody,custody,Garde alternée,calendar,famille/partage/communauté,/family/custody,feuille dans l’écran,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,tasks:/guide/school,guide_school,"Crèche, nounou, école",tasks,autre,/guide/[topic],,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=parents-bebes,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Bébé et enfant,/meals,,,,,,,,feeding:/meals?for=child&child=:id,meals,Repas et recettes,feeding,tâches/planning,/meals,/meals/new /meals/shopping,/meals/[slug] /meals/rankings,/meals/menu /meals/pantry,non,non,non,non
+outil,Bébé et enfant,/sleep/[childId],,,,,,,,sleep:/sleep/c2,kid_sleep_rhythm,Planning de sommeil,sleep,suivi/mesures,/sleep/[childId],dans l’écran,/sleep/difficult/[childId] /sleep/help/[childId],,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,growth:/guide/sport,guide_sport,Sport et activité,growth,autre,/guide/[topic],,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/needs,,,,,,,,health:/child/:id/needs,kid_needs,Mon enfant a un besoin particulier,health,formulaire/assistant,/child/[id]/needs,feuille dans l’écran,,,non,non,non,non
+outil,Bébé et enfant,/child/[id]/steps,,,,,,,,health:/child/:id/steps,kid_steps,Mes démarches,health,formulaire/assistant,/child/[id]/steps,,,,non,non,non,non
+outil,Santé,/guide/[topic],,,,,,,,mood:/guide/behaviour,guide_behaviour,Émotions et comportement,mood,autre,/guide/[topic],,,,non,non,non,non
+outil,Famille,/family/kid-routines,,,,,,,,tasks:/family/kid-routines,kid_routines,Routines en images,tasks,tâches/planning,/family/kid-routines,feuille dans l’écran,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=parents-enfants,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non
+outil,Accueil,/summary,,,,,,,,tasks:/summary?family=1,family_summary,Résumé familial du jour,tasks,famille/partage/communauté,/summary,,,,non,non,non,non
+outil,Famille,/family/history,,,,,,,,tasks:/family/history,family_history,Historique des tâches,tasks,tâches/planning,/family/history,,,/family/history,non,non,non,non
+outil,Famille,/family/review,,,,,,,,prevention:/family/review,family_review,Bilan de la semaine,prevention,famille/partage/communauté,/family/review,,,,non,non,non,non
+outil,Communauté,/community,,,,,,,,resources:/(tabs)/community?space=familles-nombreuses,community,Communauté,resources,famille/partage/communauté,/community,,,,non,non,non,non

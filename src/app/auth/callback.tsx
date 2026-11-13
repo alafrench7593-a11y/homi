@@ -5,9 +5,9 @@
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Loading, Text } from '@/components/ui';
 import { ResendButton } from '@/features/auth';
+import { EntryHero, EntryScreen, MattePanel } from '@/features/entry/EntryKit';
 import { backend } from '@/lib/backend';
 import { isExpiredLinkError, parseAuthCallback } from '@/lib/authFlow';
 import { hasSession, waitForSession } from '@/lib/authSession';
@@ -55,26 +55,35 @@ export default function AuthCallback() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (state === 'loading') return <Screen title={tr('auth.callback.title')}><Loading label={tr('auth.callback.activating')} /></Screen>;
+  if (state === 'loading') {
+    return (
+      <EntryScreen back={false}>
+        <EntryHero icon="check" title={tr('auth.callback.title')} testID="entry-hero" />
+        <Loading label={tr('auth.callback.activating')} />
+      </EntryScreen>
+    );
+  }
   if (state === 'expired') {
     return (
-      <Screen title={tr('auth.callback.expiredTitle')}>
+      <EntryScreen back={false} footer={<Button label={tr('auth.signIn')} variant="secondary" full onPress={() => router.replace('/auth/sign-in')} />}>
+        <EntryHero icon="link" title={tr('auth.callback.expiredTitle')} testID="entry-hero" />
         <Banner tone="warning" title={tr('auth.link.invalidTitle')}>{tr('auth.callback.expiredBody')}</Banner>
-        <Field label={tr('auth.email')} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
-        <ResendButton label={tr('auth.link.newLink')} initialSentAt={null} onResend={async () => {
-          if (!email.trim()) throw new Error(tr('v.email.required'));
-          await backend.auth.resendConfirmation(email.trim());
-        }} />
+        <MattePanel>
+          <Field label={tr('auth.email')} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
+          <ResendButton label={tr('auth.link.newLink')} initialSentAt={null} onResend={async () => {
+            if (!email.trim()) throw new Error(tr('v.email.required'));
+            await backend.auth.resendConfirmation(email.trim());
+          }} />
+        </MattePanel>
         <Text variant="small" muted>{tr('auth.callback.alreadyConfirmed')}</Text>
-        <Button label={tr('auth.signIn')} variant="secondary" onPress={() => router.replace('/auth/sign-in')} />
-      </Screen>
+      </EntryScreen>
     );
   }
   return (
-    <Screen title={tr('auth.callback.title')}>
+    <EntryScreen back={false} footer={<Button label={tr('auth.signIn')} size="lg" full onPress={() => router.replace('/auth/sign-in')} />}>
+      <EntryHero icon="alert-triangle" title={tr('auth.callback.title')} testID="entry-hero" />
       <Banner tone="danger">{message || tr('auth.callback.unusable')}</Banner>
-      <Button label={tr('auth.signIn')} onPress={() => router.replace('/auth/sign-in')} />
       <Button label={tr('auth.forgot')} variant="ghost" onPress={() => router.replace('/auth/forgot')} />
-    </Screen>
+    </EntryScreen>
   );
 }

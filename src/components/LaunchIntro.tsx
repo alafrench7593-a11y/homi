@@ -9,7 +9,7 @@
  *  - le premier écran et ses données se chargent EN DESSOUS pendant l'animation (rien n'attend celle-ci) ;
  *  - le calque ne capte aucun toucher (pointerEvents « none ») : l'écran est utilisable dès qu'il est rendu ;
  *  - jouée une seule fois par lancement à froid (pas au retour d'arrière-plan, pas à chaque changement d'écran) ;
- *  - absente à la toute première ouverture (l'introduction cinématique joue déjà ce rôle) ;
+ *  - absente à la toute première ouverture (l'introduction HOMI de /cinematic, même chorégraphie, joue déjà ce rôle) ;
  *  - « Réduire les animations » ou économie d'énergie (useMotion → 'off') : aucune introduction, état final immédiat ;
  *  - thème nuit ('minimal') ou lancement déjà lent : version abrégée (logo complet, courte pose, fondu).
  * Une seule horloge (valeur partagée, fil UI) pilote toute la chorégraphie ; chaque pièce n'anime que son opacité
@@ -160,7 +160,7 @@ const FAMILY_TOP = Math.min(...HOMI_FAMILY.map((f) => f.top));
 const FAMILY_BOTTOM = Math.max(...HOMI_FAMILY.map((f) => f.bottom));
 const ID = { house: 'hmi-house', edge: 'hmi-edge', fig: 'hmi-fig', glow: 'hmi-glow', halo: 'hmi-halo' };
 
-function IntroMark({ size, clock, tl }: { size: number; clock: SharedValue<number>; tl: IntroTimeline }) {
+export function IntroMark({ size, clock, tl }: { size: number; clock: SharedValue<number>; tl: IntroTimeline }) {
   const k = size / HOMI_VIEWBOX;
   const full = StyleSheet.absoluteFill;
 

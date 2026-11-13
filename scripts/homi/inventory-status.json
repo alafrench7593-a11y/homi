@@ -1,0 +1,39 @@
+{
+  "_doc": "Statuts de la refonte HOMI, saisis à la main puis repris par scripts/homi/inventory.mjs. screens : chemin sous src/app → « à faire » | « tranche » | « fait ». tools : identifiant du catalogue (colonne id de MATRICE_OUTILS.csv) → { ecrans_refondus, commandes_adaptees, transition_implementee, parcours_verifie } (« non » | « partiel » | « oui »).",
+  "screens": {
+    "index.tsx": "fait",
+    "cinematic.tsx": "fait",
+    "welcome.tsx": "fait",
+    "auth/sign-in.tsx": "fait",
+    "auth/sign-up.tsx": "fait",
+    "auth/forgot.tsx": "fait",
+    "auth/reset.tsx": "fait",
+    "auth/callback.tsx": "fait",
+    "onboarding.tsx": "tranche",
+    "intro.tsx": "tranche"
+  },
+  "tools": {},
+  "pilots": [
+    {
+      "kind": "Saisie",
+      "label": "Mon humeur",
+      "key": "mood",
+      "why": "bilan court à choix (humeur, énergie, note facultative), privé, avec relais d’aide : valide champs mats, puces, bouton principal au-dessus du clavier et feuille de confirmation",
+      "routes": ["/me/mood", "/me/diary"]
+    },
+    {
+      "kind": "Données",
+      "label": "Biberon",
+      "key": "pp_bottle",
+      "why": "minuteur en direct + saisie rapide + historique et compteur de mesurettes : valide chiffres animés, carte d’état, transition liste → détail et lisibilité de nuit",
+      "routes": ["/bottle", "/bottle/[childId]", "/bottle/history", "/bottle/scoops"]
+    },
+    {
+      "kind": "Plusieurs étapes",
+      "label": "Scanner un produit",
+      "key": "scan_product",
+      "why": "caméra ou saisie du code → fiche résultat → historique et comparaison : valide transitions entre écrans, états chargement / erreur réseau / introuvable",
+      "routes": ["/scanner", "/scanner/product", "/scanner/result/[id]", "/scanner/history", "/scanner/compare"]
+    }
+  ]
+}

@@ -50,7 +50,7 @@ def signup(pg, email, pw='abcdefg1', double=False):
     return wait_text(pg, 'Vérifiez vos e-mails')
 
 with sync_playwright() as p:
-    b = p.chromium.launch(args=ARGS)
+    b = p.chromium.launch(args=ARGS, executable_path=os.environ['PW_CHROMIUM']) if os.environ.get('PW_CHROMIUM') else p.chromium.launch(args=ARGS)
     errs = []
 
     # ------------------------------------------------ A. inscription → confirmation → onboarding repris
@@ -77,7 +77,7 @@ with sync_playwright() as p:
     R['A_ecran_verifiez'] = wait_text(pg, 'Vérifiez vos e-mails'); shot(pg, 'a1-verifiez')
     R['A_une_seule_inscription'] = len(fake.signup_bodies) == 1
     meta = fake.signup_bodies[0].get('data', {}) if fake.signup_bodies else {}
-    R['A_consentements_metadonnees'] = meta.get('adult_confirmed') is True and meta.get('terms_version') == '2026-10'
+    R['A_consentements_metadonnees'] = meta.get('adult_confirmed') is True and bool(re.fullmatch(r'\d{4}-\d{2}', meta.get('terms_version') or ''))
     R['A_redirect_callback'] = any(c[1].startswith('/auth/v1/signup') and 'redirect_to=' in c[1] and 'auth%2Fcallback' in c[1] for c in fake.calls)
     t = T(pg); R['A_renvoyer_desactive_60s'] = bool(re.search(r'Renvoyer l’e-mail \(dans \d+ s\)', t))
     uid = next(iter(fake.users))

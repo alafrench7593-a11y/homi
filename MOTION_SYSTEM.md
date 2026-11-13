@@ -63,7 +63,7 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 Une horloge partagée (0 → 2 280 ms, linéaire), chaque pièce applique sa courbe à son étape :
 tracé du contour 120–820 ms (`reveal`) · illumination (remplissage + lueur) 600–1 000 ms · halo bref 600–1 800 ms · parent, parent, enfant, enfant à 900 / 1 000 / 1 100 / 1 200 ms (360 ms chacun : fondu, +10 unités, 0,9 → 1 autour des pieds) · pose 240 ms · fondu du calque 1 800–2 280 ms avec avancée 1 → 1,06.
 Image finale = `BrandLogo` (mêmes tracés, mêmes dégradés). Tracés séparés générés par `scripts/homi/brand.mjs` → `src/brand/homiMarkSvg.ts` (`HOMI_HOUSE_PATH`, `HOMI_HOUSE_LENGTH`, `HOMI_FAMILY`, `HOMI_COLORS`) ; dessin inchangé (SVG et PNG régénérés identiques).
-Règles conservées : une fois par lancement à froid ; absente à la première ouverture (l'intro cinématique joue) ; `off` → aucune intro, calque retiré à durée 0 ; `minimal` (nuit) ou lancement déjà lent (> 2 s) → version abrégée (logo complet, 260 ms de pose, 320 ms de fondu). Calque `pointerEvents="none"`, masqué aux lecteurs d'écran ; l'accueil se charge dessous.
+Règles conservées : une fois par lancement à froid ; absente à la première ouverture (l'introduction HOMI de `/cinematic` — `src/features/entry/HomiIntro.tsx`, même chorégraphie suivie du nom, ≈ 2,2 s, sans vidéo — joue déjà ce rôle) ; `off` → aucune intro, calque retiré à durée 0 ; `minimal` (nuit) ou lancement déjà lent (> 2 s) → version abrégée (logo complet, 260 ms de pose, 320 ms de fondu). Calque `pointerEvents="none"`, masqué aux lecteurs d'écran ; l'accueil se charge dessous.
 
 ### Morphs entre modules (`src/motion/MorphIcon.tsx`, `morphShapes.ts`)
 
@@ -111,7 +111,7 @@ Jest : Reanimated tourne dans son implémentation JS officielle grâce au résol
 - **Navigation / coque** : `app/_layout.tsx` (`components/Dock.tsx` migré le 13/11/2026, voir « Branchements »).
 - **Fonds et décors en boucle** (`Animated.loop`) : `Aurora.tsx`, `PowderSky.tsx`, `StarField.tsx`, `VideoBackdrop.tsx`, `DayClock.tsx`, `FetusArt.tsx`, `FetusOrb.tsx`, `ToolGlyph.tsx`, `features/motionViz.tsx`, `story/FamilyStoryArt.tsx`, `goldTimeline.tsx`, `pregnancyThread.tsx`, `dayThread.tsx`, `dayStrip/DayStrip.tsx`, `cycle/GuideArt.tsx`, `cycle/GoldCycleRing.tsx`, `cocoon/Cocoon.tsx`.
 - **Instruments et chronomètres** : `bottleClock.tsx`, `bottleDay.tsx`, `bottleInstrument.tsx`, `childCare.tsx`.
-- **Écrans et modules** : `app/intro.tsx`, `app/calendar.tsx`, `app/cycle/calendar.tsx`, `app/child/[id]/discoveries.tsx`, `cinematicIntro/CinematicIntro.tsx`, `Paywall.tsx`, `subscription.tsx`, `community.tsx`, `namesSwipe.tsx`, `familyLoad.tsx`, `postpartum.tsx`, `cycle/Bars.tsx`, `cycle/PainKit.tsx`, `cycle/kit.tsx`, `cycle3/CycleCalendar.tsx`, `cycle3/ui.tsx`, `Charts.tsx`, `GrowthChart.tsx`.
+- **Écrans et modules** : `app/intro.tsx`, `app/calendar.tsx`, `app/cycle/calendar.tsx`, `app/child/[id]/discoveries.tsx`, `Paywall.tsx`, `subscription.tsx`, `community.tsx`, `namesSwipe.tsx`, `familyLoad.tsx`, `postpartum.tsx`, `cycle/Bars.tsx`, `cycle/PainKit.tsx`, `cycle/kit.tsx`, `cycle3/CycleCalendar.tsx`, `cycle3/ui.tsx`, `Charts.tsx`, `GrowthChart.tsx`.
 
 ## Plan de migration
 

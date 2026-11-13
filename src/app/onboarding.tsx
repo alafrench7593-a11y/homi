@@ -1,12 +1,15 @@
-/** Première ouverture : court, doux, et ne demande que l'utile. */
+/**
+ * Première ouverture : court, doux, et ne demande que l'utile (HOMI, entrée Keynote).
+ * Un point focal par étape d'accueil (logo, puis coche de l'écran « prêt »), une seule action principale en pied
+ * d'écran (« Continuer » à largeur stable, au-dessus du clavier) ; « Retour » est un bouton rond qui revient à l'étape
+ * précédente SANS perdre la saisie (tout l'état vit ici, les étapes sont des vues contrôlées).
+ */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, Text, Toggle } from '@/components/ui';
-import { FetusOrb } from '@/components/FetusOrb';
-import { WeeksRing } from '@/components/DayClock';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, Row, Text, Toggle } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
@@ -18,7 +21,11 @@ import { addDays, todayISO } from '@/lib/domain/dates';
 import type { ConsentPurpose, Journey } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { useTheme } from '@/theme/ThemeProvider';
-import { palette, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
+import { FocalMark, useCompactEntry } from '@/features/entry/EntryKit';
+import { DEMO_PILL_HEIGHT } from '@/components/DemoBar';
+import { useBackendMode } from '@/lib/demoMode';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { INTERESTS, interestHint, interestLabel, journeyOptions, reminderSuggestions, type Interest } from '@/lib/domain/journeys';
 import { formatList, getLocale, t as tr } from '@/i18n';
 import { BRAND } from '@/config/brand';
@@ -28,7 +35,6 @@ import { CheckRow, LegalLink } from '@/features/auth';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft } from '@/lib/onboardingDraft';
 import { Tappable } from '@/components/Tappable';
 import { StaggerItem, StepProgress, StepSwap } from '@/components/Motion';
-import { Appear } from '@/components/Appear';
 
 type Step = 'intro' | 'journeys' | 'pregnancy' | 'children' | 'reminders' | 'consents';
 
@@ -45,6 +51,7 @@ export default function Onboarding() {
   const t = useTheme();
   const toast = useToast();
   const qc = useQueryClient();
+  const insets = useSafeAreaInsets();
   const userId = useUserId();
   const [step, setStep] = useState<Step>('intro');
   const [name, setName] = useState('');
@@ -67,6 +74,9 @@ export default function Onboarding() {
   const [ready, setReady] = useState<ReadySummary | null>(null);
   const JOURNEYS = journeyOptions();
   const finishing = useRef(false);
+  const compact = useCompactEntry();
+  // Démonstration : la pastille « Démo » flotte en haut ; l'écran (sans en-tête) lui laisse sa place
+  const demoTop = useBackendMode().isDemo ? { paddingTop: insets.top + spacing.md + DEMO_PILL_HEIGHT } : undefined;
 
   // Reprise : brouillon le plus récent entre l'appareil et le profil
   useEffect(() => {
@@ -225,12 +235,12 @@ export default function Onboarding() {
   ) : step === 'intro' ? (
     <Button label={tr('onb.start')} size="lg" full onPress={goNext} />
   ) : (
-    <Row>
-      <Button label={tr('common.back')} variant="secondary" onPress={prev} style={{ flex: 1 }} />
+    <Row style={{ alignItems: 'center' }}>
+      <IconButton icon="arrow-left" tone="filled" label={tr('common.back')} onPress={prev} />
       {step === 'consents' ? (
-        <Button label={tr('onb.go')} loading={saving} onPress={finish} style={{ flex: 2 }} />
+        <Button label={tr('onb.go')} size="lg" loading={saving} disabled={saving} onPress={finish} style={{ flex: 1 }} testID="onb-finish" />
       ) : (
-        <Button label={tr('common.continue')} onPress={goNext} style={{ flex: 2 }} />
+        <Button label={tr('common.continue')} size="lg" onPress={goNext} style={{ flex: 1 }} testID="onb-next" />
       )}
     </Row>
   );
@@ -246,14 +256,10 @@ export default function Onboarding() {
       { icon: 'lock' as IconName, text: tr('onb.ready.privacy') },
     ];
     return (
-      <Screen stars footer={footer}>
+      <Screen stars footer={footer} contentStyle={demoTop}>
         <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
           {/* Compte prêt : la pastille de confirmation apparaît en « pop », puis le résumé en cascade */}
-          <Appear kind="pop" delay={0.05} duration={0.7}>
-            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
-              <Icon name="check" size={44} color={t.colors.primaryText} />
-            </View>
-          </Appear>
+          <FocalMark icon="check" size={compact ? 120 : 200} />
           <Text variant="title" center accessibilityRole="header">{name.trim() ? tr('onb.ready.titleNamed', { name: name.trim() }) : tr('onb.ready.title')}</Text>
           <Text center muted style={{ maxWidth: 340 }}>{tr('onb.ready.body')}</Text>
         </View>
@@ -274,16 +280,14 @@ export default function Onboarding() {
   }
 
   return (
-    <Screen stars={step === 'intro'} footer={footer}>
+    <Screen stars={step === 'intro'} footer={footer} contentStyle={demoTop}>
       {step !== 'intro' && progress}
       {error ? <Banner tone="warning">{error}</Banner> : null}
 
       <StepSwap key={step} dir={dir}>
       {step === 'intro' && (
-        <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.xl }}>
-          <View style={{ width: 250, height: 250, borderRadius: 125, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <WeeksRing week={18} size={240}><FetusOrb growth={0.5} size={180} interactive={false} /></WeeksRing>
-          </View>
+        <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: compact ? 0 : spacing.md }}>
+          <FocalMark logo size={compact ? 140 : 240} />
           <Text variant="hero" center accessibilityRole="header">{tr('onb.welcome')}</Text>
           <Text center muted style={{ maxWidth: 340 }}>
             {tr('onb.welcomeBody', { app: BRAND.name })}

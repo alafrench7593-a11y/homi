@@ -1,10 +1,14 @@
-/** Inscription : validation en direct, règles du mot de passe, 18 ans et CGU, confirmation par e-mail. */
+/**
+ * Inscription (HOMI, entrée Keynote) : validation en direct, règles du mot de passe, 18 ans et CGU, confirmation par
+ * e-mail. Un point focal, champs sur surface mate, « Créer mon compte » en pied d'écran (au-dessus du clavier).
+ * Adresse déjà utilisée : le bandeau propose directement « Se connecter ».
+ */
 import React, { useEffect, useRef, useState } from 'react';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Row, Text } from '@/components/ui';
+import { EntryHero, EntryScreen, MattePanel } from '@/features/entry/EntryKit';
 import { CheckRow, hasSocialSignIn, LegalLink, PasswordRules, ResendButton, SocialButtons } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { LEGAL_VERSIONS, peekPendingInvite, savePendingConsents } from '@/lib/authFlow';
@@ -16,6 +20,7 @@ export default function SignUp() {
   const [form, setForm] = useState({ email: '', password: '', confirm: '', adult: false, terms: false });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [exists, setExists] = useState(false);
   const [loading, setLoading] = useState(false);
   const inFlight = useRef(false);
   const [sent, setSent] = useState(false);
@@ -49,6 +54,7 @@ export default function SignUp() {
       return setErrors(fieldErrors(parsed.error));
     }
     setErrors({});
+    setExists(false);
     inFlight.current = true;
     setLoading(true);
     try {
@@ -66,6 +72,7 @@ export default function SignUp() {
       else router.replace('/');
     } catch (e) {
       setErrors({ _: signUpError(e) });
+      setExists(isExistingAccountError(e));
     } finally {
       inFlight.current = false;
       setLoading(false);
@@ -74,26 +81,38 @@ export default function SignUp() {
 
   if (sent) {
     return (
-      <Screen back title={tr('auth.check.title')}>
+      <EntryScreen footer={<Button label={tr('auth.check.confirmed')} size="lg" full onPress={() => router.replace('/auth/sign-in')} />}>
+        <EntryHero icon="mail" title={tr('auth.check.title')} testID="entry-check" />
         <Banner tone="success" title={tr('auth.check.bannerTitle')}>
           {tr('auth.check.body', { email: form.email })}
         </Banner>
         <Text variant="small" muted>{tr('auth.check.nothing')}</Text>
         <ResendButton onResend={() => backend.auth.resendConfirmation(form.email.trim())} />
-        <Button label={tr('auth.check.confirmed')} onPress={() => router.replace('/auth/sign-in')} />
         <Button label={tr('auth.check.changeEmail')} variant="ghost" onPress={() => setSent(false)} />
-      </Screen>
+      </EntryScreen>
     );
   }
 
   return (
-    <Screen back title={tr('auth.signUp.title')} subtitle={tr('auth.signUp.subtitle')}>
+    <EntryScreen
+      footer={
+        <>
+          {/* Erreur d'envoi juste au-dessus de l'action : visible même clavier ouvert ou formulaire défilé */}
+          {errors._ ? (
+            <Banner tone="danger" action={exists ? <Button label={tr('entry.exists.signIn')} variant="secondary" onPress={() => router.replace('/auth/sign-in')} /> : undefined}>{errors._}</Banner>
+          ) : null}
+          <Button label={tr('auth.signUp.create')} size="lg" full loading={loading} disabled={loading} onPress={submit} testID="signup-submit" />
+        </>
+      }
+    >
+      <EntryHero icon="user-plus" title={tr('auth.signUp.title')} lead={tr('auth.signUp.subtitle')} testID="entry-hero" />
       {invited ? <Banner tone="info" title={tr('auth.signUp.invitedTitle')}>{tr('auth.signUp.invitedBody')}</Banner> : null}
-      {errors._ ? <Banner tone="danger">{errors._}</Banner> : null}
+      <MattePanel testID="signup-panel">
       <Field label={tr('auth.email')} value={form.email} onChangeText={set('email')} onBlur={touch('email')} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="emailAddress" error={err('email')} returnKeyType="next" />
       <Field label={tr('auth.password')} value={form.password} onChangeText={set('password')} onBlur={touch('password')} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" error={errors.password} />
       <PasswordRules value={form.password} />
       <Field label={tr('auth.signUp.confirmPassword')} value={form.confirm} onChangeText={set('confirm')} onBlur={touch('confirm')} secureTextEntry revealable autoComplete="new-password" error={err('confirm')} onSubmitEditing={submit} returnKeyType="done" />
+      </MattePanel>
 
       <View style={{ gap: spacing.xs }}>
         <CheckRow label={tr('auth.signUp.adultA11y')} checked={form.adult} onChange={set('adult')} error={errors.adult}>
@@ -108,18 +127,26 @@ export default function SignUp() {
         </Row>
       </View>
 
-      <Button label={tr('auth.signUp.create')} size="lg" loading={loading} disabled={loading} onPress={submit} />
       <SocialButtons onError={(m) => setErrors({ _: m })} disabled={loading} />
       {hasSocialSignIn() ? <Text variant="caption" muted center>{tr('auth.signUp.socialNote')}</Text> : null}
       <Button label={tr('auth.signUp.haveAccount')} variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
-    </Screen>
+    </EntryScreen>
   );
+}
+
+/** Adresse déjà inscrite (code ou message du service de connexion). */
+function isExistingAccountError(e: unknown): boolean {
+  const code = (e as { code?: unknown } | null)?.code;
+  if (code === 'user_already_exists' || code === 'email_exists') return true;
+  const m = e instanceof Error ? e.message : '';
+  // Message brut du service (anglais) ou déjà traduit par le client (friendlyAuthError)
+  return /already (registered|exists)|user_already_exists/i.test(m) || m === tr('auth.err.exists');
 }
 
 /** Erreurs connues du service de connexion (en anglais) : message traduit ; sinon message générique traduit. */
 function signUpError(e: unknown): string {
   const m = e instanceof Error ? e.message : '';
-  if (/already (registered|exists)|user_already_exists/i.test(m)) return tr('pw.auth.exists');
+  if (isExistingAccountError(e)) return tr('pw.auth.exists');
   if (/password/i.test(m) && /(weak|short|least|characters|pwned|leaked)/i.test(m)) return tr('pw.auth.weak');
   if (/rate limit|too many/i.test(m)) return tr('pw.auth.rate');
   if (/invalid.*email|email.*invalid/i.test(m)) return tr('pw.auth.email');

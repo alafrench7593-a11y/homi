@@ -2,8 +2,8 @@
  * Introduction en 8 scènes (13/11/2026) : une histoire, du cycle à la vie à deux.
  *   1 Bienvenue · 2 Mon cycle · 3 Mon projet bébé · 4 Ma grossesse · 5 Mon bébé · 6 Mon journal ·
  *   7 Notre histoire à deux · 8 Commencer (langue, créer un compte, se connecter, découvrir sans compte).
- * Le fond est la vidéo animée de l'application (montée dans _layout, derrière toutes les pages), sous un voile de
- * lecture. Le logo est le PNG transparent, posé directement sur le fond : ni cercle, ni tuile, ni halo.
+ * Le fond est la scène de l'application (montée dans _layout, derrière toutes les pages), sous un voile de
+ * lecture tiré du fond du thème. Le logo est le PNG transparent, posé directement sur le fond : ni cercle, ni tuile, ni halo.
  * « Passer » mène toujours à la dernière scène ; l'introduction se rejoue depuis l'écran de bienvenue.
  * Animations : transform et opacity uniquement ; « réduire les animations » : états finaux immédiats.
  * Ne présente que des fonctions réellement disponibles.
@@ -26,7 +26,7 @@ import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { useUiStore } from '@/lib/store';
 import { duration, easing, stagger, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NACRE, NATIVE_DRIVER, radius, spacing, typography } from '@/theme/tokens';
+import { alpha, NATIVE_DRIVER, radius, spacing, typography } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { BrandLogo } from '@/components/BrandLogo';
 
@@ -111,7 +111,7 @@ function ProgressArt() {
       <View style={{ width: W, height: 26, justifyContent: 'center' }}>
         <View style={{ height: 3, borderRadius: 2, backgroundColor: tint(t.colors.text, 0.18), overflow: 'hidden' }}>
           <Animated.View style={{ width: W, height: 3, transform: [{ translateX: v.interpolate({ inputRange: [0, 1], outputRange: [-W, -W * (1 - progress)] }) }] }}>
-            <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1 }} />
+            <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1 }} />
           </Animated.View>
         </View>
         {[0, 0.33, 0.66, 1].map((x) => <View key={x} style={{ position: 'absolute', left: x * (W - 10), width: 10, height: 10, borderRadius: 5, backgroundColor: x <= progress ? t.colors.gold : t.colors.background, borderWidth: 1, borderColor: t.colors.gold }} />)}
@@ -151,7 +151,7 @@ function TogetherArt() {
       {dot('user', -14)}
       <View style={{ width: W, height: 3, alignItems: 'center' }}>
         <Animated.View style={{ width: W, height: 2, borderRadius: 1, opacity: v, transform: [{ scaleX: v.interpolate({ inputRange: [0, 0.45, 1], outputRange: [0, 0, 1] }) }] }}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 1 }} />
+          <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ flex: 1, borderRadius: 1 }} />
         </Animated.View>
       </View>
       {dot('user', 14)}
@@ -217,7 +217,7 @@ export default function Intro() {
     v.setValue(0);
     setI(n);
     timeTo(v, 1, duration.slow, reduce, easing.decelerate).start();
-    // filet de sécurité : si l'animation est ralentie (vidéo de fond qui décode), le contenu s'affiche quand même
+    // filet de sécurité : si l'animation est ralentie (appareil chargé), le contenu s'affiche quand même
     setTimeout(() => v.setValue(1), duration.slow + 250);
   }
   const goRef = useRef(go);
@@ -256,9 +256,9 @@ export default function Intro() {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Fond : la vidéo animée de l'application reste visible (elle est derrière toutes les pages) ; simple voile de lecture */}
+      {/* Fond : la scène de l'application reste visible (elle est derrière toutes les pages) ; simple voile de lecture */}
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} testID="intro-backdrop">
-        <LinearGradient colors={t.isDark ? ['rgba(31,35,68,0.5)', 'rgba(31,35,68,0.22)', 'rgba(31,35,68,0.68)'] : ['rgba(236,230,246,0.5)', 'rgba(236,230,246,0.18)', 'rgba(236,230,246,0.72)']}
+        <LinearGradient colors={[alpha(t.colors.background, 0.5), alpha(t.colors.background, 0.2), alpha(t.colors.background, 0.7)]}
           locations={[0, 0.45, 1]} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       </View>
     <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} {...pan.panHandlers}>
@@ -334,8 +334,8 @@ export default function Intro() {
 
       {last ? (
         <View style={{ gap: spacing.xs }}>
-          <Button label={tr('intro.privacy.create')} icon="arrow-right" full onPress={() => leave('/auth/sign-up')} />
-          <Button label={tr('intro.privacy.signIn')} variant="secondary" full onPress={() => leave('/auth/sign-in')} />
+          <Button label={tr('intro.privacy.create')} size="lg" icon="arrow-right" full onPress={() => leave('/auth/sign-up')} />
+          <Button label={tr('intro.privacy.signIn')} variant="ghost" full onPress={() => leave('/auth/sign-in')} />
           <Button label={tr('intro.privacy.demo')} variant="ghost" icon="eye" full onPress={() => leave('demo')} />
         </View>
       ) : (

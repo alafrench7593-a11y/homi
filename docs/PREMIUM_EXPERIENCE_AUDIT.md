@@ -112,5 +112,5 @@ Après modification : `tsc` 0 erreur, 0 texte en dur, routes à jour (217), Jest
 - L'écran Premium (logo 64 pt) n'a pas été recapturé dans cette tranche.
 
 ## Observations sans modification (décision à prendre)
-- `intro-cinematique.mp4` en 4K pèse 46 Mo dans l'application (la version 1080p pèse 9,7 Mo). Non touché.
+- `intro-cinematique.mp4` en 4K pèse 46 Mo dans l'application (la version 1080p pèse 9,7 Mo). Retiré le 13/11/2026 (introduction HOMI vectorielle, src/features/entry/HomiIntro.tsx).
 - L'icône de l'application et l'icône Android n'ont pas été modifiées.
