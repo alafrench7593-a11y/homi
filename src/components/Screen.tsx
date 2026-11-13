@@ -7,6 +7,7 @@ import { router, useIsFocused, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { HOMI } from '@/features/homiColors';
 import { IconButton, Text } from './ui';
 import { StarField } from './StarField';
 import { useFocusEntrance } from './Motion';
@@ -148,14 +149,14 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {/* Pages du bébé et de l'enfant : vidéo des galets le jour et l'animation de la maman avec son enfant */}
       {isChildPage(pathname, tool?.id) ? <ChildBackdrop /> : null}
-      {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color="#FFF1E6" />}
+      {(stars || t.isDark) && <StarField density={t.name === 'night' ? 30 : stars ? 26 : 16} color={HOMI.starlight} />}
       {/* « padding » sur iOS et Android : Android est toujours edge-to-edge (Expo 54+), adjustResize ne réduit plus l'écran */}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={KEYBOARD_BEHAVIOR} keyboardVerticalOffset={keyboardOffset}>
         <KeyboardScopeContext.Provider value={keyboardScope}>
         {header}
         {body}
         {footer || action ? (
-          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: keyboardVisible ? spacing.sm : bottomInset > 0 ? bottomInset + spacing.xs : insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
+          <View style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: keyboardVisible ? spacing.sm : bottomInset > 0 ? Math.max(insets.bottom, 10) + bottomInset : insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>
             {/* écran d'onglet (barre du bas) : le bouton d'action reste au-dessus de la barre */}
             {action ? (paidTool ? <PaidToolAction tool={paidTool} action={action} /> : <Button label={action.label} icon={action.icon ?? 'plus'} size="lg" full onPress={() => { Keyboard.dismiss(); action.onPress(); }} disabled={action.disabled} testID={action.testID ?? 'miniapp-action'} />) : null}
             {footer}

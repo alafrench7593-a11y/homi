@@ -10,7 +10,8 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
-import { Appear } from '@/components/Appear';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
+import { Cascade } from '@/motion';
 import { DemoBanner, ProfileSwitcher } from '@/components/Family';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
@@ -146,7 +147,7 @@ export default function Home() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen bottomInset={156}>
+      <Screen bottomInset={TAB_SCREEN_INSET}>
         {/* En-tête */}
         {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
         <View style={{ gap: 2, marginTop: spacing.xs }}>
@@ -168,29 +169,29 @@ export default function Home() {
         <ToolSearchButton testID="home-tool-search" />
 
         {/* 1. Parcours et profil actifs */}
-        <Appear kind="soft" delay={0.1} style={{ gap: 4 }}>
+        <Cascade index={0} style={{ gap: 4 }}>
           {simple ? null : <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
             <Icon name="compass" size={14} color={t.colors.textMuted} />
             <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
             <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
           </Tappable>}
           <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
-        </Appear>
+        </Cascade>
         {/* « HOMI » : l'étape du profil affiché, discrète, au-dessus des cartes utiles */}
-        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <Appear kind="soft" delay={0.15}><StoryHomeStrip /></Appear> : null}
+        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <Cascade index={1}><StoryHomeStrip /></Cascade> : null}
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
         {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
         {homeCards.map((key, i) => {
           const node = cards[key];
           if (!node) return null;
-          return <Appear key={key} kind={key === 'main' ? 'pop' : key === 'assistant' ? 'btn' : 'soft'} delay={0.2 + Math.min(i, 6) * 0.08}><View testID={`home-card-${key}`}>{node}</View></Appear>;
+          return <Cascade key={key} index={2 + i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
         })}
 
         {childScope ? null : (
-          <Appear kind="side" delay={0.7}>
+          <Cascade index={2 + homeCards.length}>
             <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
-          </Appear>
+          </Cascade>
         )}
 
         <DemoBanner />

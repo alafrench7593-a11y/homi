@@ -1,56 +1,71 @@
 /**
  * Barre d'onglets HOMI (13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
- * Style « Keynote premium » : capsule flottante en verre minuit (BlurView + voile `tabBar` du thème), lisible en
- * clair comme en sombre ; état actif = pastille lilas derrière l'icône + libellé appuyé ; libellés complets
- * (taille calculée pour tenir à 320 px de large, jamais d'ellipse) ; cibles ≥ 56 px ; haptique discrète ;
- * « Réduire les animations » : aucun mouvement. Profil : avatar en haut à droite des écrans (AccountActions).
+ * Style « Keynote premium » : capsule flottante en verre (BlurView + voile), minuit en clair ; en sombre, verre
+ * relevé plus clair que le fond (« plus haut = plus clair »), liseré lilas et ombre haute pour la détacher du fond ;
+ * nuit : surface opaque tamisée, sans flou ni ombre.
  *
- * Ajout rapide (biberon, tétée, couche, sommeil, humeur…) : bouton rond toujours présent au-dessus de la barre,
- * à droite (remplace l'ancien onglet Suivi et l'appui long sur « Outils »). Masqué seulement sur l'Accueil d'un
- * enfant, où « + Ajouter » du cocon joue le même rôle au même endroit.
+ * Libellés : chaque onglet prend la largeur de son libellé (au moins 44 px), la taille commune reste à 12 px et ne
+ * descend qu'au quart de pixel près (≥ 11 px à 320 px de large), jamais d'ellipse (`tabLayout`, testé).
+ * Mouvement (src/motion) : enfoncement en ressort à la pression (`usePressScale`) et pastille active qui GLISSE
+ * d'un onglet à l'autre (translateX en ressort « doux ») ; Réduire les animations / économie d'énergie : état final
+ * immédiat ; nuit : fondu court sans rebond.
+ *
+ * Bouton d'action rond à droite de la capsule, SUR LA MÊME LIGNE (jamais posé sur le contenu) : « + » ajout rapide
+ * par défaut ; un écran peut le remplacer (`useDockAction` : Communauté → Publier, accueil d'un enfant → Ajouter).
+ * Un seul bouton d'action par écran. Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
  */
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
-import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { springTo } from '@/theme/motion';
-import { fonts, NACRE, palette, radius, spacing, themes } from '@/theme/tokens';
+import { useTheme } from '@/theme/ThemeProvider';
+import { fonts, glass, palette, physicalShadow, primaryGradient, radius, spacing, themes, type Theme } from '@/theme/tokens';
+import { useMotion, usePressScale } from '@/motion';
 import { useScope } from '@/lib/data/hooks-scope';
-import { ACTIVE_ALIAS, NAV_TABS, tabLabelSize, type NavTab } from '@/features/hubs/hubMap';
+import { ACTIVE_ALIAS, dockGeometry, estimateLabelWidth, NAV_TABS, TAB_BAR_H, TAB_LABEL_MAX, tabLayout, type NavTab } from '@/features/hubs/hubMap';
 import { Sheet } from './Overlays';
 import { tint } from './ToolGlyph';
 import { haptic, Icon, type IconName, Text } from './ui';
+import { useDockActionFor, type DockAction } from './dockAction';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
-/** Hauteur réservée à la barre (capsule de 64 px + marge) : utilisée par les boutons flottants des écrans. */
-export const DOCK_HEIGHT = 74;
-const BAR_H = DOCK_HEIGHT - 10;
-const FAB = 54;
-const FAB_SMALL = 48;
+/** Hauteur de la ligne du bas (capsule de 64 px + marge) au-dessus de la zone sûre. */
+export const DOCK_HEIGHT = TAB_BAR_H + 10;
+/**
+ * Espace UNIQUE à réserver sous le contenu des écrans d'onglet (`<Screen bottomInset>` ou `paddingBottom` d'une
+ * liste, en plus de la zone sûre) : la barre et son bouton d'action sont sur la même ligne, rien d'autre ne flotte.
+ */
+export const TAB_SCREEN_INSET = DOCK_HEIGHT + spacing.xs;
 const LONG_PRESS = 'tabLongPress' as const;
-/** Taille de référence des libellés (px) : réduite seulement si le plus long ne tient pas (plancher 9 px). */
-const LABEL_BASE = 12;
-export const fitLabelSize = (tabW: number, widest: number) => Math.max(9, Math.min(LABEL_BASE, Math.floor(((LABEL_BASE * (tabW - 6)) / widest) * 4) / 4));
+/** Pastille d'état actif (derrière l'icône), et position verticale fixe de l'icône dans l'onglet. */
+const PILL_W = 44;
+const PILL_H = 30;
+const ICON_TOP = 8;
 
-/** Encres de la barre : la capsule est toujours en verre minuit, donc encres du thème sombre (nuit : ses propres encres tamisées). */
+/** Encres de la barre : capsule toujours sombre, donc encres du thème sombre (nuit : ses propres encres tamisées). */
 function useBarInk() {
   const t = useTheme();
   return t.isDark ? t.colors : themes.dark.colors;
 }
 
-function TabItem({ tab, focused, label, a11y, fontSize, onPress, onLongPress }: { tab: NavTab; focused: boolean; label: string; a11y: string; fontSize: number; onPress: () => void; onLongPress: () => void }) {
+/** Matière de la capsule selon le thème (voir l'en-tête). */
+function barSurface(t: Theme) {
+  if (t.name === 'night') return { fill: t.colors.surfaceAlt, edge: t.colors.border, highlight: 'transparent', blur: false, shadow: undefined };
+  if (t.isDark) return { fill: glass.dark.floating.fill, edge: tint(themes.dark.colors.primary, 0.34), highlight: glass.dark.floating.highlight, blur: true, shadow: physicalShadow('high', true) };
+  return { fill: t.colors.tabBar, edge: tint(themes.dark.colors.primary, 0.28), highlight: tint(palette.white, 0.16), blur: true, shadow: physicalShadow('high', false) };
+}
+
+function TabItem({ tab, width, focused, label, a11y, fontSize, onPress, onLongPress }: { tab: NavTab; width: number; focused: boolean; label: string; a11y: string; fontSize: number; onPress: () => void; onLongPress: () => void }) {
   const ink = useBarInk();
-  const reduce = useReduceMotion();
-  const v = useRef(new Animated.Value(focused ? 1 : 0)).current;
-  useEffect(() => { springTo(v, focused ? 1 : 0, 'pop', reduce).start(); }, [v, focused, reduce]);
+  const p = usePressScale({ scale: 0.9, haptic: 'none' });
   return (
-    <Tappable
+    <Pressable
       accessibilityRole="tab"
       accessibilityState={{ selected: focused }}
       aria-selected={focused}
@@ -58,53 +73,98 @@ function TabItem({ tab, focused, label, a11y, fontSize, onPress, onLongPress }: 
       testID={`tab-${tab.name}`}
       onPress={onPress}
       onLongPress={onLongPress}
-      pressScale={0.94}
-      hoverLift={0}
-      style={{ flex: 1, minWidth: 0, minHeight: 56, alignItems: 'center', justifyContent: 'center', gap: 3 }}
+      onPressIn={p.onPressIn}
+      onPressOut={p.onPressOut}
+      style={{ width, height: TAB_BAR_H }}
     >
-      <View style={{ width: 52, height: 30, alignItems: 'center', justifyContent: 'center' }}>
-        {/* Pastille d'état actif (lilas) : apparaît en s'élargissant depuis le centre */}
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, backgroundColor: tint(ink.primary, 0.24), borderWidth: 1, borderColor: tint(ink.primary, 0.32), opacity: v, transform: [{ scaleX: v.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }] }]} />
-        <Feather name={tab.icon} size={21} color={focused ? ink.primary : ink.textMuted} />
-      </View>
-      <Text
-        style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.15, textAlign: 'center' }}
-        color={focused ? ink.text : ink.textMuted}
-        numberOfLines={1}
-        maxFontSizeMultiplier={1.2}
-      >
-        {label}
-      </Text>
-    </Tappable>
+      <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: ICON_TOP, gap: 3 }, p.style]}>
+        <View style={{ height: PILL_H, alignItems: 'center', justifyContent: 'center' }}>
+          <Feather name={tab.icon} size={21} color={focused ? ink.primary : ink.textMuted} />
+        </View>
+        <Text
+          style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.15, textAlign: 'center' }}
+          color={focused ? ink.text : ink.textMuted}
+          numberOfLines={1}
+          maxFontSizeMultiplier={1.2}
+        >
+          {label}
+        </Text>
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+/** Pastille lilas de l'onglet actif : glisse d'un onglet à l'autre (transform seulement). */
+function ActivePill({ x, visible }: { x: number; visible: boolean }) {
+  const ink = useBarInk();
+  const m = useMotion();
+  const tx = useSharedValue(x);
+  const op = useSharedValue(visible ? 1 : 0);
+  const placed = useRef(false);
+  useEffect(() => {
+    // première position : posée sans animation ; ensuite, glissement en ressort doux (interruptible)
+    tx.value = placed.current ? m.spring(x, 'doux') : x;
+    placed.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [x]);
+  useEffect(() => { op.value = m.timing(visible ? 1 : 0, 160, 'standard'); }, [visible, m, op]);
+  const style = useAnimatedStyle(() => ({ opacity: op.value, transform: [{ translateX: tx.value }] }));
+  return (
+    <Animated.View pointerEvents="none" testID="tab-indicator"
+      style={[{ position: 'absolute', left: 0, top: ICON_TOP, width: PILL_W, height: PILL_H, borderRadius: radius.pill, backgroundColor: tint(ink.primary, 0.24), borderWidth: 1, borderColor: tint(ink.primary, 0.34) }, style]} />
+  );
+}
+
+/** Bouton d'action de la barre : « + » (ajout rapide) ou l'action de l'écran affiché (`useDockAction`). */
+export function DockActionButton({ route, size = 56, onQuickAdd }: { route: string; size?: number; onQuickAdd?: () => void }) {
+  const t = useTheme();
+  const custom = useDockActionFor(route);
+  const p = usePressScale({ scale: 0.92 });
+  const action: DockAction = custom ?? { icon: 'plus', label: tr('nav.quickAdd'), hint: tr('nav.quickAddHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
+  const night = t.name === 'night';
+  return (
+    <Pressable
+      testID={action.testID}
+      accessibilityRole="button"
+      accessibilityLabel={action.label}
+      accessibilityHint={action.hint}
+      onPressIn={p.onPressIn}
+      onPressOut={p.onPressOut}
+      onPress={() => { haptic('light'); action.onPress(); }}
+      style={{ width: size, height: size }}
+    >
+      <Animated.View style={[{ flex: 1, borderRadius: size / 2, boxShadow: night ? undefined : physicalShadow('mid', t.isDark) }, p.style]}>
+        <LinearGradient colors={night ? [t.colors.primary, t.colors.primary, t.colors.primary] : primaryGradient(t.isDark)} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }}
+          style={{ flex: 1, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tint(palette.white, t.isDark ? 0.35 : 0.4) }}>
+          <Icon name={action.icon as IconName} size={size >= 56 ? 25 : 22} color={t.colors.primaryText} />
+        </LinearGradient>
+      </Animated.View>
+    </Pressable>
   );
 }
 
 export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const t = useTheme();
-  const ink = useBarInk();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const scope = useScope();
   const [open, setOpen] = useState(false);
+  const surface = barSurface(t);
 
   const focusedName = state.routes[state.index]?.name ?? 'index';
   const activeName = ACTIVE_ALIAS[focusedName] ?? focusedName;
   const tabs = NAV_TABS.map((tab) => ({ tab, route: state.routes.find((r) => r.name === tab.name) })).filter((x): x is { tab: NavTab; route: (typeof state.routes)[number] } => !!x.route);
   const labels = tabs.map((x) => tr(x.tab.label));
 
-  const side = width < 360 ? spacing.xs : spacing.sm;
-  const fab = width < 360 ? FAB_SMALL : FAB;
-  const barW = Math.min(width - side * 2, 560);
-  const tabW = (barW - 8) / Math.max(tabs.length, 1);
+  const g = dockGeometry(width);
   // Libellés jamais coupés : largeur réelle mesurée (police chargée, langue active, taille de texte du téléphone),
-  // puis taille commune réduite juste assez pour le plus long ; estimation prudente avant la première mesure
+  // estimation prudente avant la première mesure
   const [natural, setNatural] = useState<Record<string, number>>({});
-  const widest = Math.max(0, ...labels.map((l) => natural[l] ?? 0));
-  const measured = labels.every((l) => natural[l] != null) && widest > 0;
-  const fontSize = measured ? fitLabelSize(tabW, widest) : tabLabelSize(tabW, Math.max(0, ...labels.map((l) => l.length)));
+  const widthsKey = labels.map((l) => natural[l] ?? estimateLabelWidth(l)).join('|');
+  const layout = useMemo(() => tabLayout(g.inner, widthsKey.split('|').map(Number)), [g.inner, widthsKey]);
+  const activeIndex = tabs.findIndex((x) => x.tab.name === activeName);
+  const at = Math.max(activeIndex, 0);
+  const pillX = g.pad + layout.widths.slice(0, at).reduce((a, w) => a + w, 0) + ((layout.widths[at] ?? PILL_W) - PILL_W) / 2;
   const bottom = Math.max(insets.bottom, 10);
-  // Accueil d'un enfant : « + Ajouter » du cocon est déjà à cet endroit
-  const cocoonAdd = focusedName === 'index' && (scope.scope === 'baby' || scope.scope === 'child') && !!scope.child;
 
   const go = (route: (typeof state.routes)[number]) => {
     const focused = focusedName === route.name;
@@ -117,60 +177,48 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
 
   return (
     <>
-      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, paddingHorizontal: side, alignItems: 'center' }}>
-        {cocoonAdd ? null : (
-          <View pointerEvents="box-none" style={{ position: 'absolute', right: side + 4, bottom: bottom + BAR_H + 10 }}>
-            <Tappable
-              testID="quick-add"
-              accessibilityRole="button"
-              accessibilityLabel={tr('nav.quickAdd')}
-              accessibilityHint={tr('nav.quickAddHint')}
-              onPress={() => { haptic('light'); setOpen(true); }}
-              pressScale={0.92}
-              style={{ width: fab, height: fab, borderRadius: fab / 2, shadowColor: palette.nightDeep, shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 }}
-            >
-              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, borderRadius: fab / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tint(palette.white, 0.55) }}>
-                <Icon name="plus" size={fab > FAB_SMALL ? 26 : 23} color={palette.white} />
-              </LinearGradient>
-            </Tappable>
-          </View>
-        )}
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, alignItems: 'center' }}>
         {/* Mesure invisible des libellés à la taille de référence, en graisse active (la plus large) */}
         <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
           style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 }}>
           <View style={{ width: 1000, alignItems: 'flex-start' }}>
             {labels.map((l) => (
-              <Text key={l} onLayout={(e) => { const w = Math.ceil(e.nativeEvent.layout.width); setNatural((m) => (m[l] === w ? m : { ...m, [l]: w })); }}
-                style={{ fontFamily: fonts.bodyBold, fontSize: LABEL_BASE, letterSpacing: -0.15 }} maxFontSizeMultiplier={1.2} numberOfLines={1}>{l}</Text>
+              <Text key={l} onLayout={(e) => { const w = Math.ceil(e.nativeEvent.layout.width); if (w > 0) setNatural((m) => (m[l] === w ? m : { ...m, [l]: w })); }}
+                style={{ fontFamily: fonts.bodyBold, fontSize: TAB_LABEL_MAX, letterSpacing: -0.15 }} maxFontSizeMultiplier={1.2} numberOfLines={1}>{l}</Text>
             ))}
           </View>
         </View>
-        <View
-          accessibilityRole="tablist"
-          accessibilityLabel={tr('nav.tablist')}
-          style={{ height: BAR_H, width: barW, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' ? t.colors.tabBar : 'transparent', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4,
-            borderWidth: StyleSheet.hairlineWidth, borderColor: tint(ink.primary, 0.28), shadowColor: palette.nightDeep, shadowOpacity: t.isDark ? 0.35 : 0.22, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 10 }}
-        >
-          {Platform.OS !== 'android' ? (
-            <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, overflow: 'hidden' }]}>
-              <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.tabBar }]} />
-              {/* reflet de verre sur l'arête haute */}
-              <View style={{ position: 'absolute', top: 0, left: 28, right: 28, height: 1, backgroundColor: tint(ink.text, 0.16) }} />
-            </View>
-          ) : null}
-          {tabs.map(({ tab, route }, i) => (
-            <TabItem
-              key={route.key}
-              tab={tab}
-              label={labels[i]}
-              a11y={descriptors[route.key]?.options.title ?? labels[i]}
-              focused={activeName === tab.name}
-              fontSize={fontSize}
-              onPress={() => go(route)}
-              onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
-            />
-          ))}
+        <View pointerEvents="box-none" style={{ width: g.row, flexDirection: 'row', alignItems: 'center', gap: g.gap }}>
+          <View
+            accessibilityRole="tablist"
+            accessibilityLabel={tr('nav.tablist')}
+            style={{ height: TAB_BAR_H, width: g.barW, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' || !surface.blur ? surface.fill : 'transparent', flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad,
+              borderWidth: 1, borderColor: surface.edge, boxShadow: surface.shadow }}
+          >
+            {Platform.OS !== 'android' && surface.blur ? (
+              <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, overflow: 'hidden' }]}>
+                <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: surface.fill }]} />
+                {/* reflet de verre sur l'arête haute */}
+                <View style={{ position: 'absolute', top: 0, left: 28, right: 28, height: 1, backgroundColor: surface.highlight }} />
+              </View>
+            ) : null}
+            <ActivePill x={pillX} visible={activeIndex >= 0} />
+            {tabs.map(({ tab, route }, i) => (
+              <TabItem
+                key={route.key}
+                tab={tab}
+                width={layout.widths[i]}
+                label={labels[i]}
+                a11y={descriptors[route.key]?.options.title ?? labels[i]}
+                focused={activeName === tab.name}
+                fontSize={layout.fontSize}
+                onPress={() => go(route)}
+                onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
+              />
+            ))}
+          </View>
+          <DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />
         </View>
       </View>
       <QuickAddSheet visible={open} onClose={() => setOpen(false)} />
@@ -215,8 +263,8 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
       {child ? <Text variant="small" weight="bold" testID="quick-for">{tr('dock.forChild', { name: child.first_name })}</Text> : null}
       {compact ? (
         <Tappable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
-          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.gold, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}>
-          <Icon name="message-circle" color={palette.gold} />
+          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.lavender, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}>
+          <Icon name="message-circle" color={palette.lavender} />
           <Text weight="bold" color={palette.milk} style={{ flex: 1 }}>{tr('dock.ask')}</Text>
           <Icon name="chevron-right" size={18} color={palette.milk} />
         </Tappable>
@@ -246,12 +294,12 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
       <Tappable
         accessibilityRole="button"
         onPress={go(() => router.push('/assistant/chat'))}
-        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.gold, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}
+        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.lavender, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}
       >
-        <Icon name="message-circle" color={palette.gold} />
+        <Icon name="message-circle" color={palette.lavender} />
         <View style={{ flex: 1 }}>
           <Text weight="bold" color={palette.milk}>{tr('dock.ask')}</Text>
-          <Text variant="small" color="rgba(251,248,244,0.7)">{tr('dock.askSub')}</Text>
+          <Text variant="small" color={tint(palette.milk, 0.78)}>{tr('dock.askSub')}</Text>
         </View>
       </Tappable>
       <QuickAddGrid onBefore={onClose} />

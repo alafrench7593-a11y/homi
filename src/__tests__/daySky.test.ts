@@ -11,14 +11,14 @@ describe('ciel du mode jour', () => {
       expect(luminance(c)).toBeLessThan(0.95);
     }
   });
-  it('matin crème et pêche, journée bleu ciel et lavande, fin de journée abricot et mauve', () => {
+  it('matin perle et champagne, journée bleu ciel et lavande, fin de journée champagne et mauve (HOMI)', () => {
     const rgb = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
     const morning = daySkyAt(8).stops.map(rgb);
-    expect(morning[1][0]).toBeGreaterThan(morning[1][2]); // pêche : plus de rouge que de bleu
+    expect(morning[1][0]).toBeGreaterThan(morning[1][2]); // champagne pâle : plus de rouge que de bleu
     const day = daySkyAt(13).stops.map(rgb);
     expect(day[0][2]).toBeGreaterThan(day[0][0]); // bleu ciel en haut
     const late = daySkyAt(17.5).stops.map(rgb);
-    expect(late[0][0]).toBeGreaterThan(late[0][2]); // abricot
+    expect(late[0][0]).toBeGreaterThan(late[0][2]); // champagne pâle
     expect(late[3][2]).toBeGreaterThan(late[3][1]); // mauve en bas
   });
   it('transition progressive : aucun saut entre deux instants proches', () => {

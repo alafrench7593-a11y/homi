@@ -95,13 +95,55 @@ export const HUB_ROUTE: Record<HubKey, NavTab['name']> = { health: 'health', bab
 /** Routes d'onglet hors de la barre (liens profonds, tests) : toujours valides. */
 export const HIDDEN_TAB_ROUTES = ['agenda', 'track', 'tools', 'ask', 'moi', 'profile'] as const;
 
+// ------------------------------------------------------------------ géométrie de la barre (pure, testée)
+/** Libellés : 12 px de référence, 11 px minimum à 320 px de large (10 px seulement pour une langue très longue). */
+export const TAB_LABEL_MAX = 12;
+export const TAB_LABEL_MIN = 11;
+const TAB_LABEL_FLOOR = 10;
+/** Largeur minimale d'un onglet (cible tactile 44 × 64 px, recommandation iOS) et marge autour du libellé. */
+export const TAB_MIN_W = 44;
+const TAB_LABEL_PAD = 4;
+/** Hauteur de la capsule. */
+export const TAB_BAR_H = 64;
+
 /**
- * Taille des libellés de la barre : la même pour les 5 onglets, calculée sur le plus long pour qu'aucun ne soit
- * coupé (0,6 em par caractère : largeur moyenne prudente de Manrope ; plancher 9,5 px, plafond 12 px).
+ * Ligne du bas : marges latérales, bouton d'action rond (à droite de la capsule, même ligne) et capsule des onglets
+ * (`pad` : marge intérieure, pour que les libellés des extrémités ne touchent pas l'arrondi).
+ * Petit écran (< 360 px) : marges et bouton réduits pour laisser la place aux libellés.
  */
-export function tabLabelSize(tabWidth: number, longest: number) {
-  return Math.max(9.5, Math.min(12, (tabWidth - 4) / (Math.max(longest, 1) * 0.6)));
+export function dockGeometry(width: number) {
+  const narrow = width < 360;
+  const side = narrow ? 4 : 12;
+  const action = narrow ? 44 : 56;
+  const gap = narrow ? 5 : 8;
+  const pad = narrow ? 4 : 10;
+  const row = Math.min(width - side * 2, 600);
+  const barW = row - action - gap;
+  return { side, action, gap, pad, row, barW, inner: barW - pad * 2 };
 }
+
+/**
+ * Largeur de chaque onglet et taille commune des libellés : chaque onglet reçoit la largeur de son libellé (+ marge,
+ * au moins TAB_MIN_W), le reste est partagé à parts égales ; la taille descend par quarts de pixel seulement si la
+ * somme dépasse. `natural` = largeurs mesurées (ou estimées) des libellés à TAB_LABEL_MAX. Jamais d'ellipse en français.
+ */
+export function tabLayout(inner: number, natural: number[]): { fontSize: number; widths: number[] } {
+  const n = Math.max(natural.length, 1);
+  const base = (size: number) => natural.map((w) => Math.max(TAB_MIN_W, (w * size) / TAB_LABEL_MAX + TAB_LABEL_PAD));
+  const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
+  let size = TAB_LABEL_MAX;
+  while (size > TAB_LABEL_FLOOR && sum(base(size)) > inner) size -= 0.25;
+  let b = base(size);
+  // Langue très longue (allemand…) : au plancher, on renonce d'abord à la largeur minimale (les onglets restent
+  // contigus : la cible tactile garde 64 px de haut), puis, en dernier recours, on réduit tout proportionnellement
+  if (sum(b) > inner) b = natural.map((w) => (w * size) / TAB_LABEL_MAX + TAB_LABEL_PAD);
+  if (sum(b) > inner) { const k = inner / sum(b); b = b.map((w) => w * k); }
+  const extra = Math.max(0, inner - sum(b)) / n;
+  return { fontSize: size, widths: b.map((w) => w + extra) };
+}
+
+/** Estimation prudente de la largeur d'un libellé avant la première mesure (Manrope gras mesuré : 0,57 à 0,65 em par caractère ; 0,66 retenu). */
+export const estimateLabelWidth = (label: string, size = TAB_LABEL_MAX) => label.length * size * 0.66;
 
 /** Onglet allumé quand on est sur une ancienne route d'onglet. */
 export const ACTIVE_ALIAS: Record<string, NavTab['name']> = { ask: 'health', track: 'baby', agenda: 'household', tools: 'index', moi: 'community' };

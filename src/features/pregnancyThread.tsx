@@ -52,7 +52,7 @@ export function PregnancyThread({ title, caption, items, labelOf, onPress, testI
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const line = tint(t.isDark ? '#E5C190' : '#AC8B5D', 0.55);
+  const line = tint(t.isDark ? '#E9CFA4' : '#76561D', 0.55);
   return (
     <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID={testID}>

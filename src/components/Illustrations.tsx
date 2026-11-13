@@ -23,8 +23,8 @@ export function WelcomeIllustration({ size = 300 }: { size?: number }) {
     <Svg width={size} height={size * 0.8} viewBox="0 0 300 240" accessibilityElementsHidden importantForAccessibility="no">
       <Defs>
         <RadialGradient id="moon" cx="50%" cy="50%" r="50%">
-          <Stop offset="0%" stopColor="#FFF4DD" />
-          <Stop offset="100%" stopColor="#F0D9A8" />
+          <Stop offset="0%" stopColor="#F6ECDA" />
+          <Stop offset="100%" stopColor="#E9CFA4" />
         </RadialGradient>
         <LinearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0%" stopColor="#E4DAFB" />
@@ -32,12 +32,12 @@ export function WelcomeIllustration({ size = 300 }: { size?: number }) {
         </LinearGradient>
       </Defs>
       <Circle cx="150" cy="78" r="58" fill="url(#moon)" opacity={0.9} />
-      <Circle cx="150" cy="78" r="80" fill="#F0D9A8" opacity={0.12} />
+      <Circle cx="150" cy="78" r="80" fill="#E9CFA4" opacity={0.12} />
       <Path d="M0 190 C 70 150, 120 168, 160 176 C 210 186, 250 160, 300 170 L 300 240 L 0 240 Z" fill="url(#hill)" />
       <Person x={70} y={128} skin={SKIN_TONES[4]} cloth="#B9AEDB" hair="#2B2433" />
       <Person x={96} y={150} scale={0.6} skin={SKIN_TONES[4]} cloth="#C9B6F2" hair="#2B2433" />
-      <Person x={150} y={118} skin={SKIN_TONES[1]} cloth="#C9B6F2" hair="#6B4A3A" />
-      <Person x={176} y={124} skin={SKIN_TONES[0]} cloth="#5B2A86" hair="#C9A45C" />
+      <Person x={150} y={118} skin={SKIN_TONES[1]} cloth="#C9B6F2" hair="#3E3557" />
+      <Person x={176} y={124} skin={SKIN_TONES[0]} cloth="#5B2A86" hair="#E9CFA4" />
       <Ellipse cx="163" cy="168" rx="11" ry="8" fill="#F7F4FB" />
       <Circle cx="163" cy="160" r="7" fill={SKIN_TONES[0]} />
       <Person x={236} y={130} skin={SKIN_TONES[2]} cloth="#6E5FA8" hair="#2B2433" />
@@ -84,7 +84,7 @@ export function EmptyIllustration({ kind = 'moon', size = 140 }: { kind?: 'moon'
 
 /** Avatar à initiales, tonalité douce stable par identifiant. */
 export function initialsColor(id: string): string {
-  const colors = ['#E4B6CF', '#B9AEDB', '#E2C48B', '#9CC1A2', '#C9B6F2', '#A79BD2'];
+  const colors = ['#D3B3E3', '#B9AEDB', '#E9CFA4', '#9CC1A2', '#C9B6F2', '#A79BD2'];
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
   return colors[h % colors.length];

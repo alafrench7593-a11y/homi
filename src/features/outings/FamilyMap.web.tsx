@@ -76,5 +76,5 @@ function GoogleFamilyMap({ center, places, radius, height = 320, onSelect, inter
   }, [ok, center.lat, center.lon, places, radius, interactive]);
 
   if (!ok || failed) return <MapUnavailable height={height} />;
-  return <View ref={ref} testID="out-map" accessibilityLabel={tr('out.mapA11y')} style={{ height, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border, backgroundColor: '#F7F1EA' }} />;
+  return <View ref={ref} testID="out-map" accessibilityLabel={tr('out.mapA11y')} style={{ height, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border, backgroundColor: '#F4F0FA' }} />;
 }

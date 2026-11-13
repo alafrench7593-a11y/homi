@@ -123,17 +123,41 @@ describe('aucune publication ni sauvegarde accidentelle', () => {
 
 describe('chiffrement et journaux', () => {
   it('AES-GCM : aller-retour, données illisibles sans la clé, altération détectée', () => {
-    const key = new Uint8Array(32).map((_, i) => i * 7);
-    const plain = new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    const sealed = encryptBytes(key, plain);
-    expect(Array.from(sealed)).not.toEqual(expect.arrayContaining(Array.from(plain.subarray(0, 3))));
-    expect(Array.from(decryptBytes(key, sealed))).toEqual(Array.from(plain));
-    const other = new Uint8Array(32).fill(1);
-    expect(() => decryptBytes(other, sealed)).toThrow();
-    const tampered = sealed.slice();
-    tampered[tampered.length - 1] ^= 1;
-    expect(() => decryptBytes(key, tampered)).toThrow();
-    expect(encryptBytes(key, plain)).not.toEqual(sealed); // nonce aléatoire
+    // Déterministe (13/11/2026) : l'ancien test cherchait des octets isolés (0xff, 0xd8) n'importe où dans un chiffré
+    // ALÉATOIRE et échouait au hasard (~1 fois sur 40). Les nonces sont maintenant fournis par un générateur simulé :
+    // le chiffré est reproductible, et l'on vérifie toujours que le nonce vient bien du générateur aléatoire.
+    const nonces = [new Uint8Array(12).map((_, i) => 0x10 + i), new Uint8Array(12).map((_, i) => 0xa0 + i)];
+    let draws = 0;
+    const fakeRandom = (a: Uint8Array) => { a.set(nonces[draws++ % nonces.length].subarray(0, a.length)); return a; };
+    const g = globalThis as { crypto?: { getRandomValues?: (a: Uint8Array) => Uint8Array } };
+    const saved = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
+    Object.defineProperty(globalThis, 'crypto', { value: { ...(g.crypto ?? {}), getRandomValues: fakeRandom }, configurable: true, writable: true });
+    try {
+      const key = new Uint8Array(32).map((_, i) => i * 7);
+      const plain = new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      const sealed = encryptBytes(key, plain);
+      expect(draws).toBe(1); // nonce tiré du générateur aléatoire
+      expect(sealed.length).toBe(12 + plain.length + 16); // nonce + chiffré + étiquette d'authentification
+      expect(Array.from(sealed.subarray(0, 12))).toEqual(Array.from(nonces[0]));
+      // l'en-tête JPEG (FF D8 FF) n'apparaît nulle part en clair, et le corps chiffré diffère du clair
+      const hex = Array.from(sealed, (b) => b.toString(16).padStart(2, '0')).join('');
+      expect(hex).not.toContain('ffd8ff');
+      expect(Array.from(sealed.subarray(12, 12 + plain.length))).not.toEqual(Array.from(plain));
+      expect(Array.from(decryptBytes(key, sealed))).toEqual(Array.from(plain));
+      const other = new Uint8Array(32).fill(1);
+      expect(() => decryptBytes(other, sealed)).toThrow();
+      const tampered = sealed.slice();
+      tampered[tampered.length - 1] ^= 1;
+      expect(() => decryptBytes(key, tampered)).toThrow();
+      // un nouveau nonce à chaque chiffrement : même clair, même clé → chiffré différent
+      const again = encryptBytes(key, plain);
+      expect(draws).toBe(2);
+      expect(Array.from(again)).not.toEqual(Array.from(sealed));
+      expect(Array.from(decryptBytes(key, again))).toEqual(Array.from(plain));
+    } finally {
+      if (saved) Object.defineProperty(globalThis, 'crypto', saved);
+      else delete (globalThis as { crypto?: unknown }).crypto;
+    }
   });
   it('redactForLogs retire images, URI et base64', () => {
     const out = JSON.stringify(redactForLogs({ message: 'Analyse impossible', photoUri: 'file:///x.jpg', nested: { b: 'data:image/jpeg;base64,AAAA', big: 'A'.repeat(400) }, bytes: new Uint8Array(3) }));

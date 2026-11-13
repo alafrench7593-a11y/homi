@@ -13,7 +13,7 @@ export const MAIN_CATEGORIES: FamilyCategory[] = ['cafes', 'restaurants', 'parks
 /** Filtre secondaire : PMI, accueil enfants-parents, accompagnement. */
 export const SECONDARY_CATEGORY: FamilyCategory = 'support';
 export const CATEGORY_ICON: Record<FamilyCategory, string> = { cafes: 'coffee', restaurants: 'shopping-bag', parks: 'sun', activities: 'star', support: 'life-buoy' };
-export const CATEGORY_TINT: Record<FamilyCategory, string> = { cafes: '#C9822B', restaurants: '#D9617A', parks: '#5E9E3A', activities: '#7A5FB8', support: '#3E7FA6' };
+export const CATEGORY_TINT: Record<FamilyCategory, string> = { cafes: '#8A5A0E', restaurants: '#A8346A', parks: '#5E9E3A', activities: '#7A5FB8', support: '#3E7FA6' };
 
 export interface FamilyPlace extends GooglePlace {
   fetchedOn: string;
@@ -70,14 +70,14 @@ export function regionFor(center: { lat: number; lon: number }, places: { lat: n
 
 /** Style doux du fond de carte Google (couleurs pastel, points d'intérêt Google masqués pour laisser voir nos repères). */
 export const SOFT_MAP_STYLE = [
-  { elementType: 'geometry', stylers: [{ color: '#F7F1EA' }] },
+  { elementType: 'geometry', stylers: [{ color: '#F4F0FA' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#7A6B74' }] },
   { elementType: 'labels.text.stroke', stylers: [{ color: '#FFFDF9' }] },
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
   { featureType: 'poi.park', elementType: 'geometry', stylers: [{ visibility: 'on' }, { color: '#DCEBCF' }] },
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#FFFFFF' }] },
-  { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#FBEFE6' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#F6DCCB' }] },
+  { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#F7F4FB' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#E9E2F5' }] },
   { featureType: 'transit', stylers: [{ visibility: 'off' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#D8E6F3' }] },
 ];

@@ -258,7 +258,7 @@ export default function Intro() {
     <View style={{ flex: 1 }}>
       {/* Fond : la vidéo animée de l'application reste visible (elle est derrière toutes les pages) ; simple voile de lecture */}
       <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} testID="intro-backdrop">
-        <LinearGradient colors={t.isDark ? ['rgba(31,35,68,0.5)', 'rgba(31,35,68,0.22)', 'rgba(31,35,68,0.68)'] : ['rgba(235,224,210,0.5)', 'rgba(235,224,210,0.18)', 'rgba(235,224,210,0.72)']}
+        <LinearGradient colors={t.isDark ? ['rgba(31,35,68,0.5)', 'rgba(31,35,68,0.22)', 'rgba(31,35,68,0.68)'] : ['rgba(236,230,246,0.5)', 'rgba(236,230,246,0.18)', 'rgba(236,230,246,0.72)']}
           locations={[0, 0.45, 1]} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
       </View>
     <View style={{ flex: 1, paddingTop: insets.top + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} {...pan.panHandlers}>

@@ -12,7 +12,7 @@ import { DICTIONARIES } from '@/i18n/dictionaries';
 import { setLocale } from '@/i18n';
 import { toolCatalog } from '@/lib/domain/toolCatalog';
 import type { ScopeCtx } from '@/lib/journeys/tools';
-import { ACTIVE_ALIAS, HIDDEN_TAB_ROUTES, HUB_ENTRIES, HUB_KEYS, HUB_ROUTE, HUB_THEMES, hubGroups, hubOf, hubTools, NAV_TABS, tabLabelSize } from '@/features/hubs/hubMap';
+import { ACTIVE_ALIAS, HIDDEN_TAB_ROUTES, HUB_ENTRIES, HUB_KEYS, HUB_ROUTE, HUB_THEMES, hubGroups, hubOf, hubTools, NAV_TABS, dockGeometry, estimateLabelWidth, TAB_LABEL_MIN, TAB_MIN_W, tabLayout } from '@/features/hubs/hubMap';
 import { pushRecent, RECENT_MAX } from '@/features/hubs/recentTools';
 import { APP_ROUTES } from '@/lib/routes.generated';
 
@@ -92,14 +92,32 @@ describe('HOMI : barre à 5 onglets et routes conservées', () => {
 
   it.each(Object.keys(DICTIONARIES).map((l) => [l]))('« %s » : libellés complets, non vides, qui tiennent à 320 px', (locale) => {
     const d = DICTIONARIES[locale];
-    const labels = NAV_TABS.map((x) => d[x.label]);
+    const labels = NAV_TABS.map((x) => d[x.label] as string);
     for (const l of labels) expect(typeof l === 'string' && l.trim().length > 0).toBe(true);
-    // barre à 320 px : marges 2 × 8, capsule 2 × 4 → 5 onglets de 59 px ; largeur estimée 0,58 em par caractère (Manrope)
-    const tabW = (320 - 16 - 8) / 5;
-    const longest = Math.max(...labels.map((l) => (l as string).length));
-    const size = tabLabelSize(tabW, longest);
-    expect(size).toBeGreaterThanOrEqual(9.5);
-    expect(longest * size * 0.58).toBeLessThanOrEqual(tabW);
+    // barre à 320 px (bouton d'action sur la même ligne) : chaque libellé tient dans son onglet, sans ellipse
+    const g = dockGeometry(320);
+    const { fontSize, widths } = tabLayout(g.inner, labels.map((l) => estimateLabelWidth(l)));
+    expect(fontSize).toBeGreaterThanOrEqual(10);
+    labels.forEach((l, i) => expect(estimateLabelWidth(l, fontSize)).toBeLessThanOrEqual(widths[i]));
+    expect(widths.reduce((a, w) => a + w, 0)).toBeLessThanOrEqual(g.inner + 0.01);
+  });
+
+  it('français : libellés à 12 px à 390 px de large, au moins 11 px à 320 px (largeurs mesurées de Manrope gras)', () => {
+    // largeurs réelles à 12 px (export web, Chromium, Manrope 700 chargée) : Accueil, Santé, Bébé, Famille, Communauté
+    const measured = [42.1, 34.0, 28.8, 40.0, 78.2];
+    const wide = tabLayout(dockGeometry(390).inner, measured);
+    const narrow = tabLayout(dockGeometry(320).inner, measured);
+    expect(wide.fontSize).toBe(12);
+    expect(narrow.fontSize).toBeGreaterThanOrEqual(TAB_LABEL_MIN);
+    // cible tactile ≥ 44 px de large, libellé entier dans son onglet
+    for (const l of [wide, narrow]) {
+      for (const w of l.widths) expect(w).toBeGreaterThanOrEqual(TAB_MIN_W);
+      measured.forEach((m, i) => expect((m * l.fontSize) / 12).toBeLessThanOrEqual(l.widths[i]));
+    }
+    // estimation prudente d'avant la mesure (une seule image, plus large que la réalité) : déjà ≥ 10 px sans ellipse
+    const est = NAV_TABS.map((x) => estimateLabelWidth(DICTIONARIES.fr[x.label] as string));
+    expect(tabLayout(dockGeometry(390).inner, est).fontSize).toBeGreaterThanOrEqual(11);
+    expect(tabLayout(dockGeometry(320).inner, est).fontSize).toBeGreaterThanOrEqual(10);
   });
 });
 

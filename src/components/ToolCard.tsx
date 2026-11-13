@@ -6,9 +6,15 @@
  * États : normal · survol (web) · pressé · focus clavier · actif (outil en cours) · désactivé
  * (profil enfant à créer) · confirmation (favori). Le toucher réagit immédiatement ; la navigation
  * part pendant que le glyphe joue son animation (jamais retardée pour les urgences).
+ *
+ * Mouvement (Reanimated, src/motion) : enfoncement en ressort (`usePressScale`), puis la carte s'élève
+ * (`useCardLift`, 140 ms) avant l'ouverture de l'outil, dont l'écran répond par son entrée ; survol web : −3 px.
+ * Réduire les animations / économie d'énergie : ouverture immédiate, aucun mouvement ; nuit : sans élévation.
  */
 import React, { useRef, useState } from 'react';
-import { Animated, Platform, Pressable, View, type GestureResponderEvent } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, View, type GestureResponderEvent } from 'react-native';
+import Reanimated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { durations, useCardLift, useMotion, usePressScale } from '@/motion';
 import { router } from 'expo-router';
 import { GlassSurface } from './Glass';
 import { usePop, usePressMotion } from './Motion';
@@ -18,7 +24,7 @@ import type { CatalogTool, ToolStatus } from '@/lib/domain/toolCatalog';
 import { THEME_TITLE } from '@/lib/domain/toolCatalog';
 import { markToolOpen } from '@/lib/toolOrigin';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, palette, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 
 export const TOOL_CARD_HEIGHT = 164;
@@ -38,7 +44,11 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
 }) {
   const t = useTheme();
   const reduce = useReduceMotion();
-  const press = usePressMotion({ pressed: 0.965, hoverLift: -3 });
+  const m = useMotion();
+  const press = usePressScale({ scale: 0.965, haptic: 'none' });
+  const lift = useCardLift();
+  const hover = useSharedValue(0);
+  const hoverStyle = useAnimatedStyle(() => ({ transform: [{ translateY: hover.value * -3 }] }));
   const [hovered, setHovered] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -51,20 +61,29 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
     haptic('selection');
     setPlay((p) => p + 1);
     beforeOpen?.();
-    openTool(tool, e.nativeEvent.pageY, reduce);
+    const y = e.nativeEvent.pageY;
+    // urgences : aucune attente ; sinon la carte s'élève puis l'outil s'ouvre (immédiat si le mouvement est coupé)
+    if (tool.urgent) { openTool(tool, y, true); return; }
+    lift.open(() => {
+      openTool(tool, y, true);
+      setTimeout(lift.settle, durations.slow); // l'écran de l'outil recouvre déjà la carte
+    });
   }
 
   return (
-    <Animated.View style={[{ width, minHeight: TOOL_CARD_HEIGHT }, press.style]}>
+    <Reanimated.View style={[{ width, minHeight: TOOL_CARD_HEIGHT }, hoverStyle]}>
+      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.lg, backgroundColor: palette.night, opacity: 0, transform: [{ translateY: 8 }, { scale: 0.96 }] }, lift.shadow]} />
+      <Reanimated.View style={[{ flex: 1 }, lift.style]}>
+      <Reanimated.View style={[{ flex: 1 }, press.style]}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={a11y}
         accessibilityHint={THEME_TITLE[tool.theme]}
         onPress={onPress}
-        onPressIn={() => { setPressed(true); press.handlers.onPressIn(); }}
-        onPressOut={() => { setPressed(false); press.handlers.onPressOut(); }}
-        onHoverIn={() => { setHovered(true); press.handlers.onHoverIn?.(); if (!reduce && !tool.urgent) setPlay((p) => p + 1); }}
-        onHoverOut={() => { setHovered(false); press.handlers.onHoverOut?.(); }}
+        onPressIn={() => { setPressed(true); press.onPressIn(); }}
+        onPressOut={() => { setPressed(false); press.onPressOut(); }}
+        onHoverIn={() => { setHovered(true); hover.value = m.timing(1, durations.fast, 'standard'); if (!reduce && !tool.urgent) setPlay((p) => p + 1); }}
+        onHoverOut={() => { setHovered(false); hover.value = m.timing(0, durations.fast, 'standard'); }}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         style={{ flex: 1, ...(Platform.OS === 'web' ? ({ outlineStyle: 'none', cursor: 'pointer' } as object) : {}) }}
@@ -90,8 +109,10 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
           </View>
         </GlassSurface>
       </Pressable>
+      </Reanimated.View>
+      </Reanimated.View>
       {tool.urgent ? null : <FavoriteButton on={favorite} label={tool.label} color={c} onPress={() => onToggleFavorite(tool)} />}
-    </Animated.View>
+    </Reanimated.View>
   );
 }
 

@@ -16,7 +16,7 @@ import { linkFrame } from '@/components/linkFrame';
 import { NightsHelpCard } from '@/features/sleepHelpCard';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -44,9 +44,8 @@ import { CHILD_SOURCES, SAFE_SLEEP } from '@/content/childSafety';
 import { LOG_TABLE, type Article, type Bottle, type Breastfeed, type Child, type Diaper, type Meal, type Observation, type Sleep } from '@/lib/types';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { DOCK_HEIGHT } from '@/components/Dock';
+import { useDockAction } from '@/components/dockAction';
 import { fonts, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t as tr, type TKey } from '@/i18n';
 import { toISODate } from '@/lib/domain/dates';
 import { CATEGORY_GLOW, CATEGORY_INK, HOMI, HOMI_FILL, HOMI_WASH } from '@/features/homiColors';
@@ -727,15 +726,14 @@ export function ArticleCard({ article, premium }: { article: Article; premium: b
 
 const ADD_GLYPH: Record<AddAction, RibbonKind> = { bottle: 'bottle', breastfeed: 'breastfeed', meal: 'meal', diaper: 'diaper', sleep: 'sleep', medication: 'medication', symptom: 'symptom', note: 'note' };
 
-/** Bouton flottant et feuille d'ajout (favoris personnalisables). Rendu par l'accueil, au-dessus de la barre. */
+/** Feuille d'ajout (favoris personnalisables), ouverte par le bouton d'action de la barre d'onglets. Rendu par l'accueil. */
 export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }) {
   const t = useTheme();
-  const insets = useSafeAreaInsets();
   const toast = useToast();
-  // Petit écran : bouton rond (icône seule) pour ne pas masquer le contenu
-  const compact = useWindowDimensions().width < 380;
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  // « + Ajouter » : c'est le bouton d'action de la barre d'onglets (même ligne que la barre, jamais sur le contenu)
+  useDockAction('index', { icon: 'plus', label: tr('coc.add.a11y', { name: child.first_name }), testID: 'cocoon-add', onPress: () => { setEditing(false); setOpen(true); } });
   const chosen = useUiStore((s) => s.cocoonFavorites);
   const setChosen = useUiStore((s) => s.setCocoonFavorites);
   const age = childAge(child.birth_date);
@@ -787,15 +785,6 @@ export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }
   };
   return (
     <>
-      <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: Math.max(insets.bottom, 10) + DOCK_HEIGHT + 6 }}>
-        <Pressable testID="cocoon-add" accessibilityRole="button" accessibilityLabel={tr('coc.add.a11y', { name: child.first_name })} onPress={() => { haptic('light'); setEditing(false); setOpen(true); }}
-          style={({ pressed }) => ({ borderRadius: radius.pill, transform: [{ scale: pressed ? 0.96 : 1 }], shadowColor: HOMI.prune, shadowOpacity: 0.35, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 8 })}>
-          <LinearGradient colors={HOMI_FILL} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 56, minWidth: 56, paddingHorizontal: compact ? 0 : 22, borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' }}>
-            <Icon name="plus" size={compact ? 26 : 22} color="#FFFFFF" />
-            {compact ? null : <Text weight="bold" color="#FFFFFF">{tr('coc.add.button')}</Text>}
-          </LinearGradient>
-        </Pressable>
-      </View>
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('coc.add.title', { name: child.first_name })}>
         <View style={{ gap: spacing.sm }} testID="cocoon-add-sheet">
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1 }}>{tr(editing ? 'coc.add.editHint' : 'coc.add.favorites').toUpperCase()}</Text>

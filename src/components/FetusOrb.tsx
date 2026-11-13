@@ -24,7 +24,7 @@ interface Props {
 const HUES = {
   rose: { core: '#F1E6F6', mid: '#D3B3E3', deep: '#7A3F8E', glow: '#E4D0EE' },
   lavande: { core: '#E4DDF7', mid: '#B9AEDB', deep: '#6E5FA8', glow: '#CFC4F0' },
-  or: { core: '#F6ECDA', mid: '#E9CFA4', deep: '#8F7340', glow: '#F1E2C6' },
+  or: { core: '#F6ECDA', mid: '#E9CFA4', deep: '#76561D', glow: '#F6ECDA' },
 };
 
 export function FetusOrb({ growth, size = 280, hue = 'lavande', interactive = true, accessibilityLabel }: Props) {

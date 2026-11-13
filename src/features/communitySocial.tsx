@@ -28,9 +28,9 @@ import { localeTag, t as tr } from '@/i18n';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
 // Accents choisis par le parent (noms conservés) : teintes harmonisées HOMI, encres lisibles sur fond clair
-export const ACCENT_COLOR: Record<ProfileAccent, string> = { rose: '#A8346A', lavande: '#5E44A8', menthe: '#286B40', peche: '#9A5636', ciel: '#2A609C', sable: '#76561D' };
+export const ACCENT_COLOR: Record<ProfileAccent, string> = { rose: '#A8346A', lavande: '#5E44A8', menthe: '#286B40', peche: '#8A5A0E', ciel: '#2A609C', sable: '#76561D' };
 export const BANNER_COLORS: Record<ProfileBanner, [string, string, string]> = {
-  aube: SKY_GRADIENTS.dawn, nuit: SKY_GRADIENTS.dusk, prairie: ['#EAF7EC', '#E6F6F4', '#FFF3E6'], ocean: ['#E9F4FF', '#EAEDFF', '#E6F6F4'], nacre: NACRE,
+  aube: SKY_GRADIENTS.dawn, nuit: SKY_GRADIENTS.dusk, prairie: ['#EAF7EC', '#E6F6F4', '#F6ECDA'], ocean: ['#E9F4FF', '#EAEDFF', '#E6F6F4'], nacre: NACRE,
 };
 export const accentOf = (a?: string | null) => (a && a in ACCENT_COLOR ? ACCENT_COLOR[a as ProfileAccent] : null);
 

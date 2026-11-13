@@ -33,7 +33,7 @@ export function PlaceArt({ category, height = 120 }: { category: FamilyCategory;
         <Defs>
           <SvgGradient id={id} x1="0" y1="0" x2="1" y2="1">
             <Stop offset="0" stopColor={tint} stopOpacity={t.isDark ? 0.42 : 0.26} />
-            <Stop offset="1" stopColor={t.isDark ? '#2A2440' : '#FFF7EE'} stopOpacity={1} />
+            <Stop offset="1" stopColor={t.isDark ? '#2A2440' : '#F7F4FB'} stopOpacity={1} />
           </SvgGradient>
         </Defs>
         <Rect x="0" y="0" width="320" height="120" fill={`url(#${id})`} />
@@ -171,7 +171,7 @@ export function PlaceSheet({ place, distance, onClose }: { place: FamilyPlace | 
 export function MapUnavailable({ height = 220 }: { height?: number }) {
   const t = useTheme();
   return (
-    <View style={{ height, borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', padding: spacing.md, backgroundColor: t.isDark ? '#2A2440' : '#F6EFE6', borderWidth: 1, borderColor: t.colors.border, gap: 6 }} testID="out-map-unavailable">
+    <View style={{ height, borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', padding: spacing.md, backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', borderWidth: 1, borderColor: t.colors.border, gap: 6 }} testID="out-map-unavailable">
       <Icon name="map" size={26} color={t.colors.lavender} />
       <Text weight="bold" center>{tr('out.mapUnavailable')}</Text>
       <Text variant="caption" muted center>{tr('out.mapUnavailableBody')}</Text>

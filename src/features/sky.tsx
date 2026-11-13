@@ -91,7 +91,7 @@ export function SkyArc({ phase, moments, greeting, subtitle, now = new Date() }:
   const nowPos = pos(hourOf(now));
   const ink = t.colors.text;
   // astre : lune perle la nuit, champagne au crépuscule et à l'aube, champagne doré le jour
-  const body = phase === 'night' ? '#F6EFE4' : phase === 'dusk' ? '#E9CFA4' : phase === 'dawn' ? '#F1E2C6' : '#E2C48B';
+  const body = phase === 'night' ? '#F6EFE4' : phase === 'dusk' ? '#E9CFA4' : phase === 'dawn' ? '#F6ECDA' : '#E9CFA4';
   const arcPath = (from: number, to: number) => {
     const steps = 40;
     let d = '';

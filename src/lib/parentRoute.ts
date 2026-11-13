@@ -25,8 +25,12 @@ const SECTION_HOME: Record<string, string> = {
   article: '/library', assistant: '/ask', legal: '/settings', partner: '/cycle', profiles: '/settings', auth: '/welcome',
 };
 
+/** Anciennes routes d'onglet (HOMI, hors de la barre) : « Retour » ramène à l'onglet qui les contient (cf. ACTIVE_ALIAS). */
+const OLD_TAB_HOME: Record<string, string> = { '/agenda': '/household', '/track': '/baby', '/ask': '/health' };
+
 export function parentRoute(pathname: string): string {
   const clean = (pathname.split(/[?#]/)[0] ?? '/').replace(/\/+$/, '');
+  if (OLD_TAB_HOME[clean]) return OLD_TAB_HOME[clean];
   const segments = clean.split('/').filter(Boolean);
   for (let n = segments.length - 1; n > 0; n--) {
     const candidate = segments.slice(0, n);

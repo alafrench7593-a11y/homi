@@ -242,7 +242,7 @@ function WebFrame({ children }: { children: React.ReactNode }) {
   try { off = Platform.OS === 'web' && globalThis.localStorage?.getItem('toietmoi.frame') === 'off'; } catch { off = false; }
   if (Platform.OS !== 'web' || width < 600 || off) return <>{children}</>;
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E4D6C6', padding: 24 }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E9E2F5', padding: 24 }}>
       <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.7)', shadowColor: '#635878', shadowOpacity: 0.28, shadowRadius: 50, shadowOffset: { width: 0, height: 24 } }}>
         {children}
       </View>

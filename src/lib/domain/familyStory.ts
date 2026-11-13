@@ -352,13 +352,14 @@ export interface StoryPalette {
   shadow: string;
 }
 export const DAY_PALETTE: StoryPalette = {
-  id: 'day', dressLight: '#F0CBC4',
-  line: '#7A5546', skin: '#E7C9B8', hair: '#6E4A3A', dress: '#E3B3AE', dressShade: '#D59F9A', sleeve: '#E3B3AE',
-  kidTop: '#F6E8DC', kidBottom: '#B89C8C', swaddle: '#FBF1EA', shoe: '#7A5546', shadow: 'rgba(122,85,70,0.16)',
+  // HOMI (13/11/2026) : robe lilas, traits encre violette, tons perle et champagne (plus de rose poudré ni de brun)
+  id: 'day', dressLight: '#E4DAFB',
+  line: '#584D72', skin: '#E7C9B8', hair: '#3E3557', dress: '#CDBEFA', dressShade: '#B9A8F0', sleeve: '#CDBEFA',
+  kidTop: '#F6ECDA', kidBottom: '#8E84A8', swaddle: '#F7F4FB', shoe: '#584D72', shadow: 'rgba(28,21,51,0.14)',
 };
 export const NIGHT_PALETTE: StoryPalette = {
   id: 'night', dressLight: '#A97CA2',
-  line: '#F0D9CF', skin: '#C9A6A4', hair: '#5A3E52', dress: '#8E6488', dressShade: '#7B5577', sleeve: '#8E6488',
+  line: '#E4DAFB', skin: '#C9A6A4', hair: '#5A3E52', dress: '#8E6488', dressShade: '#7B5577', sleeve: '#8E6488',
   kidTop: '#D9C6D6', kidBottom: '#6F6489', swaddle: '#E7DCE6', shoe: '#3E3557', shadow: 'rgba(10,12,30,0.35)',
 };
 

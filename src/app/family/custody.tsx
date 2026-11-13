@@ -29,7 +29,7 @@ const normTime = (v: string) => { const m = v.trim().match(/^(\d{1,2})[:h](\d{2}
 function useSideColors() {
   const t = useTheme();
   // deux teintes nettement différentes (chaud / froid) en plus de la lettre A ou B : jamais la couleur seule
-  return { A: t.isDark ? 'rgba(238,201,152,0.45)' : 'rgba(223,187,139,0.75)', B: t.isDark ? 'rgba(120,185,255,0.38)' : 'rgba(160,200,255,0.85)' } as Record<Side, string>;
+  return { A: t.isDark ? 'rgba(233,207,164,0.45)' : 'rgba(233,207,164,0.85)', B: t.isDark ? 'rgba(120,185,255,0.38)' : 'rgba(160,200,255,0.85)' } as Record<Side, string>;
 }
 
 function PlanEditor({ plan, visible, onClose }: { plan?: CustodyPlan; visible: boolean; onClose: (id?: string) => void }) {

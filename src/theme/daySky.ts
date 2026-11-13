@@ -1,9 +1,10 @@
 /**
  * Ciel du mode jour (logique pure, testée) : un dégradé lumineux qui évolue PROGRESSIVEMENT avec l'heure,
- * jamais blanc pur, et une légère teinte selon le profil affiché.
- *  · Matin : crème, pêche, rose clair, lumière de lever de soleil.
- *  · Journée : bleu ciel légèrement grisé, lavande, touche dorée discrète.
- *  · Fin de journée : abricot, vieux rose, mauve — transition vers le mode nuit (qui reste inchangé).
+ * jamais blanc pur, et une légère teinte selon le profil affiché. Couleurs HOMI (13/11/2026) : perle, lilas,
+ * champagne pâle et bleu ciel grisé — plus de pêche, de rose poudré ni d'abricot (ancienne marque).
+ *  · Matin : perle, champagne pâle, lilas très clair, soleil champagne bas.
+ *  · Journée : bleu ciel légèrement grisé, lavande, perle, touche champagne discrète.
+ *  · Fin de journée : champagne pâle, lilas, mauve — transition vers le mode nuit (qui reste inchangé).
  * Les couleurs sont interpolées minute par minute entre des repères : aucun changement brutal.
  */
 
@@ -20,17 +21,17 @@ interface Key { h: number; stops: [string, string, string, string]; sun: { x: nu
 
 /** Repères de la journée (heures décimales). Entre deux repères, interpolation linéaire. */
 export const DAY_KEYS: Key[] = [
-  // aube / matin : crème, pêche, rose clair ; soleil bas à gauche
-  { h: 5.5, stops: ['#F8E9EF', '#FCE6DA', '#FCE0E6', '#F1E5F6'], sun: { x: 0.12, y: 0.42, color: '#FFC9A8', opacity: 0.55 }, nacre: '#FFE6EE' },
-  { h: 8, stops: ['#FFF2E6', '#FFE5D4', '#FCDDE5', '#F3E6F7'], sun: { x: 0.18, y: 0.3, color: '#FFD3A6', opacity: 0.75 }, nacre: '#FFEAF0' },
-  // journée : bleu ciel grisé, lavande, crème, touche dorée en haut à droite
-  { h: 11, stops: ['#E2EBF6', '#EAE5F9', '#F8F0F5', '#FDF1E6'], sun: { x: 0.82, y: 0.06, color: '#FFE6A8', opacity: 0.6 }, nacre: '#EEF0FF' },
-  { h: 15.5, stops: ['#E0E9F5', '#E9E3F8', '#F8EEF3', '#FEF0E2'], sun: { x: 0.74, y: 0.1, color: '#FFE0A0', opacity: 0.55 }, nacre: '#F0ECFF' },
-  // fin de journée : abricot, vieux rose, mauve ; soleil bas à droite
-  { h: 17.5, stops: ['#FBE2D4', '#F8D9D3', '#F0D5E0', '#E4D7F0'], sun: { x: 0.86, y: 0.5, color: '#FFC08F', opacity: 0.7 }, nacre: '#FFE2E6' },
-  { h: 19, stops: ['#F6DCD5', '#F1D3DB', '#E9D5EA', '#DFD7F0'], sun: { x: 0.9, y: 0.7, color: '#FFAE8E', opacity: 0.55 }, nacre: '#F6DCEB' },
+  // aube / matin : perle, champagne pâle, lilas très clair ; soleil champagne bas à gauche
+  { h: 5.5, stops: ['#F4F0FA', '#F3EEF4', '#EEE8F7', '#E9E2F5'], sun: { x: 0.12, y: 0.42, color: '#E9CFA4', opacity: 0.45 }, nacre: '#EFE8FB' },
+  { h: 8, stops: ['#F7F4FB', '#F6ECDA', '#EEE8F7', '#E9E2F5'], sun: { x: 0.18, y: 0.3, color: '#E9CFA4', opacity: 0.6 }, nacre: '#F1EAFB' },
+  // journée : bleu ciel grisé, lavande, perle, touche champagne en haut à droite
+  { h: 11, stops: ['#E2EBF6', '#EAE5F9', '#F4F0FA', '#F6F2FA'], sun: { x: 0.82, y: 0.06, color: '#E9CFA4', opacity: 0.45 }, nacre: '#EEF0FF' },
+  { h: 15.5, stops: ['#E0E9F5', '#E9E3F8', '#F4F0FA', '#F6ECDA'], sun: { x: 0.74, y: 0.1, color: '#E9CFA4', opacity: 0.4 }, nacre: '#F0ECFF' },
+  // fin de journée : champagne pâle, lilas, mauve ; soleil bas à droite
+  { h: 17.5, stops: ['#F6ECDA', '#EFE4F2', '#E4DAFB', '#E4D7F0'], sun: { x: 0.86, y: 0.5, color: '#E9CFA4', opacity: 0.55 }, nacre: '#EFE6FA' },
+  { h: 19, stops: ['#EDE3F0', '#E8DDF3', '#E4DAFB', '#DFD7F0'], sun: { x: 0.9, y: 0.7, color: '#CDBEFA', opacity: 0.5 }, nacre: '#ECE4FA' },
   // nuit en « toujours clair » : lavande douce, jamais sombre
-  { h: 22, stops: ['#ECE6F6', '#EFE3F0', '#F1E5EC', '#E6E2F4'], sun: { x: 0.8, y: 0.12, color: '#E9DDFF', opacity: 0.45 }, nacre: '#F1E8FF' },
+  { h: 22, stops: ['#ECE6F6', '#EFE3F0', '#EEE6F4', '#E6E2F4'], sun: { x: 0.8, y: 0.12, color: '#E9DDFF', opacity: 0.45 }, nacre: '#F1E8FF' },
 ];
 
 const hex = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
@@ -68,11 +69,11 @@ export const PREVIEW_HOUR: Record<'dawn' | 'day' | 'dusk' | 'night', number> = {
 /** Teinte légère selon le profil affiché : même direction artistique, ambiance un peu différente. */
 export type SkyProfile = 'pregnancy' | 'cycle' | 'baby' | 'child' | 'default';
 export const PROFILE_TINTS: Record<SkyProfile, [string, string, string]> = {
-  pregnancy: ['#FFCDB2', '#F6C3D2', '#F2DDA6'], // pêche, rose poudré, doré doux
-  cycle: ['#EBA790', '#F4BDCD', '#D3C3F3'], // terracotta, rose, lavande
-  baby: ['#C9DFF6', '#D9CFF6', '#FFEFD8'], // bleu ciel, lavande, crème
-  child: ['#FFD3BD', '#CBE5CF', '#CADFF5'], // pêche, sauge douce, bleu clair
-  default: ['#FFD6C8', '#E2D6F7', '#FBE3EC'],
+  pregnancy: ['#E9CFA4', '#E4DAFB', '#F6ECDA'], // champagne, lilas pâle, champagne pâle
+  cycle: ['#D3B3E3', '#E4DAFB', '#D3C3F3'], // mauve, lilas pâle, lavande
+  baby: ['#C9DFF6', '#D9CFF6', '#F6ECDA'], // bleu ciel, lavande, champagne pâle
+  child: ['#E9CFA4', '#CBE5CF', '#CADFF5'], // champagne, sauge douce, bleu clair
+  default: ['#E4DAFB', '#E2D6F7', '#F6ECDA'],
 };
 
 /** Opacité maximale de la teinte du profil : garde le texte secondaire lisible (≥ 4,5:1, testé). */

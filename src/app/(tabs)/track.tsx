@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { TodaySummary } from '@/components/MiniApp';
 import { PremiumGate, ProfileSwitcher } from '@/components/Family';
 import { BarChart } from '@/components/Charts';
@@ -176,7 +177,7 @@ export default function Track() {
   const cycle = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle';
   return (
     <View style={{ flex: 1 }}>
-      <Screen back account title={tr('screen.track.title')} bottomInset={156}>
+      <Screen back account title={tr('screen.track.title')} bottomInset={TAB_SCREEN_INSET}>
         <ProfileSwitcher />
         {loading ? <Skeleton kind="card" rows={2} /> : failed ? (
           <ErrorView error={failed.error} onRetry={() => { void childrenQ.refetch(); void pregnanciesQ.refetch(); void journeysQ.refetch(); }} />

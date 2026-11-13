@@ -48,9 +48,9 @@ export default function Launch() {
   return (
     <View style={{ flex: 1, backgroundColor: '#1C1128', alignItems: 'center', justifyContent: 'center', gap: 18 }} accessibilityLabel={tr('common.appLoading', { app: BRAND.name })}>
       <Aurora mood="evening" intensity={1.25} />
-      <StarField color="#FDF2E5" />
+      <StarField color="#F6EFE4" />
       <FetusOrb growth={0.6} size={180} interactive={false} />
-      <Text variant="title" color="#FCF5ED">{BRAND.name}</Text>
+      <Text variant="title" color="#F7F4FB">{BRAND.name}</Text>
       <Text italic color={t.colors.gold}>{isLoading ? tr('brand.tagline') : ' '}</Text>
     </View>
   );
