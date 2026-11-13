@@ -294,6 +294,10 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
   const step = lay.key === stepKey ? lay.step : 0;
   const adapt = !!full || size === 'lg';
   const lineH = (BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0)) * cappedScale(fontScale, typography.button.maxScale);
+  const onLabelLayout = (e: { nativeEvent: { layout: { height: number } } }) => {
+    const lines = Math.round(e.nativeEvent.layout.height / lineH);
+    setLay((cur) => { const s = cur.key === stepKey ? cur.step : 0; const n = nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel }); return n === s && cur.key === stepKey ? cur : { key: stepKey, step: n }; });
+  };
   const shownIcon = step >= 1 ? undefined : icon;
   const shownLabel = step >= 2 && shortLabel ? shortLabel : label;
   // Désactivation animée (fondu), réussite (respiration) et échec (tremblement) : l'action part toujours tout de suite,
@@ -380,14 +384,13 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veil, opacity: m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, veilHover] }) }]} />
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? NEUTRALS.graphite : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? stateVeil.pressSolidDarken : veilPress], extrapolate: 'clamp' }) }]} />
       {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante */}
-      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
+      {/* mesure sur la rangée (View : onLayout fiable sur toutes les plateformes, le web ne le rend pas sur Text) ;
+          sa hauteur = celle du libellé (l'icône, 15-18 px, est plus basse qu'une ligne) */}
+      <Animated.View onLayout={adapt ? onLabelLayout : undefined}
+        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
         {shownIcon && <Animated.View style={nudge(shownIcon)}><Icon name={shownIcon} size={iconSize} color={fg} /></Animated.View>}
         {shownLabel ? (
           <Text weight="bold" color={fg} center maxFontSizeMultiplier={typography.button.maxScale}
-            onLayout={adapt ? (e) => {
-              const lines = Math.round(e.nativeEvent.layout.height / lineH);
-              setLay((cur) => { const s = cur.key === stepKey ? cur.step : 0; const n = nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel }); return n === s && cur.key === stepKey ? cur : { key: stepKey, step: n }; });
-            } : undefined}
             style={[{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size] - (step >= 3 ? 2 : 0), lineHeight: BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0), letterSpacing: 0.1 }, NO_HYPHENS]}>
             {shownLabel}
           </Text>

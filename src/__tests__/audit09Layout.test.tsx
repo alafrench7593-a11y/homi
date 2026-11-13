@@ -18,7 +18,7 @@ import { ToastProvider } from '@/components/Overlays';
 import { charEm, fitTitleSize, lineCount, orbLayout, textWidth, TITLE_STEPS } from '@/components/layoutFit';
 import { pillsFit, ChoiceGroup } from '@/components/controls/ChoiceGroup';
 import { headerMode, nextInnerScrolled, HEADER_TIGHT_HEIGHT } from '@/components/Screen';
-import { nextLabelStep } from '@/components/ui';
+import { Button, nextLabelStep } from '@/components/ui';
 import { webKeyboardOpen, WEB_KEYBOARD_MIN } from '@/components/keyboard';
 import { offsetToEnsure, offsetToReveal } from '@/components/screenChrome';
 import { confirmationLook } from '@/components/controls/ConfirmationCard';
@@ -223,5 +223,25 @@ describe('graphiques (signalés par l’audit 06)', () => {
     expect(labels).toContain(29);
     expect(labels.length).toBeLessThanOrEqual(7);
     expect(v.map((_, i) => i).filter(l.showValue)).toEqual([12, 29]);
+  });
+});
+
+describe('bouton pleine largeur : rendu', () => {
+  const textNodes = (r: ReactTestRenderer, s: string) => r.root.findAll((n) => typeof n.type === 'string' && n.props.children === s);
+  it('libellé sur 2 lignes → icône retirée et marges réduites, puis libellé court', async () => {
+    const r = await render(<Button label="Enregistrer : Plutôt bien" shortLabel="Enregistrer" icon="check" size="lg" full onPress={() => undefined} />);
+    const measure = async (s: string) => {
+      // la rangée (icône + libellé) qui contient le libellé porte la mesure
+      const node = r.root.findAll((x) => typeof x.props.onLayout === 'function' && x.findAll((y) => y.props.children === s).length > 0 && x.props.accessibilityRole !== 'button').pop()!;
+      await act(async () => { node.props.onLayout({ nativeEvent: { layout: { width: 180, height: 22 * 2 * 2 } } }); });
+    };
+    const icons = () => r.root.findAll((n) => n.props.name === 'check').length;
+    expect(icons()).toBeGreaterThan(0);
+    await measure('Enregistrer : Plutôt bien');
+    expect(icons()).toBe(0);
+    await measure('Enregistrer : Plutôt bien');
+    expect(textNodes(r, 'Enregistrer').length).toBeGreaterThan(0);
+    // le lecteur d'écran lit toujours le libellé complet
+    expect(r.root.findAll((n) => n.props.accessibilityLabel === 'Enregistrer : Plutôt bien').length).toBeGreaterThan(0);
   });
 });
