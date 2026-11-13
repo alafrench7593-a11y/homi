@@ -228,7 +228,8 @@ function TrackEntry() {
           return { ...base, at: time.toISOString(), prepared_ml: prepared, consumed_ml: consumed, planned_next_ml: next.value, milk_type: milkType.trim() || null };
         }
       case 'breastfeed': {
-        const mins = timerStart ? elapsed / 60 : Number(duration.replace(',', '.'));
+        // Durée relue sur l'horloge au moment d'arrêter (jamais le dernier affichage, figé si l'app était en arrière-plan)
+        const mins = timerStart ? Math.max(0, Date.now() - timerStart.getTime()) / 60000 : Number(duration.replace(',', '.'));
         if (!timerStart && duration && (!Number.isFinite(mins) || mins <= 0 || mins > 180)) return setError(tr('u7.track.err.duration')), null;
         const start = timerStart ?? time;
         return { ...base, side, started_at: start.toISOString(), ended_at: mins ? new Date(start.getTime() + mins * 60000).toISOString() : null };

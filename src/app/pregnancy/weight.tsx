@@ -118,7 +118,8 @@ export default function WeightScreen() {
     });
   }
 
-  const points = (weights ?? []).map((w) => ({ x: new Date(w.measured_on).getTime(), y: Number(w.weight_kg), label: formatDate(w.measured_on, { day: 'numeric', month: 'long', timeZone: 'UTC' }) }));
+  // Dates calendaires : abscisse à 0 h UTC et étiquettes lues en UTC (sinon la veille s'affiche à l'ouest de Greenwich)
+  const points = (weights ?? []).map((w) => ({ x: Date.parse(`${w.measured_on.slice(0, 10)}T00:00:00Z`), y: Number(w.weight_kg), label: formatDate(w.measured_on, { day: 'numeric', month: 'long', timeZone: 'UTC' }) }));
 
   const loading = weightsQ.isLoading && !weights;
   const failed = weightsQ.isError && !weights;
@@ -168,7 +169,7 @@ export default function WeightScreen() {
             {loading ? <Skeleton kind="card" rows={1} /> : failed ? (
               <ErrorView error={weightsQ.error} onRetry={() => void weightsQ.refetch()} title={tr('u2.weight.load_error')} />
             ) : points.length >= 2 ? (
-              <Card><Text weight="bold">{tr('u2.weight.mine')}</Text><LineChart points={points} unit="kg" accessibilityLabel={tr('u2.weight.chart_a11y')} formatX={(x) => formatDate(x, { day: 'numeric', month: 'short' })} /></Card>
+              <Card><Text weight="bold">{tr('u2.weight.mine')}</Text><LineChart points={points} unit="kg" accessibilityLabel={tr('u2.weight.chart_a11y')} formatX={(x) => formatDate(x, { day: 'numeric', month: 'short', timeZone: 'UTC' })} /></Card>
             ) : (
               <Card tone="soft"><Text muted>{tr('u2.weight.chart_needs_two')}</Text></Card>
             )}

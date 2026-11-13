@@ -15,7 +15,7 @@ import { QuickEntry } from '@/features/quickEntry';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
-import { lastDaysSeries } from '@/lib/domain/daily';
+import { drunkMl, lastDaysSeries } from '@/lib/domain/daily';
 import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -64,7 +64,8 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
 
   if (!child) return null;
   const chartDays = premium ? days : 7;
-  const bottleSeries = lastDaysSeries(Math.min(chartDays, 7), bottles, (b) => b.at, (b) => b.consumed_ml ?? b.prepared_ml ?? 0);
+  // « Lait bu par jour » : seules les quantités BUES notées (une quantité préparée n'est pas une quantité bue)
+  const bottleSeries = lastDaysSeries(Math.min(chartDays, 7), bottles, (b) => b.at, drunkMl);
   const diaperSeries = lastDaysSeries(Math.min(chartDays, 7), diapers, (d) => d.at, () => 1);
 
   return (

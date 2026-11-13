@@ -404,6 +404,7 @@ export const ui1 = {
   'u1.fam.shareTitle': 'Rejoindre notre famille sur {app}',
   'u1.fam.shareMessage': 'Je t’invite à rejoindre notre famille sur {app}.\n\nOuvre ce lien depuis ton téléphone : {link}\n\nOu saisis ce code dans Réglages › Famille & partage › « J’ai un code » :\n{token}\n\nL’invitation expire dans 7 jours.',
   'u1.fam.codeIncomplete': 'Ce code paraît incomplet : copiez-le en entier.',
+  'u1.fam.alreadyIn': 'Vous faites déjà partie de ce foyer. Vos droits se modifient par la personne qui gère le foyer.',
   'u1.fam.welcome': 'Bienvenue dans ce foyer !',
   'u1.fam.leaveTitle': 'Quitter ce foyer ?',
   'u1.fam.leaveBody': 'Vous n’aurez plus accès aux informations partagées de ce foyer. Vos données personnelles (humeur, cycle, poids…) restent à vous.',

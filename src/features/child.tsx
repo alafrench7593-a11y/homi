@@ -235,7 +235,7 @@ export function GrowthTab({ child }: { child: Child }) {
   const position = whoSex && lastAge ? describePosition(WHO_IND[metric], whoSex, lastAge.m, lastAge.y) : null;
   const points = (measurements ?? [])
     .filter((x) => x[metric] != null)
-    .map((x) => ({ x: new Date(x.measured_on).getTime(), y: Number(x[metric]), label: fd(x.measured_on, false) }));
+    .map((x) => ({ x: Date.parse(`${x.measured_on.slice(0, 10)}T00:00:00Z`), y: Number(x[metric]), label: fd(x.measured_on, false) }));
 
   // Dernière valeur connue de chaque mesure (saisies de la famille) : affichée en tuiles et reprise d'un geste dans le formulaire
   const sortedM = [...(measurements ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on));
@@ -306,7 +306,7 @@ export function GrowthTab({ child }: { child: Child }) {
       ) : points.length >= 2 ? (
         <Card>
           <Text weight="bold">{metricLabel(metric)} ({m.unit})</Text>
-          <LineChart points={points} unit={m.unit} accessibilityLabel={tr('u7.child.chartA11y', { label: metricLabel(metric).toLowerCase(), name: child.first_name })} formatX={(x) => formatDate(x, { month: 'short', year: '2-digit' })} />
+          <LineChart points={points} unit={m.unit} accessibilityLabel={tr('u7.child.chartA11y', { label: metricLabel(metric).toLowerCase(), name: child.first_name })} formatX={(x) => formatDate(x, { month: 'short', year: '2-digit', timeZone: 'UTC' })} />
         </Card>
       ) : (
         <Card tone="soft"><Text muted>{points.length === 1 ? tr('u7.child.addSecond') : tr('u7.child.addTwo')}</Text></Card>
