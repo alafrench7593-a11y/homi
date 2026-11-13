@@ -400,6 +400,8 @@ export const ui1: Messages<typeof fr> = {
   "u1.fam.haveAccount": "Ya tengo cuenta",
   "u1.fam.errDomain": "Elige al menos un área visible.",
   "u1.fam.errProfile": "Elige al menos un perfil para compartir.",
+  "u1.fam.errCaregiverChild": "Elige al menos un niño confiado a esta persona.",
+  "u1.fam.caregiverScopeNote": "Una niñera solo ve a los niños marcados aquí y solo los documentos que le compartes uno a uno.",
   "u1.fam.yourProfiles": "Tus perfiles",
   "u1.fam.premiumPreview": "{names}: biberones, sueño, pañales y citas sincronizados en los dos teléfonos, con «quién lo anotó» en cada registro.",
   "u1.fam.shareTitle": "Únete a nuestra familia en {app}",

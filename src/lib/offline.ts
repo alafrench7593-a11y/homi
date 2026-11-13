@@ -13,6 +13,7 @@ import { AppState } from 'react-native';
 import { create } from 'zustand';
 import { backend, BackendError } from './backend';
 import { t as tr } from '@/i18n';
+import { conflictTarget } from './offlineConflicts';
 
 export interface PendingOp {
   id: string;
@@ -55,7 +56,7 @@ function uuidLike(): string {
 }
 
 async function send(op: Pick<PendingOp, 'table' | 'row' | 'conflict' | 'merge'>) {
-  const conflict = op.conflict ?? ('client_id' in op.row ? 'client_id' : 'id');
+  const conflict = op.conflict ?? conflictTarget(op.table, op.row);
   await backend.insert(op.table, op.row, { onConflict: conflict, ignoreDuplicates: !op.merge });
 }
 

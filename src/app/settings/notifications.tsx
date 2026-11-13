@@ -3,7 +3,9 @@
  *  - automatiques : rendez-vous (veille 19 h + 1 h avant), tâches du foyer, échéances à préparer, papiers qui expirent ;
  *  - minuteur biberon (réglage existant) et rappels/médicaments (page des rappels) ;
  *  - heures calmes : les notifications automatiques sont décalées au matin ; médicaments et biberon ne le sont jamais.
- * Réglages propres à CE téléphone ; tout est programmé sur le téléphone, rien n'est envoyé à un service extérieur.
+ * Réglages propres à CE téléphone ; tout est programmé sur le téléphone. Seuls les heures calmes, le fuseau horaire et
+ * le choix « détail sur l'écran verrouillé » sont recopiés sur le serveur HOMI (notification_settings), pour que les
+ * notifications envoyées par le serveur les respectent aussi (13/11/2026, HOMI_NOTIFICATION_RULES.md).
  */
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -84,6 +86,11 @@ export default function NotificationSettings() {
           </>
         ) : null}
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('nt.quietNote')}</Text>
+      </Card>
+
+      <SectionTitle title={tr('nt.lockTitle')} />
+      <Card testID="nt-lock">
+        <ToggleRow label={tr('nt.lockDetails')} hint={tr('nt.lockDetailsD')} value={prefs.lockscreenDetails} onChange={(v) => set({ lockscreenDetails: v })} />
       </Card>
 
       <SectionTitle title={tr('nt.nextTitle')} />

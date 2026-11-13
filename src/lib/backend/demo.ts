@@ -299,17 +299,36 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     // plus de mois gratuit des outils depuis le 08/11/2026 (20261108000300_premium_strict.sql)
     return {
       premium, ai: grantActive(AI_ENTITLEMENT), trial_until: null, strict: !!opts.strictPremium,
+      caregiver: T('household_members').some((m) => m.user_id === state.session?.userId && m.role === 'caregiver'),
       tools: PAID_TOOLS.map((k) => { const owned = grantActive(toolEntitlement(k)); return { key: k, product_id: toolProductId(k), owned, allowed: premium || owned }; }),
     };
   }
-  /** Premium strict : mêmes tables et mêmes exceptions que _require_premium_write (20261108000300_premium_strict.sql). */
-  const strictGuard = (table: string) => {
+  /**
+   * Premium strict : mêmes tables et mêmes exceptions que _require_premium_write (20261108000300_premium_strict.sql),
+   * y compris celle du 13/11/2026 (20261113000100_caregiver_premium.sql) : une nounou n'est jamais bloquée pour ses
+   * saisies dans le foyer qui l'emploie (la famille paie).
+   */
+  const strictGuard = (table: string, householdIds: unknown[] = []) => {
     if (!opts.strictPremium || !state.session || isPremium()) return;
     if (AI_TABLES.includes(table) && grantActive(AI_ENTITLEMENT)) return;
+    if (STRICT_TABLES.includes(table) && householdIds.length && householdIds.every((h) => isCaregiverIn(h))) return;
     if (STRICT_TABLES.includes(table) || AI_TABLES.includes(table)) {
       throw new BackendError('Fonction Premium : abonnement requis pour enregistrer de nouvelles données', 'P0001', 'premium_required');
     }
   };
+  const isCaregiverIn = (household: unknown) => household != null
+    && T('household_members').some((m) => m.household_id === household && m.user_id === state.session?.userId && m.role === 'caregiver');
+  /** Enfants autorisés (miroir de _member_child_allowed) : nounou sans choix = aucun enfant. */
+  const childAllowed = (childId: unknown) => {
+    const child = T('children').find((c) => c.id === childId);
+    const m = child && T('household_members').find((x) => x.household_id === child.household_id && x.user_id === state.session?.userId);
+    if (!m) return false;
+    if (m.role === 'owner') return true;
+    if (m.child_scope == null) return m.role !== 'caregiver';
+    return (m.child_scope as unknown[]).includes(childId);
+  };
+  /** Tables versionnées (20261113000500_hors_ligne_versions.sql) : version posée par le serveur. */
+  const VERSIONED = ['family_tasks', 'care_requests', 'shopping_items'];
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
@@ -667,7 +686,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     }
     if (table === 'product_scans') checkScan(r);
     // Fonctions Premium : mêmes règles que les déclencheurs serveur (20261021000500_premium.sql)
-    strictGuard(table);
+    strictGuard(table, [r.household_id]);
+    if (VERSIONED.includes(table)) { r.version = 1; r.updated_at ??= nowIso(); }
     const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', sleep_feedback: 'sleep_insights' };
     if (PREMIUM_INSERT[table] && !isPremium()) throw new BackendError(`Fonction Premium (${PREMIUM_INSERT[table]})`, 'P0001', 'premium_required');
     // « Ses découvertes » : quelques aliments gratuits par enfant (20261027000100_discoveries_grow_nearby.sql)
@@ -1284,6 +1304,36 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       row.used += 1;
       return [{ allowed: true, used: row.used, quota }];
     },
+    // Fiche de sécurité d'un enfant (miroir de child_safety_card) : allergies et consignes critiques
+    child_safety_card: (a) => {
+      if (!childAllowed(a.p_child)) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      const c = T('children').find((x) => x.id === a.p_child)!;
+      return {
+        child_id: c.id, first_name: c.first_name, birth_date: c.birth_date, allergies_declared: c.allergies_declared ?? [], habits: c.habits ?? null,
+        items: T('child_health_items').filter((i) => i.child_id === c.id && ['allergy', 'treatment', 'contact', 'soothe'].includes(String(i.kind))).map((i) => ({ kind: i.kind, label: i.label, details: i.details ?? null })),
+        treatments: T('child_treatments').filter((t) => t.child_id === c.id && t.active !== false).map((t) => ({ name: t.name })),
+      };
+    },
+    // Mise à jour conditionnelle (miroir de update_if_version) : conflit si la ligne a changé depuis la lecture
+    update_if_version: (a) => {
+      const allowed: Record<string, string[]> = {
+        family_tasks: ['title', 'category', 'due_at', 'assignee_id', 'priority', 'essential', 'recurrence', 'status', 'notes'],
+        care_requests: ['status', 'message', 'starts_at', 'ends_at'],
+        shopping_items: ['label', 'qty', 'unit', 'aisle', 'at_home', 'checked', 'position'],
+      };
+      const cols = allowed[String(a.p_table)];
+      const patch = (a.p_patch ?? {}) as Row;
+      if (!cols || !Object.keys(patch).length || Object.keys(patch).some((k) => !cols.includes(k))) throw new BackendError(tr('l2.dm.forbidden'), '22023');
+      const row = T(String(a.p_table)).find((x) => x.id === a.p_id);
+      if (!row) return { status: 'not_found' };
+      if (Number(row.version ?? 1) !== Number(a.p_expected_version)) return { status: 'conflict', row: { ...row } };
+      const wasDone = row.status === 'done';
+      Object.assign(row, patch, { version: Number(row.version ?? 1) + 1, updated_at: nowIso() });
+      if (a.p_table === 'family_tasks' && row.status === 'done' && !wasDone) { row.done_at = nowIso(); row.done_by = state.session?.userId ?? null; }
+      if (a.p_table === 'family_tasks' && row.status !== 'done') { row.done_at = null; row.done_by = null; }
+      persist();
+      return { status: 'ok', row: { ...row } };
+    },
     set_member_scope: (a) => {
       const m = T('household_members').find((x) => x.household_id === a.p_household && x.user_id === a.p_user && x.role !== 'owner');
       if (m) { m.child_scope = a.p_child_scope ?? null; m.pregnancy_access = a.p_pregnancy_access ?? true; }
@@ -1772,7 +1822,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           return JSON.parse(JSON.stringify(rows)) as R[];
         }
       }
-      if (rows.length) strictGuard(table);
+      if (rows.length) strictGuard(table, rows.map((r) => r.household_id));
+      if (VERSIONED.includes(table)) {
+        patch = { ...patch };
+        delete patch.version; delete patch.client_id;
+        for (const r of rows) { r.version = Number(r.version ?? 1) + 1; r.updated_at = nowIso(); }
+      }
       rows = rows.filter((r) => social.beforeUpdate(table, r, patch) && outings.beforeUpdate(table, r, patch));
       markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError(tr('l2.dm.forbidden'), '42501');

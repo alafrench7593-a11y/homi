@@ -35,25 +35,29 @@ type Rights = { view: Domain[]; edit: Domain[] };
 /** Profils partagés : null = tous les enfants (actuels et à venir). */
 type Scope = { children: string[] | null; pregnancy: boolean };
 
-/** Choix des profils accessibles (Lina, Noé, la grossesse). Retirer un profil coupe l'accès à ses données immédiatement. */
-function ProfileScopePicker({ value, onChange, disabled }: { value: Scope; onChange: (s: Scope) => void; disabled?: boolean }) {
+/**
+ * Choix des profils accessibles (Lina, Noé, la grossesse). Retirer un profil coupe l'accès à ses données immédiatement.
+ * Nounou (13/11/2026) : pas de choix « tous les enfants » ; sans enfant coché, le serveur ne lui en montre aucun.
+ */
+function ProfileScopePicker({ value, onChange, disabled, caregiver }: { value: Scope; onChange: (s: Scope) => void; disabled?: boolean; caregiver?: boolean }) {
   const { data: children } = useChildren();
   const pregnancy = useActivePregnancy();
   const kids = children ?? [];
-  const all = value.children == null;
-  const has = (id: string) => all || value.children!.includes(id);
+  const all = !caregiver && value.children == null;
+  const has = (id: string) => all || (value.children ?? []).includes(id);
   const toggle = (id: string) => {
-    const cur = all ? kids.map((k) => k.id) : value.children!;
+    const cur = all ? kids.map((k) => k.id) : value.children ?? [];
     onChange({ ...value, children: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] });
   };
   return (
     <View style={{ gap: 6 }} testID="profile-scope">
       <Text variant="label">{tr('u1.fam.sharedProfiles')}</Text>
       <Row wrap>
-        <Chip label={tr('u1.fam.allChildren')} selected={all} onPress={disabled ? undefined : () => onChange({ ...value, children: all ? kids.map((k) => k.id) : null })} />
+        {caregiver ? null : <Chip label={tr('u1.fam.allChildren')} selected={all} onPress={disabled ? undefined : () => onChange({ ...value, children: all ? kids.map((k) => k.id) : null })} />}
         {kids.map((k) => <Chip key={k.id} label={k.first_name} selected={has(k.id)} onPress={disabled ? undefined : () => toggle(k.id)} />)}
         {pregnancy ? <Chip label={tr('u1.fam.myPregnancy')} selected={value.pregnancy} onPress={disabled ? undefined : () => onChange({ ...value, pregnancy: !value.pregnancy })} /> : null}
       </Row>
+      {caregiver ? <Text variant="caption" muted>{tr('u1.fam.caregiverScopeNote')}</Text> : null}
     </View>
   );
 }
@@ -144,7 +148,7 @@ function MemberCard({ member, isMe, amOwner }: { member: HouseholdMember; isMe: 
       </Row>
       {open ? (
         <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
-          <ProfileScopePicker value={scope} onChange={setScope} disabled={!editable} />
+          <ProfileScopePicker value={scope} onChange={setScope} disabled={!editable} caregiver={member.role === 'caregiver'} />
           {editable ? <Button label={tr('u1.fam.saveScope')} size="sm" variant="secondary" loading={setMemberScope.isPending} onPress={saveScope} style={{ alignSelf: 'flex-start' }} /> : null}
           <PermissionMatrix value={rights} onChange={setRights} disabled={!editable} />
           {editable ? (
@@ -220,7 +224,10 @@ function FamilyScreenSignedIn() {
   const [creating, setCreating] = useState(false);
   useEffect(() => { if (household) setName(household.name); }, [household]);
   useEffect(() => {
-    setRights(role === 'caregiver' ? { view: ['daily', 'health', 'lists'], edit: ['daily'] } : { view: DEFAULT_VIEW, edit: DEFAULT_EDIT });
+    // Préréglage nounou (13/11/2026) : quotidien et listes, SANS la santé (la fiche de sécurité des enfants confiés
+    // reste toujours lisible) ; aucun enfant ni grossesse tant que la famille n'a pas choisi.
+    setRights(role === 'caregiver' ? { view: ['daily', 'lists'], edit: ['daily'] } : { view: DEFAULT_VIEW, edit: DEFAULT_EDIT });
+    setScope(role === 'caregiver' ? { children: [], pregnancy: false } : { children: null, pregnancy: true });
   }, [role]);
 
   const pending = useMemo(
@@ -232,6 +239,7 @@ function FamilyScreenSignedIn() {
   async function invite() {
     if (!hid) return;
     if (!rights.view.length) return toast(tr('u1.fam.errDomain'), 'error');
+    if (role === 'caregiver' && !scope.children?.length) return toast(tr('u1.fam.errCaregiverChild'), 'error');
     if (scope.children && !scope.children.length && !scope.pregnancy) return toast(tr('u1.fam.errProfile'), 'error');
     const names = (kidsForPreview ?? []).filter((k) => scope.children == null || scope.children.includes(k.id)).map((k) => k.first_name);
     if (!inviteAccess.require(<Text variant="small">{tr('u1.fam.premiumPreview', { names: formatList(names) || tr('u1.fam.yourProfiles') })}</Text>)) return;
@@ -348,7 +356,7 @@ function FamilyScreenSignedIn() {
                 <View style={{ gap: spacing.sm }}>
                   <Segmented label={tr('u1.fam.inviteeRole')} value={role} onChange={setRole} options={[{ value: 'coparent', label: tr('u1.fam.role.coparent') }, { value: 'caregiver', label: tr('u1.fam.role.caregiver') }]} />
                   <Text variant="small" muted>{tr('u1.fam.chooseRights')}</Text>
-                  <ProfileScopePicker value={scope} onChange={setScope} />
+                  <ProfileScopePicker value={scope} onChange={setScope} caregiver={role === 'caregiver'} />
                   <PermissionMatrix value={rights} onChange={setRights} />
                   <Button label={tr('u1.fam.createInvitation')} icon="user-plus" loading={createInvitation.isPending} onPress={invite} testID="invite-create" />
                   {!inviteAccess.premium ? <Text variant="caption" muted>{tr('u1.fam.premiumNote')}</Text> : null}

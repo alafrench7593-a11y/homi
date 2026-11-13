@@ -397,6 +397,8 @@ export const ui1 = {
   'u1.fam.haveAccount': 'J’ai déjà un compte',
   'u1.fam.errDomain': 'Choisissez au moins un domaine visible.',
   'u1.fam.errProfile': 'Choisissez au moins un profil à partager.',
+  'u1.fam.errCaregiverChild': 'Choisissez au moins un enfant confié à cette personne.',
+  'u1.fam.caregiverScopeNote': 'Une nounou ne voit que les enfants cochés ici, et seulement les documents que vous lui partagez un par un.',
   'u1.fam.yourProfiles': 'Vos profils',
   'u1.fam.premiumPreview': '{names} : biberons, sommeil, couches et rendez-vous synchronisés sur les deux téléphones, avec « qui a noté » sur chaque saisie.',
   'u1.fam.shareTitle': 'Rejoindre notre famille sur {app}',

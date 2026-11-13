@@ -1,0 +1,88 @@
+# HOMI — Architecture de synchronisation (source de vérité)
+
+Établi le 13/11/2026 (fondations du foyer, avant les modules Missions / Nounou / Courses).
+Migrations : `20261113000300_journal_audit.sql`, `20261113000400_evenements_foyer.sql`, `20261113000500_hors_ligne_versions.sql`.
+Tests : `supabase/tests/sql/96_journal_audit.sql`, `97_evenements_foyer.sql`, `98_hors_ligne_notifications.sql` ; Jest `src/__tests__/foyerFondations.test.ts`.
+
+## 1. Source de vérité
+
+- **Le serveur Postgres fait foi.** Les droits (RLS), les champs posés par le serveur (`done_by`, `done_at`, `version`, `household_id` recopié, `shared_by`…) et les règles métier vivent dans des déclencheurs `security definer`. L'application n'accorde jamais un droit seule.
+- L'appareil garde : un **cache** React Query persistant (lecture hors ligne ; données sensibles exclues, `PRIVATE_KEYS`) et une **file d'attente** des saisies (`src/lib/offline.ts`). Ni l'un ni l'autre ne fait foi : au retour du réseau, le serveur tranche.
+- Le mode démo (`src/lib/backend/demo.ts`) émule les mêmes règles (Premium de la nounou, `update_if_version`, `child_safety_card`, version) pour que l'app et ses tests restent cohérents.
+
+## 2. Événements métier (`household_events`, « outbox »)
+
+Objectif : remplacer les couplages directs « déclencheur A met à jour la table B » par des **faits typés** publiés une fois, consommés par les modules intéressés.
+
+| Colonne | Rôle |
+|---|---|
+| `type` (`household_event_type`, énuméré) | `task.completed`, `task.reopened`, `care_request.accepted`, `shopping.item_checked`, `timesheet.submitted`, `contract.updated`, `expense.recorded`, `stock.low`… (20 valeurs ; ajout par `alter type … add value` dans une migration dédiée) |
+| `household_id`, `actor_id` (NULL = serveur), `entity_table`, `entity_id` | Qui, où, sur quoi |
+| `payload` (objet JSON ≤ 8 Ko) | Données utiles au consommateur, jamais de document ni de texte de santé complet |
+| `idempotency_key` **UNIQUE** | Même fait rejoué = même événement (voir § 3) |
+| `status` | `pending` → `processing` → `done` / `failed` (après 5 tentatives) / `skipped` (anti-boucle) |
+| `attempts`, `available_at`, `last_error`, `processed_at` | Réessais avec délai croissant (2, 4, 8… min) |
+| `depth`, `origin_event_id`, `root_event_id` | Chaîne de causalité (anti-boucle) |
+
+- **Émission** : `_emit_household_event(foyer, type, table, id, payload, clé)` — réservée au serveur (déclencheurs, `service_role`). Aucun client ne peut émettre, modifier ni effacer un événement (privilèges retirés + RLS).
+- **Consommation** : `claim_household_events(limite, types)` réserve des événements `pending` avec `FOR UPDATE SKIP LOCKED` (plusieurs consommateurs sans double traitement), puis `finish_household_event(id, ok, erreur)`. Le consommateur déclare l'événement traité dans **sa** transaction : `select _begin_event_processing(id)`.
+- **Lecture** : propriétaire et co-parents du foyer (tableau de bord, débogage) ; jamais une nounou, jamais un autre foyer.
+- **Exemple branché** : `family_tasks` passe à `done` → `task.completed` (clé `task.completed:<tâche>:<horodatage de fin>`) ; réouverture → `task.reopened`. Une tâche terminée, rouverte puis terminée de nouveau produit deux faits distincts ; une modification sans changement de statut n'en produit aucun.
+- **Non branché** (volontairement) : les 13 synchronisations inter-modules. Chacune deviendra un consommateur : par ex. `task.completed` (catégorie courses) → cocher l'article lié ; `shopping.item_checked` → stock ; `expense.recorded` → budget ; `timesheet.validated` → contrat/budget. Le déclencheur existant « demande acceptée → tâche transférée » (`care_requests_after`) reste en place jusqu'à sa migration vers un consommateur.
+
+## 3. Idempotence
+
+| Niveau | Mécanisme |
+|---|---|
+| Saisie hors ligne (insertion) | `client_id` uuid généré sur l'appareil ; tables de suivi : `unique(client_id)` ; **tâches, demandes, articles de courses : `unique(household_id, client_id)`** ; envoi `on conflict … do nothing` (`conflictTarget()` dans `src/lib/offlineConflicts.ts`) |
+| Événements | `idempotency_key` unique ; une émission répétée renvoie l'événement existant (même en cas de course : `on conflict do nothing` puis relecture) |
+| Notifications push | Réservation atomique `pushed_at` avant l'envoi (deux exécutions de `send-push` n'envoient jamais deux fois) |
+| Tâches récurrentes | Occurrence suivante créée sans doublon (existant, `40_family_load.sql`) |
+
+Construction des clés : `<type>:<entité>:<instant ou version du fait>` — jamais un horodatage de réception (il change à chaque rejeu).
+
+## 4. Conflits d'édition
+
+Avant : « le dernier qui écrit gagne » sans le savoir. Maintenant, sur `family_tasks`, `care_requests`, `shopping_items` :
+
+1. `version integer` posée par le serveur (`_bump_version`) : 1 à la création, +1 à chaque modification, **impossible à forcer** par l'appareil ; `client_id` figé ; `updated_at` mis à jour.
+2. `update_if_version(table, id, version_lue, modifications)` (RPC, `security invoker` : RLS et déclencheurs métier s'appliquent) renvoie :
+   - `ok` + ligne : écrit ;
+   - `conflict` + ligne actuelle : quelqu'un a modifié entre-temps, **rien n'est écrasé** ;
+   - `forbidden` : ligne visible mais non modifiable par cette personne ;
+   - `not_found` : absente **ou invisible** (rien n'est révélé à un autre foyer ou à un membre retiré).
+   Colonnes modifiables : liste blanche par table (jamais `household_id`, `client_id`, `version`, auteurs).
+3. Côté app : `updateIfVersion()` et `conflictingFields()` (`src/lib/offlineConflicts.ts`). Stratégie de résolution recommandée par champ :
+   - **booléens « fait / coché »** : la valeur du serveur l'emporte si elle va dans le même sens ; sinon on montre les deux (ex. coché par l'un, décoché par l'autre) ;
+   - **texte** (titre, notes) : jamais de fusion automatique ; l'écran propose « garder la mienne / garder la sienne » ;
+   - **assignation, échéance** : la plus récente côté serveur l'emporte, l'autre est proposée en un geste.
+   L'écran de résolution reste à construire (agent interface) ; la détection serveur est en place et testée.
+
+## 5. Hors ligne
+
+- **Insertions** : file existante (`insertOrQueue`, `flushQueue`), ordre conservé, erreurs passagères gardées, refus serveur → « conflits » visibles dans Réglages > Synchronisation, jamais supprimés en silence. Désormais aussi pour les **tâches** (`useSaveTask`) et les **articles de courses** (`useAddShoppingItem`) avec `client_id` par foyer. Les demandes d'aide gardent un envoi direct (une demande « SOS » ne doit pas paraître envoyée alors qu'elle attend) mais portent un `client_id`.
+- **Modifications hors ligne** : pas encore mises en file. Prochaine étape : mettre en file `{table, id, version_lue, modifications}` et rejouer via `update_if_version` ; un `conflict` va dans « à vérifier » avec les deux versions.
+- **Suppressions** : directes uniquement (pas de suppression logique) ; le journal d'audit garde la trace (« avant » résumé).
+- **Révocation** : un membre retiré ne lit plus rien côté serveur à la seconde (RLS). Son cache local garde ce qu'il avait déjà lu tant qu'il ne se déconnecte pas (`localWipe.ts` à la déconnexion) — voir `HOMI_SECURITY_REVIEW.md` § Reste à faire.
+
+## 6. Anti-boucle
+
+- Tout événement émis **pendant** le traitement d'un autre (contexte `homi.event_id` posé par `_begin_event_processing`, local à la transaction) hérite de `origin_event_id`, `root_event_id` et d'une profondeur +1.
+- Profondeur > 3 → enregistré `skipped` (« anti-boucle : profondeur maximale »), jamais traité.
+- Même `(type, table, entité)` déjà présent dans la chaîne d'origine → `skipped` (« même fait déjà présent »).
+- `skipped` ne bloque jamais la saisie métier qui l'a provoqué et laisse une trace lisible.
+- Les déclencheurs existants gardent leur garde-fou `pg_trigger_depth()` (verrou Premium, cascades).
+
+## 7. Journal d'audit commun (`household_audit_log`)
+
+- Ajout seul : écriture uniquement par le déclencheur `_audit_row` ; `UPDATE`, `DELETE` direct et `TRUNCATE` refusés **même pour le serveur** ; seule la suppression du foyer (cascade) efface son journal.
+- Contenu : foyer, instant, acteur (NULL = serveur), origine `client`/`server`, table, ligne, action, **avant/après résumés** (colonnes modifiées seulement, textes tronqués à 120 caractères, jamais d'empreinte de jeton, de chemin de fichier ni de champ technique).
+- Tables suivies : `household_members` (rôle, droits, enfants autorisés), `household_invitations`, `documents`, `document_shares`, `family_tasks`, `care_requests`. Brancher une table future : `select public._attach_audit('pointages', 'daily');` dans sa migration.
+- Lecture : propriétaire (tout), co-parent (membres/invitations + domaines qu'il peut voir) ; jamais une nounou ; plus rien après un retrait.
+
+## 8. Ce qui reste
+
+1. File hors ligne des **modifications** (rejeu via `update_if_version`) et écran de résolution des conflits.
+2. Consommateur générique des événements (fonction planifiée ou `pg_cron`) et migration des synchronisations codées en dur.
+3. Realtime : ajouter `shopping_items`, `shopping_lists`, `document_shares` à la publication si les écrans en ont besoin.
+4. Suppression logique (`deleted_at`) pour les modules où l'historique compte (pointages, contrats).

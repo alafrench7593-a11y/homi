@@ -400,6 +400,8 @@ export const ui1: Messages<typeof fr> = {
   "u1.fam.haveAccount": "Ich habe schon ein Konto",
   "u1.fam.errDomain": "Wähle mindestens einen sichtbaren Bereich.",
   "u1.fam.errProfile": "Wähle mindestens ein Profil zum Teilen.",
+  "u1.fam.errCaregiverChild": "Wähle mindestens ein Kind, das dieser Person anvertraut wird.",
+  "u1.fam.caregiverScopeNote": "Eine Nanny sieht nur die hier angekreuzten Kinder und nur die Dokumente, die du einzeln mit ihr teilst.",
   "u1.fam.yourProfiles": "Deine Profile",
   "u1.fam.premiumPreview": "{names}: Fläschchen, Schlaf, Windeln und Termine auf beiden Handys synchronisiert, mit „wer hat es eingetragen“ bei jedem Eintrag.",
   "u1.fam.shareTitle": "Tritt unserer Familie bei {app} bei",

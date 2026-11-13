@@ -7,6 +7,7 @@ import { getLocale } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
+import { insertOrQueue } from '../offline';
 import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
 import { useScope } from './hooks-scope';
 import { localizeRecipes } from '../recipes/english';
@@ -246,7 +247,8 @@ export function useToggleShoppingItem() {
 export function useAddShoppingItem() {
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: (v: { listId: string; householdId: string; label: string; position: number }) => backend.insert('shopping_items', { list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position }),
+    // client_id unique par foyer : un article ajouté hors ligne est envoyé au retour du réseau, sans doublon
+    mutationFn: (v: { listId: string; householdId: string; label: string; position: number }) => insertOrQueue('shopping_items', { client_id: uuid(), list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position }),
     onSuccess: () => inv('shopping_items'),
   });
 }

@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { backend, eq, gte } from '../backend';
 import { useUserId } from '../auth';
 import { insertOrQueue } from '../offline';
+import { uuid } from '../uuid';
 import { useHouseholdId, useHouseholdMembers, useInvalidate, useRows } from './hooks';
 import type { CareRequest, CareShift, FamilyTask, RequestKind, Routine } from '../domain/familyLoad';
 import type { FamilyEvent } from '../domain/calendar';
@@ -41,7 +42,8 @@ export function useSaveTask() {
     mutationFn: async ({ id, input }: { id?: string; input: Partial<TaskInput> & { status?: FamilyTask['status'] } }) => {
       if (id) return backend.update('family_tasks', input, [eq('id', id)]);
       if (!hid) throw new Error(tr('l3.familyload.need_household'));
-      return insertOrQueue('family_tasks', { ...input, household_id: hid });
+      // client_id unique par foyer : renvoyée par la file hors ligne sans jamais créer de doublon
+      return insertOrQueue('family_tasks', { client_id: uuid(), ...input, household_id: hid });
     },
     onSuccess: () => inv('family_tasks', 'family_task_events'),
   });
@@ -55,7 +57,7 @@ export function useBatchTasks() {
     mutationFn: async (a: { create?: Partial<TaskInput>[]; postpone?: { id: string; to: string }[] }) => {
       if (a.create?.length) {
         if (!hid) throw new Error(tr('l3.familyload.need_household'));
-        await backend.insert('family_tasks', a.create.map((t) => ({ ...t, household_id: hid })));
+        await backend.insert('family_tasks', a.create.map((t) => ({ client_id: uuid(), ...t, household_id: hid })));
       }
       for (const p of a.postpone ?? []) await backend.update('family_tasks', { due_at: p.to }, [eq('id', p.id)]);
     },
@@ -86,7 +88,7 @@ export function useCreateRequest() {
   return useMutation({
     mutationFn: async (r: { kind: RequestKind; message?: string | null; to_user?: string | null; task_id?: string | null; shift_id?: string | null; starts_at?: string | null; ends_at?: string | null }) => {
       if (!hid) throw new Error(tr('l3.familyload.need_household'));
-      return backend.insert('care_requests', { ...r, household_id: hid });
+      return backend.insert('care_requests', { client_id: uuid(), ...r, household_id: hid });
     },
     onSuccess: () => inv('care_requests'),
   });

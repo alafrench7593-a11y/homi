@@ -1,53 +1,82 @@
 // Envoi des notifications push du centre de notifications (réponses du forum,
-// abonnement, rappels officiels de produits, annonces).
-// Déclenchement : Database Webhook sur INSERT public.notifications, ou tâche planifiée.
+// abonnement, rappels officiels de produits, annonces, organisation du foyer).
+// Déclenchement : Database Webhook sur INSERT public.notifications, ET tâche planifiée (toutes les 15 min)
+// qui envoie les notifications différées par les heures calmes.
 // Les rappels personnels (biberon, rendez-vous…) sont des notifications LOCALES
 // programmées sur le téléphone : ils fonctionnent sans réseau.
+// Règles (HOMI_NOTIFICATION_RULES.md, _shared/push-rules.ts) :
+//  - heures calmes du destinataire appliquées ICI (push_quiet_until) : non urgente → différée (deliver_after) ;
+//  - écran verrouillé : texte générique sauf accord explicite (notification_settings.lockscreen_details) ;
+//  - l'envoi ne touche jamais read_at : une notification n'est jamais considérée comme lue.
 import { adminClient, env, json, safeEqual } from '../_shared/http.ts';
+import { channelFor, lockScreenText, planDelivery, type PushRow } from '../_shared/push-rules.ts';
 
-type Row = { id: string; user_id: string; title: string; body: string | null; deep_link: string | null; category: string };
+type Row = PushRow & { deliver_after: string | null };
 
 Deno.serve(async (req) => {
   // Protégé par un secret partagé (en-tête du Database Webhook)
   if (!safeEqual(req.headers.get('x-webhook-secret') ?? '', env('PUSH_WEBHOOK_SECRET'))) return json({ error: 'unauthorized' }, 401);
   const admin = adminClient();
+  const now = new Date();
 
+  // À envoyer : jamais envoyées, dont l'heure d'envoi est venue (report des heures calmes : 24 h au plus)
   const { data: pending } = await admin
     .from('notifications')
-    .select('id,user_id,title,body,deep_link,category')
+    .select('id,user_id,title,body,deep_link,category,urgent,deliver_after')
     .is('pushed_at', null)
-    .gt('created_at', new Date(Date.now() - 24 * 3600 * 1000).toISOString())
+    .or(`deliver_after.is.null,deliver_after.lte.${now.toISOString()}`)
+    .gt('created_at', new Date(now.getTime() - 48 * 3600 * 1000).toISOString())
     .limit(500);
-  const candidates = (pending ?? []) as Row[];
-  if (!candidates.length) return json({ sent: 0 });
+  const due = (pending ?? []) as Row[];
+  if (!due.length) return json({ sent: 0, deferred: 0 });
+
+  // Heures calmes : calculées par le serveur (fuseau et réglages de chaque destinataire)
+  const quietOf = new Map<string, string | null>();
+  for (const uid of new Set(due.filter((r) => !r.urgent).map((r) => r.user_id))) {
+    const { data } = await admin.rpc('push_quiet_until', { p_user: uid, p_at: now.toISOString() });
+    quietOf.set(uid, (data as string | null) ?? null);
+  }
+  const toDefer = new Map<string, string[]>();
+  const candidates: Row[] = [];
+  for (const r of due) {
+    const plan = planDelivery(r, quietOf.get(r.user_id));
+    if (plan.action === 'defer') toDefer.set(plan.until, [...(toDefer.get(plan.until) ?? []), r.id]);
+    else candidates.push(r);
+  }
+  for (const [until, ids] of toDefer) {
+    await admin.from('notifications').update({ deliver_after: until }).in('id', ids).is('pushed_at', null);
+  }
+  const deferred = [...toDefer.values()].reduce((n, ids) => n + ids.length, 0);
+  if (!candidates.length) return json({ sent: 0, deferred });
+
   // Réservation atomique AVANT l'envoi : deux appels simultanés ne peuvent plus envoyer la même
   // notification (seule la ligne encore « non envoyée » est réservée par un seul appel).
   const { data: claimed } = await admin.from('notifications').update({ pushed_at: new Date().toISOString() })
     .in('id', candidates.map((r) => r.id)).is('pushed_at', null).select('id');
   const claimedIds = new Set((claimed ?? []).map((c: { id: string }) => c.id));
   const rows = candidates.filter((r) => claimedIds.has(r.id));
-  if (!rows.length) return json({ sent: 0 });
+  if (!rows.length) return json({ sent: 0, deferred });
 
   const userIds = [...new Set(rows.map((r) => r.user_id))];
   const { data: devices } = await admin.from('push_devices').select('user_id,expo_push_token').in('user_id', userIds);
   // Langue de chaque destinataire (profiles.locale, 5 langues) : textes génériques d'écran verrouillé traduits
   const { data: profs } = await admin.from('profiles').select('id,locale').in('id', userIds);
   const langOf = new Map<string, string>((profs ?? []).map((p: { id: string; locale: string | null }) => [p.id, p.locale ?? 'fr']));
+  // Détail sur l'écran verrouillé : seulement avec l'accord explicite de la personne
+  const { data: settings } = await admin.from('notification_settings').select('user_id,lockscreen_details').in('user_id', userIds);
+  const detailsOf = new Map<string, boolean>((settings ?? []).map((s: { user_id: string; lockscreen_details: boolean }) => [s.user_id, s.lockscreen_details === true]));
   const tokensByUser = new Map<string, string[]>();
   for (const d of devices ?? []) tokensByUser.set(d.user_id, [...(tokensByUser.get(d.user_id) ?? []), d.expo_push_token]);
 
   const messages = rows.flatMap((r) =>
     (tokensByUser.get(r.user_id) ?? []).map((to) => ({
       to,
-      // Écran verrouillé : ni pseudonyme, ni nom de groupe (un groupe peut révéler un sujet de santé),
-      // ni contenu de conversation ; le détail s'affiche dans l'application.
-      // Rappel de produit : le nom du produit (ex. un lait infantile) peut révéler une naissance.
-      title: r.category.startsWith('community') ? pushText(langOf.get(r.user_id), 'communityTitle')
-        : r.category === 'product_recall' ? pushText(langOf.get(r.user_id), 'recallTitle') : r.title,
-      body: r.category.startsWith('community') ? pushText(langOf.get(r.user_id), 'communityBody')
-        : r.category === 'product_recall' ? pushText(langOf.get(r.user_id), 'recallBody') : r.body ?? undefined,
+      // Écran verrouillé : ni pseudonyme, ni nom de groupe, ni nom de produit, ni contenu ; le détail
+      // s'affiche dans l'application (ou sur l'écran verrouillé si la personne l'a choisi).
+      ...lockScreenText(r, langOf.get(r.user_id), detailsOf.get(r.user_id) ?? false),
       sound: 'default',
-      channelId: r.category === 'product_recall' ? 'alerts' : 'community',
+      priority: r.urgent ? 'high' : 'default',
+      channelId: channelFor(r),
       data: { url: r.deep_link ?? '/notifications', notificationId: r.id },
     })),
   );
@@ -73,17 +102,5 @@ Deno.serve(async (req) => {
     });
   }
   if (invalid.length) await admin.from('push_devices').delete().in('expo_push_token', invalid);
-  return json({ sent: messages.length, removed_tokens: invalid.length });
+  return json({ sent: messages.length, deferred, removed_tokens: invalid.length });
 });
-
-/** Textes génériques des notifications (écran verrouillé, sans contenu sensible), dans la langue du destinataire. */
-const PUSH_TEXTS: Record<string, Record<'communityTitle' | 'communityBody' | 'recallTitle' | 'recallBody', string>> = {
-  fr: { communityTitle: 'Nouvelle activité dans la communauté', communityBody: 'Ouvrez l’application pour lire le message.', recallTitle: 'Alerte sur un produit enregistré', recallBody: 'Ouvrez l’application pour voir le détail du rappel.' },
-  en: { communityTitle: 'New activity in the community', communityBody: 'Open the app to read the message.', recallTitle: 'Alert about a saved product', recallBody: 'Open the app to see the recall details.' },
-  es: { communityTitle: 'Nueva actividad en la comunidad', communityBody: 'Abre la aplicación para leer el mensaje.', recallTitle: 'Alerta sobre un producto guardado', recallBody: 'Abre la aplicación para ver los detalles de la retirada.' },
-  de: { communityTitle: 'Neue Aktivität in der Community', communityBody: 'Öffne die App, um die Nachricht zu lesen.', recallTitle: 'Warnung zu einem gespeicherten Produkt', recallBody: 'Öffne die App, um die Details des Rückrufs zu sehen.' },
-  it: { communityTitle: 'Nuova attività nella community', communityBody: 'Apri l’app per leggere il messaggio.', recallTitle: 'Avviso su un prodotto salvato', recallBody: 'Apri l’app per vedere i dettagli del richiamo.' },
-};
-function pushText(lang: string | undefined, key: 'communityTitle' | 'communityBody' | 'recallTitle' | 'recallBody'): string {
-  return (PUSH_TEXTS[lang ?? 'fr'] ?? PUSH_TEXTS.fr)[key];
-}

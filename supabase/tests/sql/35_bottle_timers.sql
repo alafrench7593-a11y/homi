@@ -29,6 +29,8 @@ insert into public.children (household_id, first_name, birth_date) select hid, '
 insert into public.children (household_id, first_name, birth_date) select hid, 'Lou', current_date - 40 from bt_ctx;
 create temp table bt_kids as select id, first_name from public.children where first_name in ('Jade', 'Lou');
 grant select on bt_kids to authenticated;
+-- Depuis le 13/11/2026, une nounou sans choix d'enfants n'en voit aucun : la propriétaire confie les jumelles à Oscar
+update public.household_invitations set child_scope = (select array_agg(id) from bt_kids) where role = 'caregiver' and household_id = (select hid from bt_ctx);
 
 insert into public.bottles (child_id, household_id, at, prepared_ml, consumed_ml, planned_next_ml, milk_type, note)
   select id, (select hid from bt_ctx), now() - interval '1 hour', 150, 120, 150, 'Lait 1er âge', 'Rot après 60 ml' from bt_kids where first_name = 'Jade';

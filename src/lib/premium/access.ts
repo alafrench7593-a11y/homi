@@ -26,6 +26,18 @@ const FREE: RegExp[] = [
 
 const AI_ROUTES: RegExp[] = [/^\/ask\/?$/, /^\/assistant(\/.*)?$/];
 
+/**
+ * Écrans de garde ouverts à une nounou (caregiver) sans Premium (13/11/2026, la famille paie) : suivi des
+ * enfants confiés, tâches et organisation du foyer, courses, agenda, documents partagés. Le serveur décide
+ * toujours de ce qu'elle voit et écrit (domaines, enfants autorisés, documents partagés) ; ces écrans ne
+ * lui donnent aucun droit de plus. Miroir de 20261113000100_caregiver_premium.sql.
+ */
+export const CAREGIVER_ROUTES: RegExp[] = [
+  /^\/$/, /^\/today\/?$/, /^\/(track|agenda)(\/.*)?$/, /^\/bottle(\/.*)?$/, /^\/sleep(\/.*)?$/, /^\/night(\/.*)?$/,
+  /^\/child\/[^/]+(\/.*)?$/, /^\/teeth\/?$/, /^\/family(\/.*)?$/, /^\/calendar\/?$/, /^\/lists\/?$/,
+  /^\/meals\/shopping\/?$/, /^\/documents\/?$/, /^\/documents\/[^/]+\/?$/, /^\/notifications\/?$/,
+];
+
 /** Écrans d'un outil vendu à vie (ancienne offre) : restent ouverts à qui l'a acheté. */
 const TOOL_ROUTES: Record<PaidTool, RegExp[]> = {
   pma_tracker: [/^\/fertility\/pma\/?$/],
@@ -60,6 +72,7 @@ export function gateFor(path: string, premium: boolean | undefined, access?: Acc
   if (premium === true) return 'open';
   if (access?.strict === false) return 'open';
   if (access?.ai && AI_ROUTES.some((r) => r.test(p))) return 'open';
+  if (access?.caregiver && CAREGIVER_ROUTES.some((r) => r.test(p))) return 'open';
   if (access) {
     for (const t of access.tools) {
       if (t.owned && TOOL_ROUTES[t.key as PaidTool]?.some((r) => r.test(p))) return 'open';

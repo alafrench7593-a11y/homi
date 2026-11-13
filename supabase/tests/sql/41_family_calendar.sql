@@ -11,6 +11,8 @@ insert into auth.users (id, email) values (:'ELI', 'cal-eli@exemple.test'), (:'F
 insert into public.households (id, name, created_by) values (:'FOYER', 'Foyer d''Éli', :'ELI');
 insert into public.household_members (household_id, user_id, role, can_view, can_edit) values (:'FOYER', :'FAB', 'caregiver', array['lists'], array[]::text[]);
 insert into public.children (id, household_id, first_name, birth_date) values (:'ENFANT', :'FOYER', 'Lou', current_date - 400);
+-- Depuis le 13/11/2026 : une nounou voit seulement les enfants qui lui sont confiés explicitement
+update public.household_members set child_scope = array[:'ENFANT']::uuid[] where household_id = :'FOYER' and user_id = :'FAB';
 
 set role authenticated; set request.jwt.claim.sub = :'ELI';
 insert into public.family_events (household_id, child_id, kind, title, starts_at, ends_at, recurrence)

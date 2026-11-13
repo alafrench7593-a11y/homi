@@ -31,6 +31,11 @@ export interface AccessInfo {
   trial_until: string | null;
   /** Verrouillage strict en vigueur (premium_policy) ; absent : strict */
   strict?: boolean;
+  /**
+   * Nounou (caregiver) dans au moins un foyer (13/11/2026) : ses saisies de garde dans ce foyer ne sont jamais
+   * bloquées par l'abonnement (la famille paie). Ne donne PAS le Premium : ses propres outils restent soumis à l'offre.
+   */
+  caregiver?: boolean;
   tools: { key: string; product_id: string; owned: boolean; allowed: boolean }[];
 }
 
