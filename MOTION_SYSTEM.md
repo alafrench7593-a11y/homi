@@ -149,6 +149,8 @@ Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), ca
 | Barre d'onglets (v3) | ressort `panneau` | indicateur de verre teinté qui glisse |
 | Sélecteurs (`ChoiceGroup`, `Segmented`) | ressort `panneau` | indicateur qui glisse ; orbes qui grandissent / se resserrent |
 | Fond de coque (`DesertScene`) | `withRepeat` + `cancelAnimation` | parallaxe légère, image fixe sinon |
+| Assistant du scanner (`features/scanner/WizardChrome.tsx`) | `m.timing` 280 ms `decelerate` (nuit : fondu 160 ms ; `off` : immédiat) | l'étape glisse de 16 px dans le sens du geste + fondu ; les segments de progression se remplissent / se vident en `translateX` au même moment ; chaque étape repart en haut |
+| Historique / dernier scan → fiche (`features/scanner/components.tsx`) | `useMorphSource('scan-<id>')` + `MorphTarget` | la surface mate de la ligne s'agrandit vers la fiche résultat, retour vers la même ligne |
 | Réglages → Apparence (`app/settings/appearance.tsx`) | `GlowCard` (sélecteur, `role="radio"`), `CompletionCheck`, `CompletionGlow`, `PressSheen` | démonstration vivante ; palette Auto : couleurs interpolées par paliers de 5 min (pas d'animation, voir `HOMI_DESIGN_SYSTEM.md`) |
 
 Tout passe par `useMotion` : `off` (Réduire les animations, économie d'énergie) → état final immédiat, `minimal` (nuit) → fondus courts sans déplacement ni élévation. Transform et opacité uniquement.

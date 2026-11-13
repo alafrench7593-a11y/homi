@@ -1,44 +1,42 @@
 /**
- * Parcours de scan (produit ou aliment) :
- *   1. saisie : code-barres (caméra), photo du produit, photo de la liste d'ingrédients, import d'une photo,
- *      recherche par nom ou EAN ; la reconnaissance des photos se fait SUR LE TÉLÉPHONE (Google ML Kit) ;
- *   2. confirmation : « Est-ce bien ce produit ? » (rappels officiels affichés dès qu'ils sont connus) ;
- *   3. détails : pour qui, type et usage (produit) ou questions complémentaires (aliment), relecture des ingrédients ;
- *   4. analyse par les règles, enregistrement, puis fiche résultat (explication IA demandée côté serveur).
+ * Assistant de scan (produit ou aliment) en 4 étapes — rendu seulement (logique : `useScanWizard`) :
+ *   Identifier → Confirmer (« Est-ce bien ce produit ? ») → Pour qui → Préciser, puis analyse et fiche résultat.
+ *  - Progression discrète qui avance / recule avec le geste ; étapes franchies accessibles depuis la progression.
+ *  - Retour (flèche ronde du pied, flèche de l'en-tête, retour Android, segment de progression) : étape précédente,
+ *    SAISIE CONSERVÉE. La flèche de l'en-tête ne quitte l'écran qu'à la première étape.
+ *  - Bouton principal unique (point focal) dans le pied d'écran : visible clavier ouvert, largeur stable,
+ *    appuis répétés ignorés pendant la recherche / l'analyse.
+ *  - États réels : chargement (bouton), produit inconnu des bases, base injoignable, erreur réseau (réessayer),
+ *    quota atteint (rappels officiels toujours gratuits), confirmation seulement après l'enregistrement.
+ * Surfaces : formulaires et listes en surface MATE ; aucune couleur en dur.
  */
-import React, { useMemo, useRef, useState } from 'react';
-import { Image, Linking, Platform, StyleSheet, View } from 'react-native';
-import { router } from 'expo-router';
-import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
-import { useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Divider, Field, haptic, Row, SectionTitle, Text } from '@/components/ui';
+import React, { useContext, useEffect, useRef } from 'react';
+import { Image, Linking, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { router, useIsFocused, useNavigation } from 'expo-router';
+import { CameraView } from 'expo-camera';
+import { Screen } from '@/components/Screen';
+import { KeyboardScopeContext, useKeyboardScopeFor } from '@/components/keyboard';
+import { ToolArticles } from '@/features/ToolArticles';
+import { ScreenToolContext } from '@/lib/screenTool';
+import { Banner, Chip, Divider, Field, Icon, Row, SectionTitle, Text } from '@/components/ui';
+import { IconOrb, PrimaryButton, SecondaryButton } from '@/components/controls';
+import { MatteSurface } from '@/components/surfaces';
 import { ScanFrame } from '@/features/motionViz';
+import { usePressScale } from '@/motion';
 import { isDemo } from '@/lib/backend';
-import { friendlyError } from '@/lib/data/hooks-settings';
-import {
-  GENERIC_PROFILES, QuotaReachedError, lookupCosing, searchCiqual, useCheckRecalls, useFoodsCatalog, useLookupBarcode, useSaveAnalysis,
-  useScanProfileOptions, useScanQuota, useSearchProducts,
-} from '@/lib/data/hooks-scanner';
-import { checkBarcode } from '@/lib/domain/products';
-import { profileLabel, type ScanProfile } from '@/lib/domain/scanCommon';
-import {
-  asProductType, buildFoodInput, buildProductInput, catalogMatches, ingredientNamesForCosing, parseAllergies, recallCheckOf, snapshotOf,
-  PRODUCT_TYPES, type ConfirmedSubject, type IngredientsOrigin,
-} from '@/lib/domain/scanFlow';
-import { analyzeFood, foodQuestions, type FoodAnswers } from '@/lib/domain/scanFood';
-import { frontTextToQuery } from '@/lib/domain/scanOcr';
-import { analyzeProduct, EXPOSURE_LABEL, PRODUCT_TYPE_LABEL, ZONE_LABEL, type Exposure, type ProductType, type Zone } from '@/lib/domain/scanProduct';
-import {
-  LocalRecognitionUnavailable, localBarcodeRecognitionAvailable, localTextRecognitionAvailable, readBarcodesFromImage,
-  readTextFromImage, type TextReading,
-} from '@/lib/scanner/localRecognition';
-import type { CiqualFood, DatabaseStatus, LookupResponse, ProductCandidate, RecallRow, ScanKind, ScanMethod } from '@/lib/types-scanner';
+import { GENERIC_PROFILES } from '@/lib/data/hooks-scanner';
+import { profileLabel, RECALL_DISCLAIMER } from '@/lib/domain/scanCommon';
+import { PRODUCT_TYPES } from '@/lib/domain/scanFlow';
+import { EXPOSURE_LABEL, PRODUCT_TYPE_LABEL, ZONE_LABEL, type Exposure, type Zone } from '@/lib/domain/scanProduct';
+import type { ScanKind } from '@/lib/types-scanner';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { t as tr, type TKey } from '@/i18n';
 import { DemoTag, RecallCard } from './components';
-import { RECALL_DISCLAIMER } from '@/lib/domain/scanCommon';
-import { t as tr } from '@/i18n';
+import { useScanWizard, type ScanWizard } from './useScanWizard';
+import { StepProgress, StepStage } from './WizardChrome';
+import { stepIndex, WIZARD_STEPS } from './wizard';
 
 const OPENED_KEY = 'openedDaysAgo';
 const cameraAvailable = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -48,521 +46,417 @@ const DEMO_CODES: Record<ScanKind, string[]> = {
 };
 const EXPOSURES: Exposure[] = ['rinse_off', 'leave_on', 'inhaled', 'indirect'];
 const ZONES: Zone[] = ['face', 'body', 'diaper_area', 'scalp', 'lips', 'hands', 'air', 'textiles', 'surfaces'];
+const STEP_LABEL: Record<(typeof WIZARD_STEPS)[number], TKey> = { identify: 'scn.step.identify', confirm: 'scn.step.confirm', profile: 'scn.step.profile', details: 'scn.step.details' };
 
-type Step = 'input' | 'confirm' | 'details';
-interface LookupState { recalls: RecallRow[]; recall_check: LookupResponse['recall_check'] | null; database?: DatabaseStatus; message?: string; stale?: boolean; outage?: boolean }
+export function ScanFlow({ kind, title, subtitle }: { kind: ScanKind; title: string; subtitle?: string }) {
+  const w = useScanWizard(kind);
+  const navigation = useNavigation();
+  const back = w.back;
+  // Flèche de l'en-tête / retour Android : étape précédente, saisie conservée (l'écran n'est quitté qu'à la 1re étape)
+  useEffect(() => navigation.addListener('beforeRemove', (e) => {
+    if (w.leaving.current || w.step === 'identify') return;
+    e.preventDefault();
+    back();
+  }), [navigation, w.step]); // eslint-disable-line react-hooks/exhaustive-deps
 
-export function ScanFlow({ kind }: { kind: ScanKind }) {
+  const labels = WIZARD_STEPS.map((s) => tr(STEP_LABEL[s]));
+  const index = stepIndex(w.step);
+  return (
+    <Screen back title={title} subtitle={subtitle} scroll={false} footer={<WizardFooter w={w} />}>
+      <StepScroll step={w.step}>
+        <StepProgress labels={labels} index={index} onJump={(i) => w.goTo(WIZARD_STEPS[i])} />
+        <StepStage key={w.step} dir={w.dir.current} testID={`scan-step-${w.step}`}>
+          {w.step === 'identify' ? <IdentifyStep w={w} /> : null}
+          {w.step === 'confirm' ? <ConfirmStep w={w} /> : null}
+          {w.step === 'profile' ? <ProfileStep w={w} /> : null}
+          {w.step === 'details' ? <DetailsStep w={w} /> : null}
+        </StepStage>
+      </StepScroll>
+    </Screen>
+  );
+}
+
+/**
+ * Zone qui défile propre à l'assistant : chaque nouvelle étape commence EN HAUT (progression et point d'entrée
+ * visibles), même si l'étape précédente avait défilé. Même comportement clavier que `Screen` (champ actif gardé
+ * visible, « Suivant », clavier fermé en quittant l'écran) ; « Pour aller plus loin » reste en bas.
+ */
+function StepScroll({ step, children }: { step: string; children: React.ReactNode }) {
+  const ref = useRef<ScrollView>(null);
+  const { scope, onScroll } = useKeyboardScopeFor(ref);
+  const focused = useIsFocused();
+  const toolId = useContext(ScreenToolContext);
+  useEffect(() => { ref.current?.scrollTo({ y: 0, animated: false }); }, [step]);
+  useEffect(() => { if (!focused) scope.dismissIfOwned(); }, [focused, scope]);
+  useEffect(() => () => scope.dismissIfOwned(), [scope]);
+  return (
+    <KeyboardScopeContext.Provider value={scope}>
+      <ScrollView ref={ref} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64}
+        keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} testID="scan-scroll"
+        contentContainerStyle={{ paddingTop: spacing.md, paddingBottom: spacing.xxl, gap: spacing.md }}>
+        {children}
+        {toolId ? <ToolArticles toolId={toolId} /> : null}
+      </ScrollView>
+    </KeyboardScopeContext.Provider>
+  );
+}
+
+// ------------------------------------------------------------ pied : retour + action principale
+function WizardFooter({ w }: { w: ScanWizard }) {
+  const busy = !!w.busy;
+  let primary: { label: string; icon?: 'search' | 'check' | 'arrow-right'; onPress: () => unknown; disabled: boolean; testID: string };
+  if (w.step === 'identify') {
+    primary = { label: tr('u6.sf.search'), icon: 'search', onPress: () => w.runSearch(w.query, 'search'), disabled: w.query.trim().length < 2, testID: 'scan-search' };
+  } else if (w.step === 'confirm') {
+    const nothing = !w.candidates.length && !w.ciqual.length;
+    const label = w.pick?.kind === 'manual' || nothing ? tr('u6.sf.continue_name') : w.pick?.kind === 'ciqual' ? tr('u6.sf.yes_food') : tr('u6.sf.yes_product');
+    primary = { label, onPress: () => w.confirmSubject(), disabled: !w.picked, testID: 'scan-confirm' };
+  } else if (w.step === 'profile') {
+    primary = { label: tr('scn.next'), icon: 'arrow-right', onPress: w.continueProfile, disabled: !w.profile || w.needsAge, testID: 'scan-next' };
+  } else {
+    primary = { label: tr('u6.sf.analyse'), icon: 'check', onPress: w.analyse, disabled: !w.profile || w.needsAge || w.quotaReached, testID: 'scan-analyse' };
+  }
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+      {w.step !== 'identify' ? <IconOrb icon="arrow-left" label={tr('scn.prev')} onPress={w.back} testID="scan-prev" /> : null}
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <PrimaryButton label={primary.label} icon={primary.icon} size="lg" full loading={busy} disabled={primary.disabled}
+          onPress={primary.onPress as () => void} testID={primary.testID} />
+      </View>
+    </View>
+  );
+}
+
+// ------------------------------------------------------------ éléments partagés
+/** Réponse à choisir (« Est-ce bien ce produit ? ») : surface mate, sélection = liseré de la palette + coche + gras. */
+function ChoiceCard({ selected, onPress, label, testID, children }: { selected: boolean; onPress: () => void; label: string; testID?: string; children: React.ReactNode }) {
   const t = useTheme();
-  const toast = useToast();
-  const lookupBarcode = useLookupBarcode();
-  const search = useSearchProducts();
-  const checkRecalls = useCheckRecalls();
-  const save = useSaveAnalysis();
-  const { data: quota } = useScanQuota();
-  const { data: foods } = useFoodsCatalog();
-  const options = useScanProfileOptions();
-  const [permission, requestPermission] = useCameraPermissions();
-  const localText = localTextRecognitionAvailable();
-  const localBarcode = localBarcodeRecognitionAvailable();
-
-  const [step, setStep] = useState<Step>('input');
-  const [method, setMethod] = useState<ScanMethod>('manual');
-  const [busy, setBusy] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [cameraOn, setCameraOn] = useState(false);
-  const [reading, setReading] = useState(false);
-  const [cameraDenied, setCameraDenied] = useState<'ask' | 'settings' | null>(null);
-  const [query, setQuery] = useState('');
-  const [candidates, setCandidates] = useState<ProductCandidate[]>([]);
-  const [ciqual, setCiqual] = useState<CiqualFood[]>([]);
-  const [lookup, setLookup] = useState<LookupState>({ recalls: [], recall_check: null });
-  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
-  const [subject, setSubject] = useState<ConfirmedSubject | null>(null);
-  const [manualName, setManualName] = useState('');
-  const [manualBrand, setManualBrand] = useState('');
-  const [ocr, setOcr] = useState<TextReading | null>(null);
-  // Produit
-  const [ptype, setPtype] = useState<ProductType | null>(null);
-  const [ingredients, setIngredients] = useState('');
-  const [origin, setOrigin] = useState<IngredientsOrigin>(null);
-  const [precautions, setPrecautions] = useState('');
-  const [pao, setPao] = useState('');
-  const [exposure, setExposure] = useState<Exposure | null>(null);
-  const [zone, setZone] = useState<Zone | null>(null);
-  // Aliment
-  const [answers, setAnswers] = useState<FoodAnswers>({});
-  const [openedText, setOpenedText] = useState('');
-  // Profil
-  const [profileKey, setProfileKey] = useState<string | null>(null);
-  const [ageText, setAgeText] = useState('');
-  const [allergiesText, setAllergiesText] = useState('');
-  const [quotaReached, setQuotaReached] = useState(false);
-  const lock = useRef(false);
-
-  // ------------------------------------------------------------ profil
-  const selectedKey = profileKey ?? options[0]?.key ?? null;
-  const generic = GENERIC_PROFILES.find((g) => g.key === selectedKey) ?? null;
-  const profile: ScanProfile | null = useMemo(() => {
-    const declared = parseAllergies(allergiesText);
-    const o = options.find((x) => x.key === selectedKey);
-    if (o) return { ...o.profile, allergies: [...(o.profile.allergies ?? []), ...(kind === 'product' ? declared : [])] };
-    if (!generic) return null;
-    const n = Number(ageText.replace(',', '.'));
-    const ageMonths = !generic.needsAge || !ageText.trim() || !Number.isFinite(n) || n < 0 ? null : generic.kind === 'child' ? Math.round(n * 12) : Math.round(n);
-    return { kind: generic.kind, ageMonths: generic.needsAge ? ageMonths : undefined, allergies: kind === 'product' ? declared : [] };
-  }, [options, selectedKey, generic, ageText, allergiesText, kind]);
-
-  // ------------------------------------------------------------ identification
-  function reset() {
-    setStep('input'); setCandidates([]); setCiqual([]); setLookup({ recalls: [], recall_check: null }); setScannedBarcode(null); setSubject(null);
-    setNotice(null); setQuotaReached(false);
-  }
-
-  async function identifyBarcode(raw: string, m: ScanMethod) {
-    const check = checkBarcode(raw);
-    if (!check.ok) { setNotice(check.error); return; }
-    setBusy(tr('u6.sf.searching_product'));
-    try {
-      const r = await lookupBarcode.mutateAsync({ barcode: check.code, kind });
-      setScannedBarcode(check.code);
-      setLookup({ recalls: r.recalls ?? [], recall_check: r.recall_check ?? null, database: r.database, message: r.message, stale: r.stale === true, outage: r.lookup_status === 'unavailable' || r.lookup_status === 'saturated' });
-      setCandidates(r.found && r.product ? [r.product] : []);
-      setCiqual([]);
-      setManualName('');
-      setNotice(check.warning ?? null);
-      setMethod(m);
-      setStep('confirm');
-    } catch (e) {
-      toast(friendlyError(e, tr('u6.sf.search_failed')), 'error');
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function runSearch(text: string, m: ScanMethod) {
-    const q = text.trim();
-    const digits = q.replace(/[\s-]/g, '');
-    if (/^\d{8,14}$/.test(digits)) return identifyBarcode(digits, m === 'search' ? 'manual' : m);
-    if (q.length < 2) { setNotice(tr('u6.sf.min_chars')); return; }
-    setBusy(tr('u6.sf.searching'));
-    try {
-      const [r, cq] = await Promise.all([search.mutateAsync({ query: q, kind }), kind === 'food' ? searchCiqual(q) : Promise.resolve([] as CiqualFood[])]);
-      setCandidates(r.candidates ?? []);
-      setCiqual(cq);
-      setLookup({ recalls: [], recall_check: null, database: r.database, message: r.message ?? undefined, outage: r.lookup_status === 'unavailable' || r.lookup_status === 'saturated' });
-      setScannedBarcode(null);
-      setManualName(q);
-      setNotice(null);
-      setMethod(m);
-      setStep('confirm');
-    } catch (e) {
-      toast(friendlyError(e, tr('u6.sf.search_failed')), 'error');
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  function onScanned(e: BarcodeScanningResult) {
-    if (lock.current) return;
-    lock.current = true;
-    // Retour immédiat : le cadre se resserre, puis la caméra se ferme et la recherche démarre
-    setReading(true);
-    haptic('success');
-    setTimeout(() => setCameraOn(false), 350);
-    identifyBarcode(e.data, 'barcode').finally(() => { lock.current = false; setReading(false); });
-  }
-
-  async function openCamera() {
-    try {
-      if (!permission?.granted) {
-        const p = await requestPermission();
-        if (!p.granted) { setCameraDenied(p.canAskAgain ? 'ask' : 'settings'); return; }
-      }
-      setCameraDenied(null);
-      setCameraOn(true);
-    } catch {
-      setNotice(tr('u6.sf.camera_failed'));
-    }
-  }
-
-  function applyReading(reading: TextReading) {
-    setOcr(reading);
-    const text = reading.ingredients ?? reading.text.trim().slice(0, 2000);
-    if (text) { setIngredients(text); setOrigin('ocr_reviewed'); }
-    if (reading.precautions) setPrecautions(reading.precautions);
-  }
-
-  async function fromPhoto(source: 'camera' | 'library', purpose: 'product' | 'ingredients') {
-    if (!localText && !localBarcode) { setNotice(tr('l7.recog.unavailable')); return; }
-    let res: ImagePicker.ImagePickerResult;
-    try {
-      const perm = source === 'camera' ? await ImagePicker.requestCameraPermissionsAsync() : await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!perm.granted) {
-        if (source === 'camera') setCameraDenied(perm.canAskAgain ? 'ask' : 'settings');
-        else toast(tr('u6.sf.photos_access'), 'error');
-        return;
-      }
-      res = source === 'camera'
-        ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.9 })
-        : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9, allowsMultipleSelection: false });
-    } catch {
-      toast(source === 'camera' ? tr('u6.sf.camera_open_failed') : tr('u6.sf.gallery_open_failed'), 'error');
-      return;
-    }
-    if (res.canceled || !res.assets?.[0]) return;
-    const uri = res.assets[0].uri;
-    setBusy(tr('u6.sf.reading_photo'));
-    try {
-      if (purpose === 'product') {
-        const codes = localBarcode ? await readBarcodesFromImage(uri) : [];
-        if (codes[0]) { setBusy(null); await identifyBarcode(codes[0], source === 'camera' ? 'photo_barcode' : 'import'); return; }
-        const reading = await readTextFromImage(uri);
-        if (reading.ingredients) applyReading(reading);
-        if (reading.printedBarcode) { setBusy(null); await identifyBarcode(reading.printedBarcode, source === 'camera' ? 'photo' : 'import'); return; }
-        const q = frontTextToQuery(reading.text);
-        if (q.length >= 2) { setQuery(q); setBusy(null); await runSearch(q, source === 'camera' ? 'photo' : 'import'); return; }
-        setNotice(tr('u6.sf.nothing_readable'));
-      } else {
-        const reading = await readTextFromImage(uri);
-        applyReading(reading);
-        if (step === 'input') {
-          setMethod('ingredients_photo');
-          if (reading.printedBarcode) { setBusy(null); await identifyBarcode(reading.printedBarcode, 'ingredients_photo'); return; }
-          setNotice(tr('u6.sf.ingredients_read'));
-        }
-      }
-    } catch (e) {
-      setNotice(e instanceof LocalRecognitionUnavailable ? e.message : tr('u6.sf.photo_unreadable'));
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  // ------------------------------------------------------------ confirmation
-  async function refreshRecalls(s: ConfirmedSubject) {
-    try {
-      const r = await checkRecalls.mutateAsync({ barcode: s.barcode, brand: s.brand, name: s.name });
-      setLookup((l) => ({ ...l, recalls: r.recalls ?? [], recall_check: r.recall_check ?? null }));
-    } catch {
-      setLookup((l) => ({ ...l, recall_check: { checked: false, source: 'RappelConso', error: tr('u6.sf.recall_check_failed') } }));
-    }
-  }
-
-  function confirmSubject(s: ConfirmedSubject) {
-    setSubject(s);
-    const c = s.candidate;
-    if (c) {
-      setPtype(asProductType(c.product_type));
-      if (c.ingredients_text && origin !== 'ocr_reviewed') { setIngredients(c.ingredients_text); setOrigin('database'); }
-      if (c.precautions_text && !precautions) setPrecautions(c.precautions_text);
-      if (c.period_after_opening && !pao) setPao(c.period_after_opening);
-    }
-    // Rappels : déjà vérifiés par la recherche du code-barres, sinon vérification pour CE produit
-    if (!(lookup.recall_check && s.barcode && s.barcode === scannedBarcode)) refreshRecalls(s);
-    setStep('details');
-  }
-
-  // ------------------------------------------------------------ analyse
-  const catalog = (foods ?? []) as { id: string; name: string; aliases?: string[] | null }[];
-  const foodMatch = subject?.name ? catalog.find((f) => catalogMatches(subject.name!, [f])) ?? null : null;
-  const foodDraftInput = subject && kind === 'food'
-    ? buildFoodInput(subject, { ingredientsText: ingredients, ingredientsOrigin: origin, ocrReadability: ocr?.readability }, {
-      recalls: lookup.recalls, recallCheck: recallCheckOf(lookup.recall_check), catalogMatch: !!foodMatch, demoMode: isDemo,
-    })
-    : null;
-  const questions = foodDraftInput && profile ? foodQuestions(foodDraftInput, profile).filter((q) => q.key !== 'allergies') : [];
-  const needsAge = !!generic?.needsAge && profile?.ageMonths == null;
-
-  async function analyse() {
-    if (!subject || !profile) { toast(tr('u6.sf.choose_who'), 'error'); return; }
-    setBusy(tr('u6.sf.analysing'));
-    try {
-      const recallCheck = recallCheckOf(lookup.recall_check);
-      let analysis;
-      let typeLabel: string | null = null;
-      if (kind === 'product') {
-        const cosing = await lookupCosing(ingredientNamesForCosing(ingredients));
-        const input = buildProductInput(subject, {
-          type: ptype, ingredientsText: ingredients, ingredientsOrigin: origin, ocrReadability: ocr?.readability, precautionsText: precautions,
-          periodAfterOpening: pao, exposure, zone,
-        }, { recalls: lookup.recalls, recallCheck, cosing, demoMode: isDemo });
-        analysis = analyzeProduct(input, profile);
-        typeLabel = ptype ? PRODUCT_TYPE_LABEL[ptype] : null;
-      } else {
-        const opened = Number(openedText);
-        const a: FoodAnswers = { ...answers, allergies: parseAllergies(allergiesText), openedDaysAgo: openedText.trim() && Number.isFinite(opened) ? Math.max(0, Math.round(opened)) : null };
-        analysis = analyzeFood(foodDraftInput!, profile, a);
-        typeLabel = 'Aliment';
-      }
-      const stored = { ...analysis, declaredAllergens: subject.candidate?.allergens ?? [] };
-      const id = await save.mutateAsync({
-        kind, method, barcode: subject.barcode, productId: subject.candidate?.id ?? null, foodId: kind === 'food' ? foodMatch?.id ?? null : null,
-        snapshot: snapshotOf(subject, typeLabel, isDemo), analysis: stored,
-      });
-      router.replace(`/scanner/result/${id}`);
-    } catch (e) {
-      if (e instanceof QuotaReachedError) setQuotaReached(true);
-      else toast(friendlyError(e, tr('u6.sf.save_failed')), 'error');
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  // ------------------------------------------------------------ rendu
-  const recallsBlock = lookup.recalls.length ? (
-    <>
-      <SectionTitle title={tr('u6.sc.recalls_title')} />
-      {lookup.recalls.map((r) => <RecallCard key={r.id} r={{ ...r, lot_numbers: r.lot_numbers ?? [], match: r.match ?? 'gtin' }} />)}
-      <Text variant="caption" muted>{RECALL_DISCLAIMER}</Text>
-    </>
-  ) : null;
-
-  const demoNote = isDemo ? (
-    <Banner tone="demo" title={tr('u6.sc.demo_data')}>
-      {tr('u6.sf.demo_note', { codes: DEMO_CODES[kind].slice(0, 2).join(tr('u6.sf.or')) })}
-    </Banner>
-  ) : null;
-
-  if (step === 'input') {
-    return (
-      <>
-        {demoNote}
-        <Card>
-          <Text variant="label">{tr('u6.sf.barcode')}</Text>
-          {cameraAvailable ? (
-            cameraOn ? (
-              <View style={[styles.camera, { borderColor: t.colors.border, marginTop: spacing.xs }]}>
-                <CameraView style={StyleSheet.absoluteFill} facing="back" barcodeScannerSettings={{ barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'] }} onBarcodeScanned={onScanned} />
-                <ScanFrame reading={reading} />
-                <View style={styles.cameraFooter}>
-                  <Button label={tr('u6.sf.close_camera')} size="sm" variant="secondary" style={{ backgroundColor: 'rgba(255,255,255,0.85)' }} onPress={() => setCameraOn(false)} />
-                </View>
-              </View>
-            ) : (
-              <>
-                <Text variant="caption" muted style={{ marginTop: 2 }}>{tr('u6.sf.camera_note')}</Text>
-                <Button label={tr('u6.sf.scan_barcode')} icon="camera" size="lg" style={{ marginTop: spacing.sm }} onPress={openCamera} />
-              </>
-            )
-          ) : (
-            <Text variant="small" muted style={{ marginTop: 2 }}>{tr('u6.sf.no_camera_here')}</Text>
-          )}
-          {cameraDenied ? (
-            <Banner tone="warning" title={tr('u6.sf.camera_denied')}
-              action={cameraDenied === 'settings' ? <Button label={tr('u6.sf.open_settings')} size="sm" variant="secondary" style={{ marginTop: 6, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
-              {cameraDenied === 'settings'
-                ? tr('u6.sf.camera_denied_settings')
-                : tr('u6.sf.camera_denied_ask')}
-            </Banner>
-          ) : null}
-        </Card>
-
-        <Card>
-          <Text variant="label">{tr('u6.sf.photo')}</Text>
-          {localText || localBarcode ? (
-            <>
-              <Text variant="caption" muted style={{ marginTop: 2 }}>{tr('u6.sf.photo_local')}</Text>
-              <Row wrap style={{ marginTop: spacing.sm }}>
-                <Button label={kind === 'food' ? tr('u6.sf.photo_packaging') : tr('u6.sf.take_photo')} icon="camera" size="sm" variant="secondary" onPress={() => fromPhoto('camera', 'product')} />
-                <Button label={tr('u6.sf.photo_ingredients')} icon="file-text" size="sm" variant="secondary" onPress={() => fromPhoto('camera', 'ingredients')} />
-                <Button label={tr('u6.sf.import_photo')} icon="image" size="sm" variant="ghost" onPress={() => fromPhoto('library', 'product')} />
-              </Row>
-            </>
-          ) : (
-            <Banner tone="info">{tr('u6.sf.photo_needs_app', { reason: tr('l7.recog.unavailable') })}</Banner>
-          )}
-        </Card>
-
-        <Card>
-          <Field label={kind === 'food' ? tr('u6.sf.food_name_or_code') : tr('u6.sf.product_name_or_code')} value={query} onChangeText={setQuery}
-            hint={kind === 'food' ? tr('u6.sf.hint_food') : tr('u6.sf.hint_product')}
-            returnKeyType="search" onSubmitEditing={() => runSearch(query, 'search')} />
-          <Button label={tr('u6.sf.search')} icon="search" variant="secondary" loading={!!busy} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => runSearch(query, 'search')} />
-          {isDemo ? (
-            <Row wrap style={{ marginTop: spacing.sm }}>
-              {DEMO_CODES[kind].map((c) => <Chip key={c} label={c} onPress={() => { setQuery(c); identifyBarcode(c, 'manual'); }} />)}
-            </Row>
-          ) : null}
-        </Card>
-        {ocr && method === 'ingredients_photo' ? <Banner tone="success">{tr('u6.sf.ingredients_read_banner')}</Banner> : null}
-        {notice ? <Banner tone="info">{notice}</Banner> : null}
-        {busy ? <Text variant="small" muted>{busy}</Text> : null}
-      </>
-    );
-  }
-
-  if (step === 'confirm') {
-    const nothing = !candidates.length && !ciqual.length;
-    return (
-      <>
-        {demoNote}
-        {notice ? <Banner tone="warning">{notice}</Banner> : null}
-        {recallsBlock}
-        <SectionTitle title={tr('u6.sf.is_it')} />
-        {lookup.message && (nothing || lookup.database === 'demo' || lookup.outage) ? <Banner tone={lookup.outage ? 'warning' : 'info'}>{lookup.message}</Banner> : null}
-        {lookup.stale && candidates[0] ? <Banner tone="warning">{tr('u6.sf.stale', { date: candidates[0].data_retrieved_at.split('-').reverse().join('/') })}</Banner> : null}
-        {candidates.map((c, i) => (
-          <Card key={`${c.barcode}${i}`}>
-            <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
-              {c.image_url ? <Image source={{ uri: c.image_url }} style={{ width: 64, height: 64, borderRadius: radius.md }} resizeMode="contain" accessibilityLabel={tr('u6.sc.photo')} /> : null}
-              <View style={{ flex: 1, gap: 2 }}>
-                {c.is_demo || isDemo ? <DemoTag /> : null}
-                <Text weight="bold">{c.name ?? tr('u6.sf.name_missing')}</Text>
-                <Text variant="small" muted>{[c.brand, c.barcode ? `EAN ${c.barcode}` : null].filter(Boolean).join(' · ')}</Text>
-                <Text variant="caption" muted>{`${tr('u6.sc.source', { text: c.data_source })}${c.data_retrieved_at ? `, ${tr('u6.sf.consulted', { date: c.data_retrieved_at.split('-').reverse().join('/') })}` : ''}`}</Text>
-              </View>
-            </Row>
-            <Row wrap style={{ marginTop: spacing.sm }}>
-              <Button label={tr('u6.sf.yes_product')} size="sm" onPress={() => confirmSubject({ candidate: c, name: c.name, brand: c.brand, barcode: c.barcode || scannedBarcode, imageUrl: c.image_url })} />
-            </Row>
-          </Card>
-        ))}
-        {ciqual.map((f) => (
-          <Card key={f.code}>
-            {f.is_demo || isDemo ? <DemoTag /> : null}
-            <Text weight="bold">{f.nom}</Text>
-            <Text variant="caption" muted>{tr('u6.sf.generic_food', { version: f.source_version })}</Text>
-            <Button label={tr('u6.sf.yes_food')} size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }}
-              onPress={() => confirmSubject({ candidate: null, ciqual: f, name: f.nom, brand: null, barcode: null, imageUrl: null })} />
-          </Card>
-        ))}
-        <Card tone="soft">
-          <Text weight="medium">{nothing ? tr('u6.sf.not_found') : tr('u6.sf.none_match')}</Text>
-          <Text variant="small" muted style={{ marginTop: 2 }}>{tr('u6.sf.enter_yourself')}</Text>
-          <Field label={kind === 'food' ? tr('u6.sf.food_name') : tr('u6.sf.product_name')} value={manualName} onChangeText={setManualName} />
-          {kind === 'product' || scannedBarcode ? <Field label={tr('u6.sf.brand')} optional value={manualBrand} onChangeText={setManualBrand} /> : null}
-          <Row wrap style={{ marginTop: spacing.sm }}>
-            <Button label={tr('u6.sf.continue_name')} size="sm" variant="secondary" disabled={manualName.trim().length < 2}
-              onPress={() => confirmSubject({ candidate: null, name: manualName.trim(), brand: manualBrand.trim() || null, barcode: scannedBarcode, imageUrl: null })} />
-            <Button label={tr('u6.sf.restart')} size="sm" variant="ghost" onPress={reset} />
+  const p = usePressScale({ scale: 0.985, haptic: 'none' });
+  return (
+    <Pressable accessibilityRole="radio" accessibilityState={{ checked: selected, selected }} aria-checked={selected} accessibilityLabel={label}
+      onPress={onPress} onPressIn={p.onPressIn} onPressOut={p.onPressOut} testID={testID}>
+      <Animated.View style={p.style}>
+        <MatteSurface radius={radius.lg} padded={spacing.md} style={selected ? { borderColor: t.colors.primary, borderWidth: 2 } : null}>
+          <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
+            <View style={{ flex: 1, minWidth: 0, gap: 2 }}>{children}</View>
+            <View style={{ width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center', borderWidth: 2,
+              borderColor: selected ? t.colors.primary : t.material.lines.track, backgroundColor: selected ? t.colors.primary : 'transparent' }}>
+              {selected ? <Icon name="check" size={14} color={t.colors.primaryText} /> : null}
+            </View>
           </Row>
-        </Card>
-        {busy ? <Text variant="small" muted>{busy}</Text> : null}
-      </>
-    );
-  }
+        </MatteSurface>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
-  // ------------------------------------------------------------ détails
+function FailureBanner({ w }: { w: ScanWizard }) {
+  if (!w.failure) return null;
+  const f = w.failure;
+  return (
+    <View testID={f.kind === 'network' ? 'scan-error-network' : 'scan-error'}>
+      <Banner tone="danger" icon={f.kind === 'network' ? 'wifi-off' : 'alert-triangle'} title={f.kind === 'network' ? tr('scn.err.network') : tr('scn.err.other')}
+        action={<SecondaryButton label={tr('scn.retry')} icon="refresh-cw" size="sm" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={() => f.retry()} testID="scan-retry" />}>
+        {f.message}
+      </Banner>
+    </View>
+  );
+}
+
+function RecallsBlock({ w }: { w: ScanWizard }) {
+  if (!w.lookup.recalls.length) return null;
+  return (
+    <View style={{ gap: spacing.sm }} testID="scan-recalls">
+      <SectionTitle title={tr('u6.sc.recalls_title')} />
+      {w.lookup.recalls.map((r) => <RecallCard key={r.id} r={{ ...r, lot_numbers: r.lot_numbers ?? [], match: r.match ?? 'gtin' }} />)}
+      <Text variant="caption" muted>{RECALL_DISCLAIMER}</Text>
+    </View>
+  );
+}
+
+/** Produit confirmé, rappelé en tête des étapes suivantes ; « Modifier » revient à la confirmation (saisie conservée). */
+function SubjectSummary({ w }: { w: ScanWizard }) {
+  const s = w.subject;
+  const check = w.lookup.recall_check;
+  return (
+    <MatteSurface radius={radius.lg} padded={spacing.md} testID="scan-subject">
+      <Row style={{ alignItems: 'center' }}>
+        <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+          <Text variant="caption" muted>{tr('u6.sf.confirmed')}</Text>
+          {s?.candidate?.is_demo || isDemo ? <DemoTag /> : null}
+          <Text weight="bold" numberOfLines={2}>{s?.name ?? '—'}</Text>
+          <Text variant="small" muted>{[s?.brand, s?.barcode ? `EAN ${s.barcode}` : null].filter(Boolean).join(' · ') || (s?.candidate ? '' : tr('u6.sf.manual'))}</Text>
+        </View>
+        <SecondaryButton label={tr('scn.edit')} size="sm" onPress={() => w.goTo('confirm')} testID="scan-edit-subject" />
+      </Row>
+      {!w.lookup.recalls.length && check ? (
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{check.checked ? tr('u6.sf.no_recall', { disclaimer: RECALL_DISCLAIMER }) : check.error ?? ''}</Text>
+      ) : null}
+    </MatteSurface>
+  );
+}
+
+function ChipGroup<T extends string>({ label, values, value, labelOf, onChange }: { label: string; values: T[]; value: T | null; labelOf: (v: T) => string; onChange: (v: T | null) => void }) {
+  return (
+    <View style={{ gap: spacing.xs }}>
+      <Text variant="label">{label}</Text>
+      <View accessibilityRole="radiogroup" accessibilityLabel={label} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+        {values.map((x) => <Chip key={x} label={labelOf(x)} selected={value === x} onPress={() => onChange(value === x ? null : x)} />)}
+      </View>
+    </View>
+  );
+}
+
+// ------------------------------------------------------------ 1. Identifier
+function IdentifyStep({ w }: { w: ScanWizard }) {
+  const t = useTheme();
+  const { kind } = w;
   return (
     <>
-      {demoNote}
-      <Card>
-        <Row style={{ alignItems: 'center' }}>
-          <View style={{ flex: 1 }}>
-            <Text variant="caption" muted>{tr('u6.sf.confirmed')}</Text>
-            <Text weight="bold">{subject?.name ?? '—'}</Text>
-            <Text variant="small" muted>{[subject?.brand, subject?.barcode ? `EAN ${subject.barcode}` : null].filter(Boolean).join(' · ') || (subject?.candidate ? '' : tr('u6.sf.manual'))}</Text>
+      <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
+        <Field label={kind === 'food' ? tr('u6.sf.food_name_or_code') : tr('u6.sf.product_name_or_code')} value={w.query} onChangeText={w.setQuery}
+          hint={kind === 'food' ? tr('u6.sf.hint_food') : tr('u6.sf.hint_product')} autoCorrect={false} testID="scan-query"
+          returnKeyType="search" onSubmitEditing={() => { void w.runSearch(w.query, 'search'); }} />
+        {isDemo ? (
+          <View style={{ gap: spacing.xs }}>
+            <Text variant="caption" muted>{tr('scn.demoCodes')}</Text>
+            <Row wrap>
+              {DEMO_CODES[kind].map((c) => <Chip key={c} label={c} onPress={() => { w.setQuery(c); void w.identifyBarcode(c, 'manual'); }} testID={`scan-demo-${c}`} />)}
+            </Row>
           </View>
-          <Button label={tr('u6.sf.change')} size="sm" variant="ghost" onPress={reset} />
-        </Row>
-      </Card>
-      {recallsBlock}
-      {!lookup.recalls.length && lookup.recall_check ? (
-        <Text variant="caption" muted>
-          {lookup.recall_check.checked ? tr('u6.sf.no_recall', { disclaimer: RECALL_DISCLAIMER }) : lookup.recall_check.error ?? ''}
-        </Text>
+        ) : null}
+      </MatteSurface>
+
+      <FailureBanner w={w} />
+      {isDemo ? (
+        <Banner tone="demo" title={tr('u6.sc.demo_data')}>{tr('u6.sf.demo_note', { codes: DEMO_CODES[kind].slice(0, 2).join(tr('u6.sf.or')) })}</Banner>
+      ) : null}
+      {w.notice ? <Banner tone="info">{w.notice}</Banner> : null}
+      {w.ocr && w.method === 'ingredients_photo' ? <Banner tone="success">{tr('u6.sf.ingredients_read_banner')}</Banner> : null}
+      {w.busy ? <Text variant="small" muted accessibilityLiveRegion="polite" testID="scan-busy">{w.busy}</Text> : null}
+
+      <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.xs }}>
+        <Text variant="label">{tr('u6.sf.barcode')}</Text>
+        {cameraAvailable ? (
+          w.camera.on ? (
+            <View style={[styles.camera, { borderColor: t.colors.border, backgroundColor: t.colors.surfaceAlt }]}>
+              <CameraView style={StyleSheet.absoluteFill} facing="back" barcodeScannerSettings={{ barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e'] }} onBarcodeScanned={w.camera.onScanned} />
+              <ScanFrame reading={w.camera.reading} />
+              <View style={styles.cameraFooter}>
+                <SecondaryButton label={tr('u6.sf.close_camera')} size="sm" onPress={() => w.camera.setOn(false)} />
+              </View>
+            </View>
+          ) : (
+            <>
+              <Text variant="caption" muted>{tr('u6.sf.camera_note')}</Text>
+              <SecondaryButton label={tr('u6.sf.scan_barcode')} icon="camera" onPress={w.camera.open} style={{ alignSelf: 'flex-start' }} />
+            </>
+          )
+        ) : (
+          <Text variant="small" muted>{tr('u6.sf.no_camera_here')}</Text>
+        )}
+        {w.camera.denied ? (
+          <Banner tone="warning" title={tr('u6.sf.camera_denied')}
+            action={w.camera.denied === 'settings' ? <SecondaryButton label={tr('u6.sf.open_settings')} size="sm" style={{ marginTop: 6, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
+            {w.camera.denied === 'settings' ? tr('u6.sf.camera_denied_settings') : tr('u6.sf.camera_denied_ask')}
+          </Banner>
+        ) : null}
+        <Divider />
+        <Text variant="label">{tr('u6.sf.photo')}</Text>
+        {w.photo.localText || w.photo.localBarcode ? (
+          <>
+            <Text variant="caption" muted>{tr('u6.sf.photo_local')}</Text>
+            <Row wrap>
+              <SecondaryButton label={kind === 'food' ? tr('u6.sf.photo_packaging') : tr('u6.sf.take_photo')} icon="camera" size="sm" onPress={() => w.photo.fromPhoto('camera', 'product')} />
+              <SecondaryButton label={tr('u6.sf.photo_ingredients')} icon="file-text" size="sm" onPress={() => w.photo.fromPhoto('camera', 'ingredients')} />
+              <SecondaryButton label={tr('u6.sf.import_photo')} icon="image" size="sm" onPress={() => w.photo.fromPhoto('library', 'product')} />
+            </Row>
+          </>
+        ) : (
+          <Text variant="caption" muted>{tr('u6.sf.photo_needs_app', { reason: tr('l7.recog.unavailable') })}</Text>
+        )}
+      </MatteSurface>
+    </>
+  );
+}
+
+// ------------------------------------------------------------ 2. Confirmer
+function ConfirmStep({ w }: { w: ScanWizard }) {
+  const { kind, candidates, ciqual, lookup } = w;
+  const nothing = !candidates.length && !ciqual.length;
+  const date = (iso: string) => iso.split('-').reverse().join('/');
+  return (
+    <>
+      {w.notice ? <Banner tone="warning">{w.notice}</Banner> : null}
+      <RecallsBlock w={w} />
+      <SectionTitle title={tr('u6.sf.is_it')} />
+      {lookup.outage ? (
+        <View testID="scan-outage"><Banner tone="warning" icon="cloud-off" title={tr('scn.outage')}>{lookup.message ?? tr('scn.outageBody')}</Banner></View>
+      ) : lookup.message && lookup.database === 'demo' && !nothing ? <Banner tone="info">{lookup.message}</Banner> : null}
+      {lookup.stale && candidates[0] ? <Banner tone="warning">{tr('u6.sf.stale', { date: date(candidates[0].data_retrieved_at) })}</Banner> : null}
+
+      {nothing ? (
+        // Produit inconnu : on le dit, rien n'est deviné
+        <MatteSurface radius={radius.lg} padded={spacing.md} testID="scan-unknown" contentStyle={{ gap: spacing.xs }}>
+          <Row gap={spacing.sm}><Icon name="help-circle" size={20} /><Text weight="bold" style={{ flex: 1 }}>{tr('u6.sf.not_found')}</Text></Row>
+          {w.scannedBarcode ? <Text variant="small" muted>{tr('scn.unknownCode', { code: w.scannedBarcode })}</Text> : null}
+          {lookup.message && !lookup.outage ? <Text variant="small" muted>{lookup.message}</Text> : null}
+          <Text variant="small">{tr('scn.unknownBody')}</Text>
+        </MatteSurface>
       ) : null}
 
-      <SectionTitle title={tr('u6.sf.for_whom')} />
-      <Card>
-        <Row wrap>
-          {options.map((o) => <Chip key={o.key} label={o.label} selected={selectedKey === o.key} onPress={() => setProfileKey(o.key)} />)}
-          {GENERIC_PROFILES.map((g) => <Chip key={g.key} label={g.label} selected={selectedKey === g.key} onPress={() => setProfileKey(g.key)} />)}
-        </Row>
-        {generic?.needsAge ? (
-          <Field label={generic.kind === 'child' ? tr('u6.sf.age_years') : tr('u6.sf.age_months')} keyboardType="number-pad" value={ageText} onChangeText={setAgeText}
-            error={needsAge && ageText.trim() ? tr('u6.sf.age_invalid') : null} hint={tr('u6.sf.age_hint')} />
-        ) : null}
-        {profile ? <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u6.sf.analysis_for', { profile: profileLabel(profile) })}</Text> : null}
-      </Card>
+      {candidates.length ? (
+        <View accessibilityRole="radiogroup" accessibilityLabel={tr('u6.sf.is_it')} style={{ gap: spacing.sm }}>
+          {candidates.map((c, i) => (
+            <ChoiceCard key={`${c.barcode}${i}`} selected={w.pick?.kind === 'candidate' && w.pick.index === i} onPress={() => w.setPick({ kind: 'candidate', index: i })}
+              label={[c.name ?? tr('u6.sf.name_missing'), c.brand].filter(Boolean).join(', ')} testID={`scan-candidate-${i}`}>
+              <Row gap={spacing.md} style={{ alignItems: 'flex-start' }}>
+                {c.image_url ? <Image source={{ uri: c.image_url }} style={{ width: 56, height: 56, borderRadius: radius.sm }} resizeMode="contain" accessibilityLabel={tr('u6.sc.photo')} /> : null}
+                <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
+                  {c.is_demo || isDemo ? <DemoTag /> : null}
+                  <Text weight="bold">{c.name ?? tr('u6.sf.name_missing')}</Text>
+                  <Text variant="small" muted>{[c.brand, c.barcode ? `EAN ${c.barcode}` : null].filter(Boolean).join(' · ')}</Text>
+                  <Text variant="caption" muted>{`${tr('u6.sc.source', { text: c.data_source })}${c.data_retrieved_at ? `, ${tr('u6.sf.consulted', { date: date(c.data_retrieved_at) })}` : ''}`}</Text>
+                </View>
+              </Row>
+            </ChoiceCard>
+          ))}
+        </View>
+      ) : null}
+      {ciqual.length ? (
+        <View accessibilityRole="radiogroup" accessibilityLabel={tr('u6.sf.is_it')} style={{ gap: spacing.sm }}>
+          {ciqual.map((f, i) => (
+            <ChoiceCard key={f.code} selected={w.pick?.kind === 'ciqual' && w.pick.index === i} onPress={() => w.setPick({ kind: 'ciqual', index: i })} label={f.nom} testID={`scan-ciqual-${i}`}>
+              {f.is_demo || isDemo ? <DemoTag /> : null}
+              <Text weight="bold">{f.nom}</Text>
+              <Text variant="caption" muted>{tr('u6.sf.generic_food', { version: f.source_version })}</Text>
+            </ChoiceCard>
+          ))}
+        </View>
+      ) : null}
+      {!nothing && !w.pick ? <Text variant="caption" muted>{tr('scn.pickOne')}</Text> : null}
 
+      <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }} testID="scan-manual">
+        <View style={{ gap: 2 }}>
+          <Text weight="medium">{nothing ? tr('scn.nameIt') : tr('u6.sf.none_match')}</Text>
+          <Text variant="small" muted>{tr('u6.sf.enter_yourself')}</Text>
+        </View>
+        <Field label={kind === 'food' ? tr('u6.sf.food_name') : tr('u6.sf.product_name')} value={w.manualName} onChangeText={w.setManualName} testID="scan-manual-name" maxLength={160} />
+        {kind === 'product' || w.scannedBarcode ? <Field label={tr('u6.sf.brand')} optional value={w.manualBrand} onChangeText={w.setManualBrand} maxLength={120} testID="scan-manual-brand" /> : null}
+      </MatteSurface>
+    </>
+  );
+}
+
+// ------------------------------------------------------------ 3. Pour qui
+function ProfileStep({ w }: { w: ScanWizard }) {
+  return (
+    <>
+      <SubjectSummary w={w} />
+      <RecallsBlock w={w} />
+      <SectionTitle title={tr('u6.sf.for_whom')} />
+      <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
+        <View accessibilityRole="radiogroup" accessibilityLabel={tr('u6.sf.for_whom')} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+          {w.options.map((o) => <Chip key={o.key} label={o.label} selected={w.selectedKey === o.key} onPress={() => w.setProfileKey(o.key)} />)}
+          {GENERIC_PROFILES.map((g) => <Chip key={g.key} label={g.label} selected={w.selectedKey === g.key} onPress={() => w.setProfileKey(g.key)} testID={`scan-profile-${g.key.replace(/^g:/, '')}`} />)}
+        </View>
+        {w.generic?.needsAge ? (
+          <Field label={w.generic.kind === 'child' ? tr('u6.sf.age_years') : tr('u6.sf.age_months')} keyboardType="number-pad" value={w.ageText} onChangeText={w.setAgeText}
+            error={w.needsAge && w.ageText.trim() ? tr('u6.sf.age_invalid') : null} hint={tr('u6.sf.age_hint')} testID="scan-age" maxLength={3} />
+        ) : null}
+        <Field label={tr('u6.sf.allergies')} optional value={w.allergiesText} onChangeText={w.setAllergiesText} hint={tr('u6.sf.allergies_hint')} testID="scan-allergies" maxLength={300} />
+        {w.profile ? <Text variant="caption" muted>{tr('u6.sf.analysis_for', { profile: profileLabel(w.profile) })}</Text> : null}
+        {w.needsAge ? <Text variant="caption" muted>{tr('u6.sf.need_age')}</Text> : null}
+      </MatteSurface>
+    </>
+  );
+}
+
+// ------------------------------------------------------------ 4. Préciser + analyser
+function DetailsStep({ w }: { w: ScanWizard }) {
+  const { kind } = w;
+  return (
+    <>
+      <SubjectSummary w={w} />
+      <RecallsBlock w={w} />
       {kind === 'product' ? (
         <>
           <SectionTitle title={tr('u6.sf.type_use')} />
-          <Card>
-            <Text variant="label">{tr('u6.sf.product_type')}</Text>
-            <Row wrap style={{ marginTop: 4 }}>
-              {PRODUCT_TYPES.filter((x) => x !== 'other').map((x) => <Chip key={x} label={PRODUCT_TYPE_LABEL[x]} selected={ptype === x} onPress={() => setPtype(ptype === x ? null : x)} />)}
-            </Row>
-            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u6.sf.use')}</Text>
-            <Row wrap style={{ marginTop: 4 }}>
-              {EXPOSURES.map((x) => <Chip key={x} label={EXPOSURE_LABEL[x]} selected={exposure === x} onPress={() => setExposure(exposure === x ? null : x)} />)}
-            </Row>
-            <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('u6.sf.zone')}</Text>
-            <Row wrap style={{ marginTop: 4 }}>
-              {ZONES.map((x) => <Chip key={x} label={ZONE_LABEL[x]} selected={zone === x} onPress={() => setZone(zone === x ? null : x)} />)}
-            </Row>
-            <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u6.sf.no_precision')}</Text>
-          </Card>
+          <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
+            <ChipGroup label={tr('u6.sf.product_type')} values={PRODUCT_TYPES.filter((x) => x !== 'other')} value={w.ptype} labelOf={(x) => PRODUCT_TYPE_LABEL[x]} onChange={w.setPtype} />
+            <ChipGroup label={tr('u6.sf.use')} values={EXPOSURES} value={w.exposure} labelOf={(x) => EXPOSURE_LABEL[x]} onChange={w.setExposure} />
+            <ChipGroup label={tr('u6.sf.zone')} values={ZONES} value={w.zone} labelOf={(x) => ZONE_LABEL[x]} onChange={w.setZone} />
+            <Text variant="caption" muted>{tr('u6.sf.no_precision')}</Text>
+          </MatteSurface>
         </>
       ) : null}
 
       <SectionTitle title={tr('u6.sc.ingredients')} />
-      <Card>
-        <Field label={kind === 'food' ? tr('u6.sf.list_food') : tr('u6.sf.list_inci')} optional multiline value={ingredients}
-          onChangeText={(v) => { setIngredients(v); if (origin === 'database' || origin === null) setOrigin(v.trim() ? 'manual' : null); }}
-          hint={origin === 'database' ? tr('u6.sf.hint_db') : origin === 'ocr_reviewed' ? tr('u6.sf.hint_ocr') : tr('u6.sf.hint_manual')} />
-        {origin === 'ocr_reviewed' && ocr ? (
-          <Text variant="caption" muted>{tr('u6.sf.readability', { pct: Math.round(ocr.readability * 100) })}</Text>
+      <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
+        <Field label={kind === 'food' ? tr('u6.sf.list_food') : tr('u6.sf.list_inci')} optional multiline value={w.ingredients} testID="scan-ingredients"
+          onChangeText={(v) => { w.setIngredients(v); if (w.origin === 'database' || w.origin === null) w.setOrigin(v.trim() ? 'manual' : null); }}
+          hint={w.origin === 'database' ? tr('u6.sf.hint_db') : w.origin === 'ocr_reviewed' ? tr('u6.sf.hint_ocr') : tr('u6.sf.hint_manual')} />
+        {w.origin === 'ocr_reviewed' && w.ocr ? <Text variant="caption" muted>{tr('u6.sf.readability', { pct: Math.round(w.ocr.readability * 100) })}</Text> : null}
+        {w.photo.localText ? (
+          <SecondaryButton label={tr('u6.sf.photo_list')} icon="camera" size="sm" style={{ alignSelf: 'flex-start' }} onPress={() => w.photo.fromPhoto('camera', 'ingredients')} />
         ) : null}
-        {localText ? (
-          <Button label={tr('u6.sf.photo_list')} icon="camera" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => fromPhoto('camera', 'ingredients')} />
-        ) : <Text variant="caption" muted>{tr('l7.recog.unavailable')}.</Text>}
         {kind === 'product' ? (
           <>
-            <Field label={tr('u6.sf.precautions')} optional multiline value={precautions} onChangeText={setPrecautions} />
-            <Field label={tr('u6.sf.pao')} optional value={pao} onChangeText={setPao} />
+            <Field label={tr('u6.sf.precautions')} optional multiline value={w.precautions} onChangeText={w.setPrecautions} maxLength={1000} />
+            <Field label={tr('u6.sf.pao')} optional value={w.pao} onChangeText={w.setPao} maxLength={20} />
           </>
         ) : null}
-        <Field label={tr('u6.sf.allergies')} optional value={allergiesText} onChangeText={setAllergiesText}
-          hint={tr('u6.sf.allergies_hint')} />
-      </Card>
+      </MatteSurface>
 
-      {kind === 'food' && questions.length ? (
+      {kind === 'food' && w.questions.length ? (
         <>
           <SectionTitle title={tr('u6.sf.questions')} />
-          <Card>
+          <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
             <Text variant="caption" muted>{tr('u6.sf.questions_note')}</Text>
-            {questions.map((q, i) => (
-              <View key={q.key} style={{ marginTop: spacing.sm }}>
+            {w.questions.map((q, i) => (
+              <View key={q.key} style={{ gap: 4 }}>
                 {i > 0 ? <Divider /> : null}
                 <Text weight="medium">{q.label}{q.critical ? ' *' : ''}</Text>
                 <Text variant="caption" muted>{q.why}</Text>
                 {q.options ? (
-                  <Row wrap style={{ marginTop: 4 }}>
+                  <View accessibilityRole="radiogroup" accessibilityLabel={q.label} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                     {q.options.map((o) => (
-                      <Chip key={o.value} label={o.label} selected={(answers as Record<string, unknown>)[q.key] === o.value}
-                        onPress={() => setAnswers((a) => ({ ...a, [q.key]: o.value }))} />
+                      <Chip key={o.value} label={o.label} selected={(w.answers as Record<string, unknown>)[q.key] === o.value}
+                        onPress={() => w.setAnswers((a) => ({ ...a, [q.key]: o.value }))} />
                     ))}
-                  </Row>
+                  </View>
                 ) : q.key === OPENED_KEY ? (
-                  <Field label={tr('u6.sf.days')} optional keyboardType="number-pad" value={openedText} onChangeText={setOpenedText} />
+                  <Field label={tr('u6.sf.days')} optional keyboardType="number-pad" value={w.openedText} onChangeText={w.setOpenedText} maxLength={4} />
                 ) : null}
               </View>
             ))}
-            <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('u6.sf.unanswered')}</Text>
-          </Card>
+            <Text variant="caption" muted>{tr('u6.sf.unanswered')}</Text>
+          </MatteSurface>
         </>
       ) : null}
 
-      {quotaReached ? (
-        <Banner tone="info" title={tr('u6.sf.quota_used')}
-          action={<Button label={tr('u6.sf.discover')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} />}>
-          {tr('u6.sf.quota_body')}
-        </Banner>
-      ) : quota ? (
-        <Text variant="caption" muted>{tr('u6.sf.quota_left', { remaining: quota.remaining, quota: quota.quota })}</Text>
+      <FailureBanner w={w} />
+      {w.quotaReached ? (
+        <View testID="scan-quota">
+          <Banner tone="info" title={tr('u6.sf.quota_used')}
+            action={(
+              <Row wrap style={{ marginTop: spacing.xs }}>
+                <SecondaryButton label={tr('scn.freeRecalls')} icon="bell" size="sm" onPress={() => router.push('/scanner/recalls')} />
+                <SecondaryButton label={tr('u6.sf.discover')} size="sm" onPress={() => router.push('/settings/subscription')} />
+              </Row>
+            )}>
+            {tr('u6.sf.quota_body')}
+          </Banner>
+        </View>
+      ) : w.quota ? (
+        <Text variant="caption" muted>{tr('u6.sf.quota_left', { remaining: w.quota.remaining, quota: w.quota.quota })}</Text>
       ) : null}
-      <Button label={tr('u6.sf.analyse')} icon="check" size="lg" loading={!!busy} disabled={!profile || needsAge || quotaReached} onPress={analyse} />
-      {needsAge ? <Text variant="caption" muted>{tr('u6.sf.need_age')}</Text> : null}
-      {busy ? <Text variant="small" muted>{busy}</Text> : null}
+      {w.busy ? <Text variant="small" muted accessibilityLiveRegion="polite">{w.busy}</Text> : null}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  camera: { height: 300, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, backgroundColor: '#000' },
-  frame: { position: 'absolute', left: '12%', right: '12%', top: '32%', bottom: '32%', borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)', borderRadius: radius.md },
+  camera: { height: 300, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1 },
   cameraFooter: { position: 'absolute', bottom: spacing.sm, left: 0, right: 0, alignItems: 'center' },
 });

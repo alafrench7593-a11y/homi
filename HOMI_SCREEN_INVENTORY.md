@@ -23,13 +23,13 @@
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
 | Réglages | 21 | 21 | 0 | 0 | 4 | 0 |
 | Accueil | 21 | 18 | 0 | 3 | 9 | 1 |
-| Santé | 29 | 29 | 0 | 0 | 16 | 0 |
+| Santé | 29 | 21 | 0 | 8 | 16 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
 | Grossesse et post-partum | 19 | 19 | 0 | 0 | 6 | 0 |
 | Bébé et enfant | 32 | 32 | 0 | 0 | 70 | 1 |
 | Famille | 30 | 30 | 0 | 0 | 6 | 0 |
 | Communauté | 16 | 16 | 0 | 0 | 4 | 0 |
-| **Total** | **231** | **218** | **2** | **11** | **130** | **4** |
+| **Total** | **231** | **210** | **2** | **19** | **130** | **4** |
 
 Rôles : détail 36 · formulaire 46 · historique 17 · liste 85 · réglage 27 · résultat 13 · scène 7.
 
@@ -145,14 +145,14 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/products` | liste | kid_products | Screen, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/products/[id]` | détail | — | Screen, Card, Button, Banner, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/products/compare` | résultat | — | Screen, Card, Chip, EmptyState | 0 |  | à faire |
-| `/scanner` | liste | — | Screen, Card, GlassSurface, Button, Banner, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/scanner/avoid` | formulaire | scan_avoid | Screen, Card, Field, IconButton, Banner, ListRow, EmptyState, Skeleton | 0 |  | à faire |
-| `/scanner/compare` | résultat | scan_compare | Screen, Card, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/scanner/food` | détail | scan_food | Screen | 0 |  | à faire |
-| `/scanner/history` | historique | scan_history | Screen, Button, IconButton, Chip, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
-| `/scanner/product` | détail | scan_product | Screen | 0 |  | à faire |
-| `/scanner/recalls` | liste | recall_alerts | Screen, Card, Button, Banner, Toggle, ListRow, SectionTitle | 0 |  | à faire |
-| `/scanner/result/[id]` | résultat | — | Screen, Card, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/scanner` | liste | — | Screen, Card, Banner, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/scanner/avoid` | formulaire | scan_avoid | Screen, Field, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/scanner/compare` | résultat | scan_compare | Screen, Banner, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/scanner/food` | détail | scan_food | — | 0 |  | fait |
+| `/scanner/history` | historique | scan_history | Screen, Chip, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
+| `/scanner/product` | détail | scan_product | — | 0 |  | fait |
+| `/scanner/recalls` | liste | recall_alerts | Screen, Banner, Toggle, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | fait |
+| `/scanner/result/[id]` | résultat | — | Screen, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/sources` | liste | sources | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/teeth` | liste | kid_teeth | Screen, Card, Sheet, Field, Button, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/tutos` | détail | video_tutos | — | 0 |  | à faire |
@@ -403,9 +403,9 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Comparer les moyens | `avoid_methods` | `/contraception/methods` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log` | non | non | non | non |
 | Contraception d’urgence | `avoid_emergency` | `/contraception/emergency` | `/contraception/consultation` | — | `/contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
 | Préparer une consultation | `avoid_consult` | `/contraception/consultation` | dans l’écran | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
-| Scanner un produit | `scan_product` | `/scanner/product` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/result/[id]` | `/scanner/history /scanner/recalls` | non | non | non | non |
-| Scanner un aliment | `scan_food` | `/scanner/food` | `/scanner/avoid` | `/scanner/compare /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | non | non | non | non |
-| Comparer deux produits | `scan_compare` | `/scanner/compare` | `/scanner/avoid` | `/scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | non | non | non | non |
+| Scanner un produit | `scan_product` | `/scanner/product` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
+| Scanner un aliment | `scan_food` | `/scanner/food` | `/scanner/avoid` | `/scanner/compare /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
+| Comparer deux produits | `scan_compare` | `/scanner/compare` | `/scanner/avoid` | `/scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
 | Journée difficile | `family_difficult` | `/family/difficult` | — | — | — | non | non | non | non |
 | Personnaliser l’accueil | `home_settings` | `/settings/home` | — | — | — | non | non | non | non |
 | Réglages | `settings` | `/settings` | — | — | — | non | non | non | non |
@@ -467,9 +467,9 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Calendrier du cycle | `avoid_fertile` | `/cycle/calendar` | feuille dans l’écran | — | — | non | non | non | non |
 | Symptômes | `cycle_symptoms` | `/cycle/symptoms` | — | — | — | non | non | non | non |
 | Statistiques du cycle | `cycle_stats` | `/cycle/stats` | — | — | — | non | non | non | non |
-| Historique et favoris | `scan_history` | `/scanner/history` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/recalls` | non | non | non | non |
-| Produits à éviter | `scan_avoid` | `/scanner/avoid` | dans l’écran | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | non | non | non | non |
-| Alertes produits rappelés | `recall_alerts` | `/scanner/recalls` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history` | non | non | non | non |
+| Historique et favoris | `scan_history` | `/scanner/history` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/recalls` | oui | oui | oui | oui |
+| Produits à éviter | `scan_avoid` | `/scanner/avoid` | dans l’écran | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | partiel | partiel |
+| Alertes produits rappelés | `recall_alerts` | `/scanner/recalls` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history` | oui | oui | partiel | oui |
 | Examens | `ttc_exams` | `/fertility/exams` | — | — | — | non | non | non | non |
 | Cycle et période fertile | `ttc_cycle` | `/fertility` | — | — | — | non | non | non | non |
 | Tests d’ovulation et de grossesse | `ttc_tests` | `/fertility/log` | — | — | `/fertility/log` | non | non | non | non |

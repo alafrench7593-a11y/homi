@@ -195,14 +195,14 @@ ecran,Santé,/products/[id],src/app/products/[id].tsx,détail,,Screen Card Butto
 ecran,Santé,/products/compare,src/app/products/compare.tsx,résultat,,Screen Card Chip EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/profile,src/app/(tabs)/profile.tsx,liste,,Screen Card Button Chip ListRow SectionTitle ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/profiles/new,src/app/profiles/new.tsx,formulaire,,Screen Card Button Banner Segmented ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner,src/app/scanner/index.tsx,liste,,Screen Card GlassSurface Button Banner ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/avoid,src/app/scanner/avoid.tsx,formulaire,scan_avoid,Screen Card Field IconButton Banner ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/compare,src/app/scanner/compare.tsx,résultat,scan_compare,Screen Card Button Banner Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/food,src/app/scanner/food.tsx,détail,scan_food,Screen,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/history,src/app/scanner/history.tsx,historique,scan_history,Screen Button IconButton Chip EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/product,src/app/scanner/product.tsx,détail,scan_product,Screen,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/recalls,src/app/scanner/recalls.tsx,liste,recall_alerts,Screen Card Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
-ecran,Santé,/scanner/result/[id],src/app/scanner/result/[id].tsx,résultat,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/scanner,src/app/scanner/index.tsx,liste,,Screen Card Banner ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/avoid,src/app/scanner/avoid.tsx,formulaire,scan_avoid,Screen Field Banner ListRow EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/compare,src/app/scanner/compare.tsx,résultat,scan_compare,Screen Banner ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/food,src/app/scanner/food.tsx,détail,scan_food,,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/history,src/app/scanner/history.tsx,historique,scan_history,Screen Chip EmptyState ErrorView Skeleton VirtualList,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/product,src/app/scanner/product.tsx,détail,scan_product,,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/recalls,src/app/scanner/recalls.tsx,liste,recall_alerts,Screen Banner Toggle ListRow SectionTitle ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Santé,/scanner/result/[id],src/app/scanner/result/[id].tsx,résultat,,Screen EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
 ecran,Réglages,/settings,src/app/settings/index.tsx,réglage,settings,Screen Card Field Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/account,src/app/settings/account.tsx,réglage,,Screen Card Sheet Field Button Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen GlowCard Sheet Field Button Banner Chip Segmented Toggle SectionTitle CompletionCheck,3,non,à faire,,,,,,,,,,,,,
@@ -249,12 +249,12 @@ outil,Cycle et fertilité,/cycle/symptoms,,,,,,,,cycle:/cycle/symptoms,cycle_sym
 outil,Cycle et fertilité,/contraception/consultation,,,,,,,,cycle:/contraception/consultation,avoid_consult,Préparer une consultation,cycle,formulaire/assistant,/contraception/consultation,dans l’écran,,/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods,non,non,non,non
 outil,Cycle et fertilité,/cycle/stats,,,,,,,,cycle:/cycle/stats,cycle_stats,Statistiques du cycle,cycle,suivi/mesures,/cycle/stats,,,,non,non,non,non
 outil,Cycle et fertilité,/contraception/journal,,,,,,,,cycle:/contraception/journal,contraception_journal,Journal de ma contraception,cycle,humeur/journal,/contraception/journal,/contraception/consultation,,/contraception/emergency /contraception/history /contraception/log /contraception/methods,non,non,non,non
-outil,Santé,/scanner/product,,,,,,,,scanner:/scanner/product,scan_product,Scanner un produit,scanner,formulaire/assistant,/scanner/product,/scanner/avoid,/scanner/compare /scanner/food /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
-outil,Santé,/scanner/food,,,,,,,,scanner:/scanner/food,scan_food,Scanner un aliment,scanner,formulaire/assistant,/scanner/food,/scanner/avoid,/scanner/compare /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
-outil,Santé,/scanner/history,,,,,,,,scanner:/scanner/history,scan_history,Historique et favoris,scanner,suivi/mesures,/scanner/history,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/recalls,non,non,non,non
-outil,Santé,/scanner/compare,,,,,,,,scanner:/scanner/compare,scan_compare,Comparer deux produits,scanner,formulaire/assistant,/scanner/compare,/scanner/avoid,/scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
-outil,Santé,/scanner/avoid,,,,,,,,scanner:/scanner/avoid,scan_avoid,Produits à éviter,scanner,suivi/mesures,/scanner/avoid,dans l’écran,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,non,non,non,non
-outil,Santé,/scanner/recalls,,,,,,,,scanner:/scanner/recalls,recall_alerts,Alertes produits rappelés,scanner,suivi/mesures,/scanner/recalls,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history,non,non,non,non
+outil,Santé,/scanner/product,,,,,,,,scanner:/scanner/product,scan_product,Scanner un produit,scanner,formulaire/assistant,/scanner/product,/scanner/avoid,/scanner/compare /scanner/food /scanner/result/[id],/scanner/history /scanner/recalls,oui,oui,oui,oui
+outil,Santé,/scanner/food,,,,,,,,scanner:/scanner/food,scan_food,Scanner un aliment,scanner,formulaire/assistant,/scanner/food,/scanner/avoid,/scanner/compare /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,oui,oui,oui,oui
+outil,Santé,/scanner/history,,,,,,,,scanner:/scanner/history,scan_history,Historique et favoris,scanner,suivi/mesures,/scanner/history,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/recalls,oui,oui,oui,oui
+outil,Santé,/scanner/compare,,,,,,,,scanner:/scanner/compare,scan_compare,Comparer deux produits,scanner,formulaire/assistant,/scanner/compare,/scanner/avoid,/scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,oui,oui,oui,oui
+outil,Santé,/scanner/avoid,,,,,,,,scanner:/scanner/avoid,scan_avoid,Produits à éviter,scanner,suivi/mesures,/scanner/avoid,dans l’écran,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,oui,oui,partiel,partiel
+outil,Santé,/scanner/recalls,,,,,,,,scanner:/scanner/recalls,recall_alerts,Alertes produits rappelés,scanner,suivi/mesures,/scanner/recalls,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history,oui,oui,partiel,oui
 outil,Accueil,/calendar,,,,,,,,calendar:/calendar,family_calendar,Agenda familial,calendar,tâches/planning,/calendar,feuille dans l’écran,,,non,non,non,non
 outil,Famille,/family/prep,,,,,,,,calendar:/family/prep,family_prep,Échéances préparées,calendar,tâches/planning,/family/prep,,,,non,non,non,non
 outil,Famille,/family,,,,,,,,tasks:/family,family_tasks,Organisation familiale,tasks,tâches/planning,/family,,,,non,non,non,non

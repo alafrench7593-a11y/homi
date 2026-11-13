@@ -13,13 +13,57 @@
     "intro.tsx": "tranche",
     "me/mood/index.tsx": "fait",
     "me/mood/[id].tsx": "fait",
-    "me/diary.tsx": "fait"
+    "me/diary.tsx": "fait",
+    "scanner/index.tsx": "fait",
+    "scanner/product.tsx": "fait",
+    "scanner/food.tsx": "fait",
+    "scanner/result/[id].tsx": "fait",
+    "scanner/history.tsx": "fait",
+    "scanner/compare.tsx": "fait",
+    "scanner/avoid.tsx": "fait",
+    "scanner/recalls.tsx": "fait"
   },
   "tools": {
     "mood:/me/mood": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "scanner:/scanner/product": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "scanner:/scanner/food": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "scanner:/scanner/history": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "scanner:/scanner/compare": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "scanner:/scanner/avoid": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "partiel",
+      "parcours_verifie": "partiel"
+    },
+    "scanner:/scanner/recalls": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "partiel",
       "parcours_verifie": "oui"
     }
   },
@@ -29,21 +73,35 @@
       "label": "Mon humeur",
       "key": "mood",
       "why": "bilan court à choix (humeur, énergie, note facultative), privé, avec relais d’aide : valide champs mats, puces, bouton principal au-dessus du clavier et feuille de confirmation",
-      "routes": ["/me/mood", "/me/diary"]
+      "routes": [
+        "/me/mood",
+        "/me/diary"
+      ]
     },
     {
       "kind": "Données",
       "label": "Biberon",
       "key": "pp_bottle",
       "why": "minuteur en direct + saisie rapide + historique et compteur de mesurettes : valide chiffres animés, carte d’état, transition liste → détail et lisibilité de nuit",
-      "routes": ["/bottle", "/bottle/[childId]", "/bottle/history", "/bottle/scoops"]
+      "routes": [
+        "/bottle",
+        "/bottle/[childId]",
+        "/bottle/history",
+        "/bottle/scoops"
+      ]
     },
     {
       "kind": "Plusieurs étapes",
       "label": "Scanner un produit",
       "key": "scan_product",
       "why": "caméra ou saisie du code → fiche résultat → historique et comparaison : valide transitions entre écrans, états chargement / erreur réseau / introuvable",
-      "routes": ["/scanner", "/scanner/product", "/scanner/result/[id]", "/scanner/history", "/scanner/compare"]
+      "routes": [
+        "/scanner",
+        "/scanner/product",
+        "/scanner/result/[id]",
+        "/scanner/history",
+        "/scanner/compare"
+      ]
     }
   ]
 }
