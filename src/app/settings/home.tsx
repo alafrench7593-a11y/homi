@@ -9,7 +9,35 @@ import { Button, Card, Chip, IconButton, Row, SectionTitle, Text, Toggle } from 
 import { effectiveHidden, homeCardOrder, HOME_CARDS, QUICK_KEYS, orderedHomeCards, quickIcon, quickLabel } from '@/features/home';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { t as tr, type TKey } from '@/i18n';
+import { Cascade, MorphIcon, MORPH_SHAPES, type MorphShape } from '@/motion';
+import { useTheme } from '@/theme/ThemeProvider';
+
+/** Libellés des modules (clés existantes) associés aux formes morphables. */
+const MODULE_LABEL: Record<MorphShape, TKey> = {
+  drop: 'u2.profiles.track_breastfeed', moon: 'u2.profiles.track_sleep', circle: 'u2.sky.u_cycle',
+  belly: 'u2.preg.title', house: 'cy.nav.calendar', heart: 'u7.child.mk.memory',
+};
+
+/** Démonstration du système de mouvement : l'icône se transforme d'un module à l'autre (src/motion/MorphIcon). */
+function ModuleMorphPreview() {
+  const t = useTheme();
+  const [shape, setShape] = React.useState<MorphShape>('house');
+  return (
+    <Cascade index={0}>
+      <Card testID="module-morph-preview">
+        <Row style={{ alignItems: 'center' }}>
+          <MorphIcon shape={shape} size={52} color={t.colors.primary} testID="module-morph-icon" />
+          <Row wrap gap={spacing.xs} style={{ flex: 1 }}>
+            {MORPH_SHAPES.map((s) => (
+              <Chip key={s} label={tr(MODULE_LABEL[s])} selected={s === shape} onPress={() => setShape(s)} testID={`morph-${s}`} />
+            ))}
+          </Row>
+        </Row>
+      </Card>
+    </Cascade>
+  );
+}
 
 export default function HomeSettings() {
   const toast = useToast();
@@ -45,6 +73,7 @@ export default function HomeSettings() {
 
   return (
     <Screen back title={tr('u1.home.title')} subtitle={tr('u1.home.subtitle')}>
+      <ModuleMorphPreview />
       <Card>
         <Row>
           <View style={{ flex: 1, gap: 2 }}>
