@@ -12,6 +12,7 @@
  */
 import React from 'react';
 import { Keyboard, Platform, TextInput, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { ScreenChromeContext } from './screenChrome';
 
 type Measurable = { measureInWindow?: (cb: (x: number, y: number, width: number, height: number) => void) => void };
 type Box = { x: number; y: number; width: number; height: number };
@@ -113,8 +114,12 @@ type ScrollTarget = Measurable & { scrollTo?: (o: { x?: number; y: number; anima
 /**
  * Portée clavier d'une zone qui défile (ScrollView de `Screen` ou de `Sheet`) : à brancher sur `ref` et `onScroll`.
  */
-export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | null>) {
+export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | null>, opts?: { chrome?: boolean }) {
   const offset = React.useRef(0);
+  // Zone inscrite auprès de l'écran (en-tête qui se replie, `useScreenScroll`) ; une feuille (Sheet) ne s'inscrit pas
+  const chromeCtx = React.useContext(ScreenChromeContext);
+  const chrome = opts?.chrome === false ? null : chromeCtx;
+  React.useEffect(() => chrome?.register({ ref: scrollRef, offset: () => offset.current }), [chrome, scrollRef]);
   const entries = React.useRef<FieldEntry[]>([]);
   const listeners = React.useRef(new Set<() => void>());
   const ver = React.useRef(0);
@@ -180,8 +185,16 @@ export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | nu
   }, [scrollRef]);
 
   React.useEffect(() => () => { pending.current?.(); }, []);
+  // Web : le clavier s'ouvre APRÈS le focus (zone visible réduite) ; le champ actif est alors ramené en vue
+  React.useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    startWebKeyboard();
+    const f = () => { if (webKb.open && lastFocused.current && stillFocused(lastFocused.current)) scope.reveal(lastFocused.current); };
+    webKb.subs.add(f);
+    return () => { webKb.subs.delete(f); };
+  }, [scope]);
 
-  const onScroll = React.useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => { offset.current = e.nativeEvent.contentOffset.y; }, []);
+  const onScroll = React.useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => { offset.current = e.nativeEvent.contentOffset.y; chrome?.onScroll(e); }, [chrome]);
   return { scope, onScroll };
 }
 
@@ -191,11 +204,56 @@ export function useRevealOnFocus(ref: React.RefObject<TextInput | null>) {
   return React.useCallback(() => { scope?.reveal(ref.current); }, [scope, ref]);
 }
 
-/** Le clavier logiciel est-il affiché ? (iOS : dès qu'il commence à monter ; web : jamais.) */
+/**
+ * Web : le clavier logiciel des navigateurs mobiles ne déclenche aucun événement `Keyboard` ; il RÉDUIT la zone
+ * visible (`visualViewport`, ou la fenêtre sur Android). On le considère ouvert quand un champ de saisie a le focus
+ * ET que la hauteur visible a perdu au moins `WEB_KEYBOARD_MIN` px par rapport à la plus grande hauteur vue à la
+ * même largeur (logique pure, testée).
+ */
+export const WEB_KEYBOARD_MIN = 120;
+export function webKeyboardOpen(p: { editing: boolean; height: number; maxHeight: number }): boolean {
+  return p.editing && p.maxHeight - p.height >= WEB_KEYBOARD_MIN;
+}
+
+type WebWin = { innerWidth: number; innerHeight: number; visualViewport?: { height: number; addEventListener: (t: string, f: () => void) => void; removeEventListener: (t: string, f: () => void) => void } | null; addEventListener: (t: string, f: () => void, o?: boolean) => void; removeEventListener: (t: string, f: () => void, o?: boolean) => void };
+const webKb = { open: false, maxH: 0, width: 0, subs: new Set<() => void>(), started: false };
+function webEditing(): boolean {
+  const d = (globalThis as { document?: { activeElement?: { tagName?: string; type?: string; isContentEditable?: boolean } | null } }).document;
+  const a = d?.activeElement;
+  if (!a) return false;
+  if (a.tagName === 'TEXTAREA' || a.isContentEditable) return true;
+  return a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|range|color|file|hidden|reset|image)$/i.test(a.type ?? '');
+}
+function startWebKeyboard() {
+  const w = globalThis as unknown as WebWin;
+  if (webKb.started || typeof w.addEventListener !== 'function') return;
+  webKb.started = true;
+  const update = () => {
+    const h = w.visualViewport?.height ?? w.innerHeight;
+    if (w.innerWidth !== webKb.width) { webKb.width = w.innerWidth; webKb.maxH = 0; }
+    // la plus grande hauteur n'est retenue que sans champ actif (sinon le clavier fausserait la référence)
+    if (!webEditing() || h > webKb.maxH) webKb.maxH = Math.max(webKb.maxH, h);
+    const open = webKeyboardOpen({ editing: webEditing(), height: h, maxHeight: webKb.maxH });
+    if (open !== webKb.open) { webKb.open = open; webKb.subs.forEach((f) => f()); }
+  };
+  w.addEventListener('resize', update);
+  w.addEventListener('focusin', update, true);
+  w.addEventListener('focusout', () => setTimeout(update, 0), true);
+  w.visualViewport?.addEventListener('resize', update);
+  update();
+}
+
+/** Le clavier logiciel est-il affiché ? (iOS : dès qu'il commence à monter ; web : zone visible réduite pendant une saisie.) */
 export function useKeyboardVisible() {
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(() => (Platform.OS === 'web' ? webKb.open : false));
   React.useEffect(() => {
-    if (Platform.OS === 'web') return;
+    if (Platform.OS === 'web') {
+      startWebKeyboard();
+      const f = () => setVisible(webKb.open);
+      webKb.subs.add(f);
+      f();
+      return () => { webKb.subs.delete(f); };
+    }
     const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setVisible(true));
     const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setVisible(false));
     return () => { show.remove(); hide.remove(); };

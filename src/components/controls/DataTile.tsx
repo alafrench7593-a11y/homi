@@ -9,7 +9,8 @@
  * (sa tendance est donnée par `trendLabel` si fourni). Contraste du texte sur la lumière interne testé (contrast.test.ts).
  */
 import React from 'react';
-import { Pressable, StyleSheet, Text as RNText, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text as RNText, View, type StyleProp, type ViewStyle } from 'react-native';
+import { useFontScale } from '@/theme/fontScale';
 import Svg, { Defs, LinearGradient as SvgLinear, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import Animated from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
@@ -68,6 +69,11 @@ export interface DataTileProps {
   unit?: string;
   /** Contexte : période (« cette semaine »), comparaison… */
   context?: string;
+  /**
+   * Lignes du contexte (défaut 3). Au-delà, le texte est volontairement abrégé (« … ») et reste lu en entier par
+   * les lecteurs d'écran (libellé de la tuile) ; `0` = jamais abrégé. Texte agrandi : +1 ligne automatiquement.
+   */
+  contextLines?: number;
   icon?: React.ComponentProps<typeof Feather>['name'];
   tint?: TileTint;
   /** Valeurs réelles pour le micrographique (≥ 2 valeurs finies, sinon rien n'est dessiné) */
@@ -83,8 +89,10 @@ export interface DataTileProps {
   testID?: string;
 }
 
-export function DataTile({ label, value, unit, context, icon, tint = 'accent', series, trendLabel, emptyText, onPress, morphId, style, testID }: DataTileProps) {
+export function DataTile({ label, value, unit, context, contextLines = 3, icon, tint = 'accent', series, trendLabel, emptyText, onPress, morphId, style, testID }: DataTileProps) {
   const t = useTheme();
+  const fontScale = useFontScale();
+  const ctxLines = contextLines > 0 ? contextLines + (fontScale > 1.15 ? 1 : 0) : undefined;
   const id = React.useId().replace(/:/g, '');
   const color = tileTint(t, tint);
   const light = innerLight(t, color);
@@ -109,7 +117,7 @@ export function DataTile({ label, value, unit, context, icon, tint = 'accent', s
       ) : null}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         {icon ? <Feather name={icon} size={15} color={empty ? t.colors.textMuted : valueInk(t, tint) === t.colors.text ? t.colors.primary : color} /> : null}
-        <RNText maxFontSizeMultiplier={1.4} numberOfLines={2} style={{ flex: 1, color: t.colors.textMuted, fontFamily: fonts.bodyMedium, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight }}>{label}</RNText>
+        <RNText maxFontSizeMultiplier={1.4} {...(Platform.OS === 'web' ? ({ dataSet: { fsmax: '1.4' } } as object) : null)} style={{ flex: 1, color: t.colors.textMuted, fontFamily: fonts.bodyMedium, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight }}>{label}</RNText>
       </View>
       {empty ? (
         <View style={{ flex: 1, justifyContent: 'flex-end', gap: 2 }} testID="tile-empty">
@@ -126,7 +134,7 @@ export function DataTile({ label, value, unit, context, icon, tint = 'accent', s
           {/* micrographique (au-dessus) puis contexte : jamais l'un ne coupe l'autre, même dans une tuile étroite */}
           <View style={{ gap: 4, marginTop: 'auto' }}>
             {series ? <Sparkline series={series} color={color} /> : null}
-            {context ? <RNText maxFontSizeMultiplier={1.5} numberOfLines={2} style={{ color: t.colors.textMuted, fontFamily: fonts.body, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight }}>{context}</RNText> : null}
+            {context ? <RNText maxFontSizeMultiplier={1.5} numberOfLines={ctxLines} {...(Platform.OS === 'web' ? ({ dataSet: { fsmax: '1.5', truncate: 'intentional' } } as object) : null)} style={{ color: t.colors.textMuted, fontFamily: fonts.body, fontSize: typography.caption.fontSize, lineHeight: typography.caption.lineHeight }}>{context}</RNText> : null}
           </View>
         </>
       )}

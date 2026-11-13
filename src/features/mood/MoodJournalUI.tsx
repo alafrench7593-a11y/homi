@@ -148,8 +148,9 @@ export function SupportBanner({ urgent, testID }: { urgent: boolean; testID?: st
  * TOUJOURS présent (désactivé tant qu'aucune humeur n'est choisie) : il ne disparaît pas sous le doigt après l'envoi,
  * un double appui ne peut donc pas tomber sur la liste dessous ; il ne s'allume qu'avec le choix (un seul point focal).
  */
-export function ComposerAction({ label, onPress, testID, icon = 'check', disabled }: { label: string; onPress: () => Promise<unknown>; testID: string; icon?: React.ComponentProps<typeof PrimaryButton>['icon']; disabled?: boolean }) {
-  return <PrimaryButton label={label} icon={icon} size="lg" full onPress={onPress} testID={testID} disabled={disabled} />;
+export function ComposerAction({ label, shortLabel, onPress, testID, icon = 'check', disabled }: { label: string; shortLabel?: string; onPress: () => Promise<unknown>; testID: string; icon?: React.ComponentProps<typeof PrimaryButton>['icon']; disabled?: boolean }) {
+  // libellé court (petit écran, texte agrandi) : le bouton reste sur une ligne, le lecteur d'écran lit `label`
+  return <PrimaryButton label={label} shortLabel={shortLabel} icon={icon} size="lg" full onPress={onPress} testID={testID} disabled={disabled} />;
 }
 
 export const timeLabel = (iso: string) => formatTime(iso);

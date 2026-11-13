@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import {
-  ActivityIndicator, Animated, Easing, Pressable, StyleSheet, Text as RNText, TextInput, View,
+  ActivityIndicator, Animated, Easing, Platform, Pressable, StyleSheet, Text as RNText, TextInput, View,
   type GestureResponderEvent, type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
   useWindowDimensions,
 } from 'react-native';
@@ -32,6 +32,7 @@ import { useKeyboardScope } from './keyboard';
 import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useToast } from './Overlays';
+import { cappedScale, useFontScale } from '@/theme/fontScale';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 
@@ -68,17 +69,23 @@ interface AppTextProps extends TextProps {
  */
 const ROLE: Record<Variant, TypographyRole> = { hero: 'display', title: 'headingXL', heading: 'headingM', body: 'bodyM', small: 'bodyS', caption: 'caption', label: 'label' };
 
+const IS_WEB = Platform.OS === 'web';
+
 export function Text({ variant = 'body', muted, color, weight, center, italic, style, intentionalTruncation, ...rest }: AppTextProps) {
   const t = useTheme();
   const display = variant === 'hero' || variant === 'title';
   const family = italic ? fonts.displayItalic : display ? fonts.display : variant === 'heading' ? fonts.displayMedium : weight === 'bold' ? fonts.bodyBold : weight === 'medium' || variant === 'label' ? fonts.bodyMedium : fonts.body;
   const scale = variant === 'label' ? typeScale.small : typeScale[variant];
   const role = typography[ROLE[variant]];
+  // Web : le plafond d'agrandissement est publié (data-fsmax) pour l'audit de mise en page, qui simule la taille de
+  // texte du téléphone (react-native-web n'applique pas maxFontSizeMultiplier) — voir e2e/audit_ux_detect.js
+  const cap = rest.maxFontSizeMultiplier ?? role.maxScale;
+  const dataSet = IS_WEB ? (intentionalTruncation ? { truncate: 'intentional', fsmax: String(cap) } : { fsmax: String(cap) }) : intentionalTruncation ? { truncate: 'intentional' } : null;
   return (
     <RNText
       maxFontSizeMultiplier={role.maxScale}
       style={[{ color: color ?? (muted ? t.colors.textMuted : t.colors.text), fontFamily: family, ...scale, textAlign: center ? 'center' : undefined }, variant === 'label' && { letterSpacing: typography.label.letterSpacing }, style]}
-      {...(intentionalTruncation ? ({ dataSet: { truncate: 'intentional' } } as object) : null)}
+      {...(dataSet ? ({ dataSet } as object) : null)}
       {...rest}
     />
   );
@@ -190,6 +197,11 @@ function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLa
  */
 interface ButtonProps extends Omit<PressableProps, 'style' | 'children' | 'onPress'> {
   label: string;
+  /**
+   * Libellé court (bouton pleine largeur) : si le libellé complet ne tient pas sur une ligne (petit écran, texte
+   * agrandi), le bouton retire d'abord son icône, puis affiche ce libellé. Le lecteur d'écran annonce toujours `label`.
+   */
+  shortLabel?: string;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive' | 'night';
   icon?: IconName;
   /** Icône après le libellé (ex. flèche « suivant »). */
@@ -241,8 +253,22 @@ function useButtonMotion() {
   };
 }
 const easingStd = Easing.bezier(0.2, 0, 0, 1);
+/** Libellés de bouton : retour à la ligne entre les mots seulement (pas de « Plu-tôt »). */
+const NO_HYPHENS = (IS_WEB ? { hyphens: 'manual' } : null) as unknown as TextStyle;
 
-export function Button({ label, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
+/**
+ * Étape d'adaptation d'un bouton pleine largeur dont le libellé passe sur plusieurs lignes (logique pure, testée) :
+ * 0 = icône + libellé ; 1 = libellé sans icône ; 2 = libellé court (si fourni). On n'avance que si le libellé
+ * occupe plus d'une ligne ; jamais de retour en arrière tant que la largeur et le libellé ne changent pas.
+ */
+export function nextLabelStep(step: number, o: { lines: number; hasIcon: boolean; hasShort: boolean }): number {
+  if (o.lines <= 1) return step;
+  if (step === 0 && o.hasIcon) return 1;
+  if (step <= 1 && o.hasShort) return 2;
+  return step;
+}
+
+export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
   const variant = v === 'destructive' ? 'danger' : v;
   const t = useTheme();
   const reduce = useReduceMotion();
@@ -256,6 +282,15 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const busy = React.useRef(new Animated.Value(isBusy ? 1 : 0)).current;
   React.useEffect(() => { timeTo(busy, isBusy ? 1 : 0, duration.fast, reduce).start(); }, [busy, isBusy, reduce]);
   const off = !!disabled;
+  // Libellé trop long pour une ligne (bouton pleine largeur) : sans icône, puis libellé court
+  const fontScale = useFontScale();
+  const [step, setStep] = React.useState(0);
+  const boxW = React.useRef(0);
+  React.useEffect(() => { setStep(0); }, [label, shortLabel]);
+  const adapt = !!full && (!!icon || !!shortLabel);
+  const lineH = (BUTTON.font[size] + 6) * cappedScale(fontScale, typography.button.maxScale);
+  const shownIcon = step >= 1 ? undefined : icon;
+  const shownLabel = step >= 2 && shortLabel ? shortLabel : label;
   // Désactivation animée (fondu), réussite (respiration) et échec (tremblement) : l'action part toujours tout de suite,
   // ces retours l'accompagnent seulement, après le résultat réel de la promesse.
   const offV = React.useRef(new Animated.Value(off ? 1 : 0)).current;
@@ -266,13 +301,16 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
 
   const nightC = t.name === 'night' ? t.colors : themes.night.colors;
   const sheen = usePressSheen();
-  const bg = { primary: t.colors.primary, secondary: linesOf(t).controlFill, outline: 'transparent', ghost: glassOf(t).inset.fill, danger: t.colors.danger, night: nightC.primary }[variant];
-  const fg = {
+  // Sombre : un bouton plein désactivé devient un verre neutre (la couleur vive atténuée restait le point le plus
+  // lumineux de l'écran et semblait active) ; en clair, la teinte atténuée reste lisible comme « pas encore »
+  const dimSolid = off && solid && t.isDark;
+  const lines = linesOf(t);
+  const bg = dimSolid ? lines.controlFill : { primary: t.colors.primary, secondary: linesOf(t).controlFill, outline: 'transparent', ghost: glassOf(t).inset.fill, danger: t.colors.danger, night: nightC.primary }[variant];
+  const fg = dimSolid ? t.colors.textMuted : {
     primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
     danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: nightC.primaryText,
   }[variant];
-  const lines = linesOf(t);
-  const border = { primary: 'transparent', secondary: lines.hairline, outline: t.colors.primary, ghost: lines.hairline, danger: t.colors.danger, night: nightC.primary }[variant];
+  const border = dimSolid ? lines.hairline : { primary: 'transparent', secondary: lines.hairline, outline: t.colors.primary, ghost: lines.hairline, danger: t.colors.danger, night: nightC.primary }[variant];
   // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
   const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
   const veilHover = solid ? stateVeil.hoverSolid : variant === 'secondary' ? stateVeil.hoverGlass : 0.08;
@@ -301,7 +339,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   };
   const radiusPx = BUTTON.radius[size];
   return (
-    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: offV.interpolate({ inputRange: [0, 1], outputRange: [1, feedback.disabledOpacity] }), borderRadius: radiusPx }, style,
+    <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: offV.interpolate({ inputRange: [0, 1], outputRange: [1, dimSolid ? 0.8 : feedback.disabledOpacity] }), borderRadius: radiusPx }, style,
       { transform: [{ translateX: shake }, { scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, BUTTON.pressScale] }) }, { scale: pulse }] }]}>
     <Pressable
       accessibilityRole="button"
@@ -314,6 +352,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       onHoverIn={m.handlers.onHoverIn}
       onHoverOut={m.handlers.onHoverOut}
       onPress={handlePress}
+      onLayout={adapt ? (e) => { const w = Math.round(e.nativeEvent.layout.width); if (Math.abs(w - boxW.current) > 2) { boxW.current = w; setStep(0); } } : undefined}
       style={[
         styles.button,
         { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: BUTTON.padX[size] },
@@ -337,10 +376,12 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? NEUTRALS.graphite : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? stateVeil.pressSolidDarken : veilPress], extrapolate: 'clamp' }) }]} />
       {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante */}
       <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
-        {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
-        {label ? (
-          <Text weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: 0.1 }}>
-            {label}
+        {shownIcon && <Animated.View style={nudge(shownIcon)}><Icon name={shownIcon} size={iconSize} color={fg} /></Animated.View>}
+        {shownLabel ? (
+          <Text weight="bold" color={fg} center maxFontSizeMultiplier={typography.button.maxScale}
+            onLayout={adapt ? (e) => { const lines = Math.round(e.nativeEvent.layout.height / lineH); setStep((s) => nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel })); } : undefined}
+            style={[{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: 0.1 }, NO_HYPHENS]}>
+            {shownLabel}
           </Text>
         ) : null}
         {iconRight && <Animated.View style={nudge(iconRight)}><Icon name={iconRight} size={iconSize} color={fg} /></Animated.View>}
@@ -361,7 +402,7 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
  * Bouton icône seule (retour, fermer, menu, partager…) : zone tactile de 48 px, pastille visible de 40 px aux coins de
  * 12 px. `plain` : sans fond (fond discret au survol), `filled` : fond discret + liseré, `primary` : plein.
  */
-export function IconButton({ icon, label, onPress, color, size = 20, style, tone = 'plain', disabled }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean }) {
+export function IconButton({ icon, label, onPress, color, size = 20, style, tone = 'plain', disabled, testID }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean; testID?: string }) {
   const t = useTheme();
   const m = useButtonMotion();
   const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? linesOf(t).controlFill : 'transparent';
@@ -379,6 +420,7 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
       }}
       {...m.handlers}
       hitSlop={6}
+      testID={testID}
       style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: MIN_TOUCH / 2, opacity: disabled ? 0.45 : 1 }, style]}
     >
       <Animated.View style={{ width: D, height: D, borderRadius: D / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: bg,
@@ -550,6 +592,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           accessibilityLabel={label}
           accessibilityHint={hint}
           maxFontSizeMultiplier={1.6}
+          {...(IS_WEB ? ({ dataSet: { field: '1', fsmax: '1.6' } } as object) : null)}
           // Multiligne : le texte commence en haut du cadre (Android le centrait verticalement)
           style={[{ flex: 1, minWidth: 0, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, rest.multiline ? { textAlignVertical: 'top' } : null, style as StyleProp<TextStyle>]}
           {...rest}
@@ -624,9 +667,10 @@ function BannerText({ text, fold, accent }: { text: string; fold: boolean; accen
   const long = fold && text.length > FOLD_AT;
   return (
     <>
-      <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} accessibilityLabel={text}>{text}</Text>
+      <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} intentionalTruncation={long && !open} accessibilityLabel={text}>{text}</Text>
       {long ? (
-        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={12} hoverLift={0} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
+        // cible de 44 px de haut (le web ignore hitSlop), sans décaler la mise en page (marges négatives)
+        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={12} hoverLift={0} style={{ alignSelf: 'flex-start', minHeight: MIN_TOUCH, justifyContent: 'center', marginVertical: -12, paddingRight: spacing.sm }}>
           <Text variant="caption" weight="bold" color={accent}>{open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')}</Text>
         </Tappable>
       ) : null}

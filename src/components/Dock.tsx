@@ -34,6 +34,7 @@ import { Sheet } from './Overlays';
 import { tint } from './ToolGlyph';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { useDockActionFor, type DockAction } from './dockAction';
+import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
@@ -170,6 +171,9 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const at = Math.max(activeIndex, 0);
   const pillX = g.pad + layout.widths.slice(0, at).reduce((a, w) => a + w, 0) + ((layout.widths[at] ?? PILL_W) - PILL_W) / 2;
   const bottom = Math.max(insets.bottom, 10);
+  // Clavier ouvert : la barre s'efface (elle recouvrait le champ actif sur le web et en fenêtre réduite) ; elle
+  // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
+  const keyboard = useKeyboardVisible();
 
   const go = (route: (typeof state.routes)[number]) => {
     const focused = focusedName === route.name;
@@ -182,7 +186,8 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
 
   return (
     <>
-      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, alignItems: 'center' }}>
+      <View pointerEvents="box-none" testID="dock"
+        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
         {/* Mesure invisible des libellés à la taille de référence, en graisse active (la plus large) */}
         <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
           style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 }}>

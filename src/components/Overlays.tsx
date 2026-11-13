@@ -78,7 +78,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
   // Clavier : le champ actif reste visible dans la feuille ; fermer la feuille ferme le clavier ouvert par un de ses champs
   const scrollRef = useRef<ScrollView>(null);
-  const { scope: keyboardScope, onScroll } = useKeyboardScopeFor(scrollRef);
+  const { scope: keyboardScope, onScroll } = useKeyboardScopeFor(scrollRef, { chrome: false });
   useEffect(() => {
     if (!visible) keyboardScope.dismissIfOwned();
   }, [visible, keyboardScope]);

@@ -121,8 +121,9 @@ describe('ChoiceGroup', () => {
     await act(async () => { grp.props.onLayout({ nativeEvent: { layout: { width: CHECK_MIN_WIDTH * 3 + 40, height: 52 } } }); });
     expect(host(r, 'choice-indicator').length).toBe(1);
     expect(host(r, 'choice-check').length).toBe(1);
-    // très étroit : pas de coche, le gras reste
-    await act(async () => { grp.props.onLayout({ nativeEvent: { layout: { width: 200, height: 52 } } }); });
+    // très étroit : pas de coche, le gras reste (230 px : les libellés tiennent encore en pills avec le fontScale 2
+    // du simulateur Jest, plafonné à 1,5 ; plus étroit, le sélecteur passe en cartes — audit 09)
+    await act(async () => { grp.props.onLayout({ nativeEvent: { layout: { width: 230, height: 52 } } }); });
     expect(host(r, 'choice-check').length).toBe(0);
   });
   it('variante orbes (humeur) : coche sur l’orbe choisi', async () => {

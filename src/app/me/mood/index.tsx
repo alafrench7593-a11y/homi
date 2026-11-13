@@ -53,7 +53,7 @@ export default function MoodScreen() {
 
   return (
     <Screen back title={tr('u8.mood.title')} subtitle={tr('u8.mood.subtitle')} scroll={false} padded={false}
-      footer={<ComposerAction label={c.mood ? tr('u8.mood.saveNamed', { mood: moodLabel(c.mood) }) : tr('u8.mood.saveMain')} onPress={save} disabled={!c.mood} testID="mood-main-action" />}>
+      footer={<ComposerAction label={c.mood ? tr('u8.mood.saveNamed', { mood: moodLabel(c.mood) }) : tr('u8.mood.saveMain')} shortLabel={tr('common.save')} onPress={save} disabled={!c.mood} testID="mood-main-action" />}>
       <VirtualList
         ref={listRef}
         data={loading || failed ? [] : moods ?? []}
