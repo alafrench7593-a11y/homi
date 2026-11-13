@@ -41,6 +41,25 @@ export function batcher(flush: (tables: string[]) => void, delayMs = 400) {
   };
 }
 
+/**
+ * Retour du temps réel après une coupure (réseau instable, serveur redémarré, téléphone en veille) : les changements
+ * faits pendant la coupure ne seront jamais annoncés. Au premier « en direct » qui suit une perte, on relit donc tout
+ * ce que l'abonnement couvre. Le tout premier abonnement ne relit rien (les écrans viennent de charger).
+ */
+export function reconnectWatcher(onResume: () => void) {
+  let wasLive = false;
+  let lost = false;
+  return (status: 'live' | 'offline') => {
+    if (status === 'live') {
+      if (wasLive && lost) onResume();
+      wasLive = true;
+      lost = false;
+    } else if (wasLive) {
+      lost = true;
+    }
+  };
+}
+
 let wired = false;
 /** Premier plan et réseau : sur téléphone, React Query ne le sait pas tout seul. */
 export function wireFocusAndOnline() {
@@ -64,7 +83,9 @@ export function useRealtimeSync(householdId: string | null | undefined, userId: 
     const b = batcher((tables) => {
       void qc.invalidateQueries({ predicate: (q) => tables.some((t) => q.queryKey.includes(t)) });
     });
-    const stop = backend.subscribeChanges(changeSpecs(householdId, userId), (t) => b.push(t), (s) => setLive(s === 'live'));
+    const specs = changeSpecs(householdId, userId);
+    const watch = reconnectWatcher(() => specs.forEach((sp) => b.push(sp.table)));
+    const stop = backend.subscribeChanges(specs, (t) => b.push(t), (s) => { setLive(s === 'live'); watch(s); });
     return () => { b.cancel(); stop(); setLive(false); };
   }, [householdId, userId, qc]);
   return live;
