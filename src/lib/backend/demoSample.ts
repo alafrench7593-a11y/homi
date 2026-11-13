@@ -60,6 +60,8 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
     log('sleeps', { child_id: lina, kind: 'night', started_at: dayAt(d, 19, 40 + shift), ended_at: dayAt(d - 1, 7, shift), wakeups: d % 2, wake_events: d % 2 ? [{ at: dayAt(d - 1, 3, 10), minutes: 15, back_at: dayAt(d - 1, 3, 25) }] : [] });
   }
   log('sleep_profiles', { child_id: lina, usual_wake: '07:00', nap_count: 2, usual_bedtime: '19:45', routine_minutes: 20, routine_note: tr('l2.ds.routine'), feeding: 'mixed', difficulties: [], use_corrected: false, gestational_weeks: null, notify: { enabled: false }, updated_at: new Date().toISOString() });
+  // Journal du sommeil (démonstration) : un changement de routine daté
+  log('sleep_notes', { child_id: lina, kind: 'routine_change', tags: [], noted_at: dayAt(3, 18, 0), note: tr('sj.demoNote') });
   log('meals', { child_id: lina, at: iso(5), description: tr('l2.ds.meal'), foods: ['Carotte', 'Patate douce'], texture: 'mashed', reaction_note: null });
   for (const [days, kg, cm] of [[300, 7.4, 66], [200, 8.6, 71.5], [60, 9.9, 77]] as const) {
     log('child_measurements', { child_id: lina, measured_on: addDays(today, -days), weight_kg: kg, height_cm: cm, head_cm: null, source: 'professional' });

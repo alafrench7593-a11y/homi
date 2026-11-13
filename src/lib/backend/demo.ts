@@ -64,7 +64,7 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const demoRecallMessage = () => tr('l2.dm.recallCheck');
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps', 'sleep_notes'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -647,6 +647,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       if (!['nap', 'bedtime'].includes(r.target) || !['right', 'early', 'late'].includes(r.verdict)) throw new BackendError(tr('l2.dm.opinionInvalid'));
       if (T('sleep_feedback').some((x) => x.child_id === r.child_id && x.target === r.target && x.estimated_for === r.estimated_for)) throw new BackendError(tr('l2.dm.opinionExists'), '23505');
       r.created_at ??= nowIso();
+    }
+    // Journal du sommeil (20261113000200_sommeil.sql) : sorte, étiquettes, jamais vide ni dans le futur
+    if (table === 'sleep_notes') {
+      const tags: unknown[] = Array.isArray(r.tags) ? r.tags : [];
+      r.tags = tags; r.noted_at ??= nowIso(); r.created_at ??= nowIso();
+      const known = ['falling_asleep', 'night_wakings', 'short_naps', 'early_waking', 'irregular', 'other'];
+      if (!['difficulty', 'routine_change'].includes(r.kind) || tags.some((x) => !known.includes(String(x))) || tags.length > 6
+        || (!tags.length && !String(r.note ?? '').trim()) || String(r.note ?? '').length > 1000
+        || Date.parse(r.noted_at) > Date.now() + 5 * 60_000) throw new BackendError(tr('l2.dm.valueInvalid'));
     }
     if (table === 'sleeps' && !r.ended_at && T('sleeps').some((s) => s.child_id === r.child_id && !s.ended_at)) {
       throw new BackendError(tr('l2.dm.sleepOngoing'));
@@ -1427,7 +1436,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
         place_suggestions: T('place_suggestions').filter((x) => x.user_id === uid()),
         households: T('households').filter((h) => households.includes(h.id)).map((h) => ({
           household: h,
-          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines', 'food_introductions', 'food_tastings', 'child_steps']
+          ...Object.fromEntries(['pregnancies', 'expected_babies', 'children', 'child_measurements', 'breastfeeds', 'bottles', 'pumpings', 'meals', 'diapers', 'sleeps', 'child_observations', 'appointments', 'checklists', 'checklist_items', 'documents', 'sleep_profiles', 'sleep_feedback', 'bedtime_routines', 'food_introductions', 'food_tastings', 'child_steps', 'sleep_notes']
             .map((t) => [t, byHousehold(t).filter((r) => r.household_id === h.id)])),
         })),
         community: {

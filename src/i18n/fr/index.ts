@@ -61,3 +61,4 @@ export { langAdmin } from './langAdmin';
 export { paywall } from './paywall';
 export { assistantSections } from './assistantSections';
 export { diary } from './diary';
+export { sleepJournal } from './sleepJournal';

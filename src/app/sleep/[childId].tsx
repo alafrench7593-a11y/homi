@@ -26,7 +26,7 @@ import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons, SleepTimeline } from '@/features/sleep';
 import { WakeCheckReminder } from '@/features/sleepWakeCheck';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useChildren, useInvalidate, useMemberships, usePremium, useReminders, useRows } from '@/lib/data/hooks';
+import { useChild, useChildren, useInvalidate, useMemberships, usePremium, useReminders, useRows, useTrackedChildren } from '@/lib/data/hooks';
 import { openLink } from '@/lib/links';
 import { friendlyError, useDeleteReminder, useSaveReminder } from '@/lib/data/hooks-settings';
 import { saveSleepProfile, useNightFeeds, useSleepNotificationSync, useSleepPlan, type SleepProfileRow } from '@/lib/data/hooks-sleepPlanner';
@@ -40,6 +40,7 @@ import { SEEK_HELP_NOW } from '@/content/nightHelp';
 import { notificationsSupported } from '@/lib/notifications';
 import type { Child, Sleep } from '@/lib/types';
 import { palette, spacing } from '@/theme/tokens';
+import { useTheme } from '@/theme/ThemeProvider';
 import { formatNumber, localeTag, t as tr } from '@/i18n';
 
 type Tab = 'today' | 'profile' | 'alerts' | 'trends' | 'safety';
@@ -83,7 +84,7 @@ export default function SleepPlanner() {
       </Screen>
     );
   }
-  return <PlannerBody child={child} tab={tab} setTab={setTab} />;
+  return <PlannerBody key={child.id} child={child} tab={tab} setTab={setTab} />;
 }
 
 function PlannerBody({ child, tab, setTab }: { child: Child; tab: Tab; setTab: (t: Tab) => void }) {
@@ -91,8 +92,14 @@ function PlannerBody({ child, tab, setTab }: { child: Child; tab: Tab; setTab: (
   const { plan, profile } = data;
   useSleepNotificationSync(child, plan, profile);
   const age = childAge(child.birth_date);
+  const kids = (useTrackedChildren().data ?? []).filter((c) => c.enabled_tracking.includes('sleep'));
   return (
     <Screen back title={tr('u4.sp.titleOf', { name: child.first_name })} subtitle={plan?.age.corrected ? tr('u4.sp.corrected', { age: age.label }) : age.label}>
+      {kids.length > 1 ? (
+        <Row wrap testID="sleep-children">
+          {kids.map((c) => <Chip key={c.id} label={c.first_name} selected={c.id === child.id} accessibilityLabel={tr('sj.childA11y', { name: c.first_name })} onPress={() => { if (c.id !== child.id) router.replace({ pathname: '/sleep/[childId]', params: { childId: c.id, tab } }); }} />)}
+        </Row>
+      ) : null}
       <Row wrap testID="sleep-tabs">
         {TABS.map((x) => <Chip key={x.key} label={tr(x.label)} selected={tab === x.key} onPress={() => setTab(x.key)} accessibilityLabel={tr('u4.sp.tabA11y', { label: tr(x.label) })} />)}
       </Row>
@@ -190,6 +197,8 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
         <Button size="sm" variant="secondary" icon="heart" label={tr('u4.nh.title')} onPress={() => router.push(`/sleep/help/${child.id}` as never)} testID="sleep-help-link" />
         <Button size="sm" variant="ghost" icon="moon" label={tr('u4.tonight.title')} onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
         <Button size="sm" variant="ghost" icon="edit-3" label={tr('u4.sl.logPast')} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'sleep', child: child.id } })} />
+        <Button size="sm" variant="ghost" icon="calendar" label={tr('sj.open')} onPress={() => router.push({ pathname: '/sleep/history/[childId]', params: { childId: child.id } })} testID="sleep-history-link" />
+        <Button size="sm" variant="ghost" icon="users" label={tr('sj.relay')} onPress={() => router.push('/family/nights')} testID="sleep-relay-link" />
       </Row>
       <SleepEditSheet child={child} sleep={editing} all={sleeps as Sleep[]} onClose={() => setEditing(null)} />
     </View>
@@ -415,6 +424,10 @@ function TrendsTab({ child, data }: { child: Child; data: PlanData }) {
     : null;
   return (
     <View style={{ gap: spacing.sm }}>
+      <Card onPress={() => router.push({ pathname: '/sleep/history/[childId]', params: { childId: child.id } })} accessibilityLabel={tr('sj.open')} testID="sleep-trends-history">
+        <Text weight="bold">{tr('sj.open')}</Text>
+        <Text variant="small" muted>{tr('sj.openSub')}</Text>
+      </Card>
       <SectionTitle title={tr('u4.sp.daySummary')} />
       <Card testID="sleep-day-summary">
         <Text>{tr('u4.sp.daySumLine', { naps: tr('u4.sl.naps', { count: plan?.napsDone ?? 0 }), span: span(plan?.daySleepMinutes ?? 0) })}</Text>
@@ -480,6 +493,7 @@ function TrendsTab({ child, data }: { child: Child; data: PlanData }) {
 
 function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
   const toast = useToast();
+  const theme = useTheme();
   const { sleeps, profile, now } = data;
   const age = childAge(child.birth_date);
   const [note, setNote] = useState('');
@@ -499,7 +513,7 @@ function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u4.sp.officialSrc')}</Text>
         {SAFE_SLEEP_SOURCES.map((s) => (
           <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
-            <Text variant="caption" color={palette.lavenderInk} style={{ flex: 1 }}>
+            <Text variant="caption" color={theme.isDark ? theme.colors.lavender : palette.lavenderInk} style={{ flex: 1 }}>
               {tr('u4.sp.srcLine', { label: s.label, pub: new Date(`${s.published}T12:00:00`).toLocaleDateString(localeTag()), cons: new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString(localeTag()) })}
             </Text>
           </Tappable>

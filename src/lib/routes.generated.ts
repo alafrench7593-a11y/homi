@@ -205,6 +205,7 @@ export const APP_ROUTES: readonly string[] = [
   '/sleep/[childId]',
   '/sleep/difficult/[childId]',
   '/sleep/help/[childId]',
+  '/sleep/history/[childId]',
   '/sleep/tonight',
   '/sources',
   '/story',
