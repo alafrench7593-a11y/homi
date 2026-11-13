@@ -90,7 +90,9 @@ export function orbLayout(o: { labels: string[]; width: number; fontSize: number
       if (per === n) return { perRow: n, col, rows: 1 };
       // rangées équilibrées (5 orbes : 3 + 2, pas 4 + 1) ; colonnes de la largeur trouvée (même rythme sur chaque rangée)
       const rows = Math.ceil(n / per);
-      return { perRow: Math.ceil(n / rows), col, rows };
+      const perRow = Math.ceil(n / rows);
+      // colonnes élargies à la rangée équilibrée : le passage à la ligne (flexWrap) tombe bien après `perRow` orbes
+      return { perRow, col: Math.floor((o.width - o.gap * (perRow - 1)) / perRow) - 1, rows };  // −1 px : arrondis du navigateur
     }
   }
   return { perRow: 1, col: o.width, rows: n };

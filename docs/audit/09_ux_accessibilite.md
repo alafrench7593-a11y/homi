@@ -56,10 +56,18 @@ publics : `/welcome`, `/auth/sign-in`, `/auth/sign-up`, `/auth/forgot`.
 
 ## 2. Résultats chiffrés
 
-| | Avant (base 6827ebe) | Après |
+| | Avant (base 6827ebe) | Après (composants partagés corrigés) |
 |---|---|---|
-| Écrans en défaut (constats bloquants) | 20 / 33 | voir § 5 (fin de rapport) |
-| Constats bloquants | 91 | voir § 5 |
+| Écrans en défaut (constats bloquants) | 20 / 33 | 11 / 33, **tous hors des composants partagés** (§ 4) |
+| Constats bloquants (5 configurations) | 91 | 29, tous « connus » et signalés (`A_connus`) ; 0 nouveau |
+| Texte agrandi 1,3, hors clavier | humeur, journal, scanner, missions, stocks, bandeaux, Paywall en défaut | seuls les hubs (« Rechercher un outil », « Ma grossesse ») |
+| Clavier 320 × 308, texte 1 | 8 écrans à champ masqué | 0 |
+
+Partie B (après) : focus visible au clavier sur les 3 écrans parcourus ; noms accessibles : 0 manque (12 écrans) ;
+`Sheet` fermée par Échap, voile et bouton, sans fantôme, avec et sans « Réduire les animations » ; retour pendant
+une transition : OK ; aucun élément invisible ne capte les clics (accueil, historique → fiche → retour) ;
+contraste mesuré : seuls des libellés de bouton principal clair à 4,3–4,4:1 avant le retrait du reflet (rejoué
+après correction, § 5).
 
 Captures (deviceScaleFactor 2, regardées) : avant `/tmp/audit9/before-full/`, `/tmp/homi-p1/shots/zoom13-*`,
 `/tmp/homi-p3/shots/05-preciser-clavier.png` ; après `/tmp/audit9/shots/` et `/tmp/audit9/apres/`.
@@ -118,6 +126,21 @@ d'elle-même en **cartes** (`variant="cards"`, aussi publique, avec `description
 **M5. Pastille « Démo · Camille · voir comme Sam » hors de l'écran** — missions, stocks. Cause : `alignSelf:
 flex-start` sans `maxWidth`. Correction : `maxWidth: '100%'` + passage à la ligne (`DemoPerson.tsx`).
 
+**M5 bis. Écran Premium verrouillé sans retour (audit 01 N-05)** — `PremiumGate` couvrait l'en-tête et la barre
+d'onglets ; ses boutons empilaient un écran à chaque appui. Correction : bouton Retour toujours visible
+(`premium-gate-back`, retour ou parent) ; en mode verrouillé, les boutons du Paywall REMPLACENT l'écran.
+
+**M5 ter. `Screen.action` jetait la promesse (audit 05)** — le double appui n'était bloqué sur aucun bouton
+principal d'écran. Correction : `ActionButton` renvoie la promesse au `Button` (chargement, appuis ignorés).
+
+**M5 quater. Feuilles ouvertes à mi-hauteur (audit 05)** — sur le web, « Enregistrer » restait hors écran tant
+qu'on ne tirait pas la poignée. Correction : `Sheet` s'ouvre au grand cran (panneau entier, plafonné à l'écran) ;
+le cran moyen reste au geste.
+
+**M5 quinquies. Questions de consultation en double (audit 05)** — `ConsultationChecklist` (4 écrans « Mes
+questions ») : `newQuestions` ignore casse, espaces, ponctuation finale ; message « déjà dans votre liste ».
+Test Jest.
+
 **M6. Graphiques (signalés par l'audit 06)** — `LineChart` affichait « 62.7 » ; `BarChart` tronqué à 7 barres,
 « 30 jours » sans effet (onglet Suivi). Correction : `chartNumber` (format de la langue, axes, valeurs et lecteur
 d'écran) ; décision : **30 barres quotidiennes** (pas d'agrégation par semaine, pour que « 30 jours » montre chaque
@@ -150,7 +173,7 @@ celui de `@/motion` (non fait : écran pilote stable).
 
 | Gravité | Écran | Constat | Piste |
 |---|---|---|---|
-| **Critique** | toute adresse profonde (`/me/mood`, `/settings`, …) rechargée en démo | renvoie à `/welcome` (l'Accueil `/` rechargé garde la session) ; casse les liens profonds et TOUTES les suites E2E qui font `goto` | probablement `9ea0ccc` (auth : session appliquée après `useIsRestoring`) — **agent auth** |
+| ~~Critique~~ corrigé | toute adresse profonde rechargée en démo | renvoyait à `/welcome` (vu pendant l'audit, base `e91a321`) | corrigé dans `src/lib/auth.tsx` (fondations `6b3359f`) ; `audit_ux.py` navigue de toute façon dans l'app (`pushState`) |
 | Majeur | hubs `/health`, `/baby`, `/household` à 1,3 | « Rechercher un outil », « Ma grossesse » tronqués sans accès au texte complet | **agent navigation** : `numberOfLines` + `intentionalTruncation`, ou passage à la ligne |
 | Majeur | `/`, `/family`, `/community` clavier + 1,3 | champ de l'assistant, « Ajout rapide », « Rechercher » hors de la zone visible (écrans à défilement propre, sans `useKeyboardScopeFor` / `useRevealOnFocus`) | **agent navigation** : brancher la portée clavier |
 | Majeur | `/onboarding`, `/settings/account` clavier + 1,3 | champ visible sur 2–34 px seulement | **agent auth / onboarding** : `Screen` ou portée clavier |
@@ -160,9 +183,15 @@ celui de `@/motion` (non fait : écran pilote stable).
 | Mineur | `ToolCard` | libellé d'interrupteur en dur en français (« ajouter aux raccourcis ») | i18n (non détecté par `i18n-scan`) |
 | Info | ordre du focus (Tab) | `/me/mood`, `/settings/appearance` : 1–3 retours en arrière (grilles 2 colonnes, tuiles de semaine) | à revoir écran par écran |
 
-## 5. Résultats finaux
+## 5. Résultats finaux et vérifications
 
-Voir la fin de ce fichier (complétée après la dernière exécution).
+- `e2e/audit_ux.py` : vert (0 constat bloquant nouveau ; 29 constats connus listés dans `A_connus`, propriétaires
+  au § 4) ; rapport JSON et captures dans `E2E_SHOTS`.
+- Contrôle croisé avec l'audit 01 : **confirmé** — aucun débordement horizontal réel sur `/me/mood` et `/me/diary`
+  (aucun `texte_rogne` / `texte_hors_ecran`, avant comme après) ; le rognage à gauche des captures du pilote
+  venait de l'animation d'entrée. La troncature des libellés d'orbes (« Très diffi-… », « Diffici/le ») est, elle,
+  réelle avant correction (texte 1,3) et absente après.
+- Jest, tsc, i18n, routes, E2E existants : voir le rapport de fin de mission.
 
 ## 6. Limites
 
