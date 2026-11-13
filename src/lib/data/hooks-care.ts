@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
+import { withIdempotentId } from '../idempotency';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { resync } from './hooks-settings';
 import { useUiStore } from '../store';
@@ -91,8 +92,13 @@ export function useSaveAppointment() {
         calendar_keys: a.calendarKeys ?? [], document_ids: a.documentIds ?? [],
       };
       if (a.id) { await backend.update('appointments', row, [eq('id', a.id)]); return a.id; }
-      const [saved] = await backend.insert<{ id: string }>('appointments', { ...row, household_id: a.householdId, pregnancy_id: a.pregnancyId ?? null, child_id: a.childId ?? null, questions: [] });
-      return saved?.id ?? null;
+      // Audit 08 : id posé sur l'appareil, stable tant que l'envoi n'a pas abouti → « Réessayer » après une réponse
+      // perdue (ou une double pression) ne crée jamais un second rendez-vous
+      const insert = { ...row, household_id: a.householdId, pregnancy_id: a.pregnancyId ?? null, child_id: a.childId ?? null, questions: [] };
+      return withIdempotentId('appointments', insert, async (id) => {
+        await backend.insert<{ id: string }>('appointments', { id, ...insert }, { onConflict: 'id', ignoreDuplicates: true });
+        return id;
+      });
     },
     onSuccess: () => inv('appointments'),
   });

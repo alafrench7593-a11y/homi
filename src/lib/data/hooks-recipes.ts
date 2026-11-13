@@ -20,6 +20,7 @@ import { bandFor, defaultBand, scoreRecipe, type AgeBand, type IngredientPrice, 
 import { pregnancyProgress } from '../domain/pregnancy';
 import { childAge } from '../domain/child';
 import { uuid } from '../uuid';
+import { derivedId, withIdempotentId } from '../idempotency';
 import type { Child } from '../types';
 import { toISODate } from '../domain/dates';
 import { loadEmbeddedRecipesModule, type EmbeddedRecipesModule } from '../lazyContent';
@@ -234,16 +235,25 @@ export function useLatestShoppingList() {
   const items = useRows<ShoppingItem>(['shopping_items', list?.id ?? ''], list ? { table: 'shopping_items', filters: [eq('list_id', list.id)], order: [{ col: 'position' }] } : null, { staleTime: 5_000 });
   return { list, items: items.data ?? [], loading: lists.isLoading || items.isLoading };
 }
+/** client_id déterministe d'un article de liste générée (uuid valide : préfixe de la liste + position). */
+export const listItemClientId = derivedId;
 export function useCreateShoppingList() {
   const hid = useHouseholdId();
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (v: { title: string; planId: string | null; lines: ShoppingLine[] }) => {
       const h = hid ?? (await ensureHousehold());
-      const id = uuid();
-      await backend.insert('shopping_lists', { id, household_id: h, plan_id: v.planId, title: v.title });
-      if (v.lines.length) await backend.insert('shopping_items', v.lines.map((l, n) => ({ list_id: id, household_id: h, ingredient_key: l.key, label: l.label, qty: l.qty, unit: l.unit, aisle: l.aisle, at_home: l.atHome, checked: false, position: n })));
-      return id;
+      // Audit 08 : liste et articles forment UNE saisie. id de liste stable tant qu'elle n'a pas abouti, articles à
+      // client_id dérivé (liste + position) : « Réessayer » après une coupure reprend la même liste, sans doublon ni
+      // liste vide orpheline (les articles déjà écrits sont ignorés, les manquants ajoutés).
+      return withIdempotentId('shopping_lists', { h, ...v }, async (id) => {
+        await backend.insert('shopping_lists', { id, household_id: h, plan_id: v.planId, title: v.title }, { onConflict: 'id', ignoreDuplicates: true });
+        if (v.lines.length) {
+          await backend.insert('shopping_items', v.lines.map((l, n) => ({ client_id: listItemClientId(id, n), list_id: id, household_id: h, ingredient_key: l.key, label: l.label, qty: l.qty, unit: l.unit, aisle: l.aisle, at_home: l.atHome, checked: false, position: n })),
+            { onConflict: 'household_id,client_id', ignoreDuplicates: true });
+        }
+        return id;
+      });
     },
     onSuccess: () => inv('shopping_lists', 'shopping_items'),
   });
@@ -261,11 +271,12 @@ export function useAddShoppingItem() {
   const inv = useInvalidate();
   return useMutation({
     // client_id unique par foyer : un article ajouté hors ligne est envoyé au retour du réseau, sans doublon
-    mutationFn: (v: ShoppingItemInput) => insertOrQueue('shopping_items', {
-      client_id: uuid(), list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position,
+    // Audit 08 : double pression → même client_id (clé d'idempotence par contenu) → un seul article
+    mutationFn: (v: ShoppingItemInput) => withIdempotentId('shopping_items', v, (client_id) => insertOrQueue('shopping_items', {
+      client_id, list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position,
       ...(v.qty != null ? { qty: v.qty } : {}), ...(v.unit ? { unit: v.unit } : {}), ...(v.brand ? { brand: v.brand } : {}), ...(v.size ? { size: v.size } : {}),
       ...(v.category ? { category: v.category } : {}), ...(v.assignee_id ? { assignee_id: v.assignee_id } : {}), ...(v.stock_id ? { stock_id: v.stock_id } : {}),
-    }),
+    })),
     onSuccess: () => inv('shopping_items'),
   });
 }

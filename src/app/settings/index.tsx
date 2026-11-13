@@ -15,7 +15,7 @@ import { useHousehold, useHouseholdMembers, usePremium, useProfile, useReminders
 import { friendlyError, useMyRoles } from '@/lib/data/hooks-settings';
 import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
-import { useOfflineStore } from '@/lib/offline';
+import { flushQueue, useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
 import { spacing } from '@/theme/tokens';
 import { deviceRegion, getLocale, t as tr } from '@/i18n';
@@ -67,9 +67,13 @@ export default function SettingsScreen() {
   }
 
   async function signOut(allDevices: boolean) {
+    // Audit 08 : saisies encore en file → dernier essai d'envoi, puis avertissement honnête (« Vos données restent
+    // enregistrées » était faux pour elles : un autre compte qui se connecte ensuite les efface du téléphone).
+    if (useOfflineStore.getState().pending.length && useOfflineStore.getState().online) await flushQueue().catch(() => 0);
+    const waiting = useOfflineStore.getState().pending.length;
     const ok = await confirm(
       allDevices ? tr('settings.signOut.confirmAll') : tr('settings.signOut.confirm'),
-      allDevices ? tr('settings.signOut.bodyAll') : tr('settings.signOut.body'),
+      (allDevices ? tr('settings.signOut.bodyAll') : tr('settings.signOut.body')) + (waiting ? `\n\n${tr('rel.signOut.pending', { count: waiting })}` : ''),
       tr('settings.signOut'),
     );
     if (!ok) return;
