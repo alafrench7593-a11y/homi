@@ -7,7 +7,7 @@
  * vidéo de fond (ciel rose et pêche). Liens et boutons cuivre doré, dégradé signature champagne → rose doré ;
  * la nuit garde le bleu nuit et la prune, avec des accents champagne.
  *
- * Direction artistique « HOMI » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
+ * Direction artistique « Au fil de nous » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
  * crème et beige rosé, traits et textes brun chaud, accents taupe et rose poudré. Nuit : bleu nuit et prune,
  * jamais de noir. Remplace la palette « Aurore » à la demande de la porteuse du projet.
  *
@@ -217,7 +217,10 @@ export const typography = {
   bodyM: { fontFamily: fonts.body, ...typeScale.body, letterSpacing: 0, color: 'text', maxScale: 1.7 },
   bodyS: { fontFamily: fonts.body, ...typeScale.small, letterSpacing: 0, color: 'text', maxScale: 1.7 },
   caption: { fontFamily: fonts.body, ...typeScale.caption, letterSpacing: 0, color: 'textMuted', maxScale: 1.7 },
-  label: { fontFamily: fonts.bodyMedium, ...typeScale.small, letterSpacing: 0.5, color: 'textMuted', maxScale: 1.5 },
+  /** Libellé de champ ou de groupe, en casse de phrase : pas d'approche ajoutée (elle est réservée à `overline`). */
+  label: { fontFamily: fonts.bodyMedium, ...typeScale.small, letterSpacing: 0.1, color: 'textMuted', maxScale: 1.5 },
+  /** Sur-titre en capitales (« GROSSESSE · 2 BÉBÉS ») : petit, gras, approche ouverte pour respirer. */
+  overline: { fontFamily: fonts.bodyBold, fontSize: 12, lineHeight: 16, letterSpacing: 1.1, color: 'textMuted', maxScale: 1.4 },
   button: { fontFamily: fonts.bodyBold, fontSize: 16, lineHeight: 22, letterSpacing: 0, color: 'primaryText', maxScale: 1.4 },
   /** Voix du journal : dates et phrases d'ouverture. */
   editorial: { fontFamily: fonts.serifItalic, fontSize: 26, lineHeight: 32, letterSpacing: -0.3, color: 'text', maxScale: 1.4 },
@@ -225,16 +228,144 @@ export const typography = {
 } as const satisfies Record<string, TypeStyle>;
 export type TypographyRole = keyof typeof typography;
 
-/** Élévations : ombres chaudes et discrètes (jamais noires), trois niveaux seulement. */
+/** Élévations : ombres nuit violette et discrètes (jamais noires), trois niveaux seulement. */
 export const elevation = {
   none: { shadowOpacity: 0, elevation: 0 },
   low: { shadowColor: '#2A1F52', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   mid: { shadowColor: '#2A1F52', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
   high: { shadowColor: '#2A1F52', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
 } as const;
+export type ElevationLevel = Exclude<keyof typeof elevation, 'none'>;
 
-/** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. */
-export const controlSize = { sm: 40, md: 52, lg: 58, chip: 40, field: 52 } as const;
+// ======================================================================== Design system HOMI (13/11/2026)
+// Jetons de matière : verre, ombres physiques, voiles d'état. Ils ne modifient AUCUNE couleur de thème verrouillée ;
+// chaque nouvelle surface est vérifiée par src/__tests__/designSystem.test.ts (texte ≥ 4,5:1). Voir DESIGN_SYSTEM.md.
+
+/**
+ * Encre des ombres : nuit violette, jamais noir pur. En sombre, une nuit plus profonde (sinon l'ombre disparaît
+ * sur le fond midnight). Composantes RVB, l'opacité vient de chaque couche.
+ */
+export const SHADOW_INK = { light: '42,31,82', dark: '6,4,16' } as const;
+
+/** Couche d'ombre au format `boxShadow` de React Native (iOS, Android et web avec la même syntaxe). */
+export interface ShadowLayer { offsetX: number; offsetY: number; blurRadius: number; spreadDistance?: number; color: string; inset?: boolean }
+
+/**
+ * Ombres physiques : chaque niveau = une ombre de contact (courte, nette, sous l'objet) + une ombre d'ambiance
+ * (longue, diffuse, décalée vers le bas comme sous une lumière zénithale). C'est la paire qui donne la sensation
+ * d'un objet posé, pas un halo flou. Opacités plus fortes en sombre pour rester perceptibles.
+ */
+const SHADOW_STEPS: Record<ElevationLevel, { contact: [number, number, number]; ambient: [number, number, number] }> = {
+  // [décalage Y, flou, opacité claire] ; l'opacité sombre est dérivée (× 4, plafonnée)
+  low: { contact: [1, 2, 0.06], ambient: [4, 14, 0.06] },
+  mid: { contact: [1, 3, 0.08], ambient: [10, 28, 0.11] },
+  high: { contact: [2, 6, 0.08], ambient: [18, 44, 0.14] },
+};
+export function physicalShadow(level: ElevationLevel, isDark: boolean): ShadowLayer[] {
+  const s = SHADOW_STEPS[level];
+  const ink = isDark ? SHADOW_INK.dark : SHADOW_INK.light;
+  const a = (o: number) => Math.min(isDark ? o * 4 : o, 0.6).toFixed(3);
+  return [
+    { offsetX: 0, offsetY: s.contact[0], blurRadius: s.contact[1], color: `rgba(${ink},${a(s.contact[2])})` },
+    { offsetX: 0, offsetY: s.ambient[0], blurRadius: s.ambient[1], spreadDistance: -Math.round(s.ambient[1] / 6), color: `rgba(${ink},${a(s.ambient[2])})` },
+  ];
+}
+/**
+ * Dégradé des boutons principaux (et du bouton d'action flottant) : prune éclairé en haut, prune au centre, plus
+ * profond en bas ; lilas en sombre. Vertical seulement, deux teintes voisines : un volume, pas un arc-en-ciel.
+ */
+export const primaryGradient = (isDark: boolean): [string, string, string] => (isDark ? ['#E2D7FF', '#CDBEFA', '#B4A1F0'] : ['#6E3A9E', '#5B2A86', '#4A2170']);
+
+/** Ombre colorée des boutons pleins : la lumière traverse le prune (ou le lilas la nuit), jamais du gris. */
+export function tintedShadow(rgb: string, isDark: boolean): ShadowLayer[] {
+  return [
+    { offsetX: 0, offsetY: 1, blurRadius: 2, color: `rgba(${isDark ? SHADOW_INK.dark : rgb},${isDark ? 0.4 : 0.18})` },
+    { offsetX: 0, offsetY: 8, blurRadius: 20, spreadDistance: -4, color: `rgba(${rgb},${isDark ? 0.22 : 0.3})` },
+  ];
+}
+
+/**
+ * Niveaux de surface (du plus bas au plus haut). La hiérarchie se lit par l'opacité du verre, le liseré et l'ombre,
+ * jamais par la couleur :
+ *  - `inset`    : creux (champs, rails de sélecteur, pastilles au repos) ; pas d'ombre, liseré fin teinté.
+ *  - `raised`   : cartes (= `theme.colors.surface`, inchangée) ; ombre physique `mid`.
+ *  - `floating` : panneaux flottants, feuilles, menus, bouton d'action ; presque opaque, ombre `high`.
+ * `edge` = liseré lumineux (bord du verre) ; `highlight` = reflet d'1 px sur l'arête supérieure ;
+ * `blur` = intensité de expo-blur (iOS/web ; Android garde le remplissage seul) ; 0 en mode nuit (économie, calme).
+ */
+export type SurfaceLevel = 'inset' | 'raised' | 'floating';
+export interface GlassLevel { fill: string; edge: string; highlight: string; blur: number; shadow: ElevationLevel | null }
+export const glass: Record<ThemeName, Record<SurfaceLevel, GlassLevel>> = {
+  light: {
+    inset: { fill: 'rgba(236,230,246,0.7)', edge: 'rgba(91,42,134,0.14)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+    raised: { fill: themes.light.colors.surface, edge: themes.light.colors.border, highlight: 'rgba(255,255,255,1)', blur: 26, shadow: 'mid' },
+    floating: { fill: 'rgba(255,255,255,0.88)', edge: 'rgba(255,255,255,1)', highlight: 'rgba(255,255,255,1)', blur: 38, shadow: 'high' },
+  },
+  dark: {
+    inset: { fill: 'rgba(255,255,255,0.06)', edge: 'rgba(205,190,250,0.18)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+    raised: { fill: themes.dark.colors.surface, edge: themes.dark.colors.border, highlight: 'rgba(255,255,255,0.20)', blur: 26, shadow: 'mid' },
+    floating: { fill: 'rgba(50,38,92,0.92)', edge: 'rgba(205,190,250,0.22)', highlight: 'rgba(255,255,255,0.24)', blur: 38, shadow: 'high' },
+  },
+  night: {
+    inset: { fill: themes.night.colors.backgroundAlt, edge: themes.night.colors.border, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+    raised: { fill: themes.night.colors.surface, edge: themes.night.colors.border, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+    floating: { fill: themes.night.colors.surfaceAlt, edge: themes.night.colors.border, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+  },
+};
+
+/**
+ * Teintes de carte (`<Card tone>`) : un voile de couleur de marque posé sur le verre. Toujours très léger en sombre
+ * (les teintes chaudes sur violet tournent au brun : la carte « soft » est une perle lilas, pas du champagne).
+ */
+export type CardTint = 'soft' | 'lavender' | 'gold';
+export const cardTint: Record<'light' | 'dark', Record<CardTint, string>> = {
+  light: { soft: 'rgba(236,230,246,0.78)', lavender: 'rgba(228,218,251,0.66)', gold: 'rgba(240,222,190,0.62)' },
+  dark: { soft: 'rgba(205,190,250,0.08)', lavender: 'rgba(205,190,250,0.13)', gold: 'rgba(233,207,164,0.12)' },
+};
+
+/** Bandeaux : fond teinté + liseré + couleur d'accent (icône, titre). `fg` est lu comme du texte : ≥ 4,5:1. */
+export type BannerTone = 'info' | 'warning' | 'danger' | 'demo' | 'success';
+export interface BannerColors { bg: string; edge: string; fg: string }
+export function bannerColors(theme: Theme): Record<BannerTone, BannerColors> {
+  const c = theme.colors;
+  if (!theme.isDark) {
+    return {
+      info: { bg: 'rgba(228,218,251,0.72)', edge: 'rgba(94,68,168,0.18)', fg: c.lavender },
+      warning: { bg: 'rgba(250,234,206,0.82)', edge: 'rgba(118,86,29,0.22)', fg: '#7A4E0E' },
+      danger: { bg: c.dangerSoft, edge: 'rgba(163,36,58,0.22)', fg: c.danger },
+      demo: { bg: 'rgba(255,255,255,0.66)', edge: 'rgba(91,42,134,0.12)', fg: c.textMuted },
+      success: { bg: 'rgba(214,240,224,0.78)', edge: 'rgba(29,102,68,0.2)', fg: c.success },
+    };
+  }
+  return {
+    info: { bg: 'rgba(205,190,250,0.12)', edge: 'rgba(205,190,250,0.22)', fg: c.lavender },
+    warning: { bg: 'rgba(240,190,110,0.12)', edge: 'rgba(240,190,110,0.24)', fg: theme.name === 'night' ? '#E0B877' : '#F5C983' },
+    danger: { bg: c.dangerSoft, edge: 'rgba(255,151,166,0.26)', fg: c.danger },
+    demo: { bg: 'rgba(255,255,255,0.06)', edge: 'rgba(205,190,250,0.14)', fg: c.textMuted },
+    success: { bg: 'rgba(159,224,181,0.11)', edge: 'rgba(159,224,181,0.22)', fg: c.success },
+  };
+}
+
+/**
+ * Traits et voiles d'interaction (dérivés du texte et du prune, aucune nouvelle teinte) :
+ *  - `controlFill` : verre des contrôles secondaires (en sombre, un voile blanc : un contrôle relevé est plus clair) ;
+ *  - `hairline` : liseré des contrôles (boutons secondaires, pastilles, champs) ;
+ *  - `separator` : séparateur dans une carte (visible sur verre blanc, contrairement à `border`) ;
+ *  - `track` : rail d'interrupteur éteint (visible sur le verre blanc ; l'état se lit aussi par la position du pouce) ;
+ *  - `iconWell` : pastille derrière une icône de liste ;
+ *  - `pressVeil` : voile ajouté à l'appui (les boutons pleins s'assombrissent, le reste se teinte).
+ */
+export const lines = {
+  light: { controlFill: 'rgba(255,255,255,0.88)', hairline: 'rgba(91,42,134,0.16)', separator: 'rgba(28,21,51,0.09)', track: 'rgba(88,77,114,0.28)', iconWell: 'rgba(91,42,134,0.07)', thumbEdge: 'rgba(28,21,51,0.08)' },
+  dark: { controlFill: 'rgba(255,255,255,0.1)', hairline: 'rgba(205,190,250,0.18)', separator: 'rgba(205,190,250,0.12)', track: 'rgba(205,190,250,0.24)', iconWell: 'rgba(205,190,250,0.10)', thumbEdge: 'rgba(0,0,0,0)' },
+} as const;
+export const linesFor = (isDark: boolean) => (isDark ? lines.dark : lines.light);
+
+/** Voiles d'état (survol web, appui) : opacités, sur une couche absolue (aucun décalage de mise en page). */
+export const stateVeil = { hoverSolid: 0.1, hoverGlass: 0.05, pressSolidDarken: 0.12, pressGlass: 0.09, pressTint: 0.14 } as const;
+
+/** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. Cible tactile ≥ MIN_TOUCH via hitSlop si besoin. */
+export const controlSize = { sm: 40, md: 52, lg: 58, chip: 44, field: 50 } as const;
 
 export const MIN_TOUCH = 48; // zone tactile minimale (Android 48dp, iOS 44pt)
 
