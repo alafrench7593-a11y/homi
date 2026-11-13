@@ -1,7 +1,7 @@
 /** Textes d'interface extraits lors de la traduction complète FR/EN (lot 4, 01/11/2026). */
 export const ui4 = {
-  'u4.story.strip.a11y': 'Au fil de nous. {caption}. {scene} Ouvrir la présentation.',
-  'u4.story.strip.title': 'Au fil de nous',
+  'u4.story.strip.a11y': 'HOMI. {caption}. {scene} Ouvrir la présentation.',
+  'u4.story.strip.title': 'HOMI',
   'u4.story.strip.cta': 'Notre histoire',
   'u4.clock.a11y': '{label}. Sur les dernières 24 heures : {feeds} repas, {sleeps} sommeils, {diapers} changes.',
   'u4.clock.sleep': 'Sommeil',

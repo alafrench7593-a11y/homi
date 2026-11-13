@@ -1,5 +1,5 @@
 /**
- * Abonnement « Au fil de nous Premium » — éléments d'interface partagés par la page Premium, la feuille Premium et la
+ * Abonnement « HOMI Premium » — éléments d'interface partagés par la page Premium, la feuille Premium et la
  * rubrique « Mon abonnement » du profil : formules (1 mois, 6 mois, 12 mois), conditions, avantages, état.
  * Prix : ceux de la boutique (ou la grille de démonstration, signalée comme telle). Aucun compte à rebours, aucun prix
  * barré, aucun bouton caché. Les droits restent décidés par le serveur (has_premium).

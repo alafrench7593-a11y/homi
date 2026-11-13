@@ -1,5 +1,5 @@
 /**
- * Icônes originales des suivis (dessin vectoriel propre à Au fil de nous) et teintes douces.
+ * Icônes originales des suivis (dessin vectoriel propre à HOMI) et teintes douces.
  * Les anciennes grandes cases carrées ont été remplacées par « Mes actions du jour »
  * (src/features/dailyActions/DailyActions.tsx).
  */

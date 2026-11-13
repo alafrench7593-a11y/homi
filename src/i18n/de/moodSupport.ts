@@ -18,7 +18,7 @@ export const moodSupport: Messages<typeof fr> = {
   "wb.title": "Widget „Baby“ (iPhone)",
   "wb.pref": "Uhrzeiten im Widget anzeigen",
   "wb.prefD": "Nächstes Fläschchen und nächste Medikamenteneinnahme. Nie der Name eines Medikaments. Deaktiviert: Das Widget zeigt nur „App öffnen“.",
-  "wb.howto": "So fügst du es hinzu: Lange auf den Home-Bildschirm des iPhones drücken, dann „+“ und „Au fil de nous“.",
+  "wb.howto": "So fügst du es hinzu: Lange auf den Home-Bildschirm des iPhones drücken, dann „+“ und „HOMI“.",
   "wb.bottle": "Fläschchen für {name}: {time}",
   "wb.dose": "Behandlung ({who}): {time}",
   "wb.nothing": "Noch nichts geplant",

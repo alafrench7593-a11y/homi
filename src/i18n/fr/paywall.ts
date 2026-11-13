@@ -1,6 +1,6 @@
 /** Écran Premium (verrouillage strict du 08/11/2026) : fil doré des étapes de vie, fonctions réelles, 3 formules. */
 export const paywall = {
-  'pw.title': 'Au fil de nous Premium',
+  'pw.title': 'HOMI Premium',
   'pw.tagline': 'Tout votre parcours, du projet bébé aux premiers pas, relié par un même fil.',
   'pw.stage.ttc': 'Projet bébé',
   'pw.stage.pregnancy': 'Grossesse',

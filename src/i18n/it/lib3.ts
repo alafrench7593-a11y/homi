@@ -45,7 +45,7 @@ export const lib3: Messages<typeof fr> = {
   "l3.notif.ch_community": "Community",
   "l3.notif.ch_reminders": "Promemoria",
   "l3.notif.ch_sleep": "Sonno (stime)",
-  "l3.notif.lock_body": "Apri Au fil de nous per vedere i dettagli.",
+  "l3.notif.lock_body": "Apri HOMI per vedere i dettagli.",
   "l3.notif.lock_title": "Promemoria terapia",
   "l3.notif.test_body": "Riceverai qui i tuoi promemoria, anche con l’app chiusa.",
   "l3.notif.test_title": "I promemoria funzionano",

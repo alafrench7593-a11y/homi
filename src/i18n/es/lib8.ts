@@ -101,7 +101,7 @@ export const lib8: Messages<typeof fr> = {
   "l8.np.askBody": "{reason}\n\nEl teléfono te pedirá permiso para enviar notificaciones. Podrás retirarlo en cualquier momento.",
   "l8.np.askTitle": "¿Recibir este recordatorio?",
   "l8.np.continue": "Continuar",
-  "l8.np.deniedBody": "{reason}\n\nLas notificaciones están rechazadas para Au fil de nous. Puedes reactivarlas en los ajustes del teléfono.",
+  "l8.np.deniedBody": "{reason}\n\nLas notificaciones están rechazadas para HOMI. Puedes reactivarlas en los ajustes del teléfono.",
   "l8.np.deniedTitle": "Notificaciones desactivadas",
   "l8.np.openSettings": "Abrir los ajustes",
   "l8.pv.badFile": "Archivo cifrado no válido",

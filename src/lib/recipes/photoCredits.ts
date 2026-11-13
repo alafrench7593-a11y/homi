@@ -9,7 +9,7 @@ import type { PhotoInfo } from './types';
 export const AI_PHOTOS: Record<string, PhotoInfo> = {
   'puree-carotte-pomme-de-terre': {
     kind: 'generated',
-    source: 'ElevenLabs (modèle Seedream 5 Lite de ByteDance), généré le 20/10/2026 pour Au fil de nous',
+    source: 'ElevenLabs (modèle Seedream 5 Lite de ByteDance), généré le 20/10/2026 pour HOMI',
     author: 'ElevenLabs (Seedream 5 Lite)',
     license: 'conditions d’utilisation d’ElevenLabs',
     url: null,
@@ -22,7 +22,7 @@ export const AI_PHOTOS: Record<string, PhotoInfo> = {
 /** Mêmes mentions en anglais (affichées quand l'application est en anglais). */
 export const AI_PHOTOS_EN: Record<string, Pick<PhotoInfo, 'source' | 'author' | 'license' | 'rights' | 'alt'>> = {
   'puree-carotte-pomme-de-terre': {
-    source: 'ElevenLabs (ByteDance’s Seedream 5 Lite model), generated on 20/10/2026 for Au fil de nous',
+    source: 'ElevenLabs (ByteDance’s Seedream 5 Lite model), generated on 20/10/2026 for HOMI',
     author: 'ElevenLabs (Seedream 5 Lite)',
     license: 'ElevenLabs terms of use',
     rights: 'use within the app',

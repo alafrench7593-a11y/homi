@@ -3,7 +3,7 @@
  * vidéo de fond (ciel rose et pêche). Liens et boutons cuivre doré, dégradé signature champagne → rose doré ;
  * la nuit garde le bleu nuit et la prune, avec des accents champagne.
  *
- * Direction artistique « Au fil de nous » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
+ * Direction artistique « HOMI » (octobre 2026) : fond rose poudré doux et lumineux (#F2DDD8), dégradés
  * crème et beige rosé, traits et textes brun chaud, accents taupe et rose poudré. Nuit : bleu nuit et prune,
  * jamais de noir. Remplace la palette « Aurore » à la demande de la porteuse du projet.
  *

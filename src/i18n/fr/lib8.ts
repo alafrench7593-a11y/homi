@@ -98,7 +98,7 @@ export const lib8 = {
   "l8.np.askBody": "{reason}\n\nLe téléphone va vous demander l’autorisation d’envoyer des notifications. Vous pourrez la retirer à tout moment.",
   "l8.np.askTitle": "Recevoir ce rappel ?",
   "l8.np.continue": "Continuer",
-  "l8.np.deniedBody": "{reason}\n\nLes notifications sont refusées pour Au fil de nous. Vous pouvez les réactiver dans les réglages du téléphone.",
+  "l8.np.deniedBody": "{reason}\n\nLes notifications sont refusées pour HOMI. Vous pouvez les réactiver dans les réglages du téléphone.",
   "l8.np.deniedTitle": "Notifications désactivées",
   "l8.np.openSettings": "Ouvrir les réglages",
   "l8.pv.badFile": "Fichier chiffré invalide",

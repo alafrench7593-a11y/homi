@@ -289,7 +289,7 @@ Les parents aussi traversent une période d’ajustement. Leurs propres besoins 
 - Acceptez de mettre certaines choses en pause et de fixer des priorités.
 - Parlez-en à deux régulièrement : qui fait quoi, qui se repose quand, comment chacun peut avoir un moment pour soi.
 - Une fois la période d’adaptation passée, les sorties en famille, même courtes, font du bien à tous et évitent l’isolement.
-- Dans Au fil de nous, les tâches du foyer, l’agenda partagé et les relais de nuit peuvent aider à répartir la charge.
+- Dans HOMI, les tâches du foyer, l’agenda partagé et les relais de nuit peuvent aider à répartir la charge.
 
 ## Questions fréquentes
 **Mon aîné de 3 ans refait pipi dans sa culotte depuis la naissance : que faire ?** Ce type de retour en arrière peut arriver après l’arrivée d’un bébé. Accueillez-le calmement, sans punition, en lui offrant de l’attention à d’autres moments. Si cela dure ou vous inquiète, parlez-en à son médecin.
@@ -334,7 +334,7 @@ Les douleurs elles-mêmes n’entraînent pas de complications, mais elles peuve
 - **Bouger** : un peu de mouvement ou un sport doux soulage souvent.
 - **Les habitudes** : limiter ou éviter l’alcool, le café et le tabac avant et pendant les règles.
 - **Les médicaments** : un antalgique sans ordonnance peut être pris si besoin, sur conseil du pharmacien. L’aspirine est déconseillée, car elle fluidifie le sang et peut augmenter les saignements. D’autres traitements existent ; votre médecin choisit avec vous ce qui convient selon votre santé, vos autres traitements et un éventuel projet de grossesse.
-- **Noter vos symptômes** : le suivi du cycle dans Au fil de nous permet de noter l’intensité de la douleur, les jours concernés et ce qui vous a soulagée. Ces notes facilitent l’échange avec le professionnel.
+- **Noter vos symptômes** : le suivi du cycle dans HOMI permet de noter l’intensité de la douleur, les jours concernés et ce qui vous a soulagée. Ces notes facilitent l’échange avec le professionnel.
 
 ## Questions fréquentes
 **Avoir très mal pendant ses règles, faut-il simplement le supporter ?** Non. Une douleur qui vous empêche de vivre normalement mérite d’être soulagée et d’en chercher la cause. Vous pouvez en parler à votre médecin traitant, à une sage-femme ou à un gynécologue.

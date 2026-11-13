@@ -615,7 +615,7 @@ export const ui5: Messages<typeof fr> = {
   "u5.story.home_note": "Auf der Startseite zeigt die Illustration die Phase des angezeigten Profils: deinen Zyklus, deine Schwangerschaft oder das Alter jedes deiner Kinder.",
   "u5.story.back": "Zur Startseite",
   "u5.avatar.photo": "Foto von {name}",
-  "u5.story.title": "Au fil de nous",
+  "u5.story.title": "HOMI",
   "u5.ui.collapse": "Einklappen",
   "u5.ui.read_more": "Weiterlesen",
 };

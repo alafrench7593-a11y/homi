@@ -128,7 +128,7 @@ export const docs: Messages<typeof fr> = {
   'docs.export.one': 'Export or share',
   'docs.export.heading': 'Documents for an appointment',
   'docs.export.generated': { one: 'Created on {date} · {count} document', other: 'Created on {date} · {count} documents' },
-  'docs.export.pdfNotice': 'Prepared by the person concerned with the Au fil de nous app. Any summaries are automatic and must be checked against the originals.',
+  'docs.export.pdfNotice': 'Prepared by the person concerned with the HOMI app. Any summaries are automatic and must be checked against the originals.',
   'docs.export.summaryOf': 'Summary:',
   'docs.export.summaryNotice': 'Automatic summary based on the text read; check it against the original. This is not medical advice.',
   'docs.export.fileName': 'documents',

@@ -1,5 +1,5 @@
 /**
- * Introduction cinématique « Au fil de nous » (première ouverture, rejouable depuis Réglages › Mon accueil).
+ * Introduction cinématique « HOMI » (première ouverture, rejouable depuis Réglages › Mon accueil).
  *
  * Une seule vidéo de fond (assets/video/intro-cinematique.mp4, montée à partir des vidéos de l'application :
  * voir scripts/build-intro-video.sh) et, par-dessus, tout le motion design en natif :

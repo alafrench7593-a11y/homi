@@ -279,7 +279,7 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
  * (Réglages › Mon accueil) mais sont masquées par défaut.
  */
 export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
-  { key: 'story', get label() { return 'Au fil de nous'; }, get detail() { return tr('u5.home.hc_story_d'); } },
+  { key: 'story', get label() { return 'HOMI'; }, get detail() { return tr('u5.home.hc_story_d'); } },
   { key: 'main', get label() { return tr('u5.home.hc_main'); }, get detail() { return tr('u5.home.hc_main_d'); } },
   { key: 'quick', get label() { return tr('u5.home.hc_quick'); }, get detail() { return tr('u5.home.hc_quick_d'); } },
   // Visible par défaut (07/11/2026) : « Mon assistant IA », juste après les raccourcis

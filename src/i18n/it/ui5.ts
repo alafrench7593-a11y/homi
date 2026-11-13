@@ -615,7 +615,7 @@ export const ui5: Messages<typeof fr> = {
   "u5.story.home_note": "Nella home, l’illustrazione mostra la tappa del profilo mostrato: il tuo ciclo, la tua gravidanza o l’età di ciascuno dei tuoi bambini.",
   "u5.story.back": "Torna alla home",
   "u5.avatar.photo": "Foto di {name}",
-  "u5.story.title": "Au fil de nous",
+  "u5.story.title": "HOMI",
   "u5.ui.collapse": "Riduci",
   "u5.ui.read_more": "Continua a leggere",
 };

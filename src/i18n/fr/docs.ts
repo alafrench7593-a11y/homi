@@ -126,7 +126,7 @@ export const docs = {
   'docs.export.one': 'Exporter ou partager',
   'docs.export.heading': 'Dossier de documents pour une consultation',
   'docs.export.generated': { one: 'Créé le {date} · {count} document', other: 'Créé le {date} · {count} documents' },
-  'docs.export.pdfNotice': 'Dossier préparé par la personne concernée avec l’application Au fil de nous. Les résumés éventuels sont automatiques et doivent être vérifiés sur les originaux.',
+  'docs.export.pdfNotice': 'Dossier préparé par la personne concernée avec l’application HOMI. Les résumés éventuels sont automatiques et doivent être vérifiés sur les originaux.',
   'docs.export.summaryOf': 'Résumé :',
   'docs.export.summaryNotice': 'Résumé automatique fidèle au texte lu, à vérifier sur l’original. Ce n’est pas un avis médical.',
   'docs.export.fileName': 'documents',

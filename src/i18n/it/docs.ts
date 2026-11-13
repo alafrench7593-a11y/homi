@@ -129,7 +129,7 @@ export const docs: Messages<typeof fr> = {
   "docs.export.one": "Esporta o condividi",
   "docs.export.heading": "Fascicolo di documenti per una visita",
   "docs.export.generated": {"one": "Creato il {date} · {count} documento", "other": "Creato il {date} · {count} documenti"},
-  "docs.export.pdfNotice": "Fascicolo preparato dalla persona interessata con l'app Au fil de nous. Gli eventuali riepiloghi sono automatici e devono essere verificati sugli originali.",
+  "docs.export.pdfNotice": "Fascicolo preparato dalla persona interessata con l'app HOMI. Gli eventuali riepiloghi sono automatici e devono essere verificati sugli originali.",
   "docs.export.summaryOf": "Riepilogo:",
   "docs.export.summaryNotice": "Riepilogo automatico fedele al testo letto, da verificare sull'originale. Non è un parere medico.",
   "docs.export.fileName": "documenti",

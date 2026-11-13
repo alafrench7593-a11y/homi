@@ -152,7 +152,7 @@ export const lib2 = {
   'l2.do.website': 'Le site doit commencer par https://',
   'l2.do.ageRange': 'Tranche d’âge invalide',
   'l2.do.textLong': 'Texte trop long.',
-  'l2.do.noMeetups': 'Les rencontres entre membres ne sont pas proposées dans Au fil de nous.',
+  'l2.do.noMeetups': 'Les rencontres entre membres ne sont pas proposées dans HOMI.',
   'l2.do.notAllowed': 'Action non autorisée.',
   'l2.do.profileFirst': 'Créez d’abord votre profil communautaire',
   'l2.do.suspended': 'Compte suspendu',

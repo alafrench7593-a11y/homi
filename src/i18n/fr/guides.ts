@@ -180,7 +180,7 @@ export const guides = {
   'cj.add': 'Noter',
   'cj.deleteQ': 'Supprimer cette note ?',
   'cj.prepare': 'Préparer mes questions pour le rendez-vous',
-  'cj.exportTitle': 'Journal de ma contraception — Au fil de nous',
+  'cj.exportTitle': 'Journal de ma contraception — HOMI',
   'cj.exportIntro': 'Effets ressentis, notés par moi-même (export du {date}). À montrer à mon gynécologue, mon médecin ou ma sage-femme.',
 
   // ---------------------------------------------------------------- fiche de mon enfant
@@ -207,7 +207,7 @@ export const guides = {
   'kc.added': 'Ajouté à la fiche.',
   'kc.share': 'Partager la fiche',
   'kc.born': 'né·e le {date}',
-  'kc.exportTitle': 'Fiche de {name} — Au fil de nous',
+  'kc.exportTitle': 'Fiche de {name} — HOMI',
   'kc.exportDate': 'Fiche partagée le {date}, rédigée par ses parents.',
   'kc.exportFooter': 'Cette fiche est rédigée par les parents ; elle ne remplace ni le carnet de santé ni l’ordonnance. Pour un PAI (projet d’accueil individualisé), le médecin et l’école établissent le document officiel.',
   'kc.pai': 'Allergie, asthme, traitement à l’école : un PAI (projet d’accueil individualisé) se met en place avec le médecin de l’enfant et l’école. Cette fiche vous aide à préparer ce rendez-vous ; elle ne remplace pas le PAI.',

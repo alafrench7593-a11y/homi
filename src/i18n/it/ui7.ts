@@ -579,6 +579,6 @@ export const ui7: Messages<typeof fr> = {
   "u7.child.profileUpdated": "Profilo aggiornato.",
   "u7.child.editProfile": "Modifica il profilo di {name}",
   "u7.family.askHint": "Apre l'assistente di intelligenza artificiale",
-  "u7.family.premiumNote": "Questa funzione fa parte di Au fil de nous Premium. Il monitoraggio essenziale, la community e tutte le informazioni di sicurezza restano gratuiti.",
+  "u7.family.premiumNote": "Questa funzione fa parte di HOMI Premium. Il monitoraggio essenziale, la community e tutte le informazioni di sicurezza restano gratuiti.",
   "u7.family.discover": "Scopri l'abbonamento",
 };

@@ -15,7 +15,7 @@ export const moodSupport = {
   'wb.title': 'Widget « Bébé » (iPhone)',
   'wb.pref': 'Afficher les heures dans le widget',
   'wb.prefD': 'Prochain biberon et prochaine prise de traitement. Jamais le nom d’un médicament. Désactivé : le widget affiche seulement « Ouvrir l’application ».',
-  'wb.howto': 'Pour l’ajouter : appui long sur l’écran d’accueil de l’iPhone, puis « + » et « Au fil de nous ».',
+  'wb.howto': 'Pour l’ajouter : appui long sur l’écran d’accueil de l’iPhone, puis « + » et « HOMI ».',
   'wb.bottle': 'Biberon de {name} : {time}',
   'wb.dose': 'Traitement ({who}) : {time}',
   'wb.nothing': 'Rien de prévu pour l’instant',

@@ -3,7 +3,7 @@ import type { Messages } from '../types';
 
 /** Cinematic introduction (first launch, can be replayed from Settings › My home). */
 export const cinema: Messages<typeof fr> = {
-  'cine.a11y': 'Animated introduction to Au fil de nous',
+  'cine.a11y': 'Animated introduction to HOMI',
   'cine.skip': 'Skip',
   'cine.skipA11y': 'Skip the introduction',
   'cine.open.l1': 'Every story',

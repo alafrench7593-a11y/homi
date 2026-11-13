@@ -1,3 +1,4 @@
+import { BRAND } from '@/config/brand';
 /**
  * Offre Premium : états de l'abonnement (essai, fin d'essai, renouvellement, annulation, grâce, paiement refusé,
  * expiration), webhook RevenueCat, dates affichées, quotas, fonctions réservées vérifiées par le moteur local,
@@ -220,7 +221,7 @@ describe('widgets : rien de sensible sur l’écran verrouillé sans accord', ()
   it('grossesse, rendez-vous et prénom masqués par défaut', () => {
     const w = widgetSnapshot({ scope: 'pregnancy', weeksSA: 24, nextAppointment: { title: 'Échographie', at: '2026-10-25T09:00:00Z' } });
     expect(JSON.stringify(w)).not.toMatch(/24 SA|Échographie/);
-    expect(w.title).toBe('Au fil de nous');
+    expect(w.title).toBe(BRAND.name);
     const ok = widgetSnapshot({ scope: 'pregnancy', weeksSA: 24 }, { lockScreenDetails: true });
     expect(ok.lines[0].value).toBe('24 SA');
   });

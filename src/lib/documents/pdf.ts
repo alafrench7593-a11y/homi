@@ -17,8 +17,8 @@ export async function pdfFromJpegs(pages: JpegPage[], title?: string): Promise<U
   const { PDFDocument } = await loadPdfLib();
   const doc = await PDFDocument.create();
   if (title) doc.setTitle(title);
-  doc.setProducer('Au fil de nous');
-  doc.setCreator('Au fil de nous');
+  doc.setProducer('HOMI');
+  doc.setCreator('HOMI');
   for (const p of pages) {
     const img = await doc.embedJpg(p.bytes);
     const landscape = p.width > p.height;
@@ -70,7 +70,7 @@ export async function buildExportPdf(items: ExportItem[], labels: ExportLabels):
   const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
   const out = await PDFDocument.create();
   out.setTitle(labels.heading);
-  out.setProducer('Au fil de nous');
+  out.setProducer('HOMI');
   const font = await out.embedFont(StandardFonts.Helvetica);
   const bold = await out.embedFont(StandardFonts.HelveticaBold);
   const writer = () => {
@@ -128,7 +128,7 @@ export async function buildTextPdf(title: string, subtitle: string[], sections: 
   const { PDFDocument, StandardFonts, rgb } = await loadPdfLib();
   const out = await PDFDocument.create();
   out.setTitle(winAnsiSafe(title));
-  out.setProducer('Au fil de nous');
+  out.setProducer('HOMI');
   const font = await out.embedFont(StandardFonts.Helvetica);
   const bold = await out.embedFont(StandardFonts.HelveticaBold);
   let page = out.addPage([A4.w, A4.h]);

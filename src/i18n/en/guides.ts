@@ -178,7 +178,7 @@ export const guides: Messages<typeof fr> = {
   'cj.add': 'Note',
   'cj.deleteQ': 'Delete this note?',
   'cj.prepare': 'Prepare my questions for the appointment',
-  'cj.exportTitle': 'My contraception diary — Au fil de nous',
+  'cj.exportTitle': 'My contraception diary — HOMI',
   'cj.exportIntro': 'Side effects felt, noted by myself (exported on {date}). To show my gynaecologist, doctor or midwife.',
 
   'kc.intro': 'One page for school, the childminder, the grandparents: what to know, what to avoid, who to call, what soothes them. Share it as text, or bring it to prepare a school health plan (PAI) with the doctor and the school.',
@@ -204,7 +204,7 @@ export const guides: Messages<typeof fr> = {
   'kc.added': 'Added to the card.',
   'kc.share': 'Share the card',
   'kc.born': 'born on {date}',
-  'kc.exportTitle': '{name}’s card — Au fil de nous',
+  'kc.exportTitle': '{name}’s card — HOMI',
   'kc.exportDate': 'Card shared on {date}, written by the parents.',
   'kc.exportFooter': 'This card is written by the parents; it replaces neither the health record nor the prescription. For a PAI (individual school health plan), the doctor and the school draw up the official document.',
   'kc.pai': 'Allergy, asthma, treatment at school: a PAI (individual school health plan) is set up with the child’s doctor and the school. This card helps you prepare that meeting; it does not replace the PAI.',

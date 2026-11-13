@@ -1,5 +1,5 @@
 /**
- * Formules « Au fil de nous Premium » (logique pure, testée par Jest) : 1 mois, 6 mois, 12 mois — un seul droit
+ * Formules « HOMI Premium » (logique pure, testée par Jest) : 1 mois, 6 mois, 12 mois — un seul droit
  * RevenueCat (AU_FIL_DE_NOUS_PREMIUM), les 3 formules donnent le même Premium.
  *
  * Prix : TOUJOURS ceux de la boutique (App Store / Google Play) transmis par RevenueCat — priceString, price,

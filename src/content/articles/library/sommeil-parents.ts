@@ -103,7 +103,7 @@ Les besoins de chacun ne sont pas forcément les mêmes : la mère récupère pa
 
 **Si vous êtes seul(e)** : demandez à un proche de venir quelques jours, ou de garder bébé le temps d'une sieste. La PMI peut aussi vous orienter vers des aides, par exemple une aide à domicile.
 
-Dans Au fil de nous, les relais de nuit permettent de noter qui se lève quand, pour que chacun s'y retrouve.
+Dans HOMI, les relais de nuit permettent de noter qui se lève quand, pour que chacun s'y retrouve.
 
 ## Questions fréquentes
 **Comment se rendormir après son tour ?**
@@ -219,7 +219,7 @@ Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un 
 - Réduisez ce qui peut l'être : tâches non urgentes, sollicitations, visites.
 - Préparez la consultation : depuis quand, ce qui a changé, ce qui vous inquiète le plus.
 
-Dans Au fil de nous, le suivi de votre humeur et de votre sommeil peut vous aider à repérer une évolution et à en parler.
+Dans HOMI, le suivi de votre humeur et de votre sommeil peut vous aider à repérer une évolution et à en parler.
 
 ## Questions fréquentes
 **Comment savoir si c'est « juste » de la fatigue ?**

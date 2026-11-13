@@ -129,7 +129,7 @@ export const docs: Messages<typeof fr> = {
   "docs.export.one": "Exportar o compartir",
   "docs.export.heading": "Dosier de documentos para una consulta",
   "docs.export.generated": {"one": "Creado el {date} · {count} documento", "other": "Creado el {date} · {count} documentos"},
-  "docs.export.pdfNotice": "Dosier preparado por la persona interesada con la aplicación Au fil de nous. Los posibles resúmenes son automáticos y deben verificarse con los originales.",
+  "docs.export.pdfNotice": "Dosier preparado por la persona interesada con la aplicación HOMI. Los posibles resúmenes son automáticos y deben verificarse con los originales.",
   "docs.export.summaryOf": "Resumen:",
   "docs.export.summaryNotice": "Resumen automático fiel al texto leído, por verificar con el original. No es una opinión médica.",
   "docs.export.fileName": "documentos",

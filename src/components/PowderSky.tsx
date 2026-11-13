@@ -1,5 +1,5 @@
 /**
- * Fond « Au fil de nous ».
+ * Fond « HOMI ».
  *  · Jour : rose poudré doux et lumineux (#F2DDD8), dégradés subtils crème et beige rosé, lumière chaude diffuse
  *    qui suit lentement l'heure (matin à gauche, fin de journée à droite), quelques particules claires.
  *  · Nuit : bleu nuit et prune (jamais noir), halo prune, particules lumineuses.

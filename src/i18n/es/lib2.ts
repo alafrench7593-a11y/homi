@@ -155,7 +155,7 @@ export const lib2: Messages<typeof fr> = {
   "l2.do.website": "La web debe empezar por https://",
   "l2.do.ageRange": "Franja de edad no válida",
   "l2.do.textLong": "Texto demasiado largo.",
-  "l2.do.noMeetups": "Los encuentros entre miembros no se ofrecen en Au fil de nous.",
+  "l2.do.noMeetups": "Los encuentros entre miembros no se ofrecen en HOMI.",
   "l2.do.notAllowed": "Acción no autorizada.",
   "l2.do.profileFirst": "Primero crea tu perfil de la comunidad",
   "l2.do.suspended": "Cuenta suspendida",

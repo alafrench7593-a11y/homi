@@ -286,7 +286,7 @@ function Backdrop() {
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }}>
       {mounted.dark ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
-          {/* Nuit « Au fil de nous » : la vidéo de fond sous un voile bleu nuit et prune ; fond fixe en attendant ou sans animation */}
+          {/* Nuit « HOMI » : la vidéo de fond sous un voile bleu nuit et prune ; fond fixe en attendant ou sans animation */}
           <VideoBackdrop fallback={<PowderSky hour={hour} night still={lowPower} />} />
           {glow > 0 && hour >= 18 ? <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(214,120,170,0.20)', 'rgba(255,164,128,0.30)']} locations={[0.3, 0.7, 1]} style={[StyleSheet.absoluteFill, { opacity: glow }]} /> : null}
         </Animated.View>

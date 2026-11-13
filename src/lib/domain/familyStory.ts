@@ -1,5 +1,5 @@
 /**
- * « Au fil de nous » — l'histoire d'une femme et de son enfant, de l'avant-grossesse aux dix ans de l'enfant
+ * « HOMI » — l'histoire d'une femme et de son enfant, de l'avant-grossesse aux dix ans de l'enfant
  * (logique pure, testée). Une seule et même femme, un seul et même enfant d'une étape à l'autre.
  *
  *  1. sceneFor()   : l'étape à montrer pour le profil affiché (cycle → femme seule ; grossesse → ventre selon la

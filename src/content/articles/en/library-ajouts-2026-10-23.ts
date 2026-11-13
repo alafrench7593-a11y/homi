@@ -256,7 +256,7 @@ Parents also go through a period of adjustment. Their own needs often come secon
 - Accept putting some things on hold and setting priorities.
 - Talk about it together regularly: who does what, who rests when, how each of you can have a moment for yourself.
 - Once the adjustment period has passed, family outings, even short ones, do everyone good and prevent isolation.
-- In Au fil de nous, household tasks, the shared calendar and night-time relays can help share the load.
+- In HOMI, household tasks, the shared calendar and night-time relays can help share the load.
 
 ## Frequently asked questions
 **My 3-year-old has started wetting their pants again since the birth: what can I do?** This kind of step backwards can happen after a baby arrives. Welcome it calmly, without punishment, offering them attention at other times. If it lasts or worries you, talk to their doctor.
@@ -295,7 +295,7 @@ The pain itself does not lead to complications, but it can be a sign of an illne
 - **Moving**: a little movement or gentle sport often eases it.
 - **Habits**: limit or avoid alcohol, coffee and tobacco before and during periods.
 - **Medicines**: an over-the-counter painkiller can be taken if needed, on the pharmacist's advice. Aspirin is not recommended, because it thins the blood and can increase bleeding. Other treatments exist; your doctor chooses with you what suits you depending on your health, your other treatments and any plan for pregnancy.
-- **Noting your symptoms**: cycle tracking in Au fil de nous lets you note the intensity of the pain, the days concerned and what eased it. These notes make the discussion with the professional easier.
+- **Noting your symptoms**: cycle tracking in HOMI lets you note the intensity of the pain, the days concerned and what eased it. These notes make the discussion with the professional easier.
 
 ## Frequently asked questions
 **Having a lot of pain during periods, should you simply put up with it?** No. Pain that stops you living normally deserves to be relieved and its cause looked for. You can talk to your doctor, a sage-femme (midwife) or a gynaecologist.

@@ -129,7 +129,7 @@ export const docs: Messages<typeof fr> = {
   "docs.export.one": "Exportieren oder teilen",
   "docs.export.heading": "Dokumentenmappe für einen Arzttermin",
   "docs.export.generated": {"one": "Erstellt am {date} · {count} Dokument", "other": "Erstellt am {date} · {count} Dokumente"},
-  "docs.export.pdfNotice": "Mappe, erstellt von der betroffenen Person mit der App Au fil de nous. Eventuelle Zusammenfassungen sind automatisch und müssen anhand der Originale geprüft werden.",
+  "docs.export.pdfNotice": "Mappe, erstellt von der betroffenen Person mit der App HOMI. Eventuelle Zusammenfassungen sind automatisch und müssen anhand der Originale geprüft werden.",
   "docs.export.summaryOf": "Zusammenfassung:",
   "docs.export.summaryNotice": "Automatische Zusammenfassung, getreu dem gelesenen Text, anhand des Originals zu prüfen. Das ist keine ärztliche Meinung.",
   "docs.export.fileName": "Dokumente",

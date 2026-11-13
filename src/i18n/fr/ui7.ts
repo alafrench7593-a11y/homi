@@ -576,6 +576,6 @@ export const ui7 = {
   'u7.child.profileUpdated': 'Profil mis à jour.',
   'u7.child.editProfile': 'Modifier le profil de {name}',
   'u7.family.askHint': 'Ouvre l’assistant d’intelligence artificielle',
-  'u7.family.premiumNote': 'Cette fonction fait partie de Au fil de nous Premium. Le suivi essentiel, la communauté et toutes les informations de sécurité restent gratuits.',
+  'u7.family.premiumNote': 'Cette fonction fait partie de HOMI Premium. Le suivi essentiel, la communauté et toutes les informations de sécurité restent gratuits.',
   'u7.family.discover': 'Découvrir l’abonnement',
 };

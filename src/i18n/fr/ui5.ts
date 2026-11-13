@@ -612,7 +612,7 @@ export const ui5 = {
   'u5.story.home_note': 'Sur l’accueil, l’illustration montre l’étape du profil affiché : votre cycle, votre grossesse ou l’âge de chacun de vos enfants.',
   'u5.story.back': 'Retour à l’accueil',
   'u5.avatar.photo': 'Photo de {name}',
-  'u5.story.title': 'Au fil de nous',
+  'u5.story.title': 'HOMI',
   'u5.ui.collapse': 'Réduire',
   'u5.ui.read_more': 'Lire la suite',
 };

@@ -1,7 +1,7 @@
 /**
  * Communauté — composants partagés : avatars (illustrations originales ou photo), photos des publications,
  * carte de publication (réactions, commentaires, enregistrer, partager, menu modifier / supprimer / signaler / bloquer),
- * feuilles de signalement et de catégories. Identité graphique propre à Au fil de nous.
+ * feuilles de signalement et de catégories. Identité graphique propre à HOMI.
  */
 import { useBounceOn } from '@/components/Motion';
 import React, { useState } from 'react';

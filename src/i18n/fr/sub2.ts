@@ -1,5 +1,5 @@
 /**
- * Abonnement « Au fil de nous Premium » v2 (05/11/2026) : page Premium, 3 formules, conditions, feuille Premium,
+ * Abonnement « HOMI Premium » v2 (05/11/2026) : page Premium, 3 formules, conditions, feuille Premium,
  * rubrique « Mon abonnement », statuts. Aucun prix ici : les prix viennent de la boutique (ou de la grille de
  * démonstration, src/lib/premium/plans.ts).
  */
@@ -74,10 +74,10 @@ export const sub2 = {
   'sub2.cta.isCurrent': 'C’est votre formule actuelle',
 
   'sub2.web.title': 'Abonnement dans l’application mobile',
-  'sub2.web.body': 'L’abonnement Premium se prend dans l’application Au fil de nous sur iPhone (App Store) ou Android (Google Play). Une fois abonnée, Premium est aussi actif ici, avec le même compte.',
+  'sub2.web.body': 'L’abonnement Premium se prend dans l’application HOMI sur iPhone (App Store) ou Android (Google Play). Une fois abonnée, Premium est aussi actif ici, avec le même compte.',
 
   'sub2.my.title': 'MON ABONNEMENT',
-  'sub2.my.premium': 'Au fil de nous Premium',
+  'sub2.my.premium': 'HOMI Premium',
   'sub2.my.free': 'Version gratuite',
   'sub2.my.plan': 'Formule',
   'sub2.my.status': 'Statut',

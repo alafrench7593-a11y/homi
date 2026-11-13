@@ -2,7 +2,7 @@ import type { paywall as fr } from '../fr/paywall';
 import type { Messages } from '../types';
 
 export const paywall: Messages<typeof fr> = {
-  'pw.title': 'Au fil de nous Premium',
+  'pw.title': 'HOMI Premium',
   'pw.tagline': 'Todo tu recorrido, del deseo de ser madre a los primeros pasos, unido por un mismo hilo.',
   'pw.stage.ttc': 'Buscar un bebé',
   'pw.stage.pregnancy': 'Embarazo',

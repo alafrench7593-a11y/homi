@@ -1,9 +1,9 @@
 {
-  "name": "Au fil de nous",
-  "shortName": "Au fil de nous",
-  "tagline": "À chaque étape de votre histoire",
-  "slug": "toi-et-moi",
-  "scheme": "toietmoi",
-  "bundleId": "fr.aufildenous.app",
-  "supportEmail": "aufildenous@outlook.fr"
+  "name": "HOMI",
+  "shortName": "HOMI",
+  "tagline": "Your Family, One Home",
+  "slug": "homi",
+  "scheme": "homi",
+  "bundleId": "app.homi.family",
+  "supportEmail": "support@homi.invalid"
 }

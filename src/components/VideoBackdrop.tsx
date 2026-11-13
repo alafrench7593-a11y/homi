@@ -29,7 +29,7 @@ function useForeground(): boolean {
 }
 
 /**
- * Fonds vidéo « Au fil de nous » (26/10/2026, ElevenLabs, Kling 3 Pro) : 10 s chacun, format téléphone, sans son,
+ * Fonds vidéo « HOMI » (26/10/2026, ElevenLabs, Kling 3 Pro) : 10 s chacun, format téléphone, sans son,
  * aux couleurs du logo. Jour : ciel rose et pêche, lumière dorée, fil doré ; nuit : bleu nuit et prune, lune,
  * étoiles, fil champagne. Fournis avec l'application : aucune dépendance à un lien externe.
  * Ils tournent en fondu enchaîné, dans un ordre tiré au hasard, parfois en miroir et à vitesse variable

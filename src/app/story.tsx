@@ -1,5 +1,5 @@
 /**
- * Présentation « Au fil de nous » : en faisant défiler, la même femme traverse son histoire — avant, enceinte,
+ * Présentation « HOMI » : en faisant défiler, la même femme traverse son histoire — avant, enceinte,
  * son nouveau-né dans les bras, son bébé assis puis debout, son enfant qui grandit jusqu'à dix ans, main dans la main.
  * L'illustration reste en haut et évolue avec le défilement (poses intermédiaires) ; les textes défilent dessous.
  * « Réduire les animations » : chaque chapitre montre sa propre image fixe.

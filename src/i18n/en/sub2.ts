@@ -1,7 +1,7 @@
 import type { sub2 as fr } from '../fr/sub2';
 import type { Messages } from '../types';
 
-/** “Au fil de nous Premium” subscription v2 (05/11/2026). No prices here: prices come from the store (or the demo grid). */
+/** “HOMI Premium” subscription v2 (05/11/2026). No prices here: prices come from the store (or the demo grid). */
 export const sub2: Messages<typeof fr> = {
   'sub2.ent.refunded': 'Your subscription was refunded: Premium access has ended. Your data remains available.',
   'sub2.ent.pauseScheduled': 'Pause scheduled: Premium stays active until {date}.',
@@ -73,10 +73,10 @@ export const sub2: Messages<typeof fr> = {
   'sub2.cta.isCurrent': 'This is your current plan',
 
   'sub2.web.title': 'Subscribe in the mobile app',
-  'sub2.web.body': 'The Premium subscription is taken out in the Au fil de nous app on iPhone (App Store) or Android (Google Play). Once subscribed, Premium is active here too, with the same account.',
+  'sub2.web.body': 'The Premium subscription is taken out in the HOMI app on iPhone (App Store) or Android (Google Play). Once subscribed, Premium is active here too, with the same account.',
 
   'sub2.my.title': 'MY SUBSCRIPTION',
-  'sub2.my.premium': 'Au fil de nous Premium',
+  'sub2.my.premium': 'HOMI Premium',
   'sub2.my.free': 'Free version',
   'sub2.my.plan': 'Plan',
   'sub2.my.status': 'Status',

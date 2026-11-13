@@ -392,7 +392,7 @@ export const ui1: Messages<typeof fr> = {
   "u1.fam.removeFromHousehold": "Quitar del hogar",
   "u1.fam.ownerOnly": "Solo el propietario del hogar puede modificar estos permisos.",
   "u1.fam.invitation": "Invitación",
-  "u1.fam.joinOn": "Unirse a un hogar en Au fil de nous",
+  "u1.fam.joinOn": "Unirse a un hogar en HOMI",
   "u1.fam.invitedTitle": "Te han invitado a unirte a un hogar",
   "u1.fam.invitedWithCode": "Crea tu cuenta o inicia sesión: la invitación te estará esperando y la confirmarás con un toque.",
   "u1.fam.invitedIncomplete": "Este enlace de invitación está incompleto. Pide a la persona que te ha invitado que te lo vuelva a enviar.",

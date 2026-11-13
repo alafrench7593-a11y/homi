@@ -42,7 +42,7 @@ export const lib3 = {
   'l3.notif.ch_community': 'Communauté',
   'l3.notif.ch_reminders': 'Rappels',
   'l3.notif.ch_sleep': 'Sommeil (estimations)',
-  'l3.notif.lock_body': 'Ouvrez Au fil de nous pour voir le détail.',
+  'l3.notif.lock_body': 'Ouvrez HOMI pour voir le détail.',
   'l3.notif.lock_title': 'Rappel de traitement',
   'l3.notif.test_body': 'Vous recevrez vos rappels ici, même application fermée.',
   'l3.notif.test_title': 'Les rappels fonctionnent',

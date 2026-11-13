@@ -1,5 +1,5 @@
 /**
- * « Au fil de nous » : la femme et son enfant, dessinés à partir de la même pose numérique que les tests
+ * « HOMI » : la femme et son enfant, dessinés à partir de la même pose numérique que les tests
  * (src/lib/domain/familyStory.ts). Les changements d'étape (autre profil, enfant qui grandit) passent par des poses
  * intermédiaires, en douceur. Mouvement au repos très léger (respiration, halo, particules la nuit), jamais au
  * premier plan. « Réduire les animations » ou économie d'énergie : la même image, immobile.

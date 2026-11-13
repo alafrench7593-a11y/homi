@@ -173,7 +173,7 @@ export default function Home() {
           </Tappable>}
           <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
         </Appear>
-        {/* « Au fil de nous » : l'étape du profil affiché, discrète, au-dessus des cartes utiles */}
+        {/* « HOMI » : l'étape du profil affiché, discrète, au-dessus des cartes utiles */}
         {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <Appear kind="soft" delay={0.15}><StoryHomeStrip /></Appear> : null}
         {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 

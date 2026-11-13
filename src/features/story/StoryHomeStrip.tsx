@@ -1,5 +1,5 @@
 /**
- * Accueil › « Au fil de nous » : commence par l'étape du profil affiché, puis fait défiler les autres mini-vidéos (femme seule pour le cycle, ventre selon la
+ * Accueil › « HOMI » : commence par l'étape du profil affiché, puis fait défiler les autres mini-vidéos (femme seule pour le cycle, ventre selon la
  * semaine de grossesse, enfant selon SON âge, jumeaux et fratrie selon la famille renseignée). Bandeau discret et
  * compact (130 px), au-dessus des cartes utiles qu'il ne masque jamais ; touché, il ouvre la présentation.
  */

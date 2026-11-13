@@ -615,7 +615,7 @@ export const ui5: Messages<typeof fr> = {
   'u5.story.home_note': 'On the home screen, the illustration shows the stage of the profile displayed: your cycle, your pregnancy or the age of each of your children.',
   'u5.story.back': 'Back to home',
   'u5.avatar.photo': 'Photo of {name}',
-  'u5.story.title': 'Au fil de nous',
+  'u5.story.title': 'HOMI',
   'u5.ui.collapse': 'Show less',
   'u5.ui.read_more': 'Read more',
 };

@@ -3,7 +3,7 @@ import type { cinema as fr } from '../fr/cinema';
 import type { Messages } from '../types';
 
 export const cinema: Messages<typeof fr> = {
-  "cine.a11y": "Introducción animada de Au fil de nous",
+  "cine.a11y": "Introducción animada de HOMI",
   "cine.skip": "Saltar",
   "cine.skipA11y": "Saltar la introducción",
   "cine.open.l1": "Cada historia",

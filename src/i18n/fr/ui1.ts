@@ -389,7 +389,7 @@ export const ui1 = {
   'u1.fam.removeFromHousehold': 'Retirer du foyer',
   'u1.fam.ownerOnly': 'Seul le propriétaire du foyer peut modifier ces droits.',
   'u1.fam.invitation': 'Invitation',
-  'u1.fam.joinOn': 'Rejoindre un foyer sur Au fil de nous',
+  'u1.fam.joinOn': 'Rejoindre un foyer sur HOMI',
   'u1.fam.invitedTitle': 'Vous êtes invité·e à rejoindre un foyer',
   'u1.fam.invitedWithCode': 'Créez votre compte ou connectez-vous : l’invitation vous attendra, puis vous la confirmerez en un geste.',
   'u1.fam.invitedIncomplete': 'Ce lien d’invitation est incomplet. Demandez à la personne qui vous a invité·e de vous le renvoyer.',
