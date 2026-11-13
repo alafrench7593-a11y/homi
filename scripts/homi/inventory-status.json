@@ -21,7 +21,11 @@
     "scanner/history.tsx": "fait",
     "scanner/compare.tsx": "fait",
     "scanner/avoid.tsx": "fait",
-    "scanner/recalls.tsx": "fait"
+    "scanner/recalls.tsx": "fait",
+    "bottle/index.tsx": "fait",
+    "bottle/[childId].tsx": "fait",
+    "bottle/history.tsx": "fait",
+    "bottle/scoops.tsx": "fait"
   },
   "tools": {
     "mood:/me/mood": {
@@ -64,6 +68,24 @@
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "partiel",
+      "parcours_verifie": "oui"
+    },
+    "feeding:/bottle/:id": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "feeding:/bottle/scoops": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    },
+    "feeding:/bottle/history?child=:id": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
       "parcours_verifie": "oui"
     }
   },

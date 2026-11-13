@@ -26,10 +26,10 @@
 | Santé | 29 | 21 | 0 | 8 | 16 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
 | Grossesse et post-partum | 19 | 19 | 0 | 0 | 6 | 0 |
-| Bébé et enfant | 32 | 32 | 0 | 0 | 70 | 1 |
+| Bébé et enfant | 32 | 28 | 0 | 4 | 70 | 1 |
 | Famille | 30 | 30 | 0 | 0 | 6 | 0 |
 | Communauté | 16 | 16 | 0 | 0 | 4 | 0 |
-| **Total** | **231** | **210** | **2** | **19** | **130** | **4** |
+| **Total** | **231** | **206** | **2** | **23** | **130** | **4** |
 
 Rôles : détail 36 · formulaire 46 · historique 17 · liste 85 · réglage 27 · résultat 13 · scène 7.
 
@@ -238,10 +238,10 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
 | `/baby` | détail | — | — | 0 |  | à faire |
-| `/bottle` | liste | — | Screen, Button, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/bottle/[childId]` | détail | pp_bottle | Screen, Card, Sheet, Field, Button, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/bottle/history` | historique | baby_bottle_history | Screen, Card, Sheet, Button, IconButton, Chip, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
-| `/bottle/scoops` | détail | bottle_scoops | Screen, Card, Field, Button, Banner | 0 |  | à faire |
+| `/bottle` | liste | — | Screen, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/bottle/[childId]` | détail | pp_bottle | Screen, Sheet, Field, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/bottle/history` | historique | baby_bottle_history | Screen, Sheet, IconButton, Chip, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
+| `/bottle/scoops` | détail | bottle_scoops | Screen, Field, Banner | 0 |  | fait |
 | `/child/[id]` | détail | kid_profile, kid_milestones | Screen, Button, IconButton, EmptyState, ErrorView, Skeleton | 1 |  | à faire |
 | `/child/[id]/album` | historique | — | Screen, Card, Sheet, Field, Button, Banner, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
 | `/child/[id]/card` | résultat | kid_card | Screen, Card, Field, Button, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
@@ -451,8 +451,8 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Je décroche | `offduty` | `/family/offduty` | — | — | — | non | non | non | non |
 | Mouvements de bébé | `preg_moves` | `/pregnancy/moves` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/weight` | non | non | non | non |
 | Allaitement | `pp_feeding` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
-| Biberon | `pp_bottle` | `/bottle/[childId]` | feuille dans l’écran | `/bottle/scoops` | `/bottle/history` | non | non | non | non |
-| Compteur de mesurettes | `bottle_scoops` | `/bottle/scoops` | — | `/bottle/[childId]` | `/bottle/history` | non | non | non | non |
+| Biberon | `pp_bottle` | `/bottle/[childId]` | feuille dans l’écran | `/bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
+| Compteur de mesurettes | `bottle_scoops` | `/bottle/scoops` | — | `/bottle/[childId]` | `/bottle/history` | oui | oui | oui | oui |
 | Biberons | `baby_bottle` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
 | Sommeil | `kid_sleep` | `/night` | — | — | `/night/help` | non | non | non | non |
 | Aide pour la nuit | `baby_night_help` | `/night/help` | — | — | — | non | non | non | non |
@@ -481,7 +481,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Suivi du poids | `preg_weight` | `/pregnancy/weight` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves` | non | non | non | non |
 | Récupération | `pp_recovery` | `/postpartum` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Cicatrisation et rééducation | `pp_body` | `/postpartum/recovery` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/sharing /postpartum/understand` | non | non | non | non |
-| Historique des biberons | `baby_bottle_history` | `/bottle/history` | feuille dans l’écran | `/bottle/[childId] /bottle/scoops` | `/bottle/history` | non | non | non | non |
+| Historique des biberons | `baby_bottle_history` | `/bottle/history` | feuille dans l’écran | `/bottle/[childId] /bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
 | Planning de sommeil | `kid_sleep_rhythm` | `/sleep/[childId]` | dans l’écran | `/sleep/difficult/[childId] /sleep/help/[childId]` | — | non | non | non | non |
 | Suivi de la journée | `baby_daily` | `/track` | `/track/[kind]` | — | — | non | non | non | non |
 | Dents | `kid_teeth` | `/teeth` | feuille dans l’écran | — | — | non | non | non | non |

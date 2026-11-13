@@ -68,3 +68,4 @@ export { homeToday } from './homeToday';
 export { entry } from './entry';
 export { moodJournal } from './moodJournal';
 export { scanner } from './scanner';
+export { bottleV3 } from './bottleV3';
