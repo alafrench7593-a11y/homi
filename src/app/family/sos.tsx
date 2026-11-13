@@ -6,7 +6,7 @@
  *      de confiance, le relais du foyer, les numéros d'écoute ; 4. en parler au pédiatre.
  * Les contacts sont ceux déjà saisis dans « Soutien » ; rien de nouveau n'est stocké.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,6 +22,7 @@ import { callNumber, goBack } from '@/lib/links';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { useTapShield } from '@/features/tapShield';
 
 function Big({ icon, label, sub, onPress, tone, testID }: { icon: IconName; label: string; sub?: string; onPress: () => void; tone?: 'danger' | 'calm'; testID?: string }) {
   const t = useTheme();
@@ -46,6 +47,14 @@ export default function FamilySos() {
   const toast = useToast();
   const hid = useHouseholdId();
   const ask = useCreateRequest();
+  // Double appui sur « Demander le relais » : une seule demande envoyée au foyer
+  const sending = useRef(false);
+  const { arm, shielded } = useTapShield();
+  const askRelay = () => {
+    if (sending.current || shielded()) return;
+    sending.current = true;
+    ask.mutateAsync({ kind: 'relay', message: tr('sos.relayMsg') }).then(() => { arm(); toast(tr('sos.relaySent')); }).catch((e) => toast(friendlyError(e), 'error')).finally(() => { sending.current = false; });
+  };
   const { data: contacts } = useTrustedContacts();
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
@@ -77,7 +86,7 @@ export default function FamilySos() {
         <Big key={c.id} icon="phone" label={c.name} sub={c.relation ?? undefined} onPress={() => callNumber(c.phone!, toast)} />
       ))}
       {!people.length ? <Big icon="user-plus" label={tr('sos.addContact')} sub={tr('sos.addContactD')} onPress={() => router.push('/postpartum/support')} /> : null}
-      {hid ? <Big icon="users" label={tr('sos.relay')} sub={tr('sos.relayD')} onPress={() => ask.mutateAsync({ kind: 'relay', message: tr('sos.relayMsg') }).then(() => toast(tr('sos.relaySent'))).catch((e) => toast(friendlyError(e), 'error'))} /> : null}
+      {hid ? <Big icon="users" label={tr('sos.relay')} sub={tr('sos.relayD')} onPress={askRelay} /> : null}
       <Big icon="headphones" label={tr('sos.line')} sub={tr('sos.lineD')} onPress={() => callNumber('3114', toast)} />
       <Big icon="alert-octagon" tone="danger" label={tr('sos.medical')} sub={tr('sos.medicalD')} onPress={() => callNumber('15', toast)} />
 

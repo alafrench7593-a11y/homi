@@ -2,7 +2,7 @@
  * Mode urgence organisationnelle : interface minimale pour les moments de surcharge importante.
  * Gros boutons, aucun formulaire long, aucune animation. Ne remplace pas les services d'urgence.
  */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +20,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr } from '@/i18n';
+import { useTapShield } from '@/features/tapShield';
 
 function Big({ icon, label, onPress, tone }: { icon: IconName; label: string; onPress: () => void; tone?: 'danger' }) {
   const t = useTheme();
@@ -46,7 +47,14 @@ export default function OrgEmergency() {
   const [showContacts, setShowContacts] = useState(false);
   const { plan } = lightenDay(tasks ?? [], todayISO());
 
-  const send = (kind: 'relay' | 'help_today', msg: string) => ask.mutateAsync({ kind }).then(() => toast(msg)).catch((e) => toast(friendlyError(e), 'error'));
+  // Double appui sur une grande touche : une seule demande envoyée au foyer
+  const sending = useRef(false);
+  const { arm, shielded } = useTapShield();
+  const send = (kind: 'relay' | 'help_today', msg: string) => {
+    if (sending.current || shielded()) return;
+    sending.current = true;
+    ask.mutateAsync({ kind }).then(() => { arm(); toast(msg); }).catch((e) => toast(friendlyError(e), 'error')).finally(() => { sending.current = false; });
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }}>
