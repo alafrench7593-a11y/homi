@@ -1,181 +1,110 @@
 /**
- * Barre de navigation flottante : Accueil · Suivi · [Outils] · Communauté · Moi.
- * « Outils » est au centre GÉOMÉTRIQUE (deux moitiés de largeur égale). Appui long sur « Outils » :
- * ajout rapide (ancien bouton « + »), aussi présent en haut de la page Outils.
+ * Barre d'onglets HOMI (13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
+ * Style « Keynote premium » : capsule flottante en verre minuit (BlurView + voile `tabBar` du thème), lisible en
+ * clair comme en sombre ; état actif = pastille lilas derrière l'icône + libellé appuyé ; libellés complets
+ * (taille calculée pour tenir à 320 px de large, jamais d'ellipse) ; cibles ≥ 56 px ; haptique discrète ;
+ * « Réduire les animations » : aucun mouvement. Profil : avatar en haut à droite des écrans (AccountActions).
+ *
+ * Ajout rapide (biberon, tétée, couche, sommeil, humeur…) : bouton rond toujours présent au-dessus de la barre,
+ * à droite (remplace l'ancien onglet Suivi et l'appui long sur « Outils »). Masqué seulement sur l'Accueil d'un
+ * enfant, où « + Ajouter » du cocon joue le même rôle au même endroit.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
-import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Feather } from '@expo/vector-icons';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { springTo } from '@/theme/motion';
-import { fonts, NACRE, NATIVE_DRIVER, palette, radius, spacing } from '@/theme/tokens';
-import { PulseRing } from './MotionKit';
+import { fonts, NACRE, palette, radius, spacing, themes } from '@/theme/tokens';
 import { useScope } from '@/lib/data/hooks-scope';
+import { ACTIVE_ALIAS, NAV_TABS, tabLabelSize, type NavTab } from '@/features/hubs/hubMap';
 import { Sheet } from './Overlays';
+import { tint } from './ToolGlyph';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { t as tr } from '@/i18n';
-import { useAuth } from '@/lib/auth';
-import { useProfile } from '@/lib/data/hooks';
-import { UserAvatar } from './UserAvatar';
-import { avatarInitial } from './AccountActions';
 import { Tappable } from '@/components/Tappable';
 
-const TAB_ICONS: Record<string, IconName> = { index: 'home', agenda: 'calendar', track: 'activity', ask: 'message-circle', community: 'users', profile: 'user', tools: 'grid', moi: 'user' };
-const SHORT_KEYS = { index: 'tab.home', agenda: 'tab.agenda', track: 'tab.track', ask: 'tab.ask', community: 'tab.community', profile: 'tab.profile', moi: 'tab.me' } as const;
-const short = (name: string) => (name in SHORT_KEYS ? tr(SHORT_KEYS[name as keyof typeof SHORT_KEYS]) : undefined);
-
+/** Hauteur réservée à la barre (capsule de 64 px + marge) : utilisée par les boutons flottants des écrans. */
 export const DOCK_HEIGHT = 74;
-/** Mode jour : barre en verre dépoli clair (jamais blanche opaque), icônes foncées bien contrastées. */
-const DAY_INK = '#1C1533';
-const DAY_MUTED = '#584D72';
-/** Routes d'onglet accessibles par lien mais absentes de la barre (« Moi » communautaire : depuis Communauté). */
-const HIDDEN_FROM_BAR = new Set(['moi']);
+const BAR_H = DOCK_HEIGHT - 10;
+const FAB = 54;
+const FAB_SMALL = 48;
+const LONG_PRESS = 'tabLongPress' as const;
+/** Taille de référence des libellés (px) : réduite seulement si le plus long ne tient pas (plancher 9 px). */
+const LABEL_BASE = 12;
+export const fitLabelSize = (tabW: number, widest: number) => Math.max(9, Math.min(LABEL_BASE, Math.floor(((LABEL_BASE * (tabW - 6)) / widest) * 4) / 4));
 
-/** Onglet Profil : la photo de la personne (ou son initiale) à la place d'une icône, anneau quand l'onglet est actif. */
-function ProfileTabIcon({ focused }: { focused: boolean }) {
+/** Encres de la barre : la capsule est toujours en verre minuit, donc encres du thème sombre (nuit : ses propres encres tamisées). */
+function useBarInk() {
+  const t = useTheme();
+  return t.isDark ? t.colors : themes.dark.colors;
+}
+
+function TabItem({ tab, focused, label, a11y, fontSize, onPress, onLongPress }: { tab: NavTab; focused: boolean; label: string; a11y: string; fontSize: number; onPress: () => void; onLongPress: () => void }) {
+  const ink = useBarInk();
   const reduce = useReduceMotion();
-  const day = !useTheme().isDark;
-  const { session } = useAuth();
-  const { data: profile } = useProfile();
   const v = useRef(new Animated.Value(focused ? 1 : 0)).current;
   useEffect(() => { springTo(v, focused ? 1 : 0, 'pop', reduce).start(); }, [v, focused, reduce]);
   return (
-    <Animated.View style={{ transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.1] }) }, { translateY: v.interpolate({ inputRange: [0, 1], outputRange: [0, -1.5] }) }] }}>
-      <View style={{ width: 26, height: 26, borderRadius: 13, borderWidth: focused ? 2 : 0, borderColor: day ? '#5B2A86' : '#E9CFA4', alignItems: 'center', justifyContent: 'center' }}>
-        <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={focused ? 21 : 24} testID="tab-profile-avatar" />
-      </View>
-    </Animated.View>
-  );
-}
-
-/** Libellé de l'onglet Profil : le prénom choisi, sinon « Profil ». */
-function useProfileTabLabel(): string {
-  const { data: profile } = useProfile();
-  const first = profile?.display_name?.trim().split(/\s+/)[0];
-  return first ? first.slice(0, 12) : tr('tab.profile');
-}
-
-/** Icône d'onglet : petit rebond quand l'onglet devient actif. */
-function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
-  const reduce = useReduceMotion();
-  const day = !useTheme().isDark;
-  const v = useRef(new Animated.Value(focused ? 1 : 0)).current;
-  useEffect(() => { springTo(v, focused ? 1 : 0, 'pop', reduce).start(); }, [v, focused, reduce]);
-  return (
-    <Animated.View style={{ transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [1, 1.14] }) }, { translateY: v.interpolate({ inputRange: [0, 1], outputRange: [0, -1.5] }) }] }}>
-      <Feather name={name} size={21} color={day ? (focused ? DAY_INK : DAY_MUTED) : focused ? '#FFFFFF' : 'rgba(247,244,251,0.55)'} />
-    </Animated.View>
-  );
-}
-
-/**
- * Bouton central « Outils » : orbe nacrée (dégradé existant) et quatre tuiles qui se déploient.
- * Toucher : enfoncement en profondeur, onde lumineuse, tuiles qui s'écartent puis se reposent.
- * Actif : anneau lumineux, libellé affirmé. Appui long : ajout rapide (ancien bouton « + »).
- */
-const ORB = 50;
-const TILE = 7.5;
-const TILES: { x: number; y: number; round?: boolean }[] = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1, round: true }];
-
-function ToolsOrb({ focused, sheetOpen, onPress, onLongPress }: { focused: boolean; sheetOpen: boolean; onPress: () => void; onLongPress: () => void }) {
-  const reduce = useReduceMotion();
-  const press = useRef(new Animated.Value(0)).current;      // profondeur
-  const deploy = useRef(new Animated.Value(0)).current;     // tuiles écartées (0 → 1 → 0)
-  const active = useRef(new Animated.Value(focused ? 1 : 0)).current;
-  const turn = useRef(new Animated.Value(0)).current;       // ajout rapide ouvert : les tuiles tournent d'un quart
-  const [pulse, setPulse] = useState(0);
-  useEffect(() => { springTo(active, focused ? 1 : 0, 'gentle', reduce).start(); }, [focused, active, reduce]);
-  useEffect(() => { springTo(turn, sheetOpen ? 1 : 0, 'pop', reduce).start(); }, [sheetOpen, turn, reduce]);
-  const burst = () => {
-    if (reduce) return;
-    setPulse((p) => p + 1);
-    deploy.setValue(0);
-    Animated.sequence([
-      Animated.timing(deploy, { toValue: 1, duration: 140, useNativeDriver: NATIVE_DRIVER }),
-      Animated.spring(deploy, { toValue: 0, tension: 220, friction: 11, useNativeDriver: NATIVE_DRIVER }),
-    ]).start();
-  };
-  const gap = 3.2;
-  const span = TILE * 2 + gap;
-  return (
-    <Pressable
+    <Tappable
       accessibilityRole="tab"
       accessibilityState={{ selected: focused }}
       aria-selected={focused}
-      accessibilityLabel={tr('dock.tools')}
-      accessibilityHint={tr('dock.toolsHint')}
-      onPressIn={() => springTo(press, 1, 'press', reduce).start()}
-      onPressOut={() => springTo(press, 0, 'release', reduce).start()}
-      onPress={() => { burst(); onPress(); }}
-      onLongPress={() => { haptic('success'); burst(); onLongPress(); }}
-      delayLongPress={380}
-      hitSlop={6}
-      style={{ width: ORB + 10, height: ORB + 10, alignItems: 'center', justifyContent: 'center' }}
+      accessibilityLabel={a11y}
+      testID={`tab-${tab.name}`}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      pressScale={0.94}
+      hoverLift={0}
+      style={{ flex: 1, minWidth: 0, minHeight: 56, alignItems: 'center', justifyContent: 'center', gap: 3 }}
     >
-      <PulseRing trigger={pulse} size={ORB + 12} color="#FFFFFF" />
-      {/* anneau d'état actif */}
-      <Animated.View pointerEvents="none" style={{ position: 'absolute', width: ORB + 8, height: ORB + 8, borderRadius: (ORB + 8) / 2, borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)', opacity: active, transform: [{ scale: active.interpolate({ inputRange: [0, 1], outputRange: [0.86, 1] }) }] }} />
-      <Animated.View style={{ width: ORB, height: ORB, borderRadius: ORB / 2, overflow: 'hidden', alignItems: 'center', justifyContent: 'center',
-        shadowColor: '#000', shadowOpacity: 0.28, shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 6,
-        transform: [{ scale: press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.9] }) }, { translateY: press.interpolate({ inputRange: [0, 1], outputRange: [0, 1.5] }) }] }}>
-        <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-        {/* reflet de verre : s'intensifie à la pression */}
-        <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 2, left: 8, right: 8, height: ORB * 0.42, borderRadius: ORB, backgroundColor: '#FFFFFF', opacity: press.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.34] }) }} />
-        <Animated.View style={{ width: span, height: span, transform: [{ rotate: turn.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '90deg'] }) }] }}>
-          {TILES.map((tl, i) => {
-            const dx = tl.x ? 1 : -1; const dy = tl.y ? 1 : -1;
-            return (
-              <Animated.View key={i} style={{ position: 'absolute', left: tl.x * (TILE + gap), top: tl.y * (TILE + gap), width: TILE, height: TILE, borderRadius: tl.round ? TILE / 2 : 2.2, backgroundColor: '#FFFFFF',
-                opacity: tl.round ? active.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) : 1,
-                transform: [
-                  { translateX: deploy.interpolate({ inputRange: [0, 1], outputRange: [0, dx * 2.4] }) },
-                  { translateY: deploy.interpolate({ inputRange: [0, 1], outputRange: [0, dy * 2.4] }) },
-                  { scale: tl.round ? active.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) : 1 },
-                ] }} />
-            );
-          })}
-        </Animated.View>
-      </Animated.View>
-    </Pressable>
+      <View style={{ width: 52, height: 30, alignItems: 'center', justifyContent: 'center' }}>
+        {/* Pastille d'état actif (lilas) : apparaît en s'élargissant depuis le centre */}
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, backgroundColor: tint(ink.primary, 0.24), borderWidth: 1, borderColor: tint(ink.primary, 0.32), opacity: v, transform: [{ scaleX: v.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1] }) }] }]} />
+        <Feather name={tab.icon} size={21} color={focused ? ink.primary : ink.textMuted} />
+      </View>
+      <Text
+        style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.15, textAlign: 'center' }}
+        color={focused ? ink.text : ink.textMuted}
+        numberOfLines={1}
+        maxFontSizeMultiplier={1.2}
+      >
+        {label}
+      </Text>
+    </Tappable>
   );
 }
 
 export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const t = useTheme();
-  const reduce = useReduceMotion();
+  const ink = useBarInk();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const scope = useScope();
   const [open, setOpen] = useState(false);
-  // Onglets visibles ; « Outils » entre les deux groupes (3 de chaque côté), chaque onglet a la même largeur
-  const visible = state.routes.filter((r) => {
-    const o = descriptors[r.key].options as { href?: unknown; tabBarItemStyle?: { display?: string } };
-    // expo-router traduit `href: null` en élément masqué : la route existe toujours (liens profonds), hors de la barre
-    return o.href !== null && o.tabBarItemStyle?.display !== 'none' && !HIDDEN_FROM_BAR.has(r.name);
-  });
-  const center = visible.find((r) => r.name === 'tools');
-  const sides = visible.filter((r) => r !== center);
-  const half = Math.floor(sides.length / 2);
-  const left = sides.slice(0, half);
-  const right = sides.slice(half);
-  const focusedName = state.routes[state.index]?.name;
-  // Pastille lumineuse qui glisse sous l'onglet actif (positions mesurées dans la barre)
-  const [tabX, setTabX] = useState<Record<string, { x: number; w: number }>>({});
-  const [groupX, setGroupX] = useState<{ left: number; right: number }>({ left: 0, right: 0 });
-  const pillX = useRef(new Animated.Value(0)).current;
-  const pillW = useRef(new Animated.Value(0)).current;
-  const pillOn = useRef(new Animated.Value(0)).current;
-  const sideOf = (name: string) => (left.some((r) => r.name === name) ? 'left' : 'right');
-  const pos = focusedName && tabX[focusedName] ? { x: tabX[focusedName].x + groupX[sideOf(focusedName)], w: tabX[focusedName].w } : null;
-  useEffect(() => {
-    springTo(pillOn, pos && focusedName !== 'tools' ? 1 : 0, 'gentle', reduce).start();
-    if (!pos) return;
-    springTo(pillX, pos.x, 'gentle', reduce).start();
-    springTo(pillW, pos.w, 'gentle', reduce).start();
-  }, [focusedName, pos?.x, pos?.w, pillX, pillW, pillOn, reduce]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const focusedName = state.routes[state.index]?.name ?? 'index';
+  const activeName = ACTIVE_ALIAS[focusedName] ?? focusedName;
+  const tabs = NAV_TABS.map((tab) => ({ tab, route: state.routes.find((r) => r.name === tab.name) })).filter((x): x is { tab: NavTab; route: (typeof state.routes)[number] } => !!x.route);
+  const labels = tabs.map((x) => tr(x.tab.label));
+
+  const side = width < 360 ? spacing.xs : spacing.sm;
+  const fab = width < 360 ? FAB_SMALL : FAB;
+  const barW = Math.min(width - side * 2, 560);
+  const tabW = (barW - 8) / Math.max(tabs.length, 1);
+  // Libellés jamais coupés : largeur réelle mesurée (police chargée, langue active, taille de texte du téléphone),
+  // puis taille commune réduite juste assez pour le plus long ; estimation prudente avant la première mesure
+  const [natural, setNatural] = useState<Record<string, number>>({});
+  const widest = Math.max(0, ...labels.map((l) => natural[l] ?? 0));
+  const measured = labels.every((l) => natural[l] != null) && widest > 0;
+  const fontSize = measured ? fitLabelSize(tabW, widest) : tabLabelSize(tabW, Math.max(0, ...labels.map((l) => l.length)));
+  const bottom = Math.max(insets.bottom, 10);
+  // Accueil d'un enfant : « + Ajouter » du cocon est déjà à cet endroit
+  const cocoonAdd = focusedName === 'index' && (scope.scope === 'baby' || scope.scope === 'child') && !!scope.child;
 
   const go = (route: (typeof state.routes)[number]) => {
     const focused = focusedName === route.name;
@@ -186,75 +115,66 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     }
   };
 
-  const profileLabel = useProfileTabLabel();
-  const renderTab = (route: (typeof state.routes)[number]) => {
-    const focused = focusedName === route.name;
-    const isProfile = route.name === 'profile';
-    const label = isProfile ? profileLabel : short(route.name) ?? descriptors[route.key].options.title ?? route.name;
-    return (
-      <Tappable
-        key={route.key}
-        onLayout={(e) => { const { x, width } = e.nativeEvent.layout; setTabX((m) => (m[route.name]?.x === x && m[route.name]?.w === width ? m : { ...m, [route.name]: { x, w: width } })); }}
-        accessibilityRole="tab"
-        accessibilityState={{ selected: focused }}
-        aria-selected={focused}
-        accessibilityLabel={isProfile && label !== tr('tab.profile') ? tr('header.profileNamed', { name: label }) : descriptors[route.key].options.title ?? label}
-        testID={`tab-${route.name}`}
-        onPress={() => go(route)}
-        style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}
-      >
-        {isProfile ? <ProfileTabIcon focused={focused} /> : <TabIcon name={TAB_ICONS[route.name] ?? 'circle'} focused={focused} />}
-        <TabLabel label={label} focused={focused} />
-      </Tappable>
-    );
-  };
-
-  const toolsFocused = focusedName === 'tools';
-  const day = !t.isDark;
   return (
     <>
-      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: Math.max(insets.bottom, 10), paddingHorizontal: spacing.sm, alignItems: 'center' }}>
-        <View style={{ height: DOCK_HEIGHT - 10, width: '100%', maxWidth: 560, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' ? (day ? 'rgba(250,248,253,0.92)' : t.colors.tabBar) : 'transparent', shadowColor: day ? '#2A1F52' : '#000', shadowOpacity: day ? 0.16 : 0.18, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 8, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4, borderWidth: day ? 1 : 0, borderColor: 'rgba(255,255,255,0.9)' }}>
+      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, paddingHorizontal: side, alignItems: 'center' }}>
+        {cocoonAdd ? null : (
+          <View pointerEvents="box-none" style={{ position: 'absolute', right: side + 4, bottom: bottom + BAR_H + 10 }}>
+            <Tappable
+              testID="quick-add"
+              accessibilityRole="button"
+              accessibilityLabel={tr('nav.quickAdd')}
+              accessibilityHint={tr('nav.quickAddHint')}
+              onPress={() => { haptic('light'); setOpen(true); }}
+              pressScale={0.92}
+              style={{ width: fab, height: fab, borderRadius: fab / 2, shadowColor: palette.nightDeep, shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 8 }}
+            >
+              <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1, borderRadius: fab / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tint(palette.white, 0.55) }}>
+                <Icon name="plus" size={fab > FAB_SMALL ? 26 : 23} color={palette.white} />
+              </LinearGradient>
+            </Tappable>
+          </View>
+        )}
+        {/* Mesure invisible des libellés à la taille de référence, en graisse active (la plus large) */}
+        <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
+          style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 }}>
+          <View style={{ width: 1000, alignItems: 'flex-start' }}>
+            {labels.map((l) => (
+              <Text key={l} onLayout={(e) => { const w = Math.ceil(e.nativeEvent.layout.width); setNatural((m) => (m[l] === w ? m : { ...m, [l]: w })); }}
+                style={{ fontFamily: fonts.bodyBold, fontSize: LABEL_BASE, letterSpacing: -0.15 }} maxFontSizeMultiplier={1.2} numberOfLines={1}>{l}</Text>
+            ))}
+          </View>
+        </View>
+        <View
+          accessibilityRole="tablist"
+          accessibilityLabel={tr('nav.tablist')}
+          style={{ height: BAR_H, width: barW, borderRadius: radius.pill, backgroundColor: Platform.OS === 'android' ? t.colors.tabBar : 'transparent', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4,
+            borderWidth: StyleSheet.hairlineWidth, borderColor: tint(ink.primary, 0.28), shadowColor: palette.nightDeep, shadowOpacity: t.isDark ? 0.35 : 0.22, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 10 }}
+        >
           {Platform.OS !== 'android' ? (
             <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.pill, overflow: 'hidden' }]}>
-              <BlurView intensity={day ? 42 : 30} tint={day ? 'light' : 'dark'} style={StyleSheet.absoluteFill} />
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: day ? 'rgba(250,248,253,0.62)' : t.colors.tabBar }]} />
-              <View style={{ position: 'absolute', top: 0, left: 24, right: 24, height: 1, backgroundColor: day ? 'rgba(255,255,255,0.98)' : 'rgba(255,255,255,0.18)' }} />
+              <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.tabBar }]} />
+              {/* reflet de verre sur l'arête haute */}
+              <View style={{ position: 'absolute', top: 0, left: 28, right: 28, height: 1, backgroundColor: tint(ink.text, 0.16) }} />
             </View>
           ) : null}
-          {pos ? (
-            <>
-              <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 7, bottom: 7, left: 0, width: pos.w, borderRadius: radius.pill, backgroundColor: day ? 'rgba(233,88,124,0.12)' : 'rgba(255,255,255,0.10)', opacity: pillOn, transform: [{ translateX: pillX }] }} />
-              <Animated.View pointerEvents="none" style={{ position: 'absolute', top: 10, left: -2, width: 4, height: 4, borderRadius: 2, backgroundColor: palette.gold, opacity: pillOn, transform: [{ translateX: Animated.add(pillX, Animated.multiply(pillW, 0.5)) }] }} />
-            </>
-          ) : null}
-          {/* Deux moitiés de largeur égale : le bouton central est au centre géométrique, quelle que soit la longueur des libellés */}
-          <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.left === x ? g : { ...g, left: x })); }} style={{ flex: Math.max(1, left.length), flexDirection: 'row' }}>{left.map(renderTab)}</View>
-          {center ? (
-            <View style={{ width: 64, alignItems: 'center', justifyContent: 'center', gap: 3, minHeight: 56 }}>
-              {/* emplacement de la même hauteur qu'une icône d'onglet : l'orbe en déborde vers le haut, le libellé reste aligné */}
-              <View style={{ width: 21, height: 21, alignItems: 'center' }}>
-                <View style={{ position: 'absolute', top: -34, alignItems: 'center', justifyContent: 'center' }}>
-                  <ToolsOrb focused={toolsFocused} sheetOpen={open} onPress={() => go(center)} onLongPress={() => setOpen(true)} />
-                </View>
-              </View>
-              <TabLabel label={tr('dock.tools')} focused={toolsFocused} />
-            </View>
-          ) : null}
-          <View onLayout={(e) => { const x = e.nativeEvent.layout.x; setGroupX((g) => (g.right === x ? g : { ...g, right: x })); }} style={{ flex: Math.max(1, right.length), flexDirection: 'row' }}>{right.map(renderTab)}</View>
+          {tabs.map(({ tab, route }, i) => (
+            <TabItem
+              key={route.key}
+              tab={tab}
+              label={labels[i]}
+              a11y={descriptors[route.key]?.options.title ?? labels[i]}
+              focused={activeName === tab.name}
+              fontSize={fontSize}
+              onPress={() => go(route)}
+              onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
+            />
+          ))}
         </View>
       </View>
       <QuickAddSheet visible={open} onClose={() => setOpen(false)} />
     </>
-  );
-}
-
-function TabLabel({ label, focused }: { label: string; focused: boolean }) {
-  const day = !useTheme().isDark;
-  return (
-    <Text style={{ fontFamily: focused ? fonts.bodyMedium : fonts.body, fontSize: label.length > 9 ? 8.5 : 9.5, lineHeight: 12, letterSpacing: label.length > 9 ? -0.3 : -0.1 }} color={day ? (focused ? DAY_INK : DAY_MUTED) : focused ? '#FFFFFF' : 'rgba(247,244,251,0.55)'} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
-      {label}
-    </Text>
   );
 }
 
@@ -295,7 +215,7 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
       {child ? <Text variant="small" weight="bold" testID="quick-for">{tr('dock.forChild', { name: child.first_name })}</Text> : null}
       {compact ? (
         <Tappable accessibilityRole="button" onPress={go(() => router.push('/assistant/chat'))}
-          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(255,143,177,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}>
+          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.gold, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}>
           <Icon name="message-circle" color={palette.gold} />
           <Text weight="bold" color={palette.milk} style={{ flex: 1 }}>{tr('dock.ask')}</Text>
           <Icon name="chevron-right" size={18} color={palette.milk} />
@@ -326,7 +246,7 @@ function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => 
       <Tappable
         accessibilityRole="button"
         onPress={go(() => router.push('/assistant/chat'))}
-        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: 'rgba(255,143,177,0.35)', backgroundColor: pressed ? palette.nightSoft : palette.night })}
+        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: tint(palette.gold, 0.35), backgroundColor: pressed ? palette.nightSoft : palette.night })}
       >
         <Icon name="message-circle" color={palette.gold} />
         <View style={{ flex: 1 }}>

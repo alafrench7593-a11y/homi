@@ -26,20 +26,22 @@ export default function TabsLayout() {
     <>
     {session ? <DigestSync /> : null}
     {session ? <AutoNotificationsSync /> : null}
-    <Tabs detachInactiveScreens screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
+    {/* HOMI (13/11/2026) : 5 onglets — Accueil · Santé · Bébé · Famille · Communauté. Profil = avatar en haut à droite.
+        Les anciens onglets restent des routes valides hors de la barre (`href: null`) : liens profonds, notifications, tests ;
+        on y arrive depuis les hubs (accès directs), la recherche universelle et « Tous les outils ». */}
+    <Tabs detachInactiveScreens backBehavior="history" screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
-      {/* Agenda (07/11/2026, demande de la propriétaire) : 3 onglets de chaque côté, « Outils » au centre exact */}
-      <Tabs.Screen name="agenda" options={{ title: tr('tab.agenda') }} />
-      <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
-      {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
-      <Tabs.Screen name="tools" options={{ title: tr('dock.tools') }} />
+      <Tabs.Screen name="health" options={{ title: tr('nav.tab.health') }} />
+      <Tabs.Screen name="baby" options={{ title: tr('nav.tab.baby') }} />
+      <Tabs.Screen name="household" options={{ title: tr('nav.tab.family') }} />
       <Tabs.Screen name="community" options={{ title: tr('tab.community') }} />
-      <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
-      {/* « Moi » retiré de la barre (choix de la propriétaire) : profil communautaire depuis Communauté, compte privé depuis l'avatar ; la route reste (liens profonds) */}
+      {/* Hors de la barre : Agenda (→ Famille), Suivi (→ Bébé), Outils (→ Accueil et recherche), Questions (→ Santé), Moi, Profil (avatar) */}
+      <Tabs.Screen name="agenda" options={{ title: tr('tab.agenda'), href: null }} />
+      <Tabs.Screen name="track" options={{ title: tr('tab.track'), href: null }} />
+      <Tabs.Screen name="tools" options={{ title: tr('dock.tools'), href: null }} />
+      <Tabs.Screen name="ask" options={{ title: tr('tab.ask'), href: null }} />
       <Tabs.Screen name="moi" options={{ title: tr('tab.me'), href: null }} />
-      {/* Profil de la personne (07/11/2026, demande de la propriétaire) : dans la barre, à droite, avec sa photo ;
-          toujours aussi accessible depuis l'avatar en haut à droite */}
-      <Tabs.Screen name="profile" options={{ title: tr('tab.profile') }} />
+      <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>
     </>
   );

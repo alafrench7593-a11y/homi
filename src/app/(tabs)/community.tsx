@@ -10,6 +10,7 @@ import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { DOCK_HEIGHT } from '@/components/Dock';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Fab, Field, Icon, IconButton, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -237,10 +238,11 @@ export default function Community() {
         ListHeaderComponent={header}
         ListFooterComponent={footer}
         ListEmptyComponent={empty}
-        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + 140, gap: spacing.sm }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + 200, gap: spacing.sm }}
         showsVerticalScrollIndicator={false}
       />
-      <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: insets.bottom + 104 }}>
+      {/* Au-dessus du bouton d'ajout rapide de la barre (HOMI) */}
+      <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.sm + 4, bottom: Math.max(insets.bottom, 10) + DOCK_HEIGHT + 74 }}>
         <Fab icon="edit-3" label={tr('cm1.feed.publish')} onPress={newPost} />
       </View>
       <CategorySheet visible={allOpen} onClose={() => setAllOpen(false)} forums={spaces.all} selected={forumId} onSelect={setForumId} />

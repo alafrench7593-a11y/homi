@@ -98,7 +98,7 @@ export default function Tools() {
   const statusOf = (tool: CatalogTool) => { const k = statusKeyFor(tool); return k ? statuses[k] : undefined; };
 
   return (
-    <Screen account title={tr('screen.tools.title')} subtitle={tr('screen.tools.sub')} bottomInset={96} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+    <Screen account title={tr('screen.tools.title')} subtitle={tr('screen.tools.sub')} bottomInset={156} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       <View onLayout={(e) => setMeasured(Math.floor(e.nativeEvent.layout.width))} style={{ height: 0, alignSelf: 'stretch', marginBottom: -spacing.md }} />
       {urgent ? <UrgentStrip tool={urgent} /> : null}
       {/* Les outils affichés dépendent du profil choisi ici (grossesse, post-partum, chaque enfant, famille, moi) */}
