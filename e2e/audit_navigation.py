@@ -184,6 +184,9 @@ def set_body(P, need, cur):
 
 
 BLOCKING = {'plantage', 'introuvable', 'ecran_blanc', 'erreur_donnees', 'onglet_plante', 'session_perdue'}
+# Écran attendu après « Retour » / « Fermer » depuis un lien direct (sans historique) : l'écran parent, jamais l'Accueil
+# (audit 01 N-07 : écrans plein écran du sommeil ouverts par une notification)
+EXPECTED_BACK = {'/sleep/tonight': '/baby', '/sleep/difficult/[childId]': '/baby', '/sleep/help/[childId]': '/baby'}
 
 
 # ------------------------------------------------------------------ phase routes (liens profonds)
@@ -246,6 +249,8 @@ def check_route(S, route, premium):
                 st2 = P.state()
                 row['retour'] = st2['path']
                 row['retour_ok'] = st2['path'] != before and P.pg.url.startswith(B) and not (set(st2['flags']) & BLOCKING)
+                if route in EXPECTED_BACK and st2['path'].split('?')[0] != EXPECTED_BACK[route]:
+                    row['retour_ok'] = False; row['retour_attendu'] = EXPECTED_BACK[route]
                 row['retour_flags'] = st2['flags']
             except Exception as e:
                 row['retour'] = 'ERREUR ' + str(e)[:80]; row['retour_ok'] = False

@@ -4,7 +4,7 @@ import { formatDate, formatNumber, formatUnit, getLocale, initialLocale, setLoca
 import { availableLocales, LOCALES, proposeLocale } from '@/i18n/locales';
 import type { Msg } from '@/i18n/types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { scan, listFiles } = require('../../scripts/i18n-scan.js');
+const { scan, scanFile, listFiles } = require('../../scripts/i18n-scan.js');
 
 /** Fichiers entièrement traduits : aucun texte affiché ne doit y être écrit en dur (régression bloquée). */
 export const MIGRATED = [
@@ -107,5 +107,12 @@ describe('textes en dur', () => {
   });
   it('appli entièrement en deux langues : aucun texte affiché écrit en dur dans les écrans et composants', () => {
     expect(scan(listFiles(['src/app', 'src/features', 'src/components']))).toEqual({});
+  });
+  it('détecte les chaînes cachées dans un gabarit neutre (`${a} : ${on ? "…" : "…"}`, ancien ToolCard)', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('fs'), os = require('os'), path = require('path');
+    const f = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'i18n-scan-')), 'Fav.tsx');
+    fs.writeFileSync(f, "export const F = ({ on, label }) => <Tappable accessibilityLabel={`${label} : ${on ? 'retirer des raccourcis' : 'ajouter aux raccourcis'}`} />;\n");
+    expect(scanFile(f).map((h: { text: string }) => h.text)).toEqual(['retirer des raccourcis', 'ajouter aux raccourcis']);
   });
 });

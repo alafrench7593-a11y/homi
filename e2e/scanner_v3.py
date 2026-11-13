@@ -174,7 +174,11 @@ with sync_playwright() as p:
     R['inconnu_bouton_desactive'] = disabled(pg, 'scan-confirm')
     shot(pg, '08-inconnu')
     tid(pg, 'scan-manual-name').fill('Surligneur'); pg.wait_for_timeout(300)
-    R['inconnu_nomme_active'] = not disabled(pg, 'scan-confirm') and 'Continuer avec ce nom' in tid(pg, 'scan-confirm').inner_text()
+    # 320 px : le libellé complet ne tient pas sur une ligne → libellé court « Continuer » (audit 09) ; le lecteur
+    # d'écran lit toujours « Continuer avec ce nom »
+    btn = tid(pg, 'scan-confirm')
+    R['inconnu_nomme_active'] = (not disabled(pg, 'scan-confirm') and (btn.get_attribute('aria-label') or '') == 'Continuer avec ce nom'
+                                 and btn.inner_text().strip() in ('Continuer avec ce nom', 'Continuer'))
 
     # 7. Aliment (démo) jusqu'au résultat
     pg.goto(B + '/scanner/food'); pg.wait_for_timeout(2500)

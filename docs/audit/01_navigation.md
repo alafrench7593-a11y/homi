@@ -96,8 +96,8 @@ Aucun écran blanc, aucune page « introuvable » sur une adresse valide, aucune
 - `/community/saved` : aucun lien ; doublon de l'onglet « Enregistrés » du profil communauté. À relier ou rediriger.
 - `/nearby` : redirection historique vers `/outings` (voulu).
 
-### N-07 — Fermer « Nuit difficile » / « Aide pour cette nuit » ouverts par lien direct : retour à l'Accueil (faible, non corrigé — propriétaire : Sommeil)
-`/sleep/difficult/[childId]` (`goBack()` → `/(tabs)`) et `/sleep/tonight` (`replace('/')`) : à partir d'une notification, « Fermer » mène à l'Accueil plutôt qu'à l'onglet Bébé. Suggestion : `goBack('/baby')`.
+### N-07 — Fermer « Nuit difficile » / « Aide pour cette nuit » ouverts par lien direct : retour à l'Accueil (faible, **corrigé le 13/11/2026**)
+`/sleep/difficult/[childId]` (`goBack()` → `/(tabs)`) et `/sleep/tonight` (`replace('/')`) : à partir d'une notification, « Fermer » mène à l'Accueil plutôt qu'à l'onglet Bébé. Correction : `goUp(pathname)` (`src/lib/links.ts`) = retour dans l'historique, sinon `parentRoute` (→ `/baby`), comme le Retour de `Screen`. Tests : Jest `parentRoute.test.ts` (`goUp`), `audit_navigation.py` phase `routes` (`EXPECTED_BACK`).
 
 ### N-08 — Contrôles sans effet attendus (information)
 - Avatar « Mon profil » sur `/profile` : on y est déjà (pourrait porter `aria-current`).

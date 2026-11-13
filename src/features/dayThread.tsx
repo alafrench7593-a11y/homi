@@ -15,6 +15,8 @@ import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 const NODE = 22;
+/** Largeur en dessous de laquelle le texte d'une ligne ne descend pas : les boutons d'action passent alors dessous. */
+const TEXT_MIN = 150;
 
 export interface ThreadRow {
   key: string;
@@ -100,17 +102,19 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
                     testID={r.testID}
                     style={{ flex: 1, marginBottom: last ? 0 : spacing.sm, paddingVertical: hot ? spacing.sm : 2, paddingHorizontal: hot ? spacing.md : 0, borderRadius: 18,
                       backgroundColor: hot ? tint(accent, t.isDark ? 0.18 : 0.1) : 'transparent', borderWidth: hot ? 1 : 0, borderColor: tint(accent, 0.35) }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                      <View style={{ flex: 1, opacity: faded ? 0.78 : 1 }}>
+                    {/* Texte d'abord, ENTIER : les boutons d'action passent sous le texte quand la place manque (320 px,
+                        texte agrandi : la colonne du titre tombait à ~30 px, « Do-n… », audit 09) */}
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: spacing.sm, rowGap: 6 }}>
+                      <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: TEXT_MIN, minWidth: 0, opacity: faded ? 0.78 : 1 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                           {r.time ? <Text weight="bold" style={{ fontSize: hot ? 20 : 16 }}>{r.time}</Text> : null}
                           <Text variant="caption" weight="bold" color={faded ? t.colors.textMuted : color}>{(r.tag ?? THREAD_LABEL[r.state]).toUpperCase()}</Text>
                         </View>
-                        <Text weight={hot ? 'bold' : 'medium'} style={{ textDecorationLine: r.state === 'done' ? 'line-through' : 'none' }} numberOfLines={2}>{r.title}</Text>
-                        {r.sub ? <Text variant="caption" muted numberOfLines={2}>{r.sub}</Text> : null}
+                        <Text weight={hot ? 'bold' : 'medium'} style={{ textDecorationLine: r.state === 'done' ? 'line-through' : 'none' }}>{r.title}</Text>
+                        {r.sub ? <Text variant="caption" muted>{r.sub}</Text> : null}
                       </View>
                       {r.action || r.action2 ? (
-                        <View style={{ alignItems: 'flex-end', gap: 6 }}>
+                        <View style={{ alignItems: 'flex-end', gap: 6, marginLeft: 'auto' }}>
                           {r.action ? (
                             <Tappable bare onPress={r.action.onPress} accessibilityRole="button" accessibilityLabel={`${r.action.label} : ${r.title}`} testID={r.action.testID} hitSlop={8}
                               style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: r.action.strong || hot ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>

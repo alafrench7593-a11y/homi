@@ -65,7 +65,7 @@ if os.environ.get('AUDIT_CFG'):
     CONFIGS = [CONFIGS[int(i)] for i in os.environ['AUDIT_CFG'].split(',')]
 # Constats qui font échouer la suite (les autres sont rapportés : troncature volontaire, cible tactile à revoir)
 BLOCKING = {'texte_hors_ecran', 'texte_rogne', 'texte_deborde_sa_boite', 'texte_tronque', 'mot_coupe', 'libelle_hors_bouton', 'bouton_hors_ecran',
-            'bouton_principal_2_lignes', 'champ_masque', 'zone_saisie_etroite', 'cible_tactile_trop_petite'}
+            'bouton_principal_2_lignes', 'champ_masque', 'zone_saisie_etroite', 'cible_tactile_trop_petite', 'onglet_trop_etroit', 'onglet_sans_nom'}
 
 R_A, R_B, errs = {}, {}, []
 
@@ -73,6 +73,15 @@ FOCUS_FIRST_FIELD = """() => {
   const vis = (e) => { const r = e.getBoundingClientRect(); return r.width > 4 && r.height > 4 && getComputedStyle(e).visibility !== 'hidden'; };
   const f = [...document.querySelectorAll('input:not([type=hidden]):not([readonly]), textarea')].filter(vis)[0];
   if (!f) return false; f.focus(); return true; }"""
+# Barre d'onglets : chaque onglet ≥ 44 px de large (audit 09 : 35–40 px à 320 px, texte 1,3) ; au-delà du seuil, icônes
+# seules, chaque onglet garde un nom accessible (src/features/hubs/hubMap.ts `tabLayout`)
+DOCK_CHECK = """() => { const out = []; for (const e of document.querySelectorAll('[data-testid="dock"] [role="tab"]')) {
+  const r = e.getBoundingClientRect(); if (r.width < 1 || getComputedStyle(e).visibility === 'hidden') continue;
+  if (r.width < 43.5 || r.height < 43.5) out.push({ kind: 'onglet_trop_etroit', text: e.getAttribute('aria-label') || '?', w: Math.round(r.width), h: Math.round(r.height) });
+  if (!(e.getAttribute('aria-label') || e.innerText || '').trim()) out.push({ kind: 'onglet_sans_nom', text: e.getAttribute('data-testid') || '?' }); }
+  return out; }"""
+# Nouvel appui sur le champ actif : `focus()` sur un champ déjà focalisé n'émet aucun événement
+REFOCUS_FIELD = """() => { const f = document.activeElement; if (!f || !(f.tagName === 'INPUT' || f.tagName === 'TEXTAREA')) return false; f.blur(); f.focus(); return true; }"""
 # Champ focalisé : visible en entier, non recouvert (point central), zone qui défile assez haute
 FIELD_CHECK = """() => {
   const out = []; const H = window.innerHeight; const f = document.activeElement;
@@ -153,15 +162,23 @@ def audit_route(pg, cfg, r, public=False):
     run_steps(pg, r)
     found = []
     if cfg['kb']:
+        # Ordre du téléphone : la taille du texte est réglée AVANT l'appui sur le champ. Jusqu'ici l'agrandissement
+        # était appliqué APRÈS le focus : le champ, déjà ramené en vue, était repoussé hors de la zone visible, et le
+        # second `focus()` (champ déjà actif) ne déclenchait aucun événement — d'où les « champ_masque » de l'audit 09
+        # sur /, /family, /community, /onboarding, /settings/account… (tous absents à texte 1, constat du 13/11/2026).
+        if cfg['scale'] != 1:
+            pg.evaluate('(k) => window.__homiTextScale(k)', cfg['scale']); pg.wait_for_timeout(300)
         if not pg.evaluate(FOCUS_FIRST_FIELD):
             return None  # écran sans champ : la configuration clavier ne s'applique pas
         pg.set_viewport_size({'width': W, 'height': H - KB}); pg.wait_for_timeout(900)
         pg.evaluate(FOCUS_FIRST_FIELD); pg.wait_for_timeout(700)  # Field fait défiler jusqu'au champ
         if cfg['scale'] != 1:
+            # agrandissement réappliqué aux textes rendus entre-temps, puis nouvel appui sur le champ (événement réel)
             pg.evaluate('(k) => window.__homiTextScale(k)', cfg['scale']); pg.wait_for_timeout(400)
-            pg.evaluate(FOCUS_FIRST_FIELD); pg.wait_for_timeout(600)
+            pg.evaluate(REFOCUS_FIELD); pg.wait_for_timeout(700)
         found += pg.evaluate(FIELD_CHECK)
     found += detect(pg, cfg['scale'])
+    found += pg.evaluate(DOCK_CHECK)
     if os.environ.get('AUDIT_SHOTS', '1') == '1' and (found or os.environ.get('AUDIT_SHOTS_ALL')):
         pg.screenshot(path=f"{SHOTS}/A-{cfg['name']}-{r.strip('/').replace('/', '_').replace('#', '-') or 'accueil'}.png")
     return found
@@ -191,7 +208,10 @@ def part_a(b):
 FOCUS_INFO = """() => { const e = document.activeElement; if (!e || e === document.body) return null; const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
   // champ `Field` : son halo (liseré de la couleur principale, voir ui.tsx) remplace l'anneau du navigateur
   const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2) || (cs.boxShadow && cs.boxShadow !== 'none') || e.getAttribute('data-field') === '1';
-  return { name: (e.getAttribute('aria-label') || e.innerText || e.getAttribute('placeholder') || '').replace(/\\s+/g, ' ').trim().slice(0, 40), role: e.getAttribute('role') || e.tagName.toLowerCase(), x: Math.round(r.left), y: Math.round(r.top + window.scrollY), w: Math.round(r.width), h: Math.round(r.height), ring, inView: r.bottom > 0 && r.top < window.innerHeight }; }"""
+  // position DANS LE CONTENU : la zone de l'écran défile (ScrollView = div qui défile) pour montrer l'élément focalisé ;
+  // sa position à l'écran remontait alors sans que l'ordre remonte (faux « retours » de l'audit 09, /me/mood, /settings/appearance)
+  let st = window.scrollY; for (let p = e.parentElement; p; p = p.parentElement) { const ps = getComputedStyle(p); if ((ps.overflowY === 'auto' || ps.overflowY === 'scroll') && p.scrollHeight > p.clientHeight) st += p.scrollTop; }
+  return { name: (e.getAttribute('aria-label') || e.innerText || e.getAttribute('placeholder') || '').replace(/\\s+/g, ' ').trim().slice(0, 40), role: e.getAttribute('role') || e.tagName.toLowerCase(), x: Math.round(r.left), y: Math.round(r.top + st), w: Math.round(r.width), h: Math.round(r.height), ring, inView: r.bottom > 0 && r.top < window.innerHeight }; }"""
 UNNAMED = """() => { const out = []; for (const e of document.querySelectorAll('[role=button],[role=switch],[role=radio],[role=checkbox],[role=tab],button,a[href],input,textarea')) {
   const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1) continue; let hid = false; for (let p = e; p; p = p.parentElement) { const cs = getComputedStyle(p); if (cs.display === 'none' || cs.visibility === 'hidden' || p.getAttribute('aria-hidden') === 'true') { hid = true; break; } } if (hid) continue;
   const name = (e.getAttribute('aria-label') || e.innerText || e.getAttribute('placeholder') || e.getAttribute('title') || '').trim();
@@ -280,9 +300,10 @@ def part_b(b):
             if info:
                 seq.append(info)
         R_B[f'focus_visible_{r}'] = bool(seq) and all(s['ring'] for s in seq)
+        # haut → bas dans le contenu ; seul retour admis : le bouclage de la fin de l'écran vers l'en-tête (y < 120)
         back_jumps = [(a['name'], c['name']) for a, c in zip(seq, seq[1:]) if c['y'] < a['y'] - 60 and not (a['y'] > 400 and c['y'] < 120)]
-        R_B[f'info_ordre_focus_{r}'] = len(back_jumps) <= 1
-        if not R_B[f'focus_visible_{r}'] or not R_B[f'info_ordre_focus_{r}']:
+        R_B[f'ordre_focus_{r}'] = not back_jumps
+        if not R_B[f'focus_visible_{r}'] or not R_B[f'ordre_focus_{r}']:
             R_B[f'detail_focus_{r}'] = [s for s in seq if not s['ring']][:4] or back_jumps[:4]
         pg.screenshot(path=f'{SHOTS}/B-focus-{r.strip("/").replace("/", "_")}.png')
 
@@ -398,17 +419,10 @@ with sync_playwright() as p:
         part_b(br)
     br.close()
 
-# Constats CONNUS hors des composants partagés : signalés à leur propriétaire (docs/audit/09_ux_accessibilite.md § 4).
-# Ils restent listés (« A_connus ») mais ne font pas échouer la suite ; tout NOUVEAU constat la fait échouer.
-KNOWN = [
-    ('/health', 'texte_tronque', ''), ('/baby', 'texte_tronque', ''), ('/household', 'texte_tronque', ''),  # hubs (navigation)
-    ('/family', 'texte_tronque', ''), ('/family', 'champ_masque', ''), ('/community', 'champ_masque', ''),  # hubs (navigation)
-    ('/', 'champ_masque', 'Votre question'),  # Accueil, assistant (navigation)
-    ('/onboarding', 'champ_masque', ''), ('/settings/account', 'champ_masque', ''),  # auth / onboarding
-    ('/scanner/product#inconnu', 'cible_tactile_trop_petite', 'Revenir'), ('/scanner/product#inconnu', 'bouton_principal_2_lignes', ''),  # pilote Scanner
-    ('/scanner/product#inconnu', 'champ_masque', ''),  # pilote Scanner (zone de l'assistant, texte 1,3 + clavier)
-    ('/me/mood#choix', 'champ_masque', ''), ('/family/missions/new', 'champ_masque', ''),  # texte 1,3 + clavier : 308 px, cf. § 6
-]
+# Constats CONNUS (signalés à leur propriétaire, ne font pas échouer la suite) : liste VIDE depuis les corrections
+# résiduelles de l'audit 09 (13/11/2026, docs/audit/09_ux_accessibilite.md § 4). Tout constat bloquant fait échouer.
+# Format : (écran, type de constat, début du texte), à justifier précisément si on en rajoute un.
+KNOWN: list[tuple[str, str, str]] = []
 known_of = lambda r, f: any(r == kr and f['kind'] == kk and (f.get('text') or '').startswith(kt) for kr, kk, kt in KNOWN)  # noqa: E731
 known = {r: {c: [f for f in fs if f['kind'] in BLOCKING and known_of(r, f)] for c, fs in cfgs.items()} for r, cfgs in R_A.items()}
 known = {r: {c: fs for c, fs in cfgs.items() if fs} for r, cfgs in known.items()}

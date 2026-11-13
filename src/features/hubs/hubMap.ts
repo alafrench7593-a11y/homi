@@ -125,21 +125,24 @@ export function dockGeometry(width: number) {
 /**
  * Largeur de chaque onglet et taille commune des libellés : chaque onglet reçoit la largeur de son libellé (+ marge,
  * au moins TAB_MIN_W), le reste est partagé à parts égales ; la taille descend par quarts de pixel seulement si la
- * somme dépasse. `natural` = largeurs mesurées (ou estimées) des libellés à TAB_LABEL_MAX. Jamais d'ellipse en français.
+ * somme dépasse. `natural` = largeurs mesurées (ou estimées) des libellés à TAB_LABEL_MAX (taille de texte du
+ * téléphone comprise). Jamais d'ellipse, jamais d'onglet de moins de TAB_MIN_W.
+ *
+ * Seuil (audit 09, décision du 13/11/2026) : si, à la taille plancher (10 px), les cinq libellés ne tiennent pas
+ * avec 44 px par onglet (320 px de large + texte agrandi, langue longue sur petit écran), la barre passe en
+ * ICÔNES SEULES (`iconsOnly`) : onglets de largeur égale (≥ 44 px), libellés masqués à l'écran mais toujours
+ * annoncés (nom accessible = libellé complet). Plutôt qu'un libellé abrégé (« Commu. ») ou une cible de 35 px.
  */
-export function tabLayout(inner: number, natural: number[]): { fontSize: number; widths: number[] } {
+export function tabLayout(inner: number, natural: number[]): { fontSize: number; widths: number[]; iconsOnly: boolean } {
   const n = Math.max(natural.length, 1);
   const base = (size: number) => natural.map((w) => Math.max(TAB_MIN_W, (w * size) / TAB_LABEL_MAX + TAB_LABEL_PAD));
   const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
   let size = TAB_LABEL_MAX;
   while (size > TAB_LABEL_FLOOR && sum(base(size)) > inner) size -= 0.25;
-  let b = base(size);
-  // Langue très longue (allemand…) : au plancher, on renonce d'abord à la largeur minimale (les onglets restent
-  // contigus : la cible tactile garde 64 px de haut), puis, en dernier recours, on réduit tout proportionnellement
-  if (sum(b) > inner) b = natural.map((w) => (w * size) / TAB_LABEL_MAX + TAB_LABEL_PAD);
-  if (sum(b) > inner) { const k = inner / sum(b); b = b.map((w) => w * k); }
+  const b = base(size);
+  if (sum(b) > inner) return { fontSize: size, widths: natural.map(() => inner / n), iconsOnly: true };
   const extra = Math.max(0, inner - sum(b)) / n;
-  return { fontSize: size, widths: b.map((w) => w + extra) };
+  return { fontSize: size, widths: b.map((w) => w + extra), iconsOnly: false };
 }
 
 /** Estimation prudente de la largeur d'un libellé avant la première mesure (Manrope gras mesuré : 0,57 à 0,65 em par caractère ; 0,66 retenu). */

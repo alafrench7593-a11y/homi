@@ -9,7 +9,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
@@ -18,7 +18,7 @@ import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
-import { callNumber, goBack } from '@/lib/links';
+import { callNumber, goUp } from '@/lib/links';
 import { useNightFeeds, useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
 import { lastEvents, nightPistes, NIGHT_OBSERVATIONS, WORRYING_SIGNS, type NightObservation } from '@/lib/domain/nightsHelp';
@@ -44,6 +44,7 @@ export default function DifficultNight() {
   const topInset = insets.top + useDemoInset();
   const STEPS = stepLabels();
   const { childId } = useLocalSearchParams<{ childId: string }>();
+  const pathname = usePathname();
   const toast = useToast();
   const child = useChild(childId);
   const childrenQ = useChildren();
@@ -64,7 +65,7 @@ export default function DifficultNight() {
         <StatusBar style="light" />
         <View style={{ padding: spacing.lg, paddingTop: topInset + spacing.md, gap: spacing.md }}>
           <Row style={{ alignItems: 'center' }}>
-            <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }} testID="dn-close"><Icon name="x" color={MUTED} /></Tappable>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goUp(pathname)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }} testID="dn-close"><Icon name="x" color={MUTED} /></Tappable>
           </Row>
           {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
             <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('u4.child.loadError')} />
@@ -91,7 +92,7 @@ export default function DifficultNight() {
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + 140, gap: spacing.md }}>
         <Row style={{ alignItems: 'center' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goUp(pathname)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
           <Text variant="caption" color={MUTED} style={{ flex: 1 }}>{tr('u4.dn.stepOf', { n: step + 1, total: STEPS.length, name })}</Text>
         </Row>
         <Text variant="title" color={TEXT}>{STEPS[step]}</Text>
@@ -157,7 +158,7 @@ export default function DifficultNight() {
         <Row>
           {step > 0 ? <View style={{ flex: 1 }}><Big label={tr('u4.dn.back')} soft onPress={() => setStep(step - 1)} testID="dn-back" /></View> : null}
           <View style={{ flex: 1 }}>
-            {step < STEPS.length - 1 ? <Big label={tr('u4.dn.next')} onPress={() => setStep(step + 1)} testID="dn-next" /> : <Big label={tr('u4.dn.finish')} onPress={() => goBack()} testID="dn-finish" />}
+            {step < STEPS.length - 1 ? <Big label={tr('u4.dn.next')} onPress={() => setStep(step + 1)} testID="dn-next" /> : <Big label={tr('u4.dn.finish')} onPress={() => goUp(pathname)} testID="dn-finish" />}
           </View>
         </Row>
       </View>

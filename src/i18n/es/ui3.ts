@@ -508,6 +508,7 @@ export const ui3: Messages<typeof fr> = {
   "u3.tools.errTools": "No se pueden mostrar tus herramientas",
   "u3.tools.favAdd": "«{label}» añadido a tus accesos directos.",
   "u3.tools.favDel": "«{label}» quitado de los accesos directos.",
+  "u3.tools.favSwitch": "{label} en mis accesos directos",
   "u3.tools.favs": "Favoritos",
   "u3.tools.filter": "Filtrar: {title}",
   "u3.tools.filterTools": "Filtrar las herramientas",

@@ -19,7 +19,8 @@ import { MatteSurface } from '@/components/surfaces';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Chip, Field, Icon, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { MoodSupportCard } from '@/features/mood/MoodSupportCard';
-import { ComposerAction, EntryRow, feelingLabel, moodLabel, MoodOrbs, Reveal, SaveResult, SupportBanner } from '@/features/mood/MoodJournalUI';
+import { ComposerAction, EntryRow, feelingLabel, moodLabel, MoodOrbs, SaveResult, SupportBanner } from '@/features/mood/MoodJournalUI';
+import { Reveal } from '@/motion';
 import { FEELINGS, NOTE_MAX, weekSummary } from '@/features/mood/model';
 import { useMoodCheckin } from '@/features/mood/useMoodJournal';
 import { useMoods } from '@/lib/data/hooks';
@@ -77,9 +78,10 @@ export default function MoodScreen() {
               {c.error ? <Text variant="small" color={t.colors.danger} accessibilityLiveRegion="polite" testID="mood-error">{tr(c.error === 'mood' ? 'u8.mood.pick' : 'u8.mood.max')}</Text> : null}
             </View>
 
-            {/* 2. Saisir : apparaît une fois l'humeur choisie */}
+            {/* 2. Saisir : apparaît une fois l'humeur choisie (`Reveal` du design system : fondu + 12 px à l'apparition, refermé aussitôt après l'envoi) */}
             {c.mood ? (
-              <Reveal testID="mood-details">
+            <Reveal visible appear testID="mood-details">
+              <View style={{ gap: spacing.md }}>
                 <MatteSurface padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
                   <Text weight="bold">{tr('u8.mood.present')} <Text variant="small" muted>{tr('u8.mood.optional')}</Text></Text>
                   <Row wrap>
@@ -95,7 +97,8 @@ export default function MoodScreen() {
                   <Text variant="caption" muted>{tr('u8.mood.safetyNote')}</Text>
                 </MatteSurface>
                 {c.support ? <SupportBanner urgent={c.support === 'urgent'} testID="mood-support-now" /> : null}
-              </Reveal>
+              </View>
+            </Reveal>
             ) : null}
 
             {shownSupport ? <SupportBanner urgent={shownSupport === 'urgent'} testID="mood-support-after" /> : !c.mood ? <MoodSupportCard /> : null}

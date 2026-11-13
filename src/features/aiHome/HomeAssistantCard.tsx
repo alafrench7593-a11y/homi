@@ -55,12 +55,16 @@ export function HomeAssistantCard() {
       <Tappable accessibilityRole="button" accessibilityLabel={tr('ai.home.online')} onPress={() => router.push(q.trim().length >= 2 ? { pathname: '/assistant/chat', params: { q: q.trim() } } : '/assistant/chat')} testID="home-ai-online"
         style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
         <Icon name="cloud" size={16} color="#FFFFFF" />
-        <Text variant="small" weight="bold" color="#FFFFFF" style={{ flex: 1 }}>{tr('ai.home.online')}</Text>
-        {aiAssistantOnline() ? null : (
-          <View style={{ backgroundColor: 'rgba(255,255,255,0.28)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }} testID="home-ai-soon">
-            <Text variant="caption" weight="bold" color="#FFFFFF">{tr('pw.soon.badge')}</Text>
-          </View>
-        )}
+        {/* libellé et pastille « Bientôt disponible » : la pastille passe sous le libellé quand la place manque (texte
+            agrandi à 320 px : le libellé tombait à 3 lettres par ligne, « Ré-ponse », audit 09) */}
+        <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 6, rowGap: 4 }}>
+          <Text variant="small" weight="bold" color="#FFFFFF" style={{ flexShrink: 1 }}>{tr('ai.home.online')}</Text>
+          {aiAssistantOnline() ? null : (
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.28)', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 }} testID="home-ai-soon">
+              <Text variant="caption" weight="bold" color="#FFFFFF">{tr('pw.soon.badge')}</Text>
+            </View>
+          )}
+        </View>
         <Icon name="chevron-right" size={16} color="#FFFFFF" />
       </Tappable>
       <Text variant="caption" color="rgba(255,255,255,0.85)">{tr('ai.home.localNote')} {tr('ai.home.disclaimer')}</Text>

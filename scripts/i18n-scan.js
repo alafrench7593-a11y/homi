@@ -54,7 +54,11 @@ function scanFile(file) {
     const out = [];
     const walk = (n) => {
       if ((ts.isStringLiteral(n) || ts.isNoSubstitutionTemplateLiteral(n)) && isHuman(n.text)) out.push(n);
-      else if (ts.isTemplateExpression(n)) { if (isHuman(n.head.text + n.templateSpans.map((s) => s.literal.text).join(' '))) out.push({ text: n.getText(), getStart: () => n.getStart() }); }
+      else if (ts.isTemplateExpression(n)) {
+        if (isHuman(n.head.text + n.templateSpans.map((s) => s.literal.text).join(' '))) out.push({ text: n.getText(), getStart: () => n.getStart() });
+        // gabarit neutre (`${a} : ${b}`) : les chaînes de ses expressions sont lues aussi (audit 09, ToolCard)
+        else n.templateSpans.forEach((s) => walk(s.expression));
+      }
       else if (ts.isCallExpression(n) && /^(t|tr)$/.test(n.expression.getText())) return; // déjà traduit
       else ts.forEachChild(n, walk);
     };

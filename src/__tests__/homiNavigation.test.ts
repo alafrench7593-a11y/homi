@@ -96,10 +96,14 @@ describe('HOMI : barre à 5 onglets et routes conservées', () => {
     for (const l of labels) expect(typeof l === 'string' && l.trim().length > 0).toBe(true);
     // barre à 320 px (bouton d'action sur la même ligne) : chaque libellé tient dans son onglet, sans ellipse
     const g = dockGeometry(320);
-    const { fontSize, widths } = tabLayout(g.inner, labels.map((l) => estimateLabelWidth(l)));
+    const { fontSize, widths, iconsOnly } = tabLayout(g.inner, labels.map((l) => estimateLabelWidth(l)));
     expect(fontSize).toBeGreaterThanOrEqual(10);
-    labels.forEach((l, i) => expect(estimateLabelWidth(l, fontSize)).toBeLessThanOrEqual(widths[i]));
+    // libellés affichés : chacun tient ; sinon icônes seules (nom accessible complet) — jamais de cible < 44 px
+    if (!iconsOnly) labels.forEach((l, i) => expect(estimateLabelWidth(l, fontSize)).toBeLessThanOrEqual(widths[i]));
+    for (const w of widths) expect(w).toBeGreaterThanOrEqual(TAB_MIN_W);
     expect(widths.reduce((a, w) => a + w, 0)).toBeLessThanOrEqual(g.inner + 0.01);
+    // à 390 px, texte normal : toujours les libellés
+    expect(tabLayout(dockGeometry(390).inner, labels.map((l) => estimateLabelWidth(l))).iconsOnly).toBe(false);
   });
 
   it('français : libellés à 12 px à 390 px de large, au moins 11 px à 320 px (largeurs mesurées de Manrope gras)', () => {
@@ -118,6 +122,20 @@ describe('HOMI : barre à 5 onglets et routes conservées', () => {
     const est = NAV_TABS.map((x) => estimateLabelWidth(DICTIONARIES.fr[x.label] as string));
     expect(tabLayout(dockGeometry(390).inner, est).fontSize).toBeGreaterThanOrEqual(11);
     expect(tabLayout(dockGeometry(320).inner, est).fontSize).toBeGreaterThanOrEqual(10);
+  });
+
+  it('texte agrandi 1,3 (libellés plafonnés à ×1,2) : 390 px garde les libellés, 320 px passe en icônes seules ≥ 44 px (audit 09)', () => {
+    const measured = [42.1, 34.0, 28.8, 40.0, 78.2].map((w) => w * 1.2);
+    const wide = tabLayout(dockGeometry(390).inner, measured);
+    expect(wide.iconsOnly).toBe(false);
+    measured.forEach((m, i) => expect((m * wide.fontSize) / 12).toBeLessThanOrEqual(wide.widths[i]));
+    const narrow = tabLayout(dockGeometry(320).inner, measured);
+    expect(narrow.iconsOnly).toBe(true);
+    // avant : onglets réduits proportionnellement à 35–40 px de large
+    for (const w of narrow.widths) expect(w).toBeGreaterThanOrEqual(TAB_MIN_W);
+    expect(new Set(narrow.widths.map((w) => w.toFixed(2))).size).toBe(1);
+    // texte normal à 320 px : libellés conservés (≥ 11 px)
+    expect(tabLayout(dockGeometry(320).inner, [42.1, 34.0, 28.8, 40.0, 78.2]).iconsOnly).toBe(false);
   });
 });
 

@@ -14,7 +14,7 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, type Share
 import { Text } from '@/components/ui';
 import { durations, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 export function StepProgress({ labels, index, onJump, testID = 'scan-progress' }: { labels: string[]; index: number; onJump: (i: number) => void; testID?: string }) {
@@ -39,10 +39,12 @@ export function StepProgress({ labels, index, onJump, testID = 'scan-progress' }
         {labels.map((label, i) => {
           const done = i < index;
           return (
-            <Pressable key={label} disabled={!done} onPress={() => onJump(i)} hitSlop={{ top: 10, bottom: 10 }}
+            <Pressable key={label} disabled={!done} onPress={() => onJump(i)}
               accessibilityRole={done ? 'button' : undefined} accessibilityElementsHidden={!done} importantForAccessibility={done ? 'yes' : 'no-hide-descendants'}
               accessibilityLabel={done ? tr('scn.step.jump', { n: i + 1, name: label }) : undefined} testID={`${testID}-seg-${i}`}
-              style={{ flex: 1, height: 20, justifyContent: 'center' }}>
+              // cible de 44 px de haut (audit 09 : 65 × 20 px ; `hitSlop` est ignoré sur le web), trait fin inchangé :
+              // la marge négative garde la place visuelle de 20 px
+              style={{ flex: 1, height: MIN_TOUCH, marginVertical: -(MIN_TOUCH - 20) / 2, justifyContent: 'center' }}>
               <View onLayout={i === 0 ? (e: LayoutChangeEvent) => { segW.value = e.nativeEvent.layout.width; } : undefined}
                 style={{ height: 4, borderRadius: radius.pill, backgroundColor: t.material.lines.track, overflow: 'hidden' }}>
                 <SegmentFill i={i} pos={pos} segW={segW} color={t.colors.primary} />

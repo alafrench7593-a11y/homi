@@ -210,6 +210,13 @@ racine du navigateur / 16).
 - **Bouton pleine largeur** (`Button full`, `Screen.action`) : si le libellé passe à la ligne, l'icône part, puis
   `shortLabel` s'affiche (le lecteur d'écran lit toujours `label`). `Screen.action.onPress` peut renvoyer une
   promesse (chargement, double appui ignoré) ; `action.loading` force le chargement.
+- **Barre d'onglets (`Dock`)** : libellés entiers (12 → 10 px) ; si à 10 px ils ne tiennent pas avec 44 px par onglet
+  (320 px + texte agrandi, langue longue), **icônes seules**, onglets égaux ≥ 44 px, nom accessible = libellé
+  complet (`tabLayout().iconsOnly`). Jamais de libellé abrégé ni d'onglet de moins de 44 px.
+- **Rangée texte + actions** (fil du jour, cartes) : le texte reste entier ; les actions passent dessous quand il
+  tomberait sous ~150 px (`flexWrap`), jamais l'inverse. Une pastille d'état passe sous son libellé.
+- **Écran plein écran sans `Screen`** : « Fermer » = `goUp(pathname)` (`src/lib/links.ts`) : retour, sinon l'écran
+  parent (`parentRoute`), jamais l'Accueil par défaut.
 - **Désactivé en sombre** : bouton plein → verre neutre + texte secondaire (la couleur vive atténuée semblait active).
 - **Clavier** : `useKeyboardVisible()` vaut aussi sur le web (zone visible réduite ≥ 120 px pendant une saisie) ;
   la barre d'onglets (`Dock`) s'efface, l'en-tête se replie, le champ actif est ramené en vue à l'ouverture.

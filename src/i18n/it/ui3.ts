@@ -508,6 +508,7 @@ export const ui3: Messages<typeof fr> = {
   "u3.tools.errTools": "Impossibile mostrare i tuoi strumenti",
   "u3.tools.favAdd": "«{label}» aggiunto alle tue scorciatoie.",
   "u3.tools.favDel": "«{label}» rimosso dalle scorciatoie.",
+  "u3.tools.favSwitch": "{label} nelle mie scorciatoie",
   "u3.tools.favs": "Preferiti",
   "u3.tools.filter": "Filtra: {title}",
   "u3.tools.filterTools": "Filtra gli strumenti",

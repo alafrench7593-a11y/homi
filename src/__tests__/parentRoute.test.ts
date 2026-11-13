@@ -31,3 +31,19 @@ it('profil d’un enfant ouvert par lien direct : Retour vers l’onglet Bébé'
   expect(parentRoute('/family/missions/m1')).toBe('/family/missions');
   expect(parentRoute('/fertility/test/ovulation')).toBe('/fertility');
 });
+
+// Audit 01 N-07 : « Fermer » des écrans plein écran du sommeil ouverts par lien direct → onglet Bébé, pas l'Accueil
+jest.mock('expo-router', () => ({ router: { canGoBack: jest.fn(() => false), back: jest.fn(), replace: jest.fn() } }));
+it('goUp : lien direct → écran parent ; avec historique → retour', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { router } = require('expo-router') as { router: { canGoBack: jest.Mock; back: jest.Mock; replace: jest.Mock } };
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { goUp } = require('@/lib/links') as typeof import('@/lib/links');
+  goUp('/sleep/tonight');
+  goUp('/sleep/difficult/abc');
+  expect(router.replace.mock.calls).toEqual([['/baby'], ['/baby']]);
+  router.canGoBack.mockReturnValue(true);
+  goUp('/sleep/tonight');
+  expect(router.back).toHaveBeenCalledTimes(1);
+  expect(router.replace).toHaveBeenCalledTimes(2);
+});

@@ -68,7 +68,8 @@ export function ToolSearchButton({ testID = 'tool-search-open' }: { testID?: str
           backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border })}
       >
         <Icon name="search" size={19} color={t.colors.primary} />
-        <Text muted style={{ flex: 1 }} numberOfLines={1}>{tr('nav.search.button')}</Text>
+        {/* Jamais tronqué (audit 09) : texte agrandi / langue longue → passage à la ligne, le « champ » grandit */}
+        <Text muted style={{ flex: 1, paddingVertical: spacing.xs }}>{tr('nav.search.button')}</Text>
         <Icon name="star" size={16} color={t.colors.textMuted} />
       </Tappable>
       <ToolSearchSheet visible={open} onClose={() => setOpen(false)} />

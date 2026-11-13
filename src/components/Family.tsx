@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
 import { useTheme } from '@/theme/ThemeProvider';
+import { useFontScale } from '@/theme/fontScale';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { useActivePregnancy, useActiveSubject, useEmergencyResources, useExpectedBabies, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { childAge } from '@/lib/domain/child';
@@ -86,8 +87,11 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
   }
   const current = items.find((i) => i.active) ?? items[0];
   const others = items.filter((i) => i !== current).slice(0, 3);
-  // < 360 px : un seul avatar empilé derrière le profil affiché, pour laisser la place au nom
+  // < 360 px : un seul avatar empilé derrière le profil affiché, pour laisser la place au nom ; avec un texte agrandi,
+  // aucun (le nom « Ma grossesse » garde sa ligne)
   const narrow = winW < 360;
+  const fontScale = useFontScale();
+  const stacked = narrow ? (fontScale > 1.15 ? 0 : 1) : 3;
 
   const sheet = (
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('pj.switcher.title')}>
@@ -159,14 +163,15 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
       >
         <View style={{ flexDirection: 'row', flexShrink: 0 }}>
           {current.avatar}
-          {others.slice(0, narrow ? 1 : 3).map((o, i) => (
+          {others.slice(0, stacked).map((o, i) => (
             <View key={o.key} style={{ marginLeft: -12, zIndex: -i - 1, opacity: 0.9, borderWidth: 2, borderColor: t.colors.surface, borderRadius: 22 }}>{o.avatar}</View>
           ))}
         </View>
-        {/* Petit écran : le nom du profil tient sur une ligne (ellipse), jamais coupé en plein mot (« Ma gros-sesse ») */}
+        {/* Petit écran / texte agrandi : nom et détail ENTIERS (audit 09 : « Ma grossesse » était tronqué) ; ils
+            passent à la ligne entre les mots, jamais en plein mot (« Ma gros-sesse ») ni en ellipse */}
         <View style={{ flex: 1, minWidth: 0 }}>
-          <Text weight="bold" numberOfLines={1}>{current.label}</Text>
-          <Text variant="caption" muted numberOfLines={2}>{current.sub}</Text>
+          <Text weight="bold">{current.label}</Text>
+          <Text variant="caption" muted>{current.sub}</Text>
         </View>
         <Icon name="chevron-down" size={18} color={t.colors.textMuted} />
       </Tappable>

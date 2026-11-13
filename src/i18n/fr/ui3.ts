@@ -505,6 +505,7 @@ export const ui3 = {
   'u3.tools.errTools': 'Impossible d’afficher vos outils',
   'u3.tools.favAdd': '« {label} » ajouté à vos raccourcis.',
   'u3.tools.favDel': '« {label} » retiré des raccourcis.',
+  'u3.tools.favSwitch': '{label} dans mes raccourcis',
   'u3.tools.favs': 'Favoris',
   'u3.tools.filter': 'Filtrer : {title}',
   'u3.tools.filterTools': 'Filtrer les outils',
