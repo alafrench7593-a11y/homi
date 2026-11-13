@@ -7,3 +7,7 @@ export { MatteSurface, OpticalSurface, SmokedSurface, registerSceneSurfaces, typ
 export { CardSource, DetailScene, SCENE_MS, lastOpenedCard, registerCardDetailTransition, type CardSourceProps, type DetailSceneProps } from './cardDetail';
 export { DataTile, MemberSelector, registerSceneControls, type DataTileProps, type MemberOption, type MemberSelectorProps } from './controls';
 export { useListLayout } from './layout';
+
+// Design system v3 branché dès le premier import de la scène
+import { bindSceneToDesignSystem } from './v3Bindings';
+bindSceneToDesignSystem();
