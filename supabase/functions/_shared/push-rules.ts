@@ -30,6 +30,17 @@ export function planDelivery(row: Pick<PushRow, 'urgent'>, quietUntil: string | 
   return { action: 'send' };
 }
 
+/** Délai avant un nouvel essai quand les heures calmes n'ont pas pu être calculées (erreur serveur). */
+export const QUIET_LOOKUP_RETRY_MS = 15 * 60 * 1000;
+
+/**
+ * Heures calmes « inconnues » (le calcul a échoué) : on ne réveille jamais quelqu'un par défaut.
+ * Une notification non urgente est alors différée et retentée ; une urgence part quand même (planDelivery).
+ */
+export function quietUntilOnLookupError(now: Date): string {
+  return new Date(now.getTime() + QUIET_LOOKUP_RETRY_MS).toISOString();
+}
+
 type TextKey = 'communityTitle' | 'communityBody' | 'recallTitle' | 'recallBody' | 'genericTitle' | 'genericBody' | 'urgentTitle';
 
 /** Textes génériques (écran verrouillé, sans contenu sensible), dans la langue du destinataire. */

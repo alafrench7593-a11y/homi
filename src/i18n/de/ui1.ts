@@ -407,6 +407,7 @@ export const ui1: Messages<typeof fr> = {
   "u1.fam.shareTitle": "Tritt unserer Familie bei {app} bei",
   "u1.fam.shareMessage": "Ich lade dich ein, unserer Familie bei {app} beizutreten.\n\nÖffne diesen Link auf deinem Handy: {link}\n\nOder gib diesen Code unter Einstellungen › Familie & Teilen › „Ich habe einen Code“ ein:\n{token}\n\nDie Einladung läuft in 7 Tagen ab.",
   "u1.fam.codeIncomplete": "Dieser Code scheint unvollständig zu sein: Kopiere ihn vollständig.",
+  "u1.fam.alreadyIn": "Du gehörst bereits zu diesem Haushalt. Deine Rechte ändert die Person, die den Haushalt verwaltet.",
   "u1.fam.welcome": "Willkommen in diesem Haushalt!",
   "u1.fam.leaveTitle": "Diesen Haushalt verlassen?",
   "u1.fam.leaveBody": "Du hast dann keinen Zugriff mehr auf die geteilten Infos dieses Haushalts. Deine persönlichen Daten (Stimmung, Zyklus, Gewicht…) bleiben deine.",

@@ -143,8 +143,12 @@ class FakeSupabase:
                 'can_view': body.get('p_can_view', []), 'can_edit': body.get('p_can_edit', []), 'created_at': now(), 'expires_at': '2099-01-01T00:00:00Z', 'accepted_at': None, 'revoked_at': None})
             return 200, tok
         if fn == 'accept_household_invitation':
-            inv = next((i for i in self.t('household_invitations') if i['token'] == body.get('p_token') and not i['accepted_at']), None)
+            inv = next((i for i in self.t('household_invitations') if i['token'] == body.get('p_token') and not i['accepted_at']
+                        and not i.get('revoked_at') and i['expires_at'] > now()), None)
             if not inv: return 400, {'code': 'P0001', 'message': 'Invitation invalide ou expirée'}
+            # Même règle que la base (20261118000700) : une personne déjà membre ne change pas ses droits par un lien
+            if any(m['household_id'] == inv['household_id'] and m['user_id'] == uid for m in self.t('household_members')):
+                return 409, {'code': '23505', 'message': 'Vous faites déjà partie de ce foyer.'}
             inv['accepted_at'] = now()
             self.t('household_members').append({'household_id': inv['household_id'], 'user_id': uid, 'role': inv['role'], 'can_view': inv['can_view'], 'can_edit': inv['can_edit'], 'joined_at': now()})
             for h in list(self.t('households')):

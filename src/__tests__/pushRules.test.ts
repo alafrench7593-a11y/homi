@@ -3,7 +3,7 @@
  * confidentialité de l'écran verrouillé, urgences. Le calcul de la fin des heures calmes (fuseau, réglages)
  * est fait en SQL (push_quiet_until, testé dans supabase/tests/sql/98_hors_ligne_notifications.sql).
  */
-import { channelFor, lockScreenText, planDelivery, PUSH_TEXTS, pushText, type PushRow } from '../../supabase/functions/_shared/push-rules';
+import { channelFor, lockScreenText, planDelivery, PUSH_TEXTS, pushText, QUIET_LOOKUP_RETRY_MS, quietUntilOnLookupError, type PushRow } from '../../supabase/functions/_shared/push-rules';
 
 const row: PushRow = { id: 'n1', user_id: 'u1', title: 'Lou a de la fièvre', body: 'Message de la nounou', deep_link: '/family', category: 'family' };
 
@@ -42,5 +42,17 @@ describe('send-push : écran verrouillé', () => {
     const keys = Object.keys(PUSH_TEXTS.fr).sort();
     for (const l of ['en', 'es', 'de', 'it']) expect(Object.keys(PUSH_TEXTS[l]).sort()).toEqual(keys);
     expect(pushText('xx', 'genericTitle')).toBe('Nouvelle notification');
+  });
+});
+
+describe('heures calmes : échec du calcul (audit 07)', () => {
+  it('une notification non urgente est différée de 15 min au lieu de partir', () => {
+    const now = new Date('2026-11-13T02:00:00Z');
+    const until = quietUntilOnLookupError(now);
+    expect(Date.parse(until) - now.getTime()).toBe(QUIET_LOOKUP_RETRY_MS);
+    expect(planDelivery({ urgent: false }, until)).toEqual({ action: 'defer', until });
+  });
+  it('une urgence part quand même', () => {
+    expect(planDelivery({ urgent: true }, quietUntilOnLookupError(new Date()))).toEqual({ action: 'send' });
   });
 });
