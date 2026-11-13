@@ -6,7 +6,7 @@
  * n'est interprétée. Si quelque chose préoccupe le parent : résumé factuel de ses notes pour le pédiatre.
  * Gratuit : étapes principales, sécurité, sources, résumé à l'écran. Premium : toutes les étapes, activités, PDF.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, ScrollView, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -33,6 +33,7 @@ import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 /** Référence stable : un nouveau tableau à chaque lecture du store provoquerait des rendus sans fin. */
 const NO_QUESTIONS: string[] = [];
@@ -161,13 +162,19 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
   const toast = useToast();
   const save = useSaveStep();
   const st = row?.status;
+  // Double appui sur « Observé » : une seule étape enregistrée (l'étape n'est relue qu'après l'envoi)
+  const sending = useRef(false);
+  const { arm, shielded } = useTapShield();
   /** « Observé » en un geste (date du jour, modifiable ensuite en touchant la carte). */
   async function quickObserved() {
+    if (sending.current || shielded()) return;
+    sending.current = true;
     try {
       await save.mutateAsync({ child, key: s.key, existing: row ?? null, status: 'observed', date: todayISO(), note: row?.note ?? null });
+      arm();
       haptic('success');
       toast(tr('gr.saved'), 'success');
-    } catch (e) { toast(friendlyError(e), 'error'); }
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; }
   }
   const tint = st === 'observed' ? (t.colors.success ?? '#3E8E41') : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
   const quick = !locked && st !== 'observed';
@@ -217,7 +224,7 @@ function SourceLink({ s }: { s: { label: string; url: string; published?: string
   );
 }
 
-function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | null; row?: ChildStep; child: { id: string; household_id: string; first_name: string }; premium: boolean; onClose: () => void }) {
+function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | null; row?: ChildStep; child: { id: string; household_id: string; first_name: string; birth_date?: string | null }; premium: boolean; onClose: () => void }) {
   const t = useTheme();
   const toast = useToast();
   const save = useSaveStep();
@@ -239,6 +246,8 @@ function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | nul
     const iso = status === 'observed' ? frToISO(date) : null;
     if (status === 'observed' && !iso) return setErr(tr('dc.err.date'));
     if (iso && iso > todayISO()) return setErr(tr('dc.err.future'));
+    // Une étape observée ne peut pas précéder la naissance (date saisie à la main)
+    if (iso && child.birth_date && iso < child.birth_date) return setErr(tr('u7.child.err.beforeBirth'));
     try {
       await save.mutateAsync({ child, key: s.key, existing: row ?? null, status, date: iso, note: note.trim() || null });
       haptic('success');

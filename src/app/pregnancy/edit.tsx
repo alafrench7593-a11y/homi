@@ -42,9 +42,13 @@ export default function EditPregnancy() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Le formulaire part des données RELUES à l'ouverture, pas du cache gardé sur l'appareil (qui peut dater d'avant le
+  // dernier enregistrement) : sinon il afficherait d'anciennes valeurs et les réenregistrerait. Hors connexion (lecture
+  // en pause), le cache reste utilisé.
+  const fresh = (q: { isFetchedAfterMount: boolean; isFetching: boolean }) => q.isFetchedAfterMount || !q.isFetching;
   useEffect(() => {
-    if (!draft && pregnancy && babies) setDraft(toDraft(pregnancy, babies));
-  }, [draft, pregnancy, babies]);
+    if (!draft && pregnancy && babies && fresh(pregnanciesQ) && fresh(babiesQ)) setDraft(toDraft(pregnancy, babies));
+  }, [draft, pregnancy, babies, pregnanciesQ, babiesQ]);
 
   if (pregnanciesQ.isLoading && !pregnanciesQ.data) {
     return <Screen back title={tr('u2.pedit.title')}><Skeleton kind="card" rows={3} /></Screen>;

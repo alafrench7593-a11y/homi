@@ -22,6 +22,7 @@ import { getPermission, notificationsSupported, requestPermission, snoozeLocally
 import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 interface TDraft { name: string; dose: string; times: string; frequency: Treatment['frequency']; weekdays: number[]; start: string; end: string; instructions: string; prescriber: string; reminders: boolean; active: boolean }
 const emptyT = (): TDraft => ({ name: '', dose: '', times: '', frequency: 'daily', weekdays: [], start: toFrDate(todayISO()), end: '', instructions: '', prescriber: '', reminders: true, active: true });
@@ -90,6 +91,8 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
   const [draft, setDraft] = useState<TDraft>(emptyT());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [noteFor, setNoteFor] = useState<Dose<AnyTreatment, AnyLog> | null>(null);
+  // La feuille reste affichée pendant sa fermeture : un double appui sur « Enregistrer » ne crée pas le traitement deux fois
+  const { arm, guard } = useTapShield();
   const [note, setNote] = useState('');
 
   // Ouverture depuis la notification « Ajouter une note »
@@ -116,6 +119,7 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
       const id = editing && editing !== 'new' ? editing.id : null;
       if (isChild) await saveChild.mutateAsync({ id, childName, reminders: draft.reminders, row: { ...v.row, child_id: childId! } });
       else await saveMine.mutateAsync({ id, reminders: draft.reminders, row: v.row });
+      arm();
       setEditing(null);
       toast(tr('nd.t.saved'), 'success');
     } catch (e) { setErrors({ form: friendlyError(e) }); }
@@ -222,7 +226,7 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
           </Banner>
         ) : null}
         <Toggle label={tr('nd.t.active')} value={draft.active} onChange={(v) => set('active', v)} />
-        <Button label={tr('common.save')} loading={save.isPending} onPress={() => submit()} testID="t-save" />
+        <Button label={tr('common.save')} loading={save.isPending} onPress={guard(() => submit())} testID="t-save" />
         {editing && editing !== 'new' ? <Button label={tr('common.delete')} variant="ghost" icon="trash-2" onPress={async () => {
           if (!(await confirm(tr('nd.t.deleteTitle'), editing.name, tr('common.delete')))) return;
           try {
