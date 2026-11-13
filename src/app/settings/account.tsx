@@ -9,11 +9,12 @@ import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
 import { PasswordRules } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
+import { BackendError } from '@/lib/backend/types';
 import { useAuth } from '@/lib/auth';
 import { friendlyError, useDeleteAccount, useExportData } from '@/lib/data/hooks-settings';
 import { exportJson, exportPdf } from '@/lib/exportData';
 import { wipeLocalData } from '@/lib/localWipe';
-import { passwordSchema } from '@/lib/validation';
+import { issueText, passwordSchema } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
@@ -35,7 +36,8 @@ export default function AccountScreen() {
   async function changePassword() {
     if (inFlight.current) return;
     const p = passwordSchema.safeParse(pw);
-    if (!p.success) return setPwError(p.error.issues[0].message);
+    // Message du schéma encodé (clé de traduction) : traduit ici, jamais affiché brut (« v.password.length »)
+    if (!p.success) return setPwError(issueText(p.error.issues[0].message));
     if (pw !== pw2) return setPwError(tr('u1.acc.pwMismatch'));
     setPwError(null);
     inFlight.current = true;
@@ -86,7 +88,9 @@ export default function AccountScreen() {
       toast(tr('u1.acc.deleted'), 'info');
       router.replace('/welcome');
     } catch (e) {
-      toast(friendlyError(e, tr('u1.acc.deleteFailed')), 'error');
+      // Audit 2 : refus du service (500, 429…) → message propre à la suppression (« Réessayez ou écrivez-nous »),
+      // au lieu du générique « service momentanément indisponible » ; hors connexion → message réseau.
+      toast(e instanceof BackendError && e.isNetwork ? friendlyError(e) : tr('u1.acc.deleteFailed'), 'error');
     }
   }
 
