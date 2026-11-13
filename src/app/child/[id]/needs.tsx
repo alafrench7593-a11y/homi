@@ -32,6 +32,7 @@ import { snoozeLocally } from '@/lib/notifications';
 import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
 
 type Tab = 'forYou' | 'profile' | 'follow' | 'treatments';
 const FOR_YOU: Tab = 'forYou';
@@ -140,6 +141,8 @@ function NeedsProfile({ childId }: { childId: string }) {
   const [other, setOther] = useState('');
   const [notes, setNotes] = useState('');
   const [advanced, setAdvanced] = useState(false);
+  // Premier enregistrement : tant que la fiche n'est pas relue, un second appui en créerait une seconde
+  const { arm, guard } = useTapShield();
   useEffect(() => { if (needs) { setKinds(needs.kinds); setOther(needs.other_label ?? ''); setNotes(needs.notes ?? ''); } }, [needs]);
   if (isLoading) return <Skeleton rows={3} />;
   const toggle = (k: NeedKind) => setKinds((xs) => (xs.includes(k) ? xs.filter((x) => x !== k) : [...xs, k]));
@@ -153,10 +156,10 @@ function NeedsProfile({ childId }: { childId: string }) {
       {!advanced && !kinds.some((k) => (ADVANCED_NEED_KINDS as readonly string[]).includes(k)) ? <Button label={tr('nd.advanced')} variant="ghost" size="sm" onPress={() => setAdvanced(true)} /> : null}
       {kinds.includes('other') ? <Field label={tr('nd.profile.other')} value={other} onChangeText={setOther} maxLength={80} /> : null}
       <Field label={tr('nd.profile.notes')} optional value={notes} onChangeText={setNotes} multiline maxLength={4000} hint={tr('nd.profile.notesHint')} />
-      <Button label={tr('common.save')} loading={save.isPending} testID="needs-save" onPress={async () => {
-        try { await save.mutateAsync({ id: needs?.id, child_id: childId, kinds, other_label: kinds.includes('other') ? other.trim() || null : null, notes: notes.trim() || null }); toast(tr('nd.saved'), 'success'); }
+      <Button label={tr('common.save')} loading={save.isPending} testID="needs-save" onPress={guard(async () => {
+        try { await save.mutateAsync({ id: needs?.id, child_id: childId, kinds, other_label: kinds.includes('other') ? other.trim() || null : null, notes: notes.trim() || null }); arm(); toast(tr('nd.saved'), 'success'); }
         catch (e) { toast(friendlyError(e), 'error'); }
-      }} />
+      })} />
       <Text variant="caption" muted>{tr('nd.profile.private')}</Text>
     </View>
   );
