@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**229 routes** réelles (`src/lib/routes.generated.ts`) portées par **230 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **155 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**230 routes** réelles (`src/lib/routes.generated.ts`) portées par **231 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **155 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -21,17 +21,17 @@
 |---|---:|---:|---:|---:|---:|---:|
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
-| Réglages | 21 | 21 | 0 | 0 | 2 | 0 |
-| Accueil | 20 | 20 | 0 | 0 | 9 | 1 |
+| Réglages | 21 | 21 | 0 | 0 | 4 | 0 |
+| Accueil | 21 | 18 | 0 | 3 | 9 | 1 |
 | Santé | 29 | 29 | 0 | 0 | 16 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
 | Grossesse et post-partum | 19 | 19 | 0 | 0 | 6 | 0 |
 | Bébé et enfant | 32 | 32 | 0 | 0 | 70 | 1 |
 | Famille | 30 | 30 | 0 | 0 | 6 | 0 |
 | Communauté | 16 | 16 | 0 | 0 | 4 | 0 |
-| **Total** | **230** | **220** | **2** | **8** | **128** | **4** |
+| **Total** | **231** | **218** | **2** | **11** | **130** | **4** |
 
-Rôles : détail 35 · formulaire 46 · historique 17 · liste 85 · réglage 27 · résultat 13 · scène 7.
+Rôles : détail 36 · formulaire 46 · historique 17 · liste 85 · réglage 27 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -87,7 +87,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/profiles/new` | formulaire | — | Screen, Card, Button, Banner, Segmented, ErrorView, Skeleton | 0 |  | à faire |
 | `/settings` | réglage | settings | Screen, Card, Field, Button, Banner, Toggle, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/account` | réglage | — | Screen, Card, Sheet, Field, Button, Banner, ListRow, SectionTitle | 0 |  | à faire |
-| `/settings/appearance` | réglage | — | Screen, GlowCard, Button, Banner, Chip, Segmented, Toggle, SectionTitle, CompletionCheck | 1 |  | à faire |
+| `/settings/appearance` | réglage | — | Screen, GlowCard, Sheet, Field, Button, Banner, Chip, Segmented, Toggle, SectionTitle, CompletionCheck | 3 |  | à faire |
 | `/settings/family` | réglage | — | Screen, Card, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/home` | réglage | home_settings | Screen, Card, Button, IconButton, Chip, Toggle, SectionTitle, Cascade | 0 |  | à faire |
 | `/settings/language` | réglage | — | Screen, Card, Banner, SectionTitle | 0 |  | à faire |
@@ -112,8 +112,9 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/household` | détail | — | — | 0 |  | à faire |
 | `/journal` | historique | — | Screen, Card, Field, Button, IconButton, Chip, Segmented, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/me` | liste | — | Screen, Card, GlassSurface, Banner, ListRow, SectionTitle | 0 |  | à faire |
-| `/me/diary` | historique | — | Screen, Card, Field, Button, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/me/mood` | liste | mood | Screen, Card, Field, Button, Banner, Chip, Toggle, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
+| `/me/diary` | historique | — | Screen, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/me/mood` | liste | mood | Screen, Field, Chip, Toggle, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
+| `/me/mood/[id]` | détail | — | Screen, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/me/sleep` | liste | sleep | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
 | `/moi` | liste | — | Screen, Card, Sheet, Button, Banner, Segmented, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/story` | scène | — | Screen, Button | 0 |  | à faire |
@@ -285,10 +286,10 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/kid-routines` | liste | kid_routines | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/load` | liste | mental_load | Screen, Card, Button, Banner, EmptyState | 0 |  | à faire |
 | `/family/me-time` | formulaire | family_metime | Screen, Card, Field, Button, Segmented, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
-| `/family/missions` | liste | — | Screen, Button, Segmented, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
-| `/family/missions/[id]` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton, Cascade, DetailEnter | 0 |  | à faire |
-| `/family/missions/new` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, Segmented, Cascade | 0 |  | à faire |
-| `/family/missions/responsibilities` | liste | — | Screen, Card, Button, Chip, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions` | liste | — | Screen, Button, Segmented, ListRow, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions/[id]` | formulaire | — | Screen, Field, Button, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions/new` | formulaire | — | Screen, Field, Button, Banner, Chip, Segmented | 0 |  | à faire |
+| `/family/missions/responsibilities` | liste | — | Screen, ListRow, ErrorView, Skeleton, Cascade | 0 |  | à faire |
 | `/family/nights` | formulaire | family_nights | Screen, Card, GlassSurface, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/family/notebook` | liste | house_notebook | Screen, Card, Sheet, Field, Button, Banner, Chip, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/offduty` | liste | offduty | Screen, Card, Field, Button, Banner, Chip | 0 |  | à faire |
@@ -430,7 +431,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
-| Mon humeur | `mood` | `/me/mood` | — | — | `/me/diary /me/sleep` | non | non | non | non |
+| Mon humeur | `mood` | `/me/mood` | — | `/me/mood/[id]` | `/me/diary /me/sleep` | oui | oui | oui | oui |
 | Journal de ma contraception | `contraception_journal` | `/contraception/journal` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/log /contraception/methods` | non | non | non | non |
 | Vider ma tête | `brain_dump` | `/family/brain-dump` | dans l’écran | — | — | non | non | non | non |
 | Carnet de la maison | `house_notebook` | `/family/notebook` | feuille dans l’écran | — | — | non | non | non | non |
@@ -461,7 +462,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
-| Mon sommeil | `sleep` | `/me/sleep` | feuille dans l’écran | — | `/me/diary /me/mood` | non | non | non | non |
+| Mon sommeil | `sleep` | `/me/sleep` | feuille dans l’écran | `/me/mood/[id]` | `/me/diary /me/mood` | non | non | non | non |
 | Cycle et règles | `avoid_cycle` | `/cycle` | dans l’écran | — | — | non | non | non | non |
 | Calendrier du cycle | `avoid_fertile` | `/cycle/calendar` | feuille dans l’écran | — | — | non | non | non | non |
 | Symptômes | `cycle_symptoms` | `/cycle/symptoms` | — | — | — | non | non | non | non |

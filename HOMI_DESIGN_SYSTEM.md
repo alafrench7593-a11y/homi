@@ -139,6 +139,9 @@ Une seule source pour courbes (`src/motion`), reflets (`theme.material.light`), 
 | `DataTile` | surface mate `tile` (30), lumière INTERNE radiale (palette ou statut), valeur grande et fine (Space Grotesk 500, 40, chiffres tabulaires), unité, contexte (période) ; micrographique `Sparkline` **seulement avec ≥ 2 valeurs réelles** | 0,98 (si appuyable) ; avec `morphId` : transition carte → détail | anneau | — | — | — | **état vide explicite** (« — » + texte) |
 | `SensitiveButton` | libellé explicite, couleur sémantique (erreur) | 0,98, **sans reflet** (mouvement sobre) | anneau | — | idem bouton | idem | idem |
 
+- `ChoiceGroup variant="orbs" light="travel"` (ajout rétro-compatible, pilote Humeur → journal) : UNE lumière diffuse
+  glisse vers l'orbe choisi (ressort `panneau`) au lieu de s'allumer sous chacun ; les autres orbes glissent vers lui
+  (`CHOICE.orbGather`, réduit à la place libre : 0 à 320 px). Défaut `each` inchangé.
 - Statuts : couleur + icône + libellé, jamais la couleur seule.
 - **Un seul point focal lumineux par écran** : l'action principale OU la sélection active (GlowCard, indicateur,
   capsule d'action). Les listes restent mates (`GlowCard still`, pas de faisceau).

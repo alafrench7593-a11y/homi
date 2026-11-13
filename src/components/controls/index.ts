@@ -5,5 +5,5 @@
  */
 export { PrimaryButton, SecondaryButton, SensitiveButton } from './Buttons';
 export { IconOrb, ORB_SIZE } from './IconOrb';
-export { CHECK_MIN_WIDTH, CHOICE, ChoiceGroup, type ChoiceOption } from './ChoiceGroup';
+export { CHECK_MIN_WIDTH, CHOICE, ChoiceGroup, orbCenter, orbGatherOffset, type ChoiceOption } from './ChoiceGroup';
 export { DataTile, Sparkline, sparkPoints, tileTint, type DataTileProps, type TileTint } from './DataTile';

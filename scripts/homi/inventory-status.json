@@ -10,9 +10,19 @@
     "auth/reset.tsx": "fait",
     "auth/callback.tsx": "fait",
     "onboarding.tsx": "tranche",
-    "intro.tsx": "tranche"
+    "intro.tsx": "tranche",
+    "me/mood/index.tsx": "fait",
+    "me/mood/[id].tsx": "fait",
+    "me/diary.tsx": "fait"
   },
-  "tools": {},
+  "tools": {
+    "mood:/me/mood": {
+      "ecrans_refondus": "oui",
+      "commandes_adaptees": "oui",
+      "transition_implementee": "oui",
+      "parcours_verifie": "oui"
+    }
+  },
   "pilots": [
     {
       "kind": "Saisie",
