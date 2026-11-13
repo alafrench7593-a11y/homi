@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQueryClient } from '@tanstack/react-query';
+import { useIsRestoring, useQueryClient } from '@tanstack/react-query';
 import { backend, initBackendMode, onBackendSwitch, type Session } from './backend';
 import { cancelAllLocal } from './notifications';
 import { setQueueOwner } from './offline';
@@ -12,6 +12,9 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState>({ session: null, ready: false });
+
+/** Cache des écrans enregistré sur l'appareil (PersistQueryClientProvider, src/app/_layout.tsx). */
+export const PERSISTED_CACHE_KEY = 'toietmoi.cache.v1';
 
 /** Dernier compte connecté sur ce téléphone : le cache hors ligne n'est vidé que si le compte CHANGE. */
 const LAST_USER_KEY = 'toietmoi.lastUser';
@@ -40,6 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
   const currentUser = useRef<string | null | undefined>(undefined);
   const lastUser = useRef<string | null | undefined>(undefined);
+  // Audit 2 : le cache enregistré est relu EN MÊME TEMPS que la session. Effacé avant la fin de cette relecture
+  // (session expirée, autre compte), il revenait aussitôt : les données du compte précédent restaient sur l'appareil.
+  // La session n'est donc appliquée qu'une fois le cache relu.
+  const isRestoring = useIsRestoring();
 
   useEffect(() => onBackendSwitch((reason) => {
     qc.clear();
@@ -55,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }), [qc]);
 
   useEffect(() => {
+    if (isRestoring) return undefined;
     let mounted = true;
     const apply = (s: Session | null) => {
       const uid = s?.userId ?? null;
@@ -66,7 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Au démarrage, même compte qu'à la dernière ouverture : on GARDE le cache restauré (consultation
         // hors connexion). Sinon, aucune donnée d'un compte ne doit rester visible pour un autre.
         const sameAsLastTime = first && uid && lastUser.current === uid;
-        if (!sameAsLastTime) qc.clear();
+        if (!sameAsLastTime) {
+          qc.clear();
+          // Copie sur l'appareil effacée tout de suite (sans attendre la prochaine écriture du cache, ~2 s)
+          AsyncStorage.removeItem(PERSISTED_CACHE_KEY).catch(() => undefined);
+        }
         // A-13 : session expirée ou autre compte → les rappels, le résumé et le planning de sommeil du compte
         // précédent ne doivent plus sonner (la déconnexion volontaire le faisait déjà, pas l'expiration).
         const previous = first ? lastUser.current : currentUserBefore;
@@ -89,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mounted = false;
       off();
     };
-  }, [qc, generation]);
+  }, [qc, generation, isRestoring]);
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
