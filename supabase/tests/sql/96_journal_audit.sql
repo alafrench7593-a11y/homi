@@ -40,7 +40,8 @@ select tests.ok(tests.count('select * from public.household_audit_log where tabl
   'audit : création et fin de tâche journalisées (avant / après)');
 select tests.ok((select actor_id from public.household_audit_log where table_name = 'family_tasks' and action = 'insert') = :'OW'
   and (select origin from public.household_audit_log where table_name = 'family_tasks' and action = 'insert') = 'client', 'audit : auteur et origine enregistrés');
-select tests.ok(tests.count($$select * from public.household_audit_log where table_name = 'household_members' and action = 'update' and after ? 'child_scope' and after ? 'pregnancy_access'$$) = 1,
+-- (14/11/2026) la grossesse d'une nounou est déjà fermée à l'insertion (20261114000100) : seul child_scope change ici
+select tests.ok(tests.count($$select * from public.household_audit_log where table_name = 'household_members' and action = 'update' and after ? 'child_scope' and not (after ? 'pregnancy_access')$$) = 1,
   'audit : changement des enfants autorisés d''un membre journalisé');
 select tests.ok(tests.count($$select * from public.household_audit_log where table_name = 'document_shares' and action = 'insert'$$) = 1
   and tests.count($$select * from public.household_audit_log where table_name = 'documents' and action = 'insert' and origin = 'server'$$) = 1, 'audit : document et partage journalisés');

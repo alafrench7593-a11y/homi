@@ -20,6 +20,7 @@ import { AuthProvider, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
 import { PremiumPreviewHost } from '@/components/Premium';
 import { SleepNotificationsHost } from '@/features/sleep';
+import { useHouseholdRevocationGuard } from '@/lib/householdPurge';
 import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally, handleDoneResponse } from '@/lib/notifications';
 import { startOfflineSync, useOfflineStore } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
@@ -97,6 +98,8 @@ function Bootstrap() {
   }, [toast]);
   // Abonnement : relecture de has_premium après une resynchronisation avec RevenueCat (subscription-sync)
   usePurchasesSync();
+  // Retrait ou départ d'un foyer : ses données lues auparavant sont effacées de ce téléphone
+  useHouseholdRevocationGuard();
 
   useEffect(() => {
     if (session) {

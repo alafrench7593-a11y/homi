@@ -18,6 +18,9 @@ interface UiState {
   nightMode: boolean;
   nightVibrations: boolean;
   householdId: string | null;
+  /** Foyers dont cet appareil a déjà lu les données (purge du cache local après un retrait ou un départ). */
+  knownHouseholds: string[];
+  setKnownHouseholds: (ids: string[]) => void;
   subject: ActiveSubject | null;
   hapticsEnabled: boolean;
   /** Widget iOS du cycle : contenu détaillé (sinon discret). Réglage propre à cet appareil. */
@@ -97,6 +100,8 @@ export const useUiStore = create<UiState>()(
       nightMode: false,
       nightVibrations: false,
       householdId: null,
+      knownHouseholds: [],
+      setKnownHouseholds: (knownHouseholds) => set({ knownHouseholds }),
       subject: null,
       hapticsEnabled: true,
       cycleWidgetDetailed: false,
@@ -155,7 +160,7 @@ export const useUiStore = create<UiState>()(
       setSubject: (subject) => set({ subject }),
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
-      reset: () => set({ householdId: null, subject: null, nightMode: false }),
+      reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false }),
     }),
     {
       name: 'toietmoi.ui',

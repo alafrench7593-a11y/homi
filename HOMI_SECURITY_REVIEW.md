@@ -67,8 +67,8 @@ Pas de « suspension temporaire » d'un membre : la révocation passe par le ret
 
 ## 6. Ce qui reste (avant Missions / Nounou / Courses)
 
-1. **Cache local après révocation** : le serveur coupe tout, mais l'appareil d'un membre retiré garde ce qu'il avait déjà lu jusqu'à sa déconnexion. À faire : sur `401/403` ou disparition du foyer dans `household_members`, purger les requêtes de ce foyer (`queryClient.removeQueries`) et la file hors ligne correspondante.
-2. **Grossesse et nounou** : `pregnancy_access` vaut vrai par défaut côté serveur ; le préréglage de l'app le met à faux pour une nounou, mais une invitation fabriquée par une autre interface garderait la valeur par défaut. À durcir comme `child_scope` (défaut fermé pour `caregiver`).
+1. ~~Cache local après révocation~~ **Fait le 14/11/2026** : `src/lib/householdPurge.ts` purge les requêtes et la file hors ligne d'un foyer qui disparaît de la liste fraîche des appartenances (test `householdPurge.test.ts`). La RLS renvoie des listes vides (pas de 403) : c'est la disparition du foyer qui sert de signal. Limite : l'appareil doit être en ligne pour constater le retrait.
+2. ~~Grossesse et nounou~~ **Fait le 14/11/2026** (`20261114000100_grossesse_nounou_fermee.sql`, test `98p_grossesse_nounou.sql`) : insertion d'un membre ou d'une invitation `caregiver` → `pregnancy_access` faux sauf accord explicite de la propriétaire (paramètre de `create_household_invitation`, recopié à l'acceptation, ou `set_member_scope`) ; co-parent → nounou referme la grossesse ; `set_member_scope(…, NULL)` ne l'ouvre plus. Co-parents inchangés ; nounous déjà membres : valeur conservée (visible et modifiable par la propriétaire).
 3. **Partage de document par l'interface** : la table et les règles existent ; l'écran « Partager avec… » est à faire (agent interface), ainsi que l'écran « Journal du foyer ».
 4. **Durée d'accès** : aucune date d'expiration d'un accès professionnel ; pas de rôle distinct « grand-parent ».
 5. **Plusieurs foyers par nounou** : possible en base, mais pas de sélecteur de foyer dans l'app.

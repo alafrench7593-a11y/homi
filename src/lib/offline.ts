@@ -256,3 +256,19 @@ export function startOfflineSync(onSynced?: (n: number) => void) {
     if (onSyncedCb === onSynced) onSyncedCb = undefined;
   };
 }
+
+/**
+ * L'appareil n'appartient plus à ce foyer (retrait par la propriétaire, départ) : les saisies en attente et les refus
+ * gardés pour ce foyer sont effacés du téléphone (le serveur les refuserait ; ils ne doivent plus rester lisibles ici).
+ * Renvoie le nombre d'entrées retirées.
+ */
+export async function purgeQueueForHousehold(householdId: string): Promise<number> {
+  if (loading) await loading;
+  const { pending, conflicts } = useOfflineStore.getState();
+  const keep = (op: PendingOp) => op.row?.household_id !== householdId;
+  const removed = pending.filter((o) => !keep(o)).length + conflicts.filter((o) => !keep(o)).length;
+  if (!removed) return 0;
+  useOfflineStore.setState({ pending: pending.filter(keep), conflicts: conflicts.filter(keep) });
+  await save();
+  return removed;
+}
