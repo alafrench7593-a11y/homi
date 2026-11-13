@@ -270,7 +270,8 @@ function FamilyScreenSignedIn() {
       toast(tr('u1.fam.welcome'));
       if (params.code) router.replace('/'); // arrivé·e par le lien : on continue (onboarding ou accueil)
     } catch (e) {
-      setCodeError(friendlyError(e));
+      // Déjà membre (audit 7) : le serveur refuse sans toucher aux droits ni consommer l'invitation
+      setCodeError((e as { code?: string })?.code === '23505' ? tr('u1.fam.alreadyIn') : friendlyError(e));
     }
   }
 
