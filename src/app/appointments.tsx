@@ -181,8 +181,14 @@ export default function AppointmentsScreen() {
 
   async function remove(a: Appointment) {
     if (!(await confirm(tr('u1.appt.deleteTitle'), tr('u1.appt.deleteBody', { title: a.title }), tr('u1.appt.delete')))) return;
+    // Échec (réseau, droits) : message d'erreur, la feuille reste ouverte (jamais d'échec muet ni de faux « supprimé »)
+    try {
+      await backend.remove('appointments', [eq('id', a.id)]);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
+      return;
+    }
     await backend.remove('reminders', [eq('appointment_id', a.id)]).catch(() => undefined);
-    await backend.remove('appointments', [eq('id', a.id)]);
     inv('appointments', 'reminders');
     setDraft(null);
     toast(tr('u1.appt.deleted'));
@@ -340,7 +346,7 @@ export default function AppointmentsScreen() {
             <Segmented label={tr('u1.appt.reminder')} value={String(draft.lead)} onChange={(v) => set('lead', Number(v) as ReminderLead)} options={leads()} />
             {draft.lead !== 0 && !notificationsSupported && <Banner tone="info">{tr('u1.appt.webNote')}</Banner>}
             <Button label={draft.id ? tr('u1.appt.saveChanges') : tr('u1.appt.add')} onPress={save} loading={saving} full />
-            {!!draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); if (a) remove(a); }} />}
+            {!!draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); return a ? remove(a) : undefined; }} />}
           </>
         )}
       </Sheet>
