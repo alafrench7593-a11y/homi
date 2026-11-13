@@ -10,8 +10,26 @@ export type ActiveSubject =
   | { type: 'family' }
   | { type: 'me' };
 
+/** Apparence choisie : Système, Clair, Sombre. `auto` (ancien : clair/sombre selon l'heure) et `night` (thème des soins
+ *  nocturnes) restent acceptés à l'exécution pour les données déjà enregistrées et les scénarios de test. */
+export type ThemePreference = 'auto' | 'system' | 'light' | 'dark' | 'night';
+/** Palette : Auto (selon l'heure locale) ou fixe. */
+export type PalettePreference = 'auto' | 'aurore' | 'crepuscule' | 'menthe' | 'iris';
+export interface AppearancePrefs { theme: ThemePreference; palette: PalettePreference }
+
 interface UiState {
-  themePreference: 'auto' | 'system' | 'light' | 'dark' | 'night';
+  themePreference: ThemePreference;
+  palettePreference: PalettePreference;
+  setPalette: (p: PalettePreference) => void;
+  /**
+   * Préférences d'apparence PAR COMPTE sur cet appareil (identifiant utilisateur → choix). Ce qu'un membre choisit ne
+   * change rien pour les autres ; `themePreference` / `palettePreference` sont les valeurs du compte actif.
+   */
+  appearanceByUser: Record<string, AppearancePrefs>;
+  /** Compte dont les préférences d'apparence sont actuellement chargées. */
+  appearanceOwner: string | null;
+  /** Change de compte : enregistre les choix courants et charge ceux du nouveau compte (Système + Auto par défaut). */
+  switchAppearanceOwner: (userId: string) => void;
   /** Aperçu d'une phase du ciel (réglages > apparence) ; null = heure réelle */
   skyOverride: 'dawn' | 'day' | 'dusk' | 'night' | null;
   setSkyOverride: (p: UiState['skyOverride']) => void;
@@ -98,10 +116,31 @@ interface UiState {
   reset: () => void;
 }
 
+const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: 'auto' };
+/** Copie des choix d'apparence du compte actif (rien si aucun compte n'est encore connu). */
+function withOwner(st: UiState, patch: Partial<AppearancePrefs>): Record<string, AppearancePrefs> {
+  if (!st.appearanceOwner) return st.appearanceByUser;
+  const cur = st.appearanceByUser[st.appearanceOwner] ?? { theme: st.themePreference, palette: st.palettePreference };
+  return { ...st.appearanceByUser, [st.appearanceOwner]: { ...cur, ...patch } };
+}
+
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      themePreference: 'auto', // le ciel de la famille : suit l'heure réelle
+      themePreference: 'system', // v2 : suit le réglage clair / sombre du téléphone
+      palettePreference: 'auto', // v2 : palette selon l'heure locale
+      setPalette: (palettePreference) => set((st) => ({ palettePreference, appearanceByUser: withOwner(st, { palette: palettePreference }) })),
+      appearanceByUser: {},
+      appearanceOwner: null,
+      switchAppearanceOwner: (userId) => set((st) => {
+        if (st.appearanceOwner === userId) return {};
+        // Premier compte vu sur cet appareil : il garde les choix déjà faits (aucune réinitialisation surprise)
+        if (st.appearanceOwner === null && !st.appearanceByUser[userId]) {
+          return { appearanceOwner: userId, appearanceByUser: { ...st.appearanceByUser, [userId]: { theme: st.themePreference, palette: st.palettePreference } } };
+        }
+        const saved = st.appearanceByUser[userId] ?? DEFAULT_APPEARANCE;
+        return { appearanceOwner: userId, themePreference: saved.theme, palettePreference: saved.palette };
+      }),
       skyOverride: null,
       setSkyOverride: (skyOverride) => set({ skyOverride }),
       nightMode: false,
@@ -162,7 +201,7 @@ export const useUiStore = create<UiState>()(
       cinematicSeen: false,
       setCinematicSeen: (cinematicSeen) => set({ cinematicSeen }),
       setOverloadTipsOff: (overloadTipsOff) => set({ overloadTipsOff }),
-      setTheme: (themePreference) => set({ themePreference }),
+      setTheme: (themePreference) => set((st) => ({ themePreference, appearanceByUser: withOwner(st, { theme: themePreference }) })),
       setNightMode: (nightMode) => set({ nightMode }),
       setNightVibrations: (nightVibrations) => set({ nightVibrations }),
       setHousehold: (householdId) => set({ householdId }),

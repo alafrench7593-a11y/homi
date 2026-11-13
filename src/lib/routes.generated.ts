@@ -204,6 +204,7 @@ export const APP_ROUTES: readonly string[] = [
   '/scanner/result/[id]',
   '/settings',
   '/settings/account',
+  '/settings/appearance',
   '/settings/family',
   '/settings/home',
   '/settings/language',

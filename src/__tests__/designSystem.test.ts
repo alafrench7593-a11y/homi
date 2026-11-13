@@ -1,7 +1,7 @@
 /**
  * Design system HOMI (DESIGN_SYSTEM.md) : chaque surface de verre, teinte de carte, bandeau, bouton et pastille
  * garde un texte ≥ 4,5:1 (WCAG AA), mesuré après mélange avec TOUT ce qui peut se trouver dessous (fond et les trois
- * arrêts du dégradé de page). Les ombres restent nuit violette, jamais noir pur.
+ * arrêts du dégradé de page). Les ombres sont graphite (v2), jamais noir pur. Palette par défaut (Aurore) ; les quatre palettes sont couvertes par contrast.test.ts.
  */
 import { bannerColors, cardTint, glass, linesFor, physicalShadow, primaryGradient as PRIMARY_GRADIENT, SHADOW_INK, themes, tintedShadow, type ThemeName } from '@/theme/tokens';
 import { contrastRatio, over, parseColor, stack, type RGB } from '@/theme/contrast';
@@ -85,9 +85,9 @@ describe.each(NAMES)('boutons et pastilles — thème %s', (name) => {
 });
 
 describe('ombres physiques', () => {
-  it('jamais de noir pur ; encre nuit violette en clair', () => {
+  it('jamais de noir pur ; encre graphite chaude en clair (v2)', () => {
     for (const dark of [false, true]) {
-      const layers = [...physicalShadow('low', dark), ...physicalShadow('mid', dark), ...physicalShadow('high', dark), ...tintedShadow('91,42,134', dark)];
+      const layers = [...physicalShadow('low', dark), ...physicalShadow('mid', dark), ...physicalShadow('high', dark), ...tintedShadow(themes.light.material.accentRgb, dark)];
       for (const l of layers) expect(l.color.startsWith('rgba(0,0,0')).toBe(false);
     }
     for (const l of physicalShadow('mid', false)) expect(l.color.startsWith(`rgba(${SHADOW_INK.light},`)).toBe(true);

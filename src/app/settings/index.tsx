@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import Constants from 'expo-constants';
 import { Screen } from '@/components/Screen';
 import { DemoBanner } from '@/components/Family';
-import { Banner, Button, Card, Chip, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Banner, Button, Card, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { useAuth } from '@/lib/auth';
@@ -17,16 +17,12 @@ import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
 import { useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
-import { previewTime, spacing, type SkyPhase } from '@/theme/tokens';
-import { deviceRegion, formatTime, getLocale, t as tr } from '@/i18n';
+import { spacing } from '@/theme/tokens';
+import { deviceRegion, getLocale, t as tr } from '@/i18n';
 import { defaultRegion, localeInfo, REGIONS } from '@/i18n/locales';
 
-/** « Nuit » : thème nocturne doux. Le magasin d'état l'accepte à l'exécution (ThemeProvider sait l'afficher). */
-type Appearance = 'auto' | 'light' | 'dark' | 'night';
-const APPEARANCE_KEYS: Appearance[] = ['auto', 'light', 'dark', 'night'];
-const APPEARANCE_ICON: Record<Appearance, IconName> = { auto: 'clock', light: 'sun', dark: 'moon', night: 'star' };
-const PHASES: SkyPhase[] = ['dawn', 'day', 'dusk', 'night'];
-const hhmm = (d: Date) => formatTime(d);
+/** Apparence (v2) : résumé « Système · Auto » ; le réglage complet est dans Réglages → Apparence et couleurs. */
+const MODE_ICON: Record<'system' | 'light' | 'dark', IconName> = { system: 'smartphone', light: 'sun', dark: 'moon' };
 
 export default function SettingsScreen() {
   const toast = useToast();
@@ -43,9 +39,7 @@ export default function SettingsScreen() {
   const { isModerator } = useMyRoles();
 
   const preference = useUiStore((s) => s.themePreference);
-  const setTheme = useUiStore((s) => s.setTheme);
-  const skyOverride = useUiStore((s) => s.skyOverride);
-  const setSkyOverride = useUiStore((s) => s.setSkyOverride);
+  const palettePref = useUiStore((s) => s.palettePreference) ?? 'auto';
   const haptics = useUiStore((s) => s.hapticsEnabled);
   const region = useUiStore((s) => s.region);
   const regionInfo = REGIONS.find((r) => r.code === (region ?? defaultRegion(deviceRegion()))) ?? REGIONS[0];
@@ -58,12 +52,7 @@ export default function SettingsScreen() {
     if (profile) setName(profile.display_name ?? '');
   }, [profile]);
 
-  const appearance: Appearance = (['light', 'dark', 'night'] as string[]).includes(preference) ? (preference as Appearance) : 'auto';
-
-  function chooseAppearance(v: Appearance) {
-    setTheme(v as Parameters<typeof setTheme>[0]);
-    if (v !== 'auto') setSkyOverride(null);
-  }
+  const mode = preference === 'light' || preference === 'dark' ? preference : 'system';
 
   async function saveName() {
     const v = name.trim();
@@ -117,34 +106,13 @@ export default function SettingsScreen() {
       <SectionTitle title={tr('settings.appearance')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          {/* Libellés complets (« Toujours clair »…) : des pastilles qui passent à la ligne plutôt qu'un sélecteur trop étroit */}
-          <View accessibilityRole="radiogroup" accessibilityLabel={tr('settings.appearance.label')} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-            {APPEARANCE_KEYS.map((value) => (
-              <Chip key={value} label={tr(`settings.appearance.${value}` as const)} icon={APPEARANCE_ICON[value]} selected={appearance === value} onPress={() => chooseAppearance(value)} testID={`appearance-${value}`} />
-            ))}
-          </View>
-          <Text variant="small" muted>
-            {tr(`settings.appearance.${appearance}Hint` as const)}
-          </Text>
-          <Divider />
-          <Text weight="medium">{tr('settings.sky.title')}</Text>
-          <Text variant="small" muted>{tr('settings.sky.hint')}</Text>
-          <Row wrap>
-            {PHASES.map((p) => (
-              <Chip
-                key={p}
-                label={`${tr(`settings.sky.${p}` as const)} · ${hhmm(previewTime(p))}`}
-                selected={skyOverride === p}
-                onPress={() => {
-                  if (appearance !== 'auto') setTheme('auto');
-                  setSkyOverride(skyOverride === p ? null : p);
-                }}
-              />
-            ))}
-          </Row>
-          {skyOverride ? (
-            <Button label={tr('settings.sky.reset')} icon="rotate-ccw" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setSkyOverride(null)} />
-          ) : null}
+          <ListRow
+            icon={MODE_ICON[mode]}
+            title={tr('settings.appearance.row')}
+            subtitle={tr('settings.appearance.rowSub', { mode: tr(`settings.appearance.${mode}` as const), palette: tr(`settings.palette.${palettePref}` as const) })}
+            onPress={() => router.push('/settings/appearance')}
+            testID="settings-appearance"
+          />
           <Divider />
           <Row style={{ justifyContent: 'space-between' }}>
             <Text style={{ flex: 1 }}>{tr('settings.haptics')}</Text>

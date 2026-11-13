@@ -53,6 +53,10 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 | `AnimatedNumber` | compteur numérique | 700 ms `decelerate` ; natif : texte mis à jour sur le fil UI (TextInput non éditable) ; web : re-rendu seulement quand la chaîne change ; lecteurs d'écran : valeur finale uniquement ; chiffres tabulaires |
 | `MorphIcon` | icône de module morphable | 520 ms `decelerate` + souffle d'échelle 0,94 ; `minimal` : 160 ms sans souffle |
 | `LaunchIntro` (`src/components`) | lancement maison → silhouettes → accueil | voir ci-dessous |
+| `PressSheen` / `usePressSheen` (v2) | reflet bref qui glisse sur un bouton capsule à la pression (bouton principal, bouton d'action de la barre) | bande de lumière inclinée −18°, une traversée de 520 ms `decelerate`, opacité en sinus (0 au repos et à la fin) ; `off` et `minimal` : rien n'est rendu |
+| `GlowCard` (v2, `src/components`) | carte sélectionnée / action importante / validation | activation : halo 0 → 1 en ressort `doux` + échelle 0,97 → 1 ; filet en fondu 240 ms `standard` ; faisceau unique 720 ms `decelerate`. Repos : statique. `still` (listes) : aucun mouvement. `minimal` : fondu court, ni halo ni faisceau |
+| `CompletionCheck` + `CompletionGlow` (v2) | passage d'une tâche à « terminé » | disque 0,6 → 1 en `rebondLeger`, coche tracée 240 ms (`strokeDashoffset`, 80 ms après), anneau 520 ms, haptique « succès » ; halo de ligne 180 ms + 720 ms ; décocher : fondu 200 ms. `off` : état final immédiat ; `minimal` : fondus seuls |
+| `Sheet` (v2, `components/Overlays.tsx`) | panneau du bas | ouverture : ressort `doux` (interruptible, repart de la position courante) ; fermeture : 240 ms `accelerate`, démontage via `scheduleOnRN` |
 
 ### Introduction de lancement (`src/components/LaunchIntro.tsx`)
 
@@ -67,7 +71,7 @@ goutte → allaitement · lune → sommeil · cercle → cycle · ventre → gro
 Méthode fiable : chaque forme est un contour fermé unique rééchantillonné à 72 points équidistants, sens horaire, départ au point situé au-dessus du centre ; interpolation point à point (pas de bibliothèque de chemins, pas de commandes incompatibles).
 Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), carte en tête : choisir un module transforme l'icône.
 
-## Branchements (13/11/2026)
+## Branchements (13/11/2026, complétés par la v2 « Lumière sur graphite »)
 
 | Où | Primitive | Effet |
 |---|---|---|
@@ -77,6 +81,11 @@ Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), ca
 | Accès directs et rappel communauté des hubs | `LiftCard` | élévation avant navigation |
 | Sections des hubs (`features/hubs/HubScreen.tsx`) | `Cascade` (rangs 1…) | accès directs, favoris, puis chaque thème |
 | Cartes de l'accueil (`app/(tabs)/index.tsx`) | `Cascade` (rangs 0…) | profil, fil HOMI, cartes dans l'ordre choisi, « Tous les outils » |
+| Bouton principal (`ui.tsx` `Button variant="primary"`) | `PressSheen` | reflet qui glisse à chaque appui (en plus de l'enfoncement existant) |
+| Bouton d'action de la barre (`Dock.tsx`) | `usePressScale` + `PressSheen` | enfoncement + reflet |
+| `Card selected` / `Card emphasis` (`ui.tsx`) | `GlowCard` | halo qui grandit, filet, faisceau unique |
+| Feuilles du bas (`Overlays.tsx` `Sheet`) | `useMotion` (`spring 'doux'`, `timing 'accelerate'`) | migré d'`Animated` vers Reanimated |
+| Réglages → Apparence (`app/settings/appearance.tsx`) | `GlowCard` (sélecteur, `role="radio"`), `CompletionCheck`, `CompletionGlow`, `PressSheen` | démonstration vivante ; palette Auto : couleurs interpolées par paliers de 5 min (pas d'animation, voir `HOMI_DESIGN_SYSTEM.md`) |
 
 Tout passe par `useMotion` : `off` (Réduire les animations, économie d'énergie) → état final immédiat, `minimal` (nuit) → fondus courts sans déplacement ni élévation. Transform et opacité uniquement.
 
@@ -89,12 +98,16 @@ Tout passe par `useMotion` : `off` (Réduire les animations, économie d'énergi
 
 ## Tests
 
+`src/__tests__/homiV2.test.tsx` (v2) : reflet absent et coche posée sans ressort ni halo avec Réduire les animations
+et en économie d'énergie ; ressort puis état final en mouvement complet ; halo de validation éteint à la fin.
+`e2e/apparence_v2.py` : mêmes vérifications dans Chromium avec `reducedMotion: 'reduce'` / `'no-preference'`.
+
 `src/__tests__/motionReanimated.test.tsx` (22 tests) : niveaux, durée 0 et valeur finale en `off`, ressorts, courbes, cascade / détail / pression / compteur / morph en économie d'énergie et Réduire les animations, pièces du logo identiques au SVG, chorégraphie de l'intro, intro jouée une seule fois et retirée à la fin.
 Jest : Reanimated tourne dans son implémentation JS officielle grâce au résolveur `react-native-reanimated/jest/resolver` (config `jest.resolver` de `package.json`) ; sans lui, le module natif des worklets ne se charge pas sous Jest. Le mock `react-native-reanimated/mock` n'est pas utilisé (il rend toutes les animations instantanées et ne permettrait pas de vérifier la différence `off` / `full`).
 
 ## Inventaire `Animated` (React Native) restant — 53 fichiers hors tests
 
-- **Socle partagé (à migrer en premier, gain maximal)** : `components/ui.tsx`, `Motion.tsx`, `MotionKit.tsx`, `Appear.tsx`, `Tappable.tsx`, `Screen.tsx`, `Overlays.tsx`, `States.tsx`, `Glass.tsx`, `ToolCard.tsx`, `AccountActions.tsx`, `theme/motion.ts` (helpers `springTo`, `timeTo`, `shakeX`, `successPulse`).
+- **Socle partagé (à migrer en premier, gain maximal)** : `components/ui.tsx` (le reflet du bouton principal est déjà en Reanimated), `Motion.tsx`, `MotionKit.tsx`, `Appear.tsx`, `Tappable.tsx`, `Screen.tsx`, `Overlays.tsx` (toasts ; la feuille `Sheet` est migrée), `States.tsx`, `Glass.tsx` (reflet au curseur), `ToolCard.tsx`, `AccountActions.tsx`, `theme/motion.ts` (helpers `springTo`, `timeTo`, `shakeX`, `successPulse`).
 - **Navigation / coque** : `app/_layout.tsx` (`components/Dock.tsx` migré le 13/11/2026, voir « Branchements »).
 - **Fonds et décors en boucle** (`Animated.loop`) : `Aurora.tsx`, `PowderSky.tsx`, `StarField.tsx`, `VideoBackdrop.tsx`, `DayClock.tsx`, `FetusArt.tsx`, `FetusOrb.tsx`, `ToolGlyph.tsx`, `features/motionViz.tsx`, `story/FamilyStoryArt.tsx`, `goldTimeline.tsx`, `pregnancyThread.tsx`, `dayThread.tsx`, `dayStrip/DayStrip.tsx`, `cycle/GuideArt.tsx`, `cycle/GoldCycleRing.tsx`, `cocoon/Cocoon.tsx`.
 - **Instruments et chronomètres** : `bottleClock.tsx`, `bottleDay.tsx`, `bottleInstrument.tsx`, `childCare.tsx`.

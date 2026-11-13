@@ -1,6 +1,6 @@
 /**
- * Fond « aurore boréale » : voiles de lumière douce (pêche, rose, lavande, menthe)
- * qui ondulent très lentement derrière le contenu. Chaleureux le jour, lumineux la nuit.
+ * Fond « aurore » : voiles de lumière douce aux couleurs de la palette affichée (HOMI v2), qui ondulent très
+ * lentement derrière le contenu. Ivoire le jour, graphite le soir et la nuit.
  * Purement décoratif : masqué aux lecteurs d'écran, immobile si « Réduire les animations » est activé.
  */
 import React, { useEffect, useMemo, useRef } from 'react';
@@ -12,33 +12,24 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 
 export type AuroraMood = 'day' | 'dawn' | 'evening' | 'night' | 'lowlight';
 
-const MOODS: Record<AuroraMood, { base: [string, string, string]; glows: { c: string; o: number }[]; ribbons: { c: string; o: number }[] }> = {
-  dawn: {
-    base: ['#FBF9FE', '#F4F0FA', '#EFE9F8'],
-    glows: [{ c: '#E4DAFB', o: 0.75 }, { c: '#F6ECDA', o: 0.55 }, { c: '#CDBEFA', o: 0.55 }, { c: '#F6ECDA', o: 0.45 }],
-    ribbons: [{ c: '#D9CCFA', o: 0.35 }, { c: '#E9CFA4', o: 0.25 }],
-  },
-  day: {
-    base: ['#FFFFFF', '#F7F4FB', '#F1ECF9'],
-    glows: [{ c: '#E9DFFC', o: 0.65 }, { c: '#F6ECDA', o: 0.5 }, { c: '#D3C6FB', o: 0.55 }, { c: '#E8E1F7', o: 0.5 }],
-    ribbons: [{ c: '#DCD0FA', o: 0.3 }, { c: '#E9CFA4', o: 0.2 }],
-  },
-  evening: {
-    base: ['#261C4A', '#1A1433', '#110D23'],
-    glows: [{ c: '#7B5CD6', o: 0.42 }, { c: '#E9CFA4', o: 0.22 }, { c: '#5B2A86', o: 0.45 }, { c: '#CDBEFA', o: 0.2 }],
-    ribbons: [{ c: '#9C86E8', o: 0.26 }, { c: '#E9CFA4', o: 0.16 }],
-  },
-  night: {
-    base: ['#1A1433', '#120E26', '#0C0919'],
-    glows: [{ c: '#6E52D0', o: 0.4 }, { c: '#5B2A86', o: 0.36 }, { c: '#CDBEFA', o: 0.18 }, { c: '#E9CFA4', o: 0.14 }],
-    ribbons: [{ c: '#8E78E2', o: 0.24 }, { c: '#B9A6F2', o: 0.2 }],
-  },
-  lowlight: {
-    base: ['#0C0919', '#0F0B1E', '#120D24'],
-    glows: [{ c: '#5E4A9E', o: 0.22 }, { c: '#5B2A86', o: 0.18 }, { c: '#3E3470', o: 0.12 }, { c: '#6E6188', o: 0.08 }],
-    ribbons: [{ c: '#6A58A8', o: 0.12 }, { c: '#4A3C80', o: 0.1 }],
-  },
-};
+type MoodColors = { base: [string, string, string]; glows: { c: string; o: number }[]; ribbons: { c: string; o: number }[] };
+/**
+ * HOMI v2 : fonds ivoire (jour) ou graphite (soir, nuit), lueurs aux deux accents de la palette affichée (a, b).
+ * `lowlight` (soins nocturnes) : graphite presque noir, lueurs à peine perceptibles.
+ */
+function moodColors(mood: AuroraMood, a: string, b: string): MoodColors {
+  switch (mood) {
+    case 'dawn':
+    case 'day':
+      return { base: ['#FAF8F4', '#F4F1EB', '#EEEAE3'], glows: [{ c: a, o: 0.32 }, { c: b, o: 0.26 }, { c: '#FFFFFF', o: 0.6 }, { c: b, o: 0.2 }], ribbons: [{ c: a, o: 0.16 }, { c: b, o: 0.12 }] };
+    case 'evening':
+      return { base: ['#17181C', '#0F1013', '#0A0B0D'], glows: [{ c: a, o: 0.3 }, { c: b, o: 0.24 }, { c: a, o: 0.18 }, { c: b, o: 0.14 }], ribbons: [{ c: a, o: 0.18 }, { c: b, o: 0.14 }] };
+    case 'night':
+      return { base: ['#141519', '#0D0E11', '#08090B'], glows: [{ c: a, o: 0.22 }, { c: b, o: 0.18 }, { c: a, o: 0.12 }, { c: b, o: 0.1 }], ribbons: [{ c: a, o: 0.14 }, { c: b, o: 0.1 }] };
+    default:
+      return { base: ['#0B0B0E', '#09090C', '#08080B'], glows: [{ c: a, o: 0.1 }, { c: b, o: 0.08 }, { c: '#6E6B78', o: 0.06 }, { c: a, o: 0.05 }], ribbons: [{ c: a, o: 0.06 }, { c: b, o: 0.05 }] };
+  }
+}
 
 export function moodFor(themeName: string, phase?: string): AuroraMood {
   if (themeName === 'night') return 'lowlight';
@@ -65,7 +56,8 @@ export function Aurora({ mood: forced, intensity = 1 }: { mood?: AuroraMood; int
   const reduce = useReduceMotion();
   const { width, height } = useWindowDimensions();
   const mood = forced ?? moodFor(t.name, t.phase);
-  const m = MOODS[mood];
+  const [ga, gb] = t.tokens.accent.glow;
+  const m = useMemo(() => moodColors(mood, ga, gb), [mood, ga, gb]);
   const uid = React.useId().replace(/[^a-zA-Z0-9]/g, '');
   const d1 = useDrift(14000, reduce);
   const d2 = useDrift(19000, reduce);

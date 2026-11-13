@@ -14,7 +14,7 @@ import { BRAND } from '@/config/brand';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
+import { alpha, fonts, MIN_TOUCH, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { BrandLine, BrandLogo } from '@/components/BrandLogo';
 
@@ -82,7 +82,7 @@ export default function Welcome() {
         {/* Texte principal, en bas et centré */}
         <View style={{ alignItems: 'center' }}>
           <Appear kind="pop" delay={0.22}>
-            <LinearGradient colors={t.isDark ? ['rgba(233,207,164,0.34)', 'rgba(91,42,134,0.5)', 'rgba(38,28,74,0.78)'] : ['rgba(205,190,250,0.7)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginBottom: 18 }}>
+            <LinearGradient colors={t.isDark ? [alpha(t.tokens.accent.glow[0], 0.26), alpha(t.tokens.accent.glow[1], 0.22), 'rgba(30,31,37,0.8)'] : [alpha(t.tokens.accent.glow[1], 0.5), 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.95)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, marginBottom: 18 }}>
               <Sparkle color={t.isDark ? t.colors.accent : t.colors.primary} />
               <Text variant="small" color={ink}>{tr('brand.tagline')}</Text>
             </LinearGradient>

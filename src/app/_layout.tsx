@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
@@ -257,19 +256,16 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Fond vivant unique, derrière toutes les pages.
- *  · Vidéo de fond en boucle (ciel rose onirique) sous un voile rose poudré le jour, bleu nuit et prune la nuit.
- *  · En attendant la vidéo, sans réseau, avec « Réduire les animations » ou en économie d'énergie : fond fixe
- *    rose poudré (jour) ou bleu nuit et prune (nuit), jamais noir.
- * Le passage de l'un à l'autre se fait en fondu, et le début de soirée garde une lueur de coucher de soleil
- * qui s'éteint progressivement : jamais de changement brutal.
+ * Fond unique, derrière toutes les pages (HOMI v2) : ivoire chaud (clair) ou graphite (sombre), avec les lueurs de
+ * la palette affichée (`PowderSky`). Le passage clair ↔ sombre se fait en fondu ; la palette Auto change par paliers
+ * de 5 min (interpolation de couleurs) : jamais de changement brutal. Immobile avec « Réduire les animations » ou en
+ * économie d'énergie.
  */
 function Backdrop() {
   const t = useTheme();
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
   const skyOverride = useUiStore((s) => s.skyOverride);
-  const preference = useUiStore((s) => s.themePreference);
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 60_000); return () => clearInterval(id); }, []);
   const hour = skyOverride ? PREVIEW_HOUR[skyOverride] : now.getHours() + now.getMinutes() / 60;
@@ -282,8 +278,6 @@ function Backdrop() {
     if (reduce) { v.setValue(light ? 1 : 0); done(); return; }
     Animated.timing(v, { toValue: light ? 1 : 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }).start(({ finished }) => { if (finished) done(); });
   }, [light, reduce, v]);
-  // Lueur du coucher de soleil sur le ciel de nuit, de 18 h 30 à 20 h 30 (mode automatique)
-  const glow = preference === 'auto' && t.name === 'dark' ? Math.max(0, Math.min(1, (20.5 - hour) / 2)) : 0;
   // Pendant l'introduction cinématique, elle seule joue une vidéo (fond fixe dessous, jamais noir)
   const pathname = usePathname();
   if (pathname === '/cinematic') return <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }} />;
@@ -293,7 +287,6 @@ function Backdrop() {
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
           {/* HOMI : ciel minuit vectoriel (plus de vidéo de fond : identité HOMI, moins de batterie) */}
           <PowderSky hour={hour} night still={lowPower} />
-          {glow > 0 && hour >= 18 ? <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(155,120,230,0.18)', 'rgba(233,207,164,0.22)']} locations={[0.3, 0.7, 1]} style={[StyleSheet.absoluteFill, { opacity: glow }]} /> : null}
         </Animated.View>
       ) : null}
       {mounted.light ? (
