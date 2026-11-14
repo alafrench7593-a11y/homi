@@ -56,4 +56,4 @@ export const HOMI_COLORS = {
   "name": "#F2EEFF"
  }
 } as const;
-export const HOMI_BACKGROUNDS = {"light":"#F1EEE7","dark":"#06090B"} as const;
+export const HOMI_BACKGROUNDS = {"light":"#F6F3EE","dark":"#07080B"} as const;

@@ -285,7 +285,7 @@ function LiveLogo(p: Inner & { level: 'full' | 'minimal' }) {
           <TraceLayer size={S} clock={clock} stage={tl.trace} gradient={{ id: `${id}-edge`, stops: c.edge }} width={HOMI_HOUSE_STROKE} />
           {moving ? <CometLayer size={S} clock={clock} trace={tl.trace} comet={tl.comet} tone={tone} /> : null}
           {/* 3. la famille : parent, parent, enfant, enfant */}
-          {HOMI_FAMILY.map((_, i) => <Figure key={i} index={i} size={S} clock={clock} stage={tl.figures[i]} tone={tone} moving={moving} />)}
+          {HOMI_FAMILY.map((_, i) => <Figure key={i} index={i} size={S} clock={clock} stage={tl.figures[i]} tone={tone} moving={moving} testID={`${testID}-figure-${i}`} />)}
         </Animated.View>
         {/* 4. le nom, révélé dans la lumière */}
         <Animated.View style={[{ position: 'absolute', left: 0, top: box.name.top, width, height: box.name.line, overflow: 'hidden' }, nameWindow]}>
@@ -298,9 +298,10 @@ function LiveLogo(p: Inner & { level: 'full' | 'minimal' }) {
             <Svg width={band} height={box.name.line * 1.4} viewBox="0 0 100 100" preserveAspectRatio="none">
               <Defs>
                 <RadialGradient id={`${id}-sheen`} cx="0.5" cy="0.5" r="0.5">
-                  <Stop offset="0" stopColor="#FFFFFF" stopOpacity={tone === 'dark' ? 0.7 : 0.95} />
-                  <Stop offset="0.45" stopColor={c.glow} stopOpacity={0.4} />
-                  <Stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
+                  {/* sombre : lumière blanche ; clair : lueur lavande (le blanc disparaît sur ivoire et laisserait un anneau) */}
+                  <Stop offset="0" stopColor={tone === 'dark' ? '#FFFFFF' : c.halo} stopOpacity={tone === 'dark' ? 0.7 : 0.4} />
+                  <Stop offset="0.5" stopColor={c.glow} stopOpacity={tone === 'dark' ? 0.4 : 0.22} />
+                  <Stop offset="1" stopColor={c.glow} stopOpacity={0} />
                 </RadialGradient>
               </Defs>
               <Rect x={0} y={0} width={100} height={100} fill={`url(#${id}-sheen)`} />
@@ -379,7 +380,7 @@ function CometLayer({ size, clock, trace, comet, tone }: { size: number; clock: 
 }
 
 /** Une silhouette : monte et grandit autour de ses pieds avec un léger rebond (back-out), en fondu. Nuit : fondu seul. */
-function Figure({ index, size, clock, stage, tone, moving }: { index: number; size: number; clock: SharedValue<number>; stage: Stage; tone: 'light' | 'dark'; moving: boolean }) {
+function Figure({ index, size, clock, stage, tone, moving, testID }: { index: number; size: number; clock: SharedValue<number>; stage: Stage; tone: 'light' | 'dark'; moving: boolean; testID: string }) {
   const f = HOMI_FAMILY[index];
   const k = size / HOMI_VIEWBOX;
   const style = useAnimatedStyle(() => {
@@ -398,7 +399,7 @@ function Figure({ index, size, clock, stage, tone, moving }: { index: number; si
   const c = HOMI_COLORS[tone];
   const gid = `hmA${tone[0]}-fig-${index}`;
   return (
-    <Animated.View testID={`homi-logo-figure-${index}`} style={[StyleSheet.absoluteFill, style]} pointerEvents="none">
+    <Animated.View testID={testID} style={[StyleSheet.absoluteFill, style]} pointerEvents="none">
       <Svg width={size} height={size} viewBox={VB}>
         <Defs>
           <LinearGradient id={gid} gradientUnits={USER_SPACE} x1="0" y1={HOMI_FAMILY_SPAN.top} x2="0" y2={HOMI_FAMILY_SPAN.bottom}>

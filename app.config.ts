@@ -85,7 +85,7 @@ const config: ExpoConfig = {
   android: {
     package: BRAND.bundleId,
     adaptiveIcon: {
-      backgroundColor: '#06090B',
+      backgroundColor: '#07080B',
       foregroundImage: './assets/android-icon-foreground.png',
       backgroundImage: './assets/android-icon-background.png',
       monochromeImage: './assets/android-icon-monochrome.png',
@@ -105,8 +105,8 @@ const config: ExpoConfig = {
     'expo-sharing',
     'expo-apple-authentication',
     'expo-web-browser',
-    // Logotype HOMI v4 (scripts/homi/brand.mjs) : le mot-symbole, clair sur ivoire, sombre sur obsidienne (fonds du thème)
-    ['expo-splash-screen', { backgroundColor: '#F1EEE7', image: './assets/splash-icon.png', imageWidth: 220, dark: { backgroundColor: '#06090B', image: './assets/splash-icon-dark.png' } }],
+    // Logo HOMI v5 « maison » (scripts/homi/brand.mjs) : la maison, claire sur ivoire, sombre sur obsidienne (fonds du thème)
+    ['expo-splash-screen', { backgroundColor: '#F6F3EE', image: './assets/splash-icon.png', imageWidth: 200, dark: { backgroundColor: '#07080B', image: './assets/splash-icon-dark.png' } }],
     ['expo-notifications', { color: '#5B2A86' }],
     ['expo-local-authentication', { faceIDPermission: 'Face ID protège l’accès aux informations les plus intimes de votre suivi du cycle.' }],
     // Widget iOS « Mon cycle » (discret par défaut) — nécessite une build de développement, indisponible dans Expo Go

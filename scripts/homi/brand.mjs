@@ -18,8 +18,8 @@ const OUT_BRAND = path.join(ROOT, 'assets/brand');
 const OUT_ASSETS = path.join(ROOT, 'assets');
 
 // ------------------------------------------------------------------------------------------------ couleurs
-/** Fonds de l'application (palette v3, src/theme) : la marque est accordée à ces deux fonds. */
-export const BACKGROUNDS = { light: '#F1EEE7', dark: '#06090B' };
+/** Fonds de l'application (design system v4 « Lumière minérale », src/theme/tokens.ts : ivoire, obsidienne). */
+export const BACKGROUNDS = { light: '#F6F3EE', dark: '#07080B' };
 
 /**
  * Maison violette (dégradé vertical), lueur intérieure lavande, contour lumineux (blanc → lavande → violet clair),

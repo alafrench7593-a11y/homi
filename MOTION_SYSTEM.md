@@ -181,9 +181,10 @@ Niveaux : `off` → état final (maison, famille, nom, panneau posé) avec un si
 immédiats ; `minimal` (nuit) → fondu 160 ms, panneau en fondu, silhouettes en fondu, aucun déplacement ; version
 FIXE (`still` ou largeur < 120 px) → `BrandStack`. Image finale = `BrandStack` (mêmes tracés : `HOMI_MARK_SVG`).
 
-Branchements : `/cinematic` (`HomiIntro` : la maison se construit puis se déploie en premier panneau de verre où se
-pose l'accroche, 2,08 s + 420 ms de pose = 2,5 s) ; `LaunchIntro` (sans déploiement) ; « Découvrir HOMI » (`/discover`, sans `deployTo`,
-enchaîne sur `onHousePanel`). Captures image par image et vidéo : `e2e/logotype.py`.
+Branchements : « Découvrir HOMI » (`/discover`, et `/cinematic` qui y redirige) — `setDiscoverOpening(HomiLogoAnimated)`
+dans `src/app/_layout.tsx`, sans `deployTo` : la présentation fait grandir son panneau de verre à partir de la mesure
+`onHousePanel` ; `LaunchIntro` (sans déploiement) ; `HomiIntro` (`src/features/entry`, avec `deployTo` : la maison se
+déploie en panneau où se pose l'accroche, 2,08 s + 420 ms de pose = 2,5 s ; plus monté par une route depuis /discover). Captures image par image et vidéo : `e2e/logotype.py`.
 
 ### Introduction de lancement (`src/components/LaunchIntro.tsx`)
 

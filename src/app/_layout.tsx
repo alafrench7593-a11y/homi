@@ -43,6 +43,8 @@ import { AppErrorBoundary } from '@/components/AppErrorBoundary';
 import { initCrashReporting, setCrashReportingAllowed } from '@/lib/crashReporting';
 import { backend, eq } from '@/lib/backend';
 import { LaunchIntro } from '@/components/LaunchIntro';
+import { HomiLogoAnimated } from '@/components/HomiLogoAnimated';
+import { setDiscoverOpening } from '@/features/discover/opening';
 import { duration as motionDuration, intro } from '@/theme/motion';
 
 /** Écran d'erreur global (expo-router) : jamais d'écran blanc. */
@@ -53,6 +55,8 @@ SplashScreen.preventAutoHideAsync().catch(() => undefined);
 try { SplashScreen.setOptions({ fade: true, duration: intro.splashFadeMs }); } catch { /* web, anciennes versions */ }
 configureNotifications();
 initCrashReporting();
+// « Découvrir HOMI » s'ouvre sur le logo maison animé (point d'injection prévu par src/features/discover/opening.tsx)
+setDiscoverOpening(HomiLogoAnimated);
 
 const queryClient = new QueryClient({
   defaultOptions: {

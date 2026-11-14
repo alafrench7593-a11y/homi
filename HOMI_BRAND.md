@@ -7,12 +7,12 @@ Nom de travail : **HOMI — Your Family, One Home**. Disponibilité (INPI, EUIPO
 **Décision du propriétaire (14/11/2026) : le logotype « lentille » v4 (commit `a76b511`, O lentille de verre) est
 ABANDONNÉ.** Retour au logo MAISON, logo officiel : une maison violette aux contours lumineux, deux parents et deux
 enfants au centre (silhouettes blanc → lavande ; parents identiques, aucun stéréotype de genre). Dessin d'origine (v1–v3,
-13/11/2026) inchangé ; seules les couleurs sont accordées aux fonds actuels :
+13/11/2026) inchangé ; seules les couleurs sont accordées aux fonds actuels (design system v4 « Lumière minérale ») :
 
 | Variante | Fond | Maison | Contour | Silhouettes | Nom « HOMI » |
 |---|---|---|---|---|---|
-| claire | ivoire `#F1EEE7` | violet `#7A52E6` → `#3F2196` | `#F4EFFF` → `#C3B0FA` → `#8C6FEA` sur un liseré `#2E1872` (net sur ivoire) | `#FFFFFF` → `#D9CCFF` | `#2A1A66` |
-| sombre | obsidienne `#06090B` | violet `#7C55EA` → `#3B1E8E` | `#FFFFFF` → `#D6C8FF` → `#9F86F2` | `#FFFFFF` → `#D6C8FF` | `#F2EEFF` |
+| claire | ivoire `#F6F3EE` | violet `#7A52E6` → `#3F2196` | `#F4EFFF` → `#C3B0FA` → `#8C6FEA` sur un liseré `#2E1872` (net sur ivoire) | `#FFFFFF` → `#D9CCFF` | `#2A1A66` |
+| sombre | obsidienne `#07080B` | violet `#7C55EA` → `#3B1E8E` | `#FFFFFF` → `#D6C8FF` → `#9F86F2` | `#FFFFFF` → `#D6C8FF` | `#F2EEFF` |
 | monochrome | — | contour épais (14 u) | — | pleines | couleur du texte |
 
 Lisibilité vérifiée de 16 à 1024 px (planche en tailles réelles : `node scripts/homi/brand.mjs --planche` →
@@ -25,7 +25,7 @@ la maison violette au contour clair reste identifiable (favicon, onglets).
 |---|---|
 | `assets/brand/homi-mark-{light,dark,mono}.svg` | la maison : claire (ivoire), sombre (obsidienne), monochrome (`currentColor`) ; `homi-mark.svg` = claire |
 | `assets/brand/homi-app-icon.svg` | tuile d'icône : la maison sur obsidienne, halo violet |
-| `assets/icon.png`, `android-icon-{foreground,background,monochrome}.png`, `splash-icon.png` (claire), `splash-icon-dark.png`, `favicon.png` | générés pour Expo (`app.config.ts` : fond adaptatif `#06090B`, écran de lancement ivoire `#F1EEE7` / obsidienne `#06090B`) |
+| `assets/icon.png`, `android-icon-{foreground,background,monochrome}.png`, `splash-icon.png` (claire), `splash-icon-dark.png`, `favicon.png` | générés pour Expo (`app.config.ts` : fond adaptatif `#07080B`, écran de lancement ivoire `#F6F3EE` / obsidienne `#07080B`) |
 | `src/brand/homiMarkSvg.ts` | mêmes tracés pour l'application (SVG complets, maison, longueur du contour, silhouettes, couleurs) |
 
 Source unique : `node scripts/homi/brand.mjs`. Test : `src/__tests__/homiLogo.test.tsx`.

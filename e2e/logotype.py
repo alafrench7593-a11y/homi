@@ -2,17 +2,17 @@
 Logo HOMI v5 « maison » dans un navigateur réel (Chromium, deviceScaleFactor 2) :
  1. planche de lisibilité : la maison (SVG livrés d'assets/brand) en tailles réelles 16 → 256 px, clair / sombre /
     monochrome, et l'icône PNG générée (48 / 1024) ;
- 2. séquence animée de /cinematic image par image (horloge de Playwright pilotée, 72 images par pas de 40 ms),
-    en clair et en sombre : contour tracé + reflet sur le bord → maison illuminée → parent, parent, enfant, enfant →
-    nom HOMI → la maison se déploie en panneau ;
- 3. vidéo webm de l'animation (temps réel, clair) ;
+ 2. séquence animée de l'ouverture de « Découvrir HOMI » (/discover, logo branché par `setDiscoverOpening`) image
+    par image (captures en temps réel pendant 3,2 s, nommées par leur instant), en clair et en sombre : contour tracé +
+    reflet sur le bord → maison illuminée → parent, parent, enfant, enfant → nom HOMI → la maison s'ouvre en panneau ;
+ 3. vidéo webm de l'animation (temps réel, clair ; e2e/logotype_video.js, Playwright Node — NODE_PATH=$(npm root -g)) ;
  4. « Réduire les animations » : état final directement (accueil sans compte : maison + nom présents) ;
  5. connexion et accueil (clair / sombre) : la maison et le nom HOMI lisibles.
   npx expo export --platform web --clear --output-dir /tmp/maison/dist && python3 e2e/spa_server.py /tmp/maison/dist 19011 &
   E2E_URL=http://127.0.0.1:19011 python3 e2e/logotype.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide. Captures : $E2E_SHOTS (défaut /tmp/maison/shots).
 """
-import base64, json, os, pathlib, shutil
+import base64, json, os, pathlib, subprocess, time
 from playwright.sync_api import sync_playwright
 
 B = os.environ.get('E2E_URL', 'http://127.0.0.1:19011')
@@ -64,41 +64,35 @@ def run(p):
     R['planche'] = pg.evaluate('() => [...document.images].every((i) => i.complete && i.naturalWidth > 0)')
     ctx.close()
 
-    # 2. séquence animée /cinematic, horloge pilotée, clair et sombre
+    # 2. séquence animée de l'ouverture de Découvrir HOMI, horloge pilotée, clair et sombre
     for theme in ['light', 'dark']:
         ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, locale='fr-FR', timezone_id='Europe/Paris', reduced_motion='no-preference')
         pg = ctx.new_page()
         pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
+        # première ouverture : / → /discover (l'introduction de lancement ne joue pas, rien ne recouvre l'ouverture)
         pg.add_init_script(state(theme))
-        pg.clock.install()
-        pg.goto(B + '/cinematic?replay=1')
-        for _ in range(200):
-            if pg.locator('[data-testid="homi-intro-logo"]').count() > 0: break
-            pg.clock.run_for(25)
-        R[f'{theme}_intro_montee'] = pg.locator('[data-testid="homi-intro-logo"]').count() > 0
-        R[f'{theme}_nom_annonce'] = pg.locator('[data-testid="homi-intro-logo"][aria-label="HOMI"]').count() >= 1
-        R[f'{theme}_quatre_silhouettes'] = pg.locator('[data-testid^="homi-logo-figure-"]').count() == 4
-        panel_seen = False
-        for i in range(72):
-            pg.screenshot(path=f'{SHOTS}/2-sequence-{theme}-{i:02d}.png', clip={'x': 0, 'y': 120, 'width': 390, 'height': 600})
-            if pg.locator('[data-testid="homi-house-panel"]').count() >= 1: panel_seen = True
-            pg.clock.run_for(40)
-        R[f'{theme}_panneau_deploye'] = panel_seen
+        pg.goto(B + '/')
+        pg.wait_for_selector('[data-testid="discover-logo"]', timeout=15000)
+        t0 = time.time()
+        R[f'{theme}_logo_maison_anime'] = pg.locator('[data-testid="discover-logo"]').count() > 0 and pg.locator('[data-testid="discover-logo-static"]').count() == 0
+        R[f'{theme}_nom_annonce'] = pg.locator('[data-testid="discover-logo"][aria-label="HOMI"]').count() >= 1
+        R[f'{theme}_quatre_silhouettes'] = pg.locator('[data-testid^="discover-logo-figure-"]').count() == 4
+        # temps réel : captures aussi rapprochées que possible pendant 3,2 s, nommées par leur instant (ms)
+        i = 0
+        while time.time() - t0 < 3.2:
+            ms = int((time.time() - t0) * 1000)
+            pg.screenshot(path=f'{SHOTS}/2-sequence-{theme}-{i:02d}-{ms:04d}ms.png', clip={'x': 0, 'y': 60, 'width': 390, 'height': 640}, animations='allow')
+            i += 1
+        R[f'{theme}_images_sequence'] = i >= 12
+        R[f'{theme}_nom_revele'] = pg.locator('[data-testid="discover-logo-name"]').first.is_visible()
         ctx.close()
 
-    # 3. vidéo (temps réel)
-    vdir = f'{SHOTS}/video'; shutil.rmtree(vdir, ignore_errors=True)
-    ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, locale='fr-FR', reduced_motion='no-preference',
-                        record_video_dir=vdir, record_video_size={'width': 390, 'height': 844})
-    pg = ctx.new_page()
-    pg.add_init_script(state('light'))
-    pg.goto(B + '/cinematic?replay=1')
-    pg.wait_for_timeout(5000)
-    video = pg.video.path() if pg.video else None
-    ctx.close()
-    if video and os.path.exists(video):
-        shutil.move(video, f'{SHOTS}/3-animation-maison.webm')
-    R['video'] = os.path.exists(f'{SHOTS}/3-animation-maison.webm') and os.path.getsize(f'{SHOTS}/3-animation-maison.webm') > 10000
+    # 3. vidéo (temps réel) : Playwright Node (recordVideo), e2e/logotype_video.js
+    out = f'{SHOTS}/3-animation-maison.webm'
+    env = dict(os.environ, NAV_URL=B, E2E_VIDEO=out)
+    env.setdefault('NODE_PATH', subprocess.run(['npm', 'root', '-g'], capture_output=True, text=True).stdout.strip())
+    subprocess.run(['node', str(ROOT / 'e2e' / 'logotype_video.js')], env=env, capture_output=True, text=True, timeout=120)
+    R['video'] = os.path.exists(out) and os.path.getsize(out) > 10000
 
     # 4. Réduire les animations : accueil sans compte, maison + nom, aucune intro animée
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, locale='fr-FR', reduced_motion='reduce')
