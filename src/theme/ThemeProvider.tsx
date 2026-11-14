@@ -1,5 +1,6 @@
 /**
- * Thème HOMI v3 : apparence (Système / Clair / Sombre) × palette (Auto / Turquoise / Aurore / Crépuscule / Menthe / Iris).
+ * Thème HOMI v4 : apparence (Système / Clair / Sombre) × palette (Auto / Brume pêche / Aurore lilas / Lagune turquoise /
+ * Ambre minéral). Une préférence v3 encore enregistrée est lue comme la palette v4 la plus proche (`migratePalette`).
  *  - Changement de palette (choix manuel) : lumière, reflets, accents et scène sont INTERPOLÉS ENSEMBLE (un seul
  *    mélange de palettes, `blendAccents`) en 4 paliers sur ≈ 360 ms (famille « scène »). Réduire les animations,
  *    économie d'énergie ou nuit : changement immédiat (le fond garde son fondu simple).
@@ -11,7 +12,7 @@
  */
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState, useColorScheme } from 'react-native';
-import { AUTO_PREVIEW_PHASE, autoPaletteAt, blendAccents, buildTheme, PALETTES, previewTime, SIGNATURE_PALETTE, skyPhase, themes, type PaletteAccents, type PaletteName, type SkyPhase, type Theme, type ThemeName } from './tokens';
+import { AUTO_PREVIEW_PHASE, autoPaletteAt, blendAccents, buildTheme, migratePalette, PALETTES, previewTime, SIGNATURE_PALETTE, skyPhase, themes, type PaletteAccents, type PaletteName, type SkyPhase, type Theme, type ThemeName } from './tokens';
 import { useLowPower } from '@/lib/lowPower';
 import { useUiStore } from '@/lib/store';
 import { useAuth } from '@/lib/auth';
@@ -81,7 +82,7 @@ function usePaletteTween(target: PaletteAccents, key: string, animate: boolean):
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const system = useColorScheme();
   const preference = useUiStore((s) => s.themePreference);
-  const palettePref = useUiStore((s) => s.palettePreference) ?? 'auto';
+  const palettePref = migratePalette(useUiStore((s) => s.palettePreference));
   const nightMode = useUiStore((s) => s.nightMode);
   const skyOverride = useUiStore((s) => s.skyOverride);
   const switchOwner = useUiStore((s) => s.switchAppearanceOwner);

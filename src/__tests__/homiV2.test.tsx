@@ -16,7 +16,7 @@ import { AccessibilityInfo, Text as RNText } from 'react-native';
 import { getAnimatedStyle } from 'react-native-reanimated';
 import { act, create, type ReactTestInstance, type ReactTestRenderer } from 'react-test-renderer';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
-import { useUiStore } from '@/lib/store';
+import { migrateAppearance, useUiStore } from '@/lib/store';
 import { GlowCard } from '@/components/GlowCard';
 import { CompletionCheck, CompletionGlow, PressSheen, usePressSheen } from '@/motion';
 import { autoPaletteAt, PALETTES, type Theme } from '@/theme/tokens';
@@ -40,7 +40,7 @@ beforeEach(() => {
   mockLowPower = false;
   seen = null;
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'aurore', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'lilas', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
 });
 afterEach(async () => {
   await act(async () => { while (mounted.length) mounted.pop()!.unmount(); });
@@ -52,24 +52,24 @@ describe('préférences d’apparence', () => {
   it('apparence et palette indépendantes, appliquées immédiatement', async () => {
     await render(<Probe />);
     expect(seen!.name).toBe('light');
-    expect(seen!.colors.primary).toBe(PALETTES.aurore.ink[0]);
-    await act(async () => { useUiStore.getState().setPalette('menthe'); });
-    // v3 : la palette est interpolée en 4 paliers (≈ 360 ms) — d'abord la couleur affichée, puis la nouvelle
-    expect(seen!.colors.primary).toBe(PALETTES.aurore.ink[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.lilas.ink[0]);
+    await act(async () => { useUiStore.getState().setPalette('lagune'); });
+    // v3-v4 : la palette est interpolée en 4 paliers (≈ 360 ms) — d'abord la couleur affichée, puis la nouvelle
+    expect(seen!.colors.primary).toBe(PALETTES.lilas.ink[0]);
     await act(async () => { jest.advanceTimersByTime(400); });
-    expect(seen!.colors.primary).toBe(PALETTES.menthe.ink[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.lagune.ink[0]);
     await act(async () => { useUiStore.getState().setTheme('dark'); });
     expect(seen!.name).toBe('dark');
-    expect(seen!.colors.primary).toBe(PALETTES.menthe.glow[0]);
-    expect(seen!.colors.background).toBe('#06090B');
+    expect(seen!.colors.primary).toBe(PALETTES.lagune.glow[0]);
+    expect(seen!.colors.background).toBe('#07080B');
   });
   it('Auto : palette de l’heure locale, aperçu d’un autre moment via skyOverride', async () => {
     await act(async () => { useUiStore.setState({ palettePreference: 'auto', skyOverride: 'dusk' }); });
     await render(<Probe />);
-    expect(seen!.palette).toBe('crepuscule');
-    expect(seen!.colors.primary).toBe(PALETTES.crepuscule.ink[0]);
+    expect(seen!.palette).toBe('ambre');
+    expect(seen!.colors.primary).toBe(PALETTES.ambre.ink[0]);
     await act(async () => { useUiStore.getState().setSkyOverride('dawn'); });
-    expect(seen!.palette).toBe('menthe');
+    expect(seen!.palette).toBe('peche');
     await act(async () => { useUiStore.getState().setSkyOverride(null); });
     expect(seen!.palette).toBe(autoPaletteAt(new Date()).dominant);
   });
@@ -87,14 +87,31 @@ describe('préférences d’apparence', () => {
   it('par compte : chaque membre retrouve ses choix, un nouveau compte part de Système + Auto', () => {
     const s = () => useUiStore.getState();
     act(() => { s().switchAppearanceOwner('alice'); });
-    expect(s().appearanceByUser.alice).toEqual({ theme: 'light', palette: 'aurore' }); // premier compte : garde l'existant
-    act(() => { s().setTheme('dark'); s().setPalette('iris'); });
+    expect(s().appearanceByUser.alice).toEqual({ theme: 'light', palette: 'lilas' }); // premier compte : garde l'existant
+    act(() => { s().setTheme('dark'); s().setPalette('peche'); });
     act(() => { s().switchAppearanceOwner('bob'); });
     expect([s().themePreference, s().palettePreference]).toEqual(['system', 'auto']);
-    act(() => { s().setPalette('crepuscule'); });
+    act(() => { s().setPalette('ambre'); });
     act(() => { s().switchAppearanceOwner('alice'); });
-    expect([s().themePreference, s().palettePreference]).toEqual(['dark', 'iris']);
-    expect(s().appearanceByUser.bob).toEqual({ theme: 'system', palette: 'crepuscule' });
+    expect([s().themePreference, s().palettePreference]).toEqual(['dark', 'peche']);
+    expect(s().appearanceByUser.bob).toEqual({ theme: 'system', palette: 'ambre' });
+  });
+  it('migration v4 : les palettes v3 enregistrées (compte actif et autres comptes) passent à la plus proche', () => {
+    const out = migrateAppearance({
+      palettePreference: 'turquoise' as never,
+      appearanceByUser: { alice: { theme: 'dark', palette: 'crepuscule' as never }, bob: { theme: 'system', palette: 'auto' }, carla: { theme: 'light', palette: 'iris' as never } },
+    });
+    expect(out.palettePreference).toBe('lagune');
+    expect(out.appearanceByUser).toEqual({ alice: { theme: 'dark', palette: 'ambre' }, bob: { theme: 'system', palette: 'auto' }, carla: { theme: 'light', palette: 'lilas' } });
+    // une valeur v3 posée directement (ancien stockage) s'affiche avec la palette v4 la plus proche
+    act(() => { useUiStore.getState().setPalette('menthe' as never); });
+    expect(useUiStore.getState().palettePreference).toBe('lagune');
+  });
+  it('migration v4 : une préférence v3 encore en mémoire est affichée comme la plus proche', async () => {
+    await act(async () => { useUiStore.setState({ palettePreference: 'aurore' as never }); });
+    await render(<Probe />);
+    expect(seen!.palette).toBe('lagune');
+    expect(seen!.colors.primary).toBe(PALETTES.lagune.ink[0]);
   });
 });
 

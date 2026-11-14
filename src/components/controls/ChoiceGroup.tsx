@@ -1,9 +1,10 @@
 /**
- * Sélecteur HOMI v3 (segmented, choix de membre, durée, catégorie, humeur) — référence « Lightly ».
+ * Sélecteur HOMI v4 (segmented, choix de membre, durée, catégorie, humeur) — référence « Lightly ».
  *
- *  - `pills` (défaut) : rail en creux, INDICATEUR DE VERRE translucide qui GLISSE vers le choix actif (ressort
- *    « panneau », interruptible), lumière diffuse de la palette derrière l'option active ; la sélection est confirmée
- *    par le texte (gras) ET une coche (dès que la place le permet, ≥ 92 px par option), jamais par la couleur seule.
+ *  - `pills` (défaut) : rail en creux, LENTILLE de verre clair (`Lens`) qui GLISSE sous le choix actif (ressort
+ *    « panneau », interruptible) ; elle grossit l'option sans la colorer (caustique de la palette au pied) ; la
+ *    sélection est confirmée par le texte (gras) ET une coche dans la couleur d'accent (dès que la place le permet,
+ *    ≥ 92 px par option), jamais par la couleur seule.
  *  - `orbs` : rangée d'orbes de verre givré (humeur, membre) ; l'orbe choisi grandit (1,08) avec une lumière diffuse
  *    derrière lui, les autres se resserrent légèrement vers lui (0,94) — les choix « se rapprochent » ; une pastille
  *    à coche confirme le choix, le libellé passe en gras.
@@ -21,6 +22,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text as RNText, View, type LayoutChangeEvent, type TextStyle } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { Lens, LENS, useLensSlide } from './Lens';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -92,22 +94,13 @@ export function ChoiceGroup<T extends string>({ options, value, onChange, label,
 
 function Pills<T extends string>({ options, value, onChange, label, testID }: { options: ChoiceOption<T>[]; value: T | null | undefined; onChange: (v: T) => void; label: string; testID?: string }) {
   const t = useTheme();
-  const m = useMotion();
-  const night = t.name === 'night';
   const [w, setW] = useState(0);
+  const [railH, setRailH] = useState(52);
   const found = options.findIndex((o) => o.value === value);
   const n = Math.max(1, options.length);
   const segW = w ? (w - CHOICE.pad * 2 - CHOICE.gap * (n - 1)) / n : 0;
-  const x = useSharedValue(0);
-  const placed = useRef(false);
-  useEffect(() => {
-    if (found < 0 || !segW) return;
-    const to = found * (segW + CHOICE.gap);
-    x.value = placed.current ? m.spring(to, 'panneau') : to;
-    placed.current = true;
-  }, [found, segW]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => () => cancelAnimation(x), [x]);
-  const indicator = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+  // Lentille : position du choix actif dans le rail (première pose immédiate, puis glissement)
+  const lens = useLensSlide(CHOICE.pad + Math.max(0, found) * (segW + CHOICE.gap), segW);
   const showCheck = segW >= CHECK_MIN_WIDTH;
   const fontScale = useFontScale();
   if (w > 0 && !pillsFit(options.map((o) => o.label), segW, cappedScale(fontScale, PILL_LABEL_MAX), showCheck || options.some((o) => !!o.icon))) {
@@ -115,28 +108,19 @@ function Pills<T extends string>({ options, value, onChange, label, testID }: { 
   }
   const g = t.material.glass.inset;
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label} testID={testID} onLayout={(e: LayoutChangeEvent) => setW(e.nativeEvent.layout.width)}
+    <View accessibilityRole="radiogroup" accessibilityLabel={label} testID={testID} onLayout={(e: LayoutChangeEvent) => { setW(e.nativeEvent.layout.width); setRailH(Math.round(e.nativeEvent.layout.height)); }}
       style={[styles.rail, { backgroundColor: g.fill, borderColor: g.edge }]}>
-      {segW > 0 && found >= 0 ? (
-        <Animated.View pointerEvents="none" testID="choice-indicator"
-          style={[{ position: 'absolute', top: CHOICE.pad, bottom: CHOICE.pad, left: CHOICE.pad, width: segW, borderRadius: 999, overflow: 'hidden', backgroundColor: night ? t.colors.primary : t.colors.primary,
-            boxShadow: night ? undefined : [{ offsetX: 0, offsetY: 6, blurRadius: 18, spreadDistance: -2, color: alpha(t.tokens.accent.glow[0], t.isDark ? 0.45 : 0.4) }] }, indicator]}>
-          {/* pastille de verre teinté : dégradé de la palette, reflet haut, arête claire */}
-          {!night ? <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-          {!night ? <LinearGradient colors={['rgba(255,255,255,0.32)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 0.6 }} style={StyleSheet.absoluteFill} /> : null}
-          {!night ? <View style={{ position: 'absolute', top: 0, left: 12, right: 12, height: 1, backgroundColor: 'rgba(255,255,255,0.55)' }} /> : null}
-        </Animated.View>
-      ) : null}
+      {segW > 0 && found >= 0 ? <Lens slide={lens} top={LENS.inset} height={Math.max(0, railH - 2 - LENS.inset * 2)} testID="choice-indicator" /> : null}
       {options.map((o) => {
         const sel = o.value === value;
-        const color = sel ? t.colors.primaryText : t.colors.textMuted;
+        const color = sel ? t.colors.text : t.colors.textMuted;
         return (
           <Pressable key={o.value} accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }} aria-checked={sel}
             accessibilityLabel={o.accessibilityLabel ?? o.label} testID={o.testID}
             onPress={() => { motionHaptic('selection'); onChange(o.value); }} hitSlop={{ top: 4, bottom: 4 }}
-            style={[styles.segment, sel && !segW ? { backgroundColor: t.colors.primary } : null]}>
+            style={[styles.segment, sel && !segW ? { backgroundColor: t.material.lens.fill } : null]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-              {sel && showCheck ? <Feather name="check" size={14} color={color} testID="choice-check" /> : o.icon ? <Feather name={o.icon} size={14} color={color} /> : null}
+              {sel && showCheck ? <Feather name="check" size={14} color={t.colors.primary} testID="choice-check" /> : o.icon ? <Feather name={o.icon} size={14} color={color} /> : null}
               <RNText maxFontSizeMultiplier={PILL_LABEL_MAX} {...web(PILL_LABEL_MAX)} style={[{ color, fontFamily: sel ? fonts.bodyBold : fonts.bodyMedium, fontSize: typography.bodyS.fontSize, lineHeight: typography.bodyS.lineHeight, textAlign: 'center', flexShrink: 1 }, NO_HYPHENS]}>{o.label}</RNText>
             </View>
           </Pressable>

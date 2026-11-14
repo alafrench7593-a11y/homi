@@ -1,6 +1,6 @@
 /**
- * Barre d'onglets HOMI (v3, 13/11/2026) : Accueil · Santé · Bébé · Famille · Communauté. Capsule flottante en VERRE
- * OPTIQUE (src/components/surfaces) avec indicateur de verre qui glisse vers l'onglet actif.
+ * Barre d'onglets HOMI (v4, 14/11/2026) : Accueil · Santé · Bébé · Famille · Communauté. Capsule flottante en VERRE
+ * OPTIQUE (src/components/surfaces) avec la LENTILLE (`controls/Lens`) qui glisse sous l'onglet actif.
  * Style « Liquid Glass » : capsule flottante en verre (`LiquidGlass` : GlassView natif sur iOS 26+, sinon flou +
  * remplissage), teintée d'un dégradé pastel de la palette, arête claire en haut, ombre colorée douce dessous.
  * Clair : verre ivoire ; sombre : verre fumé plus clair que le graphite ; nuit : surface opaque tamisée, sans flou ni ombre.
@@ -9,25 +9,27 @@
  * descend qu'au quart de pixel près (≥ 11 px à 320 px de large), jamais d'ellipse (`tabLayout`, testé). Au-delà
  * (10 px ne suffisent pas avec 44 px par onglet : 320 px + texte agrandi, langue longue) : ICÔNES SEULES, onglets
  * égaux ≥ 44 px, nom accessible = libellé complet (audit 09).
- * Mouvement (src/motion) : enfoncement en ressort à la pression (`usePressScale`) et pastille active qui GLISSE
- * d'un onglet à l'autre (translateX en ressort « doux ») ; Réduire les animations / économie d'énergie : état final
+ * Mouvement (src/motion) : enfoncement en ressort à la pression (`usePressScale`) et lentille qui GLISSE
+ * d'un onglet à l'autre (position et largeur en ressort « panneau ») ; Réduire les animations / économie d'énergie : état final
  * immédiat ; nuit : fondu court sans rebond.
  *
  * Bouton d'action rond à droite de la capsule, SUR LA MÊME LIGNE (jamais posé sur le contenu) : « + » ajout rapide
  * par défaut ; un écran peut le remplacer (`useDockAction` : Communauté → Publier, accueil d'un enfant → Ajouter).
  * Un seul bouton d'action par écran. Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { router } from 'expo-router';
+import Animated from 'react-native-reanimated';
+import { router, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, radius, spacing } from '@/theme/tokens';
-import { PressSheen, useMotion, usePressScale, usePressSheen } from '@/motion';
+import { alpha, fonts, radius, spacing } from '@/theme/tokens';
+import { spaceOf, spaceScene } from '@/theme/ambiance';
+import { Lens, LENS, useLensSlide } from './controls/Lens';
+import { PressSheen, usePressScale, usePressSheen } from '@/motion';
 import { LiquidGlass, liquidShadow } from './Glass';
 import { GlowCard } from './GlowCard';
 import { useScope } from '@/lib/data/hooks-scope';
@@ -95,32 +97,15 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPres
 }
 
 /**
- * Indicateur de VERRE de l'onglet actif (v3, référence « Lightly ») : capsule de verre teinté de la palette, arête
- * claire, lumière diffuse dessous ; elle GLISSE d'un onglet à l'autre (translateX, ressort « panneau » interruptible).
+ * LENTILLE de l'onglet actif (v4) : capsule de verre clair qui couvre l'onglet (icône + libellé) et GLISSE d'un onglet à
+ * l'autre en ajustant sa largeur (ressort « panneau », interruptible) ; sa caustique prend l'accent secondaire de
+ * l'espace affiché. Réduire les animations : pose immédiate ; nuit : sans reflet.
  */
-function ActivePill({ x, visible, top = ICON_TOP }: { x: number; visible: boolean; top?: number }) {
+function ActiveLens({ x, w }: { x: number; w: number }) {
   const t = useTheme();
-  const ink = useBarInk();
-  const m = useMotion();
-  const night = t.name === 'night';
-  const tx = useSharedValue(x);
-  const op = useSharedValue(visible ? 1 : 0);
-  const placed = useRef(false);
-  useEffect(() => {
-    // première position : posée sans animation ; ensuite, glissement en ressort (interruptible)
-    tx.value = placed.current ? m.spring(x, 'panneau') : x;
-    placed.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [x]);
-  useEffect(() => { op.value = m.timing(visible ? 1 : 0, 160, 'standard'); }, [visible, m, op]);
-  const style = useAnimatedStyle(() => ({ opacity: op.value, transform: [{ translateX: tx.value }] }));
-  return (
-    <Animated.View pointerEvents="none" testID="tab-indicator"
-      style={[{ position: 'absolute', left: 0, top, width: PILL_W, height: PILL_H, borderRadius: radius.pill, overflow: 'hidden', backgroundColor: tint(ink.primary, t.isDark ? 0.2 : 0.14), borderWidth: 1, borderColor: tint(ink.primary, 0.36),
-        boxShadow: night ? undefined : [{ offsetX: 0, offsetY: 4, blurRadius: 14, spreadDistance: -2, color: tint(t.tokens.accent.glow[0], t.isDark ? 0.5 : 0.4) }] }, style]}>
-      {!night ? <LinearGradient colors={['rgba(255,255,255,0.38)', 'rgba(255,255,255,0)']} start={{ x: 0.2, y: 0 }} end={{ x: 0.5, y: 0.9 }} style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} /> : null}
-    </Animated.View>
-  );
+  const slide = useLensSlide(x, w);
+  const hue = spaceScene(t, spaceOf(usePathname())).hue;
+  return <Lens slide={slide} top={LENS.inset} height={TAB_BAR_H - LENS.inset * 2} hue={alpha(hue, t.isDark ? 0.8 : 0.9)} testID="tab-indicator" />;
 }
 
 /** Bouton d'action de la barre : « + » (ajout rapide) ou l'action de l'écran affiché (`useDockAction`). */
@@ -156,7 +141,6 @@ export function DockActionButton({ route, size = 56, onQuickAdd }: { route: stri
 }
 
 export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
-  const t = useTheme();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
@@ -174,7 +158,8 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const layout = useMemo(() => tabLayout(g.inner, widthsKey.split('|').map(Number)), [g.inner, widthsKey]);
   const activeIndex = tabs.findIndex((x) => x.tab.name === activeName);
   const at = Math.max(activeIndex, 0);
-  const pillX = g.pad + layout.widths.slice(0, at).reduce((a, w) => a + w, 0) + ((layout.widths[at] ?? PILL_W) - PILL_W) / 2;
+  // Lentille : début de l'onglet actif dans la capsule (marge intérieure comprise), 2 px de retrait de chaque côté
+  const lensX = g.pad - 1 + layout.widths.slice(0, at).reduce((a, w) => a + w, 0) + 2;
   const bottom = Math.max(insets.bottom, 10);
   // Clavier ouvert : la barre s'efface (elle recouvrait le champ actif sur le web et en fenêtre réduite) ; elle
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
@@ -210,7 +195,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
             accessibilityLabel={tr('nav.tablist')}
             style={{ height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad - 1 }}
           >
-            <ActivePill x={pillX - 1} visible={activeIndex >= 0} top={layout.iconsOnly ? ICON_TOP_ALONE : ICON_TOP} />
+            {activeIndex >= 0 ? <ActiveLens x={lensX} w={Math.max(0, (layout.widths[at] ?? PILL_W) - 4)} /> : null}
             {tabs.map(({ tab, route }, i) => (
               <TabItem
                 key={route.key}

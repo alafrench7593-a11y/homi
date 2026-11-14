@@ -2,6 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { migratePalette, type PaletteChoice } from '@/theme/tokens';
 
 export type ActiveSubject =
   | { type: 'pregnancy'; id: string }
@@ -13,8 +14,8 @@ export type ActiveSubject =
 /** Apparence choisie : Système, Clair, Sombre. `auto` (ancien : clair/sombre selon l'heure) et `night` (thème des soins
  *  nocturnes) restent acceptés à l'exécution pour les données déjà enregistrées et les scénarios de test. */
 export type ThemePreference = 'auto' | 'system' | 'light' | 'dark' | 'night';
-/** Palette : Auto (selon l'heure locale) ou fixe. */
-export type PalettePreference = 'auto' | 'turquoise' | 'aurore' | 'crepuscule' | 'menthe' | 'iris';
+/** Palette : Auto (selon l'heure locale) ou fixe — v4 : Brume pêche, Aurore lilas, Lagune turquoise, Ambre minéral. */
+export type PalettePreference = PaletteChoice;
 export interface AppearancePrefs { theme: ThemePreference; palette: PalettePreference }
 
 interface UiState {
@@ -117,6 +118,13 @@ interface UiState {
 }
 
 const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: 'auto' };
+
+/** Préférences d'apparence enregistrées (éventuellement v3) → v4 : palette la plus proche, par compte (pur, testé). */
+export function migrateAppearance<S extends Pick<UiState, 'palettePreference' | 'appearanceByUser'>>(st: S): S {
+  const byUser: Record<string, AppearancePrefs> = {};
+  for (const [id, p] of Object.entries(st.appearanceByUser ?? {})) byUser[id] = { theme: p?.theme ?? 'system', palette: migratePalette(p?.palette) };
+  return { ...st, palettePreference: migratePalette(st.palettePreference), appearanceByUser: byUser };
+}
 /** Copie des choix d'apparence du compte actif (rien si aucun compte n'est encore connu). */
 function withOwner(st: UiState, patch: Partial<AppearancePrefs>): Record<string, AppearancePrefs> {
   if (!st.appearanceOwner) return st.appearanceByUser;
@@ -129,7 +137,7 @@ export const useUiStore = create<UiState>()(
     (set) => ({
       themePreference: 'system', // v2 : suit le réglage clair / sombre du téléphone
       palettePreference: 'auto', // v2 : palette selon l'heure locale
-      setPalette: (palettePreference) => set((st) => ({ palettePreference, appearanceByUser: withOwner(st, { palette: palettePreference }) })),
+      setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
       appearanceByUser: {},
       appearanceOwner: null,
       switchAppearanceOwner: (userId) => set((st) => {
@@ -139,7 +147,7 @@ export const useUiStore = create<UiState>()(
           return { appearanceOwner: userId, appearanceByUser: { ...st.appearanceByUser, [userId]: { theme: st.themePreference, palette: st.palettePreference } } };
         }
         const saved = st.appearanceByUser[userId] ?? DEFAULT_APPEARANCE;
-        return { appearanceOwner: userId, themePreference: saved.theme, palettePreference: saved.palette };
+        return { appearanceOwner: userId, themePreference: saved.theme, palettePreference: migratePalette(saved.palette) };
       }),
       skyOverride: null,
       setSkyOverride: (skyOverride) => set({ skyOverride }),
@@ -215,6 +223,9 @@ export const useUiStore = create<UiState>()(
       storage: createJSONStorage(() => AsyncStorage),
       // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit
       partialize: ({ nightMode: _n, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
+      // Palettes v3 retirées (14/11/2026) : à CHAQUE restauration, les choix enregistrés (compte actif et autres comptes
+      // de l'appareil) passent à la palette v4 la plus proche (`migratePalette`) ; rien n'est perdu ni réinitialisé
+      merge: (persisted, current) => migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }),
     },
   ),
 );

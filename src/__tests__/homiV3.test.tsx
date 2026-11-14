@@ -19,7 +19,8 @@ import { ThemeProvider, useTheme, PALETTE_TWEEN } from '@/theme/ThemeProvider';
 import { useUiStore } from '@/lib/store';
 import { ChoiceGroup, CHECK_MIN_WIDTH, DataTile, IconOrb, PrimaryButton, SensitiveButton, sparkPoints } from '@/components/controls';
 import { ToastProvider, sheetRelease, sheetSnaps, SHEET } from '@/components/Overlays';
-import { backdropVariant, sceneAnimates, SCENE } from '@/components/scene/DesertScene';
+import { backdropVariant, pebble, sceneAnimates, SCENE } from '@/components/scene/SpaceScene';
+import { spaceOf } from '@/theme/ambiance';
 import { durationFamilies, duration } from '@/theme/motion';
 import { dampingRatio, springs } from '@/motion/curves';
 import { MorphSource, morphRegistry, MORPH } from '@/motion/Morph';
@@ -44,7 +45,7 @@ beforeEach(() => {
   seen = null;
   morphRegistry.reset();
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'dark', palettePreference: 'turquoise', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'dark', palettePreference: 'lagune', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
 });
 afterEach(async () => {
   await act(async () => { while (mounted.length) mounted.pop()!.unmount(); });
@@ -71,23 +72,23 @@ describe('système de mouvement v3', () => {
 describe('changement de palette : lumière, reflets, accents et scène interpolés ensemble', () => {
   it('passe par des couleurs intermédiaires, puis se pose sur la nouvelle palette', async () => {
     await render(<Probe />);
-    expect(seen!.colors.primary).toBe(PALETTES.turquoise.glow[0]);
-    const sceneBefore = seen!.material.scene.horizon;
-    await act(async () => { useUiStore.getState().setPalette('crepuscule'); });
+    expect(seen!.colors.primary).toBe(PALETTES.lagune.glow[0]);
+    const sceneBefore = seen!.material.scene.light;
+    await act(async () => { useUiStore.getState().setPalette('ambre'); });
     await act(async () => { jest.advanceTimersByTime(PALETTE_TWEEN.stepMs); });
     const mid = seen!;
-    expect(mid.colors.primary).not.toBe(PALETTES.turquoise.glow[0]);
-    expect(mid.colors.primary).not.toBe(PALETTES.crepuscule.glow[0]);
-    expect(mid.material.scene.horizon).not.toBe(sceneBefore);
+    expect(mid.colors.primary).not.toBe(PALETTES.lagune.glow[0]);
+    expect(mid.colors.primary).not.toBe(PALETTES.ambre.glow[0]);
+    expect(mid.material.scene.light).not.toBe(sceneBefore);
     await act(async () => { jest.advanceTimersByTime(PALETTE_TWEEN.stepMs * PALETTE_TWEEN.steps); });
-    expect(seen!.colors.primary).toBe(PALETTES.crepuscule.glow[0]);
-    expect(seen!.palette).toBe('crepuscule');
+    expect(seen!.colors.primary).toBe(PALETTES.ambre.glow[0]);
+    expect(seen!.palette).toBe('ambre');
   });
   it('Réduire les animations : changement immédiat (aucune étape)', async () => {
     jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(true);
     await render(<Probe />);
-    await act(async () => { useUiStore.getState().setPalette('iris'); });
-    expect(seen!.colors.primary).toBe(PALETTES.iris.glow[0]);
+    await act(async () => { useUiStore.getState().setPalette('lilas'); });
+    expect(seen!.colors.primary).toBe(PALETTES.lilas.glow[0]);
   });
 });
 
@@ -223,13 +224,39 @@ describe('panneau du bas gestuel', () => {
   });
 });
 
-describe('scène désert sci-fi', () => {
-  it('immersive à l’ouverture et sur l’accueil, calme ailleurs', () => {
+describe('scènes d’espace (v4)', () => {
+  it('immersive à l’ouverture et à la racine de chaque espace, calme sur les écrans internes', () => {
     expect(backdropVariant('/')).toBe('immersive');
     expect(backdropVariant('/welcome')).toBe('immersive');
-    expect(backdropVariant('/health')).toBe('calm');
+    for (const r of ['/health', '/baby', '/household', '/community', '/settings']) expect(backdropVariant(r)).toBe('immersive');
     expect(backdropVariant('/settings/appearance')).toBe('calm');
+    expect(backdropVariant('/health/x')).toBe('calm');
+    expect(backdropVariant('/cycle')).toBe('calm');
     expect(backdropVariant(null)).toBe('calm');
+  });
+  it('chaque adresse appartient à un espace (Accueil par défaut)', () => {
+    expect(spaceOf('/')).toBe('home');
+    expect(spaceOf('/health')).toBe('health');
+    expect(spaceOf('/cycle/bleeding')).toBe('health');
+    expect(spaceOf('/pregnancy/weight')).toBe('health');
+    expect(spaceOf('/baby')).toBe('baby');
+    expect(spaceOf('/bottle/abc')).toBe('baby');
+    expect(spaceOf('/household')).toBe('family');
+    expect(spaceOf('/family/missions/new')).toBe('family');
+    expect(spaceOf('/meals/shopping')).toBe('family');
+    expect(spaceOf('/community')).toBe('community');
+    expect(spaceOf('/community/post/1')).toBe('community');
+    expect(spaceOf('/settings/appearance')).toBe('settings');
+    expect(spaceOf('/premium')).toBe('settings');
+    expect(spaceOf('/inconnu')).toBe('home');
+    expect(spaceOf(null)).toBe('home');
+    expect(spaceOf('/meteo')).toBe('home'); // « /me » ne capture pas « /meteo »
+  });
+  it('formes minérales : galets irréguliers, jamais un cercle (aucun arc décoratif)', () => {
+    const d = pebble(100, 100, 40, 20);
+    expect(d.startsWith('M')).toBe(true);
+    expect((d.match(/C/g) ?? []).length).toBe(4);
+    expect(d).not.toMatch(/A/); // pas d'arc SVG
   });
   it('image fixe : Réduire les animations, économie d’énergie / nuit, arrière-plan, hors écran', () => {
     expect(sceneAnimates({ level: 'full', appActive: true, active: true })).toBe(true);

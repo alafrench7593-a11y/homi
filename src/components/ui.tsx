@@ -221,6 +221,8 @@ export const BUTTON = {
   font: { sm: 14, md: 15, lg: 16 },
   icon: { sm: 15, md: 17, lg: 18 },
   pressScale: 0.98,
+  /** Durée de la coche de succès après une action asynchrone réussie (v4) */
+  successMs: 900,
   hoverMs: 180,
   pressInMs: 110,
   pressOutMs: 200,
@@ -306,6 +308,10 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
   React.useEffect(() => { timeTo(offV, off ? 1 : 0, feedback.disabledMs, reduce).start(); }, [offV, off, reduce]);
   const pulse = React.useRef(new Animated.Value(1)).current;
   const shake = React.useRef(new Animated.Value(0)).current;
+  // Succès (v4) : une coche remplace brièvement le libellé (900 ms), à taille constante ; Réduire les animations : sans fondu
+  const [done, setDone] = React.useState(false);
+  const doneV = React.useRef(new Animated.Value(0)).current;
+  const hideLabel = React.useMemo(() => Animated.add(busy, doneV).interpolate({ inputRange: [0, 1], outputRange: [1, 0], extrapolate: 'clamp' }), [busy, doneV]);
   const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
 
   const nightC = t.name === 'night' ? t.colors : themes.night.colors;
@@ -341,7 +347,13 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       setPending(true);
       // Une action qui échoue sans gérer son erreur affiche au moins un message (jamais d'échec muet)
       (r as Promise<unknown>)
-        .then(() => { if (mounted.current) successPulse(pulse, reduce).start(); })
+        .then(() => {
+          if (!mounted.current) return;
+          successPulse(pulse, reduce).start();
+          setDone(true);
+          timeTo(doneV, 1, duration.fast, reduce).start();
+          setTimeout(() => { if (mounted.current) timeTo(doneV, 0, duration.fast, reduce).start(() => { if (mounted.current) setDone(false); }); }, BUTTON.successMs);
+        })
         .catch((err) => { if (!mounted.current) return; haptic('warning'); shakeX(shake, reduce).start(); toast(friendlyErrorMessage(err), 'error'); })
         .finally(() => { running.current = false; if (mounted.current) setPending(false); });
     }
@@ -387,7 +399,7 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       {/* mesure sur la rangée (View : onLayout fiable sur toutes les plateformes, le web ne le rend pas sur Text) ;
           sa hauteur = celle du libellé (l'icône, 15-18 px, est plus basse qu'une ligne) */}
       <Animated.View onLayout={adapt ? onLabelLayout : undefined}
-        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
+        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: hideLabel }}>
         {shownIcon && <Animated.View style={nudge(shownIcon)}><Icon name={shownIcon} size={iconSize} color={fg} /></Animated.View>}
         {shownLabel ? (
           <Text weight="bold" color={fg} center maxFontSizeMultiplier={typography.button.maxScale}
@@ -402,6 +414,11 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
       {isBusy ? (
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: busy }]}>
           <ActivityIndicator size="small" color={fg} />
+        </Animated.View>
+      ) : null}
+      {done && !isBusy ? (
+        <Animated.View pointerEvents="none" testID="button-success" accessibilityLiveRegion="polite" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: doneV }]}>
+          <Icon name="check" size={iconSize + 3} color={fg} />
         </Animated.View>
       ) : null}
     </Pressable>
