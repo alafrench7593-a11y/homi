@@ -48,8 +48,8 @@ const IOS_PERMISSION_TEXTS: Record<'fr' | 'en' | 'es' | 'de' | 'it', Record<stri
 const config: ExpoConfig = {
   name: BRAND.name,
   slug: BRAND.slug,
-  // Compte Expo de HOMI : fourni par l'environnement (jamais celui de HOMI)
-  owner: process.env.EXPO_OWNER,
+  // Compte Expo de HOMI (alafre, projet @alafre/homi) ; EXPO_OWNER le remplace si besoin
+  owner: process.env.EXPO_OWNER ?? 'alafre',
   version: '0.1.0',
   scheme: BRAND.scheme,
   orientation: 'portrait',
@@ -128,7 +128,7 @@ const config: ExpoConfig = {
   ],
   experiments: { typedRoutes: true },
   extra: {
-    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID },
+    eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? '7ae940a8-0ecd-45e4-a1c9-0b5bfa6255dc' },
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
     // Seulement « configurée ou non » (jamais la valeur) pour afficher un état clair si la carte manque
