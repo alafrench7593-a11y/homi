@@ -164,6 +164,8 @@ export default function SettingsScreen() {
         <Divider />
         <ListRow icon="help-circle" title={SUPPORT.title} onPress={() => router.push('/legal/support')} testID="settings-support" />
         <Divider />
+        <ListRow icon="play-circle" title={tr('kn.settingsRow')} subtitle={tr('kn.settingsRowSub')} onPress={() => router.push('/discover?replay=1' as never)} testID="settings-discover" />
+        <Divider />
         <ListRow icon="file-text" title={TERMS.title} onPress={() => router.push('/legal/terms')} testID="settings-terms" />
         <Divider />
         <ListRow icon="lock" title={PRIVACY.title} onPress={() => router.push('/legal/privacy')} testID="settings-privacy-policy" />

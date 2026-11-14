@@ -181,6 +181,8 @@ function Navigator() {
       <Stack.Screen name="track/[kind]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="night" options={{ animation: 'fade', gestureEnabled: false }} />
       <Stack.Screen name="cinematic" options={{ animation: 'fade', animationDuration: 500, gestureEnabled: false }} />
+      {/* « Découvrir HOMI » : le geste horizontal appartient à la présentation (chapitres), pas au retour système */}
+      <Stack.Screen name="discover/index" options={{ animation: 'fade', animationDuration: 500, gestureEnabled: false }} />
       <Stack.Screen name="sleep/tonight" options={{ animation: 'fade' }} />
       <Stack.Screen name="emergency" options={{ presentation: 'modal' }} />
       <Stack.Screen name="assistant/chat" options={{ presentation: Platform.OS === 'ios' ? 'modal' : 'card' }} />

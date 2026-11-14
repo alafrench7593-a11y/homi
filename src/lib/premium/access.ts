@@ -13,7 +13,7 @@
 import type { AccessInfo, PaidTool } from './offers';
 
 const FREE: RegExp[] = [
-  /^\/welcome\/?$/, /^\/intro\/?$/, /^\/cinematic\/?$/, /^\/auth\//, /^\/legal\//, /^\/onboarding\/?$/,
+  /^\/welcome\/?$/, /^\/intro\/?$/, /^\/cinematic\/?$/, /^\/discover(\/.*)?$/, /^\/auth\//, /^\/legal\//, /^\/onboarding\/?$/,
   /^\/journeys(\/.*)?$/, /^\/profiles\/new\/?$/,
   /^\/(profile|moi)\/?$/,
   /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|family|sync)\/?$/,
