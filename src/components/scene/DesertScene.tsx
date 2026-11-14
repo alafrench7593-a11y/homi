@@ -41,7 +41,7 @@ export const SCENE = {
 } as const;
 
 /** Routes où le fond de coque est immersif (ouverture, accueil) ; partout ailleurs : calme. */
-export const IMMERSIVE_ROUTES = ['/', '/welcome', '/intro', '/onboarding'] as const;
+export const IMMERSIVE_ROUTES = ['/', '/welcome', '/intro', '/onboarding', '/discover'] as const;
 export function backdropVariant(pathname: string | null | undefined): SceneVariant {
   if (!pathname) return 'calm';
   return IMMERSIVE_ROUTES.some((r) => (r === '/' ? pathname === '/' : pathname === r || pathname.startsWith(`${r}/`))) ? 'immersive' : 'calm';

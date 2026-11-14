@@ -64,6 +64,21 @@ Parallaxe légère : 4 plans (3 / 6 / 9 / 12 px), 22 s aller-retour en sinus, `w
 (`sceneAnimates`, testé) : `off`, `minimal`, application en arrière-plan (`AppState`), `active={false}` (hors écran),
 `still`. Annulée (`cancelAnimation`) dès qu'une de ces conditions apparaît.
 
+### « Découvrir HOMI » (`/discover`, `src/features/discover/**`, 14/11/2026)
+
+Remplace l'introduction de première ouverture (`/cinematic` redirige ; même règle « une fois » `cinematicSeen`),
+relançable depuis Réglages → Découvrir HOMI (`?replay=1`). Ouverture : la MAISON HOMI s'illumine puis s'ouvre en
+premier panneau de verre (reflet qui longe son bord), caméra dans le panneau (gros plan sur grossesse, biberons,
+mission, puis recul). Caméra (450 ms `decelerate`, avancée + glissement) réservée à l'ouverture et aux changements de
+chapitre ; geste horizontal interruptible. Catalogue : chaque tuile s'ouvre depuis sa position (`MorphSource sheen` :
+reflet sur le bord haut du fantôme) et revient à sa place. Démos : moteur `DemoPlayer` / `DemoTarget` (doigt fantôme
+qui approche et appuie, puis résultat ; un vrai toucher l'interrompt) — 12 types génériques + 9 démos sur mesure.
+`off` : état final, aucun doigt, « Rejouer » attend le geste ; `minimal` : fondus seuls.
+**Branchement du logo animé** : `setDiscoverOpening(HomiLogoAnimated)` (ou `<DiscoverKeynote logo=…>`) ; la
+présentation passe `width`, `tone`, `still`, `onHousePanel` (= `onLensPanel`), `onDone` et fait elle-même grandir le
+panneau depuis la maison mesurée (pas de `deployTo`). Sans logo injecté : maison existante (`BrandLogo`) provisoire.
+Tests : `src/__tests__/discoverHomi.test.tsx` ; E2E `e2e/decouvrir_homi.py`, vidéo `e2e/decouvrir_homi_video.js`.
+
 ## Principes
 
 1. **Calme et intentionnel.** Le mouvement explique (d'où vient un écran, ce qui vient de changer), il ne décore pas. Jamais d'agressivité, jamais d'attente imposée : l'action part tout de suite, l'animation suit.

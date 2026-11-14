@@ -70,3 +70,4 @@ export { moodJournal } from './moodJournal';
 export { scanner } from './scanner';
 export { bottleV3 } from './bottleV3';
 export { reliability } from './reliability';
+export { keynote } from './keynote';
