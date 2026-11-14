@@ -3,6 +3,22 @@
 Nouveau code : **Reanimated 4.7.1** (`react-native-worklets` 0.13.0), primitives dans `src/motion/**`.
 Jetons partagés avec l'API `Animated` historique : `src/theme/motion.ts`.
 
+## v4 « lumière minérale » (14/11/2026)
+
+Les familles et ressorts v3 ci-dessous sont CONSERVÉS. Changements v4 :
+
+| Geste | Où | Mouvement | Réduire les animations / nuit |
+|---|---|---|---|
+| **Lentille qui glisse** (changement d'onglet) | `Dock` → `Lens` (`src/components/controls/Lens.tsx`) | position ET largeur de la lentille en ressort `panneau` (`useLensSlide`), première pose sans trajet, interruptible ; la caustique prend l'accent de l'espace | pose immédiate / sans reflet ni caustique |
+| **Lentille du sélecteur** | `ChoiceGroup` pills, `Segmented` | même lentille, même ressort ; gras + coche en plus | idem |
+| **Confirmation** | `Button` (et `PrimaryButton` / `SecondaryButton`) | promesse résolue : respiration 1 → 1,03 + COCHE qui remplace le libellé 900 ms (`BUTTON.successMs`), largeur stable ; échec : tremblement + message ; double appui ignoré pendant le chargement | coche sans fondu, sans respiration |
+| **Panneaux** | `Sheet` (verre OPTIQUE en v4) | inchangé (geste, crans, fermeture 280 ms) | inchangé |
+| **Changement de palette** | `ThemeProvider` | lumière de la scène, reflets du verre, caustiques et accents interpolés ENSEMBLE (4 × 90 ms) ; le contenu ne bouge pas (aucune mise en page ne dépend de la palette) | immédiat |
+| **Scène d'espace** | `SpaceScene` | parallaxe de la lumière (3 px) et de la composition (6 px), 22 s ; passer d'un espace à l'autre change la composition avec le fondu de l'écran | image fixe |
+
+Alternative lisible au verre : le remplissage seul garantit le contraste (testé) ; « Réduire la transparence » (iOS)
+et la nuit rendent toutes les matières opaques ; la lentille reste plus claire que son rail même sans reflet.
+
 ## v3 « désert sci-fi » (13/11/2026) — trois familles, quatre gestes signature
 
 | Famille | Bornes | Jeton | Exemples |
@@ -58,11 +74,26 @@ restent disponibles (élévation sans fantôme).
 transition). Fond : changement clair ↔ sombre par un voile qui s'efface en 400 ms (immédiat avec Réduire les
 animations). Chaque palier intermédiaire est lisible (contrast.test.ts, « changement de palette animé »).
 
-### Scène (`DesertScene`)
+### Scène (`SpaceScene`, v4 ; `DesertScene` = alias de l'Accueil)
 
-Parallaxe légère : 4 plans (3 / 6 / 9 / 12 px), 22 s aller-retour en sinus, `withRepeat` sur le fil UI. Image fixe
+Parallaxe légère : lumière 3 px, composition 6 px (constantes `SCENE.parallax`), 22 s aller-retour en sinus, `withRepeat` sur le fil UI. Image fixe
 (`sceneAnimates`, testé) : `off`, `minimal`, application en arrière-plan (`AppState`), `active={false}` (hors écran),
 `still`. Annulée (`cancelAnimation`) dès qu'une de ces conditions apparaît.
+
+### « Découvrir HOMI » (`/discover`, `src/features/discover/**`, 14/11/2026)
+
+Remplace l'introduction de première ouverture (`/cinematic` redirige ; même règle « une fois » `cinematicSeen`),
+relançable depuis Réglages → Découvrir HOMI (`?replay=1`). Ouverture : la MAISON HOMI s'illumine puis s'ouvre en
+premier panneau de verre (reflet qui longe son bord), caméra dans le panneau (gros plan sur grossesse, biberons,
+mission, puis recul). Caméra (450 ms `decelerate`, avancée + glissement) réservée à l'ouverture et aux changements de
+chapitre ; geste horizontal interruptible. Catalogue : chaque tuile s'ouvre depuis sa position (`MorphSource sheen` :
+reflet sur le bord haut du fantôme) et revient à sa place. Démos : moteur `DemoPlayer` / `DemoTarget` (doigt fantôme
+qui approche et appuie, puis résultat ; un vrai toucher l'interrompt) — 12 types génériques + 9 démos sur mesure.
+`off` : état final, aucun doigt, « Rejouer » attend le geste ; `minimal` : fondus seuls.
+**Branchement du logo animé** : `setDiscoverOpening(HomiLogoAnimated)` (ou `<DiscoverKeynote logo=…>`) ; la
+présentation passe `width`, `tone`, `still`, `onHousePanel` (= `onLensPanel`), `onDone` et fait elle-même grandir le
+panneau depuis la maison mesurée (pas de `deployTo`). Sans logo injecté : maison existante (`BrandLogo`) provisoire.
+Tests : `src/__tests__/discoverHomi.test.tsx` ; E2E `e2e/decouvrir_homi.py`, vidéo `e2e/decouvrir_homi_video.js`.
 
 ## Principes
 
@@ -182,8 +213,8 @@ Démonstration : **Réglages → Mon accueil** (`src/app/settings/home.tsx`), ca
 | Bouton d'action de la barre (`Dock.tsx`) | `usePressScale` + `PressSheen` | enfoncement + reflet |
 | `Card selected` / `Card emphasis` (`ui.tsx`) | `GlowCard` | halo qui grandit, filet, faisceau unique |
 | Feuilles du bas (`Overlays.tsx` `Sheet`) | gesture-handler + `useMotion` (`springs.panneau`, `timing 'accelerate'`) | v3 : gestuel (voir plus haut) |
-| Barre d'onglets (v3) | ressort `panneau` | indicateur de verre teinté qui glisse |
-| Sélecteurs (`ChoiceGroup`, `Segmented`) | ressort `panneau` | indicateur qui glisse ; orbes qui grandissent / se resserrent |
+| Barre d'onglets (v4) | ressort `panneau` | LENTILLE de verre clair qui glisse (position + largeur) |
+| Sélecteurs (`ChoiceGroup`, `Segmented`) | ressort `panneau` | lentille qui glisse (v4) ; orbes qui grandissent / se resserrent |
 | Fond de coque (`DesertScene`) | `withRepeat` + `cancelAnimation` | parallaxe légère, image fixe sinon |
 | Assistant du scanner (`features/scanner/WizardChrome.tsx`) | `m.timing` 280 ms `decelerate` (nuit : fondu 160 ms ; `off` : immédiat) | l'étape glisse de 16 px dans le sens du geste + fondu ; les segments de progression se remplissent / se vident en `translateX` au même moment ; chaque étape repart en haut |
 | Historique / dernier scan → fiche (`features/scanner/components.tsx`) | `useMorphSource('scan-<id>')` + `MorphTarget` | la surface mate de la ligne s'agrandit vers la fiche résultat, retour vers la même ligne |

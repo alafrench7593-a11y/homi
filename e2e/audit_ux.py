@@ -7,10 +7,10 @@ Audit 09 — UX, accessibilité et mouvement (démo web, petit écran 320 × 568
   PW_CHROMIUM=/opt/pw-browsers/chromium NAV_URL=http://127.0.0.1:8979 E2E_SHOTS=/tmp/audit9/shots python3 e2e/audit_ux.py
 
 Partie A — débordements (détecteur e2e/audit_ux_detect.js) sur ~30 écrans représentatifs, 5 configurations :
-  clair Turquoise texte 1 ; clair Turquoise texte 1,3 ; sombre Crépuscule texte 1,3 ;
+  clair Lagune texte 1 ; clair Lagune texte 1,3 ; sombre Ambre texte 1,3 ;
   clavier ouvert (fenêtre réduite à 320 × 308 : 568 − 260 px de clavier iPhone SE + barre de suggestions,
-  comme le KeyboardAvoidingView « padding » de Screen/Sheet) sombre Turquoise, premier champ focalisé ;
-  clavier ouvert + texte 1,3 clair Crépuscule.
+  comme le KeyboardAvoidingView « padding » de Screen/Sheet) sombre Lagune, premier champ focalisé ;
+  clavier ouvert + texte 1,3 clair Ambre.
   Texte agrandi : simulation fidèle de `fontScale` (min(échelle, maxFontSizeMultiplier) par texte, voir le détecteur).
   Au clavier, le champ focalisé doit rester visible et non recouvert, et la zone qui défile garder ≥ 96 px
   (libellé + champ d'une ligne : en-tête replié, barre d'onglets masquée).
@@ -51,11 +51,11 @@ STEPS = {
     '/scanner/product#inconnu': ['@fill:scan-query:4006381333931', 'scan-search'],
 }
 CONFIGS = [
-    {'name': 'clair-turquoise-1', 'theme': 'light', 'palette': 'turquoise', 'scale': 1.0, 'kb': False},
-    {'name': 'clair-turquoise-1.3', 'theme': 'light', 'palette': 'turquoise', 'scale': 1.3, 'kb': False},
-    {'name': 'sombre-crepuscule-1.3', 'theme': 'dark', 'palette': 'crepuscule', 'scale': 1.3, 'kb': False},
-    {'name': 'clavier-sombre-turquoise-1', 'theme': 'dark', 'palette': 'turquoise', 'scale': 1.0, 'kb': True},
-    {'name': 'clavier-clair-crepuscule-1.3', 'theme': 'light', 'palette': 'crepuscule', 'scale': 1.3, 'kb': True},
+    {'name': 'clair-lagune-1', 'theme': 'light', 'palette': 'lagune', 'scale': 1.0, 'kb': False},
+    {'name': 'clair-lagune-1.3', 'theme': 'light', 'palette': 'lagune', 'scale': 1.3, 'kb': False},
+    {'name': 'sombre-ambre-1.3', 'theme': 'dark', 'palette': 'ambre', 'scale': 1.3, 'kb': False},
+    {'name': 'clavier-sombre-lagune-1', 'theme': 'dark', 'palette': 'lagune', 'scale': 1.0, 'kb': True},
+    {'name': 'clavier-clair-ambre-1.3', 'theme': 'light', 'palette': 'ambre', 'scale': 1.3, 'kb': True},
 ]
 if os.environ.get('AUDIT_ONLY'):
     keep = os.environ['AUDIT_ONLY'].split(',')
@@ -286,7 +286,7 @@ def part_b(b):
     cfg = {'name': 'B'}
     ctx, pg = new_ctx(b, cfg)
     pg.goto(B + '/welcome'); pg.wait_for_timeout(1500)
-    pg.evaluate("(p) => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': 'dark', 'palettePreference': 'turquoise'})
+    pg.evaluate("(p) => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': 'dark', 'palettePreference': 'lagune'})
     enter_demo(pg)
 
     # B1. Focus clavier visible et ordre logique (haut → bas, sans saut arrière de plus d'une ligne)
@@ -324,7 +324,7 @@ def part_b(b):
 
     # B4. Contraste mesuré (pixels) — 4 combinaisons thème × palette
     bad = []
-    for theme, pal in [('light', 'turquoise'), ('dark', 'turquoise'), ('light', 'crepuscule'), ('dark', 'crepuscule')]:
+    for theme, pal in [('light', 'lagune'), ('dark', 'lagune'), ('light', 'ambre'), ('dark', 'ambre')]:
         pg.evaluate("(p) => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': theme, 'palettePreference': pal})
         pg.goto(B + '/'); pg.wait_for_timeout(3000)  # apparence relue au démarrage (l'Accueil garde la session)
         for r in ['/', '/me/mood', '/settings/appearance', '/family/missions', '/scanner']:

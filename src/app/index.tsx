@@ -29,8 +29,8 @@ export default function Launch() {
   const introSeen = useUiStore((s) => s.introSeen);
   const cinematicSeen = useUiStore((s) => s.cinematicSeen);
 
-  // Toute première ouverture (pas encore de compte) : introduction HOMI vectorielle, une seule fois, « Passer » possible
-  if (ready && !session && hydrated && !cinematicSeen) return <Redirect href="/cinematic" />;
+  // Toute première ouverture (pas encore de compte) : présentation « Découvrir HOMI », une seule fois, « Passer » possible
+  if (ready && !session && hydrated && !cinematicSeen) return <Redirect href={'/discover' as never} />;
   // Première ouverture sans compte : introduction (toujours « Passer » possible)
   if (ready && !session && hydrated && !introSeen) return <Redirect href="/intro" />;
   if (ready && !session && hydrated) return <Redirect href="/welcome" />;

@@ -34,8 +34,8 @@ import { useMotion } from './useMotion';
 export const MORPH = { openMs: 400, revealMs: 160, closeMs: 340, fadeInMs: 100 } as const;
 
 type Rect = { x: number; y: number; w: number; h: number };
-type Source = { measure: (cb: (r: Rect) => void) => void; radius: number; tint?: string };
-type Host = { expand: (id: string, rect: Rect, radius: number, tint?: string) => void; collapse: (id: string, rect: Rect, radius: number, tint?: string) => void };
+type Source = { measure: (cb: (r: Rect) => void) => void; radius: number; tint?: string; sheen?: boolean };
+type Host = { expand: (id: string, rect: Rect, radius: number, tint?: string, sheen?: boolean) => void; collapse: (id: string, rect: Rect, radius: number, tint?: string, sheen?: boolean) => void };
 
 /** Registre des sources montées et de l'hôte (module : un seul hôte par application). */
 const sources = new Map<string, Source>();
@@ -57,19 +57,19 @@ function measureRef(ref: React.RefObject<View | null>, cb: (r: Rect) => void) {
 }
 
 /** Source de morph : `ref` à poser sur la surface, `open(navigate)` à appeler à l'appui. */
-export function useMorphSource(id: string, opts: { radius?: number; tint?: string } = {}) {
+export function useMorphSource(id: string, opts: { radius?: number; tint?: string; sheen?: boolean } = {}) {
   const ref = useRef<View>(null);
   const m = useMotion();
   const radius = opts.radius ?? R.lg;
   useEffect(() => {
-    sources.set(id, { measure: (cb) => measureRef(ref, cb), radius, tint: opts.tint });
+    sources.set(id, { measure: (cb) => measureRef(ref, cb), radius, tint: opts.tint, sheen: opts.sheen });
     return () => { if (sources.get(id)?.measure) sources.delete(id); };
-  }, [id, radius, opts.tint]);
+  }, [id, radius, opts.tint, opts.sheen]);
   const open = (navigate: () => void) => {
     lastOpened = id;
     if (m.level !== 'full' || !host) { navigate(); return; }
     measureRef(ref, (r) => {
-      if (r.w > 0 && r.h > 0) host?.expand(id, r, radius, opts.tint);
+      if (r.w > 0 && r.h > 0) host?.expand(id, r, radius, opts.tint, opts.sheen);
       navigate();
     });
   };
@@ -82,12 +82,14 @@ type SourceProps = Omit<PressableProps, 'style' | 'children' | 'onPress'> & {
   children: React.ReactNode;
   radius?: number;
   tint?: string;
+  /** Reflet qui suit le bord haut de la surface pendant qu'elle s'agrandit (et au retour). */
+  sheen?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
 /** Surface appuyable qui s'agrandit vers l'écran détail. */
-export function MorphSource({ id, onOpen, children, radius, tint, style, ...rest }: SourceProps) {
-  const src = useMorphSource(id, { radius, tint });
+export function MorphSource({ id, onOpen, children, radius, tint, sheen, style, ...rest }: SourceProps) {
+  const src = useMorphSource(id, { radius, tint, sheen });
   return (
     <Pressable accessibilityRole="button" {...rest} onPress={() => { motionHaptic('light'); src.open(onOpen); }}>
       <View ref={src.ref} collapsable={false} style={style}>{children}</View>
@@ -106,7 +108,7 @@ export function MorphTarget({ id, children, style, testID }: { id: string; child
       const src = sources.get(id);
       if (!src || !host || lastOpened !== id) return;
       lastOpened = null;
-      src.measure((r) => { if (r.w > 0 && r.h > 0) host?.collapse(id, r, src.radius, src.tint); });
+      src.measure((r) => { if (r.w > 0 && r.h > 0) host?.collapse(id, r, src.radius, src.tint, src.sheen); });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -121,6 +123,7 @@ export function MorphHost() {
   const { width: W, height: H } = useWindowDimensions();
   const rootRef = useRef<View>(null);
   const [tint, setTint] = useState<string | undefined>(undefined);
+  const [sheen, setSheen] = useState(false);
   const [visible, setVisible] = useState(false);
   const p = useSharedValue(0);
   const op = useSharedValue(0);
@@ -135,16 +138,16 @@ export function MorphHost() {
     // décalage de l'hôte dans la fenêtre (web : cadre téléphone centré)
     const offset = (r: Rect, cb: (r: Rect) => void) => measureRef(rootRef, (o) => cb({ x: r.x - o.x, y: r.y - o.y, w: r.w, h: r.h }));
     host = {
-      expand: (_id, r, radius, tnt) => offset(r, (rr) => {
-        setTint(tnt); setVisible(true);
+      expand: (_id, r, radius, tnt, shn) => offset(r, (rr) => {
+        setTint(tnt); setSheen(!!shn); setVisible(true);
         cancelAnimation(p); cancelAnimation(op);
         from.value = rr; rad.value = radius;
         p.value = 0; op.value = 1;
         p.value = withTiming(1, { duration: MORPH.openMs, easing: curves.decelerate });
         op.value = withDelay(MORPH.openMs, withTiming(0, { duration: MORPH.revealMs, easing: curves.standard }, (f) => { 'worklet'; if (f) scheduleOnRN(hide); }));
       }),
-      collapse: (_id, r, radius, tnt) => offset(r, (rr) => {
-        setTint(tnt); setVisible(true);
+      collapse: (_id, r, radius, tnt, shn) => offset(r, (rr) => {
+        setTint(tnt); setSheen(!!shn); setVisible(true);
         cancelAnimation(p); cancelAnimation(op);
         from.value = rr; rad.value = radius;
         p.value = 1; op.value = 0;
@@ -170,6 +173,12 @@ export function MorphHost() {
       borderRadius: rad.value * (1 - k) + 28 * k,
     };
   });
+  // reflet : une bande claire qui longe le bord haut, du coin de départ vers l'autre bord, au rythme de la surface
+  const edge = useAnimatedStyle(() => {
+    const k = p.value;
+    const w = from.value.w + (size.value.w - from.value.w) * k;
+    return { width: w * 0.42, opacity: Math.sin(Math.PI * Math.min(1, Math.max(0, k))) * 0.95, transform: [{ translateX: w * (-0.42 + 1.42 * k) }] };
+  });
   const s = t.material.surfaces.matte;
   const light = tint ?? t.tokens.accent.glow[0];
   return (
@@ -177,6 +186,11 @@ export function MorphHost() {
       {visible ? (
         <Animated.View testID="morph-ghost" style={[{ position: 'absolute', overflow: 'hidden', backgroundColor: s.fill, borderWidth: 1, borderColor: s.edge }, ghost]}>
           <LinearGradient colors={[alpha(light, t.isDark ? 0.16 : 0.14), alpha(light, 0)]} start={t.material.light.start} end={t.material.light.end} style={StyleSheet.absoluteFill} />
+          {sheen ? (
+            <Animated.View testID="morph-sheen" style={[{ position: 'absolute', top: 0, left: 0, height: 2 }, edge]}>
+              <LinearGradient colors={[alpha('#FFFFFF', 0), alpha('#FFFFFF', t.isDark ? 0.7 : 0.95), alpha('#FFFFFF', 0)]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
+            </Animated.View>
+          ) : null}
         </Animated.View>
       ) : null}
     </View>
