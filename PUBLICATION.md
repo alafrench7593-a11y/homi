@@ -38,7 +38,7 @@
 | Nom affiché | `Au fil de nous` (14 caractères, sous la limite de 30) | [fait] |
 | Version | `0.1.0` (`app.config.ts`). Une première version publique en `1.0.0` est plus lisible pour les utilisatrices ; décision de David. | [David] |
 | Numéro de build | géré à distance par EAS (`appVersionSource: remote`, `autoIncrement: true` en production) — iOS et Android | [fait] |
-| Équipe / appli App Store Connect | **Retirés le 14/11/2026** : `L5HM8RN2QD` / `6827529809` sont ceux d'Au fil de nous. HOMI aura sa propre fiche App Store Connect | [à faire] |
+| Équipe / appli App Store Connect | HOMI : Team `L5HM8RN2QD` (compte partagé avec Au fil de nous), fiche propre ASC App ID `6834794892`, bundle `app.homi.family`, SKU `homi-ios`, nom « HOMI – Vie de famille » | [fait] |
 | Appareils | iPhone uniquement (`supportsTablet: false`), portrait. Apple teste parfois sur iPad en mode compatibilité. | [à vérifier] |
 | Chiffrement | `ITSAppUsesNonExemptEncryption: false` — pas de question export à chaque build | [fait] |
 | Manifeste de confidentialité Apple | `NSPrivacyTracking: false`, 4 API justifiées (UserDefaults, horodatage de fichiers, temps de démarrage, espace disque) | [fait] |
