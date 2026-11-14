@@ -1,17 +1,17 @@
 /**
- * Réglages → Apparence et couleurs (HOMI v3 « désert sci-fi »).
+ * Réglages → Apparence et couleurs (HOMI v4 « lumière minérale »).
  *
  * Deux commandes indépendantes :
- *  1. Apparence : Système, Clair, Sombre (sélecteur capsule). Le mode nuit des soins nocturnes reste interne
+ *  1. Apparence : Système, Clair, Sombre (sélecteur à lentille). Le mode nuit des soins nocturnes reste interne
  *     (écran /night) et n'est pas proposé ici.
- *  2. Palette : Auto (selon l'heure locale, transition douce), Turquoise (signature), Aurore, Crépuscule, Menthe,
- *     Iris. Une palette choisie reste fixe jusqu'au retour en Auto ; le changement interpole lumière, reflets,
- *     accents et scène ensemble.
+ *  2. Palette : Auto (selon l'heure locale, transition douce), Brume pêche (signature), Aurore lilas, Lagune turquoise,
+ *     Ambre minéral. Une palette choisie reste fixe jusqu'au retour en Auto ; le changement interpole lumière, reflets,
+ *     accents et scène ensemble (le contenu ne bouge pas).
  * Aperçu immédiat (l'écran entier change, plus la carte d'aperçu en tête) ; choix persistants (store de l'appareil)
- * et propres à chaque compte (`appearanceByUser`).
+ * et propres à chaque compte (`appearanceByUser`) ; une préférence v3 est lue comme la palette v4 la plus proche.
  *
- * Écran de vérification du design system v3 : trois matières, famille de commandes (boutons, IconOrb, sélecteurs,
- * tuiles de données, action sensible), panneau du bas gestuel, scène immersive / calme.
+ * Écran de vérification du design system v4 : trois matières + la lentille, famille de commandes et leurs états
+ * (chargement, succès, erreur, désactivé), panneau du bas gestuel, scène de chaque espace (immersive / calme).
  */
 import React, { useState } from 'react';
 import { View } from 'react-native';
@@ -21,13 +21,15 @@ import { GlowCard } from '@/components/GlowCard';
 import { Banner, Button, Chip, Field, Icon, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { FrostedGlass, MatteSurface, OpticalGlass } from '@/components/surfaces';
 import { ChoiceGroup, DataTile, IconOrb, PrimaryButton, SecondaryButton, SensitiveButton } from '@/components/controls';
-import { DesertScene, type SceneVariant } from '@/components/scene/DesertScene';
+import { SpaceScene, type SceneVariant } from '@/components/scene/SpaceScene';
+import { Lens, LENS, useLensSlide } from '@/components/controls/Lens';
+import { SPACE_KEYS, type SpaceKey } from '@/theme/ambiance';
 import { Sheet, useToast } from '@/components/Overlays';
 import { CompletionCheck, CompletionGlow } from '@/motion';
 import { useUiStore, type PalettePreference } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
 import {
-  alpha, AUTO_SCHEDULE, autoPaletteAt, buildTheme, PALETTE_NAMES, PALETTES, PHASE_PALETTE, previewTime, radius, spacing,
+  alpha, AUTO_SCHEDULE, autoPaletteAt, buildTheme, migratePalette, PALETTE_NAMES, PALETTES, PHASE_PALETTE, previewTime, radius, spacing,
   type PaletteName, type SkyPhase,
 } from '@/theme/tokens';
 import { formatNumber, formatTime, t as tr } from '@/i18n';
@@ -106,7 +108,7 @@ function MaterialsPreview() {
   ];
   return (
     <View style={{ borderRadius: radius.xl, overflow: 'hidden', minHeight: 200 }} testID="materials-preview">
-      <DesertScene variant="immersive" testID="scene-materials" />
+      <SpaceScene space="settings" variant="immersive" testID="scene-materials" />
       <View style={{ padding: spacing.sm, gap: spacing.sm }}>
         {items.map(({ C, title, sub, id }) => (
           <C key={id} radius={radius.lg} padded={spacing.md} testID={`surface-${id}`}>
@@ -114,6 +116,28 @@ function MaterialsPreview() {
             <Text variant="small" muted>{sub}</Text>
           </C>
         ))}
+        <LensSample />
+      </View>
+    </View>
+  );
+}
+
+/** La lentille seule, posée dans un rail en creux (même matière que la sélection des sélecteurs et des onglets). */
+function LensSample() {
+  const t = useTheme();
+  const [w, setW] = useState(0);
+  const slide = useLensSlide(LENS.inset, Math.max(0, w * 0.5 - LENS.inset));
+  const g = t.material.glass.inset;
+  return (
+    <View testID="surface-lens" onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}
+      style={{ minHeight: 64, borderRadius: radius.pill, borderWidth: 1, borderColor: g.edge, backgroundColor: t.material.surfaces.matte.fill, flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, borderRadius: radius.pill, backgroundColor: g.fill }} />
+      {w > 0 ? <Lens slide={slide} top={LENS.inset} height={62 - LENS.inset * 2} /> : null}
+      <View style={{ width: '50%', paddingHorizontal: spacing.md, paddingVertical: spacing.xs }}>
+        <Text weight="bold">{tr('settings.ds.lens')}</Text>
+      </View>
+      <View style={{ width: '50%', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs }}>
+        <Text variant="caption" muted>{tr('settings.ds.lensSub')}</Text>
       </View>
     </View>
   );
@@ -133,6 +157,12 @@ function ControlsPreview() {
       <Row wrap>
         <PrimaryButton label={tr('settings.ds.save')} icon="check" testID="ds-primary" onPress={() => new Promise<void>((r) => setTimeout(() => { r(); toast(tr('settings.ds.saved')); }, 900))} />
         <SecondaryButton label={tr('settings.ds.cancel')} testID="ds-secondary" onPress={() => undefined} />
+      </Row>
+      <Text variant="small" weight="medium">{tr('settings.ds.states')}</Text>
+      <Row wrap>
+        <PrimaryButton label={tr('settings.ds.disabled')} size="sm" disabled onPress={() => undefined} testID="ds-disabled" />
+        <SecondaryButton label={tr('settings.ds.fail')} size="sm" icon="alert-triangle" testID="ds-fail"
+          onPress={() => new Promise<void>((_r, reject) => setTimeout(() => reject(new Error(tr('settings.ds.failMsg'))), 700))} />
       </Row>
       <Row gap={spacing.sm}>
         <IconOrb icon="plus" label={tr('settings.ds.add')} tone="accent" onPress={() => setSheet(true)} testID="ds-orb-add" />
@@ -171,15 +201,23 @@ function ControlsPreview() {
   );
 }
 
+/** Scène de chaque espace, immersive ou calme (aperçu sans quitter les réglages). */
 function ScenePreview() {
   const [variant, setVariant] = useState<SceneVariant>('immersive');
+  const [space, setSpace] = useState<SpaceKey>('home');
   return (
     <View style={{ gap: spacing.sm }}>
+      <Row wrap gap={spacing.xs}>
+        {SPACE_KEYS.map((k) => (
+          <Chip key={k} label={tr(`settings.space.${k}` as const)} selected={space === k} onPress={() => setSpace(k)} testID={`scene-space-pick-${k}`} />
+        ))}
+      </Row>
       <Segmented label={tr('settings.scene.title')} value={variant} onChange={setVariant}
         options={[{ value: 'immersive', label: tr('settings.scene.immersive'), testID: 'scene-pick-immersive' }, { value: 'calm', label: tr('settings.scene.calm'), testID: 'scene-pick-calm' }]} />
       <View style={{ height: 300, borderRadius: radius.xl, overflow: 'hidden' }} testID="scene-preview">
-        <DesertScene variant={variant} />
+        <SpaceScene space={space} variant={variant} />
       </View>
+      <Text variant="small" muted>{tr('settings.space.hint')}</Text>
       <Text variant="small" muted>{tr('settings.scene.hint')}</Text>
     </View>
   );
@@ -189,7 +227,7 @@ export default function AppearanceScreen() {
   const t = useTheme();
   const preference = useUiStore((s) => s.themePreference);
   const setTheme = useUiStore((s) => s.setTheme);
-  const palette = useUiStore((s) => s.palettePreference) ?? 'auto';
+  const palette = migratePalette(useUiStore((s) => s.palettePreference));
   const setPalette = useUiStore((s) => s.setPalette);
   const skyOverride = useUiStore((s) => s.skyOverride);
   const setSkyOverride = useUiStore((s) => s.setSkyOverride);
@@ -298,7 +336,7 @@ export default function AppearanceScreen() {
       <MaterialsPreview />
       <ControlsPreview />
 
-      <SectionTitle title={tr('settings.scene.title')} />
+      <SectionTitle title={tr('settings.space.title')} />
       <ScenePreview />
 
       <Banner tone="info">{tr('settings.appearance.private')}</Banner>

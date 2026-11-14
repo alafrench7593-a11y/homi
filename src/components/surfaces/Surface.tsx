@@ -1,14 +1,14 @@
 /**
- * Les trois matières HOMI v3 (voir HOMI_DESIGN_SYSTEM.md § 3) — une seule primitive, trois rôles :
+ * Les trois matières HOMI (v4, voir HOMI_DESIGN_SYSTEM.md § 3) — une seule primitive, trois rôles :
  *
- *  - `optical`  VERRE OPTIQUE : scène principale, commande flottante (barre d'onglets, bouton capsule, carte de
- *               tête). Couches, de bas en haut : flou (ou GlassView natif iOS 26+) → remplissage → dégradé interne
+ *  - `optical`  VERRE OPTIQUE — réservé à la NAVIGATION (barre d'onglets), aux SÉLECTIONS et aux PANNEAUX PRINCIPAUX
+ *               (panneau du bas, carte de tête). Reflets lilas en clair, fumée teintée en sombre. Couches, de bas en haut : flou (ou GlassView natif iOS 26+) → remplissage → dégradé interne
  *               teinté (la lumière traverse l'épaisseur, d'en haut à gauche) → reflet spéculaire dans le coin
  *               éclairé → arêtes : haute claire (concentrée côté lumière), gauche qui s'éteint vers le bas,
  *               contre-reflet coloré en bas (épaisseur) → ombre portée physique + ombre COLORÉE de l'accent.
- *  - `frosted`  VERRE FUMÉ (sombre) / GIVRÉ (clair) : navigation, panneaux, filtres, commandes. Flou + remplissage,
- *               reflet discret, arête haute fine, ombre physique.
- *  - `matte`    SURFACE MATE : longues listes, formulaires denses, textes, données à lecture rapide. Opaque, aucun
+ *  - `frosted`  VERRE GIVRÉ (clair) / FUMÉ (sombre) — COMMANDES SECONDAIRES (bouton secondaire, filtres, disques
+ *               d'icône). Flou + remplissage, reflet discret, arête haute fine, ombre physique.
+ *  - `matte`    SURFACE MATE : listes longues, formulaires, résultats denses, textes. Opaque, aucun
  *               flou, liseré à peine visible, ombre basse. Jamais de verre ici (lisibilité, coût de rendu).
  *
  * Le remplissage seul garantit le contraste (testé sur chaque couleur de la scène) : le flou est un bonus.

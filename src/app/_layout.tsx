@@ -11,7 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { backdropVariant, DesertScene } from '@/components/scene/DesertScene';
+import { backdropVariant, SpaceScene } from '@/components/scene/SpaceScene';
+import { spaceOf } from '@/theme/ambiance';
 import { MorphHost } from '@/motion/Morph';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
@@ -262,9 +263,9 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Fond unique, derrière toutes les pages (HOMI v3) : scène « désert sci-fi » vectorielle (`DesertScene`), aux couleurs
- * de la palette affichée. Variante `immersive` à l'ouverture et sur l'accueil, `calm` partout ailleurs (écrans
- * denses). Le passage clair ↔ sombre se fait par un voile qui s'efface (400 ms ; Réduire les animations : immédiat) ;
+ * Fond unique, derrière toutes les pages (HOMI v4) : scène de l'ESPACE affiché (`SpaceScene`, `spaceOf(adresse)` :
+ * Accueil, Santé, Bébé, Famille, Communauté, Réglages), aux couleurs de la palette et à l'accent de l'espace.
+ * Variante `immersive` à l'ouverture et à la racine de chaque espace, `calm` sur les écrans internes (denses). Le passage clair ↔ sombre se fait par un voile qui s'efface (400 ms ; Réduire les animations : immédiat) ;
  * un changement de palette est interpolé par le ThemeProvider (lumière, reflets, accents et scène ensemble).
  * Image fixe avec Réduire les animations, en économie d'énergie, en arrière-plan et la nuit.
  */
@@ -290,7 +291,7 @@ function Backdrop() {
   if (pathname === '/cinematic') return <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }} />;
   return (
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }} testID={t.isDark ? 'bg-night' : 'bg-powder'}>
-      <DesertScene variant={backdropVariant(pathname)} still={lowPower} />
+      <SpaceScene space={spaceOf(pathname)} variant={backdropVariant(pathname)} still={lowPower} />
       {veil ? <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: veil, opacity: fade }]} /> : null}
     </View>
   );

@@ -1,12 +1,16 @@
 """
-HOMI v3 « désert sci-fi » — Réglages → Apparence et couleurs + panneau du bas gestuel (démonstration, sans compte) :
- · palette Turquoise (signature) : aperçu immédiat, persistance après rechargement et par compte ;
+HOMI v4 « lumière minérale » (le fichier garde son nom v3) — Réglages → Apparence et couleurs + panneau du bas gestuel
+(démonstration, sans compte) :
+ · palettes v4 (Auto, Brume pêche, Aurore lilas, Lagune turquoise, Ambre minéral) ; Lagune turquoise : aperçu immédiat,
+   persistance après rechargement et par compte ; une préférence v3 enregistrée (« turquoise ») est migrée ;
  · changement de palette INTERPOLÉ (une couleur intermédiaire observée pendant la transition), puis posé ;
  · « Réduire les animations » émulé (reducedMotion = 'reduce') : changement immédiat, aucun reflet, scène fixe ;
  · panneau du bas : ouverture, le panneau SUIT le doigt (glisser la poignée), retour au cran si relâché tôt,
    fermeture en glissant vers le bas, fermeture par le voile et par le bouton Fermer, champ texte (clavier) utilisable
    dans le panneau ;
- · scène : immersive à l'accueil, calme ailleurs ; aucune particule (« étoiles »).
+ · scène d'ESPACE : immersive à la racine de chaque espace (composition propre à l'espace), calme sur les écrans
+   internes ; aucune particule ni astre (« arcs » répétés) ;
+ · lentille : le sélecteur et la barre d'onglets ont une lentille qui glisse sous l'option active.
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 Usage : NAV_URL=http://127.0.0.1:8901 PW_CHROMIUM=/opt/pw-browsers/chromium python3 e2e/apparence_v3.py
 """
@@ -15,7 +19,7 @@ from playwright.sync_api import sync_playwright
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8901')
 EXE = os.environ.get('PW_CHROMIUM') or None
-SHOTS = os.environ.get('E2E_SHOTS', '/tmp/homi-v3/e2e'); os.makedirs(SHOTS, exist_ok=True)
+SHOTS = os.environ.get('E2E_SHOTS', '/tmp/homi-v4/e2e'); os.makedirs(SHOTS, exist_ok=True)
 R, errs = {}, []
 
 def hex_rgb(h):
@@ -23,9 +27,9 @@ def hex_rgb(h):
 
 # Encres verrouillées (src/theme/tokens.ts, PALETTES) : clair = ink[0], sombre = glow[0]
 PRIMARY = {
-    ('light', 'turquoise'): '#00646A', ('dark', 'turquoise'): '#46E3D6',
-    ('light', 'crepuscule'): '#A63A1C', ('dark', 'crepuscule'): '#FF9C84',
-    ('light', 'iris'): '#4540C8', ('light', 'menthe'): '#0A6459',
+    ('light', 'lagune'): '#00636A', ('dark', 'lagune'): '#55DCD2',
+    ('light', 'ambre'): '#7C4A0C', ('dark', 'ambre'): '#F0BC6C',
+    ('light', 'peche'): '#9A4122', ('light', 'lilas'): '#5B3DB0',
 }
 
 def primary(pg):
@@ -70,38 +74,50 @@ def run(p):
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris', device_scale_factor=2, reduced_motion='no-preference')
     pg = login(ctx)
     pg.goto(B + '/'); pg.wait_for_timeout(3000)
-    R['scene_immersive_accueil'] = count(pg, 'scene-immersive') >= 1
-    pg.goto(B + '/health'); pg.wait_for_timeout(3000)
-    R['scene_calme_hub'] = count(pg, 'scene-calm') >= 1 and count(pg, 'scene-immersive') == 0
+    R['scene_immersive_accueil'] = count(pg, 'scene-immersive') >= 1 and count(pg, 'scene-space-home') >= 1
+    R['lentille_onglets'] = count(pg, 'tab-indicator') == 1  # barre d'onglets : une seule lentille
+    for route, space in [('/health', 'health'), ('/baby', 'baby'), ('/household', 'family'), ('/community', 'community'), ('/settings', 'settings')]:
+        pg.goto(B + route); pg.wait_for_timeout(2500)
+        R[f'scene_espace_{space}'] = count(pg, f'scene-space-{space}') >= 1 and count(pg, 'scene-immersive') >= 1
+    pg.goto(B + '/cycle'); pg.wait_for_timeout(3000)
+    R['scene_calme_ecran_interne'] = count(pg, 'scene-calm') >= 1 and count(pg, 'scene-immersive') == 0 and count(pg, 'scene-space-health') >= 1
+    R['aucun_astre_ni_cercle'] = pg.evaluate("() => document.querySelectorAll('[data-testid^=\"scene-space-\"] circle').length") == 0
     pg.goto(B + '/settings/appearance'); pg.wait_for_timeout(3000)
-    R['palette_turquoise_proposee'] = count(pg, 'palette-turquoise') == 1
-    R['six_choix'] = all(count(pg, f'palette-{c}') == 1 for c in ['auto', 'turquoise', 'aurore', 'crepuscule', 'menthe', 'iris'])
+    R['cinq_choix_v4'] = all(count(pg, f'palette-{c}') == 1 for c in ['auto', 'peche', 'lilas', 'lagune', 'ambre'])
+    R['anciennes_palettes_retirees'] = all(count(pg, f'palette-{c}') == 0 for c in ['turquoise', 'aurore', 'crepuscule', 'menthe', 'iris'])
+    R['lentille_selecteur'] = count(pg, 'choice-indicator') >= 1
 
     pg.locator('[data-testid="appearance-light"]').first.click(); pg.wait_for_timeout(500)
-    pg.locator('[data-testid="palette-turquoise"]').first.click(); pg.wait_for_timeout(600)
-    R['turquoise_appliquee'] = primary(pg) == hex_rgb(PRIMARY[('light', 'turquoise')]) and checked(pg, 'palette-turquoise') == 'true'
-    pg.screenshot(path=f'{SHOTS}/v3_clair_turquoise.png')
+    pg.locator('[data-testid="palette-lagune"]').first.click(); pg.wait_for_timeout(600)
+    R['lagune_appliquee'] = primary(pg) == hex_rgb(PRIMARY[('light', 'lagune')]) and checked(pg, 'palette-lagune') == 'true'
+    pg.screenshot(path=f'{SHOTS}/v4_clair_lagune.png')
 
     # transition interpolée : couleur intermédiaire pendant ~360 ms, puis la nouvelle palette
-    pg.locator('[data-testid="palette-crepuscule"]').first.click()
+    pg.locator('[data-testid="palette-ambre"]').first.click()
     seen = set()
     for _ in range(14):
         seen.add(primary(pg)); pg.wait_for_timeout(30)
     pg.wait_for_timeout(400)
-    end = hex_rgb(PRIMARY[('light', 'crepuscule')]); start = hex_rgb(PRIMARY[('light', 'turquoise')])
+    end = hex_rgb(PRIMARY[('light', 'ambre')]); start = hex_rgb(PRIMARY[('light', 'lagune')])
     R['palette_interpolee'] = len(seen - {end, start, None}) >= 1
     R['palette_posee'] = primary(pg) == end
 
-    # sombre + Turquoise, persistance après rechargement et par compte
+    # sombre + Lagune turquoise, persistance après rechargement et par compte
     pg.locator('[data-testid="appearance-dark"]').first.click(); pg.wait_for_timeout(300)
-    pg.locator('[data-testid="palette-turquoise"]').first.click(); pg.wait_for_timeout(600)
+    pg.locator('[data-testid="palette-lagune"]').first.click(); pg.wait_for_timeout(600)
     pg.reload(); pg.wait_for_timeout(4000)
     st = ui_state(pg)
-    R['persistance_stockage'] = st.get('themePreference') == 'dark' and st.get('palettePreference') == 'turquoise'
-    R['persistance_affichage'] = primary(pg) == hex_rgb(PRIMARY[('dark', 'turquoise')]) and checked(pg, 'palette-turquoise') == 'true'
+    R['persistance_stockage'] = st.get('themePreference') == 'dark' and st.get('palettePreference') == 'lagune'
+    R['persistance_affichage'] = primary(pg) == hex_rgb(PRIMARY[('dark', 'lagune')]) and checked(pg, 'palette-lagune') == 'true'
     owner = st.get('appearanceOwner')
-    R['preference_par_compte'] = bool(owner) and (st.get('appearanceByUser') or {}).get(owner) == {'theme': 'dark', 'palette': 'turquoise'}
-    R['aucune_particule'] = pg.evaluate("() => document.querySelectorAll('[data-testid=\"bg-night\"] circle').length") <= 8  # astre seulement
+    R['preference_par_compte'] = bool(owner) and (st.get('appearanceByUser') or {}).get(owner) == {'theme': 'dark', 'palette': 'lagune'}
+    R['aucune_particule'] = pg.evaluate("() => document.querySelectorAll('[data-testid=\"bg-night\"] circle').length") == 0
+    # migration : une préférence v3 enregistrée (« crepuscule », compte actif) devient la plus proche (Ambre minéral)
+    pg.evaluate("""(o) => { const ui = JSON.parse(localStorage.getItem('toietmoi.ui')); ui.state.palettePreference = 'crepuscule';
+      ui.state.appearanceByUser[o] = { theme: 'dark', palette: 'crepuscule' }; localStorage.setItem('toietmoi.ui', JSON.stringify(ui)); }""", owner)
+    pg.reload(); pg.wait_for_timeout(4000)
+    R['migration_v3_vers_v4'] = checked(pg, 'palette-ambre') == 'true' and primary(pg) == hex_rgb(PRIMARY[('dark', 'ambre')])
+    pg.locator('[data-testid="palette-lagune"]').first.click(); pg.wait_for_timeout(600)
 
     # ---------------------------------------------------------------- panneau du bas gestuel
     pg.locator('[data-testid="demo-sheet-open"]').first.scroll_into_view_if_needed()
@@ -113,7 +129,7 @@ def run(p):
     R['panneau_suit_le_doigt'] = during - rest > 50
     pg.mouse.up(); pg.wait_for_timeout(700)
     R['panneau_revient_au_cran'] = abs((translate_y(pg, 'sheet') or 0) - rest) < 4 and count(pg, 'sheet-panel') == 1
-    pg.screenshot(path=f'{SHOTS}/v3_panneau_sombre.png')
+    pg.screenshot(path=f'{SHOTS}/v4_panneau_sombre.png')
     # clavier : le champ du panneau prend le focus et reçoit la saisie
     pg.locator('[data-testid="demo-sheet-field"]').first.click(); pg.keyboard.type('Pain et lait'); pg.wait_for_timeout(300)
     R['panneau_champ_saisie'] = pg.locator('[data-testid="demo-sheet-field"]').first.input_value() == 'Pain et lait'
@@ -138,10 +154,10 @@ def run(p):
     pg = login(ctx)
     pg.goto(B + '/settings/appearance'); pg.wait_for_timeout(3500)
     R['reduit_aucun_reflet'] = count(pg, 'press-sheen') == 0
-    pg.locator('[data-testid="palette-turquoise"]').first.click(); pg.wait_for_timeout(50)
-    R['reduit_changement_immediat'] = primary(pg) == hex_rgb(PRIMARY[('light', 'turquoise')])
-    pg.locator('[data-testid="palette-crepuscule"]').first.click(); pg.wait_for_timeout(50)
-    R['reduit_changement_immediat_2'] = primary(pg) == hex_rgb(PRIMARY[('light', 'crepuscule')])
+    pg.locator('[data-testid="palette-lagune"]').first.click(); pg.wait_for_timeout(50)
+    R['reduit_changement_immediat'] = primary(pg) == hex_rgb(PRIMARY[('light', 'lagune')])
+    pg.locator('[data-testid="palette-ambre"]').first.click(); pg.wait_for_timeout(50)
+    R['reduit_changement_immediat_2'] = primary(pg) == hex_rgb(PRIMARY[('light', 'ambre')])
     # scène fixe : la transformation des plans ne bouge pas
     t1 = pg.evaluate("() => [...document.querySelectorAll('[data-testid=\"scene-calm\"] *')].map((e) => getComputedStyle(e).transform).join('|').slice(0, 2000)")
     pg.wait_for_timeout(1200)
@@ -150,10 +166,11 @@ def run(p):
     pg.locator('[data-testid="demo-sheet-open"]').first.scroll_into_view_if_needed()
     pg.locator('[data-testid="demo-sheet-open"]').first.click(); pg.wait_for_timeout(150)
     R['reduit_panneau_immediat'] = count(pg, 'sheet-panel') == 1 and abs(translate_y(pg, 'sheet') or 0) < 2
-    pg.screenshot(path=f'{SHOTS}/v3_reduit_panneau.png')
+    pg.screenshot(path=f'{SHOTS}/v4_reduit_panneau.png')
     ctx.close()
     b.close()
 
 with sync_playwright() as p:
     run(p)
 print(json.dumps({**R, 'erreurs': errs[:5]}, ensure_ascii=False, indent=1))
+raise SystemExit(0 if all(R.values()) and not errs else 1)

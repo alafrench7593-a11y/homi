@@ -156,7 +156,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
         {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
         <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
           <ReAnimated.View onLayout={onLayout} style={[styles.sheet, styles.sheetInFlow, sheetStyle]} testID="sheet">
-            <LiquidGlass testID="sheet-panel" kind="frosted" edges="top" radius={radius.sheet} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
+            <LiquidGlass testID="sheet-panel" kind="optical" edges="top" radius={radius.sheet} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
               <GestureDetector gesture={pan}>
                 <View collapsable={false} testID="sheet-handle-area">
                   <View

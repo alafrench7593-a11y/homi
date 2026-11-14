@@ -1,176 +1,159 @@
-# HOMI — Design system v3 « Désert sci-fi » (13/11/2026)
+# HOMI — Design system v4 « Lumière minérale » (14/11/2026)
 
-Décision du propriétaire : **remplace « Lumière sur graphite » (v2)**. Direction : *Apple Keynote × Black Mirror ×
-Liquid Glass* — « futuristic glassmorphism UI blending modern interface with a surreal sci-fi desert landscape,
-floating glass panels, neon teal accents, immersive environment, premium dashboard aesthetics », en restant
-accueillante pour une famille.
+Décision du propriétaire : **remplace la v3 « désert sci-fi » turquoise**. Constat sur la v3 : arcs décoratifs répétés
+(l'astre en haut à droite de chaque écran), dominante turquoise uniforme, compositions trop semblables d'un espace à
+l'autre. Direction v4 :
 
-Références (décrites, aucune image copiée) : (1) désert sci-fi de nuit — obsidienne, sable minéral, turquoise néon,
-astre géant, arche de pierre, eau qui reflète, panneaux de verre épais flottants aux bords clairs, capsule turquoise
-lumineuse ; (2) « Liquid Glass Kit » — verre épais, reflets concentrés sur les arêtes, translucidité modulée,
-capsules, ombres colorées douces ; (3) tableau de bord sombre — tuiles très arrondies, couleur qui éclaire la surface
-DE L'INTÉRIEUR, chiffres grands et fins, micrographiques fins ; (4) carte de verre ambré sur fond flou, capsule
-d'action pâle dans une barre de verre ; (5) « Lightly » — verre givré, typographie grande et légère, barre d'onglets
-capsule flottante à bouton rond actif, boutons ronds, lumière diffuse derrière l'option active, choix qui se
-rapprochent quand on sélectionne.
+- **Clair** : panneau ivoire lumineux, bleu brume, pêche, reflets lilas ; formes MINÉRALES et lumière douce pour la
+  profondeur.
+- **Sombre** : obsidienne, verre fumé, lumière DIRECTIONNELLE (Black Mirror × désert sci-fi).
+- **Chaque espace a son ambiance** (composition, lumière, accent secondaire), sans changer le sens des statuts.
+- Références de composants (décrites, aucune image copiée) : « Lightly » (disques givrés, sélecteurs, navigation
+  flottante) et tableau de mesures (tuiles à lumière intérieure, valeurs lisibles, micrographiques).
+- La **lentille** : la sélection est une lentille de verre clair qui glisse sous l'option active — même matière que le
+  « O » du futur logo (une lentille de verre). Le logo lui-même n'est PAS modifié ici (agent logo).
 
 | Fichier | Rôle |
 |---|---|
-| `src/theme/tokens.ts` | neutres, 5 palettes, Auto, `buildTheme` → `tokens` / `material` (verre, **surfaces**, **scène**, **lumière**) / `colors` ; `surfaceShadow`, `innerLight`, rayons |
-| `src/theme/ThemeProvider.tsx` | apparence × palette, préférences par compte, Auto, **changement de palette interpolé** (`PALETTE_TWEEN`) |
-| `src/components/surfaces/` | `Surface`, `OpticalGlass`, `FrostedGlass`, `MatteSurface`, `SurfaceLight`, détection Liquid Glass natif |
-| `src/components/controls/` | `PrimaryButton`, `SecondaryButton`, `SensitiveButton`, `IconOrb`, `ChoiceGroup`, `DataTile`, `Sparkline` |
-| `src/components/scene/DesertScene.tsx` | scène vectorielle immersive / calme, parallaxe, `backdropVariant` |
-| `src/components/Overlays.tsx` | `Sheet` gestuel (`sheetSnaps`, `sheetRelease`) |
-| `src/motion/Morph.tsx` | transition carte → détail (`MorphSource`, `useMorphSource`, `MorphTarget`, `MorphHost`) |
-| `src/components/ui.tsx`, `Glass.tsx`, `GlowCard.tsx`, `Dock.tsx` | composants historiques alignés sur la v3 (API inchangée) |
-| `src/app/settings/appearance.tsx` | réglages + **écran de vérification** (matières, commandes, panneau, scène) |
-| Tests | `contrast.test.ts` (verrou v3), `designSystem.test.ts`, `homiV2.test.tsx`, `homiV3.test.tsx` ; E2E `e2e/apparence_v3.py` |
+| `src/theme/tokens.ts` | neutres v4, 4 palettes + Auto, `migratePalette` (v3 → v4), `sceneColors`, `buildTheme` → `tokens` / `material` (verre, surfaces, **lentille**, scène, lumière) / `colors` |
+| `src/theme/ambiance.ts` | **ambiances par espace** : `AMBIANCES`, `spaceOf(adresse)`, `spaceScene(theme, espace)` |
+| `src/theme/ThemeProvider.tsx` | apparence × palette, préférences par compte, Auto, changement de palette interpolé (`PALETTE_TWEEN`) |
+| `src/lib/store.ts` | préférences par compte ; `migrateAppearance` à chaque restauration (palette v3 → la plus proche) |
+| `src/components/scene/SpaceScene.tsx` | **scène de chaque espace**, immersive / calme (`DesertScene.tsx` = alias de compatibilité) |
+| `src/components/controls/Lens.tsx` | **`Lens`**, `useLensSlide`, `LENS` |
+| `src/components/surfaces/` | `Surface`, `OpticalGlass`, `FrostedGlass`, `MatteSurface`, détection Liquid Glass natif |
+| `src/components/controls/` | `PrimaryButton`, `SecondaryButton`, `SensitiveButton`, `IconOrb`, `ChoiceGroup`, `DataTile`, `Lens` |
+| `src/components/Dock.tsx`, `Overlays.tsx`, `ui.tsx` | barre d'onglets à lentille, panneau du bas en verre optique, bouton à 8 états |
+| `src/app/settings/appearance.tsx` | réglages + écran de vérification (matières, lentille, états, panneau, scène de chaque espace) |
+| Tests | `contrast.test.ts` (verrou v4), `homiV2.test.tsx` (préférences, migration), `homiV3.test.tsx` (scènes, espaces, mouvement) ; E2E `e2e/apparence_v3.py` (adapté v4), `e2e/audit_ux.py` |
 
 ## 1. Réglages (Réglages → Apparence et couleurs)
 
 | Réglage | Valeurs | Défaut | Stockage |
 |---|---|---|---|
 | Apparence | Système, Clair, Sombre | Système | `themePreference` |
-| Palette | **Auto, Turquoise**, Aurore, Crépuscule, Menthe, Iris | Auto | `palettePreference` |
+| Palette | **Auto, Brume pêche, Aurore lilas, Lagune turquoise, Ambre minéral** | Auto | `palettePreference` |
 
-- **Turquoise = signature** : premier choix manuel, palette des exports statiques (`themes`, `DEFAULT_PALETTE`,
-  `SIGNATURE_PALETTE`) et repli de toute valeur inconnue.
-- Aperçu en direct (tout l'écran + carte d'aperçu) ; persistance par compte inchangée (`appearanceByUser`, pas de
-  synchronisation serveur — `src/lib/backend/**` et `supabase/**` hors périmètre).
-- **Changement de palette** : lumière (scène, halo, reflets), sélections, confirmations et accents sont calculés
-  d'un SEUL mélange de palettes (`blendAccents`) et passent ensemble de l'ancienne à la nouvelle en 4 paliers sur
-  ≈ 360 ms (famille « scène »). Réduire les animations / économie d'énergie / nuit : immédiat. Chaque palier
-  intermédiaire est testé (contraste).
-- Mode nuit (écran `/night`) : obsidienne très tamisée, palette mêlée de gris (35 %), ni flou, ni reflet, ni halo,
-  ni scène animée.
+- **Brume pêche = signature** (`SIGNATURE_PALETTE`, exports statiques `themes`, repli de toute valeur inconnue).
+- Aperçu en direct (tout l'écran + carte d'aperçu) ; mémorisé **par compte** (`appearanceByUser`), aucune
+  synchronisation serveur (`supabase/**` hors périmètre).
+- **Migration** : les palettes v3 sont retirées ; toute préférence enregistrée (compte actif ET autres comptes de
+  l'appareil) passe à la palette v4 la plus proche — distance RVB cumulée des deux encres et des deux lueurs, vérifiée
+  par le test : Turquoise → Lagune, Menthe → Lagune, Aurore (cyan) → Lagune, Iris → Aurore lilas, Crépuscule → Ambre
+  minéral. Appliquée à la restauration (`persist.merge` → `migrateAppearance`), à l'écriture (`setPalette`), au
+  changement de compte et à la lecture (`ThemeProvider`, réglages).
+- Changement de palette : lumière de la scène, reflets du verre, caustiques, sélections et accents passent ensemble
+  de l'ancienne à la nouvelle palette (4 paliers, ≈ 360 ms) ; le contenu ne bouge pas. Réduire les animations,
+  économie d'énergie, nuit : immédiat.
 
-### Auto (heure LOCALE)
+### Auto (heure LOCALE) — chaque palette a son moment
 
-| Dès | Palette | Pourquoi |
-|---|---|---|
-| 06:00 | Menthe | matin frais et calme |
-| 11:00 | **Turquoise** | pleine journée : la signature prend la plus longue plage active. Elle remplace Aurore dans l'Auto : cyan et turquoise sont trop proches pour qu'on perçoive deux plages ; Aurore reste au choix manuel |
-| 17:00 | Crépuscule | fin de journée, chaleur (école, repas, bain) |
-| 21:00 | Iris | soir et nuit, indigo apaisé |
+| Dès | Palette |
+|---|---|
+| 06:00 | Brume pêche (aube) |
+| 11:00 | Lagune turquoise (journée) |
+| 17:00 | Ambre minéral (fin de journée) |
+| 21:00 | Aurore lilas (soir et nuit) |
 
 Fondu de 60 min centré sur chaque bascule, paliers de 5 min, déterministe, continu à minuit. Aperçu sans changer
-l'heure : puces Matin / Journée / Fin de journée / Soir (`skyOverride`, `PHASE_PALETTE`).
+l'heure : puces Matin / Journée / Fin de journée / Soir.
 
 ## 2. Couleurs (verrouillées par `contrast.test.ts`)
 
-| Rôle | Clair « ivoire minéral » | Sombre « obsidienne » | Nuit |
+| Rôle | Clair « ivoire lumineux » | Sombre « obsidienne » | Nuit |
 |---|---|---|---|
-| Fond | `#F1EEE7` (dégradé `#F8F6F1 → #E8E3D9`) | `#06090B` (dégradé `#0C1215 → #040607`) | `#060708` |
-| Texte / secondaire | `#13181A` / `#4A5154` | `#EDF3F2` / `#A9B3B4` | `#D6DADB` / `#979EA1` |
-| Statuts (succès · attention · erreur · info) | `#1B6234` · `#7A4600` · `#A51F2B` · `#1D5AA6` | `#8BE0A6` · `#F7C770` · `#FF9A93` · `#9CC4FF` | `#94C29E` · `#D9B577` · `#E8A3A0` · `#9EB6D8` |
+| Fond | `#F6F3EE` (dégradé `#FBFAF7 → #ECE7E0`) | `#07080B` (dégradé `#0F1116 → #030405`) | `#060708` |
+| Lumières du clair | bleu brume `#D3DEEA` · pêche `#F4D6C4` · lilas `#E0D8F3` | — | — |
+| Texte / secondaire | `#15171C` / `#4A4E58` | `#EEF0F4` / `#A9AEB9` | `#D6DADB` / `#979EA1` |
+| Statuts (succès · attention · erreur · info) — **inchangés depuis la v3** | `#1B6234` · `#7A4600` · `#A51F2B` · `#1D5AA6` | `#8BE0A6` · `#F7C770` · `#FF9A93` · `#9CC4FF` | `#94C29E` · `#D9B577` · `#E8A3A0` · `#9EB6D8` |
 
 | Palette | Encres (clair) a / b | Lueurs (sombre) a / b |
 |---|---|---|
-| **Turquoise** (turquoise néon + sable minéral) | `#00646A` / `#7A4E12` | `#46E3D6` / `#E9C58C` |
-| Aurore (cyan + violet) | `#0A6176` / `#5E36C4` | `#6FE3F5` / `#C4B2FF` |
-| Crépuscule (corail + ambre) | `#A63A1C` / `#8A4D00` | `#FF9C84` / `#FFC56E` |
-| Menthe (vert d'eau + sauge) | `#0A6459` / `#256A28` | `#5EE6D0` / `#93E89A` |
-| Iris (indigo + rose) | `#4540C8` / `#A11F60` | `#A9B2FF` / `#F7A4CF` |
+| **Brume pêche** (pêche + bleu brume) | `#9A4122` / `#3A5878` | `#FFB08E` / `#A9C4E8` |
+| Aurore lilas (lilas + rose d'aurore) | `#5B3DB0` / `#8A3866` | `#C8B5FF` / `#F4B4D2` |
+| Lagune turquoise (turquoise + bleu profond) | `#00636A` / `#2D5786` | `#55DCD2` / `#A4C4F0` |
+| Ambre minéral (ambre + terre minérale) | `#7C4A0C` / `#7A4030` | `#F0BC6C` / `#E6A890` |
 
-**Contraste** : texte, secondaire, primaire, accent 2 et les 4 statuts ≥ 4,5:1 pour 5 palettes × clair / sombre /
-nuit, les 288 instants de l'Auto, les 20 transitions de palette (3 étapes chacune), sur **toutes les couleurs de la
-scène** (ciel, horizon, astre, dunes, arche, maison de verre, fenêtre, eau) et sur **chaque matière posée sur chacune
-d'elles** (verre optique + lumière interne + reflet spéculaire, verre givré / fumé, mate, creux, teintes, tuiles
-éclairées de l'intérieur aux couleurs de la palette et des statuts). Exclus : traits ≤ 2 px (liseré de l'astre, arête
-de l'arche, reflets de l'eau). Bouton principal : texte ≥ 4,5:1 sur chaque arrêt de son dégradé.
+Ambre minéral est proche de la couleur « attention » : un statut est TOUJOURS couleur + icône + libellé (testé :
+`BANNER_ICON`), jamais la couleur seule ; l'accent n'est jamais égal à un statut (testé).
 
-## 3. Matières (`theme.material.surfaces`, `src/components/surfaces`)
+**Contraste** : texte, secondaire, primaire, accent 2 et les 4 statuts ≥ 4,5:1 pour 4 palettes × clair / sombre /
+nuit × **6 scènes d'espace** (ciel, lumière, brume, 3 pierres, face éclairée, sol, fenêtre), chaque mélange de l'Auto,
+chaque étape des 12 transitions de palette, et **chaque matière posée sur chacune de ces couleurs** (verre optique +
+lumière interne + reflet, verre givré / fumé, mate, creux, **lentille sur rail et sur verre**, teintes, tuiles
+éclairées de l'intérieur). Exclus : traits ≤ 2 px (arêtes éclairées, reflets). Bouton principal : texte ≥ 4,5:1 sur
+chaque arrêt de son dégradé.
 
-| Matière | Usage | Couches | Clair | Sombre |
-|---|---|---|---|---|
-| **Verre optique** `optical` | scène principale, commande flottante (barre d'onglets, capsule d'action, carte de tête) | flou 48 (ou `GlassView` iOS 26+) → remplissage → lumière interne teintée (haut-gauche → bas-droite) → reflet spéculaire du coin éclairé → arête haute claire (concentrée côté lumière) + arête gauche qui s'éteint + contre-reflet coloré en bas → ombre physique `high` + **ombre colorée** de l'accent | blanc teinté 7 %, 66 % | fumée teintée 8 %, 76 % |
-| **Verre givré / fumé** `frosted` | navigation, panneaux, filtres, commandes | flou 32 → remplissage → reflet doux → arête haute fine → ombre `mid` | blanc 80 % | fumée 82 % |
-| **Surface mate** `matte` | longues listes, formulaires, textes, données | opaque, aucun flou, liseré à peine visible, ombre `low` — **jamais de verre** | `#FCFBF9` | obsidienne relevée (≈ `#121618`) |
+## 3. Matières et lentille (`theme.material`, `src/components/surfaces`, `controls/Lens`)
 
-- `Card` (ui.tsx) et `GlassSurface` (≈ 30 écrans) : remplissage opaque ⇒ **mate** automatiquement, sans flou
-  (lecture rapide, coût de rendu nul) ; un remplissage translucide devient du verre givré ; les anciens remplissages
-  violets codés en dur (`rgba(40,32,70,…)`) sont remplacés par le verre fumé du thème.
-- `LiquidGlass` → `Surface` (`kind` : `optical` par défaut en `floating`, `frosted` pour les panneaux).
-- Plateformes : iOS 26+ `GlassView` (détection protégée inchangée : `isLiquidGlassAvailable()` ET
-  `isGlassEffectAPIAvailable()`) + voile de lisibilité ; iOS ancien / web : `BlurView` (le flou porte lui-même ses
-  coins — le web ignore l'arrondi du parent) ; Android : remplissage seul ; Réduire la transparence et nuit : opaque.
-- Lumière : `theme.material.light` (direction haut-gauche → bas-droite, arête, reflet) — une seule source.
-- Rayons v3 : `sm 12 · md 18 · lg 26 · xl 34 · tile 30 · sheet 34 · orb 24 · pill`.
+| Matière | Réservée à | Clair | Sombre |
+|---|---|---|---|
+| **Verre optique** `optical` | **navigation** (barre d'onglets), **sélections**, **panneaux principaux** (panneau du bas, carte de tête) | blanc aux reflets lilas teintés de la palette, 70 %, flou 48, lumière interne palette → lilas, ombre colorée | fumée teintée 7 %, 76 % |
+| **Verre givré / fumé** `frosted` | **commandes secondaires** (bouton secondaire, filtres, disques d'icône) | blanc 80 %, flou 32 | fumée 82 % |
+| **Surface mate** `matte` | **listes longues, formulaires, résultats denses**, textes | `#FFFEFD` opaque | obsidienne relevée opaque |
+| **Lentille** `lens` | l'option ACTIVE d'un sélecteur ou de la barre d'onglets | blanc 94 % (plus clair que le rail), liseré encre 14 %, reflet de réfraction haut, ombre interne basse, caustique de la palette au pied | `#252932` teinté 10 %, 92 % |
+
+- La lentille **grossit sans colorer** : l'option reste en couleur de texte, en gras, avec une coche à la couleur
+  d'accent ; une seule action colorée (le bouton principal) reste identifiable par écran.
+- `Card` / `GlassSurface` : remplissage opaque ⇒ mate automatiquement. Plateformes : iOS 26+ `GlassView` (détection
+  protégée inchangée) + voile de lisibilité ; iOS ancien / web : `BlurView` ; Android : remplissage seul ; Réduire la
+  transparence et nuit : opaque (**alternative lisible au verre** : le remplissage seul est testé).
 
 ```tsx
-import { OpticalGlass, FrostedGlass, MatteSurface, Surface } from '@/components/surfaces';
-<OpticalGlass radius={radius.xl} padded={spacing.md} tint={statusColor?}>…</OpticalGlass>
-<Surface kind="frosted" edges="top" contentStyle={…}>…</Surface>
+import { Lens, LENS, useLensSlide } from '@/components/controls';
+const slide = useLensSlide(x, width);                // première pose immédiate, puis ressort « panneau »
+<Lens slide={slide} top={LENS.inset} height={44} hue={accentDeLEspace?} testID="choice-indicator" />
 ```
 
-## 4. Scène « désert sci-fi » (`DesertScene`)
+## 4. Scènes d'espace et ambiances (`SpaceScene`, `src/theme/ambiance.ts`)
 
-Création originale, 100 % SVG + dégradés en couches (aucune image générée ni copiée) : ciel, lueur d'horizon, astre
-géant éclairé d'en haut à gauche (bandes atmosphériques, liseré), arche de pierre, dunes minérales, **maison de verre à
-la fenêtre allumée** (le foyer HOMI), eau calme qui reflète l'astre et la fenêtre. Couleurs : `theme.material.scene`,
-calculées depuis les lueurs de la palette (`sceneColors`).
+Création originale 100 % SVG, **aucun astre, aucun cercle, aucun arc décoratif** (galets = courbes irrégulières,
+testé). Chaque espace est reconnaissable à sa composition, sa lumière et son accent secondaire (décoratif, jamais un
+texte, jamais une couleur de statut — testé) :
 
-| Variante | Où | Contenu |
-|---|---|---|
-| `immersive` | ouverture, accueil, états vides importants (`backdropVariant` : `/`, `/welcome`, `/intro`, `/onboarding`) | scène complète |
-| `calm` | tous les autres écrans (denses) | ciel, petit astre dans le coin, horizon et eau très bas : rien sous le contenu |
+| Espace (routes, `spaceOf`) | Composition | Lumière | Accent secondaire |
+|---|---|---|---|
+| Accueil (`/`, défaut) | « Seuil » : chaîne de plateaux, mesa portant la maison de verre à la fenêtre allumée | haut gauche (0,12 ; 0,08) | celui de la palette |
+| Santé (`/health`, cycle, grossesse, santé, questions…) | « Cairn » : galets empilés en équilibre, à droite | haut droite (0,92 ; 0,06) | lilas `#B9A8F0` |
+| Bébé (`/baby`, enfant, biberon, sommeil, suivi…) | « Nid » : dunes rondes et galets lovés, à gauche | zénith (0,5 ; 0) | pêche `#F6B89C` |
+| Famille (`/household`, famille, repas, listes, agenda…) | « Strates » : terrasses de roche en paliers, à droite | rasante depuis la gauche (0 ; 0,32) | ambre `#EDB66C` |
+| Communauté (`/community`) | « Monolithes » : pierres dressées ensemble, reflets au sol | contre-jour (0,55 ; 0,3) | bleu brume `#97B6E0` |
+| Réglages (`/settings`, premium, mentions…) | « Prisme » : cristal à facettes qui décompose un rayon | haut gauche, rayons fins (0,08 ; 0,04) | gris minéral `#B8BFCC` |
 
-- Fond de coque (`Backdrop`, `src/app/_layout.tsx`) : remplace `PowderSky` (conservé comme alias). **Particules
-  décoratives (« étoiles ») supprimées** (`StarField` ne rend plus rien).
-- Parallaxe légère (Reanimated, fil UI) : 4 plans, 3 → 12 px, 22 s aller-retour. **Image fixe** (`sceneAnimates`) :
-  Réduire les animations, économie d'énergie, nuit, application en arrière-plan, scène hors écran (`active={false}`).
-- Vignette : dans une boîte plus large que haute (aperçu, état vide), la scène entière est montrée à l'échelle et
-  les bandes (ciel, dunes, eau) débordent pour remplir. `<DesertScene variant="immersive" active={focused} />`.
-- Web : three.js / React Three Fiber **non installés** — évolution possible derrière ce même composant (réfraction du
-  verre, eau animée sur ordinateur), à ne faire qu'avec un repli identique à la version SVG.
+- Clair : ciel bleu brume → ivoire → pêche, halo de lumière blanche, brume d'horizon, pierres pâles (brume, lilas,
+  pêche) teintées par l'espace, sol aux reflets lilas. Sombre : obsidienne, pierres presque noires lues par leur arête
+  éclairée, **faisceau directionnel** depuis la source de lumière de l'espace, sol qui reflète. Nuit : même scène très
+  tamisée, fixe.
+- **Variantes** : `immersive` à l'ouverture et à la RACINE de chaque espace (`/`, `/health`, `/baby`, `/household`,
+  `/community`, `/settings`) — la composition se pose dans l'en-tête (cadre rogné `STAGE_TOP`), au-dessus d'un sol ;
+  `calm` sur les écrans internes — même lumière et même accent, composition réduite posée en bas, à une place propre à
+  chaque espace (`CALM_X`). Vignette (aperçu plus large que haut) : composition entière à l'échelle.
+- Fond de coque : `<SpaceScene space={spaceOf(pathname)} variant={backdropVariant(pathname)} />` (`_layout.tsx`).
+- Parallaxe légère (lumière 3 px, composition 6 px, 22 s) ; image fixe avec Réduire les animations, économie
+  d'énergie, nuit, arrière-plan, hors écran. Web : animation CSS (aucun calcul JS par image).
 
 ## 5. Famille de commandes (`src/components/controls`)
 
-Une seule source pour courbes (`src/motion`), reflets (`theme.material.light`), teintes, ombres et opacités.
-
 | Commande | Repos | Pression | Focus | Sélection | Chargement | Succès / erreur | Désactivé |
 |---|---|---|---|---|---|---|---|
-| `PrimaryButton` (= `Button` primary) | verre teinté de la palette (dégradé + lumière interne), arête fine, libellé contrasté, ombre colorée | s'enfonce 0,98 + reflet qui traverse (320 ms) | anneau global (web) | — | indicateur à la place du libellé, **largeur stable**, appuis suivants **ignorés** (pas de double soumission), `busy` annoncé | respiration 1 → 1,03 / tremblement + message | fondu 0,48, sans ombre |
-| `SecondaryButton` | verre givré / fumé, reflet discret | 0,98 + voile | anneau | — | idem | idem | idem |
-| `IconOrb` (ajouter, fermer, options) | disque optique 40 / 48 / 56 px, reflet du coin éclairé, arête claire ; **nom accessible obligatoire** ; cible ≥ 48 px (`hitSlop`) | 0,92 en ressort `vif`, retour `rebondLeger` | anneau | lumière diffuse derrière + `selected` | — | — | 0,45, sans lumière ni haptique |
-| `ChoiceGroup` `pills` (segmented, durée, catégorie, membre) — `Segmented` y délègue | rail en creux | haptique « sélection » | anneau | **indicateur de verre teinté qui GLISSE** (ressort `panneau`) + lumière diffuse + **gras + coche** (≥ 92 px par option) | — | — | — |
-| `ChoiceGroup` `orbs` (humeur) | orbes givrés + libellé | idem | anneau | l'orbe choisi grandit (1,08) avec lumière diffuse, les autres se resserrent (0,94) ; pastille à coche ; gras | — | — | — |
-| `DataTile` | surface mate `tile` (30), lumière INTERNE radiale (palette ou statut), valeur grande et fine (Space Grotesk 500, 40, chiffres tabulaires), unité, contexte (période) ; micrographique `Sparkline` **seulement avec ≥ 2 valeurs réelles** | 0,98 (si appuyable) ; avec `morphId` : transition carte → détail | anneau | — | — | — | **état vide explicite** (« — » + texte) |
-| `SensitiveButton` | libellé explicite, couleur sémantique (erreur) | 0,98, **sans reflet** (mouvement sobre) | anneau | — | idem bouton | idem | idem |
+| `PrimaryButton` (= `Button` primary) — **verre teinté** de la palette, l'action principale de l'écran | dégradé de la palette, arête fine, libellé ≥ 4,5:1, ombre colorée | 0,98 + reflet qui traverse | anneau (web) | — | indicateur à la place du libellé, largeur stable, appuis suivants ignorés, `busy` annoncé | **coche 900 ms** + respiration / tremblement + message | fondu ; en sombre verre neutre |
+| `SecondaryButton` — **verre givré** | givré / fumé, reflet discret | 0,98 + voile | anneau | — | idem | idem | idem |
+| `IconOrb` — **bouton rond à icône** (disque givré) | 40 / 48 / 56 px, reflet du coin éclairé ; nom accessible obligatoire ; cible ≥ 48 px | 0,92 ressort | anneau | lumière diffuse + `selected` | — | — | 0,45 |
+| `ChoiceGroup` pills / `Segmented` — **sélecteur à lentille** | rail en creux | haptique « sélection » | anneau | **LENTILLE qui glisse** sous l'option + gras + coche accent | — | — | — |
+| `ChoiceGroup` orbes, cartes | inchangés (v3) | | | | | | |
+| `DataTile` — **tuile à lumière intérieure** | mate, foyer radial (palette ou statut), valeur grande et fine, unité, contexte ; micrographique seulement avec ≥ 2 valeurs réelles | 0,98 | anneau | — | — | — | état vide explicite |
+| `SensitiveButton` | libellé explicite, couleur « erreur », confirmation | 0,98 sans reflet | anneau | — | idem | idem | idem |
+| `Dock` — **navigation flottante** | capsule de verre optique, bouton rond d'action à droite | 0,9 | anneau | **lentille** couvrant l'onglet actif (icône accent + libellé gras), caustique à l'accent de l'espace | — | — | — |
 
-- `ChoiceGroup variant="orbs" light="travel"` (ajout rétro-compatible, pilote Humeur → journal) : UNE lumière diffuse
-  glisse vers l'orbe choisi (ressort `panneau`) au lieu de s'allumer sous chacun ; les autres orbes glissent vers lui
-  (`CHOICE.orbGather`, réduit à la place libre : 0 à 320 px). Défaut `each` inchangé.
-- Statuts : couleur + icône + libellé, jamais la couleur seule.
-- **Un seul point focal lumineux par écran** : l'action principale OU la sélection active (GlowCard, indicateur,
-  capsule d'action). Les listes restent mates (`GlowCard still`, pas de faisceau).
-- `Chip` : choisi plein = verre teinté (reflet haut) ; choisi « lavande » = coche en plus de la teinte.
-- `Toggle` : capsule allumée au dégradé de la palette ; `Field` : creux qui s'éclaire au focus (liseré + halo).
-- `Dock` : capsule de **verre optique** flottante, indicateur de verre teinté qui **glisse** vers l'onglet actif
-  (ressort `panneau`, lumière diffuse), bouton rond d'action à droite (capsule turquoise lumineuse, reflet à la
-  pression).
-
-```tsx
-import { PrimaryButton, SecondaryButton, SensitiveButton, IconOrb, ChoiceGroup, DataTile } from '@/components/controls';
-<PrimaryButton label={t('save')} onPress={() => save()} />            // promesse → chargement, double appui bloqué
-<IconOrb icon="plus" label={t('add')} tone="accent" onPress={open} />
-<ChoiceGroup label={t('duration')} value={d} onChange={setD} options={[{ value: '15', label: '15 min' }, …]} />
-<ChoiceGroup variant="orbs" label={t('mood')} value={m} onChange={setM} options={[{ value: 'calm', label, icon: 'feather' }, …]} />
-<DataTile label={t('sleep')} value={formatNumber(7.4)} unit="h" context={t('week')} series={real} morphId={`sleep-${id}`} onPress={() => router.push(…)} />
-<SensitiveButton label={t('leaveHousehold')} confirmMessage={…} onPress={leave} />
-```
+Une seule action principale colorée par écran ; statuts = couleur + icône + libellé ; doubles pressions ignorées
+pendant le chargement ; libellés et zones tactiles ≥ 44–48 px (audit 09 inchangé).
 
 ## 6. Mouvement (détails : `MOTION_SYSTEM.md`)
 
-Familles : **micro 120–180 ms** (pression, coche, pastille) · **panneaux 220–320 ms** (panneau du bas, sélecteur,
-indicateur) · **scènes 320–450 ms** (carte → détail, palette, fondu de mode). Interruptibles (ressorts et `withTiming`
-repartent de la valeur courante). Réduire les animations / économie d'énergie → états finaux ou fondus simples.
-
-- **Panneau du bas gestuel** (`Sheet`, API inchangée) : suit le doigt, crans moyen + grand, fermeture cohérente,
-  clavier → grand cran.
-- **Morph carte → détail** : `MorphSource` / `useMorphSource(id).open(navigate)` côté carte, `MorphTarget id` côté
-  détail, `MorphHost` monté une fois dans `_layout.tsx`. Retour vers le même élément (rectangle re-mesuré).
+Familles : micro 120–180 ms · panneaux 220–320 ms (lentille, panneau du bas, sélecteurs) · scènes 320–450 ms
+(changement de palette, carte → détail, fondu de mode). Interruptibles. Réduire les animations / économie d'énergie :
+états finaux ; nuit : fondus courts. Le panneau du bas (`Sheet`, verre optique en v4) et le morph carte → détail sont
+inchangés.
 
 ## 6 bis. Haut d'écran et pastille « Démonstration » (`src/components/demoInset.ts`)
 
@@ -235,6 +218,7 @@ clavier) ; tests Jest `src/__tests__/audit09Layout.test.tsx`.
 
 ## 7. Non vérifié ici
 
-Rendu iOS natif (GlassView, flou réel), Android (boxShadow coloré, absence de flou), geste du panneau au doigt sur
-appareil, VoiceOver / TalkBack, FPS / ProMotion, coût de la parallaxe sur appareil bas de gamme. Vérifié : TypeScript,
-Jest, export web, E2E Chromium (`e2e/apparence_v3.py`, dont `reducedMotion: 'reduce'`), captures deviceScaleFactor 2.
+Rendu iOS natif (GlassView, flou réel, lentille sur GlassView), Android (boxShadow coloré, absence de flou), largeur
+animée de la lentille sur appareil bas de gamme, VoiceOver / TalkBack, FPS / ProMotion. Vérifié : TypeScript, Jest,
+export web, E2E Chromium (`e2e/apparence_v3.py` adapté v4, dont `reducedMotion: 'reduce'` et la migration v3 → v4 ;
+`e2e/audit_ux.py`), captures deviceScaleFactor 2 de chaque espace en clair et sombre (Brume pêche, Lagune turquoise).

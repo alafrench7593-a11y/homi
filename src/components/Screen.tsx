@@ -182,7 +182,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { top: -spacing.lg, bottom: -spacing.sm, left: mode.largeInContent && padded ? -spacing.lg : 0, right: mode.largeInContent && padded ? -spacing.lg : 0 }]}>
           <Svg width="100%" height="100%">
             <Defs>
-              <RadialGradient id={glowId} cx="18%" cy="55%" rx="55%" ry="75%">
+              {/* lueur qui s'éteint AVANT les bords du cadre (aucune arête rectangulaire visible) */}
+              <RadialGradient id={glowId} cx="30%" cy="50%" rx="30%" ry="50%">
                 <Stop offset="0" stopColor={accent} stopOpacity={t.isDark ? 0.24 : 0.18} />
                 <Stop offset="1" stopColor={accent} stopOpacity="0" />
               </RadialGradient>
