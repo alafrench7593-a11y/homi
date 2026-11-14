@@ -19,13 +19,14 @@ import * as Haptics from 'expo-haptics';
 import { act, create, type ReactTestInstance, type ReactTestRenderer } from 'react-test-renderer';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { useUiStore } from '@/lib/store';
-import { intro, introTotalMs } from '@/theme/motion';
+import { intro } from '@/theme/motion';
 import { introTimeline, LaunchIntro, resetLaunchIntroForTests, shouldPlayLaunchIntro, stageProgress } from '@/components/LaunchIntro';
 import {
   AnimatedNumber, Cascade, cascadeDelay, curves, dampingRatio, DetailEnter, formatCounter, MORPH_POINTS, MORPH_SHAPES, MorphIcon,
   morphPath, motionDuration, motionSpring, motionTiming, PressableScale, resolveMotionLevel, springs,
 } from '@/motion';
-import { HOMI_FAMILY, HOMI_HOUSE_LENGTH, HOMI_HOUSE_PATH, HOMI_MARK_SVG } from '@/brand/homiMarkSvg';
+import { HOMI_LAYER_SVG, HOMI_WORDMARK_SVG } from '@/brand/homiMarkSvg';
+import { logoTimeline } from '@/brand/logoMotion';
 
 const mounted: ReactTestRenderer[] = [];
 async function render(el: React.ReactElement) {
@@ -178,34 +179,30 @@ describe('icônes morphables', () => {
   });
 });
 
-describe('logo HOMI : pièces détachées', () => {
-  it('maison et silhouettes exposées sont exactement celles du logo', () => {
-    expect(HOMI_MARK_SVG).toContain(HOMI_HOUSE_PATH);
-    for (const f of HOMI_FAMILY) {
-      expect(HOMI_MARK_SVG).toContain(f.bodyD);
-      expect(HOMI_MARK_SVG).toContain(`<circle cx="${f.cx}" cy="${f.headY}" r="${f.headR}"/>`);
+describe('logo HOMI : calques de l’animation', () => {
+  it('lettres + lentille superposées = mot-symbole exact (clair et sombre)', () => {
+    for (const tone of ['light', 'dark'] as const) {
+      const inner = (svg: string) => svg.replace(/^[\s\S]*?<\/defs>\n/, '').replace(/\n<\/svg>$/, '');
+      expect(HOMI_WORDMARK_SVG[tone]).toContain(inner(HOMI_LAYER_SVG[tone].letters));
+      expect(HOMI_WORDMARK_SVG[tone]).toContain(inner(HOMI_LAYER_SVG[tone].lens));
     }
-    expect(HOMI_FAMILY.map((f) => f.role)).toEqual(['parent', 'parent', 'child', 'child']);
-    expect(HOMI_HOUSE_LENGTH).toBeGreaterThan(600);
-    expect(HOMI_HOUSE_LENGTH).toBeLessThan(720);
   });
 });
 
 describe('introduction de lancement', () => {
-  it('chorégraphie : tracé → illumination → parents → enfants → fondu, total = introTotalMs (1,5–2,5 s)', () => {
+  it('chorégraphie : reflet qui révèle le mot → volume de la lentille → pose → fondu (1,5–2,5 s)', () => {
     const tl = introTimeline('full');
-    expect(tl.total).toBe(introTotalMs);
     expect(tl.total).toBeGreaterThanOrEqual(1500);
     expect(tl.total).toBeLessThanOrEqual(2500);
-    expect(tl.light[0]).toBeGreaterThan(tl.trace[0]);
-    expect(tl.figures[0][0]).toBeGreaterThan(tl.light[0]);
-    for (let i = 1; i < tl.figures.length; i++) expect(tl.figures[i][0]).toBeGreaterThan(tl.figures[i - 1][0]);
-    expect(tl.exit[0]).toBeGreaterThanOrEqual(tl.figures[3][0] + tl.figures[3][1]);
+    expect(tl.logo).toEqual(logoTimeline('full'));
+    expect(tl.logo.lens[0]).toBeGreaterThan(tl.logo.reveal[0]);
+    expect(tl.logo.deploy).toBeNull();
+    expect(tl.exit[0]).toBeGreaterThanOrEqual(tl.logo.end);
   });
   it('version abrégée (nuit, lancement lent) : logo complet d’emblée, ≤ 600 ms', () => {
     const tl = introTimeline('short');
-    expect(stageProgress(0, tl.trace)).toBe(1);
-    expect(tl.figures.every((s) => stageProgress(0, s) === 1)).toBe(true);
+    expect(stageProgress(0, tl.logo.reveal)).toBe(1);
+    expect(stageProgress(0, tl.logo.lens)).toBe(1);
     expect(tl.total).toBeLessThanOrEqual(intro.shortHoldMs + intro.shortExitMs);
   });
   it('économie d’énergie : jamais d’introduction', () => {
@@ -215,7 +212,7 @@ describe('introduction de lancement', () => {
     resetLaunchIntroForTests();
     const r = await render(<LaunchIntro />);
     expect(byTestId(r, 'launch-intro')).toBeTruthy();
-    await act(async () => { jest.advanceTimersByTime(introTotalMs + 200); });
+    await act(async () => { jest.advanceTimersByTime(introTimeline('full').total + 200); });
     expect(byTestId(r, 'launch-intro')).toBeUndefined();
     const again = await render(<LaunchIntro />);
     expect(byTestId(again, 'launch-intro')).toBeUndefined();

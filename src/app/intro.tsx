@@ -18,7 +18,6 @@ import { Appear } from '@/components/Appear';
 import { StaggerItem } from '@/components/Motion';
 import { tint, ToolGlyph } from '@/components/ToolGlyph';
 import { Button, haptic, Icon, type IconName, Text } from '@/components/ui';
-import { BRAND } from '@/config/brand';
 import { formatDate, getLocale, isRTL, t as tr, type TKey } from '@/i18n';
 import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
 import { availableLocales } from '@/i18n/locales';
@@ -29,7 +28,7 @@ import { duration, easing, stagger, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { alpha, NATIVE_DRIVER, radius, spacing, typography } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandWordmark } from '@/components/BrandLogo';
 
 type Scene = 'welcome' | 'cycle' | 'project' | 'pregnancy' | 'baby' | 'journal' | 'together' | 'start';
 export const INTRO_SCENES: Scene[] = ['welcome', 'cycle', 'project', 'pregnancy', 'baby', 'journal', 'together', 'start'];
@@ -66,12 +65,12 @@ function useEnter(ms: number, delay = 0) {
 }
 const rise = (v: Animated.Value, from = 10) => ({ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [from, 0] }) }] });
 
-/** Logo : opacité progressive, très légère translation, puis stabilisation. Posé directement sur le fond. */
+/** Mot-symbole HOMI (logotype v4) : opacité progressive, très légère translation, puis stabilisation. */
 function LogoMark({ size }: { size: number }) {
   const v = useEnter(900, 120);
   return (
-    <Animated.View testID="intro-logo" style={{ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-      <BrandLogo size={size} />
+    <Animated.View testID="intro-logo" style={{ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }}>
+      <BrandWordmark height={Math.round(size * 0.36)} />
     </Animated.View>
   );
 }
@@ -282,7 +281,6 @@ export default function Intro() {
         {slide === 'welcome' ? (
           <View style={{ alignItems: 'center', gap: spacing.md }} testID="intro-scene-welcome">
             <LogoMark size={shortScreen ? 150 : 190} />
-            <Appear kind="mask" delay={0.5}><Text variant="title" center accessibilityRole="header">{BRAND.name}</Text></Appear>
             <Appear kind="soft" delay={0.7}><Text center style={[editorial, { maxWidth: 340 }]}>{tr('intro.s.welcome.h')}</Text></Appear>
             <Appear kind="soft" delay={0.9}><Text center muted style={{ maxWidth: 340 }}>{tr('intro.mission')}</Text></Appear>
           </View>

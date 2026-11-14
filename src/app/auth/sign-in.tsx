@@ -44,7 +44,7 @@ export default function SignIn() {
         </>
       }
     >
-      <EntryHero icon="log-in" title={tr('auth.signIn.title')} lead={tr('entry.signIn.lead')} testID="entry-hero" />
+      <EntryHero logo wordmark title={tr('auth.signIn.title')} lead={tr('entry.signIn.lead')} testID="entry-hero" />
       <MattePanel testID="signin-panel">
         <Field label={tr('auth.email')} value={form.email} onChangeText={(email) => { setForm((f) => ({ ...f, email })); setErrors(({ email: _e, ...r }) => r); }} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="username" error={errors.email} returnKeyType="next" />
         <Field label={tr('auth.password')} value={form.password} onChangeText={(password) => { setForm((f) => ({ ...f, password })); setErrors(({ password: _p, ...r }) => r); }} secureTextEntry revealable autoComplete="current-password" textContentType="password" error={errors.password} onSubmitEditing={submit} returnKeyType="go" />

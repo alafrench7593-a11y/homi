@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="90 -4 128 128" role="img" aria-label="HOMI">
+<defs><linearGradient id="hwl-ink" gradientUnits="userSpaceOnUse" x1="10" y1="10" x2="350" y2="110"><stop offset="0" stop-color="#1C2740"/><stop offset="0.5" stop-color="#1C2740"/><stop offset="0.62" stop-color="#43557E"/><stop offset="0.8" stop-color="#1C2740"/><stop offset="1" stop-color="#1C2740"/></linearGradient>
+<linearGradient id="hwl-ref" gradientUnits="userSpaceOnUse" x1="206" y1="0" x2="352" y2="0"><stop offset="0" stop-color="#8E7FD0" stop-opacity="0.55"/><stop offset="0.55" stop-color="#8E7FD0" stop-opacity="0.12"/><stop offset="1" stop-color="#8E7FD0" stop-opacity="0"/></linearGradient>
+<radialGradient id="hwl-lens" gradientUnits="userSpaceOnUse" cx="144" cy="48" r="49.6" fx="140" fy="44"><stop offset="0" stop-color="#FBFCFF"/><stop offset="0.42" stop-color="#B4C6E2"/><stop offset="1" stop-color="#5A7099"/></radialGradient>
+<radialGradient id="hwl-caus" gradientUnits="userSpaceOnUse" cx="170" cy="78" r="27.900000000000002"><stop offset="0" stop-color="#F4B48E" stop-opacity="0.95"/><stop offset="1" stop-color="#F4B48E" stop-opacity="0"/></radialGradient>
+<linearGradient id="hwl-rim" gradientUnits="userSpaceOnUse" x1="102" y1="8" x2="206" y2="112"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/><stop offset="0.5" stop-color="#C9BEF5" stop-opacity="0.35"/><stop offset="1" stop-color="#F4B48E" stop-opacity="0.9"/></linearGradient></defs>
+<path d="M122 60A32 32 0 1 1 186 60A32 32 0 1 1 122 60Z" fill="url(#hwl-lens)"/>
+<path d="M122 60A32 32 0 1 1 186 60A32 32 0 1 1 122 60Z" fill="url(#hwl-caus)" opacity="0.45"/>
+<path d="M180.28 47.74A29 29 0 0 1 141.74 86.28A51.77 51.77 0 0 0 180.28 47.74Z" fill="url(#hwl-caus)"/>
+<path d="M131.31 67.81A24 24 0 0 1 161.81 37.31A73.5 73.5 0 0 0 131.31 67.81Z" fill="#FFFFFF" opacity="0.95"/>
+<path d="M102 60A52 52 0 1 1 206 60A52 52 0 1 1 102 60ZM123 60A31 31 0 1 0 185 60A31 31 0 1 0 123 60Z" fill="url(#hwl-ink)"/>
+<circle cx="154" cy="60" r="51" fill="none" stroke="url(#hwl-rim)" stroke-width="1.6"/>
+</svg>

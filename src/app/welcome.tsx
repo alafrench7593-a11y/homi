@@ -1,6 +1,6 @@
 /**
- * Accueil sans compte (HOMI, entrée Keynote) : UN point focal (le logo HOMI sur le halo de la palette, révélé en
- * profondeur), un titre, une phrase, UNE action principale (« Commencer »). Texte et boutons sont là dès la première
+ * Accueil sans compte (HOMI, entrée Keynote) : le mot-symbole HOMI en en-tête, UN point focal (la lentille du logotype
+ * sur le halo de la palette, révélée en profondeur), un titre, une phrase, UNE action principale (« Commencer »). Texte et boutons sont là dès la première
  * image : seule la scène s'anime. Options en boutons ronds (langue) ; l'aide reste nommée en toutes lettres.
  * Couleurs : thème uniquement.
  */
@@ -12,11 +12,10 @@ import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { Button, Icon, IconButton, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandWordmark } from '@/components/BrandLogo';
 import { FocalMark } from '@/features/entry/EntryKit';
 import { isDemo } from '@/lib/backend';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
-import { BRAND } from '@/config/brand';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -49,9 +48,8 @@ export default function Welcome() {
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.xs, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} showsVerticalScrollIndicator={false}>
         {/* En-tête : marque, langue (bouton rond), aide (toujours nommée) */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }} accessible accessibilityRole="header" accessibilityLabel={BRAND.name}>
-            <BrandLogo size={28} />
-            <Text weight="bold" numberOfLines={1} style={{ fontSize: 16, letterSpacing: -0.3, flexShrink: 1 }}>{BRAND.name}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, minWidth: 0 }}>
+            <BrandWordmark height={22} testID="welcome-wordmark" />
           </View>
           <IconButton icon="globe" tone="filled" label={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push({ pathname: '/intro', params: { scene: 'start' } })} />
           <Tappable

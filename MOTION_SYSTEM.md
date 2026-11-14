@@ -67,7 +67,7 @@ Parallaxe légère : 4 plans (3 / 6 / 9 / 12 px), 22 s aller-retour en sinus, `w
 ## Principes
 
 1. **Calme et intentionnel.** Le mouvement explique (d'où vient un écran, ce qui vient de changer), il ne décore pas. Jamais d'agressivité, jamais d'attente imposée : l'action part tout de suite, l'animation suit.
-2. **Compositeur uniquement.** On anime `transform` et `opacity`, sur le fil UI (valeurs partagées et worklets). Seules exceptions : le tracé du contour de la maison au lancement (`strokeDashoffset`, un seul chemin) et le `d` des icônes morphables (≤ 72 points, petites icônes).
+2. **Compositeur uniquement.** On anime `transform` et `opacity`, sur le fil UI (valeurs partagées et worklets). Seules exceptions : le rectangle du panneau issu de la lentille du logo (un seul `Rect`, `useAnimatedProps`) et le `d` des icônes morphables (≤ 72 points, petites icônes).
 3. **Interruptible.** Ressorts et `withTiming` repartent de la valeur courante ; le morph d'icône repart de la forme réellement affichée. Les séquences figées sont réservées aux one-shots (intro).
 4. **Un seul hook.** Toute primitive passe par `useMotion()` (voir ci-dessous). Aucune durée, courbe ou ressort en dur dans un écran.
 5. **Rien de permanent qui gêne.** Pas de boucle décorative près d'un chronomètre ou pendant les soins de nuit.
@@ -92,7 +92,7 @@ Depuis un geste (fil UI) : `motionTiming(level, …)` / `motionSpring(level, …
 | `decelerate` | 0.16, 1, 0.3, 1 | entrées, apparitions (signature) |
 | `standard` | 0.2, 0, 0, 1 | changements d'état, fondus de nuit |
 | `accelerate` | 0.3, 0, 1, 1 | sorties |
-| `reveal` | 0.45, 0, 0.25, 1 | tracés (contour de la maison) |
+| `reveal` | 0.45, 0, 0.25, 1 | révélations (reflet qui révèle le logotype) |
 
 Courbes = worklets autonomes (solveur de Bézier), identiques iOS / Android / web / Jest.
 
@@ -113,7 +113,7 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 | `LiftCard` + `DetailEnter` | transition carte → écran détail « shared-element-like » | source : échelle 1,03, −4 px, ombre de contact en fondu, `onOpen` après 140 ms ; destination : 0,94 / +14 px → 1 / 0 en `doux` |
 | `AnimatedNumber` | compteur numérique | 700 ms `decelerate` ; natif : texte mis à jour sur le fil UI (TextInput non éditable) ; web : re-rendu seulement quand la chaîne change ; lecteurs d'écran : valeur finale uniquement ; chiffres tabulaires |
 | `MorphIcon` | icône de module morphable | 520 ms `decelerate` + souffle d'échelle 0,94 ; `minimal` : 160 ms sans souffle |
-| `LaunchIntro` (`src/components`) | lancement maison → silhouettes → accueil | voir ci-dessous |
+| `HomiLogoAnimated` / `LaunchIntro` (`src/components`) | logotype : reflet → volume de la lentille → panneau ; lancement | voir ci-dessus |
 | `PressSheen` / `usePressSheen` (v2) | reflet bref qui glisse sur un bouton capsule à la pression (bouton principal, bouton d'action de la barre) | bande de lumière inclinée −18°, une traversée de 320 ms `decelerate` (v3), opacité en sinus (0 au repos et à la fin) ; `off` et `minimal` : rien n'est rendu |
 | `GlowCard` (v2, `src/components`) | carte sélectionnée / action importante / validation | activation : halo 0 → 1 en ressort `doux` + échelle 0,97 → 1 ; filet en fondu 240 ms `standard` ; faisceau unique 720 ms `decelerate`. Repos : statique. `still` (listes) : aucun mouvement. `minimal` : fondu court, ni halo ni faisceau |
 | `CompletionCheck` + `CompletionGlow` (v2) | passage d'une tâche à « terminé » | disque 0,6 → 1 en `rebondLeger`, coche tracée 240 ms (`strokeDashoffset`, 80 ms après), anneau 520 ms, haptique « succès » ; halo de ligne 180 ms + 720 ms ; décocher : fondu 200 ms. `off` : état final immédiat ; `minimal` : fondus seuls |
@@ -121,12 +121,37 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 | `Screen` — en-tête (audit 09) | titre compact qui apparaît / grand titre fixe qui se replie | 160 ms (compact) / 200 ms (repli en hauteur), `timeTo` : immédiat avec « Réduire les animations » |
 | `Sheet` (v2, `components/Overlays.tsx`) | panneau du bas | ouverture : ressort `doux` (interruptible, repart de la position courante) ; fermeture : 240 ms `accelerate`, démontage via `scheduleOnRN` |
 
+### Logotype animé (`src/components/HomiLogoAnimated.tsx`, v4 « lentille », 14/11/2026)
+
+Le logo s'anime comme UN SEUL objet, sur une seule horloge (valeur partagée, fil UI). Constantes nommées :
+`src/brand/logoMotion.ts` (`LOGO_MOTION`, `logoTimeline`, `lensPanelFrame`, testés).
+
+| Étape | Temps (mouvement complet) | Mécanique |
+|---|---|---|
+| reflet qui révèle le mot | 120 → 1 020 ms, courbe `reveal` | fenêtre `overflow: hidden` qui glisse + contre-glissement du contenu (transform seul) ; ellipse de lumière inclinée (−18°) au bord, opacité en cloche |
+| la lentille prend du volume | 680 → 1 240 ms, `decelerate` | verre « à plat » → calque lentille finale (opacité, échelle 0,86 → 1 autour du centre du O) ; halo bref derrière (crête 0,55) |
+| déploiement en panneau (si `deployTo`) | 1 280 → 1 900 ms, `decelerate` | UN rectangle SVG (`x, y, width, height, rx` via `useAnimatedProps`) du disque de la lentille au panneau cible, dessiné SOUS les lettres (il sort de derrière le O) ; exception documentée comme le tracé d'un contour |
+
+API : `<HomiLogoAnimated width tone? still? clock? timeline? deployTo? panel? onLensPanel? onDone? />`
+— `deployTo` : panneau cible en coordonnées FENÊTRE (`{ x, y, width, height, radius, fill, edge? }`) ;
+`panel` : valeur partagée 0 → 1 écrite sur le fil UI pendant le déploiement ; `onLensPanel(lens, target)` : une seule
+fois au début du déploiement (mesure de la lentille dans la fenêtre : `{ x, y, width, height, cx, cy, r }`) ;
+`onDone` : une fois, fin de l'horloge interne ; `clock` + `timeline` : horloge externe (intro de lancement). Retours
+vers JS par `scheduleOnRN`, jamais à chaque image ; `cancelAnimation` au démontage.
+Niveaux : `off` → état final (mot, lentille en volume, panneau posé) avec un simple fondu d'opacité de 180 ms, rappels
+immédiats ; `minimal` (nuit) → fondu 160 ms, panneau en fondu, aucun déplacement ; version FIXE (`still` ou largeur
+< 120 px) → `BrandWordmark`. Image finale = `BrandWordmark` (mêmes calques : `HOMI_LAYER_SVG`).
+
+Branchements : `/cinematic` (`HomiIntro` : reflet → volume → la lentille se déploie en premier panneau où se pose
+l'accroche, ≈ 2,4 s) ; `LaunchIntro` (sans déploiement). Captures image par image : `e2e/logotype.py`.
+
 ### Introduction de lancement (`src/components/LaunchIntro.tsx`)
 
-Une horloge partagée (0 → 2 280 ms, linéaire), chaque pièce applique sa courbe à son étape :
-tracé du contour 120–820 ms (`reveal`) · illumination (remplissage + lueur) 600–1 000 ms · halo bref 600–1 800 ms · parent, parent, enfant, enfant à 900 / 1 000 / 1 100 / 1 200 ms (360 ms chacun : fondu, +10 unités, 0,9 → 1 autour des pieds) · pose 240 ms · fondu du calque 1 800–2 280 ms avec avancée 1 → 1,06.
-Image finale = `BrandLogo` (mêmes tracés, mêmes dégradés). Tracés séparés générés par `scripts/homi/brand.mjs` → `src/brand/homiMarkSvg.ts` (`HOMI_HOUSE_PATH`, `HOMI_HOUSE_LENGTH`, `HOMI_FAMILY`, `HOMI_COLORS`) ; dessin inchangé (SVG et PNG régénérés identiques).
-Règles conservées : une fois par lancement à froid ; absente à la première ouverture (l'introduction HOMI de `/cinematic` — `src/features/entry/HomiIntro.tsx`, même chorégraphie suivie du nom, ≈ 2,2 s, sans vidéo — joue déjà ce rôle) ; `off` → aucune intro, calque retiré à durée 0 ; `minimal` (nuit) ou lancement déjà lent (> 2 s) → version abrégée (logo complet, 260 ms de pose, 320 ms de fondu). Calque `pointerEvents="none"`, masqué aux lecteurs d'écran ; l'accueil se charge dessous.
+Une horloge partagée (0 → ≈ 1 960 ms, linéaire) : logo animé (`logoTimeline('full')`, sans panneau) · pose 240 ms ·
+fondu du calque 480 ms avec avancée 1 → 1,06. Règles conservées : une fois par lancement à froid ; absente à la
+première ouverture (`/cinematic` joue ce rôle) ; `off` → aucune intro, calque retiré à durée 0 ; `minimal` (nuit) ou
+lancement déjà lent (> 2 s) → version abrégée (logo complet, 260 ms de pose, 320 ms de fondu). Calque
+`pointerEvents="none"`, masqué aux lecteurs d'écran ; l'accueil se charge dessous.
 
 ### Morphs entre modules (`src/motion/MorphIcon.tsx`, `morphShapes.ts`)
 

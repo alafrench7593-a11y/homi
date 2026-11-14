@@ -9,6 +9,7 @@ import { DemoBanner } from '@/components/Family';
 import { Banner, Button, Card, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
+import { BrandWordmark } from '@/components/BrandLogo';
 import { useAuth } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { useHousehold, useHouseholdMembers, usePremium, useProfile, useReminders, useUpdateProfile } from '@/lib/data/hooks';
@@ -174,7 +175,7 @@ export default function SettingsScreen() {
 
       <SectionTitle title={tr('settings.about')} />
       <Card tone="soft">
-        <Text variant="heading">{BRAND.name}</Text>
+        <BrandWordmark height={26} style={{ marginBottom: spacing.xxs }} testID="settings-wordmark" />
         <Text italic muted>{tr('brand.tagline')}</Text>
         {/* Ligne informative : le geste caché (7 appuis, mode développeur) reste, sans surbrillance de bouton au toucher (iOS) */}
         <Text variant="small" muted suppressHighlighting style={{ marginTop: spacing.xs }} onPress={() => {

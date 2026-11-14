@@ -17,7 +17,7 @@ import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Icon, type IconName, Text } from '@/components/ui';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandLogo, BrandWordmark } from '@/components/BrandLogo';
 import { durations } from '@/motion/curves';
 import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -87,7 +87,7 @@ export function FocalGlow({ size }: { size: number }) {
 }
 
 /**
- * Point focal : halo de la palette + disque en dégradé portant une icône (ou le logo HOMI).
+ * Point focal : halo de la palette + disque en dégradé portant une icône (ou la lentille du logotype HOMI).
  * Décor uniquement (masqué aux lecteurs d'écran) ; se révèle en profondeur.
  */
 export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolean; size: number }) {
@@ -108,13 +108,17 @@ export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolea
   );
 }
 
-/** En-tête Keynote : point focal, titre, une phrase. Titre et phrase sont là dès la première image. */
-export function EntryHero({ icon, logo, title, lead, kicker, testID }: { icon?: IconName; logo?: boolean; title: string; lead?: string; kicker?: string; testID?: string }) {
+/**
+ * En-tête Keynote : point focal, titre, une phrase. Titre et phrase sont là dès la première image.
+ * `wordmark` : le nom HOMI (mot-symbole vectoriel) se lit au-dessus du titre — connexion, inscription.
+ */
+export function EntryHero({ icon, logo, wordmark, title, lead, kicker, testID }: { icon?: IconName; logo?: boolean; wordmark?: boolean; title: string; lead?: string; kicker?: string; testID?: string }) {
   const t = useTheme();
   const compact = useCompactEntry();
   return (
     <View testID={testID} style={{ alignItems: 'center', gap: compact ? spacing.xs : spacing.sm, paddingTop: compact ? 0 : spacing.sm }}>
       <FocalMark icon={icon} logo={logo} size={compact ? 104 : 168} />
+      {wordmark ? <BrandWordmark height={compact ? 18 : 24} header={false} testID="entry-wordmark" /> : null}
       {kicker ? <Text variant="label" color={t.colors.primary} center>{kicker}</Text> : null}
       <Text variant="title" center accessibilityRole="header" style={{ maxWidth: 360 }}>{title}</Text>
       {lead ? <Text center muted style={{ maxWidth: 340 }}>{lead}</Text> : null}

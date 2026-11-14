@@ -105,7 +105,7 @@ export default function SignUp() {
         </>
       }
     >
-      <EntryHero icon="user-plus" title={tr('auth.signUp.title')} lead={tr('auth.signUp.subtitle')} testID="entry-hero" />
+      <EntryHero logo wordmark title={tr('auth.signUp.title')} lead={tr('auth.signUp.subtitle')} testID="entry-hero" />
       {invited ? <Banner tone="info" title={tr('auth.signUp.invitedTitle')}>{tr('auth.signUp.invitedBody')}</Banner> : null}
       <MattePanel testID="signup-panel">
       <Field label={tr('auth.email')} value={form.email} onChangeText={set('email')} onBlur={touch('email')} autoCapitalize="none" keyboardType="email-address" autoComplete="email" textContentType="emailAddress" error={err('email')} returnKeyType="next" />
