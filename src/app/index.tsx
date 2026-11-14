@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { useProfile } from '@/lib/data/hooks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Text } from '@/components/ui';
-import { BrandWordmark } from '@/components/BrandLogo';
+import { BrandStack } from '@/components/BrandLogo';
 import { BRAND } from '@/config/brand';
 import { peekPendingInvite } from '@/lib/authFlow';
 import { useUiStore } from '@/lib/store';
@@ -44,7 +44,7 @@ export default function Launch() {
   if (hydrated && !cinematicSeen && !ready) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.background, alignItems: 'center', justifyContent: 'center', gap: 18 }} accessibilityLabel={tr('common.appLoading', { app: BRAND.name })}>
-      <BrandWordmark height={56} />
+      <BrandStack width={180} testID="loading-brand" />
       <Text muted>{isLoading ? tr('brand.tagline') : ' '}</Text>
     </View>
   );

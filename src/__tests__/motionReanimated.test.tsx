@@ -25,7 +25,7 @@ import {
   AnimatedNumber, Cascade, cascadeDelay, curves, dampingRatio, DetailEnter, formatCounter, MORPH_POINTS, MORPH_SHAPES, MorphIcon,
   morphPath, motionDuration, motionSpring, motionTiming, PressableScale, resolveMotionLevel, springs,
 } from '@/motion';
-import { HOMI_LAYER_SVG, HOMI_WORDMARK_SVG } from '@/brand/homiMarkSvg';
+import { HOMI_FAMILY, HOMI_HOUSE_LENGTH, HOMI_HOUSE_PATH, HOMI_MARK_SVG } from '@/brand/homiMarkSvg';
 import { logoTimeline } from '@/brand/logoMotion';
 
 const mounted: ReactTestRenderer[] = [];
@@ -179,30 +179,38 @@ describe('icônes morphables', () => {
   });
 });
 
-describe('logo HOMI : calques de l’animation', () => {
-  it('lettres + lentille superposées = mot-symbole exact (clair et sombre)', () => {
+describe('logo HOMI : pièces détachées', () => {
+  it('maison et silhouettes exposées sont exactement celles du logo (clair et sombre)', () => {
     for (const tone of ['light', 'dark'] as const) {
-      const inner = (svg: string) => svg.replace(/^[\s\S]*?<\/defs>\n/, '').replace(/\n<\/svg>$/, '');
-      expect(HOMI_WORDMARK_SVG[tone]).toContain(inner(HOMI_LAYER_SVG[tone].letters));
-      expect(HOMI_WORDMARK_SVG[tone]).toContain(inner(HOMI_LAYER_SVG[tone].lens));
+      expect(HOMI_MARK_SVG[tone]).toContain(HOMI_HOUSE_PATH);
+      for (const f of HOMI_FAMILY) {
+        expect(HOMI_MARK_SVG[tone]).toContain(f.bodyD);
+        expect(HOMI_MARK_SVG[tone]).toContain(`<circle cx="${f.cx}" cy="${f.headY}" r="${f.headR}"/>`);
+      }
     }
+    expect(HOMI_FAMILY.map((f) => f.role)).toEqual(['parent', 'parent', 'child', 'child']);
+    expect(HOMI_HOUSE_LENGTH).toBeGreaterThan(600);
+    expect(HOMI_HOUSE_LENGTH).toBeLessThan(720);
   });
 });
 
 describe('introduction de lancement', () => {
-  it('chorégraphie : reflet qui révèle le mot → volume de la lentille → pose → fondu (1,5–2,5 s)', () => {
+  it('chorégraphie : tracé → illumination → parents → enfants → nom → pose → fondu (1,5–2,5 s)', () => {
     const tl = introTimeline('full');
     expect(tl.total).toBeGreaterThanOrEqual(1500);
     expect(tl.total).toBeLessThanOrEqual(2500);
     expect(tl.logo).toEqual(logoTimeline('full'));
-    expect(tl.logo.lens[0]).toBeGreaterThan(tl.logo.reveal[0]);
+    expect(tl.logo.light[0]).toBeGreaterThan(tl.logo.trace[0]);
+    expect(tl.logo.figures[0][0]).toBeGreaterThan(tl.logo.light[0]);
+    for (let i = 1; i < tl.logo.figures.length; i++) expect(tl.logo.figures[i][0]).toBeGreaterThan(tl.logo.figures[i - 1][0]);
     expect(tl.logo.deploy).toBeNull();
     expect(tl.exit[0]).toBeGreaterThanOrEqual(tl.logo.end);
   });
   it('version abrégée (nuit, lancement lent) : logo complet d’emblée, ≤ 600 ms', () => {
     const tl = introTimeline('short');
-    expect(stageProgress(0, tl.logo.reveal)).toBe(1);
-    expect(stageProgress(0, tl.logo.lens)).toBe(1);
+    expect(stageProgress(0, tl.logo.trace)).toBe(1);
+    expect(tl.logo.figures.every((st) => stageProgress(0, st) === 1)).toBe(true);
+    expect(stageProgress(0, tl.logo.name)).toBe(1);
     expect(tl.total).toBeLessThanOrEqual(intro.shortHoldMs + intro.shortExitMs);
   });
   it('économie d’énergie : jamais d’introduction', () => {

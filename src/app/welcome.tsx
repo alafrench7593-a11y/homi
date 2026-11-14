@@ -1,5 +1,5 @@
 /**
- * Accueil sans compte (HOMI, entrée Keynote) : le mot-symbole HOMI en en-tête, UN point focal (la lentille du logotype
+ * Accueil sans compte (HOMI, entrée Keynote) : la maison HOMI et son nom en en-tête, UN point focal (la maison HOMI
  * sur le halo de la palette, révélée en profondeur), un titre, une phrase, UNE action principale (« Commencer »). Texte et boutons sont là dès la première
  * image : seule la scène s'anime. Options en boutons ronds (langue) ; l'aide reste nommée en toutes lettres.
  * Couleurs : thème uniquement.

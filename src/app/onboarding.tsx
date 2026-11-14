@@ -28,7 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { INTERESTS, interestHint, interestLabel, journeyOptions, reminderSuggestions, type Interest } from '@/lib/domain/journeys';
 import { formatList, getLocale, t as tr } from '@/i18n';
 import { BRAND } from '@/config/brand';
-import { BrandWordmark } from '@/components/BrandLogo';
+import { BrandName } from '@/components/BrandLogo';
 import { eq } from '@/lib/backend';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
 import { CheckRow, LegalLink } from '@/features/auth';
@@ -289,7 +289,7 @@ export default function Onboarding() {
       {step === 'intro' && (
         <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: compact ? 0 : spacing.md }}>
           <FocalMark logo size={compact ? 140 : 240} />
-          <BrandWordmark height={compact ? 20 : 26} header={false} />
+          <View accessible accessibilityRole="image" accessibilityLabel={BRAND.name}><BrandName size={compact ? 22 : 30} /></View>
           <Text variant="hero" center accessibilityRole="header">{tr('onb.welcome')}</Text>
           <Text center muted style={{ maxWidth: 340 }}>
             {tr('onb.welcomeBody', { app: BRAND.name })}

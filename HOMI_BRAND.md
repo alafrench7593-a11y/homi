@@ -2,80 +2,51 @@
 
 Nom de travail : **HOMI — Your Family, One Home**. Disponibilité (INPI, EUIPO, stores, domaines) **non vérifiée** : à faire avant tout investissement marketing.
 
-## Logo — v4 « lentille » (14/11/2026)
+## Logo — v5 « maison » (14/11/2026)
 
-Décision du propriétaire : le pictogramme maison + famille, détaché du nom, est **remplacé** par un **logotype
-complet** : les quatre lettres H · O · M · I sont dessinées ensemble, et le **O est une lentille de verre** sertie
-dans un anneau — un reflet (croissant, en haut à gauche) capte la lumière ; une caustique pêche (en bas à droite) la
-transmet au reste du mot (lueur lilas portée sur le M et le I). Dessin vectoriel ORIGINAL : capitales construites sur
-une grille de 100 (fût de 20, angles arrondis de 3,2 / 1,6), O à dépassement optique (rayon 52), aucune police rendue
-en texte — le logo est identique sur iOS, Android, web et dans les PNG. Ce n'est la copie d'aucun logo existant.
+**Décision du propriétaire (14/11/2026) : le logotype « lentille » v4 (commit `a76b511`, O lentille de verre) est
+ABANDONNÉ.** Retour au logo MAISON, logo officiel : une maison violette aux contours lumineux, deux parents et deux
+enfants au centre (silhouettes blanc → lavande ; parents identiques, aucun stéréotype de genre). Dessin d'origine (v1–v3,
+13/11/2026) inchangé ; seules les couleurs sont accordées aux fonds actuels :
 
-### Deux pistes explorées (`assets/brand/explorations/`)
+| Variante | Fond | Maison | Contour | Silhouettes | Nom « HOMI » |
+|---|---|---|---|---|---|
+| claire | ivoire `#F1EEE7` | violet `#7A52E6` → `#3F2196` | `#F4EFFF` → `#C3B0FA` → `#8C6FEA` sur un liseré `#2E1872` (net sur ivoire) | `#FFFFFF` → `#D9CCFF` | `#2A1A66` |
+| sombre | obsidienne `#06090B` | violet `#7C55EA` → `#3B1E8E` | `#FFFFFF` → `#D6C8FF` → `#9F86F2` | `#FFFFFF` → `#D6C8FF` | `#F2EEFF` |
+| monochrome | — | contour épais (14 u) | — | pleines | couleur du texte |
 
-| Piste | Idée | Fichiers |
-|---|---|---|
-| 1 — **lentille** (retenue) | le O devient une lentille de verre qui capte et transmet un reflet au mot | `piste1-lentille-{wordmark,sign}-{light,dark,mono}.svg` |
-| 2 — foyer & lien | le H porte un toit (pignon : le foyer), le O est fait de deux anneaux entrelacés (le lien), M et I liés par une ligature en pied | `piste2-foyer-{wordmark,sign}-{light,dark,mono}.svg` |
+Lisibilité vérifiée de 16 à 1024 px (planche en tailles réelles : `node scripts/homi/brand.mjs --planche` →
+`assets/brand/preview/planche-maison.png`) : la maison et ses quatre silhouettes restent distinctes dès 24 px ; à 16 px
+la maison violette au contour clair reste identifiable (favicon, onglets).
 
-Planche comparative en tailles réelles (mot à 16 / 24 / 32 / 48 / 96 px de haut, signe à 16–48 px ; clair, sombre,
-monochrome) : `explorations/planche-pistes.png`. Mesures (monochrome noir sur blanc, `explorations/mesures.json`,
-régénérées par `node scripts/homi/brand.mjs --explorations`) :
-
-| Hauteur du mot | Lecture du nom — piste 1 | piste 2 | Contreformes (trous) — piste 1 | piste 2 |
-|---|---|---|---|---|
-| 16 px | **91,3 %** | 74,9 % | 1 | 5 |
-| 24 px | **94,2 %** | 76,4 % | 1 | 7 |
-| 32 px | **95,0 %** | 76,2 % | 1 | 13 |
-| 48 px | **96,5 %** | 76,7 % | 1 | 9 |
-| 96 px | 97,3 % | 76,0 % | 1 | 11 |
-
-- *Lecture du nom* : corrélation entre le mot rendu en petit (agrandi) et des capitales canoniques H · O · M · I
-  tracées sur la même grille. Biais assumé : la piste 1 garde ces capitales et n'ajoute que le reflet, elle part donc
-  favorite ; la mesure répond à la seule question qui compte en petit format — **le nom HOMI se lit-il encore ?** La
-  piste 2 plafonne à ≈ 76 % : le double anneau se lit « OO » (« HOOMI ») et la ligature MI se lit « Ш ».
-- *Contreformes* : la lentille garde exactement la même contreforme de 16 à 96 px (aucune fusion) ; la piste 2 passe de
-  5 à 13 trous selon la taille — les anneaux entrelacés se bouchent ou se fragmentent.
-- *Distinction du signe* (signe comparé à sa forme générique : anneau sans reflet / H à traverse droite) : piste 1
-  1,8 → 3,4 points de 16 à 48 px, piste 2 2,0 → 3,9. Le toit du H se distingue un peu plus d'un H ordinaire ; mais un
-  H seul ne dit pas HOMI, alors que l'anneau + reflet est le O du mot, et le verre en couleur le rend immédiatement
-  identifiable (icône).
-
-**Choix : piste 1**, la plus reconnaissable en petit format et en monochrome (nom lisible, dessin stable, un seul
-détail signature qui survit jusqu'à 16 px : le reflet dans le O).
-
-### Fichiers (piste retenue)
+### Fichiers
 
 | Fichier | Usage |
 |---|---|
-| `assets/brand/homi-wordmark-light.svg` | mot-symbole, version **claire** (fond ivoire : encre bleu brume, verre bleu brume / pêche, reflet lilas) |
-| `assets/brand/homi-wordmark-dark.svg` | version **sombre** (fond obsidienne : lettres nacrées éclairées de haut à gauche, verre fumé, lumière directionnelle) |
-| `assets/brand/homi-wordmark-mono.svg` | **monochrome** (`currentColor`) : anneau + reflet plein ; impression, gravure, petits formats |
-| `assets/brand/homi-sign-{light,dark,mono}.svg` | **signe compact** = la lentille du O (même tracé, recadré) |
-| `assets/brand/homi-app-icon.svg` | tuile d'icône : la lentille sur obsidienne, halo bleu brume |
-| `assets/icon.png`, `android-icon-{foreground,background,monochrome}.png`, `splash-icon.png` (clair), `splash-icon-dark.png`, `favicon.png` | générés pour Expo (`app.config.ts` : fond adaptatif `#06090B`, écran de lancement ivoire `#F1EEE7` / obsidienne `#06090B`) |
-| `assets/brand/preview/icon-{24,48,1024}.png` | aperçus de l'icône (`--preview`) |
-| `src/brand/homiMarkSvg.ts` | mêmes tracés pour l'application (SVG complets, lettres, lentille, calques de l'animation, couleurs) |
+| `assets/brand/homi-mark-{light,dark,mono}.svg` | la maison : claire (ivoire), sombre (obsidienne), monochrome (`currentColor`) ; `homi-mark.svg` = claire |
+| `assets/brand/homi-app-icon.svg` | tuile d'icône : la maison sur obsidienne, halo violet |
+| `assets/icon.png`, `android-icon-{foreground,background,monochrome}.png`, `splash-icon.png` (claire), `splash-icon-dark.png`, `favicon.png` | générés pour Expo (`app.config.ts` : fond adaptatif `#06090B`, écran de lancement ivoire `#F1EEE7` / obsidienne `#06090B`) |
+| `src/brand/homiMarkSvg.ts` | mêmes tracés pour l'application (SVG complets, maison, longueur du contour, silhouettes, couleurs) |
 
-Source unique : `node scripts/homi/brand.mjs` régénère tout ; `--explorations` ajoute les pistes, la planche et les
-mesures ; `--preview` les aperçus d'icône. Test : `src/__tests__/homiLogo.test.tsx` (SVG livrés = module de l'app,
-aucune police, calques = mot-symbole).
+Source unique : `node scripts/homi/brand.mjs`. Test : `src/__tests__/homiLogo.test.tsx`.
 
-### Composants
+### Composants (`src/components/BrandLogo.tsx`)
 
-- `BrandWordmark` (`src/components/BrandLogo.tsx`) : mot-symbole fixe — `height`, `tone` (`auto` | `light` | `dark` |
-  `mono` + `color`), annoncé « HOMI » (en-tête par défaut, `header={false}` ou `decorative`).
-- `BrandLogo` (API inchangée `size`, `style`) : le signe compact (lentille) ; `BrandMono`, `BrandShine`, `BrandLine`.
-- `HomiLogoAnimated` (`src/components/HomiLogoAnimated.tsx`) : le logo animé comme un seul objet — voir
-  `MOTION_SYSTEM.md` › « Logotype animé ».
+- `BrandLogo` (API inchangée `size`, `style` ; `tone` facultatif) : la maison ; `BrandMono`, `BrandShine`, `BrandLine`.
+- `BrandName` : le nom « HOMI » dans la typographie de l'app (Space Grotesk 700), couleur de la marque, taille fixe.
+- `BrandWordmark` (`height`, `tone`, `color`, `decorative`, `header`, `testID`) : maison + nom HOMI à côté.
+- `BrandStack` : maison + nom dessous (composition du logo animé, écran de chargement, introduction).
+- `HomiLogoAnimated` : le logo animé — voir `MOTION_SYSTEM.md` › « Logo animé ».
 
-Où : en-tête de l'accueil sans compte, connexion et inscription (lentille + mot-symbole au-dessus du titre),
-onboarding, introduction (/cinematic : logo animé ; diapositives : mot-symbole), écran de chargement, Réglages › À
-propos, écran de lancement natif. Le Paywall garde le signe compact.
+Où : en-tête de l'accueil sans compte (maison + nom) et point focal (maison) ; connexion, inscription, onboarding
+(maison en point focal + nom HOMI) ; introduction (/cinematic : logo animé ; diapositives : maison + nom) ; écran de
+chargement ; Réglages › À propos ; Paywall (maison) ; écran de lancement natif ; « Découvrir HOMI ».
 
-***À faire** : validation par la propriétaire ; disponibilité juridique du nom (voir plus haut).
+***À faire** : disponibilité juridique du nom (voir plus haut).
 
-Historique : v1–v3 (13/11/2026) maison lumineuse + deux parents et deux enfants (dessin retiré le 14/11/2026).
+Historique : v1–v3 (13/11/2026) maison lumineuse + famille ; v4 (14/11/2026) logotype « lentille » — abandonné le
+14/11/2026 par décision du propriétaire, fichiers supprimés (`homi-wordmark-*`, `homi-sign-*`, `explorations/`) ;
+v5 (14/11/2026) retour à la maison, couleurs accordées à ivoire / obsidienne, animation full motion.
 
 ## Palette v3 « Désert sci-fi » (13/11/2026, verrouillée par `src/__tests__/contrast.test.ts`)
 

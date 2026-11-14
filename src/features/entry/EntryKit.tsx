@@ -17,7 +17,8 @@ import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Icon, type IconName, Text } from '@/components/ui';
-import { BrandLogo, BrandWordmark } from '@/components/BrandLogo';
+import { BrandLogo, BrandName, BrandWordmark } from '@/components/BrandLogo';
+import { BRAND } from '@/config/brand';
 import { durations } from '@/motion/curves';
 import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -87,7 +88,7 @@ export function FocalGlow({ size }: { size: number }) {
 }
 
 /**
- * Point focal : halo de la palette + disque en dégradé portant une icône (ou la lentille du logotype HOMI).
+ * Point focal : halo de la palette + disque en dégradé portant une icône (ou la maison HOMI).
  * Décor uniquement (masqué aux lecteurs d'écran) ; se révèle en profondeur.
  */
 export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolean; size: number }) {
@@ -110,7 +111,8 @@ export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolea
 
 /**
  * En-tête Keynote : point focal, titre, une phrase. Titre et phrase sont là dès la première image.
- * `wordmark` : le nom HOMI (mot-symbole vectoriel) se lit au-dessus du titre — connexion, inscription.
+ * `wordmark` : le nom HOMI se lit au-dessus du titre — connexion, inscription. Avec `logo` (la maison est déjà le
+ * point focal) : le nom seul, dans la typographie de la marque ; sinon maison + nom (`BrandWordmark`).
  */
 export function EntryHero({ icon, logo, wordmark, title, lead, kicker, testID }: { icon?: IconName; logo?: boolean; wordmark?: boolean; title: string; lead?: string; kicker?: string; testID?: string }) {
   const t = useTheme();
@@ -118,7 +120,9 @@ export function EntryHero({ icon, logo, wordmark, title, lead, kicker, testID }:
   return (
     <View testID={testID} style={{ alignItems: 'center', gap: compact ? spacing.xs : spacing.sm, paddingTop: compact ? 0 : spacing.sm }}>
       <FocalMark icon={icon} logo={logo} size={compact ? 104 : 168} />
-      {wordmark ? <BrandWordmark height={compact ? 18 : 24} header={false} testID="entry-wordmark" /> : null}
+      {wordmark ? (logo
+        ? <View testID="entry-wordmark" accessible accessibilityRole="image" accessibilityLabel={BRAND.name}><BrandName size={compact ? 22 : 28} /></View>
+        : <BrandWordmark height={compact ? 18 : 24} header={false} testID="entry-wordmark" />) : null}
       {kicker ? <Text variant="label" color={t.colors.primary} center>{kicker}</Text> : null}
       <Text variant="title" center accessibilityRole="header" style={{ maxWidth: 360 }}>{title}</Text>
       {lead ? <Text center muted style={{ maxWidth: 340 }}>{lead}</Text> : null}

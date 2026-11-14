@@ -1,9 +1,9 @@
 /**
- * Introduction HOMI de première ouverture (logotype v4 « lentille », 14/11/2026).
- * 100 % vectorielle (react-native-svg + Reanimated), ≈ 2,4 s, aucun fichier vidéo — le logo s'anime comme UN objet :
- *  - un reflet balaie le mot HOMI et le révèle (le nom est lisible dès la première seconde) ;
- *  - la lentille du O prend du volume ;
- *  - la lentille se DÉPLOIE en premier panneau (verre de la palette) où se pose la phrase d'accroche ;
+ * Introduction HOMI de première ouverture (logo v5 « maison », 14/11/2026).
+ * 100 % vectorielle (react-native-svg + Reanimated), ≈ 2,5 s, aucun fichier vidéo — le logo s'anime comme UN objet :
+ *  - le contour de la maison se trace, un reflet court sur le bord ; la maison s'illumine ;
+ *  - parent, parent, enfant, enfant apparaissent (léger rebond) ; le nom HOMI se révèle dans la lumière ;
+ *  - la maison se DÉPLOIE en premier panneau de verre où se pose la phrase d'accroche ;
  *  - puis l'écran suivant arrive en fondu (navigation).
  * Règles : « Passer » toujours visible, en bas à portée de pouce (≥ 48 px, jamais sous la pastille « Démo ») ;
  * « Réduire les animations » ou économie d'énergie → aucune animation, sortie immédiate ; thème nuit → version
@@ -15,7 +15,7 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, ReduceMotion, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { logoTimeline, stageProgress, type LensPanelTarget } from '@/brand/logoMotion';
+import { logoTimeline, stageProgress, type HousePanelTarget } from '@/brand/logoMotion';
 import { HomiLogoAnimated } from '@/components/HomiLogoAnimated';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Text } from '@/components/ui';
@@ -27,12 +27,12 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { DepthReveal, FocalGlow } from './EntryKit';
 
 /** Pose finale (nom + accroche lisibles dans le panneau) avant de passer la main à l'écran suivant. */
-export const HOMI_INTRO_HOLD_MS = 520;
+export const HOMI_INTRO_HOLD_MS = 420;
 /** La phrase se pose dans le panneau quand il a parcouru 55 % de son déploiement. */
 const TAGLINE_AT = 0.55;
 const TAGLINE_MS = 380;
 
-/** Durée totale (pure, testée) : logo (reflet → volume → panneau) + pose. 'short' : nuit (fondus). */
+/** Durée totale (pure, testée) : logo (tracé → illumination → famille → nom → panneau) + pose. 'short' : nuit (fondus). */
 export function homiIntroDuration(mode: 'full' | 'short'): number {
   return logoTimeline(mode === 'short' ? 'minimal' : 'full', true).end + HOMI_INTRO_HOLD_MS;
 }
@@ -64,7 +64,7 @@ export function HomiIntro({ onDone }: { onDone: () => void }) {
 
   // Panneau cible : l'emplacement de la phrase d'accroche, mesuré dans la fenêtre
   const slot = useRef<View>(null);
-  const [target, setTarget] = useState<LensPanelTarget | null>(null);
+  const [target, setTarget] = useState<HousePanelTarget | null>(null);
   const measureSlot = useCallback(() => {
     slot.current?.measureInWindow?.((x, y, w, h) => {
       if (w > 0 && h > 0) setTarget({ x, y, width: w, height: h, radius: radius.lg, fill: t.material.glass.floating.fill, edge: t.material.glass.floating.edge });
@@ -77,7 +77,7 @@ export function HomiIntro({ onDone }: { onDone: () => void }) {
     return { opacity: p, transform: [{ translateY: 6 * (1 - p) }] };
   });
 
-  const logoWidth = Math.round(Math.min(width * 0.72, 330, height * 0.6));
+  const logoWidth = Math.round(Math.min(width * 0.58, 250, height * 0.34));
   const panelWidth = Math.round(Math.min(width - spacing.lg * 2, 360));
   const glow = Math.round(Math.min(width * 1.2, 520));
   if (m.off) return <View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.background }]} />;

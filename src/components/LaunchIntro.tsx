@@ -1,8 +1,9 @@
 /**
- * Introduction d'ouverture HOMI (lancement à froid, ≈ 2 s, Reanimated + react-native-svg) — logotype v4 « lentille » :
- * dans la continuité de l'écran de lancement natif (même fond, même mot-symbole), un reflet balaie le mot HOMI et le
- * révèle, la lentille du O prend du volume, pose sur le logo complet — identique à BrandWordmark —, puis le calque
- * s'efface sur l'accueil avec une très légère avancée (profondeur). Logo : `HomiLogoAnimated` (même horloge).
+ * Introduction d'ouverture HOMI (lancement à froid, ≈ 2,2 s, Reanimated + react-native-svg) — logo v5 « maison » :
+ * dans la continuité de l'écran de lancement natif (même fond, même maison), le contour de la maison se trace (un
+ * reflet court sur le bord), la maison s'illumine, parent, parent, enfant, enfant apparaissent, le nom HOMI se révèle
+ * dans la lumière, pose sur le logo complet — identique à BrandStack —, puis le calque s'efface sur l'accueil avec une
+ * très légère avancée (profondeur). Logo : `HomiLogoAnimated` (même horloge).
  *
  * Ne ralentit jamais le lancement :
  *  - le premier écran et ses données se chargent EN DESSOUS pendant l'animation (rien n'attend celle-ci) ;
@@ -47,10 +48,10 @@ export function shouldPlayLaunchIntro(o: { alreadyPlayed: boolean; reduceMotion:
 export type IntroTimeline = { logo: LogoTimeline; exit: Stage; total: number };
 
 /** Logo complet d'emblée (version abrégée) : toutes les étapes terminées à l'instant 0. */
-const LOGO_DONE: LogoTimeline = { fadeIn: [0, 0], reveal: [0, 0], lens: [0, 0], deploy: null, end: 0 };
+const LOGO_DONE: LogoTimeline = { ...logoTimeline('minimal'), fadeIn: [0, 0], end: 0 };
 
 /**
- * Chorégraphie (pure, testée). 'full' : reflet qui révèle le mot → volume de la lentille → pose → fondu du calque.
+ * Chorégraphie (pure, testée). 'full' : tracé → illumination → parents → enfants → nom → pose → fondu du calque.
  * 'short' (nuit, lancement lent) : logo complet d'emblée, courte pose, fondu.
  */
 export function introTimeline(mode: 'full' | 'short'): IntroTimeline {
@@ -66,7 +67,7 @@ export function introTimeline(mode: 'full' | 'short'): IntroTimeline {
 export function LaunchIntro() {
   const t = useTheme();
   const m = useMotion();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const [phase, setPhase] = useState<Phase>(() => (played ? 'done' : 'wait'));
   const [hydrated, setHydrated] = useState(() => useUiStore.persist?.hasHydrated?.() ?? true);
   useEffect(() => (hydrated ? undefined : useUiStore.persist?.onFinishHydration?.(() => setHydrated(true))), [hydrated]);
@@ -121,7 +122,7 @@ export function LaunchIntro() {
   });
 
   if (phase === 'done') return null;
-  const logoWidth = Math.round(Math.min(width * 0.62, 300));
+  const logoWidth = Math.round(Math.min(width * 0.6, height * 0.36, 280));
   return (
     <Animated.View
       testID="launch-intro"

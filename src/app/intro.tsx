@@ -28,7 +28,7 @@ import { duration, easing, stagger, timeTo } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { alpha, NATIVE_DRIVER, radius, spacing, typography } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { BrandWordmark } from '@/components/BrandLogo';
+import { BrandStack } from '@/components/BrandLogo';
 
 type Scene = 'welcome' | 'cycle' | 'project' | 'pregnancy' | 'baby' | 'journal' | 'together' | 'start';
 export const INTRO_SCENES: Scene[] = ['welcome', 'cycle', 'project', 'pregnancy', 'baby', 'journal', 'together', 'start'];
@@ -65,12 +65,12 @@ function useEnter(ms: number, delay = 0) {
 }
 const rise = (v: Animated.Value, from = 10) => ({ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [from, 0] }) }] });
 
-/** Mot-symbole HOMI (logotype v4) : opacité progressive, très légère translation, puis stabilisation. */
+/** Logo HOMI (maison + nom) : opacité progressive, très légère translation, puis stabilisation. */
 function LogoMark({ size }: { size: number }) {
   const v = useEnter(900, 120);
   return (
     <Animated.View testID="intro-logo" style={{ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }, { scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }}>
-      <BrandWordmark height={Math.round(size * 0.36)} />
+      <BrandStack width={Math.round(size * 0.92)} testID="intro-brand" />
     </Animated.View>
   );
 }
