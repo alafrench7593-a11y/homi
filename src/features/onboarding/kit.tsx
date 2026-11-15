@@ -14,7 +14,11 @@ import { durations, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
-/** Entrée d'une étape (montée avec `key` = étape). */
+/**
+ * Entrée d'une étape (montée avec `key` = étape) : fondu + montée VERTICALE de 12 px. Pas de glissement horizontal :
+ * sur le web, un contenu décalé vers la droite pendant l'entrée élargissait la zone qui défile, et un appui à ce
+ * moment-là la faisait défiler horizontalement (contenu coupé à gauche à 320 px).
+ */
 export function StepFade({ dir, children, style }: { dir: number; children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   const m = useMotion();
   const p = useSharedValue(m.off ? 1 : 0);
@@ -27,7 +31,7 @@ export function StepFade({ dir, children, style }: { dir: number; children: Reac
   const moves = m.level === 'full';
   const a = useAnimatedStyle(() => ({
     opacity: p.value,
-    transform: [{ translateX: moves ? (1 - p.value) * 16 * Math.sign(dir || 1) : 0 }],
+    transform: [{ translateY: moves ? (1 - p.value) * 12 * (dir < 0 ? -1 : 1) : 0 }],
   }));
   return <Animated.View style={[style, a]}>{children}</Animated.View>;
 }

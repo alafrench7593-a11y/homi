@@ -56,8 +56,25 @@ def detect(pg, tag):
     found = pg.evaluate('() => window.__homiDetect ? window.__homiDetect() : []') or []
     # La pastille « Démo » et le fond ne font pas partie du parcours
     found = [f for f in found if 'Démo' not in str(f.get('text', ''))]
+    # Défilement horizontal (fenêtre ou conteneur) et boîtes visibles hors de 0..largeur (décor de scène exclu)
+    found += pg.evaluate("""() => {
+      const vw = window.innerWidth, out = [];
+      if (window.scrollX || document.scrollingElement.scrollLeft) out.push({ kind: 'defilement_horizontal_fenetre', x: window.scrollX });
+      for (const el of document.querySelectorAll('body *')) {
+        if (el.closest('svg') || el.closest('[aria-hidden="true"]')) continue;
+        const cs = getComputedStyle(el);
+        if (cs.visibility === 'hidden' || cs.display === 'none' || parseFloat(cs.opacity) === 0) continue;
+        if (el.scrollLeft > 0 && el.scrollWidth > el.clientWidth && !/(auto|scroll)/.test(cs.overflowX)) out.push({ kind: 'conteneur_decale', text: (el.innerText || '').slice(0, 40), x: el.scrollLeft });
+        if (el.scrollLeft > 0 && /(auto|scroll)/.test(cs.overflowY) && !/(auto|scroll)/.test(cs.overflowX)) out.push({ kind: 'zone_defilement_decalee', text: (el.innerText || '').slice(0, 40), x: el.scrollLeft });
+        const r = el.getBoundingClientRect();
+        if (!r.width || !r.height || r.bottom < 0 || r.top > window.innerHeight) continue;
+        const txt = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+        if (txt && (r.left < -1 || r.right > vw + 1)) out.push({ kind: 'hors_largeur', text: el.textContent.trim().slice(0, 40), l: Math.round(r.left), r: Math.round(r.right) });
+      }
+      return out.slice(0, 8);
+    }""") or []
     if found:
-        overflow.append({tag: found[:6]})
+        overflow.append({tag: found[:8]})
 
 
 def shot(pg, name, tag):
@@ -102,7 +119,8 @@ def flow(b, w, h, scheme, main=False):
     if main:
         R['1_titre_visible'] = pg.get_by_role('heading', name='Bienvenue chez vous').is_visible()
         R['1_bouton_dans_ecran'] = in_view(pg, tid(pg, 'onb-start'))
-    tid(pg, 'onb-start').click(); pg.wait_for_timeout(700)
+    # 320 px : appui IMMÉDIAT pendant l'entrée de l'étape (cause du contenu coupé à gauche : défilement horizontal parasite)
+    tid(pg, 'onb-start').click(); pg.wait_for_timeout(60 if w == 320 else 700)
     # ---------------------------------------------------------------- 2. situation
     if main:
         tid(pg, 'onb-next').click(); pg.wait_for_timeout(400)

@@ -75,6 +75,8 @@ function TopCard({ task, index, total, drag, width, height, left, right, onAssig
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const enter = useSharedValue(m.off ? 1 : 0);
+  // 0 → 1 : la carte rejoint la personne (elle se réduit et s'efface DANS l'avatar, sans sortir de l'écran)
+  const gone = useSharedValue(0);
   const level = m.level;
   useEffect(() => {
     drag.value = 0;
@@ -86,15 +88,22 @@ function TopCard({ task, index, total, drag, width, height, left, right, onAssig
     'worklet';
     const who = side < 0 ? left.who : right.who;
     if (level === 'off') { scheduleOnRN(commit, who); return; }
-    drag.value = withTiming(0, { duration: 220 });
-    // départ rapide vers la personne (ease-out fort), la vitesse du lancer raccourcit le trajet
-    x.value = withTiming(side * width * 1.1, { duration: Math.abs(vx) > FLING ? 160 : 220, easing: Easing.bezier(0.23, 1, 0.32, 1) }, (done) => { if (done) scheduleOnRN(commit, who); });
+    const ms = Math.abs(vx) > FLING ? 200 : 260;
+    const ease = Easing.bezier(0.23, 1, 0.32, 1);
+    drag.value = withTiming(0, { duration: ms });
+    // vers le centre de l'avatar visé (quart de la largeur, au-dessus de la pile), ease-out fort ; le lancer raccourcit le trajet
+    x.value = withTiming(side * width * 0.25, { duration: ms, easing: ease });
+    y.value = withTiming(-(height / 2 + 92), { duration: ms, easing: ease });
+    gone.value = withTiming(1, { duration: ms, easing: ease }, (done) => { if (done) scheduleOnRN(commit, who); });
   };
   const pan = Gesture.Pan()
     .activeOffsetX([-8, 8])
     .failOffsetY([-14, 14])
     .onUpdate((e) => {
-      x.value = e.translationX;
+      // au-delà de 35 % de la largeur, résistance : la carte reste presque entière à l'écran
+      const lim = width * 0.35;
+      const ax = Math.abs(e.translationX);
+      x.value = ax > lim ? Math.sign(e.translationX) * (lim + (ax - lim) * 0.3) : e.translationX;
       y.value = e.translationY * 0.2;
       drag.value = e.translationX;
     })
@@ -110,12 +119,12 @@ function TopCard({ task, index, total, drag, width, height, left, right, onAssig
       }
     });
   const card = useAnimatedStyle(() => ({
-    opacity: enter.value,
+    opacity: enter.value * (1 - gone.value),
     transform: [
       { translateX: x.value },
       { translateY: y.value + (1 - enter.value) * 10 },
       { rotate: `${interpolate(x.value, [-width, width], [-9, 9], Extrapolation.CLAMP)}deg` },
-      { scale: 0.96 + 0.04 * enter.value },
+      { scale: (0.96 + 0.04 * enter.value) * (1 - 0.78 * gone.value) },
     ],
   }));
   return (

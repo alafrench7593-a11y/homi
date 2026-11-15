@@ -1,7 +1,7 @@
 /**
  * Écran Premium v2 (15/11/2026) — utilisé par /premium (plein écran) et par PremiumGate (écran réservé, `locked`).
- *  - En tête : la maison HOMI animée (HomiLogoAnimated : tracé, lumière, famille, nom ; Réduire les animations →
- *    image finale), puis le contenu en cascade courte.
+ *  - En tête : la maison HOMI (petite, image fixe sous 120 px), titre court ; puis les formules et le bouton principal,
+ *    visibles sans défiler à 390 × 844 ; ensuite la frise d'essai, les avantages (compacts), mentions et liens.
  *  - Avantages RÉELS de Premium (verrouillage strict, src/lib/premium/access.ts : suivi des enfants, cycle / grossesse /
  *    post-partum, organisation du foyer, partage avec UN co-parent, communauté), en phrases courtes.
  *  - 3 formules aux prix de la boutique (RevenueCat ; démonstration : DEMO_GRID signalée), l'annuelle en tête avec un
@@ -55,13 +55,10 @@ function Benefits() {
   return (
     <View testID="pw2-benefits" style={{ gap: spacing.xs }}>
       <Text variant="label" accessibilityRole="header">{tr('pay2.benTitle')}</Text>
-      <View accessibilityRole="list" style={{ borderRadius: radius.lg, borderWidth: 1, borderColor: th.colors.border, backgroundColor: th.colors.surface, paddingHorizontal: spacing.md }}>
-        {BENEFITS.map((b, i) => (
-          <View key={b.key} accessible accessibilityLabel={tr(`pay2.ben.${b.key}`)}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 10, borderTopWidth: i ? 1 : 0, borderTopColor: th.colors.border }}>
-            <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: th.colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={b.icon} size={16} color={th.colors.primary} />
-            </View>
+      <View accessibilityRole="list" style={{ gap: 6 }}>
+        {BENEFITS.map((b) => (
+          <View key={b.key} accessible accessibilityLabel={tr(`pay2.ben.${b.key}`)} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm }}>
+            <Icon name={b.icon} size={16} color={th.colors.primary} />
             <Text variant="small" style={{ flex: 1 }}>{tr(`pay2.ben.${b.key}`)}</Text>
           </View>
         ))}
@@ -226,22 +223,23 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
 
   const hero = (
     <Cascade index={0}>
-      <View style={{ alignItems: 'center', gap: spacing.xs, paddingTop: spacing.sm }}>
-        <HomiLogoAnimated width={84} still={locked} testID="pw2-logo" />
-        <Text variant="caption" weight="bold" color={th.colors.primary} style={{ letterSpacing: 1.6, marginTop: spacing.xs }}>{tr('pay2.eyebrow').toUpperCase()}</Text>
+      <View style={{ alignItems: 'center', gap: 4 }}>
+        <HomiLogoAnimated width={64} still={locked} testID="pw2-logo" />
+        <Text variant="caption" weight="bold" color={th.colors.primary} style={{ letterSpacing: 1.6 }}>{tr('pay2.eyebrow').toUpperCase()}</Text>
         <Text variant="title" center accessibilityRole="header" testID="pw2-title">{locked ? tr('pw.locked') : tr('pay2.title')}</Text>
         {!subscriber ? (
-          <Text variant="body" muted center testID="pw2-lead">{trial ? tr('pay2.lead.trial', { count: chosen!.trialDays }) : tr('pay2.lead')}</Text>
+          <Text variant="small" muted center testID="pw2-lead">{trial ? tr('pay2.lead.trial', { count: chosen!.trialDays }) : tr('pay2.lead')}</Text>
         ) : null}
         {locked ? <Text variant="small" muted center>{tr('pw.lockedBody')}</Text> : null}
       </View>
     </Cascade>
   );
 
+  // Ordre (19/11/2026) : formules + bouton principal visibles sans défiler (390 × 844), puis frise d'essai, avantages
+  // compacts, mentions, restauration et liens.
   const offer = (
     <>
-      <Cascade index={1}><Benefits /></Cascade>
-      <Cascade index={2}>
+      <Cascade index={1}>
         <View style={{ gap: spacing.sm }}>
           <Text variant="label" accessibilityRole="header">{tr('pay2.plansTitle')}</Text>
           {webWithoutPurchase(plans.mode) ? <WebPurchaseNotice /> : plans.mode === 'unavailable' ? (
@@ -257,14 +255,15 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
         </View>
       </Cascade>
       {chosen && purchasable ? (
-        <Cascade index={3}>
+        <Cascade index={2}>
           <View style={{ gap: spacing.md }}>
-            {trial ? <TrialTimeline plan={chosen} from={now} /> : null}
             <View style={{ gap: spacing.xs }}>
               <CtaButton label={ctaLabel(chosen)} hint={ctaHint(chosen, now)} loading={busy === 'buy'} disabled={!!busy} onPress={() => void buy()} />
               <Text variant="small" muted center testID="pw2-cta-hint">{ctaHint(chosen, now)}</Text>
             </View>
             <FeedbackBanner fb={fb} />
+            {trial ? <TrialTimeline plan={chosen} from={now} /> : null}
+            <Benefits />
             <View style={{ gap: 4 }} testID="pw2-fine">
               <Text variant="caption" muted>{tr('pay2.fine.renew', { price: chosen.price, per: perLong(chosen.period) })}</Text>
               <Text variant="caption" muted>{tr(cancelHintKey(Platform.OS))}</Text>
@@ -272,7 +271,12 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
             </View>
           </View>
         </Cascade>
-      ) : <FeedbackBanner fb={fb} />}
+      ) : (
+        <>
+          <FeedbackBanner fb={fb} />
+          <Cascade index={2}><Benefits /></Cascade>
+        </>
+      )}
       {purchasable ? (
         <Button label={tr('pay2.restore')} variant="ghost" icon="refresh-cw" loading={busy === 'restore'} disabled={!!busy} onPress={() => void doRestore()} testID="pw2-restore" />
       ) : null}
@@ -280,7 +284,7 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
   );
 
   const body = (
-    <View style={{ gap: spacing.md + 4, paddingBottom: spacing.xl }} testID={locked ? 'paywall-locked' : 'paywall'}>
+    <View style={{ gap: spacing.md, paddingBottom: spacing.xl }} testID={locked ? 'paywall-locked' : 'paywall'}>
       {hero}
       {subscriber ? <SubscriberPanel justActivated={activated} onContinue={onContinue} /> : offer}
       {onLater && !subscriber ? <Button label={tr('pay2.later')} variant="ghost" onPress={onLater} testID="pw2-later" /> : null}

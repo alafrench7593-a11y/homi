@@ -12,7 +12,7 @@
  * Les comptes qui ont terminé ne passent plus ici (src/app/index.tsx).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -86,6 +86,22 @@ export default function Onboarding() {
   // Démonstration : la pastille « Démo » flotte en haut ; l'écran (sans en-tête) lui laisse sa place
   const demoInset = useDemoInset();
   const demoTop = demoInset ? { paddingTop: insets.top + spacing.md + demoInset } : undefined;
+
+  // Web : aucun défilement horizontal parasite (focus d'un élément qui dépasse pendant une animation) ; le contenu
+  // reste aligné sur 0..largeur. Sans effet sur iOS / Android (zones de défilement verticales uniquement).
+  useEffect(() => {
+    if (Platform.OS !== 'web') return undefined;
+    const doc = (globalThis as unknown as { document?: Document }).document;
+    const win = globalThis as unknown as Window;
+    if (!doc) return undefined;
+    const onScroll = (e: Event) => {
+      const el = e.target as HTMLElement | Document | null;
+      if (el && 'scrollLeft' in el && el instanceof HTMLElement && el.scrollLeft && !/(auto|scroll)/.test(win.getComputedStyle(el).overflowX)) el.scrollLeft = 0;
+      if (win.scrollX) win.scrollTo(0, win.scrollY);
+    };
+    doc.addEventListener('scroll', onScroll, true);
+    return () => doc.removeEventListener('scroll', onScroll, true);
+  }, []);
 
   const journeys = useMemo(() => journeysFor(answers), [answers]);
   const interests = useMemo(() => interestsFor(answers), [answers]);

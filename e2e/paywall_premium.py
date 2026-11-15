@@ -113,6 +113,10 @@ def scenario_main(b):
     txt = T(pg)
     R['ouvre_premium'] = has(pg, 'premium-screen') and has(pg, 'pw2-title')
     R['fermeture_visible'] = has(pg, 'pw2-close')
+    # 390 × 844 : titre, les 3 formules et le bouton principal visibles sans défiler (19/11/2026)
+    R['formules_et_bouton_sans_defiler'] = pg.evaluate("""() => ['pw2-title', 'pw2-plan-annual', 'pw2-plan-six_months', 'pw2-plan-monthly', 'pw2-buy'].every((id) => {
+      const e = [...document.querySelectorAll(`[data-testid="${id}"]`)].find((x) => x.getBoundingClientRect().height > 0);
+      const r = e && e.getBoundingClientRect(); return !!r && r.top >= 0 && r.bottom <= window.innerHeight; })""")
     R['avantages_reels'] = has(pg, 'pw2-benefits') and 'Biberons, tétées, sommeil' in txt and 'co-parent' in txt
     R['prix_demo'] = all(x in txt for x in ['119,99 €', '69,99 €', '14,99 €'])
     R['economies_22_33'] = 'économie de 33 %' in txt and 'économie de 22 %' in txt and '11,67 € / mois' in txt and '10,00 € / mois' in txt
