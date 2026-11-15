@@ -5,8 +5,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ConsentPurpose, Journey } from './types';
 import type { ChildDraft, PregnancyDraft } from '@/features/profiles';
+import { sanitizeAnswers, type OnboardingAnswers } from './onboarding/personalize';
 
-export const ONBOARDING_STEPS = ['intro', 'journeys', 'pregnancy', 'children', 'feeding', 'reminders', 'consents'] as const;
+/**
+ * Étapes enregistrées dans le brouillon. Onboarding v2 (19/11/2026) : « intro » = ouverture, « journeys » = situation,
+ * puis besoins, formulaires, répartition, démonstration, synthèse (« reminders ») et accords. « feeding » : ancienne
+ * étape, reprise sur la synthèse.
+ */
+export const ONBOARDING_STEPS = ['intro', 'journeys', 'needs', 'household', 'pregnancy', 'children', 'split', 'demo', 'feeding', 'reminders', 'consents'] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 /** Réponse à « Votre bébé prend-il le biberon ? » (facultative). */
@@ -24,6 +30,8 @@ export interface OnboardingDraft {
   bottleFeeding: BottleFeeding;
   /** Centres d'intérêt facultatifs (santé, communauté) ; absent des anciens brouillons. */
   interests?: string[];
+  /** Onboarding v2 : réponses (situation, besoins, foyer, répartition) ; absent des anciens brouillons. */
+  answers?: OnboardingAnswers;
   /** Horodatage de la dernière sauvegarde (pour choisir la plus récente entre l'appareil et le profil). */
   savedAt?: string;
 }
@@ -43,7 +51,9 @@ export function restoreDraft(raw: string | null | undefined | object): Onboardin
   if (!d || d.v !== 1 || !Array.isArray(d.journeys) || !Array.isArray(d.children) || !d.consents) return null;
   const step = (ONBOARDING_STEPS as readonly string[]).includes(d.step as string) ? (d.step as OnboardingStep) : 'journeys';
   const interests = Array.isArray(d.interests) ? d.interests.filter((x): x is string => typeof x === 'string') : [];
-  return { ...(d as OnboardingDraft), step, interests };
+  const out: OnboardingDraft = { ...(d as OnboardingDraft), step, interests };
+  if (d.answers !== undefined) out.answers = sanitizeAnswers(d.answers);
+  return out;
 }
 
 const key = (userId: string) => `toietmoi.onboarding.${userId}`;
