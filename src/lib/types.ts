@@ -19,6 +19,9 @@ export interface Profile {
   theme: 'system' | 'light' | 'dark';
   /** Situation familiale (07/11/2026) : null = non renseignée. */
   family_situation?: FamilySituation | null;
+  /** Onboarding v2 (19/11/2026) : réponses du parcours d'accueil (lisibles par la personne seule). */
+  onboarding_answers?: Record<string, unknown> | null;
+  onboarding_version?: number | null;
   /** Photo de profil (07/11/2026) : chemin dans l'espace privé « profile-photos » ; null = initiale. */
   avatar_path?: string | null;
 }

@@ -1707,7 +1707,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     let profileCreated = false;
     if (!T('profiles').some((p) => p.id === userId)) {
       profileCreated = true;
-      T('profiles').push({ id: userId, display_name: null, journeys: [], interests: [], locale: 'fr', timezone: 'Europe/Paris', onboarding_completed: false, home_shortcuts: ['bottle', 'diaper', 'sleep', 'question'], hide_weight_module: false, theme: 'system' });
+      T('profiles').push({ id: userId, display_name: null, journeys: [], interests: [], locale: 'fr', timezone: 'Europe/Paris', onboarding_completed: false, onboarding_answers: null, onboarding_version: null, home_shortcuts: ['bottle', 'diaper', 'sleep', 'question'], hide_weight_module: false, theme: 'system' });
       T('privacy_settings').push({ user_id: userId, analytics_enabled: false, crash_reports_enabled: false, ai_history_enabled: false, ai_history_consented_at: null, community_visible: true, retention_months: 36 });
     }
     const member = T('household_members').find((m) => m.user_id === userId);
@@ -1880,6 +1880,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           }
           persist();
           return JSON.parse(JSON.stringify(rows)) as R[];
+        }
+        // Onboarding v2 (20261119000100_onboarding_answers.sql) : objet JSON borné, version 1 à 100
+        if (table === 'profiles' && ('onboarding_answers' in patch || 'onboarding_version' in patch)) {
+          const ans = patch.onboarding_answers;
+          if (ans != null && (typeof ans !== 'object' || Array.isArray(ans) || JSON.stringify(ans).length >= 8000)) throw new BackendError('profiles_onboarding_answers_shape', '23514');
+          const ver = patch.onboarding_version;
+          if (ver != null && (typeof ver !== 'number' || ver < 1 || ver > 100)) throw new BackendError('profiles_onboarding_version_range', '23514');
         }
         if (table === 'community_profiles') {
           for (const r of rows) {
