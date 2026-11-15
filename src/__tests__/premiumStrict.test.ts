@@ -87,9 +87,9 @@ describe('moteur local : même règle que le serveur', () => {
 });
 
 describe('formules', () => {
-  it('grille de démonstration 10,99 / 49,99 / 79,99, essai sur le mensuel seulement, économies calculées', () => {
+  it('grille de démonstration 14,99 / 69,99 / 119,99, essai de 3 jours sur les 3 formules, économies calculées (33 / 22 %)', () => {
     const plans = demoPlans('fr-FR');
-    expect(plans.map((p) => [p.period, p.price.replace(/\s/g, ' '), p.trialDays])).toEqual([['annual', '79,99 €', 0], ['six_months', '49,99 €', 0], ['monthly', '10,99 €', 3]]);
-    expect(plans.map((p) => p.savingsPct)).toEqual([39, 24, null]);
+    expect(plans.map((p) => [p.period, p.price.replace(/\s/g, ' '), p.trialDays])).toEqual([['annual', '119,99 €', 3], ['six_months', '69,99 €', 3], ['monthly', '14,99 €', 3]]);
+    expect(plans.map((p) => p.savingsPct)).toEqual([33, 22, null]);
   });
 });

@@ -20,6 +20,7 @@ import { eq } from './backend/types';
 import { localeTag, t as tr } from '@/i18n';
 import { deviceState, needsServerSync } from './premium/customerSync';
 import { notifySubscriptionChanged } from './premium/syncEvents';
+import { PurchaseError, purchaseErrorKind } from './premium/purchaseErrors';
 import { getPurchaseMode, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
 import type { SubRow } from './premium/entitlement';
 import { buildPlans, demoPlans, periodOfProduct, PREMIUM_ENTITLEMENT, productChangeFor, type Plan } from './premium/plans';
@@ -134,7 +135,15 @@ export async function applyTrialEligibility(plans: Plan[], os: string = Platform
 }
 
 // ---------------------------------------------------------------- achat, restauration, gestion
-export type PurchaseOutcome = 'confirmed' | 'pending' | 'cancelled';
+/**
+ * Résultat d'un achat :
+ *  - confirmed : le SERVEUR voit le droit (has_premium) ;
+ *  - pending   : la boutique a accepté mais le serveur ne voit pas encore le droit (webhook en retard) ;
+ *  - deferred  : paiement en attente d'approbation (Demander l'achat / Ask to Buy) : rien n'est ouvert ;
+ *  - cancelled : la personne a fermé la feuille de paiement.
+ * Les autres erreurs sont levées en PurchaseError (catégorie : réseau, achats interdits, boutique…).
+ */
+export type PurchaseOutcome = 'confirmed' | 'pending' | 'deferred' | 'cancelled';
 
 /** Abonnement personnel actif vu par l'appareil (pour un changement de formule sans double abonnement). */
 async function activeStoreProduct(): Promise<string | null> {
@@ -161,8 +170,10 @@ export async function purchase(plan: Plan, opts: { currentProductId?: string | n
   try {
     await Purchases.purchasePackage(plan.pkg, null, change as never);
   } catch (e) {
-    if ((e as { userCancelled?: boolean | null })?.userCancelled) return 'cancelled';
-    throw e;
+    const kind = purchaseErrorKind(e);
+    if (kind === 'cancelled') return 'cancelled';
+    if (kind === 'deferred') return 'deferred';
+    throw new PurchaseError(kind, e);
   }
   await syncSubscription(true);
   return (await waitForServerEntitlement()) ? 'confirmed' : 'pending';

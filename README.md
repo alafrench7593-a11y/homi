@@ -85,8 +85,8 @@ En local : `supabase start` puis utilisez l'URL/clé affichées.
 
 Guide pas à pas (App Store Connect, Google Play Console, RevenueCat, secrets, tests sur appareil) : **[ABONNEMENT.md](ABONNEMENT.md)**.
 
-1. Produits (même groupe d'abonnements Apple) : `aufildenous_premium_monthly` (10,99 € / mois, essai gratuit 3 jours), `aufildenous_premium_6months` (54,99 € / 6 mois), `aufildenous_premium_annual` (99,99 € / an). L'application affiche toujours les prix **de la boutique**.
-2. Dans RevenueCat : entitlement `AU_FIL_DE_NOUS_PREMIUM`, offering courante avec les packages Monthly, 6 Month et Annual.
+1. Produits (même groupe d'abonnements Apple « HOMI Premium ») : `homi_premium_monthly` (14,99 € / mois), `homi_premium_6months` (69,99 € / 6 mois), `homi_premium_annual` (119,99 € / an), essai gratuit de 3 jours sur chacun. L'application affiche toujours les prix **de la boutique**.
+2. Dans RevenueCat : entitlement `HOMI_PREMIUM`, offering courante avec les packages Monthly, 6 Month et Annual.
 3. Renseignez les clés publiques `EXPO_PUBLIC_REVENUECAT_APPLE_KEY` / `EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY` ; côté serveur : `REVENUECAT_WEBHOOK_SECRET`, `REVENUECAT_SECRET_API_KEY`, `REVENUECAT_ENTITLEMENT`.
 4. Webhook RevenueCat → `https://<ref>.supabase.co/functions/v1/revenuecat-webhook`, en-tête `Authorization: Bearer <REVENUECAT_WEBHOOK_SECRET>` ; fonction `subscription-sync` déployée (resynchronisation après achat / restauration).
 

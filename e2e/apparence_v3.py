@@ -55,7 +55,7 @@ def login(ctx):
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
     pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = s.session.userId;
       s.tables.subscriptions = (s.tables.subscriptions || []).filter((x) => x.user_id !== me);
-      s.tables.subscriptions.push({ user_id: me, status: 'active', product_id: 'aufildenous_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true });
+      s.tables.subscriptions.push({ user_id: me, status: 'active', product_id: 'homi_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true });
       localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }""")
     return pg
 

@@ -1,6 +1,6 @@
 /**
  * Formules « HOMI Premium » (logique pure, testée par Jest) : 1 mois, 6 mois, 12 mois — un seul droit
- * RevenueCat (AU_FIL_DE_NOUS_PREMIUM), les 3 formules donnent le même Premium.
+ * RevenueCat (HOMI_PREMIUM), les 3 formules donnent le même Premium.
  *
  * Prix : TOUJOURS ceux de la boutique (App Store / Google Play) transmis par RevenueCat — priceString, price,
  * currencyCode. Le prix par mois et l'économie par rapport au mensuel sont CALCULÉS à partir de ces prix réels.
@@ -16,23 +16,26 @@
 import type { PurchasesPackage, PurchasesStoreProduct } from 'react-native-purchases';
 
 export type PlanPeriod = 'monthly' | 'six_months' | 'annual';
-export const PREMIUM_ENTITLEMENT = 'AU_FIL_DE_NOUS_PREMIUM';
+export const PREMIUM_ENTITLEMENT = 'HOMI_PREMIUM';
 export const PLAN_ORDER: PlanPeriod[] = ['annual', 'six_months', 'monthly'];
 export const PLAN_MONTHS: Record<PlanPeriod, number> = { monthly: 1, six_months: 6, annual: 12 };
+/** Identifiants App Store / Google Play, groupe d'abonnements « HOMI Premium » (propres à HOMI, distincts d'Au fil de nous). */
 export const PRODUCT_IDS: Record<PlanPeriod, string> = {
-  monthly: 'aufildenous_premium_monthly',
-  six_months: 'aufildenous_premium_6months',
-  annual: 'aufildenous_premium_annual',
+  monthly: 'homi_premium_monthly',
+  six_months: 'homi_premium_6months',
+  annual: 'homi_premium_annual',
 };
 /** Badges : 12 mois « MEILLEURE OFFRE », 6 mois « ÉCONOMISEZ », mensuel « SANS ENGAGEMENT LONGUE DURÉE ». */
 export const PLAN_BADGE: Record<PlanPeriod, 'best' | 'save' | 'flex'> = { annual: 'best', six_months: 'save', monthly: 'flex' };
 
 /** Grille tarifaire affichée UNIQUEMENT en démonstration (aucune boutique, aucun paiement). */
 export const DEMO_CURRENCY = 'EUR';
+/** Grille voulue (15/11/2026) : 14,99 € / mois ; 69,99 € / 6 mois (≈ 11,67 €/mois, −22 %) ; 119,99 € / an (≈ 10 €/mois, −33 %) ;
+ *  essai gratuit de 3 jours sur les trois formules. En boutique, prix et essai viennent TOUJOURS de StoreKit / Play. */
 export const DEMO_GRID: Record<PlanPeriod, { amount: number; trialDays: number }> = {
-  monthly: { amount: 10.99, trialDays: 3 },
-  six_months: { amount: 49.99, trialDays: 0 },
-  annual: { amount: 79.99, trialDays: 0 },
+  monthly: { amount: 14.99, trialDays: 3 },
+  six_months: { amount: 69.99, trialDays: 3 },
+  annual: { amount: 119.99, trialDays: 3 },
 };
 
 export interface Plan {
@@ -98,6 +101,11 @@ export function savingsPct(amount: number, months: number, monthlyAmount: number
   return pct >= 1 ? pct : null;
 }
 
+/** Prix ramené à un mois, arrondi au centime le plus proche (69,99 / 6 = 11,665 → 11,67 : correction du flottant binaire). */
+export function perMonthAmount(amount: number, months: number): number {
+  return Math.round((amount / months) * 100 + 1e-6) / 100;
+}
+
 interface RawPlan { id: string; period: PlanPeriod; price: string; amount: number; currency: string; trialDays: number; demo: boolean; pkg?: PurchasesPackage }
 
 function finish(raw: RawPlan[], locale: string): Plan[] {
@@ -108,7 +116,7 @@ function finish(raw: RawPlan[], locale: string): Plan[] {
     return {
       ...p,
       months,
-      perMonth: months > 1 && p.amount > 0 ? formatMoney(Math.round((p.amount / months) * 100) / 100, p.currency, locale) : null,
+      perMonth: months > 1 && p.amount > 0 ? formatMoney(perMonthAmount(p.amount, months), p.currency, locale) : null,
       savingsPct: sameCurrency ? savingsPct(p.amount, months, monthly!.amount) : null,
     };
   });

@@ -116,12 +116,12 @@ artificielle », « Gemini »), charte de la communauté (« Signaler, bloquer �
 
 ## 3. Abonnements (configuration réelle du code)
 
-### 3.1 Premium (un seul droit RevenueCat `AU_FIL_DE_NOUS_PREMIUM`, un seul groupe Apple)
+### 3.1 HOMI Premium (un seul droit RevenueCat `HOMI_PREMIUM`, groupe Apple « HOMI Premium », projet RevenueCat HOMI séparé)
 | Produit | Prix de référence France | Essai |
 |---|---|---|
-| `aufildenous_premium_monthly` | 10,99 € / mois | 3 jours (nouveaux abonnés, si la boutique l'accorde) |
-| `aufildenous_premium_6months` | 49,99 € / 6 mois | aucun |
-| `aufildenous_premium_annual` | 79,99 € / an | aucun |
+| `homi_premium_monthly` | 14,99 € / mois | 3 jours (offre d'introduction, si Apple confirme l'éligibilité) |
+| `homi_premium_6months` | 69,99 € / 6 mois | 3 jours (idem) |
+| `homi_premium_annual` | 119,99 € / an | 3 jours (idem) |
 
 L'appli affiche **toujours le prix de la boutique** ; la grille ci-dessus n'apparaît qu'en démonstration, signalée comme
 telle. Procédure console complète : `ABONNEMENT.md`.
@@ -268,8 +268,8 @@ réponse « sexualité ». Public cible : 18+. [à vérifier]
 >
 > **Account deletion**: Profil tab › "Mon compte privé" › "Supprimer mon compte" (also Réglages › Mon compte).
 >
-> **Subscriptions**: "Au fil de nous Premium" — three auto-renewable plans in one group with identical content
-> (monthly with a 3-day free trial for new subscribers, 6 months, 12 months), plus a separate monthly "Assistant IA"
+> **Subscriptions**: "HOMI Premium" — three auto-renewable plans in one group with identical content
+> (monthly, 6 months, 12 months, each with a 3-day free trial for eligible new subscribers), plus a separate monthly "Assistant IA"
 > subscription that unlocks only the AI assistant. Prices are read from the App Store. "Restaurer mes achats" is on the
 > Premium screen and in Profil › Abonnement.
 >
@@ -329,9 +329,9 @@ VOTRE VIE PRIVÉE D'ABORD
 Aucune publicité, aucune revente de données. Verrouillage par Face ID, notifications discrètes, export et suppression
 de vos données à tout moment.
 
-AU FIL DE NOUS PREMIUM
-Les fonctions de suivi et d'accompagnement font partie de Premium : trois formules au même contenu (mensuelle avec
-3 jours d'essai pour les nouveaux abonnés, 6 mois, 12 mois). Un abonnement « Assistant IA » seul est aussi proposé.
+HOMI PREMIUM
+Les fonctions de suivi et d'accompagnement font partie de Premium : trois formules au même contenu (mensuelle, 6 mois,
+12 mois), chacune avec 3 jours d'essai pour les nouveaux abonnés éligibles. Un abonnement « Assistant IA » seul est aussi proposé.
 Les prix sont affichés dans l'application avant tout achat. Les abonnements se renouvellent automatiquement sauf
 résiliation au moins 24 heures avant la fin de la période, dans les réglages de votre compte App Store ou Google Play.
 Sans abonnement, vous gardez l'accès à votre compte, à vos données (consultation, export, suppression), aux numéros

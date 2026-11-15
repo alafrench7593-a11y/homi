@@ -18,6 +18,8 @@ import { AiOfferCard, ToolOffersCard } from '@/features/offers/ToolOffer';
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement } from '@/lib/data/hooks-premium';
 import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
+import { PurchaseError } from '@/lib/premium/purchaseErrors';
+import { errorFeedback, outcomeFeedback } from '@/features/premium/paywallModel';
 import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
 import { periodOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import { purchase } from '@/lib/purchases';
@@ -119,10 +121,13 @@ export default function SubscriptionScreen() {
       const out = await purchase(chosen, { currentProductId: ownActive ? sub?.product_id ?? null : null });
       inv('subscriptions');
       if (out === 'confirmed') toast(currentPeriod ? tr('sub2.page.changed') : tr('u1.sub.welcome', { name: tr('sub2.my.premium') }), 'success');
-      else if (out === 'pending') toast(tr('sub2.page.pending'), 'info');
+      else if (out === 'pending' || out === 'deferred') toast(outcomeFeedback(out).text, 'info');
     } catch (e) {
-      const msg = friendlyError(e);
-      if (!/cancel|annul/i.test(msg)) toast(msg, 'error');
+      if (e instanceof PurchaseError) toast(errorFeedback(e.kind).text, e.kind === 'unknown' ? 'error' : 'info');
+      else {
+        const msg = friendlyError(e);
+        if (!/cancel|annul/i.test(msg)) toast(msg, 'error');
+      }
     } finally {
       setBusy(false);
     }

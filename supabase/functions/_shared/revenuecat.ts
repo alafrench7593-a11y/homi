@@ -18,13 +18,13 @@
  *  - les événements arrivés en retard ne remplacent jamais un état plus récent.
  */
 
-export const DEFAULT_ENTITLEMENT = 'AU_FIL_DE_NOUS_PREMIUM';
+export const DEFAULT_ENTITLEMENT = 'HOMI_PREMIUM';
 
 /** Identifiants des produits (App Store ; Google Play : mêmes identifiants, ou « abonnement:offre-de-base »). */
 export const PRODUCT_IDS = {
-  monthly: 'aufildenous_premium_monthly',
-  six_months: 'aufildenous_premium_6months',
-  annual: 'aufildenous_premium_annual',
+  monthly: 'homi_premium_monthly',
+  six_months: 'homi_premium_6months',
+  annual: 'homi_premium_annual',
 } as const;
 
 export type SubStatus = 'none' | 'trial' | 'active' | 'grace' | 'cancelled' | 'expired' | 'billing_issue' | 'refunded' | 'paused';

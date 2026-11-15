@@ -19,7 +19,7 @@ insert into auth.users (id, email) values
 
 -- ---------------------------------------------------------------- Valeurs par défaut et statuts acceptés
 insert into public.subscriptions (user_id) values (:'SG');
-select tests.ok((select entitlement from public.subscriptions where user_id = :'SG') = 'AU_FIL_DE_NOUS_PREMIUM', 'droit par défaut : AU_FIL_DE_NOUS_PREMIUM');
+select tests.ok((select entitlement from public.subscriptions where user_id = :'SG') = 'HOMI_PREMIUM', 'droit par défaut : HOMI_PREMIUM');
 select tests.ok((select status from public.subscriptions where user_id = :'SG') = 'none', 'statut par défaut : aucun abonnement');
 update public.subscriptions set status = 'refunded', refunded_at = now() where user_id = :'SG';
 update public.subscriptions set status = 'paused', resumes_at = now() + interval '30 days' where user_id = :'SG';

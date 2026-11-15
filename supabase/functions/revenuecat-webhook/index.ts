@@ -4,7 +4,7 @@
 // L'identifiant RevenueCat (appUserID) est l'identifiant Supabase de l'utilisatrice.
 // Si REVENUECAT_SECRET_API_KEY est définie, la fiche abonné est relue dans l'API REST après chaque événement
 // (recommandation RevenueCat) ; sinon le contenu de l'événement est utilisé.
-// Droit attendu : REVENUECAT_ENTITLEMENT (défaut AU_FIL_DE_NOUS_PREMIUM) ; les événements d'un autre droit sont ignorés.
+// Droit attendu : REVENUECAT_ENTITLEMENT (défaut HOMI_PREMIUM) ; les événements d'un autre droit sont ignorés.
 // Logique et tests : ../_shared/subscription-run.ts, ../_shared/subscription-run_test.ts
 import { adminClient } from '../_shared/http.ts';
 import { entitlementId, handleWebhook, revenueCatApi, supabaseDb } from '../_shared/subscription-run.ts';

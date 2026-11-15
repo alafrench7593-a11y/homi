@@ -76,7 +76,7 @@ def at(pg, path, key, wait=2500):
 
 def set_sub(pg, status, days):
     mutate(pg, f"""s => {{ const me = s.session.userId; s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== me);
-      s.tables.subscriptions.push({{ user_id: me, status: '{status}', product_id: 'aufildenous_premium_annual', store: 'test', period_type: 'annual',
+      s.tables.subscriptions.push({{ user_id: me, status: '{status}', product_id: 'homi_premium_annual', store: 'test', period_type: 'annual',
         expires_at: new Date(Date.now() + {days} * 86400000).toISOString(), will_renew: {'true' if status in ('trial', 'active') else 'false'},
         started_at: new Date(Date.now() - 86400000).toISOString(), price: 99.99, currency: 'EUR',
         refunded_at: {"new Date().toISOString()" if status == 'refunded' else 'null'} }}); }}""")

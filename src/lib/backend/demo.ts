@@ -1579,7 +1579,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     set_demo_subscription: (a) => {
       // Démonstration uniquement (données locales fictives, aucun paiement) : grille 1 mois / 6 mois / 12 mois,
-      // essai de 3 jours sur le mensuel ; un changement de formule remplace la ligne (jamais deux abonnements).
+      // essai de 3 jours sur chaque formule (grille DEMO_GRID) ; un changement de formule remplace la ligne (jamais deux abonnements).
       const subs = T('subscriptions');
       const idx = subs.findIndex((s) => s.user_id === uid());
       const period: PlanPeriod = a.period === 'annual' || a.period === 'six_months' ? a.period : 'monthly';
