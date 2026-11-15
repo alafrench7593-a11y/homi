@@ -72,6 +72,18 @@ def detect(pg, key):
     return found
 
 
+FRAMES = f'{SHOTS}/frames'
+_frame = [0]
+
+
+def frames(pg, n=1, every=90):
+    """Images pour la vidéo de secours (ffmpeg du système) quand l'enregistrement Playwright n'est pas disponible."""
+    os.makedirs(FRAMES, exist_ok=True)
+    for _ in range(n):
+        pg.screenshot(path=f'{FRAMES}/{_frame[0]:04d}.png'); _frame[0] += 1
+        pg.wait_for_timeout(every)
+
+
 def shoot(pg, name):
     pg.screenshot(path=f'{SHOTS}/{name}.png', full_page=False)
     # page entière : la zone qui défile (ScrollView) est agrandie le temps de la capture
@@ -97,7 +109,7 @@ def scenario_main(b):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_' not in m.text and 'sb.fake.test' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     enter_demo(pg)
-    go(pg, '/premium', 4500)
+    pg.goto(B + '/premium'); frames(pg, 30, 60); pg.wait_for_timeout(1500)
     txt = T(pg)
     R['ouvre_premium'] = has(pg, 'premium-screen') and has(pg, 'pw2-title')
     R['fermeture_visible'] = has(pg, 'pw2-close')
@@ -119,7 +131,8 @@ def scenario_main(b):
     full_scroll_capture(pg, 'premium_clair_390')
 
     # Sélection : 6 mois (ressort, état radio) → chronologie et bouton suivent
-    tid(pg, 'pw2-plan-six_months').click(); pg.wait_for_timeout(700)
+    pg.mouse.wheel(0, 900); frames(pg, 6, 120)
+    tid(pg, 'pw2-plan-six_months').click(); frames(pg, 10, 40); pg.wait_for_timeout(300)
     tl = sp(tid(pg, 'pw2-timeline').inner_text())
     R['selection_6_mois'] = tid(pg, 'pw2-plan-six_months').get_attribute('aria-checked') == 'true' and tid(pg, 'pw2-plan-annual').get_attribute('aria-checked') == 'false'
     R['chronologie_suit_selection'] = '6 mois à 69,99 €' in tl
@@ -140,8 +153,9 @@ def scenario_main(b):
 
     # Achat simulé (démonstration) : 6 mois avec essai
     tid(pg, 'pw2-plan-six_months').click(); pg.wait_for_timeout(500)
-    tid(pg, 'pw2-buy').click(); pg.wait_for_timeout(3500)
+    tid(pg, 'pw2-buy').click(); frames(pg, 20, 120); pg.wait_for_timeout(1000)
     txt = T(pg)
+    frames(pg, 6, 150)
     R['achat_simule_abonne'] = has(pg, 'pw2-subscriber') and 'Premium est actif' in txt and 'Formule actuelle : 6 mois' in txt
     R['abonne_sans_offre_nouveau_client'] = not has(pg, 'pw2-plans') and not has(pg, 'pw2-buy')
     R['abonne_gerer'] = has(pg, 'pw2-manage')
@@ -168,7 +182,9 @@ def scenario_main(b):
     ctx.close()
     if video and os.path.exists(video):
         shutil.copy(video, f'{SHOTS}/paywall_premium.webm')
-        R['video'] = True
+    elif shutil.which('ffmpeg') and os.path.isdir(FRAMES):
+        os.system(f'ffmpeg -y -loglevel error -framerate 8 -i {FRAMES}/%04d.png -vf scale=390:-2 -c:v libvpx-vp9 -b:v 1M {SHOTS}/paywall_premium.webm')
+    R['video'] = os.path.exists(f'{SHOTS}/paywall_premium.webm')
 
 
 def scenario_shots(b, scheme, w, h):
