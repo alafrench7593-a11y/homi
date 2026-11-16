@@ -5,6 +5,9 @@ import { onLocaleChange } from '@/i18n';
  * Version acceptée à l'inscription : LEGAL_VERSIONS (src/lib/authFlow.ts).
  */
 import { BRAND } from '@/config/brand';
+/** Médiateur de la consommation (art. L612-1) : à renseigner dans brand.json dès sa désignation. */
+const MEDIATOR = (BRAND as { mediator?: string }).mediator?.trim() ?? '';
+
 import { inLang, localized } from '@/i18n/localized';
 
 const LEGAL_DRAFT_NOTICE_FR = 'Brouillon — à valider par un juriste avant la mise en ligne.';
@@ -26,6 +29,8 @@ const TERMS_FR: LegalDoc = {
     { title: 'Supprimer son compte ≠ résilier', body: 'Supprimer votre compte HOMI efface vos données mais n’arrête pas le paiement : la résiliation se fait toujours dans les réglages de votre store. Le bouton « Gérer mon abonnement » (Profil › Mon abonnement) y mène directement.' },
     { title: 'Données des enfants', body: 'Les enfants n’ont pas de compte. Les informations et photos les concernant sont saisies par un parent ou une personne autorisée du foyer, qui en reste responsable vis-à-vis des autres titulaires de l’autorité parentale.' },
     { title: 'Responsabilité', body: 'L’éditeur met tout en œuvre pour fournir une information fiable et à jour, sans pouvoir garantir l’absence d’erreur. Vérifiez toujours les indications des emballages, des notices et de votre professionnel de santé.' },
+    { title: 'Droit de rétractation', body: `Pour un abonnement souscrit à distance, la loi prévoit un délai de rétractation de 14 jours. En démarrant l’abonnement (ou l’essai gratuit) immédiatement, vous demandez expressément l’exécution du service avant la fin de ce délai et reconnaissez perdre votre droit de rétractation dès que le service est pleinement fourni ; un remboursement reste possible auprès de votre store selon ses propres règles. Pour toute question : ${BRAND.supportEmail}.` },
+    { title: 'Réclamations et médiation', body: MEDIATOR ? `Adressez d’abord votre réclamation à ${BRAND.supportEmail}. À défaut de solution sous deux mois, vous pouvez saisir gratuitement le médiateur de la consommation : ${MEDIATOR}.` : `Adressez votre réclamation à ${BRAND.supportEmail} : réponse sous un mois au plus. Les coordonnées du médiateur de la consommation compétent figureront ici dès sa désignation.` },
     { title: 'Droit applicable', body: 'Droit français. En cas de litige, une solution amiable sera recherchée avant toute action.' },
   ],
 };
@@ -69,6 +74,8 @@ const TERMS_EN: LegalDoc = {
     { title: 'Deleting your account ≠ cancelling', body: 'Deleting your HOMI account erases your data but does not stop payment: cancellation is always done in your store’s settings. The “Manage my subscription” button (Profile › My subscription) takes you there directly.' },
     { title: 'Children’s data', body: 'Children do not have accounts. Information and photos about them are entered by a parent or an authorised person in the household, who remains responsible for it towards the other holders of parental authority.' },
     { title: 'Liability', body: 'The publisher does its best to provide reliable and up-to-date information, but cannot guarantee that it is free of errors. Always check the instructions on packaging, leaflets and from your health professional.' },
+    { title: 'Right of withdrawal', body: `For a subscription taken out remotely, the law provides a 14-day withdrawal period. By starting the subscription (or the free trial) immediately, you expressly ask for the service to begin before that period ends and acknowledge that you lose your right of withdrawal once the service has been fully provided; a refund may still be granted by your store under its own rules. Questions: ${BRAND.supportEmail}.` },
+    { title: 'Complaints and mediation', body: MEDIATOR ? `First send your complaint to ${BRAND.supportEmail}. If no solution is found within two months, you may refer the matter free of charge to the consumer mediator: ${MEDIATOR}.` : `Send your complaint to ${BRAND.supportEmail}: you will get a reply within one month at most. The contact details of the competent consumer mediator will be added here as soon as one is appointed.` },
     { title: 'Governing law', body: 'French law applies. In the event of a dispute, an amicable solution will be sought before any legal action.' },
   ],
 };
@@ -116,6 +123,8 @@ const TERMS_ES: LegalDoc = {
     { title: 'Eliminar tu cuenta ≠ cancelar', body: 'Eliminar tu cuenta de HOMI borra tus datos, pero no detiene el pago: la cancelación se hace siempre en los ajustes de tu tienda de aplicaciones. El botón «Gestionar mi suscripción» (Perfil › Mi suscripción) te lleva directamente allí.' },
     { title: 'Datos de los niños', body: 'Los niños no tienen cuenta. La información y las fotos que les conciernen las introduce un padre, una madre o una persona autorizada del hogar, que sigue siendo responsable de ellas frente a los demás titulares de la autoridad parental.' },
     { title: 'Responsabilidad', body: 'El editor hace todo lo posible por ofrecer una información fiable y actualizada, sin poder garantizar la ausencia de errores. Comprueba siempre las indicaciones de los envases, de los prospectos y de tu profesional sanitario.' },
+    { title: 'Derecho de desistimiento', body: `Para una suscripción contratada a distancia, la ley prevé un plazo de desistimiento de 14 días. Al iniciar la suscripción (o la prueba gratuita) de inmediato, solicitas expresamente que el servicio comience antes de que termine ese plazo y reconoces que pierdes tu derecho de desistimiento una vez prestado plenamente el servicio; tu tienda puede seguir concediendo un reembolso según sus propias normas. Consultas: ${BRAND.supportEmail}.` },
+    { title: 'Reclamaciones y mediación', body: MEDIATOR ? `Envía primero tu reclamación a ${BRAND.supportEmail}. Si no se encuentra solución en dos meses, puedes acudir gratuitamente al mediador de consumo: ${MEDIATOR}.` : `Envía tu reclamación a ${BRAND.supportEmail}: recibirás respuesta en un plazo máximo de un mes. Los datos del mediador de consumo competente figurarán aquí en cuanto se designe.` },
     { title: 'Derecho aplicable', body: 'Derecho francés. En caso de litigio, se buscará una solución amistosa antes de cualquier acción.' },
   ],
 };
@@ -156,6 +165,8 @@ const TERMS_DE: LegalDoc = {
     { title: 'Konto löschen ≠ kündigen', body: 'Das Löschen deines Au-fil-de-nous-Kontos löscht deine Daten, stoppt aber nicht die Zahlung: Die Kündigung erfolgt immer in den Einstellungen deines Stores. Die Schaltfläche „Mein Abonnement verwalten“ (Profil › Mein Abonnement) führt dich direkt dorthin.' },
     { title: 'Daten der Kinder', body: 'Kinder haben kein Konto. Informationen und Fotos, die sie betreffen, werden von einem Elternteil oder einer berechtigten Person des Haushalts eingegeben, die dafür gegenüber den anderen Inhabern der elterlichen Sorge verantwortlich bleibt.' },
     { title: 'Haftung', body: 'Der Herausgeber setzt alles daran, verlässliche und aktuelle Informationen bereitzustellen, kann jedoch nicht garantieren, dass sie fehlerfrei sind. Prüfe immer die Angaben auf Verpackungen, in Beipackzetteln und von deiner medizinischen Fachperson.' },
+    { title: 'Widerrufsrecht', body: `Bei einem im Fernabsatz abgeschlossenen Abonnement gilt eine gesetzliche Widerrufsfrist von 14 Tagen. Wenn du das Abonnement (oder die kostenlose Testphase) sofort startest, verlangst du ausdrücklich, dass die Leistung vor Ablauf dieser Frist beginnt, und bestätigst, dass dein Widerrufsrecht erlischt, sobald die Leistung vollständig erbracht ist; eine Erstattung kann dein Store weiterhin nach seinen eigenen Regeln gewähren. Fragen: ${BRAND.supportEmail}.` },
+    { title: 'Beschwerden und Schlichtung', body: MEDIATOR ? `Richte deine Beschwerde zuerst an ${BRAND.supportEmail}. Wird innerhalb von zwei Monaten keine Lösung gefunden, kannst du kostenlos die Verbraucherschlichtungsstelle anrufen: ${MEDIATOR}.` : `Richte deine Beschwerde an ${BRAND.supportEmail}: Du erhältst spätestens innerhalb eines Monats eine Antwort. Die Kontaktdaten der zuständigen Verbraucherschlichtungsstelle werden hier ergänzt, sobald sie benannt ist.` },
     { title: 'Anwendbares Recht', body: 'Es gilt französisches Recht. Im Streitfall wird vor jedem rechtlichen Schritt eine gütliche Lösung angestrebt.' },
   ],
 };
@@ -196,6 +207,8 @@ const TERMS_IT: LegalDoc = {
     { title: 'Eliminare l’account ≠ disdire', body: 'Eliminare il tuo account HOMI cancella i tuoi dati ma non interrompe il pagamento: la disdetta si effettua sempre nelle impostazioni del tuo store. Il pulsante «Gestisci il mio abbonamento» (Profilo › Il mio abbonamento) ti porta direttamente lì.' },
     { title: 'Dati dei bambini', body: 'I bambini non hanno un account. Le informazioni e le foto che li riguardano sono inserite da un genitore o da una persona autorizzata del nucleo familiare, che ne resta responsabile nei confronti degli altri titolari della responsabilità genitoriale.' },
     { title: 'Responsabilità', body: 'L’editore fa il possibile per fornire un’informazione affidabile e aggiornata, senza poter garantire l’assenza di errori. Verifica sempre le indicazioni delle confezioni, dei foglietti illustrativi e del tuo professionista sanitario.' },
+    { title: 'Diritto di recesso', body: `Per un abbonamento sottoscritto a distanza, la legge prevede un periodo di recesso di 14 giorni. Avviando subito l’abbonamento (o la prova gratuita), chiedi espressamente che il servizio inizi prima della fine di tale periodo e riconosci di perdere il diritto di recesso una volta che il servizio è stato interamente fornito; il tuo store può comunque concedere un rimborso secondo le proprie regole. Domande: ${BRAND.supportEmail}.` },
+    { title: 'Reclami e mediazione', body: MEDIATOR ? `Invia prima il tuo reclamo a ${BRAND.supportEmail}. Se non si trova una soluzione entro due mesi, puoi rivolgerti gratuitamente al mediatore dei consumatori: ${MEDIATOR}.` : `Invia il tuo reclamo a ${BRAND.supportEmail}: riceverai risposta entro un mese al massimo. I recapiti del mediatore dei consumatori competente saranno indicati qui non appena designato.` },
     { title: 'Legge applicabile', body: 'Legge francese. In caso di controversia, si cercherà una soluzione amichevole prima di qualsiasi azione.' },
   ],
 };
