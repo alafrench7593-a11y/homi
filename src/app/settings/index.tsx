@@ -18,7 +18,7 @@ import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
 import { flushQueue, useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
-import { migratePalette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { deviceRegion, getLocale, t as tr } from '@/i18n';
 import { defaultRegion, localeInfo, REGIONS } from '@/i18n/locales';
 
@@ -40,7 +40,6 @@ export default function SettingsScreen() {
   const { isModerator } = useMyRoles();
 
   const preference = useUiStore((s) => s.themePreference);
-  const palettePref = migratePalette(useUiStore((s) => s.palettePreference));
   const haptics = useUiStore((s) => s.hapticsEnabled);
   const region = useUiStore((s) => s.region);
   const regionInfo = REGIONS.find((r) => r.code === (region ?? defaultRegion(deviceRegion()))) ?? REGIONS[0];
@@ -114,7 +113,7 @@ export default function SettingsScreen() {
           <ListRow
             icon={MODE_ICON[mode]}
             title={tr('settings.appearance.row')}
-            subtitle={tr('settings.appearance.rowSub', { mode: tr(`settings.appearance.${mode}` as const), palette: tr(`settings.palette.${palettePref}` as const) })}
+            subtitle={tr(`settings.appearance.${mode}` as const)}
             onPress={() => router.push('/settings/appearance')}
             testID="settings-appearance"
           />

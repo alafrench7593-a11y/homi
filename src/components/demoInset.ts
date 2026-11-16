@@ -12,12 +12,12 @@ import { useBackendMode } from '@/lib/demoMode';
 import { useAuth } from '@/lib/auth';
 
 /** Hauteur visible de la pastille et de son bouton ; la cible tactile du bouton est complétée à 48 px par `hitSlop`. */
-export const DEMO_PILL_HEIGHT = 34;
-export const DEMO_LEAVE_HEIGHT = DEMO_PILL_HEIGHT - 6;
+export const DEMO_PILL_HEIGHT = 28;
+export const DEMO_LEAVE_HEIGHT = DEMO_PILL_HEIGHT;
 /** Écart entre la zone sûre et le haut de la pastille. */
 export const DEMO_PILL_TOP = 4;
 /** Place réservée sous la zone sûre quand la pastille est affichée : écart + pastille + respiration. */
-export const DEMO_INSET = DEMO_PILL_TOP + DEMO_PILL_HEIGHT + 4;
+export const DEMO_INSET = DEMO_PILL_TOP + DEMO_PILL_HEIGHT + 10;
 
 /** Vrai quand la pastille « Démonstration » est affichée (même condition que `DemoBar`). */
 export function useDemoPillVisible(): boolean {

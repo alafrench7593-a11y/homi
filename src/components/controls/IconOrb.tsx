@@ -11,7 +11,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, MIN_TOUCH } from '@/theme/tokens';
@@ -56,15 +55,11 @@ export function IconOrb({ icon, label, onPress, size = 'md', tone = 'glass', sel
     >
       <Animated.View style={[{ flex: 1 }, p.style]}>
         {selected && !night && !disabled ? (
-          <View pointerEvents="none" testID="orb-light" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, boxShadow: [{ offsetX: 0, offsetY: 4, blurRadius: 20, spreadDistance: 1, color: alpha(t.tokens.accent.glow[0], t.isDark ? 0.55 : 0.45) }] }]} />
+          <View pointerEvents="none" testID="orb-light" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, borderWidth: 2, borderColor: alpha(t.colors.primary, 0.35), transform: [{ scale: 1.12 }] }]} />
         ) : null}
         <View style={{ flex: 1, borderRadius: D / 2, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: fill, borderWidth: 1,
           borderColor: tone === 'danger' ? alpha(t.tokens.status.danger, 0.4) : selected ? t.tokens.border.active : f.edge,
-          boxShadow: night || disabled ? undefined : [{ offsetX: 0, offsetY: 2, blurRadius: 8, color: `rgba(${t.material.shadowInk},${t.isDark ? 0.4 : 0.12})` }] }}>
-          {tone === 'accent' && !night ? <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-          {/* reflet spéculaire dans le coin éclairé + arête haute */}
-          {!night ? <LinearGradient pointerEvents="none" colors={[alpha('#FFFFFF', t.isDark ? 0.16 : 0.55), alpha('#FFFFFF', 0)]} start={{ x: 0.15, y: 0 }} end={{ x: 0.55, y: 0.65 }} style={StyleSheet.absoluteFill} /> : null}
-          {!night ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: D * 0.25, right: D * 0.25, height: 1, backgroundColor: alpha('#FFFFFF', t.isDark ? 0.4 : 0.95) }} /> : null}
+          }}>
           <Feather name={icon} size={Math.round(D * 0.42)} color={ink} accessibilityElementsHidden importantForAccessibility="no" />
         </View>
       </Animated.View>

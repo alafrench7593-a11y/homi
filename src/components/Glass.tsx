@@ -10,23 +10,21 @@
  */
 import React from 'react';
 import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeProvider';
 import { glassOf, physicalShadow, radius as R, surfaceShadow, type ElevationLevel, type ShadowLayer } from '@/theme/tokens';
 import { parseColor } from '@/theme/contrast';
-import { Surface, transparentOf } from './surfaces/Surface';
-import { BLUR_OK, LIQUID_GLASS_NATIVE, useReduceTransparency } from './surfaces/nativeGlass';
+import { Surface } from './surfaces/Surface';
+import { LIQUID_GLASS_NATIVE, useReduceTransparency } from './surfaces/nativeGlass';
 
 export { LIQUID_GLASS_NATIVE, useReduceTransparency };
 export type GlassDepth = 1 | 2 | 3;
 
-const SHADOW_FOR_DEPTH: Record<GlassDepth, ElevationLevel> = { 1: 'low', 2: 'mid', 3: 'high' };
+const SHADOW_FOR_DEPTH: Record<GlassDepth, ElevationLevel> = { 1: 'low', 2: 'low', 3: 'mid' };
 /** Remplissages violets codés en dur avant la v3 (« rgba(40,32,70,…) ») : remplacés par le verre fumé du thème. */
 const LEGACY_VIOLET = /^rgba\(40,\s*32,\s*70/;
 
 export function GlassSurface({
-  children, fill, borderColor, depth = 2, radius = R.lg, style, padded = 0, highlight = true, shadow = true, sheen,
+  children, fill, borderColor, depth = 2, radius = R.lg, style, padded = 0, shadow = true,
 }: {
   children?: React.ReactNode;
   /** Couleur de remplissage existante (ex. theme.colors.surface). */
@@ -36,51 +34,27 @@ export function GlassSurface({
   radius?: number;
   style?: StyleProp<ViewStyle>;
   padded?: number;
+  /** Conservé pour compatibilité (v5 : aucun reflet) */
   highlight?: boolean;
   shadow?: boolean;
-  /** Reflet lumineux qui suit le curseur (web) : valeurs -1..1 issues de useTilt. */
+  /** Conservé pour compatibilité (v5 : aucun reflet au curseur) */
   sheen?: { x: Animated.Value; y: Animated.Value };
 }) {
   const t = useTheme();
   const night = t.name === 'night';
   const g = glassOf(t);
-  const color = LEGACY_VIOLET.test(fill) ? t.material.surfaces.frosted.fill : fill;
+  // v5 : surface OPAQUE, sans flou ni reflet ; un ancien remplissage violet ou translucide devient la surface du thème
   let translucent = false;
-  try { translucent = parseColor(color).a < 1; } catch { translucent = false; }
-  const level = translucent ? t.material.surfaces.frosted : t.material.surfaces.matte;
-  const intensity = night || !translucent ? 0 : depth === 1 ? Math.round(level.blur * 0.6) : level.blur;
-  const edge = level.highlight;
+  try { translucent = parseColor(fill).a < 1; } catch { translucent = false; }
+  const color = LEGACY_VIOLET.test(fill) || translucent ? t.colors.surface : fill;
   return (
     <View
       style={[
-        { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth * 2, borderColor: borderColor ?? (translucent ? level.edge : g.raised.edge), overflow: 'hidden', padding: padded, backgroundColor: color },
-        shadow && !night ? { boxShadow: physicalShadow(SHADOW_FOR_DEPTH[depth], t.isDark) } : null,
+        { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth, borderColor: borderColor ?? g.raised.edge, overflow: 'hidden', padding: padded, backgroundColor: color },
+        shadow && !night && depth > 1 ? { boxShadow: physicalShadow(SHADOW_FOR_DEPTH[depth], t.isDark) } : null,
         style,
       ]}
     >
-      {BLUR_OK && intensity > 0 ? <BlurView intensity={intensity} tint={t.isDark ? 'dark' : 'light'} style={[StyleSheet.absoluteFill, { borderRadius: radius, overflow: 'hidden' }]} pointerEvents="none" /> : null}
-      {BLUR_OK && intensity > 0 ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: color }]} /> : null}
-      {highlight && !night && translucent ? (
-        <>
-          <LinearGradient pointerEvents="none" colors={level.inner} start={t.material.light.start} end={t.material.light.end} style={StyleSheet.absoluteFill} />
-          <LinearGradient pointerEvents="none" colors={[transparentOf(edge), edge, transparentOf(edge)]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={{ position: 'absolute', top: 0, left: radius * 0.35, right: radius * 0.35, height: 1 }} />
-        </>
-      ) : null}
-      {sheen ? (
-        <Animated.View
-          pointerEvents="none"
-          style={{
-            position: 'absolute', width: '70%', height: '140%', top: '-20%', left: '15%', opacity: 0.5,
-            transform: [
-              { translateX: sheen.y.interpolate({ inputRange: [-1, 1], outputRange: [-60, 60] }) },
-              { translateY: sheen.x.interpolate({ inputRange: [-1, 1], outputRange: [-30, 30] }) },
-              { rotate: '20deg' },
-            ],
-          }}
-        >
-          <LinearGradient colors={['rgba(255,255,255,0)', t.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
-        </Animated.View>
-      ) : null}
       {children}
     </View>
   );

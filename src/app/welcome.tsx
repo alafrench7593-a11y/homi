@@ -19,7 +19,7 @@ import { startDemoWithoutAccount } from '@/lib/demoMode';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, radius, spacing, typography } from '@/theme/tokens';
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
@@ -71,9 +71,9 @@ export default function Welcome() {
         {/* Titre, phrase et actions : disponibles immédiatement */}
         <View style={{ alignItems: 'center', gap: spacing.sm }}>
           <Text variant="label" color={t.colors.primary} center>{tr('brand.tagline')}</Text>
-          <Text center accessibilityRole="header" accessibilityLabel={tr('welcome.titleA11y')} maxFontSizeMultiplier={1.3} style={{ fontFamily: fonts.displayMedium, fontSize: 34, lineHeight: 40, letterSpacing: -1.2, color: t.colors.text }}>
-            {tr('welcome.title1')}{'\n'}
-            <Text maxFontSizeMultiplier={1.3} style={{ fontFamily: fonts.serifItalic, fontSize: 38, letterSpacing: -0.6, color: t.colors.primary }}>{tr('welcome.title2a')}</Text>{tr('welcome.title2b')}
+          {/* v5 : une seule famille (Manrope), titre aéré, plus d'italique éditoriale */}
+          <Text center accessibilityRole="header" accessibilityLabel={tr('welcome.titleA11y')} maxFontSizeMultiplier={1.3} style={[typography.display, { fontSize: 32, lineHeight: 38, color: t.colors.text }]}>
+            {tr('welcome.title1')}{'\n'}{tr('welcome.title2a')}{tr('welcome.title2b')}
           </Text>
           <Text center muted style={{ maxWidth: 340 }}>{tr('welcome.body')}</Text>
         </View>

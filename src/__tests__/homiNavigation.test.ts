@@ -124,12 +124,17 @@ describe('HOMI : barre à 5 onglets et routes conservées', () => {
     expect(tabLayout(dockGeometry(320).inner, est).fontSize).toBeGreaterThanOrEqual(10);
   });
 
-  it('texte agrandi 1,3 (libellés plafonnés à ×1,2) : 390 px garde les libellés, 320 px passe en icônes seules ≥ 44 px (audit 09)', () => {
+  it('texte agrandi 1,3 (libellés plafonnés à ×1,2) : 390 px et 320 px (barre v5 pleine largeur) gardent les libellés ENTIERS ; au-delà, icônes seules ≥ 44 px (audit 09)', () => {
     const measured = [42.1, 34.0, 28.8, 40.0, 78.2].map((w) => w * 1.2);
-    const wide = tabLayout(dockGeometry(390).inner, measured);
-    expect(wide.iconsOnly).toBe(false);
-    measured.forEach((m, i) => expect((m * wide.fontSize) / 12).toBeLessThanOrEqual(wide.widths[i]));
-    const narrow = tabLayout(dockGeometry(320).inner, measured);
+    for (const width of [390, 320]) {
+      const l = tabLayout(dockGeometry(width).inner, measured);
+      expect(l.iconsOnly).toBe(false);
+      measured.forEach((m, i) => expect((m * l.fontSize) / 12).toBeLessThanOrEqual(l.widths[i]));
+      for (const w of l.widths) expect(w).toBeGreaterThanOrEqual(TAB_MIN_W);
+    }
+    // langue plus longue + texte agrandi à 320 px : plus de place pour cinq libellés → icônes seules, onglets égaux
+    const longer = measured.map((w) => w * 1.25);
+    const narrow = tabLayout(dockGeometry(320).inner, longer);
     expect(narrow.iconsOnly).toBe(true);
     // avant : onglets réduits proportionnellement à 35–40 px de large
     for (const w of narrow.widths) expect(w).toBeGreaterThanOrEqual(TAB_MIN_W);

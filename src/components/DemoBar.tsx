@@ -2,11 +2,11 @@
  * Pastille « Démo » (HOMI) : compacte, toujours visible en haut de chaque écran tant que la démonstration est active.
  * La sortie est un vrai bouton (« Quitter la démo », ≥ 48 px de cible, lu « Quitter la démonstration » par les lecteurs
  * d'écran), jamais caché derrière un menu. Écran étroit (< 360 px) : « Démo » + bouton « Quitter » avec icône.
- * Couleurs : verre flottant du thème (aucune valeur en dur).
+ * v5 : pastille compacte et discrète (surface + liseré, point corail), sortie en lien corail. Couleurs : thème uniquement.
  * Place réservée : les écrans décalent leur haut de `useDemoInset()` (src/components/demoInset.ts) tant qu'elle est affichée.
  */
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, Text } from '@/components/ui';
@@ -33,7 +33,6 @@ export function DemoBar() {
   const [leaving, setLeaving] = useState(false);
   const inFlight = useRef(false);
   if (!isDemo || !session) return null;
-  const glass = t.material.glass.floating;
   const slop = Math.ceil((MIN_TOUCH - DEMO_LEAVE_HEIGHT) / 2);
 
   async function leave() {
@@ -53,31 +52,35 @@ export function DemoBar() {
 
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', top: insets.top + DEMO_PILL_TOP, left: 0, right: 0, alignItems: 'center', zIndex: 50 }}>
+      {/* v5 : petite pastille discrète (statut = capsule) — « Démo » + sortie toujours visible, sans aplat coloré */}
       <View
         testID="demo-pill"
-        style={{ flexDirection: 'row', alignItems: 'center', height: DEMO_PILL_HEIGHT, paddingLeft: 12, paddingRight: canLeave ? 3 : 12, gap: 8, borderRadius: radius.pill, backgroundColor: glass.fill, borderWidth: 1, borderColor: glass.edge, boxShadow: physicalShadow('mid', t.isDark) }}
+        style={{ flexDirection: 'row', alignItems: 'center', height: DEMO_PILL_HEIGHT, paddingLeft: 10, paddingRight: canLeave ? 2 : 10, gap: 6, borderRadius: radius.pill, backgroundColor: t.colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, boxShadow: physicalShadow('low', t.isDark) }}
       >
         <View accessible accessibilityRole="text" accessibilityLabel={tr('demo.badgeA11y')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.colors.primary }} />
-          <Text variant="caption" weight="bold" maxFontSizeMultiplier={1.3}>{tr(narrow ? 'demo.badgeShort' : 'demo.badge')}</Text>
+          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: t.colors.accent }} />
+          <Text variant="caption" weight="bold" muted maxFontSizeMultiplier={1.3}>{tr('demo.badgeShort')}</Text>
         </View>
         {canLeave ? (
-          <Tappable
-            testID="demo-leave"
-            accessibilityRole="button"
-            accessibilityLabel={tr('demo.leaveA11y')}
-            accessibilityState={{ busy: leaving, disabled: leaving }}
-            disabled={leaving}
-            hitSlop={{ top: slop, bottom: slop, left: 4, right: 8 }}
-            onPress={leave}
-            // cible de 44 px de haut (le web ignore hitSlop) ; la pilule visible garde 28 px
-            style={({ pressed }) => ({ minHeight: 44, marginVertical: -(44 - DEMO_LEAVE_HEIGHT) / 2, justifyContent: 'center', opacity: pressed ? 0.85 : 1 })}
-          >
-            <View style={{ height: DEMO_LEAVE_HEIGHT, paddingHorizontal: 12, borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: t.colors.primary }}>
-              {leaving ? <ActivityIndicator size="small" color={t.colors.primaryText} /> : <Icon name="log-out" size={14} color={t.colors.primaryText} />}
-              <Text variant="caption" weight="bold" color={t.colors.primaryText} maxFontSizeMultiplier={1.3}>{tr(narrow ? 'demo.leave' : 'demo.leaveVisible')}</Text>
-            </View>
-          </Tappable>
+          <>
+            <View style={{ width: StyleSheet.hairlineWidth, height: 14, backgroundColor: t.colors.border }} />
+            <Tappable
+              testID="demo-leave"
+              accessibilityRole="button"
+              accessibilityLabel={tr('demo.leaveA11y')}
+              accessibilityState={{ busy: leaving, disabled: leaving }}
+              disabled={leaving}
+              hitSlop={{ top: slop, bottom: slop, left: 4, right: 8 }}
+              onPress={leave}
+              // cible de 44 px de haut (le web ignore hitSlop) ; la pastille visible garde 28 px
+              style={({ pressed }) => ({ minHeight: 44, marginVertical: -(44 - DEMO_LEAVE_HEIGHT) / 2, justifyContent: 'center', opacity: pressed ? 0.7 : 1 })}
+            >
+              <View style={{ height: DEMO_LEAVE_HEIGHT, paddingHorizontal: 8, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                {leaving ? <ActivityIndicator size="small" color={t.colors.primary} /> : <Icon name="log-out" size={13} color={t.colors.primary} />}
+                <Text variant="caption" weight="bold" color={t.colors.primary} maxFontSizeMultiplier={1.3}>{tr(narrow ? 'demo.leave' : 'demo.leaveVisible')}</Text>
+              </View>
+            </Tappable>
+          </>
         ) : null}
       </View>
     </View>

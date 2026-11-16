@@ -20,15 +20,12 @@ import { useReduceMotion } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { toolForPath, type PathTool } from '@/lib/domain/toolForPath';
-import { glyphColor } from './ToolGlyph';
-import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { Button, type IconName } from './ui';
 import { ToolArticles } from '@/features/ToolArticles';
 import { ScreenToolContext } from '@/lib/screenTool';
 import { ToolAccessBanner } from '@/features/offers/ToolOffer';
 import { useToolAccess } from '@/lib/data/hooks-access';
 import { isPaidTool, type PaidTool } from '@/lib/premium/offers';
-import { ChildBackdrop, isChildPage } from '@/features/story/ChildBackdrop';
 import { useDemoInset } from './demoInset';
 
 /** Action principale de l'outil (gros bouton en bas de l'écran). */
@@ -130,8 +127,6 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   // Outils « à vie » (07/11/2026) : après le mois gratuit et sans achat, le contenu reste lisible mais l'ajout est bloqué
   const paidTool = isPaidTool(tool?.id) ? (tool!.id as PaidTool) : null;
   const content = paidTool ? <PaidToolGate tool={paidTool} scroll={scroll}>{children}</PaidToolGate> : children;
-  const accent = tool ? glyphColor(t, tool.theme, tool.urgent) : null;
-  const glowId = `g${React.useId().replace(/:/g, '')}`;
 
   // ------------------------------------------------------------ en-tête qui se replie
   const [titleH, setTitleH] = React.useState(0);
@@ -178,20 +173,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       onLayout={(e) => { const h = Math.round(e.nativeEvent.layout.height); if (h > 0 && Math.abs(h - titleHRef.current) > 1) setTitleH(h); }}
       style={{ paddingHorizontal: mode.largeInContent && padded ? 0 : spacing.lg, paddingTop: mode.largeInContent ? 0 : spacing.xs }}
     >
-      {accent ? (
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { top: -spacing.lg, bottom: -spacing.sm, left: mode.largeInContent && padded ? -spacing.lg : 0, right: mode.largeInContent && padded ? -spacing.lg : 0 }]}>
-          <Svg width="100%" height="100%">
-            <Defs>
-              {/* lueur qui s'éteint AVANT les bords du cadre (aucune arête rectangulaire visible) */}
-              <RadialGradient id={glowId} cx="30%" cy="50%" rx="30%" ry="50%">
-                <Stop offset="0" stopColor={accent} stopOpacity={t.isDark ? 0.24 : 0.18} />
-                <Stop offset="1" stopColor={accent} stopOpacity="0" />
-              </RadialGradient>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill={`url(#${glowId})`} />
-          </Svg>
-        </View>
-      ) : null}
+      {/* v5 : fond uni — plus de lueur derrière le titre */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }} testID={tool ? `miniapp-${tool.id}` : undefined}>
         {origin ? <ArrivalGlyph origin={origin} size={glyphSize - 8} /> : tool ? <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={glyphSize} play={1} /> : null}
         <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
@@ -270,9 +252,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
     <ScreenFocusContext.Provider value={focused}>
     <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
-      {/* Pages du bébé et de l'enfant : vidéo des galets le jour et l'animation de la maman avec son enfant */}
-      {isChildPage(pathname, tool?.id) ? <ChildBackdrop /> : null}
-      {/* v3 : plus de particules décoratives (« étoiles ») ; `stars` est conservé pour compatibilité */}
+      {/* v5 : fond uni partout (plus de décor derrière les pages bébé / enfant, ni de particules) ; `stars` conservé pour compatibilité */}
       {/* « padding » sur iOS et Android : Android est toujours edge-to-edge (Expo 54+), adjustResize ne réduit plus l'écran */}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={KEYBOARD_BEHAVIOR} keyboardVerticalOffset={keyboardOffset}>
         <ScreenChromeContext.Provider value={chrome}>

@@ -20,7 +20,6 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useMotion } from '@/motion/useMotion';
 
@@ -65,23 +64,12 @@ export function Lens({ slide, top, height, radius = 999, hue, testID }: {
   const L = t.material.lens;
   const night = t.name === 'night';
   const style = useAnimatedStyle(() => ({ width: slide.w.value, transform: [{ translateX: slide.x.value }] }));
-  const caustic = hue ? hue : L.caustic;
+  void hue;
   return (
     <Animated.View pointerEvents="none" testID={testID}
       style={[{ position: 'absolute', left: 0, top, height, borderRadius: radius, overflow: 'hidden', backgroundColor: L.fill, borderWidth: 1, borderColor: L.edge,
-        boxShadow: night ? undefined : [{ offsetX: 0, offsetY: 4, blurRadius: 14, spreadDistance: -3, color: L.shadow }] }, style]}>
-      {!night ? (
-        <>
-          {/* reflet de réfraction : l'arête haute concentre la lumière */}
-          <LinearGradient colors={[t.isDark ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.85)', 'rgba(255,255,255,0)']} start={{ x: 0.3, y: 0 }} end={{ x: 0.5, y: LENS.rimDepth }} style={StyleSheet.absoluteFill} />
-          {/* épaisseur : ombre interne en bas */}
-          <LinearGradient colors={['rgba(0,0,0,0)', L.shade]} start={{ x: 0.5, y: 0.55 }} end={{ x: 0.5, y: 1 }} style={StyleSheet.absoluteFill} />
-          {/* caustique : lumière de la palette concentrée au pied de la lentille */}
-          <LinearGradient colors={['rgba(0,0,0,0)', caustic, 'rgba(0,0,0,0)']} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={styles.caustic} />
-          <View style={[styles.rim, { backgroundColor: L.rim }]} />
-        </>
-      ) : null}
-    </Animated.View>
+        // v5 : indicateur de sélection = surface claire opaque + liseré + ombre de contact très légère (aucun reflet)
+        boxShadow: night ? undefined : [{ offsetX: 0, offsetY: 1, blurRadius: 3, color: L.shadow }] }, style]} />
   );
 }
 

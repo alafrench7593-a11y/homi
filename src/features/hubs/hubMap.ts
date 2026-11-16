@@ -103,23 +103,23 @@ const TAB_LABEL_FLOOR = 10;
 /** Largeur minimale d'un onglet (cible tactile 44 × 64 px, recommandation iOS) et marge autour du libellé. */
 export const TAB_MIN_W = 44;
 const TAB_LABEL_PAD = 4;
-/** Hauteur de la capsule. */
-export const TAB_BAR_H = 64;
+/** Hauteur de la barre (v5 : barre pleine largeur, posée en bas, fine ligne de séparation). */
+export const TAB_BAR_H = 60;
 
 /**
- * Ligne du bas : marges latérales, bouton d'action rond (à droite de la capsule, même ligne) et capsule des onglets
- * (`pad` : marge intérieure, pour que les libellés des extrémités ne touchent pas l'arrondi).
- * Petit écran (< 360 px) : marges et bouton réduits pour laisser la place aux libellés.
+ * Barre v5 : pleine largeur (plus de capsule flottante), bouton d'action INTÉGRÉ à droite, même hauteur de base que
+ * les onglets (centré verticalement dans la barre). `pad` : marge intérieure gauche et droite ; `inner` : place des
+ * cinq onglets. Petit écran (< 360 px) : marges et bouton réduits pour laisser la place aux libellés entiers.
  */
 export function dockGeometry(width: number) {
   const narrow = width < 360;
-  const side = narrow ? 4 : 12;
-  const action = narrow ? 44 : 56;
-  const gap = narrow ? 5 : 8;
-  const pad = narrow ? 4 : 10;
-  const row = Math.min(width - side * 2, 600);
-  const barW = row - action - gap;
-  return { side, action, gap, pad, row, barW, inner: barW - pad * 2 };
+  const side = 0;
+  const action = narrow ? 44 : 48;
+  const gap = narrow ? 2 : 6;
+  const pad = narrow ? 4 : 8;
+  const row = Math.min(width, 600);
+  const barW = row;
+  return { side, action, gap, pad, row, barW, inner: barW - pad * 2 - action - gap };
 }
 
 /**

@@ -8,7 +8,6 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
-import { StarField } from '@/components/StarField';
 import { Button, Chip, haptic, Icon, Row, Text, Toggle } from '@/components/ui';
 import { ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
@@ -18,18 +17,17 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useUiStore } from '@/lib/store';
 import { formatDuration, formatTime, timeAgo } from '@/lib/domain/dates';
 import type { Breastfeed, Diaper } from '@/lib/types';
-import { Aurora } from '@/components/Aurora';
-import { radius, spacing } from '@/theme/tokens';
+import { radius, spacing, themes } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr } from '@/i18n';
 
-// Couleurs du thème « Nuit » HOMI (src/theme/tokens.ts) : champagne tamisé, perle lilas, jamais de blanc pur
-const GOLD = '#CDB48A';
-const TEXT = '#DDD0EC';
-const MUTED = '#A598C0';
-const BG = '#0F0B1E';
-const CARD = '#1A1430';
-const CARD_PRESSED = '#2E2650';
+// Couleurs du thème « Nuit » HOMI v5 (src/theme/tokens.ts, `themes.night`) : prune très tamisée, jamais de blanc pur
+const GOLD = themes.night.colors.gold;
+const TEXT = themes.night.colors.text;
+const MUTED = themes.night.colors.textMuted;
+const BG = themes.night.colors.background;
+const CARD = themes.night.colors.surface;
+const CARD_PRESSED = themes.night.colors.surfaceAlt;
 
 function BigButton({ icon, label, sub, onPress }: { icon: React.ComponentProps<typeof Icon>['name']; label: string; sub?: string; onPress: () => void }) {
   return (
@@ -152,9 +150,7 @@ export default function NightMode() {
   return (
     <View style={{ flex: 1, backgroundColor: BG, overflow: 'hidden' }}>
       <StatusBar style="light" />
-      <Aurora mood="lowlight" />
-      <StarField density={40} color={TEXT} />
-      {/* Défilement : sur petit écran (ou texte agrandi) rien n'est coupé ; le décor reste à l'intérieur de l'écran */}
+      {/* Fond uni tamisé (v5 : plus d'aurore ni d'étoiles) ; défilement : sur petit écran rien n'est coupé */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.sm, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg, gap: spacing.md }}>
         <Row style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.night.quit_a11y')} onPress={() => router.back()} hitSlop={10} style={{ minHeight: 48, justifyContent: 'center' }}>

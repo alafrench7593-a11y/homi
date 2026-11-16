@@ -3,19 +3,18 @@
  * le mot de passe oublié, la confirmation et l'onboarding.
  *
  * Règles (HOMI_SCREEN_INVENTORY.md › Entrée) :
- *  - un seul point focal par écran (`EntryHero`) : un disque lumineux sur un halo de la palette ;
+ *  - un seul point focal par écran (`EntryHero`) : la maison HOMI ou un disque prune, sur le HALO CORAIL ;
  *  - la scène se révèle EN PROFONDEUR (échelle 1,12 → 1 + fondu, Reanimated, `useMotion`) mais le texte et l'action
  *    principale sont rendus tout de suite, sans animation d'entrée : rien n'attend la scène ;
  *  - champs posés sur une surface MATE (`MattePanel`, opaque, sans flou ni reflet) : lisibles sur toutes les palettes ;
  *  - une seule action principale, en pied d'écran (`EntryScreen.footer`) : elle reste au-dessus du clavier ouvert.
  * Couleurs : uniquement le thème (`useTheme`) ; aucune valeur en dur, la refonte des jetons s'applique d'elle-même.
  */
-import React, { useEffect, useId } from 'react';
+import React, { useEffect } from 'react';
 import { useWindowDimensions, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
+import { CoralHalo } from '@/components/CoralHalo';
 import { Icon, type IconName, Text } from '@/components/ui';
 import { BrandLogo, BrandName, BrandWordmark } from '@/components/BrandLogo';
 import { BRAND } from '@/config/brand';
@@ -62,29 +61,9 @@ export function DepthReveal({ children, style, delay = 0 }: { children: React.Re
   );
 }
 
-/** Halo radial à deux lueurs de la palette (intensité du thème : nulle la nuit). */
+/** Halo corail (v5) derrière le point focal : le seul décor lumineux de l'entrée (`CoralHalo`, figé si Réduire les animations). */
 export function FocalGlow({ size }: { size: number }) {
-  const t = useTheme();
-  const id = `fg${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-  const k = t.tokens.halo.intensity;
-  if (k <= 0) return <View style={{ width: size, height: size }} />;
-  return (
-    <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Defs>
-        <RadialGradient id={`${id}a`} cx="0.44" cy="0.46" r="0.44">
-          <Stop offset="0" stopColor={t.tokens.halo.color} stopOpacity={0.9 * k} />
-          <Stop offset="1" stopColor={t.tokens.halo.color} stopOpacity={0} />
-        </RadialGradient>
-        <RadialGradient id={`${id}b`} cx="0.57" cy="0.56" r="0.42">
-          <Stop offset="0" stopColor={t.tokens.halo.color2} stopOpacity={0.75 * k} />
-          <Stop offset="1" stopColor={t.tokens.halo.color2} stopOpacity={0} />
-        </RadialGradient>
-      </Defs>
-      {/* deux disques pleine taille : chaque lueur s'éteint avant le bord (aucune arête visible) */}
-      <Circle cx={50} cy={50} r={50} fill={`url(#${id}a)`} />
-      <Circle cx={50} cy={50} r={50} fill={`url(#${id}b)`} />
-    </Svg>
-  );
+  return <CoralHalo size={size} testID="entry-halo" />;
 }
 
 /**
@@ -100,9 +79,8 @@ export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolea
       {logo ? (
         <BrandLogo size={Math.round(size * 0.56)} />
       ) : (
-        <View style={{ width: disc, height: disc, borderRadius: disc / 2, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: t.material.glass.floating.highlight }}>
-          <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-          {icon ? <Icon name={icon} size={Math.round(disc * 0.44)} color={t.tokens.text.onAccent} /> : null}
+        <View style={{ width: disc, height: disc, borderRadius: disc / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }}>
+          {icon ? <Icon name={icon} size={Math.round(disc * 0.44)} color={t.tokens.action.text} /> : null}
         </View>
       )}
     </DepthReveal>

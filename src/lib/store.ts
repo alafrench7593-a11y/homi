@@ -14,7 +14,7 @@ export type ActiveSubject =
 /** Apparence choisie : Système, Clair, Sombre. `auto` (ancien : clair/sombre selon l'heure) et `night` (thème des soins
  *  nocturnes) restent acceptés à l'exécution pour les données déjà enregistrées et les scénarios de test. */
 export type ThemePreference = 'auto' | 'system' | 'light' | 'dark' | 'night';
-/** Palette : Auto (selon l'heure locale) ou fixe — v4 : Brume pêche, Aurore lilas, Lagune turquoise, Ambre minéral. */
+/** Palette : v5, identité unique ('homi'). Champ conservé pour les données enregistrées (migré à la restauration). */
 export type PalettePreference = PaletteChoice;
 export interface AppearancePrefs { theme: ThemePreference; palette: PalettePreference }
 
@@ -29,7 +29,7 @@ interface UiState {
   appearanceByUser: Record<string, AppearancePrefs>;
   /** Compte dont les préférences d'apparence sont actuellement chargées. */
   appearanceOwner: string | null;
-  /** Change de compte : enregistre les choix courants et charge ceux du nouveau compte (Système + Auto par défaut). */
+  /** Change de compte : enregistre les choix courants et charge ceux du nouveau compte (Système par défaut). */
   switchAppearanceOwner: (userId: string) => void;
   /** Aperçu d'une phase du ciel (réglages > apparence) ; null = heure réelle */
   skyOverride: 'dawn' | 'day' | 'dusk' | 'night' | null;
@@ -117,9 +117,10 @@ interface UiState {
   reset: () => void;
 }
 
-const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: 'auto' };
+const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: 'homi' };
 
-/** Préférences d'apparence enregistrées (éventuellement v3) → v4 : palette la plus proche, par compte (pur, testé). */
+/** Préférences d'apparence enregistrées (palettes v3 / v4, Auto) → identité unique v5, par compte ; le choix
+ *  Système / Clair / Sombre est conservé tel quel (pur, testé). */
 export function migrateAppearance<S extends Pick<UiState, 'palettePreference' | 'appearanceByUser'>>(st: S): S {
   const byUser: Record<string, AppearancePrefs> = {};
   for (const [id, p] of Object.entries(st.appearanceByUser ?? {})) byUser[id] = { theme: p?.theme ?? 'system', palette: migratePalette(p?.palette) };
@@ -136,7 +137,7 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       themePreference: 'system', // v2 : suit le réglage clair / sombre du téléphone
-      palettePreference: 'auto', // v2 : palette selon l'heure locale
+      palettePreference: 'homi', // v5 : identité unique
       setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
       appearanceByUser: {},
       appearanceOwner: null,
@@ -144,7 +145,7 @@ export const useUiStore = create<UiState>()(
         if (st.appearanceOwner === userId) return {};
         // Premier compte vu sur cet appareil : il garde les choix déjà faits (aucune réinitialisation surprise)
         if (st.appearanceOwner === null && !st.appearanceByUser[userId]) {
-          return { appearanceOwner: userId, appearanceByUser: { ...st.appearanceByUser, [userId]: { theme: st.themePreference, palette: st.palettePreference } } };
+          return { appearanceOwner: userId, appearanceByUser: { ...st.appearanceByUser, [userId]: { theme: st.themePreference, palette: migratePalette(st.palettePreference) } } };
         }
         const saved = st.appearanceByUser[userId] ?? DEFAULT_APPEARANCE;
         return { appearanceOwner: userId, themePreference: saved.theme, palettePreference: migratePalette(saved.palette) };
@@ -223,8 +224,8 @@ export const useUiStore = create<UiState>()(
       storage: createJSONStorage(() => AsyncStorage),
       // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit
       partialize: ({ nightMode: _n, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
-      // Palettes v3 retirées (14/11/2026) : à CHAQUE restauration, les choix enregistrés (compte actif et autres comptes
-      // de l'appareil) passent à la palette v4 la plus proche (`migratePalette`) ; rien n'est perdu ni réinitialisé
+      // Palettes retirées (v5, 16/11/2026) : à CHAQUE restauration, les choix enregistrés (compte actif et autres comptes
+      // de l'appareil) passent à l'identité unique (`migratePalette`) ; l'apparence choisie est conservée
       merge: (persisted, current) => migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }),
     },
   ),

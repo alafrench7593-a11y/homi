@@ -4,7 +4,6 @@ import React from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { FetusArt } from '@/components/FetusArt';
-import { StarField } from '@/components/StarField';
 import { ClockLegend, DayClock, WeeksRing, type ClockEvent } from '@/components/DayClock';
 import { Card, haptic, Icon, type IconName, Row, Text } from '@/components/ui';
 import { ToolGlyph } from '@/components/ToolGlyph';

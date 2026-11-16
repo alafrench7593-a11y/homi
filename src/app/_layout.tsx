@@ -11,8 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { backdropVariant, SpaceScene } from '@/components/scene/SpaceScene';
-import { spaceOf } from '@/theme/ambiance';
 import { MorphHost } from '@/motion/Morph';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
@@ -26,15 +24,11 @@ import { configureNotifications, notificationRoute, notificationsSupported, regi
 import { startOfflineSync, useOfflineStore } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
 import { usePurchasesSync } from '@/lib/data/hooks-premium';
-import { SpaceGrotesk_500Medium } from '@expo-google-fonts/space-grotesk/500Medium';
-import { SpaceGrotesk_600SemiBold } from '@expo-google-fonts/space-grotesk/600SemiBold';
-import { SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk/700Bold';
 import { Manrope_500Medium } from '@expo-google-fonts/manrope/500Medium';
 import { Manrope_600SemiBold } from '@expo-google-fonts/manrope/600SemiBold';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope/700Bold';
-import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
+import { Manrope_800ExtraBold } from '@expo-google-fonts/manrope/800ExtraBold';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router';
-import { useLowPower } from '@/lib/lowPower';
 import { JourneyGuard } from '@/components/JourneyGuard';
 import { PremiumGate } from '@/components/PremiumGate';
 import { DemoBar } from '@/components/DemoBar';
@@ -197,7 +191,7 @@ function Navigator() {
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({ SpaceGrotesk_500Medium, SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold, Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold, InstrumentSerif_400Regular_Italic });
+  const [loaded, error] = useFonts({ Manrope_500Medium, Manrope_600SemiBold, Manrope_700Bold, Manrope_800ExtraBold });
 
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync().catch(() => undefined);
@@ -258,8 +252,8 @@ function WebFrame({ children }: { children: React.ReactNode }) {
   try { off = Platform.OS === 'web' && globalThis.localStorage?.getItem('toietmoi.frame') === 'off'; } catch { off = false; }
   if (Platform.OS !== 'web' || width < 600 || off) return <>{children}</>;
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E9E2F5', padding: 24 }}>
-      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(255,255,255,0.7)', shadowColor: '#635878', shadowOpacity: 0.28, shadowRadius: 50, shadowOffset: { width: 0, height: 24 } }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1E4E1', padding: 24 }}>
+      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(84,40,60,0.10)', shadowColor: '#54283C', shadowOpacity: 0.12, shadowRadius: 40, shadowOffset: { width: 0, height: 16 } }}>
         {children}
       </View>
     </View>
@@ -267,17 +261,13 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Fond unique, derrière toutes les pages (HOMI v4) : scène de l'ESPACE affiché (`SpaceScene`, `spaceOf(adresse)` :
- * Accueil, Santé, Bébé, Famille, Communauté, Réglages), aux couleurs de la palette et à l'accent de l'espace.
- * Variante `immersive` à l'ouverture et à la racine de chaque espace, `calm` sur les écrans internes (denses). Le passage clair ↔ sombre se fait par un voile qui s'efface (400 ms ; Réduire les animations : immédiat) ;
- * un changement de palette est interpolé par le ThemeProvider (lumière, reflets, accents et scène ensemble).
- * Image fixe avec Réduire les animations, en économie d'énergie, en arrière-plan et la nuit.
+ * Fond unique, derrière toutes les pages (HOMI v5) : UNI, à la couleur du thème — plus aucune scène, paysage ni motif.
+ * Le passage clair ↔ sombre se fait par un voile qui s'efface (400 ms ; Réduire les animations : immédiat).
+ * Le seul décor lumineux est le halo corail (`CoralHalo`), posé par l'accueil, l'entrée et l'onboarding eux-mêmes.
  */
 function Backdrop() {
   const t = useTheme();
   const reduce = useReduceMotion();
-  const lowPower = useLowPower();
-  const pathname = usePathname();
   // voile du mode précédent, qui s'efface quand le mode change
   const [veil, setVeil] = useState<string | null>(null);
   const prevBg = useRef(t.colors.background);
@@ -291,11 +281,8 @@ function Backdrop() {
     fade.setValue(1);
     Animated.timing(fade, { toValue: 0, duration: 400, easing: Easing.inOut(Easing.quad), useNativeDriver: Platform.OS !== 'web' }).start(({ finished }) => { if (finished) setVeil(null); });
   }, [t.colors.background, reduce, fade]);
-  // Pendant l'introduction cinématique, elle seule joue une vidéo (fond fixe dessous, jamais noir)
-  if (pathname === '/cinematic') return <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: t.colors.background }} />;
   return (
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }} testID={t.isDark ? 'bg-night' : 'bg-powder'}>
-      <SpaceScene space={spaceOf(pathname)} variant={backdropVariant(pathname)} still={lowPower} />
       {veil ? <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: veil, opacity: fade }]} /> : null}
     </View>
   );

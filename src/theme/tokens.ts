@@ -1,27 +1,22 @@
 /**
- * HOMI v4 (14/11/2026, décision du propriétaire) — « Lumière minérale ». Remplace la v3 « désert sci-fi » turquoise
- * (constat : arcs décoratifs répétés en haut à droite de chaque écran, dominante turquoise uniforme, compositions
- * trop semblables). Deux réglages indépendants (Réglages → Apparence) :
- *  1. Apparence : Système, Clair (panneau ivoire lumineux, bleu brume, pêche, reflets lilas), Sombre (obsidienne,
- *     verre fumé, lumière directionnelle). Le mode « nuit » des soins nocturnes reste interne (écran /night) :
- *     obsidienne très tamisée, palette atténuée, ni flou ni halo ni scène animée.
- *  2. Palette : Auto (selon l'heure locale, transition douce), Brume pêche (signature), Aurore lilas,
- *     Lagune turquoise, Ambre minéral. Les palettes modifient reflets et accents ; le sens des statuts ne change pas.
+ * HOMI v5 « Lumière corail » (16/11/2026, décision de la propriétaire) — remplace la v4 « Lumière minérale » et ses
+ * quatre palettes. Constat : HOMI ressemblait trop à « Au Fil de Nous » (beige, terracotta, paysages en fond,
+ * boutons capsules à dégradé marron, cartes empilées partout).
  *
- * Chaque ESPACE (Accueil, Santé, Bébé, Famille, Communauté, Réglages) a son AMBIANCE (`src/theme/ambiance.ts`) :
- * une composition minérale, une direction de lumière et un accent secondaire décoratif (`spaceScene`).
+ * UNE SEULE identité : lumière corail, rose chaud, touches de lilas (rares), encre prune profonde.
+ *  - Clair : fond uni ivoire rosé, surfaces blanches, séparateurs rosés très légers.
+ *  - Sombre : prune-anthracite profond (jamais noir pur), surfaces élevées légèrement rosées.
+ *  - Nuit (écran /night, soins nocturnes, interne) : prune très tamisée, ni halo ni ombre.
+ * Réglages → Apparence : seulement Système / Clair / Sombre. Les anciennes préférences de palette (v3, v4, Auto) sont
+ * migrées vers l'identité unique (`migratePalette` → 'homi').
  *
- * Trois matières (`theme.material.surfaces`, voir HOMI_DESIGN_SYSTEM.md) + la LENTILLE (`theme.material.lens`) :
- *  - `optical` : verre optique — navigation, sélections, panneaux principaux ;
- *  - `frosted` : verre givré (clair) / fumé (sombre) — commandes secondaires ;
- *  - `matte`   : surface mate opaque — listes longues, formulaires, résultats denses (= `colors.surface`) ;
- *  - lentille  : disque / capsule de verre clair qui glisse sous l'option active (sélecteurs, barre d'onglets) —
- *    le « O » du futur logo est une lentille de verre.
+ * Fond UNI partout : plus aucun paysage, scène, motif ni dégradé de page. La seule lumière décorative est le HALO
+ * CORAIL (`theme.tokens.halo`, composant `CoralHalo`), réservé à l'accueil, à l'entrée et à l'onboarding, derrière
+ * l'illustration. Profondeur = plans (fond → surface → surface élevée) et lumière ; ombres très légères ou aucune.
  *
- * Les rôles historiques (`colors.background`, `text`, `primary`…) sont conservés et alimentés par les jetons
- * (`theme.tokens`) : les ~229 écrans changent d'un coup sans modification. Contrastes testés pour chaque palette ×
- * clair / sombre / nuit × espace, chaque instant de l'Auto, chaque matière posée sur chaque couleur de chaque scène
- * (src/__tests__/contrast.test.ts).
+ * Les rôles historiques (`colors.*`, `material.*`) sont conservés et alimentés par les jetons : ~230 écrans changent
+ * d'un coup sans modification. Les matières v4 (`optical`, `frosted`, `matte`, lentille) existent encore comme NOMS
+ * mais sont des surfaces OPAQUES, sans flou ni reflet. Contrastes testés (src/__tests__/contrast.test.ts).
  */
 
 // ======================================================================== Couleurs de base
@@ -39,34 +34,55 @@ export const rgbOf = (c: Hex) => hexRgb(c).join(',');
 export const alpha = (c: Hex, a: number) => `rgba(${rgbOf(c)},${a})`;
 
 /**
- * Neutres v4 : ivoire lumineux (clair), obsidienne froide et neutre (sombre), obsidienne tamisée (nuit), et les trois
- * lumières du clair (bleu brume, pêche, lilas). Les anciens noms (`graphite*`, `pearl*`, `smoke`) sont conservés pour
- * les imports existants et pointent sur les nouvelles valeurs.
+ * Identité HOMI v5 (verrouillée par contrast.test.ts). Trois familles :
+ *  - `*Deep` : encres pour le clair (texte, icônes, aplats à texte blanc) — ≥ 4,5:1 sur le fond et les surfaces ;
+ *  - `*Glow` : lueurs pour le sombre (texte coloré, aplats à texte encre) — ≥ 4,5:1 sur le prune et ses surfaces ;
+ *  - teintes pures (`coral`, `rose`, `lilac`) : DÉCOR uniquement (halo, illustration, pastilles), jamais un texte.
  */
-export const NEUTRALS = {
-  ivory: '#F6F3EE',
-  ivoryHigh: '#FBFAF7',
-  ivoryLow: '#ECE7E0',
-  ink: '#15171C',
-  inkSoft: '#4A4E58',
-  obsidian: '#07080B',
-  obsidianHigh: '#0F1116',
-  obsidianLow: '#030405',
-  graphite: '#07080B',
-  graphiteHigh: '#0F1116',
-  graphiteLow: '#030405',
-  smoke: '#171A20',
-  pearl: '#EEF0F4',
-  pearlSoft: '#A9AEB9',
-  nightBg: '#060708',
-  white: '#FFFFFF',
-  /** Lumières du clair : bleu brume (ciel), pêche (horizon), lilas (reflets) */
-  mist: '#D3DEEA',
-  peach: '#F4D6C4',
-  lilac: '#E0D8F3',
+export const IDENTITY = {
+  coral: '#F2826F',
+  coralDeep: '#B5452F',
+  coralGlow: '#FFA08A',
+  rose: '#EC7E9C',
+  roseDeep: '#A8365F',
+  roseGlow: '#F4A3C0',
+  lilac: '#B9A6F2',
+  lilacDeep: '#6A4FB8',
+  lilacGlow: '#C9B6FF',
+  /** Encre prune : texte principal du clair, aplat de l'action principale */
+  plum: '#2A1621',
+  plumAction: '#3B1D2C',
 } as const;
 
-/** Couleurs d'origine conservées comme noms (anciens imports) mais réalignées sur la v4. */
+/**
+ * Neutres v5 : ivoire rosé (clair), prune-anthracite (sombre), prune tamisée (nuit). Les anciens noms (`ivory`,
+ * `obsidian`, `graphite*`, `pearl*`, `smoke`, `mist`, `peach`, `lilac`) sont conservés pour les imports existants et
+ * pointent sur les nouvelles valeurs.
+ */
+export const NEUTRALS = {
+  ivory: '#FBF4F2',
+  ivoryHigh: '#FFFAF8',
+  ivoryLow: '#F5EAE7',
+  ink: IDENTITY.plum,
+  inkSoft: '#6E5562',
+  obsidian: '#1A1217',
+  obsidianHigh: '#241A20',
+  obsidianLow: '#140E12',
+  graphite: '#1A1217',
+  graphiteHigh: '#241A20',
+  graphiteLow: '#140E12',
+  smoke: '#2E2229',
+  pearl: '#F6ECEF',
+  pearlSoft: '#C2AFB8',
+  nightBg: '#0E0A0C',
+  white: '#FFFFFF',
+  /** Teintes pâles de l'identité (fonds de pastilles, illustrations) : corail, rose, lilas */
+  mist: '#FFE4DC',
+  peach: '#FCE3EA',
+  lilac: '#ECE5FB',
+} as const;
+
+/** Couleurs d'origine conservées comme noms (anciens imports) mais réalignées sur la v5. */
 export const palette = {
   night: NEUTRALS.obsidian,
   nightDeep: NEUTRALS.obsidianLow,
@@ -74,148 +90,52 @@ export const palette = {
   mist: NEUTRALS.ivory,
   mistDeep: NEUTRALS.ivoryLow,
   milk: NEUTRALS.pearl,
-  powder: '#E3E9F1',
-  powderDeep: '#B9CBE2',
-  clay: '#C2477E', // framboise : cœur, repas
-  lavender: '#C8B5FF', // lilas (lueur)
-  lavenderInk: '#5B3DB0',
+  powder: '#F6E7E3',
+  powderDeep: '#EBCFC8',
+  clay: IDENTITY.roseDeep, // cœur, repas
+  lavender: IDENTITY.lilacGlow,
+  lavenderInk: IDENTITY.lilacDeep,
   gold: '#F0BC6C',
   goldInk: '#7F4B0C',
   ink: NEUTRALS.ink,
   inkSoft: NEUTRALS.inkSoft,
   white: NEUTRALS.white,
-  danger: '#C8283F',
-  dangerSoft: '#FBE4E4',
+  danger: '#B3111B',
+  dangerSoft: '#FCE8E8',
 };
 
-// ======================================================================== Palettes
-export type PaletteName = 'peche' | 'lilas' | 'lagune' | 'ambre';
-export type PaletteChoice = 'auto' | PaletteName;
-/** Ordre d'affichage : Brume pêche (signature) d'abord. */
-export const PALETTE_NAMES: PaletteName[] = ['peche', 'lilas', 'lagune', 'ambre'];
-
+// ======================================================================== Identité unique
 /**
- * Une palette = deux accents (a, b) en deux versions :
- *  - `ink`  : encres pour le clair (texte, icônes, boutons à texte blanc) — ≥ 4,5:1 sur l'ivoire, chaque scène et le verre ;
- *  - `glow` : lueurs pour le sombre (texte coloré, filets, reflets) — ≥ 4,5:1 sur l'obsidienne, chaque scène et le verre.
+ * v5 : une seule identité. `PaletteName` reste un type (anciens imports), à une seule valeur. Aucune palette au choix,
+ * plus d'Auto selon l'heure.
  */
+export type PaletteName = 'homi';
+export type PaletteChoice = PaletteName;
+export const PALETTE_NAMES: PaletteName[] = ['homi'];
+/** Accents : encres (clair) et lueurs (sombre), a = corail, b = rose chaud. */
 export interface PaletteAccents { ink: [Hex, Hex]; glow: [Hex, Hex] }
 export const PALETTES: Record<PaletteName, PaletteAccents> = {
-  peche: { ink: ['#9A4122', '#3A5878'], glow: ['#FFB08E', '#A9C4E8'] }, // pêche + bleu brume (signature)
-  lilas: { ink: ['#5B3DB0', '#8A3866'], glow: ['#C8B5FF', '#F4B4D2'] }, // lilas + rose d'aurore
-  lagune: { ink: ['#00636A', '#2D5786'], glow: ['#55DCD2', '#A4C4F0'] }, // turquoise de lagune + bleu profond
-  ambre: { ink: ['#7C4A0C', '#7A4030'], glow: ['#F0BC6C', '#E6A890'] }, // ambre + terre minérale
+  homi: { ink: [IDENTITY.coralDeep, IDENTITY.roseDeep], glow: [IDENTITY.coralGlow, IDENTITY.roseGlow] },
 };
-/** Palette signature : défaut des palettes manuelles et des exports statiques. */
-export const SIGNATURE_PALETTE: PaletteName = 'peche';
-
+export const SIGNATURE_PALETTE: PaletteName = 'homi';
 /**
- * Palettes v3 (retirées le 14/11/2026) → palette v4 LA PLUS PROCHE (distance RVB cumulée des deux encres et des deux
- * lueurs, calculée et vérifiée par contrast.test.ts). Toute valeur inconnue retombe sur la signature.
+ * Anciennes préférences de palette (v3 : turquoise, menthe, aurore, iris, crépuscule ; v4 : auto, peche, lilas,
+ * lagune, ambre) → identité unique. Rien n'est perdu : il n'y a plus rien à choisir.
  */
 export const LEGACY_PALETTE: Record<string, PaletteName> = {
-  turquoise: 'lagune',
-  menthe: 'lagune',
-  aurore: 'lagune',
-  iris: 'lilas',
-  crepuscule: 'ambre',
+  auto: 'homi', peche: 'homi', lilas: 'homi', lagune: 'homi', ambre: 'homi',
+  turquoise: 'homi', menthe: 'homi', aurore: 'homi', iris: 'homi', crepuscule: 'homi',
 };
-/** Préférence de palette enregistrée (éventuellement v3) → choix v4. */
-export function migratePalette(p: string | null | undefined): PaletteChoice {
-  if (!p || p === 'auto') return 'auto';
-  if ((PALETTE_NAMES as string[]).includes(p)) return p as PaletteName;
-  return LEGACY_PALETTE[p] ?? SIGNATURE_PALETTE;
-}
-
-/** Mélange de deux palettes (transition de l'Auto, changement de palette animé). */
-export function blendAccents(a: PaletteAccents, b: PaletteAccents, k: number): PaletteAccents {
-  if (k <= 0) return a;
-  if (k >= 1) return b;
-  return {
-    ink: [mixHex(a.ink[0], b.ink[0], k), mixHex(a.ink[1], b.ink[1], k)],
-    glow: [mixHex(a.glow[0], b.glow[0], k), mixHex(a.glow[1], b.glow[1], k)],
-  };
-}
-
-// ======================================================================== Palette « Auto » (heure locale)
-/**
- * Plages de l'Auto (heure LOCALE du téléphone) — les quatre palettes v4, une par moment :
- *  - 06:00 Brume pêche : l'aube, ivoire et pêche, ciel bleu brume (réveil, petit-déjeuner) ;
- *  - 11:00 Lagune turquoise : la journée, lumière franche et fraîche ;
- *  - 17:00 Ambre minéral : fin de journée, lumière rasante et chaude (retours d'école, repas, bain) ;
- *  - 21:00 Aurore lilas : soir et nuit, lilas apaisé (couchers, réveils nocturnes).
- * Chaque changement est un fondu de 60 min centré sur l'heure prévue (30 min avant → 30 min après), par paliers de
- * 5 min : environ 8 % de la différence à chaque palier, donc aucun saut perceptible, jamais de hasard.
- */
-export const AUTO_SCHEDULE: { from: number; palette: PaletteName }[] = [
-  { from: 6, palette: 'peche' },
-  { from: 11, palette: 'lagune' },
-  { from: 17, palette: 'ambre' },
-  { from: 21, palette: 'lilas' },
-];
-export const AUTO_BLEND_MINUTES = 60;
-export const AUTO_STEP_MINUTES = 5;
-
-export interface AutoState {
-  /** Palette dominante (celle dont on se rapproche le plus) */
-  dominant: PaletteName;
-  from: PaletteName;
-  to: PaletteName;
-  /** 0 → `from`, 1 → `to` (quantifié par paliers de 5 min) */
-  k: number;
-  /** Prochain instant où la couleur affichée change (palier suivant ou début du prochain fondu) */
-  next: Date;
-  /** Prochaine palette prévue et heure de bascule (affichage dans les réglages) */
-  upcoming: { palette: PaletteName; at: Date };
-}
-
-/** État de l'Auto à un instant donné (logique pure, testée). */
-export function autoPaletteAt(d: Date = new Date()): AutoState {
-  const minutes = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
-  const S = AUTO_SCHEDULE;
-  const half = AUTO_BLEND_MINUTES / 2;
-  const at = (m: number) => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setMinutes(m); return x; };
-  // Bascule la plus proche (avant ou après), boucle sur minuit
-  for (let i = 0; i < S.length; i++) {
-    const edge = S[i].from * 60;
-    for (const shift of [0, -1440, 1440]) {
-      const e = edge + shift;
-      if (minutes >= e - half && minutes < e + half) {
-        const prev = S[(i - 1 + S.length) % S.length].palette;
-        const raw = (minutes - (e - half)) / AUTO_BLEND_MINUTES;
-        const steps = AUTO_BLEND_MINUTES / AUTO_STEP_MINUTES;
-        const step = Math.floor(raw * steps);
-        const k = Math.min(1, Math.max(0, step / steps));
-        const nextStep = e - half + (step + 1) * AUTO_STEP_MINUTES;
-        const nextEdgeIdx = (i + 1) % S.length;
-        return {
-          dominant: k < 0.5 ? prev : S[i].palette,
-          from: prev, to: S[i].palette, k,
-          next: at(nextStep),
-          upcoming: k < 0.5 ? { palette: S[i].palette, at: at(e) } : { palette: S[nextEdgeIdx].palette, at: at(S[nextEdgeIdx].from * 60 + (nextEdgeIdx === 0 ? 1440 : 0) + shift) },
-        };
-      }
-    }
-  }
-  // Hors fondu : palette de la plage courante
-  let idx = S.length - 1;
-  for (let i = 0; i < S.length; i++) if (minutes >= S[i].from * 60) idx = i;
-  const nextIdx = (idx + 1) % S.length;
-  let nextEdge = S[nextIdx].from * 60;
-  if (nextEdge <= minutes) nextEdge += 1440;
-  const p = S[idx].palette;
-  return { dominant: p, from: p, to: p, k: 0, next: at(nextEdge - half), upcoming: { palette: S[nextIdx].palette, at: at(nextEdge) } };
+/** Préférence de palette enregistrée (v3, v4 ou absente) → identité unique (pur, testé). */
+export function migratePalette(_p?: string | null): PaletteChoice {
+  return SIGNATURE_PALETTE;
 }
 
 // ======================================================================== Thèmes
 export type ThemeName = 'light' | 'dark' | 'night';
 
-/** Le ciel de la famille (ancienne API, conservée pour l'accueil et l'aperçu de l'Auto). */
+/** Moment de la journée (salutation de l'accueil, aperçu). N'a plus d'effet sur les couleurs. */
 export type SkyPhase = 'dawn' | 'day' | 'dusk' | 'night';
-/** Moment représentatif de chaque palette (aperçu « voir à 8 h »… dans les réglages). */
-export const AUTO_PREVIEW_PHASE: Record<PaletteName, SkyPhase> = { peche: 'dawn', lagune: 'day', ambre: 'dusk', lilas: 'night' };
-/** Palette de l'Auto pour chaque moment (d'après le programme). */
-export const PHASE_PALETTE: Record<SkyPhase, PaletteName> = { dawn: 'peche', day: 'lagune', dusk: 'ambre', night: 'lilas' };
 export function skyPhase(d: Date = new Date()): SkyPhase {
   const h = d.getHours() + d.getMinutes() / 60;
   if (h >= 6 && h < 11) return 'dawn';
@@ -223,45 +143,56 @@ export function skyPhase(d: Date = new Date()): SkyPhase {
   if (h >= 17 && h < 21) return 'dusk';
   return 'night';
 }
+/** Fonds unis (anciens imports : bannières de profil). Trois fois la même couleur : plus de dégradé de page. */
 export const SKY_GRADIENTS: Record<Exclude<SkyPhase, 'night'>, [string, string, string]> = {
-  dawn: [NEUTRALS.ivoryHigh, NEUTRALS.ivory, NEUTRALS.ivoryLow],
-  day: [NEUTRALS.ivoryHigh, NEUTRALS.ivory, NEUTRALS.ivoryLow],
-  dusk: [NEUTRALS.obsidianHigh, NEUTRALS.obsidian, NEUTRALS.obsidianLow],
+  dawn: [NEUTRALS.ivory, NEUTRALS.ivory, NEUTRALS.ivory],
+  day: [NEUTRALS.ivory, NEUTRALS.ivory, NEUTRALS.ivory],
+  dusk: [NEUTRALS.obsidian, NEUTRALS.obsidian, NEUTRALS.obsidian],
 };
-/** Heure représentative de chaque phase (aperçu dans les réglages) : une par palette de l'Auto. */
+/** Heure représentative de chaque moment (aperçu « voir à 8 h » de l'accueil). */
 export function previewTime(p: SkyPhase): Date {
   const d = new Date();
   const [h, m] = { dawn: [8, 0], day: [14, 0], dusk: [19, 0], night: [23, 0] }[p];
   d.setHours(h, m, 0, 0);
   return d;
 }
-export const SKY_LABEL: Record<SkyPhase, string> = { dawn: 'Matin', day: 'Journée', dusk: 'Fin de journée', night: 'Soir' };
 
 /**
  * Jetons sémantiques (une seule source pour chaque rôle). Tous les composants partagés lisent ces jetons ;
  * `colors` (rôles historiques) en est un alias.
  */
 export interface DesignTokens {
-  surface: { background: string; card: string; glass: string; glassStrong: string; opaque: string };
+  surface: { background: string; card: string; glass: string; glassStrong: string; opaque: string; /** surface élevée (feuille, menu) */ raised: string; /** creux (rail, champ) */ sunken: string };
   text: { primary: string; secondary: string; onAccent: string };
-  accent: { accent: string; accent2: string; /** dégradé de palette (a → b) */ gradient: [string, string]; /** version lumineuse (halos, filets), même en clair */ glow: [string, string] };
+  accent: { accent: string; accent2: string; /** lilas : accent secondaire RARE */ lilac: string; gradient: [string, string]; /** version lumineuse (décor), même en clair */ glow: [string, string] };
+  /** Action principale : aplat profond + texte clair (clair : prune ; sombre : corail) */
+  action: { fill: string; text: string };
+  /** Action principale posée sur le halo corail (`Button variant="onHero"`) : surface claire opaque + texte foncé */
+  onHero: { fill: string; text: string };
   border: { rest: string; active: string };
-  halo: { color: string; color2: string; intensity: number };
+  /**
+   * HALO CORAIL (accueil, entrée, onboarding uniquement) : dégradé radial localisé derrière l'illustration.
+   * `color` = cœur corail, `color2` = rose chaud, `color3` = bord lilas ; `intensity` 0 = éteint (nuit).
+   */
+  halo: { color: string; color2: string; color3: string; intensity: number };
   status: { success: string; warning: string; danger: string; info: string };
+  /** Anneau de focus visible (clavier, lecteur d'écran) */
+  focus: string;
 }
 
 export interface Theme {
   name: ThemeName;
   phase?: SkyPhase;
   isDark: boolean;
-  /** Palette dominante affichée (Auto : celle de la plage horaire courante) */
+  /** Identité affichée (toujours 'homi') */
   palette: PaletteName;
   tokens: DesignTokens;
-  /** Matière dérivée (verre, traits, teintes, dégradé principal, scène, lumière) : voir plus bas */
+  /** Matière dérivée (surfaces, traits, teintes) : voir plus bas */
   material: Material;
   colors: {
     background: string;
     backgroundAlt: string;
+    /** Conservé pour compatibilité : trois fois le fond (fond uni) */
     gradient: [string, string, string];
     surface: string;
     surfaceAlt: string;
@@ -285,14 +216,10 @@ export interface Theme {
   };
 }
 
-
-// ======================================================================== Matière (verre, traits, teintes)
+// ======================================================================== Matière (surfaces, traits, teintes)
 /**
- * Niveaux de surface historiques (du plus bas au plus haut) :
- *  - `inset`    : creux (champs, rails de sélecteur, pastilles au repos) ; pas d'ombre ;
- *  - `raised`   : cartes = surface MATE (= `theme.colors.surface`, opaque, sans flou) ; ombre `mid` ;
- *  - `floating` : panneaux flottants, menus = verre GIVRÉ / FUMÉ ; ombre `high`.
- * `edge` = liseré ; `highlight` = arête supérieure éclairée ; `blur` = intensité du flou (iOS / web).
+ * Niveaux de surface historiques : `inset` (creux : rails, champs), `raised` (cartes = `colors.surface`),
+ * `floating` (feuilles, menus = surface élevée). v5 : tous OPAQUES (sauf le creux, une teinte légère), sans flou.
  */
 export type SurfaceLevel = 'inset' | 'raised' | 'floating';
 export type ElevationLevel = 'low' | 'mid' | 'high';
@@ -300,434 +227,318 @@ export interface GlassLevel { fill: string; edge: string; highlight: string; blu
 export type CardTint = 'soft' | 'lavender' | 'gold';
 export interface Lines { controlFill: string; hairline: string; separator: string; track: string; iconWell: string; thumbEdge: string }
 
-/** Les trois matières (v3, rôles redéfinis en v4). */
+/** Noms des anciennes matières v4 (conservés) : en v5 ce sont des surfaces opaques. */
 export type SurfaceKind = 'optical' | 'frosted' | 'matte';
 export interface SurfaceSpec {
-  /** Remplissage (garantit seul le contraste : le flou est un bonus) */
   fill: string;
-  /** Bord fin */
   edge: string;
-  /** Arête éclairée (côté de la lumière) */
   highlight: string;
-  /** Dégradé interne (épaisseur du verre, lumière qui traverse) : du côté éclairé vers l'ombre */
   inner: [string, string];
-  /** Intensité du flou (0 : aucun) */
+  /** v5 : toujours 0 (aucun flou) */
   blur: number;
-  /** Ombre physique */
   shadow: ElevationLevel | null;
-  /** Opacité de l'ombre colorée de l'accent sous la surface (0 : aucune) */
+  /** v5 : toujours 0 (aucune ombre colorée) */
   glow: number;
 }
 
-/**
- * LENTILLE (v4) : capsule ou disque de verre CLAIR et épais qui glisse sous l'option active (sélecteurs, barre
- * d'onglets). Elle ne colore pas le contenu : elle le « grossit » (remplissage plus clair que le rail), avec une arête
- * réfractée (bord clair en haut, ombre interne en bas) et une caustique de la palette au pied. Le « O » du futur logo
- * est une lentille de verre : même matière.
- */
-export interface LensSpec {
-  /** Remplissage (texte et accent lisibles dessus, testé) */
-  fill: string;
-  /** Liseré */
-  edge: string;
-  /** Arête réfractée haute (reflet) */
-  rim: string;
-  /** Caustique colorée au pied de la lentille (lumière concentrée) */
-  caustic: string;
-  /** Ombre interne de l'épaisseur (bas) */
-  shade: string;
-  /** Ombre portée douce */
-  shadow: string;
-}
+/** Indicateur de sélection (sélecteurs, ex-« lentille ») : surface claire qui glisse sous l'option active. */
+export interface LensSpec { fill: string; edge: string; rim: string; caustic: string; shade: string; shadow: string }
 
-/**
- * Couleurs d'une SCÈNE (fond de coque), calculées pour un mode, une palette et l'accent secondaire d'un espace
- * (`spaceScene`, src/theme/ambiance.ts). Formes MINÉRALES et lumière douce ; plus aucun astre ni arc décoratif.
- */
-export interface SceneColors {
-  /** Ciel / fond : haut, milieu, bas */
-  sky: [string, string, string];
-  /** Lumière : halo doux (clair) ou faisceau directionnel (sombre), couleur pleine au cœur */
-  light: string;
-  /** Brume d'horizon (bleu brume en clair) */
-  haze: string;
-  /** Formes minérales : lointaine, médiane, proche (opaques) */
-  stones: [string, string, string];
-  /** Face éclairée des pierres (côté de la lumière) */
-  facet: string;
-  /** Arête éclairée (trait ≤ 2 px, hors calcul de contraste) */
-  rim: string;
-  /** Sol / eau qui reflète : haut → bas */
-  floor: [string, string];
-  /** Reflets (traits fins, hors calcul de contraste) */
-  glint: string;
-  /** Accent secondaire de l'espace, déjà mêlé à la palette (décor : pierres, lumière, caustiques) */
-  hue: string;
-  /** Fenêtre allumée du foyer (Accueil) */
-  window: string;
-}
-/** Direction de la lumière (reflets directionnels) : d'en haut à gauche vers en bas à droite. */
+/** Ancienne direction de la lumière (reflets) : v5, reflets éteints (transparents). */
 export interface LightSpec { start: { x: number; y: number }; end: { x: number; y: number }; edge: string; sheen: string }
 export interface Material {
   glass: Record<SurfaceLevel, GlassLevel>;
   surfaces: Record<SurfaceKind, SurfaceSpec>;
   lens: LensSpec;
-  /** Scène de l'Accueil (accent secondaire = palette) ; les autres espaces : `spaceScene(theme, espace)` */
-  scene: SceneColors;
   light: LightSpec;
   lines: Lines;
   cardTint: Record<CardTint, string>;
-  /** Dégradé des boutons principaux (texte `primaryText` lisible sur chaque arrêt) */
+  /** Aplat de l'action principale (trois fois la même couleur : plus de dégradé) — texte `primaryText` lisible */
   primaryGradient: [string, string, string];
-  /** Composantes « r,g,b » des deux accents (ombres teintées, halos) */
   accentRgb: string;
   accent2Rgb: string;
-  /** Encre des ombres physiques */
+  /** Encre des ombres physiques (« r,g,b ») */
   shadowInk: string;
 }
 
 const STATUS = {
-  light: { success: '#1B6234', warning: '#7A4600', danger: '#A51F2B', info: '#1D5AA6' },
-  dark: { success: '#8BE0A6', warning: '#F7C770', danger: '#FF9A93', info: '#9CC4FF' },
-  night: { success: '#94C29E', warning: '#D9B577', danger: '#E8A3A0', info: '#9EB6D8' },
+  // Rouge d'alerte santé : rouge franc (≈ 357°), distinct du corail (≈ 12°) et du rose (≈ 337°) ; toujours + icône + libellé
+  light: { success: '#1B6B3A', warning: '#8A4B00', danger: '#B3111B', info: '#1D5AA6' },
+  dark: { success: '#8BE0A6', warning: '#F7C770', danger: '#FF6B6B', info: '#9CC4FF' },
+  night: { success: '#94C29E', warning: '#D9B577', danger: '#F08C8C', info: '#9EB6D8' },
 } as const;
 
 const LIGHT_DIR = { start: { x: 0, y: 0 }, end: { x: 0.85, y: 1 } };
+const NO_LIGHT = 'rgba(255,255,255,0)';
+const flatSurface = (fill: string, edge: string, shadow: ElevationLevel | null): SurfaceSpec => ({ fill, edge, highlight: NO_LIGHT, inner: [NO_LIGHT, NO_LIGHT], blur: 0, shadow, glow: 0 });
 
-/**
- * Scène pour un mode, deux lueurs de palette (ga, gb) et l'accent secondaire d'un espace (`hue`, une lueur pastel).
- *  - Clair : ciel bleu brume → ivoire → pêche, pierres pâles (brume, lilas, pêche) teintées par l'espace, reflets lilas
- *    de la palette, halo de lumière blanche.
- *  - Sombre : obsidienne, pierres presque noires lisibles par leur arête éclairée, faisceau de lumière directionnelle
- *    teinté par l'espace et la palette, sol qui reflète.
- *  - Nuit : même scène, très tamisée.
- */
-export function sceneColors(mode: ThemeName, ga: Hex, gb: Hex, hue: Hex = ga): SceneColors {
+/** Thème complet pour un mode (l'identité est unique ; `acc` reste paramétrable pour les tests). */
+export function buildTheme(mode: ThemeName, acc: PaletteAccents = PALETTES.homi, paletteName: PaletteName = 'homi'): Theme {
   const N = NEUTRALS;
-  if (mode === 'light') {
-    const B = N.ivory;
-    const tone = mixHex(hue, ga, 0.3);
-    const refl = mixHex(N.lilac, ga, 0.25);
-    return {
-      sky: [mixHex(B, mixHex(N.mist, hue, 0.15), 0.8), B, mixHex(B, mixHex(N.peach, gb, 0.1), 0.5)],
-      light: mixHex('#FFFFFF', tone, 0.08),
-      haze: mixHex(B, N.mist, 0.6),
-      stones: [
-        mixHex(B, mixHex(N.mist, tone, 0.3), 0.6),
-        mixHex(B, mixHex(N.lilac, tone, 0.35), 0.58),
-        mixHex(B, mixHex(N.peach, tone, 0.3), 0.66),
-      ],
-      facet: mixHex('#FFFFFF', tone, 0.07),
-      rim: 'rgba(255,255,255,0.95)',
-      floor: [mixHex(B, refl, 0.5), mixHex(B, N.mist, 0.3)],
-      glint: alpha(mixHex(ga, '#FFFFFF', 0.25), 0.75),
-      hue: tone,
-      window: mixHex('#FFFFFF', ga, 0.3),
-    };
-  }
-  const dim = mode === 'night' ? 0.45 : 1;
-  const base = mode === 'night' ? N.nightBg : N.obsidian;
-  const tone = mixHex(hue, ga, 0.35);
-  return {
-    sky: [mixHex(base, tone, 0.06 * dim), base, mixHex(base, tone, 0.03 * dim)],
-    light: mixHex(base, tone, 0.2 * dim),
-    haze: mixHex(base, tone, 0.08 * dim),
-    stones: [mixHex('#15171D', tone, 0.08 * dim), mixHex('#101217', tone, 0.06 * dim), mixHex('#0B0C10', tone, 0.04 * dim)],
-    facet: mixHex('#1A1D24', tone, 0.12 * dim),
-    rim: alpha(mixHex(tone, '#FFFFFF', 0.3), 0.5 * dim),
-    floor: [mixHex(base, tone, 0.07 * dim), mixHex(base, '#000000', 0.3)],
-    glint: alpha(tone, 0.5 * dim),
-    hue: tone,
-    window: mixHex(base, ga, 0.2 * dim),
-  };
-}
-
-/** Thème complet pour un mode et une palette (éventuellement mélangée par l'Auto ou une transition). */
-export function buildTheme(mode: ThemeName, acc: PaletteAccents, paletteName: PaletteName): Theme {
-  const N = NEUTRALS;
+  const I = IDENTITY;
   if (mode === 'light') {
     const [a, b] = acc.ink;
     const [ga, gb] = acc.glow;
     const status = STATUS.light;
-    // Surface mate : blanc ivoire opaque (listes, formulaires, données)
-    const matte = mixHex('#FFFFFF', N.ivory, 0.2);
-    const frosted = alpha(mixHex('#FFFFFF', ga, 0.03), 0.8);
-    // Verre optique : blanc aux reflets LILAS teintés de la palette
-    const optical = alpha(mixHex('#FFFFFF', mixHex(N.lilac, ga, 0.35), 0.14), 0.7);
-    const surfaces: Record<SurfaceKind, SurfaceSpec> = {
-      optical: { fill: optical, edge: 'rgba(255,255,255,0.95)', highlight: 'rgba(255,255,255,1)', inner: [alpha(ga, 0.16), alpha(N.lilac, 0.18)], blur: 48, shadow: 'high', glow: 0.22 },
-      frosted: { fill: frosted, edge: 'rgba(255,255,255,0.9)', highlight: 'rgba(255,255,255,1)', inner: ['rgba(255,255,255,0.45)', 'rgba(255,255,255,0)'], blur: 32, shadow: 'mid', glow: 0 },
-      matte: { fill: matte, edge: 'rgba(21,23,28,0.07)', highlight: 'rgba(255,255,255,0)', inner: ['rgba(255,255,255,0)', 'rgba(255,255,255,0)'], blur: 0, shadow: 'low', glow: 0 },
-    };
+    const surface = '#FFFFFF';
+    const sunken = '#F6EBE8';
+    const edge = 'rgba(84,40,60,0.10)';
+    const separator = 'rgba(84,40,60,0.08)';
+    const raisedSpec = flatSurface(surface, edge, 'low');
     const material: Material = {
       glass: {
-        inset: { fill: 'rgba(84,92,118,0.06)', edge: 'rgba(21,23,28,0.09)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-        raised: { fill: matte, edge: surfaces.matte.edge, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: 'mid' },
-        floating: { fill: frosted, edge: surfaces.frosted.edge, highlight: 'rgba(255,255,255,1)', blur: 32, shadow: 'high' },
+        inset: { fill: 'rgba(120,52,70,0.055)', edge, highlight: NO_LIGHT, blur: 0, shadow: null },
+        raised: { fill: surface, edge, highlight: NO_LIGHT, blur: 0, shadow: 'low' },
+        floating: { fill: surface, edge, highlight: NO_LIGHT, blur: 0, shadow: 'mid' },
       },
-      surfaces,
-      lens: {
-        fill: alpha(mixHex('#FFFFFF', ga, 0.05), 0.94), edge: alpha(mixHex(N.ink, a, 0.4), 0.14), rim: 'rgba(255,255,255,1)',
-        caustic: alpha(ga, 0.75), shade: alpha(mixHex(N.ink, a, 0.3), 0.1), shadow: alpha(mixHex(a, N.ink, 0.4), 0.3),
-      },
-      scene: sceneColors('light', ga, gb),
-      light: { ...LIGHT_DIR, edge: 'rgba(255,255,255,1)', sheen: 'rgba(255,255,255,0.55)' },
-      lines: { controlFill: 'rgba(255,255,255,0.86)', hairline: alpha(a, 0.2), separator: 'rgba(21,23,28,0.09)', track: 'rgba(74,78,88,0.3)', iconWell: alpha(a, 0.08), thumbEdge: 'rgba(21,23,28,0.08)' },
-      cardTint: { soft: mixHex(matte, ga, 0.1), lavender: mixHex(matte, N.lilac, 0.45), gold: mixHex(matte, N.peach, 0.5) },
-      primaryGradient: [mixHex(a, '#FFFFFF', 0.08), a, mixHex(a, b, 0.25)],
-      accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '30,32,44',
+      surfaces: { optical: raisedSpec, frosted: raisedSpec, matte: flatSurface(surface, edge, null) },
+      lens: { fill: '#FFFFFF', edge: 'rgba(84,40,60,0.12)', rim: NO_LIGHT, caustic: NO_LIGHT, shade: NO_LIGHT, shadow: 'rgba(84,40,60,0.10)' },
+      light: { ...LIGHT_DIR, edge: NO_LIGHT, sheen: NO_LIGHT },
+      lines: { controlFill: sunken, hairline: 'rgba(84,40,60,0.16)', separator, track: 'rgba(84,40,60,0.24)', iconWell: '#FCEBE6', thumbEdge: 'rgba(84,40,60,0.10)' },
+      cardTint: { soft: '#FFF1ED', lavender: '#F4F0FD', gold: '#FFF4E6' },
+      primaryGradient: [I.plumAction, I.plumAction, I.plumAction],
+      accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '84,40,60',
     };
     return {
       name: 'light', isDark: false, palette: paletteName, material,
       tokens: {
-        surface: { background: N.ivory, card: matte, glass: frosted, glassStrong: frosted, opaque: '#FFFFFF' },
+        surface: { background: N.ivory, card: surface, glass: surface, glassStrong: surface, opaque: surface, raised: surface, sunken },
         text: { primary: N.ink, secondary: N.inkSoft, onAccent: '#FFFFFF' },
-        accent: { accent: a, accent2: b, gradient: [a, b], glow: [ga, gb] },
-        border: { rest: 'rgba(21,23,28,0.10)', active: alpha(a, 0.55) },
-        halo: { color: ga, color2: gb, intensity: 0.3 },
+        accent: { accent: a, accent2: b, lilac: I.lilacDeep, gradient: [a, b], glow: [ga, gb] },
+        action: { fill: I.plumAction, text: '#FFFFFF' },
+        onHero: { fill: '#FFFFFF', text: I.plum },
+        border: { rest: edge, active: alpha(a, 0.6) },
+        halo: { color: I.coral, color2: I.rose, color3: I.lilac, intensity: 0.55 },
         status,
+        focus: a,
       },
       colors: {
-        background: N.ivory, backgroundAlt: N.ivoryLow, gradient: [N.ivoryHigh, N.ivory, N.ivoryLow],
-        surface: matte, surfaceAlt: 'rgba(255,255,255,0.6)', border: 'rgba(21,23,28,0.08)',
+        background: N.ivory, backgroundAlt: N.ivoryLow, gradient: [N.ivory, N.ivory, N.ivory],
+        surface, surfaceAlt: sunken, border: edge,
         text: N.ink, textMuted: N.inkSoft,
         primary: a, primaryText: '#FFFFFF',
-        accent: mixHex(gb, '#FFFFFF', 0.45), accentSoft: alpha(gb, 0.22),
-        lavender: b, gold: '#7A4E12',
-        success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: '#FBE4E4',
-        tabBar: frosted, overlay: 'rgba(18,18,26,0.34)', heart: '#A8346A',
+        accent: I.coral, accentSoft: alpha(I.coral, 0.16),
+        lavender: I.lilacDeep, gold: '#7A4E12',
+        success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: '#FCE8E8',
+        tabBar: surface, overlay: 'rgba(42,22,33,0.36)', heart: I.roseDeep,
       },
     };
   }
   if (mode === 'dark') {
     const [a, b] = acc.glow;
     const status = STATUS.dark;
-    // Surface mate : obsidienne relevée, opaque, un souffle de l'accent
-    const matte = mixHex(mixHex(N.obsidian, '#FFFFFF', 0.055), a, 0.02);
-    const frosted = alpha(mixHex(N.smoke, a, 0.04), 0.82);
-    const optical = alpha(mixHex(N.smoke, a, 0.07), 0.76);
-    const surfaces: Record<SurfaceKind, SurfaceSpec> = {
-      optical: { fill: optical, edge: 'rgba(255,255,255,0.16)', highlight: 'rgba(255,255,255,0.62)', inner: [alpha(a, 0.08), alpha(b, 0.03)], blur: 48, shadow: 'high', glow: 0.2 },
-      frosted: { fill: frosted, edge: 'rgba(255,255,255,0.11)', highlight: 'rgba(255,255,255,0.3)', inner: ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0)'], blur: 32, shadow: 'mid', glow: 0 },
-      matte: { fill: matte, edge: 'rgba(255,255,255,0.07)', highlight: 'rgba(255,255,255,0)', inner: ['rgba(255,255,255,0)', 'rgba(255,255,255,0)'], blur: 0, shadow: 'low', glow: 0 },
-    };
+    const surface = N.obsidianHigh;
+    const raised = N.smoke;
+    const edge = 'rgba(255,220,232,0.10)';
+    const separator = 'rgba(255,220,232,0.08)';
     const material: Material = {
       glass: {
-        inset: { fill: 'rgba(255,255,255,0.05)', edge: 'rgba(255,255,255,0.10)', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-        raised: { fill: matte, edge: surfaces.matte.edge, highlight: 'rgba(255,255,255,0)', blur: 0, shadow: 'mid' },
-        floating: { fill: frosted, edge: surfaces.frosted.edge, highlight: 'rgba(255,255,255,0.3)', blur: 32, shadow: 'high' },
+        inset: { fill: 'rgba(255,220,232,0.06)', edge, highlight: NO_LIGHT, blur: 0, shadow: null },
+        raised: { fill: surface, edge, highlight: NO_LIGHT, blur: 0, shadow: 'low' },
+        floating: { fill: raised, edge, highlight: NO_LIGHT, blur: 0, shadow: 'mid' },
       },
-      surfaces,
-      lens: {
-        fill: alpha(mixHex('#252932', a, 0.1), 0.92), edge: 'rgba(255,255,255,0.2)', rim: 'rgba(255,255,255,0.62)',
-        caustic: alpha(a, 0.6), shade: 'rgba(0,0,0,0.4)', shadow: 'rgba(0,0,0,0.5)',
-      },
-      scene: sceneColors('dark', a, b),
-      light: { ...LIGHT_DIR, edge: 'rgba(255,255,255,0.62)', sheen: 'rgba(255,255,255,0.04)' },
-      lines: { controlFill: 'rgba(255,255,255,0.08)', hairline: 'rgba(255,255,255,0.13)', separator: 'rgba(255,255,255,0.07)', track: 'rgba(255,255,255,0.2)', iconWell: alpha(a, 0.1), thumbEdge: 'rgba(0,0,0,0)' },
-      cardTint: { soft: mixHex(matte, a, 0.07), lavender: mixHex(matte, b, 0.08), gold: mixHex(matte, '#F0BC6C', 0.07) },
-      primaryGradient: [mixHex(a, '#FFFFFF', 0.16), a, mixHex(a, b, 0.4)],
-      accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '2,3,5',
+      surfaces: { optical: flatSurface(raised, edge, 'low'), frosted: flatSurface(raised, edge, 'low'), matte: flatSurface(surface, edge, null) },
+      lens: { fill: '#3B2D35', edge: 'rgba(255,220,232,0.14)', rim: NO_LIGHT, caustic: NO_LIGHT, shade: NO_LIGHT, shadow: 'rgba(0,0,0,0.25)' },
+      light: { ...LIGHT_DIR, edge: NO_LIGHT, sheen: NO_LIGHT },
+      lines: { controlFill: raised, hairline: 'rgba(255,220,232,0.16)', separator, track: 'rgba(255,220,232,0.22)', iconWell: '#3A242B', thumbEdge: 'rgba(0,0,0,0)' },
+      cardTint: { soft: '#2E1F22', lavender: '#272033', gold: '#2E2420' },
+      primaryGradient: [a, a, a],
+      accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '6,3,5',
     };
     return {
       name: 'dark', isDark: true, palette: paletteName, material,
       tokens: {
-        surface: { background: N.obsidian, card: matte, glass: frosted, glassStrong: frosted, opaque: N.smoke },
-        text: { primary: N.pearl, secondary: N.pearlSoft, onAccent: N.obsidian },
-        accent: { accent: a, accent2: b, gradient: [a, b], glow: [a, b] },
-        border: { rest: 'rgba(255,255,255,0.09)', active: alpha(a, 0.6) },
-        halo: { color: a, color2: b, intensity: 0.45 },
+        surface: { background: N.obsidian, card: surface, glass: raised, glassStrong: raised, opaque: surface, raised, sunken: N.obsidianLow },
+        text: { primary: N.pearl, secondary: N.pearlSoft, onAccent: I.plum },
+        accent: { accent: a, accent2: b, lilac: I.lilacGlow, gradient: [a, b], glow: [a, b] },
+        action: { fill: a, text: I.plum },
+        onHero: { fill: N.pearl, text: I.plum },
+        border: { rest: edge, active: alpha(a, 0.6) },
+        halo: { color: I.coral, color2: I.rose, color3: I.lilac, intensity: 0.32 },
         status,
+        focus: a,
       },
       colors: {
-        background: N.obsidian, backgroundAlt: '#0B0C10', gradient: [N.obsidianHigh, N.obsidian, N.obsidianLow],
-        surface: matte, surfaceAlt: 'rgba(255,255,255,0.08)', border: 'rgba(255,255,255,0.09)',
+        background: N.obsidian, backgroundAlt: N.obsidianLow, gradient: [N.obsidian, N.obsidian, N.obsidian],
+        surface, surfaceAlt: raised, border: edge,
         text: N.pearl, textMuted: N.pearlSoft,
-        primary: a, primaryText: N.obsidian,
+        primary: a, primaryText: I.plum,
         accent: b, accentSoft: alpha(b, 0.16),
-        lavender: b, gold: '#F0BC6C',
-        success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: 'rgba(255,120,110,0.15)',
-        tabBar: frosted, overlay: 'rgba(0,0,0,0.58)', heart: '#FF9CC3',
+        lavender: I.lilacGlow, gold: '#F0BC6C',
+        success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: 'rgba(255,107,107,0.14)',
+        tabBar: surface, overlay: 'rgba(8,4,6,0.6)', heart: I.roseGlow,
       },
     };
   }
-  // Nuit (soins à 3 h) : obsidienne très tamisée, accents atténués (mêlés de gris), ni flou ni halo
+  // Nuit (soins à 3 h) : prune très tamisée, accents atténués, ni halo ni ombre
   const [ga, gb] = acc.glow;
-  const a = mixHex(ga, '#A0A6A8', 0.35);
-  const b = mixHex(gb, '#A0A6A8', 0.35);
+  const a = mixHex(ga, '#A39A9E', 0.35);
+  const b = mixHex(gb, '#A39A9E', 0.35);
   const status = STATUS.night;
-  const flat = (fill: string): SurfaceSpec => ({ fill, edge: '#22262A', highlight: 'rgba(255,255,255,0)', inner: ['rgba(0,0,0,0)', 'rgba(0,0,0,0)'], blur: 0, shadow: null, glow: 0 });
+  const flat = (fill: string): SurfaceSpec => flatSurface(fill, '#2A2126', null);
   const material: Material = {
     glass: {
-      inset: { fill: '#0F1113', edge: '#22262A', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-      raised: { fill: '#131619', edge: '#22262A', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
-      floating: { fill: '#191C20', edge: '#22262A', highlight: 'rgba(255,255,255,0)', blur: 0, shadow: null },
+      inset: { fill: '#140F12', edge: '#2A2126', highlight: NO_LIGHT, blur: 0, shadow: null },
+      raised: { fill: '#17111A', edge: '#2A2126', highlight: NO_LIGHT, blur: 0, shadow: null },
+      floating: { fill: '#1E171B', edge: '#2A2126', highlight: NO_LIGHT, blur: 0, shadow: null },
     },
-    surfaces: { optical: flat('#191C20'), frosted: flat('#191C20'), matte: flat('#131619') },
-    lens: { fill: '#20242A', edge: '#2C3036', rim: 'rgba(255,255,255,0)', caustic: 'rgba(0,0,0,0)', shade: 'rgba(0,0,0,0)', shadow: 'rgba(0,0,0,0)' },
-    scene: sceneColors('night', ga, gb),
-    light: { ...LIGHT_DIR, edge: 'rgba(255,255,255,0)', sheen: 'rgba(255,255,255,0)' },
-    lines: { controlFill: 'rgba(255,255,255,0.07)', hairline: 'rgba(255,255,255,0.11)', separator: 'rgba(255,255,255,0.07)', track: 'rgba(255,255,255,0.16)', iconWell: 'rgba(255,255,255,0.06)', thumbEdge: 'rgba(0,0,0,0)' },
-    cardTint: { soft: alpha(a, 0.06), lavender: alpha(b, 0.08), gold: 'rgba(217,181,119,0.08)' },
+    surfaces: { optical: flat('#1E171B'), frosted: flat('#1E171B'), matte: flat('#17111A') },
+    lens: { fill: '#251D22', edge: '#33292F', rim: NO_LIGHT, caustic: NO_LIGHT, shade: NO_LIGHT, shadow: 'rgba(0,0,0,0)' },
+    light: { ...LIGHT_DIR, edge: NO_LIGHT, sheen: NO_LIGHT },
+    lines: { controlFill: '#1E171B', hairline: 'rgba(255,230,238,0.11)', separator: 'rgba(255,230,238,0.07)', track: 'rgba(255,230,238,0.16)', iconWell: '#221A1E', thumbEdge: 'rgba(0,0,0,0)' },
+    cardTint: { soft: '#1C1517', lavender: '#1A1720', gold: '#1D1816' },
     primaryGradient: [a, a, a],
     accentRgb: rgbOf(a), accent2Rgb: rgbOf(b), shadowInk: '0,0,0',
   };
   return {
     name: 'night', isDark: true, palette: paletteName, material,
     tokens: {
-      surface: { background: N.nightBg, card: '#131619', glass: '#131619', glassStrong: '#191C20', opaque: '#131619' },
-      text: { primary: '#D6DADB', secondary: '#979EA1', onAccent: N.nightBg },
-      accent: { accent: a, accent2: b, gradient: [a, b], glow: [a, b] },
-      border: { rest: '#22262A', active: alpha(a, 0.5) },
-      halo: { color: a, color2: b, intensity: 0 },
+      surface: { background: N.nightBg, card: '#17111A', glass: '#17111A', glassStrong: '#1E171B', opaque: '#17111A', raised: '#1E171B', sunken: '#140F12' },
+      text: { primary: '#D9CDD2', secondary: '#A0939A', onAccent: N.nightBg },
+      accent: { accent: a, accent2: b, lilac: mixHex(I.lilacGlow, '#A39A9E', 0.35), gradient: [a, b], glow: [a, b] },
+      action: { fill: a, text: N.nightBg },
+      onHero: { fill: '#D9CDD2', text: N.nightBg },
+      border: { rest: '#2A2126', active: alpha(a, 0.5) },
+      halo: { color: a, color2: b, color3: b, intensity: 0 },
       status,
+      focus: a,
     },
     colors: {
-      background: N.nightBg, backgroundAlt: '#0C0E10', gradient: ['#0C0E10', '#090A0C', '#060708'],
-      surface: '#131619', surfaceAlt: '#191C20', border: '#22262A',
-      text: '#D6DADB', textMuted: '#979EA1',
+      background: N.nightBg, backgroundAlt: '#120D10', gradient: [N.nightBg, N.nightBg, N.nightBg],
+      surface: '#17111A', surfaceAlt: '#1E171B', border: '#2A2126',
+      text: '#D9CDD2', textMuted: '#A0939A',
       primary: a, primaryText: N.nightBg,
-      accent: b, accentSoft: '#1C1F23',
+      accent: b, accentSoft: '#21191D',
       lavender: b, gold: '#CDB48A',
-      success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: '#2A1A1C',
+      success: status.success, warning: status.warning, info: status.info, danger: status.danger, dangerSoft: '#2A181A',
       tabBar: N.nightBg, overlay: 'rgba(0,0,0,0.6)', heart: '#E09AB8',
     },
   };
 }
 
-/** Palette par défaut des exports statiques (anciens imports hors thème) : Brume pêche, la signature v4. */
 export const DEFAULT_PALETTE: PaletteName = SIGNATURE_PALETTE;
 export const themes: Record<ThemeName, Theme> = {
-  light: buildTheme('light', PALETTES.peche, 'peche'),
-  dark: buildTheme('dark', PALETTES.peche, 'peche'),
-  night: buildTheme('night', PALETTES.peche, 'peche'),
+  light: buildTheme('light'),
+  dark: buildTheme('dark'),
+  night: buildTheme('night'),
 };
 
-
-/** Dégradé signature (anneaux, barres de progression décoratives) : pêche → lilas → bleu brume. */
-export const NACRE: [string, string, string] = ['#FFB896', '#D3C4F6', '#A9C4E8'];
+/** Dégradé de l'identité (anneaux de progression, avatars, illustrations) : corail → rose → lilas. */
+export const NACRE: [string, string, string] = [IDENTITY.coral, IDENTITY.rose, IDENTITY.lilac];
 export const spacing = { xxs: 4, xs: 8, sm: 12, md: 16, lg: 24, xl: 32, xxl: 48 };
 /**
- * Rayons v3 : coins généreux (verre épais, tuiles de tableau de bord). `tile` : tuiles de données ; `sheet` : panneau
- * du bas ; `orb` : moitié d'un bouton rond de 48 px.
+ * Rayons v5 : `control` (boutons, champs, sélecteurs : rectangle aux angles souples, PAS une capsule) ; `lg` cartes ;
+ * `xl` grandes surfaces ; `sheet` panneau du bas ; `pill` RÉSERVÉ aux filtres et statuts (`Chip`, pastilles).
  */
-export const radius = { sm: 12, md: 18, lg: 26, xl: 34, tile: 30, sheet: 34, orb: 24, pill: 999 };
+export const radius = { sm: 10, control: 14, md: 16, lg: 20, xl: 24, tile: 20, sheet: 28, orb: 24, pill: 999 };
 
+/**
+ * UNE seule famille : Manrope (déjà chargée ; humaniste, lisible en petit, chiffres nets). Space Grotesk et
+ * Instrument Serif (italique éditoriale) sont retirés. Les anciens noms (`display*`, `serifItalic`) pointent sur
+ * des graisses de Manrope.
+ */
 export const fonts = {
-  display: 'SpaceGrotesk_700Bold',
-  displayMedium: 'SpaceGrotesk_600SemiBold',
-  displayItalic: 'SpaceGrotesk_500Medium',
+  display: 'Manrope_800ExtraBold',
+  displayMedium: 'Manrope_700Bold',
+  displayItalic: 'Manrope_600SemiBold',
   body: 'Manrope_500Medium',
   bodyMedium: 'Manrope_600SemiBold',
   bodyBold: 'Manrope_700Bold',
-  serifItalic: 'InstrumentSerif_400Regular_Italic',
+  /** Ancienne italique éditoriale (Instrument Serif) : remplacée par Manrope 600, droite */
+  serifItalic: 'Manrope_600SemiBold',
 };
 
 /** Tailles de base ; elles suivent le réglage de taille de texte du téléphone (allowFontScaling). */
 export const typeScale = {
-  hero: { fontSize: 56, lineHeight: 58, letterSpacing: -2.5 },
-  title: { fontSize: 32, lineHeight: 36, letterSpacing: -1 },
-  heading: { fontSize: 20, lineHeight: 26, letterSpacing: -0.4 },
-  body: { fontSize: 16, lineHeight: 23 },
+  hero: { fontSize: 36, lineHeight: 42, letterSpacing: -1.1 },
+  title: { fontSize: 28, lineHeight: 34, letterSpacing: -0.7 },
+  heading: { fontSize: 19, lineHeight: 25, letterSpacing: -0.3 },
+  body: { fontSize: 16, lineHeight: 24 },
   small: { fontSize: 14, lineHeight: 20 },
   caption: { fontSize: 12.5, lineHeight: 17 },
 };
 
 /**
- * Hiérarchie typographique complète (12/11/2026). Une seule source : famille, corps, interligne, graisse et
- * approche pour chaque rôle. La couleur vient du thème (`text` ou `textMuted`) ; toutes les tailles suivent le
- * réglage de taille de texte du téléphone, plafonné par `maxScale` pour ne jamais casser une mise en page.
- * Titres : Space Grotesk (fonctionnel) ; accents de journal intime : Instrument Serif italique.
+ * Échelle typographique v5 (une famille, Manrope) : display, titre, titre de section, corps, libellé, métadonnée,
+ * chiffres tabulaires. La couleur vient du thème ; les tailles suivent le réglage du téléphone, plafonnées par `maxScale`.
  */
-export interface TypeStyle { fontFamily: string; fontSize: number; lineHeight: number; letterSpacing: number; color: 'text' | 'textMuted' | 'primaryText'; maxScale: number }
+export interface TypeStyle { fontFamily: string; fontSize: number; lineHeight: number; letterSpacing: number; color: 'text' | 'textMuted' | 'primaryText'; maxScale: number; fontVariant?: 'tabular-nums'[] }
 export const typography = {
+  /** Display : titre d'accueil, d'entrée, d'onboarding (une fois par écran) */
   display: { fontFamily: fonts.display, ...typeScale.hero, color: 'text', maxScale: 1.3 },
+  /** Titre d'écran */
   headingXL: { fontFamily: fonts.display, ...typeScale.title, color: 'text', maxScale: 1.5 },
-  headingL: { fontFamily: fonts.displayMedium, fontSize: 24, lineHeight: 30, letterSpacing: -0.6, color: 'text', maxScale: 1.5 },
+  headingL: { fontFamily: fonts.displayMedium, fontSize: 22, lineHeight: 28, letterSpacing: -0.4, color: 'text', maxScale: 1.5 },
+  /** Titre de section */
   headingM: { fontFamily: fonts.displayMedium, ...typeScale.heading, color: 'text', maxScale: 1.7 },
   bodyL: { fontFamily: fonts.body, fontSize: 18, lineHeight: 27, letterSpacing: 0, color: 'text', maxScale: 1.7 },
+  /** Corps */
   bodyM: { fontFamily: fonts.body, ...typeScale.body, letterSpacing: 0, color: 'text', maxScale: 1.7 },
   bodyS: { fontFamily: fonts.body, ...typeScale.small, letterSpacing: 0, color: 'text', maxScale: 1.7 },
-  caption: { fontFamily: fonts.body, ...typeScale.caption, letterSpacing: 0, color: 'textMuted', maxScale: 1.7 },
-  /** Libellé de champ ou de groupe, en casse de phrase : pas d'approche ajoutée (elle est réservée à `overline`). */
+  /** Métadonnée (heure, source, compteur) */
+  caption: { fontFamily: fonts.body, ...typeScale.caption, letterSpacing: 0.1, color: 'textMuted', maxScale: 1.7 },
+  /** Libellé (champ, groupe, rangée), casse de phrase */
   label: { fontFamily: fonts.bodyMedium, ...typeScale.small, letterSpacing: 0.1, color: 'textMuted', maxScale: 1.5 },
-  /** Sur-titre en capitales (« GROSSESSE · 2 BÉBÉS ») : petit, gras, approche ouverte pour respirer. */
-  overline: { fontFamily: fonts.bodyBold, fontSize: 12, lineHeight: 16, letterSpacing: 1.1, color: 'textMuted', maxScale: 1.4 },
+  /** Sur-titre en capitales (« GROSSESSE · 2 BÉBÉS ») */
+  overline: { fontFamily: fonts.bodyBold, fontSize: 12, lineHeight: 16, letterSpacing: 1, color: 'textMuted', maxScale: 1.4 },
   button: { fontFamily: fonts.bodyBold, fontSize: 16, lineHeight: 22, letterSpacing: 0, color: 'primaryText', maxScale: 1.4 },
-  /** Voix du journal : dates et phrases d'ouverture. */
-  editorial: { fontFamily: fonts.serifItalic, fontSize: 26, lineHeight: 32, letterSpacing: -0.3, color: 'text', maxScale: 1.4 },
-  editorialS: { fontFamily: fonts.serifItalic, fontSize: 19, lineHeight: 25, letterSpacing: -0.1, color: 'textMuted', maxScale: 1.5 },
+  /** Chiffres tabulaires (compteurs, mesures, durées : les chiffres ne « dansent » pas) */
+  numeric: { fontFamily: fonts.bodyBold, fontSize: 28, lineHeight: 34, letterSpacing: -0.5, color: 'text', maxScale: 1.4, fontVariant: ['tabular-nums'] },
+  /** Anciennes voix « journal » : même famille, droite (plus d'italique éditoriale) */
+  editorial: { fontFamily: fonts.displayMedium, fontSize: 22, lineHeight: 28, letterSpacing: -0.3, color: 'text', maxScale: 1.4 },
+  editorialS: { fontFamily: fonts.bodyMedium, fontSize: 17, lineHeight: 24, letterSpacing: -0.1, color: 'textMuted', maxScale: 1.5 },
 } as const satisfies Record<string, TypeStyle>;
 export type TypographyRole = keyof typeof typography;
 
-/** Élévations (ancien format) : ombres sable / obsidienne discrètes (jamais noires), trois niveaux seulement. */
+/** Élévations (ancien format) : très légères, encre prune (jamais noire). */
 export const elevation = {
   none: { shadowOpacity: 0, elevation: 0 },
-  low: { shadowColor: '#1C1814', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  mid: { shadowColor: '#1C1814', shadowOpacity: 0.12, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 5 },
-  high: { shadowColor: '#1C1814', shadowOpacity: 0.18, shadowRadius: 28, shadowOffset: { width: 0, height: 12 }, elevation: 10 },
+  low: { shadowColor: '#54283C', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
+  mid: { shadowColor: '#54283C', shadowOpacity: 0.06, shadowRadius: 14, shadowOffset: { width: 0, height: 4 }, elevation: 3 },
+  high: { shadowColor: '#54283C', shadowOpacity: 0.09, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 6 },
 } as const;
 
-
-// ======================================================================== Design system HOMI (v3 → v4)
-// Jetons de matière : verre, ombres physiques, voiles d'état. Chaque surface est vérifiée par
-// src/__tests__/designSystem.test.ts (texte ≥ 4,5:1) pour chaque palette. Voir DESIGN_SYSTEM.md.
-
-/**
- * Encre des ombres : graphite chaud en clair, presque noir en sombre (jamais #000 pur, pour garder une ombre douce).
- * Composantes RVB, l'opacité vient de chaque couche.
- */
-export const SHADOW_INK = { light: '30,32,44', dark: '2,3,5' } as const;
+// ======================================================================== Ombres (très légères)
+/** Encre des ombres : prune en clair, presque noir rosé en sombre (jamais #000 pur). */
+export const SHADOW_INK = { light: '84,40,60', dark: '6,3,5' } as const;
 
 /** Couche d'ombre au format `boxShadow` de React Native (iOS, Android et web avec la même syntaxe). */
 export interface ShadowLayer { offsetX: number; offsetY: number; blurRadius: number; spreadDistance?: number; color: string; inset?: boolean }
 
 /**
- * Ombres physiques : chaque niveau = une ombre de contact (courte, nette) + une ombre d'ambiance (longue, diffuse,
- * décalée vers le bas). Opacités plus fortes en sombre pour rester perceptibles.
+ * Ombres v5 : très légères — la profondeur vient des plans (fond → surface → surface élevée), pas de l'ombre.
+ * Une ombre de contact + une ambiance diffuse, opacités faibles.
  */
 const SHADOW_STEPS: Record<ElevationLevel, { contact: [number, number, number]; ambient: [number, number, number] }> = {
-  low: { contact: [1, 2, 0.06], ambient: [4, 14, 0.06] },
-  mid: { contact: [1, 3, 0.07], ambient: [10, 28, 0.1] },
-  high: { contact: [2, 6, 0.08], ambient: [18, 44, 0.13] },
+  low: { contact: [1, 2, 0.035], ambient: [2, 8, 0.03] },
+  mid: { contact: [1, 2, 0.04], ambient: [6, 18, 0.05] },
+  high: { contact: [1, 3, 0.05], ambient: [12, 32, 0.08] },
 };
 export function physicalShadow(level: ElevationLevel, isDark: boolean): ShadowLayer[] {
   const s = SHADOW_STEPS[level];
   const ink = isDark ? SHADOW_INK.dark : SHADOW_INK.light;
-  const a = (o: number) => Math.min(isDark ? o * 4 : o, 0.6).toFixed(3);
+  const a = (o: number) => Math.min(isDark ? o * 4 : o, 0.45).toFixed(3);
   return [
     { offsetX: 0, offsetY: s.contact[0], blurRadius: s.contact[1], color: `rgba(${ink},${a(s.contact[2])})` },
     { offsetX: 0, offsetY: s.ambient[0], blurRadius: s.ambient[1], spreadDistance: -Math.round(s.ambient[1] / 6), color: `rgba(${ink},${a(s.ambient[2])})` },
   ];
 }
 
-/** Dégradé des boutons principaux de la palette par défaut (préférer `primaryGradientOf(theme)`). */
+/** Aplat de l'action principale (ancien « dégradé » : trois arrêts identiques). */
 export const primaryGradient = (isDark: boolean): [string, string, string] => themes[isDark ? 'dark' : 'light'].material.primaryGradient;
-/** Dégradé des boutons principaux du thème affiché (palette comprise). */
 export const primaryGradientOf = (t: Theme): [string, string, string] => t.material.primaryGradient;
 
-/** Ombre colorée douce sous les éléments pleins : la lumière traverse l'accent, jamais du gris. */
-export function tintedShadow(rgb: string, isDark: boolean): ShadowLayer[] {
-  return [
-    { offsetX: 0, offsetY: 1, blurRadius: 2, color: `rgba(${isDark ? SHADOW_INK.dark : rgb},${isDark ? 0.4 : 0.16})` },
-    { offsetX: 0, offsetY: 8, blurRadius: 22, spreadDistance: -4, color: `rgba(${rgb},${isDark ? 0.26 : 0.28})` },
-  ];
+/** Ancienne ombre colorée : v5, une ombre de contact discrète (plus d'ombre teintée épaisse). */
+export function tintedShadow(_rgb: string, isDark: boolean): ShadowLayer[] {
+  return physicalShadow('low', isDark);
 }
 
-/**
- * Halo diffus (cartes sélectionnées, validation) : deux lueurs décalées aux couleurs de la palette, qui débordent du
- * contour. À réserver à UN élément à la fois (carte choisie, action importante, moment de validation).
- */
-export function haloShadow(t: Theme, strength = 1): ShadowLayer[] {
-  const i = t.tokens.halo.intensity * strength;
-  if (i <= 0) return [];
-  return [
-    { offsetX: -6, offsetY: 4, blurRadius: 26, spreadDistance: -2, color: alpha(t.tokens.halo.color, +(i * 0.9).toFixed(3)) },
-    { offsetX: 6, offsetY: 10, blurRadius: 34, spreadDistance: -4, color: alpha(t.tokens.halo.color2, +(i * 0.8).toFixed(3)) },
-  ];
+/** Ancien halo diffus des cartes sélectionnées : v5, aucun (la sélection est un contour corail). */
+export function haloShadow(_t: Theme, _strength = 1): ShadowLayer[] {
+  return [];
 }
 
-/** Verre de la palette par défaut, par thème (anciens imports). Préférer `glassOf(theme)`. */
+/** Surfaces par thème (anciens imports). Préférer `glassOf(theme)`. */
 export const glass: Record<ThemeName, Record<SurfaceLevel, GlassLevel>> = {
   light: themes.light.material.glass,
   dark: themes.dark.material.glass,
@@ -735,11 +546,11 @@ export const glass: Record<ThemeName, Record<SurfaceLevel, GlassLevel>> = {
 };
 export const glassOf = (t: Theme) => t.material.glass;
 
-/** Teintes de carte (`<Card tone>`) de la palette par défaut. Préférer `cardTintOf(theme)`. */
+/** Teintes de carte (`<Card tone>`). Préférer `cardTintOf(theme)`. */
 export const cardTint: Record<'light' | 'dark', Record<CardTint, string>> = { light: themes.light.material.cardTint, dark: themes.dark.material.cardTint };
 export const cardTintOf = (t: Theme) => t.material.cardTint;
 
-/** Bandeaux : fond teinté + liseré + couleur d'accent (icône, titre). `fg` est lu comme du texte : ≥ 4,5:1. */
+/** Bandeaux : fond teinté OPAQUE + liseré + couleur d'accent (icône, titre). `fg` est lu comme du texte : ≥ 4,5:1. */
 export type BannerTone = 'info' | 'warning' | 'danger' | 'demo' | 'success';
 export interface BannerColors { bg: string; edge: string; fg: string }
 export function bannerColors(theme: Theme): Record<BannerTone, BannerColors> {
@@ -747,32 +558,32 @@ export function bannerColors(theme: Theme): Record<BannerTone, BannerColors> {
   const c = theme.colors;
   if (!theme.isDark) {
     return {
-      info: { bg: 'rgba(226,236,250,0.78)', edge: alpha(s.info, 0.2), fg: s.info },
-      warning: { bg: 'rgba(250,236,210,0.82)', edge: alpha(s.warning, 0.22), fg: s.warning },
+      info: { bg: '#EAF0FA', edge: alpha(s.info, 0.18), fg: s.info },
+      warning: { bg: '#FBF0E0', edge: alpha(s.warning, 0.2), fg: s.warning },
       danger: { bg: c.dangerSoft, edge: alpha(s.danger, 0.22), fg: s.danger },
-      demo: { bg: 'rgba(255,255,255,0.66)', edge: 'rgba(28,27,32,0.10)', fg: c.textMuted },
-      success: { bg: 'rgba(218,240,224,0.8)', edge: alpha(s.success, 0.2), fg: s.success },
+      demo: { bg: '#FFFFFF', edge: c.border, fg: c.textMuted },
+      success: { bg: '#E7F3EA', edge: alpha(s.success, 0.18), fg: s.success },
     };
   }
   return {
     info: { bg: alpha(s.info, 0.1), edge: alpha(s.info, 0.22), fg: s.info },
     warning: { bg: alpha(s.warning, 0.1), edge: alpha(s.warning, 0.22), fg: s.warning },
     danger: { bg: c.dangerSoft, edge: alpha(s.danger, 0.24), fg: s.danger },
-    demo: { bg: 'rgba(255,255,255,0.05)', edge: 'rgba(255,255,255,0.10)', fg: c.textMuted },
+    demo: { bg: 'rgba(255,220,232,0.05)', edge: c.border, fg: c.textMuted },
     success: { bg: alpha(s.success, 0.09), edge: alpha(s.success, 0.2), fg: s.success },
   };
 }
 
-/** Traits et voiles d'interaction de la palette par défaut. Préférer `linesOf(theme)`. */
+/** Traits et voiles d'interaction. Préférer `linesOf(theme)`. */
 export const lines = { light: themes.light.material.lines, dark: themes.dark.material.lines } as const;
 export const linesFor = (isDark: boolean) => (isDark ? lines.dark : lines.light);
 export const linesOf = (t: Theme) => t.material.lines;
 
 /** Voiles d'état (survol web, appui) : opacités, sur une couche absolue (aucun décalage de mise en page). */
-export const stateVeil = { hoverSolid: 0.1, hoverGlass: 0.05, pressSolidDarken: 0.12, pressGlass: 0.09, pressTint: 0.14 } as const;
+export const stateVeil = { hoverSolid: 0.08, hoverGlass: 0.04, pressSolidDarken: 0.14, pressGlass: 0.07, pressTint: 0.1 } as const;
 
-/** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. Cible tactile ≥ MIN_TOUCH via hitSlop si besoin. */
-export const controlSize = { sm: 40, md: 52, lg: 58, chip: 44, field: 50 } as const;
+/** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. Cible tactile ≥ 44 pt (hitSlop si besoin). */
+export const controlSize = { sm: 44, md: 52, lg: 56, chip: 40, field: 52 } as const;
 
 export const MIN_TOUCH = 48; // zone tactile minimale (Android 48dp, iOS 44pt)
 
@@ -780,28 +591,19 @@ export const MIN_TOUCH = 48; // zone tactile minimale (Android 48dp, iOS 44pt)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 export const NATIVE_DRIVER: boolean = (require('react-native') as typeof import('react-native')).Platform.OS !== 'web';
 
-// ======================================================================== Matières v3 (aides)
-/** Matière d'un type pour le thème affiché (`optical`, `frosted`, `matte`). */
+// ======================================================================== Aides
+/** Surface d'un type pour le thème affiché (noms v4 conservés). */
 export const surfaceOf = (t: Theme, kind: SurfaceKind): SurfaceSpec => t.material.surfaces[kind];
 
-/**
- * Ombre d'une matière : ombre physique (contact + ambiance) + ombre COLORÉE de l'accent pour le verre optique
- * (la lumière traverse le verre et teinte le sol). Nuit : aucune.
- */
-export function surfaceShadow(t: Theme, kind: SurfaceKind, strength = 1): ShadowLayer[] | undefined {
+/** Ombre d'une surface : très légère (aucune la nuit, aucune ombre colorée). */
+export function surfaceShadow(t: Theme, kind: SurfaceKind, _strength = 1): ShadowLayer[] | undefined {
   const s = t.material.surfaces[kind];
   if (t.name === 'night' || !s.shadow) return undefined;
-  const layers = physicalShadow(s.shadow, t.isDark);
-  if (s.glow > 0) layers.push({ offsetX: 0, offsetY: 16, blurRadius: 40, spreadDistance: -12, color: alpha(t.tokens.accent.glow[0], +(s.glow * strength).toFixed(3)) });
-  return layers;
+  return physicalShadow(s.shadow, t.isDark);
 }
 
-/**
- * Lumière intérieure d'une tuile de données (référence « tableau de mesures ») : la couleur semble éclairer la
- * surface DE L'INTÉRIEUR. Renvoie la couleur du foyer radial et son opacité, pour une teinte donnée (palette ou
- * statut). Bornée pour que le texte reste ≥ 4,5:1 (testé : contrast.test.ts, « tuiles »).
- */
+/** Teinte intérieure d'une tuile de données (statut ou accent) : très douce, texte ≥ 4,5:1 (testé). */
 export function innerLight(t: Theme, tint: string): { color: string; opacity: number } {
   if (t.name === 'night') return { color: tint, opacity: 0 };
-  return { color: tint, opacity: t.isDark ? 0.2 : 0.16 };
+  return { color: tint, opacity: t.isDark ? 0.12 : 0.07 };
 }

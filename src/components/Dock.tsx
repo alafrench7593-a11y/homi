@@ -1,70 +1,57 @@
 /**
- * Barre d'onglets HOMI (v4, 14/11/2026) : Accueil · Santé · Bébé · Famille · Communauté. Capsule flottante en VERRE
- * OPTIQUE (src/components/surfaces) avec la LENTILLE (`controls/Lens`) qui glisse sous l'onglet actif.
- * Style « Liquid Glass » : capsule flottante en verre (`LiquidGlass` : GlassView natif sur iOS 26+, sinon flou +
- * remplissage), teintée d'un dégradé pastel de la palette, arête claire en haut, ombre colorée douce dessous.
- * Clair : verre ivoire ; sombre : verre fumé plus clair que le graphite ; nuit : surface opaque tamisée, sans flou ni ombre.
+ * Barre d'onglets HOMI (v5 « Lumière corail », 16/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
+ * Barre PLEINE LARGEUR posée en bas : fond surface, fine ligne de séparation en haut, aucune capsule flottante, aucun
+ * verre, aucune ombre épaisse. Icônes d'une seule famille (Feather, via `Icon`).
  *
- * Libellés : chaque onglet prend la largeur de son libellé (au moins 44 px), la taille commune reste à 12 px et ne
- * descend qu'au quart de pixel près (≥ 11 px à 320 px de large), jamais d'ellipse (`tabLayout`, testé). Au-delà
- * (10 px ne suffisent pas avec 44 px par onglet : 320 px + texte agrandi, langue longue) : ICÔNES SEULES, onglets
- * égaux ≥ 44 px, nom accessible = libellé complet (audit 09).
- * Mouvement (src/motion) : enfoncement en ressort à la pression (`usePressScale`) et lentille qui GLISSE
- * d'un onglet à l'autre (position et largeur en ressort « panneau ») ; Réduire les animations / économie d'énergie : état final
- * immédiat ; nuit : fondu court sans rebond.
+ * Libellés ENTIERS (jamais coupés, jamais d'ellipse) : chaque onglet prend la largeur de son libellé mesuré (au moins
+ * 44 px), la taille commune descend par quarts de pixel (12 → 10 px) ; « Communauté » tient à 320 et 390 px. Au-delà
+ * (texte agrandi + langue longue) : icônes seules, nom accessible = libellé complet (`tabLayout`, testé).
  *
- * Bouton d'action rond à droite de la capsule, SUR LA MÊME LIGNE (jamais posé sur le contenu) : « + » ajout rapide
- * par défaut ; un écran peut le remplacer (`useDockAction` : Communauté → Publier, accueil d'un enfant → Ajouter).
- * Un seul bouton d'action par écran. Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
+ * Onglet actif : icône corail sur une pastille teintée + libellé en gras (couleur + graisse + forme). Changer d'onglet
+ * ne glisse pas (pairs, pas une hiérarchie) : l'état actif s'affiche directement ; seule la pression a un ressort.
+ *
+ * Bouton d'action INTÉGRÉ à droite, dans la barre et à la même hauteur de base que les onglets (rectangle aux angles
+ * souples, aplat de l'action principale) : « + » ajout rapide par défaut ; un écran peut le remplacer
+ * (`useDockAction` : Communauté → Publier, accueil d'un enfant → Ajouter). Il ne chevauche jamais le contenu.
+ * Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
  */
 import { useMemo, useState } from 'react';
-import { Pressable, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { router, usePathname } from 'expo-router';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
-import { alpha, fonts, radius, spacing } from '@/theme/tokens';
-import { spaceOf, spaceScene } from '@/theme/ambiance';
-import { Lens, LENS, useLensSlide } from './controls/Lens';
-import { PressSheen, usePressScale, usePressSheen } from '@/motion';
-import { LiquidGlass, liquidShadow } from './Glass';
+import { fonts, radius, spacing } from '@/theme/tokens';
+import { usePressScale } from '@/motion';
 import { GlowCard } from './GlowCard';
 import { useScope } from '@/lib/data/hooks-scope';
 import { ACTIVE_ALIAS, dockGeometry, estimateLabelWidth, NAV_TABS, TAB_BAR_H, TAB_LABEL_MAX, tabLayout, type NavTab } from '@/features/hubs/hubMap';
 import { Sheet } from './Overlays';
-import { tint } from './ToolGlyph';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
-/** Hauteur de la ligne du bas (capsule de 64 px + marge) au-dessus de la zone sûre. */
-export const DOCK_HEIGHT = TAB_BAR_H + 10;
+/** Hauteur de la barre au-dessus de la zone sûre. */
+export const DOCK_HEIGHT = TAB_BAR_H + 4;
 /**
  * Espace UNIQUE à réserver sous le contenu des écrans d'onglet (`<Screen bottomInset>` ou `paddingBottom` d'une
  * liste, en plus de la zone sûre) : la barre et son bouton d'action sont sur la même ligne, rien d'autre ne flotte.
  */
 export const TAB_SCREEN_INSET = DOCK_HEIGHT + spacing.xs;
 const LONG_PRESS = 'tabLongPress' as const;
-/** Pastille d'état actif (derrière l'icône), et position verticale fixe de l'icône dans l'onglet. */
+/** Pastille de l'onglet actif (derrière l'icône) et position verticale de l'icône dans l'onglet. */
 const PILL_W = 44;
-const PILL_H = 30;
-const ICON_TOP = 8;
-/** Icônes seules : icône et pastille centrées verticalement dans la capsule. */
+const PILL_H = 28;
+const ICON_TOP = 6;
+/** Icônes seules : icône et pastille centrées verticalement dans la barre. */
 const ICON_TOP_ALONE = (TAB_BAR_H - PILL_H) / 2;
 
-/** Encres de la barre : celles du thème (verre clair en clair, fumé en sombre). */
-function useBarInk() {
-  return useTheme().colors;
-}
-
 function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPress, onLongPress }: { tab: NavTab; width: number; focused: boolean; label: string; a11y: string; fontSize: number; iconsOnly: boolean; onPress: () => void; onLongPress: () => void }) {
-  const ink = useBarInk();
-  const p = usePressScale({ scale: 0.9, haptic: 'none' });
+  const t = useTheme();
+  const p = usePressScale({ scale: 0.92, haptic: 'none' });
   return (
     <Pressable
       accessibilityRole="tab"
@@ -78,14 +65,15 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPres
       onPressOut={p.onPressOut}
       style={{ width, height: TAB_BAR_H }}
     >
-      <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: iconsOnly ? ICON_TOP_ALONE : ICON_TOP, gap: 3 }, p.style]}>
-        <View style={{ height: PILL_H, alignItems: 'center', justifyContent: 'center' }}>
-          <Feather name={tab.icon} size={iconsOnly ? 23 : 21} color={focused ? ink.primary : ink.textMuted} />
+      <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: iconsOnly ? ICON_TOP_ALONE : ICON_TOP, gap: 2 }, p.style]}>
+        <View style={{ width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: focused ? t.material.lines.iconWell : 'transparent' }}
+          testID={focused ? 'tab-indicator' : undefined}>
+          <Icon name={tab.icon} size={iconsOnly ? 23 : 21} color={focused ? t.colors.primary : t.colors.textMuted} />
         </View>
         {/* Icônes seules (petit écran + texte agrandi) : libellé non affiché, le nom accessible reste le libellé complet */}
         {iconsOnly ? null : <Text
-          style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.15, textAlign: 'center' }}
-          color={focused ? ink.text : ink.textMuted}
+          style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.1, textAlign: 'center' }}
+          color={focused ? t.colors.text : t.colors.textMuted}
           numberOfLines={1}
           maxFontSizeMultiplier={1.2}
         >
@@ -96,51 +84,34 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPres
   );
 }
 
-/**
- * LENTILLE de l'onglet actif (v4) : capsule de verre clair qui couvre l'onglet (icône + libellé) et GLISSE d'un onglet à
- * l'autre en ajustant sa largeur (ressort « panneau », interruptible) ; sa caustique prend l'accent secondaire de
- * l'espace affiché. Réduire les animations : pose immédiate ; nuit : sans reflet.
- */
-function ActiveLens({ x, w }: { x: number; w: number }) {
-  const t = useTheme();
-  const slide = useLensSlide(x, w);
-  const hue = spaceScene(t, spaceOf(usePathname())).hue;
-  return <Lens slide={slide} top={LENS.inset} height={TAB_BAR_H - LENS.inset * 2} hue={alpha(hue, t.isDark ? 0.8 : 0.9)} testID="tab-indicator" />;
-}
-
 /** Bouton d'action de la barre : « + » (ajout rapide) ou l'action de l'écran affiché (`useDockAction`). */
-export function DockActionButton({ route, size = 56, onQuickAdd }: { route: string; size?: number; onQuickAdd?: () => void }) {
+export function DockActionButton({ route, size = 48, onQuickAdd }: { route: string; size?: number; onQuickAdd?: () => void }) {
   const t = useTheme();
   const custom = useDockActionFor(route);
-  const p = usePressScale({ scale: 0.92 });
-  const sheen = usePressSheen();
+  const p = usePressScale({ scale: 0.94 });
   const action: DockAction = custom ?? { icon: 'plus', label: tr('nav.quickAdd'), hint: tr('nav.quickAddHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
-  const night = t.name === 'night';
   return (
     <Pressable
       testID={action.testID}
       accessibilityRole="button"
       accessibilityLabel={action.label}
       accessibilityHint={action.hint}
-      onPressIn={() => { p.onPressIn(); sheen.play(); }}
+      onPressIn={p.onPressIn}
       onPressOut={p.onPressOut}
       onPress={() => { haptic('light'); action.onPress(); }}
+      hitSlop={size < 48 ? (48 - size) / 2 : 0}
       style={{ width: size, height: size }}
     >
-      {/* Bouton capsule rond : dégradé de la palette, arête claire, ombre colorée ; reflet qui glisse à la pression */}
-      <Animated.View style={[{ flex: 1, borderRadius: size / 2, boxShadow: liquidShadow(t, 'mid') }, p.style]}>
-        <LinearGradient colors={night ? [t.colors.primary, t.colors.primary, t.colors.primary] : t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-          style={{ flex: 1, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: tint('#FFFFFF', t.isDark ? 0.3 : 0.45), overflow: 'hidden' }}>
-          <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: size * 0.22, right: size * 0.22, height: 1, backgroundColor: 'rgba(255,255,255,0.5)' }} />
-          <Icon name={action.icon as IconName} size={size >= 56 ? 25 : 22} color={t.colors.primaryText} />
-          <PressSheen sheen={sheen} intensity={0.45} />
-        </LinearGradient>
+      {/* Rectangle aux angles souples, aplat de l'action principale (prune en clair, corail en sombre), sans dégradé */}
+      <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
+        <Icon name={action.icon as IconName} size={22} color={t.tokens.action.text} />
       </Animated.View>
     </Pressable>
   );
 }
 
 export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
+  const t = useTheme();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
@@ -156,11 +127,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const [natural, setNatural] = useState<Record<string, number>>({});
   const widthsKey = labels.map((l) => natural[l] ?? estimateLabelWidth(l)).join('|');
   const layout = useMemo(() => tabLayout(g.inner, widthsKey.split('|').map(Number)), [g.inner, widthsKey]);
-  const activeIndex = tabs.findIndex((x) => x.tab.name === activeName);
-  const at = Math.max(activeIndex, 0);
-  // Lentille : début de l'onglet actif dans la capsule (marge intérieure comprise), 2 px de retrait de chaque côté
-  const lensX = g.pad - 1 + layout.widths.slice(0, at).reduce((a, w) => a + w, 0) + 2;
-  const bottom = Math.max(insets.bottom, 10);
+  const bottom = Math.max(insets.bottom, 4);
   // Clavier ouvert : la barre s'efface (elle recouvrait le champ actif sur le web et en fenêtre réduite) ; elle
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
   const keyboard = useKeyboardVisible();
@@ -177,25 +144,24 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   return (
     <>
       <View pointerEvents="box-none" testID="dock"
-        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
+        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, alignItems: 'center', display: keyboard ? 'none' : 'flex',
+          backgroundColor: t.colors.tabBar, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: t.colors.border }}>
         {/* Mesure invisible des libellés à la taille de référence, en graisse active (la plus large) */}
         <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
           style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 }}>
           <View style={{ width: 1000, alignItems: 'flex-start' }}>
             {labels.map((l) => (
               <Text key={l} onLayout={(e) => { const w = Math.ceil(e.nativeEvent.layout.width); if (w > 0) setNatural((m) => (m[l] === w ? m : { ...m, [l]: w })); }}
-                style={{ fontFamily: fonts.bodyBold, fontSize: TAB_LABEL_MAX, letterSpacing: -0.15 }} maxFontSizeMultiplier={1.2} numberOfLines={1}>{l}</Text>
+                style={{ fontFamily: fonts.bodyBold, fontSize: TAB_LABEL_MAX, letterSpacing: -0.1 }} maxFontSizeMultiplier={1.2} numberOfLines={1}>{l}</Text>
             ))}
           </View>
         </View>
-        <View pointerEvents="box-none" style={{ width: g.row, flexDirection: 'row', alignItems: 'center', gap: g.gap }}>
-          <LiquidGlass testID="tab-bar-glass" radius={radius.pill} style={{ height: TAB_BAR_H, width: g.barW }}>
+        <View testID="tab-bar-glass" pointerEvents="box-none" style={{ width: g.row, height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad, gap: g.gap }}>
           <View
             accessibilityRole="tablist"
             accessibilityLabel={tr('nav.tablist')}
-            style={{ height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad - 1 }}
+            style={{ height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', width: g.inner }}
           >
-            {activeIndex >= 0 ? <ActiveLens x={lensX} w={Math.max(0, (layout.widths[at] ?? PILL_W) - 4)} /> : null}
             {tabs.map(({ tab, route }, i) => (
               <TabItem
                 key={route.key}
@@ -211,7 +177,6 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
               />
             ))}
           </View>
-          </LiquidGlass>
           <DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />
         </View>
       </View>

@@ -1,6 +1,6 @@
 /**
  * Audit 10 (performance) : les animations décoratives en boucle s'arrêtent quand l'écran n'est pas affiché
- * (onglet resté monté en arrière-plan), et la dérive du fond passe par une animation CSS sur le web.
+ * (onglet resté monté en arrière-plan) ; v5 : le fond de coque est uni (plus de scène animée).
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
@@ -14,7 +14,6 @@ import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ScreenFocusContext, useScreenFocused } from '@/components/screenChrome';
 import { FamilyStoryArt } from '@/features/story/FamilyStoryArt';
 import { FetusArt } from '@/components/FetusArt';
-import { SCENE, webDriftStyle } from '@/components/scene/DesertScene';
 import { WOMAN_ALONE } from '@/lib/domain/familyStory';
 import { STORY_ROTATE_MS, useRotatingChapter } from '@/features/story/StoryHomeStrip';
 
@@ -61,14 +60,9 @@ it('bébé à naître : aucune boucle (flottement, battement, liseré) quand l�
   r.unmount();
 });
 
-it('fond (web) : dérive CSS aller-retour, mêmes amplitude et période que Reanimated, style partagé', () => {
-  const s = webDriftStyle(12, 0) as unknown as Record<string, unknown>;
-  expect(webDriftStyle(12, 0)).toBe(s);
-  expect(s.animationDuration).toBe(`${SCENE.driftMs / 2}ms`);
-  expect(s.animationDirection).toBe('alternate');
-  expect(s.animationIterationCount).toBe('infinite');
-  expect(JSON.stringify(s.animationKeyframes)).toContain('translate3d(12px,0px,0px)');
-  expect(JSON.stringify(webDriftStyle(3, 3))).toContain('translate3d(3px,-3px,0px)');
+it('fond de coque v5 : plus aucune scène animée (les modules de scène n’existent plus)', () => {
+  expect(() => require('@/components/scene/SpaceScene')).toThrow();
+  expect(() => require('@/components/scene/DesertScene')).toThrow();
 });
 
 it('accueil en arrière-plan : la rotation des mini-vidéos se met en pause et garde l’étape affichée', () => {

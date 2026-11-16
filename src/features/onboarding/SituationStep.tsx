@@ -1,6 +1,6 @@
 /**
  * Temps 2 — Situation : « Où en êtes-vous ? ». Grille de choix visuels (deux colonnes), chaque situation teintée par
- * l'accent de l'espace qu'elle ouvre (Santé lilas, Bébé pêche, Famille ambre). Conséquence visible tout de suite : la
+ * une teinte de l'identité (Santé lilas, Bébé rose, Famille corail). Conséquence visible tout de suite : la
  * ligne « Espaces ouverts » se compose sous la grille. Un seul suivi du corps à la fois (projet bébé, grossesse, cycle).
  */
 import React from 'react';
@@ -9,14 +9,16 @@ import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanim
 import { ChoiceGroup } from '@/components/controls';
 import { Icon, Text, type IconName } from '@/components/ui';
 import { Reveal, useMotion } from '@/motion';
-import { AMBIANCES, type SpaceKey } from '@/theme/ambiance';
 import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
+import { IDENTITY, radius, spacing } from '@/theme/tokens';
 import { formatList, t as tr, type TKey } from '@/i18n';
 import { SITUATIONS, toggleSituation, type CycleGoal, type Situation } from '@/lib/onboarding/personalize';
 import { SelectableTile, StepTitle } from './kit';
 
 export const SITUATION_ICON: Record<Situation, IconName> = { ttc: 'sunrise', pregnant: 'moon', baby: 'sun', kids: 'users', cycle: 'calendar', home: 'home' };
+type SpaceKey = 'health' | 'baby' | 'family';
+/** Teinte décorative de chaque espace ouvert : les trois tons de l'identité v5 (corail, rose, lilas), jamais un texte. */
+const SPACE_HUE: Record<SpaceKey, string> = { health: IDENTITY.lilac, baby: IDENTITY.rose, family: IDENTITY.coral };
 export const SITUATION_SPACE: Record<Situation, SpaceKey> = { ttc: 'health', pregnant: 'health', cycle: 'health', baby: 'baby', kids: 'baby', home: 'family' };
 const SPACE_ICON: Partial<Record<SpaceKey, IconName>> = { health: 'activity', baby: 'sun', family: 'home' };
 
@@ -32,7 +34,7 @@ export function SituationStep({ situations, cycleGoal, onChange, onGoal }: {
       <StepTitle title={tr('o2.sit.title')} lead={tr('o2.sit.lead')} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="onb-situations">
         {SITUATIONS.map((s) => (
-          <SelectableTile key={s} testID={`onb-sit-${s}`} icon={SITUATION_ICON[s]} hue={AMBIANCES[SITUATION_SPACE[s]].hue}
+          <SelectableTile key={s} testID={`onb-sit-${s}`} icon={SITUATION_ICON[s]} hue={SPACE_HUE[SITUATION_SPACE[s]]}
             label={tr(`o2.sit.${s}` as TKey)} hint={tr(`o2.sit.${s}.hint` as TKey)} selected={situations.includes(s)}
             onPress={() => onChange(toggleSituation(situations, s))}
             style={{ flexBasis: '46%', flexGrow: 1 }} />
@@ -50,7 +52,7 @@ export function SituationStep({ situations, cycleGoal, onChange, onGoal }: {
         {spaces.map((sp) => (
           <Animated.View key={sp} entering={anim ? FadeIn.duration(220) : undefined} exiting={anim ? FadeOut.duration(140) : undefined} layout={anim ? LinearTransition.springify().damping(30).stiffness(280) : undefined}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: spacing.sm, paddingVertical: 6, borderRadius: radius.pill, borderWidth: 1, borderColor: t.tokens.border.rest, backgroundColor: t.material.lines.controlFill }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: AMBIANCES[sp].hue ?? t.colors.primary }} />
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: SPACE_HUE[sp] }} />
             <Icon name={SPACE_ICON[sp] ?? 'circle'} size={14} color={t.colors.text} />
             <Text variant="small" weight="bold">{tr(`o2.space.${sp}` as TKey)}</Text>
           </Animated.View>

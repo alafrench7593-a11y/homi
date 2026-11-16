@@ -23,7 +23,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text as RNText, View, type LayoutChangeEvent, type TextStyle } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Lens, LENS, useLensSlide } from './Lens';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, fonts, MIN_TOUCH, typography } from '@/theme/tokens';
@@ -152,10 +151,8 @@ function Orb<T extends string>({ o, sel, any, onPress, ownLight = true, gather =
       testID={o.testID} onPress={onPress} style={col ? { alignItems: 'center', gap: 6, width: col } : { alignItems: 'center', gap: 6, minWidth: MIN_TOUCH, flex: 1 }}>
       <Animated.View style={[{ width: D, height: D }, style]}>
         {/* lumière diffuse derrière l'option active */}
-        {!night && ownLight ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, boxShadow: [{ offsetX: 0, offsetY: 4, blurRadius: 22, spreadDistance: 2, color: alpha(t.tokens.accent.glow[0], t.isDark ? 0.55 : 0.5) }] }, glow]} /> : null}
-        <View style={{ flex: 1, borderRadius: D / 2, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: sel ? t.colors.primary : f.fill, borderWidth: 1, borderColor: sel ? alpha('#FFFFFF', 0.5) : f.edge }}>
-          {sel && !night ? <LinearGradient colors={t.material.primaryGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-          {!night ? <LinearGradient colors={[alpha('#FFFFFF', t.isDark ? 0.14 : 0.5), alpha('#FFFFFF', 0)]} start={{ x: 0.2, y: 0 }} end={{ x: 0.5, y: 0.7 }} style={StyleSheet.absoluteFill} /> : null}
+        {!night && ownLight ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, borderWidth: 2, borderColor: alpha(t.colors.primary, 0.35), transform: [{ scale: 1.12 }] }, glow]} /> : null}
+        <View style={{ flex: 1, borderRadius: D / 2, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', backgroundColor: sel ? t.colors.primary : f.fill, borderWidth: 1, borderColor: sel ? t.colors.primary : f.edge }}>
           {o.icon ? <Feather name={o.icon} size={22} color={sel ? t.colors.primaryText : t.colors.text} /> : null}
         </View>
         {sel ? (

@@ -1,5 +1,5 @@
 /**
- * HOMI v2 : préférences d'apparence (par compte, persistantes), thème résolu (apparence × palette × Auto),
+ * HOMI v2 → v5 : préférences d'apparence (par compte, persistantes), thème résolu (apparence, identité unique),
  * GlowCard, reflet des boutons et coche de validation (Réduire les animations / économie d'énergie → aucun mouvement).
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
@@ -19,7 +19,7 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { migrateAppearance, useUiStore } from '@/lib/store';
 import { GlowCard } from '@/components/GlowCard';
 import { CompletionCheck, CompletionGlow, PressSheen, usePressSheen } from '@/motion';
-import { autoPaletteAt, PALETTES, type Theme } from '@/theme/tokens';
+import { PALETTES, type Theme } from '@/theme/tokens';
 
 const mounted: ReactTestRenderer[] = [];
 async function render(el: React.ReactElement) {
@@ -40,7 +40,7 @@ beforeEach(() => {
   mockLowPower = false;
   seen = null;
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'lilas', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'lilas' as never, skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
 });
 afterEach(async () => {
   await act(async () => { while (mounted.length) mounted.pop()!.unmount(); });
@@ -48,32 +48,28 @@ afterEach(async () => {
   jest.restoreAllMocks();
 });
 
-describe('préférences d’apparence', () => {
-  it('apparence et palette indépendantes, appliquées immédiatement', async () => {
+describe('préférences d’apparence (v5 : identité unique, Système / Clair / Sombre)', () => {
+  it('apparence appliquée immédiatement ; une seule identité (corail), plus de palette', async () => {
     await render(<Probe />);
     expect(seen!.name).toBe('light');
-    expect(seen!.colors.primary).toBe(PALETTES.lilas.ink[0]);
-    await act(async () => { useUiStore.getState().setPalette('lagune'); });
-    // v3-v4 : la palette est interpolée en 4 paliers (≈ 360 ms) — d'abord la couleur affichée, puis la nouvelle
-    expect(seen!.colors.primary).toBe(PALETTES.lilas.ink[0]);
-    await act(async () => { jest.advanceTimersByTime(400); });
-    expect(seen!.colors.primary).toBe(PALETTES.lagune.ink[0]);
+    expect(seen!.palette).toBe('homi');
+    expect(seen!.colors.primary).toBe(PALETTES.homi.ink[0]);
+    expect(seen!.colors.background).toBe('#FBF4F2');
     await act(async () => { useUiStore.getState().setTheme('dark'); });
     expect(seen!.name).toBe('dark');
-    expect(seen!.colors.primary).toBe(PALETTES.lagune.glow[0]);
-    expect(seen!.colors.background).toBe('#07080B');
+    expect(seen!.colors.primary).toBe(PALETTES.homi.glow[0]);
+    expect(seen!.colors.background).toBe('#1A1217');
   });
-  it('Auto : palette de l’heure locale, aperçu d’un autre moment via skyOverride', async () => {
-    await act(async () => { useUiStore.setState({ palettePreference: 'auto', skyOverride: 'dusk' }); });
+  it('l’heure ne change plus les couleurs : l’aperçu d’un moment (skyOverride) ne touche que la phase', async () => {
+    await act(async () => { useUiStore.setState({ skyOverride: 'dusk' }); });
     await render(<Probe />);
-    expect(seen!.palette).toBe('ambre');
-    expect(seen!.colors.primary).toBe(PALETTES.ambre.ink[0]);
+    const primary = seen!.colors.primary;
+    expect(seen!.phase).toBe('dusk');
     await act(async () => { useUiStore.getState().setSkyOverride('dawn'); });
-    expect(seen!.palette).toBe('peche');
-    await act(async () => { useUiStore.getState().setSkyOverride(null); });
-    expect(seen!.palette).toBe(autoPaletteAt(new Date()).dominant);
+    expect(seen!.phase).toBe('dawn');
+    expect(seen!.colors.primary).toBe(primary);
   });
-  it('mode nuit (écran /night) prioritaire, palette atténuée, sans halo', async () => {
+  it('mode nuit (écran /night) prioritaire, sans halo', async () => {
     await act(async () => { useUiStore.setState({ nightMode: true }); });
     await render(<Probe />);
     expect(seen!.name).toBe('night');
@@ -84,34 +80,33 @@ describe('préférences d’apparence', () => {
     await render(<Probe />);
     expect(['light', 'dark']).toContain(seen!.name);
   });
-  it('par compte : chaque membre retrouve ses choix, un nouveau compte part de Système + Auto', () => {
+  it('par compte : chaque membre retrouve son apparence, un nouveau compte part de Système', () => {
     const s = () => useUiStore.getState();
     act(() => { s().switchAppearanceOwner('alice'); });
-    expect(s().appearanceByUser.alice).toEqual({ theme: 'light', palette: 'lilas' }); // premier compte : garde l'existant
-    act(() => { s().setTheme('dark'); s().setPalette('peche'); });
+    expect(s().appearanceByUser.alice).toEqual({ theme: 'light', palette: 'homi' }); // premier compte : garde l'existant (palette migrée)
+    act(() => { s().setTheme('dark'); });
     act(() => { s().switchAppearanceOwner('bob'); });
-    expect([s().themePreference, s().palettePreference]).toEqual(['system', 'auto']);
-    act(() => { s().setPalette('ambre'); });
+    expect([s().themePreference, s().palettePreference]).toEqual(['system', 'homi']);
+    act(() => { s().setTheme('system'); });
     act(() => { s().switchAppearanceOwner('alice'); });
-    expect([s().themePreference, s().palettePreference]).toEqual(['dark', 'peche']);
-    expect(s().appearanceByUser.bob).toEqual({ theme: 'system', palette: 'ambre' });
+    expect([s().themePreference, s().palettePreference]).toEqual(['dark', 'homi']);
+    expect(s().appearanceByUser.bob).toEqual({ theme: 'system', palette: 'homi' });
   });
-  it('migration v4 : les palettes v3 enregistrées (compte actif et autres comptes) passent à la plus proche', () => {
+  it('migration v5 : toutes les palettes enregistrées (v3, v4, Auto ; compte actif et autres comptes) deviennent l’identité unique, l’apparence est conservée', () => {
     const out = migrateAppearance({
       palettePreference: 'turquoise' as never,
-      appearanceByUser: { alice: { theme: 'dark', palette: 'crepuscule' as never }, bob: { theme: 'system', palette: 'auto' }, carla: { theme: 'light', palette: 'iris' as never } },
+      appearanceByUser: { alice: { theme: 'dark', palette: 'crepuscule' as never }, bob: { theme: 'system', palette: 'auto' as never }, carla: { theme: 'light', palette: 'lagune' as never } },
     });
-    expect(out.palettePreference).toBe('lagune');
-    expect(out.appearanceByUser).toEqual({ alice: { theme: 'dark', palette: 'ambre' }, bob: { theme: 'system', palette: 'auto' }, carla: { theme: 'light', palette: 'lilas' } });
-    // une valeur v3 posée directement (ancien stockage) s'affiche avec la palette v4 la plus proche
+    expect(out.palettePreference).toBe('homi');
+    expect(out.appearanceByUser).toEqual({ alice: { theme: 'dark', palette: 'homi' }, bob: { theme: 'system', palette: 'homi' }, carla: { theme: 'light', palette: 'homi' } });
     act(() => { useUiStore.getState().setPalette('menthe' as never); });
-    expect(useUiStore.getState().palettePreference).toBe('lagune');
+    expect(useUiStore.getState().palettePreference).toBe('homi');
   });
-  it('migration v4 : une préférence v3 encore en mémoire est affichée comme la plus proche', async () => {
-    await act(async () => { useUiStore.setState({ palettePreference: 'aurore' as never }); });
+  it('migration v5 : une préférence ancienne encore en mémoire s’affiche avec l’identité unique', async () => {
+    await act(async () => { useUiStore.setState({ palettePreference: 'lilas' as never }); });
     await render(<Probe />);
-    expect(seen!.palette).toBe('lagune');
-    expect(seen!.colors.primary).toBe(PALETTES.lagune.ink[0]);
+    expect(seen!.palette).toBe('homi');
+    expect(seen!.colors.primary).toBe(PALETTES.homi.ink[0]);
   });
 });
 
@@ -121,7 +116,7 @@ describe('GlowCard, reflet et validation', () => {
     const press = r.root.findAll((n) => n.props.testID === 'g' && n.props.accessibilityRole === 'radio')[0];
     expect(press.props.accessibilityState).toEqual({ checked: false, selected: false });
   });
-  it('mouvement complet : faisceau à l’activation, reflet du bouton présent', async () => {
+  it('mouvement complet : reflet de pression disponible (primitive conservée)', async () => {
     function Sheen() { const s = usePressSheen(); return <PressSheen sheen={s} />; }
     const r = await render(<><GlowCard active><RNText>x</RNText></GlowCard><Sheen /></>);
     await act(async () => { jest.advanceTimersByTime(50); });

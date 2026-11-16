@@ -1,7 +1,7 @@
 /**
- * HOMI v3 « désert sci-fi » : famille de commandes (états, accessibilité, double soumission), panneau du bas
- * gestuel (crans, fermeture), scène (variantes, mise en pause), système de mouvement (familles de durées),
- * transition carte → détail (registre, Réduire les animations), changement de palette interpolé.
+ * HOMI v3 → v5 : famille de commandes (états, accessibilité, double soumission), panneau du bas
+ * gestuel (crans, fermeture), fond uni et halo corail, système de mouvement (familles de durées),
+ * transition carte → détail (registre, Réduire les animations), apparence résolue (identité unique).
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('@expo/vector-icons', () => ({ Feather: (p: { testID?: string }) => (p.testID ? require('react').createElement('Text', { testID: p.testID }) : null), MaterialCommunityIcons: () => null }));
@@ -15,12 +15,11 @@ jest.mock('@/lib/lowPower', () => ({ useLowPower: () => mockLowPower }));
 import React from 'react';
 import { AccessibilityInfo, Alert } from 'react-native';
 import { act, create, type ReactTestInstance, type ReactTestRenderer } from 'react-test-renderer';
-import { ThemeProvider, useTheme, PALETTE_TWEEN } from '@/theme/ThemeProvider';
+import { ThemeProvider, useTheme, resolveThemeName } from '@/theme/ThemeProvider';
 import { useUiStore } from '@/lib/store';
 import { ChoiceGroup, CHECK_MIN_WIDTH, DataTile, IconOrb, PrimaryButton, SensitiveButton, sparkPoints } from '@/components/controls';
 import { ToastProvider, sheetRelease, sheetSnaps, SHEET } from '@/components/Overlays';
-import { backdropVariant, pebble, sceneAnimates, SCENE } from '@/components/scene/SpaceScene';
-import { spaceOf } from '@/theme/ambiance';
+import { CoralHalo, HALO } from '@/components/CoralHalo';
 import { durationFamilies, duration } from '@/theme/motion';
 import { dampingRatio, springs } from '@/motion/curves';
 import { MorphSource, morphRegistry, MORPH } from '@/motion/Morph';
@@ -45,7 +44,7 @@ beforeEach(() => {
   seen = null;
   morphRegistry.reset();
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'dark', palettePreference: 'lagune', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'dark', palettePreference: 'homi', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
 });
 afterEach(async () => {
   await act(async () => { while (mounted.length) mounted.pop()!.unmount(); });
@@ -61,7 +60,6 @@ describe('système de mouvement v3', () => {
     expect(inRange(duration.scene, durationFamilies.scene)).toBe(true);
     expect(inRange(MORPH.openMs, durationFamilies.scene)).toBe(true);
     expect(inRange(MORPH.closeMs, durationFamilies.scene)).toBe(true);
-    expect(inRange(PALETTE_TWEEN.steps * PALETTE_TWEEN.stepMs, durationFamilies.scene)).toBe(true);
   });
   it('ressort « panneau » quasi critique (pas de rebond visible)', () => {
     expect(dampingRatio(springs.panneau)).toBeGreaterThan(0.85);
@@ -69,37 +67,29 @@ describe('système de mouvement v3', () => {
   });
 });
 
-describe('changement de palette : lumière, reflets, accents et scène interpolés ensemble', () => {
-  it('passe par des couleurs intermédiaires, puis se pose sur la nouvelle palette', async () => {
-    await render(<Probe />);
-    expect(seen!.colors.primary).toBe(PALETTES.lagune.glow[0]);
-    const sceneBefore = seen!.material.scene.light;
-    await act(async () => { useUiStore.getState().setPalette('ambre'); });
-    await act(async () => { jest.advanceTimersByTime(PALETTE_TWEEN.stepMs); });
-    const mid = seen!;
-    expect(mid.colors.primary).not.toBe(PALETTES.lagune.glow[0]);
-    expect(mid.colors.primary).not.toBe(PALETTES.ambre.glow[0]);
-    expect(mid.material.scene.light).not.toBe(sceneBefore);
-    await act(async () => { jest.advanceTimersByTime(PALETTE_TWEEN.stepMs * PALETTE_TWEEN.steps); });
-    expect(seen!.colors.primary).toBe(PALETTES.ambre.glow[0]);
-    expect(seen!.palette).toBe('ambre');
+describe('identité unique (v5) : apparence résolue sans palette', () => {
+  it('nuit prioritaire, puis le choix, puis le système ; « auto » lu comme Système', () => {
+    expect(resolveThemeName({ nightMode: true, preference: 'light', system: 'light' })).toBe('night');
+    expect(resolveThemeName({ nightMode: false, preference: 'dark', system: 'light' })).toBe('dark');
+    expect(resolveThemeName({ nightMode: false, preference: 'system', system: 'dark' })).toBe('dark');
+    expect(resolveThemeName({ nightMode: false, preference: 'auto', system: null })).toBe('light');
   });
-  it('Réduire les animations : changement immédiat (aucune étape)', async () => {
-    jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(true);
+  it('changer d’apparence pose directement le thème (aucune étape intermédiaire)', async () => {
     await render(<Probe />);
-    await act(async () => { useUiStore.getState().setPalette('lilas'); });
-    expect(seen!.colors.primary).toBe(PALETTES.lilas.glow[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.homi.glow[0]);
+    await act(async () => { useUiStore.getState().setTheme('light'); });
+    expect(seen!.colors.primary).toBe(PALETTES.homi.ink[0]);
   });
 });
 
 describe('matières', () => {
-  it('verre optique : ombre physique + ombre COLORÉE ; surface mate : sans couleur ; nuit : aucune ombre', () => {
-    const opt = surfaceShadow(themes.dark, 'optical')!;
-    expect(opt.length).toBe(3);
-    expect(surfaceShadow(themes.dark, 'matte')!.length).toBe(2);
+  it('v5 : surfaces élevées = ombre de contact très légère (2 couches, aucune couleur) ; contenu sans ombre ; nuit : aucune', () => {
+    const opt = surfaceShadow(themes.light, 'optical')!;
+    expect(opt.length).toBe(2);
+    for (const l of opt) expect(Number(l.color.match(/,([\d.]+)\)$/)![1])).toBeLessThanOrEqual(0.08);
+    expect(surfaceShadow(themes.light, 'matte')).toBeUndefined();
     expect(surfaceShadow(themes.night, 'optical')).toBeUndefined();
-    expect(themes.light.material.surfaces.matte.blur).toBe(0);
-    expect(themes.light.material.surfaces.optical.blur).toBeGreaterThan(themes.light.material.surfaces.frosted.blur);
+    for (const k of ['optical', 'frosted', 'matte'] as const) expect(themes.light.material.surfaces[k].blur).toBe(0);
   });
 });
 
@@ -224,48 +214,21 @@ describe('panneau du bas gestuel', () => {
   });
 });
 
-describe('scènes d’espace (v4)', () => {
-  it('immersive à l’ouverture et à la racine de chaque espace, calme sur les écrans internes', () => {
-    expect(backdropVariant('/')).toBe('immersive');
-    expect(backdropVariant('/welcome')).toBe('immersive');
-    for (const r of ['/health', '/baby', '/household', '/community', '/settings']) expect(backdropVariant(r)).toBe('immersive');
-    expect(backdropVariant('/settings/appearance')).toBe('calm');
-    expect(backdropVariant('/health/x')).toBe('calm');
-    expect(backdropVariant('/cycle')).toBe('calm');
-    expect(backdropVariant(null)).toBe('calm');
+describe('fond uni et halo corail (v5)', () => {
+  it('halo : respiration très lente et discrète', () => {
+    expect(HALO.breathMs).toBeGreaterThanOrEqual(5000);
+    expect(HALO.scale).toBeLessThanOrEqual(1.05);
+    expect(HALO.minOpacity).toBeGreaterThanOrEqual(0.85);
   });
-  it('chaque adresse appartient à un espace (Accueil par défaut)', () => {
-    expect(spaceOf('/')).toBe('home');
-    expect(spaceOf('/health')).toBe('health');
-    expect(spaceOf('/cycle/bleeding')).toBe('health');
-    expect(spaceOf('/pregnancy/weight')).toBe('health');
-    expect(spaceOf('/baby')).toBe('baby');
-    expect(spaceOf('/bottle/abc')).toBe('baby');
-    expect(spaceOf('/household')).toBe('family');
-    expect(spaceOf('/family/missions/new')).toBe('family');
-    expect(spaceOf('/meals/shopping')).toBe('family');
-    expect(spaceOf('/community')).toBe('community');
-    expect(spaceOf('/community/post/1')).toBe('community');
-    expect(spaceOf('/settings/appearance')).toBe('settings');
-    expect(spaceOf('/premium')).toBe('settings');
-    expect(spaceOf('/inconnu')).toBe('home');
-    expect(spaceOf(null)).toBe('home');
-    expect(spaceOf('/meteo')).toBe('home'); // « /me » ne capture pas « /meteo »
-  });
-  it('formes minérales : galets irréguliers, jamais un cercle (aucun arc décoratif)', () => {
-    const d = pebble(100, 100, 40, 20);
-    expect(d.startsWith('M')).toBe(true);
-    expect((d.match(/C/g) ?? []).length).toBe(4);
-    expect(d).not.toMatch(/A/); // pas d'arc SVG
-  });
-  it('image fixe : Réduire les animations, économie d’énergie / nuit, arrière-plan, hors écran', () => {
-    expect(sceneAnimates({ level: 'full', appActive: true, active: true })).toBe(true);
-    expect(sceneAnimates({ level: 'off', appActive: true, active: true })).toBe(false);
-    expect(sceneAnimates({ level: 'minimal', appActive: true, active: true })).toBe(false);
-    expect(sceneAnimates({ level: 'full', appActive: false, active: true })).toBe(false);
-    expect(sceneAnimates({ level: 'full', appActive: true, active: false })).toBe(false);
-    expect(sceneAnimates({ level: 'full', appActive: true, active: true, still: true })).toBe(false);
-    expect(Math.max(...SCENE.parallax)).toBeLessThanOrEqual(12); // parallaxe légère
+  it('halo rendu en clair (décor masqué aux lecteurs d’écran), éteint la nuit', async () => {
+    await act(async () => { useUiStore.setState({ themePreference: 'light' }); });
+    const r = await render(<CoralHalo size={200} testID="halo" />);
+    const h = host(r, 'halo')[0];
+    expect(h.props.accessibilityElementsHidden).toBe(true);
+    expect(h.findAll((n) => (n.type as unknown) === 'RNSVGRadialGradient' || String(n.type).includes('RadialGradient')).length).toBeGreaterThan(0);
+    await act(async () => { useUiStore.setState({ nightMode: true }); });
+    const night = host(r, 'halo')[0];
+    expect(night.findAll((n) => String(n.type).includes('RadialGradient')).length).toBe(0);
   });
 });
 
