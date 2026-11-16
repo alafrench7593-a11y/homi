@@ -51,7 +51,7 @@ export function useLensSlide(x: number, width: number): LensSlide {
   return { x: sx, w: sw };
 }
 
-export function Lens({ slide, top, height, radius = 999, hue, testID }: {
+export function Lens({ slide, top, height, radius = 10, hue, testID }: {
   slide: LensSlide;
   top: number;
   height: number;

@@ -572,8 +572,8 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
       aria-checked={onPress ? !!selected : undefined}
       accessibilityLabel={accessibilityLabel ?? label}
       testID={testID}
-      // 40 px visibles + 4 px de chaque côté : cible ≥ 48 px sans alourdir les rangées de filtres
-      hitSlop={onPress ? { top: 4, bottom: 4 } : undefined}
+      // 44 px visibles + 2 px de chaque côté : cible ≥ 48 px sans alourdir les rangées de filtres
+      hitSlop={onPress ? { top: 2, bottom: 2 } : undefined}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
       style={[styles.chip, {
         borderColor: filled ? t.tokens.action.fill : selected ? alpha(t.colors.lavender, 0.5) : hairlineOf(t),
@@ -648,8 +648,8 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
       {/* Champ = surface « inset » : un creux de verre au liseré fin, qui s'éclaire au focus (halo prune) */}
       <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
-        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 18, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
-        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: 22, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
+        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: radius.control + 1.5, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
+        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: radius.control + 5, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
         <TextInput
           ref={input}
           placeholderTextColor={t.colors.textMuted}
@@ -908,7 +908,7 @@ const styles = StyleSheet.create({
   segmented: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
   // marge intérieure réduite (8 → 4) : à 320 px, 4 options allemandes (« Woche ») ne se coupent plus au milieu du mot
   segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },
-  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 18, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
+  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: radius.control, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
   banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, alignItems: 'flex-start', borderWidth: 1 },
   bannerIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: -2 },
   // flexWrap : une action longue (allemand, italien, petit écran) passe sous le titre au lieu de sortir de l'écran

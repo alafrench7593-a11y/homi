@@ -4,7 +4,7 @@
  * blanc). Vectoriel (react-native-svg) ; tracés générés par `scripts/homi/brand.mjs` → `src/brand/homiMarkSvg.ts`
  * (même source que assets/brand/homi-mark-*.svg et les icônes).
  *  - BrandLogo     : la maison seule — API inchangée (size, style) ; `tone` facultatif ;
- *  - BrandName     : le nom « HOMI » dans la typographie de l'app (Space Grotesk, graisse 700), couleur de la marque ;
+ *  - BrandName     : le nom « HOMI » dans la typographie de l'app (Manrope, graisse 800), couleur de la marque ;
  *  - BrandWordmark : maison + nom HOMI à côté (en-têtes, écrans d'identité) — API height / tone / color / decorative /
  *                    header / testID ;
  *  - BrandStack    : maison + nom dessous (composition du logo animé, version fixe) ;
@@ -76,7 +76,7 @@ export function BrandMono({ size = 24, color, style }: LogoProps & { color: stri
 }
 
 /**
- * Le nom « HOMI » en typographie de l'app (titres : Space Grotesk 700), couleur de la marque. Taille FIXE (c'est un
+ * Le nom « HOMI » en typographie de l'app (Manrope 800, v5), couleur de la marque. Taille FIXE (c'est un
  * logo : il ne suit pas la taille de texte du téléphone). Décor par défaut — le composant parent annonce le nom.
  */
 export function BrandName({ size, line, tone = 'auto', color, style }: { size: number; line?: number; tone?: BrandTone; color?: string; style?: StyleProp<TextStyle> }) {
@@ -86,7 +86,6 @@ export function BrandName({ size, line, tone = 'auto', color, style }: { size: n
       variant="title"
       allowFontScaling={false}
       maxFontSizeMultiplier={1}
-      numberOfLines={1}
       accessible={false}
       importantForAccessibility="no"
       style={[{ fontFamily: fonts.display, fontSize: size, lineHeight: line ?? Math.round(size * 1.18), letterSpacing: -size * 0.02, color: fill, includeFontPadding: false }, style]}

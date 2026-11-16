@@ -196,7 +196,7 @@ with sync_playwright() as p:
     before = len([c for c in fake.calls if c[1].startswith('/rest/')])
     pg.get_by_role('button', name='Découvrir sans compte').click(); sleep(6); shot(pg, 'f1-demo')
     t = T(pg)
-    R['F_demo_sans_compte'] = 'Démonstration' in t and ('Lina' in t or 'Accueil' in t)
+    R['F_demo_sans_compte'] = ('Démonstration' in t or 'Démo' in t) and ('Lina' in t or 'Accueil' in t)
     R['F_aucune_ecriture_reelle'] = len([c for c in fake.calls if c[1].startswith('/rest/')]) == before
     pg.get_by_role('button', name='Quitter la démonstration').click(); sleep(4)
     R['F_quitter_demo'] = 'Vivez chaque étape' in T(pg) or 'Commencer' in T(pg)

@@ -583,7 +583,7 @@ export const linesOf = (t: Theme) => t.material.lines;
 export const stateVeil = { hoverSolid: 0.08, hoverGlass: 0.04, pressSolidDarken: 0.14, pressGlass: 0.07, pressTint: 0.1 } as const;
 
 /** Tailles de contrôle (hauteur minimale) : boutons, champs, pastilles. Cible tactile ≥ 44 pt (hitSlop si besoin). */
-export const controlSize = { sm: 44, md: 52, lg: 56, chip: 40, field: 52 } as const;
+export const controlSize = { sm: 44, md: 52, lg: 56, chip: 44, field: 52 } as const;
 
 export const MIN_TOUCH = 48; // zone tactile minimale (Android 48dp, iOS 44pt)
 

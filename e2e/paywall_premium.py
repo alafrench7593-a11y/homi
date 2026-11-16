@@ -67,7 +67,7 @@ def enter_demo(pg):
 def detect(pg, key):
     found = pg.evaluate('() => window.__homiDetect ? window.__homiDetect() : []')
     # Le logo animé (SVG) et la pastille de démonstration ne sont pas des textes de l'écran Premium
-    found = [f for f in found if 'Démonstration' not in json.dumps(f, ensure_ascii=False) and 'Quitter' not in json.dumps(f, ensure_ascii=False)]
+    found = [f for f in found if 'Démo' not in json.dumps(f, ensure_ascii=False) and 'Quitter' not in json.dumps(f, ensure_ascii=False)]
     overflow[key] = found
     return found
 

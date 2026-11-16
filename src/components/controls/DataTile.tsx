@@ -127,8 +127,8 @@ export function DataTile({ label, value, unit, context, contextLines = 3, icon, 
       ) : (
         <>
           <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, flexWrap: 'wrap' }}>
-            {/* chiffre grand et fin (Space Grotesk 500), chiffres tabulaires */}
-            <RNText maxFontSizeMultiplier={1.25} numberOfLines={1} adjustsFontSizeToFit style={{ color: valueInk(t, tint), fontFamily: fonts.displayItalic, fontSize: 40, lineHeight: 46, letterSpacing: -1.6, fontVariant: ['tabular-nums'] }}>{String(value)}</RNText>
+            {/* chiffre grand (Manrope 700, interligne ≥ hauteur de la police), chiffres tabulaires */}
+            <RNText maxFontSizeMultiplier={1.25} numberOfLines={1} adjustsFontSizeToFit style={{ color: valueInk(t, tint), fontFamily: fonts.displayMedium, fontSize: 40, lineHeight: 54, letterSpacing: -0.8, fontVariant: ['tabular-nums'] }}>{String(value)}</RNText>
             {unit ? <RNText maxFontSizeMultiplier={1.4} style={{ color: t.colors.textMuted, fontFamily: fonts.bodyMedium, fontSize: 15, lineHeight: 20 }}>{unit}</RNText> : null}
           </View>
           {/* micrographique (au-dessus) puis contexte : jamais l'un ne coupe l'autre, même dans une tuile étroite */}

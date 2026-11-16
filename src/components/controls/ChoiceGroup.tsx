@@ -249,7 +249,7 @@ function TravelingLight({ index, count, w }: { index: number; count: number; w: 
 }
 
 const styles = StyleSheet.create({
-  rail: { flexDirection: 'row', borderRadius: 999, padding: CHOICE.pad, gap: CHOICE.gap, borderWidth: 1 },
+  rail: { flexDirection: 'row', borderRadius: 14, padding: CHOICE.pad, gap: CHOICE.gap, borderWidth: 1 },
   // marge intérieure réduite : à 320 px, 4 options allemandes (« Woche ») ne se coupent pas au milieu du mot
-  segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },
+  segment: { flex: 1, minHeight: 44, borderRadius: 10, justifyContent: 'center', paddingHorizontal: 4 },
 });
