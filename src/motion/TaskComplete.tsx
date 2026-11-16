@@ -98,9 +98,14 @@ export function CompletionCheck({ done, onToggle, label, size = 28, disabled, te
       <Animated.View pointerEvents="none" testID="completion-disc" style={[{ position: 'absolute', width: size, height: size, borderRadius: size / 2, overflow: 'hidden' }, discStyle]}>
         <LinearGradient colors={[a, b]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
       </Animated.View>
-      <Svg width={size} height={size} viewBox="0 0 24 24" pointerEvents="none">
-        <AnimatedPath d={CHECK_D} stroke={t.colors.primaryText} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" fill="none" strokeDasharray={`${CHECK_LEN} ${CHECK_LEN}`} animatedProps={checkProps} />
-      </Svg>
+      {/* Coche AU-DESSUS du disque : calque positionné comme lui (sur le web, un <svg> non positionné était peint SOUS
+          le disque absolu — disque plein sans coche) et déclaré après lui (ordre de dessin natif). */}
+      <View pointerEvents="none" testID="completion-tick" style={{ position: 'absolute', width: size, height: size, zIndex: 1 }}>
+        <Svg width={size} height={size} viewBox="0 0 24 24">
+          <AnimatedPath d={CHECK_D} stroke={t.colors.primaryText} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" fill="none"
+            strokeDasharray={[CHECK_LEN, CHECK_LEN]} animatedProps={checkProps} />
+        </Svg>
+      </View>
     </Pressable>
   );
 }
