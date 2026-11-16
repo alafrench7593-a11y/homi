@@ -30,8 +30,30 @@ export { stageProgress };
 
 /** Une seule fois par exécution de l'application (lancement à froid). */
 let played = false;
+
+/**
+ * Passage de relais vers l'écran suivant (onboarding) : le logo maison n'est joué QU'UNE fois par lancement.
+ * 'none' : aucune introduction n'a montré le logo ; 'playing' : le calque montre le logo ; 'done' : il l'a montré
+ * puis s'est effacé. Un écran qui ouvre avec le même logo (`OpeningStep`) le pose alors directement et n'anime que ce
+ * qui suit (titre), au moment où le calque s'efface.
+ */
+export type LaunchLogoState = 'none' | 'playing' | 'done';
+let logoState: LaunchLogoState = 'none';
+const logoListeners = new Set<(s: LaunchLogoState) => void>();
+function setLogoState(s: LaunchLogoState) {
+  if (logoState === s) return;
+  logoState = s;
+  logoListeners.forEach((f) => f(s));
+}
+export function launchLogoState(): LaunchLogoState { return logoState; }
+/** Abonnement à la fin de l'introduction (renvoie la fonction de désabonnement). */
+export function onLaunchLogoState(f: (s: LaunchLogoState) => void): () => void {
+  logoListeners.add(f);
+  return () => { logoListeners.delete(f); };
+}
+
 /** Tests : rejouer l'introduction comme après un nouveau lancement. */
-export function resetLaunchIntroForTests() { played = false; }
+export function resetLaunchIntroForTests() { played = false; logoState = 'none'; logoListeners.clear(); }
 
 type Phase = 'wait' | 'play' | 'done';
 
@@ -97,8 +119,13 @@ export function LaunchIntro() {
     }
     const tl = introTimeline(m.minimal || isLateStart() ? 'short' : 'full');
     setTimeline(tl);
+    setLogoState('playing');
     setPhase('play');
   }, [phase, hydrated, m.off, m.minimal, cinematicSeen, veil]);
+
+  // Le logo a été montré : l'écran d'en dessous ne le rejoue pas (fin normale, arrêt net ou démontage)
+  useEffect(() => { if (phase === 'done' && logoState === 'playing') setLogoState('done'); }, [phase]);
+  useEffect(() => () => { if (logoState === 'playing') setLogoState('done'); }, []);
 
   useEffect(() => {
     if (phase !== 'play') return;
