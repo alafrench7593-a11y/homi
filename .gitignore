@@ -28,3 +28,4 @@ coverage/
 au-fil-de-nous-source*.zip
 assets/brand/preview/
 supabase/.temp/
+.env.eas-simulator
