@@ -49,7 +49,7 @@ SplashScreen.preventAutoHideAsync().catch(() => undefined);
 try { SplashScreen.setOptions({ fade: true, duration: intro.splashFadeMs }); } catch { /* web, anciennes versions */ }
 configureNotifications();
 initCrashReporting();
-// « Découvrir HOMI » s'ouvre sur le logo maison animé (point d'injection prévu par src/features/discover/opening.tsx)
+// « Découvrir HOMI » s'ouvre sur le logo HOMI v5 « encre » animé (point d'injection prévu par src/features/discover/opening.tsx)
 setDiscoverOpening(HomiLogoAnimated);
 
 const queryClient = new QueryClient({

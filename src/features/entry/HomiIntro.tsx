@@ -1,9 +1,9 @@
 /**
- * Introduction HOMI de première ouverture (logo v5 « maison », 14/11/2026).
- * 100 % vectorielle (react-native-svg + Reanimated), ≈ 2,5 s, aucun fichier vidéo — le logo s'anime comme UN objet :
- *  - le contour de la maison se trace, un reflet court sur le bord ; la maison s'illumine ;
- *  - parent, parent, enfant, enfant apparaissent (léger rebond) ; le nom HOMI se révèle dans la lumière ;
- *  - la maison se DÉPLOIE en premier panneau de verre où se pose la phrase d'accroche ;
+ * Introduction HOMI de première ouverture (logo v5 « encre », 16/11/2026).
+ * 100 % vectorielle (react-native-svg + Reanimated), ≈ 2,4 s, aucun fichier vidéo — le logo s'anime comme UN objet :
+ *  - le corps « M » monte, les deux têtes se posent (léger ressort) ;
+ *  - « HOMI » se révèle, le point du i se pose ;
+ *  - le symbole se DÉPLOIE en premier panneau de verre où se pose la phrase d'accroche ;
  *  - puis l'écran suivant arrive en fondu (navigation).
  * Règles : « Passer » toujours visible, en bas à portée de pouce (≥ 48 px, jamais sous la pastille « Démo ») ;
  * « Réduire les animations » ou économie d'énergie → aucune animation, sortie immédiate ; thème nuit → version
@@ -32,7 +32,7 @@ export const HOMI_INTRO_HOLD_MS = 420;
 const TAGLINE_AT = 0.55;
 const TAGLINE_MS = 380;
 
-/** Durée totale (pure, testée) : logo (tracé → illumination → famille → nom → panneau) + pose. 'short' : nuit (fondus). */
+/** Durée totale (pure, testée) : logo (corps → têtes → nom → panneau) + pose. 'short' : nuit (fondus). */
 export function homiIntroDuration(mode: 'full' | 'short'): number {
   return logoTimeline(mode === 'short' ? 'minimal' : 'full', true).end + HOMI_INTRO_HOLD_MS;
 }

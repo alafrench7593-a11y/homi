@@ -78,9 +78,9 @@ export const feedback = {
 
 /**
  * Introduction d'ouverture HOMI (lancement à froid, Reanimated : src/components/LaunchIntro.tsx) :
- * le contour de la maison se trace, la maison s'illumine, les deux parents puis les deux enfants apparaissent,
- * pose, puis fondu vers le premier écran. Total ≈ 2,3 s ; le premier écran se charge en dessous pendant ce temps
- * (rien n'attend l'animation) et reste utilisable au toucher dès le début.
+ * le logo v5 « encre » a sa propre chorégraphie (src/brand/logoMotion.ts) ; ici, le délai d'apparition, la pose, le
+ * fondu, l'avancée finale et la version abrégée (les autres valeurs restent pour l'API Animated historique).
+ * Total ≈ 2 s ; le premier écran se charge en dessous pendant ce temps (rien n'attend l'animation).
  */
 export const intro = {
   revealDelayMs: 120,  // le fond seul, dans la continuité de l'écran de lancement natif

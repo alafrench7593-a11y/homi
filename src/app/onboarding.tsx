@@ -1,6 +1,6 @@
 /**
  * Première ouverture — onboarding v2 « immersif » (19/11/2026), en 8 temps :
- *  1 Ouverture (logo maison animé, titre, action immédiate) · 2 Situation · 3 Besoins + foyer (+ formulaires grossesse /
+ *  1 Ouverture (logo HOMI, titre, action immédiate) · 2 Situation · 3 Besoins + foyer (+ formulaires grossesse /
  *  enfants si le parcours l'exige) · 4 « Qui s'en occupe ? » (geste) · 5 Démonstration (vrais composants, données
  *  d'exemple) · 6 Synthèse calculée + rappels, puis accords · 7 Révélation (opérations réelles) · 8 Premium (sauté si
  *  déjà abonné·e).

@@ -25,7 +25,7 @@ import {
   AnimatedNumber, Cascade, cascadeDelay, curves, dampingRatio, DetailEnter, formatCounter, MORPH_POINTS, MORPH_SHAPES, MorphIcon,
   morphPath, motionDuration, motionSpring, motionTiming, PressableScale, resolveMotionLevel, springs,
 } from '@/motion';
-import { HOMI_FAMILY, HOMI_HOUSE_LENGTH, HOMI_HOUSE_PATH, HOMI_MARK_SVG } from '@/brand/homiMarkSvg';
+import { HOMI_PARTS, HOMI_SVG, HOMI_SYMBOL_PATH, HOMI_WORD_PATH } from '@/brand/homiMarkSvg';
 import { logoTimeline } from '@/brand/logoMotion';
 
 const mounted: ReactTestRenderer[] = [];
@@ -180,37 +180,33 @@ describe('icônes morphables', () => {
 });
 
 describe('logo HOMI : pièces détachées', () => {
-  it('maison et silhouettes exposées sont exactement celles du logo (clair et sombre)', () => {
+  it('têtes, corps, lettres et point du i sont exactement les tracés du logo (encre et ivoire)', () => {
     for (const tone of ['light', 'dark'] as const) {
-      expect(HOMI_MARK_SVG[tone]).toContain(HOMI_HOUSE_PATH);
-      for (const f of HOMI_FAMILY) {
-        expect(HOMI_MARK_SVG[tone]).toContain(f.bodyD);
-        expect(HOMI_MARK_SVG[tone]).toContain(`<circle cx="${f.cx}" cy="${f.headY}" r="${f.headR}"/>`);
-      }
+      expect(HOMI_SVG.symbol[tone]).toContain(HOMI_SYMBOL_PATH);
+      expect(HOMI_SVG.logo[tone]).toContain(HOMI_SYMBOL_PATH);
+      expect(HOMI_SVG.logo[tone]).toContain(HOMI_WORD_PATH);
     }
-    expect(HOMI_FAMILY.map((f) => f.role)).toEqual(['parent', 'parent', 'child', 'child']);
-    expect(HOMI_HOUSE_LENGTH).toBeGreaterThan(600);
-    expect(HOMI_HOUSE_LENGTH).toBeLessThan(720);
+    expect(HOMI_SYMBOL_PATH).toBe(HOMI_PARTS.headA.d + HOMI_PARTS.headB.d + HOMI_PARTS.body.d);
+    expect(HOMI_WORD_PATH).toBe(HOMI_PARTS.dot.d + HOMI_PARTS.letters.d);
   });
 });
 
 describe('introduction de lancement', () => {
-  it('chorégraphie : tracé → illumination → parents → enfants → nom → pose → fondu (1,5–2,5 s)', () => {
+  it('chorégraphie : corps → têtes → nom → point du i → pose → fondu (1,5–2,5 s)', () => {
     const tl = introTimeline('full');
     expect(tl.total).toBeGreaterThanOrEqual(1500);
     expect(tl.total).toBeLessThanOrEqual(2500);
     expect(tl.logo).toEqual(logoTimeline('full'));
-    expect(tl.logo.light[0]).toBeGreaterThan(tl.logo.trace[0]);
-    expect(tl.logo.figures[0][0]).toBeGreaterThan(tl.logo.light[0]);
-    for (let i = 1; i < tl.logo.figures.length; i++) expect(tl.logo.figures[i][0]).toBeGreaterThan(tl.logo.figures[i - 1][0]);
+    expect(tl.logo.heads[0][0]).toBeGreaterThan(tl.logo.body[0]);
+    expect(tl.logo.heads[1][0]).toBeGreaterThan(tl.logo.heads[0][0]);
+    expect(tl.logo.word[0]).toBeGreaterThan(tl.logo.heads[1][0]);
+    expect(tl.logo.dot[0]).toBeGreaterThan(tl.logo.word[0]);
     expect(tl.logo.deploy).toBeNull();
     expect(tl.exit[0]).toBeGreaterThanOrEqual(tl.logo.end);
   });
   it('version abrégée (nuit, lancement lent) : logo complet d’emblée, ≤ 600 ms', () => {
     const tl = introTimeline('short');
-    expect(stageProgress(0, tl.logo.trace)).toBe(1);
-    expect(tl.logo.figures.every((st) => stageProgress(0, st) === 1)).toBe(true);
-    expect(stageProgress(0, tl.logo.name)).toBe(1);
+    for (const st of [tl.logo.body, ...tl.logo.heads, tl.logo.word, tl.logo.dot]) expect(stageProgress(0, st)).toBe(1);
     expect(tl.total).toBeLessThanOrEqual(intro.shortHoldMs + intro.shortExitMs);
   });
   it('économie d’énergie : jamais d’introduction', () => {

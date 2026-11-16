@@ -83,7 +83,7 @@ Parallaxe légère : lumière 3 px, composition 6 px (constantes `SCENE.parallax
 ### « Découvrir HOMI » (`/discover`, `src/features/discover/**`, 14/11/2026)
 
 Remplace l'introduction de première ouverture (`/cinematic` redirige ; même règle « une fois » `cinematicSeen`),
-relançable depuis Réglages → Découvrir HOMI (`?replay=1`). Ouverture : la MAISON HOMI s'illumine puis s'ouvre en
+relançable depuis Réglages → Découvrir HOMI (`?replay=1`). Ouverture : le LOGO HOMI se pose (animé) puis son symbole s'ouvre en
 premier panneau de verre (reflet qui longe son bord), caméra dans le panneau (gros plan sur grossesse, biberons,
 mission, puis recul). Caméra (450 ms `decelerate`, avancée + glissement) réservée à l'ouverture et aux changements de
 chapitre ; geste horizontal interruptible. Catalogue : chaque tuile s'ouvre depuis sa position (`MorphSource sheen` :
@@ -92,13 +92,13 @@ qui approche et appuie, puis résultat ; un vrai toucher l'interrompt) — 12 ty
 `off` : état final, aucun doigt, « Rejouer » attend le geste ; `minimal` : fondus seuls.
 **Branchement du logo animé** : `setDiscoverOpening(HomiLogoAnimated)` (ou `<DiscoverKeynote logo=…>`) ; la
 présentation passe `width`, `tone`, `still`, `onHousePanel` (= `onLensPanel`), `onDone` et fait elle-même grandir le
-panneau depuis la maison mesurée (pas de `deployTo`). Sans logo injecté : maison existante (`BrandLogo`) provisoire.
+panneau depuis le symbole mesuré (pas de `deployTo`). Sans logo injecté : logo fixe (`BrandStack`) en fondu, provisoire.
 Tests : `src/__tests__/discoverHomi.test.tsx` ; E2E `e2e/decouvrir_homi.py`, vidéo `e2e/decouvrir_homi_video.js`.
 
 ## Principes
 
 1. **Calme et intentionnel.** Le mouvement explique (d'où vient un écran, ce qui vient de changer), il ne décore pas. Jamais d'agressivité, jamais d'attente imposée : l'action part tout de suite, l'animation suit.
-2. **Compositeur uniquement.** On anime `transform` et `opacity`, sur le fil UI (valeurs partagées et worklets). Seules exceptions : le contour de la maison du logo (`strokeDashoffset` du tracé et du reflet qui court sur le bord) et le panneau issu de la maison (un seul tracé `d`, `useAnimatedProps`) et le `d` des icônes morphables (≤ 72 points, petites icônes).
+2. **Compositeur uniquement.** On anime `transform` et `opacity`, sur le fil UI (valeurs partagées et worklets). Seules exceptions : le panneau issu du symbole du logo (un seul tracé `d`, `useAnimatedProps`) et le `d` des icônes morphables (≤ 72 points, petites icônes).
 3. **Interruptible.** Ressorts et `withTiming` repartent de la valeur courante ; le morph d'icône repart de la forme réellement affichée. Les séquences figées sont réservées aux one-shots (intro).
 4. **Un seul hook.** Toute primitive passe par `useMotion()` (voir ci-dessous). Aucune durée, courbe ou ressort en dur dans un écran.
 5. **Rien de permanent qui gêne.** Pas de boucle décorative près d'un chronomètre ou pendant les soins de nuit.
@@ -123,7 +123,7 @@ Depuis un geste (fil UI) : `motionTiming(level, …)` / `motionSpring(level, …
 | `decelerate` | 0.16, 1, 0.3, 1 | entrées, apparitions (signature) |
 | `standard` | 0.2, 0, 0, 1 | changements d'état, fondus de nuit |
 | `accelerate` | 0.3, 0, 1, 1 | sorties |
-| `reveal` | 0.45, 0, 0.25, 1 | tracés et révélations (contour de la maison du logo) |
+| `reveal` | 0.45, 0, 0.25, 1 | tracés et révélations |
 
 Courbes = worklets autonomes (solveur de Bézier), identiques iOS / Android / web / Jest.
 
@@ -144,7 +144,7 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 | `LiftCard` + `DetailEnter` | transition carte → écran détail « shared-element-like » | source : échelle 1,03, −4 px, ombre de contact en fondu, `onOpen` après 140 ms ; destination : 0,94 / +14 px → 1 / 0 en `doux` |
 | `AnimatedNumber` | compteur numérique | 700 ms `decelerate` ; natif : texte mis à jour sur le fil UI (TextInput non éditable) ; web : re-rendu seulement quand la chaîne change ; lecteurs d'écran : valeur finale uniquement ; chiffres tabulaires |
 | `MorphIcon` | icône de module morphable | 520 ms `decelerate` + souffle d'échelle 0,94 ; `minimal` : 160 ms sans souffle |
-| `HomiLogoAnimated` / `LaunchIntro` (`src/components`) | logo maison : tracé → illumination → famille → nom → panneau ; lancement | voir ci-dessus |
+| `HomiLogoAnimated` / `LaunchIntro` (`src/components`) | logo v5 « encre » : corps → têtes → nom → point du i → panneau ; lancement | voir ci-dessous |
 | `PressSheen` / `usePressSheen` (v2) | reflet bref qui glisse sur un bouton capsule à la pression (bouton principal, bouton d'action de la barre) | bande de lumière inclinée −18°, une traversée de 320 ms `decelerate` (v3), opacité en sinus (0 au repos et à la fin) ; `off` et `minimal` : rien n'est rendu |
 | `GlowCard` (v2, `src/components`) | carte sélectionnée / action importante / validation | activation : halo 0 → 1 en ressort `doux` + échelle 0,97 → 1 ; filet en fondu 240 ms `standard` ; faisceau unique 720 ms `decelerate`. Repos : statique. `still` (listes) : aucun mouvement. `minimal` : fondu court, ni halo ni faisceau |
 | `CompletionCheck` + `CompletionGlow` (v2) | passage d'une tâche à « terminé » | disque 0,6 → 1 en `rebondLeger`, coche tracée 240 ms (`strokeDashoffset`, 80 ms après), anneau 520 ms, haptique « succès » ; halo de ligne 180 ms + 720 ms ; décocher : fondu 200 ms. `off` : état final immédiat ; `minimal` : fondus seuls |
@@ -152,47 +152,52 @@ Durées (ms, `theme/motion.ts`) : `instant` 90 · `fast` 160 · `base` 240 · `s
 | `Screen` — en-tête (audit 09) | titre compact qui apparaît / grand titre fixe qui se replie | 160 ms (compact) / 200 ms (repli en hauteur), `timeTo` : immédiat avec « Réduire les animations » |
 | `Sheet` (v2, `components/Overlays.tsx`) | panneau du bas | ouverture : ressort `doux` (interruptible, repart de la position courante) ; fermeture : 240 ms `accelerate`, démontage via `scheduleOnRN` |
 
-### Logo animé (`src/components/HomiLogoAnimated.tsx`, v5 « maison », 14/11/2026)
+### Logo animé (`src/components/HomiLogoAnimated.tsx`, v5 « encre », 16/11/2026)
 
-Décision du propriétaire (14/11/2026) : le logotype « lentille » v4 est **abandonné**, retour au logo MAISON (maison
-violette aux contours lumineux, deux parents et deux enfants). Le logo s'anime comme UN SEUL objet, sur une seule
-horloge (valeur partagée, fil UI). Constantes nommées : `src/brand/logoMotion.ts` (`LOGO_MOTION`, `LOGO_LAYOUT`,
-`logoTimeline`, `backOut`, `houseMeasureAt`, `housePanelFrame`, `housePanelPath`, testés). Même ordre et mêmes courbes
-que l'ancienne `intro` (`src/theme/motion.ts`), resserrés (introduction /cinematic complète ≤ 2,5 s). Composition : maison centrée en haut (62 % de la largeur), nom dessous.
+Décision de la propriétaire (16/11/2026) : le logo officiel est SON logo en encre (symbole « M » formé de deux
+personnes + mot-symbole « HOMI », voir `HOMI_BRAND.md`) ; le logo maison violet et son animation (tracé, illumination,
+reflets, quatre silhouettes) sont retirés. Le logo s'anime comme UN SEUL objet, **sobrement et vite (logo complet en
+1,32 s)**, sur une seule horloge (valeur partagée, fil UI). Constantes nommées : `src/brand/logoMotion.ts`
+(`LOGO_MOTION`, `logoBox`, `logoTimeline`, `backOut`, `houseMeasureAt`, `housePanelFrame`, `housePanelPath`, testés).
+Composition : l'assemblage officiel (symbole à gauche, mot à droite ; hauteur `logoBox(width).height` ≈ 0,31 × largeur).
+Pièces : sous-tracés EXACTS de la source (`HOMI_PARTS` : tête au chignon, seconde tête, corps « M », lettres, point du
+i), encre en clair, ivoire en sombre. **Transform et opacité uniquement** (aucun tracé animé hors panneau).
 
 | Étape | Temps (mouvement complet) | Mécanique |
 |---|---|---|
-| le contour se trace | 120 → 760 ms, `reveal` | `strokeDashoffset` du contour (liseré violet profond en clair + contour lumineux en dégradé) |
-| reflet qui court sur le bord | 120 → 1 200 ms | trait de 9 % du contour (lueur 20 u + cœur blanc 5 u) à la tête du tracé, puis un demi-tour (`decelerate`) en s'éteignant |
-| la maison s'illumine | 560 → 920 ms, `decelerate` ; halo 560 → 1 560 ms | remplissage violet + lueur intérieure (opacité) ; halo en cloche (crête 0,6, retombe à 0) ; ensemble 0,94 → 1 |
-| parent, parent, enfant, enfant | 820 / 920 / 1 020 / 1 120 ms, 380 ms chacun | échelle 0,55 → 1 autour des pieds + montée de 14 u, courbe back-out (s = 1,7, ≈ 10 % de rebond) |
-| le nom HOMI se révèle dans la lumière | 1 000 → 1 500 ms, `decelerate` | fenêtre qui glisse + contre-glissement, montée de 6 px ; reflet incliné (−18°) qui traverse le nom |
-| déploiement en panneau (si `deployTo`) | 1 520 → 2 080 ms, `decelerate` | UN tracé SVG sous la maison : pignon → rectangle arrondi (toit aplati, rayons du panneau), teinte violette → matière du panneau |
+| le corps « M » monte du sol | 120 → 560 ms, `decelerate` | fenêtre qui se lève (la fenêtre glisse vers le haut, le contenu en sens inverse) + montée de 10 % de sa hauteur, fondu rapide |
+| les deux têtes se posent | chignon 340 → 760 ms, seconde tête 430 → 850 ms | tombent de 45 % de leur hauteur, échelle 0,6 → 1 autour de leur centre, back-out (s = 1,7, ≈ 10 % de ressort) |
+| « HOMI » se révèle | 640 → 1 080 ms, `decelerate` | fenêtre qui glisse de gauche à droite + contre-glissement, montée de 6 % |
+| le point du i se pose | 980 → 1 320 ms | même ressort que les têtes, sans chute |
+| ensemble | 120 → 1 320 ms | échelle 0,97 → 1 (`decelerate`) |
+| déploiement en panneau (si `deployTo`) | 1 380 → 1 940 ms, `decelerate` | UN tracé SVG sous le logo : la boîte du symbole (angles arrondis) grandit jusqu'au panneau cible, déjà en verre |
 
 API (stable) : `<HomiLogoAnimated width tone? still? clock? timeline? deployTo? panel? onHousePanel? onLensPanel? onDone? />`
-— `deployTo` : panneau cible en coordonnées FENÊTRE (`{ x, y, width, height, radius, fill, edge? }`) ; `panel` :
-valeur partagée 0 → 1 écrite sur le fil UI pendant le déploiement ; `onHousePanel(house, target)` (alias
-rétro-compatible `onLensPanel`, un seul appel si la même fonction est passée aux deux) : une seule fois, au début du
-déploiement — ou, sans `deployTo`, quand le logo est complet (1 500 ms, `target` = null) — avec la mesure FENÊTRE de la
-maison `{ x, y, width, height, cx, cy, r }` ; `onDone` : une fois, fin de l'horloge interne ; `clock` + `timeline` :
-horloge externe. Retours vers JS par `scheduleOnRN`, jamais à chaque image ; `cancelAnimation` au démontage.
-Hauteur du logo : `logoBox(width).height` (≈ 0,93 × largeur).
-Niveaux : `off` → état final (maison, famille, nom, panneau posé) avec un simple fondu d'opacité de 180 ms, rappels
-immédiats ; `minimal` (nuit) → fondu 160 ms, panneau en fondu, silhouettes en fondu, aucun déplacement ; version
-FIXE (`still` ou largeur < 120 px) → `BrandStack`. Image finale = `BrandStack` (mêmes tracés : `HOMI_MARK_SVG`).
+— `tone` : `light` = encre, `dark` = ivoire (défaut : thème) ; `deployTo` : panneau cible en coordonnées FENÊTRE
+(`{ x, y, width, height, radius, fill, edge? }`) ; `panel` : valeur partagée 0 → 1 écrite sur le fil UI pendant le
+déploiement ; `onHousePanel(house, target)` (nom historique ; alias `onLensPanel`, un seul appel si la même fonction
+est passée aux deux) : une seule fois, au début du déploiement — ou, sans `deployTo`, quand le logo est complet
+(1 320 ms, `target` = null) — avec la mesure FENÊTRE du symbole `{ x, y, width, height, cx, cy, r }` ; `onDone` : une
+fois, fin de l'horloge interne ; `clock` + `timeline` : horloge externe. Retours vers JS par `scheduleOnRN`, jamais à
+chaque image ; `cancelAnimation` au démontage.
+Niveaux : `off` (Réduire les animations, économie d'énergie) → état final (logo complet, panneau posé) avec un simple
+fondu d'opacité de 180 ms, rappels immédiats ; `minimal` (nuit) → fondu 160 ms, aucun déplacement ; version FIXE
+(`still` ou largeur < 120 px) → `BrandStack`. Image finale = `BrandStack` (mêmes tracés : `HOMI_SVG.logo`).
 
 Branchements : « Découvrir HOMI » (`/discover`, et `/cinematic` qui y redirige) — `setDiscoverOpening(HomiLogoAnimated)`
 dans `src/app/_layout.tsx`, sans `deployTo` : la présentation fait grandir son panneau de verre à partir de la mesure
-`onHousePanel` ; `LaunchIntro` (sans déploiement) ; `HomiIntro` (`src/features/entry`, avec `deployTo` : la maison se
-déploie en panneau où se pose l'accroche, 2,08 s + 420 ms de pose = 2,5 s ; plus monté par une route depuis /discover). Captures image par image et vidéo : `e2e/logotype.py`.
+`onHousePanel` (passage de relais à 1 350 ms, juste après le logo complet) ; `LaunchIntro` (sans déploiement) ;
+`HomiIntro` (`src/features/entry`, avec `deployTo` : le symbole se déploie en panneau où se pose l'accroche, 1,94 s +
+420 ms de pose). Captures image par image et vidéo : `e2e/logotype.py` (+ `e2e/logotype_video.js`).
 
 ### Introduction de lancement (`src/components/LaunchIntro.tsx`)
 
-Une horloge partagée (0 → ≈ 2 220 ms, linéaire) : logo maison animé (`logoTimeline('full')`, sans panneau) · pose 240 ms ·
-fondu du calque 480 ms avec avancée 1 → 1,06. Règles conservées : une fois par lancement à froid ; absente à la
-première ouverture (`/cinematic` joue ce rôle) ; `off` → aucune intro, calque retiré à durée 0 ; `minimal` (nuit) ou
-lancement déjà lent (> 2 s) → version abrégée (logo complet, 260 ms de pose, 320 ms de fondu). Calque
-`pointerEvents="none"`, masqué aux lecteurs d'écran ; l'accueil se charge dessous.
+Une horloge partagée (0 → ≈ 2 040 ms, linéaire) : logo animé (`logoTimeline('full')`, sans panneau, 1 320 ms) · pose
+240 ms · fondu du calque 480 ms avec avancée 1 → 1,06. Règles conservées : une fois par lancement à froid ; absente à
+la première ouverture (`/cinematic` joue ce rôle) ; `off` → aucune intro, calque retiré à durée 0 ; `minimal` (nuit)
+ou lancement déjà lent (> 2 s) → version abrégée (logo complet, 260 ms de pose, 320 ms de fondu). Calque
+`pointerEvents="none"`, masqué aux lecteurs d'écran ; l'accueil se charge dessous. L'ouverture de l'onboarding
+(`OpeningStep`) ne rejoue pas le logo après l'introduction (`launchLogoState`) : jamais deux logos d'affilée.
 
 ### Morphs entre modules (`src/motion/MorphIcon.tsx`, `morphShapes.ts`)
 

@@ -1,6 +1,6 @@
 /**
  * Accueil sans compte (HOMI v5 « Lumière corail ») :
- *  - en tête, le logo maison PETIT (la marque), la langue et l'aide (icône + libellé, sans capsule) ;
+ *  - en tête, le logo HOMI PETIT (symbole + HOMI, encre / ivoire), la langue et l'aide (icône + libellé, sans capsule) ;
  *  - l'illustration `famille` sur le halo corail (taille fixe, se resserre sur petit écran), seule image de l'écran ;
  *  - un titre aéré, une phrase ;
  *  - hiérarchie des actions : « Commencer » (principal) → « J'ai déjà un compte » (secondaire sobre) →

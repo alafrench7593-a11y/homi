@@ -4,7 +4,7 @@
  *
  * Règles (HOMI_SCREEN_INVENTORY.md › Entrée) :
  *  - un seul point focal par écran (`EntryHero`) : l'illustration 3D `famille` (HeroArt.tsx) ou, pour un écran
- *    d'état, un disque prune à icône, sur le HALO CORAIL ; le logo maison reste petit, en tête ;
+ *    d'état, un disque prune à icône, sur le HALO CORAIL ; le logo HOMI reste petit, en tête ;
  *  - la scène se révèle EN PROFONDEUR (échelle 1,12 → 1 + fondu, Reanimated, `useMotion`) mais le texte et l'action
  *    principale sont rendus tout de suite, sans animation d'entrée : rien n'attend la scène ;
  *  - champs posés sur une surface MATE (`MattePanel`, opaque, sans flou ni reflet) : lisibles sur toutes les palettes ;
@@ -68,7 +68,7 @@ export function FocalGlow({ size }: { size: number }) {
 }
 
 /**
- * Point focal : halo de la palette + disque en dégradé portant une icône (ou la maison HOMI).
+ * Point focal : halo de la palette + disque en dégradé portant une icône (ou le symbole HOMI).
  * Décor uniquement (masqué aux lecteurs d'écran) ; se révèle en profondeur.
  */
 export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolean; size: number }) {
@@ -89,7 +89,7 @@ export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolea
 }
 
 /**
- * En-tête d'entrée (v5) : le logo maison PETIT en tête (`wordmark`), puis le point focal — l'illustration 3D `famille`
+ * En-tête d'entrée (v5) : le logo HOMI PETIT en tête (`wordmark`), puis le point focal — l'illustration 3D `famille`
  * sur le halo corail (`logo` ou `art`) ou, pour les écrans d'état (e-mail envoyé, lien expiré), un disque prune
  * portant une icône — un titre aéré, une phrase. Titre et phrase sont là dès la première image.
  */

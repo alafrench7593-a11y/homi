@@ -15,7 +15,7 @@ export const keynote: Messages<typeof fr> = {
   'kn.settingsRow': 'HOMI entdecken',
   'kn.settingsRowSub': 'Die Präsentation und eine Demo jedes Werkzeugs',
   'kn.open.lead': 'Eine App für die ganze Familie.',
-  'kn.open.a11y': 'Das HOMI-Haus leuchtet auf und öffnet sich zu einer ersten Glasfläche, auf der eine Schwangerschaft, die Begleitung eines Kindes und das Familienleben erscheinen.',
+  'kn.open.a11y': 'Das HOMI-Logo erscheint und öffnet sich zu einer ersten Glasfläche, auf der eine Schwangerschaft, die Begleitung eines Kindes und das Familienleben erscheinen.',
   'kn.open.preg.title': 'Schwangerschaft',
   'kn.open.preg.value': 'Woche 24',
   'kn.open.preg.sub': 'Etwa 30 cm',

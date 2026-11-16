@@ -1,54 +1,59 @@
 /**
- * Logo HOMI v5 « maison » (14/11/2026, décision du propriétaire : retour à la maison, le logotype « lentille » v4
- * est abandonné). Maison violette aux contours lumineux, deux parents et deux enfants au centre (silhouettes lavande /
- * blanc). Vectoriel (react-native-svg) ; tracés générés par `scripts/homi/brand.mjs` → `src/brand/homiMarkSvg.ts`
- * (même source que assets/brand/homi-mark-*.svg et les icônes).
- *  - BrandLogo     : la maison seule — API inchangée (size, style) ; `tone` facultatif ;
- *  - BrandName     : le nom « HOMI » dans la typographie de l'app (Manrope, graisse 800), couleur de la marque ;
- *  - BrandWordmark : maison + nom HOMI à côté (en-têtes, écrans d'identité) — API height / tone / color / decorative /
- *                    header / testID ;
- *  - BrandStack    : maison + nom dessous (composition du logo animé, version fixe) ;
+ * Logo HOMI v5 « encre » (16/11/2026, décision de la propriétaire) : symbole « M » formé de deux personnes (l'une avec
+ * un chignon) + mot-symbole « HOMI » arrondi (point du i rond). ENCRE sur fond clair, IVOIRE sur fond sombre (même
+ * dessin) ; aucune autre couleur. Vectoriel (react-native-svg) ; tracés tirés tels quels des sources de la
+ * propriétaire par `scripts/homi/brand.mjs` → `src/brand/homiMarkSvg.ts` (mêmes SVG que assets/brand/ et les icônes).
+ *  - BrandLogo     : le symbole « M » seul — API inchangée (size, style) ; `tone` facultatif ;
+ *  - BrandName     : le mot-symbole « HOMI » seul (dessin, aucune police) ;
+ *  - BrandWordmark : logo complet (symbole + HOMI, assemblage officiel) — en-têtes, connexion, Réglages ;
+ *  - BrandStack    : logo complet à une largeur donnée (version fixe du logo animé, écran de chargement) ;
  *  - BrandLine / BrandShine / BrandMono : grands visuels, éclat monochrome, monochrome couleur du texte.
- * Version claire = fond ivoire, sombre = fond obsidienne ; « auto » suit le thème.
+ * « auto » suit le thème : encre en clair, ivoire en sombre. Accessibilité : annoncé « HOMI ».
  */
 import { View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 
-import { HOMI_COLORS, HOMI_MARK_SVG } from '@/brand/homiMarkSvg';
-import { logoBox } from '@/brand/logoMotion';
-import { Text } from '@/components/ui';
+import { HOMI_INK, HOMI_SVG, HOMI_WORD_VIEWBOX, type HomiArt } from '@/brand/homiMarkSvg';
+import { LOGO_RATIO, logoBox } from '@/brand/logoMotion';
 import { BRAND } from '@/config/brand';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts } from '@/theme/tokens';
 
 type LogoProps = { size?: number; style?: StyleProp<ViewStyle> };
+/** auto (thème) | light = encre (fond clair) | dark = ivoire (fond sombre) | mono = `color` (sinon couleur du texte). */
 export type BrandTone = 'auto' | 'light' | 'dark' | 'mono';
 
-/** Largeur indicative du `BrandWordmark` (maison + nom) : ≈ 2,9 × la hauteur. */
-export const WORDMARK_RATIO = 2.9;
-/** Proportions du `BrandWordmark` (part de la hauteur). */
-const WORDMARK = { name: 0.66, gap: 0.22 } as const;
+/** Largeur du `BrandWordmark` (logo complet) : ≈ 3,26 × la hauteur. */
+export const WORDMARK_RATIO = LOGO_RATIO;
+/** Rapport largeur / hauteur du mot-symbole seul. */
+const WORD_RATIO = HOMI_WORD_VIEWBOX[2] / HOMI_WORD_VIEWBOX[3];
 
-/** Variante effective : « auto » → clair ou sombre selon le thème. */
+/** Variante effective : « auto » → encre (clair) ou ivoire (sombre) selon le thème. */
 export function useBrandTone(tone: BrandTone = 'auto'): 'light' | 'dark' | 'mono' {
   const t = useTheme();
   return tone === 'auto' ? (t.isDark ? 'dark' : 'light') : tone;
 }
 
-/** Couleur du nom selon la variante (mono : `color`, sinon couleur du texte). */
+/** Couleur du logo selon la variante (mono : `color`, sinon couleur du texte). */
 export function useBrandNameColor(tone: BrandTone = 'auto', color?: string): string {
   const t = useTheme();
   const v = useBrandTone(tone);
-  return v === 'mono' ? color ?? t.colors.text : HOMI_COLORS[v].name;
+  return v === 'mono' ? color ?? t.colors.text : HOMI_INK[v];
 }
 
-/** La maison (logo), en couleur selon le thème. Décor : le nom est annoncé ailleurs. */
-export function BrandLogo({ size = 28, style, tone = 'auto', color }: LogoProps & { tone?: BrandTone; color?: string }) {
+const hidden = { accessible: false, importantForAccessibility: 'no-hide-descendants', accessibilityElementsHidden: true } as const;
+
+/** Un des trois dessins (symbole, mot, logo) dans la variante voulue. Décor : le nom est annoncé par le parent. */
+function Art({ art, width, height, tone, color }: { art: HomiArt; width: number; height: number; tone: BrandTone; color?: string }) {
   const t = useTheme();
   const v = useBrandTone(tone);
+  return <SvgXml xml={HOMI_SVG[art][v]} width={width} height={height} color={v === 'mono' ? color ?? t.colors.text : undefined} />;
+}
+
+/** Le symbole « M » (deux personnes), encre ou ivoire selon le thème. Décor : le nom est annoncé ailleurs. */
+export function BrandLogo({ size = 28, style, tone = 'auto', color }: LogoProps & { tone?: BrandTone; color?: string }) {
   return (
-    <View style={[{ width: size, height: size }, style]} accessible={false} importantForAccessibility="no-hide-descendants">
-      <SvgXml xml={HOMI_MARK_SVG[v]} width={size} height={size} color={v === 'mono' ? color ?? t.colors.text : undefined} />
+    <View style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, style]} {...hidden}>
+      <Art art="symbol" width={size} height={size} tone={tone} color={color} />
     </View>
   );
 }
@@ -57,48 +62,33 @@ export function BrandLine({ size = 160, style }: LogoProps) {
   return <BrandLogo size={size} style={style} />;
 }
 
-/** Copie monochrome de la maison, à superposer exactement au logo : son opacité animée donne un éclat. */
-export function BrandShine({ size, color = '#F7F4FB' }: { size: number; color?: string }) {
-  return (
-    <View style={{ width: size, height: size }} accessible={false} importantForAccessibility="no-hide-descendants">
-      <SvgXml xml={HOMI_MARK_SVG.mono} width={size} height={size} color={color} />
-    </View>
-  );
+/** Copie monochrome du symbole, à superposer exactement au logo : son opacité animée donne un éclat. */
+export function BrandShine({ size, color = '#F7F1E8' }: { size: number; color?: string }) {
+  return <BrandLogo size={size} tone="mono" color={color} />;
 }
 
-/** Maison monochrome de la couleur du texte (en-têtes, pieds de page, petits formats). */
+/** Symbole monochrome de la couleur voulue (en-têtes, pieds de page, petits formats). */
 export function BrandMono({ size = 24, color, style }: LogoProps & { color: string }) {
-  return (
-    <View style={[{ width: size, height: size }, style]} accessible={false} importantForAccessibility="no-hide-descendants">
-      <SvgXml xml={HOMI_MARK_SVG.mono} width={size} height={size} color={color} />
-    </View>
-  );
+  return <BrandLogo size={size} tone="mono" color={color} style={style} />;
 }
 
 /**
- * Le nom « HOMI » en typographie de l'app (Manrope 800, v5), couleur de la marque. Taille FIXE (c'est un
- * logo : il ne suit pas la taille de texte du téléphone). Décor par défaut — le composant parent annonce le nom.
+ * Le mot-symbole « HOMI » seul (dessin de la propriétaire, aucune police). `size` : hauteur du dessin (point du i
+ * compris) ; `line` : hauteur de la ligne qui le centre. Taille FIXE (c'est un logo). Décor par défaut.
  */
 export function BrandName({ size, line, tone = 'auto', color, style }: { size: number; line?: number; tone?: BrandTone; color?: string; style?: StyleProp<TextStyle> }) {
-  const fill = useBrandNameColor(tone, color);
+  const h = line ?? size;
   return (
-    <Text
-      variant="title"
-      allowFontScaling={false}
-      maxFontSizeMultiplier={1}
-      accessible={false}
-      importantForAccessibility="no"
-      style={[{ fontFamily: fonts.display, fontSize: size, lineHeight: line ?? Math.round(size * 1.18), letterSpacing: -size * 0.02, color: fill, includeFontPadding: false }, style]}
-    >
-      {BRAND.name}
-    </Text>
+    <View style={[{ height: h, justifyContent: 'center' }, style as StyleProp<ViewStyle>]} {...hidden}>
+      <Art art="word" width={Math.round(size * WORD_RATIO)} height={size} tone={tone} color={color} />
+    </View>
   );
 }
 
 type WordmarkProps = {
-  /** Hauteur (px) : côté de la maison ; le nom suit (≈ 0,66 × hauteur). */
+  /** Hauteur (px) du logo complet ; largeur = hauteur × `WORDMARK_RATIO`. */
   height?: number;
-  /** clair (fond clair), sombre (fond sombre), monochrome (`color`, sinon couleur du texte) ou auto (thème). */
+  /** encre (light), ivoire (dark), monochrome (`color`, sinon couleur du texte) ou auto (thème). */
   tone?: BrandTone;
   color?: string;
   style?: StyleProp<ViewStyle>;
@@ -109,26 +99,25 @@ type WordmarkProps = {
 };
 
 const a11yFor = (decorative: boolean, header: boolean) => (decorative
-  ? ({ accessible: false, importantForAccessibility: 'no-hide-descendants', accessibilityElementsHidden: true } as const)
+  ? hidden
   : ({ accessible: true, accessibilityRole: header ? 'header' : 'image', accessibilityLabel: BRAND.name } as const));
 
-/** Maison + nom HOMI à côté (version FIXE : en-têtes, connexion, écrans d'identité). */
+/** Logo complet (symbole + HOMI), version FIXE : en-têtes, connexion, écrans d'identité. */
 export function BrandWordmark({ height = 28, tone = 'auto', color, style, decorative = false, header = true, testID }: WordmarkProps) {
+  const width = Math.round(height * WORDMARK_RATIO);
   return (
-    <View testID={testID} style={[{ height, flexDirection: 'row', alignItems: 'center', gap: Math.round(height * WORDMARK.gap) }, style]} {...a11yFor(decorative, header)}>
-      <BrandLogo size={height} tone={tone} color={color} />
-      <BrandName size={Math.round(height * WORDMARK.name)} line={height} tone={tone} color={color} />
+    <View testID={testID} style={[{ height, width }, style]} {...a11yFor(decorative, header)}>
+      <Art art="logo" width={width} height={height} tone={tone} color={color} />
     </View>
   );
 }
 
-/** Maison + nom dessous (composition du logo animé, `logoBox`) — version FIXE du logo animé, écran de chargement. */
+/** Logo complet à une largeur donnée (`logoBox`) — image finale du logo animé, écran de chargement, introduction. */
 export function BrandStack({ width, tone = 'auto', color, style, decorative = false, header = true, testID }: Omit<WordmarkProps, 'height'> & { width: number }) {
   const b = logoBox(width);
   return (
-    <View testID={testID} style={[{ width, height: b.height, alignItems: 'center' }, style]} {...a11yFor(decorative, header)}>
-      <BrandLogo size={b.house.size} tone={tone} color={color} />
-      <BrandName size={b.name.size} line={b.name.line} tone={tone} color={color} style={{ marginTop: b.name.top - b.house.size }} />
+    <View testID={testID} style={[{ width, height: b.height }, style]} {...a11yFor(decorative, header)}>
+      <Art art="logo" width={width} height={b.height} tone={tone} color={color} />
     </View>
   );
 }

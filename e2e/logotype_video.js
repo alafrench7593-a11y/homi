@@ -1,17 +1,17 @@
 /**
- * Vidéo (webm) du logo maison animé : première ouverture → « Découvrir HOMI », la maison se trace (reflet sur le
- * bord), s'illumine, parent, parent, enfant, enfant, le nom HOMI se révèle, puis la maison s'ouvre en panneau de verre.
+ * Vidéo (webm) du logo HOMI v5 « encre » animé : première ouverture → « Découvrir HOMI » : le corps « M » monte,
+ * les deux têtes se posent, « HOMI » se révèle, le point du i se pose, puis le symbole s'ouvre en panneau de verre.
  * Appelé par e2e/logotype.py ; seul :
- *   NODE_PATH=$(npm root -g) NAV_URL=http://127.0.0.1:19011 node e2e/logotype_video.js [sombre]
- * Sortie : $E2E_VIDEO (défaut /tmp/maison/shots/3-animation-maison.webm).
+ *   NODE_PATH=$(npm root -g) NAV_URL=http://127.0.0.1:8995 node e2e/logotype_video.js [sombre]
+ * Sortie : $E2E_VIDEO (défaut /tmp/logo5/shots/3-animation-logo.webm).
  */
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { chromium } = require('playwright');
 
-const B = process.env.NAV_URL || 'http://127.0.0.1:19011';
-const OUT = process.env.E2E_VIDEO || '/tmp/maison/shots/3-animation-maison.webm';
+const B = process.env.NAV_URL || 'http://127.0.0.1:8995';
+const OUT = process.env.E2E_VIDEO || '/tmp/logo5/shots/3-animation-logo.webm';
 const dark = process.argv.includes('sombre');
 
 (async () => {
@@ -26,7 +26,7 @@ const dark = process.argv.includes('sombre');
   const pg = await ctx.newPage();
   await pg.goto(`${B}/`);
   await pg.waitForSelector('[data-testid="discover-logo"]', { timeout: 15000 });
-  await pg.waitForTimeout(5500);
+  await pg.waitForTimeout(4000);
   const video = pg.video();
   await ctx.close();
   fs.mkdirSync(path.dirname(OUT), { recursive: true });

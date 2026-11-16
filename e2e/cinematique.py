@@ -1,12 +1,12 @@
 """
 Ancienne route /cinematic (première ouverture) dans un navigateur réel — depuis le 14/11/2026 elle REDIRIGE vers
-« Découvrir HOMI » (/discover), dont l'ouverture joue le logo maison animé (`HomiLogoAnimated`, branché par
+« Découvrir HOMI » (/discover), dont l'ouverture joue le logo HOMI v5 « encre » animé (`HomiLogoAnimated`, branché par
 `setDiscoverOpening` dans src/app/_layout.tsx). Le parcours complet de /discover (chapitres, catalogue, démos, Passer,
 relance depuis Réglages) est couvert par e2e/decouvrir_homi.py ; ce script vérifie seulement ce qui reste propre à
 l'ancienne route et au logo de l'ouverture :
  - /cinematic et /cinematic?replay=1 mènent à /discover, aucune vidéo ;
- - l'ouverture affiche la maison animée (quatre silhouettes, nom HOMI annoncé) ;
- - « Réduire les animations » : la maison en version fixe (aucun calque animé).
+ - l'ouverture affiche le logo animé (corps « M », deux têtes, nom et point du i ; nom HOMI annoncé) ;
+ - « Réduire les animations » : le logo en version fixe (aucune pièce animée).
   npx expo export --platform web --clear --output-dir /tmp/maison/dist && python3 e2e/spa_server.py /tmp/maison/dist 19011 &
   NAV_URL=http://127.0.0.1:19011 python3 e2e/cinematique.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
@@ -45,8 +45,8 @@ def run(p):
     pg.goto(B + '/cinematic?replay=1')
     R['revoir_redirige_vers_discover'] = wait_url(pg, lambda u: '/discover' in u, 8) is not None
     pg.wait_for_selector('[data-testid="discover-logo"]', timeout=10000)
-    R['maison_animee'] = pg.locator('[data-testid="discover-logo-static"]').count() == 0
-    R['quatre_silhouettes'] = pg.locator('[data-testid^="discover-logo-figure-"]').count() == 4
+    R['logo_anime'] = pg.locator('[data-testid="discover-logo-static"]').count() == 0
+    R['corps_et_deux_tetes'] = pg.locator('[data-testid^="discover-logo-head-"]').count() == 2 and pg.locator('[data-testid="discover-logo-body"]').count() == 1
     R['nom_annonce'] = pg.locator('[data-testid="discover-logo"][aria-label="HOMI"]').count() >= 1
     R['aucune_video'] = pg.locator('video').count() == 0
     pg.wait_for_timeout(1100)
@@ -66,7 +66,7 @@ def run(p):
     pg.goto(B + '/cinematic?replay=1')
     wait_url(pg, lambda u: '/discover' in u, 8)
     pg.wait_for_selector('[data-testid="discover-opening"]', timeout=10000); pg.wait_for_timeout(600)
-    R['reduit_maison_fixe'] = pg.locator('[data-testid="discover-logo-static"]').count() >= 1 and pg.locator('[data-testid^="discover-logo-figure-"]').count() == 0
+    R['reduit_logo_fixe'] = pg.locator('[data-testid="discover-logo-static"]').count() >= 1 and pg.locator('[data-testid^="discover-logo-head-"]').count() == 0
     pg.screenshot(path=f'{SHOTS}/reduit-maison-fixe.png')
     b.close()
 

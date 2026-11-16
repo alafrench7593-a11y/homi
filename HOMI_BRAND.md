@@ -2,51 +2,77 @@
 
 Nom de travail : **HOMI — Your Family, One Home**. Disponibilité (INPI, EUIPO, stores, domaines) **non vérifiée** : à faire avant tout investissement marketing.
 
-## Logo — v5 « maison » (14/11/2026)
+## Logo — v5 « encre » (16/11/2026)
 
-**Décision du propriétaire (14/11/2026) : le logotype « lentille » v4 (commit `a76b511`, O lentille de verre) est
-ABANDONNÉ.** Retour au logo MAISON, logo officiel : une maison violette aux contours lumineux, deux parents et deux
-enfants au centre (silhouettes blanc → lavande ; parents identiques, aucun stéréotype de genre). Dessin d'origine (v1–v3,
-13/11/2026) inchangé ; seules les couleurs sont accordées aux fonds actuels (design system v4 « Lumière minérale ») :
+**Décision de la propriétaire (16/11/2026) : le logo officiel de HOMI est SON logo, en ENCRE.** Il remplace
+complètement le logo maison violet (maison + deux parents + deux enfants, v5 du 14/11/2026) et, avant lui, le logotype
+« lentille » v4. Le violet disparaît de la marque.
 
-| Variante | Fond | Maison | Contour | Silhouettes | Nom « HOMI » |
-|---|---|---|---|---|---|
-| claire | ivoire `#F6F3EE` | violet `#7A52E6` → `#3F2196` | `#F4EFFF` → `#C3B0FA` → `#8C6FEA` sur un liseré `#2E1872` (net sur ivoire) | `#FFFFFF` → `#D9CCFF` | `#2A1A66` |
-| sombre | obsidienne `#07080B` | violet `#7C55EA` → `#3B1E8E` | `#FFFFFF` → `#D6C8FF` → `#9F86F2` | `#FFFFFF` → `#D6C8FF` | `#F2EEFF` |
-| monochrome | — | contour épais (14 u) | — | pleines | couleur du texte |
+Le logo : un **symbole « M » formé de deux personnes** (l'une avec un chignon : deux têtes rondes posées sur un corps
+en « M ») et le **mot-symbole « HOMI »** arrondi (point du i rond). Assemblage officiel : symbole à gauche, mot à droite,
+bases alignées (`homi-logo-encre.svg`, rapport 1402 × 430).
 
-Lisibilité vérifiée de 16 à 1024 px (planche en tailles réelles : `node scripts/homi/brand.mjs --planche` →
-`assets/brand/preview/planche-maison.png`) : la maison et ses quatre silhouettes restent distinctes dès 24 px ; à 16 px
-la maison violette au contour clair reste identifiable (favicon, onglets).
+| Variante | Couleur | Fond |
+|---|---|---|
+| encre (`light`) | `#1F1B1A` | fonds clairs : ivoire rosé `#FBF4F2` (app), `#EFE2DA` (icône) |
+| ivoire (`dark`) | `#F7F1E8` | fonds sombres : prune-anthracite `#1A1217`, nuit `#0E0A0C` |
+| monochrome (`mono`) | `currentColor` | cas techniques (éclat, icône monochrome Android en blanc) |
 
-### Fichiers
+Même dessin dans les deux couleurs ; aucune autre couleur, aucun dégradé, aucun effet.
+
+### Sources et fichiers
+
+Sources fournies par la propriétaire (vectorielles, propres, **utilisées telles quelles, jamais redessinées**) :
+`assets/brand/source-v5/` — `homi-logo-{encre,ivoire}.svg`, `homi-motsymbole-{encre,ivoire}.svg`,
+`homi-symbole-{encre,ivoire}.svg`, `homi-icone-monochrome.png` (icône d'app 1024, encre sur ivoire rosé `#EFE2DA`).
+
+Source unique : `node scripts/homi/brand.mjs` (`--planche` : planche 16 → 256 px dans `assets/brand/preview/`, non
+versionnée) lit ces sources et génère :
 
 | Fichier | Usage |
 |---|---|
-| `assets/brand/homi-mark-{light,dark,mono}.svg` | la maison : claire (ivoire), sombre (obsidienne), monochrome (`currentColor`) ; `homi-mark.svg` = claire |
-| `assets/brand/homi-app-icon.svg` | tuile d'icône : la maison sur obsidienne, halo violet |
-| `assets/icon.png`, `android-icon-{foreground,background,monochrome}.png`, `splash-icon.png` (claire), `splash-icon-dark.png`, `favicon.png` | générés pour Expo (`app.config.ts` : fond adaptatif `#07080B`, écran de lancement ivoire `#F6F3EE` / obsidienne `#07080B`) |
-| `src/brand/homiMarkSvg.ts` | mêmes tracés pour l'application (SVG complets, maison, longueur du contour, silhouettes, couleurs) |
+| `assets/brand/homi-symbole-{encre,ivoire,mono}.svg` | le symbole « M » seul |
+| `assets/brand/homi-motsymbole-{encre,ivoire,mono}.svg` | le mot « HOMI » seul |
+| `assets/brand/homi-logo-{encre,ivoire,mono}.svg` | le logo complet (assemblage officiel) |
+| `assets/brand/homi-app-icon.svg` | tuile d'icône vectorielle (même rendu que l'icône PNG de la propriétaire) |
+| `assets/icon.png` | icône iOS / principale = `homi-icone-monochrome.png` (symbole à 70 % de la hauteur, sans transparence) |
+| `assets/android-icon-{foreground,background,monochrome}.png` | adaptatif : symbole encre à 50 % (zone sûre), fond `#EFE2DA`, monochrome blanc |
+| `assets/splash-icon.png`, `splash-icon-dark.png` | écran de lancement : symbole encre / ivoire (fonds `#FBF4F2` / `#1A1217`, `app.config.ts`) |
+| `assets/favicon.png` | favicon 48 px (tuile d'icône) |
+| `src/brand/homiMarkSvg.ts` | mêmes tracés pour l'application : SVG complets (`HOMI_SVG`), couleurs (`HOMI_INK`), assemblage (`HOMI_LOCKUP`), pièces du logo animé (`HOMI_PARTS` : têtes, corps, lettres, point du i — sous-tracés exacts de la source) |
 
-Source unique : `node scripts/homi/brand.mjs`. Test : `src/__tests__/homiLogo.test.tsx`.
+Test : `src/__tests__/homiLogo.test.tsx` (SVG livrés = module de l'app, tracés = sources, encre / ivoire seulement,
+aucune police, anciennes sources retirées).
+
+### Règles d'usage
+
+- **Zone de protection** : autour du logo (symbole seul ou logo complet), un espace libre au moins égal à la **hauteur
+  du point du i** (≈ 20 % de la hauteur du logo complet, ≈ 20 % de celle du symbole) ; aucun texte, bord ou image dedans.
+- **Taille minimale** : symbole **16 px** de haut (favicon, onglets) ; logo complet **16 px** de haut (le mot reste
+  lisible), 20 px conseillés en en-tête.
+- **Couleurs** : encre sur fond clair, ivoire sur fond sombre. **Interdit** : toute autre couleur (violet, corail,
+  dégradé, contour, ombre portée), un fond qui réduit le contraste, la **déformation** (étirer, incliner, faire
+  pivoter, changer les proportions ou l'espacement symbole / mot), redessiner ou recomposer les lettres, remplacer le
+  mot-symbole par une police.
 
 ### Composants (`src/components/BrandLogo.tsx`)
 
-- `BrandLogo` (API inchangée `size`, `style` ; `tone` facultatif) : la maison ; `BrandMono`, `BrandShine`, `BrandLine`.
-- `BrandName` : le nom « HOMI » dans la typographie de l'app (Space Grotesk 700), couleur de la marque, taille fixe.
-- `BrandWordmark` (`height`, `tone`, `color`, `decorative`, `header`, `testID`) : maison + nom HOMI à côté.
-- `BrandStack` : maison + nom dessous (composition du logo animé, écran de chargement, introduction).
+- `BrandLogo` (API inchangée `size`, `style` ; `tone` facultatif) : le **symbole** ; `BrandMono`, `BrandShine`, `BrandLine`.
+- `BrandName` : le **mot-symbole** « HOMI » seul (dessin, aucune police).
+- `BrandWordmark` (`height`, `tone`, `color`, `decorative`, `header`, `testID`) : le **logo complet** (largeur ≈ 3,26 × hauteur).
+- `BrandStack` (`width`) : le logo complet à une largeur donnée — image finale du logo animé, écran de chargement, introduction.
+- `useBrandTone` : `auto` = encre en clair, ivoire en sombre. Accessibilité : le logo est annoncé « HOMI ».
 - `HomiLogoAnimated` : le logo animé — voir `MOTION_SYSTEM.md` › « Logo animé ».
 
-Où : en-tête de l'accueil sans compte (maison + nom) et point focal (maison) ; connexion, inscription, onboarding
-(maison en point focal + nom HOMI) ; introduction (/cinematic : logo animé ; diapositives : maison + nom) ; écran de
-chargement ; Réglages › À propos ; Paywall (maison) ; écran de lancement natif ; « Découvrir HOMI ».
+Où : accueil sans compte (/welcome, petit logo en tête), connexion et inscription (petit logo en tête), introduction
+(/intro : logo complet), écran de chargement, Réglages › À propos, ouverture de « Découvrir HOMI » (logo animé),
+introduction de lancement (logo animé), écran de lancement natif et icônes (symbole). Les illustrations 3D
+(`assets/illustrations`) ne changent pas.
 
 ***À faire** : disponibilité juridique du nom (voir plus haut).
 
-Historique : v1–v3 (13/11/2026) maison lumineuse + famille ; v4 (14/11/2026) logotype « lentille » — abandonné le
-14/11/2026 par décision du propriétaire, fichiers supprimés (`homi-wordmark-*`, `homi-sign-*`, `explorations/`) ;
-v5 (14/11/2026) retour à la maison, couleurs accordées à ivoire / obsidienne, animation full motion.
+Historique : v1–v3 (13/11/2026) maison lumineuse + famille ; v4 (14/11/2026) logotype « lentille » — abandonné ;
+v5 « maison » (14/11/2026) maison violette — remplacée le 16/11/2026 par le logo de la propriétaire (v5 « encre »).
 
 ## Palette v3 « Désert sci-fi » (13/11/2026, verrouillée par `src/__tests__/contrast.test.ts`)
 

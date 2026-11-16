@@ -1,5 +1,5 @@
 /**
- * « Découvrir HOMI » — présentation façon keynote : ouverture (la maison HOMI s'illumine → s'ouvre en premier panneau de verre → scènes),
+ * « Découvrir HOMI » — présentation façon keynote : ouverture (le logo HOMI se pose → son symbole s'ouvre en premier panneau de verre → scènes),
  * huit chapitres (cycle, grossesse, bébé, enfant, santé, organisation familiale, communauté, autres espaces) avec
  * des démos concrètes, puis la fin « La vie de famille, dès les premiers battements. ».
  *

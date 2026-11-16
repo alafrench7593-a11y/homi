@@ -1,5 +1,5 @@
 /**
- * Ouverture de « Découvrir HOMI » : la MAISON HOMI (maison violette, deux parents, deux enfants) s'illumine, puis
+ * Ouverture de « Découvrir HOMI » : le LOGO HOMI (symbole « M » aux deux personnes + « HOMI ») se pose, puis le symbole
  * s'ouvre en premier panneau de verre ; trois scènes (grossesse, suivi d'un enfant, vie du foyer) s'y déploient sous
  * un mouvement de caméra (gros plan sur chacune, puis recul sur les trois).
  *
@@ -13,27 +13,26 @@
  *   // ou ponctuellement : <DiscoverKeynote logo={HomiLogoAnimated} />
  *
  * Ce que la présentation lui passe : `width` (largeur du logo), `still` (Réduire les animations → état final),
- * `onHousePanel` et `onLensPanel` (même rappel : mesure FENÊTRE de la maison au moment où elle s'ouvre — la
+ * `onHousePanel` et `onLensPanel` (même rappel : mesure FENÊTRE du symbole au moment où il s'ouvre — la
  * présentation fait partir le panneau de verre de ce rectangle), `onDone`. La présentation ne passe PAS `deployTo` :
- * c'est elle qui fait grandir le panneau (il contient les scènes) ; le logo joue l'illumination de la maison, la
+ * c'est elle qui fait grandir le panneau (il contient les scènes) ; le logo joue son apparition, la
  * présentation enchaîne à `OPENING.handoffAt` (ou dès `onDone` / `onHousePanel` s'ils arrivent plus tôt).
  * Le logo reste décoratif (masqué aux lecteurs d'écran ; la présentation annonce `kn.open.a11y`).
- * Tant qu'aucun logo n'est injecté : ouverture PROVISOIRE avec la marque existante (`BrandLogo`, maison).
+ * Tant qu'aucun logo n'est injecté : ouverture PROVISOIRE avec le logo fixe (`BrandStack`) en fondu.
  */
 import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BrandLogo } from '@/components/BrandLogo';
+import { BrandStack } from '@/components/BrandLogo';
 import { OpticalGlass } from '@/components/surfaces';
 import { Icon, type IconName, Text } from '@/components/ui';
-import { BRAND } from '@/config/brand';
 import { formatNumber, t as tr, type TKey } from '@/i18n';
 import { useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { alpha, fonts, radius, spacing } from '@/theme/tokens';
+import { alpha, radius, spacing } from '@/theme/tokens';
 
-/** Mesure de la maison (coordonnées fenêtre), forme de `LensMeasure` du logo animé. */
+/** Mesure du symbole du logo (nom historique « house ») (coordonnées fenêtre), forme de `LensMeasure` du logo animé. */
 export type HouseMeasure = { x: number; y: number; width: number; height: number; cx?: number; cy?: number; r?: number };
 /** Sous-ensemble de l'API publique de `HomiLogoAnimated` utilisé par la présentation. */
 export interface DiscoverLogoProps {
@@ -65,36 +64,27 @@ export function useDiscoverLogo(override?: DiscoverLogo | null): DiscoverLogo {
 /** Chorégraphie de l'ouverture (ms, pure, testée). */
 export const OPENING = { lightMs: 1100, handoffAt: 1350, handoffMs: 700, scenesAt: 2000, sceneMs: 760, total: 2000 + 760 * 3 + 300 } as const;
 
-// ------------------------------------------------------------------ ouverture provisoire : la maison existante s'illumine
+// ------------------------------------------------------------------ ouverture provisoire : le logo se pose en fondu
 export function ProvisionalHomiLogo({ width, still, onDone, testID = 'discover-provisional-logo' }: DiscoverLogoProps) {
   const t = useTheme();
   const m = useMotion();
   const light = useSharedValue(still || m.off ? 1 : 0);
-  const house = Math.round(width * 0.62);
+  const glow = Math.round(width * 0.6);
   useEffect(() => {
     if (still || m.off) { light.value = 1; onDone?.(); return; }
     light.value = 0;
     light.value = m.timing(1, OPENING.lightMs, 'decelerate');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [still, m.off]);
-  // la maison s'illumine : halo qui grandit, maison qui se pose, nom qui suit
-  const halo = useAnimatedStyle(() => ({ opacity: interpolate(light.value, [0, 0.5, 1], [0, 0.9, 0.55]), transform: [{ scale: 0.6 + 0.5 * light.value }] }));
-  const mark = useAnimatedStyle(() => ({ opacity: interpolate(light.value, [0, 0.35], [0, 1], Extrapolation.CLAMP), transform: [{ scale: 0.92 + 0.08 * light.value }] }));
-  const word = useAnimatedStyle(() => {
-    const k = interpolate(light.value, [0.45, 1], [0, 1], Extrapolation.CLAMP);
-    return { opacity: k, transform: [{ translateY: 8 * (1 - k) }] };
-  });
+  // halo corail discret, le logo (encre / ivoire) se pose
+  const halo = useAnimatedStyle(() => ({ opacity: interpolate(light.value, [0, 0.5, 1], [0, 0.7, 0.4]), transform: [{ scale: 0.6 + 0.5 * light.value }] }));
+  const mark = useAnimatedStyle(() => ({ opacity: interpolate(light.value, [0, 0.4], [0, 1], Extrapolation.CLAMP), transform: [{ scale: 0.96 + 0.04 * light.value }] }));
   return (
-    <View style={{ width, alignItems: 'center' }} testID={testID}>
-      <View style={{ width: house, height: house, alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.View pointerEvents="none" style={[{ position: 'absolute', width: house * 1.5, height: house * 1.5, borderRadius: house }, halo]}>
-          <LinearGradient colors={[alpha(t.tokens.accent.glow[0], 0.42), alpha(t.tokens.accent.glow[0], 0)]} start={{ x: 0.5, y: 0.5 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: house }]} />
-        </Animated.View>
-        <Animated.View style={mark}><BrandLogo size={house} /></Animated.View>
-      </View>
-      <Animated.View style={word}>
-        <Text style={{ fontFamily: fonts.display, fontSize: Math.round(width * 0.24), lineHeight: Math.round(width * 0.28), letterSpacing: -1, color: t.colors.text }} maxFontSizeMultiplier={1}>{BRAND.name}</Text>
+    <View style={{ width, alignItems: 'center', justifyContent: 'center' }} testID={testID}>
+      <Animated.View pointerEvents="none" style={[{ position: 'absolute', width: glow * 1.5, height: glow * 1.5, borderRadius: glow }, halo]}>
+        <LinearGradient colors={[alpha(t.tokens.accent.glow[0], 0.42), alpha(t.tokens.accent.glow[0], 0)]} start={{ x: 0.5, y: 0.5 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: glow }]} />
       </Animated.View>
+      <Animated.View style={mark}><BrandStack width={width} decorative /></Animated.View>
     </View>
   );
 }
@@ -140,20 +130,20 @@ export function OpeningScene({ token, width, height, logo }: { token: number; wi
   const handoff = useSharedValue(m.off ? 1 : 0);
   const scenes = useSharedValue(m.off ? 3 : 0);
   const started = useRef(false);
-  // rectangle de la maison dans le repère de la scène (mise en page du logo ; mesure du logo si elle arrive)
+  // rectangle du symbole dans le repère de la scène (mise en page du logo ; mesure du logo si elle arrive)
   const [house, setHouse] = useState<{ cx: number; cy: number; size: number } | null>(null);
   const stageRef = useRef<View>(null);
 
   const W = width;
-  const logoW = Math.round(Math.min(W * 0.46, 200));
+  const logoW = Math.round(Math.min(W * 0.62, 260));
   const panelW = Math.min(W - spacing.lg * 2, 380);
   const panelH = ROW_H * 3 + ROW_GAP * 2 + spacing.md * 2;
-  // composition : logo au centre, puis la caméra le remonte (réduit) quand la maison s'ouvre en panneau
-  const logoTop = height * 0.42 - logoW * 0.5;
+  // composition : logo au centre, puis la caméra le remonte (réduit) quand le symbole s'ouvre en panneau
+  const logoTop = height * 0.42 - logoW * 0.16;
   const logoFinalY = Math.max(spacing.xs, height * 0.02) - logoTop;
   const panelTop = Math.max(logoW * 0.55 + spacing.lg, height * 0.24);
 
-  // la maison s'ouvre : à l'heure prévue, ou plus tôt si le logo l'annonce (onHousePanel / onDone)
+  // le symbole s'ouvre : à l'heure prévue, ou plus tôt si le logo l'annonce (onHousePanel / onDone)
   const open = useCallback(() => {
     if (started.current || m.off) return;
     started.current = true;
@@ -182,8 +172,8 @@ export function OpeningScene({ token, width, height, logo }: { token: number; wi
 
   const logoStyle = useAnimatedStyle(() => ({ opacity: 1 - 0.15 * handoff.value, transform: [{ translateY: logoFinalY * handoff.value }, { scale: 1 - 0.45 * handoff.value }] }));
   const hx = house?.cx ?? W / 2;
-  const hy = house?.cy ?? logoTop + logoW * 0.31;
-  const startScale = (house?.size ?? logoW * 0.62) / panelW;
+  const hy = house?.cy ?? logoTop + logoW * 0.155;
+  const startScale = (house?.size ?? logoW * 0.31) / panelW;
   const panel = useAnimatedStyle(() => {
     const k = handoff.value;
     return {
@@ -208,7 +198,7 @@ export function OpeningScene({ token, width, height, logo }: { token: number; wi
     <View ref={stageRef} collapsable={false} style={{ height, width: '100%' }} accessible accessibilityLabel={tr('kn.open.a11y')} testID="discover-opening">
       <Animated.View style={[{ position: 'absolute', top: logoTop, left: 0, right: 0, alignItems: 'center' }, logoStyle]}>
         <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
-          onLayout={(e) => { const l = e.nativeEvent.layout; setHouse((cur) => cur ?? { cx: l.x + l.width / 2, cy: logoTop + l.y + l.width * 0.31, size: l.width * 0.62 }); }}>
+          onLayout={(e) => { const l = e.nativeEvent.layout; setHouse((cur) => cur ?? { cx: l.x + l.width * 0.11, cy: logoTop + l.y + l.width * 0.155, size: l.width * 0.31 }); }}>
           <Logo width={logoW} still={m.off} tone={t.isDark ? 'dark' : 'light'} onHousePanel={onHousePanel} onLensPanel={onHousePanel} onDone={open} testID="discover-logo" />
         </View>
       </Animated.View>

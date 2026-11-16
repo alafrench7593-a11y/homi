@@ -372,8 +372,9 @@ describe('point d’injection du logotype', () => {
     expect(typeof p.onHousePanel).toBe('function');
     expect(p.onLensPanel).toBe(p.onHousePanel);
     expect(typeof p.onDone).toBe('function');
-    // aucune lentille : c'est la maison qui s'ouvre en premier panneau (texte annoncé)
-    expect(tr('kn.open.a11y')).toMatch(/maison/);
+    // logo v5 « encre » : c'est le logo qui s'ouvre en premier panneau (texte annoncé), ni lentille ni maison
+    expect(tr('kn.open.a11y')).toMatch(/logo HOMI/);
+    expect(tr('kn.open.a11y')).not.toMatch(/maison/);
     expect(tr('kn.open.a11y')).not.toMatch(/lentille/);
   });
   it('la maison qui s’ouvre (onHousePanel) lance le panneau et les scènes sans attendre', async () => {

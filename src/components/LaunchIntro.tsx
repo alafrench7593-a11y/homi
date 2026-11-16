@@ -1,9 +1,9 @@
 /**
- * Introduction d'ouverture HOMI (lancement à froid, ≈ 2,2 s, Reanimated + react-native-svg) — logo v5 « maison » :
- * dans la continuité de l'écran de lancement natif (même fond, même maison), le contour de la maison se trace (un
- * reflet court sur le bord), la maison s'illumine, parent, parent, enfant, enfant apparaissent, le nom HOMI se révèle
- * dans la lumière, pose sur le logo complet — identique à BrandStack —, puis le calque s'efface sur l'accueil avec une
- * très légère avancée (profondeur). Logo : `HomiLogoAnimated` (même horloge).
+ * Introduction d'ouverture HOMI (lancement à froid, ≈ 2 s, Reanimated + react-native-svg) — logo v5 « encre » :
+ * dans la continuité de l'écran de lancement natif (même fond, même symbole), le corps « M » monte, les deux têtes se
+ * posent, « HOMI » se révèle et le point du i se pose (1,32 s), pose sur le logo complet — identique à BrandStack —,
+ * puis le calque s'efface sur l'accueil avec une très légère avancée (profondeur). Logo : `HomiLogoAnimated` (même
+ * horloge).
  *
  * Ne ralentit jamais le lancement :
  *  - le premier écran et ses données se chargent EN DESSOUS pendant l'animation (rien n'attend celle-ci) ;
@@ -32,7 +32,7 @@ export { stageProgress };
 let played = false;
 
 /**
- * Passage de relais vers l'écran suivant (onboarding) : le logo maison n'est joué QU'UNE fois par lancement.
+ * Passage de relais vers l'écran suivant (onboarding) : le logo HOMI n'est joué QU'UNE fois par lancement.
  * 'none' : aucune introduction n'a montré le logo ; 'playing' : le calque montre le logo ; 'done' : il l'a montré
  * puis s'est effacé. Un écran qui ouvre avec le même logo (`OpeningStep`) le pose alors directement et n'anime que ce
  * qui suit (titre), au moment où le calque s'efface.
@@ -73,7 +73,7 @@ export type IntroTimeline = { logo: LogoTimeline; exit: Stage; total: number };
 const LOGO_DONE: LogoTimeline = { ...logoTimeline('minimal'), fadeIn: [0, 0], end: 0 };
 
 /**
- * Chorégraphie (pure, testée). 'full' : tracé → illumination → parents → enfants → nom → pose → fondu du calque.
+ * Chorégraphie (pure, testée). 'full' : corps → têtes → nom → point du i → pose → fondu du calque.
  * 'short' (nuit, lancement lent) : logo complet d'emblée, courte pose, fondu.
  */
 export function introTimeline(mode: 'full' | 'short'): IntroTimeline {
@@ -149,7 +149,7 @@ export function LaunchIntro() {
   });
 
   if (phase === 'done') return null;
-  const logoWidth = Math.round(Math.min(width * 0.6, height * 0.36, 280));
+  const logoWidth = Math.round(Math.min(width * 0.66, height * 0.36, 300));
   return (
     <Animated.View
       testID="launch-intro"

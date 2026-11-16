@@ -1,19 +1,20 @@
 /**
- * Logo HOMI v5 « maison » animé — FULL MOTION, comme UN SEUL objet (Reanimated 4 + react-native-svg), une seule
- * horloge sur le fil UI (chorégraphie : src/brand/logoMotion.ts) :
- *  1. le contour de la maison se TRACE, un reflet court sur le bord (tête du tracé, puis un demi-tour qui s'éteint) ;
- *  2. la maison S'ILLUMINE : remplissage violet, halo qui s'allume puis retombe ;
- *  3. les silhouettes apparaissent en cascade — parent, parent, enfant, enfant — avec un léger rebond ;
- *  4. le nom HOMI se révèle dans la lumière (fenêtre qui glisse + reflet qui le traverse) ;
- *  5. (facultatif, `deployTo`) la maison se DÉPLOIE en premier panneau de verre : le toit s'aplatit, la forme grandit
- *     du dessin de la maison au panneau cible (un seul tracé SVG animé, exception documentée).
- * Composition (`logoBox`) : maison centrée en haut (62 % de la largeur), nom dessous. Image finale = `BrandStack`.
+ * Logo HOMI v5 « encre » animé (16/11/2026) — le logo de la propriétaire (symbole « M » formé de deux personnes +
+ * mot-symbole « HOMI »), animé comme UN SEUL objet, sobrement et vite (≤ 1,4 s), sur une seule horloge sur le fil UI
+ * (Reanimated 4 + react-native-svg ; chorégraphie : src/brand/logoMotion.ts) :
+ *  1. le corps « M » MONTE du sol (fenêtre qui se lève + légère montée) ;
+ *  2. les deux têtes se POSENT sur le corps avec un léger ressort (chignon d'abord) ;
+ *  3. « HOMI » se révèle de gauche à droite ; le point du i se pose en dernier (même ressort) ;
+ *  4. (facultatif, `deployTo`) le symbole s'ouvre en premier panneau de verre (rectangle arrondi qui grandit jusqu'au
+ *     panneau cible ; un seul tracé SVG animé, exception documentée).
+ * Composition : l'assemblage officiel (`logoBox`, homi-logo-encre.svg). Image finale = `BrandStack`. Encre en clair,
+ * ivoire en sombre ; transform et opacité uniquement (pièces = sous-tracés exacts de la source).
  *
  * Niveaux (`useMotion`) :
  *  - 'full'    : séquence complète ;
  *  - 'minimal' : nuit — logo complet en fondu court, panneau en fondu (aucun déplacement) ;
- *  - 'off'     : Réduire les animations / économie d'énergie — ÉTAT FINAL (maison, famille, nom, panneau posé),
- *                simple fondu d'opacité de 180 ms ; `onHousePanel` et `onDone` appelés tout de suite.
+ *  - 'off'     : Réduire les animations / économie d'énergie — ÉTAT FINAL (logo complet, panneau posé), simple fondu
+ *                d'opacité de 180 ms ; `onHousePanel` et `onDone` appelés tout de suite.
  * Version FIXE : `still` ou largeur < 120 px → `BrandStack`.
  *
  * Retour vers JS : `onHousePanel` (alias `onLensPanel`) une seule fois — au début du déploiement, ou quand le logo
@@ -27,26 +28,24 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { G, Path } from 'react-native-svg';
+import { HOMI_INK, HOMI_LOCKUP, HOMI_PARTS, type HomiPart } from '@/brand/homiMarkSvg';
 import {
-  HOMI_COLORS, HOMI_FAMILY, HOMI_FAMILY_SPAN, HOMI_HOUSE_BOX, HOMI_HOUSE_LENGTH, HOMI_HOUSE_PATH, HOMI_HOUSE_RIM, HOMI_HOUSE_STROKE, HOMI_VIEWBOX,
-} from '@/brand/homiMarkSvg';
-import {
-  backOut, houseMeasureAt, housePanelFrame, housePanelPath, LOGO_MOTION, logoBox, logoTimeline, stageProgress,
-  type HouseMeasure, type HousePanelTarget, type LogoTimeline, type Stage,
+  backOut, houseMeasureAt, housePanelFrame, housePanelPath, LOGO_MOTION, lockupToPx, logoBox, logoTimeline, stageProgress,
+  type Box, type HouseMeasure, type HousePanelTarget, type LogoTimeline, type Stage,
 } from '@/brand/logoMotion';
 import { BRAND } from '@/config/brand';
 import { curves } from '@/motion/curves';
 import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { BrandName, BrandStack } from './BrandLogo';
+import { BrandStack } from './BrandLogo';
 
 export type { HouseMeasure, HousePanelTarget, LensMeasure, LensPanelTarget } from '@/brand/logoMotion';
 
 export type HomiLogoAnimatedProps = {
-  /** Largeur du logo (px) : maison = 62 % de la largeur, nom dessous (hauteur : `logoBox(width).height`). */
+  /** Largeur du logo complet (px) ; hauteur : `logoBox(width).height` (≈ 0,31 × largeur). */
   width: number;
-  /** 'light' (fond clair) | 'dark' (fond sombre) ; défaut : thème. */
+  /** 'light' = encre (fond clair) | 'dark' = ivoire (fond sombre) ; défaut : thème. */
   tone?: 'light' | 'dark';
   /** Version fixe forcée (petits formats). */
   still?: boolean;
@@ -54,11 +53,11 @@ export type HomiLogoAnimatedProps = {
   clock?: SharedValue<number>;
   /** Chorégraphie (défaut : `logoTimeline(niveau, !!deployTo)`). */
   timeline?: LogoTimeline;
-  /** Panneau cible (coordonnées FENÊTRE) : la maison s'y déploie. */
+  /** Panneau cible (coordonnées FENÊTRE) : le symbole s'y déploie. */
   deployTo?: HousePanelTarget;
   /** Avancement 0 → 1 du déploiement, écrit par le logo sur le fil UI (pour enchaîner d'autres éléments). */
   panel?: SharedValue<number>;
-  /** La maison s'ouvre (une fois) : mesure FENÊTRE de la maison et panneau cible (null sans `deployTo`). */
+  /** Le symbole s'ouvre (une fois) : sa mesure FENÊTRE (nom historique) et panneau cible (null sans `deployTo`). */
   onHousePanel?: (house: HouseMeasure, target: HousePanelTarget | null) => void;
   /** Alias rétro-compatible de `onHousePanel` (logotype « lentille » v4). */
   onLensPanel?: (house: HouseMeasure, target: HousePanelTarget | null) => void;
@@ -68,16 +67,15 @@ export type HomiLogoAnimatedProps = {
   testID?: string;
 };
 
-/** Mesure de la maison dans la fenêtre (pure, testée). `lensMeasureAt` : alias rétro-compatible. */
+/** Mesure du symbole dans la fenêtre (pure, testée). `lensMeasureAt` : alias rétro-compatible. */
 export { houseMeasureAt };
 export const lensMeasureAt = houseMeasureAt;
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
-/** Dégradés en coordonnées du dessin (carré de 256), comme dans le logo fixe. */
-const USER_SPACE = 'userSpaceOnUse' as const;
 const NEVER = ReduceMotion.Never;
-const VB = `0 0 ${HOMI_VIEWBOX} ${HOMI_VIEWBOX}`;
-const L = HOMI_HOUSE_LENGTH;
+const VB = HOMI_LOCKUP.viewBox.join(' ');
+const SYMBOL_T = `translate(${HOMI_LOCKUP.symbol.x} ${HOMI_LOCKUP.symbol.y}) scale(${HOMI_LOCKUP.symbol.scale})`;
+const WORD_T = `translate(${HOMI_LOCKUP.word.x} ${HOMI_LOCKUP.word.y})`;
 
 export function HomiLogoAnimated(props: HomiLogoAnimatedProps) {
   const { width, still, testID = 'homi-logo' } = props;
@@ -116,14 +114,14 @@ function useWindowOrigin() {
   return { ref, origin, onLayout };
 }
 
-/** Version fixe : maison + nom, sans mouvement. */
+/** Version fixe : logo complet, sans mouvement. */
 function StaticLogo({ width, tone, style, testID, onDone }: Inner) {
   useEffect(() => { onDone?.(); }, [onDone]);
   return <BrandStack width={width} tone={tone} style={style} testID={`${testID}-static`} />;
 }
 
 /**
- * Réduire les animations : état final immédiat (maison, famille, nom, panneau posé), fondu d'opacité court.
+ * Réduire les animations : état final immédiat (logo complet, panneau posé), fondu d'opacité court.
  * Rappels appelés tout de suite (aucune attente imposée).
  */
 function ReducedLogo(p: Inner) {
@@ -149,7 +147,7 @@ function ReducedLogo(p: Inner) {
   const s = useAnimatedStyle(() => ({ opacity: fade.value }));
   return (
     <Animated.View ref={ref} onLayout={onLayout} testID={testID} style={[{ width, height: box.height }, style, s]} accessible accessibilityRole="header" accessibilityLabel={BRAND.name}>
-      {deployTo && origin ? <PanelLayer origin={origin} house={houseMeasureAt(origin, width)} target={deployTo} tone={tone} progress={null} moving={false} /> : null}
+      {deployTo && origin ? <PanelLayer origin={origin} house={houseMeasureAt(origin, width)} target={deployTo} progress={null} moving={false} /> : null}
       <View testID={`${testID}-final`} style={StyleSheet.absoluteFill} accessible={false} importantForAccessibility="no-hide-descendants">
         <BrandStack width={width} tone={tone} decorative />
       </View>
@@ -157,17 +155,17 @@ function ReducedLogo(p: Inner) {
   );
 }
 
+
 function LiveLogo(p: Inner & { level: 'full' | 'minimal' }) {
   const { width, tone, style, testID, level, deployTo, onDone } = p;
   const box = logoBox(width);
-  const S = box.house.size;
   const own = useSharedValue(0);
   const clock = p.clock ?? own;
-  const tl = p.timeline ?? logoTimeline(level, !!deployTo);
+  const tl: LogoTimeline = p.timeline ?? logoTimeline(level, !!deployTo);
   const { ref, origin, onLayout } = useWindowOrigin();
   const moving = level === 'full';
 
-  // Horloge interne (sauf horloge externe) : linéaire, chaque calque applique sa courbe à son étape
+  // Horloge interne (sauf horloge externe) : linéaire, chaque pièce applique sa courbe à son étape
   const finish = useCallback(() => onDone?.(), [onDone]);
   useEffect(() => {
     if (p.clock) return;
@@ -179,7 +177,7 @@ function LiveLogo(p: Inner & { level: 'full' | 'minimal' }) {
     return () => cancelAnimation(own);
   }, [p.clock, own, tl.end, finish]);
 
-  // La maison s'ouvre : un seul retour vers JS (mesure de la maison), jamais à chaque image
+  // Le symbole s'ouvre : un seul retour vers JS (sa mesure), jamais à chaque image
   const open = useOpenCallback(p);
   const houseRef = useRef<HouseMeasure | null>(null);
   houseRef.current = origin ? houseMeasureAt(origin, width) : null;
@@ -200,233 +198,114 @@ function LiveLogo(p: Inner & { level: 'full' | 'minimal' }) {
     },
   );
 
-  // 0. fondu d'ensemble (nuit) ; légère mise en place 0,94 → 1 pendant la construction (autour du centre de la maison)
-  const lastFig = tl.figures[tl.figures.length - 1];
-  const settle: Stage = [tl.trace[0], lastFig[0] + lastFig[1] - tl.trace[0]];
-  const whole = useAnimatedStyle(() => ({ opacity: curves.standard(stageProgress(clock.value, tl.fadeIn)) }));
-  const houseStyle = useAnimatedStyle(() => {
-    const s = LOGO_MOTION.settleFromScale + (1 - LOGO_MOTION.settleFromScale) * curves.decelerate(stageProgress(clock.value, settle));
-    return { transform: [{ scale: s }] };
-  });
-  // 2. illumination : remplissage + halo en cloche (retombe à 0 : image finale = logo fixe)
-  const fillStyle = useAnimatedStyle(() => ({ opacity: curves.decelerate(stageProgress(clock.value, tl.light)) }));
-  const haloStyle = useAnimatedStyle(() => {
-    const q = stageProgress(clock.value, tl.halo);
-    const bell = q <= 0 || q >= 1 ? 0 : q < 0.3 ? curves.decelerate(q / 0.3) : 1 - curves.standard((q - 0.3) / 0.7);
-    return { opacity: LOGO_MOTION.haloPeak * bell, transform: [{ scale: 0.75 + 0.35 * curves.decelerate(q) }] };
-  });
-  // 4. nom : fenêtre qui glisse (contre-glissement du contenu), montée de 6 px, reflet qui traverse
-  const nameWindow = useAnimatedStyle(() => {
-    const r = curves.decelerate(stageProgress(clock.value, tl.name));
-    return { transform: [{ translateX: (r - 1) * width }] };
-  });
-  const nameContent = useAnimatedStyle(() => {
-    const raw = stageProgress(clock.value, tl.name);
-    const r = curves.decelerate(raw);
-    return { opacity: Math.min(1, raw * 3), transform: [{ translateX: (1 - r) * width }, { translateY: 6 * (1 - r) }] };
-  });
-  const band = Math.round(width * LOGO_MOTION.sheenWidth);
-  const sheenStyle = useAnimatedStyle(() => {
-    const raw = stageProgress(clock.value, tl.name);
-    const bell = raw <= 0 || raw >= 1 ? 0 : Math.sin(Math.PI * raw);
-    return { opacity: bell, transform: [{ translateX: curves.reveal(raw) * (width + band) - band }, { skewX: `${LOGO_MOTION.sheenSkewDeg}deg` }] };
+  // fondu d'ensemble (nuit) ; légère mise en place 0,97 → 1 pendant la construction (autour du centre)
+  const settle: Stage = [tl.body[0], Math.max(0, tl.open - tl.body[0])];
+  const whole = useAnimatedStyle(() => {
+    const s = moving ? LOGO_MOTION.settleFromScale + (1 - LOGO_MOTION.settleFromScale) * curves.decelerate(stageProgress(clock.value, settle)) : 1;
+    return { opacity: curves.standard(stageProgress(clock.value, tl.fadeIn)), transform: [{ scale: s }] };
   });
 
-  const c = HOMI_COLORS[tone];
-  const id = `hmA${tone[0]}`;
-  const halo = Math.round(S * 1.7);
+  const ink = HOMI_INK[tone];
   const housePanel = deployTo && origin && tl.deploy ? { house: houseMeasureAt(origin, width), target: deployTo } : null;
   return (
     <Animated.View
       ref={ref}
       onLayout={onLayout}
       testID={testID}
-      style={[{ width, height: box.height }, style, whole]}
+      style={[{ width, height: box.height }, style]}
       accessible
       accessibilityRole="header"
       accessibilityLabel={BRAND.name}
     >
-      {housePanel ? <PanelLayer origin={origin!} house={housePanel.house} target={housePanel.target} tone={tone} progress={{ clock, stage: tl.deploy! }} moving={moving} /> : null}
-      <View style={StyleSheet.absoluteFill} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
-        <Animated.View testID={`${testID}-house`} style={[{ position: 'absolute', left: box.house.left, top: box.house.top, width: S, height: S }, houseStyle]}>
-          {/* halo derrière la maison */}
-          <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: (S - halo) / 2, top: (S - halo) / 2 + S * 0.04, width: halo, height: halo }, haloStyle]}>
-            <Svg width={halo} height={halo} viewBox="0 0 100 100">
-              <Defs>
-                <RadialGradient id={`${id}-halo`} cx="0.5" cy="0.5" r="0.5">
-                  <Stop offset="0" stopColor={c.glow} stopOpacity={0.95} />
-                  <Stop offset="0.45" stopColor={c.halo} stopOpacity={0.35} />
-                  <Stop offset="1" stopColor={c.halo} stopOpacity={0} />
-                </RadialGradient>
-              </Defs>
-              <Circle cx={50} cy={50} r={50} fill={`url(#${id}-halo)`} />
-            </Svg>
-          </Animated.View>
-          {/* 1a. liseré (clair) : tracé sous le remplissage, comme dans le logo fixe */}
-          {c.rim ? <TraceLayer size={S} clock={clock} stage={tl.trace} stroke={c.rim} width={HOMI_HOUSE_RIM} /> : null}
-          {/* 2. la maison s'illumine */}
-          <Animated.View testID={`${testID}-fill`} style={[StyleSheet.absoluteFill, fillStyle]}>
-            <Svg width={S} height={S} viewBox={VB}>
-              <Defs>
-                <LinearGradient id={`${id}-house`} gradientUnits={USER_SPACE} x1="0" y1={HOMI_HOUSE_BOX.y} x2="0" y2={HOMI_HOUSE_BOX.y + HOMI_HOUSE_BOX.height}>
-                  <Stop offset="0" stopColor={c.houseTop} />
-                  <Stop offset="1" stopColor={c.houseBottom} />
-                </LinearGradient>
-                <RadialGradient id={`${id}-glow`} gradientUnits={USER_SPACE} cx="128" cy="138" r="118">
-                  <Stop offset="0" stopColor={c.glow} stopOpacity={0.38} />
-                  <Stop offset="1" stopColor={c.glow} stopOpacity={0} />
-                </RadialGradient>
-              </Defs>
-              <Path d={HOMI_HOUSE_PATH} fill={`url(#${id}-house)`} />
-              <Path d={HOMI_HOUSE_PATH} fill={`url(#${id}-glow)`} />
-            </Svg>
-          </Animated.View>
-          {/* 1b. contour lumineux tracé + reflet qui court sur le bord */}
-          <TraceLayer size={S} clock={clock} stage={tl.trace} gradient={{ id: `${id}-edge`, stops: c.edge }} width={HOMI_HOUSE_STROKE} />
-          {moving ? <CometLayer size={S} clock={clock} trace={tl.trace} comet={tl.comet} tone={tone} /> : null}
-          {/* 3. la famille : parent, parent, enfant, enfant */}
-          {HOMI_FAMILY.map((_, i) => <Figure key={i} index={i} size={S} clock={clock} stage={tl.figures[i]} tone={tone} moving={moving} testID={`${testID}-figure-${i}`} />)}
-        </Animated.View>
-        {/* 4. le nom, révélé dans la lumière */}
-        <Animated.View style={[{ position: 'absolute', left: 0, top: box.name.top, width, height: box.name.line, overflow: 'hidden' }, nameWindow]}>
-          <Animated.View testID={`${testID}-name`} style={[{ width, height: box.name.line, alignItems: 'center', justifyContent: 'center' }, nameContent]}>
-            <BrandName size={box.name.size} line={box.name.line} tone={tone} />
-          </Animated.View>
-        </Animated.View>
-        {moving ? (
-          <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: box.name.top - box.name.line * 0.2, height: box.name.line * 1.4, width: band, left: 0 }, sheenStyle]}>
-            <Svg width={band} height={box.name.line * 1.4} viewBox="0 0 100 100" preserveAspectRatio="none">
-              <Defs>
-                <RadialGradient id={`${id}-sheen`} cx="0.5" cy="0.5" r="0.5">
-                  {/* sombre : lumière blanche ; clair : lueur lavande (le blanc disparaît sur ivoire et laisserait un anneau) */}
-                  <Stop offset="0" stopColor={tone === 'dark' ? '#FFFFFF' : c.halo} stopOpacity={tone === 'dark' ? 0.7 : 0.4} />
-                  <Stop offset="0.5" stopColor={c.glow} stopOpacity={tone === 'dark' ? 0.4 : 0.22} />
-                  <Stop offset="1" stopColor={c.glow} stopOpacity={0} />
-                </RadialGradient>
-              </Defs>
-              <Rect x={0} y={0} width={100} height={100} fill={`url(#${id}-sheen)`} />
-            </Svg>
-          </Animated.View>
-        ) : null}
-      </View>
+      {housePanel ? <PanelLayer origin={origin!} house={housePanel.house} target={housePanel.target} progress={{ clock, stage: tl.deploy! }} moving={moving} /> : null}
+      <Animated.View style={[StyleSheet.absoluteFill, whole]} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+        {/* 1. le corps « M » monte du sol */}
+        <Wipe testID={`${testID}-body`} part={HOMI_PARTS.body} transform={SYMBOL_T} axis="up" box={box} clock={clock} stage={tl.body} rise={LOGO_MOTION.bodyRise} moving={moving} ink={ink} />
+        {/* 2. les deux têtes se posent (chignon d'abord) */}
+        <Pop testID={`${testID}-head-0`} part={HOMI_PARTS.headA} transform={SYMBOL_T} box={box} clock={clock} stage={tl.heads[0]} drop={LOGO_MOTION.headDrop} moving={moving} ink={ink} />
+        <Pop testID={`${testID}-head-1`} part={HOMI_PARTS.headB} transform={SYMBOL_T} box={box} clock={clock} stage={tl.heads[1]} drop={LOGO_MOTION.headDrop} moving={moving} ink={ink} />
+        {/* 3. « HOMI » se révèle, puis le point du i se pose */}
+        <Wipe testID={`${testID}-name`} part={HOMI_PARTS.letters} transform={WORD_T} axis="right" box={box} clock={clock} stage={tl.word} rise={LOGO_MOTION.wordRise} moving={moving} ink={ink} />
+        <Pop testID={`${testID}-dot`} part={HOMI_PARTS.dot} transform={WORD_T} box={box} clock={clock} stage={tl.dot} drop={0} moving={moving} ink={ink} />
+      </Animated.View>
     </Animated.View>
   );
 }
 
-/** Contour tracé (strokeDashoffset d'un seul tracé, le « trait qui se dessine ») : couleur unie ou dégradé lumineux. */
-function TraceLayer({ size, clock, stage, stroke, gradient, width }: {
-  size: number; clock: SharedValue<number>; stage: Stage; stroke?: string; gradient?: { id: string; stops: readonly string[] }; width: number;
-}) {
-  const trace = useAnimatedProps(() => ({ strokeDashoffset: L * (1 - curves.reveal(stageProgress(clock.value, stage))) }));
+type LogoGeometry = ReturnType<typeof logoBox>;
+type PartProps = { part: HomiPart; transform: string; box: LogoGeometry; clock: SharedValue<number>; stage: Stage; moving: boolean; ink: string; testID: string };
+
+/** Une pièce du logo, dessinée dans le cadre du logo complet et replacée sous l'origine `at` (px). */
+function PartSvg({ part, transform, box, at, ink }: { part: HomiPart; transform: string; box: LogoGeometry; at: Box; ink: string }) {
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Svg width={size} height={size} viewBox={VB}>
-        {gradient ? (
-          <Defs>
-            <LinearGradient id={gradient.id} gradientUnits={USER_SPACE} x1="32" y1="30" x2="224" y2="224">
-              <Stop offset="0" stopColor={gradient.stops[0]} />
-              <Stop offset="0.55" stopColor={gradient.stops[1]} />
-              <Stop offset="1" stopColor={gradient.stops[2]} />
-            </LinearGradient>
-          </Defs>
-        ) : null}
-        <AnimatedPath
-          d={HOMI_HOUSE_PATH}
-          fill="none"
-          stroke={gradient ? `url(#${gradient.id})` : stroke}
-          strokeWidth={width}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          strokeDasharray={[L, L]}
-          strokeDashoffset={L}
-          animatedProps={trace}
-        />
-      </Svg>
-    </View>
+    <Svg width={box.width} height={box.height} viewBox={VB} style={{ position: 'absolute', left: -at.left, top: -at.top }}>
+      <G transform={transform}><Path d={part.d} fill={ink} /></G>
+    </Svg>
   );
 }
+
+/** Marge (px) autour de la fenêtre d'une pièce : l'anticrénelage du bord n'est jamais rogné. */
+const EDGE = 2;
+const padded = (b: Box): Box => ({ left: b.left - EDGE, top: b.top - EDGE, width: b.width + 2 * EDGE, height: b.height + 2 * EDGE });
 
 /**
- * Reflet qui court sur le bord : un trait court (9 % du contour) — lueur large + cœur blanc — placé à la tête du
- * tracé, puis qui poursuit sa course (un demi-tour) en s'éteignant.
+ * Révélation par fenêtre (transform uniquement) : la fenêtre glisse (vers le haut : le corps monte du sol ; vers la
+ * droite : le nom se lit), le contenu glisse en sens inverse — il reste en place, à une légère montée près. Nuit : fondu.
  */
-function CometLayer({ size, clock, trace, comet, tone }: { size: number; clock: SharedValue<number>; trace: Stage; comet: Stage; tone: 'light' | 'dark' }) {
-  const seg = L * LOGO_MOTION.cometDash;
-  const traceEnd = trace[0] + trace[1];
-  const run: Stage = [traceEnd, Math.max(1, comet[0] + comet[1] - traceEnd)];
-  const head = (t: number) => {
-    'worklet';
-    if (t <= traceEnd) return L * curves.reveal(stageProgress(t, trace));
-    return L + LOGO_MOTION.cometRunLaps * L * curves.decelerate(stageProgress(t, run));
-  };
-  const alpha = (t: number) => {
-    'worklet';
-    const on = Math.min(1, stageProgress(t, trace) * 10);
-    const off = 1 - curves.standard(stageProgress(t, run));
-    return t < trace[0] ? 0 : on * off;
-  };
-  const glow = useAnimatedProps(() => ({ strokeDashoffset: seg - head(clock.value), strokeOpacity: 0.5 * alpha(clock.value) }));
-  const core = useAnimatedProps(() => ({ strokeDashoffset: seg - head(clock.value), strokeOpacity: alpha(clock.value) }));
+function Wipe({ part, transform, box, clock, stage, moving, ink, testID, axis, rise }: PartProps & { axis: 'up' | 'right'; rise: number }) {
+  const b = padded(lockupToPx(part.box, box.scale));
+  const up = axis === 'up';
+  const span = up ? b.height : b.width;
+  const lift = rise * part.box.height * box.scale;
+  const win = useAnimatedStyle(() => {
+    const r = moving ? curves.decelerate(stageProgress(clock.value, stage)) : 1;
+    const o = (1 - r) * span;
+    return { transform: up ? [{ translateY: o }] : [{ translateX: -o }] };
+  });
+  const content = useAnimatedStyle(() => {
+    const raw = stageProgress(clock.value, stage);
+    const r = moving ? curves.decelerate(raw) : 1;
+    const o = (1 - r) * span;
+    return {
+      opacity: moving ? Math.min(1, raw * 3) : raw,
+      transform: up ? [{ translateY: -o + lift * (1 - r) }] : [{ translateX: o }, { translateY: lift * (1 - r) }],
+    };
+  });
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Svg width={size} height={size} viewBox={VB}>
-        <AnimatedPath d={HOMI_HOUSE_PATH} fill="none" stroke={HOMI_COLORS[tone].glow} strokeWidth={20} strokeLinecap="round" strokeLinejoin="round"
-          strokeDasharray={[seg, L - seg]} strokeDashoffset={seg} strokeOpacity={0} animatedProps={glow} />
-        <AnimatedPath d={HOMI_HOUSE_PATH} fill="none" stroke="#FFFFFF" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round"
-          strokeDasharray={[seg, L - seg]} strokeDashoffset={seg} strokeOpacity={0} animatedProps={core} />
-      </Svg>
-    </View>
+    <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: b.left, top: b.top, width: b.width, height: b.height, overflow: 'hidden' }, win]}>
+      <Animated.View testID={testID} style={[{ width: b.width, height: b.height }, content]}>
+        <PartSvg part={part} transform={transform} box={box} at={b} ink={ink} />
+      </Animated.View>
+    </Animated.View>
   );
 }
 
-/** Une silhouette : monte et grandit autour de ses pieds avec un léger rebond (back-out), en fondu. Nuit : fondu seul. */
-function Figure({ index, size, clock, stage, tone, moving, testID }: { index: number; size: number; clock: SharedValue<number>; stage: Stage; tone: 'light' | 'dark'; moving: boolean; testID: string }) {
-  const f = HOMI_FAMILY[index];
-  const k = size / HOMI_VIEWBOX;
+/** Pièce ronde qui se pose (têtes, point du i) : tombe de `drop` × sa hauteur, grandit autour de son centre, léger ressort. */
+function Pop({ part, transform, box, clock, stage, moving, ink, testID, drop }: PartProps & { drop: number }) {
+  const b = padded(lockupToPx(part.box, box.scale));
   const style = useAnimatedStyle(() => {
     const p = stageProgress(clock.value, stage);
     if (!moving) return { opacity: p };
     const e = backOut(p);
-    const s = LOGO_MOTION.figureFromScale + (1 - LOGO_MOTION.figureFromScale) * e;
-    // échelle autour des pieds : translation équivalente (transform-origin non utilisé, portable)
-    const ox = f.cx * k - size / 2;
-    const oy = f.bottom * k - size / 2;
-    return {
-      opacity: Math.min(1, p * 2.5),
-      transform: [{ translateX: ox * (1 - s) }, { translateY: oy * (1 - s) + LOGO_MOTION.figureRise * k * (1 - Math.min(1, e)) }, { scale: s }],
-    };
+    const s = LOGO_MOTION.headFromScale + (1 - LOGO_MOTION.headFromScale) * e;
+    return { opacity: Math.min(1, p * 3), transform: [{ translateY: -drop * b.height * (1 - e) }, { scale: s }] };
   });
-  const c = HOMI_COLORS[tone];
-  const gid = `hmA${tone[0]}-fig-${index}`;
   return (
-    <Animated.View testID={testID} style={[StyleSheet.absoluteFill, style]} pointerEvents="none">
-      <Svg width={size} height={size} viewBox={VB}>
-        <Defs>
-          <LinearGradient id={gid} gradientUnits={USER_SPACE} x1="0" y1={HOMI_FAMILY_SPAN.top} x2="0" y2={HOMI_FAMILY_SPAN.bottom}>
-            <Stop offset="0" stopColor={c.figTop} />
-            <Stop offset="1" stopColor={c.figBottom} />
-          </LinearGradient>
-        </Defs>
-        <G fill={`url(#${gid})`}>
-          <Circle cx={f.cx} cy={f.headY} r={f.headR} />
-          <Path d={f.bodyD} />
-        </G>
-      </Svg>
+    <Animated.View testID={testID} pointerEvents="none" style={[{ position: 'absolute', left: b.left, top: b.top, width: b.width, height: b.height }, style]}>
+      <PartSvg part={part} transform={transform} box={box} at={b} ink={ink} />
     </Animated.View>
   );
 }
 
 /**
- * Panneau issu de la maison : un seul tracé SVG (pignon → rectangle arrondi), en coordonnées de fenêtre (calque plein
- * écran replacé sous l'origine du logo), dessiné SOUS la maison — il sort de derrière elle. Il part violet (la maison)
- * et devient verre (matière du panneau cible).
+ * Panneau issu du symbole : un seul tracé SVG (rectangle arrondi qui grandit), en coordonnées de fenêtre (calque plein
+ * écran replacé sous l'origine du logo), dessiné SOUS le logo — il sort de derrière le symbole, déjà en verre.
  * `progress` null : panneau posé (état final). `moving` false (nuit) : forme finale en fondu, sans déplacement.
  */
-function PanelLayer({ origin, house, target, tone, progress, moving }: {
+function PanelLayer({ origin, house, target, progress, moving }: {
   origin: { x: number; y: number };
   house: HouseMeasure;
   target: HousePanelTarget;
-  tone: 'light' | 'dark';
   progress: { clock: SharedValue<number>; stage: Stage } | null;
   moving: boolean;
 }) {
@@ -436,15 +315,8 @@ function PanelLayer({ origin, house, target, tone, progress, moving }: {
   const glass = useAnimatedProps(() => {
     const raw = clock ? stageProgress(clock.value, stage) : 1;
     const q = moving ? curves.decelerate(raw) : 1;
-    return { d: housePanelPath(housePanelFrame(house, target, q)), opacity: moving ? Math.min(1, raw * 4) : curves.standard(raw) };
+    return { d: housePanelPath(housePanelFrame(house, target, q)), opacity: moving ? Math.min(1, raw * 3) : curves.standard(raw) };
   });
-  const tint = useAnimatedProps(() => {
-    const raw = clock ? stageProgress(clock.value, stage) : 1;
-    const q = moving ? curves.decelerate(raw) : 1;
-    // la teinte violette de la maison s'efface pendant l'ouverture : le panneau devient verre
-    return { d: housePanelPath(housePanelFrame(house, target, q)), opacity: moving && raw > 0 ? 0.9 * (1 - curves.standard(raw)) : 0 };
-  });
-  const c = HOMI_COLORS[tone];
   const start = housePanelPath(housePanelFrame(house, target, 1));
   return (
     <View
@@ -456,7 +328,6 @@ function PanelLayer({ origin, house, target, tone, progress, moving }: {
     >
       <Svg width={win.width} height={win.height}>
         <AnimatedPath animatedProps={glass} d={start} fill={target.fill} stroke={target.edge ?? 'none'} strokeWidth={target.edge ? 1 : 0} />
-        <AnimatedPath animatedProps={tint} d={start} fill={c.houseBottom} opacity={0} />
       </Svg>
     </View>
   );

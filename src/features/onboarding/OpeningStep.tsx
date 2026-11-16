@@ -1,7 +1,7 @@
 /**
  * Temps 1 — Ouverture (v5) : l'illustration `famille` sur le halo corail, puis le titre qui se lève, une phrase, la
  * durée. Le bouton principal (pied d'écran) est actif dès la première image ; seule la scène s'anime.
- * Lancement à froid : l'introduction de lancement (`LaunchIntro`) vient de jouer le logo maison ; l'ouverture ne le
+ * Lancement à froid : l'introduction de lancement (`LaunchIntro`) vient de jouer le logo HOMI ; l'ouverture ne le
  * rejoue PAS (aucun logo ici : l'illustration prend le relais) et le titre attend que le calque de l'introduction
  * s'efface. Réduire les animations : tout est posé d'emblée.
  */
