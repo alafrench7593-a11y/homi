@@ -31,18 +31,21 @@ interface Props {
   hue?: 'rose' | 'lavande' | 'or';
   interactive?: boolean;
   accessibilityLabel?: string;
+  /** Image fixe (écran de suivi lu : ni flottement, ni battement, ni étincelle du liseré) — v5, semaine de grossesse */
+  still?: boolean;
 }
 
-export function FetusArt({ week, growth, size = 260, hue, interactive = true, accessibilityLabel }: Props) {
+export function FetusArt({ week, growth, size = 260, hue, interactive = true, accessibilityLabel, still }: Props) {
   const source = foetusImageFor(week);
   if (!source) return <FetusOrb growth={growth} size={size} hue={hue} interactive={interactive} accessibilityLabel={accessibilityLabel} />;
-  return <FetusImage source={source} size={size} interactive={interactive} accessibilityLabel={accessibilityLabel} />;
+  return <FetusImage source={source} size={size} interactive={interactive} accessibilityLabel={accessibilityLabel} forceStill={still} />;
 }
 
-function FetusImage({ source, size, interactive, accessibilityLabel }: { source: NonNullable<ReturnType<typeof foetusImageFor>>; size: number; interactive: boolean; accessibilityLabel?: string }) {
+function FetusImage({ source, size, interactive, accessibilityLabel, forceStill }: { source: NonNullable<ReturnType<typeof foetusImageFor>>; size: number; interactive: boolean; accessibilityLabel?: string; forceStill?: boolean }) {
   const reduce = useReduceMotion();
   // boucles décoratives (flottement, battement, liseré) : arrêtées aussi quand l'écran n'est pas affiché
-  const still = reduce || !useScreenFocused();
+  const focused = useScreenFocused();
+  const still = reduce || !focused || !!forceStill;
   const tilt = useRef(new Animated.Value(0)).current;
   const float = useRef(new Animated.Value(0)).current;
   const fade = useRef(new Animated.Value(0)).current;
@@ -100,8 +103,8 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
         <Animated.View testID="fetus-heart" pointerEvents="none" style={{
           position: 'absolute', left: size * 0.47, top: size * 0.47, width: size * 0.07, height: size * 0.07, borderRadius: size,
           backgroundColor: 'rgba(255,156,195,0.9)', shadowColor: '#FF9CC3', shadowOpacity: 0.9, shadowRadius: size * 0.05, shadowOffset: { width: 0, height: 0 },
-          opacity: reduce ? 0.7 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
-          transform: [{ scale: reduce ? 1 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.35] }) }],
+          opacity: reduce || forceStill ? 0.7 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
+          transform: [{ scale: reduce || forceStill ? 1 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.35] }) }],
         }} />
       </Animated.View>
     </View>

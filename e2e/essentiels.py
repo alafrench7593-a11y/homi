@@ -112,14 +112,15 @@ def run(p):
     subject(pg, 'preg')
     go(pg, '/pregnancy', 3000)
     t = T(pg)
-    R['grossesse_taille_poids_sources'] = 'mpedia' in tid(pg, 'fetal-source').inner_text() and 'pas les mesures de votre bébé' in t and 'poids moyen' in tid(pg, 'fetal-size').inner_text()
+    R['grossesse_taille_poids_sources'] = 'mpedia' in tid(pg, 'fetal-source').inner_text() and 'pas les mesures de votre bébé' in t and 'Poids' in tid(pg, 'fetal-size').inner_text()
     R['grossesse_animation_coeur'] = pg.locator('[data-testid="fetus-heart"]').count() > 0
-    R['grossesse_rubriques_voir_plus'] = tid(pg, 'preg-rubric-week').is_visible() and pg.locator('[data-testid="preg-rubric-community"]').count() == 0
+    # v5 : la rubrique « Cette semaine » (qui ramenait en haut du même écran) est retirée : redondante
+    R['grossesse_rubriques_voir_plus'] = tid(pg, 'preg-rubric-body').is_visible() and pg.locator('[data-testid="preg-rubric-community"]').count() == 0
     tid(pg, 'preg-rubrics-more').click(); pg.wait_for_timeout(500)
     # Depuis 877b21e, « Mes examens » est remplacé par « Mon calendrier de grossesse » (échographies, vrais rendez-vous,
     # rappels) et « Comment je me sens » et « Complément prescrit » ont rejoint les rubriques
     R['grossesse_toutes_les_rubriques'] = all(pg.locator(f'[data-testid="preg-rubric-{k}"]').count() for k in
-                                              ['week', 'body', 'weight', 'sleep', 'mood', 'feel', 'meals', 'appointments', 'calendar', 'docs', 'birth', 'lists', 'names', 'articles', 'assistant', 'community', 'supplement'])
+                                              ['body', 'weight', 'sleep', 'mood', 'feel', 'meals', 'appointments', 'calendar', 'docs', 'birth', 'lists', 'names', 'articles', 'assistant', 'community', 'supplement'])
     R['grossesse_prochain_rdv'] = tid(pg, 'preg-next-appt').is_visible()
     pg.screenshot(path=f'{SHOTS}/ess_pregnancy.png', full_page=True)
     go(pg, '/settings/reminders?new=supplement', 2600)

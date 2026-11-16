@@ -1,5 +1,5 @@
 /**
- * Recherche universelle des outils (HOMI) : un champ en haut de l'Accueil et des onglets hub ouvre une feuille
+ * Recherche universelle des outils (HOMI) : un champ (rectangle aux angles souples, v5) en haut de l'Accueil et des onglets hub ouvre une feuille
  * qui cherche dans TOUS les outils (profil affiché + autres profils : chaque enfant, grossesse, moi, famille).
  * Champ vide : favoris puis récents. Un outil d'un autre profil sélectionne ce profil avant de s'ouvrir.
  * Réutilise `searchTools` et `favoriteTools` du catalogue (aucune liste parallèle).
@@ -64,7 +64,7 @@ export function ToolSearchButton({ testID = 'tool-search-open' }: { testID?: str
         accessibilityHint={tr('nav.search.hint')}
         onPress={() => { haptic('selection'); setOpen(true); }}
         pressScale={0.985}
-        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, paddingHorizontal: spacing.md, borderRadius: radius.pill,
+        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, paddingHorizontal: spacing.md, borderRadius: radius.control,
           backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border })}
       >
         <Icon name="search" size={19} color={t.colors.primary} />
