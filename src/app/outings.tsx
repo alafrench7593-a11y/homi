@@ -8,7 +8,6 @@
 import React, { useMemo, useState } from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
@@ -51,7 +50,6 @@ export default function Outings() {
   return (
     <Screen back title={tr('out.title')} subtitle={tr('out.subtitle')}>
       <View testID="outings" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(233,207,164,0.05)', 'rgba(201,184,255,0.06)'] : ['#F7F4FB', '#F3EEFB', '#F6ECDA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 3000, borderRadius: 32 }} />
       <Text variant="small" muted testID="out-privacy">{tr('out.privacy')}</Text>
 
       <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={24} padded={spacing.md}>
