@@ -1,0 +1,31 @@
+import type { day5 as fr } from '../fr/day5';
+import type { Messages } from '../types';
+
+export const day5: Messages<typeof fr> = {
+  'd5.state.late': "Con retraso",
+  'd5.state.now': "En curso",
+  'd5.state.next': "Después",
+  'd5.state.later': "Más tarde",
+  'd5.state.done': "Hecho",
+  'd5.state.past': "Pasado",
+  'd5.state.anytime': "Durante el día",
+  'd5.anytime': "Todo el día",
+  'd5.done': "Hecho",
+  'd5.doneA11y': "Marcar «{title}» como hecho",
+  'd5.brief': "En resumen",
+  'd5.next.appointment': "Próxima cita",
+  'd5.next.event': "Próximo evento",
+  'd5.next.noneTitle': "Ninguna cita hoy",
+  'd5.next.noneBody': "Las citas y los eventos del hogar aparecerán aquí.",
+  'd5.next.hint': "Abre el detalle",
+  'd5.kind.custody': "Custodia",
+  'd5.urgent.title': "Por atender",
+  'd5.rest.title': "El resto del día",
+  'd5.clear.pill': "Al día",
+  'd5.clear.body': "Ninguna solicitud te espera.",
+  'd5.cal.clash': "Solapamiento",
+  'd5.cal.free': "Nada previsto",
+  'd5.bottle.next': "Próximo recordatorio",
+  'd5.bottle.late': "Recordatorio pasado",
+  'd5.bottle.historySub': "Todos los biberones anotados, día a día",
+};

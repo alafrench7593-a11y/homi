@@ -1,0 +1,31 @@
+import type { day5 as fr } from '../fr/day5';
+import type { Messages } from '../types';
+
+export const day5: Messages<typeof fr> = {
+  'd5.state.late': "Late",
+  'd5.state.now': "In progress",
+  'd5.state.next': "Next",
+  'd5.state.later': "Later",
+  'd5.state.done': "Done",
+  'd5.state.past': "Past",
+  'd5.state.anytime': "Any time today",
+  'd5.anytime': "All day",
+  'd5.done': "Done",
+  'd5.doneA11y': "Mark “{title}” as done",
+  'd5.brief': "At a glance",
+  'd5.next.appointment': "Next appointment",
+  'd5.next.event': "Next event",
+  'd5.next.noneTitle': "No appointments today",
+  'd5.next.noneBody': "Your household’s appointments and events will show up here.",
+  'd5.next.hint': "Opens the details",
+  'd5.kind.custody': "Custody",
+  'd5.urgent.title': "To handle",
+  'd5.rest.title': "Rest of the day",
+  'd5.clear.pill': "Up to date",
+  'd5.clear.body': "No request is waiting for you.",
+  'd5.cal.clash': "Overlap",
+  'd5.cal.free': "Nothing planned",
+  'd5.bottle.next': "Next reminder",
+  'd5.bottle.late': "Reminder passed",
+  'd5.bottle.historySub': "Every bottle logged, day by day",
+};

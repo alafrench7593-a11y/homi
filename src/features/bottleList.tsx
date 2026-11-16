@@ -4,7 +4,7 @@
  * Toucher la ligne ouvre l'écran de l'enfant par la transition carte → détail (`MorphSource` → `MorphTarget`).
  */
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { Skeleton } from '@/components/States';
 import { Icon, Text } from '@/components/ui';
@@ -15,6 +15,7 @@ import { atClock, formatClock, isStaleTimer, nextReminderSentence, remainingMinu
 import { sessionState } from '@/lib/domain/bottleSession';
 import type { Child } from '@/lib/types';
 import { MorphSource } from '@/motion/Morph';
+import { DayRail, StatusPill, type DayState, type PillTone } from '@/features/day5/DayParts';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -38,19 +39,22 @@ export function BottleChildRow({ child, last }: { child: Child; last?: boolean }
     ? passed ? tr('u6.bottle.was_due', { name: child.first_name, when: atClock(active.due_at, now) }) : nextReminderSentence(child.first_name, active.due_at, now)
     : tr('u6.bottle.none_for', { name: child.first_name });
   const open = () => router.push({ pathname: '/bottle/[childId]', params: { childId: child.id } });
+  // Heure alignée (colonne tabulaire) : début du biberon en cours, sinon heure du prochain rappel
+  const time = running ? formatClock(running.started_at) : active ? formatClock(active.due_at) : '—';
+  const pill: { label: string; tone: PillTone } | null = running ? { label: status ?? '', tone: 'accent' }
+    : active ? (passed ? { label: tr('d5.bottle.late'), tone: 'late' } : { label: tr('d5.bottle.next'), tone: 'muted' }) : null;
+  const dayState: DayState = running ? 'now' : passed ? 'late' : active ? 'next' : 'anytime';
   return (
     <MorphSource id={childMorphId(child.id)} onOpen={open} radius={radius.md} accessibilityLabel={tr('u6.bottle.open_a11y', { line: [status, line].filter(Boolean).join('. ') })} testID={`bottle-row-${child.id}`}>
-      <View style={{ minHeight: MIN_TOUCH + 16, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm, paddingHorizontal: spacing.xs,
-        borderBottomWidth: last ? 0 : 1, borderColor: t.material.lines.separator }}>
-        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.material.lines.iconWell, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name={running ? (state === 'paused' ? 'pause' : 'activity') : active ? 'bell' : 'bell-off'} size={20} color={passed && !running ? t.colors.danger : t.colors.primary} />
-        </View>
-        <View style={{ flex: 1, gap: 2 }}>
+      <View style={{ minHeight: MIN_TOUCH + 16, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, paddingVertical: spacing.sm, paddingHorizontal: spacing.sm,
+        borderBottomWidth: last ? 0 : StyleSheet.hairlineWidth, borderColor: t.material.lines.separator }}>
+        <DayRail time={time} state={dayState} first last />
+        <View style={{ flex: 1, gap: 4, minWidth: 0 }}>
           <Text weight="bold">{tr('u6.bottle.card_title', { name: child.first_name })}</Text>
-          {status ? <Text variant="small" weight="medium" color={t.colors.primary}>{status}</Text> : null}
-          <Text variant="small" muted={!active}>{line}</Text>
+          {pill ? <StatusPill label={pill.label} tone={pill.tone} icon={running ? (state === 'paused' ? 'pause' : 'activity') : passed ? 'bell' : undefined} /> : null}
+          {!active && !running ? <Text variant="small" muted>{line}</Text> : null}
         </View>
-        <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+        <View style={{ paddingTop: 2 }}><Icon name="chevron-right" size={18} color={t.colors.textMuted} /></View>
       </View>
     </MorphSource>
   );

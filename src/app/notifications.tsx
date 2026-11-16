@@ -1,12 +1,11 @@
 /** Boîte de réception : rappels, réponses de la communauté, abonnement, rappels officiels de produits. */
 import React, { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { Chip, haptic, Icon, type IconName, IconButton, Row, SectionTitle, Text } from '@/components/ui';
+import { Chip, haptic, Icon, type IconName, IconButton, Row, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { useRelevantNotifications } from '@/lib/data/hooks-scope';
 import { useDeleteNotification, useMarkAllNotificationsRead, useMarkNotificationRead } from '@/lib/data/hooks-me';
@@ -87,7 +86,11 @@ export default function NotificationsScreen() {
     if (to) router.push(to as never);
   }
 
-  function row(n: AppNotification) {
+  /**
+   * Une notification = une rangée d'un groupe (« Non lues », « Lues ») : une surface, filets fins, icône cohérente,
+   * titre, message entier, heure relative ALIGNÉE à droite (chiffres tabulaires), catégorie. Pas de carte par ligne.
+   */
+  function row(n: AppNotification, first: boolean, last: boolean) {
     const meta = CATEGORY[n.category] ?? CATEGORY.system;
     const to = routeOf(n);
     const isUnread = !n.read_at;
@@ -95,41 +98,53 @@ export default function NotificationsScreen() {
     // Déjà lue et sans lien : appuyer ne fait rien, la ligne reste donc un texte (ni effet de pression, ni vibration)
     const inert = !to && !isUnread;
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: isUnread ? t.colors.surface : t.colors.surfaceAlt }}>
+      <View testID={`notif-row-${n.id}`} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xxs, backgroundColor: t.colors.surface, borderColor: t.colors.border,
+        borderLeftWidth: StyleSheet.hairlineWidth, borderRightWidth: StyleSheet.hairlineWidth, borderTopWidth: first ? StyleSheet.hairlineWidth : 0, borderBottomWidth: last ? StyleSheet.hairlineWidth : 0,
+        borderTopLeftRadius: first ? radius.lg : 0, borderTopRightRadius: first ? radius.lg : 0, borderBottomLeftRadius: last ? radius.lg : 0, borderBottomRightRadius: last ? radius.lg : 0, overflow: 'hidden' }}>
+        {!first ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, right: 0, left: spacing.md + 36 + spacing.sm, height: StyleSheet.hairlineWidth, backgroundColor: t.material.lines.separator }} /> : null}
         <Tappable
           accessibilityRole={inert ? undefined : 'button'}
           disabled={inert}
-          accessibilityLabel={`${isUnread ? `${tr('u2.notif.unread_dot')} ` : ''}${catLabel(meta.label)} : ${n.title}${n.body ? `. ${n.body}` : ''}`}
+          accessibilityLabel={`${isUnread ? `${tr('u2.notif.unread_dot')} ` : ''}${catLabel(meta.label)} : ${n.title}${n.body ? `. ${n.body}` : ''}. ${ago(n.created_at)}`}
           accessibilityHint={to ? tr('u2.notif.hint_open') : isUnread ? tr('u2.notif.hint_mark') : undefined}
           onPress={() => { haptic('selection'); openNotif(n); }}
-          style={({ pressed }) => ({ flex: 1, flexDirection: 'row', gap: spacing.sm, padding: spacing.md, paddingRight: 0, minHeight: MIN_TOUCH, opacity: pressed ? 0.8 : 1 })}
+          pressScale={0.99}
+          style={({ pressed }) => ({ flex: 1, flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.sm + 2, paddingLeft: spacing.md, minHeight: MIN_TOUCH, opacity: pressed ? 0.85 : 1 })}
         >
-          <View style={{ width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: urgent ? t.colors.dangerSoft : t.colors.surfaceAlt }}>
-            <Icon name={meta.icon} size={18} color={urgent ? t.colors.danger : t.colors.text} />
+          <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: urgent ? t.colors.dangerSoft : t.material.lines.iconWell }}>
+            <Icon name={meta.icon} size={17} color={urgent ? t.colors.danger : t.colors.primary} />
           </View>
-          <View style={{ flex: 1, gap: 2 }}>
-            <Row gap={6}>
-              {isUnread && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.colors.heart }} />}
+          <View style={{ flex: 1, gap: 2, minWidth: 0 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs }}>
+              {isUnread ? <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.colors.primary, alignSelf: 'center' }} /> : null}
               <Text weight={isUnread ? 'bold' : 'medium'} style={{ flex: 1 }}>{n.title}</Text>
-            </Row>
+            </View>
             {/* Message entier : une notification sans lien n'a pas d'autre endroit où le lire */}
             {n.body ? <Text variant="small" muted>{n.body}</Text> : null}
-            <Text variant="caption" muted>{catLabel(meta.label)} · {ago(n.created_at)}</Text>
+            {/* Catégorie à gauche, heure relative alignée à droite (chiffres tabulaires) ; « › » quand la ligne ouvre un écran */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: spacing.xs, rowGap: 2 }}>
+              <Text variant="caption" color={urgent ? t.colors.danger : t.colors.textMuted} weight={urgent ? 'bold' : undefined} style={{ marginRight: 'auto' }}>{catLabel(meta.label)}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, marginLeft: 'auto' }}>
+                <Text variant="caption" muted style={{ fontVariant: ['tabular-nums'], textAlign: 'right' }}>{ago(n.created_at)}</Text>
+                {to ? <Icon name="chevron-right" size={14} color={t.colors.textMuted} /> : null}
+              </View>
+            </View>
           </View>
-          {!!to && <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </Tappable>
-        {isUnread ? <IconButton icon="check" label={tr('u2.notif.mark_read', { title: n.title })} color={t.colors.primary} size={18} onPress={() => { haptic('selection'); markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') }); }} /> : null}
-        <IconButton icon="x" label={tr('u2.notif.delete_a11y', { title: n.title })} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, tr('u2.notif.delete_failed')), 'error') }); }} />
+        <View style={{ paddingTop: 4, paddingRight: spacing.xxs }}>
+          {isUnread ? <IconButton icon="check" label={tr('u2.notif.mark_read', { title: n.title })} color={t.colors.primary} size={18} onPress={() => { haptic('selection'); markRead.mutate(n.id, { onError: (e) => toast(friendlyError(e), 'error') }); }} /> : null}
+          <IconButton icon="x" label={tr('u2.notif.delete_a11y', { title: n.title })} color={t.colors.textMuted} size={18} onPress={() => { if (del.isPending && del.variables === n.id) return; del.mutate(n.id, { onError: (e) => toast(friendlyError(e, tr('u2.notif.delete_failed')), 'error') }); }} />
+        </View>
       </View>
     );
   }
 
-  type Item = { kind: 'section'; title: string } | { kind: 'notif'; n: AppNotification };
+  type Item = { kind: 'section'; title: string } | { kind: 'notif'; n: AppNotification; first: boolean; last: boolean };
   const items = useMemo<Item[]>(() => [
     ...(unread.length ? [{ kind: 'section', title: tr('u2.notif.unread') } as const] : []),
-    ...unread.map((n) => ({ kind: 'notif', n }) as const),
+    ...unread.map((n, i) => ({ kind: 'notif', n, first: i === 0, last: i === unread.length - 1 }) as const),
     ...(read.length ? [{ kind: 'section', title: tr('u2.notif.read') } as const] : []),
-    ...read.map((n) => ({ kind: 'notif', n }) as const),
+    ...read.map((n, i) => ({ kind: 'notif', n, first: i === 0, last: i === read.length - 1 }) as const),
   ], [unread, read]);
   const loading = isLoading && !data;
   const failed = isError && !data;
@@ -148,18 +163,13 @@ export default function NotificationsScreen() {
       <VirtualList
         data={loading || failed ? [] : items}
         keyExtractor={(it) => (it.kind === 'section' ? `s-${it.title}` : it.n.id)}
-        renderItem={({ item }) => (item.kind === 'section' ? <SectionTitle title={item.title} /> : row(item.n))}
+        renderItem={({ item }) => (item.kind === 'section' ? <Text variant="label" accessibilityRole="header" style={{ marginTop: spacing.md, marginBottom: spacing.xs, paddingHorizontal: spacing.xxs }}>{item.title}</Text> : row(item.n, item.first, item.last))}
         refreshing={isRefetching}
         onRefresh={() => void refetch()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.sm }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl }}
         ListHeaderComponent={loading ? <Skeleton rows={5} /> : failed ? <ErrorView error={error} onRetry={() => void refetch()} title={tr('u2.notif.load_error')} /> : (
           <View style={{ gap: spacing.sm }}>
-          <TodaySummary title={tr('u2.notif.brief')} items={[
-            { icon: 'bell', value: String(allUnread.length), label: allUnread.length > 1 ? tr('u2.notif.unread') : tr('u2.notif.one_unread') },
-            { icon: 'clock', value: String((data ?? []).filter((n) => n.category === 'reminder').length), label: tr('u2.notif.g_reminders') },
-            { icon: 'alert-triangle', value: String((data ?? []).filter((n) => n.category === 'product_recall').length), label: tr('u2.notif.cat_recall') },
-          ]} />
           {(data ?? []).length ? (
             <Row wrap gap={6} testID="notif-filters">
               {GROUPS.filter((g) => g.value === 'all' || (data ?? []).some((n) => GROUP_OF(n.category) === g.value)).map((g) => {
@@ -171,9 +181,9 @@ export default function NotificationsScreen() {
           </View>
         )}
         ListEmptyComponent={loading || failed ? null : (
-          <EmptyState icon="bell" title={tr('u2.notif.nothing')} body={tr('u2.notif.nothing_body')} action={{ label: tr('u2.notif.manage'), icon: 'settings', onPress: () => router.push('/settings/reminders' as never) }} />
+          <EmptyState icon="bell" title={tr('u2.notif.nothing')} body={tr('u2.notif.nothing_body')} />
         )}
-        ListFooterComponent={<Text variant="caption" muted center style={{ marginTop: spacing.sm }}>{tr('u2.notif.footer')}</Text>}
+        ListFooterComponent={allUnread.length ? <Text variant="caption" muted center style={{ marginTop: spacing.md }}>{tr('u2.notif.footer')}</Text> : null}
       />
     </Screen>
   );

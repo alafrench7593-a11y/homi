@@ -8,18 +8,22 @@ import { Animated, Linking, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
-import { TodaySummary } from '@/components/MiniApp';
 import { ErrorView, Skeleton } from '@/components/States';
-import { StaggerItem, usePop } from '@/components/Motion';
+import { usePop } from '@/components/Motion';
 import { Flash, SlideSwap } from '@/components/MotionKit';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { parseFrDateTime, splitLocal } from '@/features/familyLoad';
-import { useAppointments, useChildren, useHouseholdId } from '@/lib/data/hooks';
+import { useAppointments, useChildren, useHouseholdId, useMyMembership } from '@/lib/data/hooks';
+import { useRespondMission } from '@/lib/data/hooks-missions';
+import { useUserId } from '@/lib/auth';
+import { isMission } from '@/lib/domain/missions';
+import { canCompleteTask, type TaskLike } from '@/features/homeToday/todayModel';
 import { feedUrl, useCalendarFeeds, useCreateCalendarFeed, useRevokeCalendarFeed, webcalUrl } from '@/lib/data/hooks-calendar';
 import { backendUrl, isDemo } from '@/lib/backend';
 import { useCareShifts, useDeleteEvent, useFamilyEvents, useFamilyTasks, usePeople, useSaveEvent, useSaveTask } from '@/lib/data/hooks-family-load';
-import { DayThread, clockFr, type ThreadRow } from '@/features/dayThread';
+import { BriefStrip, DayList, DayRow, DaySection, DaySeparator, DoneButton, DayTimeline, type DayRowSpec, type DayState } from '@/features/day5/DayParts';
+import { WeekStrip } from '@/features/day5/WeekStrip';
 import { threadStates } from '@/lib/domain/dayThread';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
@@ -31,11 +35,11 @@ import { exportTextFile } from '@/lib/exportData';
 import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import type { ThreadState } from '@/lib/domain/dayThread';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatDate, formatTime } from '@/i18n';
 
 type View_ = 'day' | 'week' | 'month' | 'agenda';
-const ICON: Record<CalendarItem['source'], IconName> = { event: 'star', appointment: 'calendar', task: 'check-square', night: 'moon', me_time: 'sun' };
 const hm = (iso: string) => formatTime(iso);
 const longDay = (day: string) => formatDate(atLocal(day, 12), { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase());
 
@@ -65,6 +69,27 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const save = useSaveEvent();
   const del = useDeleteEvent();
   const saveTask = useSaveTask();
+  const respond = useRespondMission();
+  const me = useUserId();
+  const membership = useMyMembership();
+  const canEdit = !!membership && (membership.role === 'owner' || (membership.can_edit ?? []).includes('lists'));
+  /**
+   * « Fait » seulement quand c'est permis (même règle que l'accueil) : une mission se termine par mission_respond
+   * (son destinataire, jamais la mission de quelqu'un d'autre), une tâche simple par son statut.
+   */
+  const taskOf = (id: string) => (tasks ?? []).find((x) => x.id === id) as TaskLike | undefined;
+  const canFinish = (id: string) => { const x = taskOf(id); return !!x && canCompleteTask(x, me, canEdit); };
+  async function finish(id: string) {
+    const x = taskOf(id);
+    if (!x) return;
+    try {
+      if (isMission(x)) {
+        const out = await respond.mutateAsync({ id, action: 'complete', version: x.version });
+        if (out?.status === 'conflict') throw new Error(tr('ht.conflict'));
+      } else await saveTask.mutateAsync({ id, input: { status: 'done' } });
+      haptic('success'); toast(tr('u3.cal.doneDot'));
+    } catch (e) { toast(friendlyError(e), 'error'); }
+  }
 
   const range = useMemo(() => {
     if (view === 'day') return [cursor, addDays(cursor, 1)];
@@ -154,50 +179,54 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
       : view === 'month' ? formatDate(atLocal(cursor, 12), { month: 'long', year: 'numeric' }).replace(/^./, (c) => c.toUpperCase())
         : tr('u3.cal.next30');
 
-  const renderItem = (i: CalendarItem, idx: number) => (
-    <StaggerItem key={i.key} index={idx}>
-      <Flash on={moved === i.refId} color={t.colors.primary}>
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('u3.cal.itemA11y', { source: SOURCE_LABEL[i.source], title: i.title, when: i.allDay ? tr('u3.cal.allDayLc') : hm(i.starts) })} onPress={() => openItem(i)}
-        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: clashes.has(i.key) ? t.colors.gold : t.colors.border })}>
-        <Text variant="small" weight="bold" style={{ width: 48 }}>{i.allDay ? tr('u3.cal.dayShort') : hm(i.starts)}</Text>
-        <Icon name={ICON[i.source]} size={16} color={i.source === 'appointment' ? t.colors.heart : i.source === 'event' ? t.colors.primary : t.colors.lavender} />
-        <View style={{ flex: 1 }}>
-          <Text weight="medium" style={{ textDecorationLine: i.done ? 'line-through' : 'none' }}>{i.title}</Text>
-          <Text variant="caption" muted>{[SOURCE_LABEL[i.source], i.private ? tr('u3.cal.private') : null, i.recurring ? tr('u3.cal.repeated') : null, i.who ? labelOf(i.who) : null, i.location, clashes.has(i.key) ? tr('u3.cal.clash') : null].filter(Boolean).join(' · ')}</Text>
-        </View>
-      </Tappable>
-      </Flash>
-    </StaggerItem>
+  /** Rangée d'agenda : heure alignée (+ fin), titre, capsule (fait / chevauchement), source · personne · lieu. */
+  const itemRow = (i: CalendarItem, state?: DayState): DayRowSpec => ({
+    key: i.key, time: i.allDay ? tr('d5.anytime') : hm(i.starts), timeSub: i.allDay || i.source === 'task' || i.ends === i.starts ? null : hm(i.ends),
+    state: state ?? (i.done ? 'done' : 'later'), title: i.title,
+    pill: i.done ? { label: tr('d5.state.done'), tone: 'done' } : clashes.has(i.key) ? { label: tr('d5.cal.clash'), tone: 'late', icon: 'alert-triangle' } : state === 'now' || state === 'next' || state === 'late' ? undefined : null,
+    sub: [SOURCE_LABEL[i.source], i.private ? tr('u3.cal.private') : null, i.recurring ? tr('u3.cal.repeated') : null, i.who ? labelOf(i.who) : null, i.location].filter(Boolean).join(' · '),
+    onPress: () => openItem(i), testID: `cal-item-${i.key}`,
+    accessibilityLabel: tr('u3.cal.itemA11y', { source: SOURCE_LABEL[i.source], title: i.title, when: i.allDay ? tr('u3.cal.allDayLc') : hm(i.starts) }) + (clashes.has(i.key) ? `. ${tr('u3.cal.clash')}` : ''),
+  });
+  const dayList = (list: CalendarItem[], testID?: string) => (
+    <DayList testID={testID}>
+      {list.map((i, k) => (
+        <Flash key={i.key} on={moved === i.refId} color={t.colors.primary}>
+          {k ? <DaySeparator /> : null}
+          <DayRow r={itemRow(i)} first={k === 0} last={k === list.length - 1} />
+        </Flash>
+      ))}
+    </DayList>
   );
 
   return (
-    <Screen back account bottomInset={inTab ? TAB_SCREEN_INSET : 0} title={tr('u3.cal.title')} subtitle={tr('u3.cal.subtitle')} right={<IconButton icon="plus" label={tr('u3.cal.newEvent')} onPress={() => openNew()} />}
+    <Screen back account bottomInset={inTab ? TAB_SCREEN_INSET : 0} title={tr('u3.cal.title')} subtitle={tr('u3.cal.subtitle')}
       action={{ label: tr('u3.cal.addEvent'), icon: 'plus', onPress: () => openNew(), testID: 'calendar-add' }}>
       {(() => {
-        const nextUp = todayItems.filter((x) => Date.parse(x.ends) >= Date.now()).sort((a, b) => (a.starts < b.starts ? -1 : 1))[0];
+        const nextUp = todayItems.filter((x) => !x.done && Date.parse(x.ends) >= Date.now()).sort((a, b) => (a.starts < b.starts ? -1 : 1))[0];
         return (
-          <TodaySummary items={[
-            { icon: 'list', value: String(todayItems.length), label: todayItems.length > 1 ? tr('u3.cal.itemsMany') : tr('u3.cal.itemsOne') },
-            { icon: 'calendar', value: String(todayItems.filter((x) => x.source === 'appointment').length), label: tr('u3.cal.appts') },
-            { icon: 'clock', value: nextUp ? (nextUp.allDay ? tr('u3.cal.allDaySum') : hm(nextUp.starts)) : '—', label: nextUp ? tr('u3.cal.nextUp', { title: nextUp.title }) : tr('u3.cal.next') },
+          <BriefStrip title={tr('d5.brief')} testID="cal-brief" items={[
+            { value: String(todayItems.length), label: todayItems.length > 1 ? tr('u3.cal.itemsMany') : tr('u3.cal.itemsOne') },
+            { value: String(todayItems.filter((x) => x.source === 'appointment').length), label: tr('u3.cal.appts') },
+            { value: nextUp ? (nextUp.allDay ? tr('u3.cal.allDaySum') : hm(nextUp.starts)) : '—', label: nextUp ? tr('u3.cal.nextUp', { title: nextUp.title }) : tr('u3.cal.next') },
           ]} />
         );
       })()}
       {(() => {
-        // Aujourd'hui au fil d'or : ce qui est passé, en cours, ensuite ; une tâche se coche en un geste
-        const rows: ThreadRow[] = threadStates(todayItems.map((i) => ({ key: i.key, at: i.allDay ? null : i.starts, end: i.allDay ? null : i.ends, done: i.done, actionable: i.source === 'task', allDay: i.allDay, item: i })))
+        // Aujourd'hui : chronologie calme (heures alignées, fil fin) — en retard, en cours, ensuite ; « Fait » en un geste
+        const STATE: Record<ThreadState, DayState> = { done: 'done', now: 'now', late: 'late', past: 'past', next: 'next', todo: 'later', anytime: 'anytime' };
+        const rows: DayRowSpec[] = threadStates(todayItems.map((i) => ({ key: i.key, at: i.allDay ? null : i.starts, end: i.allDay ? null : i.ends, done: i.done, actionable: i.source === 'task', allDay: i.allDay, item: i })))
           .map(({ item: i, state }) => ({
-            key: i.key, state, time: i.allDay ? '' : clockFr(i.starts), title: i.title, icon: ICON[i.source],
-            sub: [SOURCE_LABEL[i.source], i.who ? labelOf(i.who) : null, i.location].filter(Boolean).join(' · '),
-            onPress: () => openItem(i), testID: `cal-today-${i.key}`,
-            action: i.source === 'task' && !i.done ? { label: tr('u3.cal.done'), testID: `cal-done-${i.refId}`, onPress: async () => {
-              try { await saveTask.mutateAsync({ id: i.refId, input: { status: 'done' } }); haptic('success'); toast(tr('u3.cal.doneDot')); } catch (e) { toast(friendlyError(e), 'error'); }
-            } } : undefined,
+            ...itemRow(i, STATE[state]), pill: undefined, testID: `cal-today-${i.key}`,
+            right: i.source === 'task' && !i.done && canFinish(i.refId) ? <DoneButton testID={`cal-done-${i.refId}`} accessibilityLabel={tr('d5.doneA11y', { title: i.title })} onPress={() => void finish(i.refId)} /> : undefined,
           }));
-        return <DayThread title={tr('u3.cal.todayT')} rows={rows} testID="cal-today"
-          empty={<Text variant="small" muted>{tr('u3.cal.nothingToday')}</Text>} />;
+        return (
+          <DaySection title={tr('u3.cal.todayT')} testID="cal-today">
+            <DayTimeline rows={rows} empty={<Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothingToday')}</Text>} />
+          </DaySection>
+        );
       })()}
-      <WeekStrip cursor={cursor} counts={(d) => itemsOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; setCursor(d); setView('day'); haptic('selection'); }} />
+      <WeekStrip cursor={cursor} counts={(d) => itemsOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; setCursor(d); setView('day'); }} />
       <Segmented label={tr('u3.cal.view')} value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: tr('u3.cal.dayShort') }, { value: 'week', label: tr('u3.cal.vWeek') }, { value: 'month', label: tr('u3.cal.vMonth') }, { value: 'agenda', label: tr('u3.cal.vAgenda') }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label={tr('u3.cal.prevP')} onPress={() => move(-1)} /> : <View />}
@@ -216,9 +245,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
         <MonthView cursor={cursor} items={items} onPick={(d) => { setCursor(d); setView('day'); }} />
       ) : view === 'day' ? (
         <View style={{ gap: spacing.xs }}>
-          {itemsOnDay(items, cursor).map(renderItem)}
-          {!itemsOnDay(items, cursor).length ? <Card tone="soft"><Text variant="small" muted>{tr('u3.cal.nothingDay')}</Text></Card> : null}
-          <Button label={tr('u3.cal.addDay')} icon="plus" variant="secondary" size="sm" style={{ alignSelf: 'flex-start' }} onPress={() => openNew(cursor)} />
+          {itemsOnDay(items, cursor).length ? dayList(itemsOnDay(items, cursor), 'cal-day-list') : <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothingDay')}</Text>}
         </View>
       ) : (
         Array.from({ length: view === 'week' ? 7 : 31 }, (_, k) => addDays(range[0], k)).map((d) => {
@@ -226,16 +253,16 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
           if (view === 'agenda' && !list.length) return null;
           return (
             <View key={d} style={{ gap: spacing.xs }}>
-              <Tappable onPress={() => { setCursor(d); setView('day'); }} accessibilityRole="button" accessibilityLabel={tr('u3.cal.seeDay', { day: longDay(d) })}>
-                <Text weight="bold" color={d === todayISO() ? t.colors.primary : t.colors.text}>{longDay(d)}{d === todayISO() ? tr('u3.cal.todaySfx') : ''}</Text>
+              <Tappable onPress={() => { haptic('selection'); setCursor(d); setView('day'); }} accessibilityRole="button" accessibilityLabel={tr('u3.cal.seeDay', { day: longDay(d) })}
+                style={{ minHeight: 36, justifyContent: 'center', paddingHorizontal: spacing.xxs }}>
+                <Text variant="label" color={d === todayISO() ? t.colors.primary : t.colors.text}>{longDay(d)}{d === todayISO() ? tr('u3.cal.todaySfx') : ''}</Text>
               </Tappable>
-              {list.map(renderItem)}
-              {view === 'week' && !list.length ? <Text variant="caption" muted>—</Text> : null}
+              {list.length ? dayList(list) : view === 'week' ? <Text variant="caption" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('d5.cal.free')}</Text> : null}
             </View>
           );
         })
       )}
-      {view === 'agenda' && !items.length ? <Card tone="soft"><Text variant="small" muted>{tr('u3.cal.nothing30')}</Text></Card> : null}
+      {view === 'agenda' && !items.length ? <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothing30')}</Text> : null}
       </SlideSwap>
 
       <SectionTitle title={tr('u3.cal.shareT')} />
@@ -298,33 +325,6 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
         ) : null}
       </Sheet>
     </Screen>
-  );
-}
-
-/** Semaine en un coup d'œil : 7 pastilles (jour, nombre d'éléments), touchée = vue du jour. */
-function WeekStrip({ cursor, counts, onPick }: { cursor: string; counts: (d: string) => number; onPick: (d: string) => void }) {
-  const t = useTheme();
-  const start = weekStart(todayISO());
-  const today = todayISO();
-  return (
-    <View style={{ flexDirection: 'row', gap: 6 }} testID="cal-week-strip">
-      {Array.from({ length: 7 }, (_, k) => addDays(start, k)).map((d) => {
-        const n = counts(d);
-        const on = d === cursor;
-        const isToday = d === today;
-        return (
-          <Tappable key={d} onPress={() => onPick(d)} accessibilityRole="button" accessibilityLabel={`${longDay(d)}, ${n ? tr('u3.cal.nItems', { count: n }) : tr('u3.cal.nothingLc')}`}
-            style={{ flex: 1, alignItems: 'center', paddingVertical: 8, borderRadius: 16, borderWidth: 1,
-              borderColor: isToday ? t.colors.primary : t.colors.border, backgroundColor: on ? t.colors.primary : t.colors.surface }}>
-            <Text variant="caption" color={on ? t.colors.primaryText : t.colors.textMuted}>{formatDate(atLocal(d, 12), { weekday: 'narrow' })}</Text>
-            <Text weight="bold" color={on ? t.colors.primaryText : t.colors.text}>{Number(d.slice(8))}</Text>
-            <View style={{ flexDirection: 'row', gap: 2, height: 5, marginTop: 2 }}>
-              {Array.from({ length: Math.min(n, 3) }, (_, i) => <View key={i} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: on ? t.colors.primaryText : t.colors.gold }} />)}
-            </View>
-          </Tappable>
-        );
-      })}
-    </View>
   );
 }
 
