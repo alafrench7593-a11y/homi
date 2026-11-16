@@ -126,7 +126,7 @@ describe('Accueil : ligne d’agenda', () => {
     expect(tl.map((e) => e.key)).toEqual(['task:sam', 'task:bath', 'task:linge']);
   });
 
-  it('pastille « fait » remplaçable (point d’injection) ; surfaces et transition injectables', async () => {
+  it('pastille « fait » remplaçable (point d’injection) ; transition injectable, plus de verre optique (v5)', async () => {
     const Custom = jest.fn((p: DoneMarkProps) => null);
     setTodayDoneComponent(Custom as unknown as React.ComponentType<DoneMarkProps>);
     expect(getTodayDoneComponent()).toBe(Custom);
@@ -136,7 +136,8 @@ describe('Accueil : ligne d’agenda', () => {
     registerCardDetailTransition({ CardSource: Source });
     await render(<TodayFocus x={byId('bath')} owner={person('me')} creator={null} celebrate onComplete={jest.fn()} onAccept={jest.fn()} DoneComponent={getTodayDoneComponent()} />);
     expect(Custom).toHaveBeenCalledWith(expect.objectContaining({ done: true, celebrate: true }), undefined);
-    expect(Optical).toHaveBeenCalled();
+    // v5 « Lumière corail » : la demande en tête est une carte isolée (plus de verre optique ni de halo derrière un contenu à lire)
+    expect(Optical).not.toHaveBeenCalled();
     expect(Source).toHaveBeenCalledWith(expect.objectContaining({ sourceKey: 'today:bath' }), undefined);
     setTodayDoneComponent(null);
     expect(getTodayDoneComponent()).toBe(DoneMark);

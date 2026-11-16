@@ -7,8 +7,7 @@ import React from 'react';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { SectionTitle, Text } from '@/components/ui';
-import { SecondaryButton } from '@/components/controls';
+import { ListGroup, ListRow, SectionTitle, Text } from '@/components/ui';
 import { MatteSurface } from '@/components/surfaces';
 import { BottleNotificationSettings, noRecommendationNote } from '@/features/bottle';
 import { BottleChildRow } from '@/features/bottleList';
@@ -42,7 +41,11 @@ export default function BottleTimers() {
           {sorted.map((c, i) => <BottleChildRow key={c.id} child={c} last={i === sorted.length - 1} />)}
         </MatteSurface>
       )}
-      {sorted.length ? <SecondaryButton label={tr('u6.bottle_index.history')} icon="list" onPress={() => router.push({ pathname: '/bottle/history', params: { child: sorted[0].id } })} testID="bottles-history" /> : null}
+      {sorted.length ? (
+        <ListGroup>
+          <ListRow icon="list" title={tr('u6.bottle_index.history')} subtitle={tr('d5.bottle.historySub')} onPress={() => router.push({ pathname: '/bottle/history', params: { child: sorted[0].id } })} testID="bottles-history" />
+        </ListGroup>
+      ) : null}
       <SectionTitle title={tr('u6.bottle_index.notifications')} />
       <BottleNotificationSettings />
       <Text variant="caption" muted>{noRecommendationNote()}</Text>

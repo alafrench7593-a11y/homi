@@ -16,11 +16,11 @@ import { Tappable } from '@/components/Tappable';
 import { DELAY_PRESETS, formatHM } from '@/lib/domain/bottleTimer';
 import { slotClock, type DaySlot } from '@/lib/domain/bottleDayPlan';
 import { BottleClock } from './bottleClock';
+import { DayTimeline, RowCue, type DayRowSpec } from '@/features/day5/DayParts';
 import { useTheme } from '@/theme/ThemeProvider';
-import { alpha, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
-const NODE = 22;
 
 /** Ouvre la saisie d'un biberon pré-remplie (heure du créneau et quantité habituelle), toujours vérifiable avant d'enregistrer. */
 export function openSlot(childId: string, slot: DaySlot, timerId?: string | null) {
@@ -60,7 +60,6 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval }: {
   const done = slots.filter((s) => s.status === 'done').length;
   const given = t.tokens.accent.accent2;
   const accent = t.colors.primary;
-  const line = t.material.lines.track;
   // le cadran suit la largeur disponible (320 px : ≈ 240 px), sans jamais dépasser 300 px
   const dial = w ? Math.min(300, Math.floor(w)) : 0;
   return (
@@ -99,54 +98,26 @@ function DayCard({ childId, slots, intervalMinutes, timerId, onPickInterval }: {
         <Text variant="caption" weight="bold" color={accent}>{showList ? tr('u7.bottleDay.hide') : tr('u7.bottleDay.show')}</Text>
         <Icon name={showList ? 'chevron-up' : 'chevron-down'} size={14} color={accent} />
       </Tappable>
-      {showList ? <View style={{ marginTop: spacing.xs }}>
-        {slots.map((s, i) => {
-          const last = i === slots.length - 1;
+      {showList ? (
+        <DayTimeline testID="bottle-day-list" style={{ backgroundColor: 'transparent', borderWidth: 0, marginHorizontal: -spacing.md }} rows={slots.map((s, i): DayRowSpec => {
           const isNext = s.status === 'next';
-          const color = s.status === 'done' ? given : isNext ? accent : s.status === 'missed' ? t.tokens.status.danger : t.colors.textMuted;
           const ml = s.status === 'done'
             ? [s.bottle?.prepared_ml != null ? tr('u7.bottleDay.prepared', { ml: s.bottle.prepared_ml }) : null, s.bottle?.consumed_ml != null ? tr('u7.bottleDay.drunk', { ml: s.bottle.consumed_ml }) : null].filter(Boolean).join(' · ') || tr('u7.bottleDay.noted')
             : s.suggestedMl != null ? tr('u7.bottleDay.usual', { ml: s.suggestedMl }) : tr('u7.bottleDay.qty');
           const label = s.status === 'done' ? tr('u7.bottleDay.given') : isNext ? tr('u7.bottleDay.next') : s.status === 'missed' ? tr('u7.bottleDay.toFill') : tr('u7.bottleDay.planned');
-          return (
-            <View key={`${s.at}-${i}`} style={{ flexDirection: 'row', gap: spacing.md }}>
-              {/* fil vertical et perles */}
-              <View style={{ width: NODE, alignItems: 'center' }}>
-                <View style={{ width: NODE, height: NODE, borderRadius: NODE, alignItems: 'center', justifyContent: 'center',
-                  backgroundColor: s.status === 'done' ? given : isNext ? accent : 'transparent', borderWidth: s.status === 'done' || isNext ? 0 : 2, borderColor: color, borderStyle: s.status === 'missed' ? 'dashed' : 'solid' }}>
-                  {s.status === 'done' ? <Icon name="check" size={13} color={t.colors.background} /> : isNext ? <Icon name="droplet" size={12} color={t.colors.primaryText} /> : null}
-                </View>
-                {!last ? <View style={{ flex: 1, width: 2, minHeight: 18, backgroundColor: line, marginVertical: 2, borderRadius: 1 }} /> : null}
-              </View>
-              <Tappable
-                bare
-                accessibilityRole="button"
-                accessibilityLabel={tr(s.status === 'done' ? 'u7.bottleDay.a11yDone' : s.status === 'planned' ? 'u7.bottleDay.a11yPlanned' : 'u7.bottleDay.a11yFill', { label, clock: slotClock(s.at), ml })}
-                disabled={s.status === 'planned'}
-                onPress={() => (s.status === 'done' && s.bottle ? router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: s.bottle.id } }) : openSlot(childId, s, timerId))}
-                testID={`bottle-slot-${i}`}
-                style={{ flex: 1, marginBottom: last ? 0 : spacing.sm, paddingVertical: isNext ? spacing.sm : 2, paddingHorizontal: isNext ? spacing.sm : 0, borderRadius: radius.md,
-                  backgroundColor: isNext ? alpha(t.tokens.accent.glow[0], t.isDark ? 0.12 : 0.1) : 'transparent', borderWidth: isNext ? 1 : 0, borderColor: t.tokens.border.active }}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                  <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                      <Text weight="bold" style={{ fontSize: isNext ? 20 : 17, fontVariant: ['tabular-nums'], opacity: s.status === 'planned' ? 0.75 : 1 }}>{slotClock(s.at)}</Text>
-                      <Text variant="caption" weight="bold" color={s.status === 'planned' ? t.colors.textMuted : s.status === 'done' ? t.colors.text : color}>{label.toUpperCase()}</Text>
-                    </View>
-                    <Text variant="small" muted>{ml}</Text>
-                  </View>
-                  {s.status === 'done' ? <Icon name="edit-2" size={15} color={t.colors.textMuted} /> : s.status === 'planned' ? <Icon name="clock" size={15} color={t.colors.textMuted} /> : (
-                    <View style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: isNext ? accent : alpha(t.tokens.accent.glow[0], t.isDark ? 0.16 : 0.12) }}>
-                      <Text variant="caption" weight="bold" color={isNext ? t.colors.primaryText : t.colors.text}>{isNext ? tr('u7.bottleDay.log') : tr('u7.bottleDay.fill')}</Text>
-                    </View>
-                  )}
-                </View>
-              </Tappable>
-            </View>
-          );
-        })}
-      </View> : null}
+          // Horaires alignés (colonne tabulaire), statut en capsule ; l'action est dans la ligne (« Noter », « Remplir »)
+          return {
+            key: `${s.at}-${i}`, time: slotClock(s.at), title: ml, strike: false,
+            state: s.status === 'done' ? 'done' : isNext ? 'next' : s.status === 'missed' ? 'late' : 'later',
+            pill: { label, tone: s.status === 'done' ? 'done' : isNext ? 'accent' : s.status === 'missed' ? 'late' : 'muted' },
+            accessibilityLabel: tr(s.status === 'done' ? 'u7.bottleDay.a11yDone' : s.status === 'planned' ? 'u7.bottleDay.a11yPlanned' : 'u7.bottleDay.a11yFill', { label, clock: slotClock(s.at), ml }),
+            onPress: s.status === 'planned' ? undefined : () => (s.status === 'done' && s.bottle ? router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: s.bottle.id } }) : openSlot(childId, s, timerId)),
+            trailing: s.status === 'done' ? <Icon name="edit-2" size={15} color={t.colors.textMuted} /> : s.status === 'planned' ? <Icon name="clock" size={15} color={t.colors.textMuted} />
+              : <RowCue label={isNext ? tr('u7.bottleDay.log') : tr('u7.bottleDay.fill')} />,
+            testID: `bottle-slot-${i}`,
+          };
+        })} />
+      ) : null}
       <Text variant="caption" muted>{tr('u7.bottleDay.footer')}</Text>
     </MatteSurface>
   );

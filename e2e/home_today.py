@@ -66,8 +66,9 @@ with sync_playwright() as p:
     sec = tid(pg, 'home-today')
     box = sec.bounding_box() if sec.count() else None
     R['section_visible_sans_defiler'] = bool(box) and box['y'] < 568 * 0.75
-    R['titre'] = pg.get_by_role('heading', name='Aujourd’hui', exact=True).count() > 0 or pg.get_by_text('Aujourd’hui', exact=True).count() > 0
-    R['resume'] = 'à faire' in (tid(pg, 'home-today-summary').inner_text() if tid(pg, 'home-today-summary').count() else '')
+    # v5 (16/11/2026) : plus de titre « Aujourd’hui » ni de compteurs : prochain événement, « À traiter », « Le reste de la journée »
+    R['titre'] = tid(pg, 'home-next-up').count() > 0 and pg.get_by_text('À traiter', exact=True).count() > 0
+    R['resume'] = pg.locator('[data-testid="home-today-summary"]').count() == 0
     milk = task_by_title(pg, MILK)
     R['mission_qui_m_attend_en_premier'] = bool(milk) and tid(pg, 'today-emphasis').count() > 0 and MILK in tid(pg, 'today-emphasis').inner_text()
     R['statut_en_toutes_lettres'] = bool(milk) and 'À accepter' in row_status(pg, milk['id'])

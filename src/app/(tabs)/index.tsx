@@ -170,7 +170,7 @@ export default function Home() {
         </View>
         {/* Scène « Aujourd'hui » en tête : point focal (prochaine action utile) puis agenda lisible. Seule entrée d'ajout :
             le « + » de la barre d'onglets (sur l'accueil d'un enfant, il reste celui du cocon). */}
-        <HomeToday dockAdd={!childScope} />
+        <HomeToday dockAdd={!childScope} art={scope.scope === 'pregnancy' ? 'grossesse' : scope.scope === 'baby' || scope.scope === 'postpartum' ? 'bebe' : scope.scope === 'child' ? 'enfants' : cycleMode ? 'cycle' : 'foyer'} />
 
         {/* Plus bas, allégé : le profil affiché (grossesse, enfant, cycle…), puis les cartes choisies dans Réglages › Mon accueil */}
         <View style={{ gap: spacing.sm, marginTop: spacing.md }}>
