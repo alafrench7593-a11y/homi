@@ -6,6 +6,7 @@ import { onLocaleChange } from '@/i18n';
  */
 import { BRAND } from '@/config/brand';
 /** Médiateur de la consommation (art. L612-1) : à renseigner dans brand.json dès sa désignation. */
+const PUB = (BRAND as { publisher: { name: string; siren: string } }).publisher;
 const MEDIATOR = (BRAND as { mediator?: string }).mediator?.trim() ?? '';
 
 import { inLang, localized } from '@/i18n/localized';
@@ -39,7 +40,7 @@ const PRIVACY_FR: LegalDoc = {
   title: 'Politique de confidentialité',
   updated: 'Novembre 2026',
   sections: [
-    { title: 'Responsable du traitement', body: `David PRINCIVIL, éditeur de ${BRAND.name}, à titre personnel (particulier). Pour toute question ou pour exercer vos droits, écrivez à ${BRAND.supportEmail} : réponse dans un délai d’un mois au plus.` },
+    { title: 'Responsable du traitement', body: `${PUB.name}, entrepreneur individuel (EI), éditeur de ${BRAND.name} — SIREN ${PUB.siren}. Pour toute question ou pour exercer vos droits, écrivez à ${BRAND.supportEmail} : réponse dans un délai d’un mois au plus.` },
     { title: 'Base légale', body: 'Les données de santé (cycle, grossesse, santé des enfants, humeur, rapports) ne sont traitées qu’avec votre consentement explicite, enregistré et daté, que vous pouvez retirer à tout moment dans Profil › Confidentialité. Le compte, l’abonnement et la sécurité du service reposent sur l’exécution du contrat ; la conservation des factures (par Apple ou Google) sur une obligation légale.' },
     { title: 'Données collectées', body: 'Compte (e-mail), profil, informations que vous saisissez (grossesse, enfants, suivis, cycle), consentements horodatés. Les données de santé ne sont traitées qu’avec votre consentement explicite.' },
     { title: 'Finalités', body: 'Fournir les fonctions de l’application, vos rappels, le partage avec les membres de votre foyer selon les droits que vous choisissez, et la sécurité du service. Jamais de publicité ciblée, jamais de revente de vos données.' },
@@ -84,7 +85,7 @@ const PRIVACY_EN: LegalDoc = {
   title: 'Privacy policy',
   updated: 'November 2026',
   sections: [
-    { title: 'Data controller', body: `David PRINCIVIL, publisher of ${BRAND.name}, as a private individual. For any question or to exercise your rights, write to ${BRAND.supportEmail}: you will get a reply within one month at most.` },
+    { title: 'Data controller', body: `${PUB.name}, sole trader (entrepreneur individuel, EI), publisher of ${BRAND.name} — SIREN ${PUB.siren}. For any question or to exercise your rights, write to ${BRAND.supportEmail}: you will get a reply within one month at most.` },
     { title: 'Legal basis', body: 'Health data (cycle, pregnancy, children’s health, mood, intercourse) is processed only with your explicit consent, recorded and dated, which you can withdraw at any time in Profile › Privacy. The account, the subscription and the security of the service rely on performance of the contract; the keeping of invoices (by Apple or Google) relies on a legal obligation.' },
     { title: 'Data collected', body: 'Account (email), profile, information you enter (pregnancy, children, tracking, cycle), time-stamped consents. Health data is processed only with your explicit consent.' },
     { title: 'Purposes', body: 'To provide the app’s features, your reminders, sharing with the members of your household according to the rights you choose, and the security of the service. Never targeted advertising, never resale of your data.' },
@@ -133,7 +134,7 @@ const PRIVACY_ES: LegalDoc = {
   title: 'Política de privacidad',
   updated: 'Noviembre de 2026',
   sections: [
-    { title: 'Responsable del tratamiento', body: `David PRINCIVIL, editor de ${BRAND.name}, a título personal (particular). Para cualquier pregunta o para ejercer tus derechos, escribe a ${BRAND.supportEmail}: respuesta en un plazo máximo de un mes.` },
+    { title: 'Responsable del tratamiento', body: `${PUB.name}, empresario individual (entrepreneur individuel, EI), editor de ${BRAND.name} — SIREN ${PUB.siren}. Para cualquier pregunta o para ejercer tus derechos, escribe a ${BRAND.supportEmail}: respuesta en un plazo máximo de un mes.` },
     { title: 'Base jurídica', body: 'Los datos de salud (ciclo, embarazo, salud de los niños, estado de ánimo, relaciones sexuales) solo se tratan con tu consentimiento explícito, registrado y fechado, que puedes retirar en cualquier momento en Perfil › Privacidad. La cuenta, la suscripción y la seguridad del servicio se basan en la ejecución del contrato; la conservación de las facturas (por Apple o Google), en una obligación legal.' },
     { title: 'Datos recopilados', body: 'Cuenta (correo electrónico), perfil, información que introduces (embarazo, hijos, seguimientos, ciclo), consentimientos con fecha y hora. Los datos de salud solo se tratan con tu consentimiento explícito.' },
     { title: 'Finalidades', body: 'Ofrecer las funciones de la aplicación, tus recordatorios, el uso compartido con los miembros de tu hogar según los derechos que elijas, y la seguridad del servicio. Nunca publicidad dirigida, nunca reventa de tus datos.' },
@@ -175,7 +176,7 @@ const PRIVACY_DE: LegalDoc = {
   title: 'Datenschutzerklärung',
   updated: 'November 2026',
   sections: [
-    { title: 'Verantwortlicher', body: `David PRINCIVIL, Herausgeber von ${BRAND.name}, als Privatperson. Für alle Fragen oder zur Ausübung deiner Rechte schreibe an ${BRAND.supportEmail}: Antwort innerhalb von höchstens einem Monat.` },
+    { title: 'Verantwortlicher', body: `${PUB.name}, Einzelunternehmer (entrepreneur individuel, EI), Herausgeber von ${BRAND.name} — SIREN ${PUB.siren}. Für alle Fragen oder zur Ausübung deiner Rechte schreibe an ${BRAND.supportEmail}: Antwort innerhalb von höchstens einem Monat.` },
     { title: 'Rechtsgrundlage', body: 'Gesundheitsdaten (Zyklus, Schwangerschaft, Gesundheit der Kinder, Stimmung, Geschlechtsverkehr) werden nur mit deiner ausdrücklichen, gespeicherten und datierten Einwilligung verarbeitet, die du jederzeit unter Profil › Datenschutz widerrufen kannst. Konto, Abonnement und die Sicherheit des Dienstes beruhen auf der Vertragserfüllung; die Aufbewahrung der Rechnungen (durch Apple oder Google) auf einer gesetzlichen Pflicht.' },
     { title: 'Erhobene Daten', body: 'Konto (E-Mail), Profil, Informationen, die du eingibst (Schwangerschaft, Kinder, Aufzeichnungen, Zyklus), Einwilligungen mit Zeitstempel. Gesundheitsdaten werden nur mit deiner ausdrücklichen Einwilligung verarbeitet.' },
     { title: 'Zwecke', body: 'Bereitstellung der Funktionen der App, deiner Erinnerungen, der Freigabe für die Mitglieder deines Haushalts gemäß den von dir gewählten Rechten sowie die Sicherheit des Dienstes. Niemals gezielte Werbung, niemals Weiterverkauf deiner Daten.' },
@@ -217,7 +218,7 @@ const PRIVACY_IT: LegalDoc = {
   title: 'Informativa sulla privacy',
   updated: 'Novembre 2026',
   sections: [
-    { title: 'Titolare del trattamento', body: `David PRINCIVIL, editore di ${BRAND.name}, a titolo personale (privato). Per qualsiasi domanda o per esercitare i tuoi diritti, scrivi a ${BRAND.supportEmail}: risposta entro un mese al massimo.` },
+    { title: 'Titolare del trattamento', body: `${PUB.name}, imprenditore individuale (entrepreneur individuel, EI), editore di ${BRAND.name} — SIREN ${PUB.siren}. Per qualsiasi domanda o per esercitare i tuoi diritti, scrivi a ${BRAND.supportEmail}: risposta entro un mese al massimo.` },
     { title: 'Base giuridica', body: 'I dati sanitari (ciclo, gravidanza, salute dei bambini, umore, rapporti) sono trattati solo con il tuo consenso esplicito, registrato e datato, che puoi revocare in qualsiasi momento in Profilo › Privacy. L’account, l’abbonamento e la sicurezza del servizio si basano sull’esecuzione del contratto; la conservazione delle fatture (da parte di Apple o Google) su un obbligo di legge.' },
     { title: 'Dati raccolti', body: 'Account (e-mail), profilo, informazioni che inserisci (gravidanza, figli, monitoraggi, ciclo), consensi con data e ora. I dati sanitari sono trattati solo con il tuo consenso esplicito.' },
     { title: 'Finalità', body: 'Fornire le funzioni dell’app, i tuoi promemoria, la condivisione con i membri del tuo nucleo familiare secondo i diritti che scegli, e la sicurezza del servizio. Mai pubblicità mirata, mai rivendita dei tuoi dati.' },
@@ -244,7 +245,7 @@ const NOTICE_FR: LegalDoc = {
   title: `Mentions légales`,
   updated: `Novembre 2026`,
   sections: [
-    { title: `Éditeur`, body: `${BRAND.name} est éditée par David PRINCIVIL, à titre personnel (particulier). Contact : ${BRAND.supportEmail}.` },
+    { title: `Éditeur`, body: `${BRAND.name} est éditée par ${PUB.name}, entrepreneur individuel (EI), SIREN ${PUB.siren}. Contact : ${BRAND.supportEmail}.` },
     { title: `Directeur de la publication`, body: `David PRINCIVIL.` },
     { title: `Hébergement des données`, body: `Supabase, Inc. (supabase.com) : base de données, fichiers et comptes. Les autres services techniques utilisés sont listés dans la politique de confidentialité.` },
     { title: `Distribution`, body: `${BRAND.name} est distribuée par l’App Store (Apple) et Google Play (Google). Les paiements sont encaissés par ces boutiques.` },
@@ -279,7 +280,7 @@ const NOTICE_EN: LegalDoc = {
   title: `Legal notice`,
   updated: `November 2026`,
   sections: [
-    { title: `Publisher`, body: `${BRAND.name} is published by David PRINCIVIL, as a private individual. Contact: ${BRAND.supportEmail}.` },
+    { title: `Publisher`, body: `${BRAND.name} is published by ${PUB.name}, sole trader (entrepreneur individuel, EI), SIREN ${PUB.siren}. Contact: ${BRAND.supportEmail}.` },
     { title: `Publication director`, body: `David PRINCIVIL.` },
     { title: `Data hosting`, body: `Supabase, Inc. (supabase.com): database, files and accounts. The other technical services used are listed in the privacy policy.` },
     { title: `Distribution`, body: `${BRAND.name} is distributed through the App Store (Apple) and Google Play (Google). Payments are collected by these stores.` },
@@ -314,7 +315,7 @@ const NOTICE_ES: LegalDoc = {
   title: `Aviso legal`,
   updated: `Noviembre de 2026`,
   sections: [
-    { title: `Editor`, body: `${BRAND.name} está editada por David PRINCIVIL, a título personal (particular). Contacto: ${BRAND.supportEmail}.` },
+    { title: `Editor`, body: `${BRAND.name} está editada por ${PUB.name}, empresario individual (entrepreneur individuel, EI), SIREN ${PUB.siren}. Contacto: ${BRAND.supportEmail}.` },
     { title: `Director de la publicación`, body: `David PRINCIVIL.` },
     { title: `Alojamiento de los datos`, body: `Supabase, Inc. (supabase.com): base de datos, archivos y cuentas. Los demás servicios técnicos utilizados se enumeran en la política de privacidad.` },
     { title: `Distribución`, body: `${BRAND.name} se distribuye a través del App Store (Apple) y Google Play (Google). Los pagos los cobran estas tiendas.` },
@@ -349,7 +350,7 @@ const NOTICE_DE: LegalDoc = {
   title: `Impressum`,
   updated: `November 2026`,
   sections: [
-    { title: `Herausgeber`, body: `${BRAND.name} wird von David PRINCIVIL als Privatperson herausgegeben. Kontakt: ${BRAND.supportEmail}.` },
+    { title: `Herausgeber`, body: `${BRAND.name} wird von ${PUB.name} herausgegeben, Einzelunternehmer (entrepreneur individuel, EI), SIREN ${PUB.siren}. Kontakt: ${BRAND.supportEmail}.` },
     { title: `Verantwortlich für den Inhalt`, body: `David PRINCIVIL.` },
     { title: `Hosting der Daten`, body: `Supabase, Inc. (supabase.com): Datenbank, Dateien und Konten. Die weiteren genutzten technischen Dienste sind in der Datenschutzerklärung aufgeführt.` },
     { title: `Vertrieb`, body: `${BRAND.name} wird über den App Store (Apple) und Google Play (Google) vertrieben. Die Zahlungen werden von diesen Stores eingezogen.` },
@@ -384,7 +385,7 @@ const NOTICE_IT: LegalDoc = {
   title: `Note legali`,
   updated: `Novembre 2026`,
   sections: [
-    { title: `Editore`, body: `${BRAND.name} è pubblicata da David PRINCIVIL, a titolo personale (privato). Contatto: ${BRAND.supportEmail}.` },
+    { title: `Editore`, body: `${BRAND.name} è pubblicata da ${PUB.name}, imprenditore individuale (entrepreneur individuel, EI), SIREN ${PUB.siren}. Contatto: ${BRAND.supportEmail}.` },
     { title: `Direttore della pubblicazione`, body: `David PRINCIVIL.` },
     { title: `Hosting dei dati`, body: `Supabase, Inc. (supabase.com): database, file e account. Gli altri servizi tecnici utilizzati sono elencati nell’informativa sulla privacy.` },
     { title: `Distribuzione`, body: `${BRAND.name} è distribuita tramite l’App Store (Apple) e Google Play (Google). I pagamenti sono incassati da questi store.` },

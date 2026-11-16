@@ -6,5 +6,9 @@
   "scheme": "homi",
   "bundleId": "app.homi.family",
   "supportEmail": "homixyz@gmail.com",
-  "mediator": ""
+  "mediator": "",
+  "publisher": {
+    "name": "David PRINCIVIL",
+    "siren": "131194466"
+  }
 }
