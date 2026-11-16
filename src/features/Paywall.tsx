@@ -1,6 +1,6 @@
 /**
  * Écran Premium v2 (15/11/2026) — utilisé par /premium (plein écran) et par PremiumGate (écran réservé, `locked`).
- *  - En tête : la maison HOMI (petite, image fixe sous 120 px), titre court ; puis les formules et le bouton principal,
+ *  - En tête (v5) : l'illustration `famille` sur le halo corail (compacte), titre court ; puis les formules et le bouton principal,
  *    visibles sans défiler à 390 × 844 ; ensuite la frise d'essai, les avantages (compacts), mentions et liens.
  *  - Avantages RÉELS de Premium (verrouillage strict, src/lib/premium/access.ts : suivi des enfants, cycle / grossesse /
  *    post-partum, organisation du foyer, partage avec UN co-parent, communauté), en phrases courtes.
@@ -15,10 +15,10 @@
  *    « confirmé » seulement quand le serveur voit le droit (jamais de faux succès).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Linking, Platform, Pressable, ScrollView, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence } from 'react-native-reanimated';
 import { router } from 'expo-router';
-import { HomiLogoAnimated } from '@/components/HomiLogoAnimated';
+import { HeroArt } from '@/features/entry/HeroArt';
 import { DrawCheck } from '@/components/MotionKit';
 import { confirm } from '@/components/Overlays';
 import { Banner, Button, Icon, Loading, Text, type IconName } from '@/components/ui';
@@ -217,6 +217,7 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
     } finally { setBusy(null); }
   }
 
+  const compactHero = useWindowDimensions().height < 700;
   const subscriber = ent.premium === true && !locked;
   const trial = !!chosen && chosen.trialDays > 0;
   const purchasable = !webWithoutPurchase(plans.mode) && plans.mode !== 'unavailable';
@@ -224,8 +225,9 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
   const hero = (
     <Cascade index={0}>
       <View style={{ alignItems: 'center', gap: 4 }}>
-        <HomiLogoAnimated width={64} still={locked} testID="pw2-logo" />
-        <Text variant="caption" weight="bold" color={th.colors.primary} style={{ letterSpacing: 1.6 }}>{tr('pay2.eyebrow').toUpperCase()}</Text>
+        {/* v5 : l'illustration `famille` sur le halo corail, en tête compacte (formules et bouton restent au premier écran) */}
+        <HeroArt name="famille" size={compactHero ? 88 : 116} reveal={!locked} testID="pw2-art" />
+        <Text variant="label" weight="bold" color={th.colors.primary} testID="pw2-eyebrow">{tr('pay2.eyebrow')}</Text>
         <Text variant="title" center accessibilityRole="header" testID="pw2-title">{locked ? tr('pw.locked') : tr('pay2.title')}</Text>
         {!subscriber ? (
           <Text variant="small" muted center testID="pw2-lead">{trial ? tr('pay2.lead.trial', { count: chosen!.trialDays }) : tr('pay2.lead')}</Text>

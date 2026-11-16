@@ -6,9 +6,10 @@
  * Écran sauté si l'utilisateur a déjà Premium.
  */
 import React from 'react';
-import { View } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { Icon, Text, type IconName } from '@/components/ui';
 import { Cascade } from '@/motion';
+import { HeroArt, heroSize } from '@/features/entry/HeroArt';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -18,10 +19,14 @@ import { StepTitle } from './kit';
 export function PremiumStep({ features, childName }: { features: PremiumFeature[]; childName?: string | null }) {
   const t = useTheme();
   // Données déjà créées, urgences, alertes de rappel : ce qui ne dépend jamais d'un abonnement
+  const win = useWindowDimensions();
   const free = [6, 0, 2].map((i) => ALWAYS_FREE[i]).filter(Boolean);
   return (
     <View style={{ gap: spacing.lg }} testID="onb-premium">
-      <StepTitle kicker={tr('o2.prem.kicker')} title={tr('o2.prem.title')} lead={tr('o2.prem.lead')} />
+      <View style={{ gap: spacing.sm }}>
+        <HeroArt name="foyer-maison" size={heroSize(win, { max: 168, min: 96, reserve: 660 })} testID="onb-premium-art" />
+        <StepTitle kicker={tr('o2.prem.kicker')} title={tr('o2.prem.title')} lead={tr('o2.prem.lead')} />
+      </View>
       <View style={{ gap: spacing.sm }}>
         <Text variant="label" weight="bold" color={t.colors.primary}>{tr('o2.prem.adds')}</Text>
         {features.map((f, i) => (

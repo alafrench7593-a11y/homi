@@ -3,7 +3,8 @@
  * le mot de passe oublié, la confirmation et l'onboarding.
  *
  * Règles (HOMI_SCREEN_INVENTORY.md › Entrée) :
- *  - un seul point focal par écran (`EntryHero`) : la maison HOMI ou un disque prune, sur le HALO CORAIL ;
+ *  - un seul point focal par écran (`EntryHero`) : l'illustration 3D `famille` (HeroArt.tsx) ou, pour un écran
+ *    d'état, un disque prune à icône, sur le HALO CORAIL ; le logo maison reste petit, en tête ;
  *  - la scène se révèle EN PROFONDEUR (échelle 1,12 → 1 + fondu, Reanimated, `useMotion`) mais le texte et l'action
  *    principale sont rendus tout de suite, sans animation d'entrée : rien n'attend la scène ;
  *  - champs posés sur une surface MATE (`MattePanel`, opaque, sans flou ni reflet) : lisibles sur toutes les palettes ;
@@ -16,12 +17,12 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'rea
 import { Screen } from '@/components/Screen';
 import { CoralHalo } from '@/components/CoralHalo';
 import { Icon, type IconName, Text } from '@/components/ui';
-import { BrandLogo, BrandName, BrandWordmark } from '@/components/BrandLogo';
-import { BRAND } from '@/config/brand';
+import { BrandLogo, BrandWordmark } from '@/components/BrandLogo';
 import { durations } from '@/motion/curves';
 import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { HeroArt, type IllustrationName } from './HeroArt';
 
 /** Durée de la révélation en profondeur (≈ 730 ms) : longue et douce, mais jamais bloquante. */
 export const DEPTH_REVEAL_MS = Math.round(durations.entrance * 1.4);
@@ -88,22 +89,23 @@ export function FocalMark({ icon, logo, size }: { icon?: IconName; logo?: boolea
 }
 
 /**
- * En-tête Keynote : point focal, titre, une phrase. Titre et phrase sont là dès la première image.
- * `wordmark` : le nom HOMI se lit au-dessus du titre — connexion, inscription. Avec `logo` (la maison est déjà le
- * point focal) : le nom seul, dans la typographie de la marque ; sinon maison + nom (`BrandWordmark`).
+ * En-tête d'entrée (v5) : le logo maison PETIT en tête (`wordmark`), puis le point focal — l'illustration 3D `famille`
+ * sur le halo corail (`logo` ou `art`) ou, pour les écrans d'état (e-mail envoyé, lien expiré), un disque prune
+ * portant une icône — un titre aéré, une phrase. Titre et phrase sont là dès la première image.
  */
-export function EntryHero({ icon, logo, wordmark, title, lead, kicker, testID }: { icon?: IconName; logo?: boolean; wordmark?: boolean; title: string; lead?: string; kicker?: string; testID?: string }) {
+export function EntryHero({ icon, logo, art, wordmark, title, lead, kicker, testID }: { icon?: IconName; logo?: boolean; art?: IllustrationName; wordmark?: boolean; title: string; lead?: string; kicker?: string; testID?: string }) {
   const t = useTheme();
   const compact = useCompactEntry();
+  const illustration = art ?? (logo ? 'famille' : null);
   return (
-    <View testID={testID} style={{ alignItems: 'center', gap: compact ? spacing.xs : spacing.sm, paddingTop: compact ? 0 : spacing.sm }}>
-      <FocalMark icon={icon} logo={logo} size={compact ? 104 : 168} />
-      {wordmark ? (logo
-        ? <View testID="entry-wordmark" accessible accessibilityRole="image" accessibilityLabel={BRAND.name}><BrandName size={compact ? 22 : 28} /></View>
-        : <BrandWordmark height={compact ? 18 : 24} header={false} testID="entry-wordmark" />) : null}
+    <View testID={testID} style={{ alignItems: 'center', gap: compact ? spacing.xs : spacing.sm }}>
+      {wordmark ? <BrandWordmark height={compact ? 16 : 20} header={false} testID="entry-wordmark" /> : null}
+      {illustration
+        ? <HeroArt name={illustration} size={compact ? 112 : 184} testID="entry-art" />
+        : <FocalMark icon={icon} size={compact ? 104 : 148} />}
       {kicker ? <Text variant="label" color={t.colors.primary} center>{kicker}</Text> : null}
       <Text variant="title" center accessibilityRole="header" style={{ maxWidth: 360 }}>{title}</Text>
-      {lead ? <Text center muted style={{ maxWidth: 340 }}>{lead}</Text> : null}
+      {lead ? <Text center muted style={{ maxWidth: 320 }}>{lead}</Text> : null}
     </View>
   );
 }

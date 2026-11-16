@@ -12,7 +12,7 @@
  * Les comptes qui ont terminé ne passent plus ici (src/app/index.tsx).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,7 +36,8 @@ import {
   answersPayload, emptyAnswers, interestsFor, journeysFor, needsChildrenForm, needsPregnancyForm, ONBOARDING_VERSION, personalize, situationsFromJourneys,
   splitDeck, type OnboardingAnswers,
 } from '@/lib/onboarding/personalize';
-import { OnbProgress, StepFade, StepTitle } from '@/features/onboarding/kit';
+import { artForAnswers, OnbProgress, StepFade, StepTitle } from '@/features/onboarding/kit';
+import { HeroArt, heroSize } from '@/features/entry/HeroArt';
 import { OpeningStep } from '@/features/onboarding/OpeningStep';
 import { SITUATION_SPACE, SituationStep } from '@/features/onboarding/SituationStep';
 import { HouseholdStep, NeedsStep } from '@/features/onboarding/NeedsStep';
@@ -83,6 +84,7 @@ export default function Onboarding() {
   const [revealDone, setRevealDone] = useState(false);
   const finishing = useRef(false);
   const compact = useCompactEntry();
+  const win = useWindowDimensions();
   // Démonstration : la pastille « Démo » flotte en haut ; l'écran (sans en-tête) lui laisse sa place
   const demoInset = useDemoInset();
   const demoTop = demoInset ? { paddingTop: insets.top + spacing.md + demoInset } : undefined;
@@ -328,6 +330,11 @@ export default function Onboarding() {
   return (
     <Screen footer={footer} contentStyle={demoTop}>
       {temps > 1 ? <OnbProgress count={TOTAL_TEMPS} index={temps - 1} label={tr('o2.progress', { step: temps, total: TOTAL_TEMPS })} /> : null}
+      {/* Temps 2 à 6 : l'illustration de la situation choisie, sur le halo, reste en place d'une question à l'autre (fondu
+          enchaîné quand la situation principale change) ; seules les questions entrent et sortent. */}
+      {phase === 'flow' && step !== 'intro' ? (
+        <HeroArt name={artForAnswers(answers)} size={heroSize(win, { max: 150, min: 88, reserve: 690 })} reveal={false} testID="onb-art" style={{ marginTop: compact ? 0 : spacing.xs }} />
+      ) : null}
       {error && phase === 'flow' ? <Banner tone="warning">{error}</Banner> : null}
       <StepFade key={key} dir={phase === 'flow' ? dir : 1}>
         {phase === 'reveal' ? (

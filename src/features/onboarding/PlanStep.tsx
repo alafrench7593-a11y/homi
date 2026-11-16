@@ -1,13 +1,12 @@
 /**
  * Temps 6 — Personnalisation réelle : synthèse CALCULÉE des réponses (`personalize`, testé) présentée comme une fiche
  * éditoriale (pas de cartes répétées) : objectif, priorité, trois outils numérotés (vraies routes de l'application),
- * puis la première action proposée sur la seule surface de verre optique de l'écran. Les rappels proposés se
+ * puis la première action proposée sur une surface calme (v5 : plus de verre hors sélecteur). Les rappels proposés se
  * choisissent ici (aucun n'est activé sans accord) ; les accords (6 bis) suivent.
  */
 import React from 'react';
 import { View } from 'react-native';
 import { Chip, Icon, Text, type IconName } from '@/components/ui';
-import { OpticalGlass } from '@/components/surfaces';
 import { Cascade } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -73,17 +72,17 @@ export function PlanStep({ plan, reminders, chosen, onToggleReminder }: {
         </Fact>
       </Cascade>
       <Cascade index={3}>
-        <OpticalGlass radius={radius.lg} padded={spacing.md} testID="onb-plan-first">
+        <View testID="onb-plan-first" style={{ borderRadius: radius.lg, padding: spacing.md, borderWidth: 1, borderColor: t.tokens.border.rest, backgroundColor: t.tokens.surface.opaque }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
-              <Icon name={FIRST_ICON[plan.first.key]} size={20} color={t.colors.primaryText} />
+            <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
+              <Icon name={FIRST_ICON[plan.first.key]} size={20} color={t.colors.primary} />
             </View>
             <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
               <Text variant="label">{tr('o2.plan.first')}</Text>
               <Text weight="bold">{tr(`o2.first.${plan.first.key}` as TKey)}</Text>
             </View>
           </View>
-        </OpticalGlass>
+        </View>
       </Cascade>
       <Cascade index={4}>
         <View style={{ gap: spacing.xs, paddingTop: spacing.sm }}>

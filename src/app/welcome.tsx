@@ -1,25 +1,28 @@
 /**
- * Accueil sans compte (HOMI, entrée Keynote) : la maison HOMI et son nom en en-tête, UN point focal (la maison HOMI
- * sur le halo de la palette, révélée en profondeur), un titre, une phrase, UNE action principale (« Commencer »). Texte et boutons sont là dès la première
- * image : seule la scène s'anime. Options en boutons ronds (langue) ; l'aide reste nommée en toutes lettres.
- * Couleurs : thème uniquement.
+ * Accueil sans compte (HOMI v5 « Lumière corail ») :
+ *  - en tête, le logo maison PETIT (la marque), la langue et l'aide (icône + libellé, sans capsule) ;
+ *  - l'illustration `famille` sur le halo corail (taille fixe, se resserre sur petit écran), seule image de l'écran ;
+ *  - un titre aéré, une phrase ;
+ *  - hiérarchie des actions : « Commencer » (principal) → « J'ai déjà un compte » (secondaire sobre) →
+ *    « Découvrir sans compte » (lien).
+ * Texte et boutons sont rendus dès la première image : seule l'illustration arrive en douceur.
  */
 import React, { useState } from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
+import { useDemoInset } from '@/components/demoInset';
 import { Button, Icon, IconButton, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { BrandWordmark } from '@/components/BrandLogo';
-import { FocalMark } from '@/features/entry/EntryKit';
+import { HeroArt, heroSize } from '@/features/entry/HeroArt';
 import { isDemo } from '@/lib/backend';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, radius, spacing, typography } from '@/theme/tokens';
+import { MIN_TOUCH, spacing, typography } from '@/theme/tokens';
 
 export default function Welcome() {
   const insets = useSafeAreaInsets();
@@ -27,8 +30,9 @@ export default function Welcome() {
   const topInset = insets.top + useDemoInset();
   const win = useWindowDimensions();
   const t = useTheme();
-  // Écran court (320×568) : le point focal se resserre pour garder les actions au premier écran
-  const focal = Math.round(Math.max(150, Math.min(300, win.height - 470)));
+  const short = win.height < 640;
+  // Illustration : la plus grande possible en gardant titre et trois actions au premier écran (320 × 568 compris)
+  const art = heroSize(win, { max: 300, min: 132, reserve: short ? 420 : 500 });
   const [starting, setStarting] = useState(false);
 
   async function demo() {
@@ -43,45 +47,46 @@ export default function Welcome() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: t.colors.background }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1, paddingTop: topInset + spacing.xs, paddingBottom: insets.bottom + spacing.md, paddingHorizontal: spacing.lg }} showsVerticalScrollIndicator={false}>
-        {/* En-tête : marque, langue (bouton rond), aide (toujours nommée) */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH }}>
+        {/* En-tête : la marque (petite), la langue, l'aide — sans capsule */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, minHeight: MIN_TOUCH }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, minWidth: 0 }}>
-            <BrandWordmark height={22} testID="welcome-wordmark" />
+            <BrandWordmark height={20} testID="welcome-wordmark" />
           </View>
-          <IconButton icon="globe" tone="filled" label={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push({ pathname: '/intro', params: { scene: 'start' } })} />
+          <IconButton icon="globe" label={tr('welcome.language', { language: localeInfo(getLocale()).native })} onPress={() => router.push({ pathname: '/intro', params: { scene: 'start' } })} testID="welcome-language" />
           <Tappable
             accessibilityRole="button"
             accessibilityLabel={tr('welcome.helpA11y')}
             onPress={() => router.push('/emergency')}
-            style={({ pressed }) => ({ minHeight: MIN_TOUCH, paddingHorizontal: spacing.md, borderRadius: radius.pill, flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: t.material.glass.inset.edge, backgroundColor: t.material.glass.inset.fill, opacity: pressed ? 0.8 : 1 })}
+            testID="welcome-help"
+            style={({ pressed }) => ({ minHeight: MIN_TOUCH, paddingHorizontal: spacing.xs, flexDirection: 'row', alignItems: 'center', gap: 6, opacity: pressed ? 0.6 : 1 })}
           >
-            <Icon name="life-buoy" size={16} color={t.colors.heart} />
+            <Icon name="life-buoy" size={18} color={t.colors.text} />
             <Text variant="small" weight="bold" numberOfLines={1}>{tr('welcome.help')}</Text>
           </Tappable>
         </View>
 
-        {/* Point focal unique : la scène se révèle en profondeur */}
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: focal }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <FocalMark logo size={focal} />
+        {/* L'illustration sur le halo corail : seul point focal */}
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: art + spacing.md, paddingTop: spacing.sm }}>
+          <HeroArt name="famille" size={art} testID="welcome-hero" />
         </View>
 
-        {/* Titre, phrase et actions : disponibles immédiatement */}
-        <View style={{ alignItems: 'center', gap: spacing.sm }}>
-          <Text variant="label" color={t.colors.primary} center>{tr('brand.tagline')}</Text>
-          {/* v5 : une seule famille (Manrope), titre aéré, plus d'italique éditoriale */}
-          <Text center accessibilityRole="header" accessibilityLabel={tr('welcome.titleA11y')} maxFontSizeMultiplier={1.3} style={[typography.display, { fontSize: 32, lineHeight: 38, color: t.colors.text }]}>
-            {tr('welcome.title1')}{'\n'}{tr('welcome.title2a')}{tr('welcome.title2b')}
+        {/* Titre et phrase : disponibles immédiatement */}
+        <View style={{ alignItems: 'center', gap: spacing.sm, paddingTop: spacing.xs }}>
+          <Text center accessibilityRole="header" maxFontSizeMultiplier={1.3} testID="welcome-title"
+            style={[typography.display, { fontSize: short ? 28 : 34, lineHeight: short ? 34 : 40, color: t.colors.text, maxWidth: 340 }]}>
+            {tr('e5.welcome.title')}
           </Text>
-          <Text center muted style={{ maxWidth: 340 }}>{tr('welcome.body')}</Text>
+          <Text center muted style={{ maxWidth: 320 }}>{tr('e5.welcome.lead')}</Text>
         </View>
 
-        <View style={{ gap: spacing.xs, marginTop: spacing.lg, alignSelf: 'stretch' }}>
-          <Button label={tr('welcome.start')} size="lg" icon="arrow-right" full onPress={() => router.push('/auth/sign-up')} testID="welcome-start" />
-          <Button label={tr('welcome.haveAccount')} variant="ghost" full onPress={() => router.push('/auth/sign-in')} />
-          <Button label={tr('welcome.demo')} variant="ghost" icon="eye" full loading={starting} onPress={demo} />
+        {/* Une action principale, une secondaire sobre, un lien */}
+        <View style={{ gap: spacing.xs, marginTop: short ? spacing.md : spacing.xl, alignSelf: 'stretch' }}>
+          <Button label={tr('welcome.start')} size="lg" full onPress={() => router.push('/auth/sign-up')} testID="welcome-start" />
+          <Button label={tr('e5.welcome.haveAccount')} variant="secondary" size="lg" full onPress={() => router.push('/auth/sign-in')} testID="welcome-sign-in" />
+          <Button label={tr('welcome.demo')} variant="ghost" full loading={starting} onPress={demo} testID="welcome-demo" />
         </View>
         {isDemo ? <Text variant="caption" center muted style={{ marginTop: spacing.xs }}>{tr('demo.banner')}</Text> : null}
       </ScrollView>

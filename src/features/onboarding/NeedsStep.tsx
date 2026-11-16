@@ -5,50 +5,22 @@
  *  - « Qui partage le foyer ? » : le cercle du foyer se peuple (vous, l'autre parent, nounou, crèche) et une phrase dit
  *    ce que ce choix change réellement (missions à deux, outils du parent solo, calendrier de garde, accès nounou).
  */
-import React, { useEffect } from 'react';
-import { Pressable, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, LinearTransition, ZoomIn, ZoomOut, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import React from 'react';
+import { View } from 'react-native';
+import Animated, { FadeIn, FadeOut, LinearTransition, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { ChoiceGroup } from '@/components/controls';
 import { Chip, Field, Icon, Text, haptic, type IconName } from '@/components/ui';
 import { MattePanel } from '@/features/entry/EntryKit';
 import { useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { toolLabelKey } from '@/lib/journeys/tools';
 import type { FamilySituation } from '@/lib/types';
 import { HELPERS, MAX_NEEDS, NEEDS, recommendTools, toggleNeed, type Helper, type Need, type OnboardingAnswers } from '@/lib/onboarding/personalize';
-import { StepTitle } from './kit';
+import { ChoiceList, ChoiceRow, StepTitle } from './kit';
 
 export const NEED_ICON: Record<Need, IconName> = { mental_load: 'layers', sleep: 'moon', health: 'activity', appointments: 'calendar', meals: 'shopping-cart', community: 'message-circle' };
-
-function NeedRow({ need, rank, onPress }: { need: Need; rank: number; onPress: () => void }) {
-  const t = useTheme();
-  const m = useMotion();
-  const on = useSharedValue(rank ? 1 : 0);
-  useEffect(() => { on.value = m.spring(rank ? 1 : 0, 'rebondLeger'); }, [rank]); // eslint-disable-line react-hooks/exhaustive-deps
-  const badge = useAnimatedStyle(() => ({ opacity: on.value, transform: [{ scale: 0.6 + 0.4 * on.value }] }));
-  const fill = useAnimatedStyle(() => ({ opacity: on.value }));
-  const label = tr(`o2.need.${need}` as TKey);
-  return (
-    <Pressable testID={`onb-need-${need}`} accessibilityRole="checkbox" accessibilityState={{ checked: !!rank }} aria-checked={!!rank}
-      accessibilityLabel={rank ? `${label}. ${tr('o2.needs.rankA11y', { n: rank })}` : label}
-      onPress={() => { haptic('selection'); onPress(); }}
-      style={({ pressed }) => ({ minHeight: MIN_TOUCH + 8, borderRadius: radius.md, borderWidth: 1, borderColor: rank ? t.tokens.border.active : t.tokens.border.rest, backgroundColor: pressed ? t.colors.surfaceAlt : 'transparent', overflow: 'hidden', justifyContent: 'center' })}>
-      <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: t.material.lens.fill }, fill]} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs }}>
-        <Icon name={NEED_ICON[need]} size={20} color={rank ? t.colors.primary : t.colors.textMuted} />
-        <Text weight={rank ? 'bold' : 'medium'} style={{ flex: 1 }}>{label}</Text>
-        <View style={{ width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ position: 'absolute', width: 24, height: 24, borderRadius: 12, borderWidth: 1.5, borderColor: t.material.lines.track }} />
-          <Animated.View style={[{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }, badge]}>
-            <Text variant="small" weight="bold" color={t.colors.primaryText}>{rank || ''}</Text>
-          </Animated.View>
-        </View>
-      </View>
-    </Pressable>
-  );
-}
 
 export function NeedsStep({ answers, onNeeds }: { answers: OnboardingAnswers; onNeeds: (n: Need[]) => void }) {
   const t = useTheme();
@@ -58,9 +30,15 @@ export function NeedsStep({ answers, onNeeds }: { answers: OnboardingAnswers; on
   return (
     <View style={{ gap: spacing.md }}>
       <StepTitle title={tr('o2.needs.title')} lead={tr('o2.needs.lead', { max: MAX_NEEDS })} />
-      <View style={{ gap: spacing.xs }}>
-        {NEEDS.map((n) => <NeedRow key={n} need={n} rank={answers.needs.indexOf(n) + 1} onPress={() => onNeeds(toggleNeed(answers.needs, n))} />)}
-      </View>
+      {/* Une liste : le rang (1, 2) se pose en ressort dans le témoin du choix */}
+      <ChoiceList label={tr('o2.needs.title')}>
+        {NEEDS.map((n) => {
+          const rank = answers.needs.indexOf(n) + 1;
+          const label = tr(`o2.need.${n}` as TKey);
+          return <ChoiceRow key={n} testID={`onb-need-${n}`} icon={NEED_ICON[n]} label={label} selected={!!rank} rank={rank || undefined}
+            a11yLabel={rank ? `${label}. ${tr('o2.needs.rankA11y', { n: rank })}` : label} onPress={() => onNeeds(toggleNeed(answers.needs, n))} />;
+        })}
+      </ChoiceList>
       {/* Conséquence visible : ce que l'accueil mettra en avant (vrais outils, recalculés à chaque choix) */}
       <View testID="onb-needs-effect" accessible accessibilityLiveRegion="polite"
         accessibilityLabel={tools.length ? `${tr('o2.needs.effect')} : ${tools.map((x) => tr(toolLabelKey(x.id))).join(', ')}` : tr('o2.needs.effectNone')}
@@ -90,13 +68,13 @@ function HomeCircle({ members }: { members: Member[] }) {
   const anim = m.level === 'full';
   return (
     <View accessible accessibilityLabel={members.map((x) => x.label).join(', ')} testID="onb-home-circle"
-      style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', flexWrap: 'wrap', gap: spacing.md, minHeight: 104, paddingVertical: spacing.sm }}>
+      style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', flexWrap: 'wrap', gap: spacing.md, minHeight: 84, paddingVertical: spacing.xs }}>
       {members.map((x, i) => (
         <Animated.View key={x.key} entering={anim ? ZoomIn.springify().damping(19).stiffness(260) : undefined} exiting={anim ? ZoomOut.duration(140) : undefined}
           layout={anim ? LinearTransition.springify().damping(30).stiffness(280) : undefined} style={{ alignItems: 'center', gap: 6, width: 72 }}>
-          <View style={{ width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center',
-            backgroundColor: i === 0 ? t.colors.primary : t.material.lines.controlFill, borderWidth: 1, borderColor: i === 0 ? t.material.lens.rim : t.tokens.border.rest }}>
-            {x.initial ? <Text variant="heading" color={t.colors.primaryText}>{x.initial}</Text> : <Icon name={x.icon ?? 'user'} size={22} color={i === 0 ? t.colors.primaryText : t.colors.text} />}
+          <View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center',
+            backgroundColor: i === 0 ? t.tokens.action.fill : t.material.lines.controlFill, borderWidth: i === 0 ? 0 : 1, borderColor: t.tokens.border.rest }}>
+            {x.initial ? <Text variant="heading" color={t.tokens.action.text}>{x.initial}</Text> : <Icon name={x.icon ?? 'user'} size={20} color={i === 0 ? t.tokens.action.text : t.colors.text} />}
           </View>
           <Text variant="caption" weight="bold" center numberOfLines={2}>{x.label}</Text>
         </Animated.View>

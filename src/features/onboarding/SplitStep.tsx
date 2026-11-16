@@ -53,8 +53,8 @@ function Zone({ who, label, count, side, drag, width }: { who: Assignee; label: 
     <View style={{ flex: 1, alignItems: 'center', gap: 6 }} accessible accessibilityLabel={`${label} : ${tr('o2.split.count', { count })}`} testID={`onb-zone-${who}`}>
       <View style={{ width: 76, height: 76, alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View pointerEvents="none" style={[{ position: 'absolute', width: 76, height: 76, borderRadius: 38, backgroundColor: t.tokens.halo.color, opacity: 0 }, glow]} />
-        <Animated.View style={[{ width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', backgroundColor: who === 'me' ? t.colors.primary : t.material.lines.controlFill, borderWidth: 1, borderColor: who === 'me' ? t.material.lens.rim : t.tokens.border.rest }, disc]}>
-          {initial ? <Text variant="heading" color={t.colors.primaryText}>{initial}</Text> : <Icon name={who === 'later' ? 'clock' : who === 'me' ? 'user' : 'user'} size={22} color={who === 'me' ? t.colors.primaryText : t.colors.text} />}
+        <Animated.View style={[{ width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', backgroundColor: who === 'me' ? t.tokens.action.fill : t.material.lines.controlFill, borderWidth: who === 'me' ? 0 : 1, borderColor: t.tokens.border.rest }, disc]}>
+          {initial ? <Text variant="heading" color={t.tokens.action.text}>{initial}</Text> : <Icon name={who === 'later' ? 'clock' : 'user'} size={22} color={who === 'me' ? t.tokens.action.text : t.colors.text} />}
         </Animated.View>
         <View style={{ position: 'absolute', right: 0, top: 0, minWidth: 24, height: 24, borderRadius: 12, paddingHorizontal: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.surface.opaque, borderWidth: 1, borderColor: t.tokens.border.rest }}>
           <Text variant="caption" weight="bold" testID={`onb-zone-count-${who}`}>{count}</Text>
@@ -222,7 +222,7 @@ function AssignButton({ icon, label, a11y, onPress, iconRight, testID }: { icon:
   const t = useTheme();
   return (
     <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress}
-      style={({ pressed }) => ({ flex: 1, minHeight: MIN_TOUCH, borderRadius: radius.pill, flexDirection: iconRight ? 'row-reverse' : 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm,
+      style={({ pressed }) => ({ flex: 1, minHeight: MIN_TOUCH, borderRadius: radius.control, flexDirection: iconRight ? 'row-reverse' : 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm,
         borderWidth: 1, borderColor: t.tokens.border.rest, backgroundColor: pressed ? t.colors.surfaceAlt : t.material.lines.controlFill })}>
       <Icon name={icon} size={16} color={t.colors.text} />
       <Text variant="small" weight="bold" center style={{ flexShrink: 1 }}>{label}</Text>
