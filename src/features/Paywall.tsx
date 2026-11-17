@@ -8,15 +8,16 @@
  *    badge sobre ; aucune urgence, aucun compte à rebours, aucun témoignage.
  *  - Essai : chronologie (Aujourd'hui → Pendant N jours → Le <date réelle>) seulement si la boutique propose l'essai
  *    pour cette formule ET qu'Apple confirme l'éligibilité (applyTrialEligibility). Aucune promesse de rappel.
- *  - Bouton principal au libellé exact (« Commencer l'essai de 3 jours » / « S'abonner — 119,99 € / an »),
- *    renouvellement automatique, comment annuler, « Restaurer les achats », conditions et confidentialité.
+ *  - Bouton principal au libellé exact (« Commencer l'essai de 3 jours » / « S'abonner — 119,99 € / an ») ; juste
+ *    dessous, visibles avec lui sans défiler : ce qui est prélevé et quand, et le renouvellement automatique en clair
+ *    (bloc `PurchaseCta`, partagé avec la page d'abonnement : mêmes textes, mêmes calculs — paywallModel.ts) ;
+ *    comment annuler, « Restaurer les achats », conditions et confidentialité.
  *  - Abonné·e (has_premium, serveur) : formule actuelle et « Gérer l'abonnement », jamais l'offre de nouveau client.
  *  - Issues d'achat : annulé, en attente d'approbation (Ask to Buy), réseau, achats bloqués, boutique indisponible ;
  *    « confirmé » seulement quand le serveur voit le droit (jamais de faux succès).
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSequence } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { HeroArt } from '@/features/entry/HeroArt';
 import { DrawCheck } from '@/components/MotionKit';
@@ -26,16 +27,17 @@ import { usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subs
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement, usePremiumShare } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { periodOfProduct, type PlanPeriod } from '@/lib/premium/plans';
+import type { PlanPeriod } from '@/lib/premium/plans';
 import { PurchaseError } from '@/lib/premium/purchaseErrors';
 import { purchasesSdk } from '@/lib/purchaseMode';
-import { Cascade, motionHaptic, useMotion } from '@/motion';
+import { Cascade, motionHaptic } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { PlanPicker } from './premium/PlanPicker';
 import { TrialTimeline } from './premium/TrialTimeline';
-import { cancelHintKey, ctaHint, ctaLabel, defaultPeriod, errorFeedback, outcomeFeedback, perLong, planName, type Feedback } from './premium/paywallModel';
+import { PurchaseCta, PurchaseFinePrint } from './premium/PurchaseCta';
+import { defaultPeriod, errorFeedback, outcomeFeedback, planName, subscriberSummary, type Feedback } from './premium/paywallModel';
 
 export { ctaLabel as paywallCta } from './premium/paywallModel';
 
@@ -65,24 +67,6 @@ function Benefits() {
       </View>
       <Text variant="caption" muted>{tr('pw.dataSafe')}</Text>
     </View>
-  );
-}
-
-/** Bouton principal : léger ressort quand son libellé change (nouvelle formule), rien avec Réduire les animations. */
-function CtaButton({ label, hint, loading, disabled, onPress }: { label: string; hint: string; loading: boolean; disabled: boolean; onPress: () => void }) {
-  const m = useMotion();
-  const s = useSharedValue(1);
-  const first = useRef(true);
-  useEffect(() => {
-    if (first.current) { first.current = false; return; }
-    if (m.off) return;
-    s.value = withSequence(m.timing(0.97, 90, 'standard') as number, m.spring(1, 'rebondLeger') as number);
-  }, [label, m, s]);
-  const style = useAnimatedStyle(() => ({ transform: [{ scale: s.value }] }));
-  return (
-    <Animated.View style={style}>
-      <Button label={label} size="lg" full loading={loading} disabled={disabled} onPress={onPress} accessibilityHint={hint} testID="pw2-buy" />
-    </Animated.View>
   );
 }
 
@@ -120,10 +104,10 @@ function SubscriberPanel({ justActivated, onContinue }: { justActivated: boolean
   const mode = usePlans().mode;
   const [busy, setBusy] = useState(false);
   const [fb, setFb] = useState<Feedback | null>(null);
-  const sub = ent.sub;
-  const own = !!sub && sub.status !== 'none';
-  const period = (sub?.period_type && sub.period_type !== 'trial' && sub.period_type !== 'lifetime' ? sub.period_type : periodOfProduct(sub?.product_id)) as PlanPeriod | null;
-  const sharedBy = share.data?.shared_by;
+  // Même résumé que la page d'abonnement : achat personnel (formule, échéance) ou Premium partagé par l'autre adulte
+  const summary = subscriberSummary(ent, share.data?.shared_by);
+  const own = summary?.origin === 'own';
+  const period = summary?.period ?? null;
 
   async function manage() {
     if (mode === 'test' && !(await confirm(tr('u1.sub.stopDemoTitle'), tr('u1.sub.stopDemoBody'), tr('u1.sub.stop')))) return;
@@ -145,9 +129,8 @@ function SubscriberPanel({ justActivated, onContinue }: { justActivated: boolean
           <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{tr('pay2.sub.title')}</Text>
         </View>
         {own && period ? <Text weight="bold" testID="pw2-sub-plan">{tr('pay2.sub.plan', { plan: planName(period) })}</Text> : null}
-        <Text variant="small" testID="pw2-sub-message">
-          {!own ? (sharedBy?.display_name ? tr('sub2.page.sharedBy', { name: sharedBy.display_name }) : tr('sub2.page.sharedAnon')) : ent.message}
-        </Text>
+        <Text variant="small" testID="pw2-sub-message">{summary?.message ?? ent.message}</Text>
+        {summary ? <Text variant="caption" muted testID="pw2-sub-origin">{summary.originText}</Text> : null}
       </View>
       <FeedbackBanner fb={fb} />
       {onContinue ? <Button label={tr('pay2.sub.continue')} size="lg" full onPress={onContinue} testID="pw2-continue" /> : null}
@@ -259,18 +242,12 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
       {chosen && purchasable ? (
         <Cascade index={2}>
           <View style={{ gap: spacing.md }}>
-            <View style={{ gap: spacing.xs }}>
-              <CtaButton label={ctaLabel(chosen)} hint={ctaHint(chosen, now)} loading={busy === 'buy'} disabled={!!busy} onPress={() => void buy()} />
-              <Text variant="small" muted center testID="pw2-cta-hint">{ctaHint(chosen, now)}</Text>
-            </View>
+            {/* Bouton + ce qui est prélevé + renouvellement automatique : même bloc que la page d'abonnement */}
+            <PurchaseCta plan={chosen} loading={busy === 'buy'} disabled={!!busy} onPress={() => void buy()} now={now} />
             <FeedbackBanner fb={fb} />
             {trial ? <TrialTimeline plan={chosen} from={now} /> : null}
             <Benefits />
-            <View style={{ gap: 4 }} testID="pw2-fine">
-              <Text variant="caption" muted>{tr('pay2.fine.renew', { price: chosen.price, per: perLong(chosen.period) })}</Text>
-              <Text variant="caption" muted>{tr(cancelHintKey(Platform.OS))}</Text>
-              <Text variant="caption" muted>{chosen.demo ? tr('pay2.fine.demo') : tr('pay2.fine.store')}</Text>
-            </View>
+            <PurchaseFinePrint plan={chosen} now={now} />
           </View>
         </Cascade>
       ) : (

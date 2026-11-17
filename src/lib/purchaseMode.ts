@@ -30,9 +30,28 @@ type Sdk = typeof import('./purchases');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 export const purchasesSdk = (): Sdk => require('./purchases') as Sdk;
 
+/** Pages officielles de gestion des abonnements (résiliation, moyen de paiement, changement de formule). */
+export const MANAGE_URLS = { ios: 'https://apps.apple.com/account/subscriptions', android: 'https://play.google.com/store/account/subscriptions' } as const;
+/** Page de gestion de la boutique de cette plateforme (web et iPhone : Apple, l'application étant d'abord iOS). */
+export const manageUrl = (os: string = Platform.OS): string => (os === 'android' ? MANAGE_URLS.android : MANAGE_URLS.ios);
+
+/**
+ * Démonstration : grille prévue. L'essai n'y est proposé qu'une fois par compte (miroir d'Apple : une offre de
+ * lancement par groupe d'abonnements) — un compte de démonstration qui a déjà eu un abonnement voit les formules
+ * sans essai, comme une personne non éligible en boutique.
+ */
+export async function demoPlansForAccount(): Promise<Plan[]> {
+  const plans = demoPlans(localeTag());
+  let used = false;
+  try {
+    used = (await backend.rpc<boolean>('demo_trial_used')) === true;
+  } catch { /* lecture impossible : grille complète, comme un premier affichage */ }
+  return used ? plans.map((p) => ({ ...p, trialDays: 0 })) : plans;
+}
+
 /** Formules : boutique (prix réels) ou grille de démonstration, sans charger le SDK hors mode boutique. */
 export function loadPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
   if (mode === 'store') return purchasesSdk().getPlans();
-  return Promise.resolve(mode === 'test' ? demoPlans(localeTag()) : []);
+  return mode === 'test' ? demoPlansForAccount() : Promise.resolve([]);
 }

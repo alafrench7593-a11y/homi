@@ -77,7 +77,7 @@ describe('textes de l’écran (logique pure)', () => {
     const [, six] = demoPlans('fr-FR');
     const steps = trialTimeline(six, from);
     expect(steps.map((s) => nb(s.title))).toEqual(['Aujourd’hui', 'Pendant 3 jours', 'Le 18 novembre']);
-    expect(nb(steps[2].body)).toBe('Début de l’abonnement 6 mois à 69,99 €, sauf résiliation au moins 24 h avant.');
+    expect(nb(steps[2].body)).toBe('Premier prélèvement : 69,99 € pour la formule 6 mois, sauf résiliation au moins 24 h avant.');
     expect(steps.some((s) => /prévien|rappel/i.test(s.body))).toBe(false); // aucune promesse de rappel
     expect(trialTimeline({ ...six, trialDays: 0 }, from)).toEqual([]);
     // Fin d'année : l'année est ajoutée
@@ -157,12 +157,15 @@ describe('écran Premium (démonstration)', () => {
     expect(buyLabel(r)).toBe('Commencer l’essai de 3 jours');
     const expected = chargeDate({ period: 'annual', trialDays: 3 });
     expect(txt).toContain(`Le ${nb(expected)}`);
-    expect(txt).toContain('Début de l’abonnement 12 mois à 119,99 €');
+    expect(txt).toContain('Premier prélèvement : 119,99 € pour la formule 12 mois');
+    expect(txt).toContain(`L’essai se termine le ${nb(expected)}`);
+    // renouvellement automatique écrit en clair, dans le même bloc que le bouton
+    expect(txt).toContain('Renouvellement automatique : 119,99 € par an, jusqu’à résiliation.');
     expect(txt).toMatch(/Réglages iOS › votre identifiant Apple › Abonnements/);
     expect(has(r, 'pw2-legal-terms') && has(r, 'pw2-legal-privacy') && has(r, 'pw2-restore') && has(r, 'pw2-close')).toBe(true);
     // Sélection : 6 mois → le bouton suit, la chronologie aussi
     await tap(r, 'pw2-plan-six_months');
-    expect(allText(r)).toContain('Début de l’abonnement 6 mois à 69,99 €');
+    expect(allText(r)).toContain('Premier prélèvement : 69,99 € pour la formule 6 mois');
     // Achat simulé (démonstration) → retour à l'accueil
     await tap(r, 'pw2-buy');
     expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)');

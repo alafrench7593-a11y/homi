@@ -6,14 +6,23 @@ données fictives, aucun paiement ; StoreKit / RevenueCat réels NON testables i
   « Plus tard » depuis l'onboarding, débordements (e2e/audit_ux_detect.js), captures clair / sombre en 390 × 844 et
   320 × 568, vidéo webm.
 
+Page d'abonnement (Réglages › Abonnement, 17/11/2026), dans les 4 états × 2 largeurs × clair / sombre :
+  non abonné éligible (promesse, 3 blocs du comparatif, formules calculées, essai daté, renouvellement automatique
+  visible AVEC le bouton sans défiler, restaurer, gérer, CGU, « Continuer sans m'abonner »), non éligible (aucune
+  mention d'essai), abonné (formule, échéance, origine, changer de formule, gérer), abonné partagé (Premium ouvert par
+  l'autre adulte du foyer : la règle du serveur est rejouée par la démonstration).
+  Captures : abonnement_<état>_<thème>_<largeur>.png (écran) et …_page.png (page entière).
+
   EXPO_PUBLIC_SUPABASE_URL=http://sb.fake.test EXPO_PUBLIC_SUPABASE_ANON_KEY=fake-anon-key \
     npx expo export --platform web --clear --output-dir /tmp/pay/web
   python3 e2e/spa_server.py /tmp/pay/web 8941 &
   (vidéo : PLAYWRIGHT_BROWSERS_PATH doit contenir le ffmpeg attendu par Playwright)
   PW_CHROMIUM=/opt/pw-browsers/chromium NAV_URL=http://127.0.0.1:8941 python3 e2e/paywall_premium.py
+  (sans le ffmpeg de Playwright : ajouter PW_VIDEO=0)
 """
 import json, os, re, shutil, sys
-from datetime import date, timedelta
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from playwright.sync_api import sync_playwright
 
 B = os.environ.get('NAV_URL', 'http://127.0.0.1:8941')
@@ -50,8 +59,10 @@ def go(pg, path, wait=3000):
 
 
 def j3():
-    d = date.today() + timedelta(days=3)
-    return f"{d.day} {MOIS[d.month]}" + (f" {d.year}" if d.year != date.today().year else '')
+    # même fuseau que le navigateur (Europe/Paris) : sinon la date diffère entre 23 h et minuit UTC
+    today = datetime.now(ZoneInfo('Europe/Paris')).date()
+    d = today + timedelta(days=3)
+    return f"{d.day} {MOIS[d.month]}" + (f" {d.year}" if d.year != today.year else '')
 
 
 def no_sub(pg):
@@ -102,8 +113,9 @@ def full_scroll_capture(pg, name):
 
 
 def scenario_main(b):
-    ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris', device_scale_factor=2,
-                        color_scheme='light', record_video_dir=f'{SHOTS}/video', record_video_size={'width': 390, 'height': 844})
+    # PW_VIDEO=0 : pas d'enregistrement Playwright (son ffmpeg peut manquer) ; la vidéo est alors montée depuis les images
+    video_opts = {} if os.environ.get('PW_VIDEO') == '0' else {'record_video_dir': f'{SHOTS}/video', 'record_video_size': {'width': 390, 'height': 844}}
+    ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris', device_scale_factor=2, color_scheme='light', **video_opts)
     ctx.add_init_script(DETECT_JS)
     pg = ctx.new_page()
     pg.on('console', lambda m: m.type == 'error' and 'ERR_' not in m.text and 'sb.fake.test' not in m.text and errs.append(m.text[:200]))
@@ -124,10 +136,11 @@ def scenario_main(b):
     R['annuel_selectionne_defaut'] = tid(pg, 'pw2-plan-annual').get_attribute('aria-checked') == 'true'
     R['essai_3_jours_partout'] = all(has(pg, f'pw2-trial-{p}') for p in ['annual', 'six_months', 'monthly'])
     tl = sp(tid(pg, 'pw2-timeline').inner_text()) if has(pg, 'pw2-timeline') else ''
-    R['chronologie_date_reelle'] = 'Aujourd’hui' in tl and 'Pendant 3 jours' in tl and f'Le {j3()}' in tl and '12 mois à 119,99 €' in tl
+    R['chronologie_date_reelle'] = 'Aujourd’hui' in tl and 'Pendant 3 jours' in tl and f'L’essai se termine le {j3()}' in tl and f'Le {j3()}' in tl and 'Premier prélèvement : 119,99 € pour la formule 12 mois' in tl
     R['aucune_promesse_de_rappel'] = not re.search(r'nous vous (préviendrons|rappellerons)|rappel avant', txt, re.I)
     R['bouton_essai_exact'] = sp(tid(pg, 'pw2-buy').inner_text()).strip() == 'Commencer l’essai de 3 jours'
-    R['renouvellement_et_annulation'] = 'renouvelé automatiquement' in txt and 'Réglages iOS › votre identifiant Apple › Abonnements' in txt
+    R['renouvellement_et_annulation'] = 'Renouvellement automatique : 119,99 € par an' in txt and 'Réglages iOS › votre identifiant Apple › Abonnements' in txt
+    R['renouvellement_visible_avec_le_bouton'] = together(pg, 'pw2-buy')
     R['mention_demo'] = 'Démonstration : montants de la grille prévue' in txt
     R['aucune_fausse_urgence'] = not re.search(r'(offre limitée|plus que|expire dans|\d+:\d\d:\d\d|témoign)', txt, re.I)
     R['debordement_390'] = len(detect(pg, 'clair_390')) == 0
@@ -139,7 +152,7 @@ def scenario_main(b):
     tid(pg, 'pw2-plan-six_months').click(); frames(pg, 10, 40); pg.wait_for_timeout(300)
     tl = sp(tid(pg, 'pw2-timeline').inner_text())
     R['selection_6_mois'] = tid(pg, 'pw2-plan-six_months').get_attribute('aria-checked') == 'true' and tid(pg, 'pw2-plan-annual').get_attribute('aria-checked') == 'false'
-    R['chronologie_suit_selection'] = '6 mois à 69,99 €' in tl
+    R['chronologie_suit_selection'] = '69,99 € pour la formule 6 mois' in tl
     R['lecture_accessible_prix'] = '69,99 € pour 6 mois' in sp(tid(pg, 'pw2-plan-six_months').get_attribute('aria-label') or '') and 'économie' in (tid(pg, 'pw2-plan-six_months').get_attribute('aria-label') or '')
     shoot(pg, 'premium_clair_390_6mois')
 
@@ -191,6 +204,114 @@ def scenario_main(b):
     R['video'] = os.path.exists(f'{SHOTS}/paywall_premium.webm')
 
 
+def together(pg, buy):
+    """Le bouton d'achat et la phrase de renouvellement automatique sont visibles en même temps, sans défiler de plus."""
+    return pg.evaluate("""(buy) => { const vis = (id) => [...document.querySelectorAll(`[data-testid="${id}"]`)].find((x) => x.getBoundingClientRect().height > 0);
+      const b = vis(buy), r = vis('pw2-renew'); if (!b || !r) return false; b.scrollIntoView({ block: 'center' });
+      const inside = (e) => { const q = e.getBoundingClientRect(); return q.top >= 0 && q.bottom <= window.innerHeight; };
+      return inside(b) && inside(r) && /Renouvellement automatique/.test(r.innerText); }""", buy)
+
+
+SCROLLER = "[...document.querySelectorAll('div')].filter(d => getComputedStyle(d).overflowY === 'auto' && d.scrollHeight > d.clientHeight + 40).sort((a, b) => b.scrollHeight - a.scrollHeight)[0]"
+
+
+def page_capture(pg, name):
+    """Écran tel qu'affiché (haut de page), puis page entière (zone qui défile déroulée)."""
+    pg.evaluate("() => { const el = " + SCROLLER + "; if (el) el.scrollTop = 0; }")
+    pg.wait_for_timeout(300)
+    pg.screenshot(path=f'{SHOTS}/{name}.png')
+    h = pg.evaluate("() => { const el = " + SCROLLER + "; return el ? el.scrollHeight + (window.innerHeight - el.clientHeight) : 0; }")
+    vp = pg.viewport_size
+    if h:
+        pg.set_viewport_size({'width': vp['width'], 'height': min(h + 40, 7000)}); pg.wait_for_timeout(700)
+        pg.screenshot(path=f'{SHOTS}/{name}_page.png')
+        pg.set_viewport_size(vp); pg.wait_for_timeout(300)
+
+
+SUB_ROW = """(user, days) => ({ user_id: user, entitlement: 'HOMI_PREMIUM', product_id: 'homi_premium_annual', store: 'test', period_type: 'annual', price: 119.99, currency: 'EUR',
+  status: days > 0 ? 'active' : 'expired', expires_at: new Date(Date.now() + days * 86400000).toISOString(), will_renew: days > 0, started_at: new Date(Date.now() - 40 * 86400000).toISOString(), trial_ends_at: null })"""
+CAM, HH = '00000000-0000-4000-8000-00000000ca11', '00000000-0000-4000-8000-0000000000f1'
+
+
+def set_state(pg, state):
+    """Prépare les données de démonstration de l'état voulu (compte de démonstration, aucune boutique)."""
+    if state == 'eligible':
+        js = "s => { s.tables.subscriptions = []; }"
+    elif state == 'non_eligible':  # un abonnement a déjà existé : l'essai n'est plus proposé
+        js = "s => { s.tables.subscriptions = [(" + SUB_ROW + ")(s.session.userId, -5)]; }"
+    elif state == 'abonne':
+        js = "s => { s.tables.subscriptions = [(" + SUB_ROW + ")(s.session.userId, 320)]; }"
+    else:  # abonné partagé : Camille a créé un foyer et s'est abonnée ; la personne affichée l'a rejoint comme co-parent
+        js = """s => { const me = s.session.userId, cam = '%s', hh = '%s';
+          s.tables.subscriptions = [(%s)(cam, 200)];
+          s.tables.profiles = (s.tables.profiles || []).filter(p => p.id !== cam).concat([{ id: cam, display_name: 'Camille' }]);
+          s.tables.households = (s.tables.households || []).filter(h => h.id !== hh).concat([{ id: hh, name: 'Foyer de Camille', created_by: cam, created_at: '2026-10-01T08:00:00Z' }]);
+          s.tables.household_members = (s.tables.household_members || []).filter(m => m.household_id !== hh).concat([
+            { household_id: hh, user_id: cam, role: 'owner', joined_at: '2026-10-01T08:00:00Z', can_view: [], can_edit: [] },
+            { household_id: hh, user_id: me, role: 'coparent', joined_at: '2026-10-02T08:00:00Z', can_view: [], can_edit: [] }]); }""" % (CAM, HH, SUB_ROW)
+    mutate(pg, js)
+
+
+def clear_shared(pg):
+    mutate(pg, "s => { const hh = '%s'; s.tables.household_members = (s.tables.household_members || []).filter(m => m.household_id !== hh); s.tables.households = (s.tables.households || []).filter(h => h.id !== hh); s.tables.subscriptions = []; }" % HH)
+
+
+def scenario_page(b, scheme, w, h, checks):
+    """Page d'abonnement dans les 4 états ; `checks` : assertions détaillées de contenu (une seule fois, 390 clair)."""
+    ctx = b.new_context(viewport={'width': w, 'height': h}, locale='fr-FR', timezone_id='Europe/Paris', device_scale_factor=2, color_scheme=scheme)
+    ctx.add_init_script(DETECT_JS)
+    pg = ctx.new_page()
+    pg.on('pageerror', lambda e: errs.append(f'PAGE abonnement {scheme} {w} ' + str(e)[:200]))
+    enter_demo(pg)
+    key = f'{"sombre" if scheme == "dark" else "clair"}_{w}'
+    for state in ['eligible', 'non_eligible', 'abonne', 'partage']:
+        set_state(pg, state)
+        go(pg, '/settings/subscription', 4500)
+        txt = T(pg)
+        offer = sp(tid(pg, 'sub3-offer').inner_text()) if has(pg, 'sub3-offer') else ''
+        k = f'{state}_{key}'
+        R[f'page_debordement_{k}'] = len(detect(pg, f'page_{k}')) == 0
+        if state == 'eligible':
+            R[f'page_eligible_{key}'] = has(pg, 'sub3-promise') and all(has(pg, x) for x in ['sub3-free', 'sub3-premium', 'sub3-family', 'pw2-plans', 'pw2-timeline', 'plan-buy'])
+            if checks:
+                R['page_promesse'] = 'Premium ouvre le suivi complet de votre famille' in sp(tid(pg, 'sub3-promise').inner_text())
+                R['page_sans_abonnement_reel'] = all(x in sp(tid(pg, 'sub3-free').inner_text()) for x in ['numéros d’urgence', 'alertes officielles de rappel', 'Export de toutes vos données', 'Rien n’est effacé'])
+                R['page_premium_par_besoin'] = all(x in sp(tid(pg, 'sub3-premium').inner_text()) for x in ['Pour moi', 'Pour mon enfant', 'Pour ma famille', 'Mes outils'])
+                R['page_en_famille'] = all(x in sp(tid(pg, 'sub3-family').inner_text()) for x in ['sans supplément', 'Un seul autre adulte', 'nounou'])
+                R['page_prix_calcules'] = all(x in offer for x in ['119,99 €', '69,99 €', '14,99 €', 'économie de 33 %', 'économie de 22 %', '10,00 € / mois', '11,67 € / mois'])
+                R['page_conseillee_expliquee'] = 'Le plus avantageux' in offer and 'prix ramené au mois est le plus bas' in offer
+                tl = sp(tid(pg, 'pw2-timeline').inner_text())
+                R['page_essai_dates'] = 'Pendant 3 jours' in tl and f'L’essai se termine le {j3()}' in tl and 'Premier prélèvement : 119,99 € pour la formule 12 mois' in tl and 'Réglages iOS › votre identifiant Apple › Abonnements' in tl
+                R['page_bouton_essai'] = sp(tid(pg, 'plan-buy').inner_text()).strip() == 'Commencer l’essai de 3 jours'
+                R['page_lecture_formule'] = all(x in sp(tid(pg, 'pw2-plan-annual').get_attribute('aria-label') or '') for x in ['12 mois', '119,99 € par an', '10,00 € par mois', '33 % d’économie', '3 jours d’essai gratuit'])
+                R['page_restaurer_gerer_liens'] = all(has(pg, x) for x in ['sub-restore', 'sub-manage-link', 'sub-legal-links', 'sub3-continue-free'])
+                R['page_aucune_urgence'] = not re.search(r'(offre limitée|plus que \d|expire dans|\d+:\d\d:\d\d|témoign|Familiale|\+ ?5 ?€)', txt, re.I)
+                R['page_aucune_case'] = pg.locator('input[type="checkbox"], [role="checkbox"], [role="switch"]').filter(visible=True).count() == 0
+            page_capture(pg, f'abonnement_{state}_{key}')
+            R[f'page_renouvellement_avec_bouton_{key}'] = together(pg, 'plan-buy')
+            pg.wait_for_timeout(300); pg.screenshot(path=f'{SHOTS}/abonnement_{state}_{key}_achat.png')
+            continue
+        if state == 'non_eligible':
+            R[f'page_non_eligible_{key}'] = has(pg, 'pw2-plans') and not has(pg, 'pw2-timeline') and not re.search(r'essai|offert|gratuit', offer, re.I) \
+                and sp(tid(pg, 'plan-buy').inner_text()).strip() == 'S’abonner — 119,99 € / an' and 'essai' not in (tid(pg, 'pw2-plan-annual').get_attribute('aria-label') or '')
+            page_capture(pg, f'abonnement_{state}_{key}')
+            R[f'page_non_eligible_renouvellement_{key}'] = together(pg, 'plan-buy')
+            pg.wait_for_timeout(300); pg.screenshot(path=f'{SHOTS}/abonnement_{state}_{key}_achat.png')
+            continue
+        card = sp(tid(pg, 'my-subscription').inner_text())
+        # ouvrir la page en étant déjà abonné·e n'est pas une activation : pas de bandeau « Premium activé »
+        R[f'page_sans_fausse_activation_{k}'] = not has(pg, 'premium-activated')
+        if state == 'abonne':
+            R[f'page_abonne_{key}'] = all(x in card for x in ['HOMI Premium', '12 mois', 'Prochain renouvellement', 'Achat personnel']) and has(pg, 'sub-manage') and has(pg, 'sub-restore') \
+                and 'Passer à la formule' in sp(tid(pg, 'plan-buy').inner_text()) and has(pg, 'pw2-current-annual') and not has(pg, 'sub3-promise') and not re.search(r'essai|offert', offer, re.I)
+        else:
+            R[f'page_partage_{key}'] = 'offert par Camille' in card and 'Partagé par Camille' in card and 'rien à payer' in card \
+                and not has(pg, 'pw2-plans') and not has(pg, 'plan-buy') and not has(pg, 'sub-manage') and has(pg, 'sub-restore')
+        page_capture(pg, f'abonnement_{state}_{key}')
+    clear_shared(pg)
+    ctx.close()
+
+
 def scenario_shots(b, scheme, w, h):
     ctx = b.new_context(viewport={'width': w, 'height': h}, locale='fr-FR', timezone_id='Europe/Paris', device_scale_factor=2, color_scheme=scheme)
     ctx.add_init_script(DETECT_JS)
@@ -215,6 +336,10 @@ with sync_playwright() as p:
     scenario_shots(b, 'light', 320, 568)
     scenario_shots(b, 'dark', 390, 844)
     scenario_shots(b, 'dark', 320, 568)
+    scenario_page(b, 'light', 390, 844, True)
+    scenario_page(b, 'dark', 390, 844, False)
+    scenario_page(b, 'light', 320, 568, False)
+    scenario_page(b, 'dark', 320, 568, False)
     b.close()
 
 R['aucune_erreur_page'] = not [e for e in errs if e.startswith('PAGE')]

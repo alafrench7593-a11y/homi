@@ -21,9 +21,9 @@ import { localeTag, t as tr } from '@/i18n';
 import { deviceState, needsServerSync } from './premium/customerSync';
 import { notifySubscriptionChanged } from './premium/syncEvents';
 import { PurchaseError, purchaseErrorKind } from './premium/purchaseErrors';
-import { getPurchaseMode, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
+import { demoPlansForAccount, getPurchaseMode, MANAGE_URLS, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
 import type { SubRow } from './premium/entitlement';
-import { buildPlans, demoPlans, periodOfProduct, PREMIUM_ENTITLEMENT, productChangeFor, type Plan } from './premium/plans';
+import { buildPlans, periodOfProduct, PREMIUM_ENTITLEMENT, productChangeFor, type Plan } from './premium/plans';
 
 export { billingDates, type Plan } from './premium/plans';
 
@@ -107,7 +107,7 @@ export async function checkCustomerInfo(info: CustomerInfo | null): Promise<bool
 // ---------------------------------------------------------------- formules
 export async function getPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
-  if (mode === 'test') return demoPlans(localeTag());
+  if (mode === 'test') return demoPlansForAccount();
   if (mode !== 'store') return []; // jamais de prix inventé hors démonstration
   if (ready) await ready.catch(() => undefined);
   const offerings = await Purchases.getOfferings();
@@ -190,8 +190,7 @@ export async function restore(): Promise<boolean> {
   return waitForServerEntitlement(8000);
 }
 
-/** Pages officielles de gestion des abonnements (résiliation, moyen de paiement, changement de formule). */
-export const MANAGE_URLS = { ios: 'https://apps.apple.com/account/subscriptions', android: 'https://play.google.com/store/account/subscriptions' } as const;
+export { MANAGE_URLS };
 
 /** Gestion officielle : feuille Apple (iOS), page Google Play (Android). Renvoie l'URL à ouvrir si l'appli doit l'ouvrir. */
 export async function manageSubscription(): Promise<string | null> {

@@ -1,18 +1,20 @@
 /**
- * Chronologie de l'essai gratuit (écran Premium v2) : Aujourd'hui → Pendant N jours → Le <date réelle> : début de
- * l'abonnement. Affichée seulement si la boutique confirme un essai pour la formule choisie (trialDays > 0).
+ * Chronologie de l'essai gratuit (écran Premium v2 et page d'abonnement) : Aujourd'hui → Pendant N jours (date exacte
+ * de fin de l'essai) → Le <date réelle> : premier prélèvement et son montant, puis comment annuler avant.
+ * Affichée seulement si la boutique confirme un essai pour la formule choisie (trialDays > 0) : une personne non
+ * éligible ne voit aucune mention d'essai.
  * Aucune promesse de rappel : HOMI ne programme pas de notification de fin d'essai.
  * Les étapes arrivent en cascade courte (Cascade : Réduire les animations → visibles d'emblée).
  */
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Text } from '@/components/ui';
 import { Cascade } from '@/motion';
 import type { Plan } from '@/lib/premium/plans';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
-import { trialTimeline } from './paywallModel';
+import { cancelHintKey, trialTimeline } from './paywallModel';
 
 export function TrialTimeline({ plan, from }: { plan: Pick<Plan, 'trialDays' | 'price' | 'period'>; from?: Date }) {
   const th = useTheme();
@@ -41,6 +43,7 @@ export function TrialTimeline({ plan, from }: { plan: Pick<Plan, 'trialDays' | '
           );
         })}
       </View>
+      <Text variant="small" muted testID="pw2-tl-cancel">{tr(cancelHintKey(Platform.OS))}</Text>
     </View>
   );
 }

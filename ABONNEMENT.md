@@ -35,21 +35,99 @@ Ce que fait l'application avec ces réglages :
   par mois et l'économie (« économie de 33 % ») sont **calculés** à partir de ces prix réels, arrondis vers le bas. Avec
   la grille ci-dessus : 6 mois ≈ 11,67 €/mois (économie de 22 %), 12 mois ≈ 10,00 €/mois (économie de 33 %). La grille
   n'est écrite dans le code **que pour le mode démonstration** (« Découvrir sans compte »), signalée comme telle.
-- **Essai** : la chronologie « Aujourd'hui → Pendant 3 jours → Le <date> » et le bouton « Commencer l'essai de 3 jours »
+- **Essai** : la chronologie « Aujourd'hui → Pendant 3 jours (date exacte de fin) → Le <date> : premier prélèvement et
+  son montant », la marche à suivre pour annuler et le bouton « Commencer l'essai de 3 jours »
   n'apparaissent **que si** l'App Store propose une offre d'introduction gratuite sur la formule choisie **et** qu'Apple
   confirme que la personne y a droit (Apple n'accorde l'essai qu'**une fois par groupe d'abonnements**). Sinon le bouton
   dit « S'abonner — 119,99 € / an » (prix réel).
-- Les 3 formules donnent **exactement le même Premium**. Un abonnement couvre l'abonné·e et **un** co-parent adulte du foyer.
+- Les 3 formules donnent **exactement le même Premium**. Un abonnement couvre l'abonné·e et **un** co-parent adulte du
+  foyer, sans supplément. Il n'existe **aucune formule « Familiale » payante** ni option à + 5 € : rien de tel n'est affiché.
+- **Renouvellement automatique** : écrit en clair juste sous le bouton d'achat (« Renouvellement automatique : 119,99 €
+  par an, jusqu'à résiliation. »), donc visible en même temps que lui sans défiler, sur l'écran Premium comme sur la page
+  d'abonnement (même bloc `PurchaseCta`).
 - Un·e abonné·e qui rouvre l'écran Premium voit **sa formule actuelle et « Gérer l'abonnement »**, jamais l'offre de
   nouveau client.
 - Aucune notification de fin d'essai n'est programmée par HOMI : l'écran ne promet donc aucun rappel.
 
 ### 0.1 Modèle « Premium strict » (rappel)
-Sans Premium, un compte garde : inscription, connexion, présentation, onboarding, profil, réglages, **consultation,
-export et suppression de toutes ses données**, urgences, alertes officielles de rappel de produits, mentions légales,
-« Donner mon avis ». Le reste affiche l'écran Premium. Le serveur refuse les nouvelles saisies sans Premium
+Sans Premium, un compte garde : inscription, connexion, présentation, onboarding, profil, réglages (compte,
+confidentialité, langue, notifications, foyer, synchronisation, abonnement), **export et suppression de toutes ses
+données**, urgences, alertes officielles de rappel de produits, sources, mentions légales, « Donner mon avis ».
+Le reste affiche l'écran Premium : les écrans de suivi étant réservés, les données déjà saisies ne se **consultent**
+plus à l'écran sans Premium — elles restent conservées et s'exportent (Réglages › Confidentialité). Le serveur refuse les nouvelles saisies sans Premium
 (`20261108000300_premium_strict.sql`) ; **aucune donnée n'est supprimée à la fin d'un abonnement**. Interrupteur de
 secours (admin) : `update public.premium_policy set strict = false;`.
+
+### 0.2 Ce que la page d'abonnement affirme, et d'où vient chaque affirmation (17/11/2026)
+
+Page : **Réglages › Abonnement** (`src/app/settings/subscription.tsx`). Le contenu du comparatif est déclaré dans
+`src/features/premium/offerModel.ts` ; `src/__tests__/subscriptionPage.test.tsx` échoue si une affirmation cesse d'être
+vraie dans le code. Textes : `src/i18n/<langue>/sub3.ts` (5 langues), `pay2.ts`, `sub2.ts`.
+
+**Bloc « Sans abonnement »** — n'est annoncé que ce qui s'ouvre réellement sans Premium (`isFreeRoute`,
+`src/lib/premium/access.ts`, lignes 15 à 25) :
+
+| Ce que dit la page | Preuve |
+|---|---|
+| Urgences : numéros d'urgence, contraception d'urgence, « Je craque », mode urgence du foyer | `access.ts:22` (`/emergency`, `/contraception/emergency`, `/family/(sos\|urgent)`) ; outils `emergency`, `avoid_emergency`, `family_sos`, `family_urgent` du registre |
+| Aide après la naissance, alertes officielles de rappel de produits, sources et références | `access.ts:22` (`/postpartum/support`), `access.ts:24` (`/scanner/recalls`), `access.ts:20` (`/sources`) ; outils `pp_support`, `recall_alerts`, `sources` |
+| Compte, profil, parcours, présentation de HOMI | `access.ts:16-19` (`/discover`, `/journeys`, `/profiles/new`, `/profile`, `/settings/account`) |
+| Réglages : confidentialité, langue, notifications, foyer, synchronisation, abonnement | `access.ts:19` (liste fermée ; **`/settings/appearance`, `/settings/home`, `/settings/reminders`, `/settings/services`, `/settings/iphone-calendar` n'y sont pas** : la page ne les annonce pas) |
+| Export de toutes les données, suppression du compte ; rien n'est effacé à la fin d'un abonnement | `/settings/privacy` (`access.ts:19`, `src/app/settings/privacy.tsx`) ; `supabase/migrations/20261108000300_premium_strict.sql:17` (« Aucune donnée n'est modifiée ni supprimée ») |
+| Mentions légales, « Donner mon avis » | `access.ts:16` (`/legal/…`), `access.ts:20` (`/feedback`) |
+
+Outils gratuits du registre (`src/lib/journeys/tools.ts`, statut calculé par `isFreeRoute`) : **7 outils sur 120** —
+`emergency`, `sources`, `avoid_emergency`, `pp_support`, `family_urgent`, `family_sos`, `recall_alerts`. (L'audit en
+comptait 9 : les deux autres, `settings` et `journeys`, sont des entrées « Mon compte », pas des outils.)
+
+**Bloc « HOMI Premium »** — quatre besoins ; chaque outil cité existe dans le registre et est réservé à Premium
+(test « chaque outil cité existe dans le registre et est réservé ») :
+
+| Besoin | Outils du registre cités |
+|---|---|
+| Pour moi | `cycle_home`, `avoid_contraception`, `ttc_cycle`, `preg_evolution`, `pp_recovery`, `mood`, `sleep` |
+| Pour mon enfant | `baby_bottle`, `baby_breastfeed`, `baby_diaper`, `kid_sleep`, `baby_foods`, `kid_grow`, `kid_vaccines`, `kid_treatments` |
+| Pour ma famille | `family_tasks`, `family_routines`, `family_calendar`, `family_shopping`, `family_stocks`, `family_nights`, `mental_load` |
+| Mes outils | `meals`, `meal_menu`, `scan_product`, `documents`, `appointments`, `summary`, `library`, `community` |
+
+L'assistant IA n'est **pas** annoncé (`src/config/features.ts` : `aiAssistantOnline: false`, « bientôt disponible »).
+
+**Bloc « En famille »** :
+
+| Ce que dit la page | Preuve |
+|---|---|
+| Un autre adulte du foyer profite du même Premium sans supplément | `public._premium_of` (`supabase/migrations/20261105000100_subscription_v2.sql:91-108`) : droit accordé à l'abonné·e **ou** à l'adulte (rôle `owner` / `coparent`) désigné par `_premium_partner_of` ; aucun produit ni prix associé |
+| Un seul autre adulte : le premier co-parent arrivé dans le foyer de l'abonné·e, sinon la personne qui a créé le foyer que l'abonné·e a rejoint | `public._premium_partner_of` (même fichier, lignes 72-89 : `order by prio, since, partner limit 1`) |
+| Une nounou invitée ouvre sans abonnement les écrans de garde et y enregistre ses saisies ; elle ne reçoit pas Premium pour ses propres outils | `supabase/migrations/20261113000100_caregiver_premium.sql:43` (`_require_premium_write` : saisie d'un membre `caregiver` dans le foyer jamais bloquée) et `:58` (`my_access.caregiver`) ; `CAREGIVER_ROUTES` (`access.ts:35`) ; `_premium_of` ne donne rien au rôle `caregiver` |
+
+**Formules, essai, conditions** (mêmes fonctions sur l'écran Premium et sur la page : `src/features/premium/paywallModel.ts`) :
+
+| Ce que dit la page | Preuve |
+|---|---|
+| Prix de chaque formule | `priceString` de la boutique (`buildPlans`, `src/lib/premium/plans.ts`) ; démonstration : `DEMO_GRID` (`plans.ts:35`), signalée « Démonstration » |
+| « 10,00 € / mois », « économie de 33 % » | `perMonthAmount` (`plans.ts:105`), `savingsPct` (`plans.ts:98`) — calculés sur les prix réels, jamais écrits |
+| « Le plus avantageux » + « son prix ramené au mois est le plus bas » | `recommendedPeriod` (`paywallModel.ts:17`) : la formule à la plus forte économie calculée ; aucune économie calculable → aucun badge |
+| Essai : durée, date de fin, date et montant du premier prélèvement, comment annuler | `trialDaysOf` (`plans.ts:87`), `applyTrialEligibility` (`src/lib/purchases.ts:124`, éligibilité confirmée par Apple), `billingDates` (`plans.ts:145`), `trialTimeline` (`paywallModel.ts:57`) |
+| Non éligible : aucune mention d'essai | `trialDays = 0` → `trialTimeline` vide, bouton « S'abonner — <prix> / <période> », `purchaseTerms` sans essai (`paywallModel.ts:87`) |
+| Renouvellement automatique, annulation, origine du prix | `purchaseTerms` → bloc `PurchaseCta` / `PurchaseFinePrint` (`src/features/premium/PurchaseCta.tsx`) |
+| Vue abonné : formule, échéance ou fin d'accès, origine (achat personnel / partagé par …) | `entitlement` (`src/lib/premium/entitlement.ts`), `subscriberSummary` (`paywallModel.ts:120`), RPC `my_premium_share` |
+| « Gérer mon abonnement » | abonné·e : feuille Apple `showManageSubscriptions` (`purchases.ts`) ; sinon lien `MANAGE_URLS` (`src/lib/purchaseMode.ts`) : `https://apps.apple.com/account/subscriptions` |
+
+Garde-fous : aucun compte à rebours, aucune urgence, aucune case à cocher ; « Continuer sans m'abonner » toujours
+affiché ; la formule conseillée est seulement présélectionnée (bouton radio, modifiable d'un geste) ; les textes
+d'abonnement des 5 langues ne contiennent ni prix, ni pourcentage, ni durée d'essai en dur (test Jest).
+
+**Démonstration** (aucune boutique) : l'essai n'y est proposé qu'une fois par compte (`demo_trial_used`,
+`src/lib/backend/demo.ts`), et le partage familial rejoue la règle du serveur (`premiumPartnerOf`, `my_premium_share`).
+
+**Écarts connus entre le code et la configuration de la boutique** (non corrigés ici, à trancher) :
+- `aufildenous_ai_monthly` (droit `ASSISTANT_IA`) et `aufildenous_tool_*` (droits `TOOL_…`) sont de **vrais identifiants
+  de produits et de droits** dans le code (`src/lib/premium/offers.ts`, table `public.paid_tools` des migrations
+  `20261107000200` et `20261107000300`, `purchaseOffer`). Ils ne correspondent à aucun des trois produits de la boutique
+  HOMI. Ils n'ont pas été renommés ; la carte « Assistant IA » a été retirée de la page d'abonnement (offre sans produit).
+- `/settings/appearance` (palettes) est réservé à Premium par `access.ts` : sans doute involontaire.
+- Les textes `ALWAYS_FREE` (`src/lib/premium/features*.ts`) promettent encore « accès à toutes les données déjà créées »
+  et « signalement et blocage dans la communauté » : ces écrans sont réservés. Ils ne sont plus affichés par la page.
 
 ---
 
@@ -221,13 +299,15 @@ RevenueCat › **Customers** › UUID Supabase (historique des événements).
 
 | # | Scénario | Comment | Résultat attendu |
 |---|---|---|---|
-| 1 | Prix réels | Ouvrir l'écran Premium | 3 formules aux prix de l'App Store ; 12 mois en tête « Le plus avantageux » ; « économie de 22 % / 33 % » calculées ; aucune mention « démonstration » |
+| 1 | Prix réels | Ouvrir l'écran Premium, puis Réglages › Abonnement | 3 formules aux prix de l'App Store ; 12 mois en tête « Le plus avantageux » ; « économie de 22 % / 33 % » calculées ; renouvellement automatique lisible sous le bouton sans défiler ; aucune mention « démonstration » |
 | 2 | Essai éligible | Compte Sandbox neuf | « 3 jours offerts » sur chaque formule ; chronologie avec la date réelle J+3 ; bouton « Commencer l'essai de 3 jours » |
 | 3 | Achat avec essai | Choisir 12 mois › Commencer l'essai › valider la feuille Apple | Feuille Apple « essai gratuit de 3 jours » ; Premium ouvert **après** confirmation du serveur ; statut « Essai », fin d'essai = J+3 |
 | 4 | Fin d'essai | Laisser l'essai se terminer (quelques minutes en Sandbox) | Statut « Actif », premier prélèvement au prix de la formule |
 | 5 | Essai déjà utilisé | Rouvrir Premium avec le même compte Sandbox, sans abonnement | **Aucun** essai affiché ; bouton « S'abonner — <prix> / <période> » |
 | 6 | Achat sans essai | Compte Sandbox ayant déjà eu l'essai | Prélèvement immédiat ; statut « Actif » |
-| 7 | Abonné·e | Rouvrir `/premium` en étant abonné·e | Formule actuelle + « Gérer l'abonnement » (feuille Apple), aucune offre de nouveau client |
+| 7 | Abonné·e | Rouvrir `/premium` et Réglages › Abonnement en étant abonné·e | Formule actuelle, prochaine échéance, origine « Achat personnel », « Gérer mon abonnement » (feuille Apple), « Changer de formule » sans essai ; aucune offre de nouveau client |
+| 7 bis | Abonné·e partagé·e | Second compte adulte (co-parent) du foyer d'un·e abonné·e, sans achat | « Premium vous est offert par <prénom> », origine « Partagé par <prénom> », ni formules ni bouton de gestion |
+| 7 ter | Gérer sans abonnement | Réglages › Abonnement › « Gérer mon abonnement » sans abonnement | La page Abonnements du compte Apple s'ouvre |
 | 8 | Restauration | Supprimer l'app, réinstaller, se reconnecter › « Restaurer les achats » | « Achats restaurés », Premium retrouvé (le serveur relit RevenueCat) |
 | 9 | Expiration | Résilier puis laisser la période passer | « Annulé » (Premium jusqu'à l'échéance) puis « Expiré » ; données conservées et exportables |
 | 10 | Annulation de la feuille | Ouvrir la feuille Apple puis **Annuler** | Message « Achat annulé. Rien n'a été prélevé. » ; aucun Premium |
@@ -240,7 +320,8 @@ RevenueCat › **Customers** › UUID Supabase (historique des événements).
 | 17 | Depuis l'onboarding | `/premium?from=onboarding` › acheter, ou « Plus tard » | Retour à l'accueil dans les deux cas |
 
 Ce qui est vérifié automatiquement dans le dépôt (sans StoreKit) : grille et calculs (Jest), éligibilité à l'essai
-(`applyTrialEligibility`, Jest), issues d'achat simulées (Ask to Buy, annulation, réseau), logique serveur (Deno et
+(`applyTrialEligibility`, Jest), page d'abonnement et preuves du comparatif (`subscriptionPage.test.tsx`), issues
+d'achat simulées (Ask to Buy, annulation, réseau), logique serveur (Deno et
 `supabase/tests/sql/80_subscription_v2.sql`, `80h_homi_premium_ids.sql`), parcours complet en démonstration
 (`e2e/paywall_premium.py`).
 

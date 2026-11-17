@@ -1,15 +1,29 @@
 /**
- * Écran Premium v2 — logique d'affichage pure (testée par Jest) : formule sélectionnée par défaut, libellé exact du
- * bouton, chronologie de l'essai, libellés lus par VoiceOver / TalkBack, message de chaque issue d'achat.
+ * Écran Premium v2 et page d'abonnement — logique d'affichage pure (testée par Jest), partagée par les deux écrans :
+ * formule conseillée et sélectionnée par défaut, libellé exact du bouton, chronologie de l'essai, conditions
+ * tarifaires, libellés lus par VoiceOver / TalkBack, message de chaque issue d'achat, résumé de l'abonnement en cours.
  * Tout montant vient du Plan (boutique ou grille de démonstration) ; toute date de billingDates ; rien n'est écrit en dur.
  */
-import { billingDates, type Plan, type PlanPeriod } from '@/lib/premium/plans';
+import type { Entitlement, SubRow } from '@/lib/premium/entitlement';
+import { billingDates, periodOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import type { PurchaseErrorKind } from '@/lib/premium/purchaseErrors';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 
-/** Formule proposée d'abord : l'annuelle (mise en avant), sinon la première disponible. */
-export function defaultPeriod(plans: Pick<Plan, 'period'>[]): PlanPeriod | null {
-  return (plans.find((p) => p.period === 'annual') ?? plans[0])?.period ?? null;
+/**
+ * Formule conseillée : celle dont le prix ramené au mois est le plus bas, d'après l'économie CALCULÉE sur les prix
+ * réels (savingsPct). Aucune économie calculable (devises différentes, mensuel absent, prix non avantageux) :
+ * aucune formule n'est signalée.
+ */
+export function recommendedPeriod(plans: Pick<Plan, 'period' | 'savingsPct'>[]): PlanPeriod | null {
+  let best: Pick<Plan, 'period' | 'savingsPct'> | null = null;
+  for (const p of plans) if ((p.savingsPct ?? 0) > (best?.savingsPct ?? 0)) best = p;
+  return best?.period ?? null;
+}
+
+/** Formule proposée d'abord : la formule conseillée, sinon l'annuelle, sinon la première disponible. */
+export function defaultPeriod(plans: Pick<Plan, 'period' | 'savingsPct'>[] | Pick<Plan, 'period'>[]): PlanPeriod | null {
+  const list = plans as Pick<Plan, 'period' | 'savingsPct'>[];
+  return recommendedPeriod(list) ?? (list.find((p) => p.period === 'annual') ?? list[0])?.period ?? null;
 }
 
 export const planName = (p: PlanPeriod) => tr(`sub2.plan.${p}.title` as TKey);
@@ -44,19 +58,81 @@ export function trialTimeline(plan: Pick<Plan, 'trialDays' | 'price' | 'period'>
   if (!(plan.trialDays > 0)) return [];
   return [
     { key: 'today', title: tr('pay2.tl.today'), body: tr('pay2.tl.todayBody') },
-    { key: 'during', title: tr('pay2.tl.during', { count: plan.trialDays }), body: tr('pay2.tl.duringBody') },
+    { key: 'during', title: tr('pay2.tl.during', { count: plan.trialDays }), body: tr('pay2.tl.duringBody', { date: chargeDate(plan, from) }) },
     { key: 'charge', title: tr('pay2.tl.charge', { date: chargeDate(plan, from) }), body: tr('pay2.tl.chargeBody', { plan: planName(plan.period), price: plan.price }) },
   ];
 }
 
 /** Ce que lit le lecteur d'écran pour une formule : nom, prix et période en toutes lettres, économie, essai. */
-export function planA11yLabel(plan: Pick<Plan, 'period' | 'price' | 'perMonth' | 'savingsPct' | 'trialDays'>, featured = false): string {
+export function planA11yLabel(plan: Pick<Plan, 'period' | 'price' | 'perMonth' | 'savingsPct' | 'trialDays'>, featured = false, current = false): string {
   const parts = [planName(plan.period), `${plan.price} ${perLong(plan.period)}`];
   if (plan.perMonth) parts.push(tr('pay2.plan.a11y.perMonth', { price: plan.perMonth }));
   if (plan.savingsPct) parts.push(tr('pay2.plan.a11y.save', { pct: plan.savingsPct }));
   if (plan.trialDays > 0) parts.push(tr('pay2.plan.a11y.trial', { count: plan.trialDays }));
   if (featured) parts.push(tr('pay2.plan.a11y.badge'));
+  if (current) parts.push(tr('sub3.plan.current'));
   return parts.join(', ');
+}
+
+/** Renouvellement automatique, en clair : montant et période de la formule choisie (affiché avec le bouton d'achat). */
+export const renewLine = (plan: Pick<Plan, 'price' | 'period'>): string => tr('pay2.fine.renew', { price: plan.price, per: perLong(plan.period) });
+
+export interface TermLine { key: 'charge' | 'renew' | 'cancel' | 'source'; text: string }
+
+/**
+ * Conditions tarifaires de la formule choisie, identiques sur l'écran Premium et sur la page d'abonnement :
+ * ce qui est prélevé et quand, renouvellement automatique, comment annuler, origine du prix.
+ * Sans essai confirmé par la boutique (trialDays = 0), aucune ligne ne parle d'essai.
+ */
+export function purchaseTerms(plan: Pick<Plan, 'trialDays' | 'price' | 'period' | 'demo'>, os: string, from: Date = new Date()): TermLine[] {
+  return [
+    { key: 'charge', text: ctaHint(plan, from) },
+    { key: 'renew', text: renewLine(plan) },
+    { key: 'cancel', text: tr(cancelHintKey(os)) },
+    { key: 'source', text: plan.demo ? tr('pay2.fine.demo') : tr('pay2.fine.store') },
+  ];
+}
+
+/** Abonnement PERSONNEL en cours (essai, actif, grâce, résilié mais encore ouvert, pause programmée). */
+export function ownActive(sub: Pick<SubRow, 'status'> | null | undefined, premium: boolean): boolean {
+  return !!sub && premium && ['trial', 'active', 'grace', 'cancelled', 'paused'].includes(sub.status);
+}
+
+/** Formule d'un abonnement (colonne period_type, sinon identifiant du produit). */
+export function periodOfSub(sub: Pick<SubRow, 'period_type' | 'product_id'> | null | undefined): PlanPeriod | null {
+  const p = sub?.period_type;
+  return p === 'monthly' || p === 'six_months' || p === 'annual' ? p : periodOfProduct(sub?.product_id);
+}
+
+export interface SubscriberSummary {
+  /** Achat personnel, ou Premium partagé par l'autre adulte du foyer (aucun abonnement personnel en cours). */
+  origin: 'own' | 'shared';
+  originText: string;
+  /** Formule en cours (inconnue pour un Premium partagé : la facturation appartient à la personne abonnée). */
+  period: PlanPeriod | null;
+  /** Prochaine échéance, fin d'essai ou fin d'accès si résilié (phrase datée) ; partage : qui partage. */
+  message: string;
+  /** Vrai si la personne peut gérer cet abonnement (changer de formule, résilier) : jamais pour un Premium partagé. */
+  manageable: boolean;
+}
+
+/** Vue abonné : origine, formule et échéance. Null si la personne n'a pas Premium. */
+export function subscriberSummary(
+  ent: Pick<Entitlement, 'message'> & { premium: boolean; sub?: Pick<SubRow, 'status' | 'period_type' | 'product_id'> | null },
+  sharedBy?: { display_name: string | null } | null,
+): SubscriberSummary | null {
+  if (!ent.premium) return null;
+  if (ownActive(ent.sub, true)) {
+    return { origin: 'own', originText: tr('sub3.origin.own'), period: periodOfSub(ent.sub), message: ent.message, manageable: true };
+  }
+  const name = sharedBy?.display_name?.trim();
+  return {
+    origin: 'shared',
+    originText: name ? tr('sub3.origin.shared', { name }) : tr('sub3.origin.sharedAnon'),
+    period: null,
+    message: name ? tr('sub2.page.sharedBy', { name }) : tr('sub2.page.sharedAnon'),
+    manageable: false,
+  };
 }
 
 /** Comment annuler, selon la plateforme (web de démonstration : la marche à suivre iPhone, l'application étant iOS). */

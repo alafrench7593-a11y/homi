@@ -335,10 +335,34 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
     if (grants(s as never)) return true;
-    // Co-parent : Premium partagé par la propriétaire abonnée du foyer (miroir de _premium_of ; jamais pour une nounou)
+    // Partage : l'abonné·e + UN seul autre adulte du foyer (miroir de _premium_of ; jamais pour une nounou)
+    return premiumGiver() != null;
+  };
+  const subActive = (user: unknown) => grants(T('subscriptions').find((r) => r.user_id === user) as never);
+  /** Miroir de public._premium_partner_of : le seul autre adulte qui profite de l'abonnement de `subscriber`. */
+  const premiumPartnerOf = (subscriber: unknown): string | null => {
+    const hm = T('household_members');
+    const c: { partner: string; prio: number; since: string }[] = [];
+    // a) co-parents des foyers dont l'abonné·e est propriétaire : le premier arrivé
+    for (const o of hm.filter((m) => m.user_id === subscriber && m.role === 'owner')) {
+      for (const m of hm.filter((x) => x.household_id === o.household_id && x.role === 'coparent' && x.user_id !== subscriber)) c.push({ partner: m.user_id, prio: 1, since: String(m.joined_at ?? '') });
+    }
+    // b) à défaut, le propriétaire du foyer où l'abonné·e est co-parent
+    for (const me of hm.filter((m) => m.user_id === subscriber && m.role === 'coparent')) {
+      for (const o of hm.filter((x) => x.household_id === me.household_id && x.role === 'owner' && x.user_id !== subscriber)) c.push({ partner: o.user_id, prio: 2, since: String(me.joined_at ?? '') });
+    }
+    c.sort((a, b) => a.prio - b.prio || a.since.localeCompare(b.since) || String(a.partner).localeCompare(String(b.partner)));
+    return c[0]?.partner ?? null;
+  };
+  /** Adulte abonné du foyer dont la personne connectée est LE bénéficiaire (null : aucun). */
+  const premiumGiver = (): string | null => {
     const me = state.session?.userId;
-    return T('household_members').some((m) => m.user_id === me && m.role === 'coparent'
-      && T('household_members').some((o) => o.household_id === m.household_id && o.role === 'owner' && grants(T('subscriptions').find((r) => r.user_id === o.user_id) as never)));
+    if (!me) return null;
+    const hm = T('household_members');
+    const adult = (r: unknown) => r === 'owner' || r === 'coparent';
+    const others = hm.filter((m) => m.user_id === me && adult(m.role))
+      .flatMap((m) => hm.filter((o) => o.household_id === m.household_id && o.user_id !== me && adult(o.role)).map((o) => String(o.user_id)));
+    return [...new Set(others)].sort().find((u) => subActive(u) && premiumPartnerOf(u) === me) ?? null;
   };
   const limit = (key: string) => {
     const l = T('plan_limits').find((p) => p.key === key);
@@ -1608,7 +1632,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       else subs.push(row);
       return row;
     },
-    my_premium_share: () => ({ shared_with: null, shared_by: null }),
+    // Miroir de public.my_premium_share() : avec qui mon Premium est partagé / qui me le partage (pour soi seulement)
+    my_premium_share: () => {
+      const me = uid();
+      const person = (id: string | null) => (id ? { user_id: id, display_name: (T('profiles').find((p) => p.id === id)?.display_name as string | undefined) ?? null } : null);
+      return { shared_with: person(subActive(me) ? premiumPartnerOf(me) : null), shared_by: person(premiumGiver()) };
+    },
+    // Démonstration : l'essai gratuit n'est proposé qu'une fois (comme Apple, une fois par groupe d'abonnements) —
+    // dès qu'un abonnement de démonstration a existé pour ce compte, les formules s'affichent sans essai.
+    demo_trial_used: () => T('subscriptions').some((s) => s.user_id === uid() && s.status !== 'none'),
   };
 
   const functions: Record<string, (b: Row) => unknown> = {

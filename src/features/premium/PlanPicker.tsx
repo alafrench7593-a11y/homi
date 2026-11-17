@@ -1,9 +1,12 @@
 /**
- * Choix de la formule (écran Premium v2) : trois lignes compactes pleine largeur, l'annuelle en tête avec un badge sobre
+ * Choix de la formule (écran Premium v2 ET page d'abonnement) : trois lignes compactes pleine largeur. La formule
+ * conseillée — celle dont le prix ramené au mois, CALCULÉ sur les prix de la boutique, est le plus bas — porte un badge
+ * sobre et une phrase qui dit pourquoi ; sans économie calculable, aucune formule n'est signalée.
  * (19/11/2026 : formules et bouton principal visibles sans défiler à 390 × 844).
  * Sélection : bord, fond et pastille passent à l'état choisi en ressort « vif » (Reanimated, fil UI), haptique
  * « sélection » au changement seulement. Réduire les animations : état final immédiat (useMotion).
- * Accessibilité : groupe de boutons radio ; chaque formule annonce nom, prix, période, prix mensuel, économie, essai.
+ * Accessibilité : groupe de boutons radio ; chaque formule annonce nom, prix, période, prix mensuel, économie, essai,
+ * et « votre formule actuelle » pour un·e abonné·e qui change de formule.
  */
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
@@ -14,7 +17,7 @@ import type { Plan, PlanPeriod } from '@/lib/premium/plans';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
-import { perLong, planA11yLabel, planName } from './paywallModel';
+import { perLong, planA11yLabel, planName, recommendedPeriod } from './paywallModel';
 
 function Radio({ on, color, ring }: { on: SharedValue<number>; color: string; ring: string }) {
   const dot = useAnimatedStyle(() => ({ opacity: on.value, transform: [{ scale: 0.4 + 0.6 * on.value }] }));
@@ -26,7 +29,7 @@ function Radio({ on, color, ring }: { on: SharedValue<number>; color: string; ri
   );
 }
 
-function Option({ plan, selected, featured, onSelect }: { plan: Plan; selected: boolean; featured: boolean; onSelect: (p: PlanPeriod) => void }) {
+function Option({ plan, selected, featured, current, onSelect }: { plan: Plan; selected: boolean; featured: boolean; current: boolean; onSelect: (p: PlanPeriod) => void }) {
   const th = useTheme();
   const m = useMotion();
   const on = useSharedValue(selected ? 1 : 0);
@@ -44,7 +47,7 @@ function Option({ plan, selected, featured, onSelect }: { plan: Plan; selected: 
   // économie, essai) qui passent à la ligne si besoin ; prix et période alignés à droite.
   return (
     <PressableScale onPress={choose} haptic="none" scale={0.985} accessibilityRole="radio" accessibilityState={{ checked: selected, selected }} aria-checked={selected}
-      accessibilityLabel={planA11yLabel(plan, featured)} testID={`pw2-plan-${plan.period}`}>
+      accessibilityLabel={planA11yLabel(plan, featured, current)} testID={`pw2-plan-${plan.period}`}>
       <Animated.View style={[{ borderRadius: radius.lg, borderWidth: featured ? 2 : 1.5, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }, surface]}>
         <Radio on={on} color={th.colors.primary} ring={th.colors.textMuted} />
         <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
@@ -62,6 +65,7 @@ function Option({ plan, selected, featured, onSelect }: { plan: Plan; selected: 
             </Text>
           ) : null}
           {plan.trialDays > 0 ? <Text variant="small" weight="medium" color={th.colors.primary} testID={`pw2-trial-${plan.period}`}>{tr('pay2.plan.trial', { count: plan.trialDays })}</Text> : null}
+          {current ? <Text variant="small" weight="bold" testID={`pw2-current-${plan.period}`}>{tr('sub2.plan.current')}</Text> : null}
         </View>
         <View style={{ alignItems: 'flex-end', maxWidth: '42%' }}>
           <Text variant={featured ? 'heading' : 'body'} weight="bold" testID={`pw2-price-${plan.period}`}>{plan.price}</Text>
@@ -72,13 +76,15 @@ function Option({ plan, selected, featured, onSelect }: { plan: Plan; selected: 
   );
 }
 
-export function PlanPicker({ plans, selected, onSelect }: { plans: Plan[]; selected: PlanPeriod | null; onSelect: (p: PlanPeriod) => void }) {
-  const featured = plans.find((p) => p.period === 'annual') ?? null;
-  const others = plans.filter((p) => p !== featured);
+export function PlanPicker({ plans, selected, onSelect, currentPeriod }: { plans: Plan[]; selected: PlanPeriod | null; onSelect: (p: PlanPeriod) => void; currentPeriod?: PlanPeriod | null }) {
+  const th = useTheme();
+  const recommended = recommendedPeriod(plans);
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={tr('pay2.plansTitle')} style={{ gap: spacing.sm }} testID="pw2-plans">
-      {featured ? <Option plan={featured} featured selected={selected === featured.period} onSelect={onSelect} /> : null}
-      {others.map((p) => <Option key={p.period} plan={p} featured={false} selected={selected === p.period} onSelect={onSelect} />)}
+    <View style={{ gap: spacing.sm }}>
+      <View accessibilityRole="radiogroup" accessibilityLabel={tr('pay2.plansTitle')} style={{ gap: spacing.sm }} testID="pw2-plans">
+        {plans.map((p) => <Option key={p.period} plan={p} featured={p.period === recommended} current={p.period === currentPeriod} selected={selected === p.period} onSelect={onSelect} />)}
+      </View>
+      {recommended ? <Text variant="caption" color={th.colors.textMuted} testID="pw2-recommended-why">{tr('sub3.recommended')}</Text> : null}
     </View>
   );
 }
