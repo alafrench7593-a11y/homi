@@ -139,7 +139,7 @@ export default function Discoveries() {
       <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(243,219,189,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F9EDDE', '#F1EAFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
 
       {/* Résumé : progression par catégorie, sans total ni comparaison */}
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={26} padded={spacing.md}>
+      <GlassSurface fill={t.colors.surface} depth={2} radius={26} padded={spacing.md}>
         <View testID="dc-hero" style={{ gap: 6 }}>
           <Text variant="label" muted>{tr('dc.hero.title', { name })}</Text>
           <Text variant="heading" testID="dc-hero-line">
@@ -292,11 +292,11 @@ const CAT_TINT: Record<FoodCategory, string> = {
 
 function FoodTile({ food, entry, state, width, locked, onPress }: { food: FoodDef; entry?: FoodEntry; state: DisplayState; width: number; locked: boolean; onPress: () => void }) {
   const t = useTheme();
-  const badge: Record<DisplayState, string> = { discovered: t.colors.success ?? '#3E8E41', retry_later: '#AD8C5E', to_discover: t.colors.textMuted, not_yet_age: t.colors.textMuted };
+  const badge: Record<DisplayState, string> = { discovered: t.colors.success, retry_later: '#AD8C5E', to_discover: t.colors.textMuted, not_yet_age: t.colors.textMuted };
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={`${food.name}. ${tr(`dc.state.${state}` as TKey)}${entry?.favorite ? `. ${tr('dc.favorite')}` : ''}${locked ? `. ${tr('dc.locked')}` : ''}`}
       onPress={onPress} testID={`dc-food-${food.key}`} style={{ width }}>
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.58)'} depth={1} radius={22} padded={10} style={{ alignItems: 'center' }}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={22} padded={10} style={{ alignItems: 'center' }}>
         <View style={{ alignItems: 'center', gap: 6 }}>
           <FoodArt food={food} size={Math.min(84, width - 28)} dim={state === 'not_yet_age' || locked} />
           <Text weight="bold" variant="small" center>{food.name}</Text>

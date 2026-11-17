@@ -155,6 +155,7 @@ export function SleepQuickButtons({ child }: { child: Child }) {
 
 /** État actuel, durée, prochaine action estimée, bouton d'enregistrement. Le détail est dans « Sommeil ». */
 export function SleepNowCard({ child }: { child: Child }) {
+  const t = useTheme();
   const premium = usePremium();
   const { plan } = useSleepPlan(child);
   const lines = plan ? planLines(plan, child.first_name, child.sex) : [];
@@ -166,7 +167,7 @@ export function SleepNowCard({ child }: { child: Child }) {
     <View testID="sleep-now">
       <Card>
         <Row style={{ alignItems: 'center' }}>
-          <Icon name={plan?.state === 'awake' ? 'sun' : 'moon'} color={palette.lavenderInk} />
+          <Icon name={plan?.state === 'awake' ? 'sun' : 'moon'} color={t.colors.lavender} />
           <View style={{ flex: 1 }}>
             <Text variant="caption" muted>{tr('u4.sl.cardTitle', { name: child.first_name })}</Text>
             <Text weight="bold" testID="sleep-now-state">{state ?? '—'}</Text>
@@ -227,7 +228,7 @@ export function SleepTimeline({ plan, showEstimates, onEdit, now }: { plan: Slee
     <View accessibilityLabel={tr('u4.sl.dayPlan')} testID="sleep-timeline">
       {items.map((i, k) => {
         const done = !i.estimated;
-        const color = i.kind === 'night' || i.kind === 'nap' ? palette.lavenderInk : i.kind === 'awake' ? t.colors.gold : t.colors.textMuted;
+        const color = i.kind === 'night' || i.kind === 'nap' ? t.colors.lavender : i.kind === 'awake' ? t.colors.gold : t.colors.textMuted;
         const dur = i.to !== null ? span((i.to - i.from) / MIN) : i.ongoing ? span((now.getTime() - i.from) / MIN) : null;
         const when = i.kind === 'nap_est' ? tr('u4.sl.around', { time: clock(i.from) }) : i.kind === 'bedtime' && plan.bedtime ? `${clock(plan.bedtime.from)} – ${clock(plan.bedtime.to)}` : i.to !== null && i.kind !== 'routine' ? `${clock(i.from)} – ${clock(i.to)}` : i.kind === 'routine' ? tr('u4.sl.around', { time: clock(i.from) }) : tr('u4.sl.since', { time: clock(i.from) });
         const body = (
@@ -255,6 +256,7 @@ export function SleepTimeline({ plan, showEstimates, onEdit, now }: { plan: Slee
 // ─── Modifier un horaire ───────────────────────────────────────────────────────────────────────────
 
 export function SleepEditSheet({ child, sleep, all, onClose }: { child: Child; sleep: Sleep | null; all: Sleep[]; onClose: () => void }) {
+  const t = useTheme();
   const toast = useToast();
   const act = useSleepActions(child);
   const [start, setStart] = useState('');
@@ -291,7 +293,7 @@ export function SleepEditSheet({ child, sleep, all, onClose }: { child: Child; s
           <View style={{ flex: 1 }}><Field label={tr('u4.sl.fellAsleep')} value={start} onChangeText={setStart} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-start" /></View>
           <View style={{ flex: 1 }}><Field label={tr('u4.sl.wake')} optional={!sleep.ended_at} value={end} onChangeText={setEnd} placeholder={sleep.ended_at ? '' : tr('u4.sl.ongoing')} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-end" /></View>
         </Row>
-        {error ? <Text variant="small" color={palette.danger}>{error}</Text> : null}
+        {error ? <Text variant="small" color={t.colors.danger}>{error}</Text> : null}
         <Button label={tr('u4.sl.save')} onPress={save} loading={busy} testID="sleep-edit-save" />
         <Button label={tr('u4.sl.deleteBtn')} variant="ghost" icon="trash-2" onPress={del} testID="sleep-edit-delete" />
       </View>

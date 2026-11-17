@@ -44,7 +44,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useOfflineStore } from '@/lib/offline';
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions } from '@/components/AccountActions';
 import { Tappable } from '@/components/Tappable';
 import { ToolSearchButton } from '@/features/hubs/ToolSearch';

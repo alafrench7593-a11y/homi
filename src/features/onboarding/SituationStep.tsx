@@ -12,7 +12,7 @@ import { ChoiceGroup } from '@/components/controls';
 import { Text, type IconName } from '@/components/ui';
 import { Reveal, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { IDENTITY, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { formatList, t as tr, type TKey } from '@/i18n';
 import { SITUATIONS, toggleSituation, type CycleGoal, type Situation } from '@/lib/onboarding/personalize';
 import { ChoiceList, ChoiceRow, StepTitle } from './kit';
@@ -20,7 +20,8 @@ import { ChoiceList, ChoiceRow, StepTitle } from './kit';
 export const SITUATION_ICON: Record<Situation, IconName> = { ttc: 'sunrise', pregnant: 'moon', baby: 'sun', kids: 'users', cycle: 'calendar', home: 'home' };
 type SpaceKey = 'health' | 'baby' | 'family';
 /** Teinte décorative de chaque espace ouvert : les trois tons de l'identité v5 (corail, rose, lilas), jamais un texte. */
-const SPACE_HUE: Record<SpaceKey, string> = { health: IDENTITY.lilac, baby: IDENTITY.rose, family: IDENTITY.coral };
+/** Teinte de décor de chaque espace : rang dans `theme.tokens.decor` (suit la palette affichée). */
+const SPACE_HUE: Record<SpaceKey, 'a' | 'b' | 'c'> = { health: 'c', baby: 'b', family: 'a' };
 export const SITUATION_SPACE: Record<Situation, SpaceKey> = { ttc: 'health', pregnant: 'health', cycle: 'health', baby: 'baby', kids: 'baby', home: 'family' };
 
 export function SituationStep({ situations, cycleGoal, onChange, onGoal }: {
@@ -51,7 +52,7 @@ export function SituationStep({ situations, cycleGoal, onChange, onGoal }: {
         {spaces.map((sp) => (
           <Animated.View key={sp} entering={anim ? FadeIn.duration(220) : undefined} exiting={anim ? FadeOut.duration(140) : undefined} layout={anim ? LinearTransition.springify().damping(30).stiffness(280) : undefined}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill, borderWidth: 1, borderColor: t.tokens.border.rest }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: SPACE_HUE[sp] }} />
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.tokens.decor[SPACE_HUE[sp]] }} />
             <Text variant="small" weight="bold">{tr(`o2.space.${sp}` as TKey)}</Text>
           </Animated.View>
         ))}

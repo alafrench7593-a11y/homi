@@ -52,7 +52,7 @@ export default function Outings() {
       <View testID="outings" />
       <Text variant="small" muted testID="out-privacy">{tr('out.privacy')}</Text>
 
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={24} padded={spacing.md}>
+      <GlassSurface fill={t.colors.surface} depth={2} radius={24} padded={spacing.md}>
         <TownPicker onHere={setHere} />
         {center ? <Text variant="small" style={{ marginTop: spacing.xs }} testID="out-center">{here ? tr('nb.aroundHere') : tr('nb.around', { town: town!.label })}</Text> : null}
       </GlassSurface>
@@ -136,7 +136,7 @@ function DirectoryCard({ d, town }: { d: Directory; town: string | null }) {
   const toast = useToast();
   const url = directoryUrl(d, town);
   return (
-    <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.6)'} depth={1} radius={20} padded={spacing.md}>
+    <GlassSurface fill={t.colors.surface} depth={1} radius={20} padded={spacing.md}>
       <View style={{ gap: 4 }} testID={`out-dir-${d.kind}`}>
         <Text weight="bold">{d.title}</Text>
         <Text variant="small">{d.body}</Text>

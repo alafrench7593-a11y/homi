@@ -33,7 +33,7 @@ export function NightsHelpCard({ child }: { child: Child }) {
     : null;
   return (
     <View style={{ borderRadius: 26, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }} testID="nights-help-card">
-      <LinearGradient colors={t.isDark ? ['#1E2347', '#171B36'] : ['#EEF0FB', '#F8F1FB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: spacing.md, gap: spacing.sm }}>
+      <LinearGradient colors={[t.material.cardTint.lavender, t.material.cardTint.soft]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: spacing.md, gap: spacing.sm }}>
         <Tappable accessibilityRole="button" accessibilityLabel={tr('u3.sleep.helpA11y', { name })} onPress={() => router.push(`/sleep/help/${child.id}` as never)} testID="nights-help-open">
           <Row style={{ alignItems: 'center' }}>
             <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: `${t.colors.lavender}33`, alignItems: 'center', justifyContent: 'center' }}><Icon name="moon" size={19} color={t.colors.lavender} /></View>

@@ -1,14 +1,15 @@
 /**
- * Thème HOMI v5 « Lumière corail » : UNE identité (corail, rose chaud, lilas rare), trois apparences —
- * Système / Clair / Sombre (Réglages → Apparence). Plus de palette au choix ni d'Auto selon l'heure : une ancienne
- * préférence de palette est lue comme l'identité unique (`migratePalette`).
+ * Thème HOMI v6 : cinq palettes + mode Adaptatif (Réglages → Apparence), trois apparences — Système / Clair / Sombre.
+ *  - Palette : `palettePreference` (une palette fixe, ou « adaptive » : la palette suit le profil affiché, selon la
+ *    correspondance fixe `ADAPTIVE_PALETTE`). Une ancienne préférence (v3, v4, Auto) est lue comme la palette par défaut.
  *  - Préférences par compte : au changement de session, `switchAppearanceOwner` charge les choix du compte.
- *  - Mode nuit (écran /night) : prioritaire, prune tamisée.
+ *  - Mode nuit (écran /night) : prioritaire, teinte de la palette très tamisée.
  *  - `phase` : moment de la journée (salutation de l'accueil), sans effet sur les couleurs.
+ * Les composants lisent `useTheme()` ; aucun ne connaît le nom d'une palette.
  */
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, useColorScheme } from 'react-native';
-import { previewTime, skyPhase, themes, type SkyPhase, type Theme, type ThemeName } from './tokens';
+import { previewTime, resolvePalette, skyPhase, themeFor, themes, type SkyPhase, type Theme, type ThemeName } from './tokens';
 import { useUiStore } from '@/lib/store';
 import { useAuth } from '@/lib/auth';
 
@@ -30,6 +31,8 @@ export function resolveThemeName(o: { nightMode: boolean; preference: string | n
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const system = useColorScheme();
   const preference = useUiStore((s) => s.themePreference);
+  const paletteChoice = useUiStore((s) => s.palettePreference);
+  const profile = useUiStore((s) => s.adaptiveProfile);
   const nightMode = useUiStore((s) => s.nightMode);
   const skyOverride = useUiStore((s) => s.skyOverride);
   const switchOwner = useUiStore((s) => s.switchAppearanceOwner);
@@ -47,7 +50,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const name = resolveThemeName({ nightMode, preference, system });
   const phase: SkyPhase = skyOverride ?? skyPhase(skyOverride ? previewTime(skyOverride) : new Date());
 
-  const value = useMemo(() => ({ theme: { ...themes[name], phase }, reduceMotion }), [name, phase, reduceMotion]);
+  const paletteName = resolvePalette(paletteChoice, profile);
+
+  const value = useMemo(() => ({ theme: { ...themeFor(name, paletteName), phase }, reduceMotion }), [name, paletteName, phase, reduceMotion]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 

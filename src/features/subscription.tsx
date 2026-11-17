@@ -20,8 +20,7 @@ import type { EntitlementState } from '@/lib/premium/entitlement';
 import { billingDates, formatMoney, periodOfProduct, PLAN_BADGE, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import { getPurchaseMode, loadPlans, purchasesSdk } from '@/lib/purchaseMode';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
-import { HOMI_FILL } from './homiColors';
+import { alpha, radius, spacing } from '@/theme/tokens';
 import { springTo } from '@/theme/motion';
 import { DrawCheck } from '@/components/MotionKit';
 import { Appear } from '@/components/Appear';
@@ -44,17 +43,19 @@ export const webWithoutPurchase = (mode: string) => Platform.OS === 'web' && mod
 
 // ---------------------------------------------------------------- en-tête
 export function PremiumHero() {
+  // aplat de l'action principale de la palette affichée (texte lisible, testé)
+  const hero = useTheme().tokens.action;
   return (
-    <LinearGradient colors={HOMI_FILL} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs }}>
+    <LinearGradient colors={[hero.fill, hero.fill]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs }}>
       <View testID="premium-hero">
         <Row>
-          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="star" size={18} color="#FFFFFF" />
+          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: alpha(hero.text, 0.18), alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="star" size={18} color={hero.text} />
           </View>
-          <Text variant="caption" weight="bold" color="#FFFFFF" style={{ letterSpacing: 1.6, flex: 1 }} accessibilityRole="header">{tr('sub2.page.title')}</Text>
+          <Text variant="caption" weight="bold" color={hero.text} style={{ letterSpacing: 1.6, flex: 1 }} accessibilityRole="header">{tr('sub2.page.title')}</Text>
         </Row>
-        <Text variant="heading" color="#FFFFFF" style={{ marginTop: spacing.sm }}>{tr('sub2.page.subtitle')}</Text>
-        <Text variant="small" color="#FFFFFF" style={{ marginTop: spacing.xs, opacity: 0.92 }}>{tr('sub2.page.oneAccess')}</Text>
+        <Text variant="heading" color={hero.text} style={{ marginTop: spacing.sm }}>{tr('sub2.page.subtitle')}</Text>
+        <Text variant="small" color={hero.text} style={{ marginTop: spacing.xs, opacity: 0.92 }}>{tr('sub2.page.oneAccess')}</Text>
       </View>
     </LinearGradient>
   );

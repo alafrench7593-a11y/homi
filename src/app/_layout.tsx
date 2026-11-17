@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
+import { AdaptiveProfileSync } from '@/theme/AdaptiveProfileSync';
 import { MorphHost } from '@/motion/Morph';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
@@ -215,6 +216,8 @@ export default function RootLayout() {
             <I18nProvider>
               <ToastProvider>
                 <Bootstrap />
+                {/* Mode Adaptatif : le profil affiché choisit la palette (src/theme/AdaptiveProfileSync.tsx) */}
+                <AdaptiveProfileSync />
                 <SessionGuard />
                 <WebInteractionStyles />
                 <WebFrame>
@@ -250,10 +253,11 @@ function WebFrame({ children }: { children: React.ReactNode }) {
   // Contrôle de la mise en page tablette / ordinateur (tests) : localStorage « toietmoi.frame » = « off »
   let off = false;
   try { off = Platform.OS === 'web' && globalThis.localStorage?.getItem('toietmoi.frame') === 'off'; } catch { off = false; }
+  const t = useTheme();
   if (Platform.OS !== 'web' || width < 600 || off) return <>{children}</>;
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1E4E1', padding: 24 }}>
-      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(84,40,60,0.10)', shadowColor: '#54283C', shadowOpacity: 0.12, shadowRadius: 40, shadowOffset: { width: 0, height: 16 } }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.backgroundAlt, padding: 24 }}>
+      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border, shadowColor: t.tokens.shadowColor, shadowOpacity: 0.12, shadowRadius: 40, shadowOffset: { width: 0, height: 16 } }}>
         {children}
       </View>
     </View>

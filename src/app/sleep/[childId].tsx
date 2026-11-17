@@ -9,6 +9,7 @@
  *    professionnel — toujours gratuits.
  * Les heures affichées sont des estimations personnalisables, jamais des obligations ni des promesses.
  */
+import { useTheme } from '@/theme/ThemeProvider';
 import { Tappable } from '@/components/Tappable';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
@@ -199,6 +200,7 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
 // ─── Profil ────────────────────────────────────────────────────────────────────────────────────────
 
 function ProfileTab({ child, profile }: { child: Child; profile: SleepProfileRow | null }) {
+  const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const [wake, setWake] = useState(hm(profile?.usual_wake));
@@ -262,7 +264,7 @@ function ProfileTab({ child, profile }: { child: Child; profile: SleepProfileRow
         <Row wrap>{DIFFICULTIES.map((d) => <Chip key={d} label={DIFFICULTY_LABEL[d]} selected={diffs.includes(d)} onPress={() => setDiffs(diffs.includes(d) ? diffs.filter((x) => x !== d) : [...diffs, d])} />)}</Row>
         <Text variant="caption" muted>{tr('u4.sp.diffNote')}</Text>
       </Card>
-      {error ? <Text variant="small" color={palette.danger}>{error}</Text> : null}
+      {error ? <Text variant="small" color={t.colors.danger}>{error}</Text> : null}
       <Button label={tr('u4.sp.saveProfile')} onPress={save} loading={busy} testID="profile-save" />
       <BedtimeRoutine child={child} profileBedtime={hm(profile?.usual_bedtime)} />
     </View>
@@ -479,6 +481,7 @@ function TrendsTab({ child, data }: { child: Child; data: PlanData }) {
 // ─── Sécurité et professionnel (toujours gratuit) ──────────────────────────────────────────────────
 
 function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
+  const t = useTheme();
   const toast = useToast();
   const { sleeps, profile, now } = data;
   const age = childAge(child.birth_date);
@@ -499,7 +502,7 @@ function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u4.sp.officialSrc')}</Text>
         {SAFE_SLEEP_SOURCES.map((s) => (
           <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
-            <Text variant="caption" color={palette.lavenderInk} style={{ flex: 1 }}>
+            <Text variant="caption" color={t.colors.lavender} style={{ flex: 1 }}>
               {tr('u4.sp.srcLine', { label: s.label, pub: new Date(`${s.published}T12:00:00`).toLocaleDateString(localeTag()), cons: new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString(localeTag()) })}
             </Text>
           </Tappable>

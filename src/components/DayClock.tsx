@@ -49,8 +49,8 @@ export function DayClock({ events, size = 280, children, now = new Date(), label
     <View style={{ width: size, height: size }} accessible accessibilityRole="image" accessibilityLabel={tr('u4.clock.a11y', { label, feeds: counts.feed, sleeps: counts.sleep, diapers: counts.diaper })}>
       <Svg width={size} height={size}>
         {/* cadran : nuit (18h-6h) teintée, jour clair */}
-        <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 18)), angleOf(new Date(2000, 0, 1, 6)))} stroke={t.isDark ? '#262B57' : '#DCD5EE'} strokeWidth={26} fill="none" />
-        <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 6)), angleOf(new Date(2000, 0, 1, 18)))} stroke={t.isDark ? '#1E2247' : '#F1ECF7'} strokeWidth={26} fill="none" />
+        <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 18)), angleOf(new Date(2000, 0, 1, 6)))} stroke={t.material.lines.track} strokeWidth={26} fill="none" />
+        <Path d={arc(c, c, rSleep, angleOf(new Date(2000, 0, 1, 6)), angleOf(new Date(2000, 0, 1, 18)))} stroke={t.material.lines.separator} strokeWidth={26} fill="none" />
         {Array.from({ length: 24 }, (_, h) => {
           const a = (h / 24) * 360 - 90;
           const p1 = polar(c, c, c - 6, a);
@@ -65,19 +65,19 @@ export function DayClock({ events, size = 280, children, now = new Date(), label
         {recent.filter((e) => e.kind === 'sleep').map((e, i) => {
           const s = new Date(Math.max(new Date(e.start).getTime(), since));
           const en = e.end ? new Date(e.end) : now;
-          return <Path key={`s${i}`} d={arc(c, c, rSleep, angleOf(s), angleOf(en))} stroke={palette.lavender} strokeWidth={18} strokeLinecap="round" fill="none" opacity={e.end ? 0.95 : 0.6} />;
+          return <Path key={`s${i}`} d={arc(c, c, rSleep, angleOf(s), angleOf(en))} stroke={t.tokens.chart[2]} strokeWidth={18} strokeLinecap="round" fill="none" opacity={e.end ? 0.95 : 0.6} />;
         })}
         {/* repas */}
         {recent.filter((e) => e.kind === 'feed').map((e, i) => {
           const p = polar(c, c, rFeed, angleOf(new Date(e.start)));
-          return <Circle key={`f${i}`} cx={p.x} cy={p.y} r={6} fill={palette.clay} stroke={t.colors.surface} strokeWidth={2} />;
+          return <Circle key={`f${i}`} cx={p.x} cy={p.y} r={6} fill={t.tokens.chart[1]} stroke={t.colors.surface} strokeWidth={2} />;
         })}
         {/* changes */}
         {recent.filter((e) => e.kind === 'diaper').map((e, i) => {
           const a = angleOf(new Date(e.start));
           const p1 = polar(c, c, rDiaper + 4, a);
           const p2 = polar(c, c, rDiaper - 4, a);
-          return <Line key={`d${i}`} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={palette.gold} strokeWidth={4} strokeLinecap="round" />;
+          return <Line key={`d${i}`} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke={t.tokens.chart[5]} strokeWidth={4} strokeLinecap="round" />;
         })}
         {/* maintenant */}
         <G>
@@ -108,9 +108,9 @@ export function ClockLegend() {
   );
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 16 }}>
-      {item(palette.lavender, tr('u4.clock.sleep'), 'arc')}
-      {item(palette.clay, tr('u4.clock.meal'), 'dot')}
-      {item(palette.gold, tr('u4.clock.change'), 'bar')}
+      {item(t.tokens.chart[2], tr('u4.clock.sleep'), 'arc')}
+      {item(t.tokens.chart[1], tr('u4.clock.meal'), 'dot')}
+      {item(t.tokens.chart[5], tr('u4.clock.change'), 'bar')}
     </View>
   );
 }

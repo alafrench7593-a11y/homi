@@ -45,7 +45,7 @@ export function StockCard({ stock, labelOf, onOpen }: { stock: Stock; labelOf: (
     stock.threshold != null ? tr('stk.threshold.short', { qty: formatStockQty(stock.threshold, stock.unit) }) : null,
     stock.responsible_id ? labelOf(stock.responsible_id) : null].filter(Boolean).join(' · ');
   return (
-    <LiftCard testID={`stock-${stock.id}`} accessibilityLabel={`${productLabelOf(stock)}. ${meta}`} onOpen={onOpen} radius={radius.lg} shadowColor={palette.night}
+    <LiftCard testID={`stock-${stock.id}`} accessibilityLabel={`${productLabelOf(stock)}. ${meta}`} onOpen={onOpen} radius={radius.lg} shadowColor={t.tokens.shadowColor}
       style={{ padding: spacing.md, gap: spacing.xs, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
         <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.primary, t.isDark ? 0.2 : 0.1) }}>

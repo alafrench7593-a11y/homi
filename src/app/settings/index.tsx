@@ -18,7 +18,7 @@ import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
 import { flushQueue, useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
-import { spacing } from '@/theme/tokens';
+import { migratePalette, spacing } from '@/theme/tokens';
 import { deviceRegion, getLocale, t as tr } from '@/i18n';
 import { DEVICE_CALENDAR_ROUTE, useDeviceCalendarSummary } from '@/features/deviceCalendar/DeviceCalendarParts';
 import { defaultRegion, localeInfo, REGIONS } from '@/i18n/locales';
@@ -42,6 +42,7 @@ export default function SettingsScreen() {
   const iphoneCalendar = useDeviceCalendarSummary();
 
   const preference = useUiStore((s) => s.themePreference);
+  const paletteChoice = migratePalette(useUiStore((s) => s.palettePreference));
   const haptics = useUiStore((s) => s.hapticsEnabled);
   const region = useUiStore((s) => s.region);
   const regionInfo = REGIONS.find((r) => r.code === (region ?? defaultRegion(deviceRegion()))) ?? REGIONS[0];
@@ -115,7 +116,7 @@ export default function SettingsScreen() {
           <ListRow
             icon={MODE_ICON[mode]}
             title={tr('settings.appearance.row')}
-            subtitle={tr(`settings.appearance.${mode}` as const)}
+            subtitle={tr('v6.palette.rowSub', { mode: tr(`settings.appearance.${mode}` as const), palette: tr(`v6.palette.${paletteChoice}` as const) })}
             onPress={() => router.push('/settings/appearance')}
             testID="settings-appearance"
           />

@@ -76,7 +76,7 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
 
   return (
     <Reanimated.View style={[{ width, minHeight: TOOL_CARD_HEIGHT }, hoverStyle]}>
-      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.lg, backgroundColor: palette.night, opacity: 0, transform: [{ translateY: 8 }, { scale: 0.96 }] }, lift.shadow]} />
+      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.lg, backgroundColor: t.tokens.shadowColor, opacity: 0, transform: [{ translateY: 8 }, { scale: 0.96 }] }, lift.shadow]} />
       <Reanimated.View style={[{ flex: 1 }, lift.style]}>
       <Reanimated.View style={[{ flex: 1 }, press.style]}>
       <Pressable

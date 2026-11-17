@@ -6,7 +6,7 @@
  * Lisibilité : le texte posé sur le verre utilise toujours l'encre de la palette (anthracite / blanc cassé),
  * avec un voile assez opaque pour garder le contraste quel que soit le fond animé derrière.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -23,24 +23,29 @@ export interface CyclePalette {
   onAccent: string;
 }
 
-/** Contrastes calculés (WCAG AA ≥ 4,5:1) sur le fond « paper » : encre 13,2:1 (clair) / 14,4:1 (sombre), encre douce 6,4 / 9,7, couleurs d'état ≥ 5:1, texte sur « period » 5,3 / 8,0. */
-// HOMI (13/11/2026) : perle et midnight violet ; « powder » et « rose » deviennent lilas pâle et mauve framboise,
-// les règles passent du vieux rose au framboise HOMI. Les noms des clés restent (compatibilité des écrans).
-const LIGHT: CyclePalette = {
-  ink: '#1C1533', inkSoft: '#584D72', paper: '#F7F4FB', glass: 'rgba(251,249,254,0.86)', glassBorder: 'rgba(255,255,255,0.95)', line: '#E4DEEE',
-  powder: '#ECE4FA', rose: '#D3B3E3', lavender: '#D9CFF0', mauve: '#735C9B', beige: '#F6ECDA', pearl: '#E8E4F0', anthracite: '#1C1533',
-  period: '#A8346A', periodSoft: '#FBE8F1', estimate: '#B9A6D8', fertile: '#DCD3F2', info: '#2A609C', warn: '#8A5A0E', danger: '#B3261E', success: '#2F6E4F',
-  onAccent: '#FFFFFF',
-};
-const DARK: CyclePalette = {
-  ink: '#F7F4FB', inkSoft: '#C3B8DD', paper: '#16112B', glass: 'rgba(29,22,56,0.88)', glassBorder: 'rgba(255,255,255,0.16)', line: '#2E2650',
-  powder: '#3A2650', rose: '#B98AB0', lavender: '#3E3470', mauve: '#C2AEE6', beige: '#3A3226', pearl: '#2A2342', anthracite: '#110D23',
-  period: '#FF9CC3', periodSoft: '#3A2036', estimate: '#8C7AB0', fertile: '#33295A', info: '#A8CCFF', warn: '#F2D49A', danger: '#FF8A80', success: '#8BD3AE',
-  onAccent: '#110D23',
-};
+/**
+ * v6 (17/11/2026) : la palette du cycle n'est plus un jeu de couleurs à part (perle et violet) — elle est DÉRIVÉE du
+ * thème affiché (`useTheme()`), donc de la palette choisie dans Réglages → Apparence, en clair comme en sombre.
+ * Les noms des clés restent (compatibilité des écrans). Seules restent fixes les couleurs CODIFIÉES d'une donnée de
+ * cycle (règles, règles estimées, fenêtre fertile) : elles ne changent pas de sens d'une palette à l'autre.
+ */
+const CYCLE_CODE = {
+  light: { period: '#A8346A', periodSoft: '#FBE8F1', estimate: '#B9A6D8', fertile: '#DCD3F2' },
+  dark: { period: '#FF9CC3', periodSoft: '#3A2036', estimate: '#8C7AB0', fertile: '#33295A' },
+} as const;
 export function useCyclePalette(): CyclePalette {
   const t = useTheme();
-  return t.isDark ? DARK : LIGHT;
+  return useMemo(() => {
+    const k = t.tokens;
+    const [w0, , w2] = k.decor.wash;
+    return {
+      ink: t.colors.text, inkSoft: t.colors.textMuted, paper: t.colors.background, glass: t.colors.surface, glassBorder: t.colors.border, line: t.material.lines.hairline,
+      powder: w0, rose: k.decor.b, lavender: w2, mauve: t.colors.lavender, beige: t.material.cardTint.gold, pearl: t.colors.surfaceAlt, anthracite: k.inverse.fill,
+      ...(t.isDark ? CYCLE_CODE.dark : CYCLE_CODE.light),
+      info: k.status.info, warn: k.status.warning, danger: k.status.danger, success: k.status.success,
+      onAccent: k.text.onAccent,
+    };
+  }, [t]);
 }
 
 /** Carte de verre dépoli. Sans flou (Android, web lent, mouvement réduit) : surface opaque équivalente. */
@@ -52,7 +57,7 @@ export function Glass({ children, style, padded = true, onPress, accessibilityLa
   const blur = Platform.OS === 'ios' && !reduce;
   const body = (
     <Animated.View style={[{ borderRadius: radius.lg, borderWidth: 1, borderColor: c.glassBorder, overflow: 'hidden', backgroundColor: blur ? 'transparent' : c.glass,
-      shadowColor: '#2E2A33', shadowOpacity: t.isDark ? 0.35 : 0.08, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 2,
+      shadowColor: t.tokens.shadowColor, shadowOpacity: t.isDark ? 0.35 : 0.08, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 2,
       transform: [{ scale: press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.985] }) }] }, style]}>
       {blur ? <><BlurView intensity={40} tint={t.isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} /><View style={[StyleSheet.absoluteFill, { backgroundColor: c.glass }]} /></> : null}
       <View style={{ padding: padded ? spacing.md : 0, gap: spacing.xs }}>{children}</View>

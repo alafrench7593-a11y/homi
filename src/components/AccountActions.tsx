@@ -47,7 +47,7 @@ export function ProfileAvatarButton() {
     >
       <Animated.View style={{ transform: [{ scale: press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.88] }) }] }}>
         {/* anneau doré quand le Profil est ouvert */}
-        <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderRadius: (SIZE + 6) / 2, borderWidth: 1.5, borderColor: palette.gold, opacity: ring }} />
+        <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -3, left: -3, right: -3, bottom: -3, borderRadius: (SIZE + 6) / 2, borderWidth: 1.5, borderColor: t.colors.gold, opacity: ring }} />
         <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={SIZE} testID="header-avatar" />
       </Animated.View>
     </Pressable>

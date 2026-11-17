@@ -79,14 +79,14 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
         accessibilityRole="button"
         accessibilityLabel={openSleep ? tr('trk.night.a11yOpen') : tr('trk.night.a11yStart')}
         onPress={() => { haptic('light'); router.push('/night'); }}
-        style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: '#1D1638', flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
+        style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.tokens.inverse.fill, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
       >
-        <Icon name="moon" color="#CDB48A" />
+        <Icon name="moon" color={t.tokens.inverse.accent} />
         <View style={{ flex: 1 }}>
-          <Text weight="bold" color="#F7F4FB">{openSleep ? tr('trk.night.ongoing') : tr('trk.night.title')}</Text>
-          <Text variant="small" color="#C3B8DD">{openSleep ? tr('trk.night.ongoingHint') : tr('trk.night.hint')}</Text>
+          <Text weight="bold" color={t.tokens.inverse.text}>{openSleep ? tr('trk.night.ongoing') : tr('trk.night.title')}</Text>
+          <Text variant="small" color={t.tokens.inverse.textMuted}>{openSleep ? tr('trk.night.ongoingHint') : tr('trk.night.hint')}</Text>
         </View>
-        <Icon name="chevron-right" color="#C3B8DD" />
+        <Icon name="chevron-right" color={t.tokens.inverse.textMuted} />
       </Tappable>
 
       <QuickEntry activeChildId={childId} />

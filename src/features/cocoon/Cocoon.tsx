@@ -89,19 +89,19 @@ function Glass({ children, wash, style, rounded = 30, testID, clear }: { childre
   // Cadre transparent (ciel de l'application visible), simple liseré lilas : grand cadre du profil de l'enfant
   if (clear) {
     return (
-      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.28)' : 'rgba(91,42,134,0.22)' }, style]}>
+      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }, style]}>
         {children}
       </View>
     );
   }
   return (
-    <View testID={testID} style={[{ borderRadius: rounded, shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: dark ? 0.3 : 0.13, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
-      <View style={{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.78)' }}>
+    <View testID={testID} style={[{ borderRadius: rounded, shadowColor: t.tokens.shadowColor, shadowOpacity: dark ? 0.3 : 0.07, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
+      <View style={{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }}>
         {BLUR_OK ? <BlurView intensity={dark ? 28 : 40} tint={dark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" /> : null}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.58)' : 'rgba(251,249,254,0.56)' }]} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.surface }]} />
         {wash ? <LinearGradient pointerEvents="none" colors={wash} locations={[0, 0.55, 1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-        <LinearGradient pointerEvents="none" colors={[dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.55)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
-        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: rounded * 0.7, right: rounded * 0.7, height: 1, backgroundColor: dark ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.98)' }} />
+        <LinearGradient pointerEvents="none" colors={['transparent', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
+        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: rounded * 0.7, right: rounded * 0.7, height: 1, backgroundColor: 'transparent' }} />
         {children}
       </View>
     </View>
@@ -406,8 +406,8 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
               {actions.map((a, i) => (
                 <Tappable key={a.testID} testID={a.testID} accessibilityRole="button" accessibilityLabel={`${a.label}, ${child.first_name}`} disabled={busy} onPress={() => go(a)}
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, opacity: busy ? 0.6 : pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }],
-                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.2)',
-                    backgroundColor: i === 0 ? t.colors.primary : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(251,249,254,0.75)') })}>
+                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : t.colors.border,
+                    backgroundColor: i === 0 ? t.colors.primary : t.colors.surfaceAlt })}>
                   <Icon name={a.icon} size={17} color={i === 0 ? t.colors.primaryText : t.colors.text} />
                   <Text weight="bold" color={i === 0 ? t.colors.primaryText : undefined}>{a.label}</Text>
                 </Tappable>
@@ -485,7 +485,7 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
               const h = new Date(range.from + i * 3600_000).getHours();
               return (
                 <View key={i} pointerEvents="none" style={{ position: 'absolute', left: i * HOUR_W, top: 8, bottom: 0, alignItems: 'center', width: 1 }}>
-                  <View style={{ flex: 1, width: 1, backgroundColor: dark ? 'rgba(255,255,255,0.07)' : 'rgba(28,21,51,0.06)' }} />
+                  <View style={{ flex: 1, width: 1, backgroundColor: t.material.lines.separator }} />
                   {i % 2 === 0 ? <Text variant="caption" muted style={{ position: 'absolute', bottom: 0, width: 40, left: -20, textAlign: 'center', fontSize: 11 }}>{tr('coc.ribbon.hour', { h: String(h) })}</Text> : null}
                 </View>
               );
@@ -598,7 +598,7 @@ function InfoCard({ k, label, value, sub, child }: { k: InfoKey; label: string; 
     <Pressable accessibilityRole="button" accessibilityLabel={`${label} : ${value}${sub ? `, ${sub}` : ''}`} onPress={() => { haptic('selection'); open(); }} style={({ pressed }) => ({ flex: 1, transform: [{ scale: pressed ? 0.97 : 1 }] })} testID={`cocoon-info-${k}`}>
       <Glass rounded={24} style={{ flex: 1 }}>
         <View style={{ padding: spacing.sm, gap: 4, minHeight: 112 }}>
-          <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)' }}>
+          <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
             <KindGlyph kind={kind} color={ink} size={17} />
           </View>
           <Text variant="caption" muted numberOfLines={2}>{label}</Text>

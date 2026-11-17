@@ -22,9 +22,10 @@ import { avatarInitial } from './AccountActions';
 import { useAuth } from '@/lib/auth';
 
 function Avatar({ label, color, icon, size = 40 }: { label?: string; color: string; icon?: IconName; size?: number }) {
+  const ink = useTheme().tokens.text.onDecor;
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: color, alignItems: 'center', justifyContent: 'center' }}>
-      {icon ? <Icon name={icon} size={size * 0.45} color="#1C1B20" /> : <Text weight="bold" color="#1C1B20" variant="small">{label}</Text>}
+      {icon ? <Icon name={icon} size={size * 0.45} color={ink} /> : <Text weight="bold" color={ink} variant="small">{label}</Text>}
     </View>
   );
 }
@@ -37,9 +38,9 @@ function Bubble({ label, active, onPress, testID, children, a11y }: { label: str
     <Tappable testID={testID} accessibilityRole={active === undefined ? 'button' : 'radio'} accessibilityState={active === undefined ? undefined : { selected: active }} accessibilityLabel={a11y}
       onPress={() => { haptic('selection'); onPress(); }} style={({ pressed }) => ({ alignItems: 'center', gap: 4, width: 68, opacity: pressed ? 0.8 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}>
       <View style={{ width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center', borderWidth: 2.5,
-        borderColor: active ? t.colors.primary : (t.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.9)'),
-        backgroundColor: t.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.55)',
-        shadowColor: '#5E36C4', shadowOpacity: active ? 0.35 : 0.1, shadowRadius: active ? 12 : 8, shadowOffset: { width: 0, height: 4 } }}>
+        borderColor: active ? t.colors.primary : t.colors.border,
+        backgroundColor: t.colors.surface,
+        shadowColor: t.tokens.shadowColor, shadowOpacity: active ? 0.35 : 0.1, shadowRadius: active ? 12 : 8, shadowOffset: { width: 0, height: 4 } }}>
         {children}
       </View>
       <Text variant="caption" weight={active ? 'bold' : 'medium'} numberOfLines={1} center>{label}</Text>
@@ -70,7 +71,7 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
     const names = babies?.map((b) => b.nickname).filter(Boolean).join(' · ');
     items.push({
       key: 'preg', label: tr('pj.subject.pregnancy'), sub: `${names ? `${names} · ` : ''}${p.label}`,
-      avatar: <Avatar color="#E9C987" icon="moon" />, active: subject.type === 'pregnancy',
+      avatar: <Avatar color={t.tokens.decor.b} icon="moon" />, active: subject.type === 'pregnancy',
       onPress: () => setSubject({ type: 'pregnancy', id: pregnancy.id }),
     });
   }
@@ -83,7 +84,7 @@ export function ProfileSwitcher({ variant = 'card' }: { variant?: 'card' | 'bubb
     });
   }
   if ((children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) {
-    items.push({ key: 'family', label: tr('pj.subject.family'), sub: tr('pj.subject.familySub'), avatar: <Avatar color="#D6CEF0" icon="users" />, active: subject.type === 'family', onPress: () => setSubject({ type: 'family' }) });
+    items.push({ key: 'family', label: tr('pj.subject.family'), sub: tr('pj.subject.familySub'), avatar: <Avatar color={t.tokens.decor.c} icon="users" />, active: subject.type === 'family', onPress: () => setSubject({ type: 'family' }) });
   }
   const current = items.find((i) => i.active) ?? items[0];
   const others = items.filter((i) => i !== current).slice(0, 3);
@@ -189,7 +190,7 @@ export function AskFab({ bottom = 0 }: { bottom?: number }) {
       accessibilityLabel={tr('ask.button')}
       accessibilityHint={tr('u7.family.askHint')}
       onPress={() => { haptic('light'); router.push('/assistant/chat'); }}
-      style={({ pressed }) => [styles.fab, { bottom: bottom + spacing.md, backgroundColor: t.colors.primary, opacity: pressed ? 0.9 : 1 }]}
+      style={({ pressed }) => [styles.fab, { bottom: bottom + spacing.md, backgroundColor: t.colors.primary, shadowColor: t.tokens.shadowColor, opacity: pressed ? 0.9 : 1 }]}
     >
       <Icon name="message-circle" size={20} color={t.colors.primaryText} />
       <Text weight="medium" color={t.colors.primaryText}>{tr('ask.button')}</Text>
@@ -274,7 +275,7 @@ const styles = StyleSheet.create({
   switcher: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: 8, paddingRight: spacing.md, borderRadius: radius.pill, borderWidth: 1, minHeight: 58 },
   pill: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: 6, paddingLeft: 6, paddingRight: 14, borderRadius: radius.pill, borderWidth: 1.2, minHeight: MIN_TOUCH + 4 },
   add: { paddingHorizontal: 14, paddingRight: 14, justifyContent: 'center' },
-  fab: { position: 'absolute', right: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 18, minHeight: 52, borderRadius: 14, shadowColor: '#0D0E11', shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
+  fab: { position: 'absolute', right: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 18, minHeight: 52, borderRadius: 14, shadowOpacity: 0.25, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 },
   emergency: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, borderWidth: StyleSheet.hairlineWidth, minHeight: 64 },
   phone: { minWidth: 64, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
 });

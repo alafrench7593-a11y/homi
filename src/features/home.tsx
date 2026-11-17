@@ -21,7 +21,7 @@ import { summarizeDay, suggestedNextSide } from '@/lib/domain/daily';
 import { nextOccurrence } from '@/lib/domain/reminders';
 import type { Appointment, Bottle, Breastfeed, Child, Diaper, Pregnancy, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
+import { alpha, fonts, radius, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
 import { formatDate, localeTag, t as tr } from '@/i18n';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
@@ -49,7 +49,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
         pressScale={0.99}
       >
         <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
-          <LinearGradient colors={t.isDark ? ['rgba(255,255,255,0.02)', 'rgba(185,157,246,0.16)'] : ['rgba(255,255,255,0.55)', 'rgba(222,208,248,0.35)']} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+          <LinearGradient colors={[alpha(t.tokens.decor.c, 0), alpha(t.tokens.decor.c, t.isDark ? 0.16 : 0.24)]} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? tr('u5.home.preg_many', { n }) : tr('u5.home.preg')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
@@ -63,7 +63,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           </View>
           <View style={{ marginTop: 'auto', paddingTop: spacing.md }}>
             <Text variant="caption" muted style={{ alignSelf: 'flex-end', marginBottom: 4 }}>{pct} %</Text>
-            <ProgressBar value={pct / 100} color={NACRE[1]} gradient={NACRE} track={t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(151,123,218,0.12)'} accessibilityLabel={tr('u5.home.progress_a11y', { pct })} />
+            <ProgressBar value={pct / 100} color={t.tokens.decor.b} gradient={t.tokens.decor.ring} track={t.material.lines.separator} accessibilityLabel={tr('u5.home.progress_a11y', { pct })} />
           </View>
         </View>
       </Tappable>
@@ -116,7 +116,7 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
         <DayClock events={events} size={compact ? 220 : 290} label={tr('u5.home.day_of', { name: child.first_name })}>
           {openSleep ? (
             <>
-              <Icon name="moon" color={palette.lavenderInk} />
+              <Icon name="moon" color={t.colors.lavender} />
               <Text variant="heading" center>{tr('u5.home.asleep')}</Text>
               <Text variant="caption" muted center>{tr('u5.home.since', { time: timeAgo(openSleep.started_at).replace('il y a ', '') })}</Text>
             </>
@@ -139,8 +139,8 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
         ))}
       </View>
       {openSleep && (
-        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
-          <Text weight="medium" color={palette.milk}>{tr('u5.home.open_night')}</Text>
+        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: t.tokens.inverse.fill, alignItems: 'center', justifyContent: 'center' }}>
+          <Text weight="medium" color={t.tokens.inverse.text}>{tr('u5.home.open_night')}</Text>
         </Tappable>
       )}
     </View>

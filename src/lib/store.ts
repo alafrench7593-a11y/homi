@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { migratePalette, type PaletteChoice } from '@/theme/tokens';
+import { DEFAULT_PALETTE, migratePalette, type PaletteChoice, type ProfileKind } from '@/theme/tokens';
 
 export type ActiveSubject =
   | { type: 'pregnancy'; id: string }
@@ -14,7 +14,7 @@ export type ActiveSubject =
 /** Apparence choisie : Système, Clair, Sombre. `auto` (ancien : clair/sombre selon l'heure) et `night` (thème des soins
  *  nocturnes) restent acceptés à l'exécution pour les données déjà enregistrées et les scénarios de test. */
 export type ThemePreference = 'auto' | 'system' | 'light' | 'dark' | 'night';
-/** Palette : v5, identité unique ('homi'). Champ conservé pour les données enregistrées (migré à la restauration). */
+/** Palette : une des cinq palettes v6, ou « adaptive » (suit le profil affiché). Anciennes valeurs migrées à la restauration. */
 export type PalettePreference = PaletteChoice;
 export interface AppearancePrefs { theme: ThemePreference; palette: PalettePreference }
 
@@ -22,6 +22,14 @@ interface UiState {
   themePreference: ThemePreference;
   palettePreference: PalettePreference;
   setPalette: (p: PalettePreference) => void;
+  /** Rétablir par défaut : Système + palette par défaut, pour le compte actif. */
+  resetAppearance: () => void;
+  /**
+   * Profil affiché, résolu (moi, grossesse, enfant, post-partum, famille) : écrit par `AdaptiveProfileSync` à partir du
+   * sélecteur de profil ; lu par le thème en mode Adaptatif. Conservé pour éviter un changement de couleurs au lancement.
+   */
+  adaptiveProfile: ProfileKind;
+  setAdaptiveProfile: (p: ProfileKind) => void;
   /**
    * Préférences d'apparence PAR COMPTE sur cet appareil (identifiant utilisateur → choix). Ce qu'un membre choisit ne
    * change rien pour les autres ; `themePreference` / `palettePreference` sont les valeurs du compte actif.
@@ -117,9 +125,9 @@ interface UiState {
   reset: () => void;
 }
 
-const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: 'homi' };
+const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: DEFAULT_PALETTE };
 
-/** Préférences d'apparence enregistrées (palettes v3 / v4, Auto) → identité unique v5, par compte ; le choix
+/** Préférences d'apparence enregistrées : palettes v3 / v4 et Auto → palette par défaut, choix v6 conservés, par compte ; le choix
  *  Système / Clair / Sombre est conservé tel quel (pur, testé). */
 export function migrateAppearance<S extends Pick<UiState, 'palettePreference' | 'appearanceByUser'>>(st: S): S {
   const byUser: Record<string, AppearancePrefs> = {};
@@ -137,8 +145,11 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       themePreference: 'system', // v2 : suit le réglage clair / sombre du téléphone
-      palettePreference: 'homi', // v5 : identité unique
+      palettePreference: DEFAULT_PALETTE, // v6 : « Rose poudré et pêche » par défaut
       setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
+      resetAppearance: () => set((st) => ({ themePreference: DEFAULT_APPEARANCE.theme, palettePreference: DEFAULT_APPEARANCE.palette, appearanceByUser: withOwner(st, DEFAULT_APPEARANCE) })),
+      adaptiveProfile: 'me',
+      setAdaptiveProfile: (adaptiveProfile) => set((st) => (st.adaptiveProfile === adaptiveProfile ? {} : { adaptiveProfile })),
       appearanceByUser: {},
       appearanceOwner: null,
       switchAppearanceOwner: (userId) => set((st) => {
@@ -224,8 +235,8 @@ export const useUiStore = create<UiState>()(
       storage: createJSONStorage(() => AsyncStorage),
       // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit
       partialize: ({ nightMode: _n, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
-      // Palettes retirées (v5, 16/11/2026) : à CHAQUE restauration, les choix enregistrés (compte actif et autres comptes
-      // de l'appareil) passent à l'identité unique (`migratePalette`) ; l'apparence choisie est conservée
+      // À CHAQUE restauration, les choix enregistrés (compte actif et autres comptes de l'appareil) passent par
+      // `migratePalette` : anciennes palettes (v3, v4, Auto) → palette par défaut, choix v6 conservés ; l'apparence est conservée
       merge: (persisted, current) => migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }),
     },
   ),

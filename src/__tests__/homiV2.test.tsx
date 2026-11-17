@@ -19,7 +19,7 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { migrateAppearance, useUiStore } from '@/lib/store';
 import { GlowCard } from '@/components/GlowCard';
 import { CompletionCheck, CompletionGlow, PressSheen, usePressSheen } from '@/motion';
-import { PALETTES, type Theme } from '@/theme/tokens';
+import { PALETTE_SPECS, PALETTES, type Theme } from '@/theme/tokens';
 
 const mounted: ReactTestRenderer[] = [];
 async function render(el: React.ReactElement) {
@@ -40,7 +40,7 @@ beforeEach(() => {
   mockLowPower = false;
   seen = null;
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'lilas' as never, skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'lilas' as never, adaptiveProfile: 'me', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
 });
 afterEach(async () => {
   await act(async () => { while (mounted.length) mounted.pop()!.unmount(); });
@@ -101,6 +101,48 @@ describe('préférences d’apparence (v5 : identité unique, Système / Clair /
     expect(out.appearanceByUser).toEqual({ alice: { theme: 'dark', palette: 'homi' }, bob: { theme: 'system', palette: 'homi' }, carla: { theme: 'light', palette: 'homi' } });
     act(() => { useUiStore.getState().setPalette('menthe' as never); });
     expect(useUiStore.getState().palettePreference).toBe('homi');
+  });
+  it('v6 : une palette choisie s’applique immédiatement, en clair et en sombre, et reste propre au compte', async () => {
+    await render(<Probe />);
+    act(() => { useUiStore.getState().switchAppearanceOwner('alice'); });
+    await act(async () => { useUiStore.getState().setPalette('sauge'); });
+    expect(seen!.palette).toBe('sauge');
+    expect(seen!.colors.primary).toBe(PALETTES.sauge.ink[0]);
+    expect(seen!.colors.background).toBe(PALETTE_SPECS.sauge.light.bg);
+    await act(async () => { useUiStore.getState().setTheme('dark'); });
+    expect(seen!.colors.primary).toBe(PALETTES.sauge.glow[0]);
+    expect(seen!.colors.background).toBe(PALETTE_SPECS.sauge.dark.bg);
+    expect(useUiStore.getState().appearanceByUser.alice).toEqual({ theme: 'dark', palette: 'sauge' });
+    // un autre compte part de la palette par défaut ; le premier retrouve la sienne
+    await act(async () => { useUiStore.getState().switchAppearanceOwner('bob'); });
+    expect(seen!.palette).toBe('homi');
+    await act(async () => { useUiStore.getState().switchAppearanceOwner('alice'); });
+    expect(seen!.palette).toBe('sauge');
+    // un choix v6 survit à la restauration
+    expect(migrateAppearance({ palettePreference: 'sauge', appearanceByUser: { alice: { theme: 'dark', palette: 'adaptive' } } }))
+      .toEqual({ palettePreference: 'sauge', appearanceByUser: { alice: { theme: 'dark', palette: 'adaptive' } } });
+  });
+  it('v6 : Adaptatif suit le profil affiché (correspondance fixe) ; une palette fixe l’ignore', async () => {
+    await act(async () => { useUiStore.setState({ palettePreference: 'adaptive', adaptiveProfile: 'me' }); });
+    await render(<Probe />);
+    expect(seen!.palette).toBe('homi');
+    for (const [profile, palette] of [['pregnancy', 'lavande'], ['child', 'sauge'], ['postpartum', 'champagne'], ['family', 'nuit'], ['me', 'homi']] as const) {
+      await act(async () => { useUiStore.getState().setAdaptiveProfile(profile); });
+      expect(seen!.palette).toBe(palette);
+      expect(seen!.colors.primary).toBe(PALETTES[palette].ink[0]);
+    }
+    await act(async () => { useUiStore.getState().setPalette('champagne'); useUiStore.getState().setAdaptiveProfile('family'); });
+    expect(seen!.palette).toBe('champagne');
+  });
+  it('v6 : « Rétablir par défaut » remet Système et la palette par défaut, pour le compte actif', async () => {
+    await render(<Probe />);
+    act(() => { useUiStore.getState().switchAppearanceOwner('alice'); });
+    await act(async () => { useUiStore.getState().setPalette('nuit'); useUiStore.getState().setTheme('dark'); });
+    expect(seen!.palette).toBe('nuit');
+    await act(async () => { useUiStore.getState().resetAppearance(); });
+    expect([useUiStore.getState().themePreference, useUiStore.getState().palettePreference]).toEqual(['system', 'homi']);
+    expect(useUiStore.getState().appearanceByUser.alice).toEqual({ theme: 'system', palette: 'homi' });
+    expect(seen!.palette).toBe('homi');
   });
   it('migration v5 : une préférence ancienne encore en mémoire s’affiche avec l’identité unique', async () => {
     await act(async () => { useUiStore.setState({ palettePreference: 'lilas' as never }); });

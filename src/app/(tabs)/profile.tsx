@@ -22,7 +22,7 @@ import { useActivePregnancy, useArticles, useChildren, useJourneyState, usePremi
 import { JOURNEY_ICON, useJourneyProfileLabel } from '@/features/journeys';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
-import { palette, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
 
@@ -49,8 +49,8 @@ export default function Profile() {
             {/* Photo de profil (07/11/2026) : un appui pour l'ajouter, la changer ou la supprimer */}
             <Tappable accessibilityRole="button" accessibilityLabel={profile?.avatar_path ? tr('pphoto.change') : tr('pphoto.add')} onPress={() => setPhotoOpen(true)} testID="profile-photo">
               <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={72} testID="profile-avatar" />
-              <View style={{ position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: palette.gold, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: t.colors.background }}>
-                <Icon name="camera" size={13} color="#FFFFFF" />
+              <View style={{ position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: t.tokens.action.fill, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: t.colors.background }}>
+                <Icon name="camera" size={13} color={t.tokens.action.text} />
               </View>
             </Tappable>
             <View style={{ flex: 1 }}>

@@ -98,7 +98,7 @@ export default function Grow() {
       action={nextStep ? { label: tr('mb.gr.action'), icon: 'check-circle', onPress: () => openStep(nextStep), testID: 'gr-main-action' } : undefined}>
       <View testID="grow" />
       <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(233,207,164,0.05)'] : ['rgba(247,244,251,0.18)', 'rgba(244,240,250,0.12)', 'rgba(246,236,218,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2200, borderRadius: 32 }} />
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={26} padded={spacing.md}>
+      <GlassSurface fill={t.colors.surface} depth={2} radius={26} padded={spacing.md}>
         <View style={{ gap: 6 }} testID="gr-hero">
           <Text variant="heading">{tr('gr.heroTitle', { name })}</Text>
           <Text variant="small">{tr('gr.rhythm')}</Text>
@@ -115,7 +115,7 @@ export default function Grow() {
         <View style={{ gap: 6 }} testID="gr-recent">
           {recent.map((r) => { const s = STEP_BY_KEY[r.step_key]; return s ? (
             <Tappable key={r.id} accessibilityRole="button" onPress={() => openStep(s)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44 }}>
-              <Icon name={r.status === 'observed' ? 'check-circle' : 'loader'} size={18} color={r.status === 'observed' ? (t.colors.success ?? '#3E8E41') : t.colors.primary} />
+              <Icon name={r.status === 'observed' ? 'check-circle' : 'loader'} size={18} color={r.status === 'observed' ? t.colors.success : t.colors.primary} />
               <Text style={{ flex: 1 }}>{s.title}</Text>
               <Text variant="caption" muted>{r.observed_on ? formatDate(`${r.observed_on}T12:00:00`, { day: 'numeric', month: 'short' }) : tr(`gr.status.${r.status}` as TKey)}</Text>
             </Tappable>
@@ -138,7 +138,7 @@ export default function Grow() {
       </View>
       {!premium ? <Text variant="caption" muted testID="gr-free-note">{tr('gr.freeNote')}</Text> : null}
 
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.58)'} depth={1} radius={22} padded={spacing.md}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={22} padded={spacing.md}>
         <View style={{ gap: 6 }}>
           <Text weight="bold">{tr('gr.summary')}</Text>
           <Text variant="small">{tr('gr.summaryHint')}</Text>
@@ -176,14 +176,14 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
       toast(tr('gr.saved'), 'success');
     } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; }
   }
-  const tint = st === 'observed' ? (t.colors.success ?? '#3E8E41') : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
+  const tint = st === 'observed' ? t.colors.success : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
   const quick = !locked && st !== 'observed';
   // Le bouton « Observé » est posé SUR la carte et non dedans : un bouton dans un bouton est invalide sur le web
   return (
     <View>
     <Tappable accessibilityRole="button" onPress={onPress} testID={`gr-step-${s.key}`}
       accessibilityLabel={`${s.title}. ${tr('gr.around', { range: range(s.around[0], s.around[1]) })}${st ? `. ${tr(`gr.status.${st}` as TKey)}` : ''}${locked ? `. ${tr('gr.locked')}` : ''}`}>
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.6)'} depth={1} radius={20} padded={spacing.sm + 4}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={20} padded={spacing.sm + 4}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
           <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: tint }}>
             <Icon name={locked ? 'lock' : st === 'observed' ? 'check' : st === 'in_progress' ? 'loader' : st === 'not_tracked' ? 'eye-off' : 'circle'} size={16} color={tint} />

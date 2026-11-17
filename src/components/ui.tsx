@@ -15,7 +15,7 @@ import { Feather } from '@expo/vector-icons';
 import ReAnimated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import {
-  alpha, bannerColors, cardTintOf, controlSize, fonts, glassOf, linesFor, linesOf, MIN_TOUCH, NEUTRALS, physicalShadow, primaryGradient, radius, spacing, themes, typeScale, typography,
+  alpha, bannerColors, cardTintOf, controlSize, fonts, glassOf, linesFor, linesOf, MIN_TOUCH, physicalShadow, primaryGradient, radius, spacing, themes, typeScale, typography,
   type BannerTone, type Theme, type TypographyRole,
 } from '@/theme/tokens';
 import { GlowCard, type GlowEmphasis } from './GlowCard';
@@ -135,7 +135,7 @@ function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLa
     soft: tint.soft,
     lavender: tint.lavender,
     // Carte « nuit » : une scène graphite posée sur la page, même en clair (texte perle dessus)
-    night: NEUTRALS.graphite,
+    night: t.tokens.inverse.fill,
     gold: tint.gold,
     danger: t.colors.dangerSoft,
   }[tone];
@@ -154,7 +154,7 @@ function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLa
       {children}
     </GlassSurface>
   ) : (
-    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'danger' ? bannerColors(t).danger.edge : 'rgba(255,255,255,0.10)', padding: padded ? spacing.md : 0 },
+    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'danger' ? bannerColors(t).danger.edge : t.tokens.inverse.edge, padding: padded ? spacing.md : 0 },
       t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) }, style]}>
       {children}
     </View>
@@ -306,12 +306,12 @@ export function buttonColors(t: Theme, v: ButtonVariant): { bg: string; fg: stri
   const lines = linesOf(t);
   const nightC = t.name === 'night' ? t.colors : themes.night.colors;
   switch (v === 'destructive' ? 'danger' : v) {
-    case 'primary': return { bg: t.tokens.action.fill, fg: t.tokens.action.text, border: 'transparent', veil: t.isDark ? NEUTRALS.ink : '#FFFFFF' };
+    case 'primary': return { bg: t.tokens.action.fill, fg: t.tokens.action.text, border: 'transparent', veil: t.tokens.action.text };
     case 'onHero': return { bg: t.tokens.onHero.fill, fg: t.tokens.onHero.text, border: 'transparent', veil: t.tokens.onHero.text };
     case 'secondary': return { bg: lines.controlFill, fg: t.colors.text, border: 'transparent', veil: t.colors.text };
     case 'outline': return { bg: 'transparent', fg: t.colors.primary, border: lines.hairline, veil: t.colors.primary };
     case 'icon': return { bg: lines.controlFill, fg: t.colors.text, border: 'transparent', veil: t.colors.text };
-    case 'danger': return { bg: t.colors.danger, fg: t.isDark ? NEUTRALS.ink : '#FFFFFF', border: 'transparent', veil: t.isDark ? NEUTRALS.ink : '#FFFFFF' };
+    case 'danger': return { bg: t.colors.danger, fg: t.tokens.text.onAccent, border: 'transparent', veil: t.tokens.text.onAccent };
     case 'night': return { bg: nightC.primary, fg: nightC.primaryText, border: 'transparent', veil: nightC.primaryText };
     case 'ghost':
     case 'link':
@@ -466,7 +466,7 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
   const t = useTheme();
   const m = useButtonMotion();
   const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? linesOf(t).controlFill : 'transparent';
-  const veil = tone === 'primary' ? '#FFFFFF' : t.colors.text;
+  const veil = tone === 'primary' ? t.colors.primaryText : t.colors.text;
   const D = 40;
   return (
     <Pressable
@@ -514,7 +514,7 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
         {...press.handlers}
         style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: withLabel ? 20 : 0, borderRadius: radius.md, overflow: 'hidden' }}
       >
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: t.tokens.action.text, opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
         <Icon name={icon} size={20} color={t.tokens.action.text} />
         {withLabel ? <Text weight="bold" color={t.tokens.action.text} style={{ flexShrink: 1, fontSize: 15, letterSpacing: -0.15 }}>{label}</Text> : null}
       </Pressable>
@@ -731,7 +731,7 @@ export function Banner({ tone = 'info', icon, title, children, action }: { tone?
   const c = { ...bannerColors(t)[tone], icon: BANNER_ICON[tone] };
   return (
     <View style={[styles.banner, { backgroundColor: c.bg, borderColor: c.edge }]} accessibilityRole={tone === 'danger' ? 'alert' : undefined}>
-      <View style={[styles.bannerIcon, { backgroundColor: t.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.7)' }]}>
+      <View style={[styles.bannerIcon, { backgroundColor: t.tokens.surface.veil }]}>
         <Icon name={icon ?? c.icon} size={16} color={c.fg} />
       </View>
       <View style={{ flex: 1, gap: 2 }}>
@@ -913,7 +913,7 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on, overflow: 'hidden' }]} />
       <Animated.View
         style={{
-          width: 26, height: 26, borderRadius: 13, backgroundColor: t.name === 'night' ? t.colors.text : '#FFFFFF',
+          width: 26, height: 26, borderRadius: 13, backgroundColor: t.tokens.surface.thumb,
           borderWidth: StyleSheet.hairlineWidth, borderColor: linesOf(t).thumbEdge,
           boxShadow: physicalShadow('low', t.isDark),
           transform: [{ translateX: on.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }, { scaleX: squish.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],

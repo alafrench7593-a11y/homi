@@ -114,7 +114,7 @@ export function PlaceCard({ p, onPress }: { p: FamilyPlace & { distance: number 
   const type = p.typeLabel ?? catLabel(p.category);
   return (
     <Tappable accessibilityRole="button" onPress={onPress} testID={`out-place-${p.id}`} accessibilityLabel={`${p.name}, ${type}, ${approxDistance(p.distance)}`}>
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.68)'} depth={1} radius={22} padded={spacing.sm + 2}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={22} padded={spacing.sm + 2}>
         <View style={{ gap: spacing.xs }}>
           <PlacePhoto place={p} height={120} />
           <Text weight="bold" numberOfLines={2}>{p.name}</Text>

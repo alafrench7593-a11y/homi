@@ -35,8 +35,8 @@ import { todayISO } from '@/lib/domain/dates';
 import { useUiStore } from '@/lib/store';
 import type { Bottle, Breastfeed, Child, Diaper, Meal, Observation, Pumping, Sleep } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
-import { CATEGORY_INK, HOMI } from '@/features/homiColors';
+import { alpha, radius, spacing } from '@/theme/tokens';
+import { CATEGORY_INK } from '@/features/homiColors';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 
 export interface ActionModel { key: ActionKey; info: string; onOpen: () => void; onAdd: () => void; addLabel?: string; active?: boolean }
@@ -49,7 +49,6 @@ const INK: Record<ActionKey, string> = {
   feel: CATEGORY_INK.feel, mother_sleep: CATEGORY_INK.mother_sleep, eat: CATEGORY_INK.meal, weight: CATEGORY_INK.weight, echo: CATEGORY_INK.sleep, checkin: CATEGORY_INK.reminder,
   breastfeed: CATEGORY_INK.breastfeed, bottle: CATEGORY_INK.bottle, diaper: CATEGORY_INK.diaper, sleep: CATEGORY_INK.sleep, meal: CATEGORY_INK.meal, medication: CATEGORY_INK.medication, growth: CATEGORY_INK.growth, pumping: CATEGORY_INK.pumping, observation: CATEGORY_INK.symptom,
 };
-const INK_DARK = '#C9B8FF';
 
 export const actionLabel = (k: ActionKey): string => (TRACK_KEYS.has(k) ? tr(`dom.track.label.${k}` as TKey) : tr(`da.label.${k}` as TKey));
 
@@ -226,11 +225,11 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
   const everything = [...shown, ...more].map((k) => models[k]).filter((m): m is ActionModel => !!m);
 
   return (
-    <View testID="daily-actions" style={{ borderRadius: 28, shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: dark ? 0.3 : 0.12, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 3 }}>
-      <View style={{ borderRadius: 28, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.85)' }}>
+    <View testID="daily-actions" style={{ borderRadius: 28, shadowColor: t.tokens.shadowColor, shadowOpacity: dark ? 0.3 : 0.06, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 3 }}>
+      <View style={{ borderRadius: 28, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }}>
         {Platform.OS === 'ios' || Platform.OS === 'web' ? <BlurView intensity={dark ? 26 : 38} tint={dark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" /> : null}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.55)' : 'rgba(251,249,254,0.6)' }]} />
-        <LinearGradient pointerEvents="none" colors={dark ? ['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)'] : ['rgba(255,255,255,0.6)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.7 }} style={StyleSheet.absoluteFill} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.surface }]} />
+        <LinearGradient pointerEvents="none" colors={['transparent', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.7 }} style={StyleSheet.absoluteFill} />
         <View style={{ paddingTop: spacing.sm, paddingBottom: spacing.sm, gap: spacing.xs }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, gap: spacing.xs }}>
             <View style={{ flex: 1 }}>
@@ -238,14 +237,14 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="caption" muted>{tr(PROFILE_SUB[ctx.profile])}</Text>
             </View>
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.seeAllA11y')} onPress={() => setAll(true)} testID="track-see-all"
-              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', borderWidth: 1, borderColor: dark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.2)', backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.75)' }}>
+              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surfaceAlt }}>
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
             {list.map((m) => <Capsule key={m.key} m={m} />)}
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.customize')} testID="actions-customize" onPress={() => { setDraft(shown); setEdit(true); }}
-              style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: dark ? 'rgba(255,255,255,0.25)' : 'rgba(28,21,51,0.18)', minHeight: 132 }}>
+              style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: t.material.lines.track, minHeight: 132 }}>
               <Icon name="sliders" size={18} color={t.colors.textMuted} />
               <Text variant="caption" muted center>{tr('da.customizeShort')}</Text>
             </Tappable>
@@ -270,7 +269,7 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
                 onPress={() => (on ? setDraft(draft.filter((x) => x !== k)) : draft.length >= 4 ? toast(tr('da.max'), 'info') : setDraft([...draft, k]))}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
                 <Icon name={on ? 'check-square' : 'square'} size={20} color={on ? t.colors.primary : t.colors.textMuted} />
-                <ActionGlyph k={k} color={dark ? INK_DARK : INK[k]} size={22} />
+                <ActionGlyph k={k} color={dark ? t.colors.primary : INK[k]} size={22} />
                 <Text weight="bold" style={{ flex: 1 }}>{actionLabel(k)}</Text>
               </Tappable>
             );
@@ -287,13 +286,13 @@ function Capsule({ m }: { m: ActionModel }) {
   const t = useTheme();
   const dark = t.isDark;
   const reduce = useReduceMotion();
-  const ink = dark ? INK_DARK : INK[m.key];
+  const ink = dark ? t.colors.primary : INK[m.key];
   return (
     <View testID={`track-card-${m.key}`} style={{ width: 128 }}>
       <Tappable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} accessibilityHint={tr('trk.cards.openHint')}
         onPress={() => { haptic('selection'); m.onOpen(); }} pressScale={reduce ? 1 : 0.97}
-        style={{ flexGrow: 1, minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.72)', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.95)' }}>
-        <View style={{ width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: dark ? 'rgba(201,184,255,0.14)' : `${INK[m.key]}1A` }}>
+        style={{ flexGrow: 1, minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: t.colors.border }}>
+        <View style={{ width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: alpha(ink, dark ? 0.14 : 0.1) }}>
           <ActionGlyph k={m.key} color={ink} size={24} />
         </View>
         {/* Libellé et information entiers (plus de « … ») ; flexGrow : les capsules voisines gardent la même hauteur */}
@@ -302,7 +301,7 @@ function Capsule({ m }: { m: ActionModel }) {
       </Tappable>
       <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
         onPress={() => { haptic('light'); m.onAdd(); }} pressScale={0.9} hoverLift={0}
-        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: dark ? '#000000' : '#50446B', shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
+        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: t.tokens.shadowColor, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
         <Icon name={m.active ? 'sun' : 'plus'} size={16} color={t.colors.primaryText} />
       </Tappable>
     </View>
@@ -311,11 +310,11 @@ function Capsule({ m }: { m: ActionModel }) {
 
 function Row({ m }: { m: ActionModel }) {
   const t = useTheme();
-  const ink = t.isDark ? INK_DARK : INK[m.key];
+  const ink = t.isDark ? t.colors.primary : INK[m.key];
   return (
     <View testID={`track-card-${m.key}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56 }}>
       <Tappable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} onPress={m.onOpen} pressScale={0.99} hoverLift={0} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-        <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(201,184,255,0.14)' : `${INK[m.key]}1A` }}><ActionGlyph k={m.key} color={ink} size={22} /></View>
+        <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: alpha(ink, t.isDark ? 0.14 : 0.1) }}><ActionGlyph k={m.key} color={ink} size={22} /></View>
         <View style={{ flex: 1 }}>
           <Text weight="bold">{actionLabel(m.key)}</Text>
           <Text variant="caption" muted numberOfLines={2}>{m.info}</Text>
