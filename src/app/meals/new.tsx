@@ -38,6 +38,8 @@ export default function NewRecipe() {
   const [cook, setCook] = useState('20');
   const [ings, setIngs] = useState<RecipeIngredient[]>([]);
   const [q, setQ] = useState('');
+  // Saisie brute des quantités : reconvertir en nombre à chaque frappe effaçait la virgule (« 1,5 » devenait « 15 »)
+  const [qtyText, setQtyText] = useState<Record<string, string>>({});
   const [steps, setSteps] = useState('');
   const [storage, setStorage] = useState('');
   const [library, setLibrary] = useState(false);
@@ -95,7 +97,7 @@ export default function NewRecipe() {
             <IconButton icon="x" label={tr('rc.new.removeIng')} onPress={() => setIngs(ings.filter((_, n) => n !== k))} />
           </Row>
           <Row>
-            <View style={{ width: 96 }}><Field label={tr('rc.new.qty')} value={x.qty == null ? '' : String(x.qty)} onChangeText={(v) => setIng(k, { qty: v ? Number(v.replace(',', '.')) || null : null })} keyboardType="decimal-pad" maxLength={6} /></View>
+            <View style={{ width: 96 }}><Field label={tr('rc.new.qty')} value={qtyText[x.key] ?? (x.qty == null ? '' : String(x.qty))} onChangeText={(v) => { setQtyText((d) => ({ ...d, [x.key]: v })); setIng(k, { qty: v ? Number(v.replace(',', '.')) || null : null }); }} keyboardType="decimal-pad" maxLength={6} /></View>
             <Row wrap style={{ flex: 1 }}>{UNITS.map((u) => <Chip key={u} label={tr(`rc.unit.${u}` as TKey)} selected={x.unit === u} onPress={() => setIng(k, { unit: u })} />)}</Row>
           </Row>
         </Card>

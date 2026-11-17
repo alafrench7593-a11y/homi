@@ -87,9 +87,11 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
     if (level.value === 'full') y.value = withSpring(to, { ...springs.panneau, velocity: vy, reduceMotion: ReduceMotion.Never });
     else y.value = motionTiming(level.value, to, durations.panel, 'standard');
   };
+  // Déclarée HORS du worklet : `closeAnim` tourne aussi sur le fil UI (fin du geste), où une fonction locale ne peut
+  // pas être confiée à scheduleOnRN (« Locally defined function passed to scheduleOnRN » → arrêt de l'app).
+  const unmount = () => setMounted(false);
   const closeAnim = () => {
     'worklet';
-    const unmount = () => setMounted(false);
     y.value = motionTiming(level.value, h.value + 24, durations.panel, 'accelerate', (finished) => {
       'worklet';
       if (finished) scheduleOnRN(unmount);
