@@ -1,9 +1,8 @@
 /**
- * « Ajouter pour aujourd'hui » : la SEULE entrée d'ajout de l'accueil (ouverte par le « + » de la barre d'onglets).
+ * « Créer une tâche » : ouverte par l'action rapide centrale de la barre, depuis TOUS les onglets (17/11/2026).
  *  - Tâche simple pour aujourd'hui (même insertion que la liste familiale : useSaveTask, file hors ligne comprise) ;
  *    qui s'en charge : sélecteur de membre (avatar + prénom, indicateur qui glisse) — moi, un autre membre, ou « à prendre » ;
  *  - « Confier une mission » ouvre la création de mission (étapes) ;
- *  - Autres ajouts rapides du profil (suivi, courses, scanner…), pour que le « + » de l'accueil n'en perde aucun.
  * Confirmation selon le résultat réel : « ajoutée » (envoyée) ou « enregistrée, envoyée au retour du réseau » (file).
  */
 import React, { useState } from 'react';
@@ -11,7 +10,6 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Button, Field, haptic, Text } from '@/components/ui';
-import { QuickAddGrid } from '@/components/Dock';
 import { MemberSelector, type MemberOption } from '@/features/scene';
 import { usePeople, useSaveTask } from '@/lib/data/hooks-family-load';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -67,10 +65,6 @@ export function TodayAddSheet({ visible, onClose, me, canEdit }: { visible: bool
         <View style={{ gap: spacing.xs }}>
           <Text variant="small" muted>{tr('ht.add.missionHint')}</Text>
           <Button label={tr('ht.add.mission')} icon="send" variant="secondary" full onPress={mission} testID="today-add-mission" />
-        </View>
-        <View style={{ gap: spacing.xs }}>
-          <Text variant="label">{tr('ht.add.others')}</Text>
-          <QuickAddGrid compact onBefore={close} />
         </View>
       </View>
     </Sheet>

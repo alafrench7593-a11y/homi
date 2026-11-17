@@ -26,16 +26,16 @@ export default function TabsLayout() {
     <>
     {session ? <DigestSync /> : null}
     {session ? <AutoNotificationsSync /> : null}
-    {/* HOMI (13/11/2026) : 5 onglets — Accueil · Santé · Bébé · Famille · Communauté. Profil = avatar en haut à droite.
-        Les anciens onglets restent des routes valides hors de la barre (`href: null`) : liens profonds, notifications, tests ;
-        on y arrive depuis les hubs (accès directs), la recherche universelle et « Tous les outils ». */}
+    {/* Refonte du 17/11/2026 : Aujourd'hui · Moi · [action centrale] · Enfant · Famille. « Outils » : entrée fixe en tête
+        d'Aujourd'hui et dans l'action centrale ; Communauté : bouton en haut à droite des écrans d'onglet.
+        Les autres routes d'onglet restent valides hors de la barre (`href: null`) : liens profonds, notifications, tests. */}
     <Tabs detachInactiveScreens backBehavior="history" screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
-      <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
-      <Tabs.Screen name="health" options={{ title: tr('nav.tab.health') }} />
-      <Tabs.Screen name="baby" options={{ title: tr('nav.tab.baby') }} />
+      <Tabs.Screen name="index" options={{ title: tr('nav.tab.today') }} />
+      <Tabs.Screen name="health" options={{ title: tr('nav.tab.me') }} />
+      <Tabs.Screen name="baby" options={{ title: tr('nav.tab.child') }} />
       <Tabs.Screen name="household" options={{ title: tr('nav.tab.family') }} />
-      <Tabs.Screen name="community" options={{ title: tr('tab.community') }} />
-      {/* Hors de la barre : Agenda (→ Famille), Suivi (→ Bébé), Outils (→ Accueil et recherche), Questions (→ Santé), Moi, Profil (avatar) */}
+      {/* Hors de la barre : Communauté (bouton d'en-tête), Agenda (→ Famille), Suivi (→ Enfant), Outils (→ Aujourd'hui), Questions (→ Moi), Moi communautaire, Profil (avatar) */}
+      <Tabs.Screen name="community" options={{ title: tr('tab.community'), href: null }} />
       <Tabs.Screen name="agenda" options={{ title: tr('tab.agenda'), href: null }} />
       <Tabs.Screen name="track" options={{ title: tr('tab.track'), href: null }} />
       <Tabs.Screen name="tools" options={{ title: tr('dock.tools'), href: null }} />

@@ -273,47 +273,4 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
   return <HomeCycleCard mode={mode} />;
 }
 
-// ------------------------------------------------------------------ accueil personnalisable
-/**
- * Accueil volontairement court : carte principale, les 4 actions du quotidien, le prochain rappel, UNE publication
- * de la communauté, UNE recommandation et « Voir la communauté ». Les autres cartes restent disponibles
- * (Réglages › Mon accueil) mais sont masquées par défaut.
- */
-export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
-  { key: 'story', get label() { return 'HOMI'; }, get detail() { return tr('u5.home.hc_story_d'); } },
-  { key: 'main', get label() { return tr('u5.home.hc_main'); }, get detail() { return tr('u5.home.hc_main_d'); } },
-  { key: 'quick', get label() { return tr('u5.home.hc_quick'); }, get detail() { return tr('u5.home.hc_quick_d'); } },
-  // Visible par défaut (07/11/2026) : « Mon assistant IA », juste après les raccourcis
-  { key: 'assistant', get label() { return tr('u5.home.hc_assistant'); }, get detail() { return tr('u5.home.hc_assistant_d'); } },
-  // Maman solo (07/11/2026) : ne s'affiche que si la situation familiale est « seule avec mes enfants »
-  { key: 'solo', get label() { return tr('tool.solo_parent'); }, get detail() { return tr('sol.home.detail'); } },
-  { key: 'videos', get label() { return tr('vid.title'); }, get detail() { return tr('vid.homeDetail'); } },
-  { key: 'library', get label() { return tr('lib.home.title'); }, get detail() { return tr('lib.home.byTheme'); } },
-  { key: 'upcoming', get label() { return tr('u5.home.hc_upcoming'); }, get detail() { return ''; } },
-  { key: 'outings', get label() { return tr('u5.home.hc_outings'); }, get detail() { return tr('u5.home.hc_outings_d'); } },
-  { key: 'community', get label() { return tr('u5.home.hc_community'); }, get detail() { return tr('u5.home.hc_community_d'); } },
-  { key: 'recommendation', get label() { return tr('u5.home.hc_recommendation'); }, get detail() { return tr('u5.home.hc_recommendation_d'); } },
-  { key: 'article', get label() { return tr('u5.home.hc_article'); }, get detail() { return ''; }, defaultHidden: true },
-  { key: 'recipe', get label() { return tr('u5.home.hc_recipe'); }, get detail() { return tr('u5.home.hc_recipe_d'); }, defaultHidden: true },
-];
-
-/** Cartes masquées : choix de la personne + cartes masquées par défaut qu'elle n'a jamais placées dans son ordre. */
-export function effectiveHidden(order: string[], hidden: string[]): string[] {
-  const defaults = HOME_CARDS.filter((c) => c.defaultHidden && !order.includes(c.key)).map((c) => c.key);
-  return [...new Set([...hidden, ...defaults])];
-}
-
-/** Toutes les cartes : ordre choisi, puis les cartes nouvelles à leur place par défaut. */
-export function homeCardOrder(order: string[]): string[] {
-  const all = HOME_CARDS.map((c) => c.key);
-  const known = order.filter((k) => all.includes(k));
-  for (const k of all) if (!known.includes(k)) known.splice(Math.min(all.indexOf(k), known.length), 0, k);
-  return known;
-}
-
-/** Ordre choisi, puis les cartes nouvelles à leur place par défaut ; sans les cartes masquées. */
-export function orderedHomeCards(order: string[], hidden: string[]): string[] {
-  const known = homeCardOrder(order);
-  const off = effectiveHidden(order, hidden);
-  return known.filter((k) => !off.includes(k));
-}
+// Accueil personnalisable : modules et configurations par situation dans src/features/homeToday/homeLayout.ts (17/11/2026).

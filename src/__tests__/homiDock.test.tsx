@@ -1,6 +1,7 @@
 /**
- * Rendu réel de la barre d'onglets HOMI : 5 onglets accessibles (rôle « tab », état sélectionné), libellés complets,
- * anciennes routes absentes de la barre mais qui allument leur onglet parent, bouton d'ajout rapide toujours là.
+ * Rendu réel de la barre d'onglets HOMI (refonte du 17/11/2026) : 4 onglets accessibles (rôle « tab », état sélectionné)
+ * autour de l'action centrale « Ajouter », libellés complets, routes hors barre (Communauté comprise) qui allument leur
+ * onglet parent, feuille d'actions rapides du profil.
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
@@ -21,7 +22,7 @@ import { useDockAction } from '@/components/dockAction';
 import { setLocale } from '@/i18n';
 
 const ROUTES = ['index', 'health', 'baby', 'household', 'community', 'agenda', 'track', 'tools', 'ask', 'moi', 'profile'];
-const TITLES: Record<string, string> = { index: 'Accueil', health: 'Santé', baby: 'Bébé', household: 'Famille', community: 'Communauté' };
+const TITLES: Record<string, string> = { index: 'Aujourd’hui', health: 'Moi', baby: 'Enfant', household: 'Famille' };
 
 function props(focused: string, navigate = jest.fn()) {
   const routes = ROUTES.map((name) => ({ key: `${name}-k`, name }));
@@ -50,18 +51,41 @@ const tabs = (r: ReactTestRenderer) => r.root.findAll((n) => typeof n.type === '
 describe('Barre d’onglets HOMI', () => {
   beforeAll(() => setLocale('fr'));
 
-  it('5 onglets, libellés complets, Accueil sélectionné, ajout rapide présent', async () => {
+  it('4 onglets autour de l’action centrale, libellés complets, Aujourd’hui sélectionné', async () => {
     const r = await render(<Dock {...props('index')} />);
     const list = tabs(r);
-    expect(list.map((n) => n.props.testID)).toEqual(['tab-index', 'tab-health', 'tab-baby', 'tab-household', 'tab-community']);
-    expect(list.map((n) => texts(n).join(''))).toEqual(['Accueil', 'Santé', 'Bébé', 'Famille', 'Communauté']);
-    expect(list.map((n) => !!n.props.accessibilityState?.selected)).toEqual([true, false, false, false, false]);
-    expect(r.root.findAll((n) => n.props.testID === 'quick-add' && typeof n.type === 'string').length).toBeGreaterThan(0);
+    expect(list.map((n) => n.props.testID)).toEqual(['tab-index', 'tab-health', 'tab-baby', 'tab-household']);
+    expect(list.map((n) => texts(n).join(''))).toEqual(['Aujourd’hui', 'Moi', 'Enfant', 'Famille']);
+    expect(list.map((n) => !!n.props.accessibilityState?.selected)).toEqual([true, false, false, false]);
     expect(r.root.findAll((n) => typeof n.type === 'string' && n.props.accessibilityRole === 'tablist')).toHaveLength(1);
+    // l'action centrale : entre le 2e et le 3e onglet, nom accessible clair (« Ajouter »), jamais un « + » muet
+    const add = r.root.findAll((n) => n.props.testID === 'quick-add' && typeof n.props.onPress === 'function')[0];
+    expect(add.props.accessibilityLabel).toBe('Ajouter');
+    expect(add.props.accessibilityRole).toBe('button');
+    const order = r.root.findAll((n) => typeof n.type === 'string' && (n.props.accessibilityRole === 'tab' || n.props.testID === 'quick-add')).map((n) => n.props.testID);
+    expect(order.filter((x, i) => order.indexOf(x) === i)).toEqual(['tab-index', 'tab-health', 'quick-add', 'tab-baby', 'tab-household']);
     act(() => r.unmount());
   });
 
-  it('un seul bouton d’action : l’écran Communauté remplace « + » par « Publier » (même place, même ligne)', async () => {
+  it('l’action centrale ouvre la feuille : 4 à 6 actions au libellé explicite, « Tous mes outils », choix des actions', async () => {
+    const r = await render(<Dock {...props('household')} />);
+    const add = r.root.findAll((n) => n.props.testID === 'quick-add' && typeof n.props.onPress === 'function')[0];
+    await act(async () => { add.props.onPress(); });
+    await act(async () => { await new Promise((res) => setTimeout(res, 40)); });
+    const actions = r.root.findAll((n) => typeof n.type === 'string' && /^qa-(?!tools|customize|pick)/.test(String(n.props.testID ?? '')) && n.props.accessibilityRole === 'button');
+    const ids = [...new Set(actions.map((n) => n.props.testID as string))];
+    expect(ids.length).toBeGreaterThanOrEqual(4);
+    expect(ids.length).toBeLessThanOrEqual(6);
+    // profil sans enfant ni grossesse (aucune session) : tâche et rendez-vous sont proposés, jamais un biberon
+    expect(ids).toEqual(expect.arrayContaining(['qa-task', 'qa-appointment']));
+    expect(ids).not.toContain('qa-bottle');
+    for (const n of actions) expect(String(n.props.accessibilityLabel).length).toBeGreaterThan(6);
+    expect(r.root.findAll((n) => n.props.testID === 'qa-tools' && typeof n.type === 'string').length).toBeGreaterThan(0);
+    expect(r.root.findAll((n) => n.props.testID === 'qa-customize').length).toBeGreaterThan(0);
+    act(() => r.unmount());
+  });
+
+  it('un seul bouton d’action : l’écran Communauté (hors barre) remplace « Ajouter » par « Publier » (même place) et allume Aujourd’hui', async () => {
     const onPublish = jest.fn();
     function Publish() {
       useDockAction('community', { icon: 'edit-3', label: 'Publier', testID: 'community-publish', onPress: onPublish });
@@ -72,6 +96,7 @@ describe('Barre d’onglets HOMI', () => {
     expect(r.root.findAll((n) => host(n, 'quick-add'))).toHaveLength(0);
     const pub = r.root.findAll((n) => n.props.testID === 'community-publish' && typeof n.props.onPress === 'function')[0];
     expect(pub.props.accessibilityLabel).toBe('Publier');
+    expect(tabs(r).map((n) => !!n.props.accessibilityState?.selected)).toEqual([true, false, false, false]);
     act(() => { pub.props.onPress(); });
     expect(onPublish).toHaveBeenCalledTimes(1);
     // ailleurs (Accueil), le « + » revient
@@ -81,10 +106,10 @@ describe('Barre d’onglets HOMI', () => {
     act(() => r.unmount());
   });
 
-  it('une ancienne route (Questions) allume son onglet parent (Santé) ; toucher Santé y revient', async () => {
+  it('une route hors barre (Questions) allume son onglet parent (Moi) ; toucher Moi y revient', async () => {
     const navigate = jest.fn();
     const r = await render(<Dock {...props('ask', navigate)} />);
-    expect(tabs(r).map((n) => !!n.props.accessibilityState?.selected)).toEqual([false, true, false, false, false]);
+    expect(tabs(r).map((n) => !!n.props.accessibilityState?.selected)).toEqual([false, true, false, false]);
     const health = r.root.findAll((n) => n.props.testID === 'tab-health' && typeof n.props.onPress === 'function')[0];
     act(() => { health.props.onPress({ nativeEvent: {} }); });
     expect(navigate).toHaveBeenCalledWith('health');

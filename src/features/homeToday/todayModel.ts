@@ -152,6 +152,41 @@ export function custodyToday(plans: CustodyPlanToday[], exceptions: (CustodyExce
   });
 }
 
+// ------------------------------------------------------------------ journée du profil affiché (17/11/2026)
+/**
+ * Profil pour lequel la journée est affichée. Les tâches n'ont pas d'enfant rattaché (family_tasks : un adulte
+ * responsable) : elles restent celles du foyer, sauf pour « Moi » où l'on ne garde que ce qui me concerne.
+ */
+export type TodayProfile =
+  | { kind: 'all' }
+  | { kind: 'child'; childId: string }
+  | { kind: 'pregnancy'; pregnancyId: string }
+  | { kind: 'me'; userId: string | null | undefined };
+
+/** Événement familial : celui de l'enfant affiché, ou un événement de toute la famille (sans enfant rattaché). */
+export const eventForProfile = (e: Pick<FamilyEvent, 'child_id'>, p: TodayProfile): boolean =>
+  p.kind === 'all' ? true : p.kind === 'child' ? !e.child_id || e.child_id === p.childId : !e.child_id;
+
+/** Rendez-vous : celui de l'enfant affiché ; grossesse : les miens et ceux de la grossesse ; moi : les miens seulement. */
+export function appointmentForProfile(a: { child_id?: string | null; pregnancy_id?: string | null }, p: TodayProfile): boolean {
+  if (p.kind === 'all') return true;
+  if (p.kind === 'child') return a.child_id === p.childId;
+  if (a.child_id) return false;
+  return p.kind === 'pregnancy' ? !a.pregnancy_id || a.pregnancy_id === p.pregnancyId : !a.pregnancy_id;
+}
+
+/** Relais : nuit auprès de l'enfant pour un profil enfant ; pour « Moi » et la grossesse, seulement les miens. */
+export const shiftForProfile = (s: Pick<CareShift, 'kind' | 'user_id'>, p: TodayProfile, me: string | null | undefined): boolean =>
+  p.kind === 'all' ? true : p.kind === 'child' ? s.kind === 'night' : s.user_id === me;
+
+/** Garde alternée : seulement pour l'enfant concerné (ou un rythme commun à tous) ; jamais pour « Moi » ni la grossesse. */
+export const custodyForProfile = (c: Pick<CustodyToday, 'childId'>, p: TodayProfile): boolean =>
+  p.kind === 'all' ? true : p.kind === 'child' ? !c.childId || c.childId === p.childId : false;
+
+/** Tâches et missions : « Moi » ne garde que les miennes, celles à prendre et celles que j'ai demandées. */
+export const taskForProfile = (x: Pick<TodayTask, 'ownerId' | 'creatorId' | 'awaitsMe'>, p: TodayProfile): boolean =>
+  p.kind !== 'me' ? true : !x.ownerId || x.ownerId === p.userId || x.awaitsMe || x.creatorId === p.userId;
+
 export interface TodayModel { tasks: TodayTask[]; agenda: CalendarItem[]; shifts: CareShift[]; custody: CustodyToday[] }
 export const isEmptyToday = (m: TodayModel) => !m.tasks.length && !m.agenda.length && !m.shifts.length && !m.custody.length;
 

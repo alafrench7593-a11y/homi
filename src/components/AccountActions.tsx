@@ -54,11 +54,18 @@ export function ProfileAvatarButton() {
   );
 }
 
-/** Réglages puis Profil (l'avatar occupe le coin, comme sur iOS). */
+/**
+ * Communauté, Réglages puis Profil (l'avatar occupe le coin, comme sur iOS).
+ * Communauté (17/11/2026, demande de la propriétaire) : accessible DIRECTEMENT en haut à droite de tous les écrans
+ * d'onglet, en un geste ; elle n'est plus dans la barre du bas. Aucune pastille : l'appli ne connaît pas de « nouveautés
+ * non lues » de la communauté.
+ */
 export function AccountActions() {
   const pathname = usePathname();
+  const inCommunity = pathname.startsWith('/community') || pathname === '/moi';
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }} accessibilityRole="toolbar">
+      {inCommunity ? null : <IconButton icon="message-circle" label={tr('nav.community')} testID="header-community" onPress={() => router.push('/community')} />}
       <IconButton icon="settings" label={tr('header.settings')} onPress={() => { if (!pathname.startsWith('/settings')) router.push('/settings'); }} />
       <ProfileAvatarButton />
     </View>

@@ -12,6 +12,7 @@
  *  7. Un article adapté à l'âge.
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
+import { useSwipeExclude } from '@/components/ProfileSwitcher';
 import { linkFrame } from '@/components/linkFrame';
 import { NightsHelpCard } from '@/features/sleepHelpCard';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
@@ -366,7 +367,12 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
     if (reduce) { x.setValue(0); setSubject({ type: 'child', id: target.id }); return; }
     Animated.timing(x, { toValue: -dir * 340, duration: 160, useNativeDriver: NATIVE_DRIVER }).start(() => { x.setValue(dir * 120); setSubject({ type: 'child', id: target.id }); Animated.spring(x, { toValue: 0, tension: 160, friction: 20, useNativeDriver: NATIVE_DRIVER }).start(); });
   };
+  // La carte a son propre glissement (enfant suivant / précédent) : le glissement entre profils de l'accueil lui cède la place
+  const cardSwipe = useSwipeExclude();
+  const excludeRef = useRef(cardSwipe.onStartShouldSetResponderCapture);
+  excludeRef.current = cardSwipe.onStartShouldSetResponderCapture;
   const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponderCapture: () => excludeRef.current(),
     onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 14 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6,
     onPanResponderMove: (_, g) => x.setValue(g.dx * 0.6),
     onPanResponderRelease: (_, g) => { if (g.dx < -70) switchRef.current(1); else if (g.dx > 70) switchRef.current(-1); else Animated.spring(x, { toValue: 0, useNativeDriver: NATIVE_DRIVER }).start(); },
@@ -471,6 +477,8 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
   const ink = (k: RibbonKind) => (dark ? KIND_INK_DARK[k] : KIND_INK[k]);
   const H = 132;
   const SLEEP_Y = 84;
+  // Frise horizontale : son défilement passe avant le glissement entre profils de l'accueil
+  const noSwipe = useSwipeExclude();
   return (
     <Glass testID="cocoon-ribbon" rounded={28}>
       <View style={{ paddingTop: spacing.sm, paddingBottom: spacing.xs }}>
@@ -478,7 +486,7 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1 }}>{tr('coc.ribbon.title').toUpperCase()}</Text>
           <Text variant="caption" muted>{tr('coc.ribbon.count', { count: events.length })}</Text>
         </View>
-        <ScrollView ref={scroller} horizontal showsHorizontalScrollIndicator={false} onLayout={(e) => setViewW(e.nativeEvent.layout.width)} contentContainerStyle={{ paddingHorizontal: spacing.md }} accessibilityLabel={tr('coc.ribbon.a11y', { name: child.first_name })}>
+        <ScrollView ref={scroller} horizontal {...noSwipe} showsHorizontalScrollIndicator={false} onLayout={(e) => setViewW(e.nativeEvent.layout.width)} contentContainerStyle={{ paddingHorizontal: spacing.md }} accessibilityLabel={tr('coc.ribbon.a11y', { name: child.first_name })}>
           <View style={{ width, height: H }}>
             {/* Graduations */}
             {Array.from({ length: hours + 1 }, (_, i) => {

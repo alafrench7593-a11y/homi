@@ -1,9 +1,9 @@
 """
-HOMI v5 — onglets hub (Santé, Bébé, Famille) : CHAQUE outil listé s'ouvre sur un vrai écran (jamais « Page
+HOMI — onglets hub (Moi, Enfant, Famille ; refonte du 17/11/2026 : sélecteur de profil universel) : CHAQUE outil listé s'ouvre sur un vrai écran (jamais « Page
 introuvable »). Démonstration sans compte, Premium actif.
 Pour chaque hub : urgences, accès directs, outils de chaque groupe (« Voir plus » dépliés), outils des autres
 profils, communauté. Avant chaque clic, le profil « Ma grossesse » est réaffiché (un outil d'un autre profil
-sélectionne ce profil). Vérifie aussi : urgences en tête du hub Santé, recherche et capsules de profil présentes,
+sélectionne ce profil). Vérifie aussi : urgences en tête du hub Moi, recherche et sélecteur de profil (avatars) présents,
 aucune cible d'outil < 44 px de haut.
 Chaque clé du rapport doit valoir true ; « introuvables » et « erreurs » doivent être vides.
 Usage : NAV_URL=http://127.0.0.1:8983 PW_CHROMIUM=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell python3 e2e/hubs_v5.py
@@ -29,7 +29,7 @@ def count(pg, sel):
 def prepare(pg, hub, route):
     """Ouvre le hub, réaffiche « Ma grossesse », déplie « Voir plus » et les outils des autres profils."""
     pg.goto(B + route); pg.wait_for_timeout(1800)
-    chip = pg.locator('[data-testid="hub-subject-preg"]')
+    chip = pg.locator(f'[data-testid="hub-{hub}-profiles"] [data-testid="subject-preg"]')
     if chip.count() and chip.first.get_attribute('aria-checked') != 'true':
         chip.first.click(); pg.wait_for_timeout(900)
     show = pg.locator(f'[data-testid="hub-{hub}-others-show"]')

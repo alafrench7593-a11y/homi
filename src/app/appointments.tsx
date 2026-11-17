@@ -98,7 +98,7 @@ export default function AppointmentsScreen() {
     a.child_id ? children?.find((c) => c.id === a.child_id)?.first_name ?? tr('u1.appt.child') : a.pregnancy_id ? tr('u1.appt.pregnancy') : a.for_parent ? tr('u1.appt.me') : null;
 
   // Ouverture directe depuis l'espace post-partum : nouveau rendez-vous postnatal, privé par défaut
-  const params = useLocalSearchParams<{ new?: string; title?: string; at?: string; child?: string }>();
+  const params = useLocalSearchParams<{ new?: string; title?: string; at?: string; child?: string; concern?: string }>();
   useEffect(() => {
     if (params.new === 'postnatal') setDraft({ ...emptyDraft('me'), kind: 'postnatal', private: true });
     // Saisie vocale (« Ajouter le rendez-vous du pédiatre mardi à 15 h ») : formulaire pré-rempli, à vérifier avant d'enregistrer
@@ -107,8 +107,11 @@ export default function AppointmentsScreen() {
       const title = String(params.title ?? '').slice(0, 80);
       setDraft({ ...emptyDraft(params.child ? `child:${params.child}` : 'me'), kind: /p[eé]diatre/i.test(title) ? 'pediatric' : 'consultation', title,
         date: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` });
+    } else if (params.new === 'quick') {
+      // Action rapide de la barre (« Ajouter un rendez-vous ») : formulaire vide, déjà rattaché au profil affiché
+      setDraft(emptyDraft(params.child ? `child:${params.child}` : params.concern === 'pregnancy' ? 'pregnancy' : 'me'));
     }
-  }, [params.new, params.at]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [params.new, params.at, params.child, params.concern]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusLabel = focus ? (focus === 'pregnancy' ? tr('u1.appt.pregnancy') : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
 
   function openNew() {

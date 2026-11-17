@@ -1,11 +1,14 @@
 /**
- * Onglet « hub » HOMI (Santé, Bébé, Famille), v5 « Lumière corail » : construit à partir du catalogue des outils,
- * jamais d'une liste écrite à la main.
+ * Onglet « hub » HOMI (Moi, Enfant / Grossesse, Famille) : construit à partir du catalogue des outils, jamais d'une
+ * liste écrite à la main. Refonte du 17/11/2026 : le sélecteur de profil universel (rangée d'avatars + indicateur de
+ * pages) remplace les capsules ; glisser à gauche / à droite passe au profil voisin (d'un enfant à l'autre).
+ * `themes` / `excludeThemes` : quand l'onglet Enfant devient « Grossesse » (grossesse sans enfant), il affiche les
+ * outils de la grossesse et l'onglet Moi ne les répète pas (une seule destination par outil).
  *
  * Ordre (lecture de haut en bas, d'une main) :
  *  1. Urgences — EN TÊTE, rouge d'alerte, icône + libellé, ouverture immédiate ;
  *  2. recherche d'outil (tous les profils) ;
- *  3. profil affiché : capsules « Moi · Ma grossesse · enfants · Toute la famille » ;
+ *  3. profil affiché : rangée d'avatars « Moi · Grossesse · enfants · Famille » (`ProfileSwitcher`) ;
  *  4. accès directs (anciens onglets Questions, Suivi, Agenda ; courses, stocks) ;
  *  5. favoris ;
  *  6. outils REGROUPÉS PAR USAGE (thèmes du hub) en listes à séparateurs : 4 rangées, puis « Voir les N autres »
@@ -28,26 +31,38 @@ import { useToast } from '@/components/Overlays';
 import { Button, Text } from '@/components/ui';
 import { useProfile } from '@/lib/data/hooks';
 import { useToolStatuses } from '@/lib/data/hooks-tools';
-import { favoriteTools, statusKeyFor, THEME_TITLE, toggleFavorite, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { favoriteTools, statusKeyFor, THEME_TITLE, toggleFavorite, type CatalogTool, type ToolTheme } from '@/lib/domain/toolCatalog';
 import { SPACE_FOR_SCOPE } from '@/lib/journeys/tools';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { HUB_ENTRIES, hubGroups, hubTools, type HubKey } from './hubMap';
 import { HubGroup, HubRow, HubToolRow, UrgentRow } from './HubList';
-import { HubProfiles } from './HubProfiles';
+import { ProfileSwipe, ProfileSwitcher } from '@/components/ProfileSwitcher';
 import { ToolSearchButton, useAllToolEntries, useOpenEntry, type ToolEntry } from './ToolSearch';
 
 const MAX_W = 720;
 const PREVIEW = 4;
 
 const TITLE: Record<HubKey, { title: TKey; sub: TKey }> = {
-  health: { title: 'nav.hub.health.title', sub: 'nav.hub.health.sub' },
-  baby: { title: 'nav.hub.baby.title', sub: 'nav.hub.baby.sub' },
+  health: { title: 'nav.hub.me.title', sub: 'nav.hub.me.sub' },
+  baby: { title: 'nav.hub.child.title', sub: 'nav.hub.child.sub' },
   family: { title: 'nav.hub.family.title', sub: 'nav.hub.family.sub' },
 };
 
-export function HubScreen({ hub }: { hub: HubKey }) {
+export interface HubScreenProps {
+  hub: HubKey;
+  /** Identifiant des testID (défaut : `hub`) : l'onglet « Grossesse » affiche le hub Santé sous l'identifiant `baby`. */
+  id?: string;
+  /** Ne garder que ces thèmes (onglet « Grossesse »). */
+  themes?: ToolTheme[];
+  /** Thèmes déjà montrés par un autre onglet. */
+  excludeThemes?: ToolTheme[];
+  title?: TKey;
+  subtitle?: TKey;
+}
+
+export function HubScreen({ hub, id = hub, themes, excludeThemes, title, subtitle }: HubScreenProps) {
   const toast = useToast();
   const profileQ = useProfile();
   const { scope, catalog, others } = useAllToolEntries();
@@ -59,13 +74,19 @@ export function HubScreen({ hub }: { hub: HubKey }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   // Onglet Bébé vu depuis un profil adulte (grossesse, moi, famille) : les outils des enfants sont dépliés d'office
   const kidShown = scope.scope === 'baby' || scope.scope === 'child';
-  const othersOpen = open.__others ?? (hub === 'baby' && !kidShown);
-
-  const tools = useMemo(() => hubTools(catalog, hub), [catalog, hub]);
+  const keep = useMemo(() => {
+    const only = themes ? new Set(themes) : null;
+    const not = new Set(excludeThemes ?? []);
+    return (x: CatalogTool) => (!only || only.has(x.theme)) && !not.has(x.theme);
+  }, [themes, excludeThemes]);
+  const tools = useMemo(() => hubTools(catalog, hub).filter(keep), [catalog, hub, keep]);
   const urgent = useMemo(() => tools.filter((x) => x.urgent), [tools]);
   const groups = useMemo(() => hubGroups(tools.filter((x) => !x.urgent), hub), [tools, hub]);
   const favs = useMemo(() => favoriteTools(tools, favIds).filter((x) => !x.urgent), [tools, favIds]);
-  const otherGroups = useMemo(() => others.map((o) => ({ ...o, tools: hubTools(o.tools, hub) })).filter((o) => o.tools.length), [others, hub]);
+  const otherGroups = useMemo(() => others.map((o) => ({ ...o, tools: hubTools(o.tools, hub).filter(keep) })).filter((o) => o.tools.length), [others, hub, keep]);
+  // Vu depuis un profil qui n'a pas d'outil ici (onglet Enfant depuis « Moi », onglet Grossesse depuis un autre profil) :
+  // les outils des autres profils sont dépliés d'office
+  const othersOpen = open.__others ?? ((hub === 'baby' && !kidShown) || (!!themes && !groups.length));
 
   const statusOf = (tool: CatalogTool) => { const k = statusKeyFor(tool); return k ? statuses[k] : undefined; };
   function toggleFav(tool: CatalogTool) {
@@ -80,23 +101,26 @@ export function HubScreen({ hub }: { hub: HubKey }) {
   );
 
   return (
-    <Screen account title={tr(TITLE[hub].title)} subtitle={tr(TITLE[hub].sub)} tool={false} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
-      <View testID={`hub-${hub}`} style={{ gap: spacing.lg }}>
+    <Screen account title={tr(title ?? TITLE[hub].title)} subtitle={tr(subtitle ?? TITLE[hub].sub)} tool={false} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+      {/* Profil affiché : la même rangée d'avatars que sur Aujourd'hui, avec l'indicateur de pages */}
+      <ProfileSwitcher pager testID={`hub-${id}-profiles`} />
+      <ProfileSwipe>
+      <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>
         <View style={{ gap: spacing.sm }}>
           {urgent.map((u) => <UrgentRow key={u.id} tool={u} />)}
-          <ToolSearchButton testID={`hub-${hub}-search`} />
+          <ToolSearchButton testID={`hub-${id}-search`} />
         </View>
 
-        <HubProfiles hub={hub} />
-
         {/* Accès directs : les pages des anciens onglets (Questions, Suivi, Agenda) et le quotidien du foyer */}
-        <HubGroup testID={`hub-${hub}-entries`}>
-          {HUB_ENTRIES[hub].map((e) => <HubRow key={e.href} testID={e.testID} icon={e.icon} title={tr(e.title)} subtitle={tr(e.sub)} onPress={() => router.push(e.href as never)} />)}
-        </HubGroup>
+        {themes ? null : (
+          <HubGroup testID={`hub-${id}-entries`}>
+            {HUB_ENTRIES[hub].map((e) => <HubRow key={e.href} testID={e.testID} icon={e.icon} title={tr(e.title)} subtitle={tr(e.sub)} onPress={() => router.push(e.href as never)} />)}
+          </HubGroup>
+        )}
 
         {favs.length ? (
           <Cascade index={1}>
-            <HubGroup title={tr('nav.hub.favs')} testID={`hub-${hub}-favs`}>{favs.map((tool) => row(tool))}</HubGroup>
+            <HubGroup title={tr('nav.hub.favs')} testID={`hub-${id}-favs`}>{favs.map((tool) => row(tool))}</HubGroup>
           </Cascade>
         ) : null}
 
@@ -122,25 +146,26 @@ export function HubScreen({ hub }: { hub: HubKey }) {
 
         {otherGroups.length ? (
           othersOpen ? (
-            <View testID={`hub-${hub}-others`} style={{ gap: spacing.md }}>
+            <View testID={`hub-${id}-others`} style={{ gap: spacing.md }}>
               <View style={{ gap: 2, paddingHorizontal: spacing.xxs }}>
                 <Text variant="heading" accessibilityRole="header">{tr('u3.tools.others')}</Text>
                 <Text variant="small" muted>{tr('u3.tools.othersB')}</Text>
               </View>
               {otherGroups.map((o) => <HubGroup key={o.key} title={o.title}>{o.tools.map((tool) => row(tool, o))}</HubGroup>)}
             </View>
-          ) : <Button label={tr('pj.tools.otherShow')} icon="users" variant="secondary" onPress={() => setOpen({ ...open, __others: true })} testID={`hub-${hub}-others-show`} full />
+          ) : <Button label={tr('pj.tools.otherShow')} icon="users" variant="secondary" onPress={() => setOpen({ ...open, __others: true })} testID={`hub-${id}-others-show`} full />
         ) : null}
 
         {/* En bas, à portée de pouce : la communauté du profil (jamais cachée) et tous les outils */}
         <View style={{ gap: spacing.sm }}>
           <HubGroup title={tr('h5.hub.elsewhere')}>
-            <HubRow testID={`hub-${hub}-community`} icon="message-circle" title={tr('nav.hub.community')} subtitle={tr('nav.hub.communitySub')}
+            <HubRow testID={`hub-${id}-community`} icon="message-circle" title={tr('nav.hub.community')} subtitle={tr('nav.hub.communitySub')}
               onPress={() => router.push((space ? `/community?space=${space}` : '/community') as never)} />
           </HubGroup>
-          <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID={`hub-${hub}-all-tools`} />
+          <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID={`hub-${id}-all-tools`} />
         </View>
       </View>
+      </ProfileSwipe>
     </Screen>
   );
 }

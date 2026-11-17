@@ -78,3 +78,4 @@ export { entry5 } from './entry5';
 export { hubs5 } from './hubs5';
 export { day5 } from './day5';
 export { deviceCal } from './deviceCal';
+export { nav6 } from './nav6';

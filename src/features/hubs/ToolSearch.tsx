@@ -24,7 +24,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { hubOf } from './hubMap';
 import { useRecentTools } from './recentTools';
 
-const HUB_LABEL: Record<ReturnType<typeof hubOf>, TKey> = { health: 'nav.tab.health', baby: 'nav.tab.baby', family: 'nav.tab.family' };
+const HUB_LABEL: Record<ReturnType<typeof hubOf>, TKey> = { health: 'nav.tab.me', baby: 'nav.tab.child', family: 'nav.tab.family' };
 const MAX_RESULTS = 40;
 
 export interface ToolEntry { tool: CatalogTool; subject?: ActiveSubject; profile?: string }

@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Button, haptic, Icon, type IconName, Text } from '@/components/ui';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Tappable } from '@/components/Tappable';
+import { useSwipeExclude } from '@/components/ProfileSwitcher';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { TrackIcon } from '@/features/trackCards';
 import { useActivePregnancy, useAppointments, useLogs, useMaternalWeights, useMeasurements, useMoods, useOpenSleep, usePeriods, useProfile, useTests } from '@/lib/data/hooks';
@@ -218,6 +219,8 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
   const hapticsOn = useUiStore((s) => s.hapticsEnabled);
   const setHaptics = useUiStore((s) => s.setHaptics);
   const toast = useToast();
+  // Carrousel horizontal : son défilement passe avant le glissement entre profils de l'accueil
+  const noSwipe = useSwipeExclude();
   const { shown, more } = shownActions(ctx, favs?.[ctx.profile]);
   const [all, setAll] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -242,7 +245,7 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
+          <ScrollView horizontal {...noSwipe} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
             {list.map((m) => <Capsule key={m.key} m={m} />)}
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.customize')} testID="actions-customize" onPress={() => { setDraft(shown); setEdit(true); }}
               style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: dark ? 'rgba(255,255,255,0.25)' : 'rgba(28,21,51,0.18)', minHeight: 132 }}>

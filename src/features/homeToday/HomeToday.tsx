@@ -26,7 +26,6 @@ import { Tappable } from '@/components/Tappable';
 import { UserAvatar } from '@/components/UserAvatar';
 import { ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
-import { useDockAction } from '@/components/dockAction';
 import { Cascade, useMotion } from '@/motion';
 import { CardSource, useListLayout } from '@/features/scene';
 import { DayList, DayRail, DaySection, DaySeparator, StatusPill, type DayState } from '@/features/day5/DayParts';
@@ -40,9 +39,8 @@ import { formatTime, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { getTodayDoneComponent, type DoneMarkProps } from './DoneMark';
-import { TodayAddSheet } from './TodayAddSheet';
 import { TodayAgendaRow, TodayFocus } from './TodayTaskRow';
-import { isEmptyToday, todayTimeline, type CustodyToday, type TimelineEntry, type TodayTask } from './todayModel';
+import { isEmptyToday, todayTimeline, type CustodyToday, type TimelineEntry, type TodayProfile, type TodayTask } from './todayModel';
 import { useCompleteToday, useHomeToday, type TodayPerson } from './useHomeToday';
 
 /** Lignes de chronologie affichées sur l'accueil (le reste : « Voir toute l'organisation »). */
@@ -105,24 +103,23 @@ export function nextEntry(list: TimelineEntry[], now: number, sod: number): Othe
   return timed ?? others.find((e) => !entrySpan(e, sod) && e.kind === 'event') ?? null;
 }
 
-export function HomeToday({ DoneComponent, cascadeIndex = 0, dockAdd = true, art = 'foyer' }: { DoneComponent?: React.ComponentType<DoneMarkProps>; cascadeIndex?: number; dockAdd?: boolean; art?: NextArt } = {}) {
-  const t = useTheme();
+/**
+ * État partagé de la journée (17/11/2026) : l'accueil place « prochaine action » (`TodayNext`) et « agenda du jour »
+ * (`TodayAgenda`) à deux endroits du tableau de bord ; les deux lisent la MÊME scène (une validation dans l'un ne fait
+ * pas sauter l'autre). `profile` : journée du profil affiché.
+ */
+export function useTodayScene({ DoneComponent, profile }: { DoneComponent?: React.ComponentType<DoneMarkProps>; profile?: TodayProfile } = {}) {
   const m = useMotion();
   const toast = useToast();
-  const d = useHomeToday();
-  const layout = useListLayout();
+  const d = useHomeToday(undefined, profile);
   const { data: children } = useChildren();
   const { complete, accept } = useCompleteToday();
   const Done = DoneComponent ?? getTodayDoneComponent();
-  const [adding, setAdding] = useState(false);
   const [busy, setBusy] = useState<{ id: string; action: 'complete' | 'accept' } | null>(null);
   // Validation optimiste : la ligne passe « fait » tout de suite (animation), garde sa place un instant, puis la liste se réorganise
   const [held, setHeld] = useState<{ ids: string[]; order: string[]; focus: string | null; urgent: string[] } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
-
-  // Seule entrée d'ajout de l'écran : le « + » de la barre d'onglets ouvre la feuille d'ajout de l'accueil
-  useDockAction('index', dockAdd ? { icon: 'plus', label: tr('ht.addA11y'), hint: tr('ht.addHint'), testID: 'home-today-add', onPress: () => setAdding(true) } : null);
 
   const focusId = held ? held.focus : d.emphasis;
   const focus = d.model.tasks.find((x) => x.id === focusId) ?? null;
@@ -173,14 +170,19 @@ export function HomeToday({ DoneComponent, cascadeIndex = 0, dockAdd = true, art
   const shown = view.rest.slice(0, MAX_ROWS);
   const more = view.rest.length - shown.length;
   const nextInfo = view.next ? describeNext(view.next, children ?? [], d.person, view.now) : null;
+  return { d, view, focus, held, busy, Done, empty, shown, more, nextInfo, onComplete, onAccept };
+}
+export type TodayScene = ReturnType<typeof useTodayScene>;
 
+/** 1 + 2 — Prochain événement, puis « À traiter » (la seule action principale de l'écran). */
+export function TodayNext({ scene, art = 'foyer', cascadeIndex = 0 }: { scene: TodayScene; art?: NextArt; cascadeIndex?: number }) {
+  const t = useTheme();
+  const { d, view, focus, held, busy, Done, empty, nextInfo, onComplete, onAccept } = scene;
   return (
     <View testID="home-today" style={{ gap: spacing.md }}>
-      {/* 1. Prochain événement : ressort immédiatement (illustration sur halo local, heure tabulaire) */}
       <Cascade index={cascadeIndex}>
         {d.loading ? <Skeleton kind="card" rows={1} /> : <NextUp info={nextInfo} art={art} />}
       </Cascade>
-
       {d.loading ? <Skeleton kind="card" rows={2} />
         : d.error ? <ErrorView error={d.error} onRetry={d.retry} />
           : empty ? (
@@ -189,71 +191,88 @@ export function HomeToday({ DoneComponent, cascadeIndex = 0, dockAdd = true, art
                 <Icon name="sun" size={20} color={t.colors.primary} />
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text weight="bold">{tr('ht.empty.title')}</Text>
-                  <Text variant="small" muted>{dockAdd ? tr('ht.empty.body') : tr('ht.empty.bodyNoAdd')}</Text>
+                  <Text variant="small" muted>{tr('ht.empty.body')}</Text>
                 </View>
               </View>
             </Cascade>
+          ) : focus || view.urgent.length ? (
+            <Cascade index={cascadeIndex + 1}>
+              <DaySection title={tr('d5.urgent.title')} testID="home-urgent">
+                {focus ? (
+                  <TodayFocus x={focus} owner={d.person(focus.ownerId)} creator={focus.creatorId ? d.person(focus.creatorId) : null}
+                    celebrate={!!held?.ids.includes(focus.id)} busy={busy?.id === focus.id ? busy.action : null}
+                    onComplete={onComplete} onAccept={onAccept} DoneComponent={Done} />
+                ) : null}
+                {view.urgent.length ? (
+                  <DayList testID="home-urgent-list">
+                    {view.urgent.map((x, i) => (
+                      <React.Fragment key={x.id}>
+                        {i ? <DaySeparator /> : null}
+                        <TodayAgendaRow x={x} owner={d.person(x.ownerId)} creator={x.creatorId ? d.person(x.creatorId) : null}
+                          celebrate={!!held?.ids.includes(x.id)} busy={!!busy} onComplete={onComplete}
+                          state={x.late || (x.timed && x.dueAt && Date.parse(x.dueAt) < view.now) ? 'late' : x.timed ? 'later' : 'anytime'} first={i === 0} last={i === view.urgent.length - 1} />
+                      </React.Fragment>
+                    ))}
+                  </DayList>
+                ) : null}
+              </DaySection>
+            </Cascade>
           ) : (
-            <>
-              {/* 2. À traiter : la demande en tête (seule action principale), puis les autres demandes urgentes */}
-              {focus || view.urgent.length ? (
-                <Cascade index={cascadeIndex + 1}>
-                  <DaySection title={tr('d5.urgent.title')} testID="home-urgent">
-                    {focus ? (
-                      <TodayFocus x={focus} owner={d.person(focus.ownerId)} creator={focus.creatorId ? d.person(focus.creatorId) : null}
-                        celebrate={!!held?.ids.includes(focus.id)} busy={busy?.id === focus.id ? busy.action : null}
-                        onComplete={onComplete} onAccept={onAccept} DoneComponent={Done} />
-                    ) : null}
-                    {view.urgent.length ? (
-                      <DayList testID="home-urgent-list">
-                        {view.urgent.map((x, i) => (
-                          <React.Fragment key={x.id}>
-                            {i ? <DaySeparator /> : null}
-                            <TodayAgendaRow x={x} owner={d.person(x.ownerId)} creator={x.creatorId ? d.person(x.creatorId) : null}
-                              celebrate={!!held?.ids.includes(x.id)} busy={!!busy} onComplete={onComplete}
-                              state={x.late || (x.timed && x.dueAt && Date.parse(x.dueAt) < view.now) ? 'late' : x.timed ? 'later' : 'anytime'} first={i === 0} last={i === view.urgent.length - 1} />
-                          </React.Fragment>
-                        ))}
-                      </DayList>
-                    ) : null}
-                  </DaySection>
-                </Cascade>
-              ) : (
-                <Cascade index={cascadeIndex + 1}>
-                  <View testID="today-clear" accessibilityRole="text" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.xxs }}>
-                    <StatusPill label={tr('d5.clear.pill')} tone="done" icon="check" />
-                    <Text variant="small" muted style={{ flex: 1 }}>{tr('d5.clear.body')}</Text>
-                  </View>
-                </Cascade>
-              )}
-
-              {/* 3. Le reste de la journée : chronologie à horaires alignés */}
-              {shown.length ? (
-                <Cascade index={cascadeIndex + 2}>
-                  <DaySection title={tr('d5.rest.title')}>
-                    <DayList testID="home-today-tasks" footer={
-                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.md }}>
-                        {more > 0 ? <FooterLink icon="list" label={tr('ht.more', { count: more })} onPress={() => router.push('/family')} testID="home-today-more" /> : null}
-                        <FooterLink icon="calendar" label={tr('ht.openAgenda')} onPress={() => router.push('/calendar')} testID="home-today-open-agenda" />
-                      </View>
-                    }>
-                      {shown.map((e, i) => (
-                        <Animated.View key={e.key} layout={layout}>
-                          {i ? <DaySeparator /> : null}
-                          <TimelineRow e={e} state={view.states.get(e.key) ?? 'later'} person={d.person} held={held} busy={busy} onComplete={onComplete} first={i === 0} last={i === shown.length - 1} />
-                        </Animated.View>
-                      ))}
-                    </DayList>
-                  </DaySection>
-                </Cascade>
-              ) : (
-                <Cascade index={cascadeIndex + 2}>
-                  <FooterLink icon="calendar" label={tr('ht.openAgenda')} onPress={() => router.push('/calendar')} testID="home-today-open-agenda" />
-                </Cascade>
-              )}
-            </>
+            <Cascade index={cascadeIndex + 1}>
+              <View testID="today-clear" accessibilityRole="text" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.xxs }}>
+                <StatusPill label={tr('d5.clear.pill')} tone="done" icon="check" />
+                <Text variant="small" muted style={{ flex: 1 }}>{tr('d5.clear.body')}</Text>
+              </View>
+            </Cascade>
           )}
-      <TodayAddSheet visible={adding} onClose={() => setAdding(false)} me={d.me} canEdit={d.canEdit} />
+    </View>
+  );
+}
+
+/** 3 — Agenda du jour du profil affiché : chronologie à horaires alignés, lien vers l'agenda complet. */
+export function TodayAgenda({ scene, cascadeIndex = 0, caption }: { scene: TodayScene; cascadeIndex?: number; caption?: string }) {
+  const layout = useListLayout();
+  const { d, view, held, busy, shown, more, onComplete } = scene;
+  if (d.loading || d.error) return null;
+  const links = (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.md }}>
+      {more > 0 ? <FooterLink icon="list" label={tr('ht.more', { count: more })} onPress={() => router.push('/family')} testID="home-today-more" /> : null}
+      <FooterLink icon="calendar" label={tr('ht.openAgenda')} onPress={() => router.push('/calendar')} testID="home-today-open-agenda" />
+    </View>
+  );
+  return (
+    <Cascade index={cascadeIndex}>
+      <View testID="home-agenda" style={{ gap: spacing.xs }}>
+        <DaySection title={tr('ht.agenda.title')}>
+          {caption ? <Text variant="caption" muted testID="home-agenda-for" style={{ paddingHorizontal: spacing.xxs }}>{caption}</Text> : null}
+          {shown.length ? (
+            <DayList testID="home-today-tasks" footer={links}>
+              {shown.map((e, i) => (
+                <Animated.View key={e.key} layout={layout}>
+                  {i ? <DaySeparator /> : null}
+                  <TimelineRow e={e} state={view.states.get(e.key) ?? 'later'} person={d.person} held={held} busy={busy} onComplete={onComplete} first={i === 0} last={i === shown.length - 1} />
+                </Animated.View>
+              ))}
+            </DayList>
+          ) : (
+            <View style={{ gap: 2, paddingHorizontal: spacing.xxs }}>
+              <Text variant="small" muted testID="home-agenda-empty">{tr('ht.agenda.empty')}</Text>
+              {links}
+            </View>
+          )}
+        </DaySection>
+      </View>
+    </Cascade>
+  );
+}
+
+/** Les deux blocs à la suite (écrans qui n'intercalent rien entre eux). */
+export function HomeToday({ DoneComponent, cascadeIndex = 0, art = 'foyer', profile }: { DoneComponent?: React.ComponentType<DoneMarkProps>; cascadeIndex?: number; art?: NextArt; profile?: TodayProfile } = {}) {
+  const scene = useTodayScene({ DoneComponent, profile });
+  return (
+    <View style={{ gap: spacing.md }}>
+      <TodayNext scene={scene} art={art} cascadeIndex={cascadeIndex} />
+      <TodayAgenda scene={scene} cascadeIndex={cascadeIndex + 2} />
     </View>
   );
 }
