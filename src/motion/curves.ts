@@ -106,3 +106,25 @@ export const counter = { ms: 700 } as const;
 
 /** Morph d'icônes de module. */
 export const morph = { ms: 520, points: 72 } as const;
+
+// ------------------------------------------------------------------ Primitives « Liquid Glass » (17/11/2026)
+/** Transition de contenu partagée (changement de profil / d'onglet) : sortie courte, entrée un peu plus longue. */
+export const swap = { outMs: 110, inMs: 220, distance: 10 } as const;
+
+/** Micro-animation de favori : l'étoile saute, une onde part du centre. */
+export const favorite = { pop: 1.28, ringMs: 420, ringScale: 1.7 } as const;
+
+/** Secousse d'erreur de champ : amplitudes décroissantes (px), un pas toutes les 55 ms (≈ 275 ms). */
+export const shake = { steps: [7, -6, 4, -2, 0], stepMs: 55 } as const;
+
+/** Coche de succès : le disque se pose, la coche se trace. */
+export const successCheck = { fillMs: 180, drawMs: 240, drawDelayMs: 60 } as const;
+
+/** Squelettes de chargement : respiration lente de l'opacité (jamais de balayage lumineux). */
+export const skeleton = { ms: 900, min: 0.45 } as const;
+
+/**
+ * Glisser-déposer d'une liste verticale : appui long, la carte se soulève, les voisines se rangent, défilement
+ * automatique quand le doigt approche d'un bord (zone `edge`, vitesse proportionnelle, plafonnée).
+ */
+export const reorder = { longPressMs: 220, liftScale: 1.03, edge: 72, maxSpeed: 720 } as const;

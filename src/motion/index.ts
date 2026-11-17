@@ -16,3 +16,14 @@ export { PressSheen, SHEEN_MS, usePressSheen } from './PressSheen';
 export { COMPLETION, CompletionCheck, CompletionGlow } from './TaskComplete';
 export { MORPH, MorphHost, MorphSource, MorphTarget, morphRegistry, useMorphSource } from './Morph';
 export { Reveal, REVEAL } from './Reveal';
+// Primitives « Liquid Glass » (17/11/2026) — voir HOMI_DESIGN_SYSTEM.md § 10 et MOTION_SYSTEM.md
+export { favorite, reorder, shake, skeleton, successCheck, swap } from './curves';
+export { usePress, type PressMotion } from './Press';
+export { StaggerList } from './Stagger';
+export { ContentSwap } from './ContentSwap';
+export { useIndicator, useItemLayouts, type ItemLayout } from './Indicator';
+export { FavoriteStar, useFavoritePop } from './Favorite';
+export { useShake } from './Shake';
+export { SuccessCheck } from './SuccessCheck';
+export { SkeletonBone, SkeletonPulse } from './SkeletonPulse';
+export { autoScrollSpeed, moveKey, ReorderList, reorderOffset, reorderOrder, reorderTotal, useReorderScroll, type ReorderItemInfo, type ReorderScroll } from './Reorder';

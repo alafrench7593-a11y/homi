@@ -1,6 +1,6 @@
 /** Feuille modale, notifications éphémères (toasts) et confirmation. */
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Alert, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Alert, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible } from './keyboard';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -60,7 +60,14 @@ export function sheetRelease(o: { y: number; vy: number; snaps: number[]; h: num
  *  - lecteurs d'écran : la poignée est un réglable (« agrandir » / « réduire ou fermer »), le bouton Fermer reste ;
  *  - Réduire les animations / économie d'énergie : positions finales immédiates (le geste suit toujours le doigt).
  */
-export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+/** Contrat du panneau d'une feuille : ce que `Sheet` passe à sa surface (défaut : `LiquidGlass`, opaque). */
+export interface SheetPanelProps { testID?: string; radius: number; style?: StyleProp<ViewStyle>; contentStyle?: StyleProp<ViewStyle>; children?: React.ReactNode }
+
+export function Sheet({ visible, onClose, title, children, panel: Panel }: {
+  visible: boolean; onClose: () => void; title: string; children: React.ReactNode;
+  /** Surface du panneau (bibliothèque de verre : `GlassSheet`). Sans elle : surface opaque historique, inchangée. */
+  panel?: React.ComponentType<SheetPanelProps>;
+}) {
   const t = useTheme();
   const insets = useSafeAreaInsets();
   const { height: screenH } = useWindowDimensions();
@@ -165,7 +172,10 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
         {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
         <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
           <ReAnimated.View onLayout={onLayout} style={[styles.sheet, styles.sheetInFlow, sheetStyle]} testID="sheet">
-            <LiquidGlass testID="sheet-panel" kind="optical" edges="top" radius={radius.sheet} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: keyboardVisible ? spacing.sm : insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
+{(() => {
+              const panelProps = { testID: 'sheet-panel', radius: radius.sheet, style: { maxHeight: '100%', flexShrink: 1 } as const, contentStyle: { paddingBottom: keyboardVisible ? spacing.sm : insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 } as const };
+              const inner = (
+                <>
               <GestureDetector gesture={pan}>
                 <View collapsable={false} testID="sheet-handle-area">
                   <View
@@ -190,7 +200,10 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
               <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" testID="sheet-scroll">
                 <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
               </ScrollView>
-            </LiquidGlass>
+                </>
+              );
+              return Panel ? <Panel {...panelProps}>{inner}</Panel> : <LiquidGlass kind="optical" edges="top" {...panelProps}>{inner}</LiquidGlass>;
+            })()}
           </ReAnimated.View>
         </KeyboardAvoidingView>
       </GestureHandlerRootView>
@@ -198,23 +211,25 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   );
 }
 
-type ToastTone = 'success' | 'info' | 'error';
+export type ToastTone = 'success' | 'info' | 'error';
+/** Contrat d'une vue de toast (défaut : `ToastView` ; bibliothèque de verre : `GlassToast`). */
+export interface ToastViewProps { msg: string; tone: ToastTone; onDone: () => void }
 const ToastContext = createContext<(msg: string, tone?: ToastTone) => void>(() => undefined);
 
-export function ToastProvider({ children }: { children: React.ReactNode }) {
+export function ToastProvider({ children, view: ToastSurface = ToastView }: { children: React.ReactNode; view?: React.ComponentType<ToastViewProps> }) {
   const [toast, setToast] = useState<{ msg: string; tone: ToastTone; key: number } | null>(null);
   const show = useCallback((msg: string, tone: ToastTone = 'success') => setToast({ msg, tone, key: Date.now() }), []);
   return (
     <ToastContext.Provider value={show}>
       {children}
       {/* La fin d'un ancien message n'efface jamais le suivant */}
-      {toast && <ToastView key={toast.key} msg={toast.msg} tone={toast.tone} onDone={() => setToast((cur) => (cur?.key === toast.key ? null : cur))} />}
+      {toast && <ToastSurface key={toast.key} msg={toast.msg} tone={toast.tone} onDone={() => setToast((cur) => (cur?.key === toast.key ? null : cur))} />}
       {Platform.OS === 'web' && <ConfirmHost />}
     </ToastContext.Provider>
   );
 }
 
-function ToastView({ msg, tone, onDone }: { msg: string; tone: ToastTone; onDone: () => void }) {
+function ToastView({ msg, tone, onDone }: ToastViewProps) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const insets = useSafeAreaInsets();

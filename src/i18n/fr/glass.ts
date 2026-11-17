@@ -1,0 +1,18 @@
+/** Bibliothèque « Liquid Glass » (src/components/glass) : libellés d'accessibilité des composants et entrée de la galerie. */
+export const glass = {
+  'glass.search': "Rechercher",
+  'glass.search.clear': "Effacer la recherche",
+  'glass.fav.add': "Ajouter aux favoris",
+  'glass.fav.remove': "Retirer des favoris",
+  'glass.state.loading': "Chargement en cours",
+  'glass.state.success': "Terminé",
+  'glass.state.error': "Échec",
+  'glass.menu': "Menu",
+  'glass.profiles': "Profils",
+  'glass.tabs': "Navigation principale",
+  'glass.reorder.up': "Monter",
+  'glass.reorder.down': "Descendre",
+  'glass.reorder.hint': "Appui long, puis glisser pour réordonner",
+  'glass.gallery': "Galerie Liquid Glass",
+  'glass.gallery.sub': "Composants de verre et mouvements, pour le contrôle visuel",
+};

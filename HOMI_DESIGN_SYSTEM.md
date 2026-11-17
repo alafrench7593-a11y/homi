@@ -245,7 +245,7 @@ Petite pastille discrète (28 px, surface + liseré, point corail, « Démo ») 
 toujours visible, nom accessible « Quitter la démonstration », cible ≥ 48 px. Place réservée en haut :
 `useDemoInset()` = 42 px en démo, 0 sinon ; `useTopInset()` = zone sûre + réserve.
 
-## 7. Mouvement (détails : `MOTION_SYSTEM.md`)
+## 7. Mouvement (détails : `MOTION_SYSTEM.md` ; primitives « Liquid Glass » : § 10)
 
 Animé : pression des boutons (ressort, fil UI), sélection (pastille, contour de `GlowCard`, indicateur de sélecteur
 en ressort « panneau »), apparition des fiches (`Appear`, `Reveal`, `Cascade`), halo (respiration lente, accueil /
@@ -264,3 +264,101 @@ Rendu iOS / Android natifs (Reanimated sur appareil, haptique, VoiceOver / TalkB
 (accueil, hubs, outils) ne sont pas encore recomposés avec `ListGroup` / le halo / les illustrations 3D
 (`assets/illustrations/`) : c'est l'étape suivante, écran par écran. Vérifié : TypeScript, Jest, export web,
 captures Chromium 390 × 844 et 320 × 568, clair et sombre.
+
+## 10. Liquid Glass et mouvement (17/11/2026)
+
+Bibliothèque centralisée : `src/components/glass/` (un seul point d'entrée, `@/components/glass`), jetons dans
+`src/theme/glass.ts`, primitives de mouvement dans `src/motion/` (`@/motion`). Galerie de contrôle visuel :
+`/dev/glass` (Réglages → « Galerie Liquid Glass », en mode développeur ou en démonstration seulement). La bibliothèque
+est LIVRÉE, pas branchée : la barre du bas, les cartes d'outils, la recherche et le sélecteur de profil gardent leur
+rendu actuel tant qu'un écran ne les adopte pas.
+
+### Quand utiliser le verre — et quand NE PAS l'utiliser
+
+| Oui | Non |
+|---|---|
+| Ce qui FLOTTE au-dessus du contenu : barre d'onglets, barre du haut, bouton flottant, recherche, sélecteur, menu, toast | Une zone riche en texte : article, formulaire long, liste de données, tableau — elle reste une surface OPAQUE (`Card`, `ListGroup`, `Surface`) |
+| Une PETITE surface posée sur un fond vivant (photo, halo, illustration) : carte d'outil, résumé de trois lignes | Une carte dans une liste de vingt (coût du flou, lecture ralentie) |
+| Une feuille ou une fenêtre courte (`GlassSheet`, `GlassModal`) | Du verre sur du verre (deux flous empilés : illisible et coûteux) — une barre de verre contient des contrôles NUS (`GlassIconButton plain`) |
+| | Le mode nuit (soins de nuit) : rien ne brille, tout est opaque — c'est automatique |
+| | Un « verre » sans flou : un fond blanc translucide n'est pas du verre, la bibliothèque ne le rend jamais |
+
+Règles d'intégration : (1) ne jamais animer ni régler l'**opacité d'un ancêtre** d'un verre (le flou et le verre natif
+se figent ou disparaissent) — animer `transform`, estomper le CONTENU, ou fondre un calque frère ; (2) le libellé
+`tertiary` (sans surface) est réservé au fond uni ; (3) une seule action `primary` par écran.
+
+### Les trois niveaux de repli (`useGlassTier`, décision pure `resolveGlassTier`, testée)
+
+| Niveau | Quand | Rendu |
+|---|---|---|
+| `native` | iOS 26+, `isLiquidGlassAvailable()` **et** `isGlassEffectAPIAvailable()` (`expo-glass-effect` 57.0.5, `surfaces/nativeGlass.ts`) | `GlassView` (`glassEffectStyle="regular"`, `colorScheme` imposé par le thème de l'app, teinte de palette pour `card` et `sheet`) |
+| `blur` | iOS < 26, web ; Android 12+ seulement si l'écran publie une cible (`GlassBlurTarget` + `BlurTargetView`) | flou RÉEL (`expo-blur` 57.0.3, déjà dans `package.json` : UIVisualEffectView / `backdrop-filter`) + voile de contraste teinté + liseré clair + reflet du haut |
+| `opaque` | « Réduire la transparence » (iOS ; web : `prefers-reduced-transparency`), mode nuit, Android sans cible de flou | surface du thème (`surface.raised` / `surface`), même forme, liseré du thème |
+
+L'accessibilité passe avant tout : « Réduire la transparence » l'emporte même sur le verre natif et sur un niveau
+imposé (`GlassTierProvider`, réservé à la galerie et aux tests).
+
+### Variantes et voile de contraste (`glassSpec(theme, variante)`)
+
+| Variante | Usage | Encres garanties | Opacité du voile (résolue) |
+|---|---|---|---|
+| `chrome` | barres, boutons flottants, recherche, sélecteurs, toast | texte, secondaire renforcé ≥ 4,5:1 ; accent renforcé ≥ 3:1 | clair ≈ 0,69–0,71 · sombre ≈ 0,81–0,82 |
+| `card` | petites surfaces (carte d'outil) | idem | idem |
+| `sheet` | feuille, fenêtre, menu : contenu libre | TOUTES les encres du thème (texte, secondaire, primaire, 4 statuts) ≥ 4,5:1 | clair 0,86–0,95 · sombre 0,93–0,97 |
+
+Ce qu'il y a sous un verre est inconnu. Un flou ne sort jamais de l'enveloppe des couleurs qu'il mélange : le pire
+fond est donc un **noir ou un blanc uni**. `solveVeilAlpha` cherche la plus petite opacité du voile pour laquelle
+chaque encre promise tient sur ces deux fonds, y compris sous le reflet, l'indicateur de sélection et le voile
+d'appui. Les encres du verre (`spec.inks`) sont plus denses que celles des surfaces opaques. En sombre, la teinte du
+voile est le FOND de la palette (verre fumé). `src/__tests__/glassContrast.test.ts` refait le calcul pour les 5
+palettes en clair et en sombre (104 vérifications) ; les seuils ne se baissent pas.
+
+### Composants (`@/components/glass`)
+
+| Composant | Rôle | Props essentielles |
+|---|---|---|
+| `Glass` / `GlassMaterial` | surface de verre / sous-couche seule | `variant`, `radius`, `edges` (`all` \| `top`), `shadow`, `contentStyle`, `tier` |
+| `GlassButton` | bouton | `label`, `variant` (`primary` \| `secondary` \| `tertiary` \| `destructive`), `size` (`sm` 44 \| `md` 52 \| `lg` 56), `icon`, `iconRight`, `state` (`idle` \| `loading` \| `success` \| `error`), `disabled`, `full`, `onPress` (une promesse enchaîne chargement → succès / erreur) |
+| `GlassIconButton` | icône seule, 44 pt | `icon`, `label` (obligatoire), `onPress`, `plain`, `selected`, `disabled` |
+| `GlassFab` | bouton flottant | `icon`, `label`, `showLabel`, `tone` (`action` \| `glass`), `size` |
+| `GlassCard` | petite carte | `children`, `onPress?`, `accessibilityLabel`, `padded`, `radius` |
+| `GlassToolCard` (+ `GlassToolCardSkeleton`) | carte d'outil | `title`, `description`, `icon` ou `glyph`, `profile`, `favorite` + `onToggleFavorite`, `onPress`, `disabled`, `descriptionLines` |
+| `GlassSheet` | feuille du bas | même API que `Sheet` (`visible`, `onClose`, `title`, `children`) — c'est `Sheet` avec un panneau de verre |
+| `GlassTabBar` | barre d'onglets | `tabs` (`key`, `label`, `icon`, `accessibilityLabel?`, `width?`), `activeKey`, `onChange`, `onLongPress?`, `center` + `centerAfter`, `floating`, `bottomInset`, `labelSize`, `iconsOnly` |
+| `GlassSearchBar` | recherche | `value`, `onChangeText`, `placeholder`, `label`, `right`, + props de `TextInput` |
+| `GlassProfileSwitcher` | rangée d'avatars (présentation pure) | `profiles` (`key`, `label`, `accessibilityLabel?`, `avatar`), `activeKey`, `onChange`, `onAdd?` + `addLabel`, `size`, `glass` |
+| `GlassSegmentedControl` | sélecteur segmenté | `options` (`value`, `label`, `icon?`), `value`, `onChange`, `label` |
+| `GlassMenu` (+ `useMenuAnchor`) | menu déroulant / contextuel | `visible`, `onClose`, `items` (`key`, `label`, `icon?`, `destructive?`, `disabled?`, `selected?`, `onPress`), `anchor` |
+| `GlassModal` | fenêtre | `visible`, `onClose`, `title`, `message?`, `children?`, `actions` (`label`, `onPress`, `variant?`), `dismissable` |
+| `GlassToast` / `GlassToastProvider` | toast | le `ToastProvider` existant avec une vue de verre : `useToast()` inchangé |
+
+Tous : jetons du thème uniquement (aucune couleur en dur dans `src/components/glass`), cibles ≥ 44 pt (`hitSlop`
+quand le visuel est plus petit), rôle + nom + état annoncés, texte qui suit la taille du téléphone (plafonds de
+`typography`), sélection jamais portée par la couleur seule. Points d'extension ajoutés à l'existant, sans changement
+de comportement : `Sheet({ panel })` et `ToastProvider({ view })` (Overlays.tsx).
+
+### Primitives de mouvement et durées (`@/motion`, détails dans `MOTION_SYSTEM.md`)
+
+| Primitive | Geste | Valeurs |
+|---|---|---|
+| `usePress` | pression | compression 0,97 (ressort `vif`), retour `doux`, haptique léger au contact ; publie `progress` (voile, ombre) |
+| `StaggerList` | apparition échelonnée | fondu + 10 px, 45 ms par rang, plafond 360 ms |
+| `ContentSwap` | transition de contenu partagée (profil, onglet) | sortie 110 ms `accelerate`, entrée 220 ms `decelerate`, glissé de 10 px |
+| `useItemLayouts` + `useIndicator` | déplacement d'indicateur | ressort `panneau` (≈ 300 ms), première pose sans trajet |
+| `FavoriteStar` / `useFavoritePop` | favori | saut 1,28 → 1 (`rebondLeger`), onde 420 ms, haptique « sélection » |
+| `useShake` | secousse d'erreur | 5 pas décroissants de 55 ms (≈ 275 ms), haptique « erreur » |
+| `SuccessCheck` | coche de succès | 0,6 → 1 (`rebondLeger`), tracé 240 ms |
+| `SkeletonPulse` + `SkeletonBone` | squelettes | respiration 1 → 0,45, 900 ms par demi-cycle, un seul nœud animé par groupe |
+| `ReorderList` + `useReorderScroll` | glisser-déposer vertical | appui long 220 ms, soulèvement 1,03, voisines en ressort `panneau`, haptique à chaque rang, défilement automatique (zone de 72 px, 720 px/s) |
+
+Tout tourne sur le fil UI et passe par `useMotion()` : « Réduire les animations » et l'économie d'énergie donnent
+l'état final immédiat ; la nuit, des fondus courts sans ressort. Familles de durées inchangées : micro 120–180 ms,
+panneaux 220–320 ms, scènes 320–450 ms.
+
+### Non vérifié ici (iPhone requis)
+
+Le web ne montre que le niveau `blur` (flou CSS) et le repli opaque. À vérifier sur iPhone : le rendu du verre natif
+d'iOS 26 (lisibilité sur photo, teinte, comportement pendant une compression) ; le flou UIVisualEffectView d'iOS < 26 ;
+« Réduire la transparence » en conditions réelles ; les haptiques ; le glisser-déposer (appui long face au défilement,
+défilement automatique, 120 Hz) ; la fluidité sur un appareil lent. Android : opaque tant qu'aucun écran ne publie de
+cible de flou.

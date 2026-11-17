@@ -152,6 +152,12 @@ export default function SettingsScreen() {
             <ListRow icon="cpu" title={tr('settings.services')} subtitle={tr('settings.services.sub')} onPress={() => router.push('/settings/services')} />
           </>
         ) : null}
+        {devMode || isDemo ? (
+          <>
+            <Divider />
+            <ListRow icon="layers" title={tr('glass.gallery')} subtitle={tr('glass.gallery.sub')} onPress={() => router.push('/dev/glass' as never)} testID="settings-glass-gallery" />
+          </>
+        ) : null}
         {isModerator ? (
           <>
             <Divider />

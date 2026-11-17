@@ -18,6 +18,8 @@ const FREE: RegExp[] = [
   /^\/(profile|moi)\/?$/,
   /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|family|sync)\/?$/,
   /^\/premium\/?$/, /^\/feedback\/?$/, /^\/sources\/?$/, /^\/admin(\/.*)?$/,
+  // Galerie de QA (mode développeur / démonstration) : aucun contenu d'abonnement
+  /^\/dev(\/.*)?$/,
   // Urgences et sécurité : jamais derrière un abonnement
   /^\/emergency\/?$/, /^\/cycle\/emergency\/?$/, /^\/contraception\/emergency\/?$/, /^\/postpartum\/support\/?$/, /^\/family\/(sos|urgent)\/?$/,
   // Alertes officielles de rappel de produits : information de sécurité

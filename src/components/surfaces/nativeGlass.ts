@@ -9,6 +9,8 @@ import { AccessibilityInfo, Platform, type StyleProp, type ViewStyle } from 'rea
 
 export type NativeGlassProps = {
   glassEffectStyle?: 'clear' | 'regular' | 'none';
+  children?: React.ReactNode;
+  testID?: string;
   tintColor?: string;
   colorScheme?: 'auto' | 'light' | 'dark';
   isInteractive?: boolean;
@@ -31,10 +33,23 @@ export const LIQUID_GLASS_NATIVE = NativeGlass !== null;
 /** Flou réel sur iOS et le web ; Android garde le remplissage translucide (flou natif trop coûteux en liste). */
 export const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
 
-/** « Réduire la transparence » (iOS) : le verre devient opaque. */
+/**
+ * « Réduire la transparence » : le verre devient opaque (voir `src/components/glass/Glass.tsx`).
+ *  - iOS : Réglages → Accessibilité → Affichage et taille du texte → Réduire la transparence ;
+ *  - web : `prefers-reduced-transparency: reduce` (là où le navigateur le publie) ;
+ *  - Android : pas de réglage équivalent (et pas de flou sans cible de flou : le verre y est déjà opaque).
+ */
 export function useReduceTransparency(): boolean {
   const [on, setOn] = useState(false);
   useEffect(() => {
+    if (Platform.OS === 'web') {
+      const mq = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-transparency: reduce)') : null;
+      if (!mq) return;
+      setOn(mq.matches);
+      const onChange = (e: { matches: boolean }) => setOn(e.matches);
+      mq.addEventListener?.('change', onChange);
+      return () => mq.removeEventListener?.('change', onChange);
+    }
     if (Platform.OS !== 'ios') return;
     AccessibilityInfo.isReduceTransparencyEnabled?.().then(setOn).catch(() => undefined);
     const sub = AccessibilityInfo.addEventListener('reduceTransparencyChanged', setOn);

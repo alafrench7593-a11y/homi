@@ -3,6 +3,67 @@
 Nouveau code : **Reanimated 4.7.1** (`react-native-worklets` 0.13.0), primitives dans `src/motion/**`.
 Jetons partagés avec l'API `Animated` historique : `src/theme/motion.ts`.
 
+## Primitives « Liquid Glass » (17/11/2026) — `src/motion/`, pour `@/components/glass`
+
+Neuf primitives NOMMÉES, réutilisables hors du verre. Chacune décide d'abord si elle doit jouer (`useMotion()`), tourne
+sur le fil UI et n'anime que `transform` et `opacity` (exceptions assumées : la largeur d'un indicateur en position
+absolue et sans enfant ; un seul petit tracé SVG pour la coche).
+
+| Primitive | Fichier | Mouvement complet | `off` (Réduire les animations, économie d'énergie) | `minimal` (nuit) |
+|---|---|---|---|---|
+| `usePress({ scale, haptic, disabled })` | `Press.ts` | 0,97 en `vif` au contact, retour `doux` ; `progress` 0 → 1 ; haptique léger | aucune échelle ; `progress` saute (le voile d'appui reste) | fondu court |
+| `StaggerList` | `Stagger.tsx` | `Cascade` par rang : +45 ms, plafond 360 ms | tout visible d'emblée | fondu sans déplacement ni décalage |
+| `ContentSwap({ swapKey, direction, axis })` | `ContentSwap.tsx` | sortie 110 ms `accelerate` (l'ancien contenu reste monté), entrée 220 ms `decelerate`, 10 px | échange immédiat | fondu sans glissement |
+| `useItemLayouts()` + `useIndicator(layout)` | `Indicator.ts` | `translateX` + `width` en ressort `panneau` | pose immédiate | 160 ms sans ressort |
+| `FavoriteStar` / `useFavoritePop(active)` | `Favorite.tsx` | 1,28 → 1 en `rebondLeger`, onde 420 ms, quand la DONNÉE passe à vrai | rien | rien |
+| `useShake()` | `Shake.ts` | 7, −6, 4, −2, 0 px × 55 ms, haptique « erreur » | aucune secousse (haptique conservé) | aucune secousse |
+| `SuccessCheck({ visible })` | `SuccessCheck.tsx` | 0,6 → 1 en `rebondLeger`, tracé 240 ms après 60 ms | coche complète | fondu 180 ms |
+| `SkeletonPulse` + `SkeletonBone` | `SkeletonPulse.tsx` | opacité 1 ↔ 0,45, 900 ms, un nœud animé par groupe | immobile | immobile |
+| `ReorderList` + `useReorderScroll()` | `Reorder.tsx` | voir ci-dessous | la carte suit le doigt, sans soulèvement ; voisines sans trajet | glissement 160 ms sans ressort |
+
+### Glisser-déposer (`ReorderList`)
+
+Reanimated + Gesture Handler (API `Gesture.Pan()` déjà éprouvée en production par `Sheet`), aucune dépendance ajoutée.
+Lignes en position absolue dans un conteneur de hauteur connue ; leur place = ordre (valeur partagée) + hauteurs
+mesurées (hauteurs variables acceptées). Appui long 220 ms → la carte se soulève (1,03 + ombre en fondu) ; le rang
+visé est calculé sur le fil UI (`reorderOrder`, pur, sans oscillation : les seuils ne dépendent pas de l'ordre
+courant) ; UN aller-retour vers le fil JS par changement de rang (haptique « sélection »), jamais par image ;
+défilement automatique par `useFrameCallback`, actif seulement pendant un glisser (`autoScrollSpeed`) ; au dépôt,
+`onReorder(keys)` une fois. Lecteurs d'écran : actions « monter » / « descendre » (`info.a11y`).
+
+### Règles worklets (trois plantages iOS venaient de là) — gardées par `src/__tests__/workletDefaults.test.ts`
+
+1. aucun paramètre par défaut lisant la fermeture dans un worklet (test sur le code réellement envoyé au fil UI) ;
+2. aucune fonction déclarée DANS un worklet confiée à `scheduleOnRN` : elle est déclarée dans le composant (test
+   ajouté le 17/11/2026 : analyse de l'arbre syntaxique, avec exemples fautifs et corrects) ;
+3. aucune ref React lue dans un worklet (valeurs partagées, `useAnimatedRef`) ;
+4. pas de `width` / `height` animés avec le pilote natif d'`Animated` (les primitives ci-dessus sont en Reanimated).
+
+### Skia, Rive, Lottie : évalués, non installés
+
+Poids ci-dessous : ordres de grandeur donnés de mémoire, à mesurer sur un build avant toute décision.
+
+- **Skia** (`@shopify/react-native-skia`) — apport réel pour HOMI : réfraction / reflets procéduraux du verre et
+  graphiques très denses ; rien dans la bibliothèque actuelle n'en a besoin (flou natif + dégradés suffisent). Poids :
+  ≈ 4 Mo par architecture (iOS) et ≈ 6 Mo (Android), plus un binaire WebAssembly (CanvasKit, ≈ 3 Mo compressé) pour le
+  web. Maintenu activement (Shopify), compatible Nouvelle Architecture ; version à faire résoudre par
+  `npx expo install` au moment de l'adopter, build de développement obligatoire. **Non installé.**
+- **Rive** (`rive-react-native`) — apport : illustrations interactives à machine d'états (mascotte, onboarding) ; HOMI
+  n'a aucun fichier `.riv` ni graphiste Rive, et le logo animé existe déjà en SVG + Reanimated. Poids : moteur natif
+  ≈ 2–3 Mo par plateforme ; le web demande un autre paquet (`@rive-app/react-canvas`), donc deux intégrations.
+  Maintenu, mais hors du jeu de modules Expo (plugin de configuration, build de développement). **Non installé.**
+- **Lottie** (`lottie-react-native`) — apport : célébrations et illustrations d'états vides livrées par un motion
+  designer ; aujourd'hui la coche, le favori et les squelettes sont des primitives de quelques lignes, sans fichier
+  JSON à maintenir. Poids : ≈ 1 Mo natif + chaque animation (50–300 Ko) ; web via `@lottiefiles/dotlottie-react`.
+  Maintenu, pris en charge par `npx expo install` pour le SDK 57. **Non installé** — le premier candidat si une
+  illustration animée de célébration est commandée.
+
+### Tests
+
+`src/__tests__/motionGlass.test.tsx` (25) : chaque primitive en mouvement complet puis en état final immédiat
+(Réduire les animations / économie d'énergie), logique pure du glisser-déposer, actions d'accessibilité.
+`glassComponents.test.tsx` (53), `glassNative.test.tsx` (3), `glassContrast.test.ts` (104).
+
 ## v4 « lumière minérale » (14/11/2026)
 
 Les familles et ressorts v3 ci-dessous sont CONSERVÉS. Changements v4 :
