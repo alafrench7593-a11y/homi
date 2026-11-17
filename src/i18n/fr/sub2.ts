@@ -20,7 +20,7 @@ export const sub2 = {
   'sub2.status.paused': 'En pause',
 
   'sub2.page.screen': 'Premium',
-  'sub2.page.title': 'AU FIL DE NOUS PREMIUM',
+  'sub2.page.title': 'HOMI PREMIUM',
   'sub2.page.subtitle': 'Une expérience pour créer des liens, partager, découvrir et profiter pleinement de la communauté.',
   'sub2.page.oneAccess': 'Les 3 formules donnent exactement le même Premium, partagé avec un co-parent de votre foyer.',
   'sub2.page.choose': 'Choisissez votre formule',

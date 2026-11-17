@@ -17,7 +17,7 @@ export const sub2: Messages<typeof fr> = {
   "sub2.status.refunded": "Reembolsada",
   "sub2.status.paused": "En pausa",
   "sub2.page.screen": "Premium",
-  "sub2.page.title": "AU FIL DE NOUS PREMIUM",
+  "sub2.page.title": "HOMI PREMIUM",
   "sub2.page.subtitle": "Una experiencia para crear vínculos, compartir, descubrir y disfrutar plenamente de la comunidad.",
   "sub2.page.oneAccess": "Los 3 planes dan exactamente el mismo Premium, compartido con un coprogenitor de tu hogar.",
   "sub2.page.choose": "Elige tu plan",

@@ -8,7 +8,7 @@ import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import { TodaySummary } from '@/components/MiniApp';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { LineChart, StatPill } from '@/components/Charts';
@@ -393,6 +393,7 @@ export function MilestonesTab({ child }: { child: Child }) {
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   function start(idea?: (typeof MILESTONE_IDEAS)[number]) {
     setTitle(idea ? tr(`u7.child.idea.${idea}` as TKey) : '');
@@ -415,6 +416,9 @@ export function MilestonesTab({ child }: { child: Child }) {
     }
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui créait deux lignes
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
       const res = await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
@@ -425,6 +429,7 @@ export function MilestonesTab({ child }: { child: Child }) {
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }

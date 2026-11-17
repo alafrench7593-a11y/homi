@@ -19,7 +19,7 @@ export const sub2: Messages<typeof fr> = {
   'sub2.status.paused': 'Paused',
 
   'sub2.page.screen': 'Premium',
-  'sub2.page.title': 'AU FIL DE NOUS PREMIUM',
+  'sub2.page.title': 'HOMI PREMIUM',
   'sub2.page.subtitle': 'An experience to build connections, share, discover and make the most of the community.',
   'sub2.page.oneAccess': 'All 3 plans give exactly the same Premium, shared with one co-parent in your household.',
   'sub2.page.choose': 'Choose your plan',

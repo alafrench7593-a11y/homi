@@ -1,5 +1,5 @@
 /**
- * Page « AU FIL DE NOUS PREMIUM » (URL inchangée : /settings/subscription, paramètres ?feature= et ?plan=).
+ * Page « HOMI PREMIUM » (URL inchangée : /settings/subscription, paramètres ?feature= et ?plan=).
  * Avantages en cartes, 3 formules (12 mois « MEILLEURE OFFRE », 6 mois « ÉCONOMISEZ », mensuel « SANS ENGAGEMENT
  * LONGUE DURÉE ») aux prix de la boutique, conditions d'essai / de renouvellement / de résiliation, bouton
  * d'abonnement, « Mon abonnement », comparaison Gratuit / Premium, ce qui reste toujours gratuit, CGU et confidentialité.
