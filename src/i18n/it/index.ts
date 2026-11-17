@@ -80,3 +80,4 @@ export { hubs5 } from './hubs5';
 export { day5 } from './day5';
 export { deviceCal } from './deviceCal';
 export { toolhub } from './toolhub';
+export { nav6 } from './nav6';

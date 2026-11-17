@@ -11,7 +11,7 @@ Phases (toutes par défaut) :
   free     les mêmes routes SANS Premium : seule l'absence de plantage / page introuvable est exigée
            (l'écran « Cet espace fait partie de Premium » est un résultat attendu).
   tools    chaque outil du registre central (src/lib/journeys/tools.ts) ouvert depuis son point d'entrée normal :
-           sa carte dans l'onglet hub (Santé, Bébé, Famille), sinon la recherche universelle ; puis « Retour »
+           sa carte dans l'onglet hub (Moi, Enfant, Famille), sinon la recherche universelle ; puis « Retour »
            doit ramener à l'onglet hub, onglet parent toujours allumé.
   sweep    boutons et liens sans effet sur les écrans principaux (clic sans navigation ni changement visible).
 
@@ -261,7 +261,8 @@ def check_route(S, route, premium):
 
 
 # ------------------------------------------------------------------ phase outils (point d'entrée normal)
-HUBS = {'health': ('/health', 'Santé'), 'baby': ('/baby', 'Bébé'), 'family': ('/household', 'Famille')}
+# Refonte du 17/11/2026 : onglets Aujourd'hui · Moi · Enfant · Famille (routes inchangées : /health, /baby, /household)
+HUBS = {'health': ('/health', 'Moi'), 'baby': ('/baby', 'Enfant'), 'family': ('/household', 'Famille')}
 BODIES = [None, ('ttc', False), ('avoid', False), ('cycle', False), ('pregnancy', True)]
 
 

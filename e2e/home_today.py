@@ -1,7 +1,8 @@
 """
 Accueil — scène « Aujourd'hui » sur petit écran (320 × 568), démo web + Premium (13/11/2026, recomposée le 16/11/2026).
 Vérifie : la section en tête (ce qui m'attend en point focal, responsable nommé par son PRÉNOM, « demandée par Sam »,
-statut en toutes lettres), une seule recherche d'outils et une seule entrée d'ajout (le « + » de la barre), l'ajout d'une
+statut en toutes lettres), l'entrée fixe « Mes outils » et une seule entrée d'ajout (l'action centrale « Ajouter » de la barre,
+refonte du 17/11/2026 : « Créer une tâche » y est disponible depuis tous les onglets), l'ajout d'une
 tâche puis sa validation par la case à cocher (statut « Fait »), l'acceptation puis la validation de la mission qui
 m'attend (statut « Terminée » côté serveur émulé), l'absence de case sur la mission de quelqu'un d'autre, la création
 d'une mission (étapes) via « Confier une mission » et son affichage « À accepter » chez Sam.
@@ -75,8 +76,9 @@ with sync_playwright() as p:
     R['responsable_nomme'] = bool(milk) and 'Camille' in tid(pg, f'today-open-{milk["id"]}').inner_text()
     R['demandee_par_sam'] = bool(milk) and 'Demandée par Sam' in tid(pg, f'today-open-{milk["id"]}').inner_text()
     R['jamais_coparent'] = 'Coparent' not in tid(pg, 'home-today').inner_text()
-    R['une_seule_entree_ajout'] = pg.locator('[data-testid="home-today-add"]').count() == 1 and pg.locator('[data-testid="quick-add"]').count() == 0
-    R['une_seule_recherche_outils'] = pg.locator('[data-testid="home-tool-search"]').count() == 1 and pg.locator('[data-testid="all-tools"]').count() == 0
+    R['une_seule_entree_ajout'] = pg.locator('[data-testid="quick-add"]').count() == 1 and pg.locator('[data-testid="home-today-add"]').count() == 0 \
+        and tid(pg, 'quick-add').get_attribute('aria-label') == 'Ajouter'
+    R['une_seule_entree_outils'] = pg.locator('[data-testid="home-tools-entry"]').count() == 1 and pg.locator('[data-testid="all-tools"]').count() == 0
     shot(pg, '01-accueil-320')
 
     # 2. La mission de quelqu'un d'autre : aucun bouton pour la terminer
@@ -85,7 +87,9 @@ with sync_playwright() as p:
         and pg.locator(f'[data-testid="today-complete-{pickup["id"]}"]').count() == 0
 
     # 3. Ajouter une tâche depuis l'accueil (ajout rapide existant), puis la terminer
-    tid(pg, 'home-today-add').click(); pg.wait_for_timeout(1200)
+    tid(pg, 'quick-add').click(); pg.wait_for_timeout(1200)
+    R['feuille_actions_rapides'] = tid(pg, 'quick-sheet').count() > 0 and 4 <= pg.locator('[data-testid="quick-sheet"] [data-testid^="qa-"][role="button"]').count() - 1 <= 6
+    tid(pg, 'qa-task').click(); pg.wait_for_timeout(1200)
     R['feuille_ajout'] = tid(pg, 'today-add-sheet').count() > 0 and tid(pg, 'today-add-mission').count() > 0
     tid(pg, 'today-add-title').fill(NEW_TASK)
     shot(pg, '02-ajout')
@@ -98,7 +102,7 @@ with sync_playwright() as p:
     if btn is not None and btn.count():
         btn.scroll_into_view_if_needed(); pg.wait_for_timeout(400)
         bb = btn.bounding_box()
-        # Case à cocher : 48 px. (Le « + » de la barre mesure 44 px à 320 px de large : taille décidée par Dock.tsx, design system.)
+        # Case à cocher : 48 px. (L'action centrale de la barre mesure 48 px à 320 px de large : taille décidée par Dock.tsx.)
         R['cible_case_48px'] = bool(bb) and bb['height'] >= 48 and bb['width'] >= 48
         shot(pg, '03-avant-terminer')
         btn.click(); pg.wait_for_timeout(350)
@@ -122,8 +126,8 @@ with sync_playwright() as p:
     shot(pg, '06-mission-terminee')
 
     # 5. Créer une mission (écran existant) pour la co-parente ; elle apparaît « À accepter » sans bouton pour moi
-    tid(pg, 'home-today-add').scroll_into_view_if_needed()
-    tid(pg, 'home-today-add').click(); pg.wait_for_timeout(1200)
+    tid(pg, 'quick-add').click(); pg.wait_for_timeout(1200)
+    tid(pg, 'qa-task').click(); pg.wait_for_timeout(1200)
     tid(pg, 'today-add-mission').click(); pg.wait_for_timeout(3000)
     R['ecran_nouvelle_mission'] = '/family/missions/new' in pg.url
     tid(pg, 'mission-tpl-laundry').click(); pg.wait_for_timeout(300)

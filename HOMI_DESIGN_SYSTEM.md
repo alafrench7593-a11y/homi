@@ -14,7 +14,7 @@ espaces, profondeur par PLANS et par LUMIÈRE, une illustration forte en haut, t
 | `src/theme/ThemeProvider.tsx` | apparence Système / Clair / Sombre (+ nuit interne), `resolveThemeName`, préférences par compte |
 | `src/components/CoralHalo.tsx` | **halo corail** (seule lumière décorative) |
 | `src/components/ui.tsx` | `Button` (+ `buttonColors`), `ListGroup` / `ListRow`, `Card`, `Chip`, `Toggle`, `Field`, `Banner`… |
-| `src/components/Dock.tsx` | barre d'onglets pleine largeur + bouton d'action intégré |
+| `src/components/Dock.tsx` | barre d'onglets pleine largeur + action rapide centrale |
 | `src/components/DemoBar.tsx` | pastille « Démo » compacte + « Quitter la démo » |
 | `src/app/settings/appearance.tsx` | apparence, palettes avec aperçu réel, Adaptatif, « Rétablir par défaut » + vitrine des composants (vérification visuelle) |
 | Tests | `contrast.test.ts` (5 palettes, verrou de la palette par défaut), `hardcodedColors.test.ts` (garde-fou), `designSystem.test.ts`, `homiV2.test.tsx` (préférences, migration), `homiV3.test.tsx` (halo, mouvement), `interface.test.tsx` (bouton), `homiNavigation.test.ts` (barre) |
@@ -220,15 +220,24 @@ groupe, `ListRow` garde son ancien rendu. `Card` : réservée aux **informations
 statuts** uniquement (au repos : surface + contour ; choisie : aplat de l'action ; `tone="lavender"` : teinte lilas
 + coche). `GlowCard` (sélection) : contour corail 1,5 px + teinte corail pâle (plus de halo ni de faisceau).
 
-### Navigation (`Dock`)
+### Navigation (`Dock`) — refonte du 17/11/2026
 
-Barre **pleine largeur** posée en bas : fond surface, fine ligne de séparation en haut, aucune capsule flottante,
-aucun verre. Icônes d'une seule famille (Feather, via `Icon`). Onglet actif : icône corail sur pastille corail pâle +
-libellé gras. **Libellés entiers** à 320 et 390 px (« Communauté » compris) : largeur mesurée par onglet, 12 → 10 px,
-icônes seules seulement au-delà (texte agrandi + langue longue), onglets ≥ 44 px (`tabLayout`, testé). Changer
-d'onglet ne glisse pas. **Bouton d'action intégré** à droite, même hauteur de base que les onglets (rectangle 48 px
-aux angles souples, aplat de l'action) ; un écran le remplace via `useDockAction` ; il ne chevauche jamais le contenu.
-Écrans d'onglet : `TAB_SCREEN_INSET` en bas.
+Cinq besoins : **Aujourd'hui · Moi · [action centrale] · Enfant · Famille**, et « Outils » (entrée fixe en tête
+d'Aujourd'hui + dans la feuille de l'action centrale). Barre **pleine largeur** posée en bas : fond surface, fine ligne
+de séparation, aucune capsule flottante, aucun verre. Onglet actif : icône corail sur pastille corail pâle + libellé gras.
+
+- **4 onglets + bouton central** (et non 5 + bouton) : à 320 pt, trois onglets à droite d'un bouton centré ne laissent
+  que 128 pt → icônes seules (cibles de 43 pt) ; avec 4 onglets, libellés entiers à 12 px à 320 et 390 pt, y compris
+  « Grossesse » (`dockLayout`, testé ; capture `comparaison_barres_5_vs_4_onglets.png`).
+- **Action centrale** (52 pt, 48 pt sous 360 pt ; nom accessible « Ajouter ») : feuille du bas de 4 à 6 actions du
+  profil affiché (`features/quickActions`), choisies par la personne, + « Tous mes outils ». Un écran peut la remplacer
+  (`useDockAction` : Communauté → Publier).
+- **Onglet « Enfant » adaptatif** (`childTabMode`) : « Enfant », « Grossesse » (grossesse sans enfant), ou proposition
+  d'ajouter un enfant / une grossesse.
+- **Communauté** : hors de la barre ; bouton en haut à droite de tous les écrans d'onglet (`AccountActions`).
+- **Sélecteur de profil universel** (`components/ProfileSwitcher`) : rangée d'avatars, anneau corail + nom en gras,
+  indicateur de pages ; `ProfileSwipe` : glisser à gauche / à droite change de profil (bord gauche et carrousels exclus).
+- Écrans d'onglet : `TAB_SCREEN_INSET` en bas.
 
 ### Pastille « Démo » (`DemoBar`, `demoInset.ts`)
 

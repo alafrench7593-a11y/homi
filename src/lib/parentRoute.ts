@@ -30,7 +30,9 @@ const SECTION_HOME: Record<string, string> = {
 };
 
 /** Anciennes routes d'onglet (HOMI, hors de la barre) : « Retour » ramène à l'onglet qui les contient (cf. ACTIVE_ALIAS). */
-const OLD_TAB_HOME: Record<string, string> = { '/agenda': '/household', '/track': '/baby', '/ask': '/health' };
+// Refonte du 17/11/2026 : la Communauté sort de la barre (bouton en haut à droite des écrans d'onglet) → « Retour »
+// ramène à Aujourd'hui ; son profil communautaire (/moi) remonte à la Communauté ; « Outils » remonte à Aujourd'hui.
+const OLD_TAB_HOME: Record<string, string> = { '/agenda': '/household', '/track': '/baby', '/ask': '/health', '/community': '/', '/moi': '/community', '/tools': '/' };
 
 export function parentRoute(pathname: string): string {
   const clean = (pathname.split(/[?#]/)[0] ?? '/').replace(/\/+$/, '');

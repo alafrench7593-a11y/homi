@@ -220,6 +220,7 @@ export default function Community() {
 
   return (
     <Screen
+      back
       account
       scroll={false}
       padded={false}

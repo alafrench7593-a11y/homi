@@ -63,6 +63,18 @@ interface UiState {
   homeOrder: string[];
   homeHidden: string[];
   setHomeLayout: (order: string[], hidden: string[]) => void;
+  /**
+   * Accueil personnalisé PAR SITUATION (grossesse, nouveau-né, enfant, couple, famille…) : ordre complet des modules et
+   * modules masqués. Absent : la configuration par défaut de la situation (`HOME_PRESETS`).
+   */
+  homeLayouts: Record<string, { order: string[]; hidden: string[] }>;
+  setHomeLayoutFor: (situation: string, layout: { order: string[]; hidden: string[] } | null) => void;
+  /** Module « Infos d'un enfant » de l'accueil : l'enfant choisi (null : le premier enfant suivi). */
+  homeChildId: string | null;
+  setHomeChildId: (id: string | null) => void;
+  /** Action rapide centrale : actions choisies par profil (4 à 6 ; absent = celles du profil). */
+  quickActionFavorites: Record<string, string[]>;
+  setQuickActionFavorites: (profile: string, keys: string[] | null) => void;
   /** Raccourcis choisis (null = automatiques selon le parcours). */
   quickShortcuts: string[] | null;
   setQuickShortcuts: (keys: string[] | null) => void;
@@ -178,6 +190,20 @@ export const useUiStore = create<UiState>()(
       homeOrder: [],
       homeHidden: [],
       setHomeLayout: (homeOrder, homeHidden) => set({ homeOrder, homeHidden }),
+      homeLayouts: {},
+      setHomeLayoutFor: (situation, layout) => set((st) => {
+        const next = { ...st.homeLayouts };
+        if (layout) next[situation] = layout; else delete next[situation];
+        return { homeLayouts: next };
+      }),
+      homeChildId: null,
+      setHomeChildId: (homeChildId) => set({ homeChildId }),
+      quickActionFavorites: {},
+      setQuickActionFavorites: (profile, keys) => set((st) => {
+        const next = { ...st.quickActionFavorites };
+        if (keys && keys.length) next[profile] = keys.slice(0, 6); else delete next[profile];
+        return { quickActionFavorites: next };
+      }),
       quickShortcuts: null,
       setQuickShortcuts: (quickShortcuts) => set({ quickShortcuts }),
       cocoonFavorites: null,

@@ -1,29 +1,36 @@
 /**
- * En tête : la scène « Aujourd'hui » (src/features/homeToday, recomposée le 16/11/2026) : la prochaine action utile en point
- * focal unique, puis l'agenda du jour lisible ; une seule entrée d'ajout (le « + » de la barre d'onglets). Le reste, allégé, dessous.
- * Accueil volontairement court (profil « Suivre mon cycle » : calendrier, 5 raccourcis, une carte intelligente et le prochain
- * rappel seulement) : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
- * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
- * La communauté complète reste dans son onglet ; les autres cartes se réactivent dans Réglages › Mon accueil.
+ * « Aujourd'hui » — tableau de bord (refonte du 17/11/2026) : que dois-je faire maintenant ?
+ *
+ * En-tête FIXE : (1) bonjour + date + profil actif (sélecteur universel, indicateur de pages) et l'entrée « Outils ».
+ * Puis les modules, dans l'ordre de la configuration de la situation affichée (`HOME_PRESETS`, déclaratif : grossesse,
+ * nouveau-né, enfant, couple, famille, cycle, moi) ou dans celui choisi par la personne :
+ * (2) prochaine action importante ; (3) actions rapides ; (4) résumé du profil ; (5) agenda du jour du profil ;
+ * (6) recommandation ; (7) articles compacts ; puis les modules facultatifs.
+ *
+ * Glisser à gauche / à droite sur le tableau de bord passe au profil suivant / précédent (`ProfileSwipe`) : tout
+ * l'accueil se met à jour ; les carrousels internes gardent leur défilement. « Personnaliser », en bas, ouvre le mode
+ * édition SUR PLACE (le même éditeur que Réglages › Mon accueil).
+ * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
 import { BadgeDot } from '@/components/Motion';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
+import { useScreenScroll } from '@/components/screenChrome';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Cascade } from '@/motion';
-import { DemoBanner, ProfileSwitcher } from '@/components/Family';
+import { DemoBanner } from '@/components/Family';
+import { ProfileSwipe, ProfileSwitcher, SwipeExclude } from '@/components/ProfileSwitcher';
 import { ErrorView, Skeleton } from '@/components/States';
-import { Banner, Card, Icon, IconButton, Row, Text } from '@/components/ui';
+import { Banner, Button, Icon, IconButton, Row, Text } from '@/components/ui';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { effectiveHidden, orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
+import { PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
 import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
 import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
-import { useActivePregnancy, useArticle, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticle, useArticles, useHouseholdMembers, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
@@ -32,31 +39,40 @@ import { SoloHomeCard } from '@/features/solo/SoloHomeCard';
 import { HomeVideosCard } from '@/features/videos/HomeVideosCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
-import { ArticleCard, Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
-import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
+import { ArticleCard, Cocoon } from '@/features/cocoon/Cocoon';
+import type { Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
-import { isLocked, suggestArticles } from '@/lib/domain/content';
+import { suggestArticles } from '@/lib/domain/content';
 import { articleOfDay } from '@/lib/domain/journeys';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useOfflineStore } from '@/lib/offline';
 import { useUiStore } from '@/lib/store';
+import { useUserId } from '@/lib/auth';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions } from '@/components/AccountActions';
 import { Tappable } from '@/components/Tappable';
-import { ToolSearchButton } from '@/features/hubs/ToolSearch';
-import { HomeToday } from '@/features/homeToday';
+import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/features/homeToday';
+import { homeSituation, resolveHomeLayout, shownModules, type HomeModuleKey } from '@/features/homeToday/homeLayout';
+import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
   avoid: ['avoid'], ttc: ['ttc'], cycle: ['cycle'], none: [], pregnancy: ['pregnant'], postpartum: ['newborn'], baby: ['newborn'], child: ['child'], family: ['family', 'child'],
 };
 
+/** « Personnaliser » : remonte en haut de l'écran, où s'ouvre le mode édition. */
+function CustomizeButton({ onPress }: { onPress: () => void }) {
+  const scroll = useScreenScroll();
+  return <Button label={tr('hm.customize')} icon="sliders" variant="secondary" full testID="home-customize" onPress={() => { scroll.scrollToTop(false); onPress(); }} />;
+}
+
 export default function Home() {
   const t = useTheme();
+  const me = useUserId();
   const profileQ = useProfile();
   const profile = profileQ.data;
   // Portée affichée = profil du sélecteur + parcours actif : seule source de l'accueil (jamais un ancien parcours)
@@ -65,6 +81,7 @@ export default function Home() {
   const childrenQ = useTrackedChildren();
   const children = childrenQ.data;
   const js = useJourneyState();
+  const { data: members } = useHouseholdMembers();
   const journeysFailed = !scope.loaded && js.query.isError;
   const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children) || (!scope.loaded && !journeysFailed);
   const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : journeysFailed ? js.query : null;
@@ -73,47 +90,59 @@ export default function Home() {
   const premium = usePremium();
   const offline = useOfflineStore();
   const skyOverride = useUiStore((st) => st.skyOverride);
-  const homeOrder = useUiStore((st) => st.homeOrder);
-  const homeHidden = useUiStore((st) => st.homeHidden);
-  const quickShortcuts = useUiStore((st) => st.quickShortcuts);
   const simple = useUiStore((st) => st.simpleMode);
+  const [editing, setEditing] = useState(false);
   const now = skyOverride ? previewTime(skyOverride) : new Date();
 
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
   const child = scope.child;
-  // Profil enfant : « Le cocon du jour » (bulles, cocon, frise, trois informations, « + Ajouter », un conseil)
   const childScope = (scope.scope === 'baby' || scope.scope === 'child') && child ? scope.scope : null;
   const cycleMode = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle' ? scope.scope : null;
   setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
+  // Situation affichée → configuration du tableau de bord (déclarative), puis choix de la personne pour cette situation
+  const adults = (members ?? []).filter((m) => m.role === 'owner' || m.role === 'coparent').length;
+  const situation = homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy });
+  const saved = useUiStore((st) => st.homeLayouts[situation]);
+  const modules = useMemo(() => shownModules(resolveHomeLayout(situation, saved)), [situation, saved]);
+
+  // Journée du profil affiché : agenda, relais et garde suivent le profil (tâches : celles du foyer, les miennes pour « Moi »)
+  const todayProfile = useMemo<TodayProfile>(() => (
+    childScope && child ? { kind: 'child', childId: child.id }
+      : scope.scope === 'pregnancy' && pregnancy ? { kind: 'pregnancy', pregnancyId: pregnancy.id }
+        : scope.scope === 'family' ? { kind: 'all' } : { kind: 'me', userId: me }
+  ), [childScope, child, scope.scope, pregnancy, me]);
+  const scene = useTodayScene({ profile: todayProfile });
+  const agendaFor = todayProfile.kind === 'child' && child ? tr('ht.for.child', { name: child.first_name })
+    : todayProfile.kind === 'pregnancy' ? tr('ht.for.pregnancy') : todayProfile.kind === 'me' ? tr('ht.for.me') : tr('ht.for.all');
+
   // La semaine d'aménorrhée n'apparaît QUE pour une grossesse active affichée
-  const subtitle = (scope.scope === 'baby' || scope.scope === 'child') && child
-    ? `${child.first_name}, ${childAge(child.birth_date).label}`
-    : scope.scope === 'pregnancy' && pregnancy
-      ? `${pregnancyProgress(pregnancy.due_date).label}`
+  const subtitle = childScope && child ? `${child.first_name}, ${childAge(child.birth_date).label}`
+    : scope.scope === 'pregnancy' && pregnancy ? `${pregnancyProgress(pregnancy.due_date).label}`
       : scope.scope === 'postpartum' ? tr('pj.home.sub.postpartum')
         : scope.scope === 'family' ? tr('pj.home.sub.family')
           : cycleMode === 'ttc' ? tr('home.sub.ttc') : cycleMode ? tr('home.sub.cycle') : undefined;
 
-  const picked = useMemo(() => {
-    const list = suggestArticles(articles ?? [], {
-      journeys: LEGACY_FOR[scope.scope],
-      weekSA: scope.scope === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
-      childAgesMonths: child ? [childAge(child.birth_date).months] : scope.scope === 'family' ? (children ?? []).map((c) => childAge(c.birth_date).months) : [],
-      postpartum: scope.scope === 'postpartum',
-      multiple: scope.scope === 'pregnancy' && !!pregnancy && pregnancy.multiplicity !== 'single',
-    }, 6);
-    return articleOfDay(list);
-  }, [articles, scope.scope, pregnancy, child, children]);
+  const suggested = useMemo(() => suggestArticles(articles ?? [], {
+    journeys: LEGACY_FOR[scope.scope],
+    weekSA: scope.scope === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
+    childAgesMonths: child ? [childAge(child.birth_date).months] : scope.scope === 'family' ? (children ?? []).map((c) => childAge(c.birth_date).months) : [],
+    postpartum: scope.scope === 'postpartum',
+    multiple: scope.scope === 'pregnancy' && !!pregnancy && pregnancy.multiplicity !== 'single',
+  }, 6), [articles, scope.scope, pregnancy, child, children]);
+  const picked = articleOfDay(suggested);
   // La liste ne contient pas le texte : la carte (temps de lecture) reçoit l'article choisi, lu en entier (une requête)
   const article = useArticle(picked?.slug).data ?? null;
+  const articleCard = article ? <ArticleCard article={article} premium={premium} /> : null;
 
-  // Raccourcis : ceux choisis par la personne, mais seulement s'ils sont autorisés pour le profil affiché
-  const allowed = quickFor(scope);
-  const custom = (quickShortcuts ?? []).filter((k) => quickAllowed(k, scope));
-  const quickKeys = custom.length >= 3 ? custom : allowed;
   const journeyName = js.body ? tr(`pj.type.${js.body.type}` as TKey) : null;
-  const cards: Record<string, React.ReactNode> = {
+  const art = scope.scope === 'pregnancy' ? 'grossesse' : scope.scope === 'baby' || scope.scope === 'postpartum' ? 'bebe' : scope.scope === 'child' ? 'enfants' : cycleMode ? 'cycle' : 'foyer';
+  const cards: Record<HomeModuleKey, React.ReactNode> = {
+    // (2) Prochaine action importante : prochain événement, puis ce qui attend une réponse
+    next: <TodayNext scene={scene} art={art} />,
+    // (3) Actions rapides du profil (personnalisables) ; carrousel : son défilement passe avant le glissement de profil
+    quick: mainLoading ? null : <DailyActions />,
+    // (4) Résumé du profil sélectionné
     main: mainLoading ? <Skeleton kind="card" rows={1} />
       : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); void js.query.refetch(); }} />
       : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
@@ -122,84 +151,67 @@ export default function Home() {
       : scope.scope === 'family' ? <FamilyOverview />
       : cycleMode ? <CycleHome goal={cycleMode} />
       : <NoJourneyCard />,
-    // Les 4 actions du quotidien : cartes de suivi pour un enfant ou une grossesse, sinon les raccourcis du profil
-    // « Mes actions du jour » : une carte horizontale, 4 raccourcis du profil affiché au maximum (personnalisables)
-    quick: <DailyActions />,
-    outings: <OutingsHomeCard />,
-    community: <HomeCommunityCard />,
+    // (5) Agenda du jour, pour le profil affiché
+    agenda: <TodayAgenda scene={scene} caption={agendaFor} />,
+    // (6) Recommandation : l'article adapté, sinon une idée de repas — sans doublon avec les modules « article » / « recette »
+    recommendation: (!modules.includes('article') && !childScope ? articleCard : null) ?? (!modules.includes('recipe') ? <HomeRecipeCard /> : null),
+    // (7) Articles en format compact
+    articles: <ArticlesCompact articles={suggested.filter((a) => a.slug !== picked?.slug || !!childScope)} premium={premium} />,
+    familyTasks: <FamilyTasksModule />,
+    childInfo: <ChildInfoModule activeChildId={scope.childId ?? null} />,
+    tools: <PinnedTools />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
-    article: article ? <ArticleCard article={article} premium={premium} /> : null,
-    recipe: <HomeRecipeCard />,
-    recommendation: null as React.ReactNode,
     assistant: <HomeAssistantCard />,
+    community: <SwipeExclude><HomeCommunityCard /></SwipeExclude>,
+    outings: <OutingsHomeCard />,
+    videos: <HomeVideosCard />,
     library: <HomeLibraryCard />,
     solo: <SoloHomeCard />,
-    videos: <HomeVideosCard />,
+    story: mainLoading ? null : <StoryHomeStrip />,
+    recipe: <HomeRecipeCard />,
+    article: articleCard,
   };
-  // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
-  // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
-  // activées dans Réglages › Mon accueil (recette, question) restent affichées en dessous
-  // « Mon assistant IA » reste visible dans tous les modes (sauf si la personne l'a masqué dans Mon accueil)
-  const aiShown = !effectiveHidden(homeOrder, homeHidden).includes('assistant');
-  const libShown = !effectiveHidden(homeOrder, homeHidden).includes('library');
-  const homeCards = cycleMode && !mainLoading && !mainError ? ['main', ...(aiShown ? ['assistant'] : []), ...(libShown ? ['library'] : [])]
-    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'solo' || k === 'videos' || k === 'library' || k === 'outings')]
-      : orderedHomeCards(homeOrder, homeHidden);
-  // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
-  cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
 
   return (
-    <View style={{ flex: 1 }}>
-      <Screen bottomInset={TAB_SCREEN_INSET}>
-        {/* En-tête */}
-        {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
-        <View style={{ gap: 2, marginTop: spacing.xs }}>
-          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text variant="small" muted weight="bold" style={{ flexShrink: 1 }}>{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
-            <Row gap={0}>
-              <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
-              <View>
-                <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
-                <BadgeDot count={unread} style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
-              </View>
-              <AccountActions />
-            </Row>
-          </Row>
-          <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
-          {subtitle && !childScope ? <Text variant="small" muted>{subtitle}</Text> : null}
-        </View>
-        {/* Scène « Aujourd'hui » en tête : point focal (prochaine action utile) puis agenda lisible. Seule entrée d'ajout :
-            le « + » de la barre d'onglets (sur l'accueil d'un enfant, il reste celui du cocon). */}
-        <HomeToday dockAdd={!childScope} art={scope.scope === 'pregnancy' ? 'grossesse' : scope.scope === 'baby' || scope.scope === 'postpartum' ? 'bebe' : scope.scope === 'child' ? 'enfants' : cycleMode ? 'cycle' : 'foyer'} />
+    <Screen bottomInset={TAB_SCREEN_INSET}>
+      {/* (1) Bonjour + date + profil actif. Coin supérieur droit : urgences, notifications, Communauté, Réglages, Profil. */}
+      <View style={{ gap: 2, marginTop: spacing.xs }}>
+        {/* 5 boutons de 44 pt : ils tiennent à 320 pt ; la date passe sous la salutation (elle était écrasée à côté) */}
+        <Row style={{ justifyContent: 'flex-end', alignItems: 'center' }} gap={0}>
+          <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
+          <View>
+            <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
+            <BadgeDot count={unread} style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
+          </View>
+          <AccountActions />
+        </Row>
+        <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
+        <Text variant="small" muted testID="home-date">{[formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase()), subtitle].filter(Boolean).join(' · ')}</Text>
+      </View>
+      <ProfileSwitcher pager />
+      {/* « Outils » : entrée fixe et évidente (aussi dans l'action centrale de la barre) */}
+      <ToolsEntry />
+      {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
-        {/* Plus bas, allégé : le profil affiché (grossesse, enfant, cycle…), puis les cartes choisies dans Réglages › Mon accueil */}
-        <View style={{ gap: spacing.sm, marginTop: spacing.md }}>
-          <Text variant="heading" accessibilityRole="header">{tr('ht.below')}</Text>
-          <Cascade index={0} style={{ gap: 4 }}>
-            {simple ? null : <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
+      {editing ? <HomeEditor situation={situation} onDone={() => setEditing(false)} /> : (
+        <ProfileSwipe style={{ gap: spacing.md }}>
+          {modules.map((key, i) => {
+            const node = cards[key];
+            if (!node) return null;
+            return <Cascade key={key} index={i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
+          })}
+          {simple ? null : (
+            <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
               <Icon name="compass" size={14} color={t.colors.textMuted} />
               <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
               <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
-            </Tappable>}
-            <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
-          </Cascade>
-        </View>
-        {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
-
-        {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
-        {homeCards.map((key, i) => {
-          const node = cards[key];
-          if (!node) return null;
-          return <Cascade key={key} index={1 + i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
-        })}
-        {/* « HOMI » : l'étape du profil affiché, discrète, après les cartes utiles */}
-        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <StoryHomeStrip /> : null}
-        {/* Seule entrée de recherche d'outils de l'accueil (la feuille donne aussi accès à « Tous les outils ») */}
-        <ToolSearchButton testID="home-tool-search" />
-
-        <DemoBanner />
-      </Screen>
-      {childScope && child && !mainLoading ? <CocoonAdd key={child.id} child={child} journey={childScope} /> : null}
-    </View>
+            </Tappable>
+          )}
+          {/* Personnalisation sur place : réordonner, masquer, actions rapides, outils épinglés, rétablir */}
+          <CustomizeButton onPress={() => setEditing(true)} />
+        </ProfileSwipe>
+      )}
+      <DemoBanner />
+    </Screen>
   );
 }

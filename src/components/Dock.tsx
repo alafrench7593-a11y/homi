@@ -1,18 +1,18 @@
 /**
- * Barre d'onglets HOMI (v5 « Lumière corail », 16/11/2026) : Accueil · Santé · Bébé · Famille · Communauté.
+ * Barre d'onglets HOMI (refonte du 17/11/2026) : Aujourd'hui · Moi · [action centrale] · Enfant · Famille.
  * Barre PLEINE LARGEUR posée en bas : fond surface, fine ligne de séparation en haut, aucune capsule flottante, aucun
  * verre, aucune ombre épaisse. Icônes d'une seule famille (Feather, via `Icon`).
  *
  * Libellés ENTIERS (jamais coupés, jamais d'ellipse) : chaque onglet prend la largeur de son libellé mesuré (au moins
- * 44 px), la taille commune descend par quarts de pixel (12 → 10 px) ; « Communauté » tient à 320 et 390 px. Au-delà
- * (texte agrandi + langue longue) : icônes seules, nom accessible = libellé complet (`tabLayout`, testé).
+ * 44 px), la taille commune descend par quarts de pixel (12 → 10 px). Au-delà (texte agrandi + langue longue) : icônes
+ * seules, nom accessible = libellé complet (`tabLayout`, testé).
  *
- * Onglet actif : icône corail sur une pastille teintée + libellé en gras (couleur + graisse + forme). Changer d'onglet
- * ne glisse pas (pairs, pas une hiérarchie) : l'état actif s'affiche directement ; seule la pression a un ressort.
+ * L'onglet « Enfant » s'adapte au foyer (`childTabMode`) : « Enfant », « Grossesse » (grossesse sans enfant), ou
+ * l'écran qui propose d'ajouter un enfant ou une grossesse.
  *
- * Bouton d'action INTÉGRÉ à droite, dans la barre et à la même hauteur de base que les onglets (rectangle aux angles
- * souples, aplat de l'action principale) : « + » ajout rapide par défaut ; un écran peut le remplacer
- * (`useDockAction` : Communauté → Publier, accueil d'un enfant → Ajouter). Il ne chevauche jamais le contenu.
+ * ACTION RAPIDE CENTRALE (nom accessible « Ajouter ») : au centre de la barre, à portée de pouce. Elle ouvre une
+ * feuille du bas avec 4 à 6 actions du profil affiché (`quickActions.ts`), que la personne peut choisir, plus l'entrée
+ * fixe « Tous mes outils ». Un écran peut encore la remplacer (`useDockAction` : Communauté → Publier).
  * Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
  */
 import { useMemo, useState } from 'react';
@@ -24,11 +24,15 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing } from '@/theme/tokens';
 import { usePressScale } from '@/motion';
-import { GlowCard } from './GlowCard';
 import { useScope } from '@/lib/data/hooks-scope';
-import { ACTIVE_ALIAS, dockGeometry, estimateLabelWidth, NAV_TABS, TAB_BAR_H, TAB_LABEL_MAX, tabLayout, type NavTab } from '@/features/hubs/hubMap';
-import { Sheet } from './Overlays';
-import { haptic, Icon, type IconName, Text } from './ui';
+import { useActivePregnancy, useMyMembership, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useUserId } from '@/lib/auth';
+import { useUiStore } from '@/lib/store';
+import { ACTIVE_ALIAS, CHILD_TAB, childTabMode, dockGeometry, dockLayout, estimateLabelWidth, NAV_CENTER_AFTER, NAV_TABS, TAB_BAR_H, TAB_LABEL_MAX, type NavTab } from '@/features/hubs/hubMap';
+import { QUICK_ACTIONS, QUICK_MAX, QUICK_MIN, quickAvailable, quickHref, quickProfile, quickShown, type QuickActionKey, type QuickCtx } from '@/features/quickActions/quickActions';
+import { TodayAddSheet } from '@/features/homeToday/TodayAddSheet';
+import { Sheet, useToast } from './Overlays';
+import { Button, haptic, Icon, type IconName, Text } from './ui';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
@@ -49,7 +53,7 @@ const ICON_TOP = 6;
 /** Icônes seules : icône et pastille centrées verticalement dans la barre. */
 const ICON_TOP_ALONE = (TAB_BAR_H - PILL_H) / 2;
 
-function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPress, onLongPress }: { tab: NavTab; width: number; focused: boolean; label: string; a11y: string; fontSize: number; iconsOnly: boolean; onPress: () => void; onLongPress: () => void }) {
+function TabItem({ tab, icon, width, focused, label, a11y, fontSize, iconsOnly, onPress, onLongPress }: { tab: NavTab; icon: IconName; width: number; focused: boolean; label: string; a11y: string; fontSize: number; iconsOnly: boolean; onPress: () => void; onLongPress: () => void }) {
   const t = useTheme();
   const p = usePressScale({ scale: 0.92, haptic: 'none' });
   return (
@@ -68,7 +72,7 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPres
       <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: iconsOnly ? ICON_TOP_ALONE : ICON_TOP, gap: 2 }, p.style]}>
         <View style={{ width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: focused ? t.material.lines.iconWell : 'transparent' }}
           testID={focused ? 'tab-indicator' : undefined}>
-          <Icon name={tab.icon} size={iconsOnly ? 23 : 21} color={focused ? t.colors.primary : t.colors.textMuted} />
+          <Icon name={icon} size={iconsOnly ? 23 : 21} color={focused ? t.colors.primary : t.colors.textMuted} />
         </View>
         {/* Icônes seules (petit écran + texte agrandi) : libellé non affiché, le nom accessible reste le libellé complet */}
         {iconsOnly ? null : <Text
@@ -84,12 +88,12 @@ function TabItem({ tab, width, focused, label, a11y, fontSize, iconsOnly, onPres
   );
 }
 
-/** Bouton d'action de la barre : « + » (ajout rapide) ou l'action de l'écran affiché (`useDockAction`). */
+/** Bouton d'action central : « Ajouter » (actions rapides du profil) ou l'action de l'écran affiché (`useDockAction`). */
 export function DockActionButton({ route, size = 48, onQuickAdd }: { route: string; size?: number; onQuickAdd?: () => void }) {
   const t = useTheme();
   const custom = useDockActionFor(route);
   const p = usePressScale({ scale: 0.94 });
-  const action: DockAction = custom ?? { icon: 'plus', label: tr('nav.quickAdd'), hint: tr('nav.quickAddHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
+  const action: DockAction = custom ?? { icon: 'plus', label: tr('qa.buttonA11y'), hint: tr('qa.buttonHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
   return (
     <Pressable
       testID={action.testID}
@@ -104,7 +108,7 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
     >
       {/* Rectangle aux angles souples, aplat de l'action principale (prune en clair, corail en sombre), sans dégradé */}
       <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
-        <Icon name={action.icon as IconName} size={22} color={t.tokens.action.text} />
+        <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />
       </Animated.View>
     </Pressable>
   );
@@ -115,18 +119,24 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
+  const { data: kids } = useTrackedChildren();
+  const pregnancy = useActivePregnancy();
+  const childTab = CHILD_TAB[childTabMode({ children: kids?.length ?? 0, pregnancy: !!pregnancy })];
 
   const focusedName = state.routes[state.index]?.name ?? 'index';
   const activeName = ACTIVE_ALIAS[focusedName] ?? focusedName;
   const tabs = NAV_TABS.map((tab) => ({ tab, route: state.routes.find((r) => r.name === tab.name) })).filter((x): x is { tab: NavTab; route: (typeof state.routes)[number] } => !!x.route);
-  const labels = tabs.map((x) => tr(x.tab.label));
+  // L'onglet « Enfant » porte le libellé de la situation du foyer (Enfant / Grossesse)
+  const labels = tabs.map((x) => tr(x.tab.name === 'baby' ? childTab.label : x.tab.label));
+  const icons = tabs.map((x) => (x.tab.name === 'baby' ? childTab.icon : x.tab.icon));
 
   const g = dockGeometry(width);
   // Libellés jamais coupés : largeur réelle mesurée (police chargée, langue active, taille de texte du téléphone),
   // estimation prudente avant la première mesure
   const [natural, setNatural] = useState<Record<string, number>>({});
   const widthsKey = labels.map((l) => natural[l] ?? estimateLabelWidth(l)).join('|');
-  const layout = useMemo(() => tabLayout(g.inner, widthsKey.split('|').map(Number)), [g.inner, widthsKey]);
+  // Deux moitiés égales de part et d'autre du bouton : il reste au milieu de l'écran quel que soit le libellé
+  const layout = useMemo(() => dockLayout(g.inner, widthsKey.split('|').map(Number)), [g.inner, widthsKey]);
   const bottom = Math.max(insets.bottom, 4);
   // Clavier ouvert : la barre s'efface (elle recouvrait le champ actif sur le web et en fenêtre réduite) ; elle
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
@@ -140,6 +150,21 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
       navigation.navigate(route.name);
     }
   };
+  const item = ({ tab, route }: (typeof tabs)[number], i: number) => (
+    <TabItem
+      key={route.key}
+      tab={tab}
+      icon={icons[i]}
+      width={layout.widths[i]}
+      label={labels[i]}
+      a11y={tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i]}
+      focused={activeName === tab.name}
+      fontSize={layout.fontSize}
+      iconsOnly={layout.iconsOnly}
+      onPress={() => go(route)}
+      onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
+    />
+  );
 
   return (
     <>
@@ -156,37 +181,117 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
             ))}
           </View>
         </View>
-        <View testID="tab-bar-glass" pointerEvents="box-none" style={{ width: g.row, height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad, gap: g.gap }}>
-          <View
-            accessibilityRole="tablist"
-            accessibilityLabel={tr('nav.tablist')}
-            style={{ height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', width: g.inner }}
-          >
-            {tabs.map(({ tab, route }, i) => (
-              <TabItem
-                key={route.key}
-                tab={tab}
-                width={layout.widths[i]}
-                label={labels[i]}
-                a11y={descriptors[route.key]?.options.title ?? labels[i]}
-                focused={activeName === tab.name}
-                fontSize={layout.fontSize}
-                iconsOnly={layout.iconsOnly}
-                onPress={() => go(route)}
-                onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
-              />
-            ))}
+        {/* Onglets de part et d'autre de l'action centrale : Aujourd'hui · Moi · [Ajouter] · Enfant · Famille */}
+        <View testID="tab-bar-glass" accessibilityRole="tablist" accessibilityLabel={tr('nav.tablist')}
+          style={{ width: g.row, height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad }}>
+          {tabs.slice(0, NAV_CENTER_AFTER).map((x, i) => item(x, i))}
+          <View style={{ marginHorizontal: g.gap }}>
+            <DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />
           </View>
-          <DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />
+          {tabs.slice(NAV_CENTER_AFTER).map((x, i) => item(x, i + NAV_CENTER_AFTER))}
         </View>
       </View>
-      <QuickAddSheet visible={open} onClose={() => setOpen(false)} />
+      <QuickActionSheet visible={open} onClose={() => setOpen(false)} />
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------- action rapide centrale
+/** Contexte de l'action rapide pour le profil affiché. */
+export function useQuickCtx(): { ctx: QuickCtx; childId: string | null; childName: string | null; pregnancy: boolean } {
+  const scope = useScope();
+  const { data: profile } = useProfile();
+  return {
+    ctx: { profile: quickProfile(scope.scope), postpartum: scope.postpartum, hideWeight: !!profile?.hide_weight_module },
+    childId: scope.childId ?? null, childName: scope.child?.first_name ?? null, pregnancy: scope.scope === 'pregnancy',
+  };
+}
+
+/** Choix des actions rapides du profil affiché (cases à cocher, 4 à 6) : feuille centrale et mode « Personnaliser ». */
+export function QuickActionPicker({ onDone }: { onDone: () => void }) {
+  const t = useTheme();
+  const toast = useToast();
+  const { ctx } = useQuickCtx();
+  const chosen = useUiStore((s) => s.quickActionFavorites[ctx.profile]);
+  const setChosen = useUiStore((s) => s.setQuickActionFavorites);
+  const [draft, setDraft] = useState<QuickActionKey[]>(() => quickShown(ctx, chosen));
+  const available = quickAvailable(ctx);
+  return (
+    <View style={{ gap: spacing.xs }} testID="qa-picker">
+      <Text variant="small" muted>{tr('qa.pickHint', { min: QUICK_MIN, max: QUICK_MAX })}</Text>
+      {available.map((k) => {
+        const on = draft.includes(k);
+        return (
+          <Tappable key={k} accessibilityRole="checkbox" accessibilityState={{ checked: on }} aria-checked={on} testID={`qa-pick-${k}`} accessibilityLabel={tr(QUICK_ACTIONS[k].label)}
+            onPress={() => { haptic('selection'); if (on) setDraft(draft.filter((x) => x !== k)); else if (draft.length >= QUICK_MAX) toast(tr('qa.max', { max: QUICK_MAX }), 'info'); else setDraft([...draft, k]); }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
+            <Icon name={on ? 'check-square' : 'square'} size={20} color={on ? t.colors.primary : t.colors.textMuted} />
+            <Icon name={QUICK_ACTIONS[k].icon} size={20} color={t.colors.text} />
+            <Text weight="medium" style={{ flex: 1 }}>{tr(QUICK_ACTIONS[k].label)}</Text>
+          </Tappable>
+        );
+      })}
+      <Button label={tr('common.save')} full testID="qa-pick-save" onPress={() => { if (draft.length < QUICK_MIN) { toast(tr('qa.min', { min: QUICK_MIN }), 'info'); return; } setChosen(ctx.profile, draft); onDone(); }} />
+      <Button label={tr('qa.pickReset')} variant="ghost" testID="qa-pick-reset" onPress={() => { setChosen(ctx.profile, null); onDone(); }} />
+    </View>
+  );
+}
+
+function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+  const t = useTheme();
+  const { ctx, childId, childName, pregnancy } = useQuickCtx();
+  const chosen = useUiStore((s) => s.quickActionFavorites[ctx.profile]);
+  const me = useUserId();
+  const membership = useMyMembership();
+  const canEdit = !!membership && (membership.role === 'owner' || (membership.can_edit ?? []).includes('lists'));
+  const [picking, setPicking] = useState(false);
+  const [task, setTask] = useState(false);
+  const keys = quickShown(ctx, chosen);
+  const close = () => { setPicking(false); onClose(); };
+  const after = (fn: () => void) => { close(); setTimeout(fn, 180); };
+  const run = (k: QuickActionKey) => {
+    haptic('light');
+    const href = quickHref(k, { childId, pregnancy });
+    after(href ? () => router.push(href as never) : () => setTask(true));
+  };
+  return (
+    <>
+      <Sheet visible={visible} onClose={close} title={picking ? tr('qa.pickTitle') : childName ? tr('dock.forChild', { name: childName }) : tr('qa.title')}>
+        {picking ? <QuickActionPicker onDone={() => setPicking(false)} /> : (
+          <View testID="quick-sheet" style={{ gap: spacing.sm }}>
+            {/* 4 à 6 actions du profil : grandes cibles sur deux colonnes, pictogramme AU-DESSUS du libellé explicite
+                (à 320 pt, un libellé à côté de l'icône était coupé au milieu des mots) */}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+              {keys.map((k) => (
+                <Tappable key={k} accessibilityRole="button" accessibilityLabel={tr(QUICK_ACTIONS[k].label)} testID={`qa-${k}`} onPress={() => run(k)}
+                  style={({ pressed }) => ({ flexBasis: '47%', flexGrow: 1, minHeight: 92, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, paddingHorizontal: spacing.xs, paddingVertical: spacing.sm,
+                    backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, alignItems: 'center', justifyContent: 'center', gap: 6 })}>
+                  <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
+                    <Icon name={QUICK_ACTIONS[k].icon} size={20} color={t.colors.primary} />
+                  </View>
+                  <Text variant="small" weight="bold" center>{tr(QUICK_ACTIONS[k].label)}</Text>
+                </Tappable>
+              ))}
+            </View>
+            {/* Entrée fixe : tous les outils (recherche, favoris), quel que soit le profil */}
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('qa.tools')} testID="qa-tools" onPress={() => { haptic('light'); after(() => router.push('/tools')); }}
+              style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: t.tokens.border.active, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+              <Icon name="grid" color={t.colors.primary} />
+              <Text weight="bold" style={{ flex: 1 }}>{tr('qa.tools')}</Text>
+              <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+            </Tappable>
+            <Button label={tr('qa.customize')} icon="sliders" variant="ghost" size="sm" testID="qa-customize" onPress={() => { haptic('selection'); setPicking(true); }} />
+          </View>
+        )}
+      </Sheet>
+      {/* « Créer une tâche » : disponible depuis tous les onglets (avant : seulement sur l'accueil) */}
+      <TodayAddSheet visible={task} onClose={() => setTask(false)} me={me} canEdit={canEdit} />
     </>
   );
 }
 
 /**
- * Actions d'ajout rapide (ancien bouton « + ») : TOUJOURS pour le profil affiché.
+ * Grille d'ajouts du profil affiché (écran « Outils ») : TOUJOURS pour le profil affiché.
  * Biberon, tétée, couche, minuteur : uniquement quand un bébé né est affiché ; jamais pour une grossesse.
  */
 function useQuickAdd(onBefore?: () => void) {
@@ -201,7 +306,7 @@ function useQuickAdd(onBefore?: () => void) {
     { icon: 'coffee', label: tr('dock.q.bottle'), onPress: track('bottle'), show: baby },
     { icon: 'droplet', label: tr('dock.q.breastfeed'), onPress: track('breastfeed'), show: baby },
     { icon: 'wind', label: tr('dock.q.diaper'), onPress: track('diaper'), show: baby },
-    { icon: 'moon', label: tr('dock.q.sleep'), onPress: go(() => router.push(`/night?child=${childId}`)), show: kid },
+    { icon: 'moon', label: tr('dock.q.sleep'), onPress: track('sleep'), show: kid },
     { icon: 'feather', label: tr('dock.q.meal'), onPress: track('meal'), show: kid },
     { icon: 'thermometer', label: tr('dock.q.health'), onPress: track('observation'), show: kid },
     { icon: 'clock', label: tr('dock.q.timer'), onPress: go(() => router.push(`/bottle/${childId}`)), show: baby },
@@ -247,26 +352,5 @@ export function QuickAddGrid({ compact, onBefore }: { compact?: boolean; onBefor
         ))}
       </View>
     </View>
-  );
-}
-
-function QuickAddSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const t = useTheme();
-  const { child, go } = useQuickAdd(onClose);
-  return (
-    <Sheet visible={visible} onClose={onClose} title={child ? tr('dock.forChild', { name: child.first_name }) : tr('dock.add')}>
-      {/* Action importante de la feuille : carte lumineuse (filet dégradé + halo), seule mise en avant de l'écran */}
-      <GlowCard active emphasis="action" onPress={go(() => router.push('/assistant/chat'))} accessibilityLabel={`${tr('dock.ask')}, ${tr('dock.askSub')}`} testID="quick-ask">
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          <Icon name="message-circle" color={t.colors.primary} />
-          <View style={{ flex: 1 }}>
-            <Text weight="bold">{tr('dock.ask')}</Text>
-            <Text variant="small" muted>{tr('dock.askSub')}</Text>
-          </View>
-          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-        </View>
-      </GlowCard>
-      <QuickAddGrid onBefore={onClose} />
-    </Sheet>
   );
 }

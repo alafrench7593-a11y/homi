@@ -12,12 +12,16 @@ import { useRespondMission } from '@/lib/data/hooks-missions';
 import { useCustodyExceptions, useCustodyPlans } from '@/lib/data/hooks-tools6';
 import { todayISO } from '@/lib/domain/dates';
 import { t as tr } from '@/i18n';
-import { custodyToday, emphasisId, todayAgenda, todayShifts, todayTasks, type TaskLike, type TodayModel, type TodayTask } from './todayModel';
+import { appointmentForProfile, custodyForProfile, custodyToday, emphasisId, eventForProfile, shiftForProfile, taskForProfile, todayAgenda, todayShifts, todayTasks, type TaskLike, type TodayModel, type TodayProfile, type TodayTask } from './todayModel';
 import type { RespondResultStatus } from '@/lib/data/hooks-missions';
 
 export interface TodayPerson { id: string | null; name: string; initial: string; avatarPath: string | null; isMe: boolean }
 
-export function useHomeToday(now: Date = new Date()) {
+const ALL: TodayProfile = { kind: 'all' };
+const profileKey = (p: TodayProfile) => (p.kind === 'child' ? `c:${p.childId}` : p.kind === 'pregnancy' ? `p:${p.pregnancyId}` : p.kind === 'me' ? `m:${p.userId ?? ''}` : 'all');
+
+/** `profile` : la journée est celle du profil affiché (agenda, relais, garde ; tâches du foyer). Défaut : tout le foyer. */
+export function useHomeToday(now: Date = new Date(), profile: TodayProfile = ALL) {
   const me = useUserId();
   const membership = useMyMembership();
   const canEdit = !!membership && (membership.role === 'owner' || (membership.can_edit ?? []).includes('lists'));
@@ -35,12 +39,13 @@ export function useHomeToday(now: Date = new Date()) {
   const model = useMemo<TodayModel>(() => {
     const at = new Date(minute * 60_000);
     return {
-      tasks: todayTasks((tasksQ.data ?? []) as TaskLike[], me, at, { canEdit }),
-      agenda: todayAgenda({ events: eventsQ.data ?? [], appointments: apptQ.data ?? [] }, at),
-      shifts: todayShifts(shiftsQ.data ?? [], at),
-      custody: plan ? custodyToday([plan], exQ.data ?? [], at) : [],
+      tasks: todayTasks((tasksQ.data ?? []) as TaskLike[], me, at, { canEdit }).filter((x) => taskForProfile(x, profile)),
+      agenda: todayAgenda({ events: (eventsQ.data ?? []).filter((e) => eventForProfile(e, profile)), appointments: (apptQ.data ?? []).filter((a) => appointmentForProfile(a, profile)) }, at),
+      shifts: todayShifts(shiftsQ.data ?? [], at).filter((x) => shiftForProfile(x, profile, me)),
+      custody: (plan ? custodyToday([plan], exQ.data ?? [], at) : []).filter((c) => custodyForProfile(c, profile)),
     };
-  }, [tasksQ.data, eventsQ.data, apptQ.data, shiftsQ.data, plan, exQ.data, me, canEdit, minute]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasksQ.data, eventsQ.data, apptQ.data, shiftsQ.data, plan, exQ.data, me, canEdit, minute, profileKey(profile)]);
 
   /**
    * Prénom et photo de la personne (household_member_names : prénom affiché + avatar des membres actifs, rien
