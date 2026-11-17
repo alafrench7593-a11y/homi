@@ -20,7 +20,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { ScreenToolContext } from '@/lib/screenTool';
 import { ToolArticles } from '@/features/ToolArticles';
-import { TOOL_TOPICS } from '@/lib/domain/toolArticles';
+import { toolTopic } from '@/lib/domain/toolArticles';
 import { KeyboardScopeContext, useKeyboardScopeFor } from '@/components/keyboard';
 
 // ------------------------------------------------------------------ squelettes
@@ -168,7 +168,7 @@ function VirtualListInner<T>({ renderItem, ListFooterComponent, onScroll, ...pro
   // Liste d'un outil : ses articles « Pour aller plus loin » viennent après le pied de liste
   const toolId = React.useContext(ScreenToolContext);
   const Orig = ListFooterComponent;
-  const footer = toolId && TOOL_TOPICS[toolId] ? (
+  const footer = toolId && toolTopic(toolId) ? (
     <View>
       {Orig ? (React.isValidElement(Orig) ? Orig : React.createElement(Orig as React.ComponentType)) : null}
       <ToolArticles toolId={toolId} />

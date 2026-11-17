@@ -1,12 +1,13 @@
 /**
  * Liens des catalogues d'outils (hubs Santé / Bébé / Famille, accueil, « Tous mes outils », recherche) : chaque
  * `href` correspond à une route qui existe (src/lib/routes.generated.ts, généré par scripts/gen-routes.js).
- * Garde-fou v5 : /sleep, /child, /guide et /assistant n'ont PAS d'écran d'index (routes dynamiques) — un lien sans
- * paramètre vers ces sections ouvrirait « Page introuvable ».
+ * Garde-fou v5 : /sleep, /child et /assistant n'ont PAS d'écran d'index (routes dynamiques) — un lien sans
+ * paramètre vers ces sections ouvrirait « Page introuvable ». /guide en a un depuis le centre d'outils (17/11/2026) :
+ * c'est la route de l'outil unique « Guides pratiques ».
  */
 import { setLocale } from '@/i18n';
-import { toolCatalog } from '@/lib/domain/toolCatalog';
-import { TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
+import { accountEntries, toolCatalog } from '@/lib/domain/toolCatalog';
+import { TOOL_CATEGORIES, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
 import { APP_ROUTES } from '@/lib/routes.generated';
 import { HUB_ENTRIES, HUB_KEYS } from '@/features/hubs/hubMap';
 
@@ -34,13 +35,23 @@ describe('liens des outils → routes existantes', () => {
     expect(routeExists('/cette-page-nexiste-pas')).toBe(false);
   });
 
-  it('/sleep, /child, /guide, /assistant : pas d’index (un lien sans paramètre serait cassé)', () => {
-    for (const p of ['/sleep', '/child', '/guide', '/assistant']) expect(routeExists(p)).toBe(false);
+  it('/sleep, /child, /assistant : pas d’index (un lien sans paramètre serait cassé) ; /guide est l’index des guides', () => {
+    for (const p of ['/sleep', '/child', '/assistant']) expect(routeExists(p)).toBe(false);
+    expect(routeExists('/guide')).toBe(true);
+  });
+
+  it('centre d’outils : /tools et une route par catégorie (dont « Mon compte et réglages »)', () => {
+    expect(routeExists('/tools')).toBe(true);
+    for (const c of [...TOOL_CATEGORIES, 'account']) expect(routeExists(`/tools/${c}`)).toBe(true);
   });
 
   it.each(CTXS.map((c, i) => [`${c.scope}#${i}`, c]))('« %s » : chaque outil du catalogue ouvre une route existante', (_n, ctx) => {
-    const bad = toolCatalog(ctx as ScopeCtx).filter((t) => !routeExists(t.href)).map((t) => `${t.key} → ${t.href}`);
+    const entries = [...toolCatalog(ctx as ScopeCtx), ...accountEntries(ctx as ScopeCtx)];
+    const bad = entries.filter((t) => !routeExists(t.href)).map((t) => `${t.key} → ${t.href}`);
     expect(bad).toEqual([]);
+    // sous-accès (onglets, filtres, guides) : mêmes exigences
+    const badSubs = entries.flatMap((t) => t.subs).filter((x) => !routeExists(x.href)).map((x) => `${x.id} → ${x.href}`);
+    expect(badSubs).toEqual([]);
   });
 
   it('chaque outil du registre central, quel que soit le profil, a un lien valide (ou aucun lien)', () => {
@@ -48,6 +59,10 @@ describe('liens des outils → routes existantes', () => {
     for (const def of TOOLS) for (const ctx of CTXS) {
       const href = def.href(ctx);
       if (href && !routeExists(href)) bad.push(`${def.id} → ${href}`);
+      for (const sub of def.subs ?? []) {
+        const h = sub.href(ctx);
+        if (h && !routeExists(h)) bad.push(`${def.id}.${sub.id} → ${h}`);
+      }
     }
     expect(bad).toEqual([]);
   });

@@ -11,7 +11,7 @@
 import type { IconName } from '@/components/ui';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { HUB_ROUTE, hubOf } from '@/features/hubs/hubMap';
-import { SCOPES, TOOL_BY_ID, TOOLS, type Scope, type ScopeCtx, type ToolDef } from '@/lib/journeys/tools';
+import { REAL_TOOLS, SCOPES, TOOL_BY_ID, type Scope, type ScopeCtx, type ToolDef } from '@/lib/journeys/tools';
 import { CAREGIVER_ROUTES, gateFor, isFreeRoute } from '@/lib/premium/access';
 import { isPaidTool } from '@/lib/premium/offers';
 
@@ -29,7 +29,7 @@ export const CHAPTERS: Chapter[] = [
   { key: 'cycle', icon: 'refresh-cw', featured: ['cycle_home', 'cycle_symptoms', 'ttc_temperature'] },
   { key: 'pregnancy', icon: 'heart', featured: ['preg_evolution', 'preg_moves', 'preg_lists'] },
   { key: 'baby', icon: 'droplet', featured: ['baby_bottle', 'kid_sleep', 'baby_breastfeed'] },
-  { key: 'child', icon: 'smile', featured: ['kid_growth', 'kid_mood', 'kid_routines'] },
+  { key: 'child', icon: 'smile', featured: ['kid_profile', 'kid_mood', 'kid_routines'] },
   { key: 'health', icon: 'activity', featured: ['appointments', 'mood', 'kid_health'] },
   { key: 'family', icon: 'home', featured: ['family_missions', 'family_stocks', 'family_shopping', 'family_calendar'] },
   { key: 'community', icon: 'users', featured: ['community', 'nearby', 'solo_parent'] },
@@ -69,17 +69,13 @@ const read: DemoSpec = { kind: 'read' };
 /** Chapitre et démo de CHAQUE outil du registre central (garde-fou : test de couverture). */
 export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }> = {
   // ---------------------------------------------------------------- cycle (éviter, projet bébé, suivre)
-  avoid_cycle: { chapter: 'cycle', demo: custom('cycle') },
   avoid_contraception: { chapter: 'cycle', demo: { kind: 'remind', time: '21:00' } },
   avoid_methods: { chapter: 'cycle', demo: read },
   avoid_emergency: { chapter: 'cycle', demo: { kind: 'help' } },
-  avoid_fertile: { chapter: 'cycle', demo: { kind: 'plan', set: 'cycle', time: '08:00', inDays: 3 } },
   cycle_symptoms: { chapter: 'cycle', demo: { kind: 'journal', set: 'body' } },
   avoid_reminders: { chapter: 'cycle', demo: { kind: 'remind', time: '21:00' } },
   avoid_consult: { chapter: 'cycle', demo: { kind: 'tasks', set: 'consult' } },
   ttc_cycle: { chapter: 'cycle', demo: custom('cycle') },
-  ttc_calendar: { chapter: 'cycle', demo: { kind: 'plan', set: 'cycle', time: '08:00', inDays: 2 } },
-  ttc_periods: { chapter: 'cycle', demo: custom('cycle') },
   ttc_tests: { chapter: 'cycle', demo: { kind: 'journal', set: 'test' } },
   ttc_mucus: { chapter: 'cycle', demo: { kind: 'journal', set: 'mucus' } },
   ttc_temperature: { chapter: 'cycle', demo: { kind: 'measure', series: [36.4, 36.5, 36.4, 36.6], next: 36.8, unit: 'degC', decimals: 1 } },
@@ -88,13 +84,14 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   ttc_understand: { chapter: 'cycle', demo: read },
   ttc_consult: { chapter: 'cycle', demo: { kind: 'tasks', set: 'consult' } },
   ttc_reminders: { chapter: 'cycle', demo: { kind: 'remind', time: '07:30' } },
-  ttc_articles: { chapter: 'cycle', demo: read },
   cycle_home: { chapter: 'cycle', demo: custom('cycle') },
   cycle_calendar: { chapter: 'cycle', demo: { kind: 'plan', set: 'cycle', time: '08:00', inDays: 4 } },
+  cycle_pain: { chapter: 'cycle', demo: { kind: 'journal', set: 'body' } },
+  cycle_discharge: { chapter: 'cycle', demo: { kind: 'journal', set: 'body' } },
+  cycle_bleeding: { chapter: 'cycle', demo: { kind: 'journal', set: 'body' } },
   cycle_journal: { chapter: 'cycle', demo: { kind: 'journal', set: 'body' } },
   cycle_stats: { chapter: 'cycle', demo: { kind: 'measure', series: [29, 27, 30, 28], next: 28, unit: 'days' } },
   cycle_guides: { chapter: 'cycle', demo: read },
-  guide_pma: { chapter: 'cycle', demo: read },
   pma_tracker: { chapter: 'cycle', demo: { kind: 'plan', set: 'pma', time: '07:45', inDays: 2 } },
   contraception_journal: { chapter: 'cycle', demo: { kind: 'journal', set: 'pill' } },
   cycle_kit: { chapter: 'cycle', demo: { kind: 'tasks', set: 'kit' } },
@@ -106,9 +103,6 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   preg_eat: { chapter: 'pregnancy', demo: { kind: 'scan', set: 'food', verdict: 'watch' } },
   preg_feel: { chapter: 'pregnancy', demo: { kind: 'journal', set: 'body' } },
   preg_calendar: { chapter: 'pregnancy', demo: { kind: 'plan', set: 'pregnancy', time: '10:30', inDays: 5 } },
-  preg_birth_prep: { chapter: 'pregnancy', demo: read },
-  preg_articles: { chapter: 'pregnancy', demo: { kind: 'read', video: true } },
-  preg_intimacy: { chapter: 'pregnancy', demo: read },
   preg_names: { chapter: 'pregnancy', demo: { kind: 'journal', set: 'names' } },
   preg_lists: { chapter: 'pregnancy', demo: { kind: 'tasks', set: 'birthbag' } },
   preg_edit: { chapter: 'pregnancy', demo: { kind: 'setting', set: 'date' } },
@@ -120,11 +114,8 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   pp_mental: { chapter: 'pregnancy', demo: read },
   pp_support: { chapter: 'pregnancy', demo: { kind: 'help' } },
   pp_partner: { chapter: 'pregnancy', demo: { kind: 'tasks', set: 'home' } },
-  guide_loss: { chapter: 'pregnancy', demo: read },
 
   // ---------------------------------------------------------------- bébé
-  pp_feeding: { chapter: 'baby', demo: { kind: 'timer', minutes: 14 } },
-  pp_bottle: { chapter: 'baby', demo: custom('bottle') },
   baby_breastfeed: { chapter: 'baby', demo: { kind: 'timer', minutes: 14 } },
   baby_bottle_timer: { chapter: 'baby', demo: custom('bottle') },
   baby_bottle: { chapter: 'baby', demo: custom('bottle') },
@@ -134,16 +125,19 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   baby_daily: { chapter: 'baby', demo: { kind: 'journal', set: 'day' } },
   baby_night_help: { chapter: 'baby', demo: { kind: 'ask', set: 'night' } },
   kid_sleep: { chapter: 'baby', demo: custom('sleep') },
+  sleep_help: { chapter: 'baby', demo: { kind: 'ask', set: 'night' } },
   kid_sleep_rhythm: { chapter: 'baby', demo: { kind: 'plan', set: 'nap', time: '13:15', inDays: 0 } },
   baby_foods: { chapter: 'baby', demo: { kind: 'journal', set: 'food' } },
-  guide_neonat: { chapter: 'baby', demo: read },
   family_nights: { chapter: 'baby', demo: { kind: 'plan', set: 'night', time: '22:00', inDays: 0 } },
 
   // ---------------------------------------------------------------- enfant
-  kid_profile: { chapter: 'child', demo: read },
-  kid_growth: { chapter: 'child', demo: { kind: 'measure', series: [68, 71, 73.5, 75], next: 76.5, unit: 'cm', decimals: 1 } },
+  kid_profile: { chapter: 'child', demo: { kind: 'measure', series: [68, 71, 73.5, 75], next: 76.5, unit: 'cm', decimals: 1 } },
+  kid_album: { chapter: 'child', demo: { kind: 'journal', set: 'note' } },
+  kid_school: { chapter: 'child', demo: { kind: 'journal', set: 'note' } },
+  journal: { chapter: 'child', demo: { kind: 'journal', set: 'day' } },
+  meal_menu: { chapter: 'child', demo: { kind: 'plan', set: 'meal', time: '12:30', inDays: 2 } },
+  meal_pantry: { chapter: 'child', demo: { kind: 'journal', set: 'food' } },
   kid_grow: { chapter: 'child', demo: { kind: 'journal', set: 'note' } },
-  kid_milestones: { chapter: 'child', demo: { kind: 'journal', set: 'note' } },
   kid_teeth: { chapter: 'child', demo: { kind: 'entry', from: 5, to: 6, unit: 'teeth' } },
   kid_mood: { chapter: 'child', demo: custom('mood') },
   kid_routines: { chapter: 'child', demo: { kind: 'tasks', set: 'routine' } },
@@ -151,14 +145,6 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   meal_rankings: { chapter: 'child', demo: { kind: 'journal', set: 'food' } },
   kid_products: { chapter: 'child', demo: { kind: 'scan', set: 'product', verdict: 'ok' } },
   summary: { chapter: 'child', demo: read },
-  guide_hygiene: { chapter: 'child', demo: read },
-  guide_sport: { chapter: 'child', demo: read },
-  guide_activities: { chapter: 'child', demo: read },
-  guide_kidsleep: { chapter: 'child', demo: read },
-  guide_kidfood: { chapter: 'child', demo: read },
-  guide_behaviour: { chapter: 'child', demo: read },
-  guide_school: { chapter: 'child', demo: read },
-  guide_toddler: { chapter: 'child', demo: read },
 
   // ---------------------------------------------------------------- santé et bien-être
   appointments: { chapter: 'health', demo: { kind: 'plan', set: 'appointment', time: '09:30', inDays: 3 } },
@@ -166,12 +152,12 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   emergency: { chapter: 'health', demo: { kind: 'help' } },
   kid_vaccines: { chapter: 'health', demo: { kind: 'plan', set: 'vaccine', time: '11:00', inDays: 12 } },
   kid_health: { chapter: 'health', demo: { kind: 'measure', series: [37.2, 38.4, 38.1, 37.7], next: 37.3, unit: 'degC', decimals: 1 } },
-  kid_needs: { chapter: 'health', demo: { kind: 'tasks', set: 'care' } },
   kid_treatments: { chapter: 'health', demo: { kind: 'remind', time: '08:00' } },
   kid_card: { chapter: 'health', demo: read },
   kid_steps: { chapter: 'health', demo: { kind: 'tasks', set: 'papers' } },
-  guide_illnesses: { chapter: 'health', demo: read },
-  guide_firstaid: { chapter: 'health', demo: read },
+  health_book: { chapter: 'health', demo: { kind: 'journal', set: 'doc' } },
+  medications: { chapter: 'health', demo: { kind: 'remind', time: '08:00' } },
+  me_diary: { chapter: 'health', demo: { kind: 'journal', set: 'mood' } },
   consult_questions: { chapter: 'health', demo: { kind: 'tasks', set: 'consult' } },
   mood: { chapter: 'health', demo: custom('mood') },
   sleep: { chapter: 'health', demo: { kind: 'measure', series: [5.5, 6, 4.5, 6.5], next: 7, unit: 'h', decimals: 1 } },
@@ -179,13 +165,11 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
 
   // ---------------------------------------------------------------- organisation familiale
   family_missions: { chapter: 'family', demo: custom('missions') },
-  family_responsibilities: { chapter: 'family', demo: { kind: 'tasks', set: 'domains' } },
   family_shopping: { chapter: 'family', demo: custom('shopping') },
   family_stocks: { chapter: 'family', demo: custom('stocks') },
   family_tasks: { chapter: 'family', demo: { kind: 'tasks', set: 'home' } },
   family_routines: { chapter: 'family', demo: { kind: 'tasks', set: 'routine' } },
   family_history: { chapter: 'family', demo: { kind: 'tasks', set: 'home' } },
-  family_summary: { chapter: 'family', demo: read },
   family_calendar: { chapter: 'family', demo: { kind: 'plan', set: 'family', time: '10:00', inDays: 2 } },
   family_metime: { chapter: 'family', demo: { kind: 'plan', set: 'metime', time: '18:30', inDays: 1 } },
   family_difficult: { chapter: 'family', demo: { kind: 'tasks', set: 'self' } },
@@ -201,13 +185,11 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   couple_week: { chapter: 'family', demo: { kind: 'journal', set: 'couple' } },
   custody: { chapter: 'family', demo: { kind: 'plan', set: 'custody', time: '18:00', inDays: 4 } },
   family_papers: { chapter: 'family', demo: { kind: 'tasks', set: 'papers' } },
-  guide_couple: { chapter: 'family', demo: read },
 
   // ---------------------------------------------------------------- communauté
   community: { chapter: 'community', demo: { kind: 'ask', set: 'community' } },
   nearby: { chapter: 'community', demo: read },
   solo_parent: { chapter: 'community', demo: read },
-  guide_work: { chapter: 'community', demo: read },
 
   // ---------------------------------------------------------------- autres espaces : scanner, assistant, lectures, rappels, réglages
   scan_product: { chapter: 'more', demo: custom('scanner') },
@@ -220,8 +202,8 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   local_ai: { chapter: 'more', demo: { kind: 'ask', set: 'articles' } },
   library: { chapter: 'more', demo: read },
   sources: { chapter: 'more', demo: read },
-  video_tutos: { chapter: 'more', demo: { kind: 'read', video: true } },
-  official_videos: { chapter: 'more', demo: { kind: 'read', video: true } },
+  guides: { chapter: 'more', demo: read },
+  videos: { chapter: 'more', demo: { kind: 'read', video: true } },
   reminders: { chapter: 'more', demo: { kind: 'remind', time: '20:00' } },
   notifications: { chapter: 'more', demo: { kind: 'remind', time: '20:00' } },
   home_settings: { chapter: 'more', demo: { kind: 'setting' } },
@@ -239,9 +221,9 @@ export interface DiscoverTool {
   urgent: boolean;
 }
 
-/** Tous les outils du registre, rangés par chapitre (ordre des chapitres, puis ordre du registre). */
+/** Tous les OUTILS du registre (les entrées « Mon compte et réglages » n'en sont pas), rangés par chapitre puis dans l'ordre du registre. */
 export const DISCOVER_TOOLS: DiscoverTool[] = CHAPTER_KEYS.flatMap((ch) =>
-  TOOLS.filter((d) => TOOL_DEMOS[d.id]?.chapter === ch).map((d) => ({ key: d.id, theme: d.theme, icon: d.icon, chapter: ch, demo: TOOL_DEMOS[d.id].demo, urgent: !!d.urgent })),
+  REAL_TOOLS.filter((d) => TOOL_DEMOS[d.id]?.chapter === ch).map((d) => ({ key: d.id, theme: d.theme, icon: d.icon, chapter: ch, demo: TOOL_DEMOS[d.id].demo, urgent: !!d.urgent })),
 );
 export const DISCOVER_BY_KEY = Object.fromEntries(DISCOVER_TOOLS.map((x) => [x.key, x])) as Record<string, DiscoverTool>;
 export const toolsOfChapter = (ch: ChapterKey) => DISCOVER_TOOLS.filter((x) => x.chapter === ch);

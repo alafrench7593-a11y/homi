@@ -2,7 +2,8 @@
  * Recherche universelle des outils (HOMI) : un champ (rectangle aux angles souples, v5) en haut de l'Accueil et des onglets hub ouvre une feuille
  * qui cherche dans TOUS les outils (profil affiché + autres profils : chaque enfant, grossesse, moi, famille).
  * Champ vide : favoris puis récents. Un outil d'un autre profil sélectionne ce profil avant de s'ouvrir.
- * Réutilise `searchTools` et `favoriteTools` du catalogue (aucune liste parallèle).
+ * Recherche par besoin (`searchCatalog`, index local) : si rien ne correspond vraiment, la feuille le dit et propose
+ * les catégories — jamais de résultat au hasard.
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -15,17 +16,16 @@ import { Button, Field, haptic, Icon, Text } from '@/components/ui';
 import { useActiveSubject } from '@/lib/data/hooks';
 import { useOtherProfileTools } from '@/lib/data/hooks-alltools';
 import { useScope } from '@/lib/data/hooks-scope';
-import { favoriteTools, searchTools, THEME_TITLE, toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { categoryTitle, favoriteTools, toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { searchCatalog } from '@/lib/domain/toolSearch';
+import { CategoryList } from '@/features/toolHub/CategoryList';
 import type { ActiveSubject } from '@/lib/store';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
-import { t as tr, type TKey } from '@/i18n';
-import { hubOf } from './hubMap';
+import { t as tr } from '@/i18n';
 import { useRecentTools } from './recentTools';
 
-const HUB_LABEL: Record<ReturnType<typeof hubOf>, TKey> = { health: 'nav.tab.health', baby: 'nav.tab.baby', family: 'nav.tab.family' };
-const MAX_RESULTS = 40;
 
 export interface ToolEntry { tool: CatalogTool; subject?: ActiveSubject; profile?: string }
 
@@ -87,9 +87,11 @@ export function ToolSearchSheet({ visible, onClose }: { visible: boolean; onClos
 
   const byId = useMemo(() => { const m = new Map<string, ToolEntry>(); for (const e of entries) if (!m.has(e.tool.id)) m.set(e.tool.id, e); return m; }, [entries]);
   const allTools = useMemo(() => [...byId.values()].map((e) => e.tool), [byId]);
-  const results = useMemo(() => (q.trim() ? searchTools(allTools, q).slice(0, MAX_RESULTS).map((x) => byId.get(x.id)!) : []), [q, allTools, byId]);
-  const favs = useMemo(() => favoriteTools(allTools, favIds).map((x) => byId.get(x.id)!), [allTools, favIds, byId]);
-  const recents = useMemo(() => favoriteTools(allTools, recentIds).map((x) => byId.get(x.id)!), [allTools, recentIds, byId]);
+  // un sous-accès en favori (guide, onglet) garde le profil de son outil
+  const entryOf = React.useCallback((x: CatalogTool): ToolEntry => byId.get(x.id) ?? { ...(x.parent ? byId.get(x.parent) : undefined), tool: x }, [byId]);
+  const results = useMemo(() => (q.trim() ? searchCatalog(allTools, q).results.map((r) => byId.get(r.tool.id) ?? { tool: r.tool }) : []), [q, allTools, byId]);
+  const favs = useMemo(() => favoriteTools(allTools, favIds).map(entryOf), [allTools, favIds, entryOf]);
+  const recents = useMemo(() => favoriteTools(allTools, recentIds).map(entryOf), [allTools, recentIds, entryOf]);
 
   const close = () => { setQ(''); onClose(); };
   const open = (e: ToolEntry) => {
@@ -112,9 +114,12 @@ export function ToolSearchSheet({ visible, onClose }: { visible: boolean; onClos
               {results.map((e) => <ResultRow key={`${e.profile ?? ''}-${e.tool.id}`} entry={e} onPress={() => open(e)} />)}
             </View>
           ) : (
-            <View style={{ gap: spacing.xs, alignItems: 'flex-start' }}>
-              <Text weight="bold">{tr('nav.search.empty')}</Text>
-              <Text variant="small" muted>{tr('nav.search.emptyB')}</Text>
+            <View style={{ gap: spacing.sm }} testID="tool-search-empty">
+              <View style={{ gap: 2 }} accessibilityLiveRegion="polite">
+                <Text weight="bold">{tr('th.ui.noMatch')}</Text>
+                <Text variant="small" muted>{tr('th.ui.noMatchB')}</Text>
+              </View>
+              <CategoryList tools={allTools} showAccount={false} onOpen={close} />
             </View>
           )
         ) : (
@@ -149,15 +154,16 @@ function ShortcutRow({ title, icon, entries, onOpen, close }: { title: string; i
 function ResultRow({ entry, onPress }: { entry: ToolEntry; onPress: () => void }) {
   const t = useTheme();
   const { tool } = entry;
-  const where = [tr(HUB_LABEL[hubOf(tool)]), THEME_TITLE[tool.theme], entry.profile].filter(Boolean).join(' · ');
+  const where = [categoryTitle(tool.category), entry.profile].filter(Boolean).join(' · ');
   return (
-    <Tappable accessibilityRole="button" accessibilityLabel={`${tool.label}, ${where}`} onPress={onPress} testID={`tool-search-result-${tool.key}`}
+    <Tappable accessibilityRole="button" accessibilityLabel={[tool.label, tool.sub, where].filter(Boolean).join('. ')} onPress={onPress} testID={`tool-search-result-${tool.key}`}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 8, paddingHorizontal: spacing.xs, paddingVertical: 6, borderRadius: radius.md,
         backgroundColor: pressed ? t.colors.surfaceAlt : 'transparent' })}>
       <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={40} />
       <View style={{ flex: 1, gap: 2 }}>
         <Text weight="bold">{tool.label}</Text>
-        <Text variant="caption" muted numberOfLines={1}>{where}</Text>
+        {tool.sub ? <Text variant="small" muted numberOfLines={2} intentionalTruncation>{tool.sub}</Text> : null}
+        <Text variant="caption" muted>{where}</Text>
       </View>
       <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
     </Tappable>

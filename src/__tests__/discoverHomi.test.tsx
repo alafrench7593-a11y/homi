@@ -31,7 +31,7 @@ import { act, create, type ReactTestInstance, type ReactTestRenderer } from 'rea
 import { DICTIONARIES } from '@/i18n/dictionaries';
 import { setLocale, t as tr } from '@/i18n';
 import { toolCatalog } from '@/lib/domain/toolCatalog';
-import { TOOLS, toolsFor, type ScopeCtx } from '@/lib/journeys/tools';
+import { REAL_TOOLS, TOOLS, toolsFor, type ScopeCtx } from '@/lib/journeys/tools';
 import { gateFor, isFreeRoute } from '@/lib/premium/access';
 import { APP_ROUTES } from '@/lib/routes.generated';
 import { isPublicRoute } from '@/lib/publicRoutes';
@@ -87,9 +87,10 @@ afterEach(async () => {
 });
 
 describe('couverture : chaque outil du catalogue a sa démo', () => {
-  it('les 144 outils du registre ont une démo, un chapitre, une seule fois', () => {
-    expect(DISCOVER_TOOLS.length).toBe(TOOLS.length);
-    expect(new Set(DISCOVER_TOOLS.map((x) => x.key)).size).toBe(TOOLS.length);
+  it('les 120 outils du registre ont une démo, un chapitre, une seule fois (les entrées de compte ne sont pas présentées comme des outils)', () => {
+    expect(DISCOVER_TOOLS.length).toBe(REAL_TOOLS.length);
+    expect(new Set(DISCOVER_TOOLS.map((x) => x.key)).size).toBe(REAL_TOOLS.length);
+    expect(DISCOVER_TOOLS.some((x) => ['settings', 'journeys', 'notifications'].includes(x.key))).toBe(false);
     for (const d of TOOLS) expect(TOOL_DEMOS[d.id]).toBeDefined();
     for (const k of Object.keys(TOOL_DEMOS)) expect(TOOLS.some((d) => d.id === k)).toBe(true);
     const kinds = new Set(DISCOVER_TOOLS.map((x) => x.demo.kind));
@@ -102,7 +103,7 @@ describe('couverture : chaque outil du catalogue a sa démo', () => {
     }
   });
 
-  it('chaque entrée du catalogue (9 parcours, ≈ 155) mène à une démo et à une route existante', () => {
+  it('chaque entrée du catalogue (9 parcours, 120 outils) mène à une démo et à une route existante', () => {
     const ids = new Set<string>();
     for (const ctx of CTXS) {
       for (const tool of toolCatalog(ctx)) {
@@ -111,7 +112,7 @@ describe('couverture : chaque outil du catalogue a sa démo', () => {
         expect(routeExists(tool.href, APP_ROUTES)).toBe(true);
       }
     }
-    expect(ids.size).toBeGreaterThanOrEqual(148);
+    expect(ids.size).toBe(REAL_TOOLS.length);
   });
 
   it('table outil → démo → lien (HOMI_DEMOS_OUT=docs/audit/DEMOS_OUTILS.csv)', () => {
@@ -169,11 +170,12 @@ describe('couverture : chaque outil du catalogue a sa démo', () => {
     }
   });
 
-  it('phrases d’usage tirées des sous-titres existants quand ils existent', () => {
+  it('phrase d’usage : la description d’une phrase de chaque outil (la même que dans « Mes outils »)', () => {
     const src = DISCOVER_TOOLS.map((x) => usageSource(x.key));
     expect(src.filter((s) => s === 'absente')).toEqual([]);
-    expect(src.filter((s) => s === 'sous-titre').length).toBeGreaterThanOrEqual(90);
-    expect(usagePhrase('family_missions')).toBe(tr('tool.family_missions.sub'));
+    expect(src.filter((s) => s !== 'description')).toEqual([]);
+    expect(usagePhrase('family_missions')).toBe(tr('th.family_missions.d'));
+    expect(usagePhrase('family_nights')).toBe('Organisez les tours de nuit entre les parents pour mieux partager les réveils du bébé.');
   });
 
   it('chaque chapitre a des outils, ses outils mis en avant en font partie', () => {
@@ -237,7 +239,7 @@ describe('données de démo isolées du foyer', () => {
     }
   });
 
-  it('jouer et toucher les 144 démos : aucun appel au serveur, aucune écriture locale', async () => {
+  it('jouer et toucher les 120 démos : aucun appel au serveur, aucune écriture locale', async () => {
     const setItem = jest.spyOn(AsyncStorage, 'setItem');
     const before = JSON.stringify(useUiStore.getState());
     for (const x of DISCOVER_TOOLS) {

@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { DEFAULT_PALETTE, migratePalette, type PaletteChoice, type ProfileKind } from '@/theme/tokens';
+import { migrateToolIds } from '@/lib/domain/toolFavorites';
 
 export type ActiveSubject =
   | { type: 'pregnancy'; id: string }
@@ -237,7 +238,11 @@ export const useUiStore = create<UiState>()(
       partialize: ({ nightMode: _n, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
       // À CHAQUE restauration, les choix enregistrés (compte actif et autres comptes de l'appareil) passent par
       // `migratePalette` : anciennes palettes (v3, v4, Auto) → palette par défaut, choix v6 conservés ; l'apparence est conservée
-      merge: (persisted, current) => migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }),
+      // Favoris d'outils (17/11/2026) : les anciennes clés « thème:adresse » deviennent l'identifiant stable de l'outil
+      merge: (persisted, current) => {
+        const next = migrateAppearance({ ...current, ...(persisted as Partial<UiState>) });
+        return { ...next, toolFavorites: migrateToolIds(next.toolFavorites) };
+      },
     },
   ),
 );

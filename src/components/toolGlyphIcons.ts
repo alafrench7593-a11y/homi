@@ -11,162 +11,177 @@
  */
 import type { IconName } from '@/components/ui';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
+import { TOOL_ALIASES } from '@/lib/journeys/tools';
 
-/** Outil par outil : ce que l'on doit comprendre en voyant l'icône. */
-const BY_ID: Record<string, string> = {
-  // Scanner
-  scan_product: 'barcode-scan',            // scanner un produit : code-barres
-  scan_food: 'food-apple',                 // scanner un aliment : pomme
-  scan_history: 'history',                 // historique et favoris : horloge qui revient
-  scan_compare: 'scale-balance',           // comparer deux produits : balance à plateaux
-  scan_avoid: 'cancel',                    // produits à éviter : interdit
-  // Assistant et ressources
-  ask: 'chat-question',                    // poser une question
-  local_ai: 'robot',                       // assistant des articles (IA locale)
-  nearby: 'map-marker-radius',             // sorties près de chez moi
-  summary: 'file-document-multiple',       // résumés
-  community: 'account-group',              // communauté
-  library: 'bookshelf',                    // bibliothèque
-  sources: 'link-variant',                 // sources et lectures
-  // Humeur
-  mood: 'emoticon-happy',                  // mon humeur
-  kid_mood: 'emoticon-happy-outline',      // humeur et émotions de l'enfant
-  pp_recovery: 'heart-plus',               // récupération après la naissance
-  pp_checkin: 'notebook-heart',            // mon point du jour
-  pp_body: 'yoga',                         // mon corps
-  pp_mental: 'head-heart',                 // moral
-  pp_support: 'hand-heart',                // soutien
-  pp_partner: 'account-heart',             // partenaire
-  // Sommeil
-  sleep: 'sleep',                          // mon sommeil : Zz
-  kid_sleep: 'moon-waning-crescent',       // sommeil de l'enfant : lune
-  kid_sleep_rhythm: 'bed-clock',           // planning de sommeil : lit + horloge
-  baby_night_help: 'weather-night',        // aide pour la nuit : lune et étoiles
-  // Famille et quotidien
-  family_summary: 'home-group',            // résumé familial du jour
-  family_tasks: 'format-list-checks',      // tâches : liste cochée
-  family_routines: 'repeat-variant',       // routines : répétition
-  family_history: 'clipboard-text-clock',  // historique
-  family_calendar: 'calendar-month',       // agenda familial
-  family_nights: 'account-switch',         // relais de nuit : deux personnes qui se relaient
-  family_metime: 'meditation',             // temps pour soi
-  family_difficult: 'weather-windy',       // moments difficiles
-  family_urgent: 'alarm-light',            // urgence familiale : gyrophare
-  family_review: 'chart-box',              // bilan
-  // Repas et alimentation
-  meals: 'silverware-fork-knife',          // repas et recettes : couverts
-  meal_rankings: 'trophy-variant',         // classements des recettes : trophée
-  preg_eat: 'food-apple',                  // bien manger enceinte
-  pp_feeding: 'mother-nurse',              // allaitement après la naissance
-  baby_breastfeed: 'mother-nurse',         // allaitement
-  pp_bottle: 'baby-bottle',                // biberon
-  baby_bottle: 'baby-bottle',              // biberon
-  baby_bottle_timer: 'timer-sand',         // minuteur du biberon : sablier
-  baby_bottle_history: 'chart-areaspline', // historique des biberons : courbe
-  baby_foods: 'bowl-mix',                  // diversification : bol
-  // Santé
-  appointments: 'stethoscope',             // rendez-vous et examens
-  documents: 'folder-heart',               // documents de santé
-  emergency: 'phone-alert',                // urgences : téléphone d'alerte
-  kid_vaccines: 'needle',                  // vaccins : seringue
-  kid_health: 'thermometer',               // santé de l'enfant : thermomètre
-  kid_needs: 'puzzle-heart',              // besoins de l'enfant : pièce de puzzle avec un cœur
-  kid_treatments: 'pill-multiple',         // traitements : comprimés
-  ttc_exams: 'clipboard-pulse',            // examens
-  ttc_consult: 'medical-bag',              // consulter
-  // Enfant
-  kid_profile: 'account-child',            // profil de l'enfant
-  kid_growth: 'human-male-height',         // croissance : taille
-  kid_grow: 'star-circle',                 // il grandit : étapes
-  kid_milestones: 'trophy',                // grandes étapes : trophée
-  kid_teeth: 'tooth',                      // dents
-  kid_products: 'shopping-search',         // produits enfants : vérifier un achat
-  // Couches et quotidien bébé
-  baby_diaper: 'human-baby-changing-table',// couches : table à langer
-  baby_daily: 'clipboard-list',            // journée de bébé : liste
-  // Rappels et réglages
-  reminders: 'bell-ring',                  // rappels
-  avoid_reminders: 'bell-ring',
-  ttc_reminders: 'bell-ring',
-  notifications: 'bell-badge',             // notifications : cloche avec pastille
-  home_settings: 'view-dashboard-edit',    // personnaliser l'accueil
-  settings: 'cog',                         // réglages
-  journeys: 'map-marker-path',             // modifier mon parcours : chemin
-  // Cycle
-  avoid_cycle: 'calendar-month',           // cycle et règles : calendrier
-  cycle_home: 'water',                     // mon cycle : goutte
-  cycle_calendar: 'calendar-multiselect',  // calendrier du cycle
-  ttc_cycle: 'water',
-  ttc_calendar: 'calendar-multiselect',
-  avoid_contraception: 'pill',             // contraception : pilule
-  avoid_methods: 'scale-balance',          // comparer les moyens : balance
-  avoid_emergency: 'alert-decagram',       // contraception d'urgence : alerte
-  avoid_fertile: 'weather-sunset-up',      // fenêtre fertile : lever de soleil
-  cycle_symptoms: 'pulse',                 // symptômes
-  avoid_consult: 'hospital-box',           // consulter
-  ttc_periods: 'water-opacity',            // règles : goutte
-  ttc_tests: 'test-tube',                  // tests : éprouvette
-  ttc_mucus: 'magnify',                    // observation : loupe
-  ttc_temperature: 'thermometer-lines',    // température
-  ttc_intimacy: 'lock',                    // intimité : cadenas
-  ttc_understand: 'book-education',        // comprendre
-  ttc_articles: 'book-open-variant',       // articles
-  cycle_journal: 'notebook-edit',          // journal
-  cycle_stats: 'chart-bar',                // statistiques
-  cycle_guides: 'book-information-variant',// guides
-  ttc_start_pregnancy: 'human-pregnant',   // je suis enceinte
-  // Grossesse
-  preg_evolution: 'baby-face',             // évolution de bébé
-  preg_weight: 'scale-bathroom',           // poids : pèse-personne
-  preg_feel: 'spa',                        // comment je me sens
-  preg_calendar: 'calendar-heart',         // calendrier de grossesse
-  preg_birth_prep: 'baby-carriage',        // préparer la naissance : landau
-  preg_articles: 'book-open-variant',
-  preg_intimacy: 'heart-flash',            // intimité pendant la grossesse
-  preg_names: 'calendar-star',             // prénoms : étoile
-  preg_lists: 'format-list-checkbox',      // listes de grossesse
-  preg_edit: 'calendar-edit',              // modifier ma grossesse
-  preg_end: 'flag-checkered',              // fin de grossesse : drapeau d'arrivée
-  // Guides thématiques et nouveaux outils (04/11/2026)
-  guide_illnesses: 'thermometer-alert',    // maladies de l'enfance : thermomètre d'alerte
-  guide_firstaid: 'medical-bag',           // urgences et premiers secours : trousse
-  guide_hygiene: 'hand-wash',              // hygiène : mains lavées
-  guide_sport: 'run',                      // sport : coureur
-  guide_activities: 'palette',             // activités : palette
-  guide_kidsleep: 'bed',                   // sommeil de l'enfant : lit
-  guide_kidfood: 'food-variant',           // alimentation 1–10 ans : assiette
-  guide_behaviour: 'emoticon-confused',    // émotions et comportement
-  guide_school: 'school',                  // crèche, nounou, école
-  guide_toddler: 'human-child',            // grandir de 1 à 3 ans
-  guide_work: 'briefcase-variant',         // droits au travail : mallette
-  guide_loss: 'heart-broken',              // après une perte
-  guide_pma: 'test-tube',                  // parcours PMA : éprouvette
-  guide_couple: 'account-multiple-plus',   // à deux
-  guide_neonat: 'baby-face-outline',       // néonatologie
-  consult_questions: 'comment-question',   // questions pour le rendez-vous
-  preg_moves: 'motion',                    // mouvements de bébé
-  contraception_journal: 'notebook-edit',  // journal de ma contraception
-  kid_card: 'card-account-details',        // fiche de mon enfant
-  kid_steps: 'clipboard-check',            // mes démarches
-  family_sos: 'hand-heart',                // je craque
-  cycle_kit: 'bag-personal',               // trousse règles : petit sac
-  pma_tracker: 'needle',                   // suivi PMA : traitements et injections
-  bottle_scoops: 'counter',                // compteur de mesurettes
-  recall_alerts: 'alert-octagram',         // alertes produits rappelés
-  kid_routines: 'gesture-tap-button',      // routines en pictogrammes
-  custody: 'home-switch',                  // garde alternée : deux maisons
-  brain_dump: 'head-lightbulb',            // vider ma tête
-  family_domains: 'account-switch',        // confier un domaine
-  mental_load: 'scale-balance',            // qui y pense
-  family_prep: 'calendar-check',           // échéances préparées
-  offduty: 'power-sleep',                  // je décroche
-  house_notebook: 'notebook',              // carnet de la maison
-  couple_week: 'coffee',                   // point de couple
-  exhaustion_check: 'battery-low',         // je suis à bout
-  family_papers: 'folder-account',         // papiers de la famille
-  solo_parent: 'human-female-girl',        // maman solo
-  official_videos: 'play-box-multiple',    // vidéos & articles
-  video_tutos: 'human-male-board',         // tutos vidéo
+/**
+ * Outil par outil : ce que l'on doit comprendre en voyant l'icône. UN symbole par outil du registre : aucun symbole
+ * n'est partagé par deux outils (garde-fou : src/__tests__/toolHub.test.ts). Les sous-accès (`outil.sous-accès`)
+ * gardent le symbole de l'ancien outil dont ils viennent.
+ */
+export const TOOL_GLYPHS: Record<string, string> = {
+  // 1. Alimentation et allaitement
+  baby_breastfeed: 'mother-nurse',          // allaitement
+  baby_bottle: 'baby-bottle',               // noter un biberon
+  baby_bottle_timer: 'timer-sand',          // journée des biberons : sablier jusqu'au prochain
+  baby_bottle_history: 'chart-areaspline',  // historique des biberons : courbe
+  bottle_scoops: 'counter',                 // compteur de mesurettes
+  baby_diaper: 'human-baby-changing-table', // couches : table à langer
+  baby_foods: 'bowl-mix',                   // diversification : bol
+  meals: 'silverware-fork-knife',           // repas et recettes : couverts
+  meal_menu: 'room-service',                // menu de la semaine : cloche de service
+  meal_pantry: 'fridge',                    // cuisiner avec ce que j'ai : réfrigérateur
+  meal_rankings: 'trophy-variant',          // classement des recettes : trophée
+  preg_eat: 'carrot',                       // bien manger enceinte
+  scan_food: 'food-apple',                  // scanner un aliment : pomme
+  // 2. Sommeil et réveils
+  kid_sleep: 'moon-waning-crescent',        // sommeil de l'enfant : lune
+  kid_sleep_rhythm: 'bed-clock',            // planning de sommeil : lit + horloge
+  sleep_help: 'lightbulb-night',            // aide au sommeil : veilleuse
+  baby_night_help: 'weather-night',         // bilan de la nuit : lune et étoiles
+  family_nights: 'account-switch',          // relais de nuit : deux personnes qui se relaient
+  sleep: 'sleep',                           // mon sommeil : Zz
+  // 3. Croissance et développement
+  kid_profile: 'account-child',             // fiche de l'enfant
+  'kid_profile.growth': 'human-male-height',// croissance : taille
+  'kid_profile.milestones': 'trophy',       // journal : grandes étapes
+  kid_grow: 'stairs-up',                    // étapes du développement : marches
+  kid_teeth: 'tooth',                       // dents
+  kid_mood: 'emoticon-happy-outline',       // humeur et émotions de l'enfant
+  kid_album: 'image-multiple',              // album photo
+  baby_daily: 'clipboard-list',             // suivi de la journée : liste
+  journal: 'timeline-text',                 // journal complet : chronologie
+  // 4. Santé et rendez-vous
+  appointments: 'stethoscope',              // rendez-vous et examens
+  consult_questions: 'comment-question',    // questions pour le rendez-vous
+  documents: 'folder-heart',                // documents de santé
+  health_book: 'book-heart',                // carnet de santé
+  kid_vaccines: 'needle',                   // vaccins : seringue
+  kid_health: 'thermometer',                // suivi de santé : thermomètre
+  kid_treatments: 'pill',                   // traitements de l'enfant
+  'kid_treatments.needs': 'puzzle-heart',   // mon enfant a un besoin particulier
+  medications: 'pill-multiple',             // médicaments : comprimés
+  kid_steps: 'clipboard-check',             // démarches de l'enfant
+  summary: 'file-document-multiple',        // résumés
+  mood: 'emoticon-happy',                   // mon humeur
+  me_diary: 'book-lock',                    // mon journal intime : carnet fermé
+  exhaustion_check: 'battery-low',          // point sur ma fatigue
+  emergency: 'phone-alert',                 // urgences : téléphone d'alerte
+  ask: 'chat-question',                     // assistant : poser une question
+  local_ai: 'robot',                        // assistant hors ligne
+  library: 'bookshelf',                     // bibliothèque
+  'library.conception': 'book-open-variant',
+  'library.pregnancy': 'book-open-variant',
+  'library.birth': 'baby-carriage',
+  'library.intimacy': 'heart-flash',
+  guides: 'book-open-page-variant',         // guides pratiques
+  'guides.illnesses': 'thermometer-alert',
+  'guides.firstaid': 'medical-bag',
+  'guides.hygiene': 'hand-wash',
+  'guides.sport': 'run',
+  'guides.activities': 'palette',
+  'guides.kidsleep': 'bed',
+  'guides.kidfood': 'food-variant',
+  'guides.behaviour': 'emoticon-confused',
+  'guides.school': 'school',
+  'guides.toddler': 'human-child',
+  'guides.work': 'briefcase-variant',
+  'guides.loss': 'heart-broken',
+  'guides.pma': 'test-tube',
+  'guides.couple': 'account-multiple-plus',
+  'guides.neonat': 'baby-face-outline',
+  videos: 'play-box-multiple',              // vidéos et tutos
+  'videos.tutos': 'human-male-board',
+  sources: 'link-variant',                  // sources et références
+  // 5. Cycle et fertilité
+  cycle_home: 'water',                      // mon cycle : goutte
+  cycle_calendar: 'calendar-multiselect',   // calendrier du cycle
+  cycle_symptoms: 'pulse',                  // symptômes du cycle
+  cycle_pain: 'lightning-bolt-circle',      // douleurs
+  cycle_discharge: 'water-opacity',         // pertes vaginales
+  cycle_bleeding: 'water-alert',            // saignements inhabituels
+  cycle_journal: 'notebook-edit',           // journal du cycle
+  cycle_stats: 'chart-bar',                 // statistiques du cycle
+  cycle_guides: 'book-information-variant', // guides du cycle
+  cycle_kit: 'bag-personal',                // trousse de règles : petit sac
+  avoid_contraception: 'shield-check',      // ma contraception : protection
+  avoid_methods: 'scale-balance',           // comparer les contraceptions : balance
+  avoid_emergency: 'alert-decagram',        // contraception d'urgence : alerte
+  avoid_reminders: 'alarm',                 // rappels de contraception : réveil
+  avoid_consult: 'hospital-box',            // préparer ma consultation de contraception
+  contraception_journal: 'text-box-edit',   // journal de ma contraception
+  ttc_cycle: 'flower-tulip',                // cycle et période fertile
+  ttc_tests: 'test-tube',                   // tests d'ovulation et de grossesse : éprouvette
+  ttc_mucus: 'magnify',                     // glaire cervicale : observation
+  ttc_temperature: 'thermometer-lines',     // température au réveil
+  ttc_intimacy: 'lock',                     // rapports : privé
+  ttc_exams: 'clipboard-pulse',             // examens de fertilité
+  ttc_understand: 'book-education',         // comprendre mon cycle
+  ttc_consult: 'medical-bag',               // préparer ma consultation de fertilité
+  ttc_reminders: 'calendar-clock',          // rappels du projet bébé
+  pma_tracker: 'iv-bag',                    // suivi de PMA : traitements
+  // 6. Grossesse et post-partum
+  ttc_start_pregnancy: 'human-pregnant',    // démarrer ma grossesse
+  preg_evolution: 'baby-face',              // ma grossesse semaine par semaine
+  preg_weight: 'scale-bathroom',            // mon poids : pèse-personne
+  preg_feel: 'spa',                         // mes symptômes de grossesse
+  preg_moves: 'motion',                     // mouvements de bébé
+  preg_calendar: 'calendar-heart',          // calendrier de grossesse
+  preg_names: 'tag-heart',                  // idées de prénoms : étiquette
+  preg_lists: 'bag-suitcase',               // listes de préparation : valise
+  pp_recovery: 'heart-plus',                // ma récupération après la naissance
+  pp_checkin: 'notebook-heart',             // mon point du jour
+  pp_body: 'yoga',                          // cicatrisation et rééducation
+  pp_mental: 'head-heart',                  // baby blues et dépression du post-partum
+  pp_support: 'hand-heart',                 // trouver de l'aide
+  pp_partner: 'account-heart',              // espace du co-parent
+  // 7. École, crèche et garde
+  kid_school: 'town-hall',                  // école ou mode de garde : établissement
+  kid_card: 'card-account-details',         // fiche à transmettre
+  kid_routines: 'gesture-tap-button',       // routines en images
+  custody: 'home-switch',                   // garde alternée : deux maisons
+  // 8. Couple et foyer
+  mental_load: 'scale-unbalanced',          // répartition de la charge mentale
+  family_domains: 'account-arrow-right',    // confier un domaine
+  'family_domains.responsibilities': 'account-check',
+  couple_week: 'coffee',                    // point de couple
+  family_review: 'chart-box',               // bilan de la semaine
+  family_metime: 'meditation',              // temps pour soi
+  offduty: 'power-sleep',                   // je décroche
+  family_difficult: 'weather-windy',        // journée difficile
+  family_urgent: 'alarm-light',             // mode urgence du foyer : gyrophare
+  family_sos: 'lifebuoy',                   // je craque : bouée
+  solo_parent: 'human-female-girl',         // parent solo
+  community: 'account-group',               // communauté
+  // 9. Organisation familiale
+  family_calendar: 'calendar-month',        // agenda familial
+  family_tasks: 'format-list-checks',       // tâches du foyer : liste cochée
+  family_missions: 'send',                  // missions familiales : demande envoyée
+  family_routines: 'repeat-variant',        // routines du foyer : répétition
+  family_history: 'clipboard-text-clock',   // historique des tâches
+  brain_dump: 'head-lightbulb',             // vider ma tête
+  family_prep: 'calendar-check',            // échéances à préparer
+  family_shopping: 'cart',                  // liste de courses
+  family_stocks: 'package-variant-closed',  // stocks du foyer
+  house_notebook: 'notebook',               // carnet de la maison
+  family_papers: 'folder-account',          // papiers de la famille
+  reminders: 'bell-ring',                   // rappels
+  nearby: 'map-marker-radius',              // sorties en famille
+  scan_product: 'barcode-scan',             // scanner un produit : code-barres
+  scan_compare: 'compare-horizontal',       // comparer deux produits
+  scan_history: 'history',                  // produits scannés
+  scan_avoid: 'cancel',                     // produits à éviter : interdit
+  recall_alerts: 'alert-octagram',          // alertes de rappel de produits
+  kid_products: 'shopping-search',          // guide des produits pour enfants
+  // Mon compte et réglages (pas des outils)
+  settings: 'cog',
+  notifications: 'bell-badge',
+  journeys: 'map-marker-path',
+  home_settings: 'view-dashboard-edit',
+  preg_edit: 'calendar-edit',
+  preg_end: 'flag-checkered',
+  // Catégories du centre d'outils
+  'cat.feeding': 'baby-bottle', 'cat.sleep': 'moon-waning-crescent', 'cat.growth': 'human-male-height', 'cat.health': 'stethoscope', 'cat.cycle': 'water',
+  'cat.pregnancy': 'human-pregnant', 'cat.school': 'school', 'cat.couple': 'account-heart', 'cat.family': 'calendar-month', 'cat.account': 'cog',
 };
 
 /** Repli par catégorie puis icône d'origine (glyphes sans identifiant d'outil). */
@@ -204,5 +219,5 @@ const BY_ICON: Partial<Record<IconName, string>> = {
 
 /** Nom du symbole plein (Material Community Icons) pour un outil, ou null pour garder l'icône au trait. */
 export function toolGlyphIcon(theme: ToolTheme | 'urgent', icon: IconName, id?: string): string | null {
-  return (id ? BY_ID[id] : undefined) ?? BY_THEME[theme]?.[icon] ?? BY_ICON[icon] ?? null;
+  return (id ? TOOL_GLYPHS[id] ?? TOOL_GLYPHS[TOOL_ALIASES[id]] : undefined) ?? BY_THEME[theme]?.[icon] ?? BY_ICON[icon] ?? null;
 }

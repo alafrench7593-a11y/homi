@@ -22,7 +22,7 @@ import { ToolCard } from '@/components/ToolCard';
 import type { CatalogTool } from '@/lib/domain/toolCatalog';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
-const tool: CatalogTool = { id: 'sleep:/sleep/abc', key: 'kid_sleep_rhythm', theme: 'sleep', icon: 'trending-up', label: 'Planning de sommeil', href: '/sleep/abc' };
+const tool: CatalogTool = { id: 'kid_sleep_rhythm', key: 'kid_sleep_rhythm', category: 'sleep', theme: 'sleep', icon: 'trending-up', label: 'Planning de sommeil', href: '/sleep/abc', profiles: ['baby', 'child'], free: false, subs: [] };
 
 it('le profil n’est choisi qu’à l’ouverture (la carte n’est pas démontée avant la navigation)', async () => {
   const beforeOpen = jest.fn();

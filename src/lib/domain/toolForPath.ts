@@ -5,8 +5,9 @@
  */
 import type { IconName } from '@/components/ui';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
-import { SCOPES, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
+import { SCOPES, subRef, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
 
+/** `id` : identifiant stable de l'outil, ou `<outil>.<sous-accès>` quand l'écran est un sous-accès (guide, onglet, filtre). */
 export interface PathTool { id: string; theme: ToolTheme; icon: IconName; urgent?: boolean }
 
 const ID = '__id__';
@@ -19,7 +20,7 @@ export function normalizeToolPath(href: string): string {
   if (!/^\/bottle\/(scoops|history)$/.test(p)) p = p.replace(/\/(child|bottle|sleep)\/[^/]+/, `/$1/${ID}`);
   const keep = new URLSearchParams(query);
   const kept: string[] = [];
-  for (const k of ['tab']) { const v = keep.get(k); if (v) kept.push(`${k}=${v}`); }
+  for (const k of ['tab', 'all']) { const v = keep.get(k); if (v) kept.push(`${k}=${v}`); }
   return kept.length ? `${p}?${kept.join('&')}` : p;
 }
 
@@ -39,6 +40,18 @@ function index() {
       const key = normalizeToolPath(href);
       // le premier outil déclaré pour une adresse donne l'identité (catégorie principale)
       if (!INDEX.has(key)) INDEX.set(key, { id: tool.id, theme: tool.theme, icon: tool.icon, urgent: tool.urgent });
+    }
+  }
+  // sous-accès (guides, onglets, filtres) : après tous les outils, pour qu'un outil garde toujours son adresse
+  for (const tool of TOOLS) {
+    for (const sub of tool.subs ?? []) {
+      for (const c of ctxs) {
+        let href: string | null = null;
+        try { href = sub.href(c); } catch { href = null; }
+        if (!href) continue;
+        const key = normalizeToolPath(href);
+        if (!INDEX.has(key)) INDEX.set(key, { id: subRef(tool.id, sub.id), theme: tool.theme, icon: sub.icon });
+      }
     }
   }
   return INDEX;

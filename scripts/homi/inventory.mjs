@@ -8,7 +8,8 @@
  *
  * Sources :
  *  - src/lib/routes.generated.ts (routes réelles) + fichiers de src/app (mêmes règles que scripts/gen-routes.js) ;
- *  - MATRICE_OUTILS.csv (catalogue des outils, écrit par src/__tests__/homiToolMatrix.test.ts) ;
+ *  - MATRICE_OUTILS.csv (catalogue des outils : un besoin = une ligne, identifiant stable du registre, catégorie,
+ *    description, profils, Premium, sous-accès ; écrit par src/__tests__/homiToolMatrix.test.ts) ;
  *  - scripts/homi/inventory-status.json : statuts saisis à la main (écrans : « à faire / tranche / fait » ;
  *    outils : « écrans refondus / commandes adaptées / transition implémentée / parcours vérifié »).
  *    C'est le SEUL fichier à modifier au fil de la refonte ; le reste est calculé.
@@ -129,6 +130,14 @@ const TYPE_BY_KEY = {
   'suivi/mesures': ['sleep', 'avoid_cycle', 'avoid_fertile', 'cycle_symptoms', 'cycle_stats', 'ttc_cycle', 'ttc_tests', 'ttc_mucus', 'ttc_temperature', 'ttc_intimacy', 'pma_tracker', 'preg_evolution', 'preg_weight', 'pp_recovery', 'pp_body', 'baby_bottle_history', 'kid_sleep_rhythm', 'baby_daily', 'kid_teeth', 'kid_growth', 'kid_vaccines', 'kid_health', 'kid_treatments', 'scan_history', 'scan_avoid', 'recall_alerts', 'ttc_exams'],
 };
 const KEY_TYPE = Object.fromEntries(Object.entries(TYPE_BY_KEY).flatMap(([type, keys]) => keys.map((k) => [k, type])));
+// Centre d'outils (17/11/2026) : identifiants des outils fusionnés ou entrés au registre
+Object.assign(KEY_TYPE, {
+  cycle_home: 'suivi/mesures', cycle_calendar: 'suivi/mesures', cycle_pain: 'suivi/mesures', cycle_discharge: 'suivi/mesures', cycle_bleeding: 'suivi/mesures',
+  journal: 'suivi/mesures', medications: 'suivi/mesures', health_book: 'suivi/mesures', kid_treatments: 'suivi/mesures',
+  baby_breastfeed: 'minuteur/session', baby_bottle_timer: 'minuteur/session',
+  meal_menu: 'tâches/planning', meal_pantry: 'tâches/planning', summary: 'famille/partage/communauté',
+  sleep_help: 'formulaire/assistant', kid_school: 'formulaire/assistant', kid_album: 'humeur/journal', me_diary: 'humeur/journal',
+});
 const toolType = (key) => KEY_TYPE[key] ?? 'autre';
 
 // ------------------------------------------------------------------ calcul

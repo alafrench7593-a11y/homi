@@ -4,6 +4,7 @@
  */
 import type { ArticleSummary, Category } from '@/lib/types';
 import { localized } from '@/i18n/localized';
+import { resolveTool } from '@/lib/journeys/tools';
 import { ASK_ES } from './toolArticles.es';
 import { ASK_DE } from './toolArticles.de';
 import { ASK_IT } from './toolArticles.it';
@@ -329,9 +330,28 @@ export function toolArticleScore(topic: ToolTopic, a: { title: string; tags?: st
   return s;
 }
 
+/** Outils ajoutés au registre le 17/11/2026 : ils reprennent les articles de l'outil le plus proche. */
+const TOPIC_ALIAS: Record<string, string> = {
+  meal_menu: 'meals', meal_pantry: 'meals', sleep_help: 'kid_sleep', kid_album: 'kid_milestones', journal: 'baby_daily', health_book: 'documents',
+  medications: 'kid_treatments', me_diary: 'mood', cycle_pain: 'cycle_symptoms', cycle_discharge: 'cycle_symptoms', cycle_bleeding: 'cycle_symptoms',
+  kid_school: 'guide_school', videos: 'official_videos',
+};
+
+/**
+ * Thème d'articles d'un outil, par identifiant actuel OU ancien : un sous-accès (`guides.kidsleep`, `kid_profile.growth`)
+ * garde le thème de l'ancien outil dont il vient ; un outil fusionné garde le sien.
+ */
+export function toolTopic(toolId: string): ToolTopic | undefined {
+  const direct = TOOL_TOPICS[toolId] ?? TOOL_TOPICS[TOPIC_ALIAS[toolId]];
+  if (direct) return direct;
+  const r = resolveTool(toolId);
+  if (!r) return undefined;
+  return (r.sub ? TOOL_TOPICS[r.sub.legacy] : undefined) ?? TOOL_TOPICS[r.def.id] ?? TOOL_TOPICS[TOPIC_ALIAS[r.def.id]];
+}
+
 /** Les meilleurs articles pour un outil. */
 export function articlesForTool<T extends ArticleSummary>(toolId: string, articles: T[], categories: Category[] | undefined, n = 3): T[] {
-  const topic = TOOL_TOPICS[toolId];
+  const topic = toolTopic(toolId);
   if (!topic) return [];
   const slugOf = new Map((categories ?? []).map((c) => [c.id, c.slug]));
   return articles

@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**230 routes** réelles (`src/lib/routes.generated.ts`) portées par **231 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **155 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**236 routes** réelles (`src/lib/routes.generated.ts`) portées par **237 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **120 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -19,19 +19,20 @@
 
 | Zone | Fichiers | À faire | Tranche | Fait | Couleurs en dur | Animated RN |
 |---|---:|---:|---:|---:|---:|---:|
+| Autres | 5 | 5 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
-| Réglages | 21 | 21 | 0 | 0 | 4 | 0 |
-| Accueil | 21 | 18 | 0 | 3 | 9 | 1 |
-| Santé | 29 | 21 | 0 | 8 | 16 | 0 |
+| Réglages | 22 | 22 | 0 | 0 | 0 | 0 |
+| Accueil | 21 | 18 | 0 | 3 | 4 | 1 |
+| Santé | 29 | 21 | 0 | 8 | 7 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
-| Grossesse et post-partum | 19 | 19 | 0 | 0 | 6 | 0 |
-| Bébé et enfant | 32 | 28 | 0 | 4 | 70 | 1 |
+| Grossesse et post-partum | 19 | 19 | 0 | 0 | 1 | 0 |
+| Bébé et enfant | 32 | 28 | 0 | 4 | 50 | 1 |
 | Famille | 30 | 30 | 0 | 0 | 6 | 0 |
 | Communauté | 16 | 16 | 0 | 0 | 4 | 0 |
-| **Total** | **231** | **206** | **2** | **23** | **130** | **4** |
+| **Total** | **237** | **212** | **2** | **23** | **87** | **4** |
 
-Rôles : détail 36 · formulaire 46 · historique 17 · liste 85 · réglage 27 · résultat 13 · scène 7.
+Rôles : détail 40 · formulaire 46 · historique 17 · liste 86 · réglage 28 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -40,10 +41,20 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | Pilote | Outil (clé) | Pourquoi | Routes du parcours |
 |---|---|---|---|
 | Saisie | Mon humeur (`mood`) | bilan court à choix (humeur, énergie, note facultative), privé, avec relais d’aide : valide champs mats, puces, bouton principal au-dessus du clavier et feuille de confirmation | `/me/mood` → `/me/diary` |
-| Données | Biberon (`pp_bottle`) | minuteur en direct + saisie rapide + historique et compteur de mesurettes : valide chiffres animés, carte d’état, transition liste → détail et lisibilité de nuit | `/bottle` → `/bottle/[childId]` → `/bottle/history` → `/bottle/scoops` |
+| Données | Biberon (`baby_bottle_timer`) | minuteur en direct + saisie rapide + historique et compteur de mesurettes : valide chiffres animés, carte d’état, transition liste → détail et lisibilité de nuit | `/bottle` → `/bottle/[childId]` → `/bottle/history` → `/bottle/scoops` |
 | Plusieurs étapes | Scanner un produit (`scan_product`) | caméra ou saisie du code → fiche résultat → historique et comparaison : valide transitions entre écrans, états chargement / erreur réseau / introuvable | `/scanner` → `/scanner/product` → `/scanner/result/[id]` → `/scanner/history` → `/scanner/compare` |
 
 ## Écrans par zone
+
+### Autres
+
+| Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
+|---|---|---|---|---:|:-:|---|
+| `/discover` | détail | — | — | 0 |  | à faire |
+| `/discover/tool/[id]` | détail | — | — | 0 |  | à faire |
+| `/discover/tools` | détail | — | — | 0 |  | à faire |
+| `/guide` | liste | guides | Screen, ListRow, EmptyState | 0 |  | à faire |
+| `/tools/[category]` | détail | — | Screen, EmptyState, VirtualList | 0 |  | à faire |
 
 ### Auth / entrée
 
@@ -57,8 +68,8 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/auth/sign-up` | formulaire | — | Field, Button, Banner, EntryHero, EntryScreen, MattePanel | 0 |  | fait |
 | `/cinematic` | scène | — | — | 0 |  | fait |
 | `/intro` | scène | — | Button | 0 | oui | tranche |
-| `/onboarding` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Chip, Toggle, FocalMark | 0 |  | tranche |
-| `/welcome` | scène | — | Button, IconButton, FocalMark | 0 |  | fait |
+| `/onboarding` | formulaire | — | Screen, Button, IconButton, Banner, MattePanel | 0 |  | tranche |
+| `/welcome` | scène | — | Button, IconButton | 0 |  | fait |
 
 ### Admin
 
@@ -77,19 +88,20 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
 | `/feedback` | liste | — | Screen, Card, Field, Button, IconButton, Banner, Chip, SectionTitle | 0 |  | à faire |
-| `/journeys` | liste | journeys | Screen, Card, Sheet, Button, Banner, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
+| `/journeys` | liste | — | Screen, Card, Sheet, Button, Banner, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/journeys/[id]` | détail | — | Screen, Card, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/journeys/blocked` | réglage | — | Screen, Button, Banner, EmptyState | 0 |  | à faire |
 | `/legal/[doc]` | détail | — | Screen, Card | 0 |  | à faire |
-| `/notifications` | liste | notifications | Screen, IconButton, Chip, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
-| `/premium` | détail | — | Screen | 0 |  | à faire |
-| `/profile` | liste | — | Screen, Card, Button, Chip, ListRow, SectionTitle, ErrorView, Skeleton | 1 |  | à faire |
+| `/notifications` | liste | — | Screen, IconButton, Chip, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
+| `/premium` | détail | — | IconButton | 0 |  | à faire |
+| `/profile` | liste | — | Screen, Card, Button, Chip, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/profiles/new` | formulaire | — | Screen, Card, Button, Banner, Segmented, ErrorView, Skeleton | 0 |  | à faire |
-| `/settings` | réglage | settings | Screen, Card, Field, Button, Banner, Toggle, ListRow, SectionTitle | 0 |  | à faire |
+| `/settings` | réglage | — | Screen, Card, Field, Button, Banner, Toggle, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/account` | réglage | — | Screen, Card, Sheet, Field, Button, Banner, ListRow, SectionTitle | 0 |  | à faire |
-| `/settings/appearance` | réglage | — | Screen, GlowCard, Sheet, Field, Button, Banner, Chip, Segmented, Toggle, SectionTitle, CompletionCheck | 3 |  | à faire |
+| `/settings/appearance` | réglage | — | Screen, Card, GlowCard, Button, Banner, Chip, Segmented, Toggle, ListRow, SectionTitle, CompletionCheck | 0 |  | à faire |
 | `/settings/family` | réglage | — | Screen, Card, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
-| `/settings/home` | réglage | home_settings | Screen, Card, Button, IconButton, Chip, Toggle, SectionTitle, Cascade | 0 |  | à faire |
+| `/settings/home` | réglage | — | Screen, Card, Button, IconButton, Chip, Toggle, SectionTitle, Cascade | 0 |  | à faire |
+| `/settings/iphone-calendar` | réglage | — | Screen, Card, Button, Banner, Toggle, SectionTitle | 0 |  | à faire |
 | `/settings/language` | réglage | — | Screen, Card, Banner, SectionTitle | 0 |  | à faire |
 | `/settings/notifications` | réglage | — | Screen, Card, Button, Banner, Chip, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/privacy` | réglage | — | Screen, Card, Sheet, Field, Button, Banner, Chip, Toggle, SectionTitle | 0 |  | à faire |
@@ -110,19 +122,19 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/calendar` | formulaire | family_calendar | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, Segmented, Toggle, SectionTitle, ErrorView, Skeleton | 0 | oui | à faire |
 | `/health` | détail | — | — | 0 |  | à faire |
 | `/household` | détail | — | — | 0 |  | à faire |
-| `/journal` | historique | — | Screen, Card, Field, Button, IconButton, Chip, Segmented, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
+| `/journal` | historique | journal | Screen, Card, Field, Button, IconButton, Chip, Segmented, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/me` | liste | — | Screen, Card, GlassSurface, Banner, ListRow, SectionTitle | 0 |  | à faire |
-| `/me/diary` | historique | — | Screen, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/me/diary` | historique | me_diary | Screen, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/me/mood` | liste | mood | Screen, Field, Chip, Toggle, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
 | `/me/mood/[id]` | détail | — | Screen, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/me/sleep` | liste | sleep | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
 | `/moi` | liste | — | Screen, Card, Sheet, Button, Banner, Segmented, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/story` | scène | — | Screen, Button | 0 |  | à faire |
-| `/summary` | résultat | summary, family_summary | Screen, Card, Button, Banner, Chip, SectionTitle | 0 |  | à faire |
+| `/summary` | résultat | summary | Screen, Button, Banner, Chip, SectionTitle | 0 |  | à faire |
 | `/today` | liste | — | Screen, Card, Button, Segmented | 0 |  | à faire |
-| `/tools` | liste | — | Screen, Field, Button, Chip, EmptyState, ErrorView, Skeleton, ToolCard | 0 |  | à faire |
-| `/track` | liste | baby_daily | Screen, Card, Button, Banner, Segmented, ListRow, SectionTitle, ErrorView, Skeleton | 5 |  | à faire |
-| `/track/[kind]` | formulaire | pp_feeding, baby_bottle, baby_diaper | Screen, Field, Button, Banner, Chip, Segmented, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/tools` | liste | — | Screen, Field, IconButton, ErrorView, Skeleton | 0 |  | à faire |
+| `/track` | liste | baby_daily | Screen, Card, Button, Banner, Segmented, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
+| `/track/[kind]` | formulaire | baby_breastfeed, baby_bottle, baby_diaper | Screen, Field, Button, Banner, Chip, Segmented, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 
 ### Santé
 
@@ -133,15 +145,15 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/consult/questions` | formulaire | consult_questions | Screen | 0 |  | à faire |
 | `/documents` | liste | documents | Screen, Card, GlassSurface, Sheet, Field, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
 | `/documents/[id]` | formulaire | — | Screen, Card, Sheet, Field, Button, IconButton, Banner, Segmented, Toggle, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
-| `/documents/book` | liste | — | Screen, Card, Banner, Chip, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
+| `/documents/book` | liste | health_book | Screen, Card, Banner, Chip, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/documents/export` | résultat | — | Screen, Card, Button, Banner, Toggle, SectionTitle, Skeleton | 0 |  | à faire |
 | `/documents/scan` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Segmented, Toggle | 3 |  | à faire |
 | `/emergency` | détail | emergency | Screen, Card, Banner | 0 |  | à faire |
-| `/guide/[topic]` | détail | guide_loss, guide_couple, guide_pma, guide_work, guide_firstaid, guide_neonat, guide_kidfood, guide_kidsleep, guide_hygiene, guide_activities, guide_toddler, guide_illnesses, guide_school, guide_sport, guide_behaviour | Screen, Card, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
-| `/library` | liste | library, ttc_articles, preg_birth_prep, preg_articles, preg_intimacy | Screen, Card, GlassSurface, Field, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
-| `/medications` | liste | — | Screen, Card, Banner, Chip, SectionTitle | 1 |  | à faire |
+| `/guide/[topic]` | détail | — | Screen, Card, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
+| `/library` | liste | library | Screen, Card, GlassSurface, Field, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
+| `/medications` | liste | medications | Screen, Card, Banner, Chip, SectionTitle | 1 |  | à faire |
 | `/nearby` | détail | — | — | 0 |  | à faire |
-| `/outings` | liste | nearby | Screen, GlassSurface, Button, Banner, Chip, Segmented, SectionTitle, Skeleton | 9 |  | à faire |
+| `/outings` | liste | nearby | Screen, GlassSurface, Button, Banner, Chip, Segmented, SectionTitle, Skeleton | 0 |  | à faire |
 | `/products` | liste | kid_products | Screen, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/products/[id]` | détail | — | Screen, Card, Button, Banner, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/products/compare` | résultat | — | Screen, Card, Chip, EmptyState | 0 |  | à faire |
@@ -154,9 +166,9 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/scanner/recalls` | liste | recall_alerts | Screen, Banner, Toggle, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | fait |
 | `/scanner/result/[id]` | résultat | — | Screen, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/sources` | liste | sources | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
-| `/teeth` | liste | kid_teeth | Screen, Card, Sheet, Field, Button, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/tutos` | détail | video_tutos | — | 0 |  | à faire |
-| `/videos` | liste | official_videos | Screen, Card, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
+| `/teeth` | liste | kid_teeth | Screen, Sheet, Field, Button, Banner, Chip, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/tutos` | détail | — | — | 0 |  | à faire |
+| `/videos` | liste | videos | Screen, Card, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
 
 ### Cycle et fertilité
 
@@ -170,12 +182,12 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/contraception/log` | historique | — | Screen, Banner, SectionTitle | 0 |  | à faire |
 | `/contraception/methods` | liste | avoid_methods | Screen, Card, Button, Banner | 0 |  | à faire |
 | `/contraception/reminders` | réglage | avoid_reminders | Screen, Card, Sheet, Field, Button, Chip, Toggle, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
-| `/cycle` | formulaire | avoid_cycle | Screen, Field, Button, Chip, Segmented, ErrorView, Skeleton | 0 |  | à faire |
+| `/cycle` | formulaire | cycle_home | Screen, Field, Button, Chip, Segmented, ErrorView, Skeleton | 0 |  | à faire |
 | `/cycle/advice` | liste | — | Screen, Banner, Skeleton | 0 |  | à faire |
-| `/cycle/bleeding` | liste | — | Screen, Field, Button, Banner | 0 |  | à faire |
-| `/cycle/calendar` | liste | avoid_fertile | Screen, Sheet, Button, IconButton, ListRow, ErrorView, Skeleton | 0 | oui | à faire |
-| `/cycle/discharge` | liste | — | Screen, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/cycle/discharge/[id]` | formulaire | — | Screen, Field, Button, Banner | 0 |  | à faire |
+| `/cycle/bleeding` | liste | cycle_bleeding | Screen, Field, Button, Banner | 0 |  | à faire |
+| `/cycle/calendar` | liste | cycle_calendar | Screen, Sheet, Button, IconButton, ListRow, ErrorView, Skeleton | 0 | oui | à faire |
+| `/cycle/discharge` | liste | cycle_discharge | Screen, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/cycle/discharge/[id]` | formulaire | — | Screen, Field, Button, Banner, EmptyState, Skeleton | 0 |  | à faire |
 | `/cycle/emergency` | détail | — | Screen | 0 |  | à faire |
 | `/cycle/export` | résultat | — | Screen, Button, Banner | 0 |  | à faire |
 | `/cycle/guides` | liste | cycle_guides | Screen | 0 |  | à faire |
@@ -185,7 +197,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/cycle/journal` | historique | cycle_journal | Screen, Field, Button, Banner | 0 |  | à faire |
 | `/cycle/kit` | liste | cycle_kit | Screen, Card, Button, Banner, ListRow | 0 |  | à faire |
 | `/cycle/month` | résultat | — | Screen, Card, Button, IconButton | 0 |  | à faire |
-| `/cycle/pain` | liste | — | Screen, Field, Button, Banner | 0 |  | à faire |
+| `/cycle/pain` | liste | cycle_pain | Screen, Field, Button, Banner | 0 |  | à faire |
 | `/cycle/privacy` | réglage | — | Screen, Button, Banner, Chip | 0 |  | à faire |
 | `/cycle/professional` | liste | — | Screen, Button | 0 |  | à faire |
 | `/cycle/recap` | historique | — | Screen, Button, Skeleton | 0 |  | à faire |
@@ -223,11 +235,11 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/postpartum/sharing` | liste | — | Screen, Card, Field, Button, Banner, Chip, Toggle, ListRow, SectionTitle, Skeleton | 0 |  | à faire |
 | `/postpartum/support` | formulaire | pp_support | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, Segmented, ListRow, SectionTitle, Skeleton | 0 |  | à faire |
 | `/postpartum/understand` | liste | pp_mental | Screen, Banner | 0 |  | à faire |
-| `/pregnancy` | liste | preg_evolution | Screen, Card, GlassSurface, Field, Button, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 5 |  | à faire |
+| `/pregnancy` | liste | preg_evolution | Screen, Card, Field, Button, Banner, Chip, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/pregnancy/calendar` | liste | preg_calendar | Screen, Card, Button, Banner, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/pregnancy/eat` | liste | preg_eat | Screen, Card, Button, Banner, Chip, SectionTitle, Skeleton | 0 |  | à faire |
-| `/pregnancy/edit` | formulaire | preg_edit | Screen, Card, Button, Banner, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/pregnancy/end` | formulaire | preg_end | Screen, Card, Field, Button, Banner, Chip, EmptyState | 0 |  | à faire |
+| `/pregnancy/edit` | formulaire | — | Screen, Card, Button, Banner, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/pregnancy/end` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, EmptyState | 0 |  | à faire |
 | `/pregnancy/feel` | formulaire | preg_feel | Screen, Card, Field, Button, Banner, Chip, Toggle, SectionTitle, EmptyState | 0 |  | à faire |
 | `/pregnancy/moves` | liste | preg_moves | Screen, Card, Field, Button, Banner, Chip, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
 | `/pregnancy/start` | formulaire | ttc_start_pregnancy | Screen, Card, Field, Button, Banner, Segmented | 0 |  | à faire |
@@ -238,36 +250,36 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
 | `/baby` | détail | — | — | 0 |  | à faire |
-| `/bottle` | liste | — | Screen, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | fait |
-| `/bottle/[childId]` | détail | pp_bottle | Screen, Sheet, Field, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/bottle` | liste | — | Screen, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/bottle/[childId]` | détail | baby_bottle_timer | Screen, Sheet, Field, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/bottle/history` | historique | baby_bottle_history | Screen, Sheet, IconButton, Chip, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
 | `/bottle/scoops` | détail | bottle_scoops | Screen, Field, Banner | 0 |  | fait |
-| `/child/[id]` | détail | kid_profile, kid_milestones | Screen, Button, IconButton, EmptyState, ErrorView, Skeleton | 1 |  | à faire |
-| `/child/[id]/album` | historique | — | Screen, Card, Sheet, Field, Button, Banner, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
+| `/child/[id]` | détail | kid_profile | Screen, Button, IconButton, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/album` | historique | kid_album | Screen, Card, Sheet, Field, Button, Banner, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
 | `/child/[id]/card` | résultat | kid_card | Screen, Card, Field, Button, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
-| `/child/[id]/discoveries` | formulaire | baby_foods | Screen, GlassSurface, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 25 | oui | à faire |
+| `/child/[id]/discoveries` | formulaire | baby_foods | Screen, GlassSurface, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 20 | oui | à faire |
 | `/child/[id]/foods` | détail | — | — | 0 |  | à faire |
-| `/child/[id]/grow` | liste | kid_grow | Screen, GlassSurface, Sheet, Field, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 13 |  | à faire |
-| `/child/[id]/growth` | détail | kid_growth | — | 0 |  | à faire |
+| `/child/[id]/grow` | liste | kid_grow | Screen, GlassSurface, Sheet, Field, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 5 |  | à faire |
+| `/child/[id]/growth` | détail | — | — | 0 |  | à faire |
 | `/child/[id]/health-tracking` | formulaire | kid_health | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, Toggle, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/child/[id]/needs` | formulaire | kid_treatments, kid_needs | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/child/[id]/school` | liste | — | Screen, Card, Field, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/needs` | formulaire | kid_treatments | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/school` | liste | kid_school | Screen, Card, Field, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/steps` | liste | kid_steps | Screen, Card, Button, Banner, EmptyState, Skeleton | 0 |  | à faire |
 | `/child/[id]/vaccines` | formulaire | kid_vaccines | Screen, Card, GlassSurface, Sheet, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/wellbeing` | liste | kid_mood | Screen, Card, Field, Button, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
 | `/meals` | liste | meals | Screen, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/meals/[slug]` | détail | — | Screen, Card, Sheet, Button, IconButton, Banner, Chip, SectionTitle, EmptyState, Skeleton | 1 |  | à faire |
-| `/meals/menu` | liste | — | Screen, Card, Sheet, Button, IconButton, Banner, Chip, SectionTitle | 0 |  | à faire |
+| `/meals/menu` | liste | meal_menu | Screen, Card, Sheet, Button, IconButton, Banner, Chip, SectionTitle | 0 |  | à faire |
 | `/meals/new` | formulaire | — | Screen, Card, Field, IconButton, Banner, Chip, SectionTitle | 0 |  | à faire |
-| `/meals/pantry` | liste | — | Screen, Field, Button, Chip, SectionTitle, EmptyState | 0 |  | à faire |
+| `/meals/pantry` | liste | meal_pantry | Screen, Field, Button, Chip, SectionTitle, EmptyState | 0 |  | à faire |
 | `/meals/rankings` | résultat | meal_rankings | Screen, Button, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/meals/settings` | réglage | — | Screen, Card, Field, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
-| `/meals/shopping` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, SectionTitle, EmptyState, Skeleton, Cascade | 1 |  | à faire |
-| `/night` | scène | kid_sleep | Button, Chip, Toggle, ErrorView, Skeleton | 8 |  | à faire |
+| `/meals/shopping` | formulaire | family_shopping | Screen, Card, Field, Button, Banner, Chip, SectionTitle, EmptyState, Skeleton, Cascade | 1 |  | à faire |
+| `/night` | scène | kid_sleep | Button, Chip, Toggle, ErrorView, Skeleton | 2 |  | à faire |
 | `/night/help` | liste | baby_night_help | Screen, Card, Field, Button, Banner, Chip, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/sleep/[childId]` | formulaire | kid_sleep_rhythm | Screen, Card, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/sleep/difficult/[childId]` | détail | — | EmptyState, ErrorView, Skeleton | 9 |  | à faire |
-| `/sleep/help/[childId]` | détail | — | Screen, Card, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 4 |  | à faire |
+| `/sleep/help/[childId]` | détail | sleep_help | Screen, Card, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 4 |  | à faire |
 | `/sleep/tonight` | scène | — | Chip | 6 |  | à faire |
 
 ### Famille
@@ -286,7 +298,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/kid-routines` | liste | kid_routines | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/load` | liste | mental_load | Screen, Card, Button, Banner, EmptyState | 0 |  | à faire |
 | `/family/me-time` | formulaire | family_metime | Screen, Card, Field, Button, Segmented, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
-| `/family/missions` | liste | — | Screen, Button, Segmented, ListRow, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions` | liste | family_missions | Screen, Button, Segmented, ListRow, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
 | `/family/missions/[id]` | formulaire | — | Screen, Field, Button, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
 | `/family/missions/new` | formulaire | — | Screen, Field, Button, Banner, Chip, Segmented | 0 |  | à faire |
 | `/family/missions/responsibilities` | liste | — | Screen, ListRow, ErrorView, Skeleton, Cascade | 0 |  | à faire |
@@ -299,7 +311,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/routines` | formulaire | family_routines | Screen, Card, Sheet, Field, Button, Chip, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/family/solo` | formulaire | solo_parent | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
 | `/family/sos` | liste | family_sos | — | 2 |  | à faire |
-| `/family/stocks` | détail | — | — | 0 |  | à faire |
+| `/family/stocks` | détail | family_stocks | — | 0 |  | à faire |
 | `/family/stocks/[id]` | détail | — | Screen, Card, Button, Banner, Chip, EmptyState, Skeleton, Cascade, DetailEnter | 0 |  | à faire |
 | `/family/stocks/baby` | détail | — | — | 0 |  | à faire |
 | `/family/stocks/new` | formulaire | — | Screen | 0 |  | à faire |
@@ -330,119 +342,87 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 
 Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session · formulaire/assistant · famille/partage/communauté · autre. Parcours : entrée → saisie → résultat → historique, d’après les routes sœurs qui existent (« feuille dans l’écran » : la saisie se fait dans une feuille du même écran). Les quatre dernières colonnes se remplissent au fil de la refonte (`scripts/homi/inventory-status.json` › `tools`).
 
-### autre (32)
+### autre (16)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
-| Après une perte | `guide_loss` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Contraception | `avoid_contraception` | `/contraception` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
-| Sorties près de chez moi | `nearby` | `/outings` | — | — | — | non | non | non | non |
 | Bibliothèque | `library` | `/library` | — | — | — | non | non | non | non |
-| Sources et lectures | `sources` | `/sources` | — | — | — | non | non | non | non |
-| Guides | `cycle_guides` | `/cycle/guides` | — | — | — | non | non | non | non |
-| Tutos vidéo | `video_tutos` | `/tutos` | — | — | — | non | non | non | non |
-| Vidéos & articles | `official_videos` | `/videos` | — | — | — | non | non | non | non |
+| Guides pratiques | `guides` | `/guide` | — | `/guide/[topic]` | — | non | non | non | non |
+| Vidéos et tutos | `videos` | `/videos` | — | — | — | non | non | non | non |
+| Sources et références | `sources` | `/sources` | — | — | — | non | non | non | non |
+| Guides du cycle | `cycle_guides` | `/cycle/guides` | — | — | — | non | non | non | non |
+| Ma contraception | `avoid_contraception` | `/contraception` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
+| Missions familiales | `family_missions` | `/family/missions` | — | — | — | non | non | non | non |
+| Liste de courses | `family_shopping` | `/meals/shopping` | `/meals/new` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
+| Stocks du foyer | `family_stocks` | `/family/stocks` | — | — | — | non | non | non | non |
+| Sorties en famille | `nearby` | `/outings` | — | — | — | non | non | non | non |
 | Comprendre mon cycle | `ttc_understand` | `/fertility/understand` | — | — | — | non | non | non | non |
-| Parcours PMA | `guide_pma` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Articles sur la conception | `ttc_articles` | `/library` | — | — | — | non | non | non | non |
-| Mes droits au travail | `guide_work` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Urgences et premiers secours | `guide_firstaid` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Produits enfants | `kid_products` | `/products` | — | `/products/[id] /products/compare` | — | non | non | non | non |
+| Guide des produits pour enfants | `kid_products` | `/products` | — | `/products/[id] /products/compare` | — | non | non | non | non |
 | Bien manger enceinte | `preg_eat` | `/pregnancy/eat` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Préparation à l’accouchement | `preg_birth_prep` | `/library` | — | — | — | non | non | non | non |
-| Résumés | `summary` | `/summary` | — | — | — | non | non | non | non |
-| Articles et vidéos | `preg_articles` | `/library` | — | — | — | non | non | non | non |
-| Sexualité pendant la grossesse | `preg_intimacy` | `/library` | — | — | — | non | non | non | non |
-| Mon bébé en néonat | `guide_neonat` | `/guide/[topic]` | — | — | — | non | non | non | non |
 | Baby blues et dépression du post-partum | `pp_mental` | `/postpartum/understand` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing` | non | non | non | non |
-| Santé mentale : trouver de l’aide | `pp_support` | `/postpartum/support` | `/postpartum/checkin` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
-| Classements des recettes | `meal_rankings` | `/meals/rankings` | `/meals/new /meals/shopping` | `/meals/[slug]` | `/meals/menu /meals/pantry` | non | non | non | non |
-| Alimentation 1–10 ans | `guide_kidfood` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Sommeil de l’enfant | `guide_kidsleep` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Hygiène et soins | `guide_hygiene` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Activités par âge | `guide_activities` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Grandir de 1 à 3 ans | `guide_toddler` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Maladies de l’enfance | `guide_illnesses` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Crèche, nounou, école | `guide_school` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Sport et activité | `guide_sport` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Émotions et comportement | `guide_behaviour` | `/guide/[topic]` | — | — | — | non | non | non | non |
+| Trouver de l’aide | `pp_support` | `/postpartum/support` | `/postpartum/checkin` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
+| Classement des recettes | `meal_rankings` | `/meals/rankings` | `/meals/new /meals/shopping` | `/meals/[slug]` | `/meals/menu /meals/pantry` | non | non | non | non |
 
-### famille/partage/communauté (19)
+### famille/partage/communauté (10)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
+| Répartition de la charge mentale | `mental_load` | `/family/load` | — | — | — | non | non | non | non |
 | Confier un domaine | `family_domains` | `/family/domains` | — | — | — | non | non | non | non |
-| À deux | `guide_couple` | `/guide/[topic]` | — | — | — | non | non | non | non |
-| Qui y pense ? | `mental_load` | `/family/load` | — | — | — | non | non | non | non |
 | Point de couple | `couple_week` | `/family/couple` | dans l’écran | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
-| Maman solo | `solo_parent` | `/family/solo` | feuille dans l’écran | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
+| Parent solo | `solo_parent` | `/family/solo` | feuille dans l’écran | — | — | non | non | non | non |
 | Communauté | `community` | `/community` | — | — | — | non | non | non | non |
 | Relais de nuit | `family_nights` | `/family/nights` | dans l’écran | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
-| Espace du conjoint | `pp_partner` | `/postpartum/partner` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
+| Résumés | `summary` | `/summary` | — | — | — | non | non | non | non |
+| Espace du co-parent | `pp_partner` | `/postpartum/partner` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Garde alternée | `custody` | `/family/custody` | feuille dans l’écran | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
-| Résumé familial du jour | `family_summary` | `/summary` | — | — | — | non | non | non | non |
 | Bilan de la semaine | `family_review` | `/family/review` | — | — | — | non | non | non | non |
-| Communauté | `community` | `/community` | — | — | — | non | non | non | non |
 
-### formulaire/assistant (31)
+### formulaire/assistant (23)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
-| Documents | `documents` | `/documents` | `/documents/[id] /documents/scan` | `/documents/export` | `/documents/book` | non | non | non | non |
-| Urgences | `emergency` | `/emergency` | — | — | — | non | non | non | non |
-| Mes questions pour le rendez-vous | `consult_questions` | `/consult/questions` | dans l’écran | — | — | non | non | non | non |
-| Je suis à bout | `exhaustion_check` | `/family/exhausted` | — | — | — | non | non | non | non |
-| J’ai un test positif | `ttc_start_pregnancy` | `/pregnancy/start` | `/pregnancy/edit /pregnancy/end /pregnancy/feel` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Comparer les moyens | `avoid_methods` | `/contraception/methods` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log` | non | non | non | non |
-| Contraception d’urgence | `avoid_emergency` | `/contraception/emergency` | `/contraception/consultation` | — | `/contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
-| Préparer une consultation | `avoid_consult` | `/contraception/consultation` | dans l’écran | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
-| Scanner un produit | `scan_product` | `/scanner/product` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
 | Scanner un aliment | `scan_food` | `/scanner/food` | `/scanner/avoid` | `/scanner/compare /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
-| Comparer deux produits | `scan_compare` | `/scanner/compare` | `/scanner/avoid` | `/scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
-| Journée difficile | `family_difficult` | `/family/difficult` | — | — | — | non | non | non | non |
-| Personnaliser l’accueil | `home_settings` | `/settings/home` | — | — | — | non | non | non | non |
-| Réglages | `settings` | `/settings` | — | — | — | non | non | non | non |
-| Modifier mon parcours | `journeys` | `/journeys` | feuille dans l’écran | `/journeys/[id]` | — | non | non | non | non |
+| Mes questions pour le rendez-vous | `consult_questions` | `/consult/questions` | dans l’écran | — | — | non | non | non | non |
+| Documents de santé | `documents` | `/documents` | `/documents/[id] /documents/scan` | `/documents/export` | `/documents/book` | non | non | non | non |
+| Point sur ma fatigue | `exhaustion_check` | `/family/exhausted` | — | — | — | non | non | non | non |
+| Urgences | `emergency` | `/emergency` | — | — | — | non | non | non | non |
 | Assistant | `ask` | `/ask` | — | — | — | non | non | non | non |
-| Assistant des articles | `local_ai` | `/assistant/local` | — | — | `/assistant/chat` | non | non | non | non |
+| Assistant hors ligne | `local_ai` | `/assistant/local` | — | — | `/assistant/chat` | non | non | non | non |
+| Comparer les contraceptions | `avoid_methods` | `/contraception/methods` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log` | non | non | non | non |
+| Contraception d’urgence | `avoid_emergency` | `/contraception/emergency` | `/contraception/consultation` | — | `/contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
+| Préparer ma consultation de contraception | `avoid_consult` | `/contraception/consultation` | dans l’écran | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
+| Démarrer ma grossesse | `ttc_start_pregnancy` | `/pregnancy/start` | `/pregnancy/edit /pregnancy/end /pregnancy/feel` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
+| Journée difficile | `family_difficult` | `/family/difficult` | — | — | — | non | non | non | non |
 | Papiers de la famille | `family_papers` | `/family/papers` | feuille dans l’écran | — | — | non | non | non | non |
-| Préparer une consultation | `ttc_consult` | `/fertility/consultation` | dans l’écran | — | — | non | non | non | non |
-| Documents | `documents` | `/documents` | `/documents/[id] /documents/scan` | `/documents/export` | `/documents/book` | non | non | non | non |
-| Mes questions pour le rendez-vous | `consult_questions` | `/consult/questions` | dans l’écran | — | — | non | non | non | non |
-| Modifier la grossesse | `preg_edit` | `/pregnancy/edit` | `/pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Terminer la grossesse | `preg_end` | `/pregnancy/end` | `/pregnancy/edit /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Mode urgence organisation | `family_urgent` | `/family/urgent` | — | — | — | non | non | non | non |
+| Scanner un produit | `scan_product` | `/scanner/product` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
+| Comparer deux produits | `scan_compare` | `/scanner/compare` | `/scanner/avoid` | `/scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
+| Préparer ma consultation de fertilité | `ttc_consult` | `/fertility/consultation` | dans l’écran | — | — | non | non | non | non |
+| Mode urgence du foyer | `family_urgent` | `/family/urgent` | — | — | — | non | non | non | non |
 | Je craque | `family_sos` | `/family/sos` | — | — | — | non | non | non | non |
-| Sa fiche | `kid_profile` | `/child/[id]` | — | — | — | non | non | non | non |
-| Documents | `documents` | `/documents` | `/documents/[id] /documents/scan` | `/documents/export` | `/documents/book` | non | non | non | non |
-| Mes questions pour le rendez-vous | `consult_questions` | `/consult/questions` | dans l’écran | — | — | non | non | non | non |
-| Fiche de mon enfant | `kid_card` | `/child/[id]/card` | — | — | — | non | non | non | non |
-| Mon enfant a un besoin particulier | `kid_needs` | `/child/[id]/needs` | feuille dans l’écran | — | — | non | non | non | non |
-| Mes démarches | `kid_steps` | `/child/[id]/steps` | — | — | — | non | non | non | non |
+| Aide au sommeil | `sleep_help` | `/sleep/help/[childId]` | — | — | — | non | non | non | non |
+| Fiche de l’enfant | `kid_profile` | `/child/[id]` | — | — | — | non | non | non | non |
+| École ou mode de garde | `kid_school` | `/child/[id]/school` | — | — | — | non | non | non | non |
+| Fiche à transmettre | `kid_card` | `/child/[id]/card` | — | — | — | non | non | non | non |
+| Démarches de l’enfant | `kid_steps` | `/child/[id]/steps` | — | — | — | non | non | non | non |
 
-### humeur/journal (12)
+### humeur/journal (13)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
 | Mon humeur | `mood` | `/me/mood` | — | `/me/mood/[id]` | `/me/diary /me/sleep` | oui | oui | oui | oui |
+| Mon journal intime | `me_diary` | `/me/diary` | — | `/me/mood/[id]` | `/me/mood /me/sleep` | non | non | non | non |
 | Journal de ma contraception | `contraception_journal` | `/contraception/journal` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/log /contraception/methods` | non | non | non | non |
 | Vider ma tête | `brain_dump` | `/family/brain-dump` | dans l’écran | — | — | non | non | non | non |
 | Carnet de la maison | `house_notebook` | `/family/notebook` | feuille dans l’écran | — | — | non | non | non | non |
 | Idées de prénoms | `preg_names` | `/names` | — | — | — | non | non | non | non |
 | Journal du cycle | `cycle_journal` | `/cycle/journal` | — | — | `/cycle/journal` | non | non | non | non |
-| Comment je me sens aujourd’hui ? | `preg_feel` | `/pregnancy/feel` | `/pregnancy/edit /pregnancy/end /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Point du jour | `pp_checkin` | `/postpartum/checkin` | `/postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
-| Ses découvertes | `baby_foods` | `/child/[id]/discoveries` | feuille dans l’écran | — | — | non | non | non | non |
-| Je grandis | `kid_grow` | `/child/[id]/grow` | feuille dans l’écran | — | — | non | non | non | non |
-| Journal | `kid_milestones` | `/child/[id]` | — | — | — | non | non | non | non |
-| Humeur et émotions | `kid_mood` | `/child/[id]/wellbeing` | — | — | — | non | non | non | non |
+| Mes symptômes de grossesse | `preg_feel` | `/pregnancy/feel` | `/pregnancy/edit /pregnancy/end /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
+| Mon point du jour | `pp_checkin` | `/postpartum/checkin` | `/postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
+| Diversification alimentaire | `baby_foods` | `/child/[id]/discoveries` | feuille dans l’écran | — | — | non | non | non | non |
+| Étapes du développement | `kid_grow` | `/child/[id]/grow` | feuille dans l’écran | — | — | non | non | non | non |
+| Humeur et émotions de l’enfant | `kid_mood` | `/child/[id]/wellbeing` | — | — | — | non | non | non | non |
+| Album photo | `kid_album` | `/child/[id]/album` | feuille dans l’écran | — | `/child/[id]/album` | non | non | non | non |
 
 ### minuteur/session (9)
 
@@ -450,73 +430,70 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
 | Je décroche | `offduty` | `/family/offduty` | — | — | — | non | non | non | non |
 | Mouvements de bébé | `preg_moves` | `/pregnancy/moves` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/weight` | non | non | non | non |
-| Allaitement | `pp_feeding` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
-| Biberon | `pp_bottle` | `/bottle/[childId]` | feuille dans l’écran | `/bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
+| Allaitement | `baby_breastfeed` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
+| Journée des biberons | `baby_bottle_timer` | `/bottle/[childId]` | feuille dans l’écran | `/bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
 | Compteur de mesurettes | `bottle_scoops` | `/bottle/scoops` | — | `/bottle/[childId]` | `/bottle/history` | oui | oui | oui | oui |
-| Biberons | `baby_bottle` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
-| Sommeil | `kid_sleep` | `/night` | — | — | `/night/help` | non | non | non | non |
-| Aide pour la nuit | `baby_night_help` | `/night/help` | — | — | — | non | non | non | non |
+| Noter un biberon | `baby_bottle` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
 | Couches | `baby_diaper` | `/track/[kind]` | dans l’écran | — | — | non | non | non | non |
+| Sommeil de l’enfant | `kid_sleep` | `/night` | — | — | `/night/help` | non | non | non | non |
+| Bilan de la nuit | `baby_night_help` | `/night/help` | — | — | — | non | non | non | non |
 
-### suivi/mesures (28)
+### suivi/mesures (32)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
 | Mon sommeil | `sleep` | `/me/sleep` | feuille dans l’écran | `/me/mood/[id]` | `/me/diary /me/mood` | non | non | non | non |
-| Cycle et règles | `avoid_cycle` | `/cycle` | dans l’écran | — | — | non | non | non | non |
-| Calendrier du cycle | `avoid_fertile` | `/cycle/calendar` | feuille dans l’écran | — | — | non | non | non | non |
-| Symptômes | `cycle_symptoms` | `/cycle/symptoms` | — | — | — | non | non | non | non |
+| Carnet de santé | `health_book` | `/documents/book` | `/documents/[id] /documents/scan` | `/documents/export` | — | non | non | non | non |
+| Médicaments | `medications` | `/medications` | — | — | — | non | non | non | non |
+| Mon cycle | `cycle_home` | `/cycle` | dans l’écran | — | — | non | non | non | non |
+| Calendrier du cycle | `cycle_calendar` | `/cycle/calendar` | feuille dans l’écran | — | — | non | non | non | non |
+| Symptômes du cycle | `cycle_symptoms` | `/cycle/symptoms` | — | — | — | non | non | non | non |
+| Douleurs | `cycle_pain` | `/cycle/pain` | — | — | — | non | non | non | non |
+| Pertes vaginales | `cycle_discharge` | `/cycle/discharge` | — | — | — | non | non | non | non |
+| Saignements inhabituels | `cycle_bleeding` | `/cycle/bleeding` | — | — | — | non | non | non | non |
 | Statistiques du cycle | `cycle_stats` | `/cycle/stats` | — | — | — | non | non | non | non |
-| Historique et favoris | `scan_history` | `/scanner/history` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/recalls` | oui | oui | oui | oui |
+| Produits scannés | `scan_history` | `/scanner/history` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/recalls` | oui | oui | oui | oui |
 | Produits à éviter | `scan_avoid` | `/scanner/avoid` | dans l’écran | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | partiel | partiel |
-| Alertes produits rappelés | `recall_alerts` | `/scanner/recalls` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history` | oui | oui | partiel | oui |
-| Examens | `ttc_exams` | `/fertility/exams` | — | — | — | non | non | non | non |
+| Alertes de rappel de produits | `recall_alerts` | `/scanner/recalls` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history` | oui | oui | partiel | oui |
 | Cycle et période fertile | `ttc_cycle` | `/fertility` | — | — | — | non | non | non | non |
 | Tests d’ovulation et de grossesse | `ttc_tests` | `/fertility/log` | — | — | `/fertility/log` | non | non | non | non |
 | Glaire cervicale | `ttc_mucus` | `/fertility/mucus` | — | — | — | non | non | non | non |
-| Température (facultatif) | `ttc_temperature` | `/fertility/body` | dans l’écran | — | — | non | non | non | non |
-| Rapports (facultatif, privé) | `ttc_intimacy` | `/fertility/intimacy` | — | — | — | non | non | non | non |
-| Suivi PMA | `pma_tracker` | `/fertility/pma` | feuille dans l’écran | — | — | non | non | non | non |
-| Évolution du bébé | `preg_evolution` | `/pregnancy` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Suivi du poids | `preg_weight` | `/pregnancy/weight` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves` | non | non | non | non |
-| Récupération | `pp_recovery` | `/postpartum` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
+| Température au réveil | `ttc_temperature` | `/fertility/body` | dans l’écran | — | — | non | non | non | non |
+| Rapports | `ttc_intimacy` | `/fertility/intimacy` | — | — | — | non | non | non | non |
+| Examens de fertilité | `ttc_exams` | `/fertility/exams` | — | — | — | non | non | non | non |
+| Suivi de PMA | `pma_tracker` | `/fertility/pma` | feuille dans l’écran | — | — | non | non | non | non |
+| Ma grossesse semaine par semaine | `preg_evolution` | `/pregnancy` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
+| Mon poids pendant la grossesse | `preg_weight` | `/pregnancy/weight` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/calendar /pregnancy/eat /pregnancy/moves` | non | non | non | non |
+| Ma récupération après la naissance | `pp_recovery` | `/postpartum` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Cicatrisation et rééducation | `pp_body` | `/postpartum/recovery` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/partner /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Historique des biberons | `baby_bottle_history` | `/bottle/history` | feuille dans l’écran | `/bottle/[childId] /bottle/scoops` | `/bottle/history` | oui | oui | oui | oui |
 | Planning de sommeil | `kid_sleep_rhythm` | `/sleep/[childId]` | dans l’écran | `/sleep/difficult/[childId] /sleep/help/[childId]` | — | non | non | non | non |
-| Suivi de la journée | `baby_daily` | `/track` | `/track/[kind]` | — | — | non | non | non | non |
 | Dents | `kid_teeth` | `/teeth` | feuille dans l’écran | — | — | non | non | non | non |
-| Croissance | `kid_growth` | `/child/[id]/growth` | — | — | — | non | non | non | non |
+| Suivi de la journée | `baby_daily` | `/track` | `/track/[kind]` | — | — | non | non | non | non |
+| Journal complet | `journal` | `/journal` | — | — | `/journal` | non | non | non | non |
 | Vaccins | `kid_vaccines` | `/child/[id]/vaccines` | feuille dans l’écran | — | — | non | non | non | non |
-| Suivi santé | `kid_health` | `/child/[id]/health-tracking` | feuille dans l’écran | — | — | non | non | non | non |
-| Traitements prescrits | `kid_treatments` | `/child/[id]/needs` | feuille dans l’écran | — | — | non | non | non | non |
-| Planning de sommeil | `kid_sleep_rhythm` | `/sleep/[childId]` | dans l’écran | `/sleep/difficult/[childId] /sleep/help/[childId]` | — | non | non | non | non |
+| Suivi de santé de l’enfant | `kid_health` | `/child/[id]/health-tracking` | feuille dans l’écran | — | — | non | non | non | non |
+| Traitements de l’enfant | `kid_treatments` | `/child/[id]/needs` | feuille dans l’écran | — | — | non | non | non | non |
 
-### tâches/planning (24)
+### tâches/planning (17)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
 | Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
+| Menu de la semaine | `meal_menu` | `/meals/menu` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/pantry` | non | non | non | non |
+| Cuisiner avec ce que j’ai | `meal_pantry` | `/meals/pantry` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu` | non | non | non | non |
 | Rendez-vous et examens | `appointments` | `/appointments` | feuille dans l’écran | — | — | non | non | non | non |
-| Agenda familial | `family_calendar` | `/calendar` | feuille dans l’écran | — | — | non | non | non | non |
-| Échéances préparées | `family_prep` | `/family/prep` | — | — | — | non | non | non | non |
-| Organisation familiale | `family_tasks` | `/family` | — | — | — | non | non | non | non |
-| Routines | `family_routines` | `/family/routines` | feuille dans l’écran | — | — | non | non | non | non |
-| Temps pour soi | `family_metime` | `/family/me-time` | dans l’écran | — | — | non | non | non | non |
-| Rappels | `reminders` | `/settings/reminders` | feuille dans l’écran | — | — | non | non | non | non |
-| Notifications | `notifications` | `/notifications` | — | — | — | non | non | non | non |
+| Trousse de règles | `cycle_kit` | `/cycle/kit` | — | — | — | non | non | non | non |
 | Rappels de contraception | `avoid_reminders` | `/contraception/reminders` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
-| Trousse règles | `cycle_kit` | `/cycle/kit` | — | — | — | non | non | non | non |
-| Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
-| Rappels | `ttc_reminders` | `/fertility/reminders` | — | — | — | non | non | non | non |
-| Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
-| Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
-| Rendez-vous et examens | `appointments` | `/appointments` | feuille dans l’écran | — | — | non | non | non | non |
-| Listes | `preg_lists` | `/lists` | feuille dans l’écran | — | — | non | non | non | non |
-| Mon calendrier de grossesse | `preg_calendar` | `/pregnancy/calendar` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
-| Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
-| Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
-| Rendez-vous et examens | `appointments` | `/appointments` | feuille dans l’écran | — | — | non | non | non | non |
-| Repas et recettes | `meals` | `/meals` | `/meals/new /meals/shopping` | `/meals/[slug] /meals/rankings` | `/meals/menu /meals/pantry` | non | non | non | non |
+| Temps pour soi | `family_metime` | `/family/me-time` | dans l’écran | — | — | non | non | non | non |
+| Agenda familial | `family_calendar` | `/calendar` | feuille dans l’écran | — | — | non | non | non | non |
+| Tâches du foyer | `family_tasks` | `/family` | — | — | — | non | non | non | non |
+| Routines du foyer | `family_routines` | `/family/routines` | feuille dans l’écran | — | — | non | non | non | non |
+| Échéances à préparer | `family_prep` | `/family/prep` | — | — | — | non | non | non | non |
+| Rappels | `reminders` | `/settings/reminders` | feuille dans l’écran | — | — | non | non | non | non |
+| Rappels du projet bébé | `ttc_reminders` | `/fertility/reminders` | — | — | — | non | non | non | non |
+| Calendrier de grossesse | `preg_calendar` | `/pregnancy/calendar` | `/pregnancy/edit /pregnancy/end /pregnancy/feel /pregnancy/start` | — | `/pregnancy/eat /pregnancy/moves /pregnancy/weight` | non | non | non | non |
+| Listes de préparation | `preg_lists` | `/lists` | feuille dans l’écran | — | — | non | non | non | non |
 | Routines en images | `kid_routines` | `/family/kid-routines` | feuille dans l’écran | — | — | non | non | non | non |
 | Historique des tâches | `family_history` | `/family/history` | — | — | `/family/history` | non | non | non | non |
 

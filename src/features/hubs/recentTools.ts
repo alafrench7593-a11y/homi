@@ -5,6 +5,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { migrateToolIds } from '@/lib/domain/toolFavorites';
 
 export const RECENT_MAX = 8;
 
@@ -15,6 +16,8 @@ export function pushRecent(ids: string[], id: string, max = RECENT_MAX): string[
 
 interface RecentState {
   recentTools: string[];
+  /** Outils déjà ouverts au moins une fois sur cet appareil : un outil connu s'ouvre directement, sans repasser par sa fiche. */
+  knownTools: string[];
   addRecent: (id: string) => void;
   clearRecent: () => void;
 }
@@ -23,9 +26,18 @@ export const useRecentTools = create<RecentState>()(
   persist(
     (set) => ({
       recentTools: [],
-      addRecent: (id) => set((s) => ({ recentTools: pushRecent(s.recentTools, id) })),
+      knownTools: [],
+      addRecent: (id) => set((s) => ({ recentTools: pushRecent(s.recentTools, id), knownTools: s.knownTools.includes(id) ? s.knownTools : [...s.knownTools, id] })),
       clearRecent: () => set({ recentTools: [] }),
     }),
-    { name: 'homi.recentTools', storage: createJSONStorage(() => AsyncStorage) },
+    {
+      name: 'homi.recentTools', storage: createJSONStorage(() => AsyncStorage),
+      // anciennes clés « thème:adresse » → identifiant stable de l'outil (17/11/2026)
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<RecentState>;
+        const recentTools = migrateToolIds(p.recentTools).slice(0, RECENT_MAX);
+        return { ...current, ...p, recentTools, knownTools: migrateToolIds([...(p.knownTools ?? []), ...recentTools]) };
+      },
+    },
   ),
 );

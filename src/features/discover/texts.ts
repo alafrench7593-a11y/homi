@@ -5,18 +5,18 @@
  */
 import { clockHM } from '@/i18n/formats';
 import { formatDate, formatList, formatNumber, t as tr, tMaybe, type TKey } from '@/i18n';
-import { toolLabelKey, toolSubKey } from '@/lib/journeys/tools';
+import { toolDescKey, toolLabelKey, toolSubKey } from '@/lib/journeys/tools';
 import type { ChapterKey, DemoSpec, DiscoverTool, JournalSet, TaskSet, ToolAccessInfo, Unit } from './model';
 
 export const toolName = (key: string) => tr(toolLabelKey(key));
 
-/** Phrase d'usage : sous-titre existant de l'outil, sinon phrase dédiée (`kn.use.<outil>`). */
+/** Phrase d'usage : la description d'une phrase de l'outil (`th.<outil>.d`), commune à tout le centre d'outils. */
 export function usagePhrase(key: string): string {
-  return tMaybe(toolSubKey(key)) || tMaybe(`kn.use.${key}`) || '';
+  return tMaybe(toolDescKey(key)) || tMaybe(toolSubKey(key)) || tMaybe(`kn.use.${key}`) || '';
 }
 /** Source de la phrase d'usage (CSV, tests). */
-export const usageSource = (key: string): 'sous-titre' | 'phrase dédiée' | 'absente' =>
-  tMaybe(toolSubKey(key)) ? 'sous-titre' : tMaybe(`kn.use.${key}`) ? 'phrase dédiée' : 'absente';
+export const usageSource = (key: string): 'description' | 'sous-titre' | 'phrase dédiée' | 'absente' =>
+  tMaybe(toolDescKey(key)) ? 'description' : tMaybe(toolSubKey(key)) ? 'sous-titre' : tMaybe(`kn.use.${key}`) ? 'phrase dédiée' : 'absente';
 
 export const chapterTitle = (k: ChapterKey) => tr(`kn.ch.${k}.title` as TKey);
 export const chapterLead = (k: ChapterKey) => tr(`kn.ch.${k}.lead` as TKey);

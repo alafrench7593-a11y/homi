@@ -28,61 +28,61 @@
     "bottle/scoops.tsx": "fait"
   },
   "tools": {
-    "mood:/me/mood": {
+    "mood": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "scanner:/scanner/product": {
+    "scan_product": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "scanner:/scanner/food": {
+    "scan_food": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "scanner:/scanner/history": {
+    "scan_history": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "scanner:/scanner/compare": {
+    "scan_compare": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "scanner:/scanner/avoid": {
+    "scan_avoid": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "partiel",
       "parcours_verifie": "partiel"
     },
-    "scanner:/scanner/recalls": {
+    "recall_alerts": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "partiel",
       "parcours_verifie": "oui"
     },
-    "feeding:/bottle/:id": {
+    "baby_bottle_timer": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "feeding:/bottle/scoops": {
+    "bottle_scoops": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
       "parcours_verifie": "oui"
     },
-    "feeding:/bottle/history?child=:id": {
+    "baby_bottle_history": {
       "ecrans_refondus": "oui",
       "commandes_adaptees": "oui",
       "transition_implementee": "oui",
@@ -103,7 +103,7 @@
     {
       "kind": "Données",
       "label": "Biberon",
-      "key": "pp_bottle",
+      "key": "baby_bottle_timer",
       "why": "minuteur en direct + saisie rapide + historique et compteur de mesurettes : valide chiffres animés, carte d’état, transition liste → détail et lisibilité de nuit",
       "routes": [
         "/bottle",

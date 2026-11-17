@@ -8,13 +8,13 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Chip, Icon, ListRow, Text } from '@/components/ui';
 import { useArticles, useCategories } from '@/lib/data/hooks';
-import { articlesForTool, TOOL_TOPICS } from '@/lib/domain/toolArticles';
+import { articlesForTool, toolTopic } from '@/lib/domain/toolArticles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 export function ToolArticles({ toolId }: { toolId: string }) {
-  const topic = TOOL_TOPICS[toolId];
+  const topic = toolTopic(toolId);
   if (!topic) return null;
   return <Inner toolId={toolId} ask={topic.ask} />;
 }

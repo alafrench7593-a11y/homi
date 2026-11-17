@@ -42,10 +42,9 @@ const ADULT_ONLY: Partial<Record<ToolTheme, Set<Scope>>> = { sleep: new Set([...
 
 /** Thème « resources » : rangement outil par outil (clé du registre central). */
 export const RESOURCE_HUB: Record<string, HubKey> = {
-  ask: 'health', local_ai: 'health', library: 'health', sources: 'health', official_videos: 'health',
-  cycle_guides: 'health', ttc_articles: 'health', preg_articles: 'health', preg_intimacy: 'health',
-  summary: 'baby', video_tutos: 'baby',
-  nearby: 'family', community: 'family', solo_parent: 'family', family_papers: 'family', guide_work: 'family',
+  ask: 'health', local_ai: 'health', library: 'health', sources: 'health', videos: 'health', guides: 'health', cycle_guides: 'health',
+  summary: 'baby',
+  nearby: 'family', community: 'family', solo_parent: 'family', family_papers: 'family',
 };
 
 /** Onglet hub d'un outil du catalogue (toujours défini : aucun outil sans onglet). */

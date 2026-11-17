@@ -2,7 +2,7 @@
  * Réorganisation par profil (mission du 20 octobre 2026) et catégories « Éviter une grossesse » / « Projet bébé » :
  * accueil d'un nouveau-né, parcours grossesse, calendrier du cycle, rappels de vaccins, aide pour la nuit.
  */
-import { quickAllowed, quickFor, screenAllowed, toolsFor, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
+import { allowedToolIds, quickAllowed, quickFor, screenAllowed, toolsFor, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
 import { appointmentRelevant, notificationRelevant, reminderRelevant, type RelevanceCtx } from '@/lib/journeys/relevance';
 import { addMonthsISO, byVisit, nextDoses, VACCINE_DOSES, VACCINE_SOURCES, vaccineSchedule } from '@/lib/domain/vaccines';
 import { lastNights, nightSummary } from '@/lib/domain/night';
@@ -35,13 +35,13 @@ describe('accueil d’un nouveau-né : seulement ce qui concerne ce profil', () 
     expect(notificationRelevant({ deep_link: '/fertility/log', payload: {}, category: 'reminder' }, { activeScopes: ['avoid'], pregnancyId: null, trackedChildIds: [] })).toBe(false);
   });
   it('les essentiels du nouveau-né, l’aide pour la nuit et les infos de la mère ; pas de catégorie post-partum indépendante', () => {
-    const ids = toolsFor({ scope: 'baby', childId: 'lina', babyId: 'lina', postpartum: true }).map((x) => x.id);
+    const ids = allowedToolIds({ scope: 'baby', childId: 'lina', babyId: 'lina', postpartum: true });
     for (const id of ['baby_breastfeed', 'baby_bottle', 'baby_bottle_timer', 'baby_diaper', 'kid_sleep', 'kid_growth', 'kid_vaccines', 'baby_foods', 'meals', 'scan_food', 'appointments', 'baby_night_help', 'pp_recovery', 'pp_checkin', 'pp_mental']) expect(ids).toContain(id);
     for (const id of ['kid_journal', 'child_school', 'preg_evolution', 'kid_needs']) expect(ids).not.toContain(id);
     // « À deux » (04/11/2026) : l'organisation familiale est ouverte dès le bébé (charge mentale, relais)
     expect(ids).toContain('family_tasks');
     // Sans post-partum en cours (coparent, adoption…), pas d'informations de récupération de la mère
-    expect(toolsFor({ scope: 'baby', childId: 'lina', babyId: 'lina' }).map((x) => x.id)).not.toContain('pp_recovery');
+    expect(allowedToolIds({ scope: 'baby', childId: 'lina', babyId: 'lina' })).not.toContain('pp_recovery');
     expect(TOOLS.some((x) => x.id === 'kid_journal' || x.id === 'child_school')).toBe(false);
     expect(quickAllowed('journal', { scope: 'baby', childId: 'lina' })).toBe(false);
     expect(quickAllowed('nighthelp', { scope: 'baby', childId: 'lina' })).toBe(true);
@@ -54,7 +54,7 @@ describe('accueil d’un nouveau-né : seulement ce qui concerne ce profil', () 
 });
 
 describe('parcours grossesse : seulement les outils prévus', () => {
-  const ids = toolsFor({ scope: 'pregnancy', pregnancyId: 'p1' }).map((x) => x.id);
+  const ids = allowedToolIds({ scope: 'pregnancy', pregnancyId: 'p1' });
   it('développement, rendez-vous, documents, poids facultatif, sommeil, humeur, repas, préparation, prénoms, articles, sexualité', () => {
     for (const id of ['preg_evolution', 'appointments', 'documents', 'preg_weight', 'sleep', 'mood', 'preg_eat', 'preg_birth_prep', 'preg_names', 'preg_articles', 'preg_intimacy']) expect(ids).toContain(id);
   });
@@ -83,7 +83,7 @@ describe('« Éviter une grossesse » et « Projet bébé » : calendrier du cyc
     expect(screenAllowed('/pregnancy', ['ttc'])).toBe(false); // jamais de semaines de grossesse en projet bébé
   });
   it('projet bébé : tests d’ovulation, tests de grossesse, glaire, rappels', () => {
-    const ids = toolsFor(ttc).map((x) => x.id);
+    const ids = allowedToolIds(ttc);
     for (const id of ['ttc_calendar', 'ttc_tests', 'ttc_mucus', 'ttc_reminders', 'cycle_symptoms']) expect(ids).toContain(id);
     expect(ids).not.toContain('preg_evolution');
   });

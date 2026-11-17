@@ -1,13 +1,18 @@
 /**
- * Catalogue « Outils » : tous les outils réels de l'application, rangés par thème.
- * Source unique = `toolCategories` (rangement par parcours, conservé tel quel) + quelques outils
- * qui existaient sans y figurer. Aucun outil n'est retiré : un même écran n'apparaît qu'une fois
- * par thème. Les thèmes donnent à chaque outil sa propre identité visuelle et animée.
+ * Catalogue du centre d'outils : les outils réels de l'application, depuis le registre central
+ * (src/lib/journeys/tools.ts). Un besoin = une entrée, rangée dans l'une des 9 catégories ; chaque entrée porte un
+ * nom, une description d'une phrase, ses profils, son statut Premium, une route directe et un identifiant STABLE
+ * (favoris, récents). Les « thèmes » restent l'identité visuelle des glyphes (couleur, animation) et le rangement des onglets.
  */
 import type { IconName } from '@/components/ui';
-import { localeTag, t as tr, tMaybe } from '@/i18n';
+import { localeTag, t as tr, tMaybe, type TKey } from '@/i18n';
 import { localized } from '@/i18n/localized';
-import { toolLabelKey, toolsFor, toolSubKey, type ScopeCtx } from '@/lib/journeys/tools';
+import { isFreeRoute } from '@/lib/premium/access';
+import {
+  canonicalToolId, FEATURED, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProfiles, toolsFor, toolSubKey,
+  type ResolvedTool, type Scope, type ScopeCtx, type ToolCategory, type ToolProfile,
+} from '@/lib/journeys/tools';
+import { searchCatalog } from './toolSearch';
 
 export type ToolTheme =
   | 'feeding' | 'sleep' | 'diapers' | 'teeth' | 'growth' | 'health' | 'mood' | 'pregnancy' | 'cycle'
@@ -118,71 +123,156 @@ export const THEMES: { key: ToolTheme; title: string; short: string }[] = locali
 const themeTitles = (l: typeof THEMES_FR) => Object.fromEntries(l.map((x) => [x.key, x.title])) as Record<ToolTheme, string>;
 export const THEME_TITLE = localized(themeTitles(THEMES_FR), themeTitles(THEMES_EN), { es: themeTitles(THEMES_ES), de: themeTitles(THEMES_DE), it: themeTitles(THEMES_IT) });
 
-export interface CatalogTool {
-  /** Identifiant stable (favoris) : dérivé de l'adresse sans l'identifiant d'enfant. */
+// ------------------------------------------------------------------ catégories du centre d'outils
+/** Pictogramme de chaque catégorie (liste « Mes outils »). */
+export const CATEGORY_ICON: Record<ToolCategory, IconName> = {
+  feeding: 'coffee', sleep: 'moon', growth: 'trending-up', health: 'activity', cycle: 'rotate-cw', pregnancy: 'heart',
+  school: 'book', couple: 'users', family: 'home', account: 'settings',
+};
+/** Thème visuel (couleur du glyphe) prêté à chaque catégorie. */
+export const CATEGORY_THEME: Record<ToolCategory, ToolTheme> = {
+  feeding: 'feeding', sleep: 'sleep', growth: 'growth', health: 'health', cycle: 'cycle', pregnancy: 'pregnancy',
+  school: 'tasks', couple: 'relay', family: 'calendar', account: 'reminders',
+};
+export const categoryTitle = (c: ToolCategory) => tr(`th.cat.${c}` as TKey);
+export const categoryLead = (c: ToolCategory) => tr(`th.cat.${c}.d` as TKey);
+export const isToolCategory = (v: unknown): v is ToolCategory => typeof v === 'string' && (v === 'account' || (TOOL_CATEGORIES as string[]).includes(v));
+
+export interface CatalogSub {
+  /** Identifiant stable `<outil>.<sous-accès>` (favoris, recherche). */
   id: string;
-  /** Identifiant de l'outil dans le registre central. */
+  icon: IconName;
+  label: string;
+  /** Précision courte (fragment hérité), quand elle existe. */
+  hint?: string;
+  category: ToolCategory;
+  href: string;
+}
+
+export interface CatalogTool {
+  /** Identifiant STABLE de l'outil dans le registre central (favoris, récents, liens) : ne dépend ni du thème ni de l'adresse. */
+  id: string;
+  /** Même valeur que `id` (ancien nom du champ, conservé pour les écrans existants). */
   key: string;
+  category: ToolCategory;
   theme: ToolTheme;
   icon: IconName;
   label: string;
+  /** Description d'UNE phrase : à quoi sert l'outil. */
   sub?: string;
   href: string;
+  /** Profils concernés (lisibles : moi, grossesse, post-partum, bébé, enfant, famille). */
+  profiles: ToolProfile[];
+  /** Ouvert sans abonnement (urgences, sécurité, sources) ; sinon inclus dans Premium. */
+  free: boolean;
   /** Outil « pour tout le monde », adapté au profil affiché. */
   universal?: boolean;
   /** Urgences : jamais retardé par une animation. */
   urgent?: boolean;
+  /** Sous-accès disponibles pour le profil affiché (onglets, filtres, lectures du même écran). */
+  subs: CatalogSub[];
+  /** Entrée construite à partir d'un sous-accès (favori ou résultat de recherche) : identifiant de l'outil parent. */
+  parent?: string;
 }
 
-/** Identifiant stable : l'adresse sans identifiant d'enfant, plus le thème. */
-export function toolId(theme: ToolTheme, href: string) {
-  const clean = href.replace(/\/child\/[^/?]+/, '/child/:id').replace(/\/bottle\/(?!(?:scoops|history)$)[^/?]+$/, '/bottle/:id').replace(/([?&])child=[^&]+/, '$1child=:id');
-  return `${theme}:${clean}`;
+const routePath = (href: string) => href.replace('/(tabs)', '') || '/';
+
+function toCatalog(it: ResolvedTool): CatalogTool {
+  const def = TOOL_BY_ID[it.id];
+  const desc = tMaybe(toolDescKey(it.id));
+  return {
+    id: it.id, key: it.id, category: it.category, theme: it.theme, icon: it.icon, label: tr(toolLabelKey(it.id)), sub: desc || undefined,
+    href: it.href, profiles: toolProfiles(def), free: isFreeRoute(routePath(it.href)), universal: it.universal, urgent: it.urgent,
+    subs: it.subs.map((s) => ({ id: s.id, icon: s.icon, label: tr(toolLabelKey(s.id)), hint: tMaybe(toolSubKey(s.id)) || undefined, category: s.category, href: s.href })),
+  };
 }
+
+const CAT_ORDER = new Map<ToolCategory, number>([...TOOL_CATEGORIES, 'account' as const].map((c, i) => [c, i]));
+const byCategory = (list: CatalogTool[]) =>
+  list.map((x, i) => ({ x, i })).sort((a, b) => CAT_ORDER.get(a.x.category)! - CAT_ORDER.get(b.x.category)! || a.i - b.i).map((r) => r.x);
 
 /**
- * Outils AUTORISÉS pour le profil affiché, depuis le registre central (src/lib/journeys/tools.ts),
- * dédoublonnés et rangés dans l'ordre des thèmes. Libellés dans la langue active.
+ * Outils AUTORISÉS pour le profil affiché, depuis le registre central (src/lib/journeys/tools.ts), rangés dans
+ * l'ordre des 9 catégories. Un besoin = une entrée ; les entrées « Mon compte et réglages » n'y figurent pas
+ * (voir `accountEntries`). Libellés dans la langue active.
  */
 export function toolCatalog(ctx: ScopeCtx): CatalogTool[] {
-  const seen = new Set<string>();
-  const out: CatalogTool[] = [];
-  for (const it of toolsFor(ctx)) {
-    const id = toolId(it.theme, it.href);
-    if (seen.has(id)) continue;
-    seen.add(id);
-    const sub = tMaybe(toolSubKey(it.id));
-    out.push({ id, key: it.id, theme: it.theme, icon: it.icon, label: tr(toolLabelKey(it.id)), sub: sub || undefined, href: it.href, universal: it.universal, urgent: it.urgent });
-  }
-  const order = new Map(THEMES.map((x, i) => [x.key, i]));
-  return out.map((x, i) => ({ x, i })).sort((a, b) => order.get(a.x.theme)! - order.get(b.x.theme)! || a.i - b.i).map((r) => r.x);
+  return byCategory(toolsFor(ctx).filter((x) => x.category !== 'account').map(toCatalog));
 }
 
-/** Regroupe par thème (thèmes vides omis). */
+/** Réglages, notifications, parcours : accessibles depuis « Mes outils », jamais comptés comme outils. */
+export function accountEntries(ctx: ScopeCtx): CatalogTool[] {
+  return toolsFor(ctx).filter((x) => x.category === 'account').map(toCatalog);
+}
+
+/** Entrée de liste pour un sous-accès (favori, résultat de recherche, « à lire ») : s'ouvre comme un outil. */
+export function subAsTool(tool: CatalogTool, sub: CatalogSub): CatalogTool {
+  return { ...tool, id: sub.id, key: sub.id, category: sub.category, icon: sub.icon, label: sub.label, sub: sub.hint, href: sub.href, subs: [], parent: tool.id, urgent: false };
+}
+
+/** Retrouve une entrée (outil ou sous-accès) par son identifiant stable. */
+export function findEntry(tools: CatalogTool[], id: string): CatalogTool | null {
+  for (const x of tools) {
+    if (x.id === id) return x;
+    const s = x.subs.find((y) => y.id === id);
+    if (s) return subAsTool(x, s);
+  }
+  return null;
+}
+
+/** Outils d'une catégorie + lectures (« à lire » : guides rangés dans cette catégorie). */
+export function categoryContent(tools: CatalogTool[], category: ToolCategory) {
+  return {
+    tools: tools.filter((x) => x.category === category),
+    readings: tools.flatMap((x) => x.subs.filter((s) => s.category === category && x.category !== category).map((s) => subAsTool(x, s))),
+  };
+}
+
+/** Les plus utiles pour le profil affiché (6 au plus) : sélection du registre, complétée dans l'ordre du catalogue. */
+export function featuredTools(tools: CatalogTool[], scope: Scope, max = 6): CatalogTool[] {
+  const byId = new Map(tools.map((x) => [x.id, x]));
+  const picked = FEATURED[scope].map((id) => byId.get(id)).filter((x): x is CatalogTool => !!x && !x.urgent);
+  for (const x of tools) {
+    if (picked.length >= max) break;
+    if (!x.urgent && !picked.includes(x)) picked.push(x);
+  }
+  return picked.slice(0, max);
+}
+
+/** Regroupe par thème visuel (thèmes vides omis) : onglets hub. */
 export function groupByTheme(tools: CatalogTool[]) {
   return THEMES.map((th) => ({ ...th, items: tools.filter((x) => x.theme === th.key) })).filter((g) => g.items.length);
 }
 
-const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’']/g, ' ');
-
-/** Recherche tolérante (accents, casse) sur le libellé, la description et la catégorie. */
-export function searchTools(tools: CatalogTool[], q: string) {
-  const words = fold(q).split(/\s+/).filter(Boolean);
-  if (!words.length) return tools;
-  return tools.filter((x) => {
-    const hay = fold(`${x.label} ${x.sub ?? ''} ${THEME_TITLE[x.theme]}`);
-    return words.every((w) => hay.includes(w));
-  });
+/** Regroupe par catégorie (les 9, dans l'ordre ; catégories vides gardées avec une liste vide). */
+export function groupByCategory(tools: CatalogTool[]) {
+  return TOOL_CATEGORIES.map((key) => ({ key, title: categoryTitle(key), items: tools.filter((x) => x.category === key) }));
 }
 
-/** Favoris : garde l'ordre choisi, ignore les identifiants qui ne correspondent plus à un outil. */
+/** Recherche par besoin (voir toolSearch.ts) : outils classés par pertinence ; requête vide → tous les outils. */
+export function searchTools(tools: CatalogTool[], q: string): CatalogTool[] {
+  if (!q.trim()) return tools;
+  return searchCatalog(tools, q).results.map((r) => r.tool);
+}
+
+// ------------------------------------------------------------------ favoris (identifiant stable de l'outil)
+/** Favoris : garde l'ordre choisi, ignore les identifiants qui ne correspondent plus à un outil du profil affiché. */
 export function favoriteTools(tools: CatalogTool[], favIds: string[]) {
-  const byId = new Map(tools.map((x) => [x.id, x]));
-  return favIds.map((id) => byId.get(id)).filter((x): x is CatalogTool => !!x);
+  const seen = new Set<string>();
+  const out: CatalogTool[] = [];
+  for (const raw of favIds) {
+    const id = canonicalToolId(raw) ?? raw;
+    if (seen.has(id)) continue;
+    const e = findEntry(tools, id);
+    if (e) { seen.add(id); out.push(e); }
+  }
+  return out;
 }
 export function toggleFavorite(favIds: string[], id: string) {
   return favIds.includes(id) ? favIds.filter((x) => x !== id) : [...favIds, id];
 }
+
+export { migrateToolIds } from './toolFavorites';
 
 // ------------------------------------------------------------------ état utile sur les cartes
 /** Données réelles déjà chargées par l'application ; rien n'est inventé pour remplir une carte. */
