@@ -37,8 +37,10 @@ export function motionDuration(level: MotionLevel, ms: number): number {
  * Animation temporelle vers `to`. 'off' → valeur finale immédiate (et rappel `finished = true` synchrone).
  * ReduceMotion.Never : la décision est déjà prise ici (une seule source de vérité, réglage + économie d'énergie).
  */
-export function motionTiming(level: MotionLevel, to: number, ms: number = durations.base, curve: CurveName = 'decelerate', cb?: AnimationCallback): number {
+export function motionTiming(level: MotionLevel, to: number, msArg?: number, curve: CurveName = 'decelerate', cb?: AnimationCallback): number {
   'worklet';
+  // pas de valeur par défaut lisant la fermeture (voir backOut, src/brand/logoMotion.ts) : plantage sur le fil UI
+  const ms = msArg ?? durations.base;
   if (level === 'off') {
     if (cb) cb(true);
     return to;

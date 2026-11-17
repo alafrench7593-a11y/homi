@@ -128,8 +128,11 @@ export function mix(a: number, b: number, p: number): number {
 }
 
 /** Courbe « back-out » (worklet) : léger dépassement puis retour à 1 — le ressort des têtes et du point du i. */
-export function backOut(p: number, s: number = LOGO_MOTION.overshoot): number {
+export function backOut(p: number, overshoot?: number): number {
   'worklet';
+  // Jamais de valeur par défaut qui lit la fermeture (`s = LOGO_MOTION.overshoot`) : sur le fil UI, le paramètre par
+  // défaut est évalué AVANT que la fermeture du worklet soit dépaquetée → ReferenceError → plantage au lancement (iOS).
+  const s = overshoot ?? LOGO_MOTION.overshoot;
   if (p <= 0) return 0;
   if (p >= 1) return 1;
   const q = p - 1;
