@@ -127,7 +127,7 @@ export default function FamilyHome() {
         empty={<Text variant="small" muted>{tr('u2.fam.nothing_planned')}</Text>} />
       <Row style={{ alignItems: 'flex-end' }}>
         <View style={{ flex: 1 }}>
-          <Field label={tr('u2.fam.quick_add')} placeholder={tr('u2.fam.quick_ph')} value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" testID="family-quick" />
+          <Field label={tr('u2.fam.quick_add')} placeholder={tr('u2.fam.quick_ph')} value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" submitBehavior="submit" testID="family-quick" />
         </View>
         <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
       </Row>

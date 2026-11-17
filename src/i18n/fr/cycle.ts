@@ -194,6 +194,8 @@ export const cycle = {
   'cy.dis.subtitle': 'Observer ses pertes aide à repérer ce qui change pour vous',
   'cy.dis.new': 'Nouvelle observation',
   'cy.dis.edit': 'Modifier l’observation',
+  'cy.dis.notFound': 'Observation introuvable',
+  'cy.dis.notFoundBody': 'Elle a peut-être été supprimée, ou le lien n’est plus valable.',
   'cy.dis.formSubtitle': 'Tout est facultatif : notez ce que vous observez',
   'cy.dis.guidesHint': 'Comprendre les variations courantes et savoir quand demander un avis.',
   'cy.dis.empty': 'Aucune observation',

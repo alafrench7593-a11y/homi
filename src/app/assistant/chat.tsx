@@ -358,6 +358,7 @@ function Chat() {
         maxToRenderPerBatch={12}
         windowSize={7}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         keyExtractor={(m) => m.id}
         removeClippedSubviews={false}
         contentContainerStyle={{ gap: spacing.md, paddingBottom: spacing.lg }}

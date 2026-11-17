@@ -110,8 +110,9 @@ export function IntensityMeter({ value, onChange }: { value: number | null; onCh
         <View {...pan.panHandlers} onLayout={(e: LayoutChangeEvent) => { width.current = e.nativeEvent.layout.width || 1; }}
           style={{ flex: 1, height: MIN_TOUCH, justifyContent: 'center' }}>
           <View style={{ height: 14, borderRadius: 7, backgroundColor: c.pearl, overflow: 'hidden' }}>
-            <Animated.View style={{ height: 14, borderRadius: 7, backgroundColor: c.period, opacity: fill.interpolate({ inputRange: [0, 10], outputRange: [0.35, 1] }),
-              width: fill.interpolate({ inputRange: [0, 10], outputRange: ['0%', '100%'] }) }} />
+            {/* `width` n'est pas animable par le pilote natif (springTo) : la barre pleine largeur est mise à l'échelle depuis la gauche */}
+            <Animated.View testID="intensity-fill" style={{ height: 14, width: '100%', borderRadius: 7, backgroundColor: c.period, opacity: fill.interpolate({ inputRange: [0, 10], outputRange: [0.35, 1] }),
+              transformOrigin: 'left', transform: [{ scaleX: fill.interpolate({ inputRange: [0, 10], outputRange: [0.0001, 1] }) }] }} />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
             <Text variant="caption" color={c.inkSoft}>0</Text><Text variant="caption" color={c.inkSoft}>5</Text><Text variant="caption" color={c.inkSoft}>10</Text>

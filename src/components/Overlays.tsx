@@ -1,7 +1,7 @@
 /** Feuille modale, notifications éphémères (toasts) et confirmation. */
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor } from './keyboard';
+import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible } from './keyboard';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
@@ -82,6 +82,13 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
   useEffect(() => {
     if (!visible) keyboardScope.dismissIfOwned();
   }, [visible, keyboardScope]);
+  // Clavier ouvert : un appui sur le voile ferme d'abord le clavier (la saisie reste), l'appui suivant ferme la feuille.
+  // Fonction du fil JS uniquement (appelée par Pressable) : jamais confiée à un worklet.
+  const keyboardVisible = useKeyboardVisible();
+  const onBackdrop = () => {
+    if (keyboardVisible) Keyboard.dismiss();
+    else onClose();
+  };
   const settle = (to: number, vy = 0) => {
     'worklet';
     if (level.value === 'full') y.value = withSpring(to, { ...springs.panneau, velocity: vy, reduceMotion: ReduceMotion.Never });
@@ -153,12 +160,12 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
     <Modal visible transparent animationType="none" onRequestClose={onClose} accessibilityViewIsModal>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ReAnimated.View style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }, backdropStyle]}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={tr('common.close')} accessibilityRole="button" testID="sheet-backdrop" />
+          <Pressable style={StyleSheet.absoluteFill} onPress={onBackdrop} accessibilityLabel={tr('common.close')} accessibilityRole="button" testID="sheet-backdrop" />
         </ReAnimated.View>
         {/* La feuille remonte au-dessus du clavier (iOS et Android) et ne passe jamais sous la barre d'état */}
         <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} pointerEvents="box-none" style={[StyleSheet.absoluteFill, { justifyContent: 'flex-end', paddingTop: insets.top + spacing.sm }]}>
           <ReAnimated.View onLayout={onLayout} style={[styles.sheet, styles.sheetInFlow, sheetStyle]} testID="sheet">
-            <LiquidGlass testID="sheet-panel" kind="optical" edges="top" radius={radius.sheet} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
+            <LiquidGlass testID="sheet-panel" kind="optical" edges="top" radius={radius.sheet} style={{ maxHeight: '100%', flexShrink: 1 }} contentStyle={{ paddingBottom: keyboardVisible ? spacing.sm : insets.bottom + spacing.md, paddingTop: spacing.xs, maxHeight: '100%', flexShrink: 1 }}>
               <GestureDetector gesture={pan}>
                 <View collapsable={false} testID="sheet-handle-area">
                   <View
@@ -180,7 +187,7 @@ export function Sheet({ visible, onClose, title, children }: { visible: boolean;
                 </View>
               </GestureDetector>
               {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
-              <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled">
+              <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" testID="sheet-scroll">
                 <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
               </ScrollView>
             </LiquidGlass>

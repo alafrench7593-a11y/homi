@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import {
-  ActivityIndicator, Animated, Easing, Platform, Pressable, StyleSheet, Text as RNText, TextInput, View,
+  ActivityIndicator, Animated, Easing, InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text as RNText, TextInput, View,
   type GestureResponderEvent, type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
   useWindowDimensions,
 } from 'react-native';
@@ -28,7 +28,7 @@ import { usePop, usePressMotion, useShake } from './Motion';
 import { duration, feedback, hapticsSupported, interaction, shakeX, springTo, successPulse, timeTo } from '@/theme/motion';
 import { Tappable } from './Tappable';
 import { Appear } from './Appear';
-import { useKeyboardScope } from './keyboard';
+import { needsKeyboardAccessory, useKeyboardScope } from './keyboard';
 import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useToast } from './Overlays';
@@ -633,6 +633,12 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
     blurOnSubmit: false,
     onSubmitEditing: () => { void scope.focusNext(input.current); },
   } : {};
+  // iPhone : les pavés numériques n'ont pas de touche Retour. Une barre au-dessus du clavier porte « Suivant » (il reste
+  // un champ) ou « OK » (dernier champ, ou champ hors portée) et lance le même enchaînement que la touche Retour.
+  const accessoryId = `kb${React.useId().replace(/[^A-Za-z0-9]/g, '')}`;
+  const accessory = editable && !rest.multiline && rest.inputAccessoryViewID == null && needsKeyboardAccessory(rest.keyboardType, Platform.OS);
+  const accessoryNext = !!scope && !scope.isLast(entry);
+  const onAccessory = () => { if (scope) void scope.focusNext(input.current); else Keyboard.dismiss(); };
   const [focused, setFocused] = React.useState(false);
   const [shown, setShown] = React.useState(false);
   const reduce = useReduceMotion();
@@ -661,6 +667,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           style={[{ flex: 1, minWidth: 0, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, rest.multiline ? { textAlignVertical: 'top' } : null, style as StyleProp<TextStyle>]}
           {...rest}
           {...chainProps}
+          {...(accessory ? { inputAccessoryViewID: accessoryId } : null)}
           secureTextEntry={secureTextEntry && !shown}
           onFocus={(e) => { setFocused(true); scope?.reveal(input.current); onFocus?.(e); }}
           onBlur={(e) => { setFocused(false); onBlur?.(e); }}
@@ -690,6 +697,22 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         </Appear>
       ) : hint ? (
         <Text variant="small" muted>{hint}</Text>
+      ) : null}
+      {accessory ? (
+        <InputAccessoryView nativeID={accessoryId} backgroundColor={t.colors.surface}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: t.colors.border }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={accessoryNext ? tr('common.next') : tr('common.ok')}
+              onPress={onAccessory}
+              hitSlop={6}
+              testID="field-accessory"
+              style={({ pressed }) => ({ minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}
+            >
+              <Text weight="bold" color={t.colors.primary} maxFontSizeMultiplier={1.4}>{accessoryNext ? tr('common.next') : tr('common.ok')}</Text>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
       ) : null}
     </Animated.View>
   );

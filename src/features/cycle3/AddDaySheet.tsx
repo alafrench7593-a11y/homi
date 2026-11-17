@@ -342,7 +342,7 @@ function NotesPanel({ state, set, iso }: { state: DayState; set: (p: Partial<Day
       <Text variant="small" weight="bold">{tr('c3.f.tags')}</Text>
       {state.tags.length ? <Row wrap>{state.tags.map((x) => <Chip key={x} label={`#${x}`} selected onPress={() => set({ tags: state.tags.filter((y) => y !== x) })} />)}</Row> : null}
       <Row gap={spacing.xs} style={{ alignItems: 'flex-end' }}>
-        <View style={{ flex: 1 }}><Field label={tr('c3.f.addTag')} value={tag} onChangeText={setTag} placeholder={tr('c3.f.tagPlaceholder')} maxLength={30} onSubmitEditing={addTag} testID="c3-tag" /></View>
+        <View style={{ flex: 1 }}><Field label={tr('c3.f.addTag')} value={tag} onChangeText={setTag} placeholder={tr('c3.f.tagPlaceholder')} maxLength={30} onSubmitEditing={addTag} submitBehavior="submit" testID="c3-tag" /></View>
         <Button label="+" onPress={addTag} variant="secondary" accessibilityLabel={tr('c3.f.addTag')} />
       </Row>
       {!customAccess.premium ? <Text variant="caption" muted>{tr('c3.f.tagLimit')}</Text> : null}

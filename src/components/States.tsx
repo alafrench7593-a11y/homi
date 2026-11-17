@@ -200,6 +200,7 @@ function VirtualListInner<T>({ renderItem, ListFooterComponent, onScroll, ...pro
       windowSize={7}
       removeClippedSubviews
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       ListFooterComponent={footer}
       {...props}
     />

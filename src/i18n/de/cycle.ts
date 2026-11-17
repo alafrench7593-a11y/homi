@@ -197,6 +197,8 @@ export const cycle: Messages<typeof fr> = {
   "cy.dis.subtitle": "Deinen Ausfluss zu beobachten hilft dir zu erkennen, was sich bei dir verändert",
   "cy.dis.new": "Neue Beobachtung",
   "cy.dis.edit": "Beobachtung ändern",
+  "cy.dis.notFound": "Beobachtung nicht gefunden",
+  "cy.dis.notFoundBody": "Sie wurde vielleicht gelöscht, oder der Link ist nicht mehr gültig.",
   "cy.dis.formSubtitle": "Alles ist optional: Notiere, was du beobachtest",
   "cy.dis.guidesHint": "Häufige Veränderungen verstehen und wissen, wann du Rat holen solltest.",
   "cy.dis.empty": "Keine Beobachtung",

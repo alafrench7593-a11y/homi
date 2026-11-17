@@ -117,6 +117,7 @@ export const cocoon = {
   // Article
   'coc.article.title': 'À lire',
   'coc.article.read': 'Lire',
+  'coc.article.readFull': 'Lire l’article',
   // Ajouter
   'coc.add.button': 'Ajouter',
   'coc.add.a11y': 'Ajouter un événement pour {name}',

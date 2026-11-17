@@ -196,6 +196,8 @@ export const cycle: Messages<typeof fr> = {
   'cy.dis.subtitle': 'Observing discharge helps you notice what changes for you',
   'cy.dis.new': 'New observation',
   'cy.dis.edit': 'Edit observation',
+  'cy.dis.notFound': 'Observation not found',
+  'cy.dis.notFoundBody': 'It may have been deleted, or the link is no longer valid.',
   'cy.dis.formSubtitle': 'Everything is optional: note what you observe',
   'cy.dis.guidesHint': 'Understand common variations and when to seek advice.',
   'cy.dis.empty': 'No observations',

@@ -43,15 +43,25 @@ export function revealOffset(p: { fieldTop: number; fieldBottom: number; viewTop
  * comptent comme la même ligne). Renvoie l'index du champ qui suit `current`, ou -1.
  */
 export function nextInVisualOrder(boxes: (Box | null)[], current: number): number {
+  if (!boxes[current]) return -1;
+  const order = visualOrder(boxes);
+  const at = order.indexOf(current);
+  return at >= 0 && at + 1 < order.length ? order[at + 1] : -1;
+}
+
+/** Index des champs visibles (mesurés, taille non nulle) dans l'ordre visuel : la même règle pour « Suivant » et pour « OK ». */
+export function visualOrder(boxes: (Box | null)[]): number[] {
   const ROW = 8;
-  const cur = boxes[current];
-  if (!cur) return -1;
-  const order = boxes
+  return boxes
     .map((b, i) => ({ b, i }))
     .filter((e): e is { b: Box; i: number } => !!e.b && e.b.width > 0 && e.b.height > 0)
-    .sort((a, b) => (Math.abs(a.b.y - b.b.y) <= ROW ? a.b.x - b.b.x : a.b.y - b.b.y));
-  const at = order.findIndex((e) => e.i === current);
-  return at >= 0 && at + 1 < order.length ? order[at + 1].i : -1;
+    .sort((a, b) => (Math.abs(a.b.y - b.b.y) <= ROW ? a.b.x - b.b.x : a.b.y - b.b.y))
+    .map((e) => e.i);
+}
+
+/** Pavés iOS sans touche Retour : `Field` leur ajoute une barre « Suivant / OK » au-dessus du clavier. */
+export function needsKeyboardAccessory(keyboardType: string | undefined, os: string = Platform.OS): boolean {
+  return os === 'ios' && (keyboardType === 'number-pad' || keyboardType === 'decimal-pad' || keyboardType === 'phone-pad');
 }
 
 /** Lance `cb` quand le clavier est affiché (ou peu après s'il l'est déjà / s'il n'y a pas de clavier logiciel). */
@@ -98,7 +108,10 @@ export interface KeyboardScope {
   register: (entry: FieldEntry) => () => void;
   /** Champ suivant ; `false` s'il n'y en a pas (le clavier est alors fermé). */
   focusNext: (input: TextInput | null) => Promise<boolean>;
-  /** Le champ est-il le dernier champ inscrit (pour « OK » au lieu de « Suivant ») ? */
+  /**
+   * Le champ est-il le dernier dans l'ordre visuel (pour « OK » au lieu de « Suivant ») ? Même ordre que `focusNext` ;
+   * tant qu'aucun champ n'a pu être mesuré (premier rendu, tests), l'ordre d'inscription sert de repli.
+   */
   isLast: (entry: FieldEntry) => boolean;
   subscribe: (cb: () => void) => () => void;
   version: () => number;
@@ -125,9 +138,36 @@ export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | nu
   const ver = React.useRef(0);
   const lastFocused = React.useRef<TextInput | null>(null);
   const pending = React.useRef<(() => void) | null>(null);
+  // Dernières positions mesurées des champs : `isLast` (synchrone, appelé au rendu) suit ainsi l'ordre visuel de `focusNext`
+  const boxes = React.useRef(new WeakMap<FieldEntry, Box | null>());
+  const measuring = React.useRef(false);
+  const alive = React.useRef(true);
 
   const scope = React.useMemo<KeyboardScope>(() => {
     const bump = () => { ver.current += 1; listeners.current.forEach((l) => l()); };
+    const usable = () => entries.current.filter((e) => e.editable() && e.ref.current);
+    const lastEntry = (): FieldEntry | null => {
+      const list = usable();
+      const order = visualOrder(list.map((e) => boxes.current.get(e) ?? null));
+      if (order.length) return list[order[order.length - 1]];
+      const all = entries.current.filter((e) => e.editable());
+      return all.length ? all[all.length - 1] : null;
+    };
+    // Mesure différée (après la mise en page) ; ne redessine les champs que si le « dernier » a changé
+    const refreshOrder = () => {
+      if (measuring.current) return;
+      measuring.current = true;
+      void Promise.resolve().then(async () => {
+        measuring.current = false;
+        const list = usable();
+        if (!list.length) return;
+        const before = lastEntry();
+        const measured = await Promise.all(list.map((e) => measure(e.ref.current as unknown as Measurable)));
+        if (!alive.current) return;
+        list.forEach((e, i) => boxes.current.set(e, measured[i]));
+        if (lastEntry() !== before) bump();
+      });
+    };
     const scrollToReveal = async (input: TextInput | null) => {
       const scroller = scrollRef.current;
       if (!input || !scroller) return;
@@ -146,28 +186,31 @@ export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | nu
     return {
       reveal: (input) => {
         lastFocused.current = input;
+        refreshOrder();
         pending.current?.();
         pending.current = whenKeyboardShown(() => { pending.current = null; void scrollToReveal(input); });
       },
       register: (entry) => {
         entries.current.push(entry);
         bump();
-        return () => { entries.current = entries.current.filter((e) => e !== entry); bump(); };
+        refreshOrder();
+        return () => { entries.current = entries.current.filter((e) => e !== entry); boxes.current.delete(entry); bump(); };
       },
       focusNext: async (input) => {
-        const list = entries.current.filter((e) => e.editable() && e.ref.current);
+        const list = usable();
         const current = list.findIndex((e) => e.ref.current === input);
         if (current >= 0) {
-          const boxes = await Promise.all(list.map((e) => measure(e.ref.current as unknown as Measurable)));
-          const next = nextInVisualOrder(boxes, current);
+          const measured = await Promise.all(list.map((e) => measure(e.ref.current as unknown as Measurable)));
+          list.forEach((e, i) => boxes.current.set(e, measured[i]));
+          const next = nextInVisualOrder(measured, current);
           if (next >= 0) { list[next].ref.current?.focus(); return true; }
         }
         Keyboard.dismiss();
         return false;
       },
       isLast: (entry) => {
-        const list = entries.current.filter((e) => e.editable());
-        return list.length === 0 || list[list.length - 1] === entry;
+        const last = lastEntry();
+        return last === null || last === entry;
       },
       subscribe: (cb) => { listeners.current.add(cb); return () => { listeners.current.delete(cb); }; },
       version: () => ver.current,
@@ -184,7 +227,7 @@ export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | nu
     };
   }, [scrollRef]);
 
-  React.useEffect(() => () => { pending.current?.(); }, []);
+  React.useEffect(() => { alive.current = true; return () => { alive.current = false; pending.current?.(); }; }, []);
   // Web : le clavier s'ouvre APRÈS le focus (zone visible réduite) ; le champ actif est alors ramené en vue
   React.useEffect(() => {
     if (Platform.OS !== 'web') return;

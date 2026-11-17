@@ -197,6 +197,8 @@ export const cycle: Messages<typeof fr> = {
   "cy.dis.subtitle": "Observar tu flujo te ayuda a detectar lo que cambia en ti",
   "cy.dis.new": "Nueva observación",
   "cy.dis.edit": "Editar la observación",
+  "cy.dis.notFound": "Observación no encontrada",
+  "cy.dis.notFoundBody": "Puede que se haya eliminado o que el enlace ya no sea válido.",
   "cy.dis.formSubtitle": "Todo es opcional: anota lo que observes",
   "cy.dis.guidesHint": "Entender las variaciones habituales y saber cuándo pedir opinión.",
   "cy.dis.empty": "Ninguna observación",

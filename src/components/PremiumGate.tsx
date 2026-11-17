@@ -22,6 +22,11 @@ import { gateFor } from '@/lib/premium/access';
 import { useTheme } from '@/theme/ThemeProvider';
 import { t as tr } from '@/i18n';
 
+/** La flèche Retour de l'écran verrouillé a-t-elle une destination ? Pas sur la racine « / » (accueil). */
+export function gateHasBack(pathname: string): boolean {
+  return ((pathname.split(/[?#]/)[0] ?? '').replace(/\/+$/, '') || '/') !== '/';
+}
+
 export function PremiumGate() {
   const { session } = useAuth();
   const pathname = usePathname() ?? '/';
@@ -40,11 +45,14 @@ export function PremiumGate() {
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: topInset, paddingBottom: insets.bottom }}
       testID={decision === 'checking' ? 'premium-gate-checking' : 'premium-gate'} accessibilityViewIsModal>
-      {/* Retour toujours visible (audit 01 N-05 / 09) : l'écran verrouillé couvre l'en-tête et la barre d'onglets */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: spacing.sm }}>
-        <IconButton icon="arrow-left" label={tr('common.back')} testID="premium-gate-back"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace(parentRoute(pathname) as never))} />
-      </View>
+      {/* Retour visible (audit 01 N-05 / 09) : l'écran verrouillé couvre l'en-tête et la barre d'onglets. Sur l'accueil
+          (« / ») il n'y a nulle part où revenir : la flèche ne faisait rien, elle est masquée. */}
+      {gateHasBack(pathname) ? (
+        <View style={{ flexDirection: 'row', paddingHorizontal: spacing.sm }}>
+          <IconButton icon="arrow-left" label={tr('common.back')} testID="premium-gate-back"
+            onPress={() => (router.canGoBack() ? router.back() : router.replace(parentRoute(pathname) as never))} />
+        </View>
+      ) : null}
       {decision === 'checking' ? <Loading label={tr('pw.checking')} /> : <Paywall locked />}
     </View>
   );

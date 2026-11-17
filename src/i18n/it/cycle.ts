@@ -197,6 +197,8 @@ export const cycle: Messages<typeof fr> = {
   "cy.dis.subtitle": "Osservare le perdite aiuta a notare cosa cambia per te",
   "cy.dis.new": "Nuova osservazione",
   "cy.dis.edit": "Modifica l'osservazione",
+  "cy.dis.notFound": "Osservazione non trovata",
+  "cy.dis.notFoundBody": "Forse è stata eliminata, oppure il link non è più valido.",
   "cy.dis.formSubtitle": "È tutto facoltativo: annota ciò che osservi",
   "cy.dis.guidesHint": "Capire le variazioni comuni e sapere quando chiedere un parere.",
   "cy.dis.empty": "Nessuna osservazione",

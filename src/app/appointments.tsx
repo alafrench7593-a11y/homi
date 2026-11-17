@@ -247,7 +247,7 @@ export default function AppointmentsScreen() {
             })}
             <Row style={{ alignItems: 'flex-end' }}>
               <View style={{ flex: 1 }}>
-                <Field label={tr('u1.appt.newQuestion')} optional value={newQ} onChangeText={setNewQ} placeholder={tr('u1.appt.newQuestionPh')} onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" testID="appt-q-new" />
+                <Field label={tr('u1.appt.newQuestion')} optional value={newQ} onChangeText={setNewQ} placeholder={tr('u1.appt.newQuestionPh')} onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" submitBehavior="submit" testID="appt-q-new" />
               </View>
               <Button label={tr('u1.appt.add')} icon="plus" size="sm" variant="secondary" disabled={!newQ.trim()} onPress={() => void addQuestion(a)} testID="appt-q-add" />
             </Row>

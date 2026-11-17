@@ -669,24 +669,27 @@ const ART: Record<ArtTheme, { c: [string, string, string]; glyph: TrackKey }> = 
   growth: { c: ['#E9CFA4', '#DCD2FF', '#D3ECF0'], glyph: 'growth' }, // champagne → lilas → menthe
 };
 
+/** Côté de la vignette de la carte « À lire » : dimensions fixes, la carte ne dépend jamais d'une hauteur en pourcentage. */
+export const ARTICLE_ART = 88;
+
 /** Illustration propre à HOMI (formes douces + pictogramme), jamais une image générée. */
 function ArticleArt({ theme }: { theme: ArtTheme }) {
   const id = React.useId().replace(/:/g, '');
   const a = ART[theme];
   return (
-    <View style={{ width: 92, alignSelf: 'stretch', minHeight: 104, borderRadius: 22, overflow: 'hidden' }} accessibilityElementsHidden importantForAccessibility="no">
-      <Svg width="100%" height="100%" viewBox="0 0 92 110" preserveAspectRatio="xMidYMid slice">
+    <View style={{ width: ARTICLE_ART, height: ARTICLE_ART, borderRadius: 20, overflow: 'hidden' }} testID="article-art" accessibilityElementsHidden importantForAccessibility="no">
+      <Svg width={ARTICLE_ART} height={ARTICLE_ART} viewBox="0 0 92 92">
         <Defs>
           <SvgLinear id={`g${id}`} x1="0" y1="0" x2="1" y2="1"><Stop offset="0" stopColor={a.c[0]} /><Stop offset="0.55" stopColor={a.c[1]} /><Stop offset="1" stopColor={a.c[2]} /></SvgLinear>
           <RadialGradient id={`r${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.85" /><Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" /></RadialGradient>
         </Defs>
-        <Rect x="0" y="0" width="92" height="110" fill={`url(#g${id})`} />
-        <Circle cx="70" cy="22" r="34" fill={`url(#r${id})`} />
-        <Path d="M0 82 C 22 70, 44 92, 92 76 L 92 110 L 0 110 Z" fill="#FFFFFF" opacity="0.35" />
-        <Path d="M0 94 C 30 84, 56 104, 92 90 L 92 110 L 0 110 Z" fill="#FFFFFF" opacity="0.30" />
-        <Circle cx="46" cy="52" r="22" fill="#FFFFFF" opacity="0.7" />
+        <Rect x="0" y="0" width="92" height="92" fill={`url(#g${id})`} />
+        <Circle cx="70" cy="16" r="34" fill={`url(#r${id})`} />
+        <Path d="M0 70 C 22 58, 44 80, 92 64 L 92 92 L 0 92 Z" fill="#FFFFFF" opacity="0.35" />
+        <Path d="M0 82 C 30 72, 56 90, 92 78 L 92 92 L 0 92 Z" fill="#FFFFFF" opacity="0.30" />
+        <Circle cx="46" cy="44" r="22" fill="#FFFFFF" opacity="0.7" />
       </Svg>
-      <View style={{ position: 'absolute', left: 0, right: 0, top: 41, alignItems: 'center' }}><TrackIcon k={a.glyph} color={HOMI.lilacInk} size={22} /></View>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: ARTICLE_ART - 4, alignItems: 'center', justifyContent: 'center' }}><TrackIcon k={a.glyph} color={HOMI.lilacInk} size={22} /></View>
     </View>
   );
 }
@@ -694,27 +697,29 @@ function ArticleArt({ theme }: { theme: ArtTheme }) {
 /** Temps de lecture estimé (environ 200 mots par minute), au moins 1 minute. */
 export const readingMinutes = (body: string) => Math.max(1, Math.round(body.replace(/[#*_>`-]/g, ' ').split(/\s+/).filter(Boolean).length / 200));
 
-/** Carte éditoriale : illustration, titre, temps de lecture, bouton « Lire » (accueil de chaque profil). */
+/**
+ * Carte éditoriale « À lire » (accueil de chaque profil) : vignette carrée fixe, titre (2 lignes), temps de lecture,
+ * aperçu (3 lignes) et lien « Lire l'article ». Hauteur dictée par le contenu seulement : aucune hauteur en
+ * pourcentage, aucun `marginTop: 'auto'`, aucun étirement vertical (sur iPhone la carte descendait jusqu'en bas de l'écran).
+ */
 export function ArticleCard({ article, premium }: { article: Article; premium: boolean }) {
   const t = useTheme();
   const open = () => router.push(`/article/${article.slug}`);
   return (
     <Glass rounded={28} testID="cocoon-article">
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('home.articleA11y', { title: article.title })} onPress={open} style={{ flexDirection: 'row', gap: spacing.sm, padding: spacing.sm }}>
+      <Pressable accessibilityRole="button" accessibilityLabel={tr('home.articleA11y', { title: article.title })} onPress={open} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.sm }} testID="cocoon-article-row">
         <ArticleArt theme={artTheme(article)} />
-        <View style={{ flex: 1, gap: 4, paddingVertical: 2 }}>
+        <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1, flex: 1 }}>{tr('coc.article.title').toUpperCase()}</Text>
+            <Text variant="caption" weight="bold" muted numberOfLines={1} style={{ letterSpacing: 1.1, flexShrink: 1, flexGrow: 1 }}>{tr('coc.article.title').toUpperCase()}</Text>
             {isLocked(article, premium) ? <Icon name="lock" size={13} color={t.colors.gold} /> : null}
           </View>
-          <Text weight="bold" numberOfLines={3}>{article.title}</Text>
-          <Text variant="caption" muted testID="article-reading">{tr('home.readingTime', { n: readingMinutes(article.body_md ?? '') })}</Text>
-          <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
-          <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: t.isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)' }}>
-              <Text variant="small" weight="bold">{tr('coc.article.read')}</Text>
-              <Icon name="arrow-right" size={14} color={t.colors.text} />
-            </View>
+          <Text weight="bold" numberOfLines={2} testID="article-title">{article.title}</Text>
+          <Text variant="caption" muted numberOfLines={1} testID="article-reading">{tr('home.readingTime', { n: readingMinutes(article.body_md ?? '') })}</Text>
+          {article.summary ? <Text variant="small" muted numberOfLines={3} intentionalTruncation testID="article-summary">{article.summary}</Text> : null}
+          <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', maxWidth: '100%', gap: 6, minHeight: 36, marginTop: 2, paddingVertical: 6, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: t.isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)' }} testID="article-link">
+            <Text variant="small" weight="bold" style={{ flexShrink: 1 }}>{tr('coc.article.readFull')}</Text>
+            <Icon name="arrow-right" size={14} color={t.colors.text} />
           </View>
         </View>
       </Pressable>

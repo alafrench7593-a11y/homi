@@ -562,7 +562,7 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
   return (
     <>
       <Card>
-        <Field label={tr('u5.fert.q_add')} value={text} onChangeText={setText} maxLength={300} placeholder={tr('u5.fert.q_ph')} onSubmitEditing={() => addQuestions([text])} />
+        <Field label={tr('u5.fert.q_add')} value={text} onChangeText={setText} maxLength={300} placeholder={tr('u5.fert.q_ph')} onSubmitEditing={() => addQuestions([text])} submitBehavior="submit" />
         <Button label={tr('u5.fert.add')} icon="plus" variant="secondary" style={{ marginTop: spacing.sm }} loading={add.isPending} onPress={() => addQuestions([text])} />
       </Card>
       {questionsQ.isLoading && !data ? <Skeleton rows={3} /> : null}

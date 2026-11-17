@@ -186,6 +186,7 @@ export default function LocalAssistant() {
         data={msgs}
         keyExtractor={(m) => m.id}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md }}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>

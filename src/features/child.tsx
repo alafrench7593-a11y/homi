@@ -222,6 +222,7 @@ export function GrowthTab({ child }: { child: Child }) {
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   const m = METRICS.find((x) => x.key === metric)!;
   const [whoOn, setWhoOn] = useState(true);
@@ -266,6 +267,9 @@ export function GrowthTab({ child }: { child: Child }) {
     if (!e.weight_kg && !e.height_cm && !e.head_cm && METRICS.every((x) => row[x.key] == null)) e.form = tr('u7.child.err.atLeastOne');
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
       const res = await insertOrQueue('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
@@ -277,6 +281,7 @@ export function GrowthTab({ child }: { child: Child }) {
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -528,6 +533,7 @@ export function HealthTab({ child }: { child: Child }) {
   const [due, setDue] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   function start(kind: HealthItemKind) {
     setAdding(kind);
@@ -548,6 +554,9 @@ export function HealthTab({ child }: { child: Child }) {
     }
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
       const res = await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
@@ -557,6 +566,7 @@ export function HealthTab({ child }: { child: Child }) {
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -672,6 +682,7 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
   const [reaction, setReaction] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const [editing, setEditing] = useState<FoodIntroduction | null>(null);
   const [editNote, setEditNote] = useState('');
 
@@ -691,6 +702,9 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
     else if (iso > todayISO()) e.date = tr('u7.child.err.future');
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
       const res = await insertOrQueue('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
@@ -702,6 +716,7 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -788,11 +803,15 @@ export function EditChildSheet({ child, visible, onClose }: { child: Child; visi
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   async function save() {
     const v = validateChild(draft);
     setErrors(v.errors);
     if (!v.birth || Object.keys(v.errors).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     setError(null);
     try {
@@ -807,6 +826,7 @@ export function EditChildSheet({ child, visible, onClose }: { child: Child; visi
     } catch (e) {
       setError(errorMessage(e));
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }

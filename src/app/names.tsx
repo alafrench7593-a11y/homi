@@ -300,7 +300,7 @@ export default function NamesScreen() {
       <SectionTitle title={tr('u7.names.ownIdea')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Field label={tr('u7.names.firstName')} value={custom} onChangeText={(v) => { setCustom(v); setCustomError(null); }} maxLength={40} autoCapitalize="words" error={customError} onSubmitEditing={addCustom} returnKeyType="done" />
+          <Field label={tr('u7.names.firstName')} value={custom} onChangeText={(v) => { setCustom(v); setCustomError(null); }} maxLength={40} autoCapitalize="words" error={customError} onSubmitEditing={addCustom} returnKeyType="done" submitBehavior="submit" />
           <Button label={tr('u7.names.addToFavs')} icon="plus" variant="secondary" loading={busy === custom.trim() && !!custom.trim()} onPress={addCustom} />
         </View>
       </Card>

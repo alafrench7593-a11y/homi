@@ -234,6 +234,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       testID="screen-scroll"
       contentContainerStyle={[styles.wide, { paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.xs : top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       showsVerticalScrollIndicator={false}
     >
       {titleBlock}

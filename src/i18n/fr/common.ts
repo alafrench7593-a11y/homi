@@ -2,6 +2,7 @@
 export const common = {
   'common.loadingA11y': 'Chargement…',
   'common.ok': 'OK',
+  'common.next': 'Suivant',
   'common.add': 'Ajouter',
   'common.showPassword': 'Afficher le mot de passe',
   'common.optional': 'facultatif',
