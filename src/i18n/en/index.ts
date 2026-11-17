@@ -77,3 +77,4 @@ export { visual5 } from './visual5';
 export { entry5 } from './entry5';
 export { hubs5 } from './hubs5';
 export { day5 } from './day5';
+export { deviceCal } from './deviceCal';

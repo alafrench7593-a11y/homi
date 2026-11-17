@@ -20,6 +20,7 @@ import { flushQueue, useOfflineStore } from '@/lib/offline';
 import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
 import { spacing } from '@/theme/tokens';
 import { deviceRegion, getLocale, t as tr } from '@/i18n';
+import { DEVICE_CALENDAR_ROUTE, useDeviceCalendarSummary } from '@/features/deviceCalendar/DeviceCalendarParts';
 import { defaultRegion, localeInfo, REGIONS } from '@/i18n/locales';
 
 /** Apparence (v2) : résumé « Système · Auto » ; le réglage complet est dans Réglages → Apparence et couleurs. */
@@ -38,6 +39,7 @@ export default function SettingsScreen() {
   const { data: reminders } = useReminders();
   const premium = usePremium();
   const { isModerator } = useMyRoles();
+  const iphoneCalendar = useDeviceCalendarSummary();
 
   const preference = useUiStore((s) => s.themePreference);
   const haptics = useUiStore((s) => s.hapticsEnabled);
@@ -134,6 +136,7 @@ export default function SettingsScreen() {
         <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/settings' } } as never)} testID="settings-feedback" />
         <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="settings-notifs" />
         <ListRow icon="bell" title={tr('settings.reminders')} subtitle={activeReminders ? tr('settings.reminders.active', { count: activeReminders }) : tr('settings.reminders.none')} onPress={() => router.push('/settings/reminders')} />
+        {iphoneCalendar.visible ? <ListRow icon="calendar" title={tr('ical.title')} subtitle={iphoneCalendar.text} onPress={() => router.push(DEVICE_CALENDAR_ROUTE as never)} testID="settings-iphone-calendar" /> : null}
         <Divider />
         <ListRow icon="star" title={tr('settings.subscription')} subtitle={premium ? tr('settings.subscription.active', { app: BRAND.name }) : tr('settings.subscription.free')} onPress={() => router.push('/settings/subscription')} />
         <Divider />

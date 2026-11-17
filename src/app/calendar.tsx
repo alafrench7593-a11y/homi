@@ -38,10 +38,23 @@ import { radius, spacing } from '@/theme/tokens';
 import type { ThreadState } from '@/lib/domain/dayThread';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatDate, formatTime } from '@/i18n';
+import { homiKey, sortAgenda, type DeviceAgendaItem } from '@/lib/deviceCalendar';
+import { useDeviceAgenda } from '@/lib/deviceCalendar/hooks';
+import { AddToDeviceCalendar, DeviceCalendarEntry, DeviceEventSheet } from '@/features/deviceCalendar/DeviceCalendarParts';
 
 type View_ = 'day' | 'week' | 'month' | 'agenda';
 const hm = (iso: string) => formatTime(iso);
 const longDay = (day: string) => formatDate(atLocal(day, 12), { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase());
+
+/** Une ligne de l'agenda : élément HOMI, ou événement du calendrier de l'iPhone (lecture seule, jamais enregistré). */
+type Entry = CalendarItem | DeviceAgendaItem;
+const isDevice = (i: Entry): i is DeviceAgendaItem => i.source === 'device';
+/** Événements du téléphone qui touchent un jour (un événement sans durée compte le jour où il a lieu). */
+function deviceOnDay(items: DeviceAgendaItem[], day: string): DeviceAgendaItem[] {
+  const a = atLocal(day).getTime();
+  const b = atLocal(addDays(day, 1)).getTime();
+  return items.filter((i) => { const s = Date.parse(i.starts); const e = Date.parse(i.ends); return s < b && (e > a || (e === s && s >= a)); });
+}
 
 type Draft = { id?: string; title: string; kind: EventKind; date: string; from: string; to: string; allDay: boolean; location: string; notes: string; recurrence: 'none' | 'daily' | 'weekly' | 'monthly'; until: string; childId: string | null };
 
@@ -53,6 +66,9 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const [view, setView] = useState<View_>(params.view ?? 'week');
   const [cursor, setCursor] = useState(todayISO());
   const [draft, setDraft] = useState<Draft | null>(null);
+  /** Occurrence touchée (événement répété) : celle qui part vers le calendrier de l'iPhone si la série ne peut pas l'être. */
+  const [openedAt, setOpenedAt] = useState<string | null>(null);
+  const [deviceItem, setDeviceItem] = useState<DeviceAgendaItem | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [withHealth, setWithHealth] = useState(false);
   const eventsQ = useFamilyEvents();
@@ -102,6 +118,18 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const weekItems = useMemo(() => { const s0 = weekStart(todayISO()); return itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(s0), atLocal(addDays(s0, 7))); }, [eventsQ.data, appointments, tasks, shifts]);
   const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts]);
 
+  // Calendrier de l'iPhone : événements des calendriers choisis, lus sur le téléphone pour la période affichée + la
+  // semaine en cours. Affichage seul : ils n'entrent ni dans l'export .ics, ni dans l'abonnement, ni sur le serveur.
+  const knownKeys = useMemo(() => new Set([...(eventsQ.data ?? []).map((e) => homiKey('event', e.id)), ...(appointments ?? []).map((a) => homiKey('appointment', a.id))]), [eventsQ.data, appointments]);
+  const today = todayISO();
+  const deviceSpan = useMemo(() => {
+    const w = weekStart(today);
+    return [atLocal(range[0] < w ? range[0] : w).getTime(), atLocal(range[1] > addDays(w, 7) ? range[1] : addDays(w, 7)).getTime()] as const;
+  }, [range, today]);
+  const deviceItems = useDeviceAgenda(deviceSpan[0], deviceSpan[1], knownKeys);
+  const entriesOnDay = (list: CalendarItem[], day: string): Entry[] => sortAgenda<Entry>([...itemsOnDay(list, day), ...deviceOnDay(deviceItems, day)]);
+  const todayEntries = entriesOnDay(todayItems, today);
+
   const dir = useRef(0);
   const [moved, setMoved] = useState<string | null>(null);
   function move(n: number) {
@@ -119,6 +147,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   useEffect(() => { if (params.new === '1') openNew(); }, [params.new]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function openItem(i: CalendarItem) {
+    setOpenedAt(i.source === 'event' && i.recurring ? i.starts : null);
     if (i.source === 'appointment') return router.push('/appointments');
     if (i.source === 'task') return router.push('/family');
     if (i.source === 'night') return router.push('/family/nights');
@@ -188,12 +217,22 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
     onPress: () => openItem(i), testID: `cal-item-${i.key}`,
     accessibilityLabel: tr('u3.cal.itemA11y', { source: SOURCE_LABEL[i.source], title: i.title, when: i.allDay ? tr('u3.cal.allDayLc') : hm(i.starts) }) + (clashes.has(i.key) ? `. ${tr('u3.cal.clash')}` : ''),
   });
-  const dayList = (list: CalendarItem[], testID?: string) => (
+  /** Rangée d'un événement du calendrier de l'iPhone : marque « iPhone », nom du calendrier, détail en lecture seule. */
+  const deviceRow = (i: DeviceAgendaItem, state?: DayState): DayRowSpec => ({
+    key: i.key, time: i.allDay ? tr('d5.anytime') : hm(i.starts), timeSub: i.allDay || i.ends === i.starts ? null : hm(i.ends),
+    state: state ?? 'later', title: i.title || tr('ical.detail.untitled'), strike: false,
+    pill: { label: tr('ical.badge'), tone: 'info', icon: 'smartphone' },
+    sub: [i.calendarTitle, i.location].filter(Boolean).join(' · '),
+    onPress: () => setDeviceItem(i), testID: `cal-item-${i.key}`,
+    accessibilityLabel: tr('ical.item.a11y', { calendar: i.calendarTitle, title: i.title || tr('ical.detail.untitled'), when: i.allDay ? tr('u3.cal.allDayLc') : hm(i.starts) }),
+  });
+  const entryRow = (i: Entry, state?: DayState) => (isDevice(i) ? deviceRow(i, state) : itemRow(i, state));
+  const dayList = (list: Entry[], testID?: string) => (
     <DayList testID={testID}>
       {list.map((i, k) => (
         <Flash key={i.key} on={moved === i.refId} color={t.colors.primary}>
           {k ? <DaySeparator /> : null}
-          <DayRow r={itemRow(i)} first={k === 0} last={k === list.length - 1} />
+          <DayRow r={entryRow(i)} first={k === 0} last={k === list.length - 1} />
         </Flash>
       ))}
     </DayList>
@@ -206,7 +245,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
         const nextUp = todayItems.filter((x) => !x.done && Date.parse(x.ends) >= Date.now()).sort((a, b) => (a.starts < b.starts ? -1 : 1))[0];
         return (
           <BriefStrip title={tr('d5.brief')} testID="cal-brief" items={[
-            { value: String(todayItems.length), label: todayItems.length > 1 ? tr('u3.cal.itemsMany') : tr('u3.cal.itemsOne') },
+            { value: String(todayEntries.length), label: todayEntries.length > 1 ? tr('u3.cal.itemsMany') : tr('u3.cal.itemsOne') },
             { value: String(todayItems.filter((x) => x.source === 'appointment').length), label: tr('u3.cal.appts') },
             { value: nextUp ? (nextUp.allDay ? tr('u3.cal.allDaySum') : hm(nextUp.starts)) : '—', label: nextUp ? tr('u3.cal.nextUp', { title: nextUp.title }) : tr('u3.cal.next') },
           ]} />
@@ -215,8 +254,8 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
       {(() => {
         // Aujourd'hui : chronologie calme (heures alignées, fil fin) — en retard, en cours, ensuite ; « Fait » en un geste
         const STATE: Record<ThreadState, DayState> = { done: 'done', now: 'now', late: 'late', past: 'past', next: 'next', todo: 'later', anytime: 'anytime' };
-        const rows: DayRowSpec[] = threadStates(todayItems.map((i) => ({ key: i.key, at: i.allDay ? null : i.starts, end: i.allDay ? null : i.ends, done: i.done, actionable: i.source === 'task', allDay: i.allDay, item: i })))
-          .map(({ item: i, state }) => ({
+        const rows: DayRowSpec[] = threadStates(todayEntries.map((i) => ({ key: i.key, at: i.allDay ? null : i.starts, end: i.allDay ? null : i.ends, done: isDevice(i) ? false : i.done, actionable: i.source === 'task', allDay: i.allDay, item: i })))
+          .map(({ item: i, state }) => (isDevice(i) ? { ...deviceRow(i, STATE[state]), testID: `cal-today-${i.key}` } : {
             ...itemRow(i, STATE[state]), pill: undefined, testID: `cal-today-${i.key}`,
             right: i.source === 'task' && !i.done && canFinish(i.refId) ? <DoneButton testID={`cal-done-${i.refId}`} accessibilityLabel={tr('d5.doneA11y', { title: i.title })} onPress={() => void finish(i.refId)} /> : undefined,
           }));
@@ -226,7 +265,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
           </DaySection>
         );
       })()}
-      <WeekStrip cursor={cursor} counts={(d) => itemsOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; setCursor(d); setView('day'); }} />
+      <WeekStrip cursor={cursor} counts={(d) => entriesOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; setCursor(d); setView('day'); }} />
       <Segmented label={tr('u3.cal.view')} value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: tr('u3.cal.dayShort') }, { value: 'week', label: tr('u3.cal.vWeek') }, { value: 'month', label: tr('u3.cal.vMonth') }, { value: 'agenda', label: tr('u3.cal.vAgenda') }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label={tr('u3.cal.prevP')} onPress={() => move(-1)} /> : <View />}
@@ -242,14 +281,14 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
 
       <SlideSwap key={`${view}:${range[0]}`} dir={dir.current}>
       {view === 'month' ? (
-        <MonthView cursor={cursor} items={items} onPick={(d) => { setCursor(d); setView('day'); }} />
+        <MonthView cursor={cursor} items={items} extra={(d) => deviceOnDay(deviceItems, d).length} onPick={(d) => { setCursor(d); setView('day'); }} />
       ) : view === 'day' ? (
         <View style={{ gap: spacing.xs }}>
-          {itemsOnDay(items, cursor).length ? dayList(itemsOnDay(items, cursor), 'cal-day-list') : <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothingDay')}</Text>}
+          {entriesOnDay(items, cursor).length ? dayList(entriesOnDay(items, cursor), 'cal-day-list') : <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothingDay')}</Text>}
         </View>
       ) : (
         Array.from({ length: view === 'week' ? 7 : 31 }, (_, k) => addDays(range[0], k)).map((d) => {
-          const list = itemsOnDay(items, d);
+          const list = entriesOnDay(items, d);
           if (view === 'agenda' && !list.length) return null;
           return (
             <View key={d} style={{ gap: spacing.xs }}>
@@ -262,7 +301,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
           );
         })
       )}
-      {view === 'agenda' && !items.length ? <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothing30')}</Text> : null}
+      {view === 'agenda' && !items.length && !deviceItems.some((i) => Date.parse(i.ends) >= atLocal(range[0]).getTime() && Date.parse(i.starts) < atLocal(range[1]).getTime()) ? <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothing30')}</Text> : null}
       </SlideSwap>
 
       <SectionTitle title={tr('u3.cal.shareT')} />
@@ -272,6 +311,9 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
       </Card>
 
       <FeedCard />
+
+      <DeviceCalendarEntry />
+      <DeviceEventSheet item={deviceItem} onClose={() => setDeviceItem(null)} />
 
       <Sheet visible={exportOpen} onClose={() => setExportOpen(false)} title={tr('u3.cal.exportTitle')}>
         <View style={{ gap: spacing.sm }}>
@@ -321,6 +363,12 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
             <Field label={tr('u3.cal.notes')} optional multiline value={draft.notes} onChangeText={(v) => setDraft({ ...draft, notes: v })} maxLength={2000} />
             <Button label={draft.id ? tr('u3.cal.save') : tr('u3.cal.add')} full onPress={submit} loading={save.isPending} />
             {draft.id ? <Button label={tr('u3.fertBody.delOk')} variant="ghost" onPress={remove} /> : null}
+            {(() => {
+              // Ajout au calendrier de l'iPhone : l'événement ENREGISTRÉ (pas la saisie en cours), sur appui seulement
+              const saved = draft.id ? eventsQ.data?.find((x) => x.id === draft.id) : undefined;
+              const who = saved?.child_id ? children?.find((c) => c.id === saved.child_id)?.first_name : null;
+              return saved ? <AddToDeviceCalendar source={{ kind: 'event', event: saved }} title={saved.title} occurrenceStart={openedAt} notes={who ? tr('ical.note.for', { name: who }) : null} /> : null;
+            })()}
           </View>
         ) : null}
       </Sheet>
@@ -328,7 +376,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   );
 }
 
-function MonthView({ cursor, items, onPick }: { cursor: string; items: CalendarItem[]; onPick: (d: string) => void }) {
+function MonthView({ cursor, items, extra, onPick }: { cursor: string; items: CalendarItem[]; extra?: (d: string) => number; onPick: (d: string) => void }) {
   const t = useTheme();
   const month = cursor.slice(0, 7);
   const today = todayISO();
@@ -337,7 +385,7 @@ function MonthView({ cursor, items, onPick }: { cursor: string; items: CalendarI
       <Row gap={0}>{monthGrid(cursor)[0].map((d, i) => <Text key={i} variant="caption" muted center style={{ flex: 1 }}>{formatDate(atLocal(d, 12), { weekday: 'narrow' })}</Text>)}</Row>
       {monthGrid(cursor).map((w) => (
         <Row key={w[0]} gap={0}>
-          {w.map((d) => <DayCell key={d} day={d} out={d.slice(0, 7) !== month} today={d === today} count={itemsOnDay(items, d).length} onPress={() => onPick(d)} accent={t.colors.primary} />)}
+          {w.map((d) => <DayCell key={d} day={d} out={d.slice(0, 7) !== month} today={d === today} count={itemsOnDay(items, d).length + (extra?.(d) ?? 0)} onPress={() => onPick(d)} accent={t.colors.primary} />)}
         </Row>
       ))}
     </Card>

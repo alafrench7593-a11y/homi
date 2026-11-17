@@ -23,6 +23,7 @@ import { tint } from '@/components/ToolGlyph';
 import { countdown } from '@/lib/domain/dayThread';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate } from '@/i18n';
+import { AddToDeviceCalendar } from '@/features/deviceCalendar/DeviceCalendarParts';
 
 const kinds = (): { value: AppointmentKind; label: string; icon: IconName }[] => [
   { value: 'consultation', label: tr('u1.appt.kind.consultation'), icon: 'user' },
@@ -346,6 +347,15 @@ export default function AppointmentsScreen() {
             <Segmented label={tr('u1.appt.reminder')} value={String(draft.lead)} onChange={(v) => set('lead', Number(v) as ReminderLead)} options={leads()} />
             {draft.lead !== 0 && !notificationsSupported && <Banner tone="info">{tr('u1.appt.webNote')}</Banner>}
             <Button label={draft.id ? tr('u1.appt.saveChanges') : tr('u1.appt.add')} onPress={save} loading={saving} full />
+            {(() => {
+              // Ajout au calendrier de l'iPhone : le rendez-vous ENREGISTRÉ, sur appui seulement. La personne concernée
+              // (profil déjà associé au rendez-vous) est rappelée dans les notes ; les notes et questions restent dans HOMI.
+              const saved = draft.id ? appointments?.find((x) => x.id === draft.id) : undefined;
+              if (!saved) return null;
+              const who = concernLabel(saved);
+              return <AddToDeviceCalendar source={{ kind: 'appointment', appointment: { id: saved.id, title: saved.title, starts_at: saved.starts_at, location_label: saved.location_label }, leadMinutes: leadOf(reminderFor(saved.id), saved.starts_at) }}
+                title={saved.title} notes={who ? tr('ical.note.for', { name: who }) : null} testID="appt-ical" />;
+            })()}
             {!!draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); return a ? remove(a) : undefined; }} />}
           </>
         )}
