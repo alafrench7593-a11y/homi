@@ -22,6 +22,15 @@ export interface ScreenChrome {
 export const ScreenChromeContext = React.createContext<ScreenChrome | null>(null);
 
 /**
+ * Défilement de l'écran pour le glisser-déposer (`ReorderList scroll`) : fourni par `<Screen reorder>` (zone
+ * défilante Reanimated), sinon null — la liste se réorganise alors sans défilement automatique.
+ */
+export const ScreenReorderScrollContext = React.createContext<import('@/motion').ReorderScroll | null>(null);
+export function useScreenReorderScroll() {
+  return React.useContext(ScreenReorderScrollContext);
+}
+
+/**
  * L'écran qui contient ce composant est-il affiché ? (`Screen` le fournit ; `true` hors d'un écran.)
  * Les animations décoratives en boucle s'arrêtent quand il est faux : les onglets restent montés en arrière-plan
  * et, sur le web, chaque image d'une boucle Animated coûte du JS (audit 10 : ≈ 1 200 écritures de style/s

@@ -53,7 +53,7 @@ export default function HomeSettings() {
   const situation = homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy });
 
   return (
-    <Screen back title={tr('u1.home.title')} subtitle={tr('u1.home.subtitle')}>
+    <Screen back title={tr('u1.home.title')} subtitle={tr('u1.home.subtitle')} reorder>
       <ModuleMorphPreview />
       <Card>
         <Row>

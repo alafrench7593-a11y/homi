@@ -3,8 +3,11 @@
  * capsules des hubs. Une rangée horizontale d'avatars — Moi, ma grossesse, chaque enfant suivi, toute la famille —
  * présente en tête d'Aujourd'hui, de Moi / Enfant / Famille, de Mes outils et de l'agenda.
  *
- *  - Profil actif nettement marqué : anneau corail + prénom en gras (forme + graisse, pas la couleur seule) ; l'anneau
- *    apparaît en ressort (fil UI), immédiatement avec « Réduire les animations ».
+ *  - Rendu par `GlassProfileSwitcher` (bibliothèque de verre) : profil actif nettement marqué par UN anneau qui GLISSE
+ *    vers l'avatar choisi + prénom en gras (forme + graisse, pas la couleur seule), état « choisi » annoncé.
+ *  - Changement COORDONNÉ (`profileTransition`) : l'anneau part tout de suite, le contenu du profil précédent s'efface,
+ *    puis le nouveau profil est rendu à neuf (clé par profil) et entre en léger décalé. Immédiat avec « Réduire les
+ *    animations ».
  *  - Permissions : la liste ne contient QUE ce que le serveur renvoie à ce compte (enfants filtrés par la RLS et le
  *    périmètre par enfant, grossesse fermée à une nounou) et les parcours suivis ; rien n'est déduit ni inventé ici.
  *  - `ProfileSwipe` : glissement horizontal entre profils (accueil, hubs). Il ne capte pas le bord gauche (retour
@@ -18,6 +21,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { Platform, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import { GlassProfileSwitcher, type GlassProfile } from './glass';
+import { changeProfile, usePendingProfile } from './profileTransition';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { router } from 'expo-router';
@@ -43,29 +48,21 @@ export function useProfileList() {
   const { subject, setSubject } = useActiveSubject();
   const pregnancy = useActivePregnancy();
   const { data: children } = useTrackedChildren();
+  const m = useMotion();
   const list = useMemo(() => profileEntries({ pregnancyId: pregnancy?.id, children }), [pregnancy?.id, children]);
   const index = activeProfileIndex(list, subject);
-  const select = (i: number) => { const e = list[i]; if (e && i !== index) { haptic('selection'); setSubject(e.subject); } };
+  /** Change de profil (transition coordonnée) ; `silent` : l'haptique est déjà partie (toucher d'un avatar). */
+  const select = (i: number, silent?: boolean) => {
+    const e = list[i];
+    if (!e || i === index) return;
+    if (!silent) haptic('selection');
+    changeProfile(e.key, i > index ? 1 : -1, m.level, () => setSubject(e.subject));
+  };
   return { list, index, select, pregnancy, active: list[index] };
 }
 
 const SIZE = 48;
 const ITEM_W = 68;
-
-function Ring({ active, children }: { active: boolean; children: React.ReactNode }) {
-  const t = useTheme();
-  const m = useMotion();
-  const on = useSharedValue(active ? 1 : 0);
-  useEffect(() => { on.value = motionSpring(m.level, active ? 1 : 0, 'doux'); }, [active, m.level, on]);
-  const ring = useAnimatedStyle(() => ({ opacity: on.value, transform: [{ scale: 0.86 + 0.14 * on.value }] }));
-  return (
-    <View style={{ width: SIZE + 10, height: SIZE + 10, alignItems: 'center', justifyContent: 'center' }}>
-      <Animated.View pointerEvents="none" testID={active ? 'profile-ring' : undefined}
-        style={[{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, borderRadius: (SIZE + 10) / 2, borderWidth: 2.5, borderColor: t.colors.primary }, ring]} />
-      {children}
-    </View>
-  );
-}
 
 function Glyph({ icon }: { icon: IconName }) {
   const t = useTheme();
@@ -86,52 +83,46 @@ export interface ProfileSwitcherProps {
 }
 
 export function ProfileSwitcher({ pager = false, add = true, testID = 'profile-switcher', style }: ProfileSwitcherProps = {}) {
-  const t = useTheme();
   const { list, index, select, pregnancy } = useProfileList();
   const { data: profile } = useProfile();
   const { session } = useAuth();
   const swipe = useContext(SwipeCtx);
-  const scroll = useRef<ScrollView>(null);
-  // Les avatars suivent le profil affiché (glissement, autre écran) : l'actif reste visible dans la rangée
-  useEffect(() => { scroll.current?.scrollTo({ x: Math.max(0, index * (ITEM_W + spacing.xxs) - ITEM_W), animated: true }); }, [index]);
+  const pendingKey = usePendingProfile();
+  const scrollProps = useMemo(() => ({ onStartShouldSetResponderCapture: () => { swipe?.exclude(); return false; } }), [swipe]);
 
   const label = (e: ProfileEntry) => (e.kind === 'me' ? tr('pj.subject.me') : e.kind === 'pregnancy' ? tr('ps.pregnancy') : e.kind === 'family' ? tr('ps.family') : e.child!.first_name);
   const a11y = (e: ProfileEntry) => (e.kind === 'me' ? tr('pj.bubble.meA11y', { name: profile?.display_name?.trim() || tr('pj.subject.me') })
     : e.kind === 'pregnancy' ? `${tr('pj.subject.pregnancy')}${pregnancy ? `, ${pregnancyProgress(pregnancy.due_date).label}` : ''}`
       : e.kind === 'family' ? tr('pj.subject.family') : `${e.child!.first_name}, ${childAge(e.child!.birth_date).label}`);
+  const profiles: GlassProfile[] = list.map((e) => ({
+    key: e.key,
+    label: label(e),
+    accessibilityLabel: a11y(e),
+    testID: `subject-${e.key}`,
+    avatar: e.kind === 'me' ? <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={SIZE} testID="subject-me-avatar" />
+      : e.kind === 'child' ? <ChildAvatar child={e.child!} size={SIZE} />
+        : <Glyph icon={e.kind === 'pregnancy' ? 'heart' : 'users'} />,
+  }));
+  // Profil visé pendant la transition : l'anneau s'y rend tout de suite, le contenu suit
+  const activeKey = pendingKey && list.some((e) => e.key === pendingKey) ? pendingKey : list[index]?.key ?? '';
 
   return (
-    <View testID={testID} style={[{ gap: 2 }, style]}>
-      <ScrollView ref={scroll} horizontal showsHorizontalScrollIndicator={false} accessibilityRole="radiogroup" accessibilityLabel={tr('ps.a11y')}
-        onStartShouldSetResponderCapture={() => { swipe?.exclude(); return false; }}
-        contentContainerStyle={{ gap: spacing.xxs, paddingVertical: 2, paddingRight: spacing.sm }}>
-        {list.map((e, i) => {
-          const active = i === index;
-          return (
-            <Tappable key={e.key} testID={`subject-${e.key}`} accessibilityRole="radio" accessibilityState={{ selected: active, checked: active }} aria-checked={active}
-              accessibilityLabel={a11y(e)} onPress={() => select(i)} pressScale={0.96} hoverLift={0} style={{ width: ITEM_W, alignItems: 'center', gap: 2 }}>
-              <Ring active={active}>
-                {e.kind === 'me' ? <UserAvatar path={profile?.avatar_path} initial={avatarInitial(profile?.display_name, session?.email)} size={SIZE} testID="subject-me-avatar" />
-                  : e.kind === 'child' ? <ChildAvatar child={e.child!} size={SIZE} />
-                    : <Glyph icon={e.kind === 'pregnancy' ? 'heart' : 'users'} />}
-              </Ring>
-              <Text variant="caption" weight={active ? 'bold' : 'medium'} color={active ? t.colors.text : t.colors.textMuted} numberOfLines={1} center style={{ maxWidth: ITEM_W }}>{label(e)}</Text>
-            </Tappable>
-          );
-        })}
-        {add ? (
-          <Tappable testID="subject-add" accessibilityRole="button" accessibilityLabel={tr('pj.switcher.add')} onPress={() => { haptic('selection'); router.push('/journeys'); }}
-            pressScale={0.96} hoverLift={0} style={{ width: ITEM_W, alignItems: 'center', gap: 2 }}>
-            <View style={{ width: SIZE + 10, height: SIZE + 10, alignItems: 'center', justifyContent: 'center' }}>
-              <View style={{ width: SIZE, height: SIZE, borderRadius: SIZE / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderStyle: 'dashed', borderColor: t.tokens.border.active }}>
-                <Icon name="plus" size={20} color={t.colors.primary} />
-              </View>
-            </View>
-            <Text variant="caption" weight="medium" muted numberOfLines={1} center>{tr('pj.bubble.add')}</Text>
-          </Tappable>
-        ) : null}
-      </ScrollView>
-      {pager && list.length > 1 ? <ProfilePager count={list.length} index={index} /> : null}
+    <View testID={testID} style={[{ gap: 4 }, style]}>
+      <GlassProfileSwitcher
+        profiles={profiles}
+        activeKey={activeKey}
+        onChange={(key) => select(list.findIndex((e) => e.key === key), true)}
+        onAdd={add ? () => { haptic('selection'); router.push('/journeys'); } : undefined}
+        addLabel={tr('pj.switcher.add')}
+        addCaption={tr('pj.bubble.add')}
+        addTestID="subject-add"
+        ringTestID="profile-ring"
+        label={tr('ps.a11y')}
+        size={SIZE}
+        scrollProps={scrollProps}
+        testID={`${testID}-row`}
+      />
+      {pager && list.length > 1 ? <ProfilePager count={list.length} index={Math.max(0, list.findIndex((e) => e.key === activeKey))} /> : null}
     </View>
   );
 }
@@ -170,7 +161,8 @@ export function useSwipeExclude() {
 
 /**
  * Enveloppe d'un écran de profil : glisser à gauche / à droite passe au profil suivant / précédent ; le contenu suit
- * légèrement le doigt puis entre en fondu glissé. « Réduire les animations » : changement immédiat, sans glissement.
+ * légèrement le doigt, puis la transition coordonnée prend le relais (`ProfileStage` : voile frère, jamais l'opacité
+ * d'un ancêtre). « Réduire les animations » : changement immédiat, sans glissement.
  */
 export function ProfileSwipe({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
   const m = useMotion();
@@ -178,7 +170,6 @@ export function ProfileSwipe({ children, style }: { children: React.ReactNode; s
   const level = useSharedValue(m.level);
   useEffect(() => { level.value = m.level; }, [m.level, level]);
   const tx = useSharedValue(0);
-  const fade = useSharedValue(1);
   const began = useSharedValue(0);
   const excludedAt = useSharedValue(0);
   const ctx = useMemo(() => ({ exclude: () => { excludedAt.value = Date.now(); }, excludedAt }), [excludedAt]);
@@ -193,18 +184,7 @@ export function ProfileSwipe({ children, style }: { children: React.ReactNode; s
     return () => document.removeEventListener('click', guard, true);
   }, [swipedAt]);
 
-  // Entrée du nouveau profil : léger décalage dans le sens du geste + fondu (aucun en « Réduire les animations »)
-  const last = useRef(index);
-  useEffect(() => {
-    if (last.current === index) return;
-    const dir = index > last.current ? 1 : -1;
-    last.current = index;
-    if (m.off) { tx.value = 0; fade.value = 1; return; }
-    tx.value = dir * 28;
-    fade.value = 0.35;
-    tx.value = motionTiming(m.level, 0, 260, 'decelerate');
-    fade.value = motionTiming(m.level, 1, 260, 'decelerate');
-  }, [index, m.level, m.off, tx, fade]);
+  // L'entrée du nouveau profil (voile + décalage) est celle de `ProfileStage` : ici, seulement le suivi du doigt
 
   // Déclarées dans le composant (jamais dans le worklet) : confiées à scheduleOnRN à la fin du geste
   const count = list.length;
@@ -231,7 +211,7 @@ export function ProfileSwipe({ children, style }: { children: React.ReactNode; s
       swipedAt.value = Date.now();
       tx.value = motionTiming(level.value, 0, 200, 'decelerate');
     });
-  const anim = useAnimatedStyle(() => ({ opacity: fade.value, transform: [{ translateX: tx.value }] }));
+  const anim = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }] }));
 
   return (
     <SwipeCtx.Provider value={ctx}>
@@ -243,4 +223,10 @@ export function ProfileSwipe({ children, style }: { children: React.ReactNode; s
       </GestureDetector>
     </SwipeCtx.Provider>
   );
+}
+
+/** Clé du profil affiché (rendu par profil : `ProfileStage profileKey`). */
+export function useActiveProfileKey(): string {
+  const { active } = useProfileList();
+  return active?.key ?? 'none';
 }

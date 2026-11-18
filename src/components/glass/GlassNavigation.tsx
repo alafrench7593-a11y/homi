@@ -182,13 +182,20 @@ export interface GlassProfile {
 
 export const GLASS_PROFILE = { size: 48, ring: 5, item: 68 } as const;
 
-export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, addLabel, size = GLASS_PROFILE.size, glass = true, label, style, testID = 'glass-profile-switcher' }: {
+export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, addLabel, addCaption, addTestID, ringTestID, scrollProps, size = GLASS_PROFILE.size, glass = true, label, style, testID = 'glass-profile-switcher' }: {
   profiles: GlassProfile[];
   activeKey: string;
   onChange: (key: string) => void;
   /** Affiche « ajouter un profil » en bout de rangée */
   onAdd?: () => void;
+  /** Nom annoncé de « ajouter » (ex. « Ajouter un profil ») */
   addLabel?: string;
+  /** Libellé visible court sous « + » (défaut : `addLabel`) */
+  addCaption?: string;
+  addTestID?: string;
+  ringTestID?: string;
+  /** Propriétés supplémentaires de la rangée défilante (ex. exclusion d'un geste parent) */
+  scrollProps?: Partial<React.ComponentProps<typeof ScrollView>>;
   size?: number;
   /** `true` (défaut) : rangée posée dans une capsule de verre ; `false` : rangée nue (fond uni) */
   glass?: boolean;
@@ -210,10 +217,10 @@ export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, add
   const text = glass ? spec.inks.text : t.colors.text;
   const muted = glass ? spec.inks.muted : t.colors.textMuted;
   const row = (
-    <ScrollView ref={scroll} horizontal showsHorizontalScrollIndicator={false} accessibilityRole="radiogroup" accessibilityLabel={label ?? tr('glass.profiles')}
+    <ScrollView ref={scroll} horizontal showsHorizontalScrollIndicator={false} accessibilityRole="radiogroup" accessibilityLabel={label ?? tr('glass.profiles')} {...scrollProps}
       contentContainerStyle={{ paddingHorizontal: glass ? spacing.xs : 0, paddingVertical: glass ? spacing.xs : 2 }}>
       {/* Anneau de sélection : UN seul, qui glisse d'un avatar à l'autre */}
-      <Animated.View pointerEvents="none" testID={`${testID}-ring`} style={[styles.ringTrack, { top: glass ? spacing.xs : 2, height: ring }, slide]}>
+      <Animated.View pointerEvents="none" testID={ringTestID ?? `${testID}-ring`} style={[styles.ringTrack, { top: glass ? spacing.xs : 2, height: ring }, slide]}>
         <View style={{ width: ring, height: ring, borderRadius: ring / 2, borderWidth: 2.5, borderColor: glass ? spec.inks.accent : t.colors.primary }} />
       </Animated.View>
       {profiles.map((p) => {
@@ -228,13 +235,13 @@ export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, add
         );
       })}
       {onAdd && addLabel ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={addLabel} testID={`${testID}-add`} onPress={onAdd} style={{ width: itemW, alignItems: 'center', gap: 2 }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={addLabel} testID={addTestID ?? `${testID}-add`} onPress={onAdd} style={{ width: itemW, alignItems: 'center', gap: 2 }}>
           <View style={{ width: ring, height: ring, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderStyle: 'dashed', borderColor: muted }}>
               <Icon name="plus" size={20} color={text} />
             </View>
           </View>
-          <Text variant="caption" weight="medium" color={muted} numberOfLines={1} center style={{ maxWidth: itemW - 4 }}>{addLabel}</Text>
+          <Text variant="caption" weight="medium" color={muted} numberOfLines={1} center style={{ maxWidth: itemW - 4 }}>{addCaption ?? addLabel}</Text>
         </Pressable>
       ) : null}
     </ScrollView>
