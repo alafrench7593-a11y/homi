@@ -23,8 +23,8 @@ import { localizeGroupName, personalizedOrder, pollPercent, splitMentions, type 
 import { isPremiumRequired } from '@/lib/premium/features';
 import type { CommunityGroup, FeedPost, Forum, MemberCard } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
+import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens';
-import { MessagesButton } from '@/features/communityMessages';
 import { localeTag, t as tr } from '@/i18n';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
@@ -178,7 +178,8 @@ export function GroupCard({ g, compact }: { g: CommunityGroup; compact?: boolean
 export function FeedTabs<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
   const t = useTheme();
   return (
-    <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 2 }} accessibilityRole="tablist" testID="feed-tabs">
+    // Coupée à droite sur un écran étroit : elle va jusqu'au bord et s'estompe tant qu'elle peut défiler
+    <FadingScrollRow gap={2} accessibilityRole="tablist" testID="feed-tabs">
       {options.map((o) => {
         const selected = value === o.value;
         return (
@@ -188,7 +189,7 @@ export function FeedTabs<T extends string>({ value, onChange, options }: { value
           </Tappable>
         );
       })}
-    </ScrollView>
+    </FadingScrollRow>
   );
 }
 
@@ -238,10 +239,6 @@ export function FiltersButton({ active, onOpen }: { active: boolean; onOpen: () 
         ))} testID="community-filters"
         accessibilityLabel={access.premium ? tr('cm1.filters.title') : tr('cm1.filters.a11yPremium')}
         style={!access.premium ? { borderColor: t.colors.gold } : undefined} />
-      {/* Messagerie privée : entrée posée ici, dans la rangée d'actions de la communauté (« Groupes », « Filtres »),
-          parce que l'écran de l'onglet (src/app/(tabs)/community.tsx) n'était pas modifiable pendant ce chantier.
-          À déplacer dans l'en-tête de l'onglet quand il le sera. */}
-      <MessagesButton />
     </>
   );
 }

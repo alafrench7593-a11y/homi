@@ -5,7 +5,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { Button, Icon, Text } from '@/components/ui';
+import { Button, Icon, IconButton, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { Avatar } from '@/features/community';
@@ -51,17 +51,19 @@ export function UnreadBadge({ count, testID }: { count: number; testID?: string 
   );
 }
 
-/** Entrée de la messagerie depuis la communauté ; la pastille compte messages non lus et demandes reçues. */
-export function MessagesButton() {
+/**
+ * Entrée de la messagerie, dans l'en-tête de l'écran Communauté (21/11/2026 ; elle était dans la rangée « Groupes /
+ * Filtres ») : enveloppe + pastille qui compte messages non lus et demandes reçues ; le nom accessible dit le nombre.
+ */
+export function MessagesHeaderButton() {
   const { data: me } = useCommunityProfile();
   const unread = useDmUnread(!!me);
   useDmRealtime(!!me);
   const n = me ? unread.total : 0;
   return (
     <View>
-      <Button label={tr('dm.title')} icon="mail" size="sm" variant="secondary" onPress={() => router.push('/community/messages' as never)} testID="community-messages"
-        accessibilityLabel={n ? tr('dm.entryA11y', { count: n }) : tr('dm.title')} />
-      {n ? <View pointerEvents="none" style={{ position: 'absolute', top: -6, right: -6 }}><UnreadBadge count={n} testID="community-messages-badge" /></View> : null}
+      <IconButton icon="mail" label={n ? tr('dm.entryA11y', { count: n }) : tr('dm.title')} onPress={() => router.push('/community/messages' as never)} testID="community-messages" />
+      {n ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, right: 0 }}><UnreadBadge count={n} testID="community-messages-badge" /></View> : null}
     </View>
   );
 }

@@ -16,6 +16,8 @@ import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/State
 import { Banner, Button, Card, Chip, Field, Icon, IconButton, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { CategorySheet, PostCard, spaceIcon } from '@/features/community';
+import { MessagesHeaderButton } from '@/features/communityMessages';
+import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { FeedTabs, FiltersButton, FiltersSheet, FollowButton, MemberRow } from '@/features/communitySocial';
 import { useActivePregnancy, useCommunityProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useCommunityFeed, useCommunitySearch, useSavedPosts, useSpaces } from '@/lib/data/hooks-community';
@@ -157,12 +159,13 @@ export default function Community() {
           {filters ? <IconButton icon="x" label={tr('cm1.feed.clearFilters')} onPress={() => setFilters(null)} /> : null}
         </Row>
       ) : null}
-      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingVertical: 2 }} testID="community-categories">
+      {/* Catégories : la rangée va jusqu'au bord de l'écran et s'estompe à droite tant qu'elle peut défiler */}
+      <FadingScrollRow testID="community-categories">
         <Chip label={tr('cm1.feed.all')} icon="layers" selected={!forumId} onPress={() => setForumId(null)} />
         {spaces.primary.map((f) => <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={forumId === f.id} onPress={() => setForumId(forumId === f.id ? null : f.id)} />)}
         {current && !primaryIds.has(current.id) ? <Chip label={current.title} icon={spaceIcon(current)} selected onPress={() => setForumId(null)} /> : null}
         <Chip label={tr('cm1.feed.allCategories')} icon="grid" onPress={() => setAllOpen(true)} accessibilityLabel={tr('cm1.feed.allCategoriesA11y')} />
-      </ScrollView>
+      </FadingScrollRow>
       {mode === 'saved' && !searching && (folders.data?.length ?? 0) > 0 ? (
         <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="saved-folders">
           <Chip label={tr('cm1.feed.allSaved')} icon="bookmark" selected={!folderId} onPress={() => setFolderId(null)} />
@@ -228,7 +231,10 @@ export default function Community() {
       subtitle={tr('screen.community.sub')}
       right={(
         <Row gap={0}>
-          <IconButton icon="map-pin" label={tr('out.title')} onPress={() => router.push('/outings' as never)} />
+          {/* Messagerie privée (avec sa pastille de non-lus) : dans l'en-tête de l'écran, plus dans la rangée Groupes / Filtres */}
+          <MessagesHeaderButton />
+          {/* « Sorties » n'est plus une icône d'en-tête : la carte « Sorties près de chez moi » est en tête de page, et
+              l'en-tête doit tenir sur une ligne à 320 pt (Messages, notifications, profil communautaire, avatar) */}
           <IconButton icon="bell" label={tr('cm1.feed.notifications')} onPress={() => router.push('/notifications')} />
           {/* Mon profil communautaire (publications, réponses, groupes, albums, enregistrés) */}
           <IconButton icon="at-sign" label={me ? tr('cm1.feed.communityProfile') : tr('cm1.feed.createCommunityProfile')} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />
