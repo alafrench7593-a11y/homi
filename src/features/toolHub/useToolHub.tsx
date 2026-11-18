@@ -20,6 +20,7 @@ import { useUiStore } from '@/lib/store';
 import { useReduceMotion } from '@/theme/ThemeProvider';
 import { t as tr } from '@/i18n';
 import { ToolSheet } from './ToolSheet';
+import { tourEvent } from '@/features/tour/store';
 
 export type { ToolEntry };
 
@@ -95,7 +96,8 @@ export function useToolHub() {
     openTool(e.tool, undefined, reduce || e.tool.urgent);
   }, [setSubject, addRecent, reduce]);
 
-  const showSheet = useCallback((e: ToolEntry) => setSheet(e), []);
+  // la fiche d'un outil compte comme une ouverture pour la visite guidée (« Trouver un outil »)
+  const showSheet = useCallback((e: ToolEntry) => { tourEvent({ type: 'toolOpened', id: e.tool.id }); setSheet(e); }, []);
   // urgences, lectures (sous-accès) et réglages : jamais de fiche intermédiaire
   const opensDirectly = useCallback((tool: CatalogTool) => !!tool.urgent || !!tool.parent || tool.category === 'account' || knownSet.has(tool.id), [knownSet]);
   /** Appui sur une rangée : fiche pour un outil nouveau, ouverture directe pour un outil connu. */

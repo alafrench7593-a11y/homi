@@ -16,6 +16,8 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { UserAvatar } from './UserAvatar';
 import { t as tr } from '@/i18n';
+import { useTourAllowed } from '@/features/tour/TourEntry';
+import { startTour } from '@/features/tour/store';
 
 const SIZE = 32;
 /** Disques de verre de l’en-tête : 44 pt (cible tactile réelle, y compris sur le web où hitSlop n’existe pas) et leur écart. */
@@ -80,6 +82,7 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
     if (pathname !== href.replace('/(tabs)', '')) router.push(href as never);
   };
   const name = profile?.display_name?.trim();
+  const tourAllowed = useTourAllowed();
   return (
     <GlassSheet visible={visible} onClose={onClose} title={tr('header.account')}>
       <View testID="account-sheet" style={{ gap: spacing.md }}>
@@ -94,6 +97,7 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
         <ListGroup>
           <ListRow icon="user" title={tr('header.profile')} onPress={() => go('/(tabs)/profile')} testID="account-sheet-profile" />
           <ListRow icon="settings" title={tr('header.settings')} onPress={() => go('/settings')} testID="account-sheet-settings" />
+          {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} onPress={() => { onClose(); setTimeout(startTour, 200); }} testID="account-sheet-tour" /> : null}
           <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle="15 · 112 · 3114" danger iconColor={t.colors.danger} onPress={() => go('/emergency')} testID="account-sheet-emergency" />
         </ListGroup>
       </View>

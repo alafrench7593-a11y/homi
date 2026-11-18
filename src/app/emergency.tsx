@@ -1,4 +1,5 @@
 /** Urgences : toujours gratuit, accessible sans compte et depuis tous les écrans. */
+import { markEmergencyCall } from '@/features/tour/store';
 import React from 'react';
 import { Linking } from 'react-native';
 import { useToast } from '@/components/Overlays';
@@ -17,7 +18,7 @@ export default function Emergency() {
   return (
     <Screen back title={tr('u7.emergency.title')} subtitle={tr('u7.emergency.subtitle')}
       action={{ label: region === 'FR' ? tr('u7.emergency.call15') : tr('u7.emergency.callPhone', { phone }), icon: 'phone', testID: 'emergency-call-15',
-        onPress: () => { Linking.openURL(`tel:${phone}`).catch(() => toast(tr('u7.emergency.callFail', { phone }), 'error')); } }}>
+        onPress: () => { markEmergencyCall(); Linking.openURL(`tel:${phone}`).catch(() => toast(tr('u7.emergency.callFail', { phone }), 'error')); } }}>
       {/* les numéros d'abord, sans animation ni texte à lire avant */}
       <EmergencyList />
       {region !== 'FR' ? (

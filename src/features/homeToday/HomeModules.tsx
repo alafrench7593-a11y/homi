@@ -26,6 +26,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { HOME_MODULES, resolveHomeLayout, setModuleVisible, type HomeLayout, type HomeModuleKey, type HomeSituation } from './homeLayout';
 import { useHomeToday } from './useHomeToday';
+import { useTourAnchor } from '@/features/tour/anchors';
 
 const CHILD_INFO: HomeModuleKey = 'childInfo';
 
@@ -70,7 +71,9 @@ export function HomeCardSkeleton() {
 /** Entrée FIXE et évidente en tête d'Aujourd'hui : tous les outils (recherche, favoris, par thème). */
 export function ToolsEntry() {
   const t = useTheme();
+  const anchor = useTourAnchor('tools-entry');
   return (
+    <View {...anchor}>
     <Tappable accessibilityRole="button" accessibilityLabel={`${tr('hm.toolsEntry')}. ${tr('hm.toolsEntrySub')}`} testID="home-tools-entry" onPress={() => { haptic('selection'); router.push('/tools'); }}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.lg, borderWidth: 1,
         borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
@@ -83,6 +86,7 @@ export function ToolsEntry() {
       </View>
       <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
     </Tappable>
+    </View>
   );
 }
 
@@ -197,6 +201,8 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
     toast(tr('hm.resetDone'));
   }
   const label = (k: HomeModuleKey) => tr(HOME_MODULES.find((m) => m.key === k)!.label);
+  // Visite guidée : le doigt fantôme montre le glisser-déposer sur la liste des modules
+  const reorderAnchor = useTourAnchor('home-editor');
 
   return (
     <View testID="home-editor" style={{ gap: spacing.md }}>
@@ -213,6 +219,7 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
       <View style={{ gap: spacing.xs }}>
         <Text variant="label" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{tr('hm.modules')}</Text>
         <Text variant="caption" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('glass.reorder.hint')}</Text>
+        <View {...reorderAnchor}>
         <ReorderList
           data={layout.order}
           keyOf={(k) => k}
@@ -228,6 +235,7 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
               onVisible={(v) => set(setModuleVisible(layout, key, v))} />
           )}
         />
+        </View>
       </View>
 
       {/* Actions rapides du profil affiché (bouton central de la barre) */}

@@ -3,7 +3,9 @@
  *  1 Ouverture (logo HOMI, titre, action immédiate) · 2 Situation · 3 Besoins + foyer (+ formulaires grossesse /
  *  enfants si le parcours l'exige) · 4 « Qui s'en occupe ? » (geste) · 5 Démonstration (vrais composants, données
  *  d'exemple) · 6 Synthèse calculée + rappels, puis accords · 7 Révélation (opérations réelles) · 8 Premium (sauté si
- *  déjà abonné·e).
+ *  déjà abonné·e), puis la proposition de VISITE GUIDÉE dans l'application réelle (« Faire la visite (2 min) » /
+ *  « Plus tard » ; jamais pour un compte qui n'est que nounou) — elle remplace la keynote « Découvrir HOMI », qui reste
+ *  dans Réglages comme présentation des outils.
  * Conservé de la v1 : prénom, parcours (bodyJourney / childJourneyType / planChange / runOps), grossesse et enfants
  * (createPregnancy / createChild + validations, sans doublon en cas de nouvel essai), rappels suggérés + autorisation
  * des notifications, accords (CONSENT_ROWS, LEGAL_VERSIONS, données de santé obligatoires), brouillon local ET profil
@@ -48,11 +50,13 @@ import { ConsentsStep } from '@/features/onboarding/ConsentsStep';
 import { RevealStep, type RevealLine } from '@/features/onboarding/RevealStep';
 import { PremiumStep } from '@/features/onboarding/PremiumStep';
 import { InviteOtherParent } from '@/features/couple/CoupleKit';
+import { deferTourOffer, TourOfferStep, useScreenOpen, useTourAllowed } from '@/features/tour/TourEntry';
+import { tourDispatch } from '@/features/tour/store';
 import { spacing } from '@/theme/tokens';
 import { formatList, getLocale, t as tr, type TKey } from '@/i18n';
 
 type Step = Exclude<OnboardingStep, 'feeding'>;
-type Phase = 'flow' | 'reveal' | 'premium';
+type Phase = 'flow' | 'reveal' | 'premium' | 'tour';
 
 /** Temps (1 à 8) de chaque étape enregistrée. */
 const TEMPS: Record<Step, number> = { intro: 1, journeys: 2, needs: 3, household: 3, pregnancy: 3, children: 3, split: 4, demo: 5, reminders: 6, consents: 6 };
@@ -165,7 +169,16 @@ export default function Onboarding() {
   useEffect(() => { lastIdx.current = idx; }, [idx]);
   const next = () => setStep(steps[Math.min(idx + 1, steps.length - 1)]);
   const prev = () => { setError(null); setStep(steps[Math.max(idx - 1, 0)]); };
-  const temps = phase === 'reveal' ? 7 : phase === 'premium' ? 8 : TEMPS[step];
+  const temps = phase === 'reveal' ? 7 : phase === 'premium' || phase === 'tour' ? 8 : TEMPS[step];
+  // Visite guidée proposée après la révélation et Premium (jamais à une nounou, jamais pendant une urgence)
+  // L'accueil doit être ouvert (Premium ou essai) : sinon la visite est gardée pour plus tard (carte de l'accueil)
+  const tourAllowed = useTourAllowed();
+  const homeOpen = useScreenOpen('/');
+  const afterPremium = () => {
+    if (tourAllowed && homeOpen) return setPhase('tour');
+    if (tourAllowed) deferTourOffer();
+    exit();
+  };
 
   function goNext() {
     if (step === 'journeys' && !answers.situations.length) return setError(tr('o2.sit.required'));
@@ -290,16 +303,22 @@ export default function Onboarding() {
   }
 
   const back = <IconButton icon="arrow-left" tone="filled" label={tr('common.back')} onPress={prev} testID="onb-back" />;
-  const footer = phase === 'premium' ? (
+  const footer = phase === 'tour' ? (
+    <View style={{ gap: spacing.xs }}>
+      <Button label={tr('tour.offer.start')} size="lg" full icon="compass" testID="onb-tour-start"
+        onPress={() => { router.replace('/(tabs)'); tourDispatch({ type: 'start' }); }} />
+      <Button label={tr('tour.later')} variant="secondary" size="lg" full testID="onb-tour-later" onPress={() => { deferTourOffer(); exit(); }} />
+    </View>
+  ) : phase === 'premium' ? (
     <View style={{ gap: spacing.xs }}>
       <Button label={tr('o2.prem.see')} size="lg" full icon="star" testID="onb-premium-see"
-        onPress={() => { router.replace('/(tabs)'); router.push({ pathname: '/premium', params: { from: 'onboarding' } } as never); }} />
-      <Button label={tr('o2.prem.skip')} variant="secondary" size="lg" full testID="onb-premium-skip" onPress={() => exit()} />
+        onPress={() => { if (tourAllowed) deferTourOffer(); router.replace('/(tabs)'); router.push({ pathname: '/premium', params: { from: 'onboarding' } } as never); }} />
+      <Button label={tr('o2.prem.skip')} variant="secondary" size="lg" full testID="onb-premium-skip" onPress={afterPremium} />
     </View>
   ) : phase === 'reveal' ? (
     revealDone ? (
       <View style={{ gap: spacing.xs }}>
-        <Button label={tr('common.continue')} size="lg" full testID="onb-reveal-next" onPress={() => (premium ? exit() : setPhase('premium'))} />
+        <Button label={tr('common.continue')} size="lg" full testID="onb-reveal-next" onPress={() => (premium ? afterPremium() : setPhase('premium'))} />
         <Button label={tr('o2.reveal.startWith', { action: tr(`o2.first.${plan.first.key}` as TKey) })} variant="ghost" full testID="onb-first-action" onPress={() => exit(plan.first.route)} />
       </View>
     ) : error ? (
@@ -330,7 +349,7 @@ export default function Onboarding() {
   const key = phase === 'flow' ? step : phase;
   return (
     <Screen footer={footer} contentStyle={demoTop}>
-      {temps > 1 ? <OnbProgress count={TOTAL_TEMPS} index={temps - 1} label={tr('o2.progress', { step: temps, total: TOTAL_TEMPS })} /> : null}
+      {temps > 1 && phase !== 'tour' ? <OnbProgress count={TOTAL_TEMPS} index={temps - 1} label={tr('o2.progress', { step: temps, total: TOTAL_TEMPS })} /> : null}
       {/* Temps 2 à 6 : l'illustration de la situation choisie, sur le halo, reste en place d'une question à l'autre (fondu
           enchaîné quand la situation principale change) ; seules les questions entrent et sortent. */}
       {phase === 'flow' && step !== 'intro' ? (
@@ -345,6 +364,8 @@ export default function Onboarding() {
             {/* 19/11/2026 : foyer à deux → « Ajouter l'autre parent à votre famille ? » (Inviter maintenant / Plus tard) */}
             {revealDone && (answers.sharing === 'couple' || answers.sharing === 'coparenting') ? <InviteOtherParent testID="onb-invite" /> : null}
           </View>
+        ) : phase === 'tour' ? (
+          <TourOfferStep />
         ) : phase === 'premium' ? (
           <PremiumStep features={plan.premium} childName={childName} />
         ) : step === 'intro' ? (

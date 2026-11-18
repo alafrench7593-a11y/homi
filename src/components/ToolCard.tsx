@@ -11,6 +11,9 @@
  * (`useCardLift`, 140 ms) avant l'ouverture de l'outil, dont l'écran répond par son entrée ; survol web : −3 px.
  * Réduire les animations / économie d'énergie : ouverture immédiate, aucun mouvement ; nuit : sans élévation.
  */
+import { tourEvent } from '@/features/tour/store';
+import { maybeToolHint } from '@/features/tour/ToolHint';
+import { toolProblem } from '@/features/toolHub/ToolSheet';
 import React, { useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, View, type GestureResponderEvent } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -32,6 +35,8 @@ export const TOOL_CARD_HEIGHT = 164;
 
 /** Ouvre l'outil : mémorise l'origine (glyphe → en-tête) et navigue sans attendre l'animation. */
 export function openTool(tool: CatalogTool, y?: number, reduce?: boolean) {
+  tourEvent({ type: 'toolOpened', id: tool.id });
+  maybeToolHint({ id: tool.id, urgent: tool.urgent, title: tool.label, body: toolProblem(tool) ?? tool.sub ?? null, path: tool.href });
   markToolOpen({ href: tool.href, id: tool.id, theme: tool.theme, icon: tool.icon, urgent: tool.urgent, y });
   const go = () => router.push(tool.href as never);
   if (tool.urgent || reduce) go();

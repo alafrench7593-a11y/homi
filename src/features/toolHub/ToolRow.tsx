@@ -27,6 +27,7 @@ import { TOOL_PROFILES } from '@/lib/journeys/tools';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, physicalShadow, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { useTourAnchor } from '@/features/tour/anchors';
 
 export const TOOL_ROW_MIN_HEIGHT = 72;
 /** Lignes de description affichées avant l'ellipse (2 auparavant : la phrase était coupée au milieu). */
@@ -146,10 +147,14 @@ export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorit
 export function FavoriteStar({ on, label, onPress, id }: { on: boolean; label: string; onPress: () => void; id?: string }) {
   const t = useTheme();
   const name = tr('th.ui.favSwitch', { label });
+  // Visite guidée (« Ajouter un favori ») : la découpe se pose sur la première étoile visible
+  const anchor = useTourAnchor('tool-star');
   return (
+    <View {...anchor}>
     <MotionStar active={on} onToggle={() => onPress()} labelOn={name} labelOff={name} role="switch" hapticOn="success"
       size={18} box={MIN_TOUCH} color={t.colors.textMuted} activeColor={t.colors.primary} well={t.colors.accentSoft}
       testID={id ? `tool-fav-${id}` : undefined} ringTestID={id ? `fav-ring-${id}` : undefined} />
+    </View>
   );
 }
 

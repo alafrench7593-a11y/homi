@@ -43,6 +43,8 @@ import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
+import { useTourAnchor } from '@/features/tour/anchors';
+import { tourEvent, tourQuickChosen } from '@/features/tour/store';
 
 /**
  * Hauteur visuelle de la barre au-dessus de la zone sûre : capsule de verre flottante (60 + 2 × 4) et l'écart qui la
@@ -75,6 +77,7 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
   const t = useTheme();
   const custom = useDockActionFor(route);
   const p = usePressScale({ scale: 0.94 });
+  const anchor = useTourAnchor('quick-add');
   const action: DockAction = custom ?? { icon: 'plus', label: tr('qa.buttonA11y'), hint: tr('qa.buttonHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
   return (
     <Pressable
@@ -88,10 +91,12 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
       hitSlop={size < 48 ? (48 - size) / 2 : 0}
       style={{ width: size, height: size }}
     >
+      <View {...anchor} style={{ flex: 1 }}>
       {/* Rectangle aux angles souples, aplat de l'action principale (prune en clair, corail en sombre), sans dégradé */}
       <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
         <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />
       </Animated.View>
+      </View>
     </Pressable>
   );
 }
@@ -262,6 +267,8 @@ function QuickActionSheet({ visible, family, onClose }: { visible: boolean; fami
   const run = (k: QuickActionKey) => {
     haptic('light');
     const href = quickHref(k, { childId, pregnancy });
+    // Visite guidée : une action est choisie (son formulaire s'ouvre ; la tâche est une feuille sur place)
+    tourQuickChosen(k, !!href);
     after(href ? () => router.push(href as never) : () => setTask(true));
   };
   return (
@@ -295,7 +302,7 @@ function QuickActionSheet({ visible, family, onClose }: { visible: boolean; fami
         )}
       </GlassSheet>
       {/* « Créer une tâche » : disponible depuis tous les onglets (avant : seulement sur l'accueil) */}
-      <TodayAddSheet visible={task} onClose={() => setTask(false)} me={me} canEdit={canEdit} />
+      <TodayAddSheet visible={task} onClose={() => { setTask(false); tourEvent({ type: 'quickFormClosed' }); }} me={me} canEdit={canEdit} />
     </>
   );
 }

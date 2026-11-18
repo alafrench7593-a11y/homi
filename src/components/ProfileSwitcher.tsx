@@ -41,6 +41,8 @@ import { UserAvatar } from './UserAvatar';
 import { avatarInitial } from './AccountActions';
 import { haptic, Icon, Text, type IconName } from './ui';
 import { activeProfileIndex, neighbourIndex, profileEntries, SWIPE, swipeDirection, type ProfileEntry } from './profileList';
+import { useTourAnchor } from '@/features/tour/anchors';
+import { setTourProfileCount } from '@/features/tour/store';
 
 export { activeProfileIndex, neighbourIndex, profileEntries, SWIPE, swipeDirection, type ProfileEntry, type ProfileKind } from './profileList';
 
@@ -92,6 +94,9 @@ export function ProfileSwitcher({ pager = false, add = true, testID = 'profile-s
   const scrollProps = useMemo(() => ({ onStartShouldSetResponderCapture: () => { swipe?.exclude(); return false; } }), [swipe]);
   // Compte qui n'est QUE nounou : jamais les profils du foyer
   const caregiver = isCaregiverOnly(useMemberships().data);
+  // Visite guidée : la découpe se pose sur la rangée d'avatars (étape « Changer de profil »)
+  const anchor = useTourAnchor('profile-switcher');
+  useEffect(() => { setTourProfileCount(list.length); }, [list.length]);
 
   const label = (e: ProfileEntry) => (e.kind === 'me' ? tr('pj.subject.me') : e.kind === 'pregnancy' ? tr('ps.pregnancy') : e.kind === 'family' ? tr('ps.family') : e.child!.first_name);
   const a11y = (e: ProfileEntry) => (e.kind === 'me' ? tr('pj.bubble.meA11y', { name: profile?.display_name?.trim() || tr('pj.subject.me') })
@@ -112,6 +117,7 @@ export function ProfileSwitcher({ pager = false, add = true, testID = 'profile-s
   if (caregiver) return null;
   return (
     <View testID={testID} style={[{ gap: 4 }, style]}>
+      <View {...anchor}>
       <GlassProfileSwitcher
         profiles={profiles}
         activeKey={activeKey}
@@ -126,6 +132,7 @@ export function ProfileSwitcher({ pager = false, add = true, testID = 'profile-s
         scrollProps={scrollProps}
         testID={`${testID}-row`}
       />
+      </View>
       {pager && list.length > 1 ? <ProfilePager count={list.length} index={Math.max(0, list.findIndex((e) => e.key === activeKey))} /> : null}
     </View>
   );
@@ -216,12 +223,14 @@ export function ProfileSwipe({ children, style }: { children: React.ReactNode; s
       tx.value = motionTiming(level.value, 0, 200, 'decelerate');
     });
   const anim = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }] }));
+  // Visite guidée : la zone où l'on glisse reste touchable pendant l'étape « Changer de profil »
+  const anchor = useTourAnchor('profile-swipe');
 
   return (
     <SwipeCtx.Provider value={ctx}>
       <GestureDetector gesture={pan} touchAction="pan-y">
         {/* Vue hôte du geste, non aplatie ; l'animation est dessous. */}
-        <View testID="profile-swipe" collapsable={false}>
+        <View testID="profile-swipe" collapsable={false} ref={anchor.ref} onLayout={anchor.onLayout}>
           <Animated.View style={[style, anim]}>{children}</Animated.View>
         </View>
       </GestureDetector>

@@ -39,6 +39,7 @@ import { searchCatalog } from '@/lib/domain/toolSearch';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { useTourAnchor } from '@/features/tour/anchors';
 
 /** Largeur utile maximale (tablette, ordinateur) : les listes restent lisibles et centrées, jamais étirées. */
 const MAX_W = 720;
@@ -68,13 +69,18 @@ export default function Tools() {
   const forTitle = scope.child ? tr('th.ui.for', { name: scope.child.first_name })
     : scope.scope === 'pregnancy' ? tr('th.ui.forPregnancy') : scope.scope === 'family' ? tr('th.ui.forFamily') : tr('th.ui.forMe');
   const loading = profileQ.isLoading && !profileQ.data;
+  // Visite guidée (« Trouver un outil ») : la recherche, puis ses premiers résultats
+  const searchAnchor = useTourAnchor('tools-search');
+  const resultsAnchor = useTourAnchor('tools-results');
 
   return (
     <Screen account title={tr('th.ui.title')} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       {/* 1. Recherche par besoin (verre : petite surface de navigation posée sur le fond) */}
       <View style={{ gap: spacing.sm }}>
+        <View {...searchAnchor}>
         <GlassSearchBar value={q} onChangeText={setQ} label={tr('th.ui.search')} placeholder={tr('th.ui.searchPh')} testID="tools-search"
           onFocus={() => setSearching(true)} onBlur={() => setSearching(false)} />
+        </View>
         {/* Champ actif et vide : catégories suggérées */}
         {searching && !query && !loading ? <CategoryChips tools={allTools} /> : null}
       </View>
@@ -83,7 +89,7 @@ export default function Tools() {
         <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title={tr('u3.tools.errTools')} />
       ) : outcome ? (
         outcome.understood ? (
-          <View testID="tools-results" accessibilityLiveRegion="polite">
+          <View testID="tools-results" accessibilityLiveRegion="polite" {...resultsAnchor}>
             <Text variant="caption" muted style={{ marginBottom: spacing.xs }}>{tr('th.ui.results', { count: outcome.results.length })}</Text>
             {/* Résultats : cartes opaques (texte), entrée en décalé léger (une fois par résultat nouveau) */}
             <StaggerList>

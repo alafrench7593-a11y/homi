@@ -1,4 +1,6 @@
 /** Réglages : profil, apparence, famille, rappels, abonnement, confidentialité, aide, à propos, déconnexion. */
+import { useTourAllowed } from '@/features/tour/TourEntry';
+import { startTour, useTourStore } from '@/features/tour/store';
 import { LEGAL_NOTICE, PRIVACY, SUPPORT, TERMS } from '@/content/legal';
 import React, { useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
@@ -28,6 +30,10 @@ const MODE_ICON: Record<'system' | 'light' | 'dark', IconName> = { system: 'smar
 
 export default function SettingsScreen() {
   const toast = useToast();
+  // Visite guidée : relance (jamais pour un compte nounou) et aides de première ouverture des outils
+  const tourAllowed = useTourAllowed();
+  const hintsOff = useTourStore((s) => s.hintsOff);
+  const setHintsOff = useTourStore((s) => s.setHintsOff);
   const offline = useOfflineStore();
   const devMode = useDeveloperMode();
   const versionTaps = useRef(0);
@@ -173,6 +179,16 @@ export default function SettingsScreen() {
         <ListRow icon="mail" title={tr('settings.help.write')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('settings.help.writeTo', { email: BRAND.supportEmail }), 'info'))} />
         <Divider />
         <ListRow icon="help-circle" title={SUPPORT.title} onPress={() => router.push('/legal/support')} testID="settings-support" />
+        <Divider />
+        {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} subtitle={tr('tour.settingsRowSub')} onPress={startTour} testID="settings-tour" /> : null}
+        {tourAllowed ? <Divider /> : null}
+        <Row style={{ justifyContent: 'space-between', alignItems: 'center' }} testID="settings-tool-hints">
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text>{tr('tour.hints.row')}</Text>
+            <Text variant="small" muted>{tr('tour.hints.rowSub')}</Text>
+          </View>
+          <Toggle label={tr('tour.hints.row')} value={!hintsOff} onChange={(v) => setHintsOff(!v)} />
+        </Row>
         <Divider />
         <ListRow icon="play-circle" title={tr('kn.settingsRow')} subtitle={tr('kn.settingsRowSub')} onPress={() => router.push('/discover?replay=1' as never)} testID="settings-discover" />
         <Divider />

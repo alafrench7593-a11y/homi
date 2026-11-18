@@ -17,6 +17,7 @@
  * blocs (`Cascade`), pression, validation (coche), réorganisation douce après une validation (`useListLayout`).
  * Confirmation : seulement après la réponse RÉELLE du serveur (fait maintenant / déjà fait / conflit → erreur).
  */
+import { useTourAnchor } from '@/features/tour/anchors';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -237,7 +238,7 @@ export function TodayAgenda({ scene, cascadeIndex = 0, caption }: { scene: Today
   const links = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.md }}>
       {more > 0 ? <FooterLink icon="list" label={tr('ht.more', { count: more })} onPress={() => router.push('/family')} testID="home-today-more" /> : null}
-      <FooterLink icon="calendar" label={tr('ht.openAgenda')} onPress={() => router.push('/calendar')} testID="home-today-open-agenda" />
+      <AgendaLink />
     </View>
   );
   return (
@@ -286,6 +287,12 @@ function TimelineRow({ e, state, person, held, busy, onComplete, first, last }: 
     return <TodayAgendaRow x={x} owner={person(x.ownerId)} creator={x.creatorId ? person(x.creatorId) : null} celebrate={!!held?.ids.includes(x.id)} busy={!!busy} onComplete={onComplete} state={state} first={first} last={last} />;
   }
   return <AgendaItemRow e={e} state={state} person={person} first={first} last={last} />;
+}
+
+/** « Ouvrir l'agenda » : ancre de la visite guidée (étape « Ouvrir l'agenda »). */
+function AgendaLink() {
+  const anchor = useTourAnchor('agenda-link');
+  return <View {...anchor} style={{ alignSelf: 'flex-start' }}><FooterLink icon="calendar" label={tr('ht.openAgenda')} onPress={() => router.push('/calendar')} testID="home-today-open-agenda" /></View>;
 }
 
 function FooterLink({ icon, label, onPress, testID }: { icon: IconName; label: string; onPress: () => void; testID?: string }) {

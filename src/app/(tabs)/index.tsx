@@ -61,7 +61,13 @@ import { Tappable } from '@/components/Tappable';
 import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/features/homeToday';
 import { coparentSituation } from '@/features/homeToday/coparentHome';
 import { homeSituation, resolveHomeLayout, shownModules, type HomeModuleKey } from '@/features/homeToday/homeLayout';
+import { TourResumeCard } from '@/features/tour/TourEntry';
+import { useTourAnchor } from '@/features/tour/anchors';
+import { tourEvent } from '@/features/tour/store';
 import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeCardSkeleton, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
+
+/** Visite guidée : l'éditeur de l'accueil vient de s'ouvrir (étape « Personnaliser l'accueil »). */
+const EDITOR_OPENED = { type: 'editorOpened' } as const;
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
@@ -71,7 +77,14 @@ const LEGACY_FOR: Record<Scope, Journey[]> = {
 /** « Personnaliser » : remonte en haut de l'écran, où s'ouvre le mode édition. */
 function CustomizeButton({ onPress }: { onPress: () => void }) {
   const scroll = useScreenScroll();
-  return <Button label={tr('hm.customize')} icon="sliders" variant="secondary" full testID="home-customize" onPress={() => { scroll.scrollToTop(false); onPress(); }} />;
+  const anchor = useTourAnchor('home-customize');
+  return <View {...anchor}><Button label={tr('hm.customize')} icon="sliders" variant="secondary" full testID="home-customize" onPress={() => { scroll.scrollToTop(false); onPress(); }} /></View>;
+}
+
+/** Carte de l'accueil, ancre de la visite pour « prochaine action » et « actions rapides ». */
+function HomeCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const anchor = useTourAnchor(`home-${id}`);
+  return <View testID={`home-card-${id}`} {...anchor}>{children}</View>;
 }
 
 export default function Home() {
@@ -200,6 +213,8 @@ export default function Home() {
       <ProfileSwitcher pager />
       {/* « Outils » : entrée fixe et évidente (aussi dans l'action centrale de la barre) */}
       <ToolsEntry />
+      {/* Visite guidée interrompue : reprise discrète, masquable */}
+      <TourResumeCard />
       {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
       {editing ? <HomeEditor situation={situation} onDone={() => setEditing(false)} /> : (
@@ -210,7 +225,7 @@ export default function Home() {
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;
-            return <Cascade key={key} index={i}><View testID={`home-card-${key}`}>{node}</View></Cascade>;
+            return <Cascade key={key} index={i}><HomeCard id={key}>{node}</HomeCard></Cascade>;
           })}
           {simple ? null : (
             <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
@@ -220,7 +235,7 @@ export default function Home() {
             </Tappable>
           )}
           {/* Personnalisation sur place : réordonner, masquer, actions rapides, outils épinglés, rétablir */}
-          <CustomizeButton onPress={() => setEditing(true)} />
+          <CustomizeButton onPress={() => { setEditing(true); tourEvent(EDITOR_OPENED); }} />
           </ProfileStage>
         </ProfileSwipe>
       )}
