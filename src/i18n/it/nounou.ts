@@ -12,7 +12,7 @@ export const nounou: Messages<typeof fr> = {
   'nn.home.parentSub': 'Diario della giornata, foto, messaggi e accesso della tata.',
   'nn.home.emptyTitle': 'Ancora nessun affido',
   'nn.home.emptyBody': 'Una famiglia ti ha invitata? Apri il link ricevuto o inserisci il codice qui sotto.',
-  'nn.profile.open': 'Apri «I miei affidi»',
+  'nn.profile.open': 'Tutti i miei affidi',
   'nn.profile.openSub': 'Diario, foto e messaggi di ogni affido',
   'nn.profile.settings': 'Il mio account e le impostazioni',
 

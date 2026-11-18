@@ -12,7 +12,7 @@ export const nounou: Messages<typeof fr> = {
   'nn.home.parentSub': 'Daily log, photos, messages and the childminder’s access.',
   'nn.home.emptyTitle': 'No childcare yet',
   'nn.home.emptyBody': 'Has a family invited you? Open the link you received or enter the code below.',
-  'nn.profile.open': 'Open “My childcare”',
+  'nn.profile.open': 'All my childcare',
   'nn.profile.openSub': 'Log, photos and messages for each child you look after',
   'nn.profile.settings': 'My account and settings',
 

@@ -12,7 +12,7 @@ export const nounou: Messages<typeof fr> = {
   'nn.home.parentSub': 'Tagebuch, Fotos, Nachrichten und Zugang der Tagesmutter.',
   'nn.home.emptyTitle': 'Noch keine Betreuung',
   'nn.home.emptyBody': 'Hat dich eine Familie eingeladen? Öffne den erhaltenen Link oder gib unten den Code ein.',
-  'nn.profile.open': '„Meine Betreuungen“ öffnen',
+  'nn.profile.open': 'Alle meine Betreuungen',
   'nn.profile.openSub': 'Tagebuch, Fotos und Nachrichten jeder Betreuung',
   'nn.profile.settings': 'Mein Konto und meine Einstellungen',
 
