@@ -122,7 +122,7 @@ export function useAddCareEntry() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (v: { table: string; row: Record<string, unknown> }) => insertOrQueue(v.table, { client_id: uuid(), ...v.row }),
-    onSuccess: (_r, v) => inv('care_day', v.table),
+    onSuccess: (_r, v) => { void inv('care_day', v.table); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 
@@ -134,7 +134,7 @@ export function useMergeCareEntry() {
       if (!Object.keys(v.patch).length) return;
       await backend.update(v.table, v.patch, [eq('id', v.id)]);
     },
-    onSuccess: (_r, v) => inv('care_day', v.table),
+    onSuccess: (_r, v) => { void inv('care_day', v.table); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 
@@ -143,7 +143,7 @@ export function useEndSleep() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (id: string) => { await backend.update('sleeps', { ended_at: new Date().toISOString() }, [eq('id', id)]); },
-    onSuccess: () => inv('care_day', 'sleeps'),
+    onSuccess: () => { void inv('care_day', 'sleeps'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 
@@ -159,21 +159,21 @@ export function useInviteCaregiver() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: (v: { childId: string; label: string | null }) => backend.rpc<{ token: string; link_id: string; expires_at: string }>('childcare_invite', { p_child: v.childId, p_label: v.label }),
-    onSuccess: () => inv('childcare_links', 'household_invitations'),
+    onSuccess: () => { void inv('childcare_links', 'household_invitations'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 export function useCareLinkAction() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (v: { action: 'confirm' | 'revoke'; linkId: string }) => { await backend.rpc(v.action === 'confirm' ? 'childcare_confirm' : 'childcare_revoke', { p_link: v.linkId }); },
-    onSuccess: () => inv('childcare_links', 'my_childcare', 'members', 'household_members'),
+    onSuccess: () => { void inv('childcare_links', 'my_childcare', 'members', 'household_members'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 export function useAddChildToCaregiver() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: (v: { childId: string; caregiverId: string }) => backend.rpc<string>('childcare_add_child', { p_child: v.childId, p_caregiver: v.caregiverId }),
-    onSuccess: () => inv('childcare_links', 'members'),
+    onSuccess: () => { void inv('childcare_links', 'members'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 export function useSetCareSettings() {
@@ -184,7 +184,7 @@ export function useSetCareSettings() {
         p_child: v.childId, p_photos_allowed: v.photosAllowed ?? null, p_retention: v.retention ?? null,
         p_allow_download: v.allowDownload ?? null, p_notify_name: v.notifyName ?? null,
       }),
-    onSuccess: () => inv('childcare_settings', 'my_childcare'),
+    onSuccess: () => { void inv('childcare_settings', 'my_childcare'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 export function useNotifyPrefs(childId: string | null | undefined) {
@@ -197,7 +197,7 @@ export function useSetNotifyPrefs() {
   const me = useUserId();
   return useMutation({
     mutationFn: (p: NotifyPrefs) => backend.insert('childcare_notify_prefs', { user_id: me, ...p, updated_at: new Date().toISOString() }, { onConflict: 'user_id,child_id' }),
-    onSuccess: () => inv('childcare_notify_prefs'),
+    onSuccess: () => { void inv('childcare_notify_prefs'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 /** Purge des photos dont la durée de conservation est dépassée (à l'ouverture de l'espace par un parent). */
@@ -230,14 +230,14 @@ export function useDeleteCarePhoto() {
       // fichier effacé ensuite ; refusé par la base s'il est encore dans les souvenirs (il y reste)
       await backend.storage.remove(CARE_PHOTO_BUCKET, [p.storage_path]).catch(() => undefined);
     },
-    onSuccess: () => inv('childcare_photos', 'care_day', 'childcare-photo-url'),
+    onSuccess: () => { void inv('childcare_photos', 'care_day', 'childcare-photo-url'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 export function usePhotoToMemories() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: (photoId: string) => backend.rpc<string>('childcare_photo_to_memories', { p_photo: photoId }),
-    onSuccess: () => inv('childcare_photos', 'child_photos'),
+    onSuccess: () => { void inv('childcare_photos', 'child_photos'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }
 
@@ -257,6 +257,6 @@ export function useSendCareMessage() {
   return useMutation({
     mutationFn: (v: { childId: string; body: string; important: boolean }) =>
       insertOrQueue('childcare_messages', { client_id: uuid(), child_id: v.childId, body: v.body, important: v.important }),
-    onSuccess: () => inv('childcare_messages'),
+    onSuccess: () => { void inv('childcare_messages'); }, // jamais attendu : hors ligne, la relecture est en pause
   });
 }

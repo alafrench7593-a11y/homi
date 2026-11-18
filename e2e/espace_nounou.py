@@ -33,6 +33,7 @@ class FakeCare(FakeSupabase):
         self.objects = {}        # chemin → octets
         self.uploads = []        # (chemin, octets) reçus
         self.removed = []
+        self.offline_pages = set()
 
     # ---------------------------------------------------------------- droits émulés
     def member(self, hid, uid): return next((m for m in self.t('household_members') if m['household_id'] == hid and m['user_id'] == uid), None)
@@ -183,6 +184,8 @@ class FakeCare(FakeSupabase):
     # ---------------------------------------------------------------- stockage (octets)
     def route(self, route):
         req = route.request
+        # Coupure réseau d'UN téléphone : ses requêtes échouent (les requêtes interceptées ignorent set_offline)
+        if self.offline_pages and route.request.frame.page in self.offline_pages: return route.abort('internetdisconnected')
         u = urllib.parse.urlparse(req.url)
         if not u.path.startswith('/storage/v1/object'): return super().route(route)
         h = {'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*', 'access-control-expose-headers': '*'}
@@ -392,14 +395,16 @@ with sync_playwright() as p:
     # 8. hors ligne → file d'attente → synchronisation, une seule fois ; doublon proposé à la fusion
     pn.goto(B + f'/garde/{LOU}/ajouter?type=diaper'); pn.wait_for_timeout(2500)
     before = len(fake.t('diapers'))
-    cn.set_offline(True); pn.wait_for_timeout(1500)          # le réseau coupe, l'écran reste ouvert
+    cn.set_offline(True); fake.offline_pages.add(pn); pn.wait_for_timeout(1500)   # le réseau coupe, l'écran reste ouvert
     tid(pn, 'care-diaper-stool').click(); tid(pn, 'care-save').click(); pn.wait_for_timeout(1500)
+    R['doublon_propose_nounou'] = has(pn, 'care-dup-sheet')   # un change a déjà été noté quelques minutes avant
+    if has(pn, 'care-dup-add'): tid(pn, 'care-dup-add').click(); pn.wait_for_timeout(1500)
     queued = pn.evaluate("() => { try { return JSON.parse(localStorage.getItem('toietmoi.offline.v1') || '{}').pending || []; } catch (e) { return []; } }")
     R['hors_ligne_en_file'] = len(fake.t('diapers')) == before and any(o.get('table') == 'diapers' for o in queued)
     pn.wait_for_timeout(500)
     R['hors_ligne_indicateur'] = pn.get_by_text(re.compile('en attente d’envoi')).count() > 0
     shot(pn, 'nounou_hors_ligne_390')
-    cn.set_offline(False); pn.wait_for_timeout(8000)
+    fake.offline_pages.discard(pn); cn.set_offline(False); pn.wait_for_timeout(8000)
     R['synchronisation'] = len(fake.t('diapers')) == before + 1
     pn.reload(); pn.wait_for_timeout(5000)
     R['rejouee_une_seule_fois'] = len([d for d in fake.t('diapers') if d.get('stool')]) == 1
@@ -422,7 +427,9 @@ with sync_playwright() as p:
     tid(p1, 'care-revoke').click(); p1.wait_for_timeout(600); confirm_dialog(p1, 'Retirer l’accès')
     pn.goto(B + f'/garde/{LOU}'); pn.wait_for_timeout(3000)
     pn.wait_for_timeout(3000)
-    R['revocation_serveur'] = not any(m['user_id'] == NN for m in fake.t('household_members'))
+    R['revocation_serveur'] = not any(m['user_id'] == NN and m['household_id'] == H for m in fake.t('household_members'))
+    if not R['revocation_serveur']: R['debug_membres_nounou'] = [(m['household_id'] == H, m['role'], m.get('child_scope')) for m in fake.t('household_members') if m['user_id'] == NN]
+    R['debug_liens'] = [(l['label'], bool(l['confirmed_at']), bool(l['revoked_at'])) for l in fake.t('childcare_links')]
     R['revocation_ecran'] = pn.get_by_text('Accès indisponible').count() > 0
     R['revocation_plus_de_carnet'] = pn.get_by_text('par Vous').count() == 0
     shot(pn, 'nounou_apres_revocation_390')
