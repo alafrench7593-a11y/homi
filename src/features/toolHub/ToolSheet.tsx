@@ -5,11 +5,11 @@
  *  2. « Problème résolu » : la situation du parent, rédigée en une phrase pour chaque outil (`th.<id>.problem`) ;
  *  3. « En pratique » : l'aperçu « geste → résultat » repris de « Découvrir HOMI » quand il existe ;
  *  4. « Commencer » : placé AVANT les détails secondaires (pour qui, Premium, sous-accès) pour rester visible sans
- *     défiler à 320 × 568.
+ *     défiler à 320 × 568 ; sur un écran bas, « En pratique » passe juste après lui.
  * Rien n'est lu ni écrit dans les données du foyer : textes du registre et valeurs d'exemple constantes.
  */
 import React from 'react';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { GlassButton, GlassSheet } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { ToolGlyph } from '@/components/ToolGlyph';
@@ -44,6 +44,8 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
   entry: ToolEntry | null; favorite: boolean; onToggleFavorite: (tool: CatalogTool) => void; onClose: () => void; onStart: (e: ToolEntry) => void;
 }) {
   const t = useTheme();
+  // Écran bas (320 × 568) : « En pratique » passe après « Commencer », qui reste visible sans défiler
+  const short = useWindowDimensions().height < SHORT_SCREEN;
   // la dernière fiche reste affichée pendant la fermeture de la feuille
   const last = React.useRef<ToolEntry | null>(entry);
   if (entry) last.current = entry;
@@ -73,18 +75,11 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
           </View>
         ) : null}
 
-        {preview ? (
-          <View style={{ gap: 6 }} accessible accessibilityLabel={`${tr('th.sheet.how')}. ${preview.gesture} ${preview.result}`} testID="tool-sheet-preview">
-            <Text variant="caption" muted accessibilityRole="header">{tr('th.sheet.how')}</Text>
-            <View style={{ borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, gap: 6 }}>
-              <Step icon="edit-3" label={tr('th.sheet.gesture')} text={preview.gesture} />
-              <Step icon="check-circle" label={tr('th.sheet.result')} text={preview.result} />
-            </View>
-          </View>
-        ) : null}
+        {preview && !short ? <Preview preview={preview} /> : null}
 
         {/* Action principale : avant les détails, visible sans défiler sur un petit écran */}
         <GlassButton label={tr('th.sheet.start')} variant="primary" iconRight="arrow-right" full onPress={() => onStart(e)} testID="tool-sheet-start" />
+        {preview && short ? <Preview preview={preview} /> : null}
 
         <View style={{ gap: 6 }}>
           <Text variant="caption" muted accessibilityRole="header">{tr('th.sheet.who')}</Text>
@@ -114,6 +109,23 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
         ) : null}
       </View>
     </GlassSheet>
+  );
+}
+
+/** Hauteur d'écran sous laquelle « En pratique » passe après « Commencer » (320 × 568 : oui ; 390 × 844 : non). */
+export const SHORT_SCREEN = 700;
+
+/** « En pratique » : le geste et son résultat, repris de « Découvrir HOMI ». */
+function Preview({ preview }: { preview: { gesture: string; result: string } }) {
+  const t = useTheme();
+  return (
+    <View style={{ gap: 6 }} accessible accessibilityLabel={`${tr('th.sheet.how')}. ${preview.gesture} ${preview.result}`} testID="tool-sheet-preview">
+      <Text variant="caption" muted accessibilityRole="header">{tr('th.sheet.how')}</Text>
+      <View style={{ borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, paddingVertical: spacing.xs, paddingHorizontal: spacing.sm, gap: 6 }}>
+        <Step icon="edit-3" label={tr('th.sheet.gesture')} text={preview.gesture} />
+        <Step icon="check-circle" label={tr('th.sheet.result')} text={preview.result} />
+      </View>
+    </View>
   );
 }
 

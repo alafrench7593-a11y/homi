@@ -21,7 +21,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.cat.pregnancy.d': 'La gravidanza settimana dopo settimana, poi la tua ripresa dopo la nascita.',
   'th.cat.pregnancy.all': 'Tutti gli strumenti di gravidanza e post-partum',
   'th.cat.school': 'Scuola, nido e custodia',
-  'th.cat.school.d': 'La struttura del bambino, la scheda per chi lo accudisce, le routine e l’affido condiviso.',
+  'th.cat.school.d': 'La struttura del bambino, la scheda per chi lo accudisce, le routine, l’affido condiviso e la tata.',
   'th.cat.school.all': 'Tutti gli strumenti di scuola e custodia',
   'th.cat.couple': 'Coppia e casa',
   'th.cat.couple.d': 'Dividere il carico, prendere fiato e superare le giornate difficili, in coppia o da soli.',

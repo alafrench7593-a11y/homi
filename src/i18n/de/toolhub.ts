@@ -21,7 +21,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.cat.pregnancy.d': 'Die Schwangerschaft Woche für Woche, danach Ihre Erholung nach der Geburt.',
   'th.cat.pregnancy.all': 'Alle Werkzeuge zu Schwangerschaft und Wochenbett',
   'th.cat.school': 'Schule, Kita und Betreuung',
-  'th.cat.school.d': 'Die Einrichtung des Kindes, das Infoblatt für Betreuende, Routinen und Wechselmodell.',
+  'th.cat.school.d': 'Die Einrichtung des Kindes, das Infoblatt für Betreuende, Routinen, Wechselmodell und Tagesmutter.',
   'th.cat.school.all': 'Alle Werkzeuge zu Schule und Betreuung',
   'th.cat.couple': 'Paar und Haushalt',
   'th.cat.couple.d': 'Die Last teilen, durchatmen und schwere Tage überstehen, zu zweit oder allein.',

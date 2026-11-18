@@ -21,7 +21,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.cat.pregnancy.d': 'El embarazo semana a semana y, después, tu recuperación tras el nacimiento.',
   'th.cat.pregnancy.all': 'Todas las herramientas de embarazo y posparto',
   'th.cat.school': 'Colegio, guardería y cuidado',
-  'th.cat.school.d': 'El centro del niño, la ficha para quien lo cuida, las rutinas y la custodia compartida.',
+  'th.cat.school.d': 'El centro del niño, la ficha para quien lo cuida, las rutinas, la custodia compartida y la niñera.',
   'th.cat.school.all': 'Todas las herramientas de colegio y cuidado',
   'th.cat.couple': 'Pareja y hogar',
   'th.cat.couple.d': 'Repartir la carga, tomar aire y superar los días difíciles, en pareja o en solitario.',

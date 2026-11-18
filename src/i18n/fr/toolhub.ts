@@ -25,7 +25,7 @@ export const toolhub = {
   'th.cat.pregnancy.d': 'La grossesse semaine après semaine, puis votre récupération après la naissance.',
   'th.cat.pregnancy.all': 'Tous les outils de grossesse et de post-partum',
   'th.cat.school': 'École, crèche et garde',
-  'th.cat.school.d': 'L’établissement de l’enfant, la fiche à transmettre, les routines et la garde alternée.',
+  'th.cat.school.d': 'L’établissement de l’enfant, la fiche à transmettre, les routines, la garde alternée et la nounou.',
   'th.cat.school.all': 'Tous les outils d’école et de garde',
   'th.cat.couple': 'Couple et foyer',
   'th.cat.couple.d': 'Partager la charge, souffler et traverser les journées difficiles, à deux ou en solo.',

@@ -21,7 +21,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.cat.pregnancy.d': 'Your pregnancy week by week, then your recovery after the birth.',
   'th.cat.pregnancy.all': 'All pregnancy and postpartum tools',
   'th.cat.school': 'School, nursery and childcare',
-  'th.cat.school.d': 'Your child’s school or childcare, the hand-over sheet, routines and shared custody.',
+  'th.cat.school.d': 'Your child’s school or childcare, the hand-over sheet, routines, shared custody and the nanny.',
   'th.cat.school.all': 'All school and childcare tools',
   'th.cat.couple': 'Couple and household',
   'th.cat.couple.d': 'Share the load, take a breather and get through hard days, as a couple or on your own.',
