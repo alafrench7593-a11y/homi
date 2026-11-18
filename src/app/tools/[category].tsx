@@ -16,7 +16,8 @@ import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, VirtualList } from '@/components/States';
 import { Text } from '@/components/ui';
-import { ToolRow } from '@/features/toolHub/ToolRow';
+import { ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
+import { useProfile } from '@/lib/data/hooks';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
 import { categoryContent, categoryFromParam, categoryLead, categoryTitle, isToolCategory } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
@@ -28,6 +29,8 @@ export default function ToolCategoryScreen() {
   const { category: param } = useLocalSearchParams<{ category: string }>();
   const category = categoryFromParam(param) ?? param;
   const hub = useToolHub();
+  const profileQ = useProfile();
+  const loading = profileQ.isLoading && !profileQ.data;
   const valid = isToolCategory(category);
 
   const items = useMemo<Item[]>(() => {
@@ -81,10 +84,10 @@ export default function ToolCategoryScreen() {
         initialNumToRender={10}
         windowSize={7}
         keyboardShouldPersistTaps="handled"
-        ListEmptyComponent={
+        ListEmptyComponent={loading ? <ToolRowsSkeleton rows={5} testID="tools-category-skeleton" /> : (
           <EmptyState icon="compass" title={tr('th.ui.catEmpty')} body={tr('th.ui.catEmptyB')}
             action={{ label: tr('th.ui.catEmptyAction'), onPress: () => router.push('/journeys' as never) }} />
-        }
+        )}
         renderItem={({ item }) => item.kind === 'header' ? (
           <View style={{ paddingTop: spacing.lg, paddingBottom: spacing.xs }}>
             <Text variant="heading" accessibilityRole="header">{item.title}</Text>

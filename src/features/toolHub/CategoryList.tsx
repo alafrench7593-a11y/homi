@@ -7,7 +7,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { ToolGlyph } from '@/components/ToolGlyph';
-import { haptic, Icon, Text } from '@/components/ui';
+import { Chip, haptic, Icon, Text } from '@/components/ui';
+import { StaggerList } from '@/motion';
 import { Tappable } from '@/components/Tappable';
 import { CATEGORY_ICON, CATEGORY_THEME, categoryTitle, type CatalogTool } from '@/lib/domain/toolCatalog';
 import { TOOL_CATEGORIES, type ToolCategory } from '@/lib/journeys/tools';
@@ -21,10 +22,32 @@ export function categoryCounts(tools: CatalogTool[]): Record<ToolCategory, numbe
   return out;
 }
 
+/**
+ * Catégories SUGGÉRÉES quand le champ de recherche est vide (centre d'outils, feuille de recherche) : les plus fournies
+ * pour le foyer, en pastilles ; une pastille ouvre la catégorie. Apparition en décalé léger (`StaggerList`).
+ */
+export function CategoryChips({ tools, max = 5, onOpen, testID = 'tools-suggest' }: { tools: CatalogTool[]; max?: number; onOpen?: () => void; testID?: string }) {
+  const counts = React.useMemo(() => categoryCounts(tools), [tools]);
+  const cats = React.useMemo(() => TOOL_CATEGORIES.filter((c) => counts[c] > 0).sort((a, b) => counts[b] - counts[a]).slice(0, max), [counts, max]);
+  if (!cats.length) return null;
+  return (
+    <View testID={testID} style={{ gap: 6 }}>
+      <Text variant="caption" weight="medium" muted accessibilityRole="header">{tr('glass.suggest')}</Text>
+      <StaggerList style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+        {cats.map((c) => (
+          <Chip key={c} label={categoryTitle(c)} icon={CATEGORY_ICON[c]} testID={`${testID}-${c}`}
+            onPress={() => { haptic('selection'); onOpen?.(); router.push(`/tools/${c}` as never); }} />
+        ))}
+      </StaggerList>
+    </View>
+  );
+}
+
 export function CategoryList({ tools, showAccount = true, onOpen }: { tools: CatalogTool[]; showAccount?: boolean; /** Appelé juste avant l'ouverture (fermer une feuille). */ onOpen?: () => void }) {
+  const t = useTheme();
   const counts = React.useMemo(() => categoryCounts(tools), [tools]);
   return (
-    <View testID="tools-categories">
+    <View testID="tools-categories" style={{ borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surface, paddingHorizontal: spacing.sm, overflow: 'hidden' }}>
       {TOOL_CATEGORIES.map((c, i) => (
         <CategoryRow key={c} category={c} first={i === 0} onOpen={onOpen}
           detail={counts[c] ? tr('th.ui.count', { count: counts[c] }) : tr('th.ui.countNone')} />

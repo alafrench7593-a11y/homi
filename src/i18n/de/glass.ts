@@ -17,4 +17,9 @@ export const glass: Messages<typeof fr> = {
   'glass.reorder.hint': "Gedrückt halten und ziehen, um neu anzuordnen",
   'glass.gallery': "Liquid-Glass-Galerie",
   'glass.gallery.sub': "Glaskomponenten und Bewegung, zur Sichtprüfung",
+  'glass.reorder.saved': 'Reihenfolge gespeichert',
+  'glass.reorder.position': '{name}, Position {n} von {total}',
+  'glass.suggest': 'Vorgeschlagene Kategorien',
+  'glass.sheet.problem': 'Wobei es hilft',
+  'glass.sheet.quote': '„{q}“',
 };

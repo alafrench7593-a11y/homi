@@ -17,4 +17,9 @@ export const glass: Messages<typeof fr> = {
   'glass.reorder.hint': "Touch and hold, then drag to reorder",
   'glass.gallery': "Liquid Glass gallery",
   'glass.gallery.sub': "Glass components and motion, for visual checks",
+  'glass.reorder.saved': 'Order saved',
+  'glass.reorder.position': '{name}, position {n} of {total}',
+  'glass.suggest': 'Suggested categories',
+  'glass.sheet.problem': 'Problem it solves',
+  'glass.sheet.quote': '“{q}”',
 };

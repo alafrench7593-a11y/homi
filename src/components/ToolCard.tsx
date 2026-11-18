@@ -14,7 +14,7 @@
 import React, { useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, View, type GestureResponderEvent } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { durations, useCardLift, useMotion, usePressScale } from '@/motion';
+import { durations, useCardLift, useMotion, usePress } from '@/motion';
 import { router } from 'expo-router';
 import { GlassSurface } from './Glass';
 import { usePop, usePressMotion } from './Motion';
@@ -46,7 +46,8 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
   const t = useTheme();
   const reduce = useReduceMotion();
   const m = useMotion();
-  const press = usePressScale({ scale: 0.965, haptic: 'none' });
+  // Langage de GlassToolCard : compression 0,97 (fil UI) et haptique léger au contact
+  const press = usePress({ scale: 0.97, haptic: 'light' });
   const lift = useCardLift();
   const hover = useSharedValue(0);
   const hoverStyle = useAnimatedStyle(() => ({ transform: [{ translateY: hover.value * -3 }] }));
@@ -59,7 +60,6 @@ export function ToolCard({ tool, status, favorite, onToggleFavorite, width, befo
   const a11y = [tool.label, status?.text ?? tool.sub, favorite ? 'favori' : null].filter(Boolean).join(', ');
 
   function onPress(e: GestureResponderEvent) {
-    haptic('selection');
     setPlay((p) => p + 1);
     const y = e.nativeEvent.pageY;
     // urgences : aucune attente ; sinon la carte s'élève puis l'outil s'ouvre (immédiat si le mouvement est coupé)
