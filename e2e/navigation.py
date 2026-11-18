@@ -1,8 +1,9 @@
 """
 Navigation HOMI (refonte du 17/11/2026) : 4 onglets — Aujourd'hui · Moi · Enfant · Famille — autour de l'ACTION RAPIDE
 CENTRALE (« Ajouter » : feuille de 4 à 6 actions du profil ; « Publier » sur Communauté). « Outils » : entrée fixe en
-tête d'Aujourd'hui et dans la feuille centrale. Communauté : bouton en haut à droite des écrans d'onglet (hors barre).
-Profil + Réglages en haut à droite. Routes d'onglet hors barre (/community, /track, /ask, /agenda) : valides, avec un
+tête d'Aujourd'hui et dans la feuille centrale. Communauté : bouton nommé en haut à droite des écrans d'onglet (hors
+barre). Avatar en haut à droite : feuille « Mon compte » (Mon profil, Réglages, Urgences) — plus de bouton Réglages
+dans l'en-tête (21/11/2026). Routes d'onglet hors barre (/community, /track, /ask, /agenda) : valides, avec un
 bouton Retour, et l'onglet parent allumé. Sélecteur de profil universel : avatars, glissement, indicateur de pages.
 Version web de démonstration (sans compte), servie par spa_server.py :
   npx expo export --platform web --clear && python3 e2e/spa_server.py dist 8822 &
@@ -51,14 +52,14 @@ def selected(pg, name):
 
 
 def header_ok(pg, avatar_name=re.compile('^(Mon profil|My profile)'), community=True):
-    """Communauté, Réglages et avatar présents, dans le coin supérieur droit, cibles ≥ 44 px, sans chevauchement
-    (ni entre eux, ni avec le sélecteur de profil)."""
-    s = pg.get_by_role('button', name=re.compile('^(Réglages|Settings)$')).filter(visible=True).first
+    """Communauté (nommée) et avatar présents dans le coin supérieur droit, cibles ≥ 44 px, sans chevauchement (ni
+    entre eux, ni avec le sélecteur de profil) ; plus de bouton Réglages dans l'en-tête (il est dans la feuille de l'avatar)."""
     a = pg.get_by_role('button', name=avatar_name).filter(visible=True).first
-    if not (s.count() and a.count()): return False
-    bs, ba = s.bounding_box(), a.bounding_box()
+    if not a.count(): return False
+    ba = a.bounding_box()
     w = pg.viewport_size['width']
-    ok = bool(bs and ba and ba['y'] < 140 and bs['y'] < 140 and ba['x'] > w * 0.6 and ba['x'] > bs['x'])
+    no_settings = pg.locator('[data-testid="header-settings"]').filter(visible=True).count() == 0
+    ok = bool(ba and ba['y'] < 140 and ba['x'] > w * 0.6 and ba['x'] + ba['width'] <= w and no_settings)
     if not community: return ok
     c = pg.locator('[data-testid="header-community"]').filter(visible=True).first
     if not c.count(): return False
@@ -67,8 +68,14 @@ def header_ok(pg, avatar_name=re.compile('^(Mon profil|My profile)'), community=
     sw = pg.locator('[data-testid="profile-switcher"], [data-testid$="-profiles"]').filter(visible=True).first
     bw = sw.bounding_box() if sw.count() else None
     clear_switcher = (not bw) or bc['y'] + bc['height'] <= bw['y'] + 1
-    return bool(ok and name_ok and bc['width'] >= 44 and bc['height'] >= 44 and bc['y'] < 140 and bc['x'] >= w * 0.4 and bc['x'] + bc['width'] <= bs['x'] + 1
-                and bc['x'] + bc['width'] <= w and ba['x'] + ba['width'] <= w and clear_switcher)
+    return bool(ok and name_ok and bc['width'] >= 44 and bc['height'] >= 44 and bc['y'] < 140 and bc['x'] >= w * 0.3 and bc['x'] + bc['width'] <= ba['x'] + 1
+                and bc['x'] + bc['width'] <= w and clear_switcher)
+
+
+def open_account_sheet(pg):
+    """Appui sur l'avatar : la feuille « Mon compte » s'ouvre (Mon profil, Réglages, Urgences)."""
+    tid(pg, 'header-account').click(); pg.wait_for_timeout(1200)
+    return pg.locator('[data-testid="account-sheet"]').filter(visible=True).count() == 1
 
 
 LAST_ABOVE_BAR = """() => {
@@ -170,10 +177,26 @@ with sync_playwright() as p:
     pg.get_by_role('button', name='Retour').filter(visible=True).first.click(); pg.wait_for_timeout(1500)
     R['1_communaute_retour'] = pg.url.rstrip('/') == B and selected(pg, 'Aujourd’hui')
 
-    # 2-3. Aujourd'hui : Communauté + avatar + Réglages en haut à droite ; sélecteur de profil et entrée « Outils » en tête
+    # 2-3. Aujourd'hui : urgences, notifications, Communauté (nommée) et avatar en haut à droite — 4 éléments, plus de
+    #      Réglages dans l'en-tête ; sélecteur de profil et entrée « Outils » en tête
     pg.get_by_role('tab', name='Aujourd’hui').click(); pg.wait_for_timeout(1500)
     R['2_3_accueil_profil_reglages_en_haut_a_droite'] = header_ok(pg)
     R['2_urgence_et_notifications_conservees'] = pg.get_by_role('button', name='Besoin d’aide maintenant').count() == 1 and pg.get_by_role('button', name=re.compile('^Notifications')).count() == 1
+    # même rangée que la cloche : urgences, notifications, Communauté, avatar (la pastille « Démo » est au-dessus)
+    R['2_entete_accueil_4_elements'] = pg.evaluate("""() => {
+      const front = (e) => { const r = e.getBoundingClientRect(); const h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !!h && (e.contains(h) || h.contains(e)); };
+      const bell = [...document.querySelectorAll('[data-testid="home-bell"]')].find(e => e.offsetParent !== null && front(e));
+      if (!bell) return -1; const b = bell.getBoundingClientRect(), mid = b.y + b.height / 2;
+      const outer = (e) => !e.parentElement.closest('[role="button"], button');
+      // seulement ce qui est au premier plan (un onglet inactif reste monté sous l'écran affiché)
+      return [...document.querySelectorAll('[role="button"], button')].filter(e => { const r = e.getBoundingClientRect(); return e.offsetParent !== null && r.width > 0 && outer(e) && r.y <= mid && r.y + r.height >= mid && front(e); }).length; }""") == 4
+    hc390 = tid(pg, 'header-community')
+    R['2_communaute_libelle_visible_390'] = 'Communauté' in (hc390.inner_text() or '')
+    R['2_feuille_avatar'] = open_account_sheet(pg) and all(tid(pg, x).count() == 1 for x in ['account-sheet-profile', 'account-sheet-settings', 'account-sheet-emergency'])
+    pg.screenshot(path=f'{SHOTS}/nav-feuille-avatar.png')
+    tid(pg, 'account-sheet-emergency').click(); pg.wait_for_timeout(1500)
+    R['2_urgences_depuis_la_feuille'] = pg.url.endswith('/emergency')
+    pg.goto(B + '/'); pg.wait_for_timeout(2000)
     sw, te, ht = tid(pg, 'profile-switcher').bounding_box(), tid(pg, 'home-tools-entry').bounding_box(), tid(pg, 'home-today').bounding_box()
     R['2_selecteur_puis_outils_puis_journee'] = bool(sw and te and ht and sw['y'] < te['y'] < ht['y'])
     tid(pg, 'home-tools-entry').click(); pg.wait_for_timeout(1500)
@@ -183,12 +206,15 @@ with sync_playwright() as p:
 
     # 4. Profil : données du compte connecté (avatar en haut à droite, plus d'onglet Profil)
     name = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const u = s.session && s.session.userId; const p = s.tables.profiles.find(x => x.id === u); return p ? (p.display_name || '') : '' }")
-    pg.get_by_role('button', name=re.compile('^Mon profil')).first.click(); pg.wait_for_timeout(1800)
+    open_account_sheet(pg)
+    tid(pg, 'account-sheet-profile').click(); pg.wait_for_timeout(1800)
     body = pg.inner_text('body')
     R['4_profil_ouvert'] = pg.url.endswith('/profile') and 'MES PARCOURS' in body
     R['4_profil_donnees_du_compte'] = (name in body) if name else ('Mon profil' in body)
     R['4_profil_lien_publications'] = 'Mes publications' in body
-    pg.get_by_role('button', name='Réglages').first.click(); pg.wait_for_timeout(1500)
+    # Réglages : derrière l'avatar (feuille « Mon compte »)
+    open_account_sheet(pg)
+    tid(pg, 'account-sheet-settings').click(); pg.wait_for_timeout(1500)
     R['3_reglages_ouverts'] = pg.url.endswith('/settings') and 'Langue et pays' in pg.inner_text('body')
     for sub in ['/settings/account', '/settings/privacy', '/settings/reminders', '/settings/language', '/settings/home']:
         pg.goto(B + sub); pg.wait_for_timeout(1200)
@@ -377,6 +403,11 @@ with sync_playwright() as p:
     R['9_entete_petit_ecran'] = header_ok(pg)
     hc = tid(pg, 'header-community').bounding_box()
     R['9_communaute_dans_l_ecran'] = bool(hc and hc['x'] >= 0 and hc['x'] + hc['width'] <= 320)
+    R['9_urgences_et_notifications_320'] = all(tid(pg, x).count() == 1 for x in ['home-help', 'home-bell'])
+    pg.screenshot(path=f'{SHOTS}/nav-entete-320.png')
+    R['9_feuille_avatar_320'] = open_account_sheet(pg)
+    pg.screenshot(path=f'{SHOTS}/nav-feuille-avatar-320.png')
+    pg.keyboard.press('Escape'); pg.goto(B + '/'); pg.wait_for_timeout(1800)
     for path in ['/health', '/baby', '/household', '/tools']:
         pg.goto(B + path); pg.wait_for_timeout(1800)
         R[f'9_entete_320_{path.strip("/")}'] = header_ok(pg) and not bar_metrics(pg)['overflow']

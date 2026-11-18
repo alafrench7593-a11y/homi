@@ -182,9 +182,10 @@ export default function Home() {
 
   return (
     <Screen bottomInset={TAB_SCREEN_INSET} reorder>
-      {/* (1) Bonjour + date + profil actif. Coin supérieur droit : urgences, notifications, Communauté, Réglages, Profil. */}
+      {/* (1) Bonjour + date + profil actif. Coin supérieur droit (21/11/2026) : urgences, notifications, Communauté
+          (nommée), avatar ; les Réglages sont derrière l'avatar (feuille « Mon compte », qui rappelle aussi les Urgences). */}
       <View style={{ gap: 2, marginTop: spacing.xs }}>
-        {/* 5 boutons de 44 pt : ils tiennent à 320 pt ; la date passe sous la salutation (elle était écrasée à côté) */}
+        {/* 4 éléments de 44 pt de haut : ils tiennent à 320 pt (Communauté sans libellé visible sous 360 pt) */}
         <Row style={{ justifyContent: 'flex-end', alignItems: 'center' }} gap={HEADER_GAP}>
           <GlassIconButton icon="life-buoy" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
           <View>
