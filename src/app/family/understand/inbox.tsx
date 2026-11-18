@@ -111,7 +111,7 @@ export default function Inbox() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
             {REPLIES.map((k, i) => <Chip key={k} label={tr(k)} onPress={() => setReply((r) => (r.trim() ? `${r.trim()} ${tr(k)}` : tr(k)))} testID={`und-reply-${i + 1}`} />)}
           </View>
-          <Field label={tr('und.reply.ph')} value={reply} onChangeText={setReply} maxLength={2000} multiline testID="und-reply-text" />
+          <Field label={tr('und.reply.ph')} value={reply} onChangeText={setReply} maxLength={2000} multiline style={{ minHeight: 96 }} testID="und-reply-text" />
           <Button label={tr('und.reply.send', { name: partner.name })} icon="send" full disabled={!reply.trim()} testID="und-reply-send"
             onPress={() => setConfirming({ kind: 'reply', text: reply.trim() })} />
           <Button label={tr('und.offer.title')} icon="user-check" variant="secondary" full testID="und-offer" onPress={() => setOfferOpen(true)} />

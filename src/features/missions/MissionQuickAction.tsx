@@ -24,7 +24,13 @@ export function quickActionFor(m: Pick<Mission, 'mission_state' | 'assignee_id' 
   return null;
 }
 
-export function MissionQuickAction({ m, me, onDone }: { m: Mission; me: string; onDone: (id: string) => void }) {
+/**
+ * `onFinishing` : appelé AVANT l'envoi de « Mission terminée » ; le parent garde la ligne affichée (même si la liste
+ * relue la dit déjà terminée) le temps que la coche se trace, puis `onDone` la retire.
+ */
+export function MissionQuickAction({ m, me, onFinishing, onAbort, onDone }: {
+  m: Mission; me: string; onFinishing?: (id: string) => void; onAbort?: (id: string) => void; onDone: (id: string) => void;
+}) {
   const t = useTheme();
   const toast = useToast();
   const respond = useRespondMission();
@@ -33,16 +39,17 @@ export function MissionQuickAction({ m, me, onDone }: { m: Mission; me: string; 
   if (!action && !done) return null;
   async function run() {
     if (!action) return;
+    if (action === 'complete') onFinishing?.(m.id);
     try {
       const out = await respond.mutateAsync({ id: m.id, action, version: m.version });
-      if (out?.status === 'conflict') { toast(tr('ht.conflict'), 'error'); return; }
+      if (out?.status === 'conflict') { toast(tr('ht.conflict'), 'error'); onAbort?.(m.id); return; }
       if (out?.queued) toast(tr('cp2.mis.queued'), 'info');
       if (action === 'complete') {
         setDone(true);
         // la coche se trace, puis la ligne quitte les missions actives
         setTimeout(() => onDone(m.id), 900);
       }
-    } catch (e) { toast(friendlyError(e), 'error'); }
+    } catch (e) { onAbort?.(m.id); toast(friendlyError(e), 'error'); }
   }
   if (done) {
     return (

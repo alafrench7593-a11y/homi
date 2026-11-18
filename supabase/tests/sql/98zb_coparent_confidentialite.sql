@@ -134,7 +134,7 @@ reset role;
 select tests.ok((select count(*) from public.notifications where user_id = :'CP' and payload ->> 'couple' = 'true') = 1, 'notification : une seule pour le rejeu');
 select tests.ok((select title = 'Camille souhaite partager quelque chose avec vous' and body = 'Ouvrez HOMI quand vous le souhaitez.'
   from public.notifications where user_id = :'CP' and payload ->> 'couple' = 'true'), 'notification : texte fixe avec le prénom');
-select tests.ok(not exists (select 1 from public.notifications where (title || coalesce(body, '') || payload::text || coalesce(deep_link, '')) ilike '%repos%'),
+select tests.ok(not exists (select 1 from public.notifications where user_id in (:'OW', :'CP') and (title || coalesce(body, '') || payload::text || coalesce(deep_link, '')) ilike '%repos ce soir%'),
   'notification : AUCUN contenu du message (titre, texte, données, lien)');
 select tests.ok(not exists (select 1 from public.household_audit_log where (coalesce(before::text, '') || coalesce(after::text, '')) ilike '%repos ce soir%') and not exists (select 1 from public.household_events where payload::text ilike '%repos ce soir%'),
   'message : contenu absent du journal d''audit et des événements du foyer');

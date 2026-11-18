@@ -37,7 +37,10 @@ export default function Missions() {
   const m = useMotion();
   // Missions qui viennent d'être terminées ici : la coche s'est tracée, la ligne part tout de suite (sans attendre le serveur)
   const [left, setLeft] = useState<string[]>([]);
-  const list = useMemo(() => (tab === 'received' ? q.received : q.sent).filter((x) => !isTerminal(x.mission_state) && !left.includes(x.id)), [tab, q.received, q.sent, left]);
+  // …et celles en train de se terminer restent affichées le temps de la coche, même si la liste relue les dit terminées
+  const [finishing, setFinishing] = useState<string[]>([]);
+  const list = useMemo(() => (tab === 'received' ? q.received : q.sent)
+    .filter((x) => (!isTerminal(x.mission_state) || finishing.includes(x.id)) && !left.includes(x.id)), [tab, q.received, q.sent, left, finishing]);
   const toAccept = q.received.filter((x) => x.mission_state === 'pending').length;
   const doneCount = q.all.filter((x) => x.mission_state === 'done').length;
   const exiting = m.off ? undefined : FadeOut.duration(m.minimal ? 120 : 220);
@@ -67,7 +70,8 @@ export default function Missions() {
                 {i ? <Divider /> : null}
                 <MissionRow m={x} me={q.me ?? ''} personOf={personOf} onOpen={() => router.push(missionHref(x.id) as never)} />
                 <View style={{ alignItems: 'flex-start', paddingBottom: spacing.xs, paddingLeft: 44 }}>
-                  <MissionQuickAction m={x} me={q.me ?? ''} onDone={(id) => setLeft((l) => [...l, id])} />
+                  <MissionQuickAction m={x} me={q.me ?? ''} onFinishing={(id) => setFinishing((f) => [...f, id])} onAbort={(id) => setFinishing((f) => f.filter((y) => y !== id))}
+                    onDone={(id) => { setLeft((l) => [...l, id]); setFinishing((f) => f.filter((y) => y !== id)); }} />
                 </View>
               </Animated.View>
             ))}

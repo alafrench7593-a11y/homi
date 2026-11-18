@@ -113,6 +113,8 @@ export type AppointmentKind = 'consultation' | 'ultrasound' | 'exam' | 'blood_te
 export interface Appointment {
   id: string; household_id: string; pregnancy_id: string | null; child_id: string | null; for_parent: boolean;
   kind: AppointmentKind; title: string; starts_at: string; location_label: string | null; notes: string | null; questions: string[];
+  /** Rendez-vous « pour moi » partagé volontairement avec le foyer (19/11/2026 ; sinon réservé à son autrice). */
+  shared_with_household?: boolean | null;
   /** Réservé à la personne qui l'a créé (non visible du foyer). */
   private_to_creator?: boolean; created_by?: string | null;
 }

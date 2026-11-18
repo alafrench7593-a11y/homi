@@ -52,7 +52,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 function emptyDraft(concern: Concern): Draft {
-  return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60, private: false };
+  return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60, private: true }; // 19/11/2026 : un rendez-vous « pour moi » est privé tant qu'on ne le partage pas
 }
 
 export default function AppointmentsScreen() {
@@ -125,7 +125,7 @@ export default function AppointmentsScreen() {
     setDraft({
       id: a.id, kind: a.kind, title: a.title, date: toFrDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`), time: `${pad(d.getHours())}h${pad(d.getMinutes())}`,
       location: a.location_label ?? '', notes: a.notes ?? '', questions: a.questions.join('\n'),
-      concern: a.child_id ? `child:${a.child_id}` : a.pregnancy_id ? 'pregnancy' : 'me', lead: leadOf(reminderFor(a.id), a.starts_at), private: !!a.private_to_creator,
+      concern: a.child_id ? `child:${a.child_id}` : a.pregnancy_id ? 'pregnancy' : 'me', lead: leadOf(reminderFor(a.id), a.starts_at), private: !!a.private_to_creator || (!!a.for_parent && !a.shared_with_household),
     });
   }
 
@@ -157,6 +157,8 @@ export default function AppointmentsScreen() {
       for_parent: draft.concern === 'me', pregnancy_id: draft.concern === 'pregnancy' ? pregnancy?.id ?? null : null, child_id: childId,
       // Un rendez-vous personnel peut rester privé (non visible du foyer) ; ceux d'un enfant restent partagés
       private_to_creator: draft.concern === 'me' && draft.private,
+      // partage explicite avec le foyer (politique appointments_for_parent_owner) : seulement si « privé » est décoché
+      shared_with_household: draft.concern === 'me' && !draft.private ? true : null,
     };
     setSaving(true);
     try {

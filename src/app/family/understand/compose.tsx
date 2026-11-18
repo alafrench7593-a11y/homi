@@ -92,7 +92,7 @@ export default function Compose() {
           options={VARIANTS.map((v) => ({ value: v, label: tr(`und.v.${v}` as TKey), testID: `und-variant-${v}` }))} />
       ) : null}
       <ContentSwap swapKey={situation ? variant : 'feelings'}>
-        <Field label={tr('und.compose.title')} value={text} onChangeText={(v) => { setText(v); setEdited(true); }} maxLength={2000} multiline testID="und-text" />
+        <Field label={tr('und.compose.title')} value={text} onChangeText={(v) => { setText(v); setEdited(true); }} maxLength={2000} multiline style={{ minHeight: 168 }} testID="und-text" />
       </ContentSwap>
       {showsHelp(feelings) ? <HelpLine /> : null}
       {!partner ? <Banner tone="info">{tr('und.compose.noPartner')}</Banner> : null}

@@ -9,7 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
-import { Button, Card, Field, Segmented, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Button, Card, Field, Segmented, SectionTitle, Text } from '@/components/ui';
+import { SwitchRow } from '@/features/couple/CoupleKit';
 import { useUserId } from '@/lib/auth';
 import { usePregnancies } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -58,7 +59,7 @@ export default function MyInfo() {
       <SectionTitle title={tr('cp2.info.share')} />
       <Card testID="info-shares">
         {SHARES.map((s) => (
-          <Toggle key={s.key} label={tr(s.label)} value={!!share[s.key]} onChange={(v) => void run(saveProfile.mutateAsync({ ...share, [s.key]: v }))} />
+          <SwitchRow key={s.key} testID={`info-${s.key}`} label={tr(s.label)} value={!!share[s.key]} onChange={(v) => void run(saveProfile.mutateAsync({ ...share, [s.key]: v }))} />
         ))}
       </Card>
 
@@ -67,10 +68,10 @@ export default function MyInfo() {
           <SectionTitle title={tr('cp2.info.pregnancy')} />
           <Card testID="info-pregnancy">
             <Text variant="small" muted>{tr('cp2.info.pregnancyB')}</Text>
-            <Toggle label={tr('cp2.info.pregBasics')} value={!!pregnancy.share_basics}
+            <SwitchRow label={tr('cp2.info.pregBasics')} value={!!pregnancy.share_basics}
               onChange={(v) => void run(sharePreg.mutateAsync({ id: pregnancy.id, basics: v, medical: v ? !!pregnancy.share_medical : false }))} />
             {pregnancy.share_basics ? (
-              <Toggle label={tr('cp2.info.pregMedical')} value={!!pregnancy.share_medical}
+              <SwitchRow label={tr('cp2.info.pregMedical')} value={!!pregnancy.share_medical}
                 onChange={(v) => void run(sharePreg.mutateAsync({ id: pregnancy.id, basics: true, medical: v }))} />
             ) : null}
           </Card>
@@ -79,8 +80,8 @@ export default function MyInfo() {
 
       <SectionTitle title={tr('cp2.info.notifs')} />
       <Card testID="info-notifs">
-        <Toggle label={tr('cp2.info.notifMissionDone')} value={prefs.mission_done} onChange={(v) => void run(savePrefs.mutateAsync({ mission_done: v }))} />
-        <Toggle label={tr('cp2.info.notifDiscreet')} value={prefs.couple_discreet} onChange={(v) => void run(savePrefs.mutateAsync({ couple_discreet: v }))} />
+        <SwitchRow label={tr('cp2.info.notifMissionDone')} value={prefs.mission_done} onChange={(v) => void run(savePrefs.mutateAsync({ mission_done: v }))} />
+        <SwitchRow label={tr('cp2.info.notifDiscreet')} value={prefs.couple_discreet} onChange={(v) => void run(savePrefs.mutateAsync({ couple_discreet: v }))} />
       </Card>
 
       <SectionTitle title={tr('cp2.info.grammar')} subtitle={tr('cp2.info.grammarB')} />

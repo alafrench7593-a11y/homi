@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Sheet } from '@/components/Overlays';
 import { GlassCard } from '@/components/glass';
-import { Button, Icon, Row, Text } from '@/components/ui';
+import { Button, Icon, Row, Text, Toggle } from '@/components/ui';
 import { useUserId } from '@/lib/auth';
 import { useHouseholdMembers, useMyMembership } from '@/lib/data/hooks';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -63,6 +63,16 @@ export function ConfirmSend({ visible, name, text, busy, onConfirm, onClose, tes
         <Button label={tr('und.confirm.back')} variant="ghost" full onPress={onClose} testID={`${testID}-back`} />
       </View>
     </Sheet>
+  );
+}
+
+/** Ligne de réglage lisible : libellé visible à gauche, interrupteur à droite (≥ 44 pt, VoiceOver : « interrupteur »). */
+export function SwitchRow({ label, value, onChange, testID }: { label: string; value: boolean; onChange: (v: boolean) => void; testID?: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }} testID={testID}>
+      <Text style={{ flex: 1 }}>{label}</Text>
+      <Toggle label={label} value={value} onChange={onChange} />
+    </View>
   );
 }
 

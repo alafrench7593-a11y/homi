@@ -50,7 +50,7 @@ export default function RestRequestScreen() {
       </StaggerList>
       {picked ? (
         <View style={{ gap: spacing.xs }}>
-          <Field label={tr('und.req.text')} value={text} onChangeText={setText} maxLength={300} multiline testID="und-req-text" />
+          <Field label={tr('und.req.text')} value={text} onChangeText={setText} maxLength={300} multiline style={{ minHeight: 80 }} testID="und-req-text" />
           <Button label={tr('und.req.send', { name: partner?.name ?? '' })} icon="send" full disabled={!partner || !text.trim()} onPress={() => setConfirming(true)} testID="und-req-send" />
         </View>
       ) : null}
