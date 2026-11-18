@@ -26,7 +26,7 @@ export const missions = {
   'mis.state.cancelled': 'Annulée',
   'mis.reply.accept': 'J’accepte',
   'mis.reply.start': 'Je m’en occupe',
-  'mis.reply.complete': 'C’est terminé',
+  'mis.reply.complete': 'Mission terminée',
   'mis.reply.decline': 'Je ne peux pas',
   'mis.reply.postpone': 'Je propose un autre horaire',
   'mis.reply.ask': 'Besoin de précision',

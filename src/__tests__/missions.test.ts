@@ -130,7 +130,7 @@ describe('missions : modèles neutres (5 langues)', () => {
     expect(['mis.state.pending', 'mis.state.accepted', 'mis.state.in_progress', 'mis.state.done', 'mis.state.declined', 'mis.state.postponed', 'mis.state.cancelled'].map((k) => fr[k]))
       .toEqual(['À accepter', 'Acceptée', 'En cours', 'Terminée', 'Refusée', 'Reportée', 'Annulée']);
     expect(['mis.reply.accept', 'mis.reply.start', 'mis.reply.complete', 'mis.reply.decline', 'mis.reply.postpone', 'mis.reply.ask'].map((k) => fr[k]))
-      .toEqual(['J’accepte', 'Je m’en occupe', 'C’est terminé', 'Je ne peux pas', 'Je propose un autre horaire', 'Besoin de précision']);
+      .toEqual(['J’accepte', 'Je m’en occupe', 'Mission terminée', 'Je ne peux pas', 'Je propose un autre horaire', 'Besoin de précision']);
     const all = Object.entries(fr).filter(([k]) => k.startsWith('mis.')).map(([, v]) => JSON.stringify(v)).join(' ');
     expect(all).not.toMatch(/score|classement|en retard|oublié|vu à/i);
   });
@@ -143,9 +143,14 @@ describe('missions : notifications (miroir de public._mission_notification)', ()
     for (const ty of types) {
       const n = missionNotification(ty, 'X')!;
       expect(sql).toContain(`when '${ty}'`);
-      expect(sql).toContain(`then '${n.title.slice(0, -1)}'`);
+      // « <Prénom> a terminé : … » (19/11/2026) : titre posé par le consommateur de 20261119100000_confidentialite_coparent.sql
+      if (ty !== 'mission.completed') expect(sql).toContain(`then '${n.title.slice(0, -1)}'`);
       expect(sql).toContain(n.body);
     }
+    const done = SQL('migrations/20261119100000_confidentialite_coparent.sql');
+    expect(done).toContain("coalesce(public._first_name_of(e.actor_id), 'Quelqu’un') || ' a terminé : ' || t.title");
+    expect(missionNotification('mission.completed', 'Sortir les poubelles', '  Sam  Martin ')?.title).toBe('Sam a terminé : Sortir les poubelles');
+    expect(missionNotification('mission.completed', 'Sortir les poubelles')?.title).toBe('Quelqu’un a terminé : Sortir les poubelles');
     expect(missionNotification('mission.requested', 'Acheter des couches taille 4 aujourd’hui')?.title).toBe('Nouvelle mission : Acheter des couches taille 4 aujourd’hui');
   });
   it('« En cours » ne notifie personne (pas de relance) ; la bonne personne est prévenue', () => {
@@ -200,7 +205,7 @@ describe('missions : démonstration (scénario A, mêmes règles que le serveur)
     expect(after.find((i) => i.label === 'Couches taille 4')?.checked).toBe(true);
     await b.rpc('demo_switch_person', { p_user: me });
     const mine = await b.select<{ title: string }>({ table: 'notifications', filters: [{ col: 'user_id', op: 'eq', value: me }] });
-    expect(mine.map((n) => n.title)).toEqual(expect.arrayContaining(['Mission acceptée : Acheter des couches taille 4 aujourd’hui', 'Mission terminée : Acheter des couches taille 4 aujourd’hui']));
+    expect(mine.map((n) => n.title)).toEqual(expect.arrayContaining(['Mission acceptée : Acheter des couches taille 4 aujourd’hui', 'Sam a terminé : Acheter des couches taille 4 aujourd’hui']));
     const history = await b.select<{ kind: string }>({ table: 'family_task_events', filters: [{ col: 'task_id', op: 'eq', value: m.id }], order: [{ col: 'created_at' }] });
     expect(history.map((e) => e.kind)).toEqual(['created', 'accepted', 'done']);
     // refus sans justification, puis transition interdite

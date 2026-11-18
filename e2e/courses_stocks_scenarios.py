@@ -145,7 +145,7 @@ with sync_playwright() as p:
     R['A_anti_boucle_une_seule_fin'] = len(done_events) == 1
     shot(pg, 'A07-terminee')
     switch(pg)
-    R['A_confirmation_mere'] = any(n['title'] == 'Mission terminée : ' + TITLE and n['user_id'] == mother for n in table(pg, 'notifications'))
+    R['A_confirmation_mere'] = any(n['title'].endswith(' a terminé : ' + TITLE) and n['user_id'] == mother for n in table(pg, 'notifications'))
     # Étape 8 : la mère valide l'achat → stock de couches actualisé
     pg.goto(B + f"/family/stocks/{couches['id']}"); pg.wait_for_timeout(3000)
     R['A8_carte_validation'] = tid(pg, f"purchase-{couches['id']}").count() > 0

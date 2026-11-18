@@ -31,6 +31,7 @@ import { createSocial } from './demoSocial';
 import { createMessages, DM_TABLES } from './demoMessages';
 import { createOutings } from './demoOutings';
 import { createMissions } from './demoMissions';
+import { createCouple } from './demoCouple';
 import { createStocks } from './demoStocks';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
@@ -93,6 +94,8 @@ const OWNER_TABLES: Record<string, string> = {
   parent_sleep_logs: 'user_id',
   // Grossesse : « Comment je me sens aujourd'hui ? » (jamais visible du foyer)
   pregnancy_symptom_logs: 'user_id',
+  // Se comprendre : ressentis strictement personnels
+  couple_feelings: 'user_id',
   // Près de chez moi : favoris et signalements strictement personnels (aucune position enregistrée)
   place_favorites: 'user_id', place_reports: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
@@ -480,6 +483,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   let stocks: ReturnType<typeof createStocks> | null = null;
   const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t),
     matchStock: (h, label) => stocks?.matchStock(h, label) ?? null, itemChecked: (item) => stocks?.itemChecked(item) });
+  const couple = createCouple({ T, me: () => state.session?.userId, nowIso, uuid });
   stocks = createStocks({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
   const stockHooks = stocks;
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
@@ -1091,6 +1095,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       return T('community_profiles').map((p) => ({ user_id: p.user_id, pseudonym: p.pseudonym, handle: p.handle, avatar_path: p.avatar_path ?? null, avatar_preset: p.avatar_preset ?? null, created_at: p.created_at }));
     }
     const rows = T(table);
+    // Se comprendre, profil familial, grossesse partagée, rendez-vous « pour moi » (19/11/2026, demoCouple.ts)
+    const coupleRows = couple.filter(table, rows);
+    if (coupleRows) return coupleRows;
     const ownerCol = OWNER_TABLES[table];
     // Données personnelles : uniquement celles du compte connecté
     if (ownerCol && !['posts', 'comments', 'post_photos'].includes(table)) {
@@ -1187,6 +1194,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     ...social.rpcs,
     ...messages.rpcs,
     ...missions.rpcs,
+    ...couple.rpcs,
     ...stockHooks.rpcs,
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
     demo_switch_person: (a) => {

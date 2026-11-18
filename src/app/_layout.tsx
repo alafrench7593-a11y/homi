@@ -72,7 +72,7 @@ const PRIVATE_KEYS = ['assistant_messages', 'assistant_conversations', 'document
   'period_entries', 'periods', 'symptom_logs', 'bleeding_logs', 'discharge_logs', 'fertility_observations', 'intercourse_logs', 'ovulation_tests', 'pregnancy_tests',
   'cycle_journal', 'cycle_custom_items', 'cycle_shares', 'contraception_logs', 'postpartum_checkins', 'postpartum_actions', 'postpartum_shared_status',
   'trusted_contacts', 'child_treatments', 'treatment_logs', 'child_needs', 'child_need_entries', 'pregnancy_symptom_logs', 'maternal_weights',
-  'notifications', 'child_photos', 'child-photo-url'];
+  'notifications', 'child_photos', 'child-photo-url', 'couple_feelings', 'couple_messages'];
 
 import { useHouseholdId } from '@/lib/data/hooks';
 import { useRealtimeSync, wireFocusAndOnline } from '@/lib/sync';

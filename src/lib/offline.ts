@@ -55,7 +55,12 @@ function uuidLike(): string {
   });
 }
 
+/** Préfixe d'une réponse serveur mise en file (ex. « rpc:mission_respond ») : rejouée telle quelle, une fois. */
+export const RPC_PREFIX = 'rpc:';
+
 async function send(op: Pick<PendingOp, 'table' | 'row' | 'conflict' | 'merge'>) {
+  // 19/11/2026 : une réponse idempotente du serveur (« Je m'en occupe », « Mission terminée ») peut attendre le réseau
+  if (op.table.startsWith(RPC_PREFIX)) { await backend.rpc(op.table.slice(RPC_PREFIX.length), op.row); return; }
   const conflict = op.conflict ?? conflictTarget(op.table, op.row);
   await backend.insert(op.table, op.row, { onConflict: conflict, ignoreDuplicates: !op.merge });
 }
@@ -169,6 +174,31 @@ export async function insertOrQueue(table: string, input: Record<string, unknown
       await enqueue(table, row, opts);
       scheduleRetry(); // réseau « présent » mais serveur injoignable : nouvel essai sans attendre un changement de réseau
       return 'queued';
+    }
+    throw e;
+  }
+}
+
+/**
+ * Appel d'une fonction serveur IDEMPOTENTE (rejouer la même réponse ne change rien : mission_respond renvoie
+ * « inchangé »). Hors connexion ou serveur injoignable : mise en file, une seule fois (même appel déjà en file →
+ * rien de plus), envoyée au retour du réseau. Renvoie le résultat, ou `queued` si l'appel attend le réseau.
+ */
+export async function rpcOrQueue<T>(fn: string, args: Record<string, unknown>): Promise<{ queued: true } | { queued: false; result: T }> {
+  const table = RPC_PREFIX + fn;
+  const key = JSON.stringify(args);
+  const queue = async () => {
+    if (!useOfflineStore.getState().pending.some((op) => op.table === table && JSON.stringify(op.row) === key)) await enqueue(table, args);
+    return { queued: true as const };
+  };
+  if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return queue();
+  try {
+    return { queued: false, result: await backend.rpc<T>(fn, args) };
+  } catch (e) {
+    if (backend.mode !== 'demo' && isTransient(e)) {
+      const out = await queue();
+      scheduleRetry();
+      return out;
     }
     throw e;
   }

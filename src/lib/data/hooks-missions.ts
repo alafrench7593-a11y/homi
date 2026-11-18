@@ -3,14 +3,15 @@
  * et réponses (RPC create_mission / mission_respond : le serveur valide chaque transition).
  */
 import { useMemo } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { t as tr } from '@/i18n';
 import { backend, BackendError, eq } from '../backend';
 import { useUserId } from '../auth';
 import { uuid } from '../uuid';
+import { rpcOrQueue, useOfflineStore } from '../offline';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { useFamilyTasks, type TaskEvent } from './hooks-family-load';
-import { isMission, receivedMissions, sentMissions, sortMissions, type Mission, type MissionAction } from '../domain/missions';
+import { isMission, nextState, receivedMissions, sentMissions, sortMissions, type Mission, type MissionAction } from '../domain/missions';
 import type { TaskCategory } from '../domain/familyLoad';
 
 /** Toutes les missions du foyer visibles par la personne (le serveur a déjà filtré : foyer, enfant confié). */
@@ -67,22 +68,71 @@ export function useCreateMission() {
 }
 
 export interface RespondArgs { id: string; action: MissionAction; note?: string | null; due_at?: string | null; assignee_id?: string | null; version?: number }
-type RespondResult = { status: 'ok' | 'not_found' | 'conflict'; unchanged?: boolean; row?: Mission };
+/** `queued` : réponse gardée sur le téléphone (hors connexion), envoyée une fois au retour du réseau. */
+type RespondResult = { status: 'ok' | 'not_found' | 'conflict'; unchanged?: boolean; queued?: boolean; row?: Mission };
+/** Réponses qui peuvent attendre le réseau : rejouées par le serveur sans effet de bord (« inchangé »). */
+const QUEUEABLE: MissionAction[] = ['accept', 'start', 'complete'];
 /** Résultat réel d'une réponse, pour la confirmation affichée : fait maintenant, ou déjà fait (rejeu). */
 export type RespondResultStatus = 'ok' | 'unchanged';
 
 /** Réponse à une mission. « not_found » et « conflict » deviennent des erreurs lisibles. */
 export async function respondMission(a: RespondArgs): Promise<RespondResult> {
-  const out = await backend.rpc<RespondResult>('mission_respond', {
-    p_task: a.id, p_action: a.action, p_note: a.note ?? null, p_due_at: a.due_at ?? null, p_assignee: a.assignee_id ?? null, p_expected_version: a.version ?? null,
-  });
+  const args = { p_task: a.id, p_action: a.action, p_note: a.note ?? null, p_due_at: a.due_at ?? null, p_assignee: a.assignee_id ?? null, p_expected_version: a.version ?? null };
+  let out: RespondResult;
+  if (QUEUEABLE.includes(a.action) && !a.note) {
+    // Hors connexion : mise en file SANS version attendue (le rejeu doit rester « inchangé », jamais « conflit »)
+    const r = await rpcOrQueue<RespondResult>('mission_respond', { ...args, p_expected_version: online() ? args.p_expected_version : null });
+    if (r.queued) return { status: 'ok', queued: true };
+    out = r.result;
+  } else out = await backend.rpc<RespondResult>('mission_respond', args);
   if (out?.status === 'not_found') throw new BackendError(tr('mis.detail.notFound'), 'not_found');
   return out;
+}
+const online = () => useOfflineStore.getState().online;
+
+/** Réponse en file : la liste montre tout de suite le nouvel état (la file l'enverra ; le serveur reste juge). */
+function applyLocally(qc: QueryClient, a: RespondArgs) {
+  qc.setQueriesData<Mission[]>({ predicate: (q) => q.queryKey.includes('family_tasks') }, (rows) => {
+    if (!Array.isArray(rows)) return rows;
+    return rows.map((r) => {
+      if (r?.id !== a.id || !r.mission_state) return r;
+      const next = nextState(r.mission_state, a.action);
+      if (!next) return r;
+      return { ...r, mission_state: next, status: next === 'done' ? 'done' : 'todo', done_at: next === 'done' ? new Date().toISOString() : r.done_at };
+    });
+  });
 }
 
 export function useRespondMission() {
   const inv = useInvalidate();
-  return useMutation({ mutationFn: respondMission, onSuccess: () => inv(...INVALIDATE) });
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: respondMission,
+    onSuccess: (out, a) => { if (out?.queued) applyLocally(qc, a); else inv(...INVALIDATE); },
+  });
+}
+
+// ---------------------------------------------------------------- historique « Terminées » (paginé)
+export const DONE_PAGE = 20;
+/**
+ * Missions terminées du foyer, des plus récentes aux plus anciennes, par pages de 20 (curseur : date de réalisation).
+ * Requête à part : l'écran principal ne charge jamais l'historique.
+ */
+export function useDoneMissions() {
+  const hid = useHouseholdId();
+  const me = useUserId();
+  return useInfiniteQuery({
+    queryKey: [me, 'family_tasks', 'done-history', hid ?? ''],
+    enabled: !!hid,
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) => backend.select<Mission>({
+      table: 'family_tasks',
+      filters: [eq('household_id', hid), eq('mission_state', 'done'), ...(pageParam ? [{ col: 'done_at', op: 'lt' as const, value: pageParam }] : [])],
+      order: [{ col: 'done_at', asc: false }],
+      limit: DONE_PAGE,
+    }),
+    getNextPageParam: (last) => (last.length < DONE_PAGE ? null : last[last.length - 1]?.done_at ?? null),
+  });
 }
 
 /** Démonstration : une seconde personne rejoint le foyer, puis on peut « voir comme » elle (les deux côtés d'une mission). */

@@ -44,6 +44,8 @@ export interface Pregnancy {
   id: string;
   household_id: string;
   carrier_user_id: string | null;
+  /** Partages choisis par la personne enceinte (19/11/2026) : l'essentiel (terme, semaine, rendez-vous), le médical. */
+  share_basics?: boolean | null; share_medical?: boolean | null;
   due_date: string;
   lmp_date: string | null;
   due_date_source: 'due_date' | 'lmp' | 'professional' | 'conception' | 'positive_test';

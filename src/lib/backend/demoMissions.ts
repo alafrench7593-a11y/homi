@@ -46,13 +46,16 @@ export function createMissions(c: MissionsCtx) {
   /** Consommateur des événements « mission.* » (miroir de _consume_mission_event). */
   function consume(type: MissionEventType, t: Row, actor: string | undefined) {
     const target = missionNotifyTarget(type, t as never);
-    const text = missionNotification(type, t.title);
+    const actorName = actor ? (T('profiles').find((p) => p.id === actor)?.display_name as string | undefined) : null;
+    const text = missionNotification(type, t.title, actorName);
     if (target && text) {
       const to: string[] = target === 'household'
         ? T('household_members').filter((m) => m.household_id === t.household_id && m.user_id !== t.created_by && canReceive(t.household_id, m.user_id, t.child_id)).map((m) => m.user_id)
         : [target === 'assignee' ? t.assignee_id : t.created_by].filter((u) => u && canReceive(t.household_id, u, t.child_id));
       for (const u of to) {
         if (u === actor) continue;
+        // Préférence de la personne (notification_settings.mission_done, vrai par défaut)
+        if (type === 'mission.completed' && T('notification_settings').some((x) => x.user_id === u && x.mission_done === false)) continue;
         T('notifications').push({ id: c.uuid(), user_id: u, category: 'family', title: text.title, body: text.body, deep_link: missionHref(t.id),
           payload: { task_id: t.id, mission: type }, read_at: null, created_at: c.nowIso() });
       }

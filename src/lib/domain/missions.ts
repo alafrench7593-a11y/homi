@@ -199,10 +199,19 @@ const NOTIF_BODY: Partial<Record<MissionEventType, string>> = {
   'mission.postponed': 'Ouvrez HOMI pour voir le moment proposé.',
   'mission.question': 'Ouvrez HOMI pour répondre.',
 };
-/** Texte de la notification serveur (centre de notifications). L'écran verrouillé reste générique par défaut (send-push). */
-export function missionNotification(type: MissionEventType, title: string): { title: string; body: string } | null {
+/**
+ * Texte de la notification serveur (centre de notifications). L'écran verrouillé reste générique par défaut (send-push).
+ * Mission terminée (19/11/2026) : « <Prénom> a terminé : <mission> » (prénom affiché de la personne qui l'a faite).
+ */
+export function missionNotification(type: MissionEventType, title: string, actorName?: string | null): { title: string; body: string } | null {
   if (type === 'mission.started') return null; // « En cours » : pas de notification (pas de relance)
-  return { title: (NOTIF_PREFIX[type] + title).slice(0, 160), body: NOTIF_BODY[type] ?? 'Ouvrez HOMI pour voir le détail.' };
+  const head = type === 'mission.completed' ? `${firstName(actorName) ?? 'Quelqu’un'} a terminé : ` : NOTIF_PREFIX[type];
+  return { title: (head + title).slice(0, 160), body: NOTIF_BODY[type] ?? 'Ouvrez HOMI pour voir le détail.' };
+}
+/** Premier mot du prénom affiché, 40 caractères (miroir de public._first_name_of). */
+export function firstName(name: string | null | undefined): string | null {
+  const w = (name ?? '').replace(/\s+/g, ' ').trim().split(' ')[0]?.slice(0, 40) ?? '';
+  return w || null;
 }
 /** Qui est prévenu : le destinataire (nouvelle mission, rappel, annulation) ou le créateur (réponses) ; jamais l'auteur du fait. */
 export function missionNotifyTarget(type: MissionEventType, m: Pick<Mission, 'assignee_id' | 'created_by'>): 'assignee' | 'creator' | 'household' | null {

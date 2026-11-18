@@ -134,7 +134,7 @@ export function PinnedTools() {
 }
 
 // ------------------------------------------------------------------------------------------------ « Personnaliser »
-const SITUATION_ICON: Record<HomeSituation, IconName> = { pregnancy: 'heart', newborn: 'smile', child: 'smile', couple: 'users', family: 'users', cycle: 'refresh-cw', me: 'user' };
+const SITUATION_ICON: Record<HomeSituation, IconName> = { pregnancy: 'heart', newborn: 'smile', child: 'smile', couple: 'users', family: 'users', cycle: 'refresh-cw', me: 'user', coparent: 'user-check' };
 
 /**
  * Éditeur de l'accueil : réordonner, masquer / afficher les modules, choisir les actions rapides, épingler des outils,

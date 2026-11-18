@@ -9,6 +9,7 @@
  */
 import type { TKey } from '@/i18n';
 import type { Scope } from '@/lib/journeys/tools';
+import { COPARENT_PRESET } from './coparentHome'; // situation « co-parent » (19/11/2026), voir coparentHome.ts
 
 export type HomeModuleKey =
   | 'next' | 'quick' | 'main' | 'agenda' | 'recommendation' | 'articles'
@@ -39,8 +40,8 @@ export const HOME_MODULES: { key: HomeModuleKey; label: TKey; detail?: TKey }[] 
 export const HOME_MODULE_KEYS = HOME_MODULES.map((m) => m.key);
 
 /** Situation du foyer telle qu'elle est affichée : choisit la configuration par défaut. */
-export type HomeSituation = 'pregnancy' | 'newborn' | 'child' | 'couple' | 'family' | 'cycle' | 'me';
-export const HOME_SITUATIONS: HomeSituation[] = ['pregnancy', 'newborn', 'child', 'couple', 'family', 'cycle', 'me'];
+export type HomeSituation = 'pregnancy' | 'newborn' | 'child' | 'couple' | 'family' | 'cycle' | 'me' | 'coparent';
+export const HOME_SITUATIONS: HomeSituation[] = ['pregnancy', 'newborn', 'child', 'couple', 'family', 'cycle', 'me', 'coparent'];
 
 /**
  * Situation (pure) : le profil affiché d'abord (grossesse, nouveau-né, enfant, famille) ; pour « Moi », un foyer de
@@ -73,6 +74,7 @@ export const HOME_PRESETS: Record<HomeSituation, HomeModuleKey[]> = {
   family: ['next', 'quick', 'main', 'agenda', 'recommendation', 'articles'],
   cycle: ['next', 'main', 'agenda', 'assistant', 'articles'],
   me: [...REF, 'upcoming', 'assistant', 'community'],
+  coparent: COPARENT_PRESET,
 };
 
 export interface HomeLayout { order: HomeModuleKey[]; hidden: HomeModuleKey[] }

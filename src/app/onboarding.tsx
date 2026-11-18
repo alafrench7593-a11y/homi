@@ -47,6 +47,7 @@ import { PlanStep } from '@/features/onboarding/PlanStep';
 import { ConsentsStep } from '@/features/onboarding/ConsentsStep';
 import { RevealStep, type RevealLine } from '@/features/onboarding/RevealStep';
 import { PremiumStep } from '@/features/onboarding/PremiumStep';
+import { InviteOtherParent } from '@/features/couple/CoupleKit';
 import { spacing } from '@/theme/tokens';
 import { formatList, getLocale, t as tr, type TKey } from '@/i18n';
 
@@ -338,8 +339,12 @@ export default function Onboarding() {
       {error && phase === 'flow' ? <Banner tone="warning">{error}</Banner> : null}
       <StepFade key={key} dir={phase === 'flow' ? dir : 1}>
         {phase === 'reveal' ? (
-          <RevealStep lines={lines} total={expectedLines} done={revealDone} error={error}
-            title={name.trim() ? tr('o2.reveal.titleNamed', { name: name.trim() }) : tr('o2.reveal.title')} />
+          <View style={{ gap: spacing.md }}>
+            <RevealStep lines={lines} total={expectedLines} done={revealDone} error={error}
+              title={name.trim() ? tr('o2.reveal.titleNamed', { name: name.trim() }) : tr('o2.reveal.title')} />
+            {/* 19/11/2026 : foyer à deux → « Ajouter l'autre parent à votre famille ? » (Inviter maintenant / Plus tard) */}
+            {revealDone && (answers.sharing === 'couple' || answers.sharing === 'coparenting') ? <InviteOtherParent testID="onb-invite" /> : null}
+          </View>
         ) : phase === 'premium' ? (
           <PremiumStep features={plan.premium} childName={childName} />
         ) : step === 'intro' ? (

@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
+import { InviteOtherParent } from '@/features/couple/CoupleKit';
 import { backend, eq } from '@/lib/backend';
 import { useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { useFamilyEvents, useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
@@ -53,6 +54,12 @@ export default function CoupleWeek() {
   return (
     <Screen back title={toolName('couple_week')} subtitle={tr('cm.cp.week', { date: formatDate(week, { day: 'numeric', month: 'long' }) })}>
       <Text muted>{tr('cm.cp.intro')}</Text>
+      <InviteOtherParent testID="cp-invite" />
+      <Card padded={false} testID="cp-understand">
+        <ListRow icon="feather" title={tr('und.entry')} subtitle={tr('und.entrySub')} onPress={() => router.push('/family/understand')} testID="cp-understand-open" />
+        <ListRow icon="message-circle" title={tr('und.inbox.entry')} onPress={() => router.push('/family/understand/inbox')} />
+        <ListRow icon="users" title={tr('cp2.place.title')} subtitle={tr('cp2.place.sub')} onPress={() => router.push('/family/my-place')} testID="cp-my-place" />
+      </Card>
       <SectionTitle title={tr('cm.cp.s1')} />
       <Card padded={false} testID="cp-events">
         {events.length ? events.slice(0, 12).map((e) => <ListRow key={e.id} icon="calendar" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'long', day: 'numeric', hour: e.all_day ? undefined : '2-digit', minute: e.all_day ? undefined : '2-digit' })} />)

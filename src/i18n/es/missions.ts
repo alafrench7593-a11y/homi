@@ -28,7 +28,7 @@ export const missions: Messages<typeof fr> = {
   'mis.state.cancelled': 'Cancelada',
   'mis.reply.accept': 'Acepto',
   'mis.reply.start': 'Me encargo',
-  'mis.reply.complete': 'Está hecho',
+  'mis.reply.complete': 'Misión terminada',
   'mis.reply.decline': 'No puedo',
   'mis.reply.postpone': 'Propongo otro horario',
   'mis.reply.ask': 'Necesito más detalles',

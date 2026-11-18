@@ -118,7 +118,7 @@ with sync_playwright() as p:
     switch(pg)
     s = demo_state(pg)
     mine = [n['title'] for n in s['tables'].get('notifications', []) if n['user_id'] == mother]
-    R['confirmation_mere'] = ('Mission acceptée : ' + TITLE) in mine and ('Mission terminée : ' + TITLE) in mine
+    R['confirmation_mere'] = ('Mission acceptée : ' + TITLE) in mine and ('Sam a terminé : ' + TITLE) in mine
     pg.goto(B + f'/family/missions/{mission_id}'); pg.wait_for_timeout(3000)
     R['mere_voit_terminee'] = tid(pg, 'mission-state-done').count() > 0
     hist = tid(pg, 'mission-history').inner_text() if tid(pg, 'mission-history').count() else ''
@@ -127,7 +127,7 @@ with sync_playwright() as p:
     pg.goto(B + '/family/missions?tab=sent'); pg.wait_for_timeout(3000)
     shot(pg, '10-mere-envoyees')
     pg.goto(B + '/notifications'); pg.wait_for_timeout(3000)
-    R['centre_notifications'] = pg.get_by_text(re.compile('Mission terminée')).count() > 0
+    R['centre_notifications'] = pg.get_by_text(re.compile('a terminé')).count() > 0
     shot(pg, '11-mere-notifications')
     pg.goto(B + '/family/missions/responsibilities'); pg.wait_for_timeout(3000)
     R['responsabilites'] = tid(pg, 'resp-shopping').count() > 0 and tid(pg, 'resp-pets').count() > 0
