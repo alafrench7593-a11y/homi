@@ -19,8 +19,11 @@ const CTXS: ScopeCtx[] = [
   { scope: 'avoid' }, { scope: 'ttc' }, { scope: 'cycle' }, { scope: 'none' }, { scope: 'pregnancy', pregnancyId: 'p1' },
   { scope: 'postpartum', babyId: 'c1', postpartum: true }, { scope: 'baby', childId: 'c1', postpartum: true }, { scope: 'child', childId: 'c2' }, { scope: 'family' },
 ];
-/** 123 outils rangés dans les 9 catégories + l'espace Communauté (120 avant le reclassement du 18/11/2026). */
-const BASELINE_TOOLS = 124;
+/**
+ * 126 outils rangés dans les 9 catégories + l'espace Communauté (120 avant le reclassement du 18/11/2026 ; 123 avant
+ * l'entrée au registre de « Garde et nounou », « Se comprendre » et « Ma place dans la famille », le 21/11/2026).
+ */
+const BASELINE_TOOLS = 127;
 const BASELINE_THEMES = 17;
 const BASELINE_LEGACY = 138;
 

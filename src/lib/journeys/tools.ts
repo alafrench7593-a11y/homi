@@ -17,7 +17,8 @@
  *    (filtres de la bibliothèque, onglets de la fiche enfant, guides de lecture) ;
  *  - ses anciens identifiants (`aliases`) : toujours résolus (`resolveTool`), pour ne casser ni favoris ni liens.
  *
- * Nom, description d'une phrase et mots de recherche : `th.<id>`, `th.<id>.d`, `th.<id>.k` (src/i18n/<langue>/toolhub.ts).
+ * Nom, description d'une phrase, mots de recherche et « problème résolu » : `th.<id>`, `th.<id>.d`, `th.<id>.k`,
+ * `th.<id>.problem` (src/i18n/<langue>/toolhub.ts).
  * Statut Premium : calculé depuis src/lib/premium/access.ts (source unique), voir `toolCatalog`.
  *
  * Ce registre sert au centre d'outils, aux onglets, à l'accueil, aux actions rapides ET au garde d'accès des écrans
@@ -284,6 +285,8 @@ export const TOOLS: ToolDef[] = [
   { id: 'kid_card', category: 'school', theme: 'health', icon: 'credit-card', scopes: KID, also: ['health'], href: (c) => kid(c, '/card') },
   { id: 'kid_routines', category: 'school', theme: 'tasks', icon: 'toggle-right', scopes: ['child', 'family'], href: () => '/family/kid-routines' },
   { id: 'custody', category: 'school', theme: 'calendar', icon: 'home', scopes: [...KID, 'family'], href: () => '/family/custody' },
+  // Espace nounou (21/11/2026) : carnet de liaison, photos et messages de la garde ; ouvert sans abonnement (access.ts)
+  { id: 'childcare', category: 'school', theme: 'growth', icon: 'trello', scopes: [...KID, 'family'], href: () => '/garde' },
 
   // ================================================================ 8. Couple et foyer
   { id: 'mental_load', category: 'couple', theme: 'relay', icon: 'pie-chart', scopes: TOGETHER, href: () => '/family/load' },
@@ -292,6 +295,8 @@ export const TOOLS: ToolDef[] = [
     { id: 'responsibilities', legacy: 'family_responsibilities', icon: 'user-check', href: () => '/family/missions/responsibilities' },
   ] },
   { id: 'couple_week', category: 'couple', theme: 'relay', icon: 'message-square', scopes: TOGETHER, href: () => '/family/couple' },
+  // « Se comprendre » (19/11/2026) : dire ce que l'on ressent à l'autre adulte du foyer, sans culpabilisation
+  { id: 'couple_understand', category: 'couple', theme: 'relay', icon: 'mail', scopes: TOGETHER, href: () => '/family/understand' },
   { id: 'family_review', category: 'couple', theme: 'prevention', icon: 'percent', scopes: ['family'], href: () => '/family/review' },
   { id: 'family_metime', category: 'couple', theme: 'metime', icon: 'headphones', scopes: TOGETHER, href: () => '/family/me-time' },
   { id: 'offduty', category: 'couple', theme: 'metime', icon: 'power', scopes: TOGETHER, href: () => '/family/offduty' },
@@ -303,7 +308,11 @@ export const TOOLS: ToolDef[] = [
   // ================================================================ 9. Organisation familiale
   { id: 'family_calendar', category: 'family', theme: 'calendar', icon: 'table', scopes: TOGETHER, href: () => '/calendar' },
   { id: 'family_tasks', category: 'family', theme: 'tasks', icon: 'check-square', scopes: TOGETHER, href: () => '/family' },
-  { id: 'family_missions', category: 'family', theme: 'tasks', icon: 'send', scopes: TOGETHER, href: () => '/family/missions' },
+  { id: 'family_missions', category: 'family', theme: 'tasks', icon: 'send', scopes: TOGETHER, href: () => '/family/missions', subs: [
+    { id: 'done', legacy: 'family_missions_done', icon: 'check-circle', href: () => '/family/missions/done' },
+  ] },
+  // « Ma place dans la famille » (19/11/2026) : mes enfants, mes missions, l'organisation partagée, vus de ma place
+  { id: 'family_my_place', category: 'family', theme: 'tasks', icon: 'navigation-2', scopes: TOGETHER, href: () => '/family/my-place' },
   { id: 'family_routines', category: 'family', theme: 'tasks', icon: 'list', scopes: TOGETHER, href: () => '/family/routines' },
   { id: 'family_history', category: 'family', theme: 'tasks', icon: 'rewind', scopes: ['family'], href: () => '/family/history' },
   { id: 'brain_dump', category: 'family', theme: 'tasks', icon: 'download', scopes: TOGETHER, href: () => '/family/brain-dump' },
@@ -316,13 +325,18 @@ export const TOOLS: ToolDef[] = [
   { id: 'nearby', category: 'family', theme: 'resources', icon: 'map-pin', scopes: ALL, universal: true, also: ['couple'], href: () => '/outings' },
 
   // ================================================================ La communauté : un ESPACE à part (pas un outil d'une catégorie)
-  { id: 'community', category: 'community', theme: 'resources', icon: 'globe', scopes: ALL, universal: true, href: (c) => (SPACE_FOR_SCOPE[c.scope] ? `/(tabs)/community?space=${SPACE_FOR_SCOPE[c.scope]}` : '/(tabs)/community') },
+  { id: 'community', category: 'community', theme: 'resources', icon: 'globe', scopes: ALL, universal: true, href: (c) => (SPACE_FOR_SCOPE[c.scope] ? `/(tabs)/community?space=${SPACE_FOR_SCOPE[c.scope]}` : '/(tabs)/community'), subs: [
+    // Messagerie privée entre membres (19/11/2026) : un accès direct de l'espace Communauté, pas un outil d'une catégorie
+    { id: 'messages', legacy: 'community_messages', icon: 'mail', href: () => '/community/messages' },
+  ] },
 
   // ================================================================ Mon compte et réglages (PAS des outils)
   { id: 'settings', category: 'account', theme: 'reminders', icon: 'settings', scopes: ALL, universal: true, href: () => '/settings' },
   { id: 'notifications', category: 'account', theme: 'reminders', icon: 'inbox', scopes: ALL, universal: true, href: () => '/notifications' },
   { id: 'journeys', category: 'account', theme: 'reminders', icon: 'refresh-cw', scopes: ALL, universal: true, href: () => '/journeys' },
   { id: 'home_settings', category: 'account', theme: 'reminders', icon: 'layout', scopes: ALL, universal: true, href: () => '/settings/home' },
+  // Ce que la famille voit de moi (rôle, partages, notifications) : un réglage du compte, pas un outil
+  { id: 'my_info', category: 'account', theme: 'reminders', icon: 'smartphone', scopes: TOGETHER, universal: true, href: () => '/family/my-info' },
   { id: 'preg_edit', category: 'account', theme: 'pregnancy', icon: 'edit-2', scopes: ['pregnancy'], href: () => '/pregnancy/edit' },
   { id: 'preg_end', category: 'account', theme: 'pregnancy', icon: 'flag', scopes: ['pregnancy'], href: () => '/pregnancy/end' },
 ];
@@ -378,6 +392,8 @@ export function toolLabelKey(id: string): TKey {
 }
 export const toolDescKey = (id: string) => `th.${resolveTool(id)?.def.id ?? id}.d` as TKey;
 export const toolWordsKey = (id: string) => `th.${resolveTool(id)?.def.id ?? id}.k` as TKey;
+/** « Problème résolu » de la fiche d'outil : la situation du parent, rédigée en une phrase (`th.<id>.problem`). */
+export const toolProblemKey = (id: string) => `th.${resolveTool(id)?.def.id ?? id}.problem` as TKey;
 /** Précision courte héritée (fragment) : encore utilisée pour les sous-accès et l'onboarding. */
 export function toolSubKey(id: string): TKey {
   const r = resolveTool(id);

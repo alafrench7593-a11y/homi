@@ -139,6 +139,8 @@ Object.assign(KEY_TYPE, {
   sleep_help: 'formulaire/assistant', kid_school: 'formulaire/assistant', kid_album: 'humeur/journal', me_diary: 'humeur/journal',
   // Reclassement du 18/11/2026 : écrans du cycle et du post-partum entrés au registre
   cycle_advice: 'formulaire/assistant', cycle_month: 'suivi/mesures', cycle_export: 'suivi/mesures', pp_history: 'suivi/mesures',
+  // Entrés au registre le 21/11/2026 : espace nounou, « Se comprendre », « Ma place dans la famille »
+  childcare: 'famille/partage/communauté', couple_understand: 'famille/partage/communauté', family_my_place: 'tâches/planning',
 });
 const toolType = (key) => KEY_TYPE[key] ?? 'autre';
 

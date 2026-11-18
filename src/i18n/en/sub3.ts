@@ -12,6 +12,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.free.settings': 'Settings: privacy, language, notifications, household, syncing, subscription.',
   'sub3.free.data': 'Export of all your data and account deletion. Nothing is erased when a subscription ends.',
   'sub3.free.legal': 'Legal notices and “Give feedback”.',
+  'sub3.free.childcare': 'Nanny space: invite your children’s nanny or join a childcare arrangement.',
   'sub3.free.rest': 'The tracking tools open with Premium.',
 
   'sub3.prem.title': 'HOMI Premium',

@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**237 routes** réelles (`src/lib/routes.generated.ts`) portées par **238 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **124 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**256 routes** réelles (`src/lib/routes.generated.ts`) portées par **257 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -19,7 +19,7 @@
 
 | Zone | Fichiers | À faire | Tranche | Fait | Couleurs en dur | Animated RN |
 |---|---:|---:|---:|---:|---:|---:|
-| Autres | 6 | 6 | 0 | 0 | 0 | 0 |
+| Autres | 15 | 15 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
 | Réglages | 22 | 22 | 0 | 0 | 0 | 0 |
@@ -28,11 +28,11 @@
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
 | Grossesse et post-partum | 19 | 19 | 0 | 0 | 1 | 0 |
 | Bébé et enfant | 32 | 28 | 0 | 4 | 50 | 1 |
-| Famille | 30 | 30 | 0 | 0 | 6 | 0 |
-| Communauté | 16 | 16 | 0 | 0 | 4 | 0 |
-| **Total** | **238** | **213** | **2** | **23** | **87** | **4** |
+| Famille | 38 | 38 | 0 | 0 | 6 | 0 |
+| Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
+| **Total** | **257** | **232** | **2** | **23** | **87** | **4** |
 
-Rôles : détail 40 · formulaire 46 · historique 17 · liste 87 · réglage 28 · résultat 13 · scène 7.
+Rôles : détail 44 · formulaire 47 · historique 17 · liste 101 · réglage 28 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -54,6 +54,15 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/discover` | détail | — | — | 0 |  | à faire |
 | `/discover/tool/[id]` | détail | — | — | 0 |  | à faire |
 | `/discover/tools` | détail | — | — | 0 |  | à faire |
+| `/garde` | liste | childcare | Screen, Card, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/[id]` | détail | — | Screen, Card, Button, Banner, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/[id]/acces` | liste | — | Screen, Card, Field, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/[id]/ajouter` | formulaire | — | Screen, Card, Sheet, Field, Button, Chip, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/[id]/journee` | liste | — | Screen, Card, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/[id]/messages` | liste | — | Screen, Card, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/[id]/photo` | liste | — | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/[id]/photos` | liste | — | Screen, Card, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/rejoindre` | détail | — | Screen, Card, Button | 0 |  | à faire |
 | `/guide` | liste | guides | Screen, ListRow, EmptyState | 0 |  | à faire |
 | `/tools/[category]` | détail | — | Screen, EmptyState, VirtualList | 0 |  | à faire |
 
@@ -115,7 +124,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
-| `/ ((tabs)/index.tsx)` | liste | — | Screen, Button, IconButton, Banner, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/ ((tabs)/index.tsx)` | liste | — | Screen, Button, Banner, ErrorView, Cascade | 0 |  | à faire |
 | `/agenda` | détail | — | — | 0 |  | à faire |
 | `/ask` | liste | ask | Screen, Card, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
 | `/assistant/chat` | liste | — | Screen, Card, Button, IconButton, Chip, Toggle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
@@ -133,7 +142,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/story` | scène | — | Screen, Button | 0 |  | à faire |
 | `/summary` | résultat | summary | Screen, Button, Banner, Chip, SectionTitle | 0 |  | à faire |
 | `/today` | liste | — | Screen, Card, Button, Segmented | 0 |  | à faire |
-| `/tools` | liste | — | Screen, Field, Button, IconButton, ErrorView, Skeleton | 0 |  | à faire |
+| `/tools` | liste | — | Screen, Button, ErrorView | 0 |  | à faire |
 | `/track` | liste | baby_daily | Screen, Card, Button, Banner, Segmented, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/track/[kind]` | formulaire | baby_breastfeed, baby_bottle, baby_diaper | Screen, Field, Button, Banner, Chip, Segmented, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 
@@ -264,7 +273,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/child/[id]/growth` | détail | — | — | 0 |  | à faire |
 | `/child/[id]/health-tracking` | formulaire | kid_health | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, Toggle, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/needs` | formulaire | kid_treatments | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/child/[id]/school` | liste | kid_school | Screen, Card, Field, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/school` | liste | kid_school | Screen, Card, Field, Button, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/steps` | liste | kid_steps | Screen, Card, Button, Banner, EmptyState, Skeleton | 0 |  | à faire |
 | `/child/[id]/vaccines` | formulaire | kid_vaccines | Screen, Card, GlassSurface, Sheet, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/wellbeing` | liste | kid_mood | Screen, Card, Field, Button, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
@@ -299,10 +308,14 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/kid-routines` | liste | kid_routines | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/load` | liste | mental_load | Screen, Card, Button, Banner, EmptyState | 0 |  | à faire |
 | `/family/me-time` | formulaire | family_metime | Screen, Card, Field, Button, Segmented, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
+| `/family/member/[id]` | détail | — | Screen, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/missions` | liste | family_missions | Screen, Button, Segmented, ListRow, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
 | `/family/missions/[id]` | formulaire | — | Screen, Field, Button, EmptyState, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/missions/done` | liste | — | Screen, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/family/missions/new` | formulaire | — | Screen, Field, Button, Banner, Chip, Segmented | 0 |  | à faire |
 | `/family/missions/responsibilities` | liste | — | Screen, ListRow, ErrorView, Skeleton, Cascade | 0 |  | à faire |
+| `/family/my-info` | liste | — | Screen, Card, Field, Button, SectionTitle | 0 |  | à faire |
+| `/family/my-place` | liste | family_my_place | Screen, ListRow, SectionTitle | 0 |  | à faire |
 | `/family/nights` | formulaire | family_nights | Screen, Card, GlassSurface, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/family/notebook` | liste | house_notebook | Screen, Card, Sheet, Field, Button, Banner, Chip, ListRow, SectionTitle, EmptyState | 0 |  | à faire |
 | `/family/offduty` | liste | offduty | Screen, Card, Field, Button, Banner, Chip | 0 |  | à faire |
@@ -316,6 +329,10 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/stocks/[id]` | détail | — | Screen, Card, Button, Banner, Chip, EmptyState, Skeleton, Cascade, DetailEnter | 0 |  | à faire |
 | `/family/stocks/baby` | détail | — | — | 0 |  | à faire |
 | `/family/stocks/new` | formulaire | — | Screen | 0 |  | à faire |
+| `/family/understand` | liste | couple_understand | Screen, Field, Button, Chip, ListRow, SectionTitle, Cascade | 0 |  | à faire |
+| `/family/understand/compose` | liste | — | Screen, Field, Button, Banner | 0 |  | à faire |
+| `/family/understand/inbox` | liste | — | Screen, Sheet, Field, Button, IconButton, Chip, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/family/understand/request` | liste | — | Screen, Field, Button, Banner, ListRow | 0 |  | à faire |
 | `/family/urgent` | liste | family_urgent | — | 0 |  | à faire |
 
 ### Communauté
@@ -331,6 +348,8 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/community/following` | liste | — | Screen, Card, Chip, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/community/group/[id]` | détail | — | Screen, Card, Sheet, Field, Button, IconButton, Banner, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/community/groups` | liste | — | Screen, Card, Sheet, Field, Button, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
+| `/community/messages` | liste | — | Screen, Card, Button, Banner, Segmented, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/community/messages/[id]` | détail | — | Screen, Sheet, Button, IconButton, Banner, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/community/new` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, Segmented, ErrorView, Skeleton | 4 |  | à faire |
 | `/community/notifications` | liste | — | Screen, Card, Button, Chip, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/community/post/[id]` | détail | — | Screen, Card, Sheet, Field, Button, Banner, Chip, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
@@ -364,19 +383,21 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Trouver de l’aide | `pp_support` | `/postpartum/support` | `/postpartum/checkin` | — | `/postpartum/history /postpartum/partner /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Classement des recettes | `meal_rankings` | `/meals/rankings` | `/meals/new /meals/shopping` | `/meals/[slug]` | `/meals/menu /meals/pantry` | non | non | non | non |
 
-### famille/partage/communauté (10)
+### famille/partage/communauté (12)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
 | Répartition de la charge mentale | `mental_load` | `/family/load` | — | — | — | non | non | non | non |
 | Confier un domaine | `family_domains` | `/family/domains` | — | — | — | non | non | non | non |
 | Point de couple | `couple_week` | `/family/couple` | dans l’écran | — | — | non | non | non | non |
+| Se comprendre | `couple_understand` | `/family/understand` | — | — | — | non | non | non | non |
 | Parent solo | `solo_parent` | `/family/solo` | feuille dans l’écran | — | — | non | non | non | non |
 | Communauté | `community` | `/community` | — | — | — | non | non | non | non |
 | Relais de nuit | `family_nights` | `/family/nights` | dans l’écran | — | — | non | non | non | non |
 | Résumés | `summary` | `/summary` | — | — | — | non | non | non | non |
 | Espace du co-parent | `pp_partner` | `/postpartum/partner` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Garde alternée | `custody` | `/family/custody` | feuille dans l’écran | — | — | non | non | non | non |
+| Garde et nounou | `childcare` | `/garde` | `/garde/[id]/ajouter` | `/garde/[id] /garde/rejoindre` | `/garde/[id]/acces /garde/[id]/journee /garde/[id]/messages /garde/[id]/photo /garde/[id]/photos` | non | non | non | non |
 | Bilan de la semaine | `family_review` | `/family/review` | — | — | — | non | non | non | non |
 
 ### formulaire/assistant (24)
@@ -480,7 +501,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Suivi de santé de l’enfant | `kid_health` | `/child/[id]/health-tracking` | feuille dans l’écran | — | — | non | non | non | non |
 | Traitements de l’enfant | `kid_treatments` | `/child/[id]/needs` | feuille dans l’écran | — | — | non | non | non | non |
 
-### tâches/planning (17)
+### tâches/planning (18)
 
 | Outil | Clé | Entrée | Saisie | Résultat | Historique | Écrans refondus | Commandes | Transition | Parcours vérifié |
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
@@ -493,6 +514,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Temps pour soi | `family_metime` | `/family/me-time` | dans l’écran | — | — | non | non | non | non |
 | Agenda familial | `family_calendar` | `/calendar` | feuille dans l’écran | — | — | non | non | non | non |
 | Tâches du foyer | `family_tasks` | `/family` | — | — | — | non | non | non | non |
+| Ma place dans la famille | `family_my_place` | `/family/my-place` | — | — | — | non | non | non | non |
 | Routines du foyer | `family_routines` | `/family/routines` | feuille dans l’écran | — | — | non | non | non | non |
 | Échéances à préparer | `family_prep` | `/family/prep` | — | — | — | non | non | non | non |
 | Rappels | `reminders` | `/settings/reminders` | feuille dans l’écran | — | — | non | non | non | non |

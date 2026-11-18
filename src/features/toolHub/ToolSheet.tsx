@@ -2,8 +2,7 @@
  * Fiche courte d'un outil (premier appui sur un outil jamais ouvert), dans une FEUILLE DE VERRE (`GlassSheet`, verre
  * `sheet` : voile presque opaque, toutes les encres du thème y sont garanties ≥ 4,5:1) :
  *  1. pictogramme, nom (titre de la feuille), ce que ça fait (une phrase), étoile de favori ;
- *  2. « Problème résolu » : les besoins que l'outil couvre, tirés de son index de recherche par besoin (`th.<id>.k`,
- *     tournures de trois mots ou plus, les mêmes que la recherche reconnaît) — aucun texte inventé ;
+ *  2. « Problème résolu » : la situation du parent, rédigée en une phrase pour chaque outil (`th.<id>.problem`) ;
  *  3. « En pratique » : l'aperçu « geste → résultat » repris de « Découvrir HOMI » quand il existe ;
  *  4. « Commencer » : placé AVANT les détails secondaires (pour qui, Premium, sous-accès) pour rester visible sans
  *     défiler à 320 × 568.
@@ -19,7 +18,7 @@ import type { ToolEntry } from '@/features/hubs/ToolSearch';
 import { DISCOVER_BY_KEY } from '@/features/discover/model';
 import { describeDemo } from '@/features/discover/texts';
 import { subAsTool, type CatalogTool } from '@/lib/domain/toolCatalog';
-import { TOOL_PROFILES, toolWordsKey } from '@/lib/journeys/tools';
+import { TOOL_PROFILES, toolProblemKey } from '@/lib/journeys/tools';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr, tMaybe, type TKey } from '@/i18n';
@@ -33,18 +32,12 @@ export function toolPreview(tool: CatalogTool): { gesture: string; result: strin
 }
 
 /**
- * « Problème résolu » : les tournures de besoin (3 mots ou plus) de l'index de recherche de l'outil, dans la langue
- * active — les phrases mêmes que la recherche par besoin reconnaît (« combien a bu bébé », « se réveille la nuit »).
+ * « Problème résolu » : une phrase rédigée par outil (`th.<id>.problem`, 5 langues) qui décrit la situation du parent
+ * (« Vous vous levez toutes les nuits et l'autre parent ne sait pas quand prendre le relais. »). Un sous-accès reprend
+ * celle de son outil. Rien n'est assemblé à partir des mots-clés de la recherche.
  */
-export function toolNeeds(tool: CatalogTool, max = 2): string[] {
-  const raw = tMaybe(toolWordsKey(tool.parent ?? tool.id)) ?? '';
-  const out: string[] = [];
-  for (const part of raw.split(';')) {
-    const p = part.trim();
-    if (p.split(/\s+/).length >= 3 && !out.includes(p)) out.push(p);
-    if (out.length >= max) break;
-  }
-  return out;
+export function toolProblem(tool: Pick<CatalogTool, 'id' | 'parent'>): string | null {
+  return tMaybe(toolProblemKey(tool.parent ?? tool.id)) || null;
 }
 
 export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart }: {
@@ -58,7 +51,7 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
   if (!e) return null;
   const { tool } = e;
   const preview = toolPreview(tool);
-  const needs = toolNeeds(tool);
+  const problem = toolProblem(tool);
   const isTool = tool.category !== 'account' && !tool.urgent;
   const everyone = tool.profiles.length >= TOOL_PROFILES.length - 1;
   return (
@@ -73,10 +66,10 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
           {isTool ? <FavoriteStar on={favorite} label={tool.label} onPress={() => onToggleFavorite(tool)} id={`sheet-${tool.id}`} /> : null}
         </View>
 
-        {needs.length ? (
+        {problem ? (
           <View style={{ gap: 2 }} testID="tool-sheet-problem">
             <Text variant="caption" muted accessibilityRole="header">{tr('glass.sheet.problem')}</Text>
-            <Text variant="small" weight="medium">{needs.map((n) => tr('glass.sheet.quote', { q: n })).join(' · ')}</Text>
+            <Text variant="small" weight="medium">{problem}</Text>
           </View>
         ) : null}
 

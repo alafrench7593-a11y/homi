@@ -12,6 +12,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.free.settings': 'Impostazioni: privacy, lingua, notifiche, nucleo familiare, sincronizzazione, abbonamento.',
   'sub3.free.data': 'Esportazione di tutti i tuoi dati ed eliminazione dell’account. Nulla viene cancellato alla fine di un abbonamento.',
   'sub3.free.legal': 'Note legali e «Dai la tua opinione».',
+  'sub3.free.childcare': 'Spazio tata: invita la tata dei tuoi figli o unisciti a un affido.',
   'sub3.free.rest': 'Gli strumenti di monitoraggio si aprono con Premium.',
 
   'sub3.prem.title': 'HOMI Premium',

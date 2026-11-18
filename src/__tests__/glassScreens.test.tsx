@@ -11,7 +11,7 @@ import { DOCK_HEIGHT, dockInner, TAB_SCREEN_INSET } from '@/components/Dock';
 import { changeProfile, PROFILE_SWAP, resetProfileTransition } from '@/components/profileTransition';
 import { TAB_PATHS } from '@/components/Screen';
 import { dockLayout, estimateLabelWidth } from '@/features/hubs/hubMap';
-import { toolNeeds } from '@/features/toolHub/ToolSheet';
+import { toolProblem } from '@/features/toolHub/ToolSheet';
 import { toolCatalog } from '@/lib/domain/toolCatalog';
 import { setLocale } from '@/i18n';
 import { spacing } from '@/theme/tokens';
@@ -74,14 +74,16 @@ describe('changement de profil coordonné', () => {
 });
 
 describe('fiche d’outil', () => {
-  it('« Problème résolu » : tournures de besoin de l’index de recherche (3 mots ou plus), dans la langue active', () => {
+  it('« Problème résolu » : une phrase rédigée (situation du parent), jamais des fragments de mots-clés', () => {
     setLocale('fr');
-    const tools = toolCatalog({ scope: 'baby', child: null, childId: null, postpartum: false, loaded: true } as never);
-    const bottle = tools.find((x) => x.id === 'baby_bottle');
-    if (!bottle) return;
-    const needs = toolNeeds(bottle);
-    expect(needs.length).toBeGreaterThan(0);
-    for (const n of needs) expect(n.split(/\s+/).length).toBeGreaterThanOrEqual(3);
+    const tools = toolCatalog({ scope: 'baby', childId: 'c1', postpartum: false } as never);
+    const nights = tools.find((x) => x.id === 'family_nights')!;
+    expect(toolProblem(nights)).toBe('Vous vous levez toutes les nuits et l’autre parent ne sait pas quand prendre le relais.');
+    expect(toolProblem(nights)).not.toContain(' · ');
+    // un sous-accès reprend la phrase de son outil
+    expect(toolProblem({ id: 'kid_profile.growth', parent: 'kid_profile' })).toBe(toolProblem({ id: 'kid_profile' }));
+    const src = fs.readFileSync('src/features/toolHub/ToolSheet.tsx', 'utf8');
+    expect(src).not.toMatch(/toolWordsKey|glass\.sheet\.quote/);
   });
 
   it('« Commencer » est placé avant les détails secondaires (visible sans défiler à 320 × 568)', () => {

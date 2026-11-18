@@ -145,7 +145,7 @@ describe('B. classement selon les besoins des parents', () => {
 
   it('9 catégories ; chaque outil a UNE catégorie principale ; la communauté et le compte sont à part', () => {
     expect(TOOL_CATEGORIES).toEqual(['feeding', 'sleep', 'care', 'health', 'cycle', 'pregnancy', 'school', 'couple', 'family']);
-    expect(CATEGORY_TOOLS).toHaveLength(123);
+    expect(CATEGORY_TOOLS).toHaveLength(126);
     expect(REAL_TOOLS.filter((d) => d.category === 'community').map((d) => d.id)).toEqual(['community']);
     for (const d of CATEGORY_TOOLS) expect((TOOL_CATEGORIES as string[]).includes(d.category)).toBe(true);
     expect(isToolCategory('community')).toBe(false);
@@ -190,9 +190,23 @@ describe('B. classement selon les besoins des parents', () => {
     expect(categoryContent(preg, 'health').shortcuts.map((x) => x.id)).toEqual(expect.arrayContaining(['scan_food', 'scan_product']));
   });
 
-  it('relais de nuit dans Sommeil ; École, crèche et garde garde ses 4 outils', () => {
+  it('relais de nuit dans Sommeil ; École, crèche et garde : 5 vrais outils, dont « Garde et nounou »', () => {
     expect(cat('family_nights')).toBe('sleep');
-    expect(CATEGORY_TOOLS.filter((d) => d.category === 'school').map((d) => d.id)).toEqual(['kid_school', 'kid_card', 'kid_routines', 'custody']);
+    expect(CATEGORY_TOOLS.filter((d) => d.category === 'school').map((d) => d.id)).toEqual(['kid_school', 'kid_card', 'kid_routines', 'custody', 'childcare']);
+  });
+
+  it('écrans du 19-21/11/2026 rangés : Se comprendre (couple), Ma place (organisation), Missions terminées et Messages en sous-accès, Mes informations (compte)', () => {
+    expect(cat('couple_understand')).toBe('couple');
+    expect(cat('family_my_place')).toBe('family');
+    expect(cat('childcare')).toBe('school');
+    expect(cat('my_info')).toBe('account');
+    expect(canonicalToolId('family_missions_done')).toBe('family_missions.done');
+    expect(canonicalToolId('community_messages')).toBe('community.messages');
+    const fam = toolCatalog({ scope: 'family' });
+    expect(findEntry(fam, 'family_missions.done')).toMatchObject({ parent: 'family_missions', href: '/family/missions/done' });
+    expect(findEntry(fam, 'community.messages')).toMatchObject({ parent: 'community', href: '/community/messages', category: 'community' });
+    // Messages n'est pas une catégorie : il reste dans l'espace Communauté
+    for (const shelf of TOOL_CATEGORIES) expect(categoryContent(fam, shelf).readings.some((x) => x.id === 'community.messages')).toBe(false);
   });
 
   it('raccourcis contextuels : jamais la catégorie principale, même objet (un identifiant, un favori)', () => {
@@ -296,9 +310,9 @@ describe('D. compatibilité : anciens identifiants, alias et adresses', () => {
     expect(bad).toEqual([]);
   });
 
-  it('accès libre : exactement les urgences, la sécurité et les sources (inchangé par le reclassement)', () => {
+  it('accès libre : exactement les urgences, la sécurité, les sources et l’espace nounou (règles de access.ts)', () => {
     const all = new Map(CTXS.flatMap((c) => toolCatalog(c)).map((x) => [x.id, x]));
-    expect([...all.values()].filter((x) => x.free).map((x) => x.id).sort()).toEqual(['avoid_emergency', 'emergency', 'family_sos', 'family_urgent', 'pp_support', 'recall_alerts', 'sources']);
+    expect([...all.values()].filter((x) => x.free).map((x) => x.id).sort()).toEqual(['avoid_emergency', 'childcare', 'emergency', 'family_sos', 'family_urgent', 'pp_support', 'recall_alerts', 'sources']);
   });
 
   it('chaque alias mène à un outil ou à un sous-accès existant, autorisé pour les mêmes profils, sur une route existante', () => {

@@ -148,10 +148,10 @@ describe('comparatif : chaque affirmation est vraie dans le code', () => {
     }
   });
 
-  it('les outils gratuits annoncés sont EXACTEMENT ceux du registre qui s’ouvrent sans Premium (7 outils)', () => {
+  it('les outils gratuits annoncés sont EXACTEMENT ceux du registre qui s’ouvrent sans Premium (8 outils, dont l’espace nounou)', () => {
     const announced = FREE_ITEMS.flatMap((i) => i.tools ?? []).sort();
     expect(announced).toEqual(freeTools());
-    expect(announced).toEqual(['avoid_emergency', 'emergency', 'family_sos', 'family_urgent', 'pp_support', 'recall_alerts', 'sources']);
+    expect(announced).toEqual(['avoid_emergency', 'childcare', 'emergency', 'family_sos', 'family_urgent', 'pp_support', 'recall_alerts', 'sources']);
   });
 
   it('ce que la page ne promet PAS sans abonnement reste bien réservé (apparence, suivi, communauté)', () => {

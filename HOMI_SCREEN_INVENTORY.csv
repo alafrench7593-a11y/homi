@@ -1,5 +1,5 @@
 type_ligne,zone,route,fichier,role,outils_catalogue,composants_partages,couleurs_en_dur,animated_rn_herite,statut_refonte,outil_id,outil_cle,libelle_fr,theme,type_outil,parcours_entree,parcours_saisie,parcours_resultat,parcours_historique,ecrans_refondus,commandes_adaptees,transition_implementee,parcours_verifie
-ecran,Accueil,/,src/app/(tabs)/index.tsx,liste,,Screen Button IconButton Banner ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/,src/app/(tabs)/index.tsx,liste,,Screen Button Banner ErrorView Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Auth / entrée,/,src/app/index.tsx,scène,,,0,non,fait,,,,,,,,,,,,,
 ecran,Admin,/admin,src/app/admin/index.tsx,réglage,,Screen Card Field Button Banner SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
 ecran,Admin,/admin/feedback,src/app/admin/feedback.tsx,réglage,,Screen Card Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -34,7 +34,7 @@ ecran,Bébé et enfant,/child/[id]/grow,src/app/child/[id]/grow.tsx,liste,kid_gr
 ecran,Bébé et enfant,/child/[id]/growth,src/app/child/[id]/growth.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/health-tracking,src/app/child/[id]/health-tracking.tsx,formulaire,kid_health,Screen Card Sheet Field Button Banner Chip Segmented Toggle ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/needs,src/app/child/[id]/needs.tsx,formulaire,kid_treatments,Screen Card Sheet Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Bébé et enfant,/child/[id]/school,src/app/child/[id]/school.tsx,liste,kid_school,Screen Card Field ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/school,src/app/child/[id]/school.tsx,liste,kid_school,Screen Card Field Button ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/steps,src/app/child/[id]/steps.tsx,liste,kid_steps,Screen Card Button Banner EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/vaccines,src/app/child/[id]/vaccines.tsx,formulaire,kid_vaccines,Screen Card GlassSurface Sheet Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/wellbeing,src/app/child/[id]/wellbeing.tsx,liste,kid_mood,Screen Card Field Button Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -48,6 +48,8 @@ ecran,Communauté,/community/events,src/app/community/events.tsx,liste,,Screen C
 ecran,Communauté,/community/following,src/app/community/following.tsx,liste,,Screen Card Chip SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Communauté,/community/group/[id],src/app/community/group/[id].tsx,détail,,Screen Card Sheet Field Button IconButton Banner SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Communauté,/community/groups,src/app/community/groups.tsx,liste,,Screen Card Sheet Field Button ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/messages,src/app/community/messages/index.tsx,liste,,Screen Card Button Banner Segmented EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Communauté,/community/messages/[id],src/app/community/messages/[id].tsx,détail,,Screen Sheet Button IconButton Banner Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Communauté,/community/new,src/app/community/new.tsx,formulaire,,Screen Card Field Button Banner Chip Segmented ErrorView Skeleton,4,non,à faire,,,,,,,,,,,,,
 ecran,Communauté,/community/notifications,src/app/community/notifications.tsx,liste,,Screen Card Button Chip ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Communauté,/community/post/[id],src/app/community/post/[id].tsx,détail,,Screen Card Sheet Field Button Banner Chip EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
@@ -109,10 +111,14 @@ ecran,Famille,/family/kid-routine/[id],src/app/family/kid-routine/[id].tsx,déta
 ecran,Famille,/family/kid-routines,src/app/family/kid-routines.tsx,liste,kid_routines,Screen Card Sheet Field Button IconButton Banner Chip SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/load,src/app/family/load.tsx,liste,mental_load,Screen Card Button Banner EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/me-time,src/app/family/me-time.tsx,formulaire,family_metime,Screen Card Field Button Segmented ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/member/[id],src/app/family/member/[id].tsx,détail,,Screen ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/missions,src/app/family/missions/index.tsx,liste,family_missions,Screen Button Segmented ListRow EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/missions/[id],src/app/family/missions/[id].tsx,formulaire,,Screen Field Button EmptyState ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/missions/done,src/app/family/missions/done.tsx,liste,,Screen Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/missions/new,src/app/family/missions/new.tsx,formulaire,,Screen Field Button Banner Chip Segmented,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/missions/responsibilities,src/app/family/missions/responsibilities.tsx,liste,,Screen ListRow ErrorView Skeleton Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/my-info,src/app/family/my-info.tsx,liste,,Screen Card Field Button SectionTitle,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/my-place,src/app/family/my-place.tsx,liste,family_my_place,Screen ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/nights,src/app/family/nights.tsx,formulaire,family_nights,Screen Card GlassSurface Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/notebook,src/app/family/notebook.tsx,liste,house_notebook,Screen Card Sheet Field Button Banner Chip ListRow SectionTitle EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/offduty,src/app/family/offduty.tsx,liste,offduty,Screen Card Field Button Banner Chip,0,non,à faire,,,,,,,,,,,,,
@@ -126,6 +132,10 @@ ecran,Famille,/family/stocks,src/app/family/stocks/index.tsx,détail,family_stoc
 ecran,Famille,/family/stocks/[id],src/app/family/stocks/[id].tsx,détail,,Screen Card Button Banner Chip EmptyState Skeleton Cascade DetailEnter,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/stocks/baby,src/app/family/stocks/baby.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/stocks/new,src/app/family/stocks/new.tsx,formulaire,,Screen,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/understand,src/app/family/understand/index.tsx,liste,couple_understand,Screen Field Button Chip ListRow SectionTitle Cascade,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/understand/compose,src/app/family/understand/compose.tsx,liste,,Screen Field Button Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/understand/inbox,src/app/family/understand/inbox.tsx,liste,,Screen Sheet Field Button IconButton Chip ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Famille,/family/understand/request,src/app/family/understand/request.tsx,liste,,Screen Field Button Banner ListRow,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family/urgent,src/app/family/urgent.tsx,liste,family_urgent,,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/feedback,src/app/feedback.tsx,liste,,Screen Card Field Button IconButton Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility,src/app/fertility/index.tsx,liste,ttc_cycle,Screen Card Button Banner SectionTitle ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
@@ -142,6 +152,15 @@ ecran,Cycle et fertilité,/fertility/pma,src/app/fertility/pma.tsx,formulaire,pm
 ecran,Cycle et fertilité,/fertility/reminders,src/app/fertility/reminders.tsx,réglage,ttc_reminders,Screen,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility/test/[kind],src/app/fertility/test/[kind].tsx,formulaire,,Screen Card Field Button Banner Chip Segmented SectionTitle,1,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility/understand,src/app/fertility/understand.tsx,liste,ttc_understand,Screen Card Banner Toggle SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde,src/app/garde/index.tsx,liste,childcare,Screen Card Field Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id],src/app/garde/[id]/index.tsx,détail,,Screen Card Button Banner EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id]/acces,src/app/garde/[id]/acces.tsx,liste,,Screen Card Field Button Banner ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id]/ajouter,src/app/garde/[id]/ajouter.tsx,formulaire,,Screen Card Sheet Field Button Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id]/journee,src/app/garde/[id]/journee.tsx,liste,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id]/messages,src/app/garde/[id]/messages.tsx,liste,,Screen Card Field Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id]/photo,src/app/garde/[id]/photo.tsx,liste,,Screen Card Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/[id]/photos,src/app/garde/[id]/photos.tsx,liste,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/rejoindre,src/app/garde/rejoindre.tsx,détail,,Screen Card Button,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/guide,src/app/guide/index.tsx,liste,guides,Screen ListRow EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/guide/[topic],src/app/guide/[topic].tsx,détail,,Screen Card Banner ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/health,src/app/(tabs)/health.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
@@ -230,7 +249,7 @@ ecran,Accueil,/story,src/app/story.tsx,scène,,Screen Button,0,non,à faire,,,,,
 ecran,Accueil,/summary,src/app/summary/index.tsx,résultat,summary,Screen Button Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/teeth,src/app/teeth.tsx,liste,kid_teeth,Screen Sheet Field Button Banner Chip ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/today,src/app/today.tsx,liste,,Screen Card Button Segmented,0,non,à faire,,,,,,,,,,,,,
-ecran,Accueil,/tools,src/app/(tabs)/tools.tsx,liste,,Screen Field Button IconButton ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/tools,src/app/(tabs)/tools.tsx,liste,,Screen Button ErrorView,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/tools/[category],src/app/tools/[category].tsx,détail,,Screen EmptyState VirtualList,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/track,src/app/(tabs)/track.tsx,liste,baby_daily,Screen Card Button Banner Segmented SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/track/[kind],src/app/track/[kind].tsx,formulaire,baby_breastfeed baby_bottle baby_diaper,Screen Field Button Banner Chip Segmented EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -285,6 +304,7 @@ outil,Grossesse et post-partum,/pregnancy/start,,,,,,,,ttc_start_pregnancy,ttc_s
 outil,Famille,/family/load,,,,,,,,mental_load,mental_load,Répartition de la charge mentale,relay,famille/partage/communauté,/family/load,,,,non,non,non,non
 outil,Famille,/family/domains,,,,,,,,family_domains,family_domains,Confier un domaine,tasks,famille/partage/communauté,/family/domains,,,,non,non,non,non
 outil,Famille,/family/couple,,,,,,,,couple_week,couple_week,Point de couple,relay,famille/partage/communauté,/family/couple,dans l’écran,,,non,non,non,non
+outil,Famille,/family/understand,,,,,,,,couple_understand,couple_understand,Se comprendre,relay,famille/partage/communauté,/family/understand,,,,non,non,non,non
 outil,Famille,/family/me-time,,,,,,,,family_metime,family_metime,Temps pour soi,metime,tâches/planning,/family/me-time,dans l’écran,,,non,non,non,non
 outil,Famille,/family/offduty,,,,,,,,offduty,offduty,Je décroche,metime,minuteur/session,/family/offduty,,,,non,non,non,non
 outil,Famille,/family/difficult,,,,,,,,family_difficult,family_difficult,Journée difficile,prevention,formulaire/assistant,/family/difficult,,,,non,non,non,non
@@ -292,6 +312,7 @@ outil,Famille,/family/solo,,,,,,,,solo_parent,solo_parent,Parent solo,resources,
 outil,Accueil,/calendar,,,,,,,,family_calendar,family_calendar,Agenda familial,calendar,tâches/planning,/calendar,feuille dans l’écran,,,non,non,non,non
 outil,Famille,/family,,,,,,,,family_tasks,family_tasks,Tâches du foyer,tasks,tâches/planning,/family,,,,non,non,non,non
 outil,Famille,/family/missions,,,,,,,,family_missions,family_missions,Missions familiales,tasks,autre,/family/missions,,,,non,non,non,non
+outil,Famille,/family/my-place,,,,,,,,family_my_place,family_my_place,Ma place dans la famille,tasks,tâches/planning,/family/my-place,,,,non,non,non,non
 outil,Famille,/family/routines,,,,,,,,family_routines,family_routines,Routines du foyer,tasks,tâches/planning,/family/routines,feuille dans l’écran,,,non,non,non,non
 outil,Famille,/family/brain-dump,,,,,,,,brain_dump,brain_dump,Vider ma tête,tasks,humeur/journal,/family/brain-dump,dans l’écran,,,non,non,non,non
 outil,Famille,/family/prep,,,,,,,,family_prep,family_prep,Échéances à préparer,calendar,tâches/planning,/family/prep,,,,non,non,non,non
@@ -357,6 +378,7 @@ outil,Bébé et enfant,/child/[id]/needs,,,,,,,,kid_treatments,kid_treatments,Tr
 outil,Bébé et enfant,/child/[id]/school,,,,,,,,kid_school,kid_school,École ou mode de garde,growth,formulaire/assistant,/child/[id]/school,,,,non,non,non,non
 outil,Bébé et enfant,/child/[id]/card,,,,,,,,kid_card,kid_card,Fiche à transmettre,health,formulaire/assistant,/child/[id]/card,,,,non,non,non,non
 outil,Famille,/family/custody,,,,,,,,custody,custody,Garde alternée,calendar,famille/partage/communauté,/family/custody,feuille dans l’écran,,,non,non,non,non
+outil,Autres,/garde,,,,,,,,childcare,childcare,Garde et nounou,growth,famille/partage/communauté,/garde,/garde/[id]/ajouter,/garde/[id] /garde/rejoindre,/garde/[id]/acces /garde/[id]/journee /garde/[id]/messages /garde/[id]/photo /garde/[id]/photos,non,non,non,non
 outil,Bébé et enfant,/child/[id]/steps,,,,,,,,kid_steps,kid_steps,Démarches de l’enfant,health,formulaire/assistant,/child/[id]/steps,,,,non,non,non,non
 outil,Famille,/family/kid-routines,,,,,,,,kid_routines,kid_routines,Routines en images,tasks,tâches/planning,/family/kid-routines,feuille dans l’écran,,,non,non,non,non
 outil,Famille,/family/review,,,,,,,,family_review,family_review,Bilan de la semaine,prevention,famille/partage/communauté,/family/review,,,,non,non,non,non

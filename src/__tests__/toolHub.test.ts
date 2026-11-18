@@ -12,7 +12,7 @@ import { accountEntries, categoryContent, favoriteTools, featuredTools, findEntr
 import { legacyKeyToToolId } from '@/lib/domain/toolLegacy';
 import { foldText, queryTokens, searchCatalog, wordMatch } from '@/lib/domain/toolSearch';
 import {
-  canonicalToolId, CATEGORY_TOOLS, FEATURED, REAL_TOOLS, resolveTool, SCOPES, TOOL_ALIASES, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProfiles, TOOLS, toolWordsKey,
+  canonicalToolId, CATEGORY_TOOLS, FEATURED, REAL_TOOLS, resolveTool, SCOPES, TOOL_ALIASES, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProblemKey, toolProfiles, TOOLS, toolWordsKey,
   type ScopeCtx,
 } from '@/lib/journeys/tools';
 
@@ -33,12 +33,13 @@ function everyTool(): CatalogTool[] {
 describe('registre : un besoin = une entrée', () => {
   beforeAll(() => setLocale('fr'));
 
-  it('123 outils dans 9 catégories, l’espace Communauté et 6 entrées de compte à part (144 entrées avant la refonte)', () => {
-    expect(REAL_TOOLS).toHaveLength(124);
-    expect(CATEGORY_TOOLS).toHaveLength(123);
-    expect(TOOLS.filter((d) => d.category === 'account').map((d) => d.id).sort()).toEqual(['home_settings', 'journeys', 'notifications', 'preg_edit', 'preg_end', 'settings']);
+  it('126 outils dans 9 catégories, l’espace Communauté et 7 entrées de compte à part (144 entrées avant la refonte)', () => {
+    // 21/11/2026 : « Garde et nounou », « Se comprendre », « Ma place dans la famille » ; « Mes informations » (compte)
+    expect(REAL_TOOLS).toHaveLength(127);
+    expect(CATEGORY_TOOLS).toHaveLength(126);
+    expect(TOOLS.filter((d) => d.category === 'account').map((d) => d.id).sort()).toEqual(['home_settings', 'journeys', 'my_info', 'notifications', 'preg_edit', 'preg_end', 'settings']);
     const counts = Object.fromEntries(TOOL_CATEGORIES.map((c) => [c, REAL_TOOLS.filter((d) => d.category === c).length]));
-    expect(counts).toEqual({ feeding: 12, sleep: 6, care: 12, health: 22, cycle: 29, pregnancy: 15, school: 4, couple: 10, family: 13 });
+    expect(counts).toEqual({ feeding: 12, sleep: 6, care: 12, health: 22, cycle: 29, pregnancy: 15, school: 5, couple: 11, family: 14 });
     expect(new Set(TOOLS.map((d) => d.id)).size).toBe(TOOLS.length);
   });
 
@@ -129,6 +130,28 @@ describe('chaque outil : nom, phrase, mots de recherche, pictogramme, profils, P
     setLocale('fr');
   });
 
+  it.each(LANGS)('%s : « Problème résolu » rédigé pour chaque entrée (une phrase sur la situation du parent, longueur bornée)', (lang) => {
+    setLocale(lang);
+    const bad: string[] = [];
+    const seen = new Map<string, string>();
+    for (const d of TOOLS) {
+      const p = tMaybe(toolProblemKey(d.id));
+      // une phrase : majuscule, point final, pas de seconde phrase, ni fragments de mots-clés (« · », « ; »)
+      if (!p || !/^[A-ZÀ-ÝÄÖÜ¿¡]/.test(p) || !/[.!?]$/.test(p) || /[.!?]\s+[A-ZÀ-Ý]/.test(p) || /[·;]/.test(p) || p.length < 30 || p.length > 130) bad.push(`${d.id}: « ${p} »`);
+      else if (seen.has(p)) bad.push(`${d.id}: même phrase que ${seen.get(p)}`);
+      else seen.set(p, d.id);
+    }
+    expect(bad).toEqual([]);
+    setLocale('fr');
+  });
+
+  it('« Problème résolu » : sobre (aucune promesse ni superlatif)', () => {
+    setLocale('fr');
+    const words = /\b(garanti|guérir|guérit|miracle|meilleur|parfait|idéal|révolutionnaire|incroyable|enfin)\b/i;
+    expect(TOOLS.map((d) => [d.id, tMaybe(toolProblemKey(d.id)) ?? '']).filter(([, p]) => words.test(p))).toEqual([]);
+    expect(tMaybe(toolProblemKey('family_nights'))).toBe('Vous vous levez toutes les nuits et l’autre parent ne sait pas quand prendre le relais.');
+  });
+
   it('pictogramme : un symbole existant et DISTINCT par outil (144 outils pour 66 icônes avant)', () => {
     const glyphs = TOOLS.map((d) => TOOL_GLYPHS[d.id]);
     expect(TOOLS.filter((d) => !TOOL_GLYPHS[d.id] || !MCI[TOOL_GLYPHS[d.id]]).map((d) => d.id)).toEqual([]);
@@ -145,7 +168,8 @@ describe('chaque outil : nom, phrase, mots de recherche, pictogramme, profils, P
     expect(toolProfiles(TOOL_BY_ID.appointments)).toHaveLength(6);
     const all = everyTool();
     const free = all.filter((x) => x.free).map((x) => x.id).sort();
-    expect(free).toEqual(['avoid_emergency', 'emergency', 'family_sos', 'family_urgent', 'pp_support', 'recall_alerts', 'sources']);
+    // « Garde et nounou » (/garde) : ouvert sans abonnement par src/lib/premium/access.ts (rejoindre une garde, « Mes gardes »)
+    expect(free).toEqual(['avoid_emergency', 'childcare', 'emergency', 'family_sos', 'family_urgent', 'pp_support', 'recall_alerts', 'sources']);
     expect(all.every((x) => x.profiles.length > 0 && x.href.startsWith('/'))).toBe(true);
   });
 });
@@ -243,6 +267,14 @@ describe('recherche par besoin', () => {
     ['sorties ce week-end', 'nearby'],
     ['VACCINS', 'kid_vaccines'],
     ['biberonn', 'baby_bottle'],
+    // outils ajoutés le 21/11/2026
+    ['ma femme est épuisée', 'couple_understand'],
+    ['dire à mon mari que je suis fatiguée', 'couple_understand'],
+    ['la nounou', 'childcare'],
+    ['photo de bébé chez la nounou', 'childcare'],
+    ['carnet de liaison', 'childcare'],
+    ['ma place dans la famille', 'family_my_place'],
+    ['missions terminées', 'family_missions'],
   ];
   it.each(CASES)('« %s » → %s', (q, expected) => {
     expect(ids(q, 3)).toContain(expected);

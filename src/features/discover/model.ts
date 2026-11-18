@@ -138,6 +138,7 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   kid_profile: { chapter: 'child', demo: { kind: 'measure', series: [68, 71, 73.5, 75], next: 76.5, unit: 'cm', decimals: 1 } },
   kid_album: { chapter: 'child', demo: { kind: 'journal', set: 'note' } },
   kid_school: { chapter: 'child', demo: { kind: 'journal', set: 'note' } },
+  childcare: { chapter: 'child', demo: { kind: 'journal', set: 'day' } },
   journal: { chapter: 'child', demo: { kind: 'journal', set: 'day' } },
   meal_menu: { chapter: 'child', demo: { kind: 'plan', set: 'meal', time: '12:30', inDays: 2 } },
   meal_pantry: { chapter: 'child', demo: { kind: 'journal', set: 'food' } },
@@ -187,6 +188,8 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   offduty: { chapter: 'family', demo: { kind: 'setting' } },
   house_notebook: { chapter: 'family', demo: { kind: 'journal', set: 'house' } },
   couple_week: { chapter: 'family', demo: { kind: 'journal', set: 'couple' } },
+  couple_understand: { chapter: 'family', demo: { kind: 'journal', set: 'couple' } },
+  family_my_place: { chapter: 'family', demo: { kind: 'tasks', set: 'home' } },
   custody: { chapter: 'family', demo: { kind: 'plan', set: 'custody', time: '18:00', inDays: 4 } },
   family_papers: { chapter: 'family', demo: { kind: 'tasks', set: 'papers' } },
 
@@ -213,6 +216,7 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   home_settings: { chapter: 'more', demo: { kind: 'setting' } },
   settings: { chapter: 'more', demo: { kind: 'setting' } },
   journeys: { chapter: 'more', demo: { kind: 'setting' } },
+  my_info: { chapter: 'more', demo: { kind: 'setting' } },
 };
 
 // ------------------------------------------------------------------ outils présentés

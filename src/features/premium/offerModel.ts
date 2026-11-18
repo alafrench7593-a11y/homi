@@ -29,6 +29,8 @@ export const FREE_ITEMS: FreeItem[] = [
   { key: 'sub3.free.settings', icon: 'settings', routes: ['/settings', '/settings/privacy', '/settings/language', '/settings/notifications', '/settings/family', '/settings/sync', '/settings/subscription'] },
   { key: 'sub3.free.data', icon: 'download', routes: ['/settings/privacy'] },
   { key: 'sub3.free.legal', icon: 'file-text', routes: ['/legal/terms', '/legal/privacy', '/feedback'] },
+  // Espace nounou (21/11/2026) : l'accueil « Mes gardes » / « Espace nounou de mes enfants » et le lien d'invitation
+  { key: 'sub3.free.childcare', icon: 'briefcase', routes: ['/garde', '/garde/rejoindre'], tools: ['childcare'] },
 ];
 
 export type PremiumGroupKey = 'me' | 'child' | 'family' | 'tools';

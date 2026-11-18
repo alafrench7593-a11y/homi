@@ -12,6 +12,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.free.settings': 'Einstellungen: Datenschutz, Sprache, Mitteilungen, Haushalt, Synchronisierung, Abo.',
   'sub3.free.data': 'Export all deiner Daten und Löschen des Kontos. Am Ende eines Abos wird nichts gelöscht.',
   'sub3.free.legal': 'Rechtliche Hinweise und „Feedback geben“.',
+  'sub3.free.childcare': 'Bereich Tagesmutter: die Tagesmutter Ihrer Kinder einladen oder einer Betreuung beitreten.',
   'sub3.free.rest': 'Die Tracking-Werkzeuge öffnen sich mit Premium.',
 
   'sub3.prem.title': 'HOMI Premium',

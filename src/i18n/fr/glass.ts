@@ -19,7 +19,6 @@ export const glass = {
   'glass.reorder.position': '{name}, position {n} sur {total}',
   'glass.suggest': 'Catégories suggérées',
   'glass.sheet.problem': 'Problème résolu',
-  'glass.sheet.quote': '« {q} »',
   'glass.care.entry': 'Garde et nounou',
   'glass.care.entrySub': 'Carnet de garde, photos et messages de la nounou',
 };

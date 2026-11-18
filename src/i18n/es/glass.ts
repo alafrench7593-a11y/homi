@@ -21,7 +21,6 @@ export const glass: Messages<typeof fr> = {
   'glass.reorder.position': '{name}, posición {n} de {total}',
   'glass.suggest': 'Categorías sugeridas',
   'glass.sheet.problem': 'Problema que resuelve',
-  'glass.sheet.quote': '«{q}»',
   'glass.care.entry': 'Cuidado y niñera',
   'glass.care.entrySub': 'Diario de cuidado, fotos y mensajes de la niñera',
 };

@@ -143,11 +143,13 @@ export const TOOL_GLYPHS: Record<string, string> = {
   kid_card: 'card-account-details',         // fiche à transmettre
   kid_routines: 'gesture-tap-button',       // routines en images
   custody: 'home-switch',                   // garde alternée : deux maisons
+  childcare: 'human-female-boy',            // garde et nounou : une adulte et un enfant
   // 8. Couple et foyer
   mental_load: 'scale-unbalanced',          // répartition de la charge mentale
   family_domains: 'account-arrow-right',    // confier un domaine
   'family_domains.responsibilities': 'account-check',
   couple_week: 'coffee',                    // point de couple
+  couple_understand: 'comment-text-multiple', // se comprendre : deux bulles de parole
   family_review: 'chart-box',               // bilan de la semaine
   family_metime: 'meditation',              // temps pour soi
   offduty: 'power-sleep',                   // je décroche
@@ -156,10 +158,13 @@ export const TOOL_GLYPHS: Record<string, string> = {
   family_sos: 'lifebuoy',                   // je craque : bouée
   solo_parent: 'human-female-girl',         // parent solo
   community: 'account-group',               // communauté
+  'community.messages': 'email-outline',    // messages privés de la communauté
   // 9. Organisation familiale
   family_calendar: 'calendar-month',        // agenda familial
   family_tasks: 'format-list-checks',       // tâches du foyer : liste cochée
   family_missions: 'send',                  // missions familiales : demande envoyée
+  'family_missions.done': 'check-all',      // missions terminées : double coche
+  family_my_place: 'home-account',          // ma place dans la famille : une personne dans la maison
   family_routines: 'repeat-variant',        // routines du foyer : répétition
   family_history: 'clipboard-text-clock',   // historique des tâches
   brain_dump: 'head-lightbulb',             // vider ma tête
@@ -181,6 +186,7 @@ export const TOOL_GLYPHS: Record<string, string> = {
   notifications: 'bell-badge',
   journeys: 'map-marker-path',
   home_settings: 'view-dashboard-edit',
+  my_info: 'card-account-details-outline',
   preg_edit: 'calendar-edit',
   preg_end: 'flag-checkered',
   // Catégories du centre d'outils

@@ -15,6 +15,7 @@ export const sub3 = {
   'sub3.free.settings': 'Réglages : confidentialité, langue, notifications, foyer, synchronisation, abonnement.',
   'sub3.free.data': 'Export de toutes vos données et suppression du compte. Rien n’est effacé à la fin d’un abonnement.',
   'sub3.free.legal': 'Mentions légales et « Donner mon avis ».',
+  'sub3.free.childcare': 'Espace nounou : inviter la nounou de vos enfants ou rejoindre une garde.',
   'sub3.free.rest': 'Les outils de suivi s’ouvrent avec Premium.',
 
   'sub3.prem.title': 'HOMI Premium',
