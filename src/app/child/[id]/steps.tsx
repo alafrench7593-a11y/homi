@@ -18,6 +18,7 @@ import { isPremiumError } from '@/lib/data/hooks-family';
 import type { Checklist } from '@/lib/types';
 import { ChecklistDetail } from '@/app/lists';
 import { t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { useTapShield } from '@/features/tapShield';
 
 const STEP_KEYS = ['doctor', 'school', 'observe', 'assessment', 'pco', 'adjust', 'mdph', 'association', 'relay', 'documents'] as const;
@@ -35,7 +36,7 @@ export default function ChildSteps() {
   const [limit, setLimit] = useState(false);
   // La liste créée n'apparaît qu'une fois relue : un double appui sur « Créer » n'en crée pas une seconde
   const { arm, guard } = useTapShield();
-  if (!child) return <Screen back title={tr('tool.kid_steps')}>{childLoading ? <Skeleton rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
+  if (!child) return <Screen back title={toolName('kid_steps')}>{childLoading ? <Skeleton rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
   const title = stepsTitle(child.first_name);
   const list = (listsQ.data ?? []).find((l) => l.kind === 'custom' && l.title === title) ?? null;
 
@@ -55,7 +56,7 @@ export default function ChildSteps() {
   }
 
   return (
-    <Screen back title={tr('tool.kid_steps')} subtitle={child.first_name}>
+    <Screen back title={toolName('kid_steps')} subtitle={child.first_name}>
       <Text muted>{tr('ks.intro')}</Text>
       <Banner tone="info">{tr('ks.disclaimer')}</Banner>
       {listsQ.isLoading && !listsQ.data ? <Skeleton rows={4} /> : list ? (

@@ -14,6 +14,7 @@ import { useChildren, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { useHouseNotes, type HouseNote, type NoteSection } from '@/lib/data/hooks-mental';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
 
@@ -79,7 +80,7 @@ export default function Notebook() {
   const [filter, setFilter] = useState<NoteSection | null>(null);
   const notes = (q.data ?? []).filter((n) => !filter || n.section === filter);
   return (
-    <Screen back title={tr('tool.house_notebook')} subtitle={tr('tool.house_notebook.sub')}
+    <Screen back title={toolName('house_notebook')} subtitle={toolBlurb('house_notebook')}
       action={{ label: tr('cm.nb.new'), icon: 'plus', onPress: () => { setEditing(undefined); setOpen(true); }, testID: 'nb-new' }}>
       <Text muted>{tr('cm.nb.intro')}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>

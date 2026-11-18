@@ -245,12 +245,6 @@ export const solo = {
   'sol.v.veggies': 'Faire manger plus de fruits et légumes à votre enfant',
 
   'sol.load.title': 'Alléger ma charge mentale',
-  'sol.load.dump': 'Tout ce que j’ai en tête, rangé en 1 minute',
-  'sol.load.prep': 'Rentrée, anniversaires, papiers : préparé à l’avance',
-  'sol.load.papers': 'Papiers en photo, dossiers CAF et école prêts',
-  'sol.load.notebook': 'Ce que la personne qui garde doit savoir',
-  'sol.load.offduty': 'Quelques heures pour souffler, une personne de mon cercle prend le relais',
-  'sol.load.exhausted': 'Faire le point sur ma fatigue',
   'sol.load.permission': 'Demander de l’aide n’est pas un échec : c’est une façon de prendre soin de vos enfants, en prenant soin de vous.',
   'sol.urgent': 'Idées noires, envie de tout lâcher, peur de faire du mal à votre enfant ou à vous-même : appelez le 3114 (24 h/24, gratuit) ou le 15.',
 

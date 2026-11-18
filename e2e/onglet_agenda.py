@@ -29,10 +29,10 @@ with sync_playwright() as p:
     # Famille → accès direct « Agenda »
     tid(pg, 'tab-household').click(); pg.wait_for_timeout(2000)
     R['famille_ouverte'] = pg.url.endswith('/household') and sel(pg, 'household')
-    R['acces_direct_agenda'] = has(pg, 'hub-entry-agenda')
-    tid(pg, 'hub-entry-agenda').click(); pg.wait_for_timeout(2500)
+    R['acces_direct_agenda'] = has(pg, 'tool-row-press-family_calendar')
+    tid(pg, 'tool-row-press-family_calendar').click(); pg.wait_for_timeout(2500)
     body = pg.inner_text('body')
-    R['ouvre_agenda'] = pg.url.endswith('/agenda') and 'Agenda' in body
+    R['ouvre_agenda'] = pg.url.endswith('/calendar') and 'Agenda' in body
     R['onglet_famille_reste_allume'] = sel(pg, 'household')
     R['bouton_retour'] = pg.get_by_role('button', name='Retour').filter(visible=True).count() >= 1
     R['creation_evenement'] = has(pg, 'calendar-add')

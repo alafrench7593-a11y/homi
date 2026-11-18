@@ -239,6 +239,23 @@ de séparation, aucune capsule flottante, aucun verre. Onglet actif : icône cor
   indicateur de pages ; `ProfileSwipe` : glisser à gauche / à droite change de profil (bord gauche et carrousels exclus).
 - Écrans d'onglet : `TAB_SCREEN_INSET` en bas.
 
+### Outils : une seule source (18/11/2026)
+
+Le registre `src/lib/journeys/tools.ts` est LA source de vérité d'un outil : identifiant stable, catégorie principale
+(9 catégories), raccourcis contextuels (`also`), profils, route ; son nom, sa phrase et ses mots de recherche sont dans
+`src/i18n/<langue>/toolhub.ts` (`th.<id>`). Aucun écran ne recopie un nom, une icône ou une route d'outil.
+
+- **`ToolLinks`** (`features/toolHub/ToolLinks.tsx`) : tout menu qui propose des outils (Mon cycle, Ma grossesse, Moi
+  aussi, suivi du jour, profil, onglets Moi / Enfant / Famille) passe une liste d'identifiants (`ids`) ou une
+  catégorie ; il ne choisit que le CHOIX et l'ORDRE. La rangée est `ToolRow`, la même que dans « Mes outils »
+  (pictogramme, nom, description entière jusqu'à 4 lignes, état réel éventuel, favori).
+- **Accès nommé** à la catégorie complète (`allOf` : « Tous les outils de sommeil », « Explorer les outils de santé »)
+  → `/tools/<catégorie>`. Jamais « Voir les N autres », jamais de liste repliée.
+- **Nom d'un outil dans un texte ou un titre d'écran** : `toolName(id)` / `toolBlurb(id)` (`lib/domain/toolCatalog`).
+- **Action propre à un écran** (réglage, sous-page, saisie du jour) : bouton ou puce, pas une rangée d'outil.
+- **Communauté** : un espace à part (catégorie `community`, hors des 9), bloc distinct en bas de « Mes outils ».
+- Descriptions : 100 caractères au plus dans chaque langue (test) ; garde-fous `toolSingleSource.test.ts`.
+
 ### Pastille « Démo » (`DemoBar`, `demoInset.ts`)
 
 Petite pastille discrète (28 px, surface + liseré, point corail, « Démo ») + **« Quitter la démo »** en lien corail,

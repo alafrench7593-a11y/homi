@@ -15,6 +15,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { parseBrainDump, taskCategoryOf, type DumpItem, type DumpKind } from '@/lib/domain/mentalLoad';
 import { todayISO } from '@/lib/domain/dates';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 
 const KINDS: DumpKind[] = ['task', 'appointment', 'event', 'shopping', 'admin'];
@@ -58,7 +59,7 @@ export default function BrainDump() {
   }
 
   return (
-    <Screen back title={tr('tool.brain_dump')} subtitle={tr('tool.brain_dump.sub')}>
+    <Screen back title={toolName('brain_dump')} subtitle={toolBlurb('brain_dump')}>
       <Text muted>{tr('cm.dump.intro')}</Text>
       <Card>
         <Field label={tr('cm.dump.field')} value={text} onChangeText={setText} multiline maxLength={3000} placeholder={tr('cm.dump.ph')} testID="dump-text" />
@@ -90,8 +91,8 @@ export default function BrainDump() {
       ) : null}
       <Banner tone="info" icon="lock">{tr('cm.dump.private')}</Banner>
       <Row wrap style={{ gap: spacing.xs }}>
-        <Button label={tr('tool.family_domains')} size="sm" variant="secondary" icon="users" onPress={() => router.push('/family/domains')} />
-        <Button label={tr('tool.family_tasks')} size="sm" variant="ghost" icon="check-square" onPress={() => router.push('/family')} />
+        <Button label={toolName('family_domains')} size="sm" variant="secondary" icon="users" onPress={() => router.push('/family/domains')} />
+        <Button label={toolName('family_tasks')} size="sm" variant="ghost" icon="check-square" onPress={() => router.push('/family')} />
       </Row>
     </Screen>
   );

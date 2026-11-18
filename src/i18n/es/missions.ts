@@ -7,8 +7,6 @@ export const missions: Messages<typeof fr> = {
   'tool.family_responsibilities': 'Responsabilidades',
   'tool.family_responsibilities.sub': 'Quién se ocupa de cada ámbito del hogar',
   'dock.q.mission': 'Nueva misión',
-  'nav.hub.missions': 'Misiones',
-  'nav.hub.missionsSub': 'Peticiones recibidas y enviadas en el hogar',
 
   'mis.title': 'Misiones',
   'mis.sub': 'Peticiones prácticas entre vosotros, sin insistir ni mensajes',

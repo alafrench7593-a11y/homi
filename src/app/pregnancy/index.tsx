@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/theme/ThemeProvider';
-import { Banner, Button, Card, Chip, Field, ListGroup, ListRow, Row, Text, type IconName } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, ListGroup, ListRow, Row, Text } from '@/components/ui';
 import { WeekFigures, WeekHero, WeekPicker, WeekProgress } from '@/features/pregnancyWeek/WeekParts';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
@@ -22,6 +22,7 @@ import { FETAL_SIZE_SOURCE, weekInfo } from '@/lib/domain/fetalWeeks';
 import type { ExpectedBaby } from '@/lib/types';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, formatDate, getLocale } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 
 // HOMI : lilas d'abord (un seul bébé), puis champagne et mauve pour les jumeaux et triplés
 const HUES = ['lavande', 'or', 'rose'] as const;
@@ -39,29 +40,12 @@ const countdownText = (days: number) => {
 };
 
 
-type Rubric = { key: string; icon: IconName; title: string; subtitle?: string; to: string | { pathname: string; params?: Record<string, string> } };
-/** Les rubriques de « Ma grossesse », dans l'ordre demandé ; chacune ouvre un écran existant (v5 : « Cette semaine »,
- *  qui ramenait en haut de ce même écran, est retirée). */
-function rubrics(showWeight: boolean, docs: number): Rubric[] {
-  return [
-    { key: 'body', icon: 'heart', title: tr('u2.preg.r_body'), subtitle: tr('u2.preg.r_body_sub'), to: { pathname: '/library', params: { cat: 'grossesse' } } },
-    ...(showWeight ? [{ key: 'weight', icon: 'trending-up', title: tr('u2.preg.r_weight'), subtitle: tr('u2.preg.r_weight_sub'), to: '/pregnancy/weight' } as Rubric] : []),
-    { key: 'sleep', icon: 'moon', title: tr('u2.preg.r_sleep'), subtitle: tr('u2.preg.r_sleep_sub'), to: '/me/sleep' },
-    { key: 'mood', icon: 'smile', title: tr('u2.preg.r_mood'), subtitle: tr('u2.preg.r_mood_sub'), to: '/me/mood' },
-    { key: 'feel', icon: 'feather', title: tr('u2.preg.r_feel'), subtitle: tr('u2.preg.r_feel_sub'), to: '/pregnancy/feel' },
-    { key: 'meals', icon: 'coffee', title: tr('u2.preg.r_eat'), subtitle: tr('u2.preg.r_eat_sub'), to: '/pregnancy/eat' },
-    { key: 'appointments', icon: 'calendar', title: tr('u2.preg.r_appts'), to: { pathname: '/appointments', params: { for: 'pregnancy' } } },
-    { key: 'calendar', icon: 'clipboard', title: tr('u2.preg.r_cal'), subtitle: tr('u2.preg.r_cal_sub'), to: '/pregnancy/calendar' },
-    { key: 'docs', icon: 'folder', title: tr('u2.preg.r_docs'), subtitle: docs ? tr('u2.preg.r_docs_count', { count: docs }) : undefined, to: '/documents' },
-    { key: 'birth', icon: 'book-open', title: tr('u2.preg.r_birth'), subtitle: tr('u2.preg.r_birth_sub'), to: { pathname: '/library', params: { cat: 'accouchement' } } },
-    { key: 'lists', icon: 'check-square', title: tr('u2.preg.r_lists'), subtitle: tr('u2.preg.r_lists_sub'), to: '/lists' },
-    { key: 'names', icon: 'type', title: tr('u2.preg.r_names'), to: '/names' },
-    { key: 'articles', icon: 'book', title: tr('u2.preg.r_articles'), to: { pathname: '/library', params: { journey: 'pregnant' } } },
-    { key: 'assistant', icon: 'message-circle', title: tr('u2.preg.r_ai'), subtitle: tr('u2.preg.r_ai_sub'), to: '/(tabs)/ask' },
-    { key: 'community', icon: 'users', title: tr('u2.preg.r_community'), to: '/(tabs)/community' },
-    { key: 'supplement', icon: 'bell', title: tr('u2.preg.r_supp'), subtitle: tr('u2.preg.r_supp_sub'), to: { pathname: '/settings/reminders', params: { new: 'supplement' } } },
-  ];
-}
+/**
+ * Raccourcis de « Ma grossesse », dans l'ordre demandé : des identifiants du registre central uniquement. Nom,
+ * description, pictogramme, destination, accès et favori viennent du catalogue (`ToolLinks`).
+ */
+const PREGNANCY_SHORTCUTS = ['preg_weight', 'preg_feel', 'preg_eat', 'preg_calendar', 'appointments', 'preg_lists', 'preg_names', 'sleep', 'mood', 'documents',
+  'library.pregnancy', 'library.birth', 'ask'] as const;
 
 function BabyNotes({ baby }: { baby: ExpectedBaby }) {
   const toast = useToast();
@@ -103,7 +87,6 @@ export default function PregnancyUniverse() {
   const [selected, setSelected] = useState(0);
   const simple = useUiStore((st) => st.simpleMode);
   const { setSubject } = useActiveSubject();
-  const [allRubrics, setAllRubrics] = useState(false);
   const { data: appts } = useAppointments({ upcomingOnly: true });
   const { data: docs } = useRows<{ id: string }>(['documents', 'preg', pregnancy?.id ?? ''], pregnancy ? { table: 'documents', filters: [eq('pregnancy_id', pregnancy.id)] } : null);
 
@@ -126,11 +109,10 @@ export default function PregnancyUniverse() {
   const multiple = pregnancy.multiplicity !== 'single' && pregnancy.multiplicity !== 'unknown';
   const dueDate = formatDate(pregnancy.due_date, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
   const named = babies?.[selected]?.nickname;
-  const go = (to: Rubric['to']) => { setSubject({ type: 'pregnancy', id: pregnancy.id }); router.push(to as never); };
+  const go = (to: string) => { setSubject({ type: 'pregnancy', id: pregnancy.id }); router.push(to as never); };
 
   const nextAppt = (appts ?? []).filter((x) => x.pregnancy_id === pregnancy.id && Date.parse(x.starts_at) >= Date.now()).sort((x, y) => x.starts_at.localeCompare(y.starts_at))[0];
-  const list = rubrics(!profile?.hide_weight_module, docs?.length ?? 0);
-  const shown = simple && !allRubrics ? list.slice(0, 6) : list;
+  const subject = { type: 'pregnancy' as const, id: pregnancy.id };
 
   return (
     <Screen back
@@ -174,11 +156,13 @@ export default function PregnancyUniverse() {
       <Banner tone="warning">{tr('u2.preg.warning')}</Banner>
 
       <Text variant="heading" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs, marginBottom: -spacing.xs }}>{tr('u2.preg.my_pregnancy')}</Text>
-      <ListGroup testID="preg-rubrics">
-        {shown.map((r) => <ListRow key={r.key} testID={`preg-rubric-${r.key}`} icon={r.icon} title={r.title} subtitle={r.subtitle} onPress={() => go(r.to)} />)}
-        <ListRow key="edit" icon="edit-3" title={tr('u2.preg.edit')} subtitle={tr('u2.preg.edit_sub')} onPress={() => router.push('/pregnancy/edit')} testID="preg-rubric-edit" />
-      </ListGroup>
-      {simple && list.length > 6 ? <Button label={allRubrics ? tr('u2.preg.see_less') : tr('u2.preg.see_more', { count: list.length - 6 })} variant="ghost" size="sm" onPress={() => setAllRubrics((v) => !v)} testID="preg-rubrics-more" /> : null}
+      <ToolLinks ids={PREGNANCY_SHORTCUTS} subject={subject} max={simple ? 7 : undefined} filter={(x) => x.id !== 'preg_weight' || !profile?.hide_weight_module}
+        status={{ documents: docs?.length ? tr('u2.preg.r_docs_count', { count: docs.length }) : undefined }} allOf="pregnancy" testID="preg-rubrics" />
+      {/* Actions propres à cet écran : rappel de complément, modification de la grossesse (pas des outils) */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+        <Chip icon="bell" label={tr('u2.preg.r_supp')} onPress={() => router.push({ pathname: '/settings/reminders', params: { new: 'supplement' } })} testID="preg-action-supplement" />
+        <Chip icon="edit-3" label={tr('u2.preg.edit')} onPress={() => router.push('/pregnancy/edit')} testID="preg-rubric-edit" />
+      </View>
 
       {multiple && (
         <>

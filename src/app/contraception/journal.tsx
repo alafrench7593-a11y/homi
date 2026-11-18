@@ -20,6 +20,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { todayISO } from '@/lib/domain/dates';
 import { exportTextFile } from '@/lib/exportData';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
 
@@ -66,7 +67,7 @@ export default function ContraceptionJournal() {
   }
 
   return (
-    <Screen back title={tr('tool.contraception_journal')} subtitle={tr('tool.contraception_journal.sub')}
+    <Screen back title={toolName('contraception_journal')} subtitle={toolBlurb('contraception_journal')}
       action={{ label: tr('cj.add'), icon: 'plus', onPress: guard(() => void add()), testID: 'cj-save', disabled: busy }}>
       <Text muted>{tr('cj.intro')}</Text>
       <TodaySummary title={tr('cj.summary')} items={[

@@ -2,26 +2,31 @@
  * Une catégorie du centre d'outils : la liste de ses outils (liste virtualisée).
  *  1. les outils du profil affiché ;
  *  2. ceux des autres profils du foyer (ouvrir l'un d'eux sélectionne d'abord ce profil) ;
- *  3. « À lire » : les guides de lecture rangés dans cette catégorie.
+ *  3. « Aussi utile ici » : raccourcis vers des outils dont la catégorie principale est ailleurs (même identifiant,
+ *     même favori) ;
+ *  4. « À lire » : les guides de lecture rangés dans cette catégorie.
+ * Un ancien identifiant de catégorie (« growth ») ouvre la catégorie actuelle ; « community » n'est pas une catégorie
+ * d'outils : le lien mène à l'espace Communauté.
  * « account » (Mon compte et réglages) liste les réglages : ce ne sont pas des outils.
  * Une catégorie sans outil pour les profils du foyer l'explique et propose de modifier le parcours.
  */
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, VirtualList } from '@/components/States';
 import { Text } from '@/components/ui';
 import { ToolRow } from '@/features/toolHub/ToolRow';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
-import { categoryContent, categoryLead, categoryTitle, isToolCategory } from '@/lib/domain/toolCatalog';
+import { categoryContent, categoryFromParam, categoryLead, categoryTitle, isToolCategory } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 type Item = { kind: 'header'; key: string; title: string } | { kind: 'tool'; key: string; entry: ToolEntry; first: boolean };
 
 export default function ToolCategoryScreen() {
-  const { category } = useLocalSearchParams<{ category: string }>();
+  const { category: param } = useLocalSearchParams<{ category: string }>();
+  const category = categoryFromParam(param) ?? param;
   const hub = useToolHub();
   const valid = isToolCategory(category);
 
@@ -50,10 +55,14 @@ export default function ToolCategoryScreen() {
     const seen = new Set<string>();
     const readings = hub.all.flatMap((e) => categoryContent([e.tool], category).readings.map((tool) => ({ ...e, tool })))
       .filter((e) => !seen.has(e.tool.id) && (seen.add(e.tool.id), true));
+    // raccourcis contextuels : outils rangés ailleurs, proposés ici aussi (une entrée par outil, profil affiché d'abord)
+    const shortcuts = hub.all.filter((e) => e.tool.category !== category && (e.tool.also as string[]).includes(category));
+    push(tr('th.ui.shortcuts'), 'also', shortcuts);
     push(tr('th.ui.readings'), 'read', readings);
     return out;
   }, [valid, category, hub.all, hub.account]);
 
+  if (category === 'community') return <Redirect href={'/(tabs)/community' as never} />;
   if (!valid) {
     return (
       <Screen back title={tr('th.ui.title')} tool={false}>

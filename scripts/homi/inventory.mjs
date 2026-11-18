@@ -137,6 +137,8 @@ Object.assign(KEY_TYPE, {
   baby_breastfeed: 'minuteur/session', baby_bottle_timer: 'minuteur/session',
   meal_menu: 'tâches/planning', meal_pantry: 'tâches/planning', summary: 'famille/partage/communauté',
   sleep_help: 'formulaire/assistant', kid_school: 'formulaire/assistant', kid_album: 'humeur/journal', me_diary: 'humeur/journal',
+  // Reclassement du 18/11/2026 : écrans du cycle et du post-partum entrés au registre
+  cycle_advice: 'formulaire/assistant', cycle_month: 'suivi/mesures', cycle_export: 'suivi/mesures', pp_history: 'suivi/mesures',
 });
 const toolType = (key) => KEY_TYPE[key] ?? 'autre';
 

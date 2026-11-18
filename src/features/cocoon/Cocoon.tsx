@@ -48,6 +48,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { useDockAction } from '@/components/dockAction';
 import { fonts, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { toISODate } from '@/lib/domain/dates';
 import { CATEGORY_GLOW, CATEGORY_INK, HOMI, HOMI_FILL, HOMI_WASH } from '@/features/homiColors';
 
@@ -321,8 +322,8 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
         <Button label={tr('coc.allDay')} icon="list" variant="secondary" full onPress={() => router.push('/(tabs)/track')} testID="cocoon-all-day" />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs }}>
           <SmallLink icon="smile" label={tr('coc.link.profile', { name: child.first_name })} onPress={() => router.push(`/child/${id}`)} />
-          <SmallLink icon="trending-up" label={tr('tool.kid_growth')} onPress={() => router.push(`/child/${id}/growth`)} />
-          <SmallLink icon="compass" label={tr('tool.kid_needs')} onPress={() => router.push(`/child/${id}/needs` as never)} testID="home-needs" />
+          <SmallLink icon="trending-up" label={toolName('kid_growth')} onPress={() => router.push(`/child/${id}/growth`)} />
+          <SmallLink icon="compass" label={toolName('kid_needs')} onPress={() => router.push(`/child/${id}/needs` as never)} testID="home-needs" />
         </View>
       </View>
     </View>

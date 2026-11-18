@@ -26,6 +26,7 @@ import { toFrDate } from '@/lib/validation';
 import { exportTextFile } from '@/lib/exportData';
 import { callNumber } from '@/lib/links';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 
 const KINDS: PmaKind[] = ['iiu', 'fiv', 'icsi', 'tec', 'stimulation', 'other'];
@@ -191,10 +192,10 @@ export default function PmaTracker() {
     try { await exportTextFile(lines.join('\n'), 'suivi-pma.txt', 'text/plain'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (protocolsQ.isLoading) return <Screen back title={tr('tool.pma_tracker')}><Loading /></Screen>;
+  if (protocolsQ.isLoading) return <Screen back title={toolName('pma_tracker')}><Loading /></Screen>;
 
   return (
-    <Screen back title={tr('tool.pma_tracker')} subtitle={tr('tool.pma_tracker.sub')}>
+    <Screen back title={toolName('pma_tracker')} subtitle={toolBlurb('pma_tracker')}>
       <Text muted>{tr('pma.intro')}</Text>
       <Banner tone="warning" icon="phone">{tr('pma.alert')}</Banner>
       {!current ? (

@@ -21,6 +21,7 @@ import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 const PATTERN_KEYS: CustodyPattern[] = ['week', '2255', '223', 'custom'];
 const hhmm = (v: string | null) => (v ? v.slice(0, 5) : '');
@@ -175,14 +176,14 @@ export default function Custody() {
     try { await backend.remove('custody_exceptions', [eq('id', id)]); inv('custody_exceptions'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (plansQ.isLoading) return <Screen back title={tr('tool.custody')}><Loading /></Screen>;
+  if (plansQ.isLoading) return <Screen back title={toolName('custody')}><Loading /></Screen>;
   const nowSide = plan ? sideOn(plan, today, ex) : null;
   const next = plan ? nextHandover(plan, addDays(today, 1), ex) : null;
   const todayHandover = plan ? days.find((d) => d.date === today)?.handover : false;
   const share = plan ? shareOver(plan, start, 28, ex) : null;
 
   return (
-    <Screen back title={tr('tool.custody')} subtitle={tr('tool.custody.sub')}
+    <Screen back title={toolName('custody')} subtitle={toolBlurb('custody')}
       action={plan ? { label: tr('cu.edit'), icon: 'edit-2', onPress: () => { setEditing(plan); setEditOpen(true); }, testID: 'cu-edit' } : undefined}>
       {!plan ? (
         <>

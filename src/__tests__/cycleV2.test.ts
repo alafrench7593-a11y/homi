@@ -108,7 +108,8 @@ describe('libellés du cycle', () => {
     ...['insufficient', 'low', 'moderate'].map((k) => `cy.reliability.${k}`), ...['negative', 'positive', 'peak', 'invalid', 'faint'].map((k) => `cy.test.r.${k}`),
     ...REPORT_PARTS.map((p) => `cy.ex.part.${p}`), ...['3', '6', '12', 'all'].map((r) => `cy.ex.range.${r}`),
     ...['period', 'estimate', 'fertile', 'symptom', 'discharge', 'note'].map((k) => `cy.cal.legend.${k}`), 'cy.sym.int1', 'cy.sym.int2', 'cy.sym.int3',
-    ...['calendar', 'symptoms', 'discharge', 'guides', 'bleeding', 'journal', 'stats', 'fertility', 'reminders', 'export', 'privacy', 'advice', 'pain', 'intimacy'].flatMap((k) => [`cy.nav.${k}`, `cy.nav.${k}.hint`]),
+    // les rubriques du menu sont rendues depuis le registre des outils (toolSingleSource.test.ts) ; restent les actions de l'écran
+    'cy.nav.share', 'cy.nav.privacy', 'cy.nav.emergency', 'cy.overview.tools',
     ...['yes', 'no', 'unsure', 'prefer_not'].map((k) => `cy.ans.${k}`),
     ...['vaginal', 'other', 'prefer_not'].map((k) => `cy.sex.kind.${k}`),
     ...['none', 'broke', 'slipped', 'other', 'unsure'].map((k) => `cy.sex.condom_incident.${k}`),

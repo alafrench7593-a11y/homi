@@ -31,6 +31,4 @@ export const diary: Messages<typeof fr> = {
   'dy.deleted': 'Pagina eliminata.',
   'dy.pageA11y': 'Pagina del {date}, umore: {mood}',
   'dy.listErr': 'Non è stato possibile caricare il tuo diario',
-  'dy.link': 'Il mio diario',
-  'dy.linkSub': 'Le mie pagine e i miei ricordi, solo per me',
 };

@@ -16,6 +16,7 @@ import { DOMAINS, type DomainKey } from '@/lib/domain/mentalLoad';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { DOMAIN_ICON } from '@/features/missions/domainIcons';
 
 export { DOMAIN_ICON };
@@ -32,7 +33,7 @@ export default function Domains() {
     try { await set.mutateAsync({ key, owner_id: id }); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   return (
-    <Screen back title={tr('tool.family_domains')} subtitle={tr('tool.family_domains.sub')}>
+    <Screen back title={toolName('family_domains')} subtitle={toolBlurb('family_domains')}>
       <Text muted>{tr('cm.dom.intro')}</Text>
       {people.length < 2 ? <Banner tone="info" icon="user-plus" action={<Button label={tr('cm.dom.invite')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/family')} />}>{tr('cm.dom.alone')}</Banner> : null}
       {counts.length ? (
@@ -56,7 +57,7 @@ export default function Domains() {
           {owner.get(k) ? <Text variant="caption" muted>{tr('cm.dom.owner', { person: labelOf(owner.get(k)) })}</Text> : null}
         </Card>
       ))}
-      <Button label={tr('tool.mental_load')} icon="pie-chart" variant="secondary" onPress={() => router.push('/family/load')} />
+      <Button label={toolName('mental_load')} icon="pie-chart" variant="secondary" onPress={() => router.push('/family/load')} />
     </Screen>
   );
 }

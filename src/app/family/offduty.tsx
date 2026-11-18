@@ -17,6 +17,7 @@ import { openLink } from '@/lib/links';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 import { formatTime, t as tr } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 const HOURS = [1, 2, 3, 4, 8, 12];
 
@@ -51,7 +52,7 @@ export default function OffDuty() {
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   return (
-    <Screen back title={tr('tool.offduty')} subtitle={tr('tool.offduty.sub')}>
+    <Screen back title={toolName('offduty')} subtitle={toolBlurb('offduty')}>
       {theirs.map((p) => (
         <Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner>
       ))}

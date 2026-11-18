@@ -25,18 +25,20 @@ export function pickOtherTools(catalog: CatalogTool[], shown: CatalogTool[], alr
   return catalog.filter((x) => !x.urgent && !already.has(x.id) && !(x.universal && shownKeys.has(x.key)));
 }
 
-export function useOtherProfileTools(shown: CatalogTool[]): ProfileTools[] {
+export interface HouseholdProfile { key: string; title: string; subject: ActiveSubject; ctx: ScopeCtx; /** Profil affiché. */ active: boolean }
+
+/** Tous les profils du foyer (chaque enfant, la grossesse, moi, la famille) avec leur contexte d'outils. */
+export function useHouseholdProfiles(): HouseholdProfile[] {
   const { subject } = useActiveSubject();
   const js = useJourneyState();
   const pregnancy = useActivePregnancy();
   const { data: children } = useTrackedChildren();
   return useMemo(() => {
-    const already = new Set(shown.map((x) => x.id));
     const bodyType = js.body?.type;
     const meScope: Scope = bodyType === 'avoid' || bodyType === 'ttc' || bodyType === 'cycle' ? bodyType : 'none';
     const babyId = children?.find((c) => js.childType(c.id) === 'baby')?.id ?? null;
     const base = { pregnancyId: pregnancy?.id ?? null, babyId, postpartum: !!js.postpartum };
-    const profiles: { key: string; title: string; subject: ActiveSubject; ctx: ScopeCtx }[] = [];
+    const profiles: Omit<HouseholdProfile, 'active'>[] = [];
     for (const c of children ?? []) {
       const type = js.childType(c.id);
       if (type) profiles.push({ key: `child-${c.id}`, title: tr('l3.alltools.for_child', { name: c.first_name }), subject: { type: 'child', id: c.id }, ctx: { ...base, scope: type, childId: c.id } });
@@ -44,13 +46,21 @@ export function useOtherProfileTools(shown: CatalogTool[]): ProfileTools[] {
     if (pregnancy) profiles.push({ key: 'pregnancy', title: tr('l3.alltools.for_pregnancy'), subject: { type: 'pregnancy', id: pregnancy.id }, ctx: { ...base, scope: 'pregnancy' } });
     profiles.push({ key: 'me', title: tr('l3.alltools.for_me'), subject: { type: 'me' }, ctx: { ...base, scope: meScope } });
     if ((children?.length ?? 0) + (pregnancy ? 1 : 0) > 1) profiles.push({ key: 'family', title: tr('l3.alltools.for_family'), subject: { type: 'family' }, ctx: { ...base, scope: 'family' } });
+    return profiles.map((p) => ({ ...p, active: sameSubject(p.subject, subject) }));
+  }, [subject, js, pregnancy, children]);
+}
+
+export function useOtherProfileTools(shown: CatalogTool[]): ProfileTools[] {
+  const profiles = useHouseholdProfiles();
+  return useMemo(() => {
+    const already = new Set(shown.map((x) => x.id));
     return profiles
-      .filter((p) => !sameSubject(p.subject, subject))
+      .filter((p) => !p.active)
       .map((p) => {
         const tools = pickOtherTools(toolCatalog(p.ctx), shown, already);
         tools.forEach((x) => already.add(x.id));
         return { key: p.key, title: p.title, subject: p.subject, tools };
       })
       .filter((p) => p.tools.length);
-  }, [shown, subject, js, pregnancy, children]);
+  }, [shown, profiles]);
 }

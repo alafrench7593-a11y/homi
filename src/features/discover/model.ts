@@ -92,6 +92,9 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   cycle_journal: { chapter: 'cycle', demo: { kind: 'journal', set: 'body' } },
   cycle_stats: { chapter: 'cycle', demo: { kind: 'measure', series: [29, 27, 30, 28], next: 28, unit: 'days' } },
   cycle_guides: { chapter: 'cycle', demo: read },
+  cycle_advice: { chapter: 'cycle', demo: read },
+  cycle_month: { chapter: 'cycle', demo: read },
+  cycle_export: { chapter: 'cycle', demo: read },
   pma_tracker: { chapter: 'cycle', demo: { kind: 'plan', set: 'pma', time: '07:45', inDays: 2 } },
   contraception_journal: { chapter: 'cycle', demo: { kind: 'journal', set: 'pill' } },
   cycle_kit: { chapter: 'cycle', demo: { kind: 'tasks', set: 'kit' } },
@@ -110,6 +113,7 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   preg_moves: { chapter: 'pregnancy', demo: { kind: 'entry', from: 9, to: 10, unit: 'moves' } },
   pp_recovery: { chapter: 'pregnancy', demo: { kind: 'tasks', set: 'recovery' } },
   pp_checkin: { chapter: 'pregnancy', demo: { kind: 'journal', set: 'mood' } },
+  pp_history: { chapter: 'pregnancy', demo: { kind: 'measure', series: [2, 3, 3, 4], next: 4, unit: 'days' } },
   pp_body: { chapter: 'pregnancy', demo: { kind: 'journal', set: 'body' } },
   pp_mental: { chapter: 'pregnancy', demo: read },
   pp_support: { chapter: 'pregnancy', demo: { kind: 'help' } },
@@ -259,7 +263,7 @@ function firstHref(def: ToolDef, extra: Partial<ScopeCtx> = {}): string | null {
 /** Onglet hub d'un outil (repli quand l'outil a besoin d'un profil que le foyer n'a pas encore). */
 export function hubRouteOf(key: string): string {
   const d = TOOL_BY_ID[key];
-  return `/${HUB_ROUTE[hubOf({ theme: d.theme, key })]}`;
+  return `/${HUB_ROUTE[hubOf({ key })]}`;
 }
 
 /**

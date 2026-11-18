@@ -20,7 +20,6 @@ export const scanner = {
   'scn.nameIt': 'Indiquer le produit',
   'scn.pickOne': 'Choisissez la bonne réponse, ou indiquez le produit vous-même ci-dessous.',
   'scn.freeRecalls': 'Alertes de rappel (gratuit)',
-  'scn.recallsFree': 'Rappels officiels de vos produits, toujours gratuit',
   'scn.notAnalysed': 'Pas encore analysé',
   'scn.filter': 'Afficher',
   'scn.noMatch': 'Aucune analyse pour ce filtre',

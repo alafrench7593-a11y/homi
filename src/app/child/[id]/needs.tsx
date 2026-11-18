@@ -31,6 +31,8 @@ import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
 import { snoozeLocally } from '@/lib/notifications';
 import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
 
@@ -198,10 +200,7 @@ function FollowUp({ childId }: { childId: string }) {
         {ENTRY_KINDS.map((k) => <Chip key={k} label={tr(`nd.entry.${k}` as TKey)} selected={filter === k} onPress={() => setFilter(filter === k ? null : k)} />)}
       </Row>
       <Button label={tr('nd.entry.add')} icon="plus" onPress={() => { setKind(filter ?? 'observation'); setOpen(true); }} testID="entry-add" />
-      <Card>
-        <ListRow icon="calendar" title={tr('tool.appointments')} onPress={() => router.push(`/appointments?child=${childId}`)} />
-        <ListRow icon="folder" title={tr('tool.documents')} subtitle={tr('nd.docsHint')} onPress={() => router.push(`/documents?child=${childId}`)} />
-      </Card>
+      <ToolLinks ids={['appointments', 'documents']} subject={childId ? { type: 'child', id: childId } : null} testID="needs-tools" />
       {isLoading && !entries ? <Skeleton rows={3} /> : entriesQ.isError && !entries ? (
         <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
       ) : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (

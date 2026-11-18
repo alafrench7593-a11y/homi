@@ -20,6 +20,7 @@ import { childAge } from '@/lib/domain/child';
 import { exportTextFile } from '@/lib/exportData';
 import { insertOrQueue } from '@/lib/offline';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { toastSaved } from '@/features/saveOutcome';
@@ -45,7 +46,7 @@ export default function ChildCard() {
   const [details, setDetails] = useState('');
   const [saving, setSaving] = useState(false);
   // Pendant le chargement (premier écran après connexion) : squelette, jamais « enfant introuvable » à tort
-  if (!child) return <Screen back title={tr('tool.kid_card')}>{childLoading ? <Skeleton kind="detail" rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
+  if (!child) return <Screen back title={toolName('kid_card')}>{childLoading ? <Skeleton kind="detail" rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
 
   const allergies = [...new Set([...(child.allergies_declared ?? []), ...(items ?? []).filter((i) => i.kind === 'allergy').map((i) => i.label)])];
   const of = (k: HealthItemKind) => (items ?? []).filter((i) => i.kind === k && (k !== 'treatment' || !i.done_on));
@@ -78,7 +79,7 @@ export default function ChildCard() {
   }
 
   return (
-    <Screen back title={tr('tool.kid_card')} subtitle={`${child.first_name} · ${childAge(child.birth_date).label}`}
+    <Screen back title={toolName('kid_card')} subtitle={`${child.first_name} · ${childAge(child.birth_date).label}`}
       action={{ label: tr('kc.share'), icon: 'share', onPress: () => void share(), testID: 'kid-card-share' }}>
       <Text muted>{tr('kc.intro')}</Text>
       <Card tone="soft" testID="kid-card-allergies">

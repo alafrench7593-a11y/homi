@@ -7,12 +7,6 @@ export const stocks: Messages<typeof fr> = {
   'tool.family_stocks': 'Household supplies',
   'tool.family_stocks.sub': 'Nappies, milk, detergent: roughly what is left',
   'dock.q.shopping': 'Add to shopping',
-  'nav.hub.shopping': 'Shopping',
-  'nav.hub.shoppingSub': 'The household’s shared list',
-  'nav.hub.stocks': 'Supplies',
-  'nav.hub.stocksSub': 'What is left at home, and what to plan',
-  'nav.hub.babyStocks': 'Nappies and milk',
-  'nav.hub.babyStocksSub': 'Baby supplies, shared with the household',
 
   'stk.title': 'Household supplies',
   'stk.titleBaby': 'Baby supplies',

@@ -93,10 +93,11 @@ with sync_playwright() as p:
 
     # ------------------------------------------------------------ points d'entrée
     pg.goto(B + '/household'); pg.wait_for_timeout(3500)
-    R['entree_famille_courses_stocks'] = tid(pg, 'hub-entry-shopping').count() > 0 and tid(pg, 'hub-entry-stocks').count() > 0
+    R['entree_famille_courses_stocks'] = tid(pg, 'tool-row-press-family_shopping').count() > 0 and tid(pg, 'tool-row-press-family_stocks').count() > 0
     shot(pg, 'A00-famille-entrees')
     pg.goto(B + '/baby'); pg.wait_for_timeout(3500)
-    R['entree_bebe_stocks'] = tid(pg, 'hub-entry-baby-stocks').count() > 0
+    # l'accès direct « stocks bébé » doublait l'outil Stocks : l'onglet Enfant propose la catégorie des soins, qui y mène
+    R['entree_bebe_stocks'] = tid(pg, 'hub-group-care-all-care').count() > 0
     shot(pg, 'A00b-bebe-entree-stocks')
     # Le conjoint rejoint le foyer de démonstration, puis retour côté mère
     pg.goto(B + '/family/stocks'); pg.wait_for_timeout(3000)

@@ -3,8 +3,9 @@
  * un besoin = une entrée.
  *
  * Chaque outil déclare :
- *  - sa CATÉGORIE (les 9 rayons du centre d'outils, ou « account » pour ce qui n'est pas un outil : réglages,
- *    notifications, modification du parcours — jamais compté ni affiché comme outil) ;
+ *  - sa CATÉGORIE PRINCIPALE, unique (les 9 rayons du centre d'outils ; « community » pour l'espace Communauté et
+ *    « account » pour les réglages, qui ne sont pas des outils), et les catégories où il est AUSSI proposé en
+ *    raccourci contextuel (`also`) : un seul identifiant, un seul favori, où qu'il apparaisse ;
  *  - les « portées » où il a le droit d'apparaître. La portée vient du profil affiché (sélecteur) et du parcours actif :
  *      avoid · ttc · cycle · none      → « Moi » (selon mon parcours de cycle, ou aucun)
  *      pregnancy                        → ma grossesse en cours
@@ -36,9 +37,18 @@ const CYCLE: Scope[] = ['avoid', 'ttc', 'cycle'];
 /** « À deux » (04/11/2026) : la charge mentale ne commence pas avec un enfant — tâches, agenda et relais sont ouverts à tous. */
 const TOGETHER: Scope[] = [...ADULT, 'baby', 'child', 'family'];
 
-/** Les 9 catégories du centre d'outils, dans l'ordre d'affichage, puis « Mon compte et réglages » (hors outils). */
-export type ToolCategory = 'feeding' | 'sleep' | 'growth' | 'health' | 'cycle' | 'pregnancy' | 'school' | 'couple' | 'family' | 'account';
-export const TOOL_CATEGORIES: Exclude<ToolCategory, 'account'>[] = ['feeding', 'sleep', 'growth', 'health', 'cycle', 'pregnancy', 'school', 'couple', 'family'];
+/**
+ * Les 9 catégories du centre d'outils, dans l'ordre d'affichage. Deux rangements à part, qui ne sont PAS des
+ * catégories d'outils : « community » (l'espace Communauté, indépendant des 9 catégories : un bloc distinct dans
+ * « Mes outils », accès principal en haut à droite) et « account » (Mon compte et réglages).
+ */
+export type ToolCategory = 'feeding' | 'sleep' | 'care' | 'health' | 'cycle' | 'pregnancy' | 'school' | 'couple' | 'family' | 'community' | 'account';
+export type ToolShelf = Exclude<ToolCategory, 'account' | 'community'>;
+export const TOOL_CATEGORIES: ToolShelf[] = ['feeding', 'sleep', 'care', 'health', 'cycle', 'pregnancy', 'school', 'couple', 'family'];
+/** Anciens identifiants de catégorie (liens `/tools/<catégorie>` écrits avant le 18/11/2026) : toujours résolus. */
+export const CATEGORY_ALIASES: Record<string, ToolShelf> = { growth: 'care' };
+export const canonicalCategory = (c: string | null | undefined): ToolCategory | null =>
+  (!c ? null : c in CATEGORY_ALIASES ? CATEGORY_ALIASES[c] : c === 'account' || c === 'community' || (TOOL_CATEGORIES as string[]).includes(c) ? (c as ToolCategory) : null);
 
 /** Profil lisible d'un outil (les 4 parcours de cycle et « aucun » sont tous « Moi »). */
 export type ToolProfile = 'me' | 'pregnancy' | 'postpartum' | 'baby' | 'child' | 'family';
@@ -78,6 +88,11 @@ export interface ToolDef {
   scopes: Scope[];
   /** Outil « pour tout le monde » adapté au profil affiché. */
   universal?: boolean;
+  /**
+   * Catégories où l'outil est AUSSI proposé, comme raccourci contextuel (« Aussi utile ici ») : même identifiant,
+   * même favori, même fiche. Un outil n'a qu'UNE catégorie principale (`category`) : c'est la seule où il est compté.
+   */
+  also?: ToolShelf[];
   /** Adresse selon le profil affiché ; null = pas disponible dans ce contexte. */
   href: (c: ScopeCtx) => string | null;
   /** Condition supplémentaire (ex. allaitement en post-partum seulement si un bébé est suivi). */
@@ -107,7 +122,7 @@ const guide = (topic: string, icon: IconName, category: ToolCategory, scopes: Sc
   ({ id: topic, legacy: `guide_${topic}`, icon, category, scopes, href: href ?? (() => `/guide/${topic}`) });
 
 export const TOOLS: ToolDef[] = [
-  // ================================================================ 1. Alimentation et allaitement
+  // ================================================================ 1. Alimentation et allaitement (sans les couches : voir 3)
   { id: 'baby_breastfeed', category: 'feeding', theme: 'feeding', icon: 'droplet', scopes: ['baby', 'postpartum'], aliases: ['pp_feeding'],
     when: (c) => c.scope === 'baby' || !!c.babyId, href: (c) => (c.scope === 'baby' ? q('/track/breastfeed', c) : c.babyId ? `/track/breastfeed?child=${c.babyId}` : null) },
   { id: 'baby_bottle', category: 'feeding', theme: 'feeding', icon: 'plus-circle', scopes: ['baby'], href: (c) => q('/track/bottle', c) },
@@ -115,39 +130,48 @@ export const TOOLS: ToolDef[] = [
     when: (c) => c.scope === 'baby' || !!c.babyId, href: (c) => (babyOf(c) ? `/bottle/${babyOf(c)}` : null) },
   { id: 'baby_bottle_history', category: 'feeding', theme: 'feeding', icon: 'bar-chart', scopes: ['baby'], href: (c) => q('/bottle/history', c) },
   { id: 'bottle_scoops', category: 'feeding', theme: 'feeding', icon: 'hash', scopes: ['baby', 'postpartum'], when: (c) => c.scope !== 'postpartum' || !!c.babyId, href: () => '/bottle/scoops' },
-  { id: 'baby_diaper', category: 'feeding', theme: 'diapers', icon: 'wind', scopes: ['baby'], href: (c) => q('/track/diaper', c) },
   { id: 'baby_foods', category: 'feeding', theme: 'feeding', icon: 'feather', scopes: KID, href: (c) => kid(c, '/discoveries') },
   { id: 'meals', category: 'feeding', theme: 'feeding', icon: 'coffee', scopes: MEAL_SCOPES, universal: true, href: mealsFor },
   { id: 'meal_menu', category: 'feeding', theme: 'feeding', icon: 'menu', scopes: [...MEAL_SCOPES, 'pregnancy', 'family'], universal: true, href: () => '/meals/menu' },
   { id: 'meal_pantry', category: 'feeding', theme: 'feeding', icon: 'archive', scopes: [...MEAL_SCOPES, 'pregnancy', 'family'], universal: true, href: () => '/meals/pantry' },
   { id: 'meal_rankings', category: 'feeding', theme: 'feeding', icon: 'award', scopes: [...KID, 'family'], universal: true, href: () => '/meals/rankings' },
   // Grossesse : « Repas » devient « Bien manger enceinte »
-  { id: 'preg_eat', category: 'feeding', theme: 'feeding', icon: 'thumbs-up', scopes: ['pregnancy'], href: () => '/pregnancy/eat' },
-  { id: 'scan_food', category: 'feeding', theme: 'scanner', icon: 'search', scopes: ALL, universal: true, href: () => '/scanner/food' },
+  { id: 'preg_eat', category: 'feeding', theme: 'feeding', icon: 'thumbs-up', scopes: ['pregnancy'], also: ['pregnancy'], href: () => '/pregnancy/eat' },
+  // Scanner alimentaire : « puis-je manger ou donner cet aliment ? » selon le profil (grossesse, allaitement, bébé, allergies)
+  { id: 'scan_food', category: 'feeding', theme: 'scanner', icon: 'search', scopes: ALL, universal: true, also: ['pregnancy', 'health'], href: () => '/scanner/food' },
 
   // ================================================================ 2. Sommeil et réveils
   { id: 'kid_sleep', category: 'sleep', theme: 'sleep', icon: 'moon', scopes: KID, universal: true, href: (c) => q('/night', c) },
   { id: 'kid_sleep_rhythm', category: 'sleep', theme: 'sleep', icon: 'sunset', scopes: KID, href: (c) => (c.childId ? `/sleep/${c.childId}` : null) },
   { id: 'sleep_help', category: 'sleep', theme: 'sleep', icon: 'navigation', scopes: KID, href: (c) => (c.childId ? `/sleep/help/${c.childId}` : null) },
   { id: 'baby_night_help', category: 'sleep', theme: 'sleep', icon: 'star', scopes: ['baby'], href: (c) => q('/night/help', c) },
-  { id: 'family_nights', category: 'sleep', theme: 'relay', icon: 'repeat', scopes: ['baby', 'child', 'family', 'postpartum', 'pregnancy'], href: () => '/family/nights' },
+  { id: 'family_nights', category: 'sleep', theme: 'relay', icon: 'repeat', scopes: ['baby', 'child', 'family', 'postpartum', 'pregnancy'], also: ['couple'], href: () => '/family/nights' },
   { id: 'sleep', category: 'sleep', theme: 'sleep', icon: 'cloud', scopes: ADULT, universal: true, href: () => '/me/sleep' },
 
-  // ================================================================ 3. Croissance et développement
+  // ================================================================ 3. Soins, quotidien et croissance
+  // Les soins et l'hygiène du bébé (couches, dents, produits de soin), ce qui est noté dans la journée, puis la
+  // croissance. Les couches ne sont PAS de l'alimentation ; le suivi de la journée garde un raccourci vers elles.
+  { id: 'baby_daily', category: 'care', theme: 'diapers', icon: 'layers', scopes: ['baby'], also: ['feeding', 'sleep'], href: () => '/(tabs)/track' },
+  { id: 'baby_diaper', category: 'care', theme: 'diapers', icon: 'wind', scopes: ['baby'], href: (c) => q('/track/diaper', c) },
+  { id: 'kid_teeth', category: 'care', theme: 'teeth', icon: 'circle', scopes: KID, href: (c) => q('/teeth', c) },
+  // Scanner de produits : composition d'un cosmétique, d'un soin, de lingettes, de couches, d'une lessive ou d'un
+  // produit d'entretien, lue selon le profil (grossesse, allaitement, bébé, enfant) → soins ; raccourci en santé et grossesse
+  { id: 'scan_product', category: 'care', theme: 'scanner', icon: 'maximize', scopes: ALL, universal: true, also: ['health', 'pregnancy'], href: () => '/scanner/product' },
+  { id: 'scan_history', category: 'care', theme: 'scanner', icon: 'rotate-ccw', scopes: ALL, universal: true, also: ['feeding'], href: () => '/scanner/history' },
+  { id: 'scan_compare', category: 'care', theme: 'scanner', icon: 'columns', scopes: ALL, universal: true, also: ['feeding'], href: () => '/scanner/compare' },
+  { id: 'kid_products', category: 'care', theme: 'prevention', icon: 'gift', scopes: [...KID, 'family', 'pregnancy', 'none'], universal: true, also: ['family'], href: () => '/products' },
+  { id: 'journal', category: 'care', theme: 'growth', icon: 'align-left', scopes: [...KID, 'family'], href: () => '/journal' },
   // La fiche de l'enfant : la croissance et le journal en sont deux onglets (anciens outils `kid_growth`, `kid_milestones`)
-  { id: 'kid_profile', category: 'growth', theme: 'growth', icon: 'user', scopes: KID, href: (c) => kid(c), subs: [
+  { id: 'kid_profile', category: 'care', theme: 'growth', icon: 'user', scopes: KID, href: (c) => kid(c), subs: [
     { id: 'growth', legacy: 'kid_growth', icon: 'trending-up', href: (c) => kid(c, '?tab=croissance') },
     { id: 'milestones', legacy: 'kid_milestones', icon: 'award', href: (c) => kid(c, '?tab=etapes') },
   ] },
-  { id: 'kid_grow', category: 'growth', theme: 'growth', icon: 'chevrons-up', scopes: KID, href: (c) => kid(c, '/grow') },
-  { id: 'kid_teeth', category: 'growth', theme: 'teeth', icon: 'circle', scopes: KID, href: (c) => q('/teeth', c) },
-  { id: 'kid_mood', category: 'growth', theme: 'mood', icon: 'sun', scopes: KID, universal: true, href: (c) => kid(c, '/wellbeing') },
-  { id: 'kid_album', category: 'growth', theme: 'growth', icon: 'image', scopes: KID, href: (c) => kid(c, '/album') },
-  { id: 'baby_daily', category: 'growth', theme: 'diapers', icon: 'layers', scopes: ['baby'], href: () => '/(tabs)/track' },
-  { id: 'journal', category: 'growth', theme: 'growth', icon: 'align-left', scopes: [...KID, 'family'], href: () => '/journal' },
+  { id: 'kid_grow', category: 'care', theme: 'growth', icon: 'chevrons-up', scopes: KID, href: (c) => kid(c, '/grow') },
+  { id: 'kid_mood', category: 'care', theme: 'mood', icon: 'sun', scopes: KID, universal: true, href: (c) => kid(c, '/wellbeing') },
+  { id: 'kid_album', category: 'care', theme: 'growth', icon: 'image', scopes: KID, href: (c) => kid(c, '/album') },
 
-  // ================================================================ 4. Santé et rendez-vous
-  { id: 'appointments', category: 'health', theme: 'health', icon: 'calendar', scopes: ALL, universal: true, href: (c) => (c.childId ? `/appointments?child=${c.childId}` : c.scope === 'pregnancy' ? '/appointments?for=pregnancy' : '/appointments') },
+  // ================================================================ 4. Santé, rendez-vous et conseils
+  { id: 'appointments', category: 'health', theme: 'health', icon: 'calendar', scopes: ALL, universal: true, also: ['pregnancy'], href: (c) => (c.childId ? `/appointments?child=${c.childId}` : c.scope === 'pregnancy' ? '/appointments?for=pregnancy' : '/appointments') },
   { id: 'consult_questions', category: 'health', theme: 'health', icon: 'help-circle', scopes: ALL, universal: true, href: (c) => (c.childId ? `/consult/questions?child=${c.childId}` : c.scope === 'pregnancy' ? '/consult/questions?for=pregnancy' : '/consult/questions') },
   { id: 'documents', category: 'health', theme: 'health', icon: 'folder', scopes: ALL, universal: true, href: (c) => (c.childId ? `/documents?child=${c.childId}` : c.scope === 'pregnancy' ? '/documents?for=pregnancy' : '/documents') },
   { id: 'health_book', category: 'health', theme: 'health', icon: 'folder-plus', scopes: ALL, universal: true, href: () => '/documents/book' },
@@ -160,10 +184,13 @@ export const TOOLS: ToolDef[] = [
   { id: 'medications', category: 'health', theme: 'health', icon: 'plus-square', scopes: ALL, universal: true, href: () => '/medications' },
   { id: 'kid_steps', category: 'health', theme: 'health', icon: 'check-square', scopes: ['child'], href: (c) => kid(c, '/steps') },
   // Résumés (jour, semaine, avant rendez-vous) ; vue « famille » = même écran (ancien outil `family_summary`)
-  { id: 'summary', category: 'health', theme: 'resources', icon: 'file-text', scopes: [...KID, 'pregnancy', 'family'], aliases: ['family_summary'], href: (c) => (c.scope === 'family' ? '/summary?family=1' : '/summary') },
+  { id: 'summary', category: 'health', theme: 'resources', icon: 'file-text', scopes: [...KID, 'pregnancy', 'family'], aliases: ['family_summary'], also: ['family'], href: (c) => (c.scope === 'family' ? '/summary?family=1' : '/summary') },
   { id: 'mood', category: 'health', theme: 'mood', icon: 'smile', scopes: ADULT, universal: true, href: () => '/me/mood' },
   { id: 'me_diary', category: 'health', theme: 'mood', icon: 'edit', scopes: ADULT, universal: true, href: () => '/me/diary' },
-  { id: 'exhaustion_check', category: 'health', theme: 'mood', icon: 'battery', scopes: TOGETHER, href: () => '/family/exhausted' },
+  { id: 'exhaustion_check', category: 'health', theme: 'mood', icon: 'battery', scopes: TOGETHER, also: ['couple'], href: () => '/family/exhausted' },
+  // Sécurité des produits du foyer : la liste à éviter (allergies, intolérances) et les rappels officiels
+  { id: 'scan_avoid', category: 'health', theme: 'scanner', icon: 'slash', scopes: ALL, universal: true, also: ['feeding', 'care'], href: () => '/scanner/avoid' },
+  { id: 'recall_alerts', category: 'health', theme: 'scanner', icon: 'alert-octagon', scopes: ALL, universal: true, also: ['feeding', 'care'], href: () => '/scanner/recalls' },
   { id: 'emergency', category: 'health', theme: 'health', icon: 'life-buoy', scopes: ALL, universal: true, urgent: true, href: () => '/emergency' },
   { id: 'ask', category: 'health', theme: 'resources', icon: 'message-circle', scopes: ALL, universal: true, href: () => '/(tabs)/ask' },
   { id: 'local_ai', category: 'health', theme: 'resources', icon: 'cpu', scopes: ALL, universal: true, href: () => '/assistant/local' },
@@ -181,11 +208,11 @@ export const TOOLS: ToolDef[] = [
     guide('neonat', 'heart', 'health', ['baby', 'postpartum'], (c) => (c.childId || c.babyId ? `/guide/neonat?child=${c.childId ?? c.babyId}` : '/guide/neonat')),
     guide('kidfood', 'coffee', 'feeding', [...KID, 'family']),
     guide('kidsleep', 'moon', 'sleep', [...KID, 'family']),
-    guide('hygiene', 'droplet', 'growth', [...KID, 'family']),
-    guide('activities', 'sun', 'growth', [...KID, 'family']),
-    guide('toddler', 'trending-up', 'growth', KID),
-    guide('sport', 'activity', 'growth', ['child', 'family']),
-    guide('behaviour', 'smile', 'growth', ['child', 'family']),
+    guide('hygiene', 'droplet', 'care', [...KID, 'family']),
+    guide('activities', 'sun', 'care', [...KID, 'family']),
+    guide('toddler', 'trending-up', 'care', KID),
+    guide('sport', 'activity', 'care', ['child', 'family']),
+    guide('behaviour', 'smile', 'care', ['child', 'family']),
     guide('school', 'book', 'school', [...KID, 'family']),
     guide('pma', 'clipboard', 'cycle', ['ttc']),
     guide('work', 'briefcase', 'pregnancy', ['pregnancy', 'postpartum', 'ttc', 'none', 'baby', 'family']),
@@ -209,6 +236,10 @@ export const TOOLS: ToolDef[] = [
   { id: 'cycle_bleeding', category: 'cycle', theme: 'cycle', icon: 'alert-triangle', scopes: CYCLE, href: () => '/cycle/bleeding' },
   { id: 'cycle_journal', category: 'cycle', theme: 'cycle', icon: 'edit-3', scopes: ['cycle'], href: () => '/cycle/journal' },
   { id: 'cycle_stats', category: 'cycle', theme: 'cycle', icon: 'bar-chart-2', scopes: CYCLE, href: () => '/cycle/stats' },
+  // Écrans du suivi du cycle entrés au registre le 18/11/2026 (ils n'existaient que dans le menu de « Mon cycle »)
+  { id: 'cycle_advice', category: 'cycle', theme: 'cycle', icon: 'compass', scopes: CYCLE, href: () => '/cycle/advice' },
+  { id: 'cycle_month', category: 'cycle', theme: 'cycle', icon: 'file', scopes: CYCLE, href: () => '/cycle/month' },
+  { id: 'cycle_export', category: 'cycle', theme: 'cycle', icon: 'printer', scopes: CYCLE, href: () => '/cycle/export' },
   { id: 'cycle_guides', category: 'cycle', theme: 'resources', icon: 'info', scopes: CYCLE, href: () => '/cycle/guides' },
   { id: 'cycle_kit', category: 'cycle', theme: 'reminders', icon: 'briefcase', scopes: CYCLE, href: () => '/cycle/kit' },
   { id: 'avoid_contraception', category: 'cycle', theme: 'cycle', icon: 'umbrella', scopes: ['avoid'], href: () => '/contraception' },
@@ -221,7 +252,8 @@ export const TOOLS: ToolDef[] = [
   { id: 'ttc_tests', category: 'cycle', theme: 'cycle', icon: 'check-circle', scopes: ['ttc'], href: () => '/fertility/log' },
   { id: 'ttc_mucus', category: 'cycle', theme: 'cycle', icon: 'eye', scopes: ['ttc'], href: () => '/fertility/mucus' },
   { id: 'ttc_temperature', category: 'cycle', theme: 'cycle', icon: 'sunrise', scopes: ['ttc'], href: () => '/fertility/body' },
-  { id: 'ttc_intimacy', category: 'cycle', theme: 'cycle', icon: 'lock', scopes: ['ttc'], href: () => '/fertility/intimacy' },
+  // Rapports : un seul suivi (même table) ; l'adresse « concevoir » garde la fenêtre fertile, les autres parcours ouvrent le module cycle
+  { id: 'ttc_intimacy', category: 'cycle', theme: 'cycle', icon: 'lock', scopes: CYCLE, href: (c) => (c.scope === 'ttc' ? '/fertility/intimacy' : '/cycle/intimacy') },
   { id: 'ttc_exams', category: 'cycle', theme: 'health', icon: 'file-plus', scopes: ['ttc'], href: () => '/fertility/exams' },
   { id: 'ttc_understand', category: 'cycle', theme: 'cycle', icon: 'book', scopes: ['ttc'], href: () => '/fertility/understand' },
   { id: 'ttc_consult', category: 'cycle', theme: 'health', icon: 'user-plus', scopes: ['ttc'], href: () => '/fertility/consultation' },
@@ -241,6 +273,7 @@ export const TOOLS: ToolDef[] = [
   // tant qu'un post-partum est en cours.
   { id: 'pp_recovery', category: 'pregnancy', theme: 'mood', icon: 'battery-charging', scopes: ['postpartum', 'baby', 'none'], when: pp, href: () => '/postpartum' },
   { id: 'pp_checkin', category: 'pregnancy', theme: 'mood', icon: 'check', scopes: ['postpartum', 'baby', 'none'], when: pp, href: () => '/postpartum/checkin' },
+  { id: 'pp_history', category: 'pregnancy', theme: 'mood', icon: 'git-commit', scopes: ['postpartum', 'baby', 'none'], when: pp, href: () => '/postpartum/history' },
   { id: 'pp_body', category: 'pregnancy', theme: 'mood', icon: 'move', scopes: ['postpartum', 'baby', 'none'], when: pp, href: () => '/postpartum/recovery' },
   { id: 'pp_mental', category: 'pregnancy', theme: 'mood', icon: 'cloud-rain', scopes: ['postpartum', 'baby', 'none'], when: pp, href: () => '/postpartum/understand' },
   { id: 'pp_support', category: 'pregnancy', theme: 'mood', icon: 'phone-call', scopes: ['postpartum', 'baby', 'none'], when: pp, href: () => '/postpartum/support' },
@@ -248,7 +281,7 @@ export const TOOLS: ToolDef[] = [
 
   // ================================================================ 7. École, crèche et garde
   { id: 'kid_school', category: 'school', theme: 'growth', icon: 'type', scopes: KID, href: (c) => kid(c, '/school') },
-  { id: 'kid_card', category: 'school', theme: 'health', icon: 'credit-card', scopes: KID, href: (c) => kid(c, '/card') },
+  { id: 'kid_card', category: 'school', theme: 'health', icon: 'credit-card', scopes: KID, also: ['health'], href: (c) => kid(c, '/card') },
   { id: 'kid_routines', category: 'school', theme: 'tasks', icon: 'toggle-right', scopes: ['child', 'family'], href: () => '/family/kid-routines' },
   { id: 'custody', category: 'school', theme: 'calendar', icon: 'home', scopes: [...KID, 'family'], href: () => '/family/custody' },
 
@@ -266,7 +299,6 @@ export const TOOLS: ToolDef[] = [
   { id: 'family_urgent', category: 'couple', theme: 'prevention', icon: 'zap', scopes: ['baby', 'child', 'family', 'postpartum'], href: () => '/family/urgent' },
   { id: 'family_sos', category: 'couple', theme: 'prevention', icon: 'pause', scopes: ['baby', 'child', 'family', 'postpartum'], urgent: true, href: () => '/family/sos' },
   { id: 'solo_parent', category: 'couple', theme: 'resources', icon: 'anchor', scopes: ALL, universal: true, href: () => '/family/solo' },
-  { id: 'community', category: 'couple', theme: 'resources', icon: 'globe', scopes: ALL, universal: true, href: (c) => (SPACE_FOR_SCOPE[c.scope] ? `/(tabs)/community?space=${SPACE_FOR_SCOPE[c.scope]}` : '/(tabs)/community') },
 
   // ================================================================ 9. Organisation familiale
   { id: 'family_calendar', category: 'family', theme: 'calendar', icon: 'table', scopes: TOGETHER, href: () => '/calendar' },
@@ -276,18 +308,15 @@ export const TOOLS: ToolDef[] = [
   { id: 'family_history', category: 'family', theme: 'tasks', icon: 'rewind', scopes: ['family'], href: () => '/family/history' },
   { id: 'brain_dump', category: 'family', theme: 'tasks', icon: 'download', scopes: TOGETHER, href: () => '/family/brain-dump' },
   { id: 'family_prep', category: 'family', theme: 'calendar', icon: 'fast-forward', scopes: TOGETHER, href: () => '/family/prep' },
-  { id: 'family_shopping', category: 'family', theme: 'tasks', icon: 'shopping-cart', scopes: TOGETHER, href: () => '/meals/shopping' },
-  { id: 'family_stocks', category: 'family', theme: 'tasks', icon: 'package', scopes: TOGETHER, href: () => '/family/stocks' },
+  { id: 'family_shopping', category: 'family', theme: 'tasks', icon: 'shopping-cart', scopes: TOGETHER, also: ['feeding'], href: () => '/meals/shopping' },
+  { id: 'family_stocks', category: 'family', theme: 'tasks', icon: 'package', scopes: TOGETHER, also: ['care'], href: () => '/family/stocks' },
   { id: 'house_notebook', category: 'family', theme: 'tasks', icon: 'key', scopes: TOGETHER, href: () => '/family/notebook' },
   { id: 'family_papers', category: 'family', theme: 'resources', icon: 'paperclip', scopes: ALL, universal: true, href: () => '/family/papers' },
   { id: 'reminders', category: 'family', theme: 'reminders', icon: 'bell', scopes: ALL, universal: true, href: () => '/settings/reminders' },
-  { id: 'nearby', category: 'family', theme: 'resources', icon: 'map-pin', scopes: ALL, universal: true, href: () => '/outings' },
-  { id: 'scan_product', category: 'family', theme: 'scanner', icon: 'maximize', scopes: ALL, universal: true, href: () => '/scanner/product' },
-  { id: 'scan_compare', category: 'family', theme: 'scanner', icon: 'columns', scopes: ALL, universal: true, href: () => '/scanner/compare' },
-  { id: 'scan_history', category: 'family', theme: 'scanner', icon: 'rotate-ccw', scopes: ALL, universal: true, href: () => '/scanner/history' },
-  { id: 'scan_avoid', category: 'family', theme: 'scanner', icon: 'slash', scopes: ALL, universal: true, href: () => '/scanner/avoid' },
-  { id: 'recall_alerts', category: 'family', theme: 'scanner', icon: 'alert-octagon', scopes: ALL, universal: true, href: () => '/scanner/recalls' },
-  { id: 'kid_products', category: 'family', theme: 'prevention', icon: 'gift', scopes: [...KID, 'family', 'pregnancy', 'none'], universal: true, href: () => '/products' },
+  { id: 'nearby', category: 'family', theme: 'resources', icon: 'map-pin', scopes: ALL, universal: true, also: ['couple'], href: () => '/outings' },
+
+  // ================================================================ La communauté : un ESPACE à part (pas un outil d'une catégorie)
+  { id: 'community', category: 'community', theme: 'resources', icon: 'globe', scopes: ALL, universal: true, href: (c) => (SPACE_FOR_SCOPE[c.scope] ? `/(tabs)/community?space=${SPACE_FOR_SCOPE[c.scope]}` : '/(tabs)/community') },
 
   // ================================================================ Mon compte et réglages (PAS des outils)
   { id: 'settings', category: 'account', theme: 'reminders', icon: 'settings', scopes: ALL, universal: true, href: () => '/settings' },
@@ -298,8 +327,10 @@ export const TOOLS: ToolDef[] = [
   { id: 'preg_end', category: 'account', theme: 'pregnancy', icon: 'flag', scopes: ['pregnancy'], href: () => '/pregnancy/end' },
 ];
 
-/** Vrais outils (hors « Mon compte et réglages ») : ce que le centre d'outils compte et affiche. */
+/** Tout ce que le centre d'outils sait ouvrir (hors « Mon compte et réglages ») : les outils ET l'espace Communauté. */
 export const REAL_TOOLS: ToolDef[] = TOOLS.filter((d) => d.category !== 'account');
+/** Les outils proprement dits : ceux qui sont rangés (et comptés) dans l'une des 9 catégories. */
+export const CATEGORY_TOOLS: ToolDef[] = REAL_TOOLS.filter((d) => d.category !== 'community');
 
 // ------------------------------------------------------------------ identifiants : outils, sous-accès, anciens noms
 export const subRef = (toolId: string, subId: string) => `${toolId}.${subId}`;
@@ -362,6 +393,8 @@ export function toolProfiles(def: Pick<ToolDef, 'scopes'>): ToolProfile[] {
 export interface ResolvedSub { id: string; legacy: string; icon: IconName; category: ToolCategory; href: string }
 export interface ResolvedTool {
   id: string; category: ToolCategory; theme: ToolTheme; icon: IconName; href: string; universal: boolean; urgent: boolean;
+  /** Catégories où l'outil est aussi proposé en raccourci (jamais sa catégorie principale). */
+  also: ToolShelf[];
   subs: ResolvedSub[];
 }
 
@@ -383,7 +416,7 @@ export function toolsFor(c: ScopeCtx): ResolvedTool[] {
     if (d.when && !d.when(c)) continue;
     const href = d.href(c);
     if (!href) continue;
-    out.push({ id: d.id, category: d.category, theme: d.theme, icon: d.icon, href, universal: !!d.universal, urgent: !!d.urgent, subs: resolveSubs(d, c) });
+    out.push({ id: d.id, category: d.category, theme: d.theme, icon: d.icon, href, universal: !!d.universal, urgent: !!d.urgent, also: (d.also ?? []).filter((x) => x !== d.category), subs: resolveSubs(d, c) });
   }
   return out;
 }

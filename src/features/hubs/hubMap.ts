@@ -1,12 +1,12 @@
 /**
  * HOMI — navigation (refonte du 17/11/2026) : Aujourd'hui · Moi · [action centrale] · Enfant · Famille.
  *
- * Répartition DATA-DRIVEN des outils du catalogue (`toolCatalog`) entre les trois onglets « hub » :
- *  - Santé  : cycle, grossesse, santé et rendez-vous, humeur, repas et sommeil de la mère + lectures et assistant (Questions)
- *  - Bébé   : repas, sommeil, changes, dents, croissance, scanner + résumés et tutos (Suivi du jour en accès direct)
- *  - Famille: agenda, tâches, relais de nuit, temps pour soi, surcharge, souvenirs, rappels + sorties, papiers, parent solo
- * Le thème « resources » (Questions, lectures et communauté) est réparti outil par outil : un outil de ce thème
- * qui n'est pas listé ici tombe dans Famille (jamais perdu). Tout thème inconnu tombe aussi dans Famille.
+ * Répartition DATA-DRIVEN des outils du catalogue (`toolCatalog`) entre les trois onglets « hub », d'après la
+ * CATÉGORIE de l'outil dans le registre central et le profil affiché (voir `hubOf`) :
+ *  - Moi     : cycle, grossesse et post-partum, ma santé, mon moral, mes repas et mon sommeil, l'assistant et les lectures ;
+ *  - Enfant  : alimentation, sommeil, soins, santé et école de l'enfant affiché ;
+ *  - Famille : couple et foyer, organisation familiale.
+ * Les onglets ne définissent NI libellé NI route d'outil : tout vient du registre, par `ToolLinks`.
  * Garde-fou : `src/__tests__/homiNavigation.test.ts` (chaque outil de chaque parcours a un onglet).
  *
  * Les routes d'onglet hors barre (community, agenda, track, tools, ask, moi, profile) restent des routes valides, hors de la barre ;
@@ -15,55 +15,66 @@
 import type { IconName } from '@/components/ui';
 import type { TKey } from '@/i18n';
 import type { CatalogTool, ToolTheme } from '@/lib/domain/toolCatalog';
-import { TOOL_BY_ID, type Scope } from '@/lib/journeys/tools';
+import { FEATURED, TOOL_BY_ID, TOOL_CATEGORIES, type Scope, type ToolShelf } from '@/lib/journeys/tools';
 
 export type HubKey = 'health' | 'baby' | 'family';
 export const HUB_KEYS: HubKey[] = ['health', 'baby', 'family'];
 
-/** Thèmes affichés par chaque hub, dans l'ordre d'affichage. */
-export const HUB_THEMES: Record<HubKey, ToolTheme[]> = {
-  // repas et sommeil de la mère (grossesse, cycle, « moi ») : rangés dans Santé, pas dans Bébé
-  health: ['health', 'cycle', 'pregnancy', 'mood', 'feeding', 'sleep', 'resources'],
-  baby: ['feeding', 'sleep', 'diapers', 'teeth', 'growth', 'scanner', 'resources'],
-  family: ['calendar', 'tasks', 'relay', 'metime', 'prevention', 'memories', 'reminders', 'resources'],
-};
-
-/** Hub principal de chaque thème (hors « resources », rangé outil par outil). */
-const THEME_HUB: Partial<Record<ToolTheme, HubKey>> = {
-  health: 'health', cycle: 'health', pregnancy: 'health', mood: 'health',
-  feeding: 'baby', sleep: 'baby', diapers: 'baby', teeth: 'baby', growth: 'baby', scanner: 'baby',
-  calendar: 'family', tasks: 'family', relay: 'family', metime: 'family', prevention: 'family', memories: 'family', reminders: 'family',
-};
-
-/** Portées « adulte seulement » : un outil repas/sommeil réservé à ces portées concerne la mère, pas l'enfant. */
-const ME_AND_PREGNANCY: Scope[] = ['avoid', 'ttc', 'cycle', 'none', 'pregnancy'];
-/** Sommeil : le post-partum compte comme adulte (sommeil de la mère) ; repas : non (allaitement, biberons = bébé). */
-const ADULT_ONLY: Partial<Record<ToolTheme, Set<Scope>>> = { sleep: new Set([...ME_AND_PREGNANCY, 'postpartum']), feeding: new Set(ME_AND_PREGNANCY) };
-
-/** Thème « resources » : rangement outil par outil (clé du registre central). */
-export const RESOURCE_HUB: Record<string, HubKey> = {
-  ask: 'health', local_ai: 'health', library: 'health', sources: 'health', videos: 'health', guides: 'health', cycle_guides: 'health',
-  summary: 'baby',
-  nearby: 'family', community: 'family', solo_parent: 'family', family_papers: 'family',
-};
-
-/** Onglet hub d'un outil du catalogue (toujours défini : aucun outil sans onglet). */
-export function hubOf(tool: Pick<CatalogTool, 'theme' | 'key'>): HubKey {
-  if (tool.theme === 'resources') return RESOURCE_HUB[tool.key] ?? 'family';
-  const scopes = TOOL_BY_ID[tool.key]?.scopes;
-  const adult = ADULT_ONLY[tool.theme];
-  if (adult && scopes?.length && scopes.every((x) => adult.has(x))) return 'health';
-  return THEME_HUB[tool.theme] ?? 'family';
+/**
+ * Onglet d'un outil du catalogue, pour le profil affiché (toujours défini : aucun outil sans onglet).
+ * Depuis le 18/11/2026 le rangement suit la CATÉGORIE de l'outil dans le registre central et le profil affiché —
+ * plus les 18 thèmes techniques :
+ *  - cycle, contraception, grossesse, post-partum → Moi (jamais Famille) ;
+ *  - couple, organisation familiale, communauté → Famille ;
+ *  - alimentation, sommeil, soins, santé, école : Enfant quand un enfant est affiché (vaccins, suivi de santé,
+ *    traitements d'un enfant ne sont jamais dans Moi), Famille pour le profil « toute la famille », sinon Moi (le
+ *    scanner, les repas ou les rendez-vous d'un adulte ne sont pas dans Enfant) ;
+ *  - ce qui concerne le parent lui-même (humeur, épuisement, assistant, bibliothèque, guides, vidéos) reste dans Moi.
+ */
+const PARENT_OWN = new Set(['ask', 'local_ai', 'library', 'guides', 'videos', 'sources']);
+export function hubOf(tool: { key: string }, scope?: Scope): HubKey {
+  const def = TOOL_BY_ID[tool.key];
+  if (!def) return 'family';
+  const s = scope && def.scopes.includes(scope) ? scope : def.scopes[0];
+  const kid = s === 'baby' || s === 'child';
+  switch (def.category) {
+    case 'cycle': case 'pregnancy': return 'health';
+    case 'couple': case 'family': case 'community': case 'account': return 'family';
+    case 'school': return kid ? 'baby' : 'family';
+    default:
+      // humeur, journal intime, épuisement du parent : dans Moi même quand un enfant est affiché (l'humeur de l'enfant, elle, le suit)
+      if (PARENT_OWN.has(def.id) || (def.theme === 'mood' && def.scopes.some((x) => x !== 'baby' && x !== 'child' && x !== 'family'))) return 'health';
+      return kid ? 'baby' : s === 'family' ? 'family' : 'health';
+  }
 }
 
-/** Outils d'un hub, dans l'ordre du catalogue. */
-export function hubTools(catalog: CatalogTool[], hub: HubKey): CatalogTool[] {
-  return catalog.filter((x) => hubOf(x) === hub);
+/** Outils d'un hub pour le profil affiché, dans l'ordre du catalogue. */
+export function hubTools(catalog: CatalogTool[], hub: HubKey, scope: Scope): CatalogTool[] {
+  return catalog.filter((x) => hubOf(x, scope) === hub);
 }
 
-/** Regroupe les outils d'un hub par thème, dans l'ordre du hub (thèmes vides omis). */
-export function hubGroups<T extends { theme: ToolTheme }>(tools: T[], hub: HubKey): { theme: ToolTheme; items: T[] }[] {
-  return HUB_THEMES[hub].map((theme) => ({ theme, items: tools.filter((x) => x.theme === theme) })).filter((g) => g.items.length);
+/** Outils mis en avant en tête de leur catégorie dans un onglet (identifiants du registre : ni libellé ni route ici). */
+export const HUB_PINNED: Record<HubKey, string[]> = {
+  health: ['ask'],
+  baby: ['baby_daily'],
+  family: ['family_missions', 'family_shopping', 'family_stocks', 'family_calendar'],
+};
+/** Nombre d'outils montrés par catégorie dans un onglet ; le reste est dans la catégorie complète (accès nommé). */
+export const HUB_PER_CATEGORY = 4;
+
+/**
+ * Sélection d'un onglet : pour chaque catégorie présente (ordre du centre d'outils), les outils les plus pertinents
+ * du profil (mis en avant de l'onglet, puis « Pour <profil> » du registre, puis l'ordre du catalogue), `max` au plus.
+ * Aucune liste repliée : chaque groupe se termine par l'accès nommé à sa catégorie complète.
+ */
+export function hubSelection(tools: CatalogTool[], hub: HubKey, scope: Scope, max = HUB_PER_CATEGORY): { category: ToolShelf; items: CatalogTool[]; total: number }[] {
+  const prefer = [...HUB_PINNED[hub], ...FEATURED[scope]];
+  const rank = (x: CatalogTool) => { const i = prefer.indexOf(x.id); return i < 0 ? prefer.length : i; };
+  return TOOL_CATEGORIES.map((category) => {
+    const all = tools.filter((x) => x.category === category && !x.urgent);
+    const items = all.map((x, i) => ({ x, i })).sort((p, q) => rank(p.x) - rank(q.x) || p.i - q.i).slice(0, max).map((r) => r.x);
+    return { category, items, total: all.length };
+  }).filter((g) => g.items.length);
 }
 
 /** Icône d'en-tête de chaque thème (glyphe de section). */
@@ -189,20 +200,3 @@ export const estimateLabelWidth = (label: string, size = TAB_LABEL_MAX) => label
 
 /** Onglet allumé quand on est sur une ancienne route d'onglet. */
 export const ACTIVE_ALIAS: Record<string, NavTab['name']> = { ask: 'health', track: 'baby', agenda: 'household', tools: 'index', community: 'index', moi: 'index' };
-
-/** Accès directs en tête de chaque hub : les pages des anciens onglets. */
-export const HUB_ENTRIES: Record<HubKey, { href: string; icon: IconName; title: TKey; sub: TKey; testID: string }[]> = {
-  health: [{ href: '/ask', icon: 'message-circle', title: 'nav.hub.ask', sub: 'nav.hub.askSub', testID: 'hub-entry-ask' }],
-  baby: [
-    { href: '/track', icon: 'activity', title: 'nav.hub.track', sub: 'nav.hub.trackSub', testID: 'hub-entry-track' },
-    // Couches, lingettes, lait : les stocks « bébé » du foyer (15/11/2026)
-    { href: '/family/stocks/baby', icon: 'package', title: 'nav.hub.babyStocks', sub: 'nav.hub.babyStocksSub', testID: 'hub-entry-baby-stocks' },
-  ],
-  family: [
-    { href: '/family/missions', icon: 'send', title: 'nav.hub.missions', sub: 'nav.hub.missionsSub', testID: 'hub-entry-missions' },
-    // Courses et stocks du foyer (15/11/2026)
-    { href: '/meals/shopping', icon: 'shopping-cart', title: 'nav.hub.shopping', sub: 'nav.hub.shoppingSub', testID: 'hub-entry-shopping' },
-    { href: '/family/stocks', icon: 'package', title: 'nav.hub.stocks', sub: 'nav.hub.stocksSub', testID: 'hub-entry-stocks' },
-    { href: '/agenda', icon: 'calendar', title: 'nav.hub.agenda', sub: 'nav.hub.agendaSub', testID: 'hub-entry-agenda' },
-  ],
-};

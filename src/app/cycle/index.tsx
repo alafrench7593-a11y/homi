@@ -1,7 +1,7 @@
 /**
  * Mon cycle : vue d'ensemble, enregistrement des règles (5 niveaux de flux, dates passées, modification),
- * historique, tests, et accès à tout le suivi (calendrier, symptômes, pertes, fiches, saignements, journal,
- * statistiques, rappels, export, confidentialité).
+ * historique, tests, et raccourcis vers les outils du suivi (rendus depuis le registre central par `ToolLinks`),
+ * avec un accès nommé à toute la catégorie « Cycle et fertilité ».
  * Les dates calculées sont TOUJOURS des estimations : elles ne garantissent rien et ne remplacent pas une contraception.
  * Parcours « concevoir » ou « éviter » : leur écran dédié s'ouvre d'abord (sauf ?all=1, depuis ces écrans).
  */
@@ -25,7 +25,8 @@ import { estimateCycle } from '@/lib/domain/cycle';
 import { cycleDayOn, FLOWS, symptomKeysOf } from '@/lib/domain/cycleV2';
 import { toFrDate } from '@/lib/validation';
 import type { PeriodEntry } from '@/lib/types';
-import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette, type CycleIconName } from '@/features/cycle/kit';
+import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { fmtDay } from '@/features/cycle/format';
 import { CycleRing, ringData } from '@/features/cycle/CycleRing';
 import { GoldCycleRing } from '@/features/cycle/GoldCycleRing';
@@ -42,28 +43,18 @@ import { spacing } from '@/theme/tokens';
 type TestKind = 'ovulation_tests' | 'pregnancy_tests';
 const TEST_RESULTS: Record<TestKind, string[]> = { ovulation_tests: ['negative', 'positive', 'peak', 'invalid'], pregnancy_tests: ['negative', 'positive', 'faint', 'invalid'] };
 
-const SECTIONS: { key: string; icon: CycleIconName; href: string }[] = [
-  { key: 'advice', icon: 'guide', href: '/cycle/advice' },
-  { key: 'calendar', icon: 'calendar', href: '/cycle/calendar' },
-  { key: 'symptoms', icon: 'symptoms', href: '/cycle/symptoms' },
-  { key: 'pain', icon: 'pain', href: '/cycle/pain' },
-  { key: 'intimacy', icon: 'privacy', href: '/cycle/intimacy' },
-  { key: 'discharge', icon: 'discharge', href: '/cycle/discharge' },
-  { key: 'guides', icon: 'guide', href: '/cycle/guides' },
-  { key: 'bleeding', icon: 'bleeding', href: '/cycle/bleeding' },
-  { key: 'journal', icon: 'journal', href: '/cycle/journal' },
-  { key: 'stats', icon: 'stats', href: '/cycle/stats' },
-  { key: 'fertility', icon: 'ovulation', href: '/fertility/body' },
-  { key: 'reminders', icon: 'reminders', href: '/settings/reminders' },
-  { key: 'export', icon: 'export', href: '/cycle/export' },
-  { key: 'privacy', icon: 'privacy', href: '/cycle/privacy' },
-  { key: 'emergency', icon: 'guide', href: '/cycle/emergency' },
-  { key: 'share', icon: 'privacy', href: '/cycle/share' },
-  { key: 'month', icon: 'stats', href: '/cycle/month' },
+/**
+ * Raccourcis de « Mon cycle » : le menu ne garde que le CHOIX et l'ORDRE (identifiants du registre central) ; nom,
+ * description, pictogramme, destination, accès et favori viennent du catalogue (`ToolLinks`). Tout le reste du suivi
+ * est dans la catégorie complète, à un appui (« Tous les outils du cycle et de la fertilité »).
+ */
+const CYCLE_SHORTCUTS = ['cycle_calendar', 'cycle_symptoms', 'cycle_pain', 'cycle_month', 'cycle_advice', 'reminders'] as const;
+/** Actions propres à cet écran (réglages du suivi, information d'urgence) : ce ne sont pas des outils du catalogue. */
+const CYCLE_ACTIONS: { key: string; label: TKey; icon: 'share-2' | 'lock' | 'alert-circle'; href: string }[] = [
+  { key: 'share', label: 'cy.nav.share', icon: 'share-2', href: '/cycle/share' },
+  { key: 'privacy', label: 'cy.nav.privacy', icon: 'lock', href: '/cycle/privacy' },
+  { key: 'emergency', label: 'cy.nav.emergency', icon: 'alert-circle', href: '/cycle/emergency' },
 ];
-
-/** Rubriques visibles d'emblée ; les autres s'ouvrent d'un geste (écran allégé). */
-const ESSENTIAL = ['calendar', 'month', 'advice', 'reminders', 'share', 'privacy'];
 
 const history0 = (list: PeriodEntry[]) => [...list].sort((a, b) => b.start_date.localeCompare(a.start_date));
 
@@ -183,7 +174,6 @@ function CycleHub() {
   const urgentAdvice = advice.filter((a) => rank(a.priority) >= rank('prompt') && daysBetween(a.event.date, today) <= 3);
   const freshCount = advice.filter(isNew).length;
 
-  const [allSections, setAllSections] = useState(false);
   const [ringDetail, setRingDetail] = useState(false);
   const recentSymptoms = (symptoms ?? []).slice(0, 3).flatMap((s) => symptomKeysOf(s)).slice(0, 4);
   const history = history0(entries);
@@ -291,20 +281,12 @@ function CycleHub() {
         </Glass>
       </Rise>
 
-      {/* Toutes les rubriques (grille qui passe à la ligne : jamais de libellé coupé) */}
+      {/* Outils du suivi : rendus depuis le registre central ; accès nommé à la catégorie complète */}
       <Rise delay={60}>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-          {SECTIONS.filter((s) => allSections || ESSENTIAL.includes(s.key)).map((s) => (
-            <View key={s.key} style={{ flexGrow: 1, flexBasis: 140, maxWidth: '100%' }}>
-              <Glass onPress={() => router.push(s.href as never)} accessibilityLabel={tr(`cy.nav.${s.key}` as 'cy.nav.calendar')} accessibilityHint={tr(`cy.nav.${s.key}.hint` as 'cy.nav.calendar.hint')}>
-                <CycleIcon name={s.icon} color={c.mauve} />
-                <Ink weight="bold">{tr(`cy.nav.${s.key}` as 'cy.nav.calendar')}</Ink>
-                <Ink variant="caption" soft>{tr(`cy.nav.${s.key}.hint` as 'cy.nav.calendar.hint')}</Ink>
-              </Glass>
-            </View>
-          ))}
+        <ToolLinks ids={CYCLE_SHORTCUTS} allOf="cycle" title={tr('cy.overview.tools')} testID="cycle-tools" />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.sm }}>
+          {CYCLE_ACTIONS.map((x) => <Chip key={x.key} icon={x.icon} label={tr(x.label)} onPress={() => router.push(x.href as never)} testID={`cycle-action-${x.key}`} />)}
         </View>
-        <Button label={allSections ? tr('cy.nav.less') : tr('cy.nav.more', { count: SECTIONS.length - ESSENTIAL.length })} icon={allSections ? 'chevron-up' : 'grid'} variant="ghost" onPress={() => setAllSections((v) => !v)} testID="cycle-sections-toggle" />
       </Rise>
 
       {/* Règles */}

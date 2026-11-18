@@ -1,9 +1,6 @@
 /** Refonte v5 « Lumière corail » : onglets hub, semaine de grossesse, dents, page introuvable (16/11/2026). */
 export const hubs5 = {
   // ------------------------------------------------------------ onglets hub
-  'h5.hub.for': 'Outils pour',
-  'h5.hub.profileA11y': 'Afficher les outils pour {name}',
-  'h5.hub.elsewhere': 'Ailleurs dans HOMI',
 
   // ------------------------------------------------------------ semaine de grossesse
   'h5.preg.weekA11y': '{weeks} semaines d’aménorrhée{days}',

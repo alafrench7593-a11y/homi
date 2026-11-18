@@ -5,8 +5,6 @@ export const missions = {
   'tool.family_responsibilities': 'Responsabilités',
   'tool.family_responsibilities.sub': 'Qui porte quel domaine du foyer',
   'dock.q.mission': 'Nouvelle mission',
-  'nav.hub.missions': 'Missions',
-  'nav.hub.missionsSub': 'Demandes reçues et envoyées dans le foyer',
 
   'mis.title': 'Missions',
   'mis.sub': 'Des demandes pratiques entre vous, sans relances ni messages',

@@ -25,6 +25,7 @@ import { useRecallPrefs, useSetRecallShare } from '@/lib/data/hooks-tools6';
 import { openLink } from '@/lib/links';
 import type { AppNotification } from '@/lib/types';
 import { formatDate, t as tr } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { radius, spacing } from '@/theme/tokens';
 
 export default function RecallAlerts() {
@@ -51,7 +52,7 @@ export default function RecallAlerts() {
   }
 
   return (
-    <Screen back title={tr('tool.recall_alerts')} subtitle={tr('tool.recall_alerts.sub')}
+    <Screen back title={toolName('recall_alerts')} subtitle={toolBlurb('recall_alerts')}
       footer={<PrimaryButton label={tr('rc.checkNow')} icon="refresh-cw" size="lg" full onPress={checkNow} testID="rc-check" />}>
       <Text muted>{tr('rc.intro')}</Text>
       <TodaySummary title={tr('rc.summary')} items={[

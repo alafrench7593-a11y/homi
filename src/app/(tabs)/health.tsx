@@ -12,5 +12,5 @@ export default function MeTab() {
   const { data: children } = useTrackedChildren();
   const pregnancy = useActivePregnancy();
   const mode = childTabMode({ children: children?.length ?? 0, pregnancy: !!pregnancy });
-  return <HubScreen hub="health" excludeThemes={mode === 'pregnancy' ? ['pregnancy'] : undefined} />;
+  return <HubScreen hub="health" excludeCategories={mode === 'pregnancy' ? ['pregnancy'] : undefined} />;
 }

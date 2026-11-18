@@ -67,8 +67,6 @@ export const home: Messages<typeof fr> = {
   'profile.accountCommunity': 'My account and community',
   'profile.me': 'Me too',
   'profile.meSub': 'Body, postpartum, recovery',
-  'profile.sleep': 'My sleep',
-  'profile.mood': 'My mood',
   'profile.documents': 'My documents',
   'profile.community': 'My community profile',
   'profile.communitySub': 'Posts, replies, groups, albums, saved',

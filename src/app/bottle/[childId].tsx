@@ -36,6 +36,7 @@ import {
 } from '@/lib/domain/bottleTimer';
 import type { StatsPeriod } from '@/lib/domain/bottleSession';
 import { t as tr } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { radius, spacing } from '@/theme/tokens';
 import { bottleDayPlan, nextSlot } from '@/lib/domain/bottleDayPlan';
 import { BottleDayTimeline, openSlot } from '@/features/bottleDay';
@@ -225,7 +226,7 @@ export default function BottleReminderScreen() {
         {/* 4. journée, notifications, mesurettes */}
         <BottleDayTimeline childId={childId} slots={slots} intervalMinutes={dayInterval} timerId={active?.id} onPickInterval={pickInterval} name={name} />
         <BottleNotificationSettings />
-        <SecondaryButton label={tr('tool.bottle_scoops')} icon="hash" onPress={() => router.push('/bottle/scoops')} testID="bottle-scoops" />
+        <SecondaryButton label={toolName('bottle_scoops')} icon="hash" onPress={() => router.push('/bottle/scoops')} testID="bottle-scoops" />
         <Text variant="caption" muted>{noRecommendationNote()}</Text>
       </MorphTarget>
 

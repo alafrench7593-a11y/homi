@@ -15,6 +15,8 @@ import { useAppointments, useArticles, useDocuments, useMoods } from '@/lib/data
 import { useParentSleepLogs } from '@/lib/data/hooks-sleep';
 import { nightLabel, nightMinutes } from '@/lib/domain/parentSleep';
 import { formatDate, t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { formatDuration } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -43,6 +45,9 @@ const rehab = (): { key: string; icon: IconName; title: string; text: string; sl
   },
 ];
 
+/** Raccourcis de « Moi aussi » : choix et ordre seulement (identifiants du registre central). */
+const ME_SHORTCUTS = ['pp_recovery', 'mood', 'me_diary', 'sleep', 'cycle_home', 'appointments', 'documents', 'pp_partner'] as const;
+
 export default function MeSpace() {
   const t = useTheme();
   const { data: articles } = useArticles();
@@ -56,19 +61,18 @@ export default function MeSpace() {
   const lastNightMinutes = lastNight ? nightMinutes(lastNight) : null;
   const nextAppt = appointments?.find((a) => a.for_parent) ?? appointments?.[0];
 
-  const links: { icon: IconName; title: string; subtitle: string; to: string }[] = [
-    { icon: 'sun', title: tr('u8.me.l.postpartum'), subtitle: tr('u8.me.l.postpartumSub'), to: '/postpartum' },
-    { icon: 'heart', title: tr('u8.me.l.mood'), subtitle: lastMood ? tr('u8.me.l.moodLast', { date: formatDate(lastMood.checked_at, { day: 'numeric', month: 'long' }) }) : tr('u8.me.l.moodNone'), to: '/me/mood' },
-    { icon: 'book-open', title: tr('dy.link'), subtitle: tr('dy.linkSub'), to: '/me/diary' },
-    { icon: 'moon', title: tr('u8.me.l.sleep'), subtitle: lastNight ? `${nightLabel(lastNight.log_date)}${lastNightMinutes != null ? ` · ${formatDuration(lastNightMinutes)}` : ''}` : tr('u8.me.l.sleepNone'), to: '/me/sleep' },
-    { icon: 'circle', title: tr('u8.me.l.cycle'), subtitle: tr('u8.me.l.cycleSub'), to: '/cycle' },
-    { icon: 'calendar', title: tr('u8.me.l.appts'), subtitle: nextAppt ? tr('u8.me.l.apptNext', { title: nextAppt.title }) : tr('u8.me.l.apptNone'), to: '/appointments' },
-    { icon: 'folder', title: tr('u8.me.l.docs'), subtitle: documents?.length ? tr('u8.me.l.docCount', { count: documents.length }) : tr('u8.me.l.docsNone'), to: '/documents' },
-  ];
+  // État réel de chaque raccourci (dernière humeur, dernière nuit, prochain rendez-vous, documents) : affiché en plus
+  // du nom et de la description du registre, jamais à leur place.
+  const status: Record<string, string | undefined> = {
+    mood: lastMood ? tr('u8.me.l.moodLast', { date: formatDate(lastMood.checked_at, { day: 'numeric', month: 'long' }) }) : undefined,
+    sleep: lastNight ? `${nightLabel(lastNight.log_date)}${lastNightMinutes != null ? ` · ${formatDuration(lastNightMinutes)}` : ''}` : undefined,
+    appointments: nextAppt ? tr('u8.me.l.apptNext', { title: nextAppt.title }) : undefined,
+    documents: documents?.length ? tr('u8.me.l.docCount', { count: documents.length }) : undefined,
+  };
 
   return (
     <Screen back title={tr('u8.me.title')} subtitle={tr('u8.me.subtitle')}
-      action={{ label: tr('u8.me.l.mood'), icon: 'heart', onPress: () => router.push('/me/mood'), testID: 'me-main-action' }}>
+      action={{ label: toolName('mood'), icon: 'heart', onPress: () => router.push('/me/mood'), testID: 'me-main-action' }}>
       <TodaySummary title={tr('u8.me.forMe')} items={[
         { icon: 'moon', value: lastNightMinutes != null ? formatDuration(lastNightMinutes) : '—', label: lastNight ? nightLabel(lastNight.log_date) : tr('u8.me.lastNight') },
         { icon: 'heart', value: lastMood ? formatDate(lastMood.checked_at, { day: 'numeric', month: 'short' }) : '—', label: tr('u8.me.lastCheck') },
@@ -77,27 +81,7 @@ export default function MeSpace() {
 
       <Text variant="small" muted>{tr('u8.me.intro')}</Text>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-        {links.map((l) => (
-          <View key={l.to} style={{ flexBasis: '47%', flexGrow: 1 }}>
-            {/* flex: 1 : les deux tuiles d'une rangée gardent la même hauteur quand un texte passe sur plusieurs lignes */}
-            <Tappable accessibilityRole="button" accessibilityLabel={`${l.title}. ${l.subtitle}`} onPress={() => router.push(l.to as never)} style={{ flex: 1 }}>
-              <GlassSurface fill={t.colors.surface} depth={1} radius={20} style={{ flex: 1 }}>
-                <View style={{ padding: spacing.md, gap: 6, minHeight: 96 }}>
-                  <Icon name={l.icon} size={20} color={t.colors.primary} />
-                  {/* Titre et sous-titre entiers (plus de « … ») : la tuile s'adapte à leur hauteur */}
-                  <Text weight="bold">{l.title}</Text>
-                  <Text variant="caption" muted>{l.subtitle}</Text>
-                </View>
-              </GlassSurface>
-            </Tappable>
-          </View>
-        ))}
-      </View>
-
-      <Card onPress={() => router.push('/postpartum/partner')} accessibilityLabel={tr('u8.me.partnerA11y')}>
-        <ListRow icon="users" title={tr('u8.me.partner')} subtitle={tr('u8.me.partnerSub')} />
-      </Card>
+      <ToolLinks ids={ME_SHORTCUTS} status={status} allOf="health" testID="me-tools" />
 
       <SectionTitle title={tr('u8.me.recover')} />
       <Text variant="small" muted>{tr('u8.me.recoverIntro')}</Text>
@@ -130,7 +114,7 @@ export default function MeSpace() {
       <SectionTitle title={tr('u8.me.helpNow')} />
       <Text variant="small" muted>{tr('u8.me.helpNowSub')}</Text>
       <EmergencyList compact />
-      <ListRow icon="life-buoy" title={tr('u8.me.allHelp')} subtitle={tr('u8.me.allHelpSub')} onPress={() => router.push('/emergency')} />
+      <ToolLinks ids={['emergency']} testID="me-help" />
     </Screen>
   );
 }

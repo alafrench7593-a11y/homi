@@ -7,12 +7,6 @@ export const stocks: Messages<typeof fr> = {
   'tool.family_stocks': 'Scorte di casa',
   'tool.family_stocks.sub': 'Pannolini, latte, detersivo: più o meno quanto resta',
   'dock.q.shopping': 'Aggiungi alla spesa',
-  'nav.hub.shopping': 'Spesa',
-  'nav.hub.shoppingSub': 'La lista condivisa della famiglia',
-  'nav.hub.stocks': 'Scorte',
-  'nav.hub.stocksSub': 'Cosa resta in casa e cosa prevedere',
-  'nav.hub.babyStocks': 'Pannolini e latte',
-  'nav.hub.babyStocksSub': 'Le scorte del bebè, condivise con la famiglia',
 
   'stk.title': 'Scorte di casa',
   'stk.titleBaby': 'Scorte del bebè',

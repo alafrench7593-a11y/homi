@@ -7,12 +7,6 @@ export const stocks: Messages<typeof fr> = {
   'tool.family_stocks': 'Vorräte im Haushalt',
   'tool.family_stocks.sub': 'Windeln, Milch, Waschmittel: ungefähr, was noch da ist',
   'dock.q.shopping': 'Zum Einkauf hinzufügen',
-  'nav.hub.shopping': 'Einkauf',
-  'nav.hub.shoppingSub': 'Die gemeinsame Liste des Haushalts',
-  'nav.hub.stocks': 'Vorräte',
-  'nav.hub.stocksSub': 'Was noch da ist und was bald ansteht',
-  'nav.hub.babyStocks': 'Windeln und Milch',
-  'nav.hub.babyStocksSub': 'Babyvorräte, mit dem Haushalt geteilt',
 
   'stk.title': 'Vorräte im Haushalt',
   'stk.titleBaby': 'Babyvorräte',

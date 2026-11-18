@@ -21,6 +21,7 @@ import type { IconName } from '@/components/ui';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
 import { t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
@@ -103,22 +104,7 @@ export default function Library() {
       ) : null}
       <Field label={tr('u1.lib.search')} placeholder={tr('u1.lib.searchPh')} value={q} onChangeText={setQ} returnKeyType="search" />
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-        {([
-          ['heart', tr('u1.lib.meToo'), tr('u1.lib.meTooD'), '/me', t.colors.heart],
-          ['maximize', tr('u1.lib.scanner'), tr('u1.lib.scannerD'), '/scanner', t.colors.lavender],
-          ['star', tr('u1.lib.names'), tr('u1.lib.namesD'), '/names', t.colors.gold],
-          ['life-buoy', tr('u1.lib.emergency'), tr('u1.lib.emergencyD'), '/emergency', t.colors.danger],
-        ] as const).map(([icon, title, sub, href, color]) => (
-          <View key={title} style={{ width: '48.5%' }}>
-            <Card onPress={() => router.push(href)} accessibilityLabel={tr('u1.lib.tileA11y', { title, sub })} style={{ minHeight: 118 }}>
-              <Icon name={icon} color={color} />
-              <Text variant="heading" style={{ marginTop: 6 }}>{title}</Text>
-              <Text variant="caption" muted>{sub}</Text>
-            </Card>
-          </View>
-        ))}
-      </View>
+      <ToolLinks ids={['mood', 'scan_food', 'scan_product', 'preg_names', 'emergency']} allOf="health" testID="library-tools" />
 
       {!q && !activeCat && !journey && forYou.length > 0 && (
         <>
@@ -195,8 +181,9 @@ export default function Library() {
       <SectionTitle title={tr('art.videos')} />
       {/* Vidéos officielles lues dans l'appli (07/11/2026) ; les vidéos maison publiées, s'il y en a, restent listées */}
       <Card testID="library-videos">
-        <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.librarySub', { count: ALL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="library-videos-open" />
-        <ListRow icon="tool" title={tr('vid.tutos')} subtitle={tr('vid.tutosSub', { count: TUTOS.length })} onPress={() => router.push('/tutos')} testID="library-tutos-open" />
+        <View style={{ paddingHorizontal: spacing.md }}>
+          <ToolLinks ids={['videos', 'videos.tutos']} status={{ videos: tr('vid.librarySub', { count: ALL_VIDEOS.length }), 'videos.tutos': tr('vid.tutosSub', { count: TUTOS.length }) }} testID="library-videos-open" />
+        </View>
         <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
           {ALL_VIDEOS.slice(0, 2).map((v) => <VideoCard key={v.id} video={v} compact />)}
         </View>

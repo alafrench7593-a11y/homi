@@ -20,6 +20,8 @@ import type { Bottle, Breastfeed, Diaper, LogKind, Meal, Observation, Pumping, S
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { formatDuration } from '@/lib/domain/dates';
 import { Tappable } from '@/components/Tappable';
 
@@ -97,12 +99,12 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
       ) : (
         <>
           <TodaySummary title={tr('trk.today')} testID="track-tab-today" items={[
-            { icon: 'droplet', value: String(bottles.filter((x) => isToday(x.at)).length + feeds.filter((x) => isToday(x.started_at)).length), label: tr('tool.baby_bottle') },
-            { icon: 'wind', value: String(diapers.filter((x) => isToday(x.at)).length), label: tr('tool.baby_diaper') },
+            { icon: 'droplet', value: String(bottles.filter((x) => isToday(x.at)).length + feeds.filter((x) => isToday(x.started_at)).length), label: toolName('baby_bottle') },
+            { icon: 'wind', value: String(diapers.filter((x) => isToday(x.at)).length), label: toolName('baby_diaper') },
             { icon: 'moon', value: (() => {
               const m = sleeps.filter((x) => isToday(x.started_at) && x.ended_at).reduce((n, x) => n + (Date.parse(x.ended_at!) - Date.parse(x.started_at)) / 60000, 0);
               return m ? formatDuration(m) : '—';
-            })(), label: tr('tool.kid_sleep') },
+            })(), label: toolName('kid_sleep') },
           ]} />
           <Card>
             <DayRibbon events={[
@@ -134,16 +136,19 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
       )}
       <Text variant="caption" muted>{tr('trk.chart.disclaimer')}</Text>
 
-      <SectionTitle title={tr('trk.child.profile', { name: child.first_name })} />
-      <Card>
-        <ListRow icon="trending-up" title={tr('trk.child.growth')} subtitle={tr('trk.child.growthSub')} onPress={() => router.push(`/child/${childId}/growth`)} />
-        <ListRow icon="user" title={tr('trk.child.health')} subtitle={tr('trk.child.healthSub')} onPress={() => router.push(`/child/${childId}`)} />
-        {child.enabled_tracking.includes('meal') && <ListRow icon="feather" title={tr('trk.child.foods')} subtitle={tr('trk.child.foodsSub')} onPress={() => router.push(`/child/${childId}/foods`)} />}
-        <ListRow icon="folder" title={tr('trk.documents')} subtitle={tr('trk.child.documentsSub')} onPress={() => router.push('/documents')} />
-      </Card>
+      {/* Raccourcis du suivi quotidien : choix et ordre seulement, le reste vient du registre (les couches y gardent leur raccourci) */}
+      <ToolLinks ids={CHILD_SHORTCUTS} filter={(x) => x.id !== 'baby_foods' || child.enabled_tracking.includes('meal')} allOf="care"
+        title={tr('trk.child.profile', { name: child.first_name })} testID="track-child-tools" />
     </View>
   );
 }
+
+/** Raccourcis contextuels du suivi (identifiants du registre central : ni libellé, ni icône, ni route ici). */
+const CHILD_SHORTCUTS = ['baby_diaper', 'kid_profile.growth', 'kid_profile', 'baby_foods', 'documents'] as const;
+const PREGNANCY_SHORTCUTS = ['preg_evolution', 'preg_calendar', 'preg_feel', 'preg_eat', 'preg_weight', 'appointments', 'preg_lists', 'documents', 'preg_names'] as const;
+/** Un seul des trois outils de cycle existe pour un profil (projet bébé, contraception, cycle) : les absents ne s'affichent pas. */
+const ME_SHORTCUTS = ['mood', 'ttc_cycle', 'avoid_contraception', 'cycle_home', 'appointments'] as const;
+const POSTPARTUM_SHORTCUTS = ['pp_checkin', 'pp_body', 'mood', 'sleep', 'baby_breastfeed'] as const;
 
 function PregnancyTracking({ cards }: { cards?: boolean }) {
   const { data: profile } = useProfile();
@@ -151,17 +156,8 @@ function PregnancyTracking({ cards }: { cards?: boolean }) {
   return (
     <View style={{ gap: spacing.md }}>
     {cards ? <DailyActions /> : null}
-    <Card>
-      <ListRow icon="moon" title={tr('trk.preg.weekly')} subtitle={tr('trk.preg.weeklySub')} onPress={() => router.push('/pregnancy')} />
-      <ListRow icon="calendar" title={tr('tool.preg_calendar')} subtitle={tr('care.cal.subtitle')} onPress={() => router.push('/pregnancy/calendar' as never)} testID="track-preg-calendar" />
-      <ListRow icon="feather" title={tr('tool.preg_feel')} onPress={() => router.push('/pregnancy/feel' as never)} />
-      <ListRow icon="coffee" title={tr('tool.preg_eat')} onPress={() => router.push('/pregnancy/eat' as never)} />
-      {!profile?.hide_weight_module && <ListRow icon="trending-up" title={tr('trk.preg.weight')} subtitle={tr('trk.preg.weightSub')} onPress={() => router.push('/pregnancy/weight')} />}
-      <ListRow icon="calendar" title={tr('trk.preg.appointments')} subtitle={tr('trk.preg.appointmentsSub')} onPress={() => router.push('/appointments')} />
-      <ListRow icon="check-square" title={tr('trk.preg.lists')} subtitle={tr('trk.preg.listsSub')} onPress={() => router.push('/lists')} />
-      <ListRow icon="folder" title={tr('trk.documents')} subtitle={tr('trk.preg.documentsSub')} onPress={() => router.push('/documents')} />
-      <ListRow icon="star" title={tr('trk.preg.names')} subtitle={tr('trk.preg.namesSub')} onPress={() => router.push('/names')} />
-    </Card>
+    <ToolLinks ids={PREGNANCY_SHORTCUTS} subject={pregnancy ? { type: 'pregnancy', id: pregnancy.id } : null} filter={(x) => x.id !== 'preg_weight' || !profile?.hide_weight_module}
+      allOf="pregnancy" testID="track-preg" />
     </View>
   );
 }
@@ -190,13 +186,7 @@ export default function Track() {
         {!!scope.childId && <ChildTracking childId={scope.childId} journey={scope.scope === 'baby' ? 'baby' : scope.scope === 'child' ? 'child' : null} />}
         {scope.scope === 'pregnancy' && <PregnancyTracking cards />}
         {scope.scope === 'postpartum' && (
-          <Card>
-            <ListRow icon="edit-3" title={tr('tool.pp_checkin')} onPress={() => router.push('/postpartum/checkin')} />
-            <ListRow icon="feather" title={tr('tool.pp_body')} onPress={() => router.push('/postpartum/recovery')} />
-            <ListRow icon="smile" title={tr('tool.mood')} onPress={() => router.push('/me/mood')} />
-            <ListRow icon="cloud" title={tr('tool.sleep')} onPress={() => router.push('/me/sleep')} />
-            {scope.babyId ? <ListRow icon="droplet" title={tr('tool.pp_feeding')} onPress={() => router.push(`/track/breastfeed?child=${scope.babyId}`)} /> : null}
-          </Card>
+          <ToolLinks ids={POSTPARTUM_SHORTCUTS} allOf="pregnancy" testID="track-pp" />
         )}
         {subject.type === 'family' && (
           <View style={{ gap: spacing.md }}>
@@ -210,11 +200,7 @@ export default function Track() {
         )}
         {(cycle || scope.scope === 'none') && subject.type !== 'family' ? <DailyActions /> : null}
         {(cycle || scope.scope === 'none') && subject.type !== 'family' && (
-          <Card>
-            <ListRow icon="heart" title={tr('trk.me.mood')} subtitle={tr('trk.me.moodSub')} onPress={() => router.push('/me/mood')} />
-            {cycle ? <ListRow icon="circle" title={tr('trk.me.cycle')} subtitle={tr('trk.me.cycleSub')} onPress={() => router.push(scope.scope === 'ttc' ? '/fertility' : '/cycle')} /> : null}
-            <ListRow icon="calendar" title={tr('trk.me.appointments')} onPress={() => router.push('/appointments')} />
-          </Card>
+          <ToolLinks ids={ME_SHORTCUTS} allOf={cycle ? ['cycle', 'health'] : 'health'} testID="track-me" />
         )}
         {!loading && !failed && !pregnancy && !children?.length && !cycle && scope.scope !== 'postpartum' && (
           <EmptyStateCard illustration="leaf" title={tr('trk.empty.title')} text={tr('pj.none.body')} action={<Button label={tr('pj.editJourney')} icon="compass" onPress={() => router.push('/journeys')} />} />

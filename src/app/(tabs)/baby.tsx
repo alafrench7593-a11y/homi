@@ -42,7 +42,7 @@ export default function ChildTab() {
   const childrenQ = useTrackedChildren();
   const pregnancy = useActivePregnancy();
   const mode = childTabMode({ children: childrenQ.data?.length ?? 0, pregnancy: !!pregnancy });
-  if (mode === 'pregnancy') return <HubScreen hub="health" id="baby" themes={['pregnancy']} title="nav.hub.pregnancy.title" subtitle="nav.hub.pregnancy.sub" />;
+  if (mode === 'pregnancy') return <HubScreen hub="health" id="baby" categories={['pregnancy']} title="nav.hub.pregnancy.title" subtitle="nav.hub.pregnancy.sub" />;
   // Pendant le chargement des enfants, on n'affiche pas « ajouter un enfant » à tort
   if (mode === 'empty' && !childrenQ.isLoading) return <AddChildOrPregnancy />;
   return <HubScreen hub="baby" />;

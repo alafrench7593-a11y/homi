@@ -1,14 +1,14 @@
 """
 HOMI — onglets hub (Moi, Enfant, Famille ; refonte du 17/11/2026 : sélecteur de profil universel) : CHAQUE outil listé s'ouvre sur un vrai écran (jamais « Page
 introuvable »). Démonstration sans compte, Premium actif.
-Pour chaque hub : urgences, accès directs, outils de chaque groupe (« Voir plus » dépliés), outils des autres
-profils, communauté. Avant chaque clic, le profil « Ma grossesse » est réaffiché (un outil d'un autre profil
+Pour chaque hub : urgences, outils de chaque catégorie (rendus depuis le catalogue central, sans liste repliée),
+accès nommés aux catégories complètes. Avant chaque clic, le profil « Ma grossesse » est réaffiché (un outil d'un autre profil
 sélectionne ce profil). Vérifie aussi : urgences en tête du hub Moi, recherche et sélecteur de profil (avatars) présents,
 aucune cible d'outil < 44 px de haut.
 Chaque clé du rapport doit valoir true ; « introuvables » et « erreurs » doivent être vides.
 Usage : NAV_URL=http://127.0.0.1:8983 PW_CHROMIUM=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell python3 e2e/hubs_v5.py
 """
-import json, os
+import json, os, re
 from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright
 
@@ -27,26 +27,19 @@ def count(pg, sel):
 
 
 def prepare(pg, hub, route):
-    """Ouvre le hub, réaffiche « Ma grossesse », déplie « Voir plus » et les outils des autres profils."""
+    """Ouvre le hub et réaffiche « Ma grossesse » (un outil d'un autre profil sélectionne ce profil)."""
     pg.goto(B + route); pg.wait_for_timeout(1800)
     chip = pg.locator(f'[data-testid="hub-{hub}-profiles"] [data-testid="subject-preg"]')
     if chip.count() and chip.first.get_attribute('aria-checked') != 'true':
         chip.first.click(); pg.wait_for_timeout(900)
-    show = pg.locator(f'[data-testid="hub-{hub}-others-show"]')
-    if show.count():
-        show.first.click(); pg.wait_for_timeout(500)
-    more = pg.locator('[data-testid^="hub-more-"]')
-    for i in range(more.count()):
-        el = more.nth(i)
-        if 'Voir plus' in (el.inner_text() or ''):
-            el.click(); pg.wait_for_timeout(250)
 
 
 def targets(pg, hub):
-    """Liste (sélecteur, rang, nom) de tout ce qui ouvre un écran dans le hub."""
+    """Liste (sélecteur, rang, nom) de tout ce qui ouvre un écran dans le hub : urgences, outils (rendus depuis le
+    catalogue par ToolLinks), accès nommés aux catégories complètes."""
     out = []
-    for sel in [f'[data-testid="hub-{hub}"] [data-testid^="hub-urgent-"]', f'[data-testid="hub-{hub}-entries"] [role="button"]',
-                f'[data-testid="hub-{hub}"] [data-testid^="hub-tool-"] [role="button"]', f'[data-testid="hub-{hub}-community"]']:
+    for sel in [f'[data-testid="hub-{hub}"] [data-testid^="hub-urgent-"]', f'[data-testid="hub-{hub}"] [data-testid^="tool-row-press-"]',
+                f'[data-testid="hub-{hub}"] [data-testid*="-all-"][role="link"]']:
         loc = pg.locator(sel)
         for i in range(loc.count()):
             out.append((sel, i, (loc.nth(i).get_attribute('aria-label') or '')[:60]))
@@ -68,7 +61,7 @@ def run(p):
       return !!(u.compareDocumentPosition(s) & Node.DOCUMENT_POSITION_FOLLOWING); }""")
     R['urgences_en_tete_sante'] = order is True
     R['recherche_et_profils'] = count(pg, '[data-testid="hub-health-search"]') == 1 and count(pg, '[data-testid="hub-health-profiles"]') == 1
-    small = pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="hub-tool-"] [role="button"], [data-testid^="hub-tool-"] [role="switch"]')]
+    small = pg.evaluate("""() => [...document.querySelectorAll('[data-testid="hub-health"] [data-testid^="tool-row-press-"], [data-testid="hub-health"] [data-testid^="tool-fav-"], [data-testid="hub-health"] [data-testid*="-all-"]')]
       .map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0 && r.height < 44).length""")
     R['cibles_44pt'] = small == 0
 
@@ -77,6 +70,10 @@ def run(p):
         prepare(pg, hub, route)
         items = targets(pg, hub)
         R[f'{hub}_outils_listes'] = len(items) >= 5
+        txt = pg.locator(f'[data-testid="hub-{hub}"]').inner_text()
+        R[f'{hub}_aucun_voir_les_autres'] = count(pg, '[data-testid^="hub-more-"]') == 0 and not re.search(r'Voir (plus|les \d+|\d+)|autres\)', txt)
+        R[f'{hub}_acces_nommes_aux_categories'] = count(pg, f'[data-testid="hub-{hub}"] [data-testid*="-all-"][role="link"]') >= 1 and ('Tous les outils' in txt or 'Explorer les outils' in txt)
+        R[f'{hub}_plus_d_acces_directs_en_double'] = count(pg, f'[data-testid="hub-{hub}-entries"]') == 0
         for sel, i, name in items:
             prepare(pg, hub, route)
             loc = pg.locator(sel)

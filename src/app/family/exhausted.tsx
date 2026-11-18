@@ -18,6 +18,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { EXHAUSTION_QUESTIONS, exhaustionLevel, type ExhaustionLevel } from '@/lib/domain/mentalLoad';
 import { callNumber } from '@/lib/links';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 
 export default function Exhausted() {
@@ -43,7 +44,7 @@ export default function Exhausted() {
   }
 
   return (
-    <Screen back title={tr('tool.exhaustion_check')} subtitle={tr('tool.exhaustion_check.sub')}>
+    <Screen back title={toolName('exhaustion_check')} subtitle={toolBlurb('exhaustion_check')}>
       <Text muted>{tr('cm.ex.intro')}</Text>
       {!result ? (
         <>
@@ -63,7 +64,7 @@ export default function Exhausted() {
             <Text variant="title">{tr(`cm.ex.r.${result}` as TKey)}</Text>
             <Text>{tr(`cm.ex.r.${result}.d` as TKey)}</Text>
           </Card>
-          <Button label={tr('tool.offduty')} icon="moon" onPress={guard(() => router.push('/family/offduty'))} />
+          <Button label={toolName('offduty')} icon="moon" onPress={guard(() => router.push('/family/offduty'))} />
           <Button label={tr('cm.ex.relay')} icon="users" variant="secondary" onPress={guard(() => router.push('/family/nights'))} />
           <Button label={tr('cm.ex.metime')} icon="sun" variant="secondary" onPress={guard(() => router.push('/family/me-time'))} />
           {result !== 'low' ? <Banner tone="info" icon="user-check">{tr('cm.ex.pro')}</Banner> : null}

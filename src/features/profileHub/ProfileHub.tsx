@@ -25,6 +25,8 @@ import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolName } from '@/lib/domain/toolCatalog';
 
 const KIND_ICON: Record<MyDayItem['kind'], IconName> = { reminder: 'bell', appointment: 'calendar', event: 'star', task: 'check-square', night: 'moon', me_time: 'sun' };
 const nowHHMM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
@@ -133,12 +135,18 @@ export function MyDayCard() {
       <Row wrap style={{ gap: spacing.xs, marginTop: spacing.sm }}>
         <Button label={tr('hub.day.plan')} icon="calendar" size="sm" onPress={() => router.push({ pathname: '/calendar', params: { new: '1' } } as never)} testID="hub-plan" />
         <Button label={tr('hub.day.reminder')} icon="bell" size="sm" variant="secondary" onPress={() => router.push({ pathname: '/settings/reminders', params: { new: 'custom' } })} testID="hub-reminder" />
-        <Button label={tr('tool.brain_dump')} icon="edit-3" size="sm" variant="ghost" onPress={() => router.push('/family/brain-dump')} testID="hub-dump" />
+        <Button label={toolName('brain_dump')} icon="edit-3" size="sm" variant="ghost" onPress={() => router.push('/family/brain-dump')} testID="hub-dump" />
       </Row>
       <Text variant="caption" color={t.colors.textMuted} style={{ marginTop: 4 }}>{tr('hub.day.note')}</Text>
     </Card>
   );
 }
+
+/** Raccourcis du profil : choix et ordre seulement (identifiants du registre central ; le reste vient du catalogue). */
+const ORGANIZE_TOOLS = ['family_calendar', 'medications', 'reminders', 'family_tasks', 'family_prep', 'brain_dump', 'family_domains', 'house_notebook'] as const;
+const DOCS_TOOLS = ['documents', 'family_papers', 'health_book'] as const;
+const CHILD_HEALTH_TOOLS = ['kid_vaccines', 'kid_profile.growth', 'kid_health', 'appointments', 'kid_card'] as const;
+const ME_TOOLS = ['appointments', 'mood', 'sleep', 'family_metime', 'offduty', 'exhaustion_check'] as const;
 
 /** M'organiser : agenda, rappels, organisation du foyer, échéances, carnet de la maison, charge mentale. */
 export function OrganizeSection() {
@@ -146,16 +154,10 @@ export function OrganizeSection() {
   return (
     <>
       <SectionTitle title={tr('hub.org.title')} />
-      <Card padded={false} testID="hub-organize">
-        <ListRow icon="calendar" title={tr('hub.org.calendar')} subtitle={tr('hub.org.calendarD')} onPress={() => router.push('/agenda')} testID="hub-calendar" />
-        <ListRow icon="clipboard" title={tr('med.open')} subtitle={tr('med.openD')} onPress={() => router.push('/medications')} testID="hub-meds" />
+      <ToolLinks ids={ORGANIZE_TOOLS} status={{ reminders: tr('hub.org.remindersD', { count: remindersN }) }} allOf="family" testID="hub-organize" />
+      {/* Réglage (ce n'est pas un outil) : quelles notifications je reçois */}
+      <Card padded={false}>
         <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="hub-notifs" />
-        <ListRow icon="bell" title={tr('hub.org.reminders')} subtitle={tr('hub.org.remindersD', { count: remindersN })} onPress={() => router.push('/settings/reminders')} testID="hub-reminders" />
-        <ListRow icon="check-square" title={tr('hub.org.family')} subtitle={tr('hub.org.familyD')} onPress={() => router.push('/family')} testID="hub-family-org" />
-        <ListRow icon="calendar" title={tr('tool.family_prep')} subtitle={tr('tool.family_prep.sub')} onPress={() => router.push('/family/prep')} />
-        <ListRow icon="edit-3" title={tr('tool.brain_dump')} subtitle={tr('tool.brain_dump.sub')} onPress={() => router.push('/family/brain-dump')} />
-        <ListRow icon="users" title={tr('tool.family_domains')} subtitle={tr('tool.family_domains.sub')} onPress={() => router.push('/family/domains')} />
-        <ListRow icon="book" title={tr('tool.house_notebook')} subtitle={tr('tool.house_notebook.sub')} onPress={() => router.push('/family/notebook')} />
       </Card>
     </>
   );
@@ -167,29 +169,21 @@ export function FamilyDocsSection() {
   return (
     <>
       <SectionTitle title={tr('hub.docs.title')} />
-      <Card padded={false} testID="hub-docs">
-        <ListRow icon="folder" title={tr('hub.docs.all')} subtitle={tr('hub.docs.allD', { count: docs.length })} onPress={() => router.push('/documents')} testID="hub-docs-all" />
-        <ListRow icon="camera" title={tr('hub.docs.scan')} subtitle={tr('hub.docs.scanD')} onPress={() => router.push('/documents/scan')} testID="hub-docs-scan" />
-        <ListRow icon="briefcase" title={tr('tool.family_papers')} subtitle={tr('tool.family_papers.sub')} onPress={() => router.push('/family/papers')} testID="hub-papers" />
-        <ListRow icon="book-open" title={tr('hub.docs.book')} subtitle={tr('hub.docs.bookD')} onPress={() => router.push('/documents/book')} testID="hub-book" />
-      </Card>
+      <ToolLinks ids={DOCS_TOOLS} status={{ documents: tr('hub.docs.allD', { count: docs.length }) }} testID="hub-docs" />
+      {/* Action de l'écran Documents (numériser) : pas un outil du catalogue */}
+      <Button label={tr('hub.docs.scan')} icon="camera" variant="secondary" size="sm" onPress={() => router.push('/documents/scan')} style={{ alignSelf: 'flex-start' }} testID="hub-docs-scan" />
     </>
   );
 }
 
 function ChildHealthCard({ child }: { child: Child }) {
-  const rows: { icon: IconName; key: string; to: string | { pathname: string; params: Record<string, string> } }[] = [
-    { icon: 'shield', key: 'vaccines', to: `/child/${child.id}/vaccines` },
-    { icon: 'trending-up', key: 'growth', to: `/child/${child.id}/growth` },
-    { icon: 'activity', key: 'tracking', to: `/child/${child.id}/health-tracking` },
-    { icon: 'calendar', key: 'appointments', to: { pathname: '/appointments', params: { child: child.id } } },
-    { icon: 'clipboard', key: 'card', to: `/child/${child.id}/card` },
-  ];
   return (
-    <Card padded={false} testID={`hub-child-${child.first_name}`}>
-      <ListRow leading={<ChildAvatar child={child} size={40} />} title={tr('hub.child.title', { name: child.first_name })} subtitle={childAge(child.birth_date).label} onPress={() => router.push(`/child/${child.id}`)} />
-      {rows.map((r) => <ListRow key={r.key} icon={r.icon} title={tr(`hub.child.${r.key}` as TKey)} onPress={() => router.push(r.to as never)} testID={`hub-child-${child.first_name}-${r.key}`} />)}
-    </Card>
+    <View testID={`hub-child-${child.first_name}`} style={{ gap: spacing.xs }}>
+      <Card padded={false}>
+        <ListRow leading={<ChildAvatar child={child} size={40} />} title={tr('hub.child.title', { name: child.first_name })} subtitle={childAge(child.birth_date).label} onPress={() => router.push(`/child/${child.id}`)} />
+      </Card>
+      <ToolLinks ids={CHILD_HEALTH_TOOLS} subject={{ type: 'child', id: child.id }} testID={`hub-child-${child.first_name}-tools`} />
+    </View>
   );
 }
 
@@ -210,23 +204,16 @@ export function ForMeSection() {
   const js = useJourneyState();
   const { data: profile } = useProfile();
   const body = js.body?.type ?? null;
-  const journeyRow = js.postpartum ? { icon: 'heart' as IconName, key: 'postpartum', to: '/postpartum' }
-    : body === 'pregnancy' ? { icon: 'moon' as IconName, key: 'pregnancy', to: '/pregnancy' }
-    : body === 'cycle' || body === 'avoid' || body === 'ttc' ? { icon: 'droplet' as IconName, key: 'cycle', to: '/cycle' }
-    : null;
+  const journeyTool = js.postpartum ? 'pp_recovery' : body === 'pregnancy' ? 'preg_evolution' : body === 'cycle' || body === 'avoid' || body === 'ttc' ? 'cycle_home' : null;
   return (
     <>
       <SectionTitle title={tr('hub.me.title')} />
-      <Card padded={false} testID="hub-me">
-        {journeyRow ? <ListRow icon={journeyRow.icon} title={tr(`hub.me.${journeyRow.key}` as TKey)} onPress={() => router.push(journeyRow.to as never)} testID={`hub-me-${journeyRow.key}`} /> : null}
+      <View testID="hub-me">
+        <ToolLinks ids={[...(journeyTool ? [journeyTool] : []), ...ME_TOOLS, ...(profile?.family_situation === 'solo' ? ['solo_parent'] : [])]} allOf="health" testID="hub-me-tools" />
+      </View>
+      {/* L'espace « Moi aussi » (un écran d'ensemble, pas un outil du catalogue) */}
+      <Card padded={false}>
         <ListRow icon="heart" title={tr('profile.me')} subtitle={tr('profile.meSub')} onPress={() => router.push('/me')} testID="hub-me-space" />
-        <ListRow icon="calendar" title={tr('hub.me.appointments')} subtitle={tr('hub.me.appointmentsD')} onPress={() => router.push({ pathname: '/appointments', params: { for: 'me' } })} testID="hub-me-appointments" />
-        <ListRow icon="smile" title={tr('profile.mood')} onPress={() => router.push('/me/mood')} />
-        <ListRow icon="cloud" title={tr('profile.sleep')} onPress={() => router.push('/me/sleep')} />
-        <ListRow icon="sun" title={tr('hub.me.metime')} subtitle={tr('hub.me.metimeD')} onPress={() => router.push('/family/me-time')} />
-        <ListRow icon="moon" title={tr('tool.offduty')} subtitle={tr('tool.offduty.sub')} onPress={() => router.push('/family/offduty')} />
-        <ListRow icon="battery" title={tr('tool.exhaustion_check')} subtitle={tr('tool.exhaustion_check.sub')} onPress={() => router.push('/family/exhausted')} />
-        {profile?.family_situation === 'solo' ? <ListRow icon="heart" title={tr('tool.solo_parent')} subtitle={tr('tool.solo_parent.sub')} onPress={() => router.push('/family/solo')} testID="hub-me-solo" /> : null}
       </Card>
       <Row style={{ gap: spacing.xs, alignItems: 'center' }}>
         <Icon name="lock" size={14} />

@@ -13,7 +13,8 @@ import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { ErrorView, Skeleton } from '@/components/States';
 import { t as tr } from '@/i18n';
-import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { EstimateLine, fmt, JourneyArticles, MonthCalendar, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useUserId } from '@/lib/auth';
 import { backend } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
@@ -111,22 +112,11 @@ export default function FertilityScreen() {
         </View>
       </Card>
 
-      <Appear kind="soft">
-        <Card onPress={() => router.push('/fertility/understand')} tone="lavender" accessibilityLabel={tr('u3.fertIdx.understand')}>
-          <Text weight="bold">{tr('u3.fertIdx.understand')}</Text>
-          <Text variant="small" muted>{tr('u3.fertIdx.understandSub')}</Text>
-        </Card>
-      </Appear>
 
       <SectionTitle title={tr('u3.fertIdx.follow')} />
-      <NavCard items={[
-        { icon: 'grid', title: tr('cy.nav.full'), subtitle: tr('cy.nav.full.hint'), to: '/cycle?all=1' },
-        { icon: 'edit-3', title: tr('u3.fertIdx.n1'), subtitle: tr('u3.fertIdx.n1s'), to: '/fertility/log' },
-        { icon: 'thermometer', title: tr('u3.fertBody.title'), subtitle: tr('u3.fertIdx.n2s'), to: '/fertility/body' },
-        ...(prefs.track_intercourse ? [{ icon: 'lock' as const, title: tr('u3.fertIdx.n3'), subtitle: tr('u3.fertIdx.n3s'), to: '/fertility/intimacy' }] : []),
-        { icon: 'rotate-ccw', title: tr('u3.fertHist.title'), subtitle: tr('u3.fertIdx.n4s'), to: '/fertility/history' },
-        { icon: 'bell', title: tr('u3.fertRem.title'), subtitle: tr('u3.fertIdx.n5s'), to: '/fertility/reminders' },
-      ]} />
+      <ToolLinks ids={['cycle_home', 'ttc_tests', 'ttc_temperature', 'ttc_intimacy', 'ttc_reminders']} filter={(x) => x.id !== 'ttc_intimacy' || !!prefs.track_intercourse} testID="fert-tools" />
+      {/* Sous-page de cet écran (l'historique de mes saisies) : pas un outil du catalogue */}
+      <Button label={tr('u3.fertHist.title')} icon="rotate-ccw" variant="ghost" size="sm" onPress={() => router.push('/fertility/history')} style={{ alignSelf: 'flex-start' }} testID="fert-history" />
 
       <SectionTitle title={tr('u3.fertIdx.timing')} />
       <Card tone="lavender">
@@ -142,10 +132,7 @@ export default function FertilityScreen() {
       </Card>
 
       <SectionTitle title={tr('u3.fertIdx.prepT')} />
-      <NavCard items={[
-        { icon: 'help-circle', title: tr('u3.fertIdx.q1'), subtitle: tr('u3.fertIdx.q1s'), to: '/fertility/consultation' },
-        { icon: 'activity', title: tr('u3.fertExams.title'), subtitle: tr('u3.fertIdx.q2s'), to: '/fertility/exams' },
-      ]} />
+      <ToolLinks ids={['ttc_consult', 'ttc_exams', 'ttc_understand']} allOf="cycle" testID="fert-prep" />
 
       <SectionTitle title={tr('u3.fertIdx.read')} />
       <JourneyArticles journey="ttc" />

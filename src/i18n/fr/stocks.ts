@@ -5,12 +5,6 @@ export const stocks = {
   'tool.family_stocks': 'Stocks du foyer',
   'tool.family_stocks.sub': 'Couches, lait, lessive : ce qu’il reste, à peu près',
   'dock.q.shopping': 'Ajouter aux courses',
-  'nav.hub.shopping': 'Courses',
-  'nav.hub.shoppingSub': 'La liste partagée du foyer',
-  'nav.hub.stocks': 'Stocks',
-  'nav.hub.stocksSub': 'Ce qu’il reste à la maison, et ce qui est à prévoir',
-  'nav.hub.babyStocks': 'Couches et lait',
-  'nav.hub.babyStocksSub': 'Les stocks de bébé, partagés avec le foyer',
 
   'stk.title': 'Stocks du foyer',
   'stk.titleBaby': 'Stocks de bébé',

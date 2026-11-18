@@ -21,8 +21,11 @@ import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 
 const CHECKIN_LINK = '/postpartum/checkin';
+/** Raccourcis de « Mon post-partum » : choix et ordre seulement (identifiants du registre central). */
+const PP_SHORTCUTS = ['pp_history', 'pp_mental', 'pp_support', 'pp_body', 'mood', 'sleep'] as const;
 
 export default function PostpartumHome() {
   const t = useTheme();
@@ -131,18 +134,12 @@ export default function PostpartumHome() {
           {!todayCheckin && lowDays >= 5 ? <SupportPlanCard plan={supportPlan({}, { persistentLowDays: lowDays })} /> : null}
 
           <SectionTitle title={tr('u5.pp_home.space')} />
+          <ToolLinks ids={PP_SHORTCUTS} allOf="pregnancy" testID="pp-tools" />
+          {/* Réglage de cet écran (ce que je partage avec mon ou ma partenaire) : pas un outil du catalogue */}
           <Card>
             {[
-              { icon: 'trending-up' as const, title: tr('u5.pp_history.title'), subtitle: tr('u5.pp_home.l_prog'), to: '/postpartum/history' },
-              { icon: 'book-open' as const, title: tr('u5.pp_home.l_under'), subtitle: tr('u5.pp_home.l_under_s'), to: '/postpartum/understand' },
-              { icon: 'users' as const, title: tr('u5.pp_home.l_plan'), subtitle: tr('u5.pp_home.l_plan_s'), to: '/postpartum/support' },
               { icon: 'share-2' as const, title: tr('u5.pp_home.l_share'), subtitle: settings && (settings.share_rest_need || settings.share_availability || settings.share_relay_requests || settings.share_summary) ? tr('u5.pp_home.l_share_on') : tr('u5.pp_home.l_share_off'), to: '/postpartum/sharing' },
-              { icon: 'heart' as const, title: tr('u5.pp_home.l_phys'), subtitle: tr('u5.pp_home.l_phys_s'), to: '/me' },
-            ].map((l, i) => (
-              <StaggerItem key={l.to} index={i}>
-                <ListRow icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} />
-              </StaggerItem>
-            ))}
+            ].map((l) => <ListRow key={l.to} icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} testID="pp-sharing" />)}
           </Card>
 
           <SectionTitle title={tr('u5.pp_home.settings')} />

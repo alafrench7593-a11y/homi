@@ -16,6 +16,7 @@ import { addDays, todayISO } from '@/lib/domain/dates';
 import { mondayOf } from '@/lib/domain/custody';
 import { DOMAINS } from '@/lib/domain/mentalLoad';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 
 export default function CoupleWeek() {
   const toast = useToast();
@@ -50,7 +51,7 @@ export default function CoupleWeek() {
   }
 
   return (
-    <Screen back title={tr('tool.couple_week')} subtitle={tr('cm.cp.week', { date: formatDate(week, { day: 'numeric', month: 'long' }) })}>
+    <Screen back title={toolName('couple_week')} subtitle={tr('cm.cp.week', { date: formatDate(week, { day: 'numeric', month: 'long' }) })}>
       <Text muted>{tr('cm.cp.intro')}</Text>
       <SectionTitle title={tr('cm.cp.s1')} />
       <Card padded={false} testID="cp-events">
@@ -67,7 +68,7 @@ export default function CoupleWeek() {
       <Card>
         {DOMAINS.filter((k) => domains.some((d) => d.key === k && d.owner_id)).map((k) => <Text key={k} variant="small">• {tr(`cm.domain.${k}` as TKey)} : {labelOf(domains.find((d) => d.key === k)!.owner_id)}</Text>)}
         <Text variant="small" muted>{tr('cm.cp.freeDomains', { count: DOMAINS.filter((k) => !domains.some((d) => d.key === k && d.owner_id)).length })}</Text>
-        <Button label={tr('tool.family_domains')} size="sm" variant="ghost" onPress={() => router.push('/family/domains')} />
+        <Button label={toolName('family_domains')} size="sm" variant="ghost" onPress={() => router.push('/family/domains')} />
       </Card>
       <SectionTitle title={tr('cm.cp.s4')} />
       <Card>

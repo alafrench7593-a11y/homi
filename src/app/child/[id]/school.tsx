@@ -11,6 +11,7 @@ import { useAddNeedEntry, useDeleteNeedEntry, useNeedEntries } from '@/lib/data/
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { formatDateFr, todayISO } from '@/lib/domain/dates';
 import { t as tr } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 
 export default function ChildSchool() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,7 +32,7 @@ export default function ChildSchool() {
   }
   const last = entries?.[0];
   return (
-    <Screen back title={tr('tool.child_school')} subtitle={child?.first_name}
+    <Screen back title={toolName('kid_school')} subtitle={child?.first_name}
       action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), testID: 'school-save', disabled: add.isPending }}>
       <TodaySummary title={tr('mb.sc.title')} items={[
         { icon: 'book', value: loadFailed ? '—' : String(entries?.length ?? 0), label: tr('mb.sc.count') },

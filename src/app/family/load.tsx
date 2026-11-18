@@ -14,6 +14,7 @@ import { mentalLoad, shares, type LoadRow } from '@/lib/domain/mentalLoad';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 const MEASURES: (keyof Omit<LoadRow, 'person'>)[] = ['thought', 'done', 'assigned', 'domains'];
 
@@ -26,9 +27,9 @@ export default function MentalLoad() {
   const colors = [t.colors.primary, t.colors.lavender, t.colors.gold, t.colors.success];
   const any = rows.some((r) => r.thought + r.done + r.assigned + r.domains > 0);
   return (
-    <Screen back title={tr('tool.mental_load')} subtitle={tr('tool.mental_load.sub')}>
+    <Screen back title={toolName('mental_load')} subtitle={toolBlurb('mental_load')}>
       <Text muted>{tr('cm.load.intro')}</Text>
-      {!any ? <EmptyState icon="pie-chart" title={tr('cm.load.none')} body={tr('cm.load.noneD')} action={{ label: tr('tool.brain_dump'), onPress: () => router.push('/family/brain-dump') }} /> : MEASURES.map((m) => {
+      {!any ? <EmptyState icon="pie-chart" title={tr('cm.load.none')} body={tr('cm.load.noneD')} action={{ label: toolName('brain_dump'), onPress: () => router.push('/family/brain-dump') }} /> : MEASURES.map((m) => {
         const s = shares(rows, m);
         return (
           <Card key={m} testID={`load-${m}`}>
@@ -51,7 +52,7 @@ export default function MentalLoad() {
         );
       })}
       <Banner tone="info" icon="heart">{tr('cm.load.talk')}</Banner>
-      <Button label={tr('tool.couple_week')} icon="coffee" variant="secondary" onPress={() => router.push('/family/couple')} />
+      <Button label={toolName('couple_week')} icon="coffee" variant="secondary" onPress={() => router.push('/family/couple')} />
     </Screen>
   );
 }

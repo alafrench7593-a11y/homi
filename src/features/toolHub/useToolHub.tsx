@@ -12,7 +12,9 @@ import { useToast } from '@/components/Overlays';
 import { useAllToolEntries, type ToolEntry } from '@/features/hubs/ToolSearch';
 import { useRecentTools } from '@/features/hubs/recentTools';
 import { useActiveSubject } from '@/lib/data/hooks';
-import { accountEntries, findEntry, toggleFavorite, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { useHouseholdProfiles } from '@/lib/data/hooks-alltools';
+import type { ActiveSubject } from '@/lib/store';
+import { accountEntries, findEntry, toggleFavorite, toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
 import { canonicalToolId } from '@/lib/journeys/tools';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion } from '@/theme/ThemeProvider';
@@ -50,6 +52,30 @@ export function useToolHub() {
     const owner = profileOf.get(tool.parent ?? tool.id);
     return { tool, subject: owner?.subject, profile: owner?.profile };
   }, [allTools, profileOf]);
+
+  // Catalogue COMPLET de chaque autre profil du foyer (les menus contextuels visent un profil précis : la fiche d'un
+  // enfant, « Ma grossesse »…), y compris les outils « pour tout le monde » que le profil affiché a déjà.
+  const household = useHouseholdProfiles();
+  const byProfile = useMemo(() => household.filter((p) => !p.active).map((p) => ({ ...p, tools: toolCatalog(p.ctx) })), [household]);
+  /**
+   * Entrée d'un outil du registre (identifiant actuel ou ancien, outil ou sous-accès) pour un menu contextuel :
+   * sur le profil demandé s'il est donné, sinon le profil affiché, sinon le premier profil du foyer qui le propose.
+   */
+  const resolve = useCallback((id: string, subject?: ActiveSubject | null): ToolEntry | null => {
+    const now = canonicalToolId(id) ?? id;
+    const same = (a: ActiveSubject, b: ActiveSubject) => a.type === b.type && ('id' in a ? a.id : '') === ('id' in b ? b.id : '');
+    const mine = () => { const tool = findEntry([...catalog, ...account], now); return tool ? { tool } : null; };
+    if (subject) {
+      const p = byProfile.find((x) => same(x.subject, subject));
+      if (!p) return mine(); // le profil demandé est le profil affiché
+      const tool = findEntry(p.tools, now);
+      return tool ? { tool, subject: p.subject, profile: p.title } : null;
+    }
+    const own = mine();
+    if (own) return own;
+    for (const p of byProfile) { const tool = findEntry(p.tools, now); if (tool) return { tool, subject: p.subject, profile: p.title }; }
+    return null;
+  }, [byProfile, catalog, account]);
 
   const favSet = useMemo(() => new Set(favIds.map((x) => canonicalToolId(x) ?? x)), [favIds]);
   const knownSet = useMemo(() => new Set([...knownIds, ...favSet]), [knownIds, favSet]);
@@ -91,5 +117,5 @@ export function useToolHub() {
     />
   );
 
-  return { scope, catalog, others, all, allTools, account, favorites, recents, favSet, toggleFav, openNow, showSheet, press, longPress, opensDirectly, sheetNode };
+  return { scope, catalog, others, all, allTools, account, resolve, byProfile, recentIds, favorites, recents, favSet, toggleFav, openNow, showSheet, press, longPress, opensDirectly, sheetNode };
 }

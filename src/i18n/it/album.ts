@@ -4,7 +4,6 @@ import type { Messages } from '../types';
 
 export const album: Messages<typeof fr> = {
   "alb.title": "Album foto",
-  "alb.rowSubtitle": "Foto private, visibili solo alla tua famiglia",
   "alb.privacy": "Le foto restano private: sono visibili solo alle persone della tua famiglia autorizzate a vedere {name}, mai pubblicate. La posizione GPS non viene conservata.",
   "alb.add": "Aggiungi una foto",
   "alb.take": "Scatta una foto",

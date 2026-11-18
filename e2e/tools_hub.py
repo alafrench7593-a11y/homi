@@ -6,7 +6,10 @@ Démonstration sans compte, Premium actif (comme e2e/hubs_v5.py).
   3. la fiche d'un outil (premier appui) et « Commencer » ; second appui = ouverture directe ;
   4. favori ajouté depuis une rangée, retrouvé dans « Mes favoris » ;
   5. trois recherches, dont une sans réponse (« Aucun outil ne correspond » + catégories) ;
-  6. cibles tactiles ≥ 44 px, pas de défilement horizontal.
+  6. cibles tactiles ≥ 44 px, pas de défilement horizontal ;
+  7. la Communauté en bloc distinct ; 8. la rubrique des soins (couches), raccourcis contextuels, ancien lien ;
+  9. descriptions entières (fr, de, en) ; 10. menus rebranchés sur le registre ; 11. onglets Moi / Enfant / Famille
+     pour deux profils ; 12. catégories en allemand et en anglais.
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
 Usage : NAV_URL=http://127.0.0.1:8991 OUT=<dossier> PW_CHROMIUM=<chrome-headless-shell> python3 e2e/tools_hub.py
 """
@@ -30,6 +33,17 @@ def n(pg, sel):
 
 def shot(pg, name, full=False):
     pg.screenshot(path=os.path.join(OUT, name + '.png'), full_page=full)
+
+
+def rows(pg):
+    """Identifiants des outils affichés (rangées visibles)."""
+    return pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="tool-row-press-"]')].filter((e) => e.offsetParent !== null).map((e) => e.getAttribute('data-testid').replace('tool-row-press-', ''))""")
+
+
+def untruncated(pg):
+    """Chaque description de rangée est affichée en entier (aucune ellipse) et tient en 4 lignes au plus."""
+    return pg.evaluate("""() => { const els = [...document.querySelectorAll('[data-testid^="tool-desc-"]')].filter((e) => e.offsetParent !== null);
+      return els.length > 0 && els.every((e) => { const lh = parseFloat(getComputedStyle(e).lineHeight) || 20; return e.scrollHeight <= e.clientHeight + 1 && e.clientHeight <= lh * 4 + 2; }); }""")
 
 
 def search(pg, q):
@@ -109,13 +123,113 @@ def run(p):
         and n(pg, '[data-testid="tools-no-match"] [data-testid^="tools-category-"]') == 9 and 'Aucun outil ne correspond' in pg.locator('body').inner_text()
     shot(pg, '07-recherche-sans-reponse')
 
-    # 6. Autres vues : catégorie sans outil, compte, guides, sombre
+    # 6. Autres vues : catégorie sans outil, compte, guides
     for cat, name in [('cycle', '08-categorie-cycle'), ('account', '09-compte-et-reglages'), ('health', '10-categorie-sante')]:
         pg.goto(B + f'/tools/{cat}'); pg.wait_for_timeout(2000)
         shot(pg, name, full=(cat == 'health'))
     pg.goto(B + '/guide'); pg.wait_for_timeout(2000)
     R['index_des_guides'] = n(pg, '[data-testid="guides-list"]') == 1 or 'Aucun guide' in pg.locator('body').inner_text()
     shot(pg, '11-guides')
+
+    # 7. Communauté : un bloc à part, sous les 9 catégories (pas un outil de « Couple et foyer »)
+    pg.goto(B + '/tools'); pg.wait_for_timeout(2400)
+    blk = pg.locator('[data-testid="tools-community"]').first
+    R['communaute_bloc_distinct'] = blk.count() == 1 and n(pg, '[data-testid="tools-categories"] [data-testid="tools-community"]') == 0 \
+        and pg.evaluate("""() => { const c = document.querySelector('[data-testid="tools-categories"]'), k = document.querySelector('[data-testid="tools-community"]');
+          return !!c && !!k && !!(c.compareDocumentPosition(k) & Node.DOCUMENT_POSITION_FOLLOWING); }""")
+    blk.scroll_into_view_if_needed(); pg.wait_for_timeout(400)
+    shot(pg, '12-outils-bloc-communaute'); shot(pg, '12-outils-entier', full=True)
+    pg.goto(B + '/tools/couple'); pg.wait_for_timeout(2000)
+    R['communaute_hors_couple_et_foyer'] = n(pg, '[data-testid="tool-row-press-community"]') == 0
+    pg.goto(B + '/tools'); pg.wait_for_timeout(2200)
+    pg.locator('[data-testid="tools-community-open"]').first.click(); pg.wait_for_timeout(2200)
+    R['communaute_s_ouvre'] = '/community' in pg.url
+
+    # 8. Soins : les couches y sont (plus dans l'alimentation) ; raccourcis contextuels ; ancien lien de catégorie
+    pg.goto(B + '/tools/care'); pg.wait_for_timeout(2400)
+    care = rows(pg)
+    R['soins_couches_dents_scanner'] = all(x in care for x in ('baby_diaper', 'kid_teeth', 'scan_product'))
+    R['soins_titre'] = 'Soins, quotidien et croissance' in pg.locator('body').inner_text()
+    R['descriptions_entieres_soins'] = untruncated(pg)
+    shot(pg, '13-categorie-soins'); shot(pg, '13-categorie-soins-entier', full=True)
+    pg.goto(B + '/tools/feeding'); pg.wait_for_timeout(2200)
+    feed = rows(pg)
+    R['alimentation_sans_couches'] = 'baby_diaper' not in feed and 'scan_food' in feed
+    R['raccourcis_contextuels'] = 'Aussi utile ici' in pg.locator('body').inner_text()
+    shot(pg, '14-categorie-alimentation', full=True)
+    pg.goto(B + '/tools/growth'); pg.wait_for_timeout(2200)
+    R['ancien_lien_categorie'] = 'Soins, quotidien et croissance' in pg.locator('body').inner_text() and 'baby_diaper' in rows(pg)
+    pg.goto(B + '/tools/pregnancy'); pg.wait_for_timeout(2200)
+    R['scanners_en_raccourci_grossesse'] = all(x in rows(pg) for x in ('scan_food', 'scan_product'))
+    # un favori posé depuis un raccourci est celui de l'outil (même étoile dans sa catégorie principale)
+    pg.locator('[data-testid="tool-fav-scan_food"]:visible').first.click(); pg.wait_for_timeout(500)
+    pg.goto(B + '/tools/feeding'); pg.wait_for_timeout(2200)
+    R['un_seul_favori_par_outil'] = pg.locator('[data-testid="tool-fav-scan_food"]:visible').first.get_attribute('aria-checked') == 'true'
+
+    # 9. Descriptions entières (4 lignes au plus, jamais coupées à 390 pt) dans toutes les catégories
+    full = True
+    for cat in ['feeding', 'sleep', 'care', 'health', 'cycle', 'pregnancy', 'school', 'couple', 'family']:
+        pg.goto(B + f'/tools/{cat}'); pg.wait_for_timeout(1800)
+        full = full and (untruncated(pg) or not rows(pg))
+    R['descriptions_entieres_fr'] = full
+
+    # 10. Menus rebranchés sur le registre : rangées du catalogue + accès nommé à la catégorie
+    for route, box, shelf, name in [('/pregnancy', 'preg-rubrics', 'pregnancy', '15-menu-grossesse'), ('/me', 'me-tools', 'health', '16-menu-moi-aussi'),
+                                   ('/family', 'family-tools', 'family', '17-menu-foyer'), ('/track', 'track-preg', 'pregnancy', '18-menu-suivi')]:
+        pg.goto(B + route); pg.wait_for_timeout(2600)
+        cnt = n(pg, f'[data-testid="{box}"] [data-testid^="tool-row-press-"]')
+        link = pg.locator(f'[data-testid="{box}-all-{shelf}"]')
+        R[f'menu_{box}'] = cnt >= 3 and link.count() >= 1 and not __import__('re').search(r'Voir (les )?\d+ autres|\(\d+ de plus\)', pg.locator('body').inner_text())
+        if link.count():
+            link.first.scroll_into_view_if_needed(); pg.wait_for_timeout(300)
+        shot(pg, name); shot(pg, name + '-entier', full=True)
+    pg.goto(B + '/pregnancy'); pg.wait_for_timeout(2400)
+    link = pg.locator('[data-testid="preg-rubrics-all-pregnancy"]').first
+    R['acces_nomme_grossesse'] = (link.get_attribute('aria-label') or '').startswith('Tous les outils de grossesse')
+    link.click(); pg.wait_for_timeout(2000)
+    R['acces_nomme_ouvre_la_categorie'] = pg.url.endswith('/tools/pregnancy')
+    # même outil, même nom, dans le menu et dans la catégorie
+    pg.goto(B + '/pregnancy'); pg.wait_for_timeout(2200)
+    menu_label = pg.locator('[data-testid="tool-row-press-preg_calendar"]').first.get_attribute('aria-label') or ''
+    pg.goto(B + '/tools/pregnancy'); pg.wait_for_timeout(2200)
+    cat_label = pg.locator('[data-testid="tool-row-press-preg_calendar"]').first.get_attribute('aria-label') or ''
+    R['meme_nom_menu_et_catalogue'] = bool(menu_label) and menu_label.split('.')[0] == cat_label.split('.')[0]
+
+    # 11. Onglets Moi / Enfant / Famille pour deux profils : outils du catalogue, accès nommés, aucun « Voir les N autres »
+    lina = pg.evaluate("() => (JSON.parse(localStorage.getItem('toietmoi.demo.v1')).tables.children.find(c => c.first_name === 'Lina') || {}).id")
+    for prof, chip in [('grossesse', 'subject-preg'), ('lina', f'subject-{lina}')]:
+        for hub, route in [('health', '/health'), ('baby', '/baby'), ('family', '/household')]:
+            pg.goto(B + route); pg.wait_for_timeout(2400)
+            c = pg.locator(f'[data-testid="hub-{hub}-profiles"] [data-testid="{chip}"]')
+            if c.count() and c.first.get_attribute('aria-checked') != 'true':
+                c.first.click(); pg.wait_for_timeout(1200)
+            txt = pg.locator(f'[data-testid="hub-{hub}"]').first.inner_text()
+            ids = pg.evaluate("""(h) => [...document.querySelectorAll(`[data-testid="hub-${h}"] [data-testid^="tool-row-press-"]`)].filter((e) => e.offsetParent !== null).map((e) => e.getAttribute('data-testid').replace('tool-row-press-', ''))""", hub)
+            R[f'onglet_{hub}_{prof}'] = len(ids) >= 3 and ('Tous les outils' in txt or 'Explorer les outils' in txt) and 'Voir plus' not in txt and n(pg, '[data-testid^="hub-more-"]') == 0
+            if hub == 'family':
+                R[f'famille_sans_grossesse_ni_cycle_{prof}'] = not any(x.startswith(('preg_', 'cycle_', 'avoid_', 'ttc_', 'pp_')) for x in ids)
+            if hub == 'baby' and prof == 'lina':
+                R['enfant_sante_de_l_enfant'] = 'kid_vaccines' in ids or 'appointments' in ids
+            if hub == 'health' and prof == 'lina':
+                R['moi_sans_sante_de_l_enfant'] = not any(x in ids for x in ('kid_vaccines', 'kid_health', 'kid_treatments'))
+            if hub == 'baby' and prof == 'grossesse':
+                # profil « grossesse » affiché : aucun outil propre dans Enfant (donc pas de scanner) ; seuls ceux des enfants du foyer, à leur nom
+                R['enfant_rien_pour_un_profil_sans_enfant'] = n(pg, '[data-testid="hub-baby"] [data-testid^="hub-group-"]') == 0 and n(pg, '[data-testid="hub-baby-others"]') == 1
+            shot(pg, f'19-onglet-{hub}-{prof}'); shot(pg, f'19-onglet-{hub}-{prof}-entier', full=True)
+
+    # 12. Allemand et anglais : descriptions entières dans les catégories
+    for lang, radio, cat, name in [('de', 'Deutsch', 'health', '20-categorie-sante-allemand'), ('en', 'English', 'care', '21-categorie-soins-anglais')]:
+        pg.goto(B + '/settings/language'); pg.wait_for_timeout(1800)
+        pg.get_by_role('radio', name=radio).click(); pg.wait_for_timeout(2000)
+        ok = True
+        for c2 in ['feeding', 'sleep', 'care', 'health', 'pregnancy', 'couple', 'family']:
+            pg.goto(B + f'/tools/{c2}'); pg.wait_for_timeout(1700)
+            ok = ok and (untruncated(pg) or not rows(pg))
+        R[f'descriptions_entieres_{lang}'] = ok
+        pg.goto(B + f'/tools/{cat}'); pg.wait_for_timeout(2200)
+        shot(pg, name); shot(pg, name + '-entier', full=True)
+    pg.goto(B + '/settings/language'); pg.wait_for_timeout(1800)
+    pg.get_by_role('radio', name='Français').click(); pg.wait_for_timeout(1500)
     b.close()
 
 

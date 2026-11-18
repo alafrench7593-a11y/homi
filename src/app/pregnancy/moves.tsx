@@ -18,6 +18,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { callNumber } from '@/lib/links';
 import { formatDate, formatTime, t as tr } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 
 type Level = 1 | 2 | 3;
@@ -45,7 +46,7 @@ export default function PregnancyMoves() {
   }
 
   return (
-    <Screen back title={tr('tool.preg_moves')} subtitle={week != null ? tr('pm.week', { week }) : undefined}
+    <Screen back title={toolName('preg_moves')} subtitle={week != null ? tr('pm.week', { week }) : undefined}
       action={{ label: tr('pm.add'), icon: 'plus', onPress: () => void add(), testID: 'moves-save', disabled: save.isPending }}>
       <Banner tone="warning" icon="phone" action={<Button label={tr('pm.callMaternity')} icon="phone" variant="secondary" onPress={() => router.push('/emergency')} />}>
         {tr('pm.safety')}

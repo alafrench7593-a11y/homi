@@ -101,6 +101,9 @@ export const TOOL_GLYPHS: Record<string, string> = {
   cycle_bleeding: 'water-alert',            // saignements inhabituels
   cycle_journal: 'notebook-edit',           // journal du cycle
   cycle_stats: 'chart-bar',                 // statistiques du cycle
+  cycle_advice: 'lightbulb-on-outline',     // mes conseils du cycle
+  cycle_month: 'calendar-text-outline',     // résumé du mois
+  cycle_export: 'file-pdf-box',             // export PDF du suivi
   cycle_guides: 'book-information-variant', // guides du cycle
   cycle_kit: 'bag-personal',                // trousse de règles : petit sac
   avoid_contraception: 'shield-check',      // ma contraception : protection
@@ -130,6 +133,7 @@ export const TOOL_GLYPHS: Record<string, string> = {
   preg_lists: 'bag-suitcase',               // listes de préparation : valise
   pp_recovery: 'heart-plus',                // ma récupération après la naissance
   pp_checkin: 'notebook-heart',             // mon point du jour
+  pp_history: 'chart-timeline-variant-shimmer', // mon évolution sur deux semaines
   pp_body: 'yoga',                          // cicatrisation et rééducation
   pp_mental: 'head-heart',                  // baby blues et dépression du post-partum
   pp_support: 'hand-heart',                 // trouver de l'aide
@@ -180,7 +184,7 @@ export const TOOL_GLYPHS: Record<string, string> = {
   preg_edit: 'calendar-edit',
   preg_end: 'flag-checkered',
   // Catégories du centre d'outils
-  'cat.feeding': 'baby-bottle', 'cat.sleep': 'moon-waning-crescent', 'cat.growth': 'human-male-height', 'cat.health': 'stethoscope', 'cat.cycle': 'water',
+  'cat.feeding': 'baby-bottle', 'cat.sleep': 'moon-waning-crescent', 'cat.care': 'hand-wash-outline', 'cat.health': 'stethoscope', 'cat.cycle': 'water',
   'cat.pregnancy': 'human-pregnant', 'cat.school': 'school', 'cat.couple': 'account-heart', 'cat.family': 'calendar-month', 'cat.account': 'cog',
 };
 

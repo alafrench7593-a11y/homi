@@ -1,6 +1,6 @@
 /**
  * Centre d'outils (17/11/2026) — garde-fous du nouveau modèle :
- *  - registre : un besoin = une entrée, 9 catégories + « Mon compte et réglages » (jamais compté comme outil) ;
+ *  - registre : un besoin = une entrée, 9 catégories + l'espace Communauté et « Mon compte et réglages » (à part) ;
  *  - chaque outil a un nom, une description d'UNE phrase, des mots de recherche, un pictogramme propre, des profils,
  *    un statut Premium et une route, dans les 5 langues ;
  *  - anciens identifiants toujours résolus ; favoris migrés de `thème:adresse` vers l'identifiant stable ;
@@ -12,7 +12,7 @@ import { accountEntries, categoryContent, favoriteTools, featuredTools, findEntr
 import { legacyKeyToToolId } from '@/lib/domain/toolLegacy';
 import { foldText, queryTokens, searchCatalog, wordMatch } from '@/lib/domain/toolSearch';
 import {
-  canonicalToolId, FEATURED, REAL_TOOLS, resolveTool, SCOPES, TOOL_ALIASES, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProfiles, TOOLS, toolWordsKey,
+  canonicalToolId, CATEGORY_TOOLS, FEATURED, REAL_TOOLS, resolveTool, SCOPES, TOOL_ALIASES, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProfiles, TOOLS, toolWordsKey,
   type ScopeCtx,
 } from '@/lib/journeys/tools';
 
@@ -33,11 +33,12 @@ function everyTool(): CatalogTool[] {
 describe('registre : un besoin = une entrée', () => {
   beforeAll(() => setLocale('fr'));
 
-  it('120 outils dans 9 catégories, 6 entrées de compte à part (144 entrées avant la refonte)', () => {
-    expect(REAL_TOOLS).toHaveLength(120);
+  it('123 outils dans 9 catégories, l’espace Communauté et 6 entrées de compte à part (144 entrées avant la refonte)', () => {
+    expect(REAL_TOOLS).toHaveLength(124);
+    expect(CATEGORY_TOOLS).toHaveLength(123);
     expect(TOOLS.filter((d) => d.category === 'account').map((d) => d.id).sort()).toEqual(['home_settings', 'journeys', 'notifications', 'preg_edit', 'preg_end', 'settings']);
     const counts = Object.fromEntries(TOOL_CATEGORIES.map((c) => [c, REAL_TOOLS.filter((d) => d.category === c).length]));
-    expect(counts).toEqual({ feeding: 13, sleep: 6, growth: 7, health: 20, cycle: 26, pregnancy: 14, school: 4, couple: 11, family: 19 });
+    expect(counts).toEqual({ feeding: 12, sleep: 6, care: 12, health: 22, cycle: 29, pregnancy: 15, school: 4, couple: 10, family: 13 });
     expect(new Set(TOOLS.map((d) => d.id)).size).toBe(TOOLS.length);
   });
 
@@ -113,8 +114,8 @@ describe('chaque outil : nom, phrase, mots de recherche, pictogramme, profils, P
       const desc = tMaybe(toolDescKey(d.id));
       const words = tMaybe(toolWordsKey(d.id));
       if (!name || name.length > 48) bad.push(`${d.id}: nom`);
-      // UNE phrase : majuscule, point final, pas de seconde phrase, longueur lisible sur deux lignes
-      if (!desc || !/^[A-ZÀ-ÝÄÖÜ¿¡]/.test(desc) || !/[.!?]$/.test(desc) || /[.!?]\s+[A-ZÀ-Ý]/.test(desc) || desc.length < 30 || desc.length > 150) bad.push(`${d.id}: description « ${desc} »`);
+      // UNE phrase : majuscule, point final, pas de seconde phrase, assez courte pour s'afficher en entier dans la liste
+      if (!desc || !/^[A-ZÀ-ÝÄÖÜ¿¡]/.test(desc) || !/[.!?]$/.test(desc) || /[.!?]\s+[A-ZÀ-Ý]/.test(desc) || desc.length < 30 || desc.length > 100) bad.push(`${d.id}: description « ${desc} »`);
       if (!words || words.split(';').filter((w) => w.trim()).length < 4) bad.push(`${d.id}: mots de recherche`);
     }
     expect(bad).toEqual([]);

@@ -24,6 +24,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 
 type Filter = 'today' | 'upcoming' | 'unassigned' | 'done';
 
@@ -132,9 +133,7 @@ export default function FamilyHome() {
         <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
       </Row>
 
-      <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel={tr('u2.fam.hard_a11y')}>
-        <ListRow icon="wind" title={tr('u2.fam.hard_title')} subtitle={tr('u2.fam.hard_sub')} />
-      </Card>
+      <ToolLinks ids={['family_difficult']} testID="family-hard" />
 
       <SectionTitle title={tr('u2.fam.quick_actions')} />
       <QuickActionsGrid onPick={pick} />
@@ -181,17 +180,7 @@ export default function FamilyHome() {
       ))}
 
       <SectionTitle title={tr('u2.fam.organise')} />
-      <Card>
-        {[
-          { icon: 'moon' as const, title: tr('u2.fam.nights'), subtitle: tr('u2.fam.nights_sub'), to: '/family/nights' },
-          { icon: 'sun' as const, title: tr('u2.fam.me_time'), subtitle: tr('u2.fam.me_time_sub'), to: '/family/me-time' },
-          { icon: 'list' as const, title: tr('u2.fam.routines'), subtitle: tr('u2.fam.routines_sub'), to: '/family/routines' },
-          { icon: 'calendar' as const, title: tr('u2.fam.calendar'), subtitle: tr('u2.fam.calendar_sub'), to: '/calendar' },
-          { icon: 'pie-chart' as const, title: tr('u2.fam.review'), subtitle: tr('u2.fam.review_sub'), to: '/family/review' },
-          { icon: 'clock' as const, title: tr('u2.fam.history'), subtitle: tr('u2.fam.history_sub'), to: '/family/history' },
-          { icon: 'zap' as const, title: tr('u2.fam.urgent'), subtitle: tr('u2.fam.urgent_sub'), to: '/family/urgent' },
-        ].map((l) => <ListRow key={l.to} icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} />)}
-      </Card>
+      <ToolLinks ids={['family_nights', 'family_metime', 'family_routines', 'family_calendar', 'family_review', 'family_history', 'family_urgent']} allOf={['family', 'couple']} testID="family-tools" />
 
       <View style={{ height: spacing.md }} />
       <TaskSheet task={editing} open={!!editing || creating} onClose={() => { setEditing(null); setCreating(false); }} />

@@ -12,7 +12,8 @@ import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { t as tr, formatDate, getLocale } from '@/i18n';
-import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { EstimateLine, fmt, JourneyArticles, MonthCalendar, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useContraceptionMethods, useCycleEstimates } from '@/lib/data/hooks-fertility';
 import { addDays, daysBetween, todayISO } from '@/lib/domain/dates';
 
@@ -120,19 +121,15 @@ export default function ContraceptionScreen() {
       </Card>
 
       <SectionTitle title={tr('u7.contra.index.myFollowUp')} />
-      <NavCard items={[
-        { icon: 'grid', title: tr('cy.nav.full'), subtitle: tr('cy.nav.full.hint'), to: '/cycle?all=1' },
-        { icon: 'edit-3', title: tr('u7.contra.index.logTitle'), subtitle: tr('u7.contra.index.logSub'), to: '/contraception/log' },
-        { icon: 'rotate-ccw', title: tr('u7.contra.history.title'), subtitle: tr('u7.contra.index.historySub'), to: '/contraception/history' },
-        { icon: 'bell', title: tr('u7.contra.index.reminders'), subtitle: tr('u7.contra.index.remindersSub'), to: '/contraception/reminders' },
-      ]} />
+      <ToolLinks ids={['cycle_home', 'avoid_reminders', 'contraception_journal']} testID="contra-tools" />
+      {/* Sous-pages de cet écran (noter une prise, relire l'historique) : pas des outils du catalogue */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+        <Button label={tr('u7.contra.index.logTitle')} icon="edit-3" variant="secondary" size="sm" onPress={() => router.push('/contraception/log' as never)} testID="contra-log" />
+        <Button label={tr('u7.contra.history.title')} icon="rotate-ccw" variant="ghost" size="sm" onPress={() => router.push('/contraception/history' as never)} testID="contra-history" />
+      </View>
 
       <SectionTitle title={tr('u7.contra.index.learn')} />
-      <NavCard items={[
-        { icon: 'book', title: tr('u7.contra.index.methodsTitle'), subtitle: tr('u7.contra.index.methodsSub'), to: '/contraception/methods' },
-        { icon: 'alert-circle', title: tr('u7.contra.index.emergTitle'), subtitle: tr('u7.contra.index.emergSub'), to: '/contraception/emergency' },
-        { icon: 'help-circle', title: tr('u7.contra.index.questionsTitle'), subtitle: tr('u7.contra.index.questionsSub'), to: '/contraception/consultation' },
-      ]} />
+      <ToolLinks ids={['avoid_methods', 'avoid_emergency', 'avoid_consult']} allOf="cycle" testID="contra-learn" />
       <JourneyArticles journey="avoid" />
     </Screen>
   );

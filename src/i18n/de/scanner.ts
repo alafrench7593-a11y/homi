@@ -22,7 +22,6 @@ export const scanner: Messages<typeof fr> = {
   'scn.nameIt': 'Produkt angeben',
   'scn.pickOne': 'Wählen Sie die richtige Antwort oder geben Sie das Produkt unten selbst ein.',
   'scn.freeRecalls': 'Rückrufwarnungen (kostenlos)',
-  'scn.recallsFree': 'Amtliche Rückrufe Ihrer Produkte, immer kostenlos',
   'scn.notAnalysed': 'Noch nicht analysiert',
   'scn.filter': 'Anzeigen',
   'scn.noMatch': 'Keine Analyse für diesen Filter',

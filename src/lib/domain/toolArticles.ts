@@ -335,6 +335,8 @@ const TOPIC_ALIAS: Record<string, string> = {
   meal_menu: 'meals', meal_pantry: 'meals', sleep_help: 'kid_sleep', kid_album: 'kid_milestones', journal: 'baby_daily', health_book: 'documents',
   medications: 'kid_treatments', me_diary: 'mood', cycle_pain: 'cycle_symptoms', cycle_discharge: 'cycle_symptoms', cycle_bleeding: 'cycle_symptoms',
   kid_school: 'guide_school', videos: 'official_videos',
+  // écrans entrés au registre le 18/11/2026 : mêmes lectures que l'outil voisin
+  cycle_advice: 'cycle_symptoms', cycle_month: 'cycle_stats', cycle_export: 'cycle_stats', pp_history: 'pp_checkin',
 };
 
 /**

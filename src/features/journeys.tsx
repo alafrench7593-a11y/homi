@@ -15,6 +15,7 @@ import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import type { CloseMode, JourneyRow, JourneyType } from '@/lib/journeys/model';
 import type { Child } from '@/lib/types';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -109,8 +110,8 @@ export function ChildHomeCard({ child }: { child: Child }) {
       <Text variant="small" muted>{childAge(child.birth_date).label}</Text>
       {active.length ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('pj.child.treatments', { count: active.length })}</Text> : null}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.sm }}>
-        {link('trending-up', tr('tool.kid_growth'), `/child/${child.id}/growth`)}
-        {link('compass', tr('tool.kid_needs'), `/child/${child.id}/needs`, 'home-needs')}
+        {link('trending-up', toolName('kid_growth'), `/child/${child.id}/growth`)}
+        {link('compass', toolName('kid_needs'), `/child/${child.id}/needs`, 'home-needs')}
         {link('smile', tr('pj.child.profile'), `/child/${child.id}`)}
       </View>
     </Card>

@@ -1,7 +1,6 @@
 /** Album photo d'un enfant (privé au foyer, jamais public). */
 export const album = {
   'alb.title': "Album photo",
-  'alb.rowSubtitle': "Photos privées, visibles seulement par votre foyer",
   'alb.privacy': "Les photos restent privées : elles ne sont visibles que par les personnes de votre foyer autorisées à voir {name}, jamais publiées. La position GPS n’est pas conservée.",
   'alb.add': "Ajouter une photo",
   'alb.take': "Prendre une photo",

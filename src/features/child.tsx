@@ -17,6 +17,7 @@ import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type Gr
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { t as tr, formatDate, formatNumber, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 
 /** Date lisible dans la langue courante, à partir d'une date ISO (jour civil, sans décalage de fuseau). */
 const fd = (iso: string, withYear = true) => formatDate(`${iso.slice(0, 10)}T00:00:00Z`, { day: 'numeric', month: 'long', ...(withYear ? { year: 'numeric' as const } : {}), timeZone: 'UTC' });
@@ -168,9 +169,8 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
       <Card>
         <ListRow icon="trending-up" title={tr('u7.child.growth')} subtitle={last ? [last.weight_kg != null ? `${fmt(last.weight_kg, 3)} kg` : null, last.height_cm != null ? `${fmt(last.height_cm)} cm` : null].filter(Boolean).join(' · ') : tr('u7.child.noMeasureYet')} onPress={() => onTab('croissance')} />
         <ListRow icon="heart" title={tr('u7.child.health')} subtitle={child.allergies_declared.length ? tr('u7.child.allergiesDeclared', { list: child.allergies_declared.join(', ') }) : tr('u7.child.healthSub')} onPress={() => onTab('sante')} />
-        <ListRow icon="calendar" title={tr('u7.child.appointments')} subtitle={tr('u7.child.appointmentsSub')} onPress={() => router.push('/appointments')} />
-        <ListRow icon="image" title={tr('alb.title')} subtitle={tr('alb.rowSubtitle')} onPress={() => router.push(`/child/${child.id}/album`)} testID="child-album" />
       </Card>
+      <ToolLinks ids={['appointments', 'kid_album']} subject={{ type: 'child', id: child.id }} testID="child-links" />
     </>
   );
 }
@@ -591,12 +591,7 @@ export function HealthTab({ child }: { child: Child }) {
   return (
     <>
       <Banner tone="info">{tr('u7.child.healthBanner')}</Banner>
-      <Card>
-        <ListRow icon="shield" title={tr('u7.child.vaccDone')} subtitle={tr('u7.child.vaccDoneSub')} onPress={() => router.push(`/child/${child.id}/vaccines` as never)} />
-        <ListRow icon="activity" title={tr('u7.child.healthTracking')} subtitle={tr('u7.child.healthTrackingSub')} onPress={() => router.push(`/child/${child.id}/health-tracking` as never)} />
-        <ListRow icon="smile" title={tr('u7.child.mood')} subtitle={tr('u7.child.moodSub')} onPress={() => router.push(`/child/${child.id}/wellbeing` as never)} />
-        {simple ? null : <ListRow icon="book-open" title={tr('u7.child.journal')} subtitle={tr('u7.child.journalSub')} onPress={() => router.push('/journal')} />}
-      </Card>
+      <ToolLinks ids={['kid_vaccines', 'kid_health', 'kid_mood', 'journal']} subject={{ type: 'child', id: child.id }} filter={(x) => x.id !== 'journal' || !simple} allOf="health" testID="child-health-links" />
       {child.allergies_declared.length > 0 && (
         <Card tone="gold">
           <Row><Icon name="alert-circle" size={18} /><Text weight="bold" style={{ flex: 1 }}>{tr('u7.child.allergiesProfile')}</Text></Row>

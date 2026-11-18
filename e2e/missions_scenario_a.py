@@ -57,9 +57,9 @@ with sync_playwright() as p:
 
     # 0. Point d'entrée : onglet Famille → accès direct « Missions »
     pg.goto(B + '/household'); pg.wait_for_timeout(3500)
-    R['entree_famille'] = tid(pg, 'hub-entry-missions').count() > 0
+    R['entree_famille'] = tid(pg, 'tool-row-press-family_missions').count() > 0
     shot(pg, '00-famille-hub')
-    tid(pg, 'hub-entry-missions').click(); pg.wait_for_timeout(3000)
+    tid(pg, 'tool-row-press-family_missions').click(); pg.wait_for_timeout(3000)
     R['ecran_missions'] = pg.url.rstrip('/').endswith('/family/missions')
     # Le conjoint rejoint le foyer de démonstration, puis on revient du côté de la mère
     switch(pg)

@@ -2,9 +2,6 @@ import type { hubs5 as fr } from '../fr/hubs5';
 import type { Messages } from '../types';
 
 export const hubs5: Messages<typeof fr> = {
-  'h5.hub.for': "Herramientas para",
-  'h5.hub.profileA11y': "Mostrar las herramientas para {name}",
-  'h5.hub.elsewhere': "En otras partes de HOMI",
   'h5.preg.weekA11y': "{weeks} semanas de amenorrea{days}",
   'h5.preg.daysA11y': {"one": " y {count} día", "other": " y {count} días"},
   'h5.preg.sgLine': "{weeks} semanas de embarazo · {trimester}",

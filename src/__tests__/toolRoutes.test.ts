@@ -9,7 +9,7 @@ import { setLocale } from '@/i18n';
 import { accountEntries, toolCatalog } from '@/lib/domain/toolCatalog';
 import { TOOL_CATEGORIES, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
 import { APP_ROUTES } from '@/lib/routes.generated';
-import { HUB_ENTRIES, HUB_KEYS } from '@/features/hubs/hubMap';
+import { HUB_KEYS, HUB_PINNED } from '@/features/hubs/hubMap';
 
 const CTXS: ScopeCtx[] = [
   { scope: 'avoid' }, { scope: 'ttc' }, { scope: 'cycle' }, { scope: 'none' }, { scope: 'pregnancy', pregnancyId: 'p1' },
@@ -67,7 +67,7 @@ describe('liens des outils → routes existantes', () => {
     expect(bad).toEqual([]);
   });
 
-  it('accès directs des hubs : routes existantes', () => {
-    for (const hub of HUB_KEYS) for (const e of HUB_ENTRIES[hub]) expect(routeExists(e.href)).toBe(true);
+  it('outils mis en avant dans les onglets : des outils du registre (leur route est vérifiée ci-dessus)', () => {
+    for (const hub of HUB_KEYS) for (const id of HUB_PINNED[hub]) expect(TOOLS.some((d) => d.id === id)).toBe(true);
   });
 });

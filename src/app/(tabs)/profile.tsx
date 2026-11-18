@@ -24,6 +24,7 @@ import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
 
 export default function Profile() {
@@ -88,13 +89,7 @@ export default function Profile() {
         <ForMeSection />
 
         <SectionTitle title={tr('profile.learn')} />
-        <Card>
-          <ListRow icon="message-circle" title={tr('ai.home.title')} subtitle={tr('ai.profile.sub')} onPress={() => router.push('/assistant/chat')} testID="profile-ai" />
-          <ListRow icon="clock" title={tr('ai.profile.history')} onPress={() => router.push('/ask')} />
-          <ListRow icon="book-open" title={tr('lib.home.title')} subtitle={tr('lib.profile.sub', { count: articleCount })} onPress={() => router.push('/library')} testID="profile-library" />
-          <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.profileSub', { count: ALL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="profile-videos" />
-          <ListRow icon="tool" title={tr('vid.tutos')} subtitle={tr('vid.tutosSub', { count: TUTOS.length })} onPress={() => router.push('/tutos')} testID="profile-tutos" />
-        </Card>
+        <ToolLinks ids={['ask', 'library', 'videos', 'videos.tutos']} status={{ library: tr('lib.profile.sub', { count: articleCount }), videos: tr('vid.profileSub', { count: ALL_VIDEOS.length }), 'videos.tutos': tr('vid.tutosSub', { count: TUTOS.length }) }} allOf="health" testID="profile-learn" />
 
         <SectionTitle title={tr('profile.family')} />
         {childrenQ.isLoading && !children ? <Skeleton kind="list" rows={1} /> : childrenQ.isError && !children ? (

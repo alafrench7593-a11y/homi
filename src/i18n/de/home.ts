@@ -68,8 +68,6 @@ export const home: Messages<typeof fr> = {
   "profile.accountCommunity": "Mein Konto und meine Community",
   "profile.me": "Ich auch",
   "profile.meSub": "Körper, Wochenbett, Rückbildung",
-  "profile.sleep": "Mein Schlaf",
-  "profile.mood": "Meine Stimmung",
   "profile.documents": "Meine Dokumente",
   "profile.community": "Mein Community-Profil",
   "profile.communitySub": "Beiträge, Antworten, Gruppen, Alben, Gespeichertes",

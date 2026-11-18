@@ -20,6 +20,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 /** Pictogrammes proposés (Material Community Icons, vérifiés dans la police embarquée). */
 export const PICTOS = [
@@ -135,7 +136,7 @@ export default function KidRoutines() {
   const [editing, setEditing] = useState<KidRoutine | undefined>();
   const list = q.data ?? [];
   return (
-    <Screen back title={tr('tool.kid_routines')} subtitle={tr('tool.kid_routines.sub')}
+    <Screen back title={toolName('kid_routines')} subtitle={toolBlurb('kid_routines')}
       action={{ label: tr('kr.new'), icon: 'plus', onPress: () => { setEditing(undefined); setOpen(true); }, testID: 'kr-new' }}>
       <Text muted>{tr('kr.intro')}</Text>
       {q.isLoading ? <Loading /> : !list.length ? (

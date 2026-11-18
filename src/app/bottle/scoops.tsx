@@ -22,6 +22,7 @@ import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, fonts, radius, spacing, typography } from '@/theme/tokens';
 import { formatNumber, t as tr } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 const RATIO_KEY = 'scoops.mlPerScoop';
 const num = (v: string) => Number(v.replace(',', '.').replace(/[^\d.]/g, ''));
@@ -73,7 +74,7 @@ export default function ScoopCounter() {
 
   const status = reached ? (over ? tr('sc.over') : tr('sc.done')) : tr('sc.tap');
   return (
-    <Screen back title={tr('tool.bottle_scoops')} subtitle={tr('tool.bottle_scoops.sub')}>
+    <Screen back title={toolName('bottle_scoops')} subtitle={toolBlurb('bottle_scoops')}>
       <Text muted>{tr('sc.intro')}</Text>
       <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
         <Field label={tr('sc.ratio')} value={ratio} onChangeText={saveRatio} keyboardType="decimal-pad" suffix="ml" hint={tr('sc.ratioHint')} testID="sc-ratio" />

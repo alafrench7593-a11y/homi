@@ -1,6 +1,9 @@
 /**
- * Rangée d'outil du centre d'outils : pictogramme propre à l'outil et nom sur la première ligne, description sur
- * toute la largeur (2 lignes au plus ; la phrase entière est dans la fiche), pastille de profil, étoile de favori.
+ * Rangée d'outil — la SEULE présentation d'un outil du registre, partout (centre d'outils, catégories, onglets,
+ * menus contextuels via `ToolLinks`) : pictogramme propre à l'outil et nom sur la première ligne, description sur
+ * toute la largeur, ENTIÈRE jusqu'à `TOOL_DESC_LINES` lignes (les descriptions du registre sont écrites pour tenir :
+ * test de longueur par langue ; l'ellipse n'apparaît qu'au-delà, avec de très grandes tailles de texte, et la fiche
+ * affiche toujours la phrase complète), état réel éventuel, pastille de profil, étoile de favori.
  *  - Appui : `onPress` (fiche de l'outil, ou ouverture directe pour un outil déjà connu) ;
  *  - Appui long : `onLongPress` (l'autre geste) ; les deux sont aussi des actions d'accessibilité nommées.
  * La rangée est le bouton (posé DERRIÈRE le contenu) ; l'étoile est un bouton frère de 44 pt, annoncé comme un
@@ -18,12 +21,15 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 
 export const TOOL_ROW_MIN_HEIGHT = 72;
+/** Lignes de description affichées avant l'ellipse (2 auparavant : la phrase était coupée au milieu). */
+export const TOOL_DESC_LINES = 4;
 const GLYPH = 40;
 
 /** Libellé de la pastille : profil d'un autre membre du foyer, nature de l'entrée, ou profils concernés. */
 export function profilePill(tool: CatalogTool, otherProfile?: string): string {
   if (otherProfile) return otherProfile;
   if (tool.category === 'account') return tr('th.ui.setting');
+  if (tool.category === 'community') return tr('th.ui.space');
   if (tool.parent && tool.parent === 'guides') return tr('th.ui.reading');
   if (tool.profiles.length >= TOOL_PROFILES.length - 1) return tr('th.p.all');
   return tool.profiles.map((p) => tr(`th.p.${p}` as TKey)).join(' · ');
@@ -50,12 +56,16 @@ export interface ToolRowProps {
   opensDirectly?: boolean;
   first?: boolean;
   testID?: string;
+  /** État réel fourni par l'écran (« Dernier biberon il y a 2 h ») : affiché EN PLUS du nom et de la description. */
+  status?: string;
+  /** Sans pastille de profil ni « Gratuit » (menu contextuel d'un écran qui dit déjà pour qui c'est). */
+  compact?: boolean;
 }
 
-export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorite, onToggleFavorite, onPress, onLongPress, opensDirectly, first, testID }: ToolRowProps) {
+export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorite, onToggleFavorite, onPress, onLongPress, opensDirectly, first, testID, status, compact }: ToolRowProps) {
   const t = useTheme();
   const pill = profilePill(tool, otherProfile);
-  const label = [tool.label, tool.sub, pill, tool.free && tool.category !== 'account' ? tr('th.ui.free') : null, favorite ? tr('th.ui.favOn') : null]
+  const label = [tool.label, tool.sub, status, compact && !otherProfile ? null : pill, tool.free && tool.category !== 'account' ? tr('th.ui.free') : null, favorite ? tr('th.ui.favOn') : null]
     .filter((x): x is string => !!x).map((x) => x.replace(/[.!?]$/, '')).join('. ');
   const free = tool.free && tool.category !== 'account';
   const star = !!onToggleFavorite && !tool.urgent && tool.category !== 'account';
@@ -81,11 +91,14 @@ export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorit
           <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={GLYPH} />
           <Text weight="bold" style={{ flex: 1, minWidth: 0 }}>{tool.label}</Text>
         </View>
-        {tool.sub ? <View pointerEvents="none"><Text variant="small" muted numberOfLines={2} intentionalTruncation>{tool.sub}</Text></View> : null}
-        <View pointerEvents="none" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-          <Pill label={pill} />
-          {free ? <Pill label={tr('th.ui.free')} tone="accent" /> : null}
-        </View>
+        {tool.sub ? <View pointerEvents="none"><Text variant="small" muted numberOfLines={TOOL_DESC_LINES} intentionalTruncation testID={`tool-desc-${tool.id}`}>{tool.sub}</Text></View> : null}
+        {status ? <View pointerEvents="none"><Text variant="small" weight="medium" color={t.colors.primary}>{status}</Text></View> : null}
+        {compact && !otherProfile && !free ? null : (
+          <View pointerEvents="none" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            {compact && !otherProfile ? null : <Pill label={pill} />}
+            {free ? <Pill label={tr('th.ui.free')} tone="accent" /> : null}
+          </View>
+        )}
         {star ? (
           <View style={{ position: 'absolute', top: spacing.sm - 2, right: -8 }}>
             <FavoriteStar on={favorite} label={tool.label} onPress={() => onToggleFavorite!(tool)} id={tool.id} />

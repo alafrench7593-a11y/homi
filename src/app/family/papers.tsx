@@ -21,6 +21,7 @@ import { toFrDate } from '@/lib/validation';
 import { openLink } from '@/lib/links';
 import { useTheme } from '@/theme/ThemeProvider';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 
 const PARENT_TOO: PaperKind[] = ['id_card', 'passport', 'id_photo'];
@@ -98,7 +99,7 @@ export default function Papers() {
   const color = (s: PaperStatus) => (s === 'ok' ? t.colors.success : s === 'missing' || s === 'no_photo' ? t.colors.textMuted : t.colors.danger);
 
   return (
-    <Screen back title={tr('tool.family_papers')} subtitle={tr('tool.family_papers.sub')}>
+    <Screen back title={toolName('family_papers')} subtitle={toolBlurb('family_papers')}>
       <Text muted>{tr('cm.pp.intro')}</Text>
       {alerts.length ? <Banner tone="warning" icon="clock" title={tr('cm.pp.alerts', { count: alerts.length })}>{alerts.map((p) => `${tr(`cm.pp.k.${p.kind}` as TKey)}${p.child_id ? ` (${children.find((c) => c.id === p.child_id)?.first_name ?? ''})` : ''} : ${formatDate(p.expires_on!, { day: 'numeric', month: 'short', year: 'numeric' })}`).join('\n')}</Banner> : null}
 

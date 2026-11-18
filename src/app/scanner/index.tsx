@@ -21,6 +21,8 @@ import { radius, spacing } from '@/theme/tokens';
 import { ScanListRow } from '@/features/scanner/components';
 import type { IconName } from '@/components/ui';
 import { t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 function EntryCard({ to, icon, title, sub, testID }: { to: '/scanner/product' | '/scanner/food'; icon: IconName; title: string; sub: string; testID: string }) {
   const t = useTheme();
@@ -65,8 +67,8 @@ export default function ScannerHub() {
       ]} />
 
       <Row wrap style={{ alignItems: 'stretch' }}>
-        <EntryCard to="/scanner/product" icon="maximize" title={tr('u8.hub.scanProduct')} sub={tr('u8.hub.scanProductSub')} testID="scanner-entry-product" />
-        <EntryCard to="/scanner/food" icon="search" title={tr('u8.hub.scanFood')} sub={tr('u8.hub.scanFoodSub')} testID="scanner-entry-food" />
+        <EntryCard to="/scanner/product" icon="maximize" title={toolName('scan_product')} sub={toolBlurb('scan_product')} testID="scanner-entry-product" />
+        <EntryCard to="/scanner/food" icon="search" title={toolName('scan_food')} sub={toolBlurb('scan_food')} testID="scanner-entry-food" />
       </Row>
       {quota ? <Text variant="caption" muted>{tr('u8.hub.quotaLine', { remaining: quota.remaining, quota: quota.quota })}</Text> : null}
 
@@ -94,12 +96,7 @@ export default function ScannerHub() {
       ) : null}
 
       <SectionTitle title={tr('u8.hub.tools')} />
-      <Card padded={false}>
-        <ListRow icon="clock" title={tr('u8.hub.histFav')} subtitle={tr('u8.hub.histFavSub')} onPress={() => router.push('/scanner/history')} testID="scanner-tool-history" />
-        <ListRow icon="columns" title={tr('u8.hub.compare')} subtitle={tr('u8.hub.compareSub')} onPress={() => router.push('/scanner/compare')} testID="scanner-tool-compare" />
-        <ListRow icon="slash" title={tr('u8.hub.avoid')} subtitle={tr('u8.hub.avoidSub')} onPress={() => router.push('/scanner/avoid')} />
-        <ListRow icon="bell" title={tr('tool.recall_alerts')} subtitle={tr('scn.recallsFree')} onPress={() => router.push('/scanner/recalls')} testID="scanner-tool-recalls" />
-      </Card>
+      <ToolLinks ids={['scan_history', 'scan_compare', 'scan_avoid', 'recall_alerts']} testID="scanner-tool" />
 
       <Card tone="soft">
         <Text weight="medium">{tr('u8.hub.how')}</Text>

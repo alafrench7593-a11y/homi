@@ -65,8 +65,6 @@ export const home = {
   'profile.accountCommunity': 'Mon compte et ma communauté',
   'profile.me': 'Moi aussi',
   'profile.meSub': 'Corps, post-partum, rééducation',
-  'profile.sleep': 'Mon sommeil',
-  'profile.mood': 'Mon humeur',
   'profile.documents': 'Mes documents',
   'profile.community': 'Mon profil communautaire',
   'profile.communitySub': 'Publications, réponses, groupes, albums, enregistrés',

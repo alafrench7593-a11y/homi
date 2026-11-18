@@ -3,7 +3,7 @@
  *
  * De haut en bas : la recherche par besoin ; « Mes favoris » (et les outils ouverts récemment) qui s'ouvrent
  * directement ; « Pour <profil affiché> » (les 6 plus utiles) ; puis les 9 catégories en liste, chacune ouvrant la
- * liste de ses outils. Plus de grille de cartes, plus de « Voir les N autres » : tout outil est à deux appuis au
+ * liste de ses outils ; enfin la Communauté, un espace À PART (bloc distinct : ce n'est pas un outil d'une catégorie). Plus de grille de cartes, plus de « Voir les N autres » : tout outil est à deux appuis au
  * plus (catégorie → outil), ou à un appui depuis la recherche.
  *
  * Une rangée d'outil ouvre sa fiche (ce que ça fait, pour qui, l'aperçu, « Commencer ») la première fois, puis
@@ -19,14 +19,14 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { ToolShortcut } from '@/components/ToolCard';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { ProfileSwitcher } from '@/components/Family';
-import { glyphColor, tint } from '@/components/ToolGlyph';
+import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
 import { Tappable } from '@/components/Tappable';
-import { Field, Icon, IconButton, Text } from '@/components/ui';
+import { Button, Field, Icon, IconButton, Text } from '@/components/ui';
 import { CategoryList } from '@/features/toolHub/CategoryList';
-import { ToolRow } from '@/features/toolHub/ToolRow';
+import { FavoriteStar, ToolRow } from '@/features/toolHub/ToolRow';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
 import { useProfile } from '@/lib/data/hooks';
-import { featuredTools, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { communityEntry, featuredTools, type CatalogTool } from '@/lib/domain/toolCatalog';
 import { searchCatalog } from '@/lib/domain/toolSearch';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -48,6 +48,7 @@ export default function Tools() {
   const outcome = useMemo(() => (query ? searchCatalog(searchable, query) : null), [searchable, query]);
   const featured = useMemo(() => featuredTools(catalog, scope.scope), [catalog, scope.scope]);
   const urgent = catalog.find((x) => x.urgent);
+  const community = useMemo(() => { const tool = communityEntry(allTools); return tool ? entryOf.get(tool.id) ?? { tool } : null; }, [allTools, entryOf]);
 
   const forTitle = scope.child ? tr('th.ui.for', { name: scope.child.first_name })
     : scope.scope === 'pregnancy' ? tr('th.ui.forPregnancy') : scope.scope === 'family' ? tr('th.ui.forFamily') : tr('th.ui.forMe');
@@ -114,6 +115,11 @@ export default function Tools() {
           <Section title={tr('th.ui.categories')}>
             <CategoryList tools={allTools} />
           </Section>
+
+          {/* 5. La communauté : un espace à part, hors des 9 catégories (son accès principal est en haut à droite) */}
+          {community ? (
+            <CommunityBlock tool={community.tool} favorite={hub.favSet.has(community.tool.id)} onToggleFavorite={() => hub.toggleFav(community.tool)} onOpen={() => hub.openNow(community)} />
+          ) : null}
         </>
       )}
       {hub.sheetNode}
@@ -130,6 +136,23 @@ function Section({ title, icon, children, testID }: { title: string; icon?: 'sta
         <Text variant="heading" accessibilityRole="header" style={{ flex: 1 }}>{title}</Text>
       </View>
       {children}
+    </View>
+  );
+}
+
+/** Bloc « Communauté » : présenté à part des catégories d'outils (nom, phrase et pictogramme du registre). */
+function CommunityBlock({ tool, favorite, onToggleFavorite, onOpen }: { tool: CatalogTool; favorite: boolean; onToggleFavorite: () => void; onOpen: () => void }) {
+  const t = useTheme();
+  return (
+    <View testID="tools-community" style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+      <Text variant="caption" weight="medium" muted>{tr('th.ui.communityHead')}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} size={44} />
+        <Text variant="heading" accessibilityRole="header" style={{ flex: 1, minWidth: 0 }}>{tool.label}</Text>
+        <FavoriteStar on={favorite} label={tool.label} onPress={onToggleFavorite} id={tool.id} />
+      </View>
+      {tool.sub ? <Text variant="small" muted>{tool.sub}</Text> : null}
+      <Button label={tr('th.ui.communityOpen')} icon="message-circle" variant="secondary" onPress={onOpen} full testID="tools-community-open" />
     </View>
   );
 }

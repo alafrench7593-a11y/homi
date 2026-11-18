@@ -29,6 +29,4 @@ export const diary = {
   'dy.deleted': 'Page supprimée.',
   'dy.pageA11y': 'Page du {date}, humeur : {mood}',
   'dy.listErr': 'Impossible de charger votre journal',
-  'dy.link': 'Mon journal intime',
-  'dy.linkSub': 'Mes pages et mes souvenirs, rien que pour moi',
 };

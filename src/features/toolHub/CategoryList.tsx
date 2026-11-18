@@ -17,7 +17,7 @@ import { t as tr } from '@/i18n';
 
 export function categoryCounts(tools: CatalogTool[]): Record<ToolCategory, number> {
   const out = Object.fromEntries([...TOOL_CATEGORIES, 'account'].map((c) => [c, 0])) as Record<ToolCategory, number>;
-  for (const x of tools) out[x.category] += 1;
+  for (const x of tools) if (x.category in out) out[x.category] += 1; // l'espace Communauté n'est compté nulle part
   return out;
 }
 

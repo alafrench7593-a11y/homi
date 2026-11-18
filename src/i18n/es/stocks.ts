@@ -7,12 +7,6 @@ export const stocks: Messages<typeof fr> = {
   'tool.family_stocks': 'Reservas del hogar',
   'tool.family_stocks.sub': 'Pañales, leche, detergente: lo que queda, más o menos',
   'dock.q.shopping': 'Añadir a la compra',
-  'nav.hub.shopping': 'Compra',
-  'nav.hub.shoppingSub': 'La lista compartida del hogar',
-  'nav.hub.stocks': 'Reservas',
-  'nav.hub.stocksSub': 'Lo que queda en casa y lo que hay que prever',
-  'nav.hub.babyStocks': 'Pañales y leche',
-  'nav.hub.babyStocksSub': 'Las reservas del bebé, compartidas con el hogar',
 
   'stk.title': 'Reservas del hogar',
   'stk.titleBaby': 'Reservas del bebé',

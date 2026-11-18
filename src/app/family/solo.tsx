@@ -31,6 +31,8 @@ import type { FamilySituation } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 const platform = (): 'ios' | 'android' | 'web' => (Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web');
 const PHONE = /^[0-9 +().-]{3,25}$/;
@@ -136,7 +138,7 @@ export default function Solo() {
   }
 
   return (
-    <Screen back title={tr('tool.solo_parent')} subtitle={tr('tool.solo_parent.sub')}>
+    <Screen back title={toolName('solo_parent')} subtitle={toolBlurb('solo_parent')}>
       <Text muted>{tr('sol.intro')}</Text>
 
       <Card testID="sol-situation">
@@ -213,14 +215,7 @@ export default function Solo() {
 
       {/* Charge mentale */}
       <SectionTitle title={tr('sol.load.title')} />
-      <Card padded={false}>
-        <ListRow icon="edit-3" title={tr('tool.brain_dump')} subtitle={tr('sol.load.dump')} onPress={() => router.push('/family/brain-dump')} testID="sol-load-dump" />
-        <ListRow icon="calendar" title={tr('tool.family_prep')} subtitle={tr('sol.load.prep')} onPress={() => router.push('/family/prep')} />
-        <ListRow icon="folder" title={tr('tool.family_papers')} subtitle={tr('sol.load.papers')} onPress={() => router.push('/family/papers')} />
-        <ListRow icon="book" title={tr('tool.house_notebook')} subtitle={tr('sol.load.notebook')} onPress={() => router.push('/family/notebook')} />
-        <ListRow icon="moon" title={tr('tool.offduty')} subtitle={tr('sol.load.offduty')} onPress={() => router.push('/family/offduty')} testID="sol-load-offduty" />
-        <ListRow icon="battery" title={tr('tool.exhaustion_check')} subtitle={tr('sol.load.exhausted')} onPress={() => router.push('/family/exhausted')} />
-      </Card>
+      <ToolLinks ids={['brain_dump', 'family_prep', 'family_papers', 'house_notebook', 'offduty', 'exhaustion_check']} allOf="couple" testID="sol-load" />
       <Banner tone="info" icon="heart">{tr('sol.load.permission')}</Banner>
 
       {/* Si ça ne va pas */}

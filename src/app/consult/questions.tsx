@@ -10,6 +10,7 @@ import { ConsultationChecklist } from '@/components/Fertility';
 import { Text } from '@/components/ui';
 import { useChild } from '@/lib/data/hooks';
 import { t as tr } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 
 export default function ConsultQuestions() {
   const { child: childId, for: scope } = useLocalSearchParams<{ child?: string; for?: string }>();
@@ -17,7 +18,7 @@ export default function ConsultQuestions() {
   const journey = child ? 'child' : scope === 'pregnancy' ? 'pregnancy' : 'general';
   const subtitle = child ? child.first_name : scope === 'pregnancy' ? tr('cq.pregnancy') : tr('cq.me');
   return (
-    <Screen back title={tr('tool.consult_questions')} subtitle={subtitle}>
+    <Screen back title={toolName('consult_questions')} subtitle={subtitle}>
       <Text muted>{tr('cq.intro')}</Text>
       <ConsultationChecklist journey={journey} childId={child?.id ?? null} />
     </Screen>
