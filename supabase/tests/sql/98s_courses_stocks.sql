@@ -161,7 +161,7 @@ select tests.ok((select count(*) from public.household_events where household_id
 select tests.ok((select depth = 1 and origin_event_id = (select id from public.household_events where household_id = :'H' and type = 'shopping.item_checked' and payload ->> 'label' = 'Croquettes'
   order by created_at desc limit 1) from public.household_events where type = 'mission.completed' and entity_id = (select id::text from s98 where k = 'FT')),
   'chaîne de causalité : « mission.completed » hérite du fait « article coché »');
-select tests.ok((select count(*) from public.notifications where user_id = :'OW' and title = 'Mission terminée : Racheter : Croquettes') = 1,
+select tests.ok((select count(*) from public.notifications where user_id = :'OW' and title like '% a terminé : Racheter : Croquettes') = 1,
   'mission terminée par la coche : la demandeuse reçoit la confirmation');
 select tests.ok((select qty_estimate = 2 and restock_state = 'bought' from public.household_stocks where id = (select id from s98 where k = 'F')),
   'mission terminée : quantité toujours inchangée (validation explicite attendue)');

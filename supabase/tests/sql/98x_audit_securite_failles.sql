@@ -40,6 +40,7 @@ insert into public.household_members (household_id, user_id, role, can_view, can
   (:'XH', :'XN', 'caregiver', '{daily,lists,health,pregnancy}', '{daily,lists}', array[:'XK1']::uuid[], false);
 -- Données du foyer que la nounou ne doit pas voir (Max n'est pas confié ; document non partagé ; grossesse fermée)
 insert into public.pregnancies (id, household_id, carrier_user_id, due_date) values (:'XP', :'XH', :'XM', current_date + 100);
+update public.pregnancies set share_basics = true where id = :'XP';  -- 19/11/2026 : partage choisi par XM (personne enceinte)
 insert into public.bottles (child_id, household_id, at, prepared_ml) values (:'XK2', :'XH', now() - interval '1 hour', 137);
 insert into public.family_tasks (household_id, title, child_id, due_at, created_by) values (:'XH', 'Orthophoniste de Max', :'XK2', now() + interval '2 days', :'XO');
 insert into public.family_events (household_id, title, child_id, starts_at, created_by) values (:'XH', 'Audience garde de Max', :'XK2', now() + interval '3 days', :'XO');

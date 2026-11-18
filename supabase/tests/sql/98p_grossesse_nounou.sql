@@ -34,7 +34,9 @@ set role authenticated; set request.jwt.claim.sub = :'NN';
 select tests.ok(not public.can_access_pregnancy(:'P'), 'grossesse : nounou sans accord → can_access_pregnancy faux');
 select tests.ok(tests.count('select * from public.pregnancies where id = ''d098a000-0000-4000-8000-0000000000b1''') = 0, 'grossesse : nounou sans accord → grossesse illisible (négatif)');
 set request.jwt.claim.sub = :'CP';
-select tests.ok(public.can_access_pregnancy(:'P'), 'grossesse : co-parent garde l''accès');
+select tests.ok(not public.can_access_pregnancy(:'P'), 'grossesse : co-parent sans partage de la personne enceinte → fermée (19/11/2026)');
+set request.jwt.claim.sub = :'OW'; select public.set_pregnancy_sharing(:'P', true, false); set request.jwt.claim.sub = :'CP';
+select tests.ok(public.can_access_pregnancy(:'P'), 'grossesse : co-parent garde l''accès une fois le partage choisi');
 
 -- Invitations : défaut par rôle, accord explicite respecté (inviter est une fonction Premium)
 reset role; select tests.set_premium(:'OW', true);

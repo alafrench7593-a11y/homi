@@ -38,6 +38,10 @@ select tests.ok(tests.count('select * from public.bottles where client_id = ''99
 select tests.ok(tests.count('select * from public.child_measurements') = 3, 'coparent : lecture des mesures (domaine santé en lecture)');
 select tests.throws($$insert into public.child_measurements (child_id, household_id, measured_on, weight_kg) values ('cccccccc-cccc-4ccc-8ccc-cccccccccccc','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', current_date, 10.2)$$,
   'coparent : écriture des mesures refusée sans permission « santé »');
+-- 19/11/2026 : la grossesse appartient à la personne enceinte ; Camille partage explicitement l'essentiel et les documents
+set request.jwt.claim.sub = :'CAMILLE';
+select public.set_pregnancy_sharing((select id from public.pregnancies where household_id = :'FAMILLE' and carrier_user_id = :'CAMILLE' order by created_at limit 1), true, true);
+set request.jwt.claim.sub = :'ALEX';
 select tests.ok(tests.count('select * from public.documents') = 1, 'coparent : document privé de Camille invisible, document partagé visible');
 select tests.ok(tests.count('select * from storage.objects where name like ''%prise-de-sang%''') = 0, 'coparent : fichier privé inaccessible dans le stockage');
 select tests.ok(tests.count('select * from storage.objects where name like ''%echo-t2%''') = 1, 'coparent : fichier partagé accessible (URL signée possible)');

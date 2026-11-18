@@ -123,7 +123,7 @@ select tests.ok((select mission_state = 'done' and status = 'done' and done_by =
   'mission A : terminée (fait par : le conjoint, posé par le serveur)');
 select tests.ok((select checked and checked_by = :'CP' from public.shopping_items where id = (select shopping_item_id from public.family_tasks where id = (select id from m98 where k = 'A'))),
   'mission A : article de courses coché à la fin confirmée');
-select tests.ok((select count(*) from public.notifications where user_id = :'OW' and title like 'Mission terminée : %') = 1, 'mission A : l''autrice reçoit la confirmation');
+select tests.ok((select count(*) from public.notifications where user_id = :'OW' and title like '% a terminé : %') = 1, 'mission A : l''autrice reçoit la confirmation (« <Prénom> a terminé : … »)');
 select tests.ok((select count(*) from public.notifications where user_id = :'OW' and title like '%commencé%') = 0, '« En cours » ne déclenche pas de notification (pas de relance)');
 select tests.ok((select array_agg(kind order by created_at, kind) from public.family_task_events where task_id = (select id from m98 where k = 'A'))
   = array['created', 'updated', 'accepted', 'started', 'done'], 'historique horodaté complet : créée, précisée, acceptée, en cours, terminée');
