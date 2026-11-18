@@ -104,6 +104,11 @@ export interface DeviceCalendarPrefs {
   visibleCalendarIds: string[];
   /** Calendrier où HOMI ajoute ; null = calendrier par défaut du téléphone. */
   targetCalendarId: string | null;
+  /**
+   * L'utilisateur a-t-il déjà choisi ses calendriers ? Tant que non, tous les calendriers lisibles sont affichés
+   * dès l'accès complet accordé (TestFlight 9 : rien ne s'affichait tant qu'on n'allait pas cocher un calendrier).
+   */
+  chosen?: boolean;
 }
 
 export interface DeviceCalendarState {

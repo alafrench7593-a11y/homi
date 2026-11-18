@@ -78,7 +78,8 @@ export function useDeviceAgenda(fromMs: number, toMs: number, knownHomiKeys: Rea
   const [raw, setRaw] = useState(NOTHING);
   const visible = state.prefs.visibleCalendarIds.join(',');
   useEffect(() => {
-    if (deviceCalendar.unavailable() || !visible) { setRaw(NOTHING); return; }
+    // Pas de garde sur `visible` : events() choisit lui-même tous les calendriers au premier accès complet
+    if (deviceCalendar.unavailable()) { setRaw(NOTHING); return; }
     let live = true;
     deviceCalendar.events(new Date(fromMs), new Date(toMs)).then((r) => { if (live) setRaw(r); }).catch(() => { if (live) setRaw(NOTHING); });
     return () => { live = false; };

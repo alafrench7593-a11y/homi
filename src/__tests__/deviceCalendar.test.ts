@@ -352,7 +352,7 @@ describe('calendrier cible', () => {
     phone.calendars = phone.calendars.filter((c) => c.id !== 'cal-work');
     expect(await service.targetCalendar()).toMatchObject({ calendar: { id: 'cal-home' }, fellBack: true });
     expect((await service.visibleCalendars()).map((c) => c.id)).toEqual(['cal-home']);
-    expect(service.snapshot().prefs).toEqual({ visibleCalendarIds: ['cal-home'], targetCalendarId: null });
+    expect(service.snapshot().prefs).toEqual({ visibleCalendarIds: ['cal-home'], targetCalendarId: null, chosen: true });
     expect(await service.add(evSource())).toMatchObject({ status: 'added', calendarId: 'cal-home' });
   });
 
@@ -372,9 +372,11 @@ describe('lecture des calendriers choisis (lecture seule)', () => {
     phone.events.set('x1', external('x1'));
     phone.events.set('x2', external('x2', { calendarId: 'cal-holidays', title: 'Férié', allDay: true, start: '2026-11-10T23:00:00.000Z', end: '2026-11-11T22:59:59.000Z' }));
     phone.events.set('x3', external('x3', { start: '2027-03-01T09:00:00.000Z', end: '2027-03-01T10:00:00.000Z' }));
-    // rien de choisi : rien de lu
-    expect((await service.events(new Date('2026-11-01'), new Date('2026-12-01'))).events).toEqual([]);
-    expect(phone.calls.filter((c) => c.startsWith('list:'))).toEqual([]);
+    // rien de choisi : au premier accès complet, tous les calendriers lisibles sont affichés (TestFlight 9)
+    const first = await service.events(new Date('2026-11-01'), new Date('2026-12-01'));
+    expect(first.events.map((e) => e.id).sort()).toEqual(['x1', 'x2']);
+    expect(service.snapshot().prefs.chosen).toBe(true);
+    // un choix explicite reste respecté
     await service.setPrefs({ visibleCalendarIds: ['cal-work'] });
     const r = await service.events(new Date('2026-11-01'), new Date('2026-12-01'));
     expect(r.events.map((e) => e.id)).toEqual(['x1']);
@@ -542,6 +544,6 @@ describe('mise à jour et retrait : seulement sur geste explicite, seulement ce 
     expect((await s.load()).links).toEqual({});
     await store.setItem(STORAGE_KEY, JSON.stringify({ prefs: { visibleCalendarIds: 'x', targetCalendarId: 3 }, links: { a: null, b: { eventId: 1 } } }));
     const s2 = createDeviceCalendarService({ adapter, store, timeZone: () => PARIS, now: () => NOW });
-    expect(await s2.load()).toEqual({ prefs: { visibleCalendarIds: [], targetCalendarId: null }, links: {} });
+    expect(await s2.load()).toEqual({ prefs: { visibleCalendarIds: [], targetCalendarId: null, chosen: false }, links: {} });
   });
 });

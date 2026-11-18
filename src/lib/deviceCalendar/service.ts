@@ -64,6 +64,7 @@ export function createDeviceCalendarService({ adapter, store, timeZone, now = ()
         prefs: {
           visibleCalendarIds: Array.isArray(prefs?.visibleCalendarIds) ? prefs.visibleCalendarIds.filter((x): x is string => typeof x === 'string') : [],
           targetCalendarId: typeof prefs?.targetCalendarId === 'string' ? prefs.targetCalendarId : null,
+          chosen: prefs?.chosen === true,
         },
         links: parsed?.links && typeof parsed.links === 'object' ? Object.fromEntries(Object.entries(parsed.links).filter(([, l]) => !!l && typeof l.eventId === 'string' && typeof l.fingerprint === 'string')) : {},
       };
@@ -105,13 +106,18 @@ export function createDeviceCalendarService({ adapter, store, timeZone, now = ()
    * préférences sans bruit (rien à afficher, rien à casser).
    */
   async function visibleCalendars(known?: DeviceCalendarInfo[]): Promise<DeviceCalendarInfo[]> {
-    const s = await load();
+    let s = await load();
     const all = known ?? await calendars();
     const ids = new Set(all.map((c) => c.id));
+    // Premier accès complet, aucun choix fait : tous les calendriers lisibles sont affichés (choix modifiable ensuite)
+    if (!s.prefs.chosen && !s.prefs.visibleCalendarIds.length && all.length && (await access()) === 'full') {
+      s = { ...s, prefs: { ...s.prefs, visibleCalendarIds: all.map((c) => c.id), chosen: true } };
+      await save(s);
+    }
     const kept = s.prefs.visibleCalendarIds.filter((id) => ids.has(id));
     const targetGone = !!s.prefs.targetCalendarId && !ids.has(s.prefs.targetCalendarId);
     if (all.length && (kept.length !== s.prefs.visibleCalendarIds.length || targetGone)) {
-      await save({ ...s, prefs: { visibleCalendarIds: kept, targetCalendarId: targetGone ? null : s.prefs.targetCalendarId } });
+      await save({ ...s, prefs: { ...s.prefs, visibleCalendarIds: kept, targetCalendarId: targetGone ? null : s.prefs.targetCalendarId } });
     }
     return all.filter((c) => kept.includes(c.id));
   }
@@ -241,7 +247,7 @@ export function createDeviceCalendarService({ adapter, store, timeZone, now = ()
 
   async function setPrefs(patch: Partial<DeviceCalendarPrefs>) {
     const s = await load();
-    await save({ ...s, prefs: { ...s.prefs, ...patch, ...(patch.visibleCalendarIds ? { visibleCalendarIds: [...new Set(patch.visibleCalendarIds)] } : {}) } });
+    await save({ ...s, prefs: { ...s.prefs, ...patch, ...(patch.visibleCalendarIds ? { visibleCalendarIds: [...new Set(patch.visibleCalendarIds)], chosen: true } : {}) } });
   }
 
   return {

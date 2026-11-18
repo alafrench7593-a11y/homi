@@ -104,7 +104,15 @@ export const nativeAdapter: DeviceCalendarAdapter = {
   },
   async listEvents(calendarIds, from, to) {
     if (!calendarIds.length) return [];
-    return (await loadLegacy()!.getEventsAsync(calendarIds, from, to)).map(toEvent);
+    try {
+      return (await loadLegacy()!.getEventsAsync(calendarIds, from, to)).map(toEvent);
+    } catch (e) {
+      // Repli sur l'API récente si l'ancienne lecture échoue sur cet appareil
+      const N = loadNext();
+      if (!N) throw e;
+      const list = await N.listEvents(calendarIds, from, to);
+      return list.map((ev) => toEvent(ev as unknown as Parameters<typeof toEvent>[0]));
+    }
   },
   async getEvent(id) {
     try { return toEvent(await loadLegacy()!.getEventAsync(id)); } catch (e) { if (isNotFound(e)) return null; throw e; }

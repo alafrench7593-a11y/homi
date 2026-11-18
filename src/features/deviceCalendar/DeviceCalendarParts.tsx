@@ -130,7 +130,7 @@ export function DeviceEventSheet({ item, onClose }: { item: DeviceAgendaItem | n
 }
 
 /** Résumé d'état, pour l'agenda et les réglages. */
-export function useDeviceCalendarSummary(): { visible: boolean; text: string } {
+export function useDeviceCalendarSummary(): { visible: boolean; text: string; notAsked: boolean; request: () => Promise<unknown> } {
   const o = useDeviceCalendarOverview();
   const state = useDeviceCalendarState();
   const shown = o.calendars.filter((c) => state.prefs.visibleCalendarIds.includes(c.id)).length;
@@ -138,7 +138,7 @@ export function useDeviceCalendarSummary(): { visible: boolean; text: string } {
     : o.access === 'full' ? (shown ? tr('ical.rowSub.full', { count: shown }) : tr('ical.rowSub.fullNone'))
       : o.access === 'writeOnly' ? tr('ical.rowSub.writeOnly') : o.access === 'denied' ? tr('ical.rowSub.denied') : tr('ical.rowSub.off');
   // Hors iPhone, la fonction n'existe pas : on ne la propose pas (en démonstration sur iPhone, elle s'explique)
-  return { visible: o.unavailable !== 'platform', text };
+  return { visible: o.unavailable !== 'platform', text, notAsked: !o.unavailable && o.access === 'notAsked', request: o.request };
 }
 
 /** Accès à « Calendrier iPhone » depuis l'agenda. */
@@ -147,7 +147,8 @@ export function DeviceCalendarEntry() {
   const s = useDeviceCalendarSummary();
   if (!s.visible) return null;
   return (
-    <Card onPress={() => router.push(DEVICE_CALENDAR_ROUTE as never)} accessibilityLabel={`${tr('ical.title')}. ${s.text}`} testID="cal-iphone-entry">
+    // Jamais demandé : un appui pose directement la question d'iOS, les événements arrivent aussitôt dans l'agenda
+    <Card onPress={() => { if (s.notAsked) void s.request(); else router.push(DEVICE_CALENDAR_ROUTE as never); }} accessibilityLabel={`${tr('ical.title')}. ${s.text}`} testID="cal-iphone-entry">
       <Row style={{ alignItems: 'center' }}>
         <Icon name="smartphone" size={18} color={t.colors.primary} />
         <View style={{ flex: 1 }}>
