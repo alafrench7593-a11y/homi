@@ -135,7 +135,8 @@ with sync_playwright() as p:
     # Dock : « Nouvelle mission » dans l'ajout rapide
     pg.goto(B + '/household'); pg.wait_for_timeout(3000)
     tid(pg, 'quick-add').click(); pg.wait_for_timeout(1200)
-    R['dock_nouvelle_mission'] = pg.get_by_role('button', name=re.compile('Nouvelle mission')).count() > 0
+    # libellé actuel de l'action rapide : « Confier une mission » (ancien : « Nouvelle mission ») ; « Créer une tâche » à côté
+    R['dock_nouvelle_mission'] = pg.get_by_role('button', name=re.compile('Confier une mission|Nouvelle mission')).count() > 0 and pg.get_by_role('button', name=re.compile('Créer une tâche')).count() > 0
     shot(pg, '13-dock-ajout-rapide')
     b.close()
 

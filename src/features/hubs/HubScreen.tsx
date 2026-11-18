@@ -23,8 +23,10 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Cascade } from '@/motion';
-import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, Text } from '@/components/ui';
+import { EmptyState, ErrorView } from '@/components/States';
+import { ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
+import { useCareLinks } from '@/lib/data/hooks-nounou';
+import { Button, ListGroup, ListRow, Text } from '@/components/ui';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useToolHub } from '@/features/toolHub/useToolHub';
 import { useProfile } from '@/lib/data/hooks';
@@ -35,7 +37,8 @@ import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { hubSelection, hubTools, type HubKey } from './hubMap';
 import { UrgentRow } from './HubList';
-import { ProfileSwipe, ProfileSwitcher } from '@/components/ProfileSwitcher';
+import { ProfileSwipe, ProfileSwitcher, useActiveProfileKey } from '@/components/ProfileSwitcher';
+import { ProfileStage } from '@/components/profileTransition';
 import { ToolSearchButton } from './ToolSearch';
 
 const MAX_W = 720;
@@ -62,6 +65,7 @@ export interface HubScreenProps {
 
 export function HubScreen({ hub, id = hub, categories, excludeCategories, title, subtitle }: HubScreenProps) {
   const profileQ = useProfile();
+  const profileKey = useActiveProfileKey();
   const th = useToolHub();
   const { scope, catalog, byProfile, favSet, recentIds } = th;
   const childId = scope.childId ?? (scope.scope === 'postpartum' ? scope.babyId : null);
@@ -92,16 +96,19 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
       {/* Profil affiché : la même rangée d'avatars que sur Aujourd'hui, avec l'indicateur de pages */}
       <ProfileSwitcher pager testID={`hub-${id}-profiles`} />
       <ProfileSwipe>
+      <ProfileStage profileKey={profileKey}>
       <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>
         <View style={{ gap: spacing.sm }}>
           {urgent.map((u) => <UrgentRow key={u.id} tool={u} />)}
           <ToolSearchButton testID={`hub-${id}-search`} />
+          {/* Onglet Enfant : la garde de l'enfant affiché (son carnet s'il a une nounou confirmée, sinon « Mes gardes ») */}
+          {hub === 'baby' ? <CareEntry childId={scope.childId ?? null} /> : null}
         </View>
 
         {recents.length ? <Cascade index={1}><ToolLinks ids={recents} title={tr('th.ui.recents')} status={status} testID={`hub-${id}-recents`} /></Cascade> : null}
         {favIds.length ? <Cascade index={1}><ToolLinks ids={favIds} title={tr('th.ui.favs')} status={status} testID={`hub-${id}-favs`} /></Cascade> : null}
 
-        {profileQ.isLoading && !profileQ.data ? <Skeleton kind="card" rows={3} /> : profileQ.isError && !profileQ.data ? (
+        {profileQ.isLoading && !profileQ.data ? <ToolRowsSkeleton rows={4} testID={`hub-${id}-skeleton`} /> : profileQ.isError && !profileQ.data ? (
           <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title={tr('u3.tools.errTools')} />
         ) : !groups.length && !others.length ? (
           <EmptyState icon="compass" title={tr('nav.hub.empty')} body={tr('nav.hub.emptyB')} action={{ label: tr('pj.editJourney'), onPress: () => router.push('/journeys') }} />
@@ -127,7 +134,20 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
         {/* En bas, à portée de pouce : tous les outils */}
         <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID={`hub-${id}-all-tools`} />
       </View>
+      </ProfileStage>
       </ProfileSwipe>
     </Screen>
+  );
+}
+
+/** Entrée « Garde et nounou » de l'onglet Enfant : `/garde/<enfant>` quand une nounou a un accès confirmé, sinon `/garde`. */
+function CareEntry({ childId }: { childId: string | null }) {
+  const links = useCareLinks(childId).data;
+  const active = !!childId && !!links?.some((l) => l.confirmed_at && !l.revoked_at);
+  return (
+    <ListGroup testID="hub-baby-care">
+      <ListRow icon="briefcase" title={tr('glass.care.entry')} subtitle={tr('glass.care.entrySub')} testID="hub-baby-care-open"
+        onPress={() => router.push((active ? `/garde/${childId}` : '/garde') as never)} />
+    </ListGroup>
   );
 }

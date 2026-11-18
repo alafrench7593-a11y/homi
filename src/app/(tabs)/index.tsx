@@ -8,7 +8,8 @@
  * (6) recommandation ; (7) articles compacts ; puis les modules facultatifs.
  *
  * Glisser à gauche / à droite sur le tableau de bord passe au profil suivant / précédent (`ProfileSwipe`) : tout
- * l'accueil se met à jour ; les carrousels internes gardent leur défilement. « Personnaliser », en bas, ouvre le mode
+ * l'accueil se met à jour ENSEMBLE (`ProfileStage` : sortie, rendu à neuf sous la clé du profil, entrée en cascade) ;
+ * les carrousels internes gardent leur défilement. « Personnaliser », en bas, ouvre le mode
  * édition SUR PLACE (le même éditeur que Réglages › Mon accueil).
  * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
@@ -21,16 +22,18 @@ import { useScreenScroll } from '@/components/screenChrome';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Cascade } from '@/motion';
 import { DemoBanner } from '@/components/Family';
-import { ProfileSwipe, ProfileSwitcher, SwipeExclude } from '@/components/ProfileSwitcher';
-import { ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Icon, IconButton, Row, Text } from '@/components/ui';
+import { ProfileSwipe, ProfileSwitcher, SwipeExclude, useActiveProfileKey } from '@/components/ProfileSwitcher';
+import { ProfileStage } from '@/components/profileTransition';
+import { ErrorView } from '@/components/States';
+import { Banner, Button, Icon, Row, Text } from '@/components/ui';
+import { GlassIconButton } from '@/components/glass';
 import { PostpartumHomeCard } from '@/features/postpartum';
 import { PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
 import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
 import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
-import { useActivePregnancy, useArticle, useArticles, useHouseholdMembers, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticle, useArticles, useHouseholdMembers, useJourneyState, usePremium, useProfile, useTrackedChildren, useMyMembership } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
@@ -53,11 +56,12 @@ import { useUiStore } from '@/lib/store';
 import { useUserId } from '@/lib/auth';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, previewTime, spacing } from '@/theme/tokens';
-import { AccountActions } from '@/components/AccountActions';
+import { AccountActions, HEADER_GAP, HEADER_ICON } from '@/components/AccountActions';
 import { Tappable } from '@/components/Tappable';
 import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/features/homeToday';
+import { coparentSituation } from '@/features/homeToday/coparentHome';
 import { homeSituation, resolveHomeLayout, shownModules, type HomeModuleKey } from '@/features/homeToday/homeLayout';
-import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
+import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeCardSkeleton, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
@@ -92,6 +96,7 @@ export default function Home() {
   const skyOverride = useUiStore((st) => st.skyOverride);
   const simple = useUiStore((st) => st.simpleMode);
   const [editing, setEditing] = useState(false);
+  const profileKey = useActiveProfileKey();
   const now = skyOverride ? previewTime(skyOverride) : new Date();
 
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
@@ -101,8 +106,11 @@ export default function Home() {
   setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
   // Situation affichée → configuration du tableau de bord (déclarative), puis choix de la personne pour cette situation
+  const membership = useMyMembership();
   const adults = (members ?? []).filter((m) => m.role === 'owner' || m.role === 'coparent').length;
-  const situation = homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy });
+  // Co-parent (adulte qui n'a pas créé le foyer) : accueil « coparent » sur « Moi » / « couple » (jamais les données
+  // privées de l'autre adulte)
+  const situation = coparentSituation(homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy }), membership?.role);
   const saved = useUiStore((st) => st.homeLayouts[situation]);
   const modules = useMemo(() => shownModules(resolveHomeLayout(situation, saved)), [situation, saved]);
 
@@ -143,7 +151,7 @@ export default function Home() {
     // (3) Actions rapides du profil (personnalisables) ; carrousel : son défilement passe avant le glissement de profil
     quick: mainLoading ? null : <DailyActions />,
     // (4) Résumé du profil sélectionné
-    main: mainLoading ? <Skeleton kind="card" rows={1} />
+    main: mainLoading ? <HomeCardSkeleton />
       : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); void js.query.refetch(); }} />
       : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
       : childScope && child ? <Cocoon key={child.id} child={child} journey={childScope} now={now} article={article} />
@@ -173,15 +181,15 @@ export default function Home() {
   };
 
   return (
-    <Screen bottomInset={TAB_SCREEN_INSET}>
+    <Screen bottomInset={TAB_SCREEN_INSET} reorder>
       {/* (1) Bonjour + date + profil actif. Coin supérieur droit : urgences, notifications, Communauté, Réglages, Profil. */}
       <View style={{ gap: 2, marginTop: spacing.xs }}>
         {/* 5 boutons de 44 pt : ils tiennent à 320 pt ; la date passe sous la salutation (elle était écrasée à côté) */}
-        <Row style={{ justifyContent: 'flex-end', alignItems: 'center' }} gap={0}>
-          <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
+        <Row style={{ justifyContent: 'flex-end', alignItems: 'center' }} gap={HEADER_GAP}>
+          <GlassIconButton icon="life-buoy" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
           <View>
-            <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
-            <BadgeDot count={unread} style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
+            <GlassIconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
+            <BadgeDot count={unread} style={{ position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
           </View>
           <AccountActions />
         </Row>
@@ -194,7 +202,10 @@ export default function Home() {
       {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
       {editing ? <HomeEditor situation={situation} onDone={() => setEditing(false)} /> : (
-        <ProfileSwipe style={{ gap: spacing.md }}>
+        <ProfileSwipe>
+          {/* Rendu PAR PROFIL : au changement de profil, l'ancien tableau de bord s'efface, le nouveau est monté à neuf
+              (vraies données du nouveau profil) et ses cartes entrent en cascade (`profileTransition`) */}
+          <ProfileStage profileKey={profileKey} style={{ gap: spacing.md }} testID="home-stage">
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;
@@ -209,6 +220,7 @@ export default function Home() {
           )}
           {/* Personnalisation sur place : réordonner, masquer, actions rapides, outils épinglés, rétablir */}
           <CustomizeButton onPress={() => setEditing(true)} />
+          </ProfileStage>
         </ProfileSwipe>
       )}
       <DemoBanner />

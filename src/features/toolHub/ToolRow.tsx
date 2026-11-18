@@ -8,16 +8,24 @@
  *  - Appui long : `onLongPress` (l'autre geste) ; les deux sont aussi des actions d'accessibilité nommées.
  * La rangée est le bouton (posé DERRIÈRE le contenu) ; l'étoile est un bouton frère de 44 pt, annoncé comme un
  * interrupteur avec son état. La hauteur suit le texte (grandes tailles de police) : rien n'est coupé hors description.
+ *
+ * Langage de `GlassToolCard` (18/11/2026) SANS le verre : dans une LISTE riche en texte (nom + description de 4 lignes
+ * + pastilles), une carte OPAQUE avec liseré et ombre légère se lit mieux qu'une vitre et coûte moins (pas de flou par
+ * rangée dans une liste virtualisée). Le verre est gardé pour les TUILES compactes (favoris, récents, « Pour <profil> »,
+ * `ToolTile`). Mêmes gestes : compression 0,97 (`usePress`, fil UI), ombre qui évolue, haptique léger, ouverture après
+ * l'enfoncement perçu (`openTool`). Rangée mémoïsée (React.memo).
  */
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Tappable } from '@/components/Tappable';
+import { FavoriteStar as MotionStar, SkeletonBone, SkeletonPulse, usePress } from '@/motion';
 import { ToolGlyph } from '@/components/ToolGlyph';
-import { haptic, Icon, Text } from '@/components/ui';
+import { haptic, Text } from '@/components/ui';
 import type { CatalogTool } from '@/lib/domain/toolCatalog';
 import { TOOL_PROFILES } from '@/lib/journeys/tools';
 import { useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, physicalShadow, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 
 export const TOOL_ROW_MIN_HEIGHT = 72;
@@ -64,67 +72,105 @@ export interface ToolRowProps {
 
 export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorite, onToggleFavorite, onPress, onLongPress, opensDirectly, first, testID, status, compact }: ToolRowProps) {
   const t = useTheme();
+  const p = usePress({ scale: 0.97, haptic: 'light' });
+  // Ombre de repos (contact + diffuse) qui se fond dans la seule ombre de contact quand la carte est enfoncée
+  const shadows = React.useMemo(() => {
+    if (t.name === 'night') return null;
+    const low = physicalShadow('low', t.isDark, t.material.shadowInk);
+    return { rest: low, down: [low[0]] };
+  }, [t]);
+  const rest = useAnimatedStyle(() => ({ opacity: 1 - p.progress.value }));
+  const down = useAnimatedStyle(() => ({ opacity: p.progress.value }));
   const pill = profilePill(tool, otherProfile);
   const label = [tool.label, tool.sub, status, compact && !otherProfile ? null : pill, tool.free && tool.category !== 'account' ? tr('th.ui.free') : null, favorite ? tr('th.ui.favOn') : null]
     .filter((x): x is string => !!x).map((x) => x.replace(/[.!?]$/, '')).join('. ');
   const free = tool.free && tool.category !== 'account';
   const star = !!onToggleFavorite && !tool.urgent && tool.category !== 'account';
   return (
-    <View testID={testID ?? `tool-row-${tool.id}`} style={{ minHeight: TOOL_ROW_MIN_HEIGHT }}>
-      {first ? null : <View pointerEvents="none" style={{ position: 'absolute', top: 0, right: 0, left: 0, height: StyleSheet.hairlineWidth, backgroundColor: t.colors.border }} />}
-      <Tappable
-        accessibilityRole="button"
-        accessibilityLabel={label}
-        accessibilityHint={onLongPress ? tr(opensDirectly ? 'th.ui.hintOpen' : 'th.ui.hintSheet') : undefined}
-        accessibilityActions={onLongPress ? [{ name: 'activate' }, { name: 'longpress', label: tr(opensDirectly ? 'th.ui.actSheet' : 'th.ui.actOpen') }] : undefined}
-        onAccessibilityAction={(e) => { if (e.nativeEvent.actionName === 'longpress') onLongPress?.(); else onPress(); }}
-        onPress={() => { haptic('selection'); onPress(); }}
-        onLongPress={onLongPress ? () => { haptic('light'); onLongPress(); } : undefined}
-        delayLongPress={380}
-        pressScale={1} hoverLift={0} bare
-        testID={`tool-row-press-${tool.id}`}
-        style={({ pressed, hovered }) => [StyleSheet.absoluteFill, { borderRadius: radius.md, backgroundColor: pressed || hovered ? t.colors.surfaceAlt : 'transparent' }]}
-      />
-      {/* en-tête : pictogramme, nom (la place de l'étoile est réservée) ; la description occupe ensuite TOUTE la largeur */}
-      <View pointerEvents="box-none" style={{ paddingVertical: spacing.sm, gap: 6, minHeight: TOOL_ROW_MIN_HEIGHT, justifyContent: 'center' }}>
-        <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingRight: star ? MIN_TOUCH - 4 : 0 }}>
-          <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={GLYPH} />
-          <Text weight="bold" style={{ flex: 1, minWidth: 0 }}>{tool.label}</Text>
-        </View>
-        {tool.sub ? <View pointerEvents="none"><Text variant="small" muted numberOfLines={TOOL_DESC_LINES} intentionalTruncation testID={`tool-desc-${tool.id}`}>{tool.sub}</Text></View> : null}
-        {status ? <View pointerEvents="none"><Text variant="small" weight="medium" color={t.colors.primary}>{status}</Text></View> : null}
-        {compact && !otherProfile && !free ? null : (
-          <View pointerEvents="none" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-            {compact && !otherProfile ? null : <Pill label={pill} />}
-            {free ? <Pill label={tr('th.ui.free')} tone="accent" /> : null}
-          </View>
-        )}
-        {star ? (
-          <View style={{ position: 'absolute', top: spacing.sm - 2, right: -8 }}>
-            <FavoriteStar on={favorite} label={tool.label} onPress={() => onToggleFavorite!(tool)} id={tool.id} />
-          </View>
+    <View testID={testID ?? `tool-row-${tool.id}`} style={{ marginTop: first ? 0 : spacing.xs }}>
+      {/* Carte OPAQUE (liste riche en texte : on ne lit pas quatre lignes à travers une vitre) : liseré, profondeur
+          subtile. Au toucher : compression 0,97, l'ombre de repos se fond dans l'ombre de contact, haptique léger. */}
+      <Animated.View style={[{ borderRadius: radius.lg }, p.style]}>
+        {shadows ? (
+          <>
+            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.lg, boxShadow: shadows.rest }, rest]} />
+            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.lg, boxShadow: shadows.down }, down]} />
+          </>
         ) : null}
-      </View>
+        <Tappable
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          accessibilityHint={onLongPress ? tr(opensDirectly ? 'th.ui.hintOpen' : 'th.ui.hintSheet') : undefined}
+          accessibilityActions={onLongPress ? [{ name: 'activate' }, { name: 'longpress', label: tr(opensDirectly ? 'th.ui.actSheet' : 'th.ui.actOpen') }] : undefined}
+          onAccessibilityAction={(e) => { if (e.nativeEvent.actionName === 'longpress') onLongPress?.(); else onPress(); }}
+          onPressIn={p.onPressIn}
+          onPressOut={p.onPressOut}
+          onPress={onPress}
+          onLongPress={onLongPress ? () => { haptic('light'); onLongPress(); } : undefined}
+          delayLongPress={380}
+          pressRetentionOffset={16}
+          pressScale={1} hoverLift={0} bare
+          testID={`tool-row-press-${tool.id}`}
+          style={({ pressed, hovered }) => [StyleSheet.absoluteFill, { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: pressed || hovered ? t.colors.surfaceAlt : t.colors.surface }]}
+        />
+        {/* en-tête : pictogramme, nom (la place de l'étoile est réservée) ; la description occupe ensuite TOUTE la largeur */}
+        <View pointerEvents="box-none" style={{ paddingVertical: spacing.sm, paddingHorizontal: spacing.sm, gap: 6, minHeight: TOOL_ROW_MIN_HEIGHT, justifyContent: 'center' }}>
+          <View pointerEvents="none" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingRight: star ? MIN_TOUCH - 8 : 0 }}>
+            <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={GLYPH} />
+            <Text weight="bold" style={{ flex: 1, minWidth: 0 }}>{tool.label}</Text>
+          </View>
+          {tool.sub ? <View pointerEvents="none"><Text variant="small" muted numberOfLines={TOOL_DESC_LINES} intentionalTruncation testID={`tool-desc-${tool.id}`}>{tool.sub}</Text></View> : null}
+          {status ? <View pointerEvents="none"><Text variant="small" weight="medium" color={t.colors.primary}>{status}</Text></View> : null}
+          {compact && !otherProfile && !free ? null : (
+            <View pointerEvents="none" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+              {compact && !otherProfile ? null : <Pill label={pill} />}
+              {free ? <Pill label={tr('th.ui.free')} tone="accent" /> : null}
+            </View>
+          )}
+          {star ? (
+            <View style={{ position: 'absolute', top: spacing.xs - 2, right: 0 }}>
+              <FavoriteStar on={favorite} label={tool.label} onPress={() => onToggleFavorite!(tool)} id={tool.id} />
+            </View>
+          ) : null}
+        </View>
+      </Animated.View>
     </View>
   );
 });
 
+/**
+ * Étoile de favori des outils : micro-animation (`@/motion` FavoriteStar : saut + onde), haptique de SUCCÈS à
+ * l'ajout. L'état est enregistré tout de suite (avant l'animation : rien n'est perdu si l'on quitte l'écran) ;
+ * annoncée comme un interrupteur, avec son état.
+ */
 export function FavoriteStar({ on, label, onPress, id }: { on: boolean; label: string; onPress: () => void; id?: string }) {
   const t = useTheme();
+  const name = tr('th.ui.favSwitch', { label });
   return (
-    <Tappable
-      accessibilityRole="switch"
-      accessibilityState={{ checked: on }}
-      aria-checked={on}
-      accessibilityLabel={tr('th.ui.favSwitch', { label })}
-      onPress={() => { haptic(on ? 'light' : 'success'); onPress(); }}
-      testID={id ? `tool-fav-${id}` : undefined}
-      bare pressScale={0.9} hoverLift={0}
-      style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}
-    >
-      <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.accentSoft : 'transparent' }}>
-        <Icon name="star" size={18} color={on ? t.colors.primary : t.colors.textMuted} />
-      </View>
-    </Tappable>
+    <MotionStar active={on} onToggle={() => onPress()} labelOn={name} labelOff={name} role="switch" hapticOn="success"
+      size={18} box={MIN_TOUCH} color={t.colors.textMuted} activeColor={t.colors.primary} well={t.colors.accentSoft}
+      testID={id ? `tool-fav-${id}` : undefined} ringTestID={id ? `fav-ring-${id}` : undefined} />
+  );
+}
+
+/**
+ * Squelette d'une liste de `ToolRow` : mêmes cartes (rayon, liseré, marges, hauteur minimale, pictogramme 40, nom,
+ * deux lignes de description), os qui respirent ensemble — l'arrivée des données ne décale rien.
+ */
+export function ToolRowsSkeleton({ rows = 4, testID = 'tool-rows-skeleton' }: { rows?: number; testID?: string }) {
+  const t = useTheme();
+  return (
+    <SkeletonPulse label={tr('common.loadingA11y')} testID={testID}>
+      {Array.from({ length: rows }, (_, i) => (
+        <View key={i} style={{ marginTop: i ? spacing.xs : 0, minHeight: TOOL_ROW_MIN_HEIGHT, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.sm, gap: 8, justifyContent: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <SkeletonBone width={GLYPH} height={GLYPH} radius={GLYPH / 2} />
+            <SkeletonBone width="48%" height={16} />
+          </View>
+          <SkeletonBone width="100%" height={12} />
+          <SkeletonBone width="72%" height={12} />
+        </View>
+      ))}
+    </SkeletonPulse>
   );
 }

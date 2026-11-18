@@ -9,16 +9,19 @@ import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { Sheet } from '@/components/Overlays';
-import { openTool, ToolShortcut } from '@/components/ToolCard';
+import { openTool } from '@/components/ToolCard';
+import { GlassButton, GlassSearchBar } from '@/components/glass';
+import { StaggerList } from '@/motion';
+import { ToolTile } from '@/features/toolHub/ToolTile';
 import { ToolGlyph } from '@/components/ToolGlyph';
 import { Tappable } from '@/components/Tappable';
-import { Button, Field, haptic, Icon, Text } from '@/components/ui';
+import { haptic, Icon, Text } from '@/components/ui';
 import { useActiveSubject } from '@/lib/data/hooks';
 import { useOtherProfileTools } from '@/lib/data/hooks-alltools';
 import { useScope } from '@/lib/data/hooks-scope';
 import { categoryTitle, favoriteTools, toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
 import { searchCatalog } from '@/lib/domain/toolSearch';
-import { CategoryList } from '@/features/toolHub/CategoryList';
+import { CategoryChips, CategoryList } from '@/features/toolHub/CategoryList';
 import type { ActiveSubject } from '@/lib/store';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -105,13 +108,16 @@ export function ToolSearchSheet({ visible, onClose }: { visible: boolean; onClos
   return (
     <Sheet visible={visible} onClose={close} title={tr('nav.search.title')}>
       <View testID="tool-search-sheet" style={{ gap: spacing.md }}>
-        <Field label={tr('nav.search.title')} value={q} onChangeText={setQ} placeholder={tr('nav.search.ph')} autoFocus returnKeyType="search" autoCorrect={false}
-          accessibilityLabel={tr('nav.search.title')} testID="tool-search-input" />
+        {/* Champ de verre posé sur la feuille OPAQUE (jamais de verre dans du verre) : anneau de focus, bouton effacer */}
+        <GlassSearchBar value={q} onChangeText={setQ} label={tr('nav.search.title')} placeholder={tr('nav.search.ph')} autoFocus testID="tool-search" />
         {q.trim() ? (
           results.length ? (
             <View style={{ gap: spacing.xs }} accessibilityLiveRegion="polite">
               <Text variant="caption" muted>{tr('nav.search.count', { count: results.length })}</Text>
-              {results.map((e) => <ResultRow key={`${e.profile ?? ''}-${e.tool.id}`} entry={e} onPress={() => open(e)} />)}
+              {/* résultats : apparition en décalé léger (une fois par résultat nouveau) */}
+              <StaggerList>
+                {results.map((e) => <ResultRow key={`${e.profile ?? ''}-${e.tool.id}`} entry={e} onPress={() => open(e)} />)}
+              </StaggerList>
             </View>
           ) : (
             <View style={{ gap: spacing.sm }} testID="tool-search-empty">
@@ -124,19 +130,21 @@ export function ToolSearchSheet({ visible, onClose }: { visible: boolean; onClos
           )
         ) : (
           <>
-            {favs.length ? <ShortcutRow title={tr('nav.search.favs')} icon="star" entries={favs} onOpen={onOpen} close={close} /> : null}
-            {recents.length ? <ShortcutRow title={tr('nav.search.recents')} icon="clock" entries={recents} onOpen={onOpen} close={close} /> : null}
+            {favs.length ? <ShortcutRow title={tr('nav.search.favs')} icon="star" entries={favs} open={open} /> : null}
+            {recents.length ? <ShortcutRow title={tr('nav.search.recents')} icon="clock" entries={recents} open={open} /> : null}
             {!favs.length && !recents.length ? <Text variant="small" muted>{tr('nav.search.hint')}</Text> : null}
+            {/* champ vide : catégories suggérées */}
+            <CategoryChips tools={allTools} onOpen={close} testID="tool-search-suggest" />
           </>
         )}
-        <Button label={tr('pj.allTools')} icon="grid" variant="secondary" full testID="tool-search-all"
+        <GlassButton label={tr('pj.allTools')} icon="grid" variant="secondary" full testID="tool-search-all"
           onPress={() => { close(); setTimeout(() => router.push('/tools'), reduce ? 0 : 180); }} />
       </View>
     </Sheet>
   );
 }
 
-function ShortcutRow({ title, icon, entries, onOpen, close }: { title: string; icon: 'star' | 'clock'; entries: ToolEntry[]; onOpen: (e: ToolEntry) => void; close: () => void }) {
+function ShortcutRow({ title, icon, entries, open }: { title: string; icon: 'star' | 'clock'; entries: ToolEntry[]; open: (e: ToolEntry) => void }) {
   const t = useTheme();
   return (
     <View style={{ gap: spacing.xs }}>
@@ -145,7 +153,7 @@ function ShortcutRow({ title, icon, entries, onOpen, close }: { title: string; i
         <Text weight="bold" accessibilityRole="header">{title}</Text>
       </View>
       <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
-        {entries.map((e) => <ToolShortcut key={e.tool.id} tool={e.tool} beforeOpen={() => { onOpen(e); close(); }} />)}
+        {entries.map((e, i) => <ToolTile key={e.tool.id} tool={e.tool} profile={e.profile} index={i} onPress={() => open(e)} />)}
       </ScrollView>
     </View>
   );

@@ -102,7 +102,7 @@ describe('Barre d’onglets HOMI', () => {
     // ailleurs (Accueil), le « + » revient
     await act(async () => { r.update(<QueryClientProvider client={new QueryClient()}><AuthProvider><ThemeProvider><ToastProvider><Publish /><Dock {...props('index')} /></ToastProvider></ThemeProvider></AuthProvider></QueryClientProvider>); });
     expect(r.root.findAll((n) => host(n, 'quick-add')).length).toBeGreaterThan(0);
-    expect(r.root.findAll((n) => host(n, 'tab-indicator'))).toHaveLength(1);
+    expect(r.root.findAll((n) => host(n, 'tab-bar-glass-indicator'))).toHaveLength(1);
     act(() => r.unmount());
   });
 

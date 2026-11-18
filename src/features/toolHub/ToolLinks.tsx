@@ -98,8 +98,7 @@ export function CategoryLink({ category, first, testID }: { category: ToolShelf;
   return (
     <Tappable accessibilityRole="link" accessibilityLabel={label} testID={testID ?? `tool-links-all-${category}`}
       onPress={() => { haptic('selection'); router.push(`/tools/${category}` as never); }} bare pressScale={1} hoverLift={0}
-      style={({ pressed, hovered }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 4, paddingVertical: spacing.xs, borderRadius: radius.md, backgroundColor: pressed || hovered ? t.colors.surfaceAlt : 'transparent' })}>
-      {first ? null : <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: StyleSheet.hairlineWidth, backgroundColor: t.colors.border }} />}
+      style={({ pressed, hovered }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 4, paddingVertical: spacing.xs, marginTop: first ? 0 : spacing.xxs, borderRadius: radius.md, backgroundColor: pressed || hovered ? t.colors.surfaceAlt : 'transparent' })}>
       <View style={{ width: 40, alignItems: 'center' }}><Icon name="grid" size={18} color={t.colors.primary} /></View>
       <Text weight="medium" color={t.colors.primary} style={{ flex: 1, minWidth: 0 }}>{label}</Text>
       <Icon name="chevron-right" size={18} color={t.colors.primary} />

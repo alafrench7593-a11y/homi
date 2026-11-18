@@ -220,11 +220,15 @@ groupe, `ListRow` garde son ancien rendu. `Card` : réservée aux **informations
 statuts** uniquement (au repos : surface + contour ; choisie : aplat de l'action ; `tone="lavender"` : teinte lilas
 + coche). `GlowCard` (sélection) : contour corail 1,5 px + teinte corail pâle (plus de halo ni de faisceau).
 
-### Navigation (`Dock`) — refonte du 17/11/2026
+### Navigation (`Dock`) — refonte du 17/11/2026, verre le 18/11/2026
 
 Cinq besoins : **Aujourd'hui · Moi · [action centrale] · Enfant · Famille**, et « Outils » (entrée fixe en tête
-d'Aujourd'hui + dans la feuille de l'action centrale). Barre **pleine largeur** posée en bas : fond surface, fine ligne
-de séparation, aucune capsule flottante, aucun verre. Onglet actif : icône corail sur pastille corail pâle + libellé gras.
+d'Aujourd'hui + dans la feuille de l'action centrale). Rendue par **`GlassTabBar`** (§ 10) : capsule de verre
+**flottante** dès 360 pt de large, barre de verre **pleine largeur** collée en bas en dessous (à 320 pt les marges de la
+capsule feraient passer les libellés en icônes seules). Le contenu défile SOUS la barre translucide. Onglet actif :
+indicateur qui **glisse** d'un onglet à l'autre (ressort « panneau ») + libellé gras + petite réaction de l'icône ;
+haptique « sélection » ; changement d'onglet lui-même immédiat (fondu bref de 160 ms de l'écran d'arrivée, rien avec
+« Réduire les animations »). Fond de chaque onglet défini dès le premier rendu (`sceneStyle`).
 
 - **4 onglets + bouton central** (et non 5 + bouton) : à 320 pt, trois onglets à droite d'un bouton centré ne laissent
   que 128 pt → icônes seules (cibles de 43 pt) ; avec 4 onglets, libellés entiers à 12 px à 320 et 390 pt, y compris
@@ -237,7 +241,18 @@ de séparation, aucune capsule flottante, aucun verre. Onglet actif : icône cor
 - **Communauté** : hors de la barre ; bouton en haut à droite de tous les écrans d'onglet (`AccountActions`).
 - **Sélecteur de profil universel** (`components/ProfileSwitcher`) : rangée d'avatars, anneau corail + nom en gras,
   indicateur de pages ; `ProfileSwipe` : glisser à gauche / à droite change de profil (bord gauche et carrousels exclus).
-- Écrans d'onglet : `TAB_SCREEN_INSET` en bas.
+- Écrans d'onglet : `TAB_SCREEN_INSET` en bas (= capsule 68 pt + 8 + 8) : le DERNIER élément d'une page remonte
+  toujours au-dessus de la barre flottante (`glassScreens.test.tsx` ; e2e « défiler jusqu'en bas » sur l'accueil,
+  Mes outils, les trois onglets, à 390 et 320 pt).
+- **Compte qui n'est que nounou** (`isCaregiverOnly`) : les écrans du foyer le renvoient vers « Mes gardes »
+  (`/garde`) ; sur ceux qui lui restent (Profil, Communauté), la barre ne montre que « Mes gardes » + l'action centrale
+  « Ajouter un événement » (enfant gardé), et aucun sélecteur de profil. Parents : entrée « Garde et nounou » dans
+  l'onglet Enfant (`/garde/<enfant>` si une nounou a un accès confirmé). Onglet Famille : l'action centrale propose
+  d'abord « Confier une mission » et « Créer une tâche ». Co-parent : accueil « Co-parent » sur « Moi » / « couple ».
+- **Changement de profil coordonné** (`profileTransition`) : l'anneau glisse tout de suite vers l'avatar choisi ; un
+  voile frère à la couleur du fond recouvre le contenu du profil précédent (110 ms) ; le magasin change ENSUITE ; les
+  zones `ProfileStage` (tableau de bord de l'accueil, onglets, « Pour <profil> » de Mes outils) sont rendues sous une
+  clé par profil (vraies données du nouveau profil, jamais un mélange) et entrent en cascade (220 ms).
 
 ### Outils : une seule source (18/11/2026)
 
@@ -267,7 +282,7 @@ toujours visible, nom accessible « Quitter la démonstration », cible ≥ 48 p
 Animé : pression des boutons (ressort, fil UI), sélection (pastille, contour de `GlowCard`, indicateur de sélecteur
 en ressort « panneau »), apparition des fiches (`Appear`, `Reveal`, `Cascade`), halo (respiration lente, accueil /
 entrée / onboarding seulement). **Rien ne bouge pendant la lecture des écrans de suivi** (aucun décor animé, aucun
-fond animé). Changement d'onglet : immédiat. Réduire les animations / économie d'énergie : états finaux immédiats,
+fond animé). Changement d'onglet : immédiat (l'écran d'arrivée apparaît en 160 ms par un voile frère). Réduire les animations / économie d'énergie : états finaux immédiats,
 halo figé ; nuit : fondus courts, halo éteint.
 
 ## 8. Petit écran, texte agrandi, clavier
@@ -286,9 +301,26 @@ captures Chromium 390 × 844 et 320 × 568, clair et sombre.
 
 Bibliothèque centralisée : `src/components/glass/` (un seul point d'entrée, `@/components/glass`), jetons dans
 `src/theme/glass.ts`, primitives de mouvement dans `src/motion/` (`@/motion`). Galerie de contrôle visuel :
-`/dev/glass` (Réglages → « Galerie Liquid Glass », en mode développeur ou en démonstration seulement). La bibliothèque
-est LIVRÉE, pas branchée : la barre du bas, les cartes d'outils, la recherche et le sélecteur de profil gardent leur
-rendu actuel tant qu'un écran ne les adopte pas.
+`/dev/glass` (Réglages → « Galerie Liquid Glass », en mode développeur ou en démonstration seulement).
+
+### Où le verre est branché (18/11/2026)
+
+| Surface | Composant | Verre ? |
+|---|---|---|
+| Barre du bas | `Dock` → `GlassTabBar` (capsule flottante ≥ 360 pt, pleine largeur en dessous) | oui (`chrome`) ; bouton central : aplat opaque (pas de verre dans le verre) |
+| Feuille de l'action centrale | `GlassSheet` (+ `GlassButton` primaire / tertiaire) | oui (`sheet`) ; tuiles d'action opaques |
+| Fiche d'un outil (premier appui) | `ToolSheet` → `GlassSheet` ; « Commencer » = `GlassButton` primaire, AVANT les détails | oui (`sheet`) |
+| Sélecteur de profil | `ProfileSwitcher` → `GlassProfileSwitcher` (anneau qui glisse) | oui (`chrome`) |
+| Recherche « Mes outils » / feuille de recherche des onglets | `GlassSearchBar` (la feuille de recherche reste OPAQUE : jamais de verre dans du verre) | oui |
+| Favoris, récents, « Pour <profil> » | `ToolTile` (tuile compacte : pictogramme + nom) | oui (`card`) |
+| Icônes d'en-tête (urgences, notifications, Communauté, Réglages) | `GlassIconButton` (40 pt, cible 44) | oui |
+| Toasts (favori, réorganisation…) | `ToastProvider view={GlassToast}` à la racine | oui (`chrome`) |
+| Rangées d'outils (Mes outils, catégories, `ToolLinks`, onglets), résultats de recherche | `ToolRow` : carte OPAQUE + liseré + ombre légère, même pression que `GlassToolCard` | **non** : texte sur 4 lignes |
+| Liste des catégories, éditeur de l'accueil, cartes de l'accueil | surfaces opaques | **non** |
+
+Entrées sans opacité sur un ancêtre du verre : l'écran apparaît par un **voile frère** à la couleur du fond
+(`useFocusCover`) ; les tuiles de verre entrent par `transform` seul ; le changement de profil recouvre le contenu
+d'un voile frère (`ProfileStage`). Le reste de l'application garde `Button` (pas de remplacement en masse).
 
 ### Quand utiliser le verre — et quand NE PAS l'utiliser
 

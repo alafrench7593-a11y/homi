@@ -10,9 +10,10 @@ import { spacing, typography } from '@/theme/tokens';
 import { timeTo } from '@/theme/motion';
 import { cappedScale, useFontScale } from '@/theme/fontScale';
 import { fitTitleSize } from './layoutFit';
-import { ScreenChromeContext, ScreenFocusContext, type ScrollerEntry } from './screenChrome';
+import { ScreenChromeContext, ScreenFocusContext, ScreenReorderScrollContext, type ScrollerEntry } from './screenChrome';
+import Reanimated, { useAnimatedRef, useScrollOffset, useSharedValue } from 'react-native-reanimated';
 import { IconButton, Text } from './ui';
-import { useFocusEntrance } from './Motion';
+import { useFocusCover } from './Motion';
 import { ToolGlyph } from './ToolGlyph';
 import { AccountActions } from './AccountActions';
 import { peekToolOrigin, takeToolOrigin, type ToolOrigin } from '@/lib/toolOrigin';
@@ -64,7 +65,15 @@ interface ScreenProps {
   tool?: PathTool | null | false;
   /** Action principale de l'outil : gros bouton toujours à portée de pouce, en bas de l'écran. */
   action?: ScreenAction;
+  /**
+   * Le contenu contient une liste à réorganiser (`ReorderList`) : la zone défilante devient celle de Reanimated et
+   * son défilement est publié (`useScreenReorderScroll`) pour le défilement automatique aux bords.
+   */
+  reorder?: boolean;
 }
+
+/** Routes des écrans d'onglet (barre du bas) : arrivée en fondu bref, sans déplacement. */
+export const TAB_PATHS = new Set(['/', '/health', '/baby', '/household', '/community', '/agenda', '/track', '/tools', '/ask', '/moi', '/profile']);
 
 /** En dessous de cette hauteur visible (paysage, écran partagé, clavier ouvert), l'en-tête est replié d'office. */
 export const HEADER_TIGHT_HEIGHT = 520;
@@ -93,7 +102,7 @@ export function nextInnerScrolled(cur: boolean, e: { y: number; contentH: number
   return e.y > 2;
 }
 
-export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action }: ScreenProps) {
+export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action, reorder = false }: ScreenProps) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const insets = useSafeAreaInsets();
@@ -105,6 +114,17 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   // Clavier : la zone qui défile garde le champ actif visible ; quitter l'écran ferme le clavier ouvert par un de ses champs
   const scrollRef = React.useRef<ScrollView>(null);
   const { scope: keyboardScope, onScroll: onKeyboardScroll } = useKeyboardScopeFor(scrollRef);
+  // Glisser-déposer (`reorder`) : zone défilante Reanimated, position lue sur le fil UI (aucun aller-retour par image)
+  const animRef = useAnimatedRef<Reanimated.ScrollView>();
+  const reorderY = useScrollOffset(animRef);
+  const reorderH = useSharedValue(0);
+  const MainScroll = (reorder ? Reanimated.ScrollView : ScrollView) as typeof ScrollView;
+  const setScrollRef = React.useCallback((r: ScrollView | null) => {
+    scrollRef.current = r;
+    if (reorder) animRef(r as unknown as Reanimated.ScrollView);
+  }, [reorder, animRef]);
+  const onContentSize = React.useCallback((_w: number, h: number) => { if (reorder) reorderH.value = h; }, [reorder, reorderH]);
+  const reorderScroll = React.useMemo(() => (reorder ? { ref: animRef, scrollY: reorderY, contentH: reorderH, props: { ref: animRef, onScroll: undefined as never, onContentSizeChange: onContentSize, scrollEventThrottle: 16 } } : null), [reorder, animRef, reorderY, reorderH, onContentSize]);
   const keyboardVisible = useKeyboardVisible();
   React.useEffect(() => {
     if (!focused) keyboardScope.dismissIfOwned();
@@ -117,10 +137,11 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   const measureOffset = React.useCallback(() => {
     setTimeout(() => rootRef.current?.measureInWindow?.((_x, y) => { const v = Math.max(0, Math.round(y)); setKeyboardOffset((o) => (Math.abs(o - v) > 2 ? v : o)); }), 450);
   }, []);
-  // Continuité de navigation : le contenu entre en fondu et monte légèrement à chaque arrivée sur l'écran
-  const entrance = useFocusEntrance(focused);
   // Arrivée depuis une carte « Outils » : son glyphe se pose à côté du titre
   const pathname = usePathname();
+  // Continuité de navigation : le contenu apparaît en fondu (voile frère, jamais l'opacité d'un ancêtre du verre) ;
+  // écran d'onglet : fondu bref sans déplacement ; « Réduire les animations » : rien
+  const entrance = useFocusCover(focused, TAB_PATHS.has(pathname));
   const [origin] = React.useState<ToolOrigin | null>(() => peekToolOrigin(pathname));
   React.useEffect(() => { if (origin) takeToolOrigin(pathname); }, [origin, pathname]);
   const tool = React.useMemo(() => (forcedTool === false ? null : forcedTool ?? (title ? toolForPath(pathname) : null)), [forcedTool, pathname, title]);
@@ -225,9 +246,10 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
   );
 
   const body = scroll ? (
-    <ScrollView
-      ref={scrollRef}
+    <MainScroll
+      ref={setScrollRef}
       onScroll={onMainScroll}
+      onContentSizeChange={onContentSize}
       onScrollEndDrag={onMainScroll}
       onMomentumScrollEnd={onMainScroll}
       scrollEventThrottle={32}
@@ -241,7 +263,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       {content}
       {/* Chaque outil : ses articles « Pour aller plus loin » */}
       {tool ? <ToolArticles toolId={tool.id} /> : null}
-    </ScrollView>
+    </MainScroll>
   ) : (
     <View style={[styles.wide, { flex: 1, paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? 0 : top }, contentStyle]} testID="screen-scroll">
       {/* écran à liste : la liste ajoute elle-même « Pour aller plus loin » en bas */}
@@ -251,12 +273,13 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
 
   return (
     <ScreenFocusContext.Provider value={focused}>
-    <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance]} pointerEvents={focused ? 'auto' : 'none'}>
+    <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance.style]} pointerEvents={focused ? 'auto' : 'none'}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {/* v5 : fond uni partout (plus de décor derrière les pages bébé / enfant, ni de particules) ; `stars` conservé pour compatibilité */}
       {/* « padding » sur iOS et Android : Android est toujours edge-to-edge (Expo 54+), adjustResize ne réduit plus l'écran */}
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={KEYBOARD_BEHAVIOR} keyboardVerticalOffset={keyboardOffset}>
         <ScreenChromeContext.Provider value={chrome}>
+        <ScreenReorderScrollContext.Provider value={reorderScroll}>
         <KeyboardScopeContext.Provider value={keyboardScope}>
         {header}
         {body}
@@ -268,8 +291,14 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
           </View>
         ) : null}
         </KeyboardScopeContext.Provider>
+        </ScreenReorderScrollContext.Provider>
         </ScreenChromeContext.Provider>
       </KeyboardAvoidingView>
+      {/* Voile d'entrée à la couleur du fond uni : il s'efface au-dessus du contenu (le verre n'est jamais estompé) */}
+      {entrance.reduce ? null : (
+        <Animated.View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden testID="screen-entrance-cover"
+          style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.background, opacity: entrance.cover }]} />
+      )}
     </Animated.View>
     </ScreenFocusContext.Provider>
   );

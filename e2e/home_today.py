@@ -81,6 +81,25 @@ with sync_playwright() as p:
     R['une_seule_entree_outils'] = pg.locator('[data-testid="home-tools-entry"]').count() == 1 and pg.locator('[data-testid="all-tools"]').count() == 0
     shot(pg, '01-accueil-320')
 
+    # 1b. Changement de profil coordonné : l'accueil est rendu PAR PROFIL ; pendant la sortie on voit encore l'ancien
+    # profil (même clé), puis le nouveau est monté à neuf (nouvelle clé), jamais un mélange des deux
+    def stage_keys():
+        return pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="home-stage-"]')].filter(e => e.offsetParent !== null).map(e => e.getAttribute('data-testid'))""")
+    before = stage_keys()
+    R['accueil_rendu_par_profil'] = len(before) == 1
+    kids = pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="subject-"][role="radio"]')].filter(e => e.offsetParent !== null).map(e => e.getAttribute('data-testid'))""")
+    other = next((k for k in kids if k not in ('subject-me', 'subject-preg', 'subject-family') and pg.locator(f'[data-testid="{k}"]').first.get_attribute('aria-checked') != 'true'), None)
+    back = next((k for k in kids if pg.locator(f'[data-testid="{k}"]').first.get_attribute('aria-checked') == 'true'), None)
+    if other and back:
+        tid(pg, other).click(); pg.wait_for_timeout(40)
+        mid = stage_keys()
+        pg.wait_for_timeout(1200)
+        after = stage_keys()
+        R['profil_sortie_sur_l_ancien_contenu'] = mid == before
+        R['profil_nouveau_contenu_monte_a_neuf'] = len(after) == 1 and after != before and tid(pg, other).get_attribute('aria-checked') == 'true'
+        tid(pg, back).click(); pg.wait_for_timeout(1300)
+        R['profil_retour'] = stage_keys() == before
+
     # 2. La mission de quelqu'un d'autre : aucun bouton pour la terminer
     pickup = next((t for t in demo_state(pg)['tables']['family_tasks'] if t.get('mission_state') == 'accepted' and t['assignee_id'] != me), None)
     R['mission_d_un_autre_sans_bouton'] = bool(pickup) and pg.locator(f'[data-testid="today-row-{pickup["id"]}"]').count() == 1 \

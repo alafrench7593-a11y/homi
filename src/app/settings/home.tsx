@@ -5,8 +5,9 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Button, Card, Chip, Row, Text, Toggle } from '@/components/ui';
 import { HomeEditor } from '@/features/homeToday/HomeModules';
+import { coparentSituation } from '@/features/homeToday/coparentHome';
 import { homeSituation } from '@/features/homeToday/homeLayout';
-import { useActivePregnancy, useHouseholdMembers, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useHouseholdMembers, useTrackedChildren, useMyMembership } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
@@ -49,11 +50,14 @@ export default function HomeSettings() {
   const pregnancy = useActivePregnancy();
   const { data: children } = useTrackedChildren();
   const { data: members } = useHouseholdMembers();
+  const membership = useMyMembership();
   const adults = (members ?? []).filter((m) => m.role === 'owner' || m.role === 'coparent').length;
-  const situation = homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy });
+  // Co-parent (adulte qui n'a pas créé le foyer) : accueil « coparent » sur « Moi » / « couple » (jamais les données
+  // privées de l'autre adulte)
+  const situation = coparentSituation(homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy }), membership?.role);
 
   return (
-    <Screen back title={tr('u1.home.title')} subtitle={tr('u1.home.subtitle')}>
+    <Screen back title={tr('u1.home.title')} subtitle={tr('u1.home.subtitle')} reorder>
       <ModuleMorphPreview />
       <Card>
         <Row>

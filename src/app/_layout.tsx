@@ -17,6 +17,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { AuthProvider, PERSISTED_CACHE_KEY, useAuth } from '@/lib/auth';
 import { ToastProvider, useToast } from '@/components/Overlays';
+import { GlassToast } from '@/components/glass';
 import { PremiumPreviewHost } from '@/components/Premium';
 import { SleepNotificationsHost } from '@/features/sleep';
 import { useHouseholdRevocationGuard } from '@/lib/householdPurge';
@@ -214,7 +215,8 @@ export default function RootLayout() {
         <AuthProvider>
           <ThemeProvider>
             <I18nProvider>
-              <ToastProvider>
+              {/* Confirmations sobres sur verre (`GlassToast`) : même `useToast()` partout (favori, réorganisation…) */}
+              <ToastProvider view={GlassToast}>
                 <Bootstrap />
                 {/* Mode Adaptatif : le profil affiché choisit la palette (src/theme/AdaptiveProfileSync.tsx) */}
                 <AdaptiveProfileSync />

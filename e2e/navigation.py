@@ -71,6 +71,29 @@ def header_ok(pg, avatar_name=re.compile('^(Mon profil|My profile)'), community=
                 and bc['x'] + bc['width'] <= w and ba['x'] + ba['width'] <= w and clear_switcher)
 
 
+LAST_ABOVE_BAR = """() => {
+  // Écran au premier plan : la zone qui défile visible ; on la fait défiler jusqu'en bas, puis on compare le bas de son
+  // DERNIER élément au haut de la barre de verre (qui flotte au-dessus du contenu)
+  const vis = (e) => { const r = e.getBoundingClientRect(); return e.offsetParent !== null && r.width > 0 && r.height > 0; };
+  const bar = [...document.querySelectorAll('[data-testid="tab-bar-glass-glass"]')].find(vis);
+  const sc = [...document.querySelectorAll('[data-testid="screen-scroll"]')].filter(vis).pop();
+  if (!bar || !sc) return { ok: false, why: 'absent' };
+  sc.scrollTop = sc.scrollHeight;
+  const inner = sc.firstElementChild || sc;
+  const kids = [...inner.children].filter(vis);
+  const last = kids[kids.length - 1];
+  if (!last) return { ok: false, why: 'vide' };
+  const top = bar.getBoundingClientRect().top, bottom = last.getBoundingClientRect().bottom;
+  return { ok: bottom <= top - 4, bottom: Math.round(bottom), barTop: Math.round(top) };
+}"""
+
+
+def last_above_bar(pg):
+    """Défile jusqu'en bas de l'écran affiché : le dernier élément est-il entièrement au-dessus de la barre flottante ?"""
+    pg.evaluate(LAST_ABOVE_BAR); pg.wait_for_timeout(500)
+    return pg.evaluate(LAST_ABOVE_BAR)
+
+
 def active_profile(pg):
     """Nom accessible du profil affiché dans le sélecteur universel de l'écran au premier plan (un onglet inactif reste
     monté, figé, sous l'écran affiché : on ne lit pas le sien)."""
@@ -302,6 +325,32 @@ with sync_playwright() as p:
     order = pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="home-card-"]')].filter(e => e.offsetParent !== null).map(e => e.getAttribute('data-testid').replace('home-card-', ''))""")
     R['13_ordre_du_tableau_de_bord'] = order[:4] == ['next', 'quick', 'main', 'agenda']
 
+    # 13b. Réorganiser SANS glisser (lecteur d'écran, clavier) : « Descendre » sur « Prochaine action », ordre enregistré
+    c = tid(pg, 'home-customize'); c.scroll_into_view_if_needed(); c.click(); pg.wait_for_timeout(1000)
+    down = pg.locator('[data-testid="home-edit-down-next"]').first
+    lab = down.get_attribute('aria-label') or ''
+    R['13b_action_descendre_nommee'] = lab.startswith('Descendre') and 'Prochaine action' in lab and down.get_attribute('role') == 'button'
+    row = pg.locator('[data-testid="home-edit-next"] [aria-label*="position"]').first
+    R['13b_position_annoncee'] = (row.get_attribute('aria-label') or '').endswith('position 1 sur ' + str(pg.locator('[data-testid^="home-edit-toggle-"]').count()))
+    down.evaluate('e => e.click()'); pg.wait_for_timeout(700)
+    R['13b_confirmation_toast'] = 'Ordre enregistré' in pg.inner_text('body')
+    R['13b_position_suivante'] = (pg.locator('[data-testid="home-edit-next"] [aria-label*="position"]').first.get_attribute('aria-label') or '').find('position 2 sur') >= 0
+    tid(pg, 'home-editor-done').scroll_into_view_if_needed(); tid(pg, 'home-editor-done').click(); pg.wait_for_timeout(1000)
+    order = pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="home-card-"]')].filter(e => e.offsetParent !== null).map(e => e.getAttribute('data-testid').replace('home-card-', ''))""")
+    R['13b_ordre_applique'] = order[:2] == ['quick', 'next']
+    pg.reload(); pg.wait_for_timeout(3000)
+    order = pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="home-card-"]')].filter(e => e.offsetParent !== null).map(e => e.getAttribute('data-testid').replace('home-card-', ''))""")
+    R['13b_ordre_conserve_apres_rechargement'] = order[:2] == ['quick', 'next']
+    c = tid(pg, 'home-customize'); c.scroll_into_view_if_needed(); c.click(); pg.wait_for_timeout(1000)
+    tid(pg, 'home-edit-reset').scroll_into_view_if_needed(); tid(pg, 'home-edit-reset').click(); pg.wait_for_timeout(700)
+    tid(pg, 'home-editor-done').scroll_into_view_if_needed(); tid(pg, 'home-editor-done').click(); pg.wait_for_timeout(1000)
+
+    # 13c. Barre translucide et flottante : en bas de chaque écran d'onglet, le dernier élément reste AU-DESSUS d'elle
+    for path in ['/', '/tools', '/health', '/baby', '/household']:
+        pg.goto(B + path); pg.wait_for_timeout(2600)
+        res = last_above_bar(pg)
+        R[f'13c_bas_de_page_visible_390_{path.strip("/") or "accueil"}'] = res.get('ok') is True or res
+
     # 14. Onglet « Enfant » adaptatif : sans enfant → « Grossesse » ; sans enfant ni grossesse → ajout, jamais un cul-de-sac
     pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); s.tables.children = []; s.tables.user_journeys = s.tables.user_journeys.filter(j => j.type !== 'baby' && j.type !== 'child');
       localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }""")
@@ -331,6 +380,10 @@ with sync_playwright() as p:
     for path in ['/health', '/baby', '/household', '/tools']:
         pg.goto(B + path); pg.wait_for_timeout(1800)
         R[f'9_entete_320_{path.strip("/")}'] = header_ok(pg) and not bar_metrics(pg)['overflow']
+    for path in ['/', '/tools', '/health', '/baby', '/household']:
+        pg.goto(B + path); pg.wait_for_timeout(2400)
+        res = last_above_bar(pg)
+        R[f'9_bas_de_page_visible_320_{path.strip("/") or "accueil"}'] = res.get('ok') is True or res
     pg.goto(B + '/'); pg.wait_for_timeout(1800)
     R['9_tailles_libelles'] = sorted({t['size'] for t in m['tabs']})
     pg.screenshot(path=f'{SHOTS}/nav-320.png')

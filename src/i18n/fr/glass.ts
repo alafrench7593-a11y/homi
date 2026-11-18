@@ -15,4 +15,11 @@ export const glass = {
   'glass.reorder.hint': "Appui long, puis glisser pour réordonner",
   'glass.gallery': "Galerie Liquid Glass",
   'glass.gallery.sub': "Composants de verre et mouvements, pour le contrôle visuel",
+  'glass.reorder.saved': 'Ordre enregistré',
+  'glass.reorder.position': '{name}, position {n} sur {total}',
+  'glass.suggest': 'Catégories suggérées',
+  'glass.sheet.problem': 'Problème résolu',
+  'glass.sheet.quote': '« {q} »',
+  'glass.care.entry': 'Garde et nounou',
+  'glass.care.entrySub': 'Carnet de garde, photos et messages de la nounou',
 };

@@ -17,4 +17,11 @@ export const glass: Messages<typeof fr> = {
   'glass.reorder.hint': "Mantén pulsado y arrastra para reordenar",
   'glass.gallery': "Galería Liquid Glass",
   'glass.gallery.sub': "Componentes de cristal y movimiento, para la revisión visual",
+  'glass.reorder.saved': 'Orden guardado',
+  'glass.reorder.position': '{name}, posición {n} de {total}',
+  'glass.suggest': 'Categorías sugeridas',
+  'glass.sheet.problem': 'Problema que resuelve',
+  'glass.sheet.quote': '«{q}»',
+  'glass.care.entry': 'Cuidado y niñera',
+  'glass.care.entrySub': 'Diario de cuidado, fotos y mensajes de la niñera',
 };

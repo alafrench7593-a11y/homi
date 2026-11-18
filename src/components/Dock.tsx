@@ -1,7 +1,9 @@
 /**
- * Barre d'onglets HOMI (refonte du 17/11/2026) : Aujourd'hui · Moi · [action centrale] · Enfant · Famille.
- * Barre PLEINE LARGEUR posée en bas : fond surface, fine ligne de séparation en haut, aucune capsule flottante, aucun
- * verre, aucune ombre épaisse. Icônes d'une seule famille (Feather, via `Icon`).
+ * Barre d'onglets HOMI : Aujourd'hui · Moi · [action centrale] · Enfant · Famille — rendue par `GlassTabBar`
+ * (HOMI_DESIGN_SYSTEM.md § 10, 18/11/2026). Capsule de verre FLOTTANTE posée au-dessus du contenu (qui défile dessous),
+ * indicateur de l'onglet actif qui GLISSE d'un onglet à l'autre (ressort « panneau »), petite réaction de l'icône
+ * choisie, haptique « sélection » discret. Le changement d'onglet lui-même est immédiat (des pairs, pas une hiérarchie).
+ * Zones sûres : la capsule se pose sur la zone sûre du bas (ou à 8 pt du bord sans zone sûre).
  *
  * Libellés ENTIERS (jamais coupés, jamais d'ellipse) : chaque onglet prend la largeur de son libellé mesuré (au moins
  * 44 px), la taille commune descend par quarts de pixel (12 → 10 px). Au-delà (texte agrandi + langue longue) : icônes
@@ -10,82 +12,62 @@
  * L'onglet « Enfant » s'adapte au foyer (`childTabMode`) : « Enfant », « Grossesse » (grossesse sans enfant), ou
  * l'écran qui propose d'ajouter un enfant ou une grossesse.
  *
- * ACTION RAPIDE CENTRALE (nom accessible « Ajouter ») : au centre de la barre, à portée de pouce. Elle ouvre une
- * feuille du bas avec 4 à 6 actions du profil affiché (`quickActions.ts`), que la personne peut choisir, plus l'entrée
- * fixe « Tous mes outils ». Un écran peut encore la remplacer (`useDockAction` : Communauté → Publier).
- * Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu.
+ * ACTION RAPIDE CENTRALE (nom accessible « Ajouter ») : au centre de la capsule, à portée de pouce, aplat OPAQUE de
+ * l'action principale (pas de verre dans le verre). Elle ouvre une feuille de verre (`GlassSheet`) avec 4 à 6 actions
+ * du profil affiché (`quickActions.ts`), que la personne peut choisir, plus l'entrée fixe « Tous mes outils ». Un écran
+ * peut encore la remplacer (`useDockAction` : Communauté → Publier).
+ * Les écrans d'onglet réservent `TAB_SCREEN_INSET` en bas de leur contenu : la barre translucide ne cache jamais le
+ * dernier élément d'une page (vérifié en défilant jusqu'en bas, e2e/navigation.py).
  */
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from 'expo-router/tabs';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing } from '@/theme/tokens';
 import { usePressScale } from '@/motion';
 import { useScope } from '@/lib/data/hooks-scope';
-import { useActivePregnancy, useMyMembership, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useMemberships, useMyMembership, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useMyChildcare } from '@/lib/data/hooks-nounou';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useUserId } from '@/lib/auth';
 import { useUiStore } from '@/lib/store';
-import { ACTIVE_ALIAS, CHILD_TAB, childTabMode, dockGeometry, dockLayout, estimateLabelWidth, NAV_CENTER_AFTER, NAV_TABS, TAB_BAR_H, TAB_LABEL_MAX, type NavTab } from '@/features/hubs/hubMap';
+import { ACTIVE_ALIAS, CHILD_TAB, childTabMode, dockGeometry, dockLayout, estimateLabelWidth, NAV_CENTER_AFTER, NAV_TABS, TAB_LABEL_MAX, type NavTab } from '@/features/hubs/hubMap';
 import { QUICK_ACTIONS, QUICK_MAX, QUICK_MIN, quickAvailable, quickHref, quickProfile, quickShown, type QuickActionKey, type QuickCtx } from '@/features/quickActions/quickActions';
 import { TodayAddSheet } from '@/features/homeToday/TodayAddSheet';
-import { Sheet, useToast } from './Overlays';
-import { Button, haptic, Icon, type IconName, Text } from './ui';
+import { useToast } from './Overlays';
+import { GLASS_TAB_BAR, GlassButton, GlassSheet, GlassTabBar, type GlassTab } from './glass';
+import { haptic, Icon, type IconName, Text } from './ui';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 
-/** Hauteur de la barre au-dessus de la zone sûre. */
-export const DOCK_HEIGHT = TAB_BAR_H + 4;
+/**
+ * Hauteur visuelle de la barre au-dessus de la zone sûre : capsule de verre flottante (60 + 2 × 4) et l'écart qui la
+ * sépare du bas quand il n'y a pas de zone sûre (`GLASS_TAB_BAR.floatGap`). Avec une zone sûre, la capsule se pose
+ * dessus : sa hauteur visible reste ≤ `DOCK_HEIGHT` + zone sûre.
+ */
+export const DOCK_HEIGHT = GLASS_TAB_BAR.height + GLASS_TAB_BAR.inset * 2 + GLASS_TAB_BAR.floatGap;
 /**
  * Espace UNIQUE à réserver sous le contenu des écrans d'onglet (`<Screen bottomInset>` ou `paddingBottom` d'une
- * liste, en plus de la zone sûre) : la barre et son bouton d'action sont sur la même ligne, rien d'autre ne flotte.
+ * liste, en plus de la zone sûre) : la barre est translucide et flotte AU-DESSUS du contenu, qui défile dessous ; le
+ * dernier élément d'une page doit pouvoir remonter au-dessus d'elle (`glassScreens.test.tsx`, e2e « défiler jusqu'en
+ * bas »).
  */
 export const TAB_SCREEN_INSET = DOCK_HEIGHT + spacing.xs;
 const LONG_PRESS = 'tabLongPress' as const;
-/** Pastille de l'onglet actif (derrière l'icône) et position verticale de l'icône dans l'onglet. */
-const PILL_W = 44;
-const PILL_H = 28;
-const ICON_TOP = 6;
-/** Icônes seules : icône et pastille centrées verticalement dans la barre. */
-const ICON_TOP_ALONE = (TAB_BAR_H - PILL_H) / 2;
+/** En dessous de cette largeur, la barre ne flotte plus (pleine largeur, collée en bas) : les marges de la capsule
+ *  coûteraient 24 pt et feraient passer les libellés en icônes seules à 320 pt. */
+export const DOCK_FLOAT_MIN_W = 360;
 
-function TabItem({ tab, icon, width, focused, label, a11y, fontSize, iconsOnly, onPress, onLongPress }: { tab: NavTab; icon: IconName; width: number; focused: boolean; label: string; a11y: string; fontSize: number; iconsOnly: boolean; onPress: () => void; onLongPress: () => void }) {
-  const t = useTheme();
-  const p = usePressScale({ scale: 0.92, haptic: 'none' });
-  return (
-    <Pressable
-      accessibilityRole="tab"
-      accessibilityState={{ selected: focused }}
-      aria-selected={focused}
-      accessibilityLabel={a11y}
-      testID={`tab-${tab.name}`}
-      onPress={onPress}
-      onLongPress={onLongPress}
-      onPressIn={p.onPressIn}
-      onPressOut={p.onPressOut}
-      style={{ width, height: TAB_BAR_H }}
-    >
-      <Animated.View style={[{ flex: 1, alignItems: 'center', paddingTop: iconsOnly ? ICON_TOP_ALONE : ICON_TOP, gap: 2 }, p.style]}>
-        <View style={{ width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: focused ? t.material.lines.iconWell : 'transparent' }}
-          testID={focused ? 'tab-indicator' : undefined}>
-          <Icon name={icon} size={iconsOnly ? 23 : 21} color={focused ? t.colors.primary : t.colors.textMuted} />
-        </View>
-        {/* Icônes seules (petit écran + texte agrandi) : libellé non affiché, le nom accessible reste le libellé complet */}
-        {iconsOnly ? null : <Text
-          style={{ fontFamily: focused ? fonts.bodyBold : fonts.bodyMedium, fontSize, lineHeight: Math.round(fontSize * 1.3), letterSpacing: -0.1, textAlign: 'center' }}
-          color={focused ? t.colors.text : t.colors.textMuted}
-          numberOfLines={1}
-          maxFontSizeMultiplier={1.2}
-        >
-          {label}
-        </Text>}
-      </Animated.View>
-    </Pressable>
-  );
+/** Barre flottante ou pleine largeur, et largeur disponible pour les onglets (bouton central et ses marges déduits). */
+export function dockInner(width: number) {
+  const g = dockGeometry(width);
+  const floating = width >= DOCK_FLOAT_MIN_W;
+  const capsule = Math.min(width, 600) - (floating ? GLASS_TAB_BAR.floatMargin * 2 : 0);
+  return { action: g.action, floating, capsule, inner: capsule - GLASS_TAB_BAR.inset * 2 - g.action - spacing.xs * 2 };
 }
 
 /** Bouton d'action central : « Ajouter » (actions rapides du profil) ou l'action de l'écran affiché (`useDockAction`). */
@@ -115,8 +97,6 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
 }
 
 export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
-  const t = useTheme();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const { data: kids } = useTrackedChildren();
@@ -130,47 +110,54 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   const labels = tabs.map((x) => tr(x.tab.name === 'baby' ? childTab.label : x.tab.label));
   const icons = tabs.map((x) => (x.tab.name === 'baby' ? childTab.icon : x.tab.icon));
 
-  const g = dockGeometry(width);
+  const g = dockInner(width);
   // Libellés jamais coupés : largeur réelle mesurée (police chargée, langue active, taille de texte du téléphone),
   // estimation prudente avant la première mesure
   const [natural, setNatural] = useState<Record<string, number>>({});
   const widthsKey = labels.map((l) => natural[l] ?? estimateLabelWidth(l)).join('|');
   // Deux moitiés égales de part et d'autre du bouton : il reste au milieu de l'écran quel que soit le libellé
   const layout = useMemo(() => dockLayout(g.inner, widthsKey.split('|').map(Number)), [g.inner, widthsKey]);
-  const bottom = Math.max(insets.bottom, 4);
   // Clavier ouvert : la barre s'efface (elle recouvrait le champ actif sur le web et en fenêtre réduite) ; elle
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
   const keyboard = useKeyboardVisible();
+  const caregiver = isCaregiverOnly(useMemberships().data);
 
-  const go = (route: (typeof state.routes)[number]) => {
-    const focused = focusedName === route.name;
+  const glassTabs: GlassTab[] = tabs.map(({ tab, route }, i) => ({
+    key: route.name,
+    label: labels[i],
+    icon: icons[i],
+    accessibilityLabel: tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i],
+    width: layout.widths[i],
+    testID: `tab-${tab.name}`,
+  }));
+
+  // Changement d'onglet immédiat ; l'haptique « sélection » part de la barre (une seule par changement)
+  const go = (name: string) => {
+    const route = state.routes.find((r) => r.name === name);
+    if (!route) return;
     const ev = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-    if (!focused && !ev.defaultPrevented) {
-      haptic('selection');
-      navigation.navigate(route.name);
-    }
+    if (focusedName !== route.name && !ev.defaultPrevented) navigation.navigate(route.name);
   };
-  const item = ({ tab, route }: (typeof tabs)[number], i: number) => (
-    <TabItem
-      key={route.key}
-      tab={tab}
-      icon={icons[i]}
-      width={layout.widths[i]}
-      label={labels[i]}
-      a11y={tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i]}
-      focused={activeName === tab.name}
-      fontSize={layout.fontSize}
-      iconsOnly={layout.iconsOnly}
-      onPress={() => go(route)}
-      onLongPress={() => navigation.emit({ type: LONG_PRESS, target: route.key })}
-    />
-  );
+  const longPress = (name: string) => {
+    const route = state.routes.find((r) => r.name === name);
+    if (route) navigation.emit({ type: LONG_PRESS, target: route.key });
+  };
+
+  // Compte qui n'est QUE nounou : ni onglets ni profils du foyer ; « Mes gardes » + « Ajouter un événement » (enfant gardé)
+  if (caregiver) {
+    return (
+      <View pointerEvents="box-none" testID="dock" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
+        <GlassTabBar testID="tab-bar-glass" tabs={[{ key: 'garde', label: tr('nn.home.title'), icon: 'briefcase', testID: 'tab-garde' }]} activeKey=""
+          onChange={() => router.push('/garde' as never)} center={<CareAddButton size={g.action} />} centerAfter={1} floating={g.floating}
+          labelSize={layout.fontSize} accessibilityLabel={tr('nav.tablist')} style={{ width: Math.min(width, 600) }} />
+      </View>
+    );
+  }
 
   return (
     <>
       <View pointerEvents="box-none" testID="dock"
-        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: bottom, alignItems: 'center', display: keyboard ? 'none' : 'flex',
-          backgroundColor: t.colors.tabBar, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: t.colors.border }}>
+        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
         {/* Mesure invisible des libellés à la taille de référence, en graisse active (la plus large) */}
         <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
           style={{ position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 }}>
@@ -181,18 +168,40 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
             ))}
           </View>
         </View>
-        {/* Onglets de part et d'autre de l'action centrale : Aujourd'hui · Moi · [Ajouter] · Enfant · Famille */}
-        <View testID="tab-bar-glass" accessibilityRole="tablist" accessibilityLabel={tr('nav.tablist')}
-          style={{ width: g.row, height: TAB_BAR_H, flexDirection: 'row', alignItems: 'center', paddingHorizontal: g.pad }}>
-          {tabs.slice(0, NAV_CENTER_AFTER).map((x, i) => item(x, i))}
-          <View style={{ marginHorizontal: g.gap }}>
-            <DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />
-          </View>
-          {tabs.slice(NAV_CENTER_AFTER).map((x, i) => item(x, i + NAV_CENTER_AFTER))}
-        </View>
+        <GlassTabBar
+          testID="tab-bar-glass"
+          tabs={glassTabs}
+          activeKey={activeName}
+          onChange={go}
+          onLongPress={longPress}
+          center={<DockActionButton route={focusedName} size={g.action} onQuickAdd={() => setOpen(true)} />}
+          centerAfter={NAV_CENTER_AFTER}
+          floating={g.floating}
+          labelSize={layout.fontSize}
+          iconsOnly={layout.iconsOnly}
+          accessibilityLabel={tr('nav.tablist')}
+          style={{ width: Math.min(width, 600) }}
+        />
       </View>
-      <QuickActionSheet visible={open} onClose={() => setOpen(false)} />
+      <QuickActionSheet visible={open} family={activeName === 'household'} onClose={() => setOpen(false)} />
     </>
+  );
+}
+
+/** Action centrale d'un compte nounou : « Ajouter un événement » pour l'enfant gardé (le premier accès actif). */
+function CareAddButton({ size }: { size: number }) {
+  const t = useTheme();
+  const p = usePressScale({ scale: 0.94 });
+  const care = useMyChildcare().data ?? [];
+  const child = care.find((l) => l.status === 'active' && l.child)?.child ?? null;
+  return (
+    <Pressable testID="care-quick-add" accessibilityRole="button" accessibilityLabel={child ? `${tr('nn.add.cta')}, ${child.first_name}` : tr('nn.add.cta')}
+      onPressIn={p.onPressIn} onPressOut={p.onPressOut} hitSlop={size < 48 ? (48 - size) / 2 : 0} style={{ width: size, height: size }}
+      onPress={() => { haptic('light'); router.push((child ? `/garde/${child.id}/ajouter` : '/garde') as never); }}>
+      <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
+        <Icon name="plus" size={24} color={t.tokens.action.text} />
+      </Animated.View>
+    </Pressable>
   );
 }
 
@@ -231,13 +240,13 @@ export function QuickActionPicker({ onDone }: { onDone: () => void }) {
           </Tappable>
         );
       })}
-      <Button label={tr('common.save')} full testID="qa-pick-save" onPress={() => { if (draft.length < QUICK_MIN) { toast(tr('qa.min', { min: QUICK_MIN }), 'info'); return; } setChosen(ctx.profile, draft); onDone(); }} />
-      <Button label={tr('qa.pickReset')} variant="ghost" testID="qa-pick-reset" onPress={() => { setChosen(ctx.profile, null); onDone(); }} />
+      <GlassButton label={tr('common.save')} variant="primary" full testID="qa-pick-save" onPress={() => { if (draft.length < QUICK_MIN) { toast(tr('qa.min', { min: QUICK_MIN }), 'info'); return; } setChosen(ctx.profile, draft); onDone(); }} />
+      <GlassButton label={tr('qa.pickReset')} variant="tertiary" testID="qa-pick-reset" onPress={() => { setChosen(ctx.profile, null); onDone(); }} />
     </View>
   );
 }
 
-function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+function QuickActionSheet({ visible, family, onClose }: { visible: boolean; family?: boolean; onClose: () => void }) {
   const t = useTheme();
   const { ctx, childId, childName, pregnancy } = useQuickCtx();
   const chosen = useUiStore((s) => s.quickActionFavorites[ctx.profile]);
@@ -246,7 +255,8 @@ function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () 
   const canEdit = !!membership && (membership.role === 'owner' || (membership.can_edit ?? []).includes('lists'));
   const [picking, setPicking] = useState(false);
   const [task, setTask] = useState(false);
-  const keys = quickShown(ctx, chosen);
+  // Onglet Famille : « Confier une mission » et « Créer une tâche » d'abord (le foyer), puis les actions du profil
+  const keys = family ? [...new Set<QuickActionKey>(['mission', 'task', ...quickShown(ctx, chosen)])].slice(0, QUICK_MAX) : quickShown(ctx, chosen);
   const close = () => { setPicking(false); onClose(); };
   const after = (fn: () => void) => { close(); setTimeout(fn, 180); };
   const run = (k: QuickActionKey) => {
@@ -256,7 +266,7 @@ function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () 
   };
   return (
     <>
-      <Sheet visible={visible} onClose={close} title={picking ? tr('qa.pickTitle') : childName ? tr('dock.forChild', { name: childName }) : tr('qa.title')}>
+      <GlassSheet visible={visible} onClose={close} title={picking ? tr('qa.pickTitle') : childName ? tr('dock.forChild', { name: childName }) : tr('qa.title')}>
         {picking ? <QuickActionPicker onDone={() => setPicking(false)} /> : (
           <View testID="quick-sheet" style={{ gap: spacing.sm }}>
             {/* 4 à 6 actions du profil : grandes cibles sur deux colonnes, pictogramme AU-DESSUS du libellé explicite
@@ -280,10 +290,10 @@ function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () 
               <Text weight="bold" style={{ flex: 1 }}>{tr('qa.tools')}</Text>
               <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
             </Tappable>
-            <Button label={tr('qa.customize')} icon="sliders" variant="ghost" size="sm" testID="qa-customize" onPress={() => { haptic('selection'); setPicking(true); }} />
+            <GlassButton label={tr('qa.customize')} icon="sliders" variant="tertiary" size="sm" testID="qa-customize" onPress={() => { haptic('selection'); setPicking(true); }} />
           </View>
         )}
-      </Sheet>
+      </GlassSheet>
       {/* « Créer une tâche » : disponible depuis tous les onglets (avant : seulement sur l'accueil) */}
       <TodayAddSheet visible={task} onClose={() => setTask(false)} me={me} canEdit={canEdit} />
     </>

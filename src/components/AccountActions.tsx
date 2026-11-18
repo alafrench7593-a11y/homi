@@ -5,7 +5,8 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Pressable, View } from 'react-native';
 import { router, usePathname } from 'expo-router';
-import { haptic, IconButton, Text } from './ui';
+import { haptic, Text } from './ui';
+import { GlassIconButton } from './glass';
 import { useProfile } from '@/lib/data/hooks';
 import { useAuth } from '@/lib/auth';
 import { springTo } from '@/theme/motion';
@@ -15,6 +16,9 @@ import { UserAvatar } from './UserAvatar';
 import { t as tr } from '@/i18n';
 
 const SIZE = 32;
+/** Disques de verre de l’en-tête : 44 pt (cible tactile réelle, y compris sur le web où hitSlop n’existe pas) et leur écart. */
+export const HEADER_ICON = 44;
+export const HEADER_GAP = 4;
 
 /** Initiale affichée dans l'avatar : prénom choisi, sinon adresse e-mail, sinon un point. */
 export function avatarInitial(displayName?: string | null, email?: string | null) {
@@ -64,9 +68,10 @@ export function AccountActions() {
   const pathname = usePathname();
   const inCommunity = pathname.startsWith('/community') || pathname === '/moi';
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }} accessibilityRole="toolbar">
-      {inCommunity ? null : <IconButton icon="message-circle" label={tr('nav.community')} testID="header-community" onPress={() => router.push('/community')} />}
-      <IconButton icon="settings" label={tr('header.settings')} onPress={() => { if (!pathname.startsWith('/settings')) router.push('/settings'); }} />
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: HEADER_GAP }} accessibilityRole="toolbar">
+      {/* Icônes d'en-tête : petits disques de verre (navigation flottante), cible de 44 pt */}
+      {inCommunity ? null : <GlassIconButton icon="message-circle" label={tr('nav.community')} size={HEADER_ICON} testID="header-community" onPress={() => router.push('/community')} />}
+      <GlassIconButton icon="settings" label={tr('header.settings')} size={HEADER_ICON} testID="header-settings" onPress={() => { if (!pathname.startsWith('/settings')) router.push('/settings'); }} />
       <ProfileAvatarButton />
     </View>
   );

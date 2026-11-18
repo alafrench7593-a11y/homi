@@ -16,7 +16,7 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'rea
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH } from '@/theme/tokens';
 import { favorite } from './curves';
-import { motionHaptic } from './haptics';
+import { motionHaptic, type MotionHaptic } from './haptics';
 import { useMotion } from './useMotion';
 
 /** Styles animés du saut de l'icône et de l'onde, déclenchés quand `active` passe à vrai. */
@@ -43,7 +43,7 @@ export function useFavoritePop(active: boolean) {
   return { iconStyle, ringStyle };
 }
 
-export function FavoriteStar({ active, onToggle, labelOn, labelOff, size = 22, color, activeColor, disabled, style, testID }: {
+export function FavoriteStar({ active, onToggle, labelOn, labelOff, size = 22, color, activeColor, disabled, role = 'button', hapticOn = 'selection', box: boxSize, well, ringTestID, style, testID }: {
   active: boolean;
   onToggle: (next: boolean) => void;
   /** Libellé annoncé quand c'est un favori (ex. « Retirer des favoris ») */
@@ -54,25 +54,38 @@ export function FavoriteStar({ active, onToggle, labelOn, labelOff, size = 22, c
   color?: string;
   activeColor?: string;
   disabled?: boolean;
+  /** `switch` : annoncé comme un interrupteur (nom fixe, état coché) ; `button` (défaut) : nom selon l'état */
+  role?: 'button' | 'switch';
+  /** Haptique à l'AJOUT (défaut « sélection » ; « success » pour un enregistrement) ; le retrait reste « sélection » */
+  hapticOn?: MotionHaptic;
+  /** Côté de la cible visible (défaut : taille + 12, 32 au moins) ; la cible tactile reste ≥ 44 pt */
+  box?: number;
+  /** testID de l'onde (défaut : `<testID>-ring`) */
+  ringTestID?: string;
+  /** Pastille de fond quand c'est un favori (couleur) */
+  well?: string;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }) {
   const t = useTheme();
   const { iconStyle, ringStyle } = useFavoritePop(active);
   const tint = active ? (activeColor ?? t.colors.gold) : (color ?? t.colors.textMuted);
-  const box = Math.max(size + 12, 32);
+  const box = boxSize ?? Math.max(size + 12, 32);
   return (
     <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={active ? labelOn : labelOff}
-      accessibilityState={{ selected: active, disabled: !!disabled }}
+      accessibilityRole={role}
+      accessibilityLabel={role === 'switch' ? labelOff : active ? labelOn : labelOff}
+      accessibilityState={role === 'switch' ? { checked: active, disabled: !!disabled } : { selected: active, disabled: !!disabled }}
+      {...(role === 'switch' ? ({ 'aria-checked': active } as object) : null)}
       disabled={disabled}
       hitSlop={Math.max(0, (MIN_TOUCH - box) / 2)}
-      onPress={() => { motionHaptic('selection'); onToggle(!active); }}
+      // l'état est ENREGISTRÉ d'abord (`onToggle`, synchrone) ; l'animation suit la donnée quand elle change
+      onPress={() => { motionHaptic(active ? 'selection' : hapticOn); onToggle(!active); }}
       testID={testID}
       style={[{ width: box, height: box, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.5 : 1 }, style]}
     >
-      <Animated.View pointerEvents="none" testID={testID ? `${testID}-ring` : undefined}
+      {well && active ? <Animated.View pointerEvents="none" style={{ position: 'absolute', width: box - 6, height: box - 6, borderRadius: (box - 6) / 2, backgroundColor: well }} /> : null}
+      <Animated.View pointerEvents="none" testID={ringTestID ?? (testID ? `${testID}-ring` : undefined)}
         style={[{ position: 'absolute', width: box - 6, height: box - 6, borderRadius: (box - 6) / 2, borderWidth: 2, borderColor: tint }, ringStyle]} />
       <Animated.View pointerEvents="none" style={iconStyle}>
         <MaterialCommunityIcons name={active ? 'star' : 'star-outline'} size={size} color={tint} accessibilityElementsHidden importantForAccessibility="no" />

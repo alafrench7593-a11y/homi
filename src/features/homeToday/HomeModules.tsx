@@ -5,9 +5,11 @@
  * Aucune carte n'est étirée par son conteneur : hauteurs dictées par le contenu (ni `flex: 1` vertical, ni hauteur en %).
  */
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useToast } from '@/components/Overlays';
+import { useScreenReorderScroll } from '@/components/screenChrome';
+import { Cascade, ReorderList, SkeletonBone, SkeletonPulse, type ReorderItemInfo } from '@/motion';
 import { QuickActionPicker } from '@/components/Dock';
 import { Tappable } from '@/components/Tappable';
 import { Button, Chip, haptic, Icon, IconButton, ListGroup, ListRow, Text, Toggle, type IconName } from '@/components/ui';
@@ -21,8 +23,8 @@ import type { ArticleSummary } from '@/lib/types';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
-import { HOME_MODULES, moveModule, resolveHomeLayout, setModuleVisible, type HomeLayout, type HomeModuleKey, type HomeSituation } from './homeLayout';
+import { t as tr, type TKey } from '@/i18n';
+import { HOME_MODULES, resolveHomeLayout, setModuleVisible, type HomeLayout, type HomeModuleKey, type HomeSituation } from './homeLayout';
 import { useHomeToday } from './useHomeToday';
 
 const CHILD_INFO: HomeModuleKey = 'childInfo';
@@ -39,6 +41,29 @@ function ModuleTitle({ title, action, onAction, testID }: { title: string; actio
         </Tappable>
       ) : null}
     </View>
+  );
+}
+
+/**
+ * Squelette du résumé de profil (carte principale de l'accueil) : même carte (rayon, liseré, marges) et à peu près la
+ * même hauteur que le résumé qui arrive — pas de saut de mise en page ; os qui respirent ensemble.
+ */
+export function HomeCardSkeleton() {
+  const t = useTheme();
+  return (
+    <SkeletonPulse label={tr('common.loadingA11y')} testID="home-main-skeleton"
+      style={{ borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.md, gap: spacing.sm, minHeight: 168 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <SkeletonBone width={52} height={52} radius={26} />
+        <View style={{ flex: 1, gap: 8 }}>
+          <SkeletonBone width="58%" height={18} />
+          <SkeletonBone width="36%" height={12} />
+        </View>
+      </View>
+      <SkeletonBone width="100%" height={12} />
+      <SkeletonBone width="84%" height={12} />
+      <SkeletonBone width="100%" height={44} radius={radius.control} style={{ marginTop: 4 }} />
+    </SkeletonPulse>
   );
 }
 
@@ -123,9 +148,10 @@ export function PinnedTools() {
       <ModuleTitle title={tr('hm.tools')} action={tr('hm.toolsManage')} onAction={() => router.push('/tools')} testID="home-pinned-manage" />
       {favs.length ? (
         <ListGroup>
-          {favs.slice(0, 5).map((tool) => {
+          {favs.slice(0, 5).map((tool, i) => {
             const e = entries.find((x) => x.tool.id === tool.id)!;
-            return <ListRow key={tool.id} icon={tool.icon} title={tool.label} subtitle={e.profile} testID={`home-pinned-${tool.id}`} onPress={() => { onOpen(e); openTool(tool, undefined, reduce); }} />;
+            // entrée animée (une fois, au montage) : un outil tout juste épinglé apparaît en douceur
+            return <Cascade key={tool.id} index={i}><ListRow icon={tool.icon} title={tool.label} subtitle={e.profile} testID={`home-pinned-${tool.id}`} onPress={() => { onOpen(e); openTool(tool, undefined, reduce); }} /></Cascade>;
           })}
         </ListGroup>
       ) : <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('hm.toolsEmpty')}</Text>}
@@ -144,6 +170,7 @@ const SITUATION_ICON: Record<HomeSituation, IconName> = { pregnancy: 'heart', ne
 export function HomeEditor({ situation, onDone }: { situation: HomeSituation; onDone?: () => void }) {
   const t = useTheme();
   const toast = useToast();
+  const reorderScroll = useScreenReorderScroll();
   const saved = useUiStore((s) => s.homeLayouts[situation]);
   const save = useUiStore((s) => s.setHomeLayoutFor);
   const favIds = useUiStore((s) => s.toolFavorites);
@@ -182,29 +209,25 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
         {onDone ? <Button label={tr('hm.done')} size="sm" onPress={onDone} testID="home-editor-done" /> : null}
       </View>
 
-      {/* Modules : ordre et visibilité. L'en-tête (bonjour, date, profil, Outils) reste fixe. */}
+      {/* Modules : ordre (glisser-déposer) et visibilité. L'en-tête (bonjour, date, profil, Outils) reste fixe. */}
       <View style={{ gap: spacing.xs }}>
         <Text variant="label" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{tr('hm.modules')}</Text>
-        <View style={{ borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, paddingHorizontal: spacing.sm }}>
-          {layout.order.map((key, i) => {
-            const m = HOME_MODULES.find((x) => x.key === key)!;
-            const visible = !layout.hidden.includes(key);
-            return (
-              <View key={key} testID={`home-edit-${key}`} style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', minHeight: 56, paddingVertical: 4,
-                borderTopWidth: i ? 1 : 0, borderTopColor: t.material.lines.separator }}>
-                <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 120, opacity: visible ? 1 : 0.6 }}>
-                  <Text weight="medium">{tr(m.label)}</Text>
-                  {m.detail ? <Text variant="caption" muted>{tr(m.detail)}</Text> : null}
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' }}>
-                  <IconButton icon="arrow-up" label={tr('u1.home.up', { name: label(key) })} disabled={i === 0} onPress={() => set(moveModule(layout, key, -1))} testID={`home-edit-up-${key}`} />
-                  <IconButton icon="arrow-down" label={tr('u1.home.down', { name: label(key) })} disabled={i === layout.order.length - 1} onPress={() => set(moveModule(layout, key, 1))} testID={`home-edit-down-${key}`} />
-                  <View testID={`home-edit-toggle-${key}`}><Toggle label={tr('u1.home.show', { name: label(key) })} value={visible} onChange={(v) => set(setModuleVisible(layout, key, v))} /></View>
-                </View>
-              </View>
-            );
-          })}
-        </View>
+        <Text variant="caption" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('glass.reorder.hint')}</Text>
+        <ReorderList
+          data={layout.order}
+          keyOf={(k) => k}
+          gap={spacing.xs}
+          scroll={reorderScroll ?? undefined}
+          moveUpLabel={tr('glass.reorder.up')}
+          moveDownLabel={tr('glass.reorder.down')}
+          testID="home-edit-modules"
+          onReorder={(keys) => { set({ ...layout, order: keys as HomeModuleKey[] }); toast(tr('glass.reorder.saved')); }}
+          renderItem={(key, info) => (
+            <ModuleRow moduleKey={key} label={label(key)} detail={HOME_MODULES.find((x) => x.key === key)?.detail} index={info.index} total={layout.order.length}
+              visible={!layout.hidden.includes(key)} lifted={info.active} a11y={info.a11y} moveUp={info.moveUp} moveDown={info.moveDown}
+              onVisible={(v) => set(setModuleVisible(layout, key, v))} />
+          )}
+        />
       </View>
 
       {/* Actions rapides du profil affiché (bouton central de la barre) */}
@@ -231,12 +254,21 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
       <View style={{ gap: spacing.xs }}>
         <Text variant="label" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{tr('hm.tools')}</Text>
         {favs.length ? (
-          <ListGroup>
-            {favs.map((tool) => (
-              <ListRow key={tool.id} icon={tool.icon} title={tool.label}
-                right={<IconButton icon="x" label={tr('hm.unpin', { name: tool.label })} onPress={() => setFavIds(toggleFavorite(favIds, tool.id))} />} />
-            ))}
-          </ListGroup>
+          // Outils épinglés : même glisser-déposer (ordre des favoris, une seule liste partout), retrait en un appui
+          <ReorderList
+            data={favs}
+            keyOf={(tool) => tool.id}
+            gap={spacing.xs}
+            scroll={reorderScroll ?? undefined}
+            moveUpLabel={tr('glass.reorder.up')}
+            moveDownLabel={tr('glass.reorder.down')}
+            testID="home-edit-pinned"
+            onReorder={(keys) => { setFavIds([...keys, ...favIds.filter((x) => !keys.includes(x))]); toast(tr('glass.reorder.saved')); }}
+            renderItem={(tool, info) => (
+              <PinnedRow id={tool.id} icon={tool.icon} label={tool.label} index={info.index} total={favs.length} lifted={info.active} a11y={info.a11y}
+                moveUp={info.moveUp} moveDown={info.moveDown} onUnpin={() => { setFavIds(toggleFavorite(favIds, tool.id)); toast(tr('th.ui.favRemoved', { label: tool.label })); }} />
+            )}
+          />
         ) : <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('hm.toolsEmpty')}</Text>}
         <Button label={tr('hm.pin')} icon="star" variant="secondary" full testID="home-edit-pin"
           onPress={() => { set(setModuleVisible(layout, 'tools', true)); router.push('/tools'); }} />
@@ -247,3 +279,70 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
     </View>
   );
 }
+
+// ------------------------------------------------------------------------------------------------ rangées réordonnables
+type RowA11y = ReorderItemInfo['a11y'];
+
+/** Actions « monter / descendre » sur le web (pas d'actions d'accessibilité nommées) : boutons masqués à l'œil, lus et activables par les lecteurs d'écran et au clavier. */
+function WebMoveButtons({ name, index, total, moveUp, moveDown, testID }: { name: string; index: number; total: number; moveUp: () => void; moveDown: () => void; testID: string }) {
+  if (Platform.OS !== 'web') return null;
+  return (
+    <View style={SR_ONLY}>
+      <Pressable accessibilityRole="button" accessibilityLabel={tr('u1.home.up', { name })} disabled={index === 0} onPress={moveUp} testID={`home-edit-up-${testID}`} />
+      <Pressable accessibilityRole="button" accessibilityLabel={tr('u1.home.down', { name })} disabled={index === total - 1} onPress={moveDown} testID={`home-edit-down-${testID}`} />
+    </View>
+  );
+}
+
+/** Poignée (≡) : signale le glisser-déposer ; la carte entière se soulève à l'appui long. */
+function Grip({ lifted }: { lifted: boolean }) {
+  const t = useTheme();
+  return <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width: 28, alignItems: 'center' }}><Icon name="menu" size={18} color={lifted ? t.colors.primary : t.colors.textMuted} /></View>;
+}
+
+function rowStyle(t: ReturnType<typeof useTheme>, lifted: boolean) {
+  return { flexDirection: 'row' as const, alignItems: 'center' as const, gap: spacing.xs, minHeight: 60, paddingVertical: 6, paddingLeft: spacing.xs, paddingRight: spacing.xxs,
+    borderRadius: radius.lg, borderWidth: lifted ? 1.5 : StyleSheet.hairlineWidth, borderColor: lifted ? t.tokens.border.active : t.colors.border, backgroundColor: t.colors.surface };
+}
+
+/** Module de l'accueil : poignée, nom, détail, interrupteur « afficher » ; actions monter / descendre pour VoiceOver. */
+function ModuleRow({ moduleKey, label, detail, index, total, visible, lifted, a11y, moveUp, moveDown, onVisible }: {
+  moduleKey: HomeModuleKey; label: string; detail?: TKey; index: number; total: number; visible: boolean; lifted: boolean; a11y: RowA11y; moveUp: () => void; moveDown: () => void; onVisible: (v: boolean) => void;
+}) {
+  const t = useTheme();
+  return (
+    <View testID={`home-edit-${moduleKey}`} style={rowStyle(t, lifted)}>
+      <Grip lifted={lifted} />
+      <View accessible accessibilityLabel={tr('glass.reorder.position', { name: label, n: index + 1, total })} accessibilityHint={tr('glass.reorder.hint')} {...a11y}
+        style={{ flex: 1, minWidth: 0, opacity: visible ? 1 : 0.6 }}>
+        <Text weight="medium">{label}</Text>
+        {detail ? <Text variant="caption" muted>{tr(detail)}</Text> : null}
+      </View>
+      <WebMoveButtons name={label} index={index} total={total} moveUp={moveUp} moveDown={moveDown} testID={moduleKey} />
+      <View testID={`home-edit-toggle-${moduleKey}`}><Toggle label={tr('u1.home.show', { name: label })} value={visible} onChange={onVisible} /></View>
+    </View>
+  );
+}
+
+/** Outil épinglé : poignée, pictogramme, nom, retrait ; actions monter / descendre pour VoiceOver. */
+function PinnedRow({ id, icon, label, index, total, lifted, a11y, moveUp, moveDown, onUnpin }: {
+  id: string; icon: IconName; label: string; index: number; total: number; lifted: boolean; a11y: RowA11y; moveUp: () => void; moveDown: () => void; onUnpin: () => void;
+}) {
+  const t = useTheme();
+  return (
+    <View testID={`home-edit-pinned-${id}`} style={rowStyle(t, lifted)}>
+      <Grip lifted={lifted} />
+      <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
+        <Icon name={icon} size={16} color={t.colors.primary} />
+      </View>
+      <View accessible accessibilityLabel={tr('glass.reorder.position', { name: label, n: index + 1, total })} accessibilityHint={tr('glass.reorder.hint')} {...a11y} style={{ flex: 1, minWidth: 0 }}>
+        <Text weight="medium">{label}</Text>
+      </View>
+      <WebMoveButtons name={label} index={index} total={total} moveUp={moveUp} moveDown={moveDown} testID={`pin-${id}`} />
+      <IconButton icon="x" label={tr('hm.unpin', { name: label })} onPress={onUnpin} testID={`home-edit-unpin-${id}`} />
+    </View>
+  );
+}
+
+/** Masqué à l'œil, présent pour les lecteurs d'écran (web). */
+const SR_ONLY = { position: 'absolute' as const, width: 1, height: 1, overflow: 'hidden' as const, opacity: 0, left: 0, top: 0 };
