@@ -7,12 +7,12 @@
 import { t as tr } from '@/i18n';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { backend, eq, inList } from '../backend';
+import { backend, BackendError, eq, inList } from '../backend';
 import { useAuth, useUserId } from '../auth';
 import type { CommunityMember, CommunityNotifPrefs, CommunityProfile, FeedComment, FeedPost, Forum, Journey, ReportReason } from '../types';
 import { useForums, useInvalidate, useProfile, useRows } from './hooks';
 import { forYouOrder, primaryCategories } from '../domain/communityRules';
-import { prepareCommunityPhoto } from '../community/photos';
+import { COMMUNITY_MIME, communityPhotoPath, prepareCommunityPhoto } from '../community/photos';
 import { uuid } from '../uuid';
 
 const FEED_KEYS = ['forum_feed', 'comment_feed'];
@@ -188,14 +188,20 @@ export function useSaveNotifPrefs() {
 // ---------------------------------------------------------------- écritures
 export interface DraftPhoto { uri: string; bytes?: Uint8Array; width?: number; height?: number }
 
-/** Envoie les photos (déjà nettoyées) dans le dossier de la personne ; renvoie les chemins. */
-async function uploadPhotos(userId: string, photos: DraftPhoto[]) {
+/** Envoie les photos (déjà nettoyées) dans le dossier de la personne ; renvoie les chemins. Tout ou rien. */
+export async function uploadPhotos(userId: string, photos: DraftPhoto[]) {
   const out: { path: string; width: number | null; height: number | null }[] = [];
-  for (const ph of photos) {
-    const prepared = ph.bytes ? { bytes: ph.bytes, width: ph.width ?? 0, height: ph.height ?? 0 } : await prepareCommunityPhoto(ph.uri);
-    const path = `${userId}/${uuid()}.jpg`;
-    await backend.storage.upload(COMMUNITY_BUCKET, path, { uri: ph.uri, mimeType: 'image/jpeg', size: prepared.bytes.length, bytes: prepared.bytes, name: path.split('/')[1] });
-    out.push({ path, width: prepared.width || null, height: prepared.height || null });
+  try {
+    for (const ph of photos) {
+      const prepared = ph.bytes ? { bytes: ph.bytes, width: ph.width ?? 0, height: ph.height ?? 0 } : await prepareCommunityPhoto(ph.uri);
+      const path = communityPhotoPath(userId, uuid());
+      await backend.storage.upload(COMMUNITY_BUCKET, path, { uri: ph.uri, mimeType: COMMUNITY_MIME, size: prepared.bytes.length, bytes: prepared.bytes, name: path.split('/')[1] });
+      out.push({ path, width: prepared.width || null, height: prepared.height || null });
+    }
+  } catch (e) {
+    // une photo refusée : celles déjà envoyées sont retirées, rien ne reste orphelin
+    if (out.length) await backend.storage.remove(COMMUNITY_BUCKET, out.map((o) => o.path)).catch(() => undefined);
+    throw e;
   }
   return out;
 }
@@ -206,15 +212,24 @@ export function useCreatePost() {
   return useMutation({
     mutationFn: async (p: { forumId: string; title?: string | null; body: string; kind: 'question' | 'testimony'; anonymous: boolean; photos: DraftPhoto[];
       groupId?: string | null; poll?: { options: string[]; multiple: boolean; closesInDays?: number | null } | null }) => {
-      const [row] = await backend.insert<{ id: string; status: string }>('posts',
-        { forum_id: p.forumId, title: p.title?.trim() || null, body: p.body.trim(), kind: p.kind, anonymous: p.anonymous, group_id: p.groupId ?? null }, { returning: 'id,status' });
+      // Les photos partent AVANT la publication : si l'envoi échoue, rien n'est publié (avant : une publication sans
+      // ses photos restait en ligne, et un nouvel essai la doublait).
+      if (p.anonymous && p.photos.length) throw new BackendError(tr('cm2.photo.anonBlocked'), 'anonymous_no_photo');
+      const uploaded = p.photos.length && userId ? await uploadPhotos(userId, p.photos) : [];
+      let row: { id: string; status: string };
+      try {
+        [row] = await backend.insert<{ id: string; status: string }>('posts',
+          { forum_id: p.forumId, title: p.title?.trim() || null, body: p.body.trim(), kind: p.kind, anonymous: p.anonymous, group_id: p.groupId ?? null }, { returning: 'id,status' });
+      } catch (e) {
+        if (uploaded.length) await backend.storage.remove(COMMUNITY_BUCKET, uploaded.map((u) => u.path)).catch(() => undefined);
+        throw e;
+      }
       if (p.poll) {
         const closes = p.poll.closesInDays ? new Date(Date.now() + p.poll.closesInDays * 86_400_000).toISOString() : null;
         await backend.insert('post_polls', { post_id: row.id, multiple: p.poll.multiple, closes_at: closes }, { returning: 'post_id' });
         await backend.insert('poll_options', p.poll.options.map((label, position) => ({ post_id: row.id, label: label.trim(), position })), { returning: 'id' });
       }
-      if (p.photos.length && userId) {
-        const uploaded = await uploadPhotos(userId, p.photos);
+      if (uploaded.length) {
         await backend.insert('post_photos', uploaded.map((u, position) => ({ post_id: row.id, path: u.path, width: u.width, height: u.height, position })), { returning: 'id' });
       }
       return row;
@@ -228,13 +243,13 @@ export function useUpdatePost() {
   const userId = useUserId();
   return useMutation({
     mutationFn: async (p: { id: string; forumId: string; title?: string | null; body: string; kind: 'question' | 'testimony'; removePaths: string[]; addPhotos: DraftPhoto[]; keptCount: number }) => {
+      const uploaded = p.addPhotos.length && userId ? await uploadPhotos(userId, p.addPhotos) : [];
       const [row] = await backend.update<{ id: string; status: string }>('posts', { forum_id: p.forumId, title: p.title?.trim() || null, body: p.body.trim(), kind: p.kind }, [eq('id', p.id)], { returning: 'id,status' });
       if (p.removePaths.length) {
         await backend.remove('post_photos', [eq('post_id', p.id), inList('path', p.removePaths)]);
         await backend.storage.remove(COMMUNITY_BUCKET, p.removePaths).catch(() => undefined);
       }
-      if (p.addPhotos.length && userId) {
-        const uploaded = await uploadPhotos(userId, p.addPhotos);
+      if (uploaded.length) {
         await backend.insert('post_photos', uploaded.map((u, i) => ({ post_id: p.id, path: u.path, width: u.width, height: u.height, position: p.keptCount + i })), { returning: 'id' });
       }
       return row;
@@ -383,12 +398,12 @@ export function useSetAvatarPhoto() {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
-    mutationFn: async (p: { uri: string | null; previous: string | null }) => {
+    mutationFn: async (p: { uri: string | null; previous: string | null; width?: number | null; height?: number | null }) => {
       let path: string | null = null;
       if (p.uri && userId) {
-        const prepared = await prepareCommunityPhoto(p.uri);
-        path = `${userId}/avatar-${uuid()}.jpg`;
-        await backend.storage.upload(COMMUNITY_BUCKET, path, { uri: p.uri, mimeType: 'image/jpeg', size: prepared.bytes.length, bytes: prepared.bytes });
+        const prepared = await prepareCommunityPhoto(p.uri, { width: p.width, height: p.height });
+        path = communityPhotoPath(userId, uuid(), 'avatar');
+        await backend.storage.upload(COMMUNITY_BUCKET, path, { uri: p.uri, mimeType: COMMUNITY_MIME, size: prepared.bytes.length, bytes: prepared.bytes });
       }
       await backend.update('community_profiles', { avatar_path: path }, [eq('user_id', userId)], { returning: 'user_id' });
       if (p.previous) await backend.storage.remove(COMMUNITY_BUCKET, [p.previous]).catch(() => undefined);

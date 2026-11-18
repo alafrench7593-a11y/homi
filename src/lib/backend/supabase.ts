@@ -70,8 +70,26 @@ export function timedFetch(ms = REST_TIMEOUT_MS, base?: typeof fetch): typeof fe
   };
 }
 
+/**
+ * Octets à envoyer au stockage. Sur iPhone et Android, « fetch(file://…) » d'un fichier local échoue souvent ou rend
+ * un contenu vide : le fichier est lu par le système de fichiers. Un envoi vide est refusé ici, avec un message clair.
+ */
+export async function uploadBody(file: { uri: string; bytes?: Uint8Array }): Promise<Uint8Array | ArrayBuffer> {
+  let body: Uint8Array | ArrayBuffer;
+  if (file.bytes) body = file.bytes;
+  else if (Platform.OS !== 'web' && file.uri.startsWith('file:')) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { File } = require('expo-file-system') as typeof import('expo-file-system');
+    body = await new File(file.uri).bytes();
+  } else body = await (await fetch(file.uri)).arrayBuffer();
+  if (!body.byteLength) throw new BackendError(tr('l2.sb.fileEmpty'), 'file_empty');
+  return body;
+}
+
 /** Messages de la base : jamais de texte technique brut (souvent en anglais). */
 export function friendly(msg: string, code?: string): string {
+  if (/exceeded the maximum allowed size|payload too large|entity too large/i.test(msg)) return tr('l2.sb.fileTooLarge');
+  if (/mime type .* is not supported|invalid mime type/i.test(msg)) return tr('l2.sb.fileType');
   if (/row-level security|permission denied/i.test(msg)) return tr('l2.sb.forbidden');
   if (/duplicate key/i.test(msg)) return tr('l2.sb.exists');
   if (/network|fetch|load failed/i.test(msg)) return tr('l2.sb.offline');
@@ -191,7 +209,7 @@ export function createSupabaseBackend(url: string, anonKey: string): Backend {
     },
     storage: {
       async upload(bucket, path, file) {
-        const body = file.bytes ?? (await (await fetch(file.uri)).arrayBuffer());
+        const body = await uploadBody(file);
         const { error } = await client.storage.from(bucket).upload(path, body, { contentType: file.mimeType, upsert: false });
         wrap(error);
       },

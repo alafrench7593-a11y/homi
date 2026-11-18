@@ -83,3 +83,4 @@ export { deviceCal } from './deviceCal';
 export { toolhub } from './toolhub';
 export { nav6 } from './nav6';
 export { glass } from './glass';
+export { dm } from './dm';

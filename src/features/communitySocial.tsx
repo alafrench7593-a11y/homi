@@ -24,6 +24,7 @@ import { isPremiumRequired } from '@/lib/premium/features';
 import type { CommunityGroup, FeedPost, Forum, MemberCard } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens';
+import { MessagesButton } from '@/features/communityMessages';
 import { localeTag, t as tr } from '@/i18n';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
@@ -230,12 +231,18 @@ export function FiltersButton({ active, onOpen }: { active: boolean; onOpen: () 
   const t = useTheme();
   const access = usePremiumAccess('community_search');
   return (
-    <Button label={active ? tr('cm1.filters.active') : tr('cm1.filters.button')} icon="sliders" size="sm" variant={active ? 'primary' : 'secondary'}
-      onPress={() => (access.premium ? onOpen() : access.showPreview(
-        <Text variant="small">{tr('cm1.filters.example')}</Text>,
-      ))} testID="community-filters"
-      accessibilityLabel={access.premium ? tr('cm1.filters.title') : tr('cm1.filters.a11yPremium')}
-      style={!access.premium ? { borderColor: t.colors.gold } : undefined} />
+    <>
+      <Button label={active ? tr('cm1.filters.active') : tr('cm1.filters.button')} icon="sliders" size="sm" variant={active ? 'primary' : 'secondary'}
+        onPress={() => (access.premium ? onOpen() : access.showPreview(
+          <Text variant="small">{tr('cm1.filters.example')}</Text>,
+        ))} testID="community-filters"
+        accessibilityLabel={access.premium ? tr('cm1.filters.title') : tr('cm1.filters.a11yPremium')}
+        style={!access.premium ? { borderColor: t.colors.gold } : undefined} />
+      {/* Messagerie privée : entrée posée ici, dans la rangée d'actions de la communauté (« Groupes », « Filtres »),
+          parce que l'écran de l'onglet (src/app/(tabs)/community.tsx) n'était pas modifiable pendant ce chantier.
+          À déplacer dans l'en-tête de l'onglet quand il le sera. */}
+      <MessagesButton />
+    </>
   );
 }
 

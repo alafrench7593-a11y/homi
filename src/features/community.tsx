@@ -23,6 +23,7 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { BRAND } from '@/config/brand';
 import { accentOf, FolderSheet, MentionText, PollView, PremiumBadge, Tag } from '@/features/communitySocial';
 import { useCommunityAi, useFollowMember, usePinPost } from '@/lib/data/hooks-social';
+import { useReportConversation } from '@/lib/data/hooks-messages';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { getLocale, t as tr } from '@/i18n';
 
@@ -160,18 +161,22 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
 
 // ─── Signaler / bloquer ────────────────────────────────────────────────────────────────────────────
 
-export function ReportSheet({ visible, onClose, postId, commentId, handle, anonymous }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string; handle?: string | null; anonymous?: boolean }) {
+export function ReportSheet({ visible, onClose, postId, commentId, handle, anonymous, conversationId, onBlocked }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string; handle?: string | null; anonymous?: boolean;
+  /** Signalement depuis une conversation privée : les derniers messages de la personne sont joints pour la modération. */
+  conversationId?: string; onBlocked?: () => void }) {
   const toast = useToast();
   const reportM = useReport();
   const reportMember = useReportMember();
+  const reportConversation = useReportConversation();
   const blockM = useBlockAuthor();
   const blockMember = useBlockMember();
-  const pending = reportM.isPending || blockM.isPending || reportMember.isPending || blockMember.isPending;
+  const pending = reportM.isPending || blockM.isPending || reportMember.isPending || blockMember.isPending || reportConversation.isPending;
   const memberOnly = !postId && !commentId && !!handle;
   async function report(reason: ReportReason) {
     if (pending) return;
     try {
-      if (memberOnly) await reportMember.mutateAsync({ handle: handle!, reason });
+      if (memberOnly && conversationId) await reportConversation.mutateAsync({ id: conversationId, reason });
+      else if (memberOnly) await reportMember.mutateAsync({ handle: handle!, reason });
       else await reportM.mutateAsync({ postId, commentId, reason });
       toast(tr('cm1.report.thanks'));
       onClose();
@@ -187,6 +192,7 @@ export function ReportSheet({ visible, onClose, postId, commentId, handle, anony
       else await blockM.mutateAsync({ postId, commentId });
       toast(tr('cm1.report.blocked'));
       onClose();
+      onBlocked?.();
     } catch (e) {
       toast(friendlyError(e, tr('cm1.report.blockError')), 'error');
     }

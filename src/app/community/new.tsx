@@ -21,7 +21,7 @@ import { completeMention, localizeGroupName, mentionQuery, pollOptionsError } fr
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { sensitiveHints } from '@/lib/domain/communityRules';
-import { MAX_PHOTOS, prepareCommunityPhoto } from '@/lib/community/photos';
+import { MAX_PHOTOS, photoErrorKey, prepareCommunityPhoto } from '@/lib/community/photos';
 import { pickPhotos } from '@/lib/documents/io';
 import type { FeedPhoto } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -58,6 +58,7 @@ export default function Composer() {
   const [removed, setRemoved] = useState<string[]>([]);
   const [added, setAdded] = useState<LocalPhoto[]>([]);
   const [preparing, setPreparing] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [preview, setPreview] = useState(false);
   const [allOpen, setAllOpen] = useState(false);
   const [warned, setWarned] = useState(false);
@@ -82,21 +83,30 @@ export default function Composer() {
 
   async function addPhotos() {
     if (photoCount >= MAX_PHOTOS) return;
-    const res = await pickPhotos(true);
-    if (res === 'denied') { toast(tr('cm2.photosDenied'), 'error'); return; }
+    if (preparing) return;
+    // Jamais d'échec muet : sélecteur qui ne s'ouvre pas, photo illisible ou trop lourde → message précis
+    let res: Awaited<ReturnType<typeof pickPhotos>>;
+    try { res = await pickPhotos(true); } catch { setPhotoError(tr('cm2.photo.pickerFailed')); return; }
+    if (res === 'denied') { setPhotoError(tr('cm2.photosDenied')); return; }
+    if (!res.length) return;
     const chosen = res.slice(0, MAX_PHOTOS - photoCount);
     if (res.length > chosen.length) toast(tr('cm2.new.maxPhotos', { max: String(MAX_PHOTOS) }), 'info');
     setPreparing(true);
-    try {
-      const ready: LocalPhoto[] = [];
-      for (const r of chosen) {
-        const p = await prepareCommunityPhoto(r.uri);
+    setPhotoError(null);
+    const ready: LocalPhoto[] = [];
+    let failed: string | null = null;
+    for (const r of chosen) {
+      try {
+        const p = await prepareCommunityPhoto(r.uri, { width: r.width, height: r.height });
         ready.push({ uri: r.uri, bytes: p.bytes, width: p.width, height: p.height, previewUri: p.previewUri });
+      } catch (e) {
+        // les autres photos choisies sont gardées
+        failed = tr(photoErrorKey(e) ?? 'cm2.new.photoFailed');
       }
-      setAdded((a) => [...a, ...ready]);
-    } catch {
-      toast(tr('cm2.new.photoFailed'), 'error');
-    } finally { setPreparing(false); }
+    }
+    if (ready.length) setAdded((a) => [...a, ...ready]);
+    if (failed) setPhotoError(failed);
+    setPreparing(false);
   }
 
   function validate() {
@@ -105,6 +115,8 @@ export default function Composer() {
     if (title.trim() && title.trim().length < 3) e.title = tr('cm2.new.errTitle');
     if (!body.trim()) e.body = tr('cm2.new.errBody');
     if (pollOn && !editId) { const pe = pollOptionsError(pollOptions); if (pe) e.poll = pe; }
+    // Le serveur refuse toute photo dans une publication anonyme (elle pourrait révéler l'identité) : dit AVANT l'envoi
+    if (anonymous && photoCount) e.photos = tr('cm2.photo.anonBlocked');
     setErrors(e);
     return !Object.keys(e).length;
   }
@@ -124,7 +136,8 @@ export default function Composer() {
       toast(review ? tr('cm2.new.sentForReview') : editId ? tr('cm2.new.updated') : tr('cm2.new.online'), review ? 'info' : 'success');
       router.replace(`/community/post/${res.id}`);
     } catch (err) {
-      setErrors({ _: friendlyError(err, tr('cm2.publishFailed')) });
+      const pk = photoErrorKey(err);
+      setErrors({ _: pk ? tr(pk) : friendlyError(err, tr(added.length ? 'cm2.photo.sendFailed' : 'cm2.publishFailed')) });
     }
   }
 
@@ -242,7 +255,7 @@ export default function Composer() {
                 </Tappable>
               </View>
             ))}
-            {photoCount < MAX_PHOTOS ? (
+            {photoCount < MAX_PHOTOS && !anonymous ? (
               <Tappable accessibilityRole="button" accessibilityLabel={tr('cm2.new.addPhotos')} onPress={addPhotos} testID="composer-add-photo"
                 style={{ width: 84, height: 84, borderRadius: radius.md, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                 <Icon name={preparing ? 'loader' : 'image'} color={t.colors.textMuted} />
@@ -250,7 +263,9 @@ export default function Composer() {
               </Tappable>
             ) : null}
           </View>
-          <Text variant="caption" muted>{tr('cm2.new.photosNote')}</Text>
+          {photoError ? <Text variant="small" color={t.colors.danger} accessibilityRole="alert" testID="composer-photo-error">{photoError}</Text> : null}
+          {errors.photos ? <Text variant="small" color={t.colors.danger} accessibilityRole="alert" testID="composer-photo-anon-error">{errors.photos}</Text> : null}
+          <Text variant="caption" muted testID="composer-photo-note">{anonymous ? tr('cm2.photo.anonNote') : tr('cm2.new.photosNote')}</Text>
 
           {!editId ? (
             <>

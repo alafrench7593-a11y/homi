@@ -18,6 +18,7 @@ import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { pickPhotos } from '@/lib/documents/io';
+import { photoErrorKey } from '@/lib/community/photos';
 import { isPremiumRequired } from '@/lib/premium/features';
 import { useInvalidate } from '@/lib/data/hooks';
 import { t as tr } from '@/i18n';
@@ -41,7 +42,7 @@ export default function AlbumScreen() {
 
   async function run(a: Parameters<typeof act.mutateAsync>[0], ok?: string) {
     try { await act.mutateAsync(a); if (ok) toast(ok); return true; }
-    catch (e) { if (isPremiumRequired(e)) access.showPreview(); else toast(friendlyError(e), 'error'); return false; }
+    catch (e) { const pk = photoErrorKey(e); if (isPremiumRequired(e)) access.showPreview(); else toast(pk ? tr(pk) : friendlyError(e), 'error'); return false; }
   }
   async function removePhoto(p: { id: string; path: string }) {
     if (await confirm(tr('cm3.album.removePhotoConfirm'), tr('cm3.album.removePhotoBody'), tr('cm3.album.remove'))) void run({ kind: 'removePhoto', id: p.id, path: p.path }, tr('cm3.album.photoRemoved'));
@@ -49,10 +50,11 @@ export default function AlbumScreen() {
   async function addPhotos() {
     if (!album) return;
     if (!access.require()) return;
-    const res = await pickPhotos(true);
+    let res: Awaited<ReturnType<typeof pickPhotos>>;
+    try { res = await pickPhotos(true); } catch { toast(tr('cm2.photo.pickerFailed'), 'error'); return; }
     if (res === 'denied') { toast(tr('cm3.album.photosDenied'), 'error'); return; }
     setBusy(true);
-    try { for (const r of res.slice(0, 20)) if (!(await run({ kind: 'addPhoto', albumId: album.id, uri: r.uri }))) break; }
+    try { for (const r of res.slice(0, 20)) if (!(await run({ kind: 'addPhoto', albumId: album.id, uri: r.uri, width: r.width, height: r.height }))) break; }
     finally { setBusy(false); }
   }
 

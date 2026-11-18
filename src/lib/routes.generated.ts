@@ -48,6 +48,8 @@ export const APP_ROUTES: readonly string[] = [
   '/community/following',
   '/community/group/[id]',
   '/community/groups',
+  '/community/messages',
+  '/community/messages/[id]',
   '/community/new',
   '/community/notifications',
   '/community/post/[id]',

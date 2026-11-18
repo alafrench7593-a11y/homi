@@ -28,6 +28,7 @@ import {
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
 import { createSocial } from './demoSocial';
+import { createMessages, DM_TABLES } from './demoMessages';
 import { createOutings } from './demoOutings';
 import { createMissions } from './demoMissions';
 import { createStocks } from './demoStocks';
@@ -472,6 +473,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   /** Reconstruit la bibliothèque (hors stockage), garde les recettes personnelles et applique les corrections enregistrées. */
   // Mini-réseau social (mêmes règles que 20261023000100_community_social.sql)
   const social = createSocial({ T, me: () => state.session?.userId, uid, uuid, nowIso, limit, isModerator, blockedBetween, notify, actorLabel });
+  // Messagerie privée (mêmes règles que 20261119000300_messagerie_privee.sql)
+  const messages = createMessages({ T, uid, uuid, nowIso, blockedBetween, notify });
   // Sorties & rencontres (mêmes règles que 20261028000100_outings_meetups.sql)
   // Courses et stocks (mêmes règles que 20261115000200_courses_stocks.sql) ; reliés aux missions dans les deux sens
   let stocks: ReturnType<typeof createStocks> | null = null;
@@ -655,6 +658,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
 
   // ---------------------------------------------------------------- règles d'insertion
   function beforeInsert(table: string, r: Row): Row {
+    // Messagerie privée : aucune écriture directe (fonctions dm_* uniquement, comme sur le serveur)
+    if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
     social.beforeInsert(table, r);
     outings.beforeInsert(table, r);
     const me = state.session?.userId;
@@ -1028,6 +1033,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   // ---------------------------------------------------------------- vues
   function view(table: string): Row[] {
     const me = state.session?.userId;
+    // Messagerie privée : aucune lecture directe (les fonctions dm_* appliquent les droits)
+    if (DM_TABLES.includes(table)) return [];
     const sv = social.view(table) ?? outings.view(table);
     if (sv) return sv;
     // Blocage dans les deux sens, comme is_blocked_between côté Supabase
@@ -1178,6 +1185,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   // ---------------------------------------------------------------- fonctions backend simulées
   const rpcs: Record<string, (a: Row) => unknown> = {
     ...social.rpcs,
+    ...messages.rpcs,
     ...missions.rpcs,
     ...stockHooks.rpcs,
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
@@ -1599,6 +1607,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     load_sample_family: () => {
       buildSampleFamily(uid(), T, rpcs.create_household as (a: Row) => string);
+      messages.markDemo(uid());
       return null;
     },
     set_demo_subscription: (a) => {
@@ -1880,6 +1889,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     async update<R>(table: string, patch: Row, filters: Filter[]) {
       await load();
+      if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       // Comme 20261029000200 : activer l'historique de l'assistant = accord daté ; le désactiver l'efface
       if (table === 'privacy_settings' && 'ai_history_enabled' in patch) patch = { ...patch, ai_history_consented_at: patch.ai_history_enabled === true ? nowIso() : null };
@@ -2024,6 +2034,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     async remove(table, filters) {
       await load();
+      if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
       if (['posts', 'comments', 'post_photos'].includes(table) && !isModerator()) removed = removed.filter((r) => r.author_id === state.session?.userId);
       removed = outings.filterRemove(table, social.filterRemove(table, removed));

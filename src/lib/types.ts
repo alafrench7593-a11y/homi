@@ -126,7 +126,7 @@ export interface Reminder {
 }
 
 export interface AppNotification {
-  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'community_follow' | 'community_mention' | 'community_group' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
+  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'community_follow' | 'community_message' | 'community_mention' | 'community_group' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
   title: string; body: string | null; deep_link: string | null; payload: Record<string, unknown>; read_at: string | null; created_at: string;
 }
 

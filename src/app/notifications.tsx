@@ -25,6 +25,7 @@ const CATEGORY: Record<AppNotification['category'], { icon: IconName; label: str
   community_saved: { icon: 'bookmark', label: 'u2.notif.cat_community' },
   community_moderation: { icon: 'shield', label: 'u2.notif.cat_moderation' },
   community_follow: { icon: 'user-plus', label: 'u2.notif.cat_community' },
+  community_message: { icon: 'mail', label: 'dm.notif.category' },
   community_mention: { icon: 'at-sign', label: 'u2.notif.cat_mention' },
   community_group: { icon: 'users', label: 'u2.notif.cat_group' },
   assistant: { icon: 'help-circle', label: 'u2.notif.cat_assistant' },
