@@ -24,7 +24,7 @@ import {
   type StructuredAnswer,
 } from '../_shared/assistant-format.ts';
 
-const APP_NAME = Deno.env.get('APP_NAME') ?? 'Au fil de nous';
+const APP_NAME = Deno.env.get('APP_NAME') ?? 'HOMI';
 export const DEMO_LIMITS = { perDevice: 3, perIp: 6, perDay: 100, perMinute: 10 } as const;
 const MAX_DEMO_QUESTION = 500;
 const MAX_TOKENS = 1000;

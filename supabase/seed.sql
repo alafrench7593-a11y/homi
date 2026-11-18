@@ -62,7 +62,7 @@ with s as (select
   '[{"label":"Haute Autorité de santé","url":"https://www.has-sante.fr"},{"label":"Assurance Maladie — ameli.fr","url":"https://www.ameli.fr"}]'::jsonb as has_ameli
 )
 insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, status, is_premium, is_safety_critical)
-select v.slug, (select id from public.content_categories where slug = v.cat), v.title, v.summary, v.body, v.journeys, v.minw, v.maxw, v.mina, v.maxa, v.pp, v.tags, 'Équipe éditoriale Au fil de nous (brouillon)', v.src, 'published', v.premium, v.safety
+select v.slug, (select id from public.content_categories where slug = v.cat), v.title, v.summary, v.body, v.journeys, v.minw, v.maxw, v.mina, v.maxa, v.pp, v.tags, 'Équipe éditoriale HOMI (brouillon)', v.src, 'published', v.premium, v.safety
 from s cross join lateral (values
  ('baby-blues-ou-depression','sante-mentale','Baby blues ou dépression du post-partum ?',
   'Deux réalités différentes, et toutes deux méritent d''être prises au sérieux.',

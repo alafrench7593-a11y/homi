@@ -24,7 +24,7 @@ import {
   type StructuredAnswer,
 } from '../_shared/assistant-format.ts';
 
-const APP_NAME = Deno.env.get('APP_NAME') ?? 'Au fil de nous';
+const APP_NAME = Deno.env.get('APP_NAME') ?? 'HOMI';
 
 const MAX_HISTORY = 12;
 const MAX_TOKENS = 1400;
