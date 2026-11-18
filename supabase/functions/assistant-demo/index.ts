@@ -11,7 +11,7 @@
 import { adminClient, corsHeaders, json, rateLimit, withCors } from '../_shared/http.ts';
 import { readJsonBody } from '../_shared/body.ts';
 import { geminiConfig, geminiGenerate, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
-import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
+import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, type ArticleRef } from '../_shared/assistant-prompt.ts';
 import {
   INJECTION_REFUSAL,
@@ -51,7 +51,7 @@ Deno.serve(withCors(async (req) => {
   }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
-  let body: { message?: unknown; device_id?: unknown; recent_turns?: unknown };
+  let body: { message?: unknown; device_id?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown };
   const raw = await readJsonBody(req, 128 * 1024);
   if (!raw) return json({ error: 'too_large' }, 413);
   body = raw;
@@ -65,8 +65,9 @@ Deno.serve(withCors(async (req) => {
   // 1) Urgence : orientation humaine immédiate, sans IA et sans rien décompter
   const safety = assessSafety(message);
   if (safety.level !== 'none') {
+    const where = { lang: toSafetyLang(body.lang) ?? safety.lang, region: typeof body.region === 'string' ? body.region.slice(0, 8) : null };
     return json({
-      answer: crisisMessage(safety.level), safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level),
+      answer: crisisMessage(safety.level, where), safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level, where),
       sources: [], structured: null, show_emergency_resources: true, stored: false, demo: true,
     });
   }

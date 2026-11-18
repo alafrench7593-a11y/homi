@@ -19,7 +19,7 @@ import { DEMO_CURRENCY, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS
 import { AI_ENTITLEMENT, PAID_TOOLS, toolEntitlement, toolProductId, type AccessInfo } from '../premium/offers';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
-import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
+import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../../../supabase/functions/_shared/safety';
 import { assessProduct, type ProductData } from '../../../supabase/functions/_shared/product-rules';
 import { ASSISTANT_FOOTER } from '../../../supabase/functions/_shared/assistant-prompt';
 import {
@@ -199,7 +199,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       res = await fetch(`${r.url}/functions/v1/assistant-demo`, {
         method: 'POST',
         headers: { apikey: r.anonKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: b.message, device_id: dev[0].id, recent_turns: b.recent_turns }),
+        body: JSON.stringify({ message: b.message, device_id: dev[0].id, recent_turns: b.recent_turns, lang: b.lang, region: b.region }),
         signal,
       });
     } catch {
@@ -1169,12 +1169,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     // 1) Urgence : orientation immédiate, sans IA ni quota
     const safety = assessSafety(message);
     if (safety.level !== 'none') {
-      const answer = crisisMessage(safety.level);
+      const where = { lang: toSafetyLang(b.lang) ?? safety.lang, region: typeof b.region === 'string' ? b.region : null };
+      const answer = crisisMessage(safety.level, where);
       const mid = store(answer, { safety: safety.level, flags: safety.reasons });
       return {
         raw: null,
         result: {
-          conversation_id: convId, message_id: mid, answer, safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level),
+          conversation_id: convId, message_id: mid, answer, safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level, where),
           sources: [], structured: null, show_emergency_resources: true, stored: !!mid,
         },
       };

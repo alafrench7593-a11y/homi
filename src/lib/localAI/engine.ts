@@ -8,7 +8,7 @@
  * - Sans réponse suffisamment proche, il le dit et propose les articles voisins et un professionnel.
  * - Une situation d'urgence (détection partagée avec l'assistant en ligne) passe avant toute recherche : 15, 112, 3114.
  */
-import { assessSafety, urgentContacts, type SafetyLevel, type UrgentContact } from '../../../supabase/functions/_shared/safety';
+import { assessSafety, urgentContacts, type SafetyLevel, type SafetyOptions, type UrgentContact } from '../../../supabase/functions/_shared/safety';
 
 export interface KbArticle {
   slug: string;
@@ -319,11 +319,15 @@ export function rankArticles(index: KbIndex, question: string, hits: { p: Passag
   return [...by.values()].sort((a, b) => b.score - a.score);
 }
 
-export function answer(index: KbIndex, question: string): LocalAnswer {
-  const safety = assessSafety(question);
+/** `opts.asked` : la phrase tapée (dans la langue de la personne) quand `question` en est la formulation française ;
+ *  `opts.lang` / `opts.region` : langue de l'application et pays choisi, pour les ressources d'urgence. */
+export function answer(index: KbIndex, question: string, opts?: SafetyOptions & { asked?: string }): LocalAnswer {
+  const first = assessSafety(opts?.asked ?? question);
+  const safety = first.level !== 'none' ? first : assessSafety(question);
   if (safety.level !== 'none') {
     const hits = search(index, question, 3);
-    return { kind: 'urgent', safety: safety.level, urgent: urgentContacts(safety.level), related: uniqueArticles(hits), confidence: 1 };
+    const urgent = urgentContacts(safety.level, { lang: opts?.lang ?? safety.lang, region: opts?.region });
+    return { kind: 'urgent', safety: safety.level, urgent, related: uniqueArticles(hits), confidence: 1 };
   }
   const hits = search(index, question, 40);
   if (!hits.length) return { kind: 'none', related: [], confidence: 0 };

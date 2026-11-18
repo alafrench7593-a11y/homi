@@ -9,7 +9,7 @@
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { readJsonBody } from '../_shared/body.ts';
 import { geminiConfig, geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
-import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
+import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
 import {
   INJECTION_REFUSAL,
@@ -60,7 +60,7 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessayez dans une minute.' }, 429);
   }
 
-  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown };
+  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown };
   const raw = await readJsonBody(req, 256 * 1024);
   if (!raw) return json({ error: 'too_large' }, 413);
   body = raw;
@@ -128,7 +128,9 @@ Deno.serve(withCors(async (req) => {
   // 1) Sécurité AVANT tout : orientation humaine immédiate, gratuite, sans IA
   const safety = assessSafety(message);
   if (safety.level !== 'none') {
-    const answer = crisisMessage(safety.level);
+    // Langue de l'application (sinon celle du message) et pays choisi : ressources d'urgence adaptées
+    const where = { lang: toSafetyLang(body.lang) ?? safety.lang, region: typeof body.region === 'string' ? body.region.slice(0, 8) : null };
+    const answer = crisisMessage(safety.level, where);
     const saved = await store(answer, { safety: safety.level, flags: safety.reasons });
     return json({
       conversation_id: saved.conversationId,
@@ -136,7 +138,7 @@ Deno.serve(withCors(async (req) => {
       answer,
       safety: safety.level,
       reasons: safety.reasons,
-      urgent_contacts: urgentContacts(safety.level),
+      urgent_contacts: urgentContacts(safety.level, where),
       sources: [],
       structured: null,
       show_emergency_resources: true,

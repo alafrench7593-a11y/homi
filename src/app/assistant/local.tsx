@@ -22,7 +22,8 @@ import { answer, buildIndex, type KbIndex, type LocalAnswer } from '@/lib/localA
 
 let CACHE: { n: number; index: KbIndex } | null = null;
 import { ui8 as frUi8 } from '@/i18n/fr/ui8';
-import { type TKey, t as tr } from '@/i18n';
+import { getLocale, type TKey, t as tr } from '@/i18n';
+import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, spacing } from '@/theme/tokens';
 
@@ -146,6 +147,7 @@ export default function LocalAssistant() {
   }, [articlesQ.data]);
   const [text, setText] = useState(typeof params.q === 'string' ? params.q : '');
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  const region = useEmergencyRegion();
   const list = useRef<FlatList<Msg>>(null);
 
   const journey = typeof params.journey === 'string' && SUGGEST[params.journey] ? params.journey : pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : (profile?.journeys ?? []).includes('avoid') ? 'avoid' : 'pregnant';
@@ -165,7 +167,7 @@ export default function LocalAssistant() {
     if (!question || !index) return;
     Keyboard.dismiss();
     haptic('light');
-    setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, query ?? question) }]);
+    setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, query ?? question, { asked: question, lang: getLocale(), region }) }]);
     setText('');
     setTimeout(() => list.current?.scrollToEnd({ animated: true }), 80);
   }

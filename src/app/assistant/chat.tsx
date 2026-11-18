@@ -27,7 +27,8 @@ import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
+import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 
 interface LocalMsg {
   id: string;
@@ -80,6 +81,7 @@ function Chat() {
   const { data: conversations } = conversationsQ;
   const [busyAction, setBusyAction] = useState(false);
   const [msgs, setMsgs] = useState<LocalMsg[]>([]);
+  const region = useEmergencyRegion();
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -166,6 +168,8 @@ function Chat() {
         'assistant',
         {
           conversation_id: conversationId, message, use_context: useContext, context: useContext ? context : undefined,
+          // Langue et pays : en cas de détresse, ressources d'urgence dans la bonne langue et du bon pays
+          lang: getLocale(), region,
           // Historique non conservé : les derniers échanges accompagnent la question (gardés seulement pour cette réponse)
           recent_turns: conversationId ? undefined : msgs.filter((x) => !x.streaming && !x.error && !x.stopped && (x.role === 'user' || (x.safety ?? 'none') === 'none')).slice(-12).map((x) => ({ role: x.role, content: x.content })),
         },
