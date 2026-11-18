@@ -85,3 +85,4 @@ export { nav6 } from './nav6';
 export { glass } from './glass';
 export { dm } from './dm';
 export { couple2 } from './couple2';
+export { nounou } from './nounou';

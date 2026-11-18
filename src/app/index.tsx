@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useAuth } from '@/lib/auth';
-import { useProfile } from '@/lib/data/hooks';
+import { useMemberships, useProfile } from '@/lib/data/hooks';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Text } from '@/components/ui';
 import { BrandStack } from '@/components/BrandLogo';
@@ -21,6 +22,9 @@ export default function Launch() {
   const offlinePaused = profileQ.fetchStatus === 'paused' && !profile;
   const profileSettled = profileQ.isFetched || isError;
   const t = useTheme();
+  // Compte qui n'est QUE nounou (aucun foyer en tant que parent) : son accueil est « Mes gardes »
+  const memberships = useMemberships();
+  const caregiverOnly = isCaregiverOnly(memberships.data);
   const [invite, setInvite] = useState<string | null | undefined>(undefined);
   useEffect(() => { if (session) peekPendingInvite().then(setInvite); }, [session]);
   // Préférences locales relues avant de décider d'afficher l'introduction
@@ -37,6 +41,7 @@ export default function Launch() {
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
   if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;
   if (ready && session && invite === undefined) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
+  if (ready && session && caregiverOnly) return <Redirect href={'/garde' as never} />;
   if (ready && session && profileSettled && !offlinePaused && (!profile || !profile.onboarding_completed) && !isError) return <Redirect href="/onboarding" />;
   if (ready && session && (profile?.onboarding_completed || isError || offlinePaused)) return <Redirect href="/(tabs)" />;
 

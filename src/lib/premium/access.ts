@@ -24,6 +24,9 @@ const FREE: RegExp[] = [
   /^\/emergency\/?$/, /^\/cycle\/emergency\/?$/, /^\/contraception\/emergency\/?$/, /^\/postpartum\/support\/?$/, /^\/family\/(sos|urgent)\/?$/,
   // Alertes officielles de rappel de produits : information de sécurité
   /^\/scanner\/recalls\/?$/,
+  // Espace nounou (21/11/2026) : rejoindre une garde (lien d'invitation) et l'accueil « Mes gardes » d'une personne
+  // invitée qui n'est pas encore nounou dans le foyer. Le contenu d'une garde reste derrière l'accès confirmé.
+  /^\/garde\/?$/, /^\/garde\/rejoindre\/?$/,
 ];
 
 const AI_ROUTES: RegExp[] = [/^\/ask\/?$/, /^\/assistant(\/.*)?$/];
@@ -38,6 +41,16 @@ export const CAREGIVER_ROUTES: RegExp[] = [
   /^\/$/, /^\/today\/?$/, /^\/(track|agenda)(\/.*)?$/, /^\/bottle(\/.*)?$/, /^\/sleep(\/.*)?$/, /^\/night(\/.*)?$/,
   /^\/child\/[^/]+(\/.*)?$/, /^\/teeth\/?$/, /^\/family(\/.*)?$/, /^\/calendar\/?$/, /^\/lists\/?$/,
   /^\/meals\/shopping\/?$/, /^\/documents\/?$/, /^\/documents\/[^/]+\/?$/, /^\/notifications\/?$/,
+  // Espace nounou (21/11/2026) : « Mes gardes », carnet, photos, messages (le serveur vérifie l'accès confirmé)
+  /^\/garde(\/.*)?$/,
+];
+
+/**
+ * Écrans d'adultes jamais ouverts par le seul rôle de nounou (21/11/2026) : couple, charge mentale, temps pour soi,
+ * difficultés des parents, papiers. Le serveur ne lui renvoie déjà rien (RLS) ; l'écran reste fermé aussi.
+ */
+export const CAREGIVER_DENIED: RegExp[] = [
+  /^\/family\/(couple|load|domains|prep|review|me-time|exhausted|difficult|solo|offduty|brain-dump|papers)(\/.*)?$/,
 ];
 
 /** Écrans d'un outil vendu à vie (ancienne offre) : restent ouverts à qui l'a acheté. */
@@ -74,7 +87,7 @@ export function gateFor(path: string, premium: boolean | undefined, access?: Acc
   if (premium === true) return 'open';
   if (access?.strict === false) return 'open';
   if (access?.ai && AI_ROUTES.some((r) => r.test(p))) return 'open';
-  if (access?.caregiver && CAREGIVER_ROUTES.some((r) => r.test(p))) return 'open';
+  if (access?.caregiver && CAREGIVER_ROUTES.some((r) => r.test(p)) && !CAREGIVER_DENIED.some((r) => r.test(p))) return 'open';
   if (access) {
     for (const t of access.tools) {
       if (t.owned && TOOL_ROUTES[t.key as PaidTool]?.some((r) => r.test(p))) return 'open';

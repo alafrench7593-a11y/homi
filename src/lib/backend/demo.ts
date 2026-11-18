@@ -32,6 +32,7 @@ import { createMessages, DM_TABLES } from './demoMessages';
 import { createOutings } from './demoOutings';
 import { createMissions } from './demoMissions';
 import { createCouple } from './demoCouple';
+import { createChildcare } from './demoChildcare';
 import { createStocks } from './demoStocks';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
@@ -486,6 +487,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const couple = createCouple({ T, me: () => state.session?.userId, nowIso, uuid });
   stocks = createStocks({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
   const stockHooks = stocks;
+  // Espace nounou (mêmes règles que 20261121000100_espace_nounou.sql, côté parent)
+  const childcare = createChildcare({ T, me: () => state.session?.userId, nowIso, uuid });
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
@@ -1196,6 +1199,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     ...missions.rpcs,
     ...couple.rpcs,
     ...stockHooks.rpcs,
+    ...childcare.rpcs,
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
     demo_switch_person: (a) => {
       const me = state.session?.userId;

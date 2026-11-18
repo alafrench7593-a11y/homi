@@ -17,6 +17,8 @@ export const HOUSEHOLD_TABLES = [
   'bottle_timers', 'appointments', 'family_tasks', 'care_shifts', 'care_requests', 'family_events', 'checklist_items',
   // Courses et stocks (15/11/2026) : publiés par 20261115000200_courses_stocks.sql
   'shopping_lists', 'shopping_items', 'household_stocks',
+  // Espace nounou (21/11/2026) : carnet, photos et messages de la garde (20261121000100_espace_nounou.sql)
+  'childcare_events', 'childcare_photos', 'childcare_messages',
 ] as const;
 export const PERSONAL_TABLES = ['notifications'] as const;
 

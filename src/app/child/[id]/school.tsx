@@ -1,11 +1,11 @@
 /** École ou mode de garde : établissement, classe, contacts, aménagements décidés avec l'école, notes datées. */
 import React, { useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Card, Field, ListRow, Text } from '@/components/ui';
+import { Button, Card, Field, ListRow, Text } from '@/components/ui';
 import { useChild } from '@/lib/data/hooks';
 import { useAddNeedEntry, useDeleteNeedEntry, useNeedEntries } from '@/lib/data/hooks-needs';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -39,6 +39,12 @@ export default function ChildSchool() {
         { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },
       ]} />
       <Text muted>{tr('sc.schoolIntro')}</Text>
+      {/* Espace Nounou (21/11/2026) : carnet de la journée, photos privées, messages et accès de la nounou */}
+      <Card>
+        <Text weight="bold">{tr('nn.space.title')}</Text>
+        <Text variant="small" muted style={{ marginTop: 4 }}>{tr('nn.home.parentSub')}</Text>
+        <Button label={tr('nn.space.of', { name: child?.first_name ?? '' })} icon="home" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.push(`/garde/${id}` as never)} testID="school-open-nanny" />
+      </Card>
       <Card>
         <Field label={tr('sc.title')} value={title} onChangeText={setTitle} maxLength={120} placeholder={tr('sc.placeholder')} testID="school-title" />
         <Field label={tr('sc.body')} optional value={body} onChangeText={setBody} multiline maxLength={4000} />
