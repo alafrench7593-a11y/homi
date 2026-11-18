@@ -33,7 +33,7 @@ import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
 import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
-import { useActivePregnancy, useArticle, useArticles, useHouseholdMembers, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticle, useArticles, useHouseholdMembers, useJourneyState, usePremium, useProfile, useTrackedChildren, useMyMembership } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
@@ -59,6 +59,7 @@ import { MIN_TOUCH, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions, HEADER_GAP, HEADER_ICON } from '@/components/AccountActions';
 import { Tappable } from '@/components/Tappable';
 import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/features/homeToday';
+import { coparentSituation } from '@/features/homeToday/coparentHome';
 import { homeSituation, resolveHomeLayout, shownModules, type HomeModuleKey } from '@/features/homeToday/homeLayout';
 import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeCardSkeleton, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
 
@@ -105,8 +106,11 @@ export default function Home() {
   setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
   // Situation affichée → configuration du tableau de bord (déclarative), puis choix de la personne pour cette situation
+  const membership = useMyMembership();
   const adults = (members ?? []).filter((m) => m.role === 'owner' || m.role === 'coparent').length;
-  const situation = homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy });
+  // Co-parent (adulte qui n'a pas créé le foyer) : accueil « coparent » sur « Moi » / « couple » (jamais les données
+  // privées de l'autre adulte)
+  const situation = coparentSituation(homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy }), membership?.role);
   const saved = useUiStore((st) => st.homeLayouts[situation]);
   const modules = useMemo(() => shownModules(resolveHomeLayout(situation, saved)), [situation, saved]);
 
@@ -185,7 +189,7 @@ export default function Home() {
           <GlassIconButton icon="life-buoy" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
           <View>
             <GlassIconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
-            <BadgeDot count={unread} style={{ position: 'absolute', top: 7, right: 7, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
+            <BadgeDot count={unread} style={{ position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
           </View>
           <AccountActions />
         </Row>

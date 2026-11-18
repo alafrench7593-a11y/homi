@@ -16,8 +16,8 @@ import { UserAvatar } from './UserAvatar';
 import { t as tr } from '@/i18n';
 
 const SIZE = 32;
-/** Disques de verre de l'en-tête (cible tactile portée à 44 pt) et leur écart. */
-export const HEADER_ICON = 40;
+/** Disques de verre de l’en-tête : 44 pt (cible tactile réelle, y compris sur le web où hitSlop n’existe pas) et leur écart. */
+export const HEADER_ICON = 44;
 export const HEADER_GAP = 4;
 
 /** Initiale affichée dans l'avatar : prénom choisi, sinon adresse e-mail, sinon un point. */

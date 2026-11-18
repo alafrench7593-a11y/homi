@@ -169,7 +169,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
           style={{ width: Math.min(width, 600) }}
         />
       </View>
-      <QuickActionSheet visible={open} onClose={() => setOpen(false)} />
+      <QuickActionSheet visible={open} family={activeName === 'household'} onClose={() => setOpen(false)} />
     </>
   );
 }
@@ -215,7 +215,7 @@ export function QuickActionPicker({ onDone }: { onDone: () => void }) {
   );
 }
 
-function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+function QuickActionSheet({ visible, family, onClose }: { visible: boolean; family?: boolean; onClose: () => void }) {
   const t = useTheme();
   const { ctx, childId, childName, pregnancy } = useQuickCtx();
   const chosen = useUiStore((s) => s.quickActionFavorites[ctx.profile]);
@@ -224,7 +224,8 @@ function QuickActionSheet({ visible, onClose }: { visible: boolean; onClose: () 
   const canEdit = !!membership && (membership.role === 'owner' || (membership.can_edit ?? []).includes('lists'));
   const [picking, setPicking] = useState(false);
   const [task, setTask] = useState(false);
-  const keys = quickShown(ctx, chosen);
+  // Onglet Famille : « Confier une mission » et « Créer une tâche » d'abord (le foyer), puis les actions du profil
+  const keys = family ? [...new Set<QuickActionKey>(['mission', 'task', ...quickShown(ctx, chosen)])].slice(0, QUICK_MAX) : quickShown(ctx, chosen);
   const close = () => { setPicking(false); onClose(); };
   const after = (fn: () => void) => { close(); setTimeout(fn, 180); };
   const run = (k: QuickActionKey) => {
