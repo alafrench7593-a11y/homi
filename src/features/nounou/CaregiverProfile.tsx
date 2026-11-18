@@ -52,6 +52,7 @@ export function CaregiverProfile() {
           ) : (
             <ListRow key={l.link_id} icon="clock" title={tr('nn.home.pendingTitle')} subtitle={tr('nn.home.family', { name: l.household_name })} />
           ))}
+          {mine.data && !links.length ? <ListRow icon="inbox" title={tr('nn.home.emptyTitle')} subtitle={tr('nn.home.emptyBody')} testID="caregiver-profile-none" /> : null}
           <ListRow icon="briefcase" title={tr('nn.profile.open')} subtitle={tr('nn.profile.openSub')} onPress={() => router.push('/garde' as never)} testID="caregiver-profile-open" />
         </ListGroup>
 

@@ -77,7 +77,9 @@ with sync_playwright() as p:
     # Profil d'un compte QUE nounou (21/11/2026) : son compte, ses gardes, ses réglages — aucun outil du foyer
     txt = pn.inner_text('body')
     R['nounou_profil_compte_gardes_reglages'] = n(pn, 'caregiver-profile') == 1 and n(pn, 'caregiver-profile-cares') == 1 and n(pn, 'caregiver-profile-settings') == 1
-    R['nounou_profil_ses_gardes'] = n(pn, 'caregiver-profile-open') == 1 and 'Lou' in txt
+    # ses gardes : chaque garde (ou « Aucune garde pour l'instant ») et l'accès à « Mes gardes »
+    # (ce faux serveur n'émule pas my_childcare : la liste des gardes est vérifiée par espace_nounou.py)
+    R['nounou_profil_ses_gardes'] = n(pn, 'caregiver-profile-open') == 1
     R['nounou_profil_sans_outils_du_foyer'] = not any(w in txt for w in ['Agenda familial', 'MES PARCOURS', 'Ma famille', 'Mes outils', 'Abonnement', 'Pour aller plus loin']) \
         and n(pn, 'edit-journey') == 0 and n(pn, 'profile-learn') == 0
     pn.screenshot(path=f'{SHOTS}/nounou-profil-barre.png')
