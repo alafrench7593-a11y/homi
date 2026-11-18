@@ -95,20 +95,30 @@ revoke execute on function public.couple_send(uuid, uuid, text, text, text, uuid
 grant execute on function public.couple_send(uuid, uuid, text, text, text, uuid, uuid, uuid) to authenticated;
 
 -- ---------------------------------------------------------------- export RGPD (« Exporter mes données »)
--- Version de 20261117000100_audit_securite_backend.sql + mes ressentis, les messages que j'ai écrits ou reçus,
--- mes réglages de profil familial. export_my_data() (security INVOKER) filtre ensuite sous RLS.
-create or replace function public._export_my_data_raw()
-returns jsonb language plpgsql security definer set search_path = public as $$
-declare v_uid uuid := auth.uid();
-begin
-  if coalesce(current_setting('homi.export_filter', true), '') <> 'on' then
-    raise exception 'Export : utilisez export_my_data().' using errcode = '42501';
-  end if;
-  return public._export_my_data_v29() || jsonb_build_object('couple', jsonb_build_object(
-    'feelings', (select coalesce(jsonb_agg(to_jsonb(f) order by f.created_at), '[]') from public.couple_feelings f where f.user_id = v_uid),
+-- Mes ressentis, les messages que j'ai écrits ou reçus, mes réglages de profil familial : une fonction à part, ajoutée
+-- à la version COURANTE de _export_my_data_raw() (celle de 20261119000300_messagerie_privee.sql, qui ajoute
+-- « private_messages ») sans en réécrire le contenu. export_my_data() (security INVOKER) filtre ensuite sous RLS.
+create or replace function public._export_my_data_couple()
+returns jsonb language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'feelings', (select coalesce(jsonb_agg(to_jsonb(f) order by f.created_at), '[]') from public.couple_feelings f where f.user_id = auth.uid()),
     'messages', (select coalesce(jsonb_agg(to_jsonb(m) order by m.created_at), '[]') from public.couple_messages m
-                 where (m.author_id = v_uid or m.recipient_id = v_uid) and public._is_parent_in(m.household_id, v_uid)),
-    'family_profile', (select coalesce(jsonb_agg(to_jsonb(p)), '[]') from public.family_member_profiles p where p.user_id = v_uid)));
+                 where (m.author_id = auth.uid() or m.recipient_id = auth.uid()) and public._is_parent_in(m.household_id, auth.uid())),
+    'family_profile', (select coalesce(jsonb_agg(to_jsonb(p)), '[]') from public.family_member_profiles p where p.user_id = auth.uid()));
+$$;
+revoke execute on function public._export_my_data_couple() from public, anon, authenticated;
+
+-- Idempotent : n'ajoute la clé « couple » qu'une fois, quelle que soit la version de _export_my_data_raw() en place.
+do $$
+declare v_def text;
+begin
+  v_def := pg_get_functiondef('public._export_my_data_raw()'::regprocedure);
+  if position('_export_my_data_couple' in v_def) > 0 then return; end if;
+  if position('return public._export_my_data_v29()' in v_def) = 0 then
+    raise exception '_export_my_data_raw : version inattendue, ajout de « couple » à reprendre à la main';
+  end if;
+  v_def := replace(v_def, 'return public._export_my_data_v29()', 'return public._export_my_data_v29() || jsonb_build_object(''couple'', public._export_my_data_couple())');
+  execute v_def;
 end $$;
 revoke execute on function public._export_my_data_raw() from public, anon;
 grant execute on function public._export_my_data_raw() to authenticated;

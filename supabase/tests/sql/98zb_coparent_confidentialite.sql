@@ -166,6 +166,7 @@ select tests.ok(tests.count(format('select * from public.couple_messages where i
 set request.jwt.claim.sub = :'CP';
 select tests.ok(jsonb_array_length(public.export_my_data() -> 'couple' -> 'feelings') = 0 and jsonb_array_length(public.export_my_data() -> 'couple' -> 'messages') >= 1,
   'export : le co-parent exporte ses messages, jamais les ressentis de Camille');
+select tests.ok(public.export_my_data() ? 'couple' and public.export_my_data() ? 'private_messages', 'export : la clé « couple » s''ajoute sans retirer « private_messages » (messagerie de la communauté)');
 
 -- ================================================================ 5. missions : cycle complet, droits, rejeu, préférence
 set request.jwt.claim.sub = :'OW';
