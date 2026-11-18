@@ -1,4 +1,7 @@
-/** Profil : mes parcours, ma famille, mon espace et mes réglages. */
+/**
+ * Profil : mes parcours, ma famille, mon espace et mes réglages. Un compte qui n'est QUE nounou voit un profil à part
+ * (son compte, ses gardes, ses réglages : `CaregiverProfile`), jamais les outils du foyer.
+ */
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
@@ -18,7 +21,7 @@ import { MySubscriptionSection } from '@/features/subscription';
 import { ErrorView, Skeleton } from '@/components/States';
 import { Button, Card, Chip, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
-import { useActivePregnancy, useArticles, useChildren, useJourneyState, usePremium, useProfile } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticles, useChildren, useJourneyState, useMemberships, usePremium, useProfile } from '@/lib/data/hooks';
 import { JOURNEY_ICON, useJourneyProfileLabel } from '@/features/journeys';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -26,8 +29,17 @@ import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
+import { CaregiverProfile } from '@/features/nounou/CaregiverProfile';
 
 export default function Profile() {
+  const memberships = useMemberships();
+  // rôle inconnu : on n'affiche pas les outils du foyer « en attendant » (un compte nounou ne doit jamais les voir)
+  if (memberships.isLoading && !memberships.data) return <Screen back account bottomInset={TAB_SCREEN_INSET}><Skeleton kind="card" rows={2} /></Screen>;
+  return isCaregiverOnly(memberships.data) ? <CaregiverProfile /> : <FamilyProfile />;
+}
+
+function FamilyProfile() {
   const sharedCycles = useCycleSharedWithMe();
   const { session } = useAuth();
   const profileQ = useProfile();

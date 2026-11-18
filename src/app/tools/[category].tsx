@@ -9,6 +9,7 @@
  * d'outils : le lien mène à l'espace Communauté.
  * « account » (Mon compte et réglages) liste les réglages : ce ne sont pas des outils.
  * Une catégorie sans outil pour les profils du foyer l'explique et propose de modifier le parcours.
+ * Compte qui n'est QUE nounou : les outils du foyer ne le concernent pas → « Mes gardes » (comme l'onglet Outils).
  */
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
@@ -17,7 +18,8 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, VirtualList } from '@/components/States';
 import { Text } from '@/components/ui';
 import { ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
-import { useProfile } from '@/lib/data/hooks';
+import { useMemberships, useProfile } from '@/lib/data/hooks';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
 import { categoryContent, categoryFromParam, categoryLead, categoryTitle, isToolCategory } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
@@ -26,6 +28,11 @@ import { t as tr } from '@/i18n';
 type Item = { kind: 'header'; key: string; title: string } | { kind: 'tool'; key: string; entry: ToolEntry; first: boolean };
 
 export default function ToolCategoryScreen() {
+  if (isCaregiverOnly(useMemberships().data)) return <Redirect href={'/garde' as never} />;
+  return <ToolCategory />;
+}
+
+function ToolCategory() {
   const { category: param } = useLocalSearchParams<{ category: string }>();
   const category = categoryFromParam(param) ?? param;
   const hub = useToolHub();

@@ -74,7 +74,23 @@ with sync_playwright() as p:
     R['nounou_barre_sans_onglets_du_foyer'] = n(pn, 'tab-index') == 0 and n(pn, 'tab-baby') == 0 and n(pn, 'tab-household') == 0 and n(pn, 'tab-garde') == 1
     R['nounou_action_ajouter_un_evenement'] = (tid(pn, 'care-quick-add').get_attribute('aria-label') or '').startswith('Ajouter un événement')
     R['nounou_sans_profils_du_foyer'] = n(pn, 'profile-switcher') == 0 and pn.locator('[data-testid^="subject-"]').count() == 0
+    # Profil d'un compte QUE nounou (21/11/2026) : son compte, ses gardes, ses réglages — aucun outil du foyer
+    txt = pn.inner_text('body')
+    R['nounou_profil_compte_gardes_reglages'] = n(pn, 'caregiver-profile') == 1 and n(pn, 'caregiver-profile-cares') == 1 and n(pn, 'caregiver-profile-settings') == 1
+    R['nounou_profil_ses_gardes'] = n(pn, 'caregiver-profile-open') == 1 and 'Lou' in txt
+    R['nounou_profil_sans_outils_du_foyer'] = not any(w in txt for w in ['Agenda familial', 'MES PARCOURS', 'Ma famille', 'Mes outils', 'Abonnement', 'Pour aller plus loin']) \
+        and n(pn, 'edit-journey') == 0 and n(pn, 'profile-learn') == 0
     pn.screenshot(path=f'{SHOTS}/nounou-profil-barre.png')
+    # recherche d'outils : fermée (« Mes outils » renvoie vers « Mes gardes »), et la feuille de l'avatar ne propose rien du foyer
+    tid(pn, 'header-account').click(); pn.wait_for_timeout(1200)
+    R['nounou_feuille_avatar'] = n(pn, 'account-sheet') == 1 and n(pn, 'account-sheet-settings') == 1
+    pn.screenshot(path=f'{SHOTS}/nounou-feuille-avatar.png')
+    pn.keyboard.press('Escape'); pn.wait_for_timeout(600)
+    pn.goto(B + '/tools?q=agenda'); pn.wait_for_timeout(3000)
+    R['nounou_recherche_outils_fermee'] = pn.url.rstrip('/').endswith('/garde') and 'Agenda familial' not in pn.inner_text('body')
+    pn.goto(B + '/tools/family'); pn.wait_for_timeout(3000)
+    R['nounou_categorie_outils_fermee'] = '/tools' not in pn.url or 'Agenda familial' not in pn.inner_text('body')
+    pn.goto(B + '/profile'); pn.wait_for_timeout(3000)
     tid(pn, 'tab-garde').click(); pn.wait_for_timeout(2500)
     R['nounou_onglet_mes_gardes'] = pn.url.rstrip('/').endswith('/garde')
 

@@ -14,6 +14,9 @@ export const nounou = {
   'nn.home.parentSub': 'Carnet de la journée, photos, messages et accès de la nounou.',
   'nn.home.emptyTitle': 'Aucune garde pour l’instant',
   'nn.home.emptyBody': 'Une famille vous a invitée ? Ouvrez le lien reçu ou saisissez le code ci-dessous.',
+  'nn.profile.open': 'Ouvrir « Mes gardes »',
+  'nn.profile.openSub': 'Carnet, photos et messages de chaque garde',
+  'nn.profile.settings': 'Mon compte et mes réglages',
 
   // rejoindre
   'nn.join.title': 'Rejoindre une garde',

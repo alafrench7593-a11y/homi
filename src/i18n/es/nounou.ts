@@ -12,6 +12,9 @@ export const nounou: Messages<typeof fr> = {
   'nn.home.parentSub': 'Registro del día, fotos, mensajes y acceso de la cuidadora.',
   'nn.home.emptyTitle': 'Todavía no hay ningún cuidado',
   'nn.home.emptyBody': '¿Te ha invitado una familia? Abre el enlace recibido o escribe el código abajo.',
+  'nn.profile.open': 'Abrir «Mis cuidados»',
+  'nn.profile.openSub': 'Cuaderno, fotos y mensajes de cada cuidado',
+  'nn.profile.settings': 'Mi cuenta y mis ajustes',
 
   'nn.join.title': 'Unirse a un cuidado',
   'nn.join.invited': 'Una familia te invita a cuidar de su hijo',
