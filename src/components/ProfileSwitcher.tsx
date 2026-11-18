@@ -29,7 +29,8 @@ import { router } from 'expo-router';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { motionSpring, motionTiming, useMotion } from '@/motion';
-import { useActivePregnancy, useActiveSubject, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useActiveSubject, useMemberships, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useAuth } from '@/lib/auth';
 import { childAge } from '@/lib/domain/child';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
@@ -89,6 +90,8 @@ export function ProfileSwitcher({ pager = false, add = true, testID = 'profile-s
   const swipe = useContext(SwipeCtx);
   const pendingKey = usePendingProfile();
   const scrollProps = useMemo(() => ({ onStartShouldSetResponderCapture: () => { swipe?.exclude(); return false; } }), [swipe]);
+  // Compte qui n'est QUE nounou : jamais les profils du foyer
+  const caregiver = isCaregiverOnly(useMemberships().data);
 
   const label = (e: ProfileEntry) => (e.kind === 'me' ? tr('pj.subject.me') : e.kind === 'pregnancy' ? tr('ps.pregnancy') : e.kind === 'family' ? tr('ps.family') : e.child!.first_name);
   const a11y = (e: ProfileEntry) => (e.kind === 'me' ? tr('pj.bubble.meA11y', { name: profile?.display_name?.trim() || tr('pj.subject.me') })
@@ -106,6 +109,7 @@ export function ProfileSwitcher({ pager = false, add = true, testID = 'profile-s
   // Profil visé pendant la transition : l'anneau s'y rend tout de suite, le contenu suit
   const activeKey = pendingKey && list.some((e) => e.key === pendingKey) ? pendingKey : list[index]?.key ?? '';
 
+  if (caregiver) return null;
   return (
     <View testID={testID} style={[{ gap: 4 }, style]}>
       <GlassProfileSwitcher

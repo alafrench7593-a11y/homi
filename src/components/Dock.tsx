@@ -28,7 +28,9 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing } from '@/theme/tokens';
 import { usePressScale } from '@/motion';
 import { useScope } from '@/lib/data/hooks-scope';
-import { useActivePregnancy, useMyMembership, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useMemberships, useMyMembership, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useMyChildcare } from '@/lib/data/hooks-nounou';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useUserId } from '@/lib/auth';
 import { useUiStore } from '@/lib/store';
 import { ACTIVE_ALIAS, CHILD_TAB, childTabMode, dockGeometry, dockLayout, estimateLabelWidth, NAV_CENTER_AFTER, NAV_TABS, TAB_LABEL_MAX, type NavTab } from '@/features/hubs/hubMap';
@@ -118,6 +120,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   // Clavier ouvert : la barre s'efface (elle recouvrait le champ actif sur le web et en fenêtre réduite) ; elle
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
   const keyboard = useKeyboardVisible();
+  const caregiver = isCaregiverOnly(useMemberships().data);
 
   const glassTabs: GlassTab[] = tabs.map(({ tab, route }, i) => ({
     key: route.name,
@@ -139,6 +142,17 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     const route = state.routes.find((r) => r.name === name);
     if (route) navigation.emit({ type: LONG_PRESS, target: route.key });
   };
+
+  // Compte qui n'est QUE nounou : ni onglets ni profils du foyer ; « Mes gardes » + « Ajouter un événement » (enfant gardé)
+  if (caregiver) {
+    return (
+      <View pointerEvents="box-none" testID="dock" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
+        <GlassTabBar testID="tab-bar-glass" tabs={[{ key: 'garde', label: tr('nn.home.title'), icon: 'briefcase', testID: 'tab-garde' }]} activeKey=""
+          onChange={() => router.push('/garde' as never)} center={<CareAddButton size={g.action} />} centerAfter={1} floating={g.floating}
+          labelSize={layout.fontSize} accessibilityLabel={tr('nav.tablist')} style={{ width: Math.min(width, 600) }} />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -171,6 +185,23 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
       </View>
       <QuickActionSheet visible={open} family={activeName === 'household'} onClose={() => setOpen(false)} />
     </>
+  );
+}
+
+/** Action centrale d'un compte nounou : « Ajouter un événement » pour l'enfant gardé (le premier accès actif). */
+function CareAddButton({ size }: { size: number }) {
+  const t = useTheme();
+  const p = usePressScale({ scale: 0.94 });
+  const care = useMyChildcare().data ?? [];
+  const child = care.find((l) => l.status === 'active' && l.child)?.child ?? null;
+  return (
+    <Pressable testID="care-quick-add" accessibilityRole="button" accessibilityLabel={child ? `${tr('nn.add.cta')}, ${child.first_name}` : tr('nn.add.cta')}
+      onPressIn={p.onPressIn} onPressOut={p.onPressOut} hitSlop={size < 48 ? (48 - size) / 2 : 0} style={{ width: size, height: size }}
+      onPress={() => { haptic('light'); router.push((child ? `/garde/${child.id}/ajouter` : '/garde') as never); }}>
+      <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
+        <Icon name="plus" size={24} color={t.tokens.action.text} />
+      </Animated.View>
+    </Pressable>
   );
 }
 

@@ -22,4 +22,6 @@ export const glass: Messages<typeof fr> = {
   'glass.suggest': 'Suggested categories',
   'glass.sheet.problem': 'Problem it solves',
   'glass.sheet.quote': '“{q}”',
+  'glass.care.entry': 'Childcare and nanny',
+  'glass.care.entrySub': 'Care diary, photos and messages from the nanny',
 };

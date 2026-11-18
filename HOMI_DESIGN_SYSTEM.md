@@ -244,6 +244,11 @@ haptique « sélection » ; changement d'onglet lui-même immédiat (fondu bref 
 - Écrans d'onglet : `TAB_SCREEN_INSET` en bas (= capsule 68 pt + 8 + 8) : le DERNIER élément d'une page remonte
   toujours au-dessus de la barre flottante (`glassScreens.test.tsx` ; e2e « défiler jusqu'en bas » sur l'accueil,
   Mes outils, les trois onglets, à 390 et 320 pt).
+- **Compte qui n'est que nounou** (`isCaregiverOnly`) : les écrans du foyer le renvoient vers « Mes gardes »
+  (`/garde`) ; sur ceux qui lui restent (Profil, Communauté), la barre ne montre que « Mes gardes » + l'action centrale
+  « Ajouter un événement » (enfant gardé), et aucun sélecteur de profil. Parents : entrée « Garde et nounou » dans
+  l'onglet Enfant (`/garde/<enfant>` si une nounou a un accès confirmé). Onglet Famille : l'action centrale propose
+  d'abord « Confier une mission » et « Créer une tâche ». Co-parent : accueil « Co-parent » sur « Moi » / « couple ».
 - **Changement de profil coordonné** (`profileTransition`) : l'anneau glisse tout de suite vers l'avatar choisi ; un
   voile frère à la couleur du fond recouvre le contenu du profil précédent (110 ms) ; le magasin change ENSUITE ; les
   zones `ProfileStage` (tableau de bord de l'accueil, onglets, « Pour <profil> » de Mes outils) sont rendues sous une

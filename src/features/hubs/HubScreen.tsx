@@ -25,7 +25,8 @@ import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { Cascade } from '@/motion';
 import { EmptyState, ErrorView } from '@/components/States';
 import { ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
-import { Button, Text } from '@/components/ui';
+import { useCareLinks } from '@/lib/data/hooks-nounou';
+import { Button, ListGroup, ListRow, Text } from '@/components/ui';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useToolHub } from '@/features/toolHub/useToolHub';
 import { useProfile } from '@/lib/data/hooks';
@@ -100,6 +101,8 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
         <View style={{ gap: spacing.sm }}>
           {urgent.map((u) => <UrgentRow key={u.id} tool={u} />)}
           <ToolSearchButton testID={`hub-${id}-search`} />
+          {/* Onglet Enfant : la garde de l'enfant affiché (son carnet s'il a une nounou confirmée, sinon « Mes gardes ») */}
+          {hub === 'baby' ? <CareEntry childId={scope.childId ?? null} /> : null}
         </View>
 
         {recents.length ? <Cascade index={1}><ToolLinks ids={recents} title={tr('th.ui.recents')} status={status} testID={`hub-${id}-recents`} /></Cascade> : null}
@@ -134,5 +137,17 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
       </ProfileStage>
       </ProfileSwipe>
     </Screen>
+  );
+}
+
+/** Entrée « Garde et nounou » de l'onglet Enfant : `/garde/<enfant>` quand une nounou a un accès confirmé, sinon `/garde`. */
+function CareEntry({ childId }: { childId: string | null }) {
+  const links = useCareLinks(childId).data;
+  const active = !!childId && !!links?.some((l) => l.confirmed_at && !l.revoked_at);
+  return (
+    <ListGroup testID="hub-baby-care">
+      <ListRow icon="briefcase" title={tr('glass.care.entry')} subtitle={tr('glass.care.entrySub')} testID="hub-baby-care-open"
+        onPress={() => router.push((active ? `/garde/${childId}` : '/garde') as never)} />
+    </ListGroup>
   );
 }

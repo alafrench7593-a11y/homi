@@ -22,4 +22,6 @@ export const glass: Messages<typeof fr> = {
   'glass.suggest': 'Vorgeschlagene Kategorien',
   'glass.sheet.problem': 'Wobei es hilft',
   'glass.sheet.quote': '„{q}“',
+  'glass.care.entry': 'Betreuung und Tagesmutter',
+  'glass.care.entrySub': 'Betreuungsheft, Fotos und Nachrichten der Tagesmutter',
 };

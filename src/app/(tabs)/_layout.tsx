@@ -1,7 +1,9 @@
 import React from 'react';
-import { Redirect } from 'expo-router';
+import { Redirect, useSegments } from 'expo-router';
 import { Tabs } from 'expo-router/tabs';
 import { useAuth } from '@/lib/auth';
+import { useMemberships } from '@/lib/data/hooks';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Dock } from '@/components/Dock';
 import { t as tr } from '@/i18n';
@@ -20,10 +22,19 @@ function AutoNotificationsSync() {
   return null;
 }
 
+/** Routes d'onglet ouvertes à un compte nounou (les autres le renvoient vers « Mes gardes »). */
+const CAREGIVER_TABS = new Set(['profile', 'community', 'moi']);
+
 export default function TabsLayout() {
   const { session, ready } = useAuth();
   const t = useTheme();
+  const caregiver = isCaregiverOnly(useMemberships().data);
+  const segments = useSegments() as string[];
+  const leaf = segments[segments.length - 1] ?? '';
   if (ready && !session) return <Redirect href="/welcome" />;
+  // Compte qui n'est QUE nounou : les écrans du foyer (accueil, Moi, Enfant, Famille, outils…) ne le concernent pas ;
+  // son accueil est « Mes gardes ». Profil, Communauté et « Moi communautaire » lui restent ouverts.
+  if (caregiver && !CAREGIVER_TABS.has(leaf)) return <Redirect href={'/garde' as never} />;
   return (
     <>
     {session ? <DigestSync /> : null}
