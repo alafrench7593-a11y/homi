@@ -8,7 +8,7 @@ jest.mock('@/lib/backend', () => ({
 import React from 'react';
 import { act, create } from 'react-test-renderer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { batcher, changeSpecs, HOUSEHOLD_TABLES, reconnectWatcher, useRealtimeSync } from '@/lib/sync';
+import { batcher, changeSpecs, HOUSEHOLD_TABLES, isRealtimeLive, reconnectWatcher, useRealtimeSync } from '@/lib/sync';
 
 describe('synchronisation temps réel', () => {
   it('filtre chaque table par foyer, et les notifications par personne', () => {
@@ -67,5 +67,22 @@ describe('synchronisation temps réel', () => {
     expect(pred({ queryKey: ['notifications'] })).toBe(true);
     expect(pred({ queryKey: ['profiles'] })).toBe(false);
     jest.useRealTimers();
+  });
+
+  it('« Se comprendre » : couple_messages suit le temps réel du foyer ; le rafraîchissement de 30 s ne sert que hors direct', () => {
+    expect(changeSpecs('h1', 'u1').find((x) => x.table === 'couple_messages')?.filter).toBe('household_id=eq.h1');
+    const qc = new QueryClient();
+    function Probe() { useRealtimeSync('h1', 'u1'); return null; }
+    let r: ReturnType<typeof create> | undefined;
+    act(() => { r = create(<QueryClientProvider client={qc}><Probe /></QueryClientProvider>); });
+    act(() => { rt.status?.('live'); });
+    expect(isRealtimeLive()).toBe(true);
+    act(() => { rt.status?.('offline'); });
+    expect(isRealtimeLive()).toBe(false);
+    act(() => { r?.unmount(); });
+    expect(isRealtimeLive()).toBe(false);
+    const fs = require('fs') as { readFileSync(p: string, e: string): string };
+    expect(fs.readFileSync('src/lib/data/hooks-couple.ts', 'utf8')).toContain('refetchInterval: () => (isRealtimeLive() ? false : 30_000)');
+    expect(fs.readFileSync('supabase/migrations/20261122000200_se_comprendre_temps_reel.sql', 'utf8')).toContain('alter publication supabase_realtime add table public.couple_messages');
   });
 });

@@ -12,6 +12,7 @@ import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { uuid } from '../uuid';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
+import { isRealtimeLive } from '../sync';
 import { usePeople } from './hooks-family-load';
 import { otherAdult, type Feeling, type Grammar, type Situation } from '../domain/understand';
 import type { Mission } from '../domain/missions';
@@ -57,8 +58,9 @@ export function useCoupleMessages() {
   return useQuery({
     queryKey: [me, 'couple_messages', hid ?? ''],
     enabled: !!me && !!hid,
-    // l'autre peut écrire à tout moment : relu au premier plan (sync.ts) et toutes les 30 s sur ces écrans
-    refetchInterval: 30_000,
+    // l'autre peut écrire à tout moment : temps réel (sync.ts, couple_messages publiée) et relu au premier plan ;
+    // toutes les 30 s seulement si le temps réel n'est pas en direct (réseau instable, serveur indisponible)
+    refetchInterval: () => (isRealtimeLive() ? false : 30_000),
     staleTime: 5_000,
     queryFn: () => backend.select<CoupleMessage>({ table: 'couple_messages', filters: [eq('household_id', hid)], order: [{ col: 'created_at' }], limit: 200 }),
   });
