@@ -41,6 +41,7 @@ import { backend, eq } from '@/lib/backend';
 import { LaunchIntro } from '@/components/LaunchIntro';
 import { HomiLogoAnimated } from '@/components/HomiLogoAnimated';
 import { setDiscoverOpening } from '@/features/discover/opening';
+import { TourHost } from '@/features/tour/TourOverlay';
 import { duration as motionDuration, intro } from '@/theme/motion';
 
 /** Écran d'erreur global (expo-router) : jamais d'écran blanc. */
@@ -236,6 +237,8 @@ export default function RootLayout() {
                   <OfflinePill />
                   <PremiumPreviewHost />
                   <SleepNotificationsHost />
+                  {/* Visite guidée dans l'application réelle : découpe, bulle, pastille, aides de première ouverture */}
+                  <TourHost />
                   {/* Introduction d'ouverture : au-dessus de tout, sans capter les touchers, une fois par lancement */}
                   <LaunchIntro />
                 </WebFrame>

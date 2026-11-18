@@ -39,6 +39,21 @@ défilement automatique par `useFrameCallback`, actif seulement pendant un gliss
 3. aucune ref React lue dans un worklet (valeurs partagées, `useAnimatedRef`) ;
 4. pas de `width` / `height` animés avec le pilote natif d'`Animated` (les primitives ci-dessus sont en Reanimated).
 
+### Visite guidée dans l'application (`src/features/tour/`, 18/11/2026)
+
+Sept étapes sur les VRAIS écrans (accueil, profil, Mes outils, « Ajouter », favori, agenda, personnaliser), qui avancent
+sur un événement réel (profil changé dans le magasin, outil ouvert, favori, navigation, éditeur ouvert). Ancres :
+`useTourAnchor(id)` (mesure `measureInWindow`, défilement jusqu'à l'élément). Superposition montée une fois dans
+`_layout.tsx` (`TourHost`), sans modale : voile + découpe = UNE vue sans enfant en position absolue (bordure géante) dont
+position et taille passent d'une cible à l'autre en ressort `panneau` sur le fil UI (exception assumée « vue absolue sans
+enfant ») ; bandes transparentes qui arrêtent les touchers hors de la cible ; bulle de verre `sheet` (bandeau d'une
+ligne quand la place manque) ; doigt fantôme (toucher, glisser, faire glisser) en `withRepeat` sur le fil UI. `off` :
+découpe posée sans trajet, aucun doigt ; `minimal` : fondus courts. Aucun `scheduleOnRN`, aucune ref lue dans un
+worklet. Mode exercice (`src/lib/practice.ts`) : aucune écriture ne part (testé). Détails et règles : en tête de
+`src/features/tour/model.ts` et `TourOverlay.tsx` ; tests `tour.test.ts`, `tourScreens.test.tsx`, e2e
+`e2e/visite_guidee.py`. À vérifier sur iPhone : VoiceOver, haptique, gestes natifs, écrans présentés en modale iOS
+(la pastille de la visite passe sous eux ; le bandeau « exercice » est dans l'écran lui-même).
+
 ### Skia, Rive, Lottie : évalués, non installés
 
 Poids ci-dessous : ordres de grandeur donnés de mémoire, à mesurer sur un build avant toute décision.

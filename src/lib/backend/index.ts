@@ -3,7 +3,9 @@ import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDemoBackend } from './demo';
 import { createSupabaseBackend } from './supabase';
-import type { Backend } from './types';
+import { BackendError, type Backend } from './types';
+import { isPracticeActive, isReadOnlyRpc, recordPracticeWrite, simulated } from '@/lib/practice';
+import { t as tr } from '@/i18n';
 
 export * from './types';
 
@@ -35,10 +37,33 @@ const switchListeners = new Set<(reason: BackendSwitchReason) => void>();
  */
 export const backend: Backend = new Proxy({} as Backend, {
   get(_t, prop: string) {
+    // Visite guidée, mode exercice (src/lib/practice.ts) : aucune écriture ne part, les lectures passent
+    if (isPracticeActive()) {
+      const shielded = practiceShield(prop);
+      if (shielded) return shielded;
+    }
     const v = (active as unknown as Record<string, unknown>)[prop];
     return typeof v === 'function' ? (v as (...a: unknown[]) => unknown).bind(active) : v;
   },
 });
+
+/** Remplacement d'une méthode d'écriture pendant un exercice (null : la méthode passe telle quelle). */
+function practiceShield(prop: string): unknown {
+  switch (prop) {
+    case 'insert': return (table: string, rows: Record<string, unknown> | Record<string, unknown>[]) => simulated.insert(table, rows);
+    case 'update': return (table: string, patch: Record<string, unknown>) => simulated.update(table, patch);
+    case 'remove': return (table: string) => simulated.remove(table);
+    case 'rpc': return (fn: string, args?: Record<string, unknown>) => (isReadOnlyRpc(fn) ? active.rpc(fn, args) : simulated.rpc(fn));
+    case 'invoke': case 'invokeStream':
+      return (fn: string) => { recordPracticeWrite('invoke', fn); return Promise.reject(new BackendError(tr('tour.practice.blocked'), 'practice')); };
+    case 'storage': return {
+      ...active.storage,
+      upload: (bucket: string) => { recordPracticeWrite('upload', bucket); return Promise.resolve(); },
+      remove: (bucket: string) => { recordPracticeWrite('storageRemove', bucket); return Promise.resolve(); },
+    };
+    default: return null;
+  }
+}
 
 /**
  * `resume` : reprise, à l'ouverture, de la démonstration choisie lors d'une visite précédente.

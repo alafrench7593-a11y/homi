@@ -14,6 +14,7 @@ import { create } from 'zustand';
 import { backend, BackendError } from './backend';
 import { t as tr } from '@/i18n';
 import { conflictTarget } from './offlineConflicts';
+import { isPracticeActive, recordPracticeWrite } from './practice';
 
 export interface PendingOp {
   id: string;
@@ -142,6 +143,8 @@ export function loadQueue(): Promise<void> {
 }
 
 export async function enqueue(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean } = {}) {
+  // Visite guidée, mode exercice : rien n'est mis en attente (sinon l'exercice partirait au retour du réseau)
+  if (isPracticeActive()) { recordPracticeWrite('queue', table); return; }
   // Jamais d'écriture de la file pendant sa lecture au démarrage (sinon l'une écrase l'autre)
   if (loading) await loading;
   const id = String(row.client_id ?? row.id ?? uuidLike());
@@ -157,6 +160,7 @@ export async function enqueue(table: string, row: PendingOp['row'], opts: { conf
 export async function insertOrQueue(table: string, input: Record<string, unknown>, opts: { conflict?: string; merge?: boolean } = {}): Promise<'sent' | 'queued'> {
   const row = 'client_id' in input || 'id' in input || opts.conflict ? input : { id: uuidLike(), ...input };
   const op = { table, row, ...opts };
+  if (isPracticeActive()) { recordPracticeWrite('insert', table); return 'sent'; }
   if (backend.mode === 'demo') {
     await send(op);
     return 'sent';
@@ -191,6 +195,7 @@ export async function rpcOrQueue<T>(fn: string, args: Record<string, unknown>): 
     if (!useOfflineStore.getState().pending.some((op) => op.table === table && JSON.stringify(op.row) === key)) await enqueue(table, args);
     return { queued: true as const };
   };
+  if (isPracticeActive()) { recordPracticeWrite('rpc', fn); return { queued: false, result: null as T }; }
   if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return queue();
   try {
     return { queued: false, result: await backend.rpc<T>(fn, args) };
@@ -206,7 +211,8 @@ export async function rpcOrQueue<T>(fn: string, args: Record<string, unknown>): 
 
 export async function flushQueue(): Promise<number> {
   const st = useOfflineStore.getState();
-  if (st.syncing || !st.pending.length || backend.mode === 'demo' || !queueOwner) return 0;
+  // Pendant un exercice de la visite, la file attend : ses envois réels repartiront juste après
+  if (st.syncing || !st.pending.length || backend.mode === 'demo' || !queueOwner || isPracticeActive()) return 0;
   useOfflineStore.setState({ syncing: true });
   let sent = 0;
   const batch = st.pending;

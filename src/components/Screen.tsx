@@ -1,4 +1,5 @@
 import React from 'react';
+import { PracticeBanner } from '@/features/tour/TourEntry';
 import { parentRoute } from '@/lib/parentRoute';
 import { Animated, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible } from './keyboard';
@@ -282,6 +283,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         <ScreenReorderScrollContext.Provider value={reorderScroll}>
         <KeyboardScopeContext.Provider value={keyboardScope}>
         {header}
+        {/* Visite guidée, mode exercice : « rien ne sera enregistré » sur le formulaire ouvert */}
+        <PracticeBanner />
         {body}
         {footer || action ? (
           <View testID="screen-footer" style={{ ...styles.wide, paddingHorizontal: spacing.lg, paddingBottom: keyboardVisible ? spacing.sm : bottomInset > 0 ? Math.max(insets.bottom, 10) + bottomInset : insets.bottom + spacing.sm, paddingTop: spacing.sm, gap: spacing.sm }}>

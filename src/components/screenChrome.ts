@@ -74,6 +74,8 @@ export interface ScreenScroll {
   scrollToNode: (node: Measurable | null | undefined, animated?: boolean) => Promise<void>;
   /** Ne défile que si l'élément est caché (sous le pli ou au-dessus) : nouvelle section, confirmation, erreur. */
   ensureVisible: (node: Measurable | null | undefined, animated?: boolean) => Promise<void>;
+  /** Amène l'élément au tiers haut de la zone visible (visite guidée : loin des en-têtes et de la barre du bas). */
+  bringToThird: (node: Measurable | null | undefined, animated?: boolean) => Promise<void>;
 }
 
 /** Accès au défilement de l'écran courant (zone principale de `Screen` ou zone inscrite par l'écran). */
@@ -104,6 +106,14 @@ export function useScreenScroll(): ScreenScroll {
         if (!n || !v) return;
         const y = offsetToEnsure({ nodeY: n.y, nodeH: n.h, viewY: v.y, viewH: v.h, offset: e.offset() });
         if (y != null) go(s, y, animated);
+      },
+      bringToThird: async (node, animated = true) => {
+        const e = target();
+        const s = e?.ref.current;
+        if (!e || !s || !node) return;
+        const [n, v] = await Promise.all([measure(node), measure(s)]);
+        if (!n || !v) return;
+        go(s, Math.max(0, e.offset() + (n.y - v.y) - v.h / 3), animated);
       },
     };
   }, [chrome]);
