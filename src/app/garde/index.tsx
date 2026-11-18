@@ -44,8 +44,13 @@ export default function MyCareScreen() {
   }
 
   const loading = mine.isLoading && !mine.data;
+  // Un parent sans garde à sa charge voit l'espace de ses enfants, pas « les enfants qui vous sont confiés »
+  const parentOnly = !active.length && !pending.length && myKids.length > 0;
   return (
-    <Screen title={tr('nn.home.title')} subtitle={tr('nn.home.sub')} tool={false} account>
+    <Screen
+      // Un parent sans garde à sa charge voit l'espace de ses enfants, pas « les enfants qui vous sont confiés »
+      title={tr(parentOnly ? 'nn.home.parentTitle' : 'nn.home.title')}
+      subtitle={tr(parentOnly ? 'nn.home.parentSub' : 'nn.home.sub')} tool={false} account>
       {loading ? <Skeleton rows={3} /> : mine.isError && !mine.data ? (
         <ErrorView error={mine.error} onRetry={() => void mine.refetch()} />
       ) : (
@@ -72,8 +77,8 @@ export default function MyCareScreen() {
           ))}
           {myKids.length ? (
             <Card>
-              <Text variant="heading">{tr('nn.home.parentTitle')}</Text>
-              <Text variant="small" muted style={{ marginBottom: spacing.xs }}>{tr('nn.home.parentSub')}</Text>
+              {parentOnly ? null : <Text variant="heading">{tr('nn.home.parentTitle')}</Text>}
+              {parentOnly ? null : <Text variant="small" muted style={{ marginBottom: spacing.xs }}>{tr('nn.home.parentSub')}</Text>}
               {myKids.map((k) => (
                 <Button key={k.id} label={tr('nn.space.of', { name: k.first_name })} icon="home" variant="secondary" full style={{ marginTop: spacing.xs }}
                   onPress={() => router.push(`/garde/${k.id}` as never)} testID={`care-parent-${k.id}`} />
