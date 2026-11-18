@@ -74,6 +74,14 @@ def run(p):
         R[f'{hub}_aucun_voir_les_autres'] = count(pg, '[data-testid^="hub-more-"]') == 0 and not re.search(r'Voir (plus|les \d+|\d+)|autres\)', txt)
         R[f'{hub}_acces_nommes_aux_categories'] = count(pg, f'[data-testid="hub-{hub}"] [data-testid*="-all-"][role="link"]') >= 1 and ('Tous les outils' in txt or 'Explorer les outils' in txt)
         R[f'{hub}_plus_d_acces_directs_en_double'] = count(pg, f'[data-testid="hub-{hub}-entries"]') == 0
+        # barre de verre flottante : en bas du hub, « Tous mes outils » reste entièrement au-dessus d'elle
+        R[f'{hub}_bas_de_page_au_dessus_de_la_barre'] = pg.evaluate("""(h) => { const vis = (e) => e.offsetParent !== null;
+          const sc = [...document.querySelectorAll('[data-testid="screen-scroll"]')].filter(vis).pop(); if (sc) sc.scrollTop = sc.scrollHeight;
+          const btn = [...document.querySelectorAll(`[data-testid="hub-${h}-all-tools"]`)].find(vis);
+          const bar = [...document.querySelectorAll('[data-testid="tab-bar-glass-glass"]')].find(vis);
+          return !!btn && !!bar && btn.getBoundingClientRect().bottom <= bar.getBoundingClientRect().top - 4; }""", hub)
+        # les rangées d'outils (texte) restent opaques : aucun verre dans les listes
+        R[f'{hub}_rangees_opaques'] = count(pg, f'[data-testid="hub-{hub}"] [data-testid^="tool-row-"] [data-testid$="-material"]') == 0
         for sel, i, name in items:
             prepare(pg, hub, route)
             loc = pg.locator(sel)

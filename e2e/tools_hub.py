@@ -47,7 +47,7 @@ def untruncated(pg):
 
 
 def search(pg, q):
-    box = pg.locator('[data-testid="tools-search"]').first
+    box = pg.locator('[data-testid="tools-search-input"]').first
     box.fill(''); box.fill(q); pg.wait_for_timeout(700)
 
 
@@ -75,6 +75,16 @@ def run(p):
     small = pg.evaluate("""() => [...document.querySelectorAll('[data-testid^="tool-row-press-"], [data-testid^="tool-fav-"], [data-testid^="tools-category-"]')]
       .map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0 && (r.height < 44 || r.width < 44)).length""")
     R['cibles_44pt'] = small == 0
+    # verre : recherche et tuiles compactes (« Pour <profil> ») en verre ; les listes de texte restent opaques
+    R['recherche_en_verre'] = n(pg, '[data-testid="tools-search-material"]') == 1
+    R['tuiles_pour_profil_en_verre'] = n(pg, '[data-testid="tools-featured"] [data-testid^="tool-tile-"][data-testid$="-material"]') == feat
+    R['categories_opaques'] = n(pg, '[data-testid="tools-categories"] [data-testid$="-material"]') == 0
+    # champ actif et vide : catégories suggérées
+    # (on remonte d'abord : un défilement pendant le toucher ferme le clavier, comme sur un téléphone)
+    pg.mouse.move(195, 400); pg.mouse.wheel(0, -5000); pg.wait_for_timeout(600)
+    pg.locator('[data-testid="tools-search-input"]').first.click(); pg.wait_for_timeout(500)
+    R['categories_suggerees_champ_vide'] = n(pg, '[data-testid^="tools-suggest-"]') >= 3
+    pg.keyboard.press('Tab'); pg.wait_for_timeout(300)
 
     # 2. Une catégorie
     pg.locator('[data-testid="tools-category-sleep"]').first.click(); pg.wait_for_timeout(1800)
@@ -86,6 +96,7 @@ def run(p):
     tid = first.get_attribute('data-testid').replace('tool-row-press-', '')
     first.click(); pg.wait_for_timeout(1200)
     R['fiche_ouverte'] = n(pg, f'[data-testid="tool-sheet-{tid}"]') == 1 and n(pg, '[data-testid="tool-sheet-start"]') == 1
+    R['fiche_en_verre'] = n(pg, '[data-testid="sheet-panel-material"]') == 1
     shot(pg, '03-fiche-outil')
     pg.locator('[data-testid="tool-sheet-start"]').first.click(); pg.wait_for_timeout(2200)
     R['commencer_ouvre_l_outil'] = '/tools' not in pg.url and 'Page introuvable' not in pg.locator('body').inner_text()
@@ -216,6 +227,30 @@ def run(p):
                 # profil « grossesse » affiché : aucun outil propre dans Enfant (donc pas de scanner) ; seuls ceux des enfants du foyer, à leur nom
                 R['enfant_rien_pour_un_profil_sans_enfant'] = n(pg, '[data-testid="hub-baby"] [data-testid^="hub-group-"]') == 0 and n(pg, '[data-testid="hub-baby-others"]') == 1
             shot(pg, f'19-onglet-{hub}-{prof}'); shot(pg, f'19-onglet-{hub}-{prof}-entier', full=True)
+
+    # 11b. Petit écran (320 × 568) : la fiche d'un outil jamais ouvert montre « Commencer » sans défiler ; le dernier outil
+    # d'une catégorie se lit en entier en bas de la liste virtualisée
+    ctx2 = b.new_context(viewport={'width': 320, 'height': 568}, locale='fr-FR', timezone_id='Europe/Paris', reduced_motion='reduce')
+    pg2 = ctx2.new_page()
+    pg2.goto(B + '/welcome'); pg2.wait_for_timeout(2500)
+    pg2.get_by_text('Découvrir sans compte').first.click(); pg2.wait_for_timeout(4000)
+    pg2.evaluate(PREMIUM)
+    for cat in ['sleep', 'health', 'feeding']:
+        pg2.goto(B + f'/tools/{cat}'); pg2.wait_for_timeout(2400)
+        first = pg2.locator('[data-testid^="tool-row-press-"]:visible').first
+        first.click(); pg2.wait_for_timeout(1200)
+        st = pg2.locator('[data-testid="tool-sheet-start"]').first
+        bb = st.bounding_box() if st.count() else None
+        R[f'fiche_320_commencer_sans_defiler_{cat}'] = bool(bb and bb['y'] >= 0 and bb['y'] + bb['height'] <= 568)
+        shot(pg2, f'22-fiche-320-{cat}')
+        pg2.keyboard.press('Escape'); pg2.wait_for_timeout(700)
+        last = pg2.evaluate("""() => { const l = [...document.querySelectorAll('[data-testid^="tools-category-list-"]')].find(e => e.offsetParent !== null); if (!l) return null;
+          l.scrollTop = l.scrollHeight; return true; }"""); pg2.wait_for_timeout(900)
+        ok = pg2.evaluate("""() => { const l = [...document.querySelectorAll('[data-testid^="tools-category-list-"]')].find(e => e.offsetParent !== null); if (!l) return false; l.scrollTop = l.scrollHeight;
+          const rows = [...l.querySelectorAll('[data-testid^="tool-row-press-"]')].filter(e => e.offsetParent !== null); const r = rows[rows.length - 1].getBoundingClientRect();
+          return r.bottom <= innerHeight && r.top >= 0; }""")
+        R[f'categorie_320_dernier_outil_visible_{cat}'] = bool(last) and ok
+    ctx2.close()
 
     # 12. Allemand et anglais : descriptions entières dans les catégories
     for lang, radio, cat, name in [('de', 'Deutsch', 'health', '20-categorie-sante-allemand'), ('en', 'English', 'care', '21-categorie-soins-anglais')]:
