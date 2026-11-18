@@ -22,7 +22,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { Cascade } from '@/motion';
 import { DetailScene, MatteSurface, MemberSelector, OpticalSurface, SmokedSurface } from '@/features/scene';
 import { DemoPerson } from '@/features/missions/DemoPerson';
-import { missionWhen, StatePill } from '@/features/missions/MissionCard';
+import { missionWhen, nextOccurrenceLabel, StatePill } from '@/features/missions/MissionCard';
 import { fmtWhen, parseFrDateTime, splitLocal } from '@/features/familyLoad';
 import { useChildren } from '@/lib/data/hooks';
 import { useDocument } from '@/lib/data/hooks-documents';
@@ -90,7 +90,9 @@ export default function MissionDetail() {
       // Confirmation = résultat réel du serveur
       if (out?.status === 'conflict') { toast(tr('ht.conflict'), 'error'); void q.refetch(); return; }
       haptic(action === 'complete' || action === 'accept' ? 'success' : 'light');
-      toast(out?.unchanged ? tr('mis.toast.unchanged') : tr(TOAST[action]));
+      // Mission récurrente terminée : la confirmation annonce l'occurrence suivante (« Prochaine occurrence : jeudi 27 novembre »)
+      const next = action === 'complete' && !out?.unchanged ? nextOccurrenceLabel(m!) : null;
+      toast(out?.unchanged ? tr('mis.toast.unchanged') : next ? `${tr(TOAST[action])}. ${next}` : tr(TOAST[action]));
       setPanel(null); setNote(''); setError(undefined); setReassignTo('');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

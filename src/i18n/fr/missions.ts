@@ -40,6 +40,9 @@ export const missions = {
   'mis.fromYou': 'Demandée par vous',
   'mis.open': 'À prendre : la première personne disponible',
   'mis.noDue': 'Sans échéance',
+  'mis.recur.next': 'Prochaine : {day}',
+  'mis.recur.nextOccurrence': 'Prochaine occurrence : {date}',
+  'mis.recur.a11y': 'Mission répétée, prochaine le {day}',
   'mis.allDay': '{date}, dans la journée',
 
   'mis.form.title': 'Que faut-il faire ?',

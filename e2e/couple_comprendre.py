@@ -194,7 +194,8 @@ with sync_playwright() as p:
     tid(cpg, 'und-confirm-go').click(); cpg.wait_for_timeout(3000)
     mission = next((t for t in fake.t('family_tasks') if t['title'] == 'Gérer le coucher ce soir'), None)
     R['26_demande_de_mission_creee'] = bool(mission) and mission['assignee_id'] == sam and mission['mission_state'] == 'pending'
-    R['27_notification_nouvelle_mission'] = any(n['user_id'] == sam and n['title'].startswith('Nouvelle mission') for n in fake.t('notifications'))
+    R['27_notification_nouvelle_mission'] = any(n['user_id'] == sam and n['title'] == 'Camille t’a confié une mission' and 'coucher' not in (n.get('body') or '')
+                                                 for n in fake.t('notifications'))
     cpg.wait_for_timeout(1500)
     R['27b_camille_voit_reponse'] = 'Je comprends. Comment je peux t’aider ?' in body(cpg)
     shot(cpg, 'cam-10-fil-apres-demande')

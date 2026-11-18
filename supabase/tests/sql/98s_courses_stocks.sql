@@ -108,8 +108,9 @@ select tests.ok((select mission_state = 'pending' and assignee_id = :'CP' and ca
   'scénario F : confirmée → mission « À accepter » pour le responsable du domaine « animaux », reliée au stock');
 select tests.ok((select restock_state = 'ordered' and restock_task_id = (select id from s98 where k = 'FT') and qty_estimate = 2 from public.household_stocks where id = (select id from s98 where k = 'F')),
   'scénario F : stock « mission en cours », quantité inchangée');
-select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Nouvelle mission : Racheter : Croquettes') = 1,
-  'scénario F : le destinataire reçoit « Nouvelle mission » (consommateur des missions)');
+select tests.ok((select count(*) from public.notifications where user_id = :'CP' and payload ->> 'mission' = 'mission.requested'
+  and payload ->> 'task_id' = (select id::text from s98 where k = 'FT') and title like '%confié une mission') = 1,
+  'scénario F : le destinataire reçoit « … t’a confié une mission » (consommateur des missions)');
 set role authenticated; set request.jwt.claim.sub = :'OW';
 select tests.ok((public.stock_restock((select id from s98 where k = 'F'), 'confirm') ->> 'unchanged')::boolean
   and (public.stock_restock((select id from s98 where k = 'F'), 'confirm') -> 'task' ->> 'id')::uuid = (select id from s98 where k = 'FT'),

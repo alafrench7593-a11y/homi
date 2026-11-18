@@ -121,7 +121,9 @@ class FakeCouple(FakeSupabase):
                  'domain_key': None, 'responded_at': None, 'last_reminded_at': None, 'stock_id': None}
             self.t('family_tasks').append(t)
             self.event(t, uid, 'created', {'mission': True, 'assignee': a})
-            if a: self.notify(a, 'Nouvelle mission : ' + t['title'], 'Ouvrez HOMI pour répondre quand vous le pouvez.', '/family/missions/' + t['id'], {'task_id': t['id'], 'mission': 'mission.requested'})
+            # « <Prénom> t’a confié une mission », sans contenu (discrétion par défaut) : 20261122000100_mission_confiee.sql
+            if a: self.notify(a, (self.first_name(uid) + ' t’a confié une mission') if self.first_name(uid) else 'On t’a confié une mission',
+                              'Ouvre HOMI pour répondre quand tu peux.', '/family/missions/' + t['id'], {'task_id': t['id'], 'mission': 'mission.requested', 'entrusted': True})
             return 200, t
         if fn == 'mission_respond':
             t = next((x for x in self.t('family_tasks') if x['id'] == body.get('p_task')), None)

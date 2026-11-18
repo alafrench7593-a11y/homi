@@ -124,7 +124,8 @@ with sync_playwright() as p:
     R['A_demandee_par_vous'] = pg.get_by_text('Demandée par vous').count() > 0
     shot(pg, 'A03-envoyee')
     switch(pg)
-    R['A_notification_conjoint'] = any(n['title'] == 'Nouvelle mission : ' + TITLE and n['user_id'] == partner for n in table(pg, 'notifications'))
+    R['A_notification_conjoint'] = any(n['title'].endswith('confié une mission') and (n.get('payload') or {}).get('task_id') == mission_a and n['user_id'] == partner
+                                       for n in table(pg, 'notifications'))
     pg.goto(B + f'/family/missions/{mission_a}'); pg.wait_for_timeout(3000)
     R['A_pour_vous_minuscule'] = pg.get_by_text('Pour vous', exact=True).count() > 0 and pg.get_by_text('Pour Vous', exact=True).count() == 0
     shot(pg, 'A04-conjoint-detail-pour-vous')

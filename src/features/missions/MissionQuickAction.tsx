@@ -12,6 +12,7 @@ import { SuccessCheck } from '@/motion';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useRespondMission } from '@/lib/data/hooks-missions';
 import { viewerOf, type Mission, type MissionAction } from '@/lib/domain/missions';
+import { nextOccurrenceLabel } from './MissionCard';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -36,6 +37,7 @@ export function MissionQuickAction({ m, me, onFinishing, onAbort, onDone }: {
   const respond = useRespondMission();
   const [done, setDone] = useState(false);
   const action = quickActionFor(m, me);
+  const next = nextOccurrenceLabel(m);
   if (!action && !done) return null;
   async function run() {
     if (!action) return;
@@ -55,7 +57,11 @@ export function MissionQuickAction({ m, me, onFinishing, onAbort, onDone }: {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: 44 }} accessibilityLiveRegion="polite" testID={`mission-done-${m.id}`}>
         <SuccessCheck visible size={22} color={t.colors.success} haptic />
-        <Text variant="small" weight="bold" color={t.colors.success}>{tr('cp2.mis.doneNow')}</Text>
+        <View style={{ flexShrink: 1 }}>
+          <Text variant="small" weight="bold" color={t.colors.success}>{tr('cp2.mis.doneNow')}</Text>
+          {/* Mission récurrente : l'occurrence suivante arrive « À accepter » ; on dit quand, pour qu'elle ne surprenne pas */}
+          {next ? <Text variant="small" muted testID={`mission-done-next-${m.id}`}>{next}</Text> : null}
+        </View>
       </View>
     );
   }

@@ -9,7 +9,7 @@ import { Icon, Text, type IconName } from '@/components/ui';
 import { UserAvatar } from '@/components/UserAvatar';
 import { CardSource, DataTile } from '@/features/scene';
 import { categoryOf } from '@/lib/domain/familyLoad';
-import { isTerminal, STATE_LABEL, STATE_TONE, viewerOf, type Mission, type MissionState } from '@/lib/domain/missions';
+import { isTerminal, nextOccurrence, STATE_LABEL, STATE_TONE, viewerOf, type Mission, type MissionState } from '@/lib/domain/missions';
 import type { Person } from '@/lib/data/hooks-family-load';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -19,6 +19,21 @@ import { fmtWhen } from '@/features/familyLoad';
 export function missionWhen(m: Pick<Mission, 'due_at' | 'all_day'>): string {
   if (!m.due_at) return tr('mis.noDue');
   return m.all_day ? tr('mis.allDay', { date: formatDate(m.due_at, { weekday: 'short', day: 'numeric', month: 'short' }) }) : fmtWhen(m.due_at);
+}
+
+/**
+ * Mission récurrente : le jour de l'occurrence, court (« jeudi » dans les 7 prochains jours, sinon « jeu. 4 déc. »),
+ * pour qu'une occurrence suivante ne ressemble pas à la même mission « qui revient ».
+ */
+export function occurrenceDay(iso: string | Date, now = new Date()): string {
+  const d = new Date(iso);
+  const days = (new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 86400_000;
+  return days >= 0 && days < 7 ? formatDate(d, { weekday: 'long' }) : formatDate(d, { weekday: 'short', day: 'numeric', month: 'short' });
+}
+/** Date complète de l'occurrence suivante, pour la confirmation de fin (« Prochaine occurrence : jeudi 27 novembre »). */
+export function nextOccurrenceLabel(m: Pick<Mission, 'recurrence' | 'due_at'>): string | null {
+  const n = nextOccurrence(m);
+  return n ? tr('mis.recur.nextOccurrence', { date: formatDate(n, { weekday: 'long', day: 'numeric', month: 'long' }) }) : null;
 }
 
 export const STATE_ICON: Record<MissionState, IconName> = {
@@ -71,8 +86,10 @@ export function MissionRow({ m, me, personOf, onOpen }: { m: Mission; me: string
   const who = c.line(p?.name ?? tr('u7.people.former'));
   const when = missionWhen(m);
   const dim = m.mission_state === 'done' || m.mission_state === 'cancelled';
+  // Mission récurrente : la ligne dit de quelle occurrence il s'agit (« Prochaine : jeudi »)
+  const recurDay = m.recurrence && m.due_at && !isTerminal(m.mission_state) ? occurrenceDay(m.due_at) : null;
   return (
-    <CardSource sourceKey={`mission:${m.id}`} onOpen={onOpen} testID={`mission-${m.id}`} accessibilityLabel={[m.title, tr(STATE_LABEL[m.mission_state]), who, when].join('. ')}
+    <CardSource sourceKey={`mission:${m.id}`} onOpen={onOpen} testID={`mission-${m.id}`} accessibilityLabel={[m.title, tr(STATE_LABEL[m.mission_state]), who, when, recurDay ? tr('mis.recur.a11y', { day: recurDay }) : null].filter(Boolean).join('. ')}
       accessibilityHint={tr('ht.openHint')}
       style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, minHeight: MIN_TOUCH + 12, paddingVertical: spacing.sm, opacity: dim ? 0.72 : 1 }}>
       <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
@@ -88,6 +105,12 @@ export function MissionRow({ m, me, personOf, onOpen }: { m: Mission; me: string
           <StateLabel state={m.mission_state} testID={`mission-row-state-${m.id}`} />
           <Text variant="small" muted>{when}</Text>
         </View>
+        {recurDay ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }} testID={`mission-row-next-${m.id}`}>
+            <Icon name="repeat" size={13} color={t.colors.textMuted} />
+            <Text variant="small" muted>{tr('mis.recur.next', { day: recurDay })}</Text>
+          </View>
+        ) : null}
       </View>
       <View style={{ paddingTop: 8 }}><Icon name="chevron-right" size={18} color={t.colors.textMuted} /></View>
     </CardSource>

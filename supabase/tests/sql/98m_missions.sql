@@ -39,8 +39,9 @@ select tests.ok((select mission_state = 'pending' and status = 'todo' and assign
   from public.family_tasks where id = (select id from m98 where k = 'A')), 'mission A : créée « À accepter », destinataire et domaine posés par le serveur');
 select tests.ok((select count(*) from public.family_task_events where task_id = (select id from m98 where k = 'A') and kind = 'created') = 1,
   'mission A : création historisée');
-select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Nouvelle mission : Acheter des couches taille 4 aujourd''hui'
-  and deep_link = '/family/missions/' || (select id from m98 where k = 'A')) = 1, 'mission A : le conjoint reçoit « Nouvelle mission : … » (lien vers la mission)');
+-- Titre « <Prénom> t’a confié une mission » depuis 20261122000100_mission_confiee.sql (détails : 98zc_mission_confiee.sql)
+select tests.ok((select count(*) from public.notifications where user_id = :'CP' and payload ->> 'mission' = 'mission.requested' and payload ->> 'task_id' = (select id::text from m98 where k = 'A')
+  and title like '%confié une mission' and deep_link = '/family/missions/' || (select id from m98 where k = 'A')) = 1, 'mission A : le conjoint reçoit « … t’a confié une mission » (lien vers la mission)');
 select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Une tâche vous est confiée') = 0
   and (select count(*) from public.notifications where user_id = :'OW') = 0, 'mission A : une seule notification, rien pour l''autrice');
 select tests.ok((select status = 'done' and depth = 0 from public.household_events where type = 'mission.requested' and entity_id = (select id::text from m98 where k = 'A')),
@@ -156,7 +157,7 @@ set request.jwt.claim.sub = :'OW';
 select public.mission_respond((select id from m98 where k = 'D'), 'reassign', null, null, :'NN');
 reset role;
 select tests.ok((select mission_state = 'pending' and assignee_id = :'NN' from public.family_tasks where id = (select id from m98 where k = 'D'))
-  and (select count(*) from public.notifications where user_id = :'NN' and title = 'Nouvelle mission : Sortir les poubelles ce soir') = 1,
+  and (select count(*) from public.notifications where user_id = :'NN' and payload ->> 'mission' = 'mission.requested' and payload ->> 'task_id' = (select id::text from m98 where k = 'D')) = 1,
   'proposée à quelqu''un d''autre : « À accepter » et notifiée à la nouvelle personne');
 set role authenticated; set request.jwt.claim.sub = :'NN';
 select tests.ok(public.mission_respond((select id from m98 where k = 'D'), 'decline', 'Je finis à 19 h') ->> 'status' = 'ok', 'refus avec justification facultative');
@@ -205,7 +206,7 @@ select tests.throws(format('select public.create_mission(%L, ''Pour Noé'', %L, 
 select tests.ok(tests.count(format('select * from public.family_tasks where id = %L', (select id from m98 where k = 'K1'))) = 1
   and public.mission_respond((select id from m98 where k = 'K1'), 'accept') ->> 'status' = 'ok', 'nounou : voit et accepte la mission de l''enfant confié');
 reset role;
-select tests.ok((select count(*) from public.notifications where user_id = :'NN' and title = 'Nouvelle mission : Vaccin de Noé') = 0, 'nounou : aucune notification sur un enfant non confié');
+select tests.ok((select count(*) from public.notifications where user_id = :'NN' and payload ->> 'mission' = 'mission.requested' and payload ->> 'task_id' = (select id::text from m98 where k = 'K2')) = 0, 'nounou : aucune notification sur un enfant non confié');
 
 -- ===================================================================== responsabilités par domaine, mission « à prendre »
 -- Confier un domaine est un outil Premium (« Confier un domaine ») : la propriétaire est abonnée ici
@@ -217,8 +218,8 @@ select tests.ok((public.create_mission(:'H', 'Racheter des croquettes', null, 's
 insert into m98 select 'O', (public.create_mission(:'H', 'Vérifier l''assurance', null, 'other') ->> 'id')::uuid;
 reset role;
 select tests.ok((select assignee_id is null from public.family_tasks where id = (select id from m98 where k = 'O'))
-  and (select count(*) from public.notifications where title = 'Nouvelle mission : Vérifier l''assurance' and user_id in (:'CP', :'NN')) = 2
-  and (select count(*) from public.notifications where title = 'Nouvelle mission : Vérifier l''assurance' and user_id in (:'OW', :'NL')) = 0,
+  and (select count(*) from public.notifications where payload ->> 'mission' = 'mission.requested' and payload ->> 'task_id' = (select id::text from m98 where k = 'O') and user_id in (:'CP', :'NN')) = 2
+  and (select count(*) from public.notifications where payload ->> 'mission' = 'mission.requested' and payload ->> 'task_id' = (select id::text from m98 where k = 'O') and user_id in (:'OW', :'NL')) = 0,
   'mission « à prendre » : prévenus ceux qui ont accès à l''organisation, pas l''autrice');
 set role authenticated; set request.jwt.claim.sub = :'NN';
 select public.mission_respond((select id from m98 where k = 'O'), 'accept');

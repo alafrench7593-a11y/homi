@@ -11,7 +11,7 @@
 import { BackendError } from './types';
 import { t as tr } from '@/i18n';
 import {
-  CREATOR_ACTIONS, EVENT_OF_ACTION, MISSION_ACTIONS, MISSION_DOMAIN_OF, missionHref, missionNotification, missionNotifyTarget, nextState,
+  CREATOR_ACTIONS, EVENT_OF_ACTION, MISSION_ACTIONS, MISSION_DOMAIN_OF, missionEntrustedText, missionHref, missionNotification, missionNotifyTarget, nextState,
   type MissionAction, type MissionEventType, type MissionState,
 } from '../domain/missions';
 import type { TaskCategory } from '../domain/familyLoad';
@@ -56,8 +56,13 @@ export function createMissions(c: MissionsCtx) {
         if (u === actor) continue;
         // Préférence de la personne (notification_settings.mission_done, vrai par défaut)
         if (type === 'mission.completed' && T('notification_settings').some((x) => x.user_id === u && x.mission_done === false)) continue;
-        T('notifications').push({ id: c.uuid(), user_id: u, category: 'family', title: text.title, body: text.body, deep_link: missionHref(t.id),
-          payload: { task_id: t.id, mission: type }, read_at: null, created_at: c.nowIso() });
+        // Nouvelle mission : « <Prénom> t’a confié une mission » (langue et discrétion du destinataire, 20261122000100)
+        const entrusted = type === 'mission.requested'
+          ? missionEntrustedText(T('profiles').find((p) => p.id === u)?.locale as string | undefined, actorName, t.title,
+            T('notification_settings').some((x) => x.user_id === u && x.lockscreen_details === true))
+          : null;
+        T('notifications').push({ id: c.uuid(), user_id: u, category: 'family', title: (entrusted ?? text).title, body: (entrusted ?? text).body, deep_link: missionHref(t.id),
+          payload: { task_id: t.id, mission: type, ...(entrusted ? { entrusted: true } : {}) }, read_at: null, created_at: c.nowIso() });
       }
     }
     const purchase = !!t.product_label || t.category === 'shopping';

@@ -42,6 +42,9 @@ export const missions: Messages<typeof fr> = {
   'mis.fromYou': 'Chiesta da te',
   'mis.open': 'Libera: la prima persona disponibile',
   'mis.noDue': 'Senza scadenza',
+  'mis.recur.next': 'Prossima: {day}',
+  'mis.recur.nextOccurrence': 'Prossima volta: {date}',
+  'mis.recur.a11y': 'Missione ripetuta, la prossima {day}',
   'mis.allDay': '{date}, durante la giornata',
 
   'mis.form.title': 'Cosa c’è da fare?',

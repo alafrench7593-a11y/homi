@@ -42,6 +42,9 @@ export const missions: Messages<typeof fr> = {
   'mis.fromYou': 'Von dir erbeten',
   'mis.open': 'Offen: die erste Person, die Zeit hat',
   'mis.noDue': 'Ohne Termin',
+  'mis.recur.next': 'Nächster: {day}',
+  'mis.recur.nextOccurrence': 'Nächster Termin: {date}',
+  'mis.recur.a11y': 'Wiederkehrender Auftrag, nächster am {day}',
   'mis.allDay': '{date}, im Laufe des Tages',
 
   'mis.form.title': 'Was ist zu tun?',

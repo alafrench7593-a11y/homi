@@ -11,13 +11,14 @@ import { DICTIONARIES } from '@/i18n/dictionaries';
 import { setLocale } from '@/i18n';
 import {
   canRemind, creatorActionsFor, defaultRecipient, EVENT_OF_ACTION, isNeutralText, MISSION_ACTIONS, MISSION_DOMAIN_OF, MISSION_STATES, MISSION_TEMPLATES,
-  missionNotification, missionNotifyTarget, nextState, quickRepliesFor, receivedMissions, RESPONSIBILITIES, sentMissions, sortMissions, viewerOf,
+  missionEntrustedText, missionNotification, missionNotifyTarget, nextOccurrence, nextState, quickRepliesFor, receivedMissions, RESPONSIBILITIES, sentMissions, sortMissions, viewerOf,
   type Mission, type MissionEventType,
 } from '@/lib/domain/missions';
 import { DOMAINS } from '@/lib/domain/mentalLoad';
 import { CATEGORIES } from '@/lib/domain/familyLoad';
 import { lockScreenText, MISSION_PUSH_CATEGORY, pushCategory, pushData, type PushRow } from '../../supabase/functions/_shared/push-rules';
 import { createDemoBackend } from '@/lib/backend/demo';
+import { nextOccurrenceLabel, occurrenceDay } from '@/features/missions/MissionCard';
 
 const SQL = (f: string) => fs.readFileSync(path.join(process.cwd(), 'supabase', f), 'utf8');
 
@@ -153,6 +154,21 @@ describe('missions : notifications (miroir de public._mission_notification)', ()
     expect(missionNotification('mission.completed', 'Sortir les poubelles')?.title).toBe('Quelqu’un a terminé : Sortir les poubelles');
     expect(missionNotification('mission.requested', 'Acheter des couches taille 4 aujourd’hui')?.title).toBe('Nouvelle mission : Acheter des couches taille 4 aujourd’hui');
   });
+  it('nouvelle mission : « <Prénom> t’a confié une mission » (5 langues, discrétion), miroir de public._mission_entrusted_text', () => {
+    const sql = SQL('migrations/20261122000100_mission_confiee.sql');
+    for (const lang of ['fr', 'en', 'es', 'de', 'it']) {
+      const named = missionEntrustedText(lang, 'Léa', 'Acheter du lait', false);
+      const anon = missionEntrustedText(lang, null, 'Acheter du lait', false);
+      expect(sql).toContain(named.title.replace('Léa', ''));
+      expect(sql).toContain(`'${anon.title}'`);
+      expect(sql).toContain(`'${named.body}'`);
+      expect(named.title + named.body).not.toContain('lait');
+      expect(isNeutralText(named.title + ' ' + named.body)).toBe(true);
+    }
+    expect(missionEntrustedText('fr', '  Léa  Martin ', 'Acheter du lait', false)).toEqual({ title: 'Léa t’a confié une mission', body: 'Ouvre HOMI pour répondre quand tu peux.' });
+    expect(missionEntrustedText('fr', 'Léa', 'Acheter du lait', true).body).toBe('Acheter du lait');
+    expect(missionEntrustedText('xx', 'Léa', 'x', false).title).toBe('Léa t’a confié une mission');
+  });
   it('« En cours » ne notifie personne (pas de relance) ; la bonne personne est prévenue', () => {
     expect(missionNotification('mission.started', 'X')).toBeNull();
     expect(missionNotifyTarget('mission.requested', base)).toBe('assignee');
@@ -179,6 +195,31 @@ describe('missions : notifications (miroir de public._mission_notification)', ()
   });
 });
 
+describe('missions récurrentes : l’occurrence suivante est datée', () => {
+  it('même calcul que le serveur (échéance + jour, semaine ou mois × « every »)', () => {
+    const due = '2026-11-20T19:00:00.000Z';
+    expect(nextOccurrence({ recurrence: { type: 'weekly' }, due_at: due })?.toISOString()).toBe('2026-11-27T19:00:00.000Z');
+    expect(nextOccurrence({ recurrence: { type: 'daily', every: 2 }, due_at: due })?.toISOString()).toBe('2026-11-22T19:00:00.000Z');
+    expect(nextOccurrence({ recurrence: { type: 'monthly' }, due_at: due })?.getMonth()).toBe(11);
+    expect(nextOccurrence({ recurrence: null, due_at: due })).toBeNull();
+    expect(nextOccurrence({ recurrence: { type: 'weekly' }, due_at: null })).toBeNull();
+    const sql = SQL('migrations/20261114000300_missions.sql');
+    expect(sql).toContain("when 'weekly' then new.due_at + make_interval(weeks => v_every)");
+  });
+  it('« Prochaine : jeudi » sur la ligne, « Prochaine occurrence : <date> » à la fin', () => {
+    setLocale('fr');
+    const now = new Date(2026, 10, 18, 9);
+    expect(occurrenceDay(new Date(2026, 10, 20, 19), now)).toBe('vendredi');
+    expect(occurrenceDay(new Date(2026, 11, 4, 19), now)).toMatch(/4 déc/);
+    expect(nextOccurrenceLabel({ recurrence: { type: 'weekly' }, due_at: new Date(2026, 10, 20, 19).toISOString() })).toBe('Prochaine occurrence : vendredi 27 novembre');
+    expect(nextOccurrenceLabel({ recurrence: null, due_at: null })).toBeNull();
+    const row = fs.readFileSync('src/features/missions/MissionCard.tsx', 'utf8');
+    expect(row).toContain("tr('mis.recur.next', { day: recurDay })");
+    expect(fs.readFileSync('src/features/missions/MissionQuickAction.tsx', 'utf8')).toContain('nextOccurrenceLabel(m)');
+    expect(fs.readFileSync('src/app/family/missions/[id].tsx', 'utf8')).toContain('nextOccurrenceLabel(m!)');
+  });
+});
+
 describe('missions : démonstration (scénario A, mêmes règles que le serveur)', () => {
   it('création → acceptation → article dans les courses → terminé → confirmation, sans doublon', async () => {
     const b = createDemoBackend({ strictPremium: false });
@@ -195,7 +236,8 @@ describe('missions : démonstration (scénario A, mêmes règles que le serveur)
     await b.rpc('demo_switch_person', { p_user: partner });
     expect((await b.auth.getSession())!.userId).toBe(partner);
     const notes = await b.select<{ title: string; user_id: string }>({ table: 'notifications', filters: [{ col: 'user_id', op: 'eq', value: partner }] });
-    expect(notes.map((n) => n.title)).toContain('Nouvelle mission : Acheter des couches taille 4 aujourd’hui');
+    // « <Prénom> t’a confié une mission » : la mission n'apparaît ni dans le titre ni (discrétion par défaut) dans le texte
+    expect(notes.some((n) => /confié une mission$/.test(n.title) && !/couches/.test(`${n.title} ${(n as { body?: string }).body ?? ''}`))).toBe(true);
     await b.rpc('mission_respond', { p_task: m.id, p_action: 'accept' });
     expect((await b.rpc<{ unchanged?: boolean }>('mission_respond', { p_task: m.id, p_action: 'accept' })).unchanged).toBe(true);
     const items = await b.select<{ label: string; checked: boolean }>({ table: 'shopping_items', filters: [{ col: 'household_id', op: 'eq', value: hid }] });

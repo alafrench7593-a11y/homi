@@ -38,6 +38,15 @@ describe('send-push : écran verrouillé', () => {
     expect(channelFor({ category: 'family', urgent: true })).toBe('alerts');
     expect(channelFor({ category: 'family' })).toBe('community');
   });
+  it('nouvelle mission : « <Prénom> t’a confié une mission » reste lisible, jamais le contenu (discrétion active)', () => {
+    const m: PushRow = { ...row, title: 'Léa t’a confié une mission', body: 'Acheter du lait', payload: { task_id: 't1', mission: 'mission.requested', entrusted: true } };
+    expect(lockScreenText(m, 'fr', false)).toEqual({ title: 'Léa t’a confié une mission', body: 'Ouvrez l’application pour voir le détail.' });
+    expect(JSON.stringify(lockScreenText(m, 'fr', false))).not.toContain('lait');
+    expect(lockScreenText(m, 'fr', true)).toEqual({ title: 'Léa t’a confié une mission', body: 'Acheter du lait' });
+    // notification d'avant la migration (titre « Nouvelle mission : <mission> », sans marque) : entièrement générique
+    const old: PushRow = { ...row, title: 'Nouvelle mission : Acheter du lait', payload: { task_id: 't1', mission: 'mission.requested' } };
+    expect(lockScreenText(old, 'fr', false).title).toBe('Nouvelle notification');
+  });
   it('a les mêmes clés dans les 5 langues, langue inconnue → français', () => {
     const keys = Object.keys(PUSH_TEXTS.fr).sort();
     for (const l of ['en', 'es', 'de', 'it']) expect(Object.keys(PUSH_TEXTS[l]).sort()).toEqual(keys);

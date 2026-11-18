@@ -1,7 +1,7 @@
 """
 Missions familiales — scénario A complet dans la démo web (14/11/2026), voir HOMI_COUPLE_MISSIONS.md :
 une mère crée « Acheter des couches taille 4 aujourd'hui » pour son conjoint → il la voit dans « Reçues » avec la
-notification « Nouvelle mission : … » → « J'accepte » → l'article « Couches taille 4 » est dans la liste de courses →
+notification « Camille t’a confié une mission » → « J'accepte » → l'article « Couches taille 4 » est dans la liste de courses →
 « C'est terminé » → l'article est coché → la mère voit « Terminée » et la confirmation dans ses notifications.
 La démonstration n'a qu'un compte : « Voir comme … » (démo seulement) passe d'une personne du foyer à l'autre ;
 le serveur émulé applique les mêmes règles (seul le destinataire répond).
@@ -87,7 +87,8 @@ with sync_playwright() as p:
     s = demo_state(pg)
     partner = s['session']['userId']
     notes = [n for n in s['tables'].get('notifications', []) if n['user_id'] == partner]
-    R['notification_conjoint'] = any(n['title'] == 'Nouvelle mission : ' + TITLE and n['deep_link'] == f'/family/missions/{mission_id}' for n in notes)
+    # « Camille t’a confié une mission » : jamais le contenu dans le titre ; texte sans contenu (discrétion par défaut)
+    R['notification_conjoint'] = any(n['title'] == 'Camille t’a confié une mission' and TITLE not in (n.get('body') or '') and n['deep_link'] == f'/family/missions/{mission_id}' for n in notes)
     pg.goto(B + '/family/missions'); pg.wait_for_timeout(3000)
     R['recue_par_conjoint'] = tid(pg, f'mission-{mission_id}').count() > 0
     R['prenom_demandeuse_liste'] = 'Camille vous demande' in (tid(pg, f'mission-who-line-{mission_id}').inner_text() if tid(pg, f'mission-who-line-{mission_id}').count() else '')

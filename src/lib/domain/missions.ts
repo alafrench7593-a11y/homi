@@ -208,6 +208,39 @@ export function missionNotification(type: MissionEventType, title: string, actor
   const head = type === 'mission.completed' ? `${firstName(actorName) ?? 'Quelqu’un'} a terminé : ` : NOTIF_PREFIX[type];
   return { title: (head + title).slice(0, 160), body: NOTIF_BODY[type] ?? 'Ouvrez HOMI pour voir le détail.' };
 }
+/**
+ * Nouvelle mission (22/11/2026, miroir EXACT de public._mission_entrusted_text) : « <Prénom> t’a confié une mission »
+ * dans la langue du destinataire ; le texte porte la mission seulement si le destinataire a autorisé le détail des
+ * notifications (sinon : discrétion, aucun contenu). Le titre ne contient jamais la mission.
+ */
+const ENTRUSTED: Record<'fr' | 'en' | 'es' | 'de' | 'it', { named: (n: string) => string; anon: string; body: string }> = {
+  fr: { named: (n) => `${n} t’a confié une mission`, anon: 'On t’a confié une mission', body: 'Ouvre HOMI pour répondre quand tu peux.' },
+  en: { named: (n) => `${n} has entrusted you with a mission`, anon: 'You’ve been entrusted with a mission', body: 'Open HOMI to reply when you can.' },
+  es: { named: (n) => `${n} te ha confiado una misión`, anon: 'Te han confiado una misión', body: 'Abre HOMI para responder cuando puedas.' },
+  de: { named: (n) => `${n} hat dir einen Auftrag anvertraut`, anon: 'Dir wurde ein Auftrag anvertraut', body: 'Öffne HOMI, um zu antworten, wenn du kannst.' },
+  it: { named: (n) => `${n} ti ha affidato una missione`, anon: 'Ti è stata affidata una missione', body: 'Apri HOMI per rispondere quando puoi.' },
+};
+export function missionEntrustedText(lang: string | null | undefined, actorName: string | null | undefined, title: string, details: boolean): { title: string; body: string } {
+  const L = ENTRUSTED[(lang && lang in ENTRUSTED ? lang : 'fr') as keyof typeof ENTRUSTED];
+  const name = firstName(actorName);
+  const content = title.trim();
+  return { title: (name ? L.named(name) : L.anon).slice(0, 160), body: details && content ? content.slice(0, 160) : L.body };
+}
+/**
+ * Mission récurrente (22/11/2026) : date de l'occurrence suivante, créée par le serveur quand celle-ci est terminée
+ * (miroir du déclencheur de family_tasks : échéance + 1 jour, 1 semaine ou 1 mois, multipliés par « every »).
+ * null : pas de récurrence ou pas d'échéance (le serveur ne crée alors pas d'occurrence suivante).
+ */
+export function nextOccurrence(m: Pick<Mission, 'recurrence' | 'due_at'>): Date | null {
+  if (!m.recurrence || !m.due_at) return null;
+  const every = Math.max(1, Math.floor(Number(m.recurrence.every ?? 1)) || 1);
+  const d = new Date(m.due_at);
+  if (Number.isNaN(d.getTime())) return null;
+  if (m.recurrence.type === 'daily') d.setDate(d.getDate() + every);
+  else if (m.recurrence.type === 'weekly') d.setDate(d.getDate() + 7 * every);
+  else d.setMonth(d.getMonth() + every);
+  return d;
+}
 /** Premier mot du prénom affiché, 40 caractères (miroir de public._first_name_of). */
 export function firstName(name: string | null | undefined): string | null {
   const w = (name ?? '').replace(/\s+/g, ' ').trim().split(' ')[0]?.slice(0, 40) ?? '';

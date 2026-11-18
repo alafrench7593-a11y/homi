@@ -56,11 +56,20 @@ export function pushText(lang: string | null | undefined, key: TextKey): string 
   return (PUSH_TEXTS[lang ?? 'fr'] ?? PUSH_TEXTS.fr)[key];
 }
 
+/** Notification « <Prénom> t’a confié une mission » : titre sans contenu de la mission (20261122000100_mission_confiee.sql). */
+export function isEntrusted(row: Pick<PushRow, 'payload'>): boolean {
+  const p = row.payload ?? {};
+  return p.mission === 'mission.requested' && p.entrusted === true;
+}
+
 /** Titre et texte affichés sur l'écran verrouillé. */
 export function lockScreenText(row: PushRow, lang: string | null | undefined, showDetails: boolean): { title: string; body?: string } {
   if (row.category.startsWith('community')) return { title: pushText(lang, 'communityTitle'), body: pushText(lang, 'communityBody') };
   if (row.category === 'product_recall') return { title: pushText(lang, 'recallTitle'), body: pushText(lang, 'recallBody') };
   if (showDetails) return { title: row.title, body: row.body ?? undefined };
+  // Nouvelle mission (22/11/2026) : « <Prénom> t’a confié une mission » ne contient jamais la mission (marque
+  // `entrusted` posée par le serveur) ; ce titre reste lisible, le texte reste générique.
+  if (isEntrusted(row)) return { title: row.title, body: pushText(lang, 'genericBody') };
   return { title: pushText(lang, row.urgent ? 'urgentTitle' : 'genericTitle'), body: pushText(lang, 'genericBody') };
 }
 
