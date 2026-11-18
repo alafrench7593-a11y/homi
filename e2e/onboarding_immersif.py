@@ -20,6 +20,7 @@ import json, os, re, sys, time
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, os.path.dirname(__file__))
 from fake_supabase import FakeSupabase, FakeRealtime
+from journey_seed import PREMIUM_ON  # noqa: E402
 
 B = os.environ.get('E2E_URL', 'http://127.0.0.1:8931')
 SHOTS = os.environ.get('ONB_SHOTS', '/tmp/onb/shots'); os.makedirs(SHOTS, exist_ok=True)
@@ -102,10 +103,13 @@ def enter_demo(pg):
     pg.get_by_role('button', name='Découvrir sans compte').click(); pg.wait_for_timeout(5000)
 
 
-def flow(b, w, h, scheme, main=False):
+def flow(b, w, h, scheme, main=False, premium_on=False):
     tag = f'{w}x{h}-{scheme}'
     ctx, pg = new_ctx(b, w, h, scheme)
     enter_demo(pg)
+    if premium_on:
+        # Abonnement (ou essai) déjà actif : pas d'écran Premium, la visite guidée est proposée juste après la révélation
+        pg.evaluate(PREMIUM_ON)
     # ---------------------------------------------------------------- 1. ouverture
     t0 = time.time()
     pg.goto(B + '/onboarding')
@@ -225,18 +229,37 @@ def flow(b, w, h, scheme, main=False):
     shot(pg, '07-revelation', tag)
     tid(pg, 'onb-reveal-next').click(); pg.wait_for_timeout(1200)
     # ---------------------------------------------------------------- 8. Premium
-    if main:
-        R['8_ecran_premium'] = tid(pg, 'onb-premium').is_visible()
-        R['8_voir_formules_visible'] = in_view(pg, tid(pg, 'onb-premium-see'))
-        R['8_continuer_sans_premium_visible'] = in_view(pg, tid(pg, 'onb-premium-skip'))
-        # réponses enregistrées côté backend (démonstration : base locale persistée)
-        R['sauvegarde_onboarding_answers'] = pg.evaluate("""() => Object.keys(localStorage).some((k) => { const v = localStorage.getItem(k) || ''; return v.includes('"onboarding_answers":{') && v.includes('"onboarding_version":2'); })""")
-    shot(pg, '08-premium', tag)
-    if main:
+    if not premium_on:
+        if main:
+            R['8_ecran_premium'] = tid(pg, 'onb-premium').is_visible()
+            R['8_voir_formules_visible'] = in_view(pg, tid(pg, 'onb-premium-see'))
+            R['8_continuer_sans_premium_visible'] = in_view(pg, tid(pg, 'onb-premium-skip'))
+            # réponses enregistrées côté backend (démonstration : base locale persistée)
+            R['sauvegarde_onboarding_answers'] = pg.evaluate("""() => Object.keys(localStorage).some((k) => { const v = localStorage.getItem(k) || ''; return v.includes('"onboarding_answers":{') && v.includes('"onboarding_version":2'); })""")
+        shot(pg, '08-premium', tag)
         tid(pg, 'onb-premium-skip').click(); pg.wait_for_timeout(3000)
-        R['8_continuer_ramene_accueil'] = '/onboarding' not in pg.url
-        pg.goto(B + '/'); pg.wait_for_timeout(4000)
-        R['termine_ne_revoit_pas_onboarding'] = '/onboarding' not in pg.url
+        if main:
+            R['8_continuer_ramene_accueil'] = '/onboarding' not in pg.url
+            # Sans Premium, l'accueil est verrouillé : la visite n'y est pas lancée, elle est gardée pour plus tard
+            R['9_sans_premium_visite_gardee_pour_plus_tard'] = pg.evaluate("""() => { const v = JSON.parse(localStorage.getItem('homi.tour') || '{}'); return Object.values((v.state || {}).byUser || {}).some((p) => p.status === 'offered'); }""")
+            pg.goto(B + '/'); pg.wait_for_timeout(4000)
+            R['termine_ne_revoit_pas_onboarding'] = '/onboarding' not in pg.url
+        ctx.close()
+        return
+    # ---------------------------------------------------------------- 9. visite guidée proposée (après la révélation et Premium)
+    R[f'9_{tag}_visite_proposee'] = tid(pg, 'onb-tour').is_visible() and pg.locator('[data-testid="onb-premium"]').count() == 0
+    R[f'9_{tag}_faire_la_visite_visible'] = in_view(pg, tid(pg, 'onb-tour-start')) and 'Faire la visite (2 min)' in tid(pg, 'onb-tour-start').inner_text()
+    R[f'9_{tag}_plus_tard_visible'] = in_view(pg, tid(pg, 'onb-tour-later'))
+    R[f'9_{tag}_plus_de_keynote'] = pg.locator('[data-testid="discover"]').count() == 0
+    shot(pg, '09-visite-proposee', tag)
+    if w == 320:
+        tid(pg, 'onb-tour-start').click(); pg.wait_for_timeout(3500)
+        R[f'9_{tag}_faire_la_visite_lance_l_etape_1'] = '/onboarding' not in pg.url and tid(pg, 'tour-progress').is_visible() and tid(pg, 'tour-progress').inner_text().strip() == '1 sur 7'
+        pg.screenshot(path=f'{SHOTS}/{tag}-10-visite-etape-1.png')  # accueil : rangée d'avatars défilante, hors détecteur de l'onboarding
+    else:
+        tid(pg, 'onb-tour-later').click(); pg.wait_for_timeout(3000)
+        R[f'9_{tag}_plus_tard_carte_accueil'] = '/onboarding' not in pg.url and tid(pg, 'tour-resume').is_visible() and 'Faire la visite guidée' in tid(pg, 'tour-resume').inner_text()
+        pg.screenshot(path=f'{SHOTS}/{tag}-10-carte-visite-accueil.png')  # accueil : rangée d'avatars défilante, hors détecteur de l'onboarding
     ctx.close()
 
 
@@ -259,7 +282,7 @@ with sync_playwright() as p:
     flow(b, 390, 844, 'light', main=True)
     for (w, h, s) in [(390, 844, 'dark'), (320, 568, 'light'), (320, 568, 'dark')]:
         try:
-            flow(b, w, h, s)
+            flow(b, w, h, s, premium_on=True)
             R[f'parcours_complet_{w}x{h}_{s}'] = True
         except Exception as e:  # noqa: BLE001
             R[f'parcours_complet_{w}x{h}_{s}'] = False
