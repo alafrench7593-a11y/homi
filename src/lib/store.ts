@@ -99,6 +99,11 @@ interface UiState {
   markAdviceSeen: (signatures: string[]) => void;
   /** Outils favoris (identifiants stables du catalogue), dans l'ordre choisi. */
   toolFavorites: string[];
+  /** « Pour toi aujourd'hui » (20/11/2026) : outils épinglés (toujours visibles) et masqués (jamais recommandés). Rien n'est supprimé. */
+  toolPinned: string[];
+  toolHidden: string[];
+  setToolPinned: (ids: string[]) => void;
+  setToolHidden: (ids: string[]) => void;
   /**
    * ANCIEN garde-manger local (avant le 15/11/2026). Ce n'est plus une source de vérité : les ingrédients sont dans
    * l'inventaire du foyer (household_stocks). Ce champ ne sert qu'à la migration douce à la première synchronisation
@@ -230,6 +235,10 @@ export const useUiStore = create<UiState>()(
         return { adviceSeen: next.slice(-400) };
       }),
       toolFavorites: [],
+      toolPinned: [],
+      toolHidden: [],
+      setToolPinned: (toolPinned) => set({ toolPinned }),
+      setToolHidden: (toolHidden) => set({ toolHidden }),
       pantry: [],
       setPantry: (pantry) => set({ pantry }),
       pantryMigrated: [],
@@ -267,7 +276,7 @@ export const useUiStore = create<UiState>()(
       // Favoris d'outils (17/11/2026) : les anciennes clés « thème:adresse » deviennent l'identifiant stable de l'outil
       merge: (persisted, current) => {
         const next = migrateAppearance({ ...current, ...(persisted as Partial<UiState>) });
-        return { ...next, toolFavorites: migrateToolIds(next.toolFavorites) };
+        return { ...next, toolFavorites: migrateToolIds(next.toolFavorites), toolPinned: migrateToolIds(next.toolPinned), toolHidden: migrateToolIds(next.toolHidden) };
       },
     },
   ),
