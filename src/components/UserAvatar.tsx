@@ -20,7 +20,8 @@ export function UserAvatar({ path, initial, size = 40, label, testID }: { path?:
   }
   return (
     <View testID={testID ? `${testID}-initial` : undefined} accessibilityLabel={label}>
-      <LinearGradient colors={t.tokens.decor.ring} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', ...border }}>
+      {/* deux premières teintes de l'anneau de la palette, sans la troisième (lilas) : scan App Designer, « dégradé violet » */}
+      <LinearGradient colors={[t.tokens.decor.ring[0], t.tokens.decor.ring[1]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', ...border }}>
         {/* encre sombre : le blanc sur le dégradé nacré (#9FD8C0) mesurait 1,6:1 (audit 09) */}
         <Text weight="bold" color={t.tokens.text.onDecor} style={{ fontSize: Math.max(11, Math.round(size * 0.42)), lineHeight: Math.max(13, Math.round(size * 0.52)) }}>{initial}</Text>
       </LinearGradient>
