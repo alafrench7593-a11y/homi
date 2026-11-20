@@ -9,7 +9,7 @@ export const hubs5 = {
   'h5.preg.t1': '1er trimestre',
   'h5.preg.t2': '2e trimestre',
   'h5.preg.t3': '3e trimestre',
-  'h5.preg.viewing': 'Vous regardez la semaine {n}',
+  'h5.preg.viewing': 'Tu regardes la semaine {n}',
   'h5.preg.progress': 'Progression',
   'h5.preg.progressA11y': 'Semaine {week} sur 41 : {pct} % du chemin, {trimester}',
   'h5.preg.pct': '{pct} % du chemin',
@@ -33,7 +33,7 @@ export const hubs5 = {
 
   // ------------------------------------------------------------ dents
   'h5.teeth.emptyT': 'Pas encore de dent notée',
-  'h5.teeth.emptyB': 'Quand une dent perce, touchez-la sur le schéma : sa date et vos observations sont gardées.',
+  'h5.teeth.emptyB': 'Quand une dent perce, touche-la sur le schéma : sa date et tes observations sont gardées.',
   'h5.teeth.now': 'Que faire maintenant',
   'h5.teeth.step1': 'Noter la première dent',
   'h5.teeth.step1Sub': 'Souvent une incisive du bas, au centre (en pointillés sur le schéma)',

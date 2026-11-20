@@ -21,7 +21,7 @@ import { t as tr } from '@/i18n';
 /** Mention affichée sous les rappels (traduite au moment de l'affichage). */
 export const noRecommendationNote = () => tr('u6.bottle.no_reco');
 /** @deprecated Texte figé en français : utiliser noRecommendationNote(). */
-export const NO_RECOMMENDATION_NOTE = 'L’application ne propose ni quantité ni rythme : elle affiche uniquement ce que vous avez saisi, ou ce que vous a indiqué un professionnel de santé.';
+export const NO_RECOMMENDATION_NOTE = 'L’application ne propose ni quantité ni rythme : elle affiche uniquement ce que tu as saisi, ou ce que t’a indiqué un professionnel de santé.';
 
 /** Lecture d'une quantité facultative en ml (vide = non renseignée). */
 export function parseMl(text: string): { value: number | null; error: string | null } {

@@ -11,7 +11,7 @@ export const langAdmin = {
   'la.off': 'Non publiés : version anglaise affichée',
   'la.since': 'Publiés depuis le {date}',
   'la.confirmT': 'Publier ces articles ?',
-  'la.confirmB': 'Confirmez que les articles en {lang} ont été relus. Ils s’afficheront tout de suite pour toutes les personnes qui utilisent cette langue.',
+  'la.confirmB': 'Confirme que les articles en {lang} ont été relus. Ils s’afficheront tout de suite pour toutes les personnes qui utilisent cette langue.',
   'la.confirmOk': 'Publier',
   'la.published': 'Articles publiés.',
   'la.unpublished': 'Publication retirée : la version anglaise s’affiche de nouveau.',

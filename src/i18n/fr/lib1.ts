@@ -17,7 +17,7 @@ export const lib1 = {
   'l1.sleep.err.nap': 'Début et fin au format 14:00.',
   'l1.sleep.err.napOrder': 'La fin doit être après le début.',
   'l1.sleep.tip.sideLate.title': 'Dormir sur le côté',
-  'l1.sleep.tip.sideLate.text': 'En fin de grossesse, dormir sur le côté (gauche ou droit) est généralement conseillé. Si vous vous réveillez sur le dos, pas d’inquiétude : il suffit de vous retourner. Un coussin entre les genoux ou sous le ventre peut aider.',
+  'l1.sleep.tip.sideLate.text': 'En fin de grossesse, dormir sur le côté (gauche ou droit) est généralement conseillé. Si tu te réveilles sur le dos, pas d’inquiétude : il suffit de te retourner. Un coussin entre les genoux ou sous le ventre peut aider.',
   'l1.sleep.tip.sideEarly.title': 'Trouver une position confortable',
   'l1.sleep.tip.sideEarly.text': 'Au fil des semaines, la position sur le côté devient souvent la plus agréable ; elle est conseillée en fin de grossesse. Un coussin entre les genoux peut soulager.',
   'l1.sleep.tip.hydration.title': 'Boire plutôt en journée',
@@ -28,6 +28,6 @@ export const lib1 = {
   'l1.scan.ciqualTable': 'Table Ciqual',
   'l1.scan.ciqualVersion': 'Table Ciqual (Anses), {version}',
   'l1.scan.ciqualVersionDate': 'Table Ciqual (Anses), {version}, {date}',
-  'l1.scan.enteredByYou': 'Saisie par vous',
-  'l1.scan.enteredByYouUnverified': 'Saisie par vous (non vérifiée par une base de produits)',
+  'l1.scan.enteredByYou': 'Saisie par toi',
+  'l1.scan.enteredByYouUnverified': 'Saisie par toi (non vérifiée par une base de produits)',
 };

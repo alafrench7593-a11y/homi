@@ -20,7 +20,7 @@ export const day5 = {
   'd5.urgent.title': "À traiter",
   'd5.rest.title': "Le reste de la journée",
   'd5.clear.pill': "À jour",
-  'd5.clear.body': "Aucune demande ne vous attend.",
+  'd5.clear.body': "Aucune demande ne t’attend.",
   'd5.cal.clash': "Chevauchement",
   'd5.cal.free': "Rien de prévu",
   'd5.bottle.next': "Prochain rappel",

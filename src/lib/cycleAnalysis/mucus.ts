@@ -16,7 +16,7 @@ const MUCUS_CATEGORIES_FR: { value: MucusCategory; label: string; hint: string }
   { value: 'creamy', label: 'Crémeuse', hint: 'Blanchâtre, aspect de lotion.' },
   { value: 'egg_white', label: 'Transparente et étirable', hint: 'Comme du blanc d’œuf cru, s’étire entre deux doigts.' },
   { value: 'watery', label: 'Aqueuse', hint: 'Très liquide, claire.' },
-  { value: 'unusual', label: 'Inhabituelle', hint: 'Couleur, odeur ou aspect qui vous semble différent.' },
+  { value: 'unusual', label: 'Inhabituelle', hint: 'Couleur, odeur ou aspect qui te semble différent.' },
   { value: 'unknown', label: 'Je ne sais pas', hint: 'Difficile à décrire aujourd’hui.' },
 ];
 

@@ -194,10 +194,10 @@ const NOTIF_PREFIX: Record<Exclude<MissionEventType, 'mission.started'>, string>
   'mission.question': 'Une précision est demandée : ', 'mission.reminded': 'Petit rappel : ',
 };
 const NOTIF_BODY: Partial<Record<MissionEventType, string>> = {
-  'mission.requested': 'Ouvrez HOMI pour répondre quand vous le pouvez.',
-  'mission.declined': 'Vous pouvez la proposer à quelqu’un d’autre.',
-  'mission.postponed': 'Ouvrez HOMI pour voir le moment proposé.',
-  'mission.question': 'Ouvrez HOMI pour répondre.',
+  'mission.requested': 'Ouvre HOMI pour répondre quand tu le peux.',
+  'mission.declined': 'Tu peux la proposer à quelqu’un d’autre.',
+  'mission.postponed': 'Ouvre HOMI pour voir le moment proposé.',
+  'mission.question': 'Ouvre HOMI pour répondre.',
 };
 /**
  * Texte de la notification serveur (centre de notifications). L'écran verrouillé reste générique par défaut (send-push).
@@ -206,7 +206,7 @@ const NOTIF_BODY: Partial<Record<MissionEventType, string>> = {
 export function missionNotification(type: MissionEventType, title: string, actorName?: string | null): { title: string; body: string } | null {
   if (type === 'mission.started') return null; // « En cours » : pas de notification (pas de relance)
   const head = type === 'mission.completed' ? `${firstName(actorName) ?? 'Quelqu’un'} a terminé : ` : NOTIF_PREFIX[type];
-  return { title: (head + title).slice(0, 160), body: NOTIF_BODY[type] ?? 'Ouvrez HOMI pour voir le détail.' };
+  return { title: (head + title).slice(0, 160), body: NOTIF_BODY[type] ?? 'Ouvre HOMI pour voir le détail.' };
 }
 /**
  * Nouvelle mission (22/11/2026, miroir EXACT de public._mission_entrusted_text) : « <Prénom> t’a confié une mission »

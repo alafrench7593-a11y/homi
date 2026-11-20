@@ -86,7 +86,7 @@ const TEST_RULES_FR: TestRule[] = [
       'Une seule ligne rose : négatif.',
       'Aucune ligne rose à 3 minutes : test invalide.',
     ],
-    source: { title: 'Notice First Response Early Result', url: 'https://www.firstresponse.com/Products/Pregnancy/~/media/8809F06F680D4A5CA23069540D0A291D.ashx', consultedOn: CONSULTED, note: 'Notice nord-américaine : vérifiez la notice de la boîte achetée en France.' },
+    source: { title: 'Notice First Response Early Result', url: 'https://www.firstresponse.com/Products/Pregnancy/~/media/8809F06F680D4A5CA23069540D0A291D.ashx', consultedOn: CONSULTED, note: 'Notice nord-américaine : vérifie la notice de la boîte achetée en France.' },
   },
   {
     id: 'clearblue-detection-rapide',
@@ -165,7 +165,7 @@ const TEST_RULES_FR: TestRule[] = [
     readMaxMinutes: null,
     readingRules: [
       'Un smiley s’affiche lorsque le pic de LH est détecté.',
-      'Reportez-vous à la notice de la boîte pour le délai d’affichage et les autres symboles.',
+      'Reporte-toi à la notice de la boîte pour le délai d’affichage et les autres symboles.',
     ],
     manualOptions: [
       { value: 'smiley', label: 'Un smiley est affiché', outcome: 'lh_peak_possible' },

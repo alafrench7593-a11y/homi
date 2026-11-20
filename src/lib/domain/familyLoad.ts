@@ -124,10 +124,10 @@ export const categoryOf = (c: TaskCategory) => CATEGORIES.find((x) => x.value ==
 /** Actions rapides (§ 20). `needsTask` / `needsShift` : il faut choisir l'élément concerné. */
 type QuickAction = { kind: RequestKind; label: string; icon: IconName; detail: string; needsTask?: boolean; needsShift?: boolean };
 const QUICK_ACTIONS_FR: QuickAction[] = [
-  { kind: 'taking_over', label: 'Je prends le relais', icon: 'repeat', detail: 'Prévient le foyer que vous prenez la suite.' },
+  { kind: 'taking_over', label: 'Je prends le relais', icon: 'repeat', detail: 'Prévient le foyer que tu prends la suite.' },
   { kind: 'rest', label: 'J’ai besoin de repos', icon: 'moon', detail: 'Demande à être relayé·e pour souffler.' },
   { kind: 'take_task', label: 'Peux-tu prendre cette tâche ?', icon: 'share', detail: 'Proposer une tâche à quelqu’un d’autre.', needsTask: true },
-  { kind: 'available', label: 'Je suis disponible', icon: 'check-circle', detail: 'Signaler que vous pouvez aider.' },
+  { kind: 'available', label: 'Je suis disponible', icon: 'check-circle', detail: 'Signaler que tu peux aider.' },
   { kind: 'swap_slot', label: 'Échanger mon créneau', icon: 'shuffle', detail: 'Proposer d’échanger un relais de nuit.', needsShift: true },
   { kind: 'help_today', label: 'J’ai besoin d’aide aujourd’hui', icon: 'life-buoy', detail: 'Demande d’aide générale pour la journée.' },
   { kind: 'relay', label: 'Demander un relais', icon: 'users', detail: 'Pour qu’on prenne le bébé un moment.' },

@@ -2,13 +2,13 @@
 export const hub = {
   'hub.day.title': 'Ma journée',
   'hub.day.count': { one: '{count} élément aujourd’hui', other: '{count} éléments aujourd’hui' },
-  'hub.day.empty': 'Rien de prévu aujourd’hui. Planifiez quelque chose ou ajoutez un rappel pour ne plus avoir à y penser.',
+  'hub.day.empty': 'Rien de prévu aujourd’hui. Planifie quelque chose ou ajoute un rappel pour ne plus avoir à y penser.',
   'hub.day.more': { one: '+ {count} autre dans l’agenda', other: '+ {count} autres dans l’agenda' },
   'hub.day.allDay': 'Toute la journée',
   'hub.day.every': 'De {from} h à {to} h, toutes les {min} min',
   'hub.day.plan': 'Planifier',
   'hub.day.reminder': 'Ajouter un rappel',
-  'hub.day.note': 'Vos rappels et l’agenda du foyer : rendez-vous, événements, tâches, relais de nuit.',
+  'hub.day.note': 'Tes rappels et l’agenda du foyer : rendez-vous, événements, tâches, relais de nuit.',
   'hub.kind.reminder': 'Rappel',
   'hub.kind.appointment': 'Rendez-vous',
   'hub.kind.event': 'Événement',
@@ -24,5 +24,5 @@ export const hub = {
   'hub.child.intro': 'Vaccins, croissance, suivi, rendez-vous et la fiche à donner à l’école ou à la nounou.',
   'hub.child.title': 'Carnet de {name}',
   'hub.me.title': 'Pour moi',
-  'hub.me.private': 'Votre humeur, votre sommeil et votre fatigue restent privés : jamais visibles du foyer.',
+  'hub.me.private': 'Ton humeur, ton sommeil et ta fatigue restent privés : jamais visibles du foyer.',
 };

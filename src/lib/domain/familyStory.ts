@@ -80,12 +80,12 @@ const STORY_CHAPTERS_FR: StoryChapter[] = [
   { key: 'early', title: 'Les premières semaines', text: 'Rien ne se voit encore, et pourtant tout change déjà.', scene: { belly: bellyForWeek(16), multiple: false, kids: [] } },
   { key: 'round', title: 'Un ventre qui s’arrondit', text: 'Semaine après semaine, la vie prend sa place.', scene: { belly: bellyForWeek(28), multiple: false, kids: [] } },
   { key: 'term', title: 'Bientôt', text: 'Les derniers jours d’attente, le ventre bien rond.', scene: { belly: bellyForWeek(39), multiple: false, kids: [] } },
-  { key: 'birth', title: 'La rencontre', text: 'Votre bébé dans vos bras, tout contre vous.', scene: { belly: 0, multiple: false, kids: one(0.04) } },
-  { key: 'sitting', title: 'Tenir assis', text: 'Votre bébé découvre le monde à hauteur de tapis.', scene: { belly: 0, multiple: false, kids: one(0.7) } },
-  { key: 'steps', title: 'Les premiers pas', text: 'Debout, une main dans la vôtre : le premier élan.', scene: { belly: 0, multiple: false, kids: one(1.15) } },
-  { key: 'little', title: 'À vos côtés', text: 'Un petit enfant qui marche près de sa mère.', scene: { belly: 0, multiple: false, kids: one(3) } },
+  { key: 'birth', title: 'La rencontre', text: 'Ton bébé dans tes bras, tout contre toi.', scene: { belly: 0, multiple: false, kids: one(0.04) } },
+  { key: 'sitting', title: 'Tenir assis', text: 'Ton bébé découvre le monde à hauteur de tapis.', scene: { belly: 0, multiple: false, kids: one(0.7) } },
+  { key: 'steps', title: 'Les premiers pas', text: 'Debout, une main dans la tienne : le premier élan.', scene: { belly: 0, multiple: false, kids: one(1.15) } },
+  { key: 'little', title: 'À tes côtés', text: 'Un petit enfant qui marche près de sa mère.', scene: { belly: 0, multiple: false, kids: one(3) } },
   { key: 'growing', title: 'Grandir', text: 'L’école, les amis, les grandes questions.', scene: { belly: 0, multiple: false, kids: one(6) } },
-  { key: 'ten', title: 'Dix ans, main dans la main', text: 'Votre enfant a grandi, et votre main est toujours là.', scene: { belly: 0, multiple: false, kids: one(10) } },
+  { key: 'ten', title: 'Dix ans, main dans la main', text: 'Ton enfant a grandi, et ta main est toujours là.', scene: { belly: 0, multiple: false, kids: one(10) } },
 ];
 const STORY_CHAPTERS_TEXT_EN: Record<string, { title: string; text: string }> = {
   before: { title: 'Before', text: 'A woman, her rhythm, her wishes. The story starts with her.' },

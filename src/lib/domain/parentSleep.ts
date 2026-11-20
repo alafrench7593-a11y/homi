@@ -279,7 +279,7 @@ export interface SleepTip { key: string; icon: string; title: string; text: stri
 const POSTPARTUM_TIPS_FR: SleepTip[] = [
   { key: 'sieste-bebe', icon: 'moon', title: 'Dormir quand bébé dort, quand c’est possible', text: 'S’allonger pendant une sieste de bébé compte, même 20 minutes. Le linge et la vaisselle peuvent attendre.' },
   { key: 'relais', icon: 'users', title: 'Demander un relais la nuit', text: 'Partager les nuits avec l’autre parent ou un proche (change, bercement, biberon) permet à chacun d’avoir un bloc de sommeil plus long.' },
-  { key: 'aide', icon: 'gift', title: 'Accepter l’aide proposée', text: 'Un repas apporté, une course, une heure de garde : accepter, c’est aussi prendre soin de votre famille.' },
+  { key: 'aide', icon: 'gift', title: 'Accepter l’aide proposée', text: 'Un repas apporté, une course, une heure de garde : accepter, c’est aussi prendre soin de ta famille.' },
 ];
 const POSTPARTUM_TIPS_EN: SleepTip[] = [
   { key: 'sieste-bebe', icon: 'moon', title: 'Sleep when baby sleeps, when you can', text: 'Lying down during one of baby’s naps counts, even for 20 minutes. The laundry and the washing-up can wait.' },
@@ -299,7 +299,7 @@ function pregnancyTips(late: boolean): SleepTip[] {
 }
 
 const GENERAL_TIPS_FR: SleepTip[] = [
-  { key: 'ecrans', icon: 'smartphone', title: 'Limiter les écrans le soir', text: 'Si vous le pouvez, posez le téléphone un moment avant de dormir et baissez la luminosité. Le mode nuit de l’application est pensé pour les réveils.' },
+  { key: 'ecrans', icon: 'smartphone', title: 'Limiter les écrans le soir', text: 'Si tu le peux, pose le téléphone un moment avant de dormir et baisse la luminosité. Le mode nuit de l’application est pensé pour les réveils.' },
   { key: 'rituel', icon: 'feather', title: 'Un petit rituel du soir', text: 'Lumière douce, boisson chaude sans caféine, quelques respirations lentes : un repère simple aide parfois à lâcher prise.' },
   { key: 'cafeine', icon: 'coffee', title: 'La caféine plutôt le matin', text: 'Café, thé, sodas : les garder pour le début de journée peut faciliter l’endormissement.' },
 ];

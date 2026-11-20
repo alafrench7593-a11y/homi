@@ -5,17 +5,17 @@
  * Aucun prix ni aucune durée d'essai ici : ils viennent de la boutique à l'exécution.
  */
 export const sub3 = {
-  'sub3.promise': 'Premium ouvre le suivi complet de votre famille : vous, vos enfants et la maison, dans une seule application.',
+  'sub3.promise': 'Premium ouvre le suivi complet de ta famille : toi, tes enfants et la maison, dans une seule application.',
   'sub3.cmp.title': 'Ce qui change avec Premium',
 
   'sub3.free.title': 'Sans abonnement',
   'sub3.free.urgent': 'Urgences : numéros d’urgence, contraception d’urgence, « Je craque » et mode urgence du foyer.',
   'sub3.free.safety': 'Aide après la naissance, alertes officielles de rappel de produits, sources et références.',
-  'sub3.free.account': 'Votre compte, votre profil, vos parcours et la présentation de HOMI.',
+  'sub3.free.account': 'Ton compte, ton profil, tes parcours et la présentation de HOMI.',
   'sub3.free.settings': 'Réglages : confidentialité, langue, notifications, foyer, synchronisation, abonnement.',
-  'sub3.free.data': 'Export de toutes vos données et suppression du compte. Rien n’est effacé à la fin d’un abonnement.',
+  'sub3.free.data': 'Export de toutes tes données et suppression du compte. Rien n’est effacé à la fin d’un abonnement.',
   'sub3.free.legal': 'Mentions légales et « Donner mon avis ».',
-  'sub3.free.childcare': 'Espace nounou : inviter la nounou de vos enfants ou rejoindre une garde.',
+  'sub3.free.childcare': 'Espace nounou : inviter la nounou de tes enfants ou rejoindre une garde.',
   'sub3.free.rest': 'Les outils de suivi s’ouvrent avec Premium.',
 
   'sub3.prem.title': 'HOMI Premium',
@@ -30,20 +30,20 @@ export const sub3 = {
   'sub3.prem.same': 'Les trois formules ouvrent exactement le même Premium.',
 
   'sub3.fam.title': 'En famille',
-  'sub3.fam.adult': 'Un autre adulte de votre foyer profite du même Premium sans supplément : il n’a rien à acheter.',
-  'sub3.fam.one': 'Un seul autre adulte par abonnement. Si vous avez créé le foyer : le premier co-parent qui l’a rejoint. Si vous l’avez rejoint : la personne qui l’a créé.',
-  'sub3.fam.nanny': 'Une nounou invitée ouvre sans abonnement les écrans de garde (suivi du jour, biberons, sommeil, tâches, courses, agenda, documents partagés) et y note ce qu’elle fait pour votre foyer. Elle ne reçoit pas Premium pour ses propres outils.',
+  'sub3.fam.adult': 'Un autre adulte de ton foyer profite du même Premium sans supplément : il n’a rien à acheter.',
+  'sub3.fam.one': 'Un seul autre adulte par abonnement. Si tu as créé le foyer : le premier co-parent qui l’a rejoint. Si tu l’as rejoint : la personne qui l’a créé.',
+  'sub3.fam.nanny': 'Une nounou invitée ouvre sans abonnement les écrans de garde (suivi du jour, biberons, sommeil, tâches, courses, agenda, documents partagés) et y note ce qu’elle fait pour ton foyer. Elle ne reçoit pas Premium pour ses propres outils.',
 
   'sub3.recommended': 'Formule conseillée : son prix ramené au mois est le plus bas.',
-  'sub3.plan.current': 'votre formule actuelle',
-  'sub3.manage.ios': 'Ouvre la page Abonnements de votre compte Apple.',
+  'sub3.plan.current': 'ta formule actuelle',
+  'sub3.manage.ios': 'Ouvre la page Abonnements de ton compte Apple.',
   'sub3.manage.android': 'Ouvre la page Abonnements de Google Play.',
   'sub3.continueFree': 'Continuer sans m’abonner',
 
   'sub3.origin.label': 'Origine',
   'sub3.origin.own': 'Achat personnel',
   'sub3.origin.shared': 'Partagé par {name}',
-  'sub3.origin.sharedAnon': 'Partagé par l’autre adulte de votre foyer',
-  'sub3.shared.note': 'Vous n’avez rien à payer. Votre accès dure tant que cet abonnement est actif et que vous faites tous les deux partie du foyer. Les dates de facturation sont visibles par la personne abonnée.',
-  'sub3.sub.included': 'Ce que comprend votre Premium',
+  'sub3.origin.sharedAnon': 'Partagé par l’autre adulte de ton foyer',
+  'sub3.shared.note': 'Tu n’as rien à payer. Ton accès dure tant que cet abonnement est actif et que vous faites tous les deux partie du foyer. Les dates de facturation sont visibles par la personne abonnée.',
+  'sub3.sub.included': 'Ce que comprend ton Premium',
 };

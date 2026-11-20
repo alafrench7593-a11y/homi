@@ -51,9 +51,9 @@ const EXPOSURE_LABEL_FR: Record<Exposure, string> = {
 const EXPOSURE_EXPLANATION_FR: Record<Exposure, string> = {
   rinse_off: 'Le produit est rincé après application : il reste peu de temps au contact de la peau.',
   leave_on: 'Le produit reste sur la peau : l’exposition est plus longue qu’avec un produit rincé.',
-  inhaled: 'Une partie du produit peut être respirée (spray, parfum, diffusion) : aérez et évitez l’usage à proximité du visage d’un enfant.',
+  inhaled: 'Une partie du produit peut être respirée (spray, parfum, diffusion) : aère et évite l’usage à proximité du visage d’un enfant.',
   indirect: 'Le contact se fait surtout par les textiles lavés ou les surfaces ; le risque principal vient du produit pur (ingestion accidentelle, projection).',
-  unknown: 'L’application ne sait pas si ce produit est rincé, laissé sur la peau ou inhalé : précisez-le pour affiner l’analyse.',
+  unknown: 'L’application ne sait pas si ce produit est rincé, laissé sur la peau ou inhalé : précise-le pour affiner l’analyse.',
 };
 const EXPOSURE_LABEL_EN: Record<Exposure, string> = {
   rinse_off: 'Rinse-off product', leave_on: 'Leave-on product (stays on the skin)', inhaled: 'Possible exposure by inhalation',

@@ -60,8 +60,8 @@ export function createCouple(c: CoupleCtx) {
       const discreet = T('notification_settings').some((s) => s.user_id === a.p_recipient && s.couple_discreet === true);
       const name = discreet ? null : firstName(T('profiles').find((p) => p.id === me)?.display_name as string | undefined);
       T('notifications').push({ id: c.uuid(), user_id: a.p_recipient, category: 'family',
-        title: name ? `${name} souhaite partager quelque chose avec vous` : 'Votre partenaire souhaite partager quelque chose avec vous',
-        body: 'Ouvrez HOMI quand vous le souhaitez.', deep_link: '/family/understand/inbox', payload: { couple: true }, read_at: null, created_at: c.nowIso() });
+        title: name ? `${name} souhaite partager quelque chose avec toi` : 'Ton partenaire souhaite partager quelque chose avec toi',
+        body: 'Ouvre HOMI quand tu le souhaites.', deep_link: '/family/understand/inbox', payload: { couple: true }, read_at: null, created_at: c.nowIso() });
       return { ...row };
     },
     set_pregnancy_sharing: (a) => {

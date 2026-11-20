@@ -12,7 +12,7 @@ export const bottleV3 = {
   'bs.a11y.duration': '{min} min {sec} s',
   'bs.since': 'Commencé à {time}',
   'bs.saved_noqty': 'Durée enregistrée',
-  'bs.idle_hint': 'Touchez Démarrer quand le biberon commence',
+  'bs.idle_hint': 'Touche Démarrer quand le biberon commence',
   'bs.record_past': 'Noter un biberon déjà donné',
   'bs.duration': 'Durée',
   'bs.cancel_session': 'Annuler ce biberon',
