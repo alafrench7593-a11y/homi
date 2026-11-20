@@ -58,8 +58,9 @@ worklet. Mode exercice (`src/lib/practice.ts`) : aucune écriture ne part (test�
 
 Avant : 409 ms entre l'appui sur « Reprendre la visite » et la découpe posée, 3 sauts (le trou grandissait depuis le
 centre de l'écran, voile plein dès la première image), mesures `measureInWindow` des ancres les unes après les autres,
-toutes les 280 ms, deux états React (découpe, zone touchable) mis à jour l'un après l'autre. Après : 160 ms, aucun saut,
-aucun clignotement ; animations réduites : 79 ms. Causes corrigées : la découpe NAÎT sur l'élément (agrandie de 10 px,
+toutes les 280 ms, deux états React (découpe, zone touchable) mis à jour l'un après l'autre. Après : 93 ms, aucun saut,
+aucun clignotement ; animations réduites : 26 ms (78 ms avant). La découpe n'est montée qu'une fois la cible connue
+(sa première image porte déjà la bonne place) ; une reprise sur l'écran de l'étape ne navigue plus. Causes corrigées : la découpe NAÎT sur l'élément (agrandie de 10 px,
 resserrée en 160 ms ease-out, voile en fondu) ; la bulle n'apparaît qu'avec sa découpe ; mesures en parallèle (origine
 mémorisée), à chaque image pendant 700 ms après une étape ou un défilement puis toutes les 450 ms ; un seul état
 `geo` ; d'une étape à l'autre l'ancienne découpe reste posée 400 ms au plus le temps de trouver la nouvelle cible.

@@ -263,7 +263,7 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
   return (
     <View ref={rootRef} pointerEvents="box-none" style={StyleSheet.absoluteFill} testID="tour-overlay"
       onLayout={(e) => { const { width, height } = e.nativeEvent.layout; setFrame((f) => (f.width === width && f.height === height ? f : { width, height })); }}>
-      <Cutout hole={lost ? null : hole} lost={lost} frame={frame} level={m.level} />
+      {hole || lost ? <Cutout hole={lost ? null : hole} lost={lost} frame={frame} level={m.level} /> : null}
       {/* Touchers arrêtés HORS de l'élément (et des zones gestuelles de l'étape) ; sans élément : tout l'écran */}
       {hole || lost ? <Blockers region={lost ? null : region} frame={frame} /> : null}
       {hole && !lost && step.gesture && !m.off ? <HandHint kind={step.gesture} hole={hole} level={m.level} /> : null}
@@ -282,14 +282,16 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
  */
 function Cutout({ hole, lost, frame, level }: { hole: Rect | null; lost: boolean; frame: { width: number; height: number }; level: MotionLevel }) {
   const t = useTheme();
-  const start = hole ?? { x: frame.width / 2, y: frame.height / 2, width: 0, height: 0 };
+  // Montée seulement quand la cible est connue (ou introuvable) : la première image porte DÉJÀ la découpe sur
+  // l'élément (agrandie de 10 px, ou exacte avec Réduire les animations) — aucune image d'attente.
+  const g0 = level === 'off' ? 0 : ARRIVE_GROW;
+  const start = hole ? { x: hole.x - g0, y: hole.y - g0, width: hole.width + g0 * 2, height: hole.height + g0 * 2 } : { x: frame.width / 2, y: frame.height / 2, width: 0, height: 0 };
   const x = useSharedValue(start.x);
   const y = useSharedValue(start.y);
   const w = useSharedValue(start.width);
   const h = useSharedValue(start.height);
-  // voile : invisible tant qu'aucune cible n'est connue (pas de voile plein qui clignote avant la découpe)
-  const shown = useSharedValue(hole || lost ? 1 : 0);
-  const placed = useRef(!!hole);
+  const shown = useSharedValue(level === 'off' ? 1 : 0);
+  const placed = useRef(false);
   useEffect(() => {
     if (!hole) {
       if (lost) {
@@ -301,8 +303,6 @@ function Cutout({ hole, lost, frame, level }: { hole: Rect | null; lost: boolean
     if (!placed.current) {
       // première pose : sur l'élément, légèrement agrandie, puis resserrée
       placed.current = true;
-      const g = level === 'off' ? 0 : ARRIVE_GROW;
-      x.value = hole.x - g; y.value = hole.y - g; w.value = hole.width + g * 2; h.value = hole.height + g * 2;
       x.value = motionTiming(level, hole.x, ARRIVE_MS, 'decelerate');
       y.value = motionTiming(level, hole.y, ARRIVE_MS, 'decelerate');
       w.value = motionTiming(level, hole.width, ARRIVE_MS, 'decelerate');
