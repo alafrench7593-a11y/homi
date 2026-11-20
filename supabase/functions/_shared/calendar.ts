@@ -20,13 +20,13 @@ export const EVENT_KINDS: { value: EventKind; label: string }[] = [
   { value: 'shopping', label: 'Courses' }, { value: 'important', label: 'Date importante' }, { value: 'custom', label: 'Autre' },
 ];
 
-export type Source = 'event' | 'appointment' | 'task' | 'night' | 'me_time';
+export type Source = 'event' | 'appointment' | 'task' | 'night' | 'me_time' | 'moment';
 export interface CalendarItem {
   key: string; source: Source; refId: string; title: string; starts: string; ends: string; allDay: boolean;
   location?: string | null; health?: boolean; private?: boolean; recurring?: boolean; done?: boolean; who?: string | null;
 }
 
-export const SOURCE_LABEL: Record<Source, string> = { event: 'Événement', appointment: 'Rendez-vous', task: 'Tâche', night: 'Relais de nuit', me_time: 'Temps pour soi' };
+export const SOURCE_LABEL: Record<Source, string> = { event: 'Événement', appointment: 'Rendez-vous', task: 'Tâche', night: 'Relais de nuit', me_time: 'Temps pour soi', moment: 'Moment à deux' };
 
 // ------------------------------------------------------------------ dates locales
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -79,6 +79,8 @@ export interface Sources {
   appointments?: { id: string; title: string; starts_at: string; location_label: string | null; private_to_creator?: boolean; kind: string }[];
   tasks?: { id: string; title: string; due_at: string | null; status: string; assignee_id: string | null; mission_state?: string | null }[];
   shifts?: { id: string; kind: 'night' | 'me_time'; user_id: string; starts_at: string; ends_at: string; status: string }[];
+  /** Moments à deux planifiés (application seulement : jamais dans le flux d'abonnement du serveur). */
+  moments?: { id: string; title: string; planned_at: string; duration_minutes: number | null }[];
 }
 
 export function itemsBetween(s: Sources, from: Date, to: Date): CalendarItem[] {
@@ -102,6 +104,10 @@ export function itemsBetween(s: Sources, from: Date, to: Date): CalendarItem[] {
   for (const sh of s.shifts ?? []) {
     if (sh.status === 'cancelled' || !inRange(sh.starts_at, sh.ends_at)) continue;
     out.push({ key: `${sh.kind}:${sh.id}`, source: sh.kind, refId: sh.id, title: sh.kind === 'night' ? 'Relais de nuit' : 'Temps pour soi', starts: sh.starts_at, ends: sh.ends_at, allDay: false, who: sh.user_id });
+  }
+  for (const m of s.moments ?? []) {
+    const ends = new Date(Date.parse(m.planned_at) + (m.duration_minutes ?? 30) * 60_000).toISOString();
+    if (inRange(m.planned_at, ends)) out.push({ key: `moment:${m.id}`, source: 'moment', refId: m.id, title: m.title, starts: m.planned_at, ends, allDay: false, private: true });
   }
   return out.sort((a, b) => (a.allDay === b.allDay ? (a.starts < b.starts ? -1 : a.starts > b.starts ? 1 : a.title.localeCompare(b.title)) : a.allDay ? -1 : 1));
 }

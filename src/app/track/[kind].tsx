@@ -29,6 +29,7 @@ import { formatDuration, formatTime, toISODate, todayISO } from '@/lib/domain/da
 import { recordMealFoods } from '@/lib/data/hooks-discoveries';
 import { useTheme } from '@/theme/ThemeProvider';
 import { DayStrip } from '@/features/dayStrip/DayStrip';
+import { FeedIssuesToday, MilkStockLink } from '@/features/feeding/TrackLinks';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
 import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
@@ -425,6 +426,8 @@ function TrackEntry() {
         </View>
       ) : null}
       {!editing ? <TrackToday kind={kind} childId={childId} /> : null}
+      {!editing && kind === 'breastfeed' && childId ? <FeedIssuesToday childId={childId} /> : null}
+      {!editing && kind === 'pumping' && childId ? <MilkStockLink childId={childId} /> : null}
       {!editing && kind === 'diaper' && child ? (
         <QuickDiaperCard childId={childId} householdId={child.household_id} name={child.first_name}
           lastAt={[...dayRows].map((r) => r.at).filter((x): x is string => !!x).sort().pop() ?? null} />

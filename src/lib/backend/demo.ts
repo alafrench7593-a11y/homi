@@ -32,6 +32,7 @@ import { createMessages, DM_TABLES } from './demoMessages';
 import { createOutings } from './demoOutings';
 import { createMissions } from './demoMissions';
 import { createCouple } from './demoCouple';
+import { createAbsents, PERSONAL_TABLES } from './demoAbsents';
 import { createChildcare } from './demoChildcare';
 import { createStocks } from './demoStocks';
 import { createCredits } from './demoCredits';
@@ -115,6 +116,8 @@ const OWNER_TABLES: Record<string, string> = {
   recipe_favorites: 'user_id', recipe_dislikes: 'user_id',
   // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
   postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
+  // Mode embrouille, contractions, projet de naissance, post-partum, difficultés d'allaitement (27/11/2026)
+  ...PERSONAL_TABLES,
 };
 
 /** Même filtre que le déclencheur serveur postpartum_filter_shared. */
@@ -489,6 +492,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t),
     matchStock: (h, label) => stocks?.matchStock(h, label) ?? null, itemChecked: (item) => stocks?.itemChecked(item) });
   const couple = createCouple({ T, me: () => state.session?.userId, nowIso, uuid });
+  // Mode embrouille, moments à deux, naissance, post-partum, allaitement (27/11/2026, demoAbsents.ts)
+  const absents = createAbsents({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
   stocks = createStocks({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
   const stockHooks = stocks;
   // Espace nounou (mêmes règles que 20261121000100_espace_nounou.sql, côté parent)
@@ -684,6 +689,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (ownerCol && r[ownerCol] == null && me) r[ownerCol] = me;
     r.id ??= uuid();
     r.created_at ??= nowIso();
+    absents.beforeInsert(table, r);
     if (table === 'household_stocks' || table === 'shopping_items') {
       if (table === 'household_stocks' && r.ingredient_key && T(table).some((x) => x.household_id === r.household_id && x.ingredient_key === r.ingredient_key)) throw new BackendError(tr('l2.dm.forbidden'), '23505');
       stockHooks.beforeWrite(table, r);
@@ -1111,6 +1117,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     // Se comprendre, profil familial, grossesse partagée, rendez-vous « pour moi » (19/11/2026, demoCouple.ts)
     const coupleRows = couple.filter(table, rows);
     if (coupleRows) return coupleRows;
+    const absentRows = absents.filter(table, rows);
+    if (absentRows) return absentRows;
     const ownerCol = OWNER_TABLES[table];
     // Données personnelles : uniquement celles du compte connecté
     if (ownerCol && !['posts', 'comments', 'post_photos'].includes(table)) {
@@ -1210,6 +1218,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     ...messages.rpcs,
     ...missions.rpcs,
     ...couple.rpcs,
+    ...absents.rpcs,
     ...stockHooks.rpcs,
     ...childcare.rpcs,
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
@@ -1919,6 +1928,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       await load();
       if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      // Listes privées, moments, demandes : mêmes règles que la base (demoAbsents.ts)
+      if (['checklists', 'checklist_items', 'couple_moments', 'calm_requests', 'milk_stock'].includes(table)) rows = absents.filter(table, rows) ?? rows;
+      for (const r of rows) absents.beforeUpdate(table, r, patch);
       // Comme 20261029000200 : activer l'historique de l'assistant = accord daté ; le désactiver l'efface
       if (table === 'privacy_settings' && 'ai_history_enabled' in patch) patch = { ...patch, ai_history_consented_at: patch.ai_history_enabled === true ? nowIso() : null };
       // « Je grandis » / « Ses découvertes » : mêmes contrôles qu'à la création
@@ -2065,7 +2077,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
       if (['posts', 'comments', 'post_photos'].includes(table) && !isModerator()) removed = removed.filter((r) => r.author_id === state.session?.userId);
-      removed = outings.filterRemove(table, social.filterRemove(table, removed));
+      removed = absents.filterRemove(table, outings.filterRemove(table, social.filterRemove(table, removed)));
       markLib(table, removed);
       state.tables[table] = T(table).filter((r) => !removed.includes(r));
       social.afterRemove(table, removed, state.tables);

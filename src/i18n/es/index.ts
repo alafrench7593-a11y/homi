@@ -93,3 +93,4 @@ export { intro6 } from './intro6';
 export { screens6 } from './screens6';
 export { homi200 } from './homi200';
 export { perso } from './perso';
+export { absents1 } from './absents1';

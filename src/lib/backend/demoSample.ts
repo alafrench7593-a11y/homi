@@ -4,6 +4,7 @@ import { t as tr } from '@/i18n';
 import { addDays, todayISO } from '../domain/dates';
 import { seedTodayHousehold } from './demoToday';
 import { seedChildcarePrep } from './demoChildcarePrep';
+import { seedAbsents } from './demoAbsents';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -111,4 +112,6 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
   seedTodayHousehold({ userId, hid, childId: lina, T });
   // « Avant la garde » : candidates, entretien, visite, planning, absences et pointages de Lina
   seedChildcarePrep({ userId, hid, childId: lina, T });
+  // Laits infantiles de Lina et stock de lait maternel (27/11/2026)
+  seedAbsents({ userId, hid, childId: lina, T });
 }

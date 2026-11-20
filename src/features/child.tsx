@@ -2,6 +2,7 @@
  * Onglets du profil enfant : aperçu, croissance, étapes, santé, alimentation.
  * Tout est descriptif : aucune zone « normale/anormale », aucune notion de retard.
  */
+import { FormulaFrise } from '@/features/feeding/TrackLinks';
 import { DEV_DOMAINS } from '@/lib/domain/childCare';
 import { exportTextFile } from '@/lib/exportData';
 import { csvCell, safeFileName } from '@/lib/csv';
@@ -491,6 +492,8 @@ export function MilestonesTab({ child }: { child: Child }) {
           <Text variant="caption" muted>{tr('u7.child.milestonesNote')}</Text>
         </>
       )}
+      {/* Laits infantiles dans la frise (79) */}
+      <FormulaFrise childId={child.id} />
 
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('u7.child.logMoment')}>
         {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}

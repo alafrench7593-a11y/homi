@@ -51,7 +51,8 @@ export function remindersOn(reminders: DayReminder[], day: string): MyDayItem[] 
 
 /** Agenda du foyer pour ce jour (éléments déjà filtrés sur la journée par le calendrier). */
 export function agendaItems(items: CalendarItem[], day: string): MyDayItem[] {
-  return items.map((i) => ({
+  // Moments à deux : privés, jamais dans la journée partagée
+  return items.filter((i): i is CalendarItem & { source: Exclude<CalendarItem['source'], 'moment'> } => i.source !== 'moment').map((i) => ({
     key: `cal-${i.key}`, kind: i.source, title: i.title, refId: i.refId, done: i.done,
     time: i.allDay || localDay(i.starts) < day ? null : localTime(i.starts),
   }));

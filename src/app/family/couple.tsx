@@ -8,6 +8,7 @@ import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
 import { InviteOtherParent } from '@/features/couple/CoupleKit';
+import { useCalmMode } from '@/lib/data/hooks-calmMoments';
 import { backend, eq } from '@/lib/backend';
 import { useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { useFamilyEvents, useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
@@ -30,6 +31,9 @@ export default function CoupleWeek() {
   const open = (useFamilyTasks().data ?? []).filter((x) => x.status === 'todo');
   const domains = useDomains().data ?? [];
   const checkQ = useCoupleCheckins();
+  // Mode embrouille (172) : tant qu'il est actif POUR MOI, l'espace du couple se limite aux demandes pratiques et à
+  // l'agenda ; les zones de texte libre sont masquées (rien n'est effacé, rien n'est dit à l'autre)
+  const calm = useCalmMode().active;
   const current = (checkQ.data ?? []).find((c) => c.week_of === week);
   const past = (checkQ.data ?? []).filter((c) => c.week_of !== week).slice(0, 4);
   const [heavy, setHeavy] = useState('');
@@ -55,11 +59,15 @@ export default function CoupleWeek() {
     <Screen back title={toolName('couple_week')} subtitle={tr('cm.cp.week', { date: formatDate(week, { day: 'numeric', month: 'long' }) })}>
       <Text muted>{tr('cm.cp.intro')}</Text>
       <InviteOtherParent testID="cp-invite" />
-      <Card padded={false} testID="cp-understand">
+      <Card padded={false} testID="cp-calm">
+        <ListRow icon="feather" title={tr('calm.title')} subtitle={calm ? tr('calm.coupleOn') : tr('calm.coupleOff')} onPress={() => router.push('/family/calm')} testID="cp-calm-open" />
+        {!calm ? <ListRow icon="heart" title={tr('mom.title')} subtitle={tr('mom.coupleSub')} onPress={() => router.push('/family/moments')} testID="cp-moments-open" /> : null}
+      </Card>
+      {calm ? null : <Card padded={false} testID="cp-understand">
         <ListRow icon="feather" title={tr('und.entry')} subtitle={tr('und.entrySub')} onPress={() => router.push('/family/understand')} testID="cp-understand-open" />
         <ListRow icon="message-circle" title={tr('und.inbox.entry')} onPress={() => router.push('/family/understand/inbox')} />
         <ListRow icon="users" title={tr('cp2.place.title')} subtitle={tr('cp2.place.sub')} onPress={() => router.push('/family/my-place')} testID="cp-my-place" />
-      </Card>
+      </Card>}
       <SectionTitle title={tr('cm.cp.s1')} />
       <Card padded={false} testID="cp-events">
         {events.length ? events.slice(0, 12).map((e) => <ListRow key={e.id} icon="calendar" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'long', day: 'numeric', hour: e.all_day ? undefined : '2-digit', minute: e.all_day ? undefined : '2-digit' })} />)
@@ -77,6 +85,7 @@ export default function CoupleWeek() {
         <Text variant="small" muted>{tr('cm.cp.freeDomains', { count: DOMAINS.filter((k) => !domains.some((d) => d.key === k && d.owner_id)).length })}</Text>
         <Button label={toolName('family_domains')} size="sm" variant="ghost" onPress={() => router.push('/family/domains')} />
       </Card>
+      {calm ? <Text variant="small" muted testID="cp-calm-hidden">{tr('calm.coupleHidden')}</Text> : <>
       <SectionTitle title={tr('cm.cp.s4')} />
       <Card>
         <Field label={tr('cm.cp.heavy')} optional value={heavy} onChangeText={setHeavy} maxLength={1000} multiline placeholder={tr('cm.cp.heavyPh')} testID="cp-heavy" />
@@ -95,6 +104,7 @@ export default function CoupleWeek() {
           ))}
         </>
       ) : null}
+      </>}
       <Text variant="caption" muted>{tr('cm.cp.private')}</Text>
     </Screen>
   );

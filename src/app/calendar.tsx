@@ -15,6 +15,7 @@ import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { parseFrDateTime, splitLocal } from '@/features/familyLoad';
 import { useAppointments, useChildren, useHouseholdId, useMyMembership } from '@/lib/data/hooks';
+import { usePlannedMoments } from '@/lib/data/hooks-calmMoments';
 import { useRespondMission } from '@/lib/data/hooks-missions';
 import { useUserId } from '@/lib/auth';
 import { isMission } from '@/lib/domain/missions';
@@ -37,7 +38,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import type { ThreadState } from '@/lib/domain/dayThread';
 import { Tappable } from '@/components/Tappable';
-import { t as tr, formatDate, formatTime } from '@/i18n';
+import { t as tr, formatDate, formatTime, type TKey } from '@/i18n';
 import { homiKey, sortAgenda, type DeviceAgendaItem } from '@/lib/deviceCalendar';
 import { useDeviceAgenda } from '@/lib/deviceCalendar/hooks';
 import { AddToDeviceCalendar, DeviceCalendarEntry, DeviceEventSheet } from '@/features/deviceCalendar/DeviceCalendarParts';
@@ -75,6 +76,9 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const appointmentsQ = useAppointments();
   const tasksQ = useFamilyTasks();
   const shiftsQ = useCareShifts();
+  // Moments à deux planifiés (179) : seulement ceux de la personne, jamais exportés (privés)
+  const plannedMoments = usePlannedMoments();
+  const moments = useMemo(() => plannedMoments.map((m) => ({ id: m.id, title: tr(`mom.idea.${m.idea_key}.title` as TKey), planned_at: m.planned_at as string, duration_minutes: m.duration_minutes })), [plannedMoments]);
   const { data: appointments } = appointmentsQ;
   const { data: tasks } = tasksQ;
   const { data: shifts } = shiftsQ;
@@ -113,10 +117,10 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
     if (view === 'month') { const g = monthGrid(cursor); return [g[0][0], addDays(g[g.length - 1][6], 1)]; }
     return [todayISO(), addDays(todayISO(), 31)];
   }, [view, cursor]);
-  const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, range]);
+  const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, moments, range]);
   const clashes = useMemo(() => overlaps(items), [items]);
-  const weekItems = useMemo(() => { const s0 = weekStart(todayISO()); return itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(s0), atLocal(addDays(s0, 7))); }, [eventsQ.data, appointments, tasks, shifts]);
-  const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [] }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts]);
+  const weekItems = useMemo(() => { const s0 = weekStart(todayISO()); return itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments }, atLocal(s0), atLocal(addDays(s0, 7))); }, [eventsQ.data, appointments, tasks, shifts, moments]);
+  const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts, moments]);
 
   // Calendrier de l'iPhone : événements des calendriers choisis, lus sur le téléphone pour la période affichée + la
   // semaine en cours. Affichage seul : ils n'entrent ni dans l'export .ics, ni dans l'abonnement, ni sur le serveur.
@@ -152,6 +156,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
     if (i.source === 'task') return router.push('/family');
     if (i.source === 'night') return router.push('/family/nights');
     if (i.source === 'me_time') return router.push('/family/me-time');
+    if (i.source === 'moment') return router.push('/family/moments');
     const e = eventsQ.data?.find((x) => x.id === i.refId);
     if (!e) return;
     const a = splitLocal(e.starts_at);
@@ -194,7 +199,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   async function exportIcs() {
     const from = atLocal(addDays(todayISO(), -30));
     const to = atLocal(addDays(todayISO(), 365));
-    const all = itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: (tasks ?? []).filter((x) => x.status === 'todo'), shifts: shifts ?? [] }, from, to);
+    const all = itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: (tasks ?? []).filter((x) => x.status === 'todo'), shifts: shifts ?? [], moments }, from, to);
     const ics = toIcs(all, { includeHealthTitles: withHealth, events: eventsQ.data ?? [] });
     try {
       const r = await exportTextFile(ics, `agenda-familial-${todayISO()}.ics`, 'text/calendar', 'public.calendar-event', tr('u3.cal.exportTitle'));
