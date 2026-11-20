@@ -89,3 +89,5 @@ export { nounou } from './nounou';
 export { tour } from './tour';
 export { garde2 } from './garde2';
 export { credits } from './credits';
+export { intro6 } from './intro6';
+export { screens6 } from './screens6';

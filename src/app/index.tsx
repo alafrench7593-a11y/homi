@@ -31,11 +31,9 @@ export default function Launch() {
   const [hydrated, setHydrated] = useState(() => useUiStore.persist?.hasHydrated?.() ?? true);
   useEffect(() => (hydrated ? undefined : useUiStore.persist?.onFinishHydration?.(() => setHydrated(true))), [hydrated]);
   const introSeen = useUiStore((s) => s.introSeen);
-  const cinematicSeen = useUiStore((s) => s.cinematicSeen);
 
-  // Toute première ouverture (pas encore de compte) : présentation « Découvrir HOMI », une seule fois, « Passer » possible
-  if (ready && !session && hydrated && !cinematicSeen) return <Redirect href={'/discover' as never} />;
-  // Première ouverture sans compte : introduction (toujours « Passer » possible)
+  // Première ouverture sans compte : introduction « Je suis… » (profil → vrais outils → Commencer ; « Passer » à tout
+  // moment). Elle remplace la keynote « Découvrir HOMI » à l'ouverture (la keynote reste dans Réglages).
   if (ready && !session && hydrated && !introSeen) return <Redirect href="/intro" />;
   if (ready && !session && hydrated) return <Redirect href="/welcome" />;
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
@@ -46,7 +44,7 @@ export default function Launch() {
   if (ready && session && (profile?.onboarding_completed || isError || offlinePaused)) return <Redirect href="/(tabs)" />;
 
   // Première ouverture : on attend la session sur le fond de l'introduction (même couleur, enchaînement sans saut)
-  if (hydrated && !cinematicSeen && !ready) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
+  if (hydrated && !introSeen && !ready) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.background, alignItems: 'center', justifyContent: 'center', gap: 18 }} accessibilityLabel={tr('common.appLoading', { app: BRAND.name })}>
       <BrandStack width={180} testID="loading-brand" />

@@ -17,6 +17,7 @@
  *
  * L'opacité n'est JAMAIS posée sur un ancêtre du verre (elle figerait le flou) : seul le contenu s'estompe.
  */
+import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View, type GestureResponderEvent, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -39,6 +40,8 @@ export interface GlassButtonProps extends Omit<PressableProps, 'style' | 'childr
   variant?: GlassButtonVariant;
   size?: GlassButtonSize;
   icon?: IconName;
+  /** Pictogramme de la famille HOMI à gauche du libellé (prioritaire sur `icon`). */
+  glyph?: HomiIconName;
   iconRight?: IconName;
   /** État imposé (sinon déduit de la promesse renvoyée par `onPress`) */
   state?: GlassButtonState;
@@ -57,7 +60,7 @@ export function glassButtonColors(t: ReturnType<typeof useTheme>, inkText: strin
 
 const DISABLED = 0.45;
 
-export function GlassButton({ label, variant = 'secondary', size = 'md', icon, iconRight, state: forced, full, disabled, onPress, onPressIn, onPressOut, onFocus, onBlur, style, testID, ...rest }: GlassButtonProps) {
+export function GlassButton({ label, variant = 'secondary', size = 'md', icon, glyph, iconRight, state: forced, full, disabled, onPress, onPressIn, onPressOut, onFocus, onBlur, style, testID, ...rest }: GlassButtonProps) {
   const t = useTheme();
   const { spec, tier } = useGlass('chrome');
   const toast = useToast();
@@ -133,7 +136,8 @@ export function GlassButton({ label, variant = 'secondary', size = 'md', icon, i
           {/* Voile d'appui (aucun décalage de mise en page) */}
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: r, backgroundColor: solid ? c.fg : spec.press }, veilStyle]} />
           <View style={[styles.row, { gap: size === 'sm' ? 6 : 8, opacity: state !== 'idle' ? 0 : off ? DISABLED : 1 }]}>
-            {icon ? <Icon name={icon} size={BUTTON.icon[size]} color={c.fg} /> : null}
+            {glyph ? <HomiIcon name={glyph} size={BUTTON.icon[size] + 3} color={c.fg} tone={variant === 'primary' ? null : t.colors.primary} />
+              : icon ? <Icon name={icon} size={BUTTON.icon[size]} color={c.fg} /> : null}
             <Text weight="bold" color={c.fg} center numberOfLines={2} maxFontSizeMultiplier={typography.button.maxScale}
               style={{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: 0.1 }}>{label}</Text>
             {iconRight ? <Icon name={iconRight} size={BUTTON.icon[size]} color={c.fg} /> : null}
@@ -156,8 +160,10 @@ export function GlassButton({ label, variant = 'secondary', size = 'md', icon, i
  * Bouton icône seule sur verre (retour, fermer, menu…) : disque de 44 pt (cible ≥ 44 pt), nom accessible obligatoire.
  * `plain` : sans verre (icône seule dans la même cible), pour l'intérieur d'une barre déjà en verre.
  */
-export function GlassIconButton({ icon, label, onPress, size = 44, plain, disabled, selected, color, style, testID, accessibilityHint }: {
+export function GlassIconButton({ icon, glyph, label, onPress, size = 44, plain, disabled, selected, color, style, testID, accessibilityHint }: {
   icon: IconName;
+  /** Pictogramme de la famille HOMI (prioritaire sur `icon`). */
+  glyph?: HomiIconName;
   label: string;
   onPress: () => void;
   size?: number;
@@ -192,7 +198,10 @@ export function GlassIconButton({ icon, label, onPress, size = 44, plain, disabl
       <Animated.View style={[styles.center, { flex: 1, borderRadius: r, boxShadow: plain || t.name === 'night' ? undefined : glassShadow(spec, tier, true) }, p.style]}>
         {plain ? null : <GlassMaterial variant="chrome" radius={r} testID={testID ?? 'glass-icon-button'} />}
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: r, backgroundColor: spec.press }, veilStyle]} />
-        <View style={{ opacity: disabled ? DISABLED : 1 }}><Icon name={icon} size={Math.round(size * 0.46)} color={color ?? spec.inks.text} /></View>
+        <View style={{ opacity: disabled ? DISABLED : 1 }}>
+          {glyph ? <HomiIcon name={glyph} size={Math.round(size * 0.52)} color={color ?? spec.inks.text} tone={color ?? t.colors.primary} active={!!selected} />
+            : <Icon name={icon} size={Math.round(size * 0.46)} color={color ?? spec.inks.text} />}
+        </View>
       </Animated.View>
     </Pressable>
   );

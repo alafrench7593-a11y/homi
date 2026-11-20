@@ -341,9 +341,10 @@ describe('enchaînement', () => {
     expect(swipeStep(LAST_STEP, -120)).toBe(LAST_STEP);
     expect(swipeStep(2, -80, 0, true)).toBe(1);
   });
-  it('la première ouverture mène à /discover (et /cinematic redirige)', () => {
+  it('la première ouverture mène à l’introduction « Je suis… » (/intro), plus à la keynote ; /cinematic redirige vers la keynote', () => {
     const launch = fs.readFileSync('src/app/index.tsx', 'utf8');
-    expect(launch).toMatch(/!cinematicSeen\) return <Redirect href=\{'\/discover'/);
+    expect(launch).toMatch(/!introSeen\) return <Redirect href="\/intro" \/>/);
+    expect(launch).not.toMatch(/Redirect href=\{'\/discover'/);
     expect(fs.readFileSync('src/app/cinematic.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
     expect(fs.readFileSync('src/app/settings/index.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
   });

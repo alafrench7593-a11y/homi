@@ -21,6 +21,7 @@ import { fonts, radius as R, spacing } from '@/theme/tokens';
 import { motionHaptic, useIndicator, useItemLayouts, useMotion, usePress } from '@/motion';
 import { t as tr } from '@/i18n';
 import { Icon, Text, type IconName } from '../ui';
+import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import { Glass, useGlass } from './Glass';
 
 // ---------------------------------------------------------------------------------------------- barre d'onglets
@@ -28,6 +29,8 @@ export interface GlassTab {
   key: string;
   label: string;
   icon: IconName;
+  /** Pictogramme de la famille HOMI (prioritaire sur `icon`) : trait d'encre + aplat de l'accent, plus présent quand l'onglet est actif. */
+  glyph?: HomiIconName;
   /** Nom annoncé (défaut : `label`) */
   accessibilityLabel?: string;
   /** Largeur imposée (ex. `dockLayout`) ; sinon les onglets se partagent la place */
@@ -75,6 +78,7 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
   }, [active, m, pop]);
   const iconStyle = useAnimatedStyle(() => ({ transform: [{ scale: pop.value }] }));
   const ink = active ? spec.inks.text : spec.inks.muted;
+  const accent = useTheme().colors.primary;
   return (
     <Pressable
       accessibilityRole="tab"
@@ -91,7 +95,9 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
       style={[{ height: GLASS_TAB_BAR.height, minWidth: 44 }, tab.width ? { width: tab.width } : { flex: 1 }]}
     >
       <Animated.View style={[styles.tab, p.style]}>
-        <Animated.View style={iconStyle}><Icon name={tab.icon} size={iconsOnly ? 24 : 22} color={ink} /></Animated.View>
+        <Animated.View style={iconStyle}>
+          {tab.glyph ? <HomiIcon name={tab.glyph} size={iconsOnly ? 26 : 24} color={ink} tone={accent} active={active} /> : <Icon name={tab.icon} size={iconsOnly ? 24 : 22} color={ink} />}
+        </Animated.View>
         {iconsOnly ? null : (
           <Text numberOfLines={1} maxFontSizeMultiplier={1.2} color={ink}
             style={{ fontFamily: active ? fonts.bodyBold : fonts.bodyMedium, fontSize: labelSize, lineHeight: Math.round(labelSize * 1.3), letterSpacing: -0.1, textAlign: 'center' }}>{tab.label}</Text>

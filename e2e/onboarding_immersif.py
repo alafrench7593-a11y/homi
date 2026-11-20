@@ -277,8 +277,33 @@ def reduced(b):
     ctx.close()
 
 
+def intro_first(b):
+    """Première ouverture (stockage vide) : l'introduction « Je suis… » PRÉCÈDE l'onboarding ; le profil choisi est gardé
+    dans le brouillon local `intro.profile` ; « Découvrir sans compte » puis l'onboarding s'ouvre normalement."""
+    ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris', device_scale_factor=2)
+    pg = ctx.new_page()
+    pg.route('http://sb.fake.test/**', fake.route)
+    pg.route_web_socket(re.compile(r'wss?://sb\.fake\.test/realtime/.*'), FakeRealtime().attach)
+    pg.on('pageerror', lambda e: errs.append(f'intro: {str(e)[:200]}'))
+    pg.goto(B + '/'); pg.wait_for_timeout(3500)
+    R['0_intro_avant_onboarding'] = '/intro' in pg.url and tid(pg, 'intro-who-title').is_visible()
+    tid(pg, 'intro-profile-newborn').click(); pg.wait_for_timeout(900)
+    R['0_intro_profil_garde'] = (pg.evaluate("() => localStorage.getItem('intro.profile')") or '').find('newborn') >= 0
+    tid(pg, 'intro-skip').click(); pg.wait_for_timeout(900)
+    tid(pg, 'intro-demo').click(); pg.wait_for_timeout(5000)
+    pg.goto(B + '/onboarding')
+    tid(pg, 'onb-start').wait_for(state='visible', timeout=20000)
+    R['0_onboarding_apres_intro'] = True
+    ctx.close()
+
+
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path=CHROMIUM) if CHROMIUM else p.chromium.launch()
+    try:
+        intro_first(b)
+    except Exception as e:  # noqa: BLE001
+        R['0_intro_avant_onboarding'] = False
+        errs.append(f'intro : {str(e)[:300]}')
     flow(b, 390, 844, 'light', main=True)
     for (w, h, s) in [(390, 844, 'dark'), (320, 568, 'light'), (320, 568, 'dark')]:
         try:

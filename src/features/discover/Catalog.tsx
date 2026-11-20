@@ -70,7 +70,8 @@ export function DiscoverCatalog() {
     <Screen back title={tr('kn.cat.title')} subtitle={tr('kn.cat.sub', { count: DISCOVER_TOOLS.length })} tool={false}
       footer={
         <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-          <Button label={tr('kn.prev')} icon="chevron-left" variant="secondary" onPress={nav.backToKeynote} style={{ flex: 1 }} testID="discover-catalog-prev" />
+          {/* « Précédent » en flèche seule : « Commencer » tient sur une ligne, sans mot coupé, dès 320 pt */}
+          <Button label="" accessibilityLabel={tr('kn.prev')} icon="chevron-left" variant="secondary" onPress={nav.backToKeynote} style={{ width: 56, flexGrow: 0, flexShrink: 0 }} testID="discover-catalog-prev" />
           <Button label={tr('kn.start')} iconRight="arrow-right" onPress={nav.exit} style={{ flex: 1 }} testID="discover-catalog-start" />
         </View>
       }>

@@ -39,6 +39,7 @@ import { TodayAddSheet } from '@/features/homeToday/TodayAddSheet';
 import { useToast } from './Overlays';
 import { GLASS_TAB_BAR, GlassButton, GlassSheet, GlassTabBar, type GlassTab } from './glass';
 import { haptic, Icon, type IconName, Text } from './ui';
+import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
@@ -60,6 +61,8 @@ export const DOCK_HEIGHT = GLASS_TAB_BAR.height + GLASS_TAB_BAR.inset * 2 + GLAS
  */
 export const TAB_SCREEN_INSET = DOCK_HEIGHT + spacing.xs;
 const LONG_PRESS = 'tabLongPress' as const;
+/** Onglet → pictogramme HOMI (l'onglet « Enfant » choisit Enfant ou Grossesse selon le foyer). */
+const TAB_GLYPH: Record<string, HomiIconName> = { index: 'today', health: 'me', baby: 'child', household: 'family' };
 /** En dessous de cette largeur, la barre ne flotte plus (pleine largeur, collée en bas) : les marges de la capsule
  *  coûteraient 24 pt et feraient passer les libellés en icônes seules à 320 pt. */
 export const DOCK_FLOAT_MIN_W = 360;
@@ -94,7 +97,9 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
       <View {...anchor} style={{ flex: 1 }}>
       {/* Rectangle aux angles souples, aplat de l'action principale (prune en clair, corail en sombre), sans dégradé */}
       <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
-        <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />
+        {/* « Ajouter » : pictogramme HOMI (trait arrondi, plus épais sur l'aplat) ; une action d'écran garde son icône */}
+        {action.icon === 'plus' ? <HomiIcon name="add" size={26} color={t.tokens.action.text} tone={null} />
+          : <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />}
       </Animated.View>
       </View>
     </Pressable>
@@ -114,6 +119,8 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   // L'onglet « Enfant » porte le libellé de la situation du foyer (Enfant / Grossesse)
   const labels = tabs.map((x) => tr(x.tab.name === 'baby' ? childTab.label : x.tab.label));
   const icons = tabs.map((x) => (x.tab.name === 'baby' ? childTab.icon : x.tab.icon));
+  // Pictogrammes de la famille HOMI (src/brand/icons) : Aujourd'hui, Moi, Enfant / Grossesse, Famille
+  const glyphs = tabs.map((x) => (x.tab.name === 'baby' ? (childTab.icon === 'heart' ? 'pregnancy' : 'child') : TAB_GLYPH[x.tab.name]));
 
   const g = dockInner(width);
   // Libellés jamais coupés : largeur réelle mesurée (police chargée, langue active, taille de texte du téléphone),
@@ -131,6 +138,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     key: route.name,
     label: labels[i],
     icon: icons[i],
+    glyph: glyphs[i],
     accessibilityLabel: tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i],
     width: layout.widths[i],
     testID: `tab-${tab.name}`,
@@ -152,7 +160,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   if (caregiver) {
     return (
       <View pointerEvents="box-none" testID="dock" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
-        <GlassTabBar testID="tab-bar-glass" tabs={[{ key: 'garde', label: tr('nn.home.title'), icon: 'briefcase', testID: 'tab-garde' }]} activeKey=""
+        <GlassTabBar testID="tab-bar-glass" tabs={[{ key: 'garde', label: tr('nn.home.title'), icon: 'briefcase', glyph: 'notebook', testID: 'tab-garde' }]} activeKey=""
           onChange={() => router.push('/garde' as never)} center={<CareAddButton size={g.action} />} centerAfter={1} floating={g.floating}
           labelSize={layout.fontSize} accessibilityLabel={tr('nav.tablist')} style={{ width: Math.min(width, 600) }} />
       </View>
@@ -204,7 +212,7 @@ function CareAddButton({ size }: { size: number }) {
       onPressIn={p.onPressIn} onPressOut={p.onPressOut} hitSlop={size < 48 ? (48 - size) / 2 : 0} style={{ width: size, height: size }}
       onPress={() => { haptic('light'); router.push((child ? `/garde/${child.id}/ajouter` : '/garde') as never); }}>
       <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
-        <Icon name="plus" size={24} color={t.tokens.action.text} />
+        <HomiIcon name="add" size={26} color={t.tokens.action.text} tone={null} />
       </Animated.View>
     </Pressable>
   );

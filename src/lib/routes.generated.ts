@@ -90,6 +90,7 @@ export const APP_ROUTES: readonly string[] = [
   '/cycle/stats',
   '/cycle/symptoms',
   '/dev/glass',
+  '/dev/icons',
   '/discover',
   '/discover/tool/[id]',
   '/discover/tools',

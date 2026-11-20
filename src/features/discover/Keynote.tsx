@@ -9,7 +9,7 @@
  * Réduire les animations : changements directs, ouverture affichée dans son état final ; nuit : fondus seuls.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, ScrollView, View } from 'react-native';
+import { AccessibilityInfo, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -29,6 +29,8 @@ import { chapterExample, chapterLead, chapterTitle, toolName } from './texts';
 
 /** Caméra entre deux étapes (ms, testé). */
 export const CAMERA = { ms: 450, shift: 70, depth: 0.06 } as const;
+/** En dessous de cette largeur, « Précédent » passe en flèche seule (les libellés ne se coupent plus à 320 pt). */
+export const NARROW = 360;
 
 function ChapterSlide({ chapter, onOpenTool }: { chapter: ChapterKey; onOpenTool: (key: string) => void }) {
   const t = useTheme();
@@ -95,6 +97,7 @@ export function DiscoverKeynote({ onExit, onCatalog, onOpenTool, logo, initialSt
   const m = useMotion();
   const insets = useSafeAreaInsets();
   const top = useTopInset();
+  const { width } = useWindowDimensions();
   const rtl = isRTL();
   const [step, setStep] = useState(() => clampStep(initialStep));
   const [openings, setOpenings] = useState(0);
@@ -145,6 +148,7 @@ export function DiscoverKeynote({ onExit, onCatalog, onOpenTool, logo, initialSt
 
   const first = step === 0;
   const last = step === LAST_STEP;
+  const narrow = width < NARROW;
   return (
     <View style={{ flex: 1, paddingTop: top + spacing.xs }} testID="discover-keynote" accessibilityLabel={tr('kn.a11y.stage')}>
       {/* haut : catalogue et « Passer » toujours disponibles */}
@@ -170,7 +174,10 @@ export function DiscoverKeynote({ onExit, onCatalog, onOpenTool, logo, initialSt
       </GestureDetector>
       {/* bas : Précédent / Suivant (ou Commencer), à portée de pouce */}
       <View style={{ flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: insets.bottom + spacing.sm }}>
-        <Button label={tr('kn.prev')} icon="chevron-left" variant="secondary" disabled={first} onPress={() => go(step - 1)} style={{ flex: 1 }} testID="discover-prev" />
+        {/* 320 pt : « Précédent » en flèche seule (nom accessible complet) ; « Suivant » / « Commencer » garde toute la place */}
+        {narrow
+          ? <Button label="" accessibilityLabel={tr('kn.prev')} icon="chevron-left" variant="secondary" disabled={first} onPress={() => go(step - 1)} style={{ width: 56, flexGrow: 0, flexShrink: 0 }} testID="discover-prev" />
+          : <Button label={tr('kn.prev')} icon="chevron-left" variant="secondary" disabled={first} onPress={() => go(step - 1)} style={{ flex: 1 }} testID="discover-prev" />}
         {last
           ? <Button label={tr('kn.start')} iconRight="arrow-right" onPress={onExit} style={{ flex: 1 }} testID="discover-start" />
           : <Button label={tr('kn.next')} iconRight="chevron-right" onPress={() => go(step + 1)} style={{ flex: 1 }} testID="discover-next" />}

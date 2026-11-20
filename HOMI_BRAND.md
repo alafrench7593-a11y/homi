@@ -74,6 +74,16 @@ introduction de lancement (logo animé), écran de lancement natif et icônes (s
 Historique : v1–v3 (13/11/2026) maison lumineuse + famille ; v4 (14/11/2026) logotype « lentille » — abandonné ;
 v5 « maison » (14/11/2026) maison violette — remplacée le 16/11/2026 par le logo de la propriétaire (v5 « encre »).
 
+## Pictogrammes HOMI (20/11/2026) — `src/brand/icons/`
+
+Audit : trois styles mélangés — Feather (trait fin 2 px, angles vifs) pour la navigation et l'en-tête, Material
+Community Icons (pleins) pour les ~200 outils, silhouettes teintées de `ToolGlyph` en fond. Famille unique : grille 24,
+marge 2, trait d'ENCRE 1,75 arrondi (extrémités et jonctions), DEUX TONS (aplat doux de la couleur de catégorie ou de
+l'accent sous le trait : 16 % inactif, 38 % actif), aucune couleur en dur. Composant `<HomiIcon name=… />` ;
+galerie /dev/icons (clair et sombre, 5 palettes). Lot 1 : barre du bas (Aujourd'hui, Moi, Enfant, Grossesse, Famille),
+bouton central (« + »), en-tête (Communauté, notifications, urgences, compte), 9 catégories, outils de l'introduction,
+main de la visite guidée (`TourHand`). Lot suivant : les ~200 pictogrammes d'outils, une fois le registre fini.
+
 ## Palette v3 « Désert sci-fi » (13/11/2026, verrouillée par `src/__tests__/contrast.test.ts`)
 
 Décision du propriétaire : remplace la v2 « Lumière sur graphite ». Direction : Apple Keynote × Black Mirror × Liquid
