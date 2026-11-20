@@ -1,5 +1,5 @@
 /**
- * Démonstration (sans serveur) : crédits HOMI IA, mêmes règles que 20261126000100_credits_ia.sql.
+ * Démonstration (sans serveur) : crédits HOMI Aura, mêmes règles que 20261126000100_credits_ia.sql.
  *  - compte par payeur (Premium : partagé avec le second adulte ; Famille : solde commun du foyer) ;
  *  - octroi mensuel à l'achat simulé d'un abonnement (miroir du webhook) : 1 000 / 1 500 crédits, essai 50 ;
  *  - mensuels d'abord, puis achetés ; mensuels expirés au renouvellement ; achetés sans expiration ;
@@ -180,7 +180,7 @@ export function createCredits(c: CreditsCtx) {
       ledger(acc, 'purchase', 0, n, { product_id: id, rc_transaction_id: tx });
       return { ok: true, credited: n, purchased_remaining: acc.purchased_balance };
     },
-    // Démonstration : action facturée sans IA (le bouton « Analyser avec HOMI IA » de l'écran Mes crédits)
+    // Démonstration : action facturée sans IA (le bouton « Analyser avec HOMI Aura » de l'écran Mes crédits)
     demo_credit_spend: (a) => spend((String(a.action ?? 'tool_analysis') as CreditAction)),
     // Démonstration et tests : fixer le solde (épuisement…) par des lignes « ajustement » du grand livre
     demo_credit_adjust: (a) => {

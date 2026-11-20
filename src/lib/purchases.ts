@@ -237,7 +237,7 @@ export async function getFamilyPlans(): Promise<Plan[]> {
   return buildPlans(offerings.current?.availablePackages ?? [], Platform.OS, localeTag(), 'family');
 }
 
-// ---------------------------------------------------------------- packs de crédits HOMI IA (consommables)
+// ---------------------------------------------------------------- packs de crédits HOMI Aura (consommables)
 export interface PackOffer { id: CreditPackId; credits: number; price: string; demo: boolean; pkg?: PurchasesPackage; product?: PurchasesStoreProduct }
 
 /**

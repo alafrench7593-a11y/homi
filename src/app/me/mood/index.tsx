@@ -122,7 +122,7 @@ export default function MoodScreen() {
               </View>
             ) : null}
 
-            {/* « Analyser avec HOMI IA » : agrégats du mois seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
+            {/* « Analyser avec HOMI Aura » : agrégats du mois seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
             {!loading && !failed ? <AuraAnalysis kind="mood" data={moodAggregate(moods ?? [])} /> : null}
 
             <SectionTitle title={tr('u8.mood.previous')} />

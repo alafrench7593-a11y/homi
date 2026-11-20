@@ -109,7 +109,7 @@ function Chat() {
   const askedInitial = useRef(false);
   const consented = latest.get('ai_assistant') === true;
 
-  // Démonstration reliée à la vraie IA : limite par jour et par appareil (assistant-demo). Avec un compte : crédits HOMI IA
+  // Démonstration reliée à la vraie IA : limite par jour et par appareil (assistant-demo). Avec un compte : crédits HOMI Aura
   // (le serveur réserve, débite à la réponse livrée, restitue en cas d'échec ou de coupure : docs/CREDITS_IA.md).
   const demoLimited = isDemo && hasRealBackend;
   const limit = demoLimited ? quota?.limit ?? quotaStatus?.quota ?? null : null;

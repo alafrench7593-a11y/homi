@@ -1,5 +1,5 @@
 /**
- * « Mes crédits » (Réglages › Abonnement › Crédits) : solde HOMI IA lu sur le serveur (mensuels restants, achetés
+ * « Mes crédits » (Réglages › Abonnement › Crédits) : solde HOMI Aura lu sur le serveur (mensuels restants, achetés
  * restants, utilisés ce mois-ci, prochain renouvellement), packs aux prix de la boutique, règles en clair et
  * historique paginé (libellés lisibles, jamais le contenu d'une question). Sans abonnement : aucun crédit, renvoi vers
  * les abonnements. Démonstration : faux magasin et bouton d'essai (aucune IA appelée) pour voir le solde bouger.

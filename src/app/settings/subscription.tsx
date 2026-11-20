@@ -16,7 +16,7 @@
  * Abonné·e : formule en cours, prochaine échéance ou fin d'accès si résilié, origine (achat personnel ou partagé par
  * l'autre adulte du foyer), changer de formule, gérer / annuler, restaurer.
  * 26/11/2026 : formule « HOMI Famille » (niveau supérieur du même groupe, prix de la boutique, renouvellement écrit à
- * côté du bouton) et crédits HOMI IA (ce que chaque formule inclut, règles, lien « Mes crédits ») — sans promesse tant
+ * côté du bouton) et crédits HOMI Aura (ce que chaque formule inclut, règles, lien « Mes crédits ») — sans promesse tant
  * que l'IA n'est pas ouverte. Les anciennes offres (Assistant IA, outils à vie) ne sont plus affichées.
  *
  * Aucun prix en dur, aucun compte à rebours, aucune urgence, aucune case à cocher. Mêmes textes de conditions et

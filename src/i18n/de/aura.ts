@@ -144,7 +144,7 @@ export const aura: Messages<typeof fr> = {
   'aura.t.discovery.s2': 'Wo notiere ich den Schlaf meines Kindes?',
   'aura.t.discovery.s3': 'Wie teile ich den Kalender mit dem anderen Elternteil?',
 
-  'aura.an.title': 'Mit HOMI KI analysieren',
+  'aura.an.title': 'Mit HOMI Aura analysieren',
   'aura.an.body': 'Genau das wird für diese Analyse gesendet, und sonst nichts:',
   'aura.an.consent': 'Ich stimme zu, diese Daten nur für diese Analyse zu senden',
   'aura.an.result': 'Analyse von HOMI Aura',

@@ -1,5 +1,5 @@
 /**
- * Crédits HOMI IA côté application (démonstration : faux magasin, aucun paiement, aucune IA) :
+ * Crédits HOMI Aura côté application (démonstration : faux magasin, aucun paiement, aucune IA) :
  *  - modèle : libellés d'historique sans contenu de question, coûts, solde ;
  *  - règles de la démonstration = règles du serveur : aucun crédit sans abonnement, 1 000 (Premium) / 1 500 (Famille)
  *    à l'achat, mensuels d'abord puis achetés, refus `insufficient_credits`, pack crédité, grand livre cohérent ;
@@ -70,7 +70,7 @@ describe('modèle', () => {
     expect(l({ kind: 'monthly_grant' })).toBe('Crédits mensuels');
     expect(nb(l({ kind: 'purchase', product_id: 'homi_credits_800' }))).toBe('Pack de 800 crédits');
     expect(l({ kind: 'debit', action: 'assistant_question' })).toBe('Question à l’assistant');
-    expect(l({ kind: 'debit', action: 'inconnue' })).toBe('Action HOMI IA');
+    expect(l({ kind: 'debit', action: 'inconnue' })).toBe('Action HOMI Aura');
     expect(l({ kind: 'expire' })).toBe('Crédits mensuels non utilisés (expirés)');
     expect(l({ kind: 'refund' })).toBe('Remboursement d’un pack');
   });
@@ -188,7 +188,7 @@ describe('écrans (démonstration)', () => {
     await tap(r, 'pack-buy-homi_credits_800');
     expect((await status()).purchased_remaining).toBe(800);
     expect(textOf(r, 'credits-purchased')).toContain('800');
-    expect(textOf(r, 'credits-demo-analyze-button')).toContain('Analyser avec HOMI IA — 3 crédits');
+    expect(textOf(r, 'credits-demo-analyze-button')).toContain('Analyser avec HOMI Aura — 3 crédits');
     await tap(r, 'credits-demo-analyze-button');
     expect((await status()).monthly_remaining).toBe(997);
     expect(has(r, 'credits-hist-debit') && has(r, 'credits-hist-purchase') && has(r, 'credits-hist-monthly_grant')).toBe(true);
@@ -213,7 +213,7 @@ describe('écrans (démonstration)', () => {
     const r = await render(<SubscriptionScreen />);
     FEATURES.aiAssistantOnline = true;
     expect(textOf(r, 'family-price')).toBe('19,99 € par mois');
-    expect(textOf(r, 'family-offer')).toContain('1 500 crédits HOMI IA par mois en commun');
+    expect(textOf(r, 'family-offer')).toContain('1 500 crédits HOMI Aura par mois en commun');
     expect(textOf(r, 'family-renewal')).toContain('renouvelé automatiquement');
     expect(textOf(r, 'credits-info')).toContain('Premium : 1 000 crédits par mois');
     expect(textOf(r, 'credits-info')).toContain('pas encore ouverte');

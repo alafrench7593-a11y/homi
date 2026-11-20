@@ -7,7 +7,7 @@ export const pay2: Messages<typeof fr> = {
   'pay2.eyebrow': 'Premium',
   'pay2.title': 'Toda la vida familiar, en un mismo lugar',
   'pay2.lead': 'Una sola suscripción abre todo HOMI, para ti y tu coprogenitor.',
-  'pay2.lead.trial': { one: 'Pruébalo todo durante {count} día, sin pagar.', other: 'Pruébalo todo durante {count} días, sin pagar.' },
+  'pay2.lead.trial': { one: 'Pruébalo todo durante {count} día, sin pagar. Los créditos de HOMI Aura llegan al terminar la prueba.', other: 'Pruébalo todo durante {count} días, sin pagar. Los créditos de HOMI Aura llegan al terminar la prueba.' },
   'pay2.benTitle': 'Con Premium',
   'pay2.ben.track': 'Biberones, tomas, sueño, pañales, crecimiento y vacunas de cada hijo.',
   'pay2.ben.body': 'Ciclo, embarazo y posparto, con tus propios registros.',

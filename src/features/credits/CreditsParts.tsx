@@ -1,5 +1,5 @@
 /**
- * Crédits HOMI IA — briques d'affichage partagées par l'écran « Mes crédits », la feuille « Vous n'avez plus de
+ * Crédits HOMI Aura — briques d'affichage partagées par l'écran « Mes crédits », la feuille « Vous n'avez plus de
  * crédits » et la page d'abonnement : carte du solde, liste des packs aux prix de la boutique, règles.
  * Aucun prix écrit en dur (boutique, ou grille de démonstration signalée) ; jamais le contenu d'une question.
  */

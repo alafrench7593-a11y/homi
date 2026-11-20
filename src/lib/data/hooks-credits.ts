@@ -1,5 +1,5 @@
 /**
- * Crédits HOMI IA : solde, configuration (coûts, interrupteur), historique paginé, packs de la boutique.
+ * Crédits HOMI Aura : solde, configuration (coûts, interrupteur), historique paginé, packs de la boutique.
  * Le serveur fait foi (credits_status / credits_history / credits_config) ; l'application n'écrit jamais dans le
  * grand livre.
  */

@@ -1,5 +1,5 @@
 /**
- * Crédits HOMI IA — modèle côté application (logique pure, testée par Jest : src/__tests__/credits.test.ts).
+ * Crédits HOMI Aura — modèle côté application (logique pure, testée par Jest : src/__tests__/credits.test.ts).
  * Le SERVEUR fait foi (grand livre : supabase/migrations/20261126000100_credits_ia.sql, docs/CREDITS_IA.md) : l'application
  * ne fait qu'afficher le solde, le coût d'une action AVANT consentement, et proposer un pack quand le solde est épuisé.
  *

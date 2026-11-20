@@ -1,5 +1,5 @@
 /**
- * « Analyser avec HOMI IA — X crédits » posé sur un outil (bouton `AnalyzeWithAI` existant) avec, AVANT :
+ * « Analyser avec HOMI Aura — X crédits » posé sur un outil (bouton `AnalyzeWithAI` existant) avec, AVANT :
  *  - l'aperçu EXACT de ce qui sera envoyé (agrégats minimisés calculés sur le téléphone, analysis.ts) ;
  *  - le consentement explicite pour CETTE analyse (interrupteur, jamais pré-coché) ;
  *  - le coût, affiché par le bouton puis rappelé dans sa confirmation.

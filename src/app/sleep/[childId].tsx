@@ -102,7 +102,7 @@ function PlannerBody({ child, tab, setTab }: { child: Child; tab: Tab; setTab: (
       {tab === 'profile' ? <ProfileTab child={child} profile={profile} /> : null}
       {tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
       {tab === 'trends' ? <TrendsTab child={child} data={data} /> : null}
-      {/* « Analyser avec HOMI IA » : moyennes de la semaine, âge en mois, après aperçu et accord (docs/HOMI_AURA.md) */}
+      {/* « Analyser avec HOMI Aura » : moyennes de la semaine, âge en mois, après aperçu et accord (docs/HOMI_AURA.md) */}
       {tab === 'trends' ? <AuraSleepAnalysis child={child} /> : null}
       {tab === 'safety' ? <SafetyTab child={child} data={data} /> : null}
       <Banner tone="info">{tr('u4.sp.banner')}</Banner>

@@ -501,7 +501,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const stockHooks = stocks;
   // Espace nounou (mêmes règles que 20261121000100_espace_nounou.sql, côté parent)
   const childcare = createChildcare({ T, me: () => state.session?.userId, nowIso, uuid });
-  // Crédits HOMI IA (mêmes règles que 20261126000100_credits_ia.sql) : solde, faux magasin, historique
+  // Crédits HOMI Aura (mêmes règles que 20261126000100_credits_ia.sql) : solde, faux magasin, historique
   const credits = createCredits({
     T, me: () => state.session?.userId, nowIso, uuid,
     activeSub: (u) => { const s = T('subscriptions').find((r) => r.user_id === u); return grants(s as never) ? (s as Row) : null; },

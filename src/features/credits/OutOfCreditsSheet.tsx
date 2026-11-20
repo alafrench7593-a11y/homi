@@ -1,6 +1,6 @@
 /**
  * Feuille « Vous n'avez plus de crédits » : ouverte quand le serveur répond `insufficient_credits` (assistant,
- * « Analyser avec HOMI IA »). Affiche le solde, la date de retour des crédits mensuels, les 3 packs aux prix de la
+ * « Analyser avec HOMI Aura »). Affiche le solde, la date de retour des crédits mensuels, les 3 packs aux prix de la
  * boutique (achat via RevenueCat ; faux magasin en démonstration) et la restauration des achats.
  * Aucune urgence ni compte à rebours ; « Plus tard » toujours visible.
  */

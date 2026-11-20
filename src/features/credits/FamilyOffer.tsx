@@ -1,5 +1,5 @@
 /**
- * Page d'abonnement : formule « HOMI Famille » et explication des crédits HOMI IA (26/11/2026).
+ * Page d'abonnement : formule « HOMI Famille » et explication des crédits HOMI Aura (26/11/2026).
  *  - Famille : niveau supérieur du groupe d'abonnements « HOMI Premium » (homi_family_monthly_v2) ; prix de la boutique ;
  *    le même Premium pour tous les adultes (owner / coparent) du foyer de la personne abonnée (_premium_of) et un solde
  *    de crédits mensuel commun (credit_accounts.household_id). Depuis Premium : montée immédiate, prix au prorata
@@ -95,7 +95,7 @@ export function FamilyOffer({ current, premiumProductId }: { current: boolean; p
   );
 }
 
-/** Crédits HOMI IA : ce que chaque formule inclut et les règles, sans promesse tant que l'IA n'est pas ouverte. */
+/** Crédits HOMI Aura : ce que chaque formule inclut et les règles, sans promesse tant que l'IA n'est pas ouverte. */
 export function CreditsInfoCard({ signedIn = true }: { signedIn?: boolean }) {
   const config = useCreditConfig();
   const g = config.data?.grants ?? DEFAULT_GRANTS;

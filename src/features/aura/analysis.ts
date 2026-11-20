@@ -1,5 +1,5 @@
 /**
- * « Analyser avec HOMI IA » — agrégats MINIMISÉS calculés sur le téléphone (logique pure, testée). Seuls ces chiffres
+ * « Analyser avec HOMI Aura » — agrégats MINIMISÉS calculés sur le téléphone (logique pure, testée). Seuls ces chiffres
  * partent, après que la personne les a vus et a donné son accord pour CETTE analyse : jamais un prénom, une date de
  * naissance, une note libre (sauf les pages du journal qu'elle coche elle-même), ni un identifiant.
  */

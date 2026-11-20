@@ -145,7 +145,7 @@ export const aura = {
   'aura.t.discovery.s2': 'Où noter le sommeil de mon enfant ?',
   'aura.t.discovery.s3': 'Comment partager l’agenda avec l’autre parent ?',
 
-  'aura.an.title': 'Analyser avec HOMI IA',
+  'aura.an.title': 'Analyser avec HOMI Aura',
   'aura.an.body': 'Voici exactement ce qui sera envoyé pour cette analyse, et rien d’autre :',
   'aura.an.consent': 'J’accepte d’envoyer ces données pour cette analyse seulement',
   'aura.an.result': 'Analyse de HOMI Aura',

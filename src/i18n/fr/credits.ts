@@ -1,11 +1,11 @@
 /**
- * Crédits HOMI IA et formule Famille (26/11/2026) — docs/CREDITS_IA.md.
+ * Crédits HOMI Aura et formule Famille (26/11/2026) — docs/CREDITS_IA.md.
  * Aucun prix ici : ils viennent de la boutique à l'exécution. Les volumes de crédits viennent de la configuration
  * du serveur (paramètres {count}). Jamais le contenu d'une question dans l'historique.
  */
 export const credits = {
   'cr.screen': 'Mes crédits',
-  'cr.balance.title': 'Crédits HOMI IA',
+  'cr.balance.title': 'Crédits HOMI Aura',
   'cr.balance.total': { one: '{count} crédit disponible', other: '{count} crédits disponibles' },
   'cr.balance.monthly': 'Mensuels restants',
   'cr.balance.purchased': 'Achetés restants',
@@ -25,10 +25,10 @@ export const credits = {
   'cr.rules.failed': 'Si une réponse échoue ou est interrompue, aucun crédit n’est utilisé.',
   'cr.rules.safety': 'Les messages d’urgence et l’orientation vers de l’aide ne consomment jamais de crédit.',
   'cr.rules.restore': 'Les crédits achetés sont gardés par ton compte HOMI, sur tous tes appareils : il n’y a rien à restaurer.',
-  'cr.rules.soon': 'HOMI IA n’est pas encore ouverte : tes crédits seront utilisables à son lancement.',
+  'cr.rules.soon': 'HOMI Aura n’est pas encore ouverte : tes crédits seront utilisables à son lancement.',
 
   'cr.noSub.title': 'Les crédits font partie de HOMI Premium',
-  'cr.noSub.body': 'Sans abonnement, il n’y a pas de crédits HOMI IA. Premium inclut {premium} crédits par mois ; Famille, {family} crédits par mois partagés entre les adultes du foyer.',
+  'cr.noSub.body': 'Sans abonnement, il n’y a pas de crédits HOMI Aura. Premium inclut {premium} crédits par mois ; Famille, {family} crédits par mois partagés entre les adultes du foyer.',
   'cr.noSub.cta': 'Voir les abonnements',
 
   'cr.packs.title': 'Acheter des crédits',
@@ -62,7 +62,7 @@ export const credits = {
   'cr.action.scan_explain': 'Explication d’un produit',
   'cr.action.cycle_photo': 'Analyse d’une photo',
   'cr.action.community_summary': 'Résumé d’une discussion',
-  'cr.action.other': 'Action HOMI IA',
+  'cr.action.other': 'Action HOMI Aura',
 
   'cr.out.title': 'Tu n’as plus de crédits',
   'cr.out.body': { one: 'Cette action demande {count} crédit. Il t’en reste {left}.', other: 'Cette action demande {count} crédits. Il t’en reste {left}.' },
@@ -74,36 +74,36 @@ export const credits = {
   'cr.out.later': 'Plus tard',
   'cr.out.myCredits': 'Voir mes crédits',
 
-  'cr.ai.cta': { one: 'Analyser avec HOMI IA — {count} crédit', other: 'Analyser avec HOMI IA — {count} crédits' },
-  'cr.ai.confirmTitle': 'Analyser avec HOMI IA ?',
+  'cr.ai.cta': { one: 'Analyser avec HOMI Aura — {count} crédit', other: 'Analyser avec HOMI Aura — {count} crédits' },
+  'cr.ai.confirmTitle': 'Analyser avec HOMI Aura ?',
   'cr.ai.confirmBody': { one: 'Cette analyse utilise {count} crédit. Il t’en restera {after}. Les informations nécessaires sont envoyées à notre service d’IA pour cette analyse seulement.', other: 'Cette analyse utilise {count} crédits. Il t’en restera {after}. Les informations nécessaires sont envoyées à notre service d’IA pour cette analyse seulement.' },
   'cr.ai.confirm': { one: 'Analyser ({count} crédit)', other: 'Analyser ({count} crédits)' },
   'cr.ai.cancel': 'Annuler',
   'cr.ai.loading': 'Analyse en cours…',
   'cr.ai.error': 'L’analyse n’a pas abouti. Aucun crédit n’a été utilisé.',
   'cr.ai.retry': 'Réessayer',
-  'cr.ai.off': 'HOMI IA est momentanément indisponible. L’outil fonctionne normalement sans elle.',
-  'cr.ai.soon': 'Analyse HOMI IA : bientôt disponible',
-  'cr.ai.premium': 'HOMI IA fait partie de Premium',
+  'cr.ai.off': 'HOMI Aura est momentanément indisponible. L’outil fonctionne normalement sans elle.',
+  'cr.ai.soon': 'Analyse HOMI Aura : bientôt disponible',
+  'cr.ai.premium': 'HOMI Aura fait partie de Premium',
   'cr.ai.done': { one: 'Analyse terminée : {count} crédit utilisé.', other: 'Analyse terminée : {count} crédits utilisés.' },
 
   'cr.demo.title': 'Essayer (démonstration)',
   'cr.demo.body': 'Démonstration : aucune IA n’est appelée. Le bouton consomme des crédits de démonstration pour montrer le solde qui bouge.',
 
-  'cr.err.aiOff': 'HOMI IA est momentanément indisponible.',
-  'cr.err.premium': 'HOMI IA fait partie de HOMI Premium.',
+  'cr.err.aiOff': 'HOMI Aura est momentanément indisponible.',
+  'cr.err.premium': 'HOMI Aura fait partie de HOMI Premium.',
   'cr.err.unknown': 'Action inconnue.',
   'cr.err.insufficient': 'Tu n’as plus assez de crédits pour cette action.',
-  'cr.legacy.noSale': 'Cette offre n’est plus proposée. HOMI Premium inclut désormais des crédits HOMI IA.',
+  'cr.legacy.noSale': 'Cette offre n’est plus proposée. HOMI Premium inclut désormais des crédits HOMI Aura.',
 
-  'cr.sub.title': 'Crédits HOMI IA',
+  'cr.sub.title': 'Crédits HOMI Aura',
   'cr.sub.premium': { one: 'Premium : {count} crédit par mois, pour toi et l’autre adulte inclus.', other: 'Premium : {count} crédits par mois, pour toi et l’autre adulte inclus.' },
   'cr.sub.family': { one: 'Famille : {count} crédit par mois, en commun pour les adultes du foyer.', other: 'Famille : {count} crédits par mois, en commun pour les adultes du foyer.' },
   'cr.sub.rules': 'Les crédits mensuels se renouvellent avec l’abonnement et ne sont pas reportés d’un mois sur l’autre. Si tu les épuises, des packs de crédits sont proposés.',
   'cr.sub.link': 'Mes crédits',
 
   'fam.title': 'HOMI Famille',
-  'fam.body': { one: 'Le même Premium pour tous les adultes du foyer (parents et co-parents), et {count} crédit HOMI IA par mois en commun.', other: 'Le même Premium pour tous les adultes du foyer (parents et co-parents), et {count} crédits HOMI IA par mois en commun.' },
+  'fam.body': { one: 'Le même Premium pour tous les adultes du foyer (parents et co-parents), et {count} crédit HOMI Aura par mois en commun.', other: 'Le même Premium pour tous les adultes du foyer (parents et co-parents), et {count} crédits HOMI Aura par mois en commun.' },
   'fam.nanny': 'Une nounou invitée garde son accès aux écrans de garde, sans recevoir Premium.',
   'fam.price': '{price} par mois',
   'fam.cta': 'Choisir Famille — {price} par mois',

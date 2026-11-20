@@ -1,4 +1,4 @@
-# Crédits HOMI IA — règles, grand livre, achats, mise en service
+# Crédits HOMI Aura — règles, grand livre, achats, mise en service
 
 État au 26/11/2026. Ce document décrit ce que le code fait **réellement** et ce que la propriétaire doit créer dans les
 consoles. L'assistant en ligne reste **éteint** (aucune clé Gemini n'existe) : tout a été testé avec des doubles
@@ -70,7 +70,7 @@ webhook, jamais d'après l'application), à la lecture du solde, à la réserve,
 | Action | Coût | Branché aujourd'hui |
 |---|---|---|
 | `assistant_question` — question à l'assistant | 1 | **Oui** (fonction `assistant`) |
-| `tool_analysis` — « Analyser avec HOMI IA » sur un outil | 3 | Bouton prêt (`AnalyzeWithAI`), posé sur aucun outil |
+| `tool_analysis` — « Analyser avec HOMI Aura » sur un outil | 3 | Bouton prêt (`AnalyzeWithAI`), posé sur aucun outil |
 | `journal_summary` — synthèse de journaux choisis | 5 | Non (fonction à écrire) |
 | `action_plan` — plan d'action | 3 | Non |
 | `document_read` — lecture d'un document | 5 | Non : `document-read` reste « Premium + limite horaire » |
@@ -78,7 +78,7 @@ webhook, jamais d'après l'application), à la lecture du solde, à la réserve,
 | `cycle_photo` — analyse d'une photo | 3 | Non : `cycle-photo` idem |
 | `community_summary` — résumé / traduction d'une discussion | 1 | Non : `community-ai` idem |
 
-Les coûts sont affichés **avant** toute action (bouton « Analyser avec HOMI IA — 3 crédits », confirmation) et lus sur
+Les coûts sont affichés **avant** toute action (bouton « Analyser avec HOMI Aura — 3 crédits », confirmation) et lus sur
 le serveur (`credits_config`). Les fonctions d'analyse existantes ne débitent pas encore : les brancher demande, dans
 chacune, le même schéma que l'assistant (réserve → appel → débit si livré / restitution), décision laissée à la
 propriétaire (§ 12).
@@ -150,7 +150,7 @@ l'absence de crédits). Après l'achat d'un pack, l'application attend que le **
 « vos crédits arrivent ». Un consommable ne se « restaure » pas : le solde est gardé par le serveur (l'écran le dit).
 
 **Démonstration** : faux magasin (`demo_credit_purchase`), octroi à l'abonnement simulé, bouton d'essai « Analyser avec
-HOMI IA » sur « Mes crédits » (aucune IA appelée, crédits de démonstration), `demo_credit_adjust` pour fixer un solde.
+HOMI Aura » sur « Mes crédits » (aucune IA appelée, crédits de démonstration), `demo_credit_adjust` pour fixer un solde.
 
 ## 6. Scénarios de test Sandbox (iPhone, après mise en service)
 
@@ -179,7 +179,7 @@ HOMI IA » sur « Mes crédits » (aucune IA appelée, crédits de démonstratio
    1 500 crédits IA par mois partagés ».
 2. **Achats intégrés consommables** (Monétisation › Achats intégrés › + › **Consommable**) :
    `homi_credits_300` (3,99 €), `homi_credits_800` (8,99 €), `homi_credits_2000` (19,99 €) ; nom affiché « 300 crédits
-   HOMI IA »… ; description « Crédits pour les analyses HOMI IA. Nécessite un abonnement HOMI Premium ou Famille. Les
+   HOMI Aura »… ; description « Crédits pour les analyses HOMI Aura. Nécessite un abonnement HOMI Premium ou Famille. Les
    crédits achetés n'expirent pas. » ; capture de la feuille « Vous n'avez plus de crédits ».
 3. Fiche App Store : mentionner les achats intégrés ; **App Privacy** : données envoyées à Google (Gemini) quand l'IA
    sera ouverte.
@@ -229,7 +229,7 @@ Les outils classiques ne dépendent **jamais** de l'IA : chaque fonction Gemini 
 (explication par règles du scanner, saisie manuelle des documents, etc.), et `AnalyzeWithAI` coupé laisse l'outil
 entier (`cr.ai.off`). Rien d'autre ne lit la clé Gemini.
 
-## 11. Où poser « Analyser avec HOMI IA » (non posé : à décider)
+## 11. Où poser « Analyser avec HOMI Aura » (non posé : à décider)
 
 `<AnalyzeWithAI action="tool_analysis" run={({ requestId }) => backend.invoke('…', { request_id: requestId, … })} />`
 (`src/features/credits/AnalyzeWithAI.tsx`) — chaque pose demande une fonction serveur qui réserve / débite comme

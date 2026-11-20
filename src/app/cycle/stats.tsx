@@ -83,7 +83,7 @@ export default function StatsScreen() {
           {s.wellbeing.days ? <Ink variant="caption" soft>{tr('cy.st.basedOn', { count: s.wellbeing.days })}</Ink> : null}
         </Glass>
       </Rise>
-      {/* « Analyser avec HOMI IA » : moyennes descriptives seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
+      {/* « Analyser avec HOMI Aura » : moyennes descriptives seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
       <AuraAnalysis kind="cycle" data={cycleAggregate(s)} />
       </View>
       </PremiumSection>

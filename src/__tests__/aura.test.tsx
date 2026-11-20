@@ -113,7 +113,7 @@ describe('Aura : modèle', () => {
   });
 });
 
-describe('Analyser avec HOMI IA : agrégats minimisés', () => {
+describe('Analyser avec HOMI Aura : agrégats minimisés', () => {
   const now = new Date('2026-11-20T12:00:00Z');
   it('humeur : comptes et mots-clés, aucun texte', () => {
     const a = moodAggregate([mood('a', 1, 2, 'Je suis triste'), mood('b', 3, 4), mood('c', 60, 1)], now)!;

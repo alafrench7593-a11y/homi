@@ -1,5 +1,5 @@
 /**
- * Bouton générique « Analyser avec HOMI IA — X crédits », prêt à poser sur un outil (il n'est posé sur AUCUN écran
+ * Bouton générique « Analyser avec HOMI Aura — X crédits », prêt à poser sur un outil (il n'est posé sur AUCUN écran
  * d'outil pour l'instant : voir docs/CREDITS_IA.md § Où poser le bouton).
  *
  *  - le coût vient de la configuration du serveur (credit_settings) et est affiché AVANT tout consentement ;

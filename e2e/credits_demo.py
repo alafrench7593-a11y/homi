@@ -1,5 +1,5 @@
 """
-Crédits HOMI IA (26/11/2026) — version web de DÉMONSTRATION (« Découvrir sans compte » : faux magasin, aucun paiement,
+Crédits HOMI Aura (26/11/2026) — version web de DÉMONSTRATION (« Découvrir sans compte » : faux magasin, aucun paiement,
 aucune IA appelée ; StoreKit / RevenueCat / Gemini réels NON testables ici, voir docs/CREDITS_IA.md § 6) :
   sans abonnement (aucun crédit, aucun pack), page d'abonnement avec la carte HOMI Famille (prix de la grille de
   démonstration, renouvellement visible, crédits expliqués sans promesse), achat simulé de Famille (1 500 crédits),
@@ -110,7 +110,7 @@ def run(b, width, height, first):
     # 1) Sans abonnement : aucun crédit, aucun pack
     go(pg, '/settings/credits')
     if first:
-        R['sans_abonnement_aucun_credit'] = has(pg, 'credits-nosub') and 'Sans abonnement, il n’y a pas de crédits HOMI IA' in T(pg) and not has(pg, 'credits-packs')
+        R['sans_abonnement_aucun_credit'] = has(pg, 'credits-nosub') and 'Sans abonnement, il n’y a pas de crédits HOMI Aura' in T(pg) and not has(pg, 'credits-packs')
         R['sans_abonnement_1000_1500'] = '1 000 crédits par mois' in T(pg) and '1 500 crédits par mois' in T(pg)
 
     # 2) Page d'abonnement : carte Famille, crédits expliqués, aucune ancienne offre
@@ -120,7 +120,7 @@ def run(b, width, height, first):
     if first:
         R['famille_prix_grille'] = text_of(pg, 'family-price') == '19,99 € par mois'
         R['famille_renouvellement_visible'] = 'renouvelé automatiquement' in text_of(pg, 'family-renewal')
-        R['famille_explique'] = 'tous les adultes du foyer' in text_of(pg, 'family-offer') and '1 500 crédits HOMI IA par mois en commun' in text_of(pg, 'family-offer')
+        R['famille_explique'] = 'tous les adultes du foyer' in text_of(pg, 'family-offer') and '1 500 crédits HOMI Aura par mois en commun' in text_of(pg, 'family-offer')
         R['credits_sans_promesse'] = 'pas encore ouverte' in text_of(pg, 'credits-info') and 'Premium : 1 000 crédits par mois' in text_of(pg, 'credits-info')
         R['anciennes_offres_absentes'] = not has(pg, 'offer-ai') and not has(pg, 'offer-tools') and 'Assistant IA' not in txt
     R[f'debordement_abonnement_{w}'] = len(detect(pg, f'abonnement_{w}')) == 0
@@ -144,7 +144,7 @@ def run(b, width, height, first):
     # 5) Analyse d'essai : coût affiché avant, confirmation, solde qui bouge
     btn = text_of(pg, 'credits-demo-analyze-button')
     if first:
-        R['cout_affiche_avant'] = 'Analyser avec HOMI IA — 3 crédits' in btn
+        R['cout_affiche_avant'] = 'Analyser avec HOMI Aura — 3 crédits' in btn
     scroll_to(pg, 'credits-demo-analyze-button')
     vis(pg, 'credits-demo-analyze-button').first.click(); pg.wait_for_timeout(1200)
     if first:

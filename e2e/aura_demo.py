@@ -5,7 +5,7 @@ docs/HOMI_AURA.md § 11) :
   consentement avant la première question, coût affiché AVANT, conversation, cartes d'action, événement ajouté
   SEULEMENT après la feuille de confirmation, crédit débité (solde qui baisse de 1), détresse gratuite et immédiate,
   repli LOCAL honnête (outils et articles, sans IA), 174 traducteur émotionnel (brouillon de « Se comprendre »),
-  200 découverte (visite guidée), « Analyser avec HOMI IA » sur l'humeur (aperçu + accord), Réduire les animations,
+  200 découverte (visite guidée), « Analyser avec HOMI Aura » sur l'humeur (aperçu + accord), Réduire les animations,
   débordements (e2e/audit_ux_detect.js). Captures 390 × 844 et 320 × 568, clair et sombre : aura_<écran>_<largeur>_<thème>.png.
 
   npx expo export --platform web --clear --output-dir <dossier>/dist        # SANS EXPO_PUBLIC_SUPABASE_URL : démo seule
@@ -177,7 +177,7 @@ def run(b, width, height, scheme, first):
         R['200_visite_guidee'] = has(pg, 'aura-tour')
     shoot(pg, f'aura_200_{k}')
 
-    # 7) « Analyser avec HOMI IA » sur l'humeur : aperçu + accord
+    # 7) « Analyser avec HOMI Aura » sur l'humeur : aperçu + accord
     go(pg, '/me/mood', 4000)
     if has(pg, 'mood-3'):
         vis(pg, 'mood-3').first.click(); pg.wait_for_timeout(600)
@@ -191,7 +191,7 @@ def run(b, width, height, scheme, first):
     if sw.count():
         sw.first.click(); pg.wait_for_timeout(600)
     if first:
-        R['analyse_cout_affiche'] = 'Analyser avec HOMI IA — 3 crédits' in text_of(pg, 'aura-analysis-mood-ai-button')
+        R['analyse_cout_affiche'] = 'Analyser avec HOMI Aura — 3 crédits' in text_of(pg, 'aura-analysis-mood-ai-button')
     scroll_to(pg, 'aura-analysis-mood')
     shoot(pg, f'aura_analyse_humeur_{k}')
     if has(pg, 'aura-analysis-mood-ai-button'):
