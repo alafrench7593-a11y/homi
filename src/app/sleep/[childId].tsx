@@ -20,6 +20,7 @@ import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { BarChart } from '@/components/Charts';
 import { PremiumSection } from '@/components/Premium';
+import { AuraSleepAnalysis } from '@/features/aura/AuraAnalysis';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
@@ -101,6 +102,8 @@ function PlannerBody({ child, tab, setTab }: { child: Child; tab: Tab; setTab: (
       {tab === 'profile' ? <ProfileTab child={child} profile={profile} /> : null}
       {tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
       {tab === 'trends' ? <TrendsTab child={child} data={data} /> : null}
+      {/* « Analyser avec HOMI IA » : moyennes de la semaine, âge en mois, après aperçu et accord (docs/HOMI_AURA.md) */}
+      {tab === 'trends' ? <AuraSleepAnalysis child={child} /> : null}
       {tab === 'safety' ? <SafetyTab child={child} data={data} /> : null}
       <Banner tone="info">{tr('u4.sp.banner')}</Banner>
     </Screen>

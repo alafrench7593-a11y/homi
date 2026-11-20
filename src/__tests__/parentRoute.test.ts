@@ -12,7 +12,8 @@ it('remonte à l’écran parent existant', () => {
   expect(parentRoute('/pregnancy/calendar')).toBe('/pregnancy');
   expect(parentRoute('/settings/language?x=1')).toBe('/settings');
   expect(parentRoute('/article/reflux')).toBe('/library');
-  expect(parentRoute('/assistant/chat')).toBe('/ask');
+  // HOMI Aura (20/11/2026) : /assistant est l'écran d'Aura, parent de la conversation historique
+  expect(parentRoute('/assistant/chat')).toBe('/assistant');
   expect(parentRoute('/sleep/abc')).toBe('/baby');
   expect(parentRoute('/today')).toBe('/');
   expect(parentRoute('/')).toBe('/');

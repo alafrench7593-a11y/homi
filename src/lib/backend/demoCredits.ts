@@ -78,8 +78,8 @@ export function createCredits(c: CreditsCtx) {
     return a;
   }
 
-  /** Réserve (mensuels d'abord) → débit immédiat : en démonstration le « résultat » est livré sur l'appareil. */
-  function spend(action: CreditAction): Row {
+  /** Réserve (mensuels d'abord), comme credits_reserve : refus « insufficient_credits » si le solde ne couvre pas le coût. */
+  function reserve(action: CreditAction): { reservation_id: string; cost: number; monthly_remaining: number; purchased_remaining: number } {
     const me = c.me();
     if (!me) throw new BackendError(tr('l2.dm.signinDot'), '42501');
     const s = settings();
@@ -93,11 +93,41 @@ export function createCredits(c: CreditsCtx) {
     const p = cost - m;
     if (p > a.purchased_balance) throw new BackendError(tr('cr.err.insufficient'), 'insufficient_credits', undefined, 402);
     const rid = c.uuid();
-    T('credit_reservations').push({ id: rid, account_id: a.id, user_id: me, action, cost, from_monthly: m, from_purchased: p, status: 'committed', created_at: c.nowIso() });
+    T('credit_reservations').push({ id: rid, account_id: a.id, user_id: me, action, cost, from_monthly: m, from_purchased: p, status: 'held', created_at: c.nowIso() });
     ledger(a, 'reserve', -m, -p, { action, reservation_id: rid });
-    T('credit_ledger').push({ id: c.uuid(), account_id: a.id, actor_id: me, kind: 'debit', amount: -cost, monthly_delta: 0, purchased_delta: 0, action,
+    return { reservation_id: rid, cost, monthly_remaining: a.monthly_balance, purchased_remaining: a.purchased_balance };
+  }
+
+  /** Débit définitif (résultat livré), comme credits_commit ; idempotent. */
+  function commit(rid: string): boolean {
+    const r = T('credit_reservations').find((x) => x.id === rid);
+    if (!r) return false;
+    if (r.status === 'committed') return true;
+    if (r.status !== 'held') return false;
+    r.status = 'committed';
+    T('credit_ledger').push({ id: c.uuid(), account_id: r.account_id, actor_id: r.user_id, kind: 'debit', amount: -r.cost, monthly_delta: 0, purchased_delta: 0, action: r.action,
       product_id: null, reservation_id: rid, created_at: new Date(Date.now() + 1).toISOString() });
-    return { ok: true, cost };
+    return true;
+  }
+
+  /** Restitution (échec, réponse refusée), comme credits_release : le solde revient tel qu'avant la réserve. */
+  function release(rid: string, reason: string): boolean {
+    const r = T('credit_reservations').find((x) => x.id === rid);
+    if (!r) return false;
+    if (r.status === 'released') return true;
+    if (r.status !== 'held') return false;
+    const a = T('credit_accounts').find((x) => x.id === r.account_id);
+    if (!a) return false;
+    r.status = 'released';
+    ledger(a, 'release', r.from_monthly, r.from_purchased, { action: r.action, reservation_id: rid, meta: { reason } });
+    return true;
+  }
+
+  /** Réserve → débit immédiat : en démonstration le « résultat » est livré sur l'appareil. */
+  function spend(action: CreditAction): Row {
+    const r = reserve(action);
+    commit(r.reservation_id);
+    return { ok: true, cost: r.cost };
   }
 
   function status(): Row | null {
@@ -166,5 +196,5 @@ export function createCredits(c: CreditsCtx) {
     },
   };
 
-  return { rpcs, grant, spend, status, settings };
+  return { rpcs, grant, spend, reserve, commit, release, status, settings };
 }

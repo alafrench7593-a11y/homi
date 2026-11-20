@@ -17,6 +17,8 @@ import { Bars } from '@/features/cycle/Bars';
 import { fmtDay } from '@/features/cycle/format';
 import { formatNumber, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
+import { cycleAggregate } from '@/features/aura/analysis';
 
 export default function StatsScreen() {
   const c = useCyclePalette();
@@ -81,6 +83,8 @@ export default function StatsScreen() {
           {s.wellbeing.days ? <Ink variant="caption" soft>{tr('cy.st.basedOn', { count: s.wellbeing.days })}</Ink> : null}
         </Glass>
       </Rise>
+      {/* « Analyser avec HOMI IA » : moyennes descriptives seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
+      <AuraAnalysis kind="cycle" data={cycleAggregate(s)} />
       </View>
       </PremiumSection>
       <Ink variant="caption" soft>{tr('cy.st.notice')}</Ink>

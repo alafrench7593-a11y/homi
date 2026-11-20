@@ -36,6 +36,7 @@ import { createAbsents, PERSONAL_TABLES } from './demoAbsents';
 import { createChildcare } from './demoChildcare';
 import { createStocks } from './demoStocks';
 import { createCredits } from './demoCredits';
+import { createAuraDemo } from './demoAura';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -506,6 +507,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     activeSub: (u) => { const s = T('subscriptions').find((r) => r.user_id === u); return grants(s as never) ? (s as Row) : null; },
     giver: () => premiumGiver(),
   });
+  // HOMI Aura : même déroulé que le serveur (runAura), crédits de démonstration, modèle simulé (aucune IA)
+  const aura = createAuraDemo({ T, me: () => state.session?.userId, credits });
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
@@ -1694,7 +1697,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   };
 
   const functions: Record<string, (b: Row) => unknown> = {
-    assistant: (b) => assistantCore(b).result,
+    assistant: (b) => (b.mode === 'aura' ? aura(b) : assistantCore(b).result),
     // Communauté (Premium) : en démonstration, pas d'IA — des extraits des réponses, présentés comme tels
     'community-ai': (b) => {
       if (!isPremium()) throw new BackendError('Fonction Premium (community_ai)', 'P0001', 'premium_required');

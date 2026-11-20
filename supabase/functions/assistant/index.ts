@@ -20,7 +20,8 @@
 // Journaux : jamais le texte d'une question ni d'une réponse (codes d'état seulement).
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { readJsonBody } from '../_shared/body.ts';
-import { geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { geminiGenerate, geminiGenerateTurn, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { runAura } from '../_shared/aura-run.ts';
 import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { billedSseStream, ClientGone, requestKey, reserveRefusal, settle, type CreditsGate, type ReserveResult } from '../_shared/credits.ts';
 import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
@@ -54,6 +55,24 @@ const CAUTIOUS_ANSWER: StructuredAnswer = {
   updated_on: null,
 };
 
+/** Grand livre des crédits (RPC service_role) : réserve → débit si livré, restitution sinon. */
+function creditsGate(admin: ReturnType<typeof adminClient>, userId: string): CreditsGate {
+  return {
+    reserve: async (action, key) => {
+      const { data, error } = await admin.rpc('credits_reserve', { p_user: userId, p_action: action, p_idempotency_key: key });
+      return (error || !data ? { ok: false, error: 'server_error' } : data) as ReserveResult;
+    },
+    commit: async (id) => {
+      const { data, error } = await admin.rpc('credits_commit', { p_user: userId, p_reservation: id });
+      return !error && (data as { ok?: boolean } | null)?.ok === true;
+    },
+    release: async (id, reason) => {
+      const { data, error } = await admin.rpc('credits_release', { p_user: userId, p_reservation: id, p_reason: reason });
+      return !error && (data as { ok?: boolean } | null)?.ok === true;
+    },
+  };
+}
+
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   // Assistant IA « Bientôt disponible » (09/11/2026, src/config/features.ts) : aucun appel à l'IA tant que le secret
@@ -78,6 +97,24 @@ Deno.serve(withCors(async (req) => {
   const raw = await readJsonBody(req, 256 * 1024);
   if (!raw) return json({ error: 'too_large' }, 413);
   body = raw;
+
+  // HOMI Aura (docs/HOMI_AURA.md) : déroulé complet dans _shared/aura-run.ts, testé avec un Gemini simulé.
+  // Ordre : sécurité → consentement → crédits → Gemini (fonctions de la liste blanche, propositions jamais exécutées ici).
+  const mode = (raw as { mode?: unknown }).mode;
+  if (mode === 'aura') {
+    const out = await runAura({
+      userId: user.id,
+      consented: async () => {
+        const { data } = await db.from('consents').select('granted').eq('user_id', user.id).eq('purpose', 'ai_assistant').order('created_at', { ascending: false }).limit(1).maybeSingle();
+        return data?.granted === true;
+      },
+      geminiConfig: () => enabledGeminiConfig(admin),
+      gate: creditsGate(admin, user.id),
+      turn: (cfg, o) => geminiGenerateTurn(cfg, o),
+      log: (code) => console.error(code), // codes seulement, jamais un texte
+    }, raw);
+    return json(out.body, out.status);
+  }
   const message = (typeof body.message === 'string' ? body.message : '').trim();
   if (message.length < 2 || message.length > MAX_QUESTION_LENGTH) {
     return json({ error: 'bad_request', message: `La question doit contenir entre 2 et ${MAX_QUESTION_LENGTH.toLocaleString('fr-FR')} caractères.` }, 400);
@@ -181,20 +218,7 @@ Deno.serve(withCors(async (req) => {
   const gemini = geminiOrNull;
 
   // 4) Crédits : réserve atomique côté serveur (Premium strict : sans abonnement, aucun crédit)
-  const gate: CreditsGate = {
-    reserve: async (action, key) => {
-      const { data, error } = await admin.rpc('credits_reserve', { p_user: user.id, p_action: action, p_idempotency_key: key });
-      return (error || !data ? { ok: false, error: 'server_error' } : data) as ReserveResult;
-    },
-    commit: async (id) => {
-      const { data, error } = await admin.rpc('credits_commit', { p_user: user.id, p_reservation: id });
-      return !error && (data as { ok?: boolean } | null)?.ok === true;
-    },
-    release: async (id, reason) => {
-      const { data, error } = await admin.rpc('credits_release', { p_user: user.id, p_reservation: id, p_reason: reason });
-      return !error && (data as { ok?: boolean } | null)?.ok === true;
-    },
-  };
+  const gate: CreditsGate = creditsGate(admin, user.id);
   const reservation = await gate.reserve('assistant_question', requestKey('assistant', user.id, body.request_id));
   const refusal = reserveRefusal(reservation);
   if (refusal) return json(refusal.body, refusal.status);

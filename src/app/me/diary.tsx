@@ -19,6 +19,7 @@ import { capitalize, ComposerAction, EntryRow, MoodOrbs, SaveResult, SupportBann
 import { Reveal } from '@/motion';
 import { useDiaryPage } from '@/features/mood/useMoodJournal';
 import { useMoods } from '@/lib/data/hooks';
+import { AuraDiaryAnalysis } from '@/features/aura/AuraAnalysis';
 import { diaryPages, groupByMonth } from '@/lib/domain/diary';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, spacing, typography } from '@/theme/tokens';
@@ -87,6 +88,9 @@ export default function Diary() {
       {loading ? <Skeleton rows={3} /> : null}
       {failed ? <ErrorView error={moodsQ.error} onRetry={() => void moodsQ.refetch()} title={tr('dy.listErr')} /> : null}
       {!loading && !failed && !pages.length ? <EmptyState icon="book-open" title={tr('dy.none')} body={tr('dy.noneBody')} /> : null}
+
+      {/* Synthèse HOMI IA des SEULES pages cochées par la personne, après accord (docs/HOMI_AURA.md) */}
+      {!loading && !failed && pages.length ? <AuraDiaryAnalysis pages={pages} /> : null}
 
       {months.map((mo) => (
         <View key={mo.key} style={{ gap: spacing.sm }}>

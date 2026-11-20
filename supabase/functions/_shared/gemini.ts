@@ -8,6 +8,8 @@
  *   En-tête : x-goog-api-key
  */
 
+import { GeminiError } from './gemini-error.ts';
+
 export const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash-lite';
 /** Délai maximal d'un appel à Gemini (au-delà : erreur « indisponible », question rendue). */
@@ -34,10 +36,30 @@ export interface GeminiRequestOptions {
   maxOutputTokens?: number;
   /** Réponse JSON contrainte par un schéma (OpenAPI 3 subset). */
   responseSchema?: Record<string, unknown>;
+  /**
+   * Appel de fonctions (« function calling ») : déclarations proposées au modèle. Le modèle ne fait que DEMANDER un
+   * appel ; c'est le serveur qui décide (liste blanche, src : _shared/aura-tools.ts).
+   */
+  functions?: GeminiFunctionDeclaration[];
+  /**
+   * Contenus bruts déjà construits (tour d'appel de fonction : les parties renvoyées par le modèle sont recopiées
+   * TELLES QUELLES, signatures de pensée comprises, puis la réponse de la fonction). Remplace `turns` s'il est fourni.
+   */
+  contents?: GeminiContent[];
 }
 
+/** Déclaration d'une fonction proposée au modèle (schéma OpenAPI 3, sous-ensemble accepté par Gemini). */
+export interface GeminiFunctionDeclaration {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+}
+export type GeminiPart = Record<string, unknown>;
+export interface GeminiContent { role: 'user' | 'model'; parts: GeminiPart[] }
+export interface GeminiFunctionCall { name: string; args: Record<string, unknown> }
+
 export function buildGeminiBody(o: GeminiRequestOptions): Record<string, unknown> {
-  const contents = o.turns.map((t, i) => {
+  const contents = o.contents ?? o.turns.map((t, i) => {
     const parts: Record<string, unknown>[] = [{ text: t.text }];
     // Les images accompagnent le dernier message de l'utilisatrice
     if (i === o.turns.length - 1 && t.role === 'user') for (const img of o.images ?? []) parts.push({ inlineData: { mimeType: img.mimeType, data: img.base64 } });
@@ -48,12 +70,17 @@ export function buildGeminiBody(o: GeminiRequestOptions): Record<string, unknown
     generationConfig.responseMimeType = 'application/json';
     generationConfig.responseSchema = o.responseSchema;
   }
-  return { systemInstruction: { parts: [{ text: o.system }] }, contents, generationConfig };
+  const body: Record<string, unknown> = { systemInstruction: { parts: [{ text: o.system }] }, contents, generationConfig };
+  if (o.functions?.length) {
+    body.tools = [{ functionDeclarations: o.functions }];
+    // AUTO : le modèle choisit de répondre en texte ou de demander une fonction de la liste (jamais une autre)
+    body.toolConfig = { functionCallingConfig: { mode: 'AUTO' } };
+  }
+  return body;
 }
 
-export class GeminiError extends Error {
-  constructor(message: string, public status: number, public blocked = false) { super(message); }
-}
+// Classe d'erreur dans un module à part (partagé avec l'application sans le client Gemini), ré-exportée ici
+export { GeminiError };
 
 /** Extrait le texte d'une réponse generateContent (ou d'un fragment de flux). */
 export function geminiText(payload: unknown): { text: string; finishReason: string | null; blocked: boolean } {
@@ -79,6 +106,38 @@ export async function geminiGenerate(cfg: GeminiConfig, o: GeminiRequestOptions,
   const out = geminiText(await res.json());
   if (out.blocked) throw new GeminiError('Réponse bloquée par les filtres de sécurité', 200, true);
   return out.text;
+}
+
+/** Résultat d'un tour : texte, appels de fonction demandés, et parties brutes du modèle (à renvoyer telles quelles). */
+export interface GeminiTurnResult { text: string; calls: GeminiFunctionCall[]; parts: GeminiPart[]; finishReason: string | null }
+
+/** Lit un tour generateContent qui peut contenir des appels de fonction. */
+export function geminiTurn(payload: unknown): GeminiTurnResult & { blocked: boolean } {
+  const base = geminiText(payload);
+  const p = payload as { candidates?: { content?: { parts?: GeminiPart[] } }[] };
+  const parts = (p?.candidates?.[0]?.content?.parts ?? []).filter((x) => x && typeof x === 'object');
+  const calls: GeminiFunctionCall[] = [];
+  for (const part of parts) {
+    const fc = part.functionCall as { name?: unknown; args?: unknown } | undefined;
+    if (fc && typeof fc.name === 'string') calls.push({ name: fc.name, args: fc.args && typeof fc.args === 'object' ? (fc.args as Record<string, unknown>) : {} });
+  }
+  // Texte : seulement les parties de texte qui ne sont pas des « pensées »
+  const text = parts.filter((x) => typeof x.text === 'string' && x.thought !== true).map((x) => x.text as string).join('');
+  return { text, calls, parts, finishReason: base.finishReason, blocked: base.blocked };
+}
+
+/** Un tour non diffusé, avec appel de fonction possible. */
+export async function geminiGenerateTurn(cfg: GeminiConfig, o: GeminiRequestOptions, fetchImpl: typeof fetch = fetch): Promise<GeminiTurnResult> {
+  const res = await fetchImpl(`${GEMINI_BASE}/models/${encodeURIComponent(cfg.model)}:generateContent`, {
+    method: 'POST',
+    headers: { 'x-goog-api-key': cfg.apiKey, 'content-type': 'application/json' },
+    body: JSON.stringify(buildGeminiBody(o)),
+    signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+  }).catch((e) => { throw new GeminiError(`Gemini ${(e as Error).name === 'TimeoutError' ? 'timeout' : 'network'}`, 504); });
+  if (!res.ok) throw new GeminiError(`Gemini ${res.status}`, res.status);
+  const out = geminiTurn(await res.json());
+  if (out.blocked) throw new GeminiError('Réponse bloquée par les filtres de sécurité', 200, true);
+  return { text: out.text, calls: out.calls, parts: out.parts, finishReason: out.finishReason };
 }
 
 /** Flux SSE : appelle onDelta pour chaque fragment de texte ; renvoie le texte complet. */

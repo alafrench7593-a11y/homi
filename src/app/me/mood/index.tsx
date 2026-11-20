@@ -24,6 +24,8 @@ import { Reveal } from '@/motion';
 import { FEELINGS, NOTE_MAX, weekSummary } from '@/features/mood/model';
 import { useMoodCheckin } from '@/features/mood/useMoodJournal';
 import { useMoods } from '@/lib/data/hooks';
+import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
+import { moodAggregate } from '@/features/aura/analysis';
 import type { MoodCheckin } from '@/lib/types';
 import { useMotion } from '@/motion/useMotion';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
@@ -119,6 +121,9 @@ export default function MoodScreen() {
                   onPress={() => router.push('/me/diary')} />
               </View>
             ) : null}
+
+            {/* « Analyser avec HOMI IA » : agrégats du mois seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
+            {!loading && !failed ? <AuraAnalysis kind="mood" data={moodAggregate(moods ?? [])} /> : null}
 
             <SectionTitle title={tr('u8.mood.previous')} />
             {loading ? <Skeleton rows={2} /> : null}

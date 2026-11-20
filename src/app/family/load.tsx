@@ -15,6 +15,9 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { useUserId } from '@/lib/auth';
+import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
+import { loadAggregate } from '@/features/aura/analysis';
 
 const MEASURES: (keyof Omit<LoadRow, 'person'>)[] = ['thought', 'done', 'assigned', 'domains'];
 
@@ -26,6 +29,7 @@ export default function MentalLoad() {
   const rows = mentalLoad(tasks, domains, people.map((p) => p.id));
   const colors = [t.colors.primary, t.colors.lavender, t.colors.gold, t.colors.success];
   const any = rows.some((r) => r.thought + r.done + r.assigned + r.domains > 0);
+  const me = useUserId();
   return (
     <Screen back title={toolName('mental_load')} subtitle={toolBlurb('mental_load')}>
       <Text muted>{tr('cm.load.intro')}</Text>
@@ -52,6 +56,8 @@ export default function MentalLoad() {
         );
       })}
       <Banner tone="info" icon="heart">{tr('cm.load.talk')}</Banner>
+      {/* « Analyser avec HOMI IA » (plan d'action) : comptes « moi / l'autre adulte » et catégories, après accord */}
+      {any ? <AuraAnalysis kind="load" data={loadAggregate(rows, me, tasks as { category?: string | null; created_at: string }[])} /> : null}
       <Button label={toolName('couple_week')} icon="coffee" variant="secondary" onPress={() => router.push('/family/couple')} />
     </Screen>
   );

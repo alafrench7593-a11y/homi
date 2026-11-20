@@ -35,9 +35,10 @@ describe('liens des outils → routes existantes', () => {
     expect(routeExists('/cette-page-nexiste-pas')).toBe(false);
   });
 
-  it('/sleep, /child, /assistant : pas d’index (un lien sans paramètre serait cassé) ; /guide est l’index des guides', () => {
-    for (const p of ['/sleep', '/child', '/assistant']) expect(routeExists(p)).toBe(false);
+  it('/sleep, /child : pas d’index (un lien sans paramètre serait cassé) ; /guide est l’index des guides ; /assistant = HOMI Aura', () => {
+    for (const p of ['/sleep', '/child']) expect(routeExists(p)).toBe(false);
     expect(routeExists('/guide')).toBe(true);
+    expect(routeExists('/assistant')).toBe(true); // HOMI Aura (20/11/2026), entrées /assistant?theme=<id>
   });
 
   it('centre d’outils : /tools et une route par catégorie (dont « Mon compte et réglages »)', () => {
