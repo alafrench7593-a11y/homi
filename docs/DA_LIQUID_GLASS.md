@@ -101,8 +101,9 @@ animée.
 
 ## 6. Aura
 
-`AuraOrb` / `AuraThinkingDots` (`src/features/aura/AuraMark.tsx`) : lentille de verre à trois lumières (lilas,
-corail, lagon) autour d'un éclat blanc à quatre branches. Ouverture : pose + quart de tour de l'éclat (une fois).
+`AuraOrb` / `AuraThinkingDots` (`src/features/aura/AuraMark.tsx`) : lentille de verre bleu de nuit à trois
+lumières (corail, ambre, lagon) autour d'un éclat blanc à quatre branches — d'abord violette, recolorée après le
+scan App Designer (§ 10 : « dégradé violet = signe IA générique »). Ouverture : pose + quart de tour de l'éclat (une fois).
 Préparation d'une réponse : rotation lente des lumières + respiration, trois points de lumière tour à tour (motif
 « status glyph » de Solid Glass) ; s'arrête à l'arrivée de la réponse. L'en-tête d'Aura n'affiche plus de logo
 d'outil (`tool={false}`) : une seule signature. Couleurs `AURA` (`src/theme/toolLogo.ts`).
@@ -123,6 +124,39 @@ opaques et éclairés. Repli : natif iOS 26 → flou → opaque (Réduire la tra
 | Stageshow (github.com/benjitaylor/skills) | README lu (skill non installé) | démos filmées de l'app réelle (`e2e/da_liquid_glass.py`, enregistreur CDP + ffmpeg), hors runtime |
 | Open Design (github.com/nexu-io/open-design) | README lu (outil non installé) | comparaison de deux prototypes sur données fictives (`scripts/da/directions.cjs`) |
 | Solid Glass (github.com/deeplethe/solid-glass) | README lu | verre « solide » : arête claire, épaisseur, ombre douce sur plaques opaques ; trois points de lumière d'Aura |
+
+## 10. Méthode « App Designer » (skill fourni par la propriétaire), appliquée à Expo
+
+| Étape du skill | Appliquée ainsi | Décision visible |
+|---|---|---|
+| 0. Brief | brief de la propriétaire (refonte d'une app existante) ; section « Current app » = audit § 1 | — |
+| Redesign : audit, keep / lose, décisions | captures AVANT réelles (export web) ; tout est gardé (données, droits, traductions, parcours) ; rien de supprimé | liste des décisions laissées à la propriétaire ci-dessous |
+| 1. Pièges (`slop.md`) | lus ; tells trouvés dans l'app : grille de cartes identiques, trio de chiffres en cartes, dégradé violet (Aura), en-tête de salutation, « + » central | tuiles mini-apps, résumé à filets, Aura recolorée ; salutation et « + » listés comme décisions |
+| 2. Directions par exploration | DEUX directions (demande de la propriétaire) sur les mêmes éléments, sol clair ET sombre, matières différentes (plaques opaques teintées / verre clair) ; pas de troisième : la marque (symbole encre, palettes, Manrope) est fixée par la propriétaire, une 3ᵉ typographie ou un 3ᵉ sol n'étaient pas des options honnêtes | A « verre minéral » retenue (§ 2) |
+| Défaut de catégorie refusé | apps parentales : pastel crème + illustrations de bébés + cartes empilées | plaques de couleur franche par catégorie, logos-objets, une surface de lecture par outil |
+| Richesse | matière et couleur (plaques de verre minéral, lentille de l'icône, halos) — pas de gris sur papier | logos sur tout l'accueil, le catalogue et les en-têtes |
+| Signature | storyboard : (1) appui sur une tuile → la plaque s'enfonce (0,94, ressort vif, haptique léger) ; (2) ouverture → le logo joue sa famille (lune / anneau / courbe / coche / rebond / reflet) ; (3) action confirmée → le logo de l'en-tête rejoue (coche, rebond) ; Réduire les animations : état final immédiat | § 3, vidéo `4-outil.mp4` |
+| 4. Écrans | écrans RÉELS de l'app (pas de maquette) : accueil, catalogue, outil, tâches, Aura, réglages, sombre, 320 pt | captures `apres/` |
+| 5. Shoot, scan, critique | `shoot.mjs` adapté pour scanner l'app réelle (copie hors dépôt : `shoot-live.mjs`, scratchpad) sur 5 routes à 402 × 874 | voir résultats ci-dessous |
+| 6. Itération | r1 → corrections : Aura sans violet, initiale d'avatar ≥ 11 pt ; (avant le scan, 2 tours de captures : goutte de sélection teintée, grille 2 × 2, doublon du symbole) | commit « Aura recolorée » |
+| 7. Build / ship | NON exécuté (consigne) | — |
+
+**Scan r1 (app réelle)** — FAIL réels corrigés : dégradé violet (Aura), texte < 11 pt (initiale d'avatar 10 px).
+FAIL expliqués (faux positifs du scan sur une app RN-web) : « plus de deux familles » = Manrope chargée par graisse
+(4 noms) + police d'icônes Feather ; « texte qui se chevauche / coupé » = contenu qui défile SOUS la barre de verre
+et le pied d'action (voulu : défilement sous le verre), libellés coupés par le cadre 874 du scan ; contraste 3,85:1
+sur « » = pictogramme 20 px (seuil graphique 3:1). Avertissements répondus : 10 tailles de texte (dette connue de
+`typography`, non traitée ici), 4 teintes sur /family (statuts sémantiques : fait, en retard, à faire), éléments
+dans la zone du témoin d'accueil (barre de verre, par conception).
+
+**Décisions laissées à la propriétaire** (changements de structure que le skill classe comme décisions) :
+1. l'en-tête de salutation de l'accueil (« Douce nuit, Camille ») — tell n° 1 du skill : le remplacer par la date et
+   la prochaine chose à faire ?
+2. le bouton central « + » de la barre (tell « FAB centré ») : le garder (choix documenté du 17/11) ou le déplacer
+   dans le contexte de chaque écran ?
+3. Manrope comme unique famille (police par défaut selon le skill) : la garder (identité actuelle) ou choisir une
+   display pour les grands titres ?
+4. la réduction de l'échelle typographique à 6 tailles.
 
 ## 9. Non vérifiable ici
 

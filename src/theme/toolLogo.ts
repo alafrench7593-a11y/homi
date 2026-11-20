@@ -38,7 +38,7 @@ export const LOGO_HUES: Record<LogoCategory, string> = {
   family: '#1F7F86', // sarcelle : organisation du foyer
   community: '#3F6FB8', // bleu ouvert
   account: '#5F6670', // graphite neutre (réglages)
-  aura: '#6B4BD6', // violet d'Aura (voir AURA dans ce fichier)
+  aura: '#2E4466', // Aura : bleu de nuit (scan App Designer : le violet est LE signe « IA générique », refusé)
   urgent: '#C21F2E', // rouge d'urgence : réservé aux urgences
 };
 
@@ -120,15 +120,15 @@ export function glyphContrast(category: LogoCategory, mode: 'light' | 'dark' | '
 
 /**
  * Aura (assistante IA) : signature propre — un noyau de lumière dans une lentille, trois teintes qui tournent
- * lentement (aube, lilas, corail). Couleurs sémantiques de la marque d'Aura, identiques dans les cinq palettes.
+ * lentement (corail, ambre, lagon) sur un bleu de nuit. Couleurs sémantiques de la marque d'Aura, identiques dans les cinq palettes.
  */
 export const AURA = {
   core: '#FFFFFF',
-  hues: ['#7A5CFF', '#FF8A7A', '#4FC3D9'] as const,
-  ring: '#6B4BD6',
+  hues: ['#FF8A6B', '#F5C26B', '#4FC3C9'] as const, // corail, ambre, lagon : la lumière du foyer, jamais de violet
+  ring: '#2E4466',
   ink: '#FFFFFF',
   /** ombre colorée douce sous la lentille (CSS / RN boxShadow) */
-  shadow: '0px 4px 12px rgba(107,75,214,0.35)',
+  shadow: '0px 4px 12px rgba(46,68,102,0.35)',
 } as const;
 
 /** App icon et mot-symbole : fonds de la tuile (clair / sombre) — mêmes valeurs que assets/brand/homi-app-icon*.svg. */

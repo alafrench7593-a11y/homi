@@ -43,7 +43,7 @@ export function AuraAvatar({ size = 40, thinking = false, testID }: { size?: num
 }
 
 /**
- * SIGNATURE D'AURA : une LENTILLE de verre où trois lumières (lilas, corail, lagon) entourent un éclat blanc à quatre
+ * SIGNATURE D'AURA : une LENTILLE de verre où trois lumières (corail, ambre, lagon) sur un bleu de nuit entourent un éclat blanc à quatre
  * branches. Elle réagit :
  *  - à l'ouverture d'Aura : la lentille se pose (0,86 → 1, rebond léger) et l'éclat fait un quart de tour, une fois ;
  *  - pendant la préparation d'une réponse (`thinking`) : les lumières tournent lentement et la lentille respire ;
