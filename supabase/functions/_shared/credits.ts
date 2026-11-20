@@ -3,7 +3,7 @@
  * Jest (src/__tests__/creditsServer.test.ts). Grand livre et règles : supabase/migrations/20261126000100_credits_ia.sql ;
  * documentation : docs/CREDITS_IA.md.
  *
- *  - produits : packs consommables homi_credits_300 | _800 | _2000, formule Famille homi_family_monthly ;
+ *  - produits : packs consommables homi_credits_300 | _800 | _2000, formule Famille homi_family_monthly_v2 ;
  *  - webhook RevenueCat → action sur le grand livre (achat, remboursement, octroi mensuel) ;
  *  - assistant : réserve AVANT l'appel à l'IA, débit seulement si le résultat a été LIVRÉ, restitution sinon
  *    (échec de l'IA, réponse bloquée, diffusion coupée). La sécurité ne passe jamais par ici.
@@ -17,7 +17,7 @@ export const PACK_CREDITS: Record<CreditPackId, number> = { homi_credits_300: 30
 /** Offering RevenueCat des packs. */
 export const CREDITS_OFFERING = 'credits';
 /** Formule Famille : niveau supérieur du groupe d'abonnements « HOMI Premium » (identifiant proposé). */
-export const FAMILY_PRODUCT_IDS = { monthly: 'homi_family_monthly' } as const;
+export const FAMILY_PRODUCT_IDS = { monthly: 'homi_family_monthly_v2' } as const;
 
 export type Tier = 'premium' | 'family';
 

@@ -173,7 +173,7 @@ HOMI IA » sur « Mes crédits » (aucune IA appelée, crédits de démonstratio
 ## 7. À créer par la propriétaire (identifiants exacts — **proposés, à confirmer**)
 
 **App Store Connect** (app HOMI, ASC App ID 6834794892) :
-1. **Abonnement** `homi_family_monthly` — « HOMI Famille » — 1 mois — 19,99 € — dans le groupe **HOMI Premium**, au
+1. **Abonnement** `homi_family_monthly_v2` — « HOMI Famille » — 1 mois — 19,99 € — dans le groupe **HOMI Premium**, au
    **niveau 1** (au-dessus de `homi_premium_annual`) — sans offre de lancement. Localisations FR / EN, capture de la page
    d'abonnement montrant la carte Famille, note de revue : « Famille = même Premium pour tous les adultes du foyer et
    1 500 crédits IA par mois partagés ».
@@ -185,10 +185,10 @@ HOMI IA » sur « Mes crédits » (aucune IA appelée, crédits de démonstratio
    sera ouverte.
 
 **RevenueCat** (projet HOMI) :
-1. Produits : importer `homi_family_monthly`, `homi_credits_300`, `homi_credits_800`, `homi_credits_2000`.
-2. Droit `HOMI_PREMIUM` : y rattacher **aussi** `homi_family_monthly` (la formule est lue sur l'identifiant du produit).
+1. Produits : importer `homi_family_monthly_v2`, `homi_credits_300`, `homi_credits_800`, `homi_credits_2000`.
+2. Droit `HOMI_PREMIUM` : y rattacher **aussi** `homi_family_monthly_v2` (la formule est lue sur l'identifiant du produit).
    Ne rattacher **aucun** droit aux packs.
-3. Offering `default` : ajouter un package personnalisé `family_monthly` → `homi_family_monthly`.
+3. Offering `default` : ajouter un package personnalisé `family_monthly` → `homi_family_monthly_v2`.
 4. Nouvelle offering **`credits`** (non courante) : packages `credits_300`, `credits_800`, `credits_2000`.
 5. Webhook existant : rien à changer (tous les événements, dont `NON_RENEWING_PURCHASE`).
 

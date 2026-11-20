@@ -144,7 +144,7 @@ describe('démonstration : mêmes règles que le serveur', () => {
   });
 
   it('Famille : 1 500 crédits mensuels ; essai : 50', async () => {
-    await backend.rpc('set_demo_subscription', { active: true, period: 'monthly', product_id: 'homi_family_monthly', trial: false });
+    await backend.rpc('set_demo_subscription', { active: true, period: 'monthly', product_id: 'homi_family_monthly_v2', trial: false });
     let s = await status();
     expect([s.tier, s.monthly_remaining, s.monthly_allowance]).toEqual(['family', 1500, 1500]);
     expect((await backend.rpc<{ premium?: boolean }>('my_access'))?.premium).toBe(true);

@@ -94,8 +94,8 @@ const hook = (db: SubscriptionDb, credits: CreditsLedger | null) => (r: Request)
 
 describe('produits', () => {
   it('formule lue sur l’identifiant de produit ; packs reconnus (Google Play : abonnement:offre)', () => {
-    expect(tierOfProduct('homi_family_monthly')).toBe('family');
-    expect(tierOfProduct('homi_family_monthly:base')).toBe('family');
+    expect(tierOfProduct('homi_family_monthly_v2')).toBe('family');
+    expect(tierOfProduct('homi_family_monthly_v2:base')).toBe('family');
     expect(tierOfProduct('homi_premium_monthly')).toBe('premium');
     expect(tierOfProduct(null)).toBe('premium');
     expect(isCreditPack('homi_credits_800')).toBe(true);
@@ -103,11 +103,11 @@ describe('produits', () => {
   });
   it('plans.ts : un Famille mensuel n’est plus confondu avec le Premium mensuel (même type de package)', () => {
     const p = (id: string, price: number) => ({ identifier: id, packageType: 'MONTHLY', product: { identifier: id, price, priceString: `${price} €`, currencyCode: 'EUR', subscriptionPeriod: 'P1M', introPrice: null } }) as unknown as PurchasesPackage;
-    const pkgs = [p('homi_family_monthly', 19.99), p('homi_premium_monthly', 14.99), p('homi_credits_300', 2.99)];
+    const pkgs = [p('homi_family_monthly_v2', 19.99), p('homi_premium_monthly', 14.99), p('homi_credits_300', 2.99)];
     const premium = buildPlans(pkgs, 'ios', 'fr-FR');
     const family = buildPlans(pkgs, 'ios', 'fr-FR', 'family');
     expect(premium.map((x) => [x.id, x.tier])).toEqual([['homi_premium_monthly', 'premium']]);
-    expect(family.map((x) => [x.id, x.tier, x.amount])).toEqual([['homi_family_monthly', 'family', 19.99]]);
+    expect(family.map((x) => [x.id, x.tier, x.amount])).toEqual([['homi_family_monthly_v2', 'family', 19.99]]);
   });
 });
 
@@ -154,8 +154,8 @@ describe('webhook RevenueCat → grand livre', () => {
     const { db } = memoryDb();
     const { ledger, log } = memoryLedger();
     await hook(db, ledger)(req(ev('INITIAL_PURCHASE')));
-    await hook(db, ledger)(req(ev('PRODUCT_CHANGE', { event_timestamp_ms: NOW + 1000, new_product_id: 'homi_family_monthly' })));
-    await hook(db, ledger)(req(ev('PRODUCT_CHANGE', { event_timestamp_ms: NOW + 2000, product_id: 'homi_family_monthly', new_product_id: 'homi_premium_monthly' })));
+    await hook(db, ledger)(req(ev('PRODUCT_CHANGE', { event_timestamp_ms: NOW + 1000, new_product_id: 'homi_family_monthly_v2' })));
+    await hook(db, ledger)(req(ev('PRODUCT_CHANGE', { event_timestamp_ms: NOW + 2000, product_id: 'homi_family_monthly_v2', new_product_id: 'homi_premium_monthly' })));
     expect(log).toEqual(['grant:premium:full', 'grant:family:full']);
   });
   it('octroi échoué : 500, puis le réessai (même événement) octroie sans réécrire l’abonnement en double', async () => {

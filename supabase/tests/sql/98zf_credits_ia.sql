@@ -32,7 +32,7 @@ select tests.set_premium(:'P', true);
 select tests.set_premium(:'TT', true);
 select tests.set_premium(:'V', true);
 insert into public.subscriptions (user_id, status, store, period_type, product_id, expires_at, will_renew)
-values (:'F', 'active', 'test', 'monthly', 'homi_family_monthly', now() + interval '30 days', true),
+values (:'F', 'active', 'test', 'monthly', 'homi_family_monthly_v2', now() + interval '30 days', true),
        (:'U', 'active', 'test', 'annual', 'homi_premium_annual', now() + interval '300 days', true);
 
 -- ================================================================ structure et formule

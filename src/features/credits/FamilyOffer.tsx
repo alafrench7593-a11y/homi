@@ -1,6 +1,6 @@
 /**
  * Page d'abonnement : formule « HOMI Famille » et explication des crédits HOMI IA (26/11/2026).
- *  - Famille : niveau supérieur du groupe d'abonnements « HOMI Premium » (homi_family_monthly) ; prix de la boutique ;
+ *  - Famille : niveau supérieur du groupe d'abonnements « HOMI Premium » (homi_family_monthly_v2) ; prix de la boutique ;
  *    le même Premium pour tous les adultes (owner / coparent) du foyer de la personne abonnée (_premium_of) et un solde
  *    de crédits mensuel commun (credit_accounts.household_id). Depuis Premium : montée immédiate, prix au prorata
  *    (règle de la boutique) ; renouvellement automatique écrit à côté du bouton.

@@ -23,7 +23,7 @@ aucun secret ne doit être collé dans ce dépôt** : seule la clé **publique**
 | Produit mensuel | **`homi_premium_monthly`** — 1 mois — **14,99 €** — essai gratuit 3 jours |
 | Produit 6 mois | **`homi_premium_6months`** — 6 mois — **69,99 €** — essai gratuit 3 jours |
 | Produit annuel | **`homi_premium_annual`** — 1 an — **119,99 €** — essai gratuit 3 jours |
-| Produit Famille (26/11/2026, **identifiant proposé, à confirmer**) | **`homi_family_monthly`** — 1 mois — **19,99 €** — même groupe, **niveau le plus élevé** |
+| Produit Famille (26/11/2026, **identifiant proposé, à confirmer**) | **`homi_family_monthly_v2`** — 1 mois — **19,99 €** — même groupe, **niveau le plus élevé** |
 | Packs de crédits HOMI IA (achats **consommables**, identifiants proposés) | **`homi_credits_300`** 2,99 € · **`homi_credits_800`** 5,99 € · **`homi_credits_2000`** 11,99 € |
 | Droit (entitlement) RevenueCat | **`HOMI_PREMIUM`** (les 4 abonnements, Famille compris ; les packs : **aucun** droit) |
 | Offering RevenueCat | **`default`**, marquée **Current** ; offering **`credits`** pour les 3 packs |
@@ -181,7 +181,7 @@ Dans le groupe **HOMI Premium**, classez les produits par niveau (glisser-dépos
 
 | Niveau | Produit |
 |---|---|
-| 1 (le plus élevé) | `homi_family_monthly` (HOMI Famille, 19,99 €/mois) |
+| 1 (le plus élevé) | `homi_family_monthly_v2` (HOMI Famille, 19,99 €/mois) |
 | 2 | `homi_premium_annual` |
 | 3 | `homi_premium_6months` |
 | 4 | `homi_premium_monthly` |
@@ -231,12 +231,12 @@ quelques minutes).
 
 ### 2.3 Produits
 **Product catalog** › **Products** › **+ New** (ou **Import** depuis App Store Connect) : `homi_premium_monthly`,
-`homi_premium_6months`, `homi_premium_annual`, `homi_family_monthly` (abonnements) et `homi_credits_300`,
+`homi_premium_6months`, `homi_premium_annual`, `homi_family_monthly_v2` (abonnements) et `homi_credits_300`,
 `homi_credits_800`, `homi_credits_2000` (consommables) — app : HOMI iOS.
 
 ### 2.4 Droit `HOMI_PREMIUM`
 **Product catalog** › **Entitlements** › **+ New** › identifiant **`HOMI_PREMIUM`** (description « HOMI Premium ») ›
-**Attach** › cocher les **4** abonnements (dont `homi_family_monthly`). **Ne pas** rattacher les packs de crédits à un
+**Attach** › cocher les **4** abonnements (dont `homi_family_monthly_v2`). **Ne pas** rattacher les packs de crédits à un
 droit : ils sont crédités par le webhook (NON_RENEWING_PURCHASE) dans le grand livre du serveur.
 
 ### 2.5 Offering `default` et ses 3 packages
@@ -248,7 +248,7 @@ droit : ils sont crédités par le webhook (NON_RENEWING_PURCHASE) dans le grand
 | **Monthly** (`$rc_monthly`) | `homi_premium_monthly` |
 | **6 Month** (`$rc_six_month`) | `homi_premium_6months` |
 | **Annual** (`$rc_annual`) | `homi_premium_annual` |
-| **Custom** `family_monthly` | `homi_family_monthly` |
+| **Custom** `family_monthly` | `homi_family_monthly_v2` |
 
 Puis une **seconde** offering **`credits`** (sans « Make current ») avec 3 packages personnalisés `credits_300`,
 `credits_800`, `credits_2000` → `homi_credits_300`, `homi_credits_800`, `homi_credits_2000`.
