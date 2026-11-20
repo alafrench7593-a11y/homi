@@ -18,6 +18,8 @@ import { haptic } from '@/components/ui';
 import { useAppointments, useDocuments, useJourneyState, useProfile, useReminders } from '@/lib/data/hooks';
 import { useCareShifts, useFamilyEvents, useFamilyTasks } from '@/lib/data/hooks-family-load';
 import { atLocal, addDays, itemsBetween, itemsOnDay } from '@/lib/domain/calendar';
+import { useHouseholdActivities } from '@/lib/data/hooks-partiels2';
+import { sessionsBetween } from '@/features/activities/domain';
 import { agendaItems, remindersOn, sortDay, upcoming, type MyDayItem } from '@/lib/domain/myDay';
 import { childAge } from '@/lib/domain/child';
 import { todayISO } from '@/lib/domain/dates';
@@ -28,7 +30,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolName } from '@/lib/domain/toolCatalog';
 
-const KIND_ICON: Record<MyDayItem['kind'], IconName> = { reminder: 'bell', appointment: 'calendar', event: 'star', task: 'check-square', night: 'moon', me_time: 'sun' };
+const KIND_ICON: Record<MyDayItem['kind'], IconName> = { reminder: 'bell', appointment: 'calendar', event: 'star', task: 'check-square', night: 'moon', me_time: 'sun', activity: 'award' };
 const nowHHMM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
 
 /** Ma journée : rappels + agenda du foyer d'aujourd'hui, ce qui reste à venir d'abord. */
@@ -37,13 +39,16 @@ export function MyDayCard() {
   const day = todayISO();
   const reminders = useReminders().data ?? [];
   const events = useFamilyEvents().data ?? [];
+  const activityRows = useHouseholdActivities().data;
   const appointments = useAppointments().data ?? [];
   const tasks = useFamilyTasks().data ?? [];
   const shifts = useCareShifts().data ?? [];
   const items = useMemo(() => {
-    const cal = itemsOnDay(itemsBetween({ events, appointments, tasks, shifts }, atLocal(day), atLocal(addDays(day, 1))), day);
+    const activities = (activityRows ?? []).flatMap((a) => sessionsBetween(a, atLocal(day), atLocal(addDays(day, 1)))
+      .map((s) => ({ id: `${a.id}:${s.starts}`, activityId: a.id, childId: a.child_id, title: a.name, starts: s.starts, ends: s.ends, location: a.place })));
+    const cal = itemsOnDay(itemsBetween({ events, appointments, tasks, shifts, activities }, atLocal(day), atLocal(addDays(day, 1))), day);
     return sortDay([...agendaItems(cal, day), ...remindersOn(reminders as never, day)]);
-  }, [day, reminders, events, appointments, tasks, shifts]);
+  }, [day, reminders, events, appointments, tasks, shifts, activityRows]);
   // « C'est fait » : rappels validés aujourd'hui (daily_checks) et tâches faites
   const toast = useToast();
   const checks = useDailyChecks(day).data ?? [];
@@ -98,6 +103,7 @@ export function MyDayCard() {
   const go = (i: MyDayItem) => {
     if (i.kind === 'reminder') return router.push(i.link ? (i.link as never) : '/settings/reminders');
     if (i.kind === 'appointment') return router.push('/appointments');
+    if (i.kind === 'activity' && i.link) return router.push(i.link as never);
     return router.push({ pathname: '/calendar', params: { view: 'day' } } as never);
   };
   return (

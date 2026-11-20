@@ -71,7 +71,9 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const demoRecallMessage = () => tr('l2.dm.recallCheck');
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps',
+  // 30/11/2026 : langage, jeux, activités, devoirs (parents de l'enfant)
+  'child_language_entries', 'child_game_marks', 'child_activities', 'child_homework'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -1119,6 +1121,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (coupleRows) return coupleRows;
     const absentRows = absents.filter(table, rows);
     if (absentRows) return absentRows;
+    // Baromètre du couple (20261130100400) : mes jauges + celles que l'autre parent a partagées
+    if (table === 'couple_barometer') return rows.filter((x) => x.user_id === me || x.shared === true);
     const ownerCol = OWNER_TABLES[table];
     // Données personnelles : uniquement celles du compte connecté
     if (ownerCol && !['posts', 'comments', 'post_photos'].includes(table)) {

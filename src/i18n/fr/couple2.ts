@@ -128,6 +128,7 @@ export const couple2 = {
   'und.s.postpartum': 'Les changements depuis la naissance',
   'und.s.fear': 'Peur que l’autre le prenne mal',
   'und.s.no_sex_now': 'Je n’ai pas envie de rapports sexuels en ce moment',
+  'und.s.desire': 'J’ai envie de proximité avec toi, sans pression',
   'und.v.base': 'Suggestion',
   'und.v.short': 'Plus courte',
   'und.v.soft': 'Plus douce',
@@ -161,6 +162,10 @@ export const couple2 = {
   'und.t.no_sex_now.short': 'Je n’ai pas envie de rapports en ce moment. Je tiens à toi.',
   'und.t.no_sex_now.soft': 'J’avais besoin de te dire, avec douceur, que je n’ai pas d’envie sexuelle ces temps-ci. Je tiens à notre lien.',
   'und.t.no_sex_now.direct': 'Je n’ai pas envie de rapports sexuels en ce moment, et j’ai besoin que ce soit respecté.',
+  'und.t.desire.base': 'J’ai envie de toi et de moments plus intimes entre nous. Ce n’est pas une demande : si ce n’est pas le moment pour toi, c’est tout à fait d’accord, et on en reparlera quand tu voudras.',
+  'und.t.desire.short': 'J’ai envie de toi, sans aucune pression.',
+  'und.t.desire.soft': 'Je voulais simplement te dire que j’ai envie de me rapprocher de toi. Tu n’as rien à me répondre maintenant, et ton envie compte autant que la mienne.',
+  'und.t.desire.direct': 'J’aimerais qu’on se retrouve tous les deux, intimement. Est-ce que ça te dit, ou préfères-tu qu’on en parle plus tard ?',
 
   'und.compose.title': 'Mon message',
   'und.compose.edit': 'Vous pouvez le modifier librement',

@@ -1,15 +1,21 @@
-/** École ou mode de garde : établissement, classe, contacts, aménagements décidés avec l'école, notes datées. */
+/**
+ * École ou mode de garde : établissement, classe, contacts, aménagements décidés avec l'école, notes datées.
+ * 30/11/2026 : devoirs de la semaine (137) et activités extrascolaires (136) de l'enfant, chacun sur sa vue.
+ */
 import React, { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, Card, Field, ListRow, Text } from '@/components/ui';
+import { Button, Card, Field, ListGroup, ListRow, Text } from '@/components/ui';
+import { useChildActivities, useHomework } from '@/lib/data/hooks-partiels2';
+import { mondayOf } from '@/features/homework/domain';
+import { slotsText } from '@/features/activities/format';
 import { useChild } from '@/lib/data/hooks';
 import { useAddNeedEntry, useDeleteNeedEntry, useNeedEntries } from '@/lib/data/hooks-needs';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { formatDateFr, todayISO } from '@/lib/domain/dates';
+import { addDays, formatDateFr, todayISO } from '@/lib/domain/dates';
 import { t as tr } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 
@@ -22,6 +28,10 @@ export default function ChildSchool() {
   // Erreur réseau : on ne l'affiche jamais comme « aucune note »
   const loadFailed = entriesQ.isError && !entries;
   const add = useAddNeedEntry();
+  const homework = useHomework(id ?? null).data ?? [];
+  const activities = useChildActivities(id ?? null).data ?? [];
+  const wk = mondayOf(todayISO());
+  const hwLeft = homework.filter((h) => !h.done_at && h.due_on <= addDays(wk, 6)).length;
   const del = useDeleteNeedEntry();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -39,6 +49,12 @@ export default function ChildSchool() {
         { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },
       ]} />
       <Text muted>{tr('sc.schoolIntro')}</Text>
+      <ListGroup testID="school-tools">
+        <ListRow icon="check-square" title={tr('p2.hw.title')} subtitle={hwLeft ? tr('p2.hw.left', { count: hwLeft }) : tr('p2.hw.entrySub')}
+          onPress={() => router.push(`/child/${id}/homework` as never)} testID="school-homework" />
+        <ListRow icon="award" title={tr('p2.act.title')} subtitle={activities.length ? activities.slice(0, 2).map((a) => `${a.name} (${slotsText(a.slots)})`).join(' · ') : tr('p2.act.entrySub')}
+          onPress={() => router.push(`/child/${id}/activities` as never)} testID="school-activities" />
+      </ListGroup>
       {/* Espace Nounou (21/11/2026) : carnet de la journée, photos privées, messages et accès de la nounou */}
       <Card>
         <Text weight="bold">{tr('nn.space.title')}</Text>

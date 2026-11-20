@@ -16,7 +16,7 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
 import { Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Chip, Field, Icon, Row, SectionTitle, Text, haptic } from '@/components/ui';
+import { Banner, Button, Chip, Field, Icon, ListGroup, ListRow, Row, SectionTitle, Text, haptic } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useChild, useChildren, useMemberships, usePremium } from '@/lib/data/hooks';
 import { openLink } from '@/lib/links';
@@ -109,6 +109,12 @@ export default function Grow() {
         { icon: 'loader', value: String(progressCount), label: tr('mb.gr.inProgress') },
         { icon: 'calendar', value: tr(`gr.band.${current.key}` as TKey), label: tr('mb.gr.band') },
       ]} />
+
+      {/* 30/11/2026 : journal du langage (129) et jeux adaptés à l'âge (132) de cet enfant */}
+      <ListGroup testID="gr-more">
+        <ListRow icon="message-circle" title={tr('p2.lg.title')} subtitle={tr('p2.lg.entrySub', { name })} onPress={() => router.push(`/child/${child.id}/language` as never)} testID="gr-language" />
+        <ListRow icon="smile" title={tr('p2.gm.title')} subtitle={tr('p2.gm.entrySub')} onPress={() => router.push(`/child/${child.id}/games` as never)} testID="gr-games" />
+      </ListGroup>
 
       <SectionTitle title={tr('gr.recent')} />
       {recent.length ? (

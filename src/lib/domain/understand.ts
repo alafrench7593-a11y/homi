@@ -19,7 +19,8 @@ export const showsHelp = (feelings: readonly Feeling[]) => feelings.some((f) => 
 /** Après un partage de fatigue ou de besoin de repos : proposer (jamais imposer) d'organiser un moment de repos. */
 export const REST_FEELINGS: Feeling[] = ['tired', 'rest', 'overwhelmed', 'me_time'];
 
-export const SITUATIONS = ['fatigue', 'mental_load', 'tenderness', 'time', 'postpartum', 'fear', 'no_sex_now'] as const;
+/** « desire » (30/11/2026, outil 175) : dire une envie de proximité sans rien attendre en retour. */
+export const SITUATIONS = ['fatigue', 'mental_load', 'tenderness', 'desire', 'time', 'postpartum', 'fear', 'no_sex_now'] as const;
 export type Situation = (typeof SITUATIONS)[number];
 export const REST_SITUATIONS: Situation[] = ['fatigue', 'time', 'mental_load'];
 export const offersRest = (o: { feelings?: readonly Feeling[]; situation?: Situation | null }) =>

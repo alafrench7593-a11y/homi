@@ -1,6 +1,8 @@
 /**
  * Point de couple de la semaine (10 minutes, guidé) : la semaine qui vient (agenda), ce qui reste à faire et pour qui,
  * qui porte quels domaines, puis trois questions — ce qui pèse, ce qu'on décide, un merci. Visible des seuls parents.
+ * 30/11/2026 (outil 177) : baromètre de la semaine, facultatif et personnel (privé par défaut, partage choisi, aucune
+ * comparaison entre partenaires) — masqué, comme le texte libre, pendant le mode embrouille.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
@@ -8,6 +10,7 @@ import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
 import { InviteOtherParent } from '@/features/couple/CoupleKit';
+import { BarometerCard } from '@/features/couple/BarometerCard';
 import { useCalmMode } from '@/lib/data/hooks-calmMoments';
 import { backend, eq } from '@/lib/backend';
 import { useHouseholdId, useInvalidate } from '@/lib/data/hooks';
@@ -86,6 +89,7 @@ export default function CoupleWeek() {
         <Button label={toolName('family_domains')} size="sm" variant="ghost" onPress={() => router.push('/family/domains')} />
       </Card>
       {calm ? <Text variant="small" muted testID="cp-calm-hidden">{tr('calm.coupleHidden')}</Text> : <>
+      <BarometerCard />
       <SectionTitle title={tr('cm.cp.s4')} />
       <Card>
         <Field label={tr('cm.cp.heavy')} optional value={heavy} onChangeText={setHeavy} maxLength={1000} multiline placeholder={tr('cm.cp.heavyPh')} testID="cp-heavy" />

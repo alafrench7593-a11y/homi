@@ -118,10 +118,10 @@ export function emphasisId(list: TodayTask[]): string | null {
 }
 
 /** Rendez-vous et événements du jour encore à venir (ou en cours), journées entières comprises. */
-export function todayAgenda(s: { events?: FamilyEvent[]; appointments?: Parameters<typeof itemsBetween>[0]['appointments'] }, now: Date): CalendarItem[] {
+export function todayAgenda(s: { events?: FamilyEvent[]; appointments?: Parameters<typeof itemsBetween>[0]['appointments']; activities?: Parameters<typeof itemsBetween>[0]['activities'] }, now: Date): CalendarItem[] {
   const from = atLocal(dayKey(now));
   const to = atLocal(addDays(dayKey(now), 1));
-  return itemsBetween({ events: s.events ?? [], appointments: s.appointments ?? [], tasks: [], shifts: [] }, from, to)
+  return itemsBetween({ events: s.events ?? [], appointments: s.appointments ?? [], tasks: [], shifts: [], activities: s.activities ?? [] }, from, to)
     .filter((i) => i.allDay || Date.parse(i.ends) > now.getTime());
 }
 
@@ -164,6 +164,9 @@ export type TodayProfile =
   | { kind: 'me'; userId: string | null | undefined };
 
 /** Événement familial : celui de l'enfant affiché, ou un événement de toute la famille (sans enfant rattaché). */
+/** Séance d'activité extrascolaire (136) : tout le foyer, ou l'enfant affiché. */
+export const activityForProfile = (a: { childId: string }, p: TodayProfile): boolean => p.kind === 'all' || (p.kind === 'child' && a.childId === p.childId);
+
 export const eventForProfile = (e: Pick<FamilyEvent, 'child_id'>, p: TodayProfile): boolean =>
   p.kind === 'all' ? true : p.kind === 'child' ? !e.child_id || e.child_id === p.childId : !e.child_id;
 

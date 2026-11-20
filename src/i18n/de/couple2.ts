@@ -120,6 +120,7 @@ export const couple2: Messages<typeof fr> = {
   'und.s.postpartum': 'Veränderungen seit der Geburt',
   'und.s.fear': 'Angst, dass der andere es falsch aufnimmt',
   'und.s.no_sex_now': 'Ich habe im Moment keine Lust auf Sex',
+  'und.s.desire': 'Ich möchte dir nahe sein, ganz ohne Druck',
   'und.v.base': 'Vorschlag',
   'und.v.short': 'Kürzer',
   'und.v.soft': 'Sanfter',
@@ -153,6 +154,10 @@ export const couple2: Messages<typeof fr> = {
   'und.t.no_sex_now.short': 'Ich habe im Moment keine Lust auf Sex. Du bist mir wichtig.',
   'und.t.no_sex_now.soft': 'Ich wollte dir behutsam sagen, dass ich in letzter Zeit kein sexuelles Verlangen habe. Unsere Verbindung ist mir wichtig.',
   'und.t.no_sex_now.direct': 'Ich habe im Moment keine Lust auf Sex, und ich brauche, dass das respektiert wird.',
+  'und.t.desire.base': 'Ich habe Lust auf dich und auf mehr innige Momente zwischen uns. Das ist keine Bitte: Wenn es für dich gerade nicht passt, ist das völlig in Ordnung, und wir reden darüber, wann immer du möchtest.',
+  'und.t.desire.short': 'Ich habe Lust auf dich, ganz ohne Druck.',
+  'und.t.desire.soft': 'Ich wollte dir einfach sagen, dass ich dir gern näher wäre. Du brauchst mir jetzt nicht zu antworten, und was du möchtest, zählt genauso wie das, was ich möchte.',
+  'und.t.desire.direct': 'Ich würde gern intime Zeit zu zweit mit dir verbringen. Hast du Lust darauf, oder sprechen wir lieber später darüber?',
 
   'und.compose.title': 'Meine Nachricht',
   'und.compose.edit': 'Du kannst sie frei ändern',

@@ -95,3 +95,4 @@ export { homi200 } from './homi200';
 export { perso } from './perso';
 export { absents1 } from './absents1';
 export { foyer28 } from './foyer28';
+export { partiels2 } from './partiels2';

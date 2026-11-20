@@ -11,8 +11,11 @@ import { useCareShifts, useFamilyEvents, useFamilyTasks, usePeople, useSaveTask 
 import { useRespondMission } from '@/lib/data/hooks-missions';
 import { useCustodyExceptions, useCustodyPlans } from '@/lib/data/hooks-tools6';
 import { todayISO } from '@/lib/domain/dates';
+import { useHouseholdActivities } from '@/lib/data/hooks-partiels2';
+import { sessionsBetween } from '@/features/activities/domain';
+import { addDays, atLocal } from '@/lib/domain/calendar';
 import { t as tr } from '@/i18n';
-import { appointmentForProfile, custodyForProfile, custodyToday, emphasisId, eventForProfile, shiftForProfile, taskForProfile, todayAgenda, todayShifts, todayTasks, type TaskLike, type TodayModel, type TodayProfile, type TodayTask } from './todayModel';
+import { activityForProfile, appointmentForProfile, custodyForProfile, custodyToday, emphasisId, eventForProfile, shiftForProfile, taskForProfile, todayAgenda, todayShifts, todayTasks, type TaskLike, type TodayModel, type TodayProfile, type TodayTask } from './todayModel';
 import type { RespondResultStatus } from '@/lib/data/hooks-missions';
 
 export interface TodayPerson { id: string | null; name: string; initial: string; avatarPath: string | null; isMe: boolean }
@@ -29,6 +32,7 @@ export function useHomeToday(now: Date = new Date(), profile: TodayProfile = ALL
   const eventsQ = useFamilyEvents();
   const apptQ = useAppointments();
   const shiftsQ = useCareShifts();
+  const activitiesQ = useHouseholdActivities();
   const plansQ = useCustodyPlans();
   const plan = (plansQ.data ?? []).find((p) => p.active) ?? null;
   const day = todayISO(now);
@@ -40,12 +44,14 @@ export function useHomeToday(now: Date = new Date(), profile: TodayProfile = ALL
     const at = new Date(minute * 60_000);
     return {
       tasks: todayTasks((tasksQ.data ?? []) as TaskLike[], me, at, { canEdit }).filter((x) => taskForProfile(x, profile)),
-      agenda: todayAgenda({ events: (eventsQ.data ?? []).filter((e) => eventForProfile(e, profile)), appointments: (apptQ.data ?? []).filter((a) => appointmentForProfile(a, profile)) }, at),
+      agenda: todayAgenda({ events: (eventsQ.data ?? []).filter((e) => eventForProfile(e, profile)), appointments: (apptQ.data ?? []).filter((a) => appointmentForProfile(a, profile)),
+        activities: (activitiesQ.data ?? []).flatMap((a) => sessionsBetween(a, atLocal(day), atLocal(addDays(day, 1)))
+          .map((s) => ({ id: `${a.id}:${s.starts}`, activityId: a.id, childId: a.child_id, title: a.name, starts: s.starts, ends: s.ends, location: a.place }))).filter((x) => activityForProfile(x, profile)) }, at),
       shifts: todayShifts(shiftsQ.data ?? [], at).filter((x) => shiftForProfile(x, profile, me)),
       custody: (plan ? custodyToday([plan], exQ.data ?? [], at) : []).filter((c) => custodyForProfile(c, profile)),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tasksQ.data, eventsQ.data, apptQ.data, shiftsQ.data, plan, exQ.data, me, canEdit, minute, profileKey(profile)]);
+  }, [tasksQ.data, eventsQ.data, apptQ.data, activitiesQ.data, day, shiftsQ.data, plan, exQ.data, me, canEdit, minute, profileKey(profile)]);
 
   /**
    * Prénom et photo de la personne (household_member_names : prénom affiché + avatar des membres actifs, rien

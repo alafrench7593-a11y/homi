@@ -115,6 +115,8 @@ export interface Appointment {
   kind: AppointmentKind; title: string; starts_at: string; location_label: string | null; notes: string | null; questions: string[];
   /** Rendez-vous « pour moi » partagé volontairement avec le foyer (19/11/2026 ; sinon réservé à son autrice). */
   shared_with_household?: boolean | null;
+  /** Parcours du rendez-vous (« fertility » : calendrier des examens, 30/11/2026) et note personnelle après l'examen. */
+  care_track?: 'fertility' | null; result_note?: string | null;
   /** Réservé à la personne qui l'a créé (non visible du foyer). */
   private_to_creator?: boolean; created_by?: string | null;
 }

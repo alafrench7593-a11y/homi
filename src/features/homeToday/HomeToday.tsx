@@ -339,8 +339,10 @@ function describe(e: Other, children: { id: string; first_name: string }[], pers
   }
   if (e.kind === 'event') {
     const i: CalendarItem = e.item;
-    return { when: i.allDay ? tr('d5.anytime') : formatTime(i.starts), until: i.allDay || i.ends === i.starts ? null : formatTime(i.ends), title: i.title, sub: i.location ?? undefined, who: undefined,
-      kindLabel: i.source === 'appointment' ? tr('ht.kind.appointment') : tr('ht.kind.event'), href: i.source === 'appointment' ? '/appointments' : '/calendar' };
+    const child = i.source === 'activity' ? children.find((x) => x.id === i.childId)?.first_name : undefined;
+    return { when: i.allDay ? tr('d5.anytime') : formatTime(i.starts), until: i.allDay || i.ends === i.starts ? null : formatTime(i.ends), title: i.title, sub: [child, i.location].filter(Boolean).join(' · ') || undefined, who: undefined,
+      kindLabel: i.source === 'appointment' ? tr('ht.kind.appointment') : i.source === 'activity' ? tr('p2.act.kind') : tr('ht.kind.event'),
+      href: i.source === 'appointment' ? '/appointments' : i.source === 'activity' ? `/child/${i.childId}/activities?a=${i.refId}` : '/calendar' };
   }
   const s: CareShift = e.shift;
   return { when: formatTime(s.starts_at), until: formatTime(s.ends_at), title: s.kind === 'night' ? tr('ht.shift.night') : tr('ht.shift.me'),

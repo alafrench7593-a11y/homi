@@ -120,6 +120,7 @@ export const couple2: Messages<typeof fr> = {
   'und.s.postpartum': 'Changes since the birth',
   'und.s.fear': 'Fear that they’ll take it badly',
   'und.s.no_sex_now': 'I don’t feel like having sex at the moment',
+  'und.s.desire': 'I’d like to be close to you, without any pressure',
   'und.v.base': 'Suggestion',
   'und.v.short': 'Shorter',
   'und.v.soft': 'Gentler',
@@ -153,6 +154,10 @@ export const couple2: Messages<typeof fr> = {
   'und.t.no_sex_now.short': 'I don’t feel like having sex at the moment. I care about you.',
   'und.t.no_sex_now.soft': 'I needed to tell you, gently, that I haven’t felt sexual desire lately. Our bond matters to me.',
   'und.t.no_sex_now.direct': 'I don’t feel like having sex at the moment, and I need that to be respected.',
+  'und.t.desire.base': 'I feel like being close to you and having more intimate moments together. It’s not a request: if it’s not the right time for you, that is completely fine, and we can talk about it whenever you like.',
+  'und.t.desire.short': 'I want you, with no pressure at all.',
+  'und.t.desire.soft': 'I just wanted to tell you that I’d love to feel closer to you. You don’t have to answer now, and what you want matters as much as what I want.',
+  'und.t.desire.direct': 'I’d like us to find some intimate time together. Would you like that, or would you rather we talk about it later?',
 
   'und.compose.title': 'My message',
   'und.compose.edit': 'You can change it freely',

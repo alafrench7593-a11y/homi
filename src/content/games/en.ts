@@ -1,0 +1,39 @@
+/** HOMI games and activities — English translation of fr.ts (same games). */
+import type { GameTexts } from './types';
+
+const SMALL = 'Nothing small enough to fit through a toilet-paper roll: choking risk before age 3.';
+
+export const GAMES_EN: GameTexts = {
+  coucou_cache: { title: 'Peekaboo', how: 'Hide your face behind a scarf, then reappear saying “Peekaboo!”. Next, half-hide a toy under the cloth and let your baby find it.', material: 'A scarf or a light cloth', safety: 'The cloth never stays on your baby’s face; put it away after playing.' },
+  jeu_des_sons: { title: 'The sound game', how: 'Face to face, repeat the sounds your baby makes and wait for an answer, like a little conversation. Add a new sound now and then.', material: 'Nothing' },
+  boite_tresors: { title: 'The treasure box', how: 'Fill a box with objects of different textures: wooden spoon, washcloth, soft brush, cardboard box. Your baby explores while you name each object.', material: 'A box and things from around the house', safety: SMALL },
+  sur_le_ventre: { title: 'Tummy time', how: 'Lay your baby on their tummy on a mat and lie down facing them with a toy or a shatterproof mirror to catch their eye. A few minutes are enough.', material: 'A mat, a toy', safety: 'Always awake and watched; for sleep, babies lie on their back.' },
+  petit_orchestre: { title: 'The little orchestra', how: 'An upside-down saucepan and a wooden spoon: tap, rub, listen. Play softly then louder, taking turns.', material: 'A saucepan, a wooden spoon', safety: 'Cold, clean utensils, away from the cooker.' },
+  comptines_gestes: { title: 'Action rhymes', how: 'Sing “Row, row, row your boat” or “Pat-a-cake” and do the actions with your baby’s hands. The same rhymes, often: they will recognise them.', material: 'Nothing' },
+  balle_roule: { title: 'Rolling ball', how: 'Sitting face to face with legs apart, roll a soft ball towards your baby and encourage them to touch it or send it back.', material: 'A soft ball', safety: 'A ball too big to fit in the mouth.' },
+  promenade_mots: { title: 'The word walk', how: 'On your walk, name what you see and hear: a tree, a dog, a car, the wind. Point, and let them look.', material: 'Pushchair or baby carrier', safety: 'Protect them from sun, cold and wind.' },
+  transvaser: { title: 'Pouring and scooping', how: 'Move big dry pasta or water from one bowl to another, by hand then with a spoon. A towel under the bowls, and off you go.', material: 'Two bowls, a spoon, big pasta', safety: 'No dried beans, beads or small grains before 3; stay close.' },
+  tri_couleurs: { title: 'Sorting colours', how: 'Sort socks or blocks by colour into boxes or baskets. Name the colours together, without chasing the right answer.', material: 'Socks or blocks, a few boxes', safety: SMALL },
+  parcours_coussins: { title: 'Cushion course', how: 'A path of cushions to step over, a tunnel under the table, a box to crawl through. Do the course with them, then let them invent their own.', material: 'Cushions, a table, a big box', safety: 'Move furniture corners out of the way and clear the floor.' },
+  faire_semblant: { title: 'Let’s pretend', how: 'Make a “meal” for the cuddly toy with empty boxes and utensils, feed it, put it to bed. Follow their story.', material: 'Clean empty boxes, plastic utensils, a cuddly toy' },
+  bulles: { title: 'Soap bubbles', how: 'Blow bubbles and let your child follow, catch and pop them. Try big slow bubbles, then lots of small ones.', material: 'Diluted washing-up liquid, a straw or a ring', safety: 'The mixture is not for drinking: keep the bottle out of reach.' },
+  imagier: { title: 'Picture book at home', how: 'Look through a picture book or a catalogue: “Where is the cat?”, “What is this?”. Let them turn the pages and point in turn.', material: 'A picture book, an old magazine' },
+  tresors_parc: { title: 'Little park treasures', how: 'Collect leaves, pebbles and sticks; compare big and small, smooth and rough. Take one treasure home.', material: 'A bag', safety: 'Nothing in the mouth; wash hands when you get back.' },
+  pate_a_sel: { title: 'Salt dough', how: 'Mix two glasses of flour, one glass of salt and one glass of water. Knead, squash, roll snakes and make prints.', material: 'Flour, salt, water, a bowl', safety: 'Very salty: not for eating. Wash hands afterwards.' },
+  jacques_a_dit: { title: 'Simon says', how: 'Only do the action if the instruction starts with “Simon says”. Take turns giving the instructions.', material: 'Nothing' },
+  memory_maison: { title: 'Home-made memory game', how: 'Draw pairs of cards together (sun, cat, house…), turn them face down and find the pairs.', material: 'Cut-up card, pencils' },
+  chasse_couleurs: { title: 'Colour hunt', how: 'Find three red things in the house, then three blue, then three yellow. Lay them on a sheet of the matching colour.', material: 'Coloured paper (optional)' },
+  course_cuillere: { title: 'Egg-and-spoon race', how: 'Carry a ping-pong ball or a small potato on a spoon to the finish line without dropping it.', material: 'Spoons, a ping-pong ball', safety: 'Flat ground with no obstacles.' },
+  histoire_trois_mots: { title: 'Three-word story', how: 'Your child picks three words (a dragon, a sock, the moon) and you make up the story together, one sentence each.', material: 'Nothing' },
+  marelle: { title: 'Hopscotch', how: 'Draw a hopscotch grid in chalk, throw a pebble and hop on one foot without stepping on the pebble’s square.', material: 'Chalk, a pebble', safety: 'In a yard or garden, away from the road.' },
+  bateau_papier: { title: 'Paper boat', how: 'Fold a boat together and float it in a basin. Blow on it to make it move.', material: 'A sheet of paper, a basin of water', safety: 'Never alone near water, even shallow; empty the basin afterwards.' },
+  graine: { title: 'Plant a seed', how: 'Place a few lentils on damp cotton wool in a pot. Each day, look at what has changed and draw it.', material: 'Cotton wool, lentils, a small pot', safety: 'Raw seeds are not for eating.' },
+  marchande: { title: 'Playing shop', how: 'Set up a shop with empty boxes and real prices. Buy, give change, swap roles.', material: 'Empty boxes, coins or tokens, paper', safety: 'Keep small coins away from younger siblings.' },
+  cuisiner: { title: 'Cooking together', how: 'Choose a simple recipe: your child reads the steps, weighs and measures, you handle the oven.', material: 'Scales, a recipe, the ingredients', safety: 'Oven, hob and knives with an adult.' },
+  carte_tresor: { title: 'Treasure map', how: 'Draw a map of the home, hide an object and mark it with a cross. Then your child hides and draws.', material: 'Paper, pencils' },
+  quiz_famille: { title: 'Family quiz', how: 'Everyone prepares five questions on a topic they like (animals, sport, the family…) and asks the others.', material: 'Paper, a pencil' },
+  mots_caches: { title: 'Hidden words', how: 'Write a long word (“butterflies”) and together find all the words you can make with its letters.', material: 'Paper, a pencil' },
+  jeu_de_piste: { title: 'Treasure trail', how: 'Prepare clues to follow (“Go to the foot of the big tree”, “Take ten steps towards the bench”) leading to a little surprise.', material: 'Paper, a pencil', safety: 'A set area and a meeting point agreed in advance.' },
+  coule_flotte: { title: 'Sink or float?', how: 'Before each try, guess: will this object sink or float? Then test it and note the results in a table.', material: 'A basin of water, things from the house', safety: 'Wipe up water on the floor so nobody slips.' },
+  ombres: { title: 'Shadow puppets', how: 'In a dark room, a torch and your hands: a rabbit, a bird, a wolf. Make up a little story with the shadows.', material: 'A torch', safety: 'Don’t look straight into the light.' },
+};

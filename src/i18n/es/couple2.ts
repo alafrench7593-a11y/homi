@@ -120,6 +120,7 @@ export const couple2: Messages<typeof fr> = {
   'und.s.postpartum': 'Los cambios desde el nacimiento',
   'und.s.fear': 'Miedo a que el otro se lo tome mal',
   'und.s.no_sex_now': 'No tengo ganas de relaciones sexuales en este momento',
+  'und.s.desire': 'Tengo ganas de estar cerca de ti, sin presión',
   'und.v.base': 'Sugerencia',
   'und.v.short': 'Más corta',
   'und.v.soft': 'Más suave',
@@ -153,6 +154,10 @@ export const couple2: Messages<typeof fr> = {
   'und.t.no_sex_now.short': 'No tengo ganas de relaciones en este momento. Te quiero.',
   'und.t.no_sex_now.soft': 'Necesitaba decirte, con cariño, que últimamente no siento deseo sexual. Nuestro vínculo me importa.',
   'und.t.no_sex_now.direct': 'No tengo ganas de relaciones sexuales en este momento, y necesito que se respete.',
+  'und.t.desire.base': 'Tengo ganas de ti y de momentos más íntimos entre nosotros. No es una petición: si no es el momento para ti, está perfectamente bien, y lo hablaremos cuando quieras.',
+  'und.t.desire.short': 'Tengo ganas de ti, sin ninguna presión.',
+  'und.t.desire.soft': 'Solo quería decirte que me apetece sentirme más cerca de ti. No hace falta que me respondas ahora, y lo que tú quieres importa tanto como lo que quiero yo.',
+  'und.t.desire.direct': 'Me gustaría que nos encontráramos los dos, de forma íntima. ¿Te apetece, o prefieres que lo hablemos más tarde?',
 
   'und.compose.title': 'Mi mensaje',
   'und.compose.edit': 'Puedes modificarlo libremente',

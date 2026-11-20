@@ -16,6 +16,8 @@ import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, Row, Secti
 import { parseFrDateTime, splitLocal } from '@/features/familyLoad';
 import { useAppointments, useChildren, useHouseholdId, useMyMembership } from '@/lib/data/hooks';
 import { usePlannedMoments } from '@/lib/data/hooks-calmMoments';
+import { useHouseholdActivities } from '@/lib/data/hooks-partiels2';
+import { sessionsBetween } from '@/features/activities/domain';
 import { useRespondMission } from '@/lib/data/hooks-missions';
 import { useUserId } from '@/lib/auth';
 import { isMission } from '@/lib/domain/missions';
@@ -79,6 +81,8 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   // Moments à deux planifiés (179) : seulement ceux de la personne, jamais exportés (privés)
   const plannedMoments = usePlannedMoments();
   const moments = useMemo(() => plannedMoments.map((m) => ({ id: m.id, title: tr(`mom.idea.${m.idea_key}.title` as TKey), planned_at: m.planned_at as string, duration_minutes: m.duration_minutes })), [plannedMoments]);
+  // Activités extrascolaires (136) : séances dépliées sur la période affichée et la semaine en cours
+  const activitiesQ = useHouseholdActivities();
   const { data: appointments } = appointmentsQ;
   const { data: tasks } = tasksQ;
   const { data: shifts } = shiftsQ;
@@ -117,10 +121,20 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
     if (view === 'month') { const g = monthGrid(cursor); return [g[0][0], addDays(g[g.length - 1][6], 1)]; }
     return [todayISO(), addDays(todayISO(), 31)];
   }, [view, cursor]);
-  const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, moments, range]);
+  const activities = useMemo(() => {
+    const w = weekStart(todayISO());
+    const from = range[0] < w ? range[0] : w;
+    const to = range[1] > addDays(w, 7) ? range[1] : addDays(w, 7);
+    const names = new Map((children ?? []).map((c) => [c.id, c.first_name]));
+    return (activitiesQ.data ?? []).flatMap((a) => sessionsBetween(a, atLocal(from), atLocal(to)).map((x) => ({
+      id: `${a.id}:${x.starts}`, activityId: a.id, childId: a.child_id, title: names.get(a.child_id) ? tr('p2.act.calTitle', { name: a.name, child: names.get(a.child_id)! }) : a.name,
+      starts: x.starts, ends: x.ends, location: a.place,
+    })));
+  }, [activitiesQ.data, range, children]);
+  const items = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments, activities }, atLocal(range[0]), atLocal(range[1])), [eventsQ.data, appointments, tasks, shifts, moments, activities, range]);
   const clashes = useMemo(() => overlaps(items), [items]);
-  const weekItems = useMemo(() => { const s0 = weekStart(todayISO()); return itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments }, atLocal(s0), atLocal(addDays(s0, 7))); }, [eventsQ.data, appointments, tasks, shifts, moments]);
-  const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts, moments]);
+  const weekItems = useMemo(() => { const s0 = weekStart(todayISO()); return itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments, activities }, atLocal(s0), atLocal(addDays(s0, 7))); }, [eventsQ.data, appointments, tasks, shifts, moments, activities]);
+  const todayItems = useMemo(() => itemsBetween({ events: eventsQ.data ?? [], appointments: appointments ?? [], tasks: tasks ?? [], shifts: shifts ?? [], moments, activities }, atLocal(todayISO()), atLocal(addDays(todayISO(), 1))), [eventsQ.data, appointments, tasks, shifts, moments, activities]);
 
   // Calendrier de l'iPhone : événements des calendriers choisis, lus sur le téléphone pour la période affichée + la
   // semaine en cours. Affichage seul : ils n'entrent ni dans l'export .ics, ni dans l'abonnement, ni sur le serveur.
@@ -157,6 +171,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
     if (i.source === 'night') return router.push('/family/nights');
     if (i.source === 'me_time') return router.push('/family/me-time');
     if (i.source === 'moment') return router.push('/family/moments');
+    if (i.source === 'activity') return router.push(`/child/${i.childId}/activities?a=${i.refId}` as never);
     const e = eventsQ.data?.find((x) => x.id === i.refId);
     if (!e) return;
     const a = splitLocal(e.starts_at);

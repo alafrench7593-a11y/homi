@@ -26,7 +26,7 @@ export function useIsHouseholdParent(): { hid: string | null; parent: boolean; l
 
 type Row = { id: string; _pending?: boolean };
 /** Lignes d'une table filtrée + lignes encore en file hors ligne (même filtre simple « colonne = valeur »). */
-function useRowsWithPending<T extends Row>(table: string, key: string[], filter: { col: string; value: string } | null, order: { col: string; asc?: boolean }[], normalize?: (r: T) => T) {
+export function useRowsWithPending<T extends Row>(table: string, key: string[], filter: { col: string; value: string } | null, order: { col: string; asc?: boolean }[], normalize?: (r: T) => T) {
   const { session } = useAuth();
   const pending = useOfflineStore((s) => s.pending);
   const q = useQuery({
@@ -53,7 +53,7 @@ function useRowsWithPending<T extends Row>(table: string, key: string[], filter:
   return { ...q, data };
 }
 
-function useSave<T extends Record<string, unknown>>(table: string, invalidate: string[], conflict = 'id') {
+export function useSave<T extends Record<string, unknown>>(table: string, invalidate: string[], conflict = 'id') {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (row: T & { id?: string }) => {
@@ -66,7 +66,7 @@ function useSave<T extends Record<string, unknown>>(table: string, invalidate: s
   });
 }
 /** Suppression ; `children` : lignes dépendantes retirées d'abord (le serveur les supprime aussi en cascade — même résultat en démonstration). */
-function useRemove(table: string, invalidate: string[] = [], children: { table: string; col: string }[] = []) {
+export function useRemove(table: string, invalidate: string[] = [], children: { table: string; col: string }[] = []) {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (id: string) => {
