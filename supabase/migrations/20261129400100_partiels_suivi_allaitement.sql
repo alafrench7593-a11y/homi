@@ -3,7 +3,7 @@
 -- Écrans étendus (aucun écran parallèle) : /documents/labs (coffre de documents), /me/diary?tab=pregnancy (journal),
 --   /postpartum/support?focus=postnatal, /postpartum/checkin, /feeding/milk-stock, /bottle/history?scope=all,
 --   /family/nights?focus=bottles, /feeding/difficulties, /child/[id]/discoveries, /track/meal
--- Tests : supabase/tests/sql/98zk_partiels_suivi_allaitement.sql, src/__tests__/partiels1.test.ts
+-- Tests : supabase/tests/sql/98zl_partiels_suivi_allaitement.sql, src/__tests__/partiels1.test.ts
 --
 -- ADDITIF ET IDEMPOTENT : trois tables, colonnes facultatives (valeurs par défaut sans effet sur l'existant).
 -- Aucune donnée réécrite ; aucune valeur médicale, aucune norme ni seuil n'est stocké ou calculé par la base.

@@ -5,24 +5,24 @@
 -- Comptes distincts : parent (OW), second parent (CP), nounou confirmée de Lou (NN), non-membre (XX),
 -- ancien membre (EX, co-parent retiré du foyer en fin de fichier).
 -- =====================================================================
-\set OW 'f29a0000-0000-4000-8000-000000000001'
-\set CP 'f29a0000-0000-4000-8000-000000000002'
-\set NN 'f29a0000-0000-4000-8000-000000000003'
-\set XX 'f29a0000-0000-4000-8000-000000000005'
-\set EX 'f29a0000-0000-4000-8000-000000000006'
-\set H  'f29a0000-0000-4000-8000-0000000000a1'
-\set H2 'f29a0000-0000-4000-8000-0000000000a2'
-\set K1 'f29a0000-0000-4000-8000-0000000000c1'
-\set K2 'f29a0000-0000-4000-8000-0000000000c2'
-\set PG 'f29a0000-0000-4000-8000-0000000000b1'
-\set PU 'f29a0000-0000-4000-8000-0000000000f1'
-\set BO 'f29a0000-0000-4000-8000-0000000000f3'
-\set BX 'f29a0000-0000-4000-8000-0000000000f4'
+\set OW 'f29c1000-0000-4000-8000-000000000001'
+\set CP 'f29c1000-0000-4000-8000-000000000002'
+\set NN 'f29c1000-0000-4000-8000-000000000003'
+\set XX 'f29c1000-0000-4000-8000-000000000005'
+\set EX 'f29c1000-0000-4000-8000-000000000006'
+\set H  'f29c1000-0000-4000-8000-0000000000a1'
+\set H2 'f29c1000-0000-4000-8000-0000000000a2'
+\set K1 'f29c1000-0000-4000-8000-0000000000c1'
+\set K2 'f29c1000-0000-4000-8000-0000000000c2'
+\set PG 'f29c1000-0000-4000-8000-0000000000b1'
+\set PU 'f29c1000-0000-4000-8000-0000000000f1'
+\set BO 'f29c1000-0000-4000-8000-0000000000f3'
+\set BX 'f29c1000-0000-4000-8000-0000000000f4'
 
 reset role; set request.jwt.claim.sub = '';
-insert into auth.users (id, email) values (:'OW', 'f98zk-parent@exemple.test'), (:'CP', 'f98zk-parent2@exemple.test'),
-  (:'NN', 'f98zk-nounou@exemple.test'), (:'XX', 'f98zk-inconnu@exemple.test'), (:'EX', 'f98zk-ancien@exemple.test');
-insert into public.households (id, name, created_by) values (:'H', 'Foyer 98zk', :'OW'), (:'H2', 'Autre foyer 98zk', :'XX');
+insert into auth.users (id, email) values (:'OW', 'f98zl-parent@exemple.test'), (:'CP', 'f98zl-parent2@exemple.test'),
+  (:'NN', 'f98zl-nounou@exemple.test'), (:'XX', 'f98zl-inconnu@exemple.test'), (:'EX', 'f98zl-ancien@exemple.test');
+insert into public.households (id, name, created_by) values (:'H', 'Foyer 98zl', :'OW'), (:'H2', 'Autre foyer 98zl', :'XX');
 insert into public.household_members (household_id, user_id, role) values (:'H', :'OW', 'owner'), (:'H2', :'XX', 'owner')
   on conflict (household_id, user_id) do update set role = 'owner';
 insert into public.household_members (household_id, user_id, role, can_view, can_edit, child_scope) values
@@ -102,7 +102,7 @@ insert into public.pumpings (id, child_id, household_id, at, amount_ml, side) va
 insert into public.milk_stock (household_id, child_id, pumping_id, expressed_at, amount_ml, location, use_by, container, label)
   values (:'H', :'K1', :'PU', now() - interval '2 hours', 120, 'freezer', now() + interval '90 days', 'bag', 'Sachet 1'),
          (:'H', :'K1', :'PU', now() - interval '2 hours', 80, 'fridge', now() + interval '40 hours', 'bottle', null);
-select tests.ok(tests.count($$select * from public.milk_stock where pumping_id = 'f29a0000-0000-4000-8000-0000000000f1'$$) = 2, 'lot : une séance rangée en deux contenants');
+select tests.ok(tests.count($$select * from public.milk_stock where pumping_id = 'f29c1000-0000-4000-8000-0000000000f1'$$) = 2, 'lot : une séance rangée en deux contenants');
 select tests.throws(format($$insert into public.milk_stock (household_id, pumping_id, expressed_at, amount_ml, location, use_by) values (%L, %L, now(), 10, 'fridge', now() + interval '1 day')$$, :'H', :'PU'), 'lot : total au-delà de la quantité tirée refusé');
 select tests.throws($$update public.milk_stock set amount_ml = 130 where label = 'Sachet 1'$$, 'lot : modification au-delà de la quantité tirée refusée');
 select tests.throws($$update public.milk_stock set container = 'carton' where label = 'Sachet 1'$$, 'contenant : type inconnu refusé');
@@ -112,15 +112,15 @@ insert into public.bottles (id, child_id, household_id, at, prepared_ml, consume
 insert into public.bottles (id, child_id, household_id, at, prepared_ml) values (:'BX', :'K1', :'H', now() - interval '3 hours', 120);
 insert into public.bottle_relays (household_id, child_id, planned_at, planned_ml, assigned_to, note) values (:'H', :'K1', now() + interval '3 hours', 150, :'CP', 'Lait tiré au réfrigérateur');
 insert into public.bottle_relays (household_id, child_id, planned_at, planned_ml, assigned_to) values (:'H', :'K1', now() - interval '15 minutes', 150, :'OW');
-select tests.ok(tests.count('select * from public.bottle_relays') = 2 and tests.count($$select * from public.bottle_relays where created_by = 'f29a0000-0000-4000-8000-000000000001'$$) = 2,
+select tests.ok(tests.count('select * from public.bottle_relays') = 2 and tests.count($$select * from public.bottle_relays where created_by = 'f29c1000-0000-4000-8000-000000000001'$$) = 2,
   'relais : biberons attribués (autrice posée par le serveur)');
 select tests.throws(format($$insert into public.bottle_relays (household_id, child_id, planned_at, assigned_to) values (%L, %L, now(), %L)$$, :'H', :'K1', :'NN'), 'relais : la nounou n''est pas un parent à qui attribuer');
 select tests.throws(format($$insert into public.bottle_relays (household_id, child_id, planned_at, assigned_to) values (%L, %L, now(), %L)$$, :'H', :'K2', :'OW'), 'relais : enfant d''un autre foyer refusé');
-select tests.throws($$update public.bottle_relays set status = 'given' where assigned_to = 'f29a0000-0000-4000-8000-000000000001'$$, 'relais : « donné » demande l''heure');
+select tests.throws($$update public.bottle_relays set status = 'given' where assigned_to = 'f29c1000-0000-4000-8000-000000000001'$$, 'relais : « donné » demande l''heure');
 set request.jwt.claim.sub = :'CP';
 select tests.ok(tests.count('select * from public.bottle_relays') = 2, 'second parent : voit les relais');
 update public.bottle_relays set status = 'given', given_at = now(), bottle_id = :'BO' where assigned_to = :'OW';
-select tests.ok(tests.count($$select * from public.bottle_relays where status = 'given' and bottle_id = 'f29a0000-0000-4000-8000-0000000000f3'$$) = 1, 'relais : relié au biberon réellement noté');
+select tests.ok(tests.count($$select * from public.bottle_relays where status = 'given' and bottle_id = 'f29c1000-0000-4000-8000-0000000000f3'$$) = 1, 'relais : relié au biberon réellement noté');
 
 -- ================================================================ 120 / 123 DME et refus
 set request.jwt.claim.sub = :'OW';

@@ -138,17 +138,19 @@ export function BottleRelaysSection() {
             const match = matchingBottle(r, bottles, q.data ?? []);
             const mine = r.assigned_to === me;
             return (
-              <ListRow key={r.id} icon={mine ? 'user' : 'users'} onPress={() => setSheet({ relay: r })} testID={`brl-row-${formatTime(r.planned_at).replace(/\D/g, '')}`}
+              <View key={r.id}>
+              <ListRow icon={mine ? 'user' : 'users'} onPress={() => setSheet({ relay: r })} testID={`brl-row-${formatTime(r.planned_at).replace(/\D/g, '')}`}
                 title={tr('brl.rowTitle', { time: formatTime(r.planned_at), who: labelOf(r.assigned_to) })}
                 subtitle={[formatDate(r.planned_at, { weekday: 'long', day: 'numeric', month: 'long' }), r.planned_ml ? tr('brl.mlValue', { ml: r.planned_ml }) : null, viewLabel(r), r.note,
                   match ? tr('brl.matchHint', { time: formatTime(match.at) }) : null, r._pending ? tr('brl.pending') : null].filter(Boolean).join(' · ')}
-                right={(
-                  <View style={{ gap: 4, alignItems: 'flex-end' }}>
+              />
+              {/* Actions sous la ligne : lisibles à 320 pt */}
+              <Row wrap gap={spacing.xs} style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.sm }}>
                     {match ? <Button label={tr('brl.link')} size="sm" onPress={() => void mark(r, 'given', match)} testID={`brl-link-${r.id}`} />
                       : <Button label={tr('brl.record')} size="sm" variant="secondary" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: child.id, relay: r.id } })} testID={`brl-record-${r.id}`} />}
                     {relayView(r) === 'past' ? <Button label={tr('brl.skip')} size="sm" variant="ghost" onPress={() => void mark(r, 'skipped')} testID={`brl-skip-${r.id}`} /> : null}
-                  </View>
-                )} />
+              </Row>
+              </View>
             );
           })}
         </ListGroup>
