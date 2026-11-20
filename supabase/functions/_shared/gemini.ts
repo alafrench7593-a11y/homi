@@ -58,7 +58,28 @@ export type GeminiPart = Record<string, unknown>;
 export interface GeminiContent { role: 'user' | 'model'; parts: GeminiPart[] }
 export interface GeminiFunctionCall { name: string; args: Record<string, unknown> }
 
-export function buildGeminiBody(o: GeminiRequestOptions): Record<string, unknown> {
+/**
+ * Réflexion du modèle : facturée comme du texte de sortie. Les modèles Gemini 3.x acceptent `thinkingLevel` ; on le
+ * fixe à « minimal » (déjà le défaut de gemini-3.5-flash-lite) pour qu'un changement de GEMINI_MODEL ne fasse pas
+ * exploser le coût d'une question. Les autres modèles gardent leur réglage par défaut (le paramètre y serait refusé).
+ */
+export function thinkingConfigFor(model?: string): Record<string, unknown> | null {
+  return model && /^gemini-3/.test(model) ? { thinkingLevel: 'minimal' } : null;
+}
+
+/** Nombre de jetons d'un appel (aucun contenu) : journalisé pour mesurer le vrai coût d'un crédit. */
+export function geminiUsage(payload: unknown): { input: number; cached: number; output: number; thoughts: number } | null {
+  const u = (payload as { usageMetadata?: Record<string, number> })?.usageMetadata;
+  if (!u) return null;
+  return { input: u.promptTokenCount ?? 0, cached: u.cachedContentTokenCount ?? 0, output: u.candidatesTokenCount ?? 0, thoughts: u.thoughtsTokenCount ?? 0 };
+}
+
+function logUsage(model: string, payload: unknown) {
+  const u = geminiUsage(payload);
+  if (u) console.log(`gemini_usage model=${model} in=${u.input} cached=${u.cached} out=${u.output} thoughts=${u.thoughts}`);
+}
+
+export function buildGeminiBody(o: GeminiRequestOptions, model?: string): Record<string, unknown> {
   const contents = o.contents ?? o.turns.map((t, i) => {
     const parts: Record<string, unknown>[] = [{ text: t.text }];
     // Les images accompagnent le dernier message de l'utilisatrice
@@ -70,6 +91,8 @@ export function buildGeminiBody(o: GeminiRequestOptions): Record<string, unknown
     generationConfig.responseMimeType = 'application/json';
     generationConfig.responseSchema = o.responseSchema;
   }
+  const thinking = thinkingConfigFor(model);
+  if (thinking) generationConfig.thinkingConfig = thinking;
   const body: Record<string, unknown> = { systemInstruction: { parts: [{ text: o.system }] }, contents, generationConfig };
   if (o.functions?.length) {
     body.tools = [{ functionDeclarations: o.functions }];
@@ -99,11 +122,13 @@ export async function geminiGenerate(cfg: GeminiConfig, o: GeminiRequestOptions,
   const res = await fetchImpl(`${GEMINI_BASE}/models/${encodeURIComponent(cfg.model)}:generateContent`, {
     method: 'POST',
     headers: { 'x-goog-api-key': cfg.apiKey, 'content-type': 'application/json' },
-    body: JSON.stringify(buildGeminiBody(o)),
+    body: JSON.stringify(buildGeminiBody(o, cfg.model)),
     signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
   }).catch((e) => { throw new GeminiError(`Gemini ${(e as Error).name === 'TimeoutError' ? 'timeout' : 'network'}`, 504); });
   if (!res.ok) throw new GeminiError(`Gemini ${res.status}`, res.status);
-  const out = geminiText(await res.json());
+  const payload = await res.json();
+  logUsage(cfg.model, payload);
+  const out = geminiText(payload);
   if (out.blocked) throw new GeminiError('Réponse bloquée par les filtres de sécurité', 200, true);
   return out.text;
 }
@@ -131,11 +156,13 @@ export async function geminiGenerateTurn(cfg: GeminiConfig, o: GeminiRequestOpti
   const res = await fetchImpl(`${GEMINI_BASE}/models/${encodeURIComponent(cfg.model)}:generateContent`, {
     method: 'POST',
     headers: { 'x-goog-api-key': cfg.apiKey, 'content-type': 'application/json' },
-    body: JSON.stringify(buildGeminiBody(o)),
+    body: JSON.stringify(buildGeminiBody(o, cfg.model)),
     signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
   }).catch((e) => { throw new GeminiError(`Gemini ${(e as Error).name === 'TimeoutError' ? 'timeout' : 'network'}`, 504); });
   if (!res.ok) throw new GeminiError(`Gemini ${res.status}`, res.status);
-  const out = geminiTurn(await res.json());
+  const payload = await res.json();
+  logUsage(cfg.model, payload);
+  const out = geminiTurn(payload);
   if (out.blocked) throw new GeminiError('Réponse bloquée par les filtres de sécurité', 200, true);
   return { text: out.text, calls: out.calls, parts: out.parts, finishReason: out.finishReason };
 }
@@ -145,7 +172,7 @@ export async function geminiStream(cfg: GeminiConfig, o: GeminiRequestOptions, o
   const res = await fetchImpl(`${GEMINI_BASE}/models/${encodeURIComponent(cfg.model)}:streamGenerateContent?alt=sse`, {
     method: 'POST',
     headers: { 'x-goog-api-key': cfg.apiKey, 'content-type': 'application/json' },
-    body: JSON.stringify(buildGeminiBody(o)),
+    body: JSON.stringify(buildGeminiBody(o, cfg.model)),
     // délai pour le début de la réponse ; le flux lui-même est borné par la fonction (maxOutputTokens)
     signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS * 2),
   }).catch((e) => { throw new GeminiError(`Gemini ${(e as Error).name === 'TimeoutError' ? 'timeout' : 'network'}`, 504); });
@@ -154,6 +181,7 @@ export async function geminiStream(cfg: GeminiConfig, o: GeminiRequestOptions, o
   const dec = new TextDecoder();
   let buf = '';
   let full = '';
+  let lastUsage: unknown = null;
   for (;;) {
     const { value, done } = await reader.read();
     if (done) break;
@@ -166,7 +194,10 @@ export async function geminiStream(cfg: GeminiConfig, o: GeminiRequestOptions, o
       const data = line.slice(5).trim();
       if (!data || data === '[DONE]') continue;
       try {
-        const out = geminiText(JSON.parse(data));
+        const chunk = JSON.parse(data);
+        // Le dernier fragment porte le total des jetons de l'appel
+        if (geminiUsage(chunk)?.output) lastUsage = chunk;
+        const out = geminiText(chunk);
         if (out.blocked) throw new GeminiError('Réponse bloquée par les filtres de sécurité', 200, true);
         if (out.text) { full += out.text; await onDelta(out.text); }
       } catch (e) {
@@ -174,5 +205,6 @@ export async function geminiStream(cfg: GeminiConfig, o: GeminiRequestOptions, o
       }
     }
   }
+  if (lastUsage) logUsage(cfg.model, lastUsage);
   return full;
 }
