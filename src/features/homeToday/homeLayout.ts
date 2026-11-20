@@ -73,8 +73,8 @@ const REF: HomeModuleKey[] = ['next', 'quick', 'main', 'agenda', 'recommendation
  *    du jour montre déjà les tâches de tout le foyer.
  */
 /**
- * Sections d'outils insérées dans chaque configuration : « Pour toi aujourd'hui » juste après les actions rapides (ou
- * la prochaine action), « Ton enfant » après l'agenda, puis « Tes favoris », « Continuer » et « Explorer les outils ».
+ * Sections d'outils insérées dans chaque configuration : « Pour toi aujourd'hui » et « Ton enfant » juste après le
+ * socle de référence (prochaine action, actions rapides, résumé, agenda), puis « Tes favoris », « Continuer » et « Explorer les outils ».
  */
 export function withToolSections(list: HomeModuleKey[]): HomeModuleKey[] {
   const out: HomeModuleKey[] = list.filter((k) => k !== 'tools');
@@ -82,8 +82,7 @@ export function withToolSections(list: HomeModuleKey[]): HomeModuleKey[] {
     const i = Math.max(...anchor.map((a) => out.indexOf(a)));
     out.splice(i < 0 ? out.length : i + 1, 0, ...keys);
   };
-  after(['next', 'quick'], ['forYou']);
-  after(['agenda', 'forYou'], ['yourChild']);
+  after(['next', 'quick', 'main', 'agenda'], ['forYou', 'yourChild']);
   out.push('tools', 'continue', 'explore');
   return out;
 }
