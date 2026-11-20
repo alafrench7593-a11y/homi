@@ -190,6 +190,8 @@ export interface CatalogTool {
    * nom, sa phrase et son pictogramme, et ouvre l'outil sur la vue précise. Vide pour une entrée déjà dérivée.
    */
   fns?: CatalogSub[];
+  /** Outil d'un profil que le foyer n'a pas encore (catalogue complet) : sa fiche mène à « Modifier mon parcours ». */
+  locked?: boolean;
   /** Entrée construite à partir d'un sous-accès (favori ou résultat de recherche) : identifiant de l'outil parent. */
   parent?: string;
 }

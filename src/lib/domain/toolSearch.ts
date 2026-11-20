@@ -14,8 +14,10 @@
  * Jamais de résultat au hasard.
  */
 import { getLocale, tMaybe } from '@/i18n';
-import { toolWordsKey } from '@/lib/journeys/tools';
-import type { CatalogTool } from './toolCatalog';
+import { HOMI_200 } from '@/lib/journeys/homi200';
+import { canonicalToolId, toolWordsKey } from '@/lib/journeys/tools';
+import { subAsTool, type CatalogTool } from './toolCatalog';
+import { SEARCH_INTENTS } from './searchIntents';
 
 type Lang = 'fr' | 'en' | 'es' | 'de' | 'it';
 
@@ -56,7 +58,25 @@ export function wordMatch(q: string, w: string): number {
   if (short.length >= 4 && long.startsWith(short) && long.length - short.length <= 3) return 0.8;
   if (short.length >= 5 && long.includes(short)) return 0.55;
   if (short.length >= 5 && editOne(a, b)) return 0.6;
+  if (short.length >= 7 && editTwo(a, b)) return 0.45;
   return 0;
+}
+
+/** Distance d'édition ≤ 2 (fautes de frappe sur un mot long : « allaitemnet », « diversificaton »). */
+function editTwo(a: string, b: string): boolean {
+  if (Math.abs(a.length - b.length) > 2) return false;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    let rowMin = i;
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (cur[j] < rowMin) rowMin = cur[j];
+    }
+    if (rowMin > 2) return false;
+    prev = cur;
+  }
+  return prev[b.length] <= 2;
 }
 
 /** Mots utiles d'une requête, dans la langue donnée (mots vides et mots d'une lettre retirés). */
@@ -82,7 +102,7 @@ interface Entry {
   /** Tournures entières (texte normalisé, entouré d'espaces) : nom et mots-clés de plusieurs mots. */
   phrases: string[];
 }
-interface Index { lang: string; entries: Entry[] }
+interface Index { lang: string; entries: Entry[]; absent: Set<string>; absentNames: string[] }
 
 const CACHE = new WeakMap<readonly CatalogTool[], Index>();
 
@@ -100,16 +120,45 @@ function entryOf(tool: CatalogTool, lang: string, extraKeys = ''): Entry {
   };
 }
 
+/**
+ * Noms et mots de recherche de la liste des 200 qui DÉSIGNENT un outil (numéro qui est cet outil, doublon, ou outil
+ * partiel qui mène à un outil utilisable) : ils deviennent des mots-clés de cet outil. Les numéros absents ne sont
+ * pas indexés (rien à ouvrir).
+ */
+function h200Words(): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const e of HOMI_200) {
+    if (e.kind === 'view' || e.kind === 'absent') continue;
+    const target = canonicalToolId(e.id);
+    if (!target) continue;
+    const tool = target.startsWith('h200_') ? target : target.split('.')[0];
+    out.set(tool, `${out.get(tool) ?? ''};${tMaybe(`h2.${e.n}` as never) || ''};${tMaybe(`h2.${e.n}.k` as never) || ''}`);
+  }
+  return out;
+}
+
 function indexOf(tools: readonly CatalogTool[]): Index {
   const lang = getLocale();
   const hit = CACHE.get(tools);
   if (hit && hit.lang === lang) return hit;
   const entries: Entry[] = [];
+  const extra = h200Words();
   for (const tool of tools) {
     // les sous-accès restent trouvables par leur nom (« Croissance », « Sommeil de l'enfant ») : mots-clés de l'outil
-    entries.push(entryOf(tool, lang, tool.subs.map((s) => `${s.label};${s.hint ?? ''}`).join(';')));
+    entries.push(entryOf(tool, lang, [...tool.subs.map((s) => `${s.label};${s.hint ?? ''}`), extra.get(tool.id) ?? ''].join(';')));
+    // fonctions nommées (liste des 200) : des entrées à part entière, avec leurs propres mots
+    for (const f of tool.fns ?? []) entries.push(entryOf(subAsTool(tool, f), lang, extra.get(f.id) ?? ''));
   }
-  const idx = { lang, entries };
+  // vocabulaire des outils de la liste des 200 qui N'EXISTENT PAS encore (« contractions ») : jamais un résultat voisin
+  const known = new Set(entries.flatMap((e) => [...e.name, ...e.keys]));
+  const absent = new Set<string>();
+  const absentNames: string[] = [];
+  for (const e of HOMI_200) {
+    if (e.kind !== 'absent') continue;
+    absentNames.push(` ${foldText(tMaybe(`h2.${e.n}` as never) || '')} `);
+    for (const w of words(foldText(`${tMaybe(`h2.${e.n}` as never) || ''} ${(tMaybe(`h2.${e.n}.k` as never) || '').replace(/;/g, ' ')}`))) if (w.length > 4 && !known.has(w) && !known.has(stem(w))) absent.add(stem(w));
+  }
+  const idx = { lang, entries, absent, absentNames };
   CACHE.set(tools, idx);
   return idx;
 }
@@ -127,7 +176,7 @@ export interface SearchOutcome {
 
 /** Recherche par besoin dans une liste d'outils (profil affiché, ou tous les profils du foyer). */
 export function searchCatalog(tools: readonly CatalogTool[], query: string, max = SEARCH_MAX): SearchOutcome {
-  const { lang, entries } = indexOf(tools);
+  const { lang, entries, absent, absentNames } = indexOf(tools);
   const folded = ` ${foldText(query)} `;
   const tokens = queryTokens(query, lang);
   if (folded.trim().length < 2) return { results: [], understood: false, tokens };
@@ -153,9 +202,25 @@ export function searchCatalog(tools: readonly CatalogTool[], query: string, max 
     const coverage = total > 0 ? covered / total : 0;
     if (phrase || (covered > 0 && coverage >= MIN_COVERAGE)) hits.push({ tool: e.tool, score });
   });
+  // un mot qui ne désigne qu'un outil absent de HOMI (« contractions ») : on le dit au lieu d'un résultat voisin
+  if (absentNames.some((n) => n.trim() && folded.includes(n))) return { results: [], understood: false, tokens };
+  if (tokens.some((t, i) => absent.has(stem(t)) && !strong[i].some((v) => v >= W_KEY * 0.95))) return { results: [], understood: false, tokens };
+  // intentions prédéfinies (« il tète », « 39 de fièvre », « baby wont sleep ») : l'outil visé passe en tête
+  const intents = SEARCH_INTENTS.filter((i) => i.re.test(folded)).flatMap((i) => i.ids);
+  if (intents.length) {
+    const top = Math.max(1, ...hits.map((h) => h.score));
+    const byId = new Map(entries.map((e) => [e.tool.id, e.tool]));
+    intents.forEach((id, rank) => {
+      const tool = byId.get(id);
+      if (!tool) return;
+      const boost = top * 2 + (intents.length - rank);
+      const prev = hits.find((h) => h.tool.id === id);
+      if (prev) prev.score = Math.max(prev.score, boost); else hits.push({ tool, score: boost });
+    });
+  }
   if (!hits.length) return { results: [], understood: false, tokens };
   hits.sort((a, b) => b.score - a.score);
   const top = hits[0].score;
-  const results = hits.filter((h) => h.score >= top * MIN_RELATIVE).slice(0, max);
+  const results = hits.filter((h) => h.score >= top * MIN_RELATIVE || intents.includes(h.tool.id)).slice(0, max);
   return { results, understood: true, tokens };
 }

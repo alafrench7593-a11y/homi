@@ -101,7 +101,7 @@ export const homi200 = {
   'h2.41.d': 'Les examens prénataux à prévoir, avec rappel facultatif.',
   'h2.41.k': 'examens prenataux;prise de sang grossesse',
   'h2.42': 'Suivi des analyses médicales',
-  'h2.42.k': 'analyses;prise de sang;resultats',
+  'h2.42.k': 'analyses;prise de sang;bilan sanguin',
   'h2.43': 'Coffre-fort des documents de grossesse',
   'h2.43.d': 'Comptes rendus, échographies et ordonnances de la grossesse, rangés.',
   'h2.43.k': 'documents grossesse;comptes rendus',

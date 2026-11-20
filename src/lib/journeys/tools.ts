@@ -494,6 +494,9 @@ export function allowedToolIds(c: ScopeCtx): string[] {
     for (const s of t.subs) out.push(s.id, s.legacy);
     for (const s of t.fns) out.push(s.id);
   }
+  // numéros de la liste des 200 (et doublons) qui désignent un outil ou une fonction autorisés ici
+  const here = new Set(out);
+  for (const [alias, to] of Object.entries(TOOL_ALIASES)) if (alias.startsWith('h200_') && here.has(to)) out.push(alias);
   return out;
 }
 
