@@ -78,7 +78,7 @@ describe('fiche d’outil', () => {
     setLocale('fr');
     const tools = toolCatalog({ scope: 'baby', childId: 'c1', postpartum: false } as never);
     const nights = tools.find((x) => x.id === 'family_nights')!;
-    expect(toolProblem(nights)).toBe('Vous vous levez toutes les nuits et l’autre parent ne sait pas quand prendre le relais.');
+    expect(toolProblem(nights)).toBe('Tu te lèves toutes les nuits et l’autre parent ne sait pas quand prendre le relais.');
     expect(toolProblem(nights)).not.toContain(' · ');
     // un sous-accès reprend la phrase de son outil
     expect(toolProblem({ id: 'kid_profile.growth', parent: 'kid_profile' })).toBe(toolProblem({ id: 'kid_profile' }));

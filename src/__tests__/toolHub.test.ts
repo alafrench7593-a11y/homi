@@ -149,7 +149,7 @@ describe('chaque outil : nom, phrase, mots de recherche, pictogramme, profils, P
     setLocale('fr');
     const words = /\b(garanti|guérir|guérit|miracle|meilleur|parfait|idéal|révolutionnaire|incroyable|enfin)\b/i;
     expect(TOOLS.map((d) => [d.id, tMaybe(toolProblemKey(d.id)) ?? '']).filter(([, p]) => words.test(p))).toEqual([]);
-    expect(tMaybe(toolProblemKey('family_nights'))).toBe('Vous vous levez toutes les nuits et l’autre parent ne sait pas quand prendre le relais.');
+    expect(tMaybe(toolProblemKey('family_nights'))).toBe('Tu te lèves toutes les nuits et l’autre parent ne sait pas quand prendre le relais.');
   });
 
   it('pictogramme : un symbole existant et DISTINCT par outil (144 outils pour 66 icônes avant)', () => {

@@ -57,7 +57,7 @@ describe('étape selon le profil affiché', () => {
     expect(s.belly).toBeGreaterThan(0.5);
   });
   it('légendes et descriptions accessibles', () => {
-    expect(storyCaption({ scope: 'cycle' })).toBe('Votre histoire, à votre rythme');
+    expect(storyCaption({ scope: 'cycle' })).toBe('Ton histoire, à ton rythme');
     expect(storyCaption({ scope: 'pregnancy', weeksLabel: '24 SA' })).toBe('Le ventre s’arrondit · 24 SA');
     expect(storyCaption({ scope: 'baby', child: kid('a', 10), childName: 'Lina', twinNames: ['Noé'], childAgeLabel: '10 jours' })).toBe('Lina et Noé, 10 jours');
     expect(storyA11y(WOMAN_ALONE)).toMatch(/femme seule/);

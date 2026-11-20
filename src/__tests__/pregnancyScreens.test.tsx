@@ -137,7 +137,7 @@ describe(`grossesse (${Platform.OS})`, () => {
     const t = allText(r);
     expect(ids(r, 'echo-echo_')).toEqual(expect.arrayContaining(['echo-echo_1', 'echo-echo_2', 'echo-echo_3']));
     expect(t).toContain('Période indicative');
-    expect(t).toContain('À confirmer avec votre sage-femme ou votre médecin');
+    expect(t).toContain('À confirmer avec ta sage-femme ou ton médecin');
     expect(t).toContain('Ajouter mon véritable rendez-vous');
     expect(t).toMatch(/9 SA/);
     const [w1] = ultrasoundWindows(due);

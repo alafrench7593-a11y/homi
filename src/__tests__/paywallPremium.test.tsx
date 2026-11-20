@@ -161,7 +161,7 @@ describe('écran Premium (démonstration)', () => {
     expect(txt).toContain(`L’essai se termine le ${nb(expected)}`);
     // renouvellement automatique écrit en clair, dans le même bloc que le bouton
     expect(txt).toContain('Renouvellement automatique : 119,99 € par an, jusqu’à résiliation.');
-    expect(txt).toMatch(/Réglages iOS › votre identifiant Apple › Abonnements/);
+    expect(txt).toMatch(/Réglages iOS › ton identifiant Apple › Abonnements/);
     expect(has(r, 'pw2-legal-terms') && has(r, 'pw2-legal-privacy') && has(r, 'pw2-restore') && has(r, 'pw2-close')).toBe(true);
     // Sélection : 6 mois → le bouton suit, la chronologie aussi
     await tap(r, 'pw2-plan-six_months');

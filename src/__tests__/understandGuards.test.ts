@@ -165,7 +165,7 @@ describe('Se comprendre : démonstration (mêmes règles que le serveur)', () =>
     const notes = await b.select<{ title: string; body: string; payload: unknown; deep_link: string }>({ table: 'notifications', filters: [{ col: 'user_id', op: 'eq', value: partner }] });
     const couple = notes.filter((n) => n.deep_link === '/family/understand/inbox');
     expect(couple).toHaveLength(1);
-    expect(couple[0].title).toBe('Camille souhaite partager quelque chose avec vous');
+    expect(couple[0].title).toBe('Camille souhaite partager quelque chose avec toi');
     expect(JSON.stringify(couple[0])).not.toMatch(/forces|repos/);
     await b.rpc('couple_send', { p_household: hid, p_recipient: me, p_kind: 'reply', p_body: 'Je comprends. Comment je peux t’aider ?', p_reply_to: sent.id });
 

@@ -231,7 +231,7 @@ describe('humeur → journal : parcours (mode démonstration)', () => {
     await pressId(r, 'diary-mood-5');
     expect(byId(r, 'diary-text').length).toBeGreaterThan(0);
     await pressId(r, 'diary-save');
-    expect(allText(r)).toContain('Écrivez quelques mots avant de garder cette page.');
+    expect(allText(r)).toContain('Écris quelques mots avant de garder cette page.');
     await typeIn(r, 'diary-text', 'Premiers pas de Léa.');
     const before = await countRows();
     const btn = r.root.findAll((n) => n.props.testID === 'diary-save' && typeof n.props.onPress === 'function')[0];

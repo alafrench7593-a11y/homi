@@ -138,7 +138,7 @@ export const tools6 = {
   'rc.rateLimited': 'Vérification déjà faite il y a peu : réessaie dans une heure.',
   'rc.how': 'La vérification se fait aussi automatiquement chaque fois que tu ouvres le scanner. Le lien officiel de chaque rappel indique les lots concernés et la conduite à tenir.',
   'rc.share': 'Prévenir aussi mon foyer',
-  'rc.shareD': 'Désactivé par défaut. Activé, les autres membres du foyer reçoivent l’alerte quand un produit de VOTRE historique est rappelé (ils voient alors le nom du produit).',
+  'rc.shareD': 'Désactivé par défaut. Activé, les autres membres du foyer reçoivent l’alerte quand un produit de TON historique est rappelé (ils voient alors le nom du produit).',
   'rc.shareOn': 'Ton foyer sera prévenu',
   'rc.shareOff': 'Tu seras seul(e) prévenu(e)',
   'rc.received': 'Alertes reçues',

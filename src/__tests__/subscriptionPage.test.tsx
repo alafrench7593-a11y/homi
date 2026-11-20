@@ -93,7 +93,7 @@ describe('essai gratuit : dates exactes ; non éligible : aucune mention', () =>
     const from = new Date(2026, 10, 17, 10, 0);
     expect(chargeDate(annual(3), from)).toBe('20 novembre');
     const tl = trialTimeline(annual(3), from).map((s) => nb(`${s.title} — ${s.body}`));
-    expect(tl[1]).toBe('Pendant 3 jours — L’essai se termine le 20 novembre. Vous pouvez annuler avant, à tout moment, sans frais.');
+    expect(tl[1]).toBe('Pendant 3 jours — L’essai se termine le 20 novembre. Tu peux annuler avant, à tout moment, sans frais.');
     expect(tl[2]).toBe('Le 20 novembre — Premier prélèvement : 119,99 € pour la formule 12 mois, sauf résiliation au moins 24 h avant.');
     // essai de 7 jours configuré en boutique : tout suit, rien n'est écrit pour « 3 jours »
     expect(chargeDate(annual(7), from)).toBe('24 novembre');
@@ -109,11 +109,11 @@ describe('essai gratuit : dates exactes ; non éligible : aucune mention', () =>
     expect(terms).toEqual([
       ['charge', 'Gratuit pendant 3 jours, puis 119,99 € par an à partir du 20 novembre.'],
       ['renew', 'Renouvellement automatique : 119,99 € par an, jusqu’à résiliation.'],
-      ['cancel', 'Pour annuler : Réglages iOS › votre identifiant Apple › Abonnements, au moins 24 h avant l’échéance.'],
+      ['cancel', 'Pour annuler : Réglages iOS › ton identifiant Apple › Abonnements, au moins 24 h avant l’échéance.'],
       ['source', 'Démonstration : montants de la grille prévue, aucun paiement, données fictives.'],
     ]);
     expect(nb(purchaseTerms({ ...annual(3), demo: false }, 'android', from)[2].text)).toContain('Google Play');
-    expect(nb(purchaseTerms({ ...annual(3), demo: false }, 'ios', from)[3].text)).toBe('Prix de votre boutique, taxes comprises, confirmé avant tout paiement.');
+    expect(nb(purchaseTerms({ ...annual(3), demo: false }, 'ios', from)[3].text)).toBe('Prix de ta boutique, taxes comprises, confirmé avant tout paiement.');
   });
 
   it.each(LANGS)('non éligible (%s) : ni chronologie, ni bouton d’essai, ni mot « essai » dans les conditions ou la lecture d’écran', (lang) => {
@@ -208,10 +208,10 @@ describe('vue abonné : achat personnel ou Premium partagé', () => {
 
   it('abonné partagé : aucun abonnement personnel en cours → origine « Partagé par … », formule inconnue, non gérable', () => {
     const none = subscriberSummary({ premium: true, message: 'Version gratuite', sub: null }, { display_name: 'Camille' });
-    expect(none).toEqual({ origin: 'shared', originText: 'Partagé par Camille', period: null, message: 'Premium vous est offert par Camille, dans votre foyer.', manageable: false });
+    expect(none).toEqual({ origin: 'shared', originText: 'Partagé par Camille', period: null, message: 'Premium t’est offert par Camille, dans ton foyer.', manageable: false });
     // ancien abonnement personnel expiré + Premium du foyer : c'est bien un partage, pas « terminé »
     const expired = subscriberSummary({ premium: true, message: 'Terminé le 1 novembre 2026', sub: { status: 'expired', period_type: 'monthly' } }, { display_name: null });
-    expect(expired).toMatchObject({ origin: 'shared', originText: 'Partagé par l’autre adulte de votre foyer', manageable: false });
+    expect(expired).toMatchObject({ origin: 'shared', originText: 'Partagé par l’autre adulte de ton foyer', manageable: false });
     expect(ownActive({ status: 'expired' }, true)).toBe(false);
   });
 
@@ -303,7 +303,7 @@ describe('page d’abonnement (démonstration)', () => {
     expect(tl).toContain(`L’essai se termine le ${date}`);
     expect(tl).toContain(`Le ${date}`);
     expect(tl).toContain('Premier prélèvement : 119,99 € pour la formule 12 mois');
-    expect(tl).toContain('Réglages iOS › votre identifiant Apple › Abonnements');
+    expect(tl).toContain('Réglages iOS › ton identifiant Apple › Abonnements');
     // bouton et, dans le même bloc, prélèvement + renouvellement automatique
     expect(label(r, 'plan-buy')).toBe('Commencer l’essai de 3 jours');
     expect(textOf(r, 'pw2-cta-terms')).toContain(`Gratuit pendant 3 jours, puis 119,99 € par an à partir du ${date}.`);
@@ -334,7 +334,7 @@ describe('page d’abonnement (démonstration)', () => {
     expect(has(r, 'sub-manage') && has(r, 'sub-restore')).toBe(true);
     // changement de formule : la formule actuelle est marquée, le bouton dit ce qui se passe, aucun essai
     expect(has(r, 'pw2-current-annual')).toBe(true);
-    expect(a11y(r, 'pw2-plan-annual')).toContain('votre formule actuelle');
+    expect(a11y(r, 'pw2-plan-annual')).toContain('ta formule actuelle');
     expect(label(r, 'plan-buy')).toBe('Passer à la formule 6 mois');
     expect(has(r, 'pw2-timeline')).toBe(false);
     expect(textOf(r, 'sub3-offer')).not.toMatch(/essai|offert/i);
@@ -382,9 +382,9 @@ describe('page d’abonnement (démonstration)', () => {
 
     const r = await render(<SubscriptionScreen />);
     await flush(150);
-    expect(textOf(r, 'sub-message')).toBe('Premium vous est offert par Camille, dans votre foyer.');
+    expect(textOf(r, 'sub-message')).toBe('Premium t’est offert par Camille, dans ton foyer.');
     expect(textOf(r, 'my-sub-origin')).toContain('Partagé par Camille');
-    expect(textOf(r, 'my-sub-shared-note')).toContain('Vous n’avez rien à payer.');
+    expect(textOf(r, 'my-sub-shared-note')).toContain('Tu n’as rien à payer.');
     expect(has(r, 'pw2-plans') || has(r, 'plan-buy') || has(r, 'sub-manage') || has(r, 'sub-manage-link')).toBe(false);
     expect(has(r, 'sub-restore')).toBe(true);
     expect(has(r, 'sub3-premium') && has(r, 'sub3-family')).toBe(true);

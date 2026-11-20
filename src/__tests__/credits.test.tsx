@@ -4,7 +4,7 @@
  *  - règles de la démonstration = règles du serveur : aucun crédit sans abonnement, 1 000 (Premium) / 1 500 (Famille)
  *    à l'achat, mensuels d'abord puis achetés, refus `insufficient_credits`, pack crédité, grand livre cohérent ;
  *  - écran « Mes crédits » : solde, packs aux prix de la grille de démonstration, achat simulé, analyse d'essai,
- *    feuille « Vous n'avez plus de crédits », historique ;
+ *    feuille « Tu n'as plus de crédits », historique ;
  *  - page d'abonnement : formule Famille (prix, renouvellement visible), crédits expliqués ;
  *  - offres héritées : plus aucune vente côté application ; 5 langues complètes, aucun prix dans les textes.
  */
@@ -196,14 +196,14 @@ describe('écrans (démonstration)', () => {
     r.unmount();
   });
 
-  it('solde épuisé : la feuille « Vous n’avez plus de crédits » s’ouvre avec le renouvellement et les packs', async () => {
+  it('solde épuisé : la feuille « Tu n’as plus de crédits » s’ouvre avec le renouvellement et les packs', async () => {
     await backend.rpc('demo_credit_adjust', { monthly: 0, purchased: 0 });
     const r = await render(<CreditsScreen />);
     expect(textOf(r, 'credits-total')).toBe('0 crédit disponible');
     await tap(r, 'credits-demo-analyze-button');
     expect(has(r, 'credits-out-sheet')).toBe(true);
-    expect(textOf(r, 'credits-out-cost')).toBe('Cette action demande 3 crédits. Il vous en reste 0.');
-    expect(textOf(r, 'credits-out-renewal')).toMatch(/Vos 1 000 crédits mensuels reviennent le \d+ \S+\./);
+    expect(textOf(r, 'credits-out-cost')).toBe('Cette action demande 3 crédits. Il t’en reste 0.');
+    expect(textOf(r, 'credits-out-renewal')).toMatch(/Tes 1 000 crédits mensuels reviennent le \d+ \S+\./);
     r.unmount();
   });
 

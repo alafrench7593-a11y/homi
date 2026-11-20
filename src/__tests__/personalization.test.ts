@@ -27,7 +27,7 @@ describe('profils A–G', () => {
     expect(ids(r)).toEqual(expect.arrayContaining(['appointments']));
     expect(ids(r).filter((x) => PREG_TOOLS.includes(x)).length).toBeGreaterThanOrEqual(4);
     for (const b of BABY_TOOLS) expect(ids(r)).not.toContain(b);
-    expect(reasonText(r[0].reason)).toBe('Parce que vous êtes enceinte (24 SA)');
+    expect(reasonText(r[0].reason)).toBe('Parce que tu es enceinte (24 SA)');
   });
 
   it('B — bébé de 2 mois allaité : allaitement, sommeil, couches, récupération ; jamais le biberon de lait infantile', () => {
@@ -36,7 +36,7 @@ describe('profils A–G', () => {
     expect(ids(r)).not.toContain('bottle_scoops');
     expect(ids(r)).not.toContain('baby_foods');
     for (const p of PREG_TOOLS) expect(ids(r)).not.toContain(p);
-    expect(reasonText(r.find((x) => x.id === 'baby_breastfeed')!.reason)).toBe('Parce que vous allaitez');
+    expect(reasonText(r.find((x) => x.id === 'baby_breastfeed')!.reason)).toBe('Parce que tu allaites');
     expect(reasonText(r.find((x) => x.id === 'kid_sleep')!.reason)).toBe('Parce que Lina a 2 mois');
   });
 
@@ -45,7 +45,7 @@ describe('profils A–G', () => {
     expect(ids(r)).toEqual(expect.arrayContaining(['family_nights', 'kid_sleep', 'h200_111']));
     for (const x of ['pp_recovery', 'pp_checkin', 'h200_52', 'preg_feel', 'mood']) expect(ids(r)).not.toContain(x);
     expect(persona('C').facts.postpartum).toBe(false);
-    expect(reasonText(r.find((x) => x.id === 'family_nights')!.reason)).toBe('Parce que vous êtes papa ou coparent');
+    expect(reasonText(r.find((x) => x.id === 'family_nights')!.reason)).toBe('Parce que tu es papa ou coparent');
   });
 
   it('D — enfant de 6 ans : école proposée, routines, responsabilités ; rien pour un bébé ni la grossesse', () => {

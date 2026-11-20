@@ -14,7 +14,7 @@ export const ui1 = {
   'u1.pr.nothingLostEditable': 'Rien de ce que tu as déjà enregistré n’est perdu : tout reste consultable et modifiable.',
   'u1.pr.usedMonth': 'Tu as utilisé tes {quota} {unit} gratuites de ce mois.',
   'u1.pr.backOn': 'Elles reviennent le {date}. Rien de ce que tu as déjà enregistré n’est perdu.',
-  'u1.pr.previewHeader': 'APERÇU AVEC VOS DONNÉES',
+  'u1.pr.previewHeader': 'APERÇU AVEC TES DONNÉES',
   'u1.pr.free': 'Gratuit : {text}',
   'u1.pr.premium': 'Premium : {text}',
   'u1.pr.seePlans': 'Voir les formules',

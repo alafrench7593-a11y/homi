@@ -22,11 +22,11 @@ describe('B5 — erreurs Supabase traduites, jamais de message technique brut', 
     [{ message: 'Auth session missing!', name: 'AuthSessionMissingError', status: 400 }, /lien|session|reconnect/i],
     [{ message: 'New password should be different from the old password.', code: 'same_password' }, /différent/],
     [{ message: 'Invalid login credentials', code: 'invalid_credentials', status: 400 }, /incorrect/],
-    [{ message: 'Email not confirmed', code: 'email_not_confirmed' }, /confirmez/i],
+    [{ message: 'Email not confirmed', code: 'email_not_confirmed' }, /confirme/i],
     [{ message: 'Failed to fetch', name: 'AuthRetryableFetchError', status: 0 }, /connexion internet/],
     [{ message: 'Signups not allowed for this instance', code: 'signup_disabled' }, /inscriptions/i],
     [{ message: 'Unable to validate email address: invalid format', code: 'email_address_invalid' }, /adresse e-mail/i],
-    [{ message: 'Some totally unknown english error from the server' }, /réessayez/i],
+    [{ message: 'Some totally unknown english error from the server' }, /réessaie/i],
   ];
   it.each(cases)('%j', (err, expected) => {
     const out = friendlyAuthError(err);

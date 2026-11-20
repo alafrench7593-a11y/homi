@@ -124,7 +124,7 @@ describe('Je grandis', () => {
     for (const k of ['holds_head', 'rolls_over', 'grasps', 'hand_to_hand', 'sits_alone', 'moves_around', 'makes_sounds', 'name', 'points', 'says_words']) expect(STEPS.map((s) => s.key)).toContain(k);
     expect(fr['gr.rhythm']).toMatch(/Chaque enfant évolue à son propre rythme/);
     expect(fr['gr.heroTitle']).toBe('Les découvertes de {name}');
-    expect(fr['gr.recent']).toBe('Ce que vous avez observé récemment');
+    expect(fr['gr.recent']).toBe('Ce que tu as observé récemment');
   });
   it('quatre statuts sans jugement, dont « je ne souhaite pas la suivre »', () => {
     expect(['observed', 'in_progress', 'not_yet', 'not_tracked'].map((s) => fr[`gr.status.${s}`])).toEqual(['Observée', 'En cours d’acquisition', 'Pas encore observée', 'Je ne souhaite pas la suivre']);
@@ -139,7 +139,7 @@ describe('Je grandis', () => {
     expect(stepAvailable(nonMain, false)).toBe(false);
     expect(stepAvailable(nonMain, true)).toBe(true);
   });
-  it('« Ce que vous avez observé récemment » et résumé factuel sans interprétation', () => {
+  it('« Ce que tu as observé récemment » et résumé factuel sans interprétation', () => {
     const rows: ChildStep[] = [
       { id: '1', child_id: 'c', step_key: 'sits_alone', status: 'observed', observed_on: '2026-10-20', note: 'Sur le tapis', updated_at: '2026-10-20T10:00:00Z' },
       { id: '2', child_id: 'c', step_key: 'moves_around', status: 'in_progress', observed_on: null, note: null, updated_at: '2026-10-21T10:00:00Z' },

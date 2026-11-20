@@ -111,7 +111,7 @@ describe('bilan, conseils et contexte (logique)', () => {
     const all = [...gentleTips(8, r, null), ...nightPistes(['many_wakings', 'crying', 'parent_exhausted'], 8).flatMap((s) => s.points)].join(' ');
     expect(all).not.toMatch(/laissez[- ]le pleurer|méthode d’extinction|faire ses nuits rapidement/i);
     expect(all).toMatch(/jamais obligé·e de le laisser pleurer|il n’est jamais nécessaire/i);
-    expect(nightPistes(['parent_exhausted', 'many_wakings'], 8)[0].title).toBe('D’abord vous');
+    expect(nightPistes(['parent_exhausted', 'many_wakings'], 8)[0].title).toBe('D’abord toi');
     expect(nightPistes(['unwell'], 2).flatMap((s) => s.points).join(' ')).toMatch(/ne peut pas évaluer|15/);
     expect(lastEvents([], [], now)).toEqual(['Rien n’a été noté ces dernières heures.']);
   });
@@ -205,7 +205,7 @@ describe(`écrans (${Platform.OS})`, () => {
     expect(has(r, 'dn-events')).toBe(true);
     await press(r, 'dn-next');
     const t = allText(r);
-    expect(t).toContain('D’abord vous');
+    expect(t).toContain('D’abord toi');
     expect(t).not.toMatch(/laissez[- ]le pleurer/i);
     await press(r, 'dn-next');
     expect(has(r, 'dn-routine')).toBe(true);
@@ -233,7 +233,7 @@ describe(`écrans (${Platform.OS})`, () => {
     const toggle = r.root.findAll((n) => n.props.accessibilityLabel === 'Utiliser ma situation pour cette conversation' && typeof n.props.onPress === 'function')[0];
     await act(async () => { await toggle.props.onPress(); });
     await flush(300);
-    const input = r.root.findAll((n) => n.props.accessibilityLabel === 'Votre question' && typeof n.props.onChangeText === 'function')[0];
+    const input = r.root.findAll((n) => n.props.accessibilityLabel === 'Ta question' && typeof n.props.onChangeText === 'function')[0];
     await act(async () => { input.props.onChangeText('Et sans mes données ?'); });
     await press(r, 'chat-send', 600);
     await until(() => sent.length > 1);

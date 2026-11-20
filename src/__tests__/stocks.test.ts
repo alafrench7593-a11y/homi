@@ -135,8 +135,8 @@ describe('courses et stocks : textes neutres (5 langues)', () => {
       }
     }
   });
-  it('« Pour vous » : « vous » en minuscule dans le détail de mission (5 langues)', () => {
-    expect((DICTIONARIES.fr as Record<string, string>)['mis.toYou']).toBe('Pour vous');
+  it('« Pour toi » : « toi » en minuscule dans le détail de mission (5 langues)', () => {
+    expect((DICTIONARIES.fr as Record<string, string>)['mis.toYou']).toBe('Pour toi');
     for (const lang of ['fr', 'en', 'es', 'de', 'it'] as const) {
       const v = (DICTIONARIES[lang] as Record<string, string>)['mis.toYou'];
       expect(v.split(' ').slice(1).join(' ')).toBe(v.split(' ').slice(1).join(' ').toLowerCase());

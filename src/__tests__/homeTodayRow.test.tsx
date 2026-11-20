@@ -64,7 +64,7 @@ describe('Accueil : point focal', () => {
     const r = await render(<TodayFocus x={byId('await')} owner={person('me')} creator={person('sam')} onComplete={onComplete} onAccept={onAccept} DoneComponent={DoneMark} />);
     expect(host(r, 'today-emphasis').length).toBeGreaterThan(0);
     const all = texts(r);
-    expect(all).toContain('Attend votre réponse');
+    expect(all).toContain('Attend ta réponse');
     expect(all).toContain('À accepter');
     expect(all).toContain('Camille');
     expect(all).toContain('Demandée par Sam');
@@ -89,7 +89,7 @@ describe('Accueil : point focal', () => {
 });
 
 describe('Accueil : ligne d’agenda', () => {
-  it('mission de quelqu’un d’autre : ni case ni bouton ; prénom du responsable (Sam), demandée par vous', async () => {
+  it('mission de quelqu’un d’autre : ni case ni bouton ; prénom du responsable (Sam), demandée par toi', async () => {
     const r = await render(<TodayAgendaRow x={byId('sam')} owner={person('sam')} creator={person('me')} onComplete={jest.fn()} />);
     expect(host(r, 'today-complete-sam')).toHaveLength(0);
     expect(host(r, 'today-accept-sam')).toHaveLength(0);
@@ -97,7 +97,7 @@ describe('Accueil : ligne d’agenda', () => {
     expect(all).toContain('Sam');
     expect(all).toContain('17:30');
     expect(all).toContain('Acceptée');
-    expect(all).toContain('Demandée par vous');
+    expect(all).toContain('Demandée par toi');
     expect(all).not.toContain('Coparent');
   });
 
@@ -116,7 +116,7 @@ describe('Accueil : ligne d’agenda', () => {
 
   it('« demandée par » : seulement pour une mission dont la demandeuse n’est pas la responsable', () => {
     expect(requestedByLabel(byId('await'), person('sam'))).toBe('Demandée par Sam');
-    expect(requestedByLabel(byId('sam'), person('me'))).toBe('Demandée par vous');
+    expect(requestedByLabel(byId('sam'), person('me'))).toBe('Demandée par toi');
     expect(requestedByLabel(byId('bath'), person('me'))).toBeNull();
   });
 

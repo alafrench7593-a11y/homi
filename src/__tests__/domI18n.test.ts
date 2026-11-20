@@ -28,6 +28,6 @@ describe('textes calculés traduits (dom.*)', () => {
     expect(lastInfo('bottle', {})).toBe('Aucun biberon noté');
     expect(TRACK_LABEL.bottle).toBe('Biberon');
     expect(buildDigest({ moment: 'morning', now: NOW, questionEnabled: false }).title).toBe('Bonjour');
-    expect({ ...DIGEST_NOTIFICATION.evening }).toEqual({ title: 'Votre journée en bref', body: 'Un résumé de la journée, quand vous avez un moment.' });
+    expect({ ...DIGEST_NOTIFICATION.evening }).toEqual({ title: 'Ta journée en bref', body: 'Un résumé de la journée, quand tu as un moment.' });
   });
 });

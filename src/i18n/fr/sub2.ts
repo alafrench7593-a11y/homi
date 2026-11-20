@@ -48,7 +48,7 @@ export const sub2 = {
   'sub2.plan.six_months.per': 'pour 6 mois',
   'sub2.plan.annual.per': 'par an',
   'sub2.plan.badge.best': 'MEILLEURE OFFRE',
-  'sub2.plan.badge.save': 'ÉCONOMISEZ',
+  'sub2.plan.badge.save': 'ÉCONOMISE',
   'sub2.plan.badge.flex': 'SANS ENGAGEMENT LONGUE DURÉE',
   'sub2.plan.perMonth': 'soit {price} par mois',
   'sub2.plan.savings': 'Économise {pct} % par rapport au mensuel',

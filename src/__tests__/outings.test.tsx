@@ -266,7 +266,7 @@ describe(`écran « Sorties près de chez moi » (${Platform.OS})`, () => {
     await press(r, 'out-widen', 800);
     await until(() => calls.some((c) => c.radius === 5000));
     r.unmount();
-    for (const [m, text] of [['not_configured', 'La recherche de lieux n’est pas encore disponible.'], ['403', 'momentanément indisponible'], ['429', 'réessayez dans un instant']] as const) {
+    for (const [m, text] of [['not_configured', 'La recherche de lieux n’est pas encore disponible.'], ['403', 'momentanément indisponible'], ['429', 'réessaie dans un instant']] as const) {
       mode = m;
       r = await render(<Outings />);
       await until(() => allText(r).includes(text));

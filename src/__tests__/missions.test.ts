@@ -141,12 +141,14 @@ describe('missions : notifications (miroir de public._mission_notification)', ()
   const sql = SQL('migrations/20261114000300_missions.sql');
   const types: MissionEventType[] = ['mission.requested', 'mission.accepted', 'mission.declined', 'mission.postponed', 'mission.completed', 'mission.cancelled', 'mission.question', 'mission.reminded'];
   it('mêmes préfixes et mêmes textes que le serveur', () => {
+    const tutoiement = SQL('migrations/20261202000100_tutoiement.sql');
     for (const ty of types) {
       const n = missionNotification(ty, 'X')!;
       expect(sql).toContain(`when '${ty}'`);
       // « <Prénom> a terminé : … » (19/11/2026) : titre posé par le consommateur de 20261119100000_confidentialite_coparent.sql
       if (ty !== 'mission.completed') expect(sql).toContain(`then '${n.title.slice(0, -1)}'`);
-      expect(sql).toContain(n.body);
+      // Tutoiement (02/12/2026) : le texte d'origine est réécrit par 20261202000100_tutoiement.sql (paire « ancien → nouveau »).
+      expect(tutoiement).toContain(`$tu$'${n.body}'$tu$`);
     }
     const done = SQL('migrations/20261119100000_confidentialite_coparent.sql');
     expect(done).toContain("coalesce(public._first_name_of(e.actor_id), 'Quelqu’un') || ' a terminé : ' || t.title");
@@ -184,9 +186,9 @@ describe('missions : notifications (miroir de public._mission_notification)', ()
     for (const ty of types) expect(isNeutralText(missionNotification(ty, 'Acheter du lait')!.title + ' ' + missionNotification(ty, 'x')!.body)).toBe(true);
   });
   it('écran verrouillé générique par défaut ; boutons « J’accepte / Je ne peux pas » seulement si le détail est visible', () => {
-    const row: PushRow = { id: 'n1', user_id: 'cp', title: 'Nouvelle mission : Acheter des couches taille 4', body: 'Ouvrez HOMI pour répondre quand vous le pouvez.',
+    const row: PushRow = { id: 'n1', user_id: 'cp', title: 'Nouvelle mission : Acheter des couches taille 4', body: 'Ouvre HOMI pour répondre quand tu le peux.',
       deep_link: '/family/missions/m1', category: 'family', payload: { task_id: 'm1', mission: 'mission.requested', event_id: 'e1' } };
-    expect(lockScreenText(row, 'fr', false)).toEqual({ title: 'Nouvelle notification', body: 'Ouvrez l’application pour voir le détail.' });
+    expect(lockScreenText(row, 'fr', false)).toEqual({ title: 'Nouvelle notification', body: 'Ouvre l’application pour voir le détail.' });
     expect(pushCategory(row, false)).toBeUndefined();
     expect(pushCategory(row, true)).toBe(MISSION_PUSH_CATEGORY);
     expect(pushCategory({ payload: { task_id: 'm1', mission: 'mission.accepted' } }, true)).toBeUndefined();

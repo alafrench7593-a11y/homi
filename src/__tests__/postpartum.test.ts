@@ -37,7 +37,7 @@ describe('propositions de soutien graduées', () => {
     const p = supportPlan({ mood: 1, coping: 1 });
     expect(p.level).toBe('distress');
     expect(p.actions[0].key).toBe('pro_soon');
-    expect(p.message).not.toMatch(/deux semaines|attendez/i);
+    expect(p.message).not.toMatch(/deux semaines|attendez|attends\b/i);
   });
   it('persistance sur plusieurs jours (déclarée) → distress, même si aujourd’hui va mieux', () => {
     const history = Array.from({ length: 6 }, (_, i) => ck(addDays(TODAY, -i - 1), { mood: 2 }));
@@ -54,7 +54,7 @@ describe('propositions de soutien graduées', () => {
 });
 
 describe('aucun diagnostic, aucun score, aucune culpabilisation', () => {
-  const FORBIDDEN = /(vous avez une d[ée]pression|tu as une d[ée]pression|diagnostic de|votre score|score de|vous [êe]tes d[ée]prim[ée]e|mauvaise m[èe]re|[ée]chec de|bravo|f[ée]licitations|s[ée]rie de|nouveau record)/i;
+  const FORBIDDEN = /(vous avez une d[ée]pression|tu as une d[ée]pression|diagnostic de|votre score|ton score|score de|vous [êe]tes d[ée]prim[ée]e|tu es d[ée]prim[ée]e|mauvaise m[èe]re|[ée]chec de|bravo|f[ée]licitations|s[ée]rie de|nouveau record)/i;
   const inputs: [Partial<CheckinInput>, Parameters<typeof supportPlan>[1]][] = [
     [{}, {}], [{ needs: ['rest', 'practical'] }, {}], [{ fatigue: 5 }, {}], [{ mood: 1, stress: 5 }, {}], [{ mood: 5 }, { persistentLowDays: 9 }],
     [{ needs: ['talk', 'professional'] }, {}], [{}, { danger: ['baby'] }],
@@ -77,7 +77,7 @@ describe('aucun diagnostic, aucun score, aucune culpabilisation', () => {
     const pts = trendSeries([ck(addDays(TODAY, -3), { mood: 4 }), ck(addDays(TODAY, -2), { mood: 4 }), ck(addDays(TODAY, -1), { mood: 2 }), ck(TODAY, { mood: 1 })], 'mood', TODAY, 7);
     expect(pts).toHaveLength(7);
     const d = describeTrend(pts, true);
-    expect(d).toMatch(/d’après vos réponses/);
+    expect(d).toMatch(/d’après tes réponses/);
     expect(d).not.toMatch(FORBIDDEN);
     expect(describeTrend(pts.slice(-2), true)).toMatch(/Pas assez/);
   });

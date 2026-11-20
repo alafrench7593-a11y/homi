@@ -181,7 +181,7 @@ describe(`écran gratuit « Sorties près de chez moi » (${Platform.OS})`, () =
   });
 
   it('Overpass indisponible ou saturé : message clair, réessayer, jamais de faux lieux', async () => {
-    for (const [m, text] of [['down', 'Impossible de joindre la recherche de lieux'], ['busy', 'réessayez dans un instant']] as const) {
+    for (const [m, text] of [['down', 'Impossible de joindre la recherche de lieux'], ['busy', 'réessaie dans un instant']] as const) {
       overpassMode = m;
       const r = await render(<Outings />);
       await until(() => allText(r).includes(text));

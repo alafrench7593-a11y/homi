@@ -90,7 +90,7 @@ describe('communauté (moteur local)', () => {
     await as('ines@exemple.test');
     const n = await notifs('community_comment');
     expect(n).toHaveLength(1);
-    expect(n[0]).toMatchObject({ title: 'PapaHugo a commenté votre publication', deep_link: `/community/post/${post.id}?comment=${hugoComment.id}` });
+    expect(n[0]).toMatchObject({ title: 'PapaHugo a commenté ta publication', deep_link: `/community/post/${post.id}?comment=${hugoComment.id}` });
   });
 
   it('réponse à un commentaire → notification community_reply', async () => {
@@ -100,7 +100,7 @@ describe('communauté (moteur local)', () => {
     await as('hugo@exemple.test');
     const n = await notifs('community_reply');
     expect(n).toHaveLength(1);
-    expect(n[0].title).toBe('Ines_en_projet a répondu à votre commentaire');
+    expect(n[0].title).toBe('Ines_en_projet a répondu à ton commentaire');
   });
 
   it('réponse à une réponse : un seul niveau, la personne visée est notifiée une fois', async () => {

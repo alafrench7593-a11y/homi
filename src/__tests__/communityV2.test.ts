@@ -39,7 +39,7 @@ describe('règles pures', () => {
     expect(primaryCategories(all, ['pregnant']).map((x) => x.slug).slice(0, 3)).toEqual(['grossesse', 'jumeaux', 'questions-generales']);
     expect(primaryCategories(all, ['pregnant'])).toHaveLength(6);
   });
-  it('fil « Pour vous » : catégories du parcours et discussions actives en avant, sans rien masquer', () => {
+  it('fil « Pour toi » : catégories du parcours et discussions actives en avant, sans rien masquer', () => {
     const now = new Date('2026-10-22T12:00:00Z');
     const p = (id: string, forum: string, hoursAgo: number, likes = 0, comments = 0) => ({ id, forum_id: forum, created_at: new Date(now.getTime() - hoursAgo * 3_600_000).toISOString(), like_count: likes, comment_count: comments });
     const ordered = forYouOrder([p('a', 'autre', 1), p('b', 'mine', 3), p('c', 'autre', 2, 40, 12), p('d', 'mine', 200)], ['mine'], now).map((x) => x.id);
@@ -114,7 +114,7 @@ describe('moteur local : confidentialité et fonctions du forum', () => {
     const reply = (await db.select<FeedComment>({ table: 'comment_feed', filters: [eq('post_id', anonPost.id)] })).find((x) => x.body === 'Merci, ça m’aide.')!;
     expect(reply).toMatchObject({ anonymous: true, pseudonym: null, is_op: true });
     const n = await db.select<AppNotification>({ table: 'notifications', filters: [eq('category', 'community_reply')] });
-    expect(n[0].title).toBe('L’auteur·rice de la publication a répondu à votre commentaire');
+    expect(n[0].title).toBe('L’auteur·rice de la publication a répondu à ton commentaire');
     expect(n[0].deep_link).toMatch(/\?comment=/);
   });
 

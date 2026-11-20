@@ -255,7 +255,7 @@ describe('120 / 123 DME et refus, sans jugement', () => {
     }
     setLocale('fr');
     expect(read('src/content/articles/guide/b03.ts')).toMatch(/toujours assis et sous surveillance/);
-    expect(read('src/content/articles/guide/b03.ts')).toMatch(/ne peut plus respirer, tousser ou crier, appelez immédiatement le 15 ou le 112/);
+    expect(read('src/content/articles/guide/b03.ts')).toMatch(/ne peut plus respirer, tousser ou crier, appelle immédiatement le 15 ou le 112/);
     expect(tr('blw.safety')).toMatch(/15 ou le 112/);
   });
 });

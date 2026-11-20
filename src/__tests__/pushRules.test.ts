@@ -23,7 +23,7 @@ describe('send-push : heures calmes', () => {
 describe('send-push : écran verrouillé', () => {
   it('affiche un texte générique par défaut (aucun prénom, aucun détail)', () => {
     const t = lockScreenText(row, 'fr', false);
-    expect(t).toEqual({ title: 'Nouvelle notification', body: 'Ouvrez l’application pour voir le détail.' });
+    expect(t).toEqual({ title: 'Nouvelle notification', body: 'Ouvre l’application pour voir le détail.' });
     expect(JSON.stringify(t)).not.toContain('Lou');
   });
   it('affiche le détail seulement si la personne l’a autorisé', () => {
@@ -40,7 +40,7 @@ describe('send-push : écran verrouillé', () => {
   });
   it('nouvelle mission : « <Prénom> t’a confié une mission » reste lisible, jamais le contenu (discrétion active)', () => {
     const m: PushRow = { ...row, title: 'Léa t’a confié une mission', body: 'Acheter du lait', payload: { task_id: 't1', mission: 'mission.requested', entrusted: true } };
-    expect(lockScreenText(m, 'fr', false)).toEqual({ title: 'Léa t’a confié une mission', body: 'Ouvrez l’application pour voir le détail.' });
+    expect(lockScreenText(m, 'fr', false)).toEqual({ title: 'Léa t’a confié une mission', body: 'Ouvre l’application pour voir le détail.' });
     expect(JSON.stringify(lockScreenText(m, 'fr', false))).not.toContain('lait');
     expect(lockScreenText(m, 'fr', true)).toEqual({ title: 'Léa t’a confié une mission', body: 'Acheter du lait' });
     // notification d'avant la migration (titre « Nouvelle mission : <mission> », sans marque) : entièrement générique

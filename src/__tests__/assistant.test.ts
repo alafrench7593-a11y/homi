@@ -18,7 +18,7 @@ import type { AssistantMessage, Conversation } from '@/lib/types';
 describe('message d’accueil', () => {
   it('reprend exactement le texte imposé', () => {
     expect(ASSISTANT_INTRO).toBe(
-      'Vous échangez avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence.',
+      'Tu échanges avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence.',
     );
   });
 });
@@ -63,7 +63,7 @@ describe('réponse structurée', () => {
   const raw = [
     '### En bref',
     'Les régurgitations sont fréquentes chez le nourrisson.',
-    '### Ce que vous pouvez faire',
+    '### Ce que tu peux faire',
     '- Tenir bébé en position verticale après la tétée',
     '- Noter la fréquence',
     '  et la quantité',
@@ -205,7 +205,7 @@ describe('assistant sur le moteur local (mode démonstration)', () => {
     const err = await db.invoke('assistant', { message: 'Comment préparer la valise de maternité ?' }).catch((e) => e);
     expect(err).toBeInstanceOf(BackendError);
     expect((err as BackendError).code).toBe('ai_not_configured');
-    expect((err as BackendError).message).toBe('L’assistant n’est pas disponible pour le moment. Réessayez plus tard.');
+    expect((err as BackendError).message).toBe('L’assistant n’est pas disponible pour le moment. Réessaie plus tard.');
     expect((err as BackendError).message).not.toMatch(/Gemini|GEMINI_API_KEY|Supabase|démonstration/);
     expect((await db.rpc<{ used: number }[]>('assistant_quota_status'))[0].used).toBe(before);
     expect(await db.select({ table: 'assistant_messages', filters: [eq('role', 'assistant')] })).toHaveLength(0);

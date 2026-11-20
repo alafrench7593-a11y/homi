@@ -175,7 +175,7 @@ describe('couverture : chaque outil du catalogue a sa démo', () => {
     expect(src.filter((s) => s === 'absente')).toEqual([]);
     expect(src.filter((s) => s !== 'description')).toEqual([]);
     expect(usagePhrase('family_missions')).toBe(tr('th.family_missions.d'));
-    expect(usagePhrase('family_nights')).toBe('Organisez les tours de nuit entre les parents pour mieux partager les réveils du bébé.');
+    expect(usagePhrase('family_nights')).toBe('Organise les tours de nuit entre les parents pour mieux partager les réveils du bébé.');
   });
 
   it('chaque chapitre a des outils, ses outils mis en avant en font partie', () => {

@@ -77,7 +77,7 @@ describe('écrans du scanner (mode démonstration)', () => {
 
   it('produit : code de démonstration → confirmation → analyse enregistrée', async () => {
     const r = await render(<ScanProductScreen />);
-    expect(allText(r)).toContain('Lecture locale indisponible ici : utilisez la saisie manuelle');
+    expect(allText(r)).toContain('Lecture locale indisponible ici : utilise la saisie manuelle');
     await press(r, '0000000000062');
     expect(allText(r)).toContain('Est-ce bien ce produit ?');
     expect(allText(r)).toContain('Lingettes parfumées démo');
