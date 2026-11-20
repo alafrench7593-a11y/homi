@@ -907,18 +907,21 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
       onPressOut={() => springTo(squish, 0, 'release', reduce).start()}
       onPress={() => { haptic('selection'); onChange(!value); }}
       hitSlop={8}
-      // Rail éteint visible sur le verre blanc (l'ancien `border` blanc disparaissait en clair)
-      style={{ width: 52, height: 32, borderRadius: 16, padding: 3, backgroundColor: linesOf(t).track, justifyContent: 'center', overflow: 'hidden' }}
+      // Cible de 52 × 44 (le web ignore hitSlop) ; le rail visible garde ses 52 × 32
+      style={{ width: 52, height: MIN_TOUCH, justifyContent: 'center' }}
     >
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on, overflow: 'hidden' }]} />
-      <Animated.View
-        style={{
-          width: 26, height: 26, borderRadius: 13, backgroundColor: t.tokens.surface.thumb,
-          borderWidth: StyleSheet.hairlineWidth, borderColor: linesOf(t).thumbEdge,
-          boxShadow: physicalShadow('low', t.isDark),
-          transform: [{ translateX: on.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }, { scaleX: squish.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
-        }}
-      />
+      {/* Rail éteint visible sur le verre blanc (l'ancien `border` blanc disparaissait en clair) */}
+      <View pointerEvents="none" style={{ width: 52, height: 32, borderRadius: 16, padding: 3, backgroundColor: linesOf(t).track, justifyContent: 'center', overflow: 'hidden' }}>
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on, overflow: 'hidden' }]} />
+        <Animated.View
+          style={{
+            width: 26, height: 26, borderRadius: 13, backgroundColor: t.tokens.surface.thumb,
+            borderWidth: StyleSheet.hairlineWidth, borderColor: linesOf(t).thumbEdge,
+            boxShadow: physicalShadow('low', t.isDark),
+            transform: [{ translateX: on.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }, { scaleX: squish.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
+          }}
+        />
+      </View>
     </Pressable>
   );
 }

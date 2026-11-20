@@ -181,7 +181,7 @@ export function DoneButton({ onPress, label, icon = 'check', accessibilityLabel,
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={accessibilityLabel} accessibilityState={{ disabled: !!busy, busy: !!busy }} disabled={busy} testID={testID} hitSlop={6}
       onPress={onPress} pressScale={0.96}
-      style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, minWidth: 64, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radius.control - 2,
+      style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, minWidth: 64, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radius.control - 2,
         backgroundColor: t.tokens.surface.sunken, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, opacity: busy ? 0.6 : 1 }}>
       <Icon name={icon} size={15} color={t.colors.text} />
       <Text variant="small" weight="bold">{label ?? tr('d5.done')}</Text>

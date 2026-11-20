@@ -86,7 +86,9 @@ export default function Compose() {
   }
 
   return (
-    <Screen back title={situation ? tr(situationTitle(situation)) : tr('und.compose.title')} subtitle={tr('und.compose.edit')}>
+    // « Envoyer » dans le pied de l'écran, au-dessus du clavier (il restait sous le clavier, dans le défilement)
+    <Screen back title={situation ? tr(situationTitle(situation)) : tr('und.compose.title')} subtitle={tr('und.compose.edit')}
+      action={{ label: tr('und.compose.send', { name: partner?.name ?? '' }), icon: 'send', disabled: !partner || !text.trim(), onPress: () => setConfirming(true), testID: 'und-send' }}>
       {situation ? (
         <Segmented<Variant> label={tr('und.v.label')} value={variant} onChange={(v) => { setVariant(v); setEdited(false); }}
           options={VARIANTS.map((v) => ({ value: v, label: tr(`und.v.${v}` as TKey), testID: `und-variant-${v}` }))} />
@@ -97,8 +99,6 @@ export default function Compose() {
       {showsHelp(feelings) ? <HelpLine /> : null}
       {!partner ? <Banner tone="info">{tr('und.compose.noPartner')}</Banner> : null}
       <View style={{ gap: spacing.xs }}>
-        <Button label={tr('und.compose.send', { name: partner?.name ?? '' })} icon="send" full disabled={!partner || !text.trim()}
-          onPress={() => setConfirming(true)} testID="und-send" />
         <Button label={tr('und.compose.draft')} variant="secondary" icon="bookmark" full disabled={!text.trim()} testID="und-draft"
           onPress={() => void saveDraft(me, draftKey, text.trim()).then(() => toast(tr('und.compose.drafted')))} />
         <Button label={tr('und.compose.discard')} variant="ghost" full testID="und-discard"

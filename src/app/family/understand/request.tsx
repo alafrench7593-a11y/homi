@@ -39,7 +39,9 @@ export default function RestRequestScreen() {
   }
 
   return (
-    <Screen back title={tr('und.req.title')} subtitle={partner ? tr('und.req.sub', { name: partner.name }) : undefined}>
+    // « Envoyer » dans le pied de l'écran (au-dessus du clavier) dès qu'une demande est choisie
+    <Screen back title={tr('und.req.title')} subtitle={partner ? tr('und.req.sub', { name: partner.name }) : undefined}
+      action={picked ? { label: tr('und.req.send', { name: partner?.name ?? '' }), icon: 'send', disabled: !partner || !text.trim(), onPress: () => setConfirming(true), testID: 'und-req-send' } : undefined}>
       {!partner ? <Banner tone="info">{tr('und.compose.noPartner')}</Banner> : null}
       <StaggerList testID="und-req-list">
         {REST_REQUESTS.map((r) => (
@@ -51,7 +53,6 @@ export default function RestRequestScreen() {
       {picked ? (
         <View style={{ gap: spacing.xs }}>
           <Field label={tr('und.req.text')} value={text} onChangeText={setText} maxLength={300} multiline style={{ minHeight: 80 }} testID="und-req-text" />
-          <Button label={tr('und.req.send', { name: partner?.name ?? '' })} icon="send" full disabled={!partner || !text.trim()} onPress={() => setConfirming(true)} testID="und-req-send" />
         </View>
       ) : null}
       {partner ? <ConfirmSend visible={confirming} name={partner.name} text={text.trim()} busy={req.isPending} onConfirm={() => void go()} onClose={() => setConfirming(false)} /> : null}

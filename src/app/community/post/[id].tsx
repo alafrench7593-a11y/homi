@@ -138,7 +138,8 @@ export default function PostScreen() {
       >
         <View testID={focused ? 'comment-focused' : `comment-${c.id}`} style={{ marginLeft: reply ? spacing.lg : 0, gap: 4, paddingVertical: spacing.xs, borderLeftWidth: reply ? 2 : 0, borderLeftColor: t.colors.border, paddingLeft: reply ? spacing.sm : 0 }}>
           <Row style={{ alignItems: 'center' }} gap={8}>
-            <Tappable accessibilityRole={c.author_handle ? 'button' : 'image'} accessibilityLabel={c.author_handle ? tr('cm2.post.viewProfile', { name: who }) : who} disabled={!c.author_handle} onPress={openProfile}>
+            <Tappable accessibilityRole={c.author_handle ? 'button' : 'image'} accessibilityLabel={c.author_handle ? tr('cm2.post.viewProfile', { name: who }) : who} disabled={!c.author_handle} onPress={openProfile}
+              style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
               <Avatar path={c.avatar_path} preset={c.avatar_preset} anonymous={c.anonymous} size={30} />
             </Tappable>
             <View style={{ flex: 1 }}>

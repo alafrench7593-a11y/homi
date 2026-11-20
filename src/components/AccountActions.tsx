@@ -18,6 +18,7 @@ import { UserAvatar } from './UserAvatar';
 import { t as tr } from '@/i18n';
 import { useTourAllowed } from '@/features/tour/TourEntry';
 import { startTour } from '@/features/tour/store';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 const SIZE = 32;
 /** Disques de verre de l’en-tête : 44 pt (cible tactile réelle, y compris sur le web où hitSlop n’existe pas) et leur écart. */
@@ -74,6 +75,7 @@ export function ProfileAvatarButton() {
  */
 export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const t = useTheme();
+  const help = useHelpNumbers();
   const { session } = useAuth();
   const { data: profile } = useProfile();
   const pathname = usePathname();
@@ -98,7 +100,7 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
           <ListRow icon="user" title={tr('header.profile')} onPress={() => go('/(tabs)/profile')} testID="account-sheet-profile" />
           <ListRow icon="settings" title={tr('header.settings')} onPress={() => go('/settings')} testID="account-sheet-settings" />
           {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} onPress={() => { onClose(); setTimeout(startTour, 200); }} testID="account-sheet-tour" /> : null}
-          <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle="15 · 112 · 3114" danger iconColor={t.colors.danger} onPress={() => go('/emergency')} testID="account-sheet-emergency" />
+          <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle={help.summary} danger iconColor={t.colors.danger} onPress={() => go('/emergency')} testID="account-sheet-emergency" />
         </ListGroup>
       </View>
     </GlassSheet>
@@ -116,9 +118,9 @@ export function CommunityHeaderButton() {
   const { width } = useWindowDimensions();
   const onPress = () => router.push('/community');
   if (width >= COMMUNITY_LABEL_MIN_WIDTH) {
-    return <GlassButton label={tr('nav.community')} icon="users" size="sm" onPress={onPress} testID="header-community" style={{ minHeight: HEADER_ICON }} />;
+    return <GlassButton label={tr('nav.community')} icon="users" glyph="community" size="sm" onPress={onPress} testID="header-community" style={{ minHeight: HEADER_ICON }} />;
   }
-  return <GlassIconButton icon="users" label={tr('nav.community')} size={HEADER_ICON} testID="header-community" onPress={onPress} />;
+  return <GlassIconButton icon="users" glyph="community" label={tr('nav.community')} size={HEADER_ICON} testID="header-community" onPress={onPress} />;
 }
 
 /**

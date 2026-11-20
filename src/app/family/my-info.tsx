@@ -51,7 +51,8 @@ export default function MyInfo() {
     <Screen back title={tr('cp2.info.title')} subtitle={tr('cp2.info.sub')}>
       <SectionTitle title={tr('cp2.info.label')} />
       <Card>
-        <Field label={tr('cp2.info.label')} hint={tr('cp2.info.labelHint')} value={label} onChangeText={setLabel} maxLength={24} placeholder={tr('cp2.info.labelPh')} testID="info-label" />
+        <Field label={tr('cp2.info.label')} hint={tr('cp2.info.labelHint')} value={label} onChangeText={setLabel} maxLength={24} placeholder={tr('cp2.info.labelPh')} testID="info-label"
+          returnKeyType="done" onSubmitEditing={() => void run(saveProfile.mutateAsync({ ...share, family_label: label.trim() || null }))} />
         <Button label={tr('common.save')} size="sm" loading={saveProfile.isPending} testID="info-label-save"
           onPress={() => void run(saveProfile.mutateAsync({ ...share, family_label: label.trim() || null }))} />
       </Card>

@@ -97,7 +97,8 @@ export default function MyCareScreen() {
           ) : null}
           <Card>
             <Text weight="bold">{tr('nn.join.title')}</Text>
-            <Field label={tr('nn.join.code')} value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} hint={tr('nn.join.hint')} testID="care-join-code" />
+            <Field label={tr('nn.join.code')} value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} hint={tr('nn.join.hint')} testID="care-join-code"
+              returnKeyType="go" onSubmitEditing={() => { if (code.trim() && !joining) void join(); }} />
             <Button label={tr('nn.join.cta')} icon="log-in" variant="secondary" loading={joining} disabled={!code.trim()} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={join} testID="care-join" />
           </Card>
         </>

@@ -64,7 +64,9 @@ export default function Inbox() {
   }
 
   return (
-    <Screen back title={tr('und.inbox.title')} subtitle={tr('und.inbox.private')}>
+    // « Répondre » dans le pied de l'écran (au-dessus du clavier) quand une réponse est possible
+    <Screen back title={tr('und.inbox.title')} subtitle={tr('und.inbox.private')}
+      action={partner && lastReceived ? { label: tr('und.reply.send', { name: partner.name }), icon: 'send', disabled: !reply.trim(), onPress: () => setConfirming({ kind: 'reply', text: reply.trim() }), testID: 'und-reply-send' } : undefined}>
       {q.isLoading && !q.data ? <Skeleton kind="card" rows={2} /> : q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : !list.length ? (
         <EmptyState icon="message-circle" title={tr('und.inbox.empty')} body={tr('und.inbox.emptyB')} />
       ) : (
@@ -112,8 +114,6 @@ export default function Inbox() {
             {REPLIES.map((k, i) => <Chip key={k} label={tr(k)} onPress={() => setReply((r) => (r.trim() ? `${r.trim()} ${tr(k)}` : tr(k)))} testID={`und-reply-${i + 1}`} />)}
           </View>
           <Field label={tr('und.reply.ph')} value={reply} onChangeText={setReply} maxLength={2000} multiline style={{ minHeight: 96 }} testID="und-reply-text" />
-          <Button label={tr('und.reply.send', { name: partner.name })} icon="send" full disabled={!reply.trim()} testID="und-reply-send"
-            onPress={() => setConfirming({ kind: 'reply', text: reply.trim() })} />
           <Button label={tr('und.offer.title')} icon="user-check" variant="secondary" full testID="und-offer" onPress={() => setOfferOpen(true)} />
         </View>
       ) : null}

@@ -308,7 +308,8 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
   return (
     <Card onPress={full ? undefined : openPost} accessibilityLabel={post.title ? tr('cm1.post.a11yTitled', { author, title: post.title }) : tr('cm1.post.a11y', { author })} testID={full ? 'post-full' : `post-${post.id}`}>
       <Row style={{ alignItems: 'center' }}>
-        <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? tr('cm1.post.viewProfileOf', { name: author }) : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar">
+        <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? tr('cm1.post.viewProfileOf', { name: author }) : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar"
+          style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
           <View style={accent ? { borderRadius: 22, borderWidth: 2, borderColor: accent, padding: 1 } : undefined}>
             <Avatar path={post.avatar_path} preset={post.avatar_preset} anonymous={post.anonymous} size={accent ? 34 : 38} />
           </View>

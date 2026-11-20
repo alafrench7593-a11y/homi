@@ -20,9 +20,11 @@ import { useMyChildcare } from '@/lib/data/hooks-nounou';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 export function CaregiverProfile() {
   const t = useTheme();
+  const help = useHelpNumbers();
   const { session } = useAuth();
   const { data: profile } = useProfile();
   const mine = useMyChildcare();
@@ -62,7 +64,7 @@ export function CaregiverProfile() {
           <ListRow icon="globe" title={tr('settings.language.row')} onPress={() => router.push('/settings/language')} />
           <ListRow icon="lock" title={tr('profile.privacy')} onPress={() => router.push('/settings/privacy')} />
           <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/profile' } } as never)} />
-          <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle="15 · 112 · 3114" danger onPress={() => router.push('/emergency')} />
+          <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle={help.summary} danger onPress={() => router.push('/emergency')} />
         </ListGroup>
       </Screen>
       <ProfilePhotoSheet visible={photoOpen} onClose={() => setPhotoOpen(false)} />

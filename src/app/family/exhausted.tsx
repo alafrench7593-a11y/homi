@@ -20,9 +20,11 @@ import { callNumber } from '@/lib/links';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 export default function Exhausted() {
   const toast = useToast();
+  const help = useHelpNumbers();
   const inv = useInvalidate();
   const uid = useUserId();
   const past = useExhaustionCheckins().data ?? [];
@@ -73,9 +75,10 @@ export default function Exhausted() {
         </>
       )}
       <Banner tone="danger" icon="alert-octagon">{tr('cm.ex.urgent')}</Banner>
+      {/* Numéros du PAYS choisi (Réglages, sinon région du téléphone) : ligne d'écoute s'il en existe une, urgence médicale */}
       <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-        <View style={{ flex: 1 }}><Button label="3114" icon="phone" variant="secondary" onPress={() => callNumber('3114', toast)} /></View>
-        <View style={{ flex: 1 }}><Button label="15" icon="phone" variant="secondary" onPress={() => callNumber('15', toast)} /></View>
+        {help.crisis ? <View style={{ flex: 1 }}><Button label={help.crisis} icon="phone" variant="secondary" onPress={() => callNumber(help.crisis!, toast)} /></View> : null}
+        <View style={{ flex: 1 }}><Button label={help.urgent} icon="phone" variant="secondary" onPress={() => callNumber(help.urgent, toast)} /></View>
       </View>
       {past.length ? (
         <Card tone="soft">

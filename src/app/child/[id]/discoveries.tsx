@@ -136,7 +136,7 @@ export default function Discoveries() {
   return (
     <Screen back title={tr('dc.title')} subtitle={tr('dc.subtitle', { name, age: tr('dc.age', { count: age }) })}>
       <View testID="discoveries" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(243,219,189,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F9EDDE', '#F1EAFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2400, borderRadius: 32 }} />
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(243,219,189,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F9EDDE', '#F1EAFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2400, borderRadius: 32 }} />
 
       {/* Résumé : progression par catégorie, sans total ni comparaison */}
       <GlassSurface fill={t.colors.surface} depth={2} radius={26} padded={spacing.md}>

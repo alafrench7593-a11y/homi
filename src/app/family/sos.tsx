@@ -23,6 +23,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { useTapShield } from '@/features/tapShield';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 function Big({ icon, label, sub, onPress, tone, testID }: { icon: IconName; label: string; sub?: string; onPress: () => void; tone?: 'danger' | 'calm'; testID?: string }) {
   const t = useTheme();
@@ -45,6 +46,7 @@ export default function FamilySos() {
   // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
   const topInset = insets.top + useDemoInset();
   const toast = useToast();
+  const help = useHelpNumbers();
   const hid = useHouseholdId();
   const ask = useCreateRequest();
   // Double appui sur « Demander le relais » : une seule demande envoyée au foyer
@@ -87,8 +89,9 @@ export default function FamilySos() {
       ))}
       {!people.length ? <Big icon="user-plus" label={tr('sos.addContact')} sub={tr('sos.addContactD')} onPress={() => router.push('/postpartum/support')} /> : null}
       {hid ? <Big icon="users" label={tr('sos.relay')} sub={tr('sos.relayD')} onPress={askRelay} /> : null}
-      <Big icon="headphones" label={tr('sos.line')} sub={tr('sos.lineD')} onPress={() => callNumber('3114', toast)} />
-      <Big icon="alert-octagon" tone="danger" label={tr('sos.medical')} sub={tr('sos.medicalD')} onPress={() => callNumber('15', toast)} />
+      {/* Ligne d'écoute : seulement si le pays en a une connue (France : 3114) ; urgence médicale du pays */}
+      {help.crisis ? <Big icon="headphones" label={tr('sos.line')} sub={tr('sos.lineD')} onPress={() => callNumber(help.crisis!, toast)} /> : null}
+      <Big icon="alert-octagon" tone="danger" label={tr('sos.medical')} sub={tr('sos.medicalD')} onPress={() => callNumber(help.urgent, toast)} />
 
       <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('sos.step4')}</Text>
       <Text>{tr('sos.step4D')}</Text>

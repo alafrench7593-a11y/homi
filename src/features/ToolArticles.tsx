@@ -10,7 +10,7 @@ import { Chip, Icon, ListRow, Text } from '@/components/ui';
 import { useArticles, useCategories } from '@/lib/data/hooks';
 import { articlesForTool, toolTopic } from '@/lib/domain/toolArticles';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 export function ToolArticles({ toolId }: { toolId: string }) {
@@ -32,7 +32,7 @@ function Inner({ toolId, ask }: { toolId: string; ask: string }) {
       style={{ marginTop: spacing.md, borderRadius: 18, borderWidth: 1, borderColor: t.isDark ? 'rgba(205,190,250,0.24)' : 'rgba(91,42,134,0.16)', padding: spacing.md, gap: spacing.sm }}
     >
       <Tappable onPress={() => setOpen((v) => !v)} pressScale={0.99} hoverLift={0} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={tr('u1.ta.a11y')}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }} hitSlop={6} testID="tool-articles-toggle">
+        style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }} hitSlop={6} testID="tool-articles-toggle">
         <Icon name="book-open" size={18} color={t.colors.gold} />
         <Text weight="bold" style={{ flex: 1 }}>{tr('u1.ta.title')}</Text>
         <Text variant="caption" muted>{open ? tr('u1.ta.collapse') : tr('u1.ta.count', { count: picks.length })}</Text>

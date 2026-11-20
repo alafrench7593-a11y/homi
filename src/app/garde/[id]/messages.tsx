@@ -9,7 +9,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { useToast } from '@/components/Overlays';
-import { Button, Card, Field, Text } from '@/components/ui';
+import { Card, Field, Text } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -46,7 +46,9 @@ export default function CareMessages() {
   }
   let lastDay = '';
   return (
-    <Screen back title={tr('nn.msg.title')} subtitle={child.first_name} tool={false}>
+    // Envoyer : dans le pied de l'écran, au-dessus du clavier (il restait sous le clavier, dans le défilement)
+    <Screen back title={tr('nn.msg.title')} subtitle={child.first_name} tool={false}
+      action={{ label: tr('nn.msg.send'), icon: 'send', onPress: submit, disabled: !body.trim(), loading: send.isPending, testID: 'care-msg-send-inline' }}>
       <Text variant="small" muted>{tr('nn.msg.intro')}</Text>
       {msgs.isLoading && !msgs.data ? <Skeleton rows={3} /> : msgs.isError && !msgs.data ? (
         <ErrorView error={msgs.error} onRetry={() => void msgs.refetch()} />
@@ -75,7 +77,6 @@ export default function CareMessages() {
       <Card>
         <Field label={tr('nn.msg.field')} value={body} onChangeText={setBody} multiline maxLength={2000} testID="care-msg-body" />
         <ToggleRow value={important} onChange={setImportant} label={tr('nn.msg.markImportant')} />
-        <Button label={tr('nn.msg.send')} icon="send" disabled={!body.trim()} loading={send.isPending} style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={submit} testID="care-msg-send-inline" />
       </Card>
     </Screen>
   );

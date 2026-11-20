@@ -31,6 +31,7 @@ import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
 import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { CaregiverProfile } from '@/features/nounou/CaregiverProfile';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 export default function Profile() {
   const memberships = useMemberships();
@@ -49,6 +50,7 @@ function FamilyProfile() {
   const children = childrenQ.data;
   const premium = usePremium();
   const t = useTheme();
+  const help = useHelpNumbers();
   const [photoOpen, setPhotoOpen] = useState(false);
   const articleCount = useArticles().data?.length ?? 0;
   const js = useJourneyState();
@@ -133,7 +135,7 @@ function FamilyProfile() {
           <ListRow icon="lock" title={tr('profile.privacy')} onPress={() => router.push('/settings/privacy')} />
           <ListRow icon="settings" title={tr('profile.appearance')} onPress={() => router.push('/settings')} />
           <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/profile' } } as never)} testID="profile-feedback" />
-          <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle="15 · 112 · 3114" danger onPress={() => router.push('/emergency')} />
+          <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle={help.summary} danger onPress={() => router.push('/emergency')} />
         </Card>
       </Screen>
       <ProfilePhotoSheet visible={photoOpen} onClose={() => setPhotoOpen(false)} />

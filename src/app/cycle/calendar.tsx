@@ -151,7 +151,7 @@ export default function CycleCalendar() {
             <View key={w} style={{ flexDirection: 'row', gap: 4 }}>
               {cells.slice(w * 7, w * 7 + 7).map((d) => (
                 <Tappable key={d.iso} accessibilityRole="button" accessibilityLabel={describe(d)} onPress={() => { haptic('selection'); setDay(d); }}
-                  style={({ pressed }) => ({ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', opacity: d.inMonth ? 1 : 0.38,
+                  style={({ pressed }) => ({ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', opacity: d.inMonth ? 1 : 0.38,
                     backgroundColor: d.period ? c.period : d.estimatedFertile ? c.fertile : pressed ? c.pearl : 'transparent',
                     borderWidth: d.estimatedPeriod ? 1.5 : d.today ? 1.5 : 0, borderStyle: d.estimatedPeriod ? 'dashed' : 'solid', borderColor: d.estimatedPeriod ? c.period : c.mauve })}>
                   <Ink variant="small" weight={d.today ? 'bold' : undefined} style={{ color: d.period ? c.onAccent : c.ink }}>{String(+d.iso.slice(8, 10))}</Ink>

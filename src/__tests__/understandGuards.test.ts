@@ -93,7 +93,8 @@ describe('Se comprendre : interdits de conception', () => {
       if (sends.length) expect(confirms.length).toBeGreaterThan(0);
     }
     const compose = read('src', 'app', 'family', 'understand', 'compose.tsx');
-    expect(compose).toMatch(/onPress=\{\(\) => setConfirming\(true\)\} testID="und-send"/);
+    // « Envoyer » (pied de l'écran, au-dessus du clavier) ouvre seulement la confirmation
+    expect(compose).toMatch(/onPress: \(\) => setConfirming\(true\), testID: 'und-send'/);
   });
 
   it('schéma : pas de compteur, de score ni de statistique ; notification au texte fixe ; pas de journal du contenu', () => {

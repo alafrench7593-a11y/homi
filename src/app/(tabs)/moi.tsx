@@ -26,6 +26,7 @@ import { BRAND } from '@/config/brand';
 import { MySubscriptionSection } from '@/features/subscription';
 import { localeTag, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 type Space = 'community' | 'account';
 
@@ -89,6 +90,7 @@ function PrivateAccount() {
   const premium = usePremium();
   const blocks = useMyBlocks();
   const [help, setHelp] = useState(false);
+  const helpNums = useHelpNumbers();
   const [busy, setBusy] = useState(false);
 
   async function signOut() {
@@ -142,7 +144,7 @@ function PrivateAccount() {
       <Sheet visible={help} onClose={() => setHelp(false)} title={tr('cm3.moi.help')}>
         <ListRow icon="mail" title={tr('cm3.moi.writeUs')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('cm3.moi.writeUsAt', { email: BRAND.supportEmail }), 'info'))} />
         <ListRow icon="book-open" title={tr('cm3.moi.rules')} onPress={() => { setHelp(false); router.push('/community/rules' as never); }} />
-        <ListRow icon="life-buoy" title={tr('cm3.moi.emergency')} subtitle="15 · 112 · 3114" danger onPress={() => { setHelp(false); router.push('/emergency'); }} />
+        <ListRow icon="life-buoy" title={tr('cm3.moi.emergency')} subtitle={helpNums.summary} danger onPress={() => { setHelp(false); router.push('/emergency'); }} />
         <Row><Text variant="caption" muted>{tr('cm3.moi.disclaimer')}</Text></Row>
       </Sheet>
     </View>

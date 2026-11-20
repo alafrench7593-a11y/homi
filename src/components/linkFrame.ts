@@ -10,7 +10,7 @@ export function linkFrame(isDark: boolean): ViewStyle {
     alignItems: 'center',
     alignSelf: 'flex-start',
     gap: 6,
-    minHeight: 40,
+    minHeight: 44,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 999,

@@ -33,6 +33,7 @@ import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 const platform = (): 'ios' | 'android' | 'web' => (Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web');
 const PHONE = /^[0-9 +().-]{3,25}$/;
@@ -115,6 +116,7 @@ function GestureCard({ g }: { g: Gesture }) {
 
 export default function Solo() {
   const toast = useToast();
+  const help = useHelpNumbers();
   const today = todayISO();
   const profile = useProfile().data;
   const update = useUpdateProfile();
@@ -220,9 +222,10 @@ export default function Solo() {
 
       {/* Si ça ne va pas */}
       <Banner tone="danger" icon="alert-octagon">{tr('sol.urgent')}</Banner>
+      {/* Numéros du PAYS choisi (Réglages, sinon région du téléphone) : ligne d'écoute s'il en existe une, urgence médicale */}
       <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-        <View style={{ flex: 1 }}><Button label="3114" icon="phone" variant="secondary" onPress={() => callNumber('3114', toast)} /></View>
-        <View style={{ flex: 1 }}><Button label="15" icon="phone" variant="secondary" onPress={() => callNumber('15', toast)} /></View>
+        {help.crisis ? <View style={{ flex: 1 }}><Button label={help.crisis} icon="phone" variant="secondary" onPress={() => callNumber(help.crisis!, toast)} /></View> : null}
+        <View style={{ flex: 1 }}><Button label={help.urgent} icon="phone" variant="secondary" onPress={() => callNumber(help.urgent, toast)} /></View>
       </View>
       <Button label={tr('cm.ex.allo')} icon="phone" variant="ghost" onPress={() => callNumber('0800003456', toast)} />
 

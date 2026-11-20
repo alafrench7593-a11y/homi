@@ -104,7 +104,7 @@ export function MonthCalendar<K extends string | null>({ kindOf, styleOf, legend
             const isToday = d === today;
             const dots = dotsOf?.(d) ?? [];
             const isSel = selected === d;
-            const style = { flex: 1, aspectRatio: 1, maxHeight: 44, borderRadius: radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: s?.bg ?? 'transparent', borderWidth: isSel ? 2 : isToday ? 1.5 : 0, borderColor: isSel ? t.colors.text : t.colors.primary, opacity: inMonth ? 1 : 0.35 };
+            const style = { flex: 1, aspectRatio: 1, minHeight: 44, maxHeight: 48, borderRadius: radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: s?.bg ?? 'transparent', borderWidth: isSel ? 2 : isToday ? 1.5 : 0, borderColor: isSel ? t.colors.text : t.colors.primary, opacity: inMonth ? 1 : 0.35 };
             const label = `${fdate(d)}${isToday ? `, ${tr('u5.fert.today')}` : ''}${s ? `, ${s.label}` : ''}${dots.length ? `, ${tr('u5.fert.dots', { count: dots.length })}` : ''}`;
             const inner = (
               <>

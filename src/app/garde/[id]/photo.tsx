@@ -113,7 +113,9 @@ export default function CarePhoto() {
   }
 
   return (
-    <Screen back title={tr('nn.photo.take')} subtitle={child.first_name} tool={false}>
+    <Screen back title={tr('nn.photo.take')} subtitle={child.first_name} tool={false}
+      // légende : « Continuer » dans le pied de l'écran, au-dessus du clavier
+      action={step === 'caption' ? { label: tr('common.continue'), icon: 'arrow-right', onPress: () => setStep('others'), testID: 'care-photo-caption-next' } : undefined}>
       {step === 'intro' ? (
         <>
           {ruleSeen === false ? (
@@ -161,7 +163,6 @@ export default function CarePhoto() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
             {CAPTION_SUGGESTIONS.map((k, i) => <Chip key={k} label={tr(k)} selected={caption === tr(k)} onPress={() => setCaption(tr(k))} testID={`care-caption-${i}`} />)}
           </View>
-          <Button label={tr('common.continue')} full style={{ marginTop: spacing.sm }} onPress={() => setStep('others')} testID="care-photo-caption-next" />
           <Button label={tr('common.cancel')} variant="ghost" full onPress={cancel} />
         </Card>
       ) : null}

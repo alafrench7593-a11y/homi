@@ -97,7 +97,7 @@ export default function Grow() {
     <Screen back title={tr('gr.title')} subtitle={tr('gr.subtitle', { name, age: tr('dc.age', { count: age }) })}
       action={nextStep ? { label: tr('mb.gr.action'), icon: 'check-circle', onPress: () => openStep(nextStep), testID: 'gr-main-action' } : undefined}>
       <View testID="grow" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(233,207,164,0.05)'] : ['rgba(247,244,251,0.18)', 'rgba(244,240,250,0.12)', 'rgba(246,236,218,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2200, borderRadius: 32 }} />
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(233,207,164,0.05)'] : ['rgba(247,244,251,0.18)', 'rgba(244,240,250,0.12)', 'rgba(246,236,218,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2200, borderRadius: 32 }} />
       <GlassSurface fill={t.colors.surface} depth={2} radius={26} padded={spacing.md}>
         <View style={{ gap: 6 }} testID="gr-hero">
           <Text variant="heading">{tr('gr.heroTitle', { name })}</Text>

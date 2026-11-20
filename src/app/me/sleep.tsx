@@ -26,6 +26,7 @@ import type { Nap, ParentSleepInput, ParentSleepLog, Scale5 } from '@/lib/types-
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
 
 const qualityLabels = () => [tr('u8.sleep.q1'), tr('u8.sleep.q2'), tr('u8.sleep.q3'), tr('u8.sleep.q4'), tr('u8.sleep.q5')];
 const fatigueLabels = () => [tr('u8.sleep.f1'), tr('u8.sleep.f2'), tr('u8.sleep.f3'), tr('u8.sleep.f4'), tr('u8.sleep.f5')];
@@ -72,6 +73,7 @@ function TimeField({ label, value, onChange, error, placeholder }: { label: stri
 
 function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolean }) {
   const toast = useToast();
+  const help = useHelpNumbers();
   const what = fatigue && lowMood
     ? tr('u8.sleep.sup.both')
     : fatigue ? tr('u8.sleep.sup.fatigue') : tr('u8.sleep.sup.mood');
@@ -82,7 +84,7 @@ function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolea
       title={tr('u8.sleep.sup.title')}
       action={
         <Row wrap style={{ marginTop: spacing.xs }}>
-          <Button label={tr('u8.sleep.sup.call')} size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL('tel:3114').catch(() => toast(tr('u8.sleep.sup.callFail'), 'error'))} />
+          {help.crisis ? <Button label={tr('u8.sleep.sup.call')} size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL(`tel:${help.crisis}`).catch(() => toast(tr('u8.sleep.sup.callFail'), 'error'))} /> : null}
           <Button label={tr('u8.sleep.sup.help')} size="sm" variant="secondary" icon="life-buoy" onPress={() => router.push('/emergency')} />
         </Row>
       }
