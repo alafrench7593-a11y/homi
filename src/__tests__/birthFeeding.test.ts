@@ -2,11 +2,12 @@
  * Contractions (39), projet de naissance (44), préparation du coparent (48), rééducation et cicatrisation (58/60),
  * stock de lait (73/74), difficultés d'allaitement (76/77), laits infantiles (79) — logique pure.
  */
-import * as fs from 'fs';
-import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require('fs') as { readFileSync(p: string, enc: 'utf8'): string };
+const read = (rel: string) => fs.readFileSync(`${process.cwd()}/src/${rel}`, 'utf8');
 import { setLocale } from '@/i18n';
 import { APP_ROUTES } from '@/lib/routes.generated';
-import { clock, currentSessionId, exportSections, fmtSec, running, sessions, timed, windowStats, type Contraction } from '@/features/birth/contractions';
+import { clock, currentSessionId, exportSections, fmtSec, shortSec, running, sessions, timed, windowStats, type Contraction } from '@/features/birth/contractions';
 import { cleanAnswers, PLAN_SECTIONS, planSections, progress, toggleChoice } from '@/features/birth/birthPlan';
 import { groupOfPosition, keyOfPosition, PREP_ITEMS, prepText, templateRows } from '@/features/birth/partnerPrep';
 import { reminderAt, sessionCounts, splitSessions, validPain, type CareLog } from '@/features/postpartumCare/domain';
@@ -50,10 +51,11 @@ describe('39 chronomètre des contractions : horodatages absolus', () => {
     expect(ex[1].lines[1]).toMatch(/durée 1 min 00 s · intervalle 6 min 00 s/);
     expect(JSON.stringify(ex)).not.toMatch(/partez|urgence|hôpital|alerte/i);
     expect(fmtSec(45)).toBe('45 s');
+    expect(shortSec(65)).toBe('1:05');
     expect(fmtSec(null)).toBe('—');
   });
   it('écran : aucun seuil médical, rappel fixe vers la maternité et les numéros d’urgence', () => {
-    const src = fs.readFileSync(path.join(__dirname, '../app/pregnancy/contractions.tsx'), 'utf8');
+    const src = read('app/pregnancy/contractions.tsx');
     expect(src).toMatch(/ctr\.followAdvice/);
     expect(src).toMatch(/\/emergency/);
     expect(src).not.toMatch(/5-1-1|311|<\s*5\s*\*\s*60/);
@@ -113,7 +115,7 @@ describe('73 / 74 stock de lait : durées sourcées, plus ancien d’abord, aler
   const item = (o: Partial<MilkItem>): MilkItem => ({ id: 'm', household_id: 'h', child_id: null, pumping_id: null, expressed_at: at(0), amount_ml: 100, location: 'fridge', thawed_at: null,
     use_by: defaultUseBy(at(0), 'fridge'), status: 'stored', closed_at: null, note: null, created_by: null, created_at: at(0), updated_at: at(0), ...o });
   it('durées : uniquement celles du guide HOMI (b36.ts, mpedia d’après l’Anses)', () => {
-    const guide = fs.readFileSync(path.join(__dirname, '../content/articles/guide/b36.ts'), 'utf8');
+    const guide = read('content/articles/guide/b36.ts');
     expect(guide).toMatch(/Température ambiante \(19 à 22 °C\) : \*\*1 heure maximum\*\*/);
     expect(guide).toMatch(/Réfrigérateur \(4 °C ou moins\) : \*\*48 heures\*\*/);
     expect(guide).toMatch(/Congélateur \(−18 °C\) : \*\*4 mois\*\*/);

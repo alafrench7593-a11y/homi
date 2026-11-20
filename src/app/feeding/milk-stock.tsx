@@ -31,8 +31,9 @@ const SHORT = { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit
 const DAY = { day: 'numeric', month: 'short', year: 'numeric' } as const;
 const fmtBy = (i: Pick<MilkItem, 'use_by' | 'location'>) => formatDate(i.use_by, i.location === 'freezer' ? DAY : SHORT);
 
-function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping }: {
+function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, onAct }: {
   item: MilkItem | null; visible: boolean; onClose: () => void; householdId: string; childId: string | null; fromPumping: { id: string; at: string; amount_ml: number } | null;
+  onAct: (it: MilkItem, a: 'used' | 'discarded' | 'thaw') => Promise<void>;
 }) {
   const toast = useToast();
   const save = useSaveMilk();
@@ -74,6 +75,13 @@ function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping }
   }
   return (
     <GlassSheet visible onClose={onClose} title={item ? tr('milk.edit') : tr('milk.add')}>
+      {item && item.status === 'stored' ? (
+        <Row wrap gap={spacing.xs}>
+          <Button label={tr('milk.act.used')} icon="check" size="sm" onPress={() => void onAct(item, 'used').then(onClose)} testID="milk-act-used" />
+          <Button label={tr('milk.act.discard')} icon="x" size="sm" variant="secondary" onPress={() => void onAct(item, 'discarded').then(onClose)} testID="milk-act-discard" />
+          {item.location === 'freezer' ? <Button label={tr('milk.act.thaw')} icon="thermometer" size="sm" variant="ghost" onPress={() => void onAct(item, 'thaw').then(onClose)} testID="milk-act-thaw" /> : null}
+        </Row>
+      ) : null}
       {fromPumping ? <Banner tone="info" icon="link">{tr('milk.fromPumping', { ml: fromPumping.amount_ml, time: formatDate(fromPumping.at, SHORT) })}</Banner> : null}
       <Field label={tr('milk.amount')} value={amount} onChangeText={setAmount} keyboardType="number-pad" suffix="ml" testID="milk-f-amount" />
       <WhenFields value={when} onChange={(v) => { setWhen(v); refill(whenToIso(v), loc); }} days="past" dateLabel={tr('milk.expressedOn')} testID="milk-f-when" />
@@ -166,11 +174,7 @@ export default function MilkStock() {
         <ListGroup title={tr('milk.stockTitle')} testID="milk-list">
           {stored.map((it, i) => (
             <ListRow key={it.id} icon={it.location === 'freezer' ? 'box' : it.location === 'room' ? 'home' : 'archive'} title={label(it)} subtitle={sub(it)}
-              onPress={() => setSheet({ item: it, pumping: null })} testID={`milk-row-${i}`}
-              right={<Row gap={spacing.xs}>
-                <Button label={tr('milk.act.usedShort')} size="sm" variant="ghost" onPress={() => void close(it, 'used')} testID={`milk-used-${i}`} />
-                <Button label={tr('milk.act.discard')} size="sm" variant="ghost" onPress={() => void close(it, 'discarded')} testID={`milk-discard-${i}`} />
-              </Row>} />
+              onPress={() => setSheet({ item: it, pumping: null })} testID={`milk-row-${i}`} />
           ))}
         </ListGroup>
       ) : <EmptyState icon="droplet" title={tr('milk.emptyTitle')} body={tr('milk.emptyBody')} action={{ label: tr('milk.add'), onPress: () => setSheet({ item: null, pumping: null }) }} />}
@@ -179,7 +183,7 @@ export default function MilkStock() {
           {closed.slice(0, 20).map((it) => (
             <ListRow key={it.id} icon={it.status === 'used' ? 'check-circle' : 'x-circle'} title={label(it)}
               subtitle={[tr(`milk.status.${it.status}` as TKey), it.closed_at ? formatDate(it.closed_at, SHORT) : null].filter(Boolean).join(' · ')}
-              right={<Button label={tr('milk.delete')} size="sm" variant="ghost" onPress={() => void remove(it)} />} />
+              onPress={() => void remove(it)} />
           ))}
         </ListGroup>
       ) : null}
@@ -191,7 +195,8 @@ export default function MilkStock() {
           <Button label={tr('milk.pumpingLink')} size="sm" variant="ghost" icon="droplet" onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'pumping', child: child.id } })} testID="milk-pumping-link" />
         </Row>
       </View>
-      <ItemSheet item={sheet?.item ?? null} visible={!!sheet} onClose={() => setSheet(null)} householdId={hid} childId={child.id} fromPumping={sheet?.pumping ?? null} />
+      <ItemSheet item={sheet?.item ?? null} visible={!!sheet} onClose={() => setSheet(null)} householdId={hid} childId={child.id} fromPumping={sheet?.pumping ?? null}
+        onAct={(it, a) => (a === 'thaw' ? doThaw(it) : close(it, a))} />
     </Screen>
   );
 }

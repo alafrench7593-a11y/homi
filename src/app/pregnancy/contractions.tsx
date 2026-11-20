@@ -23,9 +23,10 @@ import { useContractions, useDeleteContraction, useSaveContraction } from '@/lib
 import { uuid } from '@/lib/uuid';
 import { buildTextPdf } from '@/lib/documents/pdf';
 import { deliverFile } from '@/lib/deliverFile';
-import { clock, currentSessionId, exportSections, fmtSec, running, sessions, timed, windowStats, type Contraction } from '@/features/birth/contractions';
+import { clock, currentSessionId, exportSections, fmtSec, shortSec, running, sessions, timed, windowStats, type Contraction } from '@/features/birth/contractions';
 
 const HM = { hour: '2-digit', minute: '2-digit', second: '2-digit' } as const;
+const hms = (iso: string) => new Date(iso).toLocaleTimeString(undefined, HM);
 
 function EditSheet({ c, onClose }: { c: Contraction | null; onClose: () => void }) {
   const toast = useToast();
@@ -61,7 +62,7 @@ function EditSheet({ c, onClose }: { c: Contraction | null; onClose: () => void 
       <WhenFields value={start} onChange={setStart} days="past" timeLabel={tr('ctr.startTime')} testID="ctr-edit-start" />
       <View style={{ gap: spacing.xs }}>
         <Text variant="label">{tr('ctr.durationSec')}</Text>
-        <Row wrap>{['30', '45', '60', '75', '90'].map((s) => <Button key={s} label={tr('ctr.fmt.sec', { s })} size="sm" variant={seconds === s ? 'primary' : 'secondary'} onPress={() => setSeconds(s)} />)}</Row>
+        <Row wrap>{['30', '45', '60', '75', '90'].map((s) => <Button key={s} label={tr('ctr.fmt.sec', { s })} size="sm" variant={seconds === s ? 'primary' : 'secondary'} onPress={() => setSeconds(s)} testID={`ctr-edit-dur-${s}`} />)}</Row>
       </View>
       <Button label={tr('common.save')} icon="check" loading={save.isPending} onPress={() => void submit()} testID="ctr-edit-save" />
       <Button label={tr('ctr.delete')} variant="ghost" icon="trash-2" onPress={() => void remove()} testID="ctr-edit-delete" />
@@ -128,25 +129,25 @@ export default function ContractionTimer() {
         <View style={{ alignItems: 'center', gap: spacing.xs }}>
           <Text variant="caption" muted>{live ? tr('ctr.running') : last ? tr('ctr.sinceLast') : tr('ctr.ready')}</Text>
           <Text variant="hero" accessibilityLiveRegion="polite" testID="ctr-clock-value">{live ? clock(live.started_at, now) : last ? clock(last.started_at, now) : '0:00'}</Text>
-          {live ? <Text variant="small" muted>{tr('ctr.startedAt', { time: formatDate(live.started_at, HM) })}</Text> : null}
+          {live ? <Text variant="small" muted>{tr('ctr.startedAt', { time: hms(live.started_at) })}</Text> : null}
         </View>
       </Card>
       <BriefStrip title={tr('ctr.windows')} testID="ctr-stats" items={[
         { value: String(s30.count), label: tr('ctr.stat.count30') },
-        { value: fmtSec(s30.avgDurationSec), label: tr('ctr.stat.duration30') },
-        { value: fmtSec(s30.avgIntervalSec), label: tr('ctr.stat.interval30') },
+        { value: shortSec(s30.avgDurationSec), label: tr('ctr.stat.duration30') },
+        { value: shortSec(s30.avgIntervalSec), label: tr('ctr.stat.interval30') },
       ]} />
       <BriefStrip title={tr('ctr.windows60')} testID="ctr-stats60" items={[
         { value: String(s60.count), label: tr('ctr.stat.count60') },
-        { value: fmtSec(s60.avgDurationSec), label: tr('ctr.stat.duration60') },
-        { value: fmtSec(s60.avgIntervalSec), label: tr('ctr.stat.interval60') },
+        { value: shortSec(s60.avgDurationSec), label: tr('ctr.stat.duration60') },
+        { value: shortSec(s60.avgIntervalSec), label: tr('ctr.stat.interval60') },
       ]} />
       <Text variant="caption" muted>{tr('ctr.statsNote')}</Text>
 
       {session.length ? (
         <ListGroup title={tr('ctr.session')} testID="ctr-session">
           {session.map((c, i) => (
-            <ListRow key={c.id} icon={c.ended_at ? 'clock' : 'activity'} title={formatDate(c.started_at, HM)}
+            <ListRow key={c.id} icon={c.ended_at ? 'clock' : 'activity'} title={hms(c.started_at)}
               subtitle={[c.durationSec == null ? tr('ctr.running') : tr('ctr.duration', { d: fmtSec(c.durationSec) }), c.intervalSec != null ? tr('ctr.interval', { d: fmtSec(c.intervalSec) }) : null, c._pending ? tr('ctr.pending') : null].filter(Boolean).join(' · ')}
               onPress={c.ended_at ? () => setEditing(c) : undefined} testID={`ctr-row-${session.length - 1 - i}`} />
           ))}

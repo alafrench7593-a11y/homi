@@ -71,6 +71,12 @@ export function fmtSec(s: number | null): string {
   return m ? tr('ctr.fmt.minSec', { m, s: String(r).padStart(2, '0') }) : tr('ctr.fmt.sec', { s: r });
 }
 
+/** Valeur courte des tuiles (m:ss) : tient à 320 pt. */
+export function shortSec(s: number | null): string {
+  if (s == null) return '—';
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
 /** Chronomètre affiché : mm:ss (ou h:mm:ss) depuis un instant absolu. */
 export function clock(fromIso: string, now: Date = new Date()): string {
   const s = Math.max(0, Math.floor((now.getTime() - Date.parse(fromIso)) / 1000));

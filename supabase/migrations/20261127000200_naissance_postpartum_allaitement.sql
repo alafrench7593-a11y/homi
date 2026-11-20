@@ -99,10 +99,12 @@ drop trigger if exists checklists_keep_author on public.checklists;
 create trigger checklists_keep_author before insert or update on public.checklists
   for each row execute function public._keep_author('created_by');
 
--- Une liste privée n'existe que pour son autrice ; seule elle peut la partager (ou la reprendre)
+-- Une liste privée n'existe que pour son autrice ; seule elle peut la partager (ou la reprendre). Une liste « coparent »
+-- créée ici et partagée reste entre les parents du foyer (jamais la nounou) ; les anciennes listes (sans autrice) : inchangées.
 create or replace function public._checklist_visible(p_list uuid)
 returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.checklists l where l.id = p_list and (not l.private_to_creator or l.created_by = auth.uid()));
+  select exists (select 1 from public.checklists l where l.id = p_list and (not l.private_to_creator or l.created_by = auth.uid())
+    and (l.kind <> 'coparent' or l.created_by is null or l.created_by = auth.uid() or public._is_household_parent(l.household_id)));
 $$;
 revoke execute on function public._checklist_visible(uuid) from public, anon;
 grant execute on function public._checklist_visible(uuid) to authenticated, service_role;
@@ -125,7 +127,10 @@ create trigger checklists_zprivacy before insert or update on public.checklists 
 
 drop policy if exists checklists_private_scope on public.checklists;
 create policy checklists_private_scope on public.checklists as restrictive for all to authenticated
-  using (not private_to_creator or created_by = auth.uid()) with check (not private_to_creator or created_by = auth.uid());
+  using ((not private_to_creator or created_by = auth.uid())
+         and (kind <> 'coparent' or created_by is null or created_by = auth.uid() or public._is_household_parent(household_id)))
+  with check ((not private_to_creator or created_by = auth.uid())
+         and (kind <> 'coparent' or created_by is null or created_by = auth.uid() or public._is_household_parent(household_id)));
 drop policy if exists checklist_items_private_scope on public.checklist_items;
 create policy checklist_items_private_scope on public.checklist_items as restrictive for all to authenticated
   using (public._checklist_visible(checklist_id)) with check (public._checklist_visible(checklist_id));

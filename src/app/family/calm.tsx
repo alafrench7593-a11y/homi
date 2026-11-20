@@ -179,16 +179,19 @@ export default function CalmMode() {
       ) : null}
 
       {split.sent.length ? (
-        <ListGroup title={tr('calm.sentTitle')} testID="calm-sent">
+        <View style={{ gap: spacing.sm }} testID="calm-sent">
+          <Text variant="heading" accessibilityRole="header">{tr('calm.sentTitle')}</Text>
           {split.sent.map((it) => (
-            <ListRow key={it.id} icon={templateOf(it.template_key)?.icon} title={titleOf(it)} subtitle={[subOf(it), tr('calm.to', { name: nameOf(it.to_user) }), stateLabel(it.state)].filter(Boolean).join(' · ')}
-              testID={`calm-out-${it.template_key}`}
-              right={<Row gap={spacing.xs}>
-                <Button label={tr('calm.changeTimeShort')} size="sm" variant="ghost" onPress={() => setEditing(it)} testID={`calm-time-${it.template_key}`} />
-                <Button label={tr('calm.cancelShort')} size="sm" variant="ghost" onPress={() => void answer(it, 'cancel')} testID={`calm-cancel-${it.template_key}`} />
-              </Row>} />
+            <Card key={it.id} testID={`calm-out-${it.template_key}`}>
+              <Text weight="bold">{titleOf(it)}</Text>
+              <Text variant="small" muted>{[subOf(it), tr('calm.to', { name: nameOf(it.to_user) }), stateLabel(it.state)].filter(Boolean).join(' · ')}</Text>
+              <Row wrap gap={spacing.xs}>
+                <Button label={tr('calm.changeTime')} icon="clock" size="sm" variant="secondary" onPress={() => setEditing(it)} testID={`calm-time-${it.template_key}`} />
+                <Button label={tr('calm.cancel')} size="sm" variant="ghost" onPress={() => void answer(it, 'cancel')} testID={`calm-cancel-${it.template_key}`} />
+              </Row>
+            </Card>
           ))}
-        </ListGroup>
+        </View>
       ) : null}
 
       {other && !split.received.length && !split.sent.length ? (

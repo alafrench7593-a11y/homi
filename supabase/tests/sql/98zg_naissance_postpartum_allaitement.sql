@@ -82,8 +82,11 @@ set request.jwt.claim.sub = :'CP';
 select tests.ok(tests.count($$select * from public.checklist_items where checklist_id = 'f27b0000-0000-4000-8000-0000000000e1'$$) = 2, 'liste partagée par la personne enceinte : visible du second parent');
 update public.checklist_items set done = true, done_by = :'CP' where label = 'Trajet repéré';
 select tests.throws(format($$update public.checklists set private_to_creator = true where id = %L$$, :'L1'), 'liste : seul l''autrice la reprend en privé');
-set request.jwt.claim.sub = :'NN';
-select tests.ok(tests.count($$select * from public.checklist_items where checklist_id = 'f27b0000-0000-4000-8000-0000000000e1'$$) = 0, 'nounou : ne voit pas la préparation à l''accouchement');
+reset role;
+update public.household_members set can_view = array_append(can_view, 'lists') where user_id = :'NN' and not ('lists' = any(can_view));
+set role authenticated; set request.jwt.claim.sub = :'NN';
+select tests.ok(tests.count($$select * from public.checklist_items where checklist_id = 'f27b0000-0000-4000-8000-0000000000e1'$$) = 0
+  and tests.count($$select * from public.checklists where id = 'f27b0000-0000-4000-8000-0000000000e1'$$) = 0, 'nounou (même avec accès aux listes) : ne voit pas la préparation partagée entre parents');
 set request.jwt.claim.sub = :'OW';
 select tests.ok(tests.count($$select * from public.checklist_items where done and done_by = 'f27b0000-0000-4000-8000-000000000002'$$) = 1, 'liste partagée : le second parent a coché');
 update public.checklists set private_to_creator = true where id = :'L1';
