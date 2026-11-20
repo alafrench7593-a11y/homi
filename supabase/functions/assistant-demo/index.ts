@@ -10,7 +10,8 @@
 // 10 / minute pour toute la démo. Les urgences sont orientées sans IA et sans rien décompter.
 import { adminClient, corsHeaders, json, rateLimit, withCors } from '../_shared/http.ts';
 import { readJsonBody } from '../_shared/body.ts';
-import { geminiConfig, geminiGenerate, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { geminiGenerate, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, type ArticleRef } from '../_shared/assistant-prompt.ts';
 import {
@@ -77,7 +78,7 @@ Deno.serve(withCors(async (req) => {
     return json({ answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true, demo: true });
   }
 
-  const gemini = geminiConfig();
+  const gemini = await enabledGeminiConfig(adminClient());
   if (!gemini) {
     console.error('assistant_demo_not_configured');
     return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessayez plus tard.' }, 503);

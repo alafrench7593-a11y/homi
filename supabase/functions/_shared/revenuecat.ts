@@ -39,6 +39,9 @@ export type RcEvent = {
   aliases?: string[];
   product_id?: string;
   new_product_id?: string;
+  /** Achats non renouvelables (packs de crédits) : identifiant de transaction de la boutique */
+  transaction_id?: string | null;
+  original_transaction_id?: string | null;
   entitlement_ids?: string[] | null;
   entitlement_id?: string | null;
   period_type?: string;

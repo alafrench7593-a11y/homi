@@ -6,7 +6,7 @@
 // mentions et coordonnées neutralisées ; jamais de pseudonyme ni de donnée de l'application.
 // Sans GEMINI_API_KEY : { ai: 'not_configured' } — l'application l'indique, jamais un faux résumé.
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
-import { geminiConfig } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { readJsonBody } from '../_shared/body.ts';
 import { MIN_COMMENTS_FOR_SUMMARY, parseRequest } from '../_shared/community-ai.ts';
 import { runSummary, runTranslation } from '../_shared/community-ai-run.ts';
@@ -23,7 +23,7 @@ Deno.serve(withCors(async (req) => {
   const { data: premium } = await auth.client.rpc('has_premium');
   if (!premium) return json({ error: 'premium_required', message: 'Fonction Premium.' }, 402);
 
-  const cfg = geminiConfig();
+  const cfg = await enabledGeminiConfig(adminClient());
   if (!cfg) return json({ ai: 'not_configured', message: 'Le résumé et la traduction par IA ne sont pas encore configurés.' });
 
   const admin = adminClient();

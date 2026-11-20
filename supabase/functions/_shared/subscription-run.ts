@@ -14,6 +14,7 @@ import {
   concernsEntitlement, DEFAULT_ENTITLEMENT, eventUserId, grantsFromSubscriber, isDuplicate, isRefund, isStale, noticeFor, subscriptionFromEvent,
   subscriptionFromSubscriber, transferIds, type GrantRow, type RcEvent, type RcSubscriberBody, type SubscriptionRow,
 } from './revenuecat.ts';
+import { grantFor, packActionFor, type CreditPackId, type GrantAction } from './credits.ts';
 
 const RC_API = 'https://api.revenuecat.com/v1/subscribers/';
 const PREMIUM_STATUSES = new Set(['trial', 'active', 'grace', 'cancelled', 'paused']);
@@ -32,6 +33,37 @@ export interface SubscriptionDb {
   premium(userId: string): Promise<boolean>;
   /** Droits achetés hors Premium (Assistant IA, outils à vie) : remplace l'état connu de la personne. */
   writeGrants?(userId: string, grants: GrantRow[]): Promise<boolean>;
+}
+
+/** Grand livre des crédits IA (RPC service_role : 20261126000100_credits_ia.sql). Toutes les écritures sont idempotentes. */
+export interface CreditsLedger {
+  grantMonthly(userId: string, g: GrantAction): Promise<boolean>;
+  purchase(userId: string, productId: CreditPackId, transactionId: string): Promise<boolean>;
+  /** 'not_found' : achat inconnu (jamais crédité) — rien à retirer. */
+  refund(transactionId: string): Promise<'ok' | 'not_found' | 'error'>;
+}
+
+export function supabaseCredits(admin: SupabaseClient): CreditsLedger {
+  const ok = (r: { data: unknown; error: unknown }) => !r.error && (r.data as { ok?: boolean } | null)?.ok === true;
+  return {
+    async grantMonthly(userId, g) {
+      const r = await admin.rpc('credits_grant_monthly', { p_payer: userId, p_tier: g.tier, p_period_end: g.periodEnd, p_trial: g.trial, p_idempotency_key: g.key, p_source: 'revenuecat' });
+      if (!ok(r)) console.error('credits_grant_error', (r.error as { code?: string } | null)?.code ?? 'refused');
+      return ok(r);
+    },
+    async purchase(userId, productId, transactionId) {
+      const r = await admin.rpc('credits_purchase', { p_user: userId, p_product: productId, p_transaction_id: transactionId, p_source: 'revenuecat' });
+      if (!ok(r)) console.error('credits_purchase_error', (r.error as { code?: string } | null)?.code ?? 'refused');
+      return ok(r);
+    },
+    async refund(transactionId) {
+      const r = await admin.rpc('credits_refund_purchase', { p_transaction_id: transactionId, p_source: 'revenuecat' });
+      if (ok(r)) return 'ok';
+      if (!r.error && (r.data as { error?: string } | null)?.error === 'not_found') return 'not_found';
+      console.error('credits_refund_error', (r.error as { code?: string } | null)?.code ?? 'refused');
+      return 'error';
+    },
+  };
 }
 
 export interface RevenueCatApi {
@@ -67,7 +99,9 @@ export function supabaseDb(admin: SupabaseClient): SubscriptionDb {
       return (data as StoredRow | null) ?? null;
     },
     async write(row) {
-      const { error } = await admin.from('subscriptions').upsert({ ...row, updated_at: new Date().toISOString() });
+      // `tier` est une colonne générée (d'après product_id) : jamais écrite
+      const { tier: _tier, ...rest } = row as StoredRow & { tier?: unknown };
+      const { error } = await admin.from('subscriptions').upsert({ ...rest, updated_at: new Date().toISOString() });
       if (error) console.error('subscription_upsert_error', error.code);
       return !error;
     },
@@ -132,7 +166,16 @@ export interface WebhookDeps {
   entitlement: string;
   api: RevenueCatApi | null;
   db: SubscriptionDb;
+  /** Crédits IA : packs consommables et octrois mensuels (absent : événements de packs refusés, octrois ignorés). */
+  credits?: CreditsLedger | null;
   now?: () => number;
+}
+
+/** Octroi mensuel (idempotent) après un événement d'abonnement ; false : RevenueCat doit réessayer. */
+async function grantCredits(event: RcEvent, row: Partial<SubscriptionRow>, userId: string, deps: WebhookDeps): Promise<boolean> {
+  const g = grantFor(event, row, userId);
+  if (!g || !deps.credits) return true;
+  return deps.credits.grantMonthly(userId, g);
 }
 
 export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Response> {
@@ -155,6 +198,21 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   }
   if (!event || typeof event.type !== 'string') return json({ error: 'bad_request' }, 400);
   if (event.type === 'TEST') return json({ ok: true, test: true });
+
+  // Packs de crédits consommables (aucun droit RevenueCat) : idempotence sur l'identifiant de transaction
+  const pack = packActionFor(event);
+  if (pack) {
+    const uid = eventUserId(event);
+    if (!uid) return json({ ok: true, ignored: 'anonymous_user' });
+    if (!deps.credits) { console.error('credits_not_configured'); return json({ error: 'not_configured' }, 500); }
+    if (pack.kind === 'purchase') {
+      return (await deps.credits.purchase(uid, pack.productId, pack.transactionId)) ? json({ ok: true, credits: 'purchase' }) : json({ error: 'server_error' }, 500);
+    }
+    const r = await deps.credits.refund(pack.transactionId);
+    if (r === 'error') return json({ error: 'server_error' }, 500);
+    return json({ ok: true, credits: 'refund', ...(r === 'not_found' ? { ignored: 'unknown_purchase' } : {}) });
+  }
+
   if (!concernsEntitlement(event, deps.entitlement)) {
     // Assistant IA, outils à vie : la fiche RevenueCat fait foi pour ces droits
     const uid = eventUserId(event);
@@ -172,7 +230,11 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
 
   const current = await deps.db.read(userId);
   if (isStale(event, current?.last_event_at)) return json({ ok: true, ignored: 'stale_event' });
-  if (isDuplicate(event, current)) return json({ ok: true, ignored: 'duplicate_event' });
+  if (isDuplicate(event, current)) {
+    // Réessai après un échec de l'octroi : l'abonnement est déjà écrit, l'octroi (idempotent) est retenté
+    if (current && !(await grantCredits(event, current, userId, deps))) return json({ error: 'server_error' }, 500);
+    return json({ ok: true, ignored: 'duplicate_event' });
+  }
 
   // Changement de formule : le produit effectif est relu dans l'API quand elle est disponible ; sinon, l'ancien
   // produit reste affiché jusqu'au RENEWAL du nouveau (un changement « différé » ne prend effet qu'à l'échéance).
@@ -197,6 +259,8 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   }
 
   if (!(await deps.db.write({ user_id: userId, ...row }))) return json({ error: 'server_error' }, 500); // RevenueCat réessaiera
+  // Crédits mensuels : INITIAL_PURCHASE, RENEWAL, PRODUCT_CHANGE vers Famille (jamais déclenchés par l'application)
+  if (!(await grantCredits(event, row, userId, deps))) return json({ error: 'server_error' }, 500);
 
   const notice = noticeFor(event, row.status, await deps.db.locale(userId).catch(() => null));
   if (notice) await deps.db.notify(userId, notice).catch(() => undefined);
@@ -220,7 +284,7 @@ async function handleTransfer(event: RcEvent, deps: WebhookDeps, now: number): P
   const source = from.length ? await deps.db.read(from[0]) : null;
   for (const id of to) {
     if (!source) continue;
-    const { user_id: _old, ...copy } = source;
+    const { user_id: _old, tier: _tier, ...copy } = source as StoredRow & { tier?: unknown };
     if (!(await deps.db.write({ ...copy, user_id: id, ...mark }))) return json({ error: 'server_error' }, 500);
   }
   for (const id of from) {

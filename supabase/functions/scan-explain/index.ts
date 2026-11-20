@@ -5,7 +5,7 @@
 // contenant une promesse d'innocuité ou un autre verdict est rejetée. Sans GEMINI_API_KEY :
 // { ai: 'not_configured' } — l'application affiche alors l'explication des règles, jamais un faux texte IA.
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
-import { geminiConfig } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { sanitizePayload } from '../_shared/scan-explain.ts';
 import { runExplain } from '../_shared/scan-explain-run.ts';
@@ -22,7 +22,7 @@ Deno.serve(withCors(async (req) => {
   const payload = sanitizePayload(body);
   if (!payload) return json({ error: 'bad_request', message: 'Résultat d’analyse invalide.' }, 400);
 
-  const cfg = geminiConfig();
+  const cfg = await enabledGeminiConfig(adminClient());
   if (!cfg) return json({ ai: 'not_configured', message: 'Explication IA non configurée.' });
 
   const admin = adminClient();

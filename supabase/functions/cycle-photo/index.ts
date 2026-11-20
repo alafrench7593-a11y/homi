@@ -7,21 +7,24 @@
 // Sans GEMINI_API_KEY : 503 { error: 'ai_not_configured' } — jamais de faux résultat.
 import { adminClient, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
 import { geminiConfig } from '../_shared/gemini.ts';
+import { aiSwitchOpen } from '../_shared/ai-switch.ts';
 import { handleCyclePhoto } from './handler.ts';
 
-Deno.serve(withCors((req) =>
-  handleCyclePhoto(req, {
+// Interrupteur serveur de l'IA (credit_settings « ai.enabled ») : IA coupée = IA non configurée
+Deno.serve(withCors(async (req) => {
+  const open = await aiSwitchOpen(adminClient());
+  return handleCyclePhoto(req, {
     authenticate: async (r) => {
       const auth = await requireUser(r);
       if (auth instanceof Response) return auth;
       const locked = await requirePremium(auth.client); // Premium strict
       return locked ?? { userId: auth.user.id };
     },
-    config: geminiConfig,
+    config: () => (open ? geminiConfig() : null),
     rateLimit: (userId) => rateLimit(adminClient(), `cycle_photo:${userId}`, 20, 3600),
     recordConsent: async (userId) => {
       const { error } = await adminClient().from('consents').insert({ user_id: userId, purpose: 'cycle_photo_ai', granted: true });
       return !error;
     },
-  })
-));
+  });
+}));

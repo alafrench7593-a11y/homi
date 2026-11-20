@@ -1,7 +1,8 @@
 // Lecture automatique d'un document : extrait UNIQUEMENT les éléments clairement écrits
 // (date, terme, nom de l'examen, mesures, poids fœtal estimé), présentés « à vérifier ».
 // Aucune interprétation. POST { document_id }
-import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
+import { geminiGenerate, GeminiError } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
 import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { READABLE_MIME } from '../_shared/document-read.ts';
@@ -49,7 +50,7 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'owner_consent_required', message: 'La personne qui a ajouté ce document n’a pas activé la lecture automatique.' }, 403);
   }
 
-  const gemini = geminiConfig();
+  const gemini = await enabledGeminiConfig(adminClient());
   if (!gemini) return json({ fields: null, status: 'not_configured', message: 'Lecture automatique non configurée : la clé GEMINI_API_KEY doit être ajoutée aux secrets Supabase.' });
 
   const { data: file, error } = await admin.storage.from('documents').download(doc.storage_path);

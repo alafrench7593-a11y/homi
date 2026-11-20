@@ -6,9 +6,23 @@
 //  - JSON (application/json) : erreurs, orientation urgente, refus, ou réponse complète si stream=false ;
 //  - SSE (text/event-stream) si stream=true : événements « meta », « delta » ({ text }), puis « done »
 //    (même contenu que la réponse JSON complète) ou « error ».
+//
+// Crédits IA (26/11/2026, docs/CREDITS_IA.md) — à la place de l'ancien compteur assistant_usage :
+//  - SÉCURITÉ AVANT TOUT : la détection de détresse et les réponses de sécurité ne consomment JAMAIS de crédit et ne
+//    sont JAMAIS bloquées par un solde nul (elles passent avant toute vérification de crédit) ;
+//  - réserve (credits_reserve, coût lu dans credit_settings) AVANT l'appel à Gemini ; refus clair
+//    402 « insufficient_credits » (solde, date de renouvellement) qui permet à l'application de proposer un pack ;
+//  - débit (credits_commit) seulement quand la réponse a été LIVRÉE ; restitution (credits_release) si Gemini échoue,
+//    si la réponse est bloquée, ou si la diffusion est coupée ; une réserve orpheline expire d'elle-même ;
+//  - clé d'idempotence : request_id envoyé par l'application (même question renvoyée → aucun second débit) ;
+//  - interrupteur serveur « ai.enabled » (credit_settings) : l'IA se coupe sans nouvelle version de l'application ;
+//  - modèle : secret GEMINI_MODEL (clé GEMINI_API_KEY d'un projet Google AI en facturation payante).
+// Journaux : jamais le texte d'une question ni d'une réponse (codes d'état seulement).
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { readJsonBody } from '../_shared/body.ts';
-import { geminiConfig, geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
+import { billedSseStream, ClientGone, requestKey, reserveRefusal, settle, type CreditsGate, type ReserveResult } from '../_shared/credits.ts';
 import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
 import {
@@ -50,7 +64,7 @@ Deno.serve(withCors(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   // 0) Authentification : le JWT est vérifié auprès de Supabase Auth ; `db` agit AVEC les droits
-  //    de la personne (RLS). Le client « service » ne sert qu'au quota et à l'écriture des messages.
+  //    de la personne (RLS). Le client « service » ne sert qu'aux crédits et à l'écriture des messages.
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
   const { user, client: db } = auth;
@@ -60,7 +74,7 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessayez dans une minute.' }, 429);
   }
 
-  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown };
+  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown; request_id?: unknown };
   const raw = await readJsonBody(req, 256 * 1024);
   if (!raw) return json({ error: 'too_large' }, 413);
   body = raw;
@@ -150,15 +164,15 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'consent_required', message: 'Pour utiliser l’assistant, acceptez d’abord ses conditions d’utilisation.' }, 403);
   }
 
-  // 2) Tentative de détournement des consignes : refus poli, sans IA ni quota
+  // 2) Tentative de détournement des consignes : refus poli, sans IA ni crédit
   if (looksLikePromptInjection(message)) {
     const structured = { ...INJECTION_REFUSAL, updated_on: todayIso() };
     return json({ conversation_id: requestedConversation, message_id: null, answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true });
   }
 
-  // 3) Quota (gratuit / premium), vérifié et réservé côté serveur
-  // L'IA n'est pas configurée : on le dit clairement, sans consommer de question ni simuler de réponse.
-  const geminiOrNull = geminiConfig();
+  // 3) IA configurée ET ouverte (clé Gemini + interrupteur serveur « ai.enabled ») : sinon on le dit clairement,
+  //    sans réserver de crédit ni simuler de réponse.
+  const geminiOrNull = await enabledGeminiConfig(admin);
   if (!geminiOrNull) {
     // Message discret pour l'utilisatrice ; l'état détaillé est dans Réglages › État des services (mode développeur)
     console.error('assistant_not_configured');
@@ -166,20 +180,40 @@ Deno.serve(withCors(async (req) => {
   }
   const gemini = geminiOrNull;
 
-  const { data: quotaRows, error: quotaErr } = await admin.rpc('consume_assistant_quota', { p_user: user.id });
-  if (quotaErr) return json({ error: 'server_error' }, 500);
-  const quota = quotaRows?.[0];
-  if (!quota?.allowed) {
-    // Premium strict (20261108000300 + 20261109000100) : sans Premium ni offre « Assistant IA », le quota vaut 0
-    if (!quota?.quota) return json({ error: 'premium_required', message: 'L’assistant fait partie de Premium (ou de l’offre Assistant IA).' }, 402);
-    return json({ error: 'quota_reached', message: `Vous avez utilisé vos ${quota?.quota ?? ''} questions de ce mois.`, used: quota?.used, quota: quota?.quota }, 402);
-  }
-  const quotaOut = { used: quota.used as number, limit: quota.quota as number, remaining: Math.max(0, (quota.quota as number) - (quota.used as number)) };
+  // 4) Crédits : réserve atomique côté serveur (Premium strict : sans abonnement, aucun crédit)
+  const gate: CreditsGate = {
+    reserve: async (action, key) => {
+      const { data, error } = await admin.rpc('credits_reserve', { p_user: user.id, p_action: action, p_idempotency_key: key });
+      return (error || !data ? { ok: false, error: 'server_error' } : data) as ReserveResult;
+    },
+    commit: async (id) => {
+      const { data, error } = await admin.rpc('credits_commit', { p_user: user.id, p_reservation: id });
+      return !error && (data as { ok?: boolean } | null)?.ok === true;
+    },
+    release: async (id, reason) => {
+      const { data, error } = await admin.rpc('credits_release', { p_user: user.id, p_reservation: id, p_reason: reason });
+      return !error && (data as { ok?: boolean } | null)?.ok === true;
+    },
+  };
+  const reservation = await gate.reserve('assistant_question', requestKey('assistant', user.id, body.request_id));
+  const refusal = reserveRefusal(reservation);
+  if (refusal) return json(refusal.body, refusal.status);
+  if (!reservation.ok) return json({ error: 'server_error' }, 500);
+  const reservationId = reservation.reservation_id;
+  const creditsOut = {
+    cost: reservation.cost,
+    monthly_remaining: reservation.monthly_remaining ?? null,
+    purchased_remaining: reservation.purchased_remaining ?? null,
+    next_renewal: reservation.next_renewal ?? null,
+  };
+  const charge = (delivered: boolean, reason: string) => settle(gate, reservationId, delivered, reason).then((r) => {
+    if (r === 'failed') console.error('credits_settle_failed', delivered ? 'commit' : 'release'); // rattrapé par l'expiration des réserves
+  });
 
-  // 4) Contexte : UNIQUEMENT si la personne l'a autorisé pour cette conversation, nettoyé ici
+  // 5) Contexte : UNIQUEMENT si la personne l'a autorisé pour cette conversation, nettoyé ici
   const context: AssistantContext | null = useContext ? sanitizeContext(body.context) : null;
 
-  // 5) Articles publiés de la bibliothèque liés à la question (lecture sous RLS)
+  // 6) Articles publiés de la bibliothèque liés à la question (lecture sous RLS)
   const words = message
     .toLowerCase()
     .normalize('NFD')
@@ -195,7 +229,7 @@ Deno.serve(withCors(async (req) => {
   }
   const articleRefs = articles.map((a, i) => ({ ref: i + 1, title: a.title, slug: a.slug, sources: a.sources }));
 
-  // 6) Historique de la conversation (sous RLS : uniquement celle de la personne)
+  // 7) Historique de la conversation (sous RLS : uniquement celle de la personne)
   const history: { role: 'user' | 'assistant'; content: string }[] = [];
   if (requestedConversation) {
     const { data: msgs } = await db
@@ -237,7 +271,7 @@ Deno.serve(withCors(async (req) => {
       safety: 'none' as const,
       demo: devMode,
       model: gemini.model,
-      quota: quotaOut,
+      credits: creditsOut,
       stored: !!saved.messageId,
     };
   }
@@ -248,60 +282,54 @@ Deno.serve(withCors(async (req) => {
     maxOutputTokens: MAX_TOKENS,
   };
 
-  const unavailable = async () => {
-    await admin.rpc('refund_assistant_quota', { p_user: user.id });
-    return { error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessayez dans un instant.' };
-  };
+  const unavailable = { error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessayez dans un instant. Aucun crédit n’a été utilisé.' };
 
-  // 7a) Réponse complète (sans diffusion)
+  // 8a) Réponse complète (sans diffusion) : débit seulement si une réponse de l'IA est rendue
   if (!wantsStream) {
     let raw: string;
     try {
       raw = (await geminiGenerate(gemini, geminiRequest)).trim();
     } catch (e) {
       console.error('llm_error', e instanceof GeminiError ? e.status : 'unknown'); // jamais le contenu
-      if (e instanceof GeminiError && e.blocked) return json(await finalize(''));
-      return json(await unavailable(), 503);
+      const blocked = e instanceof GeminiError && e.blocked;
+      await charge(false, blocked ? 'blocked' : 'llm_error');
+      // Réponse bloquée : réponse prudente, jamais facturée
+      if (blocked) return json({ ...(await finalize('')), credits: { ...creditsOut, charged: false } });
+      return json(unavailable, 503);
     }
-    return json(await finalize(raw));
+    const out = await finalize(raw);
+    await charge(!!raw, raw ? 'delivered' : 'empty');
+    return json({ ...out, credits: { ...creditsOut, charged: !!raw } });
   }
 
-  // 7b) Diffusion en continu (Server-Sent Events)
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const send = (event: string, data: unknown) => {
-        try {
-          controller.enqueue(encoder.encode(encodeSse(event, data)));
-        } catch {
-          // l'application a fermé la connexion : on termine quand même (enregistrement de la réponse)
-        }
-      };
-      const close = () => {
-        try {
-          controller.close();
-        } catch {
-          // déjà fermé
-        }
-      };
-      send('meta', { conversation_id: requestedConversation, quota: quotaOut, demo: devMode });
+  // 8b) Diffusion en continu (Server-Sent Events) : débit seulement si « done » est remis à une connexion ouverte
+  const stream = billedSseStream({
+    encode: encodeSse,
+    meta: { conversation_id: requestedConversation, credits: creditsOut, demo: devMode },
+    settle: (delivered, reason) => charge(delivered, reason),
+    produce: async (emit) => {
       let raw = '';
       try {
-        try {
-          await geminiStream(gemini, geminiRequest, (t) => {
-            raw += t;
-            send('delta', { text: t });
-          });
-        } catch (e) {
-          if (!(e instanceof GeminiError && e.blocked)) throw e;
-          raw = ''; // réponse bloquée : remplacée par la réponse prudente
-        }
-        send('done', await finalize(raw.trim()));
+        await geminiStream(gemini, geminiRequest, (t) => {
+          raw += t;
+          // L'application est partie : on arrête de lire Gemini (aucun coût inutile) et la réserve est restituée
+          if (!emit('delta', { text: t })) throw new ClientGone();
+        });
       } catch (e) {
-        console.error('assistant_stream_error', e instanceof GeminiError ? e.status : e instanceof Error ? e.name : 'unknown'); // jamais le texte de l'erreur (peut citer une saisie)
-        send('error', raw ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessayez dans un instant.' } : await unavailable());
+        if (e instanceof ClientGone) throw e;
+        if (!(e instanceof GeminiError && e.blocked)) {
+          console.error('assistant_stream_error', e instanceof GeminiError ? e.status : e instanceof Error ? e.name : 'unknown'); // jamais le texte
+          return {
+            error: raw
+              ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessayez dans un instant. Aucun crédit n’a été utilisé.' }
+              : unavailable,
+          };
+        }
+        raw = ''; // réponse bloquée : remplacée par la réponse prudente, sans débit
       }
-      close();
+      const charged = raw.trim().length > 0;
+      const out = await finalize(raw.trim());
+      return { done: { ...out, credits: { ...creditsOut, charged } }, charge: charged };
     },
   });
   return new Response(stream, {

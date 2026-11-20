@@ -2,7 +2,8 @@
 // « lecture automatique des documents ». Le document n'est accessible que si la RLS l'autorise pour CETTE personne.
 // Seul le fichier est envoyé (aucun nom, aucun profil). Le texte est renvoyé à l'application, qui le présente « à vérifier ».
 // Le texte n'est jamais écrit dans les journaux. POST { document_id }
-import { geminiConfig, geminiGenerate, GeminiError } from '../_shared/gemini.ts';
+import { geminiGenerate, GeminiError } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
 import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { MAX_READ_BYTES, parseReadResponse, READ_INSTRUCTIONS, READ_SCHEMA, READABLE_MIME, toBase64 } from '../_shared/document-read.ts';
@@ -33,7 +34,7 @@ Deno.serve(withCors(async (req) => {
     return json({ error: 'owner_consent_required' }, 403);
   }
 
-  const gemini = geminiConfig();
+  const gemini = await enabledGeminiConfig(adminClient());
   if (!gemini) return json({ status: 'not_configured' });
 
   const { data: file, error } = await admin.storage.from('documents').download(doc.storage_path);
