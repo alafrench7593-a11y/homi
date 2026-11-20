@@ -17,14 +17,14 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming, ReduceMotion } from 'react-native-reanimated';
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { router, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Glass, GLASS_TAB_BAR, GlassButton, GlassIconButton } from '@/components/glass';
 import { useToast } from '@/components/Overlays';
 import { useDemoInset } from '@/components/demoInset';
 import { haptic, Text } from '@/components/ui';
-import { curves, motionSpring, useMotion, type MotionLevel } from '@/motion';
+import { motionSpring, motionTiming, useMotion, type MotionLevel } from '@/motion';
 import { useUserId } from '@/lib/auth';
 import { isDemo } from '@/lib/backend';
 import { useMemberships } from '@/lib/data/hooks';
@@ -42,6 +42,7 @@ import {
 } from './model';
 import { lastEmergencyCall, tourDispatch, tourEvent, tourProfileCount, useTourProgress, useTourStore } from './store';
 import { ToolHintBubble } from './ToolHint';
+import { TourHand } from './TourHand';
 import { useScreenOpen } from './TourEntry';
 
 /** Actions du réducteur (constantes : aucune chaîne dans le JSX). */
@@ -55,7 +56,13 @@ const MIN_BUBBLE = 150;
 const STRIP_H = 56;
 const GAP = 12;
 const VEIL = 2400;
-const MEASURE_MS = 280;
+/** Mesure de l'élément : à chaque image (≈ 30 ms) pendant `SETTLE_MS` après une étape ou un défilement, puis au repos. */
+const MEASURE_FAST_MS = 32;
+const MEASURE_IDLE_MS = 450;
+const SETTLE_MS = 700;
+/** Arrivée de la découpe : elle part de l'élément agrandi de `ARRIVE_GROW` (jamais du centre de l'écran). */
+const ARRIVE_GROW = 10;
+const ARRIVE_MS = 160;
 /** Délai avant « Je ne trouve pas cet élément » (le temps d'un défilement et d'un chargement). */
 const NOT_FOUND_MS = 2200;
 const REVEAL_TRIES = 4;
@@ -63,15 +70,21 @@ const REVEAL_GAP_MS = 700;
 
 const sameRect = (a: Rect | null, b: Rect | null) => (!a || !b ? a === b : Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1 && Math.abs(a.width - b.width) < 1 && Math.abs(a.height - b.height) < 1);
 
-/** Premier élément VISIBLE (sur l'écran affiché) de chaque ancre, mesuré dans le repère de la superposition. */
+/**
+ * Premier élément VISIBLE (sur l'écran affiché) de chaque ancre, mesuré dans le repère de la superposition. Toutes les
+ * mesures partent EN MÊME TEMPS (une seule attente, au lieu d'une par élément les unes après les autres).
+ */
 async function measureAnchors(ids: string[], origin: { x: number; y: number }, view: { top: number; bottom: number; width: number }) {
   const found: Rect[] = [];
   const present: AnchorEntry[] = [];
-  for (const id of ids) {
+  const perId = await Promise.all(ids.map(async (id) => {
     const entries = anchorEntries(id).filter((e) => e.focused());
+    const rects = await Promise.all(entries.map((e) => e.measure()));
+    return { entries, rects };
+  }));
+  for (const { entries, rects } of perId) {
     present.push(...entries.slice(0, 1));
-    for (const e of entries) {
-      const r = await e.measure();
+    for (const r of rects) {
       if (!r) continue;
       const local = { x: r.x - origin.x, y: r.y - origin.y, width: r.width, height: r.height };
       if (rectVisible(local, view)) { found.push(local); break; }
@@ -79,6 +92,14 @@ async function measureAnchors(ids: string[], origin: { x: number; y: number }, v
   }
   return { found, present };
 }
+
+/** Origine de la superposition dans la fenêtre (plein écran : 0,0) — mémorisée, remesurée en parallèle des ancres. */
+let lastOrigin = { x: 0, y: 0 };
+const EMPTY_GEO = { hole: null, touch: null, lost: false };
+/** Nouvelle étape : l'ancienne découpe reste en place le temps de trouver la nouvelle cible (jamais de voile plein qui clignote). */
+const KEEP_PREV_MS = 400;
+/** Délai avant d'afficher la bulle seule pendant la recherche de l'élément (la mesure arrive d'ordinaire en 1 à 3 images). */
+const SEARCH_GRACE_MS = 300;
 
 /** Hôte : progression du compte, événements réels de l'application, superposition, pastille, aides contextuelles. */
 export function TourHost() {
@@ -144,56 +165,78 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
   const demoInset = useDemoInset();
   const rootRef = useRef<View>(null);
   const [frame, setFrame] = useState({ width: win.width, height: win.height });
-  const [hole, setHole] = useState<Rect | null>(null);
-  const [touch, setTouch] = useState<Rect | null>(null);
-  const [lost, setLost] = useState(false);
+  // Découpe, zone touchable et « introuvable » dans UN état : une mesure = au plus un rendu (jamais deux à la suite)
+  const [geo, setGeo] = useState<{ hole: Rect | null; touch: Rect | null; lost: boolean }>(EMPTY_GEO);
+  const { hole, touch, lost } = geo;
+  // Recherche de l'élément : la bulle (progression, Plus tard, Passer) apparaît seule après `SEARCH_GRACE_MS` si la
+  // découpe n'est toujours pas là — jamais posée au centre puis déplacée quand la mesure arrive tout de suite
+  const [waited, setWaited] = useState(false);
+  useEffect(() => { setWaited(false); const id = setTimeout(() => setWaited(true), SEARCH_GRACE_MS); return () => clearTimeout(id); }, [index, path]);
   const revealed = useRef(0);
   const lastReveal = useRef(0);
+  const settleFrom = useRef(Date.now());
   /** Défilement jusqu'à l'élément : 4 essais au plus, espacés (on ne relance pas pendant un défilement animé). */
   const tryReveal = async (e: AnchorEntry) => {
     const now = Date.now();
     if (revealed.current >= REVEAL_TRIES || now - lastReveal.current < REVEAL_GAP_MS) return;
     revealed.current++;
     lastReveal.current = now;
+    settleFrom.current = now; // la découpe suit le défilement image par image
     await e.reveal();
   };
   // Nouvelle étape : la découpe GLISSE de l'ancienne cible à la nouvelle (même vue, pas de remontage)
-  useEffect(() => { revealed.current = 0; lastReveal.current = 0; setLost(false); setTouch(null); }, [index, path]);
+  useEffect(() => {
+    revealed.current = 0; lastReveal.current = 0; settleFrom.current = Date.now();
+    setGeo((g) => (g.lost || g.touch ? { hole: g.hole, touch: null, lost: false } : g));
+  }, [index, path]);
   const ids = useMemo(() => stepAnchors(step, path), [step, path]);
   const touchIds = useMemo(() => (step.touch ?? []), [step]);
 
-  // ---- mesure de l'élément réel (au changement d'une ancre, et régulièrement : défilement, clavier, chargement)
+  // ---- mesure de l'élément réel : tout de suite, puis à chaque image pendant l'arrivée (défilement, chargement),
+  //      puis au repos ; et à chaque changement d'une ancre (onLayout)
   useEffect(() => {
     let alive = true;
     const started = Date.now();
     let busy = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const run = async () => {
       if (busy) return;
       busy = true;
       try { await measure(); } finally { busy = false; }
     };
+    const loop = () => {
+      void run().then(() => {
+        if (!alive) return;
+        timer = setTimeout(loop, Date.now() - settleFrom.current < SETTLE_MS ? MEASURE_FAST_MS : MEASURE_IDLE_MS);
+      });
+    };
     const measure = async () => {
-      const o = await measureNode(rootRef.current as never);
-      const origin = { x: o?.x ?? 0, y: o?.y ?? 0 };
       // Zone utile : sous la zone sûre et la pastille « Démo » ; au-dessus de la barre d'onglets sur un onglet
       const dock = isTabPath(path) ? GLASS_TAB_BAR.height + GLASS_TAB_BAR.inset * 2 + GLASS_TAB_BAR.floatGap + insets.bottom : 0;
       const targetsDock = ids.includes('quick-add');
       const view = { top: insets.top + demoInset + 4, bottom: frame.height - (targetsDock ? 4 : dock), width: frame.width };
-      const { found, present } = await measureAnchors(ids, origin, view);
+      // origine, éléments et zones gestuelles mesurés ensemble (l'origine précédente sert tant que la nouvelle n'est pas là)
+      const [o, main, extra] = await Promise.all([
+        measureNode(rootRef.current as never),
+        measureAnchors(ids, lastOrigin, view),
+        touchIds.length ? measureAnchors(touchIds, lastOrigin, view) : Promise.resolve(null),
+      ]);
       if (!alive) return;
+      if (o && (Math.abs(o.x - lastOrigin.x) > 0.5 || Math.abs(o.y - lastOrigin.y) > 0.5)) { lastOrigin = { x: o.x, y: o.y }; return measure(); }
+      const { found, present } = main;
       const u = unionRect(found);
       // Plusieurs éléments (prochaine action + actions rapides) : jamais plus de 55 % de l'écran découpé
       // (et jamais sous la barre d'onglets : elle reste hors de la découpe)
       const clamped = u ? { ...u, height: Math.max(24, Math.min(u.height, frame.height * 0.55, view.bottom - PAD - u.y)) } : null;
       const next = clamped ? holeFor(clamped, PAD, frame) : null;
-      setHole((h) => (sameRect(h, next) ? h : next));
-      if (touchIds.length) {
-        const extra = await measureAnchors(touchIds, origin, view);
-        const tu = unionRect([...(next ? [next] : []), ...extra.found]);
-        if (alive) setTouch((x) => (sameRect(x, tu) ? x : tu));
-      }
+      const tu = extra ? unionRect([...(next ? [next] : []), ...extra.found]) : null;
+      const notFound = !next && Date.now() - started > NOT_FOUND_MS && (!present.length || revealed.current >= REVEAL_TRIES);
+      setGeo((g) => {
+        const nh = next ?? (notFound || Date.now() - started > KEEP_PREV_MS ? null : g.hole);
+        const lostNow = next ? false : notFound || g.lost;
+        return sameRect(g.hole, nh) && sameRect(g.touch, tu) && g.lost === lostNow ? g : { hole: nh, touch: tu, lost: lostNow };
+      });
       if (next) {
-        setLost(false);
         // Un seul élément, à moitié sous la barre d'onglets ou sous l'en-tête : on le remonte au tiers de l'écran
         const cut = u && (u.y + u.height + PAD > view.bottom || u.y - PAD < view.top);
         if (cut && ids.length === 1 && present.length) await tryReveal(present[0]);
@@ -201,14 +244,11 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
       }
       // Élément présent mais hors champ : on fait défiler son écran jusqu'à lui (une fois)
       if (present.length) await tryReveal(present[0]);
-      // « Je ne trouve pas cet élément » : après le délai, et seulement quand les défilements n'ont rien donné
-      if (Date.now() - started > NOT_FOUND_MS && (!present.length || revealed.current >= REVEAL_TRIES)) setLost(true);
     };
-    void run();
-    const id = setInterval(() => { void run(); }, MEASURE_MS);
-    const off = onAnchorsChange(() => { void run(); });
-    return () => { alive = false; clearInterval(id); off(); };
-  }, [ids, touchIds, frame, insets.top, insets.bottom, demoInset, path]);
+    loop();
+    const off = onAnchorsChange(() => { settleFrom.current = Date.now(); void run(); });
+    return () => { alive = false; if (timer) clearTimeout(timer); off(); };
+  }, [ids, touchIds, frame, insets.top, insets.bottom, demoInset, path]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- annonce (VoiceOver / TalkBack) : compteur, titre et texte de l'étape
   const copy = useStepCopy(step, path);
@@ -222,38 +262,67 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
   return (
     <View ref={rootRef} pointerEvents="box-none" style={StyleSheet.absoluteFill} testID="tour-overlay"
       onLayout={(e) => { const { width, height } = e.nativeEvent.layout; setFrame((f) => (f.width === width && f.height === height ? f : { width, height })); }}>
-      <Cutout hole={lost ? null : hole} frame={frame} level={m.level} />
+      <Cutout hole={lost ? null : hole} lost={lost} frame={frame} level={m.level} />
       {/* Touchers arrêtés HORS de l'élément (et des zones gestuelles de l'étape) ; sans élément : tout l'écran */}
-      <Blockers region={lost ? null : region} frame={frame} />
-      {hole && !lost && step.gesture && !m.off ? <FingerHint kind={step.gesture} hole={hole} level={m.level} /> : null}
-      <Bubble step={step} index={index} copy={copy} hole={lost ? null : hole} lost={lost} top={top} bottom={bottom} width={frame.width} />
+      {hole || lost ? <Blockers region={lost ? null : region} frame={frame} /> : null}
+      {hole && !lost && step.gesture && !m.off ? <HandHint kind={step.gesture} hole={hole} level={m.level} /> : null}
+      {/* La bulle n'apparaît qu'avec sa découpe (ou « introuvable ») : jamais posée au centre puis déplacée */}
+      {hole || lost || waited ? <Bubble step={step} index={index} copy={copy} hole={lost ? null : hole} lost={lost} top={top} bottom={bottom} width={frame.width} /> : null}
     </View>
   );
 }
 
-/** Voile + découpe : une vue SANS ENFANT en position absolue (seule exception admise à l'animation de taille). */
-function Cutout({ hole, frame, level }: { hole: Rect | null; frame: { width: number; height: number }; level: MotionLevel }) {
+/**
+ * Voile + découpe : une vue SANS ENFANT en position absolue (seule exception admise à l'animation de taille).
+ *  - première pose (reprise, lancement) : la découpe naît SUR l'élément, agrandie de 10 px, et se resserre en 160 ms
+ *    (ease-out) pendant que le voile apparaît en fondu — jamais un trou qui grandit depuis le centre de l'écran ;
+ *  - d'une étape à l'autre : elle glisse en ressort « panneau » ;
+ *  - Réduire les animations : posée immédiatement, voile sans fondu.
+ */
+function Cutout({ hole, lost, frame, level }: { hole: Rect | null; lost: boolean; frame: { width: number; height: number }; level: MotionLevel }) {
   const t = useTheme();
   const start = hole ?? { x: frame.width / 2, y: frame.height / 2, width: 0, height: 0 };
   const x = useSharedValue(start.x);
   const y = useSharedValue(start.y);
   const w = useSharedValue(start.width);
   const h = useSharedValue(start.height);
+  // voile : invisible tant qu'aucune cible n'est connue (pas de voile plein qui clignote avant la découpe)
+  const shown = useSharedValue(hole || lost ? 1 : 0);
+  const placed = useRef(!!hole);
   useEffect(() => {
-    const target = hole ?? { x: frame.width / 2, y: frame.height / 2, width: 0, height: 0 };
-    x.value = motionSpring(level, target.x, 'panneau');
-    y.value = motionSpring(level, target.y, 'panneau');
-    w.value = motionSpring(level, target.width, 'panneau');
-    h.value = motionSpring(level, target.height, 'panneau');
-  }, [hole, frame.width, frame.height, level, x, y, w, h]);
-  useEffect(() => () => { cancelAnimation(x); cancelAnimation(y); cancelAnimation(w); cancelAnimation(h); }, [x, y, w, h]);
+    if (!hole) {
+      if (lost) {
+        x.value = frame.width / 2; y.value = frame.height / 2; w.value = 0; h.value = 0;
+        shown.value = motionTiming(level, 1, ARRIVE_MS, 'decelerate');
+      }
+      return;
+    }
+    if (!placed.current) {
+      // première pose : sur l'élément, légèrement agrandie, puis resserrée
+      placed.current = true;
+      const g = level === 'off' ? 0 : ARRIVE_GROW;
+      x.value = hole.x - g; y.value = hole.y - g; w.value = hole.width + g * 2; h.value = hole.height + g * 2;
+      x.value = motionTiming(level, hole.x, ARRIVE_MS, 'decelerate');
+      y.value = motionTiming(level, hole.y, ARRIVE_MS, 'decelerate');
+      w.value = motionTiming(level, hole.width, ARRIVE_MS, 'decelerate');
+      h.value = motionTiming(level, hole.height, ARRIVE_MS, 'decelerate');
+      shown.value = motionTiming(level, 1, ARRIVE_MS, 'decelerate');
+      return;
+    }
+    shown.value = motionTiming(level, 1, ARRIVE_MS, 'decelerate');
+    x.value = motionSpring(level, hole.x, 'panneau');
+    y.value = motionSpring(level, hole.y, 'panneau');
+    w.value = motionSpring(level, hole.width, 'panneau');
+    h.value = motionSpring(level, hole.height, 'panneau');
+  }, [hole, lost, frame.width, frame.height, level, x, y, w, h, shown]);
+  useEffect(() => () => { cancelAnimation(x); cancelAnimation(y); cancelAnimation(w); cancelAnimation(h); cancelAnimation(shown); }, [x, y, w, h, shown]);
   const veil = useAnimatedStyle(() => {
     const r = Math.max(0, Math.min(radius.lg, w.value / 2, h.value / 2));
-    return { left: x.value - VEIL, top: y.value - VEIL, width: w.value + VEIL * 2, height: h.value + VEIL * 2, borderRadius: VEIL + r };
+    return { opacity: shown.value, left: x.value - VEIL, top: y.value - VEIL, width: w.value + VEIL * 2, height: h.value + VEIL * 2, borderRadius: VEIL + r };
   });
   const ring = useAnimatedStyle(() => {
     const r = Math.max(0, Math.min(radius.lg, w.value / 2, h.value / 2));
-    return { left: x.value - 2, top: y.value - 2, width: w.value + 4, height: h.value + 4, borderRadius: r + 2, opacity: w.value > 4 ? 1 : 0 };
+    return { left: x.value - 2, top: y.value - 2, width: w.value + 4, height: h.value + 4, borderRadius: r + 2, opacity: w.value > 4 ? shown.value : 0 };
   });
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
@@ -278,36 +347,14 @@ function Blockers({ region, frame }: { region: Rect | null; frame: { width: numb
   );
 }
 
-/** Doigt fantôme : touche (pulsation), glisse (de gauche à droite) ou fait glisser (de haut en bas). Fil UI, en boucle. */
-function FingerHint({ kind, hole, level }: { kind: GestureHint; hole: Rect; level: MotionLevel }) {
-  const t = useTheme();
-  const p = useSharedValue(0);
-  const SIZE = 36;
-  useEffect(() => {
-    const ms = level === 'minimal' ? 900 : kind === 'tap' ? 700 : 1300;
-    p.value = 0;
-    p.value = withRepeat(withSequence(withDelay(350, withTiming(1, { duration: ms, easing: curves.standard, reduceMotion: ReduceMotion.Never })), withTiming(0, { duration: 0, reduceMotion: ReduceMotion.Never })), -1, false, undefined, ReduceMotion.Never);
-    return () => cancelAnimation(p);
-  }, [kind, level, p]);
+/**
+ * Main dessinée (`TourHand`) : touche le centre de l'élément, glisse en courbe sur sa largeur (changer de profil) ou
+ * fait glisser vers le bas (réordonner). Fil UI, en boucle ; jamais avec Réduire les animations.
+ */
+function HandHint({ kind, hole, level }: { kind: GestureHint; hole: Rect; level: MotionLevel }) {
   const span = kind === 'swipe' ? Math.min(hole.width * 0.5, 160) : kind === 'drag' ? Math.min(90, hole.height + 60) : 0;
-  const style = useAnimatedStyle(() => {
-    const v = p.value;
-    if (kind === 'tap') {
-      const press = v < 0.5 ? 1 - v * 0.3 : 0.85 + (v - 0.5) * 0.3;
-      return { opacity: v < 0.9 ? 0.9 : (1 - v) * 9, transform: [{ scale: press }] };
-    }
-    const travel = v < 0.15 ? 0 : v > 0.85 ? 1 : (v - 0.15) / 0.7;
-    const o = v < 0.1 ? v * 9 : v > 0.9 ? (1 - v) * 9 : 0.9;
-    return kind === 'swipe'
-      ? { opacity: o, transform: [{ translateX: -span / 2 + travel * span }, { scale: v < 0.15 ? 1 - v : 0.85 }] }
-      : { opacity: o, transform: [{ translateY: travel * span }, { scale: v < 0.15 ? 1 - v : 0.85 }] };
-  });
-  const cx = hole.x + hole.width / 2 - SIZE / 2;
-  const cy = kind === 'drag' ? hole.y + hole.height / 2 - SIZE / 2 - span / 2 : hole.y + hole.height / 2 - SIZE / 2;
-  return (
-    <Animated.View pointerEvents="none" testID={`tour-finger-${kind}`} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden
-      style={[{ position: 'absolute', left: cx, top: cy, width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2, borderColor: t.colors.surface, backgroundColor: t.colors.primary }, style]} />
-  );
+  const point = { x: hole.x + hole.width / 2, y: hole.y + hole.height / 2 };
+  return <TourHand kind={kind} point={point} span={span} level={level} />;
 }
 
 // ------------------------------------------------------------------------------------------------ textes
@@ -467,19 +514,32 @@ function TourFinished() {
   useEffect(() => { AccessibilityInfo.announceForAccessibility?.(`${tr('tour.done.title')}. ${tr('tour.done.body')}`); }, []);
   return (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill} testID="tour-done">
-      {editor && !m.off ? <FingerHint kind="drag" hole={{ x: editor.x, y: editor.y, width: editor.width, height: Math.min(editor.height, 160) }} level={m.level} /> : null}
+      {editor && !m.off ? <HandHint kind="drag" hole={{ x: editor.x, y: editor.y, width: editor.width, height: Math.min(editor.height, 160) }} level={m.level} /> : null}
       <View pointerEvents="box-none" style={{ position: 'absolute', left: spacing.md, right: spacing.md, bottom: Math.max(insets.bottom, spacing.sm) + spacing.sm, alignItems: 'center' }}>
-        {/* Petit écran : la carte laisse voir l'éditeur (le texte complet reste annoncé et défile si besoin) */}
-        <Glass variant="sheet" radius={radius.xl} style={{ width: '100%', maxWidth: 420, maxHeight: win.height * (short ? 0.5 : 0.42) }} accessibilityLiveRegion="polite">
-          <ScrollView bounces={false} contentContainerStyle={{ padding: spacing.md, gap: spacing.xs }}>
-          <Text weight="bold" accessibilityRole="header">{tr('tour.done.title')}</Text>
+        {/* Petit écran (320 × 568) : carte COMPACTE — titre, consigne du geste, puis une rangée « retirer le favori »
+            (étoile seule, nom accessible complet) + « Terminer » : elle laisse voir l'éditeur (≤ 30 % de l'écran) */}
+        <Glass variant="sheet" radius={radius.xl} style={{ width: '100%', maxWidth: 420, maxHeight: win.height * (short ? 0.32 : 0.42) }} accessibilityLiveRegion="polite">
+          <ScrollView bounces={false} contentContainerStyle={{ padding: short ? spacing.sm : spacing.md, gap: spacing.xs }}>
+          <Text weight="bold" accessibilityRole="header" accessibilityLabel={`${tr('tour.done.title')}. ${tr('tour.done.body')}`}>{tr('tour.done.title')}</Text>
           {short && editor ? null : <Text variant="small">{tr('tour.done.body')}</Text>}
-          {editor ? <Text variant="small" color={t.colors.primary} weight="bold" testID="tour-drag-hint">{tr('tour.done.dragHint')}</Text> : null}
-          {fav ? (
-            <GlassButton label={tr('tour.done.removeFav', { label: toolName(fav) })} icon="star" variant="secondary" size="sm" full testID="tour-remove-fav"
-              onPress={() => { setFavIds(toggleFavorite(favIds, fav)); tourDispatch(FORGET_FAVORITE); }} />
-          ) : null}
-          <GlassButton label={tr('tour.done.finish')} variant="primary" size="sm" full onPress={close} testID="tour-finish" />
+          {editor ? <Text variant="small" color={t.colors.primary} weight="bold" numberOfLines={short ? 2 : undefined} testID="tour-drag-hint">{tr('tour.done.dragHint')}</Text> : null}
+          {short ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+              {fav ? (
+                <GlassIconButton icon="star" label={tr('tour.done.removeFav', { label: toolName(fav) })} size={44} testID="tour-remove-fav"
+                  onPress={() => { setFavIds(toggleFavorite(favIds, fav)); tourDispatch(FORGET_FAVORITE); }} />
+              ) : null}
+              <GlassButton label={tr('tour.done.finish')} variant="primary" size="sm" onPress={close} testID="tour-finish" style={{ flex: 1 }} />
+            </View>
+          ) : (
+            <>
+              {fav ? (
+                <GlassButton label={tr('tour.done.removeFav', { label: toolName(fav) })} icon="star" variant="secondary" size="sm" full testID="tour-remove-fav"
+                  onPress={() => { setFavIds(toggleFavorite(favIds, fav)); tourDispatch(FORGET_FAVORITE); }} />
+              ) : null}
+              <GlassButton label={tr('tour.done.finish')} variant="primary" size="sm" full onPress={close} testID="tour-finish" />
+            </>
+          )}
           </ScrollView>
         </Glass>
       </View>

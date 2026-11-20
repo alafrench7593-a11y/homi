@@ -134,6 +134,42 @@ def blocked_outside(pg):
     return hit.startswith('tour-block') or hit.startswith('tour-')
 
 
+# Mesure de la REPRISE (carte « Reprendre la visite » de l'accueil) : temps entre l'appui et la découpe posée sur
+# l'élément, sauts de la découpe, clignotements de la bulle. Échantillonnage à chaque image (requestAnimationFrame).
+PROBE = """() => {
+  const T = window.__tourProbe = { click: null, samples: [], bubble: [] };
+  document.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('[data-testid="tour-resume-start"]')) T.click = performance.now(); }, true);
+  const loop = () => {
+    if (T.click != null) {
+      const now = performance.now();
+      const hs = [...document.querySelectorAll('[data-testid="tour-hole"]')];
+      const h = hs.find((x) => x.getBoundingClientRect().width > 0);
+      if (h) { const r = h.getBoundingClientRect(); T.samples.push([now - T.click, r.x, r.y, r.width, r.height, +getComputedStyle(h).opacity]); }
+      else T.samples.push([now - T.click, 0, 0, 0, 0, 0]);
+      const b = [...document.querySelectorAll('[data-testid="tour-bubble"]')].some((x) => x.getBoundingClientRect().width > 0 && getComputedStyle(x).opacity !== '0');
+      const last = T.bubble[T.bubble.length - 1];
+      if (!last || last[1] !== b) T.bubble.push([now - T.click, b]);
+    }
+    if (T.click == null || performance.now() - T.click < 2500) requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}"""
+
+
+def resume_delay(pg):
+    """Délai (ms) appui → découpe posée (à 3 px de sa place finale, opaque), nombre de sauts (> 24 px), clignotements."""
+    pg.wait_for_timeout(2600)
+    T = pg.evaluate('() => window.__tourProbe')
+    s = [x for x in T['samples'] if x[3] > 4 and x[5] > 0.5]
+    if not s:
+        return {'ms': None, 'sauts': None, 'clignotements': None}
+    fin = s[-1]
+    arrive = next(x[0] for x in s if all(abs(x[i] - fin[i]) <= 3 for i in (1, 2, 3, 4)))
+    jumps = sum(1 for a, b in zip(s, s[1:]) if max(abs(a[i] - b[i]) for i in (1, 2)) > 24)
+    flicker = max(0, sum(1 for x in T['bubble'] if x[1]) - 1)
+    return {'ms': round(arrive), 'premiere_image': round(s[0][0]), 'sauts': jumps, 'clignotements': flicker}
+
+
 def full_tour(b, w, h, scheme, main=False):
     tag = f'{w}x{h}-{scheme}'
     ctx, pg = new_ctx(b, w, h, scheme)
@@ -153,7 +189,7 @@ def full_tour(b, w, h, scheme, main=False):
     R[f'{tag}_2_atteinte'] = wait_step(pg, 2)
     hole_on(pg, tid(pg, 'profile-switcher-row'), tag, '2')
     if main:
-        R['2_doigt_qui_glisse'] = visible(pg, 'tour-finger-swipe')
+        R['2_main_qui_glisse'] = visible(pg, 'tour-hand-swipe')
     shot(pg, tag, '2-profil')
     ring = pg.evaluate("() => { const r = document.querySelector('[aria-selected=\"true\"][data-testid^=\"subject-\"]'); return r ? r.getAttribute('data-testid') : ''; }")
     other = [x for x in pg.locator('[data-testid^="subject-"]').evaluate_all("els => els.map(e => e.getAttribute('data-testid'))")
@@ -237,7 +273,7 @@ def full_tour(b, w, h, scheme, main=False):
     pg.wait_for_timeout(900)
     hole_on(pg, tid(pg, 'home-customize'), tag, '7')
     if main:
-        R['7_doigt_qui_touche'] = visible(pg, 'tour-finger-tap')
+        R['7_main_qui_touche'] = visible(pg, 'tour-hand-tap')
     shot(pg, tag, '7b-personnaliser')
     layouts_before = pg.evaluate("() => JSON.stringify(JSON.parse(localStorage.getItem('toietmoi.ui')).state.homeLayouts || {})")
     tid(pg, 'home-customize').click(); pg.wait_for_timeout(1500)
@@ -245,7 +281,7 @@ def full_tour(b, w, h, scheme, main=False):
     R[f'{tag}_7_rien_enregistre_dans_l_editeur'] = pg.evaluate("() => JSON.stringify(JSON.parse(localStorage.getItem('toietmoi.ui')).state.homeLayouts || {})") == layouts_before
     pg.wait_for_timeout(600)
     if main:
-        R['7_editeur_doigt_qui_fait_glisser'] = visible(pg, 'tour-finger-drag') and visible(pg, 'tour-drag-hint')
+        R['7_editeur_main_qui_fait_glisser'] = visible(pg, 'tour-hand-drag') and visible(pg, 'tour-drag-hint')
     shot(pg, tag, '8-fin-editeur')
     if visible(pg, 'tour-remove-fav'):
         tid(pg, 'tour-remove-fav').click(); pg.wait_for_timeout(600)
@@ -298,7 +334,12 @@ def skip_later_resume(b):
     # rechargement : la reprise survit (progression par compte, sur l'appareil)
     pg.reload(); pg.wait_for_timeout(4500)
     R['carte_reprise_apres_rechargement'] = visible(pg, 'tour-resume')
+    pg.evaluate(PROBE)
     tid(pg, 'tour-resume-start').click()
+    d = resume_delay(pg)
+    R['reprise_mesure'] = d
+    R['reprise_moins_de_300_ms'] = d['ms'] is not None and d['ms'] < 300
+    R['reprise_sans_saut_ni_clignotement'] = d['sauts'] == 0 and d['clignotements'] == 0
     R['reprise_a_la_meme_etape'] = wait_step(pg, 2)
     # Passer jusqu'au bout
     for n in range(2, 8):
@@ -349,7 +390,15 @@ def reduced(b):
     pg.goto(B + '/settings'); pg.wait_for_timeout(2000)
     tid(pg, 'settings-tour').scroll_into_view_if_needed(); tid(pg, 'settings-tour').click(); wait_step(pg, 1)
     tid(pg, 'tour-next').click(); wait_step(pg, 2)
-    R['reduire_animations_aucun_doigt'] = not visible(pg, 'tour-finger-swipe') and visible(pg, 'tour-hole')
+    # reprise en animations réduites : découpe posée en moins de 100 ms
+    tid(pg, 'tour-later').click(); pg.wait_for_timeout(800)
+    pg.evaluate(PROBE)
+    tid(pg, 'tour-resume-start').click()
+    d = resume_delay(pg)
+    R['reprise_reduite_mesure'] = d
+    R['reprise_reduite_moins_de_100_ms'] = d['ms'] is not None and d['ms'] < 100
+    wait_step(pg, 2)
+    R['reduire_animations_aucune_main'] = not visible(pg, 'tour-hand-swipe') and visible(pg, 'tour-hole')
     pg.screenshot(path=f'{SHOTS}/390x844-light-reduire-animations-profil.png')
     ctx.close()
 

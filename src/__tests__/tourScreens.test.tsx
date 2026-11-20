@@ -70,7 +70,7 @@ describe('visite guidée sur les vrais écrans', () => {
     expect(useTourStore.getState().owner).toBe(me);
     expect(has(r, 'tour-overlay')).toBe(false); // aucune visite en cours : rien
     await act(async () => { useTourStore.getState().dispatch({ type: 'start' }); });
-    await flush(100);
+    await flush(400); // la bulle seule n'apparaît qu'après 300 ms de recherche (jamais posée au centre puis déplacée)
     expect(has(r, 'tour-overlay')).toBe(true);
     expect(has(r, 'tour-progress')).toBe(true);
     expect(has(r, 'tour-later')).toBe(true);

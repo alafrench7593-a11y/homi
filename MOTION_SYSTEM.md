@@ -47,12 +47,30 @@ sur un événement réel (profil changé dans le magasin, outil ouvert, favori, 
 `_layout.tsx` (`TourHost`), sans modale : voile + découpe = UNE vue sans enfant en position absolue (bordure géante) dont
 position et taille passent d'une cible à l'autre en ressort `panneau` sur le fil UI (exception assumée « vue absolue sans
 enfant ») ; bandes transparentes qui arrêtent les touchers hors de la cible ; bulle de verre `sheet` (bandeau d'une
-ligne quand la place manque) ; doigt fantôme (toucher, glisser, faire glisser) en `withRepeat` sur le fil UI. `off` :
+ligne quand la place manque) ; MAIN dessinée (`TourHand`, 20/11/2026 : trait d'encre, ombre légère ; toucher = appui + onde, glisser = trajectoire courbe, faire glisser) en `withRepeat` sur le fil UI. `off` :
 découpe posée sans trajet, aucun doigt ; `minimal` : fondus courts. Aucun `scheduleOnRN`, aucune ref lue dans un
 worklet. Mode exercice (`src/lib/practice.ts`) : aucune écriture ne part (testé). Détails et règles : en tête de
 `src/features/tour/model.ts` et `TourOverlay.tsx` ; tests `tour.test.ts`, `tourScreens.test.tsx`, e2e
 `e2e/visite_guidee.py`. À vérifier sur iPhone : VoiceOver, haptique, gestes natifs, écrans présentés en modale iOS
 (la pastille de la visite passe sous eux ; le bandeau « exercice » est dans l'écran lui-même).
+
+### Reprise de la visite (20/11/2026) — mesurée dans `e2e/visite_guidee.py`
+
+Avant : 409 ms entre l'appui sur « Reprendre la visite » et la découpe posée, 3 sauts (le trou grandissait depuis le
+centre de l'écran, voile plein dès la première image), mesures `measureInWindow` des ancres les unes après les autres,
+toutes les 280 ms, deux états React (découpe, zone touchable) mis à jour l'un après l'autre. Après : 160 ms, aucun saut,
+aucun clignotement ; animations réduites : 79 ms. Causes corrigées : la découpe NAÎT sur l'élément (agrandie de 10 px,
+resserrée en 160 ms ease-out, voile en fondu) ; la bulle n'apparaît qu'avec sa découpe ; mesures en parallèle (origine
+mémorisée), à chaque image pendant 700 ms après une étape ou un défilement puis toutes les 450 ms ; un seul état
+`geo` ; d'une étape à l'autre l'ancienne découpe reste posée 400 ms au plus le temps de trouver la nouvelle cible.
+
+### Introduction « Je suis… » (20/11/2026) — `src/features/intro/`
+
+Une valeur partagée `pos` (page, réel) pilote tout sur le fil UI : glissement + fondu des pages, cascade des éléments
+(`Layer` : décalage `(page − pos) × profondeur × 34 px` + fondu), pastille de progression (vue absolue sans enfant)
+qui suit le doigt. Balayage `Gesture.Pan()` (résistance ×0,25 aux bords et sur « Je suis… » sans profil), relâche en
+ressort `panneau` avec la vitesse du geste, un `scheduleOnRN(settle)` par geste. `off` : pages posées, aucune
+cascade ni boucle. Tests : `introProfiles.test.tsx`, e2e `e2e/intro_profils.py`.
 
 ### Skia, Rive, Lottie : évalués, non installés
 
