@@ -79,6 +79,7 @@ describe('visite guidée sur les vrais écrans', () => {
     expect(has(r, 'tour-notfound-skip')).toBe(true);
     await press(r, 'tour-notfound-skip');
     expect(useTourStore.getState().byUser[me].step).toBe(1);
+    await flush(400); // étape suivante, élément absent : la bulle seule revient après 300 ms de recherche
     await press(r, 'tour-later');
     expect(useTourStore.getState().byUser[me].status).toBe('paused');
     expect(has(r, 'tour-overlay')).toBe(false);

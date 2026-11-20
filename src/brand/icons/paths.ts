@@ -41,8 +41,8 @@ export const HOMI_ICONS = {
   me: { fill: `${circle(12, 8.2, 3.45)}M5.25 19.75c.85-3.55 3.55-5.6 6.75-5.6s5.9 2.05 6.75 5.6z`, stroke: `${circle(12, 8.2, 3.45)}M5.25 19.75c.85-3.55 3.55-5.6 6.75-5.6s5.9 2.05 6.75 5.6` },
   /** Enfant : un visage de bébé, sa mèche. */
   child: { fill: circle(12, 12.75, 7.75), stroke: `${circle(12, 12.75, 7.75)}M12.6 5.05c-.95-.85-.75-2.3.5-2.55M9.4 15.6c1.45 1.25 3.75 1.25 5.2 0`, dots: [[9.1, 12, 1.05], [14.9, 12, 1.05]] },
-  /** Famille : la maison, deux personnes dedans. */
-  family: { fill: HOUSE, stroke: `${HOUSE}M8.4 20.5v-1.4a2 2 0 0 1 2-2h3.2a2 2 0 0 1 2 2v1.4`, dots: [[10.2, 13.6, 1.35], [13.8, 13.6, 1.35]] },
+  /** Famille : la maison et un cœur. */
+  family: { fill: HOUSE, stroke: `${HOUSE}M12 17.4s-3.1-1.85-3.1-4.1a1.65 1.65 0 0 1 3.1-.8 1.65 1.65 0 0 1 3.1.8c0 2.25-3.1 4.1-3.1 4.1z` },
   /** Grossesse : un cœur qui en porte un plus petit. */
   pregnancy: { fill: HEART, stroke: `${HEART}${circle(12, 12.3, 1.7)}` },
   /** Bouton central « Ajouter ». */

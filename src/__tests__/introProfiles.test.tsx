@@ -14,6 +14,8 @@ jest.mock('expo-haptics', () => ({
   ImpactFeedbackStyle: { Light: 'light' }, NotificationFeedbackType: { Success: 'success' },
 }));
 jest.mock('react-native-safe-area-context', () => ({ useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }) }));
+// les tuiles de données sont des sources de transition de carte (écran affiché ?) : hors navigation dans ce test
+jest.mock('expo-router', () => ({ router: { push: jest.fn(), back: jest.fn(), replace: jest.fn(), navigate: jest.fn(), canGoBack: () => false }, useLocalSearchParams: () => ({}), usePathname: () => '/intro', useIsFocused: () => true, useFocusEffect: () => undefined, Link: () => null, Stack: { Screen: () => null } }));
 jest.mock('@/lib/auth', () => ({ useAuth: () => ({ session: null, ready: true }), useUserId: () => null }));
 const mockBackendCalls: string[] = [];
 jest.mock('@/lib/backend', () => {
@@ -21,7 +23,8 @@ jest.mock('@/lib/backend', () => {
     get: (_t, p) => (p === 'then' ? undefined : rec(`${name}.${String(p)}`)),
     apply: () => { mockBackendCalls.push(name); return rec(`${name}()`); },
   });
-  return { backend: rec('backend'), isDemo: false, supabase: rec('supabase') };
+  // fonctions de requête réelles (eq, inList…), serveur et démonstration du foyer enregistrés
+  return { ...jest.requireActual('@/lib/backend'), backend: rec('backend'), isDemo: false, supabase: rec('supabase') };
 });
 
 import React from 'react';
@@ -142,6 +145,12 @@ describe('rendu', () => {
       expect(r.toJSON()).toBeTruthy();
     }
     expect(mockBackendCalls).toEqual([]);
+  });
+  it('les tableaux d’outils montrent les vraies rangées de « Mes outils » (au moins 3 outils trouvés dans le registre)', async () => {
+    for (const s of ['pregTools', 'kidTools', 'coparentTools'] as IntroScene[]) {
+      const r = await render(<IntroLayerContext.Provider value={null}><SceneView scene={s} active /></IntroLayerContext.Provider>);
+      expect(r.root.findAll((n) => typeof n.type === 'string' && typeof n.props.testID === 'string' && n.props.testID.startsWith('hub-tool-')).length).toBeGreaterThanOrEqual(3);
+    }
   });
 });
 

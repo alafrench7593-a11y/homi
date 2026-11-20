@@ -12,9 +12,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import { DataTile } from '@/components/controls';
-import { GlassProfileSwitcher, GlassToolCard, type GlassProfile } from '@/components/glass';
+import { GlassProfileSwitcher, type GlassProfile } from '@/components/glass';
 import { MatteSurface } from '@/components/surfaces';
-import { ToolGlyph } from '@/components/ToolGlyph';
 import { Text } from '@/components/ui';
 import { HomiIcon, ICON_CATEGORIES, categoryTone, CATEGORY_HOMI_ICON } from '@/brand/icons';
 import { SessionOrb } from '@/features/bottleSession';
@@ -24,11 +23,11 @@ import { demoAgenda, demoTiles } from '@/features/onboarding/DemoStep';
 import { TodayAgendaRow } from '@/features/homeToday/TodayTaskRow';
 import type { TodayPerson } from '@/features/homeToday/useHomeToday';
 import { emptyAnswers, type OnboardingAnswers, type Situation, type TaskKey } from '@/lib/onboarding/personalize';
-import { categoryTitle } from '@/lib/domain/toolCatalog';
-import { TOOL_BY_ID } from '@/lib/journeys/tools';
-import { toolName } from '@/features/discover/texts';
+import { categoryTitle, findEntry, toolCatalog } from '@/lib/domain/toolCatalog';
+import type { Scope } from '@/lib/journeys/tools';
+import { HubToolRow } from '@/features/hubs/HubList';
 import { clockHM } from '@/i18n/formats';
-import { formatNumber, t as tr } from '@/i18n';
+import { formatDate, formatNumber, formatTime, t as tr } from '@/i18n';
 import { useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -121,7 +120,14 @@ function useDoneOnce(active: boolean, ms = 1200) {
 
 // ------------------------------------------------------------------ pièces
 function Tiles({ situation, depth = 1 }: { situation: Situation; depth?: number }) {
-  const tiles = useMemo(() => demoTiles(answersFor(situation)), [situation]);
+  const { width } = useWindowDimensions();
+  const narrow = width < 360;
+  const tiles = useMemo(() => demoTiles(answersFor(situation)).map((x) => {
+    if (!narrow || x.key !== 'appt') return x;
+    // 320 pt : « dim. 14:30 » ne tient pas en grand dans une demi-tuile → le jour en grand, l'heure dans le contexte
+    const at = new Date(); at.setDate(at.getDate() + 2); at.setHours(14, 30, 0, 0);
+    return { ...x, value: formatDate(at, { weekday: 'short' }).replace(/^./, (c) => c.toUpperCase()), context: `${formatTime(at)} · ${x.context}` };
+  }), [situation, narrow]);
   return (
     <View style={{ flexDirection: 'row', gap: spacing.sm }}>
       {tiles.map((x, i) => (
@@ -133,9 +139,12 @@ function Tiles({ situation, depth = 1 }: { situation: Situation; depth?: number 
   );
 }
 
-function Agenda({ deck, split, active, depth = 1, title }: { deck: TaskKey[]; split: OnboardingAnswers['split']; active: boolean; depth?: number; title: string }) {
+function Agenda({ deck, split, active, depth = 1, title, max }: { deck: TaskKey[]; split: OnboardingAnswers['split']; active: boolean; depth?: number; title: string; max?: number }) {
   const t = useTheme();
-  const rows = useMemo(() => demoAgenda(deck, split), [deck, split]);
+  const { height } = useWindowDimensions();
+  // écran court (568 pt) : deux lignes, jamais une ligne coupée par le pied
+  const limit = max ?? (height < 700 ? 2 : 3);
+  const rows = useMemo(() => demoAgenda(deck, split).slice(0, limit), [deck, split, limit]);
   const p = people();
   const mine = rows.find((r) => r.canComplete);
   const done = useDoneOnce(active);
@@ -156,21 +165,24 @@ function Agenda({ deck, split, active, depth = 1, title }: { deck: TaskKey[]; sp
   );
 }
 
-function ToolCards({ ids, depth = 1 }: { ids: string[]; depth?: number }) {
-  const { width } = useWindowDimensions();
-  const cardW = Math.floor((Math.min(width, 520) - spacing.lg * 2 - spacing.sm) / 2);
+const NO_LINE = { text: '' };
+function ToolRows({ ids, scope, depth = 1 }: { ids: string[]; scope: Scope; depth?: number }) {
+  const { height } = useWindowDimensions();
+  const tools = useMemo(() => {
+    const all = toolCatalog({ scope, childId: 'demo', pregnancyId: 'demo', babyId: 'demo' });
+    return ids.map((id) => findEntry(all, id)).filter((x): x is NonNullable<typeof x> => !!x).slice(0, height < 700 ? 3 : 4);
+  }, [ids, scope, height]);
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-      {ids.map((id, i) => {
-        const def = TOOL_BY_ID[id];
-        return (
-          <Layer key={id} depth={depth + Math.floor(i / 2) + (i % 2) * 0.5} style={{ width: cardW }}>
-            <GlassToolCard title={toolName(id)} glyph={def ? <ToolGlyph id={id} theme={def.theme} icon={def.icon} size={40} /> : undefined} icon={def ? undefined : 'grid'}
-              onPress={() => undefined} descriptionLines={0} testID={`intro-tool-${id}`} />
+    <Layer depth={depth}>
+      <MatteSurface radius={radius.lg} padded={spacing.sm} testID="intro-tools">
+        {tools.map((x, i) => (
+          <Layer key={x.id} depth={depth + i * 0.5} testID={`intro-tool-${x.id}`}>
+            {/* nom de l'outil seul (sa description complète est trop longue pour un tableau d'une phrase) */}
+            <HubToolRow tool={x} favorite={false} status={NO_LINE} />
           </Layer>
-        );
-      })}
-    </View>
+        ))}
+      </MatteSurface>
+    </Layer>
   );
 }
 
@@ -273,13 +285,13 @@ export function SceneView({ scene, active }: { scene: IntroScene; active: boolea
   switch (scene) {
     case 'pregTiles': return <Tiles situation="pregnant" />;
     case 'nextAction': return <Agenda deck={['appt', 'bag', 'admin']} split={{ appt: 'me', bag: 'other', admin: 'me' }} active={active} title={tr('intro6.agenda.next')} />;
-    case 'pregTools': return <ToolCards ids={['preg_evolution', 'preg_moves', 'preg_lists', 'appointments']} />;
+    case 'pregTools': return <ToolRows scope="pregnancy" ids={['preg_evolution', 'preg_moves', 'preg_lists', 'appointments']} />;
     case 'feedTimer': return <FeedTimer active={active} />;
     case 'babyTiles': return <Tiles situation="baby" />;
     case 'familyProfiles': return (
       <View style={{ gap: spacing.sm }}>
         <Profiles kind="baby" active={active} />
-        <Agenda deck={['night', 'nanny', 'bag']} split={{ night: 'other', nanny: 'me', bag: 'me' }} active={active} depth={2} title={tr('o2.demo.today')} />
+        <Agenda deck={['night', 'nanny', 'meals']} split={{ night: 'other', nanny: 'me', meals: 'me' }} active={active} depth={2} title={tr('o2.demo.today')} />
       </View>
     );
     case 'kidProfiles': return (
@@ -289,10 +301,10 @@ export function SceneView({ scene, active }: { scene: IntroScene; active: boolea
       </View>
     );
     case 'weekPlan': return <Agenda deck={['school', 'appt', 'meals']} split={{ school: 'other', appt: 'me', meals: 'me' }} active={active} title={tr('intro6.agenda.week')} />;
-    case 'kidTools': return <ToolCards ids={['kid_routines', 'kid_mood', 'kid_health', 'family_missions']} />;
+    case 'kidTools': return <ToolRows scope="child" ids={['kid_routines', 'kid_mood', 'kid_health', 'kid_profile']} />;
     case 'careBook': return <CareBook />;
     case 'split': return <Agenda deck={['daycare', 'shopping', 'laundry']} split={{ daycare: 'other', shopping: 'me', laundry: 'other' }} active={active} title={tr('intro6.agenda.split')} />;
-    case 'coparentTools': return <ToolCards ids={['family_missions', 'family_calendar', 'family_shopping', 'appointments']} />;
+    case 'coparentTools': return <ToolRows scope="family" ids={['family_missions', 'family_calendar', 'family_shopping', 'family_stocks']} />;
     case 'categories': return <Categories />;
     case 'everyone': return (
       <View style={{ gap: spacing.sm }}>

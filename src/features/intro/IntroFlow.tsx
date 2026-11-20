@@ -15,7 +15,7 @@
  * Règles worklets : aucun paramètre par défaut lisant la fermeture, aucune fonction déclarée dans un worklet confiée à
  * `scheduleOnRN` (`settle` est déclarée dans le composant), aucune ref lue dans un worklet.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, ScrollView, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, ReduceMotion, type SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -37,9 +37,9 @@ import { clampPage, INTRO_PAGES, INTRO_PROFILES, INTRO_SCENES, LAST_PAGE, swipeT
 
 const PROFILE_GLYPH: Record<IntroProfile, HomiIconName> = { pregnant: 'pregnancy', newborn: 'feeding', child: 'child', coparent: 'couple', explore: 'tools' };
 const SPRING = { damping: 30, stiffness: 280, mass: 1 } as const;
-const DOT = 7;
-const DOT_GAP = 6;
-const PILL = 22;
+/** Progression : une case de 16 pt par page, un point de 6 pt centré ; la pastille couvre la case de la page vue. */
+const SLOT = 16;
+const DOT = 6;
 
 export interface IntroFlowProps {
   /** Page de départ (`?scene=start` : la dernière, après un changement de langue). */
@@ -81,7 +81,11 @@ export function IntroFlow({ initialPage = 0, initialProfile = null, onProfile, o
     settle(next);
   }, [m.off, pos, settle, page]);
 
+  // Un balayage qui commence sur une carte de profil ne la choisit pas (le web ne retire pas l'appui au geste)
+  const dragAt = useRef(0);
+  const markDrag = useCallback(() => { dragAt.current = Date.now(); }, []);
   const choose = (p: IntroProfile) => {
+    if (Date.now() - dragAt.current < 500) return;
     setProfile(p);
     hasProfile.value = 1;
     onProfile(p);
@@ -99,6 +103,8 @@ export function IntroFlow({ initialPage = 0, initialProfile = null, onProfile, o
     .activeOffsetX([-14, 14])
     .failOffsetY([-12, 12])
     .onBegin(() => { start.value = pos.value; })
+    // un seul aller-retour vers React par geste (à l'activation), jamais par image
+    .onStart(() => { scheduleOnRN(markDrag); })
     .onUpdate((e) => {
       if (off) return;
       const raw = start.value - (e.translationX * dir) / Math.max(1, width);
@@ -111,10 +117,10 @@ export function IntroFlow({ initialPage = 0, initialProfile = null, onProfile, o
       const target = swipeTarget({ page: from, dx: e.translationX, vx: e.velocityX, width, rtl, hasProfile: hasProfile.value === 1 });
       pos.value = off ? target : withSpring(target, { ...SPRING, velocity: (-e.velocityX * dir) / Math.max(1, width), reduceMotion: ReduceMotion.Never });
       scheduleOnRN(settle, target);
-    }), [off, dir, width, rtl, pos, start, hasProfile, settle]);
+    }), [off, dir, width, rtl, pos, start, hasProfile, settle, markDrag]);
 
   // ---- pastille de progression : suit `pos` (et donc le doigt)
-  const pill = useAnimatedStyle(() => ({ transform: [{ translateX: Math.max(0, Math.min(LAST_PAGE, pos.value)) * (DOT + DOT_GAP) * dir }] }));
+  const pill = useAnimatedStyle(() => ({ transform: [{ translateX: Math.max(0, Math.min(LAST_PAGE, pos.value)) * SLOT * dir }] }));
 
   const footer = (
     <View style={{ paddingHorizontal: spacing.lg, paddingBottom: insets.bottom + spacing.sm, paddingTop: spacing.xs, gap: spacing.xs }}>
@@ -142,10 +148,12 @@ export function IntroFlow({ initialPage = 0, initialProfile = null, onProfile, o
       {/* haut : progression + Passer */}
       <View style={{ paddingTop: top + spacing.xs, paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: MIN_TOUCH + top }}>
         <View accessible accessibilityRole="progressbar" accessibilityLabel={tr('intro.progress', { step: page + 1, total: INTRO_PAGES })} accessibilityValue={{ min: 1, max: INTRO_PAGES, now: page + 1 }}
-          testID="intro-progress" style={{ width: INTRO_PAGES * DOT + (INTRO_PAGES - 1) * DOT_GAP + (PILL - DOT), height: DOT, flexDirection: rtl ? 'row-reverse' : 'row', gap: DOT_GAP }}>
-          {Array.from({ length: INTRO_PAGES }, (_, i) => <View key={i} style={{ width: DOT, height: DOT, borderRadius: DOT / 2, backgroundColor: t.material.lines.track }} />)}
-          {/* pastille : vue absolue sans enfant, seule à bouger */}
-          <Animated.View style={[{ position: 'absolute', top: 0, [rtl ? 'right' : 'left']: 0, width: PILL, height: DOT, borderRadius: DOT / 2, backgroundColor: t.colors.primary }, pill]} />
+          testID="intro-progress" style={{ width: INTRO_PAGES * SLOT, height: DOT, flexDirection: rtl ? 'row-reverse' : 'row' }}>
+          {Array.from({ length: INTRO_PAGES }, (_, i) => (
+            <View key={i} style={{ width: SLOT, alignItems: 'center' }}><View style={{ width: DOT, height: DOT, borderRadius: DOT / 2, backgroundColor: t.material.lines.track }} /></View>
+          ))}
+          {/* pastille : vue absolue sans enfant, seule à bouger (elle suit le doigt) */}
+          <Animated.View style={[{ position: 'absolute', top: 0, [rtl ? 'right' : 'left']: 1, width: SLOT - 2, height: DOT, borderRadius: DOT / 2, backgroundColor: t.colors.primary }, pill]} />
         </View>
         {page < LAST_PAGE ? (
           <Tappable accessibilityRole="button" accessibilityLabel={tr('intro.skipA11y')} onPress={() => go(LAST_PAGE)} testID="intro-skip"
@@ -219,11 +227,12 @@ function WhoPage({ profile, onChoose, short }: { profile: IntroProfile | null; o
 /** Pages 1-3 — un tableau : une phrase, une scène de vrais composants. */
 function TableauPage({ profile, n, active }: { profile: IntroProfile; n: number; active: boolean }) {
   const scene = INTRO_SCENES[profile][n - 1]!;
+  const narrow = useWindowDimensions().width < 360;
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, gap: spacing.md }} showsVerticalScrollIndicator={false} testID={`intro-scene-${scene}`}>
       <Layer depth={0}>
         <Text variant="label" muted>{tr(`intro6.p.${profile}` as TKey)}</Text>
-        <Text variant="title" accessibilityRole="header" style={{ marginTop: 2 }} testID="intro-sentence">{tr(`intro6.s.${scene}` as TKey)}</Text>
+        <Text variant="title" accessibilityRole="header" style={{ marginTop: 2, fontSize: narrow ? 22 : 26, lineHeight: narrow ? 28 : 32 }} testID="intro-sentence">{tr(`intro6.s.${scene}` as TKey)}</Text>
       </Layer>
       <Layer depth={0.5}><ExampleBadge label={tr('o2.example')} /></Layer>
       <View pointerEvents="none" accessibilityElementsHidden={false}>
@@ -239,11 +248,13 @@ function EndPage({ onLanguage, short }: { onLanguage: (code: string) => void; sh
   const locale = getLocale();
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, gap: short ? spacing.sm : spacing.md }} showsVerticalScrollIndicator={false} testID="intro-scene-start">
-      <Layer depth={0}><BrandStack width={short ? 120 : 170} testID="intro-end-brand" /></Layer>
-      <Layer depth={0.6}><Text center accessibilityRole="header" style={[typography.display, { fontSize: short ? 24 : 28, lineHeight: short ? 30 : 34, color: t.colors.text, maxWidth: 340 }]}>{tr('intro6.end.title')}</Text></Layer>
+      <Layer depth={0}><BrandStack width={short ? 96 : 170} testID="intro-end-brand" /></Layer>
+      <Layer depth={0.6}><Text center accessibilityRole="header" style={[typography.display, { fontSize: short ? 22 : 28, lineHeight: short ? 28 : 34, color: t.colors.text, maxWidth: 340 }]}>{tr('intro6.end.title')}</Text></Layer>
       <Layer depth={1.2} style={{ alignSelf: 'stretch', gap: spacing.xs }}>
         <Text variant="small" weight="bold" center>{tr('intro.languageQ')}</Text>
-        <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs }}>
+        {/* écran court : les langues sur UNE rangée qui défile (les trois actions du pied restent au premier écran) */}
+        <ScrollView horizontal={short} scrollEnabled={short} showsHorizontalScrollIndicator={false} accessibilityRole="radiogroup"
+          contentContainerStyle={short ? { gap: spacing.xs, paddingHorizontal: 2 } : { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs, flexGrow: 1 }}>
           {availableLocales().map((l) => {
             const on = l.code === locale;
             return (
@@ -255,7 +266,7 @@ function EndPage({ onLanguage, short }: { onLanguage: (code: string) => void; sh
               </Tappable>
             );
           })}
-        </View>
+        </ScrollView>
       </Layer>
       <Layer depth={1.6}><Text variant="caption" muted center style={{ maxWidth: 340 }}>{tr('intro.privacy.body')}</Text></Layer>
     </ScrollView>
