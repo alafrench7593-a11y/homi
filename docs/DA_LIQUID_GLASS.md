@@ -149,6 +149,14 @@ sur « » = pictogramme 20 px (seuil graphique 3:1). Avertissements répondus : 
 `typography`, non traitée ici), 4 teintes sur /family (statuts sémantiques : fait, en retard, à faire), éléments
 dans la zone du témoin d'accueil (barre de verre, par conception).
 
+**Scan r2 → r3** : r2 trouvait encore des dégradés violets sur l'accueil — l'origine était le dégradé des avatars à
+initiale (corail → rose → LILAS) ; corrigé (deux teintes chaudes). r3 (accueil, Aura, catalogue) : **plus aucun
+dégradé violet, plus de texte < 11 pt**. Restent des FAIL d'outillage (familles = graisses de Manrope + Feather ;
+« texte coupé / hors écran » : le banc d'essai réduit `#root` à 306 px alors que l'app est mise en page à 402 — les
+captures réelles à 320 et 390 pt ne débordent pas, `rapport.json` : 0 débordement) et deux constats de structure de
+l'accueil non traités ici (cartes imbriquées × 3 : carte du rendez-vous et de la mission ; 7 teintes = avatars des
+membres, statuts et logos) → décisions ci-dessous.
+
 **Décisions laissées à la propriétaire** (changements de structure que le skill classe comme décisions) :
 1. l'en-tête de salutation de l'accueil (« Douce nuit, Camille ») — tell n° 1 du skill : le remplacer par la date et
    la prochaine chose à faire ?
