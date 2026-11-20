@@ -72,7 +72,6 @@ export const missions: Messages<typeof fr> = {
   'mis.form.productHint': 'Kommt auf die Einkaufsliste, sobald der Auftrag angenommen ist, und wird abgehakt, wenn er erledigt ist.',
   'mis.form.child': 'Betroffenes Kind',
   'mis.form.none': 'Keines',
-  'mis.form.pet': 'Betroffenes Haustier: bald verfügbar (das Haustier-Modul kommt).',
   'mis.form.attach': 'Anhang',
   'mis.form.attachHint': 'Ein Dokument des Haushalts, sichtbar nur für Personen mit Zugriff.',
   'mis.form.send': 'Auftrag senden',

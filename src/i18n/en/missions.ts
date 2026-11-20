@@ -72,7 +72,6 @@ export const missions: Messages<typeof fr> = {
   'mis.form.productHint': 'Added to the shopping list when the mission is accepted, ticked when it is done.',
   'mis.form.child': 'Child concerned',
   'mis.form.none': 'None',
-  'mis.form.pet': 'Pet concerned: coming soon (the pets module is on its way).',
   'mis.form.attach': 'Attachment',
   'mis.form.attachHint': 'A household document, visible only to people who already have access to it.',
   'mis.form.send': 'Send the mission',

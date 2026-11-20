@@ -72,7 +72,6 @@ export const missions: Messages<typeof fr> = {
   'mis.form.productHint': 'Aggiunto alla lista della spesa quando la missione è accettata, spuntato quando è completata.',
   'mis.form.child': 'Bambino interessato',
   'mis.form.none': 'Nessuno',
-  'mis.form.pet': 'Animale interessato: presto disponibile (arriva il modulo animali).',
   'mis.form.attach': 'Allegato',
   'mis.form.attachHint': 'Un documento della famiglia, visibile solo a chi vi ha già accesso.',
   'mis.form.send': 'Inviare la missione',

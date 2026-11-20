@@ -26,6 +26,7 @@ import { useChildren, useDocuments } from '@/lib/data/hooks';
 import { usePeople } from '@/lib/data/hooks-family-load';
 import { useDomains } from '@/lib/data/hooks-mental';
 import { useCreateMission } from '@/lib/data/hooks-missions';
+import { useHouseholdPets } from '@/lib/data/hooks-foyerTools';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { CATEGORIES, categoryOf, type TaskCategory } from '@/lib/domain/familyLoad';
 import { defaultRecipient, MISSION_DOMAIN_OF, MISSION_TEMPLATES, missionHref, type MissionTemplate } from '@/lib/domain/missions';
@@ -42,7 +43,7 @@ const STEPS: TKey[] = ['mis.step.what', 'mis.step.who', 'mis.step.details'];
 
 interface Draft {
   template: string | null; title: string; notes: string; who: string; category: TaskCategory; date: string; time: string;
-  priority: 'low' | 'normal' | 'high'; repeat: 'none' | 'daily' | 'weekly' | 'monthly'; product: string; child: string | null; doc: string | null;
+  priority: 'low' | 'normal' | 'high'; repeat: 'none' | 'daily' | 'weekly' | 'monthly'; product: string; child: string | null; doc: string | null; pet: string | null;
 }
 
 const addDays = (n: number) => { const d = new Date(); d.setDate(d.getDate() + n); return toFrDate(todayISO(d)); };
@@ -51,12 +52,12 @@ function fromTemplate(tpl: MissionTemplate | null): Draft {
   return {
     template: tpl?.key ?? null, title: tpl ? tr(tpl.title) : '', notes: '', who: AUTO, category: tpl?.category ?? 'shopping',
     date: tpl?.time ? addDays(0) : '', time: tpl?.time ?? '', priority: 'normal', repeat: tpl?.recurrence?.type ?? 'none',
-    product: tpl?.product ? tr(tpl.product) : '', child: null, doc: null,
+    product: tpl?.product ? tr(tpl.product) : '', child: null, doc: null, pet: null,
   };
 }
 
 export default function NewMission() {
-  const params = useLocalSearchParams<{ template?: string }>();
+  const params = useLocalSearchParams<{ template?: string; pet?: string }>();
   const t = useTheme();
   const m = useMotion();
   const toast = useToast();
@@ -69,11 +70,12 @@ export default function NewMission() {
   const others = people.filter((p) => p.id !== me);
   const [clientId] = useState(() => uuid()); // même envoi rejoué = même mission
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [d, setD] = useState<Draft>(() => fromTemplate(MISSION_TEMPLATES.find((x) => x.key === params.template) ?? null));
+  const [d, setD] = useState<Draft>(() => ({ ...fromTemplate(MISSION_TEMPLATES.find((x) => x.key === params.template) ?? null), pet: typeof params.pet === 'string' ? params.pet : null }));
+  const pets = useHouseholdPets().data ?? [];
   const [step, setStep] = useState(0);
   const leaving = useRef(false);
 
-  const pick = (tpl: MissionTemplate) => { haptic('selection'); setD((cur) => ({ ...fromTemplate(tpl), who: cur.who, child: tpl.child ? cur.child : null })); };
+  const pick = (tpl: MissionTemplate) => { haptic('selection'); setD((cur) => ({ ...fromTemplate(tpl), who: cur.who, child: tpl.child ? cur.child : null, pet: tpl.category === 'pets' ? cur.pet : null })); };
   const auto = useMemo(() => defaultRecipient(d.category, domains ?? [], me, people.map((p) => p.id)), [d.category, domains, me, people]);
   const autoPerson = people.find((p) => p.id === auto);
   const domainKey = MISSION_DOMAIN_OF[d.category];
@@ -131,6 +133,7 @@ export default function NewMission() {
         client_id: clientId, title: d.title.trim().slice(0, 120), notes: d.notes.trim() || null, assignee_id: d.who === AUTO ? null : d.who,
         category: d.category, due_at: due ?? null, all_day: !!due && !d.time.trim(), priority: d.priority,
         recurrence: d.repeat === 'none' ? null : { type: d.repeat }, child_id: d.child, product_label: showProduct ? d.product.trim() || null : null, document_id: d.doc,
+        pet_id: d.category === 'pets' ? d.pet : null,
       });
       // Confirmation APRÈS la réponse du serveur (la mission existe)
       haptic('success');
@@ -244,7 +247,17 @@ export default function NewMission() {
                 </View>
               </View>
             ) : null}
-            {d.category === 'pets' ? <Text variant="caption" muted>{tr('mis.form.pet')}</Text> : null}
+            {d.category === 'pets' && pets.length ? (
+              <View style={{ gap: spacing.xs }}>
+                <Text variant="label">{tr('pet.mission.label')}</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                  <Chip label={tr('mis.form.none')} selected={!d.pet} onPress={() => setD({ ...d, pet: null })} testID="mission-pet-none" />
+                  {pets.map((p) => <Chip key={p.id} label={p.name} selected={d.pet === p.id} onPress={() => setD({ ...d, pet: p.id })} testID={`mission-pet-${p.id}`} />)}
+                </View>
+              </View>
+            ) : d.category === 'pets' ? (
+              <Button label={tr('pet.mission.addPet')} icon="heart" variant="ghost" size="sm" onPress={() => router.push('/family/pets' as never)} testID="mission-pet-open" />
+            ) : null}
             {docs?.length ? (
               <View style={{ gap: spacing.xs }}>
                 <Text variant="label">{tr('mis.form.attach')}</Text>
