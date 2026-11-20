@@ -88,3 +88,4 @@ export { couple2 } from './couple2';
 export { nounou } from './nounou';
 export { tour } from './tour';
 export { garde2 } from './garde2';
+export { credits } from './credits';

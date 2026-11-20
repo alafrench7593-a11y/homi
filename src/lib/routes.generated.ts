@@ -240,6 +240,7 @@ export const APP_ROUTES: readonly string[] = [
   '/settings',
   '/settings/account',
   '/settings/appearance',
+  '/settings/credits',
   '/settings/family',
   '/settings/home',
   '/settings/iphone-calendar',

@@ -28,6 +28,10 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { getLocale, t as tr } from '@/i18n';
+import { uuid } from '@/lib/uuid';
+import { OutOfCreditsSheet } from '@/features/credits/OutOfCreditsSheet';
+import { useCreditConfig, useCreditStatus } from '@/lib/data/hooks-credits';
+import { costOf, isInsufficientCredits, totalRemaining } from '@/lib/credits/model';
 import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 
 interface LocalMsg {
@@ -105,9 +109,15 @@ function Chat() {
   const askedInitial = useRef(false);
   const consented = latest.get('ai_assistant') === true;
 
-  const limit = quota?.limit ?? quotaStatus?.quota ?? null;
-  const used = quota?.used ?? quotaStatus?.used ?? null;
+  // Démonstration reliée à la vraie IA : limite par jour et par appareil (assistant-demo). Avec un compte : crédits HOMI IA
+  // (le serveur réserve, débite à la réponse livrée, restitue en cas d'échec ou de coupure : docs/CREDITS_IA.md).
+  const demoLimited = isDemo && hasRealBackend;
+  const limit = demoLimited ? quota?.limit ?? quotaStatus?.quota ?? null : null;
+  const used = demoLimited ? quota?.used ?? quotaStatus?.used ?? null : null;
   const remaining = limit != null && used != null ? Math.max(0, limit - used) : null;
+  const credits = useCreditStatus();
+  const creditConfig = useCreditConfig();
+  const [outOfCredits, setOutOfCredits] = useState(false);
 
   const historyLoaded = useRef(false);
   useEffect(() => {
@@ -170,6 +180,8 @@ function Chat() {
           conversation_id: conversationId, message, use_context: useContext, context: useContext ? context : undefined,
           // Langue et pays : en cas de détresse, ressources d'urgence dans la bonne langue et du bon pays
           lang: getLocale(), region,
+          // Clé d'idempotence de la question : un renvoi après coupure n'est jamais débité deux fois
+          request_id: uuid(),
           // Historique non conservé : les derniers échanges accompagnent la question (gardés seulement pour cette réponse)
           recent_turns: conversationId ? undefined : msgs.filter((x) => !x.streaming && !x.error && !x.stopped && (x.role === 'user' || (x.safety ?? 'none') === 'none')).slice(-12).map((x) => ({ role: x.role, content: x.content })),
         },
@@ -191,9 +203,14 @@ function Chat() {
       });
       if (res.safety !== 'none') haptic('warning');
       if (res.replaced) toast(tr('u8.chat.replaced'), 'info');
-      inv('assistant_conversations', 'assistant_usage');
+      inv('assistant_conversations', 'assistant_usage', 'credits');
     } catch (e) {
-      if (e instanceof BackendError && e.isPremiumRequired) {
+      if (isInsufficientCredits(e)) {
+        // Solde épuisé : la question n'est pas comptée ; feuille d'achat de packs (solde, renouvellement, prix boutique)
+        setMsgs((m) => m.filter((x) => x.id !== answerId));
+        setOutOfCredits(true);
+        inv('credits');
+      } else if (e instanceof BackendError && e.isPremiumRequired) {
         setPremiumNeeded(e.message);
         setMsgs((m) => m.filter((x) => x.id !== answerId));
         inv('assistant_usage');
@@ -457,7 +474,11 @@ function Chat() {
         ) : null}
       />
 
+      <OutOfCreditsSheet visible={outOfCredits} onClose={() => setOutOfCredits(false)} cost={costOf('assistant_question', creditConfig.data)} />
       <View style={{ paddingBottom: keyboardVisible ? spacing.sm : insets.bottom + spacing.sm, gap: 4 }}>
+        {!demoLimited && credits.data?.subscribed ? (
+          <Text variant="caption" muted center testID="chat-credits">{tr('cr.balance.total', { count: totalRemaining(credits.data) })}</Text>
+        ) : null}
         {remaining != null && (
           <Text variant="caption" muted center>
             {demoAi

@@ -8,7 +8,8 @@
 import { Platform } from 'react-native';
 import { backend } from './backend';
 import { localeTag } from '@/i18n';
-import { demoPlans, type Plan } from './premium/plans';
+import { demoFamilyPlans, demoPlans, formatMoney, type Plan } from './premium/plans';
+import { CREDIT_PACK_IDS, DEMO_PACK_PRICES, PACK_CREDITS, type CreditPackId } from './credits/model';
 
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_APPLE_KEY;
 const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_KEY;
@@ -54,4 +55,22 @@ export function loadPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
   if (mode === 'store') return purchasesSdk().getPlans();
   return mode === 'test' ? demoPlansForAccount() : Promise.resolve([]);
+}
+
+/** Formule Famille : boutique (prix réels) ou grille de démonstration. */
+export function loadFamilyPlans(): Promise<Plan[]> {
+  const mode = getPurchaseMode();
+  if (mode === 'store') return purchasesSdk().getFamilyPlans();
+  return Promise.resolve(mode === 'test' ? demoFamilyPlans(localeTag()) : []);
+}
+
+/** Pack de crédits proposé (le paquet de la boutique n'est chargé qu'en mode boutique). */
+export interface PackChoice { id: CreditPackId; credits: number; price: string; demo: boolean; pkg?: unknown; product?: unknown }
+
+/** Packs de crédits : prix de la boutique, ou grille de démonstration (faux magasin) ; sinon aucun (jamais de prix inventé). */
+export async function loadCreditPacks(): Promise<PackChoice[]> {
+  const mode = getPurchaseMode();
+  if (mode === 'store') return purchasesSdk().getCreditPacks();
+  if (mode !== 'test') return [];
+  return CREDIT_PACK_IDS.map((id) => ({ id, credits: PACK_CREDITS[id], price: formatMoney(DEMO_PACK_PRICES[id], 'EUR', localeTag()), demo: true }));
 }

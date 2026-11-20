@@ -23,9 +23,11 @@ aucun secret ne doit être collé dans ce dépôt** : seule la clé **publique**
 | Produit mensuel | **`homi_premium_monthly`** — 1 mois — **14,99 €** — essai gratuit 3 jours |
 | Produit 6 mois | **`homi_premium_6months`** — 6 mois — **69,99 €** — essai gratuit 3 jours |
 | Produit annuel | **`homi_premium_annual`** — 1 an — **119,99 €** — essai gratuit 3 jours |
-| Droit (entitlement) RevenueCat | **`HOMI_PREMIUM`** |
-| Offering RevenueCat | **`default`**, marquée **Current** |
-| Packages | **`$rc_monthly`** (Monthly), **`$rc_six_month`** (6 Month), **`$rc_annual`** (Annual) |
+| Produit Famille (26/11/2026, **identifiant proposé, à confirmer**) | **`homi_family_monthly`** — 1 mois — **19,99 €** — même groupe, **niveau le plus élevé** |
+| Packs de crédits HOMI IA (achats **consommables**, identifiants proposés) | **`homi_credits_300`** 2,99 € · **`homi_credits_800`** 5,99 € · **`homi_credits_2000`** 11,99 € |
+| Droit (entitlement) RevenueCat | **`HOMI_PREMIUM`** (les 4 abonnements, Famille compris ; les packs : **aucun** droit) |
+| Offering RevenueCat | **`default`**, marquée **Current** ; offering **`credits`** pour les 3 packs |
+| Packages | **`$rc_monthly`** (Monthly), **`$rc_six_month`** (6 Month), **`$rc_annual`** (Annual), **`family_monthly`** (personnalisé, produit Famille) |
 | Webhook | `https://ploatloxxigplpdsqyri.supabase.co/functions/v1/revenuecat-webhook` |
 | appUserID RevenueCat | identifiant Supabase (UUID) de la personne connectée |
 
@@ -40,8 +42,18 @@ Ce que fait l'application avec ces réglages :
   n'apparaissent **que si** l'App Store propose une offre d'introduction gratuite sur la formule choisie **et** qu'Apple
   confirme que la personne y a droit (Apple n'accorde l'essai qu'**une fois par groupe d'abonnements**). Sinon le bouton
   dit « S'abonner — 119,99 € / an » (prix réel).
-- Les 3 formules donnent **exactement le même Premium**. Un abonnement couvre l'abonné·e et **un** co-parent adulte du
-  foyer, sans supplément. Il n'existe **aucune formule « Familiale » payante** ni option à + 5 € : rien de tel n'est affiché.
+- Les 3 formules Premium donnent **exactement le même Premium**. Un abonnement Premium couvre l'abonné·e et **un**
+  co-parent adulte du foyer, sans supplément, avec **1 000 crédits HOMI IA par mois** (compte du payeur, partagé avec cet
+  adulte).
+- **HOMI Famille** (26/11/2026) : le même Premium pour **tous les adultes** (owner / coparent) du foyer de la personne
+  abonnée, et **1 500 crédits HOMI IA par mois en commun**. C'est le niveau le plus élevé du groupe : depuis Premium, la
+  montée est immédiate (prix au prorata par Apple). La formule est reconnue par l'**identifiant de produit**
+  (`homi_family_*`), jamais par le type de package. Une nounou invitée ne reçoit pas Premium.
+- **Crédits HOMI IA** : règles, coûts, packs, tables et tests : **[docs/CREDITS_IA.md](docs/CREDITS_IA.md)**. Sans
+  abonnement, aucun crédit (Premium strict) ; les packs ne se proposent qu'avec un abonnement actif. La page
+  d'abonnement explique les crédits **sans promesse** : tant que l'assistant n'est pas ouvert, elle l'écrit.
+- Les anciennes offres « Assistant IA » (`aufildenous_ai_monthly`) et outils à vie (`aufildenous_tool_*`) ne sont **plus
+  affichées ni vendues** (données conservées, droits passés honorés) : docs/CREDITS_IA.md § 9.
 - **Renouvellement automatique** : écrit en clair juste sous le bouton d'achat (« Renouvellement automatique : 119,99 €
   par an, jusqu'à résiliation. »), donc visible en même temps que lui sans défiler, sur l'écran Premium comme sur la page
   d'abonnement (même bloc `PurchaseCta`).
@@ -169,9 +181,16 @@ Dans le groupe **HOMI Premium**, classez les produits par niveau (glisser-dépos
 
 | Niveau | Produit |
 |---|---|
-| 1 (le plus élevé) | `homi_premium_annual` |
-| 2 | `homi_premium_6months` |
-| 3 | `homi_premium_monthly` |
+| 1 (le plus élevé) | `homi_family_monthly` (HOMI Famille, 19,99 €/mois) |
+| 2 | `homi_premium_annual` |
+| 3 | `homi_premium_6months` |
+| 4 | `homi_premium_monthly` |
+
+Famille au niveau 1 : passer de n'importe quel Premium à Famille prend effet **tout de suite** (prorata) ; revenir de
+Famille à Premium prend effet à l'échéance. Créez le produit Famille comme les autres (§ 1.2 : durée 1 mois, prix
+19,99 €, localisation « HOMI Famille », sans essai gratuit : Apple ne l'accorderait de toute façon qu'une fois par groupe).
+Les **3 packs de crédits** se créent ailleurs : **Monétisation › Achats intégrés › +** › type **Consommable** — voir
+docs/CREDITS_IA.md § 7.
 
 Monter de niveau (mensuel → 12 mois) prend effet immédiatement, avec remboursement au prorata ; descendre
 (12 mois → mensuel) prend effet à l'échéance. Un seul abonnement à la fois : jamais de double prélèvement.
@@ -212,11 +231,13 @@ quelques minutes).
 
 ### 2.3 Produits
 **Product catalog** › **Products** › **+ New** (ou **Import** depuis App Store Connect) : `homi_premium_monthly`,
-`homi_premium_6months`, `homi_premium_annual` (app : HOMI iOS).
+`homi_premium_6months`, `homi_premium_annual`, `homi_family_monthly` (abonnements) et `homi_credits_300`,
+`homi_credits_800`, `homi_credits_2000` (consommables) — app : HOMI iOS.
 
 ### 2.4 Droit `HOMI_PREMIUM`
 **Product catalog** › **Entitlements** › **+ New** › identifiant **`HOMI_PREMIUM`** (description « HOMI Premium ») ›
-**Attach** › cocher les **3** produits.
+**Attach** › cocher les **4** abonnements (dont `homi_family_monthly`). **Ne pas** rattacher les packs de crédits à un
+droit : ils sont crédités par le webhook (NON_RENEWING_PURCHASE) dans le grand livre du serveur.
 
 ### 2.5 Offering `default` et ses 3 packages
 **Product catalog** › **Offerings** › **+ New** › identifiant **`default`**, description « HOMI Premium » › puis
@@ -227,6 +248,10 @@ quelques minutes).
 | **Monthly** (`$rc_monthly`) | `homi_premium_monthly` |
 | **6 Month** (`$rc_six_month`) | `homi_premium_6months` |
 | **Annual** (`$rc_annual`) | `homi_premium_annual` |
+| **Custom** `family_monthly` | `homi_family_monthly` |
+
+Puis une **seconde** offering **`credits`** (sans « Make current ») avec 3 packages personnalisés `credits_300`,
+`credits_800`, `credits_2000` → `homi_credits_300`, `homi_credits_800`, `homi_credits_2000`.
 
 ### 2.6 Clés
 **Project settings** › **API keys** :
@@ -269,7 +294,10 @@ supabase db push                                # dont 20261119000200_homi_premi
 supabase functions deploy revenuecat-webhook    # verify_jwt = false (secret partagé)
 supabase functions deploy subscription-sync     # verify_jwt = true
 supabase functions deploy delete-account
+# Crédits HOMI IA (26/11/2026) : migration 20261126000100_credits_ia.sql, puis
+supabase functions deploy assistant assistant-demo scan-explain document-read document-extract community-ai cycle-photo
 ```
+Ordre complet de mise en service des crédits : docs/CREDITS_IA.md § 8.
 La migration `20261119000200_homi_premium_ids.sql` met la valeur par défaut du droit à `HOMI_PREMIUM` et renomme
 l'étiquette d'une éventuelle ancienne ligne ; elle ne supprime rien.
 
@@ -318,6 +346,8 @@ RevenueCat › **Customers** › UUID Supabase (historique des événements).
 | 15 | Échec de paiement | App Store Connect › Sandbox › compte de test › interrompre les renouvellements | « Période de grâce » (Premium maintenu) puis « Problème de paiement » |
 | 16 | Remboursement | Demande de remboursement Sandbox | « Remboursé », droits retirés immédiatement |
 | 17 | Depuis l'onboarding | `/premium?from=onboarding` › acheter, ou « Plus tard » | Retour à l'accueil dans les deux cas |
+| 18 | Famille | Premium mensuel › Réglages › Abonnement › « Passer à Famille » | Feuille Apple (prorata) ; formule « Famille » ; 1 500 crédits dans « Mes crédits » ; co-parents du foyer en Premium |
+| 19 | Crédits et packs | Scénarios détaillés : docs/CREDITS_IA.md § 6 | — |
 
 Ce qui est vérifié automatiquement dans le dépôt (sans StoreKit) : grille et calculs (Jest), éligibilité à l'essai
 (`applyTrialEligibility`, Jest), page d'abonnement et preuves du comparatif (`subscriptionPage.test.tsx`), issues

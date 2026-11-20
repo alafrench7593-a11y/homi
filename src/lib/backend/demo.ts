@@ -15,7 +15,7 @@ import { lib2 as frDict } from '@/i18n/fr/lib2';
 import { lib2 as enDict } from '@/i18n/en/lib2';
 import { uuid } from '../uuid';
 import { grants } from '../premium/entitlement';
-import { DEMO_CURRENCY, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, type PlanPeriod } from '../premium/plans';
+import { DEMO_CURRENCY, DEMO_FAMILY_GRID, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, tierOfProduct, type PlanPeriod } from '../premium/plans';
 import { AI_ENTITLEMENT, PAID_TOOLS, toolEntitlement, toolProductId, type AccessInfo } from '../premium/offers';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
@@ -34,6 +34,7 @@ import { createMissions } from './demoMissions';
 import { createCouple } from './demoCouple';
 import { createChildcare } from './demoChildcare';
 import { createStocks } from './demoStocks';
+import { createCredits } from './demoCredits';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -367,7 +368,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     const adult = (r: unknown) => r === 'owner' || r === 'coparent';
     const others = hm.filter((m) => m.user_id === me && adult(m.role))
       .flatMap((m) => hm.filter((o) => o.household_id === m.household_id && o.user_id !== me && adult(o.role)).map((o) => String(o.user_id)));
-    return [...new Set(others)].sort().find((u) => subActive(u) && premiumPartnerOf(u) === me) ?? null;
+    // Famille (26/11/2026) : tous les adultes du foyer de l'abonné·e ; Premium : le seul partenaire désigné
+    const list = [...new Set(others)].sort();
+    const family = (u: string) => tierOfProduct(T('subscriptions').find((r) => r.user_id === u)?.product_id) === 'family';
+    return list.find((u) => subActive(u) && family(u)) ?? list.find((u) => subActive(u) && premiumPartnerOf(u) === me) ?? null;
   };
   const limit = (key: string) => {
     const l = T('plan_limits').find((p) => p.key === key);
@@ -489,6 +493,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const stockHooks = stocks;
   // Espace nounou (mêmes règles que 20261121000100_espace_nounou.sql, côté parent)
   const childcare = createChildcare({ T, me: () => state.session?.userId, nowIso, uuid });
+  // Crédits HOMI IA (mêmes règles que 20261126000100_credits_ia.sql) : solde, faux magasin, historique
+  const credits = createCredits({
+    T, me: () => state.session?.userId, nowIso, uuid,
+    activeSub: (u) => { const s = T('subscriptions').find((r) => r.user_id === u); return grants(s as never) ? (s as Row) : null; },
+    giver: () => premiumGiver(),
+  });
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
@@ -1195,6 +1205,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
 
   // ---------------------------------------------------------------- fonctions backend simulées
   const rpcs: Record<string, (a: Row) => unknown> = {
+    ...credits.rpcs,
     ...social.rpcs,
     ...messages.rpcs,
     ...missions.rpcs,
@@ -1630,8 +1641,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       const idx = subs.findIndex((s) => s.user_id === uid());
       const period: PlanPeriod = a.period === 'annual' || a.period === 'six_months' ? a.period : 'monthly';
       const plus = (months: number) => { const d = new Date(); d.setMonth(d.getMonth() + months); return d.toISOString(); };
-      const base = { user_id: uid(), entitlement: PREMIUM_ENTITLEMENT, product_id: a.product_id ?? PRODUCT_IDS[period], store: 'test', period_type: period,
-        price: DEMO_GRID[period].amount, currency: DEMO_CURRENCY, environment: null, refunded_at: null, billing_issue_at: null, resumes_at: null, cancel_reason: null };
+      const productId = a.product_id ?? PRODUCT_IDS[period];
+      const base = { user_id: uid(), entitlement: PREMIUM_ENTITLEMENT, product_id: productId, store: 'test', period_type: period,
+        price: tierOfProduct(productId) === 'family' ? DEMO_FAMILY_GRID.monthly.amount : DEMO_GRID[period].amount, currency: DEMO_CURRENCY, environment: null, refunded_at: null, billing_issue_at: null, resumes_at: null, cancel_reason: null };
       // Simulation des états (démonstration et tests) : essai, actif, annulé, grâce, problème de paiement, remboursé, en pause, expiré
       if (typeof a.state === 'string') {
         const days = Number(a.expires_in_days ?? 30);
@@ -1642,6 +1654,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           refunded_at: st === 'refunded' ? nowIso() : null, billing_issue_at: st === 'grace' || st === 'billing_issue' ? nowIso() : null,
           resumes_at: st === 'paused' ? new Date(Date.now() + (days + 30) * 86400_000).toISOString() : null };
         if (idx >= 0) subs[idx] = row; else subs.push(row);
+        if (st === 'active' || st === 'trial') credits.grant(uid(), tierOfProduct(row.product_id), row.expires_at, st === 'trial');
         return row;
       }
       const trialDays = a.trial ? Number(a.trial_days ?? DEMO_GRID[period].trialDays) : 0;
@@ -1652,6 +1665,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
         : { ...(idx >= 0 ? subs[idx] : base), user_id: uid(), status: 'expired', expires_at: nowIso(), will_renew: false };
       if (idx >= 0) subs[idx] = row;
       else subs.push(row);
+      // Miroir du webhook : octroi mensuel à l'achat (1 000 Premium, 1 500 Famille, 50 pendant l'essai)
+      if (a.active) credits.grant(uid(), tierOfProduct((row as Row).product_id), row.expires_at, row.status === 'trial');
       return row;
     },
     // Miroir de public.my_premium_share() : avec qui mon Premium est partagé / qui me le partage (pour soi seulement)

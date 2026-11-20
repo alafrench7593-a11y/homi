@@ -15,6 +15,9 @@
  *     et « Continuer sans m'abonner », toujours visible.
  * Abonné·e : formule en cours, prochaine échéance ou fin d'accès si résilié, origine (achat personnel ou partagé par
  * l'autre adulte du foyer), changer de formule, gérer / annuler, restaurer.
+ * 26/11/2026 : formule « HOMI Famille » (niveau supérieur du même groupe, prix de la boutique, renouvellement écrit à
+ * côté du bouton) et crédits HOMI IA (ce que chaque formule inclut, règles, lien « Mes crédits ») — sans promesse tant
+ * que l'IA n'est pas ouverte. Les anciennes offres (Assistant IA, outils à vie) ne sont plus affichées.
  *
  * Aucun prix en dur, aucun compte à rebours, aucune urgence, aucune case à cocher. Mêmes textes de conditions et
  * mêmes calculs que l'écran Premium (src/features/premium/paywallModel.ts). Sur le web : pas d'achat. Les droits sont
@@ -26,7 +29,7 @@ import { useLocalSearchParams, usePathname } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Icon, Loading, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
-import { ToolOffersCard } from '@/features/offers/ToolOffer';
+import { CreditsInfoCard, FamilyOffer } from '@/features/credits/FamilyOffer';
 import { CompareBlocks } from '@/features/premium/CompareBlocks';
 import { PlanPicker } from '@/features/premium/PlanPicker';
 import { PurchaseCta, PurchaseFinePrint } from '@/features/premium/PurchaseCta';
@@ -38,7 +41,7 @@ import { useEntitlement } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { goUp } from '@/lib/links';
 import { FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
-import type { Plan, PlanPeriod } from '@/lib/premium/plans';
+import { tierOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
 import { PurchaseError } from '@/lib/premium/purchaseErrors';
 import { purchasesSdk } from '@/lib/purchaseMode';
 import { Cascade, motionHaptic } from '@/motion';
@@ -63,7 +66,9 @@ export default function SubscriptionScreen() {
 
   // Abonnement personnel en cours : on propose un changement de formule, jamais un second abonnement
   const own = ownActive(sub, premium);
-  const currentPeriod = own ? periodOfSub(sub) : null;
+  // Formule Famille personnelle : le Premium (3 durées) n'est pas proposé (redescendre se fait dans la boutique)
+  const ownFamily = own && tierOfProduct(sub?.product_id) === 'family';
+  const currentPeriod = own && !ownFamily ? periodOfSub(sub) : null;
   const sharedOnly = premium && !own;
   // Un·e abonné·e n'est plus éligible à l'offre d'essai (une fois par groupe d'abonnements) : jamais affichée ici
   const list = useMemo<Plan[]>(() => (plans.data ?? []).map((p) => (own ? { ...p, trialDays: 0 } : p)), [plans.data, own]);
@@ -157,12 +162,18 @@ export default function SubscriptionScreen() {
         </>
       ) : null}
 
-      {!sharedOnly ? (
+      {!sharedOnly && !ownFamily ? (
         <>
           <SectionTitle title={currentPeriod ? tr('sub2.page.change') : tr('sub2.page.choose')} />
           {offer}
         </>
       ) : null}
+
+      {/* Famille : niveau supérieur (tous les adultes du foyer, crédits en commun) ; jamais pour un accès partagé */}
+      {!sharedOnly && !webWithoutPurchase(mode) ? (
+        <FamilyOffer current={!!ownFamily} premiumProductId={own && !ownFamily ? sub?.product_id ?? null : null} />
+      ) : null}
+      <CreditsInfoCard />
 
       {/* Sans abonnement : état, « Gérer mon abonnement » (page de la boutique), restauration, CGU et confidentialité */}
       {!premium ? (
@@ -171,9 +182,6 @@ export default function SubscriptionScreen() {
           <Button label={tr('sub3.continueFree')} variant="ghost" onPress={() => goUp(pathname)} testID="sub3-continue-free" full />
         </>
       ) : null}
-
-      {/* Outils achetés à vie avant le 08/11/2026 : ils restent listés (aucune vente) */}
-      <ToolOffersCard />
 
       {premium ? (
         <>

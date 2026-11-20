@@ -14,6 +14,15 @@
  *    « Subscription offers »), et la vérification d'éligibilité RevenueCat n'est pas disponible sur Android.
  */
 import type { PurchasesPackage, PurchasesStoreProduct } from 'react-native-purchases';
+import { FAMILY_PRODUCT_IDS, isCreditPack, tierOfProduct, type Tier } from '../../../supabase/functions/_shared/credits';
+
+/**
+ * Formule (26/11/2026) : « premium » (3 durées) ou « family » (Famille, niveau supérieur du même groupe d'abonnements).
+ * Elle est lue sur l'IDENTIFIANT DE PRODUIT (homi_family_* → family), jamais sur le type de package : un « Famille
+ * mensuel » ($rc_monthly ou package personnalisé) ne peut plus être confondu avec le Premium mensuel.
+ */
+export type PlanTier = Tier;
+export { FAMILY_PRODUCT_IDS, tierOfProduct };
 
 export type PlanPeriod = 'monthly' | 'six_months' | 'annual';
 export const PREMIUM_ENTITLEMENT = 'HOMI_PREMIUM';
@@ -41,6 +50,8 @@ export const DEMO_GRID: Record<PlanPeriod, { amount: number; trialDays: number }
 export interface Plan {
   /** Identifiant du produit de la boutique */
   id: string;
+  /** Formule, d'après l'identifiant du produit (absent : premium) */
+  tier?: PlanTier;
   period: PlanPeriod;
   months: number;
   /** Prix tel que formaté par la boutique (priceString) */
@@ -106,7 +117,7 @@ export function perMonthAmount(amount: number, months: number): number {
   return Math.round((amount / months) * 100 + 1e-6) / 100;
 }
 
-interface RawPlan { id: string; period: PlanPeriod; price: string; amount: number; currency: string; trialDays: number; demo: boolean; pkg?: PurchasesPackage }
+interface RawPlan { id: string; tier: PlanTier; period: PlanPeriod; price: string; amount: number; currency: string; trialDays: number; demo: boolean; pkg?: PurchasesPackage }
 
 function finish(raw: RawPlan[], locale: string): Plan[] {
   const monthly = raw.find((p) => p.period === 'monthly');
@@ -122,13 +133,18 @@ function finish(raw: RawPlan[], locale: string): Plan[] {
   });
 }
 
-/** Packages de l'offre courante → formules (une par durée ; les autres packages sont ignorés). */
-export function buildPlans(pkgs: PurchasesPackage[], os: string, locale: string): Plan[] {
+/**
+ * Packages de l'offre courante → formules d'UNE formule (premium par défaut ; une par durée ; les autres packages —
+ * autre formule, packs de crédits — sont ignorés).
+ */
+export function buildPlans(pkgs: PurchasesPackage[], os: string, locale: string, tier: PlanTier = 'premium'): Plan[] {
   const raw: RawPlan[] = [];
   for (const pkg of pkgs) {
+    const id = pkg.product.identifier;
+    if (isCreditPack(id) || tierOfProduct(id) !== tier) continue;
     const period = packagePeriod(pkg);
     if (!period || raw.some((r) => r.period === period)) continue;
-    raw.push({ id: pkg.product.identifier, period, price: pkg.product.priceString, amount: pkg.product.price, currency: pkg.product.currencyCode, trialDays: trialDaysOf(pkg.product, os), demo: false, pkg });
+    raw.push({ id, tier, period, price: pkg.product.priceString, amount: pkg.product.price, currency: pkg.product.currencyCode, trialDays: trialDaysOf(pkg.product, os), demo: false, pkg });
   }
   return finish(raw, locale);
 }
@@ -136,9 +152,22 @@ export function buildPlans(pkgs: PurchasesPackage[], os: string, locale: string)
 /** Démonstration : grille prévue, calculs identiques (économies dérivées des montants, jamais écrites en dur). */
 export function demoPlans(locale: string): Plan[] {
   return finish(PLAN_ORDER.map((period) => ({
-    id: PRODUCT_IDS[period], period, price: formatMoney(DEMO_GRID[period].amount, DEMO_CURRENCY, locale), amount: DEMO_GRID[period].amount,
+    id: PRODUCT_IDS[period], tier: 'premium' as const, period, price: formatMoney(DEMO_GRID[period].amount, DEMO_CURRENCY, locale), amount: DEMO_GRID[period].amount,
     currency: DEMO_CURRENCY, trialDays: DEMO_GRID[period].trialDays, demo: true,
   })), locale);
+}
+
+/** Grille Famille affichée UNIQUEMENT en démonstration : 19,99 € / mois (en boutique : prix de StoreKit / Play). */
+export const DEMO_FAMILY_GRID = { monthly: { amount: 19.99, trialDays: 0 } } as const;
+
+/** Packs de crédits HOMI IA, grille affichée UNIQUEMENT en démonstration (faux magasin) : 2,99 / 5,99 / 11,99 €. */
+export const DEMO_PACK_GRID = { homi_credits_300: 2.99, homi_credits_800: 5.99, homi_credits_2000: 11.99 } as const;
+
+/** Démonstration : formule Famille (mensuelle). */
+export function demoFamilyPlans(locale: string): Plan[] {
+  const g = DEMO_FAMILY_GRID.monthly;
+  return finish([{ id: FAMILY_PRODUCT_IDS.monthly, tier: 'family', period: 'monthly', price: formatMoney(g.amount, DEMO_CURRENCY, locale),
+    amount: g.amount, currency: DEMO_CURRENCY, trialDays: g.trialDays, demo: true }], locale);
 }
 
 /** Date du premier prélèvement (après l'essai éventuel) et du renouvellement suivant. */
