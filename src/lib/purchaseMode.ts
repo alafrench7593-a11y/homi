@@ -6,6 +6,7 @@
  *  - « unavailable » : RevenueCat non configuré (dont la version web : pas d'achat intégré sur le web).
  */
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { backend } from './backend';
 import { localeTag } from '@/i18n';
 import { demoFamilyPlans, demoPlans, formatMoney, type Plan } from './premium/plans';
@@ -41,8 +42,28 @@ export const manageUrl = (os: string = Platform.OS): string => (os === 'android'
  * lancement par groupe d'abonnements) — un compte de démonstration qui a déjà eu un abonnement voit les formules
  * sans essai, comme une personne non éligible en boutique.
  */
+/**
+ * DÉMONSTRATION SEULEMENT (faux magasin, mode « test ») : issues simulées pour rejouer le parcours d'achat dans la
+ * version web (e2e/paywall_premiere_reussite.py). Jamais lu en mode boutique.
+ *  - `homi.demo.purchase-sim` : cancelled | deferred | pending | network ;
+ *  - `homi.demo.catalog-sim`  : offline | error (catalogue illisible) | notrial (aucun essai pour ce compte).
+ */
+export const DEMO_PURCHASE_SIM_KEY = 'homi.demo.purchase-sim';
+export const DEMO_CATALOG_SIM_KEY = 'homi.demo.catalog-sim';
+async function readSim(key: string): Promise<string | null> {
+  if (getPurchaseMode() !== 'test') return null;
+  try { return await AsyncStorage.getItem(key); } catch { return null; }
+}
+export async function demoPurchaseSimulation(): Promise<'cancelled' | 'deferred' | 'pending' | 'network' | null> {
+  const v = await readSim(DEMO_PURCHASE_SIM_KEY);
+  return v === 'cancelled' || v === 'deferred' || v === 'pending' || v === 'network' ? v : null;
+}
+
 export async function demoPlansForAccount(): Promise<Plan[]> {
+  const sim = await readSim(DEMO_CATALOG_SIM_KEY);
+  if (sim === 'offline' || sim === 'error') throw new Error(sim === 'offline' ? 'Network request failed' : 'catalog_unavailable');
   const plans = demoPlans(localeTag());
+  if (sim === 'notrial') return plans.map((p) => ({ ...p, trialDays: 0 }));
   let used = false;
   try {
     used = (await backend.rpc<boolean>('demo_trial_used')) === true;
@@ -61,7 +82,11 @@ export function loadPlans(): Promise<Plan[]> {
 export function loadFamilyPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
   if (mode === 'store') return purchasesSdk().getFamilyPlans();
-  return Promise.resolve(mode === 'test' ? demoFamilyPlans(localeTag()) : []);
+  if (mode !== 'test') return Promise.resolve([]);
+  return readSim(DEMO_CATALOG_SIM_KEY).then((sim) => {
+    if (sim === 'offline' || sim === 'error') throw new Error(sim === 'offline' ? 'Network request failed' : 'catalog_unavailable');
+    return demoFamilyPlans(localeTag());
+  });
 }
 
 /** Pack de crédits proposé (le paquet de la boutique n'est chargé qu'en mode boutique). */

@@ -25,6 +25,7 @@ import { usePantryMigration } from '@/lib/data/hooks-stocks';
 import { configureNotifications, notificationRoute, notificationsSupported, registerPushToken, snoozeLocally, handleDoneResponse } from '@/lib/notifications';
 import { startOfflineSync, useOfflineStore } from '@/lib/offline';
 import { configurePurchases, resetPurchasesUser } from '@/lib/purchases';
+import { configureAnalytics, flushAnalytics } from '@/lib/analytics/events';
 import { usePurchasesSync } from '@/lib/data/hooks-premium';
 import { Manrope_500Medium } from '@expo-google-fonts/manrope/500Medium';
 import { Manrope_600SemiBold } from '@expo-google-fonts/manrope/600SemiBold';
@@ -113,7 +114,17 @@ function Bootstrap() {
         .catch(() => setCrashReportingAllowed(false));
       configurePurchases(session.userId).catch(() => undefined);
       registerPushToken().catch(() => undefined);
+      // Mesure du parcours d'abonnement : envoyée seulement avec l'accord « mesure d'audience » (privacy_settings)
+      const uid = session.userId;
+      configureAnalytics({
+        consent: () => backend.select<{ analytics_enabled: boolean }>({ table: 'privacy_settings', filters: [eq('user_id', uid)] })
+          .then(([p]) => (p ? !!p.analytics_enabled : null)).catch(() => null),
+        send: (rows) => backend.insert('analytics_events', rows.map((r) => ({ user_id: uid, install_id: r.install_id, name: r.name, props: r.props, occurred_at: r.at })))
+          .then(() => true).catch(() => false),
+      });
+      void flushAnalytics();
     } else {
+      configureAnalytics({ consent: async () => null, send: async () => false });
       setCrashReportingAllowed(false);
       resetPurchasesUser().catch(() => undefined);
     }

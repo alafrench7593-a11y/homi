@@ -21,7 +21,7 @@ import { localeTag, t as tr } from '@/i18n';
 import { deviceState, needsServerSync } from './premium/customerSync';
 import { notifySubscriptionChanged } from './premium/syncEvents';
 import { PurchaseError, purchaseErrorKind } from './premium/purchaseErrors';
-import { demoPlansForAccount, getPurchaseMode, MANAGE_URLS, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
+import { demoPlansForAccount, demoPurchaseSimulation, getPurchaseMode, MANAGE_URLS, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
 import type { SubRow } from './premium/entitlement';
 import { buildPlans, demoFamilyPlans, periodOfProduct, PREMIUM_ENTITLEMENT, productChangeFor, type Plan } from './premium/plans';
 import { CREDIT_PACK_IDS, CREDITS_OFFERING, PACK_CREDITS, type CreditPackId } from './credits/model';
@@ -65,6 +65,21 @@ export async function resetPurchasesUser() {
     // utilisateur déjà anonyme : rien à faire
   }
 }
+
+/**
+ * Catalogue AVANT tout compte (parcours « première réussite », 03/12/2026) : le SDK est configuré en ANONYME pour lire
+ * les prix et l'éligibilité à l'essai (StoreKit). Aucun achat n'est possible dans cet état (`purchase` exige un
+ * compte : le webhook ignore les identifiants anonymes) ; la connexion passera ensuite par `Purchases.logIn`.
+ */
+export async function ensureCatalogConfigured(): Promise<void> {
+  if (getPurchaseMode() !== 'store' || !apiKey || configured) return ready ?? undefined;
+  Purchases.configure({ apiKey });
+  configured = true;
+  Purchases.addCustomerInfoUpdateListener((info) => { void checkCustomerInfo(info); });
+}
+
+/** Un achat ne part qu'avec un compte connecté (RevenueCat logIn(id Supabase) fait). */
+export const hasPurchaseAccount = () => getPurchaseMode() !== 'store' || currentUser !== null;
 
 /** Pour les tests : état du module. */
 export const __purchasesState = () => ({ configured, currentUser });
@@ -110,6 +125,7 @@ export async function getPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
   if (mode === 'test') return demoPlansForAccount();
   if (mode !== 'store') return []; // jamais de prix inventé hors démonstration
+  await ensureCatalogConfigured();
   if (ready) await ready.catch(() => undefined);
   const offerings = await Purchases.getOfferings();
   const plans = buildPlans(offerings.current?.availablePackages ?? [], Platform.OS, localeTag());
@@ -160,12 +176,19 @@ async function activeStoreProduct(): Promise<string | null> {
 export async function purchase(plan: Plan, opts: { currentProductId?: string | null } = {}): Promise<PurchaseOutcome> {
   const purchaseMode = getPurchaseMode();
   if (purchaseMode === 'test') {
+    // Démonstration : issue simulée demandée par les tests de parcours (annulé, en attente, échec réseau)
+    const sim = await demoPurchaseSimulation();
+    if (sim === 'cancelled' || sim === 'deferred') return sim;
+    if (sim === 'network') throw new PurchaseError('network');
+    if (sim === 'pending') return 'pending';
     // Démonstration : données locales fictives, aucun paiement ; essai seulement si la grille en prévoit un
     await backend.rpc('set_demo_subscription', { active: true, period: plan.period, product_id: plan.id, trial: plan.trialDays > 0, trial_days: plan.trialDays });
     return 'confirmed';
   }
   if (purchaseMode !== 'store' || !plan.pkg) throw new Error(tr('l1.pur.notConfigured'));
   if (ready) await ready.catch(() => undefined);
+  // Jamais d'achat anonyme : le webhook l'ignorerait et Premium ne serait jamais confirmé (compte d'abord)
+  if (!currentUser) throw new PurchaseError('account_required');
   const current = opts.currentProductId ?? (Platform.OS === 'android' ? await activeStoreProduct() : null);
   const change = productChangeFor(Platform.OS, current, periodOfProduct(current), plan);
   try {
@@ -232,9 +255,10 @@ export async function getFamilyPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
   if (mode === 'test') return demoFamilyPlans(localeTag());
   if (mode !== 'store') return [];
+  await ensureCatalogConfigured();
   if (ready) await ready.catch(() => undefined);
   const offerings = await Purchases.getOfferings();
-  return buildPlans(offerings.current?.availablePackages ?? [], Platform.OS, localeTag(), 'family');
+  return applyTrialEligibility(buildPlans(offerings.current?.availablePackages ?? [], Platform.OS, localeTag(), 'family'));
 }
 
 // ---------------------------------------------------------------- packs de crédits HOMI Aura (consommables)

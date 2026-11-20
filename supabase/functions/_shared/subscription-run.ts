@@ -15,6 +15,7 @@ import {
   subscriptionFromSubscriber, transferIds, type GrantRow, type RcEvent, type RcSubscriberBody, type SubscriptionRow,
 } from './revenuecat.ts';
 import { grantFor, packActionFor, type CreditPackId, type GrantAction } from './credits.ts';
+import { firstBillingOf, type FirstBilling } from './conversion.ts';
 
 const RC_API = 'https://api.revenuecat.com/v1/subscribers/';
 const PREMIUM_STATUSES = new Set(['trial', 'active', 'grace', 'cancelled', 'paused']);
@@ -33,6 +34,8 @@ export interface SubscriptionDb {
   premium(userId: string): Promise<boolean>;
   /** Droits achetés hors Premium (Assistant IA, outils à vie) : remplace l'état connu de la personne. */
   writeGrants?(userId: string, grants: GrantRow[]): Promise<boolean>;
+  /** Événement serveur first_billing_confirmed (conversion_events, idempotent sur la transaction). */
+  recordConversion?(userId: string, e: FirstBilling): Promise<void>;
 }
 
 /** Grand livre des crédits IA (RPC service_role : 20261126000100_credits_ia.sql). Toutes les écritures sont idempotentes. */
@@ -115,6 +118,11 @@ export function supabaseDb(admin: SupabaseClient): SubscriptionDb {
     async premium(userId) {
       const { data } = await admin.rpc('_premium_of', { p_user: userId });
       return data === true;
+    },
+    async recordConversion(userId, e) {
+      // Contrainte unique (kind, transaction_id) : un webhook rejoué n'écrit jamais deux fois (migration 20261203000100)
+      const { error } = await admin.from('conversion_events').upsert({ user_id: userId, ...e }, { onConflict: 'kind,transaction_id', ignoreDuplicates: true });
+      if (error) console.error('conversion_event_error', error.code);
     },
     async writeGrants(userId, grants) {
       const at = new Date().toISOString();
@@ -259,6 +267,9 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   }
 
   if (!(await deps.db.write({ user_id: userId, ...row }))) return json({ error: 'server_error' }, 500); // RevenueCat réessaiera
+  // Mesure du paywall : première facturation confirmée (après l'essai, ou achat payé tout de suite) — jamais bloquant
+  const billing = firstBillingOf(event, current?.status);
+  if (billing && deps.db.recordConversion) await deps.db.recordConversion(userId, billing).catch(() => undefined);
   // Crédits mensuels : INITIAL_PURCHASE, RENEWAL, PRODUCT_CHANGE vers Famille (jamais déclenchés par l'application)
   if (!(await grantCredits(event, row, userId, deps))) return json({ error: 'server_error' }, 500);
 
