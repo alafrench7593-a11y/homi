@@ -24,7 +24,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { DEMOS, resultText } from './demos';
-import { AuraBubble, BenefitLine } from './kit';
+import { AuraBubble, BenefitLine, NO_HYPHENS } from './kit';
 import {
   DEMO_OF, loadProgress, needsFor, saveProgress, STAGE_PROFILE, STAGES, stepFor,
   type DemoResult, type FirstWinProgress, type FlowStep, type LifeStage, type NeedId,
@@ -131,7 +131,7 @@ export function FirstWinFlow({ initialStep }: { initialStep?: FlowStep }) {
           <View accessible accessibilityRole="header" accessibilityLabel={`${tr('fw.result.a11y')}. ${resultText(result)}`} style={{ alignItems: 'center', gap: spacing.xs }}>
             <SuccessCheck visible size={56} color={th.colors.success} />
             <Text variant="title" center>{tr(`fw.title.${need}` as TKey)}</Text>
-            <Text center muted testID="fw-result-text">{resultText(result)}</Text>
+            <Text center muted style={NO_HYPHENS} testID="fw-result-text">{resultText(result)}</Text>
           </View>
           <Demo onDone={() => undefined} result={result} />
           <View style={{ gap: spacing.xs }} testID="fw-daily">

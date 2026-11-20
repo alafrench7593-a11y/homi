@@ -47,7 +47,11 @@ export function FirstWinOffers() {
   const now = useRef(new Date()).current;
 
   const wanted = p?.plan ? `${p.plan.tier}:${p.plan.period}` : null;
-  useEffect(() => { if (cards.length && (!selected || !cards.some((c) => c.key === selected))) setSelected(defaultOfferKey(cards, wanted)); }, [cards, wanted, selected]);
+  // Présélection une fois le catalogue Premium chargé (jamais sur un catalogue partiel : Famille arrive parfois avant)
+  useEffect(() => {
+    if (catalog !== 'ready' || p === undefined) return;
+    if (!selected || !cards.some((c) => c.key === selected)) setSelected(defaultOfferKey(cards, wanted));
+  }, [catalog, cards, wanted, selected, p]);
   const card = cards.find((c) => c.key === selected) ?? null;
   const props = { stage: p?.stage ?? null, need: p?.need ?? null, variant, direction: INTEGRATED_DIRECTION.toLowerCase() };
 

@@ -4,7 +4,7 @@
  * Vrai composant (`PaywallView`), grille de DÉMONSTRATION signalée, résultat de démo d'exemple ; aucun achat possible.
  * Accessible comme /dev/glass : mode développeur ou démonstration ; ailleurs, retour à l'accueil.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { isDemo } from '@/lib/backend';
@@ -37,7 +37,10 @@ export default function PaywallPreview() {
   }, [trial]);
   const [selected, setSelected] = useState<string | null>(() => defaultOfferKey(cards, q.plan ?? null));
   const result: DemoResult = { kind: DEMO_OF[need], itemKey: need === 'prepare_birth' ? 'maternity_bag:6' : need === 'mornings' ? 'tshirt-crew' : need === 'relay' ? 'mission' : 'nap', at: '2026-12-03T10:24:00' };
-  if (!dev && !isDemo) return <Redirect href="/" />;
+  // La démonstration reprend après le chargement de la page : court délai avant de rediriger (comme /dev/icons)
+  const [grace, setGrace] = useState(true);
+  useEffect(() => { const id = setTimeout(() => setGrace(false), 800); return () => clearTimeout(id); }, []);
+  if (!dev && !isDemo) return grace ? <View style={{ flex: 1, backgroundColor: th.colors.background }} /> : <Redirect href="/" />;
   return (
     <View style={{ flex: 1, backgroundColor: th.colors.background }}>
       <PaywallView direction={direction} variant={variant} need={need} result={result} cards={cards} selectedKey={selected} onSelect={setSelected}

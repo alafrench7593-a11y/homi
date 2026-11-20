@@ -68,10 +68,13 @@ export function offerCard(plan: OfferPlan, monthly: OfferPlan | null, locale: st
   return { key: offerKey(plan), tier, period: plan.period, name, access, billed, monthly: monthlyEq, saving, trialDays: plan.trialDays, demo: plan.demo, a11y, plan };
 }
 
-/** Cartes : Premium (annuel, 6 mois, mensuel, dans l'ordre reçu) puis Famille. */
+/** Ordre d'affichage : du plus court au plus long engagement (le mensuel, présélectionné, arrive en premier). */
+const PERIOD_RANK: Record<PlanPeriod, number> = { monthly: 0, six_months: 1, annual: 2 };
+
+/** Cartes : Premium (mensuel, 6 mois, annuel) puis Famille. */
 export function offerCards(premium: OfferPlan[], family: OfferPlan[], locale: string): OfferCard[] {
   const monthly = premium.find((p) => p.period === 'monthly') ?? null;
-  return [...premium.map((p) => offerCard({ ...p, tier: 'premium' }, monthly, locale)), ...family.map((p) => offerCard({ ...p, tier: 'family' }, null, locale))];
+  return [...[...premium].sort((a, b) => PERIOD_RANK[a.period] - PERIOD_RANK[b.period]).map((p) => offerCard({ ...p, tier: 'premium' }, monthly, locale)), ...family.map((p) => offerCard({ ...p, tier: 'family' }, null, locale))];
 }
 
 /** Formule présélectionnée : celle choisie avant l'inscription si elle existe encore, sinon le mensuel Premium (prix d'appel lisible), sinon la première. */
@@ -144,11 +147,11 @@ export function termsFor(plan: Pick<OfferPlan, 'trialDays' | 'price' | 'period'>
 export type CatalogState = 'loading' | 'offline' | 'unavailable' | 'error' | 'empty' | 'ready';
 
 /** État du catalogue → affichage. L'achat n'est possible qu'à l'état « ready ». */
-export function catalogState(o: { mode: string; online: boolean; isLoading: boolean; isError: boolean; count: number; web?: boolean }): CatalogState {
+export function catalogState(o: { mode: string; online: boolean; isLoading: boolean; isError: boolean; count: number; web?: boolean; networkError?: boolean }): CatalogState {
   if (o.mode === 'unavailable' || (o.web && o.mode !== 'test')) return 'unavailable';
   if (!o.online && !o.count) return 'offline';
   if (o.isLoading) return 'loading';
-  if (o.isError) return o.online ? 'error' : 'offline';
+  if (o.isError) return o.online && !o.networkError ? 'error' : 'offline';
   if (!o.count) return 'empty';
   return 'ready';
 }

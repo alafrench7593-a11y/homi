@@ -21,7 +21,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { resultText } from './demos';
-import { BenefitLine } from './kit';
+import { BenefitLine, NO_HYPHENS } from './kit';
 import { paywallTitleKey, type DemoResult, type NeedId, type TitleVariant } from './model';
 import {
   benefitsFor, canBuy, ctaFor, phaseView, termsFor, timelineFor,
@@ -109,9 +109,9 @@ export function PaywallView(props: PaywallViewProps) {
           <View accessibilityLiveRegion="polite" testID={`fw-pw-state-${phase}`}><Banner tone={pv.tone}>{tr(pv.text)}</Banner></View>
         ) : null}
         {props.needsAccount && buyable ? <Text variant="caption" muted center testID="fw-pw-account-note">{tr('fw.pw.accountNote')}</Text> : null}
-        <Button label={card ? ctaFor(card.plan) : tr('fw.pw.retry')} size="lg" full loading={phase === 'buying' || phase === 'restoring'} disabled={!buyable}
+        <Button label={card && catalog === 'ready' ? ctaFor(card.plan) : tr('fw.pw.buyUnavailable')} size="lg" full loading={phase === 'buying' || phase === 'restoring'} disabled={!buyable}
           onPress={props.onBuy} accessibilityHint={card ? termsFor(card.plan, now) : undefined} testID="fw-pw-cta" />
-        {card && catalog === 'ready' ? <Text variant="small" center testID="fw-pw-terms-line">{termsFor(card.plan, now)}</Text> : null}
+        {card && catalog === 'ready' ? <Text variant="small" center style={NO_HYPHENS} testID="fw-pw-terms-line">{termsFor(card.plan, now)}</Text> : null}
       </View>
     </View>
   );
@@ -137,7 +137,7 @@ function ResultPreview({ result, large }: { result: DemoResult; large: boolean }
       <Icon name="check-circle" size={large ? 24 : 18} color={th.colors.success} />
       <View style={{ flex: 1, gap: 2 }}>
         <Text variant="caption" weight="bold" muted>{tr('fw.pw.preview')}</Text>
-        <Text variant={large ? 'body' : 'small'}>{resultText(result)}</Text>
+        <Text variant={large ? 'body' : 'small'} style={NO_HYPHENS}>{resultText(result)}</Text>
       </View>
     </View>
   );
@@ -160,7 +160,7 @@ function TimelineBlock({ card, now, prominent }: { card: OfferCard; now: Date; p
               </View>
               <View style={{ flex: 1, paddingBottom: last ? 0 : spacing.sm, gap: 2 }}>
                 <Text weight="bold">{s.title}</Text>
-                <Text variant="small" muted={!last} weight={last ? 'medium' : undefined}>{s.body}</Text>
+                <Text variant="small" muted={!last} weight={last ? 'medium' : undefined} style={NO_HYPHENS}>{s.body}</Text>
               </View>
             </View>
           );
@@ -182,13 +182,13 @@ function PlanRow({ card, selected, onSelect }: { card: OfferCard; selected: bool
           {selected ? <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: th.colors.primary }} /> : null}
         </View>
         <View style={{ flex: 1, minWidth: 0, gap: 1 }}>
-          <Text weight="bold">{card.name}</Text>
-          <Text variant="small" muted>{card.access}</Text>
-          {card.monthly || card.saving ? <Text variant="caption" muted>{[card.monthly, card.saving].filter(Boolean).join(' · ')}</Text> : null}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', columnGap: spacing.xs }}>
+            <Text weight="bold">{card.name}</Text>
+            <Text weight="bold" testID={`fw-billed-${card.key.replace(':', '-')}`}>{card.billed}</Text>
+          </View>
+          <Text variant="small" muted style={NO_HYPHENS}>{card.access}</Text>
+          {card.monthly || card.saving ? <Text variant="caption" muted style={NO_HYPHENS}>{[card.monthly, card.saving].filter(Boolean).join(' · ')}</Text> : null}
           {card.trialDays > 0 ? <Text variant="caption" weight="bold" color={th.colors.primary}>{tr('fw.trialBadge', { count: card.trialDays })}</Text> : null}
-        </View>
-        <View style={{ alignItems: 'flex-end', maxWidth: '40%' }}>
-          <Text weight="bold" style={{ textAlign: 'right' }} testID={`fw-billed-${card.key.replace(':', '-')}`}>{card.billed}</Text>
         </View>
       </View>
     </PressableScale>
@@ -221,7 +221,6 @@ function ComparedPlans({ cards, selected, onSelect, now }: { cards: OfferCard[];
           <Segmented label={tr('fw.pw.who')} value={tier}
             options={tiers.map((t) => ({ value: t, label: tr(`fw.pw.who.${t}` as TKey), testID: `fw-tier-${t}` }))}
             onChange={(t) => { const first = cards.find((c) => c.tier === t && (t === 'family' || c.period === 'monthly')) ?? cards.find((c) => c.tier === t); if (first) onSelect(first.key); }} />
-          {selected ? <Text variant="small" muted>{selected.access}</Text> : null}
         </View>
       ) : null}
       {sameTier.length > 1 ? (

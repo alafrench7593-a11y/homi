@@ -34,7 +34,8 @@ export function useOfferCatalog(): { cards: OfferCard[]; catalog: CatalogState; 
   const prem = useQuery({ queryKey: ['fw-plans', 'premium', ...key], queryFn: loadPlans, enabled, retry: false, staleTime: 300_000 });
   const fam = useQuery({ queryKey: ['fw-plans', 'family', ...key], queryFn: loadFamilyPlans, enabled, retry: false, staleTime: 300_000 });
   const cards = useMemo(() => offerCards(prem.data ?? [], fam.data ?? [], localeTag()), [prem.data, fam.data]);
-  const catalog = catalogState({ mode, online, isLoading: prem.isLoading, isError: prem.isError, count: (prem.data ?? []).length, web: Platform.OS === 'web' });
+  const networkError = /network|offline|internet|fetch|timed? ?out/i.test(String((prem.error as { message?: string } | null)?.message ?? ''));
+  const catalog = catalogState({ mode, online, isLoading: prem.isLoading, isError: prem.isError, count: (prem.data ?? []).length, web: Platform.OS === 'web', networkError });
   return { cards, catalog, mode, refetch: () => { void prem.refetch(); void fam.refetch(); } };
 }
 

@@ -113,19 +113,19 @@ describe('progression gardée à travers l’inscription', () => {
 describe('cartes : montant total facturé, équivalent mensuel, économie avec sa base', () => {
   const cards = offerCards(prem(), fam(), 'fr-FR');
   it('Premium (3 durées) puis Famille ; accès inclus écrit sur chaque carte', () => {
-    expect(cards.map((c) => c.key)).toEqual(['premium:annual', 'premium:six_months', 'premium:monthly', 'family:monthly']);
-    expect(cards[2].access).toBe('Pour toi et ton ou ta co-parent');
+    expect(cards.map((c) => c.key)).toEqual(['premium:monthly', 'premium:six_months', 'premium:annual', 'family:monthly']);
+    expect(cards[0].access).toBe('Pour toi et ton ou ta co-parent');
     expect(nb(cards[3].access)).toBe('Tous les adultes du foyer + 1 500 crédits Aura partagés');
     expect(cards[3].name).toBe('Famille');
   });
   it('annuel : montant débité en évidence, équivalent mensuel en complément, économie vs 12 × mensuel', () => {
-    const a = cards[0];
+    const a = cards[2];
     expect(nb(a.billed)).toBe('119,99 € par an');
     expect(nb(a.monthly!)).toBe('soit 10,00 € par mois');
     expect(nb(a.saving!)).toBe('33 % de moins que 12 × 14,99 €');
     expect(nb(cards[1].saving!)).toBe('22 % de moins que 6 × 14,99 €');
-    expect(cards[2].monthly).toBeNull();
-    expect(cards[2].saving).toBeNull();
+    expect(cards[0].monthly).toBeNull();
+    expect(cards[0].saving).toBeNull();
     expect(cards[3].saving).toBeNull();
   });
   it('aucune économie sans base (mensuel absent ou autre devise)', () => {
@@ -210,6 +210,7 @@ describe('états du catalogue et de l’achat', () => {
     expect(catalogState({ ...base, isLoading: true })).toBe('loading');
     expect(catalogState({ ...base, online: false, count: 0 })).toBe('offline');
     expect(catalogState({ ...base, isError: true, count: 0 })).toBe('error');
+    expect(catalogState({ ...base, isError: true, count: 0, networkError: true })).toBe('offline');
     expect(catalogState({ ...base, count: 0 })).toBe('empty');
     expect(catalogState({ ...base, mode: 'unavailable' })).toBe('unavailable');
     expect(catalogState({ ...base, mode: 'store', web: true })).toBe('unavailable');
