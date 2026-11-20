@@ -4,14 +4,14 @@
  */
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 import { COPARENT_PRESET, coparentSituation } from '@/features/homeToday/coparentHome';
-import { HOME_PRESETS, HOME_SITUATIONS } from '@/features/homeToday/homeLayout';
+import { HOME_PRESETS, HOME_SITUATIONS, withToolSections } from '@/features/homeToday/homeLayout';
 import { quickActionFor } from '@/features/missions/MissionQuickAction';
 import { DICTIONARIES } from '@/i18n/dictionaries';
 
 describe('accueil du co-parent', () => {
   it('situation déclarative, branchée par homeLayout', () => {
     expect(HOME_SITUATIONS).toContain('coparent');
-    expect(HOME_PRESETS.coparent).toBe(COPARENT_PRESET);
+    expect(HOME_PRESETS.coparent).toEqual(withToolSections(COPARENT_PRESET));
     for (const l of ['fr', 'en', 'es', 'de', 'it']) expect(typeof DICTIONARIES[l]['hm.situation.coparent']).toBe('string');
   });
   it('« Moi » / « couple » d’un co-parent → « coparent » ; son propre cycle, un enfant, la famille : inchangés ; propriétaire : inchangé', () => {

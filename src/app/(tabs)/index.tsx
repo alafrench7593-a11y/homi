@@ -62,6 +62,7 @@ import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/feat
 import { coparentSituation } from '@/features/homeToday/coparentHome';
 import { homeSituation, resolveHomeLayout, shownModules, type HomeModuleKey } from '@/features/homeToday/homeLayout';
 import { TourResumeCard } from '@/features/tour/TourEntry';
+import { ContinueModule, ExploreModule, ForYouModule, YourChildModule } from '@/features/homeToday/ToolSections';
 import { useTourAnchor } from '@/features/tour/anchors';
 import { tourEvent } from '@/features/tour/store';
 import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeCardSkeleton, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
@@ -181,6 +182,11 @@ export default function Home() {
     familyTasks: <FamilyTasksModule />,
     childInfo: <ChildInfoModule activeChildId={scope.childId ?? null} />,
     tools: <PinnedTools />,
+    // Sections d'outils (20/11/2026) : moteur de recommandation déterministe, raison affichée en petit
+    forYou: mainLoading ? null : <ForYouModule />,
+    continue: <ContinueModule />,
+    yourChild: mainLoading ? null : <YourChildModule />,
+    explore: <ExploreModule />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
     assistant: <HomeAssistantCard />,
     community: <SwipeExclude><HomeCommunityCard /></SwipeExclude>,

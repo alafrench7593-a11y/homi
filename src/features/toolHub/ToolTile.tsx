@@ -22,7 +22,7 @@ import { radius as R, spacing } from '@/theme/tokens';
 
 export const TOOL_TILE = { width: 100, glyph: 44, minHeight: 112 } as const;
 
-export const ToolTile = React.memo(function ToolTile({ tool, profile, index = 0, width = TOOL_TILE.width, onPress, testID }: {
+export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, index = 0, width = TOOL_TILE.width, onPress, onLongPress, a11yHint, testID }: {
   tool: CatalogTool;
   /** Profil d'un autre membre du foyer (« Léa ») : annoncé et affiché en petit */
   profile?: string;
@@ -30,6 +30,10 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, index = 0,
   index?: number;
   width?: number | `${number}%`;
   onPress: () => void;
+  /** Raison de la recommandation (« Parce que Lina a 8 mois »), affichée en petit sous le nom (20/11/2026). */
+  reason?: string;
+  onLongPress?: () => void;
+  a11yHint?: string;
   testID?: string;
 }) {
   const m = useMotion();
@@ -48,10 +52,10 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, index = 0,
   const veil = useAnimatedStyle(() => ({ opacity: p.progress.value }));
   const rest = useAnimatedStyle(() => ({ opacity: 1 - p.progress.value }));
   const down = useAnimatedStyle(() => ({ opacity: p.progress.value }));
-  const a11y = [tool.label, profile].filter(Boolean).join(', ');
+  const a11y = [tool.label, profile, reason].filter(Boolean).join(', ');
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={a11y} testID={testID ?? `tool-shortcut-${tool.id}`} pressRetentionOffset={16}
-      onPressIn={p.onPressIn} onPressOut={p.onPressOut} onPress={onPress} style={{ width }}>
+      onPressIn={p.onPressIn} onPressOut={p.onPressOut} onPress={onPress} onLongPress={onLongPress} accessibilityHint={a11yHint} style={{ width, alignSelf: 'stretch' }}>
       <Animated.View style={[styles.tile, style]}>
         {spec.shadow ? (
           <>
@@ -63,8 +67,9 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, index = 0,
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: R.lg, backgroundColor: spec.press }, veil]} />
         <View style={styles.body}>
           <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={TOOL_TILE.glyph} />
-          <Text variant="caption" weight="bold" center numberOfLines={2} color={spec.inks.text} style={styles.name}>{tool.label}</Text>
+          <Text variant="caption" weight="bold" center color={spec.inks.text} style={styles.name}>{tool.label}</Text>
           {profile ? <Text variant="caption" center numberOfLines={1} color={spec.inks.muted}>{profile}</Text> : null}
+          {reason ? <Text variant="caption" center color={spec.inks.muted} style={styles.reason} testID={testID ? `${testID}-reason` : undefined}>{reason}</Text> : null}
         </View>
       </Animated.View>
     </Pressable>
@@ -72,7 +77,9 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, index = 0,
 });
 
 const styles = StyleSheet.create({
-  tile: { borderRadius: R.lg, minHeight: TOOL_TILE.minHeight },
+  // Hauteur uniforme dans une rangée : la tuile remplit la hauteur de la plus haute (nom entier, jamais d'ellipse)
+  tile: { borderRadius: R.lg, minHeight: TOOL_TILE.minHeight, flexGrow: 1 },
   body: { alignItems: 'center', paddingHorizontal: spacing.xs, paddingTop: spacing.sm, paddingBottom: spacing.sm, gap: 6 },
   name: { fontSize: 13, lineHeight: 17 },
+  reason: { fontSize: 11, lineHeight: 14 },
 });

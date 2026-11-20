@@ -14,6 +14,7 @@ import { COPARENT_PRESET } from './coparentHome'; // situation « co-parent » (
 export type HomeModuleKey =
   | 'next' | 'quick' | 'main' | 'agenda' | 'recommendation' | 'articles'
   | 'familyTasks' | 'childInfo' | 'tools'
+  | 'forYou' | 'continue' | 'yourChild' | 'explore'
   | 'upcoming' | 'assistant' | 'community' | 'outings' | 'videos' | 'library' | 'solo' | 'story' | 'recipe' | 'article';
 
 export const HOME_MODULES: { key: HomeModuleKey; label: TKey; detail?: TKey }[] = [
@@ -26,6 +27,11 @@ export const HOME_MODULES: { key: HomeModuleKey; label: TKey; detail?: TKey }[] 
   { key: 'familyTasks', label: 'hm.familyTasks', detail: 'hm.familyTasks_d' },
   { key: 'childInfo', label: 'hm.childInfo', detail: 'hm.childInfo_d' },
   { key: 'tools', label: 'hm.tools', detail: 'hm.tools_d' },
+  // Sections d'outils (20/11/2026) : recommandées par le moteur déterministe (src/lib/personalization), avec la raison
+  { key: 'forYou', label: 'pz.home.forYou', detail: 'pz.home.forYou_d' },
+  { key: 'continue', label: 'pz.home.continue', detail: 'pz.home.continue_d' },
+  { key: 'yourChild', label: 'pz.home.yourChild', detail: 'pz.home.yourChild_d' },
+  { key: 'explore', label: 'pz.home.explore', detail: 'pz.home.explore_d' },
   { key: 'upcoming', label: 'u5.home.hc_upcoming' },
   { key: 'assistant', label: 'u5.home.hc_assistant', detail: 'u5.home.hc_assistant_d' },
   { key: 'community', label: 'u5.home.hc_community', detail: 'u5.home.hc_community_d' },
@@ -66,15 +72,31 @@ const REF: HomeModuleKey[] = ['next', 'quick', 'main', 'agenda', 'recommendation
  *  - couple : les tâches du foyer sont affichées (l'agenda de « Moi » ne montre que les miennes) ; famille : l'agenda
  *    du jour montre déjà les tâches de tout le foyer.
  */
+/**
+ * Sections d'outils insérées dans chaque configuration : « Pour toi aujourd'hui » juste après les actions rapides (ou
+ * la prochaine action), « Ton enfant » après l'agenda, puis « Tes favoris », « Continuer » et « Explorer les outils ».
+ */
+export function withToolSections(list: HomeModuleKey[]): HomeModuleKey[] {
+  const out: HomeModuleKey[] = list.filter((k) => k !== 'tools');
+  const after = (anchor: HomeModuleKey[], keys: HomeModuleKey[]) => {
+    const i = Math.max(...anchor.map((a) => out.indexOf(a)));
+    out.splice(i < 0 ? out.length : i + 1, 0, ...keys);
+  };
+  after(['next', 'quick'], ['forYou']);
+  after(['agenda', 'forYou'], ['yourChild']);
+  out.push('tools', 'continue', 'explore');
+  return out;
+}
+
 export const HOME_PRESETS: Record<HomeSituation, HomeModuleKey[]> = {
-  pregnancy: [...REF.slice(0, 4), 'upcoming', 'recommendation', 'articles', 'assistant'],
-  newborn: ['next', 'quick', 'main', 'agenda', 'articles'],
-  child: ['next', 'quick', 'main', 'agenda', 'articles'],
-  couple: ['next', 'quick', 'main', 'agenda', 'familyTasks', 'recommendation', 'articles', 'assistant'],
-  family: ['next', 'quick', 'main', 'agenda', 'recommendation', 'articles'],
-  cycle: ['next', 'main', 'agenda', 'assistant', 'articles'],
-  me: [...REF, 'upcoming', 'assistant', 'community'],
-  coparent: COPARENT_PRESET,
+  pregnancy: withToolSections([...REF.slice(0, 4), 'upcoming', 'recommendation', 'articles', 'assistant']),
+  newborn: withToolSections(['next', 'quick', 'main', 'agenda', 'articles']),
+  child: withToolSections(['next', 'quick', 'main', 'agenda', 'articles']),
+  couple: withToolSections(['next', 'quick', 'main', 'agenda', 'familyTasks', 'recommendation', 'articles', 'assistant']),
+  family: withToolSections(['next', 'quick', 'main', 'agenda', 'recommendation', 'articles']),
+  cycle: withToolSections(['next', 'main', 'agenda', 'assistant', 'articles']),
+  me: withToolSections([...REF, 'upcoming', 'assistant', 'community']),
+  coparent: withToolSections(COPARENT_PRESET),
 };
 
 export interface HomeLayout { order: HomeModuleKey[]; hidden: HomeModuleKey[] }

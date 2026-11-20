@@ -27,6 +27,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { HOME_MODULES, resolveHomeLayout, setModuleVisible, type HomeLayout, type HomeModuleKey, type HomeSituation } from './homeLayout';
 import { useHomeToday } from './useHomeToday';
 import { useTourAnchor } from '@/features/tour/anchors';
+import { HiddenToolsEditor } from './ToolSections';
 
 const CHILD_INFO: HomeModuleKey = 'childInfo';
 
@@ -281,6 +282,9 @@ export function HomeEditor({ situation, onDone }: { situation: HomeSituation; on
         <Button label={tr('hm.pin')} icon="star" variant="secondary" full testID="home-edit-pin"
           onPress={() => { set(setModuleVisible(layout, 'tools', true)); router.push('/tools'); }} />
       </View>
+
+      {/* « Pour toi aujourd'hui » : épinglés et masqués (rien n'est supprimé) */}
+      <HiddenToolsEditor />
 
       <Button label={tr('hm.reset')} icon="rotate-ccw" variant="outline" full onPress={reset} testID="home-edit-reset" />
       <Text variant="caption" muted>{tr('u1.home.local')}</Text>

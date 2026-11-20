@@ -18,7 +18,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { ErrorView } from '@/components/States';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
@@ -40,6 +40,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { useTourAnchor } from '@/features/tour/anchors';
+import { CatalogFilterBar, FilteredCatalog } from '@/features/toolHub/CatalogFilterBar';
+import { filtersActive, NO_FILTERS, type CatalogFilters } from '@/lib/domain/catalogFilters';
 
 /** Largeur utile maximale (tablette, ordinateur) : les listes restent lisibles et centrées, jamais étirées. */
 const MAX_W = 720;
@@ -50,13 +52,19 @@ export default function Tools() {
   const { width: winW } = useWindowDimensions();
   const profileKey = useActiveProfileKey();
   const { scope, catalog, all, allTools, account } = hub;
-  const [q, setQ] = useState('');
+  const params = useLocalSearchParams<{ q?: string }>();
+  const [q, setQ] = useState(typeof params.q === 'string' ? params.q : '');
+  // Catalogue complet filtré (20/11/2026) : catégorie, âge, étape de vie, favoris, récents — combinables
+  const [filters, setFilters] = useState<CatalogFilters>(NO_FILTERS);
+  const [showFilters, setShowFilters] = useState(false);
+  const filtering = filtersActive(filters);
   const [searching, setSearching] = useState(false);
   const query = q.trim();
 
   // Recherche dans tous les outils atteignables (profil affiché et autres profils) et dans les réglages
-  const searchable = useMemo(() => [...allTools, ...account], [allTools, account]);
-  const entryOf = useMemo(() => new Map<string, ToolEntry>([...all.map((e) => [e.tool.id, e] as const), ...account.map((tool) => [tool.id, { tool }] as const)]), [all, account]);
+  // (20/11/2026) les 200 entrées : outils et fonctions nommées, chacune avec son profil
+  const searchable = useMemo(() => [...hub.flat.map((e) => e.tool), ...account], [hub.flat, account]);
+  const entryOf = useMemo(() => new Map<string, ToolEntry>([...hub.flat.map((e) => [e.tool.id, e] as const), ...account.map((tool) => [tool.id, { tool }] as const)]), [hub.flat, account]);
   const outcome = useMemo(() => (query ? searchCatalog(searchable, query) : null), [searchable, query]);
   const featured = useMemo(() => featuredTools(catalog, scope.scope), [catalog, scope.scope]);
   const urgent = catalog.find((x) => x.urgent);
@@ -83,10 +91,17 @@ export default function Tools() {
         </View>
         {/* Champ actif et vide : catégories suggérées */}
         {searching && !query && !loading ? <CategoryChips tools={allTools} /> : null}
+        {!query ? (
+          <Button label={showFilters || filtering ? tr('pz.cat.hideFilters') : tr('pz.cat.showFilters')} icon="sliders" variant="secondary" size="sm"
+            onPress={() => setShowFilters(!(showFilters || filtering))} testID="tools-filter-toggle" />
+        ) : null}
+        {!query && (showFilters || filtering) ? <CatalogFilterBar value={filters} onChange={setFilters} /> : null}
       </View>
 
       {loading ? <ToolsSkeleton tileW={tileW} cols={cols} /> : profileQ.isError && !profileQ.data ? (
         <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title={tr('u3.tools.errTools')} />
+      ) : !query && filtering ? (
+        <FilteredCatalog hub={hub} filters={filters} onClear={() => setFilters(NO_FILTERS)} />
       ) : outcome ? (
         outcome.understood ? (
           <View testID="tools-results" accessibilityLiveRegion="polite" {...resultsAnchor}>

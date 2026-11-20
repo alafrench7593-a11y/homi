@@ -66,7 +66,7 @@ export const nav6: Messages<typeof fr> = {
   'hm.childInfo': "Info su un bimbo",
   'hm.childInfo_d': "Ultimi pasti, sonni e cure di un bimbo, qualunque sia il profilo mostrato",
   'hm.childInfoOf': "Info su {name}",
-  'hm.tools': "Strumenti preferiti",
+  'hm.tools': "I tuoi preferiti",
   'hm.tools_d': "I tuoi strumenti fissati, a portata di mano",
   'hm.toolsManage': "Gestisci",
   'hm.toolsEmpty': "Nessuno strumento fissato. In «Strumenti», tocca la stella di uno strumento per fissarlo qui.",

@@ -66,7 +66,7 @@ export const nav6: Messages<typeof fr> = {
   'hm.childInfo': "A child’s info",
   'hm.childInfo_d': "A child’s latest meals, sleep and care, whatever profile is shown",
   'hm.childInfoOf': "{name}’s info",
-  'hm.tools': "Favourite tools",
+  'hm.tools': "Your favourites",
   'hm.tools_d': "Your pinned tools, close at hand",
   'hm.toolsManage': "Manage",
   'hm.toolsEmpty': "No pinned tool. In “Tools”, tap a tool’s star to pin it here.",

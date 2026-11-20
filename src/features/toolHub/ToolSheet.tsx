@@ -78,7 +78,8 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
         {preview && !short ? <Preview preview={preview} /> : null}
 
         {/* Action principale : avant les détails, visible sans défiler sur un petit écran */}
-        <GlassButton label={tr('th.sheet.start')} variant="primary" iconRight="arrow-right" full onPress={() => onStart(e)} testID="tool-sheet-start" />
+        {tool.locked ? <Text variant="small" muted testID="tool-sheet-locked">{tr('pz.cat.lockedNote')}</Text> : null}
+        <GlassButton label={tool.locked ? tr('pz.cat.lockedAction') : tr('th.sheet.start')} variant="primary" iconRight="arrow-right" full onPress={() => onStart(e)} testID="tool-sheet-start" />
         {preview && short ? <Preview preview={preview} /> : null}
 
         <View style={{ gap: 6 }}>
@@ -90,7 +91,7 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
           {e.profile ? <Text variant="small" muted>{tr('th.sheet.whoOther', { name: e.profile })}</Text> : null}
         </View>
 
-        {tool.subs.length ? (
+        {tool.subs.length && !tool.locked ? (
           <View style={{ gap: 2 }}>
             <Text variant="caption" muted accessibilityRole="header">{tr('th.sheet.direct')}</Text>
             {tool.subs.map((s) => (

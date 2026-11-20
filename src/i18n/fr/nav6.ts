@@ -64,7 +64,7 @@ export const nav6 = {
   'hm.childInfo': "Infos d’un enfant",
   'hm.childInfo_d': "Les derniers repas, sommeils et soins d’un enfant, quel que soit le profil affiché",
   'hm.childInfoOf': "Infos de {name}",
-  'hm.tools': "Outils favoris",
+  'hm.tools': "Tes favoris",
   'hm.tools_d': "Vos outils épinglés, à portée de main",
   'hm.toolsManage': "Gérer",
   'hm.toolsEmpty': "Aucun outil épinglé. Dans « Outils », touchez l’étoile d’un outil pour l’épingler ici.",

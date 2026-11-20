@@ -15,6 +15,7 @@ import { useActiveSubject } from '@/lib/data/hooks';
 import { useHouseholdProfiles } from '@/lib/data/hooks-alltools';
 import type { ActiveSubject } from '@/lib/store';
 import { accountEntries, findEntry, toggleFavorite, toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { flattenCatalog } from '@/lib/domain/catalogFilters';
 import { canonicalToolId } from '@/lib/journeys/tools';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion } from '@/theme/ThemeProvider';
@@ -43,6 +44,16 @@ export function useToolHub() {
     return entries.filter((e) => !seen.has(e.tool.id) && (seen.add(e.tool.id), true));
   }, [entries]);
   const allTools = useMemo(() => all.map((e) => e.tool), [all]);
+  /**
+   * Toutes les entrées À PLAT (outils + fonctions nommées de la liste des 200), sur tous les profils du foyer : une
+   * fonction n'existe parfois que dans un profil (« Rendez-vous pédiatriques » pour un enfant) ; elle garde ce profil.
+   */
+  const flat = useMemo(() => {
+    const seen = new Set<string>();
+    const out: ToolEntry[] = [];
+    for (const e of entries) for (const tool of flattenCatalog([e.tool])) if (!seen.has(tool.id)) { seen.add(tool.id); out.push({ ...e, tool }); }
+    return out;
+  }, [entries]);
   const profileOf = useMemo(() => new Map(all.map((e) => [e.tool.id, e])), [all]);
 
   /** Entrée (outil ou sous-accès) pour un identifiant stable, avec le profil auquel elle appartient. */
@@ -99,11 +110,11 @@ export function useToolHub() {
   // la fiche d'un outil compte comme une ouverture pour la visite guidée (« Trouver un outil »)
   const showSheet = useCallback((e: ToolEntry) => { tourEvent({ type: 'toolOpened', id: e.tool.id }); setSheet(e); }, []);
   // urgences, lectures (sous-accès) et réglages : jamais de fiche intermédiaire
-  const opensDirectly = useCallback((tool: CatalogTool) => !!tool.urgent || !!tool.parent || tool.category === 'account' || knownSet.has(tool.id), [knownSet]);
+  const opensDirectly = useCallback((tool: CatalogTool) => !tool.locked && (!!tool.urgent || !!tool.parent || tool.category === 'account' || knownSet.has(tool.id)), [knownSet]);
   /** Appui sur une rangée : fiche pour un outil nouveau, ouverture directe pour un outil connu. */
   const press = useCallback((e: ToolEntry) => (opensDirectly(e.tool) ? openNow(e) : showSheet(e)), [opensDirectly, openNow, showSheet]);
   /** Appui long : l'autre geste. */
-  const longPress = useCallback((e: ToolEntry) => (opensDirectly(e.tool) ? showSheet(e) : openNow(e)), [opensDirectly, openNow, showSheet]);
+  const longPress = useCallback((e: ToolEntry) => (e.tool.locked ? showSheet(e) : opensDirectly(e.tool) ? showSheet(e) : openNow(e)), [opensDirectly, openNow, showSheet]);
 
   const sheetNode = (
     <ToolSheet
@@ -119,5 +130,5 @@ export function useToolHub() {
     />
   );
 
-  return { scope, catalog, others, all, allTools, account, resolve, byProfile, recentIds, favorites, recents, favSet, toggleFav, openNow, showSheet, press, longPress, opensDirectly, sheetNode };
+  return { scope, catalog, others, all, allTools, flat, account, resolve, byProfile, recentIds, favorites, recents, favSet, toggleFav, openNow, showSheet, press, longPress, opensDirectly, sheetNode };
 }
