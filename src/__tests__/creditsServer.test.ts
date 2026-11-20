@@ -15,13 +15,23 @@ jest.mock('../../supabase/functions/_shared/http.ts', () => ({
   safeEqual: (a: string, b: string) => a === b,
 }));
 
-import * as fs from 'fs';
-import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require('fs') as { readFileSync(p: string, e: 'utf8'): string };
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path') as { join(...p: string[]): string };
+declare const __dirname: string;
 import {
   billedSseStream, ClientGone, grantFor, isCreditPack, packActionFor, requestKey, reserveRefusal, settle, tierOfProduct, transactionIdOf,
   type CreditsGate, type GrantAction,
 } from '../../supabase/functions/_shared/credits';
-import { handleWebhook, type CreditsLedger, type StoredRow, type SubscriptionDb } from '../../supabase/functions/_shared/subscription-run';
+// Module Deno (types npm:/Deno hors du périmètre de tsc) : chargé par require, contrat typé ici
+type StoredRow = { user_id: string; status?: string | null; product_id?: string | null; expires_at?: string | null; [k: string]: unknown };
+interface SubscriptionDb { read(id: string): Promise<StoredRow | null>; write(row: StoredRow): Promise<boolean>; notify(u: string, n: unknown): Promise<void>; locale(u: string): Promise<string | null>; premium(u: string): Promise<boolean> }
+interface CreditsLedger { grantMonthly(u: string, g: GrantAction): Promise<boolean>; purchase(u: string, product: string, tx: string): Promise<boolean>; refund(tx: string): Promise<'ok' | 'not_found' | 'error'> }
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { handleWebhook } = require('../../supabase/functions/_shared/subscription-run') as {
+  handleWebhook(r: Request, d: { secret: string; entitlement: string; api: null; db: SubscriptionDb; credits: CreditsLedger | null; now: () => number }): Promise<Response>;
+};
 import { buildPlans } from '@/lib/premium/plans';
 import type { PurchasesPackage } from 'react-native-purchases';
 
@@ -275,7 +285,7 @@ describe('fonction assistant : sécurité avant tout, crédits ensuite', () => {
   it('débit seulement à la livraison ; restitution sur échec ; aucun texte dans les journaux', () => {
     expect(src).toContain('billedSseStream');
     expect(src).toMatch(/charge\(false, blocked \? 'blocked' : 'llm_error'\)/);
-    for (const line of src.split('\n').filter((l) => l.includes('console.'))) expect(line).not.toMatch(/message\)|answer|raw\b(?!\.)|e\.message/);
+    for (const line of src.split('\n').filter((l: string) => l.includes('console.'))) expect(line).not.toMatch(/message\)|answer|raw\b(?!\.)|e\.message/);
   });
   it('toutes les fonctions qui appellent Gemini respectent l’interrupteur serveur', () => {
     for (const f of ['assistant', 'assistant-demo', 'scan-explain', 'document-read', 'document-extract', 'community-ai', 'cycle-photo']) {

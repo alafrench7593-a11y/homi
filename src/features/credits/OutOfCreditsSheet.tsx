@@ -15,7 +15,7 @@ import { useCreditStatus } from '@/lib/data/hooks-credits';
 import { totalRemaining } from '@/lib/credits/model';
 import { getPurchaseMode, purchasesSdk } from '@/lib/purchaseMode';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { CreditBalanceCard, PackList } from './CreditsParts';
+import { PackList } from './CreditsParts';
 
 export function OutOfCreditsSheet({ visible, onClose, cost }: { visible: boolean; onClose: () => void; cost?: number }) {
   const status = useCreditStatus();
@@ -43,14 +43,17 @@ export function OutOfCreditsSheet({ visible, onClose, cost }: { visible: boolean
         {status.isLoading || !s ? <Loading /> : (
           <>
             {cost ? <Text testID="credits-out-cost">{tr('cr.out.body', { count: cost, left: totalRemaining(s) })}</Text> : null}
+            {/* Solde compact : les 3 packs restent visibles sans défiler, même en 320 × 568 */}
+            <Text variant="small" weight="bold" testID="credits-out-balance">
+              {tr('cr.balance.total', { count: totalRemaining(s) })}
+            </Text>
             <Text variant="small" muted testID="credits-out-renewal">
               {renewal ? tr('cr.out.renewal', { count: s.monthly_allowance, date: renewal }) : tr('cr.out.noRenewal')}
             </Text>
-            <CreditBalanceCard status={s} />
             <PackList subscribed={s.subscribed} onBought={() => { void status.refetch(); onClose(); }} />
           </>
         )}
-        {getPurchaseMode() === 'store' ? (
+        {getPurchaseMode() !== 'unavailable' ? (
           <View style={{ gap: 4 }}>
             <Button label={tr('cr.out.restore')} icon="refresh-cw" variant="ghost" loading={restoring} onPress={() => void restore()} testID="credits-out-restore" full />
             <Text variant="caption" muted center>{tr('cr.out.restoreNote')}</Text>

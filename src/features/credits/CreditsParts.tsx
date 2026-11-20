@@ -149,7 +149,6 @@ export function PackList({ subscribed, onBought }: { subscribed: boolean; onBoug
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' }}>
             <View style={{ flex: 1, minWidth: 120 }}>
               <Text weight="bold">{tr('cr.packs.item', { count: p.credits })}</Text>
-              <Text variant="small" muted>{p.price}</Text>
             </View>
             <Button
               label={p.price}
