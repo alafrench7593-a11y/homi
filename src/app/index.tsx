@@ -11,6 +11,8 @@ import { BrandStack } from '@/components/BrandLogo';
 import { BRAND } from '@/config/brand';
 import { peekPendingInvite } from '@/lib/authFlow';
 import { useUiStore } from '@/lib/store';
+import { loadProgress, resumeRoute, type FirstWinProgress } from '@/features/firstWin/model';
+import { usePremiumState } from '@/features/firstWin/hooks';
 import { t as tr } from '@/i18n';
 
 export default function Launch() {
@@ -31,14 +33,22 @@ export default function Launch() {
   const [hydrated, setHydrated] = useState(() => useUiStore.persist?.hasHydrated?.() ?? true);
   useEffect(() => (hydrated ? undefined : useUiStore.persist?.onFinishHydration?.(() => setHydrated(true))), [hydrated]);
   const introSeen = useUiStore((s) => s.introSeen);
+  // Parcours « première réussite » : compte créé entre le choix de la formule et l'achat → retour au paywall
+  const [firstWin, setFirstWin] = useState<FirstWinProgress | null | undefined>(undefined);
+  useEffect(() => { if (session) void loadProgress().then(setFirstWin); }, [session]);
+  const premium = usePremiumState();
 
-  // Première ouverture sans compte : introduction « Je suis… » (profil → vrais outils → Commencer ; « Passer » à tout
-  // moment). Elle remplace la keynote « Découvrir HOMI » à l'ouverture (la keynote reste dans Réglages).
-  if (ready && !session && hydrated && !introSeen) return <Redirect href="/intro" />;
+  // Première ouverture sans compte (03/12/2026) : parcours court « première réussite » (étape de vie → besoin →
+  // démo guidée par Aura → résultat → offres), sans compte ; l'introduction « Je suis… » reste rejouable (/intro).
+  if (ready && !session && hydrated && !introSeen) return <Redirect href={'/start' as never} />;
   if (ready && !session && hydrated) return <Redirect href="/welcome" />;
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
   if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;
   if (ready && session && invite === undefined) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
+  if (ready && session && firstWin === undefined) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
+  if (ready && session && firstWin?.awaitingAccount && premium === undefined) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
+  const resume = ready && session ? resumeRoute(firstWin ?? null, { signedIn: true, premium }) : null;
+  if (resume) return <Redirect href={resume as never} />;
   if (ready && session && caregiverOnly) return <Redirect href={'/garde' as never} />;
   if (ready && session && profileSettled && !offlinePaused && (!profile || !profile.onboarding_completed) && !isError) return <Redirect href="/onboarding" />;
   if (ready && session && (profile?.onboarding_completed || isError || offlinePaused)) return <Redirect href="/(tabs)" />;

@@ -5,7 +5,8 @@
  * Règle : jamais de faux succès. « deferred » (Demander l'achat / Ask to Buy, paiement en attente) n'ouvre rien :
  * le droit n'arrive que quand la boutique confirme, et le serveur (has_premium) reste la seule source.
  */
-export type PurchaseErrorKind = 'cancelled' | 'deferred' | 'network' | 'not_allowed' | 'store' | 'unknown';
+/** account_required : achat demandé sans compte connecté (RevenueCat anonyme) — l'interface envoie vers l'inscription. */
+export type PurchaseErrorKind = 'cancelled' | 'deferred' | 'network' | 'not_allowed' | 'store' | 'account_required' | 'unknown';
 
 const BY_CODE: Record<string, PurchaseErrorKind> = {
   '1': 'cancelled', // PURCHASE_CANCELLED_ERROR

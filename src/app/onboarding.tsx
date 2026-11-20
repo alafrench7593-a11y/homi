@@ -31,6 +31,7 @@ import type { ConsentPurpose } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
 import { introJourneyAnswers, loadIntroProfile } from '@/features/intro/model';
+import { loadProgress, saveProgress } from '@/features/firstWin/model';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft, type OnboardingStep } from '@/lib/onboardingDraft';
 import { interestsFor, journeysFor, personalize, situationsFromJourneys, type Situation } from '@/lib/onboarding/personalize';
 import { asksChildren, asksFamily, asksFeeding, asksPregnancy, legacyAnswers, previewFacts } from '@/lib/onboarding/v3';
@@ -306,6 +307,8 @@ export default function Onboarding() {
   function exit(route?: string) {
     router.replace('/(tabs)');
     if (route) router.push(route as never);
+    // Parcours « première réussite » : l'outil essayé avant l'achat s'ouvre dès que le foyer est créé
+    else void loadProgress().then((fw) => { if (fw?.openAfter) { void saveProgress({ openAfter: null }); router.push(fw.openAfter as never); } });
   }
 
   const back = <IconButton icon="arrow-left" tone="filled" label={tr('common.back')} onPress={prev} testID="onb-back" />;

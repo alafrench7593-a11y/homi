@@ -37,6 +37,7 @@ const FR_ALLOW: Record<string, string> = {
   'mom.deleteQ': 'pluriel réel : « pour vous deux »',
   'mom.idea.series_episode.sub': 'pluriel réel : série suivie à deux',
   'cp2.inv.title': 'pluriel réel : la famille du couple',
+  'fw.title.relay': 'pluriel réel : « Relayez-vous sans vous répéter » s’adresse aux deux parents (paywall du relais à deux)',
   'und.moment.body': 'pluriel réel : « à tous les deux »',
   'und.inbox.emptyB': 'pluriel réel : messages entre les deux parents',
   'und.inbox.private': 'pluriel réel : « vous deux »',

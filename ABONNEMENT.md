@@ -59,7 +59,9 @@ Ce que fait l'application avec ces réglages :
   d'abonnement (même bloc `PurchaseCta`).
 - Un·e abonné·e qui rouvre l'écran Premium voit **sa formule actuelle et « Gérer l'abonnement »**, jamais l'offre de
   nouveau client.
-- Aucune notification de fin d'essai n'est programmée par HOMI : l'écran ne promet donc aucun rappel.
+- Écran Premium (/premium) : aucune notification de fin d'essai n'est promise. Parcours « première réussite » (03/12/2026,
+  docs/PAYWALL_ONBOARDING.md) : APRÈS l'achat, la confirmation propose « Me rappeler avant mon premier paiement » (rappel
+  local 24 h avant la fin de l'essai, autorisation demandée à ce moment-là, état réel affiché, texte neutre à l'écran verrouillé).
 
 ### 0.1 Modèle « Premium strict » (rappel)
 Sans Premium, un compte garde : inscription, connexion, présentation, onboarding, profil, réglages (compte,
