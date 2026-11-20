@@ -11,7 +11,7 @@ Deno.test('heures calmes : différée, sauf urgence', () => {
 });
 
 Deno.test('écran verrouillé : générique par défaut, détail seulement avec accord', () => {
-  assertEquals(lockScreenText(row, 'fr', false), { title: 'Nouvelle notification', body: 'Ouvrez l’application pour voir le détail.' });
+  assertEquals(lockScreenText(row, 'fr', false), { title: 'Nouvelle notification', body: 'Ouvre l’application pour voir le détail.' });
   assertEquals(lockScreenText(row, 'fr', true), { title: 'Lou a de la fièvre', body: 'Message de la nounou' });
   assertEquals(lockScreenText({ ...row, category: 'community_reply' }, 'en', true).title, 'New activity in the community');
   assertEquals(channelFor({ category: 'family', urgent: true }), 'alerts');

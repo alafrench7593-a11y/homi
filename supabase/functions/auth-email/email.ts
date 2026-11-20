@@ -43,15 +43,15 @@ interface MailLang { types: Record<string, Mail>; fallback: Mail; code: string; 
 const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
   fr: {
     types: {
-      signup: { subject: 'Confirmez votre adresse — {app}', intro: 'Bienvenue ! Confirmez votre adresse e-mail pour activer votre compte.', cta: 'Confirmer mon adresse' },
-      recovery: { subject: 'Réinitialiser votre mot de passe — {app}', intro: 'Vous avez demandé à réinitialiser votre mot de passe. Si ce n’est pas vous, ignorez simplement ce message.', cta: 'Choisir un nouveau mot de passe' },
-      magiclink: { subject: 'Votre lien de connexion — {app}', intro: 'Voici votre lien de connexion. Il n’est valable que quelques minutes.', cta: 'Me connecter' },
-      invite: { subject: 'Vous êtes invité·e sur {app}', intro: 'Vous avez été invité·e à rejoindre un espace familial.', cta: 'Accepter l’invitation' },
-      email_change: { subject: 'Confirmez votre nouvelle adresse — {app}', intro: 'Confirmez le changement d’adresse e-mail de votre compte.', cta: 'Confirmer le changement' },
-      reauthentication: { subject: 'Votre code de vérification — {app}', intro: 'Utilisez ce code pour confirmer votre identité.', cta: '' },
+      signup: { subject: 'Confirme ton adresse — {app}', intro: 'Bienvenue ! Confirme ton adresse e-mail pour activer ton compte.', cta: 'Confirmer mon adresse' },
+      recovery: { subject: 'Réinitialiser ton mot de passe — {app}', intro: 'Tu as demandé à réinitialiser ton mot de passe. Si ce n’est pas toi, ignore simplement ce message.', cta: 'Choisir un nouveau mot de passe' },
+      magiclink: { subject: 'Ton lien de connexion — {app}', intro: 'Voici ton lien de connexion. Il n’est valable que quelques minutes.', cta: 'Me connecter' },
+      invite: { subject: 'Tu es invité·e sur {app}', intro: 'Tu as été invité·e à rejoindre un espace familial.', cta: 'Accepter l’invitation' },
+      email_change: { subject: 'Confirme ta nouvelle adresse — {app}', intro: 'Confirme le changement d’adresse e-mail de ton compte.', cta: 'Confirmer le changement' },
+      reauthentication: { subject: 'Ton code de vérification — {app}', intro: 'Utilise ce code pour confirmer ton identité.', cta: '' },
     },
-    fallback: { subject: '{app}', intro: 'Action à confirmer sur votre compte.', cta: 'Continuer' },
-    code: 'Code', ignore: 'Si vous n’êtes pas à l’origine de cette demande, ignorez ce message.', team: '— L’équipe {app}',
+    fallback: { subject: '{app}', intro: 'Action à confirmer sur ton compte.', cta: 'Continuer' },
+    code: 'Code', ignore: 'Si tu n’es pas à l’origine de cette demande, ignore ce message.', team: '— L’équipe {app}',
   },
   en: {
     types: {

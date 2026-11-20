@@ -22,7 +22,7 @@ select tests.throws(format($$insert into public.family_tasks (household_id, titl
 select tests.throws($$insert into public.family_task_events (task_id, household_id, kind) select id, household_id, 'done' from public.family_tasks limit 1$$, 'historique : impossible d''écrire l''historique à la main');
 
 set request.jwt.claim.sub = :'BEN';
-select tests.ok(tests.count('select * from public.notifications where category = ''family'' and title = ''Une tâche vous est confiée''') = 1, 'tâches : Ben est prévenu qu''une tâche lui est confiée (texte neutre)');
+select tests.ok(tests.count('select * from public.notifications where category = ''family'' and title = ''Une tâche t’est confiée''') = 1, 'tâches : Ben est prévenu qu''une tâche lui est confiée (texte neutre)');
 update public.family_tasks set status = 'done' where title = 'Biberons de la nuit';
 select tests.ok((select done_by = :'BEN' and done_at is not null from public.family_tasks where title = 'Biberons de la nuit' and status = 'done'), 'tâches : « fait par » et « fait le » renseignés par le serveur');
 select tests.ok(tests.count('select * from public.family_tasks where title = ''Biberons de la nuit'' and status = ''todo'' and due_at > now()') = 1, 'récurrence : la prochaine occurrence est créée');
@@ -33,7 +33,7 @@ select tests.ok(tests.count('select * from public.family_tasks where title = ''B
 -- Demandes
 insert into public.care_requests (household_id, kind, message) values (:'FOYER', 'rest', 'Je dors 2 h');
 set request.jwt.claim.sub = :'ANA';
-select tests.ok(tests.count('select * from public.notifications where title = ''Besoin de repos'' and body = ''Ouvrez l’application pour répondre.''') = 1, 'demandes : Ana est prévenue, sans détail sur l''écran verrouillé');
+select tests.ok(tests.count('select * from public.notifications where title = ''Besoin de repos'' and body = ''Ouvre l’application pour répondre.''') = 1, 'demandes : Ana est prévenue, sans détail sur l''écran verrouillé');
 update public.care_requests set status = 'accepted';
 select tests.ok((select status = 'accepted' and responded_by = :'ANA' from public.care_requests), 'demandes : Ana accepte, la réponse est horodatée');
 set request.jwt.claim.sub = :'BEN';

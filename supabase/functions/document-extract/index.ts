@@ -33,7 +33,7 @@ Deno.serve(withCors(async (req) => {
   const admin = adminClient();
   if (!(await rateLimit(admin, `extract:${auth.user.id}`, 10, 3600))) return json({ error: 'rate_limited' }, 429);
   if (!(await hasConsent(admin, auth.user.id, 'document_reading'))) {
-    return json({ error: 'consent_required', message: 'Activez la lecture automatique des documents dans Confidentialité.' }, 403);
+    return json({ error: 'consent_required', message: 'Active la lecture automatique des documents dans Confidentialité.' }, 403);
   }
 
   const body = await readJsonBody(req);
@@ -80,5 +80,5 @@ Deno.serve(withCors(async (req) => {
     const { error: saveErr } = await auth.client.from('document_extractions').insert({ document_id: doc.id, household_id: doc.household_id, fields, status: 'to_verify' });
     if (saveErr) console.error('extract_save_refused', saveErr.code);
   }
-  return json({ fields, status: 'to_verify', notice: 'Éléments lus automatiquement : vérifiez-les sur le document original. Aucune interprétation n’est fournie.' });
+  return json({ fields, status: 'to_verify', notice: 'Éléments lus automatiquement : vérifie-les sur le document original. Aucune interprétation n’est fournie.' });
 }));

@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   if (!validToken(token)) return text('Lien d’agenda introuvable ou révoqué.', 404);
   const admin = adminClient();
   const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token)))).map((b) => b.toString(16).padStart(2, '0')).join('');
-  if (!(await rateLimit(admin, `calendar-feed:${digest.slice(0, 16)}`, 60, 3600))) return text('Trop de requêtes : réessayez plus tard.', 429);
+  if (!(await rateLimit(admin, `calendar-feed:${digest.slice(0, 16)}`, 60, 3600))) return text('Trop de requêtes : réessaie plus tard.', 429);
   const { data, error } = await admin.rpc('calendar_feed_data', { p_token: token });
   if (error) { console.error('calendar_feed_error', error.code); return text('Agenda momentanément indisponible.', 503); }
   if (!data) return text('Lien d’agenda introuvable ou révoqué.', 404);

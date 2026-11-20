@@ -54,7 +54,7 @@ select tests.ok((public.dm_unread() ->> 'messages')::int = 1 and (public.dm_unre
 select tests.ok(jsonb_array_length(public.dm_inbox()) = 1 and (public.dm_inbox() -> 0 ->> 'handle') = 'dm_bea' and (public.dm_inbox() -> 0 ->> 'last_body') = 'Bonjour Alice !'
   and (public.dm_inbox() -> 0 ->> 'last_mine') = 'false', 'boîte : conversation, interlocutrice et aperçu');
 select tests.ok((select count(*) from public.notifications where user_id = auth.uid() and category = 'community_message' and body is null
-  and title = 'Vous avez un nouveau message privé' and deep_link = '/community/messages/' || (select id from tests.dm_ids where k = 'ab')) = 1, 'notification : sans le texte du message');
+  and title = 'Tu as un nouveau message privé' and deep_link = '/community/messages/' || (select id from tests.dm_ids where k = 'ab')) = 1, 'notification : sans le texte du message');
 select tests.ok(not exists (select 1 from public.notifications where category = 'community_message' and (coalesce(body, '') || title || payload::text) like '%Bonjour%'), 'notification : aucun contenu de message, nulle part');
 select tests.ok(jsonb_array_length(public.dm_messages_list((select id from tests.dm_ids where k = 'ab'))) = 1
   and (public.dm_messages_list((select id from tests.dm_ids where k = 'ab')) -> 0 ->> 'mine') = 'false', 'messages : lus par la destinataire');
@@ -90,7 +90,7 @@ reset role;
 
 set role authenticated; set request.jwt.claim.sub = :'M1';
 select tests.ok((public.dm_unread() ->> 'requests')::int = 1 and (public.dm_unread() ->> 'messages')::int = 0, 'demande reçue : comptée à part des messages');
-select tests.ok((select count(*) from public.notifications where user_id = auth.uid() and title = 'Vous avez une demande de message' and body is null) = 1, 'demande : une notification, sans texte');
+select tests.ok((select count(*) from public.notifications where user_id = auth.uid() and title = 'Tu as une demande de message' and body is null) = 1, 'demande : une notification, sans texte');
 select tests.ok((select count(*) from jsonb_array_elements(public.dm_inbox()) e where e ->> 'status' = 'request_received') = 1, 'boîte : demande reçue');
 select public.dm_respond((select id from tests.dm_ids where k = 'ca'), false);
 select tests.ok((select count(*) from jsonb_array_elements(public.dm_inbox()) e where e ->> 'handle' = 'dm_chloe') = 0, 'refus : la demande disparaît de ma boîte');

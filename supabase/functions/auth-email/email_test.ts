@@ -23,7 +23,7 @@ Deno.test('signature Standard Webhooks valide acceptée, invalide ou périmée r
 Deno.test('lien de vérification Supabase et gabarit français', () => {
   eq(verifyLink('https://proj.supabase.co', payload.email_data), 'https://proj.supabase.co/auth/v1/verify?token=abc&type=recovery&redirect_to=toietmoi%3A%2F%2Fauth%2Fcallback');
   const m = buildEmail('HOMI', 'https://proj.supabase.co', payload);
-  eq(m.subject, 'Réinitialiser votre mot de passe — HOMI');
+  eq(m.subject, 'Réinitialiser ton mot de passe — HOMI');
   eq(m.html.includes('HOMI'), true);
   eq(m.text.includes('123456'), true);
   // un nom contenant « & » reste échappé dans le HTML

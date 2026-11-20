@@ -29,10 +29,10 @@ Deno.serve(withCors(async (req) => {
   const admin = adminClient();
   // Même règle que l'assistant : rien n'est envoyé à l'IA sans l'accord « assistant IA » (désactivé par défaut)
   if (!(await hasConsent(admin, auth.user.id, 'ai_assistant'))) {
-    return json({ ai: 'consent_required', message: 'Le résumé et la traduction par IA demandent votre accord : Réglages › Confidentialité › Assistant IA.' });
+    return json({ ai: 'consent_required', message: 'Le résumé et la traduction par IA demandent ton accord : Réglages › Confidentialité › Assistant IA.' });
   }
   if (!(await rateLimit(admin, `community_ai:${auth.user.id}`, 30, 3600))) {
-    return json({ ai: 'unavailable', message: 'Trop de demandes en une heure. Réessayez plus tard.' });
+    return json({ ai: 'unavailable', message: 'Trop de demandes en une heure. Réessaie plus tard.' });
   }
 
   // Contenu lu avec les droits de la personne (vues forum_feed / comment_feed)

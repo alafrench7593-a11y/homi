@@ -46,10 +46,10 @@ const MAX_TOKENS = 1400;
 
 const CAUTIOUS_ANSWER: StructuredAnswer = {
   short:
-    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de votre situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
-  actions: ['Notez vos questions et ce que vous observez (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
+    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de ta situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
+  actions: ['Note tes questions et ce que tu observes (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
   watch: [],
-  consult: ['Demandez l’avis de votre médecin, de votre sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
+  consult: ['Demande l’avis de ton médecin, de ta sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
   questions: [],
   sources: [],
   updated_on: null,
@@ -90,7 +90,7 @@ Deno.serve(withCors(async (req) => {
   const admin = adminClient();
 
   if (!(await rateLimit(admin, `assistant:${user.id}`, 8, 60)) || !(await rateLimit(admin, `assistant-day:${user.id}`, 120, 86400))) {
-    return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessayez dans une minute.' }, 429);
+    return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessaie dans une minute.' }, 429);
   }
 
   let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown; request_id?: unknown };
@@ -198,7 +198,7 @@ Deno.serve(withCors(async (req) => {
   }
 
   if (!consented) {
-    return json({ error: 'consent_required', message: 'Pour utiliser l’assistant, acceptez d’abord ses conditions d’utilisation.' }, 403);
+    return json({ error: 'consent_required', message: 'Pour utiliser l’assistant, accepte d’abord ses conditions d’utilisation.' }, 403);
   }
 
   // 2) Tentative de détournement des consignes : refus poli, sans IA ni crédit
@@ -213,7 +213,7 @@ Deno.serve(withCors(async (req) => {
   if (!geminiOrNull) {
     // Message discret pour l'utilisatrice ; l'état détaillé est dans Réglages › État des services (mode développeur)
     console.error('assistant_not_configured');
-    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessayez plus tard.' }, 503);
+    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessaie plus tard.' }, 503);
   }
   const gemini = geminiOrNull;
 
@@ -306,7 +306,7 @@ Deno.serve(withCors(async (req) => {
     maxOutputTokens: MAX_TOKENS,
   };
 
-  const unavailable = { error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessayez dans un instant. Aucun crédit n’a été utilisé.' };
+  const unavailable = { error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessaie dans un instant. Aucun crédit n’a été utilisé.' };
 
   // 8a) Réponse complète (sans diffusion) : débit seulement si une réponse de l'IA est rendue
   if (!wantsStream) {
@@ -345,7 +345,7 @@ Deno.serve(withCors(async (req) => {
           console.error('assistant_stream_error', e instanceof GeminiError ? e.status : e instanceof Error ? e.name : 'unknown'); // jamais le texte
           return {
             error: raw
-              ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessayez dans un instant. Aucun crédit n’a été utilisé.' }
+              ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessaie dans un instant. Aucun crédit n’a été utilisé.' }
               : unavailable,
           };
         }

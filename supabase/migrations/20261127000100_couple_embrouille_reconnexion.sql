@@ -202,11 +202,11 @@ language sql immutable as $$
       else case coalesce(p_lang, 'fr')
         when 'en' then 'Your idea for a moment together was accepted' when 'es' then 'Tu idea de momento juntos fue aceptada'
         when 'de' then 'Deine Idee für einen Moment zu zweit wurde angenommen' when 'it' then 'La tua idea di momento insieme è stata accettata'
-        else 'Votre idée de moment à deux est acceptée' end end,
+        else 'Ton idée de moment à deux est acceptée' end end,
     case coalesce(p_lang, 'fr')
       when 'en' then 'Open HOMI when you like.' when 'es' then 'Abre HOMI cuando quieras.'
       when 'de' then 'Öffne HOMI, wann du möchtest.' when 'it' then 'Apri HOMI quando vuoi.'
-      else 'Ouvrez HOMI quand vous le souhaitez.' end;
+      else 'Ouvre HOMI quand tu le souhaites.' end;
 $$;
 revoke execute on function public._moment_notification(text, text) from public, anon, authenticated;
 
@@ -245,7 +245,7 @@ begin
     raise exception 'Un moment se planifie une fois accepté.' using errcode = '22023';
   end if;
   if p_action = 'plan' and p_planned_at is not null and p_planned_at < now() - interval '1 day' then
-    raise exception 'Choisissez une date à venir.' using errcode = '22023';
+    raise exception 'Choisis une date à venir.' using errcode = '22023';
   end if;
   if p_action = 'done' and m.status <> 'accepted' then raise exception 'Seul un moment accepté peut être noté comme passé.' using errcode = '22023'; end if;
   if p_action = 'cancel' and (v_uid <> m.from_user or m.status not in ('proposed', 'accepted')) then

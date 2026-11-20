@@ -9,7 +9,7 @@
 
 /** Message affiché au début de CHAQUE conversation (texte imposé, ne pas modifier). */
 export const ASSISTANT_INTRO =
-  'Vous échangez avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence.';
+  'Tu échanges avec un assistant d’intelligence artificielle spécialisé dans l’information en santé et parentalité. Il ne remplace pas un médecin, une sage-femme, un pédiatre ou les services d’urgence.';
 
 /** Même texte en anglais (version anglaise de l'application ; D-02, QA 02/11/2026). */
 export const ASSISTANT_INTRO_EN =
@@ -87,10 +87,10 @@ type SectionKey = 'short' | 'actions' | 'watch' | 'consult' | 'questions' | 'sou
 
 export const SECTION_TITLES: Record<SectionKey, string> = {
   short: 'En bref',
-  actions: 'Ce que vous pouvez faire',
+  actions: 'Ce que tu peux faire',
   watch: 'À surveiller',
   consult: 'Quand demander un avis professionnel',
-  questions: 'Pour mieux vous répondre',
+  questions: 'Pour mieux te répondre',
   sources: 'Sources',
 };
 
@@ -107,10 +107,10 @@ const fold = (s: string) =>
 function headingKey(title: string): SectionKey | null {
   const t = fold(title);
   if (/^(en bref|reponse courte)$/.test(t)) return 'short';
-  if (/^(ce que vous pouvez faire|actions?|que faire|conseils pratiques)/.test(t)) return 'actions';
+  if (/^(ce que (?:vous pouvez|tu peux) faire|actions?|que faire|conseils pratiques)/.test(t)) return 'actions';
   if (/^(a surveiller|elements a surveiller|signes a surveiller)/.test(t)) return 'watch';
   if (/^(quand (demander|consulter)|consulter|avis professionnel)/.test(t)) return 'consult';
-  if (/^(pour mieux vous repondre|questions? (pour mieux|complementaires?))/.test(t)) return 'questions';
+  if (/^(pour mieux (?:vous|te) repondre|questions? (pour mieux|complementaires?))/.test(t)) return 'questions';
   if (/^sources?( officielles?)?$/.test(t)) return 'sources';
   return null;
 }
@@ -236,7 +236,7 @@ export function looksLikePromptInjection(text: string): boolean {
 
 export const INJECTION_REFUSAL: StructuredAnswer = {
   short:
-    'Je ne peux pas modifier mes consignes. Je suis là pour vous informer sur la santé et la parentalité (grossesse, accouchement, post-partum, allaitement, santé et développement de l’enfant, sommeil, alimentation, santé mentale des parents). Quelle est votre question ?',
+    'Je ne peux pas modifier mes consignes. Je suis là pour t’informer sur la santé et la parentalité (grossesse, accouchement, post-partum, allaitement, santé et développement de l’enfant, sommeil, alimentation, santé mentale des parents). Quelle est ta question ?',
   actions: [],
   watch: [],
   consult: [],
@@ -260,20 +260,20 @@ export function devModeAnswer(message: string, articles: DevArticle[]): string {
     `### ${SECTION_TITLES.short}`,
     `**${DEV_MODE_LABEL}.** Cette réponse est générée localement pour tester l’affichage : elle ne contient aucune information médicale personnalisée.`,
     '',
-    `Votre question : « ${q} ».`,
+    `Ta question : « ${q} ».`,
     articles.length
       ? `Articles de la bibliothèque qui semblent liés : ${articles.map((a, i) => `[${i + 1}] ${a.title}`).join(' ; ')}.`
-      : 'Aucun article de la bibliothèque ne semble lié à votre question.',
+      : 'Aucun article de la bibliothèque ne semble lié à ta question.',
     '',
     `### ${SECTION_TITLES.actions}`,
-    '- Notez votre question et le contexte (depuis quand, à quelle fréquence) pour votre prochain rendez-vous.',
-    '- Consultez les articles proposés ci-dessous et les sources officielles.',
+    '- Note ta question et le contexte (depuis quand, à quelle fréquence) pour ton prochain rendez-vous.',
+    '- Consulte les articles proposés ci-dessous et les sources officielles.',
     '',
     `### ${SECTION_TITLES.watch}`,
-    '- Tout changement inhabituel, qui dure ou qui vous inquiète.',
+    '- Tout changement inhabituel, qui dure ou qui t’inquiète.',
     '',
     `### ${SECTION_TITLES.consult}`,
-    '- En cas de doute, demandez l’avis de votre médecin, de votre sage-femme ou du pédiatre.',
+    '- En cas de doute, demande l’avis de ton médecin, de ta sage-femme ou du pédiatre.',
     '- En cas d’urgence : 15 ou 112 (114 par SMS pour les personnes sourdes ou malentendantes).',
     '',
     `### ${SECTION_TITLES.sources}`,

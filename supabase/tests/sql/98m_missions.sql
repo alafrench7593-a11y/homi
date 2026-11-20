@@ -42,7 +42,7 @@ select tests.ok((select count(*) from public.family_task_events where task_id = 
 -- Titre « <Prénom> t’a confié une mission » depuis 20261122000100_mission_confiee.sql (détails : 98zc_mission_confiee.sql)
 select tests.ok((select count(*) from public.notifications where user_id = :'CP' and payload ->> 'mission' = 'mission.requested' and payload ->> 'task_id' = (select id::text from m98 where k = 'A')
   and title like '%confié une mission' and deep_link = '/family/missions/' || (select id from m98 where k = 'A')) = 1, 'mission A : le conjoint reçoit « … t’a confié une mission » (lien vers la mission)');
-select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Une tâche vous est confiée') = 0
+select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Une tâche t’est confiée') = 0
   and (select count(*) from public.notifications where user_id = :'OW') = 0, 'mission A : une seule notification, rien pour l''autrice');
 select tests.ok((select status = 'done' and depth = 0 from public.household_events where type = 'mission.requested' and entity_id = (select id::text from m98 where k = 'A')),
   'mission A : événement « mission.requested » publié et traité');

@@ -10,8 +10,8 @@
 insert into public.emergency_resources (country, label, phone, description, kind, available, position) values
  ('FR','SAMU','15','Urgence médicale : malaise, difficulté à respirer, bébé qui ne réagit pas, réaction allergique grave.','emergency','24 h/24, 7 j/7',1),
  ('FR','Numéro d''urgence européen','112','Urgence, partout dans l''Union européenne, y compris depuis un téléphone sans forfait.','emergency','24 h/24, 7 j/7',2),
- ('FR','Prévention du suicide','3114','Si vous pensez au suicide, si vous avez peur de vous faire du mal, ou si vous vous inquiétez pour un proche. Gratuit et confidentiel.','suicide_prevention','24 h/24, 7 j/7',3),
- ('FR','Enfance en danger','119','Si un enfant est en danger ou en risque de l''être, ou si vous avez peur de faire du mal à votre enfant.','parenting_support','24 h/24, 7 j/7',4),
+ ('FR','Prévention du suicide','3114','Si tu penses au suicide, si tu as peur de te faire du mal, ou si tu t’inquiètes pour un proche. Gratuit et confidentiel.','suicide_prevention','24 h/24, 7 j/7',3),
+ ('FR','Enfance en danger','119','Si un enfant est en danger ou en risque de l''être, ou si tu as peur de faire du mal à ton enfant.','parenting_support','24 h/24, 7 j/7',4),
  ('FR','Violences Femmes Info','3919','Écoute et orientation pour les femmes victimes de violences et leur entourage.','violence','24 h/24, 7 j/7',5),
  ('FR','Urgence par SMS (personnes sourdes ou malentendantes)','114','Contacter les secours par SMS, fax ou application.','emergency','24 h/24, 7 j/7',6) on conflict do nothing;
 

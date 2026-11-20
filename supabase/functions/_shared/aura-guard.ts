@@ -64,7 +64,7 @@ const DOSE: Rule[] = [
 /** Garanties, découragement à consulter, actions prétendument faites (5 langues). */
 const OTHER: Rule[] = [
   [/\b(inutile de consulter|pas besoin de (consulter|voir un medecin)|no need to (see|consult) a (doctor|professional)|you don'?t need to see a doctor|kein arzt (ist )?notig|sie mussen nicht zum arzt|no hace falta (ir al medico|consultar)|non serve (andare dal medico|consultare))/, 'découragement à consulter'],
-  [/\b(aucun risque|sans aucun danger|je vous garantis|no risk at all|i guarantee|kein risiko|ich garantiere|ningun riesgo|te garantizo|nessun rischio|ti garantisco)\b/, 'garantie de sécurité'],
+  [/\b(aucun risque|sans aucun danger|je (?:vous|te) garantis|no risk at all|i guarantee|kein risiko|ich garantiere|ningun riesgo|te garantizo|nessun rischio|ti garantisco)\b/, 'garantie de sécurité'],
   [/\b(j'ai (ajoute|cree|enregistre|programme|envoye)|i('ve| have) (added|created|saved|scheduled|sent)|ich habe (hinzugefugt|erstellt|gespeichert|eingetragen|gesendet)|he (anadido|creado|guardado|enviado|programado)|ho (aggiunto|creato|salvato|inviato|programmato))\b[^.\n]{0,40}\b(agenda|calendrier|calendar|kalender|calendario|mission|task|aufgabe|tarea|compito|rendez-vous|appointment|termin|cita|appuntamento|rappel|reminder|erinnerung|recordatorio|promemoria|message|nachricht|mensaje|messaggio)/, 'action prétendue'],
 ];
 

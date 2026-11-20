@@ -285,7 +285,7 @@ returns jsonb language plpgsql security definer set search_path = public as $$
 declare v_uid uuid := auth.uid(); v_h uuid[];
 begin
   if coalesce(current_setting('homi.export_filter', true), '') <> 'on' then
-    raise exception 'Export : utilisez export_my_data().' using errcode = '42501';
+    raise exception 'Export : utilise export_my_data().' using errcode = '42501';
   end if;
   select coalesce(array_agg(household_id), '{}') into v_h from public.household_members where user_id = v_uid;
   return public._export_my_data_raw_avant_garde() || jsonb_build_object('childcare_prep', jsonb_build_object(

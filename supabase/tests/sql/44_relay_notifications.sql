@@ -22,7 +22,7 @@ insert into public.care_shifts (household_id, kind, user_id, starts_at, ends_at)
 
 set request.jwt.claim.sub = :'BEN';
 select tests.ok(tests.count('select * from public.notifications where payload->>''kind'' = ''night_plan''') = 1, 'relais : un planning de plusieurs nuits = une seule notification');
-select tests.ok((select body = 'Ouvrez le planning pour les confirmer.' and deep_link = '/family/nights' from public.notifications where payload->>'kind' = 'night_plan'), 'relais : texte neutre et lien vers le planning');
+select tests.ok((select body = 'Ouvre le planning pour les confirmer.' and deep_link = '/family/nights' from public.notifications where payload->>'kind' = 'night_plan'), 'relais : texte neutre et lien vers le planning');
 -- Ben confirme lui-même : rien pour personne
 update public.care_shifts set status = 'confirmed' where user_id = :'BEN' and starts_at = (select min(starts_at) from public.care_shifts where user_id = :'BEN');
 

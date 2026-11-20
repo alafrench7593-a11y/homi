@@ -112,7 +112,7 @@ export type CyclePhotoInput =
 export function checkCyclePhotoBody(body: unknown): CyclePhotoInput {
   const b = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
   if (b.consent !== true) {
-    return { ok: false, status: 400, error: 'consent_required', message: 'Votre accord explicite est nécessaire pour envoyer la photo à l’analyse.' };
+    return { ok: false, status: 400, error: 'consent_required', message: 'Ton accord explicite est nécessaire pour envoyer la photo à l’analyse.' };
   }
   return checkCyclePhotoImage(b);
 }

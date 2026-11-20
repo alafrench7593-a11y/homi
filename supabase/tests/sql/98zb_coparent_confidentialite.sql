@@ -132,7 +132,7 @@ select tests.throws(format($q$select public.couple_send(%L, %L, 'share', 'bonjou
 select tests.throws(format($q$select public.couple_send(%L, %L, 'share', 'bonjour')$q$, :'H', :'XO'), 'message : jamais à une personne hors du foyer');
 reset role;
 select tests.ok((select count(*) from public.notifications where user_id = :'CP' and payload ->> 'couple' = 'true') = 1, 'notification : une seule pour le rejeu');
-select tests.ok((select title = 'Camille souhaite partager quelque chose avec vous' and body = 'Ouvrez HOMI quand vous le souhaitez.'
+select tests.ok((select title = 'Camille souhaite partager quelque chose avec toi' and body = 'Ouvre HOMI quand tu le souhaites.'
   from public.notifications where user_id = :'CP' and payload ->> 'couple' = 'true'), 'notification : texte fixe avec le prénom');
 select tests.ok(not exists (select 1 from public.notifications where user_id in (:'OW', :'CP') and (title || coalesce(body, '') || payload::text || coalesce(deep_link, '')) ilike '%repos ce soir%'),
   'notification : AUCUN contenu du message (titre, texte, données, lien)');
@@ -156,7 +156,7 @@ set request.jwt.claim.sub = :'OW';
 select tests.ok(tests.count('select * from public.couple_messages') = 2, 'message : Camille lit son message et la réponse');
 select public.couple_send(:'H', :'CP', 'share', 'Merci.', null, (select id from zb where k = 'r1'));
 reset role;
-select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Votre partenaire souhaite partager quelque chose avec vous') = 1,
+select tests.ok((select count(*) from public.notifications where user_id = :'CP' and title = 'Ton partenaire souhaite partager quelque chose avec toi') = 1,
   'notification : discrétion choisie par le destinataire → sans prénom');
 set role authenticated; set request.jwt.claim.sub = :'OW';
 delete from public.couple_messages where id = (select id from zb where k = 'm1');

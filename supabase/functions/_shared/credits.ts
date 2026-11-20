@@ -118,7 +118,7 @@ export function reserveRefusal(r: ReserveResult): { status: number; body: Record
       return {
         status: 402,
         body: {
-          error: 'insufficient_credits', message: 'Vous n’avez plus assez de crédits pour cette action.', cost: r.cost ?? null,
+          error: 'insufficient_credits', message: 'Tu n’as plus assez de crédits pour cette action.', cost: r.cost ?? null,
           credits: { monthly_remaining: r.monthly_remaining ?? 0, purchased_remaining: r.purchased_remaining ?? 0, next_renewal: r.next_renewal ?? null },
         },
       };
@@ -199,7 +199,7 @@ export function billedSseStream(o: {
         }
       } catch (e) {
         await finish(false, e instanceof ClientGone || gone ? 'stream_cut' : 'llm_error');
-        if (!gone) emit('error', { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessayez dans un instant.' });
+        if (!gone) emit('error', { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessaie dans un instant.' });
       }
       try { controller.close(); } catch { /* déjà fermé */ }
     },

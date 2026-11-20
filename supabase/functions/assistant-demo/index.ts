@@ -32,16 +32,16 @@ const MAX_TOKENS = 1000;
 
 const CAUTIOUS_ANSWER: StructuredAnswer = {
   short:
-    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de votre situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
-  actions: ['Notez vos questions et ce que vous observez (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
+    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de ta situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
+  actions: ['Note tes questions et ce que tu observes (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
   watch: [],
-  consult: ['Demandez l’avis de votre médecin, de votre sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
+  consult: ['Demande l’avis de ton médecin, de ta sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
   questions: [],
   sources: [],
   updated_on: null,
 };
 
-const LIMIT_MESSAGE = 'Vous avez utilisé les 3 questions de la démonstration pour aujourd’hui. Créez un compte gratuit pour continuer à poser vos questions.';
+const LIMIT_MESSAGE = 'Tu as utilisé les 3 questions de la démonstration pour aujourd’hui. Crée un compte gratuit pour continuer à poser tes questions.';
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -81,7 +81,7 @@ Deno.serve(withCors(async (req) => {
   const gemini = await enabledGeminiConfig(adminClient());
   if (!gemini) {
     console.error('assistant_demo_not_configured');
-    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessayez plus tard.' }, 503);
+    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessaie plus tard.' }, 503);
   }
 
   // 3) Limites (refus par défaut si le compteur est indisponible : jamais d'appels payants illimités)
@@ -92,13 +92,13 @@ Deno.serve(withCors(async (req) => {
     .map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
   const day = 86400;
   if (!(await rateLimit(admin, 'assistant-demo-min', DEMO_LIMITS.perMinute, 60))) {
-    return json({ error: 'rate_limited', message: 'Beaucoup de questions en ce moment. Réessayez dans une minute.' }, 429);
+    return json({ error: 'rate_limited', message: 'Beaucoup de questions en ce moment. Réessaie dans une minute.' }, 429);
   }
   if (!(await rateLimit(admin, `assistant-demo-dev:${device}`, DEMO_LIMITS.perDevice, day)) || !(await rateLimit(admin, `assistant-demo-ip:${ipHash}`, DEMO_LIMITS.perIp, day))) {
     return json({ error: 'quota_reached', message: LIMIT_MESSAGE, limit: DEMO_LIMITS.perDevice }, 402);
   }
   if (!(await rateLimit(admin, 'assistant-demo-day', DEMO_LIMITS.perDay, day))) {
-    return json({ error: 'quota_reached', message: 'La démonstration a reçu beaucoup de questions aujourd’hui. Créez un compte gratuit pour continuer, ou revenez demain.', limit: DEMO_LIMITS.perDevice }, 402);
+    return json({ error: 'quota_reached', message: 'La démonstration a reçu beaucoup de questions aujourd’hui. Crée un compte gratuit pour continuer, ou reviens demain.', limit: DEMO_LIMITS.perDevice }, 402);
   }
 
   // 4) Fiches publiques de la bibliothèque liées à la question
@@ -123,7 +123,7 @@ Deno.serve(withCors(async (req) => {
   } catch (e) {
     console.error('assistant_demo_llm_error', e instanceof GeminiError ? e.status : 'unknown'); // jamais le contenu
     if (!(e instanceof GeminiError && e.blocked)) {
-      return json({ error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessayez dans un instant.' }, 503);
+      return json({ error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessaie dans un instant.' }, 503);
     }
   }
 

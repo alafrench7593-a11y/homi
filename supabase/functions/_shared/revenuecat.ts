@@ -279,11 +279,11 @@ export const isDuplicate = (event: RcEvent, last: { last_event?: string | null; 
 /** Notification in-app, en français ou en anglais selon la langue du profil (français par défaut). */
 const NOTICES = {
   fr: {
-    billing: ['Problème de paiement', 'Votre abonnement n’a pas pu être renouvelé. Vérifiez votre moyen de paiement dans l’App Store ou Google Play.'],
-    expired: ['Abonnement terminé', 'Votre abonnement HOMI Premium a pris fin. Vos données et les fonctions essentielles restent disponibles.'],
-    cancelled: ['Renouvellement désactivé', 'Votre abonnement reste actif jusqu’à sa date d’échéance, puis ne sera pas renouvelé.'],
-    refunded: ['Abonnement remboursé', 'Votre abonnement a été remboursé : l’accès Premium a pris fin. Vos données restent disponibles.'],
-    paused: ['Abonnement en pause', 'Votre abonnement sera mis en pause à la fin de la période en cours. Premium reste disponible jusque-là.'],
+    billing: ['Problème de paiement', 'Ton abonnement n’a pas pu être renouvelé. Vérifie ton moyen de paiement dans l’App Store ou Google Play.'],
+    expired: ['Abonnement terminé', 'Ton abonnement HOMI Premium a pris fin. Tes données et les fonctions essentielles restent disponibles.'],
+    cancelled: ['Renouvellement désactivé', 'Ton abonnement reste actif jusqu’à sa date d’échéance, puis ne sera pas renouvelé.'],
+    refunded: ['Abonnement remboursé', 'Ton abonnement a été remboursé : l’accès Premium a pris fin. Tes données restent disponibles.'],
+    paused: ['Abonnement en pause', 'Ton abonnement sera mis en pause à la fin de la période en cours. Premium reste disponible jusque-là.'],
   },
   en: {
     billing: ['Payment issue', 'Your subscription could not be renewed. Please check your payment method in the App Store or Google Play.'],

@@ -49,8 +49,8 @@ async function fromOpenFacts(admin: Any, userId: string, barcode: string, hint?:
 }
 
 const UNAVAILABLE_MESSAGE: Partial<Record<LookupStatus, string>> = {
-  saturated: 'La base Open Food Facts est très sollicitée : réessayez dans une minute, ou saisissez la liste des ingrédients.',
-  unavailable: 'La base Open Food Facts ne répond pas pour le moment : le produit n’a pas pu être vérifié. Réessayez plus tard, ou saisissez la liste des ingrédients.',
+  saturated: 'La base Open Food Facts est très sollicitée : réessaie dans une minute, ou saisis la liste des ingrédients.',
+  unavailable: 'La base Open Food Facts ne répond pas pour le moment : le produit n’a pas pu être vérifié. Réessaie plus tard, ou saisis la liste des ingrédients.',
 };
 
 async function checkRecalls(admin: Any, product: { barcode?: string | null; brand?: string | null; name?: string | null }) {
@@ -63,7 +63,7 @@ async function checkRecalls(admin: Any, product: { barcode?: string | null; bran
     // Vérification réputée faite seulement si la base officielle a répondu à toutes les requêtes
     const { records, checked } = await fetchRecallRecords(terms, { dataset });
     status.checked = checked;
-    if (!status.checked) status.error = 'La base officielle RappelConso n’a pas pu être consultée. Réessayez plus tard ou consultez rappel.conso.gouv.fr.';
+    if (!status.checked) status.error = 'La base officielle RappelConso n’a pas pu être consultée. Réessaie plus tard ou consulte rappel.conso.gouv.fr.';
     const matches = matchRecalls(records, product);
     if (matches.length) {
       // Cache : l'insertion d'un nouveau rappel déclenche les notifications (historique et favoris)
@@ -100,7 +100,7 @@ Deno.serve(withCors(async (req) => {
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
   const admin = adminClient();
-  if (!(await rateLimit(admin, `scan:${auth.user.id}`, 40, 60))) return json({ error: 'rate_limited', message: 'Trop de recherches en peu de temps. Réessayez dans une minute.' }, 429);
+  if (!(await rateLimit(admin, `scan:${auth.user.id}`, 40, 60))) return json({ error: 'rate_limited', message: 'Trop de recherches en peu de temps. Réessaie dans une minute.' }, 429);
 
   const body: Any = await readJsonBody(req, 16 * 1024);
   if (!body) return json({ error: 'too_large' }, 413);
@@ -112,7 +112,7 @@ Deno.serve(withCors(async (req) => {
   // ------------------------------------------------------------ recherche par nom ou EAN
   if (action === 'search') {
     const query = String(body.query ?? '').trim().slice(0, 80);
-    if (query.length < 2) return json({ error: 'bad_query', message: 'Saisissez au moins 2 caractères.' }, 400);
+    if (query.length < 2) return json({ error: 'bad_query', message: 'Saisis au moins 2 caractères.' }, 400);
     const asCode = query.replace(/\D/g, '');
     const local = /^\d{8,14}$/.test(asCode)
       ? (await admin.from('products').select('*').eq('barcode', asCode).limit(5)).data ?? []
@@ -138,7 +138,7 @@ Deno.serve(withCors(async (req) => {
     const url = pricesUrl({ barcode: body.barcode ? String(body.barcode).replace(/\D/g, '') : null, categoryTag: body.category_tag ? String(body.category_tag) : null });
     if (!url) return json({ error: 'bad_query', message: 'Code-barres ou catégorie invalide.' }, 400);
     if (!openFactsEnabled()) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'disabled', message: 'Open Prices n’est pas encore activé sur ce serveur (OPENFOODFACTS_USER_AGENT manquant).' });
-    if (!(await rateLimit(admin, `openprices:read:${auth.user.id}`, 4, 60)) || !(await rateLimit(admin, 'openprices:read', 10, 60))) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'saturated', message: 'Trop de demandes de prix : réessayez dans une minute.' });
+    if (!(await rateLimit(admin, `openprices:read:${auth.user.id}`, 4, 60)) || !(await rateLimit(admin, 'openprices:read', 10, 60))) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'saturated', message: 'Trop de demandes de prix : réessaie dans une minute.' });
     try {
       const r = await fetch(url, { headers: { 'User-Agent': userAgent(), Accept: 'application/json' }, signal: AbortSignal.timeout(8000) });
       if (!r.ok) return json({ prices: [], source: OPEN_PRICES_LABEL, status: 'unavailable', message: 'Open Prices ne répond pas pour le moment : aucun prix n’est affiché.' });
@@ -175,7 +175,7 @@ Deno.serve(withCors(async (req) => {
 
   // ------------------------------------------------------------ fiche produit par code-barres
   const barcode = String(body.barcode ?? '').replace(/\D/g, '');
-  if (barcode.length < 8 || barcode.length > 14) return json({ error: 'bad_barcode', message: 'Code-barres non reconnu. Vous pouvez le saisir à la main.' }, 400);
+  if (barcode.length < 8 || barcode.length > 14) return json({ error: 'bad_barcode', message: 'Code-barres non reconnu. Tu peux le saisir à la main.' }, 400);
   const ctx: ScanContext = {
     pregnant: body.context?.pregnant === true,
     childAgeMonths: typeof body.context?.childAgeMonths === 'number' ? body.context.childAgeMonths : null,
@@ -194,8 +194,8 @@ Deno.serve(withCors(async (req) => {
       found: false, barcode, recalls, recall_check: status, database, lookup_status: lookupStatus,
       // une panne n'est jamais présentée comme « produit introuvable »
       message: outage ?? (database === 'not_connected'
-        ? 'Aucune base de produits n’est connectée : le produit ne peut pas être identifié. Photographiez la liste des ingrédients ou saisissez-la.'
-        : 'Produit introuvable. Vous pouvez photographier la liste des ingrédients ou la saisir manuellement.'),
+        ? 'Aucune base de produits n’est connectée : le produit ne peut pas être identifié. Photographie la liste des ingrédients ou saisis-la.'
+        : 'Produit introuvable. Tu peux photographier la liste des ingrédients ou la saisir manuellement.'),
     });
   }
 

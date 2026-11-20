@@ -29,7 +29,7 @@ Deno.serve(withCors(async (req) => {
   // Le profil (« enceinte », âge du bébé, allergies) est une donnée de santé : pas d'envoi à l'IA
   // sans l'accord « assistant IA ». L'application garde alors l'explication des règles.
   if (!(await hasConsent(admin, auth.user.id, 'ai_assistant'))) {
-    return json({ ai: 'consent_required', message: 'L’explication par l’IA demande votre accord (Réglages › Confidentialité › Assistant IA). L’explication des règles reste affichée.' });
+    return json({ ai: 'consent_required', message: 'L’explication par l’IA demande ton accord (Réglages › Confidentialité › Assistant IA). L’explication des règles reste affichée.' });
   }
   if (!(await rateLimit(admin, `scan_explain:${auth.user.id}`, 20, 3600))) {
     return json({ ai: 'unavailable', message: 'Trop d’explications demandées en une heure. L’explication des règles reste affichée.' });

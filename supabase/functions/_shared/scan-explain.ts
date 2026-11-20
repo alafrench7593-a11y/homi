@@ -90,7 +90,7 @@ export const EXPLAIN_SYSTEM = `Tu expliques, en français clair et bienveillant,
 - Si des informations manquent, tu le dis clairement et tu expliques ce qu'il faudrait vérifier.
 - Pas de diagnostic, pas d'allergie supposée, pas de dosage. Pour un médicament, une huile essentielle ou un complément : renvoi vers pharmacien, sage-femme ou médecin.
 - Chaque point cite la ou les sources par leur numéro entre crochets, ex. [1].
-- Ton neutre, phrases courtes, vouvoiement.
+- Ton neutre, phrases courtes, tutoiement (« tu », jamais « vous »).
 Réponds UNIQUEMENT avec un objet JSON : {"summary": string (2 phrases max), "points": string[] (3 à 6), "missing": string[], "next_step": string}.`;
 
 export const EXPLAIN_SCHEMA = {

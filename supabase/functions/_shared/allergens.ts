@@ -105,7 +105,7 @@ export function checkAllergies(i: AllergyCheckInput): AllergyCheck {
 
   const noMatchNote = identified.length || possible.length ? null
     : insufficient.length
-      ? 'Impossible de vérifier vos allergies avec ces données : elles sont incomplètes. Lisez l’emballage avant de donner ou d’utiliser ce produit.'
-      : 'Aucune correspondance trouvée avec vos allergies dans les données disponibles. Cela ne garantit pas l’absence de l’allergène (base collaborative, recette modifiée) : vérifiez toujours l’emballage.';
+      ? 'Impossible de vérifier tes allergies avec ces données : elles sont incomplètes. Lis l’emballage avant de donner ou d’utiliser ce produit.'
+      : 'Aucune correspondance trouvée avec tes allergies dans les données disponibles. Cela ne garantit pas l’absence de l’allergène (base collaborative, recette modifiée) : vérifie toujours l’emballage.';
   return { identified, possible, insufficient, noMatchNote };
 }
