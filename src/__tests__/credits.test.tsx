@@ -151,7 +151,7 @@ describe('démonstration : mêmes règles que le serveur', () => {
     await backend.rpc('set_demo_subscription', { active: false });
     await backend.rpc('set_demo_subscription', { active: true, period: 'monthly', trial: true, trial_days: 3 });
     s = await status();
-    expect(s.monthly_remaining).toBe(50);
+    expect(s.monthly_remaining).toBe(0); // essai de 3 jours : aucun crédit d'IA (décision du 20/11/2026)
   });
 
   it('offres héritées : aucune vente possible côté application', async () => {

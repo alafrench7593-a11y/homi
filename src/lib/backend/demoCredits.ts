@@ -30,7 +30,7 @@ const MONTH = 30 * 86_400_000;
 export function createCredits(c: CreditsCtx) {
   const { T } = c;
   /** Réglages du serveur simulés (l'interrupteur et les coûts peuvent être changés par les tests). */
-  const settings = () => (T('_credit_settings')[0] ??= { ai_enabled: true, costs: { ...DEFAULT_COSTS }, grants: { ...DEFAULT_GRANTS, trial: 50 } });
+  const settings = () => (T('_credit_settings')[0] ??= { ai_enabled: true, costs: { ...DEFAULT_COSTS }, grants: { ...DEFAULT_GRANTS, trial: 0 } }); // essai : aucun crédit d'IA (décision du 20/11/2026)
 
   function payerOf(me: string): { payer: string; tier: 'premium' | 'family' } | null {
     const own = c.activeSub(me);
@@ -70,7 +70,7 @@ export function createCredits(c: CreditsCtx) {
   function grant(payer: string, tier: 'premium' | 'family', periodEnd: string | null, trial = false) {
     const a = ensure(payer, tier);
     const s = settings();
-    const allowance = trial ? Number(s.grants.trial ?? 50) : Number(s.grants[tier] ?? DEFAULT_GRANTS[tier]);
+    const allowance = trial ? Number(s.grants.trial ?? 0) : Number(s.grants[tier] ?? DEFAULT_GRANTS[tier]);
     if (a.monthly_balance > 0) ledger(a, 'expire', -a.monthly_balance, 0); // sans report
     ledger(a, 'monthly_grant', allowance, 0);
     const end = Math.min(Date.now() + MONTH, periodEnd ? Date.parse(periodEnd) : Date.now() + MONTH);

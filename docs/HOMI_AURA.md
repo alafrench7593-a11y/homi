@@ -109,9 +109,7 @@ le téléphone, sans réseau, puis par le serveur avant tout le reste).
 **Abonnement actif requis** : pas de crédits offerts pendant l'essai de 3 jours (l'essai donne accès aux outils, pas à
 l'IA). Un compte en essai ou sans abonnement voit « HOMI Aura en ligne demande un abonnement actif… » avec « Continuer
 sans IA, sur ce téléphone » (mode local) et « Voir les abonnements » ; rien n'est envoyé. Même message sur les boutons
-« Analyser avec HOMI IA » pendant l'essai. Côté serveur, le réglage `grant.trial` de `credit_settings` (50 par défaut,
-docs/CREDITS_IA.md) doit être mis à 0 pour appliquer la décision (`update public.credit_settings set value = '0' where
-key = 'grant.trial';`) — non modifié ici.
+« Analyser avec HOMI IA » pendant l'essai. Côté serveur, `grant.trial` vaut 0 (docs/CREDITS_IA.md) ; la démonstration applique la même règle (`demoCredits.ts`).
 
 | Demande | Action (`credit_settings`) | Coût par défaut |
 |---|---|---|
