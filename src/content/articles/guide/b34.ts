@@ -4,7 +4,7 @@ import type { ArticleSource, LibArticle } from '../library';
 const C = '2026-10-27';
 // Sources réellement consultées le 2026-10-27 (pages officielles ou de référence françaises). `published` = date affichée par la page, quand elle est indiquée.
 const S = {
-  santeChoisir: { label: 'Santé.fr (QuestionSexualité, Santé publique France) — Comment choisir la contraception qui vous convient ?', url: 'https://www.sante.fr/comment-choisir-la-contraception-qui-vous-convient', consulted_on: C, published: '2024-09-26' },
+  santeChoisir: { label: 'Santé.fr (QuestionSexualité, Santé publique France) — Comment choisir la contraception qui te convient ?', url: 'https://www.sante.fr/comment-choisir-la-contraception-qui-vous-convient', consulted_on: C, published: '2024-09-26' },
   ameliChoisir: { label: 'ameli.fr — Comment bien choisir sa contraception ?', url: 'https://www.ameli.fr/assure/sante/themes/contraception/choisir-mode-contraception', consulted_on: C, published: '2026-01-12' },
   santeQuiOu: { label: 'Santé.fr (Fil santé jeunes) — La contraception, qui et où ?', url: 'https://www.sante.fr/node/137983', consulted_on: C, published: '2024-07-29' },
   spContraception: { label: 'Service-Public.fr — Contraception', url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/F707', consulted_on: C, published: '2026-09-28' },
@@ -812,7 +812,7 @@ ${FIN}`,
 
 ## Au quotidien
 - **Pour un homme qui veut s’impliquer** : acheter et avoir sur soi des préservatifs, apprendre à les utiliser, participer à la consultation de contraception si la partenaire le souhaite, partager les frais, se souvenir des renouvellements.
-- **Si ton partenaire (ou toi) envisage une méthode thermique**, parlez-en d’abord à un médecin ou à un urologue : elle nécessite un suivi médical et ne doit pas être improvisée.
+- **Si ton partenaire (ou toi) envisage une méthode thermique**, parles-en d’abord à un médecin ou à un urologue : elle nécessite un suivi médical et ne doit pas être improvisée.
 - **Pour la vasectomie**, il faut prendre le temps du délai de réflexion et poser toutes les questions sur son caractère définitif.
 - **En couple stable**, cherchez ensemble la méthode qui vous convient le mieux à tous les deux, plutôt que de laisser une seule personne en porter la charge.
 
@@ -1000,7 +1000,7 @@ ${FIN}`,
 
 **Décider ensemble, sans imposer.** La personne qui utilise une méthode reste seule à décider de ce qui entre dans son corps. Parler à deux ne veut pas dire faire pression : il s’agit de comprendre ce que chacun vit et attend, et de chercher la solution la plus confortable.
 
-**Le préservatif dans un couple qui dure.** L’Assurance Maladie conseille d’utiliser des préservatifs pendant les premiers mois d’une relation suivie, puis de faire un test de dépistage : une relation stable et de confiance permet ensuite d’arrêter cette protection, à condition d’avoir une autre contraception si vous ne souhaitez pas de grossesse.
+**Le préservatif dans un couple qui dure.** L’Assurance Maladie conseille d’utiliser des préservatifs pendant les premiers mois d’une relation suivie, puis de faire un test de dépistage : une relation stable et de confiance permet ensuite d’arrêter cette protection, à condition d’avoir une autre contraception si tu ne souhaites pas de grossesse.
 
 ## Au quotidien
 Quelques idées pour lancer la conversation et partager la charge :
@@ -1018,7 +1018,7 @@ Quelques idées pour lancer la conversation et partager la charge :
 Le préservatif est le seul moyen de se protéger des IST. Tu as le droit de l’exiger. Si tu subis des pressions, parles-en à un professionnel ou appelle le 0800 08 11 11.
 
 **On veut arrêter le préservatif : par quoi commencer ?**
-Un dépistage des IST pour chacun, puis la mise en place d’une autre contraception si vous ne souhaitez pas de grossesse.
+Un dépistage des IST pour chacun, puis la mise en place d’une autre contraception si tu ne souhaites pas de grossesse.
 
 **Mon partenaire envisage une vasectomie : est-ce une décision de couple ?**
 C’est une décision personnelle, réfléchie (délai de réflexion de quatre mois), qui gagne à être discutée ensemble car elle est considérée comme définitive.
@@ -1200,7 +1200,7 @@ ${FIN}`,
 
 **Bien utiliser le préservatif.** QuestionSexualité insiste : il doit être mis **dès le début**, avant toute pénétration ou éjaculation. Le lubrifiant est essentiel pour les rapports anaux.
 
-**Arrêter le préservatif.** L’Assurance Maladie conseille d’utiliser des préservatifs pendant les trois premiers mois d’une relation suivie, puis de faire un test de dépistage. Une relation stable et de confiance permet alors d’arrêter, avec une autre contraception en place si vous ne souhaitez pas de grossesse.
+**Arrêter le préservatif.** L’Assurance Maladie conseille d’utiliser des préservatifs pendant les trois premiers mois d’une relation suivie, puis de faire un test de dépistage. Une relation stable et de confiance permet alors d’arrêter, avec une autre contraception en place si tu ne souhaites pas de grossesse.
 
 ## Au quotidien
 - **Garde toujours des préservatifs** sur toi : avant 26 ans, ceux des marques listées sont pris en charge sans ordonnance en pharmacie ; les centres de santé sexuelle et les CeGIDD en distribuent gratuitement.

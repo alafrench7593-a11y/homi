@@ -37,29 +37,29 @@ Se réveiller brièvement entre deux cycles de sommeil fait partie du sommeil de
 - Coucher l'enfant encore éveillé, pour qu'il apprenne à s'endormir dans son lit.
 
 ### Cauchemars et terreurs nocturnes
-- Cauchemar : l'enfant se réveille, effrayé. Rassurez-le.
-- Terreur nocturne : en début de nuit, il crie ou s'agite sans être vraiment réveillé. Restez près de lui sans le réveiller.
+- Cauchemar : l'enfant se réveille, effrayé. Rassure-le.
+- Terreur nocturne : en début de nuit, il crie ou s'agite sans être vraiment réveillé. Reste près de lui sans le réveiller.
 
 ### Un exemple de rituel
 Dîner, bain ou toilette, pyjama, brossage des dents, une histoire dans le lit, un câlin, la veilleuse, puis « bonne nuit ». Toujours dans le même ordre, sur un temps assez court : la répétition rassure.
 
 ## Questions fréquentes
 **Mon enfant ne veut plus faire la sieste, faut-il l'y obliger ?**
-Les besoins diminuent avec l'âge. Un temps calme dans la journée peut remplacer la sieste ; s'il est très fatigué en fin de journée, avancez un peu le coucher.
+Les besoins diminuent avec l'âge. Un temps calme dans la journée peut remplacer la sieste ; s'il est très fatigué en fin de journée, avance un peu le coucher.
 
 **Il se réveille toutes les nuits depuis l'entrée à la crèche, que faire ?**
-Les changements de vie perturbent souvent le sommeil pour un temps. Gardez le rituel et des horaires réguliers, et rassurez-le brièvement la nuit.
+Les changements de vie perturbent souvent le sommeil pour un temps. Garde le rituel et des horaires réguliers, et rassure-le brièvement la nuit.
 
 **Peut-on lui donner quelque chose pour l'aider à dormir ?**
-Il n'existe pas de médicament du sommeil adapté aux jeunes enfants. Parlez-en à votre médecin si les difficultés durent.
+Il n'existe pas de médicament du sommeil adapté aux jeunes enfants. Parles-en à ton médecin si les difficultés durent.
 
 ## Quand demander conseil
-- Si les difficultés de sommeil durent, si l'enfant semble très fatigué ou irritable dans la journée : votre médecin ou pédiatre.
-- S'il ronfle fort, fait des pauses respiratoires ou semble mal respirer en dormant : parlez-en à votre médecin.
-- Si la fatigue des parents devient lourde à porter : parlez-en aussi, pour vous.
-- Difficulté à respirer, enfant inconscient ou convulsions : appelez le **15** ou le **112**.
+- Si les difficultés de sommeil durent, si l'enfant semble très fatigué ou irritable dans la journée : ton médecin ou pédiatre.
+- S'il ronfle fort, fait des pauses respiratoires ou semble mal respirer en dormant : parles-en à ton médecin.
+- Si la fatigue des parents devient lourde à porter : parles-en aussi, pour toi.
+- Difficulté à respirer, enfant inconscient ou convulsions : appelle le **15** ou le **112**.
 
-Cet article vous informe et ne remplace pas l'avis d'un professionnel de santé.`,
+Cet article t’informe et ne remplace pas l'avis d'un professionnel de santé.`,
     journeys: ['child'],
     category: 'sommeil',
     tags: ['sommeil', 'sieste', 'rituel du coucher', 'cauchemars'],
@@ -77,10 +77,10 @@ Cet article vous informe et ne remplace pas l'avis d'un professionnel de santé.
 - Avant 3 ans, les recommandations officielles sont claires : **pas d'écran**, à l'exception des appels vidéo avec des proches.
 - De 3 à 6 ans : des temps courts, au maximum 30 à 40 minutes par jour, avec des programmes adaptés et de préférence regardés **avec** un adulte.
 - Pas d'écran pendant les repas, dans la chambre ni dans l'heure ou les deux heures qui précèdent le coucher.
-- L'exemple des adultes compte autant que les règles : ce sont les échanges avec vous qui nourrissent le plus son développement.
+- L'exemple des adultes compte autant que les règles : ce sont les échanges avec toi qui nourrissent le plus son développement.
 
 ## Comprendre
-Un jeune enfant apprend en manipulant, en bougeant, en imitant et surtout en interagissant avec les personnes qui l'entourent. Quand il babille et que vous lui répondez, quand il montre un objet et que vous le nommez, son langage se construit. Un écran, même avec un programme dit « éducatif », ne répond pas à ses gestes ni à ses regards de la même façon.
+Un jeune enfant apprend en manipulant, en bougeant, en imitant et surtout en interagissant avec les personnes qui l'entourent. Quand il babille et que tu lui réponds, quand il montre un objet et que tu le nommes, son langage se construit. Un écran, même avec un programme dit « éducatif », ne répond pas à ses gestes ni à ses regards de la même façon.
 
 C'est pourquoi l'Assurance Maladie rappelle que, même courte, l'exposition aux écrans des tout-petits peut avoir des effets sur le langage, l'attention, le sommeil ou la motricité fine. Certaines sociétés savantes conseillent même d'attendre 6 ans. Depuis juillet 2025, les écrans sont d'ailleurs interdits pour les enfants dans les lieux d'accueil de la petite enfance.
 
@@ -90,27 +90,27 @@ Les écrans allumés « en fond », même si personne ne les regarde, captent au
 
 ## Au quotidien
 **Avant 3 ans**
-- Pour calmer un bébé qui pleure, privilégiez un câlin, le calme, une musique douce, une promenade.
-- Rangez les écrans hors de sa vue quand vous jouez avec lui.
-- Lors d'un trajet ou d'une salle d'attente, prévoyez un petit livre, un jouet, une comptine.
+- Pour calmer un bébé qui pleure, privilégie un câlin, le calme, une musique douce, une promenade.
+- Range les écrans hors de sa vue quand tu joues avec lui.
+- Lors d'un trajet ou d'une salle d'attente, prévois un petit livre, un jouet, une comptine.
 
 **De 3 à 6 ans**
-- Choisissez à l'avance un programme adapté, court, avec un début et une fin, plutôt qu'un défilement sans fin.
-- Regardez **avec** l'enfant et parlez-en ensuite : ce qu'il a compris, ce qu'il a ressenti.
+- Choisis à l'avance un programme adapté, court, avec un début et une fin, plutôt qu'un défilement sans fin.
+- Regarde **avec** l'enfant et parles-en ensuite : ce qu'il a compris, ce qu'il a ressenti.
 - Pas de tablette personnelle à cet âge.
 
 **Pour toute la famille**
 - Pas d'écran pendant les repas : c'est un moment d'échange précieux.
 - Pas de télévision ni de tablette dans la chambre de l'enfant.
 - Arrêt des écrans 1 à 2 heures avant le coucher, pour faciliter l'endormissement.
-- Évitez l'écran comme récompense ou comme moyen d'apaiser : l'enfant apprend alors à compter sur lui pour se calmer.
+- Évite l'écran comme récompense ou comme moyen d'apaiser : l'enfant apprend alors à compter sur lui pour se calmer.
 - Des règles communes, que les adultes respectent aussi, sont plus faciles à tenir.
 
 **Des alternatives simples** : livres, jeux de construction, pâte à modeler, feutres, cuisine ensemble, sorties au parc, chansons. Il n'est pas nécessaire d'animer chaque minute : s'ennuyer un peu aide aussi l'enfant à inventer ses propres jeux.
 
 ## Questions fréquentes
 **Mon enfant a déjà regardé des écrans avant 3 ans : est-ce grave ?**
-Il n'y a pas lieu de culpabiliser. L'important est ce que vous faites à partir de maintenant : réduire progressivement, remplacer par des moments partagés. Si vous avez une inquiétude sur son langage ou son attention, parlez-en à votre médecin.
+Il n'y a pas lieu de culpabiliser. L'important est ce que tu fais à partir de maintenant : réduire progressivement, remplacer par des moments partagés. Si tu as une inquiétude sur son langage ou son attention, parles-en à ton médecin.
 
 **Et les dessins animés « éducatifs » ?**
 Avant 3 ans, ils ne remplacent pas les échanges réels. Après 3 ans, un programme court, adapté à l'âge et regardé ensemble peut avoir sa place.
@@ -122,13 +122,13 @@ Un coin de jeux sécurisé, des livres en tissu, une boîte de « trésors » à
 En parlant des repères ensemble, simplement. Harmoniser les habitudes entre les adultes aide l'enfant à s'y retrouver.
 
 ## Quand demander conseil
-Parlez-en à votre médecin ou à la PMI si :
-- votre enfant parle peu pour son âge ou semble moins réagir à votre voix ;
+Parles-en à ton médecin ou à la PMI si :
+- ton enfant parle peu pour son âge ou semble moins réagir à ta voix ;
 - il a du mal à jouer seul quelques minutes ou à rester attentif ;
 - il a des difficultés d'endormissement ou des nuits très agitées ;
-- il réclame les écrans avec beaucoup de colère et vous vous sentez débordé(e).
+- il réclame les écrans avec beaucoup de colère et tu te sens débordé(e).
 
-Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un professionnel de santé qui connaît votre enfant.`,
+Cet article te donne des repères généraux ; il ne remplace pas l'avis d'un professionnel de santé qui connaît ton enfant.`,
     journeys: ['child'],
     category: 'enfant',
     tags: ['écrans', 'développement', 'tablette', 'télévision'],
@@ -152,15 +152,15 @@ Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un 
 ## Comprendre
 Les caries apparaissent quand les sucres restent longtemps au contact des dents : les bactéries de la bouche les transforment en acides qui attaquent l'émail. Ce n'est donc pas seulement la quantité de sucre qui compte, mais aussi **la fréquence** : grignoter ou boire sucré souvent, ou garder un biberon en bouche pour dormir, expose les dents en continu.
 
-Le fluor du dentifrice renforce l'émail. Sa quantité doit être adaptée à l'âge, car un jeune enfant avale une partie du dentifrice : c'est pourquoi l'Assurance Maladie recommande une trace avant 3 ans et un petit pois de 3 à 6 ans. La quantité de fluor est indiquée sur le tube ; en cas de doute, demandez à votre dentiste ou à votre pharmacien.
+Le fluor du dentifrice renforce l'émail. Sa quantité doit être adaptée à l'âge, car un jeune enfant avale une partie du dentifrice : c'est pourquoi l'Assurance Maladie recommande une trace avant 3 ans et un petit pois de 3 à 6 ans. La quantité de fluor est indiquée sur le tube ; en cas de doute, demande à ton dentiste ou à ton pharmacien.
 
 ## Au quotidien
 **Le brossage**
 - Une brosse souple, adaptée à l'âge, changée environ tous les trois mois ou quand les poils s'écartent.
-- Pour les plus jeunes, installez-vous derrière l'enfant ou allongez-le, tête sur vos genoux : on voit mieux toutes les dents.
-- Brossez toutes les faces, sans oublier les dents du fond.
+- Pour les plus jeunes, installe-toi derrière l'enfant ou allonge-le, tête sur tes genoux : on voit mieux toutes les dents.
+- Brosse toutes les faces, sans oublier les dents du fond.
 - Le soir, le brossage se fait après le dernier repas : ensuite, plus que de l'eau.
-- Laissez l'enfant essayer seul, puis repassez derrière lui : la dextérité vient avec le temps.
+- Laisse l'enfant essayer seul, puis repasse derrière lui : la dextérité vient avec le temps.
 
 **Les habitudes qui protègent**
 - De l'eau pendant et entre les repas ; les jus et sodas restent occasionnels.
@@ -175,24 +175,24 @@ Le fluor du dentifrice renforce l'émail. Sa quantité doit être adaptée à l'
 Dès que les premières dents apparaissent, avec une brosse adaptée et une trace de dentifrice fluoré.
 
 **Mon enfant avale le dentifrice, est-ce un problème ?**
-C'est fréquent chez les petits, d'où l'importance de la bonne quantité. Apprenez-lui progressivement à cracher.
+C'est fréquent chez les petits, d'où l'importance de la bonne quantité. Apprends-lui progressivement à cracher.
 
 **Quand faire la première visite chez le dentiste ?**
 Une visite par an est recommandée. De 3 à 24 ans, des examens de prévention sont pris en charge dans le cadre du programme « M'T dents tous les ans ».
 
 **Les dents de lait abîmées ont-elles des conséquences ?**
-Une carie peut faire mal et s'aggraver ; elle mérite d'être soignée. Le dentiste vous expliquera ce qui convient selon l'âge.
+Une carie peut faire mal et s'aggraver ; elle mérite d'être soignée. Le dentiste t’expliquera ce qui convient selon l'âge.
 
 ## Quand demander conseil
-Prenez rendez-vous avec un dentiste sans attendre la visite annuelle si vous remarquez :
+Prends rendez-vous avec un dentiste sans attendre la visite annuelle si tu remarques :
 - une tache brune ou noire sur une dent ;
 - une douleur, une gêne pour manger ou une joue gonflée ;
 - une gencive rouge, gonflée ou qui saigne ;
 - une dent abîmée, déplacée ou cassée après une chute.
 
-En cas de chute avec saignement important ou de choc à la tête, appelez le 15.
+En cas de chute avec saignement important ou de choc à la tête, appelle le 15.
 
-Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un dentiste ou d'un médecin.`,
+Cet article te donne des repères généraux ; il ne remplace pas l'avis d'un dentiste ou d'un médecin.`,
     journeys: ['child'],
     category: 'enfant',
     tags: ['dents', 'brossage', 'fluor', 'M’T dents'],
@@ -203,20 +203,20 @@ Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un 
   {
     slug: 'coleres-du-jeune-enfant',
     title: 'Les colères du jeune enfant',
-    summary: 'Les colères font partie du développement, surtout vers 2 ans : comprendre ce qui se joue, que faire pendant et après la crise, comment en prévenir certaines et prendre soin de vous.',
-    body_md: `Les colères sont très fréquentes chez les jeunes enfants. Elles ne signifient pas que vous vous y prenez mal ni que votre enfant est « difficile » : il découvre des émotions très fortes avant d'avoir les mots et la maturité pour les exprimer autrement. Votre rôle n'est pas d'empêcher toute colère, mais de l'aider, peu à peu, à les traverser.
+    summary: 'Les colères font partie du développement, surtout vers 2 ans : comprendre ce qui se joue, que faire pendant et après la crise, comment en prévenir certaines et prendre soin de toi.',
+    body_md: `Les colères sont très fréquentes chez les jeunes enfants. Elles ne signifient pas que tu t’y prends mal ni que ton enfant est « difficile » : il découvre des émotions très fortes avant d'avoir les mots et la maturité pour les exprimer autrement. Ton rôle n'est pas d'empêcher toute colère, mais de l'aider, peu à peu, à les traverser.
 
 ## En bref
 - Les colères font partie du développement, en particulier vers 2 ans, à l'âge du « non ».
 - Pendant la crise : assurer la sécurité, rester aussi calme que possible, poser une limite claire sans crier ni menacer.
 - Mettre des mots sur l'émotion aide l'enfant à la reconnaître et, plus tard, à la dire.
 - Après la tempête : se retrouver, puis valoriser les progrès, même petits.
-- Vous avez le droit de vous éloigner un instant (enfant en sécurité) et de demander un relais.
+- Tu as le droit de t’éloigner un instant (enfant en sécurité) et de demander un relais.
 
 ## Comprendre
 **Avant 2 ans**, l'enfant peut taper, mordre ou se jeter par terre : il n'a pas encore le langage pour dire ce qu'il veut ou ce qui le gêne.
 
-**Vers 2 ans**, c'est la période du « non ». L'enfant découvre qu'il est une personne distincte de vous et veut décider. Il supporte mal la frustration : un gâteau cassé, un jeu qu'il faut quitter, un vêtement qu'il ne veut pas mettre peuvent déclencher une tempête.
+**Vers 2 ans**, c'est la période du « non ». L'enfant découvre qu'il est une personne distincte de toi et veut décider. Il supporte mal la frustration : un gâteau cassé, un jeu qu'il faut quitter, un vêtement qu'il ne veut pas mettre peuvent déclencher une tempête.
 
 **Après 3 ans**, l'agressivité physique diminue en général et devient plus verbale, à mesure que le langage et la capacité à patienter se développent.
 
@@ -224,16 +224,16 @@ La fatigue, la faim, les changements (déménagement, naissance d'un frère ou d
 
 ## Au quotidien
 **Pendant la colère**
-- Assurez sa sécurité et celle des autres : éloignez ce qui pourrait le blesser.
-- Restez aussi calme que possible. Votre calme lui sert de repère pour retrouver le sien.
-- Dites clairement ce qui n'est pas acceptable : « Je ne te laisse pas taper. » Une phrase courte, ferme, sans crier.
-- Nommez l'émotion : « Tu es très en colère parce qu'on doit partir du parc. » Comprendre n'est pas céder.
-- Évitez les longues explications en pleine crise : il ne peut pas les entendre à ce moment-là.
+- Assure sa sécurité et celle des autres : éloigne ce qui pourrait le blesser.
+- Reste aussi calme que possible. Ton calme lui sert de repère pour retrouver le sien.
+- Dis clairement ce qui n'est pas acceptable : « Je ne te laisse pas taper. » Une phrase courte, ferme, sans crier.
+- Nomme l'émotion : « Tu es très en colère parce qu'on doit partir du parc. » Comprendre n'est pas céder.
+- Évite les longues explications en pleine crise : il ne peut pas les entendre à ce moment-là.
 
 **Après la tempête**
 - Un câlin ou un moment calme pour se retrouver, s'il en a envie.
 - Quelques mots simples sur ce qui s'est passé, sans le sermonner.
-- Félicitez les efforts : un enfant souvent repris a aussi besoin d'être valorisé.
+- Félicite les efforts : un enfant souvent repris a aussi besoin d'être valorisé.
 
 **Pour prévenir certaines colères**
 - Des règles simples, peu nombreuses, les mêmes pour tous les adultes.
@@ -242,32 +242,32 @@ La fatigue, la faim, les changements (déménagement, naissance d'un frère ou d
 - Des moments calmes partagés et des activités pour se dépenser chaque jour.
 - Montrer l'exemple : rester posé lors d'un désaccord entre adultes.
 
-**Prendre soin de vous** : si vous sentez la colère monter, vous pouvez vous éloigner quelques instants en laissant l'enfant en sécurité, respirer, puis revenir. Demander un relais à l'autre parent ou à un proche n'est pas un échec.
+**Prendre soin de toi** : si tu sens la colère monter, tu peux t’éloigner quelques instants en laissant l'enfant en sécurité, respirer, puis revenir. Demander un relais à l'autre parent ou à un proche n'est pas un échec.
 
 ## Questions fréquentes
 **Faut-il céder pour que la crise s'arrête ?**
-Céder à chaque fois apprend à l'enfant que la colère est un moyen d'obtenir. Vous pouvez reconnaître son émotion tout en gardant la limite.
+Céder à chaque fois apprend à l'enfant que la colère est un moyen d'obtenir. Tu peux reconnaître son émotion tout en gardant la limite.
 
 **Et s'il fait une colère en public ?**
-Mettez-le en sécurité, isolez-vous un peu si c'est possible et gardez votre calme. Le regard des autres pèse, mais votre enfant a surtout besoin de vous.
+Mets-le en sécurité, isole-toi un peu si c'est possible et garde ton calme. Le regard des autres pèse, mais ton enfant a surtout besoin de toi.
 
 **Les punitions sont-elles utiles ?**
 Les cris, les menaces et les punitions physiques n'aident pas l'enfant à apprendre à gérer ses émotions. Une limite claire, répétée calmement, est plus efficace sur la durée.
 
 **Mon enfant mord à la crèche, que faire ?**
-C'est fréquent chez les tout-petits qui n'ont pas encore les mots. Parlez-en avec l'équipe pour adopter la même réponse : arrêter le geste, s'occuper de l'enfant mordu, nommer l'émotion.
+C'est fréquent chez les tout-petits qui n'ont pas encore les mots. Parles-en avec l'équipe pour adopter la même réponse : arrêter le geste, s'occuper de l'enfant mordu, nommer l'émotion.
 
 ## Quand demander conseil
-Parlez-en à votre médecin, à la PMI ou à un psychologue si :
+Parles-en à ton médecin, à la PMI ou à un psychologue si :
 - les colères sont très fréquentes ou très intenses, ou augmentent avec le temps ;
-- votre enfant n'arrive pas à se calmer, même avec votre aide ;
+- ton enfant n'arrive pas à se calmer, même avec ton aide ;
 - il se fait mal ou blesse régulièrement les autres ;
 - il semble triste, en retrait ou en souffrance ;
-- vous vous sentez à bout ou avez peur de mal réagir.
+- tu te sens à bout ou as peur de mal réagir.
 
-Si vous sentez que vous pourriez faire du mal à votre enfant, mettez-le en sécurité et appelez le 119. Si vous traversez des idées noires, appelez le 3114.
+Si tu sens que tu pourrais faire du mal à ton enfant, mets-le en sécurité et appelle le 119. Si tu traverses des idées noires, appelle le 3114.
 
-Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un professionnel qui connaît votre enfant.`,
+Cet article te donne des repères généraux ; il ne remplace pas l'avis d'un professionnel qui connaît ton enfant.`,
     journeys: ['child'],
     category: 'enfant',
     tags: ['colères', 'émotions', 'opposition', 'éducation'],
@@ -296,44 +296,44 @@ C'est pourquoi les selles impressionnent parfois les enfants. Un enfant qui a pe
 La propreté de nuit dépend surtout de la maturation : elle vient souvent plus tard, et il est inutile de réveiller l'enfant ou de le priver de boire le soir pour la « forcer ».
 
 ## Au quotidien
-**Les signes que votre enfant est peut-être prêt**
+**Les signes que ton enfant est peut-être prêt**
 - Il marche bien, monte les escaliers, s'accroupit.
 - Il s'intéresse au pot ou aux toilettes, imite les grands.
-- Il dit « pipi » ou « caca », vous prévient qu'il a fait, ou veut enlever sa couche.
+- Il dit « pipi » ou « caca », te prévient qu'il a fait, ou veut enlever sa couche.
 - Sa couche reste sèche plus longtemps, par exemple après la sieste.
 
 **Comment l'accompagner**
-- Proposez le pot à des moments clés : après les repas, avant la sieste ou le coucher, quelques minutes seulement.
+- Propose le pot à des moments clés : après les repas, avant la sieste ou le coucher, quelques minutes seulement.
 - Un endroit fixe (toilettes avec réducteur ou pot dans la salle de bain) aide à se repérer.
 - Un petit marchepied permet de bien poser les pieds, ce qui facilite les selles.
 - Des vêtements faciles à enlever simplifient les choses.
-- Encouragez, félicitez les essais autant que les réussites ; des livres sur le sujet peuvent l'intéresser.
-- Prévenez les autres adultes qui s'occupent de lui (crèche, assistante maternelle, grands-parents) pour avoir la même approche.
+- Encourage, félicite les essais autant que les réussites ; des livres sur le sujet peuvent l'intéresser.
+- Préviens les autres adultes qui s'occupent de lui (crèche, assistante maternelle, grands-parents) pour avoir la même approche.
 
-**Les accidents** : ils sont attendus, même après plusieurs jours de réussite, surtout en cas de fatigue, de maladie ou de changement (naissance, déménagement, rentrée). Changez-le simplement, sans reproche. Si l'enfant refuse ou que la tension monte, faites une pause de quelques semaines avant de réessayer.
+**Les accidents** : ils sont attendus, même après plusieurs jours de réussite, surtout en cas de fatigue, de maladie ou de changement (naissance, déménagement, rentrée). Change-le simplement, sans reproche. Si l'enfant refuse ou que la tension monte, fais une pause de quelques semaines avant de réessayer.
 
 ## Questions fréquentes
 **L'école demande qu'il soit propre, que faire ?**
-Parlez-en tôt avec l'école et votre médecin. Mettre la pression juste avant la rentrée risque de compliquer les choses ; mieux vaut accompagner à son rythme.
+Parles-en tôt avec l'école et ton médecin. Mettre la pression juste avant la rentrée risque de compliquer les choses ; mieux vaut accompagner à son rythme.
 
 **Mon enfant était propre et recommence à avoir des accidents.**
-C'est fréquent lors d'un changement ou d'une émotion forte. Rassurez-le, revenez à un rythme plus détendu. Si cela dure ou s'accompagne de douleurs, parlez-en à votre médecin.
+C'est fréquent lors d'un changement ou d'une émotion forte. Rassure-le, reviens à un rythme plus détendu. Si cela dure ou s'accompagne de douleurs, parles-en à ton médecin.
 
 **Faut-il utiliser des culottes d'apprentissage ?**
-Elles peuvent aider certains enfants pendant la transition. Il n'y a pas de règle : faites ce qui convient à votre famille.
+Elles peuvent aider certains enfants pendant la transition. Il n'y a pas de règle : fais ce qui convient à ta famille.
 
 **Il fait pipi au pot mais garde ses selles pour la couche.**
-C'est courant. Ne forcez pas ; proposez le pot après les repas et veillez à ce qu'il boive de l'eau et mange des fruits et légumes pour des selles plus faciles.
+C'est courant. Ne force pas ; propose le pot après les repas et veille à ce qu'il boive de l'eau et mange des fruits et légumes pour des selles plus faciles.
 
 ## Quand demander conseil
-Parlez-en à votre médecin ou à la PMI :
-- s'il n'y a aucun progrès vers 3 ans malgré vos encouragements ;
+Parles-en à ton médecin ou à la PMI :
+- s'il n'y a aucun progrès vers 3 ans malgré tes encouragements ;
 - en cas de fuites fréquentes dans la culotte vers 4 à 5 ans ;
-- si votre enfant se retient, a mal en allant aux toilettes, est constipé ou a du sang dans les selles ;
+- si ton enfant se retient, a mal en allant aux toilettes, est constipé ou a du sang dans les selles ;
 - s'il a mal ou une sensation de brûlure en faisant pipi, ou de la fièvre ;
-- pour toute situation qui vous inquiète.
+- pour toute situation qui t’inquiète.
 
-Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un professionnel de santé.`,
+Cet article te donne des repères généraux ; il ne remplace pas l'avis d'un professionnel de santé.`,
     journeys: ['child'],
     category: 'enfant',
     tags: ['propreté', 'pot', 'apprentissage', 'autonomie'],
@@ -343,9 +343,9 @@ Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un 
   },
   {
     slug: 'alimentation-enfant-sans-pression',
-    title: 'Quand votre enfant refuse de manger',
+    title: 'Quand ton enfant refuse de manger',
     summary: 'Vers 2 ans, dire « non » à table est fréquent et souvent passager : pourquoi cela arrive, ce qui aide vraiment, ce qui risque d’entretenir le conflit et quand en parler à un professionnel.',
-    body_md: `Vers 2 ans, beaucoup d'enfants se mettent à refuser des aliments, y compris certains qu'ils aimaient avant, en particulier les légumes. Les repas peuvent alors devenir une source d'inquiétude ou de tension. Rassurez-vous : c'est une étape habituelle de l'affirmation de soi, en général passagère, et il existe des façons simples de la traverser plus sereinement.
+    body_md: `Vers 2 ans, beaucoup d'enfants se mettent à refuser des aliments, y compris certains qu'ils aimaient avant, en particulier les légumes. Les repas peuvent alors devenir une source d'inquiétude ou de tension. Rassure-toi : c'est une étape habituelle de l'affirmation de soi, en général passagère, et il existe des façons simples de la traverser plus sereinement.
 
 ## En bref
 - Le refus alimentaire vers 2 ans est fréquent et souvent passager.
@@ -365,7 +365,7 @@ Plus la pression est forte, plus l'enfant a tendance à résister. À l'inverse,
 **Ce qui aide**
 - Proposer une très petite quantité à goûter, sans obliger à finir.
 - Reproposer un aliment refusé quelques semaines ou quelques mois plus tard, sous une autre forme : en purée, en morceaux, gratiné, en soupe.
-- Manger ensemble à table, sans écran, et montrer que vous aimez aussi ces aliments.
+- Manger ensemble à table, sans écran, et montrer que tu aimes aussi ces aliments.
 - Associer légumes et féculents dans un même plat.
 - Le laisser se servir un peu, toucher, sentir : apprivoiser un aliment passe par tous les sens.
 - Rendre l'alimentation ludique : faire les courses ensemble, cuisiner, cultiver des herbes aromatiques.
@@ -377,30 +377,30 @@ Plus la pression est forte, plus l'enfant a tendance à résister. À l'inverse,
 - Compenser un repas refusé par un dessert ou un goûter plus copieux.
 - Préparer systématiquement un autre plat à la demande.
 
-**Avec les autres adultes** : harmoniser les habitudes avec les personnes qui gardent votre enfant aide à garder un cadre cohérent.
+**Avec les autres adultes** : harmoniser les habitudes avec les personnes qui gardent ton enfant aide à garder un cadre cohérent.
 
 ## Questions fréquentes
 **Combien de temps laisser l'enfant à table ?**
-Un repas n'a pas besoin de durer longtemps. Quand il n'a plus faim et commence à jouer, vous pouvez simplement terminer le repas, sans proposer autre chose avant le suivant.
+Un repas n'a pas besoin de durer longtemps. Quand il n'a plus faim et commence à jouer, tu peux simplement terminer le repas, sans proposer autre chose avant le suivant.
 
 **Faut-il l'obliger à goûter ?**
-Proposer, oui ; obliger, non. Le simple fait de voir l'aliment dans son assiette et dans la vôtre, repas après repas, l'aide à se familiariser.
+Proposer, oui ; obliger, non. Le simple fait de voir l'aliment dans son assiette et dans la tienne, repas après repas, l'aide à se familiariser.
 
 **Il ne mange que des pâtes et du pain, est-ce grave ?**
-C'est fréquent par périodes. Continuez à proposer des légumes et des fruits sans pression. Si son alimentation reste très restreinte ou si vous êtes inquiet(e), parlez-en à votre médecin.
+C'est fréquent par périodes. Continue à proposer des légumes et des fruits sans pression. Si son alimentation reste très restreinte ou si tu es inquiet(e), parles-en à ton médecin.
 
 **Le dessert doit-il être « mérité » ?**
 Mieux vaut que le dessert fasse simplement partie du repas, sans être une récompense : cela évite de donner encore plus de valeur aux aliments sucrés.
 
 ## Quand demander conseil
-Parlez-en à votre médecin ou à la PMI, qui peut vérifier sa courbe de croissance et vous conseiller :
-- si vous êtes inquiet(e) pour sa croissance, son poids ou sa santé ;
+Parles-en à ton médecin ou à la PMI, qui peut vérifier sa courbe de croissance et te conseiller :
+- si tu es inquiet(e) pour sa croissance, son poids ou sa santé ;
 - s'il accepte très peu d'aliments différents ;
 - s'il s'étouffe, a des haut-le-cœur ou vomit souvent en mangeant ;
 - s'il semble fatigué, pâle ou malade ;
 - si les repas deviennent une source de stress importante pour la famille.
 
-Cet article vous donne des repères généraux ; il ne remplace pas l'avis d'un professionnel de santé.`,
+Cet article te donne des repères généraux ; il ne remplace pas l'avis d'un professionnel de santé.`,
     journeys: ['child'],
     category: 'alimentation',
     tags: ['alimentation', 'refus alimentaire', 'repas', 'opposition'],

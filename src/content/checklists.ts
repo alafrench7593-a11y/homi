@@ -8,7 +8,7 @@ const CHECKLIST_TEMPLATES_FR: Templates = {
   maternity_bag: {
     title: 'Valise de maternité',
     icon: 'briefcase',
-    items: ['Carte Vitale et pièce d’identité', 'Dossier de suivi de grossesse et résultats d’examens', 'Carte de groupe sanguin (si vous l’avez)', 'Vêtements confortables et chaussons', 'Protections et sous-vêtements adaptés', 'Nécessaire de toilette', 'Chargeur de téléphone', 'Bodies, pyjamas, bonnet et chaussettes pour bébé', 'Gigoteuse ou couverture', 'Siège auto adapté pour le retour'],
+    items: ['Carte Vitale et pièce d’identité', 'Dossier de suivi de grossesse et résultats d’examens', 'Carte de groupe sanguin (si tu l’as)', 'Vêtements confortables et chaussons', 'Protections et sous-vêtements adaptés', 'Nécessaire de toilette', 'Chargeur de téléphone', 'Bodies, pyjamas, bonnet et chaussettes pour bébé', 'Gigoteuse ou couverture', 'Siège auto adapté pour le retour'],
   },
   baby_items: {
     title: 'Affaires de bébé',
@@ -19,7 +19,7 @@ const CHECKLIST_TEMPLATES_FR: Templates = {
   admin: {
     title: 'Démarches administratives',
     icon: 'file-text',
-    items: ['Déclarer la grossesse (avant la fin du 3e mois)', 'Informer l’employeur si vous le souhaitez', 'Préparer la déclaration de naissance (dans les 5 jours)', 'Prévenir la caisse d’assurance maladie et la CAF', 'Choisir un mode de garde'],
+    items: ['Déclarer la grossesse (avant la fin du 3e mois)', 'Informer l’employeur si tu le souhaites', 'Préparer la déclaration de naissance (dans les 5 jours)', 'Prévenir la caisse d’assurance maladie et la CAF', 'Choisir un mode de garde'],
   },
   purchases: { title: 'Achats utiles', icon: 'shopping-bag', items: ['Siège auto', 'Lit ou berceau', 'Baignoire ou transat de bain', 'Tire-lait (si besoin)', 'Biberons (si besoin)'] },
   coparent: { title: 'Préparation du coparent', icon: 'users', items: ['Se renseigner sur le congé de naissance / paternité', 'Préparer l’organisation des premières semaines', 'Participer à un rendez-vous de préparation', 'Savoir reconnaître les signes de détresse après la naissance'] },

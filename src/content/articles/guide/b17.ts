@@ -45,7 +45,7 @@ const S = {
   mpediaCordon: { label: 'mpedia.fr (AFPA) — Nouveau-né : quel soin pour le cordon ombilical', url: 'https://www.mpedia.fr/art-soin-du-cordon/', consulted_on: C, published: '2022-01-20' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article vous informe et vous aide à vous repérer ; il ne remplace pas l’avis du médecin, de la sage-femme, de la puéricultrice de PMI ou du pédiatre qui suit votre enfant._';
+const FIN = '_Cet article t’informe et t’aide à te repérer ; il ne remplace pas l’avis du médecin, de la sage-femme, de la puéricultrice de PMI ou du pédiatre qui suit ton enfant._';
 const BASE = { status: 'to_review' as const };
 const BB = { ...BASE, journeys: ['newborn'] as LibArticle['journeys'], category: 'sante-bebe' as const };
 
@@ -70,32 +70,32 @@ Selon l’Assurance Maladie, les croûtes de lait correspondent à une maladie d
 
 Les plaques commencent souvent sur le haut du crâne, au niveau de la **fontanelle**, puis peuvent s’étendre derrière les oreilles, aux sourcils ou à la racine des cils. Elles sont parfois entourées d’un liseré rouge. Santé.fr précise que des produits de toilette mal adaptés à la peau fragile de bébé peuvent favoriser leur apparition, par irritation répétée. Elles touchent autant les filles que les garçons.
 
-La fontanelle impressionne beaucoup de parents. Vous pouvez la laver et la masser doucement comme le reste du crâne : c’est même recommandé, car les croûtes s’y installent volontiers.
+La fontanelle impressionne beaucoup de parents. Tu peux la laver et la masser doucement comme le reste du crâne : c’est même recommandé, car les croûtes s’y installent volontiers.
 
 ## Au quotidien
 **Quelques croûtes seulement**
-- Au bain, lavez les cheveux avec un **shampoing doux pour bébé**, fontanelle comprise.
-- Retirez les croûtes en douceur avec une **brosse souple**.
-- Donnez un bain quotidien jusqu’à leur disparition, puis espacez (2 à 3 fois par semaine).
+- Au bain, lave les cheveux avec un **shampoing doux pour bébé**, fontanelle comprise.
+- Retire les croûtes en douceur avec une **brosse souple**.
+- Donne un bain quotidien jusqu’à leur disparition, puis espace (2 à 3 fois par semaine).
 
 **Croûtes plus épaisses** (méthode décrite par ameli)
-1. Appliquez de la **vaseline** environ 2 heures avant le bain et massez doucement le cuir chevelu.
-2. Lavez avec un shampoing doux.
-3. Rincez abondamment, sans laisser de trace de produit.
-4. Détachez les croûtes avec une brosse souple. Quelques cheveux peuvent partir avec : ils repoussent.
-5. Brossez plusieurs fois par jour avec une brosse souple, lavée chaque jour à l’eau et au savon.
+1. Applique de la **vaseline** environ 2 heures avant le bain et masse doucement le cuir chevelu.
+2. Lave avec un shampoing doux.
+3. Rince abondamment, sans laisser de trace de produit.
+4. Détache les croûtes avec une brosse souple. Quelques cheveux peuvent partir avec : ils repoussent.
+5. Brosse plusieurs fois par jour avec une brosse souple, lavée chaque jour à l’eau et au savon.
 
-Si cela ne suffit pas, massez le cuir chevelu à la vaseline le soir au coucher et faites le shampoing le lendemain matin. Les croûtes disparaissent en quelques jours à quelques semaines, laissant d’abord une peau un peu rosée, puis plus claire, avant que la couleur habituelle revienne.
+Si cela ne suffit pas, masse le cuir chevelu à la vaseline le soir au coucher et fais le shampoing le lendemain matin. Les croûtes disparaissent en quelques jours à quelques semaines, laissant d’abord une peau un peu rosée, puis plus claire, avant que la couleur habituelle revienne.
 
 **À éviter**
 - Gratter les plaques avec les ongles, un peigne ou une brosse dure : cela peut blesser, voire faire saigner, sans retirer les croûtes.
-- Les produits de toilette pour adultes ou parfumés : préférez des produits conçus pour les bébés.
+- Les produits de toilette pour adultes ou parfumés : préfère des produits conçus pour les bébés.
 - L’huile d’amande douce : mpedia rappelle qu’elle peut sensibiliser l’enfant à l’amande.
 
 **Pour prévenir le retour** : un shampoing doux 2 à 3 fois par semaine, un bon rinçage et un brossage quotidien avec une brosse très douce.
 
 ## Questions fréquentes
-**Les croûtes de lait viennent-elles d’un lait mal toléré ?** Non. Elles sont liées au sébum et aux levures de la peau, pas à l’alimentation. Ne changez pas de lait sans avis médical.
+**Les croûtes de lait viennent-elles d’un lait mal toléré ?** Non. Elles sont liées au sébum et aux levures de la peau, pas à l’alimentation. Ne change pas de lait sans avis médical.
 
 **Puis-je toucher la fontanelle pendant le shampoing ?** Oui, avec des gestes doux. Laver cette zone fait partie de la prévention recommandée.
 
@@ -104,7 +104,7 @@ Si cela ne suffit pas, massez le cuir chevelu à la vaseline le soir au coucher 
 **Mon bébé a-t-il mal ?** En général non : les croûtes de lait ne démangent pas et ne gênent pas le nourrisson. Un bébé grognon qui se gratte doit être montré au médecin.
 
 ## Quand demander conseil
-Consultez votre médecin ou le pédiatre si, après **deux semaines de soins quotidiens**, rien ne s’améliore ; si les croûtes s’étendent, suintent, saignent ou semblent infectées ; si la zone devient rouge, irritée ou enflée ; si d’autres zones sont touchées (fesses, plis, nombril) ; ou si votre bébé a de la fièvre ou semble gêné par des démangeaisons. En cas d’urgence, appelez le 15 (ou le 112).
+Consulte ton médecin ou le pédiatre si, après **deux semaines de soins quotidiens**, rien ne s’améliore ; si les croûtes s’étendent, suintent, saignent ou semblent infectées ; si la zone devient rouge, irritée ou enflée ; si d’autres zones sont touchées (fesses, plis, nombril) ; ou si ton bébé a de la fièvre ou semble gêné par des démangeaisons. En cas d’urgence, appelle le 15 (ou le 112).
 
 ${FIN}`,
   },
@@ -128,27 +128,27 @@ L’Assurance Maladie distingue une **forme modérée**, limitée au cuir chevel
 
 Santé.fr mentionne d’autres évolutions possibles : une **surinfection** par des bactéries ou des levures (*Candida*), ou une évolution vers un **eczéma atopique**. Les croûtes ne sont pas graves en elles-mêmes, mais elles peuvent persister des mois et être inesthétiques, ce qui pèse parfois sur le moral des parents.
 
-**Ce que fait le médecin** : un examen clinique suffit. Il conseille toujours de commencer ou de poursuivre les soins de toilette avec un savon doux. Si les croûtes sont étendues, il peut prescrire un traitement local : shampoing traitant adapté à l’enfant pour réguler le sébum, crème antifongique pour réduire les levures, parfois une crème anti-inflammatoire ou antiseptique. Suivez exactement son ordonnance et demandez-lui combien de temps poursuivre.
+**Ce que fait le médecin** : un examen clinique suffit. Il conseille toujours de commencer ou de poursuivre les soins de toilette avec un savon doux. Si les croûtes sont étendues, il peut prescrire un traitement local : shampoing traitant adapté à l’enfant pour réguler le sébum, crème antifongique pour réduire les levures, parfois une crème anti-inflammatoire ou antiseptique. Suis exactement son ordonnance et demande-lui combien de temps poursuivre.
 
 ## Au quotidien
-- **Gardez la routine de base** : shampoing doux, vaseline si besoin, brosse souple, rinçage soigneux.
-- **Observez les plis** au moment du bain et du change : cou, aisselles, aine, derrière les oreilles. Séchez-les en tamponnant.
-- **Pensez aux fesses** : une rougeur vive des fesses associée aux croûtes est un motif pour en parler au médecin.
-- **Prenez des photos** datées si les plaques changent : elles aident le médecin à juger de l’évolution.
-- **Soyez patient avec la peau** : après la chute des croûtes, des plaques rosées puis des zones plus claires peuvent rester quelques semaines. Elles se recolorent spontanément et les cheveux repoussent.
-- **Si ça revient** : reprenez les soins dès les premières croûtes ; plus elles sont peu nombreuses, plus elles partent facilement.
+- **Garde la routine de base** : shampoing doux, vaseline si besoin, brosse souple, rinçage soigneux.
+- **Observe les plis** au moment du bain et du change : cou, aisselles, aine, derrière les oreilles. Sèche-les en tamponnant.
+- **Pense aux fesses** : une rougeur vive des fesses associée aux croûtes est un motif pour en parler au médecin.
+- **Prends des photos** datées si les plaques changent : elles aident le médecin à juger de l’évolution.
+- **Sois patient avec la peau** : après la chute des croûtes, des plaques rosées puis des zones plus claires peuvent rester quelques semaines. Elles se recolorent spontanément et les cheveux repoussent.
+- **Si ça revient** : reprends les soins dès les premières croûtes ; plus elles sont peu nombreuses, plus elles partent facilement.
 
 ## Questions fréquentes
-**Les croûtes de lait peuvent-elles devenir de l’eczéma ?** Santé.fr cite cette évolution parmi les possibles. Si la peau devient sèche, rouge et que bébé se gratte, montrez-le au médecin.
+**Les croûtes de lait peuvent-elles devenir de l’eczéma ?** Santé.fr cite cette évolution parmi les possibles. Si la peau devient sèche, rouge et que bébé se gratte, montre-le au médecin.
 
 **Faut-il faire une prise de sang ou un prélèvement ?** Selon ameli, l’examen du médecin suffit à confirmer le diagnostic dans la plupart des cas.
 
-**Combien de temps dure le traitement ?** Il dépend de l’étendue des plaques. Après plusieurs jours de traitement, les croûtes se détachent ; le médecin vous dira quand arrêter.
+**Combien de temps dure le traitement ?** Il dépend de l’étendue des plaques. Après plusieurs jours de traitement, les croûtes se détachent ; le médecin te dira quand arrêter.
 
 **Mon bébé de 4 mois en refait : avons-nous mal fait ?** Non. Des récidives sont possibles jusqu’à environ 5 à 6 mois, même avec des soins bien faits.
 
 ## Quand demander conseil
-Consultez dans les jours qui viennent si les croûtes s’étendent au reste du corps ou aux fesses, si elles ne disparaissent pas malgré plusieurs semaines de soins, si elles suintent, saignent ou semblent infectées, ou si la peau est enflée. Consultez rapidement si votre bébé a de la fièvre, semble inconfortable ou mange moins. En cas d’urgence, appelez le 15 ou le 112.
+Consulte dans les jours qui viennent si les croûtes s’étendent au reste du corps ou aux fesses, si elles ne disparaissent pas malgré plusieurs semaines de soins, si elles suintent, saignent ou semblent infectées, ou si la peau est enflée. Consulte rapidement si ton bébé a de la fièvre, semble inconfortable ou mange moins. En cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -169,15 +169,15 @@ ${FIN}`,
 ## Comprendre
 *Candida albicans* est une levure qui vit naturellement sur la peau et les muqueuses. Chez le bébé, elle peut proliférer dans la bouche et provoquer un muguet. L’Assurance Maladie le décrit comme des **plaques blanches, épaisses**, qui peuvent s’étendre au tube digestif. Le port de couches, l’humidité, la chaleur, certains traitements comme les antibiotiques favorisent les mycoses chez le nourrisson ; c’est pourquoi un muguet s’accompagne souvent d’un érythème fessier.
 
-**Muguet ou simple trace de lait ?** Juste après une tétée ou un biberon, la langue peut paraître blanchâtre. Des plaques épaisses qui touchent aussi l’intérieur des joues, les gencives ou le palais, et qui persistent, évoquent davantage un muguet, tel que le décrit l’Assurance Maladie. Seul un professionnel peut faire la différence avec certitude : n’essayez pas de gratter les plaques.
+**Muguet ou simple trace de lait ?** Juste après une tétée ou un biberon, la langue peut paraître blanchâtre. Des plaques épaisses qui touchent aussi l’intérieur des joues, les gencives ou le palais, et qui persistent, évoquent davantage un muguet, tel que le décrit l’Assurance Maladie. Seul un professionnel peut faire la différence avec certitude : n’essaie pas de gratter les plaques.
 
 ## Au quotidien
-- **Montrez la bouche de bébé** au médecin, au pédiatre ou à la sage-femme. Le médecin peut prescrire un antifongique léger à appliquer dans la bouche ; respectez la durée indiquée, même si les taches disparaissent vite.
-- **Nettoyez et stérilisez après chaque usage** les tétines, téterelles et sucettes, comme le conseille mpedia.
-- **Si vous allaitez**, nettoyez vos mamelons après chaque tétée et surveillez-les : douleur, brûlures, démangeaisons ou rougeurs peuvent signaler une candidose mammaire, qui se soigne en même temps que bébé.
-- **Lavez-vous les mains** avant et après les soins de bouche et le change.
-- **Surveillez le siège** : des fesses rouges qui ne passent pas avec les soins habituels méritent d’être signalées.
-- **Ne mettez pas de produit acheté sans avis** dans la bouche de votre bébé et n’utilisez pas de remède de grand-mère.
+- **Montre la bouche de bébé** au médecin, au pédiatre ou à la sage-femme. Le médecin peut prescrire un antifongique léger à appliquer dans la bouche ; respecte la durée indiquée, même si les taches disparaissent vite.
+- **Nettoie et stérilise après chaque usage** les tétines, téterelles et sucettes, comme le conseille mpedia.
+- **Si tu allaites**, nettoie tes mamelons après chaque tétée et surveille-les : douleur, brûlures, démangeaisons ou rougeurs peuvent signaler une candidose mammaire, qui se soigne en même temps que bébé.
+- **Lave-toi les mains** avant et après les soins de bouche et le change.
+- **Surveille le siège** : des fesses rouges qui ne passent pas avec les soins habituels méritent d’être signalées.
+- **Ne mets pas de produit acheté sans avis** dans la bouche de ton bébé et n’utilise pas de remède de grand-mère.
 
 ## Questions fréquentes
 **Le muguet est-il grave ?** Il est fréquent et se soigne bien, mais il doit être confirmé et traité par un professionnel, surtout chez un tout-petit.
@@ -186,10 +186,10 @@ ${FIN}`,
 
 **Les fesses rouges ont-elles un lien ?** Souvent oui : la même levure peut coloniser un érythème fessier. D’ailleurs, quand il voit des fesses rouges, le médecin examine aussi la bouche à la recherche d’un muguet.
 
-**Puis-je continuer à allaiter ?** Le muguet n’est pas une raison d’arrêter. Parlez-en à votre médecin ou sage-femme, qui pourra traiter la mère et le bébé si besoin.
+**Puis-je continuer à allaiter ?** Le muguet n’est pas une raison d’arrêter. Parles-en à ton médecin ou sage-femme, qui pourra traiter la mère et le bébé si besoin.
 
 ## Quand demander conseil
-Consultez si vous voyez des plaques blanches qui persistent dans la bouche, si bébé refuse de téter ou boit beaucoup moins, s’il semble douloureux, si le siège est très rouge, ou si les taches reviennent après traitement. Consultez sans attendre si bébé a de la fièvre, mouille beaucoup moins ses couches ou paraît très fatigué. En cas d’urgence, appelez le 15 ou le 112.
+Consulte si tu vois des plaques blanches qui persistent dans la bouche, si bébé refuse de téter ou boit beaucoup moins, s’il semble douloureux, si le siège est très rouge, ou si les taches reviennent après traitement. Consulte sans attendre si bébé a de la fièvre, mouille beaucoup moins ses couches ou paraît très fatigué. En cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -215,25 +215,25 @@ Toutes les douleurs de l’allaitement ne sont pas des mycoses : une mauvaise po
 **Le violet de gentiane** : ce colorant est parfois appliqué sur le sein pour traiter une candidose. L’ANSM a rappelé qu’ingéré par le nourrisson pendant l’allaitement, il peut être dangereux, notamment en cas d’usage prolongé. Elle recommande de ne pas l’utiliser en première intention, de ne pas s’en procurer sans ordonnance ni hors pharmacie, et de privilégier un antifongique après confirmation du diagnostic. Il est aussi déconseillé pendant la grossesse, par précaution.
 
 ## Au quotidien
-- **Consultez** votre médecin ou votre sage-femme dès que les tétées deviennent douloureuses : ne vous soignez pas seule.
-- **Suivez le traitement à deux** : appliquez celui de la maman et donnez celui de bébé comme prescrit, pendant toute la durée indiquée.
-- **Nettoyez les mamelons** après chaque tétée et séchez-les bien : l’humidité favorise les levures.
-- **Changez souvent les coussinets** d’allaitement s’ils sont humides.
-- **Nettoyez et stérilisez** après chaque usage les téterelles, tétines et sucettes.
-- **Lavez-vous les mains** avant et après chaque tétée et chaque soin.
-- **Prenez soin de vous** : une tétée douloureuse est éprouvante. Demandez de l’aide à votre entourage, à la PMI ou à une association de soutien à l’allaitement.
+- **Consulte** ton médecin ou ta sage-femme dès que les tétées deviennent douloureuses : ne te soigne pas seule.
+- **Suis le traitement à deux** : applique celui de la maman et donne celui de bébé comme prescrit, pendant toute la durée indiquée.
+- **Nettoie les mamelons** après chaque tétée et sèche-les bien : l’humidité favorise les levures.
+- **Change souvent les coussinets** d’allaitement s’ils sont humides.
+- **Nettoie et stérilise** après chaque usage les téterelles, tétines et sucettes.
+- **Lave-toi les mains** avant et après chaque tétée et chaque soin.
+- **Prends soin de toi** : une tétée douloureuse est éprouvante. Demande de l’aide à ton entourage, à la PMI ou à une association de soutien à l’allaitement.
 
 ## Questions fréquentes
-**Dois-je arrêter d’allaiter ?** L’ANSM indique que l’allaitement peut être poursuivi. Si la douleur est trop forte, parlez-en à votre sage-femme ou médecin pour trouver une solution adaptée.
+**Dois-je arrêter d’allaiter ?** L’ANSM indique que l’allaitement peut être poursuivi. Si la douleur est trop forte, parles-en à ta sage-femme ou médecin pour trouver une solution adaptée.
 
 **Mon bébé n’a rien dans la bouche : faut-il le traiter quand même ?** C’est au médecin d’en décider. L’Assurance Maladie précise que l’enfant est traité s’il est lui aussi contaminé.
 
-**Puis-je acheter un produit en pharmacie sans ordonnance ?** Pour un enfant, ameli recommande de ne pas se soigner seul. Pour vous, demandez au pharmacien ou au médecin un produit compatible avec l’allaitement.
+**Puis-je acheter un produit en pharmacie sans ordonnance ?** Pour un enfant, ameli recommande de ne pas se soigner seul. Pour toi, demande au pharmacien ou au médecin un produit compatible avec l’allaitement.
 
 **La douleur peut-elle venir d’autre chose ?** Oui : crevasses, mauvaise prise du sein, engorgement… Un examen permet de faire la différence.
 
 ## Quand demander conseil
-Consultez si vos mamelons sont douloureux, brûlent, démangent ou rougissent, si la douleur irradie dans le sein, ou si vous avez de la fièvre. Consultez pour bébé s’il a des plaques blanches dans la bouche, tète moins bien ou a les fesses très rouges. Si l’épuisement ou la tristesse prennent le dessus, parlez-en ; le 3114 répond jour et nuit en cas de détresse. En cas d’urgence, appelez le 15 ou le 112.
+Consulte si tes mamelons sont douloureux, brûlent, démangent ou rougissent, si la douleur irradie dans le sein, ou si tu as de la fièvre. Consulte pour bébé s’il a des plaques blanches dans la bouche, tète moins bien ou a les fesses très rouges. Si l’épuisement ou la tristesse prennent le dessus, parles-en ; le 3114 répond jour et nuit en cas de détresse. En cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -260,25 +260,25 @@ On parle de **hoquet aigu** quand il dure de quelques secondes à quelques minut
 Le hoquet impressionne surtout les parents : bébé, lui, continue souvent de téter, de dormir ou de jouer.
 
 ## Au quotidien
-- **Faites une pause** pendant la tétée ou le biberon pour permettre un rot : l’air avalé favorise le hoquet.
-- **Tenez bébé à la verticale** contre vous quelques minutes après le repas, en soutenant bien sa tête.
-- **Laissez faire** : dans la plupart des cas, le hoquet s’arrête seul. Vous pouvez câliner, bercer doucement ou reprendre la tétée si bébé le souhaite.
-- **Pas d’astuces d’adulte** : les méthodes classiques (boire d’un trait, retenir sa respiration, faire peur) ne sont pas prouvées scientifiquement, selon ameli, et ne sont pas adaptées à un bébé. Ne lui faites jamais peur et ne le secouez jamais.
+- **Fais une pause** pendant la tétée ou le biberon pour permettre un rot : l’air avalé favorise le hoquet.
+- **Tiens bébé à la verticale** contre toi quelques minutes après le repas, en soutenant bien sa tête.
+- **Laisse faire** : dans la plupart des cas, le hoquet s’arrête seul. Tu peux câliner, bercer doucement ou reprendre la tétée si bébé le souhaite.
+- **Pas d’astuces d’adulte** : les méthodes classiques (boire d’un trait, retenir sa respiration, faire peur) ne sont pas prouvées scientifiquement, selon ameli, et ne sont pas adaptées à un bébé. Ne lui fais jamais peur et ne le secoue jamais.
 - **Coucher** : le hoquet n’empêche pas de coucher bébé sur le dos, dans son lit, comme d’habitude.
 
 ## Questions fréquentes
 **Le hoquet fait-il mal à mon bébé ?** Selon ameli, il est indolore pour le nourrisson.
 
-**Faut-il arrêter la tétée quand il a le hoquet ?** Ce n’est pas obligatoire. Une pause pour un rot aide souvent ; ensuite, vous pouvez reprendre si bébé est disposé à téter.
+**Faut-il arrêter la tétée quand il a le hoquet ?** Ce n’est pas obligatoire. Une pause pour un rot aide souvent ; ensuite, tu peux reprendre si bébé est disposé à téter.
 
 **Pourquoi mon bébé avait-il le hoquet dans mon ventre ?** Le hoquet apparaît dès la vie fœtale. Ces petites secousses régulières ressenties pendant la grossesse sont souvent du hoquet.
 
 **Mon bébé a le hoquet plusieurs fois par jour : est-ce trop ?** Des hoquets fréquents mais courts, chez un bébé qui mange, dort et grossit bien, sont habituels à cet âge. Ce qui doit faire consulter, c’est un hoquet qui dure plus de 48 heures, qui revient sans cesse en gênant les repas ou le sommeil, ou qui s’accompagne d’autres signes.
 
-**Peut-il être lié aux régurgitations ?** Les deux sont favorisés par un estomac plein d’air et de lait. Si bébé régurgite beaucoup, pleure pendant ou après les repas ou grossit mal, parlez-en au médecin.
+**Peut-il être lié aux régurgitations ?** Les deux sont favorisés par un estomac plein d’air et de lait. Si bébé régurgite beaucoup, pleure pendant ou après les repas ou grossit mal, parles-en au médecin.
 
 ## Quand demander conseil
-Consultez si le hoquet dure plus de 48 heures ou revient très souvent ; s’il gêne les repas ou le sommeil ; s’il survient après la prise d’un médicament ; ou s’il s’accompagne de vomissements, de pleurs inhabituels, de fièvre, de difficultés à respirer ou à avaler, ou de tout signe qui vous inquiète. En cas de gêne respiratoire, de lèvres bleutées ou de malaise, appelez immédiatement le 15 ou le 112.
+Consulte si le hoquet dure plus de 48 heures ou revient très souvent ; s’il gêne les repas ou le sommeil ; s’il survient après la prise d’un médicament ; ou s’il s’accompagne de vomissements, de pleurs inhabituels, de fièvre, de difficultés à respirer ou à avaler, ou de tout signe qui t’inquiète. En cas de gêne respiratoire, de lèvres bleutées ou de malaise, appelle immédiatement le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -303,31 +303,31 @@ Quand l’encombrement s’accompagne d’un nez qui coule, d’une toux ou d’
 
 ## Au quotidien
 **Le lavage de nez chez le nourrisson** (d’après ameli)
-1. Lavez-vous les mains. Utilisez des **dosettes de sérum physiologique** à usage unique (pas d’eau du robinet ni d’eau minérale, pas assez salées).
-2. Allongez bébé sur le côté, ou sur le dos tête tournée sur le côté, en maintenant bien sa tête.
-3. Placez l’embout à l’entrée de la **narine du dessus** et pressez la dosette.
-4. Laissez le sérum ressortir, souvent par l’autre narine, et attendez que bébé ait bien avalé.
-5. Essuyez avec un mouchoir jetable, puis faites de même de l’autre côté avec une nouvelle dosette si besoin.
+1. Lave-toi les mains. Utilise des **dosettes de sérum physiologique** à usage unique (pas d’eau du robinet ni d’eau minérale, pas assez salées).
+2. Allonge bébé sur le côté, ou sur le dos tête tournée sur le côté, en maintenant bien sa tête.
+3. Place l’embout à l’entrée de la **narine du dessus** et presse la dosette.
+4. Laisse le sérum ressortir, souvent par l’autre narine, et attends que bébé ait bien avalé.
+5. Essuie avec un mouchoir jetable, puis fais de même de l’autre côté avec une nouvelle dosette si besoin.
 
-Si vous êtes seul et que bébé bouge beaucoup, vous pouvez l’envelopper dans une serviette. Faites les lavages **avant les repas** (pour limiter les vomissements) et **avant le coucher**.
+Si tu es seul et que bébé bouge beaucoup, tu peux l’envelopper dans une serviette. Fais les lavages **avant les repas** (pour limiter les vomissements) et **avant le coucher**.
 
 **Autres gestes utiles**
-- Proposez à boire régulièrement et fractionnez les repas si bébé se fatigue en tétant.
-- Couchez-le toujours **sur le dos**, à plat, sans surélever le matelas ni ajouter de coussin.
-- Aérez la chambre chaque jour et évitez absolument la fumée de tabac.
-- Lavez-vous les mains souvent et évitez les contacts rapprochés avec des personnes enrhumées.
+- Propose à boire régulièrement et fractionne les repas si bébé se fatigue en tétant.
+- Couche-le toujours **sur le dos**, à plat, sans surélever le matelas ni ajouter de coussin.
+- Aère la chambre chaque jour et évite absolument la fumée de tabac.
+- Lave-toi les mains souvent et évite les contacts rapprochés avec des personnes enrhumées.
 
 ## Questions fréquentes
-**Mon bébé éternue souvent mais va bien : est-il enrhumé ?** Pas forcément. Les éternuements aident à dégager le nez. S’il n’a ni nez qui coule, ni toux, ni fièvre et qu’il tète bien, vous pouvez simplement observer.
+**Mon bébé éternue souvent mais va bien : est-il enrhumé ?** Pas forcément. Les éternuements aident à dégager le nez. S’il n’a ni nez qui coule, ni toux, ni fièvre et qu’il tète bien, tu peux simplement observer.
 
-**Combien de fois par jour laver le nez ?** Dès qu’il paraît encombré ; mpedia évoque jusqu’à 6 à 10 fois par jour, toujours avant les repas et le coucher. Demandez conseil à votre médecin si vous hésitez.
+**Combien de fois par jour laver le nez ?** Dès qu’il paraît encombré ; mpedia évoque jusqu’à 6 à 10 fois par jour, toujours avant les repas et le coucher. Demande conseil à ton médecin si tu hésites.
 
-**Puis-je utiliser un spray d’eau de mer ?** ameli le réserve plutôt aux bébés de plus de 6 mois, à faible pression. Avant, préférez les dosettes.
+**Puis-je utiliser un spray d’eau de mer ?** ameli le réserve plutôt aux bébés de plus de 6 mois, à faible pression. Avant, préfère les dosettes.
 
 **Les bruits de respiration pendant le sommeil sont-ils inquiétants ?** Un nez encombré est souvent en cause. Une respiration rapide, difficile ou sifflante demande en revanche un avis rapide.
 
 ## Quand demander conseil
-Consultez dans la journée si un nouveau-né de **moins d’un mois** a le nez qui coule. Chez un bébé de moins de 3 mois, consultez en cas de fièvre (38 °C ou plus), de refus de manger, de vomissements, de toux importante ou si vous êtes inquiet. À tout âge : respiration rapide ou difficile, lèvres bleutées, bébé très somnolent ou pleurs inconsolables doivent faire appeler le **15** (ou le 112) ou consulter aux urgences.
+Consulte dans la journée si un nouveau-né de **moins d’un mois** a le nez qui coule. Chez un bébé de moins de 3 mois, consulte en cas de fièvre (38 °C ou plus), de refus de manger, de vomissements, de toux importante ou si tu es inquiet. À tout âge : respiration rapide ou difficile, lèvres bleutées, bébé très somnolent ou pleurs inconsolables doivent faire appeler le **15** (ou le 112) ou consulter aux urgences.
 
 ${FIN}`,
   },
@@ -360,23 +360,23 @@ La couleur des selles dépend surtout de l’alimentation et de la bile, un liqu
 D’autres éléments peuvent modifier l’aspect des selles : un changement de lait, certains médicaments, une poussée dentaire. Du **mucus** (glaires) peut se voir lors d’un rhume ou d’une salivation abondante.
 
 ## Au quotidien
-- **Regardez la couche** sans vous inquiéter de chaque nuance : c’est l’ensemble qui compte (bébé mange-t-il, grossit-il, est-il éveillé et tonique ?).
-- **Notez les changements nets** : une couleur inhabituelle qui dure, du sang, des glaires associées à des selles vertes persistantes.
-- **Faites une photo** de la couche en cas de doute : elle aide beaucoup le médecin.
-- **Pensez à l’alimentation** : à partir de la diversification, une selle orange après des carottes ou verte après des épinards s’explique par le repas.
-- **Notez vos observations** (date, aspect, ce que bébé a mangé) pour en parler lors de la prochaine consultation.
+- **Regarde la couche** sans t’inquiéter de chaque nuance : c’est l’ensemble qui compte (bébé mange-t-il, grossit-il, est-il éveillé et tonique ?).
+- **Note les changements nets** : une couleur inhabituelle qui dure, du sang, des glaires associées à des selles vertes persistantes.
+- **Fais une photo** de la couche en cas de doute : elle aide beaucoup le médecin.
+- **Pense à l’alimentation** : à partir de la diversification, une selle orange après des carottes ou verte après des épinards s’explique par le repas.
+- **Note tes observations** (date, aspect, ce que bébé a mangé) pour en parler lors de la prochaine consultation.
 
 ## Questions fréquentes
 **Des selles vertes, est-ce inquiétant ?** Chez un bébé allaité ou nourri avec certains laits, des selles verdâtres peuvent se voir chez un bébé en pleine forme. Des selles vertes **persistantes avec des glaires**, du sang ou des douleurs font consulter rapidement.
 
 **Mon bébé n’a pas fait de méconium à la maternité, que se passe-t-il ?** L’équipe surveille ce point : en l’absence de méconium après 3 jours, un examen est réalisé pour vérifier le fonctionnement de l’intestin.
 
-**Les selles de mon bébé ont des grumeaux blancs : est-ce du lait mal digéré ?** Les selles d’un bébé allaité sont souvent grumeleuses. Ne confondez pas ces petits grains avec des selles entièrement **décolorées**, qui sont un signe d’alerte.
+**Les selles de mon bébé ont des grumeaux blancs : est-ce du lait mal digéré ?** Les selles d’un bébé allaité sont souvent grumeleuses. Ne confonds pas ces petits grains avec des selles entièrement **décolorées**, qui sont un signe d’alerte.
 
-**Un changement de lait peut-il changer la couleur ?** Oui, comme certains médicaments ou une poussée dentaire. Si bébé va bien, observez ; sinon, consultez.
+**Un changement de lait peut-il changer la couleur ?** Oui, comme certains médicaments ou une poussée dentaire. Si bébé va bien, observe ; sinon, consulte.
 
 ## Quand demander conseil
-Consultez **immédiatement** si les selles sont **blanches, grises ou couleur mastic**, **noires** en dehors du méconium, ou **rouge vif**. Consultez **rapidement** en cas de selles vertes persistantes avec glaires, de sang, de douleurs au ventre, ou si les changements s’accompagnent de fièvre, de vomissements, d’une jaunisse, d’une perte d’appétit ou d’une prise de poids insuffisante. Si bébé semble très mal, appelez le 15 ou le 112.
+Consulte **immédiatement** si les selles sont **blanches, grises ou couleur mastic**, **noires** en dehors du méconium, ou **rouge vif**. Consulte **rapidement** en cas de selles vertes persistantes avec glaires, de sang, de douleurs au ventre, ou si les changements s’accompagnent de fièvre, de vomissements, d’une jaunisse, d’une perte d’appétit ou d’une prise de poids insuffisante. Si bébé semble très mal, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -402,24 +402,24 @@ Les selles doivent leur couleur jaune, verte ou brune à la **bile**, fabriquée
 **Selles rouge vif ou traces de sang** : il s’agit souvent de sang frais. Il peut venir d’une petite fissure de l’anus (par exemple avec des selles dures) ou d’une allergie aux protéines du lait de vache, mais seul un médecin peut le dire.
 
 ## Au quotidien
-- **Regardez la couleur à chaque change** pendant les premières semaines, à la lumière du jour si possible.
-- **Demandez à la maternité, à la sage-femme ou à la PMI** de vous montrer les couleurs de selles à surveiller.
-- **Gardez la couche ou prenez une photo** si une selle vous semble pâle : cela aide le médecin à juger.
-- **Regardez aussi les urines** : des urines foncées, chez un bébé dont les selles pâlissent, sont un signe à signaler sans attendre.
-- **Observez la peau et le blanc des yeux** : une jaunisse qui persiste ou réapparaît après la sortie de maternité doit être montrée.
-- **Ne vous fiez pas à l’état général** : un bébé avec des selles décolorées peut téter et sembler bien ; le signe compte quand même.
+- **Regarde la couleur à chaque change** pendant les premières semaines, à la lumière du jour si possible.
+- **Demande à la maternité, à la sage-femme ou à la PMI** de te montrer les couleurs de selles à surveiller.
+- **Garde la couche ou prends une photo** si une selle te semble pâle : cela aide le médecin à juger.
+- **Regarde aussi les urines** : des urines foncées, chez un bébé dont les selles pâlissent, sont un signe à signaler sans attendre.
+- **Observe la peau et le blanc des yeux** : une jaunisse qui persiste ou réapparaît après la sortie de maternité doit être montrée.
+- **Ne te fie pas à l’état général** : un bébé avec des selles décolorées peut téter et sembler bien ; le signe compte quand même.
 
 ## Questions fréquentes
-**Les selles de mon bébé allaité sont jaune très pâle : faut-il s’inquiéter ?** Un jaune pâle n’est pas un blanc. En cas de doute, montrez une photo ou la couche à votre médecin ou à la PMI le jour même ; il vaut mieux vérifier.
+**Les selles de mon bébé allaité sont jaune très pâle : faut-il s’inquiéter ?** Un jaune pâle n’est pas un blanc. En cas de doute, montre une photo ou la couche à ton médecin ou à la PMI le jour même ; il vaut mieux vérifier.
 
 **Pourquoi tant d’insistance sur ce signe rare ?** Parce qu’une maladie des voies biliaires se soigne mieux quand elle est prise en charge tôt. Repérer la couleur des selles est un geste simple qui peut changer beaucoup.
 
 **Un peu de sang rouge sur la couche après une selle dure : est-ce grave ?** Cela peut venir d’une petite fissure, mais il faut consulter rapidement pour en avoir le cœur net, surtout chez un tout-petit.
 
-**Les selles foncées de la diversification sont-elles concernées ?** Non : à la diversification, les selles deviennent plus brunes, ce qui n’a rien à voir avec des selles noires comme du goudron. En cas de doute, montrez une photo au médecin.
+**Les selles foncées de la diversification sont-elles concernées ?** Non : à la diversification, les selles deviennent plus brunes, ce qui n’a rien à voir avec des selles noires comme du goudron. En cas de doute, montre une photo au médecin.
 
 ## Quand demander conseil
-Appelez votre médecin ou rendez-vous aux urgences **le jour même** si les selles sont blanches, grises ou couleur mastic, noires (hors méconium) ou rouge vif. Consultez rapidement si le teint reste jaune après deux semaines, si les urines sont foncées, en cas de fièvre, de vomissements, de refus de boire ou de comportement inhabituel. Si votre médecin n’est pas joignable, appelez le **15** : un professionnel vous orientera. En cas d’urgence vitale, le 15 ou le 112.
+Appelle ton médecin ou rendez-vous aux urgences **le jour même** si les selles sont blanches, grises ou couleur mastic, noires (hors méconium) ou rouge vif. Consulte rapidement si le teint reste jaune après deux semaines, si les urines sont foncées, en cas de fièvre, de vomissements, de refus de boire ou de comportement inhabituel. Si ton médecin n’est pas joignable, appelle le **15** : un professionnel t’orientera. En cas d’urgence vitale, le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -435,34 +435,34 @@ ${FIN}`,
 - Ce qui compte : bébé **mange bien, grossit, n’a pas le ventre très ballonné, ne vomit pas** et semble en forme.
 - Les selles d’un nourrisson sont normalement **molles à pâteuses** ; celles d’un bébé allaité sont souvent **assez liquides et grumeleuses**.
 - La **constipation**, ce sont surtout des selles **dures** (petites billes, boudin sec), un ventre tendu, des pleurs à l’évacuation.
-- La **diarrhée**, ce sont des selles très liquides, soudaines, abondantes et fréquentes : surveillez de près le risque de déshydratation.
+- La **diarrhée**, ce sont des selles très liquides, soudaines, abondantes et fréquentes : surveille de près le risque de déshydratation.
 
 ## Comprendre
 **Bébé allaité** : les premières semaines, il fait souvent une selle après chaque tétée. Ensuite, le rythme peut ralentir nettement. mpedia et Santé.fr expliquent que certains bébés allaités n’ont plus qu’une selle par semaine, voire moins, sans que ce soit une maladie, à condition qu’ils soient en forme, qu’ils grossissent et ne semblent pas souffrir. Le lait maternel entraîne moins souvent constipation et diarrhée.
 
-**Bébé au lait infantile** : selles plus épaisses et moulées, souvent plus régulières. Une préparation trop concentrée peut favoriser la constipation : il est important de respecter exactement les indications de préparation données par votre médecin et la boîte.
+**Bébé au lait infantile** : selles plus épaisses et moulées, souvent plus régulières. Une préparation trop concentrée peut favoriser la constipation : il est important de respecter exactement les indications de préparation données par ton médecin et la boîte.
 
 **Bébé qui pousse, rougit et se tortille** : cela ne veut pas dire qu’il est constipé. Si les selles ne sont pas dures et sortent sans sang, il peut s’agir d’un inconfort passager, de type coliques, qui s’améliore avec le temps.
 
 ## Au quotidien
-- **Observez l’ensemble** plutôt que le calendrier : appétit, prise de poids lors des pesées, éveil, couches mouillées.
-- **Proposez une gymnastique douce des jambes** : flexion-extension, mouvements « en grenouille », massage doux du ventre.
-- **Au biberon, vérifiez la préparation** : respectez exactement les indications données par le professionnel qui suit bébé et sur la boîte.
-- **Par fortes chaleurs ou en cas de diarrhée**, veillez à l’hydratation et parlez-en au professionnel qui suit bébé.
+- **Observe l’ensemble** plutôt que le calendrier : appétit, prise de poids lors des pesées, éveil, couches mouillées.
+- **Propose une gymnastique douce des jambes** : flexion-extension, mouvements « en grenouille », massage doux du ventre.
+- **Au biberon, vérifie la préparation** : respecte exactement les indications données par le professionnel qui suit bébé et sur la boîte.
+- **Par fortes chaleurs ou en cas de diarrhée**, veille à l’hydratation et parles-en au professionnel qui suit bébé.
 - **À éviter** : les remèdes maison non validés, comme l’eau d’Hépar avant 3 ans, et **jamais de thermomètre** ni d’objet dans l’anus pour « aider » : risque de blessure et de saignement.
-- **Suppositoire à la glycérine** : mpedia le cite pour un usage occasionnel uniquement ; demandez d’abord conseil à votre médecin ou pharmacien.
+- **Suppositoire à la glycérine** : mpedia le cite pour un usage occasionnel uniquement ; demande d’abord conseil à ton médecin ou pharmacien.
 
 ## Questions fréquentes
-**Mon bébé allaité de 6 semaines n’a pas fait de selle depuis 4 jours.** Si les selles, quand elles viennent, sont molles et que bébé tète, grossit et semble bien, ce rythme peut se voir chez un bébé allaité. En cas de ventre tendu, de vomissements, de refus de téter ou de doute, consultez.
+**Mon bébé allaité de 6 semaines n’a pas fait de selle depuis 4 jours.** Si les selles, quand elles viennent, sont molles et que bébé tète, grossit et semble bien, ce rythme peut se voir chez un bébé allaité. En cas de ventre tendu, de vomissements, de refus de téter ou de doute, consulte.
 
 **Ses selles sont très liquides : est-ce une diarrhée ?** Les selles d’un bébé allaité sont souvent liquides. On parle de diarrhée quand elles deviennent **brutalement** plus liquides, plus abondantes et plus fréquentes, souvent avec fièvre, vomissements ou baisse de l’appétit.
 
-**Faut-il changer de lait en cas de constipation ?** Ne changez pas de lait de votre propre initiative ; parlez-en au médecin, qui vérifiera d’abord la préparation et l’hydratation.
+**Faut-il changer de lait en cas de constipation ?** Ne change pas de lait de ton propre initiative ; parles-en au médecin, qui vérifiera d’abord la préparation et l’hydratation.
 
 **Les poussées dentaires changent-elles les selles ?** Santé.fr cite les poussées dentaires parmi les causes de selles plus liquides ou acides, qui peuvent irriter les fesses.
 
 ## Quand demander conseil
-Consultez rapidement si les selles sont dures avec un ventre tendu et un bébé qui hurle, s’il y a du sang, si bébé vomit, a de la fièvre, refuse de boire, mouille moins ses couches ou prend mal du poids. En cas de diarrhée chez un nourrisson, surveillez de près son état : s’il devient très somnolent, boit peu ou mouille beaucoup moins ses couches, appelez le **15** ou le 112. Des selles blanches, noires ou rouges font consulter immédiatement.
+Consulte rapidement si les selles sont dures avec un ventre tendu et un bébé qui hurle, s’il y a du sang, si bébé vomit, a de la fièvre, refuse de boire, mouille moins ses couches ou prend mal du poids. En cas de diarrhée chez un nourrisson, surveille de près son état : s’il devient très somnolent, boit peu ou mouille beaucoup moins ses couches, appelle le **15** ou le 112. Des selles blanches, noires ou rouges font consulter immédiatement.
 
 ${FIN}`,
   },
@@ -489,12 +489,12 @@ Le principal risque est l’**étranglement** : la partie engagée (souvent l’
 **Le traitement** est chirurgical, le plus souvent en ambulatoire (retour le jour même), sous anesthésie générale ou régionale. Le chirurgien referme l’orifice, par une petite incision au pli de l’aine ou par cœlioscopie. L’enfant est revu ensuite pour vérifier la cicatrisation. Les complications sont rares.
 
 ## Au quotidien
-- **Regardez les plis de l’aine** au moment du change et du bain, surtout quand bébé pleure ou pousse.
-- **Notez ce que vous voyez** : côté, taille, moment d’apparition. Une photo peut aider le médecin, car la boule peut avoir disparu au moment de la consultation.
-- **Parlez-en au médecin rapidement** : c’est lui qui confirme le diagnostic et oriente vers un chirurgien pédiatrique.
-- **N’appuyez pas** vous-même sur la boule pour la faire rentrer.
-- **En attendant l’opération**, connaissez les signes d’étranglement et gardez à portée le numéro du service qui suit votre enfant.
-- **Après l’opération**, suivez les consignes de soins de la cicatrice et le rendez-vous de contrôle.
+- **Regarde les plis de l’aine** au moment du change et du bain, surtout quand bébé pleure ou pousse.
+- **Note ce que tu vois** : côté, taille, moment d’apparition. Une photo peut aider le médecin, car la boule peut avoir disparu au moment de la consultation.
+- **Parles-en au médecin rapidement** : c’est lui qui confirme le diagnostic et oriente vers un chirurgien pédiatrique.
+- **N’appuie pas** toi-même sur la boule pour la faire rentrer.
+- **En attendant l’opération**, connais les signes d’étranglement et garde à portée le numéro du service qui suit ton enfant.
+- **Après l’opération**, suis les consignes de soins de la cicatrice et le rendez-vous de contrôle.
 
 ## Questions fréquentes
 **La hernie peut-elle se refermer toute seule avec la croissance ?** Selon ameli, non : la hernie inguinale de l’enfant ne disparaît jamais spontanément et doit être opérée.
@@ -506,7 +506,7 @@ Le principal risque est l’**étranglement** : la partie engagée (souvent l’
 **Pourquoi opérer vite un bébé ?** Parce que le risque d’étranglement est plus important chez le nourrisson : l’opération est programmée dans un court délai après le diagnostic.
 
 ## Quand demander conseil
-Prenez rendez-vous rapidement avec votre médecin si vous remarquez une grosseur dans l’aine ou la bourse, même si elle disparaît au calme. Appelez le **15** (ou le 112) ou allez aux urgences si la grosseur **ne rentre plus** et semble **douloureuse** (bébé pleure de façon inhabituelle, ne se calme pas), ou au moindre doute sur l’état de votre enfant.
+Prends rendez-vous rapidement avec ton médecin si tu remarques une grosseur dans l’aine ou la bourse, même si elle disparaît au calme. Appelle le **15** (ou le 112) ou va aux urgences si la grosseur **ne rentre plus** et semble **douloureuse** (bébé pleure de façon inhabituelle, ne se calme pas), ou au moindre doute sur l’état de ton enfant.
 
 ${FIN}`,
   },
@@ -534,23 +534,23 @@ Le **diagnostic** est clinique : la bourse est vide à la palpation. Il est souv
 **Le testicule oscillant (ascenseur)** est présent dans la bourse mais remonte sous l’effet d’un petit muscle (le crémaster). Il redescend facilement à la palpation, n’existe pas à la naissance et se stabilise à la puberté.
 
 ## Au quotidien
-- **Ne cherchez pas à faire descendre** le testicule vous-même.
-- **Profitez des examens de suivi** des premiers mois : le médecin palpe les bourses à chaque fois. Notez vos observations, par exemple au moment du bain.
+- **Ne cherche pas à faire descendre** le testicule toi-même.
+- **Profite des examens de suivi** des premiers mois : le médecin palpe les bourses à chaque fois. Note tes observations, par exemple au moment du bain.
 - **Si une opération est proposée**, elle se fait le plus souvent en ambulatoire sous anesthésie générale, après une consultation d’anesthésie.
-- **Après l’opération**, consultez en cas de fièvre, de douleur importante ou de gonflement de la bourse. Les parents peuvent palper régulièrement les bourses pour vérifier la présence du testicule.
-- **Plus tard**, à l’adolescence, votre fils pourra apprendre à palper lui-même ses testicules.
+- **Après l’opération**, consulte en cas de fièvre, de douleur importante ou de gonflement de la bourse. Les parents peuvent palper régulièrement les bourses pour vérifier la présence du testicule.
+- **Plus tard**, à l’adolescence, ton fils pourra apprendre à palper lui-même ses testicules.
 
 ## Questions fréquentes
 **Le testicule peut-il encore descendre après la naissance ?** Oui, jusqu’à 6 mois voire un an. Au-delà d’un an, l’anomalie est considérée comme définitive.
 
 **L’opération est-elle lourde ?** C’est une intervention courante, souvent en ambulatoire ; dans environ 90 % des cas, une seule intervention suffit lorsque le testicule est palpable.
 
-**Mon fils aura-t-il des difficultés pour avoir des enfants ?** Le risque existe surtout si les deux côtés sont touchés ; la chirurgie précoce le réduit de moitié selon ameli. Parlez-en avec le chirurgien.
+**Mon fils aura-t-il des difficultés pour avoir des enfants ?** Le risque existe surtout si les deux côtés sont touchés ; la chirurgie précoce le réduit de moitié selon ameli. Parles-en avec le chirurgien.
 
 **Est-ce lié à une hernie ?** Le médecin recherche une hernie inguinale associée lors de l’examen ; les deux peuvent coexister.
 
 ## Quand demander conseil
-Signalez au médecin toute bourse qui vous paraît vide ou asymétrique. Une **bourse gonflée, rouge ou douloureuse**, ou un bébé qui pleure de façon inhabituelle avec une grosse bourse, peut évoquer une torsion du testicule : c’est une urgence, appelez le **15** (ou le 112) ou allez aux urgences sans attendre.
+Signale au médecin toute bourse qui te paraît vide ou asymétrique. Une **bourse gonflée, rouge ou douloureuse**, ou un bébé qui pleure de façon inhabituelle avec une grosse bourse, peut évoquer une torsion du testicule : c’est une urgence, appelle le **15** (ou le 112) ou va aux urgences sans attendre.
 
 ${FIN}`,
   },
@@ -578,25 +578,25 @@ L’Assurance Maladie range la torsion du testicule parmi les situations de l’
 Le temps est l’élément clé : au-delà de quelques heures, les chances de sauver le testicule diminuent rapidement. L’opération ne doit pas être retardée, même si une échographie est parfois faite. Un **testicule non descendu** expose aussi à un risque de torsion.
 
 ## Au quotidien
-- **Apprenez à regarder les bourses** au change et au bain : taille, couleur, symétrie.
-- **Expliquez simplement à votre enfant**, dès qu’il peut comprendre, qu’il doit vous prévenir s’il a mal « au zizi » ou aux testicules, sans honte.
-- **N’attendez pas que ça passe** : agissez tout de suite et suivez les consignes du médecin régulateur du 15.
-- **Lors de l’appel au 15** : parlez calmement, donnez votre numéro, le nom de l’enfant, l’adresse exacte, décrivez les signes et ne raccrochez pas avant qu’on vous le dise.
-- **Gardez le carnet de santé** et la carte Vitale à portée pour partir vite.
+- **Apprends à regarder les bourses** au change et au bain : taille, couleur, symétrie.
+- **Explique simplement à ton enfant**, dès qu’il peut comprendre, qu’il doit te prévenir s’il a mal « au zizi » ou aux testicules, sans honte.
+- **N’attends pas que ça passe** : agis tout de suite et suis les consignes du médecin régulateur du 15.
+- **Lors de l’appel au 15** : parle calmement, donne ton numéro, le nom de l’enfant, l’adresse exacte, décris les signes et ne raccroche pas avant qu’on te le dise.
+- **Garde le carnet de santé** et la carte Vitale à portée pour partir vite.
 
 ## Questions fréquentes
-**Mon bébé pleure et sa bourse est un peu gonflée : est-ce forcément une torsion ?** Pas forcément (cela peut aussi être une hernie, par exemple), mais seul un médecin peut le dire et le délai compte. Appelez le 15 : un professionnel vous orientera.
+**Mon bébé pleure et sa bourse est un peu gonflée : est-ce forcément une torsion ?** Pas forcément (cela peut aussi être une hernie, par exemple), mais seul un médecin peut le dire et le délai compte. Appelle le 15 : un professionnel t’orientera.
 
-**Mon fils de 12 ans a eu une douleur la nuit qui est passée : faut-il consulter ?** Oui, parlez-en à un médecin rapidement, même si la douleur a cédé.
+**Mon fils de 12 ans a eu une douleur la nuit qui est passée : faut-il consulter ?** Oui, parles-en à un médecin rapidement, même si la douleur a cédé.
 
 **La torsion donne-t-elle de la fièvre ?** Au début, en général non. L’absence de fièvre ne doit pas rassurer.
 
 **Peut-on prévenir la torsion ?** On ne peut pas la prévenir à la maison ; l’essentiel est de reconnaître les signes et d’agir vite.
 
-**Faut-il passer une échographie avant d’aller aux urgences ?** Non. Selon ameli, l’opération ne doit pas être retardée par une échographie : allez directement aux urgences ou appelez le 15.
+**Faut-il passer une échographie avant d’aller aux urgences ?** Non. Selon ameli, l’opération ne doit pas être retardée par une échographie : va directement aux urgences ou appelle le 15.
 
 ## Quand demander conseil
-Appelez **immédiatement le 15** (ou le 112 ; le 114 pour les personnes sourdes ou malentendantes) ou rendez-vous aux urgences si votre bébé a une bourse gonflée, rouge, violacée ou douloureuse, ou si votre enfant a une douleur brutale d’un testicule, de l’aine ou du bas-ventre. Ces appels sont gratuits.
+Appelle **immédiatement le 15** (ou le 112 ; le 114 pour les personnes sourdes ou malentendantes) ou rendez-vous aux urgences si ton bébé a une bourse gonflée, rouge, violacée ou douloureuse, ou si ton enfant a une douleur brutale d’un testicule, de l’aine ou du bas-ventre. Ces appels sont gratuits.
 
 ${FIN}`,
   },
@@ -624,23 +624,23 @@ Deux situations demandent une attention particulière :
 - **Le paraphimosis** : le prépuce a été tiré en arrière et ne revient plus sur le gland, qu’il serre. Il nécessite une intervention médicale rapide.
 
 ## Au quotidien
-- **Au change** : nettoyez les bourses et le pénis avec de l’eau et un savon doux, rincez, séchez en tamponnant. Pas besoin de crème systématique.
-- **Orientez le pénis vers le bas** dans la couche les premières semaines, pour éviter que l’urine mouille le cordon.
-- **Laissez faire le temps** : avec l’âge, votre enfant pourra apprendre à décalotter lui-même, doucement et sans douleur, par exemple sous la douche ou dans le bain.
-- **Apprenez-lui à toujours remettre** le prépuce en place après la toilette.
-- **Parlez-en lors des consultations de suivi** si vous avez des questions : le médecin peut regarder.
+- **Au change** : nettoie les bourses et le pénis avec de l’eau et un savon doux, rince, sèche en tamponnant. Pas besoin de crème systématique.
+- **Oriente le pénis vers le bas** dans la couche les premières semaines, pour éviter que l’urine mouille le cordon.
+- **Laisse faire le temps** : avec l’âge, ton enfant pourra apprendre à décalotter lui-même, doucement et sans douleur, par exemple sous la douche ou dans le bain.
+- **Apprends-lui à toujours remettre** le prépuce en place après la toilette.
+- **Parles-en lors des consultations de suivi** si tu as des questions : le médecin peut regarder.
 
 ## Questions fréquentes
 **Ma mère me dit qu’il faut décalotter mon bébé à chaque bain. Est-ce vrai ?** Non. Les recommandations actuelles sont de ne pas décalotter le nourrisson et de ne jamais forcer.
 
-**Mon fils de 3 ans ne se décalotte pas : faut-il consulter ?** En l’absence de gêne, on laisse le prépuce s’assouplir. Si votre enfant a plus de 5 ans et ne peut toujours pas se décalotter, abordez-le lors d’une consultation de suivi.
+**Mon fils de 3 ans ne se décalotte pas : faut-il consulter ?** En l’absence de gêne, on laisse le prépuce s’assouplir. Si ton enfant a plus de 5 ans et ne peut toujours pas se décalotter, aborde-le lors d’une consultation de suivi.
 
-**Faut-il faire quelque chose pour aider le prépuce à s’assouplir ?** En l’absence de gêne, ameli conseille de laisser le prépuce s’assouplir naturellement, ce qui peut prendre du temps. Le médecin vous dira, lors du suivi, si une prise en charge est utile.
+**Faut-il faire quelque chose pour aider le prépuce à s’assouplir ?** En l’absence de gêne, ameli conseille de laisser le prépuce s’assouplir naturellement, ce qui peut prendre du temps. Le médecin te dira, lors du suivi, si une prise en charge est utile.
 
-**Son zizi est rouge au bout : que faire ?** Une rougeur avec gonflement et brûlures en urinant peut être une balanite ou une infection urinaire : consultez rapidement.
+**Son zizi est rouge au bout : que faire ?** Une rougeur avec gonflement et brûlures en urinant peut être une balanite ou une infection urinaire : consulte rapidement.
 
 ## Quand demander conseil
-Consultez **en urgence** si le gland ou le prépuce est enflammé avec des brûlures en urinant (possible infection urinaire), ou si le prépuce reste coincé en arrière du gland sans pouvoir le recouvrir (paraphimosis) : appelez votre médecin, le 15 ou le 112 selon l’heure et l’état de l’enfant. Prenez rendez-vous sans urgence pour un enfant de plus de 5 ans qui ne se décalotte pas, en cas de difficultés à uriner, d’anomalie connue des voies urinaires ou d’infections urinaires répétées.
+Consulte **en urgence** si le gland ou le prépuce est enflammé avec des brûlures en urinant (possible infection urinaire), ou si le prépuce reste coincé en arrière du gland sans pouvoir le recouvrir (paraphimosis) : appelle ton médecin, le 15 ou le 112 selon l’heure et l’état de l’enfant. Prends rendez-vous sans urgence pour un enfant de plus de 5 ans qui ne se décalotte pas, en cas de difficultés à uriner, d’anomalie connue des voies urinaires ou d’infections urinaires répétées.
 
 ${FIN}`,
   },
@@ -670,30 +670,30 @@ Chez certains bébés, un **canal lacrymal pas encore perméable** fait stagner 
 
 ## Au quotidien
 **Nettoyer les yeux de bébé**
-1. Lavez-vous les mains.
-2. Instillez quelques gouttes de **sérum physiologique** (dosette à usage unique) dans l’œil.
-3. Essuyez avec une **compresse stérile**, en un seul passage, de l’extérieur vers l’intérieur comme l’indique ameli.
-4. Utilisez **une compresse différente pour chaque œil**.
-5. Jetez les compresses et lavez-vous à nouveau les mains.
+1. Lave-toi les mains.
+2. Instille quelques gouttes de **sérum physiologique** (dosette à usage unique) dans l’œil.
+3. Essuie avec une **compresse stérile**, en un seul passage, de l’extérieur vers l’intérieur comme l’indique ameli.
+4. Utilise **une compresse différente pour chaque œil**.
+5. Jette les compresses et lave-toi à nouveau les mains.
 
 **Limiter la contagion**
-- Lavez-vous souvent les mains, ainsi que celles des aînés.
-- Ne partagez pas serviettes et gants de toilette ; changez-les souvent, ainsi que les taies d’oreiller.
-- Nettoyez régulièrement les jouets et surfaces que bébé touche.
+- Lave-toi souvent les mains, ainsi que celles des aînés.
+- Ne partage pas serviettes et gants de toilette ; change-les souvent, ainsi que les taies d’oreiller.
+- Nettoie régulièrement les jouets et surfaces que bébé touche.
 
-**Si un collyre est prescrit** : suivez l’ordonnance, sans arrêter trop tôt, et demandez au pharmacien de vous montrer comment l’instiller.
+**Si un collyre est prescrit** : suis l’ordonnance, sans arrêter trop tôt, et demande au pharmacien de te montrer comment l’instiller.
 
 ## Questions fréquentes
-**Le lait maternel dans l’œil, ça marche ?** mpedia indique qu’il est souvent utilisé mais sans preuve scientifique d’efficacité. Préférez le sérum physiologique et l’avis d’un professionnel.
+**Le lait maternel dans l’œil, ça marche ?** mpedia indique qu’il est souvent utilisé mais sans preuve scientifique d’efficacité. Préfère le sérum physiologique et l’avis d’un professionnel.
 
-**Puis-je attendre quelques jours avant de consulter ?** Chez un bébé de quelques semaines, mieux vaut ne pas attendre : montrez-le au médecin rapidement, surtout en cas de pus, d’œil très rouge ou de fièvre.
+**Puis-je attendre quelques jours avant de consulter ?** Chez un bébé de quelques semaines, mieux vaut ne pas attendre : montre-le au médecin rapidement, surtout en cas de pus, d’œil très rouge ou de fièvre.
 
-**Mon bébé peut-il aller à la crèche ?** La conjonctivite se transmet facilement en collectivité. Renseignez-vous auprès de la crèche et du médecin.
+**Mon bébé peut-il aller à la crèche ?** La conjonctivite se transmet facilement en collectivité. Renseigne-toi auprès de la crèche et du médecin.
 
-**Les conjonctivites reviennent souvent : pourquoi ?** Un canal lacrymal mal perméable peut en être la cause. Parlez-en au médecin, qui peut orienter vers un ophtalmologiste si nécessaire.
+**Les conjonctivites reviennent souvent : pourquoi ?** Un canal lacrymal mal perméable peut en être la cause. Parles-en au médecin, qui peut orienter vers un ophtalmologiste si nécessaire.
 
 ## Quand demander conseil
-Consultez **rapidement** (dans la journée) si votre bébé de moins de 3 mois a un œil rouge avec des sécrétions, et **sans attendre** s’il a de la fièvre, si l’œil ou la paupière sont très rouges ou gonflés, ou si une petite boule rouge apparaît au coin interne de l’œil. Si bébé semble mal, a du mal à respirer ou à boire, appelez le 15 ou le 112.
+Consulte **rapidement** (dans la journée) si ton bébé de moins de 3 mois a un œil rouge avec des sécrétions, et **sans attendre** s’il a de la fièvre, si l’œil ou la paupière sont très rouges ou gonflés, ou si une petite boule rouge apparaît au coin interne de l’œil. Si bébé semble mal, a du mal à respirer ou à boire, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -719,12 +719,12 @@ Les larmes qui stagnent favorisent la prolifération de microbes : c’est pourq
 Dans la grande majorité des cas, le canal s’ouvre spontanément avec la croissance au cours de la première année. Lorsque ce n’est pas le cas, ou en cas de surinfections chroniques, un ophtalmologiste peut proposer une petite intervention, le **sondage**, pour désobstruer le canal.
 
 ## Au quotidien
-- **Nettoyez l’œil plusieurs fois par jour** avec du sérum physiologique et une compresse propre, en un seul passage, puis jetez la compresse.
-- **Massez doucement**, si le médecin vous l’a montré : une légère pression du doigt propre sur le coin interne de l’œil, contre le nez. Demandez-lui de vous montrer le geste.
-- **Lavez-vous les mains** avant et après chaque soin.
-- **Observez l’aspect des sécrétions** : des larmes claires et quelques dépôts le matin ne sont pas la même chose qu’un œil rouge avec du pus.
-- **Évitez les remèdes maison** : le lait maternel est souvent utilisé, mais mpedia rappelle qu’aucune preuve scientifique ne soutient son efficacité.
-- **Si un collyre est prescrit** pour une surinfection, utilisez-le pendant la durée indiquée.
+- **Nettoie l’œil plusieurs fois par jour** avec du sérum physiologique et une compresse propre, en un seul passage, puis jette la compresse.
+- **Masse doucement**, si le médecin te l’a montré : une légère pression du doigt propre sur le coin interne de l’œil, contre le nez. Demande-lui de te montrer le geste.
+- **Lave-toi les mains** avant et après chaque soin.
+- **Observe l’aspect des sécrétions** : des larmes claires et quelques dépôts le matin ne sont pas la même chose qu’un œil rouge avec du pus.
+- **Évite les remèdes maison** : le lait maternel est souvent utilisé, mais mpedia rappelle qu’aucune preuve scientifique ne soutient son efficacité.
+- **Si un collyre est prescrit** pour une surinfection, utilise-le pendant la durée indiquée.
 
 ## Questions fréquentes
 **Pourquoi un seul œil ?** Le canal peut être plus fermé d’un côté que de l’autre. Les deux côtés peuvent aussi être touchés.
@@ -736,7 +736,7 @@ Dans la grande majorité des cas, le canal s’ouvre spontanément avec la crois
 **Les infections à répétition peuvent-elles venir d’autre chose ?** mpedia mentionne aussi qu’une vue insuffisante peut être en cause dans des conjonctivites fréquentes : c’est une raison de plus d’en parler au médecin.
 
 ## Quand demander conseil
-Consultez si l’œil devient **rouge**, si les sécrétions deviennent **jaunes ou verdâtres** et abondantes, si les paupières gonflent, ou si une **boule rouge et sensible** apparaît au coin interne de l’œil (consultation rapide, surtout chez un bébé de moins de 3 mois). Parlez-en au médecin si le larmoiement persiste après le premier anniversaire. En cas de fièvre chez un nouveau-né ou de bébé qui semble mal, appelez le 15 ou le 112.
+Consulte si l’œil devient **rouge**, si les sécrétions deviennent **jaunes ou verdâtres** et abondantes, si les paupières gonflent, ou si une **boule rouge et sensible** apparaît au coin interne de l’œil (consultation rapide, surtout chez un bébé de moins de 3 mois). Parles-en au médecin si le larmoiement persiste après le premier anniversaire. En cas de fièvre chez un nouveau-né ou de bébé qui semble mal, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -765,25 +765,25 @@ ${FIN}`,
 Toutes ces éruptions surviennent chez un bébé **en forme**, qui tète bien et n’a pas de fièvre. C’est ce point qui les distingue d’une éruption liée à une infection.
 
 ## Au quotidien
-- **Lavez simplement le visage** à l’eau tiède, avec une compresse ou un gant propre, puis séchez en tamponnant.
-- **Évitez les produits parfumés** et le savon sur le visage : l’Assurance Maladie recommande une toilette sans savon ni produit parfumé pour les tout-petits.
-- **Ne percez pas les boutons** et ne grattez pas les petits grains blancs.
-- **N’appliquez pas de crème pour adulte** (anti-acné, huiles essentielles, etc.).
-- **Lavez les vêtements neufs** avant la première utilisation.
-- **Gardez ses ongles courts** pour limiter les griffures sur une peau irritée.
-- **Prenez une photo** si l’éruption change : elle aide le médecin lors de la consultation suivante.
+- **Lave simplement le visage** à l’eau tiède, avec une compresse ou un gant propre, puis sèche en tamponnant.
+- **Évite les produits parfumés** et le savon sur le visage : l’Assurance Maladie recommande une toilette sans savon ni produit parfumé pour les tout-petits.
+- **Ne perce pas les boutons** et ne gratte pas les petits grains blancs.
+- **N’applique pas de crème pour adulte** (anti-acné, huiles essentielles, etc.).
+- **Lave les vêtements neufs** avant la première utilisation.
+- **Garde ses ongles courts** pour limiter les griffures sur une peau irritée.
+- **Prends une photo** si l’éruption change : elle aide le médecin lors de la consultation suivante.
 
 ## Questions fréquentes
-**L’acné de mon bébé vient-elle de mon alimentation ou du lait ?** Les sources consultées ne font pas ce lien. Elle disparaît spontanément ; parlez-en au médecin si elle vous inquiète.
+**L’acné de mon bébé vient-elle de mon alimentation ou du lait ?** Les sources consultées ne font pas ce lien. Elle disparaît spontanément ; parles-en au médecin si elle t’inquiète.
 
 **Faut-il mettre une crème ?** En général, aucun traitement n’est nécessaire. Si l’acné est marquée, le médecin peut prescrire un soin adapté lors de la visite du premier mois.
 
 **L’érythème toxique est-il contagieux ou allergique ?** Il est bénin et ne demande pas de traitement ; il disparaît rapidement.
 
-**Comment savoir si c’est autre chose ?** Une éruption avec fièvre, des cloques, du pus, ou chez un bébé qui tète moins, n’entre pas dans ces petites éruptions habituelles : consultez.
+**Comment savoir si c’est autre chose ?** Une éruption avec fièvre, des cloques, du pus, ou chez un bébé qui tète moins, n’entre pas dans ces petites éruptions habituelles : consulte.
 
 ## Quand demander conseil
-Consultez sans tarder si l’éruption s’accompagne de **fièvre** (chez un bébé de moins de 3 mois, toute fièvre fait consulter rapidement), si les boutons contiennent du **pus**, forment des **cloques** ou des croûtes, s’ils s’étendent vite, ou si bébé est grognon, tète moins ou semble fatigué. Si votre bébé semble très mal, appelez le 15 ou le 112.
+Consulte sans tarder si l’éruption s’accompagne de **fièvre** (chez un bébé de moins de 3 mois, toute fièvre fait consulter rapidement), si les boutons contiennent du **pus**, forment des **cloques** ou des croûtes, s’ils s’étendent vite, ou si bébé est grognon, tète moins ou semble fatigué. Si ton bébé semble très mal, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -804,28 +804,28 @@ ${FIN}`,
 ## Comprendre
 La peau du bébé est plus fine et plus sensible que celle de l’adulte. Quand il fait chaud, que bébé est trop couvert ou que des vêtements serrés frottent, la sueur s’évacue mal et de petites éruptions se forment. mpedia décrit trois formes : de petites vésicules claires très superficielles, des boutons rouges qui démangent, ou plus rarement des lésions plus profondes. Les boutons sont souvent petits, blancs, transparents ou rosés, et se sentent au toucher.
 
-Certains facteurs favorisent la miliaire : des bodys trop ajustés en été, les frottements répétés, des crèmes épaisses qui bouchent les pores, la transpiration. D’autres affections peuvent y ressembler, comme l’eczéma (plaques rouges et sèches qui démangent fortement) ou l’urticaire (plaques en relief qui apparaissent et disparaissent vite) : en cas de doute, consultez.
+Certains facteurs favorisent la miliaire : des bodys trop ajustés en été, les frottements répétés, des crèmes épaisses qui bouchent les pores, la transpiration. D’autres affections peuvent y ressembler, comme l’eczéma (plaques rouges et sèches qui démangent fortement) ou l’urticaire (plaques en relief qui apparaissent et disparaissent vite) : en cas de doute, consulte.
 
 ## Au quotidien
-- **Habillez léger** : vêtements amples, en coton ou en lin, qui laissent passer l’air. Une seule couche suffit souvent par temps chaud.
-- **Vérifiez la nuque** : si elle est moite, bébé a trop chaud.
-- **Aérez les pièces** et, si possible, gardez la température en dessous de 25 °C selon mpedia ; dans la chambre, les repères habituels restent entre 18 et 20 °C pour dormir.
-- **Gardez la peau propre et sèche** : bain ou douche courts, séchage en tamponnant, surtout dans les plis.
-- **Évitez les crèmes épaisses** et les produits gras sur les zones touchées ; préférez des produits légers, non comédogènes, adaptés aux bébés.
-- **Hydratez bébé** : proposez le sein plus souvent par temps chaud ; s’il n’est pas allaité, demandez au professionnel qui le suit comment adapter les apports en eau.
-- **Évitez les fortes chaleurs** : sorties aux heures fraîches, jamais de bébé dans une voiture au soleil.
+- **Habille léger** : vêtements amples, en coton ou en lin, qui laissent passer l’air. Une seule couche suffit souvent par temps chaud.
+- **Vérifie la nuque** : si elle est moite, bébé a trop chaud.
+- **Aère les pièces** et, si possible, garde la température en dessous de 25 °C selon mpedia ; dans la chambre, les repères habituels restent entre 18 et 20 °C pour dormir.
+- **Garde la peau propre et sèche** : bain ou douche courts, séchage en tamponnant, surtout dans les plis.
+- **Évite les crèmes épaisses** et les produits gras sur les zones touchées ; préfère des produits légers, non comédogènes, adaptés aux bébés.
+- **Hydrate bébé** : propose le sein plus souvent par temps chaud ; s’il n’est pas allaité, demande au professionnel qui le suit comment adapter les apports en eau.
+- **Évite les fortes chaleurs** : sorties aux heures fraîches, jamais de bébé dans une voiture au soleil.
 
 ## Questions fréquentes
 **Faut-il mettre une crème sur les boutons de chaleur ?** En général non : les lésions disparaissent sans traitement spécifique en 1 à 3 jours, avec une peau rafraîchie et bien sèche.
 
-**Mon bébé se gratte : est-ce grave ?** La forme rouge peut démanger. Rafraîchissez-le et allégez ses vêtements ; si les démangeaisons persistent, consultez.
+**Mon bébé se gratte : est-ce grave ?** La forme rouge peut démanger. Rafraîchis-le et allège ses vêtements ; si les démangeaisons persistent, consulte.
 
 **Est-ce contagieux pour la crèche ?** Non, la miliaire n’est pas contagieuse.
 
-**Comment différencier de l’eczéma ?** L’eczéma forme des plaques sèches, rugueuses, qui démangent fortement et durent ; les boutons de chaleur sont petits et disparaissent quand bébé a moins chaud. En cas de doute, demandez l’avis du médecin.
+**Comment différencier de l’eczéma ?** L’eczéma forme des plaques sèches, rugueuses, qui démangent fortement et durent ; les boutons de chaleur sont petits et disparaissent quand bébé a moins chaud. En cas de doute, demande l’avis du médecin.
 
 ## Quand demander conseil
-Consultez rapidement si votre enfant a de la **fièvre** (pour un bébé de moins de 3 mois, toute fièvre fait consulter), si du **pus** s’écoule des boutons, si des **ganglions** gonflent, ou si un nourrisson est inconfortable, pleure, mange moins. Par forte chaleur, un bébé très somnolent, qui boit peu ou mouille beaucoup moins ses couches doit être vu en urgence : appelez le 15 ou le 112.
+Consulte rapidement si ton enfant a de la **fièvre** (pour un bébé de moins de 3 mois, toute fièvre fait consulter), si du **pus** s’écoule des boutons, si des **ganglions** gonflent, ou si un nourrisson est inconfortable, pleure, mange moins. Par forte chaleur, un bébé très somnolent, qui boit peu ou mouille beaucoup moins ses couches doit être vu en urgence : appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -851,13 +851,13 @@ Des bains trop longs ou trop fréquents, de l’eau trop chaude, des savons agre
 Il ne faut pas confondre cette desquamation avec l’**eczéma atopique**, qui forme des plaques rouges, rugueuses, qui démangent et reviennent, ni avec les **croûtes de lait**, qui touchent le cuir chevelu.
 
 ## Au quotidien
-- **Préparez la salle de bain** entre 22 et 24 °C, et vérifiez l’eau du bain (environ 37 °C) avec un thermomètre au début, puis avec le coude ou l’avant-bras.
-- **Faites court** : 5 minutes de bain suffisent.
+- **Prépare la salle de bain** entre 22 et 24 °C, et vérifie l’eau du bain (environ 37 °C) avec un thermomètre au début, puis avec le coude ou l’avant-bras.
+- **Fais court** : 5 minutes de bain suffisent.
 - **Peu ou pas de savon** : un produit doux, sans parfum, adapté aux bébés, en petite quantité, bien rincé.
-- **Séchez en tamponnant**, sans frotter, en insistant dans les plis du cou, des aisselles, de l’aine et derrière les oreilles.
-- **Appliquez un émollient** adapté aux bébés sur la peau sèche, en massant doucement. Choisissez un produit sans parfum, spécifique aux nourrissons ; demandez conseil au pharmacien.
-- **Ne tirez pas** sur les petites peaux qui se détachent : laissez-les tomber seules.
-- **Habillez bébé en coton**, avec des vêtements lavés avant le premier port, sans adoucissant parfumé.
+- **Sèche en tamponnant**, sans frotter, en insistant dans les plis du cou, des aisselles, de l’aine et derrière les oreilles.
+- **Applique un émollient** adapté aux bébés sur la peau sèche, en massant doucement. Choisis un produit sans parfum, spécifique aux nourrissons ; demande conseil au pharmacien.
+- **Ne tire pas** sur les petites peaux qui se détachent : laisse-les tomber seules.
+- **Habille bébé en coton**, avec des vêtements lavés avant le premier port, sans adoucissant parfumé.
 
 ## Questions fréquentes
 **Mon bébé pèle beaucoup aux pieds : est-il déshydraté ?** Une desquamation de la peau n’est pas en elle-même un signe de déshydratation. Ce qui doit alerter, c’est un bébé qui boit peu, mouille moins ses couches, est très somnolent.
@@ -866,10 +866,10 @@ Il ne faut pas confondre cette desquamation avec l’**eczéma atopique**, qui f
 
 **Les huiles végétales sont-elles une bonne idée ?** Les sources consultées recommandent un émollient adapté ; mpedia déconseille l’huile d’amande douce, qui peut sensibiliser à l’amande.
 
-**Quand penser à l’eczéma ?** Si des plaques rouges et rugueuses apparaissent, démangent et persistent malgré l’émollient, parlez-en au médecin.
+**Quand penser à l’eczéma ?** Si des plaques rouges et rugueuses apparaissent, démangent et persistent malgré l’émollient, parles-en au médecin.
 
 ## Quand demander conseil
-Consultez si la peau devient **rouge, suintante, fissurée** ou si bébé se gratte et dort mal ; si des plaques reviennent régulièrement ; ou si la peau s’accompagne de **fièvre**, de cloques ou d’une jaunisse qui dure. Un bébé qui boit peu, est très somnolent ou mouille beaucoup moins ses couches doit être vu rapidement ; en cas d’urgence, appelez le 15 ou le 112.
+Consulte si la peau devient **rouge, suintante, fissurée** ou si bébé se gratte et dort mal ; si des plaques reviennent régulièrement ; ou si la peau s’accompagne de **fièvre**, de cloques ou d’une jaunisse qui dure. Un bébé qui boit peu, est très somnolent ou mouille beaucoup moins ses couches doit être vu rapidement ; en cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -899,24 +899,24 @@ Certains hémangiomes laissent des traces, discrètes (petits vaisseaux visibles
 Dans la majorité des cas, aucun traitement n’est nécessaire. Selon la situation, un spécialiste (souvent un dermatologue) peut proposer un traitement médicamenteux, un laser ou, plus rarement, une chirurgie.
 
 ## Au quotidien
-- **Consultez tôt** dès que vous remarquez une tache rouge qui apparaît ou grossit : mpedia recommande de voir rapidement le médecin ou le pédiatre.
-- **Photographiez la lésion** régulièrement, avec une règle ou une pièce à côté pour l’échelle, à la même lumière : c’est très utile pour le suivi.
-- **Protégez la zone** des frottements (vêtements, bretelles de porte-bébé) et des griffures.
-- **Ne mettez pas de crème** ni de produit sans avis médical.
-- **Préparez-vous aux questions** de l’entourage : le regard des autres peut être difficile. Une phrase simple (« c’est un angiome, il est suivi par le médecin ») aide souvent.
-- **Parlez de vos émotions** : l’inquiétude des parents est fréquente, n’hésitez pas à en parler au médecin.
+- **Consulte tôt** dès que tu remarques une tache rouge qui apparaît ou grossit : mpedia recommande de voir rapidement le médecin ou le pédiatre.
+- **Photographie la lésion** régulièrement, avec une règle ou une pièce à côté pour l’échelle, à la même lumière : c’est très utile pour le suivi.
+- **Protège la zone** des frottements (vêtements, bretelles de porte-bébé) et des griffures.
+- **Ne mets pas de crème** ni de produit sans avis médical.
+- **Prépare-toi aux questions** de l’entourage : le regard des autres peut être difficile. Une phrase simple (« c’est un angiome, il est suivi par le médecin ») aide souvent.
+- **Parle de tes émotions** : l’inquiétude des parents est fréquente, n’hésite pas à en parler au médecin.
 
 ## Questions fréquentes
 **Est-ce une tache de naissance ?** On l’appelle souvent ainsi, mais il n’est en général pas visible à la naissance : il apparaît au cours du premier mois.
 
-**Va-t-il disparaître complètement ?** Il diminue dans la grande majorité des cas, sur plusieurs années, mais peut laisser une marque. Le médecin vous dira si un traitement peut aider.
+**Va-t-il disparaître complètement ?** Il diminue dans la grande majorité des cas, sur plusieurs années, mais peut laisser une marque. Le médecin te dira si un traitement peut aider.
 
 **Pourquoi tant d’insistance sur les hémangiomes du visage ?** Parce que près des yeux, du nez ou de la bouche, ils peuvent gêner la vision, la respiration ou l’alimentation, et justifient une consultation spécialisée.
 
-**Faut-il s’inquiéter s’il forme une croûte ?** Un hémangiome qui s’ulcère, avec des croûtes, peut laisser une cicatrice : montrez-le rapidement au médecin pour qu’il soit pris en charge.
+**Faut-il s’inquiéter s’il forme une croûte ?** Un hémangiome qui s’ulcère, avec des croûtes, peut laisser une cicatrice : montre-le rapidement au médecin pour qu’il soit pris en charge.
 
 ## Quand demander conseil
-Montrez **rapidement** au médecin toute tache rouge ou boule bleutée qui apparaît ou grossit dans les premières semaines. Consultez **sans attendre** si l’hémangiome est près d’un œil, du nez ou de la bouche, s’il grossit vite, s’il saigne ou forme des croûtes. En cas de saignement important ou de gêne pour respirer, appelez le 15 ou le 112.
+Montre **rapidement** au médecin toute tache rouge ou boule bleutée qui apparaît ou grossit dans les premières semaines. Consulte **sans attendre** si l’hémangiome est près d’un œil, du nez ou de la bouche, s’il grossit vite, s’il saigne ou forme des croûtes. En cas de saignement important ou de gêne pour respirer, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -933,7 +933,7 @@ ${FIN}`,
 - Le **vomissement** s’accompagne de **contractions musculaires** du ventre : bébé « pousse » pour rejeter.
 - Les régurgitations concernent environ **deux tiers des bébés de 4 à 5 mois** et seulement 5 % à 10–12 mois : elles diminuent avec la position assise, la marche et les repas solides.
 - **Surélever la tête du lit n’est plus recommandé** : bébé dort sur le dos, à plat.
-- Sang dans les rejets, pleurs, refus de manger, perte de poids : **consultez**.
+- Sang dans les rejets, pleurs, refus de manger, perte de poids : **consulte**.
 
 ## Comprendre
 Le **reflux gastro-œsophagien (RGO)** désigne la remontée du contenu de l’estomac dans l’œsophage. Chez le nourrisson, il est très fréquent : le petit « clapet » entre l’œsophage et l’estomac est encore immature et peut se relâcher au mauvais moment, et l’estomac, de faible capacité, se distend facilement avec le lait et l’air avalé. Les régurgitations en sont la conséquence la plus visible. Elles apparaissent souvent avant 3 mois, après les repas, et sont favorisées par l’alimentation liquide, les changements de position et la compression du ventre.
@@ -945,13 +945,13 @@ L’Assurance Maladie distingue :
 Un **vomissement**, lui, peut avoir de nombreuses causes (infection comme une gastro-entérite, par exemple). Des vomissements répétés chez un nourrisson se signalent toujours à un médecin.
 
 ## Au quotidien
-- **Poursuivez l’allaitement** sans changement ; au biberon, préparez-le exactement selon les recommandations.
-- **Fractionnez** : selon ameli, des repas moins copieux mais plus fréquents peuvent aider ; parlez-en au professionnel qui suit bébé avant de changer le rythme.
-- **Faites des pauses** pendant la tétée ou le biberon pour un rot.
-- **Évitez de coucher bébé juste après le repas** ; ensuite, couchez-le **sur le dos**, à plat. Les dispositifs pour surélever ou caler ne sont pas recommandés.
-- **Limitez le transat et le siège auto** en journée : cette position comprime l’estomac et peut aggraver le reflux.
-- **Le lait épaissi** peut être proposé par le médecin ; ne changez pas de lait sans son avis.
-- **Protégez vos vêtements** avec un lange plutôt que de chercher à supprimer toutes les régurgitations : un bébé qui régurgite et grossit bien n’a souvent besoin que de patience.
+- **Poursuis l’allaitement** sans changement ; au biberon, prépare-le exactement selon les recommandations.
+- **Fractionne** : selon ameli, des repas moins copieux mais plus fréquents peuvent aider ; parles-en au professionnel qui suit bébé avant de changer le rythme.
+- **Fais des pauses** pendant la tétée ou le biberon pour un rot.
+- **Évite de coucher bébé juste après le repas** ; ensuite, couche-le **sur le dos**, à plat. Les dispositifs pour surélever ou caler ne sont pas recommandés.
+- **Limite le transat et le siège auto** en journée : cette position comprime l’estomac et peut aggraver le reflux.
+- **Le lait épaissi** peut être proposé par le médecin ; ne change pas de lait sans son avis.
+- **Protège tes vêtements** avec un lange plutôt que de chercher à supprimer toutes les régurgitations : un bébé qui régurgite et grossit bien n’a souvent besoin que de patience.
 
 ## Questions fréquentes
 **Mon bébé régurgite beaucoup mais grossit bien : faut-il un traitement ?** Dans un RGO simple bien toléré, seules des mesures pratiques sont utilisées. Les médicaments contre l’acidité sont réservés à des situations précises décidées par le médecin.
@@ -960,10 +960,10 @@ Un **vomissement**, lui, peut avoir de nombreuses causes (infection comme une ga
 
 **Peut-il s’agir d’une allergie au lait ?** Le médecin peut y penser, surtout en cas d’eczéma ou d’asthme associés ; il propose alors un essai d’alimentation adaptée sous son contrôle.
 
-**Le reflux peut-il donner de la toux ?** ameli indique que le reflux acide peut aggraver la toux, la laryngite ou l’enrouement. Parlez-en au médecin si ces signes se répètent.
+**Le reflux peut-il donner de la toux ?** ameli indique que le reflux acide peut aggraver la toux, la laryngite ou l’enrouement. Parles-en au médecin si ces signes se répètent.
 
 ## Quand demander conseil
-Consultez votre médecin si les régurgitations gênent bébé (cris, pleurs, refus du biberon ou du sein), si la courbe de poids ralentit, si les mesures conseillées ne suffisent pas, ou si bébé est agité après les repas ou pendant le sommeil. Consultez **rapidement** en cas de **sang** dans les rejets, de **vomissements répétés**, de fièvre, de refus de boire ou de couches beaucoup moins mouillées. En cas de malaise, de pâleur intense ou de difficulté à respirer, appelez le **15** ou le 112.
+Consulte ton médecin si les régurgitations gênent bébé (cris, pleurs, refus du biberon ou du sein), si la courbe de poids ralentit, si les mesures conseillées ne suffisent pas, ou si bébé est agité après les repas ou pendant le sommeil. Consulte **rapidement** en cas de **sang** dans les rejets, de **vomissements répétés**, de fièvre, de refus de boire ou de couches beaucoup moins mouillées. En cas de malaise, de pâleur intense ou de difficulté à respirer, appelle le **15** ou le 112.
 
 ${FIN}`,
   },
@@ -989,33 +989,33 @@ La HAS indique que cette déformation est **bénigne** : elle n’a pas d’autr
 
 ## Au quotidien
 **Pendant le sommeil**
-- Couchez bébé **sur le dos, à plat**, dans son lit, sans coussin ni cale.
-- **Alternez l’orientation de sa tête** : mpedia propose une semaine d’un côté, la suivante de l’autre (par exemple en le couchant tête d’un côté puis de l’autre du lit).
-- **Changez de temps en temps la position du lit** dans la chambre par rapport à la porte ou à la fenêtre, qui attirent son regard.
+- Couche bébé **sur le dos, à plat**, dans son lit, sans coussin ni cale.
+- **Alterne l’orientation de sa tête** : mpedia propose une semaine d’un côté, la suivante de l’autre (par exemple en le couchant tête d’un côté puis de l’autre du lit).
+- **Change de temps en temps la position du lit** dans la chambre par rapport à la porte ou à la fenêtre, qui attirent son regard.
 
 **Pendant l’éveil**
-- Posez-le souvent **sur le ventre**, sur un tapis ferme, toujours **sous votre surveillance** : cela renforce les muscles du cou et prépare les retournements.
-- Préférez un **tapis au sol avec des jouets autour** plutôt qu’un transat avec arche ou un mobile fixé d’un seul côté.
-- **Placez-vous du côté opposé** à celui vers lequel il tourne habituellement la tête, et attirez son regard avec la voix ou un jouet sonore.
-- **Alternez le bras** qui le tient pendant les tétées ou les biberons, et les côtés au change.
+- Pose-le souvent **sur le ventre**, sur un tapis ferme, toujours **sous ta surveillance** : cela renforce les muscles du cou et prépare les retournements.
+- Préfère un **tapis au sol avec des jouets autour** plutôt qu’un transat avec arche ou un mobile fixé d’un seul côté.
+- **Place-toi du côté opposé** à celui vers lequel il tourne habituellement la tête, et attire son regard avec la voix ou un jouet sonore.
+- **Alterne le bras** qui le tient pendant les tétées ou les biberons, et les côtés au change.
 
 **En promenade et en voiture**
-- Utilisez une **nacelle** pour les promenades les premiers mois.
-- Réservez la coque au **trajet en voiture** ; ne l’utilisez pas comme lit.
+- Utilise une **nacelle** pour les promenades les premiers mois.
+- Réserve la coque au **trajet en voiture** ; ne l’utilise pas comme lit.
 
 **Les gadgets** : les coussins anti-plagiocéphalie sont déconseillés par la HAS et mpedia : ils limitent la rotation de la tête et bébé risque d’y enfouir son visage.
 
 ## Questions fréquentes
 **Puis-je coucher bébé sur le côté pour éviter la tête plate ?** Non. Le couchage sur le côté est instable et celui sur le ventre peut gêner la respiration : pour dormir, toujours sur le dos.
 
-**Il n’aime pas être sur le ventre, que faire ?** Proposez de courts moments, plusieurs fois par jour, en vous mettant à sa hauteur et en lui montrant un jouet coloré ou sonore, toujours sous surveillance.
+**Il n’aime pas être sur le ventre, que faire ?** Propose de courts moments, plusieurs fois par jour, en te mettant à sa hauteur et en lui montrant un jouet coloré ou sonore, toujours sous surveillance.
 
 **Le transat est-il interdit ?** Non, mais mpedia et la HAS invitent à limiter le temps en transat ou en coque et à privilégier le tapis au sol, où bébé bouge librement.
 
 **La tête plate a-t-elle un effet sur son développement ?** Selon les données citées par la HAS, non : elle n’est pas liée à un retard du développement.
 
 ## Quand demander conseil
-Parlez-en au médecin lors des examens de suivi si vous voyez un méplat, une asymétrie du visage ou des oreilles, ou si bébé tourne toujours la tête du même côté. Consultez si votre bébé a **du mal à bouger le cou** (torticolis) : une kinésithérapie précoce peut être prescrite. Pour toute urgence, appelez le 15 ou le 112.
+Parles-en au médecin lors des examens de suivi si tu vois un méplat, une asymétrie du visage ou des oreilles, ou si bébé tourne toujours la tête du même côté. Consulte si ton bébé a **du mal à bouger le cou** (torticolis) : une kinésithérapie précoce peut être prescrite. Pour toute urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1041,12 +1041,12 @@ La HAS indique que cette déformation est bénigne, sans conséquence autre qu�
 L’Assurance Maladie rappelle aussi qu’un léger aplatissement à l’arrière, avec usure des cheveux à cet endroit, est fréquent et s’atténue quand bébé change lui-même de position.
 
 ## Au quotidien
-- **Évitez l’appui sur la zone plate** pendant l’éveil : portez-le, posez-le sur le ventre ou sur le côté sous surveillance, en veillant à ce qu’il ne s’endorme pas dans ces positions.
+- **Évite l’appui sur la zone plate** pendant l’éveil : porte-le, pose-le sur le ventre ou sur le côté sous surveillance, en veillant à ce qu’il ne s’endorme pas dans ces positions.
 - **Pour dormir, toujours sur le dos**, à plat, sans cale ni coussin, en alternant l’orientation de sa tête et en évitant qu’elle repose toujours sur la zone plate.
-- **Sollicitez le côté « difficile »** : parlez-lui, chantez, montrez les jouets et la lumière de ce côté-là ; installez la table à langer et le lit pour qu’il doive tourner la tête dans ce sens pour vous voir.
-- **Faites les exercices du kinésithérapeute** si une rééducation est prescrite, à la maison, dans le jeu.
-- **Limitez coques et transats** au strict nécessaire.
-- **Prenez une photo du dessus de la tête** une fois par mois, toujours sous le même angle, pour suivre l’évolution avec le médecin.
+- **Sollicite le côté « difficile »** : parle-lui, chante, montre les jouets et la lumière de ce côté-là ; installe la table à langer et le lit pour qu’il doive tourner la tête dans ce sens pour te voir.
+- **Fais les exercices du kinésithérapeute** si une rééducation est prescrite, à la maison, dans le jeu.
+- **Limite coques et transats** au strict nécessaire.
+- **Prends une photo du dessus de la tête** une fois par mois, toujours sous le même angle, pour suivre l’évolution avec le médecin.
 
 ## Questions fréquentes
 **Faut-il un casque ?** Rarement. La HAS indique qu’une orthèse crânienne n’est prescrite qu’exceptionnellement, par des centres de référence, lorsque la déformation ne s’améliore pas malgré les mesures de mobilité.
@@ -1058,7 +1058,7 @@ L’Assurance Maladie rappelle aussi qu’un léger aplatissement à l’arrièr
 **Est-ce de ma faute ?** Non. Beaucoup de bébés développent un méplat malgré des parents attentifs. L’important est d’agir pendant les premiers mois, quand le crâne est encore malléable.
 
 ## Quand demander conseil
-Consultez si votre bébé tourne **toujours la tête du même côté** ou a du mal à bouger le cou, si un méplat s’accentue, si le visage ou les oreilles paraissent asymétriques, ou si la forme de la tête vous inquiète. Demandez au médecin s’il faut une orientation spécialisée si la déformation ne s’améliore pas vers 6 mois. En cas d’urgence, appelez le 15 ou le 112.
+Consulte si ton bébé tourne **toujours la tête du même côté** ou a du mal à bouger le cou, si un méplat s’accentue, si le visage ou les oreilles paraissent asymétriques, ou si la forme de la tête t’inquiète. Demande au médecin s’il faut une orientation spécialisée si la déformation ne s’améliore pas vers 6 mois. En cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1071,49 +1071,49 @@ ${FIN}`,
     tags: ['couper ongles bébé', 'ongles nouveau-né', 'lime bébé', 'ciseaux bout rond', 'bébé se griffe', 'ongle incarné bébé'],
     sources: [S.ameliToilette, S.mpediaToilette],
     body_md: `## En bref
-- Les premiers jours, les ongles du nouveau-né sont **collés à la peau** : attendez qu’ils dépassent avant la première coupe.
+- Les premiers jours, les ongles du nouveau-né sont **collés à la peau** : attends qu’ils dépassent avant la première coupe.
 - **Avant un mois**, une **lime en carton** est souvent plus prudente et pratique.
-- Ensuite, utilisez des **ciseaux à bout rond** adaptés aux nourrissons, environ **une à deux fois par mois** selon mpedia, sans couper trop court.
-- **Mains** : arrondissez légèrement les coins. **Pieds** : coupez **droit**, en laissant les coins un peu longs.
-- Choisissez un **moment calme** : après le bain ou pendant le sommeil.
+- Ensuite, utilise des **ciseaux à bout rond** adaptés aux nourrissons, environ **une à deux fois par mois** selon mpedia, sans couper trop court.
+- **Mains** : arrondis légèrement les coins. **Pieds** : coupe **droit**, en laissant les coins un peu longs.
+- Choisis un **moment calme** : après le bain ou pendant le sommeil.
 
 ## Comprendre
 Les ongles de bébé sont très fins ; ils peuvent le griffer au visage quand il agite les mains. Mais dans les premiers jours, ils adhèrent encore à la peau du bout des doigts : vouloir les couper trop tôt expose à pincer ou entailler la peau. L’Assurance Maladie conseille donc d’attendre qu’ils dépassent, et mpedia recommande la lime en carton avant un mois.
 
 La façon de couper compte aussi. Aux mains, arrondir légèrement les coins évite les angles qui griffent. Aux pieds, couper droit et laisser les coins un peu plus longs limite le risque que l’ongle s’incarne dans la peau en repoussant.
 
-Les ongles s’abîment parfois tout seuls (petits bouts qui se détachent). Ne les arrachez pas : la peau autour est fragile.
+Les ongles s’abîment parfois tout seuls (petits bouts qui se détachent). Ne les arrache pas : la peau autour est fragile.
 
 ## Au quotidien
 **Préparer**
-- Choisissez des **ciseaux à bout rond** ou un **coupe-ongles** conçu pour les bébés, propres, et une lime douce. Vérifiez sur l’emballage l’âge indiqué et la conformité aux normes.
-- Installez-vous **avec une bonne lumière**, bébé calé contre vous ou allongé.
+- Choisis des **ciseaux à bout rond** ou un **coupe-ongles** conçu pour les bébés, propres, et une lime douce. Vérifie sur l’emballage l’âge indiqué et la conformité aux normes.
+- Installe-toi **avec une bonne lumière**, bébé calé contre toi ou allongé.
 - Le meilleur moment : **après le bain**, quand les ongles sont plus souples, ou **pendant une sieste**, quand bébé bouge moins.
 
 **Couper**
-1. Tenez fermement mais doucement le doigt de bébé entre votre pouce et votre index.
-2. Appuyez légèrement sur la pulpe du doigt pour l’écarter de l’ongle.
-3. Coupez par petits coups, en suivant la forme du doigt pour les mains, **droit** pour les pieds.
-4. Ne coupez pas trop court : laissez une fine bordure blanche.
-5. Passez la lime pour adoucir les angles.
+1. Tiens fermement mais doucement le doigt de bébé entre ton pouce et ton index.
+2. Appuie légèrement sur la pulpe du doigt pour l’écarter de l’ongle.
+3. Coupe par petits coups, en suivant la forme du doigt pour les mains, **droit** pour les pieds.
+4. Ne coupe pas trop court : laisse une fine bordure blanche.
+5. Passe la lime pour adoucir les angles.
 
-**Si vous entaillez la peau** : pas de panique, cela arrive. Appuyez doucement avec une compresse propre jusqu’à ce que le saignement s’arrête, puis surveillez la cicatrisation.
+**Si tu entailles la peau** : pas de panique, cela arrive. Appuie doucement avec une compresse propre jusqu’à ce que le saignement s’arrête, puis surveille la cicatrisation.
 
 **Astuces**
-- Faites-le à deux au début : l’un tient et distrait, l’autre coupe.
-- Chantez, parlez doucement : bébé s’habitue au rituel.
+- Fais-le à deux au début : l’un tient et distrait, l’autre coupe.
+- Chante, parle doucement : bébé s’habitue au rituel.
 
 ## Questions fréquentes
 **Avant un mois, faut-il vraiment attendre ?** Oui : tant que les ongles sont collés à la peau, ameli conseille d’attendre qu’ils dépassent. La lime en carton permet d’adoucir les bords en douceur, sans lame.
 
-**Mon bébé se griffe le visage la nuit : que faire ?** Limez les ongles régulièrement. Les petites griffures cicatrisent en général vite ; si elles rougissent ou suintent, montrez-les au médecin.
+**Mon bébé se griffe le visage la nuit : que faire ?** Lime les ongles régulièrement. Les petites griffures cicatrisent en général vite ; si elles rougissent ou suintent, montre-les au médecin.
 
-**À quelle fréquence ?** mpedia évoque une à deux fois par mois après un mois ; coupez dès qu’ils sont longs et assez durs.
+**À quelle fréquence ?** mpedia évoque une à deux fois par mois après un mois ; coupe dès qu’ils sont longs et assez durs.
 
 **L’ongle du gros orteil rentre dans la peau : est-ce grave ?** Un ongle de pied qui s’enfonce, avec une peau rouge, gonflée ou du pus, doit être montré au médecin.
 
 ## Quand demander conseil
-Consultez si la peau autour d’un ongle est **rouge, gonflée, chaude, douloureuse** ou contient du **pus**, si une coupure saigne longtemps, ou si l’inflammation s’étend. En cas de fièvre chez un bébé de moins de 3 mois, consultez rapidement. En cas d’urgence, appelez le 15 ou le 112.
+Consulte si la peau autour d’un ongle est **rouge, gonflée, chaude, douloureuse** ou contient du **pus**, si une coupure saigne longtemps, ou si l’inflammation s’étend. En cas de fièvre chez un bébé de moins de 3 mois, consulte rapidement. En cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1137,26 +1137,26 @@ La peau du siège est soumise à l’humidité, à la chaleur et aux frottements
 Une mycose des plis se manifeste souvent par des **plis rouges et suintants**, parfois fissurés, avec un dépôt jaunâtre et crémeux et des plaques rouges qui s’étendent. Lors de la consultation, le médecin vérifie l’absence d’infection et écarte d’autres causes de rougeurs du siège, comme l’**eczéma** ou la **dermite séborrhéique**. Si l’érythème récidive malgré des soins bien faits, il recherche une autre cause, par exemple une **diarrhée qui dure** : traiter la cause fait alors disparaître la rougeur.
 
 ## Au quotidien
-- **Changez bébé souvent**, dès que la couche est mouillée ou souillée, sans la serrer.
-- **Lavez à l’eau tiède** et avec un savon doux si besoin, rincez, puis **séchez en tamponnant**, en insistant dans les plis.
-- **Laissez les fesses à l’air** quelques minutes quand c’est possible.
-- **Appliquez le traitement prescrit** après chaque lavage, sur une peau sèche, pendant toute la durée indiquée.
-- **Évitez les lingettes parfumées** et les produits irritants ; en déplacement, préférez des lingettes sans parfum.
-- **Lavez-vous les mains** avant et après chaque change.
-- **Regardez la bouche** de bébé : des plaques blanches qui persistent évoquent un muguet, à signaler au médecin.
-- **Si vous allaitez**, surveillez vos mamelons : douleur, brûlures ou démangeaisons doivent faire consulter, car la levure peut passer de l’un à l’autre.
+- **Change bébé souvent**, dès que la couche est mouillée ou souillée, sans la serrer.
+- **Lave à l’eau tiède** et avec un savon doux si besoin, rince, puis **sèche en tamponnant**, en insistant dans les plis.
+- **Laisse les fesses à l’air** quelques minutes quand c’est possible.
+- **Applique le traitement prescrit** après chaque lavage, sur une peau sèche, pendant toute la durée indiquée.
+- **Évite les lingettes parfumées** et les produits irritants ; en déplacement, préfère des lingettes sans parfum.
+- **Lave-toi les mains** avant et après chaque change.
+- **Regarde la bouche** de bébé : des plaques blanches qui persistent évoquent un muguet, à signaler au médecin.
+- **Si tu allaites**, surveille tes mamelons : douleur, brûlures ou démangeaisons doivent faire consulter, car la levure peut passer de l’un à l’autre.
 
 ## Questions fréquentes
 **Comment savoir si c’est une mycose ?** Seul le médecin peut le dire. Une rougeur qui dure malgré les soins, avec des plis rouges et suintants, doit le faire évoquer.
 
-**Puis-je utiliser une crème antifongique que j’ai déjà à la maison ?** Non : ameli recommande de ne pas traiter seul une mycose chez un enfant de moins de 12 ans. Consultez.
+**Puis-je utiliser une crème antifongique que j’ai déjà à la maison ?** Non : ameli recommande de ne pas traiter seul une mycose chez un enfant de moins de 12 ans. Consulte.
 
-**Les antibiotiques ont-ils pu jouer ?** Oui, ils font partie des facteurs qui favorisent les mycoses. Signalez au médecin tout traitement récent.
+**Les antibiotiques ont-ils pu jouer ?** Oui, ils font partie des facteurs qui favorisent les mycoses. Signale au médecin tout traitement récent.
 
 **Faut-il changer de marque de couches ?** Les sources consultées ne le recommandent pas en particulier. L’essentiel est la fréquence des changes, une couche pas trop serrée et une peau bien sèche.
 
 ## Quand demander conseil
-Consultez si les fesses restent rouges **après quelques jours** de soins bien conduits, si la rougeur s’étend, suinte, forme des **cloques**, des **croûtes** ou du **pus**, si les plis sont fissurés, si bébé a des plaques blanches dans la bouche, ou si l’érythème revient sans cesse. Consultez rapidement en cas de **fièvre**, de diarrhée qui dure ou si bébé semble mal. En cas d’urgence, appelez le 15 ou le 112.
+Consulte si les fesses restent rouges **après quelques jours** de soins bien conduits, si la rougeur s’étend, suinte, forme des **cloques**, des **croûtes** ou du **pus**, si les plis sont fissurés, si bébé a des plaques blanches dans la bouche, ou si l’érythème revient sans cesse. Consulte rapidement en cas de **fièvre**, de diarrhée qui dure ou si bébé semble mal. En cas d’urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1177,35 +1177,35 @@ ${FIN}`,
 ## Comprendre
 Le cordon ombilical est insensible : les soins ne font pas mal à bébé. Il se dessèche progressivement puis se détache. Après sa chute, il reste une petite plaie au fond du nombril, qui doit cicatriser. Il est fréquent de voir quelques croûtes de sang au fond de l’ombilic : on peut les retirer doucement lors des soins.
 
-**Le bourgeon ombilical** (ou granulome) est une petite boule rouge, plus ou moins humide, au fond du nombril. mpedia indique qu’il n’est pas forcément inquiétant : abordez-le lors des premières consultations. Le professionnel décide si un traitement local est utile.
+**Le bourgeon ombilical** (ou granulome) est une petite boule rouge, plus ou moins humide, au fond du nombril. mpedia indique qu’il n’est pas forcément inquiétant : aborde-le lors des premières consultations. Le professionnel décide si un traitement local est utile.
 
 **Les signes qui doivent faire consulter** sont ceux d’une cicatrisation qui se passe mal ou d’une infection : saignement qui se répète, odeur désagréable, nombril qui reste humide et ne sèche pas, base du cordon ou peau autour du nombril qui rougit et se ramollit. Selon mpedia, un cordon qui n’est toujours pas tombé à **deux mois** doit aussi être montré.
 
 ## Au quotidien
 **Les soins** (d’après ameli et mpedia)
-1. Lavez-vous les mains.
-2. Nettoyez le nombril à l’eau tiède et au savon doux, avec un gant propre ou une compresse, au moins une fois par jour (par exemple après le bain) et dès qu’il est souillé.
-3. Retirez doucement les croûtes, sans forcer.
-4. Rincez puis **séchez complètement**, avec une compresse ou en laissant à l’air.
-5. Arrêtez les soins quand la cicatrisation est terminée.
+1. Lave-toi les mains.
+2. Nettoie le nombril à l’eau tiède et au savon doux, avec un gant propre ou une compresse, au moins une fois par jour (par exemple après le bain) et dès qu’il est souillé.
+3. Retire doucement les croûtes, sans forcer.
+4. Rince puis **sèche complètement**, avec une compresse ou en laissant à l’air.
+5. Arrête les soins quand la cicatrisation est terminée.
 
 **Autres conseils**
-- **Ne tirez jamais** sur le cordon, même s’il ne tient plus qu’à un fil.
-- **Repliez le bord de la couche** pour ne pas recouvrir le nombril, et chez le garçon, **orientez le pénis vers le bas**.
-- **Pas d’alcool** sur le nombril. Une désinfection n’est pas nécessaire en temps normal ; si le nombril rougit, sent mauvais ou se ramollit, demandez conseil au médecin ou au pharmacien.
+- **Ne tire jamais** sur le cordon, même s’il ne tient plus qu’à un fil.
+- **Replie le bord de la couche** pour ne pas recouvrir le nombril, et chez le garçon, **oriente le pénis vers le bas**.
+- **Pas d’alcool** sur le nombril. Une désinfection n’est pas nécessaire en temps normal ; si le nombril rougit, sent mauvais ou se ramollit, demande conseil au médecin ou au pharmacien.
 - **Le bain est possible** avant et après la chute, à condition de bien sécher ensuite.
 
 ## Questions fréquentes
-**Le nombril saigne un peu après la chute : est-ce grave ?** Quelques traces de sang sont sans gravité. Si le saignement se répète ou ne s’arrête pas, consultez.
+**Le nombril saigne un peu après la chute : est-ce grave ?** Quelques traces de sang sont sans gravité. Si le saignement se répète ou ne s’arrête pas, consulte.
 
-**Une petite boule rouge reste au fond du nombril : que faire ?** Il s’agit souvent d’un bourgeon ombilical. Montrez-le au médecin lors de la prochaine consultation ; il proposera un soin si nécessaire.
+**Une petite boule rouge reste au fond du nombril : que faire ?** Il s’agit souvent d’un bourgeon ombilical. Montre-le au médecin lors de la prochaine consultation ; il proposera un soin si nécessaire.
 
 **Le nombril sort un peu : est-ce une hernie ?** Les sources consultées pour cet article ne traitent pas de la hernie ombilicale. Toute bosse au niveau du nombril, surtout si elle grossit quand bébé pleure, se montre au médecin.
 
 **Quand peut-on arrêter les soins ?** Quand le nombril est sec et complètement cicatrisé, sans croûte ni suintement.
 
 ## Quand demander conseil
-Consultez si le nombril **saigne régulièrement**, **sent mauvais**, reste **humide**, si la peau autour devient **rouge, chaude ou gonflée**, ou si le cordon n’est pas tombé à deux mois. Consultez **sans attendre** si une rougeur s’étend autour du nombril ou si bébé a de la **fièvre**, tète moins ou semble fatigué : chez un nouveau-né, appelez le 15 ou le 112 en cas de doute.
+Consulte si le nombril **saigne régulièrement**, **sent mauvais**, reste **humide**, si la peau autour devient **rouge, chaude ou gonflée**, ou si le cordon n’est pas tombé à deux mois. Consulte **sans attendre** si une rougeur s’étend autour du nombril ou si bébé a de la **fièvre**, tète moins ou semble fatigué : chez un nouveau-né, appelle le 15 ou le 112 en cas de doute.
 
 ${FIN}`,
   },

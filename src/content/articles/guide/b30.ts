@@ -17,7 +17,7 @@ const S = {
   ameliPrevention: { label: 'ameli.fr — Prévenir les difficultés d’acquisition du langage oral', url: 'https://www.ameli.fr/assure/sante/themes/trouble-expression-langage-oral-enfant/prevention-langage-oral-maison-ecole', consulted_on: C, published: '2026-01-20' },
   langues: { label: `${MP} — Langues étrangères : quelle langue parler à son bébé ?`, url: 'https://www.mpedia.fr/art-parents-non-francophones/', consulted_on: C, published: '2023-07-13' },
   ecritNonFrancophone: { label: `${MP} — Apprentissage de l’écriture et de la lecture dans un environnement non francophone`, url: 'https://www.mpedia.fr/art-parle-plusieurs-langues-maison/', consulted_on: C, published: '2019-07-10' },
-  pourquoi: { label: `${MP} — Votre enfant comprend les questions avec « pourquoi »`, url: 'https://www.mpedia.fr/outil-enfant-comprend-questions-pourquoi/', consulted_on: C },
+  pourquoi: { label: `${MP} — Ton enfant comprend les questions avec « pourquoi »`, url: 'https://www.mpedia.fr/outil-enfant-comprend-questions-pourquoi/', consulted_on: C },
   dev34: { label: `${MP} — Autonomie de l’enfant, le développement entre 3 et 4 ans`, url: 'https://www.mpedia.fr/art-developpement-de-lenfant-3-a-4-ans/', consulted_on: C, published: '2021-01-05' },
   autonomie: { label: `${MP} — Les étapes de l’autonomie de l’enfant, entre 6 et 11 ans`, url: 'https://www.mpedia.fr/art-quelle-autonomie-quel-age/', consulted_on: C, published: '2019-07-10' },
   matin: { label: `${MP} — Aller à l’école : nos clés pour des préparatifs plus sereins le matin`, url: 'https://www.mpedia.fr/art-aller-ecole/', consulted_on: C, published: '2021-09-22' },
@@ -27,7 +27,7 @@ const S = {
   agressivite: { label: `${MP} — Comment réagir face à l’agressivité persistante de mon enfant ?`, url: 'https://www.mpedia.fr/art-mon-enfant-est-violent/', consulted_on: C, published: '2023-09-01' },
   caprices: { label: `${MP} — Cris, pleurs de l’enfant : réagir face aux caprices`, url: 'https://www.mpedia.fr/art-caprices-comment-les-gerer/', consulted_on: C, published: '2022-04-20' },
   obeissance: { label: `${MP} — Obéissance de l’enfant : quelle punition ?`, url: 'https://www.mpedia.fr/art-obeissance-punition/', consulted_on: C, published: '2023-08-31' },
-  regles: { label: `${MP} — Votre enfant accepte les règles`, url: 'https://www.mpedia.fr/outil-enfant-regles/', consulted_on: C },
+  regles: { label: `${MP} — Ton enfant accepte les règles`, url: 'https://www.mpedia.fr/outil-enfant-regles/', consulted_on: C },
   jalousie: { label: `${MP} — La jalousie de l’enfant : un sentiment à prendre en compte`, url: 'https://www.mpedia.fr/art-mon-enfant-est-jaloux/', consulted_on: C, published: '2020-10-21' },
   aine: { label: `${MP} — Accueil par l’aîné à l’arrivée d’un nouveau-né`, url: 'https://www.mpedia.fr/art-nouveau-ne-place-de-laine/', consulted_on: C, published: '2023-08-31' },
   vieFamille: { label: 'Santé.fr (contenu 1000 premiers jours / Santé publique France) — La vie de famille après la naissance', url: 'https://www.sante.fr/la-vie-de-famille-apres-la-naissance', consulted_on: C, published: '2024-08-26' },
@@ -38,8 +38,8 @@ const S = {
   pleurs: { label: 'Santé.fr (contenu mpedia / AFPA) — Pleurs de mon enfant : les comprendre et les calmer', url: 'https://www.sante.fr/pleurs-de-mon-enfant-les-comprendre-et-les-calmer', consulted_on: C, published: '2026-08-31' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article vous informe ; il ne remplace pas l’avis du médecin, du pédiatre, de la puéricultrice de PMI, du psychologue ou des professionnels qui accompagnent votre enfant._';
-const AIDE = 'Si vous vous sentez à bout ou envahi par des idées noires, appelez le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit. En cas d’urgence vitale, appelez le **15** (SAMU) ou le **112**.';
+const FIN = '_Cet article t’informe ; il ne remplace pas l’avis du médecin, du pédiatre, de la puéricultrice de PMI, du psychologue ou des professionnels qui accompagnent ton enfant._';
+const AIDE = 'Si tu te sens à bout ou envahi par des idées noires, appelle le **3114** (numéro national de prévention du suicide), gratuit, jour et nuit. Si tu penses qu’un enfant est en danger, appelle le **119** (Allô Enfance en danger), gratuit, jour et nuit. En cas d’urgence vitale, appelle le **15** (SAMU) ou le **112**.';
 
 const a = (x: Omit<LibArticle, 'status' | 'journeys'> & { journeys?: LibArticle['journeys'] }): LibArticle => ({
   journeys: ['child'], status: 'to_review', ...x,
@@ -50,7 +50,7 @@ export const GUIDE_B30: LibArticle[] = [
   a({
     slug: 'rituel-du-coucher-tout-petit-construire-etapes',
     title: 'Le rituel du coucher de 1 à 6 ans : le construire pas à pas',
-    summary: 'Comment bâtir un rituel du soir court, répété et apaisant, qui aide votre enfant à passer de la journée à la nuit et à s’endormir dans son lit.',
+    summary: 'Comment bâtir un rituel du soir court, répété et apaisant, qui aide ton enfant à passer de la journée à la nuit et à s’endormir dans son lit.',
     category: 'sommeil', tags: ['rituel du coucher', 'heure du coucher', 'histoire du soir', 'endormissement', 'routine du soir', 'coucher enfant', 'berceuse', 'bonne nuit'],
     min_age_months: 12, max_age_months: 72, journeys: ['child', 'parents_sleep'],
     sources: [S.rituel, S.sommeilEnfant],
@@ -68,22 +68,22 @@ Le rituel du soir s’inscrit dans cette logique. Les pédiatres de l’AFPA, su
 Les repères de durée de sommeil cités par le Réseau Morphée (environ 12 heures par jour entre 3 et 5 ans, environ 11 heures entre 5 et 6 ans) sont des moyennes : il existe de petits et de gros dormeurs, des enfants « du matin » et « du soir ».
 
 ## Au quotidien
-**Un exemple de rituel, à adapter à votre famille :**
+**Un exemple de rituel, à adapter à ta famille :**
 1. Le bain ou la toilette, puis le pyjama, dans la salle de bains.
 2. Les dents brossées.
 3. Volets ou rideaux fermés, lumière douce.
-4. Une histoire, une comptine ou une berceuse : la musicalité de la voix compte, même pour un tout-petit. Plus tard, vous pouvez lire ensemble, puis laisser l’enfant feuilleter seul.
+4. Une histoire, une comptine ou une berceuse : la musicalité de la voix compte, même pour un tout-petit. Plus tard, tu peux lire ensemble, puis laisser l’enfant feuilleter seul.
 5. Le tour des « bonne nuit » aux membres de la famille.
-6. Un dernier câlin, l’enfant dans son lit, encore éveillé. Vous quittez la chambre en lui disant que vous êtes tout près.
+6. Un dernier câlin, l’enfant dans son lit, encore éveillé. Tu quittes la chambre en lui disant que tu es tout près.
 
 **Ce qui aide :**
 - Garder **le même ordre** chaque soir : c’est la répétition qui rassure.
 - Éviter les jeux excitants juste avant : chatouilles, lancers de ballon ou d’oreillers.
 - Limiter la lumière le soir et éviter les écrans (tablette, téléphone, ordinateur), recommandation du Réseau Morphée.
 - Prévenir à l’avance : « Encore une histoire, puis c’est l’heure du lit. »
-- Prévoir vos propres moments de douceur : le rituel est aussi précieux pour les parents.
+- Prévoir tes propres moments de douceur : le rituel est aussi précieux pour les parents.
 
-**Si votre enfant appelle ou pleure après votre départ**, montrez-lui que vous êtes proche et que vous pouvez revenir, calmement, sans relancer le jeu.
+**Si ton enfant appelle ou pleure après ton départ**, montre-lui que tu es proche et que tu peux revenir, calmement, sans relancer le jeu.
 
 ## Questions fréquentes
 **Combien de temps doit durer le rituel ?**
@@ -96,10 +96,10 @@ Rien n’oblige à tout reproduire, mais retrouver quelques gestes familiers (l�
 Le Réseau Morphée conseille des heures de coucher et de lever stables, y compris le week-end et pendant les vacances, pour ne pas dérégler l’horloge interne.
 
 **Mon enfant réclame « encore une histoire » chaque soir. Que faire ?**
-Annoncez le nombre d’histoires avant de commencer et tenez-vous-y avec douceur. Un repère clair évite la négociation sans fin.
+Annonce le nombre d’histoires avant de commencer et tiens-t’y avec douceur. Un repère clair évite la négociation sans fin.
 
 ## Quand demander conseil
-Parlez-en au médecin ou au pédiatre si les difficultés d’endormissement ou les réveils nocturnes persistent, si votre enfant semble fatigué en journée malgré des nuits suffisantes, s’il ronfle fortement ou si les siestes réapparaissent régulièrement après 4 ans. ${AIDE}
+Parles-en au médecin ou au pédiatre si les difficultés d’endormissement ou les réveils nocturnes persistent, si ton enfant semble fatigué en journée malgré des nuits suffisantes, s’il ronfle fortement ou si les siestes réapparaissent régulièrement après 4 ans. ${AIDE}
 
 ${FIN}`,
   }),
@@ -113,8 +113,8 @@ ${FIN}`,
     body_md: `## En bref
 - Chez le jeune enfant, l’imagination déborde : la peur du noir, des bruits, des fantômes ou des sorcières est fréquente.
 - Cette peur est **réelle** pour lui : mieux vaut l’écouter et l’aider à la nommer que la nier.
-- Vous pouvez « raisonner à sa place » : allumer la lumière pour montrer qu’il n’y a rien, expliquer l’origine d’un bruit.
-- Évitez les menaces (« le loup va venir si tu ne dors pas ») qui ajoutent de la peur à la peur.
+- Tu peux « raisonner à sa place » : allumer la lumière pour montrer qu’il n’y a rien, expliquer l’origine d’un bruit.
+- Évite les menaces (« le loup va venir si tu ne dors pas ») qui ajoutent de la peur à la peur.
 
 ## Comprendre
 Pour la pédopsychiatre Sarah Bydlowski (mpedia), les peurs de l’enfance sont structurantes : les surmonter aide à grandir, à condition d’être accompagné par des parents compréhensifs et rassurants. Le jeune enfant ne fait pas encore bien la différence entre ce qu’il imagine et ce qui existe. Dans l’obscurité, une chaise devient une silhouette, un volet qui claque devient un monstre.
@@ -125,14 +125,14 @@ Le coucher est un moment de séparation. Les pédiatres de l’AFPA rappellent l
 
 ## Au quotidien
 **Au moment de la peur :**
-- **Écoutez** sans vous moquer : « Tu as peur qu’il y ait quelque chose sous le lit ? » Mettre des mots sur une peur la diminue.
-- **Vérifiez ensemble** : allumez, regardez sous le lit, ouvrez le placard. Vous montrez concrètement qu’il n’y a rien.
-- **Expliquez les bruits** : le chauffage, le voisin, le vent dans le volet.
-- **Partagez votre expérience** : dire que vous aussi avez eu peur de quelque chose, tout en précisant que c’était inoffensif, dédramatise sans minimiser.
+- **Écoute** sans te moquer : « Tu as peur qu’il y ait quelque chose sous le lit ? » Mettre des mots sur une peur la diminue.
+- **Vérifie ensemble** : allume, regarde sous le lit, ouvre le placard. Tu montres concrètement qu’il n’y a rien.
+- **Explique les bruits** : le chauffage, le voisin, le vent dans le volet.
+- **Partage ton expérience** : dire que toi aussi as eu peur de quelque chose, tout en précisant que c’était inoffensif, dédramatise sans minimiser.
 
 **Pour préparer la nuit :**
 - Un rituel du coucher calme et prévisible.
-- Une lumière douce si elle le rassure, ou la porte entrouverte : à vous de voir ce qui fonctionne chez vous.
+- Une lumière douce si elle le rassure, ou la porte entrouverte : à toi de voir ce qui fonctionne chez toi.
 - Le doudou, présence familière au toucher et à l’odeur.
 - Des histoires sur la nuit et ses « monstres » lues en journée, à distance du coucher, permettent d’en parler sans pression.
 
@@ -143,10 +143,10 @@ Le coucher est un moment de séparation. Les pédiatres de l’AFPA rappellent l
 
 ## Questions fréquentes
 **Faut-il « chasser les monstres » avec un spray ou un rituel magique ?**
-Certaines familles le font pour jouer. Gardez en tête que l’objectif est d’aider l’enfant à distinguer l’imaginaire du réel : allumer et vérifier ensemble est souvent plus rassurant à long terme que confirmer que les monstres existent.
+Certaines familles le font pour jouer. Garde en tête que l’objectif est d’aider l’enfant à distinguer l’imaginaire du réel : allumer et vérifier ensemble est souvent plus rassurant à long terme que confirmer que les monstres existent.
 
 **Mon enfant vient dans notre lit quand il a peur. Est-ce un problème ?**
-Chaque famille fait ses choix. Vous pouvez le raccompagner calmement dans son lit et rester un moment près de lui, pour qu’il apprenne que sa chambre est un lieu sûr.
+Chaque famille fait ses choix. Tu peux le raccompagner calmement dans son lit et rester un moment près de lui, pour qu’il apprenne que sa chambre est un lieu sûr.
 
 **Peur du noir et cauchemars, est-ce la même chose ?**
 Non : la peur du noir survient avant l’endormissement, le cauchemar est un mauvais rêve qui réveille l’enfant. Dans les deux cas, il a besoin d’être rassuré.
@@ -155,7 +155,7 @@ Non : la peur du noir survient avant l’endormissement, le cauchemar est un mau
 Il n’y a pas d’âge fixe. Elle s’atténue en général à mesure que l’enfant comprend mieux le monde, surtout s’il se sent écouté.
 
 ## Quand demander conseil
-Demandez l’avis du médecin de votre enfant si sa peur prend beaucoup de place dans sa vie, si elle empêche durablement le sommeil, s’il paraît anxieux de nature ou si d’autres changements apparaissent (tristesse, maux de ventre, refus de l’école). ${AIDE}
+Demande l’avis du médecin de ton enfant si sa peur prend beaucoup de place dans sa vie, si elle empêche durablement le sommeil, s’il paraît anxieux de nature ou si d’autres changements apparaissent (tristesse, maux de ventre, refus de l’école). ${AIDE}
 
 ${FIN}`,
   }),
@@ -170,7 +170,7 @@ ${FIN}`,
 - Les peurs évoluent avec l’âge : monstres et noir chez le petit, puis peur de se perdre, de perdre ses parents, de l’orage ou des voleurs, et plus tard des faits divers.
 - À partir de 6-7 ans, l’enfant se pose davantage de questions sur la mort.
 - Trois leviers aident : **écouter**, **informer** avec des mots simples, **relativiser** le risque réel.
-- Ne niez pas la peur et ne la renforcez pas : elle est réelle pour l’enfant, même si son objet ne l’est pas.
+- Ne nie pas la peur et ne la renforce pas : elle est réelle pour l’enfant, même si son objet ne l’est pas.
 
 ## Comprendre
 Selon la pédopsychiatre Sarah Bydlowski (mpedia), le jeune enfant a une imagination débordante qui nourrit des peurs « fantastiques ». En grandissant, apparaissent des peurs plus irrationnelles qui portent souvent sur ce que l’enfant comprend mal : la mort, l’orage, la maladie, les voleurs. Plus âgé, il découvre par l’école, la télévision ou internet des événements effrayants (catastrophes, crimes, enlèvements) qui peuvent l’inquiéter.
@@ -179,32 +179,32 @@ Ces peurs font partie du développement. Les surmonter aide l’enfant à grandi
 
 ## Au quotidien
 **Écouter d’abord**
-- Encouragez-le à raconter ce qui lui fait peur, sans juger ni vous moquer.
-- Reformulez : « Quand il y a du tonnerre, tu as l’impression que la maison va casser ? »
+- Encourage-le à raconter ce qui lui fait peur, sans juger ni te moquer.
+- Reformule : « Quand il y a du tonnerre, tu as l’impression que la maison va casser ? »
 
 **Informer, avec des mots adaptés**
 - **L’orage :** expliquer le phénomène aide. Compter les secondes entre l’éclair et le tonnerre permet d’estimer la distance de l’orage (environ un kilomètre toutes les trois secondes) : un jeu qui redonne le contrôle.
 - **Un animal :** un livre sur cet animal, observer de loin un chien calme avec son maître, apprendre les bons gestes (ne pas courir, ne pas caresser sans demander).
-- **Une catastrophe vue aux informations :** rappeler, si c’est le cas, que le phénomène est rare et que le risque là où vous vivez est très faible.
+- **Une catastrophe vue aux informations :** rappeler, si c’est le cas, que le phénomène est rare et que le risque là où tu vis est très faible.
 
 **Parler de la mort**
-- À partir de 6-7 ans, expliquez simplement qu’elle fait partie de la fin de la vie.
-- Répondez aux questions au fur et à mesure, sans en dire plus que ce qu’il demande.
-- Quand vous n’avez pas de réponse, cherchez ensemble. On ne peut pas protéger l’enfant de cette peur, mais on peut l’accompagner.
+- À partir de 6-7 ans, explique simplement qu’elle fait partie de la fin de la vie.
+- Réponds aux questions au fur et à mesure, sans en dire plus que ce qu’il demande.
+- Quand tu n’as pas de réponse, cherche ensemble. On ne peut pas protéger l’enfant de cette peur, mais on peut l’accompagner.
 
 **Limiter ce qui alimente l’angoisse**
-- Évitez les menaces pour obtenir l’obéissance.
-- Choisissez avec lui les images et les informations qu’il regarde, et restez disponible pour en parler.
+- Évite les menaces pour obtenir l’obéissance.
+- Choisis avec lui les images et les informations qu’il regarde, et reste disponible pour en parler.
 
 ## Questions fréquentes
 **Dois-je lui dire que, moi aussi, j’ai peur de certaines choses ?**
 Oui, cela peut aider, en précisant que la chose en question est sans danger réel. Il comprend que la peur se partage et se surmonte.
 
 **Faut-il l’obliger à affronter sa peur (caresser le chien, par exemple) ?**
-Forcer risque d’augmenter la peur. Avancez par petites étapes qu’il accepte, en le félicitant pour chaque pas.
+Forcer risque d’augmenter la peur. Avance par petites étapes qu’il accepte, en le félicitant pour chaque pas.
 
 **Il a peur qu’il nous arrive quelque chose. Comment le rassurer ?**
-Écoutez sa peur, expliquez ce qui est prévu pour lui (qui vient le chercher, qui s’occupe de lui), et rappelez que les adultes veillent sur sa sécurité.
+Écoute sa peur, explique ce qui est prévu pour lui (qui vient le chercher, qui s’occupe de lui), et rappelle que les adultes veillent sur sa sécurité.
 
 **Ces peurs peuvent-elles cacher autre chose ?**
 Parfois. Si l’enfant paraît anxieux en permanence, s’isole, dort mal ou se plaint souvent de maux de tête ou de ventre, un mal-être plus profond peut se cacher derrière.
@@ -232,7 +232,7 @@ Quand son parent disparaît de son champ de vision, le bébé peut se sentir aba
 
 Le nouveau-né est trop jeune pour choisir un doudou. En néonatalogie, on conseille souvent un petit mouchoir ou un foulard imprégné de l’odeur du parent, placé près du bébé. Plus tard, l’enfant élit lui-même son objet, parfois inattendu.
 
-Côté sécurité, pour le tout-petit, les recommandations de couchage restent prioritaires : couchage sur le dos, matelas ferme, et lit sans tour de lit, couverture, oreiller ni grosse peluche. Demandez conseil à votre pédiatre ou à la PMI pour savoir quand et comment laisser un doudou dans le lit selon l’âge de votre bébé.
+Côté sécurité, pour le tout-petit, les recommandations de couchage restent prioritaires : couchage sur le dos, matelas ferme, et lit sans tour de lit, couverture, oreiller ni grosse peluche. Demande conseil à ton pédiatre ou à la PMI pour savoir quand et comment laisser un doudou dans le lit selon l’âge de ton bébé.
 
 ## Au quotidien
 **Dans les séparations**
@@ -241,13 +241,13 @@ Côté sécurité, pour le tout-petit, les recommandations de couchage restent p
 
 **Le lavage, sans larmes**
 - Le doudou est sucé, traîné, emporté partout : il doit être lavé régulièrement.
-- Expliquez que, comme lui, son doudou a besoin d’être propre et de sentir bon.
-- Faites-en un jeu : l’enfant met lui-même le doudou dans la machine, le regarde sécher.
-- Choisissez un moment calme (pendant une sieste ou un week-end tranquille) plutôt qu’un soir où il en aura besoin.
+- Explique que, comme lui, son doudou a besoin d’être propre et de sentir bon.
+- Fais-en un jeu : l’enfant met lui-même le doudou dans la machine, le regarde sécher.
+- Choisis un moment calme (pendant une sieste ou un week-end tranquille) plutôt qu’un soir où il en aura besoin.
 
 **À la crèche et à l’école**
 - Des moments « sans doudou » y sont souvent prévus : rangé dans un panier ou dans le casier, il reste accessible en cas de chagrin.
-- Respectez les règles de l’établissement et parlez-en avec l’équipe.
+- Respecte les règles de l’établissement et parles-en avec l’équipe.
 
 **Quand il s’éloigne**
 - Avec l’autonomie, l’enfant s’intéresse à d’autres activités et délaisse peu à peu son doudou. Le détachement n’est jamais total : certains adultes le gardent toute leur vie.
@@ -260,13 +260,13 @@ Certaines familles le font pour faire face à une perte ou à un lavage. L’enf
 Non. Tous les enfants n’en choisissent pas ; certains se consolent autrement (un geste, une chanson, la main d’un adulte).
 
 **À quel âge faut-il arrêter le doudou ?**
-Il n’y a pas d’âge imposé. Il s’efface de lui-même ; vous pouvez simplement proposer qu’il reste à la maison ou au lit pendant certaines activités.
+Il n’y a pas d’âge imposé. Il s’efface de lui-même ; tu peux simplement proposer qu’il reste à la maison ou au lit pendant certaines activités.
 
 **Le doudou est perdu : que faire ?**
-Accueillez le chagrin, cherchez ensemble, et proposez un autre réconfort sans minimiser la perte. L’enfant a besoin de temps.
+Accueille le chagrin, cherche ensemble, et propose un autre réconfort sans minimiser la perte. L’enfant a besoin de temps.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la puéricultrice si les séparations restent très difficiles malgré le temps, ou si l’enfant semble en détresse durable. Pour le couchage d’un bébé, la PMI peut vous conseiller. ${AIDE}
+Parles-en au médecin ou à la puéricultrice si les séparations restent très difficiles malgré le temps, ou si l’enfant semble en détresse durable. Pour le couchage d’un bébé, la PMI peut te conseiller. ${AIDE}
 
 ${FIN}`,
   }),
@@ -292,35 +292,35 @@ Bonne nouvelle : la tétine est plus facile à abandonner que le pouce. Et si el
 
 ## Au quotidien
 **Réduire progressivement**
-- Commencez par la réserver au lit (sieste et nuit), puis seulement à l’endormissement.
-- Proposez d’autres apaisements : câlin, doudou, chanson, histoire.
-- La journée, gardez la tétine hors de vue : ce qu’on ne voit pas, on le réclame moins.
+- Commence par la réserver au lit (sieste et nuit), puis seulement à l’endormissement.
+- Propose d’autres apaisements : câlin, doudou, chanson, histoire.
+- La journée, garde la tétine hors de vue : ce qu’on ne voit pas, on le réclame moins.
 
 **Parler, expliquer**
 - Vers 2-3 ans, l’enfant comprend des explications simples : « Avec la tétine, c’est plus difficile de parler », « Tes dents ont besoin de pousser bien droit ».
-- Laissez-le participer à la décision : choisir le jour, ranger lui-même les tétines.
-- Félicitez chaque étape franchie.
+- Laisse-le participer à la décision : choisir le jour, ranger lui-même les tétines.
+- Félicite chaque étape franchie.
 
 **Hygiène et sécurité**
-- Ne nettoyez pas une tétine tombée par terre en la mettant dans votre bouche : cela transmet des germes responsables de caries.
-- Vérifiez régulièrement son état et remplacez-la au moindre signe d’usure.
-- Ne l’attachez jamais avec un cordon autour du cou.
+- Ne nettoie pas une tétine tombée par terre en la mettant dans ta bouche : cela transmet des germes responsables de caries.
+- Vérifie régulièrement son état et remplace-la au moindre signe d’usure.
+- Ne l’attache jamais avec un cordon autour du cou.
 
 ## Questions fréquentes
 **Faut-il interdire la tétine avant 4 ans ?**
 Non : selon l’avis orthodontique rapporté par mpedia, il n’est pas jugé nécessaire d’interdire la succion avant cet âge. L’important est de l’accompagner vers l’arrêt à temps.
 
 **Mon enfant parle avec la tétine dans la bouche. Que faire ?**
-Proposez-lui de l’enlever pour parler, sans le gronder. Ameli recommande, à 3 ans, d’aider l’enfant à exprimer sa pensée et de l’encourager à arrêter la tétine.
+Propose-lui de l’enlever pour parler, sans le gronder. Ameli recommande, à 3 ans, d’aider l’enfant à exprimer sa pensée et de l’encourager à arrêter la tétine.
 
 **Il pleure beaucoup depuis qu’on a arrêté. Faut-il revenir en arrière ?**
-Quelques soirs difficiles sont fréquents. Restez présent et rassurant. Si la détresse dure, faites une pause et réessayez plus tard, à un moment plus calme de sa vie.
+Quelques soirs difficiles sont fréquents. Reste présent et rassurant. Si la détresse dure, fais une pause et réessaie plus tard, à un moment plus calme de sa vie.
 
 **Tétine et pouce, lequel choisir ?**
-Pour mpedia, la tétine a l’avantage d’être plus facile à retirer. Chaque enfant a ses préférences, et vous pouvez en parler avec votre pédiatre.
+Pour mpedia, la tétine a l’avantage d’être plus facile à retirer. Chaque enfant a ses préférences, et tu peux en parler avec ton pédiatre.
 
 ## Quand demander conseil
-Parlez-en au médecin, au pédiatre ou au chirurgien-dentiste si les dents vous semblent déformées, si votre enfant fait des otites à répétition, si son langage vous inquiète ou si l’arrêt paraît impossible au fil des mois. ${AIDE}
+Parles-en au médecin, au pédiatre ou au chirurgien-dentiste si les dents te semblent déformées, si ton enfant fait des otites à répétition, si son langage t’inquiète ou si l’arrêt paraît impossible au fil des mois. ${AIDE}
 
 ${FIN}`,
   }),
@@ -354,9 +354,9 @@ Ameli rappelle aussi qu’une succion prolongée du pouce peut s’associer à u
 3. Puis plus du tout, quand l’enfant se sent prêt.
 
 **Expliquer et encourager**
-- Expliquez simplement pourquoi : les dents et le palais ont besoin de pousser sans être poussés par le pouce.
-- Félicitez les progrès, même petits. Un calendrier où il colle une gommette les jours « sans pouce » peut le motiver.
-- Évitez les moqueries, les remarques devant les autres ou les punitions : elles augmentent souvent le besoin de réconfort.
+- Explique simplement pourquoi : les dents et le palais ont besoin de pousser sans être poussés par le pouce.
+- Félicite les progrès, même petits. Un calendrier où il colle une gommette les jours « sans pouce » peut le motiver.
+- Évite les moqueries, les remarques devant les autres ou les punitions : elles augmentent souvent le besoin de réconfort.
 
 **Proposer d’autres apaisements**
 - Un câlin, le doudou, une histoire, un moment de calme partagé.
@@ -369,13 +369,13 @@ Non : pendant la première année, sucer son pouce ne pose pas de problème selo
 Si, au fil des mois, l’enfant n’arrive pas du tout à réduire la succion, cela peut traduire une difficulté d’ordre psychologique ou une angoisse. Un échange avec le médecin peut aider à comprendre.
 
 **Faut-il utiliser des produits amers ou des pansements sur le pouce ?**
-Mieux vaut en parler d’abord avec votre médecin ou votre chirurgien-dentiste. L’arrêt fonctionne mieux quand l’enfant y adhère.
+Mieux vaut en parler d’abord avec ton médecin ou ton chirurgien-dentiste. L’arrêt fonctionne mieux quand l’enfant y adhère.
 
 **Le pouce peut-il gêner la parole ?**
-Une succion très fréquente peut aller de pair avec un retard de parole. Si sa prononciation vous inquiète après 4 ans, parlez-en au médecin.
+Une succion très fréquente peut aller de pair avec un retard de parole. Si sa prononciation t’inquiète après 4 ans, parles-en au médecin.
 
 ## Quand demander conseil
-Consultez le médecin, le pédiatre ou le chirurgien-dentiste si vous remarquez une déformation des dents ou du palais, si la succion reste constante après 4 ans, si la parole vous inquiète ou si l’enfant semble anxieux. ${AIDE}
+Consulte le médecin, le pédiatre ou le chirurgien-dentiste si tu remarques une déformation des dents ou du palais, si la succion reste constante après 4 ans, si la parole t’inquiète ou si l’enfant semble anxieux. ${AIDE}
 
 ${FIN}`,
   }),
@@ -414,19 +414,19 @@ Entre 4 et 12 ans, un enfant est normalement vif en journée et s’endort profo
 
 **Remplacer la sieste par un temps calme**
 - Un moment allongé ou assis au calme : livres, musique douce, puzzle, dans sa chambre.
-- Laissez la lumière du jour : pour la sieste, la chambre n’a pas besoin d’être plongée dans le noir complet, et les bruits normaux de la maison peuvent rester.
-- S’il s’endort, laissez-le dormir, mais pas trop tard dans l’après-midi.
+- Laisse la lumière du jour : pour la sieste, la chambre n’a pas besoin d’être plongée dans le noir complet, et les bruits normaux de la maison peuvent rester.
+- S’il s’endort, laisse-le dormir, mais pas trop tard dans l’après-midi.
 
 **Ajuster le soir**
-- Les jours sans sieste, avancez un peu l’heure du coucher.
-- Si la sieste est très longue, vous pouvez le réveiller doucement au bout de 2 heures et proposer une activité stimulante ensuite (sortie, jeu).
+- Les jours sans sieste, avance un peu l’heure du coucher.
+- Si la sieste est très longue, tu peux le réveiller doucement au bout de 2 heures et proposer une activité stimulante ensuite (sortie, jeu).
 
 ## Questions fréquentes
 **Faut-il réveiller un enfant qui fait une longue sieste ?**
 Normalement, il se réveille seul. Mpedia indique qu’une sieste ne devrait pas dépasser environ 3 heures, pour ne pas retarder le coucher.
 
 **À l’école, il dort alors qu’il ne fait plus la sieste à la maison. Est-ce un problème ?**
-Le besoin de sommeil varie selon la fatigue de la semaine. Parlez-en avec l’équipe pour adapter, si possible, et observez ses nuits.
+Le besoin de sommeil varie selon la fatigue de la semaine. Parles-en avec l’équipe pour adapter, si possible, et observe ses nuits.
 
 **La sieste peut-elle compenser une nuit trop courte ?**
 En partie, mais une sieste tardive ou imprévue peut compliquer l’endormissement du soir. Mieux vaut viser des nuits suffisantes et régulières.
@@ -435,7 +435,7 @@ En partie, mais une sieste tardive ou imprévue peut compliquer l’endormisseme
 Mpedia suggère, quand un enfant semble dormir surtout par ennui, de regarder avec la personne qui le garde comment se déroule sa journée.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant de plus de 4 ans a de nouveau besoin de siestes régulières, s’il semble somnolent en journée, s’il ronfle fortement ou si son humeur change nettement. ${AIDE}
+Parles-en au médecin si ton enfant de plus de 4 ans a de nouveau besoin de siestes régulières, s’il semble somnolent en journée, s’il ronfle fortement ou si son humeur change nettement. ${AIDE}
 
 ${FIN}`,
   }),
@@ -455,32 +455,32 @@ ${FIN}`,
 ## Comprendre
 Le sommeil dépend de deux régulations : la pression de sommeil, qui monte au fil de la journée, et l’horloge circadienne, qui suit l’alternance jour-nuit. Cette horloge, située dans le cerveau, coordonne de nombreux rythmes du corps. Certains enfants sont plutôt « du matin », d’autres « du soir » : ce chronotype est en partie génétique et peut se manifester tôt.
 
-Le Réseau Morphée, dont le contenu est relayé par Santé.fr, note que les couchers plus tardifs (organisation familiale, activités du soir) ont réduit le temps de sommeil moyen des enfants, et que les médecins du sommeil s’inquiètent de la dette de sommeil qui en résulte. Pour connaître le besoin réel de votre enfant, une piste est d’observer son sommeil après une dizaine de jours de vacances sans contrainte.
+Le Réseau Morphée, dont le contenu est relayé par Santé.fr, note que les couchers plus tardifs (organisation familiale, activités du soir) ont réduit le temps de sommeil moyen des enfants, et que les médecins du sommeil s’inquiètent de la dette de sommeil qui en résulte. Pour connaître le besoin réel de ton enfant, une piste est d’observer son sommeil après une dizaine de jours de vacances sans contrainte.
 
 Repères moyens cités : environ 12 heures par jour entre 3 et 5 ans, environ 11 heures entre 5 et 6 ans, 10 à 11 heures entre 7 et 12 ans. Chaque enfant a ses particularités.
 
 ## Au quotidien
 **Au quotidien, en semaine**
-- Fixez une heure de coucher réaliste et tenez-la la plupart des soirs.
-- Sortez dehors chaque jour, si possible le matin : la lumière naturelle aide l’horloge.
-- Le soir, baissez les lumières et éteignez les écrans (tablette, téléphone, ordinateur) bien avant le coucher.
+- Fixe une heure de coucher réaliste et tiens-la la plupart des soirs.
+- Sors dehors chaque jour, si possible le matin : la lumière naturelle aide l’horloge.
+- Le soir, baisse les lumières et éteins les écrans (tablette, téléphone, ordinateur) bien avant le coucher.
 - Un rituel du coucher stable aide l’enfant à faire la transition vers la nuit.
 
 **Le week-end**
 - Un petit décalage est souvent sans conséquence, mais de grandes « grasses matinées » suivies d’un coucher très tardif rendent le dimanche soir et le lundi matin difficiles.
 
 **En vacances**
-- Gardez quelques repères : heure du lever pas trop variable, rituel du soir, sorties dehors.
-- Les veilles de fête ou de voyage, prévoyez un temps calme le lendemain.
+- Garde quelques repères : heure du lever pas trop variable, rituel du soir, sorties dehors.
+- Les veilles de fête ou de voyage, prévois un temps calme le lendemain.
 
 **Recaler le rythme avant la rentrée**
-- Quelques jours avant, avancez progressivement l’heure du coucher et du lever.
-- Réveillez-le à heure fixe le matin et exposez-le à la lumière du jour.
-- Gardez une soirée calme, sans écran, avec un rituel rassurant.
+- Quelques jours avant, avance progressivement l’heure du coucher et du lever.
+- Réveille-le à heure fixe le matin et expose-le à la lumière du jour.
+- Garde une soirée calme, sans écran, avec un rituel rassurant.
 
 ## Questions fréquentes
 **Mon enfant est « du soir » : faut-il le coucher plus tard ?**
-Respecter ses besoins propres est recommandé, dans les limites des contraintes de l’école. Si l’endormissement est très tardif et qu’il est fatigué le matin, parlez-en au médecin.
+Respecter ses besoins propres est recommandé, dans les limites des contraintes de l’école. Si l’endormissement est très tardif et qu’il est fatigué le matin, parles-en au médecin.
 
 **Les écrans le soir, vraiment un problème ?**
 La lumière en soirée, et en particulier celle des écrans, est citée par le Réseau Morphée parmi ce qui perturbe l’horloge. Les éteindre bien avant le coucher est une mesure simple.
@@ -489,7 +489,7 @@ La lumière en soirée, et en particulier celle des écrans, est citée par le R
 Elle peut aider ponctuellement, mais une sieste tardive peut retarder l’endormissement du soir. La régularité reste le meilleur allié.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant met très longtemps à s’endormir de façon persistante, se réveille souvent la nuit, ronfle fortement, est somnolent ou irritable en journée, ou si les siestes réapparaissent régulièrement après 4 ans. ${AIDE}
+Consulte le médecin si ton enfant met très longtemps à s’endormir de façon persistante, se réveille souvent la nuit, ronfle fortement, est somnolent ou irritable en journée, ou si les siestes réapparaissent régulièrement après 4 ans. ${AIDE}
 
 ${FIN}`,
   }),
@@ -516,32 +516,32 @@ Ameli distingue plusieurs difficultés possibles :
 - **Le retard de langage** : première phrase après 3 ans, « parler bébé » prolongé, style télégraphique.
 
 ## Au quotidien
-- **Conversez vraiment** : chacun parle, chacun écoute. Posez des questions ouvertes sur sa journée.
-- **Soyez un modèle** : phrases complètes, mots précis, débit posé.
-- **Reformulez sans corriger** : s’il dit « le pin » pour « le lapin », répondez « Oui, le lapin mange une carotte ». Mpedia et ameli conseillent de ne pas le faire répéter.
-- **Racontez et lisez** chaque jour. Ameli recommande, à 4 ans, de lire et raconter ensemble et de montrer l’exemple en lisant soi-même.
-- **Jouez avec les mots** :
-  - les rimes : vous dites « chapeau », il cherche « gâteau » ;
+- **Converse vraiment** : chacun parle, chacun écoute. Pose des questions ouvertes sur sa journée.
+- **Sois un modèle** : phrases complètes, mots précis, débit posé.
+- **Reformule sans corriger** : s’il dit « le pin » pour « le lapin », réponds « Oui, le lapin mange une carotte ». Mpedia et ameli conseillent de ne pas le faire répéter.
+- **Raconte et lis** chaque jour. Ameli recommande, à 4 ans, de lire et raconter ensemble et de montrer l’exemple en lisant soi-même.
+- **Joue avec les mots** :
+  - les rimes : tu dis « chapeau », il cherche « gâteau » ;
   - les syllabes : taper dans les mains « pa-pi-llon » ;
-  - l’histoire à l’envers : il vous raconte une histoire déjà lue plusieurs fois.
-- **Chantez** comptines et chansons. Les enregistrements peuvent dépanner, mais ne remplacent pas l’échange avec l’adulte.
-- **Limitez les écrans** : ameli rappelle qu’ils nuisent à l’acquisition du langage, en particulier la télévision allumée en fond.
+  - l’histoire à l’envers : il te raconte une histoire déjà lue plusieurs fois.
+- **Chante** comptines et chansons. Les enregistrements peuvent dépanner, mais ne remplacent pas l’échange avec l’adulte.
+- **Limite les écrans** : ameli rappelle qu’ils nuisent à l’acquisition du langage, en particulier la télévision allumée en fond.
 
 ## Questions fréquentes
 **Mon enfant de 4 ans zozote. Faut-il s’inquiéter ?**
-Un défaut isolé de prononciation est fréquent et bénin, mais il peut persister. Si, après 4 ans, certains sons restent toujours déformés, parlez-en au médecin, qui pourra prescrire un bilan orthophonique.
+Un défaut isolé de prononciation est fréquent et bénin, mais il peut persister. Si, après 4 ans, certains sons restent toujours déformés, parles-en au médecin, qui pourra prescrire un bilan orthophonique.
 
 **Il bégaie depuis quelques semaines. Que faire ?**
-Le bégaiement débute le plus souvent entre 2 et 5 ans et évolue généralement favorablement, selon ameli. Laissez-le finir ses phrases sans les compléter, et consultez si cela dure ou le gêne.
+Le bégaiement débute le plus souvent entre 2 et 5 ans et évolue généralement favorablement, selon ameli. Laisse-le finir ses phrases sans les compléter, et consulte si cela dure ou le gêne.
 
 **Faut-il éviter le « langage bébé » ?**
-Ameli conseille d’utiliser des mots simples mais corrects. Vous pouvez garder la tendresse dans le ton tout en employant les vrais mots.
+Ameli conseille d’utiliser des mots simples mais corrects. Tu peux garder la tendresse dans le ton tout en employant les vrais mots.
 
 **L’école peut-elle repérer une difficulté ?**
 Oui : un dépistage est réalisé à l’école, et le repérage précoce est jugé essentiel pour prévenir les difficultés d’apprentissage de l’écrit.
 
 ## Quand demander conseil
-Consultez le médecin si, **vers 3 ans**, votre enfant ne fait pas de phrases complètes ou n’est compris que de ses proches ; si, **à 4 ans**, il comprend mal les phrases complexes ou construit des phrases très limitées ; si, **entre 4 et 6 ans**, il garde un style télégraphique ou des mots mal articulés. Pensez aussi à faire vérifier l’audition. ${AIDE}
+Consulte le médecin si, **vers 3 ans**, ton enfant ne fait pas de phrases complètes ou n’est compris que de ses proches ; si, **à 4 ans**, il comprend mal les phrases complexes ou construit des phrases très limitées ; si, **entre 4 et 6 ans**, il garde un style télégraphique ou des mots mal articulés. Pense aussi à faire vérifier l’audition. ${AIDE}
 
 ${FIN}`,
   }),
@@ -569,12 +569,12 @@ Mpedia signale aussi qu’un « retard lexical » est souvent observé chez les 
 **Organiser les langues**
 - Une règle simple souvent choisie : « un parent, une langue ». Chaque parent garde sa langue avec l’enfant, en toutes circonstances.
 - Entre vous, parlez la langue qui vous convient ; l’enfant comprend vite qui parle quoi.
-- Évitez de passer d’une langue à l’autre au milieu d’une phrase quand vous vous adressez à lui.
+- Évite de passer d’une langue à l’autre au milieu d’une phrase quand tu t’adresses à lui.
 
 **Nourrir chaque langue**
-- Lisez des livres, chantez des comptines, regardez des albums dans les deux langues.
-- Favorisez les contacts avec la famille, des amis ou des enfants qui parlent chaque langue.
-- Si vous vivez en France et que l’autre langue est peu présente autour de vous, multipliez les occasions de l’entendre : appels avec la famille, rencontres, séjours.
+- Lis des livres, chante des comptines, regarde des albums dans les deux langues.
+- Favorise les contacts avec la famille, des amis ou des enfants qui parlent chaque langue.
+- Si tu vis en France et que l’autre langue est peu présente autour de toi, multiplie les occasions de l’entendre : appels avec la famille, rencontres, séjours.
 
 **Le français**
 - Le français reste la langue de l’école et du quotidien en France : la crèche, la halte-garderie et les lieux d’accueil enfants-parents l’y immergent naturellement.
@@ -584,16 +584,16 @@ Mpedia signale aussi qu’un « retard lexical » est souvent observé chez les 
 L’enfant bilingue doit apprendre plus de mots ; un vocabulaire un peu plus restreint dans chaque langue est souvent observé au début. Cela ne doit pas faire attribuer trop vite au bilinguisme une vraie difficulté : mpedia rappelle que des troubles réels sont parfois repérés tardivement pour cette raison.
 
 **Mon enfant me répond en français alors que je lui parle dans ma langue. Que faire ?**
-Continuez à lui parler dans votre langue, sans le forcer à répondre. Il la comprend et l’entretient en l’entendant.
+Continue à lui parler dans ta langue, sans le forcer à répondre. Il la comprend et l’entretient en l’entendant.
 
 **Faut-il arrêter une langue si l’enfant a des difficultés ?**
-Parlez-en d’abord au médecin : il évaluera les difficultés et pourra orienter vers un bilan orthophonique, qui tiendra compte du bilinguisme.
+Parles-en d’abord au médecin : il évaluera les difficultés et pourra orienter vers un bilan orthophonique, qui tiendra compte du bilinguisme.
 
 **Peut-on apprendre une troisième langue ?**
 Rien n’empêche un enfant d’être exposé à plusieurs langues, à condition qu’elles soient parlées régulièrement par des personnes qui les maîtrisent.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant ne fait pas de phrases vers 3 ans dans aucune de ses langues, s’il semble mal comprendre ce qu’on lui dit, ou si l’école vous signale des difficultés : une évaluation permet de distinguer un retard lié au bilinguisme d’un trouble du langage. ${AIDE}
+Consulte le médecin si ton enfant ne fait pas de phrases vers 3 ans dans aucune de ses langues, s’il semble mal comprendre ce qu’on lui dit, ou si l’école te signale des difficultés : une évaluation permet de distinguer un retard lié au bilinguisme d’un trouble du langage. ${AIDE}
 
 ${FIN}`,
   }),
@@ -605,7 +605,7 @@ ${FIN}`,
     min_age_months: 0, max_age_months: 120,
     sources: [S.langues, S.ecritNonFrancophone, S.ameliPrevention],
     body_md: `## En bref
-- Si vous maîtrisez mal le français, il est conseillé de parler à votre enfant **dans votre langue maternelle** : vous lui transmettez une langue riche et bien construite.
+- Si tu maîtrises mal le français, il est conseillé de parler à ton enfant **dans ta langue maternelle** : tu lui transmets une langue riche et bien construite.
 - Le français s’apprendra au contact des autres : **crèche, halte-garderie, école**, entourage. Plus ce contact est précoce et fréquent, mieux c’est.
 - Un enfant né en France ou immergé dans le français avant 5-6 ans n’a pas, selon mpedia, plus de difficulté qu’un autre pour apprendre à lire et à écrire.
 - Pour l’écrit de la langue familiale, les experts conseillent d’**attendre environ 2 ans** après l’apprentissage de la lecture en français.
@@ -619,21 +619,21 @@ Certaines situations rendent l’apprentissage de l’écrit plus difficile : ar
 
 ## Au quotidien
 **À la maison**
-- Parlez à votre enfant dans votre langue, avec des phrases complètes : racontez, chantez, nommez les choses.
-- Proposez des **livres dans les deux langues** : l’enfant se construit des repères dans les deux cultures sans avoir à choisir.
-- Évitez de mélanger les langues dans une même phrase.
+- Parle à ton enfant dans ta langue, avec des phrases complètes : raconte, chante, nomme les choses.
+- Propose des **livres dans les deux langues** : l’enfant se construit des repères dans les deux cultures sans avoir à choisir.
+- Évite de mélanger les langues dans une même phrase.
 
 **Autour de la maison**
-- Inscrivez votre enfant, si possible, dans un lieu d’accueil collectif ou à des activités où l’on parle français.
-- Fréquentez la bibliothèque, le parc, les lieux d’accueil enfants-parents, pour multiplier les échanges en français.
+- Inscris ton enfant, si possible, dans un lieu d’accueil collectif ou à des activités où l’on parle français.
+- Fréquente la bibliothèque, le parc, les lieux d’accueil enfants-parents, pour multiplier les échanges en français.
 
 **Avant et pendant l’école**
-- Parlez avec l’enseignant de la langue utilisée à la maison : c’est une information utile, pas un défaut.
-- Pour l’apprentissage de l’écrit de votre langue, les experts cités par mpedia recommandent de le différer d’environ deux ans, une fois la lecture et l’écriture du français bien installées, surtout si les deux langues sont très éloignées.
+- Parle avec l’enseignant de la langue utilisée à la maison : c’est une information utile, pas un défaut.
+- Pour l’apprentissage de l’écrit de ta langue, les experts cités par mpedia recommandent de le différer d’environ deux ans, une fois la lecture et l’écriture du français bien installées, surtout si les deux langues sont très éloignées.
 
 ## Questions fréquentes
 **Faut-il que je parle français à mon enfant pour l’aider à l’école ?**
-Si vous maîtrisez mal le français, mpedia conseille plutôt votre langue maternelle. Un français approximatif risque de transmettre des erreurs, notamment de prononciation.
+Si tu maîtrises mal le français, mpedia conseille plutôt ta langue maternelle. Un français approximatif risque de transmettre des erreurs, notamment de prononciation.
 
 **Mon enfant arrive en France à 5 ans. Combien de temps pour parler français ?**
 Mpedia indique que les enfants arrivant à l’école mettent souvent 6 à 12 mois à comprendre et à parler le français. L’apprentissage de la lecture peut alors demander plus de temps.
@@ -645,7 +645,7 @@ Non. Mpedia souligne que les difficultés de ces enfants sont souvent attribuée
 Selon mpedia, ces enfants rencontrent les mêmes difficultés d’orthographe que les autres ; la rédaction de récits peut demander plus de vocabulaire.
 
 ## Quand demander conseil
-En cas de difficulté persistante à l’oral ou à l’écrit, consultez le médecin de votre enfant : il pourra orienter vers un orthophoniste pour un bilan. N’hésitez pas à demander un interprète ou un accompagnement à la PMI ou à l’école. ${AIDE}
+En cas de difficulté persistante à l’oral ou à l’écrit, consulte le médecin de ton enfant : il pourra orienter vers un orthophoniste pour un bilan. N’hésite pas à demander un interprète ou un accompagnement à la PMI ou à l’école. ${AIDE}
 
 ${FIN}`,
   }),
@@ -659,7 +659,7 @@ ${FIN}`,
     body_md: `## En bref
 - Vers 3 ans, l’enfant comprend les questions formulées avec « pourquoi » et veut connaître le nom et la raison des choses.
 - Ces questions nourrissent son **langage** et sa compréhension des liens de cause à effet.
-- Répondez **simplement**, sans en dire plus que ce qu’il demande ; et retournez parfois la question : « Et toi, qu’en penses-tu ? »
+- Réponds **simplement**, sans en dire plus que ce qu’il demande ; et retourne parfois la question : « Et toi, qu’en penses-tu ? »
 - Les livres, surtout les albums sans texte, sont d’excellents supports pour jouer aux « pourquoi ».
 
 ## Comprendre
@@ -672,20 +672,20 @@ Plus tard, vers 5-7 ans, ses questions deviennent plus fines : il s’interroge 
 ## Au quotidien
 **Répondre sans s’épuiser**
 - Une réponse courte et vraie suffit souvent : « Il pleut parce que les nuages sont pleins d’eau. »
-- S’il enchaîne les « pourquoi », retournez la question : « À ton avis ? » Il adore souvent formuler ses propres hypothèses.
-- Vous ne savez pas ? Dites-le, et proposez de chercher ensemble dans un livre ou auprès de quelqu’un.
-- Quand vous n’êtes pas disponible, promettez d’en reparler plus tard… et tenez parole.
+- S’il enchaîne les « pourquoi », retourne la question : « À ton avis ? » Il adore souvent formuler ses propres hypothèses.
+- Tu ne sais pas ? Dis-le, et propose de chercher ensemble dans un livre ou auprès de quelqu’un.
+- Quand tu n’es pas disponible, promets d’en reparler plus tard… et tiens parole.
 
 **Jouer aux « pourquoi » avec les livres**
-- Feuilletez un album, de préférence sans texte, et demandez : « Pourquoi il est triste, à ton avis ? », « Pourquoi elle court ? »
-- S’il ne répond pas, répondez à sa place : il assimile peu à peu. Reposez les mêmes questions une autre fois pour voir ce qu’il a retenu.
+- Feuillette un album, de préférence sans texte, et demande : « Pourquoi il est triste, à ton avis ? », « Pourquoi elle court ? »
+- S’il ne répond pas, réponds à sa place : il assimile peu à peu. Repose les mêmes questions une autre fois pour voir ce qu’il a retenu.
 
 **Au fil de la journée**
-- Expliquez ce que vous faites : « Je mets un manteau parce qu’il fait froid. »
-- Observez ensemble : pourquoi l’eau bout, pourquoi les feuilles tombent, pourquoi le chat ronronne.
+- Explique ce que tu fais : « Je mets un manteau parce qu’il fait froid. »
+- Observe ensemble : pourquoi l’eau bout, pourquoi les feuilles tombent, pourquoi le chat ronronne.
 
 **Les questions délicates**
-- La mort, la naissance, les différences : répondez avec des mots simples, au fur et à mesure de ses questions, sans tout dire d’un coup.
+- La mort, la naissance, les différences : réponds avec des mots simples, au fur et à mesure de ses questions, sans tout dire d’un coup.
 
 ## Questions fréquentes
 **Mon enfant pose sans cesse la même question. Pourquoi ?**
@@ -695,13 +695,13 @@ Répéter l’aide à vérifier qu’il a bien compris et que la réponse ne cha
 Pas forcément tout de suite, ni dans le détail. L’important est de montrer que ses questions sont bienvenues.
 
 **Il ne pose presque pas de questions. Est-ce inquiétant ?**
-Chaque enfant a son style. Observez s’il comprend ce qu’on lui dit et s’il s’exprime à sa façon. En cas de doute sur le langage ou la communication, parlez-en au médecin.
+Chaque enfant a son style. Observe s’il comprend ce qu’on lui dit et s’il s’exprime à sa façon. En cas de doute sur le langage ou la communication, parles-en au médecin.
 
 **Comment répondre quand il me demande si le père Noël existe ?**
 Mpedia conseille de ne pas trancher par un simple oui ou non, mais de l’interroger sur ce qu’il pense, pour qu’il trouve lui-même ses réponses.
 
 ## Quand demander conseil
-Parlez-en au médecin si, vers 3 ans, votre enfant semble ne pas comprendre les questions simples, ne fait pas de phrases ou a peu d’échanges avec vous ; ou si une question l’angoisse durablement (peur de la mort, de la maladie). ${AIDE}
+Parles-en au médecin si, vers 3 ans, ton enfant semble ne pas comprendre les questions simples, ne fait pas de phrases ou a peu d’échanges avec toi ; ou si une question l’angoisse durablement (peur de la mort, de la maladie). ${AIDE}
 
 ${FIN}`,
   }),
@@ -732,19 +732,19 @@ Entre 3 et 4 ans, explique le pédiatre Jacques Langue, l’enfant veut prendre 
 - Un petit tabouret pour s’asseoir et enfiler chaussettes et chaussures.
 
 **Laisser faire, un peu à la fois**
-- Commencez par la dernière étape : vous enfilez le pull jusqu’aux épaules, il passe la tête et les bras. Il termine, il réussit.
-- Puis laissez-lui une étape de plus chaque semaine.
-- Proposez des choix limités : « Le pull rouge ou le bleu ? » Il se sent acteur, vous gardez la main sur l’essentiel.
+- Commence par la dernière étape : tu enfiles le pull jusqu’aux épaules, il passe la tête et les bras. Il termine, il réussit.
+- Puis laisse-lui une étape de plus chaque semaine.
+- Propose des choix limités : « Le pull rouge ou le bleu ? » Il se sent acteur, tu gardes la main sur l’essentiel.
 
 **Le matin, quand le temps manque**
 - Se préparer soi-même avant l’enfant pour être disponible.
 - Habiller l’enfant dans une pièce sans jouets pour limiter les distractions.
 - Féliciter chaque vêtement enfilé.
-- S’il ne sait pas encore ou s’il est trop distrait, vous pouvez l’habiller en discutant de sa journée.
-- Gardez l’entraînement pour le week-end, quand rien ne presse.
+- S’il ne sait pas encore ou s’il est trop distrait, tu peux l’habiller en discutant de sa journée.
+- Garde l’entraînement pour le week-end, quand rien ne presse.
 
 **Accepter l’imparfait**
-- Un pull à l’envers ou des couleurs mélangées, ce n’est pas grave tant que la tenue est adaptée à la météo. Choisissez vos combats : la sécurité et le confort d’abord.
+- Un pull à l’envers ou des couleurs mélangées, ce n’est pas grave tant que la tenue est adaptée à la météo. Choisis tes combats : la sécurité et le confort d’abord.
 
 ## Questions fréquentes
 **Mon enfant de 4 ans ne veut pas s’habiller seul alors qu’il sait le faire. Pourquoi ?**
@@ -754,10 +754,10 @@ Mpedia évoque deux pistes : il cherche peut-être l’attention de ses parents,
 Laisser décider sur les détails (la couleur, le motif) et ne contraindre que pour l’essentiel est une piste proposée par mpedia pour éviter les conflits.
 
 **Il met ses chaussures à l’envers. Je corrige ?**
-Montrez-lui un repère simple (deux gommettes qui se touchent quand les chaussures sont dans le bon sens), plutôt que de corriger à sa place.
+Montre-lui un repère simple (deux gommettes qui se touchent quand les chaussures sont dans le bon sens), plutôt que de corriger à sa place.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant a des difficultés marquées et durables de gestes fins (boutons, fermetures) par rapport aux enfants de son âge, s’il semble très maladroit ou si l’école vous signale une difficulté. ${AIDE}
+Parles-en au médecin si ton enfant a des difficultés marquées et durables de gestes fins (boutons, fermetures) par rapport aux enfants de son âge, s’il semble très maladroit ou si l’école te signale une difficulté. ${AIDE}
 
 ${FIN}`,
   }),
@@ -771,8 +771,8 @@ ${FIN}`,
     body_md: `## En bref
 - Entre 6 et 11 ans, l’enfant veut faire seul : s’habiller, aller à l’école, préparer son sac, parfois rester à la maison.
 - **Avant 7 ans**, rentrer seul de l’école pose des problèmes de sécurité ; tout dépend ensuite de l’environnement (distance, circulation, ville ou village).
-- Évitez de lui confier la responsabilité d’enfants plus jeunes **avant 7 ans environ**.
-- Pour rester seul, il doit connaître **la durée de votre absence** et **les règles de sécurité** essentielles.
+- Évite de lui confier la responsabilité d’enfants plus jeunes **avant 7 ans environ**.
+- Pour rester seul, il doit connaître **la durée de ton absence** et **les règles de sécurité** essentielles.
 
 ## Comprendre
 La psychologue Cécilie Rondan (mpedia) rappelle que l’autonomie se prépare : surmonter ses propres craintes de parent, ne pas faire à la place de l’enfant, connaître ses capacités réelles, poser un cadre tout en laissant de la liberté. Si un enfant ne fait pas seul ce qu’il pourrait faire, c’est parfois qu’il cherche l’attention de ses parents, ou qu’on ne le laisse pas faire.
@@ -781,27 +781,27 @@ L’accompagnement se fait par étapes : on fait pour lui, puis on l’aide, pui
 
 ## Au quotidien
 **Le trajet de l’école**
-- Faites le trajet ensemble plusieurs fois en le laissant guider : où traverser, où attendre, quoi faire en cas de souci.
-- Avancez par étapes : le retrouver à mi-chemin, partir avec un camarade. Le pédibus existe dans certaines villes.
-- Adaptez-vous à l’environnement plutôt qu’à un âge fixe.
+- Fais le trajet ensemble plusieurs fois en le laissant guider : où traverser, où attendre, quoi faire en cas de souci.
+- Avance par étapes : le retrouver à mi-chemin, partir avec un camarade. Le pédibus existe dans certaines villes.
+- Adapte-toi à l’environnement plutôt qu’à un âge fixe.
 
 **Rester seul à la maison**
 - Les premières fois, absences courtes et annoncées : « Je reviens dans 15 minutes. »
-- Règles claires : porte fermée à clé, ne pas ouvrir, qui appeler. Affichez les numéros utiles, dont le **15** et le **112**.
-- Tenez compte de ses peurs : s’il hésite, ne forcez pas.
+- Règles claires : porte fermée à clé, ne pas ouvrir, qui appeler. Affiche les numéros utiles, dont le **15** et le **112**.
+- Tiens compte de ses peurs : s’il hésite, ne force pas.
 
 **Le cartable et les devoirs**
-- Vers la fin du primaire, il peut préparer son sac et faire ses devoirs seul ; vous pouvez continuer à vous y intéresser et l’aider à planifier le lendemain.
-- S’il demande de l’aide, apportez-la sans faire à sa place.
+- Vers la fin du primaire, il peut préparer son sac et faire ses devoirs seul ; tu peux continuer à t’y intéresser et l’aider à planifier le lendemain.
+- S’il demande de l’aide, apporte-la sans faire à sa place.
 - Mpedia propose un lieu calme et toujours le même, une pause d’au moins 30 minutes sans écran après l’école, et des durées adaptées : environ 15 minutes de concentration à 6 ans, environ 40 minutes à 11 ans.
 
 **Le rangement**
 - Dès le primaire, l’enfant doit apprendre à gérer ses affaires : ranger à la maison l’aide à s’organiser en classe.
-- Demandez-vous pourquoi vous exigez le rangement à ce moment-là. Pour une construction en cours, laissez-la en place si possible : ranger au mauvais moment frustre l’enfant.
-- Montrez l’exemple.
+- Demande-toi pourquoi tu exiges le rangement à ce moment-là. Pour une construction en cours, laisse-la en place si possible : ranger au mauvais moment frustre l’enfant.
+- Montre l’exemple.
 
 **Le téléphone**
-- Avant 12 ans, la demande reste en général modérée ; elle augmente fortement à l’entrée au collège. Si vous en donnez un, surveillez le temps et l’usage, éloignez-le pendant les devoirs et le soir.
+- Avant 12 ans, la demande reste en général modérée ; elle augmente fortement à l’entrée au collège. Si tu en donnes un, surveille le temps et l’usage, éloigne-le pendant les devoirs et le soir.
 
 ## Questions fréquentes
 **À quel âge peut-il aller seul à l’école ?**
@@ -814,7 +814,7 @@ Chaque enfant évolue à son rythme : la réussite précoce d’un aîné ne doi
 Aider sans faire à sa place est la bonne mesure, et le rassurer s’il demande de l’aide.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à l’enseignant si votre enfant a très peur de se séparer de vous, refuse l’école, ou semble en difficulté pour s’organiser malgré l’accompagnement. ${AIDE}
+Parles-en au médecin ou à l’enseignant si ton enfant a très peur de se séparer de toi, refuse l’école, ou semble en difficulté pour s’organiser malgré l’accompagnement. ${AIDE}
 
 ${FIN}`,
   }),
@@ -829,7 +829,7 @@ ${FIN}`,
 - Un enfant n’est pas forcément « du matin » : il a besoin de **temps pour se réveiller**.
 - Avancer un peu l’heure du réveil et **préparer les affaires la veille** détend toute la famille.
 - Se préparer **avant** de réveiller l’enfant permet d’être disponible pour l’accompagner.
-- Si le refus persiste, il peut cacher un **malaise à l’école** : ouvrez la discussion.
+- Si le refus persiste, il peut cacher un **malaise à l’école** : ouvre la discussion.
 
 ## Comprendre
 Pour la pédiatre Catherine Salinier (mpedia), l’enfant qui traîne, tourne en rond ou veut jouer au lieu de s’habiller n’est pas forcément « de mauvaise volonté » : comme beaucoup d’adultes, il a besoin d’un temps de transition entre le sommeil et l’action. Un enfant curieux se laisse aussi très vite distraire par un jouet, un livre, le chat.
@@ -838,39 +838,39 @@ Les pédiatres de mpedia, dans leur campagne sur les violences éducatives ordin
 
 ## Au quotidien
 **La veille**
-- Préparez avec lui ses vêtements et son cartable.
-- Couchez-le à une heure qui lui permet un sommeil suffisant : un enfant reposé se prépare plus facilement.
+- Prépare avec lui ses vêtements et son cartable.
+- Couche-le à une heure qui lui permet un sommeil suffisant : un enfant reposé se prépare plus facilement.
 
 **Le matin**
-- **Levez-vous un peu avant lui** et soyez prêt quand il se réveille.
-- **Réveillez-le en douceur**, en lui laissant quelques minutes pour émerger.
-- **Prenez le petit-déjeuner ensemble** si possible : un réveil chaleureux, et un repas important de la journée.
-- **Habillez-vous dans une pièce sans jouets** (la salle de bains, par exemple).
-- **Valorisez chaque effort** : « Bravo, tes chaussettes sont mises ! »
-- **Transformez la contrainte en jeu** : faire parler la chaussure, chanter, « le premier qui a mis son manteau… ».
-- **Annoncez les étapes** : « Après les dents, on met les chaussures, puis on part. »
+- **Lève-toi un peu avant lui** et sois prêt quand il se réveille.
+- **Réveille-le en douceur**, en lui laissant quelques minutes pour émerger.
+- **Prends le petit-déjeuner ensemble** si possible : un réveil chaleureux, et un repas important de la journée.
+- **Habille-toi dans une pièce sans jouets** (la salle de bains, par exemple).
+- **Valorise chaque effort** : « Bravo, tes chaussettes sont mises ! »
+- **Transforme la contrainte en jeu** : faire parler la chaussure, chanter, « le premier qui a mis son manteau… ».
+- **Annonce les étapes** : « Après les dents, on met les chaussures, puis on part. »
 
 **Un support visuel**
 - Une affiche en images des étapes du matin (toilette, habits, petit-déjeuner, dents, manteau) que l’enfant suit lui-même. Il peut cocher chaque étape.
 
 **Choisir ses combats**
-- Laissez-le décider des détails (la couleur du bol, le pull) et restez ferme sur l’essentiel (être habillé chaudement, partir à l’heure).
+- Laisse-le décider des détails (la couleur du bol, le pull) et reste ferme sur l’essentiel (être habillé chaudement, partir à l’heure).
 
 ## Questions fréquentes
 **Il refuse de s’habiller chaque matin. Que faire ?**
-S’il ne sait pas encore bien s’habiller ou est très distrait, vous pouvez l’habiller en lui parlant de sa journée, de ses copains. L’entraînement à l’autonomie peut se faire le week-end.
+S’il ne sait pas encore bien s’habiller ou est très distrait, tu peux l’habiller en lui parlant de sa journée, de ses copains. L’entraînement à l’autonomie peut se faire le week-end.
 
 **Et si je crie quand même ?**
-Cela arrive à beaucoup de parents. Quand la pression monte, isolez-vous un instant, respirez, puis revenez. Vous pourrez en reparler avec lui au calme.
+Cela arrive à beaucoup de parents. Quand la pression monte, isole-toi un instant, respire, puis reviens. Tu pourras en reparler avec lui au calme.
 
 **Le refus peut-il venir de l’école ?**
-Oui. L’enfant n’aime peut-être pas l’école en ce moment. Demandez-lui s’il est content de retrouver son enseignant et ses camarades, écoutez sans juger et rassurez-le.
+Oui. L’enfant n’aime peut-être pas l’école en ce moment. Demande-lui s’il est content de retrouver son enseignant et ses camarades, écoute sans juger et rassure-le.
 
 **Les écrans le matin, est-ce une solution pour gagner du temps ?**
 Ameli signale qu’une exposition aux écrans le matin avant l’école, sans en parler avec ses parents, est associée à davantage de troubles du langage. Mieux vaut les éviter.
 
 ## Quand demander conseil
-Parlez-en à l’enseignant et au médecin si votre enfant refuse durablement l’école, se plaint souvent de maux de ventre ou de tête le matin, dort mal ou semble triste. ${AIDE}
+Parles-en à l’enseignant et au médecin si ton enfant refuse durablement l’école, se plaint souvent de maux de ventre ou de tête le matin, dort mal ou semble triste. ${AIDE}
 
 ${FIN}`,
   }),
@@ -897,28 +897,28 @@ Le livret d’éducation à la vie affective et relationnelle de l’Éducation 
 
 ## Au quotidien
 **Montrer l’exemple**
-- Dites bonjour, merci et s’il vous plaît à votre enfant et devant lui : au boulanger, au voisin, au chauffeur du bus.
-- Remerciez-le quand il vous rend service.
+- Dis bonjour, merci et s’il te plaît à ton enfant et devant lui : au boulanger, au voisin, au chauffeur du bus.
+- Remercie-le quand il te rend service.
 
 **Rappeler sans humilier**
 - Un rappel discret suffit souvent : « Qu’est-ce qu’on dit ? » ou un regard complice.
-- S’il refuse, dites bonjour pour vous deux et passez à autre chose. Vous en reparlerez plus tard, au calme.
-- Évitez les remarques devant d’autres personnes, qui renforcent le blocage.
+- S’il refuse, dis bonjour pour vous deux et passe à autre chose. Tu en reparleras plus tard, au calme.
+- Évite les remarques devant d’autres personnes, qui renforcent le blocage.
 
 **Proposer d’autres façons de saluer**
 - Un signe de la main, un « coucou », un « tope là », un sourire.
-- Prévenez grands-parents et proches : « Il dira bonjour à sa façon ; il fera un câlin s’il en a envie. »
+- Préviens grands-parents et proches : « Il dira bonjour à sa façon ; il fera un câlin s’il en a envie. »
 
 **Les mots magiques au quotidien**
-- Jouez à la marchande ou à la dînette en utilisant « s’il vous plaît » et « merci ».
-- Félicitez quand la formule vient spontanément.
+- Joue à la marchande ou à la dînette en utilisant « s’il vous plaît » et « merci ».
+- Félicite quand la formule vient spontanément.
 
 ## Questions fréquentes
 **Mon enfant ne dit jamais bonjour à l’école ou chez des amis. Est-il mal élevé ?**
-Pas nécessairement. La timidité ou l’opposition expliquent souvent ce refus. Continuez à montrer l’exemple, sans forcer.
+Pas nécessairement. La timidité ou l’opposition expliquent souvent ce refus. Continue à montrer l’exemple, sans forcer.
 
 **Grand-mère se vexe s’il ne fait pas de bisou. Comment faire ?**
-Expliquez que vous apprenez à votre enfant qu’il peut choisir comment dire bonjour. Proposez une alternative chaleureuse (un dessin, un sourire, un signe de la main).
+Explique que tu apprends à ton enfant qu’il peut choisir comment dire bonjour. Propose une alternative chaleureuse (un dessin, un sourire, un signe de la main).
 
 **Faut-il le punir s’il est impoli ?**
 Mieux vaut rappeler la règle, montrer l’exemple, et féliciter les progrès. Si une parole blessante est dite, il peut réparer en s’excusant une fois calmé.
@@ -927,7 +927,7 @@ Mieux vaut rappeler la règle, montrer l’exemple, et féliciter les progrès. 
 Elle s’installe progressivement avec le langage et la vie en groupe ; à l’école, l’enfant apprend aussi les règles de la vie collective.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant semble très inhibé avec les autres, s’isole, ou si un refus de contact physique s’accompagne d’une peur inhabituelle d’une personne. Un enfant doit pouvoir dire à un adulte de confiance si quelqu’un le touche d’une façon qui le gêne. ${AIDE}
+Parles-en au médecin si ton enfant semble très inhibé avec les autres, s’isole, ou si un refus de contact physique s’accompagne d’une peur inhabituelle d’une personne. Un enfant doit pouvoir dire à un adulte de confiance si quelqu’un le touche d’une façon qui le gêne. ${AIDE}
 
 ${FIN}`,
   }),
@@ -951,18 +951,18 @@ Entre 3 et 4 ans, explique le pédiatre Jacques Langue, l’enfant commence à j
 
 ## Au quotidien
 **Avant de jouer**
-- Chez vous, rangez à l’avance le jouet « trop précieux » que votre enfant ne veut pas prêter : il se sentira plus disposé à partager le reste.
-- Prévoyez plusieurs jouets semblables quand un copain vient.
+- Chez toi, range à l’avance le jouet « trop précieux » que ton enfant ne veut pas prêter : il se sentira plus disposé à partager le reste.
+- Prévois plusieurs jouets semblables quand un copain vient.
 
 **Pendant le jeu**
-- **Organisez les tours** : « Toi d’abord deux minutes, puis Léo. » Un sablier ou une chanson matérialisent le temps.
-- **Mettez des mots** : « Tu as envie de garder la pelle. Léo aussi aimerait l’essayer. »
-- **Proposez un échange** plutôt qu’un abandon : « Tu lui prêtes le camion et tu prends le seau ? »
-- **Valorisez** chaque geste de partage.
+- **Organise les tours** : « Toi d’abord deux minutes, puis Léo. » Un sablier ou une chanson matérialisent le temps.
+- **Mets des mots** : « Tu as envie de garder la pelle. Léo aussi aimerait l’essayer. »
+- **Propose un échange** plutôt qu’un abandon : « Tu lui prêtes le camion et tu prends le seau ? »
+- **Valorise** chaque geste de partage.
 
 **Quand ça dérape**
-- Rappelez les règles de base : pas de coups, pas de morsures, pas d’insultes.
-- Séparez calmement si besoin, puis proposez une autre activité.
+- Rappelle les règles de base : pas de coups, pas de morsures, pas d’insultes.
+- Sépare calmement si besoin, puis propose une autre activité.
 - Entre frères et sœurs, mpedia conseille, tant que ces règles sont respectées, de laisser souvent les enfants régler eux-mêmes leurs conflits : cela les aide à affirmer leur place.
 
 **Jouer ensemble à des jeux à règles**
@@ -970,19 +970,19 @@ Entre 3 et 4 ans, explique le pédiatre Jacques Langue, l’enfant commence à j
 
 ## Questions fréquentes
 **Faut-il obliger mon enfant à prêter son doudou ?**
-Non. Le doudou est un objet de réconfort très personnel. Distinguez les objets « à lui seul » des jouets à partager.
+Non. Le doudou est un objet de réconfort très personnel. Distingue les objets « à lui seul » des jouets à partager.
 
 **Au square, un enfant lui arrache sa pelle. Je dois intervenir ?**
-Si aucun ne se fait mal, laissez-leur un moment pour trouver une solution, puis aidez-les avec des mots si besoin. Intervenez immédiatement en cas de geste violent.
+Si aucun ne se fait mal, laisse-leur un moment pour trouver une solution, puis aide-les avec des mots si besoin. Interviens immédiatement en cas de geste violent.
 
 **Il ne veut jamais partager. Est-il égoïste ?**
-Avant 4 ans, il s’agit surtout d’une étape du développement. Évitez les étiquettes, qui risquent de l’enfermer dans un rôle.
+Avant 4 ans, il s’agit surtout d’une étape du développement. Évite les étiquettes, qui risquent de l’enfermer dans un rôle.
 
 **Comment lui apprendre à attendre ?**
 Par petites doses : annoncer le temps (« après cette chanson »), occuper l’attente, et féliciter quand il a réussi à patienter.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant ne cherche jamais le contact avec les autres enfants, semble ne pas comprendre leurs émotions, ou si les conflits deviennent très violents et répétés après 4 ans. ${AIDE}
+Parles-en au médecin si ton enfant ne cherche jamais le contact avec les autres enfants, semble ne pas comprendre leurs émotions, ou si les conflits deviennent très violents et répétés après 4 ans. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1008,32 +1008,32 @@ Certaines situations peuvent entretenir l’agressivité : se sentir rejeté ou 
 
 ## Au quotidien
 **Sur le moment**
-1. **Protégez** l’enfant mordu ou frappé, et occupez-vous de lui en premier.
-2. **Arrêtez le geste** : tenez doucement la main qui tape, éloignez l’enfant qui mord.
-3. **Dites non, calmement et fermement** : « Je ne te laisse pas mordre. Mordre fait mal. »
-4. **Mettez des mots** sur ce qui s’est passé : « Tu voulais le camion et tu étais en colère. »
-5. **Proposez une autre façon de faire** : dire « non », « à moi », venir chercher un adulte, taper dans un coussin.
+1. **Protège** l’enfant mordu ou frappé, et occupe-toi de lui en premier.
+2. **Arrête le geste** : tiens doucement la main qui tape, éloigne l’enfant qui mord.
+3. **Dis non, calmement et fermement** : « Je ne te laisse pas mordre. Mordre fait mal. »
+4. **Mets des mots** sur ce qui s’est passé : « Tu voulais le camion et tu étais en colère. »
+5. **Propose une autre façon de faire** : dire « non », « à moi », venir chercher un adulte, taper dans un coussin.
 
 **À distance de la crise**
-- Jouez des scènes avec des peluches : « Le lapin est fâché, qu’est-ce qu’il peut faire au lieu de taper ? »
-- Posez des questions pour l’aider à comprendre ce que ressent l’autre.
-- Proposez des activités qui canalisent l’énergie : courir dehors, danser, jeux de ballon.
-- Valorisez les moments où il a réussi à se retenir, plus souvent que vous ne sanctionnez.
+- Joue des scènes avec des peluches : « Le lapin est fâché, qu’est-ce qu’il peut faire au lieu de taper ? »
+- Pose des questions pour l’aider à comprendre ce que ressent l’autre.
+- Propose des activités qui canalisent l’énergie : courir dehors, danser, jeux de ballon.
+- Valorise les moments où il a réussi à se retenir, plus souvent que tu ne sanctionnes.
 
-**Votre attitude**
-- Restez un modèle : gardez votre calme pendant les conflits.
-- Ne mordez pas ou ne tapez pas l’enfant « pour lui montrer que ça fait mal » : le geste violent lui enseigne l’inverse de ce que vous voulez transmettre.
-- Rappelez que les règles valent pour tout le monde, y compris les adultes.
+**Ton attitude**
+- Reste un modèle : garde ton calme pendant les conflits.
+- Ne mords pas ou ne tape pas l’enfant « pour lui montrer que ça fait mal » : le geste violent lui enseigne l’inverse de ce que tu veux transmettre.
+- Rappelle que les règles valent pour tout le monde, y compris les adultes.
 
 ## Questions fréquentes
 **La crèche me dit que mon enfant mord. Que faire ?**
-Échangez avec l’équipe pour comprendre dans quelles situations cela arrive (fatigue, foule, attente, jouet convoité) et adopter les mêmes mots à la maison et à la crèche.
+Échange avec l’équipe pour comprendre dans quelles situations cela arrive (fatigue, foule, attente, jouet convoité) et adopter les mêmes mots à la maison et à la crèche.
 
 **Il se tape lui-même ou se cogne la tête quand il est contrarié. Est-ce grave ?**
-Mpedia indique que ne pas réagir excessivement suffit parfois à faire cesser ce comportement, tout en cherchant ce qui le provoque. Parlez-en au médecin si cela se répète ou s’il se blesse.
+Mpedia indique que ne pas réagir excessivement suffit parfois à faire cesser ce comportement, tout en cherchant ce qui le provoque. Parles-en au médecin si cela se répète ou s’il se blesse.
 
 **Il tape le bébé. Comment protéger les deux ?**
-Ne laissez pas le bébé seul avec l’aîné, intervenez fermement, et accordez du temps exclusif à l’aîné : la jalousie peut alimenter ces gestes.
+Ne laisse pas le bébé seul avec l’aîné, interviens fermement, et accorde du temps exclusif à l’aîné : la jalousie peut alimenter ces gestes.
 
 ## Quand demander conseil
 Mpedia conseille de consulter si le comportement est récurrent et que l’enfant ne parvient pas à maîtriser ses émotions ni ses colères, surtout après 3 ans, ou s’il se blesse. Un professionnel peut aussi aider les parents à clarifier le cadre et à se déculpabiliser. ${AIDE}
@@ -1043,7 +1043,7 @@ ${FIN}`,
   a({
     slug: 'phase-du-non-opposition-2-3-ans',
     title: 'La phase du « non » : comprendre l’opposition entre 18 mois et 3 ans',
-    summary: 'Dire non est une étape importante de la construction de soi ; voici pourquoi elle survient, comment respecter ce « non » tout en posant vos propres limites, et des astuces pour éviter le bras de fer.',
+    summary: 'Dire non est une étape importante de la construction de soi ; voici pourquoi elle survient, comment respecter ce « non » tout en posant tes propres limites, et des astuces pour éviter le bras de fer.',
     category: 'education', tags: ['phase du non', 'opposition', 'terrible two', 'enfant qui dit non', 'affirmation de soi', '2 ans', 'limites', 'négocier'],
     min_age_months: 18, max_age_months: 60,
     sources: [S.opposition, S.affirmation, S.veo],
@@ -1051,7 +1051,7 @@ ${FIN}`,
 - Vers 8 mois, l’enfant découvre qu’il est une personne distincte de ses parents ; vers **18 mois**, il veut affirmer cette différence.
 - Savoir dire non montre qu’il construit **sa propre identité** : ses « oui » deviendront des choix, pas de la soumission.
 - Les phases d’opposition sont souvent marquées vers **2 ans et demi-3 ans**, puis vers 4 ans-4 ans et demi, et au début de l’adolescence.
-- L’enjeu : **respecter son non** tout en lui apprenant à accepter le vôtre.
+- L’enjeu : **respecter son non** tout en lui apprenant à accepter le tien.
 
 ## Comprendre
 Pour les pédiatres de mpedia, dire non est pour l’enfant une façon de tester son pouvoir et de se différencier. Une fois qu’il sait dire non, il pourra le faire toute sa vie face à quelqu’un qui cherche à s’imposer à lui. Le forcer systématiquement à obéir risque de l’empêcher de s’affirmer.
@@ -1062,39 +1062,39 @@ Les limites restent essentielles : elles lui donnent les « règles du jeu » po
 
 ## Au quotidien
 **Éviter le bras de fer**
-- **Proposez des choix** limités : « Tu mets tes bottes ou tes baskets ? » Il exerce son pouvoir, vous gardez l’objectif.
-- **Détournez son attention** quand il s’obstine : une autre activité, un jeu, une chanson.
-- **Transformez la contrainte en jeu** : faire parler le pyjama, faire la course jusqu’à la voiture.
-- **Annoncez les transitions** : « Encore trois tours de toboggan, puis on rentre. » Puis « deux », puis « le dernier ».
+- **Propose des choix** limités : « Tu mets tes bottes ou tes baskets ? » Il exerce son pouvoir, tu gardes l’objectif.
+- **Détourne son attention** quand il s’obstine : une autre activité, un jeu, une chanson.
+- **Transforme la contrainte en jeu** : faire parler le pyjama, faire la course jusqu’à la voiture.
+- **Annonce les transitions** : « Encore trois tours de toboggan, puis on rentre. » Puis « deux », puis « le dernier ».
 
 **Tenir l’essentiel**
-- Restez ferme sur les principes non négociables : sécurité, hygiène, politesse, respect d’autrui.
-- Laissez-le décider sur les détails : la couleur du verre, le pull.
-- Expliquez simplement les règles et les conséquences.
-- Restez calme et évitez les discussions sans fin.
+- Reste ferme sur les principes non négociables : sécurité, hygiène, politesse, respect d’autrui.
+- Laisse-le décider sur les détails : la couleur du verre, le pull.
+- Explique simplement les règles et les conséquences.
+- Reste calme et évite les discussions sans fin.
 
 **Reconnaître son « non »**
 - « J’entends que tu ne veux pas. Moi aussi je peux dire non : on met le manteau, il fait froid. »
-- Faites-le réfléchir : « Qu’est-ce qui t’aiderait à venir ? » Il peut alors choisir de dire oui.
+- Fais-le réfléchir : « Qu’est-ce qui t’aiderait à venir ? » Il peut alors choisir de dire oui.
 
-**Prendre soin de vous**
-- Faites preuve de patience et d’indulgence, sans viser la perfection. Passez le relais quand vous sentez la colère monter.
+**Prendre soin de toi**
+- Fais preuve de patience et d’indulgence, sans viser la perfection. Passe le relais quand tu sens la colère monter.
 
 ## Questions fréquentes
 **Il dit non à tout, même à ce qu’il aime. Pourquoi ?**
-Le « non » est parfois automatique : il affirme qu’il existe. Reformulez la proposition autrement, ou laissez passer quelques minutes.
+Le « non » est parfois automatique : il affirme qu’il existe. Reformule la proposition autrement, ou laisse passer quelques minutes.
 
 **Céder, est-ce le rendre capricieux ?**
-Accepter son non sur un détail n’est pas céder. Sur l’essentiel, tenez bon avec calme : c’est son repère.
+Accepter son non sur un détail n’est pas céder. Sur l’essentiel, tiens bon avec calme : c’est son repère.
 
 **Est-ce que cela s’arrête ?**
 Cette phase évolue avec le langage : l’enfant apprend progressivement à négocier avec des mots et à trouver des compromis.
 
 **Comment réagir quand il jette des objets ?**
-Arrêtez le geste calmement, rappelez la règle, mettez l’objet hors de portée et proposez un jeu où lancer est permis (une balle en mousse, dehors).
+Arrête le geste calmement, rappelle la règle, mets l’objet hors de portée et propose un jeu où lancer est permis (une balle en mousse, dehors).
 
 ## Quand demander conseil
-Parlez-en au médecin si l’opposition est extrême et permanente, s’accompagne de colères très fréquentes et violentes, de troubles du sommeil ou de l’appétit, ou si vous vous sentez dépassé. ${AIDE}
+Parles-en au médecin si l’opposition est extrême et permanente, s’accompagne de colères très fréquentes et violentes, de troubles du sommeil ou de l’appétit, ou si tu te sens dépassé. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1114,44 +1114,44 @@ ${FIN}`,
 ## Comprendre
 Pour le pédopsychiatre Daniel Marcelli (mpedia), le mot « caprice » a une connotation négative, alors qu’il désigne souvent la seule manière pour l’enfant d’exprimer ce qu’il ressent, parfois violemment. Vers 1 an-1 an et demi, il commence à dire non. Il découvre qu’il n’est pas le centre du monde et que ses désirs ne sont pas toujours satisfaits tout de suite. Il ne sait pas encore analyser une situation ni gérer ses émotions : crier, pleurer ou se mettre en colère est alors son moyen d’expression, y compris quand il a peur ou est angoissé.
 
-Céder apprend à l’enfant que crier permet d’obtenir ce qu’il veut, et affaiblit l’autorité parentale. Ne pas céder ne fait pas de vous un parent trop sévère : c’est votre rôle de lui apprendre les règles de la vie en société. Mpedia reconnaît aussi la difficulté du regard des passants dans ces moments.
+Céder apprend à l’enfant que crier permet d’obtenir ce qu’il veut, et affaiblit l’autorité parentale. Ne pas céder ne fait pas de toi un parent trop sévère : c’est ton rôle de lui apprendre les règles de la vie en société. Mpedia reconnaît aussi la difficulté du regard des passants dans ces moments.
 
 ## Au quotidien
 **Avant la sortie**
-- **Annoncez le programme** : « On achète du pain, des pommes et du lait. On ne prend pas de bonbons aujourd’hui. »
-- **Donnez-lui un rôle** : tenir la liste, choisir les pommes, poser les articles sur le tapis.
-- **Choisissez le bon moment** : évitez les courses à l’heure de la sieste ou quand il a faim.
-- **Proposez des choix** : « Tu choisis les pommes rouges ou vertes ? »
+- **Annonce le programme** : « On achète du pain, des pommes et du lait. On ne prend pas de bonbons aujourd’hui. »
+- **Donne-lui un rôle** : tenir la liste, choisir les pommes, poser les articles sur le tapis.
+- **Choisis le bon moment** : évite les courses à l’heure de la sieste ou quand il a faim.
+- **Propose des choix** : « Tu choisis les pommes rouges ou vertes ? »
 
 **Pendant la crise**
-1. **Restez calme**, respirez. Crier ou brutaliser n’aide pas.
-2. **Mettez-le en sécurité** : à l’écart des rayons, du passage, des chariots.
-3. **Nommez son émotion** : « Tu es très en colère parce que tu voulais ce paquet. »
-4. **Tenez la limite** : « Je comprends, et la réponse reste non. »
-5. **Proposez un câlin qui contient**, sans céder. S’il refuse, ne forcez pas : restez près de lui le temps qu’il se calme.
-6. **Oubliez le public** autant que possible : votre enfant a besoin de vous, pas des passants.
+1. **Reste calme**, respire. Crier ou brutaliser n’aide pas.
+2. **Mets-le en sécurité** : à l’écart des rayons, du passage, des chariots.
+3. **Nomme son émotion** : « Tu es très en colère parce que tu voulais ce paquet. »
+4. **Tiens la limite** : « Je comprends, et la réponse reste non. »
+5. **Propose un câlin qui contient**, sans céder. S’il refuse, ne force pas : reste près de lui le temps qu’il se calme.
+6. **Oublie le public** autant que possible : ton enfant a besoin de toi, pas des passants.
 
 **Après la crise**
-- Revenez sur ce qui s’est passé, au calme, avec des mots simples.
-- Avant 3-4 ans, essayez de comprendre la cause : fatigue, faim, besoin d’attention.
-- Vers 5-6 ans, aidez-le à dire ce qu’il ressentait.
-- Félicitez-le quand une sortie se passe bien.
+- Reviens sur ce qui s’est passé, au calme, avec des mots simples.
+- Avant 3-4 ans, essaie de comprendre la cause : fatigue, faim, besoin d’attention.
+- Vers 5-6 ans, aide-le à dire ce qu’il ressentait.
+- Félicite-le quand une sortie se passe bien.
 
 ## Questions fréquentes
 **Les gens me regardent comme un mauvais parent. Comment le vivre ?**
-Ces crises arrivent à la plupart des familles. Concentrez-vous sur votre enfant ; ceux qui regardent sont souvent passés par là.
+Ces crises arrivent à la plupart des familles. Concentre-toi sur ton enfant ; ceux qui regardent sont souvent passés par là.
 
 **Faut-il partir du magasin ?**
 Si la situation devient intenable, oui : sortir au calme, le temps qu’il s’apaise, est une option. Ce n’est pas céder, c’est protéger tout le monde.
 
 **Et si je finis par lui acheter le bonbon pour avoir la paix ?**
-Cela arrive. La fois suivante, reprenez le cadre annoncé. Ce qui compte, c’est la cohérence dans la durée.
+Cela arrive. La fois suivante, reprends le cadre annoncé. Ce qui compte, c’est la cohérence dans la durée.
 
 **Faut-il punir après une crise ?**
 Mpedia conseille de ne jamais sanctionner sous le coup de la colère. Revenir sur la crise au calme est souvent plus utile.
 
 ## Quand demander conseil
-Si les crises persistent au-delà de 6-7 ans, sont très fréquentes ou très violentes, ou si votre enfant semble anxieux ou malheureux, mpedia conseille d’en parler au pédiatre ou au médecin de famille. ${AIDE}
+Si les crises persistent au-delà de 6-7 ans, sont très fréquentes ou très violentes, ou si ton enfant semble anxieux ou malheureux, mpedia conseille d’en parler au pédiatre ou au médecin de famille. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1177,40 +1177,40 @@ La pédiatre Laurence Racle (mpedia) ajoute un principe : respecter ses engageme
 
 ## Au quotidien
 **Construire le tableau ensemble**
-1. Choisissez **une ou deux règles** seulement, formulées positivement : « Je range mes jouets avant le bain », « Je reste assis à table pendant le repas ».
-2. **Dessinez-les** avec l’enfant, avec des mots adaptés à son âge.
-3. **Vérifiez qu’il a compris** : demandez-lui de reformuler.
+1. Choisis **une ou deux règles** seulement, formulées positivement : « Je range mes jouets avant le bain », « Je reste assis à table pendant le repas ».
+2. **Dessine-les** avec l’enfant, avec des mots adaptés à son âge.
+3. **Vérifie qu’il a compris** : demande-lui de reformuler.
 4. Chaque jour, une croix ou une gommette quand la règle est respectée.
 5. Après plusieurs réussites, **une récompense annoncée à l’avance**.
 
 **Choisir de bonnes récompenses**
 - Un moment partagé : une histoire de plus, un jeu de société avec papa ou maman, une sortie au parc.
 - Un privilège simple : choisir le menu du dîner, inviter un copain.
-- Évitez de faire de la nourriture sucrée ou des écrans la récompense habituelle.
+- Évite de faire de la nourriture sucrée ou des écrans la récompense habituelle.
 
 **Faire évoluer**
-- Quand l’habitude est prise, retirez progressivement le tableau : la réussite devient la récompense.
-- Changez de règle plutôt que d’en accumuler.
+- Quand l’habitude est prise, retire progressivement le tableau : la réussite devient la récompense.
+- Change de règle plutôt que d’en accumuler.
 
 **Encourager au quotidien**
-- Félicitez l’effort plutôt que le résultat, sans féliciter en permanence.
-- Préférez parfois « Tu es fier de toi ? » à « Je suis fier de toi » : l’enfant apprend à s’évaluer lui-même, une piste proposée par mpedia.
+- Félicite l’effort plutôt que le résultat, sans féliciter en permanence.
+- Préfère parfois « Tu es fier de toi ? » à « Je suis fier de toi » : l’enfant apprend à s’évaluer lui-même, une piste proposée par mpedia.
 
 ## Questions fréquentes
 **Les récompenses rendent-elles l’enfant intéressé ?**
 Utilisées ponctuellement, pour une habitude précise et sur une durée limitée, elles aident. Promettre un cadeau pour chaque demande, en revanche, transforme l’obéissance en marchandage.
 
 **Faut-il des croix « rouges » quand il n’y arrive pas ?**
-L’outil de mpedia prévoit une croix indiquant si la règle a été respectée ou non. Gardez un ton neutre : l’objectif est de progresser, pas d’humilier.
+L’outil de mpedia prévoit une croix indiquant si la règle a été respectée ou non. Garde un ton neutre : l’objectif est de progresser, pas d’humilier.
 
 **Et pour un enfant de 2 ans ?**
 À cet âge, les encouragements immédiats et les félicitations fonctionnent mieux qu’un tableau abstrait.
 
 **Ça ne marche plus au bout de deux semaines. Pourquoi ?**
-Les règles étaient peut-être trop nombreuses, la récompense trop lointaine, ou l’habitude déjà prise. Simplifiez, ou passez à autre chose.
+Les règles étaient peut-être trop nombreuses, la récompense trop lointaine, ou l’habitude déjà prise. Simplifie, ou passe à autre chose.
 
 ## Quand demander conseil
-Si, malgré un cadre clair et bienveillant, les comportements difficiles persistent, s’aggravent ou s’accompagnent de tristesse, d’agressivité ou de troubles du sommeil, parlez-en au médecin de votre enfant. ${AIDE}
+Si, malgré un cadre clair et bienveillant, les comportements difficiles persistent, s’aggravent ou s’accompagnent de tristesse, d’agressivité ou de troubles du sommeil, parles-en au médecin de ton enfant. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1228,18 +1228,18 @@ ${FIN}`,
 - Quand la pression monte : **s’isoler un instant, respirer, revenir**. Et après un dérapage, **réparer** en parlant à l’enfant.
 
 ## Comprendre
-Les pédiatres de mpedia rappellent que ces violences, souvent banalisées, peuvent peser sur le développement affectif et intellectuel de l’enfant. Elles ne disent rien de votre amour pour lui : elles surviennent souvent quand on est fatigué, pressé, débordé.
+Les pédiatres de mpedia rappellent que ces violences, souvent banalisées, peuvent peser sur le développement affectif et intellectuel de l’enfant. Elles ne disent rien de ton amour pour lui : elles surviennent souvent quand on est fatigué, pressé, débordé.
 
 Le pédopsychiatre Daniel Marcelli (mpedia) insiste sur un point : une sanction ne doit jamais faire mal, ni physiquement ni moralement (humiliation). Il conseille de ne jamais sanctionner sous le coup de la colère. On peut annoncer que la punition sera décidée plus tard, puis s’y tenir, ou demander l’avis d’un tiers plus neutre.
 
 La fatigue joue un rôle important. Le manque de sommeil augmente le risque d’épuisement, rappellent les pédiatres sur Santé.fr : savoir passer le relais n’est pas un échec.
 
 ## Au quotidien
-**Quand vous sentez la colère monter**
-1. **Mettez l’enfant en sécurité** (un tout-petit dans son lit, un plus grand dans une autre pièce).
-2. **Éloignez-vous** quelques minutes : respirez, buvez un verre d’eau, regardez par la fenêtre.
-3. **Revenez** quand vous êtes plus calme.
-4. Si possible, **passez le relais** à l’autre parent ou à un proche.
+**Quand tu sens la colère monter**
+1. **Mets l’enfant en sécurité** (un tout-petit dans son lit, un plus grand dans une autre pièce).
+2. **Éloigne-toi** quelques minutes : respire, bois un verre d’eau, regarde par la fenêtre.
+3. **Reviens** quand tu es plus calme.
+4. Si possible, **passe le relais** à l’autre parent ou à un proche.
 
 **Prévenir les moments à risque**
 - **Le matin** : préparer les affaires la veille, se préparer avant de réveiller l’enfant.
@@ -1250,25 +1250,25 @@ La fatigue joue un rôle important. Le manque de sommeil augmente le risque d’
 - **Jouer** : chanter, faire parler les objets ; la contrainte partagée avec humour passe mieux.
 
 **Après un dérapage**
-- Revenez vers votre enfant : « J’ai crié très fort, je n’aurais pas dû. J’étais fatigué et en colère. Ce n’est pas ta faute. »
-- Rappelez la règle qui était en jeu, calmement.
-- Réfléchissez à ce qui a fait monter la pression, pour l’anticiper la prochaine fois.
+- Reviens vers ton enfant : « J’ai crié très fort, je n’aurais pas dû. J’étais fatigué et en colère. Ce n’est pas ta faute. »
+- Rappelle la règle qui était en jeu, calmement.
+- Réfléchis à ce qui a fait monter la pression, pour l’anticiper la prochaine fois.
 
 ## Questions fréquentes
 **Une petite tape, est-ce vraiment interdit ?**
 La loi de 2019 précise que l’autorité parentale s’exerce sans violences, y compris physiques. Il existe d’autres façons de poser une limite.
 
 **J’ai honte d’avoir crié. Est-ce grave pour mon enfant ?**
-Personne n’est parfait. Reconnaître votre erreur et réparer apprend à votre enfant que l’on peut se tromper et s’excuser.
+Personne n’est parfait. Reconnaître ton erreur et réparer apprend à ton enfant que l’on peut se tromper et s’excuser.
 
 **Comment faire quand je suis seul avec plusieurs enfants ?**
-Simplifiez : moins d’activités, des repas plus simples, des routines visibles. Et cherchez du soutien : famille, amis, PMI, lieux d’accueil enfants-parents.
+Simplifie : moins d’activités, des repas plus simples, des routines visibles. Et cherche du soutien : famille, amis, PMI, lieux d’accueil enfants-parents.
 
 **Existe-t-il des ateliers pour les parents ?**
-Oui, de nombreux parents en souhaitent. Renseignez-vous auprès de votre PMI, de votre caisse d’allocations familiales ou de votre mairie.
+Oui, de nombreux parents en souhaitent. Renseigne-toi auprès de ta PMI, de ta caisse d’allocations familiales ou de ta mairie.
 
 ## Quand demander conseil
-Parlez-en à votre médecin, à une sage-femme, à la PMI ou à un psychologue si vous vous sentez souvent à bout, si la colère vous fait peur, ou si les cris deviennent quotidiens. Ne restez pas seul. ${AIDE}
+Parles-en à ton médecin, à une sage-femme, à la PMI ou à un psychologue si tu te sens souvent à bout, si la colère te fait peur, ou si les cris deviennent quotidiens. Ne reste pas seul. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1292,23 +1292,23 @@ Santé publique France, sur le site 1000 premiers jours, rappelle que chacun a b
 
 ## Au quotidien
 **Accueillir la régression**
-- S’il réclame un biberon ou veut être porté « comme le bébé », vous pouvez accepter parfois, avec humour et tendresse, sans en faire une règle.
-- S’il refait pipi au lit, changez les draps sans reproche. Mpedia note que cela passe généralement vite.
-- Gardez ses repères : rituel du coucher, horaires, activités habituelles.
+- S’il réclame un biberon ou veut être porté « comme le bébé », tu peux accepter parfois, avec humour et tendresse, sans en faire une règle.
+- S’il refait pipi au lit, change les draps sans reproche. Mpedia note que cela passe généralement vite.
+- Garde ses repères : rituel du coucher, horaires, activités habituelles.
 
 **Lui garder une place**
-- Pendant que vous nourrissez le bébé, invitez-le à se blottir contre vous et racontez-lui qu’il a vécu les mêmes moments.
-- Regardez ensemble ses photos et vidéos de bébé.
-- Prévoyez régulièrement un **moment seul avec lui**, en confiant le bébé à l’autre parent ou à un proche.
-- Veillez à ce que la famille et les amis s’intéressent aussi à lui, pas seulement au bébé.
+- Pendant que tu nourris le bébé, invite-le à se blottir contre toi et raconte-lui qu’il a vécu les mêmes moments.
+- Regarde ensemble ses photos et vidéos de bébé.
+- Prévois régulièrement un **moment seul avec lui**, en confiant le bébé à l’autre parent ou à un proche.
+- Veille à ce que la famille et les amis s’intéressent aussi à lui, pas seulement au bébé.
 
 **Le valoriser**
-- Confiez-lui de petites tâches : apporter un jouet, aider au change, parler au bébé, le tenir assis sous surveillance.
-- Félicitez-le quand il aide, mais aussi pour ce qu’il fait sans lien avec le bébé.
+- Confie-lui de petites tâches : apporter un jouet, aider au change, parler au bébé, le tenir assis sous surveillance.
+- Félicite-le quand il aide, mais aussi pour ce qu’il fait sans lien avec le bébé.
 
 **Mettre des mots**
 - « Ça t’agace quand le bébé pleure, hein ? » Il se sent compris, sans culpabiliser.
-- Protégez les deux enfants et apprenez à l’aîné à respecter l’espace du bébé, et inversement quand le petit commencera à ramper.
+- Protège les deux enfants et apprends à l’aîné à respecter l’espace du bébé, et inversement quand le petit commencera à ramper.
 
 **Petites attentions**
 - Un cadeau « de la part du bébé », un « sac de grand frère ou de grande sœur » préparé pendant la grossesse avec photos et mots doux, une photo de famille emportée à la maternité.
@@ -1318,13 +1318,13 @@ Santé publique France, sur le site 1000 premiers jours, rappelle que chacun a b
 Non. Santé publique France conseille de ne ni s’alarmer ni gronder : il a besoin de temps et d’être rassuré.
 
 **Il est devenu agressif avec le bébé. Que faire ?**
-Ne le laissez pas seul avec le bébé, arrêtez fermement les gestes brusques, et accordez-lui davantage d’attention à d’autres moments.
+Ne le laisse pas seul avec le bébé, arrête fermement les gestes brusques, et accorde-lui davantage d’attention à d’autres moments.
 
 **Il ne dort plus depuis la naissance. Est-ce lié ?**
-Les troubles du sommeil font partie des régressions fréquentes. Gardez le rituel du soir et rassurez-le ; consultez si cela dure.
+Les troubles du sommeil font partie des régressions fréquentes. Garde le rituel du soir et rassure-le ; consulte si cela dure.
 
 ## Quand demander conseil
-Consultez le médecin si la régression dure plusieurs semaines, si votre aîné semble triste, se renferme, perd l’appétit ou devient très agressif. Prendre soin de vous compte aussi : le manque de sommeil après une naissance pèse sur toute la famille. ${AIDE}
+Consulte le médecin si la régression dure plusieurs semaines, si ton aîné semble triste, se renferme, perd l’appétit ou devient très agressif. Prendre soin de toi compte aussi : le manque de sommeil après une naissance pèse sur toute la famille. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1339,7 +1339,7 @@ ${FIN}`,
 - Un enfant peut aimer être seul par **tempérament**, être **timide** ou très **sensible**, ou vivre une **brouille passagère** avec un camarade.
 - Avoir des copains renforce la confiance en soi et apprend à communiquer, écouter, attendre son tour.
 - Pour l’aider : **dialoguer sans insister**, commencer petit (un seul copain à la maison), **valoriser** ses réussites, **ne pas le surprotéger**.
-- Évitez de le présenter comme « le timide » : l’étiquette risque de le figer dans ce rôle.
+- Évite de le présenter comme « le timide » : l’étiquette risque de le figer dans ce rôle.
 
 ## Comprendre
 Pour la pédopsychiatre Sarah Bydlowski (mpedia), l’enfant solitaire n’est pas forcément en difficulté : certains aiment simplement être seuls. Les relations entre enfants sont aussi fluctuantes : une dispute de récréation peut isoler un enfant quelques jours, sans qu’il faille dramatiser.
@@ -1350,24 +1350,24 @@ Les comparaisons enferment l’enfant dans un rôle (« plus timide que sa sœur
 
 ## Au quotidien
 **Dialoguer sans pression**
-- Parlez de la récréation, de la classe, des copains, des loisirs, sans interrogatoire.
-- Laissez-le exprimer ses ressentis, ses complexes, d’éventuels conflits.
+- Parle de la récréation, de la classe, des copains, des loisirs, sans interrogatoire.
+- Laisse-le exprimer ses ressentis, ses complexes, d’éventuels conflits.
 
 **Lui offrir un cadre rassurant**
-- Passez du temps ensemble : jeux de société, cuisine, balades.
-- Aidez-le à voir ses qualités et à accepter ses défauts.
-- Rassurez-le sans l’empêcher d’affronter les difficultés : montrez que vous croyez en ses capacités.
+- Passe du temps ensemble : jeux de société, cuisine, balades.
+- Aide-le à voir ses qualités et à accepter ses défauts.
+- Rassure-le sans l’empêcher d’affronter les difficultés : montre que tu crois en ses capacités.
 
 **Développer sa vie sociale, pas à pas**
-- Invitez **un seul camarade** à la maison, pour un moment court et une activité qu’il aime.
-- Encouragez-le à accepter les invitations, en restant un peu au début si besoin.
-- Arrivez en avance aux fêtes et anniversaires : entrer dans un groupe déjà formé est plus difficile.
+- Invite **un seul camarade** à la maison, pour un moment court et une activité qu’il aime.
+- Encourage-le à accepter les invitations, en restant un peu au début si besoin.
+- Arrive en avance aux fêtes et anniversaires : entrer dans un groupe déjà formé est plus difficile.
 
 **Choisir des activités qui aident à s’affirmer**
-- Théâtre, sports collectifs ou un art martial comme le judo, qui développe la maîtrise du corps et du comportement. Ne l’y contraignez jamais.
+- Théâtre, sports collectifs ou un art martial comme le judo, qui développe la maîtrise du corps et du comportement. Ne l’y contrains jamais.
 
 **Valoriser et détendre**
-- Félicitez-le dans un domaine où il excelle.
+- Félicite-le dans un domaine où il excelle.
 - Le soir, une ambiance paisible (musique douce, histoire, respiration) et des moments où l’on rit ensemble.
 
 **Montrer l’exemple**
@@ -1378,13 +1378,13 @@ Les comparaisons enferment l’enfant dans un rôle (« plus timide que sa sœur
 L’encourager, oui ; le forcer, non. Les petites étapes réussies construisent sa confiance.
 
 **Il ne dit pas bonjour par timidité. Je dois insister ?**
-Mieux vaut dire bonjour vous-même et lui proposer d’autres façons de saluer (un signe, un sourire) que d’en faire un enjeu devant tout le monde.
+Mieux vaut dire bonjour toi-même et lui proposer d’autres façons de saluer (un signe, un sourire) que d’en faire un enjeu devant tout le monde.
 
 **À l’école, il reste en retrait. Que faire ?**
-Échangez avec l’enseignant : il peut vous dire comment votre enfant se comporte en groupe et favoriser des binômes.
+Échange avec l’enseignant : il peut te dire comment ton enfant se comporte en groupe et favoriser des binômes.
 
 ## Quand demander conseil
-Mpedia conseille d’être vigilant si l’enfant s’isole de plus en plus et présente d’autres signes : tristesse, sommeil perturbé, sautes d’humeur, perte d’appétit, maux de tête ou de ventre, manque d’énergie, baisse des résultats scolaires. Parlez-en à l’enseignant et au médecin ; un accompagnement psychologique peut être envisagé si la situation persiste. ${AIDE}
+Mpedia conseille d’être vigilant si l’enfant s’isole de plus en plus et présente d’autres signes : tristesse, sommeil perturbé, sautes d’humeur, perte d’appétit, maux de tête ou de ventre, manque d’énergie, baisse des résultats scolaires. Parles-en à l’enseignant et au médecin ; un accompagnement psychologique peut être envisagé si la situation persiste. ${AIDE}
 
 ${FIN}`,
   }),
@@ -1410,23 +1410,23 @@ Pour le pédopsychiatre Daniel Marcelli (mpedia), quand l’enfant transgresse u
 
 ## Au quotidien
 **Face à une histoire inventée**
-- Un petit qui raconte avoir vu un dragon au parc ne ment pas : il joue, il imagine. Entrez dans le jeu tout en marquant la frontière : « Quelle belle histoire ! Et en vrai, qu’as-tu vu au parc ? »
+- Un petit qui raconte avoir vu un dragon au parc ne ment pas : il joue, il imagine. Entre dans le jeu tout en marquant la frontière : « Quelle belle histoire ! Et en vrai, qu’as-tu vu au parc ? »
 
 **Face à un vrai mensonge**
-- Évitez de le piéger avec des questions dont vous connaissez la réponse ; dites plutôt ce que vous avez constaté : « Je vois que le vase est cassé. »
-- Rendez la vérité possible : « Si tu me dis ce qui s’est passé, on va trouver une solution ensemble. »
-- Valorisez l’aveu : « Merci de me l’avoir dit, c’était courageux. »
-- Proposez de réparer : ramasser, nettoyer, s’excuser.
-- Ne sanctionnez pas sous le coup de la colère.
+- Évite de le piéger avec des questions dont tu connais la réponse ; dis plutôt ce que tu as constaté : « Je vois que le vase est cassé. »
+- Rends la vérité possible : « Si tu me dis ce qui s’est passé, on va trouver une solution ensemble. »
+- Valorise l’aveu : « Merci de me l’avoir dit, c’était courageux. »
+- Propose de réparer : ramasser, nettoyer, s’excuser.
+- Ne sanctionne pas sous le coup de la colère.
 
 **Comprendre pourquoi il ment**
 - Peur d’être grondé, envie de faire plaisir, de se rendre intéressant, de cacher une difficulté (à l’école, avec un copain). Chercher la raison aide à répondre au vrai besoin.
 
 **Montrer l’exemple**
-- Tenez vos promesses et évitez les petits mensonges devant lui (« dis que je ne suis pas là »).
+- Tiens tes promesses et évite les petits mensonges devant lui (« dis que je ne suis pas là »).
 
 **Quand il pose des questions sur le père Noël**
-- Ne tranchez pas par un simple oui ou non. Demandez-lui : « Qu’est-ce qui te fait penser que… ? » Il trouvera lui-même ses réponses. Quand il comprend, expliquez que ces histoires sont faites pour les petits et que vous êtes heureux de le voir grandir.
+- Ne tranche pas par un simple oui ou non. Demande-lui : « Qu’est-ce qui te fait penser que… ? » Il trouvera lui-même ses réponses. Quand il comprend, explique que ces histoires sont faites pour les petits et que vous êtes heureux de le voir grandir.
 
 ## Questions fréquentes
 **Laisser croire au père Noël, est-ce mentir à son enfant ?**
@@ -1439,7 +1439,7 @@ L’imagination reste précieuse à cet âge. Elle mérite attention si elle sem
 Mieux vaut l’aider à dire la vérité et à réparer. Une punition trop lourde peut lui apprendre surtout à mieux cacher.
 
 ## Quand demander conseil
-Parlez-en au médecin si les mensonges sont très fréquents et s’accompagnent d’autres difficultés (agressivité, tristesse, difficultés scolaires, troubles du sommeil), ou si vous pensez qu’il cache quelque chose qui lui fait peur. ${AIDE}
+Parles-en au médecin si les mensonges sont très fréquents et s’accompagnent d’autres difficultés (agressivité, tristesse, difficultés scolaires, troubles du sommeil), ou si tu penses qu’il cache quelque chose qui lui fait peur. ${AIDE}
 
 ${FIN}`,
   }),

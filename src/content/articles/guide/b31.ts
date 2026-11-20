@@ -31,7 +31,7 @@ const S = {
   sportsCycle: { label: 'Ministère des Sports — Cycle menstruel et performance (guide IPCS, sportives de haut niveau)', url: 'https://www.sports.gouv.fr/sites/default/files/2025-09/guide-ipcs-cycle-menstruel-et-performance-pdf-47358.pdf', consulted_on: C },
   psycomFemmes: { label: 'Psycom (Santé mentale Info) — La santé mentale des femmes', url: 'https://www.psycom.org/sinformer/la-sante-mentale/la-sante-mentale-des-femmes/', consulted_on: C, published: '2026-09-16' },
   filsanteRegles: { label: 'Fil Santé Jeunes — Vivre avec les règles', url: 'https://www.filsantejeunes.com/vivre-avec-les-regles-18771', consulted_on: C, published: '2024-02-23' },
-  etudiantEndo: { label: 'etudiant.gouv.fr — Endométriose : les aménagements d’études qui s’adaptent à vos besoins', url: 'https://www.etudiant.gouv.fr/fr/amenagements-endometriose', consulted_on: C, published: '2025-01-20' },
+  etudiantEndo: { label: 'etudiant.gouv.fr — Endométriose : les aménagements d’études qui s’adaptent à tes besoins', url: 'https://www.etudiant.gouv.fr/fr/amenagements-endometriose', consulted_on: C, published: '2025-01-20' },
   santeEndoTravail: { label: 'Santé.fr — Endométriose et travail : 3 ressources pour comprendre et agir en entreprise', url: 'https://www.sante.fr/endometriose/endometriose-et-travail-3-ressources-pour-comprendre-et-agir-en-entreprise', consulted_on: C, published: '2024-03-07' },
   santeTests: { label: 'Santé.fr (contenu Fil Santé Jeunes) — Les tests de grossesse', url: 'https://www.sante.fr/les-tests-de-grossesse', consulted_on: C, published: '2022-07-27' },
   qsEnceinte: { label: 'QuestionSexualité (Santé publique France) — Enceinte : comment savoir ?', url: 'https://www.questionsexualite.fr/comprendre-la-conception-et-la-grossesse/la-grossesse/comment-savoir-si-vous-etes-enceinte', consulted_on: C },
@@ -1135,7 +1135,7 @@ Il existe beaucoup d’idées reçues sur les rapports pendant les règles. Fil 
 **Et les douleurs ?** Santé.fr mentionne que l’activité sexuelle peut, chez certaines personnes, réduire les troubles liés aux règles. À l’inverse, si les rapports sont douloureux, notamment en profondeur, c’est un signe à signaler à un professionnel : cela peut évoquer une endométriose.
 
 ## Au quotidien
-- **Parlez-en** avant : envies, limites, gêne éventuelle. Le consentement compte à chaque moment.
+- **Parles-en** avant : envies, limites, gêne éventuelle. Le consentement compte à chaque moment.
 - **Utilise un préservatif** si tu n’as pas de contraception ou si le statut IST de ton ou ta partenaire n’est pas connu.
 - **Retire tampon ou coupe** avant une pénétration vaginale ; un tampon oublié doit être retiré dès que possible.
 - **Côté pratique** : une serviette de bain foncée, des mouchoirs, une douche avant ou après peuvent mettre plus à l’aise.

@@ -38,7 +38,7 @@ const S = {
   charteNouveauNe: { label: 'info.gouv.fr — La charte du nouveau-né hospitalisé', url: 'https://www.info.gouv.fr/actualite/la-charte-du-nouveau-ne-hospitalise', consulted_on: C, published: '2021-11-19' },
 } satisfies Record<string, ArticleSource>;
 
-const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis d’un professionnel (médecin, sage-femme, psychologue ou psychiatre) qui connaît votre situation.';
+const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis d’un professionnel (médecin, sage-femme, psychologue ou psychiatre) qui connaît ta situation.';
 
 const PREG = { journeys: ['pregnant'] as LibArticle['journeys'], status: 'to_review' as const };
 const NEWBORN = { journeys: ['newborn', 'parents_sleep'] as LibArticle['journeys'], status: 'to_review' as const };
@@ -60,7 +60,7 @@ export const GUIDE_B21: LibArticle[] = [
 - Selon la Caf, **5 à 15 % des femmes** développeraient des troubles anxieux pendant la grossesse : un phénomène courant, à ne pas négliger.
 - **En parler** (couple, proches, professionnels) aide souvent à aller mieux et évite que le stress ne s’installe.
 - L’**entretien prénatal précoce** et la préparation à la naissance sont des moments prévus pour parler de ses émotions.
-- Si l’angoisse devient envahissante, un psychologue ou un psychiatre peut vous accompagner ; de nombreuses maternités proposent ces consultations.
+- Si l’angoisse devient envahissante, un psychologue ou un psychiatre peut t’accompagner ; de nombreuses maternités proposent ces consultations.
 
 ## Comprendre
 La grossesse bouscule beaucoup de repères en même temps : le corps se transforme, les hormones évoluent, les places changent dans la famille, au travail, parmi les amis. Santé publique France (1000 premiers jours) rappelle que ces changements soulèvent des questions légitimes : la grossesse va-t-elle bien se passer, le bébé sera-t-il en bonne santé, saurai-je m’en occuper, restera-t-il du temps pour moi et pour le couple ?
@@ -70,19 +70,19 @@ Les inquiétudes évoluent souvent au fil des trimestres. L’article de la Caf,
 - au **deuxième trimestre**, le ventre devient visible et le regard des autres peut peser ;
 - au **troisième trimestre**, les angoisses liées à l’accouchement, au rôle de parent, à la relation de couple et à la rencontre avec le bébé.
 
-Il est aussi possible de désirer profondément un enfant et de vivre la grossesse comme pénible : cela ne fait pas de vous un mauvais parent. L’**ambivalence** (penser une chose et son contraire, changer d’avis d’un jour à l’autre) est fréquente, mais elle peut fatiguer. Le passage à la parentalité peut également réveiller des souvenirs ou des blessures anciennes.
+Il est aussi possible de désirer profondément un enfant et de vivre la grossesse comme pénible : cela ne fait pas de toi un mauvais parent. L’**ambivalence** (penser une chose et son contraire, changer d’avis d’un jour à l’autre) est fréquente, mais elle peut fatiguer. Le passage à la parentalité peut également réveiller des souvenirs ou des blessures anciennes.
 
 ## Au quotidien
-- **Repérez ce qui vous apaise** et autorisez-vous à le faire : un moment seule au calme, du temps à deux ou avec des amis, lire, écouter de la musique, dessiner, marcher, être dans la nature.
-- **Allégez les obligations** que vous vous imposez : triez ce qui est vraiment important pour retrouver du temps et un peu de recul.
-- **Prenez soin de votre équilibre** : alimentation variée, activité physique adaptée, sommeil suffisant.
-- **Triez les informations** : les récits très personnels ou alarmants lus en ligne ne disent rien de votre propre grossesse. Notez plutôt vos questions pour la prochaine consultation.
-- **Parlez-en** : avec votre partenaire, une amie, une personne de la famille qui a vécu une situation proche. Une future mère citée par 1000 premiers jours raconte combien échanger avec des cousines ayant connu une fausse couche l’a soulagée.
-- **Explorez des méthodes de détente** selon vos goûts : sophrologie, yoga, relaxation, haptonomie sont citées par la Caf.
+- **Repère ce qui t’apaise** et autorise-toi à le faire : un moment seule au calme, du temps à deux ou avec des amis, lire, écouter de la musique, dessiner, marcher, être dans la nature.
+- **Allège les obligations** que tu t’imposes : trie ce qui est vraiment important pour retrouver du temps et un peu de recul.
+- **Prends soin de ton équilibre** : alimentation variée, activité physique adaptée, sommeil suffisant.
+- **Trie les informations** : les récits très personnels ou alarmants lus en ligne ne disent rien de ta propre grossesse. Note plutôt tes questions pour la prochaine consultation.
+- **Parles-en** : avec ton partenaire, une amie, une personne de la famille qui a vécu une situation proche. Une future mère citée par 1000 premiers jours raconte combien échanger avec des cousines ayant connu une fausse couche l’a soulagée.
+- **Explore des méthodes de détente** selon tes goûts : sophrologie, yoga, relaxation, haptonomie sont citées par la Caf.
 
 ## Questions fréquentes
 **Je m’inquiète tout le temps pour le bébé. Est-ce que cela peut lui nuire ?**
-S’inquiéter pour son enfant est très courant et ne fait pas de vous une « mauvaise » future mère. Si l’inquiétude prend beaucoup de place, en parler à la sage-femme ou au médecin permet de vous rassurer sur ce qui peut l’être et de trouver un soutien adapté.
+S’inquiéter pour son enfant est très courant et ne fait pas de toi une « mauvaise » future mère. Si l’inquiétude prend beaucoup de place, en parler à la sage-femme ou au médecin permet de te rassurer sur ce qui peut l’être et de trouver un soutien adapté.
 
 **À qui en parler si je n’ose pas le dire à mes proches ?**
 À la sage-femme ou au médecin qui suit la grossesse, en centre de PMI (protection maternelle et infantile), ou à un psychologue. Le dispositif Mon soutien psy permet un accompagnement psychologique remboursé, avec un accès direct à un psychologue conventionné.
@@ -94,7 +94,7 @@ Le futur second parent peut lui aussi traverser des doutes et des peurs, comme l
 Elles permettent de comprendre le déroulement de la naissance, d’échanger avec d’autres futurs parents et d’évoquer ses émotions avec une sage-femme.
 
 ## Quand demander conseil
-Consultez sans attendre si l’angoisse vous empêche de dormir, de manger ou de faire vos activités, si vous avez des crises de panique, si une tristesse s’installe plus de deux semaines ou si vous perdez l’envie de tout. En cas d’idées noires ou de pensées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Consulte sans attendre si l’angoisse t’empêche de dormir, de manger ou de faire tes activités, si tu as des crises de panique, si une tristesse s’installe plus de deux semaines ou si tu perds l’envie de tout. En cas d’idées noires ou de pensées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['anxiété grossesse', 'angoisse enceinte', 'peur', 'stress grossesse', 'inquiétude', 'émotions', 'troubles anxieux', 'soutien psychologique'],
@@ -120,33 +120,33 @@ ${END}`,
 ## Comprendre
 Au troisième trimestre, les angoisses liées à l’accouchement prennent souvent plus de place. La Caf, dans un article s’appuyant sur une sage-femme praticienne en hypnose, explique que ces craintes portent souvent sur l’inconnu, la douleur, la peur de complications ou celle de ne pas savoir pousser. Elles peuvent être plus fortes lors d’un premier bébé, ou lorsque l’on garde en mémoire un accouchement précédent difficile.
 
-Santé publique France (1000 premiers jours) rappelle que les peurs liées à la naissance et à la douleur sont très répandues, et que beaucoup de femmes découvrent ce jour-là des forces insoupçonnées. La peur fait partie du chemin ; l’objectif n’est pas de la faire disparaître à tout prix, mais d’éviter qu’elle ne vous submerge.
+Santé publique France (1000 premiers jours) rappelle que les peurs liées à la naissance et à la douleur sont très répandues, et que beaucoup de femmes découvrent ce jour-là des forces insoupçonnées. La peur fait partie du chemin ; l’objectif n’est pas de la faire disparaître à tout prix, mais d’éviter qu’elle ne te submerge.
 
-La façon de regarder les contractions compte aussi. Selon la sage-femme interrogée par la Caf, les percevoir comme une force hostile venue de l’extérieur peut amplifier la peur ; les voir comme le travail de votre propre corps, qui rapproche de la rencontre avec bébé, aide souvent à mieux les vivre.
+La façon de regarder les contractions compte aussi. Selon la sage-femme interrogée par la Caf, les percevoir comme une force hostile venue de l’extérieur peut amplifier la peur ; les voir comme le travail de ton propre corps, qui rapproche de la rencontre avec bébé, aide souvent à mieux les vivre.
 
 ## Au quotidien
-- **Posez vos questions personnelles** au gynécologue ou à la sage-femme : comment se passe le début du travail, quand partir à la maternité, quelles possibilités pour soulager la douleur, ce qui se passe en cas d’imprévu.
-- **Faites le tri dans les récits** : chaque accouchement est singulier. Les témoignages très détaillés ou dramatiques, en ligne ou dans l’entourage, ne prédisent pas votre propre histoire. Vous pouvez dire gentiment : « Je préfère ne pas entendre ce récit pour l’instant ».
-- **Suivez la préparation à la naissance et à la parentalité** : elle permet de comprendre le déroulé du jour J, la gestion des contractions et la poussée, et d’échanger avec d’autres futurs parents.
-- **Testez des outils de détente** : respiration, relaxation, sophrologie, hypnose. La Caf indique que l’auto-hypnose peut s’apprendre en deux ou trois séances.
-- **Impliquez votre partenaire ou un proche** : il ou elle peut vous encourager, vous rassurer et refaire avec vous les exercices de respiration.
-- **Écrivez ce qui vous fait peur** puis apportez la liste à votre rendez-vous : mettre des mots sur la peur la rend souvent plus concrète, donc plus abordable.
+- **Pose tes questions personnelles** au gynécologue ou à la sage-femme : comment se passe le début du travail, quand partir à la maternité, quelles possibilités pour soulager la douleur, ce qui se passe en cas d’imprévu.
+- **Fais le tri dans les récits** : chaque accouchement est singulier. Les témoignages très détaillés ou dramatiques, en ligne ou dans l’entourage, ne prédisent pas ta propre histoire. Tu peux dire gentiment : « Je préfère ne pas entendre ce récit pour l’instant ».
+- **Suis la préparation à la naissance et à la parentalité** : elle permet de comprendre le déroulé du jour J, la gestion des contractions et la poussée, et d’échanger avec d’autres futurs parents.
+- **Teste des outils de détente** : respiration, relaxation, sophrologie, hypnose. La Caf indique que l’auto-hypnose peut s’apprendre en deux ou trois séances.
+- **Implique ton partenaire ou un proche** : il ou elle peut t’encourager, te rassurer et refaire avec toi les exercices de respiration.
+- **Écris ce qui te fait peur** puis apporte la liste à ton rendez-vous : mettre des mots sur la peur la rend souvent plus concrète, donc plus abordable.
 
 ## Questions fréquentes
 **Mon premier accouchement s’est mal passé, j’ai peur que cela recommence. Que faire ?**
-Parlez-en tôt à la sage-femme ou au médecin qui vous suit. Revenir sur ce qui s’est passé, comprendre ce qui pourrait être différent cette fois et préparer la suite avec l’équipe peut beaucoup apaiser. Un soutien psychologique peut aussi aider.
+Parles-en tôt à la sage-femme ou au médecin qui te suit. Revenir sur ce qui s’est passé, comprendre ce qui pourrait être différent cette fois et préparer la suite avec l’équipe peut beaucoup apaiser. Un soutien psychologique peut aussi aider.
 
 **L’entretien prénatal précoce peut-il servir à parler de cette peur ?**
-Oui. Proposé dès la déclaration de grossesse, il accorde une place importante aux angoisses et permet d’envisager des solutions adaptées à votre situation.
+Oui. Proposé dès la déclaration de grossesse, il accorde une place importante aux angoisses et permet d’envisager des solutions adaptées à ta situation.
 
 **Mon partenaire a peur aussi. Comment l’aider à m’aider ?**
-Il ou elle peut participer aux séances de préparation, apprendre les exercices de respiration et réfléchir avec vous à son rôle le jour J. Se sentir utile rassure souvent les deux parents.
+Il ou elle peut participer aux séances de préparation, apprendre les exercices de respiration et réfléchir avec toi à son rôle le jour J. Se sentir utile rassure souvent les deux parents.
 
 **Et si la peur est si forte que je pense sans cesse à l’accouchement ?**
 Une peur qui envahit les pensées, empêche de dormir ou provoque des crises d’angoisse mérite un accompagnement par un psychologue ou un psychiatre. Beaucoup de maternités proposent ce type de consultation.
 
 ## Quand demander conseil
-Parlez-en à votre sage-femme ou à votre médecin dès que la peur vous gêne au quotidien. Si vous vous sentez submergée, sans issue, ou si des idées noires apparaissent, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas de saignement, de perte de liquide, de contractions inhabituelles ou de baisse des mouvements du bébé, contactez la maternité ou appelez le **15** (ou le **112**).
+Parles-en à ta sage-femme ou à ton médecin dès que la peur te gêne au quotidien. Si tu te sens submergée, sans issue, ou si des idées noires apparaissent, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas de saignement, de perte de liquide, de contractions inhabituelles ou de baisse des mouvements du bébé, contacte la maternité ou appelle le **15** (ou le **112**).
 
 ${END}`,
     tags: ['peur accouchement', 'tocophobie', 'angoisse accouchement', 'préparation à la naissance', 'hypnose', 'sophrologie', 'douleur', 'troisième trimestre'],
@@ -155,8 +155,8 @@ ${END}`,
   {
     ...PREG,
     slug: 'entretien-prenatal-precoce-parler-de-soi',
-    title: 'L’entretien prénatal précoce : un temps pour parler de vous, pas seulement du bébé',
-    summary: 'Obligatoire depuis 2020 et pris en charge à 100 %, l’entretien prénatal précoce est un moment d’écoute avec une sage-femme ou un médecin pour parler de vos émotions, de votre situation et de vos besoins d’accompagnement.',
+    title: 'L’entretien prénatal précoce : un temps pour parler de toi, pas seulement du bébé',
+    summary: 'Obligatoire depuis 2020 et pris en charge à 100 %, l’entretien prénatal précoce est un moment d’écoute avec une sage-femme ou un médecin pour parler de tes émotions, de ta situation et de tes besoins d’accompagnement.',
     category: 'sante-mentale',
     body_md: `Ce rendez-vous ne ressemble pas aux autres consultations de grossesse : pas d’examen, pas de prise de sang, mais un temps pour parler. C’est souvent le premier endroit où l’on ose dire ce qui inquiète.
 
@@ -165,43 +165,43 @@ ${END}`,
 - Il est proposé **dès la déclaration de grossesse** (souvent autour du 4e mois) par une **sage-femme ou un médecin**, en libéral, en centre de PMI ou à la maternité.
 - Il est **pris en charge à 100 %** par l’Assurance maladie.
 - Ce n’est **pas une consultation médicale** : c’est un temps d’écoute et d’échange sur les dimensions psychologique, émotionnelle et sociale de la grossesse.
-- Vous pouvez y venir **seule ou en couple**.
+- Tu peux y venir **seule ou en couple**.
 
 ## Comprendre
-Le ministère chargé de la santé présente l’EPP comme le premier temps clé du parcours des « 1000 premiers jours ». Son objectif est d’évaluer avec vous vos besoins d’accompagnement pendant la grossesse et après la naissance : besoin d’information, de soutien psychologique, d’aide sociale ou pratique.
+Le ministère chargé de la santé présente l’EPP comme le premier temps clé du parcours des « 1000 premiers jours ». Son objectif est d’évaluer avec toi tes besoins d’accompagnement pendant la grossesse et après la naissance : besoin d’information, de soutien psychologique, d’aide sociale ou pratique.
 
 Pourquoi parler d’émotions si tôt ? Parce que la grossesse est une période de grands changements, et que la plupart des difficultés psychiques de la période périnatale sont plus faciles à accompagner lorsqu’elles sont repérées tôt. Psycom rappelle que le manque de soutien, l’isolement, les violences, les antécédents de troubles psychiques, une grossesse non prévue ou un deuil font partie des situations qui fragilisent ; l’EPP permet d’en parler et d’être orientée si besoin.
 
-Cet entretien est aussi l’occasion de poser toutes vos questions et d’exprimer vos souhaits pour la suite : préparation à la naissance, allaitement, retour à la maison, organisation du couple.
+Cet entretien est aussi l’occasion de poser toutes tes questions et d’exprimer tes souhaits pour la suite : préparation à la naissance, allaitement, retour à la maison, organisation du couple.
 
 ## Au quotidien
 **Comment le préparer ?** Rien n’est obligatoire, mais quelques notes peuvent aider :
-- ce qui vous réjouit et ce qui vous inquiète dans cette grossesse ;
-- comment vous dormez, mangez, comment va votre moral ;
-- qui peut vous aider autour de vous, et ce qui vous manque ;
-- votre situation de travail, de logement, vos préoccupations financières ;
+- ce qui te réjouit et ce qui t’inquiète dans cette grossesse ;
+- comment tu dors, manges, comment va ton moral ;
+- qui peut t’aider autour de toi, et ce qui te manque ;
+- ta situation de travail, de logement, tes préoccupations financières ;
 - des événements passés qui pèsent encore (grossesse précédente difficile, perte, accouchement mal vécu) ;
-- vos questions sur l’accouchement, l’allaitement, les premières semaines.
+- tes questions sur l’accouchement, l’allaitement, les premières semaines.
 
-**Pendant l’entretien**, vous pouvez dire « je ne sais pas » ou « je n’ai pas envie d’en parler maintenant ». Le professionnel n’est pas là pour juger mais pour comprendre. Si une question vous met mal à l’aise, vous pouvez le signaler.
+**Pendant l’entretien**, tu peux dire « je ne sais pas » ou « je n’ai pas envie d’en parler maintenant ». Le professionnel n’est pas là pour juger mais pour comprendre. Si une question te met mal à l’aise, tu peux le signaler.
 
-**Après l’entretien**, le professionnel peut vous proposer, selon vos besoins, un suivi avec un psychologue, la PMI, un travailleur social, des séances de préparation adaptées ou d’autres ressources.
+**Après l’entretien**, le professionnel peut te proposer, selon tes besoins, un suivi avec un psychologue, la PMI, un travailleur social, des séances de préparation adaptées ou d’autres ressources.
 
 ## Questions fréquentes
 **Est-il trop tard si je suis déjà au 6e ou 7e mois ?**
-Il est recommandé tôt, mais un entretien plus tardif garde tout son intérêt. Demandez-le à votre sage-femme, à votre médecin ou à la maternité.
+Il est recommandé tôt, mais un entretien plus tardif garde tout son intérêt. Demande-le à ta sage-femme, à ton médecin ou à la maternité.
 
 **Mon partenaire peut-il venir ?**
-Oui, vous pouvez venir en couple. Vous pouvez aussi choisir d’y aller seule, par exemple si certains sujets sont plus faciles à aborder sans lui ou sans elle.
+Oui, tu peux venir en couple. Tu peux aussi choisir d’y aller seule, par exemple si certains sujets sont plus faciles à aborder sans lui ou sans elle.
 
 **Que se passe-t-il si je dis que je ne vais pas bien ?**
-Le professionnel vous écoute et réfléchit avec vous au soutien le plus adapté : consultations avec un psychologue (le dispositif Mon soutien psy permet jusqu’à 12 séances remboursées par année civile), suivi en PMI, orientation vers une équipe spécialisée. Dire que l’on va mal est le premier pas pour être aidée.
+Le professionnel t’écoute et réfléchit avec toi au soutien le plus adapté : consultations avec un psychologue (le dispositif Mon soutien psy permet jusqu’à 12 séances remboursées par année civile), suivi en PMI, orientation vers une équipe spécialisée. Dire que l’on va mal est le premier pas pour être aidée.
 
 **L’EPP remplace-t-il les consultations prénatales ?**
 Non. Il s’ajoute aux consultations médicales de suivi de grossesse, qui restent indispensables.
 
 ## Quand demander conseil
-N’attendez pas l’EPP si vous vous sentez très mal : parlez-en à votre sage-femme, votre médecin ou la PMI. Si vous avez des idées noires ou suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, composez le **15** ou le **112** ; si vous subissez des violences, le **3919** vous écoute 24 h/24.
+N’attends pas l’EPP si tu te sens très mal : parles-en à ta sage-femme, ton médecin ou la PMI. Si tu as des idées noires ou suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, compose le **15** ou le **112** ; si tu subis des violences, le **3919** t’écoute 24 h/24.
 
 ${END}`,
     tags: ['entretien prénatal précoce', 'EPP', 'sage-femme', 'PMI', '4e mois', 'parler de ses émotions', 'accompagnement grossesse', 'prise en charge'],
@@ -210,7 +210,7 @@ ${END}`,
   {
     ...NEWBORN,
     slug: 'entretien-postnatal-precoce-a-quoi-sert-il',
-    title: 'L’entretien postnatal précoce : faire le point sur votre moral après la naissance',
+    title: 'L’entretien postnatal précoce : faire le point sur ton moral après la naissance',
     summary: 'Obligatoire depuis 2022, l’entretien postnatal précoce a lieu entre la 4e et la 8e semaine après l’accouchement pour repérer tôt les signes de dépression du post-partum et évaluer les besoins de la mère et du second parent.',
     category: 'post-partum',
     min_age_months: 0,
@@ -229,31 +229,31 @@ Après une naissance, les émotions vont du bonheur à la fatigue extrême, en p
 
 L’EPNP a été créé pour ne pas laisser ces difficultés passer inaperçues. Santé publique France a publié en 2025 une étude menée dans l’Hérault auprès de mères vues en entretien par des sages-femmes de PMI entre la 4e et la 8e semaine. Parmi elles, 40 % avaient vécu difficilement leur grossesse et 31 % leur accouchement ; la fatigue (73 %), l’isolement (39 %) et l’anxiété (33 %) étaient fréquemment rapportés. Près de 3 mères sur 10 présentaient des signes modérés à importants de dépression du post-partum au questionnaire de dépistage utilisé. Ces chiffres montrent combien ce temps de parole est utile.
 
-Pendant l’entretien, le professionnel peut vous proposer de remplir un court questionnaire sur votre humeur des derniers jours. Ce n’est pas un examen à réussir : vos réponses servent à vous orienter.
+Pendant l’entretien, le professionnel peut te proposer de remplir un court questionnaire sur ton humeur des derniers jours. Ce n’est pas un examen à réussir : tes réponses servent à t’orienter.
 
 ## Au quotidien
-- **Prenez rendez-vous** auprès de la sage-femme qui vous a suivie, de la maternité, de votre médecin ou de la PMI ; demandez-le si personne ne vous l’a proposé.
-- **Notez ce qui a changé** depuis la naissance : sommeil (en dehors des réveils du bébé), appétit, envie de faire les choses, pleurs, irritabilité, inquiétudes, pensées qui vous font peur.
-- **Revenez sur l’accouchement** si vous en gardez un souvenir difficile : c’est un sujet à part entière.
-- **Parlez du retour à la maison** : qui vous aide, ce qui est lourd, ce dont vous auriez besoin (aide à domicile, relais, visites de la PMI).
-- **Pensez au second parent** : l’entretien peut aussi évaluer ses besoins. Près d’un père sur dix traverse une dépression autour de la naissance.
-- **Demandez si vous pouvez venir avec le bébé**, si c’est plus simple pour vous.
+- **Prends rendez-vous** auprès de la sage-femme qui t’a suivie, de la maternité, de ton médecin ou de la PMI ; demande-le si personne ne te l’a proposé.
+- **Note ce qui a changé** depuis la naissance : sommeil (en dehors des réveils du bébé), appétit, envie de faire les choses, pleurs, irritabilité, inquiétudes, pensées qui te font peur.
+- **Reviens sur l’accouchement** si tu en gardes un souvenir difficile : c’est un sujet à part entière.
+- **Parle du retour à la maison** : qui t’aide, ce qui est lourd, ce dont tu aurais besoin (aide à domicile, relais, visites de la PMI).
+- **Pense au second parent** : l’entretien peut aussi évaluer ses besoins. Près d’un père sur dix traverse une dépression autour de la naissance.
+- **Demande si tu peux venir avec le bébé**, si c’est plus simple pour toi.
 
 ## Questions fréquentes
 **Je vais bien, dois-je quand même y aller ?**
 Oui, c’est un temps de prévention. Il permet aussi de parler de l’organisation, du sommeil, du couple, et de savoir vers qui se tourner si les choses changent dans les mois suivants.
 
 **Quelle différence avec la consultation postnatale ?**
-La consultation postnatale, réalisée dans les semaines qui suivent l’accouchement, est un examen médical. L’EPNP est un entretien centré sur votre état émotionnel et vos besoins.
+La consultation postnatale, réalisée dans les semaines qui suivent l’accouchement, est un examen médical. L’EPNP est un entretien centré sur ton état émotionnel et tes besoins.
 
 **J’ai peur qu’on me juge si je dis que je n’éprouve pas encore beaucoup d’amour pour mon bébé : puis-je en parler ?**
 Oui, c’est justement le lieu pour le dire. Les professionnels qui mènent ces entretiens sont là pour écouter sans juger et pour proposer un soutien si besoin.
 
 **Et si les difficultés arrivent après la 8e semaine ?**
-La dépression du post-partum peut apparaître dans les semaines ou les mois suivant la naissance. Vous pouvez consulter à tout moment votre médecin, votre sage-femme ou la PMI.
+La dépression du post-partum peut apparaître dans les semaines ou les mois suivant la naissance. Tu peux consulter à tout moment ton médecin, ta sage-femme ou la PMI.
 
 ## Quand demander conseil
-Consultez sans attendre l’EPNP si une tristesse, une anxiété ou un épuisement durent plus de deux semaines, ou si vous avez du mal à vous occuper de votre bébé. En cas de pensées suicidaires ou de peur de faire du mal à votre enfant, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, de confusion ou de comportement inhabituel après l’accouchement, appelez le **15** ou le **112**.
+Consulte sans attendre l’EPNP si une tristesse, une anxiété ou un épuisement durent plus de deux semaines, ou si tu as du mal à t’occuper de ton bébé. En cas de pensées suicidaires ou de peur de faire du mal à ton enfant, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, de confusion ou de comportement inhabituel après l’accouchement, appelle le **15** ou le **112**.
 
 ${END}`,
     tags: ['entretien postnatal précoce', 'EPNP', 'post-partum', 'dépression post-partum', 'baby blues', 'sage-femme', 'PMI', 'moral après accouchement'],
@@ -277,17 +277,17 @@ ${END}`,
 ## Comprendre
 Il est fréquent de traverser des hauts et des bas pendant la grossesse. La dépression se distingue par sa **durée** et son **intensité**. Psycom décrit des symptômes présents presque tous les jours pendant au moins deux semaines : humeur triste, perte d’intérêt ou de plaisir, anxiété, douleurs physiques, fatigue, troubles de l’appétit et du sommeil, difficultés de concentration, sentiment de culpabilité ou de désespoir. Parfois apparaissent des pensées qui font peur, comme la crainte de se faire du mal ou de faire du mal au bébé, ou des idées suicidaires.
 
-Pendant la grossesse, certains signes (fatigue, sommeil perturbé, appétit modifié) peuvent ressembler aux changements physiques de cette période. N’hésitez pas à en parler : c’est au professionnel de faire la part des choses, surtout si la perte de plaisir ou la tristesse s’installent.
+Pendant la grossesse, certains signes (fatigue, sommeil perturbé, appétit modifié) peuvent ressembler aux changements physiques de cette période. N’hésite pas à en parler : c’est au professionnel de faire la part des choses, surtout si la perte de plaisir ou la tristesse s’installent.
 
 Plusieurs situations augmentent le risque, sans qu’aucune ne soit une fatalité : antécédents personnels ou familiaux de troubles psychiques, partenaire lui-même déprimé ou anxieux, manque de sommeil, événements stressants (déménagement, séparation, difficultés professionnelles), manque de soutien, violences, grossesse non prévue, complications médicales, deuil périnatal antérieur.
 
 ## Au quotidien
-- **Parlez-en à un professionnel** : la sage-femme ou le médecin qui suit votre grossesse, la PMI, votre médecin traitant. L’entretien prénatal précoce est un bon moment, mais vous pouvez en parler à n’importe quelle consultation.
-- **Consultez un psychologue** : avec Mon soutien psy, vous pouvez prendre rendez-vous directement avec un psychologue conventionné, jusqu’à 12 séances par année civile.
-- **Si vous avez déjà un traitement** pour un trouble psychique, posez toutes vos questions à l’équipe qui vous suit avant toute décision ; ne modifiez rien de vous-même.
-- **Acceptez l’aide concrète** : repas, courses, accompagnement aux rendez-vous. Dites précisément ce qui vous soulagerait.
-- **Gardez de petits repères** : une sortie dehors chaque jour, un repas partagé, une activité douce. Ce ne sont pas des remèdes à eux seuls, mais ils soutiennent le soin.
-- **Informez votre partenaire** de ce que vous traversez, pour qu’il ou elle puisse vous soutenir et prendre soin de sa propre santé mentale.
+- **Parles-en à un professionnel** : la sage-femme ou le médecin qui suit ta grossesse, la PMI, ton médecin traitant. L’entretien prénatal précoce est un bon moment, mais tu peux en parler à n’importe quelle consultation.
+- **Consulte un psychologue** : avec Mon soutien psy, tu peux prendre rendez-vous directement avec un psychologue conventionné, jusqu’à 12 séances par année civile.
+- **Si tu as déjà un traitement** pour un trouble psychique, pose toutes tes questions à l’équipe qui te suit avant toute décision ; ne modifie rien de toi-même.
+- **Accepte l’aide concrète** : repas, courses, accompagnement aux rendez-vous. Dis précisément ce qui te soulagerait.
+- **Garde de petits repères** : une sortie dehors chaque jour, un repas partagé, une activité douce. Ce ne sont pas des remèdes à eux seuls, mais ils soutiennent le soin.
+- **Informe ton partenaire** de ce que tu traverses, pour qu’il ou elle puisse te soutenir et prendre soin de sa propre santé mentale.
 
 ## Questions fréquentes
 **Être déprimée enceinte, est-ce que cela veut dire que je ne veux pas de ce bébé ?**
@@ -300,10 +300,10 @@ Personne ne peut le prédire. Être accompagnée dès la grossesse permet en rev
 Oui. Le suivi psychologique, le soutien de l’entourage et, si besoin, un traitement décidé avec un médecin font partie des soins possibles. Dans certaines situations, une prise en charge spécialisée en psychiatrie périnatale peut être proposée.
 
 **Je n’ose pas en parler de peur qu’on pense que je serai une mauvaise mère : comment faire ?**
-Les professionnels de la périnatalité connaissent bien ces difficultés. En parler, c’est déjà prendre soin de vous et de votre bébé.
+Les professionnels de la périnatalité connaissent bien ces difficultés. En parler, c’est déjà prendre soin de toi et de ton bébé.
 
 ## Quand demander conseil
-Consultez si la tristesse, la perte d’intérêt ou l’anxiété durent plus de deux semaines. En cas d’idées suicidaires, de sentiment qu’il n’y a plus d’issue ou de peur de vous faire du mal, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, appelez le **15** ou le **112**.
+Consulte si la tristesse, la perte d’intérêt ou l’anxiété durent plus de deux semaines. En cas d’idées suicidaires, de sentiment qu’il n’y a plus d’issue ou de peur de te faire du mal, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, appelle le **15** ou le **112**.
 
 ${END}`,
     tags: ['dépression grossesse', 'dépression périnatale', 'déprime enceinte', 'tristesse', 'santé mentale grossesse', 'psychologue', 'Mon soutien psy', 'facteurs de risque'],
@@ -317,7 +317,7 @@ ${END}`,
     category: 'post-partum',
     min_age_months: 0,
     max_age_months: 12,
-    body_md: `Vous avez reconnu chez vous des signes de dépression du post-partum, ou un proche s’inquiète pour vous ? L’étape suivante est souvent la plus difficile : demander de l’aide. Voici comment s’organisent les soins.
+    body_md: `Tu as reconnu chez toi des signes de dépression du post-partum, ou un proche s’inquiète pour toi ? L’étape suivante est souvent la plus difficile : demander de l’aide. Voici comment s’organisent les soins.
 
 ## En bref
 - La dépression du post-partum est **une maladie qui se soigne**, généralement avec un accompagnement et souvent un traitement.
@@ -334,13 +334,13 @@ Les signes à connaître : manque d’énergie, difficulté à s’occuper du b�
 Le soin repose sur plusieurs piliers, que Psycom résume ainsi : le **soutien social**, un **suivi psychologique** et, **selon les cas, un traitement médicamenteux** décidé avec un médecin. Lorsque c’est nécessaire, une hospitalisation dans une unité mère-enfant ou parents-bébé permet d’être soignée tout en gardant le lien avec son enfant.
 
 ## Au quotidien
-**Premier pas : en parler à un professionnel.** Vous pouvez dire simplement : « Depuis la naissance, je ne me sens pas bien, et cela dure. » La sage-femme, le médecin traitant, la puéricultrice ou la PMI vous orienteront.
+**Premier pas : en parler à un professionnel.** Tu peux dire simplement : « Depuis la naissance, je ne me sens pas bien, et cela dure. » La sage-femme, le médecin traitant, la puéricultrice ou la PMI t’orienteront.
 
-**Le psychologue** : avec Mon soutien psy, vous pouvez prendre rendez-vous directement avec un psychologue conventionné (annuaire sur le site de l’Assurance maladie), dans la limite de 12 séances par année civile. Les séances sont remboursées, sans dépassement d’honoraires. Le médecin reste utile pour orienter, notamment en cas de signes d’alerte.
+**Le psychologue** : avec Mon soutien psy, tu peux prendre rendez-vous directement avec un psychologue conventionné (annuaire sur le site de l’Assurance maladie), dans la limite de 12 séances par année civile. Les séances sont remboursées, sans dépassement d’honoraires. Le médecin reste utile pour orienter, notamment en cas de signes d’alerte.
 
 **Le psychiatre ou l’équipe de psychiatrie périnatale** : si la dépression est plus sévère, un suivi spécialisé peut être proposé, parfois à l’hôpital.
 
-**L’entourage** : pendant les soins, l’aide concrète compte beaucoup. Laissez votre partenaire, un proche ou une aide à domicile (la Caf et la PMI peuvent vous renseigner) prendre en charge une partie des nuits, des repas, du ménage.
+**L’entourage** : pendant les soins, l’aide concrète compte beaucoup. Laisse ton partenaire, un proche ou une aide à domicile (la Caf et la PMI peuvent te renseigner) prendre en charge une partie des nuits, des repas, du ménage.
 
 **Les lieux de parole** : groupes de parents, lieux d’accueil enfants-parents, associations de soutien à la parentalité permettent de rompre l’isolement.
 
@@ -349,16 +349,16 @@ Le soin repose sur plusieurs piliers, que Psycom résume ainsi : le **soutien so
 Cela dépend des personnes et de la sévérité. L’important est de commencer tôt et de ne pas interrompre le suivi dès les premiers progrès sans en parler avec le professionnel.
 
 **Puis-je continuer d’allaiter si on me propose un traitement ?**
-Posez la question au médecin qui prescrit, en lui précisant que vous allaitez. Ne modifiez pas un traitement de vous-même.
+Pose la question au médecin qui prescrit, en lui précisant que tu allaites. Ne modifie pas un traitement de toi-même.
 
 **Mon partenaire ne comprend pas ce qui m’arrive. Que lui dire ?**
-Que la dépression du post-partum est une maladie fréquente, qui se soigne, et que son soutien concret aide. Vous pouvez lui proposer de venir à une consultation avec vous. Il ou elle doit aussi être attentif à sa propre santé mentale.
+Que la dépression du post-partum est une maladie fréquente, qui se soigne, et que son soutien concret aide. Tu peux lui proposer de venir à une consultation avec toi. Il ou elle doit aussi être attentif à sa propre santé mentale.
 
 **Est-ce que mon bébé va en souffrir ?**
-Se soigner est justement la meilleure façon de protéger la relation avec votre enfant. Les professionnels peuvent aussi vous accompagner dans le lien avec votre bébé.
+Se soigner est justement la meilleure façon de protéger la relation avec ton enfant. Les professionnels peuvent aussi t’accompagner dans le lien avec ton bébé.
 
 ## Quand demander conseil
-Consultez dès que les symptômes durent plus de deux semaines. En cas d’idées suicidaires, de sentiment que votre famille serait mieux sans vous, ou de peur de faire du mal à votre bébé, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, de confusion, d’agitation ou de propos inhabituels, appelez le **15** ou le **112**. Si vous craignez pour la sécurité d’un enfant, le **119** est joignable 24 h/24.
+Consulte dès que les symptômes durent plus de deux semaines. En cas d’idées suicidaires, de sentiment que ta famille serait mieux sans toi, ou de peur de faire du mal à ton bébé, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, de confusion, d’agitation ou de propos inhabituels, appelle le **15** ou le **112**. Si tu crains pour la sécurité d’un enfant, le **119** est joignable 24 h/24.
 
 ${END}`,
     tags: ['dépression post-partum', 'soigner dépression post-partum', 'psychiatrie périnatale', 'unité mère-enfant', 'Mon soutien psy', 'psychologue', 'post-partum', 'moral après bébé'],
@@ -395,8 +395,8 @@ Certains troubles psychiques, comme les troubles bipolaires, peuvent aussi appar
 ## Au quotidien
 Ce que l’entourage peut faire :
 - **Ne pas minimiser** un changement de comportement inquiétant en le mettant sur le compte de la fatigue.
-- **Appeler le 15 (ou le 112)** dès que des signes évocateurs apparaissent, en décrivant précisément ce que vous observez.
-- **Ne pas laisser la mère seule avec le bébé** en attendant l’aide, sans la brusquer : restez calme, rassurant, présent.
+- **Appeler le 15 (ou le 112)** dès que des signes évocateurs apparaissent, en décrivant précisément ce que tu observes.
+- **Ne pas laisser la mère seule avec le bébé** en attendant l’aide, sans la brusquer : reste calme, rassurant, présent.
 - **Prévenir la maternité** si la sortie est récente : l’équipe connaît le dossier.
 - **Rassembler les informations utiles** : date de l’accouchement, traitements en cours, antécédents connus.
 
@@ -406,10 +406,10 @@ Les soins peuvent nécessiter une hospitalisation ; une unité mère-enfant ou p
 
 ## Questions fréquentes
 **Comment faire la différence avec un gros baby blues ?**
-Dans le baby blues, la mère est émue, fatiguée, pleure facilement, mais reste en contact avec la réalité. Dans la psychose, le discours devient incohérent, des idées délirantes ou des hallucinations apparaissent, le sommeil disparaît complètement. Au moindre doute, appelez le 15 : ce sont les professionnels qui feront la différence.
+Dans le baby blues, la mère est émue, fatiguée, pleure facilement, mais reste en contact avec la réalité. Dans la psychose, le discours devient incohérent, des idées délirantes ou des hallucinations apparaissent, le sommeil disparaît complètement. Au moindre doute, appelle le 15 : ce sont les professionnels qui feront la différence.
 
 **Est-ce que cela arrive seulement aux femmes qui ont déjà eu des problèmes psychiques ?**
-Les antécédents personnels ou familiaux font partie des facteurs de risque cités par Psycom. Mais l’absence d’antécédent ne doit pas faire écarter des signes inquiétants : au moindre doute, appelez le 15.
+Les antécédents personnels ou familiaux font partie des facteurs de risque cités par Psycom. Mais l’absence d’antécédent ne doit pas faire écarter des signes inquiétants : au moindre doute, appelle le 15.
 
 **La mère pourra-t-elle s’occuper de son bébé après ?**
 La psychose puerpérale se soigne. L’accompagnement, parfois en unité mère-enfant, vise justement à rétablir la santé de la mère et à soutenir la relation avec le bébé.
@@ -418,7 +418,7 @@ La psychose puerpérale se soigne. L’accompagnement, parfois en unité mère-e
 Oui. Vivre cette situation est éprouvant. Il peut en parler au médecin traitant, à un psychologue, ou appeler le 3114 en cas de détresse.
 
 ## Quand demander conseil
-Appelez immédiatement le **15** ou le **112** en cas d’agitation, d’insomnie totale, de propos incohérents, d’hallucinations, d’idées étranges au sujet du bébé ou de risque pour la mère ou l’enfant. Pour une détresse psychique ou des idées suicidaires, le **3114** répond 24 h/24, 7 j/7. Si un enfant est en danger, le **119** est joignable à tout moment.
+Appelle immédiatement le **15** ou le **112** en cas d’agitation, d’insomnie totale, de propos incohérents, d’hallucinations, d’idées étranges au sujet du bébé ou de risque pour la mère ou l’enfant. Pour une détresse psychique ou des idées suicidaires, le **3114** répond 24 h/24, 7 j/7. Si un enfant est en danger, le **119** est joignable à tout moment.
 
 ${END}`,
     tags: ['psychose puerpérale', 'psychose post-partum', 'urgence psychiatrique', 'délire après accouchement', 'insomnie', 'hallucinations', 'unité mère-enfant', 'trouble bipolaire'],
@@ -438,30 +438,30 @@ ${END}`,
 - Les **troubles anxieux** concernent environ **15 % des parents** pendant la période périnatale, selon Psycom.
 - La peur de se faire du mal ou de faire du mal au bébé (appelée **phobie d’impulsion**) figure parmi les symptômes décrits dans la **dépression périnatale**.
 - Ces pensées surgissent **malgré soi** et font souvent honte : on les tait, alors qu’elles méritent d’être dites.
-- Elles méritent d’être **dites à un professionnel**, qui saura faire la part des choses et proposer un accompagnement.
-- Si vous sentez que vous pourriez passer à l’acte, il s’agit d’une **urgence**.
+- Elles méritent d’être **dis à un professionnel**, qui saura faire la part des choses et proposer un accompagnement.
+- Si tu sens que tu pourrais passer à l’acte, il s’agit d’une **urgence**.
 
 ## Comprendre
 Devenir parent rend hypervigilant : on guette la respiration du bébé, on vérifie, on anticipe les dangers. Chez certains parents, cette vigilance se transforme en pensées intrusives, qui s’imposent sans qu’on le veuille : « Et si je le lâchais dans l’escalier ? », « Et si je le noyais dans le bain ? ». Ces pensées provoquent de l’effroi, de la culpabilité et poussent souvent à éviter certaines situations (ne plus donner le bain, ne plus porter le bébé près d’une fenêtre).
 
 Psycom cite ces « phobies d’impulsion » parmi les symptômes possibles de la dépression périnatale, aux côtés de la tristesse, de l’anxiété, de la fatigue et du sentiment de culpabilité. Les troubles anxieux sont eux aussi fréquents à cette période. Le manque de sommeil, un accouchement difficile, un bébé qui a eu des soucis de santé ou un manque de soutien peuvent les favoriser.
 
-Seul un professionnel peut évaluer votre situation : c’est pourquoi il est important d’en parler plutôt que de rester seul avec ces pensées.
+Seul un professionnel peut évaluer ta situation : c’est pourquoi il est important d’en parler plutôt que de rester seul avec ces pensées.
 
 ## Au quotidien
-- **Mettez des mots** : « J’ai des pensées qui me font peur à propos de mon bébé. » Vous pouvez le dire à votre sage-femme, votre médecin, la puéricultrice de PMI ou un psychologue. Ces professionnels accompagnent les difficultés psychiques de la période périnatale.
-- **Évitez de rester seul avec la honte** : en parler à votre partenaire ou à un proche de confiance permet aussi d’organiser des relais.
-- **Protégez votre sommeil** autant que possible : organisez des nuits ou des siestes de récupération, en confiant le bébé à l’autre parent ou à un proche.
-- **Ne vous imposez pas l’isolement** : sortir, voir d’autres parents (lieux d’accueil enfants-parents, groupes de PMI) aide à relativiser.
-- **Si une situation vous angoisse trop** (bain, change sur une table en hauteur), demandez à quelqu’un de la faire avec vous le temps d’être accompagné.
+- **Mets des mots** : « J’ai des pensées qui me font peur à propos de mon bébé. » Tu peux le dire à ta sage-femme, ton médecin, la puéricultrice de PMI ou un psychologue. Ces professionnels accompagnent les difficultés psychiques de la période périnatale.
+- **Évite de rester seul avec la honte** : en parler à ton partenaire ou à un proche de confiance permet aussi d’organiser des relais.
+- **Protège ton sommeil** autant que possible : organise des nuits ou des siestes de récupération, en confiant le bébé à l’autre parent ou à un proche.
+- **Ne t’impose pas l’isolement** : sortir, voir d’autres parents (lieux d’accueil enfants-parents, groupes de PMI) aide à relativiser.
+- **Si une situation t’angoisse trop** (bain, change sur une table en hauteur), demande à quelqu’un de la faire avec toi le temps d’être accompagné.
 - **Un suivi psychologique** peut aider à comprendre et apaiser ces pensées ; Mon soutien psy permet de consulter directement un psychologue conventionné.
 
 ## Questions fréquentes
 **Avoir ces pensées veut-il dire que je suis dangereux pour mon enfant ?**
-Ces pensées sont décrites comme des symptômes d’anxiété ou de dépression périnatale, vécus avec effroi par les parents. Seul un professionnel peut évaluer votre situation : en parler est la meilleure protection pour vous et pour votre enfant.
+Ces pensées sont décrites comme des symptômes d’anxiété ou de dépression périnatale, vécus avec effroi par les parents. Seul un professionnel peut évaluer ta situation : en parler est la meilleure protection pour toi et pour ton enfant.
 
 **Va-t-on me retirer mon bébé si j’en parle ?**
-Les professionnels de la périnatalité sont là pour vous soigner et soutenir le lien avec votre enfant. Parler de ce que vous vivez permet de mettre en place l’aide adaptée, pour vous comme pour lui.
+Les professionnels de la périnatalité sont là pour te soigner et soutenir le lien avec ton enfant. Parler de ce que tu vis permet de mettre en place l’aide adaptée, pour toi comme pour lui.
 
 **Le second parent peut-il aussi vivre cela ?**
 Oui. Les troubles anxieux et la dépression périnatale touchent aussi les pères et les seconds parents, qui peuvent consulter de la même façon.
@@ -470,7 +470,7 @@ Oui. Les troubles anxieux et la dépression périnatale touchent aussi les père
 Un accompagnement adapté aide à les comprendre et à les apaiser. Plus on en parle tôt, plus l’aide peut se mettre en place rapidement.
 
 ## Quand demander conseil
-Parlez-en dès que ces pensées reviennent souvent, vous font peur ou vous conduisent à éviter votre bébé. Si vous sentez que vous pourriez passer à l’acte, mettez le bébé en sécurité dans son lit, éloignez-vous et appelez le **15** ou le **112**. En cas d’idées suicidaires ou de détresse, le **3114** répond 24 h/24, 7 j/7. Si vous êtes inquiet pour la sécurité d’un enfant, appelez le **119**.
+Parles-en dès que ces pensées reviennent souvent, te font peur ou te conduisent à éviter ton bébé. Si tu sens que tu pourrais passer à l’acte, mets le bébé en sécurité dans son lit, éloigne-toi et appelle le **15** ou le **112**. En cas d’idées suicidaires ou de détresse, le **3114** répond 24 h/24, 7 j/7. Si tu es inquiet pour la sécurité d’un enfant, appelle le **119**.
 
 ${END}`,
     tags: ['pensées intrusives', 'phobie d’impulsion', 'peur de faire du mal à bébé', 'anxiété post-partum', 'TOC post-partum', 'dépression périnatale', 'honte', 'culpabilité'],
@@ -501,25 +501,25 @@ Ces manifestations sont souvent interprétées comme de la mauvaise humeur, du s
 Le stress chronique lié à la parentalité peut aussi conduire à un épuisement parental. L’article de *La Santé en action* consacré à ce sujet souligne que ses conséquences peuvent être plus graves chez les pères, notamment en termes d’idées suicidaires.
 
 ## Au quotidien
-- **Repérez les changements qui durent** : vous rentrez de plus en plus tard pour éviter la maison, vous buvez davantage, vous vous énervez pour un rien, vous ne prenez plus de plaisir à rien.
-- **Parlez-en** : à votre partenaire, à un ami, à votre médecin traitant. Dire « je ne vais pas bien depuis la naissance » est un acte de responsabilité, pas une faiblesse.
-- **Prenez votre place auprès du bébé** à votre façon : jouer, parler, chanter, porter, bercer, donner le bain, faire du peau à peau sont autant d’occasions de créer le lien.
-- **Utilisez les rendez-vous prévus** : l’entretien prénatal précoce peut se faire en couple, et l’entretien postnatal précoce peut aussi évaluer les besoins du conjoint.
-- **Consultez un psychologue** : Mon soutien psy est ouvert à tous, sans passage obligatoire par un médecin.
-- **Soyez attentif à votre consommation d’alcool** : son augmentation fait partie des signes possibles de dépression chez les pères, selon Psycom.
+- **Repère les changements qui durent** : tu rentres de plus en plus tard pour éviter la maison, tu bois davantage, tu t’énerves pour un rien, tu ne prends plus de plaisir à rien.
+- **Parles-en** : à ton partenaire, à un ami, à ton médecin traitant. Dire « je ne vais pas bien depuis la naissance » est un acte de responsabilité, pas une faiblesse.
+- **Prends ta place auprès du bébé** à ta façon : jouer, parler, chanter, porter, bercer, donner le bain, faire du peau à peau sont autant d’occasions de créer le lien.
+- **Utilise les rendez-vous prévus** : l’entretien prénatal précoce peut se faire en couple, et l’entretien postnatal précoce peut aussi évaluer les besoins du conjoint.
+- **Consulte un psychologue** : Mon soutien psy est ouvert à tous, sans passage obligatoire par un médecin.
+- **Sois attentif à ta consommation d’alcool** : son augmentation fait partie des signes possibles de dépression chez les pères, selon Psycom.
 
 ## Questions fréquentes
 **Ma compagne est en dépression du post-partum. Puis-je dire que moi aussi je vais mal ?**
-Oui. Prendre soin de vous fait partie du soutien que vous lui apportez. Vous pouvez consulter de votre côté et en parler ensemble avec un professionnel.
+Oui. Prendre soin de toi fait partie du soutien que tu lui apportes. Tu peux consulter de ton côté et en parler ensemble avec un professionnel.
 
 **Je n’arrive pas à m’attacher au bébé. Est-ce grave ?**
-Le désintérêt pour le bébé fait partie des signes décrits par 1000 premiers jours chez les pères qui vont mal : ce ressenti mérite d’être entendu. Parlez-en à un professionnel, surtout s’il s’accompagne de tristesse, de retrait ou d’irritabilité qui durent.
+Le désintérêt pour le bébé fait partie des signes décrits par 1000 premiers jours chez les pères qui vont mal : ce ressenti mérite d’être entendu. Parles-en à un professionnel, surtout s’il s’accompagne de tristesse, de retrait ou d’irritabilité qui durent.
 
 **Les seconds parents dans un couple de femmes sont-ils concernés ?**
 Les sources parlent surtout des pères, mais tout parent qui accueille un enfant peut traverser une période difficile : les mêmes aides lui sont ouvertes.
 
 ## Quand demander conseil
-Consultez si les signes durent plus de deux semaines, si vous consommez plus d’alcool ou de substances, ou si la colère vous fait peur. En cas d’idées suicidaires ou de sentiment d’être un poids, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, composez le **15** ou le **112**. Si vous craignez pour la sécurité de votre enfant, le **119** répond à tout moment.
+Consulte si les signes durent plus de deux semaines, si tu consommes plus d’alcool ou de substances, ou si la colère te fait peur. En cas d’idées suicidaires ou de sentiment d’être un poids, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas de danger immédiat, compose le **15** ou le **112**. Si tu crains pour la sécurité de ton enfant, le **119** répond à tout moment.
 
 ${END}`,
     tags: ['dépression paternelle', 'père déprimé', 'second parent', 'dépression post-partum père', 'irritabilité', 'alcool', 'co-parent', 'santé mentale des pères'],
@@ -549,29 +549,29 @@ Enfin, la place du second parent ne se résume pas à « aider » : c’est une 
 
 ## Au quotidien
 **Pendant la grossesse**
-- Venez aux rendez-vous quand c’est possible, notamment l’**entretien prénatal précoce** (il peut se faire en couple) et les séances de **préparation à la naissance**.
-- Parlez avec votre partenaire de la façon dont vous imaginez les premières semaines : nuits, visites, répartition des tâches, congés.
-- Renseignez-vous tôt sur votre **congé de paternité et d’accueil de l’enfant** auprès de votre employeur et de votre caisse.
+- Viens aux rendez-vous quand c’est possible, notamment l’**entretien prénatal précoce** (il peut se faire en couple) et les séances de **préparation à la naissance**.
+- Parle avec ton partenaire de la façon dont tu imagines les premières semaines : nuits, visites, répartition des tâches, congés.
+- Renseigne-toi tôt sur ton **congé de paternité et d’accueil de l’enfant** auprès de ton employeur et de ta caisse.
 
 **Après la naissance**
-- **Prenez des moments rien qu’à vous deux** avec le bébé : le bain, le change, le peau à peau, la promenade en porte-bébé, une chanson le soir.
-- **Si la mère allaite**, vous pouvez apporter le bébé pour les tétées de nuit, le recoucher, assurer le change et le câlin qui suit. Si elle tire son lait, vous pouvez donner certains biberons de lait maternel.
-- **Prenez en charge des domaines entiers** (courses, repas, rendez-vous du bébé) plutôt que d’attendre des consignes : cela aide à alléger la charge mentale.
-- **Acceptez de faire à votre façon** : pour le bébé, l’essentiel est la douceur et la disponibilité, pas la perfection des gestes.
-- **Gardez du temps pour le couple**, même court : un repas sans écran, quelques minutes pour se dire comment chacun va.
+- **Prends des moments rien qu’à vous deux** avec le bébé : le bain, le change, le peau à peau, la promenade en porte-bébé, une chanson le soir.
+- **Si la mère allaite**, tu peux apporter le bébé pour les tétées de nuit, le recoucher, assurer le change et le câlin qui suit. Si elle tire son lait, tu peux donner certains biberons de lait maternel.
+- **Prends en charge des domaines entiers** (courses, repas, rendez-vous du bébé) plutôt que d’attendre des consignes : cela aide à alléger la charge mentale.
+- **Accepte de faire à ta façon** : pour le bébé, l’essentiel est la douceur et la disponibilité, pas la perfection des gestes.
+- **Garde du temps pour le couple**, même court : un repas sans écran, quelques minutes pour se dire comment chacun va.
 
 ## Questions fréquentes
 **Je me sens maladroit avec le bébé. Comment prendre confiance ?**
-La confiance vient avec la pratique. Demandez à la sage-femme ou à la puéricultrice de PMI de vous montrer les gestes, puis faites-les régulièrement, seul avec le bébé.
+La confiance vient avec la pratique. Demande à la sage-femme ou à la puéricultrice de PMI de te montrer les gestes, puis fais-les régulièrement, seul avec le bébé.
 
 **Le bébé se calme mieux avec sa mère : est-ce que je m’y prends mal ?**
-Pas forcément. Chaque parent trouve ses propres façons d’apaiser le bébé, et cela demande du temps passé ensemble : restez régulièrement seul avec lui pour développer vos gestes à vous.
+Pas forcément. Chaque parent trouve ses propres façons d’apaiser le bébé, et cela demande du temps passé ensemble : reste régulièrement seul avec lui pour développer tes gestes à toi.
 
 **Je suis fatigué et je reprends vite le travail. Comment tenir ?**
-Parlez-en ensemble pour organiser des temps de repos pour chacun. Si la fatigue, l’irritabilité ou la tristesse s’installent, consultez : le second parent peut aussi faire une dépression autour de la naissance.
+Parles-en ensemble pour organiser des temps de repos pour chacun. Si la fatigue, l’irritabilité ou la tristesse s’installent, consulte : le second parent peut aussi faire une dépression autour de la naissance.
 
 ## Quand demander conseil
-Parlez à votre médecin ou à un psychologue si vous vous sentez durablement à l’écart, triste, irritable ou si vous avez envie de fuir la maison. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Parle à ton médecin ou à un psychologue si tu te sens durablement à l’écart, triste, irritable ou si tu as envie de fuir la maison. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['père', 'second parent', 'co-parent', 'place du père', 'lien avec bébé', 'peau à peau', 'congé paternité', 'partage des tâches'],
@@ -602,15 +602,15 @@ L’article de *La Santé en action* sur l’épuisement parental cite la charge
 ## Au quotidien
 **Rendre la charge visible**
 - Listez ensemble, pendant une semaine, tout ce qui doit être pensé et fait : repas, linge, courses, rendez-vous médicaux, vaccins, crèche, papiers Caf, anniversaires, vêtements à racheter…
-- Repérez qui y pense, et pas seulement qui l’exécute.
+- Repère qui y pense, et pas seulement qui l’exécute.
 
 **Répartir des domaines entiers**
 - Plutôt que de « donner un coup de main », chaque parent prend la responsabilité complète d’un domaine : par exemple l’un gère les repas de la semaine (menus, courses, cuisine), l’autre le suivi médical du bébé (rendez-vous, carnet de santé, ordonnances).
-- Utilisez un agenda partagé et une liste de courses commune.
+- Utilise un agenda partagé et une liste de courses commune.
 
 **Revoir le niveau d’exigence**
 - Santé publique France le dit clairement : passer du temps avec bébé est plus profitable que faire le ménage à fond.
-- Acceptez que l’autre fasse différemment : pour le bébé, ce qui compte est la douceur et l’attention, pas la perfection.
+- Accepte que l’autre fasse différemment : pour le bébé, ce qui compte est la douceur et l’attention, pas la perfection.
 
 **Se faire aider**
 - Entraide entre parents (courses groupées), proches pour un service ponctuel, garde occasionnelle pour souffler.
@@ -621,16 +621,16 @@ L’article de *La Santé en action* sur l’épuisement parental cite la charge
 
 ## Questions fréquentes
 **Mon partenaire dit qu’il en fait déjà beaucoup. Comment en parler sans dispute ?**
-Partez de la liste concrète plutôt que des reproches, et parlez de vos besoins (« j’ai besoin de ne plus penser aux rendez-vous ») plutôt que de ses manques. Le but est d’organiser, pas de compter les points.
+Pars de la liste concrète plutôt que des reproches, et parle de tes besoins (« j’ai besoin de ne plus penser aux rendez-vous ») plutôt que de ses manques. Le but est d’organiser, pas de compter les points.
 
 **Je n’arrive pas à lâcher prise, j’ai peur que ce soit mal fait : que faire ?**
-Commencez par un domaine où l’enjeu est faible, et laissez l’autre s’en occuper entièrement, à sa manière.
+Commence par un domaine où l’enjeu est faible, et laisse l’autre s’en occuper entièrement, à sa manière.
 
 **Je suis parent solo, comment alléger ma charge ?**
-Simplifiez au maximum, acceptez l’aide proposée et renseignez-vous auprès de votre Caf ou de la PMI sur l’aide à domicile et les lieux de soutien à la parentalité.
+Simplifie au maximum, accepte l’aide proposée et renseigne-toi auprès de ta Caf ou de la PMI sur l’aide à domicile et les lieux de soutien à la parentalité.
 
 ## Quand demander conseil
-Si la fatigue, l’irritabilité ou le sentiment d’être dépassé s’installent malgré les ajustements, parlez-en à votre médecin, à la PMI ou à un psychologue : c’est peut-être le début d’un épuisement parental. Si vous vous sentez à bout ou avez des idées noires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Si la fatigue, l’irritabilité ou le sentiment d’être dépassé s’installent malgré les ajustements, parles-en à ton médecin, à la PMI ou à un psychologue : c’est peut-être le début d’un épuisement parental. Si tu te sens à bout ou as des idées noires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['charge mentale', 'partage des tâches', 'organisation familiale', 'couple', 'tâches ménagères', 'épuisement', 'parents', 'agenda partagé'],
@@ -650,7 +650,7 @@ ${END}`,
 - Il associe **trois signes** : épuisement physique et émotionnel dans le rôle de parent, **distance émotionnelle** avec l’enfant, **sentiment d’inefficacité** et d’insatisfaction en tant que parent.
 - Il concernerait **environ 6 % des parents** en France, principalement des femmes, selon Santé publique France.
 - Il peut être confondu avec une dépression ou un épuisement professionnel.
-- Il ne dit rien de l’amour que vous portez à vos enfants : c’est un signal qu’il faut **plus de soutien**.
+- Il ne dit rien de l’amour que tu portes à tes enfants : c’est un signal qu’il faut **plus de soutien**.
 
 ## Comprendre
 L’article de *La Santé en action* (Santé publique France, 2024) décrit l’épuisement parental comme le résultat d’un déséquilibre entre les « stresseurs » et les ressources. Quand ce déséquilibre dure trop longtemps, il devient un burn-out parental. Tous les signes n’ont pas besoin d’être présents : il commence souvent par l’épuisement physique et émotionnel, qui réduit la disponibilité mentale, puis la capacité d’empathie.
@@ -668,24 +668,24 @@ Les conséquences ne sont pas anodines : irritabilité, conflits plus fréquents
 
 ## Au quotidien
 Quelques questions pour faire le point :
-- Vous sentez-vous « vidé » le matin, avant même que la journée commence ?
-- Avez-vous l’impression de faire les gestes du quotidien en pilote automatique, sans plaisir ?
-- Avez-vous pris de la distance avec vos enfants, comme si vous n’aviez plus d’énergie pour eux ?
-- Vous dites-vous que vous n’êtes plus le parent que vous étiez ou que vous vouliez être ?
-- Vous énervez-vous plus vite et plus fort qu’avant ?
+- Te sens-tu « vidé » le matin, avant même que la journée commence ?
+- As-tu l’impression de faire les gestes du quotidien en pilote automatique, sans plaisir ?
+- As-tu pris de la distance avec tes enfants, comme si tu n’avais plus d’énergie pour eux ?
+- Te dis-tu que tu n’es plus le parent que tu étais ou que tu voulais être ?
+- T’énerves-tu plus vite et plus fort qu’avant ?
 
 Si plusieurs réponses sont « oui » depuis des semaines :
-- **Parlez-en** à votre partenaire, à un proche, à votre médecin.
-- **Identifiez ce qui peut être allégé** tout de suite : une tâche déléguée, une exigence abandonnée, une soirée de répit.
-- **Cherchez du soutien concret** : relais de l’entourage, aide à domicile (renseignez-vous auprès de la Caf), lieux d’accueil enfants-parents.
-- **Réduisez l’autodénigrement** : vous n’êtes pas un « mauvais parent », vous êtes un parent qui a besoin d’aide.
+- **Parles-en** à ton partenaire, à un proche, à ton médecin.
+- **Identifie ce qui peut être allégé** tout de suite : une tâche déléguée, une exigence abandonnée, une soirée de répit.
+- **Cherche du soutien concret** : relais de l’entourage, aide à domicile (renseigne-toi auprès de la Caf), lieux d’accueil enfants-parents.
+- **Réduis l’autodénigrement** : tu n’es pas un « mauvais parent », tu es un parent qui a besoin d’aide.
 
 ## Questions fréquentes
 **Quelle différence avec la dépression ?**
 Les signes peuvent se ressembler, et Santé publique France note que les professionnels eux-mêmes peuvent les confondre. Le burn-out parental se définit par rapport au rôle de parent ; seul un professionnel peut faire la différence, et les deux se prennent en charge.
 
 **Faut-il forcément un arrêt de travail ?**
-Pas forcément. L’article de Santé publique France note que les mères ont surtout besoin d’un soutien dans les tâches parentales, et que le travail peut même offrir du recul. Le médecin peut vous aider à évaluer votre situation.
+Pas forcément. L’article de Santé publique France note que les mères ont surtout besoin d’un soutien dans les tâches parentales, et que le travail peut même offrir du recul. Le médecin peut t’aider à évaluer ta situation.
 
 **Les pères peuvent-ils faire un burn-out parental ?**
 Oui. Les conséquences peuvent même être plus graves chez eux, notamment en termes d’idées suicidaires et de négligence.
@@ -694,7 +694,7 @@ Oui. Les conséquences peuvent même être plus graves chez eux, notamment en te
 En reconnaissant son besoin d’aide sans le juger, en le rassurant sur le fait que le stress chronique peut toucher tous les parents, et en prenant en charge une partie concrète des tâches.
 
 ## Quand demander conseil
-Consultez votre médecin traitant si l’épuisement dure, si vous avez peur de vos réactions envers vos enfants ou si vous consommez davantage d’alcool ou de médicaments. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). Si un enfant est en danger ou si vous craignez de lui faire du mal, appelez le **119** ; en cas d’urgence, le **15** ou le **112**.
+Consulte ton médecin traitant si l’épuisement dure, si tu as peur de tes réactions envers tes enfants ou si tu consommes davantage d’alcool ou de médicaments. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). Si un enfant est en danger ou si tu crains de lui faire du mal, appelle le **119** ; en cas d’urgence, le **15** ou le **112**.
 
 ${END}`,
     tags: ['burn-out parental', 'épuisement parental', 'fatigue parent', 'parent à bout', 'stress parental', 'santé mentale des parents', 'charge mentale', 'perfectionnisme'],
@@ -726,16 +726,16 @@ Les **lignes d’écoute** permettent de parler tout de suite, sans rendez-vous.
 L’**aide à domicile de la Caf** : selon la Cnaf, un accompagnant éducatif et social (AES) peut aider pour les tâches du quotidien (ménage, repas) et un technicien de l’intervention sociale et familiale (TISF) peut épauler les parents auprès de leurs enfants. La participation est calculée selon le quotient familial ; depuis 2024, elle a été fortement réduite pour les familles les plus modestes.
 
 ## Au quotidien
-- **Choisissez une seule démarche** à faire aujourd’hui : un appel, un message à votre médecin, un rendez-vous à la PMI.
-- **Pour l’aide à domicile**, contactez votre Caf avec votre numéro d’allocataire, ou un service d’aide à domicile conventionné ; une évaluation de vos besoins est faite avant l’intervention.
-- **Pour souffler**, pensez aux **lieux d’accueil enfants-parents** (gratuits, sans inscription), aux haltes-garderies et à l’accueil occasionnel en crèche.
+- **Choisis une seule démarche** à faire aujourd’hui : un appel, un message à ton médecin, un rendez-vous à la PMI.
+- **Pour l’aide à domicile**, contacte ta Caf avec ton numéro d’allocataire, ou un service d’aide à domicile conventionné ; une évaluation de tes besoins est faite avant l’intervention.
+- **Pour souffler**, pense aux **lieux d’accueil enfants-parents** (gratuits, sans inscription), aux haltes-garderies et à l’accueil occasionnel en crèche.
 - **Pour un soutien psychologique**, Mon soutien psy permet de consulter directement un psychologue conventionné, jusqu’à 12 séances remboursées par année civile.
-- **Pour l’entourage**, dites précisément ce qui aiderait : un repas, une garde d’une heure, une course, un appel le soir.
-- **Gardez les numéros** dans votre téléphone, pour ne pas avoir à les chercher un soir difficile.
+- **Pour l’entourage**, dis précisément ce qui aiderait : un repas, une garde d’une heure, une course, un appel le soir.
+- **Garde les numéros** dans ton téléphone, pour ne pas avoir à les chercher un soir difficile.
 
 ## Questions fréquentes
 **Je ne suis pas allocataire de la Caf : puis-je demander une aide à domicile ?**
-La Cnaf indique que l’aide concerne les familles ayant au moins un enfant à charge ou attendant un premier enfant. Renseignez-vous auprès de votre Caf ou d’un service conventionné pour connaître les conditions dans votre département.
+La Cnaf indique que l’aide concerne les familles ayant au moins un enfant à charge ou attendant un premier enfant. Renseigne-toi auprès de ta Caf ou d’un service conventionné pour connaître les conditions dans ton département.
 
 **Est-ce que les lignes d’écoute peuvent me juger ou me signaler ?**
 Allô Parents Bébé et Allô, parents en crise sont anonymes et gratuites ; leur rôle est d’écouter et d’orienter. Si un enfant est en danger, le 119 est le numéro dédié.
@@ -744,7 +744,7 @@ Allô Parents Bébé et Allô, parents en crise sont anonymes et gratuites ; leu
 Ces lignes s’adressent aux parents angoissés, fatigués ou à bout : il n’y a pas de seuil à atteindre pour appeler.
 
 ## Quand demander conseil
-Si l’épuisement s’accompagne de tristesse durable, d’idées noires ou d’un sentiment qu’il n’y a plus d’issue, appelez le **3114** (gratuit, 24 h/24, 7 j/7). Si vous avez peur de faire du mal à votre enfant, mettez-le en sécurité, éloignez-vous et appelez le **119** ou, en cas d’urgence, le **15** ou le **112**.
+Si l’épuisement s’accompagne de tristesse durable, d’idées noires ou d’un sentiment qu’il n’y a plus d’issue, appelle le **3114** (gratuit, 24 h/24, 7 j/7). Si tu as peur de faire du mal à ton enfant, mets-le en sécurité, éloigne-toi et appelle le **119** ou, en cas d’urgence, le **15** ou le **112**.
 
 ${END}`,
     tags: ['aide parents', 'Allô Parents Bébé', 'Allô parents en crise', 'aide à domicile Caf', 'TISF', 'PMI', 'ligne d’écoute', 'parent épuisé'],
@@ -775,29 +775,29 @@ Santé publique France, dans son article sur l’épuisement parental, cite just
 Psycom souligne de son côté que le décalage entre l’idéal imaginé et la réalité vécue peut générer doutes, culpabilité et difficultés à en parler. Mettre des mots sur ce décalage est souvent un premier soulagement.
 
 ## Au quotidien
-- **Triez les conseils** : il n’existe pas de méthode universelle. Gardez les repères de santé publique (sécurité, sommeil, alimentation) et laissez de côté ce qui ne vous correspond pas.
-- **Faites-vous confiance** : vous connaissez votre enfant mieux que quiconque.
-- **Réduisez la comparaison** : limitez le temps passé sur les comptes qui vous font vous sentir « en dessous ». Rappelez-vous qu’une photo ne montre jamais la nuit blanche d’avant.
-- **Changez la question** : au lieu de « ai-je tout bien fait ? », demandez-vous « mon enfant a-t-il été nourri, en sécurité, aimé aujourd’hui ? ».
-- **Réparez plutôt que vous flageller** : après une colère, revenez vers votre enfant, nommez ce qui s’est passé, excusez-vous si besoin.
-- **Partagez les responsabilités** et accordez-vous du temps pour vous, sans le vivre comme un luxe.
-- **Parlez-en** avec d’autres parents : on découvre souvent qu’on n’est pas seul à douter.
+- **Trie les conseils** : il n’existe pas de méthode universelle. Garde les repères de santé publique (sécurité, sommeil, alimentation) et laisse de côté ce qui ne te correspond pas.
+- **Fais-toi confiance** : tu connais ton enfant mieux que quiconque.
+- **Réduis la comparaison** : limite le temps passé sur les comptes qui te font te sentir « en dessous ». Rappelle-toi qu’une photo ne montre jamais la nuit blanche d’avant.
+- **Change la question** : au lieu de « ai-je tout bien fait ? », demande-toi « mon enfant a-t-il été nourri, en sécurité, aimé aujourd’hui ? ».
+- **Répare plutôt que te flageller** : après une colère, reviens vers ton enfant, nomme ce qui s’est passé, excuse-toi si besoin.
+- **Partage les responsabilités** et accorde-toi du temps pour toi, sans le vivre comme un luxe.
+- **Parles-en** avec d’autres parents : on découvre souvent qu’on n’est pas seul à douter.
 
 ## Questions fréquentes
 **Je culpabilise de reprendre le travail. Est-ce mauvais pour mon enfant ?**
 Le travail peut aussi être une ressource et offrir du recul, note Santé publique France. Pour l’enfant, l’essentiel reste un lien chaleureux avec ses parents et un mode d’accueil où il est en sécurité.
 
 **Je culpabilise d’avoir arrêté l’allaitement : comment prendre du recul ?**
-Chaque situation est différente. Si cette culpabilité vous pèse, parlez-en à la sage-femme, au médecin ou à la PMI : ils peuvent vous aider à prendre du recul.
+Chaque situation est différente. Si cette culpabilité te pèse, parles-en à la sage-femme, au médecin ou à la PMI : ils peuvent t’aider à prendre du recul.
 
 **Comment soutenir un ami parent qui se dévalorise ?**
 En l’écoutant sans jugement et en proposant une aide concrète : un repas, une garde, des nouvelles régulières.
 
 **Quand la culpabilité devient-elle un problème ?**
-Quand elle est permanente, vous empêche de dormir, vous fait vous sentir incapable ou s’accompagne de tristesse. Ce peut être un signe d’épuisement ou de dépression.
+Quand elle est permanente, t’empêche de dormir, te fait te sentir incapable ou s’accompagne de tristesse. Ce peut être un signe d’épuisement ou de dépression.
 
 ## Quand demander conseil
-Parlez-en à votre médecin, à la PMI ou à un psychologue si la culpabilité ne vous quitte plus ou si vous vous sentez « nul » en tant que parent depuis des semaines. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Parles-en à ton médecin, à la PMI ou à un psychologue si la culpabilité ne te quitte plus ou si tu te sens « nul » en tant que parent depuis des semaines. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['culpabilité parentale', 'parent parfait', 'parent suffisamment bon', 'injonctions', 'réseaux sociaux', 'comparaison', 'perfectionnisme', 'mère parfaite'],
@@ -828,26 +828,26 @@ Psycom cite le manque de soutien et les événements comme l’éloignement fami
 Les **lieux d’accueil enfants-parents (LAEP)**, financés par la Caf, sont conçus pour cela : ce sont des espaces de rencontre, d’échange et de jeu, avec au moins deux accueillants formés à l’écoute. Ils ne sont ni un mode de garde ni un lieu de soin ; leur but est notamment de **rompre l’isolement**, de créer du lien entre familles et de valoriser les compétences des parents. L’accès est libre, gratuit ou avec une participation symbolique, dans le respect de l’anonymat.
 
 ## Au quotidien
-- **Sortez chaque jour**, même brièvement : une promenade, le marché, le parc. Croiser d’autres adultes compte.
-- **Repérez les lieux près de chez vous** : LAEP, groupes de parents et ateliers collectifs (sommeil, alimentation, lecture, écrans) proposés par la maternité, la PMI, la Caf, la MSA, le centre social ou la crèche.
-- **Gardez le contact** avec vos amis à votre rythme : un message, un appel pendant la sieste, une visite courte.
-- **Créez un réseau de parents** : rencontres au parc, à la PMI, en LAEP. L’entraide (courses groupées, garde croisée) allège aussi le quotidien.
-- **Planifiez des moments pour vous** : une heure de relais par l’autre parent ou un proche, sans culpabilité.
-- **Appelez une ligne d’écoute** quand la journée est trop longue : Allô Parents Bébé (0 800 00 34 56) pour les parents d’enfants de moins de 3 ans.
-- **Si vous êtes parent solo**, renseignez-vous auprès de votre Caf sur les aides et l’accompagnement possibles.
+- **Sors chaque jour**, même brièvement : une promenade, le marché, le parc. Croiser d’autres adultes compte.
+- **Repère les lieux près de chez toi** : LAEP, groupes de parents et ateliers collectifs (sommeil, alimentation, lecture, écrans) proposés par la maternité, la PMI, la Caf, la MSA, le centre social ou la crèche.
+- **Garde le contact** avec tes amis à ton rythme : un message, un appel pendant la sieste, une visite courte.
+- **Crée un réseau de parents** : rencontres au parc, à la PMI, en LAEP. L’entraide (courses groupées, garde croisée) allège aussi le quotidien.
+- **Planifie des moments pour toi** : une heure de relais par l’autre parent ou un proche, sans culpabilité.
+- **Appelle une ligne d’écoute** quand la journée est trop longue : Allô Parents Bébé (0 800 00 34 56) pour les parents d’enfants de moins de 3 ans.
+- **Si tu es parent solo**, renseigne-toi auprès de ta Caf sur les aides et l’accompagnement possibles.
 
 ## Questions fréquentes
 **Je n’ose pas aller dans un groupe de parents, je ne connais personne : comment me lancer ?**
-C’est justement le principe : les accueillants sont là pour faciliter les premiers échanges. Vous pouvez venir, rester un moment, et revenir si cela vous a plu.
+C’est justement le principe : les accueillants sont là pour faciliter les premiers échanges. Tu peux venir, rester un moment, et revenir si cela t’a plu.
 
 **Mon partenaire travaille beaucoup et je me sens seule le soir : que faire ?**
-Parlez-en ensemble : votre besoin de lien est légitime. Cherchez ensemble des moments de partage et des relais extérieurs.
+Parlez-en ensemble : ton besoin de lien est légitime. Cherche ensemble des moments de partage et des relais extérieurs.
 
 **Les LAEP accueillent-ils aussi les pères et les futurs parents ?**
 Oui, ils accueillent les enfants accompagnés d’un parent ou d’un adulte référent, ainsi que les futurs parents.
 
 ## Quand demander conseil
-Si la solitude s’accompagne de tristesse, de perte d’envie, de pleurs fréquents ou d’un sentiment de vide qui dure plus de deux semaines, parlez-en à votre médecin, à votre sage-femme ou à la PMI. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Si la solitude s’accompagne de tristesse, de perte d’envie, de pleurs fréquents ou d’un sentiment de vide qui dure plus de deux semaines, parles-en à ton médecin, à ta sage-femme ou à la PMI. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['solitude', 'isolement', 'jeune parent', 'LAEP', 'lieu d’accueil enfants-parents', 'groupe de parents', 'congé parental', 'parent solo'],
@@ -876,27 +876,27 @@ La fatigue joue un rôle majeur. L’article de *La Santé en action* sur l’é
 Psycom rappelle aussi que le second parent peut traverser une dépression autour de la naissance, avec parfois de l’irritabilité, de la colère, un retrait ou une augmentation des conflits conjugaux : une tension persistante dans le couple peut donc cacher une souffrance à soigner. L’intimité, enfin, reprend à un rythme propre à chaque couple ; en parler sans pression aide souvent davantage que de se fixer une échéance.
 
 ## Au quotidien
-- **Choisissez le bon moment** : évitez de régler les désaccords à 3 h du matin ou en pleine crise de pleurs. Notez le sujet et reprenez-le à un moment calme.
-- **Parlez en « je »** : « je me sens dépassée le soir », « j’ai besoin de dormir une nuit entière par semaine », plutôt que « tu ne fais jamais rien ».
-- **Écoutez l’autre jusqu’au bout** avant de répondre ; reformulez ce que vous avez compris.
-- **Revoyez ensemble l’organisation** : qui s’occupe de quoi, qui se lève la nuit, quels moments de repos pour chacun.
-- **Revoyez les exigences à la baisse** pour un temps : maison moins rangée, repas plus simples.
-- **Protégez de petits moments à deux** : un café, une promenade, dix minutes sans écran pour se demander « comment vas-tu vraiment ? ».
-- **Pensez aux gestes d’attention** : un mot, un merci, un câlin, qui rappellent que vous êtes une équipe.
-- **Faites-vous aider** : conseil conjugal et familial, médiation familiale, lignes d’écoute comme Allô, parents en crise (0 805 382 300).
+- **Choisis le bon moment** : évite de régler les désaccords à 3 h du matin ou en pleine crise de pleurs. Note le sujet et reprends-le à un moment calme.
+- **Parle en « je »** : « je me sens dépassée le soir », « j’ai besoin de dormir une nuit entière par semaine », plutôt que « tu ne fais jamais rien ».
+- **Écoute l’autre jusqu’au bout** avant de répondre ; reformule ce que tu as compris.
+- **Revois ensemble l’organisation** : qui s’occupe de quoi, qui se lève la nuit, quels moments de repos pour chacun.
+- **Revois les exigences à la baisse** pour un temps : maison moins rangée, repas plus simples.
+- **Protège de petits moments à deux** : un café, une promenade, dix minutes sans écran pour se demander « comment vas-tu vraiment ? ».
+- **Pense aux gestes d’attention** : un mot, un merci, un câlin, qui rappellent que tu es une équipe.
+- **Fais-toi aider** : conseil conjugal et familial, médiation familiale, lignes d’écoute comme Allô, parents en crise (0 805 382 300).
 
 ## Questions fréquentes
 **Nous nous disputons tous les jours depuis la naissance. Est-ce le signe que notre couple ne tiendra pas ?**
 Pas nécessairement : la fatigue et l’adaptation augmentent les tensions chez beaucoup de couples. Si les disputes s’installent, un tiers (conseiller conjugal et familial, psychologue) peut aider à renouer le dialogue.
 
 **Mon partenaire se renferme, boit plus ou devient très irritable : que faut-il comprendre ?**
-Ces signes peuvent traduire une dépression chez le second parent, qui concerne environ un homme sur dix pendant la période périnatale selon Psycom. Encouragez-le à consulter son médecin ou un psychologue.
+Ces signes peuvent traduire une dépression chez le second parent, qui concerne environ un homme sur dix pendant la période périnatale selon Psycom. Encourage-le à consulter son médecin ou un psychologue.
 
 **Comment distinguer conflit et violence ?**
-Un conflit oppose deux personnes qui peuvent exprimer leur désaccord. La violence installe la peur et le contrôle : humiliations, menaces, coups, contrôle de l’argent ou des sorties, pressions sexuelles. Psycom cite les violences conjugales ou intrafamiliales parmi les situations qui fragilisent la santé mentale pendant la grossesse et après la naissance. Elles ne sont jamais de votre faute.
+Un conflit oppose deux personnes qui peuvent exprimer leur désaccord. La violence installe la peur et le contrôle : humiliations, menaces, coups, contrôle de l’argent ou des sorties, pressions sexuelles. Psycom cite les violences conjugales ou intrafamiliales parmi les situations qui fragilisent la santé mentale pendant la grossesse et après la naissance. Elles ne sont jamais de ta faute.
 
 ## Quand demander conseil
-Si vous avez peur de votre partenaire ou subissez des violences, appelez le **3919** (Violences Femmes Info, gratuit, anonyme, 24 h/24) ; en cas de danger immédiat, le **17** ou le **112**. Si un enfant est exposé ou en danger, appelez le **119**. En cas de détresse ou d’idées suicidaires, le **3114** répond 24 h/24, 7 j/7.
+Si tu as peur de ton partenaire ou subis des violences, appelle le **3919** (Violences Femmes Info, gratuit, anonyme, 24 h/24) ; en cas de danger immédiat, le **17** ou le **112**. Si un enfant est exposé ou en danger, appelle le **119**. En cas de détresse ou d’idées suicidaires, le **3114** répond 24 h/24, 7 j/7.
 
 ${END}`,
     tags: ['couple après bébé', 'disputes', 'tensions couple', 'communication', 'intimité', 'conseiller conjugal', 'violences conjugales', '3919'],
@@ -928,31 +928,31 @@ La culpabilité est fréquente, nourrie par l’idée qu’un « bon parent » d
 
 ## Au quotidien
 **Avant la reprise**
-- Organisez une **période d’adaptation** avec la crèche ou l’assistant maternel, avec des temps d’accueil courts puis plus longs.
-- Faites des **essais de journée type** : heure de lever, trajet, dépôt, retour, pour repérer ce qui coince.
+- Organise une **période d’adaptation** avec la crèche ou l’assistant maternel, avec des temps d’accueil courts puis plus longs.
+- Fais des **essais de journée type** : heure de lever, trajet, dépôt, retour, pour repérer ce qui coince.
 - **Répartissez les rôles** à deux : qui dépose, qui récupère, qui reste si l’enfant est malade, qui gère le sac et les rendez-vous.
-- **Échangez avec votre employeur** sur vos horaires, un éventuel temps partiel, le télétravail si votre poste le permet.
+- **Échange avec ton employeur** sur tes horaires, un éventuel temps partiel, le télétravail si ton poste le permet.
 
 **Les premières semaines**
-- Prévoyez un **rituel de séparation** court et toujours le même (un câlin, un mot, un geste), et dites au revoir plutôt que de partir en cachette.
-- **Allégez le reste** : repas simples, courses en ligne, aide de l’entourage.
-- **Gardez des moments de qualité** le soir et le week-end plutôt que de vouloir compenser par une activité permanente.
-- **Écoutez votre fatigue** : les premières semaines cumulent souvent nuits courtes, petites maladies de l’enfant et rythme professionnel.
+- Prévois un **rituel de séparation** court et toujours le même (un câlin, un mot, un geste), et dis au revoir plutôt que de partir en cachette.
+- **Allège le reste** : repas simples, courses en ligne, aide de l’entourage.
+- **Garde des moments de qualité** le soir et le week-end plutôt que de vouloir compenser par une activité permanente.
+- **Écoute ta fatigue** : les premières semaines cumulent souvent nuits courtes, petites maladies de l’enfant et rythme professionnel.
 
-**Si vous allaitez**, renseignez-vous sur les possibilités de tirer votre lait au travail auprès de la sage-femme, de la PMI ou de votre employeur.
+**Si tu allaites**, renseigne-toi sur les possibilités de tirer ton lait au travail auprès de la sage-femme, de la PMI ou de ton employeur.
 
 ## Questions fréquentes
 **Je pleure en déposant mon bébé : est-ce que je lui transmets mon angoisse ?**
-Être émue au moment de la séparation est très courant. Un au revoir clair et tendre, puis un départ sans s’éterniser, aide souvent l’enfant comme le parent. Parlez-en avec les professionnels de l’accueil, qui ont l’habitude de ces moments.
+Être émue au moment de la séparation est très courant. Un au revoir clair et tendre, puis un départ sans s’éterniser, aide souvent l’enfant comme le parent. Parles-en avec les professionnels de l’accueil, qui ont l’habitude de ces moments.
 
 **Je suis soulagée de retrouver le travail et je m’en veux : est-ce grave ?**
-Ce soulagement est légitime : Santé publique France note que le travail peut offrir du recul. Avoir d’autres espaces de vie peut vous aider à être plus disponible pour votre enfant.
+Ce soulagement est légitime : Santé publique France note que le travail peut offrir du recul. Avoir d’autres espaces de vie peut t’aider à être plus disponible pour ton enfant.
 
 **Comment savoir si je suis simplement fatiguée ou si je m’épuise ?**
-Si la fatigue ne passe pas avec le repos, si vous vous sentez vidée, irritable, détachée de votre enfant ou incapable de faire face, parlez-en à votre médecin : il peut s’agir d’un épuisement parental ou d’une dépression.
+Si la fatigue ne passe pas avec le repos, si tu te sens vidée, irritable, détachée de ton enfant ou incapable de faire face, parles-en à ton médecin : il peut s’agir d’un épuisement parental ou d’une dépression.
 
 ## Quand demander conseil
-Parlez à votre médecin, à la PMI ou à un psychologue si l’angoisse de séparation, la tristesse ou l’épuisement durent plus de deux semaines. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Parle à ton médecin, à la PMI ou à un psychologue si l’angoisse de séparation, la tristesse ou l’épuisement durent plus de deux semaines. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['reprise du travail', 'fin du congé maternité', 'séparation', 'crèche', 'adaptation', 'culpabilité', 'congé parental', 'temps partiel'],
@@ -967,53 +967,53 @@ ${END}`,
     safety_critical: true,
     min_age_months: 0,
     max_age_months: 12,
-    body_md: `Il pleure depuis une heure, vous avez tout essayé, vous n’avez presque pas dormi. La tension monte, et vous avez peur de craquer. Ce moment arrive à beaucoup de parents ; ce qui compte, c’est d’avoir un plan pour le traverser en sécurité.
+    body_md: `Il pleure depuis une heure, tu as tout essayé, tu n’as presque pas dormi. La tension monte, et tu as peur de craquer. Ce moment arrive à beaucoup de parents ; ce qui compte, c’est d’avoir un plan pour le traverser en sécurité.
 
 ## En bref
 - Les pleurs d’un bébé en bonne santé sont **les plus intenses vers 6 semaines** et peuvent durer **2 à 3 heures par jour** en tout, avant de diminuer.
 - Un bébé ne pleure **ni par caprice ni pour embêter** : il exprime un besoin ou cherche du réconfort.
 - **Il ne faut jamais secouer un bébé** : cela peut causer un handicap à vie ou la mort.
-- Quand vous êtes à bout : **posez bébé sur le dos dans son lit**, sans objets autour, **quittez la pièce**, calmez-vous, **demandez un relais**.
-- **Allô Parents Bébé** (0 800 00 34 56) et le **119** peuvent vous écouter ; le **15** en cas de signes inquiétants.
+- Quand tu es à bout : **pose bébé sur le dos dans son lit**, sans objets autour, **quitte la pièce**, calme-toi, **demande un relais**.
+- **Allô Parents Bébé** (0 800 00 34 56) et le **119** peuvent t’écouter ; le **15** en cas de signes inquiétants.
 
 ## Comprendre
 Santé publique France (1000 premiers jours) rappelle que les pleurs sont le langage du nourrisson : faim, sommeil, chaleur, couche, douleur, ou simple besoin de bras et d’attention. La plupart du temps, ils ne signalent pas de problème de santé. Mais leur répétition met les nerfs à rude épreuve, surtout quand le sommeil manque.
 
-Ressentir de l’exaspération, de la colère ou un sentiment d’impuissance face à un bébé qui pleure n’est pas un signe que vous êtes un mauvais parent. Le danger, c’est le geste brusque qu’elles peuvent entraîner. Le carnet des 1000 premiers jours est très clair : il ne faut jamais secouer un bébé, il peut en mourir ou rester handicapé à vie. Un seul geste peut suffire.
+Ressentir de l’exaspération, de la colère ou un sentiment d’impuissance face à un bébé qui pleure n’est pas un signe que tu es un mauvais parent. Le danger, c’est le geste brusque qu’elles peuvent entraîner. Le carnet des 1000 premiers jours est très clair : il ne faut jamais secouer un bébé, il peut en mourir ou rester handicapé à vie. Un seul geste peut suffire.
 
 Avoir un « plan de sortie » préparé à l’avance, quand on est calme, aide à réagir au bon moment.
 
 ## Au quotidien
 **Pour tenter de l’apaiser**
-- Vérifiez ses besoins : faim, sommeil, chaleur, couche, signe de douleur.
-- Prenez-le contre vous, bercez-le, parlez-lui doucement ou chantonnez, massez-le, promenez-le, faites du peau à peau s’il est très petit.
-- Créez un environnement calme et peu lumineux.
-- Essayez la position à plat ventre sur votre avant-bras, qui peut soulager un mal de ventre.
-- Évitez les cris et les mots durs : ils ne calment pas et peuvent rendre l’enfant anxieux.
+- Vérifie ses besoins : faim, sommeil, chaleur, couche, signe de douleur.
+- Prends-le contre toi, berce-le, parle-lui doucement ou chantonne, masse-le, promène-le, fais du peau à peau s’il est très petit.
+- Crée un environnement calme et peu lumineux.
+- Essaie la position à plat ventre sur ton avant-bras, qui peut soulager un mal de ventre.
+- Évite les cris et les mots durs : ils ne calment pas et peuvent rendre l’enfant anxieux.
 
-**Quand vous sentez que vous allez craquer**
-1. Posez bébé **sur le dos, dans son lit**, sans couverture, coussin ni peluche autour.
-2. **Sortez de la pièce** quelques minutes : votre bébé est en sécurité dans son lit, même s’il pleure.
-3. **Calmez-vous** : respirez lentement, buvez un verre d’eau, bougez un peu, passez de l’eau fraîche sur votre visage.
-4. **Passez le relais** à l’autre parent ou à un proche de confiance, ou appelez quelqu’un pour parler.
-5. **Ne reprenez votre bébé qu’une fois apaisé.**
+**Quand tu sens que tu vas craquer**
+1. Pose bébé **sur le dos, dans son lit**, sans couverture, coussin ni peluche autour.
+2. **Sors de la pièce** quelques minutes : ton bébé est en sécurité dans son lit, même s’il pleure.
+3. **Calme-toi** : respire lentement, bois un verre d’eau, bouge un peu, passe de l’eau fraîche sur ton visage.
+4. **Passe le relais** à l’autre parent ou à un proche de confiance, ou appelle quelqu’un pour parler.
+5. **Ne reprends ton bébé qu’une fois apaisé.**
 
 **En prévention**
-- Expliquez à toutes les personnes qui gardent votre bébé qu’il ne faut jamais le secouer, et ce qu’il faut faire quand on est à bout.
-- Organisez des relais pour dormir, et consultez le médecin ou la PMI **avant d’être épuisé**.
+- Explique à toutes les personnes qui gardent ton bébé qu’il ne faut jamais le secouer, et ce qu’il faut faire quand on est à bout.
+- Organise des relais pour dormir, et consulte le médecin ou la PMI **avant d’être épuisé**.
 
 ## Questions fréquentes
 **Combien de temps puis-je le laisser pleurer dans son lit ?**
-Le temps nécessaire pour vous calmer, en restant à proximité. Si les pleurs vous inquiètent ou ne ressemblent pas à d’habitude, appelez le médecin ou le 15.
+Le temps nécessaire pour te calmer, en restant à proximité. Si les pleurs t’inquiètent ou ne ressemblent pas à d’habitude, appelle le médecin ou le 15.
 
 **Comment savoir si ses pleurs cachent une douleur ?**
-Ventre tendu, bébé qui se tortille, ne mange plus ou ne dort plus, se frotte l’oreille, vomit, a de la fièvre : appelez le médecin. En cas de signes inquiétants, appelez le 15.
+Ventre tendu, bébé qui se tortille, ne mange plus ou ne dort plus, se frotte l’oreille, vomit, a de la fièvre : appelle le médecin. En cas de signes inquiétants, appelle le 15.
 
 **J’ai eu un geste brusque et j’ai peur qu’il soit blessé : que faire ?**
-Appelez immédiatement le 15 et expliquez ce qui s’est passé, sans attendre de voir si des signes apparaissent. Le dire est la meilleure façon de protéger votre bébé.
+Appelle immédiatement le 15 et explique ce qui s’est passé, sans attendre de voir si des signes apparaissent. Le dire est la meilleure façon de protéger ton bébé.
 
 ## Quand demander conseil
-Appelez le **15** (ou le **112**) en cas de signes inquiétants chez le bébé ou après une secousse. Pour parler quand vous êtes à bout : **Allô Parents Bébé** (0 800 00 34 56, en semaine) ou le **119** (24 h/24) si vous craignez pour la sécurité de votre enfant. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7).
+Appelle le **15** (ou le **112**) en cas de signes inquiétants chez le bébé ou après une secousse. Pour parler quand tu es à bout : **Allô Parents Bébé** (0 800 00 34 56, en semaine) ou le **119** (24 h/24) si tu crains pour la sécurité de ton enfant. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7).
 
 ${END}`,
     tags: ['pleurs bébé', 'bébé pleure', 'à bout', 'syndrome du bébé secoué', 'ne jamais secouer', 'colère parent', 'Allô Parents Bébé', 'épuisement'],
@@ -1022,12 +1022,12 @@ ${END}`,
   {
     ...NEWBORN,
     slug: 'bebe-hospitalise-en-neonatologie-parents',
-    title: 'Bébé hospitalisé en néonatologie : prendre soin de vous pendant l’attente',
-    summary: 'Naissance prématurée ou bébé qui a besoin de soins : comment vivre l’hospitalisation, trouver votre place de parent auprès de lui, et vous faire soutenir pendant et après le séjour.',
+    title: 'Bébé hospitalisé en néonatologie : prendre soin de toi pendant l’attente',
+    summary: 'Naissance prématurée ou bébé qui a besoin de soins : comment vivre l’hospitalisation, trouver ta place de parent auprès de lui, et te faire soutenir pendant et après le séjour.',
     category: 'sante-mentale',
     min_age_months: 0,
     max_age_months: 6,
-    body_md: `Rien ne se passe comme imaginé : le bébé est dans une couveuse, les machines sonnent, les visites se font entre les soins. L’hospitalisation d’un nouveau-né bouleverse les parents. Prendre soin de vous fait partie de ce dont votre bébé a besoin.
+    body_md: `Rien ne se passe comme imaginé : le bébé est dans une couveuse, les machines sonnent, les visites se font entre les soins. L’hospitalisation d’un nouveau-né bouleverse les parents. Prendre soin de toi fait partie de ce dont ton bébé a besoin.
 
 ## En bref
 - Environ **75 000 nouveau-nés** sont hospitalisés chaque année en France, selon la charte du nouveau-né hospitalisé (2021).
@@ -1039,37 +1039,37 @@ ${END}`,
 ## Comprendre
 La charte du nouveau-né hospitalisé, présentée en 2021 par SOS Préma, la Société française de néonatalogie et le gouvernement, décrit dix besoins essentiels des nouveau-nés hospitalisés. Elle repose sur la théorie de l’attachement et sur les **soins de développement**, qui associent les parents aux soins. D’après la présentation officielle, ces soins réduisent en moyenne la durée d’hospitalisation et améliorent le développement et la santé de l’enfant.
 
-Pour les parents, cette période peut mêler peur, attente, culpabilité (« qu’ai-je fait de travers ? »), fatigue et moments de grande émotion. Psycom cite la naissance prématurée, les complications de la grossesse ou de l’accouchement et le bébé ayant des besoins médicaux particuliers parmi les facteurs de risque de troubles psychiques périnataux : il est donc important d’être attentif à vous, pendant l’hospitalisation comme après le retour à la maison.
+Pour les parents, cette période peut mêler peur, attente, culpabilité (« qu’ai-je fait de travers ? »), fatigue et moments de grande émotion. Psycom cite la naissance prématurée, les complications de la grossesse ou de l’accouchement et le bébé ayant des besoins médicaux particuliers parmi les facteurs de risque de troubles psychiques périnataux : il est donc important d’être attentif à toi, pendant l’hospitalisation comme après le retour à la maison.
 
 ## Au quotidien
-**Auprès de votre bébé**
-- Demandez à l’équipe comment **participer aux soins** : change, toilette, mise au sein ou tire-lait, peau à peau quand c’est possible.
-- **Parlez-lui, chantez** : votre voix fait partie de son environnement.
-- Notez vos questions pour les temps d’échange avec les médecins et les infirmiers ; demandez qu’on vous réexplique si besoin.
+**Auprès de ton bébé**
+- Demande à l’équipe comment **participer aux soins** : change, toilette, mise au sein ou tire-lait, peau à peau quand c’est possible.
+- **Parle-lui, chante** : ta voix fait partie de son environnement.
+- Note tes questions pour les temps d’échange avec les médecins et les infirmiers ; demande qu’on te réexplique si besoin.
 
-**Pour vous**
+**Pour toi**
 - **Relayez-vous** entre parents et avec des proches, pour que chacun puisse dormir, manger, se laver.
-- **Acceptez l’aide** pour la maison, les aînés, les repas.
-- **Demandez s’il est possible de rencontrer un psychologue** dans le service ou à la maternité si vous en ressentez le besoin.
-- **Échangez avec d’autres parents** qui vivent la même situation, dans le service ou via une association de parents.
-- **Gardez un lien avec vos proches** en choisissant ce que vous partagez, à votre rythme.
+- **Accepte l’aide** pour la maison, les aînés, les repas.
+- **Demande s’il est possible de rencontrer un psychologue** dans le service ou à la maternité si tu en ressens le besoin.
+- **Échange avec d’autres parents** qui vivent la même situation, dans le service ou via une association de parents.
+- **Garde un lien avec tes proches** en choisissant ce que tu partages, à ton rythme.
 
 **Au retour à la maison**
-- Préparez avec l’équipe le suivi prévu (rendez-vous, PMI, éventuelles aides).
-- Continuez de prêter attention à votre moral, même une fois rentrés.
+- Prépare avec l’équipe le suivi prévu (rendez-vous, PMI, éventuelles aides).
+- Continue de prêter attention à ton moral, même une fois rentrés.
 
 ## Questions fréquentes
 **Je n’arrive pas à me sentir parent de ce bébé derrière la couveuse. Est-ce que le lien se fera ?**
-Le lien se construit aussi à travers les soins, la voix, le toucher et le temps partagé. Parlez de ce ressenti à l’équipe : elle peut vous aider à trouver votre place auprès de lui, au fil des soins.
+Le lien se construit aussi à travers les soins, la voix, le toucher et le temps partagé. Parle de ce ressenti à l’équipe : elle peut t’aider à trouver ta place auprès de lui, au fil des soins.
 
 **Mon partenaire et moi ne vivons pas la situation de la même façon : comment rester unis ?**
 Chacun réagit à sa manière : l’un parle, l’autre agit ou se tait. Se dire comment chacun va, sans juger la façon de l’autre, aide à rester une équipe.
 
 **À qui parler en dehors de l’hôpital ?**
-À votre médecin traitant, à la PMI, à un psychologue (Mon soutien psy permet un accès direct), ou à la ligne de SOS Préma.
+À ton médecin traitant, à la PMI, à un psychologue (Mon soutien psy permet un accès direct), ou à la ligne de SOS Préma.
 
 ## Quand demander conseil
-Parlez-en à l’équipe ou à votre médecin si l’angoisse, les cauchemars, la tristesse ou l’épuisement durent ou s’aggravent, y compris après le retour à la maison. En cas de détresse ou d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). À la maison, en cas de signes inquiétants chez le bébé, appelez le **15** ou le **112**.
+Parles-en à l’équipe ou à ton médecin si l’angoisse, les cauchemars, la tristesse ou l’épuisement durent ou s’aggravent, y compris après le retour à la maison. En cas de détresse ou d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). À la maison, en cas de signes inquiétants chez le bébé, appelle le **15** ou le **112**.
 
 ${END}`,
     tags: ['néonatologie', 'prématuré', 'bébé hospitalisé', 'couveuse', 'soins de développement', 'SOS Préma', 'parents en néonat', 'charte du nouveau-né hospitalisé'],
@@ -1082,7 +1082,7 @@ ${END}`,
     title: 'Deuil périnatal : traverser la perte d’un bébé, ne pas rester seul',
     summary: 'Perdre un bébé pendant la grossesse ou peu après la naissance est un deuil à part entière. Ce que vivent souvent les parents, ce qui peut aider, et les associations et professionnels vers qui se tourner.',
     category: 'sante-mentale',
-    body_md: `La perte d’un bébé, avant ou peu après sa naissance, est un choc immense. Ce deuil reste souvent entouré de silence. Pourtant, il est reconnu, et vous n’avez pas à le traverser seul.
+    body_md: `La perte d’un bébé, avant ou peu après sa naissance, est un choc immense. Ce deuil reste souvent entouré de silence. Pourtant, il est reconnu, et tu n’as pas à le traverser seul.
 
 ## En bref
 - Le deuil périnatal désigne la **perte d’un bébé avant ou peu après sa naissance** ; il concernerait environ **7 000 familles chaque année**, selon la Caf.
@@ -1099,27 +1099,27 @@ Le deuil prend du temps et chacun le vit à sa façon. Tristesse, colère, culpa
 Psycom cite le deuil périnatal (après une fausse couche, une interruption de grossesse ou le décès du bébé à la naissance) parmi les situations qui augmentent le risque de troubles psychiques. Être accompagné n’est donc pas un luxe : c’est une protection.
 
 ## Au quotidien
-- **Prenez le temps** dont vous avez besoin : il n’y a pas de bonne durée ni de bonne façon de vivre ce deuil.
-- **Faites ce qui a du sens pour vous** : donner un prénom, organiser un rite, en parler… ou pas. Les équipes de maternité peuvent vous présenter les possibilités et vous accompagner dans ces choix.
-- **Acceptez l’accompagnement** :
+- **Prends le temps** dont tu as besoin : il n’y a pas de bonne durée ni de bonne façon de vivre ce deuil.
+- **Fais ce qui a du sens pour toi** : donner un prénom, organiser un rite, en parler… ou pas. Les équipes de maternité peuvent te présenter les possibilités et t’accompagner dans ces choix.
+- **Accepte l’accompagnement** :
   - associations de parents endeuillés, qui proposent écoute, entretiens individuels ou familiaux, groupes de parole et parfois ateliers pour les enfants : **Naître et Vivre** (deuil périnatal, ligne 01 47 23 05 08, 24 h/24), **Spama** (07 87 85 37 81, en semaine le matin), **Empreintes** et la **Fédération européenne Vivre son deuil** (tous deuils) ;
-  - professionnels : médecin traitant, sage-femme, gynécologue, psychologue ou psychiatre ; vous pouvez leur demander s’ils sont formés au deuil ;
-  - travailleur social de la Caf ou de la MSA, qui peut vous aider pour les démarches, les droits et la recherche de soutien.
-- **Prenez soin de votre corps** : la récupération physique après une naissance ou une interruption de grossesse a aussi besoin d’un suivi.
-- **Dites à vos proches ce qui vous aide** : parler de votre bébé, vous laisser du calme, une aide concrète.
+  - professionnels : médecin traitant, sage-femme, gynécologue, psychologue ou psychiatre ; tu peux leur demander s’ils sont formés au deuil ;
+  - travailleur social de la Caf ou de la MSA, qui peut t’aider pour les démarches, les droits et la recherche de soutien.
+- **Prends soin de ton corps** : la récupération physique après une naissance ou une interruption de grossesse a aussi besoin d’un suivi.
+- **Dis à tes proches ce qui t’aide** : parler de ton bébé, te laisser du calme, une aide concrète.
 
 ## Questions fréquentes
 **Est-ce un « vrai » deuil si la grossesse était encore précoce ?**
-Oui, c’est un deuil dès lors que vous le vivez comme une perte. Naître et Vivre, par exemple, accompagne les parents ayant perdu un enfant pendant la grossesse ou dans ses premières années.
+Oui, c’est un deuil dès lors que tu le vis comme une perte. Naître et Vivre, par exemple, accompagne les parents ayant perdu un enfant pendant la grossesse ou dans ses premières années.
 
 **Nous ne vivons pas le deuil de la même façon dans le couple : est-ce un problème ?**
 C’est fréquent : chacun a son rythme et sa manière d’exprimer la peine. En parler, éventuellement avec un professionnel ou dans une association, aide à ne pas s’éloigner.
 
 **Quand puis-je reprendre le travail ?**
-Il n’y a pas de règle sur le ressenti. Vos droits (congés, arrêts) dépendent de votre situation ; le travailleur social de la Caf ou de la MSA et votre médecin peuvent vous informer.
+Il n’y a pas de règle sur le ressenti. Tes droits (congés, arrêts) dépendent de ta situation ; le travailleur social de la Caf ou de la MSA et ton médecin peuvent t’informer.
 
 ## Quand demander conseil
-Consultez si la tristesse vous empêche de manger, de dormir ou de fonctionner pendant des semaines, si vous vous isolez, ou si vous consommez davantage d’alcool ou de médicaments. En cas d’idées suicidaires ou d’envie de « rejoindre » votre bébé, appelez immédiatement le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Consulte si la tristesse t’empêche de manger, de dormir ou de fonctionner pendant des semaines, si tu t’isoles, ou si tu consommes davantage d’alcool ou de médicaments. En cas d’idées suicidaires ou d’envie de « rejoindre » ton bébé, appelle immédiatement le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['deuil périnatal', 'perte d’un bébé', 'mort in utero', 'bébé décédé', 'Naître et Vivre', 'Spama', 'soutien deuil', 'association'],
@@ -1131,34 +1131,34 @@ ${END}`,
     title: 'Deuil périnatal : démarches, état civil et droits des parents',
     summary: 'Acte d’enfant sans vie, livret de famille, prénom, obsèques, congés maternité et paternité, congé de deuil, allocation en cas de décès : les repères administratifs, pour savoir à qui demander de l’aide.',
     category: 'droits-demarches',
-    body_md: `Au moment où l’on a le moins de forces, il faut parfois prendre des décisions et faire des démarches. Voici les principaux repères ; vous n’avez pas à tout gérer seul.
+    body_md: `Au moment où l’on a le moins de forces, il faut parfois prendre des décisions et faire des démarches. Voici les principaux repères ; tu n’as pas à tout gérer seul.
 
 ## En bref
 - Si l’enfant est **né sans vie** ou **né vivant mais non viable**, les parents peuvent demander un **acte d’enfant sans vie**, sur présentation d’un **certificat médical d’accouchement**.
 - Cet acte permet d’inscrire l’enfant à l’**état civil** et sur le **livret de famille**, avec, à la demande des parents, son ou ses **prénoms** ; il ne crée pas de lien de filiation.
 - Il ouvre notamment le droit d’**organiser des obsèques**, qui peuvent aussi être prévues avec l’hôpital.
 - Au-delà du **seuil de viabilité**, les **congés maternité et paternité** sont accordés dans leur totalité, et un **congé de deuil** peut être demandé.
-- La Caf ou la MSA verse sous conditions une **allocation en cas de décès d’enfant** et peut revoir vos droits.
+- La Caf ou la MSA verse sous conditions une **allocation en cas de décès d’enfant** et peut revoir tes droits.
 
 ## Comprendre
 **L’acte d’enfant sans vie.** Le Conseil national de l’Ordre des sages-femmes explique qu’il peut être établi par l’officier d’état civil pour un enfant né sans vie ou né vivant mais non viable. Il faut un certificat d’accouchement, établi par un médecin ou une sage-femme. À la demande des parents, l’acte peut comporter le ou les prénoms de l’enfant ainsi que le nom du père, de la mère ou les deux ; les parents peuvent obtenir sa mention sur le livret de famille. Aucune filiation n’est établie et l’enfant n’acquiert pas la personnalité juridique. Le guide de la MSA et de la Caf précise que cette inscription est **un choix des parents, pas une obligation**.
 
 **Si l’enfant est né vivant puis décédé**, ce sont les règles habituelles qui s’appliquent : constat et déclaration du décès dans les 24 heures, obsèques organisées dans les 6 jours, actes de naissance et de décès.
 
-**Les obsèques.** Avec un acte d’enfant sans vie, la famille peut faire procéder à une inhumation ou une crémation et choisir les pompes funèbres. Des rites peuvent aussi être prévus à l’hôpital. Si vous ne souhaitez pas vous en occuper, parlez-en avec l’équipe de la maternité. Des aides financières peuvent exister auprès de la Sécurité sociale, de la mutuelle, de l’assurance ou de l’employeur.
+**Les obsèques.** Avec un acte d’enfant sans vie, la famille peut faire procéder à une inhumation ou une crémation et choisir les pompes funèbres. Des rites peuvent aussi être prévus à l’hôpital. Si tu ne souhaites pas t’en occuper, parles-en avec l’équipe de la maternité. Des aides financières peuvent exister auprès de la Sécurité sociale, de la mutuelle, de l’assurance ou de l’employeur.
 
 **Les congés.** Selon le guide MSA-Caf, dès qu’un acte d’enfant sans vie est établi au-delà du seuil de viabilité, les congés de maternité et de paternité sont accordés en totalité. Un **congé de deuil** peut aussi être demandé, en plus des jours accordés par l’employeur pour événement familial : 8 jours pour les salariés, 15 jours pour certains non-salariés et personnes au chômage, indemnisés par l’Assurance maladie et à prendre dans l’année. Le Réseau de périnatalité de Normandie précise qu’en dessous du seuil de viabilité (moins de 22 semaines d’aménorrhée selon l’OMS, d’après ce réseau), la mère bénéficie d’un arrêt maladie et non d’un congé maternité.
 
-**Les prestations.** Une **allocation versée en cas de décès d’enfant** peut être attribuée à partir de la 20e semaine de grossesse, avec un montant qui dépend des ressources. Les prestations en cours peuvent être réexaminées : transmettez l’acte d’enfant sans vie à la Caf ou à la MSA.
+**Les prestations.** Une **allocation versée en cas de décès d’enfant** peut être attribuée à partir de la 20e semaine de grossesse, avec un montant qui dépend des ressources. Les prestations en cours peuvent être réexaminées : transmets l’acte d’enfant sans vie à la Caf ou à la MSA.
 
 ## Au quotidien
-- **Demandez à la maternité** le certificat médical d’accouchement et les informations sur les choix possibles (prénom, rites, obsèques).
-- **Laissez-vous accompagner** : la Caf ou la MSA contacte en principe les familles dès qu’elle a connaissance du décès ; vous pouvez dire que vous n’êtes pas prêt et reprendre contact plus tard. Caf : 3230 ou caf.fr.
-- **Déléguez** ce qui peut l’être à un proche de confiance.
+- **Demande à la maternité** le certificat médical d’accouchement et les informations sur les choix possibles (prénom, rites, obsèques).
+- **Laisse-toi accompagner** : la Caf ou la MSA contacte en principe les familles dès qu’elle a connaissance du décès ; tu peux dire que tu n’es pas prêt et reprendre contact plus tard. Caf : 3230 ou caf.fr.
+- **Délègue** ce qui peut l’être à un proche de confiance.
 
 ## Questions fréquentes
 **Y a-t-il un délai pour demander l’acte d’enfant sans vie ?**
-Renseignez-vous auprès de la mairie ou de la maternité sur les délais et les modalités. Pour les enfants non viables, la loi permet une inscription sur le livret de famille de façon rétroactive pour les enfants nés après le 11 janvier 1993.
+Renseigne-toi auprès de la mairie ou de la maternité sur les délais et les modalités. Pour les enfants non viables, la loi permet une inscription sur le livret de famille de façon rétroactive pour les enfants nés après le 11 janvier 1993.
 
 **Le second parent a-t-il droit à un congé ?**
 Oui, le congé de paternité est accordé en totalité lorsqu’un acte d’enfant sans vie est établi au-delà du seuil de viabilité ; sa partie facultative se discute avec l’employeur. Le congé de deuil peut aussi être demandé.
@@ -1167,7 +1167,7 @@ Oui, le congé de paternité est accordé en totalité lorsqu’un acte d’enfa
 L’équipe de la maternité, le travailleur social de la Caf ou de la MSA, et les associations de parents endeuillés.
 
 ## Quand demander conseil
-Si les démarches vous submergent, demandez l’aide du travailleur social de la Caf ou de la MSA, ou d’une association de parents endeuillés. Si vous vous sentez au bord de l’effondrement ou avez des idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Si les démarches te submergent, demande l’aide du travailleur social de la Caf ou de la MSA, ou d’une association de parents endeuillés. Si tu te sens au bord de l’effondrement ou as des idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['acte d’enfant sans vie', 'enfant né sans vie', 'deuil périnatal démarches', 'livret de famille', 'obsèques bébé', 'congé de deuil', 'congé maternité', 'allocation décès enfant'],
@@ -1179,21 +1179,21 @@ ${END}`,
     title: 'Deuil périnatal : comment soutenir des parents qui ont perdu leur bébé',
     summary: 'Famille, amis, collègues : les phrases à éviter, les gestes qui aident vraiment et la façon de rester présent dans la durée auprès de parents endeuillés.',
     category: 'sante-mentale',
-    body_md: `Un ami, une sœur, une collègue vient de perdre son bébé. On voudrait aider, mais on a peur de mal faire, alors on se tait ou on s’éloigne. Pourtant, votre présence compte énormément.
+    body_md: `Un ami, une sœur, une collègue vient de perdre son bébé. On voudrait aider, mais on a peur de mal faire, alors on se tait ou on s’éloigne. Pourtant, ta présence compte énormément.
 
 ## En bref
 - Le plus important pour des parents endeuillés est de **ne pas rester seuls** ; l’entourage a un rôle clé.
 - Les **phrases maladroites**, même bienveillantes, qui banalisent la souffrance blessent : par exemple « tu es jeune, tu en auras d’autres ».
 - **Être présent**, écouter, proposer une **aide concrète** et **nommer le bébé** si les parents le souhaitent aident souvent davantage que les conseils.
-- Le deuil dure : votre soutien est précieux **dans les semaines et les mois** qui suivent.
-- Vous pouvez orienter vers les **associations spécialisées** et les professionnels, sans forcer.
+- Le deuil dure : ton soutien est précieux **dans les semaines et les mois** qui suivent.
+- Tu peux orienter vers les **associations spécialisées** et les professionnels, sans forcer.
 
 ## Comprendre
 La Caf, dans son article « Deuil périnatal : briser le tabou », rappelle que la mort d’un tout-petit reste très taboue. Les parents se sentent fragiles et vulnérables ; certains n’osent pas considérer ce qu’ils vivent comme un vrai deuil. Le soutien des proches n’est pas toujours à la hauteur. Or, sans soutien, l’isolement peut favoriser la dépression.
 
 Reconnaître leur peine sans la comparer ni la minimiser, se souvenir de leur bébé, prononcer son prénom s’ils le souhaitent : ces gestes simples disent aux parents qu’ils ne sont pas seuls. Chaque parent est différent : certains veulent parler, d’autres se taire. L’essentiel est de suivre leur rythme.
 
-Psycom rappelle que le deuil périnatal augmente le risque de troubles psychiques. Votre attention peut aider à repérer qu’un parent va de plus en plus mal, et à l’encourager à se faire aider.
+Psycom rappelle que le deuil périnatal augmente le risque de troubles psychiques. Ton attention peut aider à repérer qu’un parent va de plus en plus mal, et à l’encourager à se faire aider.
 
 ## Au quotidien
 **Ce qui aide souvent**
@@ -1217,16 +1217,16 @@ Psycom rappelle que le deuil périnatal augmente le risque de troubles psychique
 
 ## Questions fréquentes
 **J’ai peur de raviver leur peine en parlant du bébé : vaut-il mieux se taire ?**
-Éviter le sujet peut renforcer le sentiment d’isolement que décrit la Caf. Vous pouvez demander : « As-tu envie d’en parler ? » et respecter la réponse.
+Éviter le sujet peut renforcer le sentiment d’isolement que décrit la Caf. Tu peux demander : « As-tu envie d’en parler ? » et respecter la réponse.
 
 **Je suis moi-même enceinte : dois-je m’éloigner ?**
-Pas forcément. Vous pouvez dire que vous comprenez si c’est difficile pour eux en ce moment, et leur laisser choisir la distance qui leur convient.
+Pas forcément. Tu peux dire que tu comprends si c’est difficile pour eux en ce moment, et leur laisser choisir la distance qui leur convient.
 
 **Les grands-parents vivent aussi un deuil : comment les aider ?**
 Ils perdent un petit-enfant et voient souffrir leur propre enfant. Ils peuvent eux aussi trouver écoute auprès des associations de deuil.
 
 ## Quand demander conseil
-Encouragez un parent endeuillé à consulter s’il ne mange plus, ne dort plus, s’isole complètement ou semble désespéré. S’il évoque l’envie de mourir ou de « rejoindre » son bébé, ne le laissez pas seul et appelez le **3114** (gratuit, 24 h/24, 7 j/7), qui répond aussi aux proches inquiets. En cas de danger immédiat, composez le **15** ou le **112**.
+Encourage un parent endeuillé à consulter s’il ne mange plus, ne dort plus, s’isole complètement ou semble désespéré. S’il évoque l’envie de mourir ou de « rejoindre » son bébé, ne le laisse pas seul et appelle le **3114** (gratuit, 24 h/24, 7 j/7), qui répond aussi aux proches inquiets. En cas de danger immédiat, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['deuil périnatal entourage', 'soutenir un proche', 'que dire', 'phrases à éviter', 'perte d’un bébé', 'amis', 'famille', 'collègues'],
@@ -1257,32 +1257,32 @@ ${END}`,
 ## Au quotidien
 **Pour le couple**
 - Prenez des moments pour vous dire **comment chacun va**, sans juger la façon de l’autre.
-- **Respectez les besoins différents** : l’un peut aller à un groupe de parole, l’autre préférer un entretien individuel.
+- **Respecte les besoins différents** : l’un peut aller à un groupe de parole, l’autre préférer un entretien individuel.
 - **Décidez ensemble**, à votre rythme, de ce que vous souhaitez garder ou faire pour vous souvenir du bébé.
-- **Faites-vous accompagner** si le dialogue devient difficile : psychologue, association, conseiller conjugal et familial.
+- **Fais-toi accompagner** si le dialogue devient difficile : psychologue, association, conseiller conjugal et familial.
 
 **Pour le second parent**
-- Parlez de votre peine à un proche, à votre médecin ou à une association : vous n’avez pas à « tenir » pour tout le monde.
-- Renseignez-vous sur vos droits à congé auprès de votre employeur et de votre caisse.
+- Parle de ta peine à un proche, à ton médecin ou à une association : tu n’as pas à « tenir » pour tout le monde.
+- Renseigne-toi sur tes droits à congé auprès de ton employeur et de ta caisse.
 
 **Pour les aînés**
-- **Dites-leur la vérité avec des mots simples**, adaptés à leur âge, plutôt que de laisser le silence ou des explications floues.
-- **Rassurez-les** : ils n’y sont pour rien, et ils peuvent poser des questions.
-- **Gardez leurs repères** (école, rituels, activités) autant que possible.
-- **Demandez conseil** à l’association, au médecin ou au psychologue sur la façon d’en parler, et observez leurs réactions dans le temps (sommeil, peurs, comportement).
+- **Dis-leur la vérité avec des mots simples**, adaptés à leur âge, plutôt que de laisser le silence ou des explications floues.
+- **Rassure-les** : ils n’y sont pour rien, et ils peuvent poser des questions.
+- **Garde leurs repères** (école, rituels, activités) autant que possible.
+- **Demande conseil** à l’association, au médecin ou au psychologue sur la façon d’en parler, et observe leurs réactions dans le temps (sommeil, peurs, comportement).
 
 ## Questions fréquentes
 **Mon partenaire ne veut plus en parler : est-ce qu’il oublie notre bébé ?**
-Le silence peut être une façon de se protéger, pas un oubli. Dites-lui ce dont vous avez besoin, et proposez-lui un espace de parole à lui, si cela lui convient mieux.
+Le silence peut être une façon de se protéger, pas un oubli. Dis-lui ce dont tu as besoin, et propose-lui un espace de parole à lui, si cela lui convient mieux.
 
 **Faut-il emmener nos enfants aux obsèques ?**
-Il n’y a pas de réponse unique. Vous pouvez leur expliquer ce qui va se passer et leur laisser une part de choix selon leur âge. Les associations peuvent vous aider à y réfléchir.
+Il n’y a pas de réponse unique. Tu peux leur expliquer ce qui va se passer et leur laisser une part de choix selon leur âge. Les associations peuvent t’aider à y réfléchir.
 
 **Notre aîné joue comme si de rien n’était : est-ce inquiétant ?**
-Chaque enfant exprime sa peine à sa manière, parfois par petites touches, entre deux jeux. Restez disponibles et attentifs aux changements qui durent.
+Chaque enfant exprime sa peine à sa manière, parfois par petites touches, entre deux jeux. Reste disponibles et attentifs aux changements qui durent.
 
 ## Quand demander conseil
-Consultez si l’un de vous s’effondre, s’isole ou consomme davantage d’alcool, ou si un enfant présente des troubles qui durent. En cas d’idées suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, composez le **15** ou le **112**.
+Consulte si l’un de vous s’effondre, s’isole ou consomme davantage d’alcool, ou si un enfant présente des troubles qui durent. En cas d’idées suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas d’urgence, compose le **15** ou le **112**.
 
 ${END}`,
     tags: ['deuil périnatal couple', 'second parent deuil', 'père endeuillé', 'frères et sœurs', 'fratrie', 'parler du deuil aux enfants', 'Naître et Vivre', 'congé paternité'],
@@ -1299,41 +1299,41 @@ ${END}`,
 ## En bref
 - Les émotions sont souvent **mêlées** : joie, peur que cela se reproduise, tristesse, parfois culpabilité envers le bébé décédé.
 - Les inquiétudes de grossesse, dont la **peur de perdre à nouveau le bébé**, méritent d’être reconnues sans jugement.
-- L’**entretien prénatal précoce**, pris en charge à 100 %, est un temps privilégié pour parler de votre histoire et de vos besoins.
+- L’**entretien prénatal précoce**, pris en charge à 100 %, est un temps privilégié pour parler de ton histoire et de tes besoins.
 - Un **suivi psychologique** peut être proposé ; Mon soutien psy permet un accès direct à un psychologue conventionné.
 - Des associations, comme **Naître et Vivre**, proposent des ateliers sur l’arrivée d’un enfant suivant.
 
 ## Comprendre
-Santé publique France (1000 premiers jours) cite le témoignage d’une future mère très angoissée à l’idée d’une nouvelle fausse couche, malgré les paroles rassurantes de sa sage-femme ; échanger avec des proches ayant vécu la même épreuve lui a fait du bien. Ces doutes et ces peurs ne sont pas superficiels : ils font partie de votre histoire.
+Santé publique France (1000 premiers jours) cite le témoignage d’une future mère très angoissée à l’idée d’une nouvelle fausse couche, malgré les paroles rassurantes de sa sage-femme ; échanger avec des proches ayant vécu la même épreuve lui a fait du bien. Ces doutes et ces peurs ne sont pas superficiels : ils font partie de ton histoire.
 
 Une nouvelle grossesse ne remplace pas l’enfant perdu, et il peut arriver de craindre de « l’oublier » ou de se sentir coupable d’être heureux. La Caf rappelle que l’objectif du deuil n’est pas d’oublier, mais de construire une nouvelle histoire familiale. Le bébé à venir et celui qui est parti peuvent chacun avoir leur place.
 
-Psycom cite le deuil périnatal parmi les situations qui augmentent le risque de troubles psychiques pendant la grossesse et après la naissance. Il est donc utile d’en parler tôt à l’équipe qui vous suit, pour qu’elle puisse vous proposer un accompagnement adapté.
+Psycom cite le deuil périnatal parmi les situations qui augmentent le risque de troubles psychiques pendant la grossesse et après la naissance. Il est donc utile d’en parler tôt à l’équipe qui te suit, pour qu’elle puisse te proposer un accompagnement adapté.
 
 ## Au quotidien
-- **Dites votre histoire** à la sage-femme ou au médecin dès les premiers rendez-vous, même si c’est difficile : cela leur permet d’adapter leur accompagnement et leurs explications.
-- **Demandez l’entretien prénatal précoce** : il est l’occasion de parler de vos peurs, de vos besoins et de ce qui pourrait vous rassurer.
-- **Préparez vos questions** avant chaque consultation : ce qui sera surveillé, quand et qui appeler en cas d’inquiétude.
-- **Identifiez ce qui vous apaise** et ce qui vous angoisse : certaines personnes préfèrent ne pas annoncer la grossesse tout de suite, d’autres ont besoin d’être entourées.
-- **Faites une place à vos émotions** : il est possible d’être heureux et triste à la fois.
-- **Impliquez le second parent**, qui vit lui aussi cette grossesse avec son histoire et ses craintes ; l’entretien prénatal peut se faire en couple.
-- **Rapprochez-vous d’une association** de parents endeuillés si vous en ressentez le besoin : échanger avec des parents qui ont vécu une grossesse après une perte aide souvent.
+- **Dis ton histoire** à la sage-femme ou au médecin dès les premiers rendez-vous, même si c’est difficile : cela leur permet d’adapter leur accompagnement et leurs explications.
+- **Demande l’entretien prénatal précoce** : il est l’occasion de parler de tes peurs, de tes besoins et de ce qui pourrait te rassurer.
+- **Prépare tes questions** avant chaque consultation : ce qui sera surveillé, quand et qui appeler en cas d’inquiétude.
+- **Identifie ce qui t’apaise** et ce qui t’angoisse : certaines personnes préfèrent ne pas annoncer la grossesse tout de suite, d’autres ont besoin d’être entourées.
+- **Fais une place à tes émotions** : il est possible d’être heureux et triste à la fois.
+- **Implique le second parent**, qui vit lui aussi cette grossesse avec son histoire et ses craintes ; l’entretien prénatal peut se faire en couple.
+- **Rapproche-toi d’une association** de parents endeuillés si tu en ressens le besoin : échanger avec des parents qui ont vécu une grossesse après une perte aide souvent.
 
 ## Questions fréquentes
 **Je n’arrive pas à m’attacher à ce bébé de peur de le perdre : est-ce grave ?**
-Ce mouvement de protection est compréhensible. Parlez-en à la sage-femme ou à un psychologue : être accompagné peut vous aider à vous autoriser, peu à peu, à investir cette grossesse.
+Ce mouvement de protection est compréhensible. Parles-en à la sage-femme ou à un psychologue : être accompagné peut t’aider à t’autoriser, peu à peu, à investir cette grossesse.
 
 **Les dates anniversaires tombent pendant la grossesse : comment les vivre ?**
-Ces moments peuvent être particulièrement chargés. Prévoyez du soutien ce jour-là, et faites ce qui a du sens pour vous.
+Ces moments peuvent être particulièrement chargés. Prévois du soutien ce jour-là, et fais ce qui a du sens pour toi.
 
 **Comment en parler aux aînés ?**
-Avec des mots simples et vrais, à leur rythme. Les associations et les professionnels peuvent vous aider à trouver les mots.
+Avec des mots simples et vrais, à leur rythme. Les associations et les professionnels peuvent t’aider à trouver les mots.
 
 **Faut-il attendre avant de concevoir à nouveau ?**
-C’est une question à aborder avec votre médecin ou votre sage-femme, qui tiendront compte de votre santé physique et de votre situation émotionnelle.
+C’est une question à aborder avec ton médecin ou ta sage-femme, qui tiendront compte de ta santé physique et de ta situation émotionnelle.
 
 ## Quand demander conseil
-Parlez-en sans attendre si l’angoisse vous empêche de dormir, de manger ou de vivre la grossesse, ou si une tristesse durable s’installe. En cas d’idées noires ou suicidaires, appelez le **3114** (gratuit, 24 h/24, 7 j/7). En cas de saignements, de douleurs, de perte de liquide ou de baisse des mouvements du bébé, contactez la maternité ou appelez le **15** (ou le **112**).
+Parles-en sans attendre si l’angoisse t’empêche de dormir, de manger ou de vivre la grossesse, ou si une tristesse durable s’installe. En cas d’idées noires ou suicidaires, appelle le **3114** (gratuit, 24 h/24, 7 j/7). En cas de saignements, de douleurs, de perte de liquide ou de baisse des mouvements du bébé, contacte la maternité ou appelle le **15** (ou le **112**).
 
 ${END}`,
     tags: ['grossesse après deuil', 'bébé arc-en-ciel', 'grossesse après perte', 'peur de perdre le bébé', 'deuil périnatal', 'anxiété grossesse', 'entretien prénatal précoce', 'enfant suivant'],
@@ -1360,12 +1360,12 @@ ${END}`,
 ## Comprendre
 Le 3114 a été mis en place en octobre 2021. Selon Santé.fr, les répondants sont répartis dans 18 centres régionaux et formés à l’évaluation du risque suicidaire. Leurs propos sont couverts par le secret médical.
 
-**Comment se passe un appel ?** Un message vocal confirme que l’appel est bien reçu, puis un professionnel se présente. Il évalue d’abord s’il existe un risque de passage à l’acte immédiat. Si ce n’est pas le cas, il prend le temps de comprendre votre situation, d’apaiser l’émotion, puis de vous proposer des ressources près de chez vous, comme un centre médico-psychologique. Un rappel quelques jours plus tard est parfois proposé. Souvent, la crise est désamorcée par téléphone.
+**Comment se passe un appel ?** Un message vocal confirme que l’appel est bien reçu, puis un professionnel se présente. Il évalue d’abord s’il existe un risque de passage à l’acte immédiat. Si ce n’est pas le cas, il prend le temps de comprendre ta situation, d’apaiser l’émotion, puis de te proposer des ressources près de chez toi, comme un centre médico-psychologique. Un rappel quelques jours plus tard est parfois proposé. Souvent, la crise est désamorcée par téléphone.
 
 La Caf rappelle que la crise suicidaire s’installe souvent progressivement, sur plusieurs mois, ce qui laisse le temps d’agir, et que l’isolement joue un rôle important. Une personne en crise hésite souvent à parler pour ne pas inquiéter ses proches : l’encourager à en parler peut tout changer.
 
 ## Au quotidien
-**Les numéros à garder dans votre téléphone** (d’après le répertoire des lignes d’écoute de Santé.fr) :
+**Les numéros à garder dans ton téléphone** (d’après le répertoire des lignes d’écoute de Santé.fr) :
 - **3114** : détresse psychique, idées suicidaires, proches inquiets, 24 h/24.
 - **15** ou **112** : urgence vitale, danger immédiat.
 - **Allô Parents Bébé** : 0 800 00 34 56, parents d’enfants de moins de 3 ans, en semaine.
@@ -1376,7 +1376,7 @@ La Caf rappelle que la crise suicidaire s’installe souvent progressivement, su
 - **3919** : Violences Femmes Info, 24 h/24, anonyme et gratuit.
 - **119** : Allô Enfance en danger, 24 h/24, pour un enfant en danger ou un adulte inquiet.
 
-**Si vous êtes inquiet pour un proche** : parlez-lui directement de ce que vous observez, demandez-lui comment il va vraiment, et n’hésitez pas à appeler le 3114 vous-même pour savoir comment l’aider.
+**Si tu es inquiet pour un proche** : parle-lui directement de ce que tu observes, demande-lui comment il va vraiment, et n’hésite pas à appeler le 3114 toi-même pour savoir comment l’aider.
 
 **En dehors de l’urgence**, le médecin traitant, la sage-femme, la PMI et les psychologues conventionnés (Mon soutien psy) peuvent assurer un suivi dans la durée.
 
@@ -1388,10 +1388,10 @@ Oui. Le 3114 s’adresse aux personnes en détresse psychique, sans attendre d�
 Oui. L’appel est gratuit et les échanges sont couverts par le secret médical.
 
 **Que se passe-t-il si le répondant pense que je suis en danger ?**
-Il évalue le risque avec vous et, si nécessaire, organise une aide adaptée, qui peut aller jusqu’à l’intervention des secours. Souvent, l’échange permet de désamorcer la crise et d’orienter vers des soins proches de chez vous.
+Il évalue le risque avec toi et, si nécessaire, organise une aide adaptée, qui peut aller jusqu’à l’intervention des secours. Souvent, l’échange permet de désamorcer la crise et d’orienter vers des soins proches de chez toi.
 
 ## Quand demander conseil
-Appelez le **3114** dès que vous avez des pensées suicidaires, que vous vous sentez submergé ou que vous êtes inquiet pour quelqu’un. Si la vie d’une personne est menacée dans l’immédiat, appelez le **15** ou le **112**. Si un enfant est en danger, appelez le **119**.
+Appelle le **3114** dès que tu as des pensées suicidaires, que tu te sens submergé ou que tu es inquiet pour quelqu’un. Si la vie d’une personne est menacée dans l’immédiat, appelle le **15** ou le **112**. Si un enfant est en danger, appelle le **119**.
 
 ${END}`,
     tags: ['3114', 'prévention du suicide', 'idées suicidaires', 'ligne d’écoute', 'numéro d’urgence', 'détresse', 'proche inquiet', 'santé mentale parents'],

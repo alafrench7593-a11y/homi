@@ -32,12 +32,12 @@ const S = {
   eczema: { label: 'Santé.fr — Eczéma (dermatite atopique)', url: 'https://www.sante.fr/sinformer/pathologie/maladies-peau/eczema-dermatite-atopique', consulted_on: C },
   peau: { label: 'Santé.fr — Problèmes de peau chez les enfants', url: 'https://www.sante.fr/problemes-de-peau-chez-les-enfants', consulted_on: C, published: '2026-08-12' },
   pollens: { label: 'Santé.fr — Effets des pollens sur la santé', url: 'https://www.sante.fr/effets-des-pollens-sur-la-sante-1', consulted_on: C, published: '2026-05-06' },
-  surpoids: { label: 'Santé.fr (mpedia) — Comment gérer le surpoids de votre enfant ?', url: 'https://www.sante.fr/node/1093934', consulted_on: C, published: '2026-01-26' },
+  surpoids: { label: 'Santé.fr (mpedia) — Comment gérer le surpoids de ton enfant ?', url: 'https://www.sante.fr/node/1093934', consulted_on: C, published: '2026-01-26' },
   pai: { label: 'Bulletin officiel de l’Éducation nationale n° 9 du 4 mars 2021 — Circulaire sur le projet d’accueil individualisé (PAI)', url: 'https://www.education.gouv.fr/bo/21/Hebdo9/MENE2104832C.htm', consulted_on: C, published: '2021-03-04' },
   maladiesRares: { label: 'ARS Bretagne (portail d’accompagnement des professionnels de santé) — Mémo ressources maladies rares', url: 'https://bretagne.paps.sante.fr/media/67713/download', consulted_on: C },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = 'Cet article vous informe et vous aide à vous repérer ; il ne permet pas de poser un diagnostic et ne remplace pas l’avis du médecin ou des professionnels qui suivent votre enfant.';
+const FIN = 'Cet article t’informe et t’aide à te repérer ; il ne permet pas de poser un diagnostic et ne remplace pas l’avis du médecin ou des professionnels qui suivent ton enfant.';
 const NEURO = { journeys: ['child', 'newborn'] as LibArticle['journeys'], status: 'to_review' as const, category: 'neurodeveloppement' as const };
 const KID = { journeys: ['child'] as LibArticle['journeys'], status: 'to_review' as const };
 const CHRONIC = { journeys: ['child'] as LibArticle['journeys'], status: 'to_review' as const, category: 'maladies-chroniques' as const };
@@ -61,7 +61,7 @@ Les troubles du neurodéveloppement concernent, selon Santé.fr, environ **une p
 Une PCO ne pose pas d’étiquette d’emblée. Son rôle est de **lever un doute ou d’avancer vers un diagnostic** tout en proposant déjà des interventions utiles. Le parcours dure **24 mois** et peut être renouvelé. Il s’adresse d’abord aux enfants de **0 à 6 ans inclus** ; une extension aux **7-12 ans** existe depuis 2021.
 
 Les étapes décrites par Santé.fr :
-1. Vous consultez un médecin (traitant, pédiatre, PMI, médecin scolaire).
+1. Tu consultes un médecin (traitant, pédiatre, PMI, médecin scolaire).
 2. Si les signes le justifient, il adresse l’enfant à une PCO et prescrit le parcours.
 3. Le médecin coordonnateur de la PCO valide la demande **dans les 15 jours** et propose un parcours adapté.
 4. La PCO prend les rendez-vous auprès de structures ou de professionnels qui ont signé avec elle, **au plus près du domicile**.
@@ -70,19 +70,19 @@ Les étapes décrites par Santé.fr :
 ## Au quotidien
 **Ce que couvre le forfait** (fiche technique handicap.gouv.fr, mars 2025) : un **bilan** (simple ou neuropsychologique complet) et, en moyenne, **35 séances de 45 minutes** ; il peut se limiter au bilan ou mobiliser les trois professions. Sa durée est d’**un an, renouvelable une fois**. Les comptes rendus, la coordination et les déplacements des professionnels sont inclus. L’enfant peut aussi voir un orthophoniste ou un kinésithérapeute, remboursés de façon habituelle.
 
-**Avant le rendez-vous** : notez ce qui vous interroge (langage, contact, motricité, attention, sommeil), apportez le carnet de santé et, si possible, de courtes vidéos du quotidien. Pour les 0-3 ans, un livret de repérage existe pour les parents et les professionnels ; pour les 7-12 ans, un livret avec des volets familles, enseignants et médecins.
+**Avant le rendez-vous** : note ce qui t’interroge (langage, contact, motricité, attention, sommeil), apporte le carnet de santé et, si possible, de courtes vidéos du quotidien. Pour les 0-3 ans, un livret de repérage existe pour les parents et les professionnels ; pour les 7-12 ans, un livret avec des volets familles, enseignants et médecins.
 
 ## Questions fréquentes
 **Faut-il un diagnostic pour être aidé ?** Non. C’est justement l’intérêt du dispositif : les interventions commencent pendant que l’évaluation se poursuit.
 
-**Peut-on contacter la PCO directement ?** L’orientation se fait sur **prescription médicale** : commencez par votre médecin, qui fera le lien.
+**Peut-on contacter la PCO directement ?** L’orientation se fait sur **prescription médicale** : commence par ton médecin, qui fera le lien.
 
 **Est-ce payant ?** Les professionnels du forfait sont rémunérés par l’Assurance maladie ; une fois le parcours validé, la famille **n’avance pas de frais**.
 
 **Et après le forfait ?** La PCO aide à préparer la suite, notamment une éventuelle demande à la MDPH si des besoins durables se confirment.
 
 ## Quand demander conseil
-- Dès qu’un écart de développement vous inquiète : **parlez-en à votre médecin** sans attendre la visite suivante.
+- Dès qu’un écart de développement t’inquiète : **parles-en à ton médecin** sans attendre la visite suivante.
 - Toute **perte d’une compétence acquise** (mots, jeux, gestes) mérite un avis rapide.
 - Urgence vitale : **15** ou **112**.
 
@@ -97,7 +97,7 @@ ${FIN}`,
 - L’autisme, ou **trouble du spectre de l’autisme (TSA)**, est un trouble du neurodéveloppement qui apparaît dès l’enfance et dure toute la vie.
 - Les signes peuvent souvent être **repérés avant 3 ans**.
 - Signaux d’alerte : **pas de babillage ni de gestes sociaux vers 12 mois**, **pas de mots vers 18 mois**, désintérêt pour l’entourage, et **perte de langage ou de compétences sociales à tout âge**.
-- En cas de doute, consultez : le médecin peut prescrire un **parcours de bilan et d’intervention précoce** via une plateforme de coordination (PCO).
+- En cas de doute, consulte : le médecin peut prescrire un **parcours de bilan et d’intervention précoce** via une plateforme de coordination (PCO).
 
 ## Comprendre
 Selon la Maison de l’autisme, l’autisme se manifeste surtout par :
@@ -110,9 +110,9 @@ Chaque personne autiste est unique, d’où le terme de **spectre** : les profil
 Origine : l’autisme est **multifactoriel**, avec une forte part génétique et des facteurs environnementaux périnataux. Les scientifiques s’accordent sur un point important pour les familles : **les caractéristiques psychologiques des parents n’ont aucun rôle** dans sa survenue.
 
 ## Au quotidien
-- **Observez sans vous alarmer** : notez ce qui vous interroge (réponse au prénom, pointage, jeux, réactions aux bruits), à quel âge, dans quelles situations.
-- **Parlez-en** au médecin traitant, au pédiatre, au médecin de PMI, de crèche ou de l’Éducation nationale. Ces professionnels peuvent prescrire le parcours de bilan précoce pris en charge par une PCO.
-- **N’attendez pas un diagnostic** pour agir : les interventions précoces (ergothérapie, psychomotricité, psychologue) peuvent commencer pendant l’évaluation.
+- **Observe sans t’alarmer** : note ce qui t’interroge (réponse au prénom, pointage, jeux, réactions aux bruits), à quel âge, dans quelles situations.
+- **Parles-en** au médecin traitant, au pédiatre, au médecin de PMI, de crèche ou de l’Éducation nationale. Ces professionnels peuvent prescrire le parcours de bilan précoce pris en charge par une PCO.
+- **N’attends pas un diagnostic** pour agir : les interventions précoces (ergothérapie, psychomotricité, psychologue) peuvent commencer pendant l’évaluation.
 - Pour être écouté et orienté : **Autisme Info Service, 0 800 71 40 40** (gratuit, du lundi au vendredi de 9 h à 13 h, et le mardi de 18 h à 20 h).
 
 ## Questions fréquentes
@@ -125,8 +125,8 @@ Origine : l’autisme est **multifactoriel**, avec une forte part génétique et
 **Qu’apporte un repérage précoce ?** Un dépistage précoce **améliore la prise en charge** : l’accompagnement peut être adapté plus tôt aux besoins de l’enfant.
 
 ## Quand demander conseil
-- Absence de babillage, de gestes ou de mots aux âges indiqués, ou **perte d’une compétence acquise** : consultez rapidement.
-- Si vous vous sentez épuisé ou seul : votre médecin, la PMI, Autisme Info Service.
+- Absence de babillage, de gestes ou de mots aux âges indiqués, ou **perte d’une compétence acquise** : consulte rapidement.
+- Si tu te sens épuisé ou seul : ton médecin, la PMI, Autisme Info Service.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -149,21 +149,21 @@ Ce qui peut sembler être un « caprice » est parfois une réaction à une surc
 
 ## Au quotidien
 **Rendre la journée prévisible**
-- Annoncez à l’avance ce qui va se passer, et prévenez des changements autant que possible.
-- Gardez des repères stables pour les moments clés (lever, repas, coucher).
+- Annonce à l’avance ce qui va se passer, et préviens des changements autant que possible.
+- Garde des repères stables pour les moments clés (lever, repas, coucher).
 
 **Adapter la communication**
-- Utilisez des phrases courtes et concrètes, une consigne à la fois.
-- Vérifiez que la consigne est comprise plutôt que de la répéter plus fort.
-- Les professionnels (orthophoniste, psychologue, ergothérapeute) peuvent proposer des outils adaptés à votre enfant : demandez-leur comment les reprendre à la maison.
+- Utilise des phrases courtes et concrètes, une consigne à la fois.
+- Vérifie que la consigne est comprise plutôt que de la répéter plus fort.
+- Les professionnels (orthophoniste, psychologue, ergothérapeute) peuvent proposer des outils adaptés à ton enfant : demande-leur comment les reprendre à la maison.
 
 **Tenir compte des sensibilités**
-- Repérez ce qui déclenche l’inconfort (bruit, foule, vêtements, aliments) et ce qui apaise.
-- Prévoyez un endroit calme où l’enfant peut se ressourcer.
+- Repère ce qui déclenche l’inconfort (bruit, foule, vêtements, aliments) et ce qui apaise.
+- Prévois un endroit calme où l’enfant peut se ressourcer.
 
-**Prendre soin de vous**
+**Prendre soin de toi**
 - Le **statut d’aidant familial** est défini par la loi et ouvre des aides.
-- Vous avez **droit à une formation** pour mieux accompagner votre enfant, et à des **solutions de répit**.
+- Tu as **droit à une formation** pour mieux accompagner ton enfant, et à des **solutions de répit**.
 - Après le diagnostic, la **MDPH** évalue les besoins et ouvre des droits : allocation (AEEH), aides humaines ou matérielles, accompagnement scolaire.
 
 ## Questions fréquentes
@@ -173,10 +173,10 @@ Ce qui peut sembler être un « caprice » est parfois une réaction à une surc
 
 **Mon enfant peut-il aller à l’école ordinaire ?** Oui, avec ou sans aménagements : PAP, PPS, aide humaine (AESH), selon ses besoins et les décisions de la MDPH.
 
-**Je me sens dépassé, est-ce grave ?** Non, c’est un signal à écouter : parlez-en à votre médecin, aux professionnels qui suivent l’enfant, ou à une association.
+**Je me sens dépassé, est-ce grave ?** Non, c’est un signal à écouter : parles-en à ton médecin, aux professionnels qui suivent l’enfant, ou à une association.
 
 ## Quand demander conseil
-- Changement brutal de comportement, refus alimentaire, troubles du sommeil importants : parlez-en au médecin.
+- Changement brutal de comportement, refus alimentaire, troubles du sommeil importants : parles-en au médecin.
 - Détresse d’un parent ou idées noires : **3114** (24 h/24, gratuit).
 - Urgence vitale : **15** ou **112**.
 
@@ -206,13 +206,13 @@ Ces difficultés peuvent conduire à un **rejet** à l’école ou dans la famil
 
 ## Au quotidien
 Les conseils de Santé.fr :
-- **Organisez la journée toujours de la même façon** : école, activité physique, jeux, repas, coucher, avec de bonnes conditions de sommeil.
-- **Fixez des objectifs simples et rapides**, et **valorisez chaque réussite** pour restaurer la confiance de l’enfant.
-- **Ne punissez pas les échecs** : cela risque d’installer agressivité et agitation.
-- **Offrez un exutoire physique** : une activité sportive régulière réduit l’agitation et favorise le sommeil.
-- **Renseignez-vous** : des hôpitaux et des associations organisent des réunions de parents.
+- **Organise la journée toujours de la même façon** : école, activité physique, jeux, repas, coucher, avec de bonnes conditions de sommeil.
+- **Fixe des objectifs simples et rapides**, et **valorise chaque réussite** pour restaurer la confiance de l’enfant.
+- **Ne punis pas les échecs** : cela risque d’installer agressivité et agitation.
+- **Offre un exutoire physique** : une activité sportive régulière réduit l’agitation et favorise le sommeil.
+- **Renseigne-toi** : des hôpitaux et des associations organisent des réunions de parents.
 
-Pensez aussi à vous : les parents d’enfants avec un TDAH sont souvent épuisés et inquiets. La prise en charge prévoit d’ailleurs un accompagnement **des parents** autant que de l’enfant.
+Pense aussi à toi : les parents d’enfants avec un TDAH sont souvent épuisés et inquiets. La prise en charge prévoit d’ailleurs un accompagnement **des parents** autant que de l’enfant.
 
 ## Questions fréquentes
 **Mon enfant bouge beaucoup : a-t-il un TDAH ?** Pas forcément. Ce qui compte, c’est l’intensité, la durée et le retentissement des difficultés. Seul un spécialiste peut poser le diagnostic.
@@ -224,8 +224,8 @@ Pensez aussi à vous : les parents d’enfants avec un TDAH sont souvent épuis�
 **Le TDAH disparaît-il à l’adolescence ?** Pas toujours : il peut persister à l’âge adulte, d’où l’intérêt d’un suivi.
 
 ## Quand demander conseil
-- Si l’inattention ou l’agitation **durent** et gênent l’école, les relations ou la vie de famille : consultez le médecin traitant ou le pédiatre.
-- Si l’enfant est triste, se dévalorise ou parle de mourir : consultez vite ; **3114** (24 h/24).
+- Si l’inattention ou l’agitation **durent** et gênent l’école, les relations ou la vie de famille : consulte le médecin traitant ou le pédiatre.
+- Si l’enfant est triste, se dévalorise ou parle de mourir : consulte vite ; **3114** (24 h/24).
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -242,7 +242,7 @@ ${FIN}`,
 - Un **médicament psychostimulant** peut être ajouté après 6 ans, toujours en complément et avec un suivi.
 
 ## Comprendre
-**Le parcours** : tout commence souvent chez le médecin traitant ou le pédiatre, à qui vous décrivez les difficultés. Pour les jeunes enfants, une **plateforme de coordination et d’orientation (PCO)** peut organiser des bilans et des séances (ergothérapeute, psychologue, psychomotricien) prises en charge par l’Assurance maladie, **sans attendre que le diagnostic soit posé**. Le diagnostic lui-même relève du spécialiste.
+**Le parcours** : tout commence souvent chez le médecin traitant ou le pédiatre, à qui tu décris les difficultés. Pour les jeunes enfants, une **plateforme de coordination et d’orientation (PCO)** peut organiser des bilans et des séances (ergothérapeute, psychologue, psychomotricien) prises en charge par l’Assurance maladie, **sans attendre que le diagnostic soit posé**. Le diagnostic lui-même relève du spécialiste.
 
 **Les prises en charge non médicamenteuses** décrites par Santé.fr :
 - un soutien psychothérapeutique de l’enfant **et des parents**, souvent épuisés ;
@@ -252,23 +252,23 @@ ${FIN}`,
 **Les médicaments** : chez l’enfant de **plus de 6 ans**, un psychostimulant peut être proposé **en complément** de la psychothérapie. Il nécessite l’avis d’un pédopsychiatre et doit toujours être associé à une prise en charge psychothérapeutique et psychopédagogique. Il est souvent interrompu les week-ends et vacances. Il peut ralentir un peu la croissance (effet compensé lors des pauses) et accélérer légèrement le cœur ou la tension : une **surveillance régulière** est donc prévue. Le ministère rappelle que la France **ne surprescrit pas** ce traitement.
 
 ## Au quotidien
-- **Préparez la consultation** : exemples concrets à la maison et à l’école, bulletins, remarques des enseignants, sommeil.
-- **Impliquez l’école** : des aménagements (PAP, voire PPS via la MDPH) peuvent être mis en place.
-- **Suivez le traitement tel que prescrit** et notez ce que vous observez (appétit, sommeil, humeur) pour en parler au médecin.
-- **Ne modifiez jamais seul** un traitement : posez vos questions au prescripteur.
+- **Prépare la consultation** : exemples concrets à la maison et à l’école, bulletins, remarques des enseignants, sommeil.
+- **Implique l’école** : des aménagements (PAP, voire PPS via la MDPH) peuvent être mis en place.
+- **Suis le traitement tel que prescrit** et note ce que tu observes (appétit, sommeil, humeur) pour en parler au médecin.
+- **Ne modifie jamais seul** un traitement : pose tes questions au prescripteur.
 
 ## Questions fréquentes
 **Faut-il forcément un médicament ?** Non. Les TCC et l’accompagnement des parents sont la première étape ; le médicament est un complément possible, discuté avec le spécialiste.
 
-**Le délai pour voir un spécialiste est long : que faire ?** Commencez par le médecin traitant ; pour un enfant jeune, demandez-lui si une orientation vers une **PCO** est possible.
+**Le délai pour voir un spécialiste est long : que faire ?** Commence par le médecin traitant ; pour un enfant jeune, demande-lui si une orientation vers une **PCO** est possible.
 
-**Le médicament change-t-il la personnalité ?** Les sources consultées décrivent un effet régulateur qui améliore la vie à l’école et à la maison ; parlez de toute inquiétude au prescripteur.
+**Le médicament change-t-il la personnalité ?** Les sources consultées décrivent un effet régulateur qui améliore la vie à l’école et à la maison ; parle de toute inquiétude au prescripteur.
 
 **Qui paie les séances d’ergothérapie ou de psychomotricité ?** Dans le cadre du forfait d’intervention précoce validé par une PCO, l’Assurance maladie rémunère ces professionnels.
 
 ## Quand demander conseil
-- Effets inattendus d’un traitement (sommeil, appétit, palpitations) : contactez le médecin qui suit l’enfant.
-- Tristesse durable, propos inquiétants : consultez vite ; **3114**.
+- Effets inattendus d’un traitement (sommeil, appétit, palpitations) : contacte le médecin qui suit l’enfant.
+- Tristesse durable, propos inquiétants : consulte vite ; **3114**.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -297,10 +297,10 @@ Le **livret parcours inclusif (LPI)** permet de suivre les aménagements, avec l
 Exemples d’aménagements cités : reformuler les consignes, photocopies recto seul, **police plus grande**, cours sur **clé USB**, fiches mémo, place adaptée en classe, ordinateur, allègement du travail.
 
 Démarches :
-1. Parlez-en à l’enseignant et au directeur ou chef d’établissement dès que les difficultés apparaissent.
+1. Parles-en à l’enseignant et au directeur ou chef d’établissement dès que les difficultés apparaissent.
 2. Pour un PAP, le médecin de l’Éducation nationale donne son avis sur le trouble.
-3. Pour un PPS ou une aide humaine, déposez une demande à la **MDPH** ; l’**enseignant référent** vous accompagne.
-4. Pour un examen, envoyez la demande d’aménagement **dès l’inscription** au médecin désigné, et une copie sans information médicale au service des examens.
+3. Pour un PPS ou une aide humaine, dépose une demande à la **MDPH** ; l’**enseignant référent** t’accompagne.
+4. Pour un examen, envoie la demande d’aménagement **dès l’inscription** au médecin désigné, et une copie sans information médicale au service des examens.
 
 ## Questions fréquentes
 **PAP ou PPS : comment choisir ?** Le PAP ne nécessite pas de reconnaissance de handicap ; le PPS passe par la MDPH et permet notamment une aide humaine ou du matériel attribué.
@@ -312,7 +312,7 @@ Démarches :
 **Qui contacter en cas de blocage ?** L’enseignant référent, la MDPH, le numéro vert école inclusive **0 805 805 110**.
 
 ## Quand demander conseil
-- Si votre enfant s’épuise, perd confiance ou refuse d’aller à l’école : parlez-en à l’équipe et au médecin.
+- Si ton enfant s’épuise, perd confiance ou refuse d’aller à l’école : parles-en à l’équipe et au médecin.
 - Mal-être important ou propos inquiétants : **3114** ; enfant en danger : **119**.
 - Urgence vitale : **15** ou **112**.
 
@@ -340,14 +340,14 @@ Ces troubles font partie des **troubles spécifiques des apprentissages** : ils 
 **Le bilan** : dès qu’un trouble est suspecté, un bilan pluridisciplinaire est recommandé, prescrit par un pédiatre, un neuropédiatre ou un pédopsychiatre, avec en général un **bilan orthophonique** et un **bilan psychologique**.
 
 **À la maison**
-- Valorisez les efforts et les progrès plutôt que le nombre d’erreurs.
-- Lisez-lui des histoires, alternez lecture partagée et écoute.
-- Avec l’équipe soignante, choisissez d’éventuels **outils numériques** (logiciels d’aide à la lecture ou à l’écriture).
+- Valorise les efforts et les progrès plutôt que le nombre d’erreurs.
+- Lis-lui des histoires, alterne lecture partagée et écoute.
+- Avec l’équipe soignante, choisis d’éventuels **outils numériques** (logiciels d’aide à la lecture ou à l’écriture).
 
 **À l’école** : reformulation des consignes, police plus grande, temps supplémentaire, évaluations aménagées, orthographe non sanctionnée aux examens selon les cas (PAP ou PPS).
 
 ## Questions fréquentes
-**À partir de quand peut-on parler de dyslexie ?** Le diagnostic est posé par des professionnels après un bilan, une fois l’apprentissage de la lecture engagé ; parlez de vos inquiétudes dès qu’elles apparaissent.
+**À partir de quand peut-on parler de dyslexie ?** Le diagnostic est posé par des professionnels après un bilan, une fois l’apprentissage de la lecture engagé ; parle de tes inquiétudes dès qu’elles apparaissent.
 
 **Mon enfant est-il moins intelligent ?** Non. Par définition, ces troubles touchent une fonction précise chez un enfant sans déficience intellectuelle.
 
@@ -356,8 +356,8 @@ Ces troubles font partie des **troubles spécifiques des apprentissages** : ils 
 **Peut-on obtenir une aide financière ?** Selon la situation, une demande à la MDPH (CDAPH) peut ouvrir des droits comme l’AEEH.
 
 ## Quand demander conseil
-- Lecture très laborieuse qui ne progresse pas, refus de lire, fatigue scolaire : parlez-en à l’enseignant et au médecin.
-- Perte de confiance, tristesse : consultez ; **3114** si détresse.
+- Lecture très laborieuse qui ne progresse pas, refus de lire, fatigue scolaire : parles-en à l’enseignant et au médecin.
+- Perte de confiance, tristesse : consulte ; **3114** si détresse.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -384,9 +384,9 @@ La dyspraxie appartient aux troubles « dys », sans déficience intellectuelle.
 **Le bilan** est pluridisciplinaire, coordonné par un médecin (pédiatre, neuropédiatre, pédopsychiatre), avec selon les besoins **psychomotricien, ergothérapeute, orthoptiste, neuropsychologue**.
 
 **À la maison**
-- Laissez du temps pour s’habiller ; privilégiez des vêtements faciles (scratchs, élastiques).
-- Décomposez les gestes complexes, une étape à la fois.
-- Valorisez ce qui réussit à l’oral, souvent un point fort.
+- Laisse du temps pour s’habiller ; privilégie des vêtements faciles (scratchs, élastiques).
+- Décompose les gestes complexes, une étape à la fois.
+- Valorise ce qui réussit à l’oral, souvent un point fort.
 
 **À l’école**
 - **Ordinateur** ou matériel numérique pour limiter l’écriture manuscrite, cours fournis sur clé USB ou photocopiés.
@@ -398,13 +398,13 @@ La dyspraxie appartient aux troubles « dys », sans déficience intellectuelle.
 
 **Faut-il l’empêcher d’écrire à la main ?** Non : l’objectif est de choisir, avec l’ergothérapeute, ce qui lui permet d’apprendre sans s’épuiser.
 
-**L’ergothérapie est-elle prise en charge ?** Dans le cadre d’un forfait d’intervention précoce validé par une PCO, oui ; sinon, renseignez-vous auprès de la MDPH.
+**L’ergothérapie est-elle prise en charge ?** Dans le cadre d’un forfait d’intervention précoce validé par une PCO, oui ; sinon, renseigne-toi auprès de la MDPH.
 
-**Le sport est-il déconseillé ?** Non ; choisissez une activité où l’enfant prend du plaisir, en parlant de ses besoins à l’encadrant.
+**Le sport est-il déconseillé ?** Non ; choisis une activité où l’enfant prend du plaisir, en parlant de ses besoins à l’encadrant.
 
 ## Quand demander conseil
-- Difficultés motrices qui gênent l’autonomie ou l’école, refus d’écrire, fatigue importante : parlez-en au médecin.
-- Perte de confiance, isolement : consultez ; **3114** si détresse.
+- Difficultés motrices qui gênent l’autonomie ou l’école, refus d’écrire, fatigue importante : parles-en au médecin.
+- Perte de confiance, isolement : consulte ; **3114** si détresse.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -431,24 +431,24 @@ Comme les autres « dys », elle est souvent **repérée tard**, confondue avec 
 **Le bilan** : pluridisciplinaire, prescrit par un pédiatre, un neuropédiatre ou un pédopsychiatre, souvent avec un **bilan orthophonique** et un **bilan psychologique**.
 
 **À la maison**
-- Utilisez des objets concrets (jetons, pièces, recettes de cuisine) pour donner du sens aux nombres.
-- Jouez : jeux de société avec dés, cartes, courses.
-- Évitez les comparaisons ; valorisez les progrès.
+- Utilise des objets concrets (jetons, pièces, recettes de cuisine) pour donner du sens aux nombres.
+- Joue : jeux de société avec dés, cartes, courses.
+- Évite les comparaisons ; valorise les progrès.
 
 **À l’école** (PAP ou PPS) : temps supplémentaire, tables ou fiches mémo autorisées, calculatrice selon les cas, consignes reformulées, évaluations aménagées.
 
 ## Questions fréquentes
 **Mon enfant n’aime pas les maths : est-il dyscalculique ?** Pas forcément. Ce sont la persistance des difficultés malgré l’enseignement et leur retentissement qui justifient un bilan.
 
-**À quel âge consulter ?** Dès que les difficultés vous inquiètent ou que l’enseignant les signale ; un repérage précoce rend les aides plus efficaces.
+**À quel âge consulter ?** Dès que les difficultés t’inquiètent ou que l’enseignant les signale ; un repérage précoce rend les aides plus efficaces.
 
 **La calculatrice l’empêchera-t-elle d’apprendre ?** C’est un aménagement à décider avec l’équipe, pour lui permettre de raisonner sans être bloqué par le calcul.
 
 **Existe-t-il des aides financières ?** Selon le retentissement, une demande à la MDPH peut ouvrir des droits (AEEH, matériel).
 
 ## Quand demander conseil
-- Difficultés persistantes en calcul qui gênent la scolarité : parlez-en à l’enseignant et au médecin.
-- Angoisse avant l’école, maux de ventre répétés, tristesse : consultez ; **3114** si détresse.
+- Difficultés persistantes en calcul qui gênent la scolarité : parles-en à l’enseignant et au médecin.
+- Angoisse avant l’école, maux de ventre répétés, tristesse : consulte ; **3114** si détresse.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -475,13 +475,13 @@ Le diagnostic de syndrome de Gilles de la Tourette repose sur la présence de **
 Les causes ne sont pas précisément connues : elles associeraient des facteurs **génétiques** (des antécédents familiaux sont retrouvés dans plus de la moitié des cas) et **environnementaux**.
 
 ## Au quotidien
-- **Ne demandez pas à l’enfant d’arrêter** ses tics : ils sont involontaires, et la remarque augmente souvent la tension.
-- **Informez l’entourage** (école, activités) pour éviter moqueries et punitions.
-- **Notez** quand les tics apparaissent ou augmentent (fatigue, émotion) : utile pour le médecin.
+- **Ne demande pas à l’enfant d’arrêter** ses tics : ils sont involontaires, et la remarque augmente souvent la tension.
+- **Informe l’entourage** (école, activités) pour éviter moqueries et punitions.
+- **Note** quand les tics apparaissent ou augmentent (fatigue, émotion) : utile pour le médecin.
 - Si les tics gênent la vie de l’enfant, une **thérapie cognitive et comportementale** est proposée en première intention ; d’autres traitements existent pour les formes plus sévères, décidés par les spécialistes.
 
 ## Questions fréquentes
-**Les tics de mon enfant vont-ils durer toute sa vie ?** La source consultée n’aborde pas l’évolution ; le médecin qui suit votre enfant est le mieux placé pour en parler.
+**Les tics de mon enfant vont-ils durer toute sa vie ?** La source consultée n’aborde pas l’évolution ; le médecin qui suit ton enfant est le mieux placé pour en parler.
 
 **Est-ce psychologique ?** Les tics sont des mouvements involontaires, liés à des facteurs génétiques et environnementaux ; ils ne sont pas un caprice.
 
@@ -490,8 +490,8 @@ Les causes ne sont pas précisément connues : elles associeraient des facteurs 
 **L’école peut-elle aider ?** Oui : informer l’enseignant permet d’éviter les reproches et d’adapter si besoin (par exemple, autoriser une pause).
 
 ## Quand demander conseil
-- Tics qui gênent la vie quotidienne, la scolarité, ou font souffrir l’enfant : consultez.
-- Moqueries, harcèlement, tristesse : parlez-en à l’école ; **3114** en cas de détresse.
+- Tics qui gênent la vie quotidienne, la scolarité, ou font souffrir l’enfant : consulte.
+- Moqueries, harcèlement, tristesse : parles-en à l’école ; **3114** en cas de détresse.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -519,7 +519,7 @@ Sur trois enfants qui bégaient, deux voient leur bégaiement s’améliorer seu
 - **Ne pas stresser** l’enfant, prendre le temps de l’écouter.
 - L’accompagner **sans le presser** : regard bienveillant, geste rassurant.
 - Se concentrer sur **ce qu’il dit**, pas sur la façon dont il le dit.
-- Reformuler pour vérifier que vous avez compris.
+- Reformuler pour vérifier que tu as compris.
 - Éviter de l’exposer devant les autres.
 
 **À éviter**
@@ -527,10 +527,10 @@ Sur trois enfants qui bégaient, deux voient leur bégaiement s’améliorer seu
 - Les injonctions comme « calme-toi » ou « respire ».
 - Lui demander des efforts, ou faire comme si de rien n’était en rompant le regard.
 
-Informez la famille, la crèche ou l’école pour que tout le monde adopte les mêmes attitudes.
+Informe la famille, la crèche ou l’école pour que tout le monde adopte les mêmes attitudes.
 
 ## Questions fréquentes
-**Faut-il attendre que ça passe ?** Si cela dure plus de deux mois, consultez le médecin traitant, qui prescrira un **bilan orthophonique**. Un diagnostic précoce est recommandé.
+**Faut-il attendre que ça passe ?** Si cela dure plus de deux mois, consulte le médecin traitant, qui prescrira un **bilan orthophonique**. Un diagnostic précoce est recommandé.
 
 **Comment aider le médecin ?** Des **enregistrements** faits à la maison peuvent l’aider à évaluer le bégaiement.
 
@@ -539,8 +539,8 @@ Informez la famille, la crèche ou l’école pour que tout le monde adopte les 
 **L’orthophonie est-elle utile même chez un petit ?** Oui : l’orthophoniste spécialisé suit l’enfant et guide les parents.
 
 ## Quand demander conseil
-- Bégaiement qui dure **plus de deux mois**, qui s’accompagne de tensions, de grimaces, ou qui fait souffrir l’enfant : consultez.
-- Moqueries ou isolement à l’école : parlez-en à l’équipe.
+- Bégaiement qui dure **plus de deux mois**, qui s’accompagne de tensions, de grimaces, ou qui fait souffrir l’enfant : consulte.
+- Moqueries ou isolement à l’école : parles-en à l’équipe.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -564,10 +564,10 @@ Chez l’adolescent, consulter est recommandé si ces signes **se répètent** :
 Les troubles anxieux font partie des troubles de santé **psychiques** qui peuvent justifier, à l’école, un **projet d’accueil individualisé (PAI)** quand ils durent et nécessitent des aménagements.
 
 ## Au quotidien
-- **Accueillez ce que dit l’enfant** sans minimiser (« ce n’est rien ») ni dramatiser.
-- **Gardez des repères** : horaires réguliers, sommeil, moments partagés.
-- **Repérez les déclencheurs** (séparation, école, conflits, événement de vie) et parlez-en avec lui.
-- **Faites le lien avec l’école** si les difficultés touchent la classe : l’équipe et le médecin de l’Éducation nationale peuvent proposer des aménagements.
+- **Accueille ce que dit l’enfant** sans minimiser (« ce n’est rien ») ni dramatiser.
+- **Garde des repères** : horaires réguliers, sommeil, moments partagés.
+- **Repère les déclencheurs** (séparation, école, conflits, événement de vie) et parles-en avec lui.
+- **Fais le lien avec l’école** si les difficultés touchent la classe : l’équipe et le médecin de l’Éducation nationale peuvent proposer des aménagements.
 
 **Où trouver de l’aide**
 - Le **médecin traitant** ou le pédiatre, pour un premier avis.
@@ -578,15 +578,15 @@ Les troubles anxieux font partie des troubles de santé **psychiques** qui peuve
 ## Questions fréquentes
 **Toute peur est-elle un trouble anxieux ?** Non. Les peurs font partie du développement ; ce qui inquiète, c’est leur **intensité**, leur **durée** et leur **retentissement** sur la vie de l’enfant.
 
-**Mon enfant refuse d’aller à l’école : que faire ?** Ne laissez pas la situation s’installer : parlez-en à l’école et au médecin rapidement.
+**Mon enfant refuse d’aller à l’école : que faire ?** Ne laisse pas la situation s’installer : parles-en à l’école et au médecin rapidement.
 
 **Les séances de psychologue sont-elles remboursées ?** Avec **Mon soutien psy**, jusqu’à 12 séances sont prises en charge dès 3 ans, chez un psychologue partenaire.
 
-**Dois-je en parler à mon enfant ?** Oui, simplement : lui dire que vous avez remarqué qu’il va moins bien et que vous allez chercher de l’aide ensemble.
+**Dois-je en parler à mon enfant ?** Oui, simplement : lui dire que tu as remarqué qu’il va moins bien et que tu vas chercher de l’aide ensemble.
 
 ## Quand demander conseil
-- Changement de comportement **durable** et inexpliqué : consultez.
-- **Propos inquiétants, repli, rupture avec l’entourage** : intervenez rapidement ; **3114** (24 h/24, gratuit), pour l’enfant comme pour l’entourage.
+- Changement de comportement **durable** et inexpliqué : consulte.
+- **Propos inquiétants, repli, rupture avec l’entourage** : interviens rapidement ; **3114** (24 h/24, gratuit), pour l’enfant comme pour l’entourage.
 - Enfant en danger : **119**. Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -610,24 +610,24 @@ Les thèmes sont proches chez l’enfant et chez l’adulte. Mais les jeunes enf
 Les formes précoces sont plus fréquentes chez les garçons ; à l’âge adulte, femmes et hommes sont touchés à parts égales.
 
 ## Au quotidien
-- **Observez sans juger** : des rituels qui prennent beaucoup de temps, qui retardent le départ à l’école ou provoquent une détresse si on les interrompt doivent amener à consulter.
-- **Évitez de participer aux rituels** ou de rassurer sans fin : demandez au professionnel comment réagir.
-- **Expliquez à l’enfant** que ce n’est pas de sa faute et qu’il existe des soins.
-- Gardez une vie familiale aussi régulière que possible.
+- **Observe sans juger** : des rituels qui prennent beaucoup de temps, qui retardent le départ à l’école ou provoquent une détresse si on les interrompt doivent amener à consulter.
+- **Évite de participer aux rituels** ou de rassurer sans fin : demande au professionnel comment réagir.
+- **Explique à l’enfant** que ce n’est pas de sa faute et qu’il existe des soins.
+- Garde une vie familiale aussi régulière que possible.
 
 **Les soins** : le diagnostic est clinique et peut être posé par un **psychologue**, un **médecin généraliste** ou un **psychiatre**. Les deux traitements de première intention sont la **TCC**, une psychothérapie courte, et, selon la situation, un médicament décidé par le médecin. Selon l’Inserm, ces traitements améliorent le quotidien d’environ **deux tiers** des patients.
 
 ## Questions fréquentes
 **Les manies d’ordre de mon enfant sont-elles un TOC ?** Pas forcément. On parle de TOC quand les pensées et les rituels sont **envahissants**, angoissants et gênent la vie quotidienne.
 
-**Pourquoi mon enfant me l’a-t-il caché ?** La honte et la culpabilité sont fréquentes ; accueillez ce qu’il vous confie sans reproche.
+**Pourquoi mon enfant me l’a-t-il caché ?** La honte et la culpabilité sont fréquentes ; accueille ce qu’il te confie sans reproche.
 
 **La TCC convient-elle aux enfants ?** C’est un traitement de première intention ; le professionnel l’adapte à l’âge.
 
-**Où trouver un professionnel ?** Par votre médecin, ou via l’annuaire de Santé.fr ; **Mon soutien psy** permet des séances prises en charge.
+**Où trouver un professionnel ?** Par ton médecin, ou via l’annuaire de Santé.fr ; **Mon soutien psy** permet des séances prises en charge.
 
 ## Quand demander conseil
-- Rituels envahissants, détresse, refus scolaire : consultez.
+- Rituels envahissants, détresse, refus scolaire : consulte.
 - Tristesse profonde, propos inquiétants : **3114** (24 h/24).
 - Urgence vitale : **15** ou **112**.
 
@@ -654,11 +654,11 @@ Santé.fr et mpedia décrivent une maladie qui se signale souvent par un **chang
 Facteurs possibles : deuil, difficultés familiales, **harcèlement**, sentiment de dévalorisation, antécédents familiaux.
 
 ## Au quotidien
-- **Rassurez** votre enfant sur votre soutien et votre affection.
-- **Restez présent** : moments partagés, écoute, accompagnement dans ses activités.
-- **Acceptez qu’il se confie** à quelqu’un d’autre (grand-parent, enseignant, ami de la famille) : il ne doit pas rester seul avec sa souffrance.
-- **Cherchez la cause** possible (école, famille, deuil) sans vous culpabiliser.
-- **Consultez rapidement** si rien ne s’améliore ou si cela s’aggrave.
+- **Rassure** ton enfant sur ton soutien et ton affection.
+- **Reste présent** : moments partagés, écoute, accompagnement dans ses activités.
+- **Accepte qu’il se confie** à quelqu’un d’autre (grand-parent, enseignant, ami de la famille) : il ne doit pas rester seul avec sa souffrance.
+- **Cherche la cause** possible (école, famille, deuil) sans te culpabiliser.
+- **Consulte rapidement** si rien ne s’améliore ou si cela s’aggrave.
 
 **Les soins** : un soutien psychothérapeutique (individuel ou familial) est la première étape ; chez le jeune enfant, la thérapie passe souvent par le jeu. Un antidépresseur peut être prescrit par un **pédopsychiatre** dans certaines situations, avec une **surveillance étroite** les premières semaines. Un **suivi régulier** est conseillé, même après un seul épisode.
 
@@ -669,10 +669,10 @@ Facteurs possibles : deuil, difficultés familiales, **harcèlement**, sentiment
 
 **Où consulter ?** Médecin traitant, pédiatre, CMP, Maison des adolescents ; **Mon soutien psy** dès 3 ans ; **Fil Santé Jeunes 0 800 235 236** pour les 12-25 ans.
 
-**Faut-il parler du suicide avec lui ?** Tout propos inquiétant doit être pris au sérieux : écoutez, ne restez pas seul, appelez le **3114** pour être conseillé.
+**Faut-il parler du suicide avec lui ?** Tout propos inquiétant doit être pris au sérieux : écoute, ne reste pas seul, appelle le **3114** pour être conseillé.
 
 ## Quand demander conseil
-- Propos sur la mort, automutilation, repli brutal, rupture avec l’entourage : **appelez le 3114** (24 h/24, gratuit) ou consultez en urgence.
+- Propos sur la mort, automutilation, repli brutal, rupture avec l’entourage : **appelle le 3114** (24 h/24, gratuit) ou consulte en urgence.
 - Danger immédiat ou tentative de suicide : **15** ou **112**.
 - Enfant en danger (violences, harcèlement grave) : **119**.
 
@@ -700,10 +700,10 @@ Selon l’Inserm (sur Santé.fr), le WISC-V ne donne pas qu’un chiffre : il d�
 **Difficultés possibles** chez certains enfants : un profil **hétérogène** (grands écarts entre les capacités), parfois avec des faiblesses de motricité fine pouvant évoquer une dyspraxie ; **isolement**, **anxiété** (fréquente selon les études citées), réactions fortes à la frustration, difficultés dans les relations. Ces difficultés passent souvent inaperçues car l’enfant compense.
 
 ## Au quotidien
-- **Ne cherchez pas une étiquette** : partez de ce que vit votre enfant (plaisir d’apprendre, ennui, relations, émotions).
-- **Valorisez l’effort** autant que la réussite.
-- **Parlez avec l’école** si l’enfant s’ennuie, se démotive ou a des difficultés malgré des facilités apparentes.
-- Envisagez une **évaluation globale** (développement, attention, langage, aspects émotionnels) plutôt qu’un simple score.
+- **Ne cherche pas une étiquette** : pars de ce que vit ton enfant (plaisir d’apprendre, ennui, relations, émotions).
+- **Valorise l’effort** autant que la réussite.
+- **Parle avec l’école** si l’enfant s’ennuie, se démotive ou a des difficultés malgré des facilités apparentes.
+- Envisage une **évaluation globale** (développement, attention, langage, aspects émotionnels) plutôt qu’un simple score.
 
 ## Questions fréquentes
 **Quand faire évaluer mon enfant ?** L’Inserm suggère d’y penser quand un enfant au développement verbal précoce présente des **difficultés de comportement dès la maternelle**, plutôt que d’attendre le collège.
@@ -715,7 +715,7 @@ Selon l’Inserm (sur Santé.fr), le WISC-V ne donne pas qu’un chiffre : il d�
 **Faut-il lui faire sauter une classe ?** Les sources consultées ne tranchent pas ; c’est une décision à prendre avec l’école et les professionnels, selon son bien-être global.
 
 ## Quand demander conseil
-- Anxiété importante, isolement, refus scolaire, tristesse : consultez le médecin ou un psychologue.
+- Anxiété importante, isolement, refus scolaire, tristesse : consulte le médecin ou un psychologue.
 - Propos inquiétants : **3114** (24 h/24).
 - Urgence vitale : **15** ou **112**.
 
@@ -731,7 +731,7 @@ ${FIN}`,
 - L’**épilepsie** est une maladie neurologique chronique : des **crises** se répètent, dues à une hyperactivité d’un groupe de neurones.
 - Elle est **fréquente chez l’enfant** ; plus de la moitié des enfants concernés **guérissent avant l’âge adulte**.
 - Pendant une crise : **position latérale de sécurité**, espace dégagé, **ne rien mettre dans la bouche**, **noter la durée**.
-- Appelez le **15** si la crise dure **plus de 5 minutes**, si les crises **s’enchaînent**, si l’enfant **ne reprend pas conscience en 10 minutes** ou s’il s’est **blessé**.
+- Appelle le **15** si la crise dure **plus de 5 minutes**, si les crises **s’enchaînent**, si l’enfant **ne reprend pas conscience en 10 minutes** ou s’il s’est **blessé**.
 
 ## Comprendre
 Selon Santé.fr, les symptômes dépendent de la zone du cerveau concernée :
@@ -758,17 +758,17 @@ Le traitement de l’enfant vise à éviter des séquelles et à limiter le rete
 **À l’école** : un **projet d’accueil individualisé (PAI)** précise les aménagements et la **conduite à tenir en cas d’urgence**, avec une trousse d’urgence accessible et emportée lors des sorties.
 
 ## Questions fréquentes
-**Faut-il appeler le 15 à chaque crise ?** Pour une épilepsie connue, suivez le protocole donné par le médecin ; appelez le **15** dans les situations listées plus haut ou au moindre doute. Pour une **première crise**, appelez le 15 : l’Assurance Maladie demande notamment d’appeler le 15 lorsqu’une convulsion survient **sans fièvre**, chez un enfant de moins d’un an ou de plus de 5 ans, ou en cas de plusieurs convulsions en 24 heures.
+**Faut-il appeler le 15 à chaque crise ?** Pour une épilepsie connue, suis le protocole donné par le médecin ; appelle le **15** dans les situations listées plus haut ou au moindre doute. Pour une **première crise**, appelle le 15 : l’Assurance Maladie demande notamment d’appeler le 15 lorsqu’une convulsion survient **sans fièvre**, chez un enfant de moins d’un an ou de plus de 5 ans, ou en cas de plusieurs convulsions en 24 heures.
 
 **Mon enfant pourra-t-il faire du sport ?** Oui, l’activité régulière est encouragée, en évitant les sports où une chute ou une perte de connaissance serait dangereuse, et avec l’avis du médecin.
 
-**Les écrans sont-ils interdits ?** Il est conseillé de limiter les stimulations lumineuses intermittentes ; parlez-en au médecin selon le type d’épilepsie.
+**Les écrans sont-ils interdits ?** Il est conseillé de limiter les stimulations lumineuses intermittentes ; parles-en au médecin selon le type d’épilepsie.
 
-**Que dire à l’école ?** Demandez la mise en place d’un **PAI** avec le médecin de l’Éducation nationale.
+**Que dire à l’école ?** Demande la mise en place d’un **PAI** avec le médecin de l’Éducation nationale.
 
 ## Quand demander conseil
 - **Première crise**, crise de plus de 5 minutes, crises répétées, absence de réveil en 10 minutes, blessure, difficulté à respirer : **15** ou **112**.
-- Crises plus fréquentes, effets du traitement, questions sur l’école : contactez le médecin qui suit l’enfant.
+- Crises plus fréquentes, effets du traitement, questions sur l’école : contacte le médecin qui suit l’enfant.
 
 ${FIN}`,
   },
@@ -793,7 +793,7 @@ Le diabète de type 1 peut être diagnostiqué dès **9 mois à 1 an**. Le Dr Pi
 L’**acidocétose** rend le sang trop acide. Ses signes (vomissements, nausées, douleurs abdominales) sont facilement **confondus avec une gastro-entérite**. Sévère, elle peut mettre la vie en danger.
 
 ## Au quotidien
-**Si vous remarquez ces signes** : consultez **le jour même** et demandez une **mesure de la glycémie**. Une glycémie par piqûre au bout du doigt chez le médecin ou une prise de sang suffit à orienter.
+**Si tu remarques ces signes** : consulte **le jour même** et demande une **mesure de la glycémie**. Une glycémie par piqûre au bout du doigt chez le médecin ou une prise de sang suffit à orienter.
 
 **Après le diagnostic**, la prise en charge repose sur trois piliers décrits par Santé.fr :
 - l’**insuline**, en injections ou avec une pompe (des capteurs existent ; les doses sont réglées avec l’équipe soignante) ;
@@ -809,12 +809,12 @@ Des associations, comme l’Aide aux Jeunes Diabétiques, accompagnent les famil
 
 **Une gastro peut-elle cacher un diabète ?** Oui : des vomissements avec une respiration rapide et ample chez un enfant qui n’est pas dans son état habituel doivent faire consulter en urgence.
 
-**Le diabète de type 1 vient-il d’une mauvaise alimentation ?** Les sources consultées ne le décrivent pas ainsi ; parlez des causes avec l’équipe qui suit votre enfant.
+**Le diabète de type 1 vient-il d’une mauvaise alimentation ?** Les sources consultées ne le décrivent pas ainsi ; parle des causes avec l’équipe qui suit ton enfant.
 
 **Mon enfant pourra-t-il faire du sport ?** Oui, l’activité physique fait partie de la prise en charge.
 
 ## Quand demander conseil
-- Soif, urines fréquentes, amaigrissement, fatigue : **consultez le jour même** pour une glycémie.
+- Soif, urines fréquentes, amaigrissement, fatigue : **consulte le jour même** pour une glycémie.
 - Vomissements, mal de ventre, **respiration rapide**, somnolence chez un enfant qui n’est pas dans son état habituel : **15** ou **112**.
 
 ${FIN}`,
@@ -859,12 +859,12 @@ Les nourrissons vont généralement bien les premiers mois, puis peuvent appara�
 
 **Les porteurs sains sont-ils malades ?** Non, ils n’ont pas de symptômes, mais peuvent transmettre le gène.
 
-**La fièvre est-elle grave ?** Les infections peuvent être sévères chez ces enfants : consultez **sans attendre** en cas de fièvre, selon les consignes de l’équipe qui suit votre enfant.
+**La fièvre est-elle grave ?** Les infections peuvent être sévères chez ces enfants : consulte **sans attendre** en cas de fièvre, selon les consignes de l’équipe qui suit ton enfant.
 
 **Peut-il aller à l’école normalement ?** Oui, avec un PAI et des aménagements si besoin.
 
 ## Quand demander conseil
-- Fièvre, douleur qui ne cède pas, pâleur ou fatigue inhabituelles : contactez rapidement l’équipe qui suit l’enfant.
+- Fièvre, douleur qui ne cède pas, pâleur ou fatigue inhabituelles : contacte rapidement l’équipe qui suit l’enfant.
 - Difficulté à respirer, douleur à la poitrine, faiblesse d’un côté du corps, trouble de la parole, somnolence : **15** ou **112**.
 
 ${FIN}`,
@@ -891,22 +891,22 @@ L’objectif, rappelle l’ARS Île-de-France, est de **repérer tôt** des mala
 Pour la drépanocytose, l’Inserm souligne que la prise en charge précoce **retarde les complications**.
 
 ## Au quotidien
-- **À la maternité** : l’équipe vous explique le prélèvement et recueille votre accord.
-- **Si vous sortez tôt** : demandez à la maternité comment et quand le prélèvement sera réalisé.
-- **Gardez le carnet de santé** à portée de main : il garde la trace des examens.
+- **À la maternité** : l’équipe t’explique le prélèvement et recueille ton accord.
+- **Si tu sors tôt** : demande à la maternité comment et quand le prélèvement sera réalisé.
+- **Garde le carnet de santé** à portée de main : il garde la trace des examens.
 
 ## Questions fréquentes
 **Comment se fait le prélèvement ?** Par une petite piqûre au talon ; quelques gouttes de sang sont déposées sur un buvard analysé en laboratoire.
 
-**Si on ne me rappelle pas, est-ce bon signe ?** La page consultée ne détaille pas la façon dont les résultats sont communiqués : demandez-le à la maternité.
+**Si on ne me rappelle pas, est-ce bon signe ?** La page consultée ne détaille pas la façon dont les résultats sont communiqués : demande-le à la maternité.
 
 **Un résultat anormal veut-il dire que mon bébé est malade ?** Un dépistage n’est pas un diagnostic : des examens de contrôle sont alors proposés par l’équipe spécialisée.
 
-**Puis-je refuser ?** L’accord des parents est demandé ; parlez de vos questions avec l’équipe pour décider en connaissance de cause.
+**Puis-je refuser ?** L’accord des parents est demandé ; parle de tes questions avec l’équipe pour décider en connaissance de cause.
 
 ## Quand demander conseil
-- Si vous ne savez pas si le dépistage a été fait (sortie précoce, transfert) : contactez la maternité ou votre sage-femme.
-- Bébé qui s’alimente mal, somnolent, qui respire difficilement ou a de la fièvre avant 3 mois : consultez en urgence ; **15** ou **112**.
+- Si tu ne sais pas si le dépistage a été fait (sortie précoce, transfert) : contacte la maternité ou ta sage-femme.
+- Bébé qui s’alimente mal, somnolent, qui respire difficilement ou a de la fièvre avant 3 mois : consulte en urgence ; **15** ou **112**.
 
 ${FIN}`,
   },
@@ -934,24 +934,24 @@ Les conseils de Santé.fr pour une peau sensible :
 - **Hydrater régulièrement** avec une crème adaptée, en particulier par temps froid ou sec.
 - **Couper les ongles** de l’enfant pour limiter les lésions dues au grattage.
 
-Notez ce qui semble précéder les poussées pour en parler au médecin.
+Note ce qui semble précéder les poussées pour en parler au médecin.
 
 ## Questions fréquentes
 **L’eczéma est-il contagieux ?** Non, il ne se transmet pas.
 
 **Faut-il faire des tests d’allergie ?** Selon les sources consultées, les examens complémentaires sont **en général inutiles** ; c’est le médecin qui décide au cas par cas.
 
-**Comment savoir ce qui déclenche les poussées ?** Notez ce que vous observez et parlez-en au médecin, qui adaptera les conseils à votre enfant.
+**Comment savoir ce qui déclenche les poussées ?** Note ce que tu observes et parles-en au médecin, qui adaptera les conseils à ton enfant.
 
-**La crème suffit-elle ?** L’hydratation est la base ; pendant les poussées, suivez le traitement prescrit par le médecin, sans l’arrêter de vous-même.
+**La crème suffit-elle ?** L’hydratation est la base ; pendant les poussées, suis le traitement prescrit par le médecin, sans l’arrêter de toi-même.
 
 ## Quand demander conseil
-**Consultez dans la journée** si :
-- votre enfant a de la **fièvre** ou n’est pas dans son état habituel ;
+**Consulte dans la journée** si :
+- ton enfant a de la **fièvre** ou n’est pas dans son état habituel ;
 - la peau **suinte** ou semble **infectée** (pus) ;
 - les symptômes d’une allergie connue deviennent nettement plus sévères.
 
-**Consultez dans les jours qui viennent** si les démangeaisons deviennent insupportables ou si rien ne s’améliore après 48 heures de soins.
+**Consulte dans les jours qui viennent** si les démangeaisons deviennent insupportables ou si rien ne s’améliore après 48 heures de soins.
 
 **Urgence** : gonflement du visage ou de la langue, difficulté à respirer : **15** ou **112**.
 
@@ -976,23 +976,23 @@ Quand la rhinite est liée aux pollens, on parle de rhinite **saisonnière** ; l
 Le lien avec l’asthme est important : environ **80 % des personnes asthmatiques** ont aussi une rhino-conjonctivite. Soigner et suivre une rhinite allergique, c’est aussi surveiller l’apparition d’une gêne respiratoire.
 
 ## Au quotidien
-- **Notez les périodes** où votre enfant a des symptômes : cela aide le médecin à faire le lien avec un pollen.
-- **Observez sa respiration** : toux la nuit, sifflements, essoufflement à l’effort doivent être signalés.
-- **Parlez-en à l’école** si les symptômes gênent l’attention ou le sommeil ; un PAI peut être utile en cas d’asthme associé.
-- Suivez le **traitement prescrit** par le médecin pendant la saison concernée.
+- **Note les périodes** où ton enfant a des symptômes : cela aide le médecin à faire le lien avec un pollen.
+- **Observe sa respiration** : toux la nuit, sifflements, essoufflement à l’effort doivent être signalés.
+- **Parles-en à l’école** si les symptômes gênent l’attention ou le sommeil ; un PAI peut être utile en cas d’asthme associé.
+- Suis le **traitement prescrit** par le médecin pendant la saison concernée.
 
 ## Questions fréquentes
 **Comment savoir si c’est un rhume ou une allergie ?** Une rhinite qui revient à la même saison, sans fièvre, avec des démangeaisons du nez et des yeux, évoque une allergie : le médecin confirmera.
 
 **Faut-il faire des tests ?** Le diagnostic repose sur l’examen du médecin et, si besoin, des **tests cutanés** ou une **mesure du souffle** chez l’allergologue.
 
-**Mon enfant peut-il jouer dehors ?** Oui ; parlez avec le médecin des précautions adaptées pendant les pics de pollens.
+**Mon enfant peut-il jouer dehors ?** Oui ; parle avec le médecin des précautions adaptées pendant les pics de pollens.
 
-**L’allergie peut-elle évoluer en asthme ?** La rhinite est un facteur de risque : signalez toute gêne respiratoire.
+**L’allergie peut-elle évoluer en asthme ?** La rhinite est un facteur de risque : signale toute gêne respiratoire.
 
 ## Quand demander conseil
-- Symptômes qui reviennent chaque saison ou gênent le sommeil et l’école : consultez le médecin traitant.
-- Toux nocturne, sifflements, essoufflement : consultez rapidement.
+- Symptômes qui reviennent chaque saison ou gênent le sommeil et l’école : consulte le médecin traitant.
+- Toux nocturne, sifflements, essoufflement : consulte rapidement.
 - **Difficulté à respirer**, lèvres bleutées, gonflement du visage : **15** ou **112**.
 
 ${FIN}`,
@@ -1038,13 +1038,13 @@ Les causes sont souvent multiples : déséquilibre entre ce que l’on mange et 
 
 **Faut-il peser l’enfant souvent à la maison ?** Le suivi se fait avec le médecin, sur la courbe du carnet de santé.
 
-**Et s’il grignote en cachette ?** Cherchez la raison (stress, ennui, solitude) et parlez-en avec lui ; trop d’interdits peuvent favoriser ce comportement.
+**Et s’il grignote en cachette ?** Cherche la raison (stress, ennui, solitude) et parles-en avec lui ; trop d’interdits peuvent favoriser ce comportement.
 
 **Qui peut nous aider ?** Le médecin traitant ou le pédiatre, qui peut orienter vers une prise en charge adaptée.
 
 ## Quand demander conseil
-- Courbe qui monte plus vite que la référence, essoufflement, moqueries : parlez-en au médecin.
-- Tristesse, repli, rapport difficile à la nourriture : consultez ; **3114** en cas de détresse.
+- Courbe qui monte plus vite que la référence, essoufflement, moqueries : parles-en au médecin.
+- Tristesse, repli, rapport difficile à la nourriture : consulte ; **3114** en cas de détresse.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -1091,8 +1091,8 @@ Le médecin qui suit l’enfant transmet les éléments médicaux **sous pli con
 **Le PAI fonctionne-t-il à la crèche ?** Oui, le médecin de la structure ou de la PMI peut le rédiger.
 
 ## Quand demander conseil
-- Dès le diagnostic d’une maladie chronique ou avant l’entrée à l’école : demandez un PAI.
-- Changement de traitement : prévenez l’école et faites mettre à jour la fiche d’urgence.
+- Dès le diagnostic d’une maladie chronique ou avant l’entrée à l’école : demande un PAI.
+- Changement de traitement : préviens l’école et fais mettre à jour la fiche d’urgence.
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -1118,7 +1118,7 @@ La fiche de la Maison de l’autisme rappelle que le **statut d’aidant familia
 ## Au quotidien
 **Constituer le dossier MDPH**
 - Formulaire de demande, **certificat médical** récent, bilans des professionnels (orthophoniste, psychomotricien, psychologue…), et tout document décrivant le quotidien (école, sommeil, autonomie).
-- Décrivez **concrètement** les besoins et les frais (soins non remboursés, matériel, temps de trajet, réduction d’activité).
+- Décris **concrètement** les besoins et les frais (soins non remboursés, matériel, temps de trajet, réduction d’activité).
 - De nombreuses MDPH proposent une **demande en ligne**.
 
 **Se faire aider**
@@ -1128,17 +1128,17 @@ La fiche de la Maison de l’autisme rappelle que le **statut d’aidant familia
 - Les associations de familles, souvent de bon conseil pour remplir le dossier.
 
 ## Questions fréquentes
-**Faut-il un diagnostic pour demander l’AEEH ?** La CDAPH s’appuie sur l’évaluation des besoins et le certificat médical ; parlez-en avec le médecin qui suit l’enfant.
+**Faut-il un diagnostic pour demander l’AEEH ?** La CDAPH s’appuie sur l’évaluation des besoins et le certificat médical ; parles-en avec le médecin qui suit l’enfant.
 
-**Qui contacter pour le versement ?** La page consultée ne le détaille pas : la MDPH et votre caisse d’allocations familiales peuvent vous renseigner.
+**Qui contacter pour le versement ?** La page consultée ne le détaille pas : la MDPH et ta caisse d’allocations familiales peuvent te renseigner.
 
 **Combien de temps dure la décision ?** Les délais varient selon les départements ; une expérimentation vise à les raccourcir.
 
-**Je suis épuisé : existe-t-il du répit ?** Oui : des solutions de répit existent pour les aidants ; renseignez-vous auprès de la MDPH, du 0 800 360 360 ou des associations.
+**Je suis épuisé : existe-t-il du répit ?** Oui : des solutions de répit existent pour les aidants ; renseigne-toi auprès de la MDPH, du 0 800 360 360 ou des associations.
 
 ## Quand demander conseil
-- Dès que des besoins durables apparaissent (soins, école, aide humaine) : contactez la MDPH ou l’enseignant référent.
-- Épuisement, idées noires : parlez-en à votre médecin ; **3114** (24 h/24).
+- Dès que des besoins durables apparaissent (soins, école, aide humaine) : contacte la MDPH ou l’enseignant référent.
+- Épuisement, idées noires : parles-en à ton médecin ; **3114** (24 h/24).
 - Urgence vitale : **15** ou **112**.
 
 ${FIN}`,
@@ -1158,31 +1158,31 @@ ${FIN}`,
 Une maladie rare touche peu de personnes, mais l’ensemble des maladies rares concerne beaucoup de familles. Le parcours peut être long avant le diagnostic, et l’information est parfois difficile à trouver : des réseaux nationaux existent pour cela.
 
 - **Les filières de santé maladies rares** regroupent, par grand domaine (cœur, système neuromusculaire…), les équipes expertes, les associations et les laboratoires.
-- **Les centres de référence** ont une expertise sur une maladie ou un groupe de maladies ; **les centres de compétence** assurent le suivi plus près de chez vous.
+- **Les centres de référence** ont une expertise sur une maladie ou un groupe de maladies ; **les centres de compétence** assurent le suivi plus près de chez toi.
 - **Orphanet** propose une encyclopédie des maladies rares, un répertoire des ressources expertes et le guide **« Vivre avec une maladie rare en France »**, qui recense les aides et prestations.
 - **Maladies Rares Info Services** est un service national d’information, d’orientation et de soutien, joignable par téléphone, mail et forums.
 
 Certaines maladies rares sont repérées dès la naissance grâce au **dépistage néonatal** (13 maladies sur le buvard, plus un test de l’audition).
 
 ## Au quotidien
-- **Demandez au médecin** qui suit votre enfant à quel centre de référence ou de compétence il est rattaché.
-- **Gardez un dossier** : comptes rendus, ordonnances, coordonnées des équipes ; une fiche résumée est utile en cas d’urgence.
+- **Demande au médecin** qui suit ton enfant à quel centre de référence ou de compétence il est rattaché.
+- **Garde un dossier** : comptes rendus, ordonnances, coordonnées des équipes ; une fiche résumée est utile en cas d’urgence.
 - **À l’école** : un **PAI** organise les soins et la conduite à tenir ; selon les besoins, un **PPS** via la MDPH.
 - **Droits** : le guide Orphanet « Vivre avec une maladie rare en France » recense les aides ; selon la situation, une demande à la MDPH peut ouvrir des droits.
 
 ## Questions fréquentes
 **Comment trouver une association de patients ?** Orphanet et les filières de santé recensent les associations par maladie.
 
-**Mon enfant n’a pas encore de diagnostic : à qui m’adresser ?** Le médecin peut orienter vers la filière ou le centre de référence adapté aux symptômes ; Maladies Rares Info Services peut vous aider à vous repérer.
+**Mon enfant n’a pas encore de diagnostic : à qui m’adresser ?** Le médecin peut orienter vers la filière ou le centre de référence adapté aux symptômes ; Maladies Rares Info Services peut t’aider à te repérer.
 
-**Les informations trouvées sur Internet sont-elles fiables ?** Privilégiez Orphanet, les filières et les centres de référence, et parlez-en avec l’équipe qui suit votre enfant.
+**Les informations trouvées sur Internet sont-elles fiables ?** Privilégie Orphanet, les filières et les centres de référence, et parles-en avec l’équipe qui suit ton enfant.
 
 **Existe-t-il un soutien pour les parents ?** Oui : associations, Maladies Rares Info Services, et aides aux aidants.
 
 ## Quand demander conseil
-- Aggravation, nouveau symptôme : contactez l’équipe qui suit votre enfant.
-- Épuisement, détresse : votre médecin ; **3114** (24 h/24).
-- Urgence vitale : **15** ou **112**, en présentant la fiche d’urgence si vous en avez une.
+- Aggravation, nouveau symptôme : contacte l’équipe qui suit ton enfant.
+- Épuisement, détresse : ton médecin ; **3114** (24 h/24).
+- Urgence vitale : **15** ou **112**, en présentant la fiche d’urgence si tu en as une.
 
 ${FIN}`,
   },

@@ -44,16 +44,16 @@ const S = {
   santeLangage212: { label: 'Santé.fr — Progrès du langage de 2 à 12 mois', url: 'https://www.sante.fr/progres-du-langage-de-2-12-mois', consulted_on: C, published: '2025-05-22' },
   santeLangage13: { label: 'Santé.fr (information mpedia) — Progrès du langage de 1 à 3 ans', url: 'https://www.sante.fr/progres-du-langage-de-1-3-ans', consulted_on: C, published: '2025-07-09' },
   mpediaJeux01: { label: 'mpedia.fr — Jeux de 0 à 1 an : choisir le bon, au bon moment', url: 'https://www.mpedia.fr/art-jeux-de-0-a-1-an/', consulted_on: C, published: '2021-01-05' },
-  santeAccidents: { label: 'Santé.fr — Accidents domestiques : protéger au quotidien votre enfant', url: 'https://www.sante.fr/accidents-domestiques-proteger-au-quotidien-votre-enfant', consulted_on: C, published: '2026-01-26' },
+  santeAccidents: { label: 'Santé.fr — Accidents domestiques : protéger au quotidien ton enfant', url: 'https://www.sante.fr/accidents-domestiques-proteger-au-quotidien-votre-enfant', consulted_on: C, published: '2026-01-26' },
   ameliInhale: { label: 'ameli.fr — Corps étranger inhalé par « fausse route »', url: 'https://www.ameli.fr/assure/sante/urgence/corps-etrangers/inhale', consulted_on: C, published: '2018-04-12' },
   ameliIntox: { label: 'ameli.fr — Intoxication par voie orale (par ingestion)', url: 'https://www.ameli.fr/assure/sante/urgence/accidents-domestiques/intoxication-voie-orale-ingestion', consulted_on: C, published: '2025-09-11' },
-  mpediaSiege: { label: 'mpedia.fr — Quel siège auto choisir pour votre enfant ?', url: 'https://www.mpedia.fr/art-sieges-auto/', consulted_on: C, published: '2023-07-17' },
-  santeChaleur: { label: 'Santé.fr (information RecoSanté) — Comment protéger votre santé et celle de vos enfants en cas de fortes chaleurs ?', url: 'https://www.sante.fr/comment-proteger-votre-sante-et-celle-de-vos-enfants-en-cas-de-fortes-chaleurs', consulted_on: C, published: '2025-07-17' },
+  mpediaSiege: { label: 'mpedia.fr — Quel siège auto choisir pour ton enfant ?', url: 'https://www.mpedia.fr/art-sieges-auto/', consulted_on: C, published: '2023-07-17' },
+  santeChaleur: { label: 'Santé.fr (information RecoSanté) — Comment protéger ta santé et celle de tes enfants en cas de fortes chaleurs ?', url: 'https://www.sante.fr/comment-proteger-votre-sante-et-celle-de-vos-enfants-en-cas-de-fortes-chaleurs', consulted_on: C, published: '2025-07-17' },
   mpediaSoleil: { label: 'mpedia.fr — Comment protéger son enfant du soleil ?', url: 'https://www.mpedia.fr/art-soleil-quelles-protections/', consulted_on: C, published: '2023-07-06' },
   ameliBabyBlues: { label: 'ameli.fr — Après l’accouchement : baby blues et dépression du post-partum', url: 'https://www.ameli.fr/assure/sante/devenir-parent/accouchement-nouveau-ne-et-retour-la-maison/baby-blues-depression-post-partum-grossesse', consulted_on: C, published: '2025-10-17' },
   santeSuiviApres: { label: 'Santé.fr — Le suivi médical après l’accouchement', url: 'https://www.sante.fr/le-suivi-medical-apres-laccouchement', consulted_on: C, published: '2024-08-09' },
   santeActivite: { label: 'Santé.fr (Santé publique France — 1000 premiers jours) — L’activité physique après l’accouchement', url: 'https://www.sante.fr/lactivite-physique-apres-laccouchement', consulted_on: C, published: '2021-12-03' },
-  qsContraPost: { label: 'QuestionSexualité (Santé publique France) — Quelle contraception choisir après votre accouchement ?', url: 'https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/quelle-contraception-choisir-apres-votre-accouchement', consulted_on: C },
+  qsContraPost: { label: 'QuestionSexualité (Santé publique France) — Quelle contraception choisir après ton accouchement ?', url: 'https://www.questionsexualite.fr/choisir-sa-contraception/ma-contraception-et-moi/quelle-contraception-choisir-apres-votre-accouchement', consulted_on: C },
   santeFamille: { label: 'Santé.fr (Santé publique France — 1000 premiers jours) — La vie de famille après la naissance', url: 'https://www.sante.fr/la-vie-de-famille-apres-la-naissance', consulted_on: C, published: '2024-08-26' },
   spDeclaration: { label: 'Service-Public.fr — Déclaration de naissance', url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/F961', consulted_on: C, published: '2026-06-18' },
   spPaternite: { label: 'Service-Public.fr — Congé de paternité et d’accueil de l’enfant d’un salarié du secteur privé', url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/F3156', consulted_on: C, published: '2026-06-01' },
@@ -63,7 +63,7 @@ const S = {
   spCMG: { label: 'Service-Public.fr — Complément de libre choix du mode de garde (CMG) : emploi direct', url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/F39152', consulted_on: C, published: '2026-06-26' },
 } satisfies Record<string, ArticleSource>;
 
-const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme ou de la PMI qui connaissent votre enfant et votre situation.';
+const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme ou de la PMI qui connaissent ton enfant et ta situation.';
 
 export const GUIDE_BEBE: LibArticle[] = [
   // ───────────────────────────── Allaitement, biberon, diversification ─────────────────────────────
@@ -88,12 +88,12 @@ Le lait maternel a des propriétés hydratantes et protectrices : c'est pourquoi
 Côté hygiène, les gestes simples suffisent : se laver les mains avant la tétée, nettoyer à l'eau et au savon ce qui touche les seins ou la bouche du bébé, préférer des produits sans parfum. Laver les seins à chaque tétée efface leur odeur naturelle, qui aide le bébé à s'orienter.
 
 ## Au quotidien
-- **Observez la prise du sein** : bouche grande ouverte, lèvres retroussées, menton contre le sein, une bonne partie de l'aréole en bouche. Si vous avez un doute, demandez à la sage-femme ou à une consultante en lactation d'observer une tétée.
-- **Variez les positions** (madone, ballon de rugby, allongée) pour répartir les points de pression.
-- **Pour retirer le bébé du sein**, glissez doucement un doigt au coin de sa bouche pour rompre la succion, plutôt que de tirer.
-- **Après la tétée**, exprimez quelques gouttes de lait, étalez-les sur le mamelon et laissez sécher à l'air libre.
-- **Changez souvent les coussinets** d'allaitement pour garder la peau au sec.
-- **Notez ce qui soulage** et ce qui aggrave : cela aidera le professionnel à comprendre la situation.
+- **Observe la prise du sein** : bouche grande ouverte, lèvres retroussées, menton contre le sein, une bonne partie de l'aréole en bouche. Si tu as un doute, demande à la sage-femme ou à une consultante en lactation d'observer une tétée.
+- **Varie les positions** (madone, ballon de rugby, allongée) pour répartir les points de pression.
+- **Pour retirer le bébé du sein**, glisse doucement un doigt au coin de sa bouche pour rompre la succion, plutôt que de tirer.
+- **Après la tétée**, exprime quelques gouttes de lait, étale-les sur le mamelon et laisse sécher à l'air libre.
+- **Change souvent les coussinets** d'allaitement pour garder la peau au sec.
+- **Note ce qui soulage** et ce qui aggrave : cela aidera le professionnel à comprendre la situation.
 
 ## Questions fréquentes
 **Est-ce que ça doit faire mal au début ?**
@@ -109,13 +109,13 @@ Ils peuvent dépanner, mais ils ne corrigent pas la cause. Leur usage est à dis
 Non : un produit antiseptique n'est pas nécessaire. Une douche quotidienne et des mains propres suffisent.
 
 ## Quand demander conseil
-Parlez-en à votre sage-femme, à votre médecin, à la PMI ou à une consultante en lactation si :
+Parles-en à ta sage-femme, à ton médecin, à la PMI ou à une consultante en lactation si :
 - la douleur persiste au-delà de quelques tétées ou s'aggrave ;
 - une crevasse ne cicatrise pas, saigne, ou se couvre de plaques blanches ;
-- le sein devient rouge, chaud, douloureux, ou si vous avez de la fièvre (voir l'article sur l'engorgement et la mastite) ;
-- votre bébé semble mal téter ou peu prendre de poids.
+- le sein devient rouge, chaud, douloureux, ou si tu as de la fièvre (voir l'article sur l'engorgement et la mastite) ;
+- ton bébé semble mal téter ou peu prendre de poids.
 
-En cas d'urgence pour vous ou pour votre bébé, appelez le 15 ou le 112.
+En cas d'urgence pour toi ou pour ton bébé, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -135,7 +135,7 @@ ${END}`,
 - La montée de lait survient environ 3 à 5 jours après l'accouchement, parfois avec une légère fièvre.
 - L'engorgement (seins gonflés, durs, douloureux) se soulage par des tétées fréquentes, de la chaleur avant et du froid entre les tétées.
 - Une mastite est une inflammation du sein qui peut s'infecter : elle fait souvent suite à un engorgement non soulagé.
-- Fièvre élevée ou qui dure, douleur qui persiste ou s'aggrave : consultez rapidement.
+- Fièvre élevée ou qui dure, douleur qui persiste ou s'aggrave : consulte rapidement.
 
 ## Comprendre
 Pendant les premiers jours, le bébé reçoit le colostrum, en petite quantité. Puis un lait « de transition », plus abondant, prend le relais : c'est la montée de lait. Les seins se gorgent de lait mais aussi de liquide (un œdème), ce qui les rend tendus et parfois difficiles à prendre en bouche pour le bébé.
@@ -143,34 +143,34 @@ Pendant les premiers jours, le bébé reçoit le colostrum, en petite quantité.
 L'engorgement correspond à ce gonflement important. Il n'est pas une maladie, mais s'il n'est pas soulagé, le lait stagne et une inflammation peut apparaître : c'est la mastite. Elle peut devenir infectieuse et nécessite alors un traitement adapté, prescrit par un professionnel.
 
 ## Au quotidien
-- **Proposez le sein souvent**, à la demande, sans attendre que les seins soient très pleins. La tétée reste le meilleur moyen de les drainer.
-- **Avant la tétée, un peu de chaleur** : douche chaude, compresse tiède, massage doux. Exprimez quelques gouttes, à la main ou au tire-lait, juste pour assouplir l'aréole et faciliter la prise du sein.
+- **Propose le sein souvent**, à la demande, sans attendre que les seins soient très pleins. La tétée reste le meilleur moyen de les drainer.
+- **Avant la tétée, un peu de chaleur** : douche chaude, compresse tiède, massage doux. Exprime quelques gouttes, à la main ou au tire-lait, juste pour assouplir l'aréole et faciliter la prise du sein.
 - **Entre les tétées, du froid** : une compresse froide soulage le gonflement.
-- **Évitez de trop stimuler** : tirer beaucoup de lait « pour vider » relance la production. Le but est d'assouplir, pas de vider.
-- **Changez de position** pour que le bébé draine toutes les zones du sein.
-- **Reposez-vous** autant que possible et faites-vous aider pour le reste.
+- **Évite de trop stimuler** : tirer beaucoup de lait « pour vider » relance la production. Le but est d'assouplir, pas de vider.
+- **Change de position** pour que le bébé draine toutes les zones du sein.
+- **Repose-toi** autant que possible et fais-toi aider pour le reste.
 
 ## Questions fréquentes
 **Un peu de fièvre pendant la montée de lait, est-ce inquiétant ?**
-Une légère fièvre peut accompagner la montée de lait. Si elle est élevée ou qu'elle persiste, parlez-en à l'équipe de la maternité ou, si vous êtes rentrée, à un professionnel de santé.
+Une légère fièvre peut accompagner la montée de lait. Si elle est élevée ou qu'elle persiste, parles-en à l'équipe de la maternité ou, si tu es rentrée, à un professionnel de santé.
 
 **Faut-il arrêter d'allaiter en cas de mastite ?**
-C'est au professionnel de santé de vous conseiller selon la situation. Le plus souvent, drainer le sein reste important. Ne prenez pas de décision ni de traitement seule.
+C'est au professionnel de santé de te conseiller selon la situation. Le plus souvent, drainer le sein reste important. Ne prends pas de décision ni de traitement seule.
 
 **Les choux, le tire-lait, les coquilles… qu'est-ce qui marche vraiment ?**
-Les repères officiels mettent en avant les tétées fréquentes, la chaleur avant, le froid entre les tétées et l'expression douce pour assouplir. Pour le reste, demandez conseil à votre sage-femme ou à une consultante en lactation.
+Les repères officiels mettent en avant les tétées fréquentes, la chaleur avant, le froid entre les tétées et l'expression douce pour assouplir. Pour le reste, demande conseil à ta sage-femme ou à une consultante en lactation.
 
 **Combien de temps dure l'engorgement ?**
-Il est en général transitoire. S'il ne s'améliore pas ou s'il s'accompagne de rougeur, de fièvre ou d'une douleur localisée, consultez.
+Il est en général transitoire. S'il ne s'améliore pas ou s'il s'accompagne de rougeur, de fièvre ou d'une douleur localisée, consulte.
 
 ## Quand demander conseil
-Consultez rapidement votre sage-femme, votre médecin ou la maternité si :
-- vous avez une fièvre élevée ou qui dure ;
+Consulte rapidement ta sage-femme, ton médecin ou la maternité si :
+- tu as une fièvre élevée ou qui dure ;
 - une douleur du sein persiste ou s'aggrave, ou une zone devient rouge, chaude et dure ;
-- vous vous sentez « grippée », très fatiguée ;
-- votre bébé n'arrive plus à prendre le sein.
+- tu te sens « grippée », très fatiguée ;
+- ton bébé n'arrive plus à prendre le sein.
 
-En cas d'urgence, appelez le 15 ou le 112.
+En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -188,27 +188,27 @@ ${END}`,
     body_md: `Tirer son lait permet de continuer à nourrir son bébé quand on est séparés : reprise du travail, sortie, fatigue, bébé hospitalisé… Quelques règles d'hygiène et de conservation suffisent pour que ce lait garde ses qualités.
 
 ## En bref
-- Lavez-vous les mains avant chaque utilisation ; nettoyez le matériel à l'eau chaude savonneuse après chaque tirage.
+- Lave-toi les mains avant chaque utilisation ; nettoie le matériel à l'eau chaude savonneuse après chaque tirage.
 - Repères de conservation (Anses) : 1 heure à température ambiante (19 à 22 °C), 48 heures au réfrigérateur (4 °C ou moins), 4 mois au congélateur (-18 °C).
 - Le lait se décongèle au réfrigérateur et ne se recongèle jamais.
 - Le micro-ondes est déconseillé pour le réchauffer.
-- Notez sur chaque contenant la date et l'heure du recueil.
+- Note sur chaque contenant la date et l'heure du recueil.
 
 ## Comprendre
-Il existe des tire-lait manuels, discrets et pratiques pour un usage occasionnel, et des tire-lait électriques, plus rapides, surtout à double pompage, plus adaptés à un usage régulier. Le tire-lait doit être bien ajusté : il ne doit provoquer ni douleur ni lésion. Il est souvent possible d'en louer un sur prescription : demandez à votre sage-femme ou à votre médecin.
+Il existe des tire-lait manuels, discrets et pratiques pour un usage occasionnel, et des tire-lait électriques, plus rapides, surtout à double pompage, plus adaptés à un usage régulier. Le tire-lait doit être bien ajusté : il ne doit provoquer ni douleur ni lésion. Il est souvent possible d'en louer un sur prescription : demande à ta sage-femme ou à ton médecin.
 
 Le lait maternel est un aliment vivant. Bien conservé, il garde ses qualités ; mal conservé, il peut se dégrader ou se contaminer. D'où l'importance de la chaîne du froid et des durées à respecter.
 
 ## Au quotidien
 **Tirer son lait**
-- Installez-vous au calme, massez doucement le sein, commencez à faible puissance puis augmentez progressivement.
-- En cas de douleur, vérifiez que le mamelon est bien centré dans la téterelle ou baissez la puissance ; si la douleur persiste, demandez conseil.
+- Installe-toi au calme, masse doucement le sein, commence à faible puissance puis augmente progressivement.
+- En cas de douleur, vérifie que le mamelon est bien centré dans la téterelle ou baisse la puissance ; si la douleur persiste, demande conseil.
 
 **Contenants**
-- Privilégiez le verre ou le polypropylène.
-- Remplissez aux trois quarts (le lait se dilate en congelant).
-- Congelez par petites portions pour limiter le gaspillage.
-- Ne mélangez pas du lait tiède avec du lait froid, et n'ajoutez jamais de lait frais sur du lait déjà congelé.
+- Privilégie le verre ou le polypropylène.
+- Remplis aux trois quarts (le lait se dilate en congelant).
+- Congèle par petites portions pour limiter le gaspillage.
+- Ne mélange pas du lait tiède avec du lait froid, et n'ajoute jamais de lait frais sur du lait déjà congelé.
 
 **Conserver (repères de l'Anses)**
 - Température ambiante (19 à 22 °C) : 1 heure maximum.
@@ -216,9 +216,9 @@ Le lait maternel est un aliment vivant. Bien conservé, il garde ses qualités ;
 - Congélateur (-18 °C) : 4 mois, en congelant dans les 24 heures après refroidissement au réfrigérateur.
 
 **Décongeler et réchauffer**
-- Décongelez au réfrigérateur. Le lait décongelé se garde 24 heures au réfrigérateur ou 1 heure à température ambiante, et ne se recongèle jamais.
-- Tiédissez au bain-marie, au chauffe-biberon ou sous l'eau chaude du robinet. Évitez le micro-ondes (risque de brûlure et perte de qualité).
-- Testez la température sur l'intérieur de l'avant-bras. Le lait réchauffé se consomme dans la demi-heure ; le reste se jette.
+- Décongèle au réfrigérateur. Le lait décongelé se garde 24 heures au réfrigérateur ou 1 heure à température ambiante, et ne se recongèle jamais.
+- Tiédis au bain-marie, au chauffe-biberon ou sous l'eau chaude du robinet. Évite le micro-ondes (risque de brûlure et perte de qualité).
+- Teste la température sur l'intérieur de l'avant-bras. Le lait réchauffé se consomme dans la demi-heure ; le reste se jette.
 
 **Transporter**
 - Glacière ou sac isotherme avec pack réfrigérant, sans rompre la chaîne du froid.
@@ -228,13 +228,13 @@ Le lait maternel est un aliment vivant. Bien conservé, il garde ses qualités ;
 Les repères consultés recommandent de stériliser avant le premier usage, puis de nettoyer à l'eau chaude savonneuse, rincer, laisser égoutter et couvrir d'un linge propre après chaque tirage.
 
 **Le lait a changé d'aspect au réfrigérateur, est-il abîmé ?**
-Le lait maternel peut se séparer en couches (la crème remonte) : un mouvement doux pour le mélanger suffit. En cas de doute sur une odeur ou un aspect inhabituel, demandez conseil à un professionnel.
+Le lait maternel peut se séparer en couches (la crème remonte) : un mouvement doux pour le mélanger suffit. En cas de doute sur une odeur ou un aspect inhabituel, demande conseil à un professionnel.
 
 **Combien de lait faut-il préparer pour la personne qui garde mon bébé ?**
-Les besoins varient d'un enfant à l'autre : parlez-en avec la sage-femme, le médecin ou la PMI, et observez les signes de faim et de satiété de votre bébé.
+Les besoins varient d'un enfant à l'autre : parles-en avec la sage-femme, le médecin ou la PMI, et observe les signes de faim et de satiété de ton bébé.
 
 ## Quand demander conseil
-Demandez conseil à votre sage-femme, à une consultante en lactation ou à la PMI si tirer votre lait est douloureux, si la production vous semble diminuer, ou si vous hésitez sur l'organisation. En cas d'urgence, appelez le 15 ou le 112.
+Demande conseil à ta sage-femme, à une consultante en lactation ou à la PMI si tirer ton lait est douloureux, si la production te semble diminuer, ou si tu hésites sur l'organisation. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -247,43 +247,43 @@ ${END}`,
   {
     slug: 'allaitement-et-reprise-du-travail',
     title: 'Continuer d’allaiter en reprenant le travail',
-    summary: 'Une heure par jour pour allaiter ou tirer son lait pendant la première année, un endroit adapté, une organisation anticipée : vos droits et des repères pratiques.',
-    body_md: `Reprendre le travail ne veut pas forcément dire arrêter d'allaiter. Selon votre envie et votre organisation, vous pouvez tirer votre lait au travail, garder les tétées du matin et du soir, ou combiner les deux. La loi prévoit des droits pour vous y aider.
+    summary: 'Une heure par jour pour allaiter ou tirer son lait pendant la première année, un endroit adapté, une organisation anticipée : tes droits et des repères pratiques.',
+    body_md: `Reprendre le travail ne veut pas forcément dire arrêter d'allaiter. Selon ton envie et ton organisation, tu peux tirer ton lait au travail, garder les tétées du matin et du soir, ou combiner les deux. La loi prévoit des droits pour t’y aider.
 
 ## En bref
 - Pendant l'année qui suit la naissance, la loi prévoit une heure par jour pour allaiter ou tirer son lait pendant le temps de travail.
 - Cette heure se divise en principe en deux pauses de 30 minutes ; elle n'est en principe pas rémunérée, sauf accord ou convention plus favorable.
 - Au-delà de 100 salariés, l'employeur doit aménager un local ; en dessous, il doit proposer un endroit convenable.
-- Anticipez : parlez-en tôt avec votre employeur et préparez la transition quelques jours ou semaines avant.
+- Anticipe : parles-en tôt avec ton employeur et prépare la transition quelques jours ou semaines avant.
 
 ## Comprendre
-Le Code du travail protège l'allaitement pendant la première année de l'enfant. L'heure quotidienne se répartit en principe en deux pauses de 30 minutes, l'une le matin, l'autre l'après-midi ; sans accord, chaque pause se place au milieu de la demi-journée. Votre convention collective peut prévoir mieux : rémunération de ces pauses, aménagements… Il n'existe pas de congé légal spécifique pour prolonger le congé maternité afin d'allaiter, mais certaines conventions en prévoient.
+Le Code du travail protège l'allaitement pendant la première année de l'enfant. L'heure quotidienne se répartit en principe en deux pauses de 30 minutes, l'une le matin, l'autre l'après-midi ; sans accord, chaque pause se place au milieu de la demi-journée. Ta convention collective peut prévoir mieux : rémunération de ces pauses, aménagements… Il n'existe pas de congé légal spécifique pour prolonger le congé maternité afin d'allaiter, mais certaines conventions en prévoient.
 
 Côté lactation, la production de lait répond à la stimulation. Tirer son lait régulièrement en l'absence du bébé aide à la maintenir. Les week-ends et jours de congé, multiplier les tétées la relance. Le stress, la fatigue et les nuits hachées peuvent la faire baisser : c'est fréquent et cela se travaille, avec de l'aide.
 
 ## Au quotidien
-- **Échangez tôt avec votre employeur ou les RH** : horaires des pauses, lieu pour tirer votre lait, accès à un réfrigérateur.
-- **Consultez votre convention collective** : elle peut être plus favorable que la loi.
-- **Introduisez le biberon quelques jours avant la reprise** si votre bébé en aura besoin, de préférence donné par une autre personne que vous.
-- **Préparez le matériel** : tire-lait, contenants étiquetés, sac isotherme avec pack réfrigérant.
-- **Gardez les tétées qui comptent** pour vous deux (matin, retour à la maison, soir, nuit).
-- **Transmettez le lait tiré** à la personne qui garde votre enfant, avec les consignes de conservation (voir l'article dédié).
+- **Échange tôt avec ton employeur ou les RH** : horaires des pauses, lieu pour tirer ton lait, accès à un réfrigérateur.
+- **Consulte ta convention collective** : elle peut être plus favorable que la loi.
+- **Introduis le biberon quelques jours avant la reprise** si ton bébé en aura besoin, de préférence donné par une autre personne que toi.
+- **Prépare le matériel** : tire-lait, contenants étiquetés, sac isotherme avec pack réfrigérant.
+- **Garde les tétées qui comptent** pour vous deux (matin, retour à la maison, soir, nuit).
+- **Transmets le lait tiré** à la personne qui garde ton enfant, avec les consignes de conservation (voir l'article dédié).
 
 ## Questions fréquentes
 **Mon employeur peut-il refuser ces pauses ?**
-L'heure d'allaitement est un droit prévu par la loi pendant l'année qui suit la naissance. En cas de difficulté, vous pouvez vous renseigner auprès des représentants du personnel, de l'inspection du travail ou consulter les fiches de Service-Public.fr.
+L'heure d'allaitement est un droit prévu par la loi pendant l'année qui suit la naissance. En cas de difficulté, tu peux te renseigner auprès des représentants du personnel, de l'inspection du travail ou consulter les fiches de Service-Public.fr.
 
 **Et si je n'ai pas de local ?**
 Dans une entreprise de moins de 100 salariés, l'employeur doit proposer un endroit convenable. Au-delà, il doit aménager un local dans l'établissement ou à proximité.
 
 **Mon bébé refuse le biberon, que faire ?**
-C'est fréquent. Proposez de petites quantités quand il est réceptif et pas affamé, sans forcer, et faites-le donner par une autre personne. La tasse est une alternative. Demandez conseil à la PMI ou à une consultante en lactation.
+C'est fréquent. Propose de petites quantités quand il est réceptif et pas affamé, sans forcer, et fais-le donner par une autre personne. La tasse est une alternative. Demande conseil à la PMI ou à une consultante en lactation.
 
 **Puis-je passer à un allaitement partiel ?**
 Oui : beaucoup de mères gardent quelques tétées et complètent avec du lait infantile. Le choix du lait se fait avec le médecin.
 
 ## Quand demander conseil
-Une consultante en lactation, la sage-femme, la PMI ou le médecin peuvent vous aider à préparer la reprise, notamment si la production baisse, si tirer votre lait est douloureux, ou si vous vous sentez épuisée. En cas de détresse, le 3114 répond 24 h/24. En cas d'urgence, appelez le 15 ou le 112.
+Une consultante en lactation, la sage-femme, la PMI ou le médecin peuvent t’aider à préparer la reprise, notamment si la production baisse, si tirer ton lait est douloureux, ou si tu te sens épuisée. En cas de détresse, le 3114 répond 24 h/24. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -312,25 +312,25 @@ Le lait maternel reste la référence pour nourrir un nourrisson, et chaque tét
 La production de lait s'adapte à la demande : moins le sein est stimulé, moins il produit. Supprimer les tétées trop vite peut provoquer un engorgement, et réduire la lactation plus que souhaité.
 
 ## Au quotidien
-- **Commencez par la tétée de l'après-midi** la moins abondante ; attendez quelques jours, selon la tension des seins, avant d'en remplacer une autre.
-- **Gardez de préférence** les tétées du matin, du soir et de la nuit.
-- **Demandez conseil pour le lait** : un lait « 1er âge » jusqu'à la diversification, puis « 2e âge ». Le pédiatre ou le médecin vous aide à choisir.
-- **Les week-ends et jours de congé**, multipliez les tétées et limitez les biberons pour soutenir la production.
-- **Pour la reprise du travail**, introduisez les biberons quelques jours avant ; le lait tiré peut être donné par la personne qui garde votre enfant.
-- **Observez votre bébé** : ce sont ses signes de faim et de satiété qui guident, jamais un chiffre à atteindre.
+- **Commence par la tétée de l'après-midi** la moins abondante ; attends quelques jours, selon la tension des seins, avant d'en remplacer une autre.
+- **Garde de préférence** les tétées du matin, du soir et de la nuit.
+- **Demande conseil pour le lait** : un lait « 1er âge » jusqu'à la diversification, puis « 2e âge ». Le pédiatre ou le médecin t’aide à choisir.
+- **Les week-ends et jours de congé**, multiplie les tétées et limite les biberons pour soutenir la production.
+- **Pour la reprise du travail**, introduis les biberons quelques jours avant ; le lait tiré peut être donné par la personne qui garde ton enfant.
+- **Observe ton bébé** : ce sont ses signes de faim et de satiété qui guident, jamais un chiffre à atteindre.
 
 ## Questions fréquentes
 **Mon bébé ne voudra plus du sein ?**
 Ce risque existe surtout si le biberon arrive très tôt. En attendant que l'allaitement soit installé et en gardant des tétées régulières, beaucoup de bébés alternent sans difficulté.
 
 **Je n'ai pas assez de lait, dois-je compléter ?**
-Avant de compléter, faites le point avec une sage-femme, la PMI ou une consultante en lactation : une prise du sein à corriger ou des tétées plus fréquentes suffisent parfois. Si un complément est nécessaire, il sera adapté avec le professionnel.
+Avant de compléter, fais le point avec une sage-femme, la PMI ou une consultante en lactation : une prise du sein à corriger ou des tétées plus fréquentes suffisent parfois. Si un complément est nécessaire, il sera adapté avec le professionnel.
 
 **Quel lait choisir ?**
-Il existe des laits standards, des laits pour petits troubles digestifs et des laits thérapeutiques vendus en pharmacie. Ne changez pas de lait sans avis : parlez-en au médecin.
+Il existe des laits standards, des laits pour petits troubles digestifs et des laits thérapeutiques vendus en pharmacie. Ne change pas de lait sans avis : parles-en au médecin.
 
 ## Quand demander conseil
-Parlez-en à votre sage-femme, à la PMI, à votre médecin ou à une consultante en lactation si vous avez des douleurs, des seins durs ou rouges, si votre bébé refuse l'un ou l'autre, ou s'il vous semble peu prendre de poids. En cas d'urgence, appelez le 15 ou le 112.
+Parles-en à ta sage-femme, à la PMI, à ton médecin ou à une consultante en lactation si tu as des douleurs, des seins durs ou rouges, si ton bébé refuse l'un ou l'autre, ou s'il te semble peu prendre de poids. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -343,15 +343,15 @@ ${END}`,
   {
     slug: 'sevrage-allaitement-progressif',
     title: 'Arrêter l’allaitement en douceur',
-    summary: 'Il n’y a pas d’âge unique pour sevrer : supprimer une tétée à la fois, à votre rythme, protège vos seins et facilite la transition pour votre bébé.',
-    body_md: `Arrêter d'allaiter est une décision personnelle, qui vous appartient. Que ce soit à quelques semaines, au moment de la reprise du travail ou bien plus tard, le plus important est de vous sentir bien avec ce choix et d'avancer progressivement.
+    summary: 'Il n’y a pas d’âge unique pour sevrer : supprimer une tétée à la fois, à ton rythme, protège tes seins et facilite la transition pour ton bébé.',
+    body_md: `Arrêter d'allaiter est une décision personnelle, qui t’appartient. Que ce soit à quelques semaines, au moment de la reprise du travail ou bien plus tard, le plus important est de te sentir bien avec ce choix et d'avancer progressivement.
 
 ## En bref
 - Il n'existe pas d'âge idéal unique pour sevrer ; l'OMS recommande l'allaitement exclusif jusqu'à 6 mois, puis sa poursuite avec une alimentation diversifiée jusqu'à 2 ans ou plus, si on le souhaite.
 - On supprime une tétée à la fois et on attend environ 3 à 4 jours avant la suivante.
 - La tétée supprimée est remplacée par un lait infantile adapté à l'âge (avant 1 an) ou par un repas selon l'âge.
 - Le sevrage ne nécessite aucun médicament : la production diminue d'elle-même.
-- Pour une reprise du travail, anticipez environ 15 jours à 3 semaines avant.
+- Pour une reprise du travail, anticipe environ 15 jours à 3 semaines avant.
 
 ## Comprendre
 La production de lait dépend de la stimulation des seins. En réduisant les tétées progressivement, la lactation baisse doucement, ce qui limite les tensions et les risques d'engorgement. Un arrêt brutal est possible si la situation l'impose, mais il est souvent plus inconfortable.
@@ -359,28 +359,28 @@ La production de lait dépend de la stimulation des seins. En réduisant les té
 Le sevrage est aussi une étape émotionnelle, pour la mère comme pour l'enfant. Un bébé s'adapte mieux quand la décision est claire et que la mère est soutenue par son entourage.
 
 ## Au quotidien
-- **Commencez par la tétée la moins appréciée** ou la plus courte.
-- **Attendez 3 à 4 jours** si tout se passe bien avant d'en supprimer une autre.
-- **Gardez certaines tétées** si vous le souhaitez (matin et soir, par exemple) : l'allaitement partiel est une option.
-- **Seins tendus ?** Espacez davantage les suppressions, et exprimez un peu de lait en douceur, juste pour soulager.
-- **Refus du biberon ?** C'est très fréquent : proposez de petites quantités quand il est réceptif, faites-le donner par une autre personne, essayez la tasse. La patience est souvent récompensée en quelques semaines.
-- **Pour faciliter la transition**, vous pouvez d'abord proposer votre lait au biberon, puis introduire progressivement le goût de la préparation.
+- **Commence par la tétée la moins appréciée** ou la plus courte.
+- **Attends 3 à 4 jours** si tout se passe bien avant d'en supprimer une autre.
+- **Garde certaines tétées** si tu le souhaites (matin et soir, par exemple) : l'allaitement partiel est une option.
+- **Seins tendus ?** Espace davantage les suppressions, et exprime un peu de lait en douceur, juste pour soulager.
+- **Refus du biberon ?** C'est très fréquent : propose de petites quantités quand il est réceptif, fais-le donner par une autre personne, essaie la tasse. La patience est souvent récompensée en quelques semaines.
+- **Pour faciliter la transition**, tu peux d'abord proposer ton lait au biberon, puis introduire progressivement le goût de la préparation.
 
 ## Questions fréquentes
 **Puis-je sevrer avant 6 mois ?**
-Oui. Il faudra alors une préparation pour nourrissons adaptée à l'âge de votre bébé : choisissez-la avec le médecin.
+Oui. Il faudra alors une préparation pour nourrissons adaptée à l'âge de ton bébé : choisis-la avec le médecin.
 
 **Je dois prendre un médicament, dois-je arrêter d'allaiter ?**
-Très peu de médicaments sont contre-indiqués pendant l'allaitement. Demandez l'avis d'un professionnel formé à l'allaitement avant de décider.
+Très peu de médicaments sont contre-indiqués pendant l'allaitement. Demande l'avis d'un professionnel formé à l'allaitement avant de décider.
 
 **Et les tétées de nuit ?**
-Elles peuvent être conservées quand l'enfant reçoit solides et biberons dans la journée, ou supprimées en dernier, à votre rythme.
+Elles peuvent être conservées quand l'enfant reçoit solides et biberons dans la journée, ou supprimées en dernier, à ton rythme.
 
 **Je me sens triste d'arrêter, est-ce que ça arrive à d'autres ?**
-Oui, beaucoup de mères ressentent un mélange de soulagement et de nostalgie. Si la tristesse s'installe, parlez-en à un professionnel.
+Oui, beaucoup de mères ressentent un mélange de soulagement et de nostalgie. Si la tristesse s'installe, parles-en à un professionnel.
 
 ## Quand demander conseil
-Consultez votre sage-femme ou votre médecin si un sein devient rouge, chaud, douloureux, ou si vous avez de la fièvre. Parlez-en aussi si votre bébé refuse toute autre alimentation et semble moins bien. En cas de détresse, appelez le 3114 ; en cas d'urgence, le 15 ou le 112.
+Consulte ta sage-femme ou ton médecin si un sein devient rouge, chaud, douloureux, ou si tu as de la fièvre. Parles-en aussi si ton bébé refuse toute autre alimentation et semble moins bien. En cas de détresse, appelle le 3114 ; en cas d'urgence, le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -394,14 +394,14 @@ ${END}`,
     slug: 'laits-infantiles-choisir-et-changer',
     title: 'Laits infantiles : comment s’y retrouver ?',
     summary: 'Lait 1er âge, 2e âge, laits pour petits troubles, laits thérapeutiques : à quoi ils servent, pourquoi éviter lait de vache et boissons végétales, et pourquoi ne pas changer sans avis.',
-    body_md: `Si vous ne pouvez pas ou ne souhaitez pas allaiter, ou en complément de l'allaitement, les préparations infantiles apportent à votre bébé ce dont il a besoin. Les rayons proposent de nombreuses références : voici comment les comprendre, et pourquoi le choix se fait avec un professionnel.
+    body_md: `Si tu ne peux pas ou ne souhaites pas allaiter, ou en complément de l'allaitement, les préparations infantiles apportent à ton bébé ce dont il a besoin. Les rayons proposent de nombreuses références : voici comment les comprendre, et pourquoi le choix se fait avec un professionnel.
 
 ## En bref
 - Le lait « 1er âge » (préparation pour nourrissons) convient de la naissance au début de la diversification, vers 4 à 6 mois.
 - Le lait « 2e âge » prend le relais dès qu'un biberon est remplacé par un repas à la cuillère.
 - Lait de vache, laits de chèvre ou de brebis et boissons végétales ne conviennent pas aux nourrissons.
 - Les laits « thérapeutiques » (allergie, reflux, intolérance) sont vendus en pharmacie et relèvent d'un avis médical.
-- Changer souvent de lait n'aide pas : parlez-en d'abord au médecin.
+- Changer souvent de lait n'aide pas : parles-en d'abord au médecin.
 
 ## Comprendre
 Les préparations infantiles sont très encadrées par la réglementation. On distingue :
@@ -412,24 +412,24 @@ Les préparations infantiles sont très encadrées par la réglementation. On di
 Le lait de vache contient trop de protéines et de sodium, et pas assez de fer, de zinc et de vitamines pour un nourrisson. Les boissons végétales ne respectent pas la réglementation des laits infantiles et exposent à des carences. Une exception existe : certaines préparations à base de protéines de riz hydrolysées, vendues en pharmacie, sont conformes.
 
 ## Au quotidien
-- **Choisissez le lait avec le médecin** ou la PMI, selon l'âge, la santé de votre bébé, un éventuel risque d'allergie et sa façon de réagir aux biberons.
-- **Préparez les biberons** en suivant scrupuleusement la notice (dosage, eau, hygiène) : voir l'article sur la préparation et l'hygiène des biberons.
-- **Respectez son appétit** : ne le forcez jamais à finir. Les quantités se discutent avec le professionnel qui le suit.
-- **Gardez le même lait** tant qu'il convient : beaucoup de pleurs ont des causes non digestives.
-- **À la diversification**, passez au 2e âge, puis demandez conseil pour la suite vers 1 an.
+- **Choisis le lait avec le médecin** ou la PMI, selon l'âge, la santé de ton bébé, un éventuel risque d'allergie et sa façon de réagir aux biberons.
+- **Prépare les biberons** en suivant scrupuleusement la notice (dosage, eau, hygiène) : voir l'article sur la préparation et l'hygiène des biberons.
+- **Respecte son appétit** : ne le force jamais à finir. Les quantités se discutent avec le professionnel qui le suit.
+- **Garde le même lait** tant qu'il convient : beaucoup de pleurs ont des causes non digestives.
+- **À la diversification**, passe au 2e âge, puis demande conseil pour la suite vers 1 an.
 
 ## Questions fréquentes
 **Les laits « premium » ou plus chers sont-ils meilleurs ?**
 Tous les laits infantiles respectent la même réglementation de composition. Le choix d'une référence se fait selon les besoins de l'enfant, avec un professionnel.
 
 **Mon bébé régurgite beaucoup, faut-il un lait AR ?**
-Les régurgitations sont fréquentes chez le nourrisson. Avant de changer de lait, parlez-en au médecin, qui évaluera s'il y a lieu de le faire.
+Les régurgitations sont fréquentes chez le nourrisson. Avant de changer de lait, parles-en au médecin, qui évaluera s'il y a lieu de le faire.
 
 **Puis-je préparer un lait « maison » ou une boisson végétale ?**
 Non : ces boissons ne sont pas adaptées et peuvent entraîner des carences importantes.
 
 ## Quand demander conseil
-Consultez si votre bébé refuse régulièrement ses biberons, vomit souvent, a du sang dans les selles, des diarrhées, des plaques sur la peau, ou s'il prend peu de poids. Une difficulté à respirer, un gonflement du visage ou des lèvres après un biberon imposent d'appeler le 15 ou le 112.
+Consulte si ton bébé refuse régulièrement ses biberons, vomit souvent, a du sang dans les selles, des diarrhées, des plaques sur la peau, ou s'il prend peu de poids. Une difficulté à respirer, un gonflement du visage ou des lèvres après un biberon imposent d'appeler le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -443,7 +443,7 @@ ${END}`,
     slug: 'nourrir-bebe-0-4-mois',
     title: 'Nourrir son bébé de 0 à 4 mois',
     summary: 'Jusqu’à 4 à 6 mois, le lait — maternel ou infantile — suffit : on suit l’appétit du bébé, on ne le force jamais, et la courbe de poids aide à vérifier que tout va bien.',
-    body_md: `Les premiers mois, la question « mange-t-il assez ? » revient souvent. Bonne nouvelle : votre bébé sait réguler son appétit. Votre rôle est de lui proposer le lait quand il le demande, et le suivi médical permet de vérifier qu'il grandit bien.
+    body_md: `Les premiers mois, la question « mange-t-il assez ? » revient souvent. Bonne nouvelle : ton bébé sait réguler son appétit. Ton rôle est de lui proposer le lait quand il le demande, et le suivi médical permet de vérifier qu'il grandit bien.
 
 ## En bref
 - Jusqu'à 4 à 6 mois, le lait est le seul aliment du bébé : lait maternel ou lait infantile « 1er âge ».
@@ -458,24 +458,24 @@ Après la naissance, le bébé reçoit d'abord le colostrum si sa mère allaite,
 La prise de poids varie beaucoup d'un jour à l'autre, d'un bébé à l'autre. C'est pourquoi on regarde la tendance sur plusieurs semaines plutôt qu'une pesée isolée, et on préfère peser une fois par semaine au plus, sauf avis médical différent (en cas de diarrhée par exemple). Les examens de suivi des premières semaines servent justement à vérifier la croissance.
 
 ## Au quotidien
-- **Repérez les signes d'éveil et de faim** : bébé qui s'agite, tourne la tête, porte les mains à la bouche, avant même de pleurer.
-- **Au sein**, proposez-le à la demande ; la durée et la fréquence varient d'une tétée à l'autre.
-- **Au biberon**, préparez selon la notice, laissez votre bébé faire des pauses, et arrêtez quand il détourne la tête ou s'endort.
-- **N'ajoutez rien** au lait (céréales, sucre…) avant la diversification, sauf avis médical.
-- **Notez si vous le souhaitez** les tétées, biberons, couches : cela aide à répondre aux questions du professionnel.
+- **Repère les signes d'éveil et de faim** : bébé qui s'agite, tourne la tête, porte les mains à la bouche, avant même de pleurer.
+- **Au sein**, propose-le à la demande ; la durée et la fréquence varient d'une tétée à l'autre.
+- **Au biberon**, prépare selon la notice, laisse ton bébé faire des pauses, et arrête quand il détourne la tête ou s'endort.
+- **N'ajoute rien** au lait (céréales, sucre…) avant la diversification, sauf avis médical.
+- **Note si tu le souhaites** les tétées, biberons, couches : cela aide à répondre aux questions du professionnel.
 
 ## Questions fréquentes
 **Faut-il le réveiller pour manger ?**
-Les premiers jours, et selon la situation (petit poids, jaunisse…), l'équipe de la maternité ou la sage-femme peut vous le conseiller. Ensuite, on suit en général son rythme. Demandez ce qui convient à votre bébé.
+Les premiers jours, et selon la situation (petit poids, jaunisse…), l'équipe de la maternité ou la sage-femme peut te le conseiller. Ensuite, on suit en général son rythme. Demande ce qui convient à ton bébé.
 
 **Faut-il lui donner de l'eau ?**
 Le lait couvre ses besoins en eau. On propose de l'eau en plus seulement dans certaines situations (fortes chaleurs, fièvre, diarrhée), selon les conseils du professionnel.
 
 **Mon bébé boit moins qu'avant, est-ce inquiétant ?**
-L'appétit varie. Ce qui doit alerter, c'est un bébé qui boit nettement moins sur plusieurs repas, qui semble moins bien, ou qui mouille moins ses couches : consultez alors.
+L'appétit varie. Ce qui doit alerter, c'est un bébé qui boit nettement moins sur plusieurs repas, qui semble moins bien, ou qui mouille moins ses couches : consulte alors.
 
 ## Quand demander conseil
-Consultez rapidement si votre bébé refuse plusieurs repas d'affilée, vomit beaucoup, a moins de couches mouillées, semble somnolent ou mou, ou s'il a de la fièvre avant 3 mois. En cas de malaise, de difficulté à respirer ou de bébé très difficile à réveiller, appelez le 15 ou le 112.
+Consulte rapidement si ton bébé refuse plusieurs repas d'affilée, vomit beaucoup, a moins de couches mouillées, semble somnolent ou mou, ou s'il a de la fièvre avant 3 mois. En cas de malaise, de difficulté à respirer ou de bébé très difficile à réveiller, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -492,33 +492,33 @@ ${END}`,
     body_md: `La diversification, c'est le passage progressif d'une alimentation uniquement lactée à une alimentation variée. C'est une période de découvertes, de grimaces et de petites victoires. Il n'y a pas de course : chaque bébé avance à son rythme.
 
 ## En bref
-- La diversification peut commencer entre 4 et 6 mois, pour un bébé né à terme et en bonne santé ; pour un bébé prématuré ou malade, demandez un avis médical.
+- La diversification peut commencer entre 4 et 6 mois, pour un bébé né à terme et en bonne santé ; pour un bébé prématuré ou malade, demande un avis médical.
 - Il n'y a pas d'ordre imposé : on introduit un aliment nouveau à la fois.
 - Les fruits et légumes sont cuits, sans sel ni sucre ajoutés ; on ajoute un peu de matière grasse aux purées.
 - Le lait reste l'aliment principal pendant toute la diversification.
 - Un aliment peut devoir être proposé jusqu'à 10 fois avant d'être accepté : on ne force jamais.
 
 ## Comprendre
-Votre bébé est prêt quand il tient bien sa tête, se tient assis avec un bon maintien, porte des objets à la bouche, s'intéresse à vos repas et ouvre la bouche à l'approche de la cuillère. S'il rejette fortement la cuillère ou ne tient pas sa tête, mieux vaut attendre un peu.
+Ton bébé est prêt quand il tient bien sa tête, se tient assis avec un bon maintien, porte des objets à la bouche, s'intéresse à tes repas et ouvre la bouche à l'approche de la cuillère. S'il rejette fortement la cuillère ou ne tient pas sa tête, mieux vaut attendre un peu.
 
 Au début, on propose des purées ou compotes très lisses : légumes cuits mixés (carotte, courgette, haricots verts, petits pois…), puis fruits cuits. Entre 6 et 12 mois s'ajoutent les féculents, de petites quantités de protéines (viande, poisson, œuf) et les matières grasses variées (huile de colza, de noix, de tournesol, beurre). Les textures évoluent ensuite vers des préparations plus épaisses, écrasées, puis de petits morceaux fondants.
 
 Les légumes très riches en fibres (vert de poireau, artichaut, salsifis) sont à éviter au début. Le sucre se propose le plus tard possible : avant 3 ans, mieux vaut éviter sirops, sodas, chocolat, biscuits et jus de fruits.
 
 ## Au quotidien
-- **Commencez par un seul repas par jour**, au moment qui convient à votre famille.
-- **Un nouvel aliment à la fois**, séparément, puis mélangez ensuite.
-- **Laissez-le toucher** les aliments avec ses doigts s'il en a envie : c'est aussi une découverte.
+- **Commence par un seul repas par jour**, au moment qui convient à ta famille.
+- **Un nouvel aliment à la fois**, séparément, puis mélange ensuite.
+- **Laisse-le toucher** les aliments avec ses doigts s'il en a envie : c'est aussi une découverte.
 - **Pas de quantité cible** : les besoins varient d'un enfant à l'autre.
-- **Installez-le assis, bien droit**, et restez toujours à côté de lui pendant le repas.
-- **Évitez les aliments à risque d'étouffement** : fruits à coque et cacahuètes entiers, raisins entiers, carotte crue dure, bonbons, gros morceaux fermes.
+- **Installe-le assis, bien droit**, et reste toujours à côté de lui pendant le repas.
+- **Évite les aliments à risque d'étouffement** : fruits à coque et cacahuètes entiers, raisins entiers, carotte crue dure, bonbons, gros morceaux fermes.
 
 ## Questions fréquentes
 **Par quoi commencer, légumes ou fruits ?**
 Il n'y a pas d'ordre imposé. Beaucoup de familles commencent par des légumes, mais l'important est d'avancer un aliment à la fois.
 
 **Il recrache tout, dois-je arrêter ?**
-Recracher fait partie de l'apprentissage. Proposez à nouveau quelques jours plus tard, sans insister. Si le refus est total et durable, parlez-en au médecin ou à la PMI.
+Recracher fait partie de l'apprentissage. Propose à nouveau quelques jours plus tard, sans insister. Si le refus est total et durable, parles-en au médecin ou à la PMI.
 
 **Faut-il donner de l'eau ?**
 Le lait assure l'hydratation ; l'eau peut être proposée en plus lors de fortes chaleurs. Les jus et boissons sucrées sont déconseillés.
@@ -527,7 +527,7 @@ Le lait assure l'hydratation ; l'eau peut être proposée en plus lors de fortes
 Ils ne doivent pas être retardés : voir l'article « Allergènes : les introduire tôt ».
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI pour un bébé prématuré ou ayant une maladie, en cas d'allergies dans la famille, ou si votre bébé refuse durablement de manger, vomit, a du sang dans les selles ou prend peu de poids. Une gêne respiratoire, un gonflement des lèvres ou du visage après un repas : appelez le 15 ou le 112.
+Parles-en au médecin ou à la PMI pour un bébé prématuré ou ayant une maladie, en cas d'allergies dans la famille, ou si ton bébé refuse durablement de manger, vomit, a du sang dans les selles ou prend peu de poids. Une gêne respiratoire, un gonflement des lèvres ou du visage après un repas : appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -548,7 +548,7 @@ ${END}`,
 - Tous les groupes d'aliments, y compris les allergènes (œufs, arachide) et le gluten, peuvent être découverts entre 4 et 6 mois.
 - Plus ils sont goûtés tôt, plus la tolérance peut se développer.
 - On les propose en petites quantités, sous une forme adaptée : œuf bien cuit, poisson, produits laitiers, pâte d'arachide (jamais d'arachide entière), fruits à coque finement mixés, gluten.
-- En cas d'allergies dans la famille, demandez l'avis du médecin ou de la PMI.
+- En cas d'allergies dans la famille, demande l'avis du médecin ou de la PMI.
 - Une réaction grave (gêne respiratoire, gonflement du visage) impose d'appeler le 15.
 
 ## Comprendre
@@ -558,27 +558,27 @@ Sous une forme adaptée à l'âge, c'est essentiel : un enfant ne doit jamais re
 
 ## Au quotidien
 - **Une nouveauté à la fois**, pour repérer facilement une éventuelle réaction.
-- **Au début de la journée de préférence**, quand vous pouvez observer votre enfant dans les heures qui suivent.
+- **Au début de la journée de préférence**, quand tu peux observer ton enfant dans les heures qui suivent.
 - **En petite quantité**, mélangée à une purée qu'il connaît déjà.
 - **Œuf** : toujours bien cuit.
 - **Arachide** : en pâte lisse diluée, jamais entière.
 - **Fruits à coque** : finement mixés ou en poudre.
 - **Gluten** : un peu de pain, de semoule ou de pâtes bien cuites selon l'âge.
-- **Une fois toléré**, continuez à le proposer régulièrement.
+- **Une fois toléré**, continue à le proposer régulièrement.
 
 ## Questions fréquentes
 **Faut-il un test avant d'introduire un allergène ?**
-Pas de façon systématique. Si votre enfant a un eczéma sévère, une allergie connue, ou s'il y a des allergies importantes dans la famille, demandez l'avis du médecin, qui vous dira comment procéder.
+Pas de façon systématique. Si ton enfant a un eczéma sévère, une allergie connue, ou s'il y a des allergies importantes dans la famille, demande l'avis du médecin, qui te dira comment procéder.
 
 **Mon bébé a eu quelques rougeurs autour de la bouche, est-ce une allergie ?**
-Certaines rougeurs viennent d'un simple frottement ou de l'acidité d'un aliment. Notez ce qu'il a mangé et parlez-en au médecin, surtout si la réaction se répète.
+Certaines rougeurs viennent d'un simple frottement ou de l'acidité d'un aliment. Note ce qu'il a mangé et parles-en au médecin, surtout si la réaction se répète.
 
 **Il a déjà 9 mois et n'a jamais goûté d'œuf, est-ce trop tard ?**
-Non, il n'est pas trop tard : introduisez-le comme les autres, en petite quantité. En cas de doute (eczéma important, allergie connue), demandez conseil.
+Non, il n'est pas trop tard : introduis-le comme les autres, en petite quantité. En cas de doute (eczéma important, allergie connue), demande conseil.
 
 ## Quand demander conseil
-Appelez immédiatement le 15 ou le 112 si votre enfant, après un repas, a du mal à respirer, une voix ou un cri modifié, un gonflement des lèvres, de la langue ou du visage, des vomissements répétés avec malaise, ou s'il devient mou ou pâle.
-Consultez le médecin si des plaques, des démangeaisons, des vomissements ou des diarrhées apparaissent après un aliment, ou si vous avez des allergies dans la famille.
+Appelle immédiatement le 15 ou le 112 si ton enfant, après un repas, a du mal à respirer, une voix ou un cri modifié, un gonflement des lèvres, de la langue ou du visage, des vomissements répétés avec malaise, ou s'il devient mou ou pâle.
+Consulte le médecin si des plaques, des démangeaisons, des vomissements ou des diarrhées apparaissent après un aliment, ou si tu as des allergies dans la famille.
 
 ${END}`,
     journeys: ['newborn'],
@@ -594,14 +594,14 @@ ${END}`,
     slug: 'eau-et-boissons-du-tout-petit',
     title: 'Eau, jus, boissons : que donner à boire à un tout-petit ?',
     summary: 'Le lait suffit les premiers mois ; ensuite, l’eau est la seule boisson recommandée : jus et boissons sucrées restent occasionnels ou à éviter avant 3 ans.',
-    body_md: `Faut-il donner de l'eau à un nourrisson ? Les jus de fruits sont-ils une bonne idée ? Quand il fait chaud, comment faire ? Voici les repères pour hydrater votre enfant de la naissance à 2 ans.
+    body_md: `Faut-il donner de l'eau à un nourrisson ? Les jus de fruits sont-ils une bonne idée ? Quand il fait chaud, comment faire ? Voici les repères pour hydrater ton enfant de la naissance à 2 ans.
 
 ## En bref
 - Les premiers mois, le lait (maternel ou infantile) assure l'hydratation : pas besoin d'eau en plus, sauf en cas de fortes chaleurs ou sur conseil médical.
 - À partir de la diversification et après 1 an, l'eau est la seule boisson recommandée.
 - Jus de fruits, même « 100 % pur jus », sirops et sodas sont déconseillés avant 3 ans ; le fruit entier est préférable.
 - Un biberon de réconfort ne doit contenir que de l'eau, pour protéger les dents.
-- Par forte chaleur, proposez à boire régulièrement, sans attendre qu'il le demande.
+- Par forte chaleur, propose à boire régulièrement, sans attendre qu'il le demande.
 
 ## Comprendre
 Le lait est composé en grande partie d'eau. Pour un bébé allaité ou nourri au biberon selon son appétit, il couvre les besoins les premiers mois. Certaines situations augmentent les pertes en eau : forte chaleur, fièvre, diarrhée, vomissements. Dans ces cas, les professionnels peuvent conseiller de proposer de l'eau ou une solution de réhydratation (voir l'article sur la gastro-entérite).
@@ -609,24 +609,24 @@ Le lait est composé en grande partie d'eau. Pour un bébé allaité ou nourri a
 Les boissons sucrées habituent au goût sucré, apportent du sucre sans rassasier et favorisent les caries, surtout au biberon. C'est pourquoi elles sont à éviter, et que les jus de fruits restent occasionnels.
 
 ## Au quotidien
-- **Après la diversification**, proposez de l'eau au verre, à la tasse ou au biberon, au cours et entre les repas.
-- **Pour la préparation des biberons**, suivez les consignes de la notice et des professionnels (type d'eau, dosage).
-- **En cas de chaleur** : faites boire régulièrement, laissez votre bébé en couche ou en body léger, gardez-le dans la pièce la plus fraîche, et ne le laissez jamais dans une voiture.
+- **Après la diversification**, propose de l'eau au verre, à la tasse ou au biberon, au cours et entre les repas.
+- **Pour la préparation des biberons**, suis les consignes de la notice et des professionnels (type d'eau, dosage).
+- **En cas de chaleur** : fais boire régulièrement, laisse ton bébé en couche ou en body léger, garde-le dans la pièce la plus fraîche, et ne le laisse jamais dans une voiture.
 - **Pas de boisson sucrée au biberon**, surtout au coucher.
 - **Le fruit entier** plutôt que le jus : il apporte des fibres et rassasie.
 
 ## Questions fréquentes
 **Mon bébé de 2 mois a chaud, puis-je lui donner de l'eau ?**
-Par forte chaleur, proposez-lui le sein ou le biberon plus souvent et de l'eau en petites quantités si un professionnel vous l'a conseillé. Surveillez les signes de déshydratation.
+Par forte chaleur, propose-lui le sein ou le biberon plus souvent et de l'eau en petites quantités si un professionnel te l'a conseillé. Surveille les signes de déshydratation.
 
 **Il refuse l'eau à 1 an, est-ce grave ?**
-Beaucoup d'enfants boivent peu d'eau quand ils prennent encore du lait et des purées riches en eau. Continuez à en proposer régulièrement, dans un verre qu'il aime. En cas de chaleur, de fièvre ou de diarrhée, soyez plus attentif.
+Beaucoup d'enfants boivent peu d'eau quand ils prennent encore du lait et des purées riches en eau. Continue à en proposer régulièrement, dans un verre qu'il aime. En cas de chaleur, de fièvre ou de diarrhée, sois plus attentif.
 
 **Les eaux aromatisées sont-elles une bonne option ?**
 Elles contiennent souvent du sucre ou des arômes : l'eau plate reste la meilleure boisson.
 
 ## Quand demander conseil
-Consultez rapidement si votre enfant boit beaucoup moins que d'habitude, mouille moins ses couches, a la bouche sèche, les yeux creux, s'il est anormalement endormi ou au contraire très agité, surtout en cas de diarrhée, de vomissements ou de fièvre. En cas de malaise ou d'enfant difficile à réveiller, appelez le 15 ou le 112.
+Consulte rapidement si ton enfant boit beaucoup moins que d'habitude, mouille moins ses couches, a la bouche sèche, les yeux creux, s'il est anormalement endormi ou au contraire très agité, surtout en cas de diarrhée, de vomissements ou de fièvre. En cas de malaise ou d'enfant difficile à réveiller, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -640,7 +640,7 @@ ${END}`,
     slug: 'repas-de-12-a-24-mois',
     title: 'Les repas de 1 à 2 ans',
     summary: 'Entre 12 et 23 mois, l’enfant mange de plus en plus comme la famille : quatre repas, des morceaux tendres, le lait encore présent, et l’eau comme boisson.',
-    body_md: `Après 1 an, votre enfant découvre les morceaux, veut manger seul, goûte ce qu'il y a dans votre assiette. C'est l'âge du « moi tout seul » à table, avec ses joies et ses refus. Voici les repères pour l'accompagner sans pression.
+    body_md: `Après 1 an, ton enfant découvre les morceaux, veut manger seul, goûte ce qu'il y a dans ton assiette. C'est l'âge du « moi tout seul » à table, avec ses joies et ses refus. Voici les repères pour l'accompagner sans pression.
 
 ## En bref
 - Le rythme reste de 4 repas par jour : petit-déjeuner, déjeuner, goûter, dîner.
@@ -655,25 +655,25 @@ Entre 12 et 23 mois, l'assiette se rapproche de celle de la famille : légumes, 
 L'appétit d'un jeune enfant varie beaucoup d'un repas à l'autre et d'un jour à l'autre : c'est sur la semaine qu'on regarde l'équilibre. Il est aussi fréquent qu'un enfant refuse des morceaux à la maison et les accepte à la crèche : on continue à proposer, sans forcer.
 
 ## Au quotidien
-- **Mangez ensemble quand c'est possible** : l'enfant apprend en imitant.
-- **Laissez-le se servir de ses doigts** et d'une petite cuillère, même si c'est salissant.
-- **Coupez en petits morceaux tendres** ; évitez les aliments durs, ronds ou glissants entiers (raisins, tomates cerises entières, fruits à coque, bonbons).
-- **Restez toujours à côté de lui** et installez-le assis, bien droit.
-- **Proposez sans insister** : un aliment refusé aujourd'hui sera peut-être accepté dans quelques jours.
+- **Mange ensemble quand c'est possible** : l'enfant apprend en imitant.
+- **Laisse-le se servir de ses doigts** et d'une petite cuillère, même si c'est salissant.
+- **Coupe en petits morceaux tendres** ; évite les aliments durs, ronds ou glissants entiers (raisins, tomates cerises entières, fruits à coque, bonbons).
+- **Reste toujours à côté de lui** et installe-le assis, bien droit.
+- **Propose sans insister** : un aliment refusé aujourd'hui sera peut-être accepté dans quelques jours.
 - **Pas de sucreries en récompense** ni de boissons sucrées au biberon.
 
 ## Questions fréquentes
 **Il ne mange presque rien certains jours, dois-je m'inquiéter ?**
-Les variations d'appétit sont fréquentes à cet âge. Ce qui compte, c'est sa vitalité, sa croissance sur la courbe du carnet de santé, et l'équilibre sur plusieurs jours. En cas de doute, parlez-en au médecin.
+Les variations d'appétit sont fréquentes à cet âge. Ce qui compte, c'est sa vitalité, sa croissance sur la courbe du carnet de santé, et l'équilibre sur plusieurs jours. En cas de doute, parles-en au médecin.
 
 **Lait de croissance ou lait de vache ?**
-Le lait de croissance est préférable jusqu'à 3 ans. Le lait de vache entier est possible dès 12 mois si l'alimentation est par ailleurs parfaitement équilibrée. Demandez conseil au médecin.
+Le lait de croissance est préférable jusqu'à 3 ans. Le lait de vache entier est possible dès 12 mois si l'alimentation est par ailleurs parfaitement équilibrée. Demande conseil au médecin.
 
 **Peut-il manger la même chose que nous ?**
 De plus en plus, oui, à condition d'adapter la texture et de limiter le sel, le sucre et les aliments très gras ou très salés comme la charcuterie.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant refuse durablement toute texture, s'étouffe souvent en mangeant, perd du poids ou stagne sur sa courbe, ou si les repas deviennent une source de conflit et d'inquiétude. En cas d'étouffement avec impossibilité de respirer, appelez immédiatement le 15 ou le 112 (voir l'article sur la fausse route).
+Parles-en au médecin ou à la PMI si ton enfant refuse durablement toute texture, s'étouffe souvent en mangeant, perd du poids ou stagne sur sa courbe, ou si les repas deviennent une source de conflit et d'inquiétude. En cas d'étouffement avec impossibilité de respirer, appelle immédiatement le 15 ou le 112 (voir l'article sur la fausse route).
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -688,8 +688,8 @@ ${END}`,
   {
     slug: 'examens-du-bebe-a-la-maternite',
     title: 'Les soins et examens de bébé à la maternité',
-    summary: 'Premier examen, vitamine K, visite du pédiatre, dépistage néonatal au talon, examen de sortie : ce qui est proposé à votre bébé pendant son séjour.',
-    body_md: `Pendant les premiers jours, votre bébé est examiné à plusieurs reprises. Ces examens vérifient que tout se met en place et permettent de repérer tôt certaines maladies rares, pour lesquelles une prise en charge précoce change beaucoup.
+    summary: 'Premier examen, vitamine K, visite du pédiatre, dépistage néonatal au talon, examen de sortie : ce qui est proposé à ton bébé pendant son séjour.',
+    body_md: `Pendant les premiers jours, ton bébé est examiné à plusieurs reprises. Ces examens vérifient que tout se met en place et permettent de repérer tôt certaines maladies rares, pour lesquelles une prise en charge précoce change beaucoup.
 
 ## En bref
 - Juste après la naissance, le bébé reste contre sa mère environ deux heures, sous la surveillance d'une sage-femme.
@@ -705,28 +705,28 @@ ${END}`,
 
 **La visite du pédiatre** dans les premières 24 heures porte sur le tonus, les réflexes, le cœur (recherche d'un souffle) et les hanches (recherche d'une luxation).
 
-**Le dépistage néonatal** consiste à prélever quelques gouttes de sang au talon, déposées sur un papier buvard. Il recherche des maladies rares mais graves, que l'on peut mieux prendre en charge si elles sont repérées très tôt. Si un résultat nécessite un contrôle, l'équipe vous recontacte.
+**Le dépistage néonatal** consiste à prélever quelques gouttes de sang au talon, déposées sur un papier buvard. Il recherche des maladies rares mais graves, que l'on peut mieux prendre en charge si elles sont repérées très tôt. Si un résultat nécessite un contrôle, l'équipe te recontacte.
 
 **La visite de sortie** est un second examen complet. Le carnet de santé, remis à la naissance, regroupe ensuite tout le suivi.
 
 ## Au quotidien
-- **Posez vos questions** à chaque examen : c'est le moment d'en parler.
-- **Gardez le carnet de santé** à portée de main : il vous suivra à chaque consultation.
-- **Repérez les prochains rendez-vous** : l'Assurance Maladie vous envoie le calendrier des examens de suivi.
-- **Si vous sortez tôt**, un suivi par une sage-femme à domicile peut être organisé (voir l'article sur le retour à la maison).
+- **Pose tes questions** à chaque examen : c'est le moment d'en parler.
+- **Garde le carnet de santé** à portée de main : il te suivra à chaque consultation.
+- **Repère les prochains rendez-vous** : l'Assurance Maladie t’envoie le calendrier des examens de suivi.
+- **Si tu sors tôt**, un suivi par une sage-femme à domicile peut être organisé (voir l'article sur le retour à la maison).
 
 ## Questions fréquentes
 **Le prélèvement au talon fait-il mal ?**
 Il peut être un peu désagréable. Le faire pendant une tétée ou en peau à peau aide souvent à le réconforter.
 
 **Si on ne me rappelle pas pour le dépistage, cela veut dire que tout va bien ?**
-En général, seuls les résultats nécessitant un contrôle donnent lieu à un appel. En cas de doute, posez la question à la maternité.
+En général, seuls les résultats nécessitant un contrôle donnent lieu à un appel. En cas de doute, pose la question à la maternité.
 
 **Pourquoi d'autres examens si tout va bien à la sortie ?**
 Certaines anomalies ne sont visibles qu'après quelques jours ou semaines : c'est le rôle des examens de suivi obligatoires.
 
 ## Quand demander conseil
-Après la sortie, contactez la sage-femme, le médecin ou la maternité si votre bébé tète mal, a la peau très jaune, a de la fièvre ou une température basse, vomit, ou vous semble inhabituellement endormi. En cas de difficulté à respirer, de malaise, de teint gris ou bleuté, appelez le 15 ou le 112.
+Après la sortie, contacte la sage-femme, le médecin ou la maternité si ton bébé tète mal, a la peau très jaune, a de la fièvre ou une température basse, vomit, ou te semble inhabituellement endormi. En cas de difficulté à respirer, de malaise, de teint gris ou bleuté, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -757,14 +757,14 @@ D'autres causes, plus rares et plus sérieuses, existent : une incompatibilité 
 **La photothérapie** consiste à exposer le bébé, les yeux protégés, à une lumière bleue qui transforme la bilirubine en une substance plus facile à éliminer. Les séances durent quelques heures, plusieurs jours de suite, et ne font pas mal.
 
 ## Au quotidien
-- **Observez la couleur de sa peau** à la lumière du jour, ainsi que le blanc de ses yeux.
-- **Proposez-lui à boire régulièrement** (tétées ou biberons) : une bonne alimentation aide à éliminer la bilirubine.
-- **Signalez à la sage-femme ou au médecin** toute jaunisse qui persiste après votre retour à la maison.
-- **Regardez aussi ses selles et ses urines** : des selles très claires (décolorées) ou des urines foncées sont à signaler sans attendre.
+- **Observe la couleur de sa peau** à la lumière du jour, ainsi que le blanc de ses yeux.
+- **Propose-lui à boire régulièrement** (tétées ou biberons) : une bonne alimentation aide à éliminer la bilirubine.
+- **Signale à la sage-femme ou au médecin** toute jaunisse qui persiste après ton retour à la maison.
+- **Regarde aussi ses selles et ses urines** : des selles très claires (décolorées) ou des urines foncées sont à signaler sans attendre.
 
 ## Questions fréquentes
 **Faut-il exposer mon bébé au soleil pour faire passer la jaunisse ?**
-Non : n'exposez pas votre bébé directement au soleil. Le traitement, s'il est nécessaire, se fait avec une lumière adaptée, sous surveillance médicale.
+Non : n'expose pas ton bébé directement au soleil. Le traitement, s'il est nécessaire, se fait avec une lumière adaptée, sous surveillance médicale.
 
 **Dois-je arrêter d'allaiter ?**
 Non, sauf avis médical contraire. La jaunisse liée à l'allaitement est sans gravité.
@@ -773,13 +773,13 @@ Non, sauf avis médical contraire. La jaunisse liée à l'allaitement est sans g
 La forme physiologique disparaît avant la deuxième semaine. Au-delà, ou si elle s'accentue, une consultation dans la journée est conseillée.
 
 ## Quand demander conseil
-Consultez un médecin dans la journée si :
+Consulte un médecin dans la journée si :
 - la jaunisse dure plus de cinq jours ou ne disparaît pas au bout d'une semaine ;
 - elle s'accentue au lieu de diminuer ;
 - elle apparaît dans les premières heures de vie, ou chez un nourrisson plus âgé ;
 - les selles sont très claires ou les urines foncées.
 
-Appelez le 15 ou le 112 si votre bébé est très difficile à réveiller, refuse de boire, devient mou, ou si vous êtes inquiet de son état général.
+Appelle le 15 ou le 112 si ton bébé est très difficile à réveiller, refuse de boire, devient mou, ou si tu es inquiet de son état général.
 
 ${END}`,
     journeys: ['newborn'],
@@ -799,9 +799,9 @@ ${END}`,
 ## En bref
 - Le cordon doit rester propre et sec : eau et savon si besoin, puis séchage soigneux.
 - La désinfection n'est pas obligatoire.
-- Ne plaquez pas le cordon sous la couche : repliez la couche en dessous.
+- Ne plaque pas le cordon sous la couche : replie la couche en dessous.
 - Le bain est possible avant la chute du cordon.
-- Saignement régulier, cordon qui ne sèche pas, mauvaise odeur ou cordon toujours présent à 2 mois : consultez.
+- Saignement régulier, cordon qui ne sèche pas, mauvaise odeur ou cordon toujours présent à 2 mois : consulte.
 
 ## Comprendre
 Après la naissance, le cordon est coupé et pincé avec un clamp, souvent retiré vers le deuxième jour (certaines maternités le laissent). Le reste de cordon se dessèche progressivement, noircit, puis tombe, le plus souvent au bout d'une quinzaine de jours ; une fourchette plus large, de 1 à 8 semaines, est parfois évoquée.
@@ -811,32 +811,32 @@ Les soins ne sont pas douloureux : le bébé peut pleurer parce que le liquide e
 Après la chute, il peut rester une petite boule rouge et humide au fond du nombril : c'est un bourgeon ombilical. Il n'est pas forcément inquiétant, mais il doit être montré à un professionnel, qui peut proposer un traitement local.
 
 ## Au quotidien
-- **Lavez-vous les mains** avant le soin.
-- **Nettoyez à l'eau et au savon** si besoin, en insistant doucement sous la pince et autour de la base, notamment pour retirer les croûtes de sang.
-- **Séchez bien**, en tamponnant.
-- **Positionnez le cordon** le plus verticalement possible et rabattez la couche en dessous, pour qu'il reste à l'air.
-- **Chez un garçon**, orientez le pénis vers le bas dans la couche pour que l'urine ne mouille pas le cordon.
-- **Après la chute**, continuez à sécher le nombril et retirez délicatement les petites croûtes au fond, jusqu'à cicatrisation complète.
+- **Lave-toi les mains** avant le soin.
+- **Nettoie à l'eau et au savon** si besoin, en insistant doucement sous la pince et autour de la base, notamment pour retirer les croûtes de sang.
+- **Sèche bien**, en tamponnant.
+- **Positionne le cordon** le plus verticalement possible et rabats la couche en dessous, pour qu'il reste à l'air.
+- **Chez un garçon**, oriente le pénis vers le bas dans la couche pour que l'urine ne mouille pas le cordon.
+- **Après la chute**, continue à sécher le nombril et retire délicatement les petites croûtes au fond, jusqu'à cicatrisation complète.
 
 ## Questions fréquentes
 **Puis-je donner le bain avant que le cordon tombe ?**
-Oui, le bain n'est plus déconseillé. Pensez simplement à bien sécher le cordon ensuite.
+Oui, le bain n'est plus déconseillé. Pense simplement à bien sécher le cordon ensuite.
 
 **Faut-il utiliser un antiseptique ?**
-Ce n'est pas obligatoire. Certaines maternités utilisent de la chlorhexidine : suivez les conseils qui vous ont été donnés.
+Ce n'est pas obligatoire. Certaines maternités utilisent de la chlorhexidine : suis les conseils qui t’ont été donnés.
 
 **Le cordon saigne un peu quand il tombe, est-ce grave ?**
 Quelques gouttes au moment de la chute peuvent arriver. Un saignement régulier doit en revanche être montré à un professionnel.
 
 ## Quand demander conseil
-Consultez la sage-femme ou le médecin si :
+Consulte la sage-femme ou le médecin si :
 - le cordon saigne régulièrement ;
 - il ne sèche pas ou suinte ;
 - il a une odeur désagréable, ou si la peau autour devient rouge, gonflée ou chaude ;
 - il n'est pas tombé à 2 mois ;
 - une petite boule rouge persiste au fond du nombril.
 
-Si votre bébé a de la fièvre, boit mal ou semble moins bien, consultez sans attendre ; en cas d'urgence, appelez le 15 ou le 112.
+Si ton bébé a de la fièvre, boit mal ou semble moins bien, consulte sans attendre ; en cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -857,40 +857,40 @@ ${END}`,
 - Elle ne relève pas de l'automédication : un examen médical est nécessaire.
 - Lavages de nez, repas fractionnés, chambre aérée et pas de tabac sont les gestes clés.
 - Antitussifs et fluidifiants sont contre-indiqués chez le petit enfant.
-- Lèvres bleues, pauses respiratoires, grande gêne pour respirer, bébé qui ne boit plus ou très somnolent : appelez le 15 ou le 112.
+- Lèvres bleues, pauses respiratoires, grande gêne pour respirer, bébé qui ne boit plus ou très somnolent : appelle le 15 ou le 112.
 
 ## Comprendre
 Le virus en cause (souvent le VRS) gonfle et encombre les petites bronches. Le bébé tousse pour évacuer les sécrétions, et sa respiration peut devenir plus rapide. Les symptômes s'aggravent souvent pendant les 2 à 3 premiers jours, puis s'améliorent. La guérison survient en général en 5 à 10 jours, mais la toux peut durer plusieurs semaines.
 
 Avant 6 mois, un bébé respire surtout par le nez : un nez bouché le gêne beaucoup pour respirer et pour boire. D'où l'importance des lavages de nez.
 
-Des moyens de prévention existent : un traitement préventif par anticorps, souvent proposé avant la sortie de maternité, et la vaccination de la femme enceinte en fin de grossesse. Parlez-en avec les professionnels qui vous suivent.
+Des moyens de prévention existent : un traitement préventif par anticorps, souvent proposé avant la sortie de maternité, et la vaccination de la femme enceinte en fin de grossesse. Parles-en avec les professionnels qui te suivent.
 
 ## Au quotidien
-- **Lavez le nez** au sérum physiologique avant les repas et aussi souvent que nécessaire.
-- **Fractionnez les repas** : de petites quantités plus souvent, car il se fatigue vite et peut vomir pendant les quintes de toux. Si vous allaitez et qu'il est trop fatigué pour téter, vous pouvez tirer votre lait.
-- **Gardez-le droit quand il est éveillé** ; pour dormir, couchez-le sur le dos, comme d'habitude.
-- **Aérez la chambre** et ne la chauffez pas trop (pas plus de 19 °C).
+- **Lave le nez** au sérum physiologique avant les repas et aussi souvent que nécessaire.
+- **Fractionne les repas** : de petites quantités plus souvent, car il se fatigue vite et peut vomir pendant les quintes de toux. Si tu allaites et qu'il est trop fatigué pour téter, tu peux tirer ton lait.
+- **Garde-le droit quand il est éveillé** ; pour dormir, couche-le sur le dos, comme d'habitude.
+- **Aère la chambre** et ne la chauffe pas trop (pas plus de 19 °C).
 - **Aucun tabac** dans son environnement : il aggrave la maladie.
-- **En cas de fièvre** qui le gêne, demandez au médecin ou au pharmacien quoi faire.
-- **Gardez-le à la maison** pendant la phase aiguë et lavez-vous souvent les mains.
+- **En cas de fièvre** qui le gêne, demande au médecin ou au pharmacien quoi faire.
+- **Garde-le à la maison** pendant la phase aiguë et lave-toi souvent les mains.
 
 ## Questions fréquentes
 **Faut-il des séances de kinésithérapie ?**
-Ce n'est pas systématique : c'est le médecin qui juge de l'utilité d'un soin selon l'état de votre bébé.
+Ce n'est pas systématique : c'est le médecin qui juge de l'utilité d'un soin selon l'état de ton bébé.
 
 **Peut-il retourner à la crèche ?**
-Il est conseillé de le garder à la maison pendant la phase aiguë. Demandez au médecin quand il pourra retourner en collectivité.
+Il est conseillé de le garder à la maison pendant la phase aiguë. Demande au médecin quand il pourra retourner en collectivité.
 
 **Mon bébé a déjà fait une bronchiolite, peut-il en refaire une ?**
 Oui, c'est possible. Les gestes barrières (lavage des mains, masque pour un proche enrhumé, aération) limitent le risque.
 
 ## Quand demander conseil
-**Consultez le médecin dans la journée** si votre bébé a des symptômes : toux, respiration plus rapide, rhume important.
+**Consulte le médecin dans la journée** si ton bébé a des symptômes : toux, respiration plus rapide, rhume important.
 
-**Reconsultez** si les symptômes s'aggravent, si la fièvre augmente après quelques jours, ou s'il boit moins de la moitié de ses biberons à trois repas de suite, vomit systématiquement, ou si son comportement vous inquiète (somnolence, manque de tonus, pleurs inhabituels). Les bébés de moins de 2 mois, les prématurés et ceux qui ont une maladie du cœur ou des poumons doivent être vus rapidement.
+**Reconsulte** si les symptômes s'aggravent, si la fièvre augmente après quelques jours, ou s'il boit moins de la moitié de ses biberons à trois repas de suite, vomit systématiquement, ou si son comportement t’inquiète (somnolence, manque de tonus, pleurs inhabituels). Les bébés de moins de 2 mois, les prématurés et ceux qui ont une maladie du cœur ou des poumons doivent être vus rapidement.
 
-**Appelez le 15 ou le 112 sans attendre** en cas de lèvres ou doigts bleus, de pâleur avec geignements, de pauses respiratoires, de respiration très rapide ou au contraire lente et irrégulière, de battements des ailes du nez, de creusement entre les côtes ou au-dessus des clavicules, de refus total de boire, de malaise ou de grande somnolence.
+**Appelle le 15 ou le 112 sans attendre** en cas de lèvres ou doigts bleus, de pâleur avec geignements, de pauses respiratoires, de respiration très rapide ou au contraire lente et irrégulière, de battements des ailes du nez, de creusement entre les côtes ou au-dessus des clavicules, de refus total de boire, de malaise ou de grande somnolence.
 
 ${END}`,
     journeys: ['newborn'],
@@ -905,12 +905,12 @@ ${END}`,
     slug: 'rhume-et-lavage-de-nez',
     title: 'Rhume du bébé : laver le nez et surveiller',
     summary: 'Le rhume (rhinopharyngite) guérit seul en moins de dix jours : lavages de nez, hydratation et surveillance suffisent le plus souvent ; certains signes doivent faire consulter.',
-    body_md: `Nez qui coule, nez bouché, petite toux, parfois de la fièvre : le rhume, ou rhinopharyngite, est la maladie la plus fréquente des tout-petits, surtout quand ils commencent à fréquenter une collectivité. Il est d'origine virale et guérit tout seul. Votre rôle : soulager et surveiller.
+    body_md: `Nez qui coule, nez bouché, petite toux, parfois de la fièvre : le rhume, ou rhinopharyngite, est la maladie la plus fréquente des tout-petits, surtout quand ils commencent à fréquenter une collectivité. Il est d'origine virale et guérit tout seul. Ton rôle : soulager et surveiller.
 
 ## En bref
 - La rhinopharyngite est virale et guérit spontanément en moins de dix jours.
 - Le lavage de nez au sérum physiologique soulage, surtout avant les repas et le coucher.
-- Faites boire souvent, même s'il ne le demande pas.
+- Fais boire souvent, même s'il ne le demande pas.
 - Les vasoconstricteurs nasaux sont contre-indiqués avant 15 ans ; antitussifs et fluidifiants avant 2 ans.
 - Un écoulement jaune ou vert n'est pas forcément le signe d'une surinfection.
 
@@ -920,11 +920,11 @@ Le virus irrite le nez et la gorge. Les sécrétions sont abondantes et peuvent 
 Un tout-petit ne sait pas se moucher. Avant 6 mois, il respire surtout par le nez : le dégager l'aide à respirer, à boire et à dormir.
 
 ## Au quotidien
-- **Lavez-lui le nez** au sérum physiologique ou avec une solution d'eau de mer en dosettes, avant les repas, avant le coucher et dès que nécessaire. Allongez-le sur le côté, versez le sérum dans la narine du dessus, puis faites de même de l'autre côté.
-- **Limitez le mouche-bébé**, qui peut irriter la muqueuse.
-- **Faites boire régulièrement** et fractionnez les repas s'il est gêné.
-- **Gardez une pièce aérée et pas trop chaude** (18 à 20 °C) ; évitez la climatisation, qui assèche les muqueuses.
-- **En cas de fièvre**, découvrez-le un peu (sans le déshabiller entièrement) et évitez les bains froids. Avant de donner un médicament, demandez conseil au médecin ou au pharmacien, surtout avant 3 mois.
+- **Lave-lui le nez** au sérum physiologique ou avec une solution d'eau de mer en dosettes, avant les repas, avant le coucher et dès que nécessaire. Allonge-le sur le côté, verse le sérum dans la narine du dessus, puis fais de même de l'autre côté.
+- **Limite le mouche-bébé**, qui peut irriter la muqueuse.
+- **Fais boire régulièrement** et fractionne les repas s'il est gêné.
+- **Garde une pièce aérée et pas trop chaude** (18 à 20 °C) ; évite la climatisation, qui assèche les muqueuses.
+- **En cas de fièvre**, découvre-le un peu (sans le déshabiller entièrement) et évite les bains froids. Avant de donner un médicament, demande conseil au médecin ou au pharmacien, surtout avant 3 mois.
 - **Mouchoirs jetables** et lavage des mains pour limiter la transmission.
 
 ## Questions fréquentes
@@ -932,15 +932,15 @@ Un tout-petit ne sait pas se moucher. Avant 6 mois, il respire surtout par le ne
 Non, pas pour un rhume viral. C'est le médecin qui décide d'un traitement en cas de complication (otite, par exemple).
 
 **Combien de rhumes par hiver, est-ce trop ?**
-Les tout-petits en collectivité enchaînent souvent les rhumes, le temps de construire leur immunité. Si cela vous inquiète, parlez-en au médecin.
+Les tout-petits en collectivité enchaînent souvent les rhumes, le temps de construire leur immunité. Si cela t’inquiète, parles-en au médecin.
 
 **Le lavage de nez lui fait peur, que faire ?**
-Faites-le rapidement, calmement, en le rassurant par la voix, et toujours avant les repas plutôt qu'après pour éviter qu'il vomisse. Demandez à la sage-femme ou au pharmacien de vous montrer le geste.
+Fais-le rapidement, calmement, en le rassurant par la voix, et toujours avant les repas plutôt qu'après pour éviter qu'il vomisse. Demande à la sage-femme ou au pharmacien de te montrer le geste.
 
 ## Quand demander conseil
-**Consultez sans attendre, ou appelez le 15**, en cas de fièvre chez un bébé de moins de 3 mois, de fièvre de 40 °C ou plus, de difficultés à respirer, de somnolence, de réactions faibles, de pleurs faibles ou inhabituels, de pâleur marquée, de taches violacées sur la peau, de vomissements ou diarrhées importants.
+**Consulte sans attendre, ou appelle le 15**, en cas de fièvre chez un bébé de moins de 3 mois, de fièvre de 40 °C ou plus, de difficultés à respirer, de somnolence, de réactions faibles, de pleurs faibles ou inhabituels, de pâleur marquée, de taches violacées sur la peau, de vomissements ou diarrhées importants.
 
-**Consultez le médecin** si la fièvre dépasse 38,5 °C pendant plus de trois jours ou apparaît après le troisième jour, si le nez ou la toux ne s'améliorent pas après dix jours, en cas de douleur ou d'écoulement d'oreille, d'œil rouge qui coule, de paupières gonflées, de difficultés à manger, ou si son comportement change.
+**Consulte le médecin** si la fièvre dépasse 38,5 °C pendant plus de trois jours ou apparaît après le troisième jour, si le nez ou la toux ne s'améliorent pas après dix jours, en cas de douleur ou d'écoulement d'oreille, d'œil rouge qui coule, de paupières gonflées, de difficultés à manger, ou si son comportement change.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -958,11 +958,11 @@ ${END}`,
     body_md: `La gastro-entérite est fréquente chez les jeunes enfants. Le principal risque, chez un bébé, est la déshydratation, qui peut s'installer vite. Bien réhydrater et savoir quand consulter sont les deux clés.
 
 ## En bref
-- Avant 2 ans, consultez rapidement en cas de diarrhée aiguë (au moins trois selles liquides en quelques heures), avec ou sans vomissements.
-- Donnez de la solution de réhydratation orale (SRO), souvent et en petites quantités, selon ses besoins.
-- Continuez l'allaitement, en proposant la SRO entre les tétées.
-- Ne réhydratez pas avec de l'eau seule, des sodas ou des boissons sucrées.
-- Somnolence, enfant très difficile à réveiller, yeux creux, langue sèche, vomissements qui continuent : consultez en urgence.
+- Avant 2 ans, consulte rapidement en cas de diarrhée aiguë (au moins trois selles liquides en quelques heures), avec ou sans vomissements.
+- Donne de la solution de réhydratation orale (SRO), souvent et en petites quantités, selon ses besoins.
+- Continue l'allaitement, en proposant la SRO entre les tétées.
+- Ne réhydrate pas avec de l'eau seule, des sodas ou des boissons sucrées.
+- Somnolence, enfant très difficile à réveiller, yeux creux, langue sèche, vomissements qui continuent : consulte en urgence.
 
 ## Comprendre
 La diarrhée et les vomissements font perdre de l'eau et des sels minéraux. Un nourrisson a peu de réserves : il peut se déshydrater en quelques heures. La SRO, vendue en pharmacie, contient exactement ce qu'il faut pour compenser ces pertes. Prescrite par un médecin, elle est prise en charge pour les enfants de moins de 5 ans.
@@ -970,33 +970,33 @@ La diarrhée et les vomissements font perdre de l'eau et des sels minéraux. Un 
 Les bébés de moins de 6 mois et les enfants ayant une maladie chronique sont plus à risque.
 
 ## Au quotidien
-- **SRO à volonté** : commencez par de très petites quantités plusieurs fois par heure, puis augmentez progressivement. En cas de vomissements, donnez de petites gorgées ou à la cuillère toutes les 5 à 10 minutes.
-- **Allaitement** : continuez, avec de la SRO entre les tétées.
-- **Lait en poudre** : selon les repères officiels, il peut être remplacé par de la SRO pendant 4 à 6 heures au maximum, puis le lait habituel est réintroduit, avec la SRO entre les biberons. Suivez les conseils du médecin.
-- **Alimentation diversifiée** : gardez ses aliments habituels et proposez la SRO à volonté.
-- **Surveillez** : poids si possible, température, nombre de selles, de vomissements et de biberons, comportement.
-- **Ne modifiez pas la dilution** de la SRO.
-- **Hygiène** : lavez-vous les mains après chaque change et gardez-le à la maison pour limiter la contagion.
+- **SRO à volonté** : commence par de très petites quantités plusieurs fois par heure, puis augmente progressivement. En cas de vomissements, donne de petites gorgées ou à la cuillère toutes les 5 à 10 minutes.
+- **Allaitement** : continue, avec de la SRO entre les tétées.
+- **Lait en poudre** : selon les repères officiels, il peut être remplacé par de la SRO pendant 4 à 6 heures au maximum, puis le lait habituel est réintroduit, avec la SRO entre les biberons. Suis les conseils du médecin.
+- **Alimentation diversifiée** : garde ses aliments habituels et propose la SRO à volonté.
+- **Surveille** : poids si possible, température, nombre de selles, de vomissements et de biberons, comportement.
+- **Ne modifie pas la dilution** de la SRO.
+- **Hygiène** : lave-toi les mains après chaque change et garde-le à la maison pour limiter la contagion.
 
 ## Questions fréquentes
 **Puis-je lui donner un médicament contre la diarrhée ou les vomissements ?**
-Pas sans avis médical : plusieurs médicaments sont déconseillés chez le jeune enfant (certains anti-diarrhéiques avant 12 ans, les médicaments à base d'argile avant 2 ans, les antiémétiques sans ordonnance). En cas de fièvre, demandez conseil.
+Pas sans avis médical : plusieurs médicaments sont déconseillés chez le jeune enfant (certains anti-diarrhéiques avant 12 ans, les médicaments à base d'argile avant 2 ans, les antiémétiques sans ordonnance). En cas de fièvre, demande conseil.
 
 **Combien de temps dure une gastro ?**
-Souvent quelques jours. Si la diarrhée dure plus de deux jours ou s'aggrave, consultez.
+Souvent quelques jours. Si la diarrhée dure plus de deux jours ou s'aggrave, consulte.
 
 **Existe-t-il un vaccin ?**
-Un vaccin contre le rotavirus, principal virus des gastro-entérites du nourrisson, est recommandé : parlez-en à votre médecin.
+Un vaccin contre le rotavirus, principal virus des gastro-entérites du nourrisson, est recommandé : parles-en à ton médecin.
 
 ## Quand demander conseil
-**Consultez sans délai un médecin ou allez aux urgences** si :
-- votre bébé vomit de façon répétée et ne boit plus ;
+**Consulte sans délai un médecin ou va aux urgences** si :
+- ton bébé vomit de façon répétée et ne boit plus ;
 - la diarrhée dure plus de deux jours ou s'aggrave ;
 - la fièvre dépasse 38,5 °C ;
 - les selles contiennent des glaires ou du sang ;
 - des signes de déshydratation apparaissent : agitation ou au contraire apathie et sommeil excessif, enfant difficile à réveiller, gémissements, teint pâle, yeux creux, langue sèche et collante, respiration rapide, perte de poids.
 
-En cas de malaise, d'enfant inconscient ou très difficile à réveiller, appelez le 15 ou le 112.
+En cas de malaise, d'enfant inconscient ou très difficile à réveiller, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1011,14 +1011,14 @@ ${END}`,
     slug: 'coliques-et-pleurs-du-soir',
     title: 'Coliques et pleurs du soir',
     summary: 'Les pleurs du soir culminent vers 6 semaines et s’atténuent vers 3 à 4 mois : apaiser, se relayer et ne jamais secouer, et faire examiner un bébé qui pleure beaucoup.',
-    body_md: `Votre bébé a bu, il est changé, câliné… et pourtant il pleure, souvent en fin de journée, parfois pendant des heures. Ces pleurs épuisent et inquiètent. Ils sont fréquents et finissent par s'atténuer, mais un bébé qui pleure beaucoup doit être examiné, et les parents ont besoin d'être soutenus.
+    body_md: `Ton bébé a bu, il est changé, câliné… et pourtant il pleure, souvent en fin de journée, parfois pendant des heures. Ces pleurs épuisent et inquiètent. Ils sont fréquents et finissent par s'atténuer, mais un bébé qui pleure beaucoup doit être examiné, et les parents ont besoin d'être soutenus.
 
 ## En bref
 - Les pleurs du soir surviennent surtout entre 18 h et minuit, commencent vers 3 semaines, culminent vers 6 semaines et s'atténuent vers 3 à 4 mois.
 - Le mot « coliques » est souvent utilisé à tort : ces pleurs ne signalent pas forcément un problème digestif.
 - Portage, câlins, bain, promenade, lumière tamisée, musique douce peuvent apaiser.
-- Évitez de changer souvent de lait.
-- Si vous sentez la tension monter : posez bébé en sécurité dans son lit, sortez de la pièce, appelez quelqu'un. Ne secouez jamais un bébé.
+- Évite de changer souvent de lait.
+- Si tu sens la tension monter : pose bébé en sécurité dans son lit, sors de la pièce, appelle quelqu'un. Ne secoue jamais un bébé.
 
 ## Comprendre
 En fin de journée, certains bébés semblent souffrir : visage rouge, poings serrés, ventre tendu. Pourtant, selon les repères consultés, ces pleurs ne sont pas liés à une maladie et ne relèvent pas d'un problème digestif dans la plupart des cas. On parle de pleurs excessifs quand ils durent plus de 3 heures par jour, plus de 3 jours par semaine.
@@ -1026,28 +1026,28 @@ En fin de journée, certains bébés semblent souffrir : visage rouge, poings se
 Il est très important qu'un bébé qui pleure beaucoup soit examiné par un médecin, pour écarter une cause médicale (infection, reflux, autre problème).
 
 ## Au quotidien
-- **Vérifiez les besoins de base** : faim, couche, température, environnement pas trop bruyant ni surchauffé, sans fumée.
-- **Pendant les repas** : laissez-le téter lentement, avec des pauses pour le rot ; desserrez la couche et les vêtements à la taille ; au biberon, une tétine adaptée peut aider.
+- **Vérifie les besoins de base** : faim, couche, température, environnement pas trop bruyant ni surchauffé, sans fumée.
+- **Pendant les repas** : laisse-le téter lentement, avec des pauses pour le rot ; desserre la couche et les vêtements à la taille ; au biberon, une tétine adaptée peut aider.
 - **Pour l'apaiser** : portage, peau à peau, bercement, massage du ventre, bain, promenade en poussette ou en voiture, lumière tamisée, chansons ou musique douce.
-- **Relayez-vous** avec l'autre parent ou un proche ; prévoyez des temps de repos.
-- **Si vous êtes à bout** : posez doucement le bébé sur le dos dans son lit, dites-lui que vous avez besoin d'une pause, changez de pièce quelques minutes, appelez une personne de confiance. Un bébé qui pleure dans son lit est en sécurité.
+- **Relaie-toi** avec l'autre parent ou un proche ; prévois des temps de repos.
+- **Si tu es à bout** : pose doucement le bébé sur le dos dans son lit, dis-lui que tu as besoin d'une pause, change de pièce quelques minutes, appelle une personne de confiance. Un bébé qui pleure dans son lit est en sécurité.
 
 ## Questions fréquentes
 **Faut-il changer de lait ?**
-Les changements fréquents de lait n'aident pas et peuvent perturber. Parlez-en au médecin avant toute modification.
+Les changements fréquents de lait n'aident pas et peuvent perturber. Parles-en au médecin avant toute modification.
 
 **Les probiotiques ou les tisanes marchent-ils ?**
-Certains ont montré un intérêt chez certains enfants, mais aucun médicament ne s'impose. Demandez conseil au médecin avant d'en donner.
+Certains ont montré un intérêt chez certains enfants, mais aucun médicament ne s'impose. Demande conseil au médecin avant d'en donner.
 
 **Est-ce que je le gâte si je le prends dans les bras ?**
 Non. Répondre aux pleurs d'un nourrisson le rassure.
 
 ## Quand demander conseil
-**Consultez le médecin** si votre bébé pleure beaucoup, pour écarter une cause médicale, et surtout s'il a de la fièvre, vomit, boit mal, a du mal à finir ses biberons, prend peu de poids, ou si ses pleurs sont différents de d'habitude.
+**Consulte le médecin** si ton bébé pleure beaucoup, pour écarter une cause médicale, et surtout s'il a de la fièvre, vomit, boit mal, a du mal à finir ses biberons, prend peu de poids, ou si ses pleurs sont différents de d'habitude.
 
-**Pour vous** : fatigue intense, sentiment d'être dépassé·e, idées noires : parlez-en à votre médecin, à la sage-femme ou à la PMI ; le 3114 répond 24 h/24.
+**Pour toi** : fatigue intense, sentiment d'être dépassé·e, idées noires : parles-en à ton médecin, à la sage-femme ou à la PMI ; le 3114 répond 24 h/24.
 
-**Appelez le 15 ou le 112** si votre bébé a un malaise, devient mou, gris, a du mal à respirer, ou s'il a été secoué.
+**Appelle le 15 ou le 112** si ton bébé a un malaise, devient mou, gris, a du mal à respirer, ou s'il a été secoué.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1068,7 +1068,7 @@ ${END}`,
 - La poussée dentaire peut entraîner douleurs, irritabilité, salivation abondante, joues rouges et envie de mordiller.
 - Elle peut perturber le sommeil et l'appétit.
 - Une fièvre liée aux dents ne dépasse pas 38 °C, et l'enfant reste en bon état général.
-- Une fièvre plus élevée, une diarrhée ou un enfant qui va mal ne doivent pas être attribués aux dents : consultez.
+- Une fièvre plus élevée, une diarrhée ou un enfant qui va mal ne doivent pas être attribués aux dents : consulte.
 - Le brossage commence dès la première dent.
 
 ## Comprendre
@@ -1077,25 +1077,25 @@ La dent bouge dans l'os de la mâchoire puis traverse la gencive : cela peut fai
 Selon les repères officiels, les poussées dentaires ne provoquent pas de fièvre supérieure à 38 °C, ni d'altération de l'état général, ni de diarrhée. Si ces signes apparaissent, il faut chercher une autre cause.
 
 ## Au quotidien
-- **Proposez-lui de quoi mordiller** : un anneau de dentition adapté à son âge, propre, sous surveillance.
-- **Massez doucement sa gencive** avec un doigt propre.
-- **Essuyez régulièrement son menton** et protégez la peau si elle est irritée.
-- **Évitez les colliers** (ambre ou autres) : ils exposent à un risque de strangulation, qui cause des décès chaque année en France.
-- **Demandez conseil** au médecin ou au pharmacien avant tout produit ou médicament.
-- **Dès la première dent**, commencez le brossage (voir l'article sur les dents et le brossage).
+- **Propose-lui de quoi mordiller** : un anneau de dentition adapté à son âge, propre, sous surveillance.
+- **Masse doucement sa gencive** avec un doigt propre.
+- **Essuie régulièrement son menton** et protège la peau si elle est irritée.
+- **Évite les colliers** (ambre ou autres) : ils exposent à un risque de strangulation, qui cause des décès chaque année en France.
+- **Demande conseil** au médecin ou au pharmacien avant tout produit ou médicament.
+- **Dès la première dent**, commence le brossage (voir l'article sur les dents et le brossage).
 
 ## Questions fréquentes
 **Les dents peuvent-elles donner de la fièvre ?**
-Une petite élévation, sans dépasser 38 °C, chez un bébé en forme. Au-delà, ou si votre bébé semble malade, consultez.
+Une petite élévation, sans dépasser 38 °C, chez un bébé en forme. Au-delà, ou si ton bébé semble malade, consulte.
 
 **Mon bébé a la diarrhée, c'est à cause des dents ?**
-Selon les repères officiels, non : une diarrhée ne doit pas être attribuée aux dents. Surveillez l'hydratation et consultez si besoin.
+Selon les repères officiels, non : une diarrhée ne doit pas être attribuée aux dents. Surveille l'hydratation et consulte si besoin.
 
 **Il se frotte les oreilles, est-ce une otite ?**
-Le frottement des oreilles peut accompagner une poussée dentaire, mais une otite est possible aussi, surtout avec de la fièvre ou un rhume. Faites-le examiner en cas de doute.
+Le frottement des oreilles peut accompagner une poussée dentaire, mais une otite est possible aussi, surtout avec de la fièvre ou un rhume. Fais-le examiner en cas de doute.
 
 ## Quand demander conseil
-Consultez le médecin si votre bébé a une fièvre au-dessus de 38 °C, une diarrhée, s'il pleure de façon inhabituelle, semble mal en point, ou si les symptômes vous paraissent inhabituels. Pour une question sur les dents elles-mêmes, le chirurgien-dentiste peut aussi vous répondre. En cas d'urgence, appelez le 15 ou le 112.
+Consulte le médecin si ton bébé a une fièvre au-dessus de 38 °C, une diarrhée, s'il pleure de façon inhabituelle, semble mal en point, ou si les symptômes te paraissent inhabituels. Pour une question sur les dents elles-mêmes, le chirurgien-dentiste peut aussi te répondre. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1110,7 +1110,7 @@ ${END}`,
     slug: 'vaccins-obligatoires-du-nourrisson',
     title: 'Les vaccins obligatoires du nourrisson',
     summary: 'Onze maladies, huit rendez-vous de 2 à 18 mois, souvent combinés avec les examens obligatoires : ce que prévoit le calendrier vaccinal et pourquoi il compte.',
-    body_md: `Les vaccins protègent votre enfant contre des maladies qui peuvent être graves dans les premières années de vie. En France, onze vaccinations sont obligatoires pour les enfants nés depuis le 1er janvier 2018. Elles sont réalisées pour la plupart pendant les examens de suivi.
+    body_md: `Les vaccins protègent ton enfant contre des maladies qui peuvent être graves dans les premières années de vie. En France, onze vaccinations sont obligatoires pour les enfants nés depuis le 1er janvier 2018. Elles sont réalisées pour la plupart pendant les examens de suivi.
 
 ## En bref
 - Les vaccins obligatoires protègent contre 11 maladies : diphtérie, tétanos, poliomyélite, Haemophilus influenzae b, coqueluche, hépatite B, rougeole, oreillons, rubéole, méningocoques ACWY et B, pneumocoque.
@@ -1122,18 +1122,18 @@ ${END}`,
 ## Comprendre
 Un vaccin apprend au système immunitaire à reconnaître un microbe, sans provoquer la maladie, pour mieux se défendre ensuite. Chez le tout-petit, plusieurs doses sont nécessaires pour obtenir une bonne protection, d'où ce calendrier resserré pendant les deux premières années.
 
-Les vaccins combinés permettent de protéger contre plusieurs maladies avec une seule injection, ce qui réduit le nombre de piqûres. Le calendrier est mis à jour régulièrement par les autorités de santé : votre médecin, la sage-femme ou la PMI appliquent le calendrier en vigueur.
+Les vaccins combinés permettent de protéger contre plusieurs maladies avec une seule injection, ce qui réduit le nombre de piqûres. Le calendrier est mis à jour régulièrement par les autorités de santé : ton médecin, la sage-femme ou la PMI appliquent le calendrier en vigueur.
 
-Jusqu'à 11 ans, un médecin ou une sage-femme peut vacciner votre enfant ; la PMI le peut jusqu'à 6 ans, souvent gratuitement.
+Jusqu'à 11 ans, un médecin ou une sage-femme peut vacciner ton enfant ; la PMI le peut jusqu'à 6 ans, souvent gratuitement.
 
-D'autres vaccins sont recommandés selon l'âge ou la situation (par exemple contre le rotavirus) : votre médecin vous en parlera. Pendant la grossesse, certains vaccins de la mère protègent aussi le nouveau-né (coqueluche, VRS en fin de grossesse).
+D'autres vaccins sont recommandés selon l'âge ou la situation (par exemple contre le rotavirus) : ton médecin t’en parlera. Pendant la grossesse, certains vaccins de la mère protègent aussi le nouveau-né (coqueluche, VRS en fin de grossesse).
 
 ## Au quotidien
-- **Apportez le carnet de santé** à chaque rendez-vous.
-- **Notez les dates** du calendrier dans votre agenda ou dans l'application.
-- **Pendant l'injection**, le tenir contre vous, l'allaiter ou lui parler doucement peut l'aider.
-- **Après le vaccin**, une rougeur, un petit gonflement ou une fièvre modérée peuvent apparaître : demandez au médecin ce qu'il conseille.
-- **En cas de retard**, le calendrier se rattrape : parlez-en au médecin plutôt que de repousser encore.
+- **Apporte le carnet de santé** à chaque rendez-vous.
+- **Note les dates** du calendrier dans ton agenda ou dans l'application.
+- **Pendant l'injection**, le tenir contre toi, l'allaiter ou lui parler doucement peut l'aider.
+- **Après le vaccin**, une rougeur, un petit gonflement ou une fièvre modérée peuvent apparaître : demande au médecin ce qu'il conseille.
+- **En cas de retard**, le calendrier se rattrape : parles-en au médecin plutôt que de repousser encore.
 
 ## Questions fréquentes
 **Faire plusieurs vaccins le même jour, n'est-ce pas trop ?**
@@ -1146,7 +1146,7 @@ Un petit rhume n'empêche en général pas la vaccination ; le médecin juge le 
 Oui : il faut justifier des vaccinations obligatoires pour l'admission en collectivité, sauf certificat médical de contre-indication visant un vaccin précis.
 
 ## Quand demander conseil
-Parlez-en au médecin si vous avez des questions ou des inquiétudes avant un vaccin. Après une vaccination, consultez si la fièvre est élevée ou dure, si votre bébé pleure de façon inhabituelle ou semble mal. Appelez le 15 ou le 112 en cas de gêne respiratoire, de gonflement du visage, de malaise ou de bébé très difficile à réveiller.
+Parles-en au médecin si tu as des questions ou des inquiétudes avant un vaccin. Après une vaccination, consulte si la fièvre est élevée ou dure, si ton bébé pleure de façon inhabituelle ou semble mal. Appelle le 15 ou le 112 en cas de gêne respiratoire, de gonflement du visage, de malaise ou de bébé très difficile à réveiller.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1160,28 +1160,28 @@ ${END}`,
     slug: 'examens-de-sante-et-carnet',
     title: 'Les examens de santé obligatoires et le carnet de santé',
     summary: 'Vingt examens de suivi de la naissance à l’adolescence, dont plusieurs la première année : à quoi ils servent, ce qu’on y vérifie, et comment utiliser le carnet de santé.',
-    body_md: `Même quand tout va bien, votre enfant a rendez-vous régulièrement chez le médecin. Ces examens obligatoires suivent sa croissance, son développement, sa vue, son audition, et sont l'occasion de faire ses vaccins et de poser toutes vos questions.
+    body_md: `Même quand tout va bien, ton enfant a rendez-vous régulièrement chez le médecin. Ces examens obligatoires suivent sa croissance, son développement, sa vue, son audition, et sont l'occasion de faire ses vaccins et de poser toutes tes questions.
 
 ## En bref
 - Vingt examens de suivi sont obligatoires de la naissance à l'adolescence ; ils sont pris en charge à 100 % sans avance de frais.
 - Jusqu'à 2 mois, quatre consultations sont prévues : à la 2e semaine, avant la fin du 1er mois, au 1er mois et au 2e mois.
 - Certains examens donnent lieu à un certificat de santé : au 8e jour, au 9e mois et au 24e mois.
-- Le carnet de santé suit votre enfant jusqu'à 18 ans ; il est confidentiel.
-- Il est conseillé de choisir un médecin traitant pour votre enfant.
+- Le carnet de santé suit ton enfant jusqu'à 18 ans ; il est confidentiel.
+- Il est conseillé de choisir un médecin traitant pour ton enfant.
 
 ## Comprendre
-À chaque examen, le médecin mesure le poids, la taille et le périmètre crânien, et les reporte sur les courbes du carnet de santé : ce sont ces courbes, plus qu'une mesure isolée, qui montrent si l'enfant grandit bien. Il examine aussi les yeux (motricité, strabisme), l'audition, le développement, et répond à vos questions sur l'alimentation, le sommeil, le comportement.
+À chaque examen, le médecin mesure le poids, la taille et le périmètre crânien, et les reporte sur les courbes du carnet de santé : ce sont ces courbes, plus qu'une mesure isolée, qui montrent si l'enfant grandit bien. Il examine aussi les yeux (motricité, strabisme), l'audition, le développement, et répond à tes questions sur l'alimentation, le sommeil, le comportement.
 
-Le carnet de santé est un véritable tableau de bord. Il fait le lien entre les professionnels et les parents. Seuls les professionnels soumis au secret médical peuvent le consulter ; hors consultation médicale, on ne peut vous demander que les certificats de vaccination (par exemple pour une inscription en collectivité).
+Le carnet de santé est un véritable tableau de bord. Il fait le lien entre les professionnels et les parents. Seuls les professionnels soumis au secret médical peuvent le consulter ; hors consultation médicale, on ne peut te demander que les certificats de vaccination (par exemple pour une inscription en collectivité).
 
 Les vaccinations obligatoires commencent dès 2 mois et sont souvent faites pendant ces examens.
 
 ## Au quotidien
-- **Gardez le carnet de santé** dans le sac de l'enfant ou près de vos papiers importants.
-- **Préparez vos questions** avant le rendez-vous (l'application peut vous aider à les noter).
-- **Notez vos observations** : sommeil, appétit, progrès, ce qui vous inquiète.
-- **Déclarez un médecin traitant** pour votre enfant (généraliste ou pédiatre), en ligne avec la carte Vitale.
-- **Ne sautez pas un examen** parce que tout va bien : ils servent aussi à repérer tôt ce qui ne se voit pas.
+- **Garde le carnet de santé** dans le sac de l'enfant ou près de tes papiers importants.
+- **Prépare tes questions** avant le rendez-vous (l'application peut t’aider à les noter).
+- **Note tes observations** : sommeil, appétit, progrès, ce qui t’inquiète.
+- **Déclare un médecin traitant** pour ton enfant (généraliste ou pédiatre), en ligne avec la carte Vitale.
+- **Ne saute pas un examen** parce que tout va bien : ils servent aussi à repérer tôt ce qui ne se voit pas.
 
 ## Questions fréquentes
 **Qui peut faire ces examens ?**
@@ -1194,7 +1194,7 @@ L'Assurance Maladie l'envoie après la naissance ; il est aussi disponible sur a
 Hors consultation médicale, seuls les certificats de vaccination peuvent être exigés.
 
 ## Quand demander conseil
-Entre deux examens, consultez si votre enfant prend peu de poids, ne semble pas bien voir ou entendre, si son développement vous inquiète, ou pour toute question. En cas d'urgence, appelez le 15 ou le 112.
+Entre deux examens, consulte si ton enfant prend peu de poids, ne semble pas bien voir ou entendre, si son développement t’inquiète, ou pour toute question. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1219,27 +1219,27 @@ ${END}`,
 ## Comprendre
 Après la naissance, il est habituel que le bébé perde un peu de poids les premiers jours, avant de le reprendre ; l'équipe de la maternité et la sage-femme surveillent cette période. Ensuite, la prise de poids est rapide les premiers mois puis ralentit progressivement, avec de fortes variations d'un jour à l'autre et d'un enfant à l'autre.
 
-Les courbes du carnet de santé montrent dans quel « couloir » se situe votre enfant. Un enfant peut être petit ou grand, mince ou rond : ce qui compte, c'est qu'il suive sa courbe de manière harmonieuse. Un changement brusque de couloir mérite un avis.
+Les courbes du carnet de santé montrent dans quel « couloir » se situe ton enfant. Un enfant peut être petit ou grand, mince ou rond : ce qui compte, c'est qu'il suive sa courbe de manière harmonieuse. Un changement brusque de couloir mérite un avis.
 
 ## Au quotidien
-- **Faites peser votre bébé lors des consultations** ou à la PMI ; à la maison, une pesée hebdomadaire suffit si on vous l'a conseillée.
-- **Notez ses repas et ses couches** si on vous le demande : un bébé qui mouille régulièrement ses couches et qui est éveillé et tonique s'alimente généralement bien.
-- **Pour l'allaitement**, une prise du sein efficace et des tétées à la demande soutiennent la croissance ; demandez de l'aide en cas de doute.
-- **Au biberon**, suivez son appétit et la notice ; les quantités se discutent avec le professionnel.
-- **Regardez l'ensemble** : vitalité, sommeil, éveil, pas seulement la balance.
+- **Fais peser ton bébé lors des consultations** ou à la PMI ; à la maison, une pesée hebdomadaire suffit si on te l'a conseillée.
+- **Note ses repas et ses couches** si on te le demande : un bébé qui mouille régulièrement ses couches et qui est éveillé et tonique s'alimente généralement bien.
+- **Pour l'allaitement**, une prise du sein efficace et des tétées à la demande soutiennent la croissance ; demande de l'aide en cas de doute.
+- **Au biberon**, suis son appétit et la notice ; les quantités se discutent avec le professionnel.
+- **Regarde l'ensemble** : vitalité, sommeil, éveil, pas seulement la balance.
 
 ## Questions fréquentes
 **Mon bébé allaité grossit moins vite que celui de ma sœur nourri au biberon, est-ce un problème ?**
-Les bébés allaités et nourris au biberon peuvent avoir des courbes un peu différentes. C'est l'évolution sur sa propre courbe qui compte : parlez-en au médecin si vous avez un doute.
+Les bébés allaités et nourris au biberon peuvent avoir des courbes un peu différentes. C'est l'évolution sur sa propre courbe qui compte : parles-en au médecin si tu as un doute.
 
 **Faut-il acheter une balance ?**
 Ce n'est pas nécessaire. Des pesées trop fréquentes peuvent inquiéter sans raison, à cause des variations normales d'un jour à l'autre.
 
 **Il est en bas de la courbe, est-il trop petit ?**
-Être en bas de la courbe n'est pas un problème en soi s'il la suit régulièrement. Le médecin interprète la courbe avec vous.
+Être en bas de la courbe n'est pas un problème en soi s'il la suit régulièrement. Le médecin interprète la courbe avec toi.
 
 ## Quand demander conseil
-Consultez si votre bébé ne reprend pas son poids de naissance dans les délais indiqués par la maternité ou la sage-femme, s'il perd du poids, stagne, boit mal, mouille moins de couches, vomit souvent, ou s'il est peu tonique. En cas de bébé très difficile à réveiller ou de refus de boire, appelez le 15 ou le 112.
+Consulte si ton bébé ne reprend pas son poids de naissance dans les délais indiqués par la maternité ou la sage-femme, s'il perd du poids, stagne, boit mal, mouille moins de couches, vomit souvent, ou s'il est peu tonique. En cas de bébé très difficile à réveiller ou de refus de boire, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1254,33 +1254,33 @@ ${END}`,
     slug: 'retour-a-la-maison-suivi-sage-femme',
     title: 'Le retour à la maison et le suivi par une sage-femme',
     summary: 'Visites de sage-femme à domicile, service Prado, déclaration de naissance, entretien postnatal : comment s’organise l’accompagnement après la maternité.',
-    body_md: `Rentrer à la maison avec son bébé, c'est une grande étape, souvent faite de joie, de fatigue et de questions. Vous n'êtes pas seuls : un accompagnement est prévu pour la mère et pour l'enfant pendant les premières semaines.
+    body_md: `Rentrer à la maison avec son bébé, c'est une grande étape, souvent faite de joie, de fatigue et de questions. Tu n'es pas seuls : un accompagnement est prévu pour la mère et pour l'enfant pendant les premières semaines.
 
 ## En bref
 - Une sortie est dite précoce quand elle a lieu dans les 3 jours après la naissance (96 heures après une césarienne).
-- Avec le service Prado, une sage-femme de votre choix passe chez vous dans les 24 heures après la sortie, puis organise une ou deux visites suivantes.
+- Avec le service Prado, une sage-femme de ton choix passe chez toi dans les 24 heures après la sortie, puis organise une ou deux visites suivantes.
 - Un suivi à domicile par une sage-femme est proposé jusqu'au 12e jour ; deux séances de suivi postnatal sont possibles entre le 8e jour et la 14e semaine.
 - Une puéricultrice de PMI peut aussi venir à domicile si besoin.
 - La déclaration de naissance se fait en mairie dans les 5 jours.
 
 ## Comprendre
-Le retour à la maison est un moment de bouleversement. La sage-femme vérifie votre récupération (saignements, cicatrice, seins, moral) et la santé du bébé (poids, alimentation, jaunisse, cordon). C'est aussi le moment de parler de l'allaitement ou des biberons, du sommeil, de la contraception, et de tout ce qui vous préoccupe.
+Le retour à la maison est un moment de bouleversement. La sage-femme vérifie ta récupération (saignements, cicatrice, seins, moral) et la santé du bébé (poids, alimentation, jaunisse, cordon). C'est aussi le moment de parler de l'allaitement ou des biberons, du sommeil, de la contraception, et de tout ce qui te préoccupe.
 
 Prado, le service de retour à domicile de l'Assurance Maladie, est proposé notamment lors des sorties précoces. Un conseiller passe à la maternité, puis la sage-femme organise les visites. Ce suivi est pris en charge à 100 % jusqu'au 12e jour.
 
 Pour la mère, un entretien postnatal précoce est prévu entre la 4e et la 8e semaine, et une consultation postnatale entre la 6e et la 8e semaine. Pour l'enfant, l'Assurance Maladie envoie le calendrier des examens obligatoires.
 
 ## Au quotidien
-- **Préparez votre liste de questions** pour la visite de la sage-femme.
-- **Acceptez l'aide** : repas, courses, linge, garde des aînés. Ce n'est pas le moment de tout faire seule.
-- **Reposez-vous quand le bébé dort**, au moins une partie du temps.
-- **Limitez les visites** si vous en ressentez le besoin.
-- **Gardez à portée de main** le carnet de santé, les numéros utiles (sage-femme, maternité, médecin, PMI) et le 15.
-- **Ne secouez jamais un bébé**, même pour jouer ou le calmer.
+- **Prépare ta liste de questions** pour la visite de la sage-femme.
+- **Accepte l'aide** : repas, courses, linge, garde des aînés. Ce n'est pas le moment de tout faire seule.
+- **Repose-toi quand le bébé dort**, au moins une partie du temps.
+- **Limite les visites** si tu en ressens le besoin.
+- **Garde à portée de main** le carnet de santé, les numéros utiles (sage-femme, maternité, médecin, PMI) et le 15.
+- **Ne secoue jamais un bébé**, même pour jouer ou le calmer.
 
 ## Questions fréquentes
 **Puis-je choisir ma sage-femme ?**
-Oui, dans le cadre de Prado, c'est une sage-femme de votre choix qui organise les visites.
+Oui, dans le cadre de Prado, c'est une sage-femme de ton choix qui organise les visites.
 
 **Et si je ne suis pas sortie tôt ?**
 Le suivi à domicile par une sage-femme reste proposé jusqu'au 12e jour, et les séances de suivi postnatal sont possibles ensuite.
@@ -1289,7 +1289,7 @@ Le suivi à domicile par une sage-femme reste proposé jusqu'au 12e jour, et les
 Bien sûr : ces visites concernent toute la famille.
 
 ## Quand demander conseil
-Pour vous, contactez rapidement la sage-femme, le médecin ou la maternité en cas de fièvre, de saignements abondants ou malodorants, de douleur qui augmente, de sein rouge et douloureux, de tristesse ou d'anxiété envahissantes. Pour votre bébé, en cas de fièvre, de refus de boire, de jaunisse qui s'accentue, de somnolence inhabituelle. En cas d'urgence, appelez le 15 ou le 112 ; en cas de détresse psychique, le 3114.
+Pour toi, contacte rapidement la sage-femme, le médecin ou la maternité en cas de fièvre, de saignements abondants ou malodorants, de douleur qui augmente, de sein rouge et douloureux, de tristesse ou d'anxiété envahissantes. Pour ton bébé, en cas de fièvre, de refus de boire, de jaunisse qui s'accentue, de somnolence inhabituelle. En cas d'urgence, appelle le 15 ou le 112 ; en cas de détresse psychique, le 3114.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1302,15 +1302,15 @@ ${END}`,
   {
     slug: 'bain-du-bebe-pas-a-pas',
     title: 'Donner le bain à son bébé, pas à pas',
-    summary: 'Un bain tous les deux ou trois jours suffit, dans une eau à 37 °C maximum et une pièce chaude : préparez tout avant, et ne laissez jamais votre enfant seul dans l’eau.',
+    summary: 'Un bain tous les deux ou trois jours suffit, dans une eau à 37 °C maximum et une pièce chaude : prépare tout avant, et ne laisse jamais ton enfant seul dans l’eau.',
     body_md: `Le bain peut être un moment de détente et de complicité… à condition de bien le préparer. Quelques repères simples rendent ce moment plus serein, et évitent les deux principaux risques : la brûlure et la noyade.
 
 ## En bref
 - Le bain est possible dès le retour de la maternité, même si le cordon n'est pas tombé.
 - Un bain tous les deux ou trois jours suffit ; entre deux, on nettoie le visage, les mains et le siège à chaque change.
 - Pièce entre 22 et 25 °C, eau à 37 °C maximum, vérifiée au thermomètre ; 8 à 12 cm d'eau.
-- Ne laissez jamais votre enfant seul dans son bain, même quelques secondes, même s'il tient assis.
-- Utilisez un nettoyant sans savon et un shampooing doux pour bébé.
+- Ne laisse jamais ton enfant seul dans son bain, même quelques secondes, même s'il tient assis.
+- Utilise un nettoyant sans savon et un shampooing doux pour bébé.
 
 ## Comprendre
 La peau du nourrisson est fine et fragile. Même doux, les produits de toilette la fragilisent un peu : c'est pourquoi il est conseillé d'espacer les bains. Le vernix, cette substance blanchâtre présente à la naissance, n'a pas besoin d'être retiré.
@@ -1319,35 +1319,35 @@ Les deux grands dangers du bain sont la brûlure (eau trop chaude) et la noyade,
 
 ## Au quotidien
 **Avant le bain**
-- Préparez tout à portée de main : thermomètre, produit lavant, serviette, couche, vêtements.
-- Éteignez votre téléphone, retirez vos bijoux, lavez-vous les mains.
-- Faites couler l'eau froide puis la chaude ; refroidissez le robinet et tournez le mitigeur sur le côté.
+- Prépare tout à portée de main : thermomètre, produit lavant, serviette, couche, vêtements.
+- Éteins ton téléphone, retire tes bijoux, lave-toi les mains.
+- Fais couler l'eau froide puis la chaude ; refroidis le robinet et tourne le mitigeur sur le côté.
 - Une baignoire posée au sol est plus stable.
 
 **Pendant le bain**
-- Déshabillez bébé sur la table à langer, sans jamais l'y laisser seul.
-- Soutenez sa tête et sa nuque.
-- Lavez les cheveux 2 à 3 fois par semaine avec un shampooing doux, puis savonnez du haut vers le bas, les fesses en dernier.
-- Rincez à la main, sans faire couler l'eau du robinet.
+- Déshabille bébé sur la table à langer, sans jamais l'y laisser seul.
+- Soutiens sa tête et sa nuque.
+- Lave les cheveux 2 à 3 fois par semaine avec un shampooing doux, puis savonne du haut vers le bas, les fesses en dernier.
+- Rince à la main, sans faire couler l'eau du robinet.
 
 **Après le bain**
-- Enveloppez-le dans une serviette, séchez bien les plis, mettez la couche et habillez-le vite.
-- Videz la baignoire.
+- Enveloppe-le dans une serviette, sèche bien les plis, mets la couche et habille-le vite.
+- Vide la baignoire.
 
-**Si vous devez quitter la pièce** : emportez votre bébé enveloppé dans une serviette.
+**Si tu dois quitter la pièce** : emporte ton bébé enveloppé dans une serviette.
 
 ## Questions fréquentes
 **À quel moment de la journée donner le bain ?**
-Quand cela vous convient. En fin d'après-midi, il peut aider à apaiser certains bébés qui pleurent le soir.
+Quand cela te convient. En fin d'après-midi, il peut aider à apaiser certains bébés qui pleurent le soir.
 
 **Les transats et sièges de bain sont-ils sûrs ?**
-Ils peuvent être utilisés selon les indications du fabricant, mais ils ne remplacent jamais votre surveillance : restez à côté, une main sur votre enfant.
+Ils peuvent être utilisés selon les indications du fabricant, mais ils ne remplacent jamais ta surveillance : reste à côté, une main sur ton enfant.
 
 **Sans thermomètre, comment vérifier la température ?**
-Testez l'eau avec le coude, mais le thermomètre reste la méthode la plus fiable.
+Teste l'eau avec le coude, mais le thermomètre reste la méthode la plus fiable.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si sa peau est très sèche, rouge, fissurée, ou présente des plaques. En cas de brûlure ou de bébé qui a avalé de l'eau et respire mal, appelez immédiatement le 15 ou le 112.
+Parles-en au médecin ou à la PMI si sa peau est très sèche, rouge, fissurée, ou présente des plaques. En cas de brûlure ou de bébé qui a avalé de l'eau et respire mal, appelle immédiatement le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1364,11 +1364,11 @@ ${END}`,
     body_md: `Changer une couche, nettoyer un petit nez, couper des ongles minuscules… Ces gestes reviennent plusieurs fois par jour. Ils deviennent vite naturels avec quelques repères, et un principe de base : ne jamais laisser bébé seul sur la table à langer.
 
 ## En bref
-- Le matériel de base : eau tiède, savon doux, gant ou coton, serviette propre ; des lingettes sans parfum si vous n'avez pas d'eau.
+- Le matériel de base : eau tiède, savon doux, gant ou coton, serviette propre ; des lingettes sans parfum si tu n'as pas d'eau.
 - Pour une fille, on nettoie la vulve du pubis vers l'anus ; pour un garçon, on ne décalotte pas.
 - Une crème protectrice n'est pas nécessaire ; une pommade à l'oxyde de zinc peut aider si la peau est irritée.
 - Jamais de coton-tige dans les oreilles.
-- Restez toujours à côté de votre bébé sur la table à langer.
+- Reste toujours à côté de ton bébé sur la table à langer.
 
 ## Comprendre
 La peau du siège est exposée à l'humidité et aux selles : un nettoyage doux et un séchage soigneux suffisent dans la plupart des cas. Les produits parfumés ou trop nombreux peuvent irriter.
@@ -1377,36 +1377,36 @@ Le prépuce des petits garçons est normalement serré à cet âge : il ne faut 
 
 ## Au quotidien
 **Le change**
-1. Lavez-vous les mains et installez bébé sur une serviette propre.
-2. Retirez la couche, repliez-la.
-3. Tenez ses pieds d'une main, soulevez doucement ses fesses et nettoyez de l'autre, en insistant sur les plis de l'aine et entre les fesses.
-4. Nettoyez les organes génitaux : vulve du pubis vers l'anus pour une fille, bourses et pénis sans décalotter pour un garçon.
-5. Rincez, séchez en tamponnant, remettez une couche propre.
-6. Lavez-vous les mains.
+1. Lave-toi les mains et installe bébé sur une serviette propre.
+2. Retire la couche, replie-la.
+3. Tiens ses pieds d'une main, soulève doucement ses fesses et nettoie de l'autre, en insistant sur les plis de l'aine et entre les fesses.
+4. Nettoie les organes génitaux : vulve du pubis vers l'anus pour une fille, bourses et pénis sans décalotter pour un garçon.
+5. Rince, sèche en tamponnant, remets une couche propre.
+6. Lave-toi les mains.
 
 **Le visage**
-- **Yeux** : quelques gouttes de sérum physiologique, puis essuyez avec une compresse, de l'extérieur vers l'intérieur.
-- **Nez** : sérum physiologique dans chaque narine, puis essuyez, ou mèche de coton imbibée.
-- **Oreilles** : nettoyez le pavillon et derrière l'oreille, puis l'entrée du conduit avec une serviette fine ou une mèche de coton, jamais de coton-tige.
+- **Yeux** : quelques gouttes de sérum physiologique, puis essuie avec une compresse, de l'extérieur vers l'intérieur.
+- **Nez** : sérum physiologique dans chaque narine, puis essuie, ou mèche de coton imbibée.
+- **Oreilles** : nettoie le pavillon et derrière l'oreille, puis l'entrée du conduit avec une serviette fine ou une mèche de coton, jamais de coton-tige.
 
 **Cuir chevelu** : un lavage 2 à 3 fois par semaine suffit ; un brossage quotidien avec une brosse douce limite les croûtes de lait.
 
-**Ongles** : ne coupez pas les ongles collés à la peau les premiers jours. Ensuite, coupez-les après le bain ou pendant la sieste, avec des ciseaux à bout rond : arrondis pour les mains, droits pour les pieds.
+**Ongles** : ne coupe pas les ongles collés à la peau les premiers jours. Ensuite, coupe-les après le bain ou pendant la sieste, avec des ciseaux à bout rond : arrondis pour les mains, droits pour les pieds.
 
-**Sécurité** : préparez tout à l'avance ; si vous devez attraper un objet, gardez une main sur bébé ; après le change, posez-le dans un endroit sûr, comme son lit.
+**Sécurité** : prépare tout à l'avance ; si tu dois attraper un objet, garde une main sur bébé ; après le change, pose-le dans un endroit sûr, comme son lit.
 
 ## Questions fréquentes
 **Les lingettes sont-elles adaptées ?**
-L'eau et un savon doux restent la référence. Des lingettes sans parfum peuvent dépanner quand vous n'avez pas d'eau.
+L'eau et un savon doux restent la référence. Des lingettes sans parfum peuvent dépanner quand tu n'as pas d'eau.
 
 **Ses fesses sont rouges, que faire ?**
-Changez-le souvent, nettoyez à l'eau, séchez bien et laissez si possible les fesses à l'air quelques minutes. Une pommade à l'oxyde de zinc peut aider (voir aussi l'article sur la peau et les fesses rouges).
+Change-le souvent, nettoie à l'eau, sèche bien et laisse si possible les fesses à l'air quelques minutes. Une pommade à l'oxyde de zinc peut aider (voir aussi l'article sur la peau et les fesses rouges).
 
 **Un œil colle le matin, est-ce grave ?**
-Nettoyez au sérum physiologique. Consultez si l'œil est rouge avec un écoulement de pus.
+Nettoie au sérum physiologique. Consulte si l'œil est rouge avec un écoulement de pus.
 
 ## Quand demander conseil
-Consultez si l'érythème fessier ne s'améliore pas en quelques jours, saigne ou s'étend, en cas d'œil rouge qui coule, de plaques sur la peau, ou si vous remarquez quelque chose d'inhabituel au niveau des organes génitaux. En cas de chute de la table à langer avec choc à la tête, de somnolence ou de vomissements, appelez le 15 ou le 112.
+Consulte si l'érythème fessier ne s'améliore pas en quelques jours, saigne ou s'étend, en cas d'œil rouge qui coule, de plaques sur la peau, ou si tu remarques quelque chose d'inhabituel au niveau des organes génitaux. En cas de chute de la table à langer avec choc à la tête, de somnolence ou de vomissements, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1439,25 +1439,25 @@ ${END}`,
 Les cycles de sommeil s'allongent avec l'âge, et le sommeil se structure comme celui de l'adulte vers 3 ans.
 
 ## Au quotidien
-- **Avant 3 à 4 mois, suivez son rythme** sans chercher à l'imposer.
+- **Avant 3 à 4 mois, suis son rythme** sans chercher à l'imposer.
 - **Le jour : lumière et activité** ; **la nuit : pénombre, calme, peu de paroles**. Ces « donneurs de temps » l'aident à différencier jour et nuit.
-- **Ne cherchez pas à le faire boire davantage le soir** : cela n'allonge pas ses nuits et peut provoquer des régurgitations.
-- **Après 6 mois**, laissez-lui une chance de se rendormir seul avant d'intervenir ; s'il pleure fort, rassurez-le par la voix, une caresse, sans forcément proposer à boire à chaque réveil.
+- **Ne cherche pas à le faire boire davantage le soir** : cela n'allonge pas ses nuits et peut provoquer des régurgitations.
+- **Après 6 mois**, laisse-lui une chance de se rendormir seul avant d'intervenir ; s'il pleure fort, rassure-le par la voix, une caresse, sans forcément proposer à boire à chaque réveil.
 - **Un rituel du coucher** calme et répété (bain, chanson, histoire) peut l'aider à se préparer au sommeil.
-- **Partager la chambre** de vos parents est conseillé les premiers mois, dans son propre lit.
+- **Partager la chambre** de tes parents est conseillé les premiers mois, dans son propre lit.
 
 ## Questions fréquentes
 **Mon bébé de 2 mois se réveille toutes les 3 heures, est-ce un problème ?**
-À cet âge, les réveils fréquents font partie du développement du sommeil. Parlez-en au médecin si vous êtes épuisé·e ou si autre chose vous inquiète.
+À cet âge, les réveils fréquents font partie du développement du sommeil. Parles-en au médecin si tu es épuisé·e ou si autre chose t’inquiète.
 
 **Faut-il le réveiller pour manger ?**
-Les premiers jours, la maternité ou la sage-femme peuvent vous le conseiller selon sa situation. Ensuite, on suit en général son rythme : demandez ce qui convient à votre bébé.
+Les premiers jours, la maternité ou la sage-femme peuvent te le conseiller selon sa situation. Ensuite, on suit en général son rythme : demande ce qui convient à ton bébé.
 
 **Il s'endort uniquement au sein ou dans les bras, est-ce grave ?**
-C'est fréquent. Progressivement, après quelques mois, vous pourrez l'aider à s'endormir dans son lit. Demandez conseil si la situation vous pèse.
+C'est fréquent. Progressivement, après quelques mois, tu pourras l'aider à s'endormir dans son lit. Demande conseil si la situation te pèse.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé dort très peu ou énormément, si son sommeil est très agité, s'il ronfle fort avec des pauses, ou si les nuits vous épuisent. Un bébé anormalement difficile à réveiller, mou, ou qui respire mal impose d'appeler le 15 ou le 112. Si la fatigue vous submerge, le 3114 répond 24 h/24.
+Parles-en au médecin ou à la PMI si ton bébé dort très peu ou énormément, si son sommeil est très agité, s'il ronfle fort avec des pauses, ou si les nuits t’épuisent. Un bébé anormalement difficile à réveiller, mou, ou qui respire mal impose d'appeler le 15 ou le 112. Si la fatigue te submerge, le 3114 répond 24 h/24.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1472,14 +1472,14 @@ ${END}`,
     slug: 'developpement-moteur-premiere-annee',
     title: 'Le développement moteur pendant la première année',
     summary: 'Tenir sa tête, se retourner, s’asseoir, ramper, se mettre debout : les grandes étapes de la première année, avec de grandes différences d’un enfant à l’autre.',
-    body_md: `En un an, votre bébé passe du nouveau-né blotti dans vos bras à l'enfant qui se met debout en s'agrippant aux meubles. Ces progrès suivent un ordre assez constant, mais à un rythme propre à chaque enfant. Les âges ci-dessous sont des repères, pas des examens à réussir.
+    body_md: `En un an, ton bébé passe du nouveau-né blotti dans tes bras à l'enfant qui se met debout en s'agrippant aux meubles. Ces progrès suivent un ordre assez constant, mais à un rythme propre à chaque enfant. Les âges ci-dessous sont des repères, pas des examens à réussir.
 
 ## En bref
 - Vers 2 mois, il commence à soulever la tête, sourit en réponse et suit du regard ; vers 3 mois, il tient sa tête droite quand on le porte assis.
 - Vers 4 mois, il se retourne ; vers 6 à 7 mois, il sautille quand on le tient debout.
 - Entre 7 et 9 mois, il apprend à s'asseoir seul, puis se déplace en roulant, rampant ou à quatre pattes.
 - Entre 9 et 12 mois, il se met debout en s'appuyant, utilise la pince pouce-index, pointe du doigt.
-- Les différences entre enfants sont importantes : en cas de doute, parlez-en au médecin.
+- Les différences entre enfants sont importantes : en cas de doute, parles-en au médecin.
 
 ## Comprendre
 **De 0 à 3 mois**, les réflexes du nouveau-né (marche automatique, agrippement) disparaissent progressivement : inutile de les provoquer. Le bébé découvre le monde par le regard, le toucher, la voix. Il est plus attiré par les contrastes noir et blanc que par les couleurs vives.
@@ -1493,11 +1493,11 @@ ${END}`,
 Une préférence pour une main ne veut pas dire qu'il sera gaucher ou droitier, ni qu'il a une gêne de l'autre côté.
 
 ## Au quotidien
-- **Laissez-le bouger librement** sur un tapis au sol, dans un espace sécurisé, sous votre regard.
-- **Variez les positions** quand il est éveillé, et toujours sur le dos pour dormir.
-- **Jouez avec lui** : regards, chansons, objets à attraper, cache-cache pour apprivoiser la séparation.
-- **Évitez le trotteur**, qui n'aide pas la marche et expose à des chutes.
-- **Sécurisez l'espace** au fur et à mesure qu'il se déplace (escaliers, prises, petits objets).
+- **Laisse-le bouger librement** sur un tapis au sol, dans un espace sécurisé, sous ton regard.
+- **Varie les positions** quand il est éveillé, et toujours sur le dos pour dormir.
+- **Joue avec lui** : regards, chansons, objets à attraper, cache-cache pour apprivoiser la séparation.
+- **Évite le trotteur**, qui n'aide pas la marche et expose à des chutes.
+- **Sécurise l'espace** au fur et à mesure qu'il se déplace (escaliers, prises, petits objets).
 
 ## Questions fréquentes
 **Il ne se met pas à quatre pattes, est-ce un problème ?**
@@ -1510,7 +1510,7 @@ Il est préférable de le laisser découvrir les positions par lui-même, à son
 Les comparaisons sont tentantes mais peu fiables : les écarts sont grands entre enfants. Le médecin suit son développement à chaque examen.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé ne tient pas sa tête vers 4 mois, ne cherche pas à attraper les objets, semble très raide ou au contraire très mou, n'utilise qu'un côté de son corps, a perdu des acquisitions, ou si vous avez simplement un doute. Le repérage précoce permet d'accompagner au mieux.
+Parles-en au médecin ou à la PMI si ton bébé ne tient pas sa tête vers 4 mois, ne cherche pas à attraper les objets, semble très raide ou au contraire très mou, n'utilise qu'un côté de son corps, a perdu des acquisitions, ou si tu as simplement un doute. Le repérage précoce permet d'accompagner au mieux.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1529,7 +1529,7 @@ ${END}`,
 ## En bref
 - La marche apparaît en moyenne entre 12 et 18 mois ; marcher à 17 ou 18 mois peut tout à fait arriver chez un enfant qui se développe bien.
 - Avant, l'enfant se met debout en s'appuyant, puis se déplace en se tenant aux meubles.
-- Laissez-le explorer, pieds nus à la maison, dans un espace sécurisé.
+- Laisse-le explorer, pieds nus à la maison, dans un espace sécurisé.
 - Le trotteur est déconseillé (chutes, notamment dans les escaliers).
 - Pour sortir, des chaussures souples et légères, faciles à enfiler.
 
@@ -1539,24 +1539,24 @@ Dès la naissance, le bébé a un réflexe de marche qui disparaît ensuite. La 
 Marcher pieds nus permet de mieux sentir le sol et de trouver son équilibre. Le trotteur, lui, n'apporte rien au développement et augmente le risque d'accident : la grande majorité des accidents de trotteur sont des chutes dans les escaliers.
 
 ## Au quotidien
-- **Laissez-lui de l'espace** pour se déplacer, contourner des obstacles, tomber sur les fesses et recommencer.
-- **Tenez-le par les mains** si vous l'aidez, sans lever ses bras au-dessus de ses épaules.
-- **Encouragez-le** en vous plaçant un peu hors de sa portée, sans le brusquer : la pression ralentit souvent les progrès.
-- **Proposez des jouets à pousser** ou des porteurs.
-- **Sécurisez la maison** : barrières en haut et en bas des escaliers, coins de meubles, objets fragiles hors de portée.
+- **Laisse-lui de l'espace** pour se déplacer, contourner des obstacles, tomber sur les fesses et recommencer.
+- **Tiens-le par les mains** si tu l'aides, sans lever ses bras au-dessus de ses épaules.
+- **Encourage-le** en te plaçant un peu hors de sa portée, sans le brusquer : la pression ralentit souvent les progrès.
+- **Propose des jouets à pousser** ou des porteurs.
+- **Sécurise la maison** : barrières en haut et en bas des escaliers, coins de meubles, objets fragiles hors de portée.
 
 ## Questions fréquentes
 **Mon enfant a 15 mois et ne marche pas encore, dois-je m'inquiéter ?**
-La majorité des enfants marchent entre 12 et 15 mois, et marcher à 18 mois peut tout à fait se produire. Si vous avez un doute, ou s'il ne se met pas debout avec appui, parlez-en au médecin.
+La majorité des enfants marchent entre 12 et 15 mois, et marcher à 18 mois peut tout à fait se produire. Si tu as un doute, ou s'il ne se met pas debout avec appui, parles-en au médecin.
 
 **Quelles chaussures choisir ?**
 À la maison, pieds nus de préférence. Pour sortir : semelle souple et fine, chaussure légèrement montante, contrefort rigide, facile à enfiler.
 
 **Il marche sur la pointe des pieds, est-ce grave ?**
-Parlez-en au médecin si cela persiste ou si vous avez un doute.
+Parles-en au médecin si cela persiste ou si tu as un doute.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant ne marche pas vers 18 mois, s'il ne tient pas debout avec appui, s'il boite, semble avoir mal, perd des acquisitions, ou si sa marche vous paraît inhabituelle. En cas de chute avec choc à la tête suivie de vomissements, de somnolence ou de comportement anormal, appelez le 15 ou le 112.
+Consulte le médecin si ton enfant ne marche pas vers 18 mois, s'il ne tient pas debout avec appui, s'il boite, semble avoir mal, perd des acquisitions, ou si sa marche te paraît inhabituelle. En cas de chute avec choc à la tête suivie de vomissements, de somnolence ou de comportement anormal, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1571,40 +1571,40 @@ ${END}`,
     slug: 'langage-premiere-annee',
     title: 'Le langage pendant la première année',
     summary: 'Sourires et vocalises, gazouillis, babillage, premiers mots vers 9 à 12 mois : comment le langage se construit et comment l’encourager au quotidien.',
-    body_md: `Bien avant de dire « papa » ou « maman », votre bébé communique : par ses pleurs, ses regards, ses sourires, ses sons. Le langage commence par la compréhension et les échanges. Et vous en êtes le premier partenaire.
+    body_md: `Bien avant de dire « papa » ou « maman », ton bébé communique : par ses pleurs, ses regards, ses sourires, ses sons. Le langage commence par la compréhension et les échanges. Et tu en es le premier partenaire.
 
 ## En bref
-- Vers 2 mois, bébé sourit, vocalise et imite l'intonation de votre voix.
+- Vers 2 mois, bébé sourit, vocalise et imite l'intonation de ta voix.
 - Vers 5 à 6 mois, il gazouille avec des consonnes, reconnaît son prénom et commence à babiller (ba-ba, pa-pa).
 - Entre 6 et 9 mois, il comprend des mots dans leur contexte ; le geste « au revoir » est souvent un des premiers.
 - Les premiers mots apparaissent entre 9 et 12 mois ; vers 12 mois, il dit « non » et montre du doigt.
-- Parlez-lui, chantez, lisez, et limitez la télévision, qui n'offre aucun échange.
+- Parle-lui, chante, lis, et limite la télévision, qui n'offre aucun échange.
 
 ## Comprendre
-Un bébé apprend à parler en écoutant, en observant et surtout en échangeant. Quand vous répétez ses sons puis faites une pause pour qu'il vous réponde, vous jouez au « chacun son tour », la base de la conversation. Ce jeu peut commencer dès 2 ou 3 mois.
+Un bébé apprend à parler en écoutant, en observant et surtout en échangeant. Quand tu répètes ses sons puis fais une pause pour qu'il te réponde, tu joues au « chacun son tour », la base de la conversation. Ce jeu peut commencer dès 2 ou 3 mois.
 
 Les « mots » du début peuvent être des bruitages ou des mots très déformés : ils comptent s'ils désignent toujours la même chose. Ils s'accompagnent souvent de gestes, comme pointer du doigt pour partager une découverte.
 
 ## Au quotidien
-- **Parlez-lui souvent** de ce que vous faites, avec des mots variés, en articulant, accompagnés de gestes.
-- **Nommez les objets** en les montrant.
-- **Répondez à ses sons** et laissez-lui le temps de « répondre ».
-- **Chantez des comptines**, lisez des imagiers, des livres en tissu ou en plastique.
-- **Limitez la télévision et les écrans** : ils ne remplacent pas l'échange.
-- **Regardez-le dans les yeux** quand vous lui parlez.
+- **Parle-lui souvent** de ce que tu fais, avec des mots variés, en articulant, accompagnés de gestes.
+- **Nomme les objets** en les montrant.
+- **Réponds à ses sons** et laisse-lui le temps de « répondre ».
+- **Chante des comptines**, lis des imagiers, des livres en tissu ou en plastique.
+- **Limite la télévision et les écrans** : ils ne remplacent pas l'échange.
+- **Regarde-le dans les yeux** quand tu lui parles.
 
 ## Questions fréquentes
 **Faut-il lui parler « bébé » ?**
-Une voix douce et chantante l'attire, mais des mots corrects et variés l'aident à apprendre. Parlez-lui naturellement.
+Une voix douce et chantante l'attire, mais des mots corrects et variés l'aident à apprendre. Parle-lui naturellement.
 
 **Nous parlons deux langues à la maison, est-ce un problème ?**
-Parlez-lui dans la ou les langues que vous maîtrisez et avec lesquelles vous êtes à l'aise. En cas de question, parlez-en au médecin ou à la PMI.
+Parle-lui dans la ou les langues que tu maîtrises et avec lesquelles tu es à l'aise. En cas de question, parles-en au médecin ou à la PMI.
 
 **Il ne dit pas encore de mots à 10 mois…**
 Les premiers mots apparaissent entre 9 et 12 mois, parfois un peu plus tard. Ce qui compte surtout, c'est qu'il communique : regards, sourires, babillage, gestes.
 
 ## Quand demander conseil
-Consultez le médecin ou la PMI si votre bébé ne sursaute pas lors d'un bruit soudain, ne babille pas, ne répond pas à votre voix par des sons, ne regarde pas quand on l'appelle, ou s'il existe des troubles du langage ou de l'audition dans la famille. Des tests permettent de dépister tôt les difficultés d'audition et de langage.
+Consulte le médecin ou la PMI si ton bébé ne sursaute pas lors d'un bruit soudain, ne babille pas, ne répond pas à ta voix par des sons, ne regarde pas quand on l'appelle, ou s'il existe des troubles du langage ou de l'audition dans la famille. Des tests permettent de dépister tôt les difficultés d'audition et de langage.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1618,45 +1618,45 @@ ${END}`,
     slug: 'langage-de-1-a-3-ans',
     title: 'Le langage de 1 à 3 ans',
     summary: 'Un mot pour une phrase, puis deux mots associés, puis de vraies phrases : les grandes étapes du langage du tout-petit et les signes qui doivent faire consulter.',
-    body_md: `Entre 1 et 3 ans, le langage fait des bonds spectaculaires. L'enfant comprend bien plus de mots qu'il n'en dit, puis il les assemble, pose mille questions, raconte. Votre façon de lui répondre l'aide à progresser.
+    body_md: `Entre 1 et 3 ans, le langage fait des bonds spectaculaires. L'enfant comprend bien plus de mots qu'il n'en dit, puis il les assemble, pose mille questions, raconte. Ta façon de lui répondre l'aide à progresser.
 
 ## En bref
 - De 1 an à 18 mois, un seul mot sert souvent de phrase (« gâteau » pour « je veux un gâteau ») ; le « non » s'installe.
 - De 18 mois à 2 ans, il connaît souvent plusieurs centaines de mots, dit « moi », associe deux mots (« moi-manger »).
 - De 2 à 3 ans, les phrases s'allongent, il pose sans cesse des questions et utilise « je ».
-- Ne reprenez pas sa prononciation : répétez simplement le mot correctement.
+- Ne reprends pas sa prononciation : répète simplement le mot correctement.
 - L'absence de phrases correctes vers 2 à 3 ans, ou une compréhension difficile, doit faire consulter.
 
 ## Comprendre
-La compréhension précède toujours la parole : votre enfant comprend beaucoup de choses avant de pouvoir les dire. L'articulation s'acquiert sur plusieurs années, et il est fréquent qu'un enfant de 2 ans déforme encore beaucoup de mots.
+La compréhension précède toujours la parole : ton enfant comprend beaucoup de choses avant de pouvoir les dire. L'articulation s'acquiert sur plusieurs années, et il est fréquent qu'un enfant de 2 ans déforme encore beaucoup de mots.
 
 Vers 2 à 3 ans, il commence à situer les objets dans l'espace (dedans, dehors), à distinguer hier et demain, et son vocabulaire s'enrichit : tailles, couleurs, formes, premiers chiffres.
 
 ## Au quotidien
-- **Parlez avec lui** dans une ambiance agréable, avec des échanges, des regards, des sourires.
-- **Laissez-le exprimer** ses besoins et ses envies, sans parler à sa place.
-- **Reformulez** ses phrases quand elles sont incomplètes (« Tu veux de l'eau ? Oui, tu veux de l'eau dans ton verre »), et posez-lui des questions.
-- **Félicitez ses progrès** sans exiger une prononciation parfaite.
-- **Chantez, racontez, lisez** ; jouez à la dînette, au memory, aux jeux d'imitation.
-- **Limitez les écrans** au profit des échanges.
+- **Parle avec lui** dans une ambiance agréable, avec des échanges, des regards, des sourires.
+- **Laisse-le exprimer** ses besoins et ses envies, sans parler à sa place.
+- **Reformule** ses phrases quand elles sont incomplètes (« Tu veux de l'eau ? Oui, tu veux de l'eau dans ton verre »), et pose-lui des questions.
+- **Félicite ses progrès** sans exiger une prononciation parfaite.
+- **Chante, raconte, lis** ; joue à la dînette, au memory, aux jeux d'imitation.
+- **Limite les écrans** au profit des échanges.
 
 ## Questions fréquentes
 **Il dit peu de mots mais comprend tout, est-ce rassurant ?**
-Une bonne compréhension est un élément important. Si à 2 ans il associe peu ou pas de mots, parlez-en au médecin, qui évaluera la situation.
+Une bonne compréhension est un élément important. Si à 2 ans il associe peu ou pas de mots, parles-en au médecin, qui évaluera la situation.
 
 **Il bégaie depuis quelques semaines, que faire ?**
-Restez calme, laissez-lui le temps de finir sans terminer ses phrases à sa place, et parlez-en au médecin si cela persiste ou le gêne.
+Reste calme, laisse-lui le temps de finir sans terminer ses phrases à sa place, et parles-en au médecin si cela persiste ou le gêne.
 
 **Faut-il corriger ses erreurs ?**
-Plutôt que de le reprendre, répétez le mot ou la phrase correctement, naturellement.
+Plutôt que de le reprendre, répète le mot ou la phrase correctement, naturellement.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si :
-- votre enfant est difficile à comprendre et sa parole ne s'améliore pas ;
+Parles-en au médecin ou à la PMI si :
+- ton enfant est difficile à comprendre et sa parole ne s'améliore pas ;
 - il bégaie ou a une parole très saccadée ;
 - il ne fait pas de phrases correctes vers 2 à 3 ans ;
 - il a du mal à comprendre ce qu'on lui dit, ou son attention décroche très vite ;
-- il existe des troubles du langage dans la famille, ou l'entourage (crèche, école) vous signale un retard.
+- il existe des troubles du langage dans la famille, ou l'entourage (crèche, école) te signale un retard.
 
 Des tests permettent un repérage précoce et une prise en charge plus efficace (voir aussi les articles « Neurodéveloppement »).
 
@@ -1673,19 +1673,19 @@ ${END}`,
     slug: 'jouer-avec-bebe-eveil',
     title: 'Jouer avec son bébé : l’éveil au fil des mois',
     summary: 'Le jeu est essentiel au développement : des idées adaptées à chaque âge, du hochet aux encastrements, avec les parents comme premier « jouet », et sans écran.',
-    body_md: `Pour un bébé, jouer, c'est apprendre : découvrir son corps, les objets, les autres. Pas besoin de jouets sophistiqués. Le jeu le plus précieux, c'est celui qu'il partage avec vous.
+    body_md: `Pour un bébé, jouer, c'est apprendre : découvrir son corps, les objets, les autres. Pas besoin de jouets sophistiqués. Le jeu le plus précieux, c'est celui qu'il partage avec toi.
 
 ## En bref
 - Le jeu nourrit le développement affectif, intellectuel et physique.
 - Un jouet adapté à l'âge est celui qui n'est ni trop facile ni trop difficile.
 - De 0 à 6 mois : regards, voix, hochets, mobiles, portiques ; de 6 à 9 mois : jeux répétitifs, tapis d'éveil, livres en tissu ; vers 1 an : cubes, encastrements, comptines à gestes.
 - La télévision et les écrans sont à éviter chez le tout-petit.
-- Vérifiez que les jouets sont adaptés à l'âge et sans petites pièces détachables.
+- Vérifie que les jouets sont adaptés à l'âge et sans petites pièces détachables.
 
 ## Comprendre
-**De 0 à 6 mois**, votre bébé aime vous regarder, vous imiter, écouter votre voix. Il observe son environnement : changer le transat de place lui offre de nouveaux points de vue. Hochets, mobiles et portiques éveillent ses sens.
+**De 0 à 6 mois**, ton bébé aime te regarder, t’imiter, écouter ta voix. Il observe son environnement : changer le transat de place lui offre de nouveaux points de vue. Hochets, mobiles et portiques éveillent ses sens.
 
-**Vers 6 mois**, il rit aux chatouilles et adore les jeux répétitifs avec une petite variante. Son attention retombe vite : changez de jeu sans insister.
+**Vers 6 mois**, il rit aux chatouilles et adore les jeux répétitifs avec une petite variante. Son attention retombe vite : change de jeu sans insister.
 
 **Jusqu'à 9 mois**, la pince pouce-index apparaît : il manipule, tape, découvre que ses gestes produisent des effets. Tapis d'éveil, jeux multi-activités, livres en tissu ou en plastique pour le bain lui plaisent.
 
@@ -1694,25 +1694,25 @@ ${END}`,
 Les écrans fascinent mais rendent l'enfant passif : il ne bouge plus, ne découvre plus son corps en mouvement. Rien ne remplace les jeux partagés.
 
 ## Au quotidien
-- **Accordez-lui des temps au sol**, sur un tapis, dans un espace sécurisé.
-- **Jouez à coucou-caché** : il apprend que ce qui disparaît revient, ce qui l'aide à vivre les séparations.
-- **Lisez-lui des histoires courtes** dans un moment de câlin.
-- **Faites tourner les jouets** plutôt que de tout laisser à disposition.
-- **Vérifiez l'âge indiqué** sur les jouets et retirez ceux qui sont cassés.
-- **Laissez-le s'ennuyer un peu** : c'est aussi comme cela qu'il explore.
+- **Accorde-lui des temps au sol**, sur un tapis, dans un espace sécurisé.
+- **Joue à coucou-caché** : il apprend que ce qui disparaît revient, ce qui l'aide à vivre les séparations.
+- **Lis-lui des histoires courtes** dans un moment de câlin.
+- **Fais tourner les jouets** plutôt que de tout laisser à disposition.
+- **Vérifie l'âge indiqué** sur les jouets et retire ceux qui sont cassés.
+- **Laisse-le s'ennuyer un peu** : c'est aussi comme cela qu'il explore.
 
 ## Questions fréquentes
 **Faut-il beaucoup de jouets ?**
-Non. Quelques jouets adaptés, des objets du quotidien sûrs (gobelets, boîtes) et surtout votre présence suffisent.
+Non. Quelques jouets adaptés, des objets du quotidien sûrs (gobelets, boîtes) et surtout ta présence suffisent.
 
 **Les applications « éducatives » pour bébé sont-elles utiles ?**
 Chez le tout-petit, les échanges réels avec l'adulte sont bien plus bénéfiques que les écrans, même présentés comme éducatifs (voir l'article sur les écrans).
 
 **Il se lasse vite de ses jouets…**
-Son attention est courte à cet âge : c'est attendu. Variez les propositions et suivez ses envies.
+Son attention est courte à cet âge : c'est attendu. Varie les propositions et suis ses envies.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé s'intéresse peu aux personnes ou aux objets, ne sourit pas en réponse, ne cherche pas à attraper vers 5 à 6 mois, ou si vous avez un doute sur son développement. En cas d'objet avalé ou de gêne respiratoire, appelez le 15 ou le 112.
+Parles-en au médecin ou à la PMI si ton bébé s'intéresse peu aux personnes ou aux objets, ne sourit pas en réponse, ne cherche pas à attraper vers 5 à 6 mois, ou si tu as un doute sur son développement. En cas d'objet avalé ou de gêne respiratoire, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -1730,7 +1730,7 @@ ${END}`,
     body_md: `Dès qu'un bébé commence à bouger, à attraper, puis à se déplacer, la maison devient un terrain d'exploration… et de dangers. La plupart des accidents domestiques peuvent être évités par quelques aménagements simples. Le risque zéro n'existe pas : la surveillance d'un adulte reste la meilleure protection.
 
 ## En bref
-- Ne laissez jamais bébé seul sur la table à langer ni dans le bain.
+- Ne laisse jamais bébé seul sur la table à langer ni dans le bain.
 - Barrières homologuées dans les escaliers, fenêtres et balcons sécurisés, pas de trotteur.
 - Médicaments et produits ménagers en hauteur, dans un placard fermé, dans leur emballage d'origine.
 - Petits objets et aliments à risque (cacahuètes, fruits secs, perles, pièces) hors de portée.
@@ -1753,7 +1753,7 @@ Le tout-petit ne perçoit pas le danger. Il grimpe, porte tout à la bouche, tir
 - Enfant éloigné de la cheminée, de l'insert et des radiateurs brûlants.
 - Queues de casseroles tournées vers l'intérieur ; fer à repasser débranché et rangé.
 - Température des aliments et biberons testée, surtout après un passage au micro-ondes.
-- Ne buvez pas de boisson chaude avec bébé dans les bras.
+- Ne bois pas de boisson chaude avec bébé dans les bras.
 
 **Intoxications**
 - Médicaments rangés en hauteur, dans un placard fermé à clé, jamais dans un sac à main.
@@ -1780,10 +1780,10 @@ Dès que bébé commence à se retourner et à attraper, puis à chaque nouvelle
 Ils sont utiles, mais rien ne remplace la surveillance et le rangement des appareils.
 
 **Où trouver le numéro du centre antipoison ?**
-Notez-le dès maintenant dans votre téléphone ; il est indiqué sur ameli.fr et sur le site des centres antipoison. En cas d'enfant inconscient ou de détresse, c'est le 15 ou le 112.
+Note-le dès maintenant dans ton téléphone ; il est indiqué sur ameli.fr et sur le site des centres antipoison. En cas d'enfant inconscient ou de détresse, c'est le 15 ou le 112.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de chute avec perte de connaissance, vomissements ou somnolence, de brûlure étendue ou au visage, aux mains ou aux organes génitaux, d'enfant retiré de l'eau, d'étouffement, ou d'intoxication avec enfant inconscient ou en difficulté. Pour une ingestion de produit chez un enfant conscient, appelez le centre antipoison sans attendre les symptômes. Consultez un médecin pour toute blessure qui vous inquiète.
+**Appelle le 15 ou le 112** en cas de chute avec perte de connaissance, vomissements ou somnolence, de brûlure étendue ou au visage, aux mains ou aux organes génitaux, d'enfant retiré de l'eau, d'étouffement, ou d'intoxication avec enfant inconscient ou en difficulté. Pour une ingestion de produit chez un enfant conscient, appelle le centre antipoison sans attendre les symptômes. Consulte un médecin pour toute blessure qui t’inquiète.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1802,9 +1802,9 @@ ${END}`,
 
 ## En bref
 - Toux brutale, gêne pour respirer, agitation : l'enfant tousse encore ? On ne fait rien d'autre que le laisser tousser, en le surveillant.
-- S'il ne peut plus tousser, ni crier, ni respirer, ou devient bleu : appelez immédiatement le 15 ou le 112.
-- Ne mettez jamais les doigts dans sa bouche à l'aveugle et ne le suspendez jamais par les pieds.
-- Les gestes d'expulsion dépendent de l'âge : apprenez-les lors d'une formation aux premiers secours.
+- S'il ne peut plus tousser, ni crier, ni respirer, ou devient bleu : appelle immédiatement le 15 ou le 112.
+- Ne mets jamais les doigts dans sa bouche à l'aveugle et ne le suspends jamais par les pieds.
+- Les gestes d'expulsion dépendent de l'âge : apprends-les lors d'une formation aux premiers secours.
 - Après une fausse route grave, un avis médical à l'hôpital est nécessaire.
 
 ## Comprendre
@@ -1814,33 +1814,33 @@ Quand l'obstruction est complète, l'enfant ne tousse plus, ne peut plus parler 
 
 ## Au quotidien
 **En cas d'asphyxie (il ne tousse plus, ne respire plus)**
-- Appelez le 15 ou le 112, ou faites appeler, immédiatement.
-- Ne l'allongez pas : laissez-le dans la position qu'il prend, souvent assis et penché en avant.
-- Appliquez les gestes enseignés pour son âge, sur les conseils du médecin régulateur. Selon ameli.fr :
-  - **enfant de moins de 3 ans** : le placer à plat ventre sur votre cuisse, tête vers le bas, et donner des coups secs entre les omoplates (manœuvre de Mofenson) ;
+- Appelle le 15 ou le 112, ou fais appeler, immédiatement.
+- Ne l'allonge pas : laisse-le dans la position qu'il prend, souvent assis et penché en avant.
+- Applique les gestes enseignés pour son âge, sur les conseils du médecin régulateur. Selon ameli.fr :
+  - **enfant de moins de 3 ans** : le placer à plat ventre sur ta cuisse, tête vers le bas, et donner des coups secs entre les omoplates (manœuvre de Mofenson) ;
   - **à partir de 3 ans** : jusqu'à 5 claques dans le dos, entre les omoplates, enfant penché en avant ;
   - **à partir de 1 an**, si les claques échouent : compressions brusques vers le haut, poing placé entre le nombril et le bas du sternum (manœuvre de Heimlich).
-- Arrêtez dès que l'objet est expulsé ou que l'enfant tousse à nouveau.
-- Restez au téléphone avec le Samu et suivez ses consignes ; une évaluation à l'hôpital est nécessaire.
+- Arrête dès que l'objet est expulsé ou que l'enfant tousse à nouveau.
+- Reste au téléphone avec le Samu et suis ses consignes ; une évaluation à l'hôpital est nécessaire.
 
 **Pour prévenir**
-- Pas de cacahuètes, fruits à coque ou raisins entiers, ni de bonbons durs pour les jeunes enfants ; coupez les aliments ronds.
-- Rangez petits objets, piles, pièces de monnaie et croquettes d'animaux hors de portée.
-- Choisissez des jouets adaptés à l'âge, sans petites pièces détachables.
-- Faites manger l'enfant assis, calme, sous surveillance, sans courir ni jouer en mangeant.
+- Pas de cacahuètes, fruits à coque ou raisins entiers, ni de bonbons durs pour les jeunes enfants ; coupe les aliments ronds.
+- Range petits objets, piles, pièces de monnaie et croquettes d'animaux hors de portée.
+- Choisis des jouets adaptés à l'âge, sans petites pièces détachables.
+- Fais manger l'enfant assis, calme, sous surveillance, sans courir ni jouer en mangeant.
 
 ## Questions fréquentes
 **Il a toussé fort après avoir avalé de travers mais va bien maintenant, que faire ?**
-S'il respire normalement, parle ou pleure normalement, surveillez-le. S'il garde une toux, une gêne respiratoire, un sifflement, ou si vous pensez qu'un objet a pu être inhalé, consultez rapidement.
+S'il respire normalement, parle ou pleure normalement, surveille-le. S'il garde une toux, une gêne respiratoire, un sifflement, ou si tu penses qu'un objet a pu être inhalé, consulte rapidement.
 
 **Il a avalé une pile bouton, est-ce une urgence ?**
-Oui : une pile bouton avalée peut causer des lésions très graves. Appelez immédiatement le 15 ou le 112.
+Oui : une pile bouton avalée peut causer des lésions très graves. Appelle immédiatement le 15 ou le 112.
 
 **Où apprendre les gestes ?**
 Des formations aux premiers secours sont proposées par des associations agréées ; certaines maternités et PMI en organisent pour les parents.
 
 ## Quand demander conseil
-**Urgence : appelez le 15 ou le 112** dès que l'enfant ne peut plus tousser, respirer, parler ou pleurer, devient bleu ou perd connaissance, ou en cas de pile bouton avalée. Consultez un médecin si une toux ou une gêne persiste après un épisode d'étouffement.
+**Urgence : appelle le 15 ou le 112** dès que l'enfant ne peut plus tousser, respirer, parler ou pleurer, devient bleu ou perd connaissance, ou en cas de pile bouton avalée. Consulte un médecin si une toux ou une gêne persiste après un épisode d'étouffement.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1857,11 +1857,11 @@ ${END}`,
     body_md: `Un flacon mal refermé, un médicament oublié sur une table, une dosette de lessive : en quelques secondes, un tout-petit peut avaler un produit dangereux. Les bons réflexes, dans les premières minutes, sont essentiels.
 
 ## En bref
-- Agissez vite, même si votre enfant n'a aucun symptôme.
-- Enfant inconscient : appelez le 15 ou le 112 et placez-le en position latérale de sécurité.
-- Enfant conscient : appelez le centre antipoison le plus proche.
-- Ne le faites pas vomir, ne lui donnez ni lait ni eau.
-- Gardez l'emballage, la notice et les restes du produit.
+- Agis vite, même si ton enfant n'a aucun symptôme.
+- Enfant inconscient : appelle le 15 ou le 112 et place-le en position latérale de sécurité.
+- Enfant conscient : appelle le centre antipoison le plus proche.
+- Ne le fais pas vomir, ne lui donne ni lait ni eau.
+- Garde l'emballage, la notice et les restes du produit.
 
 ## Comprendre
 Faire vomir peut aggraver les brûlures d'un produit caustique en le faisant repasser par l'œsophage et la bouche. Le lait peut accélérer l'absorption de certains produits, et l'eau peut faire mousser un détergent. C'est pourquoi le seul bon réflexe est d'appeler, pour recevoir un conseil adapté au produit, à la quantité et à l'âge de l'enfant.
@@ -1870,10 +1870,10 @@ Les signes de gravité possibles : baisse de la conscience, confusion, comportem
 
 ## Au quotidien
 **Si cela arrive**
-- Restez calme et éloignez le produit.
-- Préparez les informations : âge et poids de l'enfant, nom du produit, quantité estimée, heure, symptômes éventuels.
-- Ne le laissez pas seul et ne le transportez pas de vous-même sans avis.
-- En cas d'hospitalisation, emportez l'emballage.
+- Reste calme et éloigne le produit.
+- Prépare les informations : âge et poids de l'enfant, nom du produit, quantité estimée, heure, symptômes éventuels.
+- Ne le laisse pas seul et ne le transporte pas de toi-même sans avis.
+- En cas d'hospitalisation, emporte l'emballage.
 
 **Pour prévenir**
 - Médicaments en hauteur, dans une armoire fermée à clé, jamais dans un sac à main ni sur une table de nuit.
@@ -1881,20 +1881,20 @@ Les signes de gravité possibles : baisse de la conscience, confusion, comportem
 - Dosettes de lessive liquide hors de vue et de portée.
 - Piles bouton rangées, compartiments à piles des jouets vissés.
 - Produits de beauté, cigarettes, liquides de vapotage, tabac hors de portée.
-- Notez dès aujourd'hui le numéro de votre centre antipoison dans votre téléphone.
+- Note dès aujourd'hui le numéro de ton centre antipoison dans ton téléphone.
 
 ## Questions fréquentes
 **Il a peut-être avalé un peu de produit, mais je ne suis pas sûr·e…**
-Appelez quand même le centre antipoison : il vous dira quoi faire. Mieux vaut un appel pour rien qu'un retard.
+Appelle quand même le centre antipoison : il te dira quoi faire. Mieux vaut un appel pour rien qu'un retard.
 
 **Il a bu un peu de mon verre d'alcool, est-ce grave ?**
-L'alcool est toxique pour un jeune enfant, même en petite quantité. Appelez le centre antipoison ou le 15.
+L'alcool est toxique pour un jeune enfant, même en petite quantité. Appelle le centre antipoison ou le 15.
 
 **Il a mis une pile bouton dans sa bouche et elle a disparu…**
-C'est une urgence : appelez immédiatement le 15 ou le 112.
+C'est une urgence : appelle immédiatement le 15 ou le 112.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre enfant est inconscient, somnolent, convulse, respire mal, ou s'il a avalé une pile bouton. **Appelez le centre antipoison** pour toute autre ingestion, même sans symptôme. Les numéros d'urgence (15, 18, 112) sont gratuits, même sans crédit.
+**Appelle le 15 ou le 112** si ton enfant est inconscient, somnolent, convulse, respire mal, ou s'il a avalé une pile bouton. **Appelle le centre antipoison** pour toute autre ingestion, même sans symptôme. Les numéros d'urgence (15, 18, 112) sont gratuits, même sans crédit.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1908,14 +1908,14 @@ ${END}`,
     slug: 'siege-auto-bebe',
     title: 'Le siège auto de bébé',
     summary: 'Siège adapté à la taille, dos à la route le plus longtemps possible, airbag désactivé à l’avant, harnais bien ajusté : les règles pour chaque trajet, même court.',
-    body_md: `En voiture, un siège auto adapté et bien installé protège votre enfant en cas de choc. C'est vrai pour chaque trajet, même très court : une part importante des accidents graves d'enfants passagers surviennent près de chez soi.
+    body_md: `En voiture, un siège auto adapté et bien installé protège ton enfant en cas de choc. C'est vrai pour chaque trajet, même très court : une part importante des accidents graves d'enfants passagers surviennent près de chez soi.
 
 ## En bref
 - Le siège auto est obligatoire jusqu'à 10 ans, ou jusqu'à ce que l'enfant soit assez grand pour la ceinture seule (environ 1,35 à 1,50 m).
 - Les tout-petits voyagent dos à la route ; avec un siège i-Size (norme R129), c'est possible jusqu'à environ 15 mois.
 - À l'avant, un siège dos à la route n'est possible que si l'airbag passager est désactivé.
-- Le harnais doit être bien ajusté : retirez la doudoune ou la combinaison avant d'attacher l'enfant.
-- Évitez les sièges d'occasion dont vous ne connaissez pas l'historique.
+- Le harnais doit être bien ajusté : retire la doudoune ou la combinaison avant d'attacher l'enfant.
+- Évite les sièges d'occasion dont tu ne connais pas l'historique.
 
 ## Comprendre
 La tête d'un bébé est lourde par rapport à son corps, et son cou est encore fragile. Dos à la route, le siège répartit la force d'un choc frontal sur tout le dos et protège la tête et la nuque. C'est pourquoi on garde cette position le plus longtemps possible.
@@ -1925,13 +1925,13 @@ La norme R129 (i-Size) est plus exigeante que l'ancienne norme R44 : elle impose
 Les grandes familles de sièges : la nacelle (bébé allongé, perpendiculaire à la route), la coque (semi-couchée, dos à la route), les sièges évolutifs, puis le rehausseur. La coque ne doit pas servir de transat en dehors de la voiture pour de longues périodes.
 
 ## Au quotidien
-- **Lisez la notice** du siège et celle de la voiture.
-- **Vérifiez la fixation** : Isofix bien enclenché, ou ceinture bien tendue, ni tordue ni lâche.
-- **Ajustez le harnais** : une main doit à peine passer entre le harnais et l'enfant ; sangles sur les épaules et l'entrejambe.
-- **Pas de vêtements épais** sous le harnais : mettez la couverture ou le manteau par-dessus une fois attaché.
-- **Vérifiez le « clic »** de la boucle, bloquez les portes arrière.
-- **Rangez les objets** posés sur la banquette, qui deviennent des projectiles en cas de choc.
-- **Ne laissez jamais un enfant seul dans la voiture**, même quelques minutes, surtout par temps chaud.
+- **Lis la notice** du siège et celle de la voiture.
+- **Vérifie la fixation** : Isofix bien enclenché, ou ceinture bien tendue, ni tordue ni lâche.
+- **Ajuste le harnais** : une main doit à peine passer entre le harnais et l'enfant ; sangles sur les épaules et l'entrejambe.
+- **Pas de vêtements épais** sous le harnais : mets la couverture ou le manteau par-dessus une fois attaché.
+- **Vérifie le « clic »** de la boucle, bloque les portes arrière.
+- **Range les objets** posés sur la banquette, qui deviennent des projectiles en cas de choc.
+- **Ne laisse jamais un enfant seul dans la voiture**, même quelques minutes, surtout par temps chaud.
 
 ## Questions fréquentes
 **Puis-je installer la coque à l'avant ?**
@@ -1944,7 +1944,7 @@ C'est déconseillé : un siège qui a subi un choc peut être fragilisé sans qu
 Oui : beaucoup d'accidents surviennent sur de courts trajets.
 
 ## Quand demander conseil
-Demandez conseil au vendeur ou à des professionnels de la sécurité routière pour l'installation. Après un accident, même léger, faites examiner votre enfant s'il pleure de façon inhabituelle, vomit, semble somnolent ou si vous avez un doute ; en cas de signe inquiétant, appelez le 15 ou le 112.
+Demande conseil au vendeur ou à des professionnels de la sécurité routière pour l'installation. Après un accident, même léger, fais examiner ton enfant s'il pleure de façon inhabituelle, vomit, semble somnolent ou si tu as un doute ; en cas de signe inquiétant, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -1960,11 +1960,11 @@ ${END}`,
     body_md: `Les nourrissons et les jeunes enfants supportent mal la chaleur : ils transpirent moins efficacement et peuvent se déshydrater rapidement. Leur peau est aussi très sensible au soleil. Quelques précautions suffisent à passer l'été sereinement.
 
 ## En bref
-- Par forte chaleur, proposez à boire régulièrement (sein, biberon, eau selon l'âge), sans attendre qu'il le demande.
-- Laissez bébé en couche ou en body léger, dans la pièce la plus fraîche.
+- Par forte chaleur, propose à boire régulièrement (sein, biberon, eau selon l'âge), sans attendre qu'il le demande.
+- Laisse bébé en couche ou en body léger, dans la pièce la plus fraîche.
 - Sorties tôt le matin (avant 11 h) ou le soir (après 21 h) pendant les épisodes de canicule.
-- Évitez au maximum l'exposition directe au soleil ; vêtements couvrants, chapeau à larges bords.
-- Ne laissez jamais un enfant dans une voiture, même quelques minutes.
+- Évite au maximum l'exposition directe au soleil ; vêtements couvrants, chapeau à larges bords.
+- Ne laisse jamais un enfant dans une voiture, même quelques minutes.
 
 ## Comprendre
 La chaleur fait perdre beaucoup d'eau. Chez un bébé, cette perte peut entraîner une déshydratation, voire un coup de chaleur, en peu de temps. Les signes à surveiller : enfant qui boit moins, couches moins mouillées, somnolence ou agitation inhabituelle, fièvre, peau chaude et sèche.
@@ -1973,31 +1973,31 @@ Le soleil est aussi dangereux pour la peau et les yeux des enfants. Les coups de
 
 ## Au quotidien
 **Par forte chaleur**
-- Faites boire régulièrement ; un bébé allaité peut téter plus souvent.
+- Fais boire régulièrement ; un bébé allaité peut téter plus souvent.
 - Bains tièdes sous surveillance permanente, ou brumisation d'eau sur le visage et le corps.
-- Pièce la plus fraîche du logement ; aérez seulement quand l'air extérieur est plus frais.
+- Pièce la plus fraîche du logement ; aère seulement quand l'air extérieur est plus frais.
 - Jamais seul près d'une fenêtre ouverte ou sur un balcon.
-- Activités calmes ; emportez toujours de l'eau en voiture.
+- Activités calmes ; emporte toujours de l'eau en voiture.
 
 **Au soleil**
-- Évitez le soleil entre 10 h et 16 h.
+- Évite le soleil entre 10 h et 16 h.
 - Vêtements couvrants (manches longues, pantalon léger), de préférence anti-UV à la plage.
 - Chapeau à larges bords plutôt qu'une casquette.
 - Lunettes de soleil adaptées pour l'enfant plus grand (catégorie 3 ou 4, marquage CE).
-- Pour les zones découvertes de l'enfant plus grand : crème solaire pédiatrique, indice élevé (50 ou 50+), renouvelée au moins toutes les 2 heures. Pour un bébé, demandez conseil au médecin ou au pharmacien.
+- Pour les zones découvertes de l'enfant plus grand : crème solaire pédiatrique, indice élevé (50 ou 50+), renouvelée au moins toutes les 2 heures. Pour un bébé, demande conseil au médecin ou au pharmacien.
 
 ## Questions fréquentes
 **Faut-il donner de l'eau à un bébé allaité quand il fait très chaud ?**
-Proposez d'abord le sein plus souvent. Demandez conseil à la sage-femme, à la PMI ou au médecin pour savoir s'il faut proposer de l'eau en plus selon son âge.
+Propose d'abord le sein plus souvent. Demande conseil à la sage-femme, à la PMI ou au médecin pour savoir s'il faut proposer de l'eau en plus selon son âge.
 
 **La poussette avec une couverture dessus protège-t-elle du soleil ?**
-Couvrir la poussette d'un tissu peut faire monter la température à l'intérieur. Privilégiez l'ombre et une ombrelle adaptée, et vérifiez souvent que bébé n'a pas trop chaud.
+Couvrir la poussette d'un tissu peut faire monter la température à l'intérieur. Privilégie l'ombre et une ombrelle adaptée, et vérifie souvent que bébé n'a pas trop chaud.
 
 **Peut-on utiliser un ventilateur ?**
 Il peut aider à rafraîchir la pièce s'il n'est pas dirigé directement sur l'enfant et reste hors de sa portée.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre enfant est très somnolent, difficile à réveiller, a une fièvre élevée avec peau chaude et sèche, vomit, refuse de boire ou fait un malaise. **Consultez** s'il boit moins, mouille moins ses couches ou a un coup de soleil important.
+**Appelle le 15 ou le 112** si ton enfant est très somnolent, difficile à réveiller, a une fièvre élevée avec peau chaude et sèche, vomit, refuse de boire ou fait un malaise. **Consulte** s'il boit moins, mouille moins ses couches ou a un coup de soleil important.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -2030,24 +2030,24 @@ ${END}`,
 Plus de 10 % des pères présenteraient aussi des symptômes dépressifs dans les deux mois qui suivent la naissance.
 
 ## Au quotidien
-- **Parlez de ce que vous ressentez** à votre partenaire, à un proche, à la sage-femme, au médecin.
-- **Acceptez l'aide** pour les nuits, les repas, la maison.
-- **Profitez des rendez-vous prévus** : entretien postnatal précoce (4e à 8e semaine), consultation postnatale (6e à 8e semaine), séances de suivi avec une sage-femme.
+- **Parle de ce que tu ressens** à ton partenaire, à un proche, à la sage-femme, au médecin.
+- **Accepte l'aide** pour les nuits, les repas, la maison.
+- **Profite des rendez-vous prévus** : entretien postnatal précoce (4e à 8e semaine), consultation postnatale (6e à 8e semaine), séances de suivi avec une sage-femme.
 - **Le dispositif « Mon soutien psy »** permet des séances avec un psychologue prises en charge par l'Assurance Maladie.
 - **Partenaire, proches** : soyez attentifs aux changements, proposez votre aide concrète et encouragez à consulter.
 
 ## Questions fréquentes
 **Je n'éprouve pas l'amour « immédiat » que j'imaginais, suis-je une mauvaise mère ?**
-Non. Le lien se construit souvent progressivement. Si cette impression s'accompagne de tristesse ou d'anxiété qui durent, parlez-en à un professionnel.
+Non. Le lien se construit souvent progressivement. Si cette impression s'accompagne de tristesse ou d'anxiété qui durent, parles-en à un professionnel.
 
 **Un traitement est-il compatible avec l'allaitement ?**
-Le médecin en tient compte dans le choix du traitement. N'arrêtez rien et ne commencez rien sans avis.
+Le médecin en tient compte dans le choix du traitement. N'arrête rien et ne commence rien sans avis.
 
 **Qui peut m'aider si je suis seule ?**
 La PMI, la sage-femme, le médecin traitant, les lieux d'accueil enfants-parents, l'association Maman Blues, le numéro Allô Parent Bébé (0 800 00 34 56) et le 3114.
 
 ## Quand demander conseil
-Parlez-en sans attendre à votre sage-femme, à votre médecin ou à la PMI si le baby blues dure plus de deux semaines ou si vous reconnaissez des signes de dépression. **Appelez le 3114 (24 h/24) ou le 15** si vous avez des idées noires, des pensées de vous faire du mal ou de faire du mal à votre bébé, ou si vous remarquez chez une proche une confusion ou des propos étranges : c'est une urgence.
+Parles-en sans attendre à ta sage-femme, à ton médecin ou à la PMI si le baby blues dure plus de deux semaines ou si tu reconnais des signes de dépression. **Appelle le 3114 (24 h/24) ou le 15** si tu as des idées noires, des pensées de te faire du mal ou de faire du mal à ton bébé, ou si tu remarques chez une proche une confusion ou des propos étranges : c'est une urgence.
 
 ${END}`,
     journeys: ['newborn'],
@@ -2061,41 +2061,41 @@ ${END}`,
   {
     slug: 'suivi-medical-de-la-mere-apres-accouchement',
     title: 'Le suivi médical de la mère après l’accouchement',
-    summary: 'Entretien postnatal précoce, consultation postnatale à 6-8 semaines, visites de sage-femme, rééducation si besoin : les rendez-vous pour vous, et les signes qui doivent faire consulter.',
-    body_md: `Après la naissance, l'attention se porte souvent sur le bébé. Pourtant, votre corps et votre moral ont, eux aussi, besoin de soins et de suivi. Plusieurs rendez-vous sont prévus pour vous accompagner.
+    summary: 'Entretien postnatal précoce, consultation postnatale à 6-8 semaines, visites de sage-femme, rééducation si besoin : les rendez-vous pour toi, et les signes qui doivent faire consulter.',
+    body_md: `Après la naissance, l'attention se porte souvent sur le bébé. Pourtant, ton corps et ton moral ont, eux aussi, besoin de soins et de suivi. Plusieurs rendez-vous sont prévus pour t’accompagner.
 
 ## En bref
 - Un entretien postnatal précoce est prévu entre la 4e et la 8e semaine, avec un médecin, une sage-femme ou un gynécologue.
 - La consultation postnatale a lieu entre la 6e et la 8e semaine : examen de contrôle, allaitement, contraception, rééducation si besoin.
 - Des visites de sage-femme à domicile et des séances de suivi postnatal sont possibles.
 - Fièvre, saignements anormaux ou pertes malodorantes doivent faire consulter rapidement.
-- Tristesse, irritabilité, culpabilité qui durent : parlez-en.
+- Tristesse, irritabilité, culpabilité qui durent : parles-en.
 
 ## Comprendre
-**L'entretien postnatal précoce** fait le point sur votre ressenti depuis la naissance, repère les premiers signes de dépression du post-partum et identifie vos besoins d'accompagnement. Un second entretien peut être proposé entre la 10e et la 14e semaine.
+**L'entretien postnatal précoce** fait le point sur ton ressenti depuis la naissance, repère les premiers signes de dépression du post-partum et identifie tes besoins d'accompagnement. Un second entretien peut être proposé entre la 10e et la 14e semaine.
 
-**La consultation postnatale** porte sur votre état de santé, l'allaitement, la relation avec le bébé, et comprend un examen clinique. C'est souvent à ce moment que la rééducation périnéale et abdominale est prescrite si nécessaire, et que la contraception est discutée.
+**La consultation postnatale** porte sur ton état de santé, l'allaitement, la relation avec le bébé, et comprend un examen clinique. C'est souvent à ce moment que la rééducation périnéale et abdominale est prescrite si nécessaire, et que la contraception est discutée.
 
-**Les séances de suivi postnatal** avec une sage-femme, entre le 8e jour et la 14e semaine, permettent de faire le point sur votre récupération.
+**Les séances de suivi postnatal** avec une sage-femme, entre le 8e jour et la 14e semaine, permettent de faire le point sur ta récupération.
 
 ## Au quotidien
-- **Notez vos rendez-vous** dans l'application ou votre agenda.
-- **Préparez vos questions** : saignements, cicatrice, seins, transit, sommeil, moral, sexualité, contraception, reprise du sport.
-- **Reposez-vous** et mangez régulièrement, même simplement.
-- **Ne restez pas seule avec une douleur** ou une inquiétude : appelez la sage-femme ou le médecin.
+- **Note tes rendez-vous** dans l'application ou ton agenda.
+- **Prépare tes questions** : saignements, cicatrice, seins, transit, sommeil, moral, sexualité, contraception, reprise du sport.
+- **Repose-toi** et mange régulièrement, même simplement.
+- **Ne reste pas seule avec une douleur** ou une inquiétude : appelle la sage-femme ou le médecin.
 
 ## Questions fréquentes
 **Combien de temps durent les saignements après l'accouchement ?**
 Ils diminuent progressivement sur plusieurs semaines. Des saignements qui redeviennent abondants, avec des caillots importants ou une mauvaise odeur, doivent faire consulter.
 
 **J'ai des fuites urinaires quand je tousse, est-ce que ça va passer ?**
-Parlez-en lors de la consultation postnatale : la rééducation périnéale peut être prescrite. N'hésitez pas à aborder ce sujet, fréquent et pris en charge.
+Parles-en lors de la consultation postnatale : la rééducation périnéale peut être prescrite. N'hésite pas à aborder ce sujet, fréquent et pris en charge.
 
 **Quand pourrai-je reprendre le sport ?**
 La marche douce est possible rapidement ; les activités plus intenses se reprennent après la rééducation périnéale, en général 6 à 8 semaines après l'accouchement (voir l'article dédié).
 
 ## Quand demander conseil
-**Consultez rapidement** en cas de fièvre, de saignements anormaux ou abondants, de pertes malodorantes, de douleur qui augmente (ventre, cicatrice, mollet), de sein rouge et douloureux, de maux de tête intenses ou de troubles de la vue. **Parlez-en** en cas de fuites urinaires, de gêne dans le bas du ventre, de tristesse, d'irritabilité ou de culpabilité. **Urgence : 15 ou 112** ; **détresse psychique : 3114**.
+**Consulte rapidement** en cas de fièvre, de saignements anormaux ou abondants, de pertes malodorantes, de douleur qui augmente (ventre, cicatrice, mollet), de sein rouge et douloureux, de maux de tête intenses ou de troubles de la vue. **Parles-en** en cas de fuites urinaires, de gêne dans le bas du ventre, de tristesse, d'irritabilité ou de culpabilité. **Urgence : 15 ou 112** ; **détresse psychique : 3114**.
 
 ${END}`,
     journeys: ['newborn'],
@@ -2117,33 +2117,33 @@ ${END}`,
 - Les activités intenses ou avec port de charges se reprennent après la rééducation périnéale, en général 6 à 8 semaines après l'accouchement.
 - Après une césarienne, il faut attendre la reconstitution de la paroi abdominale, environ 2 mois.
 - Les séances de rééducation périnéale prescrites sont prises en charge à 100 % (dans la limite des tarifs de base).
-- Fuites urinaires, sensation de pesanteur : parlez-en à la consultation postnatale.
+- Fuites urinaires, sensation de pesanteur : parles-en à la consultation postnatale.
 
 ## Comprendre
 Le périnée est l'ensemble des muscles qui soutiennent la vessie, l'utérus et le rectum. Pendant la grossesse et l'accouchement, il est étiré et peut être fragilisé. Reprendre trop tôt des activités à impact (course, sauts) ou avec charges peut augmenter les fuites et la sensation de pesanteur.
 
-La rééducation périnéale, prescrite si besoin lors de la consultation postnatale, aide à retrouver un périnée fonctionnel. Elle est réalisée par une sage-femme ou un kinésithérapeute. Après une épisiotomie, la reprise se fait sur avis du professionnel qui vous suit.
+La rééducation périnéale, prescrite si besoin lors de la consultation postnatale, aide à retrouver un périnée fonctionnel. Elle est réalisée par une sage-femme ou un kinésithérapeute. Après une épisiotomie, la reprise se fait sur avis du professionnel qui te suit.
 
 ## Au quotidien
-- **Marchez** dès que vous vous en sentez capable, à votre rythme.
-- **Écoutez votre corps** : fatigue, douleurs, saignements qui augmentent sont des signaux pour ralentir.
-- **Évitez de porter lourd** les premières semaines quand c'est possible ; faites-vous aider.
-- **Profitez de la consultation postnatale** pour faire le point et obtenir une prescription de rééducation si besoin.
-- **Reprenez ensuite progressivement**, en privilégiant d'abord des activités douces (natation, vélo d'appartement, renforcement doux) selon les conseils du professionnel.
-- **Demandez des exercices adaptés** à votre situation au professionnel qui vous suit.
+- **Marche** dès que tu t’en sens capable, à ton rythme.
+- **Écoute ton corps** : fatigue, douleurs, saignements qui augmentent sont des signaux pour ralentir.
+- **Évite de porter lourd** les premières semaines quand c'est possible ; fais-toi aider.
+- **Profite de la consultation postnatale** pour faire le point et obtenir une prescription de rééducation si besoin.
+- **Reprends ensuite progressivement**, en privilégiant d'abord des activités douces (natation, vélo d'appartement, renforcement doux) selon les conseils du professionnel.
+- **Demande des exercices adaptés** à ta situation au professionnel qui te suit.
 
 ## Questions fréquentes
 **Je n'ai aucune fuite, dois-je faire la rééducation ?**
-C'est le professionnel qui l'évalue lors de la consultation postnatale. Parlez-en avec lui.
+C'est le professionnel qui l'évalue lors de la consultation postnatale. Parles-en avec lui.
 
 **Puis-je faire des abdominaux classiques tout de suite ?**
-Demandez conseil au professionnel : certains exercices sont à éviter tant que le périnée et la paroi abdominale ne sont pas rééduqués.
+Demande conseil au professionnel : certains exercices sont à éviter tant que le périnée et la paroi abdominale ne sont pas rééduqués.
 
 **Et après une césarienne ?**
-La paroi abdominale a besoin d'environ 2 mois pour se reconstituer. La marche douce reste possible selon votre confort et les conseils de l'équipe.
+La paroi abdominale a besoin d'environ 2 mois pour se reconstituer. La marche douce reste possible selon ton confort et les conseils de l'équipe.
 
 ## Quand demander conseil
-Consultez si vous avez des fuites urinaires, une sensation de pesanteur dans le bas du ventre, des douleurs pendant les rapports, des saignements qui reprennent, ou une douleur de cicatrice qui augmente. En cas de fièvre, de saignements abondants ou de douleur intense, consultez rapidement ; en cas d'urgence, appelez le 15 ou le 112.
+Consulte si tu as des fuites urinaires, une sensation de pesanteur dans le bas du ventre, des douleurs pendant les rapports, des saignements qui reprennent, ou une douleur de cicatrice qui augmente. En cas de fièvre, de saignements abondants ou de douleur intense, consulte rapidement ; en cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -2162,9 +2162,9 @@ ${END}`,
 ## En bref
 - L'ovulation peut revenir avant les règles : une ovulation est possible à partir de 21 jours après l'accouchement.
 - Les règles reviennent souvent dans les 6 à 8 semaines, mais ce délai varie beaucoup.
-- Plusieurs méthodes sont possibles selon votre situation : préservatif, pilule microprogestative, implant, DIU.
+- Plusieurs méthodes sont possibles selon ta situation : préservatif, pilule microprogestative, implant, DIU.
 - L'allaitement ne protège d'une grossesse que dans des conditions très strictes (méthode MAMA).
-- Parlez-en pendant la grossesse ou à la maternité : certaines méthodes peuvent être prescrites dès la sortie.
+- Parles-en pendant la grossesse ou à la maternité : certaines méthodes peuvent être prescrites dès la sortie.
 
 ## Comprendre
 On ne peut pas prévoir la date du retour de l'ovulation. Une grossesse est donc possible avant même les premières règles. Avoir une contraception avant de reprendre une vie sexuelle évite une grossesse rapprochée non souhaitée. Prévoir sa contraception ne signifie pas devoir reprendre les rapports à une date précise : chacun va à son rythme.
@@ -2175,28 +2175,28 @@ On ne peut pas prévoir la date du retour de l'ovulation. Une grossesse est donc
 - **implant** : pose possible dès l'accouchement, avec un professionnel de santé ;
 - **DIU** (au cuivre ou hormonal) : pose possible environ 4 semaines après l'accouchement, plus tard après une césarienne ; une autre méthode est nécessaire en attendant.
 
-L'implant et le DIU restent efficaces quel que soit le moment du sevrage. Le choix d'une méthode se fait avec un professionnel, qui tient compte de l'allaitement et de votre santé.
+L'implant et le DIU restent efficaces quel que soit le moment du sevrage. Le choix d'une méthode se fait avec un professionnel, qui tient compte de l'allaitement et de ta santé.
 
 **La méthode MAMA** (allaitement et aménorrhée) n'est envisageable que si toutes ces conditions sont réunies : allaitement exclusif (aucune autre nourriture ni boisson), tétées à la demande jour et nuit sans intervalle de plus de 4 heures le jour et 6 heures la nuit, bébé de moins de 6 mois, et règles non revenues. Son efficacité pratique est inférieure à celle des autres méthodes.
 
 ## Au quotidien
-- **Abordez le sujet** avec la sage-femme ou le médecin avant la sortie de maternité.
-- **Faites le point** à la consultation postnatale.
-- **Gardez des préservatifs** à disposition en attendant une méthode choisie.
-- **Si vous utilisez la méthode MAMA**, changez de méthode dès le retour des règles, la réduction des tétées, l'introduction d'un biberon ou les 6 mois du bébé.
+- **Aborde le sujet** avec la sage-femme ou le médecin avant la sortie de maternité.
+- **Fais le point** à la consultation postnatale.
+- **Garde des préservatifs** à disposition en attendant une méthode choisie.
+- **Si tu utilises la méthode MAMA**, change de méthode dès le retour des règles, la réduction des tétées, l'introduction d'un biberon ou les 6 mois du bébé.
 
 ## Questions fréquentes
 **J'allaite, puis-je prendre la pilule ?**
-Certaines pilules sont compatibles avec l'allaitement : c'est au professionnel de santé de vous proposer la méthode adaptée.
+Certaines pilules sont compatibles avec l'allaitement : c'est au professionnel de santé de te proposer la méthode adaptée.
 
 **Je n'ai pas encore eu mes règles, puis-je être enceinte ?**
 Oui, c'est possible, car l'ovulation précède les règles.
 
 **Et en cas d'oubli ou de rapport non protégé ?**
-La contraception d'urgence existe : voir l'article dédié, et demandez conseil rapidement à un pharmacien ou un professionnel de santé.
+La contraception d'urgence existe : voir l'article dédié, et demande conseil rapidement à un pharmacien ou un professionnel de santé.
 
 ## Quand demander conseil
-Parlez-en à votre sage-femme, votre médecin, votre gynécologue ou un centre de santé sexuelle. Consultez en cas de saignements inhabituels, de douleurs, ou si vous pensez être enceinte. En cas d'urgence, appelez le 15 ou le 112.
+Parles-en à ta sage-femme, ton médecin, ton gynécologue ou un centre de santé sexuelle. Consulte en cas de saignements inhabituels, de douleurs, ou si tu penses être enceinte. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     journeys: ['newborn'],
@@ -2216,8 +2216,8 @@ ${END}`,
 - Les besoins des parents passent souvent au second plan : se soutenir et en parler aide chacun à trouver sa place.
 - Exprimer ses besoins et écouter ceux de l'autre limite les malentendus.
 - Après une période d'adaptation, l'énergie revient.
-- Les aînés peuvent se sentir inquiets, jaloux ou rejetés, et régresser un temps : rassurez-les et faites-leur une place.
-- Prenez du recul face aux nombreux conseils et faites confiance à votre ressenti.
+- Les aînés peuvent se sentir inquiets, jaloux ou rejetés, et régresser un temps : rassure-les et fais-leur une place.
+- Prends du recul face aux nombreux conseils et fais confiance à ton ressenti.
 
 ## Comprendre
 La fatigue, les nuits hachées, les nouvelles responsabilités mettent à l'épreuve le couple. Les tensions sont fréquentes dans les premiers mois. Ce n'est pas un échec : c'est une période de transition. Partager les tâches, prendre des décisions ensemble, se réserver de petits moments à deux aident à traverser cette étape.
@@ -2229,25 +2229,25 @@ Pour les aînés, l'arrivée d'un bébé est un grand changement. Les préparer,
 Les grands-parents vivent aussi une transformation : leur soutien est précieux, à condition que chacun respecte la place des parents.
 
 ## Au quotidien
-- **Parlez-vous** : de la fatigue, de ce qui pèse, de ce qui vous ferait du bien.
-- **Répartissez les tâches** (nuits, repas, linge, rendez-vous) et ajustez régulièrement.
-- **Gardez de petits moments à deux**, même courts.
+- **Parle-toi** : de la fatigue, de ce qui pèse, de ce qui te ferait du bien.
+- **Répartis les tâches** (nuits, repas, linge, rendez-vous) et ajuste régulièrement.
+- **Garde de petits moments à deux**, même courts.
 - **Pour les aînés** : un moment privilégié chaque jour, des mots rassurants, une petite mission auprès du bébé s'ils le souhaitent.
-- **Acceptez l'aide** de l'entourage, et dites ce dont vous avez besoin.
-- **Utilisez l'application** pour partager l'organisation (tâches, relais de nuit).
+- **Accepte l'aide** de l'entourage, et dis ce dont tu as besoin.
+- **Utilise l'application** pour partager l'organisation (tâches, relais de nuit).
 
 ## Questions fréquentes
 **Nous nous disputons beaucoup depuis la naissance, est-ce grave ?**
-Les tensions sont fréquentes dans cette période. Si elles deviennent permanentes ou pesantes, un conseiller conjugal, un psychologue ou la PMI peuvent vous accompagner.
+Les tensions sont fréquentes dans cette période. Si elles deviennent permanentes ou pesantes, un conseiller conjugal, un psychologue ou la PMI peuvent t’accompagner.
 
 **L'aîné fait à nouveau pipi au lit, que faire ?**
-Une régression passagère peut accompagner l'arrivée d'un bébé. Rassurez-le, évitez les reproches et parlez-en au médecin si cela dure.
+Une régression passagère peut accompagner l'arrivée d'un bébé. Rassure-le, évite les reproches et parles-en au médecin si cela dure.
 
 **Mon partenaire ne trouve pas sa place, comment l'aider ?**
 Partager les soins du bébé (bain, change, portage, biberon si c'est le cas) permet à chacun de créer son lien.
 
 ## Quand demander conseil
-Parlez-en à un professionnel (médecin, sage-femme, PMI, psychologue, conseiller conjugal) si la tristesse, l'irritabilité ou les conflits s'installent. En cas de violences dans le couple, appelez le 3919 ; en cas de danger immédiat, le 17 ou le 112. Pour un enfant en danger, le 119. En cas de détresse psychique, le 3114.
+Parles-en à un professionnel (médecin, sage-femme, PMI, psychologue, conseiller conjugal) si la tristesse, l'irritabilité ou les conflits s'installent. En cas de violences dans le couple, appelle le 3919 ; en cas de danger immédiat, le 17 ou le 112. Pour un enfant en danger, le 119. En cas de détresse psychique, le 3114.
 
 ${END}`,
     journeys: ['newborn'],
@@ -2262,14 +2262,14 @@ ${END}`,
     slug: 'declaration-de-naissance-demarches',
     title: 'La déclaration de naissance et les premières démarches',
     summary: 'La naissance se déclare en mairie dans les 5 jours, souvent depuis la maternité : qui déclare, quels documents, nom de l’enfant, reconnaissance et livret de famille.',
-    body_md: `Dans les jours qui suivent la naissance, une démarche est obligatoire : la déclaration de naissance. Elle permet d'établir l'acte de naissance de votre enfant. Bonne nouvelle : elle peut souvent se faire directement depuis la maternité.
+    body_md: `Dans les jours qui suivent la naissance, une démarche est obligatoire : la déclaration de naissance. Elle permet d'établir l'acte de naissance de ton enfant. Bonne nouvelle : elle peut souvent se faire directement depuis la maternité.
 
 ## En bref
 - La déclaration se fait dans les 5 jours qui suivent l'accouchement (le jour de la naissance ne compte pas).
 - Elle se fait à la mairie du lieu de naissance ; beaucoup de maternités ont un service qui s'en charge.
 - Elle peut être faite par le père, la seconde mère (couple de femmes), un professionnel ou toute personne ayant assisté à l'accouchement.
 - Documents : pièces d'identité, certificat d'accouchement, déclaration de choix de nom le cas échéant, acte de reconnaissance s'il existe, livret de famille s'il existe.
-- Un retard entraîne une procédure au tribunal : ne laissez pas passer le délai.
+- Un retard entraîne une procédure au tribunal : ne laisse pas passer le délai.
 
 ## Comprendre
 **Le délai** : 5 jours après l'accouchement, sans compter le jour de la naissance. Si le dernier jour tombe un week-end ou un jour férié, il est reporté au jour ouvrable suivant.
@@ -2283,23 +2283,23 @@ ${END}`,
 **En cas de retard**, l'officier d'état civil ne peut pas régulariser seul : il faut un jugement déclaratif de naissance, et le déclarant s'expose à des sanctions.
 
 ## Au quotidien
-- **Préparez les documents** avant l'accouchement dans un dossier.
-- **Renseignez-vous auprès de la maternité** sur le service qui enregistre les déclarations.
-- **Pensez aux démarches suivantes** : déclaration à la Caf et à l'Assurance Maladie (rattachement de l'enfant), choix d'un médecin traitant, mutuelle, employeur(s).
-- **Demandez plusieurs copies** de l'acte de naissance si besoin (elles sont gratuites).
+- **Prépare les documents** avant l'accouchement dans un dossier.
+- **Renseigne-toi auprès de la maternité** sur le service qui enregistre les déclarations.
+- **Pense aux démarches suivantes** : déclaration à la Caf et à l'Assurance Maladie (rattachement de l'enfant), choix d'un médecin traitant, mutuelle, employeur(s).
+- **Demande plusieurs copies** de l'acte de naissance si besoin (elles sont gratuites).
 
 ## Questions fréquentes
 **Qui peut déclarer si la mère est seule ?**
 Lorsque la mère accouche seule à l'hôpital, l'obligation revient à l'établissement. Un proche muni du certificat d'accouchement peut aussi déclarer.
 
 **Peut-on choisir le nom après la déclaration ?**
-Le choix de nom se fait lors de la déclaration, par une déclaration conjointe. Renseignez-vous en amont auprès de la mairie ou sur Service-Public.fr.
+Le choix de nom se fait lors de la déclaration, par une déclaration conjointe. Renseigne-toi en amont auprès de la mairie ou sur Service-Public.fr.
 
 **La reconnaissance avant la naissance est-elle utile ?**
 Pour les parents non mariés, elle permet d'établir la filiation dès la naissance et de simplifier les démarches.
 
 ## Quand demander conseil
-Pour toute question, la mairie, le service de la maternité, ou Service-Public.fr peuvent vous renseigner. En cas de situation particulière (naissance à l'étranger, enfant né sans vie, difficulté de filiation), demandez conseil à la mairie ou à un juriste.
+Pour toute question, la mairie, le service de la maternité, ou Service-Public.fr peuvent te renseigner. En cas de situation particulière (naissance à l'étranger, enfant né sans vie, difficulté de filiation), demande conseil à la mairie ou à un juriste.
 
 ${END}`,
     journeys: ['newborn', 'pregnant'],
@@ -2319,7 +2319,7 @@ ${END}`,
 - Le congé de naissance de 3 jours ouvrables est pris en premier, le jour de la naissance ou le premier jour ouvrable suivant.
 - Le congé de paternité et d'accueil de l'enfant dure 25 jours calendaires (32 en cas de naissances multiples).
 - 4 jours sont obligatoires, juste après le congé de naissance ; les 21 jours restants (28 en cas de naissances multiples) se prennent dans les 6 mois, en une ou deux fois (au moins 5 jours chacune).
-- Prévenez votre employeur au moins 1 mois avant la date prévue de la naissance.
+- Préviens ton employeur au moins 1 mois avant la date prévue de la naissance.
 - Aucune condition d'ancienneté ; des indemnités journalières peuvent être versées par la CPAM sous conditions.
 
 ## Comprendre
@@ -2329,26 +2329,26 @@ ${END}`,
 
 **Prévenir l'employeur** : au moins 1 mois avant la date prévue de la naissance, en indiquant les dates. Si ce délai est respecté, l'employeur ne peut pas refuser. Si l'enfant naît plus tôt que prévu, le congé peut être pris dans le mois suivant, en informant l'employeur. Une lettre recommandée ou remise en main propre contre décharge est conseillée.
 
-**Indemnisation** : la CPAM peut verser des indemnités journalières, sous conditions d'affiliation et d'activité. Votre convention collective peut prévoir un maintien de salaire plus favorable. Le congé suspend le contrat ; il compte pour l'ancienneté, et vous retrouvez ensuite votre poste ou un poste similaire.
+**Indemnisation** : la CPAM peut verser des indemnités journalières, sous conditions d'affiliation et d'activité. Ta convention collective peut prévoir un maintien de salaire plus favorable. Le congé suspend le contrat ; il compte pour l'ancienneté, et tu retrouves ensuite ton poste ou un poste similaire.
 
 ## Au quotidien
-- **Anticipez** avec votre employeur dès que la date du terme est connue.
-- **Organisez la période facultative** selon vos besoins : juste après la naissance, ou plus tard pour un relais (reprise du travail de la mère, par exemple).
-- **Déclarez le congé** selon la procédure de votre CPAM et de votre employeur.
-- **Profitez de ce temps** pour prendre votre place auprès du bébé : soins, nuits, rendez-vous.
+- **Anticipe** avec ton employeur dès que la date du terme est connue.
+- **Organise la période facultative** selon tes besoins : juste après la naissance, ou plus tard pour un relais (reprise du travail de la mère, par exemple).
+- **Déclare le congé** selon la procédure de ta CPAM et de ton employeur.
+- **Profite de ce temps** pour prendre ta place auprès du bébé : soins, nuits, rendez-vous.
 
 ## Questions fréquentes
 **Je suis indépendant, ai-je droit à un congé ?**
-Oui, avec des règles particulières : renseignez-vous auprès de votre caisse.
+Oui, avec des règles particulières : renseigne-toi auprès de ta caisse.
 
 **Puis-je fractionner tout le congé ?**
 Seule la période facultative peut être fractionnée en deux périodes d'au moins 5 jours. Les 3 jours de naissance et les 4 jours obligatoires se prennent d'affilée.
 
 **Existe-t-il d'autres congés ensuite ?**
-Un congé supplémentaire de naissance peut suivre selon la réglementation en vigueur, et le congé parental d'éducation reste possible (voir l'article dédié). Vérifiez votre situation sur Service-Public.fr.
+Un congé supplémentaire de naissance peut suivre selon la réglementation en vigueur, et le congé parental d'éducation reste possible (voir l'article dédié). Vérifie ta situation sur Service-Public.fr.
 
 ## Quand demander conseil
-Pour votre situation précise, consultez Service-Public.fr, votre CPAM, les représentants du personnel ou les ressources humaines. Si le congé vous est refusé alors que le délai a été respecté, le conseil de prud'hommes peut être saisi.
+Pour ta situation précise, consulte Service-Public.fr, ta CPAM, les représentants du personnel ou les ressources humaines. Si le congé t’est refusé alors que le délai a été respecté, le conseil de prud'hommes peut être saisi.
 
 ${END}`,
     journeys: ['newborn', 'pregnant'],
@@ -2378,13 +2378,13 @@ ${END}`,
 
 **La rémunération** : pendant le congé, l'employeur ne verse pas de salaire pour le temps non travaillé, sauf disposition conventionnelle. La Caf ou la MSA peut verser la PreParE (prestation partagée d'éducation de l'enfant), sous conditions, ainsi que l'allocation de base sous conditions de ressources.
 
-**Le retour** : vous retrouvez votre poste ou un poste similaire, avec une rémunération au moins équivalente, et pouvez bénéficier d'un entretien professionnel. La moitié de la durée du congé compte pour l'ancienneté.
+**Le retour** : tu retrouves ton poste ou un poste similaire, avec une rémunération au moins équivalente, et peux bénéficier d'un entretien professionnel. La moitié de la durée du congé compte pour l'ancienneté.
 
 ## Au quotidien
-- **Simulez vos droits** sur caf.fr avant de décider.
-- **Discutez à deux** de l'organisation : la PreParE peut être partagée entre les parents selon les règles en vigueur.
-- **Envoyez votre demande** dans les délais, en précisant date de début et durée.
-- **Anticipez le retour** : mode de garde, entretien professionnel.
+- **Simule tes droits** sur caf.fr avant de décider.
+- **Discute à deux** de l'organisation : la PreParE peut être partagée entre les parents selon les règles en vigueur.
+- **Envoie ta demande** dans les délais, en précisant date de début et durée.
+- **Anticipe le retour** : mode de garde, entretien professionnel.
 
 ## Questions fréquentes
 **Mon employeur peut-il refuser ?**
@@ -2394,10 +2394,10 @@ Non, s'il est demandé dans les conditions prévues. En cas de refus, le conseil
 Oui, en prévenant par lettre recommandée au moins 1 mois avant. L'accord de l'employeur n'est pas nécessaire en cas de décès de l'enfant ou de baisse importante des ressources du foyer.
 
 **Le congé parental a-t-il changé récemment ?**
-Des réformes sont discutées ou mises en place (par exemple un congé de naissance) : vérifiez toujours la fiche à jour sur Service-Public.fr et caf.fr avant de décider.
+Des réformes sont discutées ou mises en place (par exemple un congé de naissance) : vérifie toujours la fiche à jour sur Service-Public.fr et caf.fr avant de décider.
 
 ## Quand demander conseil
-Pour votre situation précise : Service-Public.fr, votre Caf ou MSA, les ressources humaines ou les représentants du personnel. Pour les difficultés financières, le service social de votre mairie ou de votre Caf peut vous accompagner.
+Pour ta situation précise : Service-Public.fr, ta Caf ou MSA, les ressources humaines ou les représentants du personnel. Pour les difficultés financières, le service social de ta mairie ou de ta Caf peut t’accompagner.
 
 ${END}`,
     journeys: ['newborn', 'child'],
@@ -2411,11 +2411,11 @@ ${END}`,
     slug: 'modes-de-garde-et-aides',
     title: 'Choisir un mode de garde et connaître les aides',
     summary: 'Crèche, micro-crèche, assistante maternelle, garde à domicile : les options pour un enfant de moins de 3 ans, où chercher, et les aides comme le CMG ou le crédit d’impôt.',
-    body_md: `Trouver un mode de garde est souvent une préoccupation dès la grossesse. Les options sont variées, les places parfois rares selon les territoires, et des aides existent pour réduire le coût. Voici un panorama pour vous aider à y voir clair.
+    body_md: `Trouver un mode de garde est souvent une préoccupation dès la grossesse. Les options sont variées, les places parfois rares selon les territoires, et des aides existent pour réduire le coût. Voici un panorama pour t’aider à y voir clair.
 
 ## En bref
 - Les principaux modes de garde : crèche (collective, familiale, parentale), micro-crèche, assistante maternelle agréée, garde à domicile, garde partagée.
-- Le site monenfant.fr (Cnaf) recense les modes d'accueil et certaines places disponibles près de chez vous.
+- Le site monenfant.fr (Cnaf) recense les modes d'accueil et certaines places disponibles près de chez toi.
 - Le complément de libre choix du mode de garde (CMG), versé par la Caf ou la MSA, couvre une partie des frais d'une assistante maternelle ou d'une garde à domicile.
 - Un crédit d'impôt et des aides de l'employeur (comme le CESU préfinancé) peuvent s'ajouter, sous conditions.
 - Les vaccinations obligatoires sont exigées pour l'entrée en collectivité.
@@ -2426,25 +2426,25 @@ ${END}`,
 **Le CMG « emploi direct »** concerne les parents qui emploient directement une assistante maternelle ou une garde à domicile. Il est versé en général jusqu'aux 6 ans de l'enfant (jusqu'à 12 ans pour un parent isolé, selon les règles en vigueur), sous conditions d'activité. Son montant dépend des ressources du foyer, du nombre d'enfants, du coût horaire et du nombre d'heures. Les cotisations sociales sont prises en charge à 100 % pour une assistante maternelle agréée et à 50 % pour une garde à domicile, dans la limite d'un plafond. Les salaires se déclarent chaque mois via Pajemploi. Depuis le 1er décembre 2025, en cas de garde alternée, le CMG peut être versé à chacun des deux parents.
 
 ## Au quotidien
-- **Commencez tôt vos recherches**, parfois dès la grossesse.
-- **Consultez monenfant.fr** et le relais petite enfance ou la mairie de votre commune.
-- **Visitez, posez vos questions** : horaires, adaptation, repas, sorties, maladies, projet pédagogique.
-- **Simulez vos aides** sur caf.fr avant de choisir.
-- **Prévoyez une période d'adaptation** progressive avant la reprise du travail.
-- **Préparez le carnet de santé** et le certificat de vaccinations.
+- **Commence tôt tes recherches**, parfois dès la grossesse.
+- **Consulte monenfant.fr** et le relais petite enfance ou la mairie de ta commune.
+- **Visite, pose tes questions** : horaires, adaptation, repas, sorties, maladies, projet pédagogique.
+- **Simule tes aides** sur caf.fr avant de choisir.
+- **Prévois une période d'adaptation** progressive avant la reprise du travail.
+- **Prépare le carnet de santé** et le certificat de vaccinations.
 
 ## Questions fréquentes
 **Je n'ai pas de place en crèche, que faire ?**
-Élargissez la recherche (micro-crèches, assistantes maternelles, garde partagée) et rapprochez-vous du relais petite enfance de votre secteur.
+Élargis la recherche (micro-crèches, assistantes maternelles, garde partagée) et rapproche-toi du relais petite enfance de ton secteur.
 
 **Je suis sans emploi et parent isolé, existe-t-il une aide ?**
-Une aide à la garde d'enfant spécifique existe pour le parent isolé sans emploi : renseignez-vous sur Service-Public.fr et auprès de votre Caf.
+Une aide à la garde d'enfant spécifique existe pour le parent isolé sans emploi : renseigne-toi sur Service-Public.fr et auprès de ta Caf.
 
 **Comment se passe l'adaptation ?**
-Elle est progressive, sur quelques jours à quelques semaines, pour que l'enfant découvre le lieu et les personnes en douceur. Si vous allaitez, anticipez l'organisation (voir l'article sur l'allaitement et la reprise du travail).
+Elle est progressive, sur quelques jours à quelques semaines, pour que l'enfant découvre le lieu et les personnes en douceur. Si tu allaites, anticipe l'organisation (voir l'article sur l'allaitement et la reprise du travail).
 
 ## Quand demander conseil
-Pour les aides : caf.fr, votre Caf ou MSA, Pajemploi, Service-Public.fr. En cas de difficultés financières : le service d'action sociale de la mairie ou un Point Info Famille. Si quelque chose vous inquiète dans l'accueil de votre enfant, parlez-en d'abord avec la structure ou l'assistante maternelle, puis avec la PMI, qui délivre les agréments ; en cas de danger pour un enfant, appelez le 119.
+Pour les aides : caf.fr, ta Caf ou MSA, Pajemploi, Service-Public.fr. En cas de difficultés financières : le service d'action sociale de la mairie ou un Point Info Famille. Si quelque chose t’inquiète dans l'accueil de ton enfant, parles-en d'abord avec la structure ou l'assistante maternelle, puis avec la PMI, qui délivre les agréments ; en cas de danger pour un enfant, appelle le 119.
 
 ${END}`,
     journeys: ['newborn', 'child', 'pregnant'],

@@ -36,9 +36,9 @@ const S = {
   ameliAlim: { label: 'ameli.fr — L’alimentation pendant la grossesse', url: 'https://www.ameli.fr/assure/sante/devenir-parent/grossesse/grossesse-en-bonne-sante/grossesse-alimentation/alimentation-grossesse', consulted_on: C, published: '2026-06-18' },
 } satisfies Record<string, ArticleSource>;
 
-const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme ou du professionnel de santé qui suit votre grossesse.';
-const URG = 'En cas d’urgence (saignement abondant, perte de connaissance, convulsions, douleur violente, difficulté à respirer), appelez le 15 ou le 112.';
-const PSY = 'Si l’attente ou l’annonce d’un résultat vous submerge, parlez-en à votre équipe ; en cas d’idées noires, le 3114 (prévention du suicide) répond 24 h/24, gratuitement.';
+const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme ou du professionnel de santé qui suit ta grossesse.';
+const URG = 'En cas d’urgence (saignement abondant, perte de connaissance, convulsions, douleur violente, difficulté à respirer), appelle le 15 ou le 112.';
+const PSY = 'Si l’attente ou l’annonce d’un résultat te submerge, parles-en à ton équipe ; en cas d’idées noires, le 3114 (prévention du suicide) répond 24 h/24, gratuitement.';
 const FAMILY: Pick<LibArticle, 'journeys' | 'status' | 'category'> = { journeys: ['pregnant'], status: 'to_review', category: 'suivi-grossesse' };
 
 export const GUIDE_B16: LibArticle[] = [
@@ -48,45 +48,45 @@ export const GUIDE_B16: LibArticle[] = [
     slug: 'serologie-toxoplasmose-comprendre-resultat-controle-mensuel',
     title: 'Sérologie de la toxoplasmose : comprendre son résultat et le contrôle chaque mois',
     summary: 'Pourquoi la toxoplasmose est recherchée dès le début de la grossesse, ce que signifie être « immunisée » ou non, et comment se déroule la surveillance mensuelle.',
-    body_md: `Sur l’ordonnance de la première prise de sang figure presque toujours la toxoplasmose. Selon le résultat, vous n’en entendrez plus parler… ou vous aurez une prise de sang chaque mois jusqu’à l’accouchement. Voici comment s’y retrouver.
+    body_md: `Sur l’ordonnance de la première prise de sang figure presque toujours la toxoplasmose. Selon le résultat, tu n’en entendras plus parler… ou tu auras une prise de sang chaque mois jusqu’à l’accouchement. Voici comment s’y retrouver.
 
 ## En bref
-- La sérologie de la toxoplasmose fait partie des examens obligatoires de la première consultation, sauf si un document prouve déjà que vous êtes immunisée.
-- Si vous êtes immunisée, la surveillance s’arrête en général là.
-- Si vous ne l’êtes pas, une sérologie est refaite à chaque consultation mensuelle, jusqu’au 9e mois.
+- La sérologie de la toxoplasmose fait partie des examens obligatoires de la première consultation, sauf si un document prouve déjà que tu es immunisée.
+- Si tu es immunisée, la surveillance s’arrête en général là.
+- Si tu ne l’es pas, une sérologie est refaite à chaque consultation mensuelle, jusqu’au 9e mois.
 - Il n’existe pas de vaccin : la protection repose sur les précautions d’hygiène et d’alimentation, du début de la grossesse jusqu’à l’accouchement.
-- Seul le professionnel qui vous suit interprète le résultat : demandez-lui de vous l’expliquer.
+- Seul le professionnel qui te suit interprète le résultat : demande-lui de te l’expliquer.
 
 ## Comprendre
-La toxoplasmose est une infection due à un parasite. Elle passe souvent inaperçue chez l’adulte, mais une première contamination pendant la grossesse peut se transmettre au fœtus à travers le placenta. C’est pourquoi on cherche à savoir, dès le début, si vous avez déjà rencontré ce parasite.
+La toxoplasmose est une infection due à un parasite. Elle passe souvent inaperçue chez l’adulte, mais une première contamination pendant la grossesse peut se transmettre au fœtus à travers le placenta. C’est pourquoi on cherche à savoir, dès le début, si tu as déjà rencontré ce parasite.
 
 La prise de sang recherche des **anticorps**, c’est-à-dire les traces laissées par une infection passée ou récente. Schématiquement :
-- **vous êtes immunisée** : vous avez déjà eu la toxoplasmose avant la grossesse, souvent sans le savoir ;
-- **vous n’êtes pas immunisée** (on dit aussi « séronégative ») : vous n’avez jamais été en contact avec le parasite, et une contamination reste possible ;
+- **tu es immunisée** : tu as déjà eu la toxoplasmose avant la grossesse, souvent sans le savoir ;
+- **tu n’es pas immunisée** (on dit aussi « séronégative ») : tu n’as jamais été en contact avec le parasite, et une contamination reste possible ;
 - **le résultat demande un contrôle** : il arrive que le laboratoire ou le prescripteur demande une nouvelle prise de sang pour dater une éventuelle infection. Ce n’est pas un diagnostic en soi.
 
 Les recommandations de la Haute Autorité de santé prévoient de refaire la sérologie lors de la deuxième consultation (avant 15 semaines d’aménorrhée) si la première était négative, puis à chaque consultation intermédiaire et à celle du 9e mois. L’objectif est de repérer rapidement une contamination pendant la grossesse, pour que l’équipe puisse proposer les examens et la prise en charge adaptés.
 
 ## Au quotidien
-- **Gardez tous vos résultats** dans le même dossier, y compris ceux d’une grossesse précédente : un document prouvant l’immunité peut éviter une prise de sang inutile.
-- **Faites la prise de sang mensuelle à temps**, idéalement quelques jours avant la consultation, pour que le résultat soit disponible.
-- **Appliquez les précautions** si vous n’êtes pas immunisée : viande bien cuite, fruits, légumes et herbes soigneusement lavés, mains lavées après avoir manipulé de la terre ou de la viande crue, gants pour jardiner, litière du chat confiée à quelqu’un d’autre si possible.
-- **Notez la date de chaque prise de sang** sur votre calendrier ou dans l’application : c’est un rendez-vous facile à oublier.
-- **Posez vos questions** si le compte rendu comporte des termes que vous ne comprenez pas : la sage-femme ou le médecin peut vous traduire chaque ligne.
+- **Garde tous tes résultats** dans le même dossier, y compris ceux d’une grossesse précédente : un document prouvant l’immunité peut éviter une prise de sang inutile.
+- **Fais la prise de sang mensuelle à temps**, idéalement quelques jours avant la consultation, pour que le résultat soit disponible.
+- **Applique les précautions** si tu n’es pas immunisée : viande bien cuite, fruits, légumes et herbes soigneusement lavés, mains lavées après avoir manipulé de la terre ou de la viande crue, gants pour jardiner, litière du chat confiée à quelqu’un d’autre si possible.
+- **Note la date de chaque prise de sang** sur ton calendrier ou dans l’application : c’est un rendez-vous facile à oublier.
+- **Pose tes questions** si le compte rendu comporte des termes que tu ne comprends pas : la sage-femme ou le médecin peut te traduire chaque ligne.
 
 ## Questions fréquentes
-**Je suis non immunisée : dois-je m’inquiéter ?** Ce n’est pas une maladie, seulement l’absence de protection. Les précautions et la surveillance mensuelle sont justement là pour vous accompagner.
+**Je suis non immunisée : dois-je m’inquiéter ?** Ce n’est pas une maladie, seulement l’absence de protection. Les précautions et la surveillance mensuelle sont justement là pour t’accompagner.
 
 **Je suis immunisée : dois-je encore faire attention à la viande ?** La toxoplasmose n’est alors plus la préoccupation principale, mais d’autres précautions alimentaires, comme celles contre la listériose, restent valables pour toutes les femmes enceintes.
 
-**Le résultat parle d’un contrôle à refaire : qu’est-ce que cela veut dire ?** Certains résultats ne permettent pas de conclure d’emblée. Une deuxième prise de sang, parfois dans le même laboratoire, aide à interpréter la situation. Attendez l’avis du professionnel avant de tirer des conclusions.
+**Le résultat parle d’un contrôle à refaire : qu’est-ce que cela veut dire ?** Certains résultats ne permettent pas de conclure d’emblée. Une deuxième prise de sang, parfois dans le même laboratoire, aide à interpréter la situation. Attends l’avis du professionnel avant de tirer des conclusions.
 
-**Faut-il refaire une prise de sang après l’accouchement ?** Selon votre situation, le professionnel peut prescrire un dernier contrôle. Renseignez-vous lors de la consultation du 9e mois.
+**Faut-il refaire une prise de sang après l’accouchement ?** Selon ta situation, le professionnel peut prescrire un dernier contrôle. Renseigne-toi lors de la consultation du 9e mois.
 
-**Mon conjoint doit-il faire le test ?** La sérologie concerne la femme enceinte. Votre conjoint peut en revanche vous aider en prenant en charge la litière ou le jardinage.
+**Mon conjoint doit-il faire le test ?** La sérologie concerne la femme enceinte. Ton conjoint peut en revanche t’aider en prenant en charge la litière ou le jardinage.
 
 ## Quand demander conseil
-Si vous avez de la fièvre, des ganglions ou une grande fatigue, ou si un résultat vous inquiète, appelez la sage-femme ou le médecin qui vous suit sans attendre la prochaine consultation. ${URG}
+Si tu as de la fièvre, des ganglions ou une grande fatigue, ou si un résultat t’inquiète, appelle la sage-femme ou le médecin qui te suit sans attendre la prochaine consultation. ${URG}
 
 ${END}`,
     tags: ['toxoplasmose', 'sérologie', 'prise de sang', 'immunisée', 'non immunisée', 'contrôle mensuel', 'séronégative'],
@@ -96,15 +96,15 @@ ${END}`,
     ...FAMILY,
     slug: 'serologie-rubeole-grossesse-resultat',
     title: 'Sérologie de la rubéole pendant la grossesse : pourquoi, quand et que faire du résultat',
-    summary: 'La rubéole est recherchée au début de la grossesse : ce que signifie le résultat, les précautions si vous n’êtes pas protégée et la vaccination après l’accouchement.',
-    body_md: `La rubéole est devenue rare, mais une infection en début de grossesse peut avoir des conséquences graves pour le bébé. C’est pourquoi votre protection est vérifiée dès les premières semaines.
+    summary: 'La rubéole est recherchée au début de la grossesse : ce que signifie le résultat, les précautions si tu n’es pas protégée et la vaccination après l’accouchement.',
+    body_md: `La rubéole est devenue rare, mais une infection en début de grossesse peut avoir des conséquences graves pour le bébé. C’est pourquoi ta protection est vérifiée dès les premières semaines.
 
 ## En bref
-- Le dépistage de la rubéole est obligatoire au début de la grossesse, sauf si un document prouve déjà votre immunité.
+- Le dépistage de la rubéole est obligatoire au début de la grossesse, sauf si un document prouve déjà ton immunité.
 - Le risque pour le bébé dépend du moment de l’infection : il est le plus élevé avant 12 semaines d’aménorrhée.
-- Si vous n’êtes pas immunisée, la sérologie est refaite au cours de la grossesse, jusqu’à 18 semaines d’aménorrhée.
+- Si tu n’es pas immunisée, la sérologie est refaite au cours de la grossesse, jusqu’à 18 semaines d’aménorrhée.
 - Le vaccin (ROR) ne se fait pas pendant la grossesse ; il peut être proposé après l’accouchement.
-- Évitez le contact avec une personne qui a une éruption de petits boutons roses, surtout pendant les 4 premiers mois.
+- Évite le contact avec une personne qui a une éruption de petits boutons roses, surtout pendant les 4 premiers mois.
 
 ## Comprendre
 La rubéole est une maladie virale qui se transmet par la salive et les sécrétions du nez et de la gorge. Chez l’adulte, elle ressemble à une rougeole atténuée : fièvre modérée pendant un ou deux jours, puis petites taches roses, surtout sur le thorax, qui disparaissent vite, parfois avec des ganglions dans le cou ou derrière les oreilles. Une personne est contagieuse une semaine avant l’éruption et jusqu’à deux semaines après.
@@ -115,26 +115,26 @@ Pendant la grossesse, le virus peut traverser le placenta. Selon Santé.fr :
 - **après 18 semaines**, le risque devient très faible.
 Une rubéole peut aussi entraîner une fausse couche ou un accouchement prématuré.
 
-La sérologie recherche les anticorps qui témoignent d’une protection, acquise par la vaccination ou par une ancienne infection. Si vous avez un carnet de vaccination montrant deux doses, ou une ancienne prise de sang positive, montrez-les : cela peut suffire.
+La sérologie recherche les anticorps qui témoignent d’une protection, acquise par la vaccination ou par une ancienne infection. Si tu as un carnet de vaccination montrant deux doses, ou une ancienne prise de sang positive, montre-les : cela peut suffire.
 
 ## Au quotidien
-- **Rassemblez vos preuves de vaccination** (carnet de santé, carnet de vaccination) avant la première consultation.
-- **Si vous n’êtes pas immunisée**, tenez-vous à distance des personnes, notamment des enfants, qui présentent une éruption de boutons roses en cours ou récente.
-- **Prévenez la crèche, l’école ou votre employeur** si vous travaillez avec de jeunes enfants, pour être informée en cas de cas déclaré.
-- **Pensez au vaccin après la naissance** : la vaccination rattrapera la protection pour une future grossesse.
+- **Rassemble tes preuves de vaccination** (carnet de santé, carnet de vaccination) avant la première consultation.
+- **Si tu n’es pas immunisée**, tiens-toi à distance des personnes, notamment des enfants, qui présentent une éruption de boutons roses en cours ou récente.
+- **Préviens la crèche, l’école ou ton employeur** si tu travailles avec de jeunes enfants, pour être informée en cas de cas déclaré.
+- **Pense au vaccin après la naissance** : la vaccination rattrapera la protection pour une future grossesse.
 - **Après un vaccin ROR**, une grossesse doit être évitée pendant un mois, grâce à une contraception.
 
 ## Questions fréquentes
-**J’ai été vaccinée enfant : faut-il quand même faire la prise de sang ?** La sérologie n’est prescrite qu’en l’absence de document prouvant l’immunité. Si vous avez la trace de deux doses de vaccin, parlez-en au professionnel.
+**J’ai été vaccinée enfant : faut-il quand même faire la prise de sang ?** La sérologie n’est prescrite qu’en l’absence de document prouvant l’immunité. Si tu as la trace de deux doses de vaccin, parles-en au professionnel.
 
 **Je ne suis pas protégée : puis-je être vaccinée tout de suite ?** Non. Le vaccin contre la rubéole est un vaccin vivant, contre-indiqué pendant la grossesse. Il sera proposé après l’accouchement.
 
-**J’ai été en contact avec un enfant qui a des boutons : que faire ?** Contactez rapidement votre sage-femme ou votre médecin en précisant la date du contact. Il n’existe pas de traitement spécifique, mais une prise de sang peut être prescrite pour faire le point.
+**J’ai été en contact avec un enfant qui a des boutons : que faire ?** Contacte rapidement ta sage-femme ou ton médecin en précisant la date du contact. Il n’existe pas de traitement spécifique, mais une prise de sang peut être prescrite pour faire le point.
 
 **Pourquoi le contrôle s’arrête-t-il à 18 semaines ?** Parce qu’au-delà, le risque pour le bébé devient très faible ; la surveillance se concentre sur la période où une infection aurait le plus de conséquences.
 
 ## Quand demander conseil
-Appelez votre sage-femme ou votre médecin si vous avez de la fièvre avec une éruption, ou si vous avez été exposée à une personne malade. ${URG}
+Appelle ta sage-femme ou ton médecin si tu as de la fièvre avec une éruption, ou si tu as été exposée à une personne malade. ${URG}
 
 ${END}`,
     tags: ['rubéole', 'sérologie', 'immunité', 'vaccin ROR', 'éruption', 'prise de sang début de grossesse'],
@@ -153,7 +153,7 @@ ${END}`,
 - Il se fait par une simple prise de sang, en même temps que les autres sérologies.
 - La syphilis peut se transmettre au bébé à travers le placenta si elle n’est pas traitée.
 - Grâce à ce dépistage, la syphilis congénitale est devenue rare en France.
-- En cas de résultat positif, un traitement antibiotique existe : le professionnel vous explique la suite.
+- En cas de résultat positif, un traitement antibiotique existe : le professionnel t’explique la suite.
 
 ## Comprendre
 La syphilis est une infection sexuellement transmissible due à une bactérie. Elle peut rester discrète pendant longtemps, sans symptôme gênant : on peut donc être porteuse sans le savoir. C’est la raison pour laquelle on ne se contente pas de demander s’il y a eu des symptômes ; on la recherche chez toutes les femmes enceintes.
@@ -163,23 +163,23 @@ Selon l’Assurance maladie, une mère infectée et non traitée peut transmettr
 Le dépistage précoce permet de traiter à temps et de protéger le bébé. La HAS le classe parmi les examens obligatoires de la première consultation, avec le groupe sanguin, les sérologies de la toxoplasmose et de la rubéole et la recherche de l’hépatite B.
 
 ## Au quotidien
-- **Faites la prise de sang dès réception de l’ordonnance** : elle regroupe plusieurs sérologies en un seul prélèvement.
-- **Parlez librement de votre situation** : un nouveau partenaire, des rapports non protégés ou une IST passée sont des informations médicales utiles, confidentielles, qui ne seront pas jugées.
-- **Pensez au préservatif** pendant la grossesse si vous ou votre partenaire avez un risque d’exposition aux IST : l’Assurance maladie le recommande, y compris enceinte.
-- **Si un traitement est prescrit**, suivez-le jusqu’au bout et faites les contrôles demandés.
-- **Proposez à votre partenaire de se faire dépister** si votre résultat est positif : c’est important pour éviter une nouvelle contamination.
+- **Fais la prise de sang dès réception de l’ordonnance** : elle regroupe plusieurs sérologies en un seul prélèvement.
+- **Parle librement de ta situation** : un nouveau partenaire, des rapports non protégés ou une IST passée sont des informations médicales utiles, confidentielles, qui ne seront pas jugées.
+- **Pense au préservatif** pendant la grossesse si toi ou ton partenaire avez un risque d’exposition aux IST : l’Assurance maladie le recommande, y compris enceinte.
+- **Si un traitement est prescrit**, suis-le jusqu’au bout et fais les contrôles demandés.
+- **Propose à ton partenaire de se faire dépister** si ton résultat est positif : c’est important pour éviter une nouvelle contamination.
 
 ## Questions fréquentes
 **Pourquoi ce test alors que je n’ai aucun symptôme ?** Justement parce que la syphilis peut passer inaperçue. Le dépistage est systématique pour que personne ne passe entre les mailles du filet.
 
 **Un résultat positif signifie-t-il que le bébé est infecté ?** Non. Un résultat positif doit être confirmé et interprété par le professionnel. Un traitement adapté pendant la grossesse réduit fortement le risque pour le bébé.
 
-**Le test peut-il être refait plus tard ?** Selon votre situation (nouveau partenaire, exposition, symptômes), le professionnel peut prescrire un nouveau test au cours de la grossesse.
+**Le test peut-il être refait plus tard ?** Selon ta situation (nouveau partenaire, exposition, symptômes), le professionnel peut prescrire un nouveau test au cours de la grossesse.
 
-**Est-ce remboursé ?** Les examens de suivi de grossesse sont pris en charge par l’Assurance maladie. Présentez votre carte Vitale au laboratoire.
+**Est-ce remboursé ?** Les examens de suivi de grossesse sont pris en charge par l’Assurance maladie. Présente ta carte Vitale au laboratoire.
 
 ## Quand demander conseil
-Consultez rapidement en cas de plaie ou d’ulcération sur les organes génitaux ou dans la bouche, d’éruption sur la peau, ou si vous apprenez qu’un partenaire a une IST. ${URG}
+Consulte rapidement en cas de plaie ou d’ulcération sur les organes génitaux ou dans la bouche, d’éruption sur la peau, ou si tu apprends qu’un partenaire a une IST. ${URG}
 
 ${END}`,
     tags: ['syphilis', 'IST', 'dépistage', 'sérologie', 'prise de sang', 'infection sexuellement transmissible'],
@@ -190,7 +190,7 @@ ${END}`,
     slug: 'depistage-hepatite-b-antigene-hbs-grossesse',
     title: 'Hépatite B : pourquoi l’antigène HBs est recherché pendant la grossesse',
     summary: 'Le dépistage de l’hépatite B est obligatoire chez la femme enceinte : ce que recherche l’examen et comment le bébé est protégé dès la naissance si besoin.',
-    body_md: `Sur vos résultats, vous lirez peut-être « Ag HBs » ou « antigène HBs ». C’est le dépistage de l’hépatite B, un examen obligatoire pendant la grossesse.
+    body_md: `Sur tes résultats, tu liras peut-être « Ag HBs » ou « antigène HBs ». C’est le dépistage de l’hépatite B, un examen obligatoire pendant la grossesse.
 
 ## En bref
 - Le test de dépistage de l’hépatite B est obligatoire chez la femme enceinte.
@@ -204,28 +204,28 @@ L’hépatite B est une infection du foie due à un virus qui se transmet notamm
 
 Pendant la grossesse, le virus ne provoque pas de malformation. Le risque principal se situe au moment de l’accouchement : selon Santé.fr, une mère porteuse chronique transmet le virus à son bébé dans environ 90 % des cas en l’absence de prévention. Un nouveau-né infecté peut devenir porteur chronique et développer plus tard une maladie du foie. D’où l’intérêt de savoir à l’avance : l’équipe peut alors protéger le bébé dès ses premières heures.
 
-**À quel moment ?** La HAS recommande de rechercher l’antigène HBs dès la première consultation. Service-public.fr mentionne aussi ce dépistage lors de la prise de sang du 6e mois. En pratique, votre prescripteur choisit le moment ; l’important est que le résultat figure dans votre dossier avant l’accouchement.
+**À quel moment ?** La HAS recommande de rechercher l’antigène HBs dès la première consultation. Service-public.fr mentionne aussi ce dépistage lors de la prise de sang du 6e mois. En pratique, ton prescripteur choisit le moment ; l’important est que le résultat figure dans ton dossier avant l’accouchement.
 
-**Et si je suis porteuse ?** Santé.fr indique qu’un traitement de la mère pendant la grossesse n’est en général pas nécessaire pour prévenir la transmission, mais qu’un traitement est donné au nouveau-né à la naissance, avec une vaccination dès la naissance. Un suivi spécialisé de votre foie peut aussi vous être proposé.
+**Et si je suis porteuse ?** Santé.fr indique qu’un traitement de la mère pendant la grossesse n’est en général pas nécessaire pour prévenir la transmission, mais qu’un traitement est donné au nouveau-né à la naissance, avec une vaccination dès la naissance. Un suivi spécialisé de ton foie peut aussi t’être proposé.
 
 ## Au quotidien
-- **Vérifiez que le résultat figure dans votre dossier** de maternité avant le terme.
-- **Si vous êtes porteuse**, assurez-vous que la maternité en est informée : la prévention du bébé se fait dans les premières heures.
-- **Pensez à l’entourage** : partenaire et personnes vivant sous le même toit peuvent se faire dépister et, si besoin, vacciner.
-- **Notez les dates de vaccination** du bébé dans son carnet de santé : le calendrier doit être respecté pour qu’il soit bien protégé.
-- **Faites le point sur vos propres vaccins** : si vous n’êtes ni porteuse ni vaccinée, parlez de la vaccination avec le professionnel.
+- **Vérifie que le résultat figure dans ton dossier** de maternité avant le terme.
+- **Si tu es porteuse**, assure-toi que la maternité en est informée : la prévention du bébé se fait dans les premières heures.
+- **Pense à l’entourage** : partenaire et personnes vivant sous le même toit peuvent se faire dépister et, si besoin, vacciner.
+- **Note les dates de vaccination** du bébé dans son carnet de santé : le calendrier doit être respecté pour qu’il soit bien protégé.
+- **Fais le point sur tes propres vaccins** : si tu n’es ni porteuse ni vaccinée, parle de la vaccination avec le professionnel.
 
 ## Questions fréquentes
-**Le résultat est négatif : faut-il refaire le test ?** Le plus souvent non, sauf exposition à risque pendant la grossesse. Le professionnel vous dira s’il souhaite un contrôle.
+**Le résultat est négatif : faut-il refaire le test ?** Le plus souvent non, sauf exposition à risque pendant la grossesse. Le professionnel te dira s’il souhaite un contrôle.
 
-**Pourrai-je allaiter si je suis porteuse ?** Posez la question à l’équipe de la maternité : elle vous conseillera selon votre situation et la protection mise en place pour le bébé.
+**Pourrai-je allaiter si je suis porteuse ?** Pose la question à l’équipe de la maternité : elle te conseillera selon ta situation et la protection mise en place pour le bébé.
 
 **Le bébé sera-t-il forcément infecté si je suis porteuse ?** Non : c’est justement l’objectif du traitement préventif et de la vaccination dès la naissance.
 
-**L’hépatite B est-elle dangereuse pour ma grossesse ?** Elle n’est pas connue pour causer de malformation. Le suivi permet surtout de protéger le bébé et de surveiller votre foie.
+**L’hépatite B est-elle dangereuse pour ma grossesse ?** Elle n’est pas connue pour causer de malformation. Le suivi permet surtout de protéger le bébé et de surveiller ton foie.
 
 ## Quand demander conseil
-Consultez si vous avez une jaunisse (peau ou yeux jaunes), des urines très foncées, une grande fatigue, ou si vous apprenez qu’un proche est porteur du virus. ${URG}
+Consulte si tu as une jaunisse (peau ou yeux jaunes), des urines très foncées, une grande fatigue, ou si tu apprends qu’un proche est porteur du virus. ${URG}
 
 ${END}`,
     tags: ['hépatite B', 'antigène HBs', 'Ag HBs', 'dépistage', 'vaccination nouveau-né', 'transmission mère-enfant'],
@@ -239,7 +239,7 @@ ${END}`,
     body_md: `Le test du VIH figure parmi les analyses du début de grossesse. Il est proposé à toutes les femmes, quelle que soit leur histoire, parce qu’un résultat connu tôt change tout pour la protection du bébé.
 
 ## En bref
-- Le test du VIH est proposé à toutes les femmes lors du premier examen prénatal, avec les autres sérologies ; vous pouvez le refuser.
+- Le test du VIH est proposé à toutes les femmes lors du premier examen prénatal, avec les autres sérologies ; tu peux le refuser.
 - Si le test est négatif mais qu’un risque d’exposition persiste, un nouveau test peut être proposé au 6e mois, voire à l’accouchement.
 - Le dépistage est aussi proposé au partenaire, idéalement vers le 4e mois.
 - Pour une femme vivant avec le VIH, un traitement bien suivi réduit fortement le risque de transmission au bébé.
@@ -250,28 +250,28 @@ Le VIH peut être présent sans aucun symptôme pendant des années. Le dépista
 
 **Le partenaire aussi.** La HAS recommande de proposer le dépistage au partenaire, idéalement lors de l’examen du 4e mois, quel que soit le statut de la femme enceinte. C’est une démarche de prévention pour le couple et pour le bébé.
 
-**Si vous vivez avec le VIH**, un suivi mensuel est recommandé à l’hôpital, en infectiologie, et avec un gynécologue. Le mode d’accouchement dépend de la charge virale à l’approche du terme et de raisons obstétricales : quand la charge virale est indétectable, un accouchement par voie basse n’est pas contre-indiqué. L’allaitement n’est envisageable que dans des conditions strictes, discutées avec l’équipe, avec un suivi renforcé de la mère et de l’enfant.
+**Si tu vis avec le VIH**, un suivi mensuel est recommandé à l’hôpital, en infectiologie, et avec un gynécologue. Le mode d’accouchement dépend de la charge virale à l’approche du terme et de raisons obstétricales : quand la charge virale est indétectable, un accouchement par voie basse n’est pas contre-indiqué. L’allaitement n’est envisageable que dans des conditions strictes, discutées avec l’équipe, avec un suivi renforcé de la mère et de l’enfant.
 
 **Le suivi du bébé** comporte une prise de sang quelques jours après la naissance, puis à 1, 3 et 6 mois, et un dernier contrôle entre 18 et 24 mois, une fois les anticorps de la mère disparus.
 
 ## Au quotidien
-- **Acceptez le test en connaissance de cause** : il fait partie des prises de sang du début, sans prélèvement supplémentaire.
-- **Signalez toute situation d’exposition** pendant la grossesse (nouveau partenaire, partenaire non dépisté, rapport non protégé) : un nouveau test pourra être proposé.
-- **Encouragez votre partenaire** à se faire dépister ; c’est possible chez le médecin, au laboratoire ou dans un centre de dépistage.
-- **En cas de traitement**, organisez-vous pour ne pas oublier de prise (alarme, pilulier) et prévenez l’équipe si les nausées vous empêchent de le garder.
-- **Gardez une copie** de vos résultats et du plan de suivi dans le dossier remis à la maternité.
+- **Accepte le test en connaissance de cause** : il fait partie des prises de sang du début, sans prélèvement supplémentaire.
+- **Signale toute situation d’exposition** pendant la grossesse (nouveau partenaire, partenaire non dépisté, rapport non protégé) : un nouveau test pourra être proposé.
+- **Encourage ton partenaire** à se faire dépister ; c’est possible chez le médecin, au laboratoire ou dans un centre de dépistage.
+- **En cas de traitement**, organise-toi pour ne pas oublier de prise (alarme, pilulier) et préviens l’équipe si les nausées t’empêchent de le garder.
+- **Garde une copie** de tes résultats et du plan de suivi dans le dossier remis à la maternité.
 
 ## Questions fréquentes
-**Le test est-il obligatoire ?** Il est proposé systématiquement, mais vous pouvez le refuser. Les professionnels vous en expliquent l’intérêt pour le bébé.
+**Le test est-il obligatoire ?** Il est proposé systématiquement, mais tu peux le refuser. Les professionnels t’en expliquent l’intérêt pour le bébé.
 
 **Mon test est négatif au début : faut-il le refaire ?** Pas forcément. Il peut être refait au 6e mois ou à l’accouchement en cas de risque d’exposition, par exemple un partenaire séropositif ou non dépisté.
 
 **Les traitements contre le VIH sont-ils compatibles avec la grossesse ?** Selon la HAS, les antirétroviraux utilisés pendant la grossesse sont considérés comme sûrs. Le traitement est choisi et suivi par l’équipe spécialisée.
 
-**Mon résultat sera-t-il confidentiel ?** Oui, il relève du secret médical. Vous décidez à qui vous en parlez.
+**Mon résultat sera-t-il confidentiel ?** Oui, il relève du secret médical. Tu décides à qui tu en parles.
 
 ## Quand demander conseil
-Après une exposition à risque (rapport non protégé avec un partenaire de statut inconnu, rupture de préservatif), contactez sans attendre un médecin ou les urgences : un traitement préventif est possible, à débuter le plus tôt possible. ${URG} ${PSY}
+Après une exposition à risque (rapport non protégé avec un partenaire de statut inconnu, rupture de préservatif), contacte sans attendre un médecin ou les urgences : un traitement préventif est possible, à débuter le plus tôt possible. ${URG} ${PSY}
 
 ${END}`,
     tags: ['VIH', 'test VIH', 'dépistage', 'sérologie', 'partenaire', 'transmission mère-enfant', 'IST'],
@@ -283,14 +283,14 @@ ${END}`,
     slug: 'groupe-sanguin-deux-determinations-carte-grossesse',
     title: 'Groupe sanguin pendant la grossesse : pourquoi deux prises de sang et une carte',
     summary: 'Groupe ABO, Rhésus, Kell : à quoi sert la détermination du groupe sanguin pendant la grossesse, pourquoi elle est faite deux fois et l’intérêt de la carte de groupe.',
-    body_md: `Même si vous connaissez votre groupe sanguin, la maternité vous demandera un document officiel. Explications sur cet examen discret mais essentiel.
+    body_md: `Même si tu connais ton groupe sanguin, la maternité te demandera un document officiel. Explications sur cet examen discret mais essentiel.
 
 ## En bref
 - Le groupe sanguin (ABO), le Rhésus complet et le groupe Kell font partie des examens obligatoires du début de grossesse.
 - Une deuxième détermination est demandée si elle n’a pas déjà été faite, au plus tard en fin de grossesse.
 - Les deux résultats permettent d’établir une carte de groupe sanguin, à apporter à la maternité.
 - Ces informations servent à anticiper une éventuelle incompatibilité avec le bébé et à préparer l’accouchement, au cas où une transfusion serait nécessaire.
-- Si vous êtes Rhésus négatif, une surveillance particulière est prévue.
+- Si tu es Rhésus négatif, une surveillance particulière est prévue.
 
 ## Comprendre
 Le groupe sanguin décrit des marqueurs présents à la surface des globules rouges. On regarde notamment :
@@ -300,26 +300,26 @@ Le groupe sanguin décrit des marqueurs présents à la surface des globules rou
 
 Pourquoi deux fois ? Une seule erreur d’étiquetage ou de saisie pourrait avoir des conséquences graves le jour où une transfusion serait nécessaire. Deux prélèvements distincts, réalisés à des moments différents, sécurisent le résultat. Service-public.fr situe la deuxième détermination en fin de grossesse, au 8e ou au 9e mois, si elle n’a pas été faite avant. Le calendrier de Santé.fr conseille d’établir la carte de groupe vers le 5e mois si elle n’existe pas encore.
 
-Lors d’une première grossesse, le groupe est déterminé au début. Si vous avez déjà une carte de groupe valide comportant deux déterminations, le professionnel peut en tenir compte.
+Lors d’une première grossesse, le groupe est déterminé au début. Si tu as déjà une carte de groupe valide comportant deux déterminations, le professionnel peut en tenir compte.
 
 ## Au quotidien
-- **Cherchez votre carte de groupe sanguin** si vous en avez une (grossesse précédente, opération, don du sang) et montrez-la à la première consultation.
-- **Vérifiez qu’elle comporte deux déterminations** ; sinon, la deuxième prise de sang sera prescrite.
-- **Rangez la carte dans votre dossier de maternité** ou dans votre portefeuille, et pensez à la glisser dans la valise.
-- **Prenez-la en photo** : utile si vous oubliez le document le jour J, même si l’original reste demandé.
-- **Signalez toute transfusion passée** : cela peut modifier la surveillance (recherche d’anticorps irréguliers).
+- **Cherche ta carte de groupe sanguin** si tu en as une (grossesse précédente, opération, don du sang) et montre-la à la première consultation.
+- **Vérifie qu’elle comporte deux déterminations** ; sinon, la deuxième prise de sang sera prescrite.
+- **Range la carte dans ton dossier de maternité** ou dans ton portefeuille, et pense à la glisser dans la valise.
+- **Prends-la en photo** : utile si tu oublies le document le jour J, même si l’original reste demandé.
+- **Signale toute transfusion passée** : cela peut modifier la surveillance (recherche d’anticorps irréguliers).
 
 ## Questions fréquentes
 **Je connais mon groupe : pourquoi le refaire ?** Parce que la maternité a besoin d’un résultat de laboratoire fiable, établi selon des règles strictes. Une information orale ou une ancienne analyse isolée ne suffit pas.
 
-**Que se passe-t-il si je suis Rhésus négatif ?** Une recherche d’anticorps irréguliers est faite à plusieurs reprises, et une prévention peut être proposée selon le groupe du bébé. Votre professionnel vous explique les étapes.
+**Que se passe-t-il si je suis Rhésus négatif ?** Une recherche d’anticorps irréguliers est faite à plusieurs reprises, et une prévention peut être proposée selon le groupe du bébé. Ton professionnel t’explique les étapes.
 
-**Le groupe du père compte-t-il ?** Il peut aider à anticiper, notamment si vous êtes Rhésus négatif. Les examens biologiques prescrits au futur père dans le cadre de la grossesse sont pris en charge par l’Assurance maladie.
+**Le groupe du père compte-t-il ?** Il peut aider à anticiper, notamment si tu es Rhésus négatif. Les examens biologiques prescrits au futur père dans le cadre de la grossesse sont pris en charge par l’Assurance maladie.
 
-**J’ai perdu ma carte : que faire ?** Demandez au laboratoire qui a réalisé les analyses ou au professionnel qui vous suit : un duplicata ou une nouvelle détermination peut être organisé.
+**J’ai perdu ma carte : que faire ?** Demande au laboratoire qui a réalisé les analyses ou au professionnel qui te suit : un duplicata ou une nouvelle détermination peut être organisé.
 
 ## Quand demander conseil
-Si vous ne retrouvez pas vos résultats à l’approche du terme, parlez-en dès la consultation du 8e mois. En cas de saignement pendant la grossesse, contactez la maternité, surtout si vous êtes Rhésus négatif. ${URG}
+Si tu ne retrouves pas tes résultats à l’approche du terme, parles-en dès la consultation du 8e mois. En cas de saignement pendant la grossesse, contacte la maternité, surtout si tu es Rhésus négatif. ${URG}
 
 ${END}`,
     tags: ['groupe sanguin', 'rhésus', 'Kell', 'carte de groupe', 'deuxième détermination', 'prise de sang', 'transfusion'],
@@ -333,9 +333,9 @@ ${END}`,
     body_md: `« RAI » : trois lettres qui reviennent sur plusieurs ordonnances de grossesse. Derrière ce sigle se cache un examen de prévention pour le bébé.
 
 ## En bref
-- La RAI recherche dans votre sang des anticorps dirigés contre certains marqueurs des globules rouges, en dehors des anticorps habituels anti-A et anti-B.
+- La RAI recherche dans ton sang des anticorps dirigés contre certains marqueurs des globules rouges, en dehors des anticorps habituels anti-A et anti-B.
 - Elle fait partie des examens obligatoires de la première consultation.
-- Elle est répétée pendant la grossesse si vous êtes Rhésus négatif, ou si vous êtes Rhésus positif avec un antécédent de transfusion.
+- Elle est répétée pendant la grossesse si tu es Rhésus négatif, ou si tu es Rhésus positif avec un antécédent de transfusion.
 - Service-public.fr mentionne une RAI au 6e mois puis à répéter aux 8e et 9e mois dans ces situations.
 - Un résultat positif ne signifie pas que le bébé est malade : il conduit à des examens et à une surveillance adaptés.
 
@@ -344,28 +344,28 @@ Nos globules rouges portent des marqueurs, comme le Rhésus. Il arrive que le sy
 
 Comment une femme peut-elle produire ces anticorps ? Le plus souvent après un contact avec du sang différent du sien : une transfusion, ou le passage de quelques globules rouges du bébé dans la circulation de la mère lors d’une grossesse précédente, d’un saignement, d’un choc sur le ventre ou d’un geste comme une amniocentèse.
 
-La RAI sert à repérer ces anticorps tôt. Les recommandations de la HAS prévoient une RAI à la première consultation pour toutes, puis des contrôles répétés lors des consultations suivantes, systématiques si vous êtes Rhésus D négatif, et chez les femmes Rhésus positif ayant déjà été transfusées.
+La RAI sert à repérer ces anticorps tôt. Les recommandations de la HAS prévoient une RAI à la première consultation pour toutes, puis des contrôles répétés lors des consultations suivantes, systématiques si tu es Rhésus D négatif, et chez les femmes Rhésus positif ayant déjà été transfusées.
 
-Pour les femmes Rhésus négatif, une injection d’immunoglobulines anti-D peut être proposée dans certaines situations, par exemple après une amniocentèse ou une biopsie de trophoblaste, comme l’indiquent les fiches d’information des centres de diagnostic prénatal. Le professionnel vous explique quand et pourquoi.
+Pour les femmes Rhésus négatif, une injection d’immunoglobulines anti-D peut être proposée dans certaines situations, par exemple après une amniocentèse ou une biopsie de trophoblaste, comme l’indiquent les fiches d’information des centres de diagnostic prénatal. Le professionnel t’explique quand et pourquoi.
 
 ## Au quotidien
-- **Notez les dates des RAI** prévues sur votre calendrier de grossesse, surtout si vous êtes Rhésus négatif.
-- **Faites la prise de sang avant l’injection** si une injection d’anti-D est prévue le même jour : suivez l’ordre indiqué par votre sage-femme ou votre médecin.
-- **Signalez sans attendre** tout saignement, toute chute ou tout choc sur le ventre : une prévention peut être nécessaire rapidement.
-- **Mentionnez vos antécédents** de transfusion, de fausse couche, d’IVG ou de grossesse extra-utérine : ces informations comptent pour la surveillance.
-- **Gardez vos résultats et votre carte de groupe** ensemble dans le dossier de maternité.
+- **Note les dates des RAI** prévues sur ton calendrier de grossesse, surtout si tu es Rhésus négatif.
+- **Fais la prise de sang avant l’injection** si une injection d’anti-D est prévue le même jour : suis l’ordre indiqué par ta sage-femme ou ton médecin.
+- **Signale sans attendre** tout saignement, toute chute ou tout choc sur le ventre : une prévention peut être nécessaire rapidement.
+- **Mentionne tes antécédents** de transfusion, de fausse couche, d’IVG ou de grossesse extra-utérine : ces informations comptent pour la surveillance.
+- **Garde tes résultats et ta carte de groupe** ensemble dans le dossier de maternité.
 
 ## Questions fréquentes
-**Ma RAI est négative : qu’est-ce que cela veut dire ?** Aucun anticorps irrégulier n’a été retrouvé à ce moment-là. Si vous êtes Rhésus négatif, les contrôles continuent car la situation peut évoluer.
+**Ma RAI est négative : qu’est-ce que cela veut dire ?** Aucun anticorps irrégulier n’a été retrouvé à ce moment-là. Si tu es Rhésus négatif, les contrôles continuent car la situation peut évoluer.
 
-**Ma RAI est positive : mon bébé est-il en danger ?** Pas forcément. Certains anticorps n’ont pas de conséquence pour le bébé ; d’autres demandent une surveillance spécialisée. Le laboratoire identifie l’anticorps et le professionnel vous oriente si besoin.
+**Ma RAI est positive : mon bébé est-il en danger ?** Pas forcément. Certains anticorps n’ont pas de conséquence pour le bébé ; d’autres demandent une surveillance spécialisée. Le laboratoire identifie l’anticorps et le professionnel t’oriente si besoin.
 
 **Je suis Rhésus positif : suis-je concernée ?** La RAI est faite au début pour toutes. Elle n’est répétée qu’en cas d’antécédent de transfusion ou sur décision du professionnel.
 
-**L’injection d’anti-D fausse-t-elle la RAI ?** Elle peut apparaître sur une RAI faite ensuite. Signalez toujours au laboratoire la date d’une injection récente.
+**L’injection d’anti-D fausse-t-elle la RAI ?** Elle peut apparaître sur une RAI faite ensuite. Signale toujours au laboratoire la date d’une injection récente.
 
 ## Quand demander conseil
-Contactez la maternité le jour même en cas de saignement, de choc ou de chute sur le ventre, surtout si vous êtes Rhésus négatif. ${URG}
+Contacte la maternité le jour même en cas de saignement, de choc ou de chute sur le ventre, surtout si tu es Rhésus négatif. ${URG}
 
 ${END}`,
     tags: ['RAI', 'agglutinines irrégulières', 'anticorps', 'rhésus négatif', 'anti-D', 'allo-immunisation', 'prise de sang'],
@@ -383,7 +383,7 @@ ${END}`,
 - Service-public.fr la mentionne lors des prises de sang des 5e et 6e mois ; la HAS la prévoit parmi les examens des consultations intermédiaires.
 - Elle peut être prescrite dès le début de la grossesse en cas de facteur de risque d’anémie.
 - Les besoins en fer augmentent pendant la grossesse, surtout à la fin.
-- Si un manque de fer est repéré, le médecin ou la sage-femme peut prescrire du fer : ne prenez pas de complément sans avis.
+- Si un manque de fer est repéré, le médecin ou la sage-femme peut prescrire du fer : ne prends pas de complément sans avis.
 
 ## Comprendre
 La numération mesure plusieurs éléments du sang :
@@ -391,28 +391,28 @@ La numération mesure plusieurs éléments du sang :
 - **les globules blancs**, qui participent à la défense contre les infections ;
 - **les plaquettes**, qui interviennent dans la coagulation : leur nombre est aussi utile avant l’accouchement et une éventuelle péridurale.
 
-Pendant la grossesse, le volume de sang augmente et le bébé puise dans vos réserves. Selon l’Assurance maladie, le fer est indispensable, surtout en fin de grossesse, pour éviter une carence et l’anémie qu’elle peut entraîner.
+Pendant la grossesse, le volume de sang augmente et le bébé puise dans tes réserves. Selon l’Assurance maladie, le fer est indispensable, surtout en fin de grossesse, pour éviter une carence et l’anémie qu’elle peut entraîner.
 
-La HAS recommande une numération dès la première consultation en cas de facteur de risque d’anémie, puis au cours des consultations intermédiaires. Votre prescripteur adapte le calendrier selon votre situation : grossesses rapprochées, grossesse multiple, alimentation végétalienne, saignements, antécédents.
+La HAS recommande une numération dès la première consultation en cas de facteur de risque d’anémie, puis au cours des consultations intermédiaires. Ton prescripteur adapte le calendrier selon ta situation : grossesses rapprochées, grossesse multiple, alimentation végétalienne, saignements, antécédents.
 
 ## Au quotidien
-- **Faites la prise de sang à la date prévue**, sans être forcément à jeun sauf indication contraire sur l’ordonnance.
-- **Mangez des aliments sources de fer** : viandes, poissons, légumes secs (lentilles, pois chiches, haricots).
-- **Ne prenez pas de complément de votre propre initiative** : l’Assurance maladie déconseille les compléments alimentaires sans avis médical, car certains contiennent des vitamines ou des minéraux nocifs à forte dose.
-- **Si vous êtes végétalienne**, parlez-en au professionnel : une supplémentation peut être nécessaire.
-- **Signalez une fatigue inhabituelle**, un essoufflement au moindre effort ou des vertiges : ces signes justifient de vérifier la numération.
+- **Fais la prise de sang à la date prévue**, sans être forcément à jeun sauf indication contraire sur l’ordonnance.
+- **Mange des aliments sources de fer** : viandes, poissons, légumes secs (lentilles, pois chiches, haricots).
+- **Ne prends pas de complément de ton propre initiative** : l’Assurance maladie déconseille les compléments alimentaires sans avis médical, car certains contiennent des vitamines ou des minéraux nocifs à forte dose.
+- **Si tu es végétalienne**, parles-en au professionnel : une supplémentation peut être nécessaire.
+- **Signale une fatigue inhabituelle**, un essoufflement au moindre effort ou des vertiges : ces signes justifient de vérifier la numération.
 
 ## Questions fréquentes
 **Pourquoi mes résultats sont-ils marqués « hors norme » ?** Les valeurs de référence imprimées par le laboratoire ne sont pas toujours celles de la grossesse. Seul le professionnel peut dire si un écart demande une action.
 
-**Le fer prescrit peut-il donner des troubles digestifs ?** Cela arrive. Parlez-en au professionnel plutôt que d’arrêter seule : il peut ajuster la prescription.
+**Le fer prescrit peut-il donner des troubles digestifs ?** Cela arrive. Parles-en au professionnel plutôt que d’arrêter seule : il peut ajuster la prescription.
 
-**L’anémie est-elle dangereuse pour le bébé ?** Une anémie importante mérite d’être prise en charge, pour vous comme pour lui. C’est l’objectif de ce dépistage et des contrôles qui suivent.
+**L’anémie est-elle dangereuse pour le bébé ?** Une anémie importante mérite d’être prise en charge, pour toi comme pour lui. C’est l’objectif de ce dépistage et des contrôles qui suivent.
 
-**Les plaquettes basses empêchent-elles la péridurale ?** Le médecin anesthésiste examine vos résultats lors de la consultation pré-anesthésique et vous informe des possibilités.
+**Les plaquettes basses empêchent-elles la péridurale ?** Le médecin anesthésiste examine tes résultats lors de la consultation pré-anesthésique et toi informe des possibilités.
 
 ## Quand demander conseil
-Consultez si vous ressentez une grande fatigue persistante, un essoufflement inhabituel, des palpitations ou des malaises. Appelez la maternité en cas de saignement. ${URG}
+Consulte si tu ressens une grande fatigue persistante, un essoufflement inhabituel, des palpitations ou des malaises. Appelle la maternité en cas de saignement. ${URG}
 
 ${END}`,
     tags: ['NFS', 'numération formule sanguine', 'anémie', 'fer', 'hémoglobine', 'plaquettes', 'prise de sang 6e mois'],
@@ -429,7 +429,7 @@ ${END}`,
 - Le diabète gestationnel apparaît en général entre la 24e et la 28e semaine de grossesse, chez des femmes sans diabète connu.
 - Le dépistage est pratiqué lorsqu’au moins un facteur de risque est présent (surpoids, âge supérieur à 35 ans, antécédents de diabète…).
 - Le test consiste à boire une boisson sucrée (75 g de glucose) puis à faire plusieurs prises de sang : à jeun, une heure et deux heures après.
-- Prévoyez de rester au laboratoire environ deux heures.
+- Prévois de rester au laboratoire environ deux heures.
 - Si le diabète est confirmé, le suivi repose d’abord sur l’alimentation et l’activité physique, et parfois sur l’insuline.
 
 ## Comprendre
@@ -439,26 +439,26 @@ Pendant la grossesse, certaines hormones rendent le corps moins sensible à l’
 
 **Pourquoi dépister ?** Un diabète non équilibré expose le bébé à un poids de naissance élevé (macrosomie) et à une hypoglycémie à la naissance. Le traitement réduit les complications ; la plupart des femmes concernées accouchent d’un bébé en bonne santé.
 
-**Le déroulement.** Vous arrivez à jeun. Une première prise de sang mesure la glycémie de départ, puis vous buvez une solution contenant 75 g de glucose. D’autres prises de sang sont faites une heure puis deux heures plus tard. Les seuils d’interprétation sont appliqués par le laboratoire et le prescripteur.
+**Le déroulement.** Tu arrives à jeun. Une première prise de sang mesure la glycémie de départ, puis tu bois une solution contenant 75 g de glucose. D’autres prises de sang sont faites une heure puis deux heures plus tard. Les seuils d’interprétation sont appliqués par le laboratoire et le prescripteur.
 
 ## Au quotidien
-- **Vérifiez sur l’ordonnance** les consignes de jeûne et prenez rendez-vous si le laboratoire le demande.
-- **Suivez les consignes du laboratoire** pendant le test : on vous demande en général de rester assise et au calme, sans manger ni fumer, entre les prises de sang.
-- **Emportez de quoi patienter** (livre, écouteurs) et une collation pour après la dernière prise de sang.
-- **Faites-vous accompagner** si vous craignez un malaise ; prévenez le personnel si vous vous sentez mal ou si vous vomissez la boisson.
-- **Gardez le résultat** pour la consultation suivante, où il sera interprété avec vous.
+- **Vérifie sur l’ordonnance** les consignes de jeûne et prends rendez-vous si le laboratoire le demande.
+- **Suis les consignes du laboratoire** pendant le test : on te demande en général de rester assise et au calme, sans manger ni fumer, entre les prises de sang.
+- **Emporte de quoi patienter** (livre, écouteurs) et une collation pour après la dernière prise de sang.
+- **Fais-toi accompagner** si tu crains un malaise ; préviens le personnel si tu te sens mal ou si tu vomis la boisson.
+- **Garde le résultat** pour la consultation suivante, où il sera interprété avec toi.
 
 ## Questions fréquentes
-**La boisson est-elle désagréable ?** Elle est très sucrée ; certaines femmes ont des nausées. Boire lentement dans le temps indiqué peut aider. Si vous vomissez, le test devra en général être refait : signalez-le.
+**La boisson est-elle désagréable ?** Elle est très sucrée ; certaines femmes ont des nausées. Boire lentement dans le temps indiqué peut aider. Si tu vomis, le test devra en général être refait : signale-le.
 
-**Je n’ai aucun facteur de risque : dois-je faire le test ?** Le dépistage est ciblé sur les femmes qui ont des facteurs de risque. Votre professionnel décide avec vous selon votre dossier.
+**Je n’ai aucun facteur de risque : dois-je faire le test ?** Le dépistage est ciblé sur les femmes qui ont des facteurs de risque. Ton professionnel décide avec toi selon ton dossier.
 
 **Le test est positif : que se passe-t-il ensuite ?** Une prise en charge est organisée : conseils alimentaires, activité physique adaptée et, si le médecin le juge utile, autosurveillance de la glycémie au doigt. Une insuline est proposée si la glycémie reste trop élevée malgré ces mesures.
 
-**Le diabète disparaît-il après l’accouchement ?** Le plus souvent, oui. Le professionnel vous indiquera le suivi à prévoir après la naissance, notamment un contrôle de la glycémie, et les conseils pour la suite.
+**Le diabète disparaît-il après l’accouchement ?** Le plus souvent, oui. Le professionnel t’indiquera le suivi à prévoir après la naissance, notamment un contrôle de la glycémie, et les conseils pour la suite.
 
 ## Quand demander conseil
-Si vous avez très soif, urinez beaucoup plus que d’habitude ou si l’échographie évoque un gros bébé, parlez-en à votre professionnel. ${URG}
+Si tu as très soif, urines beaucoup plus que d’habitude ou si l’échographie évoque un gros bébé, parles-en à ton professionnel. ${URG}
 
 ${END}`,
     tags: ['HGPO', 'diabète gestationnel', 'test du sucre', 'glycémie', 'glucose', 'prise de sang à jeun', '24-28 SA'],
@@ -469,8 +469,8 @@ ${END}`,
     ...FAMILY,
     slug: 'bandelette-urinaire-sucre-albumine-consultation',
     title: 'La bandelette urinaire à chaque consultation : sucre, albumine et infection',
-    summary: 'Pourquoi on vous demande vos urines à chaque rendez-vous de grossesse, ce que recherche la bandelette et comment bien recueillir l’échantillon.',
-    body_md: `À chaque consultation de grossesse, ou presque, on vous tend un petit pot. La bandelette urinaire est rapide, indolore, et apporte des informations précieuses.
+    summary: 'Pourquoi on te demande tes urines à chaque rendez-vous de grossesse, ce que recherche la bandelette et comment bien recueillir l’échantillon.',
+    body_md: `À chaque consultation de grossesse, ou presque, on te tend un petit pot. La bandelette urinaire est rapide, indolore, et apporte des informations précieuses.
 
 ## En bref
 - La recherche de sucre (glycosurie) et d’albumine, c’est-à-dire de protéines (protéinurie), dans les urines est obligatoire à chaque consultation prénatale.
@@ -488,11 +488,11 @@ La bandelette est une petite languette couverte de zones réactives qui changent
 La HAS classe la recherche de sucre et de protéines parmi les examens obligatoires de toutes les consultations, et le dépistage des infections urinaires sans symptôme par bandelette parmi les examens proposés systématiquement. L’Assurance maladie précise que les infections urinaires sont fréquentes pendant la grossesse, souvent sans symptôme ou avec des signes discrets : la bandelette permet de les repérer.
 
 ## Au quotidien
-- **Recueillez de préférence le milieu du jet**, après une toilette intime simple : cela limite les faux résultats.
-- **Utilisez un flacon propre**, idéalement fourni par le cabinet ou la pharmacie.
-- **Si vous faites la bandelette à la maison**, respectez le temps de lecture indiqué et notez le résultat pour le professionnel.
-- **Buvez normalement** avant le rendez-vous, sans excès ni restriction.
-- **Signalez vos symptômes**, même si la bandelette est négative : brûlures, envies pressantes, douleurs dans le bas du ventre.
+- **Recueille de préférence le milieu du jet**, après une toilette intime simple : cela limite les faux résultats.
+- **Utilise un flacon propre**, idéalement fourni par le cabinet ou la pharmacie.
+- **Si tu fais la bandelette à la maison**, respecte le temps de lecture indiqué et note le résultat pour le professionnel.
+- **Bois normalement** avant le rendez-vous, sans excès ni restriction.
+- **Signale tes symptômes**, même si la bandelette est négative : brûlures, envies pressantes, douleurs dans le bas du ventre.
 
 ## Questions fréquentes
 **La bandelette a montré des traces de sucre : ai-je un diabète ?** Pas forcément. La bandelette ne suffit pas à poser un diagnostic ; le professionnel décide s’il faut un test de glycémie.
@@ -504,7 +504,7 @@ La HAS classe la recherche de sucre et de protéines parmi les examens obligatoi
 **Puis-je faire la bandelette en pharmacie ?** Santé.fr indique que la mesure de la tension et la bandelette urinaire peuvent souvent être réalisées en pharmacie lorsque cela est nécessaire rapidement, par exemple en cas de gonflement soudain des chevilles.
 
 ## Quand demander conseil
-Consultez rapidement en cas de brûlures en urinant, d’envies fréquentes, de douleurs dans le bas du ventre ou de fièvre. Un gonflement rapide et important des chevilles, du visage ou des mains, des maux de tête persistants ou des troubles de la vue justifient un avis médical en urgence. ${URG}
+Consulte rapidement en cas de brûlures en urinant, d’envies fréquentes, de douleurs dans le bas du ventre ou de fièvre. Un gonflement rapide et important des chevilles, du visage ou des mains, des maux de tête persistants ou des troubles de la vue justifient un avis médical en urgence. ${URG}
 
 ${END}`,
     tags: ['bandelette urinaire', 'albumine', 'protéinurie', 'glycosurie', 'sucre dans les urines', 'analyse d’urine', 'consultation mensuelle'],
@@ -534,23 +534,23 @@ L’Assurance maladie explique que les infections urinaires sont fréquentes che
 **Comment est-il interprété ?** Le laboratoire recherche des globules blancs et des bactéries, identifie la bactérie et teste sa sensibilité aux antibiotiques (antibiogramme). Un traitement est souvent débuté avant le résultat de l’antibiogramme, puis ajusté si besoin.
 
 ## Au quotidien
-- **Lavez-vous les mains**, faites une toilette intime à l’eau et au savon ou avec la lingette fournie, puis recueillez le milieu du jet dans le flacon stérile.
-- **Apportez l’échantillon rapidement** au laboratoire, ou conservez-le selon les consignes données.
-- **Préférez les urines du matin** si l’ordonnance le précise.
-- **Buvez régulièrement dans la journée** et n’attendez pas pour aller aux toilettes.
-- **Suivez le traitement jusqu’au bout**, même si les symptômes disparaissent, et faites l’ECBU de contrôle à la date prévue.
+- **Lave-toi les mains**, fais une toilette intime à l’eau et au savon ou avec la lingette fournie, puis recueille le milieu du jet dans le flacon stérile.
+- **Apporte l’échantillon rapidement** au laboratoire, ou conserve-le selon les consignes données.
+- **Préfère les urines du matin** si l’ordonnance le précise.
+- **Bois régulièrement dans la journée** et n’attends pas pour aller aux toilettes.
+- **Suis le traitement jusqu’au bout**, même si les symptômes disparaissent, et fais l’ECBU de contrôle à la date prévue.
 
 ## Questions fréquentes
 **Je n’ai aucune brûlure : pourquoi traiter ?** Parce qu’une infection peut être présente sans symptôme et évoluer vers les reins. Le dépistage permet justement de traiter tôt.
 
-**Les antibiotiques sont-ils compatibles avec la grossesse ?** Le professionnel choisit un antibiotique adapté à la grossesse et à la bactérie identifiée. Ne prenez jamais un ancien traitement de votre propre initiative.
+**Les antibiotiques sont-ils compatibles avec la grossesse ?** Le professionnel choisit un antibiotique adapté à la grossesse et à la bactérie identifiée. Ne prends jamais un ancien traitement de ton propre initiative.
 
-**L’infection revient souvent : que faire ?** Parlez-en : des ECBU réguliers peuvent être programmés, et des conseils adaptés vous seront donnés.
+**L’infection revient souvent : que faire ?** Parles-en : des ECBU réguliers peuvent être programmés, et des conseils adaptés te seront donnés.
 
 **Les envies fréquentes d’uriner sont-elles un signe d’infection ?** Elles sont fréquentes pendant la grossesse sans infection. En revanche, des brûlures, des douleurs ou des urines troubles doivent faire consulter.
 
 ## Quand demander conseil
-Consultez rapidement votre médecin ou votre sage-femme en cas de douleurs dans le bas du ventre, d’envies pressantes ou de brûlures en urinant. Consultez en urgence en cas de fièvre, de frissons, de douleur dans le dos ou sur le côté, de vomissements ou de contractions. ${URG}
+Consulte rapidement ton médecin ou ta sage-femme en cas de douleurs dans le bas du ventre, d’envies pressantes ou de brûlures en urinant. Consulte en urgence en cas de fièvre, de frissons, de douleur dans le dos ou sur le côté, de vomissements ou de contractions. ${URG}
 
 ${END}`,
     tags: ['ECBU', 'infection urinaire', 'cystite', 'pyélonéphrite', 'analyse d’urine', 'antibiogramme', 'brûlures urinaires'],
@@ -562,7 +562,7 @@ ${END}`,
     category: 'sante-grossesse',
     slug: 'tension-arterielle-surveillance-preeclampsie',
     title: 'Tension artérielle et prééclampsie : ce que surveille chaque consultation',
-    summary: 'Pourquoi votre tension est mesurée à chaque rendez-vous, ce qu’est l’hypertension de la grossesse et les signes de prééclampsie qui justifient d’appeler sans attendre.',
+    summary: 'Pourquoi ta tension est mesurée à chaque rendez-vous, ce qu’est l’hypertension de la grossesse et les signes de prééclampsie qui justifient d’appeler sans attendre.',
     body_md: `Le brassard gonflé à chaque consultation n’est pas une simple formalité. La mesure de la tension, associée à la recherche de protéines dans les urines, sert à repérer tôt une prééclampsie.
 
 ## En bref
@@ -577,28 +577,28 @@ La prééclampsie est une maladie de la grossesse liée à un développement ano
 
 **Les facteurs de risque** cités par Santé.fr : première grossesse, nouveau partenaire, antécédent personnel ou familial (mère, sœur) de prééclampsie, obésité, hypertension chronique, maladie rénale chronique, syndrome des antiphospholipides, âge supérieur à 40 ans, grossesse multiple.
 
-**Ce que fait la consultation.** La sage-femme ou le médecin mesure votre tension au repos, recherche des protéines dans les urines et vous interroge sur des signes d’hypertension : maux de tête, gonflements, bourdonnements, troubles visuels. La consultation du 8e mois insiste particulièrement sur ces signes.
+**Ce que fait la consultation.** La sage-femme ou le médecin mesure ta tension au repos, recherche des protéines dans les urines et toi interroge sur des signes d’hypertension : maux de tête, gonflements, bourdonnements, troubles visuels. La consultation du 8e mois insiste particulièrement sur ces signes.
 
 **Si une hypertension est repérée**, une surveillance plus rapprochée est organisée : contrôles de tension, analyses de sang et d’urine, échographies et enregistrements du rythme cardiaque du bébé. Selon la gravité, un traitement, un repos à domicile ou une hospitalisation peuvent être proposés.
 
 ## Au quotidien
-- **Arrivez un peu en avance** et asseyez-vous quelques minutes avant la mesure : l’effort ou le stress peuvent faire monter les chiffres.
-- **Mesurez votre tension à la maison** seulement si on vous l’a demandé, avec un appareil validé, et notez les résultats.
-- **Connaissez vos facteurs de risque** et parlez-en dès le début de la grossesse.
-- **Gardez sur vous le numéro de la maternité** et celui du 15.
-- **Ne minimisez pas les signes** : un mal de tête inhabituel qui ne passe pas mérite un appel, même un dimanche.
+- **Arrive un peu en avance** et assieds-toi quelques minutes avant la mesure : l’effort ou le stress peuvent faire monter les chiffres.
+- **Mesure ta tension à la maison** seulement si on te l’a demandé, avec un appareil validé, et note les résultats.
+- **Connais tes facteurs de risque** et parles-en dès le début de la grossesse.
+- **Garde sur te le numéro de la maternité** et celui du 15.
+- **Ne minimise pas les signes** : un mal de tête inhabituel qui ne passe pas mérite un appel, même un dimanche.
 
 ## Questions fréquentes
-**Ma tension était un peu haute au cabinet : est-ce grave ?** Une mesure isolée ne suffit pas. Le professionnel peut la refaire au repos, ou demander des contrôles. Suivez ses consignes.
+**Ma tension était un peu haute au cabinet : est-ce grave ?** Une mesure isolée ne suffit pas. Le professionnel peut la refaire au repos, ou demander des contrôles. Suis ses consignes.
 
 **Les pieds gonflés sont-ils toujours un signe de prééclampsie ?** Les jambes lourdes et les chevilles un peu gonflées en fin de journée sont fréquentes. Un gonflement rapide et important, du visage ou des mains, ou associé à d’autres signes, demande en revanche un avis en urgence.
 
 **La prééclampsie disparaît-elle après la naissance ?** Les symptômes s’améliorent en général dans les jours qui suivent l’accouchement, mais une surveillance reste nécessaire, y compris après la sortie de la maternité.
 
-**Puis-je faire contrôler ma tension en pharmacie ?** Oui, Santé.fr indique que la tension et la bandelette urinaire peuvent souvent être faites en pharmacie. En présence de signes d’alerte, contactez directement la maternité ou le 15.
+**Puis-je faire contrôler ma tension en pharmacie ?** Oui, Santé.fr indique que la tension et la bandelette urinaire peuvent souvent être faites en pharmacie. En présence de signes d’alerte, contacte directement la maternité ou le 15.
 
 ## Quand demander conseil
-Appelez la maternité ou le 15 sans attendre en cas de maux de tête intenses ou persistants, de bourdonnements d’oreilles, de troubles de la vue (mouches, éclairs), de douleur forte en haut du ventre ou sous les côtes à droite, de gonflement brutal du visage, des mains ou des chevilles, ou si le bébé bouge moins. En cas de convulsions ou de perte de connaissance, appelez immédiatement le 15 ou le 112.
+Appelle la maternité ou le 15 sans attendre en cas de maux de tête intenses ou persistants, de bourdonnements d’oreilles, de troubles de la vue (mouches, éclairs), de douleur forte en haut du ventre ou sous les côtes à droite, de gonflement brutal du visage, des mains ou des chevilles, ou si le bébé bouge moins. En cas de convulsions ou de perte de connaissance, appelle immédiatement le 15 ou le 112.
 
 ${END}`,
     tags: ['tension artérielle', 'hypertension', 'prééclampsie', 'pré-éclampsie', 'protéinurie', 'maux de tête', 'œdème', 'signes d’alerte'],
@@ -612,13 +612,13 @@ ${END}`,
     slug: 'echographie-premier-trimestre-11-13-sa-datation',
     title: 'L’échographie du 1er trimestre (11 à 13 SA) : datation, nombre de bébés et clarté nucale',
     summary: 'Ce que vérifie la première échographie de dépistage, pourquoi elle doit être faite dans une fenêtre précise et comment elle s’intègre au dépistage de la trisomie 21.',
-    body_md: `C’est souvent la première fois que vous voyez votre bébé à l’écran. Au-delà de l’émotion, cette échographie a des objectifs médicaux précis, et elle se fait dans un créneau de quelques semaines.
+    body_md: `C’est souvent la première fois que tu vois ton bébé à l’écran. Au-delà de l’émotion, cette échographie a des objectifs médicaux précis, et elle se fait dans un créneau de quelques semaines.
 
 ## En bref
 - La première échographie de dépistage se fait entre 11 et 13 semaines d’aménorrhée (SA) et 6 jours.
 - Elle date précisément la grossesse et permet de fixer la date prévue d’accouchement.
 - Elle vérifie le nombre d’embryons et, en cas de jumeaux, leurs caractéristiques (placenta partagé ou non).
-- Elle mesure la clarté nucale, utilisée avec une prise de sang et votre âge pour calculer le risque de trisomie 21, si vous acceptez ce dépistage.
+- Elle mesure la clarté nucale, utilisée avec une prise de sang et ton âge pour calculer le risque de trisomie 21, si tu acceptes ce dépistage.
 - Elle peut aussi repérer certaines anomalies, mais ne permet pas de tout voir.
 
 ## Comprendre
@@ -626,28 +626,28 @@ La Conférence nationale d’échographie obstétricale et fœtale (CNEOF) décr
 
 **La datation.** L’échographiste mesure la longueur de l’embryon, de la tête aux fesses (longueur cranio-caudale). À ce stade, tous les embryons grandissent à peu près au même rythme : cette mesure donne donc une date de début de grossesse fiable, plus précise que la date des dernières règles. C’est sur elle que s’appuient le calendrier des examens et la date prévue d’accouchement.
 
-**La clarté nucale.** C’est un petit espace rempli de liquide sous la peau de la nuque du fœtus. Sa mesure, associée à la longueur cranio-caudale, au dosage de marqueurs dans votre sang et à votre âge, permet de calculer un risque de trisomie 21. D’après la HAS, selon le niveau de risque, un test ADN sur prise de sang ou un caryotype peut ensuite être proposé. Ce dépistage est proposé à toutes, jamais imposé.
+**La clarté nucale.** C’est un petit espace rempli de liquide sous la peau de la nuque du fœtus. Sa mesure, associée à la longueur cranio-caudale, au dosage de marqueurs dans ton sang et à ton âge, permet de calculer un risque de trisomie 21. D’après la HAS, selon le niveau de risque, un test ADN sur prise de sang ou un caryotype peut ensuite être proposé. Ce dépistage est proposé à toutes, jamais imposé.
 
 **Les jumeaux.** Si deux embryons sont visibles, l’échographie précise s’ils partagent ou non un placenta, ce qui change le suivi.
 
 ## Au quotidien
-- **Prenez rendez-vous tôt** : les créneaux entre 11 et 13 SA sont parfois très demandés, et la mesure de la clarté nucale n’est utilisable que dans cette fenêtre.
-- **Apportez** l’ordonnance, votre carte Vitale, et le formulaire de consentement au dépistage si on vous l’a remis.
-- **Demandez s’il faut avoir la vessie pleine** : les consignes varient selon les cabinets. Selon la position du bébé, l’examen se fait par le ventre et parfois par voie vaginale.
-- **Venez accompagnée** si vous le souhaitez ; renseignez-vous sur la présence d’enfants, qui n’est pas toujours possible.
-- **Posez vos questions à la fin** : l’échographiste a besoin de concentration pendant les mesures.
+- **Prends rendez-vous tôt** : les créneaux entre 11 et 13 SA sont parfois très demandés, et la mesure de la clarté nucale n’est utilisable que dans cette fenêtre.
+- **Apporte** l’ordonnance, ta carte Vitale, et le formulaire de consentement au dépistage si on te l’a remis.
+- **Demande s’il faut avoir la vessie pleine** : les consignes varient selon les cabinets. Selon la position du bébé, l’examen se fait par le ventre et parfois par voie vaginale.
+- **Viens accompagnée** si tu le souhaites ; renseigne-toi sur la présence d’enfants, qui n’est pas toujours possible.
+- **Pose tes questions à la fin** : l’échographiste a besoin de concentration pendant les mesures.
 
 ## Questions fréquentes
 **La date d’accouchement peut-elle changer après cette échographie ?** Oui, c’est même son rôle : la date est souvent corrigée de quelques jours par rapport au calcul fait avec les dernières règles.
 
 **L’échographie peut-elle voir le sexe du bébé ?** À ce stade, ce n’est pas un objectif de l’examen. Santé.fr indique que le sexe peut être déterminé lors de l’échographie du 2e trimestre.
 
-**Le bébé ne s’est pas mis en bonne position : que se passe-t-il ?** L’échographiste peut vous demander de bouger, de marcher un peu ou de revenir un peu plus tard pour terminer les mesures.
+**Le bébé ne s’est pas mis en bonne position : que se passe-t-il ?** L’échographiste peut te demander de bouger, de marcher un peu ou de revenir un peu plus tard pour terminer les mesures.
 
 **Une clarté nucale « augmentée » veut-elle dire que mon bébé est malade ?** Non. C’est un élément du calcul de risque, qui peut conduire à proposer d’autres examens. Seul un examen diagnostique peut conclure.
 
 ## Quand demander conseil
-Avant ou après l’échographie, consultez en urgence en cas de saignement abondant, de douleur intense dans le bas du ventre ou de malaise. ${URG} ${PSY}
+Avant ou après l’échographie, consulte en urgence en cas de saignement abondant, de douleur intense dans le bas du ventre ou de malaise. ${URG} ${PSY}
 
 ${END}`,
     tags: ['échographie premier trimestre', 'échographie de datation', 'clarté nucale', '12 SA', 'jumeaux', 'date d’accouchement', 'trisomie 21'],
@@ -665,7 +665,7 @@ ${END}`,
 - Elle se fait entre 20 et 25 semaines d’aménorrhée, souvent vers 22 SA.
 - Elle vérifie le développement et la croissance du bébé grâce à des mesures et à l’observation des organes.
 - Elle observe aussi le placenta et le liquide amniotique.
-- Le sexe du bébé peut être déterminé à ce stade, si vous souhaitez le connaître.
+- Le sexe du bébé peut être déterminé à ce stade, si tu souhaites le connaître.
 - C’est un examen de dépistage : il ne peut pas repérer toutes les anomalies.
 
 ## Comprendre
@@ -678,14 +678,14 @@ Concrètement, l’échographiste examine l’une après l’autre les grandes s
 **Si quelque chose demande à être vérifié**, une échographie de contrôle, ou une échographie dite « diagnostique » réalisée par un échographiste référent, peut être proposée. Dans certaines situations, le dossier est discuté avec un centre pluridisciplinaire de diagnostic prénatal.
 
 ## Au quotidien
-- **Prévoyez du temps** : l’examen peut durer plus longtemps que le premier, surtout si le bébé bouge beaucoup ou se cache.
-- **Dites à l’avance si vous voulez connaître le sexe** ou non, pour que l’échographiste fasse attention à ne pas le révéler par mégarde.
-- **Apportez les comptes rendus précédents** (échographie du 1er trimestre, résultats du dépistage).
-- **Évitez la crème hydratante sur le ventre** le jour même si le cabinet vous le conseille.
-- **Notez vos questions** : le compte rendu contient des abréviations que la sage-femme ou le médecin peut vous expliquer.
+- **Prévois du temps** : l’examen peut durer plus longtemps que le premier, surtout si le bébé bouge beaucoup ou se cache.
+- **Dis à l’avance si tu veux connaître le sexe** ou non, pour que l’échographiste fasse attention à ne pas le révéler par mégarde.
+- **Apporte les comptes rendus précédents** (échographie du 1er trimestre, résultats du dépistage).
+- **Évite la crème hydratante sur le ventre** le jour même si le cabinet te le conseille.
+- **Note tes questions** : le compte rendu contient des abréviations que la sage-femme ou le médecin peut t’expliquer.
 
 ## Questions fréquentes
-**Pourquoi l’échographiste ne parle-t-il pas pendant l’examen ?** Il a besoin de concentration pour réaliser des mesures précises. Son silence ne signifie pas qu’il y a un problème : il fera le point avec vous à la fin.
+**Pourquoi l’échographiste ne parle-t-il pas pendant l’examen ?** Il a besoin de concentration pour réaliser des mesures précises. Son silence ne signifie pas qu’il y a un problème : il fera le point avec toi à la fin.
 
 **Mon bébé est « petit » ou « grand » sur le compte rendu : est-ce inquiétant ?** Les mesures sont comparées à des courbes de référence. Un écart isolé est interprété par le professionnel, qui peut proposer un contrôle.
 
@@ -694,7 +694,7 @@ Concrètement, l’échographiste examine l’une après l’autre les grandes s
 **L’échographie peut-elle nuire au bébé ?** Pour une échographie médicale, aucun effet nocif n’a été démontré à ce jour ; l’ANSM recommande seulement de limiter l’exposition aux ultrasons au nécessaire.
 
 ## Quand demander conseil
-Appelez la maternité en cas de saignements, de perte de liquide, de contractions régulières ou de douleurs inhabituelles. ${URG} ${PSY}
+Appelle la maternité en cas de saignements, de perte de liquide, de contractions régulières ou de douleurs inhabituelles. ${URG} ${PSY}
 
 ${END}`,
     tags: ['échographie morphologique', 'deuxième échographie', '22 SA', 'sexe du bébé', 'morphologie', 'croissance du bébé'],
@@ -722,28 +722,28 @@ Santé.fr ajoute que cet examen évalue les conditions de l’accouchement : la 
 
 **Pourquoi le poids estimé n’est-il qu’une estimation ?** Le bébé n’est pas pesé : son poids est calculé à partir de mesures, avec une marge d’erreur. Santé.fr la décrit comme « assez approximative », de l’ordre de plus ou moins 10 %. Un bébé annoncé à 3 kg peut donc peser sensiblement plus ou moins à la naissance.
 
-**Le placenta.** S’il est situé bas, près du col de l’utérus (placenta dit « praevia »), cela peut modifier le suivi et les conditions d’accouchement. L’équipe vous expliquera ce qui est prévu.
+**Le placenta.** S’il est situé bas, près du col de l’utérus (placenta dit « praevia »), cela peut modifier le suivi et les conditions d’accouchement. L’équipe t’expliquera ce qui est prévu.
 
 **Et ensuite ?** Si une croissance faible, un excès ou un manque de liquide amniotique ou une autre particularité est repéré, des échographies de surveillance, éventuellement avec un Doppler, et des enregistrements du rythme cardiaque du bébé peuvent être proposés.
 
 ## Au quotidien
-- **Prenez rendez-vous dans la bonne fenêtre** (30 à 35 SA), en tenant compte de la date de la consultation du 8e mois.
-- **Apportez les comptes rendus** des échographies précédentes : l’échographiste compare l’évolution de la croissance.
-- **Parlez de vos sensations** : si le bébé bouge moins, dites-le, même le jour de l’échographie.
-- **Ne vous focalisez pas sur un chiffre** : c’est l’évolution de la croissance au fil des examens qui compte.
-- **Prévoyez un coussin ou un temps de pause** si rester allongée sur le dos vous fait tourner la tête : signalez-le, l’examen peut se faire légèrement sur le côté.
+- **Prends rendez-vous dans la bonne fenêtre** (30 à 35 SA), en tenant compte de la date de la consultation du 8e mois.
+- **Apporte les comptes rendus** des échographies précédentes : l’échographiste compare l’évolution de la croissance.
+- **Parle de tes sensations** : si le bébé bouge moins, dis-le, même le jour de l’échographie.
+- **Ne te focalise pas sur un chiffre** : c’est l’évolution de la croissance au fil des examens qui compte.
+- **Prévois un coussin ou un temps de pause** si rester allongée sur le dos te fait tourner la tête : signale-le, l’examen peut se faire légèrement sur le côté.
 
 ## Questions fréquentes
 **Le bébé est en siège à 32 SA : faut-il s’inquiéter ?** Beaucoup de bébés se retournent encore ensuite. La position sera vérifiée lors des consultations suivantes, et des solutions peuvent être proposées si elle persiste.
 
 **On m’annonce un gros bébé : aurai-je une césarienne ?** Pas forcément. Le poids estimé est approximatif, et la décision dépend de nombreux éléments discutés avec l’équipe.
 
-**Que signifient les courbes sur le compte rendu ?** Les mesures sont reportées sur des courbes de référence, qui situent la croissance du bébé par rapport à d’autres bébés du même terme. Le professionnel vous explique où se situe votre bébé et si un contrôle est utile.
+**Que signifient les courbes sur le compte rendu ?** Les mesures sont reportées sur des courbes de référence, qui situent la croissance du bébé par rapport à d’autres bébés du même terme. Le professionnel t’explique où se situe ton bébé et si un contrôle est utile.
 
 **Faudra-t-il d’autres échographies ?** Elles ne sont pas systématiques. Elles sont prescrites si la grossesse ou le bébé le justifient, par exemple en cas de terme dépassé.
 
 ## Quand demander conseil
-Appelez la maternité si le bébé bouge moins que d’habitude, en cas de saignements, de perte de liquide, de contractions régulières avant 37 SA ou de maux de tête intenses avec troubles de la vue. ${URG}
+Appelle la maternité si le bébé bouge moins que d’habitude, en cas de saignements, de perte de liquide, de contractions régulières avant 37 SA ou de maux de tête intenses avec troubles de la vue. ${URG}
 
 ${END}`,
     tags: ['échographie troisième trimestre', '32 SA', 'poids estimé', 'placenta', 'présentation', 'siège', 'retard de croissance'],
@@ -755,7 +755,7 @@ ${END}`,
     slug: 'echographie-depistage-diagnostique-focalisee-differences',
     title: 'Échographie de dépistage, diagnostique ou focalisée : quelles différences ?',
     summary: 'Toutes les échographies de grossesse n’ont pas le même but : comprendre les trois échographies de dépistage, les examens de deuxième intention, les échographies ciblées et le consentement.',
-    body_md: `Vous avez peut-être entendu parler d’« échographie de référence », d’« écho de contrôle » ou d’« écho du col ». Ces termes désignent des examens aux objectifs différents.
+    body_md: `Tu as peut-être entendu parler d’« échographie de référence », d’« écho de contrôle » ou d’« écho du col ». Ces termes désignent des examens aux objectifs différents.
 
 ## En bref
 - Trois échographies de dépistage sont proposées à toutes les femmes, une par trimestre.
@@ -771,26 +771,26 @@ ${END}`,
 
 **L’échographie focalisée.** Elle répond à une question limitée, souvent en urgence ou pour surveiller une situation connue : confirmer qu’une grossesse est bien dans l’utérus au 1er trimestre, vérifier la vitalité du bébé, son bien-être (liquide amniotique, Doppler du cordon), estimer son poids, localiser le placenta, mesurer le col de l’utérus en cas de risque d’accouchement prématuré, suivre la croissance en cas de retard, de grossesse multiple ou de terme dépassé.
 
-**Le consentement.** Selon la CNEOF, un formulaire de consentement au dépistage prénatal est signé par la femme et par le professionnel qui l’a informée. Il couvre l’ensemble du dépistage ; vous en gardez un exemplaire, à présenter lors des échographies.
+**Le consentement.** Selon la CNEOF, un formulaire de consentement au dépistage prénatal est signé par la femme et par le professionnel qui l’a informée. Il couvre l’ensemble du dépistage ; tu en gardes un exemplaire, à présenter lors des échographies.
 
 ## Au quotidien
-- **Demandez quel est l’objectif** d’une échographie supplémentaire : vous comprendrez mieux ce qu’elle peut répondre.
-- **Gardez tous vos comptes rendus et clichés** dans un même dossier : chaque échographiste les compare aux précédents.
-- **Conservez votre exemplaire du consentement** et apportez-le aux échographies de dépistage.
-- **Notez le nom du lieu et de l’échographiste** si vous êtes orientée vers un centre de référence.
-- **Faites-vous accompagner** si un examen diagnostique est programmé : l’attente peut être éprouvante.
+- **Demande quel est l’objectif** d’une échographie supplémentaire : tu comprendras mieux ce qu’elle peut répondre.
+- **Garde tous tes comptes rendus et clichés** dans un même dossier : chaque échographiste les compare aux précédents.
+- **Conserve ton exemplaire du consentement** et apporte-le aux échographies de dépistage.
+- **Note le nom du lieu et de l’échographiste** si tu es orientée vers un centre de référence.
+- **Fais-toi accompagner** si un examen diagnostique est programmé : l’attente peut être éprouvante.
 
 ## Questions fréquentes
 **Une échographie de contrôle signifie-t-elle qu’il y a un problème ?** Pas forcément. Elle est souvent proposée parce qu’une structure n’a pas pu être bien vue, ou pour suivre une mesure dans le temps.
 
-**Puis-je refuser une échographie ?** Chaque examen nécessite votre consentement. Le professionnel vous explique ce qu’il apporte, pour que vous décidiez en connaissance de cause.
+**Puis-je refuser une échographie ?** Chaque examen nécessite ton consentement. Le professionnel t’explique ce qu’il apporte, pour que tu décides en connaissance de cause.
 
 **Pourquoi l’échographie ne voit-elle pas tout ?** Parce que certaines anomalies ne sont pas visibles à l’image, ou apparaissent tardivement, et que la qualité dépend de nombreux facteurs. La CNEOF souligne qu’un diagnostic exhaustif est impossible.
 
 **Une échographie du col, à quoi sert-elle ?** Elle mesure la longueur du col de l’utérus, utile pour évaluer un risque d’accouchement prématuré dans certaines situations.
 
 ## Quand demander conseil
-Appelez la maternité en cas de saignements, de contractions, de perte de liquide ou si le bébé bouge moins, sans attendre la prochaine échographie. ${URG} ${PSY}
+Appelle la maternité en cas de saignements, de contractions, de perte de liquide ou si le bébé bouge moins, sans attendre la prochaine échographie. ${URG} ${PSY}
 
 ${END}`,
     tags: ['échographie de référence', 'échographie diagnostique', 'échographie de contrôle', 'échographie du col', 'Doppler', 'consentement', 'dépistage prénatal'],
@@ -808,7 +808,7 @@ ${END}`,
 - Pour ces examens médicaux, aucun effet nocif pour le fœtus n’a été démontré à ce jour.
 - Les échographies « souvenir » exposent le fœtus plus longtemps et de façon ciblée, sans bénéfice médical : l’Afssaps (aujourd’hui ANSM) recommande de ne pas exposer inutilement le fœtus.
 - La réglementation française réserve l’échographie fœtale aux médecins et aux sages-femmes, à des fins médicales.
-- Vous pouvez demander des clichés lors de vos échographies médicales.
+- Tu peux demander des clichés lors de tes échographies médicales.
 
 ## Comprendre
 Une échographie repose sur des ultrasons : une sonde envoie des ondes que les tissus renvoient, et un logiciel reconstruit l’image. Les ultrasons ont deux types d’effets possibles sur les tissus, thermique et mécanique. Lors d’un examen médical habituel, aucun effet nocif n’a été démontré, et le bénéfice attendu l’emporte très largement. Par précaution, on recommande toutefois de limiter l’exposition au minimum nécessaire.
@@ -820,21 +820,21 @@ Dans une échographie « souvenir », la situation est différente. Pour obtenir
 **Et la 3D en consultation ?** L’échographie 3D fonctionne sur le même principe que la 2D, avec un logiciel de reconstruction en volume. Certains praticiens l’utilisent pour mieux voir une structure précise, dans un cadre médical.
 
 ## Au quotidien
-- **Demandez une image ou deux** à la fin de vos échographies médicales : de nombreux praticiens peuvent vous en imprimer ou vous en transmettre.
-- **Méfiez-vous des offres commerciales** d’échographie « plaisir », en boutique, à domicile ou dans des salons.
-- **Créez d’autres souvenirs** : photos du ventre mois après mois, journal de grossesse, enregistrement des battements du cœur entendus en consultation si le professionnel l’accepte.
-- **Évitez les appareils à ultrasons vendus pour écouter le cœur du bébé à la maison** : ils exposent eux aussi le fœtus sans but médical et ne remplacent pas un examen. En cas de doute sur les mouvements du bébé, appelez plutôt la maternité.
-- **Conservez les clichés à l’abri de la lumière** ou scannez-les : le papier thermique s’efface avec le temps.
+- **Demande une image ou deux** à la fin de tes échographies médicales : de nombreux praticiens peuvent t’en imprimer ou t’en transmettre.
+- **Méfie-toi des offres commerciales** d’échographie « plaisir », en boutique, à domicile ou dans des salons.
+- **Crée d’autres souvenirs** : photos du ventre mois après mois, journal de grossesse, enregistrement des battements du cœur entendus en consultation si le professionnel l’accepte.
+- **Évite les appareils à ultrasons vendus pour écouter le cœur du bébé à la maison** : ils exposent eux aussi le fœtus sans but médical et ne remplacent pas un examen. En cas de doute sur les mouvements du bébé, appelle plutôt la maternité.
+- **Conserve les clichés à l’abri de la lumière** ou scanne-les : le papier thermique s’efface avec le temps.
 
 ## Questions fréquentes
 **Une échographie médicale de plus est-elle dangereuse ?** Une échographie prescrite pour une raison médicale n’est pas contre-indiquée : son bénéfice l’emporte largement.
 
-**Puis-je demander une échographie pour connaître le sexe plus tôt ?** L’échographie n’a pas vocation à répondre à une curiosité ; le sexe peut en général être vu lors de l’échographie du 2e trimestre si vous le souhaitez.
+**Puis-je demander une échographie pour connaître le sexe plus tôt ?** L’échographie n’a pas vocation à répondre à une curiosité ; le sexe peut en général être vu lors de l’échographie du 2e trimestre si tu le souhaites.
 
-**Mon entourage veut m’offrir une séance 3D : que répondre ?** Vous pouvez expliquer que les autorités sanitaires la déconseillent, et proposer une séance photo de grossesse à la place.
+**Mon entourage veut m’offrir une séance 3D : que répondre ?** Tu peux expliquer que les autorités sanitaires la déconseillent, et proposer une séance photo de grossesse à la place.
 
 ## Quand demander conseil
-Si vous êtes inquiète pour votre bébé, ne cherchez pas à vous rassurer par une échographie commerciale : appelez la maternité ou votre sage-femme, qui peut vous examiner. Si le bébé bouge moins, consultez le jour même. ${URG}
+Si tu es inquiète pour ton bébé, ne cherche pas à te rassurer par une échographie commerciale : appelle la maternité ou ta sage-femme, qui peut t’examiner. Si le bébé bouge moins, consulte le jour même. ${URG}
 
 ${END}`,
     tags: ['échographie souvenir', 'échographie 3D', 'échographie plaisir', 'ultrasons', 'doppler fœtal', 'photo échographie'],
@@ -856,32 +856,32 @@ ${END}`,
 - Les premiers résultats arrivent en quelques jours ; d’autres analyses prennent 1 à 3 semaines.
 
 ## Comprendre
-Le liquide amniotique contient des cellules du fœtus. En les analysant, le laboratoire peut étudier les chromosomes (caryotype) ou rechercher d’autres anomalies génétiques ou infectieuses selon l’indication. Selon la HAS, le caryotype fœtal reste le seul examen qui permet de poser un diagnostic de trisomie 21 ; le dépistage, lui, ne fait qu’estimer un risque. La HAS estime le risque de perte fœtale lié aux prélèvements à environ 0,1 %, et la fiche du centre de diagnostic prénatal du CHU de Nîmes indique un risque de fausse couche de l’ordre de 0,5 à 1 %. Les chiffres varient selon les sources : demandez à l’équipe qui vous suit de vous expliquer celui qu’elle retient.
+Le liquide amniotique contient des cellules du fœtus. En les analysant, le laboratoire peut étudier les chromosomes (caryotype) ou rechercher d’autres anomalies génétiques ou infectieuses selon l’indication. Selon la HAS, le caryotype fœtal reste le seul examen qui permet de poser un diagnostic de trisomie 21 ; le dépistage, lui, ne fait qu’estimer un risque. La HAS estime le risque de perte fœtale lié aux prélèvements à environ 0,1 %, et la fiche du centre de diagnostic prénatal du CHU de Nîmes indique un risque de fausse couche de l’ordre de 0,5 à 1 %. Les chiffres varient selon les sources : demande à l’équipe qui te suit de t’expliquer celui qu’elle retient.
 
-**Le déroulement**, d’après cette fiche : l’échographiste repère la poche de liquide, désinfecte le ventre, puis introduit une aiguille très fine à travers la paroi abdominale pour aspirer une petite quantité de liquide. La piqûre est décrite comme pas plus douloureuse qu’une prise de sang. Vous repartez peu de temps après.
+**Le déroulement**, d’après cette fiche : l’échographiste repère la poche de liquide, désinfecte le ventre, puis introduit une aiguille très fine à travers la paroi abdominale pour aspirer une petite quantité de liquide. La piqûre est décrite comme pas plus douloureuse qu’une prise de sang. Tu repars peu de temps après.
 
 **Le consentement.** Un formulaire de consentement est signé avant le prélèvement : il est indispensable pour que le laboratoire puisse analyser l’échantillon.
 
-**Si vous êtes Rhésus négatif**, une injection d’immunoglobulines anti-D est réalisée.
+**Si tu es Rhésus négatif**, une injection d’immunoglobulines anti-D est réalisée.
 
 ## Au quotidien
 - **Il n’est pas nécessaire d’être à jeun** ; une vessie modérément remplie convient, selon les consignes du centre.
-- **Prenez une douche le matin** et portez des vêtements propres.
-- **Apportez votre dossier complet** : carte Vitale, carte de mutuelle, carte de groupe sanguin, échographies, sérologies et résultats du dépistage.
-- **Signalez vos antécédents**, vos traitements et vos allergies : certains augmentent le risque de saignement ou d’infection.
-- **Reposez-vous pendant 24 heures** : le repos au lit n’est pas nécessaire, mais évitez les efforts. Organisez la garde des aînés si besoin.
+- **Prends une douche le matin** et porte des vêtements propres.
+- **Apporte ton dossier complet** : carte Vitale, carte de mutuelle, carte de groupe sanguin, échographies, sérologies et résultats du dépistage.
+- **Signale tes antécédents**, tes traitements et tes allergies : certains augmentent le risque de saignement ou d’infection.
+- **Repose-toi pendant 24 heures** : le repos au lit n’est pas nécessaire, mais évite les efforts. Organise la garde des aînés si besoin.
 
 ## Questions fréquentes
-**Suis-je obligée de faire une amniocentèse ?** Non. C’est une proposition. Vous pouvez prendre le temps de réfléchir, poser toutes vos questions et accepter ou refuser.
+**Suis-je obligée de faire une amniocentèse ?** Non. C’est une proposition. Tu peux prendre le temps de réfléchir, poser toutes tes questions et accepter ou refuser.
 
 **Le test ADN sur prise de sang peut-il la remplacer ?** Non : selon la HAS, ce test affine le dépistage mais ne pose pas de diagnostic. Il peut être proposé avant, selon le niveau de risque.
 
-**Comment vais-je recevoir les résultats ?** Le laboratoire les adresse à votre médecin, qui vous les communique. Demandez à l’avance comment et quand vous serez contactée.
+**Comment vais-je recevoir les résultats ?** Le laboratoire les adresse à ton médecin, qui te les communique. Demande à l’avance comment et quand tu seras contactée.
 
 **Puis-je venir accompagnée ?** Oui, c’est même conseillé, pour le soutien comme pour le trajet du retour.
 
 ## Quand demander conseil
-Après une amniocentèse, consultez en urgence en cas de douleurs ou de contractions de l’utérus, de saignement, de perte de liquide ou de fièvre. ${URG} ${PSY}
+Après une amniocentèse, consulte en urgence en cas de douleurs ou de contractions de l’utérus, de saignement, de perte de liquide ou de fièvre. ${URG} ${PSY}
 
 ${END}`,
     tags: ['amniocentèse', 'caryotype', 'diagnostic prénatal', 'liquide amniotique', 'trisomie 21', 'anti-D', 'résultats'],
@@ -910,26 +910,26 @@ Comme l’amniocentèse, la biopsie de trophoblaste permet d’établir le caryo
 
 **Les risques.** La même fiche indique un risque de fausse couche de l’ordre de 0,5 à 1 %, surtout dans les 8 à 10 jours suivant le geste, parfois sans signe annonciateur ; la HAS estime pour sa part ce risque à environ 0,1 % pour les prélèvements invasifs. Les infections graves sont exceptionnelles. Rarement, le prélèvement échoue ou le résultat est difficile à interpréter : il arrive qu’une anomalie soit limitée au placenta. Dans ce cas, une vérification par amniocentèse peut être proposée quelques semaines plus tard. Si la position du placenta n’est pas favorable, le geste peut être reporté ou remplacé par une amniocentèse.
 
-**Si vous êtes Rhésus négatif**, une injection d’immunoglobulines anti-D est réalisée.
+**Si tu es Rhésus négatif**, une injection d’immunoglobulines anti-D est réalisée.
 
 ## Au quotidien
-- **Vous n’avez pas besoin d’être à jeun** ni d’avoir la vessie très pleine, sauf consigne différente du centre.
-- **Douchez-vous le matin** et portez des vêtements propres.
-- **Apportez votre dossier** : carte Vitale, mutuelle, carte de groupe sanguin, échographies, sérologies, résultats des marqueurs sériques.
-- **Informez l’équipe** de vos antécédents, de vos traitements et de vos allergies.
-- **Prévoyez 24 heures de repos** : le repos au lit n’est pas nécessaire, mais évitez les efforts et faites-vous raccompagner.
+- **Tu n’as pas besoin d’être à jeun** ni d’avoir la vessie très pleine, sauf consigne différente du centre.
+- **Douche-toi le matin** et porte des vêtements propres.
+- **Apporte ton dossier** : carte Vitale, mutuelle, carte de groupe sanguin, échographies, sérologies, résultats des marqueurs sériques.
+- **Informe l’équipe** de tes antécédents, de tes traitements et de tes allergies.
+- **Prévois 24 heures de repos** : le repos au lit n’est pas nécessaire, mais évite les efforts et fais-toi raccompagner.
 
 ## Questions fréquentes
-**Pourquoi me propose-t-on une biopsie plutôt qu’une amniocentèse ?** Parce qu’elle peut être faite plus tôt, ou parce qu’une analyse génétique particulière le justifie. L’équipe vous explique ses raisons et les alternatives.
+**Pourquoi me propose-t-on une biopsie plutôt qu’une amniocentèse ?** Parce qu’elle peut être faite plus tôt, ou parce qu’une analyse génétique particulière le justifie. L’équipe t’explique ses raisons et les alternatives.
 
 **Est-ce douloureux ?** La fiche du CHU de Nîmes décrit une piqûre pas plus douloureuse qu’une prise de sang.
 
-**Puis-je reprendre le travail le lendemain ?** Le repos est conseillé pendant 24 heures. Parlez-en avec le médecin, qui peut adapter le conseil à votre activité.
+**Puis-je reprendre le travail le lendemain ?** Le repos est conseillé pendant 24 heures. Parles-en avec le médecin, qui peut adapter le conseil à ton activité.
 
-**Qui m’annoncera les résultats ?** Ils sont envoyés à votre médecin, qui vous les communique. Demandez comment vous serez prévenue.
+**Qui m’annoncera les résultats ?** Ils sont envoyés à ton médecin, qui te les communique. Demande comment tu seras prévenue.
 
 ## Quand demander conseil
-Consultez en urgence en cas de douleurs, de saignement, de perte de liquide ou de fièvre dans les jours qui suivent le prélèvement. ${URG} ${PSY}
+Consulte en urgence en cas de douleurs, de saignement, de perte de liquide ou de fièvre dans les jours qui suivent le prélèvement. ${URG} ${PSY}
 
 ${END}`,
     tags: ['biopsie de trophoblaste', 'choriocentèse', 'villosités choriales', 'caryotype', 'diagnostic prénatal', 'premier trimestre'],
@@ -941,43 +941,43 @@ ${END}`,
     ...FAMILY,
     slug: 'cpdpn-centre-diagnostic-prenatal-anomalie-suspectee',
     title: 'Une anomalie est suspectée : le rôle du centre pluridisciplinaire de diagnostic prénatal (CPDPN)',
-    summary: 'Ce qu’est un CPDPN, quand et comment un dossier y est présenté, les examens qui peuvent être proposés et le soutien dont vous pouvez bénéficier.',
+    summary: 'Ce qu’est un CPDPN, quand et comment un dossier y est présenté, les examens qui peuvent être proposés et le soutien dont tu peux bénéficier.',
     body_md: `Entendre qu’une échographie ou une analyse « doit être vérifiée » est souvent un choc. En France, des centres spécialisés accompagnent les futurs parents dans ces moments.
 
 ## En bref
 - Un centre pluridisciplinaire de diagnostic prénatal (CPDPN) est une structure prévue par la loi de bioéthique.
 - Il réunit notamment des gynécologues-obstétriciens, des échographistes spécialisés, des généticiens, des pédiatres et des psychologues.
-- Votre dossier peut y être présenté par votre médecin, votre sage-femme ou votre échographiste, ou à votre demande, avec votre consentement écrit.
+- Ton dossier peut y être présenté par ton médecin, ta sage-femme ou ton échographiste, ou à ta demande, avec ton consentement écrit.
 - Le centre propose des examens complémentaires, un suivi adapté, un lieu d’accouchement et un suivi après la naissance si besoin.
 - Un soutien psychologique peut être demandé à tout moment.
 
 ## Comprendre
 Selon l’Agence de la biomédecine, le diagnostic prénatal consiste à rechercher chez l’embryon ou le fœtus une malformation ou une maladie grave, d’origine génétique, infectieuse ou autre. Il est recommandé lorsqu’une maladie génétique grave est connue dans la famille ou lorsque l’échographie révèle une anomalie. Il est strictement encadré, et il ne garantit pas l’absence de toute maladie. Son objectif est de pouvoir soigner l’enfant à naître, ou d’aider les parents à se préparer à l’accueillir.
 
-**Comment se passe la présentation d’un dossier ?** D’après le document d’information du CPDPN du CHU de Nîmes : le dossier médical (échographies, résultats biologiques) est transmis au centre avec votre consentement signé. Il est discuté lors d’une réunion pluridisciplinaire. Les propositions de prise en charge vous sont ensuite expliquées par votre médecin ou votre sage-femme référent, ou par un membre du centre. Un compte rendu écrit est adressé au professionnel qui a sollicité le centre et, si vous le souhaitez, à vous-même.
+**Comment se passe la présentation d’un dossier ?** D’après le document d’information du CPDPN du CHU de Nîmes : le dossier médical (échographies, résultats biologiques) est transmis au centre avec ton consentement signé. Il est discuté lors d’une réunion pluridisciplinaire. Les propositions de prise en charge te sont ensuite expliquées par ton médecin ou ta sage-femme référent, ou par un membre du centre. Un compte rendu écrit est adressé au professionnel qui a sollicité le centre et, si tu le souhaites, à toi-même.
 
 **Quels examens ?** Échographies diagnostiques, autres imageries comme l’IRM, prises de sang pour des analyses biologiques ou génétiques, prélèvements comme l’amniocentèse ou la biopsie de trophoblaste, consultations spécialisées (généticien, pédiatre…).
 
 **Si une maladie d’une particulière gravité, reconnue comme incurable au moment du diagnostic, est confirmée**, le CPDPN en informe les parents. Seul ce centre peut délivrer, à la demande du couple, l’attestation permettant une interruption médicale de grossesse. C’est une décision qui appartient aux parents, accompagnés par l’équipe.
 
 ## Au quotidien
-- **Demandez un écrit** ou prenez des notes : les informations sont nombreuses et l’émotion empêche souvent de tout retenir.
-- **Venez à deux** ou avec une personne de confiance aux rendez-vous importants.
-- **Posez toutes vos questions**, même celles qui vous paraissent naïves : quels sont les scénarios possibles, quels délais, quelles aides.
-- **Demandez à rencontrer le psychologue** du centre : ce soutien est prévu pour tous les parents, quelle que soit la situation.
-- **Prenez soin de vous** : sommeil, alimentation, arrêt de travail si nécessaire ; parlez-en à votre médecin.
+- **Demande un écrit** ou prends des notes : les informations sont nombreuses et l’émotion empêche souvent de tout retenir.
+- **Viens à deux** ou avec une personne de confiance aux rendez-vous importants.
+- **Pose toutes tes questions**, même celles qui te paraissent naïves : quels sont les scénarios possibles, quels délais, quelles aides.
+- **Demande à rencontrer le psychologue** du centre : ce soutien est prévu pour tous les parents, quelle que soit la situation.
+- **Prends soin de toi** : sommeil, alimentation, arrêt de travail si nécessaire ; parles-en à ton médecin.
 
 ## Questions fréquentes
-**Puis-je contacter moi-même le CPDPN ?** Oui, certains centres acceptent une prise de contact directe par leur secrétariat. Le plus souvent, c’est votre professionnel qui organise la démarche.
+**Puis-je contacter moi-même le CPDPN ?** Oui, certains centres acceptent une prise de contact directe par leur secrétariat. Le plus souvent, c’est ton professionnel qui organise la démarche.
 
-**Suis-je obligée d’accepter les examens proposés ?** Non. Chaque examen nécessite votre accord, après une information claire sur ses bénéfices et ses risques.
+**Suis-je obligée d’accepter les examens proposés ?** Non. Chaque examen nécessite ton accord, après une information claire sur ses bénéfices et ses risques.
 
 **Le centre me suivra-t-il après la naissance ?** Selon la situation, un suivi postnatal adapté est proposé, en lien avec les pédiatres.
 
-**Et si tout s’avère rassurant ?** Le suivi habituel de la grossesse reprend. Il est fréquent d’avoir besoin d’un peu de temps pour se remettre de cette inquiétude : n’hésitez pas à en parler.
+**Et si tout s’avère rassurant ?** Le suivi habituel de la grossesse reprend. Il est fréquent d’avoir besoin d’un peu de temps pour se remettre de cette inquiétude : n’hésite pas à en parler.
 
 ## Quand demander conseil
-${PSY} Vous pouvez aussi demander un rendez-vous avec le psychologue du centre ou de la maternité. ${URG}
+${PSY} Tu peux aussi demander un rendez-vous avec le psychologue du centre ou de la maternité. ${URG}
 
 ${END}`,
     tags: ['CPDPN', 'diagnostic prénatal', 'anomalie échographie', 'malformation', 'conseil génétique', 'IMG', 'soutien psychologique'],
@@ -991,44 +991,44 @@ ${END}`,
     slug: 'examens-grossesse-remboursement-prise-en-charge',
     title: 'Examens de grossesse : ce qui est pris en charge et comment éviter d’avancer les frais',
     summary: 'Consultations, prises de sang, échographies, dépistages, examen bucco-dentaire : comment l’Assurance maladie prend en charge les examens de la grossesse.',
-    body_md: `Entre les prises de sang, les échographies et les consultations, les examens de grossesse sont nombreux. La plupart sont pris en charge par l’Assurance maladie, à condition d’avoir bien déclaré votre grossesse.
+    body_md: `Entre les prises de sang, les échographies et les consultations, les examens de grossesse sont nombreux. La plupart sont pris en charge par l’Assurance maladie, à condition d’avoir bien déclaré ta grossesse.
 
 ## En bref
 - Les examens de suivi de la grossesse sont pris en charge par l’Assurance maladie.
 - Les consultations prénatales obligatoires (une avant la fin du 3e mois, puis une par mois) sont prises en charge à 100 %.
 - À partir du 1er jour du 6e mois et jusqu’au 12e jour après l’accouchement, les frais médicaux remboursables sont pris en charge à 100 %, qu’ils soient liés ou non à la grossesse.
 - L’examen bucco-dentaire de prévention est pris en charge à 100 %, sans avance de frais.
-- Le tiers payant s’applique chez les professionnels de ville pour les soins pris en charge à 100 % au titre de la maternité ; les dépassements d’honoraires restent à votre charge.
+- Le tiers payant s’applique chez les professionnels de ville pour les soins pris en charge à 100 % au titre de la maternité ; les dépassements d’honoraires restent à ta charge.
 
 ## Comprendre
-**La déclaration de grossesse ouvre les droits.** Elle doit être faite auprès de l’Assurance maladie avant la fin du 3e mois de grossesse. Pensez ensuite à mettre à jour votre carte Vitale.
+**La déclaration de grossesse ouvre les droits.** Elle doit être faite auprès de l’Assurance maladie avant la fin du 3e mois de grossesse. Pense ensuite à mettre à jour ta carte Vitale.
 
 **Les examens biologiques.** Selon la page de l’Assurance maladie consacrée à la prise en charge de la grossesse, les examens biologiques complémentaires prescrits dans ce cadre sont pris en charge à 100 %, y compris ceux du futur père. Le caryotype fœtal et le dépistage de certaines maladies génétiques, lorsqu’ils sont nécessaires, sont pris en charge à 100 % avec tiers payant.
 
-**Les échographies.** Cette même page, datée de 2017, indique que les deux premières échographies, avant la fin du 5e mois, sont prises en charge à 70 %, et que la troisième, à partir du 6e mois, est prise en charge à 100 %. Un support d’information de la Sécurité sociale des Hautes-Alpes (Caf et CPAM) daté de janvier 2026 reprend la même règle pour les deux premières échographies (70 %, dans la limite des tarifs de base de l’Assurance maladie), puis rappelle qu’à partir du 6e mois tous les frais médicaux remboursables sont pris en charge à 100 %. D’autres échographies peuvent être prises en charge en cas de pathologie de la grossesse ou du bébé. Les taux pouvant évoluer, vérifiez votre situation sur votre compte ameli.
+**Les échographies.** Cette même page, datée de 2017, indique que les deux premières échographies, avant la fin du 5e mois, sont prises en charge à 70 %, et que la troisième, à partir du 6e mois, est prise en charge à 100 %. Un support d’information de la Sécurité sociale des Hautes-Alpes (Caf et CPAM) daté de janvier 2026 reprend la même règle pour les deux premières échographies (70 %, dans la limite des tarifs de base de l’Assurance maladie), puis rappelle qu’à partir du 6e mois tous les frais médicaux remboursables sont pris en charge à 100 %. D’autres échographies peuvent être prises en charge en cas de pathologie de la grossesse ou du bébé. Les taux pouvant évoluer, vérifie ta situation sur ton compte ameli.
 
 **La préparation à la naissance et à la parentalité.** Les séances animées par un médecin ou une sage-femme sont prises en charge à 100 %. Elles commencent le plus souvent au 7e mois.
 
 **L’examen bucco-dentaire.** Il est proposé à partir du 4e mois et jusqu’à 6 mois après l’accouchement, pris en charge à 100 %. Les soins éventuels sont remboursés au taux habituel.
 
 ## Au quotidien
-- **Vérifiez que votre déclaration de grossesse a bien été enregistrée** sur votre compte ameli.
-- **Mettez à jour votre carte Vitale** en pharmacie ou à une borne après la déclaration.
-- **Présentez votre carte Vitale** à chaque examen : c’est ce qui déclenche le tiers payant.
-- **Demandez s’il y a un dépassement d’honoraires** avant une échographie dans un cabinet privé, et renseignez-vous auprès de votre mutuelle.
-- **Gardez vos décomptes** en cas d’erreur : contactez votre caisse si un examen de grossesse n’a pas été pris en charge comme prévu.
+- **Vérifie que ta déclaration de grossesse a bien été enregistrée** sur ton compte ameli.
+- **Mets à jour ta carte Vitale** en pharmacie ou à une borne après la déclaration.
+- **Présente ta carte Vitale** à chaque examen : c’est ce qui déclenche le tiers payant.
+- **Demande s’il y a un dépassement d’honoraires** avant une échographie dans un cabinet privé, et renseigne-toi auprès de ta mutuelle.
+- **Garde tes décomptes** en cas d’erreur : contacte ta caisse si un examen de grossesse n’a pas été pris en charge comme prévu.
 
 ## Questions fréquentes
 **Mon conjoint doit-il payer ses analyses ?** Les examens biologiques prescrits au futur père dans le cadre de la grossesse sont pris en charge à 100 %, selon l’Assurance maladie.
 
 **Les médicaments sont-ils remboursés à 100 % ?** À partir du 6e mois, les frais médicaux remboursables sont pris en charge à 100 %, y compris la pharmacie. Avant, le taux habituel s’applique hors examens obligatoires.
 
-**Et si je n’ai pas de mutuelle ?** Renseignez-vous auprès de votre caisse : selon vos ressources, la Complémentaire santé solidaire peut vous aider. Une assistante sociale de la maternité ou de la PMI peut aussi vous accompagner.
+**Et si je n’ai pas de mutuelle ?** Renseigne-toi auprès de ta caisse : selon tes ressources, la Complémentaire santé solidaire peut t’aider. Une assistante sociale de la maternité ou de la PMI peut aussi t’accompagner.
 
 **Le dépistage néonatal du bébé est-il payant ?** Non, il est gratuit.
 
 ## Quand demander conseil
-Si une difficulté administrative vous fait renoncer à un examen, parlez-en à la sage-femme, à la PMI ou à l’assistante sociale de la maternité : des solutions existent. Ne reportez jamais une consultation urgente pour une question de remboursement. ${URG}
+Si une difficulté administrative te fait renoncer à un examen, parles-en à la sage-femme, à la PMI ou à l’assistante sociale de la maternité : des solutions existent. Ne reporte jamais une consultation urgente pour une question de remboursement. ${URG}
 
 ${END}`,
     tags: ['remboursement', 'prise en charge 100 %', 'tiers payant', 'échographie remboursée', 'carte Vitale', 'déclaration de grossesse', 'ameli'],
@@ -1045,25 +1045,25 @@ ${END}`,
 - Le monitoring, ou cardiotocographie, enregistre le rythme cardiaque du bébé et les contractions de l’utérus.
 - Pendant la grossesse, il est réalisé en cas de besoin : consultation aux urgences de la maternité, situation de surveillance particulière, terme dépassé, avant et après certains gestes.
 - À l’arrivée en salle de naissance, l’état du bébé est évalué par un enregistrement d’environ 20 minutes ou par une auscultation intermittente.
-- Pendant le travail, la HAS prévoit une surveillance continue ou intermittente, selon votre choix éclairé et l’organisation de la maternité.
-- Si votre bébé bouge moins, contactez la maternité : un monitoring permet de vérifier son état.
+- Pendant le travail, la HAS prévoit une surveillance continue ou intermittente, selon ton choix éclairé et l’organisation de la maternité.
+- Si ton bébé bouge moins, contacte la maternité : un monitoring permet de vérifier son état.
 
 ## Comprendre
 **Comment ça marche ?** Un capteur à ultrasons, placé sur le ventre, détecte les battements du cœur du bébé. Un second capteur mesure la tension du ventre, reflet des contractions. L’appareil trace les deux courbes en même temps, ce qui permet de voir comment le cœur du bébé réagit aux contractions. Les équipes interprètent l’enregistrement selon des classifications de référence.
 
 **Pendant la grossesse.** L’Assurance maladie cite les enregistrements du rythme cardiaque fœtal parmi les examens de surveillance possibles, par exemple en cas de diabète gestationnel mal équilibré ou d’hypertension. Santé.fr indique qu’un enregistrement est fait avant et après une version par manœuvre externe, le geste qui aide un bébé en siège à se retourner.
 
-**Pendant l’accouchement**, la HAS recommande, à l’admission, de vérifier que vous avez senti le bébé bouger dans les 24 heures précédentes et d’évaluer son état soit par un enregistrement continu d’environ 20 minutes, soit par une auscultation intermittente. Pendant le travail, deux options existent :
-- **l’auscultation intermittente** : la sage-femme écoute le cœur pendant et juste après une contraction, toutes les 15 minutes en phase active, ce qui suppose une sage-femme disponible pour vous ;
+**Pendant l’accouchement**, la HAS recommande, à l’admission, de vérifier que tu as senti le bébé bouger dans les 24 heures précédentes et d’évaluer son état soit par un enregistrement continu d’environ 20 minutes, soit par une auscultation intermittente. Pendant le travail, deux options existent :
+- **l’auscultation intermittente** : la sage-femme écoute le cœur pendant et juste après une contraction, toutes les 15 minutes en phase active, ce qui suppose une sage-femme disponible pour toi ;
 - **l’enregistrement continu**, interprété selon des classifications de référence.
-Après information sur les bénéfices et inconvénients de chacune, c’est vous qui choisissez, en tenant compte des possibilités de la maternité. La HAS recommande aussi que le matériel vous permette de bouger et de rester confortable.
+Après information sur les bénéfices et inconvénients de chacune, c’est toi qui choisis, en tenant compte des possibilités de la maternité. La HAS recommande aussi que le matériel te permette de bouger et de rester confortable.
 
 ## Au quotidien
-- **Installez-vous confortablement** : demi-assise ou sur le côté plutôt qu’à plat sur le dos, qui peut provoquer un malaise.
-- **Allez aux toilettes avant** : l’enregistrement dure en général au moins une vingtaine de minutes.
-- **Signalez les mouvements du bébé** si l’équipe vous le demande.
-- **Demandez des explications** sur la courbe : seule l’équipe peut interpréter les variations du rythme.
-- **Exprimez vos souhaits** pour le travail : surveillance continue ou intermittente, possibilité de bouger, ballon. Notez-les dans votre projet de naissance.
+- **Installe-toi confortablement** : demi-assise ou sur le côté plutôt qu’à plat sur le dos, qui peut provoquer un malaise.
+- **Va aux toilettes avant** : l’enregistrement dure en général au moins une vingtaine de minutes.
+- **Signale les mouvements du bébé** si l’équipe te le demande.
+- **Demande des explications** sur la courbe : seule l’équipe peut interpréter les variations du rythme.
+- **Exprime tes souhaits** pour le travail : surveillance continue ou intermittente, possibilité de bouger, ballon. Note-les dans ton projet de naissance.
 
 ## Questions fréquentes
 **Le capteur ne trouve plus le cœur du bébé : est-ce grave ?** Le plus souvent, le bébé a simplement bougé. La sage-femme replace le capteur.
@@ -1072,10 +1072,10 @@ Après information sur les bénéfices et inconvénients de chacune, c’est vou
 
 **Faut-il un monitoring tous les jours en fin de grossesse ?** Non. Il est prescrit selon la situation, par exemple lorsque le terme est dépassé ou en cas de surveillance particulière.
 
-**Puis-je bouger pendant le travail avec un monitoring ?** La HAS recommande que le matériel de surveillance permette de bouger et de rester confortable ; renseignez-vous sur les possibilités de votre maternité. Sous péridurale, la mobilisation se fait selon un protocole de l’équipe.
+**Puis-je bouger pendant le travail avec un monitoring ?** La HAS recommande que le matériel de surveillance permette de bouger et de rester confortable ; renseigne-toi sur les possibilités de ta maternité. Sous péridurale, la mobilisation se fait selon un protocole de l’équipe.
 
 ## Quand demander conseil
-Appelez la maternité le jour même si votre bébé bouge moins ou différemment, si vous perdez du liquide, saignez, avez des contractions régulières, de la fièvre, ou des maux de tête intenses avec troubles de la vue. ${URG}
+Appelle la maternité le jour même si ton bébé bouge moins ou différemment, si tu perds du liquide, saignes, as des contractions régulières, de la fièvre, ou des maux de tête intenses avec troubles de la vue. ${URG}
 
 ${END}`,
     tags: ['monitoring', 'monito', 'rythme cardiaque fœtal', 'cardiotocographie', 'bébé bouge moins', 'surveillance', 'salle de naissance'],
@@ -1095,7 +1095,7 @@ ${END}`,
 - À partir du 4e mois : mesure de la hauteur utérine, écoute du cœur du bébé, questions sur les mouvements et les contractions.
 - En fin de grossesse : vérification de la présentation du bébé (tête en bas ou en siège).
 - Le toucher vaginal n’est pas systématique : il est réalisé quand il apporte une information utile.
-- Vous pouvez à tout moment poser des questions, demander une explication ou refuser un geste.
+- Tu peux à tout moment poser des questions, demander une explication ou refuser un geste.
 
 ## Comprendre
 Selon les recommandations de la HAS, l’examen clinique des consultations du 4e au 9e mois comprend : la mesure du poids et de la tension, la mesure de la **hauteur utérine** à partir du 4e mois, l’écoute des **bruits du cœur** du bébé, la recherche de **mouvements actifs** et de **contractions**, et l’appréciation de la **présentation** du bébé en fin de grossesse.
@@ -1109,23 +1109,23 @@ Selon les recommandations de la HAS, l’examen clinique des consultations du 4e
 **Le toucher vaginal.** Il n’est pas réalisé à chaque consultation : selon Santé.fr, il n’est pas systématique, car il peut être inconfortable ou provoquer des contractions. Il peut être proposé pour évaluer le col en cas de contractions ou en fin de grossesse.
 
 ## Au quotidien
-- **Portez des vêtements faciles à ouvrir** au niveau du ventre.
-- **Videz votre vessie avant l’examen**, sauf si on vous demande vos urines : apportez alors le flacon ou demandez-en un.
-- **Préparez vos remarques** : mouvements du bébé, contractions, fuites, gonflements, sommeil, moral.
-- **Demandez votre courbe de poids ou de hauteur utérine** si vous souhaitez suivre l’évolution.
-- **Dites si un geste vous gêne** : le professionnel doit vous expliquer ce qu’il fait et recueillir votre accord. Vous pouvez demander une pause ou refuser.
+- **Porte des vêtements faciles à ouvrir** au niveau du ventre.
+- **Vide ta vessie avant l’examen**, sauf si on te demande tes urines : apporte alors le flacon ou demandes-en un.
+- **Prépare tes remarques** : mouvements du bébé, contractions, fuites, gonflements, sommeil, moral.
+- **Demande ta courbe de poids ou de hauteur utérine** si tu souhaites suivre l’évolution.
+- **Dis si un geste te gêne** : le professionnel doit t’expliquer ce qu’il fait et recueillir ton accord. Tu peux demander une pause ou refuser.
 
 ## Questions fréquentes
 **Ma hauteur utérine est plus petite que celle de mon amie : est-ce inquiétant ?** Elle varie d’une femme à l’autre selon la morphologie. C’est son évolution, mesurée par le professionnel, qui compte.
 
-**Pourquoi me pèse-t-on à chaque fois ?** Le poids est un repère parmi d’autres, interprété sans jugement. Si la pesée vous met mal à l’aise, dites-le.
+**Pourquoi me pèse-t-on à chaque fois ?** Le poids est un repère parmi d’autres, interprété sans jugement. Si la pesée te met mal à l’aise, dis-le.
 
 **Peut-on écouter le cœur du bébé à chaque rendez-vous ?** À partir du 4e mois, l’écoute des bruits du cœur fait partie de l’examen habituel.
 
-**J’ai vécu des examens gynécologiques difficiles : puis-je le dire ?** Oui. Le professionnel peut adapter sa façon de faire, et vous proposer d’autres solutions ou un accompagnement.
+**J’ai vécu des examens gynécologiques difficiles : puis-je le dire ?** Oui. Le professionnel peut adapter sa façon de faire, et te proposer d’autres solutions ou un accompagnement.
 
 ## Quand demander conseil
-N’attendez pas la consultation suivante en cas de contractions régulières avant 37 SA, de perte de liquide, de saignements, si le bébé bouge moins, ou en cas de maux de tête intenses avec troubles de la vue. ${URG}
+N’attends pas la consultation suivante en cas de contractions régulières avant 37 SA, de perte de liquide, de saignements, si le bébé bouge moins, ou en cas de maux de tête intenses avec troubles de la vue. ${URG}
 
 ${END}`,
     tags: ['hauteur utérine', 'toucher vaginal', 'consultation prénatale', 'examen clinique', 'poids grossesse', 'bruits du cœur', 'présentation'],
@@ -1142,37 +1142,37 @@ ${END}`,
 ## En bref
 - Un examen bucco-dentaire de prévention est proposé à partir du 4e mois de grossesse et jusqu’à 6 mois après l’accouchement.
 - Il est pris en charge à 100 % par l’Assurance maladie.
-- Vous recevez une invitation et un formulaire de prise en charge au 4e mois, par courrier ou sur votre compte ameli.
+- Tu reçois une invitation et un formulaire de prise en charge au 4e mois, par courrier ou sur ton compte ameli.
 - Le dentiste vérifie dents et gencives, donne des conseils d’hygiène et aborde la santé bucco-dentaire du futur bébé.
 - Les soins éventuels se font lors d’autres rendez-vous, remboursés au taux habituel.
 
 ## Comprendre
 Pendant la grossesse, les changements hormonaux rendent les gencives plus fragiles. L’Assurance maladie décrit la **gingivite de grossesse** : elle apparaît en général entre le 3e et le 9e mois, les gencives deviennent rouges, gonflées et saignent facilement. Elle disparaît le plus souvent après l’accouchement, mais mérite un suivi chez le dentiste.
 
-L’examen de prévention permet de faire le point au bon moment. Le dentiste examine l’état des dents et des gencives, vous conseille sur le brossage et, si des soins sont nécessaires, vous propose un ou plusieurs rendez-vous. Il parle aussi des premiers gestes pour les dents de votre enfant.
+L’examen de prévention permet de faire le point au bon moment. Le dentiste examine l’état des dents et des gencives, te conseille sur le brossage et, si des soins sont nécessaires, te propose un ou plusieurs rendez-vous. Il parle aussi des premiers gestes pour les dents de ton enfant.
 
-**Les démarches.** Prenez rendez-vous chez votre dentiste habituel ou un dentiste proche de chez vous. Le jour du rendez-vous, présentez votre carte Vitale à jour et le formulaire de prise en charge. Si vous l’avez perdu, demandez-le à votre caisse d’assurance maladie ou à votre dentiste, qui peut le rééditer. Le formulaire peut aussi être utilisé à l’hôpital.
+**Les démarches.** Prends rendez-vous chez ton dentiste habituel ou un dentiste proche de chez toi. Le jour du rendez-vous, présente ta carte Vitale à jour et le formulaire de prise en charge. Si tu l’as perdu, demande-le à ta caisse d’assurance maladie ou à ton dentiste, qui peut le rééditer. Le formulaire peut aussi être utilisé à l’hôpital.
 
 ## Au quotidien
-- **Prenez rendez-vous dès réception de l’invitation** : les délais chez le dentiste peuvent être longs, et l’examen peut déboucher sur des soins à programmer.
-- **Brossez-vous les dents deux fois par jour** avec une brosse souple et un dentifrice fluoré ; brossez plus doucement les zones qui saignent, sans les éviter.
-- **Limitez les grignotages sucrés** entre les repas.
-- **Dites au dentiste que vous êtes enceinte** et à quel terme : il adaptera ses soins si besoin.
-- **Pensez à votre futur bébé** : profitez du rendez-vous pour demander des repères sur les premiers soins de ses dents, un sujet abordé lors de cet examen.
+- **Prends rendez-vous dès réception de l’invitation** : les délais chez le dentiste peuvent être longs, et l’examen peut déboucher sur des soins à programmer.
+- **Brosse-toi les dents deux fois par jour** avec une brosse souple et un dentifrice fluoré ; brosse plus doucement les zones qui saignent, sans les éviter.
+- **Limite les grignotages sucrés** entre les repas.
+- **Dis au dentiste que tu es enceinte** et à quel terme : il adaptera ses soins si besoin.
+- **Pense à ton futur bébé** : profite du rendez-vous pour demander des repères sur les premiers soins de ses dents, un sujet abordé lors de cet examen.
 
 ## Questions fréquentes
-**Peut-on se faire soigner les dents enceinte ?** Oui, des soins peuvent être réalisés pendant la grossesse. Le dentiste choisit le moment et les techniques adaptés, en tenant compte de votre terme.
+**Peut-on se faire soigner les dents enceinte ?** Oui, des soins peuvent être réalisés pendant la grossesse. Le dentiste choisit le moment et les techniques adaptés, en tenant compte de ton terme.
 
-**Mes gencives saignent : dois-je arrêter de brosser ?** Non. Continuez à brosser doucement et consultez : un saignement des gencives est un motif de suivi chez le dentiste.
+**Mes gencives saignent : dois-je arrêter de brosser ?** Non. Continue à brosser doucement et consulte : un saignement des gencives est un motif de suivi chez le dentiste.
 
 **L’examen est-il possible après la naissance ?** Oui, il reste accessible jusqu’à 6 mois après l’accouchement, selon l’Assurance maladie.
 
-**J’ai perdu le formulaire : puis-je quand même faire l’examen ?** Oui. Demandez-le à votre caisse d’assurance maladie ou à votre dentiste, qui peut le rééditer, et présentez votre carte Vitale à jour.
+**J’ai perdu le formulaire : puis-je quand même faire l’examen ?** Oui. Demande-le à ta caisse d’assurance maladie ou à ton dentiste, qui peut le rééditer, et présente ta carte Vitale à jour.
 
 **Les soins sont-ils gratuits ?** L’examen est pris en charge à 100 %. Les soins qui en découlent sont remboursés au taux habituel, et à 100 % à partir du 6e mois de grossesse pour les frais remboursables.
 
 ## Quand demander conseil
-Consultez rapidement en cas de douleur dentaire importante, d’abcès, de gonflement de la joue ou de fièvre. ${URG}
+Consulte rapidement en cas de douleur dentaire importante, d’abcès, de gonflement de la joue ou de fièvre. ${URG}
 
 ${END}`,
     tags: ['dentiste', 'examen bucco-dentaire', 'gingivite de grossesse', 'gencives qui saignent', 'soins dentaires', 'prévention', 'M’T dents'],
@@ -1184,12 +1184,12 @@ ${END}`,
     slug: 'examens-neuvieme-mois-fin-de-grossesse',
     title: 'Les examens du 9e mois : la dernière consultation avant l’accouchement',
     summary: 'Ce que comprend la 7e consultation prénatale, les analyses encore prévues, les documents à réunir et la surveillance si le terme est dépassé.',
-    body_md: `La consultation du 9e mois est la dernière du suivi prénatal. Elle fait le point sur votre santé et celle du bébé, et vérifie que tout est prêt pour l’accouchement.
+    body_md: `La consultation du 9e mois est la dernière du suivi prénatal. Elle fait le point sur ta santé et celle du bébé, et vérifie que tout est prêt pour l’accouchement.
 
 ## En bref
 - La 7e et dernière consultation prénatale a lieu au 9e mois.
-- Analyses prévues : recherche de sucre et de protéines dans les urines, sérologie de la toxoplasmose si vous n’êtes pas immunisée.
-- Si la 2e détermination du groupe sanguin n’a pas été faite, elle est réalisée ; la recherche d’anticorps irréguliers est répétée si vous êtes Rhésus négatif ou avez été transfusée.
+- Analyses prévues : recherche de sucre et de protéines dans les urines, sérologie de la toxoplasmose si tu n’es pas immunisée.
+- Si la 2e détermination du groupe sanguin n’a pas été faite, elle est réalisée ; la recherche d’anticorps irréguliers est répétée si tu es Rhésus négatif ou as été transfusée.
 - Les résultats du prélèvement pour le streptocoque B (fait entre 35 et 38 SA) et de la consultation d’anesthésie doivent figurer dans le dossier.
 - La présentation du bébé et les modalités d’accouchement sont rediscutées.
 
@@ -1198,28 +1198,28 @@ Selon la HAS, la consultation du 9e mois comprend obligatoirement la recherche d
 
 **L’examen clinique** reprend les gestes habituels : tension, poids, hauteur utérine, cœur du bébé, contractions. La position du bébé est vérifiée : tête en bas, siège ou autre. Santé.fr indique que la question de la voie d’accouchement, si elle était en suspens, est revue lors de cette visite ou à l’entrée en travail.
 
-**Le streptocoque B.** Le prélèvement vaginal est réalisé entre 35 et 38 SA. Si vous êtes porteuse, un antibiotique vous sera donné pendant le travail pour protéger le bébé : vérifiez que le résultat est bien dans votre dossier.
+**Le streptocoque B.** Le prélèvement vaginal est réalisé entre 35 et 38 SA. Si tu es porteuse, un antibiotique te sera donné pendant le travail pour protéger le bébé : vérifie que le résultat est bien dans ton dossier.
 
-**Et si le terme est dépassé ?** Une surveillance est organisée, avec des consultations et des examens rapprochés à la maternité (monitoring, échographie). L’équipe vous explique le calendrier et, si besoin, les modalités d’un déclenchement.
+**Et si le terme est dépassé ?** Une surveillance est organisée, avec des consultations et des examens rapprochés à la maternité (monitoring, échographie). L’équipe t’explique le calendrier et, si besoin, les modalités d’un déclenchement.
 
 ## Au quotidien
-- **Réunissez votre dossier** : carte de groupe sanguin (deux déterminations), résultats de sérologies, comptes rendus d’échographies, résultat du streptocoque B, compte rendu d’anesthésie.
-- **Gardez ce dossier dans votre sac** ou dans la valise de maternité.
-- **Vérifiez le trajet et les numéros** : maternité, 15, personne qui vous accompagnera.
-- **Faites la dernière prise de sang de toxoplasmose** à temps si vous n’êtes pas immunisée, et demandez si un contrôle après l’accouchement est prévu.
-- **Préparez vos questions** sur le déroulement de l’accouchement, la douleur, l’allaitement, la sortie de maternité.
+- **Réunis ton dossier** : carte de groupe sanguin (deux déterminations), résultats de sérologies, comptes rendus d’échographies, résultat du streptocoque B, compte rendu d’anesthésie.
+- **Garde ce dossier dans ton sac** ou dans la valise de maternité.
+- **Vérifie le trajet et les numéros** : maternité, 15, personne qui t’accompagnera.
+- **Fais la dernière prise de sang de toxoplasmose** à temps si tu n’es pas immunisée, et demande si un contrôle après l’accouchement est prévu.
+- **Prépare tes questions** sur le déroulement de l’accouchement, la douleur, l’allaitement, la sortie de maternité.
 
 ## Questions fréquentes
-**Le bébé bouge moins en fin de grossesse : est-ce attendu ?** Ses mouvements changent car il a moins de place, mais vous devez continuer à le sentir bouger. S’il bouge moins ou différemment, appelez la maternité le jour même.
+**Le bébé bouge moins en fin de grossesse : est-ce attendu ?** Ses mouvements changent car il a moins de place, mais tu dois continuer à le sentir bouger. S’il bouge moins ou différemment, appelle la maternité le jour même.
 
 **Faut-il refaire une échographie au 9e mois ?** Elle n’est pas systématique. Elle peut être prescrite selon la situation, par exemple si le terme est dépassé.
 
-**Que dois-je faire si je perds les eaux ?** Rendez-vous à la maternité, même sans contraction, et signalez le résultat de votre prélèvement de streptocoque B.
+**Que dois-je faire si je perds les eaux ?** Rendez-vous à la maternité, même sans contraction, et signale le résultat de ton prélèvement de streptocoque B.
 
-**J’ai oublié de faire la deuxième détermination du groupe sanguin : est-ce un problème ?** Signalez-le à la consultation : elle peut encore être faite, y compris à la maternité.
+**J’ai oublié de faire la deuxième détermination du groupe sanguin : est-ce un problème ?** Signale-le à la consultation : elle peut encore être faite, y compris à la maternité.
 
 ## Quand demander conseil
-Allez à la maternité si vous perdez du liquide, saignez, avez des contractions régulières et douloureuses, de la fièvre, des maux de tête intenses avec troubles de la vue, ou si le bébé bouge moins. ${URG}
+Va à la maternité si tu perds du liquide, saignes, as des contractions régulières et douloureuses, de la fièvre, des maux de tête intenses avec troubles de la vue, ou si le bébé bouge moins. ${URG}
 
 ${END}`,
     tags: ['9e mois', 'dernière consultation', 'terme dépassé', 'toxoplasmose', 'groupe sanguin', 'streptocoque B', 'dossier maternité'],

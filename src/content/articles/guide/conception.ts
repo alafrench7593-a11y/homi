@@ -33,7 +33,7 @@ const S = {
   spfAlcool: { label: 'Santé publique France — Syndrome d’alcoolisation fœtale : « zéro alcool pendant la grossesse »', url: 'https://www.santepubliquefrance.fr/presse/2016/syndrome-d-alcoolisation-faetale-pour-eviter-tout-risque-zero-alcool-pendant-la-grossesse', consulted_on: C, published: '2016-09-05' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article informe et vous aide à préparer vos échanges avec les professionnels : il ne remplace ni une consultation, ni un avis médical personnalisé._';
+const FIN = '_Cet article informe et t’aide à préparer tes échanges avec les professionnels : il ne remplace ni une consultation, ni un avis médical personnalisé._';
 
 export const GUIDE_CONCEPTION: LibArticle[] = [
   // ------------------------------------------------------------------ Fertilité et cycle
@@ -65,14 +65,14 @@ L’**excès de poids** chez l’homme s’accompagne d’un excès d’œstrog�
 - **Supprimer l’alcool** pendant la période d’essai.
 - **Bouger régulièrement et viser un poids de forme**, avec une alimentation variée de type méditerranéen.
 - **Éviter les pantalons trop serrés** et limiter l’exposition aux pesticides et polluants organochlorés, comme le conseille l’Assurance Maladie.
-- **Faire le point sur ses médicaments** : certains traitements pris par le futur père peuvent affecter les spermatozoïdes. N’arrêtez rien sans en parler à votre médecin.
+- **Faire le point sur ses médicaments** : certains traitements pris par le futur père peuvent affecter les spermatozoïdes. N’arrête rien sans en parler à ton médecin.
 
 ## Questions fréquentes
 **Faut-il faire un spermogramme « pour voir » ?**
 Il est prescrit dans le cadre d’un bilan, en général après 12 mois d’essais sans grossesse (6 mois si la femme a plus de 35 ans ou en cas de problème connu). Il se fait au laboratoire après 3 à 5 jours sans rapport, et se refait en cas d’anomalie, car un seul résultat ne suffit pas à conclure.
 
 **Une fièvre récente peut-elle fausser le résultat ?**
-Oui : le spermogramme ne doit pas être réalisé en cas de fièvre ou de prise de certains médicaments. Signalez-le au laboratoire.
+Oui : le spermogramme ne doit pas être réalisé en cas de fièvre ou de prise de certains médicaments. Signale-le au laboratoire.
 
 **Les effets du tabac sont-ils définitifs ?**
 Non, ils sont en grande partie réversibles. Arrêter avant d’essayer, ou avant un parcours d’AMP, est fortement recommandé.
@@ -81,7 +81,7 @@ Non, ils sont en grande partie réversibles. Arrêter avant d’essayer, ou avan
 Oui. Pour un bilan d’infertilité, l’Assurance Maladie indique que les deux membres du couple doivent être présents.
 
 ## Quand demander conseil
-Parlez-en à votre médecin si la grossesse ne vient pas après 12 mois de rapports réguliers (6 mois si la femme a plus de 35 ans), ou plus tôt en cas d’antécédent de testicule non descendu, de torsion, de chirurgie d’une hernie, d’infection sexuellement transmissible, de traitement lourd ou de troubles de l’érection. Une douleur intense et brutale d’un testicule est une urgence : appelez le 15 ou le 112.
+Parles-en à ton médecin si la grossesse ne vient pas après 12 mois de rapports réguliers (6 mois si la femme a plus de 35 ans), ou plus tôt en cas d’antécédent de testicule non descendu, de torsion, de chirurgie d’une hernie, d’infection sexuellement transmissible, de traitement lourd ou de troubles de l’érection. Une douleur intense et brutale d’un testicule est une urgence : appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -107,11 +107,11 @@ Les chiffres cités par l’Assurance Maladie donnent un ordre de grandeur du ri
 
 Chez l’homme, l’âge moyen à la naissance d’un enfant est d’environ 34 ans. Le génome des spermatozoïdes s’altère avec l’âge, ce qui peut compliquer la conception, augmenter les fausses couches et les risques génétiques pour l’enfant. L’effet de l’âge des deux partenaires se cumule.
 
-Ces chiffres sont des moyennes : ils ne disent rien de votre situation personnelle. Ils aident surtout à ne pas trop attendre pour demander un avis lorsque la grossesse tarde.
+Ces chiffres sont des moyennes : ils ne disent rien de ta situation personnelle. Ils aident surtout à ne pas trop attendre pour demander un avis lorsque la grossesse tarde.
 
 ## Au quotidien
-- **Ne pas reporter la consultation préconceptionnelle** : elle permet de faire le point sur votre santé, vos cycles et vos vaccins avant d’essayer.
-- **Connaître le bon délai pour consulter** : après 12 mois de rapports réguliers sans contraception, ou après 6 mois si vous avez plus de 35 ans.
+- **Ne pas reporter la consultation préconceptionnelle** : elle permet de faire le point sur ta santé, tes cycles et tes vaccins avant d’essayer.
+- **Connaître le bon délai pour consulter** : après 12 mois de rapports réguliers sans contraception, ou après 6 mois si tu as plus de 35 ans.
 - **Agir sur ce qui se modifie** : tabac, alcool, poids et sédentarité pèsent sur la fertilité à tout âge, chez la femme comme chez l’homme.
 - **Penser à l’autoconservation si le projet est lointain** : elle est possible pour les femmes de leur 29e à leur 37e anniversaire, et pour les hommes de 29 à 45 ans, dans des centres autorisés. Les gamètes peuvent ensuite être utilisés jusqu’au 45e anniversaire de la femme qui portera l’enfant.
 
@@ -126,7 +126,7 @@ Le dosage de l’AMH est un marqueur de la réserve ovarienne. Il est prescrit d
 Le prélèvement d’ovocytes est possible jusqu’au 43e anniversaire, et l’AMP jusqu’au 45e anniversaire de la femme qui portera l’enfant ; le recueil de spermatozoïdes jusqu’au 60e anniversaire de l’homme.
 
 ## Quand demander conseil
-Consultez votre médecin, votre gynécologue ou votre sage-femme si la grossesse ne vient pas dans les délais indiqués, ou plus tôt en cas de cycles irréguliers, de règles très douloureuses, d’antécédent d’infection génitale ou de chirurgie pelvienne. Si le sujet de l’âge vous angoisse au point de peser sur votre moral, vous pouvez en parler à un professionnel ; en cas de détresse, le 3114 répond 24 h/24.
+Consulte ton médecin, ton gynécologue ou ta sage-femme si la grossesse ne vient pas dans les délais indiqués, ou plus tôt en cas de cycles irréguliers, de règles très douloureuses, d’antécédent d’infection génitale ou de chirurgie pelvienne. Si le sujet de l’âge t’angoisse au point de peser sur ton moral, tu peux en parler à un professionnel ; en cas de détresse, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -153,10 +153,10 @@ L’Assurance Maladie, dans sa page sur le parcours de soins de l’infertilité
 Lors d’un premier bilan, le médecin commence souvent par vérifier ces bases : connaissance du cycle, période fertile, fréquence des rapports. Une cause « simple et modifiable », comme une mauvaise connaissance des périodes de fécondité, est parfois retrouvée.
 
 ## Au quotidien
-- **Repérer la période fertile** : sur un cycle régulier, elle se situe quelques jours avant l’ovulation, au milieu du cycle. Votre application peut vous aider à l’estimer, sans précision absolue.
+- **Repérer la période fertile** : sur un cycle régulier, elle se situe quelques jours avant l’ovulation, au milieu du cycle. Ton application peut t’aider à l’estimer, sans précision absolue.
 - **Viser un jour sur deux** pendant cette période, sans pression de « performance ».
 - **Garder une intimité qui ne se résume pas au calendrier** : le désir peut s’essouffler quand chaque rapport devient un objectif. Des rapports réguliers tout au long du cycle aident à ne pas tout miser sur quelques jours.
-- **Éviter les lubrifiants sans en parler** : certains peuvent gêner les spermatozoïdes ; demandez conseil à votre pharmacien ou sage-femme si vous en avez besoin.
+- **Éviter les lubrifiants sans en parler** : certains peuvent gêner les spermatozoïdes ; demande conseil à ton pharmacien ou sage-femme si tu en as besoin.
 - **Ne pas multiplier les tests** au point de générer de l’angoisse : les tests d’ovulation sont une aide, pas une obligation.
 
 ## Questions fréquentes
@@ -167,13 +167,13 @@ Non. Les repères officiels sont des rapports un jour sur deux pendant la pério
 La période fertile est alors plus difficile à prévoir. Des rapports réguliers tout au long du cycle restent la meilleure stratégie, et des cycles très irréguliers justifient d’en parler à un médecin.
 
 **La position après le rapport compte-t-elle ?**
-Les sources officielles ne donnent aucune consigne à ce sujet. Faites ce qui vous est confortable.
+Les sources officielles ne donnent aucune consigne à ce sujet. Fais ce qui t’est confortable.
 
 **Le stress du calendrier peut-il bloquer la grossesse ?**
 Il peut surtout peser sur le désir et sur le couple. Parler ensemble de ce que vous vivez, et en parler à un professionnel si besoin, aide à garder le cap.
 
 ## Quand demander conseil
-Consultez après 12 mois de rapports réguliers sans grossesse, ou après 6 mois si vous avez plus de 35 ans ou si un problème gynécologique ou urologique est connu. Parlez-en plus tôt en cas de douleurs pendant les rapports, de troubles de l’érection ou de baisse de désir qui vous fait souffrir : ce sont des sujets médicaux à part entière.
+Consulte après 12 mois de rapports réguliers sans grossesse, ou après 6 mois si tu as plus de 35 ans ou si un problème gynécologique ou urologique est connu. Parles-en plus tôt en cas de douleurs pendant les rapports, de troubles de l’érection ou de baisse de désir qui te fait souffrir : ce sont des sujets médicaux à part entière.
 
 ${FIN}`,
   },
@@ -204,7 +204,7 @@ La bonne nouvelle : ces effets sont réversibles. Chez la femme, les cils des tr
 - **Se faire accompagner** : médecin, sage-femme, pharmacien ou tabacologue peuvent prescrire un traitement. Être accompagné augmente les chances de réussite.
 - **Appeler le 39 89** (Tabac Info Service) pour un suivi gratuit par un tabacologue, ou utiliser l’application et le site.
 - **Utiliser des substituts nicotiniques** (patchs, gommes, pastilles, inhaleurs, sprays) : sur prescription, ils sont remboursés. Santé.fr précise qu’ils sont même recommandés pendant la grossesse, sous suivi d’un professionnel.
-- **Préparer les moments difficiles** : marche, respiration, activités plaisantes, lieux sans tabac. Testez ce qui marche pour vous.
+- **Préparer les moments difficiles** : marche, respiration, activités plaisantes, lieux sans tabac. Teste ce qui marche pour toi.
 - **Ne pas culpabiliser en cas de rechute** : chaque tentative rapproche de l’arrêt.
 
 ## Questions fréquentes
@@ -215,13 +215,13 @@ Les effets étant proportionnels au nombre de cigarettes, réduire aide déjà, 
 Oui, ils sont recommandés pendant la grossesse et l’allaitement, sous la supervision d’un professionnel qui adapte le traitement.
 
 **La cigarette électronique est-elle une solution ?**
-Les sources consultées ne la recommandent pas spécifiquement. Parlez-en avec votre médecin ou un tabacologue, qui vous orientera vers les méthodes validées.
+Les sources consultées ne la recommandent pas spécifiquement. Parles-en avec ton médecin ou un tabacologue, qui t’orientera vers les méthodes validées.
 
 **Combien de temps avant d’essayer faut-il arrêter ?**
 Le plus tôt possible. Côté homme, un délai d’environ trois mois permet de bénéficier de spermatozoïdes produits sans tabac.
 
 ## Quand demander conseil
-Parlez-en à votre médecin, votre sage-femme ou votre pharmacien dès que vous décidez d’arrêter, et appelez le 39 89 quand vous en avez besoin. Si l’arrêt du tabac s’accompagne d’une grande détresse ou d’idées noires, appelez le 3114.
+Parles-en à ton médecin, ta sage-femme ou ton pharmacien dès que tu décides d’arrêter, et appelle le 39 89 quand tu en as besoin. Si l’arrêt du tabac s’accompagne d’une grande détresse ou d’idées noires, appelle le 3114.
 
 ${FIN}`,
   },
@@ -252,25 +252,25 @@ Le **cannabis**, consommé plusieurs fois par semaine pendant des années, rédu
 ## Au quotidien
 - **Choisir une date d’arrêt** commune, dès l’arrêt de la contraception.
 - **Prévoir des alternatives** pour les moments sociaux : boissons sans alcool, activités sans consommation.
-- **Parler à votre médecin ou sage-femme** : ils peuvent vous orienter vers une consultation d’addictologie si l’arrêt est difficile.
+- **Parler à ton médecin ou sage-femme** : ils peuvent t’orienter vers une consultation d’addictologie si l’arrêt est difficile.
 - **Contacter Alcool Info Service** (0 980 980 930, appel anonyme et non surtaxé, 7 jours sur 7) qui consacre une rubrique à l’alcool et la grossesse.
-- **Demander de l’aide pour le cannabis** auprès de votre médecin ou d’un centre spécialisé : l’Assurance Maladie y consacre une page « Addictions : à qui s’adresser ? ».
+- **Demander de l’aide pour le cannabis** auprès de ton médecin ou d’un centre spécialisé : l’Assurance Maladie y consacre une page « Addictions : à qui s’adresser ? ».
 
 ## Questions fréquentes
 **J’ai bu un verre avant de savoir que j’étais enceinte. Que faire ?**
-N’hésitez pas à en parler à votre médecin ou sage-femme : il ou elle répondra à vos inquiétudes et adaptera le suivi si besoin. L’important est d’arrêter dès maintenant.
+N’hésite pas à en parler à ton médecin ou sage-femme : il ou elle répondra à tes inquiétudes et adaptera le suivi si besoin. L’important est d’arrêter dès maintenant.
 
 **Un verre de temps en temps pendant les essais, est-ce possible ?**
 Les recommandations officielles sont claires : zéro alcool dès le projet de grossesse, car l’embryon peut être exposé avant même que la grossesse soit connue.
 
 **Le cannabis aide-t-il à gérer le stress des essais ?**
-Il nuit à la fertilité et expose l’embryon. Si le stress est important, parlez-en à un professionnel : d’autres solutions existent.
+Il nuit à la fertilité et expose l’embryon. Si le stress est important, parles-en à un professionnel : d’autres solutions existent.
 
 **Mon partenaire doit-il arrêter aussi ?**
 Oui, l’Assurance Maladie recommande zéro alcool pour les deux parents, et le cannabis réduit la qualité du sperme.
 
 ## Quand demander conseil
-Consultez si vous n’arrivez pas à arrêter seule ou seul, si vous ressentez un besoin de consommer, ou si l’arrêt provoque des troubles (sommeil, anxiété, irritabilité importante). En cas de malaise grave lié à une consommation, appelez le 15 ou le 112. En cas de détresse psychique, le 3114 répond 24 h/24.
+Consulte si tu n’arrives pas à arrêter seule ou seul, si tu ressens un besoin de consommer, ou si l’arrêt provoque des troubles (sommeil, anxiété, irritabilité importante). En cas de malaise grave lié à une consommation, appelle le 15 ou le 112. En cas de détresse psychique, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -297,17 +297,17 @@ L’**obésité**, souvent associée à la sédentarité, est un facteur d’hyp
 Pour l’alimentation, l’Assurance Maladie conseille un régime équilibré de type méditerranéen, de réduire le café s’il dépasse 5 à 6 tasses par jour, de limiter les produits ultra-transformés, de cuisiner maison, de laver et éplucher fruits et légumes. Les folates de l’alimentation sont en général insuffisants : un complément d’acide folique est prescrit, idéalement au moins 4 semaines avant la conception. Selon l’enquête périnatale 2021, moins d’un tiers des femmes le commencent avant la grossesse.
 
 ## Au quotidien
-- **Faire le point avec votre médecin** : en cas de surpoids important, d’obésité ou de grande maigreur, une prise en charge adaptée peut être proposée.
+- **Faire le point avec ton médecin** : en cas de surpoids important, d’obésité ou de grande maigreur, une prise en charge adaptée peut être proposée.
 - **Bouger chaque jour** : l’activité physique est bénéfique avant et pendant la grossesse.
 - **Cuisiner simple et varié** : légumes, fruits, légumineuses, céréales complètes, poissons, huiles végétales.
 - **Demander la prescription d’acide folique** dès que le projet se précise.
 - **Ne pas prendre de compléments alimentaires sans avis** : certains contiennent des vitamines ou oligo-éléments à forte dose, déconseillés pour un projet de grossesse.
-- **Régime végétarien ou végan** : faites le point avec un médecin, qui prescrira si besoin des suppléments adaptés.
-- **Prévenir les infections alimentaires** (listériose, toxoplasmose si vous n’êtes pas immunisée) en prenant dès maintenant les bons réflexes.
+- **Régime végétarien ou végan** : fais le point avec un médecin, qui prescrira si besoin des suppléments adaptés.
+- **Prévenir les infections alimentaires** (listériose, toxoplasmose si tu n’es pas immunisée) en prenant dès maintenant les bons réflexes.
 
 ## Questions fréquentes
 **Faut-il perdre beaucoup de poids pour retrouver une ovulation ?**
-Dans le syndrome des ovaires polykystiques, l’Assurance Maladie indique qu’une perte d’environ 10 % du poids initial, en cas de surpoids, peut améliorer les cycles et la fertilité. Votre médecin vous aidera à fixer un objectif réaliste.
+Dans le syndrome des ovaires polykystiques, l’Assurance Maladie indique qu’une perte d’environ 10 % du poids initial, en cas de surpoids, peut améliorer les cycles et la fertilité. Ton médecin t’aidera à fixer un objectif réaliste.
 
 **Un régime strict avant la grossesse est-il une bonne idée ?**
 Les régimes très restrictifs peuvent créer des carences. Mieux vaut des changements durables, accompagnés par un professionnel.
@@ -316,7 +316,7 @@ Les régimes très restrictifs peuvent créer des carences. Mieux vaut des chang
 Les sources recommandent de réduire une consommation élevée (plus de 5 à 6 tasses par jour).
 
 ## Quand demander conseil
-Consultez votre médecin ou votre sage-femme avant d’essayer si vous avez un problème de poids important, des troubles du comportement alimentaire, un diabète ou une maladie de la thyroïde. Si votre rapport à la nourriture vous fait souffrir, vous pouvez en parler sans honte à un professionnel ; en cas de détresse, le 3114 répond 24 h/24.
+Consulte ton médecin ou ta sage-femme avant d’essayer si tu as un problème de poids important, des troubles du comportement alimentaire, un diabète ou une maladie de la thyroïde. Si ton rapport à la nourriture te fait souffrir, tu peux en parler sans honte à un professionnel ; en cas de détresse, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -350,7 +350,7 @@ L’objectif n’est pas de tout contrôler, mais de réduire raisonnablement le
 - **Logement ancien** : vérifier l’absence de canalisations en plomb.
 - **Alimentation** : varier, limiter l’ultra-transformé, laver et éplucher, privilégier le bio pour ce qui ne s’épluche pas.
 - **Cosmétiques** : choisir des produits simples, en nombre limité.
-- **Travail** : si vous êtes exposée à des produits chimiques, des solvants ou des rayonnements, parlez-en au médecin du travail dès le projet.
+- **Travail** : si tu es exposée à des produits chimiques, des solvants ou des rayonnements, parles-en au médecin du travail dès le projet.
 - **Travaux et chambre de bébé** : prévoir les travaux avant la grossesse et finir l’aménagement bien avant la naissance, en aérant souvent.
 
 ## Questions fréquentes
@@ -361,10 +361,10 @@ Non. Remplacer progressivement les produits les plus parfumés ou les plus nombr
 Les sources conseillent de privilégier le bio pour les aliments qui ne s’épluchent pas, en complément d’une alimentation variée.
 
 **Mon travail m’expose à des produits chimiques : que faire ?**
-Parlez-en au médecin du travail et à votre médecin dès le projet de grossesse : un aménagement de poste peut être étudié.
+Parles-en au médecin du travail et à ton médecin dès le projet de grossesse : un aménagement de poste peut être étudié.
 
 ## Quand demander conseil
-Parlez-en lors de la consultation préconceptionnelle, ou au médecin du travail en cas d’exposition professionnelle. Maux de tête, nausées ou malaises de plusieurs personnes dans un même logement peuvent évoquer une intoxication au monoxyde de carbone : sortez, aérez et appelez le 15, le 18 ou le 112.
+Parles-en lors de la consultation préconceptionnelle, ou au médecin du travail en cas d’exposition professionnelle. Maux de tête, nausées ou malaises de plusieurs personnes dans un même logement peuvent évoquer une intoxication au monoxyde de carbone : sors, aère et appelle le 15, le 18 ou le 112.
 
 ${FIN}`,
   },
@@ -379,7 +379,7 @@ ${FIN}`,
     sources: [S.amPreconc, S.santePreconc],
     status: 'to_review',
     body_md: `## En bref
-- C’est une consultation facultative, avant la grossesse, pour faire le point sur votre santé et votre projet.
+- C’est une consultation facultative, avant la grossesse, pour faire le point sur ta santé et ton projet.
 - Elle peut être faite par un médecin généraliste, un gynécologue ou une sage-femme, idéalement à deux.
 - Elle est prise en charge à 70 % par l’Assurance Maladie.
 - On y vérifie les vaccins, les traitements, le groupe sanguin, certaines immunités, et on prescrit l’acide folique.
@@ -392,11 +392,11 @@ Plusieurs thèmes sont abordés. Les **antécédents familiaux** : maladies gén
 Un examen clinique est réalisé (poids, tension, examen gynécologique et des seins selon la situation). Un bilan peut être prescrit : groupe sanguin (ABO, Rhésus, Kell), glycémie, immunité contre la rubéole, l’hépatite B et la toxoplasmose, dépistage de l’hépatite C, du VIH et de la syphilis.
 
 ## Au quotidien
-- **Préparez vos documents** : carnet de santé et de vaccinations, résultats de prises de sang, échographies, comptes rendus d’opérations, résultats de frottis.
-- **Notez vos questions** à l’avance, y compris celles qui vous semblent « bêtes ».
-- **Listez vos médicaments**, y compris ceux pris occasionnellement et les compléments.
-- **Venez à deux** si c’est possible.
-- **Parlez de votre situation**, même délicate : isolement, difficultés matérielles, violences. Le professionnel peut vous orienter ; le site arretonslesviolences.gouv.fr informe aussi, avec une option pour effacer les traces de visite.
+- **Prépare tes documents** : carnet de santé et de vaccinations, résultats de prises de sang, échographies, comptes rendus d’opérations, résultats de frottis.
+- **Note tes questions** à l’avance, y compris celles qui te semblent « bêtes ».
+- **Liste tes médicaments**, y compris ceux pris occasionnellement et les compléments.
+- **Viens à deux** si c’est possible.
+- **Parle de ta situation**, même délicate : isolement, difficultés matérielles, violences. Le professionnel peut t’orienter ; le site arretonslesviolences.gouv.fr informe aussi, avec une option pour effacer les traces de visite.
 
 ## Questions fréquentes
 **Est-elle obligatoire ?**
@@ -409,10 +409,10 @@ Idéalement quelques mois avant : l’acide folique doit être commencé au moin
 Oui, parfois des examens sont proposés au futur père, et ses vaccins sont aussi vérifiés.
 
 **Je suis Rhésus négatif : est-ce un problème ?**
-Ce n’est pas un problème en soi, mais cela demande une surveillance et une prévention particulières pendant la grossesse. Le professionnel vous l’expliquera.
+Ce n’est pas un problème en soi, mais cela demande une surveillance et une prévention particulières pendant la grossesse. Le professionnel te l’expliquera.
 
 ## Quand demander conseil
-Prenez rendez-vous dès que le projet se précise, et sans attendre si vous avez une maladie chronique, un traitement au long cours, des antécédents de fausses couches ou de grossesse compliquée. En cas de violences, vous pouvez appeler le 3919 ; en danger immédiat, le 17 ou le 112.
+Prends rendez-vous dès que le projet se précise, et sans attendre si tu as une maladie chronique, un traitement au long cours, des antécédents de fausses couches ou de grossesse compliquée. En cas de violences, tu peux appeler le 3919 ; en danger immédiat, le 17 ou le 112.
 
 ${FIN}`,
   },
@@ -432,26 +432,26 @@ ${FIN}`,
 - Grippe et Covid-19 peuvent aussi être faits pendant la grossesse selon les recommandations.
 
 ## Comprendre
-L’Assurance Maladie explique que la consultation préconceptionnelle sert notamment à vérifier si vous êtes vaccinée ou immunisée contre des infections qui peuvent nuire au bébé. Santé.fr ajoute que cela concerne **les deux parents** : être à jour protège l’adulte et l’enfant à venir.
+L’Assurance Maladie explique que la consultation préconceptionnelle sert notamment à vérifier si tu es vaccinée ou immunisée contre des infections qui peuvent nuire au bébé. Santé.fr ajoute que cela concerne **les deux parents** : être à jour protège l’adulte et l’enfant à venir.
 
 Les **vaccins vivants atténués** – rougeole-oreillons-rubéole (ROR) et varicelle – ne doivent pas être faits pendant la grossesse, en raison d’un risque potentiel pour le fœtus. Une grossesse doit donc être évitée pendant le mois qui suit, grâce à une contraception.
 
-La **rubéole** est recherchée par une prise de sang. Si la sérologie est négative, ou si vous n’avez pas reçu deux doses, la vaccination avant la grossesse est indispensable ; elle est associée à la vaccination contre la rougeole, qui peut provoquer des fausses couches pendant la grossesse. Si vous n’avez jamais eu la **varicelle**, la vaccination est possible avant la grossesse.
+La **rubéole** est recherchée par une prise de sang. Si la sérologie est négative, ou si tu n’as pas reçu deux doses, la vaccination avant la grossesse est indispensable ; elle est associée à la vaccination contre la rougeole, qui peut provoquer des fausses couches pendant la grossesse. Si tu n’as jamais eu la **varicelle**, la vaccination est possible avant la grossesse.
 
 La **coqueluche** est particulièrement importante : les nourrissons trop jeunes pour être vaccinés peuvent faire des formes graves nécessitant une hospitalisation. Le rattrapage est possible avant la grossesse, et la vaccination est recommandée pendant la grossesse, de préférence entre 20 et 36 semaines d’aménorrhée, pour transmettre des anticorps au bébé. Le rattrapage du tétanos, de la diphtérie, de la poliomyélite et de l’hépatite B peut aussi être fait avant.
 
 La **grippe** est conseillée avant l’hiver et possible pendant la grossesse ; le **Covid-19** est conseillé selon les recommandations en vigueur. En cas de voyage prévu, d’autres vaccins (comme la fièvre jaune) peuvent être discutés.
 
 ## Au quotidien
-- **Retrouvez votre carnet de vaccination** (ou celui de votre enfance) avant la consultation.
-- **Demandez une sérologie** rubéole si vous ne savez pas si vous êtes protégée.
-- **Planifiez** : si un vaccin vivant est nécessaire, prévoyez un mois de contraception avant d’essayer.
-- **Pensez au partenaire et à l’entourage proche** pour la coqueluche, afin de protéger le futur bébé.
-- **Consultez Vaccination Info Service** pour des informations officielles complémentaires.
+- **Retrouve ton carnet de vaccination** (ou celui de ton enfance) avant la consultation.
+- **Demande une sérologie** rubéole si tu ne sais pas si tu es protégée.
+- **Planifie** : si un vaccin vivant est nécessaire, prévois un mois de contraception avant d’essayer.
+- **Pense au partenaire et à l’entourage proche** pour la coqueluche, afin de protéger le futur bébé.
+- **Consulte Vaccination Info Service** pour des informations officielles complémentaires.
 
 ## Questions fréquentes
 **J’ai été vaccinée contre la rubéole sans le savoir enceinte. Que faire ?**
-Parlez-en rapidement à votre médecin ou sage-femme, qui fera le point avec vous sur la conduite à tenir.
+Parles-en rapidement à ton médecin ou sage-femme, qui fera le point avec toi sur la conduite à tenir.
 
 **Pourquoi la coqueluche, alors que je l’ai eue enfant ?**
 La protection diminue avec le temps. La vaccination de la future mère permet de transmettre des anticorps au bébé pendant ses premières semaines.
@@ -460,7 +460,7 @@ La protection diminue avec le temps. La vaccination de la future mère permet de
 Oui, elle est possible pendant la grossesse et conseillée avant l’hiver.
 
 ## Quand demander conseil
-Faites le point avec votre médecin, votre sage-femme ou votre pharmacien dès le projet de grossesse. Si vous êtes en contact avec une personne atteinte de rubéole, de varicelle ou de rougeole alors que vous êtes peut-être enceinte, appelez votre médecin rapidement. Fièvre élevée avec éruption ou malaise important : consultez sans attendre, ou appelez le 15.
+Fais le point avec ton médecin, ta sage-femme ou ton pharmacien dès le projet de grossesse. Si tu es en contact avec une personne atteinte de rubéole, de varicelle ou de rougeole alors que tu es peut-être enceinte, appelle ton médecin rapidement. Fièvre élevée avec éruption ou malaise important : consulte sans attendre, ou appelle le 15.
 
 ${FIN}`,
   },
@@ -475,7 +475,7 @@ ${FIN}`,
     status: 'to_review',
     body_md: `## En bref
 - En cas de maladie chronique, un bilan avant la grossesse est important : le traitement peut devoir être adapté.
-- N’arrêtez jamais un traitement de vous-même : c’est avec votre médecin que tout se décide.
+- N’arrête jamais un traitement de toi-même : c’est avec ton médecin que tout se décide.
 - Pas d’automédication ni de compléments alimentaires sans avis pendant un projet de grossesse.
 - Certains médicaments du futur père peuvent aussi affecter les spermatozoïdes.
 
@@ -489,29 +489,29 @@ Les médicaments pendant la grossesse sont à éviter autant que possible. Il es
 Enfin, le projet concerne aussi le partenaire : certains médicaments pris par le père peuvent affecter les spermatozoïdes et diminuer la fertilité.
 
 ## Au quotidien
-- **Prenez rendez-vous avec le médecin qui suit votre maladie** (et/ou votre médecin traitant) avant d’arrêter la contraception.
-- **Apportez la liste complète** de vos traitements, y compris ponctuels, plantes et compléments.
-- **Ne modifiez rien seule** : un arrêt brutal peut déséquilibrer la maladie, ce qui serait plus dangereux.
-- **Demandez la liste des médicaments utilisables** en cas de fièvre, douleur ou allergie.
-- **Signalez votre projet à chaque prescripteur** (dentiste, dermatologue, etc.) et au pharmacien.
-- **Commencez l’acide folique** sur prescription, idéalement au moins 4 semaines avant la conception.
-- **Santé psychique** : si vous prenez un traitement, parlez de votre projet avec votre psychiatre ou médecin ; un accompagnement adapté existe.
+- **Prends rendez-vous avec le médecin qui suit ta maladie** (et/ou ton médecin traitant) avant d’arrêter la contraception.
+- **Apporte la liste complète** de tes traitements, y compris ponctuels, plantes et compléments.
+- **Ne modifie rien seule** : un arrêt brutal peut déséquilibrer la maladie, ce qui serait plus dangereux.
+- **Demande la liste des médicaments utilisables** en cas de fièvre, douleur ou allergie.
+- **Signale ton projet à chaque prescripteur** (dentiste, dermatologue, etc.) et au pharmacien.
+- **Commence l’acide folique** sur prescription, idéalement au moins 4 semaines avant la conception.
+- **Santé psychique** : si tu prends un traitement, parle de ton projet avec ton psychiatre ou médecin ; un accompagnement adapté existe.
 
 ## Questions fréquentes
 **Je prends un traitement depuis des années : vais-je devoir l’arrêter ?**
-Pas forcément. Souvent, le traitement est adapté ou remplacé par une alternative compatible. Seul votre médecin peut en décider.
+Pas forcément. Souvent, le traitement est adapté ou remplacé par une alternative compatible. Seul ton médecin peut en décider.
 
 **Et si je découvre ma grossesse sous traitement ?**
-Ne l’arrêtez pas de vous-même ; appelez rapidement votre médecin pour faire le point.
+Ne l’arrête pas de toi-même ; appelle rapidement ton médecin pour faire le point.
 
 **Mon partenaire prend un traitement : faut-il en parler ?**
 Oui, certains médicaments peuvent affecter la fertilité masculine. Il peut en parler à son médecin.
 
 **Puis-je prendre un complément « spécial grossesse » acheté en pharmacie ?**
-Demandez d’abord l’avis de votre médecin ou sage-femme, qui prescrira ce dont vous avez réellement besoin.
+Demande d’abord l’avis de ton médecin ou sage-femme, qui prescrira ce dont tu as réellement besoin.
 
 ## Quand demander conseil
-Consultez avant d’essayer si vous avez une maladie chronique ou un traitement au long cours. Contactez votre médecin rapidement si vous apprenez que vous êtes enceinte alors que vous prenez un traitement. En cas de crise grave (convulsions, malaise, gêne respiratoire importante), appelez le 15 ou le 112. En cas de détresse psychique, le 3114 répond 24 h/24.
+Consulte avant d’essayer si tu as une maladie chronique ou un traitement au long cours. Contacte ton médecin rapidement si tu apprends que tu es enceinte alors que tu prends un traitement. En cas de crise grave (convulsions, malaise, gêne respiratoire importante), appelle le 15 ou le 112. En cas de détresse psychique, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -527,7 +527,7 @@ ${FIN}`,
     body_md: `## En bref
 - Avant la grossesse, une prise de sang peut vérifier le groupe sanguin (ABO, Rhésus, Kell) et certaines immunités.
 - Les femmes Rhésus négatif bénéficient d’une prévention spécifique pendant et après la grossesse.
-- Après une fausse couche, une IVG ou une grossesse extra-utérine, une injection d’anti-D est prévue si vous êtes Rhésus négatif.
+- Après une fausse couche, une IVG ou une grossesse extra-utérine, une injection d’anti-D est prévue si tu es Rhésus négatif.
 - Le bilan recherche aussi l’hépatite C, le VIH et la syphilis.
 
 ## Comprendre
@@ -535,28 +535,28 @@ Lors du bilan avant grossesse, l’Assurance Maladie indique que plusieurs exame
 
 Le **Rhésus** concerne seulement les femmes Rhésus négatif portant un enfant Rhésus positif. Si du sang du fœtus passe dans la circulation de la mère (accouchement, fausse couche, IVG, interruption médicale de grossesse, grossesse extra-utérine), la mère peut fabriquer des anticorps. Lors d’une grossesse suivante, ces anticorps peuvent détruire les globules rouges du bébé et provoquer une anémie grave.
 
-C’est pourquoi, si vous êtes Rhésus négatif, une injection d’immunoglobulines anti-D (« sérum anti-rhésus ») est réalisée après chaque accouchement et après une fausse couche, une IVG, une IMG ou une grossesse extra-utérine. Une prise de sang régulière pendant la grossesse recherche ces anticorps. Si la future mère est Rhésus négatif, le groupe sanguin du père est demandé.
+C’est pourquoi, si tu es Rhésus négatif, une injection d’immunoglobulines anti-D (« sérum anti-rhésus ») est réalisée après chaque accouchement et après une fausse couche, une IVG, une IMG ou une grossesse extra-utérine. Une prise de sang régulière pendant la grossesse recherche ces anticorps. Si la future mère est Rhésus négatif, le groupe sanguin du père est demandé.
 
-La **toxoplasmose** et la **rubéole** sont recherchées car ces infections peuvent nuire au bébé pendant la grossesse. Savoir si vous êtes protégée permet d’adapter les conseils (alimentation, hygiène) ou de vous vacciner contre la rubéole avant.
+La **toxoplasmose** et la **rubéole** sont recherchées car ces infections peuvent nuire au bébé pendant la grossesse. Savoir si tu es protégée permet d’adapter les conseils (alimentation, hygiène) ou de te vacciner contre la rubéole avant.
 
 ## Au quotidien
-- **Gardez votre carte de groupe sanguin** et vos résultats avec votre carnet de santé : ils serviront pendant toute la grossesse.
-- **Si vous êtes Rhésus négatif**, dites-le à chaque professionnel qui vous prend en charge, notamment en cas de saignement ou de fausse couche.
-- **Si vous n’êtes pas immunisée contre la toxoplasmose**, adoptez dès le projet les gestes de prévention : viande bien cuite, fruits et légumes bien lavés, lavage des mains, gants pour jardiner.
-- **Si vous n’êtes pas protégée contre la rubéole**, faites-vous vacciner avant d’essayer, avec un mois de contraception ensuite.
+- **Garde ta carte de groupe sanguin** et tes résultats avec ton carnet de santé : ils serviront pendant toute la grossesse.
+- **Si tu es Rhésus négatif**, dis-le à chaque professionnel qui te prend en charge, notamment en cas de saignement ou de fausse couche.
+- **Si tu n’es pas immunisée contre la toxoplasmose**, adopte dès le projet les gestes de prévention : viande bien cuite, fruits et légumes bien lavés, lavage des mains, gants pour jardiner.
+- **Si tu n’es pas protégée contre la rubéole**, fais-toi vacciner avant d’essayer, avec un mois de contraception ensuite.
 
 ## Questions fréquentes
 **Rhésus négatif : vais-je avoir une grossesse « à risque » ?**
-Non, pas en soi. Cela demande simplement une surveillance et une prévention bien établies, que votre équipe connaît.
+Non, pas en soi. Cela demande simplement une surveillance et une prévention bien établies, que ton équipe connaît.
 
 **Pourquoi demander le groupe du père ?**
-S’il est aussi Rhésus négatif, le bébé le sera également, ce qui change la conduite à tenir. Votre professionnel vous l’expliquera.
+S’il est aussi Rhésus négatif, le bébé le sera également, ce qui change la conduite à tenir. Ton professionnel te l’expliquera.
 
 **Ces examens sont-ils remboursés ?**
 Ils sont prescrits dans le cadre de la consultation préconceptionnelle, prise en charge par l’Assurance Maladie selon les règles habituelles.
 
 ## Quand demander conseil
-Si vous êtes Rhésus négatif et que vous avez des saignements en début de grossesse, après une chute ou un choc sur le ventre, contactez rapidement votre médecin ou sage-femme. Saignements abondants, douleurs intenses ou malaise : appelez le 15 ou le 112.
+Si tu es Rhésus négatif et que tu as des saignements en début de grossesse, après une chute ou un choc sur le ventre, contacte rapidement ton médecin ou sage-femme. Saignements abondants, douleurs intenses ou malaise : appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -588,16 +588,16 @@ La première consultation sert à confirmer la situation, repérer une cause par
 Le test post-coïtal (test de Hühner) n’est pas recommandé dans le bilan initial.
 
 ## Au quotidien
-- **Venez à deux** à la première consultation, avec vos résultats d’examens et carnets de santé.
-- **Notez vos cycles** (dates des règles, durée) quelques mois avant : cela aide le médecin.
-- **Prévoyez l’organisation** : certains examens se font à des moments précis du cycle.
-- **Pour le spermogramme**, respectez 3 à 5 jours d’abstinence et signalez une fièvre récente ou un traitement.
-- **Posez vos questions** sur chaque examen : à quoi il sert, s’il est douloureux, comment se préparer.
-- **Prenez soin du couple** : un bilan peut être éprouvant ; s’autoriser à en parler aide.
+- **Viens à deux** à la première consultation, avec tes résultats d’examens et carnets de santé.
+- **Note tes cycles** (dates des règles, durée) quelques mois avant : cela aide le médecin.
+- **Prévois l’organisation** : certains examens se font à des moments précis du cycle.
+- **Pour le spermogramme**, respecte 3 à 5 jours d’abstinence et signale une fièvre récente ou un traitement.
+- **Pose tes questions** sur chaque examen : à quoi il sert, s’il est douloureux, comment se préparer.
+- **Prends soin du couple** : un bilan peut être éprouvant ; s’autoriser à en parler aide.
 
 ## Questions fréquentes
 **L’hystérosalpingographie est-elle douloureuse ?**
-Elle peut être inconfortable. Demandez au centre comment elle se déroule et si une prise en charge de la douleur est prévue.
+Elle peut être inconfortable. Demande au centre comment elle se déroule et si une prise en charge de la douleur est prévue.
 
 **Et si tous les examens sont bons ?**
 L’objectif est alors de rassurer le couple et d’évaluer le délai raisonnable avant une éventuelle prise en charge ; une cause n’est pas toujours retrouvée.
@@ -606,7 +606,7 @@ L’objectif est alors de rassurer le couple et d’évaluer le délai raisonnab
 Non, le bilan suit une logique progressive, des examens les plus simples aux plus spécialisés.
 
 ## Quand demander conseil
-Consultez votre médecin, gynécologue ou sage-femme dans les délais indiqués, ou plus tôt en cas de cycles très irréguliers, d’absence de règles, de règles très douloureuses, d’antécédent d’infection génitale ou de chirurgie, ou de problème testiculaire chez le partenaire. Douleur pelvienne brutale et intense : appelez le 15 ou le 112. Si l’attente pèse lourd sur votre moral, le 3114 répond 24 h/24.
+Consulte ton médecin, gynécologue ou sage-femme dans les délais indiqués, ou plus tôt en cas de cycles très irréguliers, d’absence de règles, de règles très douloureuses, d’antécédent d’infection génitale ou de chirurgie, ou de problème testiculaire chez le partenaire. Douleur pelvienne brutale et intense : appelle le 15 ou le 112. Si l’attente pèse lourd sur ton moral, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -637,24 +637,24 @@ L’Assurance Maladie explique que le bilan du couple est analysé par une équi
 **AMP** : proposée après échec des traitements, ou d’emblée dans certaines situations. Elle comprend l’insémination artificielle, la fécondation in vitro (FIV, avec ou sans ICSI) et l’accueil d’embryon.
 
 ## Au quotidien
-- **Demandez un plan clair** : quelle étape, combien de temps, quand réévaluer.
-- **Notez vos traitements** et les dates de surveillance (échographies, prises de sang).
-- **Signalez tout effet inhabituel** pendant une stimulation : gonflement ou douleurs abdominales violentes, prise de poids brutale, troubles digestifs, trouble visuel.
-- **Organisez le travail** : en cas d’AMP, le Code du travail prévoit des autorisations d’absence pour les actes médicaux.
-- **Prenez soin de vous et du couple** : un accompagnement psychologique peut être proposé à tout moment.
+- **Demande un plan clair** : quelle étape, combien de temps, quand réévaluer.
+- **Note tes traitements** et les dates de surveillance (échographies, prises de sang).
+- **Signale tout effet inhabituel** pendant une stimulation : gonflement ou douleurs abdominales violentes, prise de poids brutale, troubles digestifs, trouble visuel.
+- **Organise le travail** : en cas d’AMP, le Code du travail prévoit des autorisations d’absence pour les actes médicaux.
+- **Prends soin de toi et du couple** : un accompagnement psychologique peut être proposé à tout moment.
 
 ## Questions fréquentes
 **Faut-il toujours passer par l’AMP ?**
 Non. Selon la cause, un traitement médical, une chirurgie ou simplement des changements d’hygiène de vie peuvent suffire.
 
 **Combien de temps dure un parcours ?**
-Il varie beaucoup selon la cause et l’âge. Votre équipe vous indiquera les étapes et les délais de réévaluation.
+Il varie beaucoup selon la cause et l’âge. Ton équipe t’indiquera les étapes et les délais de réévaluation.
 
 **Les traitements de l’ovulation sont-ils remboursés ?**
 Les traitements prescrits dans un parcours de soins sont pris en charge selon les règles de l’Assurance Maladie ; l’AMP est prise en charge à 100 % dans certaines limites.
 
 ## Quand demander conseil
-Contactez votre centre ou votre médecin en cas d’effet indésirable pendant un traitement. Un gonflement important du ventre avec douleurs violentes, essoufflement ou malaise pendant une stimulation impose une consultation urgente : appelez le 15 ou le 112. Si le parcours devient trop lourd moralement, parlez-en ; le 3114 répond 24 h/24.
+Contacte ton centre ou ton médecin en cas d’effet indésirable pendant un traitement. Un gonflement important du ventre avec douleurs violentes, essoufflement ou malaise pendant une stimulation impose une consultation urgente : appelle le 15 ou le 112. Si le parcours devient trop lourd moralement, parles-en ; le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -683,10 +683,10 @@ Le diagnostic chez l’adulte repose sur au moins deux critères parmi trois : e
 Le SOPK est une cause fréquente d’infertilité, parce que l’ovulation est rare ou absente. Pendant la grossesse, les risques de diabète gestationnel, de pré-éclampsie et d’accouchement prématuré sont plus élevés, surtout en cas de surpoids : un suivi adapté est donc important.
 
 ## Au quotidien
-- **Parlez de votre projet lors d’une consultation préconceptionnelle**, recommandée par l’Assurance Maladie.
+- **Parle de ton projet lors d’une consultation préconceptionnelle**, recommandée par l’Assurance Maladie.
 - **Hygiène de vie** : en cas de surpoids, alimentation équilibrée limitant sucres rapides et graisses, et plus d’activité physique. Chez les femmes de poids de forme, maigrir n’apporte pas de bénéfice.
 - **Arrêter le tabac**, pour limiter le risque cardiovasculaire.
-- **Les étapes possibles pour concevoir**, décidées avec votre médecin : recherche des autres causes (trompes, sperme du partenaire), puis induction de l’ovulation par médicaments en première intention, avec surveillance du risque de grossesse multiple ; « drilling » ovarien par cœlioscopie, qui rétablit l’ovulation dans environ 50 % des cas ; puis FIV si nécessaire.
+- **Les étapes possibles pour concevoir**, décidées avec ton médecin : recherche des autres causes (trompes, sperme du partenaire), puis induction de l’ovulation par médicaments en première intention, avec surveillance du risque de grossesse multiple ; « drilling » ovarien par cœlioscopie, qui rétablit l’ovulation dans environ 50 % des cas ; puis FIV si nécessaire.
 - **Santé psychique** : le dispositif « Mon soutien psy » permet des séances avec un psychologue, prises en charge.
 
 ## Questions fréquentes
@@ -694,13 +694,13 @@ Le SOPK est une cause fréquente d’infertilité, parce que l’ovulation est r
 Non, il rend souvent la conception plus difficile, mais de nombreuses femmes avec un SOPK ont des enfants, naturellement ou avec un traitement.
 
 **Faut-il arrêter la pilule pour faire le bilan ?**
-Le bilan hormonal doit être fait hors contraception hormonale ; votre médecin vous indiquera le délai et une contraception non hormonale en attendant.
+Le bilan hormonal doit être fait hors contraception hormonale ; ton médecin t’indiquera le délai et une contraception non hormonale en attendant.
 
 **Le SOPK disparaît-il après une grossesse ?**
 C’est une maladie chronique : le suivi se poursuit, notamment pour la glycémie, le cholestérol et la tension.
 
 ## Quand demander conseil
-Consultez en cas de cycles irréguliers ou absents, de pilosité ou d’acné importantes, ou si la grossesse tarde. Pendant un traitement d’induction de l’ovulation, signalez tout trouble visuel, toute douleur ou gonflement important du ventre ; en cas de malaise ou de douleur intense, appelez le 15 ou le 112. Si le SOPK pèse sur votre moral, le 3114 répond 24 h/24.
+Consulte en cas de cycles irréguliers ou absents, de pilosité ou d’acné importantes, ou si la grossesse tarde. Pendant un traitement d’induction de l’ovulation, signale tout trouble visuel, toute douleur ou gonflement important du ventre ; en cas de malaise ou de douleur intense, appelle le 15 ou le 112. Si le SOPK pèse sur ton moral, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -716,7 +716,7 @@ ${FIN}`,
     body_md: `## En bref
 - L’endométriose est une maladie chronique ; 30 à 40 % des femmes concernées ont une infertilité.
 - Douleurs de règles intenses, douleurs pendant les rapports, troubles digestifs ou urinaires cycliques doivent faire consulter.
-- Le diagnostic repose surtout sur l’échographie endovaginale et l’IRM, faites par des professionnels formés.
+- Le diagnostic repose surtout sur l’échographie endovaginale et l’IRM, fais par des professionnels formés.
 - En cas de désir de grossesse, chirurgie et AMP se discutent en équipe, selon la situation.
 
 ## Comprendre
@@ -727,10 +727,10 @@ Environ **30 à 40 %** des femmes atteintes présentent une infertilité. La pro
 Le diagnostic associe consultation, **échographie endovaginale** (technique de référence) et **IRM** si besoin ; un test salivaire est indiqué dans certains cas. La cœlioscopie n’est plus recommandée pour le diagnostic seul.
 
 ## Au quotidien
-- **Consultez** si vos règles vous empêchent de vivre normalement : école, travail, sorties.
-- **Tenez un carnet** des douleurs, de leur moment dans le cycle et des symptômes digestifs ou urinaires : il aide le médecin.
-- **Parlez tôt de votre projet d’enfant** : il change les options de traitement. Les traitements hormonaux qui arrêtent les règles ne sont pas compatibles avec un essai de grossesse.
-- **Discutez des options** : Santé.fr (EndoFrance) explique que le médecin discute avec la patiente du choix entre chirurgie et AMP, idéalement en centre de référence, avec une équipe pluridisciplinaire.
+- **Consulte** si tes règles t’empêchent de vivre normalement : école, travail, sorties.
+- **Tiens un carnet** des douleurs, de leur moment dans le cycle et des symptômes digestifs ou urinaires : il aide le médecin.
+- **Parle tôt de ton projet d’enfant** : il change les options de traitement. Les traitements hormonaux qui arrêtent les règles ne sont pas compatibles avec un essai de grossesse.
+- **Discute des options** : Santé.fr (EndoFrance) explique que le médecin discute avec la patiente du choix entre chirurgie et AMP, idéalement en centre de référence, avec une équipe pluridisciplinaire.
 - **Soulager la douleur** : les antalgiques se prennent sur avis médical ; les anti-inflammatoires ne s’utilisent pas au long cours.
 - **Demander l’ALD** pour les formes lourdes : une prise en charge à 100 % est possible sous conditions.
 - **Préservation de la fertilité** : en cas de maladie qui menace la fertilité (dont l’endométriose), l’autoconservation des ovocytes peut être discutée.
@@ -746,7 +746,7 @@ Non, c’est une maladie chronique qui régresse généralement après la ménop
 Oui, l’insémination ou la FIV peuvent être proposées selon la situation, l’âge et les résultats du bilan.
 
 ## Quand demander conseil
-Consultez votre médecin traitant ou gynécologue en cas de douleurs de règles intenses ou qui s’aggravent, de douleurs pendant les rapports, ou de difficultés à concevoir. Une douleur pelvienne brutale et très intense, avec fièvre ou malaise, impose d’appeler le 15 ou le 112. Si la douleur chronique pèse sur votre moral, le 3114 répond 24 h/24.
+Consulte ton médecin traitant ou gynécologue en cas de douleurs de règles intenses ou qui s’aggravent, de douleurs pendant les rapports, ou de difficultés à concevoir. Une douleur pelvienne brutale et très intense, avec fièvre ou malaise, impose d’appeler le 15 ou le 112. Si la douleur chronique pèse sur ton moral, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -779,7 +779,7 @@ Avec un **tiers donneur**, le couple ou la femme non mariée fait une **reconnai
 - **Préparer les entretiens** : l’équipe évalue la demande et explique les techniques, les chances, les risques, les contraintes. Un entretien avec un psychologue ou psychiatre fait partie du parcours.
 - **Le dossier-guide** remis à la fin des entretiens détaille les règles, les techniques et l’accès aux origines pour l’enfant issu d’un don.
 - **Délai de réflexion d’un mois** après le dernier entretien, puis confirmation écrite de la demande.
-- **Refus ou report** : les motifs sont communiqués par écrit si vous le demandez.
+- **Refus ou report** : les motifs sont communiqués par écrit si tu le demandes.
 - **Prise en charge** : à 100 % par l’Assurance Maladie, dans la limite de 6 inséminations et 4 FIV par grossesse obtenue.
 
 ## Questions fréquentes
@@ -793,10 +793,10 @@ Non. Une reconnaissance anticipée devant notaire est faite avant l’AMP avec t
 Dans l’Union européenne, l’Espace économique européen ou en Suisse, il s’agit de soins programmés soumis à une autorisation préalable de l’Assurance Maladie.
 
 **Combien de temps faut-il attendre un don de spermatozoïdes ?**
-Les délais varient selon les centres et le nombre de donneurs ; votre centre vous informera.
+Les délais varient selon les centres et le nombre de donneurs ; ton centre t’informera.
 
 ## Quand demander conseil
-Parlez de votre projet à votre médecin, gynécologue ou sage-femme, qui vous orientera vers un centre. Pendant un parcours, contactez le centre en cas d’effet inhabituel ; en cas de douleurs violentes, de gonflement important du ventre ou de malaise, appelez le 15 ou le 112. Si le parcours pèse sur votre moral, le 3114 répond 24 h/24.
+Parle de ton projet à ton médecin, gynécologue ou sage-femme, qui t’orientera vers un centre. Pendant un parcours, contacte le centre en cas d’effet inhabituel ; en cas de douleurs violentes, de gonflement important du ventre ou de malaise, appelle le 15 ou le 112. Si le parcours pèse sur ton moral, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -834,26 +834,26 @@ ${FIN}`,
 
 ## Questions fréquentes
 **Combien d’embryons sont transférés ?**
-Un ou deux, selon la situation ; votre équipe vous explique ce choix.
+Un ou deux, selon la situation ; ton équipe t’explique ce choix.
 
 **La ponction est-elle douloureuse ?**
 Elle se fait sous anesthésie locale ou générale, à discuter avec l’équipe.
 
 **Les embryons congelés ont-ils autant de chances ?**
-Votre centre pourra vous donner des informations adaptées à votre situation ; les sources consultées ne donnent pas de chiffres généraux.
+Ton centre pourra te donner des informations adaptées à ta situation ; les sources consultées ne donnent pas de chiffres généraux.
 
 **Faut-il rester allongée après le transfert ?**
-Suivez les consignes de votre centre ; les sources consultées ne donnent pas d’instruction générale à ce sujet.
+Suis les consignes de ton centre ; les sources consultées ne donnent pas d’instruction générale à ce sujet.
 
 ## Quand demander conseil
-Pendant une stimulation ou après une ponction, un gonflement important du ventre, des douleurs abdominales violentes, une prise de poids brutale, des troubles digestifs importants ou un essoufflement nécessitent une consultation médicale urgente : contactez votre centre, et appelez le 15 ou le 112 en cas de malaise. Fièvre ou saignements abondants après une ponction : consultez rapidement.
+Pendant une stimulation ou après une ponction, un gonflement important du ventre, des douleurs abdominales violentes, une prise de poids brutale, des troubles digestifs importants ou un essoufflement nécessitent une consultation médicale urgente : contacte ton centre, et appelle le 15 ou le 112 en cas de malaise. Fièvre ou saignements abondants après une ponction : consulte rapidement.
 
 ${FIN}`,
   },
   {
     slug: 'amp-prise-en-charge-et-absences-au-travail',
     title: 'AMP : remboursement, nombre de tentatives et absences au travail',
-    summary: 'Ce que l’Assurance Maladie prend en charge, les limites de tentatives et d’âge, et vos droits d’absence au travail.',
+    summary: 'Ce que l’Assurance Maladie prend en charge, les limites de tentatives et d’âge, et tes droits d’absence au travail.',
     category: 'droits-demarches',
     journeys: ['ttc'],
     tags: ['AMP', 'remboursement', '100 %', 'travail', 'absences', 'droits'],
@@ -875,24 +875,24 @@ L’équipe médicale confirme la poursuite du parcours selon la probabilité de
 Côté travail, le **Code du travail (article L1225-16)** prévoit une **autorisation d’absence** pour les actes médicaux nécessaires au protocole. Ces absences sont assimilées à du temps de travail effectif pour les congés payés et l’ancienneté, et ne doivent pas entraîner de baisse de rémunération. Un justificatif peut être demandé. La personne vivant en couple avec la demandeuse peut s’absenter pour assister à **trois** de ces examens.
 
 ## Au quotidien
-- **Gardez vos ordonnances et justificatifs** : ils servent pour le remboursement et pour l’employeur.
-- **Informez votre employeur** seulement de ce qui est nécessaire : vous n’avez pas à détailler votre parcours.
-- **Notez le nombre de tentatives** déjà réalisées : la limite s’entend par grossesse obtenue.
-- **Renseignez-vous auprès de votre centre** sur les frais éventuels non couverts (dépassements, certains médicaments, transports) et sur votre complémentaire santé.
-- **AMP à l’étranger** (UE, EEE, Suisse) : demandez une autorisation préalable à l’Assurance Maladie avant de commencer.
+- **Garde tes ordonnances et justificatifs** : ils servent pour le remboursement et pour l’employeur.
+- **Informe ton employeur** seulement de ce qui est nécessaire : tu n’as pas à détailler ton parcours.
+- **Note le nombre de tentatives** déjà réalisées : la limite s’entend par grossesse obtenue.
+- **Renseigne-toi auprès de ton centre** sur les frais éventuels non couverts (dépassements, certains médicaments, transports) et sur ta complémentaire santé.
+- **AMP à l’étranger** (UE, EEE, Suisse) : demande une autorisation préalable à l’Assurance Maladie avant de commencer.
 
 ## Questions fréquentes
 **Le compteur de tentatives repart-il après une naissance ?**
-La prise en charge est prévue « pour obtenir une grossesse ». Demandez à votre caisse ou à votre centre comment elle s’applique à un nouveau projet.
+La prise en charge est prévue « pour obtenir une grossesse ». Demande à ta caisse ou à ton centre comment elle s’applique à un nouveau projet.
 
 **Mon employeur peut-il refuser mes absences ?**
-La loi prévoit une autorisation d’absence pour les actes du protocole ; un justificatif peut vous être demandé.
+La loi prévoit une autorisation d’absence pour les actes du protocole ; un justificatif peut t’être demandé.
 
 **Les femmes seules sont-elles remboursées de la même façon ?**
 Oui, la prise en charge est identique quelle que soit la situation.
 
 ## Quand demander conseil
-Pour une question de remboursement, contactez votre caisse d’Assurance Maladie (compte ameli) ou le secrétariat de votre centre. Pour un conflit avec votre employeur, vous pouvez vous adresser aux représentants du personnel ou à l’inspection du travail. Si le parcours pèse sur votre moral, parlez-en ; le 3114 répond 24 h/24.
+Pour une question de remboursement, contacte ta caisse d’Assurance Maladie (compte ameli) ou le secrétariat de ton centre. Pour un conflit avec ton employeur, tu peux t’adresser aux représentants du personnel ou à l’inspection du travail. Si le parcours pèse sur ton moral, parles-en ; le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -919,11 +919,11 @@ L’Agence de la biomédecine rappelle que le don est **anonyme** entre donneurs
 Les gamètes sont attribués selon l’ordre d’inscription. Un appariement sur certains critères physiques peut être demandé et réalisé dans la mesure du possible ; des critères médicaux peuvent raccourcir le délai. L’Assurance Maladie fait état de listes d’attente importantes : plus de 10 000 femmes pour un don de spermatozoïdes et près de 2 800 pour un don d’ovocytes fin 2024.
 
 ## Au quotidien
-- **Inscrivez-vous tôt** dans un centre autorisé : l’attente compte.
+- **Inscris-toi tôt** dans un centre autorisé : l’attente compte.
 - **Faites la reconnaissance anticipée devant notaire** si vous êtes un couple ou une femme seule recourant à un tiers donneur.
-- **Réfléchissez à la façon de parler du don à l’enfant** : l’accès aux origines est un droit de l’enfant devenu adulte ; des psychologues des centres peuvent vous accompagner.
-- **Pensez à l’entourage** : parler du don autour de vous peut aider à recruter des donneurs, car l’attente dépend du nombre de dons.
-- **Prenez soin de vous** : le deuil de la génétique partagée peut être difficile ; un accompagnement psychologique est possible.
+- **Réfléchis à la façon de parler du don à l’enfant** : l’accès aux origines est un droit de l’enfant devenu adulte ; des psychologues des centres peuvent t’accompagner.
+- **Pense à l’entourage** : parler du don autour de toi peut aider à recruter des donneurs, car l’attente dépend du nombre de dons.
+- **Prends soin de toi** : le deuil de la génétique partagée peut être difficile ; un accompagnement psychologique est possible.
 
 ## Questions fréquentes
 **Pourrons-nous choisir le donneur ?**
@@ -936,7 +936,7 @@ Non, les donneurs n’ont aucune information sur les personnes nées de leur don
 À sa majorité, s’il le souhaite, il pourra accéder à des données non identifiantes et à l’identité du donneur, sans aucun lien de filiation.
 
 ## Quand demander conseil
-Parlez de votre projet à votre médecin ou à votre centre d’AMP, qui vous expliquera le parcours et les délais. Un psychologue peut vous accompagner dans la réflexion. Si l’attente devient trop difficile à vivre, n’hésitez pas à en parler ; le 3114 répond 24 h/24.
+Parle de ton projet à ton médecin ou à ton centre d’AMP, qui t’expliquera le parcours et les délais. Un psychologue peut t’accompagner dans la réflexion. Si l’attente devient trop difficile à vivre, n’hésite pas à en parler ; le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -965,15 +965,15 @@ Le parcours commence par un **bilan** : entretien médical, consultation génét
 **Don de spermatozoïdes** : un premier recueil au centre après 3 à 5 jours d’abstinence, pour évaluer les spermatozoïdes et leur résistance à la congélation, puis environ 4 à 5 recueils, et parfois un dernier contrôle sanguin.
 
 ## Au quotidien
-- **Contactez un centre de don** près de chez vous (listes sur les sites de l’Agence de la biomédecine).
-- **Prévoyez 4 à 6 mois** pour un don d’ovocytes.
+- **Contacte un centre de don** près de chez toi (listes sur les sites de l’Agence de la biomédecine).
+- **Prévois 4 à 6 mois** pour un don d’ovocytes.
 - **Autorisation d’absence** : la loi prévoit une absence sans perte de rémunération pour chaque étape (examens, stimulation, prélèvement).
 - **Frais** : frais médicaux pris en charge à 100 % ; frais de transport, d’hébergement, de garde d’enfant et pertes de revenus remboursés sur justificatifs.
-- **Parlez-en à votre entourage** si vous le souhaitez : le don reste anonyme pour les receveurs.
+- **Parles-en à ton entourage** si tu le souhaites : le don reste anonyme pour les receveurs.
 
 ## Questions fréquentes
 **Les personnes nées de mon don pourront-elles me retrouver ?**
-À leur majorité, si elles le demandent, elles pourront accéder à votre identité et à des données non identifiantes. Aucun lien de filiation ne peut être établi.
+À leur majorité, si elles le demandent, elles pourront accéder à ton identité et à des données non identifiantes. Aucun lien de filiation ne peut être établi.
 
 **Donner ses ovocytes réduit-il ma fertilité future ?**
 Selon l’Agence de la biomédecine, aucune conséquence à long terme des traitements n’a été rapportée à ce jour.
@@ -982,7 +982,7 @@ Selon l’Agence de la biomédecine, aucune conséquence à long terme des trait
 Oui, c’est possible pour les femmes comme pour les hommes.
 
 ## Quand demander conseil
-Contactez un centre de don pour toute question. Après une ponction, une douleur importante, un gonflement du ventre, une fièvre ou des saignements abondants doivent être signalés sans attendre au centre ; en cas de malaise, appelez le 15 ou le 112.
+Contacte un centre de don pour toute question. Après une ponction, une douleur importante, un gonflement du ventre, une fièvre ou des saignements abondants doivent être signalés sans attendre au centre ; en cas de malaise, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1013,24 +1013,24 @@ La congélation ultra-rapide des ovocytes (**vitrification**) permet une bonne s
 La conservation se fait dans des établissements autorisés par l’ARS, sans dépassements d’honoraires. Chaque année, la personne est consultée et doit confirmer par écrit la poursuite. Elle peut aussi choisir de donner ses gamètes, de les confier à la recherche ou d’arrêter la conservation (choix confirmé après un délai de réflexion de trois mois). Sans réponse pendant dix ans, la conservation prend fin.
 
 ## Au quotidien
-- **Renseignez-vous auprès d’un centre** autorisé : il vous expliquera le déroulement, les examens et les frais.
-- **Demandez quels frais sont pris en charge** : les sources consultées ne détaillent pas les tarifs de conservation.
-- **Gardez vos coordonnées à jour** auprès du centre pour recevoir la consultation annuelle.
-- **Ne repoussez pas trop** : l’âge au moment du prélèvement compte pour la qualité des ovocytes.
-- **En cas de maladie grave**, demandez à votre équipe si une préservation de la fertilité est possible avant le traitement.
+- **Renseigne-toi auprès d’un centre** autorisé : il t’expliquera le déroulement, les examens et les frais.
+- **Demande quels frais sont pris en charge** : les sources consultées ne détaillent pas les tarifs de conservation.
+- **Garde tes coordonnées à jour** auprès du centre pour recevoir la consultation annuelle.
+- **Ne repousse pas trop** : l’âge au moment du prélèvement compte pour la qualité des ovocytes.
+- **En cas de maladie grave**, demande à ton équipe si une préservation de la fertilité est possible avant le traitement.
 
 ## Questions fréquentes
 **Congeler ses ovocytes garantit-il une grossesse plus tard ?**
-Non, c’est une possibilité, pas une garantie. Votre centre pourra vous informer sur les chances selon votre âge et le nombre d’ovocytes conservés.
+Non, c’est une possibilité, pas une garantie. Ton centre pourra t’informer sur les chances selon ton âge et le nombre d’ovocytes conservés.
 
 **Puis-je le faire après 37 ans ?**
 Sans raison médicale, la loi fixe la limite au 37e anniversaire pour le prélèvement.
 
 **Que deviennent mes ovocytes si je n’en ai pas besoin ?**
-Vous pouvez choisir de les donner, de les confier à la recherche ou d’arrêter la conservation.
+Tu peux choisir de les donner, de les confier à la recherche ou d’arrêter la conservation.
 
 ## Quand demander conseil
-Parlez-en à votre gynécologue ou à un centre d’AMP. Si un traitement lourd est prévu (chimiothérapie, chirurgie pelvienne), demandez une consultation de préservation de la fertilité avant de commencer. Après une ponction, une douleur importante, un gonflement du ventre ou un malaise imposent de consulter rapidement ; en urgence, appelez le 15 ou le 112.
+Parles-en à ton gynécologue ou à un centre d’AMP. Si un traitement lourd est prévu (chimiothérapie, chirurgie pelvienne), demande une consultation de préservation de la fertilité avant de commencer. Après une ponction, une douleur importante, un gonflement du ventre ou un malaise imposent de consulter rapidement ; en urgence, appelle le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1057,29 +1057,29 @@ Le parcours d’AMP comporte, selon l’Assurance Maladie, des entretiens au cou
 Dans le couple, chacun peut réagir différemment : l’un a besoin d’en parler, l’autre de s’en éloigner. Cela ne veut pas dire que l’un tient moins au projet. Les rapports sexuels peuvent devenir une « tâche » programmée, ce qui pèse sur le désir.
 
 ## Au quotidien
-- **Donnez-vous le droit de ressentir** ce que vous ressentez, sans vous juger.
-- **Fixez ensemble des moments sans « projet bébé »** : sorties, loisirs, intimité sans calendrier.
-- **Choisissez à qui vous en parlez** : vous n’êtes pas obligée de tout partager, ni de vous justifier.
+- **Donne-toi le droit de ressentir** ce que tu ressens, sans te juger.
+- **Fixe ensemble des moments sans « projet bébé »** : sorties, loisirs, intimité sans calendrier.
+- **Choisis à qui tu en parles** : tu n’es pas obligée de tout partager, ni de te justifier.
 - **Préparez les consultations à deux** et répartissez les tâches (rendez-vous, traitements, papiers).
-- **Demandez un soutien** : psychologue du centre, médecin traitant, sage-femme, ou « Mon soutien psy » (une séance d’évaluation puis jusqu’à 11 séances prises en charge, sur orientation ou en accès direct selon les règles en vigueur).
+- **Demande un soutien** : psychologue du centre, médecin traitant, sage-femme, ou « Mon soutien psy » (une séance d’évaluation puis jusqu’à 11 séances prises en charge, sur orientation ou en accès direct selon les règles en vigueur).
 - **Associations de patients** : elles proposent des groupes de parole et des informations pratiques.
-- **Prenez soin de votre corps** : sommeil, activité physique douce, alimentation, sans en faire une nouvelle pression.
+- **Prends soin de ton corps** : sommeil, activité physique douce, alimentation, sans en faire une nouvelle pression.
 
 ## Questions fréquentes
 **Le stress empêche-t-il de tomber enceinte ?**
 Les sources consultées ne permettent pas d’en faire une cause. Ce qui est sûr, c’est que le stress fait souffrir : il mérite d’être pris en charge pour lui-même.
 
 **Comment répondre aux questions de l’entourage ?**
-Vous pouvez préparer une réponse courte qui protège votre intimité, ou demander à un proche de faire passer le message.
+Tu peux préparer une réponse courte qui protège ton intimité, ou demander à un proche de faire passer le message.
 
 **Faut-il faire une pause entre deux tentatives ?**
-C’est une décision à prendre avec votre équipe, en tenant compte de votre âge, de votre santé et de votre moral.
+C’est une décision à prendre avec ton équipe, en tenant compte de ton âge, de ta santé et de ton moral.
 
 **Mon ou ma partenaire semble moins touché(e). Est-ce le signe d’un désintérêt ?**
 Pas forcément : chacun exprime ses émotions différemment. En parler, éventuellement avec un tiers, aide à se comprendre.
 
 ## Quand demander conseil
-Consultez votre médecin ou un psychologue si la tristesse dure plusieurs semaines, si vous ne prenez plus plaisir à rien, si le sommeil ou l’appétit sont perturbés, ou si le couple traverse une crise. En cas d’idées noires ou de détresse, appelez le 3114 (24 h/24, gratuit) ; en danger immédiat, le 15 ou le 112.
+Consulte ton médecin ou un psychologue si la tristesse dure plusieurs semaines, si tu ne prends plus plaisir à rien, si le sommeil ou l’appétit sont perturbés, ou si le couple traverse une crise. En cas d’idées noires ou de détresse, appelle le 3114 (24 h/24, gratuit) ; en danger immédiat, le 15 ou le 112.
 
 ${FIN}`,
   },
@@ -1097,9 +1097,9 @@ ${FIN}`,
     status: 'to_review',
     body_md: `## En bref
 - Une fausse couche est l’arrêt spontané d’une grossesse avant 22 semaines ; elle est dite précoce avant 14 semaines.
-- Elle concerne environ 15 % des grossesses ; la cause la plus fréquente est une anomalie chromosomique de l’embryon, sans lien avec ce que vous avez fait.
-- Saignements abondants, signes de malaise ou douleur très forte d’un côté du ventre : urgence, appelez le 15.
-- Un soutien psychologique peut aider ; un nouveau projet peut être envisagé dès que vous vous sentez prête.
+- Elle concerne environ 15 % des grossesses ; la cause la plus fréquente est une anomalie chromosomique de l’embryon, sans lien avec ce que tu as fait.
+- Saignements abondants, signes de malaise ou douleur très forte d’un côté du ventre : urgence, appelle le 15.
+- Un soutien psychologique peut aider ; un nouveau projet peut être envisagé dès que tu te sens prête.
 
 ## Comprendre
 L’Assurance Maladie définit la fausse couche comme un arrêt spontané de la grossesse avant la 22e semaine. La fausse couche **précoce**, avant 14 semaines, est la plus fréquente. Une fausse couche isolée touche environ 15 % des grossesses, et les grossesses suivantes se déroulent en général sans difficulté. Le risque augmente avec l’âge. Les **fausses couches à répétition** (au moins trois consécutives avant 14 semaines) concernent environ 1,5 % des femmes et justifient un bilan.
@@ -1108,27 +1108,27 @@ Lors d’une fausse couche isolée, la cause la plus probable est une **anomalie
 
 Les signes possibles : **saignements** (légers ou abondants, brunâtres ou rouge vif), expulsion de tissus ou de caillots, **douleurs** du bas du dos ou du bas-ventre, crampes comme des règles. Un saignement en début de grossesse n’annonce pas toujours une fausse couche : un quart des femmes enceintes saignent au 1er trimestre et poursuivent leur grossesse.
 
-Le diagnostic repose sur l’examen et l’échographie, parfois un dosage de l’hormone hCG. Selon la situation : attente de l’expulsion naturelle (quelques jours à deux semaines), traitement médicamenteux pour provoquer l’expulsion, ou aspiration sous anesthésie. Si vous êtes **Rhésus négatif**, une injection d’anti-D est réalisée.
+Le diagnostic repose sur l’examen et l’échographie, parfois un dosage de l’hormone hCG. Selon la situation : attente de l’expulsion naturelle (quelques jours à deux semaines), traitement médicamenteux pour provoquer l’expulsion, ou aspiration sous anesthésie. Si tu es **Rhésus négatif**, une injection d’anti-D est réalisée.
 
 ## Au quotidien
-- **Pour des saignements modérés**, contactez votre médecin ou gynécologue dans la journée.
+- **Pour des saignements modérés**, contacte ton médecin ou gynécologue dans la journée.
 - **Après la fausse couche** : pas de tampons, attendre environ deux semaines avant les rapports sexuels, consulter en cas de fièvre, frissons, saignements abondants ou douleurs.
-- **Arrêt de travail** : si votre état le nécessite, le médecin peut en prescrire un, sans délai de carence.
-- **Accordez-vous du temps** : tristesse, vide, culpabilité ou colère sont des réactions fréquentes. Le ou la partenaire peut aussi être touché(e).
-- **Parlez-en** à vos proches, à votre médecin, à une sage-femme ou à un psychologue.
+- **Arrêt de travail** : si ton état le nécessite, le médecin peut en prescrire un, sans délai de carence.
+- **Accorde-toi du temps** : tristesse, vide, culpabilité ou colère sont des réactions fréquentes. Le ou la partenaire peut aussi être touché(e).
+- **Parles-en** à tes proches, à ton médecin, à une sage-femme ou à un psychologue.
 
 ## Questions fréquentes
 **Est-ce de ma faute ?**
-Dans la grande majorité des cas, la cause est une anomalie chromosomique de l’embryon, qui ne dépend pas de vous.
+Dans la grande majorité des cas, la cause est une anomalie chromosomique de l’embryon, qui ne dépend pas de toi.
 
 **Quand pourrai-je essayer à nouveau ?**
-L’Assurance Maladie indique qu’un projet peut être envisagé dès le rétablissement ; une consultation préconceptionnelle permet de faire le point sur vos inquiétudes.
+L’Assurance Maladie indique qu’un projet peut être envisagé dès le rétablissement ; une consultation préconceptionnelle permet de faire le point sur tes inquiétudes.
 
 **Faut-il faire des examens après une première fausse couche ?**
 En général non pour une fausse couche isolée ; un bilan est indispensable en cas de fausses couches à répétition.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de saignements abondants ou de signes de choc : faiblesse, vertiges, confusion, fièvre ou froid brutal, cœur qui s’accélère, nausées ou vomissements. Une **douleur abdominale sévère et persistante**, parfois vers l’épaule, avec petits saignements et faiblesse, peut évoquer une grossesse extra-utérine : urgence. Pour des saignements modérés, consultez dans la journée. Si la tristesse persiste ou devient trop lourde, le 3114 répond 24 h/24.
+**Appelle le 15 ou le 112** en cas de saignements abondants ou de signes de choc : faiblesse, vertiges, confusion, fièvre ou froid brutal, cœur qui s’accélère, nausées ou vomissements. Une **douleur abdominale sévère et persistante**, parfois vers l’épaule, avec petits saignements et faiblesse, peut évoquer une grossesse extra-utérine : urgence. Pour des saignements modérés, consulte dans la journée. Si la tristesse persiste ou devient trop lourde, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },
@@ -1156,29 +1156,29 @@ L’Assurance Maladie décrit des **symptômes peu spécifiques**, qui survienne
 
 Sans traitement précoce, le danger est la **rupture de la trompe** avec une hémorragie interne. Le diagnostic repose sur l’examen gynécologique, une **échographie endovaginale** et un **dosage sanguin de l’hormone bêta-hCG**, réalisés en urgence.
 
-Le traitement peut être **médicamenteux** si le diagnostic est précoce (injection d’un médicament qui fait régresser la grossesse, avec surveillance jusqu’à négativation de l’hCG, en général en un mois), ou **chirurgical** par cœlioscopie, en conservant la trompe si possible. Une simple surveillance est exceptionnelle. Si vous êtes **Rhésus négatif**, une injection d’anti-D est nécessaire.
+Le traitement peut être **médicamenteux** si le diagnostic est précoce (injection d’un médicament qui fait régresser la grossesse, avec surveillance jusqu’à négativation de l’hCG, en général en un mois), ou **chirurgical** par cœlioscopie, en conservant la trompe si possible. Une simple surveillance est exceptionnelle. Si tu es **Rhésus négatif**, une injection d’anti-D est nécessaire.
 
 Selon Santé.fr, environ une grossesse extra-utérine sur trois serait liée au tabac.
 
 ## Au quotidien
-- **Faites un test de grossesse** en cas de retard de règles avec douleurs inhabituelles ou petits saignements.
-- **N’attendez pas que la douleur passe** : consultez rapidement.
-- **Signalez vos antécédents** (GEU, chirurgie des trompes, infections génitales) dès le début d’une grossesse : votre professionnel vous proposera une échographie précoce si besoin.
+- **Fais un test de grossesse** en cas de retard de règles avec douleurs inhabituelles ou petits saignements.
+- **N’attends pas que la douleur passe** : consulte rapidement.
+- **Signale tes antécédents** (GEU, chirurgie des trompes, infections génitales) dès le début d’une grossesse : ton professionnel te proposera une échographie précoce si besoin.
 - **Arrêter le tabac** réduit le risque.
-- **Après une GEU**, prenez le temps de récupérer physiquement et émotionnellement ; parlez de votre projet suivant avec votre médecin.
+- **Après une GEU**, prends le temps de récupérer physiquement et émotionnellement ; parle de ton projet suivant avec ton médecin.
 
 ## Questions fréquentes
 **Peut-on avoir une GEU avec un test de grossesse positif « normal » ?**
 Oui : le test indique une grossesse mais pas son emplacement. Seule l’échographie le précise.
 
 **Pourrai-je être enceinte après une GEU ?**
-Oui, souvent, mais la fertilité peut diminuer. C’est pourquoi on cherche à conserver la trompe quand c’est possible ; parlez de votre projet à votre médecin.
+Oui, souvent, mais la fertilité peut diminuer. C’est pourquoi on cherche à conserver la trompe quand c’est possible ; parle de ton projet à ton médecin.
 
 **Le traitement médicamenteux est-il possible dans tous les cas ?**
-Non, il dépend du stade et de l’absence de contre-indication ; l’équipe choisit avec vous.
+Non, il dépend du stade et de l’absence de contre-indication ; l’équipe choisit avec toi.
 
 ## Quand demander conseil
-**Appelez immédiatement le 15 ou le 112** en cas de douleur abdominale violente, de douleur vers l’épaule, de malaise, de vertiges, de pâleur ou de saignements abondants, surtout si vous êtes peut-être enceinte. Pour des douleurs modérées ou de petits saignements après un retard de règles, consultez très rapidement (dans la journée) un médecin ou les urgences gynécologiques. Après une GEU, si le moral flanche, le 3114 répond 24 h/24.
+**Appelle immédiatement le 15 ou le 112** en cas de douleur abdominale violente, de douleur vers l’épaule, de malaise, de vertiges, de pâleur ou de saignements abondants, surtout si tu es peut-être enceinte. Pour des douleurs modérées ou de petits saignements après un retard de règles, consulte très rapidement (dans la journée) un médecin ou les urgences gynécologiques. Après une GEU, si le moral flanche, le 3114 répond 24 h/24.
 
 ${FIN}`,
   },

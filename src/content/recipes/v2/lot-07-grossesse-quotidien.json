@@ -39,9 +39,9 @@
    ]
   ],
   "steps": [
-   "Versez les flocons d’avoine et le lait dans une petite casserole.",
-   "Faites cuire 5 minutes à feu doux en remuant, jusqu’à ce que le mélange épaississe.",
-   "Ajoutez la banane coupée en rondelles et la cannelle, puis servez tiède."
+   "Verse les flocons d’avoine et le lait dans une petite casserole.",
+   "Fais cuire 5 minutes à feu doux en remuant, jusqu’à ce que le mélange épaississe.",
+   "Ajoute la banane coupée en rondelles et la cannelle, puis sers tiède."
   ],
   "allergens": [
    "gluten",
@@ -55,7 +55,7 @@
    "family"
   ],
   "adaptations": [
-   "Remplacez la banane par une pomme ou une poire cuite avec les flocons."
+   "Remplace la banane par une pomme ou une poire cuite avec les flocons."
   ],
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
@@ -70,7 +70,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Banana and cinnamon porridge",
    "summary": "A warm, gentle breakfast, ready in a few minutes.",
@@ -126,9 +126,9 @@
    ]
   ],
   "steps": [
-   "Faites chauffer les fruits rouges dans une petite casserole 5 minutes jusqu’à frémissement, puis laissez tiédir.",
-   "Versez le yaourt dans deux bols et parsemez de flocons d’avoine.",
-   "Ajoutez les fruits rouges tiédis au moment de servir."
+   "Fais chauffer les fruits rouges dans une petite casserole 5 minutes jusqu’à frémissement, puis laisse tiédir.",
+   "Verse le yaourt dans deux bols et parsème de flocons d’avoine.",
+   "Ajoute les fruits rouges tiédis au moment de servir."
   ],
   "allergens": [
    "gluten",
@@ -156,7 +156,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Yoghurt, oats and warmed red berries",
    "summary": "A fresh, crunchy bowl, with red berries heated for extra safety.",
@@ -218,9 +218,9 @@
    ]
   ],
   "steps": [
-   "Lavez le concombre et la ciboulette, puis coupez le concombre en fines rondelles.",
-   "Tartinez le pain de fromage frais.",
-   "Disposez le concombre, parsemez de ciboulette et servez aussitôt."
+   "Lave le concombre et la ciboulette, puis coupe le concombre en fines rondelles.",
+   "Tartine le pain de fromage frais.",
+   "Dispose le concombre, parsème de ciboulette et sers aussitôt."
   ],
   "allergens": [
    "gluten",
@@ -237,7 +237,7 @@
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
    "Grossesse : produits laitiers au lait pasteurisé uniquement, conservés au réfrigérateur (listériose).",
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un féculent complet, un produit laitier et un légume, dans une préparation sans cuisson.",
   "budget": 1,
@@ -248,7 +248,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Wholemeal bread with soft cheese and cucumber",
    "summary": "Fresh open sandwiches for the morning or afternoon snack.",
@@ -316,9 +316,9 @@
    ]
   ],
   "steps": [
-   "Battez les œufs dans un bol.",
-   "Faites fondre le beurre dans une poêle, versez les œufs et faites cuire 5 minutes à feu moyen en remuant, jusqu’à ce qu’ils soient bien pris, sans partie liquide.",
-   "Servez sur le pain grillé, parsemé de ciboulette lavée."
+   "Bats les œufs dans un bol.",
+   "Fais fondre le beurre dans une poêle, verse les œufs et fais cuire 5 minutes à feu moyen en remuant, jusqu’à ce qu’ils soient bien pris, sans partie liquide.",
+   "Sers sur le pain grillé, parsemé de ciboulette lavée."
   ],
   "allergens": [
    "eggs",
@@ -335,7 +335,7 @@
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
    "Grossesse : les œufs doivent être bien cuits, jaune et blanc fermes (salmonellose).",
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Les œufs apportent des protéines ; le pain complet un féculent riche en fibres.",
   "budget": 1,
@@ -346,7 +346,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Well-cooked scrambled eggs on wholemeal bread",
    "summary": "A savoury breakfast, with eggs cooked until well set.",
@@ -412,9 +412,9 @@
    ]
   ],
   "steps": [
-   "Faites chauffer le lait avec la vanille et le sucre jusqu’à frémissement.",
-   "Versez la semoule en pluie en remuant et laissez cuire 8 minutes à feu doux.",
-   "Répartissez dans des ramequins et servez tiède ou froid."
+   "Fais chauffer le lait avec la vanille et le sucre jusqu’à frémissement.",
+   "Verse la semoule en pluie en remuant et laisse cuire 8 minutes à feu doux.",
+   "Répartis dans des ramequins et sers tiède ou froid."
   ],
   "allergens": [
    "milk",
@@ -440,7 +440,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Vanilla semolina pudding",
    "summary": "A gentle dessert, easy to eat when you have little appetite.",
@@ -500,9 +500,9 @@
    ]
   ],
   "steps": [
-   "Épluchez et lavez les carottes, puis coupez-les en fines rondelles.",
-   "Portez le bouillon à ébullition avec les carottes et le gingembre râpé, puis laissez cuire 10 minutes.",
-   "Ajoutez les vermicelles et faites cuire encore 4 minutes avant de servir."
+   "Épluche et lave les carottes, puis coupe-les en fines rondelles.",
+   "Porte le bouillon à ébullition avec les carottes et le gingembre râpé, puis laisse cuire 10 minutes.",
+   "Ajoute les vermicelles et fais cuire encore 4 minutes avant de servir."
   ],
   "allergens": [
    "celery",
@@ -515,11 +515,11 @@
    "family"
   ],
   "adaptations": [
-   "Sans gingembre si son goût vous gêne."
+   "Sans gingembre si son goût te gêne."
   ],
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un plat léger qui apporte des légumes et un féculent ; à fractionner en petites portions si besoin.",
   "budget": 1,
@@ -530,7 +530,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Vermicelli broth with carrots and ginger",
    "summary": "A light, fragrant broth, to drink and eat in small amounts.",
@@ -603,10 +603,10 @@
    ]
   ],
   "steps": [
-   "Faites cuire le riz 12 minutes dans une grande casserole d’eau bouillante, puis égouttez.",
-   "Lavez la courgette, coupez-la en dés et faites-la cuire 8 minutes à la vapeur.",
-   "Faites cuire le poisson 10 minutes à la vapeur : la chair doit être opaque et se détacher facilement.",
-   "Servez avec un filet d’huile d’olive et quelques gouttes de citron."
+   "Fais cuire le riz 12 minutes dans une grande casserole d’eau bouillante, puis égoutte.",
+   "Lave la courgette, coupe-la en dés et fais-la cuire 8 minutes à la vapeur.",
+   "Fais cuire le poisson 10 minutes à la vapeur : la chair doit être opaque et se détacher facilement.",
+   "Sers avec un filet d’huile d’olive et quelques gouttes de citron."
   ],
   "allergens": [
    "fish"
@@ -620,7 +620,7 @@
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
    "Grossesse : le poisson doit être cuit à cœur, chair opaque (listériose, parasites).",
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un poisson maigre pour les protéines, un féculent et un légume, dans une assiette légère.",
   "budget": 1,
@@ -632,7 +632,7 @@
    "santefr_equilibre",
    "anses_poisson"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Steamed white fish, rice and courgettes",
    "summary": "A simple meal, with little smell and gentle in the mouth.",
@@ -716,10 +716,10 @@
    ]
   ],
   "steps": [
-   "Épluchez et émincez l’oignon et l’ail, puis faites-les revenir 3 minutes dans une casserole.",
-   "Ajoutez les lentilles rincées, les tomates concassées, le lait de coco, le curry et 400 ml d’eau.",
-   "Laissez mijoter 20 minutes à feu doux en remuant de temps en temps, jusqu’à ce que les lentilles soient fondantes.",
-   "Pendant ce temps, faites cuire le riz 12 minutes, puis servez avec le dahl."
+   "Épluche et émince l’oignon et l’ail, puis fais-les revenir 3 minutes dans une casserole.",
+   "Ajoute les lentilles rincées, les tomates concassées, le lait de coco, le curry et 400 ml d’eau.",
+   "Laisse mijoter 20 minutes à feu doux en remuant de temps en temps, jusqu’à ce que les lentilles soient fondantes.",
+   "Pendant ce temps, fais cuire le riz 12 minutes, puis sers avec le dahl."
   ],
   "allergens": [
    "mustard",
@@ -733,9 +733,9 @@
    "family"
   ],
   "adaptations": [],
-  "storage": "Réfrigérateur : 2 jours dans une boîte fermée ; réchauffez une seule fois.",
+  "storage": "Réfrigérateur : 2 jours dans une boîte fermée ; réchauffe une seule fois.",
   "precautions": [
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Les lentilles apportent du fer et des fibres ; avec le riz, un plat complet.",
   "budget": 1,
@@ -746,7 +746,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Le dahl se congèle jusqu’à 3 mois ; réchauffez-le jusqu’à ce qu’il soit bien chaud partout.",
+  "freezing": "Le dahl se congèle jusqu’à 3 mois ; réchauffe-le jusqu’à ce qu’il soit bien chaud partout.",
   "en": {
    "title": "Red lentil dahl with coconut milk",
    "summary": "A comforting vegetarian dish, rich in pulses.",
@@ -820,9 +820,9 @@
    ]
   ],
   "steps": [
-   "Faites cuire les lentilles 25 minutes dans une grande casserole d’eau, puis égouttez.",
-   "Épluchez, lavez et râpez les carottes ; lavez et ciselez le persil.",
-   "Mélangez les lentilles tièdes avec les carottes, le persil, l’huile d’olive et le jus de citron."
+   "Fais cuire les lentilles 25 minutes dans une grande casserole d’eau, puis égoutte.",
+   "Épluche, lave et râpe les carottes ; lave et cisèle le persil.",
+   "Mélange les lentilles tièdes avec les carottes, le persil, l’huile d’olive et le jus de citron."
   ],
   "allergens": [],
   "tags": [
@@ -836,7 +836,7 @@
   "adaptations": [],
   "storage": "Réfrigérateur : 2 jours dans une boîte fermée.",
   "precautions": [
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Les lentilles sont une légumineuse riche en fibres ; les légumes verts comme le persil contiennent des folates.",
   "budget": 1,
@@ -847,7 +847,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Warm salad of green lentils, carrots and parsley",
    "summary": "A complete salad to prepare ahead.",
@@ -928,9 +928,9 @@
    ]
   ],
   "steps": [
-   "Rincez les pois chiches et mixez-les avec le tahini, le jus de citron, l’ail épluché, l’huile d’olive et 3 cuillères à soupe d’eau.",
-   "Lavez les carottes et le concombre, épluchez les carottes, puis coupez les légumes en bâtonnets.",
-   "Servez le houmous avec les bâtonnets de légumes."
+   "Rince les pois chiches et mixe-les avec le tahini, le jus de citron, l’ail épluché, l’huile d’olive et 3 cuillères à soupe d’eau.",
+   "Lave les carottes et le concombre, épluche les carottes, puis coupe les légumes en bâtonnets.",
+   "Sers le houmous avec les bâtonnets de légumes."
   ],
   "allergens": [
    "sesame"
@@ -944,8 +944,8 @@
   "adaptations": [],
   "storage": "Réfrigérateur : 2 jours dans une boîte fermée.",
   "precautions": [
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose).",
-   "Conservez le houmous maison au réfrigérateur et consommez-le dans les 2 jours."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose).",
+   "Conserve le houmous maison au réfrigérateur et consomme-le dans les 2 jours."
   ],
   "nutrition": "Les pois chiches apportent fibres et protéines végétales ; les légumes crus bien lavés complètent.",
   "budget": 1,
@@ -956,7 +956,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Homemade hummus with vegetable sticks",
    "summary": "A savoury snack to share.",
@@ -1025,9 +1025,9 @@
    ]
   ],
   "steps": [
-   "Épluchez, lavez et coupez les pommes et les poires en morceaux.",
-   "Faites-les cuire 15 minutes à feu doux avec 3 cuillères à soupe d’eau et la cannelle.",
-   "Écrasez à la fourchette et servez tiède, parsemé de poudre d’amande."
+   "Épluche, lave et coupe les pommes et les poires en morceaux.",
+   "Fais-les cuire 15 minutes à feu doux avec 3 cuillères à soupe d’eau et la cannelle.",
+   "Écrase à la fourchette et sers tiède, parsemé de poudre d’amande."
   ],
   "allergens": [
    "nuts"
@@ -1041,7 +1041,7 @@
   "adaptations": [],
   "storage": "Réfrigérateur : 3 jours, couvert.",
   "precautions": [
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Des fruits cuits, doux pour la digestion, avec un peu de poudre d’amande.",
   "budget": 1,
@@ -1052,7 +1052,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Apple and pear compote with cinnamon and ground almonds",
    "summary": "A gentle snack, with no added sugar.",
@@ -1105,8 +1105,8 @@
    ]
   ],
   "steps": [
-   "Épluchez les kiwis et coupez-les en dés.",
-   "Répartissez les petits-suisses dans deux bols, ajoutez le kiwi et les cerneaux de noix concassés."
+   "Épluche les kiwis et coupe-les en dés.",
+   "Répartis les petits-suisses dans deux bols, ajoute le kiwi et les cerneaux de noix concassés."
   ],
   "allergens": [
    "milk",
@@ -1132,9 +1132,9 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "familyAdaptations": {
-   "child": "Avant 4 ans, remplacez les noix par un peu de poudre d’amande (risque d’étouffement)."
+   "child": "Avant 4 ans, remplace les noix par un peu de poudre d’amande (risque d’étouffement)."
   },
   "en": {
    "title": "Petits-suisses with kiwi and walnuts",
@@ -1202,9 +1202,9 @@
    ]
   ],
   "steps": [
-   "Lavez le brocoli et détaillez-le en petits bouquets.",
-   "Faites cuire les pâtes 10 minutes dans une grande casserole d’eau bouillante, en ajoutant le brocoli pour les 5 dernières minutes, puis égouttez.",
-   "Faites revenir l’ail émincé 1 minute dans l’huile d’olive, ajoutez les pâtes et le brocoli, puis l’emmental râpé, et servez chaud."
+   "Lave le brocoli et détaille-le en petits bouquets.",
+   "Fais cuire les pâtes 10 minutes dans une grande casserole d’eau bouillante, en ajoutant le brocoli pour les 5 dernières minutes, puis égoutte.",
+   "Fais revenir l’ail émincé 1 minute dans l’huile d’olive, ajoute les pâtes et le brocoli, puis l’emmental râpé, et sers chaud."
   ],
   "allergens": [
    "gluten",
@@ -1221,7 +1221,7 @@
   "adaptations": [],
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un féculent complet, un légume vert et un fromage à pâte pressée cuite pour le calcium.",
   "budget": 1,
@@ -1232,7 +1232,7 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Wholewheat pasta with broccoli and Emmental",
    "summary": "A quick dish for tired evenings.",
@@ -1300,9 +1300,9 @@
    ]
   ],
   "steps": [
-   "Lavez les tomates et coupez-les en fines tranches.",
-   "Égouttez les sardines et écrasez-les à la fourchette avec un peu de jus de citron.",
-   "Tartinez le pain, ajoutez les tomates et servez aussitôt."
+   "Lave les tomates et coupe-les en fines tranches.",
+   "Égoutte les sardines et écrase-les à la fourchette avec un peu de jus de citron.",
+   "Tartine le pain, ajoute les tomates et sers aussitôt."
   ],
   "allergens": [
    "gluten",
@@ -1317,8 +1317,8 @@
   "adaptations": [],
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
-   "Grossesse : les sardines en conserve sont déjà cuites ; évitez en revanche le poisson cru ou fumé (listériose).",
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Grossesse : les sardines en conserve sont déjà cuites ; évite en revanche le poisson cru ou fumé (listériose).",
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un petit poisson gras, dont les arêtes écrasées apportent du calcium, avec un féculent complet et un légume.",
   "budget": 1,
@@ -1330,7 +1330,7 @@
    "santefr_equilibre",
    "anses_poisson"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Sardine, tomato and lemon on toast",
    "summary": "A quick meal with a small tinned oily fish.",
@@ -1408,10 +1408,10 @@
    ]
   ],
   "steps": [
-   "Rincez le quinoa et faites-le cuire 12 minutes dans deux fois son volume d’eau.",
-   "Faites cuire le saumon 12 minutes au four à 180 °C : la chair doit être opaque à cœur et se détacher facilement.",
-   "Faites revenir l’ail émincé dans l’huile d’olive, ajoutez les épinards et laissez cuire 4 minutes.",
-   "Servez le quinoa avec les épinards et le saumon, arrosé de jus de citron."
+   "Rince le quinoa et fais-le cuire 12 minutes dans deux fois son volume d’eau.",
+   "Fais cuire le saumon 12 minutes au four à 180 °C : la chair doit être opaque à cœur et se détacher facilement.",
+   "Fais revenir l’ail émincé dans l’huile d’olive, ajoute les épinards et laisse cuire 4 minutes.",
+   "Sers le quinoa avec les épinards et le saumon, arrosé de jus de citron."
   ],
   "allergens": [
    "fish"
@@ -1426,7 +1426,7 @@
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
    "Grossesse : le saumon frais doit être cuit à cœur ; le saumon fumé est à éviter (listériose).",
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un poisson gras pour les protéines, des épinards qui contiennent des folates, et une graine riche en fibres.",
   "budget": 1,
@@ -1438,7 +1438,7 @@
    "santefr_equilibre",
    "anses_poisson"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "en": {
    "title": "Quinoa, well-cooked salmon and spinach",
    "summary": "A colourful plate, simple to prepare.",
@@ -1502,8 +1502,8 @@
    ]
   ],
   "steps": [
-   "Lavez la pomme et coupez-la en fines lamelles.",
-   "Coupez le comté en fines tranches et disposez-les sur le pain avec la pomme."
+   "Lave la pomme et coupe-la en fines lamelles.",
+   "Coupe le comté en fines tranches et dispose-les sur le pain avec la pomme."
   ],
   "allergens": [
    "gluten",
@@ -1518,8 +1518,8 @@
   "adaptations": [],
   "storage": "Réfrigérateur : 24 heures dans une boîte fermée.",
   "precautions": [
-   "Grossesse : les fromages à pâte pressée cuite comme le comté sont possibles ; retirez la croûte (listériose).",
-   "Lavez soigneusement les fruits, les légumes et les herbes, puis lavez-vous les mains (toxoplasmose)."
+   "Grossesse : les fromages à pâte pressée cuite comme le comté sont possibles ; retire la croûte (listériose).",
+   "Lave soigneusement les fruits, les légumes et les herbes, puis lave-toi les mains (toxoplasmose)."
   ],
   "nutrition": "Un fromage à pâte pressée cuite pour le calcium, un fruit et un féculent complet.",
   "budget": 1,
@@ -1530,9 +1530,9 @@
    "santefr_toxo",
    "santefr_equilibre"
   ],
-  "freezing": "Ne se congèle pas : préparez la quantité du moment.",
+  "freezing": "Ne se congèle pas : prépare la quantité du moment.",
   "familyAdaptations": {
-   "child": "Avant 4 ans, râpez la pomme (risque d’étouffement)."
+   "child": "Avant 4 ans, râpe la pomme (risque d’étouffement)."
   },
   "en": {
    "title": "Wholemeal bread with Comté and apple",

@@ -19,7 +19,7 @@ const S = {
   spEnfCharge: { label: 'Service-Public.gouv.fr — Impôt sur le revenu : enfant mineur à charge', url: `${SP}F2633`, consulted_on: C, published: '2026-01-01' },
   spARS: { label: 'Service-Public.gouv.fr — Allocation de rentrée scolaire (ARS)', url: `${SP}F1878`, consulted_on: C, published: '2026-08-04' },
   spCNS: { label: 'Service-Public.gouv.fr — Congé supplémentaire de naissance du salarié du secteur privé', url: `${SP}F39685`, consulted_on: C, published: '2026-06-03' },
-  spCNSfaq: { label: 'Service-Public.gouv.fr — Congé supplémentaire de naissance : les réponses à toutes vos questions (FAQ)', url: 'https://www.service-public.gouv.fr/particuliers/actualites/A18982', consulted_on: C, published: '2026-07-03' },
+  spCNSfaq: { label: 'Service-Public.gouv.fr — Congé supplémentaire de naissance : les réponses à toutes tes questions (FAQ)', url: 'https://www.service-public.gouv.fr/particuliers/actualites/A18982', consulted_on: C, published: '2026-07-03' },
   spNom: { label: 'Service-Public.gouv.fr — Choix du nom de famille d’un enfant par son père et sa mère', url: `${SP}F10505`, consulted_on: C, published: '2026-08-06' },
   spLivret: { label: 'Service-Public.gouv.fr — Livret de famille : délivrance à la naissance du premier enfant', url: `${SP}F11991`, consulted_on: C, published: '2026-08-12' },
   spLivretMaj: { label: 'Service-Public.gouv.fr — Mise à jour du livret de famille à la suite d’un changement', url: `${SP}F18910`, consulted_on: C, published: '2023-01-16' },
@@ -28,7 +28,7 @@ const S = {
   spAlternee: { label: 'Service-Public.gouv.fr — Comment obtenir la garde alternée d’un enfant ?', url: `${SP}F1329`, consulted_on: C, published: '2023-10-13' },
   spIFPA: { label: 'Service-Public.gouv.fr — Intermédiation financière des pensions alimentaires (IFPA)', url: `${SP}F36407`, consulted_on: C, published: '2026-04-01' },
   spASF: { label: 'Service-Public.gouv.fr — Allocation de soutien familial (ASF) : parents séparés', url: `${SP}F815`, consulted_on: C, published: '2026-04-01' },
-  spSolo: { label: 'Service-Public.gouv.fr — Vous élevez seul votre ou vos enfants : aides financières', url: `${SP}F38245`, consulted_on: C, published: '2026-04-30' },
+  spSolo: { label: 'Service-Public.gouv.fr — Tu élèves seul ton ou tes enfants : aides financières', url: `${SP}F38245`, consulted_on: C, published: '2026-04-30' },
   cafSolo: { label: 'Caf du Nord (caf.fr) — Je vis seul(e) avec mon enfant', url: 'https://www.caf.fr/allocataires/caf-du-nord/offre-de-service/vie-personnelle/je-vis-seule-avec-mon-enfant', consulted_on: C },
   spEnfMalade: { label: 'Service-Public.gouv.fr — Congé pour enfant malade du salarié du secteur privé', url: `${SP}F151`, consulted_on: C, published: '2026-03-27' },
   spAJPP: { label: 'Service-Public.gouv.fr — Allocation journalière de présence parentale (AJPP)', url: `${SP}F15132`, consulted_on: C, published: '2026-06-01' },
@@ -45,8 +45,8 @@ const S = {
 } satisfies Record<string, ArticleSource>;
 
 const VERIF = 'Montants à vérifier sur caf.fr / service-public.fr : les chiffres cités sont ceux affichés par les pages officielles consultées en octobre 2026 et peuvent être revalorisés ou modifiés.';
-const SOS = 'Si ces démarches s’ajoutent à une fatigue ou à une détresse qui vous dépasse, le 3114 répond 24 h/24, gratuitement. Si un enfant est en danger, appelez le 119. En cas d’urgence vitale, composez le 15 ou le 112.';
-const END = 'Cet article informe et vous aide à vous repérer ; il ne remplace pas un professionnel (conseiller de la Caf, de la MSA, de l’Assurance Maladie ou des impôts, travailleur social, avocat ou juriste) qui pourra étudier votre situation.';
+const SOS = 'Si ces démarches s’ajoutent à une fatigue ou à une détresse qui te dépasse, le 3114 répond 24 h/24, gratuitement. Si un enfant est en danger, appelle le 119. En cas d’urgence vitale, compose le 15 ou le 112.';
+const END = 'Cet article informe et t’aide à te repérer ; il ne remplace pas un professionnel (conseiller de la Caf, de la MSA, de l’Assurance Maladie ou des impôts, travailleur social, avocat ou juriste) qui pourra étudier ta situation.';
 const BASE: Pick<LibArticle, 'status' | 'category'> = { status: 'to_review', category: 'droits-demarches' };
 
 export const GUIDE_B26: LibArticle[] = [
@@ -60,11 +60,11 @@ export const GUIDE_B26: LibArticle[] = [
     tags: ['allocation de base', 'Paje', 'Caf', 'MSA', 'aide naissance', 'enfant de moins de 3 ans', 'plafond de ressources', 'jumeaux'],
     max_age_months: 36,
     sources: [S.spAB, S.cafAttends],
-    body_md: `Après la prime à la naissance, une autre aide de la prestation d’accueil du jeune enfant (Paje) peut prendre le relais chaque mois : l’allocation de base. Elle n’est pas automatique pour tout le monde, car elle dépend de vos ressources. Voici comment elle fonctionne.
+    body_md: `Après la prime à la naissance, une autre aide de la prestation d’accueil du jeune enfant (Paje) peut prendre le relais chaque mois : l’allocation de base. Elle n’est pas automatique pour tout le monde, car elle dépend de tes ressources. Voici comment elle fonctionne.
 
 ## En bref
 - L’allocation de base est versée pour un enfant à charge de moins de 3 ans, si les ressources du foyer ne dépassent pas un plafond.
-- Elle existe à deux niveaux : un montant plein et un montant partiel, selon vos revenus.
+- Elle existe à deux niveaux : un montant plein et un montant partiel, selon tes revenus.
 - Elle commence le mois suivant la naissance et s’arrête le mois précédant le 3e anniversaire de l’enfant.
 - Elle n’est versée que pour un seul enfant de moins de 3 ans à la fois, sauf naissances multiples.
 - ${VERIF}
@@ -79,14 +79,14 @@ export const GUIDE_B26: LibArticle[] = [
 **Les cumuls.** Elle peut se cumuler avec l’allocation journalière de présence parentale (AJPP). Elle ne se cumule pas avec le complément familial, ni avec une seconde allocation de base pour un autre enfant de moins de 3 ans. En cas de jumeaux ou de triplés, une allocation est versée pour chaque enfant né lors du même accouchement.
 
 ## Au quotidien
-- **Simulez vos droits** sur caf.fr dès la grossesse : la simulation vous donne une idée du montant possible avant de faire vos comptes.
-- **Déclarez la naissance rapidement** dans votre espace Mon Compte de la Caf (ou auprès de la MSA). Les pièces demandées sont une copie lisible du livret de famille ou un extrait d’acte de naissance de l’enfant.
-- **Signalez tout changement** : séparation, mariage, perte d’emploi, déménagement. Ces changements peuvent modifier le montant.
-- **Notez les dates clés** dans votre agenda : début du versement, puis fin au mois précédant les 3 ans.
-- **Anticipez la suite** : pour une famille de 3 enfants ou plus, le complément familial peut être étudié quand le plus jeune atteint 3 ans.
+- **Simule tes droits** sur caf.fr dès la grossesse : la simulation te donne une idée du montant possible avant de faire tes comptes.
+- **Déclare la naissance rapidement** dans ton espace Mon Compte de la Caf (ou auprès de la MSA). Les pièces demandées sont une copie lisible du livret de famille ou un extrait d’acte de naissance de l’enfant.
+- **Signale tout changement** : séparation, mariage, perte d’emploi, déménagement. Ces changements peuvent modifier le montant.
+- **Note les dates clés** dans ton agenda : début du versement, puis fin au mois précédant les 3 ans.
+- **Anticipe la suite** : pour une famille de 3 enfants ou plus, le complément familial peut être étudié quand le plus jeune atteint 3 ans.
 
 ## Questions fréquentes
-**Faut-il faire une demande spéciale pour l’allocation de base ?** Si vous êtes déjà connu de la Caf, la déclaration de la naissance permet d’étudier vos droits. Si vous ne l’êtes pas, la Caf indique que l’on crée son compte en faisant la demande de prime à la naissance, puis que l’on déclare la naissance.
+**Faut-il faire une demande spéciale pour l’allocation de base ?** Si tu es déjà connu de la Caf, la déclaration de la naissance permet d’étudier tes droits. Si tu ne l’es pas, la Caf indique que l’on crée son compte en faisant la demande de prime à la naissance, puis que l’on déclare la naissance.
 
 **J’ai un enfant de 2 ans et un nouveau bébé : vais-je toucher deux allocations ?** Non : l’allocation de base n’est versée que pour un seul enfant de moins de 3 ans à la fois, sauf naissances multiples.
 
@@ -95,7 +95,7 @@ export const GUIDE_B26: LibArticle[] = [
 **Et en cas d’adoption ?** Les règles sont différentes : Service-Public y consacre une fiche spécifique.
 
 ## Quand demander conseil
-Si votre situation est particulière (revenus irréguliers, séparation récente, travail à l’étranger, outre-mer), prenez rendez-vous avec votre Caf ou votre MSA, ou appelez Allô Service Public. Un travailleur social de la Caf peut aussi vous accompagner si le budget devient difficile. ${SOS}
+Si ta situation est particulière (revenus irréguliers, séparation récente, travail à l’étranger, outre-mer), prends rendez-vous avec ta Caf ou ta MSA, ou appelle Allô Service Public. Un travailleur social de la Caf peut aussi t’accompagner si le budget devient difficile. ${SOS}
 
 ${END}`,
   },
@@ -107,13 +107,13 @@ ${END}`,
     journeys: ['pregnant', 'newborn', 'child'],
     tags: ['allocations familiales', 'deuxième enfant', '2e enfant', 'troisième enfant', 'majoration pour âge', 'forfait 20 ans', 'Caf', 'MSA'],
     sources: [S.spAF],
-    body_md: `En France, les allocations familiales ne sont pas versées pour un premier enfant seul : elles commencent quand la famille compte au moins deux enfants à charge. Leur montant varie selon vos revenus, le nombre d’enfants et leur âge.
+    body_md: `En France, les allocations familiales ne sont pas versées pour un premier enfant seul : elles commencent quand la famille compte au moins deux enfants à charge. Leur montant varie selon tes revenus, le nombre d’enfants et leur âge.
 
 ## En bref
-- Il faut au moins 2 enfants à charge de moins de 20 ans, qui résident en France avec vous.
+- Il faut au moins 2 enfants à charge de moins de 20 ans, qui résident en France avec toi.
 - Le montant dépend des ressources du foyer : trois tranches existent, avec des plafonds qui augmentent selon le nombre d’enfants.
 - Une majoration s’ajoute quand un enfant atteint un certain âge (18 ans pour les enfants nés après le 1er mars 2012).
-- Si vous êtes déjà allocataire, l’ouverture des droits est automatique une fois la naissance déclarée.
+- Si tu es déjà allocataire, l’ouverture des droits est automatique une fois la naissance déclarée.
 - ${VERIF}
 
 ## Comprendre
@@ -121,28 +121,28 @@ ${END}`,
 
 **La majoration pour âge.** Pour un enfant né après le 1er mars 2012, une majoration est versée à partir de ses 18 ans (à partir de 14 ans pour un enfant né avant cette date). Dans une famille de 2 enfants seulement, elle n’est pas versée pour l’aîné.
 
-**Le forfait à 20 ans.** À 20 ans, un enfant n’est plus compté à charge. Dans une famille d’au moins 3 enfants, un forfait temporaire peut être versé automatiquement jusqu’au mois précédant ses 21 ans, s’il vit toujours chez vous et que ses revenus d’activité ne dépassent pas un plafond.
+**Le forfait à 20 ans.** À 20 ans, un enfant n’est plus compté à charge. Dans une famille d’au moins 3 enfants, un forfait temporaire peut être versé automatiquement jusqu’au mois précédant ses 21 ans, s’il vit toujours chez toi et que ses revenus d’activité ne dépassent pas un plafond.
 
-**Le complément dégressif.** Si vos revenus dépassent de peu un plafond, un complément dégressif peut atténuer la baisse.
+**Le complément dégressif.** Si tes revenus dépassent de peu un plafond, un complément dégressif peut atténuer la baisse.
 
 **La résidence.** L’enfant doit vivre en France. Une absence de plus de 3 mois, même seul, suspend les allocations, sauf exceptions (études, soins, apprentissage d’une langue, formation).
 
 ## Au quotidien
-- **Déclarez la naissance du 2e enfant** dans votre espace Caf ou MSA : une copie du livret de famille ou de l’acte de naissance suffit en général.
-- **Retenez le rythme de versement** : les droits s’ouvrent le mois suivant la naissance, et les allocations sont versées à terme échu (les droits d’un mois sont payés au début du mois suivant).
-- **Pensez à votre budget sur la durée** : le montant évolue avec l’âge des enfants et vos ressources.
-- **Vous n’êtes pas encore allocataire ?** Il faut remplir une déclaration de situation et l’envoyer à la Caf, ou faire la démarche en ligne.
-- **Signalez les changements** (séparation, chômage, déménagement) rapidement pour éviter des rappels de sommes.
+- **Déclare la naissance du 2e enfant** dans ton espace Caf ou MSA : une copie du livret de famille ou de l’acte de naissance suffit en général.
+- **Retiens le rythme de versement** : les droits s’ouvrent le mois suivant la naissance, et les allocations sont versées à terme échu (les droits d’un mois sont payés au début du mois suivant).
+- **Pense à ton budget sur la durée** : le montant évolue avec l’âge des enfants et tes ressources.
+- **Tu n’es pas encore allocataire ?** Il faut remplir une déclaration de situation et l’envoyer à la Caf, ou faire la démarche en ligne.
+- **Signale les changements** (séparation, chômage, déménagement) rapidement pour éviter des rappels de sommes.
 
 ## Questions fréquentes
 **Je n’ai qu’un enfant : n’ai-je droit à rien ?** Les allocations familiales commencent à 2 enfants, mais d’autres aides existent pour un premier enfant, comme la prime à la naissance ou l’allocation de base, sous conditions de ressources.
 
-**Nos enfants vivent en résidence alternée : qui touche les allocations ?** Le partage des allocations entre parents séparés obéit à des règles spécifiques ; Service-Public y consacre une fiche dédiée. Parlez-en avec votre Caf.
+**Nos enfants vivent en résidence alternée : qui touche les allocations ?** Le partage des allocations entre parents séparés obéit à des règles spécifiques ; Service-Public y consacre une fiche dédiée. Parles-en avec ta Caf.
 
 **Mon aîné va avoir 20 ans : allons-nous perdre une partie des allocations ?** Oui, il cessera d’être compté. Dans une famille d’au moins 3 enfants, le forfait temporaire peut amortir la baisse pendant un an, si les conditions sont réunies.
 
 ## Quand demander conseil
-En cas de doute sur votre tranche, de changement de situation ou de séjour prolongé à l’étranger, contactez votre Caf ou votre MSA, ou Allô Service Public. ${SOS}
+En cas de doute sur ta tranche, de changement de situation ou de séjour prolongé à l’étranger, contacte ta Caf ou ta MSA, ou Allô Service Public. ${SOS}
 
 ${END}`,
   },
@@ -166,28 +166,28 @@ ${END}`,
 ## Comprendre
 **Pourquoi « à partir de 3 ans » ?** Tant qu’un enfant a moins de 3 ans, c’est l’allocation de base qui peut être versée, et les deux aides ne se cumulent pas. Le complément familial prend donc souvent le relais quand le plus jeune souffle ses 3 bougies.
 
-**Les plafonds 2026.** Ils sont calculés sur le revenu net catégoriel de 2024. Pour 3 enfants, Service-Public affiche un plafond de 44 735 € pour un couple à un revenu et de 54 724 € pour un couple à deux revenus ou un parent isolé, avec 7 456 € de plus par enfant supplémentaire. Si vous dépassez de peu le plafond, une allocation différentielle peut être versée.
+**Les plafonds 2026.** Ils sont calculés sur le revenu net catégoriel de 2024. Pour 3 enfants, Service-Public affiche un plafond de 44 735 € pour un couple à un revenu et de 54 724 € pour un couple à deux revenus ou un parent isolé, avec 7 456 € de plus par enfant supplémentaire. Si tu dépasses de peu le plafond, une allocation différentielle peut être versée.
 
-**Les montants affichés.** La page indique 297,27 € par mois pour les ressources les plus faibles et 198,16 € pour les ressources intermédiaires, jusqu’au plafond. Les seuils précis dépendent de votre situation (un ou deux revenus, parent isolé, nombre d’enfants).
+**Les montants affichés.** La page indique 297,27 € par mois pour les ressources les plus faibles et 198,16 € pour les ressources intermédiaires, jusqu’au plafond. Les seuils précis dépendent de ta situation (un ou deux revenus, parent isolé, nombre d’enfants).
 
 **Pas de démarche en principe.** Les services fiscaux transmettent les informations à la Caf ou à la MSA. Une déclaration n’est nécessaire que si cette transmission n’a pas eu lieu.
 
 ## Au quotidien
-- **Vérifiez votre espace Caf** dans les mois qui suivent les 3 ans du plus jeune : le complément familial doit apparaître si vous y avez droit.
-- **Déclarez vos revenus chaque année** aux impôts : c’est cette déclaration qui permet le calcul.
-- **Signalez les changements familiaux** (naissance, séparation, mariage, chômage) pour que vos droits soient revus.
-- **Faites une simulation** sur caf.fr si vos revenus ont changé.
-- **Gardez une vue d’ensemble** : allocations familiales, complément familial et allocation de rentrée scolaire peuvent coexister, chacune avec ses propres règles.
+- **Vérifie ton espace Caf** dans les mois qui suivent les 3 ans du plus jeune : le complément familial doit apparaître si tu y as droit.
+- **Déclare tes revenus chaque année** aux impôts : c’est cette déclaration qui permet le calcul.
+- **Signale les changements familiaux** (naissance, séparation, mariage, chômage) pour que tes droits soient revus.
+- **Fais une simulation** sur caf.fr si tes revenus ont changé.
+- **Garde une vue d’ensemble** : allocations familiales, complément familial et allocation de rentrée scolaire peuvent coexister, chacune avec ses propres règles.
 
 ## Questions fréquentes
-**Mon 4e enfant vient de naître : le complément familial s’arrête-t-il ?** Tous les enfants pris en compte doivent avoir au moins 3 ans. Avec un nouveau bébé, c’est l’allocation de base qui peut être étudiée pour lui, et les deux ne se cumulent pas. Faites le point avec votre Caf.
+**Mon 4e enfant vient de naître : le complément familial s’arrête-t-il ?** Tous les enfants pris en compte doivent avoir au moins 3 ans. Avec un nouveau bébé, c’est l’allocation de base qui peut être étudiée pour lui, et les deux ne se cumulent pas. Fais le point avec ta Caf.
 
-**Je n’ai rien reçu alors que mes trois enfants ont plus de 3 ans.** Vérifiez que vos revenus ont bien été transmis et que vous êtes sous le plafond. Si besoin, faites une déclaration auprès de la Caf ou de la MSA.
+**Je n’ai rien reçu alors que mes trois enfants ont plus de 3 ans.** Vérifie que tes revenus ont bien été transmis et que tu es sous le plafond. Si besoin, fais une déclaration auprès de la Caf ou de la MSA.
 
 **Les règles sont-elles les mêmes outre-mer ?** Non, les conditions et montants diffèrent dans les départements d’outre-mer.
 
 ## Quand demander conseil
-Votre Caf ou votre MSA peut vérifier votre dossier et vous expliquer le calcul. Si vous rencontrez des difficultés financières, le service social de la Caf ou le centre communal d’action sociale (CCAS) de votre mairie peut vous accompagner. ${SOS}
+Ta Caf ou ta MSA peut vérifier ton dossier et t’expliquer le calcul. Si tu rencontres des difficultés financières, le service social de la Caf ou le centre communal d’action sociale (CCAS) de ta mairie peut t’accompagner. ${SOS}
 
 ${END}`,
   },
@@ -214,18 +214,18 @@ ${END}`,
 ## Comprendre
 **La condition d’activité.** En couple, il suffit en principe qu’un des deux travaille ; un parent seul doit travailler. Des exceptions existent (études, service civique, AAH, RSA avec inscription comme demandeur d’emploi, ASS). Les indemnités journalières, le chômage indemnisé et la formation rémunérée sont assimilés à une activité.
 
-**Le nouveau calcul.** Le CMG est désormais calculé à partir de vos ressources mensuelles, du nombre d’enfants à charge, du coût horaire (salaire et indemnités d’entretien et de repas pour une assistante maternelle, dans la limite d’un plafond horaire) et du nombre d’heures. Si la réforme a fait baisser votre montant, un complément peut être versé automatiquement sous conditions (recours suffisant à la garde entre mars et mai 2025 et ressources sous un plafond).
+**Le nouveau calcul.** Le CMG est désormais calculé à partir de tes ressources mensuelles, du nombre d’enfants à charge, du coût horaire (salaire et indemnités d’entretien et de repas pour une assistante maternelle, dans la limite d’un plafond horaire) et du nombre d’heures. Si la réforme a fait baisser ton montant, un complément peut être versé automatiquement sous conditions (recours suffisant à la garde entre mars et mai 2025 et ressources sous un plafond).
 
 **Les cotisations.** Elles sont prises en charge à 100 % pour une assistante maternelle agréée et à 50 % pour une garde à domicile, dans la limite d’un plafond.
 
 **Les cumuls.** Le CMG peut se cumuler avec la PreParE en cas de temps partiel. Il ne se cumule pas, pour un même enfant, avec le congé supplémentaire de naissance, sauf pour les enfants nés entre le 1er janvier et le 30 juin 2026.
 
 ## Au quotidien
-- **Faites une simulation** avant de signer un contrat : le simulateur officiel tient compte du nouveau calcul.
-- **Inscrivez-vous comme employeur sur Pajemploi**, puis déclarez chaque mois la rémunération. Pajemploi calcule le CMG et vous indique ce qui reste à payer.
-- **Pensez à l’option Pajemploi+** : avec l’accord de votre salarié, Pajemploi prélève le reste à charge et verse le salaire, ce qui évite d’avancer la totalité.
-- **Faites la première demande** auprès de la Caf (avec un compte) ou de la MSA.
-- **Signalez vos changements** (naissance, séparation, chômage, déménagement) : ils peuvent modifier le calcul.
+- **Fais une simulation** avant de signer un contrat : le simulateur officiel tient compte du nouveau calcul.
+- **Inscris-toi comme employeur sur Pajemploi**, puis déclare chaque mois la rémunération. Pajemploi calcule le CMG et t’indique ce qui reste à payer.
+- **Pense à l’option Pajemploi+** : avec l’accord de ton salarié, Pajemploi prélève le reste à charge et verse le salaire, ce qui évite d’avancer la totalité.
+- **Fais la première demande** auprès de la Caf (avec un compte) ou de la MSA.
+- **Signale tes changements** (naissance, séparation, chômage, déménagement) : ils peuvent modifier le calcul.
 
 ## Questions fréquentes
 **Le CMG est-il versé dès le premier mois ?** Il peut être versé à partir du mois précédant la demande, si les conditions sont remplies. Il s’arrête le mois civil suivant celui où une condition n’est plus remplie.
@@ -235,7 +235,7 @@ ${END}`,
 **La micro-crèche est-elle concernée ?** Pas par le CMG emploi direct : la micro-crèche relève du « CMG structure », qui a ses propres règles.
 
 ## Quand demander conseil
-Pour un calcul précis, contactez votre Caf ou votre MSA, Pajemploi pour les déclarations, ou le relais petite enfance de votre commune, qui accompagne parents et assistantes maternelles. ${SOS}
+Pour un calcul précis, contacte ta Caf ou ta MSA, Pajemploi pour les déclarations, ou le relais petite enfance de ta commune, qui accompagne parents et assistantes maternelles. ${SOS}
 
 ${END}`,
   },
@@ -244,12 +244,12 @@ ${END}`,
     category: 'ecole-garde',
     slug: 'cmg-structure-micro-creche-organisme-habilite',
     title: 'Micro-crèche ou organisme de garde à domicile : le CMG « structure » expliqué',
-    summary: 'Quand votre enfant est gardé en micro-crèche ou par un organisme habilité, le CMG structure peut couvrir jusqu’à 85 % des frais, dans la limite de plafonds.',
+    summary: 'Quand ton enfant est gardé en micro-crèche ou par un organisme habilité, le CMG structure peut couvrir jusqu’à 85 % des frais, dans la limite de plafonds.',
     journeys: ['newborn', 'child'],
     tags: ['CMG structure', 'micro-crèche', 'organisme agréé', 'garde à domicile', 'horaires atypiques', 'AEEH', 'Caf'],
     max_age_months: 72,
     sources: [S.spCMGs],
-    body_md: `Toutes les solutions d’accueil ne sont pas financées de la même manière. Quand votre enfant est accueilli dans une micro-crèche ou gardé chez vous par une association ou une entreprise agréée, une aide spécifique peut réduire la facture : le complément de libre choix du mode de garde (CMG) dit « structure ».
+    body_md: `Toutes les solutions d’accueil ne sont pas financées de la même manière. Quand ton enfant est accueilli dans une micro-crèche ou gardé chez toi par une association ou une entreprise agréée, une aide spécifique peut réduire la facture : le complément de libre choix du mode de garde (CMG) dit « structure ».
 
 ## En bref
 - Le CMG structure concerne la garde en micro-crèche (12 places au plus, facturant au plus 10 € de l’heure) ou par une association ou entreprise agréée employant des salariés à domicile.
@@ -261,18 +261,18 @@ ${END}`,
 ## Comprendre
 **La condition d’activité.** Comme pour le CMG emploi direct, il faut en principe qu’un des deux parents travaille (ou le parent seul), avec des exceptions et des situations assimilées (indemnités journalières, chômage indemnisé, formation rémunérée).
 
-**Les plafonds.** Service-Public cite par exemple, pour un enfant de moins de 3 ans, un plafond allant jusqu’à 992,12 € par mois pour un couple aux ressources les plus faibles et jusqu’à 1 289,77 € pour un parent isolé. Ils varient selon que l’enfant a moins de 3 ans ou de 3 à 6 ans, et selon vos revenus.
+**Les plafonds.** Service-Public cite par exemple, pour un enfant de moins de 3 ans, un plafond allant jusqu’à 992,12 € par mois pour un couple aux ressources les plus faibles et jusqu’à 1 289,77 € pour un parent isolé. Ils varient selon que l’enfant a moins de 3 ans ou de 3 à 6 ans, et selon tes revenus.
 
 **Les majorations.** Elles s’ajoutent sans dépasser 85 % des frais : +10 % pour une garde en horaires atypiques (au moins 25 heures par mois le soir, la nuit, le dimanche ou les jours fériés), +30 % si un parent perçoit l’AAH, +30 % si l’enfant ouvre droit à l’AEEH.
 
-**Le temps partiel.** Le CMG structure peut se cumuler avec la PreParE. Si vous travaillez à 50 % ou moins, il est divisé par deux ; entre 50 % et 80 %, il est versé en totalité. Il n’est pas possible si vous avez cessé toute activité.
+**Le temps partiel.** Le CMG structure peut se cumuler avec la PreParE. Si tu travailles à 50 % ou moins, il est divisé par deux ; entre 50 % et 80 %, il est versé en totalité. Il n’est pas possible si tu as cessé toute activité.
 
 ## Au quotidien
-- **Demandez à la structure son mode de financement** : applique-t-elle le barème de la Caf, ou fixe-t-elle ses tarifs en relevant du CMG structure ? Votre Caf pourra vous le confirmer.
-- **Comparez le reste à charge** plutôt que le tarif affiché : faites la simulation officielle avec le tarif horaire et le nombre d’heures prévus.
-- **Faites la demande à la Caf** (ou à la MSA, dans le premier mois de garde, avec le certificat rempli par la micro-crèche).
-- **Fournissez chaque mois** l’attestation de garde ou la facture acquittée.
-- **Gardez vos factures** : elles serviront aussi pour la déclaration de revenus et le crédit d’impôt.
+- **Demande à la structure son mode de financement** : applique-t-elle le barème de la Caf, ou fixe-t-elle ses tarifs en relevant du CMG structure ? Ta Caf pourra te le confirmer.
+- **Compare le reste à charge** plutôt que le tarif affiché : fais la simulation officielle avec le tarif horaire et le nombre d’heures prévus.
+- **Fais la demande à la Caf** (ou à la MSA, dans le premier mois de garde, avec le certificat rempli par la micro-crèche).
+- **Fournis chaque mois** l’attestation de garde ou la facture acquittée.
+- **Garde tes factures** : elles serviront aussi pour la déclaration de revenus et le crédit d’impôt.
 
 ## Questions fréquentes
 **Le CMG est-il versé pour chacun de mes enfants ?** En micro-crèche, il est versé par enfant gardé. Pour un organisme de garde à domicile, il est identique quel que soit le nombre d’enfants.
@@ -282,7 +282,7 @@ ${END}`,
 **Puis-je aussi bénéficier du crédit d’impôt ?** Les frais de garde hors du domicile peuvent ouvrir droit à un crédit d’impôt, après déduction du CMG perçu.
 
 ## Quand demander conseil
-Votre Caf ou votre MSA, ainsi que le relais petite enfance de votre commune, peuvent vous aider à comparer les solutions. ${SOS}
+Ta Caf ou ta MSA, ainsi que le relais petite enfance de ta commune, peuvent t’aider à comparer les solutions. ${SOS}
 
 ${END}`,
   },
@@ -291,7 +291,7 @@ ${END}`,
     category: 'ecole-garde',
     slug: 'tarif-creche-calcul-participation-familiale',
     title: 'Combien coûte une place en crèche ? Comprendre le calcul du tarif horaire',
-    summary: 'Dans les crèches financées par la Caf, le tarif horaire dépend de vos ressources et du nombre d’enfants à charge, selon un barème national avec un plancher et un plafond.',
+    summary: 'Dans les crèches financées par la Caf, le tarif horaire dépend de tes ressources et du nombre d’enfants à charge, selon un barème national avec un plancher et un plafond.',
     journeys: ['pregnant', 'newborn', 'child'],
     tags: ['tarif crèche', 'prix crèche', 'barème Caf', 'taux d’effort', 'PSU', 'participation familiale', 'crèche familiale', 'micro-crèche'],
     max_age_months: 72,
@@ -300,9 +300,9 @@ ${END}`,
 
 ## En bref
 - Dans les crèches conventionnées par la Caf, le tarif horaire est calculé selon un barème national appelé « taux d’effort ».
-- Il s’applique à vos ressources mensuelles et diminue quand le nombre d’enfants à charge augmente.
+- Il s’applique à tes ressources mensuelles et diminue quand le nombre d’enfants à charge augmente.
 - Un plancher et un plafond de ressources encadrent le calcul.
-- Selon son mode de financement, une micro-crèche applique ce barème ou fixe ses propres tarifs : dans ce second cas, renseignez-vous sur le CMG structure.
+- Selon son mode de financement, une micro-crèche applique ce barème ou fixe ses propres tarifs : dans ce second cas, renseigne-toi sur le CMG structure.
 - ${VERIF}
 
 ## Comprendre
@@ -315,21 +315,21 @@ ${END}`,
 **Les ressources utilisées.** Pour les allocataires, la crèche consulte les ressources connues de la Caf. Il est donc utile de signaler tout changement de situation à la Caf, puis d’en informer la crèche.
 
 ## Au quotidien
-- **Lisez le règlement de fonctionnement** de la crèche : il précise les modalités de facturation, le plafond appliqué et ce qui est compris.
-- **Faites votre propre estimation** avec vos ressources mensuelles et le taux qui correspond à votre nombre d’enfants.
-- **Prévenez la Caf de vos changements** (naissance, séparation, perte d’emploi) : la crèche attend la mise à jour avant de modifier le tarif.
-- **Demandez comment sont comptées les heures** réservées, les absences et les jours de fermeture.
-- **Pensez au crédit d’impôt** pour frais de garde hors du domicile, qui peut réduire encore le coût réel.
+- **Lis le règlement de fonctionnement** de la crèche : il précise les modalités de facturation, le plafond appliqué et ce qui est compris.
+- **Fais ta propre estimation** avec tes ressources mensuelles et le taux qui correspond à ton nombre d’enfants.
+- **Préviens la Caf de tes changements** (naissance, séparation, perte d’emploi) : la crèche attend la mise à jour avant de modifier le tarif.
+- **Demande comment sont comptées les heures** réservées, les absences et les jours de fermeture.
+- **Pense au crédit d’impôt** pour frais de garde hors du domicile, qui peut réduire encore le coût réel.
 
 ## Questions fréquentes
 **Pourquoi mon tarif a-t-il changé en janvier ?** Le barème et les ressources de référence sont revus chaque année. Une naissance ou un changement de revenus peut aussi modifier le tarif.
 
-**Les repas et les couches sont-ils compris ?** Le barème lu ne le précise pas : cette information figure dans le règlement de la crèche. Posez la question lors de l’inscription.
+**Les repas et les couches sont-ils compris ?** Le barème lu ne le précise pas : cette information figure dans le règlement de la crèche. Pose la question lors de l’inscription.
 
-**Je ne suis pas allocataire : comment est calculé mon tarif ?** Le barème indique que la structure retient alors le revenu brut imposable figurant sur votre avis d’imposition, avant l’abattement de 10 %. Sans justificatif, le plafond peut être appliqué.
+**Je ne suis pas allocataire : comment est calculé mon tarif ?** Le barème indique que la structure retient alors le revenu brut imposable figurant sur ton avis d’imposition, avant l’abattement de 10 %. Sans justificatif, le plafond peut être appliqué.
 
 ## Quand demander conseil
-La direction de la crèche, le relais petite enfance ou le service petite enfance de votre mairie peuvent expliquer votre facture. En cas de difficultés de paiement, parlez-en tôt à la structure et au service social de votre Caf ou de votre mairie. ${SOS}
+La direction de la crèche, le relais petite enfance ou le service petite enfance de ta mairie peuvent expliquer ta facture. En cas de difficultés de paiement, parles-en tôt à la structure et au service social de ta Caf ou de ta mairie. ${SOS}
 
 ${END}`,
   },
@@ -342,7 +342,7 @@ ${END}`,
     tags: ['crédit d’impôt', 'frais de garde', 'crèche', 'assistante maternelle', 'impôts', 'déclaration de revenus', 'garde alternée', 'Pajemploi'],
     max_age_months: 72,
     sources: [S.spF8, S.spCMG],
-    body_md: `Si votre enfant est gardé par une assistante maternelle agréée ou dans une crèche, une partie de ce que vous payez peut vous revenir grâce à l’impôt sur le revenu. Ce crédit d’impôt bénéficie aussi aux foyers non imposables, puisque l’excédent est remboursé.
+    body_md: `Si ton enfant est gardé par une assistante maternelle agréée ou dans une crèche, une partie de ce que tu paies peut te revenir grâce à l’impôt sur le revenu. Ce crédit d’impôt bénéficie aussi aux foyers non imposables, puisque l’excédent est remboursé.
 
 ## En bref
 - Il concerne les enfants de moins de 6 ans au 1er janvier de l’année d’imposition, gardés hors du domicile.
@@ -352,20 +352,20 @@ ${END}`,
 - ${VERIF}
 
 ## Comprendre
-**Pour quels enfants ?** Pour la déclaration 2026 (revenus 2025), l’enfant doit être né en 2019 ou après et être à votre charge. La garde à domicile relève d’un autre crédit d’impôt, celui de l’emploi d’un salarié à domicile.
+**Pour quels enfants ?** Pour la déclaration 2026 (revenus 2025), l’enfant doit être né en 2019 ou après et être à ta charge. La garde à domicile relève d’un autre crédit d’impôt, celui de l’emploi d’un salarié à domicile.
 
-**Le calcul pas à pas.** Prenez ce que vous avez réellement payé (pour une assistante maternelle : salaire net et cotisations sociales restées à votre charge), retirez le CMG et les aides de l’employeur, retirez les frais de repas. Le crédit correspond à 50 % du résultat, dans la limite du plafond. Service-Public donne l’exemple d’une assistante maternelle payée 4 500 € sur l’année avec 3 500 € de CMG : 1 000 € de dépenses retenues, soit 500 € de crédit.
+**Le calcul pas à pas.** Prends ce que tu as réellement payé (pour une assistante maternelle : salaire net et cotisations sociales restées à ta charge), retire le CMG et les aides de l’employeur, retire les frais de repas. Le crédit correspond à 50 % du résultat, dans la limite du plafond. Service-Public donne l’exemple d’une assistante maternelle payée 4 500 € sur l’année avec 3 500 € de CMG : 1 000 € de dépenses retenues, soit 500 € de crédit.
 
 **En garde alternée.** Les plafonds sont divisés par deux pour chaque parent : 1 750 € de dépenses et 875 € de crédit au maximum par enfant.
 
 **Le versement.** Une avance de 60 %, calculée sur l’année précédente, est versée en janvier ; le solde arrive l’été après la déclaration. Si l’avance était trop élevée, le trop-perçu est repris en septembre.
 
 ## Au quotidien
-- **Téléchargez l’attestation fiscale Pajemploi** depuis votre espace en ligne si vous employez une assistante maternelle.
-- **Demandez une attestation annuelle** à la crèche ou au centre de loisirs.
-- **Conservez les justificatifs** sans les joindre : l’administration peut les demander. Un paiement en espèces n’est pas accepté comme justificatif.
-- **Vérifiez les montants préremplis** sur votre déclaration.
-- **Anticipez l’avance de janvier** : si vous arrêtez la garde, une avance calculée sur l’année précédente peut être trop élevée, et le trop-perçu sera repris en septembre.
+- **Télécharge l’attestation fiscale Pajemploi** depuis ton espace en ligne si tu emploies une assistante maternelle.
+- **Demande une attestation annuelle** à la crèche ou au centre de loisirs.
+- **Conserve les justificatifs** sans les joindre : l’administration peut les demander. Un paiement en espèces n’est pas accepté comme justificatif.
+- **Vérifie les montants préremplis** sur ta déclaration.
+- **Anticipe l’avance de janvier** : si tu arrêtes la garde, une avance calculée sur l’année précédente peut être trop élevée, et le trop-perçu sera repris en septembre.
 
 ## Questions fréquentes
 **Je ne paie pas d’impôt : ai-je droit au crédit ?** Oui, si le crédit dépasse l’impôt dû, l’excédent est restitué.
@@ -374,10 +374,10 @@ ${END}`,
 
 **La cantine du périscolaire compte-t-elle ?** Non, les frais de repas sont exclus. Seuls les frais de garde sont retenus.
 
-**Une avance immédiate existe-t-elle ?** Service-Public mentionne une avance immédiate annoncée à partir de septembre 2027 ; vérifiez la fiche à jour avant d’en tenir compte.
+**Une avance immédiate existe-t-elle ?** Service-Public mentionne une avance immédiate annoncée à partir de septembre 2027 ; vérifie la fiche à jour avant d’en tenir compte.
 
 ## Quand demander conseil
-Votre centre des finances publiques, la messagerie de votre espace sur impots.gouv.fr ou Allô Service Public peuvent répondre à vos questions. ${SOS}
+Ton centre des finances publiques, la messagerie de ton espace sur impots.gouv.fr ou Allô Service Public peuvent répondre à tes questions. ${SOS}
 
 ${END}`,
   },
@@ -401,18 +401,18 @@ ${END}`,
 ## Comprendre
 **Quelle différence avec le crédit d’impôt « crèche » ?** La garde hors du domicile (crèche, assistante maternelle) relève d’un crédit plafonné à 3 500 € de dépenses par enfant de moins de 6 ans. La garde au domicile relève du crédit pour l’emploi d’un salarié à domicile, avec des plafonds plus élevés, y compris pour un enfant de plus de 6 ans.
 
-**Le calcul.** Additionnez le salaire et les cotisations payés, retirez le CMG et les autres aides, puis appliquez 50 % dans la limite du plafond. D’autres plafonds existent pour la première année d’emploi direct ou en cas d’invalidité.
+**Le calcul.** Additionne le salaire et les cotisations payés, retire le CMG et les autres aides, puis applique 50 % dans la limite du plafond. D’autres plafonds existent pour la première année d’emploi direct ou en cas d’invalidité.
 
-**L’avance immédiate.** Pour un enfant de plus de 6 ans, en emploi direct avec le Cesu+, vous pouvez opter pour l’avance immédiate : seule la part restant à votre charge est prélevée, avec l’accord du salarié. Pour un enfant de moins de 6 ans, Service-Public indique que cette possibilité est prévue au plus tard le 1er septembre 2027.
+**L’avance immédiate.** Pour un enfant de plus de 6 ans, en emploi direct avec le Cesu+, tu peux opter pour l’avance immédiate : seule la part restant à ta charge est prélevée, avec l’accord du salarié. Pour un enfant de moins de 6 ans, Service-Public indique que cette possibilité est prévue au plus tard le 1er septembre 2027.
 
 **Sans avance immédiate.** Un acompte de 60 % est versé en janvier de l’année suivante, sur la base de l’année précédente, puis le solde arrive à l’été.
 
 ## Au quotidien
-- **Déclarez votre salarié** sur Pajemploi (enfant de moins de 6 ans avec CMG) ou via le Cesu selon votre situation.
-- **En garde partagée**, mettez-vous d’accord par écrit avec l’autre famille sur la répartition des heures et des frais, et vérifiez avec Pajemploi ou le Cesu ce que chaque famille doit déclarer.
-- **Indiquez le type de service** « garde d’enfant » sur votre déclaration de revenus.
-- **Gardez les attestations Urssaf** ou les factures de l’organisme : elles ne sont pas à joindre mais peuvent être demandées. Les paiements en espèces ne sont pas acceptés.
-- **Faites vos comptes sur l’année** : CMG, crédit d’impôt et reste à charge réel.
+- **Déclare ton salarié** sur Pajemploi (enfant de moins de 6 ans avec CMG) ou via le Cesu selon ta situation.
+- **En garde partagée**, mets-toi d’accord par écrit avec l’autre famille sur la répartition des heures et des frais, et vérifie avec Pajemploi ou le Cesu ce que chaque famille doit déclarer.
+- **Indique le type de service** « garde d’enfant » sur ta déclaration de revenus.
+- **Garde les attestations Urssaf** ou les factures de l’organisme : elles ne sont pas à joindre mais peuvent être demandées. Les paiements en espèces ne sont pas acceptés.
+- **Fais tes comptes sur l’année** : CMG, crédit d’impôt et reste à charge réel.
 
 ## Questions fréquentes
 **Je passe par une entreprise de garde d’enfants : ai-je droit au crédit ?** Oui, l’emploi via un organisme ouvre droit au crédit ; l’organisme peut aussi proposer l’avance immédiate et déduire le crédit de sa facture.
@@ -422,7 +422,7 @@ ${END}`,
 **Mon enfant a 7 ans et je l’ai fait garder après l’école : est-ce possible ?** Oui, l’emploi d’un salarié à domicile pour garder un enfant de plus de 6 ans ouvre aussi droit à ce crédit, dans les plafonds prévus.
 
 ## Quand demander conseil
-Pour vos obligations d’employeur, contactez Pajemploi ou le Cesu ; pour l’impôt, votre centre des finances publiques ou Allô Service Public. ${SOS}
+Pour tes obligations d’employeur, contacte Pajemploi ou le Cesu ; pour l’impôt, ton centre des finances publiques ou Allô Service Public. ${SOS}
 
 ${END}`,
   },
@@ -430,12 +430,12 @@ ${END}`,
   {
     ...BASE,
     slug: 'impots-naissance-enfant-a-charge-parts-quotient-familial',
-    title: 'Un bébé arrive : ce qui change pour votre impôt sur le revenu',
-    summary: 'Un enfant à charge augmente le nombre de parts de votre foyer fiscal : demi-part pour les deux premiers, part entière à partir du troisième, avec un avantage plafonné.',
+    title: 'Un bébé arrive : ce qui change pour ton impôt sur le revenu',
+    summary: 'Un enfant à charge augmente le nombre de parts de ton foyer fiscal : demi-part pour les deux premiers, part entière à partir du troisième, avec un avantage plafonné.',
     journeys: ['pregnant', 'newborn', 'child'],
     tags: ['impôts', 'quotient familial', 'demi-part', 'enfant à charge', 'déclaration de revenus', 'parents non mariés', 'garde alternée', 'parent isolé case T'],
     sources: [S.spQF, S.spEnfCharge],
-    body_md: `À l’arrivée d’un enfant, la Caf n’est pas la seule à devoir être informée : votre déclaration de revenus évolue aussi. Un enfant à charge augmente le nombre de parts de votre foyer fiscal, ce qui peut réduire l’impôt. Voici les règles principales.
+    body_md: `À l’arrivée d’un enfant, la Caf n’est pas la seule à devoir être informée : ta déclaration de revenus évolue aussi. Un enfant à charge augmente le nombre de parts de ton foyer fiscal, ce qui peut réduire l’impôt. Voici les règles principales.
 
 ## En bref
 - Un couple marié ou pacsé dispose de 2 parts ; chacun des deux premiers enfants ajoute une demi-part, puis chaque enfant à partir du 3e ajoute une part entière.
@@ -447,7 +447,7 @@ ${END}`,
 ## Comprendre
 **Le quotient familial.** L’impôt est calculé en divisant le revenu imposable par le nombre de parts. Avec un enfant, un couple passe à 2,5 parts ; avec deux enfants, à 3 parts ; avec trois enfants, à 4 parts ; avec quatre, à 5 parts.
 
-**Le plafonnement.** L’administration compare l’impôt calculé avec toutes vos parts et l’impôt calculé sur 2 parts diminué du plafond. Si la différence dépasse le plafond, c’est le plafond qui s’applique. Concrètement, au-delà d’un certain niveau de revenus, l’avantage ne progresse plus.
+**Le plafonnement.** L’administration compare l’impôt calculé avec toutes tes parts et l’impôt calculé sur 2 parts diminué du plafond. Si la différence dépasse le plafond, c’est le plafond qui s’applique. Concrètement, au-delà d’un certain niveau de revenus, l’avantage ne progresse plus.
 
 **Qui est à charge ?** Un enfant mineur est rattaché au foyer fiscal de ses parents. Pour la déclaration 2026 (revenus 2025), un enfant né en 2007 ou après est considéré comme mineur à charge.
 
@@ -458,20 +458,20 @@ ${END}`,
 **Parent isolé.** Le parent qui vit seul avec son enfant à charge peut bénéficier d’une demi-part supplémentaire en cochant la case T de sa déclaration.
 
 ## Au quotidien
-- **Ajoutez l’enfant** sur votre prochaine déclaration de revenus, dans la rubrique des personnes à charge.
+- **Ajoute l’enfant** sur ta prochaine déclaration de revenus, dans la rubrique des personnes à charge.
 - **Parents non mariés : décidez ensemble** du rattachement, en comparant les deux options si vos revenus sont très différents.
-- **Gardez une trace** des frais de garde : ils ouvrent droit à des crédits d’impôt distincts.
-- **Après une séparation**, mettez à jour votre situation et le mode de résidence des enfants.
+- **Garde une trace** des frais de garde : ils ouvrent droit à des crédits d’impôt distincts.
+- **Après une séparation**, mets à jour ta situation et le mode de résidence des enfants.
 
 ## Questions fréquentes
-**Mon enfant mineur perçoit des revenus : que faire ?** Ses revenus s’ajoutent à ceux du foyer, sauf si vous demandez une imposition distincte. Dans ce cas, il cesse d’être à votre charge fiscale et déclare lui-même ses revenus.
+**Mon enfant mineur perçoit des revenus : que faire ?** Ses revenus s’ajoutent à ceux du foyer, sauf si tu demandes une imposition distincte. Dans ce cas, il cesse d’être à ta charge fiscale et déclare lui-même ses revenus.
 
-**Nous sommes séparés et je verse une pension : puis-je la déduire ?** Le parent qui n’a pas l’enfant à sa charge fiscale peut déduire la pension versée pour l’enfant, dans les conditions prévues. Vérifiez votre cas précis avant de remplir la déclaration.
+**Nous sommes séparés et je verse une pension : puis-je la déduire ?** Le parent qui n’a pas l’enfant à sa charge fiscale peut déduire la pension versée pour l’enfant, dans les conditions prévues. Vérifie ton cas précis avant de remplir la déclaration.
 
 **Pourquoi le troisième enfant compte-t-il double ?** C’est la règle du quotient familial : à partir du 3e enfant, chaque enfant ouvre droit à une part entière.
 
 ## Quand demander conseil
-Pour une situation particulière (enfant handicapé, recomposition familiale, revenus à l’étranger), contactez votre centre des finances publiques, la messagerie de votre espace impots.gouv.fr ou Allô Service Public. ${SOS}
+Pour une situation particulière (enfant handicapé, recomposition familiale, revenus à l’étranger), contacte ton centre des finances publiques, la messagerie de ton espace impots.gouv.fr ou Allô Service Public. ${SOS}
 
 ${END}`,
   },
@@ -494,28 +494,28 @@ ${END}`,
 - ${VERIF}
 
 ## Comprendre
-**Les plafonds 2026.** Ils sont calculés sur le revenu net catégoriel de 2024 : 28 956 € pour un enfant, 35 638 € pour deux, 42 320 € pour trois, puis 6 682 € de plus par enfant supplémentaire (métropole). Si vous dépassez légèrement le plafond, une allocation différentielle dégressive peut être versée.
+**Les plafonds 2026.** Ils sont calculés sur le revenu net catégoriel de 2024 : 28 956 € pour un enfant, 35 638 € pour deux, 42 320 € pour trois, puis 6 682 € de plus par enfant supplémentaire (métropole). Si tu dépasses légèrement le plafond, une allocation différentielle dégressive peut être versée.
 
 **Le calendrier.** En 2026, le versement a commencé le 18 août en métropole (le 4 août à Mayotte). Si une déclaration arrive après cette date, le paiement intervient quelques jours après sa réception par la Caf ou la MSA.
 
 **Les situations particulières.** Un enfant instruit en famille n’ouvre pas droit à l’ARS. Un jeune en apprentissage n’y a pas droit si sa rémunération dépasse un plafond. Pour un enfant confié à l’aide sociale à l’enfance par le juge, l’ARS est placée sur un compte bloqué et remise à l’enfant à sa majorité.
 
 ## Au quotidien
-- **Vérifiez que vos déclarations de revenus** ont bien été transmises à la Caf ou à la MSA : c’est indispensable pour le versement automatique.
-- **Pour un jeune de 16 à 18 ans**, faites la déclaration de scolarité ou d’apprentissage en ligne à partir de mi-juillet.
-- **Votre enfant entre au CP avant 6 ans ?** Si vous n’êtes pas allocataire ou si la Caf le demande, transmettez le certificat de scolarité.
-- **Vous n’êtes pas allocataire ?** Remplissez une déclaration de situation et de ressources auprès de la Caf ou de la MSA.
-- **Préparez un budget de rentrée** avec la liste de fournitures de l’école, et gardez une marge pour les dépenses de septembre (assurance scolaire, cantine, activités).
+- **Vérifie que tes déclarations de revenus** ont bien été transmises à la Caf ou à la MSA : c’est indispensable pour le versement automatique.
+- **Pour un jeune de 16 à 18 ans**, fais la déclaration de scolarité ou d’apprentissage en ligne à partir de mi-juillet.
+- **Ton enfant entre au CP avant 6 ans ?** Si tu n’es pas allocataire ou si la Caf le demande, transmets le certificat de scolarité.
+- **Tu n’es pas allocataire ?** Remplis une déclaration de situation et de ressources auprès de la Caf ou de la MSA.
+- **Prépare un budget de rentrée** avec la liste de fournitures de l’école, et garde une marge pour les dépenses de septembre (assurance scolaire, cantine, activités).
 
 ## Questions fréquentes
 **Mon enfant aura 6 ans après la rentrée : y a-t-il droit ?** Pour la rentrée 2026, l’enfant devait être né au plus tard le 31 décembre 2020. Un enfant plus jeune déjà inscrit au CP peut ouvrir droit à l’ARS sur présentation du certificat de scolarité.
 
-**Je n’ai rien reçu en août.** Vérifiez votre espace Caf ou MSA : une déclaration de revenus manquante ou la déclaration de scolarité d’un jeune de plus de 16 ans peut bloquer le versement. Pensez aussi au délai de votre banque.
+**Je n’ai rien reçu en août.** Vérifie ton espace Caf ou MSA : une déclaration de revenus manquante ou la déclaration de scolarité d’un jeune de plus de 16 ans peut bloquer le versement. Pense aussi au délai de ta banque.
 
-**L’ARS doit-elle servir uniquement aux fournitures ?** Elle est destinée à aider aux dépenses de rentrée. C’est à vous d’organiser son utilisation selon les besoins de vos enfants.
+**L’ARS doit-elle servir uniquement aux fournitures ?** Elle est destinée à aider aux dépenses de rentrée. C’est à toi d’organiser son utilisation selon les besoins de tes enfants.
 
 ## Quand demander conseil
-En cas de refus ou de doute sur votre plafond, contactez votre Caf ou votre MSA. Si la rentrée met votre budget en difficulté, le service social de la Caf, l’assistante sociale de l’établissement scolaire ou le CCAS de votre mairie peuvent vous orienter. ${SOS}
+En cas de refus ou de doute sur ton plafond, contacte ta Caf ou ta MSA. Si la rentrée met ton budget en difficulté, le service social de la Caf, l’assistante sociale de l’établissement scolaire ou le CCAS de ta mairie peuvent t’orienter. ${SOS}
 
 ${END}`,
   },
@@ -548,21 +548,21 @@ ${END}`,
 **Les protections.** L’employeur ne peut ni refuser ni reporter le congé si le délai de prévenance est respecté. Le licenciement est interdit pendant le congé, sauf faute grave ou motif étranger à la naissance. La période compte pour l’ancienneté et, si elle dure au moins 58 jours, valide un trimestre de retraite selon la FAQ.
 
 ## Au quotidien
-- **Prévenez votre employeur au moins 1 mois avant**, par lettre recommandée avec accusé de réception ou remise contre récépissé, en indiquant la durée et l’éventuel fractionnement. Le délai peut être réduit à 15 jours lorsque le congé suit immédiatement un congé paternité ou d’adoption (conditions précisées sur Service-Public).
-- **Utilisez le modèle de lettre** proposé par Service-Public.
-- **Vous n’avez pas de démarche à faire auprès de la CPAM** : l’employeur transmet les éléments, même si la caisse peut demander des pièces.
+- **Préviens ton employeur au moins 1 mois avant**, par lettre recommandée avec accusé de réception ou remise contre récépissé, en indiquant la durée et l’éventuel fractionnement. Le délai peut être réduit à 15 jours lorsque le congé suit immédiatement un congé paternité ou d’adoption (conditions précisées sur Service-Public).
+- **Utilise le modèle de lettre** proposé par Service-Public.
+- **Tu n’as pas de démarche à faire auprès de la CPAM** : l’employeur transmet les éléments, même si la caisse peut demander des pièces.
 - **Organisez-vous à deux** : en même temps pour les premiers mois, ou en relais pour retarder l’entrée en mode de garde.
-- **Faites vos comptes** : l’indemnité est inférieure au salaire, et elle ne se cumule pas avec la PreParE, le chômage ou des indemnités journalières.
+- **Fais tes comptes** : l’indemnité est inférieure au salaire, et elle ne se cumule pas avec la PreParE, le chômage ou des indemnités journalières.
 
 ## Questions fréquentes
-**Puis-je enchaîner avec un congé parental ?** Oui. Le congé supplémentaire de naissance et le congé parental indemnisé par la PreParE ne se cumulent pas, mais ils peuvent se succéder, dans l’ordre de votre choix.
+**Puis-je enchaîner avec un congé parental ?** Oui. Le congé supplémentaire de naissance et le congé parental indemnisé par la PreParE ne se cumulent pas, mais ils peuvent se succéder, dans l’ordre de ton choix.
 
 **Je suis indépendant(e) : comment faire ?** La demande se fait auprès de la CPAM en ligne, avec une attestation de cessation temporaire d’activité ; le montant est calculé à partir d’un forfait journalier.
 
 **Et le CMG pour la nounou pendant ce congé ?** Pour un même enfant, le CMG n’est pas cumulable avec ce congé, sauf pour les enfants nés ou adoptés entre le 1er janvier et le 30 juin 2026.
 
 ## Quand demander conseil
-Ce dispositif est récent : relisez la fiche Service-Public à jour, interrogez votre service des ressources humaines, vos représentants du personnel ou votre CPAM. En cas de refus de l’employeur alors que les conditions sont remplies, un juriste ou le conseil de prud’hommes peut être sollicité. ${SOS}
+Ce dispositif est récent : relis la fiche Service-Public à jour, interroge ton service des ressources humaines, tes représentants du personnel ou ta CPAM. En cas de refus de l’employeur alors que les conditions sont remplies, un juriste ou le conseil de prud’hommes peut être sollicité. ${SOS}
 
 ${END}`,
   },
@@ -570,7 +570,7 @@ ${END}`,
   {
     ...BASE,
     slug: 'choisir-le-nom-de-famille-de-son-enfant',
-    title: 'Quel nom de famille pour votre enfant ? Les règles du choix',
+    title: 'Quel nom de famille pour ton enfant ? Les règles du choix',
     summary: 'Nom du père, de la mère ou les deux accolés : les parents choisissent une seule fois, par déclaration conjointe, et ce choix vaut pour leurs enfants suivants.',
     journeys: ['pregnant', 'newborn'],
     tags: ['nom de famille', 'double nom', 'déclaration conjointe de choix de nom', 'nom du père', 'nom de la mère', 'reconnaissance', 'état civil', 'cerfa 15286'],
@@ -595,21 +595,21 @@ ${END}`,
 **Un changement plus tard.** Si le père reconnaît l’enfant après la déclaration de naissance, les parents peuvent modifier le nom par déclaration conjointe devant l’officier d’état civil. À partir de 13 ans, le consentement de l’enfant est nécessaire.
 
 ## Au quotidien
-- **Parlez-en tôt** : le choix ne s’exerce qu’une fois et vaut pour toute la fratrie.
-- **Remplissez la déclaration conjointe** à l’avance, signée par les deux parents à la même date, et glissez-la dans le dossier de maternité.
-- **Remettez-la lors de la déclaration de naissance**, à la mairie ou au service de la maternité qui s’en charge.
-- **Vérifiez l’orthographe** des noms et prénoms sur l’acte de naissance avant de partir.
+- **Parles-en tôt** : le choix ne s’exerce qu’une fois et vaut pour toute la fratrie.
+- **Remplis la déclaration conjointe** à l’avance, signée par les deux parents à la même date, et glisse-la dans le dossier de maternité.
+- **Remets-la lors de la déclaration de naissance**, à la mairie ou au service de la maternité qui s’en charge.
+- **Vérifie l’orthographe** des noms et prénoms sur l’acte de naissance avant de partir.
 - **Naissance à l’étranger** : la déclaration peut être faite lors de la demande de transcription, dans les 3 ans.
 
 ## Questions fréquentes
-**Peut-on mettre un trait d’union entre les deux noms ?** Service-Public consacre une page à cette question ; renseignez-vous auprès de la mairie, car la présentation sur l’acte suit des règles précises.
+**Peut-on mettre un trait d’union entre les deux noms ?** Service-Public consacre une page à cette question ; renseigne-toi auprès de la mairie, car la présentation sur l’acte suit des règles précises.
 
 **Notre premier enfant porte le nom du père : le second peut-il porter nos deux noms ?** Non, si les deux parents figuraient sur l’acte du premier enfant : le choix initial s’impose aux suivants.
 
 **Et pour un enfant né sans vie ?** Les parents peuvent lui donner un nom de famille, selon les mêmes possibilités ; il figure sur l’acte d’enfant sans vie.
 
 ## Quand demander conseil
-Le service état civil de la mairie répond aux questions pratiques. Pour une situation complexe (filiation contestée, nom étranger, changement de nom), un juriste, un point-justice ou un avocat peut vous éclairer. ${SOS}
+Le service état civil de la mairie répond aux questions pratiques. Pour une situation complexe (filiation contestée, nom étranger, changement de nom), un juriste, un point-justice ou un avocat peut t’éclairer. ${SOS}
 
 ${END}`,
   },
@@ -640,10 +640,10 @@ ${END}`,
 **La mise à jour.** Elle est obligatoire en cas de changement de situation familiale ou d’état civil : naissance d’un autre enfant, mariage, divorce, décès, changement de nom ou de prénom. Elle est gratuite. L’usage d’un livret falsifié ou non mis à jour est passible d’une amende.
 
 ## Au quotidien
-- **À la naissance d’un autre enfant**, présentez le livret, votre pièce d’identité et l’acte de naissance à la mairie du lieu de naissance.
+- **À la naissance d’un autre enfant**, présente le livret, ta pièce d’identité et l’acte de naissance à la mairie du lieu de naissance.
 - **Après un mariage**, l’acte de mariage est inscrit dans le livret existant.
-- **Rangez-le avec les papiers importants** et faites-en une copie numérique pour vos démarches courantes.
-- **Préparez-le avant les démarches** : déclaration de naissance à la Caf, rattachement de l’enfant à la carte Vitale de l’autre parent.
+- **Range-le avec les papiers importants** et fais-en une copie numérique pour tes démarches courantes.
+- **Prépare-le avant les démarches** : déclaration de naissance à la Caf, rattachement de l’enfant à la carte Vitale de l’autre parent.
 - **En cas de séparation**, un second livret peut être demandé.
 
 ## Questions fréquentes
@@ -651,17 +651,17 @@ ${END}`,
 
 **Le livret est-il obligatoire pour que l’enfant voyage ?** Pour une autorisation de sortie du territoire, Service-Public précise que le livret de famille ne peut pas être exigé. Il reste utile pour prouver la filiation dans d’autres démarches.
 
-**J’ai perdu le livret : que faire ?** Un duplicata peut être demandé en cas de perte, de vol ou de destruction ; Service-Public décrit la démarche selon votre situation.
+**J’ai perdu le livret : que faire ?** Un duplicata peut être demandé en cas de perte, de vol ou de destruction ; Service-Public décrit la démarche selon ta situation.
 
 ## Quand demander conseil
-Le service état civil de votre mairie est votre premier interlocuteur. Pour un événement survenu à l’étranger, contactez le Service central d’état civil de Nantes ou le consulat. ${SOS}
+Le service état civil de ta mairie est ton premier interlocuteur. Pour un événement survenu à l’étranger, contacte le Service central d’état civil de Nantes ou le consulat. ${SOS}
 
 ${END}`,
   },
   {
     ...BASE,
     slug: 'autorite-parentale-actes-usuels-et-non-usuels',
-    title: 'Autorité parentale : qui décide quoi pour votre enfant ?',
+    title: 'Autorité parentale : qui décide quoi pour ton enfant ?',
     summary: 'Les parents exercent en principe l’autorité parentale en commun ; certains actes peuvent être faits par un seul parent, d’autres exigent l’accord des deux.',
     journeys: ['newborn', 'child'],
     tags: ['autorité parentale', 'actes usuels', 'actes non usuels', 'accord des deux parents', 'reconnaissance tardive', 'juge aux affaires familiales', 'séparation', 'photos réseaux sociaux'],
@@ -687,21 +687,21 @@ ${END}`,
 **L’exercice exclusif.** Lorsque le juge confie l’autorité à un seul parent, l’autre conserve le droit et le devoir de surveiller l’entretien et l’éducation de l’enfant et doit être informé des choix importants.
 
 ## Au quotidien
-- **Informez l’autre parent** des décisions importantes, même quand un acte est usuel : cela évite bien des conflits.
-- **Mettez-vous d’accord par écrit** sur les sujets sensibles (photos en ligne, activités à risque, voyages).
-- **Gardez les justificatifs** de l’autorité parentale à portée de main : ils sont demandés pour les papiers d’identité de l’enfant.
+- **Informe l’autre parent** des décisions importantes, même quand un acte est usuel : cela évite bien des conflits.
+- **Mets-toi d’accord par écrit** sur les sujets sensibles (photos en ligne, activités à risque, voyages).
+- **Garde les justificatifs** de l’autorité parentale à portée de main : ils sont demandés pour les papiers d’identité de l’enfant.
 - **En cas de désaccord sur un acte usuel**, un parent peut prévenir le professionnel concerné, qui ne pourra plus agir sur la seule demande de l’autre.
 - **En cas de blocage**, le juge aux affaires familiales peut être saisi, sans avocat obligatoire.
 
 ## Questions fréquentes
 **Un seul parent peut-il faire vacciner l’enfant ?** Les vaccins obligatoires et le suivi médical de routine font partie des actes usuels cités par Service-Public.
 
-**Puis-je publier des photos de mon bébé sur les réseaux sociaux ?** La diffusion de photos de l’enfant sur les réseaux sociaux est citée parmi les actes qui nécessitent l’accord des deux parents. Pensez aussi à protéger sa vie privée sur le long terme.
+**Puis-je publier des photos de mon bébé sur les réseaux sociaux ?** La diffusion de photos de l’enfant sur les réseaux sociaux est citée parmi les actes qui nécessitent l’accord des deux parents. Pense aussi à protéger sa vie privée sur le long terme.
 
 **Je vais me séparer : vais-je perdre l’autorité parentale ?** Non, la séparation ne modifie pas en principe l’exercice en commun ; seul le juge peut le confier à un seul parent.
 
 ## Quand demander conseil
-Un point-justice, un avocat ou la médiation familiale peuvent vous aider à trouver un accord. Si vous craignez pour la sécurité de votre enfant, appelez le 119. ${SOS}
+Un point-justice, un avocat ou la médiation familiale peuvent t’aider à trouver un accord. Si tu crains pour la sécurité de ton enfant, appelle le 119. ${SOS}
 
 ${END}`,
   },
@@ -733,11 +733,11 @@ ${END}`,
 **Changer d’organisation.** Si une décision existe déjà, il faut en général justifier de circonstances nouvelles, comme un déménagement ou le souhait exprimé par l’enfant.
 
 ## Au quotidien
-- **Gardez l’enfant à l’écart des conflits** : il doit pouvoir maintenir des relations avec chacun de ses parents, y compris pendant la procédure.
-- **Pensez aux détails pratiques** dans la convention : rythme, vacances, trajets, fêtes, frais de cantine et d’activités, communication entre parents.
-- **Adaptez le rythme à l’âge** : parlez-en avec les professionnels qui suivent votre enfant (pédiatre, PMI, psychologue) si vous hésitez pour un tout-petit.
-- **Prévenez à l’avance en cas de déménagement** : le parent qui déménage doit en informer l’autre.
-- **Pensez aux conséquences administratives** : Caf, impôts, CMG, pension alimentaire.
+- **Garde l’enfant à l’écart des conflits** : il doit pouvoir maintenir des relations avec chacun de ses parents, y compris pendant la procédure.
+- **Pense aux détails pratiques** dans la convention : rythme, vacances, trajets, fêtes, frais de cantine et d’activités, communication entre parents.
+- **Adapte le rythme à l’âge** : parles-en avec les professionnels qui suivent ton enfant (pédiatre, PMI, psychologue) si tu hésites pour un tout-petit.
+- **Préviens à l’avance en cas de déménagement** : le parent qui déménage doit en informer l’autre.
+- **Pense aux conséquences administratives** : Caf, impôts, CMG, pension alimentaire.
 
 ## Questions fréquentes
 **La garde alternée supprime-t-elle la pension alimentaire ?** Pas forcément : une pension peut être fixée en cas d’écart important de revenus entre les parents.
@@ -747,7 +747,7 @@ ${END}`,
 **Faut-il un avocat ?** Pas pour une demande au JAF hors divorce, ni pour l’homologation d’une convention. En divorce judiciaire, l’avocat est obligatoire.
 
 ## Quand demander conseil
-Un médiateur familial, un point-justice, un avocat ou Allô Service Public peuvent vous orienter. En cas de violences conjugales, appelez le 3919 ; en cas de danger immédiat, le 17. ${SOS}
+Un médiateur familial, un point-justice, un avocat ou Allô Service Public peuvent t’orienter. En cas de violences conjugales, appelle le 3919 ; en cas de danger immédiat, le 17. ${SOS}
 
 ${END}`,
   },
@@ -771,27 +771,27 @@ ${END}`,
 ## Comprendre
 **Quand elle s’applique.** Le juge peut l’écarter si les deux parents la refusent expressément, sauf en cas de violences conjugales, où elle est imposée. Elle ne concerne pas les pensions entre ex-époux ni les sommes versées directement à l’enfant.
 
-**Comment la demander.** Si le titre la prévoit, le greffe, l’avocat ou le notaire transmet le dossier : vous n’avez rien à faire. Sinon, la demande se fait en ligne auprès de la Caf ou de la MSA, même sans l’accord de l’autre parent et sans être allocataire. Pendant l’examen, la pension continue d’être versée directement.
+**Comment la demander.** Si le titre la prévoit, le greffe, l’avocat ou le notaire transmet le dossier : tu n’as rien à faire. Sinon, la demande se fait en ligne auprès de la Caf ou de la MSA, même sans l’accord de l’autre parent et sans être allocataire. Pendant l’examen, la pension continue d’être versée directement.
 
 **En cas d’impayé.** Aripa lance d’abord une démarche amiable, puis, si besoin, un recouvrement forcé (paiement direct par l’employeur, la banque, un organisme social ou recouvrement public). Elle peut agir sur les impayés des 5 années précédant la mise en place. Le parent débiteur paie alors des frais de gestion.
 
 **En attendant le recouvrement.** Le parent isolé peut demander l’allocation de soutien familial (ASF), versée dès le premier mois d’impayé si les conditions sont remplies.
 
 ## Au quotidien
-- **Demandez un titre exécutoire** si vous vous êtes mis d’accord oralement : c’est la base de l’intermédiation et du recouvrement.
-- **Gardez une trace** des versements (relevés bancaires) et des impayés éventuels, mois par mois : ces éléments seront utiles à Aripa si un recouvrement devient nécessaire.
-- **Faites la demande en ligne** dès que vous en voyez l’intérêt : elle peut apaiser les échanges, même sans impayé.
-- **Signalez tout changement** (déménagement, nouvelle situation professionnelle, révision de la pension).
+- **Demande un titre exécutoire** si vous vous êtes mis d’accord oralement : c’est la base de l’intermédiation et du recouvrement.
+- **Garde une trace** des versements (relevés bancaires) et des impayés éventuels, mois par mois : ces éléments seront utiles à Aripa si un recouvrement devient nécessaire.
+- **Fais la demande en ligne** dès que tu en vois l’intérêt : elle peut apaiser les échanges, même sans impayé.
+- **Signale tout changement** (déménagement, nouvelle situation professionnelle, révision de la pension).
 
 ## Questions fréquentes
 **Je ne suis pas allocataire de la Caf : puis-je en bénéficier ?** Oui, il n’est pas nécessaire d’être allocataire pour demander l’intermédiation.
 
 **L’autre parent doit-il être d’accord ?** Non, la demande est possible sans son accord.
 
-**L’autre parent ne peut pas payer : que se passe-t-il ?** En cas d’insolvabilité ou d’incarcération, l’intermédiation est suspendue et la Caf ou la MSA peut verser l’ASF si vous y avez droit.
+**L’autre parent ne peut pas payer : que se passe-t-il ?** En cas d’insolvabilité ou d’incarcération, l’intermédiation est suspendue et la Caf ou la MSA peut verser l’ASF si tu y as droit.
 
 ## Quand demander conseil
-Contactez la Caf, la MSA ou le site dédié aux pensions alimentaires. Un point-justice ou un avocat peut vous aider à obtenir un titre exécutoire. En cas de violences, appelez le 3919, et le 17 en cas de danger immédiat. ${SOS}
+Contacte la Caf, la MSA ou le site dédié aux pensions alimentaires. Un point-justice ou un avocat peut t’aider à obtenir un titre exécutoire. En cas de violences, appelle le 3919, et le 17 en cas de danger immédiat. ${SOS}
 
 ${END}`,
   },
@@ -821,24 +821,24 @@ ${END}`,
 
 **Si la pension est faible.** L’ASF différentielle complète la pension jusqu’au montant de l’ASF. Elle n’est pas versée si l’écart est inférieur à 15 €, et elle est payée tous les 3 mois.
 
-**La remise en couple.** Si vous vivez de nouveau en couple, l’ASF est supprimée ; d’autres droits peuvent s’ouvrir, à vérifier avec la Caf.
+**La remise en couple.** Si tu vis de nouveau en couple, l’ASF est supprimée ; d’autres droits peuvent s’ouvrir, à vérifier avec la Caf.
 
 ## Au quotidien
-- **Faites la demande** avec le formulaire de demande d’ASF et la déclaration de situation, avec les justificatifs demandés.
-- **Rassemblez vos documents** : jugement ou convention, relevés montrant les impayés, éléments sur la situation de l’autre parent si vous les avez.
-- **Respectez le délai de 4 mois** si aucune pension n’est fixée : notez-le dans votre agenda.
-- **Signalez vos changements** rapidement, notamment une vie de couple.
-- **Faites le point sur vos autres droits** : allocation de base, CMG, aides au logement, avec une simulation sur caf.fr ou mesdroitssociaux.gouv.fr.
+- **Fais la demande** avec le formulaire de demande d’ASF et la déclaration de situation, avec les justificatifs demandés.
+- **Rassemble tes documents** : jugement ou convention, relevés montrant les impayés, éléments sur la situation de l’autre parent si tu les as.
+- **Respecte le délai de 4 mois** si aucune pension n’est fixée : note-le dans ton agenda.
+- **Signale tes changements** rapidement, notamment une vie de couple.
+- **Fais le point sur tes autres droits** : allocation de base, CMG, aides au logement, avec une simulation sur caf.fr ou mesdroitssociaux.gouv.fr.
 
 ## Questions fréquentes
 **Faut-il être divorcé pour toucher l’ASF ?** Non, il faut élever seul son enfant, sans vie de couple, avec un autre parent qui ne participe pas ou peu à son entretien.
 
-**L’ASF devra-t-elle être remboursée si l’autre parent paie plus tard ?** Lorsque l’ASF est versée en avance sur une pension fixée, la Caf peut agir pour récupérer la pension auprès de l’autre parent. Demandez à votre Caf comment cela s’applique à votre dossier.
+**L’ASF devra-t-elle être remboursée si l’autre parent paie plus tard ?** Lorsque l’ASF est versée en avance sur une pension fixée, la Caf peut agir pour récupérer la pension auprès de l’autre parent. Demande à ta Caf comment cela s’applique à ton dossier.
 
 **À partir de quand est-elle versée ?** À partir du mois qui suit la séparation des parents, si les conditions sont remplies.
 
 ## Quand demander conseil
-Le service social de la Caf propose des rendez-vous gratuits aux parents qui vivent seuls avec leur enfant. Un point-justice peut vous aider à saisir le juge. En cas de violences, appelez le 3919, et le 17 en cas de danger immédiat. ${SOS}
+Le service social de la Caf propose des rendez-vous gratuits aux parents qui vivent seuls avec leur enfant. Un point-justice peut t’aider à saisir le juge. En cas de violences, appelle le 3919, et le 17 en cas de danger immédiat. ${SOS}
 
 ${END}`,
   },
@@ -857,10 +857,10 @@ ${END}`,
 - Certaines aides ont des plafonds plus favorables pour un parent isolé, comme l’allocation de base de la Paje.
 - Le CMG peut aider à financer une crèche, une micro-crèche, une assistante maternelle ou une garde à domicile.
 - La Caf peut collecter la pension alimentaire et proposer un rendez-vous gratuit avec un travailleur social.
-- Certaines communes versent une aide à la naissance : renseignez-vous à la mairie ou au CCAS.
+- Certaines communes versent une aide à la naissance : renseigne-toi à la mairie ou au CCAS.
 
 ## Comprendre
-**Les aides financières à passer en revue.** Service-Public liste notamment : l’ASF, l’allocation de base de la Paje (sous conditions de ressources), les allocations familiales à partir de 2 enfants, la prime de déménagement à partir de 3 enfants, le CMG, la PreParE si vous réduisez ou arrêtez votre activité, l’AJPP en cas de maladie grave de l’enfant, et les aides à la scolarité. La Caf du Nord cite aussi les aides au logement, l’allocation de rentrée scolaire et le RSA, qui peut être revalorisé pour un parent isolé sous conditions.
+**Les aides financières à passer en revue.** Service-Public liste notamment : l’ASF, l’allocation de base de la Paje (sous conditions de ressources), les allocations familiales à partir de 2 enfants, la prime de déménagement à partir de 3 enfants, le CMG, la PreParE si tu réduis ou arrêtes ton activité, l’AJPP en cas de maladie grave de l’enfant, et les aides à la scolarité. La Caf du Nord cite aussi les aides au logement, l’allocation de rentrée scolaire et le RSA, qui peut être revalorisé pour un parent isolé sous conditions.
 
 **Les plafonds adaptés.** Pour l’allocation de base, le plafond d’un parent isolé est le même que celui d’un couple à deux revenus, donc plus élevé que celui d’un couple à un seul revenu. Pour le CMG emploi direct, un parent isolé peut en bénéficier jusqu’aux 12 ans de l’enfant.
 
@@ -869,21 +869,21 @@ ${END}`,
 **L’accompagnement.** La Caf propose des rendez-vous gratuits avec son service social, de l’aide à domicile, la médiation familiale, des espaces de rencontre, et des lieux d’accueil pour la petite enfance. Elle peut aussi délivrer un titre exécutoire fixant une pension, sous conditions.
 
 ## Au quotidien
-- **Déclarez votre situation de parent isolé** à la Caf dès qu’elle change : de nombreux calculs en dépendent.
-- **Faites une simulation globale** sur caf.fr ou mesdroitssociaux.gouv.fr pour repérer les aides auxquelles vous pourriez avoir droit.
-- **Demandez un rendez-vous avec un travailleur social** de la Caf ou du CCAS : il peut vous aider à monter les dossiers et à organiser votre budget.
-- **Organisez un réseau de relais** (famille, amis, voisins, lieux d’accueil enfants-parents) pour souffler.
-- **Gardez un dossier unique** avec vos justificatifs : jugement, relevés de pension, attestations.
+- **Déclare ta situation de parent isolé** à la Caf dès qu’elle change : de nombreux calculs en dépendent.
+- **Fais une simulation globale** sur caf.fr ou mesdroitssociaux.gouv.fr pour repérer les aides auxquelles tu pourrais avoir droit.
+- **Demande un rendez-vous avec un travailleur social** de la Caf ou du CCAS : il peut t’aider à monter les dossiers et à organiser ton budget.
+- **Organise un réseau de relais** (famille, amis, voisins, lieux d’accueil enfants-parents) pour souffler.
+- **Garde un dossier unique** avec tes justificatifs : jugement, relevés de pension, attestations.
 
 ## Questions fréquentes
-**Je suis enceinte et seule : à quoi puis-je prétendre ?** La prime à la naissance et l’allocation de base de la Paje sont étudiées selon vos ressources. Déclarez votre grossesse et faites une simulation. Le parcours « Je deviens parent » de Service-Public liste les démarches étape par étape.
+**Je suis enceinte et seule : à quoi puis-je prétendre ?** La prime à la naissance et l’allocation de base de la Paje sont étudiées selon tes ressources. Déclare ta grossesse et fais une simulation. Le parcours « Je deviens parent » de Service-Public liste les démarches étape par étape.
 
 **L’autre parent n’a pas reconnu l’enfant : ai-je droit à l’ASF ?** Service-Public cite ce cas parmi ceux qui peuvent ouvrir droit à l’ASF, comme le décès de l’autre parent.
 
-**Je retrouve un emploi : vais-je perdre mes aides ?** Certaines aides diminuent quand les revenus augmentent, d’autres (comme le CMG) supposent justement une activité. Faites une simulation avant et après la reprise.
+**Je retrouve un emploi : vais-je perdre mes aides ?** Certaines aides diminuent quand les revenus augmentent, d’autres (comme le CMG) supposent justement une activité. Fais une simulation avant et après la reprise.
 
 ## Quand demander conseil
-Le service social de la Caf, le CCAS de votre mairie et la PMI (pour la grossesse et les tout-petits) sont là pour vous accompagner. Si vous vous sentez à bout, parlez-en à votre médecin ou à votre sage-femme. ${SOS}
+Le service social de la Caf, le CCAS de ta mairie et la PMI (pour la grossesse et les tout-petits) sont là pour t’accompagner. Si tu te sens à bout, parles-en à ton médecin ou à ta sage-femme. ${SOS}
 
 ${END}`,
   },
@@ -896,11 +896,11 @@ ${END}`,
     tags: ['congé enfant malade', 'enfant malade travail', 'jours enfant malade', 'certificat médical', 'salarié', 'convention collective', 'crèche fièvre'],
     max_age_months: 192,
     sources: [S.spEnfMalade],
-    body_md: `Fièvre au réveil, appel de la crèche : la maladie de l’enfant bouscule souvent l’organisation de la journée. Le Code du travail prévoit un congé spécifique pour les salariés du secteur privé, en plus des éventuels arrangements prévus par votre entreprise.
+    body_md: `Fièvre au réveil, appel de la crèche : la maladie de l’enfant bouscule souvent l’organisation de la journée. Le Code du travail prévoit un congé spécifique pour les salariés du secteur privé, en plus des éventuels arrangements prévus par ton entreprise.
 
 ## En bref
-- Le congé concerne un enfant de moins de 16 ans malade ou accidenté, dont vous avez la charge.
-- Durée : 3 jours par an en principe ; 5 jours si l’enfant a moins d’un an ou si vous avez au moins 3 enfants de moins de 16 ans à charge.
+- Le congé concerne un enfant de moins de 16 ans malade ou accidenté, dont tu as la charge.
+- Durée : 3 jours par an en principe ; 5 jours si l’enfant a moins d’un an ou si tu as au moins 3 enfants de moins de 16 ans à charge.
 - Il faut remettre un certificat médical à l’employeur dès que possible.
 - L’employeur ne peut ni le refuser ni le reporter, dans la limite des jours prévus.
 - En principe non rémunéré, sauf convention collective plus favorable (et règles particulières en Alsace-Moselle).
@@ -908,30 +908,30 @@ ${END}`,
 ## Comprendre
 **Aucune condition d’ancienneté.** Le Code du travail ne prévoit pas de condition d’ancienneté : le congé est ouvert dès la période d’essai.
 
-**Une durée minimale.** Les durées du Code du travail sont un minimum : votre convention collective peut prévoir davantage de jours, voire leur rémunération. Service-Public propose un simulateur pour connaître les congés pour événements familiaux prévus par votre convention.
+**Une durée minimale.** Les durées du Code du travail sont un minimum : ta convention collective peut prévoir davantage de jours, voire leur rémunération. Service-Public propose un simulateur pour connaître les congés pour événements familiaux prévus par ta convention.
 
-**Pas d’effet sur les congés payés.** Ces jours n’entament pas vos congés payés acquis.
+**Pas d’effet sur les congés payés.** Ces jours n’entament pas tes congés payés acquis.
 
 **En Alsace-Moselle.** Dans le Bas-Rhin, le Haut-Rhin et la Moselle, le salaire est maintenu pendant ce congé.
 
 **Et si la maladie est grave ?** Pour un enfant atteint d’une maladie, d’un handicap ou d’un accident d’une particulière gravité, d’autres dispositifs existent : le congé de présence parentale et l’allocation journalière de présence parentale (AJPP).
 
 ## Au quotidien
-- **Prévenez votre employeur au plus vite**, puis transmettez le certificat médical (ou sa copie).
-- **Consultez votre convention collective** : nombre de jours, maintien éventuel du salaire.
-- **Alternez entre parents** quand c’est possible : chaque parent salarié bénéficie de ce droit auprès de son propre employeur.
-- **Préparez un plan B** avec des proches ou une solution de garde ponctuelle pour les périodes d’épidémies hivernales.
-- **Renseignez-vous sur les règles d’éviction** de la crèche ou de l’école, qui peuvent demander de garder l’enfant certains jours.
+- **Préviens ton employeur au plus vite**, puis transmets le certificat médical (ou sa copie).
+- **Consulte ta convention collective** : nombre de jours, maintien éventuel du salaire.
+- **Alterne entre parents** quand c’est possible : chaque parent salarié bénéficie de ce droit auprès de son propre employeur.
+- **Prépare un plan B** avec des proches ou une solution de garde ponctuelle pour les périodes d’épidémies hivernales.
+- **Renseigne-toi sur les règles d’éviction** de la crèche ou de l’école, qui peuvent demander de garder l’enfant certains jours.
 
 ## Questions fréquentes
-**Mon employeur peut-il me demander de poser un jour de congé payé à la place ?** Le congé pour enfant malade est un droit, que l’employeur ne peut ni refuser ni reporter dans la limite des jours acquis. Vous pouvez choisir de poser d’autres congés si vous le souhaitez, par exemple pour garder votre salaire.
+**Mon employeur peut-il me demander de poser un jour de congé payé à la place ?** Le congé pour enfant malade est un droit, que l’employeur ne peut ni refuser ni reporter dans la limite des jours acquis. Tu peux choisir de poser d’autres congés si tu le souhaites, par exemple pour garder ton salaire.
 
-**Le télétravail est-il une solution ?** C’est une organisation à discuter avec votre employeur. S’occuper d’un enfant malade et travailler en même temps est souvent difficile : le congé existe pour vous permettre d’être disponible.
+**Le télétravail est-il une solution ?** C’est une organisation à discuter avec ton employeur. S’occuper d’un enfant malade et travailler en même temps est souvent difficile : le congé existe pour te permettre d’être disponible.
 
-**Je suis agent public ou indépendant : les règles sont-elles les mêmes ?** Non, les règles décrites ici concernent les salariés du privé. Renseignez-vous auprès de votre administration ou de votre caisse.
+**Je suis agent public ou indépendant : les règles sont-elles les mêmes ?** Non, les règles décrites ici concernent les salariés du privé. Renseigne-toi auprès de ton administration ou de ta caisse.
 
 ## Quand demander conseil
-Pour la santé de votre enfant, consultez votre médecin ou votre pédiatre ; le soir et le week-end, le médecin de garde ou la pharmacie de garde peuvent vous orienter. En cas d’urgence (difficultés à respirer, enfant inconscient, convulsions), appelez le 15 ou le 112. Pour vos droits, adressez-vous aux ressources humaines, aux représentants du personnel ou à Allô Service Public. ${SOS}
+Pour la santé de ton enfant, consulte ton médecin ou ton pédiatre ; le soir et le week-end, le médecin de garde ou la pharmacie de garde peuvent t’orienter. En cas d’urgence (difficultés à respirer, enfant inconscient, convulsions), appelle le 15 ou le 112. Pour tes droits, adresse-toi aux ressources humaines, aux représentants du personnel ou à Allô Service Public. ${SOS}
 
 ${END}`,
   },
@@ -957,26 +957,26 @@ ${END}`,
 
 **Le montant de l’AJPP.** Service-Public affiche 66,64 € par jour et 33,32 € par demi-journée. Un complément mensuel peut s’ajouter, sous conditions de ressources, si les frais liés à la santé de l’enfant non remboursés dépassent un certain montant.
 
-**Les protections au travail.** Il n’y a pas de condition d’ancienneté, et l’employeur ne peut ni refuser ni reporter le congé. Le licenciement est interdit pendant le congé et pendant les 10 semaines qui suivent, sauf faute grave ou motif étranger. Vous retrouvez votre poste ou un poste similaire, et la période compte pour l’ancienneté.
+**Les protections au travail.** Il n’y a pas de condition d’ancienneté, et l’employeur ne peut ni refuser ni reporter le congé. Le licenciement est interdit pendant le congé et pendant les 10 semaines qui suivent, sauf faute grave ou motif étranger. Tu retrouves ton poste ou un poste similaire, et la période compte pour l’ancienneté.
 
 **Le renouvellement.** À l’issue des 3 ans, ou plus tôt si les 310 jours sont épuisés, un nouveau congé est possible en cas de rechute, de récidive ou de besoin persistant. Depuis février 2024, un nouveau certificat du médecin suffit, sans accord préalable de la Caf.
 
 ## Au quotidien
-- **Écrivez à votre employeur** au moins 10 jours avant le début, par lettre recommandée ou remise contre décharge, avec le certificat médical.
-- **Pour une journée isolée**, prévenez au moins 48 heures à l’avance, sauf aggravation soudaine.
-- **Remplissez le formulaire AJPP** avec le médecin et envoyez-le à la Caf ou à la MSA, puis transmettez chaque mois l’attestation des jours pris.
+- **Écris à ton employeur** au moins 10 jours avant le début, par lettre recommandée ou remise contre décharge, avec le certificat médical.
+- **Pour une journée isolée**, préviens au moins 48 heures à l’avance, sauf aggravation soudaine.
+- **Remplis le formulaire AJPP** avec le médecin et envoie-le à la Caf ou à la MSA, puis transmets chaque mois l’attestation des jours pris.
 - **Coordonnez-vous à deux** et demandez à la Caf ou à la MSA comment les jours peuvent s’organiser entre vous.
-- **Pensez aux autres soutiens** : don de jours de repos par des collègues, assistante sociale de l’hôpital, associations de parents.
+- **Pense aux autres soutiens** : don de jours de repos par des collègues, assistante sociale de l’hôpital, associations de parents.
 
 ## Questions fréquentes
 **L’AJPP se cumule-t-elle avec d’autres aides ?** Non avec plusieurs prestations, dont les indemnités maternité, paternité ou d’adoption, le congé de naissance, la PreParE, l’AAH ou les allocations chômage. Elle peut se cumuler avec l’allocation de base de la Paje.
 
-**Mon enfant a un handicap reconnu : puis-je aussi demander l’AEEH ?** L’AJPP n’est pas cumulable avec le complément d’AEEH pour le même enfant. Faites le point avec la Caf et la MDPH sur la solution la plus adaptée.
+**Mon enfant a un handicap reconnu : puis-je aussi demander l’AEEH ?** L’AJPP n’est pas cumulable avec le complément d’AEEH pour le même enfant. Fais le point avec la Caf et la MDPH sur la solution la plus adaptée.
 
 **Puis-je interrompre le congé plus tôt ?** Oui, en cas de baisse importante des ressources ou de décès de l’enfant, en prévenant l’employeur un mois avant la reprise.
 
 ## Quand demander conseil
-L’assistante sociale du service hospitalier, votre Caf, la MDPH et votre médecin traitant peuvent vous accompagner. Prendre soin de vous compte aussi : parlez de votre fatigue à un professionnel. ${SOS}
+L’assistante sociale du service hospitalier, ta Caf, la MDPH et ton médecin traitant peuvent t’accompagner. Prendre soin de toi compte aussi : parle de ta fatigue à un professionnel. ${SOS}
 
 ${END}`,
   },
@@ -985,7 +985,7 @@ ${END}`,
     ...BASE,
     slug: 'carte-vitale-rattacher-enfant-deux-parents-mutuelle',
     title: 'Carte Vitale, mutuelle, examens remboursés : bien assurer bébé dès la naissance',
-    summary: 'Après la déclaration de naissance, rattachez l’enfant à la carte Vitale des deux parents et prévenez la mutuelle ; les examens de suivi de l’enfant sont pris en charge à 100 %.',
+    summary: 'Après la déclaration de naissance, rattache l’enfant à la carte Vitale des deux parents et préviens la mutuelle ; les examens de suivi de l’enfant sont pris en charge à 100 %.',
     journeys: ['pregnant', 'newborn', 'child'],
     tags: ['carte Vitale', 'rattachement enfant', 'ayant droit', 'mutuelle', 'complémentaire santé', 'ameli', 'examens obligatoires', 'remboursement'],
     max_age_months: 192,
@@ -993,9 +993,9 @@ ${END}`,
     body_md: `Dans le tourbillon des premières semaines, une démarche simple évite bien des soucis : bien inscrire bébé auprès de l’Assurance Maladie et de la complémentaire santé. Ainsi, chaque parent peut l’emmener chez le médecin avec sa propre carte Vitale.
 
 ## En bref
-- Déclarez la naissance à l’Assurance Maladie (ou à la MSA) et à votre mutuelle.
+- Déclare la naissance à l’Assurance Maladie (ou à la MSA) et à ta mutuelle.
 - L’Assurance Maladie conseille d’inscrire l’enfant sur la carte Vitale des deux parents, quelle que soit la situation familiale.
-- Une fois la prise en compte confirmée, mettez la carte Vitale à jour, par exemple en pharmacie.
+- Une fois la prise en compte confirmée, mets la carte Vitale à jour, par exemple en pharmacie.
 - Les 20 examens de suivi médical de l’enfant, jusqu’à 16 ans, sont pris en charge à 100 % sans avance de frais, hors dépassements d’honoraires.
 - Le remboursement arrive sur le compte du parent dont la carte a été utilisée.
 
@@ -1007,21 +1007,21 @@ ${END}`,
 **Les examens de suivi.** Ils s’échelonnent de la naissance à 16 ans, dont trois examens après 6 ans (entre 8 et 9 ans, entre 11 et 13 ans, entre 15 et 16 ans). Ils peuvent être réalisés par un médecin généraliste ou un pédiatre, en cabinet ou en centre de santé, et jusqu’à 6 ans en PMI. Le carnet de santé est à présenter à chaque consultation.
 
 ## Au quotidien
-- **Déclarez la naissance dès le retour à la maison** : c’est la première étape avant le rattachement.
-- **Ajoutez ensuite l’enfant sur la carte de l’autre parent**, pour que chacun puisse consulter avec sa propre carte.
-- **Vérifiez votre contrat de mutuelle** : ajout de l’enfant, délai, garanties enfants (optique, dentaire, dépassements).
-- **Choisissez un médecin pour le suivi** de votre enfant et notez les dates des examens dans le carnet de santé.
-- **Conservez les décomptes** pour suivre les remboursements, surtout si les deux parents ont des mutuelles différentes.
+- **Déclare la naissance dès le retour à la maison** : c’est la première étape avant le rattachement.
+- **Ajoute ensuite l’enfant sur la carte de l’autre parent**, pour que chacun puisse consulter avec sa propre carte.
+- **Vérifie ton contrat de mutuelle** : ajout de l’enfant, délai, garanties enfants (optique, dentaire, dépassements).
+- **Choisis un médecin pour le suivi** de ton enfant et note les dates des examens dans le carnet de santé.
+- **Conserve les décomptes** pour suivre les remboursements, surtout si les deux parents ont des mutuelles différentes.
 
 ## Questions fréquentes
 **Les parents sont séparés : peut-on quand même rattacher l’enfant aux deux ?** Oui, l’Assurance Maladie recommande le rattachement aux deux parents quelle que soit la situation familiale.
 
 **Pourquoi le remboursement arrive-t-il sur le compte de l’autre parent ?** Il est versé sur le compte du parent qui a présenté sa carte Vitale lors de la consultation.
 
-**Les vaccins et examens obligatoires coûtent-ils quelque chose ?** Les examens de suivi sont pris en charge à 100 % sans avance de frais, sauf dépassements d’honoraires. Pour les vaccins, renseignez-vous auprès de votre médecin ou sur ameli.fr.
+**Les vaccins et examens obligatoires coûtent-ils quelque chose ?** Les examens de suivi sont pris en charge à 100 % sans avance de frais, sauf dépassements d’honoraires. Pour les vaccins, renseigne-toi auprès de ton médecin ou sur ameli.fr.
 
 ## Quand demander conseil
-Votre CPAM (par le compte ameli ou en agence), votre mutuelle et la PMI répondent aux questions pratiques. Pour la santé de votre bébé, en cas de doute, appelez votre médecin ; en cas d’urgence, le 15 ou le 112. ${SOS}
+Ta CPAM (par le compte ameli ou en agence), ta mutuelle et la PMI répondent aux questions pratiques. Pour la santé de ton bébé, en cas de doute, appelle ton médecin ; en cas d’urgence, le 15 ou le 112. ${SOS}
 
 ${END}`,
   },
@@ -1033,10 +1033,10 @@ ${END}`,
     journeys: ['pregnant', 'newborn', 'child'],
     tags: ['Complémentaire santé solidaire', 'CSS', 'mutuelle gratuite', 'CMU', 'ACS', 'petits revenus', 'RSA', 'ameli'],
     sources: [S.ameliCSS],
-    body_md: `Une mutuelle coûte cher, surtout quand la famille s’agrandit. Pour les foyers aux ressources modestes, l’Assurance Maladie propose la Complémentaire santé solidaire (CSS). Selon vos revenus, elle est gratuite ou demande une participation limitée.
+    body_md: `Une mutuelle coûte cher, surtout quand la famille s’agrandit. Pour les foyers aux ressources modestes, l’Assurance Maladie propose la Complémentaire santé solidaire (CSS). Selon tes revenus, elle est gratuite ou demande une participation limitée.
 
 ## En bref
-- La CSS complète les remboursements de l’Assurance Maladie et réduit vos frais de santé.
+- La CSS complète les remboursements de l’Assurance Maladie et réduit tes frais de santé.
 - Elle est attribuée selon les ressources du foyer et le nombre de personnes qui le composent.
 - Deux formules existent : sans participation financière, ou avec une participation qui dépend de l’âge de chaque membre (8 € par mois pour une personne de 29 ans ou moins).
 - Les bénéficiaires du RSA y ont droit sans participation, avec une attribution automatique si la demande de RSA a été faite sur caf.fr.
@@ -1049,26 +1049,26 @@ ${END}`,
 
 **La participation.** Elle dépend de l’âge de chacun au 1er janvier : de 8 € par mois (29 ans et moins) à 30 € (70 ans et plus), sans dépasser 1 € par jour et par personne.
 
-**Les salariés.** Vous pouvez demander une dispense d’adhésion à la mutuelle obligatoire de votre employeur pendant la durée de votre droit à la CSS.
+**Les salariés.** Tu peux demander une dispense d’adhésion à la mutuelle obligatoire de ton employeur pendant la durée de ton droit à la CSS.
 
 **Les jeunes parents étudiants.** Pour un étudiant de moins de 25 ans, la demande est en principe faite avec ses parents, mais leurs ressources ne sont pas prises en compte si l’étudiant a ou attend un enfant.
 
 ## Au quotidien
-- **Renseignez-vous auprès de votre CPAM** ou sur ameli.fr avant de résilier ou de souscrire une mutuelle.
-- **Comptez bien les personnes du foyer** : l’arrivée d’un bébé peut faire passer sous un plafond.
-- **Rassemblez vos justificatifs** de ressources des 12 derniers mois.
-- **Notez la date de fin de votre droit** pour anticiper son renouvellement.
-- **Ajoutez votre nouveau-né** à votre dossier CSS après la naissance : votre CPAM vous indiquera la démarche.
+- **Renseigne-toi auprès de ta CPAM** ou sur ameli.fr avant de résilier ou de souscrire une mutuelle.
+- **Compte bien les personnes du foyer** : l’arrivée d’un bébé peut faire passer sous un plafond.
+- **Rassemble tes justificatifs** de ressources des 12 derniers mois.
+- **Note la date de fin de ton droit** pour anticiper son renouvellement.
+- **Ajoute ton nouveau-né** à ton dossier CSS après la naissance : ta CPAM t’indiquera la démarche.
 
 ## Questions fréquentes
-**J’attends un bébé : est-il compté dans le foyer ?** Les règles de composition du foyer sont précisées par votre CPAM ; posez la question lors de la demande, surtout si votre situation change à la naissance.
+**J’attends un bébé : est-il compté dans le foyer ?** Les règles de composition du foyer sont précisées par ta CPAM ; pose la question lors de la demande, surtout si ta situation change à la naissance.
 
-**Je suis allocataire du RSA : dois-je faire une demande ?** Si vous avez fait votre demande de RSA sur caf.fr, l’attribution est automatique, sauf opposition. Sinon, la CPAM vous contacte ou vous pouvez faire la demande.
+**Je suis allocataire du RSA : dois-je faire une demande ?** Si tu as fait ta demande de RSA sur caf.fr, l’attribution est automatique, sauf opposition. Sinon, la CPAM te contacte ou tu peux faire la demande.
 
 **Puis-je garder des garanties en plus ?** Oui, la page de l’Assurance Maladie indique qu’une sur-complémentaire peut être souscrite.
 
 ## Quand demander conseil
-Votre CPAM, le service social de l’Assurance Maladie, le CCAS de votre mairie ou une permanence d’accès aux soins de santé (PASS) à l’hôpital peuvent vous aider. Ne renoncez pas à des soins pour des raisons financières : parlez-en à votre médecin. ${SOS}
+Ta CPAM, le service social de l’Assurance Maladie, le CCAS de ta mairie ou une permanence d’accès aux soins de santé (PASS) à l’hôpital peuvent t’aider. Ne renonce pas à des soins pour des raisons financières : parles-en à ton médecin. ${SOS}
 
 ${END}`,
   },
@@ -1081,7 +1081,7 @@ ${END}`,
     journeys: ['newborn', 'child'],
     tags: ['carte d’identité', 'CNI bébé', 'passeport enfant', 'mairie', 'ANTS', 'prédemande', 'voyage', 'autorité parentale'],
     sources: [S.spCNI, S.spAP],
-    body_md: `Un premier voyage, une inscription, une démarche administrative : vient un jour où il faut une pièce d’identité pour votre enfant. Bonne nouvelle, la carte d’identité d’un mineur est gratuite et peut être demandée dès la naissance. Voici comment s’y préparer.
+    body_md: `Un premier voyage, une inscription, une démarche administrative : vient un jour où il faut une pièce d’identité pour ton enfant. Bonne nouvelle, la carte d’identité d’un mineur est gratuite et peut être demandée dès la naissance. Voici comment s’y préparer.
 
 ## En bref
 - Tout mineur français peut obtenir une carte d’identité, quel que soit son âge, y compris un bébé.
@@ -1091,20 +1091,20 @@ ${END}`,
 - Les empreintes digitales sont prises à partir de 12 ans.
 
 ## Comprendre
-**La prédemande en ligne.** Elle est facultative mais fait gagner du temps au guichet. Vous recevez un numéro ou un QR code à présenter.
+**La prédemande en ligne.** Elle est facultative mais fait gagner du temps au guichet. Tu reçois un numéro ou un QR code à présenter.
 
 **Les pièces à apporter (originaux).** Une photo d’identité de moins de 6 mois conforme aux normes, la pièce d’identité du parent et un justificatif de domicile à son nom, le passeport de l’enfant s’il en a un. Sans passeport, un extrait d’acte de naissance de moins de 3 mois peut être demandé, sauf si la commune de naissance a dématérialisé l’état civil.
 
 **Les situations familiales particulières.** En cas de séparation, de résidence alternée ou d’autorité parentale exclusive, des justificatifs complémentaires sont demandés (jugement, justificatif de résidence alternée…). Le parent doit pouvoir prouver qu’il exerce l’autorité parentale. La demande d’un titre d’identité fait partie des démarches administratives courantes.
 
-**Le délai.** La carte est fabriquée ailleurs : comptez plusieurs semaines, davantage avant les vacances. Le suivi se fait sur le site de l’ANTS, avec un SMS si vous avez donné un numéro.
+**Le délai.** La carte est fabriquée ailleurs : compte plusieurs semaines, davantage avant les vacances. Le suivi se fait sur le site de l’ANTS, avec un SMS si tu as donné un numéro.
 
 ## Au quotidien
-- **Anticipez de plusieurs semaines, voire plusieurs mois** avant un voyage, surtout à l’approche des vacances.
-- **Prenez rendez-vous** dans une mairie équipée, pas forcément celle de votre domicile.
-- **Faites la photo avec soin** : même pour un bébé, elle doit respecter les normes officielles. Demandez conseil au photographe.
-- **Retirez la carte dans les 3 mois** après sa mise à disposition, sinon elle est détruite. À partir de 12 ans, l’enfant doit être présent au retrait.
-- **Rangez la carte avec le livret de famille** et le carnet de santé dans votre dossier « papiers de l’enfant ».
+- **Anticipe de plusieurs semaines, voire plusieurs mois** avant un voyage, surtout à l’approche des vacances.
+- **Prends rendez-vous** dans une mairie équipée, pas forcément celle de ton domicile.
+- **Fais la photo avec soin** : même pour un bébé, elle doit respecter les normes officielles. Demande conseil au photographe.
+- **Retire la carte dans les 3 mois** après sa mise à disposition, sinon elle est détruite. À partir de 12 ans, l’enfant doit être présent au retrait.
+- **Range la carte avec le livret de famille** et le carnet de santé dans ton dossier « papiers de l’enfant ».
 
 ## Questions fréquentes
 **Faut-il les deux parents au guichet ?** La fiche indique que le mineur doit être accompagné de son représentant légal, qui doit exercer l’autorité parentale et pouvoir le prouver.
@@ -1114,19 +1114,19 @@ ${END}`,
 **Mon enfant voyage sans nous : la carte suffit-elle ?** Non, s’il quitte la France sans un titulaire de l’autorité parentale, il lui faut aussi une autorisation de sortie du territoire.
 
 ## Quand demander conseil
-La mairie, le site de l’ANTS ou Allô Service Public répondent à vos questions. En cas de conflit entre parents sur un voyage ou un titre d’identité, un point-justice ou un avocat peut vous orienter. ${SOS}
+La mairie, le site de l’ANTS ou Allô Service Public répondent à tes questions. En cas de conflit entre parents sur un voyage ou un titre d’identité, un point-justice ou un avocat peut t’orienter. ${SOS}
 
 ${END}`,
   },
   {
     ...BASE,
     slug: 'autorisation-de-sortie-du-territoire-enfant-sans-parent',
-    title: 'Votre enfant part à l’étranger sans vous : l’autorisation de sortie du territoire',
+    title: 'Ton enfant part à l’étranger sans toi : l’autorisation de sortie du territoire',
     summary: 'Un mineur qui quitte la France sans un titulaire de l’autorité parentale doit avoir une autorisation de sortie du territoire (AST), remplie et signée par un parent.',
     journeys: ['newborn', 'child'],
     tags: ['autorisation de sortie du territoire', 'AST', 'voyage scolaire', 'séjour linguistique', 'colonie', 'mineur seul', 'grands-parents', 'frontière'],
     sources: [S.spAST, S.spAP],
-    body_md: `Voyage avec les grands-parents, séjour linguistique, colonie à l’étranger : quand votre enfant quitte la France sans vous, un document supplémentaire est exigé. Il s’agit de l’autorisation de sortie du territoire (AST), qui se remplit à la maison, sans passer par la mairie.
+    body_md: `Voyage avec les grands-parents, séjour linguistique, colonie à l’étranger : quand ton enfant quitte la France sans toi, un document supplémentaire est exigé. Il s’agit de l’autorisation de sortie du territoire (AST), qui se remplit à la maison, sans passer par la mairie.
 
 ## En bref
 - L’AST est obligatoire dès qu’un mineur résidant en France quitte le territoire sans être accompagné d’un titulaire de l’autorité parentale.
@@ -1143,21 +1143,21 @@ ${END}`,
 **Les cas particuliers.** Un trajet entre la métropole et un département d’outre-mer avec une escale à l’étranger nécessite une AST. Un enfant faisant l’objet d’une opposition ou d’une interdiction de sortie du territoire ne peut pas partir, même avec une AST.
 
 ## Au quotidien
-- **Préparez les documents plusieurs semaines avant** : vérifiez d’abord la validité de la pièce d’identité de l’enfant, dont la fabrication prend du temps.
-- **Fixez une durée adaptée** : un seul voyage, ou plusieurs mois si l’enfant voyage souvent avec un proche.
-- **Remettez un dossier complet** à l’adulte accompagnant (AST, copie de votre pièce d’identité, coordonnées, carnet de santé ou informations médicales utiles).
-- **Informez l’autre parent** même si sa signature n’est pas obligatoire.
-- **Pour un voyage scolaire**, suivez aussi les consignes de l’établissement.
+- **Prépare les documents plusieurs semaines avant** : vérifie d’abord la validité de la pièce d’identité de l’enfant, dont la fabrication prend du temps.
+- **Fixe une durée adaptée** : un seul voyage, ou plusieurs mois si l’enfant voyage souvent avec un proche.
+- **Remets un dossier complet** à l’adulte accompagnant (AST, copie de ta pièce d’identité, coordonnées, carnet de santé ou informations médicales utiles).
+- **Informe l’autre parent** même si sa signature n’est pas obligatoire.
+- **Pour un voyage scolaire**, suis aussi les consignes de l’établissement.
 
 ## Questions fréquentes
 **Mon enfant part avec son père, nous sommes séparés : faut-il une AST ?** Non, l’AST n’est pas nécessaire lorsque l’enfant voyage avec l’un de ses parents.
 
-**Une copie de l’AST suffit-elle ?** L’AST est présentée au garde-frontière lors du contrôle. Imprimez l’original signé et gardez une copie de sécurité.
+**Une copie de l’AST suffit-elle ?** L’AST est présentée au garde-frontière lors du contrôle. Imprime l’original signé et garde une copie de sécurité.
 
 **La compagnie aérienne refuse l’embarquement : que faire ?** Service-Public indique d’adresser une réclamation à la compagnie, puis de saisir la Direction générale de l’aviation civile sans réponse sous 2 mois.
 
 ## Quand demander conseil
-Pour une question sur un voyage précis, consultez Service-Public, l’ambassade du pays de destination ou la police aux frontières. Si vous craignez un départ à l’étranger de votre enfant sans votre accord, parlez-en rapidement à un avocat ou au commissariat ; en cas de danger, le 17. ${SOS}
+Pour une question sur un voyage précis, consulte Service-Public, l’ambassade du pays de destination ou la police aux frontières. Si tu crains un départ à l’étranger de ton enfant sans ton accord, parles-en rapidement à un avocat ou au commissariat ; en cas de danger, le 17. ${SOS}
 
 ${END}`,
   },
@@ -1166,44 +1166,44 @@ ${END}`,
     ...BASE,
     slug: 'logement-apl-prime-demenagement-famille-qui-s-agrandit',
     title: 'La famille s’agrandit : aides au logement et prime de déménagement',
-    summary: 'L’arrivée d’un enfant peut modifier vos aides au logement ; à partir du 3e enfant, une prime de déménagement peut rembourser une partie des frais si vous changez de logement.',
+    summary: 'L’arrivée d’un enfant peut modifier tes aides au logement ; à partir du 3e enfant, une prime de déménagement peut rembourser une partie des frais si tu changes de logement.',
     journeys: ['pregnant', 'newborn', 'child'],
     tags: ['APL', 'aide au logement', 'ALF', 'prime de déménagement', 'déménager enceinte', 'troisième enfant', 'Caf', 'logement famille'],
     sources: [S.spAPL, S.spDemenag],
     body_md: `Une chambre en plus devient vite nécessaire quand la famille s’agrandit. Les aides au logement tiennent compte des personnes à charge, et une prime spécifique existe pour les familles nombreuses qui déménagent. Voici ce qu’il faut savoir avant de signer un nouveau bail.
 
 ## En bref
-- L’aide personnalisée au logement (APL) tient compte du nombre de personnes à charge vivant au foyer, de vos ressources et du loyer.
+- L’aide personnalisée au logement (APL) tient compte du nombre de personnes à charge vivant au foyer, de tes ressources et du loyer.
 - Tout changement de situation familiale (naissance, séparation…) doit être signalé rapidement à la Caf ou à la MSA.
 - En cas de déménagement, il faut refaire une demande d’aide pour le nouveau logement.
 - La prime de déménagement concerne les familles d’au moins 3 enfants (nés ou à naître) qui déménagent pendant une période liée à la grossesse ou à l’âge du dernier enfant.
 - ${VERIF}
 
 ## Comprendre
-**Le calcul de l’APL.** Il repose sur des barèmes qui prennent en compte les personnes à charge vivant habituellement au foyer, les ressources des 12 derniers mois du foyer, le patrimoine au-delà de 30 000 € et le loyer. Les ressources sont actualisées automatiquement tous les trois mois. Le logement doit être votre résidence principale, décent et, pour l’APL, conventionné.
+**Le calcul de l’APL.** Il repose sur des barèmes qui prennent en compte les personnes à charge vivant habituellement au foyer, les ressources des 12 derniers mois du foyer, le patrimoine au-delà de 30 000 € et le loyer. Les ressources sont actualisées automatiquement tous les trois mois. Le logement doit être ta résidence principale, décent et, pour l’APL, conventionné.
 
-**Le versement.** L’APL est versée à partir du 1er jour du mois qui suit la demande, directement au bailleur. Comptez un délai de traitement de quelques semaines si le dossier est complet.
+**Le versement.** L’APL est versée à partir du 1er jour du mois qui suit la demande, directement au bailleur. Compte un délai de traitement de quelques semaines si le dossier est complet.
 
 **La prime de déménagement.** Il faut avoir au moins 3 enfants à charge, nés ou à naître, et déménager entre le premier jour du mois suivant la fin du 3e mois de grossesse et le dernier jour du mois précédant les 2 ans du dernier enfant. Il faut aussi avoir droit à l’APL ou à l’allocation de logement familiale pour le nouveau logement. Il n’y a pas de condition de ressources.
 
 **Le montant de la prime.** Elle rembourse les frais réellement engagés dans la limite d’un plafond : 1 147,58 € pour 3 enfants, 1 243,21 € pour 4 enfants, puis 95,63 € par enfant supplémentaire (montants affichés en 2026).
 
 ## Au quotidien
-- **Faites une simulation** d’aide au logement sur caf.fr avant de choisir un logement.
-- **Déclarez la naissance** et toute nouvelle situation dans votre espace Caf pour que l’aide soit recalculée.
-- **Gardez tous les justificatifs** du déménagement : devis, factures acquittées, location de véhicule.
-- **Demandez la prime dans les 6 mois** qui suivent le déménagement, avec le formulaire prévu et les justificatifs.
+- **Fais une simulation** d’aide au logement sur caf.fr avant de choisir un logement.
+- **Déclare la naissance** et toute nouvelle situation dans ton espace Caf pour que l’aide soit recalculée.
+- **Garde tous les justificatifs** du déménagement : devis, factures acquittées, location de véhicule.
+- **Demande la prime dans les 6 mois** qui suivent le déménagement, avec le formulaire prévu et les justificatifs.
 - **En cas de budget serré**, une avance de 50 à 75 % du devis peut être demandée, le solde étant versé sur facture.
 
 ## Questions fréquentes
-**Je suis enceinte de mon 3e enfant : puis-je déjà toucher la prime ?** Oui, si vous déménagez après la fin du 3e mois de grossesse et remplissez les autres conditions, puisque les enfants à naître sont comptés.
+**Je suis enceinte de mon 3e enfant : puis-je déjà toucher la prime ?** Oui, si tu déménages après la fin du 3e mois de grossesse et remplis les autres conditions, puisque les enfants à naître sont comptés.
 
-**Mon aide au logement a-t-elle été suspendue ?** Le versement peut être suspendu si le logement n’est plus décent, en cas d’impayés de loyer ou si des justificatifs manquent. Contactez rapidement votre Caf.
+**Mon aide au logement a-t-elle été suspendue ?** Le versement peut être suspendu si le logement n’est plus décent, en cas d’impayés de loyer ou si des justificatifs manquent. Contacte rapidement ta Caf.
 
 **La Caf a refusé : puis-je contester ?** Oui, dans un délai de 2 mois, avec possibilité de saisir un médiateur puis la commission de recours amiable.
 
 ## Quand demander conseil
-Votre Caf ou votre MSA, l’ADIL (agence départementale d’information sur le logement) ou le CCAS de votre mairie peuvent vous accompagner. En cas de risque d’expulsion ou de logement dangereux pour la santé des enfants, signalez-le sans attendre à la mairie ou au service social. ${SOS}
+Ta Caf ou ta MSA, l’ADIL (agence départementale d’information sur le logement) ou le CCAS de ta mairie peuvent t’accompagner. En cas de risque d’expulsion ou de logement dangereux pour la santé des enfants, signale-le sans attendre à la mairie ou au service social. ${SOS}
 
 ${END}`,
   },

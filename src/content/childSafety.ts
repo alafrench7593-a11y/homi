@@ -7,7 +7,7 @@ import { localized } from '@/i18n/localized';
 export interface SafetySource { title: string; publisher: string; url: string }
 
 export const CHILD_SOURCES = {
-  sleep: { title: 'Comment coucher votre bébé pour lui assurer confort et sécurité ?', publisher: 'mpedia (Association française de pédiatrie ambulatoire), relayé par Santé.fr', url: 'https://www.mpedia.fr/art-coucher-mon-bebe/' },
+  sleep: { title: 'Comment coucher ton bébé pour lui assurer confort et sécurité ?', publisher: 'mpedia (Association française de pédiatrie ambulatoire), relayé par Santé.fr', url: 'https://www.mpedia.fr/art-coucher-mon-bebe/' },
   stools: { title: 'Selles de bébé : tout comprendre pour mieux les surveiller', publisher: 'mpedia (AFPA), relayé par Santé.fr', url: 'https://www.sante.fr/selles-de-bebe-de-0-6-mois-decryptage-complet' },
   dehydration: { title: 'Déshydratation chez l’enfant', publisher: 'Le Manuel MSD (grand public)', url: 'https://www.msdmanuals.com/fr/accueil/les-faits-en-bref-problèmes-de-santé-infantiles/troubles-divers-chez-les-nourrissons-et-les-jeunes-enfants/déshydratation-chez-l-enfant' },
   fever: { title: 'Mon enfant a de la fièvre', publisher: 'ARS Normandie, d’après le carnet de santé (ministère de la Santé)', url: 'https://www.urml-normandie.org/wp-content/uploads/2023/11/A5-fievre-enfant.pdf' },
