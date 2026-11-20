@@ -32,6 +32,7 @@ const ALLOW: Record<string, string> = {
   'components/FetusOrb.tsx': 'illustration du fœtus',
   'components/BrandLogo.tsx': 'logo',
   'brand/homiMarkSvg.ts': 'logo',
+  'brand/toolLogo/appIcon.ts': 'icône de l’app (logo, source vectorielle des exports)',
   'features/recipes/RecipeArt.tsx': 'illustrations des recettes',
   'features/discoveries/FoodArt.tsx': 'illustrations des aliments',
   'features/story/FamilyStoryArt.tsx': 'illustration « histoire de famille »',

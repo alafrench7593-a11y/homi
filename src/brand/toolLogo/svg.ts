@@ -15,7 +15,7 @@ export function logoLayers(icon: HomiIconDef, spec: ToolLogoSpec, variant: LogoV
   const g = glyphTransform(variant);
   const defs = `<defs>
 <linearGradient id="${uid}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${spec.top}"/><stop offset="1" stop-color="${spec.bottom}"/></linearGradient>
-<radialGradient id="${uid}s" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFFFFF" stop-opacity="${spec.sheen}"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<radialGradient id="${uid}s" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${spec.light}" stop-opacity="${spec.sheen}"/><stop offset="1" stop-color="${spec.light}" stop-opacity="0"/></radialGradient>
 <linearGradient id="${uid}h" x1="0" y1="0" x2="0" y2="1"><stop offset="0.55" stop-color="${spec.shade}" stop-opacity="0"/><stop offset="1" stop-color="${spec.shade}" stop-opacity="${spec.shadeOpacity}"/></linearGradient>
 <clipPath id="${uid}c"><path d="${PLATE}"/></clipPath>
 </defs>`;
@@ -30,7 +30,7 @@ export function logoLayers(icon: HomiIconDef, spec: ToolLogoSpec, variant: LogoV
     `<path d="${icon.stroke}" fill="none" stroke="${spec.glyph}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>`,
     ...(icon.dots ?? []).map(([cx, cy, r]) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${spec.glyph}"/>`),
     `</g>`,
-    `<path d="${TOP_EDGE}" fill="none" stroke="#FFFFFF" stroke-opacity="${spec.rim}" stroke-width="1" stroke-linecap="round"/>`,
+    `<path d="${TOP_EDGE}" fill="none" stroke="${spec.light}" stroke-opacity="${spec.rim}" stroke-width="1" stroke-linecap="round"/>`,
     `<path d="${PLATE}" fill="none" stroke="${spec.bottom}" stroke-opacity="0.35" stroke-width="0.6"/>`,
   ].join('');
   return { defs, body };

@@ -128,3 +128,41 @@ export const skeleton = { ms: 900, min: 0.45 } as const;
  * automatique quand le doigt approche d'un bord (zone `edge`, vitesse proportionnelle, plafonnée).
  */
 export const reorder = { longPressMs: 220, liftScale: 1.03, edge: 72, maxSpeed: 720 } as const;
+
+// ------------------------------------------------------------------ Direction « Liquid Glass » (20/11/2026, docs/DA_LIQUID_GLASS.md)
+/**
+ * Logos d'outils animés (`ToolLogo`) : une animation PAR FAMILLE, jouée lors d'une interaction réelle (ouverture,
+ * démarrage, confirmation, ajout), courte, interruptible, qui revient toujours à l'état stable du logo.
+ */
+export const logoMotion = {
+  /** ouverture d'un outil : le glyphe se pose (lune : rotation de −28° → 0, glint : soulèvement de 2 px) */
+  openMs: 420,
+  moonTurnDeg: -28,
+  moonDrop: 3,
+  /** minuteur en cours : un tour d'anneau (linéaire, en boucle TANT QUE le minuteur tourne) */
+  ringPeriodMs: 1600,
+  /** part de l'anneau tracée (arc lumineux) */
+  ringArc: 0.28,
+  /** courbe de croissance : tracé, pause, retour à l'état stable */
+  curveDrawMs: 520,
+  holdMs: 650,
+  fadeMs: 260,
+  /** coche de confirmation (pastille) */
+  checkDrawMs: 260,
+  /** repas : réaction à l'ajout */
+  mealPop: 1.16,
+  /** reflet qui traverse la plaque (glint) */
+  glintMs: 560,
+  /** pression : la plaque s'enfonce légèrement */
+  pressScale: 0.94,
+} as const;
+
+/**
+ * Indicateur « liquide » de la barre d'onglets : il glisse (ressort `panneau`) et s'ÉTIRE dans le sens du trajet
+ * pendant le déplacement (comme une goutte), puis reprend sa forme. Étirement proportionnel à la distance restante,
+ * plafonné ; aucun étirement avec « Réduire les animations ».
+ */
+export const liquidIndicator = { maxStretch: 0.22, squash: 0.08, perPx: 0.0016 } as const;
+
+/** Aura : respiration du symbole pendant la préparation d'une réponse, rotation lente des teintes, ouverture. */
+export const auraMotion = { breathMs: 1100, spinMs: 9000, thinkingScale: 1.06, openMs: 480 } as const;

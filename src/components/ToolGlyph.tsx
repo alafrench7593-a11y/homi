@@ -27,6 +27,7 @@ import { toolGlyphIcon } from './toolGlyphIcons';
 import { categoryTone, HomiIcon } from '@/brand/icons';
 import { toolIconCategory, toolIconName } from '@/brand/icons/resolve';
 import { AnimatedPath } from '@/components/MotionKit';
+import { ToolLogo } from '@/brand/toolLogo/ToolLogo';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { easing } from '@/theme/motion';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
@@ -123,6 +124,10 @@ export function ToolGlyph({ id, theme, icon, size = 56, play = 0, hovered, press
   const glyph = toolGlyphIcon(urgent ? 'urgent' : theme, icon, id);
   const homi = toolIconName(id);
 
+  if (homi && !LEGACY_GLYPH) {
+    // Direction « verre minéral » (20/11/2026) : le logo de l'outil façon icône d'app (docs/DA_LIQUID_GLASS.md)
+    return <LogoGlyph id={id!} size={size} play={play} hovered={hovered} pressed={pressed} active={active} disabled={disabled} urgent={urgent} />;
+  }
   if (homi) {
     const cat = toolIconCategory(id);
     const tone = urgent ? t.colors.danger : cat ? categoryTone(t, cat) : t.colors.primary;
@@ -186,6 +191,31 @@ export function ToolGlyph({ id, theme, icon, size = 56, play = 0, hovered, press
       )}
       {active ? <View style={{ position: 'absolute', right: 2 * s, top: 2 * s, width: 10 * s, height: 10 * s, borderRadius: 5 * s, backgroundColor: c, borderWidth: 2, borderColor: t.colors.surface }} /> : null}
     </Animated.View>
+  );
+}
+
+/** Ancien rendu (pictogramme nu sur aplat) : gardé pour comparaison, désactivé. */
+const LEGACY_GLYPH = false;
+/** Part de la boîte occupée par la plaque du logo (même encombrement visuel que l'ancien pictogramme + marge). */
+export const LOGO_IN_BOX = 0.86;
+
+/**
+ * Logo d'outil dans la boîte d'un glyphe : plaque `ToolLogo` (rendu détaillé dès 50 pt de boîte, compact en dessous).
+ * Une valeur `play` déjà positive au montage (en-tête d'un outil qu'on ouvre) joue l'animation de la famille une
+ * fois, juste après l'arrivée ; chaque changement ultérieur la rejoue.
+ */
+function LogoGlyph({ id, size, play, hovered, pressed, active, disabled, urgent }: { id: string; size: number; play: number; hovered?: boolean; pressed?: boolean; active?: boolean; disabled?: boolean; urgent?: boolean }) {
+  const [n, setN] = React.useState(0);
+  React.useEffect(() => {
+    if (!play) return;
+    const h = setTimeout(() => setN((x) => x + 1), 140);
+    return () => clearTimeout(h);
+  }, [play]);
+  const plate = Math.round(size * LOGO_IN_BOX);
+  return (
+    <View testID={`tool-icon-${id}`} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center', transform: [{ translateY: hovered && !pressed ? -1 : 0 }] }}>
+      <ToolLogo id={id} size={plate} variant={size >= 50 ? 'detailed' : 'compact'} play={n} running={active} pressed={pressed} disabled={disabled} urgent={urgent} />
+    </View>
   );
 }
 

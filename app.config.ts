@@ -79,6 +79,9 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: false,
     bundleIdentifier: BRAND.bundleId,
+    // Icône « verre minéral » (docs/DA_LIQUID_GLASS.md) : claire, sombre et teintée (iOS 18+), 1024 plein cadre,
+    // générées par scripts/da/brand-export.cjs depuis src/brand/toolLogo/appIcon.ts (Android garde `icon` ci-dessus)
+    icon: { light: './assets/icon-ios-light.png', dark: './assets/icon-ios-dark.png', tinted: './assets/icon-ios-tinted.png' },
     // « Se connecter avec Apple » (obligatoire sur iOS dès qu'un autre login social est proposé)
     usesAppleSignIn: true,
     infoPlist: {

@@ -11,7 +11,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { HomiIcon, ICON_CATEGORIES, ICON_GROUPS, categoryTone, type HomiIconName, type IconCategory } from '@/brand/icons';
 import { toolIconCategory, toolIconName } from '@/brand/icons/resolve';
-import { GlassIconButton } from '@/components/glass';
+import { GlassButton, GlassIconButton } from '@/components/glass';
+import { LOGO_MOTIONS, ToolLogo, type LogoMotion } from '@/brand/toolLogo';
 import { Text } from '@/components/ui';
 import { useDemoInset } from '@/components/demoInset';
 import { HandGlyph } from '@/features/tour/TourHand';
@@ -33,17 +34,19 @@ const ENTRIES: { id: string; cat: ToolCategory; tool: boolean }[] = [
   ...TOOLS.flatMap((d) => (d.subs ?? []).map((s) => ({ id: subRef(d.id, s.id), cat: s.category ?? d.category, tool: false }))),
   ...H200_VIEWS.map((e) => ({ id: e.id, cat: (e.category ?? TOOLS.find((d) => d.id === e.target)?.category ?? 'health') as ToolCategory, tool: false })),
 ];
+/** Un outil représentatif de chaque famille d'animation. */
+const FAMILY_SAMPLE: Record<LogoMotion, string> = { moon: 'kid_sleep', ring: 'baby_breastfeed', curve: 'kid_grow', check: 'family_tasks', meal: 'meals', glint: 'appointments' };
 const toneOf = (th: Theme, id: string) => { const c = toolIconCategory(id); return c ? categoryTone(th, c) : th.colors.primary; };
 
 /** Une entrée du catalogue : son pictogramme à 28 et 20 pt, son identifiant. */
-function ToolCell({ id }: { id: string }) {
+function ToolCell({ id, play = 0 }: { id: string; play?: number }) {
   const t = useTheme();
   const name = toolIconName(id);
   return (
-    <View style={{ width: 82, alignItems: 'center', gap: 2 }} testID={`tool-icon-cell-${id}`}>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 30 }}>
-        {name ? <HomiIcon name={name} size={28} tone={toneOf(t, id)} active /> : <Text variant="caption" color={t.colors.danger}>{I.none}</Text>}
-        {name ? <HomiIcon name={name} size={20} tone={toneOf(t, id)} /> : null}
+    <View style={{ width: 92, alignItems: 'center', gap: 2 }} testID={`tool-icon-cell-${id}`}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 48 }}>
+        {name ? <ToolLogo id={id} size={44} variant="detailed" play={play} /> : <Text variant="caption" color={t.colors.danger}>{I.none}</Text>}
+        {name ? <ToolLogo id={id} size={28} variant="compact" /> : null}
       </View>
       <Text variant="caption" muted numberOfLines={2} center style={{ fontSize: 9, lineHeight: 11 }}>{id}</Text>
       {name ? <Text variant="caption" numberOfLines={1} center color={t.colors.textMuted} style={{ fontSize: 8, lineHeight: 10, opacity: 0.7 }}>{name}</Text> : null}
@@ -105,6 +108,8 @@ export default function IconGallery() {
   const top = insets.top + useDemoInset();
   const dev = useDeveloperMode();
   const [grace, setGrace] = useState(true);
+  const [play, setPlay] = useState(0);
+  const [running, setRunning] = useState(false);
   useEffect(() => { const id = setTimeout(() => setGrace(false), 800); return () => clearTimeout(id); }, []);
   if (!dev && !isDemo) return grace ? <View style={{ flex: 1, backgroundColor: t.colors.background }} /> : <Redirect href="/" />;
   return (
@@ -130,12 +135,29 @@ export default function IconGallery() {
             </View>
           </View>
         ))}
-        {/* pictogrammes de chaque outil, par catégorie, avec leur identifiant */}
+        {/* logos d'outils : les six familles d'animation, puis chaque entrée du catalogue */}
+        <View style={{ gap: spacing.xs }} testID="logos-families">
+          <Text variant="label" muted>{I.families}</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }}>
+            {LOGO_MOTIONS.map((f) => (
+              <View key={f} style={{ alignItems: 'center', gap: 4 }} testID={`logo-family-${f}`}>
+                <ToolLogo id={FAMILY_SAMPLE[f]} size={64} variant="detailed" play={play} running={f === 'ring' && running} />
+                <Text variant="caption" muted style={{ fontSize: 10 }}>{f}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' }}>
+            <GlassButton label={I.replay} size="sm" variant="secondary" onPress={() => setPlay((n) => n + 1)} testID="logos-replay" />
+            <GlassButton label={I.timer} size="sm" variant="secondary" onPress={() => setRunning((r) => !r)} testID="logos-timer" />
+          </View>
+          <Text variant="small" muted testID="logos-coverage">{I.coverage(ENTRIES.filter((e) => toolIconName(e.id)).length, ENTRIES.length)}</Text>
+        </View>
+        {/* logos de chaque outil, par catégorie, avec leur identifiant */}
         {SHELVES.map((cat) => (
           <View key={cat} style={{ gap: spacing.xs }} testID={`icons-tools-${cat}`}>
             <Text variant="label" muted>{`${I.tools} · ${cat} (${ENTRIES.filter((e) => e.cat === cat).length})`}</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.sm }}>
-              {ENTRIES.filter((e) => e.cat === cat).map((e) => <ToolCell key={e.id} id={e.id} />)}
+              {ENTRIES.filter((e) => e.cat === cat).map((e) => <ToolCell key={e.id} id={e.id} play={play} />)}
             </View>
           </View>
         ))}

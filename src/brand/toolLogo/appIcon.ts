@@ -23,7 +23,7 @@ export const LENS = { cx: 512, cy: 512, r: 360 } as const;
 /** Symbole : hauteur dans la grille 1024 (≈ 45 % : silhouette identifiable à 40 px). */
 export const SYMBOL_H = 470;
 
-export function symbolTransform(height = SYMBOL_H, cx = LENS.cx, cy = LENS.cy + 6): string {
+export function symbolTransform(height: number = SYMBOL_H, cx: number = LENS.cx, cy: number = LENS.cy + 6): string {
   const [x0, y0, w, h] = HOMI_SYMBOL_VIEWBOX;
   const k = height / h;
   return `translate(${(cx - (w * k) / 2 - x0 * k).toFixed(2)} ${(cy - (h * k) / 2 - y0 * k).toFixed(2)}) scale(${k.toFixed(5)})`;
@@ -47,8 +47,8 @@ export function appIconSvg(tone: AppIconTone, size = ICON_GRID, idp = ''): strin
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${ICON_GRID} ${ICON_GRID}" role="img" aria-label="HOMI">
 <defs>
 <linearGradient id="${idp}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.top}"/><stop offset="1" stop-color="${c.bottom}"/></linearGradient>
-<radialGradient id="${idp}ga" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${c.glowA}" stop-opacity="${tone === 'light' ? 0.55 : 0.5}"/><stop offset="1" stop-color="${c.glowA}" stop-opacity="0"/></radialGradient>
-<radialGradient id="${idp}gb" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${c.glowB}" stop-opacity="${tone === 'light' ? 0.5 : 0.45}"/><stop offset="1" stop-color="${c.glowB}" stop-opacity="0"/></radialGradient>
+<radialGradient id="${idp}ga" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${c.glowA}" stop-opacity="${tone === 'light' ? 0.72 : 0.5}"/><stop offset="1" stop-color="${c.glowA}" stop-opacity="0"/></radialGradient>
+<radialGradient id="${idp}gb" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${c.glowB}" stop-opacity="${tone === 'light' ? 0.68 : 0.45}"/><stop offset="1" stop-color="${c.glowB}" stop-opacity="0"/></radialGradient>
 <radialGradient id="${idp}lens" cx="0.42" cy="0.32" r="0.75"><stop offset="0" stop-color="${c.lens}" stop-opacity="${c.lensA + 0.18}"/><stop offset="0.7" stop-color="${c.lens}" stop-opacity="${c.lensA}"/><stop offset="1" stop-color="${c.lens}" stop-opacity="${Math.max(0, c.lensA - 0.12)}"/></radialGradient>
 <linearGradient id="${idp}rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="${c.rimA}"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.08"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="${c.rimA * 0.35}"/></linearGradient>
 <linearGradient id="${idp}shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0.55" stop-color="#2A1621" stop-opacity="0"/><stop offset="1" stop-color="#2A1621" stop-opacity="${c.shadeA}"/></linearGradient>

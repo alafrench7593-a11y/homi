@@ -55,6 +55,8 @@ export interface ToolLogoSpec {
   mid: string;
   /** encre du glyphe */
   glyph: string;
+  /** lumière (reflet, arête) : blanc */
+  light: string;
   /** aplat du glyphe (même encre, opacité `glyphFillOpacity`) */
   glyphFillOpacity: number;
   /** reflet (blanc) : opacité au point le plus lumineux */
@@ -82,7 +84,7 @@ export function toolLogoSpec(category: LogoCategory, mode: 'light' | 'dark' | 'n
   const base = LOGO_HUES[category];
   if (mode === 'night') {
     const mid = mixHex(mixHex(base, NIGHT, 0.55), BLACK, 0.15);
-    return { top: mixHex(mid, WHITE, 0.04), bottom: mixHex(mid, BLACK, 0.25), mid, glyph: '#D6D3DA', glyphFillOpacity: 0.18, sheen: 0, rim: 0.06, shade: BLACK, shadeOpacity: 0.2, drop: 'none' };
+    return { top: mixHex(mid, WHITE, 0.04), bottom: mixHex(mid, BLACK, 0.25), mid, glyph: '#D6D3DA', light: WHITE, glyphFillOpacity: 0.18, sheen: 0, rim: 0.06, shade: BLACK, shadeOpacity: 0.2, drop: 'none' };
   }
   const dark = mode === 'dark';
   // la teinte s'assombrit par petits pas jusqu'à garantir le contraste du glyphe (valeur résolue, jamais approximée)
@@ -94,6 +96,7 @@ export function toolLogoSpec(category: LogoCategory, mode: 'light' | 'dark' | 'n
     bottom: mixHex(mid, BLACK, dark ? 0.32 : 0.22),
     mid,
     glyph: WHITE,
+    light: WHITE,
     glyphFillOpacity: 0.3,
     sheen: p.sheen,
     rim: dark ? 0.3 : 0.5,

@@ -16,6 +16,11 @@ export const I = {
   hand: 'Main de la visite guidée',
   tools: 'Outils',
   none: 'aucun',
+  logos: 'Logos d’outils (détaillé 48 · compact 32 · pictogramme 20)',
+  families: 'Animations par famille (ouverture, minuteur, courbe, coche, ajout, reflet)',
+  replay: 'Rejouer les animations',
+  timer: 'Démarrer / arrêter le minuteur',
+  coverage: (n: number, total: number) => `Couverture : ${n} / ${total} entrées du catalogue ont un logo`,
   groups: { tabs: 'Barre du bas', header: 'En-tête', categories: '9 catégories', intro: 'Outils de l’introduction' } as const,
   palettes: { homi: 'HOMI', lavande: 'Lavande', nuit: 'Nuit', sauge: 'Sauge', champagne: 'Champagne' } as Record<PaletteName, string>,
   names: {
