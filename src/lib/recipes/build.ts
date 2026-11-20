@@ -1,6 +1,6 @@
 /** Construction d'une recette : valeurs communes (illustration générée, statut, date de vérification). */
 import type { Allergen, PhotoInfo, Recipe, RecipeIngredient, Unit } from './types';
-import { AI_PHOTOS } from './photoCredits';
+import { aiPhoto } from './photoCredits';
 
 export const VERIFIED_ON = '2026-10-19';
 
@@ -42,7 +42,7 @@ export function R(r: Input): Recipe {
   return {
     ...r,
     id: `rcp-${r.slug}`,
-    photo: AI_PHOTOS[r.slug] ?? generatedPhoto(r.title),
+    photo: aiPhoto(r.slug, r.title) ?? generatedPhoto(r.title),
     verifiedOn: VERIFIED_ON,
     status: 'to_review',
     statusHistory: [

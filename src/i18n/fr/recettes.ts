@@ -112,6 +112,7 @@ export const recettes = {
   'rc.card.meta': '{min} min · {n} pers.',
   'rc.card.a11y': '{title}, {min} minutes',
   'rc.generatedImage': 'Illustration générée',
+  'rc.photoNotice': 'Photo d’illustration',
   'rc.for': 'Pour {name}',
   'rc.notFound': 'Recette introuvable',
   'rc.photo.credit': 'Image : {author} · {license} · {rights}',

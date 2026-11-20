@@ -58,7 +58,8 @@ export interface IngredientDef {
 export interface RecipeIngredient { key: string; qty: number | null; unit: Unit | null; note?: string; optional?: boolean }
 
 export interface PhotoInfo {
-  kind: 'generated' | 'licensed' | 'owned';
+  /** generated : illustration dessinée par programme ; ai_illustration : photo d'illustration générée par IA (embarquée). */
+  kind: 'generated' | 'licensed' | 'owned' | 'ai_illustration';
   source: string;
   author: string;
   license: string;

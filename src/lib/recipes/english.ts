@@ -7,7 +7,7 @@
  */
 import { getLocale, t as tr } from '@/i18n';
 import { generatedPhoto, generatedPhotoEn } from './build';
-import { AI_PHOTOS, AI_PHOTOS_EN } from './photoCredits';
+import { aiPhotoEn } from './photoCredits';
 import type { Recipe, RecipeEnglish } from './types';
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
@@ -26,8 +26,11 @@ const history = (s: string) => (HISTORY[s] ? tr(HISTORY[s]) : s);
 
 function photoEn(r: Recipe, ref: Recipe, title: string): Recipe['photo'] {
   const p = r.photo;
-  const fixed = AI_PHOTOS[ref.slug];
-  if (fixed && AI_PHOTOS_EN[ref.slug] && p.author === fixed.author && p.license === fixed.license) return { ...p, ...AI_PHOTOS_EN[ref.slug] };
+  // Photo d'illustration générée par IA : mentions anglaises seulement si celles du français n'ont pas été modifiées.
+  const fixed = ref.photo.kind === 'ai_illustration' ? ref.photo : null;
+  if (fixed && p.kind === 'ai_illustration' && p.author === fixed.author && p.license === fixed.license) {
+    return { ...p, ...aiPhotoEn(ref.slug, title) };
+  }
   const gen = generatedPhoto(ref.title);
   if (p.kind === 'generated' && p.author === gen.author && p.license === gen.license) return { ...p, ...generatedPhotoEn(title) };
   return p;

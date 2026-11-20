@@ -14,7 +14,9 @@ import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { RECIPE_SOURCES } from '@/lib/recipes/sources';
 import type { Recipe } from '@/lib/recipes/types';
 import { derivedAllergens, findDuplicates, isVegetarian, validateRecipe } from '@/lib/recipes/validate';
-import { AI_PHOTOS } from '@/lib/recipes/photoCredits';
+import { AI_ILLUSTRATION, AI_PHOTOS, hasRecipePhoto } from '@/lib/recipes/photoCredits';
+import { RECIPE_PHOTO_SLUGS } from '@/lib/recipes/photoSlugs.generated';
+import { generatedPhoto } from '@/lib/recipes/build';
 
 const all = ALL_RECIPES;
 const byId = new Map(all.map((r) => [r.id, r]));
@@ -183,11 +185,41 @@ describe('les 12 scénarios', () => {
   it('10. image et licence : illustration générée et déclarée comme telle, droits enregistrés', () => {
     for (const r of all) {
       expect(r.photo.generated).toBe(true);
-      expect(r.photo.kind).toBe('generated');
       expect(r.photo.license).toBeTruthy(); expect(r.photo.rights).toBeTruthy(); expect(r.photo.author).toBeTruthy(); expect(r.photo.source).toBeTruthy();
       expect(r.photo.alt).toContain(r.title);
-      if (!AI_PHOTOS[r.slug]) expect(r.photo.alt).toMatch(/pas une photographie/);
+      if (hasRecipePhoto(r.slug)) {
+        // photo d'illustration générée par IA : déclarée comme telle, sans prétendre à une licence non vérifiée
+        expect(r.photo.kind).toBe('ai_illustration');
+        if (!AI_PHOTOS[r.slug]) {
+          expect(r.photo).toMatchObject({ ...AI_ILLUSTRATION, url: null, alt: r.title });
+          expect(r.photo.author).toMatch(/générée par IA/);
+        }
+      } else {
+        expect(r.photo.kind).toBe('generated');
+        expect(r.photo.alt).toMatch(/pas une photographie/);
+      }
     }
+  });
+  it('10 bis. photos d\'illustration : un fichier optimisé (et sa miniature) par recette, aucune pour les recettes personnelles', () => {
+    expect(RECIPE_PHOTO_SLUGS.length).toBe(all.length);
+    const slugs = new Set(all.map((r) => r.slug));
+    const fs = require('fs') as { statSync(p: string): { size: number }; existsSync(p: string): boolean };
+    for (const s of RECIPE_PHOTO_SLUGS) {
+      expect(slugs.has(s)).toBe(true);
+      expect(fs.statSync(`assets/recipes/${s}.webp`).size).toBeLessThan(90 * 1024);
+      expect(fs.existsSync(`assets/recipes/thumb/${s}.webp`)).toBe(true);
+    }
+    // base : les mentions de l'illustration dessinée laissées en base sont remplacées pour la bibliothèque…
+    const r = all.find((x) => x.slug === 'gr-hachis-parmentier')!;
+    const rows = recipeToRows({ ...r, photo: generatedPhoto(r.title) }, 'id-lib');
+    const lib = rowsToRecipes([rows.recipe], rows.ingredients, rows.steps, [rows.photo], rows.links)[0];
+    expect(lib.photo.kind).toBe('ai_illustration');
+    // … mais jamais pour une recette personnelle, même si son identifiant lisible coïncide
+    const mine = rowsToRecipes([{ ...rows.recipe, owner_id: 'user-1' }], rows.ingredients, rows.steps, [rows.photo], rows.links)[0];
+    expect(mine.photo.kind).toBe('generated');
+    // une photo fournie ou sous licence enregistrée en base reste prioritaire
+    const owned = rowsToRecipes([rows.recipe], rows.ingredients, rows.steps, [{ ...rows.photo, kind: 'owned', author: 'Famille' }], rows.links)[0];
+    expect(owned.photo).toMatchObject({ kind: 'owned', author: 'Famille' });
   });
   it('11. recette proposée depuis un produit scanné, avec précautions', () => {
     const lentils = scannedProductAdvice('Lentilles corail bio 500 g', pregnant, all);

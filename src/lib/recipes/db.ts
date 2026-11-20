@@ -1,5 +1,6 @@
 /** Conversion recettes ⇄ lignes de base de données (mêmes champs côté Supabase et côté démonstration). */
 import { generatedPhoto } from './build';
+import { aiPhoto } from './photoCredits';
 import { INGREDIENTS } from './ingredients';
 import type { Allergen, Audience, Meal, PhotoInfo, Recipe, RecipeStatus, Season, Stage, Tag, Texture, Unit } from './types';
 
@@ -43,7 +44,14 @@ export function rowsToRecipes(rows: RecipeRow[], ing: IngredientRow[], steps: St
     steps: (S.get(r.id) ?? []).sort((a, b) => a.position - b.position).map((x) => x.body),
     allergens: r.allergens, tags: r.tags, adaptations: r.adaptations, storage: r.storage, ...(r.freezing ? { freezing: r.freezing } : {}), precautions: r.precautions, nutrition: r.nutrition, budget: r.budget,
     seasons: r.seasons?.length ? r.seasons : 'all', temperature: r.temperature, familyAdaptations: r.family_adaptations && Object.keys(r.family_adaptations).length ? r.family_adaptations : undefined,
-    photo: (() => { const p = P.get(r.id)?.[0]; return p ? { kind: p.kind, source: p.source, author: p.author, license: p.license, url: p.url, rights: p.rights, generated: p.generated, alt: p.alt } : generatedPhoto(r.title); })(),
+    photo: (() => {
+      const p = P.get(r.id)?.[0];
+      // Recette de la bibliothèque avec une photo d'illustration embarquée : ses mentions remplacent celles de
+      // l'illustration dessinée enregistrée en base (une photo sous licence ou fournie, elle, est conservée).
+      const ai = r.owner_id ? null : aiPhoto(r.slug, r.title);
+      if (ai && (!p || p.kind === 'generated' || p.kind === 'ai_illustration')) return ai;
+      return p ? { kind: p.kind, source: p.source, author: p.author, license: p.license, url: p.url, rights: p.rights, generated: p.generated, alt: p.alt } : generatedPhoto(r.title);
+    })(),
     sources: (L.get(r.id) ?? []).map((x) => x.source_id), verifiedOn: r.verified_on ?? '', status: r.status,
     statusHistory: (V.get(r.id) ?? []).sort((a, b) => a.created_at.localeCompare(b.created_at)).map((x) => ({ status: x.status, by: x.by_label, on: x.created_at.slice(0, 10), ...(x.note ? { note: x.note } : {}) })),
     personal: !!r.owner_id, dbId: r.id,
