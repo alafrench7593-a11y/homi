@@ -53,7 +53,7 @@ import { assessSafety, urgentContacts, type UrgentContact } from '../../../supab
 import { MAX_QUESTION_LENGTH, todayIso } from '../../../supabase/functions/_shared/assistant-format';
 import { sanitizeActions } from '../../../supabase/functions/_shared/aura-tools';
 import { ActionCards } from './ActionCards';
-import { AuraAvatar } from './AuraMark';
+import { AuraAvatar, AuraOrb, AuraThinkingDots } from './AuraMark';
 import { EmotionTranslator } from './EmotionTranslator';
 import { JournalPicker } from './JournalPicker';
 import { askAura, classifyAuraError, type AuraErrorKind, type AuraServerReply } from './api';
@@ -398,12 +398,15 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal }: {
   const bubble = { backgroundColor: t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, gap: spacing.sm } as const;
   if (reply.kind === 'pending') {
     return (
-      <SkeletonPulse label={tr('aura.thinking')} testID="aura-pending">
-        <View style={[bubble, { maxWidth: '70%' }]}>
+      // Aura prépare sa réponse : sa signature respire et ses lumières tournent, trois points s'allument tour à tour
+      <View testID="aura-pending" accessibilityLabel={tr('aura.thinking')} accessibilityRole="progressbar" accessibilityState={{ busy: true }}
+        style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
+        <AuraOrb size={30} thinking testID="aura-pending-orb" />
+        <View style={[bubble, { maxWidth: '70%', flexDirection: 'row', alignItems: 'center', gap: spacing.sm }]}>
+          <AuraThinkingDots color={t.colors.lavender} testID="aura-thinking-dots" />
           <Text variant="small" muted>{tr('aura.thinking')}</Text>
-          <SkeletonBone width="80%" height={10} />
         </View>
-      </SkeletonPulse>
+      </View>
     );
   }
   if (reply.kind === 'safety') return <View testID="aura-safety"><UrgentCard level={reply.level} contacts={reply.contacts} message={reply.message || undefined} /></View>;

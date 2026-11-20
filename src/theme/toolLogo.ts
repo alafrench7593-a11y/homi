@@ -127,6 +127,8 @@ export const AURA = {
   hues: ['#7A5CFF', '#FF8A7A', '#4FC3D9'] as const,
   ring: '#6B4BD6',
   ink: '#FFFFFF',
+  /** ombre colorée douce sous la lentille (CSS / RN boxShadow) */
+  shadow: '0px 4px 12px rgba(107,75,214,0.35)',
 } as const;
 
 /** App icon et mot-symbole : fonds de la tuile (clair / sombre) — mêmes valeurs que assets/brand/homi-app-icon*.svg. */

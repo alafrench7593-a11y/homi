@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { liquidIndicator } from './curves';
 import { useMotion } from './useMotion';
 
 export interface ItemLayout { x: number; width: number }
@@ -55,4 +56,41 @@ export function useIndicator(layout: ItemLayout | undefined) {
   }, [lx, lw]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { cancelAnimation(x); cancelAnimation(w); }, [x, w]);
   return useAnimatedStyle(() => ({ opacity: shown.value, width: w.value, transform: [{ translateX: x.value }] }));
+}
+
+/**
+ * Indicateur « LIQUIDE » (barre d'onglets, direction Liquid Glass 20/11/2026) : même glissé que `useIndicator`, et la
+ * pastille s'ÉTIRE dans le sens du trajet tant qu'elle est loin de sa cible (comme une goutte qui se déplace), puis
+ * reprend sa forme en arrivant. Étirement proportionnel à la distance restante, plafonné (`liquidIndicator`) ; aucun
+ * étirement avec « Réduire les animations » ou la nuit (glissé seul, ou pose immédiate).
+ */
+export function useLiquidIndicator(layout: ItemLayout | undefined) {
+  const m = useMotion();
+  const x = useSharedValue(layout?.x ?? 0);
+  const w = useSharedValue(layout?.width ?? 0);
+  const target = useSharedValue(layout?.x ?? 0);
+  const shown = useSharedValue(layout && layout.width > 0 ? 1 : 0);
+  const placed = useRef(!!layout && layout.width > 0);
+  const stretchOn = m.level === 'full';
+  const lx = layout?.x;
+  const lw = layout?.width;
+  useEffect(() => {
+    if (lx === undefined || lw === undefined || !(lw > 0)) return;
+    target.value = lx;
+    if (!placed.current) {
+      placed.current = true;
+      x.value = lx;
+      w.value = lw;
+      shown.value = 1;
+      return;
+    }
+    x.value = m.spring(lx, 'panneau');
+    w.value = m.spring(lw, 'panneau');
+  }, [lx, lw]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => { cancelAnimation(x); cancelAnimation(w); }, [x, w]);
+  return useAnimatedStyle(() => {
+    const d = stretchOn ? Math.min(liquidIndicator.maxStretch, Math.abs(target.value - x.value) * liquidIndicator.perPx) : 0;
+    const squash = liquidIndicator.maxStretch > 0 ? (d / liquidIndicator.maxStretch) * liquidIndicator.squash : 0;
+    return { opacity: shown.value, width: w.value, transform: [{ translateX: x.value }, { scaleX: 1 + d }, { scaleY: 1 - squash }] };
+  });
 }

@@ -21,7 +21,7 @@ export { auraMotion, favorite, liquidIndicator, logoMotion, reorder, shake, skel
 export { usePress, type PressMotion } from './Press';
 export { StaggerList } from './Stagger';
 export { ContentSwap } from './ContentSwap';
-export { useIndicator, useItemLayouts, type ItemLayout } from './Indicator';
+export { useIndicator, useItemLayouts, useLiquidIndicator, type ItemLayout } from './Indicator';
 export { FavoriteStar, useFavoritePop } from './Favorite';
 export { useShake } from './Shake';
 export { SuccessCheck } from './SuccessCheck';

@@ -1,26 +1,27 @@
 /**
- * Tuile d'outil COMPACTE en verre (`GlassMaterial` « card ») — favoris, récents, « Pour <profil> » du centre d'outils
- * et de la recherche. Pictogramme + nom (2 lignes) : une petite surface, jamais un paragraphe (la description complète
- * est dans la fiche et dans les listes opaques, `ToolRow`). Langage de `GlassToolCard` :
- *  - toucher : compression 0,97 (`usePress`, fil UI), voile d'appui, l'ombre de repos se fond dans l'ombre de contact,
- *    haptique léger ; l'ouverture part après l'enfoncement perçu (`openTool`) ;
- *  - ENTRÉE (une fois, au montage) : la tuile se pose (0,94 → 1, 8 pt de montée), décalée de 45 ms par rang —
- *    TRANSFORM SEULEMENT : on n'estompe jamais un verre ni l'un de ses ancêtres (le flou se figerait) ;
- *  - « Réduire les animations » : aucune entrée, aucune échelle (le voile d'appui reste) ; « Réduire la transparence »,
- *    mode nuit, Android sans cible de flou : surface opaque (repli de `GlassMaterial`).
- * Nom accessible : nom de l'outil + profil éventuel (« pour Léa »).
+ * Tuile d'outil — favoris, récents, « Pour <profil> » du centre d'outils et de la recherche, raccourcis de l'accueil.
+ *
+ * Direction « verre minéral » (20/11/2026, docs/DA_LIQUID_GLASS.md) : l'outil est une MINI-APP — son logo (plaque
+ * d'icône d'app) posé directement sur la page, nom dessous, comme sur un écran d'accueil. Plus de carte de verre
+ * autour : le verre est réservé à ce qui flotte au-dessus du contenu (barre, recherche, feuilles, boutons flottants).
+ *  - toucher : la tuile se comprime (0,97, `usePress`, fil UI) et la plaque s'enfonce (0,94) dès le contact, haptique
+ *    léger ; à l'ouverture, le logo joue l'animation de SA famille (lune, anneau, courbe, coche, rebond, reflet) —
+ *    seule la tuile touchée s'anime, jamais toute la rangée ;
+ *  - ENTRÉE (une fois, au montage) : la tuile se pose (0,94 → 1, 8 pt de montée), décalée de 45 ms par rang ;
+ *  - « Réduire les animations » : aucune entrée, aucune échelle, état final du logo immédiat.
+ * Nom accessible : nom de l'outil + profil éventuel (« pour Léa ») + raison de la recommandation.
  */
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { GlassMaterial, glassShadow, useGlass } from '@/components/glass';
 import { ToolGlyph } from '@/components/ToolGlyph';
 import { Text } from '@/components/ui';
 import { cascadeDelay, useMotion, usePress } from '@/motion';
 import type { CatalogTool } from '@/lib/domain/toolCatalog';
-import { radius as R, spacing } from '@/theme/tokens';
+import { useTheme } from '@/theme/ThemeProvider';
+import { spacing } from '@/theme/tokens';
 
-export const TOOL_TILE = { width: 100, glyph: 44, minHeight: 112 } as const;
+export const TOOL_TILE = { width: 100, glyph: 60, minHeight: 104 } as const;
 
 export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, index = 0, width = TOOL_TILE.width, onPress, onLongPress, a11yHint, testID }: {
   tool: CatalogTool;
@@ -36,10 +37,12 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, in
   a11yHint?: string;
   testID?: string;
 }) {
+  const t = useTheme();
   const m = useMotion();
-  const { spec, tier } = useGlass('card');
   const p = usePress({ scale: 0.97, haptic: 'light' });
-  // Entrée : transform seulement (jamais l'opacité d'un verre)
+  const [pressed, setPressed] = React.useState(false);
+  const [play, setPlay] = React.useState(0);
+  // Entrée : transform seulement
   const enter = useSharedValue(m.level === 'full' ? 0 : 1);
   useEffect(() => {
     if (m.level !== 'full') { enter.value = 1; return; }
@@ -49,27 +52,17 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, in
   const style = useAnimatedStyle(() => ({
     transform: [{ translateY: (1 - enter.value) * 8 }, { scale: (0.94 + 0.06 * enter.value) * (1 - 0.03 * p.progress.value) }],
   }));
-  const veil = useAnimatedStyle(() => ({ opacity: p.progress.value }));
-  const rest = useAnimatedStyle(() => ({ opacity: 1 - p.progress.value }));
-  const down = useAnimatedStyle(() => ({ opacity: p.progress.value }));
   const a11y = [tool.label, profile, reason].filter(Boolean).join(', ');
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={a11y} testID={testID ?? `tool-shortcut-${tool.id}`} pressRetentionOffset={16}
-      onPressIn={p.onPressIn} onPressOut={p.onPressOut} onPress={onPress} onLongPress={onLongPress} accessibilityHint={a11yHint} style={{ width, alignSelf: 'stretch' }}>
+      onPressIn={() => { setPressed(true); p.onPressIn(); }} onPressOut={() => { setPressed(false); p.onPressOut(); }}
+      onPress={() => { setPlay((n) => n + 1); onPress(); }} onLongPress={onLongPress} accessibilityHint={a11yHint} style={{ width, alignSelf: 'stretch' }}>
       <Animated.View style={[styles.tile, style]}>
-        {spec.shadow ? (
-          <>
-            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: R.lg, boxShadow: glassShadow(spec, tier) }, rest]} />
-            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: R.lg, boxShadow: glassShadow(spec, tier, true) }, down]} />
-          </>
-        ) : null}
-        <GlassMaterial variant="card" radius={R.lg} testID={`tool-tile-${tool.id}`} />
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: R.lg, backgroundColor: spec.press }, veil]} />
-        <View style={styles.body}>
-          <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={TOOL_TILE.glyph} />
-          <Text variant="caption" weight="bold" center color={spec.inks.text} style={styles.name}>{tool.label}</Text>
-          {profile ? <Text variant="caption" center numberOfLines={1} color={spec.inks.muted}>{profile}</Text> : null}
-          {reason ? <Text variant="caption" center color={spec.inks.muted} style={styles.reason} testID={testID ? `${testID}-reason` : undefined}>{reason}</Text> : null}
+        <View style={styles.body} testID={`tool-tile-${tool.id}`}>
+          <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={TOOL_TILE.glyph} pressed={pressed} play={play} />
+          <Text variant="caption" weight="bold" center color={t.colors.text} style={styles.name}>{tool.label}</Text>
+          {profile ? <Text variant="caption" center numberOfLines={1} color={t.colors.textMuted}>{profile}</Text> : null}
+          {reason ? <Text variant="caption" center color={t.colors.textMuted} style={styles.reason} testID={testID ? `${testID}-reason` : undefined}>{reason}</Text> : null}
         </View>
       </Animated.View>
     </Pressable>
@@ -78,8 +71,8 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, in
 
 const styles = StyleSheet.create({
   // Hauteur uniforme dans une rangée : la tuile remplit la hauteur de la plus haute (nom entier, jamais d'ellipse)
-  tile: { borderRadius: R.lg, minHeight: TOOL_TILE.minHeight, flexGrow: 1 },
-  body: { alignItems: 'center', paddingHorizontal: spacing.xs, paddingTop: spacing.sm, paddingBottom: spacing.sm, gap: 6 },
+  tile: { minHeight: TOOL_TILE.minHeight, flexGrow: 1 },
+  body: { alignItems: 'center', paddingHorizontal: 2, paddingTop: spacing.xxs, paddingBottom: spacing.xs, gap: 6 },
   name: { fontSize: 13, lineHeight: 17 },
   reason: { fontSize: 11, lineHeight: 14 },
 });

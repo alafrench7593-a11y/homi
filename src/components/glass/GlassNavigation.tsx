@@ -18,7 +18,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius as R, spacing } from '@/theme/tokens';
-import { motionHaptic, useIndicator, useItemLayouts, useMotion, usePress } from '@/motion';
+import { motionHaptic, useIndicator, useItemLayouts, useLiquidIndicator, useMotion, usePress } from '@/motion';
 import { t as tr } from '@/i18n';
 import { Icon, Text, type IconName } from '../ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
@@ -111,7 +111,8 @@ export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, ce
   const insets = useSafeAreaInsets();
   const { spec } = useGlass('chrome');
   const { layouts, onItemLayout } = useItemLayouts<string>();
-  const indicator = useIndicator(layouts[activeKey]);
+  // indicateur LIQUIDE : glisse et s'étire dans le sens du trajet (docs/DA_LIQUID_GLASS.md)
+  const indicator = useLiquidIndicator(layouts[activeKey]);
   const safe = bottomInset ?? insets.bottom;
   const split = center ? (centerAfter ?? Math.ceil(tabs.length / 2)) : tabs.length;
   const radius = floating ? (GLASS_TAB_BAR.height + GLASS_TAB_BAR.inset * 2) / 2 : 0;
