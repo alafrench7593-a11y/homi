@@ -70,9 +70,9 @@ const AGES = [1, 3, 6, 9, 12, 24, 36, 72, 96];
 const STAGES_SA = [8, 12, 20, 28, 36];
 
 /** 3 — Enfants et grossesse : tout est facultatif ; seuls les enfants avec prénom et date seront créés. */
-export function FamilyStep({ answers, pregnancy, onPregnancy, pErrors, children, onChildren, cErrors }: {
+export function FamilyStep({ answers, pregnancy, onPregnancy, pErrors, kids: children, onChildren, cErrors }: {
   answers: JourneyAnswers; pregnancy: PregnancyDraft; onPregnancy: (p: PregnancyDraft) => void; pErrors: Record<string, string>;
-  children: ChildDraft[]; onChildren: (c: ChildDraft[]) => void; cErrors: Record<string, string>[];
+  kids: ChildDraft[]; onChildren: (c: ChildDraft[]) => void; cErrors: Record<string, string>[];
 }) {
   const askPreg = answers.profile.includes('pregnant');
   const askKids = answers.profile.some((t) => t === 'new_baby' || t === 'kids' || t === 'dad');

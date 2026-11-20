@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**267 routes** réelles (`src/lib/routes.generated.ts`) portées par **268 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**268 routes** réelles (`src/lib/routes.generated.ts`) portées par **269 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -22,7 +22,7 @@
 | Autres | 25 | 25 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
-| Réglages | 23 | 23 | 0 | 0 | 0 | 0 |
+| Réglages | 24 | 24 | 0 | 0 | 0 | 0 |
 | Accueil | 21 | 18 | 0 | 3 | 4 | 1 |
 | Santé | 29 | 21 | 0 | 8 | 7 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
@@ -30,9 +30,9 @@
 | Bébé et enfant | 32 | 28 | 0 | 4 | 50 | 1 |
 | Famille | 38 | 38 | 0 | 0 | 6 | 0 |
 | Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
-| **Total** | **268** | **243** | **2** | **23** | **87** | **4** |
+| **Total** | **269** | **244** | **2** | **23** | **87** | **4** |
 
-Rôles : détail 48 · formulaire 50 · historique 17 · liste 105 · réglage 28 · résultat 13 · scène 7.
+Rôles : détail 48 · formulaire 50 · historique 17 · liste 105 · réglage 29 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -120,6 +120,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/settings` | réglage | — | Screen, Card, Field, Button, Banner, Toggle, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/account` | réglage | — | Screen, Card, Sheet, Field, Button, Banner, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/appearance` | réglage | — | Screen, Card, GlowCard, Button, Banner, Chip, Segmented, Toggle, ListRow, SectionTitle, CompletionCheck | 0 |  | à faire |
+| `/settings/credits` | réglage | — | Screen, Card, Button, Banner, SectionTitle | 0 |  | à faire |
 | `/settings/family` | réglage | — | Screen, Card, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle | 0 |  | à faire |
 | `/settings/home` | réglage | — | Screen, Card, Button, Chip, Toggle, Cascade | 0 |  | à faire |
 | `/settings/iphone-calendar` | réglage | — | Screen, Card, Button, Banner, Toggle, SectionTitle | 0 |  | à faire |

@@ -241,6 +241,7 @@ ecran,Santé,/scanner/result/[id],src/app/scanner/result/[id].tsx,résultat,,Scr
 ecran,Réglages,/settings,src/app/settings/index.tsx,réglage,,Screen Card Field Button Banner Toggle ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/account,src/app/settings/account.tsx,réglage,,Screen Card Sheet Field Button Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/appearance,src/app/settings/appearance.tsx,réglage,,Screen Card GlowCard Button Banner Chip Segmented Toggle ListRow SectionTitle CompletionCheck,0,non,à faire,,,,,,,,,,,,,
+ecran,Réglages,/settings/credits,src/app/settings/credits.tsx,réglage,,Screen Card Button Banner SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/family,src/app/settings/family.tsx,réglage,,Screen Card Field Button Banner Chip Segmented ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/home,src/app/settings/home.tsx,réglage,,Screen Card Button Chip Toggle Cascade,0,non,à faire,,,,,,,,,,,,,
 ecran,Réglages,/settings/iphone-calendar,src/app/settings/iphone-calendar.tsx,réglage,,Screen Card Button Banner Toggle SectionTitle,0,non,à faire,,,,,,,,,,,,,

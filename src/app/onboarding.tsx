@@ -381,7 +381,7 @@ export default function Onboarding() {
         ) : step === 'household' ? (
           <HouseholdChoiceStep value={ja.household} invite={ja.invite} onChange={(household) => setJa((a) => ({ ...a, household }))} onInvite={(invite) => setJa((a) => ({ ...a, invite }))} />
         ) : step === 'family' ? (
-          <FamilyStep answers={ja} pregnancy={pregnancy} onPregnancy={setPregnancy} pErrors={pErrors} children={children} cErrors={cErrors}
+          <FamilyStep answers={ja} pregnancy={pregnancy} onPregnancy={setPregnancy} pErrors={pErrors} kids={children} cErrors={cErrors}
             onChildren={(list) => { setChildren(list.length ? list : [emptyChild()]); setCErrors(list.map(() => ({}))); }} />
         ) : step === 'feeding' ? (
           <FeedingStep value={ja.feeding} onChange={(feeding) => setJa((a) => ({ ...a, feeding }))} />
