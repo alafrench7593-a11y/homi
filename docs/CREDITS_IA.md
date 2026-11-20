@@ -33,7 +33,7 @@ Fichiers principaux :
   c'est une étape de mise en service (§ 8).
 - **Premium 14,99 €/mois — 1 000 crédits/mois. Famille 19,99 €/mois — 1 500 crédits/mois partagés entre les adultes
   du foyer.**
-- **Packs** quand les crédits sont épuisés : **300 crédits 2,99 €**, **800 crédits 5,99 €**, **2 000 crédits 11,99 €**.
+- **Packs** quand les crédits sont épuisés : **300 crédits 3,99 €**, **800 crédits 8,99 €**, **2 000 crédits 19,99 €**.
 - **Prix affichés : toujours ceux de la boutique** (StoreKit via RevenueCat). Les montants ci-dessus n'existent dans le
   code que dans la grille de démonstration (`src/lib/premium/plans.ts`), signalée « démonstration » à l'écran.
 
@@ -178,7 +178,7 @@ HOMI IA » sur « Mes crédits » (aucune IA appelée, crédits de démonstratio
    d'abonnement montrant la carte Famille, note de revue : « Famille = même Premium pour tous les adultes du foyer et
    1 500 crédits IA par mois partagés ».
 2. **Achats intégrés consommables** (Monétisation › Achats intégrés › + › **Consommable**) :
-   `homi_credits_300` (2,99 €), `homi_credits_800` (5,99 €), `homi_credits_2000` (11,99 €) ; nom affiché « 300 crédits
+   `homi_credits_300` (3,99 €), `homi_credits_800` (8,99 €), `homi_credits_2000` (19,99 €) ; nom affiché « 300 crédits
    HOMI IA »… ; description « Crédits pour les analyses HOMI IA. Nécessite un abonnement HOMI Premium ou Famille. Les
    crédits achetés n'expirent pas. » ; capture de la feuille « Vous n'avez plus de crédits ».
 3. Fiche App Store : mentionner les achats intégrés ; **App Privacy** : données envoyées à Google (Gemini) quand l'IA

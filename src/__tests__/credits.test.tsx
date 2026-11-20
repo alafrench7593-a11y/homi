@@ -183,7 +183,7 @@ describe('écrans (démonstration)', () => {
     expect(textOf(r, 'credits-monthly')).toContain('1 000');
     expect(textOf(r, 'credits-renewal')).toMatch(/Prochain renouvellement .*1 000 crédits mensuels/);
     const txt = allText(r);
-    for (const p of ['2,99 €', '5,99 €', '11,99 €']) expect(txt).toContain(p);
+    for (const p of ['3,99 €', '8,99 €', '19,99 €']) expect(txt).toContain(p);
     expect(has(r, 'credits-packs-demo')).toBe(true);
     await tap(r, 'pack-buy-homi_credits_800');
     expect((await status()).purchased_remaining).toBe(800);

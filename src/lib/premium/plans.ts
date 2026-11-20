@@ -160,8 +160,8 @@ export function demoPlans(locale: string): Plan[] {
 /** Grille Famille affichée UNIQUEMENT en démonstration : 19,99 € / mois (en boutique : prix de StoreKit / Play). */
 export const DEMO_FAMILY_GRID = { monthly: { amount: 19.99, trialDays: 0 } } as const;
 
-/** Packs de crédits HOMI IA, grille affichée UNIQUEMENT en démonstration (faux magasin) : 2,99 / 5,99 / 11,99 €. */
-export const DEMO_PACK_GRID = { homi_credits_300: 2.99, homi_credits_800: 5.99, homi_credits_2000: 11.99 } as const;
+/** Packs de crédits HOMI IA, grille affichée UNIQUEMENT en démonstration (faux magasin) : 3,99 / 8,99 / 19,99 € (prix fixés le 20/11/2026). */
+export const DEMO_PACK_GRID = { homi_credits_300: 3.99, homi_credits_800: 8.99, homi_credits_2000: 19.99 } as const;
 
 /** Démonstration : formule Famille (mensuelle). */
 export function demoFamilyPlans(locale: string): Plan[] {

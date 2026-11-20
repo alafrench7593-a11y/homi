@@ -24,7 +24,7 @@ aucun secret ne doit être collé dans ce dépôt** : seule la clé **publique**
 | Produit 6 mois | **`homi_premium_6months`** — 6 mois — **69,99 €** — essai gratuit 3 jours |
 | Produit annuel | **`homi_premium_annual`** — 1 an — **119,99 €** — essai gratuit 3 jours |
 | Produit Famille (26/11/2026, **identifiant proposé, à confirmer**) | **`homi_family_monthly_v2`** — 1 mois — **19,99 €** — même groupe, **niveau le plus élevé** |
-| Packs de crédits HOMI IA (achats **consommables**, identifiants proposés) | **`homi_credits_300`** 2,99 € · **`homi_credits_800`** 5,99 € · **`homi_credits_2000`** 11,99 € |
+| Packs de crédits HOMI IA (achats **consommables**, identifiants proposés) | **`homi_credits_300`** 3,99 € · **`homi_credits_800`** 8,99 € · **`homi_credits_2000`** 19,99 € |
 | Droit (entitlement) RevenueCat | **`HOMI_PREMIUM`** (les 4 abonnements, Famille compris ; les packs : **aucun** droit) |
 | Offering RevenueCat | **`default`**, marquée **Current** ; offering **`credits`** pour les 3 packs |
 | Packages | **`$rc_monthly`** (Monthly), **`$rc_six_month`** (6 Month), **`$rc_annual`** (Annual), **`family_monthly`** (personnalisé, produit Famille) |

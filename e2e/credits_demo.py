@@ -137,7 +137,7 @@ def run(b, width, height, first):
         R['solde_1500'] = text_of(pg, 'credits-total') == '1 500 crédits disponibles' and '1 500' in text_of(pg, 'credits-monthly')
         R['renouvellement_affiche'] = bool(re.search(r'\d+ \S+ : 1 500 crédits mensuels', text_of(pg, 'credits-renewal')))
         R['solde_commun_foyer'] = 'Solde commun aux adultes du foyer' in T(pg) or 'Solde partagé' in T(pg)
-        R['packs_grille_demo'] = all(p in T(pg) for p in ['2,99 €', '5,99 €', '11,99 €']) and has(pg, 'credits-packs-demo')
+        R['packs_grille_demo'] = all(p in T(pg) for p in ['3,99 €', '8,99 €', '19,99 €']) and has(pg, 'credits-packs-demo')
     R[f'debordement_credits_{w}'] = len(detect(pg, f'credits_{w}')) == 0
     shoot(pg, f'credits_mes_credits_{w}')
 
