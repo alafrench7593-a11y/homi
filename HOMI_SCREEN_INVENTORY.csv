@@ -152,7 +152,7 @@ ecran,Cycle et fertilité,/fertility/pma,src/app/fertility/pma.tsx,formulaire,pm
 ecran,Cycle et fertilité,/fertility/reminders,src/app/fertility/reminders.tsx,réglage,ttc_reminders,Screen,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility/test/[kind],src/app/fertility/test/[kind].tsx,formulaire,,Screen Card Field Button Banner Chip Segmented SectionTitle,1,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility/understand,src/app/fertility/understand.tsx,liste,ttc_understand,Screen Card Banner Toggle SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Autres,/garde,src/app/garde/index.tsx,liste,childcare,Screen Card Field Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde,src/app/garde/index.tsx,liste,childcare,Screen Card Field Button ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/garde/[id],src/app/garde/[id]/index.tsx,détail,,Screen Card Button Banner EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/garde/[id]/acces,src/app/garde/[id]/acces.tsx,liste,,Screen Card Field Button Banner ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/garde/[id]/ajouter,src/app/garde/[id]/ajouter.tsx,formulaire,,Screen Card Sheet Field Button Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -160,6 +160,16 @@ ecran,Autres,/garde/[id]/journee,src/app/garde/[id]/journee.tsx,liste,,Screen Ca
 ecran,Autres,/garde/[id]/messages,src/app/garde/[id]/messages.tsx,liste,,Screen Card Field Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/garde/[id]/photo,src/app/garde/[id]/photo.tsx,liste,,Screen Card Field Button Banner Chip EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/garde/[id]/photos,src/app/garde/[id]/photos.tsx,liste,,Screen Card Button EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep,src/app/garde/prep/index.tsx,détail,,Screen Card Banner ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/absences,src/app/garde/prep/absences.tsx,formulaire,,Screen Field Button Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/budget,src/app/garde/prep/budget.tsx,liste,,Screen Card Button Banner EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/candidats,src/app/garde/prep/candidats.tsx,liste,,Screen Card Chip EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/entretien,src/app/garde/prep/entretien.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/fiche,src/app/garde/prep/fiche.tsx,liste,,Screen Card Button Chip ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/heures,src/app/garde/prep/heures.tsx,formulaire,,Screen Card Field Button IconButton Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/modes,src/app/garde/prep/modes.tsx,liste,,Screen Card Banner,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/planning,src/app/garde/prep/planning.tsx,formulaire,,Screen Card Field Button IconButton Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/garde/prep/visite,src/app/garde/prep/visite.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/garde/rejoindre,src/app/garde/rejoindre.tsx,détail,,Screen Card Button,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/guide,src/app/guide/index.tsx,liste,guides,Screen ListRow EmptyState,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/guide/[topic],src/app/guide/[topic].tsx,détail,,Screen Card Banner ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -379,7 +389,7 @@ outil,Bébé et enfant,/child/[id]/needs,,,,,,,,kid_treatments,kid_treatments,Tr
 outil,Bébé et enfant,/child/[id]/school,,,,,,,,kid_school,kid_school,École ou mode de garde,growth,formulaire/assistant,/child/[id]/school,,,,non,non,non,non
 outil,Bébé et enfant,/child/[id]/card,,,,,,,,kid_card,kid_card,Fiche à transmettre,health,formulaire/assistant,/child/[id]/card,,,,non,non,non,non
 outil,Famille,/family/custody,,,,,,,,custody,custody,Garde alternée,calendar,famille/partage/communauté,/family/custody,feuille dans l’écran,,,non,non,non,non
-outil,Autres,/garde,,,,,,,,childcare,childcare,Garde et nounou,growth,famille/partage/communauté,/garde,/garde/[id]/ajouter,/garde/[id] /garde/rejoindre,/garde/[id]/acces /garde/[id]/journee /garde/[id]/messages /garde/[id]/photo /garde/[id]/photos,non,non,non,non
+outil,Autres,/garde,,,,,,,,childcare,childcare,Garde et nounou,growth,famille/partage/communauté,/garde,,,,non,non,non,non
 outil,Bébé et enfant,/child/[id]/steps,,,,,,,,kid_steps,kid_steps,Démarches de l’enfant,health,formulaire/assistant,/child/[id]/steps,,,,non,non,non,non
 outil,Famille,/family/kid-routines,,,,,,,,kid_routines,kid_routines,Routines en images,tasks,tâches/planning,/family/kid-routines,feuille dans l’écran,,,non,non,non,non
 outil,Famille,/family/review,,,,,,,,family_review,family_review,Bilan de la semaine,prevention,famille/partage/communauté,/family/review,,,,non,non,non,non

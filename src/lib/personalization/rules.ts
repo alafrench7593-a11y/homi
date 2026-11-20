@@ -58,7 +58,7 @@ export const PROFILE_RULES: ProfileRule[] = [
   { id: 'prio-appointments', when: (f) => prio(f, 'appointments'), reason: () => ({ key: 'pz.r.prio.appointments' }), tools: [['appointments', 7], ['consult_questions', 5], ['family_calendar', 4]] },
   { id: 'prio-tasks', when: (f) => prio(f, 'tasks'), reason: () => ({ key: 'pz.r.prio.tasks' }), tools: [['family_tasks', 7], ['family_missions', 6], ['mental_load', 5]] },
   { id: 'prio-communication', when: (f) => prio(f, 'communication'), reason: () => ({ key: 'pz.r.prio.communication' }), tools: [['couple_understand', 8], ['couple_week', 6], ['h200_176', 4]] },
-  { id: 'prio-find_nanny', when: (f) => prio(f, 'find_nanny'), reason: () => ({ key: 'pz.r.prio.find_nanny' }), tools: [['childcare', 7], ['h200_152', 5]] },
+  { id: 'prio-find_nanny', when: (f) => prio(f, 'find_nanny'), reason: () => ({ key: 'pz.r.prio.find_nanny' }), tools: [['h200_141', 8], ['h200_142', 7], ['h200_144', 6], ['h200_145', 5], ['h200_146', 5], ['h200_147', 4], ['h200_143', 3], ['childcare', 3]] },
   { id: 'prio-childcare_days', when: (f) => prio(f, 'childcare_days'), reason: () => ({ key: 'pz.r.prio.childcare_days' }), tools: [['childcare', 7], ['h200_153', 6]] },
   { id: 'prio-school', when: (f) => prio(f, 'school'), reason: () => ({ key: 'pz.r.prio.school' }), tools: [['kid_school', 7], ['kid_routines', 6], ['h200_139', 4]] },
   { id: 'prio-activities', when: (f) => prio(f, 'activities'), reason: () => ({ key: 'pz.r.prio.activities' }), tools: [['h200_131', 6], ['nearby', 5]] },
@@ -86,7 +86,7 @@ export const CHILD_RULES: ChildRule[] = [
     tools: [['kid_routines', 6], ['h200_139', 5], ['journal', 3], ['nearby', 3], ['kid_steps', 2], ['kid_health', 2]] },
   // âge scolaire (3 ans) : outils scolaires PROPOSÉS, sans présumer d'une inscription
   { id: 'school-age', when: (c) => c.months >= 36 && c.months < 132, reason: (c) => ({ key: 'pz.r.school', name: c.name }), tools: [['kid_school', 6]] },
-  { id: 'nanny', when: (_c, f) => f.caregiverLinked, reason: (c) => ({ key: 'pz.r.nanny', name: c.name }), tools: (c) => (c.months < 72 ? [['childcare', 8], ['h200_153', 7], ['h200_158', 6]] : []) },
+  { id: 'nanny', when: (_c, f) => f.caregiverLinked, reason: (c) => ({ key: 'pz.r.nanny', name: c.name }), tools: (c) => (c.months < 72 ? [['childcare', 8], ['h200_153', 7], ['h200_148', 6], ['h200_149', 5], ['h200_150', 5], ['h200_158', 4]] : []) },
 ];
 
 /** Alimentation déclarée (étape 4) : s'applique au plus jeune enfant de moins de 2 ans. */
@@ -98,5 +98,5 @@ export const FEEDING_TOOLS: Record<'breast' | 'pumped' | 'formula' | 'mixed' | '
   solids: [['baby_foods', 9], ['h200_111', 7], ['h200_114', 6], ['h200_116', 5]],
 };
 
-/** Compte qui garde des enfants (nounou) : SEULEMENT les outils de la garde. */
-export const CAREGIVER_TOOLS: W[] = [['childcare', 10], ['h200_153', 9], ['h200_157', 8], ['h200_159', 7], ['h200_154', 6], ['h200_155', 6], ['h200_156', 5], ['h200_158', 4]];
+/** Compte qui garde des enfants (nounou) : SEULEMENT les outils de la garde (parmi « Avant la garde » : heures et absences). */
+export const CAREGIVER_TOOLS: W[] = [['childcare', 10], ['h200_153', 9], ['h200_157', 8], ['h200_159', 7], ['h200_154', 6], ['h200_155', 6], ['h200_156', 5], ['h200_158', 4], ['h200_149', 4], ['h200_150', 4]];

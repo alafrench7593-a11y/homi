@@ -189,6 +189,10 @@ const FN_RAW: Record<string, Partial<M>> = {
   h200_118: { lifeStages: ['baby_6_12', 'toddler_1_3', 'child_3_6'], ageRange: [6, 72], requiredData: ['child'] },
   h200_119: { lifeStages: ['baby_6_12', 'toddler_1_3'], ageRange: [6, 36], requiredData: ['child'], feeding: ['solids'] },
   h200_121: { lifeStages: ['baby_6_12', 'toddler_1_3'], ageRange: [6, 36], requiredData: ['child'], feeding: ['solids'] },
+  // Avant la garde (141–147 : chercher, comparer, budgéter ; 148–150 : une garde en place ; 151 : contrats)
+  ...Object.fromEntries([141, 142, 143, 144, 145, 146, 147].map((n) => [`h200_${n}`, { lifeStages: ['parent', 'infant_0_6', 'baby_6_12', 'toddler_1_3', 'child_3_6'] as LifeStage[], requiredData: [] as RequiredData[] }])),
+  ...Object.fromEntries([148, 149, 150].map((n) => [`h200_${n}`, { lifeStages: ['parent', 'nanny', 'infant_0_6', 'baby_6_12', 'toddler_1_3', 'child_3_6'] as LifeStage[], requiredData: ['child', 'caregiver'] as RequiredData[] }])),
+  h200_151: { lifeStages: ['parent', 'household', 'nanny'], requiredData: [], ageRange: undefined },
   h200_152: { requiredData: ['child'] },
   h200_153: { requiredData: ['child', 'caregiver'] }, h200_154: { requiredData: ['child', 'caregiver'] }, h200_155: { requiredData: ['child', 'caregiver'] },
   h200_156: { requiredData: ['child', 'caregiver'] }, h200_157: { requiredData: ['child', 'caregiver'] }, h200_158: { requiredData: ['child', 'caregiver'] },

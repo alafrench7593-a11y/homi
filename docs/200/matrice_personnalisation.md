@@ -81,7 +81,9 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 | 5 | Suivi des repas et biberons chez la nounou | `h200_154` | Pour la garde de Lina | caregiver |
 | 6 | Suivi des siestes et changes chez la nounou | `h200_155` | Pour la garde de Lina | caregiver |
 | 7 | Journal des activités et observations | `h200_156` | Pour la garde de Lina | caregiver |
-| 8 | Album privé des photos de garde | `h200_158` | Pour la garde de Lina | caregiver |
+| 8 | Suivi des heures de garde | `h200_149` | Pour la garde de Lina | caregiver |
+| 9 | Suivi des absences et congés | `h200_150` | Pour la garde de Lina | caregiver |
+| 10 | Album privé des photos de garde | `h200_158` | Pour la garde de Lina | caregiver |
 
 ## F — Parent de trois enfants (4 mois, 4 ans, 7 ans)
 
@@ -100,7 +102,7 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 
 « Ton enfant » — Léa (4 mois) : Noter un biberon (Parce que Léa prend du lait infantile) · Garde et nounou (Parce qu’une nounou garde Léa) · Sommeil de l’enfant (Parce que Léa a 4 mois) · Journée des biberons (Parce que Léa prend du lait infantile) · Couches (Parce que Léa a 4 mois) · Carnet de liaison numérique (Parce qu’une nounou garde Léa)
 
-« Ton enfant » — Tom (4 ans) : Garde et nounou (Parce qu’une nounou garde Tom) · Carnet de liaison numérique (Parce qu’une nounou garde Tom) · Album privé des photos de garde (Parce qu’une nounou garde Tom) · École ou mode de garde (Parce que Tom a l’âge d’aller à l’école) · Suggestions d’activités selon l’âge (Parce que Tom a 4 ans) · Étapes du développement (Parce que Tom a 4 ans)
+« Ton enfant » — Tom (4 ans) : Garde et nounou (Parce qu’une nounou garde Tom) · Carnet de liaison numérique (Parce qu’une nounou garde Tom) · Calendrier des périodes de garde (Parce qu’une nounou garde Tom) · École ou mode de garde (Parce que Tom a l’âge d’aller à l’école) · Suggestions d’activités selon l’âge (Parce que Tom a 4 ans) · Étapes du développement (Parce que Tom a 4 ans)
 
 « Ton enfant » — Zoé (7 ans) : Routines en images (Parce que Zoé a 7 ans) · École ou mode de garde (Parce que Zoé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Zoé a 7 ans) · Journal complet (Parce que Zoé a 7 ans) · Sorties en famille (Parce que Zoé a 7 ans) · Suivi de santé de l’enfant (Parce que Zoé a 7 ans)
 

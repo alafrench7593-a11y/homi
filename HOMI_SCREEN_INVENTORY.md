@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**257 routes** réelles (`src/lib/routes.generated.ts`) portées par **258 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**267 routes** réelles (`src/lib/routes.generated.ts`) portées par **268 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -19,7 +19,7 @@
 
 | Zone | Fichiers | À faire | Tranche | Fait | Couleurs en dur | Animated RN |
 |---|---:|---:|---:|---:|---:|---:|
-| Autres | 15 | 15 | 0 | 0 | 0 | 0 |
+| Autres | 25 | 25 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
 | Réglages | 23 | 23 | 0 | 0 | 0 | 0 |
@@ -30,9 +30,9 @@
 | Bébé et enfant | 32 | 28 | 0 | 4 | 50 | 1 |
 | Famille | 38 | 38 | 0 | 0 | 6 | 0 |
 | Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
-| **Total** | **258** | **233** | **2** | **23** | **87** | **4** |
+| **Total** | **268** | **243** | **2** | **23** | **87** | **4** |
 
-Rôles : détail 45 · formulaire 47 · historique 17 · liste 101 · réglage 28 · résultat 13 · scène 7.
+Rôles : détail 48 · formulaire 50 · historique 17 · liste 105 · réglage 28 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -54,7 +54,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/discover` | détail | — | — | 0 |  | à faire |
 | `/discover/tool/[id]` | détail | — | — | 0 |  | à faire |
 | `/discover/tools` | détail | — | — | 0 |  | à faire |
-| `/garde` | liste | childcare | Screen, Card, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde` | liste | childcare | Screen, Card, Field, Button, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]` | détail | — | Screen, Card, Button, Banner, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]/acces` | liste | — | Screen, Card, Field, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]/ajouter` | formulaire | — | Screen, Card, Sheet, Field, Button, Chip, EmptyState, Skeleton | 0 |  | à faire |
@@ -62,6 +62,16 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/garde/[id]/messages` | liste | — | Screen, Card, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]/photo` | liste | — | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/garde/[id]/photos` | liste | — | Screen, Card, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/prep` | détail | — | Screen, Card, Banner, ListRow, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/prep/absences` | formulaire | — | Screen, Field, Button, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/prep/budget` | liste | — | Screen, Card, Button, Banner, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/prep/candidats` | liste | — | Screen, Card, Chip, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/prep/entretien` | détail | — | — | 0 |  | à faire |
+| `/garde/prep/fiche` | liste | — | Screen, Card, Button, Chip, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/prep/heures` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/prep/modes` | liste | — | Screen, Card, Banner | 0 |  | à faire |
+| `/garde/prep/planning` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
+| `/garde/prep/visite` | détail | — | — | 0 |  | à faire |
 | `/garde/rejoindre` | détail | — | Screen, Card, Button | 0 |  | à faire |
 | `/guide` | liste | guides | Screen, ListRow, EmptyState | 0 |  | à faire |
 | `/tools/[category]` | détail | — | Screen, EmptyState, VirtualList | 0 |  | à faire |
@@ -398,7 +408,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Résumés | `summary` | `/summary` | — | — | — | non | non | non | non |
 | Espace du co-parent | `pp_partner` | `/postpartum/partner` | `/postpartum/checkin /postpartum/support` | — | `/postpartum/history /postpartum/recovery /postpartum/sharing /postpartum/understand` | non | non | non | non |
 | Garde alternée | `custody` | `/family/custody` | feuille dans l’écran | — | — | non | non | non | non |
-| Garde et nounou | `childcare` | `/garde` | `/garde/[id]/ajouter` | `/garde/[id] /garde/rejoindre` | `/garde/[id]/acces /garde/[id]/journee /garde/[id]/messages /garde/[id]/photo /garde/[id]/photos` | non | non | non | non |
+| Garde et nounou | `childcare` | `/garde` | — | — | — | non | non | non | non |
 | Bilan de la semaine | `family_review` | `/family/review` | — | — | — | non | non | non | non |
 
 ### formulaire/assistant (24)

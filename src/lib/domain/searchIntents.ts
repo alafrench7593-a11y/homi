@@ -37,7 +37,11 @@ export const SEARCH_INTENTS: SearchIntent[] = [
   { id: 'menu', re: w('quoi manger|quoi cuisiner|menu|menus|repas de la semaine|planning repas|meal plan|what to eat|what to cook'), ids: ['meal_menu', 'meals'] },
   { id: 'shopping', re: w('courses|liste de courses|shopping|groceries|grocery'), ids: ['family_shopping'] },
   // garde
-  { id: 'nanny', re: w('nounou|nounous|nouno|nanny|nannies|nany|babysitter|baby sitter|babysitting|garde d enfant|garde d enfants|mode de garde|creche|assistante maternelle|ass mat|childcare|child care|childminder|daycare|day care|nursery'), ids: ['childcare'] },
+  { id: 'nannyBudget', re: w('budget de garde|cout de la garde|combien coute une creche|combien coute une nounou|coute une creche|prix de la creche|tarif nounou|tarif de la creche|childcare cost|childcare budget|nanny rates|how much does daycare cost'), ids: ['h200_147', 'h200_146'] },
+  { id: 'nannyHours', re: w('heures de garde|pointage|childcare hours|nanny hours'), ids: ['h200_149'] },
+  { id: 'nannyContract', re: w('contrat de la nounou|contrat nounou|contrat de garde|contrat de la creche|nanny contract|childcare contract'), ids: ['h200_151'] },
+  { id: 'daycareSignup', re: w('inscription a la creche|inscrire a la creche|inscription creche|inscription a l ecole|school registration'), ids: ['kid_school'] },
+  { id: 'nanny', re: w('nounou|nounous|nouno|nanny|nannies|nany|babysitter|baby sitter|babysitting|garde d enfant|garde d enfants|mode de garde|creche|assistante maternelle|ass mat|childcare|child care|childminder|daycare|day care|nursery'), ids: ['h200_141', 'h200_142', 'childcare'] },
   { id: 'liaison', re: w('carnet de liaison|cahier de liaison|journee chez la nounou|journee de garde|daily log|care diary'), ids: ['h200_153', 'childcare'] },
   // couple : « je suis épuisée et mon mari ne comprend pas »
   { id: 'understand', re: w('ne comprend pas|comprend pas|ne me comprend|comprend rien|m ecoute pas|n ecoute pas|se comprendre|on se dispute|dispute|disputes|conflit|engueulade|doesn t understand|doesnt understand|does not understand|we argue|we fight|argument|arguing|communication|communiquer'), ids: ['couple_understand', 'couple_week'] },

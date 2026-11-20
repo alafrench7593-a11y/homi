@@ -154,6 +154,17 @@ describe('recalcul automatique', () => {
   });
   it('nounou associée → carnet de liaison et photos', () => {
     expect(rec(at('2026-09-01'), { caregiverLinked: true })).toEqual(expect.arrayContaining(['childcare', 'h200_153']));
+    // garde en place : planning, heures, absences
+    const linked = ids(childRecommendations(buildFacts({ now: at('2026-09-01'), myJourneys: ['baby'], children: kid, caregiverLinked: true }), 'k', {}, 16));
+    expect(linked).toEqual(expect.arrayContaining(['h200_148', 'h200_149', 'h200_150']));
+  });
+  it('« Trouver une nounou » → avant la garde (141–147) ; la nounou elle-même → seulement 149 et 150 parmi eux', () => {
+    const f = buildFacts({ now: NOW, myJourneys: ['baby'], children: kid, answers: { v: 3, profile: ['new_baby'], priorities: ['find_nanny'] } });
+    const r = ids(recommend(f, {}, { max: 20 }));
+    expect(r).toEqual(expect.arrayContaining(['h200_141', 'h200_142', 'h200_144', 'h200_146']));
+    const nanny = ids(recommend(persona('E').facts, {}, { max: 20 }));
+    expect(nanny).toEqual(expect.arrayContaining(['h200_149', 'h200_150']));
+    for (const n of [141, 142, 143, 144, 145, 146, 147, 148, 151]) expect(nanny).not.toContain(`h200_${n}`);
   });
 });
 

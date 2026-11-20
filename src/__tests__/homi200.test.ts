@@ -40,12 +40,13 @@ describe('HOMI_200', () => {
     expect(new Set(HOMI_200.map((e) => e.id)).size).toBe(200);
     const count = (k: string) => HOMI_200.filter((e) => e.kind === k).length;
     expect({ tool: count('tool'), view: count('view'), dup: count('dup'), partial: count('partial'), absent: count('absent') })
-      .toEqual({ tool: 62, view: 69, dup: 5, partial: 36, absent: 28 });
+      .toEqual({ tool: 62, view: 80, dup: 5, partial: 34, absent: 19 });
     // statuts de docs/200/correspondance_200.csv : PARTIEL et ABSENT identiques ; DOUBLON_LISTE identiques
     const csv = fs.readFileSync('docs/200/correspondance_200.csv', 'utf8').replace(/^﻿/, '').split('\n').slice(1).filter(Boolean);
     for (const line of csv) {
       const n = Number(line.split(',')[0]);
       const e = H200_BY_N[n];
+      if (n >= 141 && n <= 151) { expect([n, e.kind]).toEqual([n, 'view']); continue; } // « Avant la garde », livré après l'audit
       if (line.includes('ABSENT')) expect([n, e.kind]).toEqual([n, 'absent']);
       if (line.includes('PARTIEL')) expect([n, e.kind]).toEqual([n, 'partial']);
       if (line.includes('DOUBLON_LISTE')) expect([n, e.kind]).toEqual([n, 'dup']);
@@ -71,7 +72,7 @@ describe('HOMI_200', () => {
     for (const e of HOMI_200.filter((x) => !x.isAvailable)) expect(visible.has(e.id)).toBe(false);
   });
 
-  it('les 69 fonctions nommées : nom de la liste, une phrase, ouvertes sur une route existante dans au moins un profil', () => {
+  it('les 80 fonctions nommées : nom de la liste, une phrase, ouvertes sur une route existante dans au moins un profil', () => {
     const flat = flattenCatalog(full());
     for (const e of H200_VIEWS) {
       const entry = flat.find((x) => x.id === e.id);
@@ -97,7 +98,7 @@ describe('HOMI_200', () => {
     const tools = flat.filter((x) => !x.parent).length;
     const fns = flat.filter((x) => x.id.startsWith('h200_')).length;
     expect(tools).toBe(CATEGORY_TOOLS.length + 1); // + Communauté
-    expect(fns).toBe(69);
+    expect(fns).toBe(80);
   });
 
   it('non-régression : anciens identifiants, favoris et sous-accès historiques toujours résolus', () => {
