@@ -157,6 +157,8 @@ export interface CatalogSub {
   hint?: string;
   category: ToolCategory;
   href: string;
+  /** Numéro de la liste des 200 : sous-accès NOMMÉ (fonction de l'outil), affiché comme une entrée du catalogue. */
+  fn?: number;
 }
 
 export interface CatalogTool {
@@ -183,6 +185,11 @@ export interface CatalogTool {
   urgent?: boolean;
   /** Sous-accès disponibles pour le profil affiché (onglets, filtres, lectures du même écran). */
   subs: CatalogSub[];
+  /**
+   * Fonctions de l'outil exposées comme sous-accès NOMMÉS du catalogue (liste des 200, `h200_<n>`) : chacune a son
+   * nom, sa phrase et son pictogramme, et ouvre l'outil sur la vue précise. Vide pour une entrée déjà dérivée.
+   */
+  fns?: CatalogSub[];
   /** Entrée construite à partir d'un sous-accès (favori ou résultat de recherche) : identifiant de l'outil parent. */
   parent?: string;
 }
@@ -196,6 +203,7 @@ function toCatalog(it: ResolvedTool): CatalogTool {
     id: it.id, key: it.id, category: it.category, theme: it.theme, icon: it.icon, label: tr(toolLabelKey(it.id)), sub: desc || undefined,
     href: it.href, profiles: toolProfiles(def), free: isFreeRoute(routePath(it.href)), universal: it.universal, urgent: it.urgent, also: it.also,
     subs: it.subs.map((s) => ({ id: s.id, icon: s.icon, label: tr(toolLabelKey(s.id)), hint: tMaybe(toolSubKey(s.id)) || undefined, category: s.category, href: s.href })),
+    fns: it.fns.map((s) => ({ id: s.id, icon: s.icon, label: tr(toolLabelKey(s.id)), hint: tMaybe(toolSubKey(s.id)) || undefined, category: s.category, href: s.href, fn: s.fn })),
   };
 }
 
@@ -220,14 +228,14 @@ export function accountEntries(ctx: ScopeCtx): CatalogTool[] {
 
 /** Entrée de liste pour un sous-accès (favori, résultat de recherche, « à lire ») : s'ouvre comme un outil. */
 export function subAsTool(tool: CatalogTool, sub: CatalogSub): CatalogTool {
-  return { ...tool, id: sub.id, key: sub.id, category: sub.category, icon: sub.icon, label: sub.label, sub: sub.hint, href: sub.href, subs: [], also: [], parent: tool.id, urgent: false };
+  return { ...tool, id: sub.id, key: sub.id, category: sub.category, icon: sub.icon, label: sub.label, sub: sub.hint, href: sub.href, subs: [], fns: [], also: [], parent: tool.id, urgent: false };
 }
 
 /** Retrouve une entrée (outil ou sous-accès) par son identifiant stable. */
 export function findEntry(tools: CatalogTool[], id: string): CatalogTool | null {
   for (const x of tools) {
     if (x.id === id) return x;
-    const s = x.subs.find((y) => y.id === id);
+    const s = x.subs.find((y) => y.id === id) ?? x.fns?.find((y) => y.id === id);
     if (s) return subAsTool(x, s);
   }
   return null;

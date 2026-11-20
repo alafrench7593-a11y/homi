@@ -27,6 +27,7 @@
 import type { IconName } from '@/components/ui';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import type { TKey } from '@/i18n';
+import { HOMI_200, H200_BY_ID, H200_VIEWS, h200Root, type H200View } from './homi200';
 
 export type Scope = 'avoid' | 'ttc' | 'cycle' | 'none' | 'pregnancy' | 'postpartum' | 'baby' | 'child' | 'family';
 export const SCOPES: Scope[] = ['avoid', 'ttc', 'cycle', 'none', 'pregnancy', 'postpartum', 'baby', 'child', 'family'];
@@ -78,6 +79,8 @@ export interface ToolSubDef {
   /** Portées où il existe ; par défaut celles de l'outil. */
   scopes?: Scope[];
   href: (c: ScopeCtx) => string | null;
+  /** Numéro de la liste des 200 (sous-accès nommé `h200_<n>`) : nom `h2.<n>`, phrase `h2.<n>.d`, mots `h2.<n>.k`. */
+  fn?: number;
 }
 
 export interface ToolDef {
@@ -349,13 +352,48 @@ export const CATEGORY_TOOLS: ToolDef[] = REAL_TOOLS.filter((d) => d.category !==
 // ------------------------------------------------------------------ identifiants : outils, sous-accès, anciens noms
 export const subRef = (toolId: string, subId: string) => `${toolId}.${subId}`;
 
-/** Ancien identifiant → identifiant actuel (outil, ou sous-accès `outil.sous-accès`). */
-export const TOOL_ALIASES: Record<string, string> = Object.fromEntries(TOOLS.flatMap((d) => [
-  ...(d.aliases ?? []).map((a) => [a, d.id] as [string, string]),
-  ...(d.subs ?? []).map((s) => [s.legacy, subRef(d.id, s.id)] as [string, string]),
-]));
-
 const CANONICAL = Object.fromEntries(TOOLS.map((x) => [x.id, x])) as Record<string, ToolDef>;
+
+// ------------------------------------------------------------------ les 200 de la liste (src/lib/journeys/homi200.ts)
+/** Adresse d'une vue précise d'un outil (onglet, paramètre, saisie), selon le profil affiché ; null si l'outil est fermé ici. */
+function viewHref(def: ToolDef, v: H200View | undefined, c: ScopeCtx): string | null {
+  const base = def.href(c);
+  if (!base || !v) return base;
+  const child = c.childId ?? (c.scope === 'postpartum' ? c.babyId : null) ?? null;
+  const join = (u: string, qs: string) => `${u}${u.includes('?') ? '&' : '?'}${qs}`;
+  if (v.kidPath) return child ? v.kidPath.replace(':id', child) : base;
+  if (v.path) return v.withChild && child ? join(v.path, `child=${child}`) : v.path;
+  if (v.query) return join(base, Object.entries(v.query).map(([k, x]) => `${k}=${encodeURIComponent(x)}`).join('&'));
+  return base;
+}
+
+/**
+ * Fonctions d'outils exposées comme SOUS-ACCÈS NOMMÉS (`h200_<n>`) : nom de la liste de la propriétaire, une phrase,
+ * pictogramme ; elles ouvrent l'outil parent sur la vue précise. Identifiant stable = `h200_<n>` (favoris, récents).
+ */
+export const TOOL_FNS: Record<string, ToolSubDef[]> = {};
+const FN_BY_ID: Record<string, { def: ToolDef; sub: ToolSubDef }> = {};
+for (const e of H200_VIEWS) {
+  const def = CANONICAL[e.target!];
+  if (!def) throw new Error(`HOMI_200 ${e.n} : outil inconnu ${e.target}`);
+  const sub: ToolSubDef = { id: e.id, legacy: e.id, icon: e.icon ?? def.icon, category: e.category, scopes: e.scopes?.filter((s) => def.scopes.includes(s)), href: (c) => viewHref(def, e.view, c), fn: e.n };
+  (TOOL_FNS[def.id] ??= []).push(sub);
+  FN_BY_ID[e.id] = { def, sub };
+}
+
+/** Ancien identifiant → identifiant actuel (outil, ou sous-accès `outil.sous-accès`, ou sous-accès nommé `h200_<n>`). */
+export const TOOL_ALIASES: Record<string, string> = Object.fromEntries([
+  ...TOOLS.flatMap((d) => [
+    ...(d.aliases ?? []).map((a) => [a, d.id] as [string, string]),
+    ...(d.subs ?? []).map((s) => [s.legacy, subRef(d.id, s.id)] as [string, string]),
+  ]),
+  // un numéro de la liste qui EST un outil, un doublon, ou un outil partiel qui mène à un outil utilisable
+  ...HOMI_200.flatMap((e) => {
+    const root = H200_BY_ID[`h200_${h200Root(e.n)}`];
+    if (root.kind === 'view') return root.id === e.id ? [] : [[e.id, root.id] as [string, string]];
+    return root.target ? [[e.id, root.target] as [string, string]] : [];
+  }),
+]);
 
 export interface ToolRef { def: ToolDef; sub?: ToolSubDef; /** Identifiant actuel et stable. */ id: string }
 
@@ -365,6 +403,8 @@ export function resolveTool(id: string | null | undefined): ToolRef | null {
   const now = TOOL_ALIASES[id] ?? id;
   const direct = CANONICAL[now];
   if (direct) return { def: direct, id: now };
+  const fn = FN_BY_ID[now];
+  if (fn) return { def: fn.def, sub: fn.sub, id: now };
   const dot = now.indexOf('.');
   if (dot < 0) return null;
   const def = CANONICAL[now.slice(0, dot)];
@@ -387,16 +427,19 @@ export const TOOL_BY_ID: Record<string, ToolDef> = {
 /** Clés de traduction d'un outil : nom, description d'une phrase, mots de recherche ; ancienne précision courte. */
 export function toolLabelKey(id: string): TKey {
   const r = resolveTool(id);
+  if (r?.sub?.fn) return `h2.${r.sub.fn}` as TKey;
   if (r?.sub) return `tool.${r.sub.legacy}` as TKey;
   return `th.${r?.id ?? id}` as TKey;
 }
-export const toolDescKey = (id: string) => `th.${resolveTool(id)?.def.id ?? id}.d` as TKey;
-export const toolWordsKey = (id: string) => `th.${resolveTool(id)?.def.id ?? id}.k` as TKey;
+const fnOf = (id: string) => resolveTool(id)?.sub?.fn;
+export const toolDescKey = (id: string) => (fnOf(id) ? `h2.${fnOf(id)}.d` : `th.${resolveTool(id)?.def.id ?? id}.d`) as TKey;
+export const toolWordsKey = (id: string) => (fnOf(id) ? `h2.${fnOf(id)}.k` : `th.${resolveTool(id)?.def.id ?? id}.k`) as TKey;
 /** « Problème résolu » de la fiche d'outil : la situation du parent, rédigée en une phrase (`th.<id>.problem`). */
 export const toolProblemKey = (id: string) => `th.${resolveTool(id)?.def.id ?? id}.problem` as TKey;
 /** Précision courte héritée (fragment) : encore utilisée pour les sous-accès et l'onboarding. */
 export function toolSubKey(id: string): TKey {
   const r = resolveTool(id);
+  if (r?.sub?.fn) return `h2.${r.sub.fn}.d` as TKey;
   return `tool.${r?.sub ? r.sub.legacy : id}.sub` as TKey;
 }
 
@@ -406,20 +449,22 @@ export function toolProfiles(def: Pick<ToolDef, 'scopes'>): ToolProfile[] {
   return TOOL_PROFILES.filter((p) => set.has(p));
 }
 
-export interface ResolvedSub { id: string; legacy: string; icon: IconName; category: ToolCategory; href: string }
+export interface ResolvedSub { id: string; legacy: string; icon: IconName; category: ToolCategory; href: string; /** Numéro de la liste des 200 (sous-accès nommé). */ fn?: number }
 export interface ResolvedTool {
   id: string; category: ToolCategory; theme: ToolTheme; icon: IconName; href: string; universal: boolean; urgent: boolean;
   /** Catégories où l'outil est aussi proposé en raccourci (jamais sa catégorie principale). */
   also: ToolShelf[];
   subs: ResolvedSub[];
+  /** Fonctions de l'outil exposées comme sous-accès nommés (`h200_<n>`), pour le profil affiché. */
+  fns: ResolvedSub[];
 }
 
-function resolveSubs(d: ToolDef, c: ScopeCtx): ResolvedSub[] {
+function resolveSubs(d: ToolDef, c: ScopeCtx, list: ToolSubDef[] = d.subs ?? []): ResolvedSub[] {
   const out: ResolvedSub[] = [];
-  for (const s of d.subs ?? []) {
+  for (const s of list) {
     if (!(s.scopes ?? d.scopes).includes(c.scope)) continue;
     const href = s.href(c);
-    if (href) out.push({ id: subRef(d.id, s.id), legacy: s.legacy, icon: s.icon, category: s.category ?? d.category, href });
+    if (href) out.push({ id: s.fn ? s.id : subRef(d.id, s.id), legacy: s.legacy, icon: s.icon, category: s.category ?? d.category, href, ...(s.fn ? { fn: s.fn } : {}) });
   }
   return out;
 }
@@ -432,7 +477,7 @@ export function toolsFor(c: ScopeCtx): ResolvedTool[] {
     if (d.when && !d.when(c)) continue;
     const href = d.href(c);
     if (!href) continue;
-    out.push({ id: d.id, category: d.category, theme: d.theme, icon: d.icon, href, universal: !!d.universal, urgent: !!d.urgent, also: (d.also ?? []).filter((x) => x !== d.category), subs: resolveSubs(d, c) });
+    out.push({ id: d.id, category: d.category, theme: d.theme, icon: d.icon, href, universal: !!d.universal, urgent: !!d.urgent, also: (d.also ?? []).filter((x) => x !== d.category), subs: resolveSubs(d, c), fns: resolveSubs(d, c, TOOL_FNS[d.id]) });
   }
   return out;
 }
@@ -447,6 +492,7 @@ export function allowedToolIds(c: ScopeCtx): string[] {
   for (const t of toolsFor(c)) {
     out.push(t.id, ...(CANONICAL[t.id].aliases ?? []));
     for (const s of t.subs) out.push(s.id, s.legacy);
+    for (const s of t.fns) out.push(s.id);
   }
   return out;
 }
@@ -456,7 +502,7 @@ export function isToolAllowed(id: string, c: ScopeCtx): boolean {
   const r = resolveTool(id);
   if (!r) return false;
   const tool = toolsFor(c).find((x) => x.id === r.def.id);
-  return !!tool && (!r.sub || tool.subs.some((s) => s.id === r.id));
+  return !!tool && (!r.sub || tool.subs.some((s) => s.id === r.id) || tool.fns.some((s) => s.id === r.id));
 }
 
 /** Les plus utiles par profil (« Pour <profil> », 6 au plus) : choisis à la main, complétés par l'ordre du catalogue. */
