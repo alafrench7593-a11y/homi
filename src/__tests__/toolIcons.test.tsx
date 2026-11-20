@@ -14,6 +14,7 @@ jest.mock('@react-native-async-storage/async-storage', () => require('@react-nat
 import React from 'react';
 import { act, create, type ReactTestRenderer } from 'react-test-renderer';
 import { HomiIcon, HOMI_ICONS, INTENTIONAL_SHARES, QUICK_ICON, SUB_ICON, TOOL_ICON, TOOL_ICON_FAMILIES, VIEW_ICON, type HomiIconName } from '@/brand/icons';
+import { ToolLogo, toolLogoDef } from '@/brand/toolLogo';
 import { toolIconCategory, toolIconName } from '@/brand/icons/resolve';
 import { ToolGlyph } from '@/components/ToolGlyph';
 import { H200_VIEWS } from '@/lib/journeys/homi200';
@@ -114,11 +115,14 @@ describe('ToolGlyph', () => {
     return r;
   }
 
-  it('rend le pictogramme HOMI de l’outil, masqué aux lecteurs d’écran', async () => {
+  it('rend le LOGO de l’outil (pictogramme HOMI du manifeste sur sa plaque), masqué aux lecteurs d’écran', async () => {
     const r = await render(<ToolGlyph id="baby_bottle" theme="feeding" icon="coffee" size={44} />);
-    const icons = r.root.findAllByType(HomiIcon);
-    expect(icons).toHaveLength(1);
-    expect(icons[0]!.props.name).toBe('bottlePlus');
+    // direction « verre minéral » (20/11/2026) : ToolGlyph rend ToolLogo, qui dessine le pictogramme du manifeste
+    expect(r.root.findAllByType(HomiIcon)).toHaveLength(0);
+    const logos = r.root.findAllByType(ToolLogo);
+    expect(logos).toHaveLength(1);
+    expect(logos[0]!.props.id).toBe('baby_bottle');
+    expect(toolLogoDef('baby_bottle')?.icon).toBe('bottlePlus');
     const box = r.root.findAll((n) => n.props.testID === 'tool-icon-baby_bottle')[0]!;
     expect(box.props.accessibilityElementsHidden).toBe(true);
     expect(box.props.importantForAccessibility).toBe('no-hide-descendants');
