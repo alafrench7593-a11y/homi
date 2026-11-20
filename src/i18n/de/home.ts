@@ -51,7 +51,7 @@ export const home: Messages<typeof fr> = {
   "header.profileNamed": "Mein Profil, {name}",
   "header.settings": "Einstellungen",
   'header.account': 'Mein Konto',
-  'header.accountHint': 'Öffnet Ihr Konto: Profil, Einstellungen und Notfälle',
+  'header.accountHint': 'Öffnet dein Konto: Profil, Einstellungen und Notfälle',
   'header.openProfile': 'Mein Profil öffnen',
   "profile.title": "Mein Profil",
   "profile.premium": " · Premium",

@@ -363,7 +363,7 @@ export const absents1: Messages<typeof fr> = {
   'bpp.item.first_days': 'Organisation der ersten Tage',
   'bpp.hint.maternity_phone': 'Die Nummer für Tag und Nacht.',
   'bpp.hint.midwife_phone': 'Falls eine Hebamme dich betreut.',
-  'bpp.hint.emergency_numbers': 'Sie sind in HOMI: Notrufnummern.',
+  'bpp.hint.emergency_numbers': 'Du bist in HOMI: Notrufnummern.',
   'bpp.hint.kids_care_phone': 'Name und Nummer der Person.',
   'bpp.hint.route_known': 'Adresse, Fahrzeit im Berufsverkehr.',
   'bpp.hint.parking': 'Parkplatz, Notaufnahme- oder Nachteingang.',

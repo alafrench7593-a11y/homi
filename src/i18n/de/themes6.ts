@@ -1,7 +1,7 @@
 /** HOMI v6 : palettes de couleurs (5 + Adaptatif), aperçu et réglage d'apparence. */
 export const themes6 = {
   'v6.palette.title': "Farbpalette",
-  'v6.palette.intro': "Fünf Paletten, jede in Hell und Dunkel. Ihre Wahl gilt sofort und überall in HOMI.",
+  'v6.palette.intro': "Fünf Paletten, jede in Hell und Dunkel. Deine Wahl gilt sofort und überall in HOMI.",
   'v6.palette.homi': "Puderrosa und Pfirsich",
   'v6.palette.homi.d': "Leuchtende Koralle, warmes Rosa, Pflaumentinte",
   'v6.palette.lavande': "Lavendel und tiefes Violett",

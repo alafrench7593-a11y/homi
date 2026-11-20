@@ -14,7 +14,7 @@ export const bottleV3: Messages<typeof fr> = {
   'bs.a11y.duration': '{min} Min. {sec} Sek.',
   'bs.since': 'Begonnen um {time}',
   'bs.saved_noqty': 'Dauer gespeichert',
-  'bs.idle_hint': 'Tippen Sie auf Starten, wenn das Fläschchen beginnt',
+  'bs.idle_hint': 'Tippe auf Starten, wenn das Fläschchen beginnt',
   'bs.record_past': 'Bereits gegebenes Fläschchen eintragen',
   'bs.duration': 'Dauer',
   'bs.cancel_session': 'Dieses Fläschchen verwerfen',

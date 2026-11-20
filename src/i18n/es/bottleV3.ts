@@ -14,7 +14,7 @@ export const bottleV3: Messages<typeof fr> = {
   'bs.a11y.duration': '{min} min {sec} s',
   'bs.since': 'Empezado a las {time}',
   'bs.saved_noqty': 'Duración guardada',
-  'bs.idle_hint': 'Toque Empezar cuando empiece la toma',
+  'bs.idle_hint': 'Toca Empezar cuando empiece la toma',
   'bs.record_past': 'Anotar un biberón ya dado',
   'bs.duration': 'Duración',
   'bs.cancel_session': 'Cancelar este biberón',

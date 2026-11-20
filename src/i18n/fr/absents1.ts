@@ -552,7 +552,7 @@ export const absents1 = {
   'bfi.err.future': 'Ce moment n’est pas encore arrivé.',
   'bfi.q.title': 'Questions pour la consultante en lactation',
   'bfi.q.intro': 'D’après ce que tu as noté ces deux dernières semaines :',
-  'bfi.q.latch': 'Peux-tu regarder la prise du sein pendant une tétée ?',
+  'bfi.q.latch': 'Pouvez-vous regarder la prise du sein pendant une tétée ?',
   'bfi.q.engorgement': 'Comment soulager les seins tendus ou un canal bouché ?',
   'bfi.q.supply': 'Comment savoir si la quantité de lait convient à mon bébé ?',
   'bfi.q.sleepy': 'Que faire quand mon bébé s’endort au sein ?',
