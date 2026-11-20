@@ -98,7 +98,8 @@ describe('tutoiement : interface française', () => {
   });
   it('exemples : raisons, carte de détresse, Aura, abonnement au « tu »', () => {
     const fr = DICTIONARIES.fr as Record<string, string>;
-    expect(fr['pz.r.breastfeeding'] ?? Object.values(fr).find((v) => typeof v === 'string' && v.startsWith('Parce que tu allaites'))).toBe('Parce que tu allaites');
+    expect(fr['pz.r.feed.breast']).toBe('Parce que tu allaites');
+    expect(fr['u4.dn.notAlone']).toBe('Tu n’es pas seul·e');
     expect(Object.values(fr).some((v) => v === 'Tu n’es pas seul·e')).toBe(true);
     expect(Object.values(fr).some((v) => typeof v === 'string' && /Parce que vous/.test(v))).toBe(false);
   });

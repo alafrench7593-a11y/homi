@@ -169,13 +169,13 @@ with sync_playwright() as p:
     sent = [m for m in fake.t('couple_messages') if m['author_id'] == cam]
     R['18_message_envoye_texte_exact'] = len(sent) == 1 and sent[0]['body'] == final and sent[0]['recipient_id'] == sam
     notes = [n for n in fake.t('notifications') if n['user_id'] == sam and n['deep_link'] == '/family/understand/inbox']
-    R['19_notification_neutre_sans_contenu'] = len(notes) == 1 and notes[0]['title'] == 'Camille souhaite partager quelque chose avec vous' and 'forces' not in json.dumps(notes[0])
-    R['20_proposition_repos'] = has(cpg, 'und-rest', 4000) and 'Voulez-vous organiser un moment de repos ?' in body(cpg)
+    R['19_notification_neutre_sans_contenu'] = len(notes) == 1 and notes[0]['title'] == 'Camille souhaite partager quelque chose avec toi' and 'forces' not in json.dumps(notes[0])
+    R['20_proposition_repos'] = has(cpg, 'und-rest', 4000) and 'Veux-tu organiser un moment de repos ?' in body(cpg)
     shot(cpg, 'cam-08-proposition-repos')
 
     # ================================================================ 5. réception et réponse
     go(spg, '/family/understand/inbox', 4000)
-    R['21_sam_recoit'] = final in body(spg) and 'Message de votre partenaire' in body(spg)
+    R['21_sam_recoit'] = final in body(spg) and 'Message de ton partenaire' in body(spg)
     shot(spg, 'sam-05-reception')
     tid(spg, 'und-reply-text').fill('Je comprends. Comment je peux t’aider ?')
     tid(spg, 'und-reply-send').click(); spg.wait_for_timeout(1000)

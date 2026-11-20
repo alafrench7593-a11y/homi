@@ -179,7 +179,7 @@ def flow(b, w, h, scheme, main=False, premium_on=False):
     if main:
         dash = tid(pg, 'onb-dashboard').inner_text()
         R['6_tableau_de_bord_avec_raisons'] = 'Parce que' in dash and 'Allaitement' in dash
-        R['6_raison_allaitement'] = 'Parce que vous allaitez' in dash
+        R['6_raison_allaitement'] = 'Parce que tu allaites' in dash
     shot(pg, '06a-tableau-de-bord', tag)
     for label in ['J’ai 18 ans ou plus', 'J’accepte les conditions d’utilisation et la politique de confidentialité']:
         box = pg.get_by_role('checkbox', name=label)

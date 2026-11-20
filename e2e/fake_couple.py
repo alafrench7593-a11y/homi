@@ -108,7 +108,7 @@ class FakeCouple(FakeSupabase):
             return 200, out
         if fn == 'create_mission':
             hid = body['p_household']
-            if not self.member(hid, uid): return 403, {'code': '42501', 'message': 'Vous n’avez pas l’autorisation de faire cette action.'}
+            if not self.member(hid, uid): return 403, {'code': '42501', 'message': 'Tu n’as pas l’autorisation de faire cette action.'}
             again = next((x for x in self.t('family_tasks') if x.get('client_id') and x.get('client_id') == body.get('p_client_id')), None)
             if again: return 200, again
             a = body.get('p_assignee')
@@ -144,13 +144,13 @@ class FakeCouple(FakeSupabase):
             self.event(t, uid, {'accept': 'accepted', 'start': 'started', 'complete': 'done', 'decline': 'declined', 'cancel': 'cancelled'}[act], {'mission': True, 'state': nxt})
             pref_off = any(s['user_id'] == t['created_by'] and s.get('mission_done') is False for s in self.t('notification_settings'))
             if act == 'complete' and not pref_off:
-                self.notify(t['created_by'], f"{self.first_name(uid) or 'Quelqu’un'} a terminé : {t['title']}", 'Ouvrez HOMI pour voir le détail.', '/family/missions/' + t['id'], {'task_id': t['id'], 'mission': 'mission.completed'})
-            if act == 'accept': self.notify(t['created_by'], 'Mission acceptée : ' + t['title'], 'Ouvrez HOMI pour voir le détail.', '/family/missions/' + t['id'], {'task_id': t['id'], 'mission': 'mission.accepted'})
+                self.notify(t['created_by'], f"{self.first_name(uid) or 'Quelqu’un'} a terminé : {t['title']}", 'Ouvre HOMI pour voir le détail.', '/family/missions/' + t['id'], {'task_id': t['id'], 'mission': 'mission.completed'})
+            if act == 'accept': self.notify(t['created_by'], 'Mission acceptée : ' + t['title'], 'Ouvre HOMI pour voir le détail.', '/family/missions/' + t['id'], {'task_id': t['id'], 'mission': 'mission.accepted'})
             return 200, {'status': 'ok', 'row': t}
         if fn == 'couple_send':
             hid, to = body['p_household'], body['p_recipient']
             if not uid or not self.parent(hid, uid) or not self.parent(hid, to) or to == uid:
-                return 403, {'code': '42501', 'message': 'Ce message ne peut être envoyé qu’à l’autre adulte de votre foyer.'}
+                return 403, {'code': '42501', 'message': 'Ce message ne peut être envoyé qu’à l’autre adulte de ton foyer.'}
             again = next((m for m in self.t('couple_messages') if m['author_id'] == uid and body.get('p_client_id') and m.get('client_id') == body.get('p_client_id')), None)
             if again: return 200, again
             r = {'id': str(uuid.uuid4()), 'household_id': hid, 'author_id': uid, 'recipient_id': to, 'kind': body['p_kind'], 'situation': body.get('p_situation'),
@@ -158,8 +158,8 @@ class FakeCouple(FakeSupabase):
             self.t('couple_messages').append(r)
             discreet = any(s['user_id'] == to and s.get('couple_discreet') for s in self.t('notification_settings'))
             name = None if discreet else self.first_name(uid)
-            self.notify(to, (name + ' souhaite partager quelque chose avec vous') if name else 'Votre partenaire souhaite partager quelque chose avec vous',
-                        'Ouvrez HOMI quand vous le souhaitez.', '/family/understand/inbox', {'couple': True})
+            self.notify(to, (name + ' souhaite partager quelque chose avec toi') if name else 'Ton partenaire souhaite partager quelque chose avec toi',
+                        'Ouvre HOMI quand tu le souhaites.', '/family/understand/inbox', {'couple': True})
             return 200, r
         if fn == 'set_pregnancy_sharing':
             p = next((x for x in self.t('pregnancies') if x['id'] == body.get('p_pregnancy')), None)
