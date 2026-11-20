@@ -70,7 +70,6 @@ export const missions = {
   'mis.form.productHint': 'Ajouté à la liste de courses quand la mission est acceptée, coché quand elle est terminée.',
   'mis.form.child': 'Enfant concerné',
   'mis.form.none': 'Aucun',
-  'mis.form.pet': 'Animal concerné : bientôt disponible (le module animaux arrive).',
   'mis.form.attach': 'Pièce jointe',
   'mis.form.attachHint': 'Un document du foyer, visible seulement par qui y a déjà accès.',
   'mis.form.send': 'Envoyer la mission',

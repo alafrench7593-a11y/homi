@@ -33,7 +33,7 @@ export function useStock(id: string | undefined) {
 
 export interface StockInput {
   label: string; category: StockCategory; brand?: string | null; size?: string | null; qty_estimate?: number | null; unit?: StockUnit | null;
-  threshold?: number | null; frequency_days?: number | null; responsible_id?: string | null; reminder?: boolean; child_id?: string | null; notes?: string | null;
+  threshold?: number | null; frequency_days?: number | null; responsible_id?: string | null; reminder?: boolean; child_id?: string | null; pet_id?: string | null; notes?: string | null;
 }
 
 /** Nouveau stock : client_id posé sur l'appareil → envoyé au retour du réseau, sans doublon. */

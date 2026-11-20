@@ -45,6 +45,8 @@ export interface MissionInput {
   title: string; assignee_id: string | null; category: TaskCategory; notes?: string | null; due_at?: string | null; all_day?: boolean;
   priority?: 'low' | 'normal' | 'high'; recurrence?: { type: 'daily' | 'weekly' | 'monthly'; every?: number } | null;
   child_id?: string | null; product_label?: string | null; document_id?: string | null; shopping_item_id?: string | null;
+  /** Animal du foyer (outil Animaux, 20261128300200) : même foyer, vérifié par le serveur. */
+  pet_id?: string | null;
 }
 
 const INVALIDATE = ['family_tasks', 'family_task_events', 'shopping_items', 'shopping_lists', 'notifications'] as const;
@@ -59,7 +61,7 @@ export function useCreateMission() {
       return backend.rpc<Mission>('create_mission', {
         p_household: hid, p_title: input.title, p_assignee: input.assignee_id, p_category: input.category, p_notes: input.notes ?? null,
         p_due_at: input.due_at ?? null, p_all_day: !!input.all_day, p_priority: input.priority ?? 'normal', p_recurrence: input.recurrence ?? null,
-        p_child_id: input.child_id ?? null, p_pet_id: null, p_shopping_item_id: input.shopping_item_id ?? null, p_product_label: input.product_label ?? null,
+        p_child_id: input.child_id ?? null, p_pet_id: input.pet_id ?? null, p_shopping_item_id: input.shopping_item_id ?? null, p_product_label: input.product_label ?? null,
         p_document_id: input.document_id ?? null, p_domain_key: null, p_client_id: input.client_id ?? uuid(),
       });
     },

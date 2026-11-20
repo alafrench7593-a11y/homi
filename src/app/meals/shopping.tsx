@@ -157,7 +157,6 @@ export default function Shopping() {
                 </View>
               </>
             ) : null}
-            <Text variant="caption" muted>{tr('shp.photoSoon')}</Text>
           </View>
         ) : null}
       </Card>

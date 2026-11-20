@@ -1,11 +1,13 @@
 /**
  * Formulaire d'un stock (ajout et modification) : produit, catégorie, marque, taille, quantité ESTIMÉE (facultative :
- * jamais devinée), unité, seuil, fréquence, responsable, rappel, enfant associé. L'animal associé est prévu (pet_id)
- * mais le module animaux n'existe pas encore : l'écran l'annonce sans champ.
+ * jamais devinée), unité, seuil, fréquence, responsable, rappel, enfant associé, animal associé (outil Animaux :
+ * croquettes, litière… visibles sur la fiche de l'animal).
  */
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { router } from 'expo-router';
 import { Button, Chip, Field, Text, Toggle } from '@/components/ui';
+import { useHouseholdPets } from '@/lib/data/hooks-foyerTools';
 import { CategoryChips } from './StockCard';
 import { STOCK_UNITS, type Stock, type StockCategory, type StockUnit } from '@/lib/domain/stocks';
 import type { StockInput } from '@/lib/data/hooks-stocks';
@@ -19,9 +21,9 @@ const parseNum = (v: string): number | null | 'bad' => {
 };
 const str = (v: number | string | null | undefined) => (v == null ? '' : String(Number(v)).replace('.', ','));
 
-export function StockForm({ initial, people, children, busy, submitLabel, onSubmit, defaultCategory }: {
+export function StockForm({ initial, people, children, busy, submitLabel, onSubmit, defaultCategory, defaultPet }: {
   initial?: Stock | null; people: { id: string; label: string }[]; children: { id: string; first_name: string }[]; busy?: boolean; submitLabel: string;
-  onSubmit: (v: StockInput) => void; defaultCategory?: StockCategory;
+  onSubmit: (v: StockInput) => void; defaultCategory?: StockCategory; defaultPet?: string | null;
 }) {
   const [label, setLabel] = useState(initial?.label ?? '');
   const [category, setCategory] = useState<StockCategory>(initial?.category ?? defaultCategory ?? 'other');
@@ -34,6 +36,8 @@ export function StockForm({ initial, people, children, busy, submitLabel, onSubm
   const [responsible, setResponsible] = useState<string | null>(initial?.responsible_id ?? null);
   const [reminder, setReminder] = useState(initial?.reminder ?? true);
   const [child, setChild] = useState<string | null>(initial?.child_id ?? null);
+  const pets = useHouseholdPets().data ?? [];
+  const [pet, setPet] = useState<string | null>(initial?.pet_id ?? defaultPet ?? null);
   const [notes, setNotes] = useState(initial?.notes ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -48,7 +52,7 @@ export function StockForm({ initial, people, children, busy, submitLabel, onSubm
     if (Object.keys(e).length) return;
     onSubmit({
       label: label.trim().slice(0, 80), category, brand: brand.trim() || null, size: size.trim() || null, qty_estimate: q as number | null, unit,
-      threshold: th as number | null, frequency_days: f as number | null, responsible_id: responsible, reminder, child_id: child, notes: notes.trim() || null,
+      threshold: th as number | null, frequency_days: f as number | null, responsible_id: responsible, reminder, child_id: child, pet_id: pet, notes: notes.trim() || null,
     });
   }
 
@@ -86,7 +90,17 @@ export function StockForm({ initial, people, children, busy, submitLabel, onSubm
           </View>
         </>
       ) : null}
-      <Text variant="caption" muted>{tr('stk.form.petSoon')}</Text>
+      {pets.length ? (
+        <>
+          <Text variant="label">{tr('pet.stock.label')}</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            <Chip label={tr('pet.stock.none')} selected={!pet} onPress={() => setPet(null)} testID="stock-pet-none" />
+            {pets.map((p) => <Chip key={p.id} label={p.name} selected={pet === p.id} onPress={() => setPet(p.id)} testID={`stock-pet-${p.id}`} />)}
+          </View>
+        </>
+      ) : category === 'pet_food' ? (
+        <Button label={tr('pet.stock.addPet')} icon="heart" variant="ghost" size="sm" onPress={() => router.push('/family/pets' as never)} testID="stock-pet-open" />
+      ) : null}
       <Field label={tr('stk.form.notes')} optional value={notes} onChangeText={setNotes} maxLength={300} multiline />
       <Button label={submitLabel} icon="check" loading={busy} onPress={submit} testID="stock-save" />
     </View>

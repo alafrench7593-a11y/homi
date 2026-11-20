@@ -20,9 +20,9 @@
 \set BF 'f27b0000-0000-4000-8000-0000000000f2'
 
 reset role; set request.jwt.claim.sub = '';
-insert into auth.users (id, email) values (:'OW', 'f98zg-parent@exemple.test'), (:'CP', 'f98zg-parent2@exemple.test'),
-  (:'NN', 'f98zg-nounou@exemple.test'), (:'XX', 'f98zg-inconnu@exemple.test'), (:'EX', 'f98zg-ancien@exemple.test');
-insert into public.households (id, name, created_by) values (:'H', 'Foyer 98zg', :'OW'), (:'H2', 'Autre foyer 98zg', :'XX');
+insert into auth.users (id, email) values (:'OW', 'f98zj-parent@exemple.test'), (:'CP', 'f98zj-parent2@exemple.test'),
+  (:'NN', 'f98zj-nounou@exemple.test'), (:'XX', 'f98zj-inconnu@exemple.test'), (:'EX', 'f98zj-ancien@exemple.test');
+insert into public.households (id, name, created_by) values (:'H', 'Foyer 98zj', :'OW'), (:'H2', 'Autre foyer 98zj', :'XX');
 insert into public.household_members (household_id, user_id, role) values (:'H', :'OW', 'owner'), (:'H2', :'XX', 'owner')
   on conflict (household_id, user_id) do update set role = 'owner';
 insert into public.household_members (household_id, user_id, role, can_view, can_edit, child_scope) values

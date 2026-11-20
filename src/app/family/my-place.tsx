@@ -1,7 +1,7 @@
 /**
  * « Ma place dans la famille » (19/11/2026) : tableau de bord d'un adulte qui n'a pas créé le foyer (co-parent), et
  * vue utile pour la propriétaire aussi. Tout parle de SA place : mes enfants, mes missions, tâches du foyer, courses
- * partagées, calendrier familial, rendez-vous partagés, rappels concernant les enfants, moments en famille, espace
+ * partagées, calendrier familial, relais parentaux, rendez-vous partagés, rappels concernant les enfants, moments en famille, espace
  * Couple, mes informations. Construit avec l'existant (mêmes requêtes et écrans) ; aucune carte n'ouvre sur les
  * données personnelles de l'autre adulte (cycle, grossesse non partagée, santé, journal, ressentis).
  */
@@ -37,6 +37,8 @@ export default function MyPlace() {
     { key: 'tasks', icon: 'list', title: 'cp2.place.tasks', href: '/household' },
     { key: 'shopping', icon: 'shopping-cart', title: 'cp2.place.shopping', href: '/meals/shopping' },
     { key: 'calendar', icon: 'calendar', title: 'cp2.place.calendar', href: '/calendar' },
+    // relais parentaux (nuits, temps libre) : demandés pour l'« Espace Papa / Espace co-parent » (outil 161)
+    { key: 'relays', icon: 'moon', title: 'ft.place.relays', sub: tr('ft.place.relaysSub'), href: '/family/nights' },
     { key: 'appointments', icon: 'clipboard', title: 'cp2.place.appointments', href: '/appointments' },
     { key: 'reminders', icon: 'bell', title: 'cp2.place.reminders', href: '/settings/reminders' },
     { key: 'moments', icon: 'sun', title: 'cp2.place.moments', href: '/outings' },
