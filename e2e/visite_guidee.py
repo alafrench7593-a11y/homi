@@ -370,7 +370,7 @@ def skip_later_resume(b):
     # Aide contextuelle à la première ouverture d'un outil : une bulle, une seule fois
     pg.goto(B + '/tools'); pg.wait_for_timeout(2500)
     # la tuile peut être sous la ligne de flottaison (favoris, récents, « Pour ma grossesse » au-dessus)
-    pg.locator('[data-testid^="tools-featured-"]').first.scroll_into_view_if_needed(); pg.wait_for_timeout(400)
+    pg.locator('[data-testid^="tools-featured-"]').first.evaluate("e => e.scrollIntoView({ block: 'center' })"); pg.wait_for_timeout(600)
     tile = first_visible(pg, '[data-testid^="tools-featured-"]')
     tile.click(); pg.wait_for_timeout(900)
     tid(pg, 'tool-sheet-start').click(); pg.wait_for_timeout(1800)
