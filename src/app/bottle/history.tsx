@@ -46,12 +46,13 @@ function ScopeSwitch({ scope, childId }: { scope: 'bottles' | 'all'; childId: st
 
 function FeedingJournalScreen() {
   const { children, child, setChild, loading } = useFeedingChild();
+  const week = useLocalSearchParams<{ view?: string }>().view === 'week';
   return (
     <Screen back title={tr('fj.title')} subtitle={child ? tr('fj.subtitle', { name: child.first_name }) : undefined}
       action={child ? { label: tr('fj.addFeed'), icon: 'plus', onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: child.id } }), testID: 'fj-add' } : undefined}>
       <ScopeSwitch scope="all" childId={child?.id ?? null} />
       <FeedingChildPicker list={children} value={child?.id ?? null} onChange={setChild} />
-      {loading ? <Skeleton kind="list" rows={4} /> : child ? <FeedingJournal key={child.id} child={child} /> : (
+      {loading ? <Skeleton kind="list" rows={4} /> : child ? <FeedingJournal key={child.id} child={child} initialView={week ? 'week' : 'day'} /> : (
         <EmptyState icon="coffee" title={tr('u6.bottle_index.empty_title')} body={tr('u6.bottle_index.empty_body')} />
       )}
     </Screen>

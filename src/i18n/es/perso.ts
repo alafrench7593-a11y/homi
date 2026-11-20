@@ -17,6 +17,7 @@ export const perso: Messages<typeof fr> = {
   'pz.r.discover': 'Para descubrir HOMI',
   'pz.r.caregiver': 'Para el cuidado de {name}',
   'pz.r.caregiverNoName': 'Para el cuidado',
+  'pz.r.pets': 'Porque una mascota vive en tu hogar',
   'pz.r.age': 'Porque {name} tiene {age}',
   'pz.r.diversifSoon': 'Para preparar la alimentación complementaria de {name}',
   'pz.r.diversif': 'Porque {name} ya come alimentos',

@@ -63,12 +63,12 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 | 4 | Sorties en famille | `nearby` | Parce que vous voulez découvrir des activités | prio-activities |
 | 5 | Suggestions d’activités selon l’âge | `h200_131` | Parce que vous voulez découvrir des activités | prio-activities |
 | 6 | Agenda familial | `family_calendar` | Parce que vous partagez le quotidien à deux | partner |
-| 7 | Tâches du foyer | `family_tasks` | Parce que vous partagez le quotidien à deux | partner |
-| 8 | Répartition de la charge mentale | `mental_load` | Parce que vous partagez le quotidien à deux | partner |
-| 9 | Se comprendre | `couple_understand` | Parce que vous partagez le quotidien à deux | partner |
-| 10 | Liste de courses | `family_shopping` | Parce que vous partagez le quotidien à deux | partner |
+| 7 | Suivi des devoirs | `h200_137` | Parce que vous voulez organiser l’école | prio-school |
+| 8 | Tâches du foyer | `family_tasks` | Parce que vous partagez le quotidien à deux | partner |
+| 9 | Répartition de la charge mentale | `mental_load` | Parce que vous partagez le quotidien à deux | partner |
+| 10 | Se comprendre | `couple_understand` | Parce que vous partagez le quotidien à deux | partner |
 
-« Ton enfant » — Noé (6 ans) : Routines en images (Parce que Noé a 6 ans) · École ou mode de garde (Parce que Noé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Noé a 6 ans) · Habitudes de lecture (Parce que Noé a 6 ans) · Bibliothèque d’histoires (Parce que Noé a 6 ans) · Journal complet (Parce que Noé a 6 ans)
+« Ton enfant » — Noé (6 ans) : Routines en images (Parce que Noé a 6 ans) · École ou mode de garde (Parce que Noé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Noé a 6 ans) · Habitudes de lecture (Parce que Noé a 6 ans) · Bibliothèque d’histoires (Parce que Noé a 6 ans) · Suivi des devoirs (Parce que Noé a 6 ans)
 
 ## E — Nounou autorisée (compte garde seulement)
 
@@ -102,9 +102,9 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 
 « Ton enfant » — Léa (4 mois) : Noter un biberon (Parce que Léa prend du lait infantile) · Garde et nounou (Parce qu’une nounou garde Léa) · Sommeil de l’enfant (Parce que Léa a 4 mois) · Journée des biberons (Parce que Léa prend du lait infantile) · Couches (Parce que Léa a 4 mois) · Carnet de liaison numérique (Parce qu’une nounou garde Léa)
 
-« Ton enfant » — Tom (4 ans) : Garde et nounou (Parce qu’une nounou garde Tom) · Carnet de liaison numérique (Parce qu’une nounou garde Tom) · Calendrier des périodes de garde (Parce qu’une nounou garde Tom) · École ou mode de garde (Parce que Tom a l’âge d’aller à l’école) · Suggestions d’activités selon l’âge (Parce que Tom a 4 ans) · Bibliothèque d’histoires (Parce que Tom a 4 ans)
+« Ton enfant » — Tom (4 ans) : Garde et nounou (Parce qu’une nounou garde Tom) · Carnet de liaison numérique (Parce qu’une nounou garde Tom) · Calendrier des périodes de garde (Parce qu’une nounou garde Tom) · École ou mode de garde (Parce que Tom a l’âge d’aller à l’école) · Suggestions d’activités selon l’âge (Parce que Tom a 4 ans) · Jeux éducatifs par âge (Parce que Tom a 4 ans)
 
-« Ton enfant » — Zoé (7 ans) : Routines en images (Parce que Zoé a 7 ans) · École ou mode de garde (Parce que Zoé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Zoé a 7 ans) · Habitudes de lecture (Parce que Zoé a 7 ans) · Bibliothèque d’histoires (Parce que Zoé a 7 ans) · Journal complet (Parce que Zoé a 7 ans)
+« Ton enfant » — Zoé (7 ans) : Routines en images (Parce que Zoé a 7 ans) · École ou mode de garde (Parce que Zoé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Zoé a 7 ans) · Habitudes de lecture (Parce que Zoé a 7 ans) · Bibliothèque d’histoires (Parce que Zoé a 7 ans) · Suivi des devoirs (Parce que Zoé a 7 ans)
 
 ## G — Sans aucune information
 
@@ -115,9 +115,9 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 | 3 | Rendez-vous et examens | `appointments` | Pour découvrir HOMI | discover |
 | 4 | Communauté | `community` | Pour découvrir HOMI | discover |
 | 5 | Liste de courses | `family_shopping` | Pour découvrir HOMI | discover |
-| 6 | Bibliothèque | `library` | Pour découvrir HOMI | discover |
-| 7 | Repas et recettes | `meals` | Pour découvrir HOMI | discover |
-| 8 | Vider ma tête | `brain_dump` | Pour découvrir HOMI | discover |
-| 9 | Mon sommeil | `sleep` | Pour découvrir HOMI | discover |
-| 10 | Sorties en famille | `nearby` | Pour découvrir HOMI | discover |
+| 6 | Découvrir HOMI | `h200_200` | Pour découvrir HOMI | discover |
+| 7 | Bibliothèque | `library` | Pour découvrir HOMI | discover |
+| 8 | Repas et recettes | `meals` | Pour découvrir HOMI | discover |
+| 9 | Vider ma tête | `brain_dump` | Pour découvrir HOMI | discover |
+| 10 | Mon sommeil | `sleep` | Pour découvrir HOMI | discover |
 

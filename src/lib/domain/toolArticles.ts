@@ -133,6 +133,9 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   guide_kidfood: { words: ['repas', 'gouter', 'lait', 'legume', 'refus', 'neophob', 'cantine', 'petit-dejeuner', 'morceau', 'allerg'], cats: ['alimentation', 'alimentation-bebe'], journeys: KID, ask: 'Mon enfant refuse de manger' },
   guide_behaviour: { words: ['colere', 'emotion', 'confiance', 'frere', 'soeur', 'jalousie', 'harcelement', 'autonomie', 'argent de poche', 'separation', 'mord'], cats: ['education', 'ecole-garde'], journeys: KID, ask: 'Comment réagir aux colères de mon enfant ?' },
   guide_school: { words: ['ecole', 'maternelle', 'creche', 'assistante maternelle', 'cantine', 'rentree', 'periscolaire', 'devoirs', 'garde'], cats: ['ecole-garde'], journeys: KID, ask: 'Comment préparer l’entrée à l’école maternelle ?' },
+  // fonctions de l'enfant (30/11/2026) : langage et devoirs ont leurs propres lectures
+  child_language: { words: ['langage', 'parole', 'premiers mots', 'bilingu', 'vocabulaire', 'begai', 'orthophon', 'parler', 'lecture'], cats: ['developpement'], journeys: KID, ask: 'Comment encourager le langage de mon enfant ?' },
+  child_homework: { words: ['devoirs', 'ecole', 'lecture', 'concentration', 'ecran', 'rentree', 'cahier', 'harcelement'], cats: ['ecole-garde', 'education'], journeys: KID, ask: 'Comment accompagner les devoirs sans conflit ?' },
   guide_toddler: { words: ['langage', 'premiers pas', 'developpement', 'proprete', 'tetine', 'doudou', 'croissance', 'motricite'], cats: ['developpement'], journeys: KID, ask: 'Mon enfant de 2 ans parle peu' },
   guide_work: { words: ['travail', 'conge', 'droits', 'salariee', 'employeur', 'reprise', 'maternite', 'paternite', 'parental'], cats: ['droits-demarches'], ask: 'Quels sont mes droits au travail enceinte ?' },
   guide_loss: { words: ['fausse couche', 'deuil', 'perte', 'perinatal', 'interruption', 'chagrin'], cats: ['sante-mentale', 'grossesse'], ask: 'Comment traverser une fausse couche ?' },
@@ -267,6 +270,8 @@ const ASK_EN: Record<string, string> = {
   'guide_kidfood': 'My child refuses to eat',
   'guide_behaviour': 'How should I react to my child’s tantrums?',
   'guide_school': 'How do I prepare for starting nursery school?',
+  'child_language': 'How can I encourage my child’s language?',
+  'child_homework': 'How can I help with homework without conflict?',
   'guide_toddler': 'My 2-year-old speaks little',
   'guide_work': 'What are my rights at work while pregnant?',
   'guide_loss': 'How do I get through a miscarriage?',
@@ -341,6 +346,8 @@ const TOPIC_ALIAS: Record<string, string> = {
   meal_menu: 'meals', meal_pantry: 'meals', sleep_help: 'kid_sleep', kid_album: 'kid_milestones', journal: 'baby_daily', health_book: 'documents',
   medications: 'kid_treatments', me_diary: 'mood', cycle_pain: 'cycle_symptoms', cycle_discharge: 'cycle_symptoms', cycle_bleeding: 'cycle_symptoms',
   kid_school: 'guide_school', videos: 'official_videos',
+  // fonctions de l'enfant (liste des 200) : leurs lectures, pas celles de la fiche de l'enfant
+  h200_129: 'child_language', h200_132: 'guide_activities', h200_136: 'guide_sport', h200_137: 'child_homework',
   // écrans entrés au registre le 18/11/2026 : mêmes lectures que l'outil voisin
   cycle_advice: 'cycle_symptoms', cycle_month: 'cycle_stats', cycle_export: 'cycle_stats', pp_history: 'pp_checkin',
 };

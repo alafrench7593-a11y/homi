@@ -1,5 +1,5 @@
 /** Famille ALIMENTATION (allaitement, biberons, diversification, repas, scanner d'aliments). Grille 24, trait 1,75. */
-import { circle, drop, heart, rrect, SCAN_CORNERS, type HomiIconDef } from '../geometry';
+import { BUBBLE_FULL, circle, drop, heart, rrect, SCAN_CORNERS, type HomiIconDef } from '../geometry';
 
 const BOTTLE = 'M6.6 9h6.8v9.5a2.5 2.5 0 0 1-2.5 2.5H9.1a2.5 2.5 0 0 1-2.5-2.5z';
 const BOWL = 'M3.75 11.5h16.5a8.25 7.5 0 0 1-16.5 0z';
@@ -45,4 +45,37 @@ export const ALIMENTATION = {
   formulaTin: { fill: rrect(5, 6.5, 14, 14, 2.5), stroke: `${rrect(5, 6.5, 14, 14, 2.5)}M5 10h14M6.5 3.75h11a1.5 1.5 0 0 1 1.5 1.5V6.5H5V5.25a1.5 1.5 0 0 1 1.5-1.5z${heart(12, 15.2, 2.6)}` },
   /** Portions préparées : le bac à portions. */
   portionTray: { fill: rrect(3, 6, 18, 12, 2.25), stroke: `${rrect(3, 6, 18, 12, 2.25)}M9 6v12M15 6v12M3 12h18` },
+  /** Suivi du lait maternel tiré : l'entonnoir du tire-lait sur son flacon gradué. */
+  pumpBottle: {
+    fill: rrect(8, 11.5, 8, 9, 2),
+    stroke: `${rrect(8, 11.5, 8, 9, 2)}M9.5 11.5V9.5h5v2M5.5 3.75h13L15 9.5H9zM10.25 15h2M10.25 17.75h2`,
+  },
+  /** Allaitement mixte : la goutte partagée, sein d'un côté, biberon de l'autre. */
+  splitDrop: {
+    fill: 'M12 2.3C12 2.3 5.5 9.4 5.5 14a6.5 6.5 0 0 0 6.5 6.5z',
+    stroke: `${drop(12, 14, 6.5)}M12 2.3v18.2`,
+  },
+  /** Biberons avec le coparent : deux biberons qui se relaient. */
+  bottleRelay: {
+    fill: rrect(3.5, 9, 6, 11.5, 2),
+    stroke: `${rrect(3.5, 9, 6, 11.5, 2)}M5 9V6.75h3V9${rrect(14.5, 9, 6, 11.5, 2)}M16 9V6.75h3V9M10.75 12h2.75M12.25 10.5l1.5 1.5-1.5 1.5M13.25 17h-2.75M11.75 15.5l-1.5 1.5 1.5 1.5`,
+  },
+  /** Questions pour la consultante en lactation : la bulle et la goutte de lait. */
+  bubbleDrop: { fill: BUBBLE_FULL, stroke: `${BUBBLE_FULL}${drop(12, 11.75, 2.6)}` },
+  /** Habitudes d'alimentation : la grille des jours et des heures. */
+  hourGrid: {
+    fill: 'M9.25 9.5h5.5V15h-5.5z',
+    stroke: `${rrect(3.5, 4, 17, 16, 2.5)}M3.5 9.5h17M3.5 15h17M9.25 4v16M14.75 4v16`,
+    dots: [[6.4, 6.75, 1.1], [17.6, 6.75, 1.1], [17.6, 17.5, 1.1]],
+  },
+  /** Diversification menée par l'enfant : le brocoli à attraper. */
+  broccoli: {
+    fill: 'M6.25 11.75a3.25 3.25 0 0 1 .9-6.1 3.75 3.75 0 0 1 7-1.4 3.5 3.5 0 0 1 4.2 5 2.75 2.75 0 0 1-1.1 2.5z',
+    stroke: 'M6.25 11.75a3.25 3.25 0 0 1 .9-6.1 3.75 3.75 0 0 1 7-1.4 3.5 3.5 0 0 1 4.2 5 2.75 2.75 0 0 1-1.1 2.5zM10 11.75l-1 8.75h6l-1-8.75M12 14.5v3',
+  },
+  /** Refus alimentaires : la cuillère et le non, sans jugement. */
+  spoonRefuse: {
+    fill: circle(17, 16, 4.25),
+    stroke: `M8 3.5c2.2 0 3.5 2 3.5 4.25S10 12 8 12 4.5 10 4.5 7.75 5.8 3.5 8 3.5zM8 12v8.5${circle(17, 16, 4.25)}M15.4 14.4l3.2 3.2M18.6 14.4l-3.2 3.2`,
+  },
 } satisfies Record<string, HomiIconDef>;

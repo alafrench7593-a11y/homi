@@ -1,5 +1,5 @@
 /** Famille GARDE (école, fiche à transmettre, routines en images, garde alternée, nounou, photos de garde). */
-import { circle, rrect, type HomiIconDef } from '../geometry';
+import { circle, rrect, star, type HomiIconDef } from '../geometry';
 
 const PACK = 'M6 9a6 6 0 0 1 12 0v9.5a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z';
 const ID = rrect(3, 5.5, 18, 14, 2.25);
@@ -22,4 +22,14 @@ export const GARDE = {
   adultChild: { fill: `${ADULT}${CHILD}`, stroke: `${circle(8.5, 6, 2.5)}${ADULT}${circle(16.5, 10.5, 2)}${CHILD}` },
   /** Appareil photo intégré. */
   camera: { fill: CAMERA, stroke: `${CAMERA}${circle(12, 13, 3.5)}`, dots: [[17.5, 9.75, 0.95]] },
+  /** Activités extrascolaires : le ballon et l'étincelle de la séance. */
+  activityBall: {
+    fill: circle(9.5, 14, 6.5),
+    stroke: `${circle(9.5, 14, 6.5)}M3.25 12.4c2.6 1.2 6.5 1.3 12.5-.5M9.5 7.5c-2 2.6-2 10.4 0 13${star(18.25, 5.75, 2.75, 1.1, 4)}`,
+  },
+  /** Suivi des devoirs : le cahier et le crayon. */
+  homework: {
+    fill: rrect(3.5, 4, 12, 16.5, 2),
+    stroke: `${rrect(3.5, 4, 12, 16.5, 2)}M7 8.5h5M7 12h5M7 15.5h2.5M17.75 7.25l2.5 2.5-6.5 6.5-3.25.75.75-3.25z`,
+  },
 } satisfies Record<string, HomiIconDef>;

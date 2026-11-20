@@ -215,6 +215,38 @@ const FN_RAW: Record<string, Partial<M>> = {
   h200_179: { lifeStages: ['couple'], requiredData: ['partner'] },
   h200_186: { lifeStages: ['couple', 'household', 'parent'], requiredData: [] },
   h200_189: { lifeStages: ['household'] },
+  // Numéros partiels complétés puis branchés au catalogue (30/11/2026)
+  h200_27: { lifeStages: ['ttc'], sensitive: 'fertility' },
+  h200_129: { lifeStages: ['baby_6_12', 'toddler_1_3', 'child_3_6'], ageRange: [6, 72] },
+  h200_132: { lifeStages: KIDS, ageRange: [0, 120] },
+  h200_136: { lifeStages: ['child_3_6', 'child_6_10'], ageRange: [36, 120] },
+  h200_137: { lifeStages: ['child_6_10'], ageRange: [72, 120] },
+  h200_175: { lifeStages: ['couple'], requiredData: ['partner'] },
+  h200_177: { lifeStages: ['couple'], requiredData: ['partner'] },
+  h200_42: { lifeStages: ['parent', 'pregnancy', 'postpartum', 'ttc'] },
+  // souvenirs de grossesse : un journal de souvenirs, pas un suivi de santé mentale (le journal intime reste sensible)
+  h200_50: { lifeStages: ['pregnancy', 'postpartum'], sensitive: undefined },
+  h200_51: { lifeStages: ['postpartum'] }, h200_53: { lifeStages: ['postpartum'] },
+  h200_57: { lifeStages: ['postpartum'] },
+  h200_72: { feeding: ['pumped', 'breast', 'mixed'], ageRange: [0, 24] },
+  h200_75: { feeding: ['mixed', 'breast', 'pumped', 'formula'], ageRange: [0, 36] },
+  h200_80: { lifeStages: ['infant_0_6', 'baby_6_12', 'couple'], feeding: BOTTLE, ageRange: [0, 24], requiredData: ['child', 'partner'] },
+  h200_81: { lifeStages: ['postpartum', 'infant_0_6', 'baby_6_12'], feeding: ['breast', 'mixed'], ageRange: [0, 24] },
+  h200_83: { feeding: ['mixed', 'breast', 'pumped', 'formula'], ageRange: [0, 36] },
+  h200_84: { feeding: ['mixed', 'breast', 'pumped', 'formula'], ageRange: [0, 36] },
+  h200_120: { feeding: ['solids'], ageRange: [6, 24], lifeStages: ['baby_6_12', 'toddler_1_3'] },
+  h200_123: { ageRange: [6, 72], lifeStages: ['baby_6_12', 'toddler_1_3', 'child_3_6'] },
+  // HOMI Aura (/assistant?theme=…) : usage de l'IA lu dans HOMI_200 (central, sauf 174 et 200 : repli local)
+  h200_29: { lifeStages: ['ttc'], sensitive: 'fertility' },
+  h200_49: { lifeStages: ['pregnancy'], requiredData: ['pregnancy'] },
+  h200_64: { lifeStages: ['postpartum'] },
+  h200_82: { lifeStages: ['postpartum', 'infant_0_6', 'baby_6_12'], feeding: ['breast', 'mixed', 'pumped'], ageRange: [0, 24], requiredData: ['child'] },
+  h200_110: { lifeStages: KIDS, ageRange: [0, 120], requiredData: ['child'] },
+  h200_124: { lifeStages: ['baby_6_12', 'toddler_1_3'], feeding: ['solids'], ageRange: [4, 36], requiredData: ['child'] },
+  h200_140: { lifeStages: KIDS, ageRange: [0, 120], requiredData: ['child'] },
+  h200_174: { lifeStages: ['couple', 'parent'] },
+  h200_190: { lifeStages: ['household', 'parent'] },
+  h200_197: { lifeStages: ['parent'] }, h200_200: { lifeStages: ['parent'] },
 };
 
 /** Disponibilité lue au moment de l'appel : l'assistant en ligne suit son interrupteur (config/features.ts). */

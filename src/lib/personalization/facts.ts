@@ -36,6 +36,8 @@ export interface ProfileFacts {
   caregiverLinked: boolean;
   /** Mode d'alimentation déclaré (le nourrisson le plus jeune), ou null. */
   feeding: Feeding | null;
+  /** Animaux enregistrés dans le foyer (table pets). */
+  pets: number;
   activeChildId: string | null;
 }
 
@@ -51,6 +53,8 @@ export interface FactsInput {
   /** Enfants pour lesquels au moins un aliment a été noté (food_introductions). */
   foodsStarted?: string[];
   caregiverLinked?: boolean;
+  /** Nombre d'animaux enregistrés dans le foyer (table pets). */
+  pets?: number;
   activeChildId?: string | null;
 }
 
@@ -85,6 +89,7 @@ export function buildFacts(i: FactsInput): ProfileFacts {
     children,
     caregiverLinked: !!i.caregiverLinked,
     feeding: declared && children.some((c) => c.months < 24) ? declared : null,
+    pets: Math.max(0, i.pets ?? 0),
     activeChildId: i.activeChildId ?? null,
   };
 }

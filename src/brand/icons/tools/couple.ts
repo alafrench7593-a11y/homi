@@ -1,5 +1,5 @@
 /** Famille COUPLE (charge mentale, domaines, point de couple, se comprendre, bilan, temps pour soi, difficultés). */
-import { BUBBLE_FULL, circle, heart, rrect, type HomiIconDef } from '../geometry';
+import { arc, BUBBLE_FULL, circle, heart, rrect, type HomiIconDef } from '../geometry';
 
 const HEART = heart(12, 12.7, 7.6);
 const CUP = 'M4.5 9.5h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5z';
@@ -38,4 +38,19 @@ export const COUPLE = {
   twoHearts: { fill: heart(9.25, 10.75, 5.25), stroke: `${heart(9.25, 10.75, 5.25)}${heart(16, 14.75, 4.25)}` },
   /** Dépenses familiales : le portefeuille. */
   wallet: { fill: rrect(3.5, 7.5, 17, 12, 2.5), stroke: `${rrect(3.5, 7.5, 17, 12, 2.5)}M5 7.5V7a2 2 0 0 1 2-2h10.5v2.5M20.5 11.5h-3.75a2 2 0 0 0 0 4h3.75`, dots: [[16.75, 13.5, 1]] },
+  /** Intimité sans pression : deux visages proches, un petit cœur. */
+  closeness: {
+    fill: heart(12, 4.75, 2.4),
+    stroke: `${heart(12, 4.75, 2.4)}${circle(8.5, 11, 2.75)}${circle(15.5, 11, 2.75)}M3.75 20.25c.4-2.9 2.3-4.75 4.75-4.75 1.4 0 2.6.6 3.5 1.6.9-1 2.1-1.6 3.5-1.6 2.45 0 4.35 1.85 4.75 4.75`,
+  },
+  /** Baromètre du couple : la météo de la semaine (soleil et nuage). */
+  coupleWeather: {
+    fill: 'M8.25 19.75h8.5a3.5 3.5 0 0 0 .3-7 4.75 4.75 0 0 0-9.05 1.25 2.9 2.9 0 0 0 .25 5.75z',
+    stroke: `M8.25 19.75h8.5a3.5 3.5 0 0 0 .3-7 4.75 4.75 0 0 0-9.05 1.25 2.9 2.9 0 0 0 .25 5.75z${arc(8.25, 8.25, 3, 150, 300)}M8.25 2.75v1.5M2.75 8.25h1.5M4.4 4.4l1.05 1.05M12.1 4.4l-1.05 1.05`,
+  },
+  /** Traducteur émotionnel : deux bulles, l'une devient l'autre. */
+  bubbleSwap: {
+    fill: rrect(11, 11, 10, 7.5, 2.5),
+    stroke: `${rrect(3, 3.5, 10, 7.5, 2.5)}M5.75 11v2.5L8.5 11${rrect(11, 11, 10, 7.5, 2.5)}M18.25 18.5V21l-2.75-2.5M15.5 5.25h1.75a2 2 0 0 1 2 2v1.5M17.75 7.25l1.5 1.5 1.5-1.5M8.5 19.25H6.75a2 2 0 0 1-2-2v-1.5M6.25 16.75l-1.5-1.5-1.5 1.5`,
+  },
 } satisfies Record<string, HomiIconDef>;

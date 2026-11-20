@@ -73,4 +73,9 @@ export const CYCLE = {
   calendarClock: { fill: circle(17, 17, 4), stroke: `M11.5 18H5.5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3.5M3.5 9.25h15M7.5 3.25v3.5M14.5 3.25v3.5${circle(17, 17, 4)}M17 15.25V17l1.25.75` },
   /** Suivi de PMA : le flacon du laboratoire. */
   flask: { fill: LIQUID, stroke: `${FLASK}M9.25 3.5h5.5M7.05 15h9.9`, dots: [[11, 12.25, 0.95], [13.1, 10.75, 0.8]] },
+  /** Calendrier des examens (liste des 200, n° 27) : le calendrier et le flacon d'analyse. */
+  calendarFlask: {
+    fill: rrect(3, 5.5, 12.5, 13, 2.25),
+    stroke: `${calendar(3, 5.5, 12.5, 13)}M17.25 11.5v3l-2.4 4.85a1 1 0 0 0 .9 1.4h4.95a1 1 0 0 0 .9-1.4L19.25 14.5v-3M16.5 11.5h3.5`,
+  },
 } satisfies Record<string, HomiIconDef>;

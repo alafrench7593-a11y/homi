@@ -92,6 +92,8 @@ export const ASK_DE: Record<string, string> = {
   'guide_kidfood': 'Mein Kind will nicht essen',
   'guide_behaviour': 'Wie reagiere ich auf die Wutanfälle meines Kindes?',
   'guide_school': 'Wie bereite ich den Start in die Vorschule (école maternelle) vor?',
+  'child_language': 'Wie fördere ich die Sprache meines Kindes?',
+  'child_homework': 'Wie begleite ich die Hausaufgaben ohne Streit?',
   'guide_toddler': 'Mein 2-jähriges Kind spricht wenig',
   'guide_work': 'Welche Rechte habe ich als Schwangere am Arbeitsplatz?',
   'guide_loss': 'Wie komme ich durch eine Fehlgeburt?',

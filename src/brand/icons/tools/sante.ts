@@ -1,5 +1,5 @@
 /** Famille SANTÉ (rendez-vous, vaccins, traitements, médicaments, humeur, sécurité des produits, assistant). */
-import { BUBBLE_FULL, capsule, circle, CLIP, CLIPBOARD, CLOSED_BOOK, CLOSED_BOOK_FILL, ngon, on, rrect, SCAN_CORNERS, type HomiIconDef } from '../geometry';
+import { BUBBLE_FULL, capsule, circle, CLIP, CLIPBOARD, CLOSED_BOOK, CLOSED_BOOK_FILL, ngon, on, rrect, SCAN_CORNERS, star, type HomiIconDef } from '../geometry';
 
 const FOLDER = 'M3.5 7A2 2 0 0 1 5.5 5h3.6l2 2.25h7.4a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z';
 const THERMO = 'M10 14.2V5.5a2 2 0 0 1 4 0v8.7a3.75 3.75 0 1 1-4 0z';
@@ -56,4 +56,17 @@ export const SANTE = {
   bubbleSpark: { fill: BUBBLE_FULL, stroke: `${BUBBLE_FULL}M12 6.75c.45 2.1 1.4 3.05 3.5 3.5-2.1.45-3.05 1.4-3.5 3.5-.45-2.1-1.4-3.05-3.5-3.5 2.1-.45 3.05-1.4 3.5-3.5z` },
   /** Assistant hors ligne : la puce. */
   chip: { fill: rrect(6.5, 6.5, 11, 11, 2), stroke: `${rrect(6.5, 6.5, 11, 11, 2)}${rrect(9.5, 9.5, 5, 5, 1)}M9.5 3.5v3M14.5 3.5v3M9.5 17.5v3M14.5 17.5v3M3.5 9.5h3M3.5 14.5h3M17.5 9.5h3M17.5 14.5h3` },
+  /** Suivi des analyses médicales : le tube et la courbe des valeurs recopiées. */
+  labCurve: {
+    fill: 'M5.5 11h3v5.75a1.5 1.5 0 0 1-3 0z',
+    stroke: 'M4.5 3.5h5M5.5 3.5v13.25a1.5 1.5 0 0 0 3 0V3.5M12.5 8v12.5h8M13.75 17l2.5-3 2 1.5 2.5-4.25',
+    dots: [[20.75, 11.25, 1.1]],
+  },
+  /** HOMI Aura (aides thématiques) : la bulle et l'étincelle. */
+  auraBubble: { fill: BUBBLE_FULL, stroke: `${BUBBLE_FULL}${star(12, 10.5, 3.75, 1.3, 4)}` },
+  /** Découvrir HOMI : la boussole. */
+  compassSpark: {
+    fill: 'M15 9 13.1 13.1 9 15l1.9-4.1z',
+    stroke: `${circle(12, 12, 8.5)}M15 9 13.1 13.1 9 15l1.9-4.1zM12 3.5v1.75M12 18.75v1.75M3.5 12h1.75M18.75 12h1.75`,
+  },
 } satisfies Record<string, HomiIconDef>;

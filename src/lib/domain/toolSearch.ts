@@ -219,6 +219,10 @@ export function searchCatalog(tools: readonly CatalogTool[], query: string, max 
     });
   }
   if (!hits.length) return { results: [], understood: false, tokens };
+  // une fonction nommée peut être indexée deux fois (entrée à plat ET fonction de son outil) : une seule ligne
+  const unique = new Map<string, SearchHit>();
+  for (const h of hits) { const prev = unique.get(h.tool.id); if (!prev || h.score > prev.score) unique.set(h.tool.id, h); }
+  hits.length = 0; hits.push(...unique.values());
   hits.sort((a, b) => b.score - a.score);
   const top = hits[0].score;
   const results = hits.filter((h) => h.score >= top * MIN_RELATIVE || intents.includes(h.tool.id)).slice(0, max);

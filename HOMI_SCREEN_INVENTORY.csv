@@ -11,8 +11,10 @@ ecran,Admin,/admin/resources,src/app/admin/resources.tsx,réglage,,Screen Card F
 ecran,Accueil,/agenda,src/app/(tabs)/agenda.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/appointments,src/app/appointments.tsx,formulaire,appointments,Screen Card GlassSurface Sheet Field Button Banner Chip Segmented Toggle SectionTitle ErrorView,1,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/article/[slug],src/app/article/[slug].tsx,détail,,Screen Card Button Banner EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Accueil,/ask,src/app/(tabs)/ask.tsx,liste,ask,Screen Card Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/ask,src/app/(tabs)/ask.tsx,détail,ask,,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/assistant,src/app/assistant/index.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/assistant/chat,src/app/assistant/chat.tsx,liste,,Screen Card Button IconButton Chip Toggle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Accueil,/assistant/history,src/app/assistant/history.tsx,historique,,Screen Card Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/assistant/local,src/app/assistant/local.tsx,liste,local_ai,Screen GlassSurface IconButton Banner Chip Skeleton,4,non,à faire,,,,,,,,,,,,,
 ecran,Auth / entrée,/auth/callback,src/app/auth/callback.tsx,détail,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
 ecran,Auth / entrée,/auth/forgot,src/app/auth/forgot.tsx,formulaire,,Field Button Banner EntryHero EntryScreen MattePanel,0,non,fait,,,,,,,,,,,,,
@@ -26,13 +28,17 @@ ecran,Bébé et enfant,/bottle/history,src/app/bottle/history.tsx,historique,bab
 ecran,Bébé et enfant,/bottle/scoops,src/app/bottle/scoops.tsx,détail,bottle_scoops,Screen Field Banner,0,non,fait,,,,,,,,,,,,,
 ecran,Accueil,/calendar,src/app/calendar.tsx,formulaire,family_calendar,Screen Card Sheet Field Button IconButton Banner Chip Segmented Toggle SectionTitle ErrorView Skeleton,0,oui,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id],src/app/child/[id].tsx,détail,kid_profile,Screen Button IconButton EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/activities,src/app/child/[id]/activities.tsx,formulaire,,Screen Card Field Button IconButton Banner Chip ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/album,src/app/child/[id]/album.tsx,historique,kid_album,Screen Card Sheet Field Button Banner Segmented SectionTitle EmptyState ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/card,src/app/child/[id]/card.tsx,résultat,kid_card,Screen Card Field Button Banner ListRow SectionTitle EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/discoveries,src/app/child/[id]/discoveries.tsx,formulaire,baby_foods,Screen GlassSurface Sheet Field Button IconButton Banner Chip SectionTitle EmptyState ErrorView Skeleton,20,oui,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/foods,src/app/child/[id]/foods.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
-ecran,Bébé et enfant,/child/[id]/grow,src/app/child/[id]/grow.tsx,liste,kid_grow,Screen GlassSurface Sheet Field Button Banner Chip SectionTitle EmptyState ErrorView Skeleton,5,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/games,src/app/child/[id]/games.tsx,liste,,Screen GlassSurface Button Banner Chip ListRow ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/grow,src/app/child/[id]/grow.tsx,liste,kid_grow,Screen GlassSurface Sheet Field Button Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton,5,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/growth,src/app/child/[id]/growth.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/health-tracking,src/app/child/[id]/health-tracking.tsx,formulaire,kid_health,Screen Card Sheet Field Button Banner Chip Segmented Toggle ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/homework,src/app/child/[id]/homework.tsx,formulaire,,Screen Card Field Button IconButton Banner Chip Toggle SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Bébé et enfant,/child/[id]/language,src/app/child/[id]/language.tsx,réglage,,Screen Card Field Button Banner Chip ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/needs,src/app/child/[id]/needs.tsx,formulaire,kid_treatments,Screen Card Sheet Field Button Banner Chip Segmented ListRow SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/school,src/app/child/[id]/school.tsx,liste,kid_school,Screen Card Field Button ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Bébé et enfant,/child/[id]/steps,src/app/child/[id]/steps.tsx,liste,kid_steps,Screen Card Button Banner EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -98,6 +104,7 @@ ecran,Santé,/documents,src/app/documents/index.tsx,liste,documents,Screen Card 
 ecran,Santé,/documents/[id],src/app/documents/[id].tsx,formulaire,,Screen Card Sheet Field Button IconButton Banner Segmented Toggle SectionTitle EmptyState ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/documents/book,src/app/documents/book.tsx,liste,health_book,Screen Card Banner Chip SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/documents/export,src/app/documents/export.tsx,résultat,,Screen Card Button Banner Toggle SectionTitle Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Santé,/documents/labs,src/app/documents/labs.tsx,formulaire,,Screen Card Field Button Banner Chip ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/documents/scan,src/app/documents/scan.tsx,formulaire,,Screen Card Field Button IconButton Banner Segmented Toggle,3,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/emergency,src/app/emergency.tsx,détail,emergency,Screen Card Banner,0,non,à faire,,,,,,,,,,,,,
 ecran,Famille,/family,src/app/family/index.tsx,liste,family_tasks,Screen Card Field Button IconButton Banner Chip SectionTitle EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
@@ -147,7 +154,7 @@ ecran,Famille,/family/urgent,src/app/family/urgent.tsx,liste,family_urgent,,0,no
 ecran,Réglages,/feedback,src/app/feedback.tsx,liste,,Screen Card Field Button IconButton Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/feeding/difficulties,src/app/feeding/difficulties.tsx,liste,,Screen Card Field Button Banner Chip Segmented ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/feeding/formula,src/app/feeding/formula.tsx,formulaire,,Screen Card Field Button Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
-ecran,Autres,/feeding/milk-stock,src/app/feeding/milk-stock.tsx,liste,,Screen Card Field Button Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/feeding/milk-stock,src/app/feeding/milk-stock.tsx,formulaire,,Screen Card Field Button Banner Chip ListRow EmptyState Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility,src/app/fertility/index.tsx,liste,ttc_cycle,Screen Card Button Banner SectionTitle ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility/body,src/app/fertility/body.tsx,formulaire,ttc_temperature,Screen Card Field IconButton Banner Chip ListRow SectionTitle ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/fertility/calendar,src/app/fertility/calendar.tsx,liste,,Screen Card Button Banner SectionTitle ErrorView Skeleton,2,non,à faire,,,,,,,,,,,,,
@@ -195,7 +202,7 @@ ecran,Réglages,/legal/[doc],src/app/legal/[doc].tsx,détail,,Screen Card,0,non,
 ecran,Santé,/library,src/app/library.tsx,liste,library,Screen Card GlassSurface Field Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
 ecran,Grossesse et post-partum,/lists,src/app/lists.tsx,liste,preg_lists,Screen Card Sheet Field Button IconButton Banner ListRow SectionTitle EmptyState ErrorView Skeleton,1,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/me,src/app/me/index.tsx,liste,,Screen Card Banner ListRow SectionTitle,0,non,à faire,,,,,,,,,,,,,
-ecran,Accueil,/me/diary,src/app/me/diary.tsx,historique,me_diary,Screen Field Button EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
+ecran,Accueil,/me/diary,src/app/me/diary.tsx,historique,me_diary,Screen Field Button Segmented EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
 ecran,Accueil,/me/mood,src/app/me/mood/index.tsx,liste,mood,Screen Field Chip Toggle SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,fait,,,,,,,,,,,,,
 ecran,Accueil,/me/mood/[id],src/app/me/mood/[id].tsx,détail,,Screen Chip EmptyState ErrorView Skeleton,0,non,fait,,,,,,,,,,,,,
 ecran,Accueil,/me/sleep,src/app/me/sleep.tsx,liste,sleep,Screen Card Sheet Field Button IconButton Banner Chip ListRow SectionTitle EmptyState ErrorView Skeleton VirtualList,0,non,à faire,,,,,,,,,,,,,
@@ -296,8 +303,8 @@ outil,Santé,/scanner/history,,,,,,,,scan_history,scan_history,Produits scannés
 outil,Santé,/scanner/compare,,,,,,,,scan_compare,scan_compare,Comparer deux produits,scanner,formulaire/assistant,/scanner/compare,/scanner/avoid,/scanner/food /scanner/product /scanner/result/[id],/scanner/history /scanner/recalls,oui,oui,oui,oui
 outil,Santé,/appointments,,,,,,,,appointments,appointments,Rendez-vous et examens,health,tâches/planning,/appointments,feuille dans l’écran,,,non,non,non,non
 outil,Santé,/consult/questions,,,,,,,,consult_questions,consult_questions,Mes questions pour le rendez-vous,health,formulaire/assistant,/consult/questions,dans l’écran,,,non,non,non,non
-outil,Santé,/documents,,,,,,,,documents,documents,Documents de santé,health,formulaire/assistant,/documents,/documents/[id] /documents/scan,/documents/export,/documents/book,non,non,non,non
-outil,Santé,/documents/book,,,,,,,,health_book,health_book,Carnet de santé,health,suivi/mesures,/documents/book,/documents/[id] /documents/scan,/documents/export,,non,non,non,non
+outil,Santé,/documents,,,,,,,,documents,documents,Documents de santé,health,formulaire/assistant,/documents,/documents/[id] /documents/labs /documents/scan,/documents/export,/documents/book,non,non,non,non
+outil,Santé,/documents/book,,,,,,,,health_book,health_book,Carnet de santé,health,suivi/mesures,/documents/book,/documents/[id] /documents/labs /documents/scan,/documents/export,,non,non,non,non
 outil,Santé,/medications,,,,,,,,medications,medications,Médicaments,health,suivi/mesures,/medications,,,,non,non,non,non
 outil,Accueil,/me/mood,,,,,,,,mood,mood,Mon humeur,mood,humeur/journal,/me/mood,,/me/mood/[id],/me/diary /me/sleep,oui,oui,oui,oui
 outil,Accueil,/me/diary,,,,,,,,me_diary,me_diary,Mon journal intime,mood,humeur/journal,/me/diary,,/me/mood/[id],/me/mood /me/sleep,non,non,non,non
@@ -306,7 +313,7 @@ outil,Santé,/scanner/avoid,,,,,,,,scan_avoid,scan_avoid,Produits à éviter,sca
 outil,Santé,/scanner/recalls,,,,,,,,recall_alerts,recall_alerts,Alertes de rappel de produits,scanner,suivi/mesures,/scanner/recalls,/scanner/avoid,/scanner/compare /scanner/food /scanner/product /scanner/result/[id],/scanner/history,oui,oui,partiel,oui
 outil,Santé,/emergency,,,,,,,,emergency,emergency,Urgences,health,formulaire/assistant,/emergency,,,,non,non,non,non
 outil,Accueil,/ask,,,,,,,,ask,ask,Assistant,resources,formulaire/assistant,/ask,,,,non,non,non,non
-outil,Accueil,/assistant/local,,,,,,,,local_ai,local_ai,Assistant hors ligne,resources,formulaire/assistant,/assistant/local,,,/assistant/chat,non,non,non,non
+outil,Accueil,/assistant/local,,,,,,,,local_ai,local_ai,Assistant hors ligne,resources,formulaire/assistant,/assistant/local,,,/assistant/chat /assistant/history,non,non,non,non
 outil,Santé,/library,,,,,,,,library,library,Bibliothèque,resources,autre,/library,,,,non,non,non,non
 outil,Autres,/guide,,,,,,,,guides,guides,Guides pratiques,resources,autre,/guide,,/guide/[topic],,non,non,non,non
 outil,Santé,/videos,,,,,,,,videos,videos,Vidéos et tutos,resources,autre,/videos,,,,non,non,non,non

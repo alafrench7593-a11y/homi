@@ -48,12 +48,21 @@ export function useToolHub() {
    * Toutes les entrées À PLAT (outils + fonctions nommées de la liste des 200), sur tous les profils du foyer : une
    * fonction n'existe parfois que dans un profil (« Rendez-vous pédiatriques » pour un enfant) ; elle garde ce profil.
    */
+  // Catalogue COMPLET de chaque autre profil du foyer (les menus contextuels visent un profil précis : la fiche d'un
+  // enfant, « Ma grossesse »…), y compris les outils « pour tout le monde » que le profil affiché a déjà.
+  const household = useHouseholdProfiles();
+  const byProfile = useMemo(() => household.filter((p) => !p.active).map((p) => ({ ...p, tools: toolCatalog(p.ctx) })), [household]);
   const flat = useMemo(() => {
     const seen = new Set<string>();
     const out: ToolEntry[] = [];
     for (const e of entries) for (const tool of flattenCatalog([e.tool])) if (!seen.has(tool.id)) { seen.add(tool.id); out.push({ ...e, tool }); }
+    // fonctions d'un outil « pour tout le monde » propres à un autre profil (l'aide allaitement d'un bébé quand la
+    // grossesse est affichée) : l'outil est déjà là, mais pas cette fonction ; elle garde le profil qui l'ouvre
+    for (const p of byProfile) for (const tool of flattenCatalog(p.tools)) {
+      if (tool.parent && !seen.has(tool.id)) { seen.add(tool.id); out.push({ tool, subject: p.subject, profile: p.title }); }
+    }
     return out;
-  }, [entries]);
+  }, [entries, byProfile]);
   const profileOf = useMemo(() => new Map(all.map((e) => [e.tool.id, e])), [all]);
 
   /** Entrée (outil ou sous-accès) pour un identifiant stable, avec le profil auquel elle appartient. */
@@ -65,10 +74,6 @@ export function useToolHub() {
     return { tool, subject: owner?.subject, profile: owner?.profile };
   }, [allTools, profileOf]);
 
-  // Catalogue COMPLET de chaque autre profil du foyer (les menus contextuels visent un profil précis : la fiche d'un
-  // enfant, « Ma grossesse »…), y compris les outils « pour tout le monde » que le profil affiché a déjà.
-  const household = useHouseholdProfiles();
-  const byProfile = useMemo(() => household.filter((p) => !p.active).map((p) => ({ ...p, tools: toolCatalog(p.ctx) })), [household]);
   /**
    * Entrée d'un outil du registre (identifiant actuel ou ancien, outil ou sous-accès) pour un menu contextuel :
    * sur le profil demandé s'il est donné, sinon le profil affiché, sinon le premier profil du foyer qui le propose.

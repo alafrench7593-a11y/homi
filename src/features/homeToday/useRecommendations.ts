@@ -9,6 +9,7 @@ import { useWindowDimensions } from 'react-native';
 import { eq } from '@/lib/backend';
 import { useActivePregnancy, useHouseholdId, useHouseholdMembers, useJourneyState, useMemberships, useMyMembership, useProfile, useRows, useTrackedChildren } from '@/lib/data/hooks';
 import { useScope } from '@/lib/data/hooks-scope';
+import { useHouseholdPets } from '@/lib/data/hooks-foyerTools';
 import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { buildFacts, childRecommendations, forYouCount, recommend, type ProfileFacts, type Recommendation } from '@/lib/personalization';
@@ -28,6 +29,8 @@ export function useProfileFacts(): ProfileFacts {
   const hid = useHouseholdId();
   const scope = useScope();
   // aliments déjà notés (diversification réellement commencée), par enfant ; une erreur (accès) = aucun
+  // animaux du foyer (l'outil Animaux n'est proposé qu'à un foyer qui en a enregistré un)
+  const pets = useHouseholdPets();
   const foods = useRows<{ child_id: string }>(['food_introductions', 'household', hid ?? ''], hid ? { table: 'food_introductions', filters: [eq('household_id', hid)], limit: 500 } : null);
   return useMemo(() => buildFacts({
     answers: profile?.onboarding_answers ?? null,
@@ -42,8 +45,9 @@ export function useProfileFacts(): ProfileFacts {
     children: (children ?? []).map((c) => ({ id: c.id, first_name: c.first_name, birth_date: c.birth_date })),
     foodsStarted: [...new Set((foods.data ?? []).map((x) => x.child_id))],
     caregiverLinked: (members ?? []).some((m) => m.role === 'caregiver'),
+    pets: (pets.data ?? []).length,
     activeChildId: scope.childId ?? null,
-  }), [profile?.onboarding_answers, membership?.role, memberships, js.active, pregnancy, me, children, foods.data, members, scope.childId]);
+  }), [profile?.onboarding_answers, membership?.role, memberships, js.active, pregnancy, me, children, foods.data, members, pets.data, scope.childId]);
 }
 
 export function useRecommendations(): { facts: ProfileFacts; forYou: Recommendation[]; count: number } {

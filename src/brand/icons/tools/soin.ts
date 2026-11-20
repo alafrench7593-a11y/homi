@@ -1,5 +1,5 @@
 /** Famille SOIN (journée, couches, dents, produits, journal, fiche et croissance de l'enfant, humeur, album). */
-import { circle, CLIP, CLIPBOARD, CLOSED_BOOK, CLOSED_BOOK_FILL, crescent, heart, on, rrect, SCAN_CORNERS, star, type HomiIconDef } from '../geometry';
+import { BUBBLE_FULL, circle, CLIP, CLIPBOARD, CLOSED_BOOK, CLOSED_BOOK_FILL, crescent, heart, on, rrect, SCAN_CORNERS, star, type HomiIconDef } from '../geometry';
 
 const DIAPER = 'M3.5 7.5h17V10c0 5.2-3.8 9.5-8.5 9.5S3.5 15.2 3.5 10z';
 const TOOTH = 'M8 4c-2.5 0-4 2-4 4.6 0 2.1.8 3.5 1.4 5.2.6 1.8.9 6.2 2.6 6.2 1.8 0 1.8-4.7 4-4.7s2.2 4.7 4 4.7c1.7 0 2-4.4 2.6-6.2.6-1.7 1.4-3.1 1.4-5.2C20 6 18.5 4 16 4c-1.6 0-2.4.9-4 .9S9.6 4 8 4z';
@@ -56,5 +56,12 @@ export const SOIN = {
     fill: crescent(12, 5.75, 2.75),
     stroke: `M3.75 10.7c2.8-.95 5.55-.6 8.25 1.2v8.6c-2.7-1.8-5.45-2.15-8.25-1.2zM20.25 10.7c-2.8-.95-5.55-.6-8.25 1.2v8.6c2.7-1.8 5.45-2.15 8.25-1.2z${crescent(12, 5.75, 2.75)}`,
     dots: [[6.5, 5, 1], [17.75, 4.25, 1]],
+  },
+  /** Journal du langage : la bulle et ses mots. */
+  speechWords: { fill: BUBBLE_FULL, stroke: `${BUBBLE_FULL}M7.5 8.5h3M12.5 8.5h4M7.5 12h6.5` },
+  /** Jeux éducatifs par âge : trois cubes de jeu empilés. */
+  toyBlocks: {
+    fill: rrect(8, 3.75, 8, 8, 1.5),
+    stroke: `${rrect(8, 3.75, 8, 8, 1.5)}${rrect(3.5, 12, 8, 8, 1.5)}${rrect(12.5, 12, 8, 8, 1.5)}${circle(12, 7.75, 1.6)}M5.75 16h3.5M14.75 16h3.5M16.5 14.25v3.5`,
   },
 } satisfies Record<string, HomiIconDef>;

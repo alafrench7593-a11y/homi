@@ -63,4 +63,16 @@ export const GROSSESSE = {
   pelvicLift: { fill: 'M3.5 8.5c2.5 6.5 14.5 6.5 17 0z', stroke: 'M3.5 8.5c2.5 6.5 14.5 6.5 17 0M8 20.5v-4.75M5.9 17.75 8 15.65l2.1 2.1M16 20.5v-4.75M13.9 17.75 16 15.65l2.1 2.1' },
   /** Suivi de la cicatrisation : la pousse. */
   sprout: { fill: 'M12 13c0-3.5-2.5-6-6.5-6 0 3.5 2.5 6 6.5 6zM12 11c0-3 2-5.5 6-5.5 0 3-2 5.5-6 5.5z', stroke: 'M12 20.5V11M12 13c0-3.5-2.5-6-6.5-6 0 3.5 2.5 6 6.5 6zM12 11c0-3 2-5.5 6-5.5 0 3-2 5.5-6 5.5zM7.5 20.5h9' },
+  /** Journal de grossesse et souvenirs : le cadre et l'image d'échographie. */
+  ultrasound: {
+    fill: 'M12 8.25 6.75 16a6.75 6.75 0 0 0 10.5 0z',
+    stroke: `${rrect(3.5, 4.5, 17, 15.5, 2.5)}M12 8.25 6.75 16a6.75 6.75 0 0 0 10.5 0z${heart(12, 14.25, 2)}`,
+  },
+  /** Calendrier de récupération post-partum : le calendrier et la feuille qui pousse. */
+  calendarLeaf: {
+    fill: 'M8.5 18.5c0-3.5 2.5-6 7-6 0 4-2.5 6-7 6z',
+    stroke: `${calendar(3.5, 5.5, 17, 15)}M8.5 18.5c0-3.5 2.5-6 7-6 0 4-2.5 6-7 6zM8.5 18.5l3.25-3`,
+  },
+  /** Journal de récupération physique : la cicatrice et ses points. */
+  scarCheck: { fill: rrect(3.5, 5, 17, 14, 3), stroke: `${rrect(3.5, 5, 17, 14, 3)}M6.75 12h10.5M8.5 10.25v3.5M12 10.25v3.5M15.5 10.25v3.5` },
 } satisfies Record<string, HomiIconDef>;

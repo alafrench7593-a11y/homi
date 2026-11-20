@@ -5,6 +5,7 @@
  */
 import type { IconName } from '@/components/ui';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
+import { H200_VIEWS } from '@/lib/journeys/homi200';
 import { SCOPES, subRef, TOOLS, type ScopeCtx } from '@/lib/journeys/tools';
 
 /** `id` : identifiant stable de l'outil, ou `<outil>.<sous-accès>` quand l'écran est un sous-accès (guide, onglet, filtre). */
@@ -53,6 +54,14 @@ function index() {
         if (!INDEX.has(key)) INDEX.set(key, { id: subRef(tool.id, sub.id), theme: tool.theme, icon: sub.icon });
       }
     }
+  }
+  // fonctions nommées propres à l'enfant (langage, jeux, activités, devoirs…) : un écran à elles, avec leur
+  // pictogramme et leurs lectures, plutôt que la fiche générique de l'enfant (après les outils et sous-accès)
+  for (const e of H200_VIEWS) {
+    if (!e.view?.kidPath || e.view.kidPath.includes('?')) continue;
+    const key = normalizeToolPath(e.view.kidPath.replace(':id', ID));
+    const def = TOOLS.find((d) => d.id === e.target);
+    if (def && !INDEX.has(key)) INDEX.set(key, { id: e.id, theme: def.theme, icon: e.icon ?? def.icon });
   }
   return INDEX;
 }

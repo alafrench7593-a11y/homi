@@ -1,5 +1,23 @@
 # HOMI — Audit des 200 outils
 
+## État au 30/11/2026 (après branchement des numéros complétés)
+
+Source : `docs/200/correspondance_200.csv` (colonne `statut` ; un numéro livré après l'audit porte « OPÉRATIONNEL (route) ») et la table `HOMI_200` (`src/lib/journeys/homi200.ts`), vérifiées par `src/__tests__/homi200.test.ts` et `src/__tests__/branchement200.test.ts`.
+
+| Statut (correspondance) | Nombre |
+|---|---|
+| OPÉRATIONNEL (131 à l'audit du 18/11 + 61 livrés depuis, avec leur route) | 192 |
+| PARTIEL : 178 Planification des moments à deux ; 196 Recherche universelle en langage naturel | 2 |
+| ABSENT : 135 Créateur d'histoires personnalisées (IA centrale) | 1 |
+| DOUBLON_LISTE (13 = 3 ; 16 = 1 ; 22 = 11 ; 35 = 13 ; 187 = 163) | 5 |
+| Total | 200 |
+
+Dans l'application (`HOMI_200`) : 63 numéros sont un outil du registre, 129 une fonction nommée (sous-accès avec son nom, sa phrase, son pictogramme et sa route exacte), 5 des doublons, 2 partiels et 1 absent : **197 numéros disponibles** dans le catalogue, la recherche et les recommandations. Les 11 entrées HOMI Aura (29, 49, 64, 82, 110, 124, 140, 174, 190, 197, 200) ouvrent `/assistant?theme=…` (IA centrale, sauf 174 et 200 qui ont un repli local), avec la règle d'accès de l'assistant (Premium ou offre « Assistant IA »).
+
+Le reste de ce document est l'audit initial du 18/11/2026, conservé tel quel.
+
+---
+
 Fichiers détaillés : [correspondance numéro par numéro](docs/200/correspondance_200.csv) · [outils existants](docs/200/matrice_outils_existants.csv) · [liste de référence](docs/200/liste_200.md) · [IA, crédits, profils](docs/200/audit_ia_credits_profils.md).
 
 Établi le 18/11/2026 sur la branche `homi/fondations` (HEAD `6bfc374`), en lecture seule (aucun fichier suivi modifié, rien committé).

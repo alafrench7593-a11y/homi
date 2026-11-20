@@ -19,6 +19,7 @@ export const perso = {
   'pz.r.discover': 'Pour découvrir HOMI',
   'pz.r.caregiver': 'Pour la garde de {name}',
   'pz.r.caregiverNoName': 'Pour la garde',
+  'pz.r.pets': 'Parce qu’un animal vit dans ton foyer',
   'pz.r.age': 'Parce que {name} a {age}',
   'pz.r.diversifSoon': 'Pour préparer la diversification de {name}',
   'pz.r.diversif': 'Parce que la diversification de {name} a commencé',

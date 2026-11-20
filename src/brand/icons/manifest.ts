@@ -84,6 +84,14 @@ export const VIEW_ICON: Record<string, HomiIconName> = {
   h200_73: 'milkJars', h200_74: 'milkJars', h200_76: 'milkQuestion', h200_77: 'milkQuestion', h200_79: 'formulaTin',
   h200_122: 'portionTray', h200_133: 'bookStar', h200_134: 'storyMoon', h200_172: 'bubbleCheck', h200_179: 'twoHearts',
   h200_186: 'wallet', h200_189: 'paw',
+  // numéros partiels complétés puis branchés au catalogue (30/11/2026)
+  h200_27: 'calendarFlask', h200_129: 'speechWords', h200_132: 'toyBlocks', h200_136: 'activityBall', h200_137: 'homework',
+  h200_175: 'closeness', h200_177: 'coupleWeather', h200_199: 'bookSpark', h200_42: 'labCurve', h200_50: 'ultrasound',
+  h200_51: 'calendarLeaf', h200_53: 'scarCheck', h200_72: 'pumpBottle', h200_75: 'splitDrop', h200_80: 'bottleRelay',
+  h200_81: 'bubbleDrop', h200_83: 'hourGrid', h200_84: 'docArrow', h200_120: 'broccoli', h200_123: 'spoonRefuse',
+  // HOMI Aura : aides thématiques (même assistante), traducteur émotionnel, découverte
+  ...Object.fromEntries([29, 49, 64, 82, 110, 124, 140, 190, 197].map((n) => [`h200_${n}`, 'auraBubble' as HomiIconName])),
+  h200_174: 'bubbleSwap', h200_200: 'compassSpark',
 };
 
 /** Raccourcis de l'accueil (src/features/home.tsx, `QUICK`) : le pictogramme de l'outil qu'ils ouvrent. */

@@ -32,8 +32,8 @@ function full(): CatalogTool[] {
   return [...seen.values()];
 }
 
-/** Anciens « absents » construits le 20/11/2026 (161 : l'Espace Papa est l'outil « Ma place dans la famille »). */
-const BUILT_AFTER_AUDIT = [39, 44, 48, 58, 60, 73, 74, 76, 77, 79, 122, 133, 134, 161, 172, 179, 186, 189];
+/** Numéros livrés après l'audit : statut « OPÉRATIONNEL (<route>) » dans la correspondance (30/11/2026). */
+const DELIVERED = /,OPÉRATIONNEL \(([^)]+)\),/;
 
 describe('HOMI_200', () => {
   beforeAll(() => setLocale('fr'));
@@ -43,14 +43,19 @@ describe('HOMI_200', () => {
     expect(new Set(HOMI_200.map((e) => e.id)).size).toBe(200);
     const count = (k: string) => HOMI_200.filter((e) => e.kind === k).length;
     expect({ tool: count('tool'), view: count('view'), dup: count('dup'), partial: count('partial'), absent: count('absent') })
-      .toEqual({ tool: 63, view: 97, dup: 5, partial: 34, absent: 1 });
+      .toEqual({ tool: 63, view: 129, dup: 5, partial: 2, absent: 1 });
+    // il ne reste qu'un absent (135, créateur d'histoires) et deux partiels (178, 196)
+    expect(HOMI_200.filter((e) => !e.isAvailable).map((e) => e.n)).toEqual([135, 178, 196]);
     // statuts de docs/200/correspondance_200.csv : PARTIEL et ABSENT identiques ; DOUBLON_LISTE identiques
     const csv = fs.readFileSync('docs/200/correspondance_200.csv', 'utf8').replace(/^﻿/, '').split('\n').slice(1).filter(Boolean);
     for (const line of csv) {
       const n = Number(line.split(',')[0]);
       const e = H200_BY_N[n];
-      if (n >= 141 && n <= 151) { expect([n, e.kind]).toEqual([n, 'view']); continue; } // « Avant la garde », livré après l'audit
-      if (BUILT_AFTER_AUDIT.includes(n)) { expect([n, e.isAvailable]).toEqual([n, true]); continue; } // construits le 20/11/2026
+      const delivered = DELIVERED.exec(line);
+      if (delivered) { // livré après l'audit : visible, sur la route notée dans la correspondance
+        expect([n, e.isAvailable, routeExists(delivered[1].replace('[id]', 'c1'))]).toEqual([n, true, true]);
+        continue;
+      }
       if (line.includes('ABSENT')) expect([n, e.kind]).toEqual([n, 'absent']);
       if (line.includes('PARTIEL')) expect([n, e.kind]).toEqual([n, 'partial']);
       if (line.includes('DOUBLON_LISTE')) expect([n, e.kind]).toEqual([n, 'dup']);
@@ -76,7 +81,7 @@ describe('HOMI_200', () => {
     for (const e of HOMI_200.filter((x) => !x.isAvailable)) expect(visible.has(e.id)).toBe(false);
   });
 
-  it('les 97 fonctions nommées : nom de la liste, une phrase, ouvertes sur une route existante dans au moins un profil', () => {
+  it('les 129 fonctions nommées : nom de la liste, une phrase, ouvertes sur une route existante dans au moins un profil', () => {
     const flat = flattenCatalog(full());
     for (const e of H200_VIEWS) {
       const entry = flat.find((x) => x.id === e.id);
@@ -95,6 +100,28 @@ describe('HOMI_200', () => {
     expect(href('h200_71', ctxKid)).toBe('/track/pumping?child=c1');
     expect(href('h200_153', ctxKid)).toBe('/garde/c1/journee');
     expect(findEntry(toolCatalog({ scope: 'cycle' }), canonicalToolId('h200_12')!)?.href).toBe('/cycle/stats');
+    // numéros complétés le 30/11/2026 : vue exacte
+    const ctxChild: ScopeCtx = { scope: 'child', childId: 'c1' };
+    expect(href('h200_129', ctxKid)).toBe('/child/c1/language');
+    expect(href('h200_132', ctxKid)).toBe('/child/c1/games');
+    expect(href('h200_136', ctxChild)).toBe('/child/c1/activities');
+    expect(href('h200_137', ctxChild)).toBe('/child/c1/homework');
+    expect(href('h200_120', ctxKid)).toBe('/child/c1/discoveries?mode=blw');
+    expect(href('h200_123', ctxKid)).toBe('/child/c1/discoveries?focus=refusals');
+    expect(href('h200_75', ctxKid)).toBe('/bottle/history?scope=all&child=c1');
+    expect(href('h200_83', ctxKid)).toBe('/bottle/history?scope=all&view=week&child=c1');
+    expect(href('h200_80', ctxKid)).toBe('/family/nights?focus=bottles');
+    expect(href('h200_81', ctxKid)).toBe('/consult/questions?theme=lactation');
+    expect(href('h200_27', { scope: 'ttc' })).toBe('/fertility/exams');
+    expect(href('h200_29', { scope: 'ttc' })).toBe('/assistant?theme=fertility');
+    expect(href('h200_42', { scope: 'none' })).toBe('/documents/labs');
+    expect(href('h200_50', { scope: 'pregnancy', pregnancyId: 'p' })).toBe('/me/diary?tab=pregnancy');
+    expect(href('h200_51', { scope: 'postpartum', postpartum: true })).toBe('/postpartum/support?focus=postnatal');
+    expect(href('h200_57', { scope: 'postpartum', postpartum: true })).toBe('/consult/questions?theme=postnatal');
+    expect(href('h200_175', { scope: 'family' })).toBe('/family/understand');
+    expect(href('h200_177', { scope: 'family' })).toBe('/family/couple');
+    expect(href('h200_197', { scope: 'none' })).toBe('/assistant?theme=personal');
+    expect(href('h200_200', { scope: 'family' })).toBe('/assistant?theme=discovery');
   });
 
   it('catalogue visible : outils existants + fonctions nommées (et rien d’autre)', () => {
@@ -102,7 +129,7 @@ describe('HOMI_200', () => {
     const tools = flat.filter((x) => !x.parent).length;
     const fns = flat.filter((x) => x.id.startsWith('h200_')).length;
     expect(tools).toBe(CATEGORY_TOOLS.length + 1); // + Communauté
-    expect(fns).toBe(97);
+    expect(fns).toBe(129);
   });
 
   it('non-régression : anciens identifiants, favoris et sous-accès historiques toujours résolus', () => {

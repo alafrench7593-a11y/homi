@@ -92,6 +92,8 @@ export const ASK_IT: Record<string, string> = {
   'guide_kidfood': 'Mio figlio rifiuta di mangiare',
   'guide_behaviour': 'Come reagire ai capricci di mio figlio?',
   'guide_school': 'Come preparare l’ingresso alla scuola dell’infanzia?',
+  'child_language': 'Come incoraggiare il linguaggio di mio figlio?',
+  'child_homework': 'Come accompagnare i compiti senza conflitti?',
   'guide_toddler': 'Mio figlio di 2 anni parla poco',
   'guide_work': 'Quali sono i miei diritti al lavoro in gravidanza?',
   'guide_loss': 'Come superare un aborto spontaneo?',

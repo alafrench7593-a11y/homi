@@ -1,5 +1,5 @@
 /** Famille DOCUMENTS (résumés, bibliothèque, guides, vidéos, sources, papiers, export). Grille 24, trait 1,75. */
-import { capsule, CLOSED_BOOK, CLOSED_BOOK_FILL, poly, rrect, type HomiIconDef } from '../geometry';
+import { capsule, CLOSED_BOOK, CLOSED_BOOK_FILL, poly, rrect, star, type HomiIconDef } from '../geometry';
 
 const BOOK = 'M3.75 6.2c2.8-.95 5.55-.6 8.25 1.2v12c-2.7-1.8-5.45-2.15-8.25-1.2zM20.25 6.2c-2.8-.95-5.55-.6-8.25 1.2v12c2.7-1.8 5.45-2.15 8.25-1.2z';
 const FRONT = 'M4.5 7.25A1.75 1.75 0 0 1 6.25 5.5h7l3.5 3.5v10.75a1.75 1.75 0 0 1-1.75 1.75h-8.75a1.75 1.75 0 0 1-1.75-1.75z';
@@ -26,4 +26,6 @@ export const DOCUMENTS = {
   paperClip: { fill: PAPER, stroke: `${PAPER}M8 13h8M8 16.5h5M9.25 2.75v5.5a1.875 1.875 0 0 0 3.75 0V4.5a.9.9 0 0 0-1.8 0V8` },
   /** Export PDF du suivi : la page et la flèche qui en sort. */
   docArrow: { fill: DOC, stroke: `${DOC}M14 3.5V8h4.5M12 10.75v6M9.5 14.25l2.5 2.5 2.5-2.5` },
+  /** Contenus recommandés pour toi : le livre et l'étincelle. */
+  bookSpark: { fill: CLOSED_BOOK_FILL, stroke: `${CLOSED_BOOK}${star(12, 9.25, 3.5, 1.3, 4)}` },
 } satisfies Record<string, HomiIconDef>;

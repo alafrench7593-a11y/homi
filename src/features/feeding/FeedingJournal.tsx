@@ -41,14 +41,15 @@ function entryLine(e: FeedEntry, who: (id: string | null) => string | null): str
   return [formatTime(e.at), entryTitle(e), e.refused.length ? tr('fj.refused', { list: e.refused.join(', ') }) : null, who(e.by)].filter(Boolean).join(' · ');
 }
 
-export function FeedingJournal({ child }: { child: { id: string; first_name: string } }) {
+/** `initialView` : « 7 jours » à l'ouverture depuis « Habitudes d'alimentation » (83, `view=week`). */
+export function FeedingJournal({ child, initialView = 'day' }: { child: { id: string; first_name: string }; initialView?: 'day' | 'week' }) {
   const toast = useToast();
   const who = useRecorderLabel();
   const [range, setRange] = useState<7 | 31>(7);
   const bf = useLogs<Breastfeed>('breastfeed', child.id, 31, { includePending: true });
   const bo = useLogs<Bottle>('bottle', child.id, 31, { includePending: true });
   const me = useLogs<Meal>('meal', child.id, 31, { includePending: true });
-  const [view, setView] = useState<'day' | 'week'>('day');
+  const [view, setView] = useState<'day' | 'week'>(initialView);
   const days = useMemo(() => lastDays(7), []);
   const [day, setDay] = useState(days[0]);
   const entries = useMemo(() => buildEntries(bf.data ?? [], bo.data ?? [], me.data ?? []), [bf.data, bo.data, me.data]);

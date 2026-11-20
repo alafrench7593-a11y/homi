@@ -62,11 +62,16 @@ export const SEARCH_INTENTS: SearchIntent[] = [
   { id: 'pillForgot', re: w('oublie ma pilule|oublie la pilule|oubli de pilule|oubli pilule|forgot my pill|missed my pill|missed pill'), ids: ['avoid_emergency', 'avoid_reminders'] },
   { id: 'pill', re: w('pilule|pill|contraception|contraceptif|birth control'), ids: ['h200_9', 'avoid_contraception'] },
   // enfant plus grand, communauté
+  { id: 'homework', re: w('devoirs|lecons|cahier de textes|homework'), ids: ['h200_137'] },
   { id: 'school', re: w('ecole|maternelle|devoirs|cartable|school|homework'), ids: ['kid_school', 'kid_routines'] },
   { id: 'activities', re: w('que faire avec|occuper|activite|activites|jeux|jouer|activities|what to do with|play ideas'), ids: ['h200_131', 'nearby'] },
   { id: 'community', re: w('autres parents|autres mamans|autres papas|rencontrer|forum|communaute|other parents|other mums|other moms|community|meet parents'), ids: ['community'] },
   { id: 'firsts', re: w('premiers pas|premier mot|premiere fois|first steps|first word|first time'), ids: ['journal', 'kid_grow'] },
   { id: 'calendar', re: w('agenda|calendrier familial|planning de la famille|family calendar|shared calendar'), ids: ['family_calendar'] },
   { id: 'custody', re: w('garde alternee|separes|separation|coparentalite|shared custody|separated|divorced'), ids: ['custody'] },
+  // HOMI Aura : « aide », « assistant », « IA » SEULS (sinon « aide pour le sommeil » chercherait le sommeil), et
+  // « je ne sais pas par où commencer » → l'assistante et la découverte
+  { id: 'aura', re: /^ (?:aide|de l aide|besoin d aide|j ai besoin d aide|l aide|aidez moi|aide moi|assistant|assistante|l assistant|l assistante|assistant ia|assistante ia|ia|l ia|intelligence artificielle|homi aura|aura|help|i need help|assistant ai|ai assistant|ai|artificial intelligence) $/, ids: ['h200_197', 'h200_200'] },
+  { id: 'start', re: w('par ou commencer|par quoi commencer|je ne sais pas quoi faire|je suis perdue|je suis perdu|where do i start|where to start|don t know where to start|dont know where to start|i m lost'), ids: ['h200_200', 'h200_197'] },
   { id: 'solo', re: w('parent solo|maman solo|papa solo|seule avec|seul avec|single mum|single mom|single dad|single parent'), ids: ['solo_parent'] },
 ];

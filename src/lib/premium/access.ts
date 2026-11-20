@@ -55,6 +55,11 @@ export const CAREGIVER_DENIED: RegExp[] = [
   /^\/family\/(couple|load|domains|prep|review|me-time|exhausted|difficult|solo|offduty|brain-dump|papers)(\/.*)?$/,
   // Outils du 20/11/2026 réservés aux parents : embrouille, moments à deux, coparent au jour J, dépenses, animaux, Espace Papa
   /^\/family\/(calm|moments|birth-partner|expenses|pets|my-place)(\/.*)?$/,
+  // Numéros complétés le 30/11/2026, réservés aux parents : se comprendre (intimité sans pression), langage, jeux,
+  // activités et devoirs de l'enfant (ChildToolGate), suivi des analyses médicales
+  /^\/family\/understand(\/.*)?$/,
+  /^\/child\/[^/]+\/(language|games|activities|homework)\/?$/,
+  /^\/documents\/labs\/?$/,
 ];
 
 /** Écrans d'un outil vendu à vie (ancienne offre) : restent ouverts à qui l'a acheté. */

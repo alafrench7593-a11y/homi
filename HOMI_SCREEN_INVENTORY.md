@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**286 routes** réelles (`src/lib/routes.generated.ts`) portées par **287 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**293 routes** réelles (`src/lib/routes.generated.ts`) portées par **294 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -19,20 +19,20 @@
 
 | Zone | Fichiers | À faire | Tranche | Fait | Couleurs en dur | Animated RN |
 |---|---:|---:|---:|---:|---:|---:|
-| Autres | 32 | 32 | 0 | 0 | 0 | 0 |
+| Autres | 33 | 33 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 0 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
 | Réglages | 24 | 24 | 0 | 0 | 0 | 0 |
-| Accueil | 21 | 18 | 0 | 3 | 4 | 1 |
-| Santé | 29 | 21 | 0 | 8 | 7 | 0 |
+| Accueil | 22 | 19 | 0 | 3 | 4 | 1 |
+| Santé | 30 | 22 | 0 | 8 | 7 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
 | Grossesse et post-partum | 23 | 23 | 0 | 0 | 1 | 0 |
-| Bébé et enfant | 33 | 29 | 0 | 4 | 50 | 1 |
+| Bébé et enfant | 37 | 33 | 0 | 4 | 50 | 1 |
 | Famille | 44 | 44 | 0 | 0 | 6 | 0 |
 | Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
-| **Total** | **287** | **262** | **2** | **23** | **87** | **3** |
+| **Total** | **294** | **269** | **2** | **23** | **87** | **3** |
 
-Rôles : détail 50 · formulaire 53 · historique 17 · liste 118 · réglage 29 · résultat 13 · scène 7.
+Rôles : détail 52 · formulaire 57 · historique 18 · liste 117 · réglage 30 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -50,6 +50,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
+| `/assistant` | détail | — | — | 0 |  | à faire |
 | `/dev/glass` | liste | — | Field | 0 |  | à faire |
 | `/dev/icons` | liste | — | — | 0 |  | à faire |
 | `/discover` | détail | — | — | 0 |  | à faire |
@@ -57,7 +58,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/discover/tools` | détail | — | — | 0 |  | à faire |
 | `/feeding/difficulties` | liste | — | Screen, Card, Field, Button, Banner, Chip, Segmented, ListRow, EmptyState, Skeleton | 0 |  | à faire |
 | `/feeding/formula` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
-| `/feeding/milk-stock` | liste | — | Screen, Card, Field, Button, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
+| `/feeding/milk-stock` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, ListRow, EmptyState, Skeleton | 0 |  | à faire |
 | `/garde` | liste | childcare | Screen, Card, Field, Button, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]` | détail | — | Screen, Card, Button, Banner, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]/acces` | liste | — | Screen, Card, Field, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
@@ -145,15 +146,16 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 |---|---|---|---|---:|:-:|---|
 | `/ ((tabs)/index.tsx)` | liste | — | Screen, Button, Banner, ErrorView, Cascade | 0 |  | à faire |
 | `/agenda` | détail | — | — | 0 |  | à faire |
-| `/ask` | liste | ask | Screen, Card, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
+| `/ask` | détail | ask | — | 0 |  | à faire |
 | `/assistant/chat` | liste | — | Screen, Card, Button, IconButton, Chip, Toggle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/assistant/history` | historique | — | Screen, Card, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
 | `/assistant/local` | liste | local_ai | Screen, GlassSurface, IconButton, Banner, Chip, Skeleton | 4 |  | à faire |
 | `/calendar` | formulaire | family_calendar | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, Segmented, Toggle, SectionTitle, ErrorView, Skeleton | 0 | oui | à faire |
 | `/health` | détail | — | — | 0 |  | à faire |
 | `/household` | détail | — | — | 0 |  | à faire |
 | `/journal` | historique | journal | Screen, Card, Field, Button, IconButton, Chip, Segmented, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/me` | liste | — | Screen, Card, Banner, ListRow, SectionTitle | 0 |  | à faire |
-| `/me/diary` | historique | me_diary | Screen, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | fait |
+| `/me/diary` | historique | me_diary | Screen, Field, Button, Segmented, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/me/mood` | liste | mood | Screen, Field, Chip, Toggle, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
 | `/me/mood/[id]` | détail | — | Screen, Chip, EmptyState, ErrorView, Skeleton | 0 |  | fait |
 | `/me/sleep` | liste | sleep | Screen, Card, Sheet, Field, Button, IconButton, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
@@ -176,6 +178,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/documents/[id]` | formulaire | — | Screen, Card, Sheet, Field, Button, IconButton, Banner, Segmented, Toggle, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
 | `/documents/book` | liste | health_book | Screen, Card, Banner, Chip, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/documents/export` | résultat | — | Screen, Card, Button, Banner, Toggle, SectionTitle, Skeleton | 0 |  | à faire |
+| `/documents/labs` | formulaire | — | Screen, Card, Field, Button, Banner, Chip, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/documents/scan` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Segmented, Toggle | 3 |  | à faire |
 | `/emergency` | détail | emergency | Screen, Card, Banner | 0 |  | à faire |
 | `/guide/[topic]` | détail | — | Screen, Card, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
@@ -288,13 +291,17 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/bottle/history` | historique | baby_bottle_history | Screen, Sheet, IconButton, Chip, SectionTitle, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | fait |
 | `/bottle/scoops` | détail | bottle_scoops | Screen, Field, Banner | 0 |  | fait |
 | `/child/[id]` | détail | kid_profile | Screen, Button, IconButton, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/activities` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Chip, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/album` | historique | kid_album | Screen, Card, Sheet, Field, Button, Banner, Segmented, SectionTitle, EmptyState, ErrorView, Skeleton | 2 |  | à faire |
 | `/child/[id]/card` | résultat | kid_card | Screen, Card, Field, Button, Banner, ListRow, SectionTitle, EmptyState, Skeleton | 0 |  | à faire |
 | `/child/[id]/discoveries` | formulaire | baby_foods | Screen, GlassSurface, Sheet, Field, Button, IconButton, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 20 | oui | à faire |
 | `/child/[id]/foods` | détail | — | — | 0 |  | à faire |
-| `/child/[id]/grow` | liste | kid_grow | Screen, GlassSurface, Sheet, Field, Button, Banner, Chip, SectionTitle, EmptyState, ErrorView, Skeleton | 5 |  | à faire |
+| `/child/[id]/games` | liste | — | Screen, GlassSurface, Button, Banner, Chip, ListRow, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/grow` | liste | kid_grow | Screen, GlassSurface, Sheet, Field, Button, Banner, Chip, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 5 |  | à faire |
 | `/child/[id]/growth` | détail | — | — | 0 |  | à faire |
 | `/child/[id]/health-tracking` | formulaire | kid_health | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, Toggle, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/homework` | formulaire | — | Screen, Card, Field, Button, IconButton, Banner, Chip, Toggle, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
+| `/child/[id]/language` | réglage | — | Screen, Card, Field, Button, Banner, Chip, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/needs` | formulaire | kid_treatments | Screen, Card, Sheet, Field, Button, Banner, Chip, Segmented, ListRow, SectionTitle, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/school` | liste | kid_school | Screen, Card, Field, Button, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/child/[id]/steps` | liste | kid_steps | Screen, Card, Button, Banner, EmptyState, Skeleton | 0 |  | à faire |
@@ -438,11 +445,11 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 | Scanner un produit | `scan_product` | `/scanner/product` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
 | Comparer deux produits | `scan_compare` | `/scanner/compare` | `/scanner/avoid` | `/scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | oui | oui |
 | Mes questions pour le rendez-vous | `consult_questions` | `/consult/questions` | dans l’écran | — | — | non | non | non | non |
-| Documents de santé | `documents` | `/documents` | `/documents/[id] /documents/scan` | `/documents/export` | `/documents/book` | non | non | non | non |
+| Documents de santé | `documents` | `/documents` | `/documents/[id] /documents/labs /documents/scan` | `/documents/export` | `/documents/book` | non | non | non | non |
 | Point sur ma fatigue | `exhaustion_check` | `/family/exhausted` | — | — | — | non | non | non | non |
 | Urgences | `emergency` | `/emergency` | — | — | — | non | non | non | non |
 | Assistant | `ask` | `/ask` | — | — | — | non | non | non | non |
-| Assistant hors ligne | `local_ai` | `/assistant/local` | — | — | `/assistant/chat` | non | non | non | non |
+| Assistant hors ligne | `local_ai` | `/assistant/local` | — | — | `/assistant/chat /assistant/history` | non | non | non | non |
 | Mes conseils du cycle | `cycle_advice` | `/cycle/advice` | — | — | — | non | non | non | non |
 | Comparer les contraceptions | `avoid_methods` | `/contraception/methods` | `/contraception/consultation` | — | `/contraception/emergency /contraception/history /contraception/journal /contraception/log` | non | non | non | non |
 | Contraception d’urgence | `avoid_emergency` | `/contraception/emergency` | `/contraception/consultation` | — | `/contraception/history /contraception/journal /contraception/log /contraception/methods` | non | non | non | non |
@@ -497,7 +504,7 @@ Types : humeur/journal · tâches/planning · suivi/mesures · minuteur/session 
 |---|---|---|---|---|---|:-:|:-:|:-:|:-:|
 | Mon sommeil | `sleep` | `/me/sleep` | feuille dans l’écran | `/me/mood/[id]` | `/me/diary /me/mood` | non | non | non | non |
 | Produits scannés | `scan_history` | `/scanner/history` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/recalls` | oui | oui | oui | oui |
-| Carnet de santé | `health_book` | `/documents/book` | `/documents/[id] /documents/scan` | `/documents/export` | — | non | non | non | non |
+| Carnet de santé | `health_book` | `/documents/book` | `/documents/[id] /documents/labs /documents/scan` | `/documents/export` | — | non | non | non | non |
 | Médicaments | `medications` | `/medications` | — | — | — | non | non | non | non |
 | Produits à éviter | `scan_avoid` | `/scanner/avoid` | dans l’écran | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history /scanner/recalls` | oui | oui | partiel | partiel |
 | Alertes de rappel de produits | `recall_alerts` | `/scanner/recalls` | `/scanner/avoid` | `/scanner/compare /scanner/food /scanner/product /scanner/result/[id]` | `/scanner/history` | oui | oui | partiel | oui |
