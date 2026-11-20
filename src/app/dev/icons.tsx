@@ -1,7 +1,8 @@
 /**
  * Galerie des pictogrammes HOMI (QA visuelle) : toute la famille `HomiIcon` (barre du bas, en-tête, bouton central,
  * 9 catégories, outils de l'introduction), inactif et actif, en CLAIR et en SOMBRE sur les CINQ palettes, plus la main
- * de la visite guidée. Accessible comme /dev/glass : mode développeur ou démonstration ; ailleurs, retour à l'accueil.
+ * de la visite guidée ET les pictogrammes de CHAQUE outil du catalogue (outils, sous-accès, fonctions de la liste des
+ * 200), rangés par catégorie avec leur identifiant, à 20 et 28 pt. Accessible comme /dev/glass : mode développeur ou démonstration ; ailleurs, retour à l'accueil.
  */
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -9,18 +10,58 @@ import { Redirect, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { HomiIcon, ICON_CATEGORIES, ICON_GROUPS, categoryTone, type HomiIconName, type IconCategory } from '@/brand/icons';
+import { toolIconCategory, toolIconName } from '@/brand/icons/resolve';
 import { GlassIconButton } from '@/components/glass';
 import { Text } from '@/components/ui';
 import { useDemoInset } from '@/components/demoInset';
 import { HandGlyph } from '@/features/tour/TourHand';
 import { I } from '@/features/dev/iconGalleryData';
 import { isDemo } from '@/lib/backend';
+import { H200_VIEWS } from '@/lib/journeys/homi200';
+import { subRef, TOOL_CATEGORIES, TOOLS, type ToolCategory } from '@/lib/journeys/tools';
 import { useDeveloperMode } from '@/lib/devMode';
 import { useTheme } from '@/theme/ThemeProvider';
 import { PALETTE_NAMES, radius, spacing, themeFor, type PaletteName, type Theme } from '@/theme/tokens';
 
 const isCategory = (n: HomiIconName): n is IconCategory => (ICON_CATEGORIES as string[]).includes(n);
 const ALL: HomiIconName[] = [...new Set(ICON_GROUPS.flatMap((g) => g.names))];
+
+/** Chaque entrée du catalogue, rangée par catégorie d'affichage : outils, sous-accès, fonctions de la liste des 200. */
+const SHELVES: ToolCategory[] = [...TOOL_CATEGORIES, 'community', 'account'];
+const ENTRIES: { id: string; cat: ToolCategory; tool: boolean }[] = [
+  ...TOOLS.map((d) => ({ id: d.id, cat: d.category, tool: true })),
+  ...TOOLS.flatMap((d) => (d.subs ?? []).map((s) => ({ id: subRef(d.id, s.id), cat: s.category ?? d.category, tool: false }))),
+  ...H200_VIEWS.map((e) => ({ id: e.id, cat: (e.category ?? TOOLS.find((d) => d.id === e.target)?.category ?? 'health') as ToolCategory, tool: false })),
+];
+const toneOf = (th: Theme, id: string) => { const c = toolIconCategory(id); return c ? categoryTone(th, c) : th.colors.primary; };
+
+/** Une entrée du catalogue : son pictogramme à 28 et 20 pt, son identifiant. */
+function ToolCell({ id }: { id: string }) {
+  const t = useTheme();
+  const name = toolIconName(id);
+  return (
+    <View style={{ width: 82, alignItems: 'center', gap: 2 }} testID={`tool-icon-cell-${id}`}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 30 }}>
+        {name ? <HomiIcon name={name} size={28} tone={toneOf(t, id)} active /> : <Text variant="caption" color={t.colors.danger}>{I.none}</Text>}
+        {name ? <HomiIcon name={name} size={20} tone={toneOf(t, id)} /> : null}
+      </View>
+      <Text variant="caption" muted numberOfLines={2} center style={{ fontSize: 9, lineHeight: 11 }}>{id}</Text>
+      {name ? <Text variant="caption" numberOfLines={1} center color={t.colors.textMuted} style={{ fontSize: 8, lineHeight: 10, opacity: 0.7 }}>{name}</Text> : null}
+    </View>
+  );
+}
+
+/** Les pictogrammes des outils (sans libellé) sur une palette donnée. */
+function ToolStrip({ th }: { th: Theme }) {
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      {ENTRIES.filter((e) => e.tool).map((e) => {
+        const name = toolIconName(e.id);
+        return name ? <HomiIcon key={e.id} name={name} size={22} color={th.colors.text} tone={toneOf(th, e.id)} /> : null;
+      })}
+    </View>
+  );
+}
 
 /** Une case : inactif puis actif, nom dessous (couleurs prises dans le thème donné). */
 function Cell({ name, th, size = 26 }: { name: HomiIconName; th: Theme; size?: number }) {
@@ -53,6 +94,7 @@ function PalettePanel({ mode, palette }: { mode: 'light' | 'dark'; palette: Pale
           {(['today', 'me', 'child', 'family'] as const).map((n, i) => <HomiIcon key={n} name={n} size={24} color={i === 0 ? th.colors.text : th.colors.textMuted} tone={th.colors.primary} active={i === 0} />)}
         </View>
       </View>
+      <ToolStrip th={th} />
     </View>
   );
 }
@@ -85,6 +127,15 @@ export default function IconGallery() {
                   <Text variant="caption" muted numberOfLines={1} style={{ fontSize: 10 }}>{I.names[n]}</Text>
                 </View>
               ))}
+            </View>
+          </View>
+        ))}
+        {/* pictogrammes de chaque outil, par catégorie, avec leur identifiant */}
+        {SHELVES.map((cat) => (
+          <View key={cat} style={{ gap: spacing.xs }} testID={`icons-tools-${cat}`}>
+            <Text variant="label" muted>{`${I.tools} · ${cat} (${ENTRIES.filter((e) => e.cat === cat).length})`}</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: spacing.sm }}>
+              {ENTRIES.filter((e) => e.cat === cat).map((e) => <ToolCell key={e.id} id={e.id} />)}
             </View>
           </View>
         ))}

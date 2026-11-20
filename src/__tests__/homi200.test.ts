@@ -32,6 +32,9 @@ function full(): CatalogTool[] {
   return [...seen.values()];
 }
 
+/** Anciens « absents » construits le 20/11/2026 (161 : l'Espace Papa est l'outil « Ma place dans la famille »). */
+const BUILT_AFTER_AUDIT = [39, 44, 48, 58, 60, 73, 74, 76, 77, 79, 122, 133, 134, 161, 172, 179, 186, 189];
+
 describe('HOMI_200', () => {
   beforeAll(() => setLocale('fr'));
 
@@ -40,13 +43,14 @@ describe('HOMI_200', () => {
     expect(new Set(HOMI_200.map((e) => e.id)).size).toBe(200);
     const count = (k: string) => HOMI_200.filter((e) => e.kind === k).length;
     expect({ tool: count('tool'), view: count('view'), dup: count('dup'), partial: count('partial'), absent: count('absent') })
-      .toEqual({ tool: 62, view: 80, dup: 5, partial: 34, absent: 19 });
+      .toEqual({ tool: 63, view: 97, dup: 5, partial: 34, absent: 1 });
     // statuts de docs/200/correspondance_200.csv : PARTIEL et ABSENT identiques ; DOUBLON_LISTE identiques
     const csv = fs.readFileSync('docs/200/correspondance_200.csv', 'utf8').replace(/^﻿/, '').split('\n').slice(1).filter(Boolean);
     for (const line of csv) {
       const n = Number(line.split(',')[0]);
       const e = H200_BY_N[n];
       if (n >= 141 && n <= 151) { expect([n, e.kind]).toEqual([n, 'view']); continue; } // « Avant la garde », livré après l'audit
+      if (BUILT_AFTER_AUDIT.includes(n)) { expect([n, e.isAvailable]).toEqual([n, true]); continue; } // construits le 20/11/2026
       if (line.includes('ABSENT')) expect([n, e.kind]).toEqual([n, 'absent']);
       if (line.includes('PARTIEL')) expect([n, e.kind]).toEqual([n, 'partial']);
       if (line.includes('DOUBLON_LISTE')) expect([n, e.kind]).toEqual([n, 'dup']);
@@ -72,7 +76,7 @@ describe('HOMI_200', () => {
     for (const e of HOMI_200.filter((x) => !x.isAvailable)) expect(visible.has(e.id)).toBe(false);
   });
 
-  it('les 80 fonctions nommées : nom de la liste, une phrase, ouvertes sur une route existante dans au moins un profil', () => {
+  it('les 97 fonctions nommées : nom de la liste, une phrase, ouvertes sur une route existante dans au moins un profil', () => {
     const flat = flattenCatalog(full());
     for (const e of H200_VIEWS) {
       const entry = flat.find((x) => x.id === e.id);
@@ -98,12 +102,13 @@ describe('HOMI_200', () => {
     const tools = flat.filter((x) => !x.parent).length;
     const fns = flat.filter((x) => x.id.startsWith('h200_')).length;
     expect(tools).toBe(CATEGORY_TOOLS.length + 1); // + Communauté
-    expect(fns).toBe(80);
+    expect(fns).toBe(97);
   });
 
   it('non-régression : anciens identifiants, favoris et sous-accès historiques toujours résolus', () => {
     for (const old of Object.keys(TOOL_ALIASES)) expect([old, resolveTool(old)]).not.toEqual([old, null]);
-    expect(migrateToolIds(['pp_feeding', 'kid_growth', 'h200_67', 'h200_66', 'h200_13', 'h200_39', 'inconnu'])).toEqual(['baby_breastfeed', 'kid_profile.growth', 'h200_67', 'cycle_symptoms']);
+    expect(migrateToolIds(['pp_feeding', 'kid_growth', 'h200_67', 'h200_66', 'h200_13', 'h200_135', 'inconnu'])).toEqual(['baby_breastfeed', 'kid_profile.growth', 'h200_67', 'cycle_symptoms']);
+    expect(migrateToolIds(['h200_39', 'h200_161'])).toEqual(['h200_39', 'family_my_place']);
     expect(isToolAllowed('h200_67', { scope: 'baby', childId: 'c1' })).toBe(true);
     expect(isToolAllowed('h200_67', { scope: 'pregnancy', pregnancyId: 'p' })).toBe(false);
   });

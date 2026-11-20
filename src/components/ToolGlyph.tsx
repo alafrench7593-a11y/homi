@@ -1,5 +1,12 @@
 /**
- * Glyphes des outils : une silhouette propre à chaque catégorie (goutte, nuage, dent, bouclier,
+ * Glyphe d'un outil (rangées, tuiles, fiches, résultats de recherche, accueil, catégories, en-têtes d'écran).
+ *
+ * Depuis le 20/11/2026 : le PICTOGRAMME HOMI de l'outil (`HomiIcon`, manifeste src/brand/icons/manifest.ts), à
+ * l'encre du thème, aplat de la couleur de sa catégorie (jetons) — rouge d'alerte pour les urgences. Décoratif pour
+ * les lecteurs d'écran (la rangée ou le bouton qui le porte a son nom). Si une entrée n'a pas de pictogramme (ne
+ * doit pas arriver : garde-fou src/__tests__/toolIcons.test.ts), repli sur l'ancien glyphe ci-dessous.
+ *
+ * Ancien glyphe (repli) : une silhouette propre à chaque catégorie (goutte, nuage, dent, bouclier,
  * anneau segmenté, cadre de scan, orbite, soleil, cartes empilées…) — pas un cercle partout.
  *
  * - Surface translucide teintée + reflet supérieur + liseré : uniquement des couleurs du thème
@@ -17,6 +24,8 @@ import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, Rect, St
 import { Icon, type IconName } from '@/components/ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { toolGlyphIcon } from './toolGlyphIcons';
+import { categoryTone, HomiIcon } from '@/brand/icons';
+import { toolIconCategory, toolIconName } from '@/brand/icons/resolve';
 import { AnimatedPath } from '@/components/MotionKit';
 import type { ToolTheme } from '@/lib/domain/toolCatalog';
 import { easing } from '@/theme/motion';
@@ -24,6 +33,8 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NACRE, NATIVE_DRIVER } from '@/theme/tokens';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
+/** Taille du pictogramme dans la boîte du glyphe (même rapport que les rangées de catégorie : 30 dans 44). */
+const HOMI_SCALE = 0.68;
 let seq = 0;
 
 type ColorKey = 'primary' | 'lavender' | 'gold' | 'success' | 'heart' | 'danger';
@@ -110,6 +121,29 @@ export function ToolGlyph({ id, theme, icon, size = 56, play = 0, hovered, press
   const fillA = t.isDark ? 0.2 : 0.14;
   const gid = useRef(`tg${++seq}`).current; // identifiants SVG uniques (plusieurs glyphes par page)
   const glyph = toolGlyphIcon(urgent ? 'urgent' : theme, icon, id);
+  const homi = toolIconName(id);
+
+  if (homi) {
+    const cat = toolIconCategory(id);
+    const tone = urgent ? t.colors.danger : cat ? categoryTone(t, cat) : t.colors.primary;
+    return (
+      <Animated.View
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        testID={id ? `tool-icon-${id}` : undefined}
+        style={{
+          width: size, height: size, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.45 : 1,
+          transform: [
+            { translateY: depth.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.5, 0, -2] }) },
+            { scale: depth.interpolate({ inputRange: [-1, 0, 1], outputRange: [0.92, 1, 1.04] }) },
+          ],
+        }}
+      >
+        <HomiIcon name={homi} size={Math.round(size * HOMI_SCALE)} tone={tone} color={urgent ? t.colors.danger : t.colors.text} active={active || hovered || pressed} />
+        {active ? <View style={{ position: 'absolute', right: 2 * s, top: 2 * s, width: 10 * s, height: 10 * s, borderRadius: 5 * s, backgroundColor: tone, borderWidth: 2, borderColor: t.colors.surface }} /> : null}
+      </Animated.View>
+    );
+  }
 
   return (
     <Animated.View

@@ -1,5 +1,7 @@
 """
-« Découvrir HOMI » (/discover) dans un navigateur réel : première ouverture → ouverture → chapitre → catalogue →
+« Découvrir HOMI » (/discover) dans un navigateur réel. Depuis le 20/11/2026, la PREMIÈRE OUVERTURE mène à
+l'introduction « Je suis… » (/intro) ; la keynote reste ouverte par son adresse et relancée depuis Réglages.
+Ouverture de la keynote → chapitre → catalogue →
 trois démos (rejouer, lien vers la vraie destination, retour à la même tuile), Précédent / Suivant / Passer /
 Commencer, relance depuis Réglages, données de démo isolées, Réduire les animations ; captures clair / sombre
 (deviceScaleFactor 2). Vidéo (webm) de l'ouverture : e2e/decouvrir_homi_video.js (Playwright Node).
@@ -56,7 +58,9 @@ def run(p):
     # ------------------------------------------------------------------ 1. première ouverture (clair) + vidéo de l'ouverture
     b, ctx, pg = ctx_for(p)
     pg.goto(B + '/')
-    R['premiere_ouverture_vers_discover'] = wait_url(pg, lambda u: '/discover' in u, 8) is not None
+    R['premiere_ouverture_vers_intro'] = wait_url(pg, lambda u: '/intro' in u, 8) is not None
+    R['intro_pas_la_keynote'] = pg.locator(TID('discover-opening')).count() == 0
+    pg.goto(B + '/discover')
     pg.wait_for_selector(TID('discover-opening'), timeout=8000)
     pg.wait_for_timeout(900)
     pg.screenshot(path=f'{SHOTS}/clair-01-ouverture-mot.png')
@@ -92,11 +96,12 @@ def run(p):
 
     # ------------------------------------------------------------------ 2. catalogue et trois démos (sans compte)
     b, ctx, pg = ctx_for(p)
-    pg.goto(B + '/'); wait_url(pg, lambda u: '/discover' in u, 8); pg.wait_for_timeout(600)
+    pg.goto(B + '/discover'); wait_url(pg, lambda u: '/discover' in u, 8); pg.wait_for_timeout(600)
     click(pg, 'discover-catalog')
     R['catalogue_ouvert'] = wait_url(pg, lambda u: '/discover/tools' in u, 5) is not None
     pg.wait_for_timeout(1200)
-    R['catalogue_144_tuiles'] = pg.locator('[data-testid^="discover-tile-"]').count() == 144
+    # une tuile par outil du catalogue (REAL_TOOLS : 127 depuis la refonte « un besoin = une entrée »)
+    R['catalogue_toutes_les_tuiles'] = pg.locator('[data-testid^="discover-tile-"]').count() == 127
     pg.screenshot(path=f'{SHOTS}/clair-07-catalogue.png')
     demos = [('baby_bottle', '5 biberons'), ('family_tasks', 'Fait par Sam'), ('ask', 'Une réponse arrive')]
     for key, expected in demos:
@@ -137,7 +142,7 @@ def run(p):
 
     # « Passer »
     b, ctx, pg = ctx_for(p)
-    pg.goto(B + '/'); wait_url(pg, lambda u: '/discover' in u, 8); pg.wait_for_timeout(400)
+    pg.goto(B + '/discover'); wait_url(pg, lambda u: '/discover' in u, 8); pg.wait_for_timeout(400)
     t = time.time(); click(pg, 'discover-skip')
     R['passer_rapide'] = wait_url(pg, lambda u: '/discover' not in u, 3) is not None and time.time() - t < 2
     b.close()
@@ -174,7 +179,7 @@ def run(p):
 
     # ------------------------------------------------------------------ 4. Réduire les animations
     b, ctx, pg = ctx_for(p, reduce=True)
-    pg.goto(B + '/'); wait_url(pg, lambda u: '/discover' in u, 8)
+    pg.goto(B + '/discover'); wait_url(pg, lambda u: '/discover' in u, 8)
     pg.wait_for_selector(TID('discover-opening'), timeout=8000); pg.wait_for_timeout(150)
     txt = body_text(pg)
     R['reduit_ouverture_complete_tout_de_suite'] = all(s in txt for s in ['Semaine 24', 'Biberons du jour', 'Sam s’en occupe', 'Une seule app pour toute la famille.'])
@@ -193,7 +198,7 @@ def run(p):
 
     # ------------------------------------------------------------------ 5. sombre
     b, ctx, pg = ctx_for(p, dark=True)
-    pg.goto(B + '/'); wait_url(pg, lambda u: '/discover' in u, 8); pg.wait_for_timeout(6000)
+    pg.goto(B + '/discover'); wait_url(pg, lambda u: '/discover' in u, 8); pg.wait_for_timeout(6000)
     pg.screenshot(path=f'{SHOTS}/sombre-01-ouverture.png')
     for _ in range(6): click(pg, 'discover-next'); pg.wait_for_timeout(450)
     pg.wait_for_timeout(2400)

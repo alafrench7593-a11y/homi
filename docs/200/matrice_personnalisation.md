@@ -34,7 +34,7 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 | 9 | Agenda familial | `family_calendar` | Parce que vous partagez le quotidien à deux | partner |
 | 10 | Relais de nuit | `family_nights` | Parce que vous voulez suivre le sommeil | prio-sleep |
 
-« Ton enfant » — Lina (2 mois) : Allaitement (Parce que vous allaitez) · Sommeil de l’enfant (Parce que Lina a 2 mois) · Couches (Parce que Lina a 2 mois) · Suivi de la journée (Parce que Lina a 2 mois) · Suivi du sein gauche et droit (Parce que vous allaitez) · Suivi du poids de bébé (Parce que Lina a 2 mois)
+« Ton enfant » — Lina (2 mois) : Allaitement (Parce que vous allaitez) · Sommeil de l’enfant (Parce que Lina a 2 mois) · Couches (Parce que Lina a 2 mois) · Suivi de la journée (Parce que Lina a 2 mois) · Suivi du sein gauche et droit (Parce que vous allaitez) · Difficultés d’allaitement (Parce que vous allaitez)
 
 ## C — Papa d’un bébé de 8 mois (co-parent)
 
@@ -68,7 +68,7 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 | 9 | Se comprendre | `couple_understand` | Parce que vous partagez le quotidien à deux | partner |
 | 10 | Liste de courses | `family_shopping` | Parce que vous partagez le quotidien à deux | partner |
 
-« Ton enfant » — Noé (6 ans) : Routines en images (Parce que Noé a 6 ans) · École ou mode de garde (Parce que Noé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Noé a 6 ans) · Journal complet (Parce que Noé a 6 ans) · Sorties en famille (Parce que Noé a 6 ans) · Suivi de santé de l’enfant (Parce que Noé a 6 ans)
+« Ton enfant » — Noé (6 ans) : Routines en images (Parce que Noé a 6 ans) · École ou mode de garde (Parce que Noé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Noé a 6 ans) · Habitudes de lecture (Parce que Noé a 6 ans) · Bibliothèque d’histoires (Parce que Noé a 6 ans) · Journal complet (Parce que Noé a 6 ans)
 
 ## E — Nounou autorisée (compte garde seulement)
 
@@ -102,9 +102,9 @@ Colonnes : rang, outil (nom affiché), identifiant stable, raison affichée en p
 
 « Ton enfant » — Léa (4 mois) : Noter un biberon (Parce que Léa prend du lait infantile) · Garde et nounou (Parce qu’une nounou garde Léa) · Sommeil de l’enfant (Parce que Léa a 4 mois) · Journée des biberons (Parce que Léa prend du lait infantile) · Couches (Parce que Léa a 4 mois) · Carnet de liaison numérique (Parce qu’une nounou garde Léa)
 
-« Ton enfant » — Tom (4 ans) : Garde et nounou (Parce qu’une nounou garde Tom) · Carnet de liaison numérique (Parce qu’une nounou garde Tom) · Calendrier des périodes de garde (Parce qu’une nounou garde Tom) · École ou mode de garde (Parce que Tom a l’âge d’aller à l’école) · Suggestions d’activités selon l’âge (Parce que Tom a 4 ans) · Étapes du développement (Parce que Tom a 4 ans)
+« Ton enfant » — Tom (4 ans) : Garde et nounou (Parce qu’une nounou garde Tom) · Carnet de liaison numérique (Parce qu’une nounou garde Tom) · Calendrier des périodes de garde (Parce qu’une nounou garde Tom) · École ou mode de garde (Parce que Tom a l’âge d’aller à l’école) · Suggestions d’activités selon l’âge (Parce que Tom a 4 ans) · Bibliothèque d’histoires (Parce que Tom a 4 ans)
 
-« Ton enfant » — Zoé (7 ans) : Routines en images (Parce que Zoé a 7 ans) · École ou mode de garde (Parce que Zoé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Zoé a 7 ans) · Journal complet (Parce que Zoé a 7 ans) · Sorties en famille (Parce que Zoé a 7 ans) · Suivi de santé de l’enfant (Parce que Zoé a 7 ans)
+« Ton enfant » — Zoé (7 ans) : Routines en images (Parce que Zoé a 7 ans) · École ou mode de garde (Parce que Zoé a l’âge d’aller à l’école) · Tableau des responsabilités de l’enfant (Parce que Zoé a 7 ans) · Habitudes de lecture (Parce que Zoé a 7 ans) · Bibliothèque d’histoires (Parce que Zoé a 7 ans) · Journal complet (Parce que Zoé a 7 ans)
 
 ## G — Sans aucune information
 

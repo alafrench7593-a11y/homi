@@ -7,18 +7,24 @@
  *  - `dots` : points pleins (yeux, repères), à l'encre.
  * Aucune couleur ici : le composant `HomiIcon` les prend dans le thème (5 palettes, clair et sombre).
  * Remplace, pour la barre du bas, l'en-tête, le bouton central et les 9 catégories, le mélange Feather (trait fin) +
- * Material Community Icons (plein) + silhouettes de `ToolGlyph`. Les ~200 pictogrammes d'outils suivront (lot suivant).
+ * Material Community Icons (plein) + silhouettes de `ToolGlyph`. Les pictogrammes d'outils sont rangés par famille
+ * dans src/brand/icons/tools/ (manifeste : src/brand/icons/manifest.ts).
  */
-export interface HomiIconDef {
-  /** Tracé à l'encre (trait). */
-  stroke: string;
-  /** Aplat doux sous le trait (facultatif). */
-  fill?: string;
-  /** Points pleins à l'encre : [x, y, rayon]. */
-  dots?: [number, number, number][];
-  /** Trait plus épais (signe « + » du bouton central, posé sur l'aplat plein de l'action). */
-  heavy?: boolean;
-}
+import type { HomiIconDef } from './geometry';
+import { ALIMENTATION } from './tools/alimentation';
+import { COMMUNAUTE } from './tools/communaute';
+import { COMPTE } from './tools/compte';
+import { COUPLE } from './tools/couple';
+import { CYCLE } from './tools/cycle';
+import { DOCUMENTS } from './tools/documents';
+import { FOYER } from './tools/foyer';
+import { GARDE } from './tools/garde';
+import { GROSSESSE } from './tools/grossesse';
+import { SANTE } from './tools/sante';
+import { SOIN } from './tools/soin';
+import { SOMMEIL } from './tools/sommeil';
+
+export type { HomiIconDef };
 
 const n = (v: number) => +v.toFixed(2);
 const circle = (cx: number, cy: number, r: number) => `M${n(cx + r)} ${cy}a${r} ${r} 0 1 1-${n(r * 2)} 0 ${r} ${r} 0 0 1 ${n(r * 2)} 0z`;
@@ -33,7 +39,7 @@ const DROP = 'M12 3.6s5.6 6.1 5.6 10.1a5.6 5.6 0 0 1-11.2 0c0-4 5.6-10.1 5.6-10.
 const MOON = 'M19.6 14.4A7.6 7.6 0 1 1 9.6 4.4a6.1 6.1 0 0 0 10 10z';
 const NOTEBOOK = 'M7 3.75h9.5a2 2 0 0 1 2 2v12.5a2 2 0 0 1-2 2H7z';
 
-export const HOMI_ICONS = {
+const BASE_ICONS = {
   // ---------------------------------------------------------------- barre du bas
   /** Aujourd'hui : un soleil (le jour en cours). */
   today: { fill: circle(12, 12, 4.4), stroke: `${circle(12, 12, 4.4)}M12 3v1.6M12 19.4V21M3 12h1.6M19.4 12H21M5.65 5.65l1.1 1.1M17.25 17.25l1.1 1.1M5.65 18.35l1.1-1.1M17.25 6.75l1.1-1.1` },
@@ -82,7 +88,23 @@ export const HOMI_ICONS = {
   next: { fill: circle(12, 12, 8.5), stroke: `${circle(12, 12, 8.5)}M8.5 12h7M12.75 8.75 16 12l-3.25 3.25` },
 } satisfies Record<string, HomiIconDef>;
 
+/**
+ * Familles de pictogrammes d'OUTILS (20/11/2026) : un fichier par famille de sens, mêmes règles que la famille de
+ * base. Le manifeste (src/brand/icons/manifest.ts) relie chaque outil du catalogue à l'un d'eux.
+ */
+export const TOOL_ICON_FAMILIES = {
+  alimentation: ALIMENTATION, sommeil: SOMMEIL, soin: SOIN, sante: SANTE, cycle: CYCLE, grossesse: GROSSESSE,
+  garde: GARDE, couple: COUPLE, foyer: FOYER, communaute: COMMUNAUTE, documents: DOCUMENTS, compte: COMPTE,
+} as const;
+export type ToolIconFamily = keyof typeof TOOL_ICON_FAMILIES;
+
+export const HOMI_ICONS = {
+  ...BASE_ICONS, ...ALIMENTATION, ...SOMMEIL, ...SOIN, ...SANTE, ...CYCLE, ...GROSSESSE, ...GARDE, ...COUPLE, ...FOYER, ...COMMUNAUTE, ...DOCUMENTS, ...COMPTE,
+};
+
 export type HomiIconName = keyof typeof HOMI_ICONS;
+/** Pictogrammes de la famille de base (barre, en-tête, catégories, introduction). */
+export const BASE_ICON_NAMES = Object.keys(BASE_ICONS) as HomiIconName[];
 export const HOMI_ICON_NAMES = Object.keys(HOMI_ICONS) as HomiIconName[];
 
 /** Groupes (galerie, tests). */

@@ -200,6 +200,21 @@ const FN_RAW: Record<string, Partial<M>> = {
   h200_162: { lifeStages: ['couple', 'parent'] },
   h200_165: { requiredData: ['partner'] },
   h200_176: { requiredData: ['partner'] }, h200_180: { requiredData: ['partner'] },
+  // Outils construits le 20/11/2026 (anciens « absents » de la liste des 200)
+  h200_39: { lifeStages: ['pregnancy'], requiredData: ['pregnancy'] },
+  h200_44: { lifeStages: ['pregnancy'], requiredData: ['pregnancy'] },
+  h200_48: { lifeStages: ['pregnancy', 'couple'], requiredData: ['pregnancy'] },
+  h200_58: { lifeStages: ['postpartum'] }, h200_60: { lifeStages: ['postpartum'] },
+  h200_73: { feeding: ['breast', 'pumped', 'mixed'], ageRange: [0, 24] }, h200_74: { feeding: ['breast', 'pumped', 'mixed'], ageRange: [0, 24] },
+  h200_76: { feeding: ['breast', 'mixed'], ageRange: [0, 24] }, h200_77: { feeding: ['breast', 'mixed'], ageRange: [0, 24] },
+  h200_79: { lifeStages: ['infant_0_6', 'baby_6_12', 'toddler_1_3', 'nanny'], feeding: ['formula', 'mixed'], ageRange: [0, 36] },
+  h200_122: { lifeStages: ['baby_6_12', 'toddler_1_3', 'child_3_6'], ageRange: [4, 36], feeding: ['solids'] },
+  h200_133: { lifeStages: ['toddler_1_3', 'child_3_6', 'child_6_10'], ageRange: [12, 120] },
+  h200_134: { lifeStages: ['toddler_1_3', 'child_3_6', 'child_6_10'], ageRange: [24, 120] },
+  h200_172: { lifeStages: ['couple', 'household'], requiredData: ['partner'] },
+  h200_179: { lifeStages: ['couple'], requiredData: ['partner'] },
+  h200_186: { lifeStages: ['couple', 'household', 'parent'], requiredData: [] },
+  h200_189: { lifeStages: ['household'] },
 };
 
 /** Disponibilité lue au moment de l'appel : l'assistant en ligne suit son interrupteur (config/features.ts). */

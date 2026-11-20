@@ -159,7 +159,7 @@ const EN: [string, string[]][] = [
   ['meet other parents', ['community']],
 ];
 
-const NO_MATCH = ['météo de demain', 'horaires du train pour Lyon', 'réserver un hôtel à Rome', 'fix my car', 'cours du bitcoin', 'chronomètre des contractions'];
+const NO_MATCH = ['météo de demain', 'horaires du train pour Lyon', 'réserver un hôtel à Rome', 'fix my car', 'cours du bitcoin'];
 
 const run = (rows: [string, string[]][], lang: string, tools: CatalogTool[]) => {
   setLocale(lang as never);
@@ -190,6 +190,12 @@ describe('recherche : 200 entrées, plus de 100 formulations réelles', () => {
   it('requêtes hors sujet ou outil absent : aucun résultat au hasard (l’écran propose les catégories)', () => {
     setLocale('fr' as never);
     expect(NO_MATCH.filter((q) => searchCatalog(fullCatalog(), q).understood).map((q) => `${q} → ${searchCatalog(fullCatalog(), q).results.map((r) => r.tool.id).join(', ')}`)).toEqual([]);
+  });
+  it('outils construits le 20/11/2026 : trouvés par leur nom', () => {
+    setLocale('fr' as never);
+    for (const [q, id] of [['chronomètre des contractions', 'h200_39'], ['stock de lait', 'h200_73'], ['animaux', 'h200_189'], ['dépenses', 'h200_186'], ['projet de naissance', 'h200_44']]) {
+      expect([q, searchCatalog(fullCatalog(), q).results.slice(0, 3).map((r) => r.tool.id)]).toEqual([q, expect.arrayContaining([id])]);
+    }
   });
   it('DE / ES / IT : au moins les noms de la liste', () => {
     for (const [lang, q, id] of [['de', 'Zahnen', 'kid_teeth'], ['es', 'Dentición', 'kid_teeth'], ['it', 'Dentizione', 'kid_teeth'], ['de', 'Carnet', ''], ['it', 'Seno sinistro e destro', 'h200_67']] as const) {

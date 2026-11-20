@@ -43,6 +43,8 @@ export const CAREGIVER_ROUTES: RegExp[] = [
   /^\/meals\/shopping\/?$/, /^\/documents\/?$/, /^\/documents\/[^/]+\/?$/, /^\/notifications\/?$/,
   // Espace nounou (21/11/2026) : « Mes gardes », carnet, photos, messages (le serveur vérifie l'accès confirmé)
   /^\/garde(\/.*)?$/,
+  // Laits infantiles (20/11/2026) : la nounou consulte le lait de l'enfant (le serveur ne lui ouvre que la lecture)
+  /^\/feeding\/formula\/?$/,
 ];
 
 /**
@@ -51,6 +53,8 @@ export const CAREGIVER_ROUTES: RegExp[] = [
  */
 export const CAREGIVER_DENIED: RegExp[] = [
   /^\/family\/(couple|load|domains|prep|review|me-time|exhausted|difficult|solo|offduty|brain-dump|papers)(\/.*)?$/,
+  // Outils du 20/11/2026 réservés aux parents : embrouille, moments à deux, coparent au jour J, dépenses, animaux, Espace Papa
+  /^\/family\/(calm|moments|birth-partner|expenses|pets|my-place)(\/.*)?$/,
 ];
 
 /** Écrans d'un outil vendu à vie (ancienne offre) : restent ouverts à qui l'a acheté. */

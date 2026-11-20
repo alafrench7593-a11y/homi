@@ -14,6 +14,8 @@ export const I = {
   inactive: 'inactif',
   active: 'actif',
   hand: 'Main de la visite guidée',
+  tools: 'Outils',
+  none: 'aucun',
   groups: { tabs: 'Barre du bas', header: 'En-tête', categories: '9 catégories', intro: 'Outils de l’introduction' } as const,
   palettes: { homi: 'HOMI', lavande: 'Lavande', nuit: 'Nuit', sauge: 'Sauge', champagne: 'Champagne' } as Record<PaletteName, string>,
   names: {
@@ -21,5 +23,5 @@ export const I = {
     community: 'Communauté', notifications: 'Notifications', emergency: 'Urgences', account: 'Compte',
     feeding: 'Alimentation', sleep: 'Sommeil', care: 'Soins', health: 'Santé', cycle: 'Cycle', school: 'École', couple: 'Couple',
     tools: 'Mes outils', timer: 'Minuteur', notebook: 'Carnet', next: 'Prochaine action',
-  } as Record<HomiIconName, string>,
+  } as Partial<Record<HomiIconName, string>>,
 };

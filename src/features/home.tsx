@@ -226,7 +226,7 @@ function QuickButton({ k, childId }: { k: string; childId?: string }) {
       onHoverOut={() => setHovered(false)}
       style={{ alignItems: 'center', gap: 6, flexGrow: 1, flexBasis: 0, minWidth: 66, maxWidth: 120 }}
     >
-      <ToolGlyph theme={QUICK_THEME[k] ?? 'resources'} icon={QUICK[k].icon} size={58} play={play} pressed={pressed} hovered={hovered} />
+      <ToolGlyph id={`quick.${k}`} theme={QUICK_THEME[k] ?? 'resources'} icon={QUICK[k].icon} size={58} play={play} pressed={pressed} hovered={hovered} />
       <Text variant="caption" weight="medium" center style={{ alignSelf: 'stretch' }}>{QUICK[k].label}</Text>
     </Pressable>
   );

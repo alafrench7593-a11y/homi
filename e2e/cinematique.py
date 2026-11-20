@@ -6,7 +6,9 @@ relance depuis Réglages) est couvert par e2e/decouvrir_homi.py ; ce script vér
 l'ancienne route et au logo de l'ouverture :
  - /cinematic et /cinematic?replay=1 mènent à /discover, aucune vidéo ;
  - l'ouverture affiche le logo animé (corps « M », deux têtes, nom et point du i ; nom HOMI annoncé) ;
- - « Réduire les animations » : le logo en version fixe (aucune pièce animée).
+ - « Réduire les animations » : le logo en version fixe (aucune pièce animée) ;
+ - depuis le 20/11/2026, la PREMIÈRE OUVERTURE (« / » sans compte) mène à l'introduction « Je suis… » (/intro), plus à
+   la keynote : aucune ouverture de « Découvrir HOMI » ne s'y joue.
   npx expo export --platform web --clear --output-dir /tmp/maison/dist && python3 e2e/spa_server.py /tmp/maison/dist 19011 &
   NAV_URL=http://127.0.0.1:19011 python3 e2e/cinematique.py
 Chaque clé du rapport doit valoir true ; « erreurs » doit être vide.
@@ -58,6 +60,15 @@ def run(p):
     pg.add_init_script(SEEN)
     pg.goto(B + '/cinematic')
     R['cinematic_redirige_vers_discover'] = wait_url(pg, lambda u: '/discover' in u, 8) is not None
+    b.close()
+
+    # 2 bis. première ouverture : l'introduction « Je suis… », pas la keynote
+    b, pg = ctx_for(p)
+    pg.goto(B + '/')
+    R['premiere_ouverture_vers_intro'] = wait_url(pg, lambda u: '/intro' in u, 8) is not None
+    pg.wait_for_selector('[data-testid^="intro-"]', timeout=10000)
+    R['premiere_ouverture_sans_keynote'] = pg.locator('[data-testid="discover-opening"]').count() == 0 and '/discover' not in pg.url
+    pg.screenshot(path=f'{SHOTS}/premiere-ouverture-intro.png')
     b.close()
 
     # 3. « Réduire les animations » : maison en version fixe

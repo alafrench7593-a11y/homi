@@ -14,6 +14,7 @@ import { QuickActionPicker } from '@/components/Dock';
 import { Tappable } from '@/components/Tappable';
 import { Button, Chip, haptic, Icon, IconButton, ListGroup, ListRow, Text, Toggle, type IconName } from '@/components/ui';
 import { ChildDailyActions } from '@/features/dailyActions/DailyActions';
+import { HomiIcon } from '@/brand/icons';
 import { useAllToolEntries, useOpenEntry } from '@/features/hubs/ToolSearch';
 import { openTool } from '@/components/ToolCard';
 import { useJourneyState, useTrackedChildren } from '@/lib/data/hooks';
@@ -79,7 +80,7 @@ export function ToolsEntry() {
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.lg, borderWidth: 1,
         borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
       <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
-        <Icon name="grid" size={18} color={t.colors.primary} />
+        <HomiIcon name="tools" size={22} tone={t.colors.primary} />
       </View>
       <View style={{ flex: 1 }}>
         <Text weight="bold">{tr('hm.toolsEntry')}</Text>

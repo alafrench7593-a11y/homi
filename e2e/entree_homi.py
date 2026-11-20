@@ -53,7 +53,8 @@ def run(p):
     R['D_titre_et_action_immediats'] = pg.evaluate("""() => {
       const op = (e) => { let o = 1; while (e && e.nodeType === 1) { o *= parseFloat(getComputedStyle(e).opacity || '1'); e = e.parentElement; } return o; };
       const btn = document.querySelector('[data-testid="welcome-start"]');
-      const title = [...document.querySelectorAll('[role="heading"]')].find((e) => (e.textContent || '').includes('Vivez chaque étape'));
+      // titre de l'accueil sans compte (le texte a changé avec la v5 : on le repère par son identifiant)
+      const title = document.querySelector('[data-testid="welcome-title"]');
       return !!btn && !!title && op(btn) > 0.99 && op(title) > 0.99;
     }""")
     pg.wait_for_timeout(1500)
@@ -75,7 +76,7 @@ def run(p):
         pg.goto(B + path); pg.wait_for_timeout(3000)
         R[f'A_pastille_sur_{path.strip("/")}'] = pg.locator('[data-testid="demo-pill"]').first.is_visible()
     pg.get_by_role('button', name='Quitter la démonstration').click(); pg.wait_for_timeout(4000)
-    R['A_quitter_ramene_accueil'] = '/welcome' in pg.url and 'Vivez chaque étape' in pg.inner_text('body')
+    R['A_quitter_ramene_accueil'] = '/welcome' in pg.url and pg.locator('[data-testid="welcome-title"]').first.is_visible()
     R['A_pastille_disparue'] = pg.locator('[data-testid="demo-pill"]').count() == 0
     ctx.close()
 
