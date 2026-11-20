@@ -73,5 +73,14 @@ export const SEARCH_INTENTS: SearchIntent[] = [
   // « je ne sais pas par où commencer » → l'assistante et la découverte
   { id: 'aura', re: /^ (?:aide|de l aide|besoin d aide|j ai besoin d aide|l aide|aidez moi|aide moi|assistant|assistante|l assistant|l assistante|assistant ia|assistante ia|ia|l ia|intelligence artificielle|homi aura|aura|help|i need help|assistant ai|ai assistant|ai|artificial intelligence) $/, ids: ['h200_197', 'h200_200'] },
   { id: 'start', re: w('par ou commencer|par quoi commencer|je ne sais pas quoi faire|je suis perdue|je suis perdu|where do i start|where to start|don t know where to start|dont know where to start|i m lost'), ids: ['h200_200', 'h200_197'] },
+  // DE / ES / IT (20/11/2026) : tournures parlées des besoins les plus fréquents, dans les trois autres langues de l'app
+  { id: 'breastfeedIntl', re: w('stillen|stillt|gestillt|an der brust|trinkt an der brust|amamantar|amamanto|da el pecho|toma el pecho|lactancia|teta|allattare|allatto|allattamento|prende il seno|al seno|poppata|poppate'), ids: ['baby_breastfeed'] },
+  { id: 'kidSleepIntl', re: w('schlaft nicht|schlaeft nicht|schlafen|einschlafen|nickerchen|mittagsschlaf|no duerme|duerme mal|siesta|siestas|dormir al bebe|non dorme|dorme male|nanna|pisolino|sonnellino|addormentare'), ids: ['kid_sleep', 'kid_sleep_rhythm'] },
+  { id: 'bottleIntl', re: w('flasche|flaschchen|flaeschchen|biberon|biberones|mamadera|biberon di latte|latte artificiale|pulvermilch|leche de formula'), ids: ['baby_bottle', 'baby_bottle_timer'] },
+  { id: 'diaperIntl', re: w('windel|windeln|wickeln|panal|panales|cambiar el panal|pannolino|pannolini|cambio pannolino'), ids: ['baby_diaper'] },
+  { id: 'feverIntl', re: w('fieber|hat fieber|fiebre|tiene fiebre|febbre|ha la febbre'), ids: ['h200_102', 'kid_health', 'medications'] },
+  { id: 'growthIntl', re: w('wachstum|wachstumskurve|gewicht|groesse|crecimiento|curva de crecimiento|peso|altura|crescita|curva di crescita|altezza'), ids: ['kid_profile', 'h200_95', 'h200_93'] },
+  { id: 'mealsIntl', re: w('essen|mahlzeit|mahlzeiten|rezepte|kochen|comida|comidas|recetas|que cocinar|pasto|pasti|ricette|cosa cucinare|svezzamento|beikost|alimentacion complementaria'), ids: ['meals', 'baby_foods'] },
+  { id: 'tasksIntl', re: w('aufgaben|haushalt|wer macht was|tareas|tareas de casa|quien hace que|faccende|compiti di casa|chi fa cosa'), ids: ['family_tasks', 'mental_load'] },
   { id: 'solo', re: w('parent solo|maman solo|papa solo|seule avec|seul avec|single mum|single mom|single dad|single parent'), ids: ['solo_parent'] },
 ];

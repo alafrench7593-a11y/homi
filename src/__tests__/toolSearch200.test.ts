@@ -204,4 +204,20 @@ describe('recherche : 200 entrées, plus de 100 formulations réelles', () => {
       expect([lang, q, searchCatalog(fullCatalog(), q).results.slice(0, 3).map((r) => r.tool.id)]).toEqual([lang, q, expect.arrayContaining([id])]);
     }
   });
+  it('DE / ES / IT : tournures parlées (synonymes enrichis le 20/11/2026)', () => {
+    const rows: [string, string, string[]][] = [
+      ['de', 'Mein Baby wird gestillt', ['baby_breastfeed']], ['es', 'Mi bebé toma el pecho', ['baby_breastfeed']], ['it', 'Il mio bambino prende il seno', ['baby_breastfeed']],
+      ['de', 'Mein Baby schläft nicht', ['kid_sleep', 'kid_sleep_rhythm']], ['es', 'Mi bebé no duerme', ['kid_sleep', 'kid_sleep_rhythm']], ['it', 'Il bambino non dorme', ['kid_sleep', 'kid_sleep_rhythm']],
+      ['de', 'Windeln wechseln', ['baby_diaper']], ['es', 'Cambiar el pañal', ['baby_diaper']], ['it', 'Cambio pannolino', ['baby_diaper']],
+      ['de', 'Er hat Fieber', ['h200_102', 'kid_health', 'medications']], ['es', 'Tiene fiebre', ['h200_102', 'kid_health', 'medications']], ['it', 'Ha la febbre', ['h200_102', 'kid_health', 'medications']],
+      ['es', 'Curva de crecimiento', ['kid_profile', 'h200_95', 'h200_93']], ['it', 'Cosa cucinare stasera', ['meals', 'baby_foods', 'meal_menu']], ['de', 'Wer macht was im Haushalt', ['family_tasks', 'mental_load']],
+    ];
+    const fails: string[] = [];
+    for (const [lang, q, want] of rows) {
+      setLocale(lang as never);
+      const got = searchCatalog(fullCatalog(), q).results.slice(0, 3).map((r) => r.tool.id);
+      if (!got.some((g) => want.includes(g))) fails.push(`${lang} ${q} → ${got.join(', ') || '(rien)'}`);
+    }
+    expect(fails).toEqual([]);
+  });
 });

@@ -38,7 +38,7 @@ export function appIconColors(tone: AppIconTone): IconColors {
 }
 
 /** SVG complet de l'icône (plein cadre 1024, sans transparence sauf `tinted`). */
-export function appIconSvg(tone: AppIconTone, size = ICON_GRID, idp = ''): string {
+export function appIconSvg(tone: AppIconTone, size = ICON_GRID, idp = '', withSymbol = true): string {
   const c = appIconColors(tone);
   const { cx, cy, r } = LENS;
   const glow = tone === 'tinted' ? '' : `
@@ -60,7 +60,7 @@ export function appIconSvg(tone: AppIconTone, size = ICON_GRID, idp = ''): strin
 <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${idp}shade)"/>
 <path d="M${cx - r * 0.78} ${cy - r * 0.36} A${r * 0.86} ${r * 0.86} 0 0 1 ${cx + r * 0.2} ${cy - r * 0.84}" fill="none" stroke="#FFFFFF" stroke-opacity="${tone === 'light' ? 0.9 : 0.35}" stroke-width="18" stroke-linecap="round"/>
 <circle cx="${cx}" cy="${cy}" r="${r - 3}" fill="none" stroke="url(#${idp}rim)" stroke-width="6"/>
-<path transform="${symbolTransform(SYMBOL_H, cx + 3, cy + 16)}" d="${HOMI_SYMBOL_PATH}" fill="#2A1621" fill-opacity="${tone === 'tinted' ? 0 : tone === 'light' ? 0.12 : 0.4}"/>
-<path transform="${symbolTransform()}" d="${HOMI_SYMBOL_PATH}" fill="${c.ink}"/>
+${withSymbol ? `<path transform="${symbolTransform(SYMBOL_H, cx + 3, cy + 16)}" d="${HOMI_SYMBOL_PATH}" fill="#2A1621" fill-opacity="${tone === 'tinted' ? 0 : tone === 'light' ? 0.12 : 0.4}"/>
+<path transform="${symbolTransform()}" d="${HOMI_SYMBOL_PATH}" fill="${c.ink}"/>` : ''}
 </svg>`;
 }

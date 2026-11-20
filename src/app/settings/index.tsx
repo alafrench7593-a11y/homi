@@ -12,6 +12,7 @@ import { Banner, Button, Card, Divider, Field, type IconName, ListRow, Row, Sect
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
 import { BrandWordmark } from '@/components/BrandLogo';
+import { HomiGlassMark } from '@/components/HomiGlassMark';
 import { useAuth } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { useHousehold, useHouseholdMembers, usePremium, useProfile, useReminders, useUpdateProfile } from '@/lib/data/hooks';
@@ -203,7 +204,11 @@ export default function SettingsScreen() {
 
       <SectionTitle title={tr('settings.about')} />
       <Card tone="soft">
-        <BrandWordmark height={26} style={{ marginBottom: spacing.xxs }} testID="settings-wordmark" />
+        {/* moment de marque : la signature animée du symbole (verre), puis le mot-symbole — ne retarde rien */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.xxs }}>
+          <HomiGlassMark size={64} testID="settings-glass-mark" />
+          <BrandWordmark height={26} testID="settings-wordmark" />
+        </View>
         <Text italic muted>{tr('brand.tagline')}</Text>
         {/* Ligne informative : le geste caché (7 appuis, mode développeur) reste, sans surbrillance de bouton au toucher (iOS) */}
         <Text variant="small" muted suppressHighlighting style={{ marginTop: spacing.xs }} onPress={() => {

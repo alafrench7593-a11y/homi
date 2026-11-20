@@ -13,6 +13,7 @@ import { HomiIcon, ICON_CATEGORIES, ICON_GROUPS, categoryTone, type HomiIconName
 import { toolIconCategory, toolIconName } from '@/brand/icons/resolve';
 import { GlassButton, GlassIconButton } from '@/components/glass';
 import { LOGO_MOTIONS, ToolLogo, type LogoMotion } from '@/brand/toolLogo';
+import { HomiGlassMark } from '@/components/HomiGlassMark';
 import { Text } from '@/components/ui';
 import { useDemoInset } from '@/components/demoInset';
 import { HandGlyph } from '@/features/tour/TourHand';
@@ -136,6 +137,10 @@ export default function IconGallery() {
           </View>
         ))}
         {/* logos d'outils : les six familles d'animation, puis chaque entrée du catalogue */}
+        <View style={{ flexDirection: "row", gap: spacing.md, alignItems: "flex-end" }} testID="logos-mark">
+          <HomiGlassMark key={`m${play}`} size={96} />
+          <HomiGlassMark key={`s${play}`} size={40} animate={false} />
+        </View>
         <View style={{ gap: spacing.xs }} testID="logos-families">
           <Text variant="label" muted>{I.families}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md }}>
