@@ -19,7 +19,7 @@ import { HomiIcon, ICON_CATEGORIES, categoryTone, CATEGORY_HOMI_ICON } from '@/b
 import { SessionOrb } from '@/features/bottleSession';
 import { CareRow } from '@/features/nounou/CareUI';
 import type { CareItem } from '@/lib/domain/nounou';
-import { demoAgenda, demoTiles } from '@/features/onboarding/DemoStep';
+import { demoAgenda, demoTiles } from './demoData';
 import { TodayAgendaRow } from '@/features/homeToday/TodayTaskRow';
 import type { TodayPerson } from '@/features/homeToday/useHomeToday';
 import { emptyAnswers, type OnboardingAnswers, type Situation, type TaskKey } from '@/lib/onboarding/personalize';

@@ -7,6 +7,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { ToolGlyph } from '@/components/ToolGlyph';
+import { CATEGORY_HOMI_ICON, categoryTone, HomiIcon, type IconCategory } from '@/brand/icons';
 import { Chip, haptic, Icon, Text } from '@/components/ui';
 import { StaggerList } from '@/motion';
 import { Tappable } from '@/components/Tappable';
@@ -73,7 +74,13 @@ function CategoryRow({ category, detail, first, onOpen }: { category: ToolCatego
       })}
     >
       {first ? null : <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: StyleSheet.hairlineWidth, backgroundColor: t.colors.border }} />}
-      <ToolGlyph id={`cat.${category}`} theme={CATEGORY_THEME[category]} icon={CATEGORY_ICON[category]} size={44} />
+      {category in CATEGORY_HOMI_ICON ? (
+        <View style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+          <HomiIcon name={CATEGORY_HOMI_ICON[category as IconCategory]} tone={categoryTone(t, category as IconCategory)} size={30} />
+        </View>
+      ) : (
+        <ToolGlyph id={`cat.${category}`} theme={CATEGORY_THEME[category]} icon={CATEGORY_ICON[category]} size={44} />
+      )}
       <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
         <Text weight="bold">{title}</Text>
         <Text variant="small" muted>{detail}</Text>

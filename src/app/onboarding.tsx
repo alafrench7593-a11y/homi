@@ -30,6 +30,7 @@ import { addDays, todayISO } from '@/lib/domain/dates';
 import type { ConsentPurpose } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
+import { introJourneyAnswers, loadIntroProfile } from '@/features/intro/model';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft, type OnboardingStep } from '@/lib/onboardingDraft';
 import { interestsFor, journeysFor, personalize, situationsFromJourneys, type Situation } from '@/lib/onboarding/personalize';
 import { asksChildren, asksFamily, asksFeeding, asksPregnancy, legacyAnswers, previewFacts } from '@/lib/onboarding/v3';
@@ -141,6 +142,13 @@ export default function Onboarding() {
         setCErrors(d.children.map(() => ({}))); setReminders(d.reminders); setConsents(d.consents); setBottleFeeding(d.bottleFeeding ?? null);
         setJa(d.answers3 ?? readJourneyAnswers(d.answers ?? situationsFromJourneys(d.journeys)) ?? emptyJourneyAnswers());
         setStep(FROM_OLD[d.step] ?? 'profile');
+      } else if (alive) {
+        // aucun brouillon : le profil choisi dans l'intro préremplit l'étape 1
+        const pre = await loadIntroProfile();
+        if (pre && alive) {
+          const seed = introJourneyAnswers(pre);
+          setJa((x) => (x.profile.length ? x : { ...x, profile: seed.profile, household: x.household ?? seed.household }));
+        }
       }
       if (alive) { clearTimeout(fallback); setHydrated(true); }
     })();

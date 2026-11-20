@@ -206,9 +206,9 @@ export default function Home() {
       <View style={{ gap: 2, marginTop: spacing.xs }}>
         {/* 4 éléments de 44 pt de haut : ils tiennent à 320 pt (Communauté sans libellé visible sous 360 pt) */}
         <Row style={{ justifyContent: 'flex-end', alignItems: 'center' }} gap={HEADER_GAP}>
-          <GlassIconButton icon="life-buoy" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
+          <GlassIconButton icon="life-buoy" glyph="emergency" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
           <View>
-            <GlassIconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
+            <GlassIconButton icon="bell" glyph="notifications" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
             <BadgeDot count={unread} style={{ position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
           </View>
           <AccountActions />

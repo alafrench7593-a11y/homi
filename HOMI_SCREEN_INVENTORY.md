@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**268 routes** réelles (`src/lib/routes.generated.ts`) portées par **269 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**269 routes** réelles (`src/lib/routes.generated.ts`) portées par **270 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -19,8 +19,8 @@
 
 | Zone | Fichiers | À faire | Tranche | Fait | Couleurs en dur | Animated RN |
 |---|---:|---:|---:|---:|---:|---:|
-| Autres | 25 | 25 | 0 | 0 | 0 | 0 |
-| Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
+| Autres | 26 | 26 | 0 | 0 | 0 | 0 |
+| Auth / entrée | 10 | 0 | 2 | 8 | 0 | 0 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
 | Réglages | 24 | 24 | 0 | 0 | 0 | 0 |
 | Accueil | 21 | 18 | 0 | 3 | 4 | 1 |
@@ -30,9 +30,9 @@
 | Bébé et enfant | 32 | 28 | 0 | 4 | 50 | 1 |
 | Famille | 38 | 38 | 0 | 0 | 6 | 0 |
 | Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
-| **Total** | **269** | **244** | **2** | **23** | **87** | **4** |
+| **Total** | **270** | **245** | **2** | **23** | **87** | **3** |
 
-Rôles : détail 48 · formulaire 50 · historique 17 · liste 105 · réglage 29 · résultat 13 · scène 7.
+Rôles : détail 48 · formulaire 50 · historique 17 · liste 106 · réglage 29 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -51,6 +51,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | Route | Rôle | Outils | Composants | Couleurs | Animated RN | Statut |
 |---|---|---|---|---:|:-:|---|
 | `/dev/glass` | liste | — | Field | 0 |  | à faire |
+| `/dev/icons` | liste | — | — | 0 |  | à faire |
 | `/discover` | détail | — | — | 0 |  | à faire |
 | `/discover/tool/[id]` | détail | — | — | 0 |  | à faire |
 | `/discover/tools` | détail | — | — | 0 |  | à faire |
@@ -59,7 +60,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/garde/[id]/acces` | liste | — | Screen, Card, Field, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]/ajouter` | formulaire | — | Screen, Card, Sheet, Field, Button, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/garde/[id]/journee` | liste | — | Screen, Card, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/garde/[id]/messages` | liste | — | Screen, Card, Field, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/garde/[id]/messages` | liste | — | Screen, Card, Field, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/[id]/photo` | liste | — | Screen, Card, Field, Button, Banner, Chip, EmptyState, Skeleton | 0 |  | à faire |
 | `/garde/[id]/photos` | liste | — | Screen, Card, Button, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
 | `/garde/prep` | détail | — | Screen, Card, Banner, ListRow, EmptyState, Skeleton | 0 |  | à faire |
@@ -87,7 +88,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/auth/sign-in` | formulaire | — | Field, Button, Banner, EntryHero, EntryScreen, MattePanel | 0 |  | fait |
 | `/auth/sign-up` | formulaire | — | Field, Button, Banner, EntryHero, EntryScreen, MattePanel | 0 |  | fait |
 | `/cinematic` | scène | — | — | 0 |  | fait |
-| `/intro` | scène | — | Button | 0 | oui | tranche |
+| `/intro` | scène | — | — | 0 |  | tranche |
 | `/onboarding` | formulaire | — | Screen, Button, IconButton, Banner | 0 |  | tranche |
 | `/welcome` | scène | — | Button, IconButton | 0 |  | fait |
 
@@ -110,7 +111,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/feedback` | liste | — | Screen, Card, Field, Button, IconButton, Banner, Chip, SectionTitle | 0 |  | à faire |
 | `/journeys` | liste | — | Screen, Card, Sheet, Button, Banner, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/journeys/[id]` | détail | — | Screen, Card, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/journeys/answers` | détail | — | Screen, Button | 0 |  | à faire |
+| `/journeys/answers` | détail | — | Screen, Button, Skeleton | 0 |  | à faire |
 | `/journeys/blocked` | réglage | — | Screen, Button, Banner, EmptyState | 0 |  | à faire |
 | `/legal/[doc]` | détail | — | Screen, Card | 0 |  | à faire |
 | `/notifications` | liste | — | Screen, IconButton, Chip, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |
@@ -344,7 +345,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/family/understand` | liste | couple_understand | Screen, Field, Button, Chip, ListRow, SectionTitle, Cascade | 0 |  | à faire |
 | `/family/understand/compose` | liste | — | Screen, Field, Button, Banner | 0 |  | à faire |
 | `/family/understand/inbox` | liste | — | Screen, Sheet, Field, Button, IconButton, Chip, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
-| `/family/understand/request` | liste | — | Screen, Field, Button, Banner, ListRow | 0 |  | à faire |
+| `/family/understand/request` | liste | — | Screen, Field, Banner, ListRow | 0 |  | à faire |
 | `/family/urgent` | liste | family_urgent | — | 0 |  | à faire |
 
 ### Communauté

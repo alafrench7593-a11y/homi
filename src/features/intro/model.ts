@@ -8,6 +8,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Situation } from '@/lib/onboarding/personalize';
+import type { JourneyAnswers } from '@/lib/personalization/answers';
 
 export type IntroProfile = 'pregnant' | 'newborn' | 'child' | 'coparent' | 'explore';
 export const INTRO_PROFILES: IntroProfile[] = ['pregnant', 'newborn', 'child', 'coparent', 'explore'];
@@ -60,6 +61,18 @@ export function introSituations(p: IntroProfile | null): Situation[] {
     case 'child': return ['kids'];
     case 'coparent': return ['kids'];
     default: return [];
+  }
+}
+
+/** Onboarding en 6 étapes : le profil choisi dans l'intro préremplit l'étape 1 (et le quotidien pour un coparent). */
+export function introJourneyAnswers(p: IntroProfile | null): Pick<JourneyAnswers, 'profile' | 'household'> {
+  switch (p) {
+    case 'pregnant': return { profile: ['pregnant'], household: null };
+    case 'newborn': return { profile: ['new_baby'], household: null };
+    case 'child': return { profile: ['kids'], household: null };
+    case 'coparent': return { profile: ['kids'], household: 'separated' };
+    case 'explore': return { profile: ['discover'], household: null };
+    default: return { profile: [], household: null };
   }
 }
 
