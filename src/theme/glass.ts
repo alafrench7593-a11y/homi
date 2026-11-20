@@ -123,7 +123,9 @@ function build(t: Theme, variant: GlassVariant): GlassSpec {
     ? { text: mixHex(c.text, WHITE, 0.5), muted: mixHex(c.textMuted, WHITE, 0.55), accent: mixHex(c.primary, WHITE, 0.25) }
     : { text: c.text, muted: mixHex(c.textMuted, c.text, 0.55), accent: mixHex(c.primary, c.text, 0.25) };
   const highlight: [string, string] = dark ? [alpha(WHITE, 0.08), clear(WHITE)] : [alpha(WHITE, 0.5), clear(WHITE)];
-  const indicator = dark ? alpha(WHITE, 0.1) : alpha(WHITE, 0.62);
+  // Sélection (DA Liquid Glass 20/11/2026) : une GOUTTE teintée de l'accent, visible d'un coup d'œil (plus un blanc sur blanc) ;
+  // elle entre dans le calcul du voile ci-dessous, donc les encres restent garanties dessus
+  const indicator = dark ? alpha(mixHex(c.background, c.primary, 0.42), 0.55) : alpha(mixHex(WHITE, t.tokens.decor.a, 0.24), 0.9);
   const press = dark ? alpha(WHITE, 0.06) : alpha(c.text, 0.07);
     const promised: [string, number][] = variant === 'chrome' ? [[inks.text, GLASS_AA], [inks.muted, GLASS_AA], [inks.accent, AA_GRAPHIC]]
     : variant === 'card' ? [[inks.text, GLASS_AA], [inks.muted, GLASS_AA], [inks.accent, AA_GRAPHIC]]
@@ -136,10 +138,10 @@ function build(t: Theme, variant: GlassVariant): GlassSpec {
     variant, base, veilAlpha, veil: alpha(base, veilAlpha),
     edge: dark ? alpha(WHITE, 0.16) : alpha(WHITE, 0.72),
     outline: `rgba(${t.material.lineRgb},${dark ? 0.1 : 0.09})`,
-    highlight, indicator, indicatorEdge: dark ? alpha(WHITE, 0.14) : alpha(WHITE, 0.85), press,
+    highlight, indicator, indicatorEdge: dark ? alpha(WHITE, 0.22) : alpha(WHITE, 0.95), press,
     blur: BLUR[variant], blurTint: dark ? 'systemUltraThinMaterialDark' : 'systemUltraThinMaterialLight',
     blurTintWeb: dark ? 'systemUltraThinMaterialDark' : 'default',
-    indicatorShadow: night ? undefined : [{ offsetX: 0, offsetY: 1, blurRadius: 4, color: `rgba(${ink},${dark ? 0.35 : 0.1})` }],
+    indicatorShadow: night ? undefined : [{ offsetX: 0, offsetY: 1, blurRadius: 5, color: `rgba(${ink},${dark ? 0.4 : 0.16})` }],
     opaque: variant === 'card' ? c.surface : t.tokens.surface.raised, opaqueEdge: t.tokens.border.rest,
     nativeStyle: 'regular', nativeTint: variant === 'chrome' ? undefined : alpha(base, variant === 'card' ? 0.38 : 0.6),
     colorScheme: dark ? 'dark' : 'light',

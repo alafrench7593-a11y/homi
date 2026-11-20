@@ -29,6 +29,8 @@ export function useToolAccent() {
 export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?: string; items: SummaryItem[]; testID?: string }) {
   const t = useTheme();
   const accent = useToolAccent();
+  // colonnes : 3 au plus ; 4 valeurs → grille 2 × 2 (jamais une valeur seule sur sa ligne)
+  const cols = items.length === 4 || items.length === 2 ? 2 : Math.min(3, items.length);
   return (
     <View style={{ gap: spacing.xs }} testID={testID ?? 'miniapp-today'} accessibilityRole="summary" accessibilityLabel={`${title} : ${items.map((i) => `${i.label} ${i.value}`).join(', ')}`}>
       <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{title}</Text>
@@ -38,8 +40,8 @@ export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
           {items.map((it, i) => (
             <View key={i} testID={it.testID}
-              style={{ flexGrow: 1, flexBasis: items.length > 2 ? '30%' : '45%', minWidth: 92, paddingVertical: spacing.md, paddingHorizontal: 12, gap: 3,
-                borderLeftWidth: i % 3 === 0 ? 0 : StyleSheet.hairlineWidth, borderColor: t.colors.border }}>
+              style={{ flexGrow: 1, flexBasis: cols === 3 ? '30%' : '45%', minWidth: 92, paddingVertical: spacing.md, paddingHorizontal: 12, gap: 3,
+                borderLeftWidth: i % cols === 0 ? 0 : StyleSheet.hairlineWidth, borderTopWidth: i >= cols ? StyleSheet.hairlineWidth : 0, borderColor: t.colors.border }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 {it.icon ? <Icon name={it.icon} size={14} color={i === 0 ? accent : t.colors.textMuted} /> : null}
                 <Text variant="caption" muted style={[{ flexShrink: 1 }, Platform.OS === 'web' ? ({ hyphens: 'auto' } as object) : null]}>{it.label}</Text>

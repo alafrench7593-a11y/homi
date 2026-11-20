@@ -264,7 +264,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       ) : null}
 
       <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
-        <AuraAvatar size={44} testID="aura-avatar" />
+        <AuraAvatar size={52} thinking={sending} testID="aura-avatar" />
         <View style={{ flex: 1, gap: 6 }}>
           <View testID="aura-mode" accessibilityLabel={tr('aura.mode.a11y', { mode: modeLabel })}
             style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, minHeight: 28, borderRadius: radius.pill, backgroundColor: remote ? t.colors.accentSoft : t.colors.surfaceAlt }}>
@@ -319,6 +319,8 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     <Screen
       back
       account={inTab}
+      // Aura a sa propre signature (lentille à trois lumières) : pas de logo d'outil dans l'en-tête
+      tool={false}
       title={tr('aura.name')}
       subtitle={theme ? tr(themeName(theme)) : tr('aura.sub')}
       scroll={false}

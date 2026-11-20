@@ -46,6 +46,7 @@ VIEWS = [
     ('allaitement', '/track/breastfeed', 0),
     ('profil', '/profile', 0),
     ('icones', '/dev/icons', 0),
+    ('reglages-apropos', '/settings', 6000),
 ]
 DEVICES = [('390', 390, 844), ('320', 320, 568)]
 REPORT = {'erreurs': [], 'debordements': {}, 'cibles_barre': {}}
@@ -117,7 +118,8 @@ def shots(br, scheme, dev, w, h, reduced=False):
             continue
         pg.goto(B + path); pg.wait_for_timeout(2600)
         if scroll:
-            pg.mouse.wheel(0, scroll); pg.wait_for_timeout(900)
+            pg.evaluate("""(y) => { const els = [...document.querySelectorAll('[data-testid=\"screen-scroll\"], [data-testid=\"home-scroll\"]')].filter(e => e.offsetParent !== null);
+              const el = els[els.length - 1] || document.scrollingElement; el.scrollTop = y; }""", scroll); pg.wait_for_timeout(1200)
         suffix = f'{dev}-{scheme}' + ('-rm' if reduced else '')
         pg.screenshot(path=f'{OUT}/{name}-{suffix}.png')
         o = overflow(pg)
@@ -141,14 +143,20 @@ def videos(br):
         finally:
             r.stop()
 
-    # 1. logo : page d'accueil sans compte (logo) puis « Découvrir HOMI » (logo animé)
-    def logo():
-        pg.goto(B + '/welcome'); pg.wait_for_timeout(2600)
-        pg.goto(B + '/discover'); pg.wait_for_timeout(3600)
-    clip('1-logo', logo)
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
     pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(3500)
     pg.evaluate(PREMIUM); pg.goto(B + '/'); pg.wait_for_timeout(3000)
+
+    # 1. logo : la signature animée (galerie : symbole de verre + familles de logos rejouées, minuteur)
+    def logo():
+        pg.goto(B + '/dev/icons'); pg.wait_for_timeout(2400)
+        for t in ['logos-replay', 'logos-timer']:
+            if tid(pg, t).count():
+                tid(pg, t).click(); pg.wait_for_timeout(1800)
+        if tid(pg, 'logos-timer').count():
+            tid(pg, 'logos-timer').click(); pg.wait_for_timeout(800)
+    clip('1-logo', logo)
+    pg.goto(B + '/'); pg.wait_for_timeout(2500)
 
     # 2. accueil + barre : défilement sous le verre, onglets touchés vite (transitions interrompues)
     def home():

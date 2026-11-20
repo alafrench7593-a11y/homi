@@ -11,7 +11,7 @@ import { DemoBanner } from '@/components/Family';
 import { Banner, Button, Card, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
-import { BrandWordmark } from '@/components/BrandLogo';
+import { BrandName } from '@/components/BrandLogo';
 import { HomiGlassMark } from '@/components/HomiGlassMark';
 import { useAuth } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
@@ -207,7 +207,7 @@ export default function SettingsScreen() {
         {/* moment de marque : la signature animée du symbole (verre), puis le mot-symbole — ne retarde rien */}
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.xxs }}>
           <HomiGlassMark size={64} testID="settings-glass-mark" />
-          <BrandWordmark height={26} testID="settings-wordmark" />
+          <View testID="settings-wordmark"><BrandName size={30} /></View>
         </View>
         <Text italic muted>{tr('brand.tagline')}</Text>
         {/* Ligne informative : le geste caché (7 appuis, mode développeur) reste, sans surbrillance de bouton au toucher (iOS) */}

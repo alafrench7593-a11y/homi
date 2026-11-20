@@ -86,9 +86,9 @@ export function ToolsEntry() {
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.lg, borderWidth: 1,
         borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
       {/* trois logos d'outils de la personne (favoris, sinon outils du quotidien) : l'entrée montre SES mini-apps */}
-      <View style={{ width: 56, height: 40 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+      <View style={{ width: 66, height: 40 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         {stack.map((id, i) => (
-          <View key={id} style={{ position: 'absolute', left: i * 10, top: i % 2 ? 6 : 0, zIndex: 3 - i }}>
+          <View key={id} style={{ position: 'absolute', left: i * 17, top: i % 2 ? 7 : 1, zIndex: 3 - i }}>
             <ToolLogo id={id} size={30} variant="compact" />
           </View>
         ))}
