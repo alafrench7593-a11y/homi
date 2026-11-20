@@ -8,7 +8,10 @@
  * Uniquement les jetons du thème ; aucune couleur en dur.
  */
 import React, { useEffect } from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+
+/** Web : jamais de césure dans un libellé de réponse (« sé-parés » à 320 pt) ; le mot passe entier à la ligne. */
+const NO_HYPHENS = (Platform.OS === 'web' ? { hyphens: 'manual' } : null) as unknown as TextStyle;
 import Animated, { cancelAnimation, interpolate, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { Icon, Text, type IconName, haptic } from '@/components/ui';
 import { durations, useMotion } from '@/motion';
@@ -144,7 +147,7 @@ export function ChoiceRow({ icon, label, hint, selected, onPress, testID, radio,
             <Icon name={icon} size={19} color={t.colors.primary} />
           </View>
           <View style={{ flex: 1, minWidth: 0, gap: 1 }}>
-            <Text weight={selected ? 'bold' : 'medium'}>{label}</Text>
+            <Text weight={selected ? 'bold' : 'medium'} style={NO_HYPHENS}>{label}</Text>
             {hint ? <Text variant="small" muted>{hint}</Text> : null}
           </View>
           <View style={{ width: 26, height: 26, alignItems: 'center', justifyContent: 'center' }}>

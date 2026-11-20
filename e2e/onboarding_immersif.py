@@ -200,7 +200,9 @@ def flow(b, w, h, scheme, main=False, premium_on=False):
         R['6_lignes_reelles'] = 'foyer est créé' in lines and 'enregistrées' in lines and '1 enfant ajouté' in lines
         R['6_titre_prenom'] = 'Camille, ton foyer est prêt' in pg.inner_text('body')
         R['6_outils_et_raisons'] = 'Parce que' in tid(pg, 'onb-reveal-tools').inner_text()
-        R['6_inviter_l_autre_parent'] = pg.locator('[data-testid="onb-invite"]').count() >= 1
+        # « Inviter un autre parent » : proposé si personne d'autre n'est adulte du foyer (la démo a déjà un co-parent)
+        other_adult = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = s.session.userId; return (s.tables.household_members || []).some((m) => m.user_id !== me && (m.role === 'owner' || m.role === 'coparent')); }")
+        R['6_inviter_l_autre_parent_si_seul'] = pg.locator('[data-testid="onb-invite"]').count() >= 1 or other_adult
     shot(pg, '06b-revelation', tag)
     tid(pg, 'onb-reveal-next').click(); pg.wait_for_timeout(1200)
     # ---------------------------------------------------------------- Premium
