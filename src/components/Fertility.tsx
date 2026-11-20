@@ -24,7 +24,7 @@ import { describeSchedule, validateSchedule, type ReminderSchedule, type Weekday
 import { toFrDate } from '@/lib/validation';
 import { QUESTION_SUGGESTIONS, type ReminderPreset } from '@/content/fertility';
 import type { PeriodEntry } from '@/lib/types';
-import type { FertilityJourney } from '@/lib/types-fertility';
+import type { FertilityJourney, QuestionTheme } from '@/lib/types-fertility';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -495,14 +495,18 @@ export function newQuestions(qs: string[], existing: string[]): string[] {
   return out;
 }
 
-export function ConsultationChecklist({ journey, childId }: { journey: FertilityJourney; childId?: string | null }) {
+export function ConsultationChecklist({ journey, childId, theme, withUnthemed, suggestions: themeSuggestions, testID }: {
+  journey: FertilityJourney; childId?: string | null;
+  /** 57 / 81 : liste d'un thème (postnatal, lactation) ; `withUnthemed` y garde les questions sans thème du parcours */
+  theme?: QuestionTheme | null; withUnthemed?: boolean; suggestions?: string[]; testID?: string;
+}) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const householdId = useHouseholdId();
-  const questionsQ = useConsultationQuestions(journey, childId);
+  const questionsQ = useConsultationQuestions(journey, childId, theme, withUnthemed);
   const { data } = questionsQ;
-  const add = useAddQuestions(journey, childId);
+  const add = useAddQuestions(journey, childId, theme);
   const [savingAnswer, setSavingAnswer] = useState(false);
   const share = useShareQuestion();
   const [text, setText] = useState('');
@@ -510,7 +514,7 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
   const [answer, setAnswer] = useState('');
   const list = data ?? [];
   const existing = new Set(list.map((q) => q.question));
-  const suggestions = QUESTION_SUGGESTIONS[journey].filter((s) => !existing.has(s));
+  const suggestions = (themeSuggestions ?? QUESTION_SUGGESTIONS[journey]).filter((s) => !existing.has(s));
   const nextPos = list.length ? Math.max(...list.map((q) => q.position)) + 1 : 0;
 
   async function addQuestions(qs: string[]) {
@@ -561,9 +565,9 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
 
   return (
     <>
-      <Card>
-        <Field label={tr('u5.fert.q_add')} value={text} onChangeText={setText} maxLength={300} placeholder={tr('u5.fert.q_ph')} onSubmitEditing={() => addQuestions([text])} submitBehavior="submit" />
-        <Button label={tr('u5.fert.add')} icon="plus" variant="secondary" style={{ marginTop: spacing.sm }} loading={add.isPending} onPress={() => addQuestions([text])} />
+      <Card testID={testID}>
+        <Field label={tr('u5.fert.q_add')} value={text} onChangeText={setText} maxLength={300} placeholder={tr('u5.fert.q_ph')} onSubmitEditing={() => addQuestions([text])} submitBehavior="submit" testID={testID ? `${testID}-field` : undefined} />
+        <Button label={tr('u5.fert.add')} icon="plus" variant="secondary" style={{ marginTop: spacing.sm }} loading={add.isPending} onPress={() => addQuestions([text])} testID={testID ? `${testID}-add` : undefined} />
       </Card>
       {questionsQ.isLoading && !data ? <Skeleton rows={3} /> : null}
       {questionsQ.isError && !data ? <ErrorView error={questionsQ.error} onRetry={() => void questionsQ.refetch()} title={tr('u5.fert.err_q')} /> : null}

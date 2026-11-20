@@ -18,6 +18,7 @@ import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
 import { childAge } from '@/lib/domain/child';
 import { useBottleChildren, useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
+import { useBottleRelays, useSaveRelays } from '@/lib/data/hooks-partiels';
 import { noRecommendationNote, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { atClock, bottleDraftDefaults, computeDueAt, markBottleGiven, nextReminderSentence, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
 import { getPermission, notificationsSupported } from '@/lib/notifications';
@@ -95,7 +96,7 @@ function TrackEntry() {
   const toast = useToast();
   const inv = useInvalidate();
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string }>();
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string; relay?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: tracked } = useTrackedChildren();
   const { data: bottleChildren } = useBottleChildren();
@@ -115,6 +116,8 @@ function TrackEntry() {
   const { data: lastBottle } = useRows<Bottle>(['bottles', childId, 'last'], kind === 'bottle' && childId ? { table: 'bottles', filters: [eq('child_id', childId)], order: [{ col: 'at', asc: false }], limit: 1 } : null);
 
   const bottleTimer = useBottleTimer(kind === 'bottle' ? childId : null);
+  const relays = useBottleRelays(kind === 'bottle' && params.relay ? child?.household_id ?? null : null, childId || null);
+  const saveRelays = useSaveRelays();
   const startTimer = useStartBottleTimer();
   const updateTimer = useUpdateBottleTimer();
   // Valeurs initiales : rien n'est suggéré (seule la quantité prévue saisie sur le minuteur pré-remplit « préparée »)
@@ -155,6 +158,8 @@ function TrackEntry() {
   const [foods, setFoods] = useState('');
   const [texture, setTexture] = useState<Meal['texture']>(null);
   const [reaction, setReaction] = useState('');
+  // 123 : aliments refusés pendant ce repas (parmi ceux notés), sans jugement
+  const [refused, setRefused] = useState<string[]>([]);
   // Ouverture depuis « + Ajouter » (symptôme, note) : le type est présélectionné
   const [obsKind, setObsKind] = useState<Observation['kind']>(() => (OBS_VALUES.some((v) => v === params.obs) ? params.obs as Observation['kind'] : 'temperature'));
   const [temp, setTemp] = useState('');
@@ -188,7 +193,7 @@ function TrackEntry() {
       case 'pumping': { const p = r as unknown as Pumping; setTime(new Date(p.at)); setAmount(p.amount_ml); setSide(p.side ?? 'both'); break; }
       case 'diaper': { const d = r as unknown as Diaper; setTime(new Date(d.at)); setWet(d.wet); setStool(d.stool); setStoolColor(d.stool_color ?? null); setConsistency(d.stool_consistency ?? null); setBlood(!!d.blood_seen); break; }
       case 'sleep': { const s = r as unknown as Sleep; setTime(new Date(s.started_at)); setEnd(s.ended_at ? new Date(s.ended_at) : new Date()); setWakeups(s.wakeups); setSleepKind(s.kind ?? 'unknown'); break; }
-      case 'meal': { const m = r as unknown as Meal; setTime(new Date(m.at)); setDescription(m.description ?? ''); setFoods(m.foods.join(', ')); setTexture(m.texture); setReaction(m.reaction_note ?? ''); break; }
+      case 'meal': { const m = r as unknown as Meal; setTime(new Date(m.at)); setDescription(m.description ?? ''); setFoods(m.foods.join(', ')); setTexture(m.texture); setReaction(m.reaction_note ?? ''); setRefused(m.refused_foods ?? []); break; }
       case 'observation': { const o = r as unknown as Observation; setTime(new Date(o.at)); setObsKind(o.kind); setTemp(o.value_num != null ? String(o.value_num).replace('.', ',') : ''); setLabel(o.label ?? ''); setTempMethod(o.temp_method ?? null); setIntensity(o.intensity ?? null); break; }
     }
   }, [existing, editing, kind, lastBottle]);
@@ -244,8 +249,10 @@ function TrackEntry() {
       case 'sleep':
         if (end < time) return setError(tr('u7.track.err.sleepEnd')), null;
         return { ...base, started_at: time.toISOString(), ended_at: end.toISOString(), wakeups, kind: sleepKind === 'unknown' ? null : sleepKind };
-      case 'meal':
-        return { ...base, at: time.toISOString(), description: description.trim() || null, foods: foods.split(',').map((f) => f.trim()).filter(Boolean), texture, reaction_note: reaction.trim() || null };
+      case 'meal': {
+        const list = foods.split(',').map((f) => f.trim()).filter(Boolean);
+        return { ...base, at: time.toISOString(), description: description.trim() || null, foods: list, refused_foods: refused.filter((f) => list.includes(f)), texture, reaction_note: reaction.trim() || null };
+      }
       case 'observation': {
         if (obsKind === 'temperature') {
           const v = Number(temp.replace(',', '.'));
@@ -284,6 +291,9 @@ function TrackEntry() {
       } else if (kind === 'bottle') {
         const id = uuid();
         const res = await add.mutateAsync({ ...row, id });
+        // 80 : biberon prévu dans le relais avec le coparent → relié au biberon réellement noté
+        const relay = params.relay ? relays.data?.find((r) => r.id === params.relay && r.status === 'planned') : undefined;
+        if (relay) await saveRelays.mutateAsync([{ ...relay, status: 'given', given_at: row.at as string, bottle_id: id }]).catch(() => undefined);
         const timerNote = await afterBottleSaved(res === 'sent' ? id : null, (row.planned_next_ml as number | null) ?? null);
         toast(
           (res === 'queued' ? tr('u7.track.bottleQueued') : tr('u7.track.bottleSaved')) + (timerNote ? ` ${timerNote}` : ''),
@@ -295,7 +305,7 @@ function TrackEntry() {
           const list = (row.foods as string[]) ?? [];
           if (list.length) {
             // F-02 : aliment relié au catalogue « Ses découvertes » ; F-03 : date LOCALE du repas
-            if (childId && child?.household_id) await recordMealFoods({ id: childId, household_id: child.household_id }, list, toISODate(time), reaction.trim() || null).catch(() => undefined);
+            if (childId && child?.household_id) await recordMealFoods({ id: childId, household_id: child.household_id }, list, toISODate(time), reaction.trim() || null, (row.refused_foods as string[]) ?? []).catch(() => undefined);
             inv('food_introductions');
           }
         }
@@ -548,6 +558,17 @@ function TrackEntry() {
               ))}
             </Row>
           </View>
+          {foods.split(',').map((f) => f.trim()).filter(Boolean).length ? (
+            <View style={{ gap: spacing.xs }} testID="track-meal-refused">
+              <Text variant="label">{tr('ref.track.label')}</Text>
+              <Row wrap>
+                {[...new Set(foods.split(',').map((f) => f.trim()).filter(Boolean))].map((f) => (
+                  <Chip key={f} label={f} icon={refused.includes(f) ? 'x' : undefined} selected={refused.includes(f)} onPress={() => setRefused((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]))} testID={`track-refused-${f}`} />
+                ))}
+              </Row>
+              <Text variant="caption" muted>{tr('ref.track.hint')}</Text>
+            </View>
+          ) : null}
           <Field label={tr('u7.track.reaction')} optional value={reaction} onChangeText={setReaction} multiline />
           <Banner tone="danger" title={tr('u7.track.reactionTitle')}>{tr('u7.track.reactionBody')}</Banner>
         </>

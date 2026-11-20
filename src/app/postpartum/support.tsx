@@ -5,11 +5,11 @@
  */
 import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { PostnatalPlan } from '@/features/postpartumCare/Postnatal';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
-import { ConsultationChecklist } from '@/components/Fertility';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, IconButton, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import {
@@ -20,7 +20,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { ACTION_KINDS, PLAN_REST_IDEAS, PLAN_TASK_IDEAS } from '@/lib/domain/postpartum';
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
-import { localeTag, t as tr } from '@/i18n';
+import { t as tr } from '@/i18n';
 
 type ContactDraft = { id?: string; kind: 'trusted' | 'professional'; name: string; relation: string; phone: string; email: string; note: string };
 const PHONE_RE = /^[0-9+ ().-]{2,30}$/;
@@ -28,6 +28,8 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 export default function PostpartumSupport() {
   const toast = useToast();
+  // 51 / 57 : arrivée directe sur les rendez-vous et questions postnatales (placés en tête de l'écran)
+  const focus = useLocalSearchParams<{ focus?: string }>().focus === 'postnatal';
   const settingsQ = usePostpartumSettings();
   const settings = settingsQ.data;
   const saveSettings = useSaveSettings();
@@ -117,6 +119,7 @@ export default function PostpartumSupport() {
         { icon: 'calendar', value: String(myAppointments.length), label: tr('u5.pp_support.appts') },
       ]} />
       <Banner tone="info">{tr('u5.pp_support.banner')}</Banner>
+      {focus ? <PostnatalPlan /> : null}
 
       <SectionTitle title={tr('u5.pp_support.s_trusted')} />
       {contactsQ.isLoading && !contactsQ.data ? <Skeleton rows={1} /> : renderContacts('trusted')}
@@ -154,16 +157,8 @@ export default function PostpartumSupport() {
         style={{ minHeight: 80, textAlignVertical: 'top' }}
       />
 
-      <SectionTitle title={tr('u5.pp_support.s_appts')} action={tr('u5.pp_support.add')} onAction={() => router.push('/appointments?new=postnatal' as never)} />
-      <Card>
-        {myAppointments.length === 0 ? <Text variant="small" muted>{tr('u5.pp_support.no_appt')}</Text> : null}
-        {myAppointments.slice(0, 5).map((a) => (
-          <ListRow key={a.id} icon={a.private_to_creator ? 'lock' : 'calendar'} title={a.title} subtitle={`${new Date(a.starts_at).toLocaleString(localeTag(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}${a.private_to_creator ? ` · ${tr('u5.pp_support.private')}` : ''}`} onPress={() => router.push('/appointments')} />
-        ))}
-      </Card>
-
-      <SectionTitle title={tr('u5.pp_support.s_q')} />
-      <ConsultationChecklist journey="postpartum" />
+      {focus ? null : <PostnatalPlan />}
+      <Button label={tr('pn.allAppts')} size="sm" variant="ghost" icon="calendar" onPress={() => router.push('/appointments')} style={{ alignSelf: 'flex-start' }} />
 
       <SectionTitle title={tr('u5.pp_support.s_act')} />
       <Card>

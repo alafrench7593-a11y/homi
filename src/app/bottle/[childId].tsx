@@ -227,6 +227,9 @@ export default function BottleReminderScreen() {
         <BottleDayTimeline childId={childId} slots={slots} intervalMinutes={dayInterval} timerId={active?.id} onPickInterval={pickInterval} name={name} />
         <BottleNotificationSettings />
         <SecondaryButton label={toolName('bottle_scoops')} icon="hash" onPress={() => router.push('/bottle/scoops')} testID="bottle-scoops" />
+        {/* 80 : relais des biberons avec le coparent ; 75 / 83 / 84 : journal tétées + biberons + repas */}
+        <SecondaryButton label={tr('brl.fromBottle')} icon="users" onPress={() => router.push({ pathname: '/family/nights', params: { focus: 'bottles', child: childId } })} testID="bottle-relays" />
+        <SecondaryButton label={tr('fj.fromBottle')} icon="list" onPress={() => router.push({ pathname: '/bottle/history', params: { child: childId, scope: 'all' } })} testID="bottle-journal" />
         <Text variant="caption" muted>{noRecommendationNote()}</Text>
       </MorphTarget>
 

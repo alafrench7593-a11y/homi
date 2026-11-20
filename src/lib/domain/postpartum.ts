@@ -80,10 +80,16 @@ export interface PostpartumCheckin {
   recovery: number | null;
   feeding_note: string | null;
   difficulties: string | null;
+  /** 53 (29/11/2026) : récupération physique notée par la personne (aucune interprétation) */
+  scar_feeling?: BodyFeeling | null;
+  perineum_feeling?: BodyFeeling | null;
+  bleeding?: Bleeding | null;
   urgent_orientation_shown: boolean;
   created_at: string;
   updated_at?: string;
 }
+export type BodyFeeling = 'better' | 'same' | 'worse' | 'not_concerned';
+export type Bleeding = 'none' | 'spotting' | 'light' | 'moderate' | 'heavy';
 
 export type CheckinInput = Omit<PostpartumCheckin, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
 

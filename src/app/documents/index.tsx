@@ -146,6 +146,17 @@ export default function DocumentsHome() {
           <Text variant="caption" muted>{tr('docs.export.short')}</Text>
         </Card></View>
       </Row>
+      {/* 42 : valeurs d'analyses saisies (courbe par analyse), reliées aux comptes rendus */}
+      <Card onPress={() => router.push('/documents/labs')} accessibilityLabel={tr('lab.title')} testID="docs-labs">
+        <Row style={{ alignItems: 'center' }}>
+          <Icon name="activity" color={t.colors.lavender} />
+          <View style={{ flex: 1 }}>
+            <Text weight="bold">{tr('lab.title')}</Text>
+            <Text variant="caption" muted>{tr('lab.short')}</Text>
+          </View>
+          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+        </Row>
+      </Card>
 
       <Banner tone="info" icon="lock">{tr('docs.privacyBanner')}</Banner>
       {atLimit ? (

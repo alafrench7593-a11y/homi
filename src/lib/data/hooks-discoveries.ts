@@ -9,7 +9,7 @@ import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { useInvalidate, useRows } from './hooks';
 import { todayISO } from '../domain/dates';
-import type { ChildStep, FoodEntry, FoodStatus, Tasting, Texture } from '../domain/discoveries';
+import type { ChildStep, FoodEntry, FoodStatus, Grasp, Method, Outcome, Tasting, Texture } from '../domain/discoveries';
 import { NEARBY_CONFIG, geocodeUrl, overpassQuery, parseGeocode, parseOverpass, type Place, type PlaceKind, type Town } from '../domain/nearby';
 import type { StepStatus } from '@/content/discoveries/steps';
 import { FOOD_BY_KEY, foodNameKey, matchFoodKey } from '@/content/discoveries/foods';
@@ -37,6 +37,10 @@ export interface FoodSave {
   favorite?: boolean;
   /** ajouter une ligne d'historique (une nouvelle proposition) */
   log: boolean;
+  /** 120 : mode de proposition, prise en main, issue de cette proposition (historique) */
+  method?: Method | null;
+  grasp?: Grasp | null;
+  outcome?: Outcome | null;
 }
 
 /** Enregistre la fiche (création ou mise à jour) et, si demandé, une ligne d'historique. */
@@ -58,6 +62,7 @@ export function useSaveFood() {
         await backend.insert('food_tastings', {
           child_id: v.child.id, household_id: v.child.household_id, food_key: v.food.key, food_name: v.food.name, tasted_on: v.date,
           status: v.status, reaction: v.reaction, reaction_note: v.reactionNote, texture: v.texture, preparation: v.preparation, note: v.note,
+          method: v.method ?? null, grasp: v.method === 'blw' ? v.grasp ?? null : null, outcome: v.outcome ?? null,
         });
       }
     },
@@ -182,7 +187,15 @@ export function useReportPlace() {
  * Premiers aliments notés dans un repas (QA 02/11/2026, F-02) : reliés au catalogue quand c'est possible,
  * jamais en double (même aliment déjà présent par sa clé OU par son nom), un aliment refusé n'empêche pas les autres.
  */
-export async function recordMealFoods(child: { id: string; household_id: string }, names: string[], date: string, reactionNote: string | null): Promise<number> {
+export async function recordMealFoods(child: { id: string; household_id: string }, names: string[], date: string, reactionNote: string | null, refused: string[] = []): Promise<number> {
+  // 123 : un aliment refusé pendant le repas est noté dans l'historique de « Ses découvertes » (refus structuré, compté)
+  for (const raw of refused) {
+    const name = raw.trim();
+    if (!name) continue;
+    const key = matchFoodKey(name);
+    const label = (key ? FOOD_BY_KEY[key]?.name : null) ?? name;
+    await backend.insert('food_tastings', { child_id: child.id, household_id: child.household_id, food_key: key, food_name: label.slice(0, 60), tasted_on: date, status: 'refused', outcome: 'refused', reaction: false, reaction_note: null, texture: null, preparation: null, note: null }).catch(() => undefined);
+  }
   const existing = await backend.select<{ food_key: string | null; food_name: string }>({ table: 'food_introductions', columns: 'food_key,food_name', filters: [eq('child_id', child.id)] });
   const keys = new Set(existing.map((e) => e.food_key ?? matchFoodKey(e.food_name)).filter(Boolean) as string[]);
   const nameKeys = new Set(existing.map((e) => foodNameKey(e.food_name)));

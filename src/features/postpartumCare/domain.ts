@@ -43,3 +43,52 @@ export const PAIN_SCALE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 export function validPain(p: number | null | undefined): boolean {
   return p == null || (Number.isInteger(p) && p >= 0 && p <= 10);
 }
+
+// ---------------------------------------------------------------- 51 / 57 rendez-vous postnataux saisis
+export interface PostnatalAppt { id: string; kind: string; title: string; starts_at: string; questions: string[]; for_parent?: boolean; created_by?: string | null; completed_at?: string | null }
+const POSTNATAL_KINDS = new Set(['postnatal', 'perineal_rehab']);
+/**
+ * Rendez-vous postnataux et de rééducation SAISIS (aucun n'est ajouté par l'application), situés par rapport à la
+ * naissance : semaines révolues depuis la date de naissance de l'enfant le plus jeune (aucune si inconnue ou avant).
+ */
+export function postnatalTimeline<A extends PostnatalAppt>(list: A[], birthDate: string | null, now: Date = new Date()) {
+  const birth = birthDate ? Date.parse(`${birthDate}T00:00:00`) : NaN;
+  const items = list.filter((a) => POSTNATAL_KINDS.has(a.kind)).map((a) => {
+    const d = Date.parse(a.starts_at) - birth;
+    return { appt: a, weeksAfterBirth: Number.isFinite(d) && d >= 0 ? Math.floor(d / (7 * 86_400_000)) : null };
+  });
+  const cut = now.getTime() - 3600_000;
+  return {
+    upcoming: items.filter((x) => Date.parse(x.appt.starts_at) >= cut).sort((a, b) => a.appt.starts_at.localeCompare(b.appt.starts_at)),
+    past: items.filter((x) => Date.parse(x.appt.starts_at) < cut).sort((a, b) => b.appt.starts_at.localeCompare(a.appt.starts_at)),
+  };
+}
+
+/** Questions postnatales pas encore posées et absentes du rendez-vous (casse et ponctuation finale ignorées). */
+export function questionsToCopy(questions: { question: string; done: boolean }[], inAppointment: string[]): string[] {
+  const key = (q: string) => q.trim().replace(/\s+/g, ' ').replace(/[\s?!.…]+$/u, '').toLowerCase();
+  const seen = new Set(inAppointment.map(key));
+  const out: string[] = [];
+  for (const q of questions) {
+    const k = key(q.question);
+    if (q.done || !k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(q.question.trim().slice(0, 200));
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------- 53 récupération physique (check-in)
+export type BodyFeeling = 'better' | 'same' | 'worse' | 'not_concerned';
+export type Bleeding = 'none' | 'spotting' | 'light' | 'moderate' | 'heavy';
+export const BODY_FEELINGS: BodyFeeling[] = ['better', 'same', 'worse', 'not_concerned'];
+export const BLEEDINGS: Bleeding[] = ['none', 'spotting', 'light', 'moderate', 'heavy'];
+
+/** Une ligne par jour noté, pour l'historique : seulement ce qui a été saisi. */
+export function bodyNotes(c: { checkin_date: string; scar_feeling?: BodyFeeling | null; perineum_feeling?: BodyFeeling | null; bleeding?: Bleeding | null }) {
+  return { day: c.checkin_date, scar: c.scar_feeling ?? null, perineum: c.perineum_feeling ?? null, bleeding: c.bleeding ?? null };
+}
+/** Jours (récents d'abord) où au moins un des trois champs a été noté. */
+export function bodyHistory<C extends { checkin_date: string; scar_feeling?: BodyFeeling | null; perineum_feeling?: BodyFeeling | null; bleeding?: Bleeding | null }>(list: C[]) {
+  return list.map(bodyNotes).filter((b) => b.scar || b.perineum || b.bleeding).sort((a, b) => b.day.localeCompare(a.day));
+}

@@ -15,6 +15,8 @@ import { MiniTrend } from '@/features/postpartum';
 import { useDeleteCheckin, usePostpartumActions, usePostpartumCheckins } from '@/lib/data/hooks-postpartum';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { ACTION_KINDS, NEEDS, describeTrend, trendSeries, type CheckinInput } from '@/lib/domain/postpartum';
+import { bodyHistory } from '@/features/postpartumCare/domain';
+import { type TKey } from '@/i18n';
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
@@ -61,6 +63,19 @@ export default function PostpartumHistory() {
             </View>
           </Card>
           <Text variant="caption" muted>{tr('u5.pp_history.disclaimer')}</Text>
+
+          {bodyHistory(list).length ? (
+            <>
+              <SectionTitle title={tr('ppb.history')} />
+              <Card testID="ppb-history">
+                {bodyHistory(list).slice(0, 14).map((b) => (
+                  <ListRow key={b.day} icon="activity" title={formatDate(new Date(`${b.day}T12:00:00`), { weekday: 'long', day: 'numeric', month: 'long' })}
+                    subtitle={[b.scar ? tr('ppb.line.scar', { v: tr(`ppb.f.${b.scar}` as TKey) }) : null, b.perineum ? tr('ppb.line.perineum', { v: tr(`ppb.f.${b.perineum}` as TKey) }) : null,
+                      b.bleeding ? tr('ppb.line.bleeding', { v: tr(`ppb.b.${b.bleeding}` as TKey) }) : null].filter(Boolean).join(' · ')} />
+                ))}
+              </Card>
+            </>
+          ) : null}
 
           {actionsQ.data?.length ? (
             <>

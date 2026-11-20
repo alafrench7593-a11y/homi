@@ -213,13 +213,13 @@ export function useUploadPrivatePhoto() {
   const inv = useInvalidate();
   const me = useUserId();
   return useMutation({
-    mutationFn: async (a: { uri: string; title: string }) => {
+    mutationFn: async (a: { uri: string; title: string; category?: 'postnatal' | 'prenatal' | 'ultrasound' | 'photo' }) => {
       const hid = await ensureHousehold();
       const bytes = encodeJpeg(await decodeForScan(a.uri, 1600), 82);
       const path = `${hid}/${uuid()}.jpg`;
       await backend.storage.upload('documents', path, { uri: '', bytes, mimeType: 'image/jpeg', size: bytes.length, name: path.split('/')[1] });
       const id = uuid();
-      await backend.insert('documents', { id, household_id: hid, uploaded_by: me, category: 'postnatal', title: a.title.slice(0, 120), storage_path: path, mime_type: 'image/jpeg', size_bytes: bytes.length, page_count: 1, private_to_uploader: true });
+      await backend.insert('documents', { id, household_id: hid, uploaded_by: me, category: a.category ?? 'postnatal', title: a.title.slice(0, 120), storage_path: path, mime_type: 'image/jpeg', size_bytes: bytes.length, page_count: 1, private_to_uploader: true });
       return id;
     },
     onSuccess: () => { void inv('documents'); },

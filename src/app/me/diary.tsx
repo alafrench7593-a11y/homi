@@ -14,7 +14,10 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, Field, Icon, Text } from '@/components/ui';
+import { Button, Field, Icon, Segmented, Text } from '@/components/ui';
+import { MemoriesView } from '@/features/pregnancyMemories/MemoriesView';
+import { usePregnancies } from '@/lib/data/hooks';
+import { usePregnancyMemories } from '@/lib/data/hooks-partiels';
 import { capitalize, ComposerAction, EntryRow, MoodOrbs, SaveResult, SupportBanner } from '@/features/mood/MoodJournalUI';
 import { Reveal } from '@/motion';
 import { useDiaryPage } from '@/features/mood/useMoodJournal';
@@ -28,7 +31,33 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 const ERR: Record<'empty' | 'mood' | 'long', TKey> = { empty: 'dy.errEmpty', mood: 'dy.errMood', long: 'dy.errLong' };
 const editorial = { fontFamily: typography.editorial.fontFamily, fontSize: typography.editorial.fontSize, lineHeight: typography.editorial.lineHeight, letterSpacing: typography.editorial.letterSpacing };
 
+type Tab = 'pages' | 'pregnancy';
+
+/** 50 : « Souvenirs de grossesse » à côté des pages du journal, dès qu'il y a (ou qu'il y a eu) une grossesse ou un souvenir. */
+function DiaryTabs({ value }: { value: Tab }) {
+  const pregnancies = usePregnancies().data ?? [];
+  const memories = usePregnancyMemories().data ?? [];
+  if (value === 'pages' && !pregnancies.length && !memories.length) return null;
+  return (
+    <Segmented label={tr('pmem.tabs')} value={value} onChange={(v) => router.setParams({ tab: v === 'pages' ? '' : v })}
+      options={[{ value: 'pages', label: tr('pmem.tabPages'), testID: 'diary-tab-pages' }, { value: 'pregnancy', label: tr('pmem.tabPregnancy'), testID: 'diary-tab-pregnancy' }]} />
+  );
+}
+
 export default function Diary() {
+  const { tab, new: openNew } = useLocalSearchParams<{ tab?: string; new?: string }>();
+  if (tab === 'pregnancy') {
+    return (
+      <Screen back title={tr('pmem.title')} subtitle={tr('pmem.subtitle')} tool={false}>
+        <DiaryTabs value="pregnancy" />
+        <MemoriesView openNew={openNew === '1'} />
+      </Screen>
+    );
+  }
+  return <DiaryPages />;
+}
+
+function DiaryPages() {
   const t = useTheme();
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const moodsQ = useMoods(200);
@@ -60,6 +89,7 @@ export default function Diary() {
           {p.editingId ? <Button label={tr('dy.cancelEdit')} variant="ghost" full onPress={p.cancelEdit} testID="diary-cancel-edit" /> : null}
         </View>
       )}>
+      <DiaryTabs value="pages" />
       <Text accessibilityRole="text" style={[editorial, { color: t.colors.text }]} maxFontSizeMultiplier={typography.editorial.maxScale}>{tr('dy.tagline')}</Text>
 
       {/* Composeur : humeur d'abord, puis la page s'ouvre */}

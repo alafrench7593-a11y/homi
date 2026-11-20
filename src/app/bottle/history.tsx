@@ -18,6 +18,8 @@ import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { copyText } from '@/features/bottle';
 import { BottleStatsTiles } from '@/features/bottleStats';
 import { MorphTarget } from '@/motion/Morph';
+import { FeedingJournal } from '@/features/feeding/FeedingJournal';
+import { FeedingChildPicker, useFeedingChild } from '@/features/feeding/ui';
 import { useDeleteRow, useActiveSubject } from '@/lib/data/hooks';
 import { useBottleChildren, useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -30,7 +32,38 @@ import { radius, spacing } from '@/theme/tokens';
 
 const shortDay = (key: string) => formatDate(new Date(`${key}T12:00:00`), { weekday: 'short' });
 
+/**
+ * 75 / 83 / 84 : « Tout le journal » (tétées + biberons + repas) à côté de l'historique des biberons, même écran.
+ * Les enfants proposés sont ceux du suivi (tétées et repas compris), pas seulement ceux en âge du biberon.
+ */
+function ScopeSwitch({ scope, childId }: { scope: 'bottles' | 'all'; childId: string | null }) {
+  return (
+    <ChoiceGroup label={tr('fj.scope')} value={scope} testID="history-scope"
+      onChange={(v) => router.setParams({ scope: v === 'all' ? 'all' : '', ...(childId ? { child: childId } : {}) })}
+      options={[{ value: 'bottles', label: tr('fj.scopeBottles') }, { value: 'all', label: tr('fj.scopeAll') }]} />
+  );
+}
+
+function FeedingJournalScreen() {
+  const { children, child, setChild, loading } = useFeedingChild();
+  return (
+    <Screen back title={tr('fj.title')} subtitle={child ? tr('fj.subtitle', { name: child.first_name }) : undefined}
+      action={child ? { label: tr('fj.addFeed'), icon: 'plus', onPress: () => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: child.id } }), testID: 'fj-add' } : undefined}>
+      <ScopeSwitch scope="all" childId={child?.id ?? null} />
+      <FeedingChildPicker list={children} value={child?.id ?? null} onChange={setChild} />
+      {loading ? <Skeleton kind="list" rows={4} /> : child ? <FeedingJournal key={child.id} child={child} /> : (
+        <EmptyState icon="coffee" title={tr('u6.bottle_index.empty_title')} body={tr('u6.bottle_index.empty_body')} />
+      )}
+    </Screen>
+  );
+}
+
 export default function BottleHistory() {
+  const { scope } = useLocalSearchParams<{ scope?: string }>();
+  return scope === 'all' ? <FeedingJournalScreen /> : <BottlesOnlyHistory />;
+}
+
+function BottlesOnlyHistory() {
   const t = useTheme();
   const toast = useToast();
   const params = useLocalSearchParams<{ child?: string; m?: string; view?: string }>();
@@ -97,6 +130,7 @@ export default function BottleHistory() {
 
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xxs }}>
+      <ScopeSwitch scope="bottles" childId={childId} />
       {children && children.length > 1 && (
         <ChoiceGroup label={tr('bs.child_pick')} value={childId} onChange={(id) => router.setParams({ child: id })} testID="bottle-history-child"
           options={children.map((c) => ({ value: c.id, label: c.first_name }))} />

@@ -5,6 +5,7 @@
  * Données de la personne seulement ; aucun diagnostic.
  */
 import React, { useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, Skeleton } from '@/components/States';
@@ -69,8 +70,9 @@ export default function FeedingDifficulties() {
   const { children, child, setChild, loading } = useFeedingChild();
   const q = useFeedingIssues(child?.id ?? null);
   const feeds = useRecentFeeds(child?.id ?? null).data ?? [];
-  const questions = useConsultationQuestions('general');
-  const addQ = useAddQuestions('general');
+  // 81 : liste « consultante en lactation » (thème lactation de « Mes questions pour le rendez-vous »)
+  const questions = useConsultationQuestions('general', null, 'lactation');
+  const addQ = useAddQuestions('general', null, 'lactation');
   const [sheet, setSheet] = useState<{ issue: FeedingIssue | null } | null>(null);
   const list = useMemo(() => q.data ?? [], [q.data]);
   const days = useMemo(() => byDay(list, feeds), [list, feeds]);
@@ -104,10 +106,17 @@ export default function FeedingDifficulties() {
       <Card testID="bfi-questions">
         <Text weight="bold" accessibilityRole="header">{tr('bfi.q.title')}</Text>
         <Text variant="small" muted>{tr('bfi.q.intro')}</Text>
+        {(questions.data ?? []).length ? (
+          <View style={{ gap: 2 }} testID="bfi-q-list">
+            <Text variant="label">{tr('bfi.q.mine', { count: (questions.data ?? []).length })}</Text>
+            {(questions.data ?? []).slice(0, 6).map((x) => <Text key={x.id} variant="small" muted={x.done} style={{ textDecorationLine: x.done ? 'line-through' : 'none' }}>• {x.question}</Text>)}
+          </View>
+        ) : null}
+        {suggestions.length ? <Text variant="label">{tr('bfi.q.suggested')}</Text> : null}
         {suggestions.map((s) => <Text key={s} variant="small">• {s}</Text>)}
         <Row wrap>
           {suggestions.length ? <Button label={tr('bfi.q.add')} icon="plus" size="sm" loading={addQ.isPending} onPress={() => void addQuestions()} testID="bfi-q-add" /> : null}
-          <Button label={tr('bfi.q.open')} icon="list" size="sm" variant="secondary" onPress={() => router.push('/consult/questions')} testID="bfi-q-open" />
+          <Button label={tr('bfi.q.open')} icon="list" size="sm" variant="secondary" onPress={() => router.push('/consult/questions?theme=lactation')} testID="bfi-q-open" />
         </Row>
       </Card>
       <Button label={tr('bfi.feedsLink')} variant="ghost" icon="droplet" onPress={() => router.push(child ? { pathname: '/track/[kind]', params: { kind: 'breastfeed', child: child.id } } : '/track/breastfeed')} testID="bfi-feeds" />

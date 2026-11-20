@@ -4,7 +4,9 @@
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { BottleRelaysSection } from '@/features/feeding/BottleRelays';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
@@ -50,6 +52,8 @@ export default function NightRelay() {
   const [endHour, setEndHour] = useState('6');
   const [custom, setCustom] = useState<Record<number, string>>({});
   const [swap, setSwap] = useState<string | null>(null);
+  // 80 : relais des biberons (en tête quand on arrive depuis les biberons)
+  const bottlesFirst = useLocalSearchParams<{ focus?: string }>().focus === 'bottles';
 
   const chosen = order.length ? order : people.map((p) => p.id);
   const startIso = frToISO(start);
@@ -88,6 +92,7 @@ export default function NightRelay() {
         { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: tr('u2.nights.my_upcoming') },
         { icon: 'check-circle', value: String(upcoming.filter((x) => x.user_id === me && x.status === 'planned').length), label: tr('u2.nights.to_confirm') },
       ]} />
+      {bottlesFirst ? <BottleRelaysSection /> : null}
       {tonight ? (
         // Ce soir, en grand : qui se lève, à quelle heure ; confirmer ou proposer un échange en un geste
         <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
@@ -174,6 +179,8 @@ export default function NightRelay() {
           <Button label={tr('u2.nights.save_plan_short')} icon="calendar" full onPress={submit} loading={save.isPending} />
         </>
       ) : null}
+
+      {bottlesFirst ? null : <BottleRelaysSection />}
 
       <RequestSheet kind={swap ? 'swap_slot' : null} shiftId={swap} onClose={() => setSwap(null)} />
     </Screen>

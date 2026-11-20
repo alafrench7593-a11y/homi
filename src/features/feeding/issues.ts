@@ -61,6 +61,11 @@ export function suggestedQuestions(issues: FeedingIssue[], now: Date = new Date(
   return out;
 }
 
+/** 81 : questions de départ de la liste « consultante en lactation » (formulations ouvertes, sans diagnostic). */
+export function lactationSuggestions(): string[] {
+  return [tr('bfi.q.latch'), tr('bfi.q.positions'), tr('bfi.q.supply'), tr('bfi.q.engorgement'), tr('bfi.q.sleepy')];
+}
+
 /** Texte d'une difficulté (liste, historique) : type · sein · douleur. */
 export function issueLine(i: FeedingIssue): string {
   return [kindLabel(i.kind), i.side ? tr(`bfi.side.${i.side}` as TKey) : null, i.pain != null ? tr('bfi.painValue', { pain: i.pain }) : null].filter(Boolean).join(' · ');

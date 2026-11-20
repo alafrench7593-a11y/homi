@@ -15,7 +15,11 @@ export interface MilkItem {
   id: string; household_id: string; child_id: string | null; pumping_id: string | null; expressed_at: string; amount_ml: number;
   location: MilkLocation; thawed_at: string | null; use_by: string; status: MilkStatus; closed_at: string | null; note: string | null;
   created_by: string | null; created_at: string; updated_at: string; _pending?: boolean;
+  /** 72 : contenant (sachet, biberon, pot, autre) et étiquette facultatifs */
+  container?: MilkContainer | null; label?: string | null;
 }
+export type MilkContainer = 'bag' | 'bottle' | 'jar' | 'other';
+export const MILK_CONTAINERS: MilkContainer[] = ['bag', 'bottle', 'jar', 'other'];
 
 /** Durées du guide HOMI (heures), source ci-dessus. */
 export const SOURCED_KEEP_HOURS: Record<MilkLocation, number> = { room: 1, fridge: 48, freezer: 24 * 30 * 4 };
@@ -86,5 +90,35 @@ export function validateMilk(d: { amount: number | null; expressedAt: string | n
   if (d.amount == null || !Number.isInteger(d.amount) || d.amount < 1 || d.amount > 1000) return 'milk.err.amount';
   if (!d.expressedAt || Number.isNaN(Date.parse(d.expressedAt))) return 'milk.err.date';
   if (!d.useBy || Number.isNaN(Date.parse(d.useBy)) || Date.parse(d.useBy) <= Date.parse(d.expressedAt)) return 'milk.err.useBy';
+  return null;
+}
+
+// ---------------------------------------------------------------- 72 lots et contenants (séance de tire-lait)
+/** Partage d'une quantité en n contenants entiers (le reste va aux premiers) : 200 ml en 3 → 67, 67, 66. */
+export function splitAmount(total: number, n: number): number[] {
+  const k = Math.max(1, Math.min(10, Math.floor(n)));
+  if (!Number.isFinite(total) || total < k) return [];
+  const base = Math.floor(total / k);
+  const rest = total - base * k;
+  return Array.from({ length: k }, (_, i) => base + (i < rest ? 1 : 0));
+}
+
+/** Quantité d'une séance pas encore rangée (contenants rangés, utilisés ou jetés comptent tous). */
+export function pumpingRemaining(p: { id: string; amount_ml: number }, stock: Pick<MilkItem, 'pumping_id' | 'amount_ml' | 'id'>[], exceptId?: string | null): number {
+  const stored = stock.filter((s) => s.pumping_id === p.id && s.id !== exceptId).reduce((sum, s) => sum + s.amount_ml, 0);
+  return Math.max(0, p.amount_ml - stored);
+}
+
+/** Contenants d'une même séance : « lot » (le premier contenant donne la date). */
+export function lotsOf(stock: MilkItem[]): { pumping_id: string; items: MilkItem[]; ml: number }[] {
+  const map = new Map<string, MilkItem[]>();
+  for (const s of stock) if (s.pumping_id) map.set(s.pumping_id, [...(map.get(s.pumping_id) ?? []), s]);
+  return [...map].map(([pumping_id, items]) => ({ pumping_id, items: items.sort((a, b) => a.created_at.localeCompare(b.created_at)), ml: items.reduce((x, i) => x + i.amount_ml, 0) }));
+}
+
+/** Contrôle d'un partage : chaque contenant de 1 à 1000 ml, total dans la limite de la séance. */
+export function validateSplit(amounts: (number | null)[], max: number | null): 'milk.err.amount' | 'milk.err.split' | null {
+  if (!amounts.length || amounts.some((a) => a == null || !Number.isInteger(a) || a < 1 || a > 1000)) return 'milk.err.amount';
+  if (max != null && amounts.reduce<number>((s, a) => s + (a ?? 0), 0) > max) return 'milk.err.split';
   return null;
 }

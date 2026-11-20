@@ -31,8 +31,9 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteFood, useFoodEntries, useSaveFood, useTastings, useToggleFoodFavorite } from '@/lib/data/hooks-discoveries';
 import { DISCOVERY_SOURCES, FOODS, FOOD_BY_KEY, matchFoodKey, FOOD_CATEGORIES, type FoodCategory, type FoodDef } from '@/content/discoveries/foods';
 import {
-  ageInMonths, discoveredThisWeek, displayState, freeFood, ideasForAge, PREPARATIONS, progressByCategory, reactionAdvice, recipesWithTasted,
-  TEXTURES, topCategories, visibleHistory, type DisplayState, type FoodEntry, type FoodStatus, type ReactionSign, type Texture,
+  ageInMonths, discoveredThisWeek, displayState, freeFood, GRASPS, ideasForAge, METHODS, OUTCOMES, PREPARATIONS, progressByCategory, reactionAdvice, recipesWithTasted,
+  refusals, statusFromOutcome, TEXTURES, topCategories, visibleHistory, type DisplayState, type FoodEntry, type FoodStatus, type Grasp, type Method, type Outcome,
+  type ReactionSign, type Tasting, type Texture,
 } from '@/lib/domain/discoveries';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
@@ -49,6 +50,11 @@ const STATUSES: FoodStatus[] = ['not_yet', 'tasted', 'liked', 'refused'];
 const SIGNS: ReactionSign[] = ['breathing', 'swelling', 'vomiting', 'faint', 'hives', 'redness_mouth', 'digestive', 'other'];
 const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const day = (iso: string) => formatDate(`${iso}T12:00:00`, { day: 'numeric', month: 'long' });
+/** Ligne d'historique : statut, texture, mode DME, prise en main, issue, réaction (seulement ce qui a été noté). */
+const tastingLine = (h: Pick<Tasting, 'status' | 'texture' | 'reaction' | 'method' | 'grasp' | 'outcome'>) => [
+  h.outcome ? tr(`blw.outcome.${h.outcome}` as TKey) : tr(`dc.status.${h.status}` as TKey), h.texture ? tr(`dc.texture.${h.texture}` as TKey) : null,
+  h.method === 'blw' ? tr('blw.tag') : null, h.grasp ? tr(`blw.grasp.${h.grasp}` as TKey) : null, h.reaction ? tr('dc.reactionNoted') : null,
+].filter(Boolean).join(' · ');
 
 /** Clés de la 2e passe (fichiers passA.ts de src/i18n) ; repli sur une clé existante tant qu'elles ne sont pas branchées. */
 const RECENT_KEY = ['pa', 'dc', 'recent'].join('.');
@@ -56,8 +62,10 @@ const RECENT_HINT_KEY = ['pa', 'dc', 'recentHint'].join('.');
 
 export default function Discoveries() {
   const t = useTheme();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, mode, focus } = useLocalSearchParams<{ id: string; mode?: string; focus?: string }>();
   const child = useChild(id);
+  // 120 : arrivée en mode « diversification menée par l'enfant » (la fiche propose ce mode par défaut) ; 123 : refus en tête
+  const blwDefault = mode === 'blw';
   const childrenQ = useChildren();
   const membershipsQ = useMemberships();
   const isLoading = (membershipsQ.isLoading && !membershipsQ.data) || (childrenQ.isLoading && !childrenQ.data);
@@ -168,6 +176,9 @@ export default function Discoveries() {
       ]} />
       <Button label={tr('dc.react')} icon="alert-triangle" variant="secondary" onPress={() => setReacting(true)} testID="dc-react" />
 
+      {focus === 'refusals' ? <RefusalsSection tastings={tastings} name={name} onOpen={(k) => { const f = FOOD_BY_KEY[k]; if (f) openFood(f); }} /> : null}
+      {blwDefault ? <BlwJournal tastings={tastings} name={name} onOpen={(k) => { const f = FOOD_BY_KEY[k]; if (f) openFood(f); }} /> : null}
+
       {/* Cette semaine */}
       <SectionTitle title={tr('dc.week')} />
       {week.length ? (
@@ -261,7 +272,7 @@ export default function Discoveries() {
           {history.slice(0, premium ? 200 : 40).map((h) => (
             <View key={h.id} testID={`dc-h-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 40 }}>
               <Text variant="caption" muted style={{ width: 72 }}>{day(h.tasted_on)}</Text>
-              <Text style={{ flex: 1 }}>{h.food_name} · {tr(`dc.status.${h.status}` as TKey)}{h.texture ? ` · ${tr(`dc.texture.${h.texture}` as TKey)}` : ''}{h.reaction ? ` · ${tr('dc.reactionNoted')}` : ''}</Text>
+              <Text style={{ flex: 1 }}>{h.food_name} · {tastingLine(h)}</Text>
             </View>
           ))}
         </View>
@@ -270,13 +281,19 @@ export default function Discoveries() {
         <PremiumSection feature="diversification" name={name} preview={<Text variant="small">{tr('dc.historyMore', { count: tastings.length - history.length })}</Text>}><View /></PremiumSection>
       ) : null}
 
+      {focus === 'refusals' ? null : <RefusalsSection tastings={tastings} name={name} onOpen={(k) => { const f = FOOD_BY_KEY[k]; if (f) openFood(f); }} />}
+      {blwDefault ? null : <BlwJournal tastings={tastings} name={name} onOpen={(k) => { const f = FOOD_BY_KEY[k]; if (f) openFood(f); }} />}
+      {/* Repères de sécurité repris du guide HOMI sourcé (b03.ts : Santé publique France, HCSP) ; aucun conseil ajouté */}
+      <Banner tone="info" icon="info" title={tr('blw.safetyTitle')}>{tr('blw.safety')}</Banner>
+      <Button label={tr('blw.guide')} size="sm" variant="ghost" icon="book-open" onPress={() => router.push('/article/diversification-feculents-bebe')} testID="dc-blw-guide" />
+
       <View style={{ gap: 2 }}>
         <Text variant="caption" muted>{tr('dc.sources')}</Text>
         {(['spf', 'anses_miel', 'lait_cru', 'ameli_quincke'] as const).map((k) => <SourceLink key={k} s={DISCOVERY_SOURCES[k]} />)}
         <Text variant="caption" muted>{tr('dc.disclaimer')}</Text>
       </View>
 
-      <FoodSheet food={open} child={child} age={age} entry={open ? byKey.get(open.key) : undefined} entries={entries} tastings={tastings} recipes={recipes ?? []} premium={premium}
+      <FoodSheet blwDefault={blwDefault} food={open} child={child} age={age} entry={open ? byKey.get(open.key) : undefined} entries={entries} tastings={tastings} recipes={recipes ?? []} premium={premium}
         onClose={() => setOpen(null)} onDiscovered={(f) => { setOpen(null); setCelebrate(f); }} onQuota={() => access.showPreview(<Text variant="small">{tr('dc.quotaPreview', { name })}</Text>, { used: entries.length, quota: 15, unit: tr('dc.quotaUnit') })} />
       <ReactionSheet visible={reacting} child={child} entries={entries} onClose={() => setReacting(false)} />
       <Celebration food={celebrate} name={name} onDone={() => setCelebrate(null)} />
@@ -320,8 +337,8 @@ function SourceLink({ s }: { s: { label: string; url: string; published?: string
 }
 
 // ---------------------------------------------------------------- fiche d'un aliment
-function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premium, onClose, onDiscovered, onQuota }: {
-  food: FoodDef | null; entries: FoodEntry[]; child: { id: string; household_id: string; first_name: string; birth_date?: string | null }; age: number; entry?: FoodEntry; tastings: { id: string; food_key: string | null; tasted_on: string; status: string; texture: string | null; reaction: boolean }[];
+function FoodSheet({ blwDefault, food, child, age, entry, entries, tastings, recipes, premium, onClose, onDiscovered, onQuota }: {
+  blwDefault?: boolean; food: FoodDef | null; entries: FoodEntry[]; child: { id: string; household_id: string; first_name: string; birth_date?: string | null }; age: number; entry?: FoodEntry; tastings: Tasting[];
   recipes: Recipe[]; premium: boolean; onClose: () => void; onDiscovered: (f: FoodDef) => void; onQuota: () => void;
 }) {
   const t = useTheme();
@@ -337,8 +354,13 @@ function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premiu
   const [reaction, setReaction] = useState(false);
   const [rxNote, setRxNote] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  // 120 : mode de proposition, prise en main, issue (mangé / goûté / refusé)
+  const [method, setMethod] = useState<Method | null>(null);
+  const [grasp, setGrasp] = useState<Grasp | null>(null);
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
   useEffect(() => {
     if (!food) return;
+    setMethod(blwDefault ? 'blw' : null); setGrasp(null); setOutcome(null);
     setStatus(entry?.status && entry.status !== 'not_yet' ? entry.status : 'tasted');
     setDate(toFrDate(todayISO()));
     setTexture(entry?.texture ?? null); setPrep(entry?.preparation ?? null); setNote(entry?.note ?? '');
@@ -358,9 +380,10 @@ function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premiu
     if (iso && child.birth_date && iso < child.birth_date) return setErr(tr('u7.child.err.beforeBirth'));
     const wasNew = !entry || entry.status === 'not_yet';
     try {
-      await save.mutateAsync({ child, food: { key: food!.key, name: food!.name }, existing: entry ?? null, status, date: iso, texture, preparation: prep, note: note.trim() || null, reaction, reactionNote: reaction ? (rxNote.trim() || null) : null, log: status !== 'not_yet' });
+      const st = status === 'not_yet' ? status : statusFromOutcome(outcome, status);
+      await save.mutateAsync({ child, food: { key: food!.key, name: food!.name }, existing: entry ?? null, status: st, date: iso, texture, preparation: prep, note: note.trim() || null, reaction, reactionNote: reaction ? (rxNote.trim() || null) : null, log: st !== 'not_yet', method, grasp, outcome });
       haptic('success');
-      if (wasNew && (status === 'tasted' || status === 'liked')) onDiscovered(food!);
+      if (wasNew && (st === 'tasted' || st === 'liked')) onDiscovered(food!);
       else { toast(tr('dc.sheet.saved'), 'success'); onClose(); }
     } catch (e) {
       if (String((e as { hint?: string }).hint ?? (e as Error).message).includes('premium_required') || /Limite/.test((e as Error).message)) { onClose(); onQuota(); }
@@ -402,6 +425,16 @@ function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premiu
             <Row wrap>{TEXTURES.map((x) => <Chip key={x} label={tr(`dc.texture.${x}` as TKey)} selected={texture === x} onPress={() => setTexture(texture === x ? null : x)} testID={`dc-texture-${x}`} />)}</Row>
             <Text variant="label">{tr('dc.sheet.prep')}</Text>
             <Row wrap>{PREPARATIONS.map((x) => <Chip key={x} label={tr(`dc.prep.${x}` as TKey)} selected={prep === x} onPress={() => setPrep(prep === x ? null : x)} testID={`dc-prep-${x}`} />)}</Row>
+            <Text variant="label">{tr('blw.method')}</Text>
+            <Row wrap>{METHODS.map((m) => <Chip key={m} label={tr(`blw.m.${m}` as TKey)} selected={method === m} onPress={() => setMethod(method === m ? null : m)} testID={`dc-method-${m}`} />)}</Row>
+            {method === 'blw' ? (
+              <>
+                <Text variant="label">{tr('blw.graspLabel')}</Text>
+                <Row wrap>{GRASPS.map((g) => <Chip key={g} label={tr(`blw.grasp.${g}` as TKey)} selected={grasp === g} onPress={() => setGrasp(grasp === g ? null : g)} testID={`dc-grasp-${g}`} />)}</Row>
+              </>
+            ) : null}
+            <Text variant="label">{tr('blw.outcomeLabel')}</Text>
+            <Row wrap>{OUTCOMES.map((o) => <Chip key={o} label={tr(`blw.outcome.${o}` as TKey)} selected={outcome === o} onPress={() => { setOutcome(outcome === o ? null : o); if (o === 'refused' && outcome !== o) setStatus('refused'); }} testID={`dc-outcome-${o}`} />)}</Row>
             <Chip label={tr('dc.sheet.reaction')} icon="alert-circle" selected={reaction} onPress={() => setReaction(!reaction)} testID="dc-reaction" />
             {reaction ? <Field label={tr('dc.sheet.reactionNote')} value={rxNote} onChangeText={setRxNote} multiline maxLength={1000} hint={tr('dc.sheet.reactionHint')} testID="dc-reaction-note" /> : null}
             {reaction ? <ReactionAdvice signs={[]} name={child.first_name} /> : null}
@@ -414,7 +447,8 @@ function FoodSheet({ food, child, age, entry, entries, tastings, recipes, premiu
         {mine.length ? (
           <View style={{ gap: 2 }} testID="dc-sheet-history">
             <Text variant="small" weight="bold">{tr('dc.sheet.history')}</Text>
-            {mine.slice(0, premium ? 50 : 5).map((h) => <Text key={h.id} variant="caption" muted>{day(h.tasted_on)} · {tr(`dc.status.${h.status}` as TKey)}{h.texture ? ` · ${tr(`dc.texture.${h.texture}` as TKey)}` : ''}{h.reaction ? ` · ${tr('dc.reactionNoted')}` : ''}</Text>)}
+            {mine.length > 1 ? <Text variant="caption" muted testID="dc-sheet-counts">{tr('ref.counts', { offered: mine.length, refused: mine.filter((x) => x.status === 'refused').length })}</Text> : null}
+            {mine.slice(0, premium ? 50 : 5).map((h) => <Text key={h.id} variant="caption" muted>{day(h.tasted_on)} · {tastingLine(h)}</Text>)}
           </View>
         ) : null}
 
@@ -533,6 +567,42 @@ function Celebration({ food, name, onDone }: { food: FoodDef | null; name: strin
         <View style={{ padding: 10, borderRadius: 80, backgroundColor: 'rgba(255,255,255,0.75)' }}><FoodArt food={food} size={120} /></View>
         <Text weight="bold" center>{tr('dc.sheet.firstTime', { name, food: food.name })}</Text>
       </Animated.View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------- 123 refus notés (sans jugement)
+function RefusalsSection({ tastings, name, onOpen }: { tastings: Tasting[]; name: string; onOpen: (key: string) => void }) {
+  const list = refusals(tastings);
+  return (
+    <View style={{ gap: spacing.xs }} testID="dc-refusals">
+      <SectionTitle title={tr('ref.title')} />
+      <Text variant="caption" muted>{tr('ref.intro', { name })}</Text>
+      {list.length ? list.slice(0, 20).map((r) => (
+        <Tappable key={r.key} accessibilityRole="button" onPress={() => r.food_key && onOpen(r.food_key)} testID={`dc-refusal-${r.food_key ?? r.food_name}`}
+          style={{ minHeight: 48, justifyContent: 'center', gap: 2 }}>
+          <Text weight="bold">{r.food_name}</Text>
+          <Text variant="caption" muted>{[tr('ref.line', { offered: r.offered, refused: r.refused }), tr('ref.last', { date: day(r.lastRefused) }),
+            r.lastStatus !== 'refused' ? tr('ref.since', { status: tr(`dc.status.${r.lastStatus}` as TKey).toLowerCase(), date: day(r.lastOffered) }) : null].filter(Boolean).join(' · ')}</Text>
+        </Tappable>
+      )) : <Text variant="small" muted testID="dc-refusals-none">{tr('ref.none')}</Text>}
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------- 120 journal de diversification menée par l'enfant
+function BlwJournal({ tastings, name, onOpen }: { tastings: Tasting[]; name: string; onOpen: (key: string) => void }) {
+  const list = tastings.filter((x) => x.method === 'blw').sort((a, b) => b.tasted_on.localeCompare(a.tasted_on));
+  return (
+    <View style={{ gap: spacing.xs }} testID="dc-blw">
+      <SectionTitle title={tr('blw.title')} />
+      <Text variant="caption" muted>{tr('blw.intro', { name })}</Text>
+      {list.length ? list.slice(0, 20).map((h) => (
+        <Tappable key={h.id} accessibilityRole="button" onPress={() => h.food_key && onOpen(h.food_key)} testID={`dc-blw-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 44 }}>
+          <Text variant="caption" muted style={{ width: 72 }}>{day(h.tasted_on)}</Text>
+          <Text style={{ flex: 1 }}>{h.food_name} · {tastingLine(h)}</Text>
+        </Tappable>
+      )) : <Text variant="small" muted testID="dc-blw-none">{tr('blw.none')}</Text>}
     </View>
   );
 }

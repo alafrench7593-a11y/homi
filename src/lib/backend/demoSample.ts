@@ -7,6 +7,7 @@ import { seedChildcarePrep } from './demoChildcarePrep';
 import { seedAbsents } from './demoAbsents';
 import { seedFoyerTools } from './demoFoyerTools';
 import { seedPartiels2 } from './demoPartiels2';
+import { seedPartiels } from './demoPartiels';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -119,4 +120,6 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
   // Dépenses, animal et soins, portions préparées, lectures (outils du 28/11/2026)
   seedFoyerTools({ userId, hid, childId: lina, T });
   seedPartiels2({ userId, hid, babyId: lina, kidId: noe, T });
+  // Analyses, souvenir de grossesse, relais de biberons, tétées, DME et refus (numéros partiels du 29/11/2026)
+  seedPartiels({ userId, hid, childId: lina, T });
 }

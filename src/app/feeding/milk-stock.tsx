@@ -23,7 +23,8 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteMilk, useMilkReminders, useMilkStock, useRecentPumpings, useSaveMilk } from '@/lib/data/hooks-feeding';
 import { FeedingChildPicker, useFeedingChild } from '@/features/feeding/ui';
 import {
-  alertAt, defaultUseBy, fifo, freshness, KEEP_SOURCE, thaw, totals, unstoredPumpings, validateMilk, type MilkItem, type MilkLocation,
+  alertAt, defaultUseBy, fifo, freshness, KEEP_SOURCE, lotsOf, MILK_CONTAINERS, pumpingRemaining, splitAmount, thaw, totals, unstoredPumpings, validateMilk, validateSplit,
+  type MilkContainer, type MilkItem, type MilkLocation,
 } from '@/features/feeding/milkStock';
 
 const LOCS: MilkLocation[] = ['fridge', 'freezer', 'room'];
@@ -31,8 +32,10 @@ const SHORT = { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit
 const DAY = { day: 'numeric', month: 'short', year: 'numeric' } as const;
 const fmtBy = (i: Pick<MilkItem, 'use_by' | 'location'>) => formatDate(i.use_by, i.location === 'freezer' ? DAY : SHORT);
 
-function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, onAct }: {
+function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, remaining, onAct }: {
   item: MilkItem | null; visible: boolean; onClose: () => void; householdId: string; childId: string | null; fromPumping: { id: string; at: string; amount_ml: number } | null;
+  /** 72 : quantité de la séance pas encore rangée (contenants déjà notés déduits) */
+  remaining: number | null;
   onAct: (it: MilkItem, a: 'used' | 'discarded' | 'thaw') => Promise<void>;
 }) {
   const toast = useToast();
@@ -46,11 +49,18 @@ function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, 
   const [remind, setRemind] = useState(true);
   const [note, setNote] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  // 72 : une séance de tire-lait se range en un ou plusieurs contenants (sachet, biberon, pot…)
+  const [count, setCount] = useState(1);
+  const [parts, setParts] = useState<string[]>([]);
+  const [container, setContainer] = useState<MilkContainer | null>(null);
+  const [label, setLabel] = useState('');
+  const left = fromPumping ? remaining ?? fromPumping.amount_ml : null;
   React.useEffect(() => {
     if (!visible) return;
     const at = item?.expressed_at ?? fromPumping?.at ?? new Date().toISOString();
     const l = item?.location ?? 'fridge';
-    setAmount(item ? String(item.amount_ml) : fromPumping ? String(fromPumping.amount_ml) : '');
+    setCount(1); setParts([]); setContainer(item?.container ?? null); setLabel(item?.label ?? '');
+    setAmount(item ? String(item.amount_ml) : fromPumping ? String(remaining ?? fromPumping.amount_ml) : '');
     setWhen(whenOf(at)); setLoc(l); setUseBy(whenOf(item?.use_by ?? defaultUseBy(at, l))); setTouched(!!item);
     setNote(item?.note ?? ''); setErr(null); setRemind(true);
   }, [visible, item?.id, fromPumping?.id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -58,19 +68,44 @@ function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, 
   const expressedAt = whenToIso(when);
   // Date limite préremplie qui suit la date et le lieu tant qu'elle n'a pas été modifiée à la main
   const refill = (at: string | null, l: MilkLocation) => { if (!touched && at) setUseBy(whenOf(defaultUseBy(at, l))); };
+  const toMl = (v: string) => (/^\d{1,4}$/.test(v.trim()) ? Number(v.trim()) : null);
+  function pickCount(n: number) {
+    setCount(n);
+    const base = toMl(amount) ?? left ?? 0;
+    setParts(n > 1 ? splitAmount(base, n).map(String) : []);
+  }
   async function submit() {
-    const ml = /^\d{1,4}$/.test(amount.trim()) ? Number(amount.trim()) : null;
+    const ml = toMl(amount);
     const by = whenToIso(useBy);
-    const e = validateMilk({ amount: ml, expressedAt, useBy: by });
+    if (count > 1 && !item) return submitLot(by);
+    const e = validateMilk({ amount: ml, expressedAt, useBy: by }) ?? (left != null && !item ? validateSplit([ml], left) : null);
     if (e) return setErr(tr(e));
     const previous = item ? reminders.find((r) => r.deep_link === `/feeding/milk-stock?item=${item.id}`)?.id ?? null : null;
     const row: Partial<MilkItem> & { household_id: string } = {
       ...(item ?? {}), household_id: householdId, child_id: item?.child_id ?? childId, pumping_id: item?.pumping_id ?? fromPumping?.id ?? null,
-      expressed_at: expressedAt!, amount_ml: ml!, location: loc, use_by: by!, note: note.trim() || null,
+      expressed_at: expressedAt!, amount_ml: ml!, location: loc, use_by: by!, note: note.trim() || null, container, label: label.trim() || null,
     };
     try {
       const r = await save.mutateAsync({ row, reminder: { at: remind ? alertAt({ use_by: by!, location: loc }) : null, title: tr('milk.reminderTitle', { ml: ml! }), previousId: previous } });
       toast(r.queued ? tr('milk.savedOffline') : tr('milk.saved'), 'success'); onClose();
+    } catch (x) { toast(friendlyError(x), 'error'); }
+  }
+  /** Plusieurs contenants depuis la même séance : une ligne par contenant, même date et même lieu. */
+  async function submitLot(by: string | null) {
+    const amounts = parts.map(toMl);
+    const e = validateMilk({ amount: amounts[0] ?? null, expressedAt, useBy: by }) ?? validateSplit(amounts, left);
+    if (e) return setErr(tr(e));
+    try {
+      let queued = false;
+      for (const [i, ml] of amounts.entries()) {
+        const row: Partial<MilkItem> & { household_id: string } = {
+          household_id: householdId, child_id: childId, pumping_id: fromPumping?.id ?? null, expressed_at: expressedAt!, amount_ml: ml!, location: loc, use_by: by!,
+          note: note.trim() || null, container, label: label.trim() ? `${label.trim().slice(0, 34)} ${i + 1}` : null,
+        };
+        const r = await save.mutateAsync({ row, reminder: { at: remind ? alertAt({ use_by: by!, location: loc }) : null, title: tr('milk.reminderTitle', { ml: ml! }), previousId: null } });
+        if (r.queued) queued = true;
+      }
+      toast(queued ? tr('milk.savedOffline') : tr('milk.lotSaved', { count: amounts.length }), 'success'); onClose();
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
   return (
@@ -83,7 +118,26 @@ function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, 
         </Row>
       ) : null}
       {fromPumping ? <Banner tone="info" icon="link">{tr('milk.fromPumping', { ml: fromPumping.amount_ml, time: formatDate(fromPumping.at, SHORT) })}</Banner> : null}
-      <Field label={tr('milk.amount')} value={amount} onChangeText={setAmount} keyboardType="number-pad" suffix="ml" testID="milk-f-amount" />
+      {fromPumping && !item ? (
+        <View style={{ gap: spacing.xs }} testID="milk-f-split">
+          <Text variant="label">{tr('milk.containers')}</Text>
+          <Row wrap>{[1, 2, 3, 4].map((n) => <Chip key={n} label={String(n)} selected={count === n} onPress={() => pickCount(n)} testID={`milk-f-count-${n}`} />)}</Row>
+          {left != null && left !== fromPumping.amount_ml ? <Text variant="caption" muted>{tr('milk.leftToStore', { ml: left })}</Text> : null}
+        </View>
+      ) : null}
+      {count > 1 && !item ? (
+        <View style={{ gap: spacing.xs }}>
+          {parts.map((p, i) => (
+            <Field key={i} label={tr('milk.containerN', { n: i + 1 })} value={p} onChangeText={(v) => setParts((cur) => cur.map((x, j) => (j === i ? v : x)))} keyboardType="number-pad" suffix="ml" testID={`milk-f-part-${i}`} />
+          ))}
+          <Text variant="caption" muted testID="milk-f-split-total">{tr('milk.splitTotal', { ml: parts.reduce((s2, x) => s2 + (toMl(x) ?? 0), 0), max: left ?? 0 })}</Text>
+        </View>
+      ) : (
+        <Field label={tr('milk.amount')} value={amount} onChangeText={setAmount} keyboardType="number-pad" suffix="ml" testID="milk-f-amount" />
+      )}
+      <Text variant="label">{tr('milk.container')}</Text>
+      <Row wrap>{MILK_CONTAINERS.map((c) => <Chip key={c} label={tr(`milk.ct.${c}` as TKey)} selected={container === c} onPress={() => setContainer(container === c ? null : c)} testID={`milk-f-ct-${c}`} />)}</Row>
+      <Field label={tr('milk.label')} optional value={label} onChangeText={setLabel} maxLength={34} placeholder={tr('milk.labelPh')} testID="milk-f-label" />
       <WhenFields value={when} onChange={(v) => { setWhen(v); refill(whenToIso(v), loc); }} days="past" dateLabel={tr('milk.expressedOn')} testID="milk-f-when" />
       <Text variant="label">{tr('milk.location')}</Text>
       <Row wrap>{LOCS.map((l) => <Chip key={l} label={tr(`milk.loc.${l}` as TKey)} selected={loc === l} onPress={() => { setLoc(l); refill(expressedAt, l); }} testID={`milk-f-loc-${l}`} />)}</Row>
@@ -112,6 +166,9 @@ export default function MilkStock() {
   const closed = all.filter((x) => x.status !== 'stored').sort((a, b) => (b.closed_at ?? '').localeCompare(a.closed_at ?? ''));
   const tot = totals(stored);
   const waiting = unstoredPumpings(pumpings, all);
+  // 72 : séances rangées en partie (il reste du lait à ranger) et lots de plusieurs contenants
+  const partial = pumpings.filter((p) => !waiting.includes(p) && all.some((x) => x.pumping_id === p.id) && pumpingRemaining(p, all) > 0);
+  const lots = new Map(lotsOf(all).filter((l) => l.items.length > 1).map((l) => [l.pumping_id, l]));
   const now = new Date();
   const expired = stored.filter((x) => freshness(x, now) === 'expired');
   const soon = stored.filter((x) => freshness(x, now) === 'soon');
@@ -133,12 +190,16 @@ export default function MilkStock() {
     if (!(await confirm(tr('milk.delete'), tr('milk.deleteQ'), tr('milk.delete')))) return;
     try { await del.mutateAsync(it.id); toast(tr('milk.deleted'), 'success'); } catch (x) { toast(friendlyError(x), 'error'); }
   }
-  const label = (it: MilkItem) => tr('milk.rowTitle', { ml: it.amount_ml, loc: tr(`milk.loc.${it.location}` as TKey) });
+  const label = (it: MilkItem) => [tr('milk.rowTitle', { ml: it.amount_ml, loc: tr(`milk.loc.${it.location}` as TKey) }), it.container ? tr(`milk.ct.${it.container}` as TKey) : null, it.label].filter(Boolean).join(' · ');
+  const lotLine = (it: MilkItem) => {
+    const lot = it.pumping_id ? lots.get(it.pumping_id) : undefined;
+    return lot ? tr('milk.lotLine', { n: lot.items.findIndex((x) => x.id === it.id) + 1, count: lot.items.length, ml: lot.ml }) : null;
+  };
   const sub = (it: MilkItem) => {
     const f = freshness(it, now);
     return [tr('milk.expressed', { date: formatDate(it.expressed_at, SHORT) }), it.thawed_at ? tr('milk.thawedTag') : null,
       f === 'expired' ? tr('milk.expiredOn', { date: fmtBy(it) }) : f === 'soon' ? tr('milk.soonOn', { date: fmtBy(it) }) : tr('milk.until', { date: fmtBy(it) }),
-      it.pumping_id ? tr('milk.linked') : null, it._pending ? tr('milk.pending') : null].filter(Boolean).join(' · ');
+      lotLine(it) ?? (it.pumping_id ? tr('milk.linked') : null), it._pending ? tr('milk.pending') : null].filter(Boolean).join(' · ');
   };
   const first = stored.find((x) => freshness(x, now) !== 'expired') ?? null;
 
@@ -170,6 +231,14 @@ export default function MilkStock() {
           ))}
         </ListGroup>
       ) : null}
+      {partial.length ? (
+        <ListGroup title={tr('milk.partialTitle')} testID="milk-partial">
+          {partial.slice(0, 5).map((p) => (
+            <ListRow key={p.id} icon="droplet" title={tr('milk.partialRow', { ml: pumpingRemaining(p, all), total: p.amount_ml })} subtitle={formatDate(p.at, SHORT)}
+              right={<Button label={tr('milk.storeRest')} size="sm" variant="secondary" onPress={() => setSheet({ item: null, pumping: p })} testID={`milk-rest-${p.amount_ml}`} />} />
+          ))}
+        </ListGroup>
+      ) : null}
       {stored.length ? (
         <ListGroup title={tr('milk.stockTitle')} testID="milk-list">
           {stored.map((it, i) => (
@@ -196,6 +265,7 @@ export default function MilkStock() {
         </Row>
       </View>
       <ItemSheet item={sheet?.item ?? null} visible={!!sheet} onClose={() => setSheet(null)} householdId={hid} childId={child.id} fromPumping={sheet?.pumping ?? null}
+        remaining={sheet?.pumping ? pumpingRemaining(sheet.pumping, all) : null}
         onAct={(it, a) => (a === 'thaw' ? doThaw(it) : close(it, a))} />
     </Screen>
   );

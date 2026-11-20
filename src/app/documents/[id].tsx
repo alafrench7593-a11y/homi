@@ -409,6 +409,9 @@ export default function DocumentDetail() {
       {/* Actions */}
       <SectionTitle title={tr('docs.actions')} />
       <View style={{ gap: spacing.xs }}>
+        {['blood_test', 'exam_result', 'report', 'prenatal', 'pregnancy_report', 'postnatal'].includes(doc.category) ? (
+          <Button label={tr('lab.fromDocButton')} icon="activity" variant="secondary" onPress={() => router.push({ pathname: '/documents/labs', params: { doc: doc.id } })} full testID="doc-labs" />
+        ) : null}
         <Button label={tr('docs.export.one')} icon="share" variant="secondary" onPress={() => router.push(`/documents/export?ids=${doc.id}`)} full />
         {canEdit ? <Button label={doc.archived ? tr('docs.unarchive') : tr('docs.archive')} icon="archive" variant="secondary" onPress={() => patch({ archived: !doc.archived }, doc.archived ? tr('docs.unarchived') : tr('docs.archivedDone'))} full /> : null}
         {canEdit ? <Button label={tr('docs.delete.button')} icon="trash-2" variant="ghost" onPress={remove} full /> : null}

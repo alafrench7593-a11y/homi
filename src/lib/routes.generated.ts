@@ -104,6 +104,7 @@ export const APP_ROUTES: readonly string[] = [
   '/documents/[id]',
   '/documents/book',
   '/documents/export',
+  '/documents/labs',
   '/documents/scan',
   '/emergency',
   '/family',

@@ -29,6 +29,8 @@ export interface AbsentsCtx {
 
 export const PERSONAL_TABLES: Record<string, string> = {
   calm_modes: 'user_id', contractions: 'user_id', birth_plans: 'user_id', postpartum_care_logs: 'user_id', breastfeeding_issues: 'user_id',
+  // 29/11/2026 (20261129400100) : analyses et souvenirs de grossesse, strictement personnels
+  lab_results: 'user_id', pregnancy_memories: 'user_id',
 };
 
 const CATEGORY: Record<string, string> = { pickup: 'childcare', groceries: 'shopping', appointment: 'appointments', medicine: 'health', paper: 'admin', night_relay: 'childcare' };
@@ -47,6 +49,7 @@ export function createAbsents(c: AbsentsCtx) {
     if (table === 'checklists') return rows.filter(checklistVisible);
     if (table === 'checklist_items') return rows.filter((i) => { const l = T('checklists').find((x) => x.id === i.checklist_id); return !l || checklistVisible(l); });
     if (table === 'milk_stock') return rows.filter((r) => isParent(r.household_id, me));
+    if (table === 'bottle_relays') return rows.filter((r) => isParent(r.household_id, me));
     return null;
   }
   function checklistVisible(l: Row) {
@@ -79,7 +82,35 @@ export function createAbsents(c: AbsentsCtx) {
     if (table === 'milk_stock') {
       if (!isParent(r.household_id, me)) throw fail();
       if (!(Number.isInteger(r.amount_ml) && r.amount_ml >= 1 && r.amount_ml <= 1000) || Date.parse(r.use_by) <= Date.parse(r.expressed_at)) throw fail('23514');
+      // 72 : les contenants d'une séance ne dépassent pas la quantité tirée
+      if (r.pumping_id) {
+        const p = T('pumpings').find((x) => x.id === r.pumping_id && x.household_id === r.household_id);
+        if (!p) throw fail('22023');
+        const stored = T('milk_stock').filter((x) => x.pumping_id === r.pumping_id && x.id !== r.id).reduce((n, x) => n + Number(x.amount_ml), 0);
+        if (p.amount_ml != null && stored + r.amount_ml > p.amount_ml) throw fail('23514');
+      }
       r.status ??= 'stored'; r.closed_at ??= null; r.created_by = me ?? null; r.updated_at = c.nowIso();
+    }
+    if (table === 'bottle_relays') {
+      const child = T('children').find((k) => k.id === r.child_id && k.household_id === r.household_id);
+      if (!child || !isParent(r.household_id, me)) throw fail();
+      if (!isParent(r.household_id, r.assigned_to)) throw fail('22023');
+      r.status ??= 'planned'; r.given_at ??= null; r.bottle_id ??= null;
+      if ((r.status === 'given') !== !!r.given_at || (r.bottle_id && r.status !== 'given')) throw fail('23514');
+      r.created_by = me ?? null; r.updated_at = c.nowIso();
+    }
+    // Comme la base (created_by default auth.uid()) : sans autrice, un rendez-vous privé disparaissait de la démo
+    if (table === 'appointments') r.created_by ??= me ?? null;
+    if (table === 'meals' && Array.isArray(r.refused_foods) && r.refused_foods.some((f: string) => !(r.foods ?? []).includes(f))) throw fail('23514');
+    if (table === 'food_tastings' && r.outcome && (r.outcome === 'refused') !== (r.status === 'refused')) throw fail('23514');
+    if (table === 'lab_results') {
+      if (!String(r.name ?? '').trim() || typeof r.value !== 'number' || !Number.isFinite(r.value)) throw fail('23514');
+      r.name = String(r.name).trim(); r.updated_at = c.nowIso();
+    }
+    if (table === 'pregnancy_memories') {
+      if (!r.title && !r.body && !(r.photo_ids ?? []).length) throw fail('23514');
+      if ((r.photo_ids ?? []).some((id: string) => !T('documents').some((d) => d.id === id && d.uploaded_by === me && d.private_to_uploader))) throw fail();
+      r.updated_at = c.nowIso();
     }
     if (table === 'formula_changes') {
       const child = T('children').find((k) => k.id === r.child_id);
@@ -93,7 +124,7 @@ export function createAbsents(c: AbsentsCtx) {
     const me = c.me();
     if (table === 'couple_moments' || table === 'calm_requests') throw fail();
     if (table === 'checklists' && 'private_to_creator' in patch && r.created_by !== me) throw fail();
-    if (table === 'milk_stock' || table === 'formula_changes' || table === 'postpartum_care_logs') patch.updated_at = c.nowIso();
+    if (table === 'milk_stock' || table === 'formula_changes' || table === 'postpartum_care_logs' || table === 'bottle_relays' || table === 'lab_results' || table === 'pregnancy_memories') patch.updated_at = c.nowIso();
   }
   function filterRemove(table: string, rows: Row[]): Row[] {
     const me = c.me();

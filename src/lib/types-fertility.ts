@@ -99,7 +99,10 @@ export interface ConsultationQuestion {
   id: string; user_id: string; household_id: string | null; journey: FertilityJourney; child_id?: string | null;
   question: string; answer: string | null; done: boolean; shared: boolean; position: number;
   created_at: string; updated_at: string;
+  /** Thème d'une liste (29/11/2026) : questions postnatales (57), pour la consultante en lactation (81). */
+  theme?: QuestionTheme | null;
 }
+export type QuestionTheme = 'postnatal' | 'lactation';
 
 /** Contraception prise, oubliée ou changée : déclarée par la personne, jamais une recommandation. */
 export interface ContraceptionLog { id: string; user_id: string; logged_on: string; kind: string; label: string | null; note: string | null; created_at: string }

@@ -1936,7 +1936,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
       // Listes privées, moments, demandes : mêmes règles que la base (demoAbsents.ts)
-      if (['checklists', 'checklist_items', 'couple_moments', 'calm_requests', 'milk_stock'].includes(table)) rows = absents.filter(table, rows) ?? rows;
+      if (['checklists', 'checklist_items', 'couple_moments', 'calm_requests', 'milk_stock', 'bottle_relays'].includes(table)) rows = absents.filter(table, rows) ?? rows;
       for (const r of rows) absents.beforeUpdate(table, r, patch);
       // Comme 20261029000200 : activer l'historique de l'assistant = accord daté ; le désactiver l'efface
       if (table === 'privacy_settings' && 'ai_history_enabled' in patch) patch = { ...patch, ai_history_consented_at: patch.ai_history_enabled === true ? nowIso() : null };

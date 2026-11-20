@@ -12,7 +12,10 @@ import { useUserId } from '../auth';
 import { useArticles, useHouseholdId, useInvalidate, usePeriods, useProfile, useRows } from './hooks';
 import { avoidMargin, estimateCycle, projectFertileWindows } from '../domain/cycle';
 import type { Journey } from '../types';
-import type { ConsultationQuestion, ContraceptionMethod, FertilityJourney, FertilityObservation, IntercourseLog } from '../types-fertility';
+import type { ConsultationQuestion, ContraceptionMethod, FertilityJourney, FertilityObservation, IntercourseLog, QuestionTheme } from '../types-fertility';
+import { uuid } from '../uuid';
+import { useOfflineStore } from '../offline';
+import { withPending } from './hooks-birthCare';
 
 // ---------------------------------------------------------------- lectures
 export function useIntercourseLogs(limit = 120) {
@@ -31,11 +34,24 @@ export function useContraceptionMethods() {
 }
 
 /** Questions de la personne connectée pour un parcours (les questions partagées par d'autres ne sont pas mêlées). */
-export function useConsultationQuestions(journey: FertilityJourney, childId?: string | null) {
+/**
+ * Questions d'un parcours. Avec un thème (57 postnatal, 81 lactation) : seulement celles de ce thème ; `withUnthemed` y
+ * ajoute les questions sans thème du même parcours (les anciennes questions post-partum restent dans la liste postnatale).
+ * Une question ajoutée hors connexion s'affiche tout de suite (en file).
+ */
+export function useConsultationQuestions(journey: FertilityJourney, childId?: string | null, theme?: QuestionTheme | null, withUnthemed = false) {
   const userId = useUserId();
-  return useRows<ConsultationQuestion>(['consultation_questions', journey, childId ?? ''], userId ? {
+  const pending = useOfflineStore((s) => s.pending);
+  const q = useRows<ConsultationQuestion>(['consultation_questions', journey, childId ?? ''], userId ? {
     table: 'consultation_questions', filters: [eq('user_id', userId), eq('journey', journey), ...(childId ? [eq('child_id', childId)] : [])], order: [{ col: 'position' }, { col: 'created_at' }],
   } : null);
+  const data = useMemo(() => {
+    const rows = withPending(q.data, pending, 'consultation_questions', (r) => r.journey === journey && (!childId || r.child_id === childId))
+      ?.sort((a, b) => a.position - b.position || (a.created_at ?? '').localeCompare(b.created_at ?? ''));
+    if (!rows || !theme) return rows;
+    return rows.filter((r) => r.theme === theme || (withUnthemed && !r.theme));
+  }, [q.data, pending, journey, childId, theme, withUnthemed]);
+  return { ...q, data };
 }
 
 /** Articles de la bibliothèque liés à un parcours. */
@@ -96,12 +112,19 @@ export function useSaveContraceptionMethod() {
   });
 }
 
-export function useAddQuestions(journey: FertilityJourney, childId?: string | null) {
+/** Ajout (hors connexion compris : identifiant posé sur l'appareil, envoyé au retour du réseau, sans doublon). */
+export function useAddQuestions(journey: FertilityJourney, childId?: string | null, theme?: QuestionTheme | null) {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
-    mutationFn: (a: { questions: string[]; startPosition: number }) =>
-      backend.insert('consultation_questions', a.questions.map((question, i) => ({ user_id: userId, journey, question: question.slice(0, 300), position: a.startPosition + i, ...(childId ? { child_id: childId } : {}) }))),
+    mutationFn: async (a: { questions: string[]; startPosition: number }) => {
+      let queued = false;
+      for (const [i, question] of a.questions.entries()) {
+        const row = { id: uuid(), user_id: userId, journey, question: question.slice(0, 300), position: a.startPosition + i, done: false, shared: false, answer: null, ...(childId ? { child_id: childId } : {}), ...(theme ? { theme } : {}) };
+        if ((await insertOrQueue('consultation_questions', row, { conflict: 'id' })) === 'queued') queued = true;
+      }
+      return { queued };
+    },
     onSuccess: () => inv('consultation_questions'),
   });
 }

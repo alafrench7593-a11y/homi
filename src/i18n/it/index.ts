@@ -97,3 +97,4 @@ export { absents1 } from './absents1';
 export { foyer28 } from './foyer28';
 export { partiels2 } from './partiels2';
 export { aura } from './aura';
+export { partiels1 } from './partiels1';

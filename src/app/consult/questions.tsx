@@ -11,16 +11,20 @@ import { Text } from '@/components/ui';
 import { useChild } from '@/lib/data/hooks';
 import { t as tr } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
+import { lactationSuggestions } from '@/features/feeding/issues';
 
 export default function ConsultQuestions() {
-  const { child: childId, for: scope } = useLocalSearchParams<{ child?: string; for?: string }>();
+  const { child: childId, for: scope, theme: themeParam } = useLocalSearchParams<{ child?: string; for?: string; theme?: string }>();
   const child = useChild(typeof childId === 'string' ? childId : null);
-  const journey = child ? 'child' : scope === 'pregnancy' ? 'pregnancy' : 'general';
-  const subtitle = child ? child.first_name : scope === 'pregnancy' ? tr('cq.pregnancy') : tr('cq.me');
+  // 57 / 81 : listes à thème (questions postnatales, questions pour la consultante en lactation)
+  const theme = themeParam === 'postnatal' || themeParam === 'lactation' ? themeParam : null;
+  const journey = theme === 'postnatal' ? 'postpartum' : child ? 'child' : scope === 'pregnancy' ? 'pregnancy' : 'general';
+  const subtitle = theme ? tr(`cq.theme.${theme}`) : child ? child.first_name : scope === 'pregnancy' ? tr('cq.pregnancy') : tr('cq.me');
   return (
     <Screen back title={toolName('consult_questions')} subtitle={subtitle}>
       <Text muted>{tr('cq.intro')}</Text>
-      <ConsultationChecklist journey={journey} childId={child?.id ?? null} />
+      <ConsultationChecklist journey={journey} childId={theme ? null : child?.id ?? null} theme={theme} withUnthemed={theme === 'postnatal'}
+        suggestions={theme === 'lactation' ? lactationSuggestions() : undefined} testID="cq-list" />
     </Screen>
   );
 }
