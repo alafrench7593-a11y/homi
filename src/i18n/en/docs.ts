@@ -35,6 +35,7 @@ export const docs: Messages<typeof fr> = {
   'docs.cat.photo': 'Photo',
   'docs.cat.other': 'Other',
   'docs.cat.custom': 'Custom category',
+  'docs.cat.childcare': 'Childcare (contracts)',
   'docs.group.health': 'Health',
   'docs.group.pregnancy': 'Pregnancy and maternity',
   'docs.group.child': 'Children',

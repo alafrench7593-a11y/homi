@@ -33,6 +33,7 @@ export const docs = {
   'docs.cat.photo': 'Photo',
   'docs.cat.other': 'Autre',
   'docs.cat.custom': 'Catégorie personnalisée',
+  'docs.cat.childcare': 'Garde (contrats)',
   'docs.group.health': 'Santé',
   'docs.group.pregnancy': 'Grossesse et maternité',
   'docs.group.child': 'Enfants',

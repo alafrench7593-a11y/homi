@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, Card, Field, Text } from '@/components/ui';
+import { Button, Card, Field, ListGroup, ListRow, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -65,6 +65,7 @@ export default function MyCareScreen() {
                   <Button label={tr('nn.home.journal')} icon="book-open" variant="secondary" onPress={() => router.push(`/garde/${l.child!.id}` as never)} testID="care-open-journal" />
                   {l.photos_allowed ? <Button label={tr('nn.photo.take')} icon="camera" variant="secondary" onPress={() => router.push(`/garde/${l.child!.id}/photo` as never)} testID="care-open-photo" /> : null}
                   <Button label={tr('nn.msg.title')} icon="message-circle" variant="secondary" onPress={() => router.push(`/garde/${l.child!.id}/messages` as never)} testID="care-open-messages" />
+                  <Button label={tr('gp.nanny.hours')} icon="clock" variant="secondary" onPress={() => router.push(`/garde/prep/heures?child=${l.child!.id}` as never)} testID="care-open-hours" />
                 </View>
               </View>
             </Card>
@@ -84,6 +85,12 @@ export default function MyCareScreen() {
                   onPress={() => router.push(`/garde/${k.id}` as never)} testID={`care-parent-${k.id}`} />
               ))}
             </Card>
+          ) : null}
+          {myKids.length ? (
+            // Parents seulement : outils d'avant la garde (choisir, comparer, budget, planning, heures, absences)
+            <ListGroup>
+              <ListRow icon="clipboard" title={tr('gp.home.link')} subtitle={tr('gp.home.linkSub')} onPress={() => router.push('/garde/prep' as never)} testID="care-open-prep" />
+            </ListGroup>
           ) : null}
           {!active.length && !pending.length && !myKids.length ? (
             <EmptyState icon="users" title={tr('nn.home.emptyTitle')} body={tr('nn.home.emptyBody')} />

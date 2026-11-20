@@ -82,7 +82,7 @@ export default function ScanScreen() {
   // Informations
   // Ouvert depuis « Papiers de la famille » : titre, catégorie et enfant déjà remplis
   const [title, setTitle] = useState(typeof titleParam === 'string' ? titleParam.slice(0, 120) : '');
-  const [category, setCategory] = useState<DocCategory>(catParam === 'admin' ? 'admin' : 'other');
+  const [category, setCategory] = useState<DocCategory>(catParam === 'admin' || catParam === 'childcare' ? catParam : 'other');
   const [custom, setCustom] = useState('');
   const [suggested, setSuggested] = useState<DocCategory | null>(null);
   const [subject, setSubject] = useState<Subject>(typeof childParam === 'string' && childParam ? { kind: 'child', id: childParam } : { kind: 'me' });
