@@ -49,7 +49,7 @@ version de l'application ni redéploiement** : `update public.credit_settings se
 | — | — | Les crédits **achetés n'expirent pas** (aucune règle ne les fait expirer). |
 | `grant.premium` | `1000` | Octroi mensuel Premium : **un compte par payeur**, partagé avec le second adulte déjà inclus dans Premium. |
 | `grant.family` | `1500` | Octroi mensuel Famille : **solde commun du foyer** (compte rattaché au foyer). |
-| `grant.trial` | `50` | Pendant l'essai gratuit de 3 jours : 50 crédits ; le total mensuel est accordé à la conversion (RENEWAL). *Choix de l'agent, à valider.* |
+| `grant.trial` | `0` | Pendant l'essai gratuit de 3 jours : aucun crédit d'IA (décision de la propriétaire, 20/11/2026) ; le total mensuel est accordé à la conversion (RENEWAL). |
 | `grant.dedupe_hours` | `12` | Un second octroi de même formule dans ce délai est ignoré (PRODUCT_CHANGE suivi d'un RENEWAL pour la même montée). |
 | `packs` | `{"homi_credits_300":300,"homi_credits_800":800,"homi_credits_2000":2000}` | Crédits versés par pack. |
 | `rule.purchase_requires_subscription` | `true` | L'application ne propose les packs qu'avec un abonnement actif. Le serveur, lui, **crédite toujours** un achat payé (au compte de l'acheteur), utilisable dès qu'il y a un abonnement. |
@@ -158,7 +158,7 @@ HOMI IA » sur « Mes crédits » (aucune IA appelée, crédits de démonstratio
 |---|---|---|
 | C1 | Compte sans abonnement › « Mes crédits » | « Les crédits font partie de HOMI Premium » ; aucun pack ; assistant : `premium_required` |
 | C2 | Achat Premium mensuel (sans essai) | `credit_ledger` : `monthly_grant` 1 000 ; « Mes crédits » : 1 000 mensuels, renouvellement = échéance |
-| C3 | Achat avec essai 3 jours | 50 crédits ; à la conversion (RENEWAL) : 1 000, ligne `expire` du reste |
+| C3 | Achat avec essai 3 jours | 0 crédit ; à la conversion (RENEWAL) : 1 000, ligne `expire` du reste |
 | C4 | Question à l'assistant | Réserve puis `debit` 1 ; « Utilisés ce mois-ci » = 1 |
 | C5 | Question en mode avion au milieu de la réponse | Aucun `debit` ; `release` (`stream_cut`) ; solde inchangé |
 | C6 | Message de détresse (« je veux mourir ») avec solde 0 | Réponse de sécurité immédiate, **aucune** ligne dans le grand livre |

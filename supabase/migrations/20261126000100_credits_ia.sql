@@ -94,7 +94,7 @@ insert into public.credit_settings (key, value, description) values
   ('cost.community_summary', '1', 'Résumé ou traduction d''une discussion.'),
   ('grant.premium', '1000', 'Crédits mensuels de Premium (compte du payeur, partagé avec le second adulte).'),
   ('grant.family', '1500', 'Crédits mensuels de Famille (solde commun des adultes du foyer).'),
-  ('grant.trial', '50', 'Crédits pendant l''essai gratuit (le total mensuel est accordé à la conversion).'),
+  ('grant.trial', '0', 'Crédits pendant l''essai gratuit : aucun (décision du 20/11/2026 ; l''essai ouvre les outils, pas l''IA).'),
   ('grant.dedupe_hours', '12', 'Un second octroi de même formule dans ce délai est ignoré (PRODUCT_CHANGE suivi d''un RENEWAL).'),
   ('packs', '{"homi_credits_300": 300, "homi_credits_800": 800, "homi_credits_2000": 2000}', 'Packs consommables : identifiant de produit → crédits.'),
   ('rule.consume_order', '"monthly_first"', 'monthly_first (défaut) ou purchased_first.'),
@@ -438,7 +438,7 @@ begin
   if exists (select 1 from public.credit_ledger where idempotency_key = p_idempotency_key) then
     return jsonb_build_object('ok', true, 'replay', true, 'monthly_remaining', a.monthly_balance);
   end if;
-  v_allow := case when p_trial then public._credit_int('grant.trial', 50)
+  v_allow := case when p_trial then public._credit_int('grant.trial', 0)
                   else public._credit_int('grant.' || p_tier, case when p_tier = 'family' then 1500 else 1000 end) end;
   -- PRODUCT_CHANGE suivi d'un RENEWAL pour la même montée de formule : un seul octroi
   if not p_trial and a.period_start is not null and a.period_start > now() - make_interval(hours => public._credit_int('grant.dedupe_hours', 12))

@@ -119,9 +119,15 @@ select public.credits_maintenance() ->> 'expired_reservations' as mx \gset
 select tests.ok(:mx >= 1 and (select status from public.credit_reservations where id = :'rp3') = 'expired',
   'maintenance : les réserves orphelines de tous les comptes sont restituées');
 
--- ================================================================ ordre mensuel → acheté (essai : 50 crédits)
+-- ================================================================ essai : aucun crédit par défaut (décision du 20/11/2026)
+select tests.ok((select value from public.credit_settings where key = 'grant.trial') = '0',
+  'essai : aucun crédit d''IA par défaut (l''essai ouvre les outils, pas l''IA)');
+-- Le scénario d'ordre mensuel → acheté ci-dessous règle l'essai à 50 le temps du test, puis remet 0
+update public.credit_settings set value = '50' where key = 'grant.trial';
+-- ================================================================ ordre mensuel → acheté (essai réglé à 50 crédits)
 select tests.ok((public.credits_grant_monthly(:'TT', 'premium', now() + interval '3 days', true, 'grant:tom:trial', 'revenuecat') ->> 'monthly_remaining')::int = 50,
   'essai : 50 crédits (le total est accordé à la conversion)');
+update public.credit_settings set value = '0' where key = 'grant.trial';
 select public.credits_purchase(:'TT', 'homi_credits_300', 'tx-tom-1') ->> 'credited' as cr1 \gset
 select public.credits_purchase(:'TT', 'homi_credits_300', 'tx-tom-1') ->> 'replay' as cr2 \gset
 select tests.ok(:cr1 = 300 and :'cr2'::boolean
