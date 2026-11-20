@@ -27,7 +27,7 @@ import { spacing } from '@/theme/tokens';
 
 const dShort = (d: string) => formatDate(d, { day: 'numeric', month: 'short' });
 
-function BatchEditor({ visible, onClose, hid, initial, used }: { visible: boolean; onClose: () => void; hid: string; initial: PortionBatch | null; used: number }) {
+function BatchEditor({ visible, onClose, onSaved, hid, initial, used }: { visible: boolean; onClose: () => void; onSaved?: () => void; hid: string; initial: PortionBatch | null; used: number }) {
   const toast = useToast();
   const save = useSaveBatch();
   const kids = (useChildren().data ?? []).filter((c) => c.household_id === hid && !c.archived);
@@ -74,6 +74,7 @@ function BatchEditor({ visible, onClose, hid, initial, used }: { visible: boolea
     try {
       const r = await save.mutateAsync({ id: initial?.id, household_id: hid, child_id: child, label: label.trim().slice(0, 80), recipe_slug: slug, portions_total: n, prepared_on: p, storage, use_by: limit, note: note.trim() || null });
       toast(tr(r.queued ? 'pt.savedOffline' : 'pt.saved'), 'success');
+      onSaved?.(); // ajout CONFIRMÉ : le logo des repas réagit (rebond)
       onClose();
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
@@ -119,6 +120,7 @@ function BatchEditor({ visible, onClose, hid, initial, used }: { visible: boolea
 
 export default function Portions() {
   const toast = useToast();
+  const [added, setAdded] = useState(0);
   const { hid, parent, loading } = useIsHouseholdParent();
   const batches = usePortionBatches(parent ? hid : null);
   const usesQ = usePortionUses(parent ? hid : null);
@@ -175,7 +177,7 @@ export default function Portions() {
     );
   };
   return (
-    <Screen back title={tr('pt.title')} subtitle={tr('pt.sub')} action={{ label: tr('pt.add'), icon: 'plus', onPress: () => { setEditing(null); setOpen(true); }, testID: 'pt-add' }}>
+    <Screen back toolPlay={added} title={tr('pt.title')} subtitle={tr('pt.sub')} action={{ label: tr('pt.add'), icon: 'plus', onPress: () => { setEditing(null); setOpen(true); }, testID: 'pt-add' }}>
       {alerts.map((b) => (
         <Banner key={b.id} tone={expiryStatus(b.use_by, today) === 'expired' ? 'warning' : 'info'} icon="clock" title={b.label}>
           <Text variant="small" testID={`pt-alert-${b.id}`}>{tr(`pt.alert.${expiryStatus(b.use_by, today)}` as TKey, { date: dShort(b.use_by!), count: portionsLeft(b, uses) })}</Text>
@@ -185,7 +187,7 @@ export default function Portions() {
         : <EmptyState icon="box" title={tr('pt.empty.title')} body={tr('pt.empty.body')} action={{ label: tr('pt.add'), icon: 'plus', onPress: () => { setEditing(null); setOpen(true); } }} />}
       {finished.length ? <ListGroup title={tr('pt.finished')}><View style={{ gap: spacing.md, padding: spacing.sm }}>{finished.slice(0, 10).map((b) => batchCard(b, true))}</View></ListGroup> : null}
       <Text variant="caption" muted>{tr('pt.notice')}</Text>
-      <BatchEditor visible={open} onClose={() => setOpen(false)} hid={hid} initial={editing} used={editing ? usedOf(editing) : 0} />
+      <BatchEditor visible={open} onClose={() => setOpen(false)} onSaved={() => setAdded((n) => n + 1)} hid={hid} initial={editing} used={editing ? usedOf(editing) : 0} />
     </Screen>
   );
 }

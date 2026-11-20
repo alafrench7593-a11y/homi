@@ -71,6 +71,10 @@ interface ScreenProps {
    * son défilement est publié (`useScreenReorderScroll`) pour le défilement automatique aux bords.
    */
   reorder?: boolean;
+  /** Minuteur de l'outil en cours (tétée, biberon…) : le logo de l'en-tête le montre (anneau qui tourne, famille « ring »). */
+  toolRunning?: boolean;
+  /** Augmente après une action CONFIRMÉE (tâche faite, repas ajouté, mesure enregistrée) : le logo de l'en-tête rejoue sa famille (coche, rebond, courbe). */
+  toolPlay?: number;
 }
 
 /** Routes des écrans d'onglet (barre du bas) : arrivée en fondu bref, sans déplacement. */
@@ -103,7 +107,7 @@ export function nextInnerScrolled(cur: boolean, e: { y: number; contentH: number
   return e.y > 2;
 }
 
-export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action, reorder = false }: ScreenProps) {
+export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action, reorder = false, toolRunning = false, toolPlay = 0 }: ScreenProps) {
   const t = useTheme();
   const reduce = useReduceMotion();
   const insets = useSafeAreaInsets();
@@ -197,7 +201,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
     >
       {/* v5 : fond uni — plus de lueur derrière le titre */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }} testID={tool ? `miniapp-${tool.id}` : undefined}>
-        {origin ? <ArrivalGlyph origin={origin} size={glyphSize - 8} /> : tool ? <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={glyphSize} play={1} /> : null}
+        {origin ? <ArrivalGlyph origin={origin} size={glyphSize - 8} /> : tool ? <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={glyphSize} play={1 + toolPlay} active={toolRunning} /> : null}
         <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
           <Text variant="title" accessibilityRole="header" style={[titleStyle, NO_HYPHENS]} testID="screen-title">{title}</Text>
           {subtitle ? <Text muted>{subtitle}</Text> : null}

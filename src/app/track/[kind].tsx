@@ -416,6 +416,7 @@ function TrackEntry() {
     <Screen
       back
       title={tr(editing ? 'u7.track.titleEdit' : 'u7.track.titleAdd', { kind: KIND_META[kind].label.toLowerCase() })}
+      toolRunning={!!timerStart}
       subtitle={child ? tr('u7.track.forName', { name: child.first_name }) : undefined}
       footer={
         <View style={{ gap: spacing.xs }}>

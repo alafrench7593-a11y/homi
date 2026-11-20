@@ -41,6 +41,8 @@ export default function FamilyHome() {
   const toast = useToast();
   const saveTask = useSaveTask();
   const [quick, setQuick] = useState('');
+  // tâche CONFIRMÉE par le serveur : la coche du logo de l'en-tête se dessine (jamais avant la réponse)
+  const [confirmed, setConfirmed] = useState(0);
   const tipsOff = useUiStore((s) => s.overloadTipsOff);
   const setTipsOff = useUiStore((s) => s.setOverloadTipsOff);
   const [filter, setFilter] = useState<Filter>('today');
@@ -89,7 +91,7 @@ export default function FamilyHome() {
   }, [tasks, day, me, labelOf, partner]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function quickSave(id: string, input: Parameters<typeof saveTask.mutateAsync>[0]['input'], message: string) {
-    try { await saveTask.mutateAsync({ id, input }); haptic('success'); toast(message); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await saveTask.mutateAsync({ id, input }); haptic('success'); toast(message); if (input.status === 'done') setConfirmed((n) => n + 1); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function quickAdd() {
     const title = quick.trim();
@@ -109,7 +111,7 @@ export default function FamilyHome() {
   }
 
   return (
-    <Screen back title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')} right={<IconButton icon="plus" label={tr('u2.fam.new_task')} onPress={() => setCreating(true)} />}
+    <Screen back toolPlay={confirmed} title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')} right={<IconButton icon="plus" label={tr('u2.fam.new_task')} onPress={() => setCreating(true)} />}
       action={{ label: tr('u2.fam.add_task'), icon: 'plus', onPress: () => setCreating(true), testID: 'family-main-action' }}>
       {(() => {
         const todo = tasks.filter((x) => x.status === 'todo');
