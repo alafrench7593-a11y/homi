@@ -122,11 +122,20 @@ let profileCount = 0;
 export function setTourProfileCount(n: number) { profileCount = n; }
 export const tourProfileCount = () => profileCount;
 
-/** Lance (ou reprend) la visite et emmène sur l'écran de l'étape courante : Réglages, feuille de l'avatar, accueil. */
+/** Écran affiché (tenu à jour par la superposition) : une reprise sur l'écran même de l'étape ne navigue pas. */
+let shownPath = '';
+export function setTourShownPath(p: string) { shownPath = p; }
+
+/**
+ * Lance (ou reprend) la visite et emmène sur l'écran de l'étape courante : Réglages, feuille de l'avatar, accueil.
+ * Reprise depuis la carte de l'accueil pour une étape de l'accueil : aucune navigation (rien à recharger, la découpe
+ * se pose tout de suite).
+ */
 export function startTour() {
   tourDispatch({ type: 'start' });
   const st = useTourStore.getState();
   const p = st.owner ? st.byUser[st.owner] : null;
   const step = TOUR_STEPS[p?.step ?? 0];
-  router.navigate((step?.goTo ?? '/') as never);
+  const to = step?.goTo ?? '/';
+  if (to !== shownPath) router.navigate(to as never);
 }

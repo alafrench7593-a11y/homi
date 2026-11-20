@@ -40,7 +40,7 @@ import {
   bubblePlacement, emergencyRecent, holeFor, isEmergencyPath, isTabPath, overlayActive, rectVisible, stepAnchors, stepOnScreen, TOUR_LENGTH, TOUR_STEPS, unionRect,
   type GestureHint, type Rect, type TourStep,
 } from './model';
-import { lastEmergencyCall, tourDispatch, tourEvent, tourProfileCount, useTourProgress, useTourStore } from './store';
+import { lastEmergencyCall, setTourShownPath, tourDispatch, tourEvent, tourProfileCount, useTourProgress, useTourStore } from './store';
 import { ToolHintBubble } from './ToolHint';
 import { TourHand } from './TourHand';
 import { useScreenOpen } from './TourEntry';
@@ -118,6 +118,7 @@ export function TourHost() {
   // ---- événements réels : navigation, catégorie ouverte, formulaire refermé
   const formOpen = useRef(false);
   useEffect(() => {
+    setTourShownPath(pathname);
     tourEvent({ type: 'route', path: pathname });
     const cat = /^\/tools\/([^/]+)$/.exec(pathname);
     if (cat) tourEvent({ type: 'categoryOpened', id: cat[1] });

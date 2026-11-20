@@ -140,6 +140,9 @@ def skip_swipe_reduce(b):
         pg.mouse.move(b0['x'] + 300 - i * 15, y); pg.wait_for_timeout(16)
     mid = pg.locator('[data-testid="intro-page-1"]').first.bounding_box()
     R['la_page_suit_le_doigt'] = bool(mid) and -140 < mid['x'] < -40
+    # le doigt s'arrête avant de se lever (aucun lancer) : sous le tiers de la largeur, la page revient
+    for _ in range(6):
+        pg.mouse.move(b0['x'] + 300 - 105, y); pg.wait_for_timeout(40)
     pg.mouse.up(); pg.wait_for_timeout(700)
     R['petit_geste_revient'] = page_on_screen(pg, 1)
     # « Découvrir sans compte » → accueil de la démonstration
