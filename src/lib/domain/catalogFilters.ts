@@ -24,12 +24,18 @@ export function flattenCatalog(tools: CatalogTool[]): CatalogTool[] {
  * Entrées « à découvrir » : outils (et leurs fonctions nommées) qu'aucun profil du foyer n'ouvre encore. Elles
  * s'ouvrent sur leur fiche, dont l'action mène à « Modifier mon parcours » (ajouter l'enfant, la grossesse, le parcours).
  */
+/** Adresse réelle de l'outil (pour son statut Premium), calculée dans sa première portée avec un profil fictif. */
+function realPath(def: (typeof CATEGORY_TOOLS)[number]): string {
+  const href = def.href({ scope: def.scopes[0], childId: 'x', babyId: 'x', pregnancyId: 'x', postpartum: true }) ?? '/journeys';
+  return href.split(/[?#]/)[0].replace('/(tabs)', '') || '/';
+}
+
 export function lockedEntries(reachable: Set<string>): CatalogTool[] {
   const out: CatalogTool[] = [];
   for (const def of [...CATEGORY_TOOLS, ...REAL_TOOLS.filter((d) => d.category === 'community')]) {
     const base: CatalogTool = {
       id: def.id, key: def.id, category: def.category, theme: def.theme, icon: def.icon, label: tr(toolLabelKey(def.id)), sub: tMaybe(toolDescKey(def.id)) || undefined,
-      href: '/journeys', profiles: toolProfiles(def), free: isFreeRoute('/journeys'), universal: !!def.universal, also: [], subs: [], fns: [], locked: true,
+      href: '/journeys', profiles: toolProfiles(def), free: isFreeRoute(realPath(def)), universal: !!def.universal, also: [], subs: [], fns: [], locked: true,
     };
     if (!reachable.has(def.id)) out.push(base);
     for (const s of TOOL_FNS[def.id] ?? []) {

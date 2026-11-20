@@ -54,7 +54,7 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
   const { tool } = e;
   const preview = toolPreview(tool);
   const problem = toolProblem(tool);
-  const isTool = tool.category !== 'account' && !tool.urgent;
+  const isTool = tool.category !== 'account' && !tool.urgent && !tool.locked;
   const everyone = tool.profiles.length >= TOOL_PROFILES.length - 1;
   return (
     <GlassSheet visible={!!entry} onClose={onClose} title={tool.label}>

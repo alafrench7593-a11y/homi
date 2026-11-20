@@ -1,10 +1,11 @@
 """
 Onboarding v2 « première ouverture immersive » (navigateur réel, démonstration sans compte) :
- - parcourt les 8 temps (ouverture, situation, besoins + foyer + enfant, répartition AU GESTE, démonstration,
-   synthèse + accords, révélation, Premium) depuis « Découvrir sans compte » (/welcome) puis /onboarding ;
- - vérifie : bouton d'ouverture actionnable en moins de 2,5 s, reprise après rechargement (brouillon), cartes
-   glissées à la souris (geste réel, Gesture Handler), réponses enregistrées (profiles.onboarding_answers de la démo),
-   « Voir les formules » ET « Continuer sans Premium » visibles, retour à l'accueil ;
+ - parcourt les 6 ÉTAPES (20/11/2026 : profil, quotidien, enfants, alimentation, priorités, tableau de bord calculé
+   par le moteur + accords, révélation), puis Premium, depuis « Découvrir sans compte » (/welcome) puis /onboarding ;
+ - vérifie : tutoiement, réponse obligatoire à l'étape 1, choix multiple, âge en un geste et jumeaux proposés, reprise
+   après rechargement (brouillon), alimentation demandée pour un nourrisson, tableau de bord avec raisons (moteur réel),
+   réponses v3 enregistrées (profiles.onboarding_answers de la démo), invitation de l'autre parent proposée,
+   « Voir les formules » ET « Continuer sans Premium » visibles, retour à l'accueil personnalisé ;
  - détecteur de débordement (e2e/audit_ux_detect.js) à chaque temps ;
  - captures clair et sombre à 390×844 et 320×568 dans $ONB_SHOTS (défaut /tmp/onb/shots) + une vidéo webm du parcours
    (390×844, clair : e2e/onboarding_immersif_video.js, Playwright Node) ; un passage « Réduire les animations » vérifie
@@ -110,156 +111,128 @@ def flow(b, w, h, scheme, main=False, premium_on=False):
     if premium_on:
         # Abonnement (ou essai) déjà actif : pas d'écran Premium, la visite guidée est proposée juste après la révélation
         pg.evaluate(PREMIUM_ON)
-    # ---------------------------------------------------------------- 1. ouverture
+    # ---------------------------------------------------------------- ouverture
     t0 = time.time()
     pg.goto(B + '/onboarding')
     tid(pg, 'onb-start').wait_for(state='visible', timeout=20000)
     if main:
-        # actionnable vite : le bouton est là bien avant la fin du logo (mesuré depuis la navigation)
-        R['1_ouverture_actionnable_moins_2_5s'] = (time.time() - t0) < 2.5 + 1.5  # marge de chargement du paquet web
-        pg.wait_for_timeout(250); pg.screenshot(path=f'{SHOTS}/{tag}-01a-ouverture-debut.png')
+        R['0_ouverture_actionnable_moins_2_5s'] = (time.time() - t0) < 2.5 + 1.5  # marge de chargement du paquet web
     pg.wait_for_timeout(2300)
-    shot(pg, '01-ouverture', tag)
+    shot(pg, '00-ouverture', tag)
     if main:
-        R['1_titre_visible'] = pg.get_by_role('heading', name='Bienvenue chez vous').is_visible()
-        R['1_bouton_dans_ecran'] = in_view(pg, tid(pg, 'onb-start'))
-    # 320 px : appui IMMÉDIAT pendant l'entrée de l'étape (cause du contenu coupé à gauche : défilement horizontal parasite)
+        R['0_titre_visible'] = pg.get_by_role('heading', name='Bienvenue chez toi').is_visible()
+        R['0_bouton_dans_ecran'] = in_view(pg, tid(pg, 'onb-start'))
     tid(pg, 'onb-start').click(); pg.wait_for_timeout(60 if w == 320 else 700)
-    # ---------------------------------------------------------------- 2. situation
+    # ---------------------------------------------------------------- 1. profil (plusieurs réponses)
     if main:
         tid(pg, 'onb-next').click(); pg.wait_for_timeout(400)
-        R['2_situation_obligatoire'] = 'Choisissez au moins une situation.' in pg.inner_text('body')
-    tid(pg, 'onb-sit-baby').click(); pg.wait_for_timeout(200)
-    tid(pg, 'onb-sit-cycle').click(); pg.wait_for_timeout(500)
-    tid(pg, 'onb-goal-avoid').click(); pg.wait_for_timeout(400)
+        R['1_reponse_obligatoire'] = 'Choisis au moins une réponse.' in pg.inner_text('body')
+        R['1_titre_tutoiement'] = 'Pour commencer, parle-nous un peu de toi' in pg.inner_text('body')
+        R['1_progression_etape_1_sur_6'] = 'Étape 1 sur 6' in (tid(pg, 'onb-progress').get_attribute('aria-label') or '')
+    tid(pg, 'onb-tag-new_baby').click(); pg.wait_for_timeout(200)
+    tid(pg, 'onb-tag-kids').click(); pg.wait_for_timeout(200)
     if main:
-        R['2_consequence_espaces'] = 'Santé' in tid(pg, 'onb-spaces').inner_text() and 'Bébé' in tid(pg, 'onb-spaces').inner_text()
-        R['2_selection_annoncee'] = tid(pg, 'onb-sit-baby').get_attribute('aria-checked') == 'true'
-    shot(pg, '02-situation', tag)
-    nxt(pg)
-    # ---------------------------------------------------------------- 3. besoins
-    tid(pg, 'onb-need-sleep').click(); pg.wait_for_timeout(150)
-    tid(pg, 'onb-need-mental_load').click(); pg.wait_for_timeout(600)
-    if main:
-        eff = tid(pg, 'onb-needs-effect').inner_text()
-        R['3_consequence_outils'] = 'Mis en avant' in eff and len(eff.strip().split('\n')) >= 3
-    shot(pg, '03a-besoins', tag)
-    nxt(pg)
-    tid(pg, 'onb-sharing-couple').click(); pg.wait_for_timeout(200)
-    tid(pg, 'onb-helper-daycare').click(); pg.wait_for_timeout(200)
-    pg.get_by_label(re.compile('^Votre prénom')).first.fill('Camille'); pg.wait_for_timeout(500)
-    if main:
-        R['3_cercle_du_foyer'] = 'Camille' in tid(pg, 'onb-home-circle').inner_text() and 'Crèche' in tid(pg, 'onb-home-circle').inner_text()
-        R['3_consequence_foyer'] = 'missions' in tid(pg, 'onb-home-effect').inner_text()
+        R['1_choix_multiple'] = tid(pg, 'onb-tag-new_baby').get_attribute('aria-checked') == 'true' and tid(pg, 'onb-tag-kids').get_attribute('aria-checked') == 'true'
+    pg.get_by_label(re.compile('^Ton prénom')).first.fill('Camille'); pg.wait_for_timeout(300)
     pg.keyboard.press('Tab'); pg.wait_for_timeout(300)
-    shot(pg, '03b-foyer', tag)
+    shot(pg, '01-profil', tag)
     nxt(pg)
-    # enfant (le parcours « bébé » l'exige)
+    # ---------------------------------------------------------------- 2. quotidien (aucun droit déduit)
+    tid(pg, 'onb-house-partner').click(); pg.wait_for_timeout(200)
+    tid(pg, 'onb-house-invite').click(); pg.wait_for_timeout(300)
+    if main:
+        R['2_aucun_droit_deduit_annonce'] = 'aucun accès' in pg.inner_text('body')
+    shot(pg, '02-quotidien', tag)
+    nxt(pg)
+    # ---------------------------------------------------------------- 3. enfants (âge en un geste, deux enfants)
     pg.get_by_label(re.compile('^Prénom ou surnom')).first.fill('Lina')
-    pg.get_by_label(re.compile('^Date de naissance')).first.fill('12/03/2026'); pg.wait_for_timeout(600)
-    shot(pg, '03c-enfant', tag)
+    tid(pg, 'onb-age-0-3').click(); pg.wait_for_timeout(300)
+    tid(pg, 'onb-child-add').click(); pg.wait_for_timeout(400)
+    pg.get_by_label(re.compile('^Prénom ou surnom')).nth(1).fill('Noé')
+    tid(pg, 'onb-age-1-72').click(); pg.wait_for_timeout(500)
+    if main:
+        R['3_jumeaux_proposes'] = pg.locator('[data-testid="onb-twins-1"]').count() == 1
+    shot(pg, '03-enfants', tag)
+    # version gratuite : un seul enfant (limite du serveur) → le second est retiré avant de continuer
+    pg.get_by_role('button', name='Retirer').last.click(); pg.wait_for_timeout(400)
     if main:
         # ------------------------------------------------------------ reprise après rechargement
         pg.wait_for_timeout(900)
         pg.reload(); pg.wait_for_timeout(5000)
-        body = pg.inner_text('body')
-        R['reprise_etape_enfant'] = 'Votre enfant' in body
-        R['reprise_saisie'] = pg.get_by_label(re.compile('^Prénom ou surnom')).first.input_value() == 'Lina'
-        R['reprise_progression_temps3'] = 'Temps 3 sur 8' in (tid(pg, 'onb-progress').get_attribute('aria-label') or '')
+        R['reprise_etape_enfants'] = pg.get_by_label(re.compile('^Prénom ou surnom')).first.input_value() == 'Lina'
+        R['reprise_progression_etape_3'] = 'Étape 3 sur 6' in (tid(pg, 'onb-progress').get_attribute('aria-label') or '')
     nxt(pg)
-    # ---------------------------------------------------------------- 4. répartition au geste
-    tid(pg, 'onb-deck').wait_for(state='visible', timeout=5000)
-    first = pg.locator('[data-testid^="onb-card-"]').first.get_attribute('data-testid')
-    drag_card(pg, -w * 0.45)
-    if main or w == 320:
-        pg.screenshot(path=f'{SHOTS}/{tag}-04a-geste-en-cours.png')
-    pg.mouse.up(); pg.wait_for_timeout(900)
+    # ---------------------------------------------------------------- 4. alimentation (nourrisson)
     if main:
-        R['4_carte_glissee_vers_vous'] = tid(pg, 'onb-zone-count-me').inner_text().strip() == '1'
-        R['4_carte_suivante'] = pg.locator('[data-testid^="onb-card-"]').first.get_attribute('data-testid') != first
-    # glisser à droite, puis relâcher trop tôt (retour), puis boutons accessibles
-    drag_card(pg, w * 0.45); pg.mouse.up(); pg.wait_for_timeout(900)
-    if main:
-        R['4_carte_glissee_vers_autre_parent'] = tid(pg, 'onb-zone-count-other').inner_text().strip() == '1'
-        drag_card(pg, w * 0.08); pg.mouse.up(); pg.wait_for_timeout(700)
-        R['4_glisser_court_revient'] = tid(pg, 'onb-zone-count-me').inner_text().strip() == '1' and tid(pg, 'onb-zone-count-other').inner_text().strip() == '1'
-    shot(pg, '04b-repartition', tag)
-    for _ in range(4):
-        if pg.locator('[data-testid="onb-assign-left"]').count():
-            tid(pg, 'onb-assign-left').click(); pg.wait_for_timeout(500)
-    if main:
-        R['4_tout_reparti'] = tid(pg, 'onb-split-done').is_visible()
-    shot(pg, '04c-reparti', tag)
+        R['4_question_alimentation'] = 'Comment nourris-tu actuellement ton bébé ?' in pg.inner_text('body')
+    tid(pg, 'onb-feed-breast').click(); pg.wait_for_timeout(300)
+    shot(pg, '04-alimentation', tag)
     nxt(pg)
-    # ---------------------------------------------------------------- 5. démonstration
-    pg.wait_for_timeout(2200)
-    if main:
-        R['5_vraies_tuiles'] = pg.locator('[data-testid="onb-tile-bottles"]').count() == 1
-        R['5_agenda_reel'] = pg.locator('[data-testid^="today-row-demo-"]').count() >= 3
-        R['5_exemple_signale'] = 'Exemple' in pg.inner_text('body')
-    shot(pg, '05-demonstration', tag)
+    # ---------------------------------------------------------------- 5. priorités
+    tid(pg, 'onb-prio-sleep').click(); pg.wait_for_timeout(150)
+    tid(pg, 'onb-prio-tasks').click(); pg.wait_for_timeout(150)
+    tid(pg, 'onb-prio-childcare_days').click(); pg.wait_for_timeout(300)
+    shot(pg, '05-priorites', tag)
     nxt(pg)
-    # ---------------------------------------------------------------- 6. synthèse + accords
+    # ---------------------------------------------------------------- 6. tableau de bord (moteur réel) + accords
+    pg.wait_for_timeout(600)
     if main:
-        R['6_objectif'] = tid(pg, 'onb-plan-goal').inner_text().strip() != ''
-        R['6_trois_outils'] = len([l for l in tid(pg, 'onb-plan-tools').inner_text().split('\n') if l.strip()]) >= 6
-    rem = pg.locator('[data-testid^="onb-rem-"]')
-    if rem.count():
-        rem.first.click(); pg.wait_for_timeout(300)
-    shot(pg, '06a-synthese', tag)
-    nxt(pg)
-    shot(pg, '06b-accords', tag)
-    # Démonstration : l'âge et les CGU n'ont pas été demandés (comme un compte Apple / Google)
+        dash = tid(pg, 'onb-dashboard').inner_text()
+        R['6_tableau_de_bord_avec_raisons'] = 'Parce que' in dash and 'Allaitement' in dash
+        R['6_raison_allaitement'] = 'Parce que vous allaitez' in dash
+    shot(pg, '06a-tableau-de-bord', tag)
     for label in ['J’ai 18 ans ou plus', 'J’accepte les conditions d’utilisation et la politique de confidentialité']:
         box = pg.get_by_role('checkbox', name=label)
         if box.count() and box.first.get_attribute('aria-checked') != 'true':
             box.first.click(); pg.wait_for_timeout(200)
     tid(pg, 'onb-finish').click()
-    # ---------------------------------------------------------------- 7. révélation
+    # ---------------------------------------------------------------- 6. révélation : opérations réelles + outils et raisons
     pg.wait_for_timeout(500)
-    if main:
-        pg.screenshot(path=f'{SHOTS}/{tag}-07a-revelation-en-cours.png')
-    tid(pg, 'onb-reveal-next').wait_for(state='visible', timeout=20000)
+    try:
+        tid(pg, 'onb-reveal-next').wait_for(state='visible', timeout=20000)
+    except Exception:
+        pg.screenshot(path=f'{SHOTS}/{tag}-06z-blocage.png')
+        errs.append(f'{tag} révélation bloquée : ' + pg.inner_text('body')[-600:])
+        raise
     pg.wait_for_timeout(900)
     if main:
         lines = tid(pg, 'onb-reveal-lines').inner_text()
-        R['7_lignes_reelles'] = 'foyer est créé' in lines and 'enregistrées' in lines
-        R['7_titre_prenom'] = 'Camille, votre foyer est prêt' in pg.inner_text('body')
-        R['7_premiere_action_proposee'] = tid(pg, 'onb-first-action').is_visible()
-    shot(pg, '07-revelation', tag)
+        R['6_lignes_reelles'] = 'foyer est créé' in lines and 'enregistrées' in lines and '1 enfant ajouté' in lines
+        R['6_titre_prenom'] = 'Camille, ton foyer est prêt' in pg.inner_text('body')
+        R['6_outils_et_raisons'] = 'Parce que' in tid(pg, 'onb-reveal-tools').inner_text()
+        R['6_inviter_l_autre_parent'] = pg.locator('[data-testid="onb-invite"]').count() >= 1
+    shot(pg, '06b-revelation', tag)
     tid(pg, 'onb-reveal-next').click(); pg.wait_for_timeout(1200)
-    # ---------------------------------------------------------------- 8. Premium
+    # ---------------------------------------------------------------- Premium
     if not premium_on:
         if main:
-            R['8_ecran_premium'] = tid(pg, 'onb-premium').is_visible()
-            R['8_voir_formules_visible'] = in_view(pg, tid(pg, 'onb-premium-see'))
-            R['8_continuer_sans_premium_visible'] = in_view(pg, tid(pg, 'onb-premium-skip'))
-            # réponses enregistrées côté backend (démonstration : base locale persistée)
-            R['sauvegarde_onboarding_answers'] = pg.evaluate("""() => Object.keys(localStorage).some((k) => { const v = localStorage.getItem(k) || ''; return v.includes('"onboarding_answers":{') && v.includes('"onboarding_version":2'); })""")
-        shot(pg, '08-premium', tag)
+            R['premium_ecran'] = tid(pg, 'onb-premium').is_visible()
+            R['premium_voir_formules_visible'] = in_view(pg, tid(pg, 'onb-premium-see'))
+            R['premium_continuer_sans_visible'] = in_view(pg, tid(pg, 'onb-premium-skip'))
+            R['sauvegarde_onboarding_answers_v3'] = pg.evaluate("""() => Object.keys(localStorage).some((k) => { const v = localStorage.getItem(k) || ''; return v.includes('"onboarding_answers":{') && v.includes('"onboarding_version":3') && v.includes('"feeding":"breast"'); })""")
+        shot(pg, '07-premium', tag)
         tid(pg, 'onb-premium-skip').click(); pg.wait_for_timeout(3000)
         if main:
-            R['8_continuer_ramene_accueil'] = '/onboarding' not in pg.url
-            # Sans Premium, l'accueil est verrouillé : la visite n'y est pas lancée, elle est gardée pour plus tard
-            R['9_sans_premium_visite_gardee_pour_plus_tard'] = pg.evaluate("""() => { const v = JSON.parse(localStorage.getItem('homi.tour') || '{}'); return Object.values((v.state || {}).byUser || {}).some((p) => p.status === 'offered'); }""")
+            R['premium_continuer_ramene_accueil'] = '/onboarding' not in pg.url
+            R['visite_gardee_pour_plus_tard'] = pg.evaluate("""() => { const v = JSON.parse(localStorage.getItem('homi.tour') || '{}'); return Object.values((v.state || {}).byUser || {}).some((p) => p.status === 'offered'); }""")
             pg.goto(B + '/'); pg.wait_for_timeout(4000)
             R['termine_ne_revoit_pas_onboarding'] = '/onboarding' not in pg.url
         ctx.close()
         return
-    # ---------------------------------------------------------------- 9. visite guidée proposée (après la révélation et Premium)
-    R[f'9_{tag}_visite_proposee'] = tid(pg, 'onb-tour').is_visible() and pg.locator('[data-testid="onb-premium"]').count() == 0
-    R[f'9_{tag}_faire_la_visite_visible'] = in_view(pg, tid(pg, 'onb-tour-start')) and 'Faire la visite (2 min)' in tid(pg, 'onb-tour-start').inner_text()
-    R[f'9_{tag}_plus_tard_visible'] = in_view(pg, tid(pg, 'onb-tour-later'))
-    R[f'9_{tag}_plus_de_keynote'] = pg.locator('[data-testid="discover"]').count() == 0
-    shot(pg, '09-visite-proposee', tag)
+    # ---------------------------------------------------------------- visite guidée proposée (après la révélation et Premium)
+    R[f'visite_{tag}_proposee'] = tid(pg, 'onb-tour').is_visible() and pg.locator('[data-testid="onb-premium"]').count() == 0
+    R[f'visite_{tag}_faire_la_visite_visible'] = in_view(pg, tid(pg, 'onb-tour-start')) and 'Faire la visite (2 min)' in tid(pg, 'onb-tour-start').inner_text()
+    R[f'visite_{tag}_plus_tard_visible'] = in_view(pg, tid(pg, 'onb-tour-later'))
+    shot(pg, '08-visite-proposee', tag)
     if w == 320:
         tid(pg, 'onb-tour-start').click(); pg.wait_for_timeout(3500)
-        R[f'9_{tag}_faire_la_visite_lance_l_etape_1'] = '/onboarding' not in pg.url and tid(pg, 'tour-progress').is_visible() and tid(pg, 'tour-progress').inner_text().strip() == '1 sur 7'
-        pg.screenshot(path=f'{SHOTS}/{tag}-10-visite-etape-1.png')  # accueil : rangée d'avatars défilante, hors détecteur de l'onboarding
+        R[f'visite_{tag}_lance_l_etape_1'] = '/onboarding' not in pg.url and tid(pg, 'tour-progress').is_visible() and tid(pg, 'tour-progress').inner_text().strip() == '1 sur 7'
     else:
         tid(pg, 'onb-tour-later').click(); pg.wait_for_timeout(3000)
-        R[f'9_{tag}_plus_tard_carte_accueil'] = '/onboarding' not in pg.url and tid(pg, 'tour-resume').is_visible() and 'Faire la visite guidée' in tid(pg, 'tour-resume').inner_text()
-        pg.screenshot(path=f'{SHOTS}/{tag}-10-carte-visite-accueil.png')  # accueil : rangée d'avatars défilante, hors détecteur de l'onboarding
+        R[f'visite_{tag}_plus_tard_carte_accueil'] = '/onboarding' not in pg.url and tid(pg, 'tour-resume').is_visible()
+        # l'accueil personnalisé suit : « Pour toi aujourd'hui » avec ses raisons
+        R[f'accueil_{tag}_pour_toi'] = tid(pg, 'home-for-you').is_visible() and 'Parce que' in tid(pg, 'home-for-you').inner_text()
+        pg.screenshot(path=f'{SHOTS}/{tag}-09-accueil-apres-onboarding.png')
     ctx.close()
 
 
@@ -270,7 +243,7 @@ def reduced(b):
     tid(pg, 'onb-start').wait_for(state='visible', timeout=20000)
     pg.wait_for_timeout(150)
     R['reduire_animations_titre_pose'] = pg.evaluate("""() => {
-      const h = [...document.querySelectorAll('[role="heading"]')].find((e) => (e.textContent || '').includes('Bienvenue chez vous'));
+      const h = [...document.querySelectorAll('[role="heading"]')].find((e) => (e.textContent || '').includes('Bienvenue chez toi'));
       let o = 1, e = h; while (e && e.nodeType === 1) { o *= parseFloat(getComputedStyle(e).opacity || '1'); e = e.parentElement; } return !!h && o > 0.99;
     }""")
     pg.screenshot(path=f'{SHOTS}/390x844-light-reduire-animations-ouverture.png')
