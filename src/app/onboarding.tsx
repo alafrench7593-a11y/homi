@@ -1,16 +1,15 @@
 /**
- * Première ouverture — onboarding v2 « immersif » (19/11/2026), en 8 temps :
- *  1 Ouverture (logo HOMI, titre, action immédiate) · 2 Situation · 3 Besoins + foyer (+ formulaires grossesse /
- *  enfants si le parcours l'exige) · 4 « Qui s'en occupe ? » (geste) · 5 Démonstration (vrais composants, données
- *  d'exemple) · 6 Synthèse calculée + rappels, puis accords · 7 Révélation (opérations réelles) · 8 Premium (sauté si
- *  déjà abonné·e), puis la proposition de VISITE GUIDÉE dans l'application réelle (« Faire la visite (2 min) » /
- *  « Plus tard » ; jamais pour un compte qui n'est que nounou) — elle remplace la keynote « Découvrir HOMI », qui reste
- *  dans Réglages comme présentation des outils.
- * Conservé de la v1 : prénom, parcours (bodyJourney / childJourneyType / planChange / runOps), grossesse et enfants
- * (createPregnancy / createChild + validations, sans doublon en cas de nouvel essai), rappels suggérés + autorisation
- * des notifications, accords (CONSENT_ROWS, LEGAL_VERSIONS, données de santé obligatoires), brouillon local ET profil
- * avec reprise, ensureHousehold, `onboarding_completed`. Les réponses (situation, besoins, foyer, répartition,
- * recommandations) sont enregistrées dans `profiles.onboarding_answers` (version 2).
+ * Première ouverture — onboarding v3 en 6 ÉTAPES (20/11/2026, demande de la propriétaire ; tutoiement dans ce parcours) :
+ *  1 « Pour commencer, parle-nous un peu de toi » (plusieurs réponses) · 2 « Qui fait partie de ton quotidien ? » ·
+ *  3 enfants et grossesse (tout facultatif ; jumeaux : même date proposée) · 4 alimentation du nourrisson (seulement
+ *  s'il y en a un) · 5 « Qu'aimerais-tu simplifier avec HOMI ? » · 6 ton tableau de bord personnalisé : aperçu calculé
+ *  par le moteur réel (src/lib/personalization), accords, puis la RÉVÉLATION (opérations réelles + outils choisis et
+ *  leurs raisons), l'écran Premium (sauté si déjà abonné·e) et la proposition de visite guidée.
+ * Conservé de la v2 : ouverture (logo), prénom, création du foyer, de la grossesse et des enfants (createPregnancy /
+ * createChild, sans doublon en cas de nouvel essai), parcours (planChange / runOps), accords (données de santé
+ * obligatoires), brouillon local ET profil avec reprise (anciens brouillons v1/v2 repris à l'étape équivalente),
+ * `onboarding_completed`. Les réponses sont enregistrées dans `profiles.onboarding_answers` (version 3) et RELUES par
+ * le moteur ; elles se modifient ensuite dans « Modifier mon parcours » (src/app/journeys/answers.tsx).
  * Les comptes qui ont terminé ne passent plus ici (src/app/index.tsx).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -25,27 +24,21 @@ import { useDemoInset } from '@/components/demoInset';
 import { useUserId } from '@/lib/auth';
 import { backend, eq, isDemo } from '@/lib/backend';
 import { ensureHousehold, usePremium } from '@/lib/data/hooks';
-import { requestPermission } from '@/lib/notifications';
 import { runOps } from '@/lib/journeys/manager';
 import { bodyJourney, childJourneyType, closeOps, planChange, type JourneyRow } from '@/lib/journeys/model';
 import { addDays, todayISO } from '@/lib/domain/dates';
-import { reminderSuggestions } from '@/lib/domain/journeys';
 import type { ConsentPurpose } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
 import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft, type OnboardingStep } from '@/lib/onboardingDraft';
-import {
-  answersPayload, emptyAnswers, interestsFor, journeysFor, needsChildrenForm, needsPregnancyForm, ONBOARDING_VERSION, personalize, situationsFromJourneys,
-  splitDeck, type OnboardingAnswers,
-} from '@/lib/onboarding/personalize';
+import { interestsFor, journeysFor, personalize, situationsFromJourneys, type Situation } from '@/lib/onboarding/personalize';
+import { asksChildren, asksFamily, asksFeeding, asksPregnancy, legacyAnswers, previewFacts } from '@/lib/onboarding/v3';
+import { emptyJourneyAnswers, journeyAnswersPayload, readJourneyAnswers, recommend, type JourneyAnswers } from '@/lib/personalization';
+import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { artForAnswers, OnbProgress, StepFade, StepTitle } from '@/features/onboarding/kit';
 import { HeroArt, heroSize } from '@/features/entry/HeroArt';
 import { OpeningStep } from '@/features/onboarding/OpeningStep';
-import { SITUATION_SPACE, SituationStep } from '@/features/onboarding/SituationStep';
-import { HouseholdStep, NeedsStep } from '@/features/onboarding/NeedsStep';
-import { SplitStep } from '@/features/onboarding/SplitStep';
-import { DemoStep } from '@/features/onboarding/DemoStep';
-import { PlanStep } from '@/features/onboarding/PlanStep';
+import { DashboardPreview, FamilyStep, FeedingStep, HouseholdChoiceStep, PrioritiesStep, ProfileStep } from '@/features/onboarding/JourneySteps';
 import { ConsentsStep } from '@/features/onboarding/ConsentsStep';
 import { RevealStep, type RevealLine } from '@/features/onboarding/RevealStep';
 import { PremiumStep } from '@/features/onboarding/PremiumStep';
@@ -55,12 +48,19 @@ import { tourDispatch } from '@/features/tour/store';
 import { spacing } from '@/theme/tokens';
 import { formatList, getLocale, t as tr, type TKey } from '@/i18n';
 
-type Step = Exclude<OnboardingStep, 'feeding'>;
+type Step = 'intro' | 'profile' | 'household' | 'family' | 'feeding' | 'priorities' | 'consents';
 type Phase = 'flow' | 'reveal' | 'premium' | 'tour';
 
-/** Temps (1 à 8) de chaque étape enregistrée. */
-const TEMPS: Record<Step, number> = { intro: 1, journeys: 2, needs: 3, household: 3, pregnancy: 3, children: 3, split: 4, demo: 5, reminders: 6, consents: 6 };
-const TOTAL_TEMPS = 8;
+/** Étape (1 à 6) de chaque écran ; l'ouverture n'est pas comptée. */
+const TEMPS: Record<Step, number> = { intro: 0, profile: 1, household: 2, family: 3, feeding: 4, priorities: 5, consents: 6 };
+const TOTAL_TEMPS = 6;
+/** Étape d'un ancien brouillon (v1, v2) → étape équivalente du parcours en 6 étapes (jamais tout refaire). */
+const FROM_OLD: Record<OnboardingStep, Step> = {
+  intro: 'intro', journeys: 'profile', profile: 'profile', needs: 'household', household: 'household', pregnancy: 'family', children: 'family', family: 'family',
+  feeding: 'feeding', split: 'priorities', demo: 'priorities', reminders: 'priorities', priorities: 'priorities', consents: 'consents',
+};
+/** Espace ouvert par chaque situation (ligne de la révélation). */
+const SITUATION_SPACE: Record<Situation, 'health' | 'baby' | 'family'> = { ttc: 'health', pregnant: 'health', cycle: 'health', baby: 'baby', kids: 'baby', home: 'family' };
 
 export default function Onboarding() {
   const qc = useQueryClient();
@@ -70,7 +70,8 @@ export default function Onboarding() {
   const [step, setStep] = useState<Step>('intro');
   const [phase, setPhase] = useState<Phase>('flow');
   const [name, setName] = useState('');
-  const [answers, setAnswers] = useState<OnboardingAnswers>(emptyAnswers);
+  const [ja, setJa] = useState<JourneyAnswers>(emptyJourneyAnswers);
+  const answers = useMemo(() => legacyAnswers(ja), [ja]);
   const [pregnancy, setPregnancy] = useState(emptyPregnancy());
   const [pErrors, setPErrors] = useState<Record<string, string>>({});
   const [children, setChildren] = useState<ChildDraft[]>([emptyChild()]);
@@ -113,8 +114,9 @@ export default function Onboarding() {
   const journeys = useMemo(() => journeysFor(answers), [answers]);
   const interests = useMemo(() => interestsFor(answers), [answers]);
   const plan = useMemo(() => personalize(answers), [answers]);
-  const deck = useMemo(() => splitDeck(answers), [answers.situations, answers.needs, answers.helpers]); // eslint-disable-line react-hooks/exhaustive-deps
-  const suggestions = useMemo(() => reminderSuggestions(journeys), [journeys]);
+  // Aperçu du tableau de bord : le moteur réel, sur les réponses et les enfants / la grossesse saisis
+  const pregWeeks = useMemo(() => { const v = validatePregnancy(pregnancy); return v.due ? pregnancyProgress(v.due).weeksSA : null; }, [pregnancy]);
+  const facts = useMemo(() => previewFacts(ja, children, pregWeeks), [ja, children, pregWeeks]);
 
   // Reprise : brouillon le plus récent entre l'appareil et le profil (anciens brouillons v1 compris)
   useEffect(() => {
@@ -137,8 +139,8 @@ export default function Onboarding() {
       if (alive && d) {
         setName(d.name); setPregnancy(d.pregnancy); setChildren(d.children.length ? d.children : [emptyChild()]);
         setCErrors(d.children.map(() => ({}))); setReminders(d.reminders); setConsents(d.consents); setBottleFeeding(d.bottleFeeding ?? null);
-        setAnswers(d.answers ?? { ...emptyAnswers(), ...situationsFromJourneys(d.journeys), needs: (d.interests ?? []).filter((x): x is 'health' | 'community' => x === 'health' || x === 'community') });
-        setStep(d.step === 'feeding' ? 'reminders' : (d.step as Step));
+        setJa(d.answers3 ?? readJourneyAnswers(d.answers ?? situationsFromJourneys(d.journeys)) ?? emptyJourneyAnswers());
+        setStep(FROM_OLD[d.step] ?? 'profile');
       }
       if (alive) { clearTimeout(fallback); setHydrated(true); }
     })();
@@ -149,19 +151,20 @@ export default function Onboarding() {
   useEffect(() => {
     if (!hydrated || !userId || finishing.current || phase !== 'flow') return;
     const id = setTimeout(() => {
-      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, answers, savedAt: new Date().toISOString() };
+      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, answers, answers3: ja, savedAt: new Date().toISOString() };
       void saveDraftLocally(userId, d);
       backend.update('profiles', { onboarding_state: d }, [eq('id', userId)]).catch(() => undefined);
     }, 400);
     return () => clearTimeout(id);
-  }, [hydrated, userId, phase, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, answers]);
+  }, [hydrated, userId, phase, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, answers, ja]);
 
-  const needsPregnancy = needsPregnancyForm(answers);
-  const needsChildren = needsChildrenForm(answers);
+  // Tout est facultatif à l'étape 3 : on ne crée que ce qui est confirmé (date valide ; prénom et date de l'enfant)
+  const needsPregnancy = asksPregnancy(ja) && !!pregnancy.date.trim();
+  const filledChildren = children.filter((c) => c.first_name.trim() || c.birth_date.trim());
+  const needsChildren = asksChildren(ja) && filledChildren.length > 0;
   const steps = useMemo<Step[]>(() => [
-    'intro', 'journeys', 'needs', 'household', ...(needsPregnancy ? ['pregnancy' as Step] : []), ...(needsChildren ? ['children' as Step] : []),
-    'split', 'demo', 'reminders', 'consents',
-  ], [needsPregnancy, needsChildren]);
+    'intro', 'profile', 'household', ...(asksFamily(ja) ? ['family' as Step] : []), ...(asksFeeding(ja, children) ? ['feeding' as Step] : []), 'priorities', 'consents',
+  ], [ja, children]);
   const idx = Math.max(0, steps.indexOf(step));
   // Sens du dernier changement d'étape (entrée depuis la droite en avançant, depuis la gauche en revenant)
   const lastIdx = useRef(idx);
@@ -169,7 +172,7 @@ export default function Onboarding() {
   useEffect(() => { lastIdx.current = idx; }, [idx]);
   const next = () => setStep(steps[Math.min(idx + 1, steps.length - 1)]);
   const prev = () => { setError(null); setStep(steps[Math.max(idx - 1, 0)]); };
-  const temps = phase === 'reveal' ? 7 : phase === 'premium' || phase === 'tour' ? 8 : TEMPS[step];
+  const temps = phase === 'reveal' ? 6 : phase === 'premium' || phase === 'tour' ? 0 : TEMPS[step];
   // Visite guidée proposée après la révélation et Premium (jamais à une nounou, jamais pendant une urgence)
   // L'accueil doit être ouvert (Premium ou essai) : sinon la visite est gardée pour plus tard (carte de l'accueil)
   const tourAllowed = useTourAllowed();
@@ -181,16 +184,14 @@ export default function Onboarding() {
   };
 
   function goNext() {
-    if (step === 'journeys' && !answers.situations.length) return setError(tr('o2.sit.required'));
-    if (step === 'pregnancy') {
-      const v = validatePregnancy(pregnancy);
+    if (step === 'profile' && !ja.profile.length) return setError(tr('o3.profile.required'));
+    if (step === 'family') {
+      // grossesse : vérifiée seulement si une date est saisie ; enfant : seulement s'il est commencé (prénom ou date)
+      const v = needsPregnancy ? validatePregnancy(pregnancy) : { errors: {}, due: 'ok' };
       setPErrors(v.errors);
-      if (!v.due) return;
-    }
-    if (step === 'children') {
-      const all = children.map(validateChild);
+      const all = children.map((c) => (c.first_name.trim() || c.birth_date.trim() ? validateChild(c) : { errors: {}, birth: 'skip' }));
       setCErrors(all.map((a) => a.errors));
-      if (all.some((a) => !a.birth)) return;
+      if (!v.due || all.some((a) => !a.birth)) return;
     }
     setError(null);
     next();
@@ -205,7 +206,7 @@ export default function Onboarding() {
   }
 
   /** Total de lignes attendues (fenêtres de la maison) : seulement les opérations qui auront lieu. */
-  const expectedLines = 3 + (needsPregnancy ? 1 : 0) + (needsChildren ? 1 : 0) + (journeys.length ? 1 : 0) + 1;
+  const expectedLines = 3 + (needsPregnancy ? 1 : 0) + (needsChildren ? 1 : 0) + (journeys.length ? 1 : 0);
 
   async function finish() {
     if (finishing.current) return;
@@ -242,7 +243,7 @@ export default function Onboarding() {
       if (needsChildren) {
         const existing = await backend.select<{ first_name: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
         let created = 0;
-        for (const c of children) {
+        for (const c of filledChildren) {
           if (!c.first_name.trim()) continue;
           const v = validateChild(c);
           if (existing.some((e) => e.first_name.trim().toLowerCase() === c.first_name.trim().toLowerCase() && e.birth_date === v.birth)) continue;
@@ -252,8 +253,8 @@ export default function Onboarding() {
         // Chaque enfant du foyer suivi dans son propre parcours (bébé < 2 ans, enfant ensuite)
         const kids = await backend.select<{ id: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
         for (const k of kids) await runOps(planChange(await jrows(), userId, { type: childJourneyType(k.birth_date, today), childId: k.id, householdId: hid }, 'archive', today)).catch(() => undefined);
-        if (journeys.includes('newborn') && kids.some((k) => k.birth_date > addDays(today, -365))) await runOps(planChange(await jrows(), userId, { type: 'postpartum' }, 'archive', today)).catch(() => undefined);
-        done('children', tr('o2.reveal.children', { count: Math.max(created, children.filter((c) => c.first_name.trim()).length) }));
+        if (journeys.includes('newborn') && !ja.profile.includes('dad') && kids.some((k) => k.birth_date > addDays(today, -365))) await runOps(planChange(await jrows(), userId, { type: 'postpartum' }, 'archive', today)).catch(() => undefined);
+        done('children', tr('o2.reveal.children', { count: Math.max(created, filledChildren.length) }));
       }
       if (journeys.length) {
         const spaces = [...new Set(answers.situations.map((s) => SITUATION_SPACE[s]))].map((x) => tr(`o2.space.${x}` as TKey));
@@ -265,14 +266,11 @@ export default function Onboarding() {
         ...(answers.sharing ? { family_situation: answers.sharing } : {}),
       }, [{ col: 'id', op: 'eq', value: userId }]);
       await clearDraftLocally(userId);
-      const chosen = suggestions.filter((r) => reminders.includes(r.key));
-      if (chosen.length) {
-        await backend.insert('reminders', chosen.map((r) => ({ user_id: userId, household_id: hid, category: r.category, title: r.title, body: r.body, schedule: r.schedule, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: r.deep_link, journey_type: r.journey_type })));
-        await requestPermission().catch(() => undefined);
-      }
-      done('reminders', chosen.length ? tr('o2.reveal.reminders', { count: chosen.length }) : tr('o2.reveal.remindersNone'));
-      // Réponses du parcours (colonne 20261119000100) : jamais bloquant si le serveur n'a pas encore la colonne
-      const saved = await backend.update('profiles', { onboarding_answers: answersPayload(answers, plan), onboarding_version: ONBOARDING_VERSION }, [{ col: 'id', op: 'eq', value: userId }]).then(() => true, () => false);
+      // Réponses du parcours (colonne 20261119000100, version 3) : RELUES par le moteur de recommandation ; jamais
+      // bloquant si le serveur n'a pas encore la colonne. Les recommandations calculées sont gardées pour mémoire.
+      const tools = recommend(facts, {}, { max: 10 }).map((r) => r.id);
+      const payload = journeyAnswersPayload(ja, { situations: answers.situations, needs: answers.needs, sharing: answers.sharing, recommendations: { tools, first_action: plan.first.key, premium: plan.premium } });
+      const saved = await backend.update('profiles', { onboarding_answers: payload, onboarding_version: 3 }, [{ col: 'id', op: 'eq', value: userId }]).then(() => true, () => false);
       if (saved) done('answers', tr('o2.reveal.answers'));
       await qc.invalidateQueries();
       haptic('success');
@@ -349,7 +347,7 @@ export default function Onboarding() {
   const key = phase === 'flow' ? step : phase;
   return (
     <Screen footer={footer} contentStyle={demoTop}>
-      {temps > 1 && phase !== 'tour' ? <OnbProgress count={TOTAL_TEMPS} index={temps - 1} label={tr('o2.progress', { step: temps, total: TOTAL_TEMPS })} /> : null}
+      {temps > 0 ? <OnbProgress count={TOTAL_TEMPS} index={temps - 1} label={tr('o3.progress', { step: temps, total: TOTAL_TEMPS })} /> : null}
       {/* Temps 2 à 6 : l'illustration de la situation choisie, sur le halo, reste en place d'une question à l'autre (fondu
           enchaîné quand la situation principale change) ; seules les questions entrent et sortent. */}
       {phase === 'flow' && step !== 'intro' ? (
@@ -362,7 +360,15 @@ export default function Onboarding() {
             <RevealStep lines={lines} total={expectedLines} done={revealDone} error={error}
               title={name.trim() ? tr('o2.reveal.titleNamed', { name: name.trim() }) : tr('o2.reveal.title')} />
             {/* 19/11/2026 : foyer à deux → « Ajouter l'autre parent à votre famille ? » (Inviter maintenant / Plus tard) */}
-            {revealDone && (answers.sharing === 'couple' || answers.sharing === 'coparenting') ? <InviteOtherParent testID="onb-invite" /> : null}
+            {/* 6 — ton tableau de bord : les outils choisis par le moteur, avec leurs raisons */}
+            {revealDone ? (
+              <View style={{ gap: spacing.xs }}>
+                <Text variant="label" accessibilityRole="header">{tr('o3.dash.title')}</Text>
+                <DashboardPreview facts={facts} max={6} testID="onb-reveal-tools" />
+              </View>
+            ) : null}
+            {/* « Inviter un autre parent » : le lien d'invitation existant ; aucun droit n'est déduit des réponses */}
+            {revealDone && (ja.invite || ja.household === 'partner' || ja.household === 'separated') ? <InviteOtherParent testID="onb-invite" /> : null}
           </View>
         ) : phase === 'tour' ? (
           <TourOfferStep />
@@ -370,46 +376,25 @@ export default function Onboarding() {
           <PremiumStep features={plan.premium} childName={childName} />
         ) : step === 'intro' ? (
           <OpeningStep compact={compact} />
-        ) : step === 'journeys' ? (
-          <SituationStep situations={answers.situations} cycleGoal={answers.cycleGoal}
-            onChange={(situations) => { setError(null); setAnswers((a) => ({ ...a, situations })); }} onGoal={(cycleGoal) => setAnswers((a) => ({ ...a, cycleGoal }))} />
-        ) : step === 'needs' ? (
-          <NeedsStep answers={answers} onNeeds={(needs) => setAnswers((a) => ({ ...a, needs }))} />
+        ) : step === 'profile' ? (
+          <ProfileStep value={ja.profile} name={name} onName={setName} onChange={(profile) => { setError(null); setJa((a) => ({ ...a, profile })); }} />
         ) : step === 'household' ? (
-          <HouseholdStep answers={answers} name={name} onName={setName}
-            onSharing={(sharing) => setAnswers((a) => ({ ...a, sharing, split: {} }))} onHelpers={(helpers) => setAnswers((a) => ({ ...a, helpers }))} />
-        ) : step === 'pregnancy' ? (
-          <View style={{ gap: spacing.md }}>
-            <StepTitle title={tr('onb.pregnancy.title')} lead={tr('onb.pregnancy.body')} />
-            <MattePanel><PregnancyForm value={pregnancy} onChange={setPregnancy} errors={pErrors} /></MattePanel>
-          </View>
-        ) : step === 'children' ? (
-          <View style={{ gap: spacing.md }}>
-            <StepTitle title={tr('onb.children.title', { count: children.length })} lead={tr('onb.children.body')} />
-            {children.map((c, i) => (
-              <MattePanel key={i}>
-                <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text weight="bold">{tr('onb.children.item', { n: i + 1 })}</Text>
-                  {children.length > 1 ? (
-                    <Button label={tr('onb.children.remove')} variant="ghost" icon="x" size="sm"
-                      onPress={() => { setChildren(children.filter((_, j) => j !== i)); setCErrors(cErrors.filter((_, j) => j !== i)); }} />
-                  ) : null}
-                </Row>
-                <ChildForm value={c} onChange={(v) => setChildren(children.map((x, j) => (j === i ? v : x)))} errors={cErrors[i] ?? {}} />
-              </MattePanel>
-            ))}
-            <Button label={tr('onb.children.add')} variant="secondary" icon="plus" onPress={() => { setChildren([...children, emptyChild()]); setCErrors([...cErrors, {}]); }} />
-          </View>
-        ) : step === 'split' ? (
-          <SplitStep answers={answers} deck={deck} name={name}
-            onAssign={(task, who) => setAnswers((a) => ({ ...a, split: { ...a.split, [task]: who } }))} onReset={() => setAnswers((a) => ({ ...a, split: {} }))} />
-        ) : step === 'demo' ? (
-          <DemoStep answers={answers} deck={deck} name={name} />
-        ) : step === 'reminders' ? (
-          <PlanStep plan={plan} reminders={suggestions} chosen={reminders}
-            onToggleReminder={(k) => { haptic('selection'); setReminders(reminders.includes(k) ? reminders.filter((x) => x !== k) : [...reminders, k]); }} />
+          <HouseholdChoiceStep value={ja.household} invite={ja.invite} onChange={(household) => setJa((a) => ({ ...a, household }))} onInvite={(invite) => setJa((a) => ({ ...a, invite }))} />
+        ) : step === 'family' ? (
+          <FamilyStep answers={ja} pregnancy={pregnancy} onPregnancy={setPregnancy} pErrors={pErrors} children={children} cErrors={cErrors}
+            onChildren={(list) => { setChildren(list.length ? list : [emptyChild()]); setCErrors(list.map(() => ({}))); }} />
+        ) : step === 'feeding' ? (
+          <FeedingStep value={ja.feeding} onChange={(feeding) => setJa((a) => ({ ...a, feeding }))} />
+        ) : step === 'priorities' ? (
+          <PrioritiesStep value={ja.priorities} onChange={(priorities) => setJa((a) => ({ ...a, priorities }))} />
         ) : (
-          <ConsentsStep consents={consents} onConsents={setConsents} needSignup={needSignupConsents} adult={adult} terms={terms} onAdult={setAdult} onTerms={setTerms} />
+          <View style={{ gap: spacing.lg }}>
+            <View style={{ gap: spacing.sm }}>
+              <StepTitle title={tr('o3.dash.title')} lead={tr('o3.dash.lead')} />
+              <DashboardPreview facts={facts} max={6} />
+            </View>
+            <ConsentsStep consents={consents} onConsents={setConsents} needSignup={needSignupConsents} adult={adult} terms={terms} onAdult={setAdult} onTerms={setTerms} />
+          </View>
         )}
       </StepFade>
     </Screen>

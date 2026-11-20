@@ -6,13 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ConsentPurpose, Journey } from './types';
 import type { ChildDraft, PregnancyDraft } from '@/features/profiles';
 import { sanitizeAnswers, type OnboardingAnswers } from './onboarding/personalize';
+import { readJourneyAnswers, type JourneyAnswers } from './personalization/answers';
 
 /**
  * Étapes enregistrées dans le brouillon. Onboarding v2 (19/11/2026) : « intro » = ouverture, « journeys » = situation,
  * puis besoins, formulaires, répartition, démonstration, synthèse (« reminders ») et accords. « feeding » : ancienne
  * étape, reprise sur la synthèse.
  */
-export const ONBOARDING_STEPS = ['intro', 'journeys', 'needs', 'household', 'pregnancy', 'children', 'split', 'demo', 'feeding', 'reminders', 'consents'] as const;
+export const ONBOARDING_STEPS = ['intro', 'journeys', 'needs', 'household', 'pregnancy', 'children', 'split', 'demo', 'feeding', 'reminders', 'consents', 'profile', 'family', 'priorities'] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 /** Réponse à « Votre bébé prend-il le biberon ? » (facultative). */
@@ -32,6 +33,8 @@ export interface OnboardingDraft {
   interests?: string[];
   /** Onboarding v2 : réponses (situation, besoins, foyer, répartition) ; absent des anciens brouillons. */
   answers?: OnboardingAnswers;
+  /** Onboarding v3 en 6 étapes (20/11/2026) : profil, quotidien, alimentation, priorités ; absent des anciens brouillons. */
+  answers3?: JourneyAnswers;
   /** Horodatage de la dernière sauvegarde (pour choisir la plus récente entre l'appareil et le profil). */
   savedAt?: string;
 }
@@ -53,6 +56,7 @@ export function restoreDraft(raw: string | null | undefined | object): Onboardin
   const interests = Array.isArray(d.interests) ? d.interests.filter((x): x is string => typeof x === 'string') : [];
   const out: OnboardingDraft = { ...(d as OnboardingDraft), step, interests };
   if (d.answers !== undefined) out.answers = sanitizeAnswers(d.answers);
+  if (d.answers3 !== undefined) out.answers3 = readJourneyAnswers({ v: 3, ...(d.answers3 as object) }) ?? undefined;
   return out;
 }
 

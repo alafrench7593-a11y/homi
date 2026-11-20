@@ -180,6 +180,7 @@ export const APP_ROUTES: readonly string[] = [
   '/journal',
   '/journeys',
   '/journeys/[id]',
+  '/journeys/answers',
   '/journeys/blocked',
   '/legal/[doc]',
   '/library',

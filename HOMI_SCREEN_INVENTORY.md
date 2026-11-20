@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**256 routes** réelles (`src/lib/routes.generated.ts`) portées par **257 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**257 routes** réelles (`src/lib/routes.generated.ts`) portées par **258 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -22,7 +22,7 @@
 | Autres | 15 | 15 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 1 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
-| Réglages | 22 | 22 | 0 | 0 | 0 | 0 |
+| Réglages | 23 | 23 | 0 | 0 | 0 | 0 |
 | Accueil | 21 | 18 | 0 | 3 | 4 | 1 |
 | Santé | 29 | 21 | 0 | 8 | 7 | 0 |
 | Cycle et fertilité | 46 | 46 | 0 | 0 | 15 | 1 |
@@ -30,9 +30,9 @@
 | Bébé et enfant | 32 | 28 | 0 | 4 | 50 | 1 |
 | Famille | 38 | 38 | 0 | 0 | 6 | 0 |
 | Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
-| **Total** | **257** | **232** | **2** | **23** | **87** | **4** |
+| **Total** | **258** | **233** | **2** | **23** | **87** | **4** |
 
-Rôles : détail 44 · formulaire 47 · historique 17 · liste 101 · réglage 28 · résultat 13 · scène 7.
+Rôles : détail 45 · formulaire 47 · historique 17 · liste 101 · réglage 28 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -78,7 +78,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/auth/sign-up` | formulaire | — | Field, Button, Banner, EntryHero, EntryScreen, MattePanel | 0 |  | fait |
 | `/cinematic` | scène | — | — | 0 |  | fait |
 | `/intro` | scène | — | Button | 0 | oui | tranche |
-| `/onboarding` | formulaire | — | Screen, Button, IconButton, Banner, MattePanel | 0 |  | tranche |
+| `/onboarding` | formulaire | — | Screen, Button, IconButton, Banner | 0 |  | tranche |
 | `/welcome` | scène | — | Button, IconButton | 0 |  | fait |
 
 ### Admin
@@ -100,6 +100,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/feedback` | liste | — | Screen, Card, Field, Button, IconButton, Banner, Chip, SectionTitle | 0 |  | à faire |
 | `/journeys` | liste | — | Screen, Card, Sheet, Button, Banner, ListRow, SectionTitle, ErrorView, Skeleton | 0 |  | à faire |
 | `/journeys/[id]` | détail | — | Screen, Card, Button, Banner, ListRow, EmptyState, ErrorView, Skeleton | 0 |  | à faire |
+| `/journeys/answers` | détail | — | Screen, Button | 0 |  | à faire |
 | `/journeys/blocked` | réglage | — | Screen, Button, Banner, EmptyState | 0 |  | à faire |
 | `/legal/[doc]` | détail | — | Screen, Card | 0 |  | à faire |
 | `/notifications` | liste | — | Screen, IconButton, Chip, EmptyState, ErrorView, Skeleton, VirtualList | 0 |  | à faire |

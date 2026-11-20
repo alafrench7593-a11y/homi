@@ -132,6 +132,11 @@ export default function Journeys() {
           </Card>
           {js.active.filter((r) => r.type !== 'pregnancy').length + (pregnancy ? 1 : 0) > 1 ? <Text variant="small" muted>{tr('pj.manager.multi')}</Text> : null}
 
+          {/* Mes réponses du parcours d'accueil (20/11/2026) : modifiables à tout moment → les outils proposés sont recalculés */}
+          <Card>
+            <ListRow icon="sliders" title={tr('o3.edit.title')} subtitle={tr('o3.edit.sub')} onPress={() => router.push('/journeys/answers' as never)} testID="journeys-answers" />
+          </Card>
+
           <SectionTitle title={tr('pj.manager.choose')} />
           <View style={{ gap: spacing.xs }} accessibilityRole="list">
             {CHOICES.map((c) => {
