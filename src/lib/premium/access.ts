@@ -16,7 +16,7 @@ const FREE: RegExp[] = [
   /^\/welcome\/?$/, /^\/intro\/?$/, /^\/cinematic\/?$/, /^\/discover(\/.*)?$/, /^\/auth\//, /^\/legal\//, /^\/onboarding\/?$/,
   /^\/journeys(\/.*)?$/, /^\/profiles\/new\/?$/,
   /^\/(profile|moi)\/?$/,
-  /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|credits|family|sync)\/?$/,
+  /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|credits|family|sync|help)\/?$/,
   /^\/premium\/?$/, /^\/start(\/.*)?$/, /^\/feedback\/?$/, /^\/sources\/?$/, /^\/admin(\/.*)?$/,
   // Galerie de QA (mode développeur / démonstration) : aucun contenu d'abonnement
   /^\/dev(\/.*)?$/,

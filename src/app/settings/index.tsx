@@ -1,19 +1,13 @@
 /** Réglages : profil, apparence, famille, rappels, abonnement, confidentialité, aide, à propos, déconnexion. */
-import { useTourAllowed } from '@/features/tour/TourEntry';
-import { startTour, useTourStore } from '@/features/tour/store';
-import { LEGAL_NOTICE, PRIVACY, SUPPORT, TERMS } from '@/content/legal';
-import React, { useEffect, useRef, useState } from 'react';
-import { Linking, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { confirmAndSignOut, SignOutRow } from '@/features/account/SignOutRow';
-import Constants from 'expo-constants';
 import { Screen } from '@/components/Screen';
 import { DemoBanner } from '@/components/Family';
-import { Banner, Button, Card, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Button, Card, Divider, Field, type IconName, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { BRAND } from '@/config/brand';
-import { BrandName } from '@/components/BrandLogo';
-import { HomiGlassMark } from '@/components/HomiGlassMark';
 import { useAuth } from '@/lib/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { useHousehold, useHouseholdMembers, usePremium, useProfile, useReminders, useUpdateProfile } from '@/lib/data/hooks';
@@ -21,7 +15,7 @@ import { friendlyError, useMyRoles } from '@/lib/data/hooks-settings';
 import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { useUiStore } from '@/lib/store';
 import { flushQueue, useOfflineStore } from '@/lib/offline';
-import { setDeveloperMode, useDeveloperMode } from '@/lib/devMode';
+import { useDeveloperMode } from '@/lib/devMode';
 import { migratePalette, spacing } from '@/theme/tokens';
 import { deviceRegion, getLocale, t as tr } from '@/i18n';
 import { DEVICE_CALENDAR_ROUTE, useDeviceCalendarSummary } from '@/features/deviceCalendar/DeviceCalendarParts';
@@ -32,13 +26,8 @@ const MODE_ICON: Record<'system' | 'light' | 'dark', IconName> = { system: 'smar
 
 export default function SettingsScreen() {
   const toast = useToast();
-  // Visite guidée : relance (jamais pour un compte nounou) et aides de première ouverture des outils
-  const tourAllowed = useTourAllowed();
-  const hintsOff = useTourStore((s) => s.hintsOff);
-  const setHintsOff = useTourStore((s) => s.setHintsOff);
   const offline = useOfflineStore();
   const devMode = useDeveloperMode();
-  const versionTaps = useRef(0);
   const { session } = useAuth();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
@@ -93,7 +82,6 @@ export default function SettingsScreen() {
   useEffect(() => { if (signout === '1') void confirmAndSignOut(isDemo).catch(() => undefined); }, [signout]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeReminders = (reminders ?? []).filter((r) => r.enabled).length;
-  const version = Constants.expoConfig?.version ?? '—';
 
   return (
     <Screen back title={tr('settings.title')} subtitle={session?.email ?? undefined}>
@@ -112,28 +100,20 @@ export default function SettingsScreen() {
       <Card>
         <Field label={tr('settings.name.label')} optional value={name} onChangeText={setName} maxLength={40} error={nameError} hint={tr('settings.name.hint')} returnKeyType="done" onSubmitEditing={saveName} />
         <Button label={tr('common.save')} size="sm" variant="secondary" loading={updateProfile.isPending} style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={saveName} />
-      </Card>
-
-      <Card>
+        <Divider />
         <ListRow icon="globe" title={tr('settings.language.row')} subtitle={tr('settings.language.rowSub', { language: localeInfo(getLocale()).native, country: getLocale() === 'fr' ? regionInfo.fr : regionInfo.en })} onPress={() => router.push('/settings/language')} />
-      </Card>
-
-      <SectionTitle title={tr('settings.appearance')} />
-      <Card>
-        <View style={{ gap: spacing.sm }}>
-          <ListRow
-            icon={MODE_ICON[mode]}
-            title={tr('settings.appearance.row')}
-            subtitle={tr('v6.palette.rowSub', { mode: tr(`settings.appearance.${mode}` as const), palette: tr(`v6.palette.${paletteChoice}` as const) })}
-            onPress={() => router.push('/settings/appearance')}
-            testID="settings-appearance"
-          />
-          <Divider />
-          <Row style={{ justifyContent: 'space-between' }}>
-            <Text style={{ flex: 1 }}>{tr('settings.haptics')}</Text>
-            <Toggle label={tr('settings.haptics')} value={haptics} onChange={setHaptics} />
-          </Row>
-        </View>
+        <Divider />
+        <ListRow
+          icon={MODE_ICON[mode]}
+          title={tr('settings.appearance.row')}
+          subtitle={tr('v6.palette.rowSub', { mode: tr(`settings.appearance.${mode}` as const), palette: tr(`v6.palette.${paletteChoice}` as const) })}
+          onPress={() => router.push('/settings/appearance')}
+          testID="settings-appearance"
+        />
+        <Row style={{ justifyContent: 'space-between' }}>
+          <Text style={{ flex: 1 }}>{tr('settings.haptics')}</Text>
+          <Toggle label={tr('settings.haptics')} value={haptics} onChange={setHaptics} />
+        </Row>
       </Card>
 
       <SectionTitle title={tr('settings.familyTools')} />
@@ -142,7 +122,6 @@ export default function SettingsScreen() {
         <Divider />
         <ListRow icon="layout" title={tr('settings.home')} subtitle={tr('settings.home.sub')} onPress={() => router.push('/settings/home')} />
         <Divider />
-        <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/settings' } } as never)} testID="settings-feedback" />
         <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="settings-notifs" />
         <ListRow icon="bell" title={tr('settings.reminders')} subtitle={activeReminders ? tr('settings.reminders.active', { count: activeReminders }) : tr('settings.reminders.none')} onPress={() => router.push('/settings/reminders')} />
         {iphoneCalendar.visible ? <ListRow icon="calendar" title={tr('ical.title')} subtitle={iphoneCalendar.text} onPress={() => router.push(DEVICE_CALENDAR_ROUTE as never)} testID="settings-iphone-calendar" /> : null}
@@ -152,15 +131,11 @@ export default function SettingsScreen() {
         <ListRow icon="lock" title={tr('settings.privacy')} subtitle={tr('settings.privacy.sub')} onPress={() => router.push('/settings/privacy')} />
         <Divider />
         <ListRow icon="refresh-cw" title={tr('settings.sync')} subtitle={offline.pending.length ? tr('settings.sync.pending', { count: offline.pending.length }) : offline.conflicts.length ? tr('sync.toCheck', { count: offline.conflicts.length }) : tr('settings.sync.allSent')} onPress={() => router.push('/settings/sync')} />
+        {/* Outils de contrôle : mode développeur uniquement (jamais en démonstration : c'est ce que voit l'examen App Store) */}
         {devMode ? (
           <>
             <Divider />
             <ListRow icon="cpu" title={tr('settings.services')} subtitle={tr('settings.services.sub')} onPress={() => router.push('/settings/services')} />
-          </>
-        ) : null}
-        {devMode || isDemo ? (
-          <>
-            <Divider />
             <ListRow icon="layers" title={tr('glass.gallery')} subtitle={tr('glass.gallery.sub')} onPress={() => router.push('/dev/glass' as never)} testID="settings-glass-gallery" />
             <ListRow icon="grid" title={tr('intro6.icons.gallery')} subtitle={tr('intro6.icons.gallerySub')} onPress={() => router.push('/dev/icons' as never)} testID="settings-icon-gallery" />
           </>
@@ -177,48 +152,10 @@ export default function SettingsScreen() {
       <Card>
         <ListRow icon="life-buoy" title={tr('settings.help.now')} subtitle={tr('settings.help.nowSub', { numbers: regionInfo.emergency })} danger onPress={() => router.push('/emergency')} />
         <Divider />
-        <ListRow icon="mail" title={tr('settings.help.write')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('settings.help.writeTo', { email: BRAND.supportEmail }), 'info'))} />
+        <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/settings' } } as never)} testID="settings-feedback" />
         <Divider />
-        <ListRow icon="help-circle" title={SUPPORT.title} onPress={() => router.push('/legal/support')} testID="settings-support" />
-        <Divider />
-        {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} subtitle={tr('tour.settingsRowSub')} onPress={startTour} testID="settings-tour" /> : null}
-        {/* Présentation d'Aura : relançable ici (et depuis les réglages d'Aura) */}
-        <ListRow icon="message-circle" title={tr('ta.intro.replay')} onPress={() => { useUiStore.getState().requestAuraIntro(); router.back(); }} testID="settings-aura-intro" />
-        {tourAllowed ? <Divider /> : null}
-        <Row style={{ justifyContent: 'space-between', alignItems: 'center' }} testID="settings-tool-hints">
-          <View style={{ flex: 1, gap: 2 }}>
-            <Text>{tr('tour.hints.row')}</Text>
-            <Text variant="small" muted>{tr('tour.hints.rowSub')}</Text>
-          </View>
-          <Toggle label={tr('tour.hints.row')} value={!hintsOff} onChange={(v) => setHintsOff(!v)} />
-        </Row>
-        <Divider />
-        <ListRow icon="play-circle" title={tr('kn.settingsRow')} subtitle={tr('kn.settingsRowSub')} onPress={() => router.push('/discover?replay=1' as never)} testID="settings-discover" />
-        <Divider />
-        <ListRow icon="file-text" title={TERMS.title} onPress={() => router.push('/legal/terms')} testID="settings-terms" />
-        <Divider />
-        <ListRow icon="lock" title={PRIVACY.title} onPress={() => router.push('/legal/privacy')} testID="settings-privacy-policy" />
-        <Divider />
-        <ListRow icon="info" title={LEGAL_NOTICE.title} onPress={() => router.push('/legal/notice')} testID="settings-legal-notice" />
-      </Card>
-      <Banner tone="info">{tr('settings.disclaimer')}</Banner>
-
-      <SectionTitle title={tr('settings.about')} />
-      <Card tone="soft">
-        {/* moment de marque : la signature animée du symbole (verre), puis le mot-symbole — ne retarde rien */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.xxs }}>
-          <HomiGlassMark size={64} testID="settings-glass-mark" />
-          <View testID="settings-wordmark"><BrandName size={30} /></View>
-        </View>
-        <Text italic muted>{tr('brand.tagline')}</Text>
-        {/* Ligne informative : le geste caché (7 appuis, mode développeur) reste, sans surbrillance de bouton au toucher (iOS) */}
-        <Text variant="small" muted suppressHighlighting style={{ marginTop: spacing.xs }} onPress={() => {
-          const n = versionTaps.current + 1;
-          versionTaps.current = n;
-          if (n === 7) { void setDeveloperMode(!devMode); toast(devMode ? tr('settings.devOff') : tr('settings.devOn')); versionTaps.current = 0; }
-        }}>
-          {isDemo ? tr('settings.versionDemo', { version }) : tr('settings.version', { version })}
-        </Text>
+        {/* Aide, visites, textes légaux, version : une page à part (Réglages tient sur un écran) */}
+        <ListRow icon="help-circle" title={tr('settings.helpInfo')} subtitle={tr('settings.helpInfo.sub')} onPress={() => router.push('/settings/help' as never)} testID="settings-help-info" />
       </Card>
 
       <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>

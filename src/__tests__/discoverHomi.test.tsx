@@ -346,7 +346,7 @@ describe('enchaînement', () => {
     expect(launch).toMatch(/!introSeen\) return <Redirect href=\{'\/start' as never\} \/>/);
     expect(launch).not.toMatch(/Redirect href=\{'\/discover'/);
     expect(fs.readFileSync('src/app/cinematic.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
-    expect(fs.readFileSync('src/app/settings/index.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
+    expect(fs.readFileSync('src/app/settings/help.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
   });
 });
 

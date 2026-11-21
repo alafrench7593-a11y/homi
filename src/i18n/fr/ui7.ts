@@ -52,7 +52,7 @@ export const ui7 = {
   'u7.family.suicide.label': 'Prévention du suicide',
   'u7.family.suicide.desc': 'Gratuit et confidentiel',
   'u7.family.demoTitle': 'Mode démonstration',
-  'u7.family.demoBody': 'Tes données restent uniquement sur cet appareil. Connecte Supabase pour la synchronisation, le partage familial et les notifications push (voir README).',
+  'u7.family.demoBody': 'Tes données d’exemple restent uniquement sur cet appareil. Crée un compte pour synchroniser, partager avec ta famille et recevoir des notifications.',
   'u7.family.helpA11y': 'Besoin d’aide maintenant : numéros d’urgence',
   'u7.growth.legendChild': 'Mesures de l’enfant',
   'u7.growth.legendMedian': 'Médiane OMS',

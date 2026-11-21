@@ -55,7 +55,7 @@ export const ui7: Messages<typeof fr> = {
   "u7.family.suicide.label": "Prevención del suicidio",
   "u7.family.suicide.desc": "Gratuito y confidencial",
   "u7.family.demoTitle": "Modo demostración",
-  "u7.family.demoBody": "Tus datos se quedan solo en este dispositivo. Conecta Supabase para la sincronización, el uso compartido familiar y las notificaciones push (ver README).",
+  "u7.family.demoBody": "Los datos de ejemplo se quedan solo en este dispositivo. Crea una cuenta para sincronizar, compartir con tu familia y recibir notificaciones.",
   "u7.family.helpA11y": "Necesito ayuda ahora: números de emergencia",
   "u7.growth.legendChild": "Medidas del niño",
   "u7.growth.legendMedian": "Mediana OMS",
