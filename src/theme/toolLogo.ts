@@ -61,11 +61,11 @@ export const GLASS_CENTER = '#9F96AD';
 
 /** Intensité de la lumière : opacité au centre du dégradé radial (repos), surcroît à l'appui / l'ouverture, rayon. */
 export const LOGO_LIGHT = {
-  opacity: { light: 0.62, dark: 0.66, night: 0.32 },
+  opacity: { light: 0.85, dark: 0.85, night: 0.6 },
   /** surcroît d'opacité au sommet de l'impulsion (appui, ouverture) */
-  pulse: 0.3,
+  pulse: 0.15,
   /** rayon du halo intérieur (fraction de la plaque) : détaillé / compact */
-  radius: { detailed: 0.4, compact: 0.36 },
+  radius: { detailed: 0.5, compact: 0.48 },
 } as const;
 
 export type LogoMode = 'light' | 'dark' | 'night';

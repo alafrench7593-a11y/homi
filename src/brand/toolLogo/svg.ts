@@ -22,7 +22,7 @@ export interface StaticLogo {
 }
 
 /** Lumière : dégradé radial (opacité relative) — même valeurs que le composant. */
-export const LIGHT_STOPS = [[0, 1], [0.55, 0.42], [1, 0]] as const;
+export const LIGHT_STOPS = [[0, 1], [0.6, 0.78], [1, 0]] as const;
 
 export function toolLogoSvg(l: StaticLogo, size: number, uid = 'l'): string {
   const c = SYMBOL_BOX / 2;

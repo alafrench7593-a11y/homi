@@ -148,8 +148,8 @@ describe('verre dépoli de la propriétaire + lumière par public', () => {
   it.each(LOGO_PUBLICS)('%s : la lumière ne rend jamais le symbole moins lisible que sur la plaque nue (clair, sombre, nuit)', (p) => {
     for (const mode of ['light', 'dark', 'night'] as const) expect(lightContrast(p, mode)).toBeGreaterThanOrEqual(bareContrast());
   });
-  it('intensité modérée et lumière plus discrète la nuit ; ombre colorée en détaillé seulement, aucune la nuit', () => {
-    expect(LOGO_LIGHT.opacity.light).toBeLessThanOrEqual(0.7);
+  it('lumière franche (choix de la propriétaire) et plus discrète la nuit ; ombre colorée en détaillé seulement, aucune la nuit', () => {
+    expect(LOGO_LIGHT.opacity.light).toBeLessThanOrEqual(0.9) // lumière franche demandée par la propriétaire (21/11/2026);
     expect(LOGO_LIGHT.opacity.night).toBeLessThan(LOGO_LIGHT.opacity.light);
     expect((logoShadow('baby', 60, 'detailed', 'light') ?? '').split('rgba(').length - 1).toBe(2);
     expect((logoShadow('baby', 40, 'compact', 'dark') ?? '').split('rgba(').length - 1).toBe(1);
