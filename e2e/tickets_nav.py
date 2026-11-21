@@ -103,8 +103,14 @@ CUT = """() => {
 }"""
 
 
+def calm(pg):
+    """Présentation d'Aura (comptes réels, première arrivée) fermée ; introduction d'ouverture terminée."""
+    pg.wait_for_timeout(1800)
+    if vis(pg, 'aura-intro-later'): tap(pg, 'aura-intro-later'); pg.wait_for_timeout(600)
+
+
 def tools_pass(pg, who, theme_tag=''):
-    pg.goto(B + '/tools'); wait(pg, 'tools-search', 40); pg.wait_for_timeout(1500)
+    pg.goto(B + '/tools'); wait(pg, 'tools-search', 40); calm(pg)
     R[f'{who}_verrou_ecran'] = vis(pg, 'premium-gate')
     R[f'{who}_intro'] = vis(pg, 'tools-intro')
     R[f'{who}_cadenas'] = pg.locator('[data-testid^="tool-tile-locked-"], [data-testid^="tools-category-locked-"]').count()
@@ -170,8 +176,10 @@ def run(p):
     # thèmes : Blanc nacré, Noir graphite (réglages), panneau de l'accueil
     for pal in ('nacre', 'graphite'):
         set_theme(pg, pal)
+        pg.evaluate("() => { const all = [...document.querySelectorAll('div')].filter((d) => /(auto|scroll)/.test(getComputedStyle(d).overflowY)); for (const el of all) el.scrollTop = 0; }")
+        pg.wait_for_timeout(2500)
         shot(pg, f'reglages_apparence_{pal}')
-        pg.goto(B + '/'); wait(pg, 'tab-health', 30); pg.wait_for_timeout(1200)
+        pg.goto(B + '/'); wait(pg, 'tab-health', 30); pg.wait_for_timeout(2800)
         shot(pg, f'accueil_{pal}')
         tabbar_zoom(pg, f'{pal}')
         tools_pass(pg, 'visiteur', f'_{pal}')
@@ -299,6 +307,23 @@ def run(p):
     T6['mon_accueil_texte'] = len(pg.locator('body').inner_text())
     shot(pg, 'reglages_mon_accueil')
     R['ticket6'] = T6
+    # Compte : Réglages (haut), Profil (bas), Mon compte en mode suppression (visiteur)
+    pg.goto(B + '/settings'); pg.wait_for_timeout(2500); shot(pg, 'compte_reglages_haut')
+    R['compte_reglages_ligne_suppression'] = vis(pg, 'settings-delete-account')
+    scroll_bottom(pg); shot(pg, 'compte_reglages_bas')
+    R['compte_reglages_deconnexion'] = vis(pg, 'settings-sign-out')
+    R['compte_reglages_deconnexion_libelle'] = pg.locator(TID('settings-sign-out')).first.get_attribute('aria-label') if pg.locator(TID('settings-sign-out')).count() else None
+    pg.goto(B + '/profile'); pg.wait_for_timeout(2500); scroll_bottom(pg); shot(pg, 'compte_profil_bas')
+    R['compte_profil_deconnexion'] = vis(pg, 'profile-sign-out')
+    pg.goto(B + '/settings'); pg.wait_for_timeout(2000)
+    if tap(pg, 'settings-delete-account'):
+        pg.wait_for_timeout(2500)
+        R['compte_suppression_2_appuis_url'] = pg.url.replace(B, '')
+        R['compte_suppression_visible'] = vis(pg, 'account-delete-start')
+        shot(pg, 'compte_suppression')
+        tap(pg, 'account-delete-start'); pg.wait_for_timeout(900); shot(pg, 'compte_suppression_confirmation')
+    else:
+        pg.goto(B + '/settings/account'); pg.wait_for_timeout(2500); shot(pg, 'compte_suppression'); scroll_bottom(pg); shot(pg, 'compte_suppression_bas')
     b.close()
 
 

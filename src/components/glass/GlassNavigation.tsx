@@ -143,13 +143,14 @@ export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, ce
         contentStyle={{ paddingHorizontal: GLASS_TAB_BAR.inset, paddingTop: GLASS_TAB_BAR.inset, paddingBottom: GLASS_TAB_BAR.inset + (floating ? 0 : safe) }}>
         <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel ?? tr('glass.tabs')} style={styles.tabRow}>
           {/* LENTILLE de l'onglet actif (référence 03 / 04, 21/11/2026) : verre bombé qui glisse d'un onglet à l'autre —
-              reflet clair en haut, arête lumineuse, lueur interne douce du thème (`tokens.glow`) au centre. Décor seul :
+              reflet clair en haut, arête lumineuse (sans lueur colorée : la lumière reste dans le symbole, TabLight). Décor seul :
               le rendu des pictogrammes d'onglet reste celui de `TabItem`. Nuit : lentille plate, sans lueur. */}
           <Animated.View pointerEvents="none" testID={`${testID}-indicator`}
             style={[styles.indicator, { borderRadius: GLASS_TAB_BAR.height / 2, backgroundColor: spec.indicator, borderColor: spec.indicatorEdge, boxShadow: spec.indicatorShadow, overflow: 'hidden' }, indicator]}>
             {lensLit ? (
               <>
-                <View style={[styles.lensGlow, { backgroundColor: theme.tokens.glow.soft, boxShadow: [{ offsetX: 0, offsetY: 0, blurRadius: 18, spreadDistance: 2, color: theme.tokens.glow.soft }] }]} testID={`${testID}-lens-glow`} />
+                {/* Ticket 2 : plus de lueur colorée au centre de la lentille — elle se lisait comme une lumière débordant
+                    du pictogramme. La lumière est DANS le symbole (TabLight) ; la lentille garde son reflet clair et son arête. */}
                 <LinearGradient colors={[spec.highlight[0], spec.highlight[1]]} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.lensSheen} />
                 <View style={[StyleSheet.absoluteFill, { borderRadius: GLASS_TAB_BAR.height / 2, borderTopWidth: 1, borderColor: theme.tokens.glow.edge, opacity: 0.7 }]} />
               </>
@@ -287,7 +288,6 @@ const styles = StyleSheet.create({
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 },
   center: { marginHorizontal: spacing.xs, alignItems: 'center', justifyContent: 'center' },
   indicator: { position: 'absolute', left: 0, top: 0, bottom: 0, borderWidth: StyleSheet.hairlineWidth },
-  lensGlow: { position: 'absolute', left: '22%', right: '22%', top: '18%', bottom: '30%', borderRadius: 999 },
   lensSheen: { position: 'absolute', left: 0, right: 0, top: 0, height: '52%' },
   segRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 40 },
   segment: { flex: 1, minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm },
