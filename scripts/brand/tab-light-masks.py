@@ -13,7 +13,7 @@ chaque icône, ce script écrit :
 L'application superpose <nom>-lit.png à l'icône et ne fait varier que son opacité (src/brand/toolGlass/TabLight.tsx) :
 la lumière reste dans le symbole au repos, à l'appui et pendant le changement d'onglet.
 
-Usage : python3 scripts/brand/tab-light-masks.py [--check]
+Usage : python3 scripts/brand/tab-light-masks.py [--check] [--lit]
   --check : recalcule en mémoire et échoue si les fichiers écrits ne correspondent plus (icônes changées).
 Dépendances : Pillow, numpy (aucune à l'exécution de l'application).
 """
@@ -87,7 +87,8 @@ def main():
     bad = []
     for n in NAMES:
         mask, lit = compute(n)
-        for suffix, img in (('mask', mask), ('lit', lit)):
+        # Les images allumées (<nom>-lit.png) de homi/fondations font foi : ce script n'écrit que les masques, sauf --lit
+        for suffix, img in (('mask', mask), ('lit', lit)) if '--lit' in sys.argv else (('mask', mask),):
             path = os.path.join(ROOT, f'{n}-{suffix}.png')
             if check:
                 if not os.path.exists(path) or not np.array_equal(np.asarray(Image.open(path).convert('RGBA')), np.asarray(img)):

@@ -12,11 +12,8 @@ export const TAB_IMAGES: Record<'today' | 'me' | 'add' | 'child' | 'family', Ima
   family: require('../../assets/brand/tabs/family.png'),
 };
 
-/**
- * « Symbole allumé » de chaque icône (ticket 2) : la couleur de la lumière, limitée au SYMBOLE (masque calculé par
- * scripts/brand/tab-light-masks.py, aussi écrit en <nom>-mask.png), plus vive au cœur du dessin. Posé sur l'icône,
- * seule son opacité varie (src/brand/toolGlass/TabLight.tsx).
- */
+/** Lumière JAUNE découpée dans la silhouette du dessin (calculée depuis chaque PNG : seuls les pixels du symbole
+ *  s'allument, jamais la tuile ni l'extérieur) ; le cœur du symbole est le plus lumineux. */
 export const TAB_LIT: Record<keyof typeof TAB_IMAGES, ImageSourcePropType> = {
   today: require('../../assets/brand/tabs/today-lit.png'),
   me: require('../../assets/brand/tabs/me-lit.png'),

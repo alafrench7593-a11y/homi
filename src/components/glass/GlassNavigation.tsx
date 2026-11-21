@@ -35,8 +35,8 @@ export interface GlassTab {
   glyph?: HomiIconName;
   /** Tuile illustrée (prioritaire sur `glyph`) : pleine quand l'onglet est actif, estompée sinon. */
   image?: ImageSourcePropType;
-  /** « Symbole allumé » de `image` (lumière DANS le pictogramme, `TAB_LIT`) ; sans lui, pas de lumière. */
-  light?: ImageSourcePropType;
+  /** Lumière intérieure du dessin (même cadrage que `image`) */
+  imageLit?: ImageSourcePropType;
   /** Nom annoncé (défaut : `label`) */
   accessibilityLabel?: string;
   /** Largeur imposée (ex. `dockLayout`) ; sinon les onglets se partagent la place */
@@ -72,7 +72,6 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
   const { spec } = useGlass('chrome');
   const m = useMotion();
   const p = usePress({ scale: 0.92, haptic: 'none' });
-  const [pressing, setPressing] = React.useState(false);
   // Réaction de l'icône : petit saut quand l'onglet DEVIENT actif (jamais au montage)
   const pop = useSharedValue(1);
   const was = useRef(active);
@@ -96,16 +95,16 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
       onLayout={onLayout}
       onPress={onPress}
       onLongPress={onLongPress}
-      onPressIn={() => { setPressing(true); p.onPressIn(); }}
-      onPressOut={() => { setPressing(false); p.onPressOut(); }}
+      onPressIn={p.onPressIn}
+      onPressOut={p.onPressOut}
       pressRetentionOffset={12}
       style={[{ height: GLASS_TAB_BAR.height, minWidth: 44 }, tab.width ? { width: tab.width } : { flex: 1 }]}
     >
       <Animated.View style={[styles.tab, p.style]}>
         <Animated.View style={iconStyle}>
           {tab.image ? (
-            // lumière jaune DANS le pictogramme : vive sur l'onglet actif, plus forte à l'appui, discrète au repos
-            <TabLight size={iconsOnly ? 34 : 30} active={active} pressed={pressing} lit={tab.light} testID={`${tab.testID ?? `glass-tab-${tab.key}`}-light${active ? '-active' : ''}`}>
+            // lumière jaune douce derrière l'icône : vive sous l'onglet actif, discrète sinon
+            <TabLight size={iconsOnly ? 34 : 30} active={active} lit={tab.imageLit} testID={`${tab.testID ?? `glass-tab-${tab.key}`}-light${active ? '-active' : ''}`}>
               <Image source={tab.image} accessibilityIgnoresInvertColors style={{ width: iconsOnly ? 34 : 30, height: iconsOnly ? 34 : 30, opacity: active ? 1 : 0.55 }} />
             </TabLight>
           )

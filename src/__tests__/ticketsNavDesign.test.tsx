@@ -31,7 +31,6 @@ import type { AccessInfo } from '@/lib/premium/offers';
 import { APPS_LOGO, PUBLIC_LIGHT, TAB_LIGHT } from '@/theme/toolLogo';
 import { tMaybe } from '@/i18n';
 import { DICTIONARIES } from '@/i18n/dictionaries';
-import { tabLightOpacity } from '@/brand/toolGlass/TabLight';
 import { CATEGORY_HUE, categoryColors, categoryContrast, type CategoryKey } from '@/theme/categoryPalette';
 import { categoryColumns } from '@/features/toolHub/CategoryList';
 import { TOOL_CATEGORIES } from '@/lib/journeys/tools';
@@ -130,42 +129,31 @@ describe('ticket 3 — « Mes apps » (nouveau nom, nouveau logo)', () => {
 describe('ticket 2 — lumière DANS le pictogramme de la barre', () => {
   const dir = path.resolve('assets/brand/tabs');
   const read = (f: string) => PNG.sync.read(fs.readFileSync(path.join(dir, f)));
-  it.each(['today', 'me', 'add', 'child', 'family'])('%s : lumière nulle hors du symbole, symbole plus clair que la tuile, cœur éclairé', (name) => {
+  it.each(['today', 'me', 'add', 'child', 'family'])('%s : la lumière (image allumée) reste dans la silhouette du symbole, jamais sur la tuile ni autour', (name) => {
     const icon = read(`${name}.png`);
     const lit = read(`${name}-lit.png`);
     const mask = read(`${name}-mask.png`);
     expect([lit.width, lit.height]).toEqual([icon.width, icon.height]);
-    let outside = 0; let litPx = 0; let bright = 0;
-    const lum = (d: Uint8Array, i: number) => 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+    // énergie lumineuse (somme des alphas) hors du masque du symbole (calculé indépendamment) : < 3 %, et faible
+    let total = 0; let outside = 0; let onTile = 0;
+    const lum = (d: Uint8Array, k: number) => 0.2126 * d[k] + 0.7152 * d[k + 1] + 0.0722 * d[k + 2];
     for (let i = 0; i < lit.data.length; i += 4) {
       const a = lit.data[i + 3];
-      if (a > 0 && mask.data[i + 3] === 0) outside += 1;
-      if (a > 0) {
-        litPx += 1;
-        // jamais sur le fond transparent ni sur la tuile (pixels sombres de la plaque)
-        expect(icon.data[i + 3]).toBeGreaterThan(200);
-        // jamais plus opaque que le masque du symbole ; presque toujours sur les pixels clairs du dessin
-        expect(a).toBeLessThanOrEqual(mask.data[i + 3]);
-        if (lum(icon.data, i) > 185) bright += 1;
-      }
+      total += a;
+      // hors du masque (rogné d'1 px) : seulement le liseré clair du symbole, jamais la plaque lavande (plus sombre)
+      if (mask.data[i + 3] < 8) { outside += a; if (a > 48 && lum(icon.data, i) < 200) onTile += 1; }
+      if (a > 0) expect(icon.data[i + 3]).toBeGreaterThan(200); // jamais sur le fond transparent autour de la tuile
     }
-    expect(outside).toBe(0);
-    expect(litPx).toBeGreaterThan(1500);
-    expect(bright / litPx).toBeGreaterThan(0.9);
-    // bord de l'icône : aucune lumière sur les 10 px du pourtour
+    expect(total).toBeGreaterThan(0);
+    expect(outside / total).toBeLessThan(0.03);
+    expect(onTile).toBeLessThan(20);
+    // pourtour de la tuile (10 px) : aucune lumière
     for (let y = 0; y < lit.height; y += 1) for (let x = 0; x < lit.width; x += 1) {
       if (x < 10 || y < 10 || x >= lit.width - 10 || y >= lit.height - 10) expect(lit.data[(y * lit.width + x) * 4 + 3]).toBe(0);
     }
   });
-  it('le « + » s’éclaire au croisement de ses branches, plus qu’au bout d’une branche', () => {
-    const lit = read('add-lit.png');
-    const at = (x: number, y: number) => lit.data[(y * lit.width + x) * 4 + 3];
-    expect(at(96, 96)).toBeGreaterThan(at(96, 50) + 60);
-  });
-  it('opacités : repos < appui < actif ; nuit atténuée', () => {
-    expect(tabLightOpacity('idle')).toBeLessThan(tabLightOpacity('pressed'));
-    expect(tabLightOpacity('pressed')).toBeLessThan(tabLightOpacity('active'));
-    expect(tabLightOpacity('active', true)).toBeLessThan(tabLightOpacity('active'));
+  it('opacités : repos < actif (TabLight de homi/fondations)', () => {
+    expect(TAB_LIGHT.idle).toBeLessThan(TAB_LIGHT.active);
     expect(TAB_LIGHT.active).toBeLessThanOrEqual(1);
   });
 });

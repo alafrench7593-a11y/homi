@@ -43,12 +43,8 @@ export const PUBLIC_LIGHT: Record<LogoPublic, string> = {
   aura: '#2E4466', // bleu nuit d'Aura
 };
 
-/**
- * Barre d'onglets : lumière jaune DANS le pictogramme (ticket 2 : jamais hors du dessin). `color` sert au calcul des
- * images « symbole allumé » (scripts/brand/tab-light-masks.py) ; les opacités sont celles de cette image posée sur
- * l'icône : onglet actif, appui, repos ; `night` atténue le tout la nuit.
- */
-export const TAB_LIGHT = { color: '#FFC83D', active: 1, pressed: 0.8, idle: 0.3, night: 0.7 } as const;
+/** Barre d'onglets : lumière jaune douce derrière les icônes (opacité au centre : onglet actif / inactif). */
+export const TAB_LIGHT = { color: '#FFC83D', active: 0.95, idle: 0.22 } as const;
 
 /** Symbole nacré (valeurs du fichier fourni) : dégradé, ombre portée, filet de lumière. */
 /**
