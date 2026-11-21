@@ -81,6 +81,17 @@ def shoot(pg, name, full=True):
             pg.set_viewport_size(vp); pg.wait_for_timeout(400)
 
 
+def links_in_view(pg):
+    vh = pg.viewport_size['height']
+    for t in ('fw-pw-restore', 'fw-pw-terms', 'fw-pw-privacy'):
+        if not has(pg, t):
+            return False
+        bb = vis(pg, t).first.bounding_box()
+        if not bb or bb['y'] + bb['height'] > vh + 1:
+            return False
+    return True
+
+
 def sim(pg, key, value):
     if value is None:
         pg.evaluate(f"() => localStorage.removeItem('{key}')")
@@ -101,19 +112,26 @@ def context(b, width, height, locale='fr-FR', reduced='no-preference'):
 # ------------------------------------------------------------------ partie 1 : maquettes
 def mockups(b, width, height):
     ctx, pg = context(b, width, height)
-    go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    # Famille d'exemple (mode démonstration) : /start/sample, ancienne destination de « Découvrir sans compte »
+    go(pg, '/start/sample', 5000)
     for d in 'ABC':
         for trial in ('1', '0'):
             go(pg, f'/dev/paywall?direction={d}&trial={trial}&need=feed_sleep&variant=need', 3000)
             label = 'essai' if trial == '1' else 'sans-essai'
             ok = has(pg, f'fw-paywall-{d}')
+            if d == 'A' and width == 390:
+                R[f'maquette_A_{trial}_heros_resultat'] = 'Sieste ajoutée' in text_of(pg, 'fw-pw-preview') and not has(pg, 'fw-pw-timeline')
             R[f'maquette_{d}_{label}_{width}'] = ok
             cta = text_of(pg, 'fw-pw-cta')
             if width == 390:
-                R[f'maquette_{d}_{label}_bouton'] = ('Démarrer mes 3 jours gratuits' in cta) if trial == '1' else ('S’abonner à 14,99 €/mois' in cta)
-                R[f'maquette_{d}_{label}_conditions'] = ('Gratuit jusqu’au 6 décembre, puis 14,99 €/mois. Renouvellement automatique.' in text_of(pg, 'fw-pw-terms-line')) if trial == '1' \
-                    else ('14,99 €/mois, débité aujourd’hui. Renouvellement automatique.' in text_of(pg, 'fw-pw-terms-line'))
+                R[f'maquette_{d}_{label}_bouton'] = ('Commencer l’essai gratuit' in cta) if trial == '1' else ('M’abonner pour un an' in cta)
+                R[f'maquette_{d}_{label}_conditions'] = ('3 jours gratuits, puis 119,99 €/an. Renouvellement automatique, annulable à tout moment.' in text_of(pg, 'fw-pw-terms-line')) if trial == '1' \
+                    else ('119,99 €/an, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.' in text_of(pg, 'fw-pw-terms-line'))
+                # Passe Paywall Designer : liens Restaurer · Conditions · Confidentialité visibles sans défiler
+                R[f'maquette_{d}_{label}_liens_visibles'] = links_in_view(pg)
+                if d == 'B':
+                    R[f'maquette_B_{label}_frise_rappel'] = has(pg, 'fw-pw-tl-remind') == (trial == '1')
+            R[f'maquette_{d}_{label}_{width}_liens_visibles'] = links_in_view(pg)
             R[f'debordement_maquette_{d}_{label}_{width}'] = len(detect(pg, f'maquette_{d}_{label}_{width}')) == 0
             shoot(pg, f'maquette_{d}_{label}_{width}')
     # Variante A/B : titre générique (même écran)
@@ -137,12 +155,14 @@ def flow(b, width, height, first):
     go(pg, '/', 4500)
     if first:
         R['premiere_ouverture_vers_start'] = '/start' in pg.url and has(pg, 'fw-step-stage')
+        R['etape_reponses_en_bas'] = vis(pg, 'fw-stage-child').first.bounding_box()['y'] > height * 0.45
         R['aura_nommee'] = 'Aura' in text_of(pg, 'fw-aura') and 'HOMI Aura' not in T(pg)
     shoot(pg, f'parcours_1_etape_{w}', full=False)
     click(pg, 'fw-stage-baby', 1500)
     if first:
         R['besoin_titre_tutoiement'] = 'Qu’est-ce qui te faciliterait la journée ?' in T(pg)
-        R['besoins_max_4'] = pg.locator('[data-testid^="fw-need-"]').filter(visible=True).count() <= 5
+        R['besoin_reprend_l_etape'] = 'J’ai un bébé' in text_of(pg, 'fw-need-echo')
+        R['besoins_max_4'] = 0 < pg.locator('[data-testid^="fw-need-"][data-testid$="_birth"], [data-testid="fw-need-feed_sleep"], [data-testid="fw-need-mornings"], [data-testid="fw-need-relay"]').filter(visible=True).count() <= 4
     shoot(pg, f'parcours_2_besoin_{w}', full=False)
     click(pg, 'fw-need-feed_sleep', 1800)
     if first:
@@ -152,7 +172,10 @@ def flow(b, width, height, first):
     nap = text_of(pg, 'fw-last-nap')
     if first:
         R['resultat_juste_apres'] = has(pg, 'fw-step-result') and bool(re.search(r'Réveil à \d{2}:\d{2}', nap))
-        R['resultat_quotidien'] = 'Au quotidien, tu retrouverais' in T(pg)
+        R['resultat_court_sans_liste'] = 'Au quotidien' not in T(pg) and not has(pg, 'fw-daily')
+        R['resultat_lien_famille_exemple'] = has(pg, 'fw-sample')
+        q = pg.evaluate("() => localStorage.getItem('homi.analytics.queue.v1') || ''")
+        R['mesure_ecrans_et_reponses'] = all(n in q for n in ('onboarding_step_viewed', 'onboarding_answer', 'demo_completed'))
     R[f'debordement_resultat_{w}'] = len(detect(pg, f'resultat_{w}')) == 0
     shoot(pg, f'parcours_4_resultat_{w}')
     # retour arrière puis retour au résultat
@@ -167,28 +190,37 @@ def flow(b, width, height, first):
     title = text_of(pg, 'fw-pw-title')
     if first:
         R['paywall_titre_variante'] = title in ('Repas et siestes, au même endroit', 'Tout HOMI, pour toi et ta famille')
-        R['paywall_apercu_resultat'] = 'Sieste ajoutée' in text_of(pg, 'fw-pw-preview')
+        # B (intégré) : un seul héros, la frise ; l'aperçu du résultat est le héros de A (vérifié sur la maquette A)
+        R['paywall_un_seul_heros'] = has(pg, 'fw-pw-timeline') and not has(pg, 'fw-pw-preview')
         R['paywall_grille_demo_signalee'] = has(pg, 'fw-pw-demo-grid')
         R['paywall_croix_visible'] = has(pg, 'fw-pw-close')
         R['paywall_liens'] = all(has(pg, t) for t in ('fw-pw-restore', 'fw-pw-terms', 'fw-pw-privacy'))
-        R['paywall_mensuel_preselectionne'] = 'Démarrer mes 3 jours gratuits' in text_of(pg, 'fw-pw-cta')
-        R['paywall_frise_date'] = bool(re.search(r'Premier paiement : 14,99 €, puis 14,99 € par mois', text_of(pg, 'fw-pw-timeline')))
-        R['carte_premium_coparent'] = 'Pour toi et ton ou ta co-parent' in text_of(pg, 'fw-plan-premium-monthly')
-        R['carte_famille_foyer_credits'] = 'Tous les adultes du foyer + 1 500 crédits Aura partagés' in text_of(pg, 'fw-plan-family-monthly')
-        R['benefices_max_3'] = pg.locator('[data-testid^="fw-pw-benefit-"]').filter(visible=True).count() <= 3
+        R['paywall_annuel_preselectionne'] = 'Commencer l’essai gratuit' in text_of(pg, 'fw-pw-cta') and pg.locator('[data-testid="fw-plan-premium-annual"][aria-checked="true"]').count() > 0
+        R['paywall_frise_date'] = bool(re.search(r'\d+ \S+\s*119,99 €', text_of(pg, 'fw-pw-timeline'))) and 'Gratuit' in text_of(pg, 'fw-pw-timeline')
+        R['paywall_frise_sans_rappel_web'] = not has(pg, 'fw-pw-tl-remind')
+        R['annuel_montant_total'] = '119,99 €/an' in text_of(pg, 'fw-billed-premium-annual') and '10,00 €/mois' in text_of(pg, 'fw-per-premium-annual')
+        R['annuel_economie_base'] = '33 % vs mensuel' in text_of(pg, 'fw-saving-premium-annual')
+        R['deux_formules_de_tete'] = has(pg, 'fw-plan-premium-monthly') and not has(pg, 'fw-plan-family-monthly') and has(pg, 'fw-pw-more')
+        R['coparent_inclus_une_fois'] = 'Premium : co-parent inclus, sans supplément.' in text_of(pg, 'fw-pw-coparent') and T(pg).count('co-parent') == 1
+        R['pas_de_liste_de_benefices'] = pg.locator('[data-testid^="fw-pw-benefit-"]').filter(visible=True).count() == 0
+        R['pas_de_phrase_24h'] = '24 h' not in T(pg)
+        R['liens_visibles_sans_defiler'] = links_in_view(pg)
     R[f'debordement_paywall_{w}'] = len(detect(pg, f'paywall_{w}')) == 0
     shoot(pg, f'integre_paywall_essai_{w}')
     # changement de formule : tout suit
-    click(pg, 'fw-plan-premium-annual', 900)
+    click(pg, 'fw-plan-premium-monthly', 900)
     if first:
-        R['annuel_montant_total'] = '119,99 € par an' in text_of(pg, 'fw-billed-premium-annual') and 'soit 10,00 € par mois' in text_of(pg, 'fw-plan-premium-annual')
-        R['annuel_economie_base'] = '33 % de moins que 12 × 14,99 €' in text_of(pg, 'fw-plan-premium-annual')
-        R['annuel_frise_suit'] = 'puis 119,99 € par an' in text_of(pg, 'fw-pw-timeline')
-        R['annuel_conditions_suivent'] = 'puis 119,99 €/an' in text_of(pg, 'fw-pw-terms-line')
+        R['mensuel_montant'] = '14,99 €/mois' in text_of(pg, 'fw-billed-premium-monthly')
+        R['mensuel_frise_suit'] = '14,99 €' in text_of(pg, 'fw-pw-timeline') and '119,99' not in text_of(pg, 'fw-pw-timeline')
+        R['mensuel_conditions_suivent'] = 'puis 14,99 €/mois' in text_of(pg, 'fw-pw-terms-line')
+    click(pg, 'fw-pw-more', 900)
+    if first:
+        R['autres_formules_depliees'] = has(pg, 'fw-plan-premium-six_months') and has(pg, 'fw-plan-family-monthly')
+        R['six_mois_economie'] = '22 % vs mensuel' in text_of(pg, 'fw-plan-premium-six_months')
     click(pg, 'fw-plan-family-monthly', 900)
     if first:
-        R['famille_sans_essai_bouton'] = 'S’abonner à 19,99 €/mois' in text_of(pg, 'fw-pw-cta')
-        R['famille_benefices'] = 'Ouvert à tous les adultes du foyer' in text_of(pg, 'fw-pw-benefits')
+        R['famille_sans_essai_bouton'] = 'M’abonner au mois' in text_of(pg, 'fw-pw-cta') and '19,99 €/mois, débité aujourd’hui' in text_of(pg, 'fw-pw-terms-line')
+        R['famille_carte_foyer_credits_sans_essai'] = 'Tous les adultes + 1 500 crédits Aura · sans essai' in text_of(pg, 'fw-plan-family-monthly')
         R['famille_frise_sans_essai'] = 'essai' not in text_of(pg, 'fw-pw-timeline').lower() and 'gratuit' not in text_of(pg, 'fw-pw-timeline').lower()
     shoot(pg, f'integre_paywall_famille_{w}', full=False)
     # croix → résultat de la démo ; « Voir les offres » → retour
@@ -197,7 +229,7 @@ def flow(b, width, height, first):
         R['croix_retour_resultat'] = has(pg, 'fw-step-result') and 'Réveil à' in T(pg)
     click(pg, 'fw-see-offers', 3500)
     if first:
-        R['voir_les_offres_retour'] = has(pg, 'fw-pw-cta') and 'S’abonner à 19,99 €/mois' in text_of(pg, 'fw-pw-cta')
+        R['voir_les_offres_retour'] = has(pg, 'fw-pw-cta') and 'M’abonner au mois' in text_of(pg, 'fw-pw-cta') and has(pg, 'fw-plan-family-monthly')
     click(pg, 'fw-plan-premium-monthly', 800)
     # sans compte : inscription entre le choix et l'achat
     click(pg, 'fw-pw-cta', 3500)
@@ -212,7 +244,7 @@ def flow(b, width, height, first):
     vis(pg, 'signup-submit').first.click(); pg.wait_for_timeout(6000)
     if first:
         R['reprise_apres_inscription'] = '/start/offers' in pg.url and 'Ton compte est prêt' in T(pg)
-        R['formule_gardee'] = 'Démarrer mes 3 jours gratuits' in text_of(pg, 'fw-pw-cta') and pg.locator('[data-testid="fw-plan-premium-monthly"][aria-checked="true"]').count() > 0
+        R['formule_gardee'] = 'Commencer l’essai gratuit' in text_of(pg, 'fw-pw-cta') and pg.locator('[data-testid="fw-plan-premium-monthly"][aria-checked="true"]').count() > 0
     shoot(pg, f'integre_reprise_compte_{w}', full=False)
     # issues d'achat simulées (faux magasin)
     for v, t in (('cancelled', 'fw-pw-state-cancelled'), ('deferred', 'fw-pw-state-deferred'), ('pending', 'fw-pw-state-pending'), ('network', 'fw-pw-state-failed')):
@@ -235,6 +267,7 @@ def flow(b, width, height, first):
         R['confirmation_outil'] = 'Ouvrir le suivi de bébé' in text_of(pg, 'fw-done-open')
         R['confirmation_invitation'] = has(pg, 'fw-done-invite')
         R['confirmation_gestion'] = has(pg, 'fw-done-manage')
+        R['confirmation_comment_arreter'] = 'Réglages › ton nom › Abonnements' in text_of(pg, 'fw-done-stop')
     R[f'debordement_confirmation_{w}'] = len(detect(pg, f'confirmation_{w}')) == 0
     shoot(pg, f'integre_confirmation_{w}')
     click(pg, 'fw-rem-set', 1500)
@@ -265,7 +298,7 @@ def catalog_states(b):
     shoot(pg, 'integre_hors_ligne_390', full=False)
     sim(pg, 'homi.demo.catalog-sim', 'notrial')
     go(pg, '/start/offers', 4000)
-    R['essai_indisponible_bouton'] = 'S’abonner à 14,99 €/mois' in text_of(pg, 'fw-pw-cta') and 'Gratuit' not in text_of(pg, 'fw-pw-terms-line')
+    R['essai_indisponible_bouton'] = 'M’abonner pour un an' in text_of(pg, 'fw-pw-cta') and 'gratuit' not in text_of(pg, 'fw-pw-terms-line').lower() and not has(pg, 'fw-pw-tl-charge')
     shoot(pg, 'integre_paywall_sans_essai_390', full=False)
     sim(pg, 'homi.demo.catalog-sim', None)
     ctx.close()
@@ -284,6 +317,19 @@ def catalog_states(b):
     ctx.close()
 
 
+def welcome_and_sample(b):
+    """Décision de la propriétaire : « Découvrir sans compte » → /start ; famille d'exemple par le lien du résultat."""
+    ctx, pg = context(b, 390, 844)
+    go(pg, '/welcome', 3000)
+    vis(pg, 'welcome-demo').first.click(); pg.wait_for_timeout(3000)
+    R['decouvrir_sans_compte_vers_start'] = '/start' in pg.url and has(pg, 'fw-step-stage')
+    click(pg, 'fw-stage-pregnancy', 1200); click(pg, 'fw-need-prepare_birth', 1500); click(pg, 'fw-check-0', 2500)
+    click(pg, 'fw-sample', 6000)
+    R['lien_famille_exemple'] = '/start' not in pg.url and 'Lina' in T(pg)
+    shoot(pg, 'famille_exemple_depuis_resultat_390', full=False)
+    ctx.close()
+
+
 def english_large_reduced(b):
     ctx, pg = context(b, 390, 844, locale='en-US', reduced='reduce')
     go(pg, '/', 4500)
@@ -292,7 +338,7 @@ def english_large_reduced(b):
     R['en_etape'] = 'Where is your family at?' in T(pg)
     click(pg, 'fw-stage-baby', 1000); click(pg, 'fw-need-feed_sleep', 1500); click(pg, 'fw-add-nap', 2000)
     click(pg, 'fw-see-offers', 4500)
-    R['en_paywall'] = 'Start my 3 free days' in text_of(pg, 'fw-pw-cta') and 'Renews automatically' in text_of(pg, 'fw-pw-terms-line')
+    R['en_paywall'] = 'Start free trial' in text_of(pg, 'fw-pw-cta') and 'Renews automatically, cancel anytime' in text_of(pg, 'fw-pw-terms-line')
     R['reduction_mouvements_rendu'] = has(pg, 'fw-pw-cta')
     shoot(pg, 'integre_paywall_en_390', full=False)
     # Texte agrandi (approximation web : zoom 130 %)
@@ -309,6 +355,7 @@ with sync_playwright() as p:
     for i, (wd, ht) in enumerate(((390, 844), (320, 568))):
         flow(b, wd, ht, i == 0)
     catalog_states(b)
+    welcome_and_sample(b)
     english_large_reduced(b)
     b.close()
 

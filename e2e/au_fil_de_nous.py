@@ -27,7 +27,7 @@ def run(p):
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate("p => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': 'light'})
     pg.goto(B + '/'); pg.wait_for_timeout(4000)
     R['fond_rose_poudre'] = rgb(pg, 'bg-powder') == 'rgb(242, 221, 216)'

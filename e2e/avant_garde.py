@@ -38,7 +38,7 @@ with sync_playwright() as p:
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     go(pg, '/welcome')
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3000)
     # données d'exemple d'« Avant la garde » retirées : le parcours part de zéro
     R['demo_exemple_present'] = demo(pg, "s => (s.tables.childcare_candidates||[]).length >= 3 && (s.tables.childcare_events||[]).length > 0")

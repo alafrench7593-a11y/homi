@@ -286,6 +286,7 @@ export const APP_ROUTES: readonly string[] = [
   '/start',
   '/start/done',
   '/start/offers',
+  '/start/sample',
   '/story',
   '/summary',
   '/teeth',

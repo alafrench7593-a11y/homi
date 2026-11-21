@@ -29,12 +29,13 @@ export function AuraBubble({ text, testID = 'fw-aura' }: { text: string; testID?
 }
 
 /** Surface d'une démo : titre, pastille « Exemple » (données fictives, rien n'est enregistré). */
-export function DemoCard({ title, children, testID }: { title: string; children: React.ReactNode; testID?: string }) {
+export function DemoCard({ title, children, testID, compact }: { title: string; children: React.ReactNode; testID?: string; compact?: boolean }) {
   const th = useTheme();
   return (
     <View testID={testID} style={{ borderRadius: radius.lg, borderWidth: 1, borderColor: th.tokens.border.rest, backgroundColor: th.tokens.surface.opaque, padding: spacing.md, gap: spacing.sm }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap' }}>
-        <Text variant="heading" accessibilityRole="header" style={{ flexShrink: 1 }}>{title}</Text>
+        {/* Écran résultat (compact) : le titre de l'écran suffit, la pastille « Exemple » reste */}
+        {!compact ? <Text variant="heading" accessibilityRole="header" style={{ flexShrink: 1 }}>{title}</Text> : null}
         <View accessible accessibilityLabel={tr('fw.exampleA11y')}><ExampleBadge label={tr('fw.example')} /></View>
       </View>
       {children}

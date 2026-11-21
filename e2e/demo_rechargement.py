@@ -17,7 +17,7 @@ with sync_playwright() as p:
     pg = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR').new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(3000)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     for path in ['/household', '/family/missions', '/settings']:
         pg.goto(B + path); pg.wait_for_timeout(4000)
         R[f'adresse_directe{path}'] = pg.url.split('?')[0].endswith(path)

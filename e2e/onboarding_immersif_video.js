@@ -34,7 +34,7 @@ async function drag(pg, dx) {
   const pg = await ctx.newPage();
   await pg.route('http://sb.fake.test/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
   await pg.goto(`${B}/welcome`); await pg.waitForTimeout(2500);
-  await pg.getByRole('button', { name: 'Découvrir sans compte' }).click(); await pg.waitForTimeout(4500);
+  await pg.evaluate(() => location.assign('/start/sample')); await pg.waitForTimeout(4500);
   await pg.goto(`${B}/onboarding`);
   await tid(pg, 'onb-start').waitFor({ state: 'visible', timeout: 20000 });
   await pg.waitForTimeout(2600);

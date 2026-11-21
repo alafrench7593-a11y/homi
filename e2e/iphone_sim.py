@@ -153,7 +153,7 @@ def main():
         welcome_err = 'a rencontré un problème' in pg.inner_text('body')
         if welcome_err:
             res['errors']['/welcome (avant démo)'] = pg.locator('[data-testid="error-detail"]').first.inner_text() if pg.locator('[data-testid="error-detail"]').count() else '?'
-        pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+        pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
         pg.evaluate(SEED)
         ids = pg.evaluate(TABLES)
         # identifiants du contenu fourni avec l'appli (src/content, src/lib/recipes) et des lignes ajoutées par SEED

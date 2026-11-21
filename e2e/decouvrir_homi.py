@@ -152,7 +152,7 @@ def run(p):
     pg.goto(B + '/discover'); pg.wait_for_timeout(500)
     pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.ui') || '{\"state\":{},\"version\":0}'); s.state.cinematicSeen = true; s.state.introSeen = true; localStorage.setItem('toietmoi.ui', JSON.stringify(s)); }")
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_role('button', name='Découvrir sans compte').click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.goto(B + '/settings'); pg.wait_for_timeout(2500)
     row = pg.locator(TID('settings-discover')).first
     row.scroll_into_view_if_needed()

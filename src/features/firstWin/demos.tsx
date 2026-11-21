@@ -23,7 +23,13 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { DemoCard } from './kit';
 import type { DemoResult } from './model';
 
-export interface DemoProps { onDone: (r: DemoResult) => void; result: DemoResult | null; now?: Date }
+export interface DemoProps {
+  onDone: (r: DemoResult) => void;
+  result: DemoResult | null;
+  now?: Date;
+  /** Écran « résultat » : seulement ce qui vient d'être fait (la démo complète reste sur l'écran précédent) */
+  compact?: boolean;
+}
 
 const MIN = 60_000;
 const nowOf = (now?: Date) => now ?? new Date();
@@ -33,8 +39,9 @@ export const CHECKLIST_DEMO_COUNT = 5;
 export const checklistItems = (): string[] => CHECKLIST_TEMPLATES.maternity_bag.items.slice(0, CHECKLIST_DEMO_COUNT);
 export const checklistLabel = (key: string) => checklistItems()[Number(key.split(':')[1] ?? 0)] ?? '';
 
-export function ChecklistDemo({ onDone, result, now }: DemoProps) {
-  const items = checklistItems();
+export function ChecklistDemo({ onDone, result, now, compact }: DemoProps) {
+  const all = checklistItems();
+  const items = compact ? all.slice(0, 3) : all;
   const [done, setDone] = useState<Set<number>>(() => new Set(result ? [Number(result.itemKey.split(':')[1])] : []));
   function toggle(i: number, next: boolean) {
     const s = new Set(done);
@@ -43,8 +50,8 @@ export function ChecklistDemo({ onDone, result, now }: DemoProps) {
     if (next && !result) onDone({ kind: 'checklist', itemKey: `maternity_bag:${i}`, at: nowOf(now).toISOString() });
   }
   return (
-    <DemoCard title={tr('fw.demo.checklist.title')} testID="fw-demo-checklist">
-      <Text variant="small" muted testID="fw-checklist-progress">{tr('fw.demo.checklist.progress', { done: done.size, total: items.length, count: done.size })}</Text>
+    <DemoCard title={tr('fw.demo.checklist.title')} testID="fw-demo-checklist" compact={compact}>
+      <Text variant="small" muted testID="fw-checklist-progress">{tr('fw.demo.checklist.progress', { done: done.size, total: all.length, count: done.size })}</Text>
       <View style={{ gap: 2 }}>
         {items.map((label, i) => (
           <CompletionGlow key={label} done={done.has(i)} radius={radius.md}>
@@ -70,18 +77,18 @@ export const DEMO_BOTTLE = { ml: 150, minutesAgo: 50 };
 const napResult = (now?: Date): DemoResult => ({ kind: 'sleepLog', itemKey: 'nap', at: nowOf(now).toISOString() });
 const birthSevenMonths = (now: Date) => { const d = new Date(now); d.setMonth(d.getMonth() - 7); return d.toISOString().slice(0, 10); };
 
-export function SleepLogDemo({ onDone, result, now }: DemoProps) {
+export function SleepLogDemo({ onDone, result, now, compact }: DemoProps) {
   const at = useMemo(() => (result ? new Date(result.at) : nowOf(now)), [result, now]);
   const added = !!result;
   const plan = useMemo(() => planDay({ childId: 'demo', birthDate: birthSevenMonths(at), sleeps: sleepDemoRecords(at, added), now: at }), [at, added]);
   const meal = new Date(at.getTime() - DEMO_BOTTLE.minutesAgo * MIN);
   return (
-    <DemoCard title={tr('fw.demo.sleepLog.title')} testID="fw-demo-sleepLog">
+    <DemoCard title={tr('fw.demo.sleepLog.title')} testID="fw-demo-sleepLog" compact={compact}>
       <View style={{ flexDirection: 'row', gap: spacing.sm }}>
         <Tile icon="coffee" label={tr('fw.demo.sleepLog.lastMeal')} value={tr('fw.demo.sleepLog.meal', { ml: formatNumber(DEMO_BOTTLE.ml), time: formatTime(meal) })} testID="fw-last-meal" />
         <Tile icon="moon" label={tr('fw.demo.sleepLog.lastNap')} value={added ? tr('fw.demo.sleepLog.napValue', { time: formatTime(at), minutes: formatNumber(45) }) : tr('fw.demo.sleepLog.none')} highlight={added} testID="fw-last-nap" />
       </View>
-      <SleepTimeline plan={plan} showEstimates now={at} />
+      {!compact ? <SleepTimeline plan={plan} showEstimates now={at} /> : null}
       {!added ? (
         <Button label={tr('fw.demo.sleepLog.add')} icon="plus" size="lg" full onPress={() => onDone(napResult(now))} testID="fw-add-nap" />
       ) : null}
@@ -109,7 +116,7 @@ export const ROUTINE_BASE = ['weather-sunny', 'toilet', 'food-croissant', 'tooth
 export const ROUTINE_MISSING = ['tshirt-crew', 'shoe-sneaker'] as const;
 export const pictoLabel = (icon: string) => tr(`kr.p.${icon.replace(/-/g, '_')}` as TKey);
 
-export function RoutineDemo({ onDone, result, now }: DemoProps) {
+export function RoutineDemo({ onDone, result, now, compact }: DemoProps) {
   const th = useTheme();
   const [steps, setSteps] = useState<string[]>(() => (result ? [...ROUTINE_BASE, result.itemKey] : [...ROUTINE_BASE]));
   const [checked, setChecked] = useState<Set<string>>(() => new Set(result ? ['weather-sunny', 'toilet', result.itemKey] : ['weather-sunny', 'toilet']));
@@ -120,7 +127,7 @@ export function RoutineDemo({ onDone, result, now }: DemoProps) {
     if (icon === extra && !result) onDone({ kind: 'routine', itemKey: icon, at: nowOf(now).toISOString() });
   }
   return (
-    <DemoCard title={tr('fw.demo.routine.title')} testID="fw-demo-routine">
+    <DemoCard title={tr('fw.demo.routine.title')} testID="fw-demo-routine" compact={compact}>
       <Text variant="small" muted>{tr('fw.demo.routine.done', { done: checked.size, total: steps.length, count: checked.size })}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }} accessibilityRole="list">
         {steps.map((icon) => {
@@ -158,11 +165,12 @@ export function RoutineDemo({ onDone, result, now }: DemoProps) {
 const SHARED: TKey[] = ['fw.demo.relay.s.calendar', 'fw.demo.relay.s.tasks', 'fw.demo.relay.s.kids', 'fw.demo.relay.s.shopping'];
 const PRIVATE: TKey[] = ['fw.demo.relay.p.mood', 'fw.demo.relay.p.cycle', 'fw.demo.relay.p.weight'];
 
-export function RelayDemo({ onDone, result, now }: DemoProps) {
+export function RelayDemo({ onDone, result, now, compact }: DemoProps) {
   const th = useTheme();
   const sent = !!result;
   return (
-    <DemoCard title={tr('fw.demo.relay.title')} testID="fw-demo-relay">
+    <DemoCard title={tr('fw.demo.relay.title')} testID="fw-demo-relay" compact={compact}>
+      {!compact ? (<>
       <View style={{ gap: 6 }} accessibilityRole="list" accessibilityLabel={tr('fw.demo.relay.shared')}>
         <Text variant="label">{tr('fw.demo.relay.shared')}</Text>
         {SHARED.map((k) => (
@@ -179,6 +187,7 @@ export function RelayDemo({ onDone, result, now }: DemoProps) {
           </View>
         ))}
       </View>
+      </>) : null}
       {sent ? (
         <CompletionGlow done radius={radius.md}>
           <View testID="fw-relay-sent" style={{ borderRadius: radius.md, padding: spacing.sm, backgroundColor: th.material.lines.iconWell, flexDirection: 'row', gap: spacing.xs }}>

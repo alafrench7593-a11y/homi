@@ -11,7 +11,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.on('request', lambda r: yt.append(r.url) if ('youtube' in r.url or 'ytimg' in r.url or 'googlevideo' in r.url) else None)
     pg.goto(B+'/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3000)
     pg.goto(B+'/family/solo'); pg.wait_for_timeout(3000)
     tid(pg,'sol-videos').scroll_into_view_if_needed(); pg.wait_for_timeout(500)

@@ -67,7 +67,7 @@ def run(p):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     # 150 recettes du nouveau catalogue + 16 de « Bien manger enceinte » (lot-07, ajoutées par 877b21e)
     R['ancien_catalogue_supprime'] = not os.path.isdir(os.path.join(HERE, '..', 'src', 'content', 'recipes', 'drafts')) and len(DRAFTS) == 166
     pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); (" + INJECT_DRAFT + ")(s); localStorage.setItem('toietmoi.demo.v1', JSON.stringify(s)); }")

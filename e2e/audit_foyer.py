@@ -92,7 +92,7 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris')
     pg = ctx.new_page(); watch(pg, 'demo')
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3000)
     camille = demo(pg)['session']['userId']
     pg.goto(B + '/family/missions'); pg.wait_for_timeout(3000)

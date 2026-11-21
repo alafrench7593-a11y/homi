@@ -85,6 +85,7 @@ export function FirstWinOffers() {
     if (!card || phase === 'buying') return;
     if (!session) return needAccount('/auth/sign-up');
     setPhase('buying');
+    void track('purchase_started', { ...props, tier: card.tier, period: card.period, trial: card.trialDays > 0 });
     try {
       const out = await purchasesSdk().purchase(card.plan as Plan);
       inv('subscriptions'); inv('access'); inv('premium');
@@ -129,7 +130,7 @@ export function FirstWinOffers() {
 
   return (
     <PaywallView direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
-      onSelect={select} catalog={catalog} phase={phase} aiOnline={aiAssistantOnline()} now={now} resume={resume === '1' && !!session}
+      onSelect={select} catalog={catalog} phase={phase} aiOnline={aiAssistantOnline()} now={now} reminder={Platform.OS === 'ios' || Platform.OS === 'android'} resume={resume === '1' && !!session}
       needsAccount={!session} onBuy={() => void buy()} onRetry={refetch} onRestore={() => void restore()} onClose={close}
       onLegal={(doc) => router.push(`/legal/${doc}`)} />
   );

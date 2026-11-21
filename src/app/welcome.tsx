@@ -5,9 +5,11 @@
  *  - un titre aéré, une phrase ;
  *  - hiérarchie des actions : « Commencer » (principal) → « J'ai déjà un compte » (secondaire sobre) →
  *    « Découvrir sans compte » (lien).
+ * Les deux premiers boutons sans compte mènent au parcours /start (démo guidée par Aura AVANT tout compte, décision
+ * de la propriétaire du 04/12/2026) ; la famille d'exemple reste accessible depuis le résultat de la démo (/start/sample).
  * Texte et boutons sont rendus dès la première image : seule l'illustration arrive en douceur.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,7 +20,6 @@ import { Tappable } from '@/components/Tappable';
 import { BrandWordmark } from '@/components/BrandLogo';
 import { HeroArt, heroSize } from '@/features/entry/HeroArt';
 import { isDemo } from '@/lib/backend';
-import { startDemoWithoutAccount } from '@/lib/demoMode';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -33,18 +34,6 @@ export default function Welcome() {
   const short = win.height < 640;
   // Illustration : la plus grande possible en gardant titre et trois actions au premier écran (320 × 568 compris)
   const art = heroSize(win, { max: 300, min: 132, reserve: short ? 420 : 500 });
-  const [starting, setStarting] = useState(false);
-
-  async function demo() {
-    if (starting) return;
-    setStarting(true);
-    try {
-      await startDemoWithoutAccount();
-      router.replace('/(tabs)');
-    } finally {
-      setStarting(false);
-    }
-  }
 
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.background }}>
@@ -84,9 +73,9 @@ export default function Welcome() {
 
         {/* Une action principale, une secondaire sobre, un lien */}
         <View style={{ gap: spacing.xs, marginTop: short ? spacing.md : spacing.xl, alignSelf: 'stretch' }}>
-          <Button label={tr('welcome.start')} size="lg" full onPress={() => router.push('/start' as never)} testID="welcome-start" />
+          <Button label={tr('welcome.start')} size="lg" full onPress={() => router.push('/start?from=welcome_start' as never)} testID="welcome-start" />
           <Button label={tr('e5.welcome.haveAccount')} variant="secondary" size="lg" full onPress={() => router.push('/auth/sign-in')} testID="welcome-sign-in" />
-          <Button label={tr('welcome.demo')} variant="ghost" full loading={starting} onPress={demo} testID="welcome-demo" />
+          <Button label={tr('welcome.demo')} variant="ghost" full onPress={() => router.push('/start?from=welcome_demo' as never)} testID="welcome-demo" />
         </View>
         {isDemo ? <Text variant="caption" center muted style={{ marginTop: spacing.xs }}>{tr('demo.banner')}</Text> : null}
       </ScrollView>

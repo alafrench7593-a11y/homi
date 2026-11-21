@@ -31,7 +31,7 @@ with sync_playwright() as p:
         pg = b.new_page(viewport={'width': w, 'height': h}, locale='fr-FR')
         pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
         pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-        pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+        pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
         pg.evaluate(SIMPLE_OFF); pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3000)
         R[f'{name}_onglets'] = [t.get_attribute('aria-label') for t in pg.locator('[role="tab"][data-testid^="tab-"]').all()]
         R[f'{name}_profil_hors_barre'] = not has(pg, 'tab-profile') and len(R[f'{name}_onglets']) == 5

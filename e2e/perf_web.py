@@ -81,7 +81,7 @@ def run(p, variant):
     R['welcome_fcp_ms'] = round(pg.evaluate("(performance.getEntriesByName('first-contentful-paint')[0] || {}).startTime || 0"))
     R['welcome_long_tasks'] = pg.evaluate('[window.__lt.length, Math.round(window.__lt.reduce((a, [, d]) => a + d, 0))]')
     pg.wait_for_timeout(1500)
-    pg.get_by_text('Découvrir sans compte').first.click()
+    pg.evaluate("() => location.assign(\'/start/sample\')")
     pg.wait_for_selector('[data-testid^="home-card-"]', timeout=120000)
     pg.evaluate(PREMIUM_ON)
     # 2. Accueil (démo + Premium) après rechargement : cache HTTP chaud, session de démo rétablie

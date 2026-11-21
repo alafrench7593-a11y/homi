@@ -321,7 +321,7 @@ with sync_playwright() as p:
     ctx, pg = new_page(b)
     pg.goto(B + '/welcome'); wait_text(pg, 'Découvrir sans compte', 15)
     rest_before = len([c for c in fake.calls if c[1].startswith('/rest/')])
-    pg.get_by_role('button', name='Découvrir sans compte').click()
+    pg.evaluate("() => location.assign(\'/start/sample\')")
     R['H_demo_entree'] = wait_text(pg, 'Lina', 15)
     R['H_demo_sans_appel_serveur'] = len([c for c in fake.calls if c[1].startswith('/rest/')]) == rest_before
     q = pg.get_by_role('button', name=re.compile('Quitter la démonstration'))

@@ -65,7 +65,7 @@ def run(p):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     hid = demo(pg, f"s => s.tables.children.find(c => c.id === '{lina}').household_id")
     birth = (TODAY - timedelta(days=190)).date().isoformat()  # ≈ 6 mois

@@ -68,7 +68,7 @@ def run(p):
     pg.route(re.compile(r'https://tile\.openstreetmap\.org/.*'), lambda route: route.fulfill(status=200, content_type='image/png', body=PNG))
 
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
     hid = demo(pg, f"s => s.tables.children.find(c => c.id === '{lina}').household_id")

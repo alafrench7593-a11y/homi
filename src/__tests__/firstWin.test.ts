@@ -14,8 +14,8 @@ import {
   PROGRESS_TTL_MS, resumeRoute, saveProgress, loadProgress, stepFor, STAGES, TOOL_ROUTE,
 } from '@/features/firstWin/model';
 import {
-  benefitsFor, canBuy, catalogState, confirmedChargeDate, ctaFor, defaultOfferKey, offerCards, phaseView, savingVsMonthly,
-  termsFor, timelineFor, type OfferPlan,
+  benefitsFor, canBuy, cardDetail, catalogState, confirmedChargeDate, ctaFor, DEFAULT_OFFER, defaultOfferKey, offerCards, phaseView,
+  savingVsMonthly, splitOffers, termsFor, timelineFor, type OfferPlan,
 } from '@/features/firstWin/offer';
 import { reminderAt, reminderContent } from '@/features/firstWin/trialReminder';
 import { __analyticsReset, __readQueue, configureAnalytics, sanitize, track, trimQueue, type QueuedEvent } from '@/lib/analytics/events';
@@ -112,21 +112,38 @@ describe('progression gardée à travers l’inscription', () => {
 
 describe('cartes : montant total facturé, équivalent mensuel, économie avec sa base', () => {
   const cards = offerCards(prem(), fam(), 'fr-FR');
-  it('Premium (3 durées) puis Famille ; accès inclus écrit sur chaque carte', () => {
-    expect(cards.map((c) => c.key)).toEqual(['premium:monthly', 'premium:six_months', 'premium:annual', 'family:monthly']);
+  it('annuel puis mensuel (formules de tête), puis 6 mois et Famille ; accès inclus gardé pour VoiceOver', () => {
+    expect(cards.map((c) => c.key)).toEqual(['premium:annual', 'premium:monthly', 'premium:six_months', 'family:monthly']);
     expect(cards[0].access).toBe('Pour toi et ton ou ta co-parent');
     expect(nb(cards[3].access)).toBe('Tous les adultes du foyer + 1 500 crédits Aura partagés');
     expect(cards[3].name).toBe('Famille');
   });
   it('annuel : montant débité en évidence, équivalent mensuel en complément, économie vs 12 × mensuel', () => {
-    const a = cards[2];
-    expect(nb(a.billed)).toBe('119,99 € par an');
+    const a = cards[0];
+    expect(nb(a.billed)).toBe('119,99 €/an');
     expect(nb(a.monthly!)).toBe('soit 10,00 € par mois');
     expect(nb(a.saving!)).toBe('33 % de moins que 12 × 14,99 €');
-    expect(nb(cards[1].saving!)).toBe('22 % de moins que 6 × 14,99 €');
-    expect(cards[0].monthly).toBeNull();
-    expect(cards[0].saving).toBeNull();
+    expect(nb(cards[2].saving!)).toBe('22 % de moins que 6 × 14,99 €');
+    expect(cards[1].monthly).toBeNull();
+    expect(cards[1].saving).toBeNull();
     expect(cards[3].saving).toBeNull();
+  });
+  it('carte : deux lignes au plus, rien de répété d’une carte à l’autre ; Famille dit qu’elle n’a pas d’essai', () => {
+    const d = cards.map((c) => cardDetail(c, { othersHaveTrial: true }));
+    expect(nb(d[0].per!)).toBe('10,00 €/mois');
+    expect(nb(d[0].saving!)).toBe('−33 % vs mensuel');
+    expect(d[1]).toEqual({ per: null, saving: null, note: null });
+    expect(nb(d[3].note!)).toBe('Tous les adultes + 1 500 crédits Aura · sans essai');
+    const lines = d.flatMap((x) => [x.per, x.saving, x.note]).filter(Boolean);
+    expect(new Set(lines).size).toBe(lines.length);
+    // un essai Famille confirmé un jour : crédits annoncés au premier paiement (0 pendant l'essai), pas de « sans essai »
+    expect(nb(cardDetail({ ...cards[3], trialDays: 3 }, { othersHaveTrial: true }).note!)).toBe('Tous les adultes + 1 500 crédits Aura, à partir du premier paiement');
+  });
+  it('formules de tête (annuel, mensuel) et « Autres formules » (6 mois, Famille)', () => {
+    const { lead, more } = splitOffers(cards);
+    expect(lead.map((c) => c.key)).toEqual(['premium:annual', 'premium:monthly']);
+    expect(more.map((c) => c.key)).toEqual(['premium:six_months', 'family:monthly']);
+    expect(splitOffers(cards.filter((c) => c.tier === 'family')).lead).toHaveLength(1);
   });
   it('aucune économie sans base (mensuel absent ou autre devise)', () => {
     const p = { amount: 100, currency: 'EUR', period: 'annual' } as const;
@@ -134,9 +151,11 @@ describe('cartes : montant total facturé, équivalent mensuel, économie avec s
     expect(savingVsMonthly(p, { amount: 14.99, currency: 'USD' })).toBeNull();
     expect(savingVsMonthly({ ...p, amount: 200 }, { amount: 14.99, currency: 'EUR' })).toBeNull();
   });
-  it('formule présélectionnée : celle choisie avant l’inscription, sinon le mensuel Premium', () => {
-    expect(defaultOfferKey(cards, 'premium:annual')).toBe('premium:annual');
-    expect(defaultOfferKey(cards, 'family:annual')).toBe('premium:monthly');
+  it('formule présélectionnée : celle choisie avant l’inscription, sinon l’annuel Premium, sinon le mensuel', () => {
+    expect(DEFAULT_OFFER).toBe('premium:annual');
+    expect(defaultOfferKey(cards, 'premium:monthly')).toBe('premium:monthly');
+    expect(defaultOfferKey(cards, 'family:annual')).toBe('premium:annual');
+    expect(defaultOfferKey(cards.filter((c) => c.key !== 'premium:annual'), null)).toBe('premium:monthly');
     expect(defaultOfferKey([], null)).toBeNull();
   });
   it('la grille de démonstration correspond aux tarifs de référence (France)', () => {
@@ -164,29 +183,40 @@ describe('bénéfices : au plus 3, réellement disponibles dans la formule chois
 
 describe('frise, bouton et conditions', () => {
   const [annual, , monthly] = prem();
-  it('essai confirmé : « Démarrer mes 3 jours gratuits », gratuit jusqu’au 6 décembre puis 14,99 €/mois', () => {
-    expect(ctaFor(monthly)).toBe('Démarrer mes 3 jours gratuits');
-    expect(nb(termsFor(monthly, NOW))).toBe('Gratuit jusqu’au 6 décembre, puis 14,99 €/mois. Renouvellement automatique.');
+  it('essai confirmé : bouton « Commencer l’essai gratuit », ligne légale du gabarit, frise jusqu’au 6 décembre', () => {
+    expect(ctaFor(monthly)).toBe('Commencer l’essai gratuit');
+    expect(nb(termsFor(monthly))).toBe('3 jours gratuits, puis 14,99 €/mois. Renouvellement automatique, annulable à tout moment.');
+    expect(nb(termsFor(monthly)).split(/\s+/).length).toBeLessThanOrEqual(20);
     const tl = timelineFor(monthly, { now: NOW });
     expect(tl.steps.map((s) => s.key)).toEqual(['today', 'charge']);
     expect(tl.steps[1].title).toBe('6 décembre');
-    expect(nb(tl.steps[1].body)).toBe('Premier paiement : 14,99 €, puis 14,99 € par mois.');
+    expect(nb(tl.steps[1].body)).toBe('14,99 €');
+    expect(tl.steps[0].body).toBe('Gratuit');
     expect(tl.caption).toBe('Dates calculées pour un démarrage aujourd’hui.');
     expect(tl.confirmed).toBe(false);
   });
-  it('sans essai confirmé : aucun mot sur l’essai, « S’abonner à 14,99 €/mois » (montant du magasin)', () => {
+  it('rappel : étape « la veille » seulement si l’appareil peut le programmer, jamais dans le passé', () => {
+    const tl = timelineFor(annual, { now: NOW, reminder: true });
+    expect(tl.steps.map((s) => s.key)).toEqual(['today', 'remind', 'charge']);
+    expect(tl.steps[1].title).toBe('5 décembre');
+    expect(tl.steps[1].body).toBe('Rappel, si tu l’actives');
+    expect(timelineFor({ ...annual, trialDays: 0 }, { now: NOW, reminder: true }).steps.map((s) => s.key)).toEqual(['today', 'renew']);
+    expect(timelineFor(annual, { now: NOW, reminder: true, confirmedFirstCharge: new Date(NOW.getTime() + 3_600_000) }).steps.map((s) => s.key)).toEqual(['today', 'charge']);
+  });
+  it('sans essai confirmé : aucun mot sur l’essai, bouton qui dit la durée, montant dans la ligne légale', () => {
     const m = { ...monthly, trialDays: 0 };
-    expect(nb(ctaFor(m))).toBe('S’abonner à 14,99 €/mois');
-    expect(nb(termsFor(m, NOW))).toBe('14,99 €/mois, débité aujourd’hui. Renouvellement automatique.');
+    expect(nb(ctaFor(m))).toBe('M’abonner au mois');
+    expect(nb(termsFor(m))).toBe('14,99 €/mois, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.');
     const tl = timelineFor(m, { now: NOW });
     expect(tl.steps.map((s) => s.key)).toEqual(['today', 'renew']);
     expect(tl.steps[1].title).toBe('3 janvier 2027');
     expect(tl.steps.map((s) => s.body).join(' ')).not.toMatch(/essai|gratuit/i);
-    expect(nb(ctaFor({ ...annual, trialDays: 0 }))).toBe('S’abonner à 119,99 €/an');
+    expect(nb(ctaFor({ ...annual, trialDays: 0 }))).toBe('M’abonner pour un an');
   });
   it('changement de formule : montant et périodicité de la frise suivent la formule', () => {
-    expect(nb(timelineFor(annual, { now: NOW }).steps[1].body)).toBe('Premier paiement : 119,99 €, puis 119,99 € par an.');
-    expect(nb(timelineFor(fam()[0], { now: NOW }).steps[0].body)).toBe('Accès complet tout de suite. Premier paiement : 19,99 € par mois.');
+    expect(nb(timelineFor(annual, { now: NOW }).steps[1].body)).toBe('119,99 €');
+    expect(nb(timelineFor(fam()[0], { now: NOW }).steps[0].body)).toBe('Paiement : 19,99 €');
+    expect(nb(timelineFor(fam()[0], { now: NOW }).steps[1].body)).toBe('Renouvellement : 19,99 € par mois.');
   });
   it('après l’achat : date confirmée par le serveur', () => {
     const d = confirmedChargeDate({ status: 'trial', trial_ends_at: '2026-12-06T09:00:00Z', expires_at: '2026-12-06T09:00:00Z' });
@@ -199,7 +229,7 @@ describe('frise, bouton et conditions', () => {
   });
   it('prix et montants ne viennent que du Plan : un prix de boutique différent est repris tel quel', () => {
     const store: OfferPlan = { id: 'homi_premium_monthly', period: 'monthly', price: '15,99 €', amount: 15.99, currency: 'EUR', trialDays: 0, demo: false };
-    expect(nb(ctaFor(store))).toBe('S’abonner à 15,99 €/mois');
+    expect(nb(termsFor(store))).toBe('15,99 €/mois, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.');
   });
 });
 

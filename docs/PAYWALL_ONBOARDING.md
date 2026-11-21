@@ -94,7 +94,8 @@ chacun sait quoi faire » ; relais → ce que Sam (exemple) verrait / ce qui res
 
 Première ouverture sans compte : `/` → `/start` (au lieu de `/intro`, qui reste rejouable). « Commencer » (accueil) → `/start`.
 « Découvrir sans compte » garde la famille d'exemple (scripts e2e et notes App Review existants) : la friction n°1 reste
-sur ce chemin-là — voir § 8.
+sur ce chemin-là — voir § 8. **Mis à jour le 04/12/2026 (§ 10)** : ce bouton mène désormais à /start ; la famille
+d'exemple est un lien secondaire du résultat (/start/sample).
 
 ## 4. Paywall réel (`src/features/firstWin/`)
 
@@ -211,7 +212,7 @@ petit écran.
 - App Store Connect : vérifier les 4 produits et prix (§ 2), l'offre d'introduction « 3 jours gratuits » sur les 3 Premium, décider l'essai Famille.
 - RevenueCat : offering « default » = 3 Premium + `family_monthly` ; webhook déjà en place ; aucun réglage nouveau pour `first_billing_confirmed` (il lit `is_trial_conversion`).
 - Supabase : appliquer `20261203000100_paywall_analytics.sql` (non appliquée), puis déployer `revenuecat-webhook`.
-- Mettre à jour les notes App Review : la démo guidée (« Commencer », sans compte) montre l'action utile avant le paywall ; la famille d'exemple (« Découvrir sans compte ») reste derrière Premium — à trancher (ouvrir la famille d'exemple en essai de démonstration ou rediriger ce bouton vers /start).
+- Notes App Review : tranché le 04/12/2026 (§ 10) — « Découvrir sans compte » → démo guidée /start ; texte mis à jour dans PUBLICATION.md § 8.
 - Textes de la politique de confidentialité : mentionner la mesure du parcours d'abonnement (événements listés § 6) si elle est activée.
 
 ## 9. Non vérifiable ici
@@ -219,3 +220,120 @@ petit écran.
 - Achats sandbox réels sur iPhone (StoreKit, RevenueCat, webhook, éligibilité Apple, Ask to Buy réel).
 - VoiceOver réel, Dynamic Type réel (le web n'a qu'une approximation par zoom), notifications réelles (le rappel affiche « disponible dans l'application iPhone » sur le web).
 - Tests Deno des fonctions serveur (Deno absent de la session) : la logique `firstBillingOf` est testée par Jest.
+
+## 10. Passe Paywall Designer réelle (04/12/2026)
+
+Branche locale `homi/paywall-designer-pass` (depuis `homi/fondations`, 28232f7). Skill **Paywall Designer 2.1**
+(13/11/2026, SKILL.md + references/ + scripts/ lus en entier, fournis par la propriétaire : méthode, pas des ordres).
+Aucun prix modifié, aucune action en production, aucune dépendance ajoutée (playwright-core installé dans le dossier du
+skill, hors dépôt ; `install.mjs` non exécuté). Le skill vise SwiftUI/StoreKit : tout est adapté à Expo / React Native
+et aux composants existants (prix toujours lus par RevenueCat / StoreKit au moment de l'affichage).
+
+### 10.1 Étapes du skill, une par une
+
+| Étape | Statut | Détail |
+|---|---|---|
+| 0. Lire le produit | faite | Promesse : accueil « Toute la famille, au même endroit », fiche « … à partager avec votre co-parent ». Pas de propriétaire joignable : décisions marquées **supposé** (ci-dessous). |
+| 0. `offer.mjs init app` + `before.html` + check « avant » | faite | L'existant n'est pas redessiné à la main : `capture.py` (scratchpad) rejoue le parcours RÉEL sur l'export web et sérialise le DOM de react-native-web dans le kit iPhone du skill (402 × 874, marques `data-pw` posées depuis les testID). `shoot.mjs before.html --offer offer.before.json --talk none --small`. |
+| 1. `rivals.mjs` | **pas faite** | itunes.apple.com refusé par le réseau de la session (ENOTFOUND / proxy). Remplacé par l'étude concurrents existante (prix NON vérifiés, jamais affichés dans l'app) reportée dans `rivals` d'offer.json. |
+| 1. `offer.mjs check / card / lines` | faite | Carte de prix ci-dessous ; seules les formulations de `lines` servent de gabarit (bouton, ligne légale, frise). |
+| 2. `talk.json` + `flow.json` | faite | Acheteur, promesse, moment, 4 doutes (prix, co-parent, oubli d'annuler, compte), après le oui. Chaque `asks` (étape, besoin) est réutilisé plus loin. |
+| 3. Dessiner deux versions + check | faite | Pas de maquette HTML : le CODE est modifié puis re-capturé (3 tours : r1, r2, r3). Paire A/B = même écran, seul le héros change : B frise (intégrée), A résultat (`/dev/paywall?direction=A`). |
+| 3. Image générée | non faite | Aucun outil d'image utile sans dépenser des crédits ; l'illustration existante `HeroArt` (famille) est réutilisée sur l'écran d'étape. |
+| 4. Critique par un critique indépendant (agent qui ne voit que les PNG) | **pas faite de façon indépendante** | Cette session n'a pas d'outil pour lancer un sous-agent. Critique faite par moi selon critique.md (« si tu ne peux pas lancer de critique »), en jouant d'abord l'acheteur méfiant, sur les PNG. 3 tours. |
+| 5. Code | faite | Expo / RN (aucun SwiftUI) : PaywallView, Offers, FirstWinFlow, demos, Done, offer.ts, i18n ×5, analytics + migration. |
+
+Fichiers de travail (non versionnés) : `scratchpad/paywall2/designer/` (offer.json, offer.before.json, talk.json,
+flow.json, card.txt, lines.txt, before.html, flow-r3*.html, `shots/{before,r1,r2,r3,r3-b,r3-en}/` avec `sheet.png` et
+`check.json`).
+
+### 10.2 Carte de prix (`offer.mjs card`, inchangée côté prix)
+
+- Échelle par mois : Premium annuel 10,00 € · 6 mois 11,67 € · mensuel 14,99 € · Famille 19,99 € ; concurrents cités
+  (NON vérifiés) de 2,50 € à 17,99 € : l'annuel est dans la fourchette, au niveau des offres « expert ».
+- Économies (arrondies à l'inférieur) : annuel −33 %, 6 mois −22 % par rapport au mensuel.
+- Avertissements du script : 4 formules payantes (« peut-on en fusionner deux ? ») ; l'essai n'est pas sur Famille → le
+  dire là où l'on choisit (fait : « sans essai » sur la carte Famille).
+- Test à lancer en premier (héros) : **A frise d'essai** contre **B résultat de la démo**, même titre, mêmes formules,
+  même pied ; juger sur le revenu par vue de paywall après remboursements.
+- À décider par la propriétaire (**supposé** en attendant) : (1) formule présélectionnée = **annuel** (règle du skill),
+  constante `DEFAULT_OFFER` dans `offer.ts`, réversible ; (2) essai Famille dans App Store Connect ; (3) durée d'essai
+  3 jours (concurrents 7 à 14 j, non vérifiés). Le test « titre » existant (generic / need) reste en place ; le test
+  « héros » est proposé pour la suite, pas lancé en même temps.
+
+### 10.3 Écarts trouvés (règle du skill → existant) et corrections
+
+| Règle (référence) | Existant | Correction |
+|---|---|---|
+| Paywall ≤ 60 mots, legal compris (screens.md § 1) | 172 mots | 63 (FR, dont 5 de la ligne « Démo » absente en production), 58 (EN) |
+| Restaurer / Conditions / Confidentialité visibles sans défiler (markup.md, `unseen`) | en bas du défilement | dans le pied fixe, sous la ligne légale |
+| Un seul héros ; aucune liste de bénéfices quand la frise ou le résultat est le héros (§ 2) | aperçu + frise + 3 bénéfices | B : titre + frise ; A : titre + résultat ; bénéfices seulement dans C |
+| Deux formules en tête, deux lignes par carte, rien de répété (§ 2) | 4 cartes, 4 lignes, « Pour toi et ton ou ta co-parent » et « 3 jours gratuits » répétés | Annuel + Mensuel ; « Aussi : 6 mois, Famille » déplie le reste ; co-parent dit une fois sous les cartes |
+| Formule par défaut : l'annuel, avec l'essai (price.md § 3) | mensuel | annuel (supposé, à confirmer) |
+| Le bouton dit ce qu'il fait sans répéter durée ni prix (§ 5.6) | « Démarrer mes 3 jours gratuits » / « S'abonner à 14,99 €/mois » | « Commencer l'essai gratuit » / « M'abonner au mois · pour 6 mois · pour un an » |
+| Ligne légale = gabarit `terms` (≤ 20 mots, essai, montant, renouvellement, annulation) | sans « annulable » ; phrase séparée « au moins 24 h avant le renouvellement » | « 3 jours gratuits, puis 119,99 €/an. Renouvellement automatique, annulable à tout moment. » ; la phrase « 24 h » (absente des pages Apple actuelles, rules-detail.md) est retirée ; « comment arrêter » passe sur l'écran après le oui |
+| Frise : Aujourd'hui · Rappel · Montant (§ 2, talk.md § 5) | 2 étapes, phrases longues | 3 arrêts en mots-clés ; l'arrêt « Rappel, si tu l'actives » n'apparaît que si l'appareil peut le programmer (iPhone / Android), jamais sur le web |
+| L'essai n'est pas plus fort que le prix ; le montant facturé est le plus gros prix | OK | gardé (montant en gras sur la carte, équivalent mensuel plus petit) |
+| Onboarding ≤ 35 mots par écran, question en haut, réponses dans la zone du pouce, écho de la réponse précédente (onboarding.md, screens.md § 3) | 47 / 48 mots, réponses en haut, pas d'écho | 33 / 33 mots (warn), cartes en bas, image sur l'écran d'étape, rappel « J'ai un bébé » au-dessus de la question du besoin |
+| Résultat ≤ 25 mots, pas de tour des fonctions (§ 2, § 5) | 112 mots (démo complète + « Au quotidien, tu retrouverais » ×3) | 35 mots : titre, phrase courte, version compacte de la démo (le vrai composant, sans le reste) |
+| Après le oui : ce qui est acheté, quand ça facture, comment arrêter | pas de « comment arrêter » | « Pour arrêter : Réglages › ton nom › Abonnements. » ; corps du rappel et de l'invitation raccourcis |
+| Mesure (onboarding.md § 6) | pas de vue par écran, pas de réponse, pas de début d'achat | `onboarding_step_viewed`, `onboarding_answer`, `purchase_started` (+ migration `20261204000100`, test SQL `98zo`) ; `onboarding_started.source` = first_open / welcome_start / welcome_demo |
+| Une seule sortie | croix seule | gardé |
+
+**Décision de la propriétaire appliquée** : « Découvrir sans compte » (/welcome) → `/start?from=welcome_demo` (démo
+avant compte). La famille d'exemple reste accessible : lien secondaire « Famille d'exemple » sur le résultat de la démo
+(sans compte) → `/start/sample` (même démonstration qu'avant). **« Sans mur immédiat » : non obtenu.** La famille
+d'exemple n'a toujours pas Premium : l'accueil d'exemple montre le mur, franchissable par l'essai SIMULÉ sans paiement.
+Supprimer ce mur demande de changer le backend de démonstration partagé (`src/lib/backend/demo.ts`, hors périmètre) et
+casserait les e2e qui testent ce mur (premium.py, paywall_premium.py, credits_demo.py, offres.py) : à trancher.
+`/intro` garde son propre bouton « Découvrir sans compte » vers la famille d'exemple (hors périmètre, non modifié).
+
+E2e mis à jour (75 scripts : `pg.get_by_text('Découvrir sans compte')…click()` → `location.assign('/start/sample')`, même
+état qu'avant) : liste exacte dans le commit (`git show --stat`). Non modifié volontairement : `intro_profils.py`
+(teste le bouton de /intro).
+
+### 10.4 Critique (tours notés, critère de critique.md, 1 à 5) — critique faite par moi, PAS indépendante
+
+| | Avant | r1 | r3 (intégré) |
+|---|---|---|---|
+| G1 les 3 acheteurs savent combien et quand | oui (mais montant sous 4 cartes) | oui | oui (frise + ligne légale) |
+| G2 rien de faux / non sourcé | oui | oui | oui |
+| G3 sortie visible et neutre | oui | oui | oui |
+| G4 `shoot.mjs` sans FAIL | non (77) | non (52) | non (37, voir ci-dessous) |
+| P1 continue la promesse | 3 | 4 | 4 |
+| P2 répond aux vrais doutes | 3 | 4 | 4 |
+| P3 offre comprise en 5 s | 2 | 4 | 4 |
+| P4 bon moment | 4 | 4 | 4 |
+| P5 chaque élément mérite sa place | 2 | 3 | 4 |
+| Mots | 1 | 3 | 4 |
+| Onboarding | 3 | 4 | 4 |
+| D1 appartient au produit | 3 | 3 | 3 |
+| D2 hiérarchie | 2 | 4 | 4 |
+| D3 typo et espacement | 3 | 3 | 3 |
+| D4 richesse tirée du produit | 3 | 3 | 3 |
+| D5 finition (petit écran) | 2 | 3 | 3 |
+
+Coupé avant d'ajouter (dans l'ordre) : liste de bénéfices, phrase « 24 h », ligne « Prix de l'App Store », titres
+« Comment ça se passe » / « Ta formule » / légende des dates, aperçu du résultat dans B (le titre « need » le reprend),
+« Premium » répété sur chaque carte, deux cartes sur quatre (dépliables), « Au quotidien » ×3 sur le résultat, phrases
+d'Aura, corps du rappel et de l'invitation. Ajouté : l'arrêt « rappel » de la frise (iPhone), « sans essai » sur Famille,
+« Pour arrêter » après le oui, une image sur l'écran d'étape. Refusé : afficher « 3 jours gratuits » sur chaque carte
+(warn du check) — l'essai est dit dans la frise et la ligne légale, et Famille dit « sans essai ».
+
+FAIL restants (r3, réponse en une ligne) :
+- Démo 97 mots (FR) : c'est le vrai composant (journal de sommeil) demandé par le brief, pas du texte d'écran.
+- « La ligne ne dit pas qu'elle renouvelle » (FR seulement) : heuristique anglaise du script (/renew/) ; la ligne dit
+  « Renouvellement automatique » ; en anglais le contrôle passe.
+- Paywall iPhone B avec l'arrêt « rappel » et le titre « need » : 67 mots (FR) ; formules dépliées : 82 mots — le
+  dépliage est un choix de la personne.
+- Après le oui : 57 mots (budget 45).
+- Petit iPhone (375 × 667) : la 2ᵉ carte et les lignes sous les cartes défilent sous le pied fixe (le check les voit
+  « recouvertes ») ; bouton, ligne légale et liens restent visibles.
+
+Ce qu'une note ne prouve pas : que plus de gens paient. Test à lancer d'abord : héros frise (B) contre résultat (A).
+
+### 10.5 Vérifications (04/12/2026)
+
+Voir le rapport de la session (résultats chiffrés : tsc, i18n-scan, gen-routes, inventaire, privacy-check, Jest complet,
+tests SQL locaux, e2e `paywall_premiere_reussite.py` avant 101/101 et après, e2e premium / credits_demo comparés à
+l'avant). Captures : `scratchpad/paywall2/avant/` et `scratchpad/paywall2/apres/` (390 et 320, avec / sans essai, FR / EN).

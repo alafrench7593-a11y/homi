@@ -132,7 +132,7 @@ def detect(pg, scale):
 
 def enter_demo(pg):
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4200)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4200)
     pg.evaluate(PREMIUM_ON)
     # Premium relu au démarrage : rechargement de l'Accueil (la session de démo y est conservée)
     pg.reload(); pg.wait_for_timeout(3500)

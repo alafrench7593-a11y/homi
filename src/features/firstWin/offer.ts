@@ -40,6 +40,10 @@ export interface OfferCard {
   monthly: string | null;
   /** Économie avec sa base explicite, ou null (jamais d'économie sans base) */
   saving: string | null;
+  /** Équivalent mensuel court, pour la carte : « 10,00 €/mois » */
+  perShort: string | null;
+  /** Économie courte, pour la carte : « 33 % de moins qu'au mois » */
+  savingShort: string | null;
   trialDays: number;
   demo: boolean;
   /** Lu par VoiceOver : tout ce qui est écrit sur la carte, dans l'ordre */
@@ -60,27 +64,60 @@ export function offerCard(plan: OfferPlan, monthly: OfferPlan | null, locale: st
   const months = PLAN_MONTHS[plan.period];
   const name = tier === 'family' ? tr('fw.plan.family') : tr(`fw.plan.${plan.period}` as TKey);
   const access = tier === 'family' ? tr('fw.access.family', { credits: DEFAULT_GRANTS.family }) : tr('fw.access.premium');
-  const billed = tr('fw.billed', { price: plan.price, per: perEvery(plan.period) });
-  const monthlyEq = months > 1 && plan.amount > 0 ? tr('fw.monthlyEq', { price: formatMoney(Math.round((plan.amount / months) * 100 + 1e-6) / 100, plan.currency, locale) }) : null;
+  const billed = tr('fw.billed', { price: plan.price, per: perShort(plan.period) });
+  const eq = months > 1 && plan.amount > 0 ? formatMoney(Math.round((plan.amount / months) * 100 + 1e-6) / 100, plan.currency, locale) : null;
+  const monthlyEq = eq ? tr('fw.monthlyEq', { price: eq }) : null;
   const pct = tier === 'premium' ? savingVsMonthly(plan, monthly) : null;
   const saving = pct && monthly ? tr('fw.saving', { pct, count: months, price: monthly.price }) : null;
+  const perShortLine = eq ? tr('fw.card.per', { price: eq }) : null;
+  const savingShort = pct && monthly ? tr('fw.card.saving', { pct }) : null;
   const a11y = [name, access, billed, monthlyEq, saving, plan.trialDays > 0 ? tr('fw.trialBadge', { count: plan.trialDays }) : null].filter(Boolean).join('. ');
-  return { key: offerKey(plan), tier, period: plan.period, name, access, billed, monthly: monthlyEq, saving, trialDays: plan.trialDays, demo: plan.demo, a11y, plan };
+  return { key: offerKey(plan), tier, period: plan.period, name, access, billed, monthly: monthlyEq, saving, perShort: perShortLine, savingShort, trialDays: plan.trialDays, demo: plan.demo, a11y, plan };
 }
 
-/** Ordre d'affichage : du plus court au plus long engagement (le mensuel, présélectionné, arrive en premier). */
-const PERIOD_RANK: Record<PlanPeriod, number> = { monthly: 0, six_months: 1, annual: 2 };
+/**
+ * Ordre d'affichage (passe Paywall Designer, 04/12/2026) : l'annuel présélectionné puis le mensuel (les deux formules
+ * de tête, qui ne diffèrent que par la durée), puis « Autres formules » : 6 mois et Famille.
+ */
+const PERIOD_RANK: Record<PlanPeriod, number> = { annual: 0, monthly: 1, six_months: 2 };
 
-/** Cartes : Premium (mensuel, 6 mois, annuel) puis Famille. */
+/** Formule présélectionnée par défaut (règle du skill : l'annuel, avec l'essai). Réversible ici, aucun prix touché. */
+export const DEFAULT_OFFER = 'premium:annual';
+/** Formules de tête, toujours visibles ; les autres sont derrière « Autres formules ». */
+export const LEAD_OFFERS = ['premium:annual', 'premium:monthly'];
+
+/** Cartes : Premium (annuel, mensuel, 6 mois) puis Famille. */
 export function offerCards(premium: OfferPlan[], family: OfferPlan[], locale: string): OfferCard[] {
   const monthly = premium.find((p) => p.period === 'monthly') ?? null;
   return [...[...premium].sort((a, b) => PERIOD_RANK[a.period] - PERIOD_RANK[b.period]).map((p) => offerCard({ ...p, tier: 'premium' }, monthly, locale)), ...family.map((p) => offerCard({ ...p, tier: 'family' }, null, locale))];
 }
 
-/** Formule présélectionnée : celle choisie avant l'inscription si elle existe encore, sinon le mensuel Premium (prix d'appel lisible), sinon la première. */
+/** Formule présélectionnée : celle choisie avant l'inscription si elle existe encore, sinon l'annuel Premium, sinon le mensuel, sinon la première. */
 export function defaultOfferKey(cards: Pick<OfferCard, 'key'>[], wanted?: string | null): string | null {
   if (wanted && cards.some((c) => c.key === wanted)) return wanted;
-  return (cards.find((c) => c.key === 'premium:monthly') ?? cards[0])?.key ?? null;
+  return (cards.find((c) => c.key === DEFAULT_OFFER) ?? cards.find((c) => c.key === 'premium:monthly') ?? cards[0])?.key ?? null;
+}
+
+/** Cartes de tête et « Autres formules ». Sans formule de tête dans le catalogue, tout est en tête. */
+export function splitOffers<T extends Pick<OfferCard, 'key'>>(cards: T[]): { lead: T[]; more: T[] } {
+  const lead = cards.filter((c) => LEAD_OFFERS.includes(c.key));
+  if (!lead.length) return { lead: cards, more: [] };
+  return { lead, more: cards.filter((c) => !LEAD_OFFERS.includes(c.key)) };
+}
+
+/**
+ * Seconde ligne d'une carte (deux lignes au plus, rien de répété d'une carte à l'autre) :
+ *  - formule longue : équivalent mensuel + économie mesurée contre le mensuel ;
+ *  - Famille : qui en profite + crédits Aura partagés (dès le premier paiement si un essai existe) ; « sans essai » quand
+ *    d'autres formules en ont un (sinon on choisirait Famille en croyant avoir l'essai).
+ */
+export function cardDetail(card: OfferCard, o: { othersHaveTrial: boolean }): { per: string | null; saving: string | null; note: string | null } {
+  if (card.tier === 'family') {
+    const parts = [tr('fw.card.family', { credits: DEFAULT_GRANTS.family }) + (card.trialDays > 0 ? tr('fw.ben.creditsAfterTrial') : '')];
+    if (card.trialDays === 0 && o.othersHaveTrial) parts.push(tr('fw.card.noTrial'));
+    return { per: null, saving: null, note: parts.join(' · ') };
+  }
+  return { per: card.perShort, saving: card.savingShort, note: card.trialDays === 0 && o.othersHaveTrial ? tr('fw.card.noTrial') : null };
 }
 
 // ------------------------------------------------------------------ bénéfices (au plus 3, réellement disponibles)
@@ -107,22 +144,30 @@ export function benefitsFor(tier: PlanTier, need: NeedId | null, o: { aiOnline: 
 // ------------------------------------------------------------------ frise, bouton, conditions
 const dayMonth = (d: Date, from: Date) => formatDate(d, d.getFullYear() === from.getFullYear() ? { day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long', year: 'numeric' });
 
-export interface TimelineStep { key: 'today' | 'charge' | 'renew'; title: string; body: string }
+export interface TimelineStep { key: 'today' | 'remind' | 'charge' | 'renew'; title: string; body: string }
 export interface Timeline { steps: TimelineStep[]; caption: string; confirmed: boolean; firstCharge: Date }
 
+/** Le rappel local est programmé 24 h avant la fin de l'essai (trialReminder.ts : REMINDER_LEAD_MS). */
+const REMIND_LEAD_MS = 24 * 3_600_000;
+
 /**
- * Frise : accès immédiat → premier paiement (date, montant exact, périodicité).
- *  - avant l'achat : dates CALCULÉES pour un démarrage aujourd'hui (le dire) ;
+ * Frise : accès immédiat → (rappel la veille, si l'appareil peut l'envoyer) → premier paiement (date et montant).
+ *  - avant l'achat : dates CALCULÉES pour un démarrage aujourd'hui (légende) ;
  *  - après l'achat : date CONFIRMÉE (fin d'essai ou échéance écrite par le serveur) quand elle est connue.
+ * L'étape « rappel » n'apparaît que si l'application peut réellement programmer ce rappel (`reminder` : iPhone,
+ * Android) ; il s'active après le oui (« si tu l'actives »), il n'est jamais présenté comme déjà en place.
  */
-export function timelineFor(plan: OfferPlan, o: { now: Date; confirmedFirstCharge?: Date | null }): Timeline {
+export function timelineFor(plan: OfferPlan, o: { now: Date; confirmedFirstCharge?: Date | null; reminder?: boolean }): Timeline {
   const calc = billingDates(plan, o.now);
   const confirmed = !!o.confirmedFirstCharge;
   const first = o.confirmedFirstCharge ?? calc.firstCharge;
   const amount = { price: plan.price, every: perEvery(plan.period) };
+  const remindAt = new Date(first.getTime() - REMIND_LEAD_MS);
+  const remind: TimelineStep[] = o.reminder && remindAt.getTime() > o.now.getTime() ? [{ key: 'remind', title: dayMonth(remindAt, o.now), body: tr('fw.tl.remind') }] : [];
   const steps: TimelineStep[] = plan.trialDays > 0
     ? [
       { key: 'today', title: tr('fw.tl.today'), body: tr('fw.tl.todayTrial', { count: plan.trialDays }) },
+      ...remind,
       { key: 'charge', title: dayMonth(first, o.now), body: tr('fw.tl.firstCharge', amount) },
     ]
     : [
@@ -132,14 +177,17 @@ export function timelineFor(plan: OfferPlan, o: { now: Date; confirmedFirstCharg
   return { steps, caption: tr(confirmed ? 'fw.tl.confirmed' : 'fw.tl.estimated'), confirmed, firstCharge: first };
 }
 
-/** Libellé du bouton : l'essai n'est promis que s'il est confirmé pour cette formule ET ce compte. */
-export function ctaFor(plan: Pick<OfferPlan, 'trialDays' | 'price' | 'period'>): string {
-  return plan.trialDays > 0 ? tr('fw.cta.trial', { count: plan.trialDays }) : tr('fw.cta.subscribe', { price: plan.price, per: perShort(plan.period) });
+/**
+ * Libellé du bouton : il dit ce qu'il fait, sans répéter la durée ni le prix (déjà sur la carte, dans la frise et sous
+ * le bouton). L'essai n'est promis que s'il est confirmé pour cette formule ET ce compte.
+ */
+export function ctaFor(plan: Pick<OfferPlan, 'trialDays' | 'period'>): string {
+  return plan.trialDays > 0 ? tr('fw.cta.trial') : tr(`fw.cta.subscribe.${plan.period}` as TKey);
 }
 
-/** Conditions lisibles sous le bouton. */
-export function termsFor(plan: Pick<OfferPlan, 'trialDays' | 'price' | 'period'>, now: Date): string {
-  if (plan.trialDays > 0) return tr('fw.terms.trial', { date: dayMonth(billingDates(plan, now).firstCharge, now), price: plan.price, per: perShort(plan.period) });
+/** Ligne légale sous le bouton (gabarit fixe du skill, ≤ 20 mots) : essai, montant, période, renouvellement, annulation. */
+export function termsFor(plan: Pick<OfferPlan, 'trialDays' | 'price' | 'period'>): string {
+  if (plan.trialDays > 0) return tr('fw.terms.trial', { count: plan.trialDays, price: plan.price, per: perShort(plan.period) });
   return tr('fw.terms.paid', { price: plan.price, per: perShort(plan.period) });
 }
 
