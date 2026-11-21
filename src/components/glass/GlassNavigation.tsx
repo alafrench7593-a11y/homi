@@ -23,6 +23,7 @@ import { motionHaptic, useIndicator, useItemLayouts, useLiquidIndicator, useMoti
 import { t as tr } from '@/i18n';
 import { Icon, Text, type IconName } from '../ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
+import { TabLight } from '@/brand/toolGlass/TabLight';
 import { Glass, useGlass } from './Glass';
 
 // ---------------------------------------------------------------------------------------------- barre d'onglets
@@ -99,7 +100,12 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
     >
       <Animated.View style={[styles.tab, p.style]}>
         <Animated.View style={iconStyle}>
-          {tab.image ? <Image source={tab.image} accessibilityIgnoresInvertColors style={{ width: iconsOnly ? 34 : 30, height: iconsOnly ? 34 : 30, opacity: active ? 1 : 0.55 }} />
+          {tab.image ? (
+            // lumière jaune douce derrière l'icône : vive sous l'onglet actif, discrète sinon
+            <TabLight size={iconsOnly ? 34 : 30} active={active} testID={`${tab.testID ?? `glass-tab-${tab.key}`}-light${active ? '-active' : ''}`}>
+              <Image source={tab.image} accessibilityIgnoresInvertColors style={{ width: iconsOnly ? 34 : 30, height: iconsOnly ? 34 : 30, opacity: active ? 1 : 0.55 }} />
+            </TabLight>
+          )
             : tab.glyph ? <HomiIcon name={tab.glyph} size={iconsOnly ? 26 : 24} color={ink} tone={accent} active={active} /> : <Icon name={tab.icon} size={iconsOnly ? 24 : 22} color={ink} />}
         </Animated.View>
         {iconsOnly ? null : (

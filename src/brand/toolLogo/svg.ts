@@ -1,43 +1,44 @@
 /**
- * Rendu SVG statique (chaîne) d'un logo d'outil — même dessin que le composant `ToolLogo` : sert aux exports PNG,
- * aux planches de vérification (scripts/da) et aux tests. Module PUR : aucun import React Native.
+ * Rendu SVG statique (chaîne) d'un logo d'outil — même dessin que le composant `ToolLogo` : sert aux planches de
+ * vérification (scripts/da) et aux tests. Module PUR : aucun import React Native.
+ *
+ * Couches, dans l'ordre de dessin (boîte 128, celle des fichiers de la propriétaire) :
+ *  1. plaque de verre dépoli (image fournie, `plateHref`) ;
+ *  2. LUMIÈRE colorée du public : disque radial au centre, derrière le dessin ;
+ *  3. symbole nacré : ombre portée, trait en dégradé nacré, filet de lumière (détaillé seulement).
  */
-import type { HomiIconDef } from '@/brand/icons/geometry';
-import type { ToolLogoSpec } from '@/theme/toolLogo';
-import { GLYPH_BOX, glyphTransform, LOGO_GRID, SHEEN, squirclePath, squircleTopEdge, type LogoVariant } from './geometry';
+import { LOGO_LIGHT, PEARL, PUBLIC_LIGHT, type LogoMode, type LogoPublic } from '@/theme/toolLogo';
+import { SYMBOL_BOX, SYMBOL_STROKE, SYMBOL_TRANSFORM, type LogoVariant } from './geometry';
 
-const PLATE = squirclePath();
-const TOP_EDGE = squircleTopEdge();
-
-/** Couches d'un logo, dans l'ordre de dessin (identiques au composant). */
-export function logoLayers(icon: HomiIconDef, spec: ToolLogoSpec, variant: LogoVariant, uid: string) {
-  const sw = (icon.heavy ? 2.25 : GLYPH_BOX[variant].stroke).toString();
-  const g = glyphTransform(variant);
-  const defs = `<defs>
-<linearGradient id="${uid}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${spec.top}"/><stop offset="1" stop-color="${spec.bottom}"/></linearGradient>
-<radialGradient id="${uid}s" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${spec.light}" stop-opacity="${spec.sheen}"/><stop offset="1" stop-color="${spec.light}" stop-opacity="0"/></radialGradient>
-<linearGradient id="${uid}h" x1="0" y1="0" x2="0" y2="1"><stop offset="0.55" stop-color="${spec.shade}" stop-opacity="0"/><stop offset="1" stop-color="${spec.shade}" stop-opacity="${spec.shadeOpacity}"/></linearGradient>
-<clipPath id="${uid}c"><path d="${PLATE}"/></clipPath>
-</defs>`;
-  const body = [
-    `<path d="${PLATE}" fill="url(#${uid}b)"/>`,
-    `<g clip-path="url(#${uid}c)"><ellipse cx="${SHEEN.cx}" cy="${SHEEN.cy}" rx="${SHEEN.rx}" ry="${SHEEN.ry}" transform="rotate(${SHEEN.rotate} ${SHEEN.cx} ${SHEEN.cy})" fill="url(#${uid}s)"/>`,
-    `<path d="${PLATE}" fill="url(#${uid}h)"/></g>`,
-    variant === 'detailed'
-      ? `<g transform="${glyphTransform(variant, 0.9)}" opacity="0.35">${icon.fill ? `<path d="${icon.fill}" fill="${spec.shade}"/>` : ''}<path d="${icon.stroke}" fill="none" stroke="${spec.shade}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/></g>`
-      : '',
-    `<g transform="${g}">${icon.fill ? `<path d="${icon.fill}" fill="${spec.glyph}" fill-opacity="${spec.glyphFillOpacity}"/>` : ''}`,
-    `<path d="${icon.stroke}" fill="none" stroke="${spec.glyph}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>`,
-    ...(icon.dots ?? []).map(([cx, cy, r]) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${spec.glyph}"/>`),
-    `</g>`,
-    `<path d="${TOP_EDGE}" fill="none" stroke="${spec.light}" stroke-opacity="${spec.rim}" stroke-width="1" stroke-linecap="round"/>`,
-    `<path d="${PLATE}" fill="none" stroke="${spec.bottom}" stroke-opacity="0.35" stroke-width="0.6"/>`,
-  ].join('');
-  return { defs, body };
+export interface StaticLogo {
+  /** plaque (URL ou data URI de l'image) */
+  plateHref: string;
+  /** tracé du symbole (grille 24) et points pleins éventuels */
+  d: string;
+  dots?: [number, number, number][];
+  pub: LogoPublic;
+  variant: LogoVariant;
+  mode: LogoMode;
 }
 
-/** SVG complet d'un logo (taille de sortie `size` px). */
-export function toolLogoSvg(icon: HomiIconDef, spec: ToolLogoSpec, variant: LogoVariant, size = LOGO_GRID, uid = 'l'): string {
-  const { defs, body } = logoLayers(icon, spec, variant, uid);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${LOGO_GRID} ${LOGO_GRID}">${defs}${body}</svg>`;
+/** Lumière : dégradé radial (opacité relative) — même valeurs que le composant. */
+export const LIGHT_STOPS = [[0, 1], [0.6, 0.78], [1, 0]] as const;
+
+export function toolLogoSvg(l: StaticLogo, size: number, uid = 'l'): string {
+  const c = SYMBOL_BOX / 2;
+  const r = SYMBOL_BOX * LOGO_LIGHT.radius[l.variant];
+  const sw = SYMBOL_STROKE[l.variant];
+  const light = PUBLIC_LIGHT[l.pub];
+  const a = LOGO_LIGHT.opacity[l.mode];
+  const dots = (fill: string) => (l.dots ?? []).map(([x, y, rr]) => `<circle cx="${x}" cy="${y}" r="${rr}" fill="${fill}" stroke="none"/>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${size}" height="${size}" viewBox="0 0 ${SYMBOL_BOX} ${SYMBOL_BOX}">
+<defs><radialGradient id="${uid}l" cx="0.5" cy="0.5" r="0.5">${LIGHT_STOPS.map(([o, k]) => `<stop offset="${o}" stop-color="${light}" stop-opacity="${+(a * k).toFixed(3)}"/>`).join('')}</radialGradient>
+<linearGradient id="${uid}p" x2="0.4" y2="1"><stop stop-color="${PEARL.top}"/><stop offset="1" stop-color="${PEARL.bottom}"/></linearGradient></defs>
+<image href="${l.plateHref}" width="${SYMBOL_BOX}" height="${SYMBOL_BOX}"/>
+<circle cx="${c}" cy="${c}" r="${r}" fill="url(#${uid}l)"/>
+<g transform="${SYMBOL_TRANSFORM}" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<g stroke="${PEARL.shadow}" opacity="${PEARL.shadowOpacity}" stroke-width="${sw.shadow}" transform="translate(0 .42)"><path d="${l.d}"/>${dots(PEARL.shadow)}</g>
+<g stroke="url(#${uid}p)" stroke-width="${sw.pearl}"><path d="${l.d}"/>${dots(PEARL.top)}</g>
+${sw.highlight ? `<g stroke="${PEARL.highlight}" opacity="${PEARL.highlightOpacity}" stroke-width="${sw.highlight}" transform="translate(0 -.23)"><path d="${l.d}"/></g>` : ''}
+</g></svg>`;
 }

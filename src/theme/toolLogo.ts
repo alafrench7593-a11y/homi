@@ -1,121 +1,100 @@
 /**
- * Logos d'outils HOMI — matière « verre minéral » (direction artistique Liquid Glass, 20/11/2026, docs/DA_LIQUID_GLASS.md).
+ * Logos d'outils HOMI — « verre dépoli + lumière par public » (21/11/2026, docs/DA_LIQUID_GLASS.md § 3 bis).
  *
- * Chaque outil est une mini-app : une PLAQUE (squircle d'icône d'app) de la teinte de sa catégorie, un GLYPHE blanc
- * en deux tons (trait + aplat), et la lumière commune à toute la famille : reflet en haut à gauche, arête claire en
- * haut, ombre interne en bas, ombre portée de contact. La plaque est OPAQUE : le logo reste lisible quel que soit le
- * fond (et sous « Réduire la transparence ») ; seul l'éclairage imite le verre.
+ * Les 134 icônes viennent de la propriétaire : une PLAQUE de verre dépoli lavande (une par catégorie) et un SYMBOLE
+ * blanc nacré au trait (src/brand/toolGlass). HOMI y ajoute une LUMIÈRE colorée au centre, derrière le dessin, dont la
+ * couleur dit À QUI SERT l'outil — on comprend d'un coup d'œil à quoi il correspond :
+ *   femme (cycle, contraception, désir d'enfant, grossesse, post-partum, « moi ») → rose ;  bébé → bleu ;
+ *   enfant → vert menthe ;  couple → pêche-corail ;  foyer / toute la famille → ambre doux ;
+ *   communauté, compte, réglages → lavande neutre ;  urgence → rouge ;  Aura → son bleu nuit.
+ * Barre d'onglets : lumière JAUNE douce derrière chaque icône (plus vive sur l'onglet actif) et derrière « + ».
  *
- * Teintes de catégorie : couleurs SÉMANTIQUES, identiques dans les cinq palettes (un outil garde la même couleur
- * partout : accueil, favoris, recherche, catalogue, écran de l'outil). Elles ne changent qu'avec l'apparence :
- * clair, sombre (plaque un peu plus profonde, arête plus discrète) et nuit (désaturée et assombrie : rien ne brille).
- *
- * Garde-fou : src/__tests__/toolLogos.test.ts — le glyphe blanc tient ≥ 3:1 (élément graphique, WCAG 1.4.11) sur
- * le point le plus CLAIR de chaque plaque, dans chaque apparence ; deux catégories n'ont jamais la même teinte.
+ * Couleurs SÉMANTIQUES (identiques dans les cinq palettes) : seule leur intensité suit l'apparence (nuit : atténuée).
+ * Garde-fou : src/__tests__/toolLogos.test.tsx — la lumière ne rend jamais le symbole MOINS lisible que sur la plaque
+ * nue (contraste nacre / centre de la plaque éclairée ≥ contraste nacre / plaque nue), publics tous distincts.
  */
 import { contrastRatio } from './contrast';
 import type { Theme } from './tokens';
 
 /** Mélange linéaire #RRGGBB (copie locale de tokens.mixHex : ce module reste chargeable hors React Native). */
-function mixHex(a: string, b: string, k: number): string {
+export function mixHex(a: string, b: string, k: number): string {
   const A = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
   const B = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
   return `#${A.map((x, i) => Math.round(x + (B[i] - x) * k).toString(16).padStart(2, '0')).join('').toUpperCase()}`;
 }
 
+/** Catégorie (rangement du catalogue) : choisit la PLAQUE de verre. */
 export type LogoCategory = 'feeding' | 'sleep' | 'care' | 'health' | 'cycle' | 'pregnancy' | 'school' | 'couple' | 'family' | 'community' | 'account' | 'aura' | 'urgent';
+export const LOGO_CATEGORIES: LogoCategory[] = ['feeding', 'sleep', 'care', 'health', 'cycle', 'pregnancy', 'school', 'couple', 'family', 'community', 'account', 'aura', 'urgent'];
 
-/** Teinte de base (milieu de la plaque) de chaque catégorie. */
-export const LOGO_HUES: Record<LogoCategory, string> = {
-  feeding: '#D9603F', // corail chaud : lait, repas
-  sleep: '#4F4FB3', // indigo de nuit
-  care: '#B87514', // miel : soins du quotidien, croissance
-  health: '#C23A55', // rose-rouge médical (jamais le rouge d'urgence)
-  cycle: '#B23C86', // baie
-  pregnancy: '#8558C7', // lilas profond
-  school: '#2F8A5B', // sauge
-  couple: '#7E3D73', // prune
-  family: '#1F7F86', // sarcelle : organisation du foyer
-  community: '#3F6FB8', // bleu ouvert
-  account: '#5F6670', // graphite neutre (réglages)
-  aura: '#2E4466', // Aura : bleu de nuit (scan App Designer : le violet est LE signe « IA générique », refusé)
-  urgent: '#C21F2E', // rouge d'urgence : réservé aux urgences
+/** Public (à qui sert l'outil) : choisit la LUMIÈRE. */
+export type LogoPublic = 'woman' | 'baby' | 'child' | 'couple' | 'family' | 'neutral' | 'urgent' | 'aura';
+export const LOGO_PUBLICS: LogoPublic[] = ['woman', 'baby', 'child', 'couple', 'family', 'neutral', 'urgent', 'aura'];
+
+/** Lumière colorée de chaque public (centre du halo, derrière le symbole). */
+export const PUBLIC_LIGHT: Record<LogoPublic, string> = {
+  woman: '#EE4D8C', // rose : outils de la femme
+  baby: '#3B82EE', // bleu : bébé
+  child: '#18A985', // vert menthe : enfant
+  couple: '#F4704F', // pêche-corail : couple
+  family: '#D27D12', // ambre doux : foyer, toute la famille
+  neutral: '#8A78E0', // lavande neutre : communauté, compte, réglages
+  urgent: '#E0303C', // rouge : urgence
+  aura: '#2E4466', // bleu nuit d'Aura
 };
 
-const WHITE = '#FFFFFF';
-const BLACK = '#000000';
-const NIGHT = '#2B2A30';
+/** Barre d'onglets : lumière jaune douce derrière les icônes (opacité au centre : onglet actif / inactif). */
+export const TAB_LIGHT = { color: '#FFC83D', active: 0.85, idle: 0.28 } as const;
 
-export interface ToolLogoSpec {
-  /** haut de la plaque (le plus clair) */
-  top: string;
-  /** bas de la plaque */
-  bottom: string;
-  /** milieu : couleur de référence (rangée active, anneau, courbe) */
-  mid: string;
-  /** encre du glyphe */
-  glyph: string;
-  /** lumière (reflet, arête) : blanc */
-  light: string;
-  /** aplat du glyphe (même encre, opacité `glyphFillOpacity`) */
-  glyphFillOpacity: number;
-  /** reflet (blanc) : opacité au point le plus lumineux */
-  sheen: number;
-  /** arête claire du haut */
-  rim: number;
-  /** ombre interne du bas (couleur + opacité) */
-  shade: string;
-  shadeOpacity: number;
-  /** ombre portée de contact (CSS / RN boxShadow) */
-  drop: string;
+/** Symbole nacré (valeurs du fichier fourni) : dégradé, ombre portée, filet de lumière. */
+export const PEARL = {
+  top: '#FFFDFD',
+  bottom: '#EEEBF8',
+  shadow: '#574966',
+  shadowOpacity: 0.25,
+  highlight: '#FFFFFF',
+  highlightOpacity: 0.44,
+} as const;
+
+/** Centre moyen des plaques de verre fournies (mesuré sur les 11 plaques, carré central de 100 px sur 512). */
+export const GLASS_CENTER = '#9F96AD';
+
+/** Intensité de la lumière : opacité au centre du dégradé radial (repos), surcroît à l'appui / l'ouverture, rayon. */
+export const LOGO_LIGHT = {
+  opacity: { light: 0.85, dark: 0.85, night: 0.6 },
+  /** surcroît d'opacité au sommet de l'impulsion (appui, ouverture) */
+  pulse: 0.15,
+  /** rayon du halo intérieur (fraction de la plaque) : détaillé / compact */
+  radius: { detailed: 0.5, compact: 0.48 },
+} as const;
+
+export type LogoMode = 'light' | 'dark' | 'night';
+
+/** Apparence d'un thème pour les logos. */
+export const logoMode = (t: Pick<Theme, 'name' | 'isDark'>): LogoMode => (t.name === 'night' ? 'night' : t.isDark ? 'dark' : 'light');
+
+/** Couleur du centre éclairé de la plaque (lumière posée sur le verre, à son opacité de repos). */
+export function litCenter(pub: LogoPublic, mode: LogoMode): string {
+  return mixHex(GLASS_CENTER, PUBLIC_LIGHT[pub], LOGO_LIGHT.opacity[mode]);
 }
 
-/** Contraste minimal visé pour le glyphe blanc sur le point le plus clair de la plaque (marge au-dessus de 3:1). */
-export const GLYPH_MIN_CONTRAST = 3.2;
+/** Contraste du symbole (bas du dégradé nacré, son point le plus sombre) sur le centre éclairé de la plaque. */
+export const lightContrast = (pub: LogoPublic, mode: LogoMode) => contrastRatio(PEARL.bottom, litCenter(pub, mode));
+/** Même mesure sur la plaque nue (référence : la lumière ne doit jamais faire moins bien). */
+export const bareContrast = () => contrastRatio(PEARL.bottom, GLASS_CENTER);
 
-function plateLight(mid: string, dark: boolean) {
-  const top = mixHex(mid, WHITE, dark ? 0.1 : 0.14);
-  const sheen = dark ? 0.24 : 0.32;
-  return { top, sheen, brightest: mixHex(top, WHITE, sheen * 0.5) };
-}
+const hexA = (hex: string, a: number) => `rgba(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(',')},${+a.toFixed(3)})`;
 
-/** Spécification d'une plaque pour une catégorie et une apparence. */
-export function toolLogoSpec(category: LogoCategory, mode: 'light' | 'dark' | 'night'): ToolLogoSpec {
-  const base = LOGO_HUES[category];
-  if (mode === 'night') {
-    const mid = mixHex(mixHex(base, NIGHT, 0.55), BLACK, 0.15);
-    return { top: mixHex(mid, WHITE, 0.04), bottom: mixHex(mid, BLACK, 0.25), mid, glyph: '#D6D3DA', light: WHITE, glyphFillOpacity: 0.18, sheen: 0, rim: 0.06, shade: BLACK, shadeOpacity: 0.2, drop: 'none' };
-  }
-  const dark = mode === 'dark';
-  // la teinte s'assombrit par petits pas jusqu'à garantir le contraste du glyphe (valeur résolue, jamais approximée)
-  let mid = dark ? mixHex(base, BLACK, 0.1) : base;
-  for (let i = 0; i < 40 && contrastRatio(WHITE, plateLight(mid, dark).brightest) < GLYPH_MIN_CONTRAST; i++) mid = mixHex(mid, BLACK, 0.04);
-  const p = plateLight(mid, dark);
-  return {
-    top: p.top,
-    bottom: mixHex(mid, BLACK, dark ? 0.32 : 0.22),
-    mid,
-    glyph: WHITE,
-    light: WHITE,
-    glyphFillOpacity: 0.3,
-    sheen: p.sheen,
-    rim: dark ? 0.3 : 0.5,
-    shade: mixHex(mid, BLACK, 0.6),
-    shadeOpacity: dark ? 0.35 : 0.26,
-    drop: dark ? '0px 2px 6px rgba(0,0,0,0.45)' : `0px 2px 5px ${hexA(mixHex(mid, BLACK, 0.4), 0.26)}, 0px 0.5px 1px ${hexA(mixHex(mid, BLACK, 0.5), 0.3)}`,
-  };
-}
-
-const hexA = (hex: string, a: number) => `rgba(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(',')},${a})`;
-
-/** Apparence d'un thème pour la matière des logos. */
-export const logoMode = (t: Pick<Theme, 'name' | 'isDark'>): 'light' | 'dark' | 'night' => (t.name === 'night' ? 'night' : t.isDark ? 'dark' : 'light');
-
-/** Contraste du glyphe sur le point le plus clair de la plaque (reflet compris). */
-export function glyphContrast(category: LogoCategory, mode: 'light' | 'dark' | 'night'): number {
-  const s = toolLogoSpec(category, mode);
-  const brightest = mixHex(s.top, WHITE, s.sheen * 0.5);
-  return contrastRatio(s.glyph, brightest);
+/**
+ * Ombre de la plaque (CSS / RN boxShadow), proportionnelle à sa taille : rendu détaillé (en-têtes, raccourcis) =
+ * ombre douce + reflet de la lumière du public sous la plaque ; compact (listes, recherche) : ombre de contact seule.
+ */
+export function logoShadow(pub: LogoPublic, size: number, variant: 'detailed' | 'compact', mode: LogoMode): string | undefined {
+  const px = (v: number) => `${+v.toFixed(1)}px`;
+  if (mode === 'night') return undefined;
+  const contact = `0px ${px(size * 0.03)} ${px(size * 0.07)} ${hexA(PEARL.shadow, mode === 'dark' ? 0.45 : 0.22)}`;
+  if (variant === 'compact') return contact;
+  return `${contact}, 0px ${px(size * 0.08)} ${px(size * 0.3)} ${hexA(PUBLIC_LIGHT[pub], mode === 'dark' ? 0.32 : 0.24)}`;
 }
 
 /**
