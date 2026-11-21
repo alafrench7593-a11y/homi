@@ -293,10 +293,10 @@ export default function MucusScreen() {
       ) : null}
 
       <Modal visible={!!viewing} transparent animationType="fade" onRequestClose={() => setViewing(null)}>
-        <Pressable accessibilityRole="button" accessibilityLabel={tr('u3.fertMucus.closePhoto')} onPress={() => setViewing(null)} style={{ flex: 1, backgroundColor: '#000d', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
+        <Tappable pressScale={1} hoverLift={0} accessibilityRole="button" accessibilityLabel={tr('u3.fertMucus.closePhoto')} onPress={() => setViewing(null)} style={{ flex: 1, backgroundColor: '#000d', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
           {viewing ? <Image source={{ uri: viewing }} style={{ width: '100%', height: '70%' }} resizeMode="contain" /> : null}
           <Text color="#fff" style={{ marginTop: spacing.sm }}>{tr('u3.fertMucus.tapClose')}</Text>
-        </Pressable>
+        </Tappable>
       </Modal>
     </Screen>
   );

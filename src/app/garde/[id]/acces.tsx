@@ -24,6 +24,7 @@ import {
   useAddChildToCaregiver, useCareChild, useCareLinkAction, useCareLinks, useCareMemberNames, useCareSettings, useInviteCaregiver,
   useNotifyPrefs, useSetCareSettings, useSetNotifyPrefs, type CareLink,
 } from '@/lib/data/hooks-nounou';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const dt = (iso: string) => `${formatDateFr(iso.slice(0, 10))} ${formatTime(iso)}`;
 
@@ -76,30 +77,30 @@ export default function CareAccess() {
       <Text variant="label">{tr('nn.access.caregivers')}</Text>
       {links.isLoading && !links.data ? <Skeleton rows={2} /> : links.isError && !links.data ? <ErrorView error={links.error} onRetry={() => void links.refetch()} /> : (
         <>
-          {toConfirm.map((l) => (
-            <Card key={l.id} tone="lavender" testID="care-to-confirm">
+          <MotionList style={{ gap: spacing.md }}>{toConfirm.map((l) => (
+            <MotionItem key={l.id}><Card key={l.id} tone="lavender" testID="care-to-confirm">
               <Text weight="bold">{tr('nn.access.toConfirm', { name: nameOf(l) })}</Text>
               <Text variant="small" style={{ marginTop: 4 }}>{tr('nn.access.toConfirmBody', { name: child.first_name })}</Text>
               <View style={{ flexDirection: 'row', gap: spacing.xs, marginTop: spacing.sm, flexWrap: 'wrap' }}>
                 <Button label={tr('nn.access.confirm')} icon="check" onPress={() => run(action.mutateAsync({ action: 'confirm', linkId: l.id }), tr('nn.access.confirmed'))} testID="care-confirm" />
                 <Button label={tr('nn.access.refuse')} variant="secondary" onPress={async () => { if (await confirm(tr('nn.access.revokeTitle'), tr('nn.access.revokeBody'), tr('nn.access.refuse'))) await run(action.mutateAsync({ action: 'revoke', linkId: l.id }), tr('nn.access.revoked')); }} />
               </View>
-            </Card>
-          ))}
-          {active.map((l) => (
-            <Card key={l.id} testID="care-active-link">
+            </Card></MotionItem>
+          ))}</MotionList>
+          <MotionList style={{ gap: spacing.md }}>{active.map((l) => (
+            <MotionItem key={l.id}><Card key={l.id} testID="care-active-link">
               <ListRow icon="user-check" title={nameOf(l)} subtitle={tr('nn.access.activeSince', { date: dt(l.confirmed_at!) })} />
               <Button label={tr('nn.access.revoke')} icon="user-x" variant="destructive" size="sm" style={{ alignSelf: 'flex-start' }} testID="care-revoke"
                 onPress={async () => { if (await confirm(tr('nn.access.revokeTitle'), tr('nn.access.revokeBody'), tr('nn.access.revoke'))) await run(action.mutateAsync({ action: 'revoke', linkId: l.id }), tr('nn.access.revoked')); }} />
-            </Card>
-          ))}
-          {invited.map((l) => (
-            <Card key={l.id} testID="care-invited">
+            </Card></MotionItem>
+          ))}</MotionList>
+          <MotionList style={{ gap: spacing.md }}>{invited.map((l) => (
+            <MotionItem key={l.id}><Card key={l.id} testID="care-invited">
               <ListRow icon="mail" title={l.label ?? tr('nn.access.invitation')} subtitle={tr('nn.access.expires', { date: dt(l.expires_at ?? l.created_at) })} />
               <Button label={tr('nn.access.cancelInvite')} variant="secondary" size="sm" style={{ alignSelf: 'flex-start' }}
                 onPress={() => run(action.mutateAsync({ action: 'revoke', linkId: l.id }), tr('nn.access.inviteCancelled'))} testID="care-cancel-invite" />
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
           {!toConfirm.length && !active.length && !invited.length ? <Text muted>{tr('nn.access.none')}</Text> : null}
         </>
       )}

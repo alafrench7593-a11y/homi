@@ -312,8 +312,8 @@ function WebMoveButtons({ name, index, total, moveUp, moveDown, testID }: { name
   if (Platform.OS !== 'web') return null;
   return (
     <View style={SR_ONLY}>
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('u1.home.up', { name })} disabled={index === 0} onPress={moveUp} testID={`home-edit-up-${testID}`} />
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('u1.home.down', { name })} disabled={index === total - 1} onPress={moveDown} testID={`home-edit-down-${testID}`} />
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u1.home.up', { name })} disabled={index === 0} onPress={moveUp} testID={`home-edit-up-${testID}`} />
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u1.home.down', { name })} disabled={index === total - 1} onPress={moveDown} testID={`home-edit-down-${testID}`} />
     </View>
   );
 }

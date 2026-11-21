@@ -161,7 +161,7 @@ export default function FamilyHome() {
       ) : tipsOff ? <Button label={tr('u2.fam.show_tips')} size="sm" variant="ghost" onPress={() => setTipsOff(false)} /> : null}
 
       {open.length || recent.length ? <SectionTitle title={tr('u2.fam.requests')} /> : null}
-      <MotionList>{[...open, ...recent].map((r, i) => <MotionItem key={r.id}><StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem></MotionItem>)}</MotionList>
+      <MotionList style={{ gap: spacing.md }}>{[...open, ...recent].map((r, i) => <MotionItem key={r.id}><StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem></MotionItem>)}</MotionList>
 
       <SectionTitle title={tr('u2.fam.tasks')} />
       {(() => {
@@ -176,7 +176,7 @@ export default function FamilyHome() {
       {tasksQ.data && list.length === 0 ? (
         <EmptyState icon="check-square" title={filter === 'done' ? tr('u2.fam.empty_done') : tr('u2.fam.empty_todo')} body={filter === 'today' ? tr('u2.fam.empty_body') : undefined} action={filter !== 'done' ? { label: tr('u2.fam.add_task'), onPress: () => setCreating(true) } : undefined} />
       ) : null}
-      <MotionList>{list.map((task, i) => (
+      <MotionList style={{ gap: spacing.md }}>{list.map((task, i) => (
         <MotionItem key={task.id}><StaggerItem key={task.id} index={i}>
           <TaskRow task={task} onEdit={setEditing} onPropose={(x) => { setProposeHint(false); setRequest({ kind: 'take_task', taskId: x.id }); }} />
         </StaggerItem></MotionItem>

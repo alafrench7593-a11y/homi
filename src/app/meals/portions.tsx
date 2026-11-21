@@ -179,7 +179,7 @@ export default function Portions() {
   };
   return (
     <Screen back toolPlay={added} title={tr('pt.title')} subtitle={tr('pt.sub')} action={{ label: tr('pt.add'), icon: 'plus', onPress: () => { setEditing(null); setOpen(true); }, testID: 'pt-add' }}>
-      <MotionList>{alerts.map((b) => (
+      <MotionList style={{ gap: spacing.md }}>{alerts.map((b) => (
         <MotionItem key={b.id}><Banner key={b.id} tone={expiryStatus(b.use_by, today) === 'expired' ? 'warning' : 'info'} icon="clock" title={b.label}>
           <Text variant="small" testID={`pt-alert-${b.id}`}>{tr(`pt.alert.${expiryStatus(b.use_by, today)}` as TKey, { date: dShort(b.use_by!), count: portionsLeft(b, uses) })}</Text>
         </Banner></MotionItem>

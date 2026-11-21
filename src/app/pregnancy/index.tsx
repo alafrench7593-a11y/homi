@@ -23,6 +23,7 @@ import type { ExpectedBaby } from '@/lib/types';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, formatDate, getLocale } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 // HOMI : lilas d'abord (un seul bébé), puis champagne et mauve pour les jumeaux et triplés
 const HUES = ['lavande', 'or', 'rose'] as const;
@@ -167,7 +168,7 @@ export default function PregnancyUniverse() {
       {multiple && (
         <>
           <Text variant="heading" accessibilityRole="header">{tr('u2.preg.each_baby')}</Text>
-          {babies?.map((b) => <BabyNotes key={b.id} baby={b} />)}
+          <MotionList style={{ gap: spacing.md }}>{babies?.map((b) => <MotionItem key={b.id}><BabyNotes key={b.id} baby={b} /></MotionItem>)}</MotionList>
           <Card tone="lavender" onPress={() => router.push({ pathname: '/assistant/chat', params: { q: tr('u2.preg.q_multiple') } })}>
             <Text weight="bold">{tr('u2.preg.q_title')}</Text>
             <Text variant="small" muted>{tr('u2.preg.q_sub')}</Text>

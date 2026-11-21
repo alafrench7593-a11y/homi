@@ -19,7 +19,6 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, linesOf, radius, spacing } from '@/theme/tokens';
 import { formatNumber, t as tr, type TKey } from '@/i18n';
 import { formatLength, formatWeight } from '@/lib/domain/fetalWeeks';
-import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Semaines d'aménorrhée affichées sur la barre (terme : 41 SA, repère français). */
 export const TERM_SA = 41;
@@ -100,9 +99,9 @@ export function WeekProgress({ weeksSA, progress, daysToDue, dueLabel }: { weeks
               );
             })}
           </View>
-          <MotionList>{ms.filter((m) => m.key !== 'term').map((m) => (
-            <MotionItem key={m.key}><View key={m.key} pointerEvents="none" style={{ position: 'absolute', left: pos(m.fromSA), top: 2, width: 2, height: 6, marginLeft: -1, borderRadius: 1, backgroundColor: t.colors.textMuted }} /></MotionItem>
-          ))}</MotionList>
+          {ms.filter((m) => m.key !== 'term').map((m) => (
+            <View key={m.key} pointerEvents="none" style={{ position: 'absolute', left: pos(m.fromSA), top: 2, width: 2, height: 6, marginLeft: -1, borderRadius: 1, backgroundColor: t.colors.textMuted }} />
+          ))}
           <View pointerEvents="none" style={{ position: 'absolute', left: pos(weeksSA), width: 20, height: 20, marginLeft: -10, borderRadius: 10, backgroundColor: t.colors.primary, borderWidth: 3, borderColor: t.colors.surface }} testID="preg-progress-marker" />
         </View>
         <View style={{ flexDirection: 'row', gap: 3, marginTop: -spacing.xs }}>
@@ -114,7 +113,7 @@ export function WeekProgress({ weeksSA, progress, daysToDue, dueLabel }: { weeks
         </View>
         <View style={{ gap: spacing.xs }}>
           <Text variant="label" muted>{tr('h5.preg.milestones')}</Text>
-          <MotionList style={{ gap: spacing.xs }}>{ms.map((m) => <MotionItem key={m.key}><MilestoneLine key={m.key} m={m} /></MotionItem>)}</MotionList>
+          {ms.map((m) => <MilestoneLine key={m.key} m={m} />)}
         </View>
       </View>
     </View>

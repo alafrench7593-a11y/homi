@@ -80,7 +80,7 @@ export default function DifficultDay() {
 
       <SectionTitle title={tr('u2.difficult.essential_today')} />
       {essential.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.no_essential')}</Text> : null}
-      <MotionList>{essential.map((task) => <MotionItem key={task.id}><TaskRow key={task.id} task={task} onEdit={setEditing} /></MotionItem>)}</MotionList>
+      <MotionList style={{ gap: spacing.md }}>{essential.map((task) => <MotionItem key={task.id}><TaskRow key={task.id} task={task} onEdit={setEditing} /></MotionItem>)}</MotionList>
 
       {todayAppointments.length ? (
         <>

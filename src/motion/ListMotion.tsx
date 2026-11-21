@@ -63,14 +63,15 @@ export function MotionList({ children, style, gap, ready = true, ...rest }: View
   );
 }
 
-export function MotionItem({ children, style, testID }: { children?: React.ReactNode; style?: ViewProps['style']; testID?: string }) {
+/** `pointerEvents` / `style` : pour des entrées posées en absolu (ruban, carte), donner `absoluteFill` + `box-none`. */
+export function MotionItem({ children, style, testID, pointerEvents }: { children?: React.ReactNode; style?: ViewProps['style']; testID?: string; pointerEvents?: ViewProps['pointerEvents'] }) {
   const m = useMotion();
   const ctx = useContext(ListCtx);
   // Décidé au montage, une fois : l'entrée est-elle arrivée après le premier affichage de sa liste ?
   const [animateIn] = useState(() => !!ctx?.settled.current);
   const a = listItemMotion(m.level, { animateIn, count: ctx?.count ?? 0 });
   return (
-    <Animated.View testID={testID} style={style} entering={a.entering} exiting={a.exiting} layout={a.layout}>
+    <Animated.View testID={testID} style={style} pointerEvents={pointerEvents} entering={a.entering} exiting={a.exiting} layout={a.layout}>
       {children}
     </Animated.View>
   );

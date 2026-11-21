@@ -390,12 +390,12 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
       onAccessibilityAction={(e) => switchTo(e.nativeEvent.actionName === 'increment' ? 1 : -1)}>
       <Glass clear rounded={36}>
         <View style={{ alignItems: 'center', paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.md, gap: 4 }}>
-          <Pressable accessibilityRole="button" accessibilityLabel={tr('coc.a11y.openProfile', { name: child.first_name })} onPress={() => router.push(`/child/${child.id}`)} style={{ width: 132, height: 132, alignItems: 'center', justifyContent: 'center' }} testID="cocoon-avatar">
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('coc.a11y.openProfile', { name: child.first_name })} onPress={() => router.push(`/child/${child.id}`)} style={{ width: 132, height: 132, alignItems: 'center', justifyContent: 'center' }} testID="cocoon-avatar">
             <BreathingHalo size={132} dark={dark} moment={moment} />
             <View style={{ borderRadius: 50, borderWidth: 3, borderColor: dark ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.95)', shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: 0.22, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } }}>
               <ChildAvatar child={child} size={88} />
             </View>
-          </Pressable>
+          </Tappable>
           <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 38, letterSpacing: -0.8, color: ink, textAlign: 'center' }} testID="cocoon-name">{child.first_name}</Text>
           <Text variant="small" muted center testID="cocoon-age">{age.label}</Text>
           {state ? (
@@ -502,25 +502,25 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
             })}
             {/* Ligne du temps */}
             <View pointerEvents="none" style={{ position: 'absolute', left: 0, width, top: SLEEP_Y + 10, height: 6, borderRadius: 3, backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)' }} />
-            {/* Sommeils */}
-            <MotionList>{events.filter((e) => e.kind === 'sleep').map((e) => {
+            {/* Sommeils — une sieste ajoutée apparaît à sa place sur le ruban (liste vivante, calques en plein cadre) */}
+            <MotionList style={StyleSheet.absoluteFill} pointerEvents="box-none">{events.filter((e) => e.kind === 'sleep').map((e) => {
               const x0 = xOf(e.start);
               const w = Math.max(10, xOf(e.end ?? e.start) - x0);
               return (
-                <MotionItem key={e.id}><Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }} hitSlop={{ top: 12, bottom: 12 }}
+                <MotionItem key={e.id} style={StyleSheet.absoluteFill} pointerEvents="box-none"><Tappable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }} hitSlop={{ top: 12, bottom: 12 }}
                   style={{ position: 'absolute', left: x0, top: SLEEP_Y, width: w, height: 26, borderRadius: 13, overflow: 'hidden' }}>
                   <LinearGradient colors={dark ? ['rgba(185,162,255,0.65)', 'rgba(140,120,240,0.55)'] : ['#B9A8FF', '#8E79EA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
                   {e.ongoing ? <View style={{ position: 'absolute', right: 3, top: 3, bottom: 3, width: 20, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.35)' }} /> : null}
                   {w > 28 ? <View style={{ position: 'absolute', left: 6, top: 4 }}><KindGlyph kind="sleep" color="#FFFFFF" size={17} /></View> : null}
-                </Pressable></MotionItem>
+                </Tappable></MotionItem>
               );
             })}</MotionList>
             {/* Autres événements */}
-            <MotionList>{points.map((e, i) => {
+            <MotionList style={StyleSheet.absoluteFill} pointerEvents="box-none">{points.map((e, i) => {
               const x = xOf(e.start) - BUBBLE / 2;
               const top = lanes[i] === 0 ? 40 : 6;
               return (
-                <MotionItem key={e.id}><Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }}
+                <MotionItem key={e.id} style={StyleSheet.absoluteFill} pointerEvents="box-none"><Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }}
                   style={({ pressed }) => ({ position: 'absolute', left: x, top, width: BUBBLE, height: BUBBLE, borderRadius: BUBBLE / 2, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 1.12 : 1 }],
                     backgroundColor: dark ? 'rgba(20,16,44,0.82)' : 'rgba(255,255,255,0.92)', borderWidth: 1.5, borderColor: ink(e.kind),
                     shadowColor: ink(e.kind), shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
@@ -717,7 +717,7 @@ export function ArticleCard({ article, premium }: { article: Article; premium: b
   const open = () => router.push(`/article/${article.slug}`);
   return (
     <Glass rounded={28} testID="cocoon-article">
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('home.articleA11y', { title: article.title })} onPress={open} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.sm }} testID="cocoon-article-row">
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('home.articleA11y', { title: article.title })} onPress={open} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.sm }} testID="cocoon-article-row">
         <ArticleArt theme={artTheme(article)} />
         <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -732,7 +732,7 @@ export function ArticleCard({ article, premium }: { article: Article; premium: b
             <Icon name="arrow-right" size={14} color={t.colors.text} />
           </View>
         </View>
-      </Pressable>
+      </Tappable>
     </Glass>
   );
 }

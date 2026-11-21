@@ -167,7 +167,7 @@ export default function LabResults() {
       {q.data && !groups.length ? (
         <EmptyState icon="activity" title={tr('lab.emptyTitle')} body={tr('lab.emptyBody')} action={{ label: tr('lab.add'), onPress: () => setSheet({ lab: null, preset: null }) }} />
       ) : null}
-      <MotionList>{groups.map((g) => (
+      <MotionList style={{ gap: spacing.md }}>{groups.map((g) => (
         <MotionItem key={g.key}><AnalysisCard key={g.key} g={g} open={open === g.key} onToggle={() => setOpen(open === g.key ? null : g.key)} docTitle={docTitle}
           onEdit={(r) => setSheet({ lab: r, preset: null })} onAdd={() => setSheet({ lab: null, preset: { name: g.name, docId: fromDoc?.id ?? null, unit: g.unit, reference: g.last.lab_reference } })} /></MotionItem>
       ))}</MotionList>

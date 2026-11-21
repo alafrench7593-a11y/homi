@@ -5,7 +5,7 @@
  * Tant que les tuiles chargent, un fond doux est visible ; si elles ne chargent pas, les repères et la liste restent.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Linking, PanResponder, View } from 'react-native';
+import { Image, Linking, PanResponder, StyleSheet, View } from 'react-native';
 import { Icon, IconButton, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { lat2y, lon2x } from '@/lib/domain/nearby';
@@ -86,19 +86,20 @@ export function OsmMap({ center, places, height = 320, onSelect, interactive = t
     <View onLayout={(e) => setW(Math.max(200, Math.round(e.nativeEvent.layout.width)))} testID="out-map" accessibilityLabel={tr('out.mapA11y')}
       style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', borderWidth: 1, borderColor: t.colors.border }}
       {...pan.panHandlers}>
-      <MotionList>{tiles.map((tile) => (
-        <MotionItem key={tile.key}><Image key={tile.key} source={{ uri: tile.url }} accessibilityIgnoresInvertColors testID="out-map-tile"
-          style={{ position: 'absolute', left: tile.left, top: tile.top, width: TILE, height: TILE, opacity: t.isDark ? 0.62 : 0.9 }} /></MotionItem>
-      ))}</MotionList>
+      {tiles.map((tile) => (
+        <Image key={tile.key} source={{ uri: tile.url }} accessibilityIgnoresInvertColors testID="out-map-tile"
+          style={{ position: 'absolute', left: tile.left, top: tile.top, width: TILE, height: TILE, opacity: t.isDark ? 0.62 : 0.9 }} />
+      ))}
       {/* voile doux pour adoucir les couleurs du fond de carte */}
       <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: t.isDark ? 'rgba(35,30,54,0.25)' : 'rgba(247,244,251,0.18)' }} />
       <View pointerEvents="none" style={{ position: 'absolute', left: me.x - 7, top: me.y - 7, width: 14, height: 14, borderRadius: 7, borderWidth: 3, borderColor: '#FFFFFF', backgroundColor: '#7A5FB8' }} />
-      <MotionList>{places.map((p) => {
+      {/* Repères : un lieu ajouté par la recherche apparaît à sa place (calques plein cadre, liste vivante) */}
+      <MotionList style={StyleSheet.absoluteFill} pointerEvents="box-none">{places.map((p) => {
         const pt = point(p);
         if (pt.x < -16 || pt.y < -4 || pt.x > w + 16 || pt.y > height + 36) return null;
         const on = selected === p.id;
         return (
-          <MotionItem key={p.id}><Tappable key={p.id} accessibilityRole="button" accessibilityLabel={p.name} onPress={() => { setSelected(p.id); onSelect(p); }} testID={`out-marker-${p.id}`}
+          <MotionItem key={p.id} style={StyleSheet.absoluteFill} pointerEvents="box-none"><Tappable key={p.id} accessibilityRole="button" accessibilityLabel={p.name} onPress={() => { setSelected(p.id); onSelect(p); }} testID={`out-marker-${p.id}`}
             style={{ position: 'absolute', left: pt.x - 18, top: pt.y - 38, width: 36, height: 42, alignItems: 'center', zIndex: on ? 2 : 1 }}>
             <View style={{ width: on ? 34 : 30, height: on ? 34 : 30, borderRadius: 17, backgroundColor: CATEGORY_TINT[p.category], alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FFFFFF', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 3, shadowOffset: { width: 0, height: 1 }, elevation: 3 }}>
               <Icon name={CATEGORY_ICON[p.category] as never} size={on ? 16 : 14} color="#FFFFFF" />

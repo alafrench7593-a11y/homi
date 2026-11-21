@@ -54,7 +54,7 @@ export default function OffDuty() {
   }
   return (
     <Screen back title={toolName('offduty')} subtitle={toolBlurb('offduty')}>
-      <MotionList>{theirs.map((p) => (
+      <MotionList style={{ gap: spacing.md }}>{theirs.map((p) => (
         <MotionItem key={p.id}><Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner></MotionItem>
       ))}</MotionList>
       {mine ? (

@@ -16,6 +16,7 @@ import { durations, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 export function StepProgress({ labels, index, onJump, testID = 'scan-progress' }: { labels: string[]; index: number; onJump: (i: number) => void; testID?: string }) {
   const t = useTheme();
@@ -39,7 +40,7 @@ export function StepProgress({ labels, index, onJump, testID = 'scan-progress' }
         {labels.map((label, i) => {
           const done = i < index;
           return (
-            <Pressable key={label} disabled={!done} onPress={() => onJump(i)}
+            <Tappable key={label} disabled={!done} onPress={() => onJump(i)}
               accessibilityRole={done ? 'button' : undefined} accessibilityElementsHidden={!done} importantForAccessibility={done ? 'yes' : 'no-hide-descendants'}
               accessibilityLabel={done ? tr('scn.step.jump', { n: i + 1, name: label }) : undefined} testID={`${testID}-seg-${i}`}
               // cible de 44 px de haut (audit 09 : 65 × 20 px ; `hitSlop` est ignoré sur le web), trait fin inchangé :
@@ -49,7 +50,7 @@ export function StepProgress({ labels, index, onJump, testID = 'scan-progress' }
                 style={{ height: 4, borderRadius: radius.pill, backgroundColor: t.material.lines.track, overflow: 'hidden' }}>
                 <SegmentFill i={i} pos={pos} segW={segW} color={t.colors.primary} />
               </View>
-            </Pressable>
+            </Tappable>
           );
         })}
       </View>

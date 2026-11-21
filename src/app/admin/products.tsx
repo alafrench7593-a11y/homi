@@ -159,7 +159,7 @@ export default function AdminProducts() {
       </Row>
       <Field label={tr('pr.admin.barcode')} value={code} onChangeText={setCode} keyboardType="number-pad" maxLength={14} testID="product-barcode" />
       <Button label={tr('pr.admin.add')} icon="plus" onPress={() => add()} loading={lookup.isPending || save.isPending} testID="product-add" />
-      <MotionList>{products.data.map((p) => (
+      <MotionList style={{ gap: spacing.md }}>{products.data.map((p) => (
         <MotionItem key={p.id}><View key={p.id} style={{ gap: spacing.xs }}>
           <Card>
             <Row style={{ justifyContent: 'space-between' }}>

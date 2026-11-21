@@ -12,6 +12,7 @@ import { articlesForTool, toolTopic } from '@/lib/domain/toolArticles';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export function ToolArticles({ toolId }: { toolId: string }) {
   const topic = toolTopic(toolId);
@@ -40,9 +41,9 @@ function Inner({ toolId, ask }: { toolId: string; ask: string }) {
       </Tappable>
       {open ? (
         <>
-          {picks.map((a) => (
-            <ListRow key={a.id} icon="file-text" title={a.title} onPress={() => router.push(`/article/${a.slug}` as never)} testID={`tool-article-${a.slug}`} />
-          ))}
+          <MotionList style={{ gap: spacing.sm }}>{picks.map((a) => (
+            <MotionItem key={a.id}><ListRow key={a.id} icon="file-text" title={a.title} onPress={() => router.push(`/article/${a.slug}` as never)} testID={`tool-article-${a.slug}`} /></MotionItem>
+          ))}</MotionList>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
             <Chip icon="message-circle" label={ask} onPress={() => router.push({ pathname: '/assistant/local', params: { q: ask } } as never)} testID="tool-articles-ask" />
             <Chip icon="edit-3" label={tr('u1.ta.ask')} onPress={() => router.push('/assistant/local' as never)} testID="tool-articles-own" />

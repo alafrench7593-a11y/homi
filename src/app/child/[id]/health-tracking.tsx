@@ -135,7 +135,7 @@ export default function HealthTracking() {
       {trackersQ.data && entriesQ.isError && !entriesQ.data ? <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} title={tr('u4.ht.errNotes')} /> : null}
       {trackersQ.data && !trackers.length ? <EmptyState icon="activity" title={tr('u4.ht.emptyTitle')} body={tr('u4.ht.emptyBody')} /> : null}
 
-      <MotionList>{trackers.map((trk, i) => {
+      <MotionList style={{ gap: spacing.md }}>{trackers.map((trk, i) => {
         const list = (entriesQ.data ?? []).filter((e) => e.tracker_id === trk.id);
         const points = list.filter((e) => e.value != null).slice(0, 60).reverse().map((e) => ({ x: Date.parse(e.at), y: Number(e.value) }));
         return (

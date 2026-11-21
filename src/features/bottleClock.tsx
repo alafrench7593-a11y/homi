@@ -20,6 +20,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts } from '@/theme/tokens';
 import { openSlot } from './bottleDay';
 import { t as tr } from '@/i18n';
+import { Tappable } from '@/components/Tappable';
 
 /** Angle (degrés, 0 = en haut, sens horaire) d'une heure sur un cadran de 24 h. */
 export function dayAngle(d: Date): number {
@@ -200,7 +201,7 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
         const p = pt(c, rTrack, dayAngle(new Date(s.at)));
         const label = s.status === 'done' ? tr('u6.clock.edit', { time: slotClock(s.at) }) : tr('u6.clock.note', { time: slotClock(s.at) });
         return (
-          <Pressable key={i} accessibilityRole="button" accessibilityLabel={label} testID={`bottle-clock-slot-${i}`} hitSlop={6}
+          <Tappable key={i} accessibilityRole="button" accessibilityLabel={label} testID={`bottle-clock-slot-${i}`} hitSlop={6}
             onPress={() => (s.status === 'done' && s.bottle ? router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: childId, id: s.bottle.id } }) : openSlot(childId, s, timerId))}
             style={{ position: 'absolute', left: p.x - 18, top: p.y - 18, width: 36, height: 36, borderRadius: 18 }} />
         );

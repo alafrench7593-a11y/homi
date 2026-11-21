@@ -16,6 +16,7 @@ import { formatDate, formatNumber, t as tr } from '@/i18n';
 import { useCandidates, useParentHousehold, usePrepAnswers, usePrepItems } from '@/lib/data/hooks-childcarePrep';
 import { isStructure, monthlyCost, progressOf, sortCandidates, type Candidate, type CandidateSort, type PrepAnswer, type PrepItem } from '@/features/childcarePrep/domain';
 import { CandidateEditor, kindLabel, money, STATUS_ICON, statusLabel } from '@/features/childcarePrep/ui';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const SORTS: CandidateSort[] = ['cost', 'status', 'name', 'recent'];
 
@@ -130,7 +131,7 @@ export default function Candidates() {
             <Text variant="label">{tr('gp.cand.sort')}</Text>
             <Row wrap>{SORTS.map((s) => <Chip key={s} label={tr(`gp.sort.${s}`)} selected={sort === s} onPress={() => setSort(s)} testID={`gp-sort-${s}`} />)}</Row>
           </View>
-          {view === 'compare' ? <CompareColumns list={list} items={items} answers={answers} /> : list.map((c) => <CandidateCard key={c.id} c={c} items={items} answers={answers} />)}
+          {view === 'compare' ? <CompareColumns list={list} items={items} answers={answers} /> : <MotionList style={{ gap: spacing.md }}>{list.map((c) => <MotionItem key={c.id}><CandidateCard key={c.id} c={c} items={items} answers={answers} /></MotionItem>)}</MotionList>}
         </>
       )}
       <CandidateEditor visible={editorOpen} onClose={() => setEditorOpen(false)} householdId={householdId} />

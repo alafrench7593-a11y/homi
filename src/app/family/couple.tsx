@@ -23,6 +23,7 @@ import { DOMAINS } from '@/lib/domain/mentalLoad';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { spacing } from '@/theme/tokens';
 
 export default function CoupleWeek() {
   const toast = useToast();
@@ -101,12 +102,12 @@ export default function CoupleWeek() {
       {past.length ? (
         <>
           <SectionTitle title={tr('cm.cp.past')} />
-          {past.map((c) => (
-            <Card key={c.id} tone="soft">
+          <MotionList style={{ gap: spacing.md }}>{past.map((c) => (
+            <MotionItem key={c.id}><Card key={c.id} tone="soft">
               <Text weight="bold">{formatDate(c.week_of, { day: 'numeric', month: 'long' })}</Text>
               {c.decisions ? <Text variant="small">{c.decisions}</Text> : null}
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </>
       ) : null}
       </>}

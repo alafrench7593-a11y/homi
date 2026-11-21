@@ -90,8 +90,8 @@ export default function PostpartumHistory() {
           ) : null}
 
           <HistoryHeader title={tr('u5.pp_history.list')} count={list.length} />
-          {list.map((c, i) => (
-            <StaggerItem key={c.id} index={i}>
+          <MotionList style={{ gap: spacing.md }}>{list.map((c, i) => (
+            <MotionItem key={c.id}><StaggerItem key={c.id} index={i}>
               <Card>
                 <ListRow
                   icon="calendar"
@@ -103,8 +103,8 @@ export default function PostpartumHistory() {
                   right={<Button label={tr('u5.pp_history.del_ok')} size="sm" variant="ghost" onPress={() => remove(c.id, c.checkin_date)} accessibilityLabel={tr('u5.pp_history.del_a11y', { date: c.checkin_date })} />}
                 />
               </Card>
-            </StaggerItem>
-          ))}
+            </StaggerItem></MotionItem>
+          ))}</MotionList>
         </>
       ) : null}
     </Screen>

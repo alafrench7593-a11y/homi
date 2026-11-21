@@ -201,7 +201,7 @@ export default function Vaccines() {
       ))}
 
       {open.length ? <SectionTitle title={tr('vx.appointments')} /> : null}
-      <MotionList>{open.map((a) => (
+      <MotionList style={{ gap: spacing.md }}>{open.map((a) => (
         <MotionItem key={a.id}><Card key={a.id}>
           <View testID={`vaccine-appt-${a.id}`}>
             <Text weight="bold">{a.title}</Text>
@@ -220,7 +220,7 @@ export default function Vaccines() {
       ))}</MotionList>
       {doneAppts.length ? <Text variant="caption" muted>{tr('vx.doneAppts', { count: doneAppts.length })}</Text> : null}
       {postponements.length ? <SectionTitle title={tr('vx.postponedTitle')} /> : null}
-      <MotionList>{(schedule ?? []).filter((x) => x.state === 'postponed').map((x) => (
+      <MotionList style={{ gap: spacing.md }}>{(schedule ?? []).filter((x) => x.state === 'postponed').map((x) => (
         <MotionItem key={x.key}><Card key={x.key}>
           <View testID={`vaccine-postponed-${x.key}`}>
             <Text weight="bold">{x.label}</Text>
@@ -261,7 +261,7 @@ export default function Vaccines() {
 
       <SectionTitle title={tr('vx.registry')} />
       {!vaccinations.length && !loading ? <EmptyState icon="shield" title={tr('vx.none')} body={tr('vx.noneBody')} /> : null}
-      <MotionList>{vaccinations.map((v, i) => (
+      <MotionList style={{ gap: spacing.md }}>{vaccinations.map((v, i) => (
         <MotionItem key={v.id}><StaggerItem key={v.id} index={i}>
           <Card style={{ paddingVertical: 4 }}>
             {/* pièce jointe et suppression à côté de la ligne et non dedans : un bouton dans un bouton est invalide sur le web */}

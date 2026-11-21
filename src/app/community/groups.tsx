@@ -87,7 +87,7 @@ export default function Groups() {
       {invites.length ? (
         <>
           <SectionTitle title={tr('cm3.groups.invitations')} />
-          {invites.map((g) => <GroupCard key={g.id} g={g} />)}
+          <MotionList style={{ gap: spacing.md }}>{invites.map((g) => <MotionItem key={g.id}><GroupCard key={g.id} g={g} /></MotionItem>)}</MotionList>
         </>
       ) : null}
 

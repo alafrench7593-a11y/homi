@@ -13,7 +13,6 @@ import { CATEGORY_ICON, CATEGORY_TINT, regionFor, SOFT_MAP_STYLE, type FamilyPla
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MapUnavailable } from './PlaceVisuals';
-import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export interface FamilyMapProps {
   center: { lat: number; lon: number };
@@ -50,13 +49,13 @@ function GoogleFamilyMap({ center, places, radius, height = 320, onSelect, inter
         pitchEnabled={false}
       >
         <Circle center={{ latitude: center.lat, longitude: center.lon }} radius={500} fillColor="rgba(122,95,184,0.10)" strokeColor="rgba(122,95,184,0.35)" />
-        <MotionList>{places.map((p) => (
-          <MotionItem key={p.id}><Marker key={p.id} coordinate={{ latitude: p.lat, longitude: p.lon }} title={p.name} onPress={() => onSelect(p)} tracksViewChanges={false} testID={`out-marker-${p.id}`}>
+        {places.map((p) => (
+          <Marker key={p.id} coordinate={{ latitude: p.lat, longitude: p.lon }} title={p.name} onPress={() => onSelect(p)} tracksViewChanges={false} testID={`out-marker-${p.id}`}>
             <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: CATEGORY_TINT[p.category], alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#FFFFFF' }}>
               <Icon name={CATEGORY_ICON[p.category] as never} size={15} color="#FFFFFF" />
             </View>
-          </Marker></MotionItem>
-        ))}</MotionList>
+          </Marker>
+        ))}
       </MapView>
     </View>
   );

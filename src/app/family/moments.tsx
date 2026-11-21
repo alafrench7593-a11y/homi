@@ -121,7 +121,7 @@ export default function CoupleMoments() {
       <Text muted>{tr('mom.intro')}</Text>
       {!other ? <><Banner tone="info" icon="users">{tr('mom.noPartner')}</Banner><InviteOtherParent testID="mom-invite" /></> : null}
 
-      <MotionList>{split.toAnswer.map((m) => (
+      <MotionList style={{ gap: spacing.md }}>{split.toAnswer.map((m) => (
         <MotionItem key={m.id}><Card key={m.id} testID={`mom-in-${m.idea_key}`}>
           <Text variant="caption" muted>{tr('mom.fromName', { name: nameOf(m.from_user) })}</Text>
           <Text weight="bold">{ideaTitle(m.idea_key)}</Text>

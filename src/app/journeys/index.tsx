@@ -181,7 +181,7 @@ export default function Journeys() {
 
       <ChangeSheet req={pending} onClose={() => setPending(null)} onConfirm={(m) => void confirmChange(m)} busy={busy} />
       <Sheet visible={!!pickChild} onClose={() => setPickChild(null)} title={pickChild ? tr(`pj.choice.${pickChild}` as TKey) : ''}>
-        {pickChild && <MotionList>{kidsFor(pickChild).map((c) => (
+        {pickChild && <MotionList style={{ gap: spacing.md }}>{kidsFor(pickChild).map((c) => (
           <MotionItem key={c.id}><ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => chooseChild(c.id, pickChild)} /></MotionItem>
         ))}</MotionList>}
         <Button label={tr('pj.addChild')} icon="plus" variant="secondary" onPress={() => { setPickChild(null); router.push('/profiles/new?kind=child'); }} full testID="add-child" />

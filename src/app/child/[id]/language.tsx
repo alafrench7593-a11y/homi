@@ -71,7 +71,7 @@ function LanguageBody({ child }: { child: Child }) {
       </View>
 
       <SectionTitle title={tr('p2.lg.frise')} />
-      {groups.length ? <MotionList>{groups.map((g) => (
+      {groups.length ? <MotionList style={{ gap: spacing.md }}>{groups.map((g) => (
         <MotionItem key={g.key}><ListGroup key={g.key} title={g.month ? formatDate(`${g.month}T12:00:00`, { month: 'long', year: 'numeric' }).replace(/^./, (x) => x.toUpperCase()) : tr('p2.lg.undated')} testID={`lg-month-${g.key}`}>
           {g.entries.map((e) => (
             <ListRow key={e.id} icon={KIND_ICON[e.kind]} title={e.kind === 'sentence' ? tr('p2.lg.quote', { text: e.text }) : e.text}

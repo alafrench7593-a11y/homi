@@ -156,7 +156,7 @@ export default function Feel() {
 
       <SectionTitle title={tr('care.feel.history')} />
       {!logs.length ? <EmptyState icon="feather" title={tr('care.feel.none')} body={tr('care.feel.noneBody')} /> : null}
-      <MotionList>{logs.slice(0, 30).map((l) => (
+      <MotionList style={{ gap: spacing.md }}>{logs.slice(0, 30).map((l) => (
         <MotionItem key={l.id}><Card key={l.id} style={{ paddingVertical: spacing.sm }}>
           <View testID={`feel-entry-${l.id}`}>
             <Row style={{ alignItems: 'center' }}>

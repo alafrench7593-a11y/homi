@@ -581,9 +581,9 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot, voi
       <View style={[bubble, { flex: 1 }]} testID="aura-local-reply" accessibilityLiveRegion="polite">
         <Text variant="small">{tr('aura.local.intro')}</Text>
         {reply.tools.length ? <Text variant="label">{tr('aura.local.tools')}</Text> : null}
-        <MotionList>{reply.tools.map((tool) => (
-          <MotionItem key={tool.id}><Button key={tool.id} label={tr('aura.act.open', { name: tool.label })} icon="arrow-right" variant="secondary" full onPress={() => openTool(tool)} testID={`aura-local-open-${tool.id}`} /></MotionItem>
-        ))}</MotionList>
+        {reply.tools.map((tool) => (
+          <Button key={tool.id} label={tr('aura.act.open', { name: tool.label })} icon="arrow-right" variant="secondary" full onPress={() => openTool(tool)} testID={`aura-local-open-${tool.id}`} />
+        ))}
         {reply.article ? (
           <View style={{ gap: 4 }} testID="aura-local-article">
             <Text variant="label">{tr('aura.local.article')}</Text>

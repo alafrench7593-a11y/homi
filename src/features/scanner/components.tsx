@@ -22,6 +22,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
 import { resultTiles, type ResultTile } from './wizard';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { Tappable } from '@/components/Tappable';
 
 /** Résultat tel qu'enregistré (analyse des règles + allergènes déclarés par la base produit). */
 export type StoredAnalysis = ScanAnalysis & { declaredAllergens?: string[] };
@@ -106,7 +107,7 @@ export function RecallSection({ a }: { a: StoredAnalysis }) {
   return (
     <>
       <SectionTitle title={tr('u6.sc.recalls_title')} />
-      {a.recalls.map((r) => <RecallCard key={r.id} r={r} />)}
+      <MotionList>{a.recalls.map((r) => <MotionItem key={r.id}><RecallCard key={r.id} r={r} /></MotionItem>)}</MotionList>
       <Card tone="soft">
         {!a.recalls.length ? (
           check?.checked
@@ -412,7 +413,7 @@ export function ScanListRow({ s, favorite, trailing, testID }: { s: ScanRow; fav
     <View ref={src.ref} collapsable={false} testID={testID ?? `scan-row-${s.id}`}>
       <MatteSurface radius={radius.lg} padded={spacing.sm}>
         <Row style={{ alignItems: 'center' }}>
-          <Pressable accessibilityRole="button" accessibilityLabel={tr('u6.sc.see_result', { name })} onPress={() => src.open(() => router.push(`/scanner/result/${s.id}`))}
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.sc.see_result', { name })} onPress={() => src.open(() => router.push(`/scanner/result/${s.id}`))}
             style={{ flex: 1, minWidth: 0, minHeight: 48, paddingHorizontal: spacing.xs, paddingVertical: 4, justifyContent: 'center' }} testID={`scan-open-${s.id}`}>
             <View style={{ gap: 2 }}>
               <Text weight="bold" numberOfLines={2}>{`${name}${favorite ? ' ★' : ''}`}</Text>
@@ -421,7 +422,7 @@ export function ScanListRow({ s, favorite, trailing, testID }: { s: ScanRow; fav
               </Text>
               {s.verdict ? <VerdictBadge verdict={s.verdict} small /> : <Text variant="caption" muted>{tr('scn.notAnalysed')}</Text>}
             </View>
-          </Pressable>
+          </Tappable>
           {trailing ?? <Icon name="chevron-right" size={18} />}
         </Row>
       </MatteSurface>

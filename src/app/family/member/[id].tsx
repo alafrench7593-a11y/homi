@@ -13,7 +13,6 @@ import { EmptyState } from '@/components/States';
 import { GlassCard } from '@/components/glass';
 import { ListRow, SectionTitle, Text } from '@/components/ui';
 import { UserAvatar } from '@/components/UserAvatar';
-import { StaggerList } from '@/motion';
 import { StateLabel } from '@/features/missions/MissionCard';
 import { useHouseholdMembers } from '@/lib/data/hooks';
 import { useFamilyEvents, usePeople } from '@/lib/data/hooks-family-load';
@@ -65,9 +64,9 @@ export default function MemberProfile() {
       <SectionTitle title={tr('cp2.member.missions')} />
       <View testID="member-missions">
         {!allowed('share_missions') ? notShared : missions.length ? (
-          <StaggerList><MotionList>{missions.map((m) => (
+          <MotionList>{missions.map((m) => (
             <MotionItem key={m.id}><ListRow key={m.id} icon="check-square" title={m.title} right={<StateLabel state={m.mission_state} />} onPress={() => router.push(missionHref(m.id) as never)} /></MotionItem>
-          ))}</MotionList></StaggerList>
+          ))}</MotionList>
         ) : <Text variant="small" muted>{tr('cp2.member.noMissions')}</Text>}
       </View>
 

@@ -185,7 +185,7 @@ export default function Solo() {
       {/* Aides */}
       <SectionTitle title={tr('sol.aids.title')} />
       <Text variant="small" muted>{tr('sol.aids.intro')}</Text>
-      <MotionList>{aids.map((a) => (
+      <MotionList style={{ gap: spacing.md }}>{aids.map((a) => (
         <MotionItem key={a.key}><Card key={a.key} testID={`sol-aid-${a.key}`}>
           <Text weight="bold">{tr(`sol.aid.${a.key}` as TKey)}</Text>
           <Text variant="small">{tr(`sol.aid.${a.key}.d` as TKey)}</Text>
@@ -200,7 +200,7 @@ export default function Solo() {
       {/* Gestes */}
       <SectionTitle title={tr('sol.g.title')} />
       <Text variant="small" muted>{tr('sol.g.intro')}</Text>
-      <MotionList>{gestures.map((g) => <MotionItem key={g.key}><GestureCard key={g.key} g={g} /></MotionItem>)}</MotionList>
+      <MotionList style={{ gap: spacing.md }}>{gestures.map((g) => <MotionItem key={g.key}><GestureCard key={g.key} g={g} /></MotionItem>)}</MotionList>
 
       {/* Vidéos officielles, lues dans l'appli */}
       <SectionTitle title={tr('sol.v.title')} />

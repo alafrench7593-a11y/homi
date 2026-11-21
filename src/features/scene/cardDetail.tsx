@@ -18,6 +18,7 @@ import { Platform, Pressable, View, type StyleProp, type ViewStyle } from 'react
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useIsFocused } from 'expo-router';
 import { motionHaptic, useCardLift, useMotion } from '@/motion';
+import { Tappable } from '@/components/Tappable';
 
 export const SCENE_MS = 380;
 
@@ -54,14 +55,14 @@ function DefaultCardSource({ sourceKey, onOpen, children, style, testID, accessi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focused]);
   return (
-    <Pressable ref={ref} style={grow ? { flex: 1, minWidth: 0 } : undefined} accessibilityRole="button" accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} testID={testID} disabled={disabled}
+    <Tappable ref={ref} style={grow ? { flex: 1, minWidth: 0 } : undefined} accessibilityRole="button" accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} testID={testID} disabled={disabled}
       onPress={() => {
         lastOpened = sourceKey;
         motionHaptic('light');
         c.open(onOpen);
       }}>
       <Animated.View style={[style, c.style]}>{children}</Animated.View>
-    </Pressable>
+    </Tappable>
   );
 }
 

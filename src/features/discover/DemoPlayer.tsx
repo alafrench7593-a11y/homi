@@ -17,6 +17,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { motionHaptic, useMotion, type MotionLevel } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, radius } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 /** Chorégraphie du geste (ms, pure, testée). */
 export const GESTURE = { waitMs: 520, approachMs: 760, releaseMs: 320, tapAt: 0.7 } as const;
@@ -136,8 +137,8 @@ export function DemoTarget({ children, label, pressable = true, style, testID, r
   );
   if (!pressable) return content;
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} testID={testID ?? 'demo-target'} onPress={apply} hitSlop={6} style={{ minHeight: 44, justifyContent: 'center' }}>
+    <Tappable accessibilityRole="button" accessibilityLabel={label} testID={testID ?? 'demo-target'} onPress={apply} hitSlop={6} style={{ minHeight: 44, justifyContent: 'center' }}>
       {content}
-    </Pressable>
+    </Tappable>
   );
 }

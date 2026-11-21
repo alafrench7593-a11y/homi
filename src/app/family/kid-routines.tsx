@@ -142,7 +142,7 @@ export default function KidRoutines() {
       <Text muted>{tr('kr.intro')}</Text>
       {q.isLoading ? <Loading /> : !list.length ? (
         <EmptyState icon="sun" title={tr('kr.none')} body={tr('kr.noneD')} action={{ label: tr('kr.new'), onPress: () => { setEditing(undefined); setOpen(true); } }} />
-      ) : <MotionList>{list.map((r) => {
+      ) : <MotionList style={{ gap: spacing.md }}>{list.map((r) => {
         const done = checks.filter((c) => c.routine_id === r.id).length;
         const who = children.find((c) => c.id === r.child_id)?.first_name;
         return (

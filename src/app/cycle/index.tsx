@@ -307,7 +307,7 @@ function CycleHub() {
       <HistoryHeader title={tr('cy.history')} count={history.length || undefined} />
       {periodsQ.isLoading && !periodsQ.data ? <Skeleton rows={2} /> : periodsQ.isError && !periodsQ.data ? <ErrorView error={periodsQ.error} onRetry={() => void periodsQ.refetch()} /> : null}
       {!history.length && !periodsQ.isLoading ? <Ink soft>{tr('cy.history.empty')}</Ink> : null}
-      <MotionList>{history.slice(0, 24).map((p) => (
+      <MotionList style={{ gap: spacing.md }}>{history.slice(0, 24).map((p) => (
         <MotionItem key={p.id}><Glass key={p.id}>
           <Row style={{ alignItems: 'flex-start' }}>
             <CycleIcon name="period" color={c.period} />

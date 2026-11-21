@@ -12,6 +12,7 @@ import { FEEDBACK_KINDS, useDeleteFeedback, useMyFeedback, useSendFeedback, type
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Feedback() {
   const params = useLocalSearchParams<{ from?: string; kind?: string }>();
@@ -50,8 +51,8 @@ export default function Feedback() {
       {mine.length ? (
         <>
           <SectionTitle title={tr('fb.mine')} />
-          {mine.map((f) => (
-            <Card key={f.id} testID={`fb-item-${f.id}`}>
+          <MotionList style={{ gap: spacing.md }}>{mine.map((f) => (
+            <MotionItem key={f.id}><Card key={f.id} testID={`fb-item-${f.id}`}>
               <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start', gap: spacing.sm }}>
                 <Text variant="caption" weight="bold" muted style={{ flex: 1 }}>{tr(`fb.kind.${f.kind}` as TKey)} · {formatDate(f.created_at, { day: 'numeric', month: 'short' })}</Text>
                 <Text variant="caption" weight="bold" testID={`fb-status-${f.id}`}>{tr(`fb.st.${f.status}` as TKey)}</Text>
@@ -63,8 +64,8 @@ export default function Feedback() {
                   try { await remove.mutateAsync(f.id); } catch (e) { toast(friendlyError(e), 'error'); }
                 }} />
               </Row>
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </>
       ) : null}
     </Screen>

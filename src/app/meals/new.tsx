@@ -19,6 +19,7 @@ import { MEALS, type Audience, type Meal, type Recipe, type RecipeIngredient, ty
 import { derivedAllergens, fold, isVegetarian, validateRecipe } from '@/lib/recipes/validate';
 import { t as tr, type TKey } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { spacing } from '@/theme/tokens';
 
 const UNITS: Unit[] = ['g', 'ml', 'u', 'cs', 'cc', 'pincee'];
 const AUDS: Audience[] = ['pregnancy', 'baby', 'child', 'family'];
@@ -91,7 +92,7 @@ export default function NewRecipe() {
       </Row>
 
       <SectionTitle title={tr('rc.ingredients')} />
-      <MotionList>{ings.map((x, k) => (
+      <MotionList style={{ gap: spacing.md }}>{ings.map((x, k) => (
         <MotionItem key={x.key}><Card key={x.key}>
           <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Text weight="bold" style={{ flex: 1 }}>{INGREDIENTS[x.key].name}</Text>

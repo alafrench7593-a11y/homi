@@ -12,7 +12,6 @@ import { Screen } from '@/components/Screen';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, Chip, Field, IconButton, ListRow, Row, Text } from '@/components/ui';
-import { StaggerList } from '@/motion';
 import { ConfirmSend } from '@/features/couple/CoupleKit';
 import { StateLabel } from '@/features/missions/MissionCard';
 import { useUserId } from '@/lib/auth';
@@ -71,8 +70,7 @@ export default function Inbox() {
       {q.isLoading && !q.data ? <Skeleton kind="card" rows={2} /> : q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : !list.length ? (
         <EmptyState icon="message-circle" title={tr('und.inbox.empty')} body={tr('und.inbox.emptyB')} />
       ) : (
-        <StaggerList gap={spacing.sm} testID="und-thread">
-          <MotionList>{list.map((m) => {
+        <MotionList style={{ gap: spacing.sm }} testID="und-thread">{list.map((m) => {
             const mine = m.author_id === me;
             const mission = m.task_id ? missions.all.find((x) => x.id === m.task_id) ?? null : null;
             return (
@@ -105,7 +103,6 @@ export default function Inbox() {
               </View></MotionItem>
             );
           })}</MotionList>
-        </StaggerList>
       )}
 
       {partner && lastReceived ? (

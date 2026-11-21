@@ -146,7 +146,7 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
   const w = Math.min(width, 900);
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose} accessibilityViewIsModal>
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('cm1.photo.close')} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(8,6,12,0.94)', alignItems: 'center', justifyContent: 'center' }}>
+      <Tappable pressScale={1} hoverLift={0} accessibilityRole="button" accessibilityLabel={tr('cm1.photo.close')} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(8,6,12,0.94)', alignItems: 'center', justifyContent: 'center' }}>
         <CommunityImage path={ph.path} style={{ width: w, height: Math.min(height * 0.8, w / ratio) }} accessibilityLabel={tr('cm1.photo.position', { index: i + 1, total: photos.length })} />
         {photos.length > 1 ? (
           <Row style={{ marginTop: spacing.md }}>
@@ -155,7 +155,7 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
             <Chip label={tr('cm1.photo.next')} icon="chevron-right" onPress={() => setI((x) => (x + 1) % photos.length)} />
           </Row>
         ) : null}
-      </Pressable>
+      </Tappable>
     </Modal>
   );
 }

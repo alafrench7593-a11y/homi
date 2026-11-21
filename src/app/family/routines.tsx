@@ -75,7 +75,7 @@ export default function Routines() {
       ) : null}
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
       {q.data && !list.length ? <EmptyState icon="list" title={tr('u2.routines.none_title')} body={tr('u2.routines.none_body')} /> : null}
-      <MotionList>{list.map((r, i) => (
+      <MotionList style={{ gap: spacing.md }}>{list.map((r, i) => (
         <MotionItem key={r.id}><StaggerItem key={r.id} index={i}>
           <Card>
             <ListRow icon="list" title={r.title} subtitle={`${tr('u2.routines.steps', { count: r.items.length })}${r.default_assignee ? ` · ${labelOf(r.default_assignee)}` : ''}`} onPress={() => setDraft({ id: r.id, title: r.title, kind: r.kind, items: r.items.join('\n'), assignee: r.default_assignee })} />

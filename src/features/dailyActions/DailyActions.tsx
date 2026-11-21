@@ -324,10 +324,10 @@ function Row({ m }: { m: ActionModel }) {
           <Text variant="caption" muted numberOfLines={2}>{m.info}</Text>
         </View>
       </Tappable>
-      <Pressable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={8} onPress={m.onAdd}
+      <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={8} onPress={m.onAdd}
         style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
         <Icon name={m.active ? 'sun' : 'plus'} size={18} color={t.colors.primaryText} />
-      </Pressable>
+      </Tappable>
     </View>
   );
 }

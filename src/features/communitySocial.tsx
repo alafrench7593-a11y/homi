@@ -28,6 +28,7 @@ import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens
 import { localeTag, t as tr } from '@/i18n';
 import { CheckMark } from '@/motion/CheckMark';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { SlidingUnderline, useSlidingUnderline } from '@/components/controls/SlidingUnderline';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
 // Accents choisis par le parent (noms conservés) : teintes harmonisées HOMI, encres lisibles sur fond clair
@@ -179,18 +180,20 @@ export function GroupCard({ g, compact }: { g: CommunityGroup; compact?: boolean
 
 export function FeedTabs<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
   const t = useTheme();
+  const u = useSlidingUnderline<T>(value);
   return (
     // Coupée à droite sur un écran étroit : elle va jusqu'au bord et s'estompe tant qu'elle peut défiler
     <FadingScrollRow gap={2} accessibilityRole="tablist" testID="feed-tabs">
       {options.map((o) => {
         const selected = value === o.value;
         return (
-          <Tappable key={o.value} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => onChange(o.value)} testID={`feed-tab-${o.value}`}
-            style={{ minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: selected ? t.colors.primary : 'transparent' }}>
+          <Tappable key={o.value} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => onChange(o.value)} testID={`feed-tab-${o.value}`} onLayout={u.onItemLayout(o.value)}
+            style={{ minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: 'transparent' }}>
             <Text weight={selected ? 'bold' : 'medium'} color={selected ? t.colors.primary : t.colors.textMuted}>{o.label}</Text>
           </Tappable>
         );
       })}
+      <SlidingUnderline style={u.style} color={t.colors.primary} bottom={2} testID="feed-tabs-underline" />
     </FadingScrollRow>
   );
 }

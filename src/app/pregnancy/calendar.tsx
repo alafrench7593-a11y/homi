@@ -96,7 +96,7 @@ export default function PregnancyCalendar() {
       />
 
       {multiple ? <View testID="preg-cal-multiple"><Banner tone="info" title={tr('care.cal.multipleTitle')}>{tr('care.cal.multipleBody')}</Banner></View> : null}
-      <MotionList>{moved.map((m) => {
+      <MotionList style={{ gap: spacing.md }}>{moved.map((m) => {
         const a = echoAppts.find((x) => x.id === m.id)!;
         return (
           <MotionItem key={m.id}><View key={m.id} testID={`preg-cal-moved-${m.key}`}>
@@ -109,7 +109,7 @@ export default function PregnancyCalendar() {
       })}</MotionList>
 
       <SectionTitle title={tr('care.cal.echos')} />
-      <MotionList>{windows.map((w) => {
+      <MotionList style={{ gap: spacing.md }}>{windows.map((w) => {
         const appt = byKey(w.key);
         const st = windowState(w, today);
         return (
@@ -151,7 +151,7 @@ export default function PregnancyCalendar() {
 
       <SectionTitle title={tr('care.cal.team')} />
       <Text variant="small" muted>{tr('care.cal.teamBody')}</Text>
-      <MotionList>{others.map((a) => (
+      <MotionList style={{ gap: spacing.md }}>{others.map((a) => (
         <MotionItem key={a.id}><Tappable key={a.id} accessibilityRole="button" onPress={() => setEditing({ key: null, appt: a, window: null })}>
           <Card><Text weight="bold">{a.title}</Text><Text variant="small" muted>{appointmentWhen(a)}{a.location_label ? ` · ${a.location_label}` : ''}</Text></Card>
         </Tappable></MotionItem>

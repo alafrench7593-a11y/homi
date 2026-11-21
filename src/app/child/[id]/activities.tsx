@@ -49,7 +49,7 @@ function ActivitiesBody({ child }: { child: Child }) {
   return (
     <Screen back title={tr('p2.act.title')} subtitle={tr('p2.act.sub', { name: child.first_name })}
       action={{ label: tr('p2.act.add'), icon: 'plus', onPress: () => setOpen({ a: null }), testID: 'act-add' }}>
-      {list.length ? <MotionList>{list.map((a) => {
+      {list.length ? <MotionList style={{ gap: spacing.md }}>{list.map((a) => {
         const next = nextSession(a, now);
         return (
           <MotionItem key={a.id}><Card key={a.id} onPress={a._pending ? undefined : () => setOpen({ a })} testID={`act-card-${a.id}`} accessibilityLabel={`${a.name}. ${slotsText(a.slots)}`}>

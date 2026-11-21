@@ -22,6 +22,7 @@ import { useCoupleMessages, useGrammar, useMyFeelings, usePartner, useSaveFeelin
 import { FEELINGS, SITUATIONS, feelingKey, showsHelp, situationTitle, unreadCount, type Feeling } from '@/lib/domain/understand';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Understand() {
   const toast = useToast();
@@ -89,11 +90,11 @@ export default function Understand() {
       {mine.data?.length ? (
         <>
           <SectionTitle title={tr('und.history')} subtitle={tr('und.historyB')} />
-          {mine.data.slice(0, 5).map((f) => (
-            <Text key={f.id} variant="small" muted testID={`und-mine-${f.id}`}>
+          <MotionList style={{ gap: spacing.md }}>{mine.data.slice(0, 5).map((f) => (
+            <MotionItem key={f.id}><Text key={f.id} variant="small" muted testID={`und-mine-${f.id}`}>
               {formatDate(f.created_at, { weekday: 'short', day: 'numeric', month: 'short' })} · {f.feelings.map((x) => tr(feelingKey(x, grammar))).join(', ')}
-            </Text>
-          ))}
+            </Text></MotionItem>
+          ))}</MotionList>
         </>
       ) : null}
     </Screen>

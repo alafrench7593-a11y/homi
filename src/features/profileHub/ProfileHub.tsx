@@ -202,7 +202,7 @@ export function ChildrenHealthSection({ children }: { children: Child[] }) {
     <>
       <SectionTitle title={tr('hub.child.section')} />
       <Text variant="small" muted>{tr('hub.child.intro')}</Text>
-      {children.map((c) => <ChildHealthCard key={c.id} child={c} />)}
+      <MotionList>{children.map((c) => <MotionItem key={c.id}><ChildHealthCard key={c.id} child={c} /></MotionItem>)}</MotionList>
     </>
   );
 }

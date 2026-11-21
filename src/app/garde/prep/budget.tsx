@@ -15,6 +15,7 @@ import { t as tr } from '@/i18n';
 import { useCandidates, useParentHousehold } from '@/lib/data/hooks-childcarePrep';
 import { monthlyCost, sortCandidates, type Candidate } from '@/features/childcarePrep/domain';
 import { CandidateEditor, kindLabel, money, SourceLinks, statusLabel } from '@/features/childcarePrep/ui';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function CareBudget() {
   const t = useTheme();
@@ -36,12 +37,12 @@ export default function CareBudget() {
       ) : (
         <>
           {cheapest && priced.length > 1 ? <Card tone="soft" testID="gp-bd-cheapest"><Text weight="bold">{tr('gp.bd.cheapest', { name: cheapest.name })}</Text></Card> : null}
-          {list.map((c) => {
+          <MotionList style={{ gap: spacing.md }}>{list.map((c) => {
             const cost = monthlyCost(c);
             const share = cost.complete ? cost.total / max : 0;
             const diff = cheapest && cost.complete && c.id !== cheapest.id && c.status !== 'dismissed' ? cost.total - monthlyCost(cheapest).total : 0;
             return (
-              <Card key={c.id} testID={`gp-bd-${c.id}`}
+              <MotionItem key={c.id}><Card key={c.id} testID={`gp-bd-${c.id}`}
                 accessibilityLabel={[c.name, kindLabel(c.kind), statusLabel(c.status), cost.complete ? `${tr('gp.cost.beforeAid')} ${money(cost.total)}` : tr('gp.cand.noPrice')].join(', ')}>
                 <Text variant="heading">{c.name}</Text>
                 <Text variant="small" muted>{`${kindLabel(c.kind)} · ${statusLabel(c.status)}`}</Text>
@@ -63,9 +64,9 @@ export default function CareBudget() {
                   </View>
                 ) : <Text muted style={{ marginTop: spacing.xs }}>{tr('gp.cost.incomplete')}</Text>}
                 <Button label={tr('gp.bd.edit')} icon="edit-2" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => setEditing(c)} testID={`gp-bd-edit-${c.id}`} />
-              </Card>
+              </Card></MotionItem>
             );
-          })}
+          })}</MotionList>
           {incomplete ? <Text variant="small" muted>{tr('gp.bd.incompleteN', { count: incomplete })}</Text> : null}
           <Text variant="small" muted>{tr('gp.bd.formula')}</Text>
         </>

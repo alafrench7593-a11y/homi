@@ -86,7 +86,7 @@ export default function MeSpace() {
 
       <SectionTitle title={tr('u8.me.recover')} />
       <Text variant="small" muted>{tr('u8.me.recoverIntro')}</Text>
-      <MotionList>{rehab().map((r) => {
+      <MotionList style={{ gap: spacing.md }}>{rehab().map((r) => {
         const related = (articles ?? []).filter((a) => r.slugs.includes(a.slug) || a.tags.some((tag) => r.tags.includes(tag)));
         return (
           <MotionItem key={r.key}><Card key={r.key} tone="lavender">

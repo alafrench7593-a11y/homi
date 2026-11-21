@@ -182,7 +182,7 @@ export default function Shopping() {
 
       {(members?.length ?? 0) > 1 ? <Text variant="small" muted testID="shopping-shared">{tr('rc.shopping.shared')}</Text> : <Text variant="small" muted>{tr('rc.shopping.shareHint')}</Text>}
       <Text variant="caption" muted>{tr('shp.linkNote')}</Text>
-      <MotionList>{STOCK_CATEGORIES.filter((c) => byCategory.some((i) => i.category === c.key)).map((c, n) => (
+      <MotionList style={{ gap: spacing.md }}>{STOCK_CATEGORIES.filter((c) => byCategory.some((i) => i.category === c.key)).map((c, n) => (
         <MotionItem key={c.key}><Cascade key={c.key} index={n} style={{ gap: 2 }}>
           <SectionTitle title={tr(c.label)} />
           <Card>{byCategory.filter((i) => i.category === c.key).map(row)}</Card>

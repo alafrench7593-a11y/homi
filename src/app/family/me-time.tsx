@@ -96,7 +96,7 @@ export default function MeTime() {
       ]} />
       <SectionTitle title={tr('u2.metime.my_booked')} />
       {mine.length === 0 ? <EmptyState icon="sun" title={tr('u2.metime.none_title')} body={tr('u2.metime.none_body')} /> : null}
-      <MotionList>{mine.map((s, i) => (
+      <MotionList style={{ gap: spacing.md }}>{mine.map((s, i) => (
         <MotionItem key={s.id}><StaggerItem key={s.id} index={i}>
           <Card>
             <ListRow icon="sun" title={fmt(s)} subtitle={s.note ?? undefined} />

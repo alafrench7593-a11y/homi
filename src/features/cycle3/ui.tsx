@@ -13,6 +13,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH } from '@/theme/tokens';
 import { CheckMark } from '@/motion/CheckMark';
+import { Tappable } from '@/components/Tappable';
 
 /**
  * Calendrier : toujours sombre et lisible (contrastes ≥ 4,5:1 sur le fond).
@@ -125,7 +126,7 @@ export function LockedCard({ testID }: { testID?: string }) {
   const t = useTheme();
   const unlock = useCycleLock((s) => s.unlock);
   return (
-    <Pressable testID={testID ?? 'cycle-locked'} accessibilityRole="button" accessibilityLabel={tr('c3.priv.unlock')}
+    <Tappable testID={testID ?? 'cycle-locked'} accessibilityRole="button" accessibilityLabel={tr('c3.priv.unlock')}
       onPress={async () => { if (await authenticate()) { haptic('success'); unlock(); } }}
       style={{ alignItems: 'center', gap: 6, padding: 20, borderRadius: 24, backgroundColor: CAL.bg }}>
       <Icon name="lock" color={CAL.soft} />
@@ -134,6 +135,6 @@ export function LockedCard({ testID }: { testID?: string }) {
       <View style={{ marginTop: 4, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: t.colors.primary }}>
         <Text weight="bold" color={t.colors.primaryText}>{tr('c3.priv.unlock')}</Text>
       </View>
-    </Pressable>
+    </Tappable>
   );
 }

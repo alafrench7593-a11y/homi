@@ -19,6 +19,7 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { Tappable } from '@/components/Tappable';
 
 export interface MemberOption {
   value: string;
@@ -66,7 +67,7 @@ function DefaultMemberSelector({ label, options, value, onChange, testID }: Memb
       {options.map((o) => {
         const on = o.value === value;
         return (
-          <Pressable key={o.value} onLayout={onLayout(o.value)} accessibilityRole="radio" accessibilityState={{ checked: on, selected: on }} aria-checked={on}
+          <Tappable key={o.value} onLayout={onLayout(o.value)} accessibilityRole="radio" accessibilityState={{ checked: on, selected: on }} aria-checked={on}
             accessibilityLabel={o.hint ? `${o.label}, ${o.hint}` : o.label} testID={o.testID}
             onPress={() => { if (!on) { haptic('selection'); onChange(o.value); } }}
             style={{ minHeight: MIN_TOUCH, maxWidth: '100%', flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingLeft: 6, paddingRight: spacing.sm, borderRadius: radius.pill }}>
@@ -76,7 +77,7 @@ function DefaultMemberSelector({ label, options, value, onChange, testID }: Memb
               </View>
             ) : <UserAvatar path={o.avatarPath} initial={o.initial ?? (o.label.trim()[0] ?? '?').toUpperCase()} size={32} />}
             <Text weight={on ? 'bold' : 'medium'} color={on ? t.colors.text : t.colors.textMuted} style={{ flexShrink: 1 }}>{o.label}</Text>
-          </Pressable>
+          </Tappable>
         );
       })}
     </View>
@@ -114,7 +115,7 @@ function DefaultDataTile({ value, label, context, empty, icon, tone = 'calm', on
   );
   const style = { flex: 1, minWidth: 84, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.tokens.surface.opaque, borderWidth: 1, borderColor: t.colors.border };
   if (!onPress) return <View testID={testID} accessible accessibilityLabel={a11y} style={style}>{body}</View>;
-  return <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress} style={style}>{body}</Pressable>;
+  return <Tappable testID={testID} accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress} style={style}>{body}</Tappable>;
 }
 
 type Controls = { MemberSelector: React.ComponentType<MemberSelectorProps>; DataTile: React.ComponentType<DataTileProps> };

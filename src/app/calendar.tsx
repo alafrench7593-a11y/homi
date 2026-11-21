@@ -471,15 +471,15 @@ function FeedCard() {
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{isDemo ? tr('u3.cal.demoOff') : tr('u3.cal.needHousehold')}</Text>
       ) : (
         <>
-          {(feedsQ.data ?? []).map((f) => (
-            <Row key={f.id} style={{ alignItems: 'center', marginTop: spacing.xs }}>
+          <MotionList>{(feedsQ.data ?? []).map((f) => (
+            <MotionItem key={f.id}><Row key={f.id} style={{ alignItems: 'center', marginTop: spacing.xs }}>
               <View style={{ flex: 1 }}>
                 <Text variant="small" weight="medium">{f.label}{f.include_health_titles ? tr('u3.cal.healthVisible') : ''}</Text>
                 <Text variant="caption" muted>{tr('u3.cal.feedMeta', { created: when(f.created_at), last: f.last_accessed_at ? tr('u3.cal.lastRead', { date: when(f.last_accessed_at) }) : tr('u3.cal.notYet') })}</Text>
               </View>
               <Button label={tr('u3.cal.revoke')} size="sm" variant="ghost" onPress={() => remove(f.id)} />
-            </Row>
-          ))}
+            </Row></MotionItem>
+          ))}</MotionList>
           <Button label={tr('u3.cal.createLink')} icon="link" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={() => setOpen(true)} />
         </>
       )}

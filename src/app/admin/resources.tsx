@@ -15,6 +15,7 @@ import { resourceAgeLabel, resourceErrors, useExternalResources, useSaveResource
 import { friendlyError, useMyRoles } from '@/lib/data/hooks-settings';
 import { t as tr, type TKey } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { spacing } from '@/theme/tokens';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const EMPTY = { slug: '', kind: 'institution' as ResourceKind, title: '', publisher: '', description: '', url: '', min: '', max: '', published: '', consulted: today() };
@@ -57,7 +58,7 @@ export default function AdminResources() {
       <Field label={tr('src.admin.consultedOn')} value={f.consulted} onChangeText={(v) => setF({ ...f, consulted: v })} maxLength={10} />
       <Button label={tr('src.admin.save')} icon="plus" onPress={() => add()} loading={save.isPending} testID="res-save" />
 
-      <MotionList>{all.data.map((r) => (
+      <MotionList style={{ gap: spacing.md }}>{all.data.map((r) => (
         <MotionItem key={r.id}><View key={r.id} testID={`res-row-${r.slug}`}><Card>
           <Text variant="caption" muted>{tr(`src.kind.${r.kind}` as TKey)} · {tr(`src.admin.status.${r.status}` as TKey)} · {resourceAgeLabel(r)}</Text>
           <Text weight="bold">{r.title}</Text>

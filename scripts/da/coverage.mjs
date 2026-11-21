@@ -23,7 +23,9 @@
  *      listes    : sur un écran qui écrit des données (mutation, insert, delete), toute liste d'ENTRÉES rendue par
  *                  `.map((x) => <… key={x.id}>)` anime l'ajout et la suppression : MotionItem (dans MotionList),
  *                  `entering` / `layout`, ou rangées d'un ListGroup / ReorderList (animés à la source). Les listes
- *                  virtualisées (FlatList / VirtualList) ne sont pas comptées (recyclage : on n'anime que l'élément touché) ;
+ *                  virtualisées (FlatList / VirtualList) ne sont pas comptées (recyclage : on n'anime que l'élément touché),
+ *                  ni les rangées horizontales (tuiles, pastilles, points), ni les boutons / pastilles / repères de carte natifs, ni les
+ *                  composants sans rendu (…Sync, …Host) ;
  *      coche     : dans un fichier qui pose des cases à cocher (rôle checkbox hors Chip), aucune coche FIGÉE
  *                  (pictogramme « check » posé tel quel) : la coche se trace (CheckMark, CompletionCheck,
  *                  SuccessCheck) ; une case sans coche (sélection par contour et graisse) passe.
@@ -66,11 +68,20 @@ export const HEADER_EXCEPTIONS = {
   '/discover': 'découverte sans compte (gabarit DemoPlayer)',
   '/discover/tools': 'redirection (découverte)',
   '/discover/tool/[id]': 'découverte sans compte (gabarit DemoPlayer)',
+  '/child/[id]/foods': 'redirection (ancien lien → onglet du profil enfant)',
+  '/child/[id]/growth': 'redirection (ancien lien → onglet du profil enfant)',
+  '/nearby': 'redirection (ancien lien → /outings)',
+  '/family/urgent': 'urgences : écran minimal plein cadre, retour en un appui, rien entre la personne et l’appel',
+  '/family/sos': 'SOS : écran minimal plein cadre, retour en un appui, rien entre la personne et l’appel',
+  '/family/kid-routine/[id]': 'mode enfant plein écran : aucun menu ni lien sortant (sortie par appui long parent)',
+  '/sleep/tonight': 'mode nuit plein écran sombre (lecture minimale, pas de chrome)',
+  '/sleep/difficult/[childId]': 'nuit difficile : plein écran sombre, pas de chrome',
 };
 /** Modales plein écran légitimes (pas des feuilles) : fichier → raison. */
 export const MODAL_EXCEPTIONS = {
   'src/app/garde/[id]/photos.tsx': 'visionneuse de photo plein écran (noir, pinch) — pas une feuille',
   'src/features/community.tsx': 'visionneuse de photo plein écran — pas une feuille',
+  'src/app/fertility/mucus.tsx': 'visionneuse de photo plein écran — pas une feuille',
 };
 
 // ------------------------------------------------------------------------------------------------ fichiers
@@ -83,7 +94,9 @@ function walk(dir, out = []) {
 }
 const rel = (p) => path.relative(ROOT, p).replace(/\\/g, '/');
 const isLibrary = (p) => /^src\/(components|motion)\//.test(rel(p));
-const isScreenCode = (p) => /^src\/(app|features)\//.test(rel(p));
+const isScreenCode = (p) => /^src\/(app|features)\//.test(rel(p)) && !OUT_OF_SCOPE.test(rel(p));
+/** Hors périmètre (consigne : paywall, achats, crédits) : non modifiés, exclus de la mesure et listés à part. */
+export const OUT_OF_SCOPE = /^src\/features\/(credits|firstWin|premium|offers)\/|^src\/features\/(Paywall|subscription)\.tsx$/;
 
 function routeOf(file) {
   let r = path.relative(APP, file).replace(/\\/g, '/').replace(/\.tsx$/, '');
@@ -111,7 +124,7 @@ function resolveImport(from, spec) {
 
 // ------------------------------------------------------------------------------------------- analyse d'un fichier
 const RAW_PRESS = new Set(['Pressable', 'TouchableOpacity', 'TouchableHighlight', 'TouchableWithoutFeedback', 'TouchableNativeFeedback']);
-const SLIDING = /\b(useIndicator|useLiquidIndicator|useLensSlide|Lens|GlassSegmentedControl|ChoiceGroup|Segmented|GlassTabBar)\b/;
+const SLIDING = /\b(useIndicator|useLiquidIndicator|useLensSlide|Lens|GlassSegmentedControl|ChoiceGroup|Segmented|GlassTabBar|useSlidingUnderline)\b|translateX:\s*x\.value/;
 const DRAWN_CHECK = /\b(CompletionCheck|SuccessCheck|DrawCheck|CheckMark|TaskCheck|CompletionGlow)\b/;
 const cache = new Map();
 
@@ -121,7 +134,7 @@ function analyse(file) {
   const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
   const imports = [];
   const rnNames = new Set();
-  const res = { file: rel(file), imports, rawPress: [], rawPressOk: 0, rawModal: [], tabs: 0, checkboxes: 0, staticChecks: 0, usesScreen: false, sheets: 0 };
+  const res = { file: rel(file), imports, rawPress: [], rawPressOk: 0, rawModal: [], tabs: 0, checkboxes: 0, staticChecks: 0, usesScreen: false, sheets: 0, plainSheets: 0 };
   sf.forEachChild((n) => {
     if (ts.isImportDeclaration(n) || ts.isExportDeclaration(n)) {
       const spec = n.moduleSpecifier && ts.isStringLiteral(n.moduleSpecifier) ? n.moduleSpecifier.text : null;
@@ -144,6 +157,7 @@ function analyse(file) {
       const line = sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1;
       if (tag === 'Screen') res.usesScreen = true;
       if (tag === 'Sheet' || tag === 'GlassSheet' || tag === 'GlassModal') res.sheets++;
+      if (tag === 'Sheet') res.plainSheets++;
       if (RAW_PRESS.has(tag) && rnNames.has(tag)) {
         const style = attrText(attrs, 'style') ?? '';
         const spread = attrs.properties.some((a) => ts.isJsxSpreadAttribute(a) && /handlers|press|Press|\bp\b|\bpr\b/.test(a.getText(sf)));
@@ -157,7 +171,12 @@ function analyse(file) {
       if (/["']tab["']/.test(role)) res.tabs++;
       if (/["']checkbox["']/.test(role) && tag !== 'Chip') res.checkboxes++;
       // coche FIGÉE : pictogramme « check » posé tel quel (au lieu d'une coche qui se trace)
-      if (/^(Icon|Feather|MaterialCommunityIcons|Ionicons)$/.test(tag) && /^["'](check|check-circle|check-square|check-bold|checkbox-marked(-circle)?)["']$/.test(attrText(attrs, 'name') ?? '')) res.staticChecks++;
+      // (seulement une coche qui APPARAÎT selon un état : `état ? <Icon name="check"/> : …` ou `état && …` ; une légende fixe passe)
+      if (/^(Icon|Feather|MaterialCommunityIcons|Ionicons)$/.test(tag) && /^["'](check|check-circle|check-square|check-bold|checkbox-marked(-circle)?)["']$/.test(attrText(attrs, 'name') ?? '')) {
+        let up = n.parent; let cond = false;
+        for (let k = 0; up && k < 4; k++, up = up.parent) if (ts.isConditionalExpression(up) || (ts.isBinaryExpression(up) && up.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken)) { cond = true; break; }
+        if (cond) res.staticChecks++;
+      }
     }
     ts.forEachChild(n, visit);
   };
@@ -184,7 +203,13 @@ function analyse(file) {
           // receveur constant (CATALOGUE, OPTIONS…) = catalogue figé, pas des entrées enregistrées
           const recv = n.expression.expression.getText(sf);
           const staticRecv = /^[A-Z][A-Z0-9_]*$/.test(recv) || /^Object\.(keys|entries|values)\([A-Z][A-Z0-9_]*\)$/.test(recv);
-          if (!staticRecv && new RegExp(`^\\{\\s*(String\\()?${p}\\.(id|key|uuid)\\b`).test(key) && tag !== 'Chip') {
+          // conteneur le plus proche : une RANGÉE (tuiles, pastilles, points de pagination) n'est pas un journal d'entrées
+          let up = n.parent;
+          while (up && !ts.isJsxElement(up) && !ts.isJsxFragment(up) && !ts.isReturnStatement(up)) up = up.parent;
+          const ctext = up && ts.isJsxElement(up) ? up.openingElement.getText(sf) : '';
+          const rowish = /flexDirection:\s*'row'|flexWrap|horizontal/.test(ctext);
+          const nonEntry = /^(Chip|Button|IconButton|Marker)$/.test(tag) || /(Sync|Host)$/.test(tag);
+          if (!staticRecv && !rowish && !nonEntry && new RegExp(`^\\{\\s*(String\\()?${p}\\.(id|uuid)\\b`).test(key)) {
             const animated = tag === 'MotionItem' || !!attrText(op.attributes, 'entering') || !!attrText(op.attributes, 'layout') || anc.some((t) => t === 'ListGroup' || t === 'ReorderList');
             res.entryLists.push({ line: sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1, tag, animated });
           }
@@ -211,6 +236,8 @@ function closure(entry) {
 }
 
 // ------------------------------------------------------------------------------------------------- audit
+const SHEET_IS_GLASS = /<Glass variant="sheet"/.test(fs.readFileSync(path.join(SRC, 'components', 'Overlays.tsx'), 'utf8'));
+
 export function audit() {
   const routes = routeFiles().map((f) => ({ file: f, route: routeOf(f) })).sort((a, b) => a.route.localeCompare(b.route));
   const lib = walk(path.join(SRC, 'components')).concat(walk(path.join(SRC, 'motion'))).map(analyse);
@@ -229,7 +256,9 @@ export function audit() {
     // feuilles
     const modals = files.filter((a) => a.rawModal.length && !MODAL_EXCEPTIONS[a.file]).flatMap((a) => a.rawModal.map((x) => `${a.file}:${x}`));
     const hasSheet = files.some((a) => a.sheets || a.rawModal.length);
-    crit.sheet = !hasSheet ? 'n/a' : modals.length ? 'fail' : 'ok';
+    // `Sheet` n'est une feuille de verre que si son panneau par défaut est le verre (Overlays.tsx)
+    const plain = SHEET_IS_GLASS ? 0 : files.reduce((n, a) => n + a.plainSheets, 0);
+    crit.sheet = !hasSheet ? 'n/a' : modals.length || plain ? 'fail' : 'ok';
     // segments
     const tabFiles = files.filter((a) => a.tabs);
     const hasSeg = tabFiles.length || files.some((a) => a.segmentsUsed);
