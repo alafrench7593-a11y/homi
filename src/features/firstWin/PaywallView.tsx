@@ -74,8 +74,8 @@ export function PaywallView(props: PaywallViewProps) {
   const plans = catalog === 'ready'
     ? direction === 'C' ? <ComparedPlans cards={cards} selected={card} onSelect={onSelect} now={now} /> : <PlanList cards={cards} selectedKey={selectedKey} onSelect={onSelect} />
     : <CatalogNotice state={catalog} onRetry={props.onRetry} />;
-  // Direction C seulement : la liste de bénéfices (A et B ont un héros, donc pas de liste — règle du skill)
-  const benefits = direction === 'C' && card ? (
+  // Liste de bénéfices : direction C, et en B quand il n'y a pas de résultat de démo à rappeler (paywall ouvert directement)
+  const benefits = (direction === 'C' || (direction === 'B' && !result)) && card ? (
     <View style={{ gap: spacing.xs }} testID="fw-pw-benefits">
       {benefitsFor(card.tier, need, { aiOnline, trial: card.trialDays > 0 }).map((b, i) => <BenefitLine key={i} text={b} testID={`fw-pw-benefit-${i}`} />)}
     </View>
@@ -84,7 +84,8 @@ export function PaywallView(props: PaywallViewProps) {
   const order: React.ReactNode[] = direction === 'A'
     ? [title, preview, plans]
     : direction === 'B'
-      ? [title, timeline, plans]
+      // B : la frise reste le héros ; sous les formules, un rappel compact de ce que la personne a fait (sinon les bénéfices)
+      ? [title, timeline, plans, result ? <ResultPreview result={result} large={false} /> : benefits]
       : [title, preview, plans, benefits];
 
   return (
