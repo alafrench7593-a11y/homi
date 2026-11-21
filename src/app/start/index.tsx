@@ -8,6 +8,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/lib/auth';
+import { prefetchDemoContent } from '@/lib/lazyContent';
 import { FirstWinFlow } from '@/features/firstWin/FirstWinFlow';
 import { usePremiumState } from '@/features/firstWin/hooks';
 import type { FlowStep } from '@/features/firstWin/model';
@@ -18,6 +19,8 @@ export default function Start() {
   const { session, ready } = useAuth();
   const premium = usePremiumState();
   const th = useTheme();
+  // Famille d'exemple (lien du résultat) : démonstration téléchargée pendant le parcours, au repos
+  React.useEffect(() => { if (!session) prefetchDemoContent(); }, [session]);
   if (!ready || (session && premium === undefined)) return <View style={{ flex: 1, backgroundColor: th.colors.background }} />;
   if (session && premium) return <Redirect href="/(tabs)" />;
   const initial = (['stage', 'need', 'demo', 'result'] as FlowStep[]).find((s) => s === step);

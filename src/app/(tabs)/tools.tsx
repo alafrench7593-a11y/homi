@@ -31,6 +31,7 @@ import { Button, Icon, Text } from '@/components/ui';
 import { SkeletonBone, SkeletonPulse, StaggerList } from '@/motion';
 import { CategoryChips, CategoryLegend, CategoryList } from '@/features/toolHub/CategoryList';
 import { PreviewBanner, ToolsIntro, useToolLock, useToolsIntro } from '@/features/toolHub/ToolsIntro';
+import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
 import { FavoriteStar, ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
 import { TOOL_TILE, ToolTile } from '@/features/toolHub/ToolTile';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
@@ -83,10 +84,13 @@ export default function Tools() {
   // Ticket 3 : droits réels (cadenas sans Premium, jamais chez un abonné), introduction par compte, revoyable
   const { premium, locked } = useToolLock();
   const intro = useToolsIntro();
+  // Logo « Mes apps » : les 4 tuiles s'allument en cascade à l'arrivée sur l'écran (statique si Réduire les animations)
+  const [logoPulse, setLogoPulse] = useState(0);
+  React.useEffect(() => { const id = setTimeout(() => setLogoPulse(1), 250); return () => clearTimeout(id); }, []);
   const resultsAnchor = useTourAnchor('tools-results');
 
   return (
-    <Screen account title={tr('th.ui.title')} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+    <Screen account title={tr('th.ui.title')} titleLogo={<AppsLogo size={40} pulse={logoPulse} testID="tools-logo" />} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       {/* 0. « Bienvenue dans Mes outils » (première visite de ce compte ; revoyable) */}
       {intro.open && !loading ? <ToolsIntro premium={premium} onDone={intro.hide} /> : null}
       {/* 1. Recherche par besoin (verre : petite surface de navigation posée sur le fond) */}

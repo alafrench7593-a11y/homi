@@ -42,6 +42,7 @@ import { haptic, Icon, type IconName, Text } from './ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import { TAB_IMAGES, TAB_LIT } from '@/brand/tabs';
 import { TabLight } from '@/brand/toolGlass/TabLight';
+import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
@@ -310,7 +311,7 @@ function QuickActionSheet({ visible, family, onClose }: { visible: boolean; fami
             {/* Entrée fixe : tous les outils (recherche, favoris), quel que soit le profil */}
             <Tappable accessibilityRole="button" accessibilityLabel={tr('qa.tools')} testID="qa-tools" onPress={() => { haptic('light'); after(() => router.push('/tools')); }}
               style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: t.tokens.border.active, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
-              <Icon name="grid" color={t.colors.primary} />
+              <AppsLogo size={28} testID="qa-tools-logo" />
               <Text weight="bold" style={{ flex: 1 }}>{tr('qa.tools')}</Text>
               <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
             </Tappable>

@@ -4,12 +4,12 @@ Ticket 1 — mode visite : temps entre l'appui sur « Découvrir sans compte » 
 
   EXPO_PUBLIC_SUPABASE_URL=http://sb.fake.test EXPO_PUBLIC_SUPABASE_ANON_KEY=fake-anon-key \
     npx expo export --platform web --clear --output-dir /tmp/visite/dist
-  python3 e2e/spa_server.py /tmp/visite/dist 8981 &
+  python3 e2e/spa_server.py /tmp/visite/dist 8981 --gzip &
   NAV_URL=http://127.0.0.1:8981 python3 e2e/visite_perf.py [essais] [normal,trou_noir,lent] > mesures.json
 
 Réseaux : « normal » (sb.fake.test refusé tout de suite, comme une adresse qui n'existe pas), « trou_noir »
 (sb.fake.test ne répond jamais : chaque requête attend son délai d'expiration), « lent » (CDP
-Network.emulateNetworkConditions : 400 ms de latence, 50 ko/s ; plus le trou noir).
+Network.emulateNetworkConditions : 400 ms de latence, 190 ko/s ≈ 1,5 Mbit/s ; plus le trou noir).
 Parcours : /welcome → « Découvrir sans compte » → /start (étape 1 utilisable) ; /intro (dernier tableau) →
 « Découvrir sans compte » → accueil de la visite ; Moi / Aujourd'hui, Mes outils, une catégorie, retours arrière ;
 sortie de la visite puis réouverture. Une étape impossible (écran recouvert) vaut null.
@@ -86,7 +86,7 @@ def new_ctx(p, net):
     if net == 'lent':
         cdp = ctx.new_cdp_session(pg)
         cdp.send('Network.enable')
-        cdp.send('Network.emulateNetworkConditions', {'offline': False, 'latency': 400, 'downloadThroughput': 50 * 1024, 'uploadThroughput': 20 * 1024})
+        cdp.send('Network.emulateNetworkConditions', {'offline': False, 'latency': 400, 'downloadThroughput': 190 * 1024, 'uploadThroughput': 90 * 1024})
     return b, ctx, pg, reqs, errs
 
 

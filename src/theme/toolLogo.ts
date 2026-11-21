@@ -129,3 +129,21 @@ export const APP_ICON = {
   light: { top: '#FBF1EC', bottom: '#EBD9D1', glow: ['#F7A08E', '#C9B6FF'] as const, ink: '#1F1B1A', lens: '#FFFFFF', shadow: '0px 6px 18px rgba(84,40,60,0.18)' },
   dark: { top: '#2A1C24', bottom: '#120C10', glow: ['#E2735E', '#7C64D8'] as const, ink: '#F7F1E8', lens: '#FFFFFF', shadow: '0px 6px 18px rgba(0,0,0,0.5)' },
 } as const;
+
+/**
+ * Logo de « Mes apps » (consigne de la propriétaire, 21/11/2026) : quatre petites tuiles d'app en verre dépoli (2 × 2),
+ * chacune allumée de la lumière d'un public des logos d'outils — rose (femme), bleu (bébé), menthe (enfant), ambre
+ * (famille). Plaque et symbole nacré : mêmes teintes que les logos d'outils (GLASS_CENTER, PEARL).
+ */
+export const APPS_LOGO = {
+  lights: [PUBLIC_LIGHT.woman, PUBLIC_LIGHT.baby, PUBLIC_LIGHT.child, PUBLIC_LIGHT.family] as const,
+  plateTop: '#C9C2D6',
+  plateBottom: GLASS_CENTER,
+  edge: '#FFFFFF',
+  pearl: PEARL.top,
+  /** opacité de la lumière au centre de chaque tuile : repos, sommet de la cascade à l'appui */
+  rest: 0.6,
+  lit: 1,
+  /** décalage entre deux tuiles dans la cascade (ms) */
+  step: 70,
+} as const;

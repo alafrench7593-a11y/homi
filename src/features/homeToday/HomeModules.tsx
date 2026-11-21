@@ -15,10 +15,7 @@ import { Tappable } from '@/components/Tappable';
 import { Button, Chip, haptic, Icon, IconButton, ListGroup, ListRow, Text, Toggle, type IconName } from '@/components/ui';
 import { ChildDailyActions } from '@/features/dailyActions/DailyActions';
 import { HomiIcon } from '@/brand/icons';
-import { ToolLogo, toolLogoDef } from '@/brand/toolLogo';
-
-/** Logos montrés par l'entrée « Mes outils » quand la personne n'a pas encore de favoris. */
-const TOOLS_ENTRY_DEFAULT = ['family_calendar', 'kid_sleep', 'meals'];
+import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
 import { useAllToolEntries, useOpenEntry } from '@/features/hubs/ToolSearch';
 import { openTool } from '@/components/ToolCard';
 import { useJourneyState, useTrackedChildren } from '@/lib/data/hooks';
@@ -78,21 +75,14 @@ export function HomeCardSkeleton() {
 export function ToolsEntry() {
   const t = useTheme();
   const anchor = useTourAnchor('tools-entry');
-  const favs = useUiStore((s) => s.toolFavorites);
-  const stack = [...new Set([...favs.filter((id) => toolLogoDef(id)), ...TOOLS_ENTRY_DEFAULT])].slice(0, 3);
+  const [pulse, setPulse] = React.useState(0);
   return (
     <View {...anchor}>
-    <Tappable accessibilityRole="button" accessibilityLabel={`${tr('hm.toolsEntry')}. ${tr('hm.toolsEntrySub')}`} testID="home-tools-entry" onPress={() => { haptic('selection'); router.push('/tools'); }}
+    <Tappable accessibilityRole="button" accessibilityLabel={`${tr('hm.toolsEntry')}. ${tr('hm.toolsEntrySub')}`} testID="home-tools-entry" onPressIn={() => setPulse((n) => n + 1)} onPress={() => { haptic('selection'); router.push('/tools'); }}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.lg, borderWidth: 1,
         borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
-      {/* trois logos d'outils de la personne (favoris, sinon outils du quotidien) : l'entrée montre SES mini-apps */}
-      <View style={{ width: 66, height: 40 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-        {stack.map((id, i) => (
-          <View key={id} style={{ position: 'absolute', left: i * 17, top: i % 2 ? 7 : 1, zIndex: 3 - i }}>
-            <ToolLogo id={id} size={30} variant="compact" />
-          </View>
-        ))}
-      </View>
+      {/* logo de « Mes apps » : 4 tuiles de verre allumées (rose, bleu, menthe, ambre), cascade à l'appui */}
+      <AppsLogo size={40} pulse={pulse} testID="home-tools-logo" />
       <View style={{ flex: 1 }}>
         <Text weight="bold">{tr('hm.toolsEntry')}</Text>
         <Text variant="caption" muted>{tr('hm.toolsEntrySub')}</Text>

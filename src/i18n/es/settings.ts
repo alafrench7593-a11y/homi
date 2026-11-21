@@ -95,7 +95,7 @@ export const settings: Messages<typeof fr> = {
   "settings.preview.err": "Atrasado",
   "settings.preview.info": "Info",
   "settings.haptics": "Vibraciones suaves al tocar",
-  "settings.familyTools": "Mi familia y mis herramientas",
+  'settings.familyTools': 'Mi familia y mis apps',
   "settings.family": "Familia y compartir",
   "settings.family.members": {"one": "{name} · {count} miembro", "other": "{name} · {count} miembros"},
   "settings.family.invite": "Invitar a un coprogenitor, gestionar accesos",

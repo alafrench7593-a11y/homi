@@ -51,7 +51,7 @@ export const parcours: Messages<typeof fr> = {
   'pj.activeBadge': 'Active',
   'pj.already': 'This journey is already active.',
   'pj.addChild': 'Add a child',
-  'pj.allTools': 'All my tools',
+  'pj.allTools': 'All my apps',
   'pj.profile.baby': 'Baby {name}',
   'pj.profile.child': 'Child {name}',
   'pj.profile.previous': { one: '{count} previous journey', other: '{count} previous journeys' },

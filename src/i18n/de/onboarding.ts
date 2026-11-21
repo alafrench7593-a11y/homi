@@ -66,7 +66,7 @@ export const onboarding: Messages<typeof fr> = {
   "onb.ready.children": {"one": "{count} Kinderprofil erstellt", "other": "{count} Kinderprofile erstellt"},
   "onb.ready.reminders": {"zero": "Keine Erinnerung geplant", "one": "{count} Erinnerung geplant", "other": "{count} Erinnerungen geplant"},
   "onb.ready.cycle": "Dein Zyklus: Trag deine nächste Periode ein, um Schätzungen zu erhalten",
-  "onb.ready.community": "Die Community wartet unter Tools auf dich",
+  'onb.ready.community': 'Die Community wartet in Meine Apps auf dich',
   "onb.ready.privacy": "Deine Daten bleiben standardmäßig privat",
   "onb.ready.cta": "Meinen Bereich entdecken",
   "journeys.title": "Meine Wege",

@@ -7,7 +7,7 @@ export const ui1: Messages<typeof fr> = {
   "u1.nf.title": "Diese Seite gibt es nicht",
   "u1.nf.body": "Der Link ist vielleicht alt oder unvollständig. Nichts ist verloren: Deine Daten sind unversehrt.",
   "u1.nf.home": "Zurück zur Startseite",
-  "u1.nf.tools": "Alle meine Tools",
+  'u1.nf.tools': 'Alle meine Apps',
   "u1.ta.a11y": "Weiterlesen: verwandte Artikel",
   "u1.ta.title": "Weiterlesen",
   "u1.ta.collapse": "Einklappen",

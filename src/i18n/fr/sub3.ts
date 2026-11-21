@@ -25,7 +25,7 @@ export const sub3 = {
   'sub3.prem.child.text': 'Biberons, allaitement, couches, sommeil, diversification, étapes du développement, vaccins et traitements.',
   'sub3.prem.family.title': 'Pour ma famille',
   'sub3.prem.family.text': 'Tâches et routines du foyer, agenda familial, courses et stocks, relais de nuit, répartition de la charge mentale.',
-  'sub3.prem.tools.title': 'Mes outils',
+  'sub3.prem.tools.title': 'Mes apps',
   'sub3.prem.tools.text': 'Repas et menus de la semaine, scanner de produits, documents de santé, rendez-vous, résumés, bibliothèque, communauté.',
   'sub3.prem.same': 'Les trois formules ouvrent exactement le même Premium.',
 

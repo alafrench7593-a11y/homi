@@ -94,7 +94,7 @@ export const settings: Messages<typeof fr> = {
   'settings.preview.err': 'Overdue',
   'settings.preview.info': 'Info',
   'settings.haptics': 'Gentle vibration on tap',
-  'settings.familyTools': 'My family and tools',
+  'settings.familyTools': 'My family and apps',
   'settings.family': 'Family & sharing',
   'settings.family.members': { one: '{name} · {count} member', other: '{name} · {count} members' },
   'settings.family.invite': 'Invite a co-parent, manage access',

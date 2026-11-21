@@ -13,6 +13,7 @@ import { haptic } from '@/components/ui';
 import { getLocale } from '@/i18n';
 import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
+import { prefetchDemoContent } from '@/lib/lazyContent';
 import { useUiStore } from '@/lib/store';
 import { IntroFlow } from '@/features/intro/IntroFlow';
 import { LAST_PAGE, loadIntroProfile, saveIntroProfile, type IntroProfile } from '@/features/intro/model';
@@ -32,6 +33,8 @@ export default function Intro() {
   const setCinematicSeen = useUiStore((s) => s.setCinematicSeen);
   const setLocalePref = useUiStore((s) => s.setLocalePref);
   const [busy, setBusy] = useState(false);
+  // Visite (ticket 1) : la démonstration se télécharge pendant la lecture, au repos
+  useEffect(() => { prefetchDemoContent(); }, []);
   // Profil déjà choisi (retour après un changement de langue) : les tableaux restent ceux de ce profil
   const [initial, setInitial] = useState<IntroProfile | null | undefined>(undefined);
   useEffect(() => { let alive = true; void loadIntroProfile().then((p) => { if (alive) setInitial(p); }); return () => { alive = false; }; }, []);

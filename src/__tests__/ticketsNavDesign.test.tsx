@@ -28,7 +28,9 @@ import { PALETTE_NAMES, THEME_STARTS, themeFor, type Theme } from '@/theme/token
 import { ThemePickerInline } from '@/features/themePicker/ThemePicker';
 import { gateFor, isLockedFor, PREVIEW_ROUTES, VISIT_ROUTES } from '@/lib/premium/access';
 import type { AccessInfo } from '@/lib/premium/offers';
-import { TAB_LIGHT } from '@/theme/toolLogo';
+import { APPS_LOGO, PUBLIC_LIGHT, TAB_LIGHT } from '@/theme/toolLogo';
+import { tMaybe } from '@/i18n';
+import { DICTIONARIES } from '@/i18n/dictionaries';
 import { tabLightOpacity } from '@/brand/toolGlass/TabLight';
 import { CATEGORY_HUE, categoryColors, categoryContrast, type CategoryKey } from '@/theme/categoryPalette';
 import { categoryColumns } from '@/features/toolHub/CategoryList';
@@ -96,6 +98,26 @@ describe('ticket 3 — accès à Mes outils', () => {
     expect(s().toolsIntroSeen.u2).toBeUndefined();
     act(() => { s().setToolsIntroSeen('u1', false); });
     expect(s().toolsIntroSeen.u1).toBe(false);
+  });
+});
+
+describe('ticket 3 — « Mes apps » (nouveau nom, nouveau logo)', () => {
+  it('nom dans les 5 langues ; un élément = « une app » ; plus aucun « Mes outils » visible', () => {
+    const want: Record<string, string> = { fr: 'Mes apps', en: 'My apps', es: 'Mis apps', de: 'Meine Apps', it: 'Le mie app' };
+    for (const [lang, name] of Object.entries(want)) {
+      const d = DICTIONARIES[lang];
+      expect([lang, d['th.ui.title'], d['hm.toolsEntry']]).toEqual([lang, name, name]);
+      const old = Object.entries(d).filter(([, v]) => /Mes outils|My tools|Meine Werkzeuge|Mis herramientas|I miei strumenti/i.test(JSON.stringify(v))).map(([k]) => k);
+      expect([lang, old]).toEqual([lang, []]);
+    }
+    expect(DICTIONARIES.fr['mt.intro.title']).toBe('Bienvenue dans Mes apps');
+    expect(DICTIONARIES.fr['th.sheet.start']).toBe('Ouvrir l’app');
+    expect(tMaybe('th.ui.title')).toBeTruthy();
+  });
+  it('logo : 4 tuiles, 4 lumières de public distinctes (rose, bleu, menthe, ambre), repos < allumé', () => {
+    expect(APPS_LOGO.lights).toEqual([PUBLIC_LIGHT.woman, PUBLIC_LIGHT.baby, PUBLIC_LIGHT.child, PUBLIC_LIGHT.family]);
+    expect(new Set(APPS_LOGO.lights).size).toBe(4);
+    expect(APPS_LOGO.rest).toBeLessThan(APPS_LOGO.lit);
   });
 });
 
