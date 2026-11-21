@@ -15,7 +15,7 @@
  *    `Screen`, portée clavier existante).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Keyboard, TextInput, View } from 'react-native';
+import { FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -95,6 +95,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const toast = useToast();
   const motion = useMotion();
   const insets = useSafeAreaInsets();
+  const { height: winH } = useWindowDimensions();
   const params = useLocalSearchParams<{ theme?: string; q?: string; mode?: string; draft?: string; situation?: string }>();
   const theme: AuraTheme | null = toAuraTheme(params.theme);
   const { subject } = useActiveSubject();
@@ -276,8 +277,8 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       ) : null}
 
       <View style={empty ? { alignItems: 'center', gap: spacing.sm } : { flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
-        {/* le personnage d'Aura : en grand à l'ouverture (coucou), en petit et immobile une fois la conversation lancée */}
-        <AuraBot size={empty ? 140 : 56} state={botState} still={!empty} decorative={false} testID="aura-avatar" />
+        {/* le personnage d'Aura : en grand à l'ouverture (coucou ; plus petit sur un écran bas), en petit et immobile une fois la conversation lancée */}
+        <AuraBot size={empty ? (winH < 700 ? 96 : 140) : 56} state={botState} still={!empty} decorative={false} testID="aura-avatar" />
         <View style={empty ? { alignSelf: 'stretch', gap: 6, alignItems: 'center' } : { flex: 1, gap: 6 }}>
           <View testID="aura-mode" accessibilityLabel={tr('aura.mode.a11y', { mode: modeLabel })}
             style={{ alignSelf: empty ? 'center' : 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, minHeight: 28, borderRadius: radius.pill, backgroundColor: remote ? t.colors.accentSoft : t.colors.surfaceAlt }}>
