@@ -41,7 +41,7 @@ def login(ctx):
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     # Démo Premium (sinon une invitation Premium peut recouvrir l'écran pendant les clics)
     pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const me = s.session.userId;
       s.tables.subscriptions = (s.tables.subscriptions || []).filter((x) => x.user_id !== me);

@@ -101,7 +101,7 @@ def drag_card(pg, dx):
 
 def enter_demo(pg):
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_role('button', name='Découvrir sans compte').click(); pg.wait_for_timeout(5000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(5000)
 
 
 def flow(b, w, h, scheme, main=False, premium_on=False):

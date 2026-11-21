@@ -57,7 +57,7 @@ def run(p):
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate(PREMIUM)
 
     # 1. Mes outils
@@ -233,7 +233,7 @@ def run(p):
     ctx2 = b.new_context(viewport={'width': 320, 'height': 568}, locale='fr-FR', timezone_id='Europe/Paris', reduced_motion='reduce')
     pg2 = ctx2.new_page()
     pg2.goto(B + '/welcome'); pg2.wait_for_timeout(2500)
-    pg2.get_by_text('Découvrir sans compte').first.click(); pg2.wait_for_timeout(4000)
+    pg2.evaluate("() => location.assign(\'/start/sample\')"); pg2.wait_for_timeout(4000)
     pg2.evaluate(PREMIUM)
     for cat in ['sleep', 'health', 'feeding']:
         pg2.goto(B + f'/tools/{cat}'); pg2.wait_for_timeout(2400)

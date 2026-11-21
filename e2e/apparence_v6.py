@@ -93,7 +93,7 @@ def start(b, scheme='light', motion='no-preference'):
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate(PREMIUM)
     return ctx, pg
 

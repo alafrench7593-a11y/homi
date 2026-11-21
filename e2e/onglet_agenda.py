@@ -22,7 +22,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(executable_path=EXE); pg = b.new_page(viewport={'width': 390, 'height': 844}, locale='fr-FR')
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3000)
     R['onglets'] = [t.get_attribute('aria-label') for t in pg.locator('[role="tab"][data-testid^="tab-"]').all()]
     R['agenda_hors_de_la_barre'] = not has(pg, 'tab-agenda') and R['onglets'] == ['Accueil', 'Santé', 'Bébé', 'Famille', 'Communauté']

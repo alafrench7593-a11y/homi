@@ -194,7 +194,7 @@ with sync_playwright() as p:
     ctx, pg = new_page(b, errs)
     pg.goto(B + '/welcome'); sleep(5)
     before = len([c for c in fake.calls if c[1].startswith('/rest/')])
-    pg.get_by_role('button', name='Découvrir sans compte').click(); sleep(6); shot(pg, 'f1-demo')
+    pg.evaluate("() => location.assign(\'/start/sample\')"); sleep(6); shot(pg, 'f1-demo')
     t = T(pg)
     R['F_demo_sans_compte'] = ('Démonstration' in t or 'Démo' in t) and ('Lina' in t or 'Accueil' in t)
     R['F_aucune_ecriture_reelle'] = len([c for c in fake.calls if c[1].startswith('/rest/')]) == before

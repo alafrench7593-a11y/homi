@@ -166,7 +166,7 @@ def enter_demo(ctx, premium=True):
     P = Page(ctx)
     pg = P.pg
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate(PREMIUM_ON if premium else PREMIUM_OFF)
     pg.reload(); P.settle(1500)
     P.take_errs()

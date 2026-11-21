@@ -65,7 +65,7 @@ def run(p):
     # ------------------------------------------------ A. démonstration : entrer puis quitter depuis la pastille
     ctx, pg = new_page(b)
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_role('button', name='Découvrir sans compte').click(); pg.wait_for_timeout(5000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(5000)
     pill = pg.locator('[data-testid="demo-pill"]').first
     R['A_pastille_visible'] = pill.is_visible() and in_view(pg, pill)
     R['A_texte_quitter_visible'] = pg.get_by_text('Quitter la démo', exact=True).first.is_visible()

@@ -68,7 +68,7 @@ def back_in_app(pg, path, wait):
         return
     outside('demo_rechargement', 'renvoi_accueil', False, 'Démonstration : chaque rechargement complet renvoie vers /welcome (session de démo non reprise ; données conservées). '
             'Cause probable : src/lib/auth.tsx s\'abonne à backend.auth.onChange avant initBackendMode (abonnement au vrai backend, session nulle) depuis l\'attente de useIsRestoring. Propriétaire : agent 2 (auth).')
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(3000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(3000)
     pg.evaluate("(p) => { history.pushState({}, '', p); dispatchEvent(new PopStateEvent('popstate', { state: {} })); }", path)
     pg.wait_for_timeout(wait)
 
@@ -175,7 +175,7 @@ def start(ctx):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and 'Failed to load resource' not in m.text and 'sb.fake.test' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate(PREMIUM_ON)
     pg.evaluate(SIMPLE_OFF)
     return pg

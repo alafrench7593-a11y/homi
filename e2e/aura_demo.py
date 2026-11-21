@@ -89,7 +89,7 @@ def run(b, width, height, scheme, first):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     k = f'{width}_{scheme}'
     # La démonstration démarre sans abonnement : HOMI Aura est derrière Premium (écran de l'abonnement, comme l'ancien
     # onglet Questions). Achat SIMULÉ de la formule Famille (faux magasin, aucun paiement) pour ouvrir Aura.

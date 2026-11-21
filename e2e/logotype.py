@@ -155,7 +155,7 @@ def run(p):
         R[f'{theme}_connexion_logo'] = wm.is_visible() and wm.get_attribute('aria-label') == 'HOMI' and ink_ok(svg_fills(pg, '[data-testid="entry-wordmark"]'), theme)
         pg.screenshot(path=f'{SHOTS}/6-connexion-{theme}.png')
         pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-        pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+        pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
         pg.evaluate(PREMIUM)  # l'accueil complet (sinon : l'offre Premium de la démo)
         pg.goto(B + '/'); pg.wait_for_timeout(3500)
         pg.screenshot(path=f'{SHOTS}/7-accueil-{theme}.png')

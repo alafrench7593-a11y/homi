@@ -58,7 +58,7 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.on('dialog', lambda d: d.accept())
     go(pg, '/welcome')
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.evaluate(PREMIUM_ON); pg.evaluate(SET_BODY, ['pregnancy', True]); pg.reload(); pg.wait_for_timeout(3000)
     ME = demo(pg, "s => s.session.userId")
     LINA = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")

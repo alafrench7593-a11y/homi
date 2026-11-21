@@ -132,7 +132,7 @@ with sync_playwright() as p:
             found = pg.evaluate(DETECT)
             if found: report.setdefault(r, {})[cfg['name']] = found
         pg.goto(B + '/welcome'); pg.wait_for_timeout(2000)
-        pg.get_by_text('Découvrir sans compte' if cfg['locale'].startswith('fr') else 'Try it without an account').first.click(); pg.wait_for_timeout(4000)
+        pg.evaluate("() => location.assign('/start/sample')"); pg.wait_for_timeout(4000)
         seeded = False
         jstate = {}
         for r in ROUTES:

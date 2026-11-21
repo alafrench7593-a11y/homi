@@ -78,7 +78,7 @@ def ctx_for(b, w, h):
 def setup(b, key, w, h):
     ctx, pg = ctx_for(b, w, h)
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_role('button', name='Découvrir sans compte').click(); pg.wait_for_timeout(5000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(5000)
     pg.evaluate(SET_PERSONA, [PERSONAS[key]])
     pg.evaluate(PREMIUM_ON)
     return ctx, pg

@@ -42,7 +42,7 @@ with sync_playwright() as p:
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     go(pg, '/welcome')
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3000)
     R['demo_exemples_presents'] = demo(pg, "s => (s.tables.household_expenses||[]).length >= 6 && (s.tables.pets||[]).length === 1 && (s.tables.prepared_portions||[]).length === 2 && (s.tables.reading_logs||[]).length >= 3")
     me = demo(pg, "s => s.session.userId")
@@ -210,7 +210,7 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris')
     pg = ctx.new_page()
     go(pg, '/welcome')
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3000)
     pet_id = demo(pg, "s => (s.tables.pets[0] || {}).id")
     screens = [('depenses', '/family/expenses'), ('animaux', '/family/pets'), ('portions', '/meals/portions'), ('lecture', '/reading'),

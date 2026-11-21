@@ -144,7 +144,7 @@ def bar_metrics(pg):
 def open_demo(pg):
     """Démo sans compte, Premium actif (sinon l'écran « Cet espace fait partie de Premium » couvre tout)."""
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4000)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate(PREMIUM_ON); pg.reload(); pg.wait_for_timeout(3500)
 
 

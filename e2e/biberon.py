@@ -81,7 +81,7 @@ def run(p):
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     pg.clock.install(time=at(13, 15))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(PREMIUM_ON)  # outils de suivi réservés à Premium depuis l'offre : la démo l'active
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     hid = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').household_id")

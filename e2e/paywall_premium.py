@@ -71,7 +71,7 @@ def no_sub(pg):
 
 def enter_demo(pg):
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     no_sub(pg)
 
 

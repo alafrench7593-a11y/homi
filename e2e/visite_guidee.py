@@ -65,7 +65,7 @@ def first_visible(pg, sel):
 
 def enter_demo(pg):
     pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_role('button', name='Découvrir sans compte').click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(PREMIUM_ON)
     pg.goto(B + '/'); pg.wait_for_timeout(4000)
 
