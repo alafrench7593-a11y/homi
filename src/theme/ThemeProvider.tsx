@@ -1,7 +1,8 @@
 /**
- * Thème HOMI v6 : cinq palettes + mode Adaptatif (Réglages → Apparence), trois apparences — Système / Clair / Sombre.
- *  - Palette : `palettePreference` (une palette fixe, ou « adaptive » : la palette suit le profil affiché, selon la
- *    correspondance fixe `ADAPTIVE_PALETTE`). Une ancienne préférence (v3, v4, Auto) est lue comme la palette par défaut.
+ * Thème HOMI v7 : huit thèmes + mode Adaptatif (sélecteur de l'accueil, Réglages → Apparence), trois apparences —
+ * Système / Clair / Sombre (Noir graphite et Nuit améthyste restent sombres : `effectiveMode`).
+ *  - Thème : `themePreview` (aperçu non confirmé du sélecteur) sinon `palettePreference` (un thème fixe, ou « adaptive » :
+ *    le thème suit le profil affiché, `ADAPTIVE_PALETTE`). Une ancienne préférence devient le thème le plus proche.
  *  - Préférences par compte : au changement de session, `switchAppearanceOwner` charge les choix du compte.
  *  - Mode nuit (écran /night) : prioritaire, teinte de la palette très tamisée.
  *  - `phase` : moment de la journée (salutation de l'accueil), sans effet sur les couleurs.
@@ -32,6 +33,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const system = useColorScheme();
   const preference = useUiStore((s) => s.themePreference);
   const paletteChoice = useUiStore((s) => s.palettePreference);
+  // aperçu du sélecteur « Personnaliser l'accueil » : prioritaire tant qu'il n'est ni appliqué ni annulé
+  const preview = useUiStore((s) => s.themePreview);
   const profile = useUiStore((s) => s.adaptiveProfile);
   const nightMode = useUiStore((s) => s.nightMode);
   const skyOverride = useUiStore((s) => s.skyOverride);
@@ -50,7 +53,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const name = resolveThemeName({ nightMode, preference, system });
   const phase: SkyPhase = skyOverride ?? skyPhase(skyOverride ? previewTime(skyOverride) : new Date());
 
-  const paletteName = resolvePalette(paletteChoice, profile);
+  const paletteName = preview ?? resolvePalette(paletteChoice, profile);
 
   const value = useMemo(() => ({ theme: { ...themeFor(name, paletteName), phase }, reduceMotion }), [name, paletteName, phase, reduceMotion]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
