@@ -227,7 +227,7 @@ export function DaySection({ title, aside, children, testID }: { title: string; 
   return (
     <View style={{ gap: spacing.xs }} testID={testID}>
       <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: spacing.sm, paddingHorizontal: spacing.xxs }}>
-        <Text variant="label" accessibilityRole="header" style={{ flex: 1 }}>{title}</Text>
+        <Text variant="heading" accessibilityRole="header" style={{ flex: 1 }}>{title}</Text>
         {aside ? <Text variant="caption" muted style={{ fontVariant: ['tabular-nums'] }}>{aside}</Text> : null}
       </View>
       {children}
