@@ -9,7 +9,7 @@ import { TAB_LIGHT } from '@/theme/toolLogo';
 
 export function TabLight({ size, active, children, testID }: { size: number; active: boolean; children: React.ReactNode; testID?: string }) {
   const uid = `tb${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-  const box = Math.round(size * 1.5);
+  const box = Math.round(size * 1.9);
   const a = active ? TAB_LIGHT.active : TAB_LIGHT.idle;
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
@@ -18,7 +18,7 @@ export function TabLight({ size, active, children, testID }: { size: number; act
           <Defs>
             <RadialGradient id={uid} cx="0.5" cy="0.5" r="0.5">
               <Stop offset="0" stopColor={TAB_LIGHT.color} stopOpacity={a} />
-              <Stop offset="0.5" stopColor={TAB_LIGHT.color} stopOpacity={a * 0.45} />
+              <Stop offset="0.55" stopColor={TAB_LIGHT.color} stopOpacity={a * 0.6} />
               <Stop offset="1" stopColor={TAB_LIGHT.color} stopOpacity={0} />
             </RadialGradient>
           </Defs>
