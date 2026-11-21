@@ -29,6 +29,23 @@ const FREE: RegExp[] = [
   /^\/garde\/?$/, /^\/garde\/rejoindre\/?$/,
 ];
 
+/**
+ * APERÇU du catalogue « Mes outils » (ticket 3, 21/11/2026) : la liste des outils et des catégories (noms, phrases,
+ * pictogrammes, favoris locaux) s'affiche à tout compte connecté, avec les outils réservés marqués d'un cadenas et une
+ * introduction à Premium AVANT l'offre. Aucune donnée privée sur ces écrans ; ouvrir un outil réservé mène toujours à
+ * son écran, couvert par l'écran Premium sans droit confirmé (règle inchangée ci-dessous).
+ */
+export const PREVIEW_ROUTES: RegExp[] = [/^\/tools\/?$/, /^\/tools\/[^/]+\/?$/];
+
+/**
+ * VISITE sans compte (« Découvrir sans compte », ticket 1) : sur la famille d'exemple (données fictives sur l'appareil,
+ * backend de démonstration), les ÉCRANS D'ONGLET se parcourent sans abonnement pour que la visite soit utilisable
+ * (accueil, Moi, Enfant, Famille). Chaque outil reste réservé (écran Premium par-dessus, retour visible), les achats
+ * restent simulés (src/lib/purchaseMode.ts). Ne s'applique JAMAIS à un vrai compte : `visit` n'est vrai qu'en
+ * démonstration (src/components/PremiumGate.tsx).
+ */
+export const VISIT_ROUTES: RegExp[] = [/^\/$/, /^\/(health|baby|household)\/?$/];
+
 const AI_ROUTES: RegExp[] = [/^\/ask\/?$/, /^\/assistant(\/.*)?$/];
 
 /**
@@ -88,11 +105,14 @@ export type GateDecision = 'open' | 'checking' | 'locked';
  * Décision d'affichage pour l'écran `path`.
  *  - premium : réponse de has_premium (undefined tant qu'elle n'est pas connue) ;
  *  - access : réponse de my_access (offre IA, outils achetés), facultative.
+ *  - opts.visit : visite de démonstration sans compte (écrans d'onglet seulement, voir VISIT_ROUTES).
  * Un droit inconnu n'ouvre jamais un écran réservé (« vérification » puis écran Premium).
  */
-export function gateFor(path: string, premium: boolean | undefined, access?: AccessInfo | null): GateDecision {
+export function gateFor(path: string, premium: boolean | undefined, access?: AccessInfo | null, opts?: { visit?: boolean }): GateDecision {
   const p = clean(path);
   if (isFreeRoute(p)) return 'open';
+  if (PREVIEW_ROUTES.some((r) => r.test(p))) return 'open';
+  if (opts?.visit && VISIT_ROUTES.some((r) => r.test(p))) return 'open';
   if (premium === true) return 'open';
   if (access?.strict === false) return 'open';
   if (access?.ai && AI_ROUTES.some((r) => r.test(p))) return 'open';
@@ -103,6 +123,12 @@ export function gateFor(path: string, premium: boolean | undefined, access?: Acc
     }
   }
   return premium === undefined ? 'checking' : 'locked';
+}
+
+/** Outil réservé pour ce compte (cadenas dans « Mes outils ») : jamais quand le droit est encore inconnu. */
+export function isLockedFor(href: string | null | undefined, premium: boolean | undefined, access?: AccessInfo | null): boolean {
+  if (!href || premium !== false) return false;
+  return gateFor(href, premium, access) === 'locked';
 }
 
 /** Tables de suivi réservées au Premium (miroir exact de la migration 20261108000300_premium_strict.sql). */

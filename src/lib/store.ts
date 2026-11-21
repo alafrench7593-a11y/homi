@@ -36,6 +36,9 @@ interface UiState {
   resetAppearance: () => void;
   /** Présentation d'Aura déjà vue, PAR COMPTE (identifiant → vrai) : elle ne s'affiche qu'une fois par personne. */
   auraIntroSeen: Record<string, boolean>;
+  /** Introduction « Bienvenue dans Mes outils » passée, par compte (ticket 3) ; revoyable depuis Mes outils. */
+  toolsIntroSeen: Record<string, boolean>;
+  setToolsIntroSeen: (userId: string, seen: boolean) => void;
   markAuraIntroSeen: (userId: string) => void;
   /** Relance demandée (réglages d'Aura, aide) — jamais persistée. */
   auraIntroRequested: boolean;
@@ -190,6 +193,8 @@ export const useUiStore = create<UiState>()(
       }),
       cancelThemePreview: () => set((st) => (st.themePreview ? { themePreview: null } : {})),
       auraIntroSeen: {},
+      toolsIntroSeen: {},
+      setToolsIntroSeen: (userId, seen) => set((st) => ({ toolsIntroSeen: { ...st.toolsIntroSeen, [userId]: seen } })),
       markAuraIntroSeen: (userId) => set((st) => (st.auraIntroSeen[userId] && !st.auraIntroRequested ? {} : { auraIntroSeen: { ...st.auraIntroSeen, [userId]: true }, auraIntroRequested: false })),
       auraIntroRequested: false,
       requestAuraIntro: () => set({ auraIntroRequested: true }),

@@ -29,7 +29,8 @@ import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
 import { Tappable } from '@/components/Tappable';
 import { Button, Icon, Text } from '@/components/ui';
 import { SkeletonBone, SkeletonPulse, StaggerList } from '@/motion';
-import { CategoryChips, CategoryList } from '@/features/toolHub/CategoryList';
+import { CategoryChips, CategoryLegend, CategoryList } from '@/features/toolHub/CategoryList';
+import { PreviewBanner, ToolsIntro, useToolLock, useToolsIntro } from '@/features/toolHub/ToolsIntro';
 import { FavoriteStar, ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
 import { TOOL_TILE, ToolTile } from '@/features/toolHub/ToolTile';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
@@ -79,10 +80,15 @@ export default function Tools() {
   const loading = profileQ.isLoading && !profileQ.data;
   // Visite guidée (« Trouver un outil ») : la recherche, puis ses premiers résultats
   const searchAnchor = useTourAnchor('tools-search');
+  // Ticket 3 : droits réels (cadenas sans Premium, jamais chez un abonné), introduction par compte, revoyable
+  const { premium, locked } = useToolLock();
+  const intro = useToolsIntro();
   const resultsAnchor = useTourAnchor('tools-results');
 
   return (
     <Screen account title={tr('th.ui.title')} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+      {/* 0. « Bienvenue dans Mes outils » (première visite de ce compte ; revoyable) */}
+      {intro.open && !loading ? <ToolsIntro premium={premium} onDone={intro.hide} /> : null}
       {/* 1. Recherche par besoin (verre : petite surface de navigation posée sur le fond) */}
       <View style={{ gap: spacing.sm }}>
         <View {...searchAnchor}>
@@ -92,8 +98,11 @@ export default function Tools() {
         {/* Champ actif et vide : catégories suggérées */}
         {searching && !query && !loading ? <CategoryChips tools={allTools} /> : null}
         {!query ? (
-          <Button label={showFilters || filtering ? tr('pz.cat.hideFilters') : tr('pz.cat.showFilters')} icon="sliders" variant="secondary" size="sm"
-            onPress={() => setShowFilters(!(showFilters || filtering))} testID="tools-filter-toggle" />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+            <Button label={showFilters || filtering ? tr('pz.cat.hideFilters') : tr('pz.cat.showFilters')} icon="sliders" variant="secondary" size="sm"
+              onPress={() => setShowFilters(!(showFilters || filtering))} testID="tools-filter-toggle" />
+            {intro.open ? null : <Button label={tr('mt.intro.replay')} icon="help-circle" variant="ghost" size="sm" onPress={intro.show} testID="tools-intro-replay" />}
+          </View>
         ) : null}
         {!query && (showFilters || filtering) ? <CatalogFilterBar value={filters} onChange={setFilters} /> : null}
       </View>
@@ -111,7 +120,7 @@ export default function Tools() {
               {outcome.results.map((r, i) => {
                 const e = entryOf.get(r.tool.id) ?? { tool: r.tool };
                 return (
-                  <ToolRow key={`tools-result-${e.tool.id}`} tool={e.tool} otherProfile={e.profile} first={i === 0} testID={`tools-result-${e.tool.id}`}
+                  <ToolRow key={`tools-result-${e.tool.id}`} tool={e.tool} otherProfile={e.profile} first={i === 0} testID={`tools-result-${e.tool.id}`} locked={locked?.(e.tool)}
                     favorite={hub.favSet.has(e.tool.id)} onToggleFavorite={hub.toggleFav}
                     opensDirectly={hub.opensDirectly(e.tool)} onPress={() => hub.press(e)} onLongPress={() => hub.longPress(e)} />
                 );
@@ -130,14 +139,16 @@ export default function Tools() {
       ) : (
         <>
           {urgent ? <UrgentStrip tool={urgent} /> : null}
+          {/* Sans Premium : aperçu du catalogue, outils réservés marqués, offre accessible (paywall existant) */}
+          {premium === false ? <PreviewBanner /> : null}
 
           {/* 2. Mes favoris (et récents) : tuiles de verre, ouverture directe */}
           <Section title={tr('th.ui.favs')} icon="star" testID="tools-favorites">
-            {hub.favorites.length ? <Tiles entries={hub.favorites} onOpen={hub.openNow} /> : <Text variant="small" muted>{tr('th.ui.favsEmpty')}</Text>}
+            {hub.favorites.length ? <Tiles entries={hub.favorites} onOpen={hub.openNow} locked={locked} /> : <Text variant="small" muted>{tr('th.ui.favsEmpty')}</Text>}
           </Section>
           {hub.recents.length ? (
             <Section title={tr('th.ui.recents')} icon="clock" testID="tools-recents">
-              <Tiles entries={hub.recents} onOpen={hub.openNow} />
+              <Tiles entries={hub.recents} onOpen={hub.openNow} locked={locked} />
             </Section>
           ) : null}
 
@@ -148,20 +159,23 @@ export default function Tools() {
             </View>
             <ProfileStage profileKey={profileKey} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
               {featured.map((tool, i) => (
-                <ToolTile key={tool.id} tool={tool} index={i} width={tileW} testID={`tools-featured-${tool.id}`} onPress={() => hub.press({ tool })} />
+                <ToolTile key={tool.id} tool={tool} index={i} width={tileW} testID={`tools-featured-${tool.id}`} locked={locked?.(tool)} onPress={() => hub.press({ tool })} />
               ))}
             </ProfileStage>
           </Section>
 
           {/* 4. Les 9 catégories, puis le compte */}
           <Section title={tr('th.ui.categories')}>
-            <CategoryList tools={allTools} />
+            <CategoryList tools={allTools} locked={locked} />
           </Section>
 
           {/* 5. La communauté : un espace à part, hors des 9 catégories (son accès principal est en haut à droite) */}
           {community ? (
             <CommunityBlock tool={community.tool} favorite={hub.favSet.has(community.tool.id)} onToggleFavorite={() => hub.toggleFav(community.tool)} onOpen={() => hub.openNow(community)} />
           ) : null}
+
+          {/* 6. Légende compacte des couleurs (les intitulés restent sur les cartes) */}
+          <CategoryLegend />
         </>
       )}
       {hub.sheetNode}
@@ -221,11 +235,11 @@ function CommunityBlock({ tool, favorite, onToggleFavorite, onOpen }: { tool: Ca
 }
 
 /** Favoris et récents : tuiles de verre compactes ; un appui ouvre l'outil (sur le bon profil). Nouvelle tuile : entrée animée. */
-function Tiles({ entries, onOpen }: { entries: ToolEntry[]; onOpen: (e: ToolEntry) => void }) {
+function Tiles({ entries, onOpen, locked }: { entries: ToolEntry[]; onOpen: (e: ToolEntry) => void; locked?: (tool: CatalogTool) => boolean }) {
   return (
     <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ gap: spacing.xs, paddingLeft: spacing.xxs, paddingRight: spacing.lg, paddingVertical: spacing.xxs }} style={{ marginHorizontal: -spacing.xxs }}>
-      {entries.map((e, i) => <ToolTile key={e.tool.id} tool={e.tool} profile={e.profile} index={i} onPress={() => onOpen(e)} />)}
+      {entries.map((e, i) => <ToolTile key={e.tool.id} tool={e.tool} profile={e.profile} index={i} locked={locked?.(e.tool)} onPress={() => onOpen(e)} />)}
     </ScrollView>
   );
 }

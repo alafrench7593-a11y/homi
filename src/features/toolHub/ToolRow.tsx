@@ -21,7 +21,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Tappable } from '@/components/Tappable';
 import { FavoriteStar as MotionStar, SkeletonBone, SkeletonPulse, usePress } from '@/motion';
 import { ToolGlyph } from '@/components/ToolGlyph';
-import { haptic, Text } from '@/components/ui';
+import { haptic, Icon, Text } from '@/components/ui';
 import type { CatalogTool } from '@/lib/domain/toolCatalog';
 import { TOOL_PROFILES } from '@/lib/journeys/tools';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -69,9 +69,11 @@ export interface ToolRowProps {
   status?: string;
   /** Sans pastille de profil ni « Gratuit » (menu contextuel d'un écran qui dit déjà pour qui c'est). */
   compact?: boolean;
+  /** Sans Premium : outil réservé (cadenas « Réservé à Premium », annoncé ; l'appui ouvre toujours sa fiche puis l'écran). */
+  locked?: boolean;
 }
 
-export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorite, onToggleFavorite, onPress, onLongPress, opensDirectly, first, testID, status, compact }: ToolRowProps) {
+export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorite, onToggleFavorite, onPress, onLongPress, opensDirectly, first, testID, status, compact, locked }: ToolRowProps) {
   const t = useTheme();
   const p = usePress({ scale: 0.97, haptic: 'light' });
   // Ombre de repos (contact + diffuse) qui se fond dans la seule ombre de contact quand la carte est enfoncée
@@ -83,7 +85,7 @@ export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorit
   const rest = useAnimatedStyle(() => ({ opacity: 1 - p.progress.value }));
   const down = useAnimatedStyle(() => ({ opacity: p.progress.value }));
   const pill = profilePill(tool, otherProfile);
-  const label = [tool.label, tool.sub, status, compact && !otherProfile ? null : pill, tool.free && tool.category !== 'account' ? tr('th.ui.free') : null, favorite ? tr('th.ui.favOn') : null]
+  const label = [tool.label, tool.sub, status, compact && !otherProfile ? null : pill, tool.free && tool.category !== 'account' ? tr('th.ui.free') : null, locked ? tr('mt.lockedA11y') : null, favorite ? tr('th.ui.favOn') : null]
     .filter((x): x is string => !!x).map((x) => x.replace(/[.!?]$/, '')).join('. ');
   const free = tool.free && tool.category !== 'account';
   const star = !!onToggleFavorite && !tool.urgent && tool.category !== 'account';
@@ -122,10 +124,16 @@ export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorit
           </View>
           {tool.sub ? <View pointerEvents="none"><Text variant="small" muted numberOfLines={TOOL_DESC_LINES} intentionalTruncation testID={`tool-desc-${tool.id}`}>{tool.sub}</Text></View> : null}
           {status ? <View pointerEvents="none"><Text variant="small" weight="medium" color={t.colors.primary}>{status}</Text></View> : null}
-          {compact && !otherProfile && !free ? null : (
+          {compact && !otherProfile && !free && !locked ? null : (
             <View pointerEvents="none" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
               {compact && !otherProfile ? null : <Pill label={pill} />}
               {free ? <Pill label={tr('th.ui.free')} tone="accent" /> : null}
+              {locked ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, minHeight: 22, borderRadius: radius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surfaceAlt }} testID={`tool-locked-${tool.id}`}>
+                  <Icon name="lock" size={11} color={t.colors.textMuted} />
+                  <Text variant="caption" muted>{tr('mt.lockedA11y')}</Text>
+                </View>
+              ) : null}
             </View>
           )}
           {star ? (

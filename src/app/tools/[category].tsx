@@ -18,6 +18,7 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, VirtualList } from '@/components/States';
 import { Text } from '@/components/ui';
 import { ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
+import { PreviewBanner, useToolLock } from '@/features/toolHub/ToolsIntro';
 import { useMemberships, useProfile } from '@/lib/data/hooks';
 import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
@@ -39,6 +40,8 @@ function ToolCategory() {
   const profileQ = useProfile();
   const loading = profileQ.isLoading && !profileQ.data;
   const valid = isToolCategory(category);
+  // Sans Premium : aperçu, outils réservés marqués d'un cadenas (droits réels ; l'écran de l'outil reste gardé)
+  const { premium, locked } = useToolLock();
 
   const items = useMemo<Item[]>(() => {
     if (!valid) return [];
@@ -91,6 +94,7 @@ function ToolCategory() {
         initialNumToRender={10}
         windowSize={7}
         keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={premium === false && category !== 'account' ? <View style={{ marginBottom: spacing.sm }}><PreviewBanner /></View> : null}
         ListEmptyComponent={loading ? <ToolRowsSkeleton rows={5} testID="tools-category-skeleton" /> : (
           <EmptyState icon="compass" title={tr('th.ui.catEmpty')} body={tr('th.ui.catEmptyB')}
             action={{ label: tr('th.ui.catEmptyAction'), onPress: () => router.push('/journeys' as never) }} />
@@ -101,7 +105,8 @@ function ToolCategory() {
           </View>
         ) : (
           <ToolRow tool={item.entry.tool} first={item.first} favorite={hub.favSet.has(item.entry.tool.id)} onToggleFavorite={hub.toggleFav}
-            opensDirectly={hub.opensDirectly(item.entry.tool)} onPress={() => hub.press(item.entry)} onLongPress={() => hub.longPress(item.entry)} />
+            opensDirectly={hub.opensDirectly(item.entry.tool)} onPress={() => hub.press(item.entry)} onLongPress={() => hub.longPress(item.entry)}
+            locked={locked?.(item.entry.tool)} />
         )}
       />
       {hub.sheetNode}

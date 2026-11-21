@@ -40,7 +40,7 @@ import { useToast } from './Overlays';
 import { GLASS_TAB_BAR, GlassButton, GlassSheet, GlassTabBar, type GlassTab } from './glass';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
-import { TAB_IMAGES } from '@/brand/tabs';
+import { TAB_IMAGES, TAB_LIT } from '@/brand/tabs';
 import { TabLight } from '@/brand/toolGlass/TabLight';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
@@ -82,6 +82,8 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
   const t = useTheme();
   const custom = useDockActionFor(route);
   const p = usePressScale({ scale: 0.94 });
+  // « + » : lumière intérieure vive au repos (action principale), pleine à l'appui — toujours DANS le symbole
+  const [pressing, setPressing] = useState(false);
   const anchor = useTourAnchor('quick-add');
   const action: DockAction = custom ?? { icon: 'plus', label: tr('qa.buttonA11y'), hint: tr('qa.buttonHint'), testID: 'quick-add', onPress: () => onQuickAdd?.() };
   return (
@@ -90,8 +92,8 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
       accessibilityRole="button"
       accessibilityLabel={action.label}
       accessibilityHint={action.hint}
-      onPressIn={p.onPressIn}
-      onPressOut={p.onPressOut}
+      onPressIn={() => { setPressing(true); p.onPressIn(); }}
+      onPressOut={() => { setPressing(false); p.onPressOut(); }}
       onPress={() => { haptic('light'); action.onPress(); }}
       hitSlop={size < 48 ? (48 - size) / 2 : 0}
       style={{ width: size, height: size }}
@@ -101,8 +103,8 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
       <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: action.icon === 'plus' ? 'transparent' : t.tokens.action.fill }, p.style]}>
         {/* « Ajouter » : tuile illustrée de la barre ; une action d'écran garde son icône sur l'aplat */}
         {action.icon === 'plus' ? (
-          // lumière jaune douce derrière « + » (même lumière que les onglets, toujours vive : c'est l'action principale)
-          <TabLight size={size} active testID="dock-add-light"><Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} /></TabLight>
+          // lumière jaune DANS le « + », au croisement de ses branches (même lumière que les onglets)
+          <TabLight size={size} active={pressing} pressed lit={TAB_LIT.add} testID="dock-add-light"><Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} /></TabLight>
         )
           : <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />}
       </Animated.View>
@@ -145,6 +147,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     icon: icons[i],
     glyph: glyphs[i],
     image: glyphs[i] && glyphs[i] in TAB_IMAGES ? TAB_IMAGES[glyphs[i] as keyof typeof TAB_IMAGES] : undefined,
+    light: glyphs[i] && glyphs[i] in TAB_LIT ? TAB_LIT[glyphs[i] as keyof typeof TAB_LIT] : undefined,
     accessibilityLabel: tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i],
     width: layout.widths[i],
     testID: `tab-${tab.name}`,
