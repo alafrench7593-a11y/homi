@@ -15,6 +15,7 @@ import { t as tr } from '@/i18n';
 import { getLocale } from '@/i18n';
 import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
+import { useAuth } from '@/lib/auth';
 import { prefetchDemoContent } from '@/lib/lazyContent';
 import { useUiStore } from '@/lib/store';
 import { IntroFlow } from '@/features/intro/IntroFlow';
@@ -36,6 +37,9 @@ export default function Intro() {
   const setLocalePref = useUiStore((s) => s.setLocalePref);
   const [busy, setBusy] = useState(false);
   const toast = useToast();
+  const [entered, setEntered] = useState(false);
+  const { session } = useAuth();
+  useEffect(() => { if (entered && session) router.replace('/(tabs)'); }, [entered, session]);
   // Visite (ticket 1) : la démonstration se télécharge pendant la lecture, au repos
   useEffect(() => { prefetchDemoContent(); }, []);
   // Profil déjà choisi (retour après un changement de langue) : les tableaux restent ceux de ce profil
@@ -52,7 +56,10 @@ export default function Intro() {
       // Réseau lent (web : morceaux de la démonstration) : état explicite au bout de 4 s ; échec : message + nouvel
       // appui possible (le chargement réessaie) — jamais de bouton qui tourne sans fin ni d'échec silencieux
       const slow = setTimeout(() => toast(tr('visit.slow'), 'info'), 4000);
-      void startDemoWithoutAccount().then(() => router.replace('/(tabs)'), () => toast(tr('visit.failed'), 'error'))
+      // Ouverture de l'accueil quand la session de la visite est CONNUE de l'application (effet ci-dessous) : naviguer
+      // juste après startDemoWithoutAccount laissait passer un état transitoire « prête, sans session » → renvoi vers
+      // /welcome (course révélée quand la démonstration est déjà préchargée).
+      void startDemoWithoutAccount().then(() => setEntered(true), () => toast(tr('visit.failed'), 'error'))
         .finally(() => { clearTimeout(slow); setBusy(false); });
       return;
     }

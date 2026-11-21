@@ -26,8 +26,11 @@ export default function StartSample() {
   const start = useCallback(() => {
     setState('loading');
     const slow = setTimeout(() => setState((s) => (s === 'loading' ? 'slow' : s)), 4000);
-    void startDemoWithoutAccount().then(() => router.replace('/(tabs)'), () => setState('failed')).finally(() => clearTimeout(slow));
+    void startDemoWithoutAccount().then(() => setEntered(true), () => setState('failed')).finally(() => clearTimeout(slow));
   }, []);
+  // Accueil ouvert quand la session de la visite est connue de l'application (jamais d'état « sans session » → /welcome)
+  const [entered, setEntered] = useState(false);
+  useEffect(() => { if (entered && session) router.replace('/(tabs)'); }, [entered, session]);
   useEffect(() => {
     if (!ready || started.current) return;
     started.current = true;
