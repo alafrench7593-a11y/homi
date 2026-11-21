@@ -28,8 +28,8 @@ function TileLight({ i, size, uid, v }: { i: number; size: number; uid: string; 
       <Svg width={s} height={s} viewBox="0 0 10 10">
         <Defs>
           <RadialGradient id={`${uid}l${i}`} cx="0.5" cy="0.55" r="0.5">
-            <Stop offset="0" stopColor={APPS_LOGO.lights[i]} stopOpacity={0.95} />
-            <Stop offset="0.6" stopColor={APPS_LOGO.lights[i]} stopOpacity={0.35} />
+            <Stop offset="0" stopColor={APPS_LOGO.lights[i]} stopOpacity={1} />
+            <Stop offset="0.65" stopColor={APPS_LOGO.lights[i]} stopOpacity={0.55} />
             <Stop offset="1" stopColor={APPS_LOGO.lights[i]} stopOpacity={0} />
           </RadialGradient>
         </Defs>

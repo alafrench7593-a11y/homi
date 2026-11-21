@@ -5,6 +5,7 @@
  *  · Mon compte privé : profils de grossesse et d'enfants, abonnement, notifications, confidentialité, personnes
  *    bloquées, sécurité, aide, export, suppression du compte, déconnexion. Rien de cet espace n'est jamais public.
  */
+import { SignOutRow } from '@/features/account/SignOutRow';
 import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -92,19 +93,6 @@ function PrivateAccount() {
   const blocks = useMyBlocks();
   const [help, setHelp] = useState(false);
   const helpNums = useHelpNumbers();
-  const [busy, setBusy] = useState(false);
-
-  async function signOut() {
-    if (!(await confirm(tr('cm3.moi.signOutConfirm'), tr('cm3.moi.signOutBody'), tr('cm3.moi.signOut')))) return;
-    setBusy(true);
-    try {
-      await cancelAllLocal().catch(() => undefined);
-      await unregisterPushToken();
-      await backend.auth.signOut(false);
-      router.replace('/welcome');
-    } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
-  }
-
   return (
     <View style={{ gap: spacing.sm }} testID="moi-account">
       <Card>
@@ -138,9 +126,10 @@ function PrivateAccount() {
       <Card>
         <ListRow icon="help-circle" title={tr('cm3.moi.help')} subtitle={tr('cm3.moi.helpSub')} onPress={() => setHelp(true)} />
         <ListRow icon="download" title={tr('cm3.moi.export')} subtitle={tr('cm3.moi.exportSub')} onPress={() => router.push('/settings/account')} />
-        <ListRow icon="trash-2" title={tr('cm3.moi.deleteAccount')} subtitle={tr('cm3.moi.deleteAccountSub')} danger onPress={() => router.push('/settings/account')} />
+        <ListRow icon="trash-2" title={tr('cm3.moi.deleteAccount')} subtitle={tr('cm3.moi.deleteAccountSub')} danger onPress={() => router.push('/settings/account?delete=1' as never)} />
       </Card>
-      <Button label={tr('cm3.moi.signOut')} variant="ghost" icon="log-out" loading={busy} onPress={signOut} testID="moi-sign-out" />
+      {/* Se déconnecter (visite : « Quitter la démo ») : même ligne de verre que Profil et Réglages */}
+      <SignOutRow testID="moi-sign-out" />
 
       <Sheet visible={help} onClose={() => setHelp(false)} title={tr('cm3.moi.help')}>
         <ListRow icon="mail" title={tr('cm3.moi.writeUs')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('cm3.moi.writeUsAt', { email: BRAND.supportEmail }), 'info'))} />

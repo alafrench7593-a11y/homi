@@ -1,0 +1,31 @@
+import type { account5 as fr } from '../fr/account5';
+import type { Messages } from '../types';
+
+export const account5: Messages<typeof fr> = {
+  'th.account_delete': 'Elimina il mio account',
+  'th.account_delete.d': 'Cancella per sempre il tuo account e tutti i tuoi dati.',
+  'th.account_delete.k': 'eliminare account; elimina il mio account; cancellazione account; cancellare i miei dati; chiudere account; disiscriversi; GDPR',
+  'th.account_delete.problem': 'Vuoi chiudere il tuo account e cancellare i tuoi dati.',
+  'th.sign_out': 'Esci',
+  'th.sign_out.d': 'Chiude la sessione su questo telefono; i tuoi dati restano salvati.',
+  'th.sign_out.k': 'esci; disconnetti; logout; cambiare account; uscire; log out',
+  'th.sign_out.problem': 'Vuoi cambiare account o lasciare il telefono a qualcun altro.',
+  'tool.account_delete': 'Elimina il mio account',
+  'tool.sign_out': 'Esci',
+  'acct.signOut.demo': 'Esci dalla demo',
+  'acct.signOut.demoConfirm': 'Uscire dalla demo?',
+  'acct.signOut.demoBody': 'I dati di esempio restano su questo telefono. Torni alla schermata di benvenuto.',
+  'acct.signOut.sub': 'Torni alla schermata di benvenuto',
+  'acct.signOut.demoSub': 'Ritorno alla schermata di benvenuto, senza account',
+  'acct.deleteRowSub': 'Cancella per sempre il tuo account e i tuoi dati',
+  'acct.erased.title': 'Cosa verrà cancellato',
+  'acct.erased.list': 'Il tuo profilo, il tuo monitoraggio, i documenti, le foto, le conversazioni e i post, sul server e su questo telefono.',
+  'acct.household': 'Una famiglia condivisa di cui sei proprietaria passa al membro più anziano.',
+  'acct.sub.title': 'Il tuo abbonamento',
+  'acct.sub.body': 'Eliminare l’account non disdice un abbonamento pagato sull’App Store: disdicilo nelle impostazioni Apple.',
+  'acct.sub.manage': 'Gestisci il mio abbonamento',
+  'acct.deleting': 'Eliminazione in corso…',
+  'acct.deleteFailedTitle': 'L’eliminazione non è riuscita',
+  'acct.retry': 'Riprova',
+  'acct.demoDelete': 'Nella demo, l’eliminazione cancella solo i dati di esempio di questo telefono.',
+};

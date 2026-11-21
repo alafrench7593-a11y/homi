@@ -117,7 +117,7 @@ Caméra, Photos, Face ID, Localisation « pendant l'utilisation » uniquement, N
 >
 > Premium: three auto-renewable subscriptions in one group (monthly with a 3-day free trial, 6 months, annual). Purchases are validated by Apple through RevenueCat; Premium is only unlocked after server confirmation. "Restaurer mes achats" is in Profil › Abonnement.
 >
-> Account deletion: Profil › Mon compte › Supprimer mon compte.
+> Account deletion: Réglages › Mon compte › Supprimer mon compte (first section of Settings, two taps).
 > Health data is never used for advertising; there is no tracking. The AI assistant (Google Gemini) is only used after explicit opt-in.
 
 ## 9. Captures (6,9 pouces, 1320 × 2868)

@@ -142,7 +142,7 @@ export const APPS_LOGO = {
   edge: '#FFFFFF',
   pearl: PEARL.top,
   /** opacité de la lumière au centre de chaque tuile : repos, sommet de la cascade à l'appui */
-  rest: 0.6,
+  rest: 0.85,
   lit: 1,
   /** décalage entre deux tuiles dans la cascade (ms) */
   step: 70,

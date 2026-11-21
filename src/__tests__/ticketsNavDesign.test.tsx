@@ -36,6 +36,10 @@ import { CATEGORY_HUE, categoryColors, categoryContrast, type CategoryKey } from
 import { categoryColumns } from '@/features/toolHub/CategoryList';
 import { TOOL_CATEGORIES } from '@/lib/journeys/tools';
 import { contrastRatio } from '@/theme/contrast';
+import { accountEntries, toolCatalog } from '@/lib/domain/toolCatalog';
+import { searchCatalog } from '@/lib/domain/toolSearch';
+import { SignOutRow } from '@/features/account/SignOutRow';
+import * as Overlays from '@/components/Overlays';
 
 jest.setTimeout(60000);
 
@@ -213,5 +217,47 @@ describe('ticket 6 — Réglages › Apparence : le même sélecteur que le bout
     expect(useUiStore.getState().themePreview).toBeNull();
     expect(useUiStore.getState().palettePreference).toBe('olive');
     expect(contrastRatio('#000000', '#FFFFFF')).toBeGreaterThan(20);
+  });
+});
+
+describe('compte — déconnexion et suppression faciles à trouver', () => {
+  const ctx = { scope: 'baby' as const, childId: 'c1', babyId: 'c1' };
+  const all = () => [...toolCatalog(ctx), ...accountEntries(ctx)];
+  it('recherche : « supprimer compte » et « déconnexion » mènent aux bons écrans', () => {
+    const del = searchCatalog(all(), 'supprimer compte');
+    expect(del.results[0]?.tool.href).toBe('/settings/account?delete=1');
+    const out = searchCatalog(all(), 'déconnexion');
+    expect(out.results[0]?.tool.href).toBe('/settings?signout=1');
+    expect(accountEntries(ctx).map((x) => x.id)).toEqual(expect.arrayContaining(['account_delete', 'sign_out']));
+    // les entrées du compte ne sont jamais comptées comme des apps
+    expect(toolCatalog(ctx).some((x) => x.id === 'account_delete' || x.id === 'sign_out')).toBe(false);
+  });
+  it('Réglages : rubrique « Mon compte » en tête, suppression à 2 appuis, ligne « Se déconnecter » en bas ; Profil et Moi aussi', () => {
+    const read = (f: string) => String(fs.readFileSync(path.resolve(f)));
+    const settings = read('src/app/settings/index.tsx');
+    expect(settings.indexOf('settings-delete-account')).toBeGreaterThan(0);
+    expect(settings.indexOf('settings-delete-account')).toBeLessThan(settings.indexOf("tr('settings.profile')"));
+    expect(settings).toContain("router.push('/settings/account?delete=1'");
+    expect(settings).toContain('<SignOutRow testID="settings-sign-out" />');
+    expect(read('src/app/(tabs)/profile.tsx')).toContain('<SignOutRow testID="profile-sign-out" />');
+    expect(read('src/app/(tabs)/moi.tsx')).toContain('<SignOutRow testID="moi-sign-out" />');
+    const account = read('src/app/settings/account.tsx');
+    for (const id of ['account-delete-erased', 'account-manage-subscription', 'account-deleting', 'account-delete-final', "tr('acct.retry')"]) expect(account).toContain(id);
+  });
+  it('ligne « Se déconnecter » (visite : « Quitter la démo ») : confirmation courte, double appui bloqué', async () => {
+    let resolve!: (v: boolean) => void;
+    const spy = jest.spyOn(Overlays, 'confirm').mockImplementation(() => new Promise<boolean>((r) => { resolve = r; }));
+    const r = await render(<SignOutRow />);
+    const row = byId(r, 'sign-out-row')[0];
+    await act(async () => { row.props.onPress(); row.props.onPress(); });
+    await flush(50);
+    expect(spy).toHaveBeenCalledTimes(1);
+    // tests : aucun serveur configuré → démonstration, la ligne s'appelle « Quitter la démo »
+    expect(spy.mock.calls[0][0]).toBe('Quitter la démo ?');
+    expect(row.props.accessibilityLabel).toBe('Quitter la démo');
+    await act(async () => { resolve(false); });
+    await flush(50);
+    spy.mockRestore();
+    r.unmount();
   });
 });

@@ -94,7 +94,7 @@ Pas de localisation en arrière-plan, pas de micro, pas de contacts.
 
 | Exigence | Où / comment | État |
 |---|---|---|
-| **Suppression du compte dans l'appli** (Apple 5.1.1 v) | Onglet **Profil › Mon compte privé › Supprimer mon compte** (aussi Réglages › Mon compte). Double confirmation (mot à taper), fonction serveur `delete-account` : données, fichiers privés, photos de l'album, client RevenueCat. Le texte rappelle que supprimer ≠ résilier. | [fait] — révocation Apple : B5 |
+| **Suppression du compte dans l'appli** (Apple 5.1.1 v) | **Réglages › Mon compte › Supprimer mon compte** : rubrique « Mon compte » EN TÊTE de Réglages, ligne dédiée « Supprimer mon compte » (2 appuis depuis Réglages) ; aussi Profil › Moi › Supprimer mon compte, et la recherche « supprimer compte ». Écran : ce qui est effacé, rappel « supprimer ≠ résilier » avec bouton « Gérer mon abonnement », mot SUPPRIMER à taper, état en cours / échec / « Réessayer ». « Se déconnecter » : ligne en bas de Profil, Moi et Réglages (« Quitter la démo » en visite). Double confirmation (mot à taper), fonction serveur `delete-account` : données, fichiers privés, photos de l'album, client RevenueCat. Le texte rappelle que supprimer ≠ résilier. | [fait] — révocation Apple : B5 |
 | **Restauration des achats** | Bouton « Restaurer mes achats » sur l'écran Premium (`Paywall`, `pw-restore`) et dans Profil › Abonnement | [fait] |
 | **Prix, durée, renouvellement affichés avant achat** (Apple 3.1.2) — Premium | `PlanTerms` : montant de la boutique, période, essai seulement si la boutique le propose, date du 1er prélèvement, renouvellement automatique, résiliation 24 h avant, liens CGU + confidentialité sous le bouton | [fait] |
 | idem — **Assistant IA** | `AiOfferCard` : prix de la boutique dans le bouton, mais « 1 mois offert » affiché **sans vérifier l'éligibilité**, et le texte sous le bouton ne dit pas que l'abonnement **se renouvelle automatiquement** | **[code] B7** |
@@ -268,7 +268,7 @@ réponse « sexualité ». Public cible : 18+. [à vérifier]
 > only on the device (purchases are simulated there and clearly labelled "démonstration"; real purchases use StoreKit
 > with the demo account).
 >
-> **Account deletion**: Profil tab › "Mon compte privé" › "Supprimer mon compte" (also Réglages › Mon compte).
+> **Account deletion**: Réglages (Settings) › "Mon compte" (first section) › "Supprimer mon compte" — two taps from Settings. Also reachable from Profil › Moi and by searching "supprimer compte". Sign out: "Se déconnecter" row at the bottom of Profil and Réglages.
 >
 > **Subscriptions**: "HOMI Premium" — three auto-renewable plans in one group with identical content
 > (monthly, 6 months, 12 months, each with a 3-day free trial for eligible new subscribers), plus a separate monthly "Assistant IA"

@@ -55,7 +55,7 @@ export const TOOL_ICON: Record<string, HomiIconName> = {
   // Communauté (espace à part)
   community: 'group',
   // Mon compte et réglages (pas des outils)
-  settings: 'gear', notifications: 'notifications', journeys: 'signpost', home_settings: 'tools', my_info: 'account', preg_edit: 'pencil', preg_end: 'flag',
+  settings: 'gear', notifications: 'notifications', journeys: 'signpost', home_settings: 'tools', account_delete: 'account', sign_out: 'account', my_info: 'account', preg_edit: 'pencil', preg_end: 'flag',
 };
 
 const GUIDE_TOPICS = ['illnesses', 'firstaid', 'neonat', 'kidfood', 'kidsleep', 'hygiene', 'activities', 'toddler', 'sport', 'behaviour', 'school', 'pma', 'work', 'loss', 'couple'];

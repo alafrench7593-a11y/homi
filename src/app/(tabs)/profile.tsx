@@ -3,6 +3,7 @@
  * (son compte, ses gardes, ses réglages : `CaregiverProfile`), jamais les outils du foyer.
  */
 import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
+import { SignOutRow } from '@/features/account/SignOutRow';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
@@ -139,6 +140,8 @@ function FamilyProfile() {
           <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/profile' } } as never)} testID="profile-feedback" />
           <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle={help.summary} danger onPress={() => router.push('/emergency')} />
         </Card>
+        {/* Se déconnecter (visite : « Quitter la démo ») directement en bas du Profil */}
+        <SignOutRow testID="profile-sign-out" />
       </Screen>
       <ProfilePhotoSheet visible={photoOpen} onClose={() => setPhotoOpen(false)} />
     </View>

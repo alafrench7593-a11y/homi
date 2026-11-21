@@ -338,6 +338,10 @@ export const TOOLS: ToolDef[] = [
   { id: 'notifications', category: 'account', theme: 'reminders', icon: 'inbox', scopes: ALL, universal: true, href: () => '/notifications' },
   { id: 'journeys', category: 'account', theme: 'reminders', icon: 'refresh-cw', scopes: ALL, universal: true, href: () => '/journeys' },
   { id: 'home_settings', category: 'account', theme: 'reminders', icon: 'layout', scopes: ALL, universal: true, href: () => '/settings/home' },
+  // Compte (consigne de la propriétaire, 21/11/2026 ; App Store 5.1.1(v)) : supprimer le compte et se déconnecter se
+  // trouvent aussi par la recherche (« supprimer compte », « déconnexion »)
+  { id: 'account_delete', category: 'account', theme: 'reminders', icon: 'trash-2', scopes: ALL, universal: true, href: () => '/settings/account?delete=1' },
+  { id: 'sign_out', category: 'account', theme: 'reminders', icon: 'log-out', scopes: ALL, universal: true, href: () => '/settings?signout=1' },
   // Ce que la famille voit de moi (rôle, partages, notifications) : un réglage du compte, pas un outil
   { id: 'my_info', category: 'account', theme: 'reminders', icon: 'smartphone', scopes: TOGETHER, universal: true, href: () => '/family/my-info' },
   { id: 'preg_edit', category: 'account', theme: 'pregnancy', icon: 'edit-2', scopes: ['pregnancy'], href: () => '/pregnancy/edit' },

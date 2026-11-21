@@ -146,7 +146,10 @@ def med(xs):
 with sync_playwright() as p:
     out = {}
     for net in NETS:
-        runs = [trial(p, net) for _ in range(N)]
+        runs = []
+        for _ in range(N):
+            runs.append(trial(p, net))
+            print(json.dumps({'reseau': net, 'essai': runs[-1]}, ensure_ascii=False), file=sys.stderr, flush=True)
         keys = [k for k in runs[0] if k.endswith('_ms')]
         out[net] = {'mediane': {k: med([r[k] for r in runs]) for k in keys},
                     'verrou_sur_accueil': [r['B_verrou_sur_accueil'] for r in runs],
