@@ -22,6 +22,7 @@ import { useReduceMotion } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { toolForPath, type PathTool } from '@/lib/domain/toolForPath';
+import { AuraToolButton } from '@/features/aura/AuraEntry';
 import { Button, type IconName } from './ui';
 import { ToolArticles } from '@/features/ToolArticles';
 import { ScreenToolContext } from '@/lib/screenTool';
@@ -242,6 +243,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         </Animated.View>
         {/* Actions groupées à droite : sur un écran étroit, elles passent à la ligne au lieu de sortir de l'écran */}
         <View style={{ flexShrink: 1, maxWidth: '75%', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center', minWidth: 0 }}>
+          {/* Écran d'outil : entrée contextuelle sobre vers Aura (nom de l'outil, actions réellement disponibles) */}
+          {tool && !pathname.startsWith('/assistant') ? <AuraToolButton toolId={tool.id} /> : null}
           {right}
           {account ? <AccountActions /> : null}
         </View>

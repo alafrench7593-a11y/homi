@@ -22,7 +22,7 @@ export const I = {
   timer: 'Démarrer / arrêter le minuteur',
   coverage: (n: number, total: number) => `Couverture : ${n} / ${total} entrées du catalogue ont un logo`,
   groups: { tabs: 'Barre du bas', header: 'En-tête', categories: '9 catégories', intro: 'Outils de l’introduction' } as const,
-  palettes: { homi: 'HOMI', lavande: 'Lavande', nuit: 'Nuit', sauge: 'Sauge', champagne: 'Champagne' } as Record<PaletteName, string>,
+  palettes: { nacre: 'Nacré', graphite: 'Graphite', sable: 'Sable', olive: 'Olive', lavande: 'Lavande', glacier: 'Glacier', rose: 'Rose', amethyste: 'Améthyste' } as Record<PaletteName, string>,
   names: {
     today: 'Aujourd’hui', me: 'Moi', child: 'Enfant', pregnancy: 'Grossesse', family: 'Famille', add: 'Ajouter',
     community: 'Communauté', notifications: 'Notifications', emergency: 'Urgences', account: 'Compte',

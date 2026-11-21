@@ -44,7 +44,7 @@ beforeEach(() => {
   seen = null;
   morphRegistry.reset();
   jest.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false);
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'dark', palettePreference: 'homi', skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'dark', palettePreference: 'rose', themePreview: null, skyOverride: null, appearanceByUser: {}, appearanceOwner: null, hapticsEnabled: true }); });
 });
 afterEach(async () => {
   await act(async () => { while (mounted.length) mounted.pop()!.unmount(); });
@@ -76,9 +76,9 @@ describe('identité unique (v5) : apparence résolue sans palette', () => {
   });
   it('changer d’apparence pose directement le thème (aucune étape intermédiaire)', async () => {
     await render(<Probe />);
-    expect(seen!.colors.primary).toBe(PALETTES.homi.glow[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.rose.glow[0]);
     await act(async () => { useUiStore.getState().setTheme('light'); });
-    expect(seen!.colors.primary).toBe(PALETTES.homi.ink[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.rose.ink[0]);
   });
 });
 

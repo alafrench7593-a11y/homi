@@ -1,21 +1,19 @@
 /**
- * HOMI v6 (17/11/2026) — design tokens centralisés, CINQ palettes au choix + mode Adaptatif, en clair et en sombre.
+ * HOMI v7 (21/11/2026) — design tokens centralisés, HUIT thèmes d'accueil + mode Adaptatif, en clair et en sombre.
  *
- * Tout ce qui est couleur d'interface part d'ici : `PALETTE_SPECS[palette][clair|sombre|nuit]` → `buildTheme` →
- * `useTheme()` (`tokens`, `colors`, `material`). Aucun composant ne connaît le nom d'une palette.
- *  1. Rose poudré et pêche (`homi`) — identité v5 « Lumière corail », INCHANGÉE, palette par défaut ;
- *  2. Lavande et violet profond (`lavande`) ; 3. Bleu nuit et cyan doux (`nuit`) ;
- *  4. Sauge et vert minéral (`sauge`) ; 5. Champagne et beige chaleureux (`champagne`).
- * Les NEUTRES sont paramétrés par palette (fond, surfaces, creux, traits, texte) : ils sont légèrement teintés.
- * Adaptatif : la palette suit le profil affiché (`ADAPTIVE_PALETTE`, correspondance fixe).
- * Réglages → Apparence : palette (ou Adaptatif) + Système / Clair / Sombre, par compte. `migratePalette` : toute
- * ancienne préférence (v3, v4, Auto) devient la palette par défaut ; un choix v6 est conservé.
+ * Tout ce qui est couleur d'interface part d'ici : `PALETTE_SPECS[thème][clair|sombre|nuit]` → `buildTheme` →
+ * `useTheme()` (`tokens`, `colors`, `material`). Aucun composant ne connaît le nom d'un thème.
+ * Thèmes (ordre du sélecteur « Personnaliser l'accueil ») : Blanc nacré, Noir graphite, Beige sable, Olive HOMI (défaut
+ * d'une nouvelle installation), Brume lavande, Bleu glacier, Rose poudré, Nuit améthyste — couleurs de départ de la
+ * propriétaire dans `THEME_STARTS`. Noir graphite et Nuit améthyste sont sombres par nature (`effectiveMode`).
+ * Jetons partagés : fond, surfaces, contours, texte, texte secondaire, accent, texte sur accent, LUEUR INTERNE (`glow`).
+ * Adaptatif : le thème suit le profil affiché (`ADAPTIVE_PALETTE`, correspondance fixe).
+ * `migratePalette` : chaque ancienne palette (v3, v4, v6) devient le thème le plus proche (docs/THEMES_AURA.md).
  *
- * Rappels v5 (toujours vrais) : fond UNI partout ; la seule lumière décorative est le HALO (`tokens.halo`, composant
- * `CoralHalo`, aux teintes de la palette), réservé à l'accueil, à l'entrée et à l'onboarding. Profondeur = plans
- * (fond → surface → surface élevée) ; ombres très légères. Les anciennes matières (`optical`, `frosted`, `matte`,
- * lentille) restent des NOMS : surfaces OPAQUES, sans flou ni reflet. Nuit (écran /night) : interne, très tamisée.
- * Contrastes de CHAQUE palette testés (src/__tests__/contrast.test.ts).
+ * Rappels v5 (toujours vrais) : fond UNI partout ; la seule lumière décorative est le HALO (`tokens.halo`), réservé à
+ * l'accueil, à l'entrée et à l'onboarding. Profondeur = plans (fond → surface → surface élevée) ; ombres très légères.
+ * Le VERRE (barres, sélecteur, feuilles) est résolu par src/theme/glass.ts à partir de ces jetons. Nuit (écran /night) :
+ * interne, très tamisée. Contrastes de CHAQUE thème testés (src/__tests__/contrast.test.ts).
  */
 
 // ======================================================================== Couleurs de base
@@ -105,34 +103,48 @@ export const palette = {
   dangerSoft: '#FCE8E8',
 };
 
-// ======================================================================== Palettes (v6)
+// ======================================================================== Thèmes d'accueil (v7, huit thèmes)
 /**
- * v6 (17/11/2026) : cinq palettes au choix + un mode Adaptatif. Chaque palette fournit un jeu COMPLET en clair et en
- * sombre (neutres teintés, surfaces, texte, accents, encre lisible, action, états, statuts harmonisés, graphiques) ;
- * la nuit (soins à 3 h) en est dérivée. `homi` (« Rose poudré et pêche ») est l'identité v5 « Lumière corail »,
- * inchangée, et reste la palette par défaut.
+ * v7 (21/11/2026, brief « Refonte Apple premium et intégration d'Aura ») : HUIT thèmes, dans l'ordre du sélecteur
+ * « Personnaliser l'accueil » — Blanc nacré, Noir graphite, Beige sable, Olive HOMI, Brume lavande, Bleu glacier,
+ * Rose poudré, Nuit améthyste. Ils REMPLACENT les cinq palettes v6 (même mécanique : `PALETTE_SPECS` → `buildTheme` →
+ * `useTheme()`), avec les couleurs de départ de la propriétaire (fond / surface / accent / texte) reprises telles quelles.
  *
- * AUCUN composant ne connaît le nom d'une palette : ils lisent `useTheme()` (`tokens`, `colors`, `material`). Seuls
- * ce fichier, le fournisseur de thème et l'écran Réglages → Apparence manipulent `PaletteName`.
+ *  - Thèmes CLAIRS (6) : ils suivent l'apparence choisie (Système / Clair / Sombre) ; leur version sombre est un jeu
+ *    profond teinté de la même famille.
+ *  - Thèmes SOMBRES par nature (Noir graphite, Nuit améthyste, `scheme: 'dark'`) : toujours sombres, quelle que soit
+ *    l'apparence (on les choisit pour leur noir) ; `light` y pointe sur le jeu sombre.
+ *  - L'action principale est l'ACCENT du thème (bouton « J'accepte » de la référence), texte sur accent lisible.
+ *  - `glow` : LUEUR INTERNE (pictogrammes de verre, lentille de l'onglet actif, bouton +) — décor, jamais un texte.
+ *
+ * Migration (`migratePalette`) : chaque ancienne palette devient le thème le plus proche (v6 Rose poudré et pêche → Rose
+ * poudré, Lavande → Brume lavande, Bleu nuit → Bleu glacier, Sauge → Olive HOMI, Champagne → Beige sable ; v3/v4 →
+ * Rose poudré, comme avant). Une nouvelle installation part d'Olive HOMI, la référence de la propriétaire.
+ *
+ * AUCUN composant ne connaît le nom d'un thème : ils lisent `useTheme()` (`tokens`, `colors`, `material`). Seuls ce
+ * fichier, le fournisseur de thème, le magasin, le sélecteur (src/features/themePicker) et Réglages → Apparence
+ * manipulent `PaletteName`.
  */
-export type PaletteName = 'homi' | 'lavande' | 'nuit' | 'sauge' | 'champagne';
-/** Choix enregistré : une palette fixe, ou « Adaptatif » (la palette suit le profil affiché). */
+export type PaletteName = 'nacre' | 'graphite' | 'sable' | 'olive' | 'lavande' | 'glacier' | 'rose' | 'amethyste';
+/** Choix enregistré : un thème fixe, ou « Adaptatif » (le thème suit le profil affiché). */
 export type PaletteChoice = 'adaptive' | PaletteName;
-export const PALETTE_NAMES: PaletteName[] = ['homi', 'lavande', 'nuit', 'sauge', 'champagne'];
-export const SIGNATURE_PALETTE: PaletteName = 'homi';
+/** Ordre du sélecteur (deux colonnes, ligne par ligne) = ordre du tableau de la propriétaire. */
+export const PALETTE_NAMES: PaletteName[] = ['nacre', 'graphite', 'sable', 'olive', 'lavande', 'glacier', 'rose', 'amethyste'];
+export const SIGNATURE_PALETTE: PaletteName = 'olive';
+/** Nouvelle installation : Olive HOMI. Les personnes déjà inscrites gardent leur choix (migré, voir `migratePalette`). */
 export const DEFAULT_PALETTE: PaletteName = SIGNATURE_PALETTE;
 
 export interface StatusColors { success: Hex; warning: Hex; danger: Hex; info: Hex }
 export type CardTint = 'soft' | 'lavender' | 'gold';
 
-/** Jeu de couleurs d'une palette pour UNE apparence (clair ou sombre). */
+/** Jeu de couleurs d'un thème pour UNE apparence (clair ou sombre). */
 export interface PaletteTone {
   /** Plans : fond de page (uni), variante du fond, carte, surface élevée (feuille, menu), creux (rail, champ) */
   bg: Hex; bgAlt: Hex; surface: Hex; raised: Hex; sunken: Hex;
   text: Hex; textMuted: Hex;
   /** Texte posé sur un aplat d'accent */
   onAccent: Hex;
-  /** Encre des traits, séparateurs et liserés (« r,g,b ») : neutre teinté de la palette */
+  /** Encre des traits, séparateurs et liserés (« r,g,b ») : neutre teinté du thème */
   line: string;
   /** Voile du creux (translucide) */
   inset: string;
@@ -144,7 +156,7 @@ export interface PaletteTone {
   action: { fill: Hex; text: Hex }; onHero: { fill: Hex; text: Hex };
   gold: Hex; heart: Hex;
   overlay: string; shadowInk: string;
-  /** Succès, attention, alerte, info — harmonisés avec la palette, rouge d'alerte toujours distinct de l'accent */
+  /** Succès, attention, alerte, info — harmonisés avec le thème, rouge d'alerte toujours distinct de l'accent */
   status: StatusColors;
   /** Fonds doux des bandeaux de statut */
   statusSoft: Record<keyof StatusColors, string>;
@@ -161,10 +173,16 @@ export interface NightTone {
 }
 
 export interface PaletteSpec {
+  /** `light` : suit l'apparence choisie ; `dark` : toujours sombre (Noir graphite, Nuit améthyste) */
+  scheme: 'light' | 'dark';
   /** Teintes pures : DÉCOR uniquement (halo, illustrations, pastilles, anneaux) — jamais un texte */
   decor: [Hex, Hex, Hex];
   /** Teintes pâles opaques (fonds de pastilles, tuiles d'illustration) */
   wash: [Hex, Hex, Hex];
+  /** Lueur interne (clair, sombre) : cœur lumineux des pictogrammes de verre et de la lentille active */
+  glow: { light: Hex; dark: Hex };
+  /** Aperçu du sélecteur : reflet nacré de la vignette (deux arrêts) — même logique que la référence 01 */
+  swatch: [Hex, Hex];
   light: PaletteTone;
   dark: PaletteTone;
   night: NightTone;
@@ -176,28 +194,32 @@ const BLACK = '#000000';
 const NIGHT_GREY = '#A39A9E';
 
 const STATUS = {
-  // Rouge d'alerte santé : rouge franc (≈ 357°), distinct du corail (≈ 12°) et du rose (≈ 337°) ; toujours + icône + libellé
+  // Rouge d'alerte santé : rouge franc (≈ 357°), distinct des accents ; toujours + icône + libellé
   light: { success: '#1B6B3A', warning: '#8A4B00', danger: '#B3111B', info: '#1D5AA6' },
   dark: { success: '#8BE0A6', warning: '#F7C770', danger: '#FF6B6B', info: '#9CC4FF' },
   night: { success: '#94C29E', warning: '#D9B577', danger: '#F08C8C', info: '#9EB6D8' },
 } as const;
 
-/** Clair : tout ce qui se déduit de quelques graines (neutre teinté, encres, décor). */
+/** Clair : tout ce qui se déduit de quelques graines (fond, SURFACE de la propriétaire, encres, décor). */
 function lightTone(s: {
-  bg: Hex; sunken: Hex; text: Hex; textMuted: Hex; line: Hex; accent: [Hex, Hex]; third: Hex; action: Hex;
+  bg: Hex; surface: Hex; sunken: Hex; text: Hex; textMuted: Hex; line: Hex; accent: [Hex, Hex]; third: Hex;
   gold: Hex; heart: Hex; status: StatusColors; decor: [Hex, Hex, Hex];
 }): PaletteTone {
+  const raised = mixHex(s.surface, WHITE, 0.6);
+  // « papier » des pastilles et fonds doux : la surface éclaircie (les surfaces teintées de la propriétaire restent lisibles)
+  const paper = mixHex(s.surface, WHITE, 0.35);
   return {
-    bg: s.bg, bgAlt: mixHex(s.bg, s.line, 0.05), surface: WHITE, raised: WHITE, sunken: s.sunken,
+    bg: s.bg, bgAlt: mixHex(s.bg, s.line, 0.05), surface: s.surface, raised, sunken: s.sunken,
     text: s.text, textMuted: s.textMuted, onAccent: WHITE,
     line: rgbOf(s.line), inset: alpha(s.line, 0.055),
-    lens: WHITE, iconWell: mixHex(WHITE, s.decor[0], 0.2),
-    tint: { soft: mixHex(WHITE, s.decor[0], 0.13), lavender: mixHex(WHITE, s.decor[2], 0.16), gold: mixHex(WHITE, '#F0BC6C', 0.16) },
+    lens: mixHex(s.surface, WHITE, 0.75), iconWell: mixHex(paper, s.decor[0], 0.2),
+    tint: { soft: mixHex(paper, s.decor[0], 0.13), lavender: mixHex(paper, s.decor[2], 0.16), gold: mixHex(paper, '#F0BC6C', 0.16) },
     accent: s.accent, third: s.third,
-    action: { fill: s.action, text: WHITE }, onHero: { fill: WHITE, text: s.text },
+    // l'action principale EST l'accent du thème (référence : « J'accepte » olive sur l'accueil Olive HOMI)
+    action: { fill: s.accent[0], text: WHITE }, onHero: { fill: WHITE, text: s.text },
     gold: s.gold, heart: s.heart, overlay: alpha(s.text, 0.36), shadowInk: rgbOf(s.line),
     status: s.status,
-    statusSoft: { success: mixHex(WHITE, s.status.success, 0.1), warning: mixHex(WHITE, s.status.warning, 0.1), danger: mixHex(WHITE, s.status.danger, 0.09), info: mixHex(WHITE, s.status.info, 0.09) },
+    statusSoft: { success: mixHex(paper, s.status.success, 0.1), warning: mixHex(paper, s.status.warning, 0.1), danger: mixHex(paper, s.status.danger, 0.09), info: mixHex(paper, s.status.info, 0.09) },
     chart: [s.accent[0], s.accent[1], s.third, s.status.info, s.status.success, s.gold],
   };
 }
@@ -238,131 +260,154 @@ function nightTone(d: PaletteTone): NightTone {
   };
 }
 
-// ---------------------------------------------------------------- 1. Rose poudré et pêche (identité v5, INCHANGÉE)
-const HOMI_LIGHT: PaletteTone = {
-  bg: NEUTRALS.ivory, bgAlt: NEUTRALS.ivoryLow, surface: WHITE, raised: WHITE, sunken: '#F6EBE8',
-  text: NEUTRALS.ink, textMuted: NEUTRALS.inkSoft, onAccent: WHITE,
-  line: '84,40,60', inset: 'rgba(120,52,70,0.055)',
-  lens: WHITE, iconWell: '#FCEBE6', tint: { soft: '#FFF1ED', lavender: '#F4F0FD', gold: '#FFF4E6' },
-  accent: [IDENTITY.coralDeep, IDENTITY.roseDeep], third: IDENTITY.lilacDeep,
-  action: { fill: IDENTITY.plumAction, text: WHITE }, onHero: { fill: WHITE, text: IDENTITY.plum },
-  gold: '#7A4E12', heart: IDENTITY.roseDeep, overlay: 'rgba(42,22,33,0.36)', shadowInk: '84,40,60',
-  status: STATUS.light,
-  statusSoft: { success: '#E7F3EA', warning: '#FBF0E0', danger: '#FCE8E8', info: '#EAF0FA' },
-  chart: [IDENTITY.coralDeep, IDENTITY.roseDeep, IDENTITY.lilacDeep, STATUS.light.info, STATUS.light.success, '#7A4E12'],
+/**
+ * Couleurs de DÉPART de la propriétaire (fond / surface / accent / texte), reprises telles quelles dans les jeux clairs
+ * (thèmes clairs) et sombres (thèmes sombres). Verrouillées par src/__tests__/contrast.test.ts.
+ */
+export const THEME_STARTS: Record<PaletteName, { bg: Hex; surface: Hex; accent: Hex; text: Hex }> = {
+  nacre: { bg: '#F4F5F8', surface: '#FFFFFF', accent: '#424957', text: '#191D26' },
+  graphite: { bg: '#111214', surface: '#24262B', accent: '#E3E5EB', text: '#F5F6F8' },
+  sable: { bg: '#F6EDE2', surface: '#FFF6E9', accent: '#674B36', text: '#2D2119' },
+  olive: { bg: '#EBEDDF', surface: '#F8F5E8', accent: '#485532', text: '#252D1A' },
+  lavande: { bg: '#F7F4FB', surface: '#EDE4F6', accent: '#674A8B', text: '#352345' },
+  glacier: { bg: '#EDF4FA', surface: '#DBE9F4', accent: '#315B79', text: '#172C3B' },
+  rose: { bg: '#FAF0F3', surface: '#F3DDE5', accent: '#854964', text: '#392331' },
+  amethyste: { bg: '#181426', surface: '#272138', accent: '#CBB5F1', text: '#F4EDF9' },
 };
-const HOMI_DARK: PaletteTone = {
-  bg: NEUTRALS.obsidian, bgAlt: NEUTRALS.obsidianLow, surface: NEUTRALS.obsidianHigh, raised: NEUTRALS.smoke, sunken: NEUTRALS.obsidianLow,
-  text: NEUTRALS.pearl, textMuted: NEUTRALS.pearlSoft, onAccent: IDENTITY.plum,
-  line: '255,220,232', inset: 'rgba(255,220,232,0.06)',
-  lens: '#3B2D35', iconWell: '#3A242B', tint: { soft: '#2E1F22', lavender: '#272033', gold: '#2E2420' },
-  accent: [IDENTITY.coralGlow, IDENTITY.roseGlow], third: IDENTITY.lilacGlow,
-  action: { fill: IDENTITY.coralGlow, text: IDENTITY.plum }, onHero: { fill: NEUTRALS.pearl, text: IDENTITY.plum },
-  gold: '#F0BC6C', heart: IDENTITY.roseGlow, overlay: 'rgba(8,4,6,0.6)', shadowInk: '6,3,5',
-  status: STATUS.dark,
-  statusSoft: { success: alpha(STATUS.dark.success, 0.09), warning: alpha(STATUS.dark.warning, 0.1), danger: 'rgba(255,107,107,0.14)', info: alpha(STATUS.dark.info, 0.1) },
-  chart: [IDENTITY.coralGlow, IDENTITY.roseGlow, IDENTITY.lilacGlow, STATUS.dark.info, STATUS.dark.success, '#F0BC6C'],
-};
-const HOMI_NIGHT: NightTone = {
-  bg: NEUTRALS.nightBg, bgAlt: '#120D10', card: '#17111A', raised: '#1E171B', sunken: '#140F12', edge: '#2A2126', lens: '#251D22', lensEdge: '#33292F', iconWell: '#221A1E',
-  tint: { soft: '#1C1517', lavender: '#1A1720', gold: '#1D1816' }, text: '#D9CDD2', textMuted: '#A0939A', accentSoft: '#21191D', dangerSoft: '#2A181A',
-  gold: '#CDB48A', heart: '#E09AB8', line: '255,230,238', status: STATUS.night,
-};
+const S = THEME_STARTS;
 
-// ---------------------------------------------------------------- 2. Lavande et violet profond
-const LAVANDE_DECOR: [Hex, Hex, Hex] = ['#A48BEA', '#CF93D9', '#93A9F0'];
-const LAVANDE_LIGHT = lightTone({
-  bg: '#F7F4FB', sunken: '#EEE9F6', text: '#1F1730', textMuted: '#5F5672', line: '#3A2A5C',
-  accent: ['#6A45B8', '#96397F'], third: '#3F58A8', action: '#2E1F52',
-  gold: '#7A4E12', heart: '#A8365F',
-  status: { success: '#1C6846', warning: '#85490A', danger: '#B01030', info: '#2456A4' },
-  decor: LAVANDE_DECOR,
+// ---------------------------------------------------------------- 1. Blanc nacré
+const NACRE_DECOR: [Hex, Hex, Hex] = ['#BFC6D4', '#A9B9D3', '#D3CBE3'];
+const NACRE_LIGHT = lightTone({
+  ...S.nacre, sunken: '#E8EAF0', textMuted: '#4F5664', line: '#2A3140',
+  accent: [S.nacre.accent, '#2F5689'], third: '#5E47A6', gold: '#734B10', heart: '#A3345C',
+  status: STATUS.light, decor: NACRE_DECOR,
 });
-const LAVANDE_DARK = darkTone({
-  bg: '#15121D', surface: '#1E1A29', raised: '#282335', sunken: '#100E17', text: '#EFEBF8', textMuted: '#B9B1C9', line: '#E4DCFF', ink: '#1F1730',
-  accent: ['#BDA7FF', '#E5A9EE'], third: '#A9BEFF',
-  gold: '#EDC27A', heart: '#F4A3C0',
-  status: { success: '#8EDDB0', warning: '#F4C878', danger: '#FF7088', info: '#9CC4FF' },
+const NACRE_DARK = darkTone({
+  bg: '#121419', surface: '#1D2027', raised: '#262A33', sunken: '#0D0F13', text: '#F2F4F8', textMuted: '#AEB4C0', line: '#DCE4F2', ink: '#191D26',
+  accent: ['#C9D3E6', '#A9C3EA'], third: '#C9B6FF', gold: '#EDC583', heart: '#F4A3C0', status: { ...STATUS.dark, danger: '#FF8C8C' },
 });
 
-// ---------------------------------------------------------------- 3. Bleu nuit et cyan doux
-const NUIT_DECOR: [Hex, Hex, Hex] = ['#62C6D8', '#7394E4', '#A9B8F5'];
-const NUIT_LIGHT = lightTone({
-  bg: '#F2F6FA', sunken: '#E7EDF4', text: '#0F1F33', textMuted: '#4C5B70', line: '#1C3558',
-  accent: ['#0E6A80', '#2D50A6'], third: '#6A4FB8', action: '#14294A',
-  gold: '#7A4E12', heart: '#A63A62',
-  status: { success: '#156A4A', warning: '#874A04', danger: '#B3111B', info: '#1D5AA6' },
-  decor: NUIT_DECOR,
-});
-const NUIT_DARK = darkTone({
-  bg: '#0F1622', surface: '#17202E', raised: '#202B3C', sunken: '#0B111A', text: '#E9F0F8', textMuted: '#AAB7C8', line: '#D6E6FF', ink: '#0F1F33',
-  accent: ['#8ADCE8', '#A6C0FF'], third: '#C9B6FF',
-  gold: '#EFC47E', heart: '#F4A3C0',
-  status: { success: '#86DDB4', warning: '#F5C972', danger: '#FF857C', info: '#9CC4FF' },
+// ---------------------------------------------------------------- 2. Noir graphite (sombre par nature)
+const GRAPHITE_DARK = darkTone({
+  ...S.graphite, raised: '#2E3036', sunken: '#0C0D0F', textMuted: '#B4B8C2', line: '#E6EAF2', ink: S.graphite.bg,
+  accent: [S.graphite.accent, '#C3CEE2'], third: '#C9B6FF', gold: '#F0C987', heart: '#F4A3C0', status: { ...STATUS.dark, danger: '#FF8C8C' },
 });
 
-// ---------------------------------------------------------------- 4. Sauge et vert minéral
-const SAUGE_DECOR: [Hex, Hex, Hex] = ['#A3BFA6', '#84BAB3', '#DCCAA4'];
-const SAUGE_LIGHT = lightTone({
-  bg: '#F4F6F1', sunken: '#E9EDE5', text: '#17241D', textMuted: '#54625A', line: '#24402F',
-  accent: ['#3C6A50', '#256868'], third: '#8A5638', action: '#1F3A2D',
-  gold: '#77520F', heart: '#A63A56',
-  status: { success: '#1B6B3A', warning: '#8A4B00', danger: '#B3111B', info: '#22599E' },
-  decor: SAUGE_DECOR,
+// ---------------------------------------------------------------- 3. Beige sable
+const SABLE_DECOR: [Hex, Hex, Hex] = ['#E4C892', '#EBBDA4', '#D3C0AC'];
+const SABLE_LIGHT = lightTone({
+  ...S.sable, sunken: '#EEE2D3', textMuted: '#5F5043', line: '#4A3620',
+  accent: [S.sable.accent, '#844C3B'], third: '#6E4D6C', gold: '#72540F', heart: '#A0364F',
+  status: { success: '#24622C', warning: '#8C4100', danger: '#B3111B', info: '#25548F' }, decor: SABLE_DECOR,
 });
-const SAUGE_DARK = darkTone({
-  bg: '#111713', surface: '#1A221D', raised: '#242E28', sunken: '#0C110E', text: '#EAF1EC', textMuted: '#AFBCB2', line: '#DCF0E2', ink: '#17241D',
-  accent: ['#A9D6B6', '#94D4CC'], third: '#E8D0A2',
-  gold: '#E8C583', heart: '#F2A6BA',
-  status: { success: '#8FE0A4', warning: '#F5C872', danger: '#FF857C', info: '#9FC6F5' },
-});
-
-// ---------------------------------------------------------------- 5. Champagne et beige chaleureux
-const CHAMPAGNE_DECOR: [Hex, Hex, Hex] = ['#E4C892', '#EBBDA4', '#D3C0AC'];
-const CHAMPAGNE_LIGHT = lightTone({
-  bg: '#F9F5EE', sunken: '#F0EADF', text: '#2A2118', textMuted: '#695C4D', line: '#4A3620',
-  accent: ['#7E5F19', '#8A5140'], third: '#765374', action: '#3A2A1C',
-  gold: '#7A5A12', heart: '#A63A56',
-  status: { success: '#2A6A32', warning: '#9A4700', danger: '#B3111B', info: '#2A5A9C' },
-  decor: CHAMPAGNE_DECOR,
-});
-const CHAMPAGNE_DARK = darkTone({
+const SABLE_DARK = darkTone({
   bg: '#181410', surface: '#221C16', raised: '#2D261E', sunken: '#120F0B', text: '#F6EFE6', textMuted: '#C5B8A7', line: '#FFEBD2', ink: '#2A2118',
-  accent: ['#EBCB8E', '#EFBBA4'], third: '#DCC0DF',
-  gold: '#E0B062', heart: '#F2A6BA',
+  accent: ['#E7C9A6', '#EFBBA4'], third: '#DCC0DF', gold: '#E0B062', heart: '#F2A6BA',
   status: { success: '#9BDD9C', warning: '#FFB86B', danger: '#FF857C', info: '#A6C6F2' },
 });
 
-/** Les cinq palettes. Ordre de `decor` et `wash` : accent principal, second accent, accent rare. */
+// ---------------------------------------------------------------- 4. Olive HOMI (référence de la démo)
+const OLIVE_DECOR: [Hex, Hex, Hex] = ['#B5C18F', '#D9CB93', '#A7B89C'];
+const OLIVE_LIGHT = lightTone({
+  ...S.olive, sunken: '#E0E3D1', textMuted: '#4D5640', line: '#34401F',
+  accent: [S.olive.accent, '#6A5418'], third: '#664B79', gold: '#6C500E', heart: '#9C3550',
+  status: { success: '#1D6233', warning: '#844400', danger: '#B3111B', info: '#1F5598' }, decor: OLIVE_DECOR,
+});
+const OLIVE_DARK = darkTone({
+  bg: '#13160F', surface: '#1C2117', raised: '#262C1F', sunken: '#0E110B', text: '#EEF0E4', textMuted: '#B7BDA6', line: '#E4ECCF', ink: S.olive.text,
+  accent: ['#C5D49B', '#E3D49A'], third: '#D9C2E8', gold: '#E8C583', heart: '#F2A6BA',
+  status: { success: '#8FE0A4', warning: '#F5C872', danger: '#FF857C', info: '#9FC6F5' },
+});
+
+// ---------------------------------------------------------------- 5. Brume lavande
+const LAVANDE_DECOR: [Hex, Hex, Hex] = ['#A48BEA', '#CF93D9', '#93A9F0'];
+const LAVANDE_LIGHT = lightTone({
+  ...S.lavande, sunken: '#E6DCF1', textMuted: '#57466A', line: '#3A2A5C',
+  accent: [S.lavande.accent, '#8A3473'], third: '#38509A', gold: '#6E450F', heart: '#9C3157',
+  status: { success: '#195E3F', warning: '#7A4208', danger: '#A80F2D', info: '#214E96' }, decor: LAVANDE_DECOR,
+});
+const LAVANDE_DARK = darkTone({
+  bg: '#15121D', surface: '#1E1A29', raised: '#282335', sunken: '#100E17', text: '#EFEBF8', textMuted: '#B9B1C9', line: '#E4DCFF', ink: '#1F1730',
+  accent: ['#BDA7FF', '#E5A9EE'], third: '#A9BEFF', gold: '#EDC27A', heart: '#F4A3C0',
+  status: { success: '#8EDDB0', warning: '#F4C878', danger: '#FF7088', info: '#9CC4FF' },
+});
+
+// ---------------------------------------------------------------- 6. Bleu glacier
+const GLACIER_DECOR: [Hex, Hex, Hex] = ['#8FC2E0', '#77B6C8', '#AFBDEB'];
+const GLACIER_LIGHT = lightTone({
+  ...S.glacier, sunken: '#D9E6F1', textMuted: '#3E5263', line: '#1C3558',
+  accent: [S.glacier.accent, '#0D5F70'], third: '#5944A0', gold: '#694709', heart: '#983158',
+  status: { success: '#145C3F', warning: '#7A4100', danger: '#A80F18', info: '#1A4F93' }, decor: GLACIER_DECOR,
+});
+const GLACIER_DARK = darkTone({
+  bg: '#0F1622', surface: '#17202E', raised: '#202B3C', sunken: '#0B111A', text: '#E9F0F8', textMuted: '#AAB7C8', line: '#D6E6FF', ink: '#0F1F33',
+  accent: ['#9CC8E8', '#8ADCE8'], third: '#C9B6FF', gold: '#EFC47E', heart: '#F4A3C0',
+  status: { success: '#86DDB4', warning: '#F5C972', danger: '#FF857C', info: '#A6C0FF' },
+});
+
+// ---------------------------------------------------------------- 7. Rose poudré (héritière de l'identité v5 « Lumière corail »)
+const ROSE_DECOR: [Hex, Hex, Hex] = [IDENTITY.coral, IDENTITY.rose, IDENTITY.lilac];
+const ROSE_LIGHT = lightTone({
+  ...S.rose, sunken: '#F0DCE4', textMuted: '#614453', line: '#54283C',
+  accent: [S.rose.accent, '#9C3D29'], third: '#5E45A6', gold: '#6E450F', heart: '#9A2F57',
+  status: { success: '#175E33', warning: '#7B4200', danger: '#A80F18', info: '#1A4F93' }, decor: ROSE_DECOR,
+});
+const ROSE_DARK = darkTone({
+  bg: NEUTRALS.obsidian, surface: NEUTRALS.obsidianHigh, raised: NEUTRALS.smoke, sunken: NEUTRALS.obsidianLow, text: NEUTRALS.pearl, textMuted: NEUTRALS.pearlSoft, line: '#FFDCE8', ink: IDENTITY.plum,
+  accent: ['#EBA9C6', IDENTITY.coralGlow], third: IDENTITY.lilacGlow, gold: '#F0BC6C', heart: IDENTITY.roseGlow, status: STATUS.dark,
+});
+
+// ---------------------------------------------------------------- 8. Nuit améthyste (sombre par nature)
+const AMETHYSTE_DARK = darkTone({
+  ...S.amethyste, raised: '#312A46', sunken: '#120F1D', textMuted: '#BDB1CF', line: '#E9DCFF', ink: S.amethyste.bg,
+  accent: [S.amethyste.accent, '#F0B6E0'], third: '#A9C4FF', gold: '#EDC27A', heart: '#F4A3C0',
+  status: { success: '#8EDDB0', warning: '#F4C878', danger: '#FF8A9A', info: '#9CC4FF' },
+});
+
+/** Les huit thèmes. Ordre de `decor` et `wash` : accent principal, second accent, accent rare. */
 export const PALETTE_SPECS: Record<PaletteName, PaletteSpec> = {
-  homi: { decor: [IDENTITY.coral, IDENTITY.rose, IDENTITY.lilac], wash: [NEUTRALS.mist, NEUTRALS.peach, NEUTRALS.lilac], light: HOMI_LIGHT, dark: HOMI_DARK, night: HOMI_NIGHT },
-  lavande: { decor: LAVANDE_DECOR, wash: ['#ECE5FB', '#F8E6F8', '#E4EAFC'], light: LAVANDE_LIGHT, dark: LAVANDE_DARK, night: nightTone(LAVANDE_DARK) },
-  nuit: { decor: NUIT_DECOR, wash: ['#DDF3F7', '#E1E9FB', '#ECEFFD'], light: NUIT_LIGHT, dark: NUIT_DARK, night: nightTone(NUIT_DARK) },
-  sauge: { decor: SAUGE_DECOR, wash: ['#E6F0E7', '#DFF0EE', '#F6EFDF'], light: SAUGE_LIGHT, dark: SAUGE_DARK, night: nightTone(SAUGE_DARK) },
-  champagne: { decor: CHAMPAGNE_DECOR, wash: ['#F9EFDB', '#FBEAE1', '#F2EAE1'], light: CHAMPAGNE_LIGHT, dark: CHAMPAGNE_DARK, night: nightTone(CHAMPAGNE_DARK) },
+  nacre: { scheme: 'light', decor: NACRE_DECOR, wash: ['#E9ECF2', '#E4EAF4', '#EEEAF5'], glow: { light: '#FFFFFF', dark: '#E8EEFF' }, swatch: ['#FFFFFF', '#DCE0E8'], light: NACRE_LIGHT, dark: NACRE_DARK, night: nightTone(NACRE_DARK) },
+  graphite: { scheme: 'dark', decor: ['#8E939E', '#6F7684', '#B9BEC9'], wash: ['#2C2F35', '#292C33', '#30323A'], glow: { light: '#FFE3A6', dark: '#FFE3A6' }, swatch: ['#55585F', '#26282D'], light: GRAPHITE_DARK, dark: GRAPHITE_DARK, night: nightTone(GRAPHITE_DARK) },
+  sable: { scheme: 'light', decor: SABLE_DECOR, wash: ['#F9EFDB', '#FBEAE1', '#F2EAE1'], glow: { light: '#FFF1D2', dark: '#FFE2B8' }, swatch: ['#FBF1E6', '#E9D2BC'], light: SABLE_LIGHT, dark: SABLE_DARK, night: nightTone(SABLE_DARK) },
+  olive: { scheme: 'light', decor: OLIVE_DECOR, wash: ['#EDF0DF', '#F5EFD6', '#E8EEE3'], glow: { light: '#FFF2B8', dark: '#F6E7A4' }, swatch: ['#64713E', '#48532C'], light: OLIVE_LIGHT, dark: OLIVE_DARK, night: nightTone(OLIVE_DARK) },
+  lavande: { scheme: 'light', decor: LAVANDE_DECOR, wash: ['#ECE5FB', '#F8E6F8', '#E4EAFC'], glow: { light: '#FFF0D2', dark: '#FFE6C4' }, swatch: ['#EDE6FA', '#CBB9EC'], light: LAVANDE_LIGHT, dark: LAVANDE_DARK, night: nightTone(LAVANDE_DARK) },
+  glacier: { scheme: 'light', decor: GLACIER_DECOR, wash: ['#DDEEF7', '#DCEFF2', '#E8ECFA'], glow: { light: '#FFFFFF', dark: '#E2F3FF' }, swatch: ['#EAF3FA', '#BCD3E6'], light: GLACIER_LIGHT, dark: GLACIER_DARK, night: nightTone(GLACIER_DARK) },
+  rose: { scheme: 'light', decor: ROSE_DECOR, wash: [NEUTRALS.mist, NEUTRALS.peach, NEUTRALS.lilac], glow: { light: '#FFE9D6', dark: '#FFD9C8' }, swatch: ['#F8E7EC', '#E5BFCD'], light: ROSE_LIGHT, dark: ROSE_DARK, night: nightTone(ROSE_DARK) },
+  amethyste: { scheme: 'dark', decor: ['#8E6BD1', '#C77DC8', '#6F7FD8'], wash: ['#2F2742', '#34263F', '#28294A'], glow: { light: '#E9D8FF', dark: '#E9D8FF' }, swatch: ['#7A5CA6', '#3E2F5E'], light: AMETHYSTE_DARK, dark: AMETHYSTE_DARK, night: nightTone(AMETHYSTE_DARK) },
 };
 
-/** Accents lisibles de chaque palette : encres (clair) et lueurs (sombre). Dérivé de `PALETTE_SPECS`. */
+/** Apparence réellement affichée : un thème sombre par nature reste sombre en « Clair » (la nuit reste prioritaire). */
+export function effectiveMode(mode: ThemeName, paletteName: PaletteName): ThemeName {
+  return mode === 'light' && PALETTE_SPECS[paletteName]?.scheme === 'dark' ? 'dark' : mode;
+}
+
+/** Accents lisibles de chaque thème : encres (clair) et lueurs (sombre). Dérivé de `PALETTE_SPECS`. */
 export interface PaletteAccents { ink: [Hex, Hex]; glow: [Hex, Hex] }
 export const PALETTES = Object.fromEntries(
   PALETTE_NAMES.map((p) => [p, { ink: PALETTE_SPECS[p].light.accent, glow: PALETTE_SPECS[p].dark.accent }]),
 ) as Record<PaletteName, PaletteAccents>;
 
 /**
- * Anciennes préférences (v3 : turquoise, menthe, aurore, iris, crépuscule ; v4 : auto, peche, lilas, lagune, ambre)
- * → palette par défaut. Les utilisateurs existants restent donc sur « Rose poudré et pêche ».
+ * Préférences enregistrées par les versions précédentes → thème le plus proche (sans perdre le choix de la personne) :
+ *  - v6 : homi (Rose poudré et pêche) → rose, lavande → lavande, nuit (Bleu nuit et cyan) → glacier, sauge → olive,
+ *    champagne → sable ;
+ *  - v3 / v4 (déjà lues comme « Rose poudré et pêche » en v6) → rose.
  */
 export const LEGACY_PALETTE: Record<string, PaletteName> = {
-  auto: 'homi', peche: 'homi', lilas: 'homi', lagune: 'homi', ambre: 'homi',
-  turquoise: 'homi', menthe: 'homi', aurore: 'homi', iris: 'homi', crepuscule: 'homi',
+  homi: 'rose', nuit: 'glacier', sauge: 'olive', champagne: 'sable',
+  auto: 'rose', peche: 'rose', lilas: 'rose', lagune: 'rose', ambre: 'rose',
+  turquoise: 'rose', menthe: 'rose', aurore: 'rose', iris: 'rose', crepuscule: 'rose',
 };
 /**
- * Préférence enregistrée → choix valide (pur, testé). Un choix v6 (une des cinq palettes, ou « adaptive ») est
- * conservé ; toute valeur ancienne, inconnue ou absente devient la palette par défaut.
+ * Préférence enregistrée → choix valide (pur, testé). Un choix v7 (un des huit thèmes, ou « adaptive ») est conservé ;
+ * une ancienne valeur devient le thème le plus proche (`LEGACY_PALETTE`) ; une valeur absente ou inconnue, le thème
+ * par défaut (nouvelle installation).
  */
 export function migratePalette(p?: string | null): PaletteChoice {
   if (p === 'adaptive') return 'adaptive';
   if (p && (PALETTE_NAMES as string[]).includes(p)) return p as PaletteName;
+  if (p && LEGACY_PALETTE[p]) return LEGACY_PALETTE[p];
   return DEFAULT_PALETTE;
 }
 
@@ -370,20 +415,18 @@ export function migratePalette(p?: string | null): PaletteChoice {
 export type ProfileKind = 'me' | 'pregnancy' | 'child' | 'postpartum' | 'family';
 export const PROFILE_KINDS: ProfileKind[] = ['me', 'pregnancy', 'child', 'postpartum', 'family'];
 /**
- * Mode Adaptatif — correspondance FIXE profil → palette (documentée dans HOMI_DESIGN_SYSTEM.md, testée) :
- * moi → Rose poudré et pêche · grossesse → Lavande et violet profond · enfant → Sauge et vert minéral ·
- * post-partum → Champagne et beige chaleureux · famille → Bleu nuit et cyan doux.
+ * Mode Adaptatif — correspondance FIXE profil → thème (testée), reprise de la v6 avec les thèmes les plus proches :
+ * moi → Rose poudré · grossesse → Brume lavande · enfant → Olive HOMI · post-partum → Beige sable · famille → Bleu glacier.
  */
 export const ADAPTIVE_PALETTE: Record<ProfileKind, PaletteName> = {
-  me: 'homi', pregnancy: 'lavande', child: 'sauge', postpartum: 'champagne', family: 'nuit',
+  me: 'rose', pregnancy: 'lavande', child: 'olive', postpartum: 'sable', family: 'glacier',
 };
-/** Palette affichée pour un choix et un profil (pur, testé). */
+/** Thème affiché pour un choix et un profil (pur, testé). */
 export function resolvePalette(choice: string | null | undefined, profile: ProfileKind | null | undefined): PaletteName {
   const c = migratePalette(choice);
   if (c !== 'adaptive') return c;
   return (profile && ADAPTIVE_PALETTE[profile]) || DEFAULT_PALETTE;
 }
-
 // ======================================================================== Thèmes
 export type ThemeName = 'light' | 'dark' | 'night';
 
@@ -450,6 +493,11 @@ export interface DesignTokens {
   chart: string[];
   /** Anneau de focus visible (clavier, lecteur d'écran) */
   focus: string;
+  /**
+   * LUEUR INTERNE (v7) : cœur lumineux des pictogrammes de verre, de la lentille de l'onglet actif et du bouton +.
+   * `inner` = couleur pleine (centre), `soft` = halo translucide, `edge` = arête claire du verre. Décor, jamais un texte.
+   */
+  glow: { inner: string; soft: string; edge: string };
 }
 
 export interface Theme {
@@ -545,8 +593,11 @@ const lineA = (rgb: string, a: number | string) => `rgba(${rgb},${a})`;
  * Thème complet pour une apparence et une palette. Tout vient de `PALETTE_SPECS[palette]` : aucun composant ne lit
  * une couleur ailleurs. La palette par défaut redonne exactement l'identité v5.
  */
-export function buildTheme(mode: ThemeName, paletteName: PaletteName = DEFAULT_PALETTE): Theme {
+export function buildTheme(requested: ThemeName, paletteName: PaletteName = DEFAULT_PALETTE): Theme {
   const spec = PALETTE_SPECS[paletteName] ?? PALETTE_SPECS[DEFAULT_PALETTE];
+  // thème sombre par nature (Noir graphite, Nuit améthyste) : sombre même en « Clair »
+  const mode = effectiveMode(requested, paletteName);
+  const glowOf = (c: string, isDark: boolean) => ({ inner: c, soft: alpha(c, isDark ? 0.32 : 0.5), edge: isDark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.85)' });
   const [d0, d1, d2] = spec.decor;
   // scène sombre posée sur la page (identique en clair et en sombre) : le fond sombre de la palette
   const inverse = { fill: spec.dark.bg, text: spec.dark.text, textMuted: spec.dark.textMuted, accent: spec.dark.gold, edge: 'rgba(255,255,255,0.10)' };
@@ -589,6 +640,7 @@ export function buildTheme(mode: ThemeName, paletteName: PaletteName = DEFAULT_P
         status, statusSoft: p.statusSoft,
         decor, chart: p.chart,
         focus: a,
+        glow: glowOf(spec.glow.light, false),
       },
       colors: {
         background: p.bg, backgroundAlt: p.bgAlt, gradient: [p.bg, p.bg, p.bg],
@@ -641,6 +693,7 @@ export function buildTheme(mode: ThemeName, paletteName: PaletteName = DEFAULT_P
         status, statusSoft: p.statusSoft,
         decor, chart: p.chart,
         focus: a,
+        glow: glowOf(spec.glow.dark, true),
       },
       colors: {
         background: p.bg, backgroundAlt: p.bgAlt, gradient: [p.bg, p.bg, p.bg],
@@ -692,6 +745,7 @@ export function buildTheme(mode: ThemeName, paletteName: PaletteName = DEFAULT_P
       decor: { a, b, c: third, ring: [a, b, third], wash: [n.tint.soft, n.tint.gold, n.tint.lavender] },
       chart: [a, b, third, status.info, status.success, n.gold],
       focus: a,
+      glow: { inner: mixHex(spec.glow.dark, NIGHT_GREY, 0.5), soft: alpha(spec.glow.dark, 0.12), edge: 'rgba(255,255,255,0.08)' },
     },
     colors: {
       background: n.bg, backgroundAlt: n.bgAlt, gradient: [n.bg, n.bg, n.bg],

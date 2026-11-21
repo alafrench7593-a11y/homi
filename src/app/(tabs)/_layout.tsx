@@ -9,6 +9,7 @@ import { Dock } from '@/components/Dock';
 import { t as tr } from '@/i18n';
 import { useDigestSync } from '@/lib/data/hooks-social';
 import { useAutoNotificationsSync } from '@/lib/data/hooks-autoNotifs';
+import { AuraIntroHost } from '@/features/aura/AuraEntry';
 
 /** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
 function DigestSync() {
@@ -58,6 +59,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="moi" options={{ title: tr('tab.me'), href: null }} />
       <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>
+    {/* Présentation d'Aura : une fois par compte, à la première arrivée (hors visite guidée), relançable */}
+    {session ? <AuraIntroHost /> : null}
     </>
   );
 }

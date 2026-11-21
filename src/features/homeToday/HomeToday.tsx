@@ -176,13 +176,13 @@ export function useTodayScene({ DoneComponent, profile }: { DoneComponent?: Reac
 export type TodayScene = ReturnType<typeof useTodayScene>;
 
 /** 1 + 2 — Prochain événement, puis « À traiter » (la seule action principale de l'écran). */
-export function TodayNext({ scene, art = 'foyer', cascadeIndex = 0 }: { scene: TodayScene; art?: NextArt; cascadeIndex?: number }) {
+export function TodayNext({ scene, art = 'foyer', cascadeIndex = 0, compactEmpty = false }: { scene: TodayScene; art?: NextArt; cascadeIndex?: number; compactEmpty?: boolean }) {
   const t = useTheme();
   const { d, view, focus, held, busy, Done, empty, nextInfo, onComplete, onAccept } = scene;
   return (
     <View testID="home-today" style={{ gap: spacing.md }}>
       <Cascade index={cascadeIndex}>
-        {d.loading ? <Skeleton kind="card" rows={1} /> : <NextUp info={nextInfo} art={art} />}
+        {d.loading ? <Skeleton kind="card" rows={1} /> : <NextUp info={nextInfo} art={art} compactEmpty={compactEmpty} />}
       </Cascade>
       {d.loading ? <Skeleton kind="card" rows={2} />
         : d.error ? <ErrorView error={d.error} onRetry={d.retry} />

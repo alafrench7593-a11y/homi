@@ -15,6 +15,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius as R, spacing } from '@/theme/tokens';
@@ -118,7 +119,9 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
 
 export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, centerAfter, floating = true, bottomInset, labelSize = 11, iconsOnly = false, accessibilityLabel, style, testID = 'glass-tab-bar' }: GlassTabBarProps) {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const { spec } = useGlass('chrome');
+  const lensLit = theme.name !== 'night';
   const { layouts, onItemLayout } = useItemLayouts<string>();
   // indicateur LIQUIDE : glisse et s'étire dans le sens du trajet (docs/DA_LIQUID_GLASS.md)
   const indicator = useLiquidIndicator(layouts[activeKey]);
@@ -136,9 +139,19 @@ export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, ce
       <Glass variant="chrome" radius={radius} edges={floating ? 'all' : 'top'} testID={`${testID}-glass`}
         contentStyle={{ paddingHorizontal: GLASS_TAB_BAR.inset, paddingTop: GLASS_TAB_BAR.inset, paddingBottom: GLASS_TAB_BAR.inset + (floating ? 0 : safe) }}>
         <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel ?? tr('glass.tabs')} style={styles.tabRow}>
-          {/* Indicateur de l'onglet actif : glisse d'un onglet à l'autre (position absolue, sans enfant) */}
+          {/* LENTILLE de l'onglet actif (référence 03 / 04, 21/11/2026) : verre bombé qui glisse d'un onglet à l'autre —
+              reflet clair en haut, arête lumineuse, lueur interne douce du thème (`tokens.glow`) au centre. Décor seul :
+              le rendu des pictogrammes d'onglet reste celui de `TabItem`. Nuit : lentille plate, sans lueur. */}
           <Animated.View pointerEvents="none" testID={`${testID}-indicator`}
-            style={[styles.indicator, { borderRadius: GLASS_TAB_BAR.height / 2, backgroundColor: spec.indicator, borderColor: spec.indicatorEdge, boxShadow: spec.indicatorShadow }, indicator]} />
+            style={[styles.indicator, { borderRadius: GLASS_TAB_BAR.height / 2, backgroundColor: spec.indicator, borderColor: spec.indicatorEdge, boxShadow: spec.indicatorShadow, overflow: 'hidden' }, indicator]}>
+            {lensLit ? (
+              <>
+                <View style={[styles.lensGlow, { backgroundColor: theme.tokens.glow.soft, boxShadow: [{ offsetX: 0, offsetY: 0, blurRadius: 18, spreadDistance: 2, color: theme.tokens.glow.soft }] }]} testID={`${testID}-lens-glow`} />
+                <LinearGradient colors={[spec.highlight[0], spec.highlight[1]]} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.lensSheen} />
+                <View style={[StyleSheet.absoluteFill, { borderRadius: GLASS_TAB_BAR.height / 2, borderTopWidth: 1, borderColor: theme.tokens.glow.edge, opacity: 0.7 }]} />
+              </>
+            ) : null}
+          </Animated.View>
           {tabs.slice(0, split).map(item)}
           {center ? <View style={styles.center}>{center}</View> : null}
           {tabs.slice(split).map(item)}
@@ -271,6 +284,8 @@ const styles = StyleSheet.create({
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 },
   center: { marginHorizontal: spacing.xs, alignItems: 'center', justifyContent: 'center' },
   indicator: { position: 'absolute', left: 0, top: 0, bottom: 0, borderWidth: StyleSheet.hairlineWidth },
+  lensGlow: { position: 'absolute', left: '22%', right: '22%', top: '18%', bottom: '30%', borderRadius: 999 },
+  lensSheen: { position: 'absolute', left: 0, right: 0, top: 0, height: '52%' },
   segRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 40 },
   segment: { flex: 1, minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm },
   ringTrack: { position: 'absolute', left: 0, alignItems: 'center', justifyContent: 'center' },

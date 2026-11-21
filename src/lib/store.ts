@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { DEFAULT_PALETTE, migratePalette, type PaletteChoice, type ProfileKind } from '@/theme/tokens';
+import { DEFAULT_PALETTE, migratePalette, PALETTE_NAMES, type PaletteChoice, type PaletteName, type ProfileKind } from '@/theme/tokens';
 import { migrateToolIds } from '@/lib/domain/toolFavorites';
 
 export type ActiveSubject =
@@ -15,7 +15,7 @@ export type ActiveSubject =
 /** Apparence choisie : Système, Clair, Sombre. `auto` (ancien : clair/sombre selon l'heure) et `night` (thème des soins
  *  nocturnes) restent acceptés à l'exécution pour les données déjà enregistrées et les scénarios de test. */
 export type ThemePreference = 'auto' | 'system' | 'light' | 'dark' | 'night';
-/** Palette : une des cinq palettes v6, ou « adaptive » (suit le profil affiché). Anciennes valeurs migrées à la restauration. */
+/** Thème : un des huit thèmes v7, ou « adaptive » (suit le profil affiché). Anciennes valeurs migrées à la restauration. */
 export type PalettePreference = PaletteChoice;
 export interface AppearancePrefs { theme: ThemePreference; palette: PalettePreference }
 
@@ -23,8 +23,24 @@ interface UiState {
   themePreference: ThemePreference;
   palettePreference: PalettePreference;
   setPalette: (p: PalettePreference) => void;
+  /**
+   * APERÇU du sélecteur « Personnaliser l'accueil » (jamais enregistré) : le thème touché s'affiche partout, tout de
+   * suite ; « Appliquer le thème » l'enregistre (`applyThemePreview`), fermer le panneau rétablit le thème confirmé
+   * (`cancelThemePreview`). Un relancement repart toujours du thème confirmé.
+   */
+  themePreview: PaletteName | null;
+  previewTheme: (p: PaletteName) => void;
+  applyThemePreview: () => void;
+  cancelThemePreview: () => void;
   /** Rétablir par défaut : Système + palette par défaut, pour le compte actif. */
   resetAppearance: () => void;
+  /** Présentation d'Aura déjà vue, PAR COMPTE (identifiant → vrai) : elle ne s'affiche qu'une fois par personne. */
+  auraIntroSeen: Record<string, boolean>;
+  markAuraIntroSeen: (userId: string) => void;
+  /** Relance demandée (réglages d'Aura, aide) — jamais persistée. */
+  auraIntroRequested: boolean;
+  requestAuraIntro: () => void;
+  clearAuraIntroRequest: () => void;
   /**
    * Profil affiché, résolu (moi, grossesse, enfant, post-partum, famille) : écrit par `AdaptiveProfileSync` à partir du
    * sélecteur de profil ; lu par le thème en mode Adaptatif. Conservé pour éviter un changement de couleurs au lancement.
@@ -145,7 +161,7 @@ interface UiState {
 
 const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: DEFAULT_PALETTE };
 
-/** Préférences d'apparence enregistrées : palettes v3 / v4 et Auto → palette par défaut, choix v6 conservés, par compte ; le choix
+/** Préférences d'apparence enregistrées : anciennes palettes (v3, v4, v6) → thème le plus proche, choix v7 conservés, par compte ; le choix
  *  Système / Clair / Sombre est conservé tel quel (pur, testé). */
 export function migrateAppearance<S extends Pick<UiState, 'palettePreference' | 'appearanceByUser'>>(st: S): S {
   const byUser: Record<string, AppearancePrefs> = {};
@@ -163,8 +179,21 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       themePreference: 'system', // v2 : suit le réglage clair / sombre du téléphone
-      palettePreference: DEFAULT_PALETTE, // v6 : « Rose poudré et pêche » par défaut
-      setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
+      palettePreference: DEFAULT_PALETTE, // v7 : Olive HOMI pour une nouvelle installation (les choix existants sont migrés)
+      setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, themePreview: null, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
+      themePreview: null,
+      previewTheme: (p) => set((st) => ((PALETTE_NAMES as string[]).includes(p) && st.themePreview !== p ? { themePreview: p } : {})),
+      applyThemePreview: () => set((st) => {
+        if (!st.themePreview) return {};
+        const palettePreference: PalettePreference = st.themePreview;
+        return { palettePreference, themePreview: null, appearanceByUser: withOwner(st, { palette: palettePreference }) };
+      }),
+      cancelThemePreview: () => set((st) => (st.themePreview ? { themePreview: null } : {})),
+      auraIntroSeen: {},
+      markAuraIntroSeen: (userId) => set((st) => (st.auraIntroSeen[userId] && !st.auraIntroRequested ? {} : { auraIntroSeen: { ...st.auraIntroSeen, [userId]: true }, auraIntroRequested: false })),
+      auraIntroRequested: false,
+      requestAuraIntro: () => set({ auraIntroRequested: true }),
+      clearAuraIntroRequest: () => set((st) => (st.auraIntroRequested ? { auraIntroRequested: false } : {})),
       resetAppearance: () => set((st) => ({ themePreference: DEFAULT_APPEARANCE.theme, palettePreference: DEFAULT_APPEARANCE.palette, appearanceByUser: withOwner(st, DEFAULT_APPEARANCE) })),
       adaptiveProfile: 'me',
       setAdaptiveProfile: (adaptiveProfile) => set((st) => (st.adaptiveProfile === adaptiveProfile ? {} : { adaptiveProfile })),
@@ -177,7 +206,7 @@ export const useUiStore = create<UiState>()(
           return { appearanceOwner: userId, appearanceByUser: { ...st.appearanceByUser, [userId]: { theme: st.themePreference, palette: migratePalette(st.palettePreference) } } };
         }
         const saved = st.appearanceByUser[userId] ?? DEFAULT_APPEARANCE;
-        return { appearanceOwner: userId, themePreference: saved.theme, palettePreference: migratePalette(saved.palette) };
+        return { appearanceOwner: userId, themePreference: saved.theme, palettePreference: migratePalette(saved.palette), themePreview: null };
       }),
       skyOverride: null,
       setSkyOverride: (skyOverride) => set({ skyOverride }),
@@ -269,13 +298,14 @@ export const useUiStore = create<UiState>()(
     {
       name: 'toietmoi.ui',
       storage: createJSONStorage(() => AsyncStorage),
-      // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit
-      partialize: ({ nightMode: _n, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
+      // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit ; l'aperçu de thème non
+      // confirmé non plus (un relancement restaure exactement le thème APPLIQUÉ)
+      partialize: ({ nightMode: _n, themePreview: _p, auraIntroRequested: _a, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
       // À CHAQUE restauration, les choix enregistrés (compte actif et autres comptes de l'appareil) passent par
       // `migratePalette` : anciennes palettes (v3, v4, Auto) → palette par défaut, choix v6 conservés ; l'apparence est conservée
       // Favoris d'outils (17/11/2026) : les anciennes clés « thème:adresse » deviennent l'identifiant stable de l'outil
       merge: (persisted, current) => {
-        const next = migrateAppearance({ ...current, ...(persisted as Partial<UiState>) });
+        const next = { ...migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }), themePreview: null, auraIntroRequested: false };
         return { ...next, toolFavorites: migrateToolIds(next.toolFavorites), toolPinned: migrateToolIds(next.toolPinned), toolHidden: migrateToolIds(next.toolHidden) };
       },
     },

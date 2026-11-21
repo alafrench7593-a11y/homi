@@ -113,9 +113,10 @@ describe('couleurs en dur hors jetons', () => {
   });
 
   it('aucun composant ne connaît le nom d’une palette (réservé à src/theme, au store et à Réglages)', () => {
-    const NAMES = /\b(PALETTE_SPECS|PALETTE_NAMES|PaletteName|ADAPTIVE_PALETTE|resolvePalette)\b|\.palette\s*===|palette\s*===\s*['"](homi|lavande|nuit|sauge|champagne)['"]/;
+    const NAMES = /\b(PALETTE_SPECS|PALETTE_NAMES|PaletteName|ADAPTIVE_PALETTE|resolvePalette)\b|\.palette\s*===|palette\s*===\s*['"](nacre|graphite|sable|olive|lavande|glacier|rose|amethyste)['"]/;
     // galeries de QA (/dev/*) : elles MONTRENT chaque palette côte à côte (aucun écran de l'application)
-    const allowed = (rel: string) => rel === 'lib/store.ts' || rel.startsWith('app/settings/') || rel.startsWith('app/dev/') || rel.startsWith('features/dev/');
+    // sélecteur « Personnaliser l'accueil » (features/themePicker) : il PRÉSENTE les huit thèmes, comme Réglages
+    const allowed = (rel: string) => rel === 'lib/store.ts' || rel.startsWith('app/settings/') || rel.startsWith('app/dev/') || rel.startsWith('features/dev/') || rel.startsWith('features/themePicker/');
     const offenders = walk(SRC).map((f) => path.relative(SRC, f).split(path.sep).join('/'))
       .filter((rel) => !allowed(rel) && NAMES.test(fs.readFileSync(path.join(SRC, rel), 'utf8')));
     expect(offenders).toEqual([]);

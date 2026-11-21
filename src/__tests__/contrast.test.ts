@@ -1,5 +1,5 @@
 /**
- * Accessibilité : contrastes AA (WCAG 2.1) de HOMI v6 — CINQ palettes, en clair, en sombre et en nuit (interne).
+ * Accessibilité : contrastes AA (WCAG 2.1) de HOMI v7 — HUIT thèmes, en clair, en sombre et en nuit (interne).
  *
  * Pour CHAQUE palette et CHAQUE apparence : texte, texte secondaire, liens (primaire), accent rare et les quatre
  * statuts ≥ 4,5:1 sur le fond et chaque surface (carte, surface élevée, creux, teintes de carte, indicateur de
@@ -15,7 +15,7 @@ jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityI
 
 import {
   ADAPTIVE_PALETTE, bannerColors, buildTheme, DEFAULT_PALETTE, IDENTITY, innerLight, LEGACY_PALETTE, migratePalette, NEUTRALS, PALETTE_NAMES,
-  PALETTE_SPECS, PALETTES, PROFILE_KINDS, resolvePalette, SIGNATURE_PALETTE, themeFor, themes, type PaletteName, type Theme, type ThemeName,
+  PALETTE_SPECS, PROFILE_KINDS, resolvePalette, SIGNATURE_PALETTE, THEME_STARTS, effectiveMode, themeFor, themes, type PaletteName, type Theme, type ThemeName,
 } from '@/theme/tokens';
 import { contrastRatio, over, parseColor, stack, type RGB } from '@/theme/contrast';
 import { BANNER_ICON, buttonColors, type ButtonVariant } from '@/components/ui';
@@ -156,92 +156,142 @@ describe.each(CASES)('palette %s, thème %s', (paletteName, mode) => {
   });
 });
 
-// Palette par défaut = identité v5 verrouillée (décision de la propriétaire, 16/11/2026) : ses valeurs ne changent pas
-// avec l'arrivée des palettes ; toute modification doit être volontaire (HOMI_DESIGN_SYSTEM.md et ce test).
-it('palette par défaut : identité HOMI v5 (couleurs verrouillées)', () => {
-  expect(IDENTITY).toEqual({
-    coral: '#F2826F', coralDeep: '#B5452F', coralGlow: '#FFA08A',
-    rose: '#EC7E9C', roseDeep: '#A8365F', roseGlow: '#F4A3C0',
-    lilac: '#B9A6F2', lilacDeep: '#6A4FB8', lilacGlow: '#C9B6FF',
-    plum: '#2A1621', plumAction: '#3B1D2C',
+// Thèmes v7 (brief de la propriétaire, 21/11/2026) : couleurs de DÉPART reprises telles quelles (fond / surface / accent /
+// texte), ordre du sélecteur, défaut d'une nouvelle installation. Toute modification doit être volontaire (ce test et
+// docs/THEMES_AURA.md).
+it('huit thèmes : couleurs de départ de la propriétaire, ordre du sélecteur, Olive HOMI par défaut', () => {
+  expect(PALETTE_NAMES).toEqual(['nacre', 'graphite', 'sable', 'olive', 'lavande', 'glacier', 'rose', 'amethyste']);
+  expect(SIGNATURE_PALETTE).toBe('olive');
+  expect(DEFAULT_PALETTE).toBe('olive');
+  expect(themes.light).toBe(themeFor('light', 'olive'));
+  expect(THEME_STARTS).toEqual({
+    nacre: { bg: '#F4F5F8', surface: '#FFFFFF', accent: '#424957', text: '#191D26' },
+    graphite: { bg: '#111214', surface: '#24262B', accent: '#E3E5EB', text: '#F5F6F8' },
+    sable: { bg: '#F6EDE2', surface: '#FFF6E9', accent: '#674B36', text: '#2D2119' },
+    olive: { bg: '#EBEDDF', surface: '#F8F5E8', accent: '#485532', text: '#252D1A' },
+    lavande: { bg: '#F7F4FB', surface: '#EDE4F6', accent: '#674A8B', text: '#352345' },
+    glacier: { bg: '#EDF4FA', surface: '#DBE9F4', accent: '#315B79', text: '#172C3B' },
+    rose: { bg: '#FAF0F3', surface: '#F3DDE5', accent: '#854964', text: '#392331' },
+    amethyste: { bg: '#181426', surface: '#272138', accent: '#CBB5F1', text: '#F4EDF9' },
   });
-  expect(themes.light.colors.background).toBe('#FBF4F2');
-  expect(themes.light.colors.surface).toBe('#FFFFFF');
-  expect(themes.light.colors.text).toBe('#2A1621');
-  expect(themes.dark.colors.background).toBe('#1A1217');
-  expect(themes.light.tokens.action.fill).toBe('#3B1D2C');
-  expect(themes.dark.tokens.action.fill).toBe('#FFA08A');
-  expect(PALETTE_NAMES).toEqual(['homi', 'lavande', 'nuit', 'sauge', 'champagne']);
-  expect(SIGNATURE_PALETTE).toBe('homi');
-  expect(DEFAULT_PALETTE).toBe('homi');
-  expect(themes.light).toBe(themeFor('light', 'homi'));
-  expect(themes.light.colors.textMuted).toBe('#6E5562');
-  expect(themes.light.colors.primary).toBe('#B5452F');
-  expect(themes.dark.colors.surface).toBe('#241A20');
-  expect(themes.dark.colors.text).toBe('#F6ECEF');
-  expect(themes.night.colors.background).toBe('#0E0A0C');
-  expect(PALETTES.homi).toEqual({ ink: ['#B5452F', '#A8365F'], glow: ['#FFA08A', '#F4A3C0'] });
-  expect(themes.light.tokens.status).toEqual({ success: '#1B6B3A', warning: '#8A4B00', danger: '#B3111B', info: '#1D5AA6' });
-  expect(themes.dark.tokens.status).toEqual({ success: '#8BE0A6', warning: '#F7C770', danger: '#FF6B6B', info: '#9CC4FF' });
+  for (const p of PALETTE_NAMES) {
+    const start = THEME_STARTS[p];
+    // thème clair : couleurs de départ dans le jeu clair ; thème sombre par nature : dans le jeu sombre, même en « Clair »
+    const t = buildTheme('light', p);
+    expect(t.isDark).toBe(PALETTE_SPECS[p].scheme === 'dark');
+    expect([t.colors.background, t.colors.surface, t.colors.primary, t.colors.text]).toEqual([start.bg, start.surface, start.accent, start.text]);
+    // l'action principale est l'accent du thème (bouton « J'accepte » de la référence)
+    expect(t.tokens.action.fill).toBe(start.accent);
+  }
+  // identité v5 conservée comme noms (anciens imports, logo, illustrations)
+  expect(IDENTITY.coral).toBe('#F2826F');
+  expect(NEUTRALS.ivory).toBe('#FBF4F2');
 });
 
-it('halo corail : jeton dédié (corail → rose → lilas), éteint la nuit', () => {
-  expect(themes.light.tokens.halo).toMatchObject({ color: IDENTITY.coral, color2: IDENTITY.rose, color3: IDENTITY.lilac });
+it('contraste ≥ 4,5:1 des couleurs de la propriétaire : texte / fond, texte / surface, texte sur accent, accent / fond', () => {
+  const failures: string[] = [];
+  for (const p of PALETTE_NAMES) {
+    for (const mode of ['light', 'dark'] as const) {
+      const t = buildTheme(mode, p);
+      const pairs: [string, string, string][] = [
+        ['texte / fond', t.colors.text, t.colors.background],
+        ['texte / surface', t.colors.text, t.colors.surface],
+        ['texte secondaire / surface', t.colors.textMuted, t.colors.surface],
+        ['texte sur accent', t.tokens.text.onAccent, t.tokens.accent.accent],
+        ['accent / fond', t.tokens.accent.accent, t.colors.background],
+        ['accent / surface', t.tokens.accent.accent, t.colors.surface],
+      ];
+      for (const [k, fg, bg] of pairs) { const r = contrastRatio(fg, bg); if (r < AA) failures.push(`${p} ${mode} ${k} : ${r.toFixed(2)}`); }
+    }
+  }
+  expect(failures).toEqual([]);
+});
+
+it('lueur interne : un jeton par thème et par apparence (décor), éteinte la nuit', () => {
+  for (const p of PALETTE_NAMES) {
+    for (const mode of ['light', 'dark'] as const) {
+      const g = buildTheme(mode, p).tokens.glow;
+      expect(parseColor(g.inner).a).toBe(1);
+      expect(parseColor(g.soft).a).toBeLessThan(1);
+    }
+    expect(parseColor(buildTheme('night', p).tokens.glow.soft).a).toBeLessThan(0.2);
+  }
+});
+
+it('halo : jeton dédié aux teintes du thème, éteint la nuit', () => {
+  expect(themes.light.tokens.halo).toMatchObject({ color: PALETTE_SPECS.olive.decor[0], color2: PALETTE_SPECS.olive.decor[1], color3: PALETTE_SPECS.olive.decor[2] });
   expect(themes.light.tokens.halo.intensity).toBeGreaterThan(0);
   expect(themes.dark.tokens.halo.intensity).toBeGreaterThan(0);
   expect(themes.night.tokens.halo.intensity).toBe(0);
 });
 
-it('neutres paramétrés par palette : fonds, surfaces et texte teintés, tous différents d’une palette à l’autre', () => {
+it('neutres paramétrés par thème : fonds, texte et accents différents d’un thème à l’autre', () => {
+  const light = PALETTE_NAMES.filter((p) => PALETTE_SPECS[p].scheme === 'light');
   for (const mode of ['light', 'dark'] as const) {
-    const of = (f: (t: Theme) => string) => new Set(PALETTE_NAMES.map((p) => f(buildTheme(mode, p)))).size;
-    expect(of((t) => t.colors.background)).toBe(PALETTE_NAMES.length);
-    expect(of((t) => t.colors.text)).toBe(PALETTE_NAMES.length);
-    expect(of((t) => t.colors.textMuted)).toBe(PALETTE_NAMES.length);
-    expect(of((t) => t.colors.surfaceAlt)).toBe(PALETTE_NAMES.length);
-    expect(of((t) => t.colors.border)).toBe(PALETTE_NAMES.length);
-    expect(of((t) => t.colors.primary)).toBe(PALETTE_NAMES.length);
-    expect(of((t) => t.tokens.action.fill)).toBe(PALETTE_NAMES.length);
+    const names = mode === 'light' ? light : PALETTE_NAMES;
+    const of = (f: (t: Theme) => string) => new Set(names.map((p) => f(buildTheme(mode, p)))).size;
+    expect(of((t) => t.colors.background)).toBe(names.length);
+    expect(of((t) => t.colors.text)).toBe(names.length);
+    expect(of((t) => t.colors.textMuted)).toBe(names.length);
+    expect(of((t) => t.colors.border)).toBe(names.length);
+    expect(of((t) => t.colors.primary)).toBe(names.length);
+    expect(of((t) => t.tokens.action.fill)).toBe(names.length);
   }
   for (const p of PALETTE_NAMES) {
-    // sombre : jamais noir pur, mais profond ; clair : très lumineux, jamais blanc pur (le blanc est la surface)
+    // sombre : jamais noir pur, mais profond
     const [r, g, b] = parseColor(buildTheme('dark', p).colors.background).rgb;
     expect(Math.max(r, g, b)).toBeGreaterThan(16);
     expect(Math.max(r, g, b)).toBeLessThan(48);
-    const [R, G, B] = parseColor(buildTheme('light', p).colors.background).rgb;
-    expect(Math.min(R, G, B)).toBeGreaterThan(232);
-    expect(buildTheme('light', p).colors.background).not.toBe('#FFFFFF');
-    // jeu complet : clair, sombre et nuit
-    expect(Object.keys(PALETTE_SPECS[p]).sort()).toEqual(['dark', 'decor', 'light', 'night', 'wash']);
+    if (PALETTE_SPECS[p].scheme === 'light') {
+      const [R, G, B] = parseColor(buildTheme('light', p).colors.background).rgb;
+      expect(Math.min(R, G, B)).toBeGreaterThan(220);
+      expect(buildTheme('light', p).colors.background).not.toBe('#FFFFFF');
+    }
+    // jeu complet : clair, sombre et nuit, lueur, aperçu du sélecteur
+    expect(Object.keys(PALETTE_SPECS[p]).sort()).toEqual(['dark', 'decor', 'glow', 'light', 'night', 'scheme', 'swatch', 'wash']);
   }
 });
 
-it('mode Adaptatif : correspondance fixe profil → palette, une palette par profil', () => {
-  expect(ADAPTIVE_PALETTE).toEqual({ me: 'homi', pregnancy: 'lavande', child: 'sauge', postpartum: 'champagne', family: 'nuit' });
-  expect(new Set(PROFILE_KINDS.map((k) => ADAPTIVE_PALETTE[k])).size).toBe(PALETTE_NAMES.length);
+it('mode Adaptatif : correspondance fixe profil → thème, un thème par profil', () => {
+  expect(ADAPTIVE_PALETTE).toEqual({ me: 'rose', pregnancy: 'lavande', child: 'olive', postpartum: 'sable', family: 'glacier' });
+  expect(new Set(PROFILE_KINDS.map((k) => ADAPTIVE_PALETTE[k])).size).toBe(PROFILE_KINDS.length);
   for (const k of PROFILE_KINDS) expect(resolvePalette('adaptive', k)).toBe(ADAPTIVE_PALETTE[k]);
-  expect(resolvePalette('adaptive', null)).toBe('homi');
-  // une palette fixe ne suit pas le profil ; une ancienne préférence reste sur la palette par défaut
-  expect(resolvePalette('sauge', 'pregnancy')).toBe('sauge');
-  expect(resolvePalette('lilas', 'pregnancy')).toBe('homi');
-  expect(resolvePalette(undefined, 'family')).toBe('homi');
+  expect(resolvePalette('adaptive', null)).toBe('olive');
+  // un thème fixe ne suit pas le profil ; une ancienne préférence devient le thème le plus proche
+  expect(resolvePalette('glacier', 'pregnancy')).toBe('glacier');
+  expect(resolvePalette('sauge', 'pregnancy')).toBe('olive');
+  expect(resolvePalette('lilas', 'pregnancy')).toBe('rose');
+  expect(resolvePalette(undefined, 'family')).toBe('olive');
 });
 
-it('le fond sombre par défaut est un prune-anthracite (jamais noir pur), le fond clair un ivoire rosé', () => {
-  const [r, g, b] = parseColor(themes.dark.colors.background).rgb;
+it('Noir graphite et Nuit améthyste sont sombres par nature ; les autres suivent l’apparence', () => {
+  for (const p of PALETTE_NAMES) {
+    const dark = PALETTE_SPECS[p].scheme === 'dark';
+    expect(effectiveMode('light', p)).toBe(dark ? 'dark' : 'light');
+    expect(effectiveMode('dark', p)).toBe('dark');
+    expect(effectiveMode('night', p)).toBe('night');
+  }
+  expect(PALETTE_NAMES.filter((p) => PALETTE_SPECS[p].scheme === 'dark')).toEqual(['graphite', 'amethyste']);
+});
+
+it('Rose poudré (héritier de l’identité v5) : sombre prune-anthracite (jamais noir pur), clair rosé', () => {
+  const [r, g, b] = parseColor(buildTheme('dark', 'rose').colors.background).rgb;
   expect(Math.max(r, g, b)).toBeGreaterThan(16); // pas noir pur
   expect(r).toBeGreaterThan(g); // teinte prune (rouge + bleu > vert)
   expect(b).toBeGreaterThan(g);
-  const [R, G, B] = parseColor(themes.light.colors.background).rgb;
+  const [R, G, B] = parseColor(buildTheme('light', 'rose').colors.background).rgb;
   expect(R).toBeGreaterThan(G); expect(R).toBeGreaterThan(B); // rosé
   expect(Math.min(R, G, B)).toBeGreaterThan(235); // très clair
 });
 
-it('migration : toute ancienne palette (v3, v4, Auto, inconnue) devient la palette par défaut ; un choix v6 est conservé', () => {
-  for (const old of ['auto', 'peche', 'lilas', 'lagune', 'ambre', 'turquoise', 'menthe', 'aurore', 'iris', 'crepuscule', 'inconnue', null, undefined]) {
-    expect(migratePalette(old)).toBe('homi');
-  }
-  for (const v of Object.values(LEGACY_PALETTE)) expect(v).toBe('homi');
+it('migration : chaque ancienne palette devient le thème le plus proche ; un choix v7 est conservé ; rien → défaut', () => {
+  // v6 → thème le plus proche (sans perdre le choix de la personne)
+  expect([migratePalette('homi'), migratePalette('lavande'), migratePalette('nuit'), migratePalette('sauge'), migratePalette('champagne')])
+    .toEqual(['rose', 'lavande', 'glacier', 'olive', 'sable']);
+  // v3 / v4 / Auto : lues comme « Rose poudré et pêche » en v6 → Rose poudré
+  for (const old of ['auto', 'peche', 'lilas', 'lagune', 'ambre', 'turquoise', 'menthe', 'aurore', 'iris', 'crepuscule']) expect(migratePalette(old)).toBe('rose');
+  // nouvelle installation, valeur inconnue : Olive HOMI
+  for (const v of ['inconnue', null, undefined, '']) expect(migratePalette(v)).toBe('olive');
   for (const p of PALETTE_NAMES) { expect(migratePalette(p)).toBe(p); expect(Object.keys(LEGACY_PALETTE)).not.toContain(p); }
   expect(migratePalette('adaptive')).toBe('adaptive');
 });
