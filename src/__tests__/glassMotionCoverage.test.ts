@@ -5,11 +5,12 @@
  *  - listes vivantes : pas d'animation au montage, état immédiat avec Réduire les animations, fondu court la nuit ;
  *  - l'assistante s'appelle « Aura » partout dans les textes visibles (5 langues, mentions, avertissement du serveur).
  */
-import { execFileSync } from 'child_process';
 
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 import { listItemMotion, LIST_MOTION } from '@/motion/ListMotion';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { execFileSync } = require('child_process') as { execFileSync(cmd: string, args: string[], o: { encoding: 'utf8' }): string };
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs') as { readFileSync(p: string, e: 'utf8'): string; readdirSync(p: string): string[] };
 
