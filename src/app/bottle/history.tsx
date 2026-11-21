@@ -19,6 +19,8 @@ import { copyText } from '@/features/bottle';
 import { BottleStatsTiles } from '@/features/bottleStats';
 import { MorphTarget } from '@/motion/Morph';
 import { FeedingJournal } from '@/features/feeding/FeedingJournal';
+import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
+import { bottleAggregate } from '@/features/aura/analysis';
 import { FeedingChildPicker, useFeedingChild } from '@/features/feeding/ui';
 import { useDeleteRow, useActiveSubject } from '@/lib/data/hooks';
 import { useBottleChildren, useBottleHistory, useRecorderLabel } from '@/lib/data/hooks-bottle';
@@ -186,6 +188,7 @@ function BottlesOnlyHistory() {
         </>
       ) : null}
 
+      {!isLoading && !loadError && !nothing ? <AuraAnalysis kind="bottle" data={bottleAggregate(bottles ?? [], child?.birth_date)} /> : null}
       <SecondaryButton label={tr('u6.bhist.summary_btn')} icon="file-text" disabled={!child || isLoading || nothing} onPress={openSummary} testID="bottle-history-summary" />
       <Text variant="caption" muted>{tr('u6.bhist.disclaimer')}</Text>
     </View>

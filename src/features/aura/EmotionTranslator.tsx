@@ -20,9 +20,12 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { MAX_QUESTION_LENGTH } from '../../../supabase/functions/_shared/assistant-format';
 import type { AuraMode } from './model';
+import type { TranslatorGoal } from './translator';
 
-export function EmotionTranslator({ mode, cost, initialDraft, initialSituation, reformulate }: {
+export function EmotionTranslator({ mode, cost, initialDraft, initialSituation, reformulate, goal = 'reformulate' }: {
   mode: AuraMode; cost: number; initialDraft?: string; initialSituation?: Situation | null;
+  /** Aide demandée depuis « Se comprendre » : reformuler, exprimer un besoin calmement, préparer une discussion. */
+  goal?: TranslatorGoal;
   /** Demande de 3 reformulations (null : échec déjà signalé par l'écran). */
   reformulate: (draft: string) => Promise<string[] | null>;
 }) {
@@ -54,15 +57,16 @@ export function EmotionTranslator({ mode, cost, initialDraft, initialSituation, 
 
   return (
     <View style={{ gap: spacing.sm }} testID="aura-translator">
-      <Text weight="bold" accessibilityRole="header">{tr('aura.ref.title')}</Text>
-      <Text variant="small" muted>{local ? tr('aura.ref.local') : tr('aura.ref.body')}</Text>
+      <Text weight="bold" accessibilityRole="header" testID="aura-ref-goal">{goal === 'reformulate' ? tr('aura.ref.title') : tr(`sa.und.${goal}` as never)}</Text>
+      <Text variant="small" muted>{local ? tr('aura.ref.local') : goal === 'reformulate' ? tr('aura.ref.body') : tr(`sa.und.${goal}.hint` as never)}</Text>
+      <Text variant="caption" muted testID="aura-ref-draft-note">{tr('sa.und.draftNote')}</Text>
       {local ? (
         <Row wrap>
           {SITUATIONS.map((s) => <Chip key={s} label={tr(situationTitle(s))} selected={situation === s} onPress={() => { setSituation(s); setPicked(null); }} testID={`aura-ref-situation-${s}`} />)}
         </Row>
       ) : (
         <>
-          <Field label={tr('aura.ref.field')} value={draft} onChangeText={setDraft} multiline maxLength={MAX_QUESTION_LENGTH} style={{ minHeight: 96, textAlignVertical: 'top' }} testID="aura-ref-draft" />
+          <Field label={goal === 'reformulate' ? tr('aura.ref.field') : tr(`sa.und.${goal}.field` as never)} value={draft} onChangeText={setDraft} multiline maxLength={MAX_QUESTION_LENGTH} style={{ minHeight: 96, textAlignVertical: 'top' }} testID="aura-ref-draft" />
           <Button label={tr('aura.ref.go', { count: cost })} icon="feather" variant="secondary" full loading={busy} disabled={draft.trim().length < 2} onPress={() => void ask()} testID="aura-ref-go" />
         </>
       )}

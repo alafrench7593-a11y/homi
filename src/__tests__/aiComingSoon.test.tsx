@@ -14,10 +14,9 @@ import { AiComingSoonCard } from '@/features/AiComingSoon';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 
 describe('assistant IA bientôt disponible', () => {
-  it('interrupteur par défaut : coupé en production (les autres tests l’allument)', () => {
-    // la valeur écrite dans src/config/features.ts est false ; jest-setup-features.js l'allume pour les autres tests
+  it('interrupteur par défaut : Aura en ligne (ouverte le 21/11/2026 avec l’accord de la propriétaire)', () => {
     const src = require('fs').readFileSync(require('path').resolve('src/config/features.ts'), 'utf8') as string;
-    expect(src).toMatch(/aiAssistantOnline:\s*false/);
+    expect(src).toMatch(/aiAssistantOnline:\s*true/);
   });
   it('carte « Bientôt disponible » : titre, articles, bibliothèque', async () => {
     FEATURES.aiAssistantOnline = false;

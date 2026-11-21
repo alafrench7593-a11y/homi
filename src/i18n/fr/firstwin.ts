@@ -100,7 +100,7 @@ export const firstwin = {
   'fw.pw.terms': 'Conditions',
   'fw.pw.privacy': 'Confidentialité',
   'fw.pw.resume': 'Ton compte est prêt. Confirme ta formule pour démarrer.',
-  'fw.pw.accountNote': 'Compte créé juste avant de payer.',
+  'fw.pw.accountNote': 'Ton compte se crée à l’étape suivante, avant tout paiement.',
   'fw.pw.retry': 'Réessayer',
   'fw.pw.loading': 'Chargement des offres de l’App Store…',
   'fw.pw.offline': 'Pas de connexion : les prix ne peuvent pas être affichés. L’achat reste désactivé.',

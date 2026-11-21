@@ -4,7 +4,8 @@
  * schémas fermés, nombres bornés, listes de mots-clés courts, textes tronqués, aucun nom ni identifiant.
  * Rien n'est enregistré : les données servent à une seule réponse.
  */
-export const AURA_ANALYSIS_KINDS = ['sleep', 'cycle', 'mood', 'diary', 'load'] as const;
+// 'bottle' (21/11/2026, ticket 5) : biberons des 7 derniers jours, agrégats seulement (facturé comme « tool_analysis »)
+export const AURA_ANALYSIS_KINDS = ['sleep', 'cycle', 'mood', 'diary', 'load', 'bottle'] as const;
 export type AuraAnalysisKind = (typeof AURA_ANALYSIS_KINDS)[number];
 
 export const MAX_JOURNAL_ENTRIES = 14;
@@ -43,6 +44,12 @@ export function sanitizeAnalysis(kind: AuraAnalysisKind, raw: unknown): Record<s
       out = {
         age_months: num(d.age_months, 0, 72), days_noted: num(d.days_noted, 0, 14), avg_night_minutes: num(d.avg_night_minutes, 0, 900),
         avg_naps: num(d.avg_naps, 0, 8, 1), avg_nap_minutes: num(d.avg_nap_minutes, 0, 600), avg_wakeups: num(d.avg_wakeups, 0, 20, 1), usual_bedtime: hm(d.usual_bedtime),
+      };
+      break;
+    case 'bottle':
+      out = {
+        window_days: num(d.window_days, 1, 14), days_noted: num(d.days_noted, 0, 14), age_months: num(d.age_months, 0, 72),
+        avg_bottles_per_day: num(d.avg_bottles_per_day, 0, 24, 1), avg_ml_per_day: num(d.avg_ml_per_day, 0, 3000), avg_gap_minutes: num(d.avg_gap_minutes, 0, 1440),
       };
       break;
     case 'cycle':

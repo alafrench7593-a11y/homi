@@ -57,14 +57,15 @@ import { AuraBot } from './AuraBot';
 import { useAuraBot, type AuraBotState } from './useAuraBot';
 import { EmotionTranslator } from './EmotionTranslator';
 import { JournalPicker } from './JournalPicker';
-import { askAura, classifyAuraError, type AuraErrorKind, type AuraServerReply } from './api';
+import { askAura, auraErrorAction, classifyAuraError, type AuraErrorKind, type AuraServerReply } from './api';
 import { AuraThinkingDots } from './AuraMark';
 import { auraToolContext } from './intro';
-import { canSpeak, dictationMode, speak, startBrowserDictation, stopSpeaking, type DictationHandle } from './voice';
+import { toTranslatorGoal } from './translator';
+import { canSpeak, dictationMode, nextDictationPhase, speak, startBrowserDictation, stopSpeaking, voiceStatus, type DictationHandle, type DictationPhase } from './voice';
 import { useAuth } from '@/lib/auth';
 import { useUiStore } from '@/lib/store';
 import {
-  auraMode, catalogForServer, creditActionFor, defaultThemeFor, featuredFor, localReply, themeName, themeSuggestions, toAuraTheme,
+  auraMode, catalogForServer, creditActionFor, defaultThemeFor, featuredFor, localReply, searchForAura, themeName, themeSuggestions, toAuraTheme,
   type AuraAction, type AuraMode, type AuraTheme, type LocalReply,
 } from './model';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -102,7 +103,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const motion = useMotion();
   const insets = useSafeAreaInsets();
   const { height: winH } = useWindowDimensions();
-  const params = useLocalSearchParams<{ theme?: string; q?: string; mode?: string; draft?: string; situation?: string; tool?: string; voice?: string; focus?: string }>();
+  const params = useLocalSearchParams<{ theme?: string; q?: string; mode?: string; draft?: string; situation?: string; tool?: string; voice?: string; focus?: string; goal?: string }>();
   // Entrée contextuelle depuis un outil : identifiant d'outil RÉEL du catalogue, sinon aucun contexte (jamais de lien inventé)
   const toolCtx = auraToolContext(typeof params.tool === 'string' ? params.tool : null);
   const toolName = toolCtx ? tr(toolCtx.labelKey) : '';
@@ -156,8 +157,12 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const dictation = dictationMode();
   const ttsAvailable = canSpeak();
   const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const [listening, setListening] = useState(false);
+  const [phase, setPhase] = useState<DictationPhase>('idle');
+  const listening = phase === 'listening' || phase === 'processing';
+  const setListening = (on: boolean) => setPhase((p) => (on ? 'listening' : p === 'listening' || p === 'processing' ? 'idle' : p));
   const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const dictated = useRef('');
+  const [consentSheet, setConsentSheet] = useState<{ retry?: () => void } | null>(null);
   const dictationRef = useRef<DictationHandle | null>(null);
   const beforeDictation = useRef('');
   const stopVoice = () => {
@@ -180,17 +185,29 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     if (!ok) setVoiceNote(tr('ta.voice.ttsOff'));
   }
   function onMic() {
-    if (listening) { dictationRef.current?.stop(); return; }
+    // « Arrêter » : la transcription se termine (phase « traitement ») jusqu'à la fin annoncée par le navigateur
+    if (listening) { setPhase((p) => nextDictationPhase(p, 'stop')); dictationRef.current?.stop(); return; }
     stopSpeaking(); setSpeakingId(null);
     setVoiceNote(null);
     if (dictation === 'browser') {
       beforeDictation.current = input;
+      dictated.current = '';
       const h = startBrowserDictation({
-        onText: (text) => setInput(text),
-        onError: (e) => setVoiceNote(tr(e === 'denied' ? 'ta.voice.denied' : e === 'no-speech' ? 'ta.voice.noSpeech' : 'aura.err.unavailable')),
-        onEnd: () => { dictationRef.current = null; setListening(false); },
+        onText: (text) => { dictated.current = text; setInput(text); },
+        onError: (e) => { setPhase((p) => nextDictationPhase(p, 'error')); setVoiceNote(tr(e === 'denied' ? 'ta.voice.denied' : e === 'no-speech' ? 'ta.voice.noSpeech' : 'sa.voice.failed')); },
+        onEnd: () => {
+          dictationRef.current = null;
+          setPhase((p) => {
+            const n = nextDictationPhase(p, 'end', dictated.current.trim().length > 0);
+            if (n === 'done') setVoiceNote(tr('sa.voice.done'));
+            return n;
+          });
+        },
       });
-      if (h) { dictationRef.current = h; setListening(true); return; }
+      if (h) { dictationRef.current = h; setPhase('listening'); return; }
+      setPhase('error');
+      setVoiceNote(tr('sa.voice.failed'));
+      return;
     }
     // Téléphone : la dictée du CLAVIER remplit le champ (autorisation demandée par le système à sa première utilisation)
     inputRef.current?.focus();
@@ -199,8 +216,9 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   function cancelDictation() {
     dictationRef.current?.abort();
     dictationRef.current = null;
-    setListening(false);
+    setPhase((p) => nextDictationPhase(p, 'cancel'));
     setInput(beforeDictation.current);
+    setVoiceNote(tr('sa.voice.canceled'));
   }
   // La présentation d'Aura est vue dès qu'on ouvre Aura ; « Écrire » / « Parler » depuis la présentation : champ prêt
   const { session } = useAuth();
@@ -223,8 +241,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
 
   /** Réponse locale honnête : outils trouvés par mots (profil affiché, puis tous) et article le plus proche. */
   function local(question: string): LocalReply {
-    const s = searchCatalog(catalog, question);
-    const res = s.understood ? s : searchCatalog(allTools, question);
+    const res = searchForAura(catalog, allTools, question, searchCatalog);
     return localReply(res, index ? localAnswer(index, question, { asked: question, lang: getLocale(), region }) : null);
   }
 
@@ -234,6 +251,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     Keyboard.dismiss();
     stopVoice();
     setVoiceNote(null);
+    setPhase('idle');
     if (!opts.retryOf) { setInput(''); }
     haptic('light');
     const now = Date.now();
@@ -255,7 +273,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       return;
     }
     if (needsSub) { toast(tr(inTrial ? 'aura.sub.trial' : 'aura.sub.none'), 'info'); return; }
-    if (!consented) { toast(tr('aura.consent.needed'), 'info'); return; }
+    if (!consented) { setConsentSheet({ retry: () => void send(question, opts) }); return; }
     const action = creditActionFor('chat', { journal: !!opts.journal });
     const cost = costOf(action, creditConfig.data);
     if (credits.data?.subscribed && totalRemaining(credits.data) < cost) { setOutOfCredits(true); return; }
@@ -278,7 +296,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       }
     } catch (e) {
       const kind = classifyAuraError(e, online);
-      if (kind === 'credits') { setMsgs((all) => all.filter((m) => m.id !== auraId)); setOutOfCredits(true); }
+      if (kind === 'credits') { replace(auraId, { kind: 'error', error: 'credits', question, requestId: uuid(), journal: opts.journal }); setOutOfCredits(true); }
       else if (kind === 'off') { setServerOff(true); replace(auraId, local(question)); toast(tr('aura.err.off'), 'info'); }
       else replace(auraId, { kind: 'error', error: kind, question, requestId, journal: opts.journal });
     } finally {
@@ -291,7 +309,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     const safety = assessSafety(draft);
     if (safety.level !== 'none') { push({ id: `a${Date.now()}`, role: 'aura', reply: { kind: 'safety', level: safety.level, contacts: urgentContacts(safety.level, { lang: getLocale(), region } as never), message: '' } }); return null; }
     if (needsSub) { toast(tr(inTrial ? 'aura.sub.trial' : 'aura.sub.none'), 'info'); return null; }
-    if (!consented) { toast(tr('aura.consent.needed'), 'info'); return null; }
+    if (!consented) { setConsentSheet({}); return null; }
     try {
       const r = await askAura({ kind: 'reformulate', draft, theme: 'emotion_translator', lang: getLocale(), region, request_id: uuid(), credit_action: creditActionFor('reformulate') });
       if (r.safety && r.safety !== 'none') { push({ id: `a${Date.now()}`, role: 'aura', reply: { kind: 'safety', level: r.safety, contacts: r.urgent_contacts ?? [], message: r.answer ?? '' } }); return null; }
@@ -315,6 +333,14 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     void send(params.q);
   }, [index, consented, remote]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Pourquoi Aura répond sans IA (dit exactement, jamais une impasse) : choix de la personne, IA coupée par le serveur,
+  // ou Aura en ligne pas encore ouverte dans cette version de l'app (interrupteur aiAssistantOnline)
+  const localReason: 'chosen' | 'off' | 'soon' | null = mode !== 'local' ? null : forceLocal ? 'chosen' : serverOff ? 'off' : 'soon';
+  const voice = useMemo(() => voiceStatus(), []);
+  const acceptConsent = (retry?: () => void) => setConsent.mutate({ purpose: 'ai_assistant', granted: true }, {
+    onSuccess: () => { setConsentSheet(null); retry?.(); },
+    onError: (e) => toast(friendlyError(e), 'error'),
+  });
   const modeLabel = tr(mode === 'online' ? 'aura.mode.online' : mode === 'demo' ? 'aura.mode.demo' : 'aura.mode.local');
   const costLine = !remote ? tr('aura.free')
     : `${tr('aura.cost', { count: askCost })}${credits.data?.subscribed ? ` · ${tr('cr.balance.total', { count: totalRemaining(credits.data) })}` : ''}`;
@@ -363,6 +389,10 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           </View>
           <View style={{ alignSelf: 'stretch', backgroundColor: t.colors.surface, borderRadius: radius.lg, borderTopLeftRadius: empty ? radius.lg : 6, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
             <Text variant="small" testID="aura-hello">{tr(remote ? 'aura.hello' : 'aura.helloLocal')}</Text>
+            {localReason ? <Text variant="caption" muted testID="aura-local-reason" style={{ marginTop: 4 }}>{tr(`sa.aura.local.${localReason}` as never)}</Text> : null}
+            {localReason === 'chosen' && (aiAssistantOnline() || (isDemo && !hasRealBackend)) ? (
+              <Button label={tr('sa.aura.useAi')} icon="cloud" size="sm" variant="ghost" style={{ alignSelf: 'flex-start' }} onPress={() => setForceLocal(false)} testID="aura-use-ai" />
+            ) : null}
           </View>
         </View>
       </View>
@@ -388,7 +418,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       {theme ? <Text variant="label" accessibilityRole="header" testID="aura-theme">{tr(themeName(theme))}</Text> : null}
 
       {theme === 'emotion_translator' ? (
-        <EmotionTranslator mode={mode} cost={costOf('assistant_question', creditConfig.data)} reformulate={reformulate}
+        <EmotionTranslator mode={mode} cost={costOf(creditActionFor('reformulate'), creditConfig.data)} reformulate={reformulate} goal={toTranslatorGoal(params.goal)}
           initialDraft={typeof params.draft === 'string' ? params.draft.slice(0, MAX_QUESTION_LENGTH) : ''}
           initialSituation={(SITUATIONS as readonly string[]).includes(params.situation ?? '') ? (params.situation as Situation) : null} />
       ) : null}
@@ -438,13 +468,22 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
         <View style={{ gap: 4 }} testID="aura-composer">
           <Text variant="caption" muted center testID="aura-cost">{costLine}</Text>
           {!online && remote ? <Text variant="caption" color={t.colors.warning} center testID="aura-offline">{tr('aura.err.network')}</Text> : null}
+          {blockedByConsent ? (
+            <View testID="aura-blocked" accessibilityLiveRegion="polite" style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: spacing.xs }}>
+              <Text variant="caption" center style={{ flexBasis: '100%' }}>{tr(needsSub ? 'sa.aura.blockedSub' : 'sa.aura.blockedConsent')}</Text>
+              {needsSub
+                ? <Button label={tr('sa.aura.seeOffer')} icon="star" size="sm" onPress={() => router.push('/settings/subscription')} testID="aura-blocked-offer" />
+                : <Button label={tr('sa.aura.giveConsent')} icon="check" size="sm" onPress={() => setConsentSheet({})} testID="aura-blocked-consent" />}
+              <Button label={tr('aura.tryLocal')} icon="search" size="sm" variant="ghost" onPress={() => setForceLocal(true)} testID="aura-blocked-local" />
+            </View>
+          ) : null}
           {listening ? (
-            <View testID="aura-listening" accessibilityLiveRegion="polite" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs }}>
+            <View testID={phase === 'processing' ? 'aura-processing' : 'aura-listening'} accessibilityLiveRegion="polite" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs }}>
               <AuraThinkingDots color={t.colors.primary} />
-              <Text variant="caption" style={{ flex: 1 }}>{tr('ta.voice.listening')}</Text>
+              <Text variant="caption" style={{ flex: 1 }}>{tr(phase === 'processing' ? 'sa.voice.processing' : 'ta.voice.listening')}</Text>
               <Button label={tr('ta.voice.cancel')} variant="ghost" size="sm" onPress={cancelDictation} testID="aura-mic-cancel" />
             </View>
-          ) : voiceNote ? <Text variant="caption" muted center testID="aura-voice-note">{voiceNote}</Text> : null}
+          ) : voiceNote ? <Text variant="caption" muted={phase !== 'error'} color={phase === 'error' ? t.colors.warning : undefined} center testID="aura-voice-note">{voiceNote}</Text> : null}
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
             {dictation !== 'none' ? (
               <Tappable accessibilityRole="button" accessibilityLabel={listening ? tr('ta.voice.end') : tr('ta.voice.talk')} accessibilityState={{ disabled: blockedByConsent, busy: listening }}
@@ -490,11 +529,20 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               voice={ttsAvailable ? { speaking: speakingId === m.id, onToggle: (text) => toggleSpeak(m.id, text) } : null}
               bot={m.id === lastAura?.id ? { state: botState, still: false } : { state: restingBot(m.reply!), still: true }}
               onRetry={(r) => void send(r.question, { requestId: r.requestId, journal: r.journal, retryOf: m.id })}
+              onCredits={() => setOutOfCredits(true)}
+              onConsent={(r) => setConsentSheet({ retry: () => void send(r.question, { journal: r.journal, retryOf: m.id }) })}
               onLocal={(q) => replace(m.id, local(q))} />
           ))}
         />
       </View>
 
+      <Sheet visible={!!consentSheet} onClose={() => setConsentSheet(null)} title={tr('aura.consent.title')}>
+        <View style={{ gap: spacing.sm }} testID="aura-consent-sheet">
+          <Text variant="small" muted>{tr('aura.consent.body')}</Text>
+          <Button label={tr('aura.consent.accept')} icon="check" full loading={setConsent.isPending} testID="aura-consent-sheet-accept" onPress={() => acceptConsent(consentSheet?.retry)} />
+          <Button label={tr('aura.consent.local')} variant="ghost" full onPress={() => { setConsentSheet(null); setForceLocal(true); }} />
+        </View>
+      </Sheet>
       <OutOfCreditsSheet visible={outOfCredits} onClose={() => setOutOfCredits(false)} cost={askCost} />
       <JournalPicker journal={journal} cost={journalCost} onClose={() => setJournal(null)}
         onSend={(p) => void send(tr('aura.journal.ask'), { journal: p })} />
@@ -508,6 +556,11 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             <Toggle label={tr('aura.settings.local')} value={forceLocal} onChange={setForceLocal} />
           </Row>
           {aiAssistantOnline() ? <Button label={tr('aura.history')} icon="clock" variant="secondary" full onPress={() => { setSettings(false); router.push('/assistant/history'); }} /> : null}
+          <View testID="aura-voice-status" style={{ gap: 2 }}>
+            <Text weight="medium">{tr('sa.voice.title')}</Text>
+            <Text variant="caption" muted testID="aura-voice-tts">{tr(`sa.voice.tts.${voice.tts}` as never)}</Text>
+            <Text variant="caption" muted testID="aura-voice-dictation">{tr(`sa.voice.dict.${voice.dictation}` as never)}</Text>
+          </View>
           <Button label={tr('ta.intro.replay')} icon="play-circle" variant="secondary" full onPress={() => { setSettings(false); useUiStore.getState().requestAuraIntro(); }} testID="aura-intro-replay" />
           <Button label={tr('aura.privacy')} icon="lock" variant="ghost" full onPress={() => { setSettings(false); router.push('/settings/privacy'); }} />
         </View>
@@ -528,7 +581,7 @@ function ListenButton({ text, voice }: { text: string; voice: { speaking: boolea
   );
 }
 
-function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot, voice }: {
+function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredits, onConsent, bot, voice }: {
   reply: Reply; catalog: ReturnType<typeof useAllToolEntries>['catalog'];
   voice: { speaking: boolean; onToggle: (text: string) => void } | null;
   /** robot à côté de la réponse : vivant pour la dernière, immobile pour les précédentes */
@@ -536,6 +589,8 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot, voi
   onChooseJournal: (j: 'mood' | 'diary') => void;
   onRetry: (r: Extract<Reply, { kind: 'error' }>) => void;
   onLocal: (q: string) => void;
+  onCredits: () => void;
+  onConsent: (r: Extract<Reply, { kind: 'error' }>) => void;
 }) {
   const t = useTheme();
   const bubble = { backgroundColor: t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, gap: spacing.sm } as const;
@@ -568,7 +623,10 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot, voi
           <View style={{ flex: 1 }}><Banner tone={reply.error === 'network' ? 'warning' : 'info'}>{tr(`aura.err.${reply.error}` as never)}</Banner></View>
         </View>
         <Row wrap>
-          {reply.error === 'network' || reply.error === 'unavailable' ? <Button label={tr('aura.retry')} icon="refresh-cw" size="sm" variant="secondary" onPress={() => onRetry(reply)} testID="aura-retry" /> : null}
+          {auraErrorAction(reply.error) === 'retry' ? <Button label={tr('aura.retry')} icon="refresh-cw" size="sm" variant="secondary" onPress={() => onRetry(reply)} testID="aura-retry" /> : null}
+          {auraErrorAction(reply.error) === 'offer' ? <Button label={tr('sa.aura.seeOffer')} icon="star" size="sm" variant="secondary" onPress={() => router.push('/settings/subscription')} testID="aura-err-offer" /> : null}
+          {auraErrorAction(reply.error) === 'credits' ? <Button label={tr('sa.aura.buyCredits')} icon="plus-circle" size="sm" variant="secondary" onPress={onCredits} testID="aura-err-credits" /> : null}
+          {auraErrorAction(reply.error) === 'consent' ? <Button label={tr('sa.aura.giveConsent')} icon="check" size="sm" variant="secondary" onPress={() => onConsent(reply)} testID="aura-err-consent" /> : null}
           <Button label={tr('aura.tryLocal')} icon="search" size="sm" variant="ghost" onPress={() => onLocal(reply.question)} testID="aura-try-local" />
         </Row>
       </View>

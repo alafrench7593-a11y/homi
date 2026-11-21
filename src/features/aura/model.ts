@@ -16,7 +16,7 @@ import type { SearchOutcome } from '@/lib/domain/toolSearch';
 import type { LocalAnswer } from '@/lib/localAI/engine';
 import { AURA_THEMES, AURA_THEME_IDS, toAuraTheme, type AuraTheme } from '../../../supabase/functions/_shared/aura-prompt';
 import { auraCreditAction } from '../../../supabase/functions/_shared/aura-data';
-import { MAX_ENTRY_TEXT, MAX_JOURNAL_ENTRIES } from '../../../supabase/functions/_shared/aura-data';
+import { MAX_ENTRY_TEXT, MAX_JOURNAL_ENTRIES, type AuraAnalysisKind } from '../../../supabase/functions/_shared/aura-data';
 import type { AuraAction, AuraCatalogEntry } from '../../../supabase/functions/_shared/aura-tools';
 import type { CreditAction } from '@/lib/credits/model';
 
@@ -77,7 +77,7 @@ export const isNetworkError = (code: unknown) => ['network', 'timeout', 'offline
 
 export type AuraRequestKind = 'chat' | 'reformulate' | 'analysis';
 /** Action facturée d'une demande — identique au serveur (aura-data.ts). */
-export function creditActionFor(kind: AuraRequestKind, o: { journal?: boolean; analysis?: 'sleep' | 'cycle' | 'mood' | 'diary' | 'load' | null } = {}): CreditAction {
+export function creditActionFor(kind: AuraRequestKind, o: { journal?: boolean; analysis?: AuraAnalysisKind | null } = {}): CreditAction {
   return auraCreditAction(kind, { journal: !!o.journal, analysis: o.analysis ?? null });
 }
 
@@ -103,6 +103,20 @@ export interface LocalReply {
   article: { slug: string; title: string; excerpt: string } | null;
   /** Faux : ni outil ni article ne correspond aux mots écrits (l'écran le dit). */
   found: boolean;
+}
+
+/**
+ * Recherche d'outils pour Aura (ticket 5) : sur TOUS les outils du foyer accessibles (profil affiché d'abord, puis les
+ * autres profils : « Où noter sa sieste ? » depuis le profil Grossesse trouve le sommeil de l'enfant, avec SA route),
+ * les outils du profil affiché gardant une légère priorité. Avant : la recherche ne regardait que le profil affiché dès
+ * qu'un mot faible y correspondait (« noter » → outils de grossesse).
+ */
+export function searchForAura(active: readonly CatalogTool[], all: readonly CatalogTool[], query: string, search: (tools: readonly CatalogTool[], q: string) => SearchOutcome): SearchOutcome {
+  const res = search(all.length ? all : active, query);
+  if (!res.understood) return res;
+  const mine = new Set(active.map((t) => t.id));
+  const results = res.results.map((h) => ({ ...h, score: h.score * (mine.has(h.tool.id) ? 1.1 : 1) })).sort((x, y) => y.score - x.score);
+  return { ...res, results };
 }
 
 /** Réponse locale HONNÊTE : outils trouvés par mots et article le plus proche ; jamais une phrase inventée. */
