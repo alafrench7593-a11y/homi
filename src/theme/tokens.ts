@@ -965,3 +965,21 @@ export function innerLight(t: Theme, tint: string): { color: string; opacity: nu
   if (t.name === 'night') return { color: tint, opacity: 0 };
   return { color: tint, opacity: t.isDark ? 0.12 : 0.07 };
 }
+
+/**
+ * Sélecteur de thème (« Personnaliser l'accueil », référence 01 de la propriétaire, 21/11/2026) : vignette active
+ * cerclée d'un LISERÉ LUMINEUX clair et doré, coche dans une pastille nacrée cerclée d'or. Mêmes valeurs pour les huit
+ * vignettes (elles montrent chacune leur thème, pas celui de l'app). Contraste : coche encre sur nacre 15,0:1, cercle d’or sur vignette olive 5,0:1 ;
+ * pastille nacrée cerclée d'or lisible sur les vignettes claires comme sombres (le contour d'or et la coche portent
+ * la sélection, avec l'état « coché » annoncé).
+ */
+export const THEME_PICKER = {
+  /** liseré lumineux de la vignette active (or clair) et sa lueur */
+  rim: '#F3D98B',
+  rimInner: 'rgba(255,253,244,0.85)',
+  rimGlow: 'rgba(243,217,139,0.55)',
+  /** pastille de la coche : nacre, cercle d'or, coche encre */
+  badge: '#FFFDF6',
+  badgeRing: '#E7C766',
+  badgeInk: '#25261E',
+} as const;

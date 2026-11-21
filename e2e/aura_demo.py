@@ -191,7 +191,7 @@ def run(b, width, height, scheme, first):
     if sw.count():
         sw.first.click(); pg.wait_for_timeout(600)
     if first:
-        R['analyse_cout_affiche'] = 'Analyser avec HOMI Aura — 3 crédits' in text_of(pg, 'aura-analysis-mood-ai-button')
+        R['analyse_cout_affiche'] = 'Analyser avec Aura — 3 crédits' in text_of(pg, 'aura-analysis-mood-ai-button')
     scroll_to(pg, 'aura-analysis-mood')
     shoot(pg, f'aura_analyse_humeur_{k}')
     if has(pg, 'aura-analysis-mood-ai-button'):

@@ -63,8 +63,12 @@ export function sheetRelease(o: { y: number; vy: number; snaps: number[]; h: num
 /** Contrat du panneau d'une feuille : ce que `Sheet` passe à sa surface (défaut : `Glass` variante `sheet`). */
 export interface SheetPanelProps { testID?: string; radius: number; style?: StyleProp<ViewStyle>; contentStyle?: StyleProp<ViewStyle>; children?: React.ReactNode }
 
-export function Sheet({ visible, onClose, title, children, panel: Panel }: {
+export function Sheet({ visible, onClose, title, children, panel: Panel, headerAlign = 'start', discreetClose = false }: {
   visible: boolean; onClose: () => void; title: string; children: React.ReactNode;
+  /** Titre centré (panneau de choix court, ex. « Personnaliser l'accueil ») ; la croix reste à droite. */
+  headerAlign?: 'start' | 'center';
+  /** Croix discrète (sans pastille, encre secondaire) : toujours là pour l'accessibilité, sans attirer l'œil. */
+  discreetClose?: boolean;
   /** Surface du panneau. Sans elle : panneau de verre `sheet` (même rendu que `GlassSheet`). */
   panel?: React.ComponentType<SheetPanelProps>;
 }) {
@@ -190,9 +194,11 @@ export function Sheet({ visible, onClose, title, children, panel: Panel }: {
                   >
                     <View style={[styles.grabber, { backgroundColor: t.isDark ? 'rgba(255,255,255,0.28)' : 'rgba(19,24,26,0.18)' }]} />
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg }}>
-                    <Text variant="heading" style={{ flex: 1 }} accessibilityRole="header">{title}</Text>
-                    <IconButton icon="x" label={tr('common.close')} onPress={onClose} tone="filled" testID="sheet-close" />
+                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: headerAlign === 'center' ? spacing.sm : spacing.lg }}>
+                    {/* titre centré : un espace de la largeur de la croix à gauche garde le titre au milieu du panneau */}
+                    {headerAlign === 'center' ? <View style={{ width: 44 }} /> : null}
+                    <Text variant="heading" center={headerAlign === 'center'} style={{ flex: 1 }} accessibilityRole="header" testID="sheet-title">{title}</Text>
+                    <IconButton icon="x" label={tr('common.close')} onPress={onClose} tone={discreetClose ? 'plain' : 'filled'} color={discreetClose ? t.colors.textMuted : undefined} size={discreetClose ? 18 : 20} testID="sheet-close" />
                   </View>
                 </View>
               </GestureDetector>

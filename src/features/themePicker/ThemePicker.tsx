@@ -15,14 +15,15 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle, Path } from 'react-native-svg';
 import { router } from 'expo-router';
-import { GlassIconButton, GlassSheet } from '@/components/glass';
-import { useToast } from '@/components/Overlays';
-import { Button, Icon, Text } from '@/components/ui';
+import { Glass, GlassIconButton } from '@/components/glass';
+import { Sheet, useToast, type SheetPanelProps } from '@/components/Overlays';
+import { Button, Text } from '@/components/ui';
+import { CheckMark } from '@/motion/CheckMark';
 import { ICON_FILL, ICON_STROKE } from '@/brand/icons';
 import { motionHaptic, useMotion, usePress } from '@/motion';
 import { useUiStore } from '@/lib/store';
 import { useTheme } from '@/theme/ThemeProvider';
-import { alpha, fonts, radius, spacing, themeFor, type PaletteName } from '@/theme/tokens';
+import { alpha, fonts, radius, spacing, THEME_PICKER, themeFor, type PaletteName } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { alwaysDark, PICKER_THEMES, pickerSelected, swatchInk, swatchOf } from './model';
 
@@ -84,8 +85,9 @@ function ThemeTile({ p, selected, height, onPress }: { p: PaletteName; selected:
     >
       <Animated.View style={[styles.tile, {
         height, borderRadius: radius.lg, borderWidth: selected ? 2.5 : StyleSheet.hairlineWidth,
-        borderColor: selected ? t.tokens.accent.accent : t.colors.border,
-        boxShadow: selected ? [{ offsetX: 0, offsetY: 0, blurRadius: 14, color: own.tokens.glow.soft }, { offsetX: 0, offsetY: 4, blurRadius: 10, color: alpha(t.tokens.shadowColor, 0.16) }] : [{ offsetX: 0, offsetY: 2, blurRadius: 6, color: alpha(t.tokens.shadowColor, 0.1) }],
+        // vignette active : liseré lumineux or clair + lueur dorée (référence 01) ; les autres : filet fin
+        borderColor: selected ? THEME_PICKER.rim : t.colors.border,
+        boxShadow: selected ? [{ offsetX: 0, offsetY: 0, blurRadius: 16, color: THEME_PICKER.rimGlow }, { offsetX: 0, offsetY: 4, blurRadius: 10, color: alpha(t.tokens.shadowColor, 0.16) }] : [{ offsetX: 0, offsetY: 2, blurRadius: 6, color: alpha(t.tokens.shadowColor, 0.1) }],
       }, press.style]}>
         <LinearGradient colors={[a, b]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
         {/* reflet nacré : une vague claire en haut de la vignette (lumière du verre) */}
@@ -95,8 +97,10 @@ function ThemeTile({ p, selected, height, onPress }: { p: PaletteName; selected:
         </Svg>
         <Text numberOfLines={2} maxFontSizeMultiplier={1.4} color={ink}
           style={{ position: 'absolute', left: spacing.sm + 2, right: spacing.sm, bottom: spacing.sm, fontFamily: fonts.bodyBold, fontSize: 16, lineHeight: 20 }}>{name}</Text>
-        <Animated.View pointerEvents="none" style={[styles.check, { backgroundColor: ink, borderColor: a }, checkStyle]}>
-          <Icon name="check" size={16} color={a} />
+        {/* second filet, nacré, à l'intérieur du liseré d'or : la lumière du verre sur le bord */}
+        {selected ? <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.lg - 2.5, borderWidth: 1, borderColor: THEME_PICKER.rimInner }]} /> : null}
+        <Animated.View pointerEvents="none" style={[styles.check, { backgroundColor: THEME_PICKER.badge, borderColor: THEME_PICKER.badgeRing }, checkStyle]}>
+          <CheckMark checked={selected} size={18} color={THEME_PICKER.badgeInk} />
         </Animated.View>
       </Animated.View>
     </Pressable>
@@ -124,7 +128,7 @@ export function ThemePickerSheet({ visible, onClose }: { visible: boolean; onClo
     if (preview) toast(tr('tp.applied', { name }));
   };
   return (
-    <GlassSheet visible={visible} onClose={close} title={tr('tp.title')}>
+    <Sheet visible={visible} onClose={close} title={tr('tp.title')} panel={ThemePanel} headerAlign="center" discreetClose>
       <View style={{ gap: spacing.md }} testID="theme-picker">
         {choice === 'adaptive' && !preview ? <Text variant="caption" muted testID="theme-adaptive-note">{tr('tp.adaptive')}</Text> : null}
         <View accessibilityRole="radiogroup" accessibilityLabel={tr('tp.group')} style={styles.grid}>
@@ -139,7 +143,26 @@ export function ThemePickerSheet({ visible, onClose }: { visible: boolean; onClo
         <Button label={tr('tp.more')} variant="link" icon="sliders" style={{ alignSelf: 'center' }} testID="theme-more"
           onPress={() => { cancelPreview(); onClose(); router.push('/settings/appearance'); }} />
       </View>
-    </GlassSheet>
+    </Sheet>
+  );
+}
+
+/**
+ * Panneau de VERRE PLUS MARQUÉ (référence 01) : verre `sheet` + arête lumineuse sur tout le bord haut et reflet
+ * clair qui descend du haut du panneau (lueur du thème). Réduire la transparence / nuit : surface opaque (`Glass`),
+ * l'arête reste.
+ */
+function ThemePanel({ testID, radius: r, style, contentStyle, children }: SheetPanelProps) {
+  const t = useTheme();
+  const edge = t.tokens.glow.edge;
+  return (
+    <Glass variant="sheet" edges="top" radius={r} testID={testID}
+      style={[style, { borderWidth: 1.5, borderBottomWidth: 0, borderColor: alpha(t.tokens.glow.inner, t.isDark ? 0.35 : 0.9) }]} contentStyle={contentStyle}>
+      <LinearGradient pointerEvents="none" colors={[alpha(t.tokens.glow.inner, t.isDark ? 0.16 : 0.55), alpha(t.tokens.glow.inner, 0)]} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 120, borderTopLeftRadius: r, borderTopRightRadius: r }} testID="theme-panel-sheen" />
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: r, right: r, height: 1.5, backgroundColor: edge }} />
+      {children}
+    </Glass>
   );
 }
 

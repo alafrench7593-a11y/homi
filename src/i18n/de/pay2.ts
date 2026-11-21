@@ -7,7 +7,7 @@ export const pay2: Messages<typeof fr> = {
   'pay2.eyebrow': 'Premium',
   'pay2.title': 'Das ganze Familienleben an einem Ort',
   'pay2.lead': 'Ein einziges Abo öffnet ganz HOMI, für dich und deinen Co-Elternteil.',
-  'pay2.lead.trial': { one: 'Teste alles {count} Tag lang, ohne zu zahlen. Die HOMI-Aura-Credits kommen am Ende der Testphase.', other: 'Teste alles {count} Tage lang, ohne zu zahlen. Die HOMI-Aura-Credits kommen am Ende der Testphase.' },
+  'pay2.lead.trial': { one: 'Teste alles {count} Tag lang, ohne zu zahlen. Die Aura-Credits kommen am Ende der Testphase.', other: 'Teste alles {count} Tage lang, ohne zu zahlen. Die Aura-Credits kommen am Ende der Testphase.' },
   'pay2.benTitle': 'Mit Premium',
   'pay2.ben.track': 'Fläschchen, Stillen, Schlaf, Windeln, Wachstum und Impfungen jedes Kindes.',
   'pay2.ben.body': 'Zyklus, Schwangerschaft und Wochenbett, mit deinen eigenen Einträgen.',
