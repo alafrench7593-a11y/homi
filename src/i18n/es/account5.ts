@@ -28,4 +28,7 @@ export const account5: Messages<typeof fr> = {
   'acct.deleteFailedTitle': 'La eliminación no se completó',
   'acct.retry': 'Reintentar',
   'acct.demoDelete': 'En la demo, la eliminación solo borra los datos de ejemplo de este teléfono.',
+  'visit.slow': 'La visita se está cargando… Tu conexión parece lenta, puedes esperar aquí.',
+  'visit.failed': 'La visita no se pudo cargar. Revisa tu conexión y vuelve a intentarlo.',
+  'visit.retry': 'Reintentar',
 };

@@ -67,7 +67,7 @@ export const nav6 = {
   'hm.tools': "Tes favoris",
   'hm.tools_d': 'Tes apps épinglées, à portée de main',
   'hm.toolsManage': "Gérer",
-  'hm.toolsEmpty': 'Aucune app épinglée. Dans « Mes apps », touche l’étoile d’une app pour l’épingler ici.',
+  'hm.toolsEmpty': 'Aucune app épinglée. Dans « Mes apps », touche l’étoile d’une app pour l’épingler ici.',
   'hm.story': "Mon étape en image",
   'hm.toolsEntry': 'Mes apps',
   'hm.toolsEntrySub': "Trouver une fonctionnalité",

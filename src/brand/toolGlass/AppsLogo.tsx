@@ -29,8 +29,8 @@ function TileLight({ i, size, uid, v }: { i: number; size: number; uid: string; 
         <Defs>
           <RadialGradient id={`${uid}l${i}`} cx="0.5" cy="0.55" r="0.5">
             <Stop offset="0" stopColor={APPS_LOGO.lights[i]} stopOpacity={1} />
-            <Stop offset="0.65" stopColor={APPS_LOGO.lights[i]} stopOpacity={0.55} />
-            <Stop offset="1" stopColor={APPS_LOGO.lights[i]} stopOpacity={0} />
+            <Stop offset="0.7" stopColor={APPS_LOGO.lights[i]} stopOpacity={0.75} />
+            <Stop offset="1" stopColor={APPS_LOGO.lights[i]} stopOpacity={0.3} />
           </RadialGradient>
         </Defs>
         <Rect x={0} y={0} width={10} height={10} rx={2.8} fill={`url(#${uid}l${i})`} />

@@ -2,7 +2,7 @@
 export const mestools = {
   'mt.intro.title': 'Bienvenue dans Mes apps',
   'mt.intro.sort': 'Les apps sont rangées par catégorie. Chaque catégorie a sa couleur, rappelée en bas de la page.',
-  'mt.intro.search': 'Cherche par besoin (« dormir », « biberon »…) : un appui ouvre l’app.',
+  'mt.intro.search': 'Cherche par besoin (« dormir », « biberon »…) : un appui ouvre l’app.',
   'mt.intro.premium': 'Sans abonnement, tu vois toutes les apps : celles qui sont réservées portent un cadenas et s’ouvrent avec Premium.',
   'mt.intro.premiumOn': 'Ton abonnement Premium ouvre toutes les apps.',
   'mt.intro.ok': 'Compris',

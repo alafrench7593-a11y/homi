@@ -28,4 +28,7 @@ export const account5: Messages<typeof fr> = {
   'acct.deleteFailedTitle': 'L’eliminazione non è riuscita',
   'acct.retry': 'Riprova',
   'acct.demoDelete': 'Nella demo, l’eliminazione cancella solo i dati di esempio di questo telefono.',
+  'visit.slow': 'Il tour si sta caricando… La tua connessione sembra lenta, puoi aspettare qui.',
+  'visit.failed': 'Il tour non si è potuto caricare. Controlla la connessione e riprova.',
+  'visit.retry': 'Riprova',
 };

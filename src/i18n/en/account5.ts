@@ -28,4 +28,7 @@ export const account5: Messages<typeof fr> = {
   'acct.deleteFailedTitle': 'The deletion didn’t go through',
   'acct.retry': 'Try again',
   'acct.demoDelete': 'In the demo, deletion only erases the sample data on this phone.',
+  'visit.slow': 'The tour is loading… Your connection seems slow, you can wait here.',
+  'visit.failed': 'The tour couldn’t load. Check your connection, then try again.',
+  'visit.retry': 'Try again',
 };

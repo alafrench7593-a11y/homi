@@ -28,4 +28,7 @@ export const account5: Messages<typeof fr> = {
   'acct.deleteFailedTitle': 'Das Löschen hat nicht geklappt',
   'acct.retry': 'Erneut versuchen',
   'acct.demoDelete': 'In der Demo löscht das nur die Beispieldaten auf diesem Handy.',
+  'visit.slow': 'Die Tour wird geladen… Deine Verbindung scheint langsam, du kannst hier warten.',
+  'visit.failed': 'Die Tour konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.',
+  'visit.retry': 'Erneut versuchen',
 };

@@ -26,4 +26,7 @@ export const account5 = {
   'acct.deleteFailedTitle': 'La suppression n’a pas abouti',
   'acct.retry': 'Réessayer',
   'acct.demoDelete': 'En démonstration, la suppression efface seulement les données d’exemple de ce téléphone.',
+  'visit.slow': 'La visite se charge… Ta connexion semble lente, tu peux patienter ici.',
+  'visit.failed': 'La visite n’a pas pu se charger. Vérifie ta connexion, puis réessaie.',
+  'visit.retry': 'Réessayer',
 } as const;

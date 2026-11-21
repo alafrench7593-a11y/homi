@@ -20,7 +20,7 @@ export const tour = {
   'tour.step.profile.body': 'Touche un autre avatar, ou glisse à gauche ou à droite sur l’accueil.',
   'tour.step.profile.bodySingle': 'Chaque personne suivie a son avatar ici. Ajoute un enfant ou une grossesse pour passer de l’un à l’autre.',
   'tour.step.tools.title': 'Trouver une app',
-  'tour.step.tools.body': 'Touche « Mes apps » : toutes les apps, classées par besoin.',
+  'tour.step.tools.body': 'Touche « Mes apps » : toutes les apps, classées par besoin.',
   'tour.step.tools.bodySearch': 'Décris ton besoin, par exemple « mon bébé se réveille la nuit », puis ouvre une app.',
   'tour.step.quick.title': 'Enregistrer une action',
   'tour.step.quick.body': 'Touche « Ajouter » et choisis une action. Rien n’est enregistré tant que tu ne confirmes pas dans le formulaire.',

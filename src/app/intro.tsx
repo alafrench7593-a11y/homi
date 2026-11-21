@@ -10,6 +10,8 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { haptic } from '@/components/ui';
+import { useToast } from '@/components/Overlays';
+import { t as tr } from '@/i18n';
 import { getLocale } from '@/i18n';
 import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
@@ -33,6 +35,7 @@ export default function Intro() {
   const setCinematicSeen = useUiStore((s) => s.setCinematicSeen);
   const setLocalePref = useUiStore((s) => s.setLocalePref);
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
   // Visite (ticket 1) : la démonstration se télécharge pendant la lecture, au repos
   useEffect(() => { prefetchDemoContent(); }, []);
   // Profil déjà choisi (retour après un changement de langue) : les tableaux restent ceux de ce profil
@@ -46,7 +49,11 @@ export default function Intro() {
     if (to === 'demo') {
       if (busy) return;
       setBusy(true);
-      void startDemoWithoutAccount().then(() => router.replace('/(tabs)')).finally(() => setBusy(false));
+      // Réseau lent (web : morceaux de la démonstration) : état explicite au bout de 4 s ; échec : message + nouvel
+      // appui possible (le chargement réessaie) — jamais de bouton qui tourne sans fin ni d'échec silencieux
+      const slow = setTimeout(() => toast(tr('visit.slow'), 'info'), 4000);
+      void startDemoWithoutAccount().then(() => router.replace('/(tabs)'), () => toast(tr('visit.failed'), 'error'))
+        .finally(() => { clearTimeout(slow); setBusy(false); });
       return;
     }
     router.replace(to === 'sign-up' ? '/auth/sign-up' : '/auth/sign-in');
