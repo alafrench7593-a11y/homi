@@ -35,6 +35,8 @@ export interface GlassTab {
   glyph?: HomiIconName;
   /** Tuile illustrée (prioritaire sur `glyph`) : pleine quand l'onglet est actif, estompée sinon. */
   image?: ImageSourcePropType;
+  /** Lumière intérieure du dessin (même cadrage que `image`) */
+  imageLit?: ImageSourcePropType;
   /** Nom annoncé (défaut : `label`) */
   accessibilityLabel?: string;
   /** Largeur imposée (ex. `dockLayout`) ; sinon les onglets se partagent la place */
@@ -102,7 +104,7 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
         <Animated.View style={iconStyle}>
           {tab.image ? (
             // lumière jaune douce derrière l'icône : vive sous l'onglet actif, discrète sinon
-            <TabLight size={iconsOnly ? 34 : 30} active={active} testID={`${tab.testID ?? `glass-tab-${tab.key}`}-light${active ? '-active' : ''}`}>
+            <TabLight size={iconsOnly ? 34 : 30} active={active} lit={tab.imageLit} testID={`${tab.testID ?? `glass-tab-${tab.key}`}-light${active ? '-active' : ''}`}>
               <Image source={tab.image} accessibilityIgnoresInvertColors style={{ width: iconsOnly ? 34 : 30, height: iconsOnly ? 34 : 30, opacity: active ? 1 : 0.55 }} />
             </TabLight>
           )

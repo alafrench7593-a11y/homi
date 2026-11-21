@@ -40,7 +40,7 @@ import { useToast } from './Overlays';
 import { GLASS_TAB_BAR, GlassButton, GlassSheet, GlassTabBar, type GlassTab } from './glass';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
-import { TAB_IMAGES } from '@/brand/tabs';
+import { TAB_IMAGES, TAB_LIT } from '@/brand/tabs';
 import { TabLight } from '@/brand/toolGlass/TabLight';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
@@ -102,7 +102,7 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
         {/* « Ajouter » : tuile illustrée de la barre ; une action d'écran garde son icône sur l'aplat */}
         {action.icon === 'plus' ? (
           // lumière jaune douce derrière « + » (même lumière que les onglets, toujours vive : c'est l'action principale)
-          <TabLight size={size} active testID="dock-add-light"><Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} /></TabLight>
+          <TabLight size={size} active lit={TAB_LIT.add} testID="dock-add-light"><Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} /></TabLight>
         )
           : <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />}
       </Animated.View>
@@ -145,6 +145,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     icon: icons[i],
     glyph: glyphs[i],
     image: glyphs[i] && glyphs[i] in TAB_IMAGES ? TAB_IMAGES[glyphs[i] as keyof typeof TAB_IMAGES] : undefined,
+    imageLit: glyphs[i] && glyphs[i] in TAB_LIT ? TAB_LIT[glyphs[i] as keyof typeof TAB_LIT] : undefined,
     accessibilityLabel: tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i],
     width: layout.widths[i],
     testID: `tab-${tab.name}`,

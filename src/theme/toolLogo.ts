@@ -44,7 +44,7 @@ export const PUBLIC_LIGHT: Record<LogoPublic, string> = {
 };
 
 /** Barre d'onglets : lumière jaune douce derrière les icônes (opacité au centre : onglet actif / inactif). */
-export const TAB_LIGHT = { color: '#FFC83D', active: 0.85, idle: 0.28 } as const;
+export const TAB_LIGHT = { color: '#FFC83D', active: 0.95, idle: 0.22 } as const;
 
 /** Symbole nacré (valeurs du fichier fourni) : dégradé, ombre portée, filet de lumière. */
 /**
