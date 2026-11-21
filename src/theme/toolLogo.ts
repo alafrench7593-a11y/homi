@@ -47,6 +47,16 @@ export const PUBLIC_LIGHT: Record<LogoPublic, string> = {
 export const TAB_LIGHT = { color: '#FFC83D', active: 0.85, idle: 0.28 } as const;
 
 /** Symbole nacré (valeurs du fichier fourni) : dégradé, ombre portée, filet de lumière. */
+/**
+ * Lumière DANS le symbole (référence 04 de la propriétaire, 21/11/2026) : le trait s'allume de la couleur du public.
+ * `bloom` = halos superposés autour du trait (largeur relative au trait, opacité) ; `tint` = part de couleur dans le
+ * bas du dégradé nacré (le haut reste blanc lumineux).
+ */
+export const SYMBOL_GLOW = {
+  bloom: [[3.4, 0.14], [2.3, 0.26], [1.55, 0.46]] as const,
+  tint: { light: 0.42, dark: 0.42, night: 0.3 },
+} as const;
+
 export const PEARL = {
   top: '#FFFDFD',
   bottom: '#EEEBF8',
@@ -61,11 +71,11 @@ export const GLASS_CENTER = '#9F96AD';
 
 /** Intensité de la lumière : opacité au centre du dégradé radial (repos), surcroît à l'appui / l'ouverture, rayon. */
 export const LOGO_LIGHT = {
-  opacity: { light: 0.85, dark: 0.85, night: 0.6 },
+  opacity: { light: 0.32, dark: 0.36, night: 0.22 },
   /** surcroît d'opacité au sommet de l'impulsion (appui, ouverture) */
   pulse: 0.15,
   /** rayon du halo intérieur (fraction de la plaque) : détaillé / compact */
-  radius: { detailed: 0.5, compact: 0.48 },
+  radius: { detailed: 0.36, compact: 0.34 },
 } as const;
 
 export type LogoMode = 'light' | 'dark' | 'night';

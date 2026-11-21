@@ -29,7 +29,7 @@ import { glassPlate } from '@/brand/toolGlass/glass';
 import { TOOL_SYMBOLS } from '@/brand/toolGlass/symbols';
 import { logoMotion, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { LOGO_LIGHT, logoMode, logoShadow, PEARL, PUBLIC_LIGHT, type LogoCategory, type LogoPublic } from '@/theme/toolLogo';
+import { LOGO_LIGHT, logoMode, logoShadow, mixHex, PEARL, PUBLIC_LIGHT, SYMBOL_GLOW, type LogoCategory, type LogoPublic } from '@/theme/toolLogo';
 import { logoPublicOf, motionOfIcon, toolLogoDef, type LogoMotion } from './families';
 import { LOGO_GRID, SYMBOL_BOX, SYMBOL_STROKE, SYMBOL_TRANSFORM, squircleRadius, type LogoVariant } from './geometry';
 import { LIGHT_STOPS } from './svg';
@@ -173,7 +173,7 @@ export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, audience, 
 
       {/* symbole nacré (couche animée) */}
       <Animated.View style={[abs, glyphStyle]}>
-        <PearlSymbol d={owner ?? fallback.stroke} dots={owner ? undefined : fallback.dots} uid={uid} size={size} variant={v} />
+        <PearlSymbol d={owner ?? fallback.stroke} dots={owner ? undefined : fallback.dots} uid={uid} size={size} variant={v} glow={lightColor} tint={SYMBOL_GLOW.tint[mode]} />
       </Animated.View>
 
       {/* lune : deux étoiles s'allument pendant que le croissant se pose */}
@@ -228,18 +228,26 @@ const Light = React.memo(function Light({ color, uid, size, radius }: { color: s
 });
 
 /** Symbole nacré (construction des fichiers fournis) : ombre portée, trait en dégradé nacré, filet de lumière (détaillé). */
-const PearlSymbol = React.memo(function PearlSymbol({ d, dots, uid, size, variant }: { d: string; dots?: [number, number, number][]; uid: string; size: number; variant: LogoVariant }) {
+const PearlSymbol = React.memo(function PearlSymbol({ d, dots, uid, size, variant, glow, tint }: { d: string; dots?: [number, number, number][]; uid: string; size: number; variant: LogoVariant; glow: string; tint: number }) {
   const sw = SYMBOL_STROKE[variant];
+  const lit = mixHex(PEARL.top, glow, tint);
   const ink = `url(#${uid}p)`;
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${SYMBOL_BOX} ${SYMBOL_BOX}`}>
       <Defs>
         <LinearGradient id={`${uid}p`} x1="0" y1="0" x2="0.4" y2="1">
           <Stop offset="0" stopColor={PEARL.top} />
-          <Stop offset="1" stopColor={PEARL.bottom} />
+          <Stop offset="1" stopColor={lit} />
         </LinearGradient>
       </Defs>
       <G transform={SYMBOL_TRANSFORM}>
+        {/* le symbole s'allume : halos de la couleur du public autour du trait (du plus large au plus serré) */}
+        {SYMBOL_GLOW.bloom.map(([k, a]) => (
+          <G key={k} opacity={a}>
+            <Path d={d} fill="none" stroke={glow} strokeWidth={sw.pearl * k} strokeLinecap="round" strokeLinejoin="round" />
+            {dots?.map(([cx, cy, rr]) => <Circle key={`g${k}${cx}-${cy}`} cx={cx} cy={cy} r={rr * k * 0.8} fill={glow} />)}
+          </G>
+        ))}
         <G transform="translate(0 0.42)" opacity={PEARL.shadowOpacity}>
           <Path d={d} fill="none" stroke={PEARL.shadow} strokeWidth={sw.shadow} strokeLinecap="round" strokeLinejoin="round" />
           {dots?.map(([cx, cy, rr]) => <Circle key={`s${cx}-${cy}`} cx={cx} cy={cy} r={rr} fill={PEARL.shadow} />)}
