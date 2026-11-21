@@ -13,7 +13,7 @@
  *    `activeKey` = clé du profil affiché, `onChange` = `select`.
  */
 import React, { useEffect, useRef } from 'react';
-import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -31,6 +31,8 @@ export interface GlassTab {
   icon: IconName;
   /** Pictogramme de la famille HOMI (prioritaire sur `icon`) : trait d'encre + aplat de l'accent, plus présent quand l'onglet est actif. */
   glyph?: HomiIconName;
+  /** Tuile illustrée (prioritaire sur `glyph`) : pleine quand l'onglet est actif, estompée sinon. */
+  image?: ImageSourcePropType;
   /** Nom annoncé (défaut : `label`) */
   accessibilityLabel?: string;
   /** Largeur imposée (ex. `dockLayout`) ; sinon les onglets se partagent la place */
@@ -96,7 +98,8 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
     >
       <Animated.View style={[styles.tab, p.style]}>
         <Animated.View style={iconStyle}>
-          {tab.glyph ? <HomiIcon name={tab.glyph} size={iconsOnly ? 26 : 24} color={ink} tone={accent} active={active} /> : <Icon name={tab.icon} size={iconsOnly ? 24 : 22} color={ink} />}
+          {tab.image ? <Image source={tab.image} accessibilityIgnoresInvertColors style={{ width: iconsOnly ? 34 : 30, height: iconsOnly ? 34 : 30, opacity: active ? 1 : 0.55 }} />
+            : tab.glyph ? <HomiIcon name={tab.glyph} size={iconsOnly ? 26 : 24} color={ink} tone={accent} active={active} /> : <Icon name={tab.icon} size={iconsOnly ? 24 : 22} color={ink} />}
         </Animated.View>
         {iconsOnly ? null : (
           <Text numberOfLines={1} maxFontSizeMultiplier={1.2} color={ink}

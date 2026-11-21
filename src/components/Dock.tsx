@@ -20,7 +20,7 @@
  * dernier élément d'une page (vérifié en défilant jusqu'en bas, e2e/navigation.py).
  */
 import { useMemo, useState } from 'react';
-import { Pressable, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, useWindowDimensions, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { router } from 'expo-router';
 import type { BottomTabBarProps } from 'expo-router/tabs';
@@ -40,6 +40,7 @@ import { useToast } from './Overlays';
 import { GLASS_TAB_BAR, GlassButton, GlassSheet, GlassTabBar, type GlassTab } from './glass';
 import { haptic, Icon, type IconName, Text } from './ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
+import { TAB_IMAGES } from '@/brand/tabs';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
@@ -96,9 +97,9 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
     >
       <View {...anchor} style={{ flex: 1 }}>
       {/* Rectangle aux angles souples, aplat de l'action principale (prune en clair, corail en sombre), sans dégradé */}
-      <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, p.style]}>
-        {/* « Ajouter » : pictogramme HOMI (trait arrondi, plus épais sur l'aplat) ; une action d'écran garde son icône */}
-        {action.icon === 'plus' ? <HomiIcon name="add" size={26} color={t.tokens.action.text} tone={null} />
+      <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: action.icon === 'plus' ? 'transparent' : t.tokens.action.fill }, p.style]}>
+        {/* « Ajouter » : tuile illustrée de la barre ; une action d'écran garde son icône sur l'aplat */}
+        {action.icon === 'plus' ? <Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} />
           : <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />}
       </Animated.View>
       </View>
@@ -139,6 +140,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     label: labels[i],
     icon: icons[i],
     glyph: glyphs[i],
+    image: glyphs[i] && glyphs[i] in TAB_IMAGES ? TAB_IMAGES[glyphs[i] as keyof typeof TAB_IMAGES] : undefined,
     accessibilityLabel: tab.name === 'baby' ? labels[i] : descriptors[route.key]?.options.title ?? labels[i],
     width: layout.widths[i],
     testID: `tab-${tab.name}`,
