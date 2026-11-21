@@ -4,7 +4,7 @@ export const ui1 = {
   'u1.nf.title': 'Cette page n’existe pas',
   'u1.nf.body': 'Le lien est peut-être ancien ou incomplet. Rien n’a été perdu : tes données sont intactes.',
   'u1.nf.home': 'Revenir à l’accueil',
-  'u1.nf.tools': 'Tous mes outils',
+  'u1.nf.tools': 'Toutes mes apps',
   'u1.ta.a11y': 'Pour aller plus loin : articles liés',
   'u1.ta.title': 'Pour aller plus loin',
   'u1.ta.collapse': 'Replier',

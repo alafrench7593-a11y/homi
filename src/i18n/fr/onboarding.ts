@@ -64,7 +64,7 @@ export const onboarding = {
   'onb.ready.children': { one: '{count} profil enfant créé', other: '{count} profils enfants créés' },
   'onb.ready.reminders': { zero: 'Aucun rappel programmé', one: '{count} rappel programmé', other: '{count} rappels programmés' },
   'onb.ready.cycle': 'Ton cycle : note tes prochaines règles pour obtenir des estimations',
-  'onb.ready.community': 'La communauté t’attend dans Outils',
+  'onb.ready.community': 'La communauté t’attend dans Mes apps',
   'onb.ready.privacy': 'Tes données restent privées par défaut',
   'onb.ready.cta': 'Découvrir mon espace',
 

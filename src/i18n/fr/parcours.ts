@@ -49,7 +49,7 @@ export const parcours = {
   'pj.activeBadge': 'Actif',
   'pj.already': 'Ce parcours est déjà actif.',
   'pj.addChild': 'Ajouter un enfant',
-  'pj.allTools': 'Tous mes outils',
+  'pj.allTools': 'Toutes mes apps',
   'pj.profile.baby': 'Bébé {name}',
   'pj.profile.child': 'Enfant {name}',
   'pj.profile.previous': { one: '{count} parcours précédent', other: '{count} parcours précédents' },

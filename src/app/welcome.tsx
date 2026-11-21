@@ -20,6 +20,7 @@ import { Tappable } from '@/components/Tappable';
 import { BrandWordmark } from '@/components/BrandLogo';
 import { HeroArt, heroSize } from '@/features/entry/HeroArt';
 import { isDemo } from '@/lib/backend';
+import { prefetchDemoContent } from '@/lib/lazyContent';
 import { getLocale, t as tr } from '@/i18n';
 import { localeInfo } from '@/i18n/locales';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -31,6 +32,8 @@ export default function Welcome() {
   const topInset = insets.top + useDemoInset();
   const win = useWindowDimensions();
   const t = useTheme();
+  // Visite (ticket 1) : la démonstration se télécharge pendant la lecture de l'écran, au repos
+  React.useEffect(() => { prefetchDemoContent(); }, []);
   const short = win.height < 640;
   // Illustration : la plus grande possible en gardant titre et trois actions au premier écran (320 × 568 compris)
   const art = heroSize(win, { max: 300, min: 132, reserve: short ? 420 : 500 });

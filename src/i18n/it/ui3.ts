@@ -492,8 +492,8 @@ export const ui3: Messages<typeof fr> = {
   "u3.sleep.wakes": ", {n} risveglio/i per notte",
   "u3.tools.errTools": "Impossibile mostrare i tuoi strumenti",
   "u3.tools.favSwitch": "{label} nelle mie scorciatoie",
-  "u3.tools.others": "Strumenti degli altri profili",
-  "u3.tools.othersB": "Tocca uno strumento: il profilo giusto viene selezionato prima di aprirlo, i dati non vengono mai mescolati.",
+  'u3.tools.others': 'App degli altri profili',
+  'u3.tools.othersB': 'Tocca un’app: il profilo giusto viene scelto prima di aprirla, i dati non si mescolano mai.',
   "u3.tools.urg": "Emergenze · 15 · 112 · 3114",
   "u3.tools.urgA11y": "Emergenze: 15, 112, 3114. Apri i numeri utili.",
 };

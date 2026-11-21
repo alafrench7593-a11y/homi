@@ -107,36 +107,55 @@ function ThemeTile({ p, selected, height, onPress }: { p: PaletteName; selected:
   );
 }
 
-export function ThemePickerSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const toast = useToast();
-  const { width, height } = useWindowDimensions();
+/**
+ * Grille des HUIT thèmes — LE sélecteur unique (ticket 6) : utilisé par le panneau du bouton palette de l'accueil ET
+ * par Réglages › Apparence et couleurs. Même source de thème : l'aperçu `themePreview` du magasin, confirmé par
+ * `applyThemePreview`, abandonné par `cancelThemePreview` (src/lib/store.ts, lu par src/theme/ThemeProvider.tsx).
+ */
+export function ThemeGrid({ compact }: { compact?: boolean }) {
   const preview = useUiStore((s) => s.themePreview);
   const choice = useUiStore((s) => s.palettePreference);
   const profile = useUiStore((s) => s.adaptiveProfile);
   const previewTheme = useUiStore((s) => s.previewTheme);
-  const applyPreview = useUiStore((s) => s.applyThemePreview);
-  const cancelPreview = useUiStore((s) => s.cancelThemePreview);
   const selected = pickerSelected(preview, choice, profile);
-  const tileH = width < 360 || height < 700 ? 70 : 84;
+  return (
+    <View accessibilityRole="radiogroup" accessibilityLabel={tr('tp.group')} style={styles.grid}>
+      {PICKER_THEMES.map((p) => (
+        <ThemeTile key={p} p={p} height={compact ? 70 : 84} selected={p === selected}
+          onPress={() => { if (p !== selected) motionHaptic('selection'); previewTheme(p); }} />
+      ))}
+    </View>
+  );
+}
+
+/** Confirmer l'aperçu (haptique, toast « thème appliqué ») ; sans aperçu en cours, rien n'est changé. */
+function useApplyTheme(): () => void {
+  const toast = useToast();
+  const applyPreview = useUiStore((s) => s.applyThemePreview);
+  return () => {
+    const { themePreview: preview, palettePreference: choice, adaptiveProfile: profile } = useUiStore.getState();
+    motionHaptic('success');
+    if (!preview) return;
+    const name = tr(`v6.palette.${pickerSelected(preview, choice, profile)}` as const);
+    applyPreview();
+    toast(tr('tp.applied', { name }));
+  };
+}
+
+export function ThemePickerSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+  const { width, height } = useWindowDimensions();
+  const preview = useUiStore((s) => s.themePreview);
+  const choice = useUiStore((s) => s.palettePreference);
+  const cancelPreview = useUiStore((s) => s.cancelThemePreview);
+  const applyTheme = useApplyTheme();
   // fermeture sans validation (voile, geste, retour) : le thème confirmé revient
   const close = () => { cancelPreview(); onClose(); };
-  const apply = () => {
-    const name = tr(`v6.palette.${selected}` as const);
-    if (preview) applyPreview();
-    motionHaptic('success');
-    onClose();
-    if (preview) toast(tr('tp.applied', { name }));
-  };
+  const apply = () => { applyTheme(); onClose(); };
   return (
     <Sheet visible={visible} onClose={close} title={tr('tp.title')} panel={ThemePanel} headerAlign="center" discreetClose>
       <View style={{ gap: spacing.md }} testID="theme-picker">
         {choice === 'adaptive' && !preview ? <Text variant="caption" muted testID="theme-adaptive-note">{tr('tp.adaptive')}</Text> : null}
-        <View accessibilityRole="radiogroup" accessibilityLabel={tr('tp.group')} style={styles.grid}>
-          {PICKER_THEMES.map((p) => (
-            <ThemeTile key={p} p={p} height={tileH} selected={p === selected}
-              onPress={() => { if (p !== selected) motionHaptic('selection'); previewTheme(p); }} />
-          ))}
-        </View>
+        <ThemeGrid compact={width < 360 || height < 700} />
         {/* petit écran : la consigne cède la place au bouton (le bouton reste visible sans défiler) */}
         {height >= 700 ? <Text variant="caption" muted center>{tr('tp.choiceHint')}</Text> : null}
         <Button label={tr('tp.apply')} full size="lg" onPress={apply} testID="theme-apply" />
@@ -144,6 +163,30 @@ export function ThemePickerSheet({ visible, onClose }: { visible: boolean; onClo
           onPress={() => { cancelPreview(); onClose(); router.push('/settings/appearance'); }} />
       </View>
     </Sheet>
+  );
+}
+
+/**
+ * Le même sélecteur, posé dans Réglages › Apparence et couleurs : aperçu au toucher ; « Appliquer le thème » /
+ * « Annuler » visibles tant qu'un aperçu est en cours ; quitter l'écran (bouton ou geste retour) sans valider rétablit
+ * le thème confirmé (jamais de thème « à moitié » enregistré).
+ */
+export function ThemePickerInline() {
+  const { width, height } = useWindowDimensions();
+  const preview = useUiStore((s) => s.themePreview);
+  const cancelPreview = useUiStore((s) => s.cancelThemePreview);
+  const applyTheme = useApplyTheme();
+  useEffect(() => () => useUiStore.getState().cancelThemePreview(), []);
+  return (
+    <View style={{ gap: spacing.sm }} testID="theme-picker-inline">
+      <ThemeGrid compact={width < 360 || height < 700} />
+      {preview ? (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }} testID="theme-inline-actions">
+          <Button label={tr('tp.apply')} style={{ flexGrow: 1 }} onPress={applyTheme} testID="theme-inline-apply" />
+          <Button label={tr('common.cancel')} variant="secondary" style={{ flexGrow: 1 }} onPress={cancelPreview} testID="theme-inline-cancel" />
+        </View>
+      ) : <Text variant="caption" muted>{tr('tp.choiceHint')}</Text>}
+    </View>
   );
 }
 

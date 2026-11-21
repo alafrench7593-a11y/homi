@@ -4,7 +4,8 @@ import { startTour, useTourStore } from '@/features/tour/store';
 import { LEGAL_NOTICE, PRIVACY, SUPPORT, TERMS } from '@/content/legal';
 import React, { useEffect, useRef, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { confirmAndSignOut, SignOutRow } from '@/features/account/SignOutRow';
 import Constants from 'expo-constants';
 import { Screen } from '@/components/Screen';
 import { DemoBanner } from '@/components/Family';
@@ -77,28 +78,19 @@ export default function SettingsScreen() {
   }
 
   async function signOut(allDevices: boolean) {
-    // Audit 08 : saisies encore en file → dernier essai d'envoi, puis avertissement honnête (« Vos données restent
-    // enregistrées » était faux pour elles : un autre compte qui se connecte ensuite les efface du téléphone).
-    if (useOfflineStore.getState().pending.length && useOfflineStore.getState().online) await flushQueue().catch(() => 0);
-    const waiting = useOfflineStore.getState().pending.length;
-    const ok = await confirm(
-      allDevices ? tr('settings.signOut.confirmAll') : tr('settings.signOut.confirm'),
-      (allDevices ? tr('settings.signOut.bodyAll') : tr('settings.signOut.body')) + (waiting ? `\n\n${tr('rel.signOut.pending', { count: waiting })}` : ''),
-      tr('settings.signOut'),
-    );
-    if (!ok) return;
+    if (signingOut) return;
     setSigningOut(true);
     try {
-      await cancelAllLocal().catch(() => undefined);
-      await unregisterPushToken();
-      await backend.auth.signOut(allDevices);
-      router.replace('/welcome');
+      await confirmAndSignOut(isDemo, allDevices);
     } catch (e) {
       toast(friendlyError(e), 'error');
     } finally {
       setSigningOut(false);
     }
   }
+  // Recherche « déconnexion » (entrée `sign_out` du registre) : /settings?signout=1 ouvre la confirmation
+  const { signout } = useLocalSearchParams<{ signout?: string }>();
+  useEffect(() => { if (signout === '1') void confirmAndSignOut(isDemo).catch(() => undefined); }, [signout]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const activeReminders = (reminders ?? []).filter((r) => r.enabled).length;
   const version = Constants.expoConfig?.version ?? '—';
@@ -106,6 +98,15 @@ export default function SettingsScreen() {
   return (
     <Screen back title={tr('settings.title')} subtitle={session?.email ?? undefined}>
       <DemoBanner />
+
+      {/* Mon compte EN TÊTE (App Store 5.1.1(v)) : la suppression du compte est à 2 appuis depuis Réglages */}
+      <SectionTitle title={tr('settings.account')} />
+      <Card>
+        <ListRow icon="user" title={tr('settings.account')} subtitle={tr('settings.account.sub')} onPress={() => router.push('/settings/account')} testID="settings-account" />
+        <Divider />
+        <ListRow icon="trash-2" title={tr('u1.acc.deleteSection')} subtitle={tr('acct.deleteRowSub')} danger
+          onPress={() => router.push('/settings/account?delete=1' as never)} testID="settings-delete-account" />
+      </Card>
 
       <SectionTitle title={tr('settings.profile')} />
       <Card>
@@ -147,8 +148,6 @@ export default function SettingsScreen() {
         {iphoneCalendar.visible ? <ListRow icon="calendar" title={tr('ical.title')} subtitle={iphoneCalendar.text} onPress={() => router.push(DEVICE_CALENDAR_ROUTE as never)} testID="settings-iphone-calendar" /> : null}
         <Divider />
         <ListRow icon="star" title={tr('settings.subscription')} subtitle={premium ? tr('settings.subscription.active', { app: BRAND.name }) : tr('settings.subscription.free')} onPress={() => router.push('/settings/subscription')} />
-        <Divider />
-        <ListRow icon="user" title={tr('settings.account')} subtitle={tr('settings.account.sub')} onPress={() => router.push('/settings/account')} />
         <Divider />
         <ListRow icon="lock" title={tr('settings.privacy')} subtitle={tr('settings.privacy.sub')} onPress={() => router.push('/settings/privacy')} />
         <Divider />
@@ -223,8 +222,9 @@ export default function SettingsScreen() {
       </Card>
 
       <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
-        <Button label={tr('settings.signOut')} variant="secondary" icon="log-out" loading={signingOut} onPress={() => signOut(false)} />
-        <Button label={tr('settings.signOutAll')} variant="ghost" onPress={() => signOut(true)} />
+        {/* Se déconnecter / Quitter la démo : ligne de verre partagée avec Profil et Moi */}
+        <SignOutRow testID="settings-sign-out" />
+        {isDemo ? null : <Button label={tr('settings.signOutAll')} variant="ghost" loading={signingOut} onPress={() => signOut(true)} />}
         {isDemo ? <Text variant="caption" muted center>{tr('settings.signOut.demo')}</Text> : null}
       </View>
     </Screen>

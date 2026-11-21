@@ -2,6 +2,7 @@
  * Symboles des 134 outils « verre dépoli » (21/11/2026) — FICHIER GÉNÉRÉ par scripts/da/tool-glass-import.cjs
  * depuis assets/brand/tool-glass/symboles/*.svg : ne pas modifier à la main. Les symboles génériques fournis ont été
  * redessinés pour dire la fonction de l'outil (originaux : assets/brand/tool-glass/symboles-originaux/).
+ * Hors catalogue fourni : `account_delete` et `sign_out` (entrées de compte dessinées par HOMI, même construction).
  * Chaque symbole = un tracé `d` sur la grille 24 (trait arrondi 2,04, posé en translate(21 21) scale(3.58) dans une
  * boîte 128 — la même que la plaque). Les couleurs (nacre, ombre, filet de lumière) sont dans src/theme/toolLogo.ts.
  */
@@ -139,7 +140,9 @@ export const TOOL_SYMBOLS: Record<string, string> = {
  "sleep": "M13.3 5.14A8 8 0 1 0 18.1 14.9A6.24 6.24 0 0 1 13.3 5.14ZM18.5 5h.01M20.5 9.5h.01M16 2.8h.01",
  "kid_sleep_rhythm": "M3 10h7M3 14.5h12M3 19h8M17.73 3.28A3.5 3.5 0 1 0 19.82 7.55A2.73 2.73 0 0 1 17.73 3.28ZM19 19h.01",
  "family_nights": "M4 9a8 8 0 0 1 14-3.5M20 15a8 8 0 0 1-14 3.5M18.5 2v4h-4M5.5 22v-4h4M12.22 8.78A3.5 3.5 0 1 0 14.32 13.05A2.73 2.73 0 0 1 12.22 8.78Z",
- "kid_sleep": "M6 15H18A3 3 0 0 1 21 18V18A3 3 0 0 1 18 21H6A3 3 0 0 1 3 18V18A3 3 0 0 1 6 15ZM12.18 3.08A4.8 4.8 0 1 0 15.06 8.94A3.74 3.74 0 0 1 12.18 3.08ZM18 5h.01"
+ "kid_sleep": "M6 15H18A3 3 0 0 1 21 18V18A3 3 0 0 1 18 21H6A3 3 0 0 1 3 18V18A3 3 0 0 1 6 15ZM12.18 3.08A4.8 4.8 0 1 0 15.06 8.94A3.74 3.74 0 0 1 12.18 3.08ZM18 5h.01",
+ "account_delete": "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6m4-6v6",
+ "sign_out": "M10 4H5v16h5M14 8l4 4-4 4m4-4H9"
 };
 
 /** Plaque de verre de chaque outil fourni (catégorie du catalogue). */
@@ -277,5 +280,7 @@ export const TOOL_GLASS_CATEGORY: Record<string, string> = {
  "sleep": "sleep",
  "kid_sleep_rhythm": "sleep",
  "family_nights": "sleep",
- "kid_sleep": "sleep"
+ "kid_sleep": "sleep",
+ "account_delete": "account",
+ "sign_out": "account"
 };

@@ -10,9 +10,13 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { haptic } from '@/components/ui';
+import { useToast } from '@/components/Overlays';
+import { t as tr } from '@/i18n';
 import { getLocale } from '@/i18n';
 import { returnHereAfterLocaleChange } from '@/i18n/I18nProvider';
 import { startDemoWithoutAccount } from '@/lib/demoMode';
+import { useAuth } from '@/lib/auth';
+import { prefetchDemoContent } from '@/lib/lazyContent';
 import { useUiStore } from '@/lib/store';
 import { IntroFlow } from '@/features/intro/IntroFlow';
 import { LAST_PAGE, loadIntroProfile, saveIntroProfile, type IntroProfile } from '@/features/intro/model';
@@ -32,6 +36,12 @@ export default function Intro() {
   const setCinematicSeen = useUiStore((s) => s.setCinematicSeen);
   const setLocalePref = useUiStore((s) => s.setLocalePref);
   const [busy, setBusy] = useState(false);
+  const toast = useToast();
+  const [entered, setEntered] = useState(false);
+  const { session } = useAuth();
+  useEffect(() => { if (entered && session) router.replace('/(tabs)'); }, [entered, session]);
+  // Visite (ticket 1) : la démonstration se télécharge pendant la lecture, au repos
+  useEffect(() => { prefetchDemoContent(); }, []);
   // Profil déjà choisi (retour après un changement de langue) : les tableaux restent ceux de ce profil
   const [initial, setInitial] = useState<IntroProfile | null | undefined>(undefined);
   useEffect(() => { let alive = true; void loadIntroProfile().then((p) => { if (alive) setInitial(p); }); return () => { alive = false; }; }, []);
@@ -43,7 +53,14 @@ export default function Intro() {
     if (to === 'demo') {
       if (busy) return;
       setBusy(true);
-      void startDemoWithoutAccount().then(() => router.replace('/(tabs)')).finally(() => setBusy(false));
+      // Réseau lent (web : morceaux de la démonstration) : état explicite au bout de 4 s ; échec : message + nouvel
+      // appui possible (le chargement réessaie) — jamais de bouton qui tourne sans fin ni d'échec silencieux
+      const slow = setTimeout(() => toast(tr('visit.slow'), 'info'), 4000);
+      // Ouverture de l'accueil quand la session de la visite est CONNUE de l'application (effet ci-dessous) : naviguer
+      // juste après startDemoWithoutAccount laissait passer un état transitoire « prête, sans session » → renvoi vers
+      // /welcome (course révélée quand la démonstration est déjà préchargée).
+      void startDemoWithoutAccount().then(() => setEntered(true), () => toast(tr('visit.failed'), 'error'))
+        .finally(() => { clearTimeout(slow); setBusy(false); });
       return;
     }
     router.replace(to === 'sign-up' ? '/auth/sign-up' : '/auth/sign-in');

@@ -95,9 +95,9 @@ describe('familles d’animation', () => {
 });
 
 describe('verre dépoli de la propriétaire + lumière par public', () => {
-  it('les 134 outils du registre ont le symbole et la plaque fournis (aucun manquant, aucun en trop)', () => {
+  it('les 134 outils fournis + 2 entrées de compte (supprimer, se déconnecter) ont symbole et plaque (aucun manquant, aucun en trop)', () => {
     expect(Object.keys(TOOL_ICON).sort()).toEqual(Object.keys(TOOL_SYMBOLS).sort());
-    expect(Object.keys(TOOL_SYMBOLS)).toHaveLength(134);
+    expect(Object.keys(TOOL_SYMBOLS)).toHaveLength(136);
     for (const d of TOOLS) expect(toolLogoDef(d.id)?.symbol).toBe(d.id);
     for (const [id, d] of Object.entries(TOOL_SYMBOLS)) { expect(d).toMatch(/^[Mm]/); expect(TOOL_GLASS_CATEGORY[id]).toBeTruthy(); }
     for (const f of new Set(Object.values(TOOL_GLASS_CATEGORY))) expect(fs.readFileSync(`assets/brand/tool-glass/glass/${f}.png`)[25]).toBe(6); // RGBA
@@ -106,7 +106,7 @@ describe('verre dépoli de la propriétaire + lumière par public', () => {
     const byDrawing = new Map<string, string[]>();
     for (const [id, d] of Object.entries(TOOL_SYMBOLS)) byDrawing.set(d, [...(byDrawing.get(d) ?? []), id]);
     expect([...byDrawing.values()].filter((ids) => ids.length > 1)).toEqual([]);
-    expect(byDrawing.size).toBe(134);
+    expect(byDrawing.size).toBe(Object.keys(TOOL_SYMBOLS).length);
     // aucun caractère dessiné : les SVG sources sont des tracés au trait, sans élément <text>
     for (const id of Object.keys(TOOL_SYMBOLS)) expect(fs.readFileSync(`assets/brand/tool-glass/symboles/${id}.svg`, 'utf8')).not.toMatch(/<text\b/);
   });

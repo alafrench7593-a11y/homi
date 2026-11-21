@@ -87,7 +87,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/start` | formulaire | — | — | 0 |  | à faire |
 | `/start/done` | détail | — | — | 0 |  | à faire |
 | `/start/offers` | détail | — | — | 0 |  | à faire |
-| `/start/sample` | détail | — | — | 0 |  | à faire |
+| `/start/sample` | détail | — | Button | 0 |  | à faire |
 | `/tools/[category]` | détail | — | Screen, EmptyState, VirtualList | 0 |  | à faire |
 
 ### Auth / entrée

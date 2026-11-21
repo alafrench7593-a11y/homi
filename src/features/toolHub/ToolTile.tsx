@@ -15,7 +15,8 @@ import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ToolGlyph } from '@/components/ToolGlyph';
-import { Text } from '@/components/ui';
+import { Icon, Text } from '@/components/ui';
+import { t as tr } from '@/i18n';
 import { cascadeDelay, useMotion, usePress } from '@/motion';
 import type { CatalogTool } from '@/lib/domain/toolCatalog';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -23,8 +24,10 @@ import { spacing } from '@/theme/tokens';
 
 export const TOOL_TILE = { width: 100, glyph: 60, minHeight: 104 } as const;
 
-export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, index = 0, width = TOOL_TILE.width, onPress, onLongPress, a11yHint, testID }: {
+export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, index = 0, width = TOOL_TILE.width, onPress, onLongPress, a11yHint, testID, locked }: {
   tool: CatalogTool;
+  /** Sans Premium : outil réservé (petit cadenas sur le logo, annoncé). */
+  locked?: boolean;
   /** Profil d'un autre membre du foyer (« Léa ») : annoncé et affiché en petit */
   profile?: string;
   /** Rang dans la rangée (décalage d'entrée) */
@@ -52,14 +55,22 @@ export const ToolTile = React.memo(function ToolTile({ tool, profile, reason, in
   const style = useAnimatedStyle(() => ({
     transform: [{ translateY: (1 - enter.value) * 8 }, { scale: (0.94 + 0.06 * enter.value) * (1 - 0.03 * p.progress.value) }],
   }));
-  const a11y = [tool.label, profile, reason].filter(Boolean).join(', ');
+  const a11y = [tool.label, profile, reason, locked ? tr('mt.lockedA11y') : null].filter(Boolean).join(', ');
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={a11y} testID={testID ?? `tool-shortcut-${tool.id}`} pressRetentionOffset={16}
       onPressIn={() => { setPressed(true); p.onPressIn(); }} onPressOut={() => { setPressed(false); p.onPressOut(); }}
       onPress={() => { setPlay((n) => n + 1); onPress(); }} onLongPress={onLongPress} accessibilityHint={a11yHint} style={{ width, alignSelf: 'stretch' }}>
       <Animated.View style={[styles.tile, style]}>
         <View style={styles.body} testID={`tool-tile-${tool.id}`}>
-          <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={TOOL_TILE.glyph} pressed={pressed} play={play} />
+          <View>
+            <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={TOOL_TILE.glyph} pressed={pressed} play={play} />
+            {locked ? (
+              <View pointerEvents="none" testID={`tool-tile-locked-${tool.id}`}
+                style={{ position: 'absolute', right: -4, bottom: -4, width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border }}>
+                <Icon name="lock" size={12} color={t.colors.textMuted} />
+              </View>
+            ) : null}
+          </View>
           <Text variant="caption" weight="bold" center color={t.colors.text} style={styles.name}>{tool.label}</Text>
           {profile ? <Text variant="caption" center numberOfLines={1} color={t.colors.textMuted}>{profile}</Text> : null}
           {reason ? <Text variant="caption" center color={t.colors.textMuted} style={styles.reason} testID={testID ? `${testID}-reason` : undefined}>{reason}</Text> : null}

@@ -1,12 +1,14 @@
 /**
- * Profil › Mon compte : adresse e-mail, mot de passe, export de toutes les données (JSON et PDF)
+ * Réglages › Mon compte (en tête de Réglages ; aussi Profil › Moi) : adresse e-mail, mot de passe, export de toutes les données (JSON et PDF)
  * et suppression du compte DANS l'application (avec confirmation), qui efface réellement données et photos.
  */
 import React, { useRef, useState } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
+import { useTheme } from '@/theme/ThemeProvider';
 import { PasswordRules } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
 import { BackendError } from '@/lib/backend/types';
@@ -32,6 +34,12 @@ export default function AccountScreen() {
   const [typed, setTyped] = useState('');
   const inFlight = useRef(false);
   const confirmWord = tr('u1.acc.confirmWord');
+  const th = useTheme();
+  // Réglages › « Supprimer mon compte » (/settings/account?delete=1) : la suppression s'affiche EN TÊTE de l'écran
+  const { delete: deleteParam } = useLocalSearchParams<{ delete?: string }>();
+  const deleteFirst = deleteParam === '1';
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const deleting = useRef(false);
 
   async function changePassword() {
     if (inFlight.current) return;
@@ -77,10 +85,13 @@ export default function AccountScreen() {
       tr('u1.acc.deleteBody'),
       tr('u1.acc.continue'),
     );
-    if (ok) { setTyped(''); setDeleteOpen(true); }
+    if (ok) { setTyped(''); setDeleteError(null); setDeleteOpen(true); }
   }
 
   async function finalDelete() {
+    if (deleting.current) return; // double appui : une seule demande au serveur
+    deleting.current = true;
+    setDeleteError(null);
     try {
       await deleteAccount.mutateAsync();
       await wipeLocalData();
@@ -90,12 +101,42 @@ export default function AccountScreen() {
     } catch (e) {
       // Audit 2 : refus du service (500, 429…) → message propre à la suppression (« Réessayez ou écrivez-nous »),
       // au lieu du générique « service momentanément indisponible » ; hors connexion → message réseau.
-      toast(e instanceof BackendError && e.isNetwork ? friendlyError(e) : tr('u1.acc.deleteFailed'), 'error');
+      const msg = e instanceof BackendError && e.isNetwork ? friendlyError(e) : tr('u1.acc.deleteFailed');
+      setDeleteError(msg);
+      toast(msg, 'error');
+    } finally {
+      deleting.current = false;
     }
   }
 
+  const DELETE_BLOCK = (
+    <>
+      <SectionTitle title={tr('u1.acc.deleteSection')} />
+      <Card testID="account-delete-card">
+        <Text variant="small">{tr('u1.acc.deleteExplain')}</Text>
+        <View style={{ gap: 6, marginTop: spacing.sm }} testID="account-delete-erased">
+          <Text weight="bold" variant="small">{tr('acct.erased.title')}</Text>
+          <Text variant="small" muted>{tr('acct.erased.list')}</Text>
+          <Text variant="small" muted>{tr('acct.household')}</Text>
+        </View>
+        {/* Abonnement : la suppression ne le résilie pas (App Store) — accès direct à sa gestion */}
+        <View style={{ gap: 6, marginTop: spacing.sm, padding: spacing.sm, borderRadius: 12, backgroundColor: th.colors.surfaceAlt }} testID="account-delete-subscription">
+          <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+            <Icon name="star" size={14} color={th.colors.primary} />
+            <Text weight="bold" variant="small">{tr('acct.sub.title')}</Text>
+          </View>
+          <Text variant="small" muted>{tr('acct.sub.body')}</Text>
+          <Button label={tr('acct.sub.manage')} variant="secondary" size="sm" icon="external-link" style={{ alignSelf: 'flex-start' }} onPress={() => router.push('/settings/subscription')} testID="account-manage-subscription" />
+        </View>
+        {isDemo ? <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('acct.demoDelete')}</Text> : null}
+        <Button label={tr('u1.acc.deleteSection')} variant="danger" icon="trash-2" style={{ marginTop: spacing.sm }} onPress={startDelete} testID="account-delete-start" />
+      </Card>
+    </>
+  );
+
   return (
     <Screen back title={tr('u1.acc.title')}>
+      {deleteFirst ? DELETE_BLOCK : null}
       <Card>
         <ListRow icon="mail" title={tr('u1.acc.email')} subtitle={session?.email ?? '—'} />
         {isDemo ? <Text variant="caption" muted>{tr('u1.acc.demoAccount')}</Text> : null}
@@ -118,17 +159,15 @@ export default function AccountScreen() {
         <Button label={tr('u1.acc.exportPdf')} icon="file-text" variant="secondary" loading={busy === 'pdf'} disabled={!!busy} style={{ marginTop: spacing.xs }} onPress={() => doExport('pdf')} />
       </Card>
 
-      <SectionTitle title={tr('u1.acc.deleteSection')} />
-      <Card>
-        <Text variant="small">{tr('u1.acc.deleteExplain')}</Text>
-        <Button label={tr('u1.acc.deleteSection')} variant="danger" icon="trash-2" style={{ marginTop: spacing.sm }} onPress={startDelete} />
-      </Card>
+      {deleteFirst ? null : DELETE_BLOCK}
       <Button label={tr('u1.acc.privacy')} variant="ghost" icon="shield" onPress={() => router.push('/settings/privacy')} />
 
       <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} title={tr('u1.acc.confirmDelete')}>
         <Banner tone="danger" title={tr('u1.acc.irreversible')}>{tr('u1.acc.typeToConfirm', { word: confirmWord })}</Banner>
-        <Field label={tr('u1.acc.confirmation')} value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder={confirmWord} />
-        <Button label={tr('u1.acc.deleteForever')} variant="danger" disabled={typed.trim() !== confirmWord} loading={deleteAccount.isPending} onPress={finalDelete} />
+        <Field label={tr('u1.acc.confirmation')} value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder={confirmWord} testID="account-delete-word" />
+        {deleteAccount.isPending ? <Text variant="small" muted accessibilityLiveRegion="polite" testID="account-deleting">{tr('acct.deleting')}</Text> : null}
+        {deleteError && !deleteAccount.isPending ? <Banner tone="danger" title={tr('acct.deleteFailedTitle')}>{deleteError}</Banner> : null}
+        <Button label={deleteError ? tr('acct.retry') : tr('u1.acc.deleteForever')} variant="danger" disabled={typed.trim() !== confirmWord || deleteAccount.isPending} loading={deleteAccount.isPending} onPress={finalDelete} testID="account-delete-final" />
       </Sheet>
     </Screen>
   );

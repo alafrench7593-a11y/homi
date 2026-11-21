@@ -11,6 +11,7 @@
 import React from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { GlassButton, GlassSheet } from '@/components/glass';
+import { useToolLock } from './ToolsIntro';
 import { Tappable } from '@/components/Tappable';
 import { ToolGlyph } from '@/components/ToolGlyph';
 import { haptic, Icon, Text } from '@/components/ui';
@@ -45,6 +46,8 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
   entry: ToolEntry | null; favorite: boolean; onToggleFavorite: (tool: CatalogTool) => void; onClose: () => void; onStart: (e: ToolEntry) => void;
 }) {
   const t = useTheme();
+  // Sans Premium (droits réels) : la fiche le dit avant d'ouvrir ; l'écran de l'outil reste couvert par l'offre
+  const { locked } = useToolLock();
   // Écran bas (320 × 568) : « En pratique » passe après « Commencer », qui reste visible sans défiler
   const short = useWindowDimensions().height < SHORT_SCREEN;
   // la dernière fiche reste affichée pendant la fermeture de la feuille
@@ -80,6 +83,12 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
 
         {/* Action principale : avant les détails, visible sans défiler sur un petit écran */}
         {tool.locked ? <Text variant="small" muted testID="tool-sheet-locked">{tr('pz.cat.lockedNote')}</Text> : null}
+        {!tool.locked && locked?.(tool) ? (
+          <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }} testID="tool-sheet-premium">
+            <Icon name="lock" size={14} color={t.colors.textMuted} />
+            <Text variant="small" muted style={{ flex: 1, minWidth: 0 }}>{tr('mt.preview.body')}</Text>
+          </View>
+        ) : null}
         <GlassButton label={tool.locked ? tr('pz.cat.lockedAction') : tr('th.sheet.start')} variant="primary" iconRight="arrow-right" full onPress={() => onStart(e)} testID="tool-sheet-start" />
         {preview && short ? <Preview preview={preview} /> : null}
 

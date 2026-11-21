@@ -3,6 +3,7 @@
  */
 import { useEffect, useState } from 'react';
 import { backend, enterDemoMode, exitDemoMode, hasRealBackend, isDemo, onBackendSwitch } from './backend';
+import { resyncAuth } from './auth';
 
 const DEMO_EMAIL = 'demo@toietmoi.local';
 const DEMO_PASSWORD = 'demonstration-locale-1';
@@ -21,6 +22,8 @@ export async function startDemoWithoutAccount(): Promise<void> {
     await backend.insert('consents', [{ user_id: s?.userId, purpose: 'health_data', granted: true }, { user_id: s?.userId, purpose: 'ai_assistant', granted: true }]).catch(() => undefined);
     await backend.rpc('load_sample_family');
   }
+  // La session de la visite est relue par l'application (jamais d'état « prête, sans session » → renvoi vers /welcome)
+  if (typeof resyncAuth === 'function') resyncAuth(); // (absente dans les tests qui simulent @/lib/auth)
 }
 
 /** Quitte la démonstration (seulement si les vrais services sont configurés). */

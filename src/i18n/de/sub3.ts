@@ -22,7 +22,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.prem.child.text': 'Fläschchen, Stillen, Windeln, Schlaf, Beikost, Entwicklungsschritte, Impfungen und Behandlungen.',
   'sub3.prem.family.title': 'Für meine Familie',
   'sub3.prem.family.text': 'Aufgaben und Routinen im Haushalt, Familienkalender, Einkäufe und Vorräte, Nachtablösung, Aufteilung der Mental Load.',
-  'sub3.prem.tools.title': 'Meine Werkzeuge',
+  'sub3.prem.tools.title': 'Meine Apps',
   'sub3.prem.tools.text': 'Mahlzeiten und Wochenmenüs, Produktscanner, Gesundheitsdokumente, Termine, Zusammenfassungen, Bibliothek, Community.',
   'sub3.prem.same': 'Alle drei Tarife öffnen genau dasselbe Premium.',
 

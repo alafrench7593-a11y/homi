@@ -30,6 +30,7 @@ import {
   type PaletteName, type Theme,
 } from '@/theme/tokens';
 import { formatNumber, t as tr } from '@/i18n';
+import { ThemePickerInline } from '@/features/themePicker/ThemePicker';
 
 type Mode = 'system' | 'light' | 'dark';
 const MODES: Mode[] = ['system', 'light', 'dark'];
@@ -87,35 +88,6 @@ function PalettePreview({ theme, testID }: { theme: Theme; testID?: string }) {
   );
 }
 
-function PaletteOption({ choice, selected, onPress }: { choice: PaletteName; selected: boolean; onPress: () => void }) {
-  const t = useTheme();
-  const theme = themeFor(t.isDark ? 'dark' : 'light', choice);
-  return (
-    <GlowCard
-      active={selected}
-      role="radio"
-      onPress={onPress}
-      testID={`palette-${choice}`}
-      accessibilityLabel={tr('settings.palette.choiceA11y', { name: paletteLabel(choice), desc: paletteDesc(choice) })}
-      style={{ flexBasis: '47%', flexGrow: 1, minWidth: 136 }}
-      contentStyle={{ padding: spacing.sm }}
-      padded={false}
-      still
-    >
-      <View style={{ gap: spacing.xs }}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <Dots theme={theme} />
-          {selected ? <Icon name="check" size={18} /> : null}
-        </Row>
-        <PalettePreview theme={theme} testID={`palette-preview-${choice}`} />
-        <View style={{ minWidth: 0 }}>
-          <Text weight="bold" variant="small">{paletteLabel(choice)}</Text>
-          <Text variant="caption" muted>{choice === DEFAULT_PALETTE ? `${tr('v6.palette.default')} · ${paletteDesc(choice)}` : paletteDesc(choice)}</Text>
-        </View>
-      </View>
-    </GlowCard>
-  );
-}
 
 /** Adaptatif : une ligne pleine largeur, les cinq palettes en pastilles, et la correspondance profil → palette. */
 function AdaptiveOption({ selected, onPress }: { selected: boolean; onPress: () => void }) {
@@ -300,8 +272,9 @@ export default function AppearanceScreen() {
 
       <SectionTitle title={tr('v6.palette.title')} />
       <Text variant="small" muted>{tr('v6.palette.intro')}</Text>
+      {/* Ticket 6 : LE MÊME sélecteur que le bouton palette de l'accueil (aperçu, Appliquer / Annuler), même source */}
+      <ThemePickerInline />
       <View accessibilityRole="radiogroup" accessibilityLabel={tr('v6.palette.title')} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="palette-choices">
-        {PALETTE_NAMES.map((p) => <PaletteOption key={p} choice={p} selected={choice === p} onPress={() => setPalette(p)} />)}
         <AdaptiveOption selected={choice === 'adaptive'} onPress={() => setPalette('adaptive')} />
       </View>
       <Text variant="caption" muted testID="palette-current">{`${tr('v6.palette.current')} : ${paletteLabel(shown)}. ${tr('v6.palette.animNote')}`}</Text>

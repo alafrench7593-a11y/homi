@@ -22,7 +22,8 @@ describe('écrans libres et réservés', () => {
     }
   });
   it('tout le reste est réservé sans Premium', () => {
-    for (const p of ['/', '/track', '/tools', '/community', '/cycle', '/bottle', '/child/abc/vaccines', '/medications', '/settings/reminders', '/family/custody', '/ask']) {
+    // « /tools » (aperçu du catalogue, ticket 3) est ouvert : voir ticketsNavDesign.test.tsx
+    for (const p of ['/', '/track', '/community', '/cycle', '/bottle', '/child/abc/vaccines', '/medications', '/settings/reminders', '/family/custody', '/ask']) {
       expect([p, gateFor(p, false, access())]).toEqual([p, 'locked']);
     }
     expect(isFreeRoute('/settingsx')).toBe(false);

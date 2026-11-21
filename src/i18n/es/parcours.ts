@@ -52,7 +52,7 @@ export const parcours: Messages<typeof fr> = {
   "pj.activeBadge": "Activo",
   "pj.already": "Este recorrido ya está activo.",
   "pj.addChild": "Añadir un hijo/a",
-  "pj.allTools": "Todas mis herramientas",
+  'pj.allTools': 'Todas mis apps',
   "pj.profile.baby": "Bebé {name}",
   "pj.profile.child": "Niño/a {name}",
   "pj.profile.previous": {"one": "{count} recorrido anterior", "other": "{count} recorridos anteriores"},

@@ -323,7 +323,7 @@ function ConfirmHost() {
   return (
     <Modal visible transparent animationType="fade" onRequestClose={() => done(false)}>
       <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} onPress={() => done(false)} accessibilityRole="button" accessibilityLabel={tr('common.close')} />
-      <Animated.View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, top: '30%', borderRadius: radius.xl, padding: spacing.lg, gap: spacing.sm, backgroundColor: t.isDark ? '#22152C' : '#FFFFFF', opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }) }, { translateY: pop.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }], shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 30, shadowOffset: { width: 0, height: 14 } }} accessibilityViewIsModal accessibilityRole="alert">
+      <Animated.View style={{ position: 'absolute', left: spacing.lg, right: spacing.lg, top: '30%', borderRadius: radius.xl, padding: spacing.lg, gap: spacing.sm, backgroundColor: t.tokens.surface.raised, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, opacity: pop, transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }) }, { translateY: pop.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }], shadowColor: t.tokens.shadowColor, shadowOpacity: 0.22, shadowRadius: 30, shadowOffset: { width: 0, height: 14 } }} accessibilityViewIsModal accessibilityRole="alert">
         <Text variant="heading">{req.title}</Text>
         {req.message ? <Text muted>{req.message}</Text> : null}
         <View style={{ flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs }}>

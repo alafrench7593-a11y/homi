@@ -81,10 +81,21 @@ for (const e of catalogue) {
   symbols[e.id] = tags.map(toPath).join('');
   meta[e.id] = CAT[e.category];
 }
+// symboles ajoutés par HOMI hors catalogue fourni (entrées de compte), dans la même construction : gardés tels quels
+const EXTRA = { account_delete: 'account', sign_out: 'account' };
+for (const [id, cat] of Object.entries(EXTRA)) {
+  const f = path.join(OUT, 'symboles', `${id}.svg`);
+  if (!fs.existsSync(f)) continue;
+  const g = fs.readFileSync(f, 'utf8').match(/<g stroke="url\(#pearl\)" stroke-width="2\.04">([\s\S]*?)<\/g>/);
+  if (!g) throw new Error(`${id} : couche nacrée introuvable`);
+  symbols[id] = (g[1].match(/<(path|circle|rect)\b[^>]*\/?>/g) ?? []).map(toPath).join('');
+  meta[id] = cat;
+}
 const ts = `/**
  * Symboles des 134 outils « verre dépoli » (21/11/2026) — FICHIER GÉNÉRÉ par scripts/da/tool-glass-import.cjs
  * depuis assets/brand/tool-glass/symboles/*.svg : ne pas modifier à la main. Les symboles génériques fournis ont été
  * redessinés pour dire la fonction de l'outil (originaux : assets/brand/tool-glass/symboles-originaux/).
+ * Hors catalogue fourni : \`account_delete\` et \`sign_out\` (entrées de compte dessinées par HOMI, même construction).
  * Chaque symbole = un tracé \`d\` sur la grille 24 (trait arrondi 2,04, posé en translate(21 21) scale(3.58) dans une
  * boîte 128 — la même que la plaque). Les couleurs (nacre, ombre, filet de lumière) sont dans src/theme/toolLogo.ts.
  */

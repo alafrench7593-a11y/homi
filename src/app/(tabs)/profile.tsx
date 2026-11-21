@@ -2,6 +2,8 @@
  * Profil : mes parcours, ma famille, mon espace et mes réglages. Un compte qui n'est QUE nounou voit un profil à part
  * (son compte, ses gardes, ses réglages : `CaregiverProfile`), jamais les outils du foyer.
  */
+import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
+import { SignOutRow } from '@/features/account/SignOutRow';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
@@ -123,7 +125,7 @@ function FamilyProfile() {
           <ListRow icon="at-sign" title={tr('profile.community')} subtitle={tr('profile.communitySub')} onPress={() => router.push('/moi' as never)} testID="profile-community" />
           <ListRow icon="lock" title={tr('profile.account')} subtitle={tr('profile.accountSub')} onPress={() => router.push({ pathname: '/moi', params: { tab: 'account' } } as never)} testID="profile-account" />
           {sharedCycles.data?.length ? <ListRow icon="users" title={tr('c3.partner.open')} subtitle={tr('c3.partner.openSub')} onPress={() => router.push('/partner/cycle' as never)} testID="profile-partner-cycle" /> : null}
-          <ListRow icon="grid" title={tr('profile.tools')} onPress={() => router.push('/tools')} />
+          <ListRow leading={<AppsLogo size={28} testID="profile-tools-logo" />} title={tr('profile.tools')} onPress={() => router.push('/tools')} />
         </Card>
 
         <MySubscriptionSection />
@@ -138,6 +140,8 @@ function FamilyProfile() {
           <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/profile' } } as never)} testID="profile-feedback" />
           <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle={help.summary} danger onPress={() => router.push('/emergency')} />
         </Card>
+        {/* Se déconnecter (visite : « Quitter la démo ») directement en bas du Profil */}
+        <SignOutRow testID="profile-sign-out" />
       </Screen>
       <ProfilePhotoSheet visible={photoOpen} onClose={() => setPhotoOpen(false)} />
     </View>

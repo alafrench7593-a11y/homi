@@ -92,7 +92,7 @@ export const settings = {
   'settings.preview.err': 'En retard',
   'settings.preview.info': 'Info',
   'settings.haptics': 'Vibrations légères au toucher',
-  'settings.familyTools': 'Ma famille et mes outils',
+  'settings.familyTools': 'Ma famille et mes apps',
   'settings.family': 'Famille & partage',
   'settings.family.members': { one: '{name} · {count} membre', other: '{name} · {count} membres' },
   'settings.family.invite': 'Inviter un coparent, gérer les accès',

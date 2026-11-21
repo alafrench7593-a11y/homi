@@ -19,6 +19,7 @@ import { backend } from '@/lib/backend';
 import { useAuth } from '@/lib/auth';
 import { useAccess } from '@/lib/data/hooks-access';
 import { gateFor } from '@/lib/premium/access';
+import { useBackendMode } from '@/lib/demoMode';
 import { useTheme } from '@/theme/ThemeProvider';
 import { t as tr } from '@/i18n';
 
@@ -37,10 +38,12 @@ export function PremiumGate() {
   // même clé que usePremium() : une seule lecture de has_premium pour toute l'application
   const q = useQuery({ queryKey: [session?.userId, 'subscriptions', 'premium'], queryFn: () => backend.rpc<boolean>('has_premium'), enabled: !!session, staleTime: 60_000 });
   const access = useAccess();
+  // Visite sans compte (famille d'exemple, données sur l'appareil) : écrans d'onglet parcourables, outils réservés
+  const { isDemo } = useBackendMode();
   if (!session) return null;
   // réponse inconnue après une erreur (hors connexion sans cache) : jamais d'ouverture par défaut
   const premium = q.data === true ? true : q.data === false || q.isError ? false : undefined;
-  const decision = gateFor(pathname, premium, access.data ?? null);
+  const decision = gateFor(pathname, premium, access.data ?? null, { visit: isDemo });
   if (decision === 'open') return null;
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: topInset, paddingBottom: insets.bottom }}

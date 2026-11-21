@@ -22,7 +22,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.prem.child.text': 'Biberones, lactancia, pañales, sueño, alimentación complementaria, etapas del desarrollo, vacunas y tratamientos.',
   'sub3.prem.family.title': 'Para mi familia',
   'sub3.prem.family.text': 'Tareas y rutinas del hogar, agenda familiar, compras y existencias, relevos de noche, reparto de la carga mental.',
-  'sub3.prem.tools.title': 'Mis herramientas',
+  'sub3.prem.tools.title': 'Mis apps',
   'sub3.prem.tools.text': 'Comidas y menús de la semana, escáner de productos, documentos de salud, citas, resúmenes, biblioteca, comunidad.',
   'sub3.prem.same': 'Los tres planes abren exactamente el mismo Premium.',
 
