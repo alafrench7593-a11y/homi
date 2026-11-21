@@ -1,6 +1,8 @@
 /**
  * Prévisualisation des trois maquettes du paywall « première réussite » (QA visuelle, captures Playwright) :
  * /dev/paywall?direction=A|B|C&trial=1|0&need=feed_sleep&variant=need|generic&catalog=ready|loading|offline&phase=idle|cancelled…
+ * &reminder=0 : frise sans l'étape « rappel » (rendu web réel). Par défaut la maquette montre l'iPhone (rappel possible).
+ * A et B forment la paire du test « héros » du skill Paywall Designer (résultat contre frise) ; C est l'ancienne direction.
  * Vrai composant (`PaywallView`), grille de DÉMONSTRATION signalée, résultat de démo d'exemple ; aucun achat possible.
  * Accessible comme /dev/glass : mode développeur ou démonstration ; ailleurs, retour à l'accueil.
  */
@@ -20,7 +22,7 @@ const CATALOG: CatalogState[] = ['loading', 'offline', 'unavailable', 'error', '
 const PHASES: PurchasePhase[] = ['idle', 'buying', 'cancelled', 'deferred', 'pending', 'failed', 'confirmed', 'restoring', 'restored', 'restore_none', 'restore_failed'];
 
 export default function PaywallPreview() {
-  const q = useLocalSearchParams<{ direction?: string; trial?: string; need?: string; variant?: string; catalog?: string; phase?: string; plan?: string }>();
+  const q = useLocalSearchParams<{ direction?: string; trial?: string; need?: string; variant?: string; catalog?: string; phase?: string; plan?: string; reminder?: string }>();
   const dev = useDeveloperMode();
   const th = useTheme();
   const direction: Direction = DIRECTIONS.find((d) => d === q.direction) ?? 'B';
@@ -44,7 +46,7 @@ export default function PaywallPreview() {
   return (
     <View style={{ flex: 1, backgroundColor: th.colors.background }}>
       <PaywallView direction={direction} variant={variant} need={need} result={result} cards={cards} selectedKey={selected} onSelect={setSelected}
-        catalog={catalog} phase={phase} aiOnline={false} now={now} needsAccount
+        catalog={catalog} phase={phase} aiOnline={false} now={now} reminder={q.reminder !== '0'} needsAccount
         onBuy={() => undefined} onRetry={() => undefined} onRestore={() => undefined} onClose={() => router.back()} onLegal={(doc) => router.push(`/legal/${doc}`)} />
     </View>
   );

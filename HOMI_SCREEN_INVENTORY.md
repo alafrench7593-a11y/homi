@@ -4,7 +4,7 @@
 > les statuts se saisissent dans `scripts/homi/inventory-status.json`, puis on relance le script.
 > Données brutes : `HOMI_SCREEN_INVENTORY.csv` (lignes `ecran` puis lignes `outil`).
 
-**297 routes** réelles (`src/lib/routes.generated.ts`) portées par **298 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
+**298 routes** réelles (`src/lib/routes.generated.ts`) portées par **299 fichiers** d’écran (la route `/` a deux fichiers : l’aiguillage de lancement `src/app/index.tsx` et l’Accueil `src/app/(tabs)/index.tsx`). **127 outils** du catalogue (`MATRICE_OUTILS.csv`).
 
 ## Colonnes
 
@@ -19,7 +19,7 @@
 
 | Zone | Fichiers | À faire | Tranche | Fait | Couleurs en dur | Animated RN |
 |---|---:|---:|---:|---:|---:|---:|
-| Autres | 37 | 37 | 0 | 0 | 0 | 0 |
+| Autres | 38 | 38 | 0 | 0 | 0 | 0 |
 | Auth / entrée | 10 | 0 | 2 | 8 | 0 | 0 |
 | Admin | 7 | 7 | 0 | 0 | 0 | 0 |
 | Réglages | 24 | 24 | 0 | 0 | 0 | 0 |
@@ -30,9 +30,9 @@
 | Bébé et enfant | 37 | 33 | 0 | 4 | 50 | 1 |
 | Famille | 44 | 44 | 0 | 0 | 6 | 0 |
 | Communauté | 18 | 18 | 0 | 0 | 4 | 0 |
-| **Total** | **298** | **273** | **2** | **23** | **87** | **3** |
+| **Total** | **299** | **274** | **2** | **23** | **87** | **3** |
 
-Rôles : détail 54 · formulaire 58 · historique 18 · liste 118 · réglage 30 · résultat 13 · scène 7.
+Rôles : détail 55 · formulaire 58 · historique 18 · liste 118 · réglage 30 · résultat 13 · scène 7.
 
 ## Pilotes proposés (à valider en premier)
 
@@ -86,6 +86,7 @@ Choisis dans l’inventaire réel pour couvrir les trois formes d’outil ; chac
 | `/start` | formulaire | — | — | 0 |  | à faire |
 | `/start/done` | détail | — | — | 0 |  | à faire |
 | `/start/offers` | détail | — | — | 0 |  | à faire |
+| `/start/sample` | détail | — | — | 0 |  | à faire |
 | `/tools/[category]` | détail | — | Screen, EmptyState, VirtualList | 0 |  | à faire |
 
 ### Auth / entrée

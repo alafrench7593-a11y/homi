@@ -286,6 +286,7 @@ ecran,Santé,/sources,src/app/sources.tsx,liste,sources,Screen Card Field Button
 ecran,Autres,/start,src/app/start/index.tsx,formulaire,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/start/done,src/app/start/done.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/start/offers,src/app/start/offers.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/start/sample,src/app/start/sample.tsx,détail,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/story,src/app/story.tsx,scène,,Screen Button,0,non,à faire,,,,,,,,,,,,,
 ecran,Accueil,/summary,src/app/summary/index.tsx,résultat,summary,Screen Button Banner Chip SectionTitle,0,non,à faire,,,,,,,,,,,,,
 ecran,Santé,/teeth,src/app/teeth.tsx,liste,kid_teeth,Screen Sheet Field Button Banner Chip ListRow EmptyState ErrorView Skeleton,0,non,à faire,,,,,,,,,,,,,

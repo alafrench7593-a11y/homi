@@ -1,5 +1,5 @@
 /**
- * Après le oui (/start/done) : confirmation — formule, montant, date de fin d'essai ou de première facturation
+ * Après le oui (/start/done) : confirmation — formule, montant, comment arrêter, date de fin d'essai ou de première facturation
  * CONFIRMÉE par le serveur (ligne d'abonnement), sinon une phrase qui dit où elle apparaîtra ;
  *  - bouton principal : ouvre directement l'outil essayé (après la création du foyer si elle n'est pas faite) ;
  *  - invitation du co-parent (Premium : un autre adulte inclus ; Famille : tous les adultes du foyer) ;
@@ -82,11 +82,13 @@ export function FirstWinDone() {
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={Platform.OS === 'web'}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.lg, gap: spacing.md, maxWidth: 560, width: '100%', alignSelf: 'center' }}>
         <Cascade index={0}>
-          <View style={{ alignItems: 'center', gap: spacing.xs }} accessible accessibilityRole="header" accessibilityLabel={`${tr('fw.done.title')}. ${tr('fw.done.plan', { plan: planName })}. ${billing}`}>
+          <View style={{ alignItems: 'center', gap: spacing.xs }} accessible accessibilityLabel={`${tr('fw.done.title')}. ${tr('fw.done.plan', { plan: planName })}. ${billing}`}>
             <SuccessCheck visible size={56} color={th.colors.success} />
-            <Text variant="title" center>{tr('fw.done.title')}</Text>
+            <Text variant="title" center accessibilityRole="header">{tr('fw.done.title')}</Text>
             <Text weight="bold" center testID="fw-done-plan">{tr('fw.done.plan', { plan: planName })}</Text>
             <Text center muted testID="fw-done-billing">{billing}</Text>
+            {/* Comment arrêter : dit ici, après le oui (le paywall ne porte que la ligne légale) */}
+            <Text variant="small" center muted testID="fw-done-stop">{tr('fw.done.stop')}</Text>
           </View>
         </Cascade>
         {demo ? (
@@ -104,7 +106,6 @@ export function FirstWinDone() {
             <Card testID="fw-done-reminder">
               <View style={{ gap: spacing.xs }}>
                 <Text weight="bold">{tr('fw.rem.title')}</Text>
-                <Text variant="small" muted>{tr('fw.rem.body')}</Text>
                 {remText ? <View accessibilityLiveRegion="polite" testID={`fw-rem-${rem.status}`}><Banner tone={rem.status === 'scheduled' ? 'success' : 'info'}>{remText}</Banner></View> : null}
                 {rem.status !== 'scheduled' && rem.status !== 'too_late' && rem.status !== 'unsupported' ? (
                   <Button label={tr('fw.rem.set')} icon="bell" variant="secondary" full loading={remBusy} onPress={() => void remind()} testID="fw-rem-set" />
@@ -117,7 +118,6 @@ export function FirstWinDone() {
           <Card testID="fw-done-invite">
             <View style={{ gap: spacing.xs }}>
               <Text weight="bold">{tr('fw.done.inviteTitle')}</Text>
-              <Text variant="small" muted>{tr('fw.done.inviteBody')}</Text>
               {tier === 'family' ? <Text variant="small" muted>{tr('fw.done.inviteFamily')}</Text> : null}
               <Button label={tr('fw.done.invite')} icon="user-plus" variant="secondary" full onPress={() => router.push('/settings/family')} testID="fw-done-invite-btn" />
             </View>

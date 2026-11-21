@@ -263,8 +263,10 @@ réponse « sexualité ». Public cible : 18+. [à vérifier]
 > does not calculate doses and always refers to a doctor or midwife. Emergency numbers are reachable without an account.
 >
 > **Demo account** (Premium active, sample family): e-mail `[à fournir]` / password `[à fournir]`. You can also tap
-> "Découvrir sans compte" on the first screen to explore sample data stored only on the device (purchases are simulated
-> there and clearly labelled "démonstration"; real purchases use StoreKit with the demo account).
+> "Découvrir sans compte" on the first screen: a short guided demo with sample data (no account, nothing sent), then
+> the subscription screen, which can be closed. From the demo result, "Famille d'exemple" opens a sample family stored
+> only on the device (purchases are simulated there and clearly labelled "démonstration"; real purchases use StoreKit
+> with the demo account).
 >
 > **Account deletion**: Profil tab › "Mon compte privé" › "Supprimer mon compte" (also Réglages › Mon compte).
 >
