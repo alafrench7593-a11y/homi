@@ -162,7 +162,9 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     await act(async () => { account.props.onPress(); });
     await flush(120);
     t = allText(r);
-    for (const x of ['Abonnement', 'Notifications', 'Confidentialité', 'Personnes bloquées', 'Sécurité', 'Aide', 'Exporter mes données', 'Supprimer mon compte', 'Se déconnecter', 'Ajouter un profil']) expect(t).toContain(x);
+    for (const x of ['Abonnement', 'Notifications', 'Confidentialité', 'Personnes bloquées', 'Sécurité', 'Aide', 'Exporter mes données', 'Supprimer mon compte', 'Ajouter un profil']) expect(t).toContain(x);
+    // Ligne de sortie partagée (SignOutRow) : « Se déconnecter », ou « Quitter la démo » en démonstration (tests sans serveur)
+    expect(t.includes('Se déconnecter') || t.includes('Quitter la démo')).toBe(true);
     r.unmount();
   });
 

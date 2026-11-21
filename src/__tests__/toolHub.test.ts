@@ -33,11 +33,11 @@ function everyTool(): CatalogTool[] {
 describe('registre : un besoin = une entrée', () => {
   beforeAll(() => setLocale('fr'));
 
-  it('126 outils dans 9 catégories, l’espace Communauté et 7 entrées de compte à part (144 entrées avant la refonte)', () => {
+  it('126 outils dans 9 catégories, l’espace Communauté et 9 entrées de compte à part (144 entrées avant la refonte)', () => {
     // 21/11/2026 : « Garde et nounou », « Se comprendre », « Ma place dans la famille » ; « Mes informations » (compte)
     expect(REAL_TOOLS).toHaveLength(127);
     expect(CATEGORY_TOOLS).toHaveLength(126);
-    expect(TOOLS.filter((d) => d.category === 'account').map((d) => d.id).sort()).toEqual(['home_settings', 'journeys', 'my_info', 'notifications', 'preg_edit', 'preg_end', 'settings']);
+    expect(TOOLS.filter((d) => d.category === 'account').map((d) => d.id).sort()).toEqual(['account_delete', 'home_settings', 'journeys', 'my_info', 'notifications', 'preg_edit', 'preg_end', 'settings', 'sign_out']);
     const counts = Object.fromEntries(TOOL_CATEGORIES.map((c) => [c, REAL_TOOLS.filter((d) => d.category === c).length]));
     expect(counts).toEqual({ feeding: 12, sleep: 6, care: 12, health: 22, cycle: 29, pregnancy: 15, school: 5, couple: 11, family: 14 });
     expect(new Set(TOOLS.map((d) => d.id)).size).toBe(TOOLS.length);

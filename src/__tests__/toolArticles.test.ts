@@ -7,7 +7,7 @@ import { GUIDE_ARTICLES } from '@/content/articles/guide';
 
 const ALL = [...LIBRARY_ARTICLES, ...NEURO_LIBRARY, ...GUIDE_ARTICLES];
 /** Outils qui SONT déjà des articles, des réglages ou des écrans de navigation. */
-const NO_ARTICLES = new Set(['ask', 'local_ai', 'library', 'sources', 'community', 'community.messages', 'my_info', 'reminders', 'notifications', 'home_settings', 'settings', 'journeys', 'summary', 'family_summary', 'preg_edit', 'avoid_reminders', 'ttc_reminders', 'ttc_articles', 'preg_articles', 'preg_birth_prep', 'guides', 'library.conception', 'library.pregnancy', 'library.birth']);
+const NO_ARTICLES = new Set(['ask', 'local_ai', 'library', 'sources', 'community', 'community.messages', 'my_info', 'reminders', 'notifications', 'home_settings', 'settings', 'account_delete', 'sign_out', 'journeys', 'summary', 'family_summary', 'preg_edit', 'avoid_reminders', 'ttc_reminders', 'ttc_articles', 'preg_articles', 'preg_birth_prep', 'guides', 'library.conception', 'library.pregnancy', 'library.birth']);
 
 describe('articles par outil', () => {
   it('chaque outil a un thème (ou est explicitement exclu)', () => {

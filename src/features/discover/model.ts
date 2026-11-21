@@ -214,6 +214,8 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   reminders: { chapter: 'more', demo: { kind: 'remind', time: '20:00' } },
   notifications: { chapter: 'more', demo: { kind: 'remind', time: '20:00' } },
   home_settings: { chapter: 'more', demo: { kind: 'setting' } },
+  account_delete: { chapter: 'more', demo: { kind: 'setting' } },
+  sign_out: { chapter: 'more', demo: { kind: 'setting' } },
   settings: { chapter: 'more', demo: { kind: 'setting' } },
   journeys: { chapter: 'more', demo: { kind: 'setting' } },
   my_info: { chapter: 'more', demo: { kind: 'setting' } },

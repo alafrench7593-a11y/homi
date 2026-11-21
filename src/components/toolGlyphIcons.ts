@@ -186,6 +186,8 @@ export const TOOL_GLYPHS: Record<string, string> = {
   notifications: 'bell-badge',
   journeys: 'map-marker-path',
   home_settings: 'view-dashboard-edit',
+  account_delete: 'account-remove-outline',
+  sign_out: 'logout',
   my_info: 'card-account-details-outline',
   preg_edit: 'calendar-edit',
   preg_end: 'flag-checkered',

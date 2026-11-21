@@ -1,6 +1,8 @@
 /**
  * Symboles des 134 outils « verre dépoli » de la propriétaire (21/11/2026) — FICHIER GÉNÉRÉ par
  * scripts/da/tool-glass-import.cjs depuis assets/brand/tool-glass/symboles/*.svg : ne pas modifier à la main.
+ * Exception (21/11/2026, consigne « déconnexion et suppression faciles à trouver ») : `account_delete` et `sign_out`,
+ * dessinés par HOMI dans la même construction en attendant la planche de la propriétaire (sources SVG à côté).
  * Chaque symbole = un tracé `d` sur la grille 24 (trait arrondi 2,04, posé en translate(21 21) scale(3.58) dans une
  * boîte 128 — la même que la plaque). Les couleurs (nacre, ombre, filet de lumière) sont dans src/theme/toolLogo.ts.
  */
@@ -10,6 +12,8 @@ export const TOOL_SYMBOLS: Record<string, string> = {
  "journeys": "M19 9a7 7 0 1 0 0 6m1-11v6h-6",
  "notifications": "M0 0m4 5-1 12v3h18v-3L20 5Z M3 15h5l2 3h4l2-3h5",
  "home_settings": "M3 4h18v16H3Zm0 5h18m-12 0v11",
+ "account_delete": "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6m4-6v6",
+ "sign_out": "M10 4H5v16h5M14 8l4 4-4 4m4-4H9",
  "settings": "M0 0m9 4 3-2 3 2 3 1 1 3 2 4-2 4-1 3-3 1-3 2-3-2-3-1-1-3-2-4 2-4 1-3ZM9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0Z",
  "preg_end": "M5 21V4c5-3 9 3 14 0v10c-5 3-9-3-14 0",
  "kid_album": "M3 4h18v16H3Zm0 12 5-5 5 5 3-3 5 4M7.5 8a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z",
@@ -148,6 +152,8 @@ export const TOOL_GLASS_CATEGORY: Record<string, string> = {
  "journeys": "account",
  "notifications": "account",
  "home_settings": "account",
+ "account_delete": "account",
+ "sign_out": "account",
  "settings": "account",
  "preg_end": "account",
  "kid_album": "care",
