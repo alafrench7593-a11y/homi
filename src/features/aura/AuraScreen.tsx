@@ -120,7 +120,9 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
 
   const { catalog, entries } = useAllToolEntries();
   const allTools = useMemo(() => { const seen = new Set<string>(); return entries.map((e) => e.tool).filter((x) => (seen.has(x.id) ? false : (seen.add(x.id), true))); }, [entries]);
-  const catalogIds = useMemo(() => new Set(catalog.map((x) => x.id)), [catalog]);
+  // Catalogue envoyé à Aura : les outils du profil affiché PUIS ceux des autres profils du foyer auxquels la personne a accès
+  // (« Mon bébé prend le sein » depuis le profil Grossesse trouve l’Allaitement du bébé) ; jamais d’outil hors de ces listes
+  const catalogIds = useMemo(() => new Set(allTools.map((x) => x.id)), [allTools]);
   const featured = useMemo(() => featuredFor(theme, catalog), [theme, catalog]);
   // l'outil du contexte n'est proposé que s'il est réellement accessible (profil affiché ou autre profil du foyer)
   const ctxTool = useMemo(() => (toolCtx ? allTools.find((x) => x.id === toolCtx.id) ?? null : null), [toolCtx, allTools]);
@@ -262,7 +264,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     try {
       const r: AuraServerReply = await askAura({
         kind: 'chat', message: question, theme, lang: getLocale(), region, request_id: requestId, credit_action: action,
-        recent_turns: recentTurns(), tools: catalogForServer(catalog, (id) => tMaybe(toolWordsKey(id)) || ''),
+        recent_turns: recentTurns(), tools: catalogForServer(allTools, (id) => tMaybe(toolWordsKey(id)) || ''),
         ...(opts.journal ? { journal: opts.journal, data_consent: true } : {}),
       });
       if (r.safety && r.safety !== 'none') {
@@ -483,7 +485,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               <Text color={t.tokens.action.text}>{m.text}</Text>
             </View>
           ) : (
-            <AuraReply reply={m.reply!} catalog={catalog} onChooseJournal={setJournal}
+            <AuraReply reply={m.reply!} catalog={allTools} onChooseJournal={setJournal}
               voice={ttsAvailable ? { speaking: speakingId === m.id, onToggle: (text) => toggleSpeak(m.id, text) } : null}
               bot={m.id === lastAura?.id ? { state: botState, still: false } : { state: restingBot(m.reply!), still: true }}
               onRetry={(r) => void send(r.question, { requestId: r.requestId, journal: r.journal, retryOf: m.id })}

@@ -167,6 +167,19 @@ describe('Aura : entrée contextuelle et actions sûres', () => {
     expect(action).toMatchObject({ type: 'open_tool', id: 'baby_breastfeed' });
   });
 
+  it('profil affiché sans bébé : le catalogue du foyer (outils des autres profils accessibles) garde Allaitement devant Sommeil', () => {
+    const own = toolCatalog({ scope: 'pregnancy' });
+    const baby = toolCatalog({ scope: 'baby', childId: 'c1', babyId: 'c1', postpartum: true });
+    const seenIds = new Set<string>();
+    const household = [...own, ...baby].filter((x) => (seenIds.has(x.id) ? false : (seenIds.add(x.id), true)));
+    const cat = sanitizeCatalog(catalogForServer(household, (id) => tMaybe(toolWordsKey(id)) || ''));
+    expect(searchAuraCatalog(cat, 'Mon bébé prend le sein')[0]?.id).toBe('baby_breastfeed');
+    // AuraScreen envoie bien ce catalogue (outils du profil puis des autres profils), et valide les cartes avec lui
+    const src = require('fs').readFileSync('src/features/aura/AuraScreen.tsx', 'utf8') as string;
+    expect(src).toMatch(/tools: catalogForServer\(allTools,/);
+    expect(src).toMatch(/new Set\(allTools\.map/);
+  });
+
   it('modèle simulé (démonstration) : même recherche, puis proposition « Ouvrir Allaitement »', () => {
     const cat = babyCatalog();
     const q = 'Mon bébé prend le sein';

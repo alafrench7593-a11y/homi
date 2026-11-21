@@ -133,7 +133,8 @@ export function ThemePickerSheet({ visible, onClose }: { visible: boolean; onClo
               onPress={() => { if (p !== selected) motionHaptic('selection'); previewTheme(p); }} />
           ))}
         </View>
-        <Text variant="caption" muted center>{tr('tp.choiceHint')}</Text>
+        {/* petit écran : la consigne cède la place au bouton (le bouton reste visible sans défiler) */}
+        {height >= 700 ? <Text variant="caption" muted center>{tr('tp.choiceHint')}</Text> : null}
         <Button label={tr('tp.apply')} full size="lg" onPress={apply} testID="theme-apply" />
         <Button label={tr('tp.more')} variant="link" icon="sliders" style={{ alignSelf: 'center' }} testID="theme-more"
           onPress={() => { cancelPreview(); onClose(); router.push('/settings/appearance'); }} />

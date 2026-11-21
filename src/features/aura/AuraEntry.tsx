@@ -9,7 +9,7 @@
  * Ici, le PERSONNAGE d'Aura est sa lentille (`AuraOrb`) ; le robot compagnon reste dans la conversation.
  */
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { GlassIconButton, GlassModal } from '@/components/glass';
@@ -99,10 +99,12 @@ export function AuraIntroLens({ size = 112, testID = 'aura-intro-lens' }: { size
 /** Présentation d'Aura (fenêtre de verre) : lentille, message, Parler / Écrire / Plus tard. */
 export function AuraIntro({ visible, onDone }: { visible: boolean; onDone: (choice: 'talk' | 'write' | 'later') => void }) {
   const choices = introChoices({ canTalk: dictationMode() !== 'none' });
+  // écran bas (320 × 568) : lentille plus petite, tout tient sans défiler
+  const short = useWindowDimensions().height < 700;
   return (
     <GlassModal visible={visible} onClose={() => onDone('later')} title={tr('aura.name')} testID="aura-intro">
-      <View style={{ alignItems: 'center', gap: spacing.md }} accessibilityLabel={tr('ta.intro.a11y')}>
-        {visible ? <AuraIntroLens /> : null}
+      <View style={{ alignItems: 'center', gap: short ? spacing.sm : spacing.md }} accessibilityLabel={tr('ta.intro.a11y')}>
+        {visible ? <AuraIntroLens size={short ? 64 : 112} /> : null}
         <Text center testID="aura-intro-hello" accessibilityLiveRegion="polite">{tr('ta.intro.hello')}</Text>
         <View style={{ alignSelf: 'stretch', gap: spacing.xs }}>
           {choices.includes('talk') ? <Button label={tr('ta.intro.talk')} icon="mic" full onPress={() => onDone('talk')} testID="aura-intro-talk" /> : null}
