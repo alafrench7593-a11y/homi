@@ -58,7 +58,7 @@ export default function Outings() {
       </GlassSurface>
 
       <Text variant="label">{tr('out.types')}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} testID="out-categories" style={{ marginHorizontal: -spacing.md }} contentContainerStyle={{ gap: spacing.xs, paddingHorizontal: spacing.md }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} testID="out-categories" style={{ marginHorizontal: -spacing.md }} contentContainerStyle={{ gap: spacing.xs, paddingHorizontal: spacing.md }}>
         <Chip label={tr('out.cat.all')} icon="grid" selected={cat === 'all'} onPress={() => setCat('all')} testID="out-cat-all" />
         {MAIN_CATEGORIES.map((c) => <Chip key={c} label={catLabel(c)} icon={CATEGORY_ICON[c] as never} selected={cat === c} onPress={() => setCat(c)} testID={`out-cat-${c}`} />)}
       </ScrollView>

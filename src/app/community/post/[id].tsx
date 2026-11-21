@@ -209,6 +209,8 @@ export default function PostScreen() {
   return (
     <Screen back scroll={false} padded={false}>
       <VirtualList
+        // Champ de commentaire dans le pied de liste : jamais retiré hors écran (sinon « Commenter » ne donne pas le focus)
+        removeClippedSubviews={false}
         ref={listRef}
         onScrollToIndexFailed={(info: { index: number; averageItemLength: number }) => { listRef.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: true }); }}
         data={commentsLoading || commentsError ? [] : rows}

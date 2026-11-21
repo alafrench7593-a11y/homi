@@ -15,6 +15,7 @@
  *    `Screen`, portée clavier existante).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { VirtualList } from '@/components/States';
 import { AppState, FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -511,13 +512,15 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       )}
     >
       <View style={{ flex: 1 }} testID="aura-screen">
-        <FlatList
+        {/* VirtualList : portée clavier (le champ « Traduire mes émotions » de l'en-tête remonte au-dessus du clavier) */}
+        <VirtualList
           ref={list}
+          removeClippedSubviews={false}
           data={msgs}
           keyExtractor={(m) => m.id}
           extraData={`${botState}:${lastAura?.id ?? ''}`}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
+          keyboardDismissMode="on-drag"
           ListHeaderComponent={header}
           contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.lg, gap: spacing.md }}
           renderItem={({ item: m }) => (m.role === 'user' ? (

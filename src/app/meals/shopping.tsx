@@ -6,7 +6,7 @@
  * qu'après validation explicite (écran Stocks).
  */
 import React, { useMemo, useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Keyboard, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
@@ -82,7 +82,8 @@ export default function Shopping() {
   async function addItem(force = false) {
     if (!list || !label.trim()) return;
     const existing = findDuplicate(items, { label: label.trim(), size: size.trim() || null });
-    if (existing && !force) { setDup(existing); haptic('warning'); return; }
+    // Bannière « déjà dans la liste » sous la carte : le clavier se ferme pour qu'elle soit vue
+    if (existing && !force) { Keyboard.dismiss(); setDup(existing); haptic('warning'); return; }
     const n = qty.trim() ? Number(qty.replace(',', '.')) : null;
     try {
       await add.mutateAsync({ listId: list.id, householdId: list.household_id, label: label.trim(), position: items.length,

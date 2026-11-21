@@ -179,7 +179,7 @@ export default function NewMission() {
             <View style={{ gap: spacing.xs }}>
               <Text variant="heading" accessibilityRole="header">{tr('mis.form.templates')}</Text>
               <Text variant="small" muted>{tr('mis.form.templatesHint')}</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
+              <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
                 {MISSION_TEMPLATES.map((tpl) => <Chip key={tpl.key} label={tr(tpl.title)} icon={tpl.icon} selected={d.template === tpl.key} onPress={() => pick(tpl)} testID={`mission-tpl-${tpl.key}`} />)}
               </ScrollView>
             </View>

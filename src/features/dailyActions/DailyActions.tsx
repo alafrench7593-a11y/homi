@@ -245,7 +245,7 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>
-          <ScrollView horizontal {...noSwipe} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" {...noSwipe} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
             {list.map((m) => <Capsule key={m.key} m={m} />)}
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.customize')} testID="actions-customize" onPress={() => { setDraft(shown); setEdit(true); }}
               style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: t.material.lines.track, minHeight: 132 }}>

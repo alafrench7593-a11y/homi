@@ -106,6 +106,8 @@ function Chat() {
   const { latest } = useConsents();
   const setConsent = useSetConsent();
   const scroll = useRef<FlatList<LocalMsg>>(null);
+  // Clavier ouvert : le dernier message reste visible au-dessus de la barre de saisie
+  useEffect(() => { if (!keyboardVisible) return; const id = setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 80); return () => clearTimeout(id); }, [keyboardVisible]);
   const askedInitial = useRef(false);
   const consented = latest.get('ai_assistant') === true;
 

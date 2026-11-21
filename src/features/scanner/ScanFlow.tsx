@@ -93,7 +93,7 @@ function StepScroll({ step, children }: { step: string; children: React.ReactNod
   return (
     <KeyboardScopeContext.Provider value={scope}>
       <ScrollView ref={ref} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64}
-        keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} testID="scan-scroll"
+        keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false} testID="scan-scroll"
         contentContainerStyle={{ paddingTop: spacing.md, paddingBottom: spacing.xxl, gap: spacing.md }}>
         {children}
         {toolId ? <ToolArticles toolId={toolId} /> : null}

@@ -4,6 +4,7 @@
  * et la présente : réponse, points clés, quand demander conseil, article et sources. Aucune question ne quitte le téléphone.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { useKeyboardVisible } from '@/components/keyboard';
 import { aiAssistantOnline } from '@/config/features';
 import { FlatList, Keyboard, Linking, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -149,6 +150,9 @@ export default function LocalAssistant() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const region = useEmergencyRegion();
   const list = useRef<FlatList<Msg>>(null);
+  const keyboardVisible = useKeyboardVisible();
+  // Clavier ouvert : le dernier message reste visible au-dessus de la barre de saisie
+  useEffect(() => { if (!keyboardVisible) return; const id = setTimeout(() => list.current?.scrollToEnd({ animated: true }), 80); return () => clearTimeout(id); }, [keyboardVisible]);
 
   const journey = typeof params.journey === 'string' && SUGGEST[params.journey] ? params.journey : pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : (profile?.journeys ?? []).includes('avoid') ? 'avoid' : 'pregnant';
   const suggestions = [...SUGGEST[journey], ...(journey !== 'child' ? SUGGEST.child.slice(0, 2) : [])];

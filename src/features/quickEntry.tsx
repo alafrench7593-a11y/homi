@@ -5,7 +5,7 @@
  * pré-rempli (biberon, rendez-vous, médicament) ou une confirmation explicite est demandée (sommeil).
  */
 import React, { useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Keyboard, Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { Banner, Button, Card, Field, Row, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
@@ -63,7 +63,8 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
   const addSleep = useAddLog('sleep');
   const Rec = speech();
   if (!children?.length) return null;
-  const analyse = (v = text) => setRes(v.trim() ? parseQuickEntry(v, children, new Date(), activeChildId) : null);
+  // Le résultat et « Vérifier et enregistrer » s'affichent sous le champ : le clavier se ferme pour les montrer
+  const analyse = (v = text) => { if (v.trim()) Keyboard.dismiss(); setRes(v.trim() ? parseQuickEntry(v, children, new Date(), activeChildId) : null); };
 
   function dictate() {
     if (!Rec) return;
