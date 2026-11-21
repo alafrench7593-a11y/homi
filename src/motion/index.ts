@@ -17,7 +17,7 @@ export { COMPLETION, CompletionCheck, CompletionGlow } from './TaskComplete';
 export { MORPH, MorphHost, MorphSource, MorphTarget, morphRegistry, useMorphSource } from './Morph';
 export { Reveal, REVEAL } from './Reveal';
 // Primitives « Liquid Glass » (17/11/2026) — voir HOMI_DESIGN_SYSTEM.md § 10 et MOTION_SYSTEM.md
-export { auraMotion, favorite, liquidIndicator, logoMotion, reorder, shake, skeleton, successCheck, swap } from './curves';
+export { auraBotMotion, auraMotion, favorite, liquidIndicator, logoMotion, reorder, shake, skeleton, successCheck, swap } from './curves';
 export { usePress, type PressMotion } from './Press';
 export { StaggerList } from './Stagger';
 export { ContentSwap } from './ContentSwap';

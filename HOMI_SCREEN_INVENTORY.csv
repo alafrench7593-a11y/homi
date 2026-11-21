@@ -95,6 +95,7 @@ ecran,Cycle et fertilité,/cycle/risk,src/app/cycle/risk.tsx,résultat,,Screen B
 ecran,Cycle et fertilité,/cycle/share,src/app/cycle/share.tsx,résultat,,Screen Card Button Banner Toggle Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/cycle/stats,src/app/cycle/stats.tsx,résultat,cycle_stats,Screen Skeleton,0,non,à faire,,,,,,,,,,,,,
 ecran,Cycle et fertilité,/cycle/symptoms,src/app/cycle/symptoms.tsx,liste,cycle_symptoms,Screen Field Button,0,non,à faire,,,,,,,,,,,,,
+ecran,Autres,/dev/aura-bot,src/app/dev/aura-bot.tsx,liste,,Button,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/dev/glass,src/app/dev/glass.tsx,liste,,Field,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/dev/icons,src/app/dev/icons.tsx,liste,,,0,non,à faire,,,,,,,,,,,,,
 ecran,Autres,/dev/paywall,src/app/dev/paywall.tsx,liste,,,0,non,à faire,,,,,,,,,,,,,
