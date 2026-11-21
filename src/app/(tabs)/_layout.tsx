@@ -10,6 +10,8 @@ import { t as tr } from '@/i18n';
 import { useDigestSync } from '@/lib/data/hooks-social';
 import { useAutoNotificationsSync } from '@/lib/data/hooks-autoNotifs';
 import { AuraIntroHost } from '@/features/aura/AuraEntry';
+import { useBackendMode } from '@/lib/demoMode';
+import { useUiStore } from '@/lib/store';
 
 /** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
 function DigestSync() {
@@ -30,6 +32,10 @@ export default function TabsLayout() {
   const { session, ready } = useAuth();
   const t = useTheme();
   const caregiver = isCaregiverOnly(useMemberships().data);
+  // Visite sans compte (ticket 1) : la présentation d'Aura ne s'ouvre pas d'elle-même 1,2 s après l'arrivée — elle
+  // recouvrait l'accueil et captait les premiers touchers de la visite ; Aura reste ouverte depuis son bouton.
+  const { isDemo } = useBackendMode();
+  const auraAsked = useUiStore((s) => s.auraIntroRequested);
   const segments = useSegments() as string[];
   const leaf = segments[segments.length - 1] ?? '';
   if (ready && !session) return <Redirect href="/welcome" />;
@@ -60,7 +66,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>
     {/* Présentation d'Aura : une fois par compte, à la première arrivée (hors visite guidée), relançable */}
-    {session ? <AuraIntroHost /> : null}
+    {session && (!isDemo || auraAsked) ? <AuraIntroHost /> : null}
     </>
   );
 }

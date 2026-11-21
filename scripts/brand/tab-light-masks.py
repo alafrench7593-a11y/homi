@@ -27,7 +27,7 @@ NAMES = ['today', 'me', 'add', 'child', 'family']
 HEART = {'today': (0.5, 0.47), 'me': (0.5, 0.36), 'add': (0.5, 0.5), 'child': (0.5, 0.52), 'family': (0.5, 0.62)}
 # Couleur de la lumière (même jaune que src/theme/toolLogo.ts TAB_LIGHT.color)
 LIGHT = (0xFF, 0xC8, 0x3D)
-LUM_LO, LUM_HI = 196.0, 214.0   # seuil doux : en dessous = tuile ; au-dessus = symbole
+LUM_LO, LUM_HI = 192.0, 206.0   # seuil doux : en dessous = tuile ; au-dessus = symbole
 TILE_MARGIN = 12               # px exclus le long du bord de la tuile (arête claire du verre)
 
 
@@ -66,7 +66,7 @@ def compute(name):
     inner = shift_min(tile, TILE_MARGIN)
     soft = soft * inner
     hard = (soft > 0.5).astype(np.float64)
-    hard = shift_min(shift_max(hard, 2), 2)          # referme les petits trous de texture (pas les yeux ni la bouche)
+    hard = shift_min(shift_max(hard, 1), 1)          # referme les trous d’1 px de la texture (jamais les séparations du dessin)
     hard = shift_min(hard, 1)                         # 1 px à l'intérieur du bord : jamais de liseré sur la tuile
     mask = np.minimum(box_blur(hard, 1), hard)        # bord adouci, toujours contenu dans le dessin
     yy, xx = np.mgrid[0:h, 0:w]

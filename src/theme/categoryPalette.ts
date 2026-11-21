@@ -20,7 +20,7 @@ export type CategoryKey = 'feeding' | 'sleep' | 'care' | 'health' | 'cycle' | 'p
 export const CATEGORY_HUE: Record<CategoryKey, string> = {
   feeding: '#2F6FD6', // bleu : repas de bébé (lumière « bébé » des logos)
   sleep: '#5B55C9', // indigo : nuits et sommeil
-  care: '#108A6C', // menthe : soins et croissance (lumière « enfant »)
+  care: '#0E7F63', // menthe : soins et croissance (lumière « enfant »)
   health: '#C8364B', // framboise : santé
   cycle: '#C93A78', // rose : cycle (lumière « femme »)
   pregnancy: '#9A4CB8', // mauve : grossesse

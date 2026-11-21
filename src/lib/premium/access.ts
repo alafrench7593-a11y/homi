@@ -40,11 +40,11 @@ export const PREVIEW_ROUTES: RegExp[] = [/^\/tools\/?$/, /^\/tools\/[^/]+\/?$/];
 /**
  * VISITE sans compte (« Découvrir sans compte », ticket 1) : sur la famille d'exemple (données fictives sur l'appareil,
  * backend de démonstration), les ÉCRANS D'ONGLET se parcourent sans abonnement pour que la visite soit utilisable
- * (accueil, Moi, Enfant, Famille). Chaque outil reste réservé (écran Premium par-dessus, retour visible), les achats
+ * (accueil, Moi, Enfant, Famille), ainsi que l’apparence et la personnalisation de l’accueil (réglages locaux). Chaque outil reste réservé (écran Premium par-dessus, retour visible), les achats
  * restent simulés (src/lib/purchaseMode.ts). Ne s'applique JAMAIS à un vrai compte : `visit` n'est vrai qu'en
  * démonstration (src/components/PremiumGate.tsx).
  */
-export const VISIT_ROUTES: RegExp[] = [/^\/$/, /^\/(health|baby|household)\/?$/];
+export const VISIT_ROUTES: RegExp[] = [/^\/$/, /^\/(health|baby|household)\/?$/, /^\/settings\/(appearance|home)\/?$/];
 
 const AI_ROUTES: RegExp[] = [/^\/ask\/?$/, /^\/assistant(\/.*)?$/];
 
