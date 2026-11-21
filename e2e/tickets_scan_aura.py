@@ -249,6 +249,13 @@ def understand(pg):
 
 def bottles(pg):
     kid = pg.evaluate("() => { const s = JSON.parse(localStorage.getItem('toietmoi.demo.v1')); const c = (s.tables.children || []).sort((a, b) => (a.birth_date < b.birth_date ? 1 : -1))[0]; return c ? c.id : null; }")
+    if kid and os.environ.get('SEED_BOTTLES') == '1':
+        # jeu d'essai : 4 jours de biberons (3 par jour) pour l'enfant le plus jeune, à partir d'une ligne existante
+        demo_state(pg, """const kid = (s.tables.children || []).sort((a, b) => (a.birth_date < b.birth_date ? 1 : -1))[0];
+          const base = (s.tables.bottles || []).find(b => b.child_id === kid.id) || { household_id: kid.household_id, created_by: s.session.userId, milk_type: null, note: null };
+          s.tables.bottles = s.tables.bottles || [];
+          for (let d = 0; d < 4; d++) for (const h of [7, 11, 15]) { const at = new Date(Date.now() - d * 86400000); at.setHours(h, 0, 0, 0);
+            s.tables.bottles.push({ ...base, id: 'seed-' + d + '-' + h, child_id: kid.id, at: at.toISOString(), prepared_ml: 150, consumed_ml: 120 + h, planned_next_ml: null, created_at: at.toISOString() }); }""")
     go(pg, f'/bottle/history?child={kid}&view=week' if kid else '/bottle/history', 4500)
     R['biberons_analyse'] = has(pg, 'aura-analysis-bottle')
     if has(pg, 'aura-analysis-bottle'):
@@ -256,6 +263,23 @@ def bottles(pg):
         R['biberons_periode'] = sp(vis(pg, 'aura-analysis-bottle-period').first.inner_text()) if has(pg, 'aura-analysis-bottle-period') else None
         R['biberons_insuffisant'] = sp(vis(pg, 'aura-analysis-bottle-empty').first.inner_text()) if has(pg, 'aura-analysis-bottle-empty') else None
     shoot(pg, 'biberons_1_analyse')
+    tog = vis(pg, 'aura-analysis-bottle').locator('[role="switch"]') if has(pg, 'aura-analysis-bottle') else None
+    if tog is not None and tog.count():
+        tog.first.click(); wait(pg, 700)
+        ai = pg.locator('[data-testid^="aura-analysis-bottle-ai"]').filter(visible=True)
+        R['biberons_bouton_cout'] = sp(ai.first.inner_text()) if ai.count() else None
+        btn = ai.locator('[role="button"]').filter(visible=True) if ai.count() else None
+        if btn is not None and btn.count():
+            btn.first.click(); wait(pg, 1500)
+            shoot(pg, 'biberons_2_confirmation')
+            for label in ('Confirmer', 'Analyser', 'Continuer'):
+                if click_text(pg, label, 3000):
+                    break
+        wait_for(pg, 'aura-analysis-bottle-result', 6000)
+        if has(pg, 'aura-analysis-bottle-result'):
+            scroll_to(pg, 'aura-analysis-bottle-result')
+        R['biberons_resultat_simule'] = has(pg, 'aura-analysis-bottle-simulated')
+        shoot(pg, 'biberons_3_resultat')
     # outil de suivi déjà équipé : sommeil
     if kid:
         go(pg, f'/sleep/{kid}', 4500)

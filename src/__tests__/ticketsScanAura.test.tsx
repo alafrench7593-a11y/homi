@@ -45,7 +45,7 @@ import * as io from '@/lib/documents/io';
 import { setPendingImport } from '@/lib/documents/pending';
 import { toolCatalog } from '@/lib/domain/toolCatalog';
 import { searchCatalog } from '@/lib/domain/toolSearch';
-import { catalogForServer } from '@/features/aura/model';
+import { catalogForServer, searchForAura } from '@/features/aura/model';
 import { runAura } from '../../supabase/functions/_shared/aura-run';
 import { sanitizeAnalysis, auraCreditAction, AURA_ANALYSIS_KINDS } from '../../supabase/functions/_shared/aura-data';
 import { simulatedTurn } from '@/lib/backend/demoAura';
@@ -426,6 +426,19 @@ describe('Ticket 5 — recherche d’outils vers la vraie route du BON profil', 
     const sein = searchCatalog(cat, 'Mon bébé prend le sein');
     expect(sein.results[0].tool.id).toBe('baby_breastfeed');
     expect(sein.results[0].tool.href).toContain('enfant-actif');
+  });
+  it('RÉGRESSION (vue dans l’app) : depuis le profil Grossesse, « Où noter sa sieste ? » proposait des outils de grossesse ; désormais le sommeil de l’enfant, avec sa route', () => {
+    const preg = toolCatalog({ scope: 'pregnancy', childId: null, pregnancyId: 'p1', babyId: 'enfant-actif', postpartum: false } as never);
+    const kid = toolCatalog(ctx as never);
+    const seen = new Set<string>();
+    const all = [...preg, ...kid].filter((x) => (seen.has(x.id) ? false : (seen.add(x.id), true)));
+    const before = searchCatalog(preg, 'Où noter sa sieste ?');
+    expect(before.understood && before.results.slice(0, 2).every((h) => /preg/.test(h.tool.id))).toBe(true); // le défaut reproduit
+    const after = searchForAura(preg, all, 'Où noter sa sieste ?', searchCatalog);
+    expect(after.results[0].tool.id).toMatch(/sleep/);
+    expect(after.results[0].tool.href).toContain('enfant-actif');
+    // une demande de grossesse reste servie par le profil affiché
+    expect(searchForAura(preg, all, 'suivre ma grossesse semaine par semaine', searchCatalog).results[0].tool.id).toMatch(/^preg/);
   });
   it('serveur (Gemini SIMULÉ) : search_tools puis propose_open_tool, seulement un outil du catalogue envoyé', async () => {
     const cat = toolCatalog(ctx as never);

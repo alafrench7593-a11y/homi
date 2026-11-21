@@ -65,7 +65,7 @@ import { canSpeak, dictationMode, nextDictationPhase, speak, startBrowserDictati
 import { useAuth } from '@/lib/auth';
 import { useUiStore } from '@/lib/store';
 import {
-  auraMode, catalogForServer, creditActionFor, defaultThemeFor, featuredFor, localReply, themeName, themeSuggestions, toAuraTheme,
+  auraMode, catalogForServer, creditActionFor, defaultThemeFor, featuredFor, localReply, searchForAura, themeName, themeSuggestions, toAuraTheme,
   type AuraAction, type AuraMode, type AuraTheme, type LocalReply,
 } from './model';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -241,8 +241,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
 
   /** Réponse locale honnête : outils trouvés par mots (profil affiché, puis tous) et article le plus proche. */
   function local(question: string): LocalReply {
-    const s = searchCatalog(catalog, question);
-    const res = s.understood ? s : searchCatalog(allTools, question);
+    const res = searchForAura(catalog, allTools, question, searchCatalog);
     return localReply(res, index ? localAnswer(index, question, { asked: question, lang: getLocale(), region }) : null);
   }
 
