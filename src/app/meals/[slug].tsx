@@ -28,6 +28,7 @@ import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { CheckMark } from '@/motion/CheckMark';
 
 const ageText = (m: number) => (m < 24 ? tr('vx.ageMonths', { count: m }) : tr('vx.ageYears', { count: Math.round(m / 12) }));
 
@@ -131,7 +132,8 @@ export default function RecipeDetail() {
             onPress={() => { haptic('selection'); setDoneSteps((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k])); }}
             style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', paddingVertical: 4 }}>
             <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? t.colors.gold : 'transparent', borderWidth: 2, borderColor: done ? t.colors.gold : t.colors.primary }}>
-              {done ? <Icon name="check" size={15} color="#FFFFFF" /> : <Text variant="caption" weight="bold" color={t.colors.primary}>{k + 1}</Text>}
+              {done ? null : <Text variant="caption" weight="bold" color={t.colors.primary}>{k + 1}</Text>}
+              <CheckMark checked={done} size={17} color="#FFFFFF" style={{ position: 'absolute' }} />
             </View>
             <Text style={{ flex: 1, opacity: done ? 0.55 : 1, textDecorationLine: done ? 'line-through' : 'none' }}>{s}</Text>
           </Tappable>

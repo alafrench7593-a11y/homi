@@ -18,6 +18,7 @@ import { MIN_TOUCH } from '@/theme/tokens';
 import { favorite } from './curves';
 import { motionHaptic, type MotionHaptic } from './haptics';
 import { useMotion } from './useMotion';
+import { usePress } from './Press';
 
 /** Styles animés du saut de l'icône et de l'onde, déclenchés quand `active` passe à vrai. */
 export function useFavoritePop(active: boolean) {
@@ -69,6 +70,7 @@ export function FavoriteStar({ active, onToggle, labelOn, labelOff, size = 22, c
 }) {
   const t = useTheme();
   const { iconStyle, ringStyle } = useFavoritePop(active);
+  const p = usePress({ scale: 0.9, haptic: 'none', disabled });
   const tint = active ? (activeColor ?? t.colors.gold) : (color ?? t.colors.textMuted);
   const box = boxSize ?? Math.max(size + 12, 32);
   return (
@@ -81,13 +83,15 @@ export function FavoriteStar({ active, onToggle, labelOn, labelOff, size = 22, c
       hitSlop={Math.max(0, (MIN_TOUCH - box) / 2)}
       // l'état est ENREGISTRÉ d'abord (`onToggle`, synchrone) ; l'animation suit la donnée quand elle change
       onPress={() => { motionHaptic(active ? 'selection' : hapticOn); onToggle(!active); }}
+      onPressIn={p.onPressIn}
+      onPressOut={p.onPressOut}
       testID={testID}
       style={[{ width: box, height: box, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.5 : 1 }, style]}
     >
       {well && active ? <Animated.View pointerEvents="none" style={{ position: 'absolute', width: box - 6, height: box - 6, borderRadius: (box - 6) / 2, backgroundColor: well }} /> : null}
       <Animated.View pointerEvents="none" testID={ringTestID ?? (testID ? `${testID}-ring` : undefined)}
         style={[{ position: 'absolute', width: box - 6, height: box - 6, borderRadius: (box - 6) / 2, borderWidth: 2, borderColor: tint }, ringStyle]} />
-      <Animated.View pointerEvents="none" style={iconStyle}>
+      <Animated.View pointerEvents="none" style={[iconStyle, p.style]}>
         <MaterialCommunityIcons name={active ? 'star' : 'star-outline'} size={size} color={tint} accessibilityElementsHidden importantForAccessibility="no" />
       </Animated.View>
     </Pressable>

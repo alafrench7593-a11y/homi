@@ -15,6 +15,7 @@ import { PRIMARY_TEETH } from '@/lib/domain/childCare';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 type Kind = 'molar' | 'canine' | 'incisor';
 /** Type de dent d'après sa place dans l'arcade (0-4 côté droit : 2e molaire → incisive centrale ; 5-9 : l'inverse). */
@@ -71,7 +72,7 @@ export function TeethMap({ present, onPick, hintFirst }: { present: Set<string>;
               <View style={{ width: s.w, height: s.h, borderRadius: s.r, transform: [{ rotate: `${p.rot}deg` }], alignItems: 'center', justifyContent: 'center',
                 backgroundColor: on ? t.colors.primary : first ? t.colors.surface : t.colors.surfaceAlt,
                 borderWidth: on ? 0 : first ? 2 : 1.5, borderStyle: first ? 'dashed' : 'solid', borderColor: first ? t.colors.primary : off }}>
-                {on ? <Icon name="check" size={14} color={t.colors.primaryText} /> : null}
+                <CheckMark checked={!!on} size={16} color={t.colors.primaryText} />
               </View>
             </Tappable>
           );

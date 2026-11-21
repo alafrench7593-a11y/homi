@@ -19,6 +19,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import type { IllustrationName } from '@/features/entry/HeroArt';
 import { primarySituation, type OnboardingAnswers, type Situation } from '@/lib/onboarding/personalize';
+import { CheckMark } from '@/motion/CheckMark';
 
 /**
  * Entrée d'une étape (montée avec `key` = étape) : fondu + montée VERTICALE de 12 px. Pas de glissement horizontal :
@@ -153,7 +154,7 @@ export function ChoiceRow({ icon, label, hint, selected, onPress, testID, radio,
           <View style={{ width: 26, height: 26, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ position: 'absolute', width: 24, height: 24, borderRadius: radio ? 12 : 7, borderWidth: 1.5, borderColor: t.material.lines.track }} />
             <Animated.View style={[{ width: 26, height: 26, borderRadius: radio ? 13 : 8, alignItems: 'center', justifyContent: 'center', backgroundColor: t.tokens.action.fill }, mark]}>
-              {rank ? <Text variant="small" weight="bold" color={t.tokens.action.text}>{rank}</Text> : <Icon name="check" size={15} color={t.tokens.action.text} />}
+              {rank ? <Text variant="small" weight="bold" color={t.tokens.action.text}>{rank}</Text> : <CheckMark checked={selected} size={17} color={t.tokens.action.text} />}
             </Animated.View>
           </View>
         </Animated.View>

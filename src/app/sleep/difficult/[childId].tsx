@@ -26,6 +26,7 @@ import { ownSleeps } from '@/lib/domain/sleepPlanner';
 import { NIGHT_SOURCES, SOOTHING_ROUTINES } from '@/content/nightHelp';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 // Bleu nuit, lumière réduite (mêmes couleurs que « Aide pour cette nuit »)
 // Thème « Nuit » HOMI : midnight violet tamisé, texte perle lilas, accent lilas (contrastes ≥ 4,5:1)
@@ -179,7 +180,7 @@ function Pick({ label, on, onPress, testID }: { label: string; on: boolean; onPr
     <Tappable accessibilityRole="checkbox" accessibilityState={{ checked: on }} onPress={onPress} testID={testID}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingVertical: 4 }}>
       <View style={{ width: 24, height: 24, borderRadius: 7, borderWidth: 2, borderColor: on ? ACCENT : MUTED, backgroundColor: on ? ACCENT : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-        {on ? <Icon name="check" size={14} color={BG} /> : null}
+        <CheckMark checked={!!on} size={16} color={BG} />
       </View>
       <Text color={TEXT} style={{ flex: 1 }}>{label}</Text>
     </Tappable>

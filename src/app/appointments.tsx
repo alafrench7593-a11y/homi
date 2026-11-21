@@ -24,6 +24,7 @@ import { countdown } from '@/lib/domain/dayThread';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate } from '@/i18n';
 import { AddToDeviceCalendar } from '@/features/deviceCalendar/DeviceCalendarParts';
+import { CheckMark } from '@/motion/CheckMark';
 
 const kinds = (): { value: AppointmentKind; label: string; icon: IconName }[] => [
   { value: 'consultation', label: tr('u1.appt.kind.consultation'), icon: 'user' },
@@ -245,7 +246,7 @@ export default function AppointmentsScreen() {
                 <Tappable key={k} bare onPress={() => { haptic('selection'); setAsked((m) => ({ ...m, [k]: !m[k] })); }} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={q} testID={`appt-q-${i}`}
                   style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 6 }}>
                   <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: on ? 0 : 2, borderColor: t.colors.gold, backgroundColor: on ? t.colors.gold : 'transparent' }}>
-                    {on ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
+                    <CheckMark checked={!!on} size={15} color="#FFFFFF" />
                   </View>
                   <Text style={{ flex: 1, textDecorationLine: on ? 'line-through' : 'none', opacity: on ? 0.6 : 1 }}>{q}</Text>
                 </Tappable>

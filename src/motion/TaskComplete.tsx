@@ -23,11 +23,13 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { haloShadow, MIN_TOUCH } from '@/theme/tokens';
 import { motionHaptic } from './haptics';
 import { useMotion } from './useMotion';
+import { usePress } from './Press';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 /** Coche dessinée dans une boîte 24 × 24 ; longueur mesurée du tracé. */
 const CHECK_D = 'M6.5 12.5 L10.5 16.5 L17.5 8.5';
 const CHECK_LEN = 17.3;
+const APressable = Animated.createAnimatedComponent(Pressable);
 export const COMPLETION = { fillMs: 200, drawMs: 240, drawDelayMs: 80, ringMs: 520, glowInMs: 180, glowOutMs: 720 } as const;
 
 export function CompletionCheck({ done, onToggle, label, size = 28, disabled, testID, style }: {
@@ -42,6 +44,8 @@ export function CompletionCheck({ done, onToggle, label, size = 28, disabled, te
 }) {
   const t = useTheme();
   const m = useMotion();
+  // appui immédiat : la case se comprime au contact, la coche se trace quand la donnée passe à « fait »
+  const p = usePress({ scale: 0.88, haptic: 'none', disabled });
   const fill = useSharedValue(done ? 1 : 0);
   const draw = useSharedValue(done ? 1 : 0);
   const ring = useSharedValue(0);
@@ -75,8 +79,10 @@ export function CompletionCheck({ done, onToggle, label, size = 28, disabled, te
   const [a, , b] = t.material.primaryGradient;
   const hit = Math.max(0, (MIN_TOUCH - size) / 2);
   return (
-    <Pressable
+    <APressable
       accessibilityRole="checkbox"
+      onPressIn={p.onPressIn}
+      onPressOut={p.onPressOut}
       accessibilityState={{ checked: done, disabled: !!disabled }}
       aria-checked={done}
       accessibilityLabel={label}
@@ -88,7 +94,7 @@ export function CompletionCheck({ done, onToggle, label, size = 28, disabled, te
         if (next) motionHaptic('success'); else motionHaptic('selection');
         onToggle(next);
       }}
-      style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.5 : 1 }, style]}
+      style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.5 : 1 }, style, p.style]}
     >
       {/* Anneau de lumière (validation) */}
       <Animated.View pointerEvents="none" style={[{ position: 'absolute', width: size, height: size, borderRadius: size / 2, borderWidth: 2, borderColor: t.tokens.accent.glow[0] }, ringStyle]} />
@@ -106,7 +112,7 @@ export function CompletionCheck({ done, onToggle, label, size = 28, disabled, te
             strokeDasharray={[CHECK_LEN, CHECK_LEN]} animatedProps={checkProps} />
         </Svg>
       </View>
-    </Pressable>
+    </APressable>
   );
 }
 

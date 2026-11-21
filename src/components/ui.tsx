@@ -25,6 +25,7 @@ import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
 import { linkFrame } from './linkFrame';
 import { usePop, usePressMotion, useShake } from './Motion';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { duration, feedback, hapticsSupported, interaction, shakeX, springTo, successPulse, timeTo } from '@/theme/motion';
 import { Tappable } from './Tappable';
 import { Appear } from './Appear';
@@ -834,11 +835,16 @@ export function ListGroup({ children, title, footer, testID, style }: { children
     <View style={[{ gap: spacing.xs }, style]} testID={testID}>
       {title ? <Text variant="label" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{title}</Text> : null}
       <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, overflow: 'hidden' }}>
-        {rows.map((row, i) => (
-          <ListGroupRowContext.Provider key={(row as { key?: React.Key }).key ?? i} value={{ inGroup: true, first: i === 0 }}>
-            {row}
-          </ListGroupRowContext.Provider>
-        ))}
+        {/* Liste vivante (à la source) : une rangée ajoutée apparaît à sa place, une rangée supprimée se replie */}
+        <MotionList>
+          {rows.map((row, i) => (
+            <MotionItem key={(row as { key?: React.Key }).key ?? i}>
+              <ListGroupRowContext.Provider value={{ inGroup: true, first: i === 0 }}>
+                {row}
+              </ListGroupRowContext.Provider>
+            </MotionItem>
+          ))}
+        </MotionList>
       </View>
       {footer ? <Text variant="caption" muted style={{ paddingHorizontal: spacing.xxs }}>{footer}</Text> : null}
     </View>

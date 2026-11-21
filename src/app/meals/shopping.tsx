@@ -28,6 +28,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { CheckMark } from '@/motion/CheckMark';
 
 const RECIPE_UNITS = ['g', 'ml', 'u', 'cs', 'cc', 'pincee'];
 const qtyText = (i: ShoppingItem) => (i.qty == null ? '' : i.unit && !RECIPE_UNITS.includes(i.unit) ? formatStockQty(i.qty, i.unit) : formatQty(Number(i.qty), (i.unit ?? null) as Unit | null));
@@ -105,7 +106,7 @@ export default function Shopping() {
       <Tappable key={i.id} testID={`shop-${i.ingredient_key ?? i.label}`} accessibilityRole="checkbox" accessibilityState={{ checked: i.checked }} accessibilityLabel={`${i.label} ${sub}`}
         onPress={() => { haptic('selection'); toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error') }); }}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
-        <View style={{ width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: i.checked ? t.colors.gold : t.colors.textMuted, backgroundColor: i.checked ? t.colors.gold : 'transparent' }}>{i.checked ? <Icon name="check" size={16} color="#FFFFFF" /> : null}</View>
+        <View style={{ width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: i.checked ? t.colors.gold : t.colors.textMuted, backgroundColor: i.checked ? t.colors.gold : 'transparent' }}><CheckMark checked={!!i.checked} size={18} color="#FFFFFF" /></View>
         <View style={{ flex: 1 }}>
           <Text style={{ textDecorationLine: i.checked ? 'line-through' : 'none' }} muted={i.checked}>{i.label.charAt(0).toUpperCase() + i.label.slice(1)}</Text>
           {sub ? <Text variant="caption" muted>{sub}</Text> : null}

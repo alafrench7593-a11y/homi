@@ -187,7 +187,7 @@ export function GlassSegmentedControl<T extends string>({ options, value, onChan
           return (
             <Pressable key={o.value} accessibilityRole="radio" accessibilityState={{ selected: active, checked: active }} aria-checked={active} accessibilityLabel={o.label}
               testID={o.testID ?? `${testID}-${o.value}`} onLayout={onItemLayout(o.value)} hitSlop={{ top: 4, bottom: 4 }}
-              onPress={() => { if (!active) { motionHaptic('selection'); onChange(o.value); } }} style={styles.segment}>
+              onPress={() => { if (!active) { motionHaptic('selection'); onChange(o.value); } }} style={({ pressed }) => [styles.segment, pressed && !active ? { opacity: 0.7 } : null]}>
               {o.icon ? <Icon name={o.icon} size={16} color={ink} /> : null}
               <Text variant="small" numberOfLines={1} maxFontSizeMultiplier={1.4} color={ink} style={{ fontFamily: active ? fonts.bodyBold : fonts.bodyMedium, flexShrink: 1 }}>{o.label}</Text>
             </Pressable>
@@ -257,14 +257,14 @@ export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, add
         return (
           <Pressable key={p.key} accessibilityRole="radio" accessibilityState={{ selected: active, checked: active }} aria-checked={active}
             accessibilityLabel={p.accessibilityLabel ?? p.label} testID={p.testID ?? `${testID}-${p.key}`} onLayout={onItemLayout(p.key)}
-            onPress={() => { if (!active) { motionHaptic('selection'); onChange(p.key); } }} style={{ width: itemW, alignItems: 'center', gap: 2 }}>
+            onPress={() => { if (!active) { motionHaptic('selection'); onChange(p.key); } }} style={({ pressed }) => ({ width: itemW, alignItems: 'center', gap: 2, transform: [{ scale: pressed ? 0.95 : 1 }] })}>
             <View style={{ width: ring, height: ring, alignItems: 'center', justifyContent: 'center' }}>{p.avatar}</View>
             <Text variant="caption" weight={active ? 'bold' : 'medium'} color={active ? text : muted} numberOfLines={1} center style={{ maxWidth: itemW - 4 }}>{p.label}</Text>
           </Pressable>
         );
       })}
       {onAdd && addLabel ? (
-        <Pressable accessibilityRole="button" accessibilityLabel={addLabel} testID={addTestID ?? `${testID}-add`} onPress={onAdd} style={{ width: itemW, alignItems: 'center', gap: 2 }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={addLabel} testID={addTestID ?? `${testID}-add`} onPress={onAdd} style={({ pressed }) => ({ width: itemW, alignItems: 'center', gap: 2, transform: [{ scale: pressed ? 0.95 : 1 }] })}>
           <View style={{ width: ring, height: ring, alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderStyle: 'dashed', borderColor: muted }}>
               <Icon name="plus" size={20} color={text} />

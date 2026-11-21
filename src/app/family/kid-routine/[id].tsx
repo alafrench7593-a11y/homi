@@ -20,6 +20,7 @@ import { goBack } from '@/lib/links';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 export default function KidRoutineMode() {
   const t = useTheme();
@@ -75,7 +76,7 @@ export default function KidRoutineMode() {
                 backgroundColor: ok ? t.colors.accentSoft : t.colors.surface, borderWidth: ok ? 3 : 1, borderColor: ok ? t.colors.success : t.colors.border, opacity: pressed ? 0.85 : 1 })}>
               <MaterialCommunityIcons name={s.icon as never} size={Math.min(84, tile * 0.5)} color={ok ? t.colors.success : t.colors.primary} />
               <Text weight="bold" center style={{ fontSize: 18, lineHeight: 22 }}>{s.label}</Text>
-              {ok ? <MaterialCommunityIcons name="check-circle" size={28} color={t.colors.success} style={{ position: 'absolute', top: 8, right: 8 }} /> : null}
+              <CheckMark checked={ok} size={30} color={t.colors.success} haptic style={{ position: 'absolute', top: 6, right: 6 }} />
             </Tappable>
           );
         })}

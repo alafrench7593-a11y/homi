@@ -29,6 +29,7 @@ import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolName } from '@/lib/domain/toolCatalog';
+import { CheckMark } from '@/motion/CheckMark';
 
 const KIND_ICON: Record<MyDayItem['kind'], IconName> = { reminder: 'bell', appointment: 'calendar', event: 'star', task: 'check-square', night: 'moon', me_time: 'sun', activity: 'award' };
 const nowHHMM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
@@ -128,7 +129,7 @@ export function MyDayCard() {
                   onPress={() => void toggle(i)} hitSlop={8} testID={`hub-check-${i.refId}`}
                   style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
                   <View style={{ width: 28, height: 28, borderRadius: 14, borderWidth: 2, borderColor: isDone(i) ? t.colors.success : t.colors.border, backgroundColor: isDone(i) ? t.colors.success : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-                    {isDone(i) ? <Icon name="check" size={16} color="#FFFFFF" /> : null}
+                    <CheckMark checked={!!(isDone(i))} size={18} color="#FFFFFF" />
                   </View>
                 </Tappable>
               ) : undefined} />

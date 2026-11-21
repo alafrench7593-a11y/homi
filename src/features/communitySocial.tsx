@@ -26,6 +26,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens';
 import { localeTag, t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
 // Accents choisis par le parent (noms conservés) : teintes harmonisées HOMI, encres lisibles sur fond clair
@@ -102,7 +103,7 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
             style={{ minHeight: MIN_TOUCH, borderRadius: radius.md, borderWidth: 1, borderColor: selected ? t.colors.primary : t.colors.border, overflow: 'hidden', justifyContent: 'center' }}>
             {showResults ? <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, backgroundColor: t.colors.primary + (o.mine ? '2E' : '14') }} /> : null}
             <Row style={{ paddingHorizontal: spacing.sm }}>
-              {selected ? <Icon name="check" size={16} color={t.colors.primary} /> : null}
+              <CheckMark checked={!!selected} size={18} color={t.colors.primary} />
               <Text style={{ flex: 1 }} weight={selected ? 'bold' : 'regular'}>{o.label}</Text>
               {showResults ? <Text variant="small" weight="bold">{tr('cm1.poll.pct', { pct })}</Text> : null}
             </Row>

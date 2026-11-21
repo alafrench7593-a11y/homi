@@ -29,6 +29,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { formatDate, formatNumber, t as tr, type TKey } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 export const RELIABILITY_LABEL = {
   get insufficient() { return tr('u5.fert.rel_insufficient'); },
@@ -584,7 +585,7 @@ export function ConsultationChecklist({ journey, childId, theme, withUnthemed, s
                   hitSlop={11}
                   style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: q.done ? t.colors.success : t.colors.border, backgroundColor: q.done ? t.colors.success : 'transparent', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}
                 >
-                  {q.done ? <Icon name="check" size={16} color="#fff" /> : null}
+                  <CheckMark checked={!!q.done} size={18} color="#fff" />
                 </Tappable>
                 <Tappable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('u5.fert.q_answer_a11y', { question: q.question })} onPress={() => { setOpen(q.id); setAnswer(q.answer ?? ''); }}>
                   <Text style={{ textDecorationLine: q.done ? 'line-through' : 'none' }} muted={q.done}>{q.question}</Text>

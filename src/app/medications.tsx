@@ -23,6 +23,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 interface Row4 { key: string; time: string; who: string; childId: string | null; name: string; dose: string; treatmentId: string; scheduledFor: string; log: { id: string; status: 'taken' | 'snoozed' | 'skipped' } | null }
 
@@ -87,7 +88,7 @@ export default function Medications() {
               <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: taken }} aria-checked={taken}
                 accessibilityLabel={taken ? tr('med.untick', { title }) : tr('med.tick', { title })} onPress={() => void toggle(r)} hitSlop={8} testID={`med-check-${r.key}`}
                 style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: taken ? th.colors.success : th.colors.primary, backgroundColor: taken ? th.colors.success : 'transparent' }}>
-                {taken ? <Icon name="check" size={20} color="#FFFFFF" /> : null}
+                <CheckMark checked={!!taken} size={22} color="#FFFFFF" />
               </Tappable>
               <View style={{ flex: 1 }}>
                 <Text weight="bold">{r.time} · {r.who}</Text>

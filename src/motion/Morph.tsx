@@ -29,6 +29,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, radius as R } from '@/theme/tokens';
 import { curves } from './curves';
 import { motionHaptic } from './haptics';
+import { usePress } from './Press';
 import { useMotion } from './useMotion';
 
 export const MORPH = { openMs: 400, revealMs: 160, closeMs: 340, fadeInMs: 100 } as const;
@@ -90,9 +91,14 @@ type SourceProps = Omit<PressableProps, 'style' | 'children' | 'onPress'> & {
 /** Surface appuyable qui s'agrandit vers l'écran détail. */
 export function MorphSource({ id, onOpen, children, radius, tint, sheen, style, ...rest }: SourceProps) {
   const src = useMorphSource(id, { radius, tint, sheen });
+  // appui immédiat (compression au contact) ; la surface s'agrandit ensuite vers l'écran détail
+  const p = usePress({ scale: 0.985, haptic: 'none' });
   return (
-    <Pressable accessibilityRole="button" {...rest} onPress={() => { motionHaptic('light'); src.open(onOpen); }}>
-      <View ref={src.ref} collapsable={false} style={style}>{children}</View>
+    <Pressable accessibilityRole="button" {...rest} onPressIn={(e) => { p.onPressIn(); rest.onPressIn?.(e); }} onPressOut={(e) => { p.onPressOut(); rest.onPressOut?.(e); }}
+      onPress={() => { motionHaptic('light'); src.open(onOpen); }}>
+      <Animated.View style={p.style}>
+        <View ref={src.ref} collapsable={false} style={style}>{children}</View>
+      </Animated.View>
     </Pressable>
   );
 }

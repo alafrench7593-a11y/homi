@@ -23,6 +23,7 @@ import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { CheckMark } from '@/motion/CheckMark';
 
 interface TDraft { name: string; dose: string; times: string; frequency: Treatment['frequency']; weekdays: number[]; start: string; end: string; instructions: string; prescriber: string; reminders: boolean; active: boolean }
 const emptyT = (): TDraft => ({ name: '', dose: '', times: '', frequency: 'daily', weekdays: [], start: toFrDate(todayISO()), end: '', instructions: '', prescriber: '', reminders: true, active: true });
@@ -170,7 +171,7 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
                 }} testID={tid(`dose-taken-${d.time}`)} hitSlop={8}
                 style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2,
                   borderColor: d.log?.status === 'taken' ? th.colors.gold : th.colors.primary, backgroundColor: d.log?.status === 'taken' ? th.colors.gold : 'transparent' }}>
-                {d.log?.status === 'taken' ? <Icon name="check" size={20} color="#FFFFFF" /> : null}
+                <CheckMark checked={d.log?.status === 'taken'} size={22} color="#FFFFFF" />
               </Tappable>
               <View style={{ flex: 1 }}>
                 <Text weight="bold" style={{ fontSize: 18 }}>{d.time} <Text weight="bold">· {d.treatment.name}</Text></Text>

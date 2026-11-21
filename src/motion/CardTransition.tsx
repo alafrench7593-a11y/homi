@@ -14,6 +14,7 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'rea
 import { scheduleOnRN } from 'react-native-worklets';
 import { cardLift, durations } from './curves';
 import { motionHaptic } from './haptics';
+import { usePress } from './Press';
 import { useMotion } from './useMotion';
 
 /** Élévation de carte : style animé + `open(cb)` qui lance l'élévation puis appelle `cb` (navigation). */
@@ -51,10 +52,14 @@ type LiftProps = Omit<PressableProps, 'style' | 'children' | 'onPress'> & {
 
 export function LiftCard({ children, onOpen, style, radius = 22, shadowColor = '#0D0E11', ...rest }: LiftProps) {
   const c = useCardLift();
+  // appui immédiat : la carte se comprime au contact (avant l'élévation, qui part au relâchement)
+  const p = usePress({ scale: 0.985, haptic: 'none' });
   return (
     <Pressable
       accessibilityRole="button"
       {...rest}
+      onPressIn={(e) => { p.onPressIn(); rest.onPressIn?.(e); }}
+      onPressOut={(e) => { p.onPressOut(); rest.onPressOut?.(e); }}
       onPress={() => {
         motionHaptic('light');
         c.open(() => {
@@ -69,7 +74,7 @@ export function LiftCard({ children, onOpen, style, radius = 22, shadowColor = '
           pointerEvents="none"
           style={[StyleSheet.absoluteFill, { borderRadius: radius, backgroundColor: shadowColor, opacity: 0, transform: [{ translateY: 10 }, { scale: 0.96 }] }, styles.shadowBlur, c.shadow]}
         />
-        <Animated.View style={style}>{children}</Animated.View>
+        <Animated.View style={[style, p.style]}>{children}</Animated.View>
       </Animated.View>
     </Pressable>
   );

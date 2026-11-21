@@ -12,6 +12,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
+import { CheckMark } from '@/motion/CheckMark';
 
 /** Règles du mot de passe, cochées au fil de la saisie. */
 export function PasswordRules({ value }: { value: string }) {
@@ -42,7 +43,7 @@ export function CheckRow({ checked, onChange, error, children, label }: { checke
         style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: MIN_TOUCH, paddingVertical: 4 }}
       >
         <View style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: error ? t.colors.danger : t.colors.primary, backgroundColor: checked ? t.colors.primary : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-          {checked && <Icon name="check" size={16} color={t.colors.primaryText} />}
+          <CheckMark checked={!!checked} size={18} color={t.colors.primaryText} />
         </View>
         <View style={{ flex: 1 }}>{children}</View>
       </Tappable>

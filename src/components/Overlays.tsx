@@ -8,7 +8,7 @@ import { useDemoInset } from '@/components/demoInset';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing, themes } from '@/theme/tokens';
 import { Button, Icon, IconButton, Text } from './ui';
-import { LiquidGlass } from './Glass';
+import { Glass } from './glass/Glass';
 import ReAnimated, { cancelAnimation, ReduceMotion, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -60,12 +60,12 @@ export function sheetRelease(o: { y: number; vy: number; snaps: number[]; h: num
  *  - lecteurs d'écran : la poignée est un réglable (« agrandir » / « réduire ou fermer »), le bouton Fermer reste ;
  *  - Réduire les animations / économie d'énergie : positions finales immédiates (le geste suit toujours le doigt).
  */
-/** Contrat du panneau d'une feuille : ce que `Sheet` passe à sa surface (défaut : `LiquidGlass`, opaque). */
+/** Contrat du panneau d'une feuille : ce que `Sheet` passe à sa surface (défaut : `Glass` variante `sheet`). */
 export interface SheetPanelProps { testID?: string; radius: number; style?: StyleProp<ViewStyle>; contentStyle?: StyleProp<ViewStyle>; children?: React.ReactNode }
 
 export function Sheet({ visible, onClose, title, children, panel: Panel }: {
   visible: boolean; onClose: () => void; title: string; children: React.ReactNode;
-  /** Surface du panneau (bibliothèque de verre : `GlassSheet`). Sans elle : surface opaque historique, inchangée. */
+  /** Surface du panneau. Sans elle : panneau de verre `sheet` (même rendu que `GlassSheet`). */
   panel?: React.ComponentType<SheetPanelProps>;
 }) {
   const t = useTheme();
@@ -202,7 +202,9 @@ export function Sheet({ visible, onClose, title, children, panel: Panel }: {
               </ScrollView>
                 </>
               );
-              return Panel ? <Panel {...panelProps}>{inner}</Panel> : <LiquidGlass kind="optical" edges="top" {...panelProps}>{inner}</LiquidGlass>;
+              // Panneau de VERRE par défaut (à la source, 22/11/2026) : toutes les feuilles de l'app sont des feuilles de verre
+              // (`sheet` : voile presque opaque, encres garanties ; Réduire la transparence / nuit → surface opaque).
+              return Panel ? <Panel {...panelProps}>{inner}</Panel> : <Glass variant="sheet" edges="top" {...panelProps}>{inner}</Glass>;
             })()}
           </ReAnimated.View>
         </KeyboardAvoidingView>

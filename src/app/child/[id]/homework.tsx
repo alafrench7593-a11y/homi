@@ -22,6 +22,7 @@ import { ChildToolGate, useParentChild } from '@/features/childTools/ChildToolGa
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { CheckMark } from '@/motion/CheckMark';
 
 export default function HomeworkScreen() {
   const state = useParentChild();
@@ -113,7 +114,7 @@ function HwRow({ h, onToggle, onOpen, showDate }: { h: Homework; onToggle: () =>
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44 }}>
       <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${h.subject} : ${h.instructions}`} onPress={onToggle} hitSlop={8} testID={`hw-check-${h.id}`}
         style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: done ? 0 : 2, borderColor: t.colors.primary, backgroundColor: done ? t.tokens.action.fill : 'transparent' }}>
-        {done ? <Icon name="check" size={15} color={t.tokens.action.text} /> : null}
+        <CheckMark checked={!!done} size={17} color={t.tokens.action.text} />
       </Tappable>
       <Tappable bare accessibilityRole="button" onPress={h._pending ? () => undefined : onOpen} style={{ flex: 1 }} testID={`hw-row-${h.id}`}>
         <Text weight="medium" style={{ textDecorationLine: done ? 'line-through' : 'none', opacity: done ? 0.65 : 1 }}>{h.subject}</Text>

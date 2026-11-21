@@ -27,3 +27,5 @@ export { useShake } from './Shake';
 export { SuccessCheck } from './SuccessCheck';
 export { SkeletonBone, SkeletonPulse } from './SkeletonPulse';
 export { autoScrollSpeed, moveKey, ReorderList, reorderOffset, reorderOrder, reorderTotal, useReorderScroll, type ReorderItemInfo, type ReorderScroll } from './Reorder';
+export { LIST_MOTION, listItemMotion, MotionItem, MotionList } from './ListMotion';
+export { CheckMark } from './CheckMark';

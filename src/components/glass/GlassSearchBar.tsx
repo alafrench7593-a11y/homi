@@ -71,7 +71,7 @@ export function GlassSearchBar({ value, onChangeText, label, placeholder, right,
         />
         <Animated.View style={clearStyle} pointerEvents={has ? 'auto' : 'none'}>
           <Pressable accessibilityRole="button" accessibilityLabel={tr('glass.search.clear')} accessibilityElementsHidden={!has} importantForAccessibility={has ? 'yes' : 'no-hide-descendants'}
-            disabled={!has} hitSlop={10} testID={`${testID}-clear`} onPress={() => { onChangeText(''); input.current?.focus(); }} style={styles.clear}>
+            disabled={!has} hitSlop={10} testID={`${testID}-clear`} onPress={() => { onChangeText(''); input.current?.focus(); }} style={({ pressed }) => [styles.clear, pressed ? { opacity: 0.6, transform: [{ scale: 0.9 }] } : null]}>
             <Icon name="x-circle" size={18} color={spec.inks.muted} />
           </Pressable>
         </Animated.View>

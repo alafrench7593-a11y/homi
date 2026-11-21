@@ -117,7 +117,7 @@ function Pills<T extends string>({ options, value, onChange, label, testID }: { 
           <Pressable key={o.value} accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }} aria-checked={sel}
             accessibilityLabel={o.accessibilityLabel ?? o.label} testID={o.testID}
             onPress={() => { motionHaptic('selection'); onChange(o.value); }} hitSlop={{ top: 4, bottom: 4 }}
-            style={[styles.segment, sel && !segW ? { backgroundColor: t.material.lens.fill } : null]}>
+            style={({ pressed }) => [styles.segment, sel && !segW ? { backgroundColor: t.material.lens.fill } : null, pressed && !sel ? { opacity: 0.7 } : null]}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
               {sel && showCheck ? <Feather name="check" size={14} color={t.colors.primary} testID="choice-check" /> : o.icon ? <Feather name={o.icon} size={14} color={color} /> : null}
               <RNText maxFontSizeMultiplier={PILL_LABEL_MAX} {...web(PILL_LABEL_MAX)} style={[{ color, fontFamily: sel ? fonts.bodyBold : fonts.bodyMedium, fontSize: typography.bodyS.fontSize, lineHeight: typography.bodyS.lineHeight, textAlign: 'center', flexShrink: 1 }, NO_HYPHENS]}>{o.label}</RNText>
@@ -148,7 +148,7 @@ function Orb<T extends string>({ o, sel, any, onPress, ownLight = true, gather =
   const f = t.material.surfaces.frosted;
   return (
     <Pressable accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }} aria-checked={sel} accessibilityLabel={o.accessibilityLabel ?? o.label}
-      testID={o.testID} onPress={onPress} style={col ? { alignItems: 'center', gap: 6, width: col } : { alignItems: 'center', gap: 6, minWidth: MIN_TOUCH, flex: 1 }}>
+      testID={o.testID} onPress={onPress} style={({ pressed }) => [col ? { alignItems: 'center', gap: 6, width: col } : { alignItems: 'center', gap: 6, minWidth: MIN_TOUCH, flex: 1 }, pressed && !sel ? { opacity: 0.72 } : null]}>
       <Animated.View style={[{ width: D, height: D }, style]}>
         {/* lumière diffuse derrière l'option active */}
         {!night && ownLight ? <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, borderWidth: 2, borderColor: alpha(t.colors.primary, 0.35), transform: [{ scale: 1.12 }] }, glow]} /> : null}
@@ -203,8 +203,8 @@ function Cards<T extends string>({ options, value, onChange, label, testID, onLa
           <Pressable key={o.value} accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }} aria-checked={sel}
             accessibilityLabel={o.accessibilityLabel ?? (o.description ? `${o.label}, ${o.description}` : o.label)} testID={o.testID}
             onPress={() => { motionHaptic('selection'); onChange(o.value); }}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 18, borderWidth: sel ? 1.5 : 1,
-              borderColor: sel ? t.colors.primary : g.edge, backgroundColor: sel ? alpha(t.tokens.accent.glow[0], t.isDark ? 0.16 : 0.12) : g.fill }}>
+            style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 18, borderWidth: sel ? 1.5 : 1,
+              borderColor: sel ? t.colors.primary : g.edge, backgroundColor: sel ? alpha(t.tokens.accent.glow[0], t.isDark ? 0.16 : 0.12) : g.fill, opacity: pressed && !sel ? 0.78 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] })}>
             {o.icon ? <Feather name={o.icon} size={18} color={sel ? t.colors.primary : t.colors.textMuted} /> : null}
             <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
               <RNText maxFontSizeMultiplier={1.7} {...web(1.7)} style={{ color: t.colors.text, fontFamily: sel ? fonts.bodyBold : fonts.bodyMedium, fontSize: typography.bodyM.fontSize, lineHeight: typography.bodyM.lineHeight }}>{o.label}</RNText>

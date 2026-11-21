@@ -20,6 +20,7 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { progressOf } from '@/lib/domain/quickPicks';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 type TemplateKind = Exclude<ChecklistKind, 'custom'>;
 const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : (CHECKLIST_TEMPLATES[kind].icon as IconName));
@@ -144,7 +145,7 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
                   style={({ pressed }) => ({ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 4, paddingVertical: 6, borderRadius: radius.md, opacity: pressed ? 0.7 : 1 })}
                 >
                   <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', borderWidth: item.done ? 0 : 2, borderColor: t.colors.border, backgroundColor: item.done ? t.colors.gold : 'transparent' }}>
-                    {item.done ? <Icon name="check" size={15} color="#FFFFFF" /> : null}
+                    <CheckMark checked={!!item.done} size={17} color="#FFFFFF" />
                   </View>
                   <Text style={{ flex: 1, textDecorationLine: item.done ? 'line-through' : 'none' }} muted={item.done}>{item.label}</Text>
                 </Tappable>

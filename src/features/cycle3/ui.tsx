@@ -12,6 +12,7 @@ import { CATEGORY_TINT, categoryOf, PILL_ICON, type CategoryKey } from '@/lib/do
 import { t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH } from '@/theme/tokens';
+import { CheckMark } from '@/motion/CheckMark';
 
 /**
  * Calendrier : toujours sombre et lisible (contrastes ≥ 4,5:1 sur le fond).
@@ -76,7 +77,10 @@ export function Pill({ id, label, icon, selected, onPress, category, disabled, t
         onPress={() => { haptic('selection'); onPress(); }}
         style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: 12, backgroundColor: bg,
           borderWidth: 1.5, borderColor: selected ? tint.ink : t.isDark ? 'rgba(255,255,255,0.14)' : 'transparent', opacity: disabled ? 0.5 : 1 }}>
-        <Icon name={selected ? 'check' : icon ?? (PILL_ICON[cat] as IconName)} size={16} color={fg} />
+        <View style={{ width: 16, height: 16, alignItems: 'center', justifyContent: 'center' }}>
+          {selected ? null : <Icon name={icon ?? (PILL_ICON[cat] as IconName)} size={16} color={fg} />}
+          <CheckMark checked={selected} size={18} color={fg} style={{ position: 'absolute' }} />
+        </View>
         <Text weight="medium" color={fg} style={{ flexShrink: 1 }}>{label}</Text>
       </Pressable>
     </Animated.View>
