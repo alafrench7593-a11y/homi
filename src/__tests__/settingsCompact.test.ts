@@ -42,3 +42,19 @@ describe('Aide et informations sans abonnement', () => {
     expect(isFreeRoute('/settings')).toBe(true);
   });
 });
+
+describe('visite guidée : jamais mise en pause à tort (régression 21/11/2026)', () => {
+  it('démonstration : l’accueil est ouvert à la visite ; droit en vérification : « checking », pas « locked »', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { gateFor } = require('@/lib/premium/access') as typeof import('@/lib/premium/access');
+    expect(gateFor('/', false, null, { visit: true })).toBe('open');
+    expect(gateFor('/', undefined, null)).toBe('checking');
+  });
+  it('la visite tient compte de la démonstration et ne se met en pause que sur un écran réellement verrouillé', () => {
+    const entry = fs.readFileSync('src/features/tour/TourEntry.tsx', 'utf8');
+    const overlay = fs.readFileSync('src/features/tour/TourOverlay.tsx', 'utf8');
+    expect(entry).toMatch(/gateFor\(path, premium, access\.data \?\? null, \{ visit: isDemo \}\)/);
+    expect(overlay).toMatch(/gate === 'locked'[^\n]*tourDispatch\(\{ type: 'later' \}\)/);
+    expect(overlay).not.toMatch(/!open && TOUR_STEPS/);
+  });
+});

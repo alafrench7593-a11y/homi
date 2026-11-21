@@ -43,7 +43,7 @@ import {
 import { lastEmergencyCall, setTourShownPath, tourDispatch, tourEvent, tourProfileCount, useTourProgress, useTourStore } from './store';
 import { ToolHintBubble } from './ToolHint';
 import { TourHand } from './TourHand';
-import { useScreenOpen } from './TourEntry';
+import { useScreenGate } from './TourEntry';
 
 /** Actions du réducteur (constantes : aucune chaîne dans le JSX). */
 const SKIP_STEP = { type: 'skipStep' } as const;
@@ -143,10 +143,11 @@ export function TourHost() {
   // La visite se ferme d'elle-même pendant une urgence ou pour un compte nounou (rien n'est perdu : « Plus tard »)
   useEffect(() => { if (progress.status === 'running' && (caregiverOnly || emergency)) tourDispatch({ type: 'later' }); }, [progress.status, caregiverOnly, emergency]);
 
-  // Écran recouvert par l'écran Premium (verrouillage strict) : la visite ne s'y pose pas ; elle attend (« Plus tard »)
-  const open = useScreenOpen(pathname);
-  const step = active && open ? TOUR_STEPS[progress.step] : null;
-  useEffect(() => { if (active && !open && TOUR_STEPS[progress.step] && stepOnScreen(TOUR_STEPS[progress.step], pathname)) tourDispatch({ type: 'later' }); }, [active, open, progress.step, pathname]);
+  // Écran recouvert par l'écran Premium (verrouillage strict) : la visite ne s'y pose pas ; elle attend (« Plus tard »).
+  // Droit encore en vérification : la visite attend la réponse sans se mettre en pause (sinon elle s'arrêtait dès son lancement)
+  const gate = useScreenGate(pathname);
+  const step = active && gate === 'open' ? TOUR_STEPS[progress.step] : null;
+  useEffect(() => { if (active && gate === 'locked' && TOUR_STEPS[progress.step] && stepOnScreen(TOUR_STEPS[progress.step], pathname)) tourDispatch({ type: 'later' }); }, [active, gate, progress.step, pathname]);
   return (
     <>
       {step && stepOnScreen(step, pathname) ? <Spotlight step={step} index={progress.step} path={pathname} /> : null}

@@ -18,7 +18,8 @@ import { useAuth } from '@/lib/auth';
 import { backend } from '@/lib/backend';
 import { useMemberships } from '@/lib/data/hooks';
 import { useAccess } from '@/lib/data/hooks-access';
-import { gateFor } from '@/lib/premium/access';
+import { gateFor, type GateDecision } from '@/lib/premium/access';
+import { useBackendMode } from '@/lib/demoMode';
 import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { isPracticeActive, onPracticeChange } from '@/lib/practice';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -38,12 +39,19 @@ export function useTourAllowed(): boolean {
  * L'écran `path` est-il ouvert (pas recouvert par l'écran Premium du verrouillage strict) ? Même lecture que
  * `PremiumGate` (une seule requête has_premium pour toute l'application). La visite ne se pose jamais sous ce voile.
  */
-export function useScreenOpen(path: string): boolean {
+export function useScreenGate(path: string): GateDecision {
   const { session } = useAuth();
   const q = useQuery({ queryKey: [session?.userId, 'subscriptions', 'premium'], queryFn: () => backend.rpc<boolean>('has_premium'), enabled: !!session, staleTime: 60_000 });
   const access = useAccess();
+  // Même décision que l'écran Premium (src/components/PremiumGate.tsx), y compris la visite sans compte (démonstration)
+  const { isDemo } = useBackendMode();
   const premium = q.data === true ? true : q.data === false || q.isError ? false : undefined;
-  return gateFor(path, premium, access.data ?? null) === 'open';
+  return gateFor(path, premium, access.data ?? null, { visit: isDemo });
+}
+
+/** Écran ouvert pour ce compte (une vérification en cours ne compte pas comme ouvert). */
+export function useScreenOpen(path: string): boolean {
+  return useScreenGate(path) === 'open';
 }
 
 /** Contenu du temps « Visite guidée » de l'onboarding (les boutons sont dans le pied de l'écran). */
