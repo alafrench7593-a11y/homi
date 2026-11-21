@@ -102,6 +102,14 @@ describe('verre dépoli de la propriétaire + lumière par public', () => {
     for (const [id, d] of Object.entries(TOOL_SYMBOLS)) { expect(d).toMatch(/^[Mm]/); expect(TOOL_GLASS_CATEGORY[id]).toBeTruthy(); }
     for (const f of new Set(Object.values(TOOL_GLASS_CATEGORY))) expect(fs.readFileSync(`assets/brand/tool-glass/glass/${f}.png`)[25]).toBe(6); // RGBA
   });
+  it('aucun doublon de symbole : deux outils n’ont jamais le même dessin (symboles clairs, 21/11/2026)', () => {
+    const byDrawing = new Map<string, string[]>();
+    for (const [id, d] of Object.entries(TOOL_SYMBOLS)) byDrawing.set(d, [...(byDrawing.get(d) ?? []), id]);
+    expect([...byDrawing.values()].filter((ids) => ids.length > 1)).toEqual([]);
+    expect(byDrawing.size).toBe(134);
+    // aucun caractère dessiné : les SVG sources sont des tracés au trait, sans élément <text>
+    for (const id of Object.keys(TOOL_SYMBOLS)) expect(fs.readFileSync(`assets/brand/tool-glass/symboles/${id}.svg`, 'utf8')).not.toMatch(/<text\b/);
+  });
   it('raccourcis de l’accueil : chacun mène à un outil du registre et en prend le symbole et le public', () => {
     for (const k of Object.keys(QUICK_ICON)) {
       expect(resolveTool(QUICK_TOOL[k])?.def.id).toBe(QUICK_TOOL[k]);

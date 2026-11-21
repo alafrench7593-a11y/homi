@@ -3,6 +3,13 @@
  * assets, hors application (aucune dépendance ajoutée : PIL de Python pour réduire les plaques).
  *
  *   node scripts/da/tool-glass-import.cjs <dossier-fourni>   (dossier contenant catalogue.json et Motion/)
+ *   node scripts/da/tool-glass-import.cjs --symboles         régénère seulement src/brand/toolGlass/symbols.ts depuis
+ *                                                            assets/brand/tool-glass/symboles/*.svg (symboles redessinés)
+ *
+ * Symboles redessinés (« symboles clairs », 21/11/2026) : la plupart des symboles fournis étaient des pictogrammes
+ * génériques (grille, carte, étoile, « # »…) qui ne disaient pas la fonction de l'outil. Les nouveaux dessins gardent la
+ * construction des fichiers fournis (grille 24, trait rond) ; les ORIGINAUX restent dans
+ * assets/brand/tool-glass/symboles-originaux/ (pour revenir en arrière : les recopier dans symboles/ puis --symboles).
  *
  * Écrit :
  *  - assets/brand/tool-glass/catalogue.json        catalogue fourni (id, label, catégorie, mouvement, teinte)
@@ -17,9 +24,10 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const SRC = path.resolve(process.argv[2] || '');
 const ROOT = path.resolve(__dirname, '..', '..');
 const OUT = path.join(ROOT, 'assets', 'brand', 'tool-glass');
+const ONLY_SYMBOLS = process.argv[2] === '--symboles';
+const SRC = ONLY_SYMBOLS ? OUT : path.resolve(process.argv[2] || '');
 if (!fs.existsSync(path.join(SRC, 'catalogue.json'))) throw new Error(`catalogue.json introuvable dans ${SRC}`);
 
 const CAT = {
@@ -28,7 +36,7 @@ const CAT = {
 };
 const catalogue = JSON.parse(fs.readFileSync(path.join(SRC, 'catalogue.json'), 'utf8'));
 for (const d of ['symboles', 'glass']) fs.mkdirSync(path.join(OUT, d), { recursive: true });
-fs.copyFileSync(path.join(SRC, 'catalogue.json'), path.join(OUT, 'catalogue.json'));
+if (!ONLY_SYMBOLS) fs.copyFileSync(path.join(SRC, 'catalogue.json'), path.join(OUT, 'catalogue.json'));
 
 // plaques : une par catégorie, 256 px
 const glass = {};
@@ -38,7 +46,7 @@ for (const e of catalogue) {
   if (glass[cat] && glass[cat] !== e.verre) throw new Error(`deux plaques pour ${cat}`);
   glass[cat] = e.verre;
 }
-for (const [cat, rel] of Object.entries(glass)) {
+for (const [cat, rel] of ONLY_SYMBOLS ? [] : Object.entries(glass)) {
   execFileSync('python3', ['-c', 'import sys; from PIL import Image; Image.open(sys.argv[1]).convert("RGBA").resize((256, 256), Image.LANCZOS).save(sys.argv[2], optimize=True)', path.join(SRC, rel), path.join(OUT, 'glass', `${cat}.png`)]);
 }
 
@@ -64,8 +72,8 @@ function toPath(tag) {
 const symbols = {};
 const meta = {};
 for (const e of catalogue) {
-  const svg = fs.readFileSync(path.join(SRC, e.symbole), 'utf8');
-  fs.writeFileSync(path.join(OUT, 'symboles', `${e.id}.svg`), svg);
+  const svg = fs.readFileSync(ONLY_SYMBOLS ? path.join(OUT, 'symboles', `${e.id}.svg`) : path.join(SRC, e.symbole), 'utf8');
+  if (!ONLY_SYMBOLS) fs.writeFileSync(path.join(OUT, 'symboles', `${e.id}.svg`), svg);
   if (!svg.includes('translate(21 21) scale(3.58)')) throw new Error(`${e.id} : mise en place inattendue`);
   const g = svg.match(/<g stroke="url\(#pearl\)" stroke-width="2\.04">([\s\S]*?)<\/g>/);
   if (!g) throw new Error(`${e.id} : couche nacrée introuvable`);
@@ -74,8 +82,9 @@ for (const e of catalogue) {
   meta[e.id] = CAT[e.category];
 }
 const ts = `/**
- * Symboles des 134 outils « verre dépoli » de la propriétaire (21/11/2026) — FICHIER GÉNÉRÉ par
- * scripts/da/tool-glass-import.cjs depuis assets/brand/tool-glass/symboles/*.svg : ne pas modifier à la main.
+ * Symboles des 134 outils « verre dépoli » (21/11/2026) — FICHIER GÉNÉRÉ par scripts/da/tool-glass-import.cjs
+ * depuis assets/brand/tool-glass/symboles/*.svg : ne pas modifier à la main. Les symboles génériques fournis ont été
+ * redessinés pour dire la fonction de l'outil (originaux : assets/brand/tool-glass/symboles-originaux/).
  * Chaque symbole = un tracé \`d\` sur la grille 24 (trait arrondi 2,04, posé en translate(21 21) scale(3.58) dans une
  * boîte 128 — la même que la plaque). Les couleurs (nacre, ombre, filet de lumière) sont dans src/theme/toolLogo.ts.
  */
@@ -86,4 +95,6 @@ export const TOOL_GLASS_CATEGORY: Record<string, string> = ${JSON.stringify(meta
 `;
 fs.mkdirSync(path.join(ROOT, 'src', 'brand', 'toolGlass'), { recursive: true });
 fs.writeFileSync(path.join(ROOT, 'src', 'brand', 'toolGlass', 'symbols.ts'), ts);
-console.log(`${catalogue.length} symboles, ${Object.keys(glass).length} plaques → ${OUT}`);
+const dup = Object.entries(symbols).filter(([id, d]) => Object.entries(symbols).some(([o, d2]) => o !== id && d2 === d));
+if (dup.length) throw new Error(`symboles identiques : ${dup.map(([id]) => id).join(', ')}`);
+console.log(`${catalogue.length} symboles${ONLY_SYMBOLS ? '' : `, ${Object.keys(glass).length} plaques`} → ${OUT}`);
