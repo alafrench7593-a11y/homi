@@ -37,6 +37,17 @@ async function bootstrapAccount(): Promise<void> {
   }
 }
 
+/**
+ * Relecture de la session (ticket 1, visite) : après « Découvrir sans compte », la session de démonstration peut être
+ * ouverte AVANT que le fournisseur ne soit abonné au backend qui vient d'être activé (démonstration préchargée :
+ * tout est prêt en quelques millisecondes) ; l'application restait alors « sans session » jusqu'au rechargement.
+ * `resyncAuth()` relance la lecture (même chemin qu'au démarrage), sans vider le cache ni changer de compte.
+ */
+const resyncListeners = new Set<() => void>();
+export function resyncAuth(): void {
+  resyncListeners.forEach((l) => l());
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({ session: null, ready: false });
   const [generation, setGeneration] = useState(0); // change quand on passe en démonstration ou qu'on la quitte
@@ -60,6 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState({ session: null, ready: false });
     setGeneration((g) => g + 1);
   }), [qc]);
+
+  useEffect(() => {
+    const l = () => setGeneration((g) => g + 1);
+    resyncListeners.add(l);
+    return () => { resyncListeners.delete(l); };
+  }, []);
 
   useEffect(() => {
     if (isRestoring) return undefined;

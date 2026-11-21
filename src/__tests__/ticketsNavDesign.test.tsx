@@ -40,6 +40,8 @@ import { accountEntries, toolCatalog } from '@/lib/domain/toolCatalog';
 import { searchCatalog } from '@/lib/domain/toolSearch';
 import { SignOutRow } from '@/features/account/SignOutRow';
 import * as Overlays from '@/components/Overlays';
+import { useAuth } from '@/lib/auth';
+import { leaveDemo, startDemoWithoutAccount } from '@/lib/demoMode';
 
 jest.setTimeout(60000);
 
@@ -258,6 +260,19 @@ describe('compte — déconnexion et suppression faciles à trouver', () => {
     await act(async () => { resolve(false); });
     await flush(50);
     spy.mockRestore();
+    r.unmount();
+  });
+});
+
+describe('ticket 1 — la session de la visite est connue de l’application dès l’entrée', () => {
+  it('« Découvrir sans compte » : la session arrive dans AuthProvider sans rechargement (relecture resyncAuth)', async () => {
+    let seenSession: unknown = null;
+    function SessionProbe() { seenSession = useAuth().session; return null; }
+    const r = await render(<SessionProbe />);
+    await act(async () => { await startDemoWithoutAccount(); });
+    await flush(400);
+    expect(seenSession).toBeTruthy();
+    await act(async () => { await leaveDemo(); });
     r.unmount();
   });
 });
