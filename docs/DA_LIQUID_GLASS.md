@@ -47,7 +47,7 @@ interne), pas une transparence (principe repris de Solid Glass).
 | `src/theme/toolLogo.ts` | matière : teintes par catégorie, plaque claire / sombre / nuit, contraste RÉSOLU |
 | `assets/brand/tool-logos/<id>.svg` | 134 sources éditables (un par outil du registre), `node scripts/da/brand-export.cjs` |
 
-**Trois rendus** : `detailed` (≥ 48 pt : en-tête d'outil, raccourcis — ombre du glyphe, ombre portée), `compact`
+**Trois rendus** : `detailed` (≥ 48 pt : en-tête d'outil, raccourcis — halo de la teinte et rayonnement du glyphe depuis le § 3 bis), `compact`
 (< 48 pt : listes, catalogue, recherche — trait plus franc), **animé** (`play`, `running`, `pressed`). Une seule
 source : `ToolGlyph` (utilisé par toutes les rangées, tuiles, résultats, en-têtes `Screen`) rend `ToolLogo` → même
 logo dans l'accueil, les favoris, la recherche, le catalogue et l'écran de l'outil.
@@ -68,6 +68,47 @@ Couverture (test `src/__tests__/toolLogos.test.tsx`, nombres réels) : **394 ent
 liste des 200 (sur 200 ; 2 absents n'ont pas d'écran), 27 raccourcis de l'accueil, 9 catégories ; 189 glyphes
 distincts ; familles : glint 265, meal 38, curve 33, check 23, moon 21, ring 14. Urgences : plaque rouge, jamais
 animée.
+
+## 3 bis. Logos d'outils — matière « verre sombre » (21/11/2026)
+
+Évolution demandée par la propriétaire d'après sa référence (icône d'app de verre teinté profond), **en code**
+(react-native-svg, aucune image générée). Inchangés : symbole HOMI, `HomiGlassMark`, icône de l'app (export lancé avec
+`--logos-only`), `AuraMark` et le robot Aura. Même API, mêmes trois rendus, mêmes six familles d'animation.
+
+| Couche | Rendu |
+|---|---|
+| Plaque | verre teinté PROFOND (dégradé vertical haut → milieu → bas à 50 % de noir), plus clair au centre-haut (cœur radial de la lumière du thème), reflet doux en diagonale depuis le coin haut-gauche, ombre interne en bas — opaque : sombre et lumineuse sur fond crème comme sur fond nuit |
+| Liseré | contour intérieur fin (1,1 / 64), blanc teinté net en haut et à gauche, une lueur de la teinte en bas à droite |
+| Halo | ombre colorée diffuse de la boîte (`logoShadow`), **rendu détaillé seulement** (en-têtes, raccourcis) ; compact (listes, recherche, catalogue dense) : ombre de contact seule ; nuit : aucun |
+| Glyphe | pictogramme HOMI rendu PLEIN : aplat + trait en dégradé blanc → pâle de la teinte ; traits intérieurs à l'aplat (et points) à la couleur de la plaque = 1–2 détails ; trait 1,95 (détaillé) / 2,15 (compact) |
+| Rayonnement | sans filtre de flou (coût mobile) : traits élargis superposés de la lumière du thème — 3 couches en détaillé, 1 en compact, 0 la nuit |
+| Animations | anneau, courbe, étoiles : encre claire du glyphe ; coche : couleur de la plaque sur pastille claire ; reflet qui traverse : blanc teinté |
+
+Palette (`src/theme/toolLogo.ts`, `LOGO_HUES` = verre, `LOGO_GLOWS` = lumière ; même verre en clair et en sombre ;
+le milieu est RÉSOLU : assombri par pas de 4 % jusqu'à ≥ 4,5:1). Contraste = point le plus sombre du glyphe contre
+point le plus clair de la plaque (haut + cœur lumineux + reflet) ; détail = couleur de la plaque sur le glyphe.
+
+| Thème | Verre résolu | Lumière | Glyphe (haut → bas) | Glyphe/plaque | Détail/glyphe | Nuit (glyphe/plaque) |
+|---|---|---|---|---|---|---|
+| alimentation (`feeding`) | #842C1A corail profond | #FFA383 | #FFFBFA → #FFF0EB | 4,52:1 | 9,25:1 | 5,79:1 |
+| sommeil (`sleep`) | #2D2E86 indigo nuit | #A6ABFF | #FBFCFF → #F1F2FF | 5,34:1 | 11,41:1 | 6,73:1 |
+| soins / croissance (`care`) | #234B3A vert sauge profond | #9FE3BF | #FBFEFC → #F0FBF5 | 4,56:1 | 10,51:1 | 5,80:1 |
+| santé (`health`) | #8A1E4C framboise | #FF94BD | #FFFBFC → #FFEEF4 | 4,62:1 | 9,20:1 | 6,33:1 |
+| cycle (`cycle`) | #792373 rose profond (orchidée) | #F4A8FF | #FFFCFF → #FDF1FF | 4,57:1 | 9,62:1 | 6,33:1 |
+| grossesse (`pregnancy`) | #52248A prune-violet | #CDA9FF | #FDFCFF → #F7F1FF | 5,08:1 | 10,80:1 | 6,69:1 |
+| école (`school`) | #6B370C ambre brûlé | #FFC87A | #FFFDFA → #FFF6EA | 4,56:1 | 10,31:1 | 5,84:1 |
+| couple (`couple`) | #741430 rubis | #FF8FA6 | #FFFBFB → #FFEDF1 | 5,42:1 | 11,06:1 | 6,84:1 |
+| foyer / famille (`family`) | #0C4C55 bleu lagon | #7FE2E8 | #FAFEFE → #EBFAFB | 4,50:1 | 10,22:1 | 5,90:1 |
+| communauté (`community`) | #1D4486 bleu ouvert | #93C2FF | #FBFDFF → #EEF5FF | 4,56:1 | 9,81:1 | 6,26:1 |
+| compte (`account`) | #36404E ardoise | #C9D4E3 | #FDFDFE → #F6F8FB | 4,71:1 | 11,11:1 | 6,47:1 |
+| Aura (`aura`) | #1B2B4C bleu de nuit | #F5C26B ambre | #FFFDF9 → #FDF5E7 | 5,97:1 | 13,88:1 | 7,21:1 |
+| urgence (`urgent`) | #A1111E rouge d'urgence | #FF8A80 | #FFFAFA → #FFECEB | 4,59:1 | 8,26:1 | 6,28:1 |
+
+Garde-fous (`src/__tests__/toolLogos.test.tsx`) : par teinte et par apparence (clair, sombre, nuit), glyphe ≥ 4,5:1 et
+détails ≥ 3:1 ; verre profond (luminance < 0,1) identique en clair et en sombre ; halo seulement en détaillé, jamais la
+nuit ; verres et lumières tous distincts. Rapport : `node scripts/da/contrast.cjs`. Planches :
+`node scripts/da/brand-export.cjs <dossier> --logos-only --png` → `tool-logos.png` (134 logos, crème et nuit) et
+`tool-themes.png` (une icône par thème en 120, 60 et 40 px, clair / sombre / nuit, contrastes mesurés).
 
 ## 4. Icône d'app, symbole, logo animé
 
