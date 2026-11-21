@@ -41,6 +41,7 @@ import { GLASS_TAB_BAR, GlassButton, GlassSheet, GlassTabBar, type GlassTab } fr
 import { haptic, Icon, type IconName, Text } from './ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import { TAB_IMAGES } from '@/brand/tabs';
+import { TabLight } from '@/brand/toolGlass/TabLight';
 import { useDockActionFor, type DockAction } from './dockAction';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
@@ -99,7 +100,10 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
       {/* Rectangle aux angles souples, aplat de l'action principale (prune en clair, corail en sombre), sans dégradé */}
       <Animated.View style={[{ flex: 1, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', backgroundColor: action.icon === 'plus' ? 'transparent' : t.tokens.action.fill }, p.style]}>
         {/* « Ajouter » : tuile illustrée de la barre ; une action d'écran garde son icône sur l'aplat */}
-        {action.icon === 'plus' ? <Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} />
+        {action.icon === 'plus' ? (
+          // lumière jaune douce derrière « + » (même lumière que les onglets, toujours vive : c'est l'action principale)
+          <TabLight size={size} active testID="dock-add-light"><Image source={TAB_IMAGES.add} accessibilityIgnoresInvertColors style={{ width: size, height: size }} /></TabLight>
+        )
           : <Icon name={action.icon as IconName} size={24} color={t.tokens.action.text} />}
       </Animated.View>
       </View>

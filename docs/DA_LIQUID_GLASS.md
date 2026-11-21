@@ -22,7 +22,7 @@ retours tactiles), captures de l'app réelle (`e2e/da_liquid_glass.py`).
 
 ## 2. Deux directions comparées, une retenue
 
-Planche : `scripts/da/directions.cjs` (données fictives ; capture dans le dossier de travail) — mêmes éléments :
+Planche : `scripts/da/directions.cjs` (retiré le 21/11/2026 avec le passage aux icônes de la propriétaire ; historique git) — mêmes éléments :
 icône d'app (180/60/40), trois logos (sommeil, allaitement, croissance) en 64/40/28, accueil, barre, Aura.
 
 | | A « Verre minéral » (retenue) | B « Verre clair » |
@@ -45,9 +45,9 @@ interne), pas une transparence (principe repris de Solid Glass).
 | `ToolLogo.tsx` | composant : 3 rendus, animations, pression, minuteur |
 | `svg.ts` | même dessin en SVG statique (exports, planches, tests) |
 | `src/theme/toolLogo.ts` | matière : teintes par catégorie, plaque claire / sombre / nuit, contraste RÉSOLU |
-| `assets/brand/tool-logos/<id>.svg` | 134 sources éditables (un par outil du registre), `node scripts/da/brand-export.cjs` |
+| `assets/brand/tool-glass/` | plaques et symboles fournis par la propriétaire (§ 3 bis), `scripts/da/tool-glass-import.cjs` |
 
-**Trois rendus** : `detailed` (≥ 48 pt : en-tête d'outil, raccourcis — halo de la teinte et rayonnement du glyphe depuis le § 3 bis), `compact`
+**Trois rendus** : `detailed` (≥ 48 pt : en-tête d'outil, raccourcis — lumière large et ombre teintée, § 3 bis), `compact`
 (< 48 pt : listes, catalogue, recherche — trait plus franc), **animé** (`play`, `running`, `pressed`). Une seule
 source : `ToolGlyph` (utilisé par toutes les rangées, tuiles, résultats, en-têtes `Screen`) rend `ToolLogo` → même
 logo dans l'accueil, les favoris, la recherche, le catalogue et l'écran de l'outil.
@@ -69,46 +69,57 @@ liste des 200 (sur 200 ; 2 absents n'ont pas d'écran), 27 raccourcis de l'accue
 distincts ; familles : glint 265, meal 38, curve 33, check 23, moon 21, ring 14. Urgences : plaque rouge, jamais
 animée.
 
-## 3 bis. Logos d'outils — matière « verre sombre » (21/11/2026)
+## 3 bis. Logos d'outils — verre dépoli de la propriétaire + lumière par public (21/11/2026)
 
-Évolution demandée par la propriétaire d'après sa référence (icône d'app de verre teinté profond), **en code**
-(react-native-svg, aucune image générée). Inchangés : symbole HOMI, `HomiGlassMark`, icône de l'app (export lancé avec
-`--logos-only`), `AuraMark` et le robot Aura. Même API, mêmes trois rendus, mêmes six familles d'animation.
+Les 134 icônes « verre dépoli » sont celles de la propriétaire (paquet `outils134` : plaques lavande dépolies,
+pictogramme blanc nacré au trait). Une étape intermédiaire « verre sombre » dessinée en code (même jour) a été
+**abandonnée** à sa demande. Inchangés : symbole HOMI, `HomiGlassMark`, icône de l'app, `AuraMark`, robot Aura.
 
-| Couche | Rendu |
+**Demande** : « une lumière colorée au centre, derrière le dessin ; à l'accueil et dans les outils, la couleur selon
+à qui sert l'outil, pour comprendre directement à quoi il correspond ; la barre d'onglets en jaune ».
+
+| Élément | Source / rendu |
 |---|---|
-| Plaque | verre teinté PROFOND (dégradé vertical haut → milieu → bas à 50 % de noir), plus clair au centre-haut (cœur radial de la lumière du thème), reflet doux en diagonale depuis le coin haut-gauche, ombre interne en bas — opaque : sombre et lumineuse sur fond crème comme sur fond nuit |
-| Liseré | contour intérieur fin (1,1 / 64), blanc teinté net en haut et à gauche, une lueur de la teinte en bas à droite |
-| Halo | ombre colorée diffuse de la boîte (`logoShadow`), **rendu détaillé seulement** (en-têtes, raccourcis) ; compact (listes, recherche, catalogue dense) : ombre de contact seule ; nuit : aucun |
-| Glyphe | pictogramme HOMI rendu PLEIN : aplat + trait en dégradé blanc → pâle de la teinte ; traits intérieurs à l'aplat (et points) à la couleur de la plaque = 1–2 détails ; trait 1,95 (détaillé) / 2,15 (compact) |
-| Rayonnement | sans filtre de flou (coût mobile) : traits élargis superposés de la lumière du thème — 3 couches en détaillé, 1 en compact, 0 la nuit |
-| Animations | anneau, courbe, étoiles : encre claire du glyphe ; coche : couleur de la plaque sur pastille claire ; reflet qui traverse : blanc teinté |
+| Plaque | `assets/brand/tool-glass/glass/<catégorie>.png` — 11 plaques fournies (une par catégorie du catalogue), réduites à 256 px ; urgence → plaque Santé, Aura → plaque Compte |
+| Symbole | `src/brand/toolGlass/symbols.ts` (GÉNÉRÉ par `scripts/da/tool-glass-import.cjs` depuis `assets/brand/tool-glass/symboles/<id>.svg`) : un tracé par outil, même construction que les fichiers fournis (ombre `#574966` 25 %, trait en dégradé nacré `#FFFDFD → #EEEBF8`, filet blanc 44 % en détaillé) ; trait 2,4 (détaillé) / 2,7 (compact) au lieu de 2,04, proche des PNG fournis |
+| Lumière | `react-native-svg` RadialGradient centré, DERRIÈRE le symbole, rayon 0,40 (détaillé) / 0,36 (compact) de la plaque, opacité au centre 0,62 (clair) / 0,66 (sombre) / 0,32 (nuit) |
+| Ombre | détaillé : contact + reflet coloré de la lumière sous la plaque ; compact : contact seul ; nuit : aucune |
+| Repli | sous-accès, fonctions `h200_<n>`, catégories : pictogramme HOMI de l'entrée dans le même trait nacré, sur la plaque de sa catégorie (les 134 outils et les 27 raccourcis de l'accueil ont tous le symbole fourni : aucun PNG complet n'est embarqué) |
+| Poids | plaques 576 Ko + symboles 16 Ko de code ; sources SVG et catalogue 155 Ko (dépôt : 0,75 Mo) |
 
-Palette (`src/theme/toolLogo.ts`, `LOGO_HUES` = verre, `LOGO_GLOWS` = lumière ; même verre en clair et en sombre ;
-le milieu est RÉSOLU : assombri par pas de 4 % jusqu'à ≥ 4,5:1). Contraste = point le plus sombre du glyphe contre
-point le plus clair de la plaque (haut + cœur lumineux + reflet) ; détail = couleur de la plaque sur le glyphe.
+**Couleur de la lumière = public** (`PUBLIC_LIGHT`, src/theme/toolLogo.ts ; choix `logoPublicOf`, src/brand/toolLogo/families.ts) :
 
-| Thème | Verre résolu | Lumière | Glyphe (haut → bas) | Glyphe/plaque | Détail/glyphe | Nuit (glyphe/plaque) |
-|---|---|---|---|---|---|---|
-| alimentation (`feeding`) | #842C1A corail profond | #FFA383 | #FFFBFA → #FFF0EB | 4,52:1 | 9,25:1 | 5,79:1 |
-| sommeil (`sleep`) | #2D2E86 indigo nuit | #A6ABFF | #FBFCFF → #F1F2FF | 5,34:1 | 11,41:1 | 6,73:1 |
-| soins / croissance (`care`) | #234B3A vert sauge profond | #9FE3BF | #FBFEFC → #F0FBF5 | 4,56:1 | 10,51:1 | 5,80:1 |
-| santé (`health`) | #8A1E4C framboise | #FF94BD | #FFFBFC → #FFEEF4 | 4,62:1 | 9,20:1 | 6,33:1 |
-| cycle (`cycle`) | #792373 rose profond (orchidée) | #F4A8FF | #FFFCFF → #FDF1FF | 4,57:1 | 9,62:1 | 6,33:1 |
-| grossesse (`pregnancy`) | #52248A prune-violet | #CDA9FF | #FDFCFF → #F7F1FF | 5,08:1 | 10,80:1 | 6,69:1 |
-| école (`school`) | #6B370C ambre brûlé | #FFC87A | #FFFDFA → #FFF6EA | 4,56:1 | 10,31:1 | 5,84:1 |
-| couple (`couple`) | #741430 rubis | #FF8FA6 | #FFFBFB → #FFEDF1 | 5,42:1 | 11,06:1 | 6,84:1 |
-| foyer / famille (`family`) | #0C4C55 bleu lagon | #7FE2E8 | #FAFEFE → #EBFAFB | 4,50:1 | 10,22:1 | 5,90:1 |
-| communauté (`community`) | #1D4486 bleu ouvert | #93C2FF | #FBFDFF → #EEF5FF | 4,56:1 | 9,81:1 | 6,26:1 |
-| compte (`account`) | #36404E ardoise | #C9D4E3 | #FDFDFE → #F6F8FB | 4,71:1 | 11,11:1 | 6,47:1 |
-| Aura (`aura`) | #1B2B4C bleu de nuit | #F5C26B ambre | #FFFDF9 → #FDF5E7 | 5,97:1 | 13,88:1 | 7,21:1 |
-| urgence (`urgent`) | #A1111E rouge d'urgence | #FF8A80 | #FFFAFA → #FFECEB | 4,59:1 | 8,26:1 | 6,28:1 |
+| Public | Lumière | Qui | Contraste symbole / centre éclairé (clair · sombre · nuit) |
+|---|---|---|---|
+| femme | #EE4D8C rose | scopes avoid, ttc, cycle, none (« moi »), pregnancy, postpartum | 2,90 · 2,92 · 2,71 |
+| bébé | #3B82EE bleu | scope baby | 2,93 · 2,96 · 2,68 |
+| enfant | #18A985 vert menthe | scope child | 2,59 · 2,58 · 2,55 |
+| couple | #F4704F pêche-corail | catégorie couple | 2,54 · 2,53 · 2,51 |
+| foyer / famille | #D27D12 ambre doux | scope family, ou outil ouvert à ≥ 3 publics | 2,63 · 2,64 · 2,56 |
+| neutre | #8A78E0 lavande | communauté, compte, réglages | 2,81 · 2,84 · 2,62 |
+| urgence | #E0303C rouge | outils `urgent` | 3,58 · 3,63 · 3,06 |
+| Aura | #2E4466 bleu nuit | pictogrammes d'Aura | 5,07 · 5,33 · 3,46 |
+| barre d'onglets | #FFC83D jaune | derrière chaque icône d'onglet (0,85 actif / 0,28 sinon) et derrière « + » (0,85) | — |
 
-Garde-fous (`src/__tests__/toolLogos.test.tsx`) : par teinte et par apparence (clair, sombre, nuit), glyphe ≥ 4,5:1 et
-détails ≥ 3:1 ; verre profond (luminance < 0,1) identique en clair et en sombre ; halo seulement en détaillé, jamais la
-nuit ; verres et lumières tous distincts. Rapport : `node scripts/da/contrast.cjs`. Planches :
-`node scripts/da/brand-export.cjs <dossier> --logos-only --png` → `tool-logos.png` (134 logos, crème et nuit) et
-`tool-themes.png` (une icône par thème en 120, 60 et 40 px, clair / sombre / nuit, contrastes mesurés).
+Règle déterministe (testée) : urgence et Aura d'abord ; communauté / compte → neutre ; couple → couple ; sinon les
+scopes de l'outil (ou du sous-accès) : ≥ 3 publics distincts → foyer ; sinon le premier scope PERTINENT (celui du
+rangement de l'outil s'il figure dans ses scopes : école → enfant, repas de bébé → bébé), à défaut le premier.
+Raccourcis de l'accueil : ceux de l'outil qu'ils ouvrent (`QUICK_TOOL`). Entrées sans outil : public de la catégorie.
+
+**Lisibilité** : les plaques fournies sont claires (centre moyen mesuré `#9F96AD`) et le symbole est blanc nacré :
+sur la plaque NUE, le contraste n'est que de **2,40:1**. Chaque lumière a été choisie (teinte moyenne, saturée) pour
+**améliorer** ce contraste au centre (2,51 à 5,33:1) — garde-fou testé : jamais moins que la plaque nue. Le seuil
+3:1 des éléments graphiques n'est atteint que pour l'urgence et Aura : limite connue du dessin fourni (symbole blanc sur
+verre clair), compensée par l'ombre portée du trait et le nom de l'outil toujours écrit à côté.
+
+**Mouvement** : la lumière s'intensifie (+0,30, ×1,12) tant que le doigt est posé et pulse une fois à l'ouverture
+(montée 160 ms, retour 620 ms) ; le symbole garde les six familles (lune, anneau, courbe, coche, repas, reflet) ;
+au repos tout est stable ; « Réduire les animations » : lumière fixe.
+
+Planches : `DA_LOGOS=<table.json> npx jest src/__tests__/toolLogos.test.tsx -t "table des logos"` puis
+`node scripts/da/brand-export.cjs <dossier> --logos-only --png --table=<table.json>` → `tool-logos.png` (134 outils,
+détaillé 60 + compact 40, crème et nuit, pastille du public) et `tool-publics.png` (légende : un outil par public en
+120 / 60 / 40, clair / sombre / nuit, contrastes). Rapport chiffré : `node scripts/da/contrast.cjs`.
 
 ## 4. Icône d'app, symbole, logo animé
 
