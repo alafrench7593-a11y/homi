@@ -166,3 +166,41 @@ export const liquidIndicator = { maxStretch: 0.22, squash: 0.08, perPx: 0.0016 }
 
 /** Aura : respiration du symbole pendant la préparation d'une réponse, rotation lente des teintes, ouverture. */
 export const auraMotion = { breathMs: 1100, spinMs: 9000, thinkingScale: 1.06, openMs: 480 } as const;
+
+/**
+ * Robot compagnon d'Aura (`AuraBot`, src/features/aura/AuraBot.tsx). Distances en unités de la grille 120 du dessin.
+ * Boucles douces (flottement, clignement, cœur) seulement en mouvement complet ; ponctuations courtes (coucou, sursaut)
+ * qui reviennent toujours à la pose de l'état.
+ */
+export const auraBotMotion = {
+  /** flottement : demi-période et amplitude */
+  floatMs: 1900,
+  float: 2.4,
+  /** clignement : un toutes les `blinkEveryMs`, paupière fermée `blinkMs` */
+  blinkEveryMs: 3600,
+  blinkMs: 80,
+  /** cœur : pulsation (demi-période), échelle maximale */
+  heartMs: 1500,
+  heartScale: 1.14,
+  /** réflexion : balancement, anneau du cœur, défilement des trois points */
+  swayMs: 1300,
+  swayDeg: 3,
+  orbitMs: 1500,
+  dotsMs: 1250,
+  /** écoute : tête penchée, regard qui suit légèrement */
+  tiltDeg: 9,
+  lookMs: 1400,
+  look: 1.6,
+  /** coucou : bras levé (degrés), va-et-vient, nombre d'allers-retours */
+  raiseDeg: -110,
+  waveFromDeg: -96,
+  waveToDeg: -126,
+  waveMs: 200,
+  waves: 3,
+  /** réponse : petit sursaut */
+  hop: 7,
+  hopMs: 150,
+  /** durées des états passagers avant le retour au repos (useAuraBot) */
+  greetMs: 2300,
+  answerMs: 1400,
+} as const;

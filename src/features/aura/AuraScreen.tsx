@@ -53,7 +53,8 @@ import { assessSafety, urgentContacts, type UrgentContact } from '../../../supab
 import { MAX_QUESTION_LENGTH, todayIso } from '../../../supabase/functions/_shared/assistant-format';
 import { sanitizeActions } from '../../../supabase/functions/_shared/aura-tools';
 import { ActionCards } from './ActionCards';
-import { AuraAvatar, AuraOrb, AuraThinkingDots } from './AuraMark';
+import { AuraBot } from './AuraBot';
+import { useAuraBot, type AuraBotState } from './useAuraBot';
 import { EmotionTranslator } from './EmotionTranslator';
 import { JournalPicker } from './JournalPicker';
 import { askAura, classifyAuraError, type AuraErrorKind, type AuraServerReply } from './api';
@@ -134,6 +135,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const [outOfCredits, setOutOfCredits] = useState(false);
   const [journal, setJournal] = useState<'mood' | 'diary' | null>(null);
   const [settings, setSettings] = useState(false);
+  const [focused, setFocused] = useState(false);
   const list = useRef<FlatList<Msg>>(null);
   const scrollEnd = () => setTimeout(() => list.current?.scrollToEnd({ animated: !motion.off }), 80);
 
@@ -240,6 +242,16 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const costLine = !remote ? tr('aura.free')
     : `${tr('aura.cost', { count: askCost })}${credits.data?.subscribed ? ` · ${tr('cr.balance.total', { count: totalRemaining(credits.data) })}` : ''}`;
   const empty = msgs.length === 0;
+  // Robot d'Aura : coucou à l'ouverture, écoute pendant la saisie, réflexion, sursaut à la réponse, inquiétude douce
+  // sur une erreur ou une réponse de sécurité (aucune logique d'IA ni de crédits ici : il ne fait que refléter l'écran)
+  const lastAura = useMemo(() => { for (let i = msgs.length - 1; i >= 0; i--) if (msgs[i].role === 'aura') return msgs[i]; return null; }, [msgs]);
+  const lastKind = lastAura?.reply?.kind;
+  const botState = useAuraBot({
+    thinking: sending || lastKind === 'pending',
+    listening: focused && input.trim().length > 0,
+    concern: lastKind === 'safety' || lastKind === 'error',
+    answerKey: lastAura && (lastKind === 'ai' || lastKind === 'local') ? `${lastAura.id}:${lastKind}` : null,
+  });
   const blockedByConsent = remote && (!consented || needsSub);
 
   const header = (
@@ -263,15 +275,16 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
         </View>
       ) : null}
 
-      <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
-        <AuraAvatar size={52} thinking={sending} testID="aura-avatar" />
-        <View style={{ flex: 1, gap: 6 }}>
+      <View style={empty ? { alignItems: 'center', gap: spacing.sm } : { flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
+        {/* le personnage d'Aura : en grand à l'ouverture (coucou), en petit et immobile une fois la conversation lancée */}
+        <AuraBot size={empty ? 140 : 56} state={botState} still={!empty} decorative={false} testID="aura-avatar" />
+        <View style={empty ? { alignSelf: 'stretch', gap: 6, alignItems: 'center' } : { flex: 1, gap: 6 }}>
           <View testID="aura-mode" accessibilityLabel={tr('aura.mode.a11y', { mode: modeLabel })}
-            style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, minHeight: 28, borderRadius: radius.pill, backgroundColor: remote ? t.colors.accentSoft : t.colors.surfaceAlt }}>
+            style={{ alignSelf: empty ? 'center' : 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, minHeight: 28, borderRadius: radius.pill, backgroundColor: remote ? t.colors.accentSoft : t.colors.surfaceAlt }}>
             <Icon name={mode === 'online' ? 'cloud' : mode === 'demo' ? 'play-circle' : 'smartphone'} size={14} color={t.colors.text} />
             <Text variant="caption" weight="bold">{modeLabel}</Text>
           </View>
-          <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderTopLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+          <View style={{ alignSelf: 'stretch', backgroundColor: t.colors.surface, borderRadius: radius.lg, borderTopLeftRadius: empty ? radius.lg : 6, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
             <Text variant="small" testID="aura-hello">{tr(remote ? 'aura.hello' : 'aura.helloLocal')}</Text>
           </View>
         </View>
@@ -333,7 +346,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           {!online && remote ? <Text variant="caption" color={t.colors.warning} center testID="aura-offline">{tr('aura.err.network')}</Text> : null}
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
             <TextInput
-              value={input} onChangeText={setInput} placeholder={tr('aura.ph')} placeholderTextColor={t.colors.textMuted} accessibilityLabel={tr('aura.yourMsg')}
+              value={input} onChangeText={setInput} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} placeholder={tr('aura.ph')} placeholderTextColor={t.colors.textMuted} accessibilityLabel={tr('aura.yourMsg')}
               multiline maxLength={MAX_QUESTION_LENGTH} textAlignVertical="top" editable={!blockedByConsent} testID="aura-input"
               style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
             />
@@ -354,6 +367,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           ref={list}
           data={msgs}
           keyExtractor={(m) => m.id}
+          extraData={`${botState}:${lastAura?.id ?? ''}`}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
           ListHeaderComponent={header}
@@ -364,6 +378,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             </View>
           ) : (
             <AuraReply reply={m.reply!} catalog={catalog} onChooseJournal={setJournal}
+              bot={m.id === lastAura?.id ? { state: botState, still: false } : { state: restingBot(m.reply!), still: true }}
               onRetry={(r) => void send(r.question, { requestId: r.requestId, journal: r.journal, retryOf: m.id })}
               onLocal={(q) => replace(m.id, local(q))} />
           ))}
@@ -390,8 +405,14 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   );
 }
 
-function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal }: {
+/** Expression du petit robot à côté d'une ancienne réponse (pose statique). */
+const restingBot = (r: Reply): AuraBotState => (r.kind === 'pending' ? 'thinking' : r.kind === 'safety' || r.kind === 'error' ? 'concern' : 'idle');
+const BOT_SIZE = 32;
+
+function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot }: {
   reply: Reply; catalog: ReturnType<typeof useAllToolEntries>['catalog'];
+  /** robot à côté de la réponse : vivant pour la dernière, immobile pour les précédentes */
+  bot: { state: AuraBotState; still: boolean };
   onChooseJournal: (j: 'mood' | 'diary') => void;
   onRetry: (r: Extract<Reply, { kind: 'error' }>) => void;
   onLocal: (q: string) => void;
@@ -400,22 +421,32 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal }: {
   const bubble = { backgroundColor: t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, gap: spacing.sm } as const;
   if (reply.kind === 'pending') {
     return (
-      // Aura prépare sa réponse : sa signature respire et ses lumières tournent, trois points s'allument tour à tour
+      // Aura prépare sa réponse : le robot réfléchit (trois points dans sa visière, cœur qui tourne) ; le texte le dit
       <View testID="aura-pending" accessibilityLabel={tr('aura.thinking')} accessibilityRole="progressbar" accessibilityState={{ busy: true }}
         style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
-        <AuraOrb size={30} thinking testID="aura-pending-orb" />
+        <AuraBot size={44} state="thinking" still={bot.still} testID="aura-pending-bot" />
         <View style={[bubble, { maxWidth: '70%', flexDirection: 'row', alignItems: 'center', gap: spacing.sm }]}>
-          <AuraThinkingDots color={t.colors.lavender} testID="aura-thinking-dots" />
           <Text variant="small" muted>{tr('aura.thinking')}</Text>
         </View>
       </View>
     );
   }
-  if (reply.kind === 'safety') return <View testID="aura-safety"><UrgentCard level={reply.level} contacts={reply.contacts} message={reply.message || undefined} /></View>;
+  // sécurité : le robot reste sobre (regard doux et inquiet, aucun sursaut) ; la carte d'orientation passe en premier
+  if (reply.kind === 'safety') {
+    return (
+      <View testID="aura-safety" style={{ gap: spacing.xs }}>
+        <AuraBot size={BOT_SIZE} state={bot.state === 'listening' || bot.state === 'thinking' ? bot.state : 'concern'} still={bot.still} testID="aura-safety-bot" />
+        <UrgentCard level={reply.level} contacts={reply.contacts} message={reply.message || undefined} />
+      </View>
+    );
+  }
   if (reply.kind === 'error') {
     return (
       <View style={{ gap: spacing.xs }} testID="aura-error" accessibilityLiveRegion="polite">
-        <Banner tone={reply.error === 'network' ? 'warning' : 'info'}>{tr(`aura.err.${reply.error}` as never)}</Banner>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+          <AuraBot size={BOT_SIZE} state={bot.state === 'listening' || bot.state === 'thinking' ? bot.state : 'concern'} still={bot.still} testID="aura-error-bot" />
+          <View style={{ flex: 1 }}><Banner tone={reply.error === 'network' ? 'warning' : 'info'}>{tr(`aura.err.${reply.error}` as never)}</Banner></View>
+        </View>
         <Row wrap>
           {reply.error === 'network' || reply.error === 'unavailable' ? <Button label={tr('aura.retry')} icon="refresh-cw" size="sm" variant="secondary" onPress={() => onRetry(reply)} testID="aura-retry" /> : null}
           <Button label={tr('aura.tryLocal')} icon="search" size="sm" variant="ghost" onPress={() => onLocal(reply.question)} testID="aura-try-local" />
@@ -425,7 +456,9 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal }: {
   }
   if (reply.kind === 'local') {
     return (
-      <View style={bubble} testID="aura-local-reply" accessibilityLiveRegion="polite">
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
+      <AuraBot size={BOT_SIZE} state={bot.state} still={bot.still} testID="aura-reply-bot" />
+      <View style={[bubble, { flex: 1 }]} testID="aura-local-reply" accessibilityLiveRegion="polite">
         <Text variant="small">{tr('aura.local.intro')}</Text>
         {reply.tools.length ? <Text variant="label">{tr('aura.local.tools')}</Text> : null}
         {reply.tools.map((tool) => (
@@ -447,14 +480,18 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal }: {
         ) : null}
         <Text variant="caption" muted>{tr('aura.footer.local')}</Text>
       </View>
+      </View>
     );
   }
   return (
     <View style={{ gap: spacing.sm }} testID="aura-reply" accessibilityLiveRegion="polite">
-      <View style={bubble}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
+      <AuraBot size={BOT_SIZE} state={bot.state} still={bot.still} testID="aura-reply-bot" />
+      <View style={[bubble, { flex: 1 }]}>
         {reply.demo ? <Text variant="caption" color={t.colors.lavender}>{tr('aura.mode.demo')}</Text> : null}
         {reply.answer ? <Markdown source={reply.answer} /> : null}
         {reply.replaced ? <Text variant="caption" muted>{tr('aura.replaced')}</Text> : null}
+      </View>
       </View>
       <ActionCards actions={reply.actions} catalog={catalog} onChooseJournal={onChooseJournal} />
       <Text variant="caption" muted testID="aura-charged">{`${reply.footer} ${reply.charged ? tr('aura.charged', { count: reply.cost }) : tr('aura.notCharged')}`}</Text>

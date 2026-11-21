@@ -186,4 +186,11 @@ export const aura: Messages<typeof fr> = {
   'aura.demo.missionTitle': 'Die Woche besprechen',
   'aura.demo.noTool': 'Demo: Ich habe kein Werkzeug zu diesen Wörtern gefunden. Mit der Online-KI beantwortet Aura deine Frage.',
   'aura.demo.final': 'Das ist mein Vorschlag. Nichts geschieht ohne deine Zustimmung: Prüf jeden Vorschlag, bevor du ihn annimmst.',
+  // robot compagnon du chat (AuraBot) : libellés d'accessibilité par état
+  'aura.bot.idle': 'Aura, deine Assistentin',
+  'aura.bot.greet': 'Aura, deine Assistentin, winkt dir zu',
+  'aura.bot.listening': 'Aura, deine Assistentin, hört dir zu',
+  'aura.bot.thinking': 'Aura, deine Assistentin, denkt über die Antwort nach',
+  'aura.bot.answer': 'Aura, deine Assistentin, hat geantwortet',
+  'aura.bot.concern': 'Aura, deine Assistentin, ist für dich da',
 };

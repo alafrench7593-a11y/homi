@@ -187,4 +187,11 @@ export const aura = {
   'aura.demo.missionTitle': 'Faire le point sur la semaine',
   'aura.demo.noTool': 'Démonstration : je n’ai pas trouvé d’outil pour ces mots. Avec l’IA en ligne, Aura répondra à ta question.',
   'aura.demo.final': 'Je te propose ceci. Rien n’est fait sans ton accord : relis chaque proposition avant de l’accepter.',
+  // robot compagnon du chat (AuraBot) : libellés d'accessibilité par état
+  'aura.bot.idle': 'Aura, ton assistante',
+  'aura.bot.greet': 'Aura, ton assistante, te fait coucou',
+  'aura.bot.listening': 'Aura, ton assistante, t’écoute',
+  'aura.bot.thinking': 'Aura, ton assistante, réfléchit à sa réponse',
+  'aura.bot.answer': 'Aura, ton assistante, a répondu',
+  'aura.bot.concern': 'Aura, ton assistante, est attentive à toi',
 };

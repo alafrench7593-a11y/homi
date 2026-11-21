@@ -186,4 +186,11 @@ export const aura: Messages<typeof fr> = {
   'aura.demo.missionTitle': 'Fare il punto sulla settimana',
   'aura.demo.noTool': 'Dimostrazione: non ho trovato strumenti per queste parole. Con l’IA online, Aura risponderà alla tua domanda.',
   'aura.demo.final': 'Ti propongo questo. Non si fa nulla senza il tuo consenso: rileggi ogni proposta prima di accettarla.',
+  // robot compagnon du chat (AuraBot) : libellés d'accessibilité par état
+  'aura.bot.idle': 'Aura, la tua assistente',
+  'aura.bot.greet': 'Aura, la tua assistente, ti saluta',
+  'aura.bot.listening': 'Aura, la tua assistente, ti ascolta',
+  'aura.bot.thinking': 'Aura, la tua assistente, sta pensando alla risposta',
+  'aura.bot.answer': 'Aura, la tua assistente, ha risposto',
+  'aura.bot.concern': 'Aura, la tua assistente, è qui per te',
 };
