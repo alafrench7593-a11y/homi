@@ -33,7 +33,7 @@ grand livre de crédits en mémoire). Aucun appel réel, aucun déploiement, auc
   recomposé (HOMI_BRAND.md).
 - **Ton** : empathique, humain, calme, respectueux ; un adulte capable, jamais infantilisé ; jamais de jugement ni de
   culpabilisation ; **tutoiement** (décision de la propriétaire) : « tu » en français, « du » en allemand, « tú » en
-  espagnol, « tu » en italien — dans l'application ET dans le prompt (`aura-2026-11-20.2`) et les réponses prudentes.
+  espagnol, « tu » en italien — dans l'application ET dans le prompt (`aura-2026-11-21.1` : l’assistante s’y nomme « Aura », assistante de l’app HOMI) et les réponses prudentes.
   Formulations épicènes dans les suggestions.
 - Aura dit qu'elle est une intelligence artificielle (accueil, mention sous chaque réponse générée).
 

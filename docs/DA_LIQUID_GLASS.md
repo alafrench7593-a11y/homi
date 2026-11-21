@@ -223,3 +223,51 @@ membres, statuts et logos) → décisions ci-dessous.
 Vrai rendu Liquid Glass d'iOS 26 (`GlassView`), VoiceOver réel, haptique, « Réduire la transparence » système,
 icône sur l'écran d'accueil iOS (masque réel, icône teintée appliquée par iOS), fluidité 120 Hz sur appareil.
 Le web ne montre que le niveau « flou » du verre.
+
+## 11. « Partout » : couverture mesurée, mouvement par fonction (21/11/2026)
+
+Branche `homi/glass-motion-partout` (depuis `homi/fondations` 7128a66). Paywall, achats et crédits : non modifiés
+(seul le nom « Aura » change dans leurs textes).
+
+**Mesure** : `node scripts/da/coverage.mjs [--json f] [--min 90] [--verbose]` (AST TypeScript ; test
+`src/__tests__/glassMotionCoverage.test.ts`, seuil 90 %). Une route = un fichier de `src/app` (300) ; son code = le
+fichier + ses imports dans `src/app` et `src/features` ; `src/components` et `src/motion` = bibliothèque auditée à part.
+Critères : en-tête `Screen` ; aucun Pressable / Touchable nu ; feuilles de verre (`Sheet` = verre `sheet` par défaut,
+aucune `Modal` à la main hors visionneuses de photo) ; onglets / segments avec indicateur qui glisse ; listes d'entrées
+(`.map(x => <… key={x.id}>)` sur un écran qui écrit des données) animées à l'ajout et à la suppression ; coche qui se
+trace (aucune coche figée qui apparaît selon un état). Exclus et listés : paywall / crédits (hors périmètre), listes
+virtualisées, rangées horizontales, repères de carte natifs. Limite : analyse statique (le critère vérifie la présence
+du mécanisme, pas son ressenti sur appareil).
+
+| | Avant (7128a66) | Après |
+|---|---|---|
+| Routes conformes | 140 / 300 (46,7 %) | 300 / 300 (100 %) |
+| appui | 262/300 | 300/300 |
+| feuilles de verre | 29/138 | 138/138 |
+| onglets / segments | 72/88 | 88/88 |
+| listes vivantes | 13/134 | 134/134 |
+| coches tracées | 55/92 | 92/92 |
+| bibliothèque : appuis nus | 11 | 0 |
+
+Exceptions d'en-tête (23, justifiées dans `HEADER_EXCEPTIONS`) : redirections (`/`, `/assistant`, `/discover/tools`,
+`/start/sample`, `/auth/callback`, `/nearby`, `/child/[id]/foods`, `/child/[id]/growth`), parcours plein cadre
+(`/welcome`, `/intro`, `/cinematic`, `/auth/sign-in|sign-up|forgot|reset`, `/start`, `/start/offers`, `/start/done`,
+`/discover`, `/discover/tool/[id]`), Aura (`/ask`), urgences (`/family/urgent`, `/family/sos`), nuit (`/night`,
+`/sleep/tonight`, `/sleep/difficult/[childId]`), mode enfant (`/family/kid-routine/[id]`), paywall et bancs d'essai
+internes (`/premium`, `/dev/*`).
+
+**Corrigé à la source** : `Sheet` → panneau de verre `sheet` par défaut ; `ListGroup` → rangées vivantes ;
+`MotionList` / `MotionItem` (`src/motion/ListMotion.tsx` : jamais au montage, `skipExiting` en quittant l'écran, seul
+l'élément touché au-delà de 40 entrées, immédiat avec Réduire les animations, fondu la nuit) ; `CheckMark` (coche qui
+se trace quand la donnée passe à « fait ») ; appui immédiat ajouté à `LiftCard`, `MorphSource`, `FavoriteStar`,
+`CompletionCheck`, segments de `ChoiceGroup` / `GlassSegmentedControl` / `GlassProfileSwitcher`, effacement de
+`GlassSearchBar` ; `SlidingUnderline` (onglets du fil et du profil de la communauté). Puis les listes d'entrées de
+128 écrans et fonctions, 15 appuis nus → `Tappable`, 20 coches.
+
+**Sélecteur de thème (référence 01)** : titre centré, croix discrète conservée, panneau au verre plus marqué (arête
+lumineuse, reflet descendant), vignette active cerclée d'un liseré or clair + filet nacré, coche tracée dans une
+pastille nacrée cerclée d'or (`THEME_PICKER`, src/theme/tokens.ts). En-tête de l'accueil : Urgences et Communauté
+restent, en disques de verre identiques à la cloche et à la palette.
+
+Captures et vidéo : `e2e/glass_motion_partout.py`. Non vérifiable ici : iPhone réel (verre natif, 120 Hz, haptique,
+VoiceOver), animations de mise en page Reanimated sur iOS (le web les rend autrement).
