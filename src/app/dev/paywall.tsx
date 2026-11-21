@@ -13,6 +13,7 @@ import { isDemo } from '@/lib/backend';
 import { useDeveloperMode } from '@/lib/devMode';
 import { demoFamilyPlans, demoPlans } from '@/lib/premium/plans';
 import { PaywallView, DIRECTIONS, type Direction } from '@/features/firstWin/PaywallView';
+import { PaywallWhite } from '@/features/firstWin/PaywallWhite';
 import { isNeed, DEMO_OF, type DemoResult, type TitleVariant } from '@/features/firstWin/model';
 import { defaultOfferKey, offerCards, type CatalogState, type PurchasePhase } from '@/features/firstWin/offer';
 import { localeTag } from '@/i18n';
@@ -25,7 +26,7 @@ export default function PaywallPreview() {
   const q = useLocalSearchParams<{ direction?: string; trial?: string; need?: string; variant?: string; catalog?: string; phase?: string; plan?: string; reminder?: string }>();
   const dev = useDeveloperMode();
   const th = useTheme();
-  const direction: Direction = DIRECTIONS.find((d) => d === q.direction) ?? 'B';
+  const direction: Direction = DIRECTIONS.find((d) => d === q.direction) ?? 'W';
   const trial = q.trial !== '0';
   const need = isNeed(q.need) ? q.need : 'feed_sleep';
   const variant: TitleVariant = q.variant === 'generic' ? 'generic' : 'need';
@@ -38,16 +39,19 @@ export default function PaywallPreview() {
     return offerCards(prem, demoFamilyPlans(localeTag()), localeTag());
   }, [trial]);
   const [selected, setSelected] = useState<string | null>(() => defaultOfferKey(cards, q.plan ?? null));
-  const result: DemoResult = { kind: DEMO_OF[need], itemKey: need === 'prepare_birth' ? 'maternity_bag:6' : need === 'mornings' ? 'tshirt-crew' : need === 'relay' ? 'mission' : 'nap', at: '2026-12-03T10:24:00' };
+  const result: DemoResult = { kind: DEMO_OF[need], itemKey: need === 'prepare_birth' ? 'maternity_bag:0' : need === 'mornings' ? 'tshirt-crew' : need === 'relay' ? 'mission' : 'nap', at: '2026-12-03T10:24:00' };
   // La démonstration reprend après le chargement de la page : court délai avant de rediriger (comme /dev/icons)
   const [grace, setGrace] = useState(true);
   useEffect(() => { const id = setTimeout(() => setGrace(false), 800); return () => clearTimeout(id); }, []);
   if (!dev && !isDemo) return grace ? <View style={{ flex: 1, backgroundColor: th.colors.background }} /> : <Redirect href="/" />;
   return (
     <View style={{ flex: 1, backgroundColor: th.colors.background }}>
+      {direction === 'W' ? <PaywallWhite direction={direction} variant={variant} need={need} result={result} cards={cards} selectedKey={selected} onSelect={setSelected}
+        catalog={catalog} phase={phase} aiOnline={false} now={now} reminder={q.reminder !== '0'} needsAccount
+        onBuy={() => undefined} onRetry={() => undefined} onRestore={() => undefined} onClose={() => router.back()} onLegal={(doc) => router.push(`/legal/${doc}`)} /> : (
       <PaywallView direction={direction} variant={variant} need={need} result={result} cards={cards} selectedKey={selected} onSelect={setSelected}
         catalog={catalog} phase={phase} aiOnline={false} now={now} reminder={q.reminder !== '0'} needsAccount
-        onBuy={() => undefined} onRetry={() => undefined} onRestore={() => undefined} onClose={() => router.back()} onLegal={(doc) => router.push(`/legal/${doc}`)} />
+        onBuy={() => undefined} onRetry={() => undefined} onRestore={() => undefined} onClose={() => router.back()} onLegal={(doc) => router.push(`/legal/${doc}`)} />)}
     </View>
   );
 }

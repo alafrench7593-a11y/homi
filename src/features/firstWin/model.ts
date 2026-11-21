@@ -154,11 +154,36 @@ export function resumeRoute(p: FirstWinProgress | null, o: { signedIn: boolean; 
   return null;
 }
 
-/** Étape où rouvrir le parcours (fermeture puis réouverture, retour arrière). */
-export type FlowStep = 'stage' | 'need' | 'demo' | 'result';
+/**
+ * Étape où rouvrir le parcours (refonte du 21/11/2026 : deux écrans) :
+ *  - `profile` : étape de vie ET besoin sur la même page (les besoins se révèlent sous la réponse) ;
+ *  - `demo` : la démo guidée ; une fois l'action faite, le résultat reste affiché dans le vrai composant (plus d'écran
+ *    « résultat » intermédiaire) et le bouton ouvre l'offre.
+ */
+export type FlowStep = 'profile' | 'demo';
+export const FLOW_STEPS: FlowStep[] = ['profile', 'demo'];
 export function stepFor(p: FirstWinProgress | null): FlowStep {
-  if (!p?.stage) return 'stage';
-  if (!p.need) return 'need';
-  if (!p.demoDone) return 'demo';
-  return 'result';
+  return p?.stage && p.need ? 'demo' : 'profile';
 }
+/** Anciennes adresses (`?step=stage|need|demo|result`) : lues avec le nouveau découpage. */
+export function parseStep(v: unknown): FlowStep | undefined {
+  if (v === 'profile' || v === 'stage' || v === 'need') return 'profile';
+  if (v === 'demo' || v === 'result') return 'demo';
+  return undefined;
+}
+
+/** Bouton qui suit le résultat de la démo et ouvre l'offre (libellé lié au besoin). */
+export const USE_CTA: Record<NeedId, TKey> = {
+  feed_sleep: 'fw.use.feed_sleep',
+  relay: 'fw.use.relay',
+  prepare_birth: 'fw.use.prepare_birth',
+  mornings: 'fw.use.mornings',
+};
+
+/** Message d'Aura sur le paywall (prédéfini, deux lignes au plus, aucun appel IA à l'ouverture). */
+export const PAYWALL_AURA: Record<NeedId, TKey> = {
+  feed_sleep: 'fw.pw.aura.feed_sleep',
+  relay: 'fw.pw.aura.relay',
+  prepare_birth: 'fw.pw.aura.prepare_birth',
+  mornings: 'fw.pw.aura.mornings',
+};

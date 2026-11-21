@@ -170,8 +170,8 @@ export function RelayDemo({ onDone, result, now, compact }: DemoProps) {
   const sent = !!result;
   return (
     <DemoCard title={tr('fw.demo.relay.title')} testID="fw-demo-relay" compact={compact}>
-      {!compact ? (<>
-      <View style={{ gap: 6 }} accessibilityRole="list" accessibilityLabel={tr('fw.demo.relay.shared')}>
+      {/* Ce que le co-parent peut consulter : aussi dans l'aperçu du paywall (compact) */}
+      <View style={{ gap: 6 }} accessibilityRole="list" accessibilityLabel={tr('fw.demo.relay.shared')} testID="fw-relay-shared">
         <Text variant="label">{tr('fw.demo.relay.shared')}</Text>
         {SHARED.map((k) => (
           <View key={k} style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'center' }} accessible accessibilityLabel={tr(k)}>
@@ -179,6 +179,7 @@ export function RelayDemo({ onDone, result, now, compact }: DemoProps) {
           </View>
         ))}
       </View>
+      {!compact ? (
       <View style={{ gap: 6 }} accessibilityRole="list" accessibilityLabel={tr('fw.demo.relay.private')} testID="fw-relay-private">
         <Text variant="label">{tr('fw.demo.relay.private')}</Text>
         {PRIVATE.map((k) => (
@@ -187,7 +188,7 @@ export function RelayDemo({ onDone, result, now, compact }: DemoProps) {
           </View>
         ))}
       </View>
-      </>) : null}
+      ) : null}
       {sent ? (
         <CompletionGlow done radius={radius.md}>
           <View testID="fw-relay-sent" style={{ borderRadius: radius.md, padding: spacing.sm, backgroundColor: th.material.lines.iconWell, flexDirection: 'row', gap: spacing.xs }}>

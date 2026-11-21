@@ -11,7 +11,7 @@ import { useAuth } from '@/lib/auth';
 import { prefetchDemoContent } from '@/lib/lazyContent';
 import { FirstWinFlow } from '@/features/firstWin/FirstWinFlow';
 import { usePremiumState } from '@/features/firstWin/hooks';
-import type { FlowStep } from '@/features/firstWin/model';
+import { parseStep } from '@/features/firstWin/model';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export default function Start() {
@@ -23,7 +23,7 @@ export default function Start() {
   React.useEffect(() => { if (!session) prefetchDemoContent(); }, [session]);
   if (!ready || (session && premium === undefined)) return <View style={{ flex: 1, backgroundColor: th.colors.background }} />;
   if (session && premium) return <Redirect href="/(tabs)" />;
-  const initial = (['stage', 'need', 'demo', 'result'] as FlowStep[]).find((s) => s === step);
+  const initial = parseStep(step);
   // Origine pour la mesure : bouton « Commencer » ou « Découvrir sans compte » de l'accueil, sinon première ouverture
   const source = from === 'welcome_start' || from === 'welcome_demo' ? from : 'first_open';
   return <FirstWinFlow initialStep={initial} source={source} />;

@@ -337,3 +337,19 @@ Ce qu'une note ne prouve pas : que plus de gens paient. Test à lancer d'abord :
 Voir le rapport de la session (résultats chiffrés : tsc, i18n-scan, gen-routes, inventaire, privacy-check, Jest complet,
 tests SQL locaux, e2e `paywall_premiere_reussite.py` avant 101/101 et après, e2e premium / credits_demo comparés à
 l'avant). Captures : `scratchpad/paywall2/avant/` et `scratchpad/paywall2/apres/` (390 et 320, avec / sans essai, FR / EN).
+
+## Refonte du 21/11/2026 — onboarding en deux écrans, paywall blanc
+
+- **Parcours** : `profile` (étape de vie + besoins révélés dessous, un seul « Continuer ») → `demo` (consigne courte
+  d'Aura, résultat gardé dans le vrai composant, bouton lié au besoin qui ouvre l'offre). L'écran « résultat » est
+  retiré. Anciennes adresses `?step=stage|need|result` relues par `parseStep`.
+- **Paywall W** (`PaywallWhite.tsx`, direction intégrée) : fond #FFFFFF (thème clair Olive HOMI imposé par `ThemeScope`),
+  croix → retour à la démo avec le résultat, titre du besoin (A/B `paywall_title_v1` conservé), aperçu du résultat +
+  orbe d'Aura qui se rassemble (`AuraOrb gather`, une fois, aucune boucle), message prédéfini, « Une question ? »
+  (réponses calculées depuis la formule et les droits : `helpAnswers`, aucun appel IA), mensuel en tête et présélectionné
+  puis annuel, « Autres formules », indicateur de verre qui glisse, frise, bouton (« Continuer vers l'essai » sans
+  compte, « Démarrer mes 3 jours gratuits » essai confirmé), preuve sociale du programme de test et « Un mot de
+  l'équipe » (sources et validations : `src/config/socialProof.ts`).
+- **Pas d'offre de sortie** (décision de la propriétaire, 21/11/2026) : la croix ferme directement.
+- **Mesure** : `demo_started`, `story_opened`, `aura_help_opened` — migration `20261205000100` à déployer AVANT la
+  diffusion (la table `analytics_events` n'existe pas encore en production : migrations 20261203/20261204 non appliquées).

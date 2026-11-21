@@ -43,6 +43,7 @@ const FR_ALLOW: Record<string, string> = {
   'und.inbox.private': 'pluriel réel : « vous deux »',
   'dm.safetyNote': 'pluriel réel : conversation « entre vous deux » (le reste est au « tu »)',
   'dm.emptyOpen': 'pluriel réel : « vous vous suivez mutuellement »',
+  'fw.pw.aura.relay': 'pluriel réel : le couple qui se relaie (« Quand vous vous relayez »), texte validé le 21/11/2026',
   'dm.blockBody': 'pluriel réel : les deux membres',
   'dm.request.body': 'pluriel réel : les deux membres',
   'dm.demo.papa1': 'pluriel réel : « votre organisation » (la famille)',

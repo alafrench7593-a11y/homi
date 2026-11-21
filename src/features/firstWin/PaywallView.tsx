@@ -30,8 +30,9 @@ import {
   type CatalogState, type OfferCard, type PurchasePhase,
 } from './offer';
 
-export type Direction = 'A' | 'B' | 'C';
-export const DIRECTIONS: Direction[] = ['A', 'B', 'C'];
+/** W : paywall blanc de la refonte du 21/11/2026 (PaywallWhite.tsx), direction intégrée ; A, B, C gardées pour comparaison. */
+export type Direction = 'A' | 'B' | 'C' | 'W';
+export const DIRECTIONS: Direction[] = ['W', 'A', 'B', 'C'];
 
 export interface PaywallViewProps {
   direction: Direction;
@@ -55,6 +56,9 @@ export interface PaywallViewProps {
   onRestore: () => void;
   onClose: () => void;
   onLegal: (doc: 'terms' | 'privacy') => void;
+  /** Mesure : aide d'Aura ouverte, histoire ouverte (W) */
+  onHelp?: () => void;
+  onStory?: () => void;
 }
 
 export function PaywallView(props: PaywallViewProps) {
@@ -143,7 +147,7 @@ function ResultPreview({ result, large }: { result: DemoResult; large: boolean }
 }
 
 /** Héros B : la frise de l'essai — trois arrêts, quelques mots chacun ; le premier paiement en gras. */
-function TimelineBlock({ card, now, reminder }: { card: OfferCard; now: Date; reminder: boolean }) {
+export function TimelineBlock({ card, now, reminder }: { card: OfferCard; now: Date; reminder: boolean }) {
   const th = useTheme();
   const tl = timelineFor(card.plan, { now, reminder });
   return (

@@ -23,10 +23,11 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { useOfferCatalog, usePremiumState, useTitleVariant } from './hooks';
 import { DEMO_OF, loadProgress, saveProgress, TOOL_ROUTE, type FirstWinProgress } from './model';
 import { defaultOfferKey, type PurchasePhase } from './offer';
-import { PaywallView, type Direction } from './PaywallView';
+import { type Direction } from './PaywallView';
+import { PaywallWhite } from './PaywallWhite';
 
 /** Direction retenue après la critique des trois maquettes (docs/PAYWALL_ONBOARDING.md § 5). */
-export const INTEGRATED_DIRECTION: Direction = 'B';
+export const INTEGRATED_DIRECTION: Direction = 'W';
 
 export function FirstWinOffers() {
   const th = useTheme();
@@ -122,16 +123,17 @@ export function FirstWinOffers() {
 
   function close() {
     void track('paywall_closed', { ...props, tier: card?.tier, period: card?.period });
-    // Le résultat de la démo et la progression restent ; « Voir les offres » ramène ici
-    if (p?.demoDone) router.replace('/start?step=result');
+    // Retour à la démo, résultat gardé (la démo est l'écran d'avant : retour natif ; sinon rouverte à l'étape démo)
+    if (p?.demoDone) { if (router.canGoBack()) router.back(); else router.replace('/start?step=demo'); }
     else if (router.canGoBack()) router.back();
     else router.replace(session ? '/(tabs)' : '/welcome');
   }
 
   return (
-    <PaywallView direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
+    <PaywallWhite direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
       onSelect={select} catalog={catalog} phase={phase} aiOnline={aiAssistantOnline()} now={now} reminder={Platform.OS === 'ios' || Platform.OS === 'android'} resume={resume === '1' && !!session}
       needsAccount={!session} onBuy={() => void buy()} onRetry={refetch} onRestore={() => void restore()} onClose={close}
-      onLegal={(doc) => router.push(`/legal/${doc}`)} />
+      onLegal={(doc) => router.push(`/legal/${doc}`)}
+      onHelp={() => void track('aura_help_opened', props)} onStory={() => void track('story_opened', props)} />
   );
 }

@@ -76,15 +76,15 @@ export function offerCard(plan: OfferPlan, monthly: OfferPlan | null, locale: st
 }
 
 /**
- * Ordre d'affichage (passe Paywall Designer, 04/12/2026) : l'annuel présélectionné puis le mensuel (les deux formules
- * de tête, qui ne diffèrent que par la durée), puis « Autres formules » : 6 mois et Famille.
+ * Ordre d'affichage (refonte du 21/11/2026, décision de la propriétaire) : Premium MENSUEL en premier et présélectionné
+ * (14,99 €/mois, le premier paiement le plus clair), l'annuel en second choix, puis « Autres formules » : 6 mois et Famille.
  */
-const PERIOD_RANK: Record<PlanPeriod, number> = { annual: 0, monthly: 1, six_months: 2 };
+const PERIOD_RANK: Record<PlanPeriod, number> = { monthly: 0, annual: 1, six_months: 2 };
 
-/** Formule présélectionnée par défaut (règle du skill : l'annuel, avec l'essai). Réversible ici, aucun prix touché. */
-export const DEFAULT_OFFER = 'premium:annual';
+/** Formule présélectionnée par défaut : le mensuel Premium (s'il est au catalogue). Réversible ici, aucun prix touché. */
+export const DEFAULT_OFFER = 'premium:monthly';
 /** Formules de tête, toujours visibles ; les autres sont derrière « Autres formules ». */
-export const LEAD_OFFERS = ['premium:annual', 'premium:monthly'];
+export const LEAD_OFFERS = ['premium:monthly', 'premium:annual'];
 
 /** Cartes : Premium (annuel, mensuel, 6 mois) puis Famille. */
 export function offerCards(premium: OfferPlan[], family: OfferPlan[], locale: string): OfferCard[] {
@@ -92,10 +92,10 @@ export function offerCards(premium: OfferPlan[], family: OfferPlan[], locale: st
   return [...[...premium].sort((a, b) => PERIOD_RANK[a.period] - PERIOD_RANK[b.period]).map((p) => offerCard({ ...p, tier: 'premium' }, monthly, locale)), ...family.map((p) => offerCard({ ...p, tier: 'family' }, null, locale))];
 }
 
-/** Formule présélectionnée : celle choisie avant l'inscription si elle existe encore, sinon l'annuel Premium, sinon le mensuel, sinon la première. */
+/** Formule présélectionnée : celle choisie avant l'inscription si elle existe encore, sinon le mensuel Premium, sinon l'annuel, sinon la première. */
 export function defaultOfferKey(cards: Pick<OfferCard, 'key'>[], wanted?: string | null): string | null {
   if (wanted && cards.some((c) => c.key === wanted)) return wanted;
-  return (cards.find((c) => c.key === DEFAULT_OFFER) ?? cards.find((c) => c.key === 'premium:monthly') ?? cards[0])?.key ?? null;
+  return (cards.find((c) => c.key === DEFAULT_OFFER) ?? cards.find((c) => c.key === 'premium:annual') ?? cards[0])?.key ?? null;
 }
 
 /** Cartes de tête et « Autres formules ». Sans formule de tête dans le catalogue, tout est en tête. */
@@ -181,8 +181,10 @@ export function timelineFor(plan: OfferPlan, o: { now: Date; confirmedFirstCharg
  * Libellé du bouton : il dit ce qu'il fait, sans répéter la durée ni le prix (déjà sur la carte, dans la frise et sous
  * le bouton). L'essai n'est promis que s'il est confirmé pour cette formule ET ce compte.
  */
-export function ctaFor(plan: Pick<OfferPlan, 'trialDays' | 'period'>): string {
-  return plan.trialDays > 0 ? tr('fw.cta.trial') : tr(`fw.cta.subscribe.${plan.period}` as TKey);
+export function ctaFor(plan: Pick<OfferPlan, 'trialDays' | 'period'>, o?: { needsAccount?: boolean }): string {
+  // Le compte se crée avant l'essai : le bouton dit l'étape qui vient (l'essai ne démarre pas encore à cet appui)
+  if (o?.needsAccount) return tr(plan.trialDays > 0 ? 'fw.cta.toTrial' : 'fw.cta.toAccount');
+  return plan.trialDays > 0 ? tr('fw.cta.startTrial', { count: plan.trialDays }) : tr(`fw.cta.subscribe.${plan.period}` as TKey);
 }
 
 /** Ligne légale sous le bouton (gabarit fixe du skill, ≤ 20 mots) : essai, montant, période, renouvellement, annulation. */

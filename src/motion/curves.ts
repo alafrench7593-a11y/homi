@@ -165,7 +165,7 @@ export const logoMotion = {
 export const liquidIndicator = { maxStretch: 0.22, squash: 0.08, perPx: 0.0016 } as const;
 
 /** Aura : respiration du symbole pendant la préparation d'une réponse, rotation lente des teintes, ouverture. */
-export const auraMotion = { breathMs: 1100, spinMs: 9000, thinkingScale: 1.06, openMs: 480 } as const;
+export const auraMotion = { breathMs: 1100, spinMs: 9000, thinkingScale: 1.06, openMs: 480, gatherMs: 760 } as const;
 
 /**
  * Robot compagnon d'Aura (`AuraBot`, src/features/aura/AuraBot.tsx). Distances en unités de la grille 120 du dessin.

@@ -17,9 +17,11 @@ export type EventName =
   | 'onboarding_started' | 'demo_completed' | 'paywall_viewed' | 'plan_selected' | 'paywall_closed'
   | 'account_required' | 'purchase_outcome' | 'trial_confirmed' | 'reminder_set'
   // passe Paywall Designer (04/12/2026, migration 20261204000100) : abandon écran par écran, réponses, début d'achat
-  | 'onboarding_step_viewed' | 'onboarding_answer' | 'purchase_started';
+  | 'onboarding_step_viewed' | 'onboarding_answer' | 'purchase_started'
+  // refonte du 21/11/2026 (migration 20261205000100) : démo commencée, histoire lue, aide d'Aura ouverte
+  | 'demo_started' | 'story_opened' | 'aura_help_opened';
 export const EVENT_NAMES: EventName[] = ['onboarding_started', 'demo_completed', 'paywall_viewed', 'plan_selected', 'paywall_closed', 'account_required', 'purchase_outcome', 'trial_confirmed', 'reminder_set',
-  'onboarding_step_viewed', 'onboarding_answer', 'purchase_started'];
+  'onboarding_step_viewed', 'onboarding_answer', 'purchase_started', 'demo_started', 'story_opened', 'aura_help_opened'];
 
 /** Seules propriétés acceptées. */
 export const ALLOWED_PROPS = ['stage', 'need', 'tier', 'period', 'variant', 'direction', 'trial', 'outcome', 'source', 'step'] as const;

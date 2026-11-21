@@ -11,7 +11,7 @@ import { DICTIONARIES } from '@/i18n/dictionaries';
 import { demoFamilyPlans, demoPlans, DEMO_GRID } from '@/lib/premium/plans';
 import {
   assignVariant, DEMO_OF, emptyProgress, fnv1a, MAX_NEEDS_PER_STAGE, NEEDS, paywallTitleKey, parseProgress, PROGRESS_KEY,
-  PROGRESS_TTL_MS, resumeRoute, saveProgress, loadProgress, stepFor, STAGES, TOOL_ROUTE,
+  PROGRESS_TTL_MS, resumeRoute, saveProgress, loadProgress, stepFor, parseStep, STAGES, TOOL_ROUTE,
 } from '@/features/firstWin/model';
 import {
   benefitsFor, canBuy, cardDetail, catalogState, confirmedChargeDate, ctaFor, DEFAULT_OFFER, defaultOfferKey, offerCards, phaseView,
@@ -86,7 +86,7 @@ describe('progression gardée à travers l’inscription', () => {
     await saveProgress({ plan: { tier: 'premium', period: 'annual' }, awaitingAccount: true });
     const p = await loadProgress();
     expect(p).toMatchObject({ stage: 'baby', need: 'feed_sleep', demoDone: true, plan: { tier: 'premium', period: 'annual' }, awaitingAccount: true });
-    expect(stepFor(p)).toBe('result');
+    expect(stepFor(p)).toBe('demo'); // refonte : le résultat reste sur l'écran de la démo
     expect(resumeRoute(p, { signedIn: true, premium: false })).toBe('/start/offers?resume=1');
   });
   it('abonné·e ou droits inconnus : jamais renvoyé·e vers le parcours de vente', () => {
@@ -103,45 +103,48 @@ describe('progression gardée à travers l’inscription', () => {
     expect(bad).toMatchObject({ stage: null, need: null, openAfter: null, plan: null });
   });
   it('étape de reprise après fermeture et réouverture', () => {
-    expect(stepFor(null)).toBe('stage');
-    expect(stepFor({ ...emptyProgress(), stage: 'child' })).toBe('need');
+    // refonte : étape de vie et besoin sur la même page (« profile »), puis la démo
+    expect(stepFor(null)).toBe('profile');
+    expect(stepFor({ ...emptyProgress(), stage: 'child' })).toBe('profile');
     expect(stepFor({ ...emptyProgress(), stage: 'child', need: 'mornings' })).toBe('demo');
+    // anciennes adresses (?step=stage|need|result) lues avec le nouveau découpage
+    expect(['stage', 'need', 'profile', 'demo', 'result', 'x'].map(parseStep)).toEqual(['profile', 'profile', 'profile', 'demo', 'demo', undefined]);
   });
   it('clé de stockage du même type que les autres « pending »', () => expect(PROGRESS_KEY).toMatch(/^homi\.pending-/));
 });
 
 describe('cartes : montant total facturé, équivalent mensuel, économie avec sa base', () => {
   const cards = offerCards(prem(), fam(), 'fr-FR');
-  it('annuel puis mensuel (formules de tête), puis 6 mois et Famille ; accès inclus gardé pour VoiceOver', () => {
-    expect(cards.map((c) => c.key)).toEqual(['premium:annual', 'premium:monthly', 'premium:six_months', 'family:monthly']);
+  it('mensuel puis annuel (formules de tête), puis 6 mois et Famille ; accès inclus gardé pour VoiceOver', () => {
+    expect(cards.map((c) => c.key)).toEqual(['premium:monthly', 'premium:annual', 'premium:six_months', 'family:monthly']);
     expect(cards[0].access).toBe('Pour toi et ton ou ta co-parent');
     expect(nb(cards[3].access)).toBe('Tous les adultes du foyer + 1 500 crédits Aura partagés');
     expect(cards[3].name).toBe('Famille');
   });
   it('annuel : montant débité en évidence, équivalent mensuel en complément, économie vs 12 × mensuel', () => {
-    const a = cards[0];
+    const a = cards[1];
     expect(nb(a.billed)).toBe('119,99 €/an');
     expect(nb(a.monthly!)).toBe('soit 10,00 € par mois');
     expect(nb(a.saving!)).toBe('33 % de moins que 12 × 14,99 €');
     expect(nb(cards[2].saving!)).toBe('22 % de moins que 6 × 14,99 €');
-    expect(cards[1].monthly).toBeNull();
-    expect(cards[1].saving).toBeNull();
+    expect(cards[0].monthly).toBeNull();
+    expect(cards[0].saving).toBeNull();
     expect(cards[3].saving).toBeNull();
   });
   it('carte : deux lignes au plus, rien de répété d’une carte à l’autre ; Famille dit qu’elle n’a pas d’essai', () => {
     const d = cards.map((c) => cardDetail(c, { othersHaveTrial: true }));
-    expect(nb(d[0].per!)).toBe('10,00 €/mois');
-    expect(nb(d[0].saving!)).toBe('−33 % vs mensuel');
-    expect(d[1]).toEqual({ per: null, saving: null, note: null });
+    expect(nb(d[1].per!)).toBe('10,00 €/mois');
+    expect(nb(d[1].saving!)).toBe('−33 % vs mensuel');
+    expect(d[0]).toEqual({ per: null, saving: null, note: null });
     expect(nb(d[3].note!)).toBe('Tous les adultes + 1 500 crédits Aura · sans essai');
     const lines = d.flatMap((x) => [x.per, x.saving, x.note]).filter(Boolean);
     expect(new Set(lines).size).toBe(lines.length);
     // un essai Famille confirmé un jour : crédits annoncés au premier paiement (0 pendant l'essai), pas de « sans essai »
     expect(nb(cardDetail({ ...cards[3], trialDays: 3 }, { othersHaveTrial: true }).note!)).toBe('Tous les adultes + 1 500 crédits Aura, à partir du premier paiement');
   });
-  it('formules de tête (annuel, mensuel) et « Autres formules » (6 mois, Famille)', () => {
+  it('formules de tête (mensuel, annuel) et « Autres formules » (6 mois, Famille)', () => {
     const { lead, more } = splitOffers(cards);
-    expect(lead.map((c) => c.key)).toEqual(['premium:annual', 'premium:monthly']);
+    expect(lead.map((c) => c.key)).toEqual(['premium:monthly', 'premium:annual']);
     expect(more.map((c) => c.key)).toEqual(['premium:six_months', 'family:monthly']);
     expect(splitOffers(cards.filter((c) => c.tier === 'family')).lead).toHaveLength(1);
   });
@@ -151,11 +154,11 @@ describe('cartes : montant total facturé, équivalent mensuel, économie avec s
     expect(savingVsMonthly(p, { amount: 14.99, currency: 'USD' })).toBeNull();
     expect(savingVsMonthly({ ...p, amount: 200 }, { amount: 14.99, currency: 'EUR' })).toBeNull();
   });
-  it('formule présélectionnée : celle choisie avant l’inscription, sinon l’annuel Premium, sinon le mensuel', () => {
-    expect(DEFAULT_OFFER).toBe('premium:annual');
-    expect(defaultOfferKey(cards, 'premium:monthly')).toBe('premium:monthly');
-    expect(defaultOfferKey(cards, 'family:annual')).toBe('premium:annual');
-    expect(defaultOfferKey(cards.filter((c) => c.key !== 'premium:annual'), null)).toBe('premium:monthly');
+  it('formule présélectionnée : celle choisie avant l’inscription, sinon le mensuel Premium, sinon l’annuel', () => {
+    expect(DEFAULT_OFFER).toBe('premium:monthly');
+    expect(defaultOfferKey(cards, 'premium:annual')).toBe('premium:annual');
+    expect(defaultOfferKey(cards, 'family:annual')).toBe('premium:monthly');
+    expect(defaultOfferKey(cards.filter((c) => c.key !== 'premium:monthly'), null)).toBe('premium:annual');
     expect(defaultOfferKey([], null)).toBeNull();
   });
   it('la grille de démonstration correspond aux tarifs de référence (France)', () => {
@@ -183,8 +186,10 @@ describe('bénéfices : au plus 3, réellement disponibles dans la formule chois
 
 describe('frise, bouton et conditions', () => {
   const [annual, , monthly] = prem();
-  it('essai confirmé : bouton « Commencer l’essai gratuit », ligne légale du gabarit, frise jusqu’au 6 décembre', () => {
-    expect(ctaFor(monthly)).toBe('Commencer l’essai gratuit');
+  it('essai confirmé : bouton « Démarrer mes 3 jours gratuits » (compte connecté), « Continuer vers l’essai » sans compte ; ligne légale du gabarit, frise jusqu’au 6 décembre', () => {
+    expect(ctaFor(monthly)).toBe('Démarrer mes 3 jours gratuits');
+    expect(ctaFor(monthly, { needsAccount: true })).toBe('Continuer vers l’essai');
+    expect(ctaFor({ ...monthly, trialDays: 0 }, { needsAccount: true })).toBe('Continuer');
     expect(nb(termsFor(monthly))).toBe('3 jours gratuits, puis 14,99 €/mois. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.');
     expect(nb(termsFor(monthly)).split(/\s+/).length).toBeLessThanOrEqual(20);
     const tl = timelineFor(monthly, { now: NOW });

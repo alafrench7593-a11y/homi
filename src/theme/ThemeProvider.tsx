@@ -10,7 +10,7 @@
  */
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo, useColorScheme } from 'react-native';
-import { previewTime, resolvePalette, skyPhase, themeFor, themes, type SkyPhase, type Theme, type ThemeName } from './tokens';
+import { previewTime, resolvePalette, skyPhase, themeFor, themes, type PaletteName, type SkyPhase, type Theme, type ThemeName } from './tokens';
 import { useUiStore } from '@/lib/store';
 import { useAuth } from '@/lib/auth';
 
@@ -56,6 +56,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const paletteName = preview ?? resolvePalette(paletteChoice, profile);
 
   const value = useMemo(() => ({ theme: { ...themeFor(name, paletteName), phase }, reduceMotion }), [name, paletteName, phase, reduceMotion]);
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+
+/**
+ * Thème imposé à une partie de l'écran (paywall blanc : clair, Olive HOMI, quel que soit le réglage) ; « Réduire les
+ * animations » et la phase du ciel restent ceux de l'appareil.
+ */
+export function ThemeScope({ mode, palette, children }: { mode: ThemeName; palette: PaletteName; children: React.ReactNode }) {
+  const parent = useContext(ThemeContext);
+  const value = useMemo(() => ({ theme: { ...themeFor(mode, palette), phase: parent.theme.phase }, reduceMotion: parent.reduceMotion }), [mode, palette, parent.theme.phase, parent.reduceMotion]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 

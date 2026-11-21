@@ -51,15 +51,19 @@ export function AuraAvatar({ size = 40, thinking = false, testID }: { size?: num
  * « Réduire les animations » : lentille immobile ; l'état « réfléchit » reste dit par le texte et les trois points.
  * Couleurs : marque d'Aura (`AURA`, src/theme/toolLogo.ts), identiques dans les cinq palettes.
  */
-export function AuraOrb({ size = 44, thinking = false, testID }: { size?: number; thinking?: boolean; testID?: string }) {
+export function AuraOrb({ size = 44, thinking = false, gather = false, testID }: { size?: number; thinking?: boolean; testID?: string;
+  /** Arrivée sur le paywall : les trois lumières se rapprochent dans le verre puis l'orbe se stabilise (une fois, aucune boucle) */
+  gather?: boolean }) {
   const m = useMotion();
   const uid = `ao${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const enter = useSharedValue(m.level === 'full' ? 0 : 1);
   const spin = useSharedValue(0);
   const breath = useSharedValue(0);
+  const spread = useSharedValue(gather && m.level === 'full' ? 1 : 0);
   useEffect(() => {
     if (m.level === 'full') enter.value = m.spring(1, 'rebondLeger');
-    return () => cancelAnimation(enter);
+    if (gather && m.level === 'full') spread.value = m.timing(0, auraMotion.gatherMs, 'decelerate');
+    return () => { cancelAnimation(enter); cancelAnimation(spread); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (thinking && m.level === 'full') {
@@ -74,7 +78,8 @@ export function AuraOrb({ size = 44, thinking = false, testID }: { size?: number
   }, [thinking, m, spin, breath]);
   useEffect(() => () => { cancelAnimation(spin); cancelAnimation(breath); }, [spin, breath]);
   const lens = useAnimatedStyle(() => ({ transform: [{ scale: (0.86 + 0.14 * enter.value) * (1 + (auraMotion.thinkingScale - 1) * breath.value) }] }));
-  const lights = useAnimatedStyle(() => ({ transform: [{ rotate: `${spin.value}deg` }] }));
+  // Lumières écartées (1,9×) puis rassemblées ; la lentille garde `overflow: hidden` : la lueur reste dans la silhouette
+  const lights = useAnimatedStyle(() => ({ transform: [{ rotate: `${spin.value + spread.value * 40}deg` }, { scale: 1 + 0.9 * spread.value }], opacity: 1 - 0.35 * spread.value }));
   const spark = useAnimatedStyle(() => ({ transform: [{ rotate: `${(1 - enter.value) * 90}deg` }] }));
   const half = size / 2;
   return (
