@@ -1,11 +1,13 @@
 /**
- * `ToolLogo` — logo d'un outil HOMI façon icône d'app (direction « verre minéral », docs/DA_LIQUID_GLASS.md).
+ * `ToolLogo` — logo d'un outil HOMI façon icône d'app (matière « verre sombre » du 21/11/2026,
+ * docs/DA_LIQUID_GLASS.md § 3 bis) : plaque de verre teinté profond, cœur lumineux, liseré haut-gauche, reflet
+ * diagonal ; glyphe plein et clair (dégradé blanc → pâle de la teinte), rayonnant, détails à la couleur de la plaque.
  *
  * TROIS RENDUS, un seul composant, une seule source par identifiant (`toolLogoDef`) :
- *  1. `detailed` (≥ 48 pt par défaut) : en-tête de l'outil, raccourcis mis en avant — plaque, reflet, ombre interne,
- *     ombre du glyphe, ombre portée ;
+ *  1. `detailed` (≥ 48 pt par défaut) : en-tête de l'outil, raccourcis mis en avant — HALO diffus de la teinte autour
+ *     de la plaque, rayonnement du glyphe en trois couches, ombre de contact ;
  *  2. `compact` (< 48 pt) : catalogue, listes, recherche — même plaque, glyphe un peu plus grand et trait plus franc,
- *     sans ombre du glyphe ;
+ *     rayonnement discret (une couche), PAS de halo (pas de bruit dans une liste dense) ;
  *  3. ANIMÉ : la famille de l'outil réagit à une interaction réelle —
  *       `play` (compteur) : ouverture, ajout, confirmation (lune qui se pose, courbe qui se trace, coche, rebond, reflet) ;
  *       `running` : l'anneau tourne tant que le minuteur tourne et s'arrête avec lui (famille `ring`) ;
@@ -18,17 +20,17 @@
 import React, { useEffect, useId, useRef } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { HOMI_ICONS, type HomiIconName } from '@/brand/icons/paths';
 import type { HomiIconDef } from '@/brand/icons/geometry';
 import { logoMotion, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { logoMode, toolLogoSpec, type LogoCategory } from '@/theme/toolLogo';
+import { logoMode, logoShadow, toolLogoSpec, type LogoCategory, type ToolLogoSpec } from '@/theme/toolLogo';
 import { motionOfIcon, toolLogoDef, type LogoMotion } from './families';
-import { GLYPH_BOX, glyphTransform, LOGO_GRID, SHEEN, squirclePath, squircleRadius, squircleTopEdge, type LogoVariant } from './geometry';
+import { CORE, FILL_EDGE, glyphGlowLayers, glyphTransform, LOGO_GRID, RIM, RIM_PATH, SHEEN_BAND, squirclePath, squircleRadius, type LogoVariant } from './geometry';
+import { glyphStroke } from './svg';
 
 const PLATE = squirclePath();
-const TOP_EDGE = squircleTopEdge();
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 /** Courbe de croissance (grille 64) et sa longueur approchée. */
 const CURVE_D = 'M11 47 C 20 46 25 41 31 36 S 44 24 53 17';
@@ -71,7 +73,6 @@ export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, size = 44,
   const spec = toolLogoSpec(cat, logoMode(t));
   const glyph: HomiIconDef = HOMI_ICONS[iconName];
   const uid = `tl${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-  const sw = glyph.heavy ? 2.25 : GLYPH_BOX[v].stroke;
   const still = m.level === 'off' || cat === 'urgent';
 
   // ------------------------------------------------------------ animation de famille (0 → 1), relancée par `play`
@@ -135,37 +136,8 @@ export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, size = 44,
       testID={testID ?? (id ? `tool-logo-${id}` : undefined)}
       style={[{ width: size, height: size, opacity: disabled ? 0.45 : 1 }, plateStyle, style]}
     >
-      <View style={[abs, { borderRadius: r, boxShadow: v === 'detailed' && spec.drop !== 'none' ? spec.drop : undefined }]}>
-        <Svg width={size} height={size} viewBox={`0 0 ${LOGO_GRID} ${LOGO_GRID}`}>
-          <Defs>
-            <LinearGradient id={`${uid}b`} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={spec.top} />
-              <Stop offset="1" stopColor={spec.bottom} />
-            </LinearGradient>
-            <RadialGradient id={`${uid}s`} cx="0.5" cy="0.5" r="0.5">
-              <Stop offset="0" stopColor={spec.light} stopOpacity={spec.sheen} />
-              <Stop offset="1" stopColor={spec.light} stopOpacity={0} />
-            </RadialGradient>
-            <LinearGradient id={`${uid}h`} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0.55" stopColor={spec.shade} stopOpacity={0} />
-              <Stop offset="1" stopColor={spec.shade} stopOpacity={spec.shadeOpacity} />
-            </LinearGradient>
-            <ClipPath id={`${uid}c`}><Path d={PLATE} /></ClipPath>
-          </Defs>
-          <Path d={PLATE} fill={`url(#${uid}b)`} />
-          <G clipPath={`url(#${uid}c)`}>
-            <Ellipse cx={SHEEN.cx} cy={SHEEN.cy} rx={SHEEN.rx} ry={SHEEN.ry} transform={`rotate(${SHEEN.rotate} ${SHEEN.cx} ${SHEEN.cy})`} fill={`url(#${uid}s)`} />
-            <Path d={PLATE} fill={`url(#${uid}h)`} />
-          </G>
-          {v === 'detailed' ? (
-            <G transform={glyphTransform(v, 0.9)} opacity={0.35}>
-              {glyph.fill ? <Path d={glyph.fill} fill={spec.shade} /> : null}
-              <Path d={glyph.stroke} fill="none" stroke={spec.shade} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
-            </G>
-          ) : null}
-          <Path d={TOP_EDGE} fill="none" stroke={spec.light} strokeOpacity={spec.rim} strokeWidth={1} strokeLinecap="round" />
-          <Path d={PLATE} fill="none" stroke={spec.bottom} strokeOpacity={0.35} strokeWidth={0.6} />
-        </Svg>
+      <View style={[abs, { borderRadius: r, boxShadow: logoShadow(spec, size, v) }]}>
+        <Plate spec={spec} uid={uid} size={size} />
       </View>
 
       {/* reflet qui traverse la plaque (ouverture) */}
@@ -175,13 +147,7 @@ export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, size = 44,
 
       {/* glyphe (couche animée) */}
       <Animated.View style={[abs, glyphStyle]}>
-        <Svg width={size} height={size} viewBox={`0 0 ${LOGO_GRID} ${LOGO_GRID}`}>
-          <G transform={glyphTransform(v)}>
-            {glyph.fill ? <Path d={glyph.fill} fill={spec.glyph} fillOpacity={spec.glyphFillOpacity} /> : null}
-            <Path d={glyph.stroke} fill="none" stroke={spec.glyph} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
-            {glyph.dots?.map(([cx, cy, rr]) => <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={rr} fill={spec.glyph} />)}
-          </G>
-        </Svg>
+        <Glyph glyph={glyph} spec={spec} variant={v} uid={uid} size={size} />
       </Animated.View>
 
       {/* lune : deux étoiles s'allument pendant que le croissant se pose */}
@@ -199,7 +165,7 @@ export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, size = 44,
         <Animated.View style={[abs, extraStyle]}>
           <Svg width={size} height={size} viewBox={`0 0 ${LOGO_GRID} ${LOGO_GRID}`}>
             {family === 'check' ? <Circle cx={49.5} cy={47.5} r={9} fill={spec.glyph} /> : null}
-            <AnimatedPath d={family === 'curve' ? CURVE_D : CHECK_D} fill="none" stroke={family === 'curve' ? spec.glyph : spec.mid} strokeWidth={family === 'curve' ? 2.6 : 2.4}
+            <AnimatedPath d={family === 'curve' ? CURVE_D : CHECK_D} fill="none" stroke={family === 'curve' ? spec.glyph : spec.detail} strokeWidth={family === 'curve' ? 2.6 : 2.4}
               strokeLinecap="round" strokeLinejoin="round" strokeDasharray={family === 'curve' ? [CURVE_LEN, CURVE_LEN] : [CHECK_LEN, CHECK_LEN]} animatedProps={drawProps} />
           </Svg>
         </Animated.View>
@@ -220,3 +186,86 @@ export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, size = 44,
     </Animated.View>
   );
 }
+
+/** Plaque de verre (statique) : verre profond, cœur lumineux, reflet diagonal, ombre interne, liseré. Même dessin que `plateLayers` (svg.ts). */
+const Plate = React.memo(function Plate({ spec, uid, size }: { spec: ToolLogoSpec; uid: string; size: number }) {
+  return (
+    <Svg width={size} height={size} viewBox={`0 0 ${LOGO_GRID} ${LOGO_GRID}`}>
+      <Defs>
+        <LinearGradient id={`${uid}b`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={spec.top} />
+          <Stop offset="0.45" stopColor={spec.mid} />
+          <Stop offset="1" stopColor={spec.bottom} />
+        </LinearGradient>
+        <RadialGradient id={`${uid}k`} cx={CORE.cx} cy={CORE.cy} r={CORE.r}>
+          <Stop offset="0" stopColor={spec.glow} stopOpacity={spec.core} />
+          <Stop offset="1" stopColor={spec.glow} stopOpacity={0} />
+        </RadialGradient>
+        <LinearGradient id={`${uid}s`} x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor={spec.light} stopOpacity={spec.sheen} />
+          <Stop offset={SHEEN_BAND.solid} stopColor={spec.light} stopOpacity={spec.sheen * 0.55} />
+          <Stop offset={SHEEN_BAND.end} stopColor={spec.light} stopOpacity={0} />
+        </LinearGradient>
+        <LinearGradient id={`${uid}h`} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0.5" stopColor={spec.shade} stopOpacity={0} />
+          <Stop offset="1" stopColor={spec.shade} stopOpacity={spec.shadeOpacity} />
+        </LinearGradient>
+        <LinearGradient id={`${uid}r`} x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor={spec.light} stopOpacity={spec.rim} />
+          <Stop offset="0.36" stopColor={spec.light} stopOpacity={spec.rim * 0.4} />
+          <Stop offset="0.6" stopColor={spec.light} stopOpacity={0} />
+        </LinearGradient>
+        <LinearGradient id={`${uid}e`} x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0.6" stopColor={spec.glow} stopOpacity={0} />
+          <Stop offset="1" stopColor={spec.glow} stopOpacity={spec.rim * 0.28} />
+        </LinearGradient>
+        <ClipPath id={`${uid}c`}><Path d={PLATE} /></ClipPath>
+      </Defs>
+      <Path d={PLATE} fill={`url(#${uid}b)`} />
+      <G clipPath={`url(#${uid}c)`}>
+        <Rect width={LOGO_GRID} height={LOGO_GRID} fill={`url(#${uid}k)`} />
+        <Rect width={LOGO_GRID} height={LOGO_GRID} fill={`url(#${uid}s)`} />
+        <Rect width={LOGO_GRID} height={LOGO_GRID} fill={`url(#${uid}h)`} />
+      </G>
+      <Path d={RIM_PATH} fill="none" stroke={`url(#${uid}e)`} strokeWidth={RIM.width * 0.8} />
+      <Path d={RIM_PATH} fill="none" stroke={`url(#${uid}r)`} strokeWidth={RIM.width} />
+    </Svg>
+  );
+});
+
+/** Glyphe plein et lumineux : rayonnement, corps en dégradé clair, détails à la couleur de la plaque. Même dessin que `glyphLayers` (svg.ts). */
+const Glyph = React.memo(function Glyph({ glyph, spec, variant, uid, size }: { glyph: HomiIconDef; spec: ToolLogoSpec; variant: LogoVariant; uid: string; size: number }) {
+  const sw = glyphStroke(glyph, variant);
+  const ink = `url(#${uid}g)`;
+  return (
+    <Svg width={size} height={size} viewBox={`0 0 ${LOGO_GRID} ${LOGO_GRID}`}>
+      <Defs>
+        <LinearGradient id={`${uid}g`} gradientUnits="userSpaceOnUse" x1="0" y1="3" x2="0" y2="21">
+          <Stop offset="0" stopColor={spec.glyph} />
+          <Stop offset="1" stopColor={spec.glyphTint} />
+        </LinearGradient>
+        {glyph.fill ? <ClipPath id={`${uid}f`}><Path d={glyph.fill} /></ClipPath> : null}
+      </Defs>
+      <G transform={glyphTransform(variant)}>
+        {glyphGlowLayers(variant, spec.glyphGlow).map(({ spread, opacity }) => (
+          <G key={spread} opacity={opacity}>
+            {glyph.fill ? <Path d={glyph.fill} fill={spec.glow} stroke={spec.glow} strokeWidth={spread} strokeLinejoin="round" /> : null}
+            <Path d={glyph.stroke} fill="none" stroke={spec.glow} strokeWidth={sw + spread} strokeLinecap="round" strokeLinejoin="round" />
+          </G>
+        ))}
+        {glyph.fill ? <Path d={glyph.fill} fill={ink} /> : null}
+        <Path d={glyph.stroke} fill="none" stroke={ink} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
+        {glyph.dots?.map(([cx, cy, rr]) => <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={rr} fill={ink} />)}
+        {glyph.fill ? (
+          <>
+            <G clipPath={`url(#${uid}f)`}>
+              <Path d={glyph.stroke} fill="none" stroke={spec.detail} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
+              {glyph.dots?.map(([cx, cy, rr]) => <Circle key={`d${cx}-${cy}`} cx={cx} cy={cy} r={rr} fill={spec.detail} />)}
+            </G>
+            <Path d={glyph.fill} fill="none" stroke={ink} strokeWidth={sw * FILL_EDGE} strokeLinejoin="round" />
+          </>
+        ) : null}
+      </G>
+    </Svg>
+  );
+});

@@ -4,7 +4,8 @@
  *    raccourcis de l'accueil, catégories) a un logo (glyphe + teinte + famille d'animation) ; chiffres sur le nombre réel ;
  *  - TROIS RENDUS : détaillé, compact, animé (lecture, minuteur en cours) ;
  *  - FAMILLES : sommeil → lune, allaitement → anneau, croissance → courbe, tâches → coche, repas → rebond ;
- *  - CONTRASTE : glyphe ≥ 3:1 sur chaque plaque, dans chaque apparence ; teintes distinctes ;
+ *  - CONTRASTE (verre sombre, 21/11/2026) : par teinte, glyphe ≥ 4,5:1 sur la plaque et détails ≥ 3:1 sur le glyphe,
+ *    en clair, sombre et nuit ; plaque profonde dans les deux apparences ; halo en détaillé seulement ; teintes distinctes ;
  *  - RÉDUIRE LES ANIMATIONS : l'anneau d'un minuteur en cours reste visible, sans rotation ; Aura immobile ;
  *  - MÊME LOGO PARTOUT : `ToolGlyph` (rangées, tuiles, recherche, en-têtes) rend `ToolLogo` pour l'identifiant.
  */
@@ -29,7 +30,8 @@ import { ToolGlyph } from '@/components/ToolGlyph';
 import { AuraOrb } from '@/features/aura/AuraMark';
 import { H200_VIEWS, HOMI_200 } from '@/lib/journeys/homi200';
 import { resolveTool, subRef, TOOL_CATEGORIES, TOOLS } from '@/lib/journeys/tools';
-import { GLYPH_MIN_CONTRAST, glyphContrast, LOGO_HUES, toolLogoSpec, type LogoCategory } from '@/theme/toolLogo';
+import { contrastRatio } from '@/theme/contrast';
+import { DETAIL_MIN_CONTRAST, detailContrast, GLYPH_MIN_CONTRAST, glyphContrast, LOGO_GLOWS, LOGO_HUES, logoShadow, plateBrightest, toolLogoSpec, type LogoCategory } from '@/theme/toolLogo';
 
 /** Toutes les entrées visibles du catalogue, sur le nombre RÉEL. */
 const ENTRIES = {
@@ -87,15 +89,45 @@ describe('familles d’animation', () => {
   });
 });
 
-describe('matière : contraste et teintes', () => {
-  it.each(['light', 'dark', 'night'] as const)('glyphe ≥ %s sur chaque plaque', (mode) => {
-    for (const c of Object.keys(LOGO_HUES) as LogoCategory[]) expect(glyphContrast(c, mode)).toBeGreaterThanOrEqual(mode === 'night' ? 4.5 : GLYPH_MIN_CONTRAST);
+/** Luminance relative WCAG, déduite du contraste avec le noir. */
+const relativeLuminance = (c: string) => contrastRatio(c, '#000000') * 0.05 - 0.05;
+
+describe('matière « verre sombre » : contraste et teintes', () => {
+  const CATS = Object.keys(LOGO_HUES) as LogoCategory[];
+  const MODES = ['light', 'dark', 'night'] as const;
+  it.each(CATS)('%s : glyphe ≥ 4,5:1 sur la plaque et détails ≥ 3:1 sur le glyphe, en clair, sombre et nuit', (c) => {
+    for (const mode of MODES) {
+      expect(glyphContrast(c, mode)).toBeGreaterThanOrEqual(GLYPH_MIN_CONTRAST);
+      expect(detailContrast(c, mode)).toBeGreaterThanOrEqual(DETAIL_MIN_CONTRAST);
+      // contrôle indépendant : point le plus sombre du glyphe contre point le plus clair de la plaque
+      const s = toolLogoSpec(c, mode);
+      expect(contrastRatio(s.glyphTint, plateBrightest(s))).toBeGreaterThanOrEqual(4.5);
+    }
   });
-  it('deux catégories n’ont jamais la même teinte de plaque', () => {
-    for (const mode of ['light', 'dark'] as const) {
-      const mids = (Object.keys(LOGO_HUES) as LogoCategory[]).map((c) => toolLogoSpec(c, mode).mid);
+  it('seuil du glyphe : celui du texte (4,5:1), même à petite taille', () => {
+    expect(GLYPH_MIN_CONTRAST).toBeGreaterThanOrEqual(4.5);
+  });
+  it('la plaque reste du verre PROFOND et lumineux sur fond crème comme sur fond nuit', () => {
+    for (const c of CATS) for (const mode of ['light', 'dark'] as const) {
+      const s = toolLogoSpec(c, mode);
+      expect(relativeLuminance(s.mid)).toBeLessThan(0.1); // verre sombre (blanc ≥ 6:1 sur le milieu de la plaque)
+      expect(s.mid).toBe(toolLogoSpec(c, mode === 'light' ? 'dark' : 'light').mid); // même verre dans les deux apparences
+      expect(relativeLuminance(s.glow)).toBeGreaterThan(relativeLuminance(s.mid)); // une lumière, pas une ombre
+    }
+  });
+  it('halo : seulement en rendu détaillé, jamais la nuit', () => {
+    for (const c of CATS) {
+      expect(logoShadow(toolLogoSpec(c, 'light'), 60, 'detailed')).toMatch(/^0px [\d.]+px [\d.]+px rgba\(/);
+      expect((logoShadow(toolLogoSpec(c, 'dark'), 60, 'compact') ?? '').split('rgba(').length - 1).toBe(1); // contact seul
+      expect(logoShadow(toolLogoSpec(c, 'night'), 60, 'detailed')).toBeUndefined();
+    }
+  });
+  it('deux catégories n’ont jamais la même teinte de plaque ni la même lumière', () => {
+    for (const mode of ['light', 'dark', 'night'] as const) {
+      const mids = CATS.map((c) => toolLogoSpec(c, mode).mid);
       expect(new Set(mids).size).toBe(mids.length);
     }
+    expect(new Set(Object.values(LOGO_GLOWS)).size).toBe(CATS.length);
   });
 });
 
