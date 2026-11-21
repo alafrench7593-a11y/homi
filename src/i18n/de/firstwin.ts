@@ -141,8 +141,8 @@ export const firstwin: Messages<typeof fr> = {
   'fw.tl.confirmed': 'Datum vom Store bestätigt.',
 
   'fw.cta.trial': 'Gratis testen',
-  'fw.terms.trial': { one: '{count} Tag gratis, danach {price}/{per}. Verlängert sich automatisch, jederzeit kündbar.', other: '{count} Tage gratis, danach {price}/{per}. Verlängert sich automatisch, jederzeit kündbar.' },
-  'fw.terms.paid': '{price}/{per}, heute abgebucht. Verlängert sich automatisch, jederzeit kündbar.',
+  'fw.terms.trial': { one: '{count} Tag gratis, danach {price}/{per}. Verlängert sich automatisch, außer bei Kündigung mindestens 24 Std. vor Ablauf.', other: '{count} Tage gratis, danach {price}/{per}. Verlängert sich automatisch, außer bei Kündigung mindestens 24 Std. vor Ablauf.' },
+  'fw.terms.paid': '{price}/{per}, heute abgebucht. Verlängert sich automatisch, außer bei Kündigung mindestens 24 Std. vor Ablauf.',
 
   'fw.state.buying': 'Zahlung mit dem App Store läuft…',
   'fw.state.restoring': 'Deine Käufe werden gesucht…',

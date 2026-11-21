@@ -125,8 +125,8 @@ def mockups(b, width, height):
             cta = text_of(pg, 'fw-pw-cta')
             if width == 390:
                 R[f'maquette_{d}_{label}_bouton'] = ('Commencer l’essai gratuit' in cta) if trial == '1' else ('M’abonner pour un an' in cta)
-                R[f'maquette_{d}_{label}_conditions'] = ('3 jours gratuits, puis 119,99 €/an. Renouvellement automatique, annulable à tout moment.' in text_of(pg, 'fw-pw-terms-line')) if trial == '1' \
-                    else ('119,99 €/an, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.' in text_of(pg, 'fw-pw-terms-line'))
+                R[f'maquette_{d}_{label}_conditions'] = ('3 jours gratuits, puis 119,99 €/an. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.' in text_of(pg, 'fw-pw-terms-line')) if trial == '1' \
+                    else ('119,99 €/an, débité aujourd’hui. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.' in text_of(pg, 'fw-pw-terms-line'))
                 # Passe Paywall Designer : liens Restaurer · Conditions · Confidentialité visibles sans défiler
                 R[f'maquette_{d}_{label}_liens_visibles'] = links_in_view(pg)
                 if d == 'B':
@@ -338,7 +338,7 @@ def english_large_reduced(b):
     R['en_etape'] = 'Where is your family at?' in T(pg)
     click(pg, 'fw-stage-baby', 1000); click(pg, 'fw-need-feed_sleep', 1500); click(pg, 'fw-add-nap', 2000)
     click(pg, 'fw-see-offers', 4500)
-    R['en_paywall'] = 'Start free trial' in text_of(pg, 'fw-pw-cta') and 'Renews automatically, cancel anytime' in text_of(pg, 'fw-pw-terms-line')
+    R['en_paywall'] = 'Start free trial' in text_of(pg, 'fw-pw-cta') and 'Renews automatically, unless cancelled at least 24 h before it renews' in text_of(pg, 'fw-pw-terms-line')
     R['reduction_mouvements_rendu'] = has(pg, 'fw-pw-cta')
     shoot(pg, 'integre_paywall_en_390', full=False)
     # Texte agrandi (approximation web : zoom 130 %)

@@ -141,8 +141,8 @@ export const firstwin: Messages<typeof fr> = {
   'fw.tl.confirmed': 'Date confirmed by the store.',
 
   'fw.cta.trial': 'Start free trial',
-  'fw.terms.trial': { one: '{count} day free, then {price}/{per}. Renews automatically, cancel anytime.', other: '{count} days free, then {price}/{per}. Renews automatically, cancel anytime.' },
-  'fw.terms.paid': '{price}/{per}, charged today. Renews automatically, cancel anytime.',
+  'fw.terms.trial': { one: '{count} day free, then {price}/{per}. Renews automatically, unless cancelled at least 24 h before it renews.', other: '{count} days free, then {price}/{per}. Renews automatically, unless cancelled at least 24 h before it renews.' },
+  'fw.terms.paid': '{price}/{per}, charged today. Renews automatically, unless cancelled at least 24 h before it renews.',
 
   'fw.state.buying': 'Payment in progress with the App Store…',
   'fw.state.restoring': 'Looking for your purchases…',

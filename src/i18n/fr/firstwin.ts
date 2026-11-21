@@ -153,8 +153,8 @@ export const firstwin = {
 
   // ---------------------------------------------------------------- bouton et conditions
   'fw.cta.trial': 'Commencer l’essai gratuit',
-  'fw.terms.trial': { one: '{count} jour gratuit, puis {price}/{per}. Renouvellement automatique, annulable à tout moment.', other: '{count} jours gratuits, puis {price}/{per}. Renouvellement automatique, annulable à tout moment.' },
-  'fw.terms.paid': '{price}/{per}, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.',
+  'fw.terms.trial': { one: '{count} jour gratuit, puis {price}/{per}. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.', other: '{count} jours gratuits, puis {price}/{per}. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.' },
+  'fw.terms.paid': '{price}/{per}, débité aujourd’hui. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.',
 
   // ---------------------------------------------------------------- états d'achat
   'fw.state.buying': 'Paiement en cours avec l’App Store…',

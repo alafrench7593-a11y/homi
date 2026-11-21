@@ -185,7 +185,7 @@ describe('frise, bouton et conditions', () => {
   const [annual, , monthly] = prem();
   it('essai confirmé : bouton « Commencer l’essai gratuit », ligne légale du gabarit, frise jusqu’au 6 décembre', () => {
     expect(ctaFor(monthly)).toBe('Commencer l’essai gratuit');
-    expect(nb(termsFor(monthly))).toBe('3 jours gratuits, puis 14,99 €/mois. Renouvellement automatique, annulable à tout moment.');
+    expect(nb(termsFor(monthly))).toBe('3 jours gratuits, puis 14,99 €/mois. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.');
     expect(nb(termsFor(monthly)).split(/\s+/).length).toBeLessThanOrEqual(20);
     const tl = timelineFor(monthly, { now: NOW });
     expect(tl.steps.map((s) => s.key)).toEqual(['today', 'charge']);
@@ -206,7 +206,7 @@ describe('frise, bouton et conditions', () => {
   it('sans essai confirmé : aucun mot sur l’essai, bouton qui dit la durée, montant dans la ligne légale', () => {
     const m = { ...monthly, trialDays: 0 };
     expect(nb(ctaFor(m))).toBe('M’abonner au mois');
-    expect(nb(termsFor(m))).toBe('14,99 €/mois, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.');
+    expect(nb(termsFor(m))).toBe('14,99 €/mois, débité aujourd’hui. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.');
     const tl = timelineFor(m, { now: NOW });
     expect(tl.steps.map((s) => s.key)).toEqual(['today', 'renew']);
     expect(tl.steps[1].title).toBe('3 janvier 2027');
@@ -229,7 +229,7 @@ describe('frise, bouton et conditions', () => {
   });
   it('prix et montants ne viennent que du Plan : un prix de boutique différent est repris tel quel', () => {
     const store: OfferPlan = { id: 'homi_premium_monthly', period: 'monthly', price: '15,99 €', amount: 15.99, currency: 'EUR', trialDays: 0, demo: false };
-    expect(nb(termsFor(store))).toBe('15,99 €/mois, débité aujourd’hui. Renouvellement automatique, annulable à tout moment.');
+    expect(nb(termsFor(store))).toBe('15,99 €/mois, débité aujourd’hui. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.');
   });
 });
 
