@@ -489,8 +489,8 @@ export const ui3 = {
   'u3.sleep.wakes': ', {n} réveil(s) par nuit',
   'u3.tools.errTools': 'Impossible d’afficher tes outils',
   'u3.tools.favSwitch': '{label} dans mes raccourcis',
-  'u3.tools.others': 'Outils des autres profils',
-  'u3.tools.othersB': 'Touche un outil : le bon profil est sélectionné avant de l’ouvrir, les données ne sont jamais mélangées.',
+  'u3.tools.others': 'Apps des autres profils',
+  'u3.tools.othersB': 'Touche une app : le bon profil est sélectionné avant de l’ouvrir, les données ne sont jamais mélangées.',
   'u3.tools.urg': 'Urgences · 15 · 112 · 3114',
   'u3.tools.urgA11y': 'Urgences : 15, 112, 3114. Ouvrir les numéros utiles.',
 };
