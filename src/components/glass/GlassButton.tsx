@@ -160,10 +160,12 @@ export function GlassButton({ label, variant = 'secondary', size = 'md', icon, g
  * Bouton icône seule sur verre (retour, fermer, menu…) : disque de 44 pt (cible ≥ 44 pt), nom accessible obligatoire.
  * `plain` : sans verre (icône seule dans la même cible), pour l'intérieur d'une barre déjà en verre.
  */
-export function GlassIconButton({ icon, glyph, label, onPress, size = 44, plain, disabled, selected, color, style, testID, accessibilityHint }: {
+export function GlassIconButton({ icon, glyph, renderIcon, label, onPress, size = 44, plain, disabled, selected, color, style, testID, accessibilityHint }: {
   icon: IconName;
   /** Pictogramme de la famille HOMI (prioritaire sur `icon`). */
   glyph?: HomiIconName;
+  /** Pictogramme dessiné par l'appelant (prioritaire sur `glyph`) : reçoit l'encre du verre et la taille conseillée. */
+  renderIcon?: (ink: string, size: number) => React.ReactNode;
   label: string;
   onPress: () => void;
   size?: number;
@@ -199,7 +201,8 @@ export function GlassIconButton({ icon, glyph, label, onPress, size = 44, plain,
         {plain ? null : <GlassMaterial variant="chrome" radius={r} testID={testID ?? 'glass-icon-button'} />}
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: r, backgroundColor: spec.press }, veilStyle]} />
         <View style={{ opacity: disabled ? DISABLED : 1 }}>
-          {glyph ? <HomiIcon name={glyph} size={Math.round(size * 0.52)} color={color ?? spec.inks.text} tone={color ?? t.colors.primary} active={!!selected} />
+          {renderIcon ? renderIcon(color ?? spec.inks.text, Math.round(size * 0.52))
+            : glyph ? <HomiIcon name={glyph} size={Math.round(size * 0.52)} color={color ?? spec.inks.text} tone={color ?? t.colors.primary} active={!!selected} />
             : <Icon name={icon} size={Math.round(size * 0.46)} color={color ?? spec.inks.text} />}
         </View>
       </Animated.View>

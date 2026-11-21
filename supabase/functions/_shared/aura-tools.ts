@@ -146,7 +146,9 @@ export function searchAuraCatalog(catalog: AuraCatalogEntry[], query: string, ma
     }
     return { e, score, hit };
   }).filter((x) => x.hit > 0 && x.hit >= Math.min(2, q.length) * 0.5);
-  scored.sort((a, b) => b.score - a.score);
+  // un outil qui couvre PLUS de mots de la demande passe devant (« Où noter sa sieste ? » : la sieste l'emporte sur un
+  // verbe générique comme « noter », présent dans beaucoup de noms d'outils) ; à égalité, le score décide
+  scored.sort((a, b) => (b.hit - a.hit) || (b.score - a.score));
   return scored.slice(0, max).map(({ e }) => ({ id: e.id, name: e.name, does: e.blurb }));
 }
 

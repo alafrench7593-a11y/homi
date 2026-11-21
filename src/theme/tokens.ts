@@ -368,13 +368,13 @@ const AMETHYSTE_DARK = darkTone({
 /** Les huit thèmes. Ordre de `decor` et `wash` : accent principal, second accent, accent rare. */
 export const PALETTE_SPECS: Record<PaletteName, PaletteSpec> = {
   nacre: { scheme: 'light', decor: NACRE_DECOR, wash: ['#E9ECF2', '#E4EAF4', '#EEEAF5'], glow: { light: '#FFFFFF', dark: '#E8EEFF' }, swatch: ['#FFFFFF', '#DCE0E8'], light: NACRE_LIGHT, dark: NACRE_DARK, night: nightTone(NACRE_DARK) },
-  graphite: { scheme: 'dark', decor: ['#8E939E', '#6F7684', '#B9BEC9'], wash: ['#2C2F35', '#292C33', '#30323A'], glow: { light: '#FFE3A6', dark: '#FFE3A6' }, swatch: ['#5A5D66', '#2A2C31'], light: GRAPHITE_DARK, dark: GRAPHITE_DARK, night: nightTone(GRAPHITE_DARK) },
+  graphite: { scheme: 'dark', decor: ['#8E939E', '#6F7684', '#B9BEC9'], wash: ['#2C2F35', '#292C33', '#30323A'], glow: { light: '#FFE3A6', dark: '#FFE3A6' }, swatch: ['#55585F', '#26282D'], light: GRAPHITE_DARK, dark: GRAPHITE_DARK, night: nightTone(GRAPHITE_DARK) },
   sable: { scheme: 'light', decor: SABLE_DECOR, wash: ['#F9EFDB', '#FBEAE1', '#F2EAE1'], glow: { light: '#FFF1D2', dark: '#FFE2B8' }, swatch: ['#FBF1E6', '#E9D2BC'], light: SABLE_LIGHT, dark: SABLE_DARK, night: nightTone(SABLE_DARK) },
-  olive: { scheme: 'light', decor: OLIVE_DECOR, wash: ['#EDF0DF', '#F5EFD6', '#E8EEE3'], glow: { light: '#FFF2B8', dark: '#F6E7A4' }, swatch: ['#B8C08E', '#6E7A48'], light: OLIVE_LIGHT, dark: OLIVE_DARK, night: nightTone(OLIVE_DARK) },
+  olive: { scheme: 'light', decor: OLIVE_DECOR, wash: ['#EDF0DF', '#F5EFD6', '#E8EEE3'], glow: { light: '#FFF2B8', dark: '#F6E7A4' }, swatch: ['#64713E', '#48532C'], light: OLIVE_LIGHT, dark: OLIVE_DARK, night: nightTone(OLIVE_DARK) },
   lavande: { scheme: 'light', decor: LAVANDE_DECOR, wash: ['#ECE5FB', '#F8E6F8', '#E4EAFC'], glow: { light: '#FFF0D2', dark: '#FFE6C4' }, swatch: ['#EDE6FA', '#CBB9EC'], light: LAVANDE_LIGHT, dark: LAVANDE_DARK, night: nightTone(LAVANDE_DARK) },
   glacier: { scheme: 'light', decor: GLACIER_DECOR, wash: ['#DDEEF7', '#DCEFF2', '#E8ECFA'], glow: { light: '#FFFFFF', dark: '#E2F3FF' }, swatch: ['#EAF3FA', '#BCD3E6'], light: GLACIER_LIGHT, dark: GLACIER_DARK, night: nightTone(GLACIER_DARK) },
   rose: { scheme: 'light', decor: ROSE_DECOR, wash: [NEUTRALS.mist, NEUTRALS.peach, NEUTRALS.lilac], glow: { light: '#FFE9D6', dark: '#FFD9C8' }, swatch: ['#F8E7EC', '#E5BFCD'], light: ROSE_LIGHT, dark: ROSE_DARK, night: nightTone(ROSE_DARK) },
-  amethyste: { scheme: 'dark', decor: ['#8E6BD1', '#C77DC8', '#6F7FD8'], wash: ['#2F2742', '#34263F', '#28294A'], glow: { light: '#E9D8FF', dark: '#E9D8FF' }, swatch: ['#8A6BB4', '#3E2F5E'], light: AMETHYSTE_DARK, dark: AMETHYSTE_DARK, night: nightTone(AMETHYSTE_DARK) },
+  amethyste: { scheme: 'dark', decor: ['#8E6BD1', '#C77DC8', '#6F7FD8'], wash: ['#2F2742', '#34263F', '#28294A'], glow: { light: '#E9D8FF', dark: '#E9D8FF' }, swatch: ['#7A5CA6', '#3E2F5E'], light: AMETHYSTE_DARK, dark: AMETHYSTE_DARK, night: nightTone(AMETHYSTE_DARK) },
 };
 
 /** Apparence réellement affichée : un thème sombre par nature reste sombre en « Clair » (la nuit reste prioritaire). */

@@ -34,6 +34,13 @@ interface UiState {
   cancelThemePreview: () => void;
   /** Rétablir par défaut : Système + palette par défaut, pour le compte actif. */
   resetAppearance: () => void;
+  /** Présentation d'Aura déjà vue, PAR COMPTE (identifiant → vrai) : elle ne s'affiche qu'une fois par personne. */
+  auraIntroSeen: Record<string, boolean>;
+  markAuraIntroSeen: (userId: string) => void;
+  /** Relance demandée (réglages d'Aura, aide) — jamais persistée. */
+  auraIntroRequested: boolean;
+  requestAuraIntro: () => void;
+  clearAuraIntroRequest: () => void;
   /**
    * Profil affiché, résolu (moi, grossesse, enfant, post-partum, famille) : écrit par `AdaptiveProfileSync` à partir du
    * sélecteur de profil ; lu par le thème en mode Adaptatif. Conservé pour éviter un changement de couleurs au lancement.
@@ -182,6 +189,11 @@ export const useUiStore = create<UiState>()(
         return { palettePreference, themePreview: null, appearanceByUser: withOwner(st, { palette: palettePreference }) };
       }),
       cancelThemePreview: () => set((st) => (st.themePreview ? { themePreview: null } : {})),
+      auraIntroSeen: {},
+      markAuraIntroSeen: (userId) => set((st) => (st.auraIntroSeen[userId] && !st.auraIntroRequested ? {} : { auraIntroSeen: { ...st.auraIntroSeen, [userId]: true }, auraIntroRequested: false })),
+      auraIntroRequested: false,
+      requestAuraIntro: () => set({ auraIntroRequested: true }),
+      clearAuraIntroRequest: () => set((st) => (st.auraIntroRequested ? { auraIntroRequested: false } : {})),
       resetAppearance: () => set((st) => ({ themePreference: DEFAULT_APPEARANCE.theme, palettePreference: DEFAULT_APPEARANCE.palette, appearanceByUser: withOwner(st, DEFAULT_APPEARANCE) })),
       adaptiveProfile: 'me',
       setAdaptiveProfile: (adaptiveProfile) => set((st) => (st.adaptiveProfile === adaptiveProfile ? {} : { adaptiveProfile })),
@@ -288,12 +300,12 @@ export const useUiStore = create<UiState>()(
       storage: createJSONStorage(() => AsyncStorage),
       // Le mode nuit n'est jamais restauré au lancement : il ne vit que pendant l'écran Nuit ; l'aperçu de thème non
       // confirmé non plus (un relancement restaure exactement le thème APPLIQUÉ)
-      partialize: ({ nightMode: _n, themePreview: _p, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
+      partialize: ({ nightMode: _n, themePreview: _p, auraIntroRequested: _a, ...rest }) => rest, // eslint-disable-line @typescript-eslint/no-unused-vars
       // À CHAQUE restauration, les choix enregistrés (compte actif et autres comptes de l'appareil) passent par
       // `migratePalette` : anciennes palettes (v3, v4, Auto) → palette par défaut, choix v6 conservés ; l'apparence est conservée
       // Favoris d'outils (17/11/2026) : les anciennes clés « thème:adresse » deviennent l'identifiant stable de l'outil
       merge: (persisted, current) => {
-        const next = { ...migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }), themePreview: null };
+        const next = { ...migrateAppearance({ ...current, ...(persisted as Partial<UiState>) }), themePreview: null, auraIntroRequested: false };
         return { ...next, toolFavorites: migrateToolIds(next.toolFavorites), toolPinned: migrateToolIds(next.toolPinned), toolHidden: migrateToolIds(next.toolHidden) };
       },
     },

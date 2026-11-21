@@ -15,7 +15,7 @@
  */
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useScreenScroll } from '@/components/screenChrome';
@@ -57,6 +57,10 @@ import { useUserId } from '@/lib/auth';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, previewTime, spacing } from '@/theme/tokens';
 import { AccountActions, HEADER_GAP, HEADER_ICON } from '@/components/AccountActions';
+import { BrandName } from '@/components/BrandLogo';
+import { BRAND } from '@/config/brand';
+import { ThemePickerButton } from '@/features/themePicker/ThemePicker';
+import { AuraHomeEntry } from '@/features/aura/AuraEntry';
 import { Tappable } from '@/components/Tappable';
 import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/features/homeToday';
 import { coparentSituation } from '@/features/homeToday/coparentHome';
@@ -90,6 +94,8 @@ function HomeCard({ id, children }: { id: string; children: React.ReactNode }) {
 
 export default function Home() {
   const t = useTheme();
+  const { width: winW } = useWindowDimensions();
+  const narrow = winW < 360;
   const me = useUserId();
   const profileQ = useProfile();
   const profile = profileQ.data;
@@ -161,7 +167,7 @@ export default function Home() {
   const art = scope.scope === 'pregnancy' ? 'grossesse' : scope.scope === 'baby' || scope.scope === 'postpartum' ? 'bebe' : scope.scope === 'child' ? 'enfants' : cycleMode ? 'cycle' : 'foyer';
   const cards: Record<HomeModuleKey, React.ReactNode> = {
     // (2) Prochaine action importante : prochain événement, puis ce qui attend une réponse
-    next: <TodayNext scene={scene} art={art} />,
+    next: <TodayNext scene={scene} art={art} compactEmpty />,
     // (3) Actions rapides du profil (personnalisables) ; carrousel : son défilement passe avant le glissement de profil
     quick: mainLoading ? null : <DailyActions />,
     // (4) Résumé du profil sélectionné
@@ -200,18 +206,27 @@ export default function Home() {
   };
 
   return (
-    <Screen bottomInset={TAB_SCREEN_INSET} reorder>
+    <Screen bottomInset={TAB_SCREEN_INSET} reorder contentStyle={{ paddingHorizontal: narrow ? spacing.md : 20 }}>
       {/* (1) Bonjour + date + profil actif. Coin supérieur droit (21/11/2026) : urgences, notifications, Communauté
           (nommée), avatar ; les Réglages sont derrière l'avatar (feuille « Mon compte », qui rappelle aussi les Urgences). */}
       <View style={{ gap: 2, marginTop: spacing.xs }}>
-        {/* 4 éléments de 44 pt de haut : ils tiennent à 320 pt (Communauté sans libellé visible sous 360 pt) */}
-        <Row style={{ justifyContent: 'flex-end', alignItems: 'center' }} gap={HEADER_GAP}>
-          <GlassIconButton icon="life-buoy" glyph="emergency" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
-          <View>
-            <GlassIconButton icon="bell" glyph="notifications" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
-            <BadgeDot count={unread} style={{ position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
-          </View>
-          <AccountActions />
+        {/* Référence 01 (21/11/2026) : mot-symbole HOMI, cloche et palette à gauche ; urgences, Communauté et avatar à droite.
+            Tout tient à 320 pt (cibles de 44 pt, marges de 16 pt sous 360 pt, Communauté en pictogramme sur l'accueil). */}
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }} gap={HEADER_GAP}>
+          <Row style={{ alignItems: 'center', flexShrink: 1 }} gap={narrow ? 2 : HEADER_GAP}>
+            <View accessible accessibilityRole="header" accessibilityLabel={BRAND.name} style={{ paddingRight: narrow ? 2 : spacing.xs }} testID="home-wordmark">
+              <BrandName size={narrow ? 17 : 20} line={HEADER_ICON} tone="mono" color={t.colors.text} />
+            </View>
+            <View>
+              <GlassIconButton icon="bell" glyph="notifications" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
+              <BadgeDot count={unread} style={{ position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
+            </View>
+            <ThemePickerButton size={HEADER_ICON} />
+          </Row>
+          <Row style={{ alignItems: 'center' }} gap={narrow ? 2 : HEADER_GAP}>
+            <GlassIconButton icon="life-buoy" glyph="emergency" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
+            <AccountActions communityIcon />
+          </Row>
         </Row>
         <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
         <Text variant="small" muted testID="home-date">{[formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase()), subtitle].filter(Boolean).join(' · ')}</Text>
@@ -219,6 +234,8 @@ export default function Home() {
       <ProfileSwitcher pager />
       {/* « Outils » : entrée fixe et évidente (aussi dans l'action centrale de la barre) */}
       <ToolsEntry />
+      {/* Aura en une interaction depuis l'accueil */}
+      <AuraHomeEntry />
       {/* Visite guidée interrompue : reprise discrète, masquable */}
       <TourResumeCard />
       {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}

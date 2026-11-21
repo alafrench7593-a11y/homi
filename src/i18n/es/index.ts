@@ -76,6 +76,7 @@ export { pay2 } from './pay2';
 export { onb2 } from './onb2';
 export { visual5 } from './visual5';
 export { themes6 } from './themes6';
+export { themesAura } from './themesAura';
 export { entry5 } from './entry5';
 export { hubs5 } from './hubs5';
 export { day5 } from './day5';

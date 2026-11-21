@@ -114,10 +114,10 @@ export const COMMUNITY_LABEL_MIN_WIDTH = 360;
  * Accès direct à la Communauté, en haut à droite : pictogramme + libellé visible quand la largeur le permet, sinon
  * pictogramme seul ; dans les deux cas le nom accessible est « Communauté ».
  */
-export function CommunityHeaderButton() {
+export function CommunityHeaderButton({ iconOnly = false }: { iconOnly?: boolean } = {}) {
   const { width } = useWindowDimensions();
   const onPress = () => router.push('/community');
-  if (width >= COMMUNITY_LABEL_MIN_WIDTH) {
+  if (!iconOnly && width >= COMMUNITY_LABEL_MIN_WIDTH) {
     return <GlassButton label={tr('nav.community')} icon="users" glyph="community" size="sm" onPress={onPress} testID="header-community" style={{ minHeight: HEADER_ICON }} />;
   }
   return <GlassIconButton icon="users" glyph="community" label={tr('nav.community')} size={HEADER_ICON} testID="header-community" onPress={onPress} />;
@@ -129,13 +129,14 @@ export function CommunityHeaderButton() {
  * d'onglet, en un geste ; elle n'est plus dans la barre du bas. Aucune pastille : l'appli ne connaît pas de « nouveautés
  * non lues » de la communauté.
  */
-export function AccountActions() {
+export function AccountActions({ communityIcon = false }: { /** accueil : Communauté en pictogramme (nom accessible complet), la place va au mot-symbole */ communityIcon?: boolean } = {}) {
   const pathname = usePathname();
+  const { width } = useWindowDimensions();
   const inCommunity = pathname.startsWith('/community') || pathname === '/moi';
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: HEADER_GAP }} accessibilityRole="toolbar">
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: communityIcon && width < 360 ? 2 : HEADER_GAP }} accessibilityRole="toolbar">
       {/* Verre de 44 pt (navigation flottante) */}
-      {inCommunity ? null : <CommunityHeaderButton />}
+      {inCommunity ? null : <CommunityHeaderButton iconOnly={communityIcon} />}
       <ProfileAvatarButton />
     </View>
   );

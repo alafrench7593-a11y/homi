@@ -1,6 +1,6 @@
 /**
  * HOMI Aura côté application : modèle (modes, coût, repli local honnête, cartes d'action), agrégats minimisés des
- * analyses, mode vocal absent (non retenu), démonstration (même déroulé que le serveur avec un modèle SIMULÉ), et écran :
+ * analyses, voix du téléphone seulement (aucun service payant), démonstration (même déroulé que le serveur avec un modèle SIMULÉ), et écran :
  * conversation, actions TOUJOURS confirmées avant écriture, crédits affichés et débités, détresse gratuite,
  * repli local. Aucune IA n'est appelée.
  */
@@ -132,10 +132,18 @@ describe('Analyser avec HOMI Aura : agrégats minimisés', () => {
   });
 });
 
-describe('Mode vocal : non retenu (décision du 20/11/2026)', () => {
-  it('aucun micro, aucune lecture à voix haute, aucun interrupteur vocal, aucun code ElevenLabs', () => {
+describe('Voix : celle du téléphone seulement (brief du 21/11/2026 ; ElevenLabs refusé le 20/11/2026)', () => {
+  it('aucun service vocal payant, aucun enregistrement audio par l’app ; synthèse système isolée dans voice.ts ; micro natif non demandé', () => {
     expect('auraVoice' in FEATURES).toBe(false);
-    for (const f of fs.readdirSync('src/features/aura')) expect([f, /expo-audio|expo-av|expo-speech|elevenlabs|voice|micro/i.test(fs.readFileSync(`src/features/aura/${f}`, 'utf8'))]).toEqual([f, false]);
+    for (const f of fs.readdirSync('src/features/aura')) {
+      const src = fs.readFileSync(`src/features/aura/${f}`, 'utf8');
+      expect([f, /expo-audio|expo-av|elevenlabs|eleven_labs/i.test(src)]).toEqual([f, false]);
+      // la synthèse (expo-speech) n'est chargée QUE par voice.ts, derrière une détection de capacité
+      if (f !== 'voice.ts') expect([f, /expo-speech/.test(src)]).toEqual([f, false]);
+    }
+    const voice = fs.readFileSync('src/features/aura/voice.ts', 'utf8');
+    expect(voice).toMatch(/requireOptionalNativeModule\('ExpoSpeech'\)/);
+    // la dictée passe par le clavier du téléphone (autorisation système) : l'app ne demande pas le micro elle-même
     expect(fs.readFileSync('app.config.ts', 'utf8')).toMatch(/microphonePermission: false/);
   });
 });

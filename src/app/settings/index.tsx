@@ -183,6 +183,8 @@ export default function SettingsScreen() {
         <ListRow icon="help-circle" title={SUPPORT.title} onPress={() => router.push('/legal/support')} testID="settings-support" />
         <Divider />
         {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} subtitle={tr('tour.settingsRowSub')} onPress={startTour} testID="settings-tour" /> : null}
+        {/* Présentation d'Aura : relançable ici (et depuis les réglages d'Aura) */}
+        <ListRow icon="message-circle" title={tr('ta.intro.replay')} onPress={() => { useUiStore.getState().requestAuraIntro(); router.back(); }} testID="settings-aura-intro" />
         {tourAllowed ? <Divider /> : null}
         <Row style={{ justifyContent: 'space-between', alignItems: 'center' }} testID="settings-tool-hints">
           <View style={{ flex: 1, gap: 2 }}>

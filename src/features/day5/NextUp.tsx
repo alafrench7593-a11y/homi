@@ -7,7 +7,7 @@
 import React from 'react';
 import { Image, View, type ImageSourcePropType } from 'react-native';
 import { CoralHalo } from '@/components/CoralHalo';
-import { Text } from '@/components/ui';
+import { Icon, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -36,7 +36,7 @@ export interface NextUpInfo {
 
 const ART_SIZE = 92;
 
-export function NextUp({ info, art = 'foyer', testID = 'home-next-up', emptyTitle, emptyBody }: { info: NextUpInfo | null; art?: NextArt; testID?: string; emptyTitle?: string; emptyBody?: string }) {
+export function NextUp({ info, art = 'foyer', testID = 'home-next-up', emptyTitle, emptyBody, compactEmpty = false }: { info: NextUpInfo | null; art?: NextArt; testID?: string; emptyTitle?: string; emptyBody?: string; /** accueil (référence 01) : sans rendez-vous, une rangée sobre (pictogramme + titre) au lieu de l'illustration */ compactEmpty?: boolean }) {
   const t = useTheme();
   const illus = (
     <View style={{ width: ART_SIZE, height: ART_SIZE, alignItems: 'center', justifyContent: 'center' }} testID={`${testID}-art`}
@@ -47,6 +47,16 @@ export function NextUp({ info, art = 'foyer', testID = 'home-next-up', emptyTitl
   );
   const shell = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: spacing.md, padding: spacing.md, paddingLeft: spacing.sm, borderRadius: radius.lg,
     backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, overflow: 'hidden' as const };
+  if (!info && compactEmpty) {
+    return (
+      <View style={[shell, { minHeight: 56, paddingVertical: spacing.sm, paddingLeft: spacing.md }]} testID={testID} accessible accessibilityLabel={[emptyTitle ?? tr('d5.next.noneTitle'), emptyBody ?? tr('d5.next.noneBody')].join('. ')}>
+        <View style={{ width: 36, height: 36, borderRadius: radius.sm, backgroundColor: t.material.lines.iconWell, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="calendar" size={18} color={t.colors.text} />
+        </View>
+        <Text weight="bold" style={{ flex: 1, minWidth: 0 }}>{emptyTitle ?? tr('d5.next.noneTitle')}</Text>
+      </View>
+    );
+  }
   if (!info) {
     return (
       <View style={shell} testID={testID} accessible accessibilityLabel={[emptyTitle ?? tr('d5.next.noneTitle'), emptyBody ?? tr('d5.next.noneBody')].join('. ')}>

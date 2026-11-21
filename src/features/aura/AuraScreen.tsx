@@ -15,8 +15,8 @@
  *    `Screen`, portée clavier existante).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { AppState, FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
@@ -58,6 +58,11 @@ import { useAuraBot, type AuraBotState } from './useAuraBot';
 import { EmotionTranslator } from './EmotionTranslator';
 import { JournalPicker } from './JournalPicker';
 import { askAura, classifyAuraError, type AuraErrorKind, type AuraServerReply } from './api';
+import { AuraThinkingDots } from './AuraMark';
+import { auraToolContext } from './intro';
+import { canSpeak, dictationMode, speak, startBrowserDictation, stopSpeaking, type DictationHandle } from './voice';
+import { useAuth } from '@/lib/auth';
+import { useUiStore } from '@/lib/store';
 import {
   auraMode, catalogForServer, creditActionFor, defaultThemeFor, featuredFor, localReply, themeName, themeSuggestions, toAuraTheme,
   type AuraAction, type AuraMode, type AuraTheme, type LocalReply,
@@ -96,7 +101,10 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const motion = useMotion();
   const insets = useSafeAreaInsets();
   const { height: winH } = useWindowDimensions();
-  const params = useLocalSearchParams<{ theme?: string; q?: string; mode?: string; draft?: string; situation?: string }>();
+  const params = useLocalSearchParams<{ theme?: string; q?: string; mode?: string; draft?: string; situation?: string; tool?: string; voice?: string; focus?: string }>();
+  // Entrée contextuelle depuis un outil : identifiant d'outil RÉEL du catalogue, sinon aucun contexte (jamais de lien inventé)
+  const toolCtx = auraToolContext(typeof params.tool === 'string' ? params.tool : null);
+  const toolName = toolCtx ? tr(toolCtx.labelKey) : '';
   const theme: AuraTheme | null = toAuraTheme(params.theme);
   const { subject } = useActiveSubject();
   const { data: children } = useChildren();
@@ -114,6 +122,8 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const allTools = useMemo(() => { const seen = new Set<string>(); return entries.map((e) => e.tool).filter((x) => (seen.has(x.id) ? false : (seen.add(x.id), true))); }, [entries]);
   const catalogIds = useMemo(() => new Set(catalog.map((x) => x.id)), [catalog]);
   const featured = useMemo(() => featuredFor(theme, catalog), [theme, catalog]);
+  // l'outil du contexte n'est proposé que s'il est réellement accessible (profil affiché ou autre profil du foyer)
+  const ctxTool = useMemo(() => (toolCtx ? allTools.find((x) => x.id === toolCtx.id) ?? null : null), [toolCtx, allTools]);
   const index = useArticleIndex(true);
 
   const credits = useCreditStatus();
@@ -138,6 +148,67 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const [settings, setSettings] = useState(false);
   const [focused, setFocused] = useState(false);
   const list = useRef<FlatList<Msg>>(null);
+  const inputRef = useRef<TextInput>(null);
+  // Voix (téléphone / navigateur uniquement) : lecture sur demande, dictée sur appui ; jamais d'écoute permanente
+  const dictation = dictationMode();
+  const ttsAvailable = canSpeak();
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const dictationRef = useRef<DictationHandle | null>(null);
+  const beforeDictation = useRef('');
+  const stopVoice = () => {
+    stopSpeaking();
+    setSpeakingId(null);
+    dictationRef.current?.abort();
+    dictationRef.current = null;
+    setListening(false);
+  };
+  // Quitter l'écran, passer en arrière-plan (appel, autre app) : lecture et dictée s'arrêtent tout de suite
+  useFocusEffect(React.useCallback(() => () => stopVoice(), [])); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (st) => { if (st !== 'active') stopVoice(); });
+    return () => { sub.remove(); stopVoice(); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  function toggleSpeak(id: string, text: string) {
+    if (speakingId === id) { stopSpeaking(); setSpeakingId(null); return; }
+    const ok = speak(text, { onEnd: () => setSpeakingId((cur) => (cur === id ? null : cur)) });
+    setSpeakingId(ok ? id : null);
+    if (!ok) setVoiceNote(tr('ta.voice.ttsOff'));
+  }
+  function onMic() {
+    if (listening) { dictationRef.current?.stop(); return; }
+    stopSpeaking(); setSpeakingId(null);
+    setVoiceNote(null);
+    if (dictation === 'browser') {
+      beforeDictation.current = input;
+      const h = startBrowserDictation({
+        onText: (text) => setInput(text),
+        onError: (e) => setVoiceNote(tr(e === 'denied' ? 'ta.voice.denied' : e === 'no-speech' ? 'ta.voice.noSpeech' : 'aura.err.unavailable')),
+        onEnd: () => { dictationRef.current = null; setListening(false); },
+      });
+      if (h) { dictationRef.current = h; setListening(true); return; }
+    }
+    // Téléphone : la dictée du CLAVIER remplit le champ (autorisation demandée par le système à sa première utilisation)
+    inputRef.current?.focus();
+    setVoiceNote(tr('ta.voice.keyboard'));
+  }
+  function cancelDictation() {
+    dictationRef.current?.abort();
+    dictationRef.current = null;
+    setListening(false);
+    setInput(beforeDictation.current);
+  }
+  // La présentation d'Aura est vue dès qu'on ouvre Aura ; « Écrire » / « Parler » depuis la présentation : champ prêt
+  const { session } = useAuth();
+  const markIntroSeen = useUiStore((s) => s.markAuraIntroSeen);
+  const introRequested = useUiStore((s) => s.auraIntroRequested);
+  useEffect(() => { if (session?.userId && !introRequested) markIntroSeen(session.userId); }, [session?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (params.voice === '1') { const id = setTimeout(onMic, 350); return () => clearTimeout(id); }
+    if (params.focus === '1') { const id = setTimeout(() => inputRef.current?.focus(), 350); return () => clearTimeout(id); }
+    return undefined;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const scrollEnd = () => setTimeout(() => list.current?.scrollToEnd({ animated: !motion.off }), 80);
 
 
@@ -158,6 +229,8 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     const question = (text ?? input).trim().slice(0, MAX_QUESTION_LENGTH);
     if (question.length < 2 || sending) return;
     Keyboard.dismiss();
+    stopVoice();
+    setVoiceNote(null);
     if (!opts.retryOf) { setInput(''); }
     haptic('light');
     const now = Date.now();
@@ -292,6 +365,23 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       </View>
 
 
+      {toolCtx ? (
+        <View testID="aura-tool-context" style={{ gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+          <Text variant="label" accessibilityRole="header" testID="aura-tool-name">{tr('ta.ctx.title', { tool: toolName })}</Text>
+          <Text variant="caption" muted>{tr('ta.ctx.note', { tool: toolName })}</Text>
+          {(['ta.ctx.how', 'ta.ctx.what'] as const).map((k) => (
+            <Tappable key={k} accessibilityRole="button" accessibilityLabel={tr('aura.ask', { q: tr(k, { tool: toolName }) })} disabled={blockedByConsent || sending}
+              onPress={() => void send(tr(k, { tool: toolName }))} testID="aura-ctx-question"
+              style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.sm, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : 'transparent', opacity: blockedByConsent ? 0.5 : 1 })}>
+              <Icon name="message-circle" size={16} color={t.colors.lavender} />
+              <Text variant="small" style={{ flex: 1 }}>{tr(k, { tool: toolName })}</Text>
+            </Tappable>
+          ))}
+          {ctxTool ? <Button label={tr('ta.ctx.open', { tool: toolName })} icon="arrow-left" variant="secondary" size="sm" full
+            onPress={() => (router.canGoBack() ? router.back() : openTool(ctxTool))} testID="aura-ctx-open" /> : null}
+        </View>
+      ) : null}
+
       {theme ? <Text variant="label" accessibilityRole="header" testID="aura-theme">{tr(themeName(theme))}</Text> : null}
 
       {theme === 'emotion_translator' ? (
@@ -345,8 +435,23 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
         <View style={{ gap: 4 }} testID="aura-composer">
           <Text variant="caption" muted center testID="aura-cost">{costLine}</Text>
           {!online && remote ? <Text variant="caption" color={t.colors.warning} center testID="aura-offline">{tr('aura.err.network')}</Text> : null}
+          {listening ? (
+            <View testID="aura-listening" accessibilityLiveRegion="polite" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs }}>
+              <AuraThinkingDots color={t.colors.primary} />
+              <Text variant="caption" style={{ flex: 1 }}>{tr('ta.voice.listening')}</Text>
+              <Button label={tr('ta.voice.cancel')} variant="ghost" size="sm" onPress={cancelDictation} testID="aura-mic-cancel" />
+            </View>
+          ) : voiceNote ? <Text variant="caption" muted center testID="aura-voice-note">{voiceNote}</Text> : null}
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
+            {dictation !== 'none' ? (
+              <Tappable accessibilityRole="button" accessibilityLabel={listening ? tr('ta.voice.end') : tr('ta.voice.talk')} accessibilityState={{ disabled: blockedByConsent, busy: listening }}
+                disabled={blockedByConsent} onPress={onMic} testID="aura-mic"
+                style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: listening ? t.colors.accentSoft : 'transparent', opacity: blockedByConsent ? 0.4 : 1 }}>
+                <Icon name={listening ? 'square' : 'mic'} size={20} color={listening ? t.colors.primary : t.colors.textMuted} />
+              </Tappable>
+            ) : null}
             <TextInput
+              ref={inputRef}
               value={input} onChangeText={setInput} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} placeholder={tr('aura.ph')} placeholderTextColor={t.colors.textMuted} accessibilityLabel={tr('aura.yourMsg')}
               multiline maxLength={MAX_QUESTION_LENGTH} textAlignVertical="top" editable={!blockedByConsent} testID="aura-input"
               style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
@@ -379,6 +484,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             </View>
           ) : (
             <AuraReply reply={m.reply!} catalog={catalog} onChooseJournal={setJournal}
+              voice={ttsAvailable ? { speaking: speakingId === m.id, onToggle: (text) => toggleSpeak(m.id, text) } : null}
               bot={m.id === lastAura?.id ? { state: botState, still: false } : { state: restingBot(m.reply!), still: true }}
               onRetry={(r) => void send(r.question, { requestId: r.requestId, journal: r.journal, retryOf: m.id })}
               onLocal={(q) => replace(m.id, local(q))} />
@@ -399,6 +505,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             <Toggle label={tr('aura.settings.local')} value={forceLocal} onChange={setForceLocal} />
           </Row>
           {aiAssistantOnline() ? <Button label={tr('aura.history')} icon="clock" variant="secondary" full onPress={() => { setSettings(false); router.push('/assistant/history'); }} /> : null}
+          <Button label={tr('ta.intro.replay')} icon="play-circle" variant="secondary" full onPress={() => { setSettings(false); useUiStore.getState().requestAuraIntro(); }} testID="aura-intro-replay" />
           <Button label={tr('aura.privacy')} icon="lock" variant="ghost" full onPress={() => { setSettings(false); router.push('/settings/privacy'); }} />
         </View>
       </Sheet>
@@ -410,8 +517,17 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
 const restingBot = (r: Reply): AuraBotState => (r.kind === 'pending' ? 'thinking' : r.kind === 'safety' || r.kind === 'error' ? 'concern' : 'idle');
 const BOT_SIZE = 32;
 
-function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot }: {
+/** « Écouter la réponse » : voix du téléphone, sur demande seulement, arrêt immédiat. */
+function ListenButton({ text, voice }: { text: string; voice: { speaking: boolean; onToggle: (text: string) => void } }) {
+  return (
+    <Button label={tr(voice.speaking ? 'ta.voice.stop' : 'ta.voice.read')} icon={voice.speaking ? 'square' : 'volume-2'} variant="ghost" size="sm"
+      style={{ alignSelf: 'flex-start' }} onPress={() => voice.onToggle(text)} testID="aura-listen" />
+  );
+}
+
+function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot, voice }: {
   reply: Reply; catalog: ReturnType<typeof useAllToolEntries>['catalog'];
+  voice: { speaking: boolean; onToggle: (text: string) => void } | null;
   /** robot à côté de la réponse : vivant pour la dernière, immobile pour les précédentes */
   bot: { state: AuraBotState; still: boolean };
   onChooseJournal: (j: 'mood' | 'diary') => void;
@@ -480,6 +596,7 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot }: {
           </>
         ) : null}
         <Text variant="caption" muted>{tr('aura.footer.local')}</Text>
+        {voice ? <ListenButton voice={voice} text={[tr('aura.local.intro'), ...reply.tools.map((x) => x.label)].join('. ')} /> : null}
       </View>
       </View>
     );
@@ -492,6 +609,7 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot }: {
         {reply.demo ? <Text variant="caption" color={t.colors.lavender}>{tr('aura.mode.demo')}</Text> : null}
         {reply.answer ? <Markdown source={reply.answer} /> : null}
         {reply.replaced ? <Text variant="caption" muted>{tr('aura.replaced')}</Text> : null}
+        {voice && reply.answer ? <ListenButton voice={voice} text={reply.answer} /> : null}
       </View>
       </View>
       <ActionCards actions={reply.actions} catalog={catalog} onChooseJournal={onChooseJournal} />
