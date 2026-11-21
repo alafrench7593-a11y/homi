@@ -92,7 +92,7 @@ export const firstwin: Messages<typeof fr> = {
   'fw.pw.terms': 'Condizioni',
   'fw.pw.privacy': 'Privacy',
   'fw.pw.resume': 'Il tuo account è pronto. Conferma il piano per iniziare.',
-  'fw.pw.accountNote': 'Account creato subito prima di pagare.',
+  'fw.pw.accountNote': 'Creerai il tuo account al passo successivo, prima di qualsiasi pagamento.',
   'fw.pw.retry': 'Riprova',
   'fw.pw.loading': 'Caricamento delle offerte dell’App Store…',
   'fw.pw.offline': 'Nessuna connessione: i prezzi non possono essere mostrati. L’acquisto resta disattivato.',
