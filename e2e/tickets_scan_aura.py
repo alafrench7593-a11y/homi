@@ -98,7 +98,9 @@ def demo_state(pg, js):
 
 SUB = """const now = new Date(); const exp = new Date(now.getTime() + 30 * 86400000);
 s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== s.session.userId);
-s.tables.subscriptions.push({ user_id: s.session.userId, entitlement: 'HOMI_PREMIUM', status: 'active', product_id: 'homi_premium_monthly', store: 'test', period_type: 'monthly', expires_at: exp.toISOString(), will_renew: true, tier: 'premium', updated_at: now.toISOString() });"""
+s.tables.subscriptions.push({ user_id: s.session.userId, entitlement: 'HOMI_PREMIUM', status: 'active', product_id: 'homi_premium_monthly', store: 'test', period_type: 'monthly', expires_at: exp.toISOString(), will_renew: true, tier: 'premium', updated_at: now.toISOString() });
+if (CREDITS) { s.tables.credit_accounts = (s.tables.credit_accounts || []).filter(a => a.payer_id !== s.session.userId);
+  s.tables.credit_accounts.push({ id: 'acc-test', payer_id: s.session.userId, household_id: null, holder_kind: 'user', tier: 'premium', monthly_allowance: 100, monthly_balance: 100, purchased_balance: 0, period_start: now.toISOString(), period_end: exp.toISOString(), created_at: now.toISOString() }); }""".replace('CREDITS', 'true' if os.environ.get('CREDITS') == '1' else 'false')
 
 
 def step(name, fn, pg):
@@ -217,8 +219,9 @@ def aura_states(pg):
         wait_for(pg, 'aura-reply', 8000)
         R['reponse_simulee'] = 'réponses simulées' in body(pg)
         shoot(pg, 'aura_9_reponse_simulee')
+    pg.keyboard.press('Escape'); wait(pg, 600)
     if has(pg, 'aura-settings'):
-        click(pg, 'aura-settings', 1200)
+        vis(pg, 'aura-settings').first.click(force=True); wait(pg, 1200)
         R['voix_etat'] = sp(vis(pg, 'aura-voice-status').first.inner_text()) if has(pg, 'aura-voice-status') else None
         shoot(pg, 'aura_10_reglages_voix')
         pg.keyboard.press('Escape'); wait(pg, 600)
@@ -272,9 +275,9 @@ def bottles(pg):
         if btn is not None and btn.count():
             btn.first.click(); wait(pg, 1500)
             shoot(pg, 'biberons_2_confirmation')
-            for label in ('Confirmer', 'Analyser', 'Continuer'):
-                if click_text(pg, label, 3000):
-                    break
+            conf = pg.get_by_role('button', name=re.compile(r'^Analyser \(')).filter(visible=True)
+            if conf.count():
+                conf.first.click(); wait(pg, 3500)
         wait_for(pg, 'aura-analysis-bottle-result', 6000)
         if has(pg, 'aura-analysis-bottle-result'):
             scroll_to(pg, 'aura-analysis-bottle-result')
