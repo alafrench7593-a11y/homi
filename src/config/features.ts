@@ -7,7 +7,7 @@
  * Les réponses à partir des articles (/assistant/local, sans IA en ligne) restent disponibles.
  */
 export const FEATURES = {
-  aiAssistantOnline: false,
+  aiAssistantOnline: true, // ouverte le 21/11/2026 (accord de la propriétaire)
   /** Backend de démonstration en Premium strict (miroir de premium_policy.strict côté serveur). Tests historiques : faux. */
   demoStrictPremium: true,
 };
