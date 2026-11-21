@@ -32,6 +32,7 @@ import { useCycleSharedWithMe } from '@/lib/data/hooks-cycle3';
 import { isCaregiverOnly } from '@/lib/domain/nounou';
 import { CaregiverProfile } from '@/features/nounou/CaregiverProfile';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Profile() {
   const memberships = useMemberships();
@@ -111,7 +112,7 @@ function FamilyProfile() {
         ) : null}
         <Card>
           {pregnancy && <ListRow icon="moon" title={tr('profile.pregnancy')} subtitle={pregnancyProgress(pregnancy.due_date).label} onPress={() => router.push('/pregnancy')} />}
-          {(children ?? []).map((c) => <ListRow key={c.id} icon="smile" leading={<ChildAvatar child={c} size={36} />} testID={`profile-child-${c.first_name}`} title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} />)}
+          <MotionList>{(children ?? []).map((c) => <MotionItem key={c.id}><ListRow key={c.id} icon="smile" leading={<ChildAvatar child={c} size={36} />} testID={`profile-child-${c.first_name}`} title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} /></MotionItem>)}</MotionList>
           <ListRow icon="plus" title={tr('profile.addChild')} onPress={() => router.push('/profiles/new')} />
           <ListRow icon="users" title={tr('profile.partner')} subtitle={tr('profile.partnerSub')} onPress={() => router.push('/settings/family')} />
         </Card>

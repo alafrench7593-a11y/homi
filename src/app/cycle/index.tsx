@@ -39,6 +39,7 @@ import { rank } from '@/lib/advice/types';
 import { uuid } from '@/lib/uuid';
 import { formatNumber, formatUnit, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type TestKind = 'ovulation_tests' | 'pregnancy_tests';
 const TEST_RESULTS: Record<TestKind, string[]> = { ovulation_tests: ['negative', 'positive', 'peak', 'invalid'], pregnancy_tests: ['negative', 'positive', 'faint', 'invalid'] };
@@ -306,8 +307,8 @@ function CycleHub() {
       <HistoryHeader title={tr('cy.history')} count={history.length || undefined} />
       {periodsQ.isLoading && !periodsQ.data ? <Skeleton rows={2} /> : periodsQ.isError && !periodsQ.data ? <ErrorView error={periodsQ.error} onRetry={() => void periodsQ.refetch()} /> : null}
       {!history.length && !periodsQ.isLoading ? <Ink soft>{tr('cy.history.empty')}</Ink> : null}
-      {history.slice(0, 24).map((p) => (
-        <Glass key={p.id}>
+      <MotionList>{history.slice(0, 24).map((p) => (
+        <MotionItem key={p.id}><Glass key={p.id}>
           <Row style={{ alignItems: 'flex-start' }}>
             <CycleIcon name="period" color={c.period} />
             <View style={{ flex: 1, gap: 2 }}>
@@ -320,8 +321,8 @@ function CycleHub() {
             <Button label={tr('common.edit')} size="sm" variant="ghost" onPress={() => edit(p)} />
             <Button label={tr('common.delete')} size="sm" variant="ghost" loading={busy === `del-${p.id}`} onPress={() => remove('period_entries', p.id, tr('cy.what.period'))} />
           </View>
-        </Glass>
-      ))}
+        </Glass></MotionItem>
+      ))}</MotionList>
 
       {/* Tests (saisie manuelle ; la lecture par photo est dans Fertilité) */}
       <Glass>
@@ -331,12 +332,12 @@ function CycleHub() {
         <Ink variant="caption" soft>{testKind === 'pregnancy_tests' ? tr('cy.test.pregnancyNote') : tr('cy.test.ovulationNote')}</Ink>
         <Button label={tr('cy.test.save')} variant="secondary" loading={busy === 'test'} onPress={saveTest} full />
         <Button label={tr('cy.test.photo')} icon="camera" variant="ghost" onPress={() => router.push(`/fertility/test/${testKind === 'ovulation_tests' ? 'ovulation' : 'pregnancy'}` as never)} full />
-        {(tests ?? []).slice(0, 8).map((x) => (
-          <Row key={x.id} style={{ justifyContent: 'space-between' }}>
+        <MotionList>{(tests ?? []).slice(0, 8).map((x) => (
+          <MotionItem key={x.id}><Row key={x.id} style={{ justifyContent: 'space-between' }}>
             <Ink variant="small" style={{ flex: 1 }}>{`${tr(`cy.test.r.${x.result}` as 'cy.test.r.negative')} · ${fmtDay(x.tested_at.slice(0, 10))}`}</Ink>
             <Button label={tr('common.delete')} size="sm" variant="ghost" loading={busy === `del-${x.id}`} onPress={() => remove(testKind, x.id, tr('cy.what.test'))} />
-          </Row>
-        ))}
+          </Row></MotionItem>
+        ))}</MotionList>
       </Glass>
     </Screen>
   );

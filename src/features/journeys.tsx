@@ -20,6 +20,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { toISODate } from '@/lib/domain/dates';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export const JOURNEY_ICON: Record<JourneyType, IconName> = {
   avoid: 'shield', ttc: 'sunrise', cycle: 'calendar', pregnancy: 'moon', postpartum: 'heart', baby: 'smile', child: 'users',
@@ -138,8 +139,8 @@ export function FamilyOverview() {
     <View style={{ gap: spacing.xs }}>
       <Card>
         <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('pj.family.title')}</Text>
-        {rows.map((r) => (
-          <Tappable key={r.key} accessibilityRole="button" accessibilityLabel={`${r.title}, ${r.sub}`} onPress={() => { haptic('selection'); r.onPress(); }}
+        <MotionList>{rows.map((r) => (
+          <MotionItem key={r.key}><Tappable key={r.key} accessibilityRole="button" accessibilityLabel={`${r.title}, ${r.sub}`} onPress={() => { haptic('selection'); r.onPress(); }}
             style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, opacity: pressed ? 0.7 : 1 })}>
             <Icon name={r.icon} color={t.colors.primary} />
             <View style={{ flex: 1 }}>
@@ -147,8 +148,8 @@ export function FamilyOverview() {
               <Text variant="small" muted>{r.sub}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-          </Tappable>
-        ))}
+          </Tappable></MotionItem>
+        ))}</MotionList>
       </Card>
       <FamilyHomeCard />
     </View>

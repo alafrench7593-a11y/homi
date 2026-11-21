@@ -20,6 +20,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate, formatTime } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const hm = (iso: string) => formatTime(iso);
 const fmt = (s: { starts_at: string; ends_at: string }) => `${formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'long' })} · ${hm(s.starts_at)} – ${hm(s.ends_at)}`;
@@ -95,8 +96,8 @@ export default function MeTime() {
       ]} />
       <SectionTitle title={tr('u2.metime.my_booked')} />
       {mine.length === 0 ? <EmptyState icon="sun" title={tr('u2.metime.none_title')} body={tr('u2.metime.none_body')} /> : null}
-      {mine.map((s, i) => (
-        <StaggerItem key={s.id} index={i}>
+      <MotionList>{mine.map((s, i) => (
+        <MotionItem key={s.id}><StaggerItem key={s.id} index={i}>
           <Card>
             <ListRow icon="sun" title={fmt(s)} subtitle={s.note ?? undefined} />
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -105,8 +106,8 @@ export default function MeTime() {
               <Button label={tr('u2.metime.cancel')} size="sm" variant="ghost" onPress={() => cancel(s)} />
             </Row>
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.metime.free_in_calendar')} />
       <Segmented label={tr('u2.metime.day')} value={which} onChange={setWhich} options={[{ value: 'today', label: tr('u2.metime.today') }, { value: 'tomorrow', label: tr('u2.metime.tomorrow') }]} />
@@ -147,7 +148,7 @@ export default function MeTime() {
       {others.length ? (
         <>
           <SectionTitle title={tr('u2.metime.others')} />
-          <Card>{others.map((s) => <ListRow key={s.id} icon="sun" title={labelOf(s.user_id)} subtitle={fmt(s)} />)}</Card>
+          <Card><MotionList>{others.map((s) => <MotionItem key={s.id}><ListRow key={s.id} icon="sun" title={labelOf(s.user_id)} subtitle={fmt(s)} /></MotionItem>)}</MotionList></Card>
           <Text variant="caption" muted>{tr('u2.metime.protect')}</Text>
         </>
       ) : null}

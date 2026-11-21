@@ -21,6 +21,7 @@ import { toFrDate } from '@/lib/validation';
 import { CERVICAL_MUCUS, type CervicalMucus } from '@/lib/types-fertility';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const mucusLabel = (v: CervicalMucus | null) => CERVICAL_MUCUS.find((m) => m.value === v)?.label ?? null;
 
@@ -120,15 +121,15 @@ export default function BodyScreen() {
         <>
           <SectionTitle title={tr('u3.fertBody.mine')} />
           <Card>
-            {list.slice(0, 20).map((o) => (
-              <ListRow
+            <MotionList>{list.slice(0, 20).map((o) => (
+              <MotionItem key={o.id}><ListRow
                 key={o.id}
                 icon="thermometer"
                 title={formatDateFr(o.observed_on)}
                 subtitle={[o.bbt_celsius != null ? `${String(o.bbt_celsius).replace('.', ',')} °C` : null, mucusLabel(o.cervical_mucus), o.note].filter(Boolean).join(' · ')}
                 right={<IconButton icon="trash-2" label={tr('u3.fertBody.delA11y', { date: formatDateFr(o.observed_on) })} onPress={() => remove(o.id, o.observed_on)} />}
-              />
-            ))}
+              /></MotionItem>
+            ))}</MotionList>
           </Card>
         </>
       ) : null}

@@ -33,6 +33,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
@@ -209,11 +210,11 @@ export default function Library() {
         <View style={{ paddingHorizontal: spacing.md }}>
           <ToolLinks ids={['videos', 'videos.tutos']} status={{ videos: tr('vid.librarySub', { count: ALL_VIDEOS.length }), 'videos.tutos': tr('vid.tutosSub', { count: TUTOS.length }) }} testID="library-videos-open" />
         </View>
-        <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
-          {ALL_VIDEOS.slice(0, 2).map((v) => <VideoCard key={v.id} video={v} compact />)}
-        </View>
+        <MotionList style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
+          {ALL_VIDEOS.slice(0, 2).map((v) => <MotionItem key={v.id}><VideoCard key={v.id} video={v} compact /></MotionItem>)}
+        </MotionList>
       </Card>
-      {videos?.length ? <Card>{videos.map((v) => <ListRow key={v.id} icon="play-circle" title={v.title} />)}</Card> : null}
+      {videos?.length ? <Card><MotionList>{videos.map((v) => <MotionItem key={v.id}><ListRow key={v.id} icon="play-circle" title={v.title} /></MotionItem>)}</MotionList></Card> : null}
     </View>
   );
 

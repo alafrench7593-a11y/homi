@@ -25,6 +25,7 @@ import { Icon } from '@/components/ui';
 import { tint } from '@/components/ToolGlyph';
 import { useTheme } from '@/theme/ThemeProvider';
 import { t as tr, formatDate, formatRelative, formatTime } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const fmtNight = (s: { starts_at: string; ends_at: string }) => tr('u2.nights.night_of', { date: formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'long' }), from: formatTime(s.starts_at), to: formatTime(s.ends_at) });
 
@@ -131,8 +132,8 @@ export default function NightRelay() {
       {shiftsQ.isLoading && !shiftsQ.data ? <Skeleton rows={2} /> : null}
       {shiftsQ.isError && !shiftsQ.data ? <ErrorView error={shiftsQ.error} onRetry={() => void shiftsQ.refetch()} title={tr('u2.nights.load_error')} /> : null}
       {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title={tr('u2.nights.none_title')} body={tr('u2.nights.none_body')} /> : null}
-      {upcoming.map((s, i) => (
-        <StaggerItem key={s.id} index={i}>
+      <MotionList>{upcoming.map((s, i) => (
+        <MotionItem key={s.id}><StaggerItem key={s.id} index={i}>
           <Card>
             <ListRow icon={s.status === 'confirmed' ? 'check-circle' : s.status === 'swapped' ? 'shuffle' : 'moon'} title={labelOf(s.user_id)} subtitle={`${fmtNight(s)}${s.status === 'confirmed' ? ` · ${tr('u2.nights.confirmed')}` : s.status === 'swapped' ? ` · ${tr('u2.nights.swapped')}` : ''}`} />
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -141,8 +142,8 @@ export default function NightRelay() {
               <Button label={tr('u2.nights.remove')} size="sm" variant="ghost" onPress={() => remove(s)} />
             </Row>
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.nights.prepare')} />
       <Card>

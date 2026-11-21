@@ -20,6 +20,7 @@ import { missionHref } from '@/lib/domain/missions';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function DoneMissions() {
   const t = useTheme();
@@ -34,12 +35,12 @@ export default function DoneMissions() {
         <EmptyState icon="check-circle" title={tr('cp2.mis.historyNone')} body={tr('cp2.mis.historyEmptyB')} />
       ) : (
         <MatteSurface padded={spacing.sm} style={{ gap: 0 }} testID="missions-done-list">
-          {rows.map((m, i) => {
+          <MotionList style={{ gap: 0 }}>{rows.map((m, i) => {
             const who = personOf(m.done_by ?? m.assignee_id);
             const name = who?.name ?? tr('u7.people.former');
             const when = m.done_at ? formatDate(m.done_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
             return (
-              <View key={m.id}>
+              <MotionItem key={m.id}><View key={m.id}>
                 {i ? <Divider /> : null}
                 <Tappable accessibilityRole="button" testID={`done-${m.id}`} onPress={() => router.push(missionHref(m.id) as never)}
                   accessibilityLabel={[m.title, tr('cp2.mis.doneBy', { name }), when, tr('mis.state.done')].join('. ')}
@@ -54,9 +55,9 @@ export default function DoneMissions() {
                     <Text variant="small" color={t.colors.textMuted} testID={`done-when-${m.id}`}>{when}</Text>
                   </View>
                 </Tappable>
-              </View>
+              </View></MotionItem>
             );
-          })}
+          })}</MotionList>
         </MatteSurface>
       )}
       {q.hasNextPage ? <Button label={tr('cp2.mis.more')} variant="secondary" loading={q.isFetchingNextPage} onPress={() => void q.fetchNextPage()} testID="missions-done-more" /> : null}

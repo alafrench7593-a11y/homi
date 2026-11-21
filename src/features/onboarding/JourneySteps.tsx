@@ -23,6 +23,7 @@ import {
 } from '@/lib/personalization';
 import { toolLabelKey, resolveTool } from '@/lib/journeys/tools';
 import { ChoiceList, ChoiceRow, StepTitle } from './kit';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const TAG_ICON: Record<ProfileTag, IconName> = { ttc: 'sunrise', pregnant: 'moon', new_baby: 'sun', kids: 'users', dad: 'user', discover: 'compass' };
 const HOUSE_ICON: Record<HouseholdKind, IconName> = { partner: 'heart', solo: 'user', separated: 'repeat', undisclosed: 'eye-off' };
@@ -154,21 +155,21 @@ export function DashboardPreview({ facts, max = 6, testID = 'onb-dashboard' }: {
   const hub = useToolHub();
   const recs = recommend(facts, {}, { max });
   return (
-    <View style={{ gap: spacing.xs }} testID={testID} accessibilityRole="list">
+    <MotionList style={{ gap: spacing.xs }} testID={testID} accessibilityRole="list">
       {recs.map((r) => {
         const def = resolveTool(r.id)?.def;
         const tool = hub.resolve(r.id)?.tool;
         return (
-          <View key={r.id} accessible accessibilityLabel={`${tr(toolLabelKey(r.id))}. ${reasonText(r.reason)}`} testID={`${testID}-${r.id}`}
+          <MotionItem key={r.id}><View key={r.id} accessible accessibilityLabel={`${tr(toolLabelKey(r.id))}. ${reasonText(r.reason)}`} testID={`${testID}-${r.id}`}
             style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <ToolGlyph id={r.id} theme={tool?.theme ?? def?.theme ?? 'resources'} icon={tool?.icon ?? def?.icon ?? 'grid'} size={36} />
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text weight="bold">{tr(toolLabelKey(r.id))}</Text>
               <Text variant="caption" muted>{reasonText(r.reason)}</Text>
             </View>
-          </View>
+          </View></MotionItem>
         );
       })}
-    </View>
+    </MotionList>
   );
 }

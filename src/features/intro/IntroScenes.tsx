@@ -32,6 +32,7 @@ import { useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import type { IntroScene } from './model';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 // ------------------------------------------------------------------ cascade pilotée par le pager
 interface LayerCtx { pos: SharedValue<number>; page: number; width: number; dir: number; off: boolean }
@@ -152,14 +153,14 @@ function Agenda({ deck, split, active, depth = 1, title, max }: { deck: TaskKey[
     <Layer depth={depth}>
       <MatteSurface radius={radius.lg} padded={spacing.sm} testID="intro-agenda">
         <Text variant="label" weight="bold" style={{ marginBottom: spacing.xxs }}>{title}</Text>
-        {rows.map((x, i) => {
+        <MotionList>{rows.map((x, i) => {
           const isDone = done && x.id === mine?.id;
           return (
-            <View key={x.id} style={i ? { borderTopWidth: 1, borderTopColor: t.material.lines.separator } : undefined}>
+            <MotionItem key={x.id}><View key={x.id} style={i ? { borderTopWidth: 1, borderTopColor: t.material.lines.separator } : undefined}>
               <TodayAgendaRow x={{ ...x, done: isDone }} owner={x.ownerId === 'me' ? p.me : x.ownerId === 'other' ? p.other : p.nobody} creator={p.me} celebrate={isDone} onComplete={() => undefined} />
-            </View>
+            </View></MotionItem>
           );
-        })}
+        })}</MotionList>
       </MatteSurface>
     </Layer>
   );
@@ -175,12 +176,12 @@ function ToolRows({ ids, scope, depth = 1 }: { ids: string[]; scope: Scope; dept
   return (
     <Layer depth={depth}>
       <MatteSurface radius={radius.lg} padded={spacing.sm} testID="intro-tools">
-        {tools.map((x, i) => (
-          <Layer key={x.id} depth={depth + i * 0.5} testID={`intro-tool-${x.id}`}>
+        <MotionList>{tools.map((x, i) => (
+          <MotionItem key={x.id}><Layer key={x.id} depth={depth + i * 0.5} testID={`intro-tool-${x.id}`}>
             {/* nom de l'outil seul (sa description complète est trop longue pour un tableau d'une phrase) */}
             <HubToolRow tool={x} favorite={false} status={NO_LINE} />
-          </Layer>
-        ))}
+          </Layer></MotionItem>
+        ))}</MotionList>
       </MatteSurface>
     </Layer>
   );
@@ -251,11 +252,11 @@ function CareBook() {
     <Layer depth={1}>
       <MatteSurface radius={radius.lg} padded={spacing.sm} testID="intro-carebook">
         <Text variant="label" weight="bold">{tr('intro6.care.title', { name: tr('intro6.demo.kid') })}</Text>
-        {items.map((it, i) => (
-          <Layer key={it.id} depth={1 + i * 0.6} style={i ? { borderTopWidth: 1, borderTopColor: t.material.lines.separator } : undefined}>
+        <MotionList>{items.map((it, i) => (
+          <MotionItem key={it.id}><Layer key={it.id} depth={1 + i * 0.6} style={i ? { borderTopWidth: 1, borderTopColor: t.material.lines.separator } : undefined}>
             <CareRow item={it} author={nanny} />
-          </Layer>
-        ))}
+          </Layer></MotionItem>
+        ))}</MotionList>
       </MatteSurface>
     </Layer>
   );

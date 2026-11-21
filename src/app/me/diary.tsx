@@ -27,6 +27,7 @@ import { diaryPages, groupByMonth } from '@/lib/domain/diary';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, spacing, typography } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const ERR: Record<'empty' | 'mood' | 'long', TKey> = { empty: 'dy.errEmpty', mood: 'dy.errMood', long: 'dy.errLong' };
 const editorial = { fontFamily: typography.editorial.fontFamily, fontSize: typography.editorial.fontSize, lineHeight: typography.editorial.lineHeight, letterSpacing: typography.editorial.letterSpacing };
@@ -122,14 +123,14 @@ function DiaryPages() {
       {/* Synthèse HOMI Aura des SEULES pages cochées par la personne, après accord (docs/HOMI_AURA.md) */}
       {!loading && !failed && pages.length ? <AuraDiaryAnalysis pages={pages} /> : null}
 
-      {months.map((mo) => (
-        <View key={mo.key} style={{ gap: spacing.sm }}>
+      <MotionList style={{ gap: spacing.xs }}>{months.map((mo) => (
+        <MotionItem key={mo.key}><View key={mo.key} style={{ gap: spacing.sm }}>
           <Text accessibilityRole="header" style={[editorial, { color: t.colors.text, marginTop: spacing.sm }]} maxFontSizeMultiplier={typography.editorial.maxScale}>{capitalize(formatDate(mo.pages[0].checked_at, { month: 'long', year: 'numeric' }))}</Text>
-          {mo.pages.map((pg) => (
-            <EntryRow key={pg.id} m={pg} testID="diary-page" onOpen={() => router.push({ pathname: '/me/mood/[id]', params: { id: pg.id } })} />
-          ))}
-        </View>
-      ))}
+          <MotionList style={{ gap: spacing.sm }}>{mo.pages.map((pg) => (
+            <MotionItem key={pg.id}><EntryRow key={pg.id} m={pg} testID="diary-page" onOpen={() => router.push({ pathname: '/me/mood/[id]', params: { id: pg.id } })} /></MotionItem>
+          ))}</MotionList>
+        </View></MotionItem>
+      ))}</MotionList>
       <View style={{ height: spacing.lg }} />
     </Screen>
   );

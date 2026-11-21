@@ -67,6 +67,7 @@ import {
   auraMode, catalogForServer, creditActionFor, defaultThemeFor, featuredFor, localReply, themeName, themeSuggestions, toAuraTheme,
   type AuraAction, type AuraMode, type AuraTheme, type LocalReply,
 } from './model';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Reply =
   | { kind: 'ai'; answer: string; actions: AuraAction[]; footer: string; charged: boolean; cost: number; replaced: boolean; demo: boolean }
@@ -415,7 +416,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       {featured.length ? (
         <View testID="aura-featured">
           <Text variant="caption" muted style={{ letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>{tr('aura.featured')}</Text>
-          {featured.map((tool) => <ListRow key={tool.id} icon={tool.icon} title={tool.label} subtitle={tool.sub} onPress={() => openTool(tool)} testID={`aura-featured-${tool.id}`} />)}
+          <MotionList>{featured.map((tool) => <MotionItem key={tool.id}><ListRow key={tool.id} icon={tool.icon} title={tool.label} subtitle={tool.sub} onPress={() => openTool(tool)} testID={`aura-featured-${tool.id}`} /></MotionItem>)}</MotionList>
         </View>
       ) : null}
     </View>
@@ -580,9 +581,9 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, bot, voi
       <View style={[bubble, { flex: 1 }]} testID="aura-local-reply" accessibilityLiveRegion="polite">
         <Text variant="small">{tr('aura.local.intro')}</Text>
         {reply.tools.length ? <Text variant="label">{tr('aura.local.tools')}</Text> : null}
-        {reply.tools.map((tool) => (
-          <Button key={tool.id} label={tr('aura.act.open', { name: tool.label })} icon="arrow-right" variant="secondary" full onPress={() => openTool(tool)} testID={`aura-local-open-${tool.id}`} />
-        ))}
+        <MotionList>{reply.tools.map((tool) => (
+          <MotionItem key={tool.id}><Button key={tool.id} label={tr('aura.act.open', { name: tool.label })} icon="arrow-right" variant="secondary" full onPress={() => openTool(tool)} testID={`aura-local-open-${tool.id}`} /></MotionItem>
+        ))}</MotionList>
         {reply.article ? (
           <View style={{ gap: 4 }} testID="aura-local-article">
             <Text variant="label">{tr('aura.local.article')}</Text>

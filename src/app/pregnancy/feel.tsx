@@ -28,6 +28,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const FREQS: Frequency[] = ['once', 'several', 'continuous'];
 const symLabel = (k: string) => tr(`care.sym.${k}` as TKey);
@@ -155,8 +156,8 @@ export default function Feel() {
 
       <SectionTitle title={tr('care.feel.history')} />
       {!logs.length ? <EmptyState icon="feather" title={tr('care.feel.none')} body={tr('care.feel.noneBody')} /> : null}
-      {logs.slice(0, 30).map((l) => (
-        <Card key={l.id} style={{ paddingVertical: spacing.sm }}>
+      <MotionList>{logs.slice(0, 30).map((l) => (
+        <MotionItem key={l.id}><Card key={l.id} style={{ paddingVertical: spacing.sm }}>
           <View testID={`feel-entry-${l.id}`}>
             <Row style={{ alignItems: 'center' }}>
               <View style={{ flex: 1 }}>
@@ -172,8 +173,8 @@ export default function Feel() {
               <Button label={tr('common.delete')} size="sm" variant="ghost" onPress={() => remove(l)} testID={`feel-delete-${l.id}`} />
             </Row>
           </View>
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
       <Text variant="caption" muted>{NOT_ADVICE}</Text>
       <Tappable accessibilityRole="link" onPress={() => router.push('/emergency')} style={{ minHeight: 40, justifyContent: 'center' }}>
         <Text variant="small" weight="bold" color={t.colors.primary}>{tr('care.feel.emergencyLink')}</Text>

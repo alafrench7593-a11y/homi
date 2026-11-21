@@ -51,6 +51,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { toISODate } from '@/lib/domain/dates';
 import { CATEGORY_GLOW, CATEGORY_INK, HOMI, HOMI_FILL, HOMI_WASH } from '@/features/homiColors';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Journey = 'baby' | 'child' | null | undefined;
 const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
@@ -502,31 +503,31 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
             {/* Ligne du temps */}
             <View pointerEvents="none" style={{ position: 'absolute', left: 0, width, top: SLEEP_Y + 10, height: 6, borderRadius: 3, backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)' }} />
             {/* Sommeils */}
-            {events.filter((e) => e.kind === 'sleep').map((e) => {
+            <MotionList>{events.filter((e) => e.kind === 'sleep').map((e) => {
               const x0 = xOf(e.start);
               const w = Math.max(10, xOf(e.end ?? e.start) - x0);
               return (
-                <Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }} hitSlop={{ top: 12, bottom: 12 }}
+                <MotionItem key={e.id}><Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }} hitSlop={{ top: 12, bottom: 12 }}
                   style={{ position: 'absolute', left: x0, top: SLEEP_Y, width: w, height: 26, borderRadius: 13, overflow: 'hidden' }}>
                   <LinearGradient colors={dark ? ['rgba(185,162,255,0.65)', 'rgba(140,120,240,0.55)'] : ['#B9A8FF', '#8E79EA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
                   {e.ongoing ? <View style={{ position: 'absolute', right: 3, top: 3, bottom: 3, width: 20, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.35)' }} /> : null}
                   {w > 28 ? <View style={{ position: 'absolute', left: 6, top: 4 }}><KindGlyph kind="sleep" color="#FFFFFF" size={17} /></View> : null}
-                </Pressable>
+                </Pressable></MotionItem>
               );
-            })}
+            })}</MotionList>
             {/* Autres événements */}
-            {points.map((e, i) => {
+            <MotionList>{points.map((e, i) => {
               const x = xOf(e.start) - BUBBLE / 2;
               const top = lanes[i] === 0 ? 40 : 6;
               return (
-                <Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }}
+                <MotionItem key={e.id}><Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }}
                   style={({ pressed }) => ({ position: 'absolute', left: x, top, width: BUBBLE, height: BUBBLE, borderRadius: BUBBLE / 2, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 1.12 : 1 }],
                     backgroundColor: dark ? 'rgba(20,16,44,0.82)' : 'rgba(255,255,255,0.92)', borderWidth: 1.5, borderColor: ink(e.kind),
                     shadowColor: ink(e.kind), shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
                   <KindGlyph kind={e.kind} color={ink(e.kind)} size={17} />
-                </Pressable>
+                </Pressable></MotionItem>
               );
-            })}
+            })}</MotionList>
             {/* Heure actuelle */}
             {nowX >= 0 && nowX <= width ? (
               <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 0, bottom: 16, width: 2, borderRadius: 1, backgroundColor: dark ? HOMI.champagne : HOMI.prune }} testID="cocoon-now-line">

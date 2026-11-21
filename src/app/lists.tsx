@@ -21,6 +21,7 @@ import { Tappable } from '@/components/Tappable';
 import { progressOf } from '@/lib/domain/quickPicks';
 import { t as tr } from '@/i18n';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type TemplateKind = Exclude<ChecklistKind, 'custom'>;
 const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : (CHECKLIST_TEMPLATES[kind].icon as IconName));
@@ -135,8 +136,8 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
           <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title={tr('u2.lists.load_error')} />
         ) : (
           <View>
-            {[...todo, ...(showDone ? doneList : [])].map((item) => (
-              <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <MotionList>{[...todo, ...(showDone ? doneList : [])].map((item) => (
+              <MotionItem key={item.id}><View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Tappable
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: item.done }}
@@ -150,8 +151,8 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
                   <Text style={{ flex: 1, textDecorationLine: item.done ? 'line-through' : 'none' }} muted={item.done}>{item.label}</Text>
                 </Tappable>
                 <IconButton icon="trash-2" size={17} color={t.colors.textMuted} label={tr('u2.lists.remove_item', { label: item.label })} onPress={() => removeItem(item)} />
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
             {!items?.length && <Text muted>{tr('u2.lists.empty')}</Text>}
             {items?.length && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>{tr('u2.lists.all_done')}</Text> : null}
             {doneList.length ? (
@@ -264,16 +265,16 @@ export default function ListsScreen() {
           {open && <ChecklistDetail key={open.id} list={open} onClose={() => setOpenId(null)} />}
           <SectionTitle title={open ? tr('u2.lists.others') : tr('u2.lists.yours')} />
           <Card>
-            {lists.filter((l) => l.id !== openId).map((l) => {
+            <MotionList>{lists.filter((l) => l.id !== openId).map((l) => {
               const items = (allItems ?? []).filter((i) => i.checklist_id === l.id);
               const done = items.filter((i) => i.done).length;
               return (
-                <View key={l.id} style={{ gap: 4, paddingBottom: spacing.xs }}>
+                <MotionItem key={l.id}><View key={l.id} style={{ gap: 4, paddingBottom: spacing.xs }}>
                   <ListRow icon={iconOf(l.kind)} title={l.title} subtitle={items.length ? tr('u2.lists.done_of', { done, total: items.length, count: done }) : tr('u2.lists.blank')} onPress={() => setOpenId(l.id)} />
                   {items.length > 0 && <ProgressBar done={done} total={items.length} />}
-                </View>
+                </View></MotionItem>
               );
-            })}
+            })}</MotionList>
             {lists.every((l) => l.id === openId) && <Text muted>{tr('u2.lists.no_other')}</Text>}
           </Card>
         </>

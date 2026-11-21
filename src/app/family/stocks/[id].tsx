@@ -24,6 +24,7 @@ import { categoryInfo, productLabelOf } from '@/lib/domain/stocks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 interface StockEvent { id: string; type: string; actor_id: string | null; payload: Record<string, unknown>; created_at: string }
 const EVENT_LABEL: Record<string, TKey> = {
@@ -141,17 +142,17 @@ export default function StockDetail() {
       {(events.data ?? []).length ? (
         <Cascade index={3} style={{ gap: spacing.xs }}>
           <Text variant="heading" accessibilityRole="header">{tr('stk.history')}</Text>
-          <View testID="stock-history" style={{ gap: spacing.xs }}>
+          <MotionList testID="stock-history" style={{ gap: spacing.xs }}>
             {(events.data ?? []).filter((e) => EVENT_LABEL[e.type]).map((e) => (
-              <View key={e.id} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
+              <MotionItem key={e.id}><View key={e.id} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }}>
                 <Icon name={e.type === 'stock.purchase_confirmed' ? 'check-circle' : e.type === 'stock.low' ? 'zap' : e.type === 'stock.restock_confirmed' ? 'send' : 'clock'} size={16} color={t.colors.primary} />
                 <View style={{ flex: 1 }}>
                   <Text variant="small" weight="medium">{tr(EVENT_LABEL[e.type], { qty: formatStockQty((e.payload.qty_after ?? null) as number | null, s.unit) })}</Text>
                   <Text variant="caption" muted>{tr('mis.ev.by', { person: e.actor_id ? labelOf(e.actor_id) : tr('stk.ev.homi'), when: formatDate(e.created_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</Text>
                 </View>
-              </View>
+              </View></MotionItem>
             ))}
-          </View>
+          </MotionList>
         </Cascade>
       ) : null}
 

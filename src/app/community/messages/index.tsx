@@ -15,6 +15,7 @@ import { useDmRealtime, useInbox } from '@/lib/data/hooks-messages';
 import { splitInbox } from '@/lib/domain/messages';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Tab = 'conversations' | 'requests';
 
@@ -49,7 +50,7 @@ export default function MessagesInbox() {
         <ErrorView error={inbox.error} onRetry={() => void inbox.refetch()} />
       ) : list.length ? (
         <Card testID={tab === 'requests' ? 'dm-requests' : 'dm-inbox'}>
-          {list.map((c, i) => <ConversationRow key={c.id} c={c} last={i === list.length - 1} />)}
+          <MotionList>{list.map((c, i) => <MotionItem key={c.id}><ConversationRow key={c.id} c={c} last={i === list.length - 1} /></MotionItem>)}</MotionList>
         </Card>
       ) : tab === 'requests' ? (
         <EmptyState icon="inbox" title={tr('dm.inbox.noRequestsTitle')} body={tr('dm.inbox.noRequestsBody')} />

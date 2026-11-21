@@ -19,6 +19,7 @@ import { useAddQuestions, useConsultationQuestions } from '@/lib/data/hooks-fert
 import { useDeleteIssue, useFeedingIssues, useRecentFeeds, useSaveIssue } from '@/lib/data/hooks-feeding';
 import { FeedingChildPicker, useFeedingChild } from '@/features/feeding/ui';
 import { byDay, ISSUE_KINDS, issueLine, kindLabel, nearestFeed, suggestedQuestions, type FeedingIssue, type FeedLite, type IssueKind, type Side } from '@/features/feeding/issues';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type SideOpt = Side | 'none';
 
@@ -109,7 +110,7 @@ export default function FeedingDifficulties() {
         {(questions.data ?? []).length ? (
           <View style={{ gap: 2 }} testID="bfi-q-list">
             <Text variant="label">{tr('bfi.q.mine', { count: (questions.data ?? []).length })}</Text>
-            {(questions.data ?? []).slice(0, 6).map((x) => <Text key={x.id} variant="small" muted={x.done} style={{ textDecorationLine: x.done ? 'line-through' : 'none' }}>• {x.question}</Text>)}
+            <MotionList style={{ gap: 2 }}>{(questions.data ?? []).slice(0, 6).map((x) => <MotionItem key={x.id}><Text key={x.id} variant="small" muted={x.done} style={{ textDecorationLine: x.done ? 'line-through' : 'none' }}>• {x.question}</Text></MotionItem>)}</MotionList>
           </View>
         ) : null}
         {suggestions.length ? <Text variant="label">{tr('bfi.q.suggested')}</Text> : null}

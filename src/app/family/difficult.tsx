@@ -20,6 +20,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate, formatTime } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const hm = (iso: string) => formatTime(iso);
 
@@ -79,19 +80,19 @@ export default function DifficultDay() {
 
       <SectionTitle title={tr('u2.difficult.essential_today')} />
       {essential.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.no_essential')}</Text> : null}
-      {essential.map((task) => <TaskRow key={task.id} task={task} onEdit={setEditing} />)}
+      <MotionList>{essential.map((task) => <MotionItem key={task.id}><TaskRow key={task.id} task={task} onEdit={setEditing} /></MotionItem>)}</MotionList>
 
       {todayAppointments.length ? (
         <>
           <SectionTitle title={tr('u2.difficult.dont_forget')} />
-          <Card>{todayAppointments.map((a) => <ListRow key={a.id} icon="calendar" title={a.title} subtitle={`${hm(a.starts_at)}${a.location_label ? ` · ${a.location_label}` : ''}`} />)}</Card>
+          <Card><MotionList>{todayAppointments.map((a) => <MotionItem key={a.id}><ListRow key={a.id} icon="calendar" title={a.title} subtitle={`${hm(a.starts_at)}${a.location_label ? ` · ${a.location_label}` : ''}`} /></MotionItem>)}</MotionList></Card>
         </>
       ) : null}
 
       <SectionTitle title={tr('u2.difficult.can_wait_title')} />
       {plan.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.nothing_postpone')}</Text> : (
         <Card>
-          {plan.map((p) => <ListRow key={p.id} icon="skip-forward" title={p.title} subtitle={tr('u2.difficult.proposed', { when: formatDate(p.to, { weekday: 'long', hour: '2-digit', minute: '2-digit' }) })} />)}
+          <MotionList>{plan.map((p) => <MotionItem key={p.id}><ListRow key={p.id} icon="skip-forward" title={p.title} subtitle={tr('u2.difficult.proposed', { when: formatDate(p.to, { weekday: 'long', hour: '2-digit', minute: '2-digit' }) })} /></MotionItem>)}</MotionList>
           <Button label={tr('u2.difficult.validate')} icon="check" size="sm" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={applyPlan} loading={batch.isPending} />
           <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u2.difficult.no_postpone_without')}</Text>
         </Card>
@@ -102,8 +103,8 @@ export default function DifficultDay() {
 
       <SectionTitle title={tr('u2.difficult.who_helps')} />
       <Card>
-        {available.map((r) => <ListRow key={r.id} icon="check-circle" title={tr('u2.difficult.available', { name: labelOf(r.from_user) })} subtitle={r.message ?? undefined} />)}
-        {(contacts ?? []).filter((c) => c.kind === 'trusted').slice(0, 4).map((c) => <ListRow key={c.id} icon="user" title={c.name} subtitle={[c.relation, c.phone].filter(Boolean).join(' · ') || undefined} onPress={c.phone ? () => router.push('/postpartum/support') : undefined} />)}
+        <MotionList>{available.map((r) => <MotionItem key={r.id}><ListRow key={r.id} icon="check-circle" title={tr('u2.difficult.available', { name: labelOf(r.from_user) })} subtitle={r.message ?? undefined} /></MotionItem>)}</MotionList>
+        <MotionList>{(contacts ?? []).filter((c) => c.kind === 'trusted').slice(0, 4).map((c) => <MotionItem key={c.id}><ListRow key={c.id} icon="user" title={c.name} subtitle={[c.relation, c.phone].filter(Boolean).join(' · ') || undefined} onPress={c.phone ? () => router.push('/postpartum/support') : undefined} /></MotionItem>)}</MotionList>
         {!available.length && !(contacts ?? []).some((c) => c.kind === 'trusted') ? <Text variant="small" muted>{tr('u2.difficult.add_trusted')}</Text> : null}
         <ListRow icon="users" title={tr('u2.difficult.my_trusted')} subtitle={tr('u2.difficult.support_plan')} onPress={() => router.push('/postpartum/support')} />
       </Card>

@@ -24,6 +24,7 @@ import {
   useCareChild, useCareMemberNames, useCarePhotoUrl, useCarePhotos, useCareSettings, useDeleteCarePhoto, usePhotoToMemories, type CarePhoto,
 } from '@/lib/data/hooks-nounou';
 import { CarePhotoThumb, useAuthorLabel } from '@/features/nounou/CareUI';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Enregistre la photo dans la photothèque du parent (ajout seulement), puis efface la copie temporaire. */
 async function saveToParentLibrary(path: string): Promise<'saved' | 'denied'> {
@@ -117,18 +118,18 @@ export default function CarePhotos() {
       ) : groups.map(([d, list]) => (
         <Card key={d}>
           <Text weight="bold" style={{ marginBottom: spacing.xs }}>{formatDateFr(d)}</Text>
-          <View style={{ gap: spacing.sm }}>
+          <MotionList style={{ gap: spacing.sm }}>
             {list.map((p) => (
-              <View key={p.id} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }} testID="care-album-item">
+              <MotionItem key={p.id}><View key={p.id} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }} testID="care-album-item">
                 <CarePhotoThumb path={p.storage_path} size={96} onPress={() => setOpen(p)} label={tr('nn.album.openA11y', { time: formatTime(p.taken_at) })} />
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text weight="bold">{formatTime(p.taken_at)}</Text>
                   <Text variant="small" muted>{tr('nn.by', { name: authorOf(p.author_id, p.origin) })}</Text>
                   {p.caption ? <Text variant="small">{p.caption}</Text> : null}
                 </View>
-              </View>
+              </View></MotionItem>
             ))}
-          </View>
+          </MotionList>
         </Card>
       ))}
       {open ? (

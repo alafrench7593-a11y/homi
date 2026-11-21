@@ -27,6 +27,7 @@ import { MySubscriptionSection } from '@/features/subscription';
 import { localeTag, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Space = 'community' | 'account';
 
@@ -115,7 +116,7 @@ function PrivateAccount() {
       <SectionTitle title={tr('cm3.moi.profiles')} />
       <Card>
         {pregnancy ? <ListRow icon="moon" title={tr('cm3.moi.pregnancy')} subtitle={pregnancyProgress(pregnancy.due_date).label} onPress={() => router.push('/pregnancy')} /> : null}
-        {(children ?? []).map((c) => <ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} />)}
+        <MotionList>{(children ?? []).map((c) => <MotionItem key={c.id}><ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} /></MotionItem>)}</MotionList>
         <ListRow icon="plus" title={tr('cm3.moi.addProfile')} onPress={() => router.push('/profiles/new')} />
         <ListRow icon="compass" title={tr('cm3.moi.journeys')} subtitle={tr('cm3.moi.journeysSub')} onPress={() => router.push('/journeys')} />
         <ListRow icon="heart" title={tr('cm3.moi.me')} subtitle={tr('cm3.moi.meSub')} onPress={() => router.push('/me')} />

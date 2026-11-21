@@ -22,6 +22,7 @@ import { dayShort, slotsText } from '@/features/activities/format';
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const DAYS: Weekday[] = [1, 2, 3, 4, 5, 6, 7];
 
@@ -48,10 +49,10 @@ function ActivitiesBody({ child }: { child: Child }) {
   return (
     <Screen back title={tr('p2.act.title')} subtitle={tr('p2.act.sub', { name: child.first_name })}
       action={{ label: tr('p2.act.add'), icon: 'plus', onPress: () => setOpen({ a: null }), testID: 'act-add' }}>
-      {list.length ? list.map((a) => {
+      {list.length ? <MotionList>{list.map((a) => {
         const next = nextSession(a, now);
         return (
-          <Card key={a.id} onPress={a._pending ? undefined : () => setOpen({ a })} testID={`act-card-${a.id}`} accessibilityLabel={`${a.name}. ${slotsText(a.slots)}`}>
+          <MotionItem key={a.id}><Card key={a.id} onPress={a._pending ? undefined : () => setOpen({ a })} testID={`act-card-${a.id}`} accessibilityLabel={`${a.name}. ${slotsText(a.slots)}`}>
             <Row style={{ alignItems: 'flex-start' }}>
               <Icon name="award" color={t.colors.primary} />
               <View style={{ flex: 1, gap: 2 }}>
@@ -64,9 +65,9 @@ function ActivitiesBody({ child }: { child: Child }) {
               </View>
               {a.reminder_minutes ? <Icon name="bell" size={16} color={t.colors.textMuted} /> : null}
             </Row>
-          </Card>
+          </Card></MotionItem>
         );
-      }) : <EmptyState icon="award" title={tr('p2.act.emptyT')} body={tr('p2.act.emptyB', { name: child.first_name })} action={{ label: tr('p2.act.add'), icon: 'plus', onPress: () => setOpen({ a: null }) }} />}
+      })}</MotionList> : <EmptyState icon="award" title={tr('p2.act.emptyT')} body={tr('p2.act.emptyB', { name: child.first_name })} action={{ label: tr('p2.act.add'), icon: 'plus', onPress: () => setOpen({ a: null }) }} />}
       <ListRow icon="calendar" title={tr('p2.act.agenda')} subtitle={tr('p2.act.agendaSub')} onPress={() => router.push('/calendar' as never)} testID="act-agenda" />
       <ActivitySheet open={open} child={child} onClose={() => setOpen(null)} />
     </Screen>

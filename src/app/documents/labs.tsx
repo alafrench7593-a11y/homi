@@ -22,6 +22,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { cleanName, curvePoints, formatLabValue, groupByAnalysis, knownNames, parseLabValue, validateLab, type AnalysisGroup, type LabResult } from '@/features/labs/domain';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const LAB_CATEGORIES = new Set(['blood_test', 'exam_result', 'report', 'prenatal', 'pregnancy_report', 'postnatal', 'consultation', 'other', 'custom']);
 const DAY = { day: 'numeric', month: 'short', year: 'numeric' } as const;
@@ -166,10 +167,10 @@ export default function LabResults() {
       {q.data && !groups.length ? (
         <EmptyState icon="activity" title={tr('lab.emptyTitle')} body={tr('lab.emptyBody')} action={{ label: tr('lab.add'), onPress: () => setSheet({ lab: null, preset: null }) }} />
       ) : null}
-      {groups.map((g) => (
-        <AnalysisCard key={g.key} g={g} open={open === g.key} onToggle={() => setOpen(open === g.key ? null : g.key)} docTitle={docTitle}
-          onEdit={(r) => setSheet({ lab: r, preset: null })} onAdd={() => setSheet({ lab: null, preset: { name: g.name, docId: fromDoc?.id ?? null, unit: g.unit, reference: g.last.lab_reference } })} />
-      ))}
+      <MotionList>{groups.map((g) => (
+        <MotionItem key={g.key}><AnalysisCard key={g.key} g={g} open={open === g.key} onToggle={() => setOpen(open === g.key ? null : g.key)} docTitle={docTitle}
+          onEdit={(r) => setSheet({ lab: r, preset: null })} onAdd={() => setSheet({ lab: null, preset: { name: g.name, docId: fromDoc?.id ?? null, unit: g.unit, reference: g.last.lab_reference } })} /></MotionItem>
+      ))}</MotionList>
       <View testID="lab-no-advice"><Banner tone="info" icon="info">{tr('lab.noAdvice')}</Banner></View>
       <Text variant="caption" muted>{tr('lab.private')}</Text>
       <Button label={tr('lab.toDocuments')} variant="ghost" icon="folder" onPress={() => router.push('/documents')} />

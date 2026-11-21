@@ -21,6 +21,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr } from '@/i18n';
 import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 function Big({ icon, label, onPress, tone }: { icon: IconName; label: string; onPress: () => void; tone?: 'danger' }) {
   const t = useTheme();
@@ -72,7 +73,7 @@ export default function OrgEmergency() {
       <Big icon="phone" label={tr('u2.urgent.call_trusted')} onPress={() => setShowContacts((v) => !v)} />
       {showContacts ? (
         <View style={{ gap: spacing.xs }}>
-          {(contacts ?? []).filter((c) => c.phone).map((c) => <Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => callNumber(c.phone!, toast)} />)}
+          <MotionList style={{ gap: spacing.xs }}>{(contacts ?? []).filter((c) => c.phone).map((c) => <MotionItem key={c.id}><Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => callNumber(c.phone!, toast)} /></MotionItem>)}</MotionList>
           {!(contacts ?? []).some((c) => c.phone) ? <Text>{tr('u2.urgent.no_number')}</Text> : null}
         </View>
       ) : null}

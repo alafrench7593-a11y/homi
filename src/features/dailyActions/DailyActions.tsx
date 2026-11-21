@@ -39,6 +39,7 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { alpha, radius, spacing } from '@/theme/tokens';
 import { CATEGORY_INK } from '@/features/homiColors';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export interface ActionModel { key: ActionKey; info: string; onOpen: () => void; onAdd: () => void; addLabel?: string; active?: boolean }
 
@@ -257,7 +258,7 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
 
       <Sheet visible={all} onClose={() => setAll(false)} title={title}>
         <View style={{ gap: spacing.xs }} testID="track-all">
-          {everything.map((m) => <Row key={m.key} m={{ ...m, onOpen: () => { setAll(false); m.onOpen(); }, onAdd: () => { setAll(false); m.onAdd(); } }} />)}
+          <MotionList style={{ gap: spacing.xs }}>{everything.map((m) => <MotionItem key={m.key}><Row key={m.key} m={{ ...m, onOpen: () => { setAll(false); m.onOpen(); }, onAdd: () => { setAll(false); m.onAdd(); } }} /></MotionItem>)}</MotionList>
           <Button label={tr('da.allTools')} icon="grid" variant="ghost" onPress={() => { setAll(false); router.push('/tools'); }} />
           <ToggleRow label={tr('trk.cards.haptics')} hint={tr('trk.cards.hapticsHint')} value={hapticsOn} onChange={setHaptics} />
         </View>

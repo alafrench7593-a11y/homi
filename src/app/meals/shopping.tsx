@@ -29,6 +29,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const RECIPE_UNITS = ['g', 'ml', 'u', 'cs', 'cc', 'pincee'];
 const qtyText = (i: ShoppingItem) => (i.qty == null ? '' : i.unit && !RECIPE_UNITS.includes(i.unit) ? formatStockQty(i.qty, i.unit) : formatQty(Number(i.qty), (i.unit ?? null) as Unit | null));
@@ -181,12 +182,12 @@ export default function Shopping() {
 
       {(members?.length ?? 0) > 1 ? <Text variant="small" muted testID="shopping-shared">{tr('rc.shopping.shared')}</Text> : <Text variant="small" muted>{tr('rc.shopping.shareHint')}</Text>}
       <Text variant="caption" muted>{tr('shp.linkNote')}</Text>
-      {STOCK_CATEGORIES.filter((c) => byCategory.some((i) => i.category === c.key)).map((c, n) => (
-        <Cascade key={c.key} index={n} style={{ gap: 2 }}>
+      <MotionList>{STOCK_CATEGORIES.filter((c) => byCategory.some((i) => i.category === c.key)).map((c, n) => (
+        <MotionItem key={c.key}><Cascade key={c.key} index={n} style={{ gap: 2 }}>
           <SectionTitle title={tr(c.label)} />
           <Card>{byCategory.filter((i) => i.category === c.key).map(row)}</Card>
-        </Cascade>
-      ))}
+        </Cascade></MotionItem>
+      ))}</MotionList>
       {aisles.map((a, n) => (
         <Cascade key={a} index={n + 1} style={{ gap: 2 }}>
           <SectionTitle title={tr(`rc.aisle.${a}` as TKey)} />

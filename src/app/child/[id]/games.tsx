@@ -25,6 +25,7 @@ import { ChildToolGate, useParentChild } from '@/features/childTools/ChildToolGa
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const DURATIONS: Duration[] = ['short', 'medium', 'long'];
 const PLACES: PlaceFilter[] = ['in', 'out'];
@@ -74,7 +75,7 @@ function GamesBody({ child }: { child: Child }) {
       </ScrollView>
       <Text variant="caption" muted testID="gm-count">{tr('p2.gm.count', { count: list.length })}</Text>
       <View style={{ gap: spacing.sm }} testID="gm-list">
-        {list.length ? list.map((g) => <GameCard key={g.id} g={g} lang={lang} m={markOf(marks, g.id)} onOpen={() => setOpen(g)} onFav={() => void mark(g, 'favorite')} />)
+        {list.length ? <MotionList style={{ gap: spacing.sm }}>{list.map((g) => <MotionItem key={g.id}><GameCard key={g.id} g={g} lang={lang} m={markOf(marks, g.id)} onOpen={() => setOpen(g)} onFav={() => void mark(g, 'favorite')} /></MotionItem>)}</MotionList>
           : <Text muted variant="small" testID="gm-none">{favOnly ? tr('p2.gm.noFav') : tr('p2.gm.none')}</Text>}
       </View>
       <ListRow icon="book-open" title={tr('p2.gm.readMore')} subtitle={tr('p2.gm.readMoreSub')} onPress={() => router.push('/guide/activities' as never)} testID="gm-guide" />

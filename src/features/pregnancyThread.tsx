@@ -12,6 +12,7 @@ import { tint } from '@/components/ToolGlyph';
 import type { PregThreadItem } from '@/lib/domain/pregnancyThread';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const NODE = 20;
 const ICON: Record<PregThreadItem['kind'], IconName> = { today: 'heart', echo: 'radio', appt: 'calendar', due: 'star' };
@@ -58,7 +59,7 @@ export function PregnancyThread({ title, caption, items, labelOf, onPress, testI
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID={testID}>
         <Text variant="heading">{title}</Text>
         {caption ? <Text variant="caption" muted>{caption}</Text> : null}
-        <View style={{ marginTop: spacing.xs }}>
+        <MotionList style={{ marginTop: spacing.xs }}>
           {items.map((it, i) => {
             const last = i === items.length - 1;
             const l = labelOf(it);
@@ -67,7 +68,7 @@ export function PregnancyThread({ title, caption, items, labelOf, onPress, testI
             const color = it.state === 'done' ? gold : isToday ? accent : isNext ? accent : line;
             const tappable = !!onPress && !isToday && it.kind !== 'due';
             return (
-              <View key={it.key} style={{ flexDirection: 'row', gap: spacing.md }}>
+              <MotionItem key={it.key}><View key={it.key} style={{ flexDirection: 'row', gap: spacing.md }}>
                 <View style={{ width: NODE, alignItems: 'center' }}>
                   {isToday || isNext ? <Pulse color={accent} icon={ICON[it.kind]} /> : (
                     <View style={{ width: NODE, height: NODE, borderRadius: NODE, alignItems: 'center', justifyContent: 'center',
@@ -98,10 +99,10 @@ export function PregnancyThread({ title, caption, items, labelOf, onPress, testI
                     {tappable ? <Icon name="chevron-right" size={16} color={t.colors.textMuted} /> : null}
                   </View>
                 </Tappable>
-              </View>
+              </View></MotionItem>
             );
           })}
-        </View>
+        </MotionList>
       </View>
     </GlassSurface>
   );

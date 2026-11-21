@@ -20,6 +20,7 @@ import { isPremiumRequired } from '@/lib/premium/features';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Groups() {
   const t = useTheme();
@@ -92,7 +93,7 @@ export default function Groups() {
 
       <SectionTitle title={tr('cm3.groups.mine')} />
       {groups.isLoading && !groups.data ? <Skeleton kind="list" rows={2} /> : mine.length ? (
-        <View style={{ gap: spacing.sm }}>{mine.map((g) => <GroupCard key={g.id} g={g} compact />)}</View>
+        <MotionList style={{ gap: spacing.sm }}>{mine.map((g) => <MotionItem key={g.id}><GroupCard key={g.id} g={g} compact /></MotionItem>)}</MotionList>
       ) : <EmptyState icon="users" title={tr('cm3.groups.emptyTitle')} body={tr('cm3.groups.emptyBody')} />}
 
       <Card tone="soft" onPress={openCreate} accessibilityLabel={tr('cm3.groups.createA11y')} testID="group-create">
@@ -103,7 +104,7 @@ export default function Groups() {
       {themes.length ? (
         <>
           <SectionTitle title={tr('cm3.groups.themes')} />
-          <View style={{ gap: spacing.sm }}>{themes.map((g) => <GroupCard key={g.id} g={g} />)}</View>
+          <MotionList style={{ gap: spacing.sm }}>{themes.map((g) => <MotionItem key={g.id}><GroupCard key={g.id} g={g} /></MotionItem>)}</MotionList>
         </>
       ) : null}
 

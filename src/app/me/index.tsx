@@ -20,6 +20,7 @@ import { toolName } from '@/lib/domain/toolCatalog';
 import { formatDuration } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Thèmes de récupération, reliés aux articles de la bibliothèque quand ils existent. */
 const rehab = (): { key: string; icon: IconName; title: string; text: string; slugs: string[]; tags: string[] }[] => [
@@ -85,10 +86,10 @@ export default function MeSpace() {
 
       <SectionTitle title={tr('u8.me.recover')} />
       <Text variant="small" muted>{tr('u8.me.recoverIntro')}</Text>
-      {rehab().map((r) => {
+      <MotionList>{rehab().map((r) => {
         const related = (articles ?? []).filter((a) => r.slugs.includes(a.slug) || a.tags.some((tag) => r.tags.includes(tag)));
         return (
-          <Card key={r.key} tone="lavender">
+          <MotionItem key={r.key}><Card key={r.key} tone="lavender">
             <Row style={{ alignItems: 'flex-start' }}>
               <Icon name={r.icon} color={t.colors.lavender} />
               <View style={{ flex: 1, gap: 6 }}>
@@ -97,15 +98,15 @@ export default function MeSpace() {
               </View>
             </Row>
             {related.length > 0 && (
-              <View style={{ marginTop: spacing.xs }}>
+              <MotionList style={{ marginTop: spacing.xs }}>
                 {related.slice(0, 2).map((a) => (
-                  <ListRow key={a.id} icon="book-open" title={a.title} subtitle={tr('u8.me.readArticle')} onPress={() => router.push(`/article/${a.slug}` as never)} />
+                  <MotionItem key={a.id}><ListRow key={a.id} icon="book-open" title={a.title} subtitle={tr('u8.me.readArticle')} onPress={() => router.push(`/article/${a.slug}` as never)} /></MotionItem>
                 ))}
-              </View>
+              </MotionList>
             )}
-          </Card>
+          </Card></MotionItem>
         );
-      })}
+      })}</MotionList>
 
       <Banner tone="info" title={tr('u8.me.whenTitle')}>
         {tr('u8.me.whenBody')}

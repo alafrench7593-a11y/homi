@@ -20,6 +20,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { BABY_STOCK_CATEGORIES, categoryInfo, needsAttention, STOCK_CATEGORIES } from '@/lib/domain/stocks';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export function StocksScreen({ baby = false }: { baby?: boolean }) {
   const q = useStocks();
@@ -68,7 +69,7 @@ export function StocksScreen({ baby = false }: { baby?: boolean }) {
           {attention.length ? (
             <View style={{ gap: spacing.sm }} testID="stocks-attention">
               <SectionTitle title={tr('stk.section.attention')} subtitle={tr('stk.section.attentionSub')} />
-              {attention.map((s, i) => <Cascade key={s.id} index={i}><StockCard stock={s} labelOf={labelOf} onOpen={() => open(s.id)} /></Cascade>)}
+              <MotionList style={{ gap: spacing.sm }}>{attention.map((s, i) => <MotionItem key={s.id}><Cascade key={s.id} index={i}><StockCard stock={s} labelOf={labelOf} onOpen={() => open(s.id)} /></Cascade></MotionItem>)}</MotionList>
             </View>
           ) : null}
           {pantryCount ? <Button label={tr('stk.pantry.count', { count: pantryCount })} icon="book-open" variant="ghost" onPress={() => router.push('/meals/pantry')} testID="stock-open-pantry" /> : null}
@@ -78,7 +79,7 @@ export function StocksScreen({ baby = false }: { baby?: boolean }) {
             return (
               <View key={c.key} style={{ gap: spacing.sm }}>
                 <SectionTitle title={tr(categoryInfo(c.key).label)} />
-                {items.map((s, i) => <Cascade key={s.id} index={i}><StockCard stock={s} labelOf={labelOf} onOpen={() => open(s.id)} /></Cascade>)}
+                <MotionList style={{ gap: spacing.sm }}>{items.map((s, i) => <MotionItem key={s.id}><Cascade key={s.id} index={i}><StockCard stock={s} labelOf={labelOf} onOpen={() => open(s.id)} /></Cascade></MotionItem>)}</MotionList>
               </View>
             );
           })}

@@ -17,6 +17,7 @@ import { useAvoidProducts, useSaveAvoid } from '@/features/avoidList';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function AvoidList() {
   const toast = useToast();
@@ -62,8 +63,8 @@ export default function AvoidList() {
       {q.data && !q.data.length ? <EmptyState icon="slash" title={tr('u8.avoid.empty')} body={tr('u8.avoid.emptyBody')} /> : null}
       {q.data?.length ? (
         <MatteSurface radius={radius.lg} testID="avoid-list">
-          {q.data.map((p, i) => (
-            <StaggerItem key={p.id} index={i}>
+          <MotionList>{q.data.map((p, i) => (
+            <MotionItem key={p.id}><StaggerItem key={p.id} index={i}>
               <ListRow icon="slash" title={p.product_name} subtitle={[p.barcode ? `EAN ${p.barcode}` : null, p.reason].filter(Boolean).join(' · ') || undefined}
                 right={(
                   <View>
@@ -74,8 +75,8 @@ export default function AvoidList() {
                     }} />
                   </View>
                 )} />
-            </StaggerItem>
-          ))}
+            </StaggerItem></MotionItem>
+          ))}</MotionList>
         </MatteSurface>
       ) : null}
     </Screen>

@@ -25,6 +25,7 @@ import { ALL_DOMAINS, type Domain, type HouseholdMember } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, formatDate, formatList, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const domainLabel = (d: Domain): { title: string; detail: string } => ({ title: tr(`u1.fam.dom.${d}.title` as TKey), detail: tr(`u1.fam.dom.${d}.detail` as TKey) });
 const roleLabel = (role: HouseholdMember['role']): string => tr(`u1.fam.role.${role}` as TKey);
@@ -379,8 +380,8 @@ function FamilyScreenSignedIn() {
               {pending.length ? (
                 <Card>
                   <Text weight="bold">{tr('u1.fam.pendingInvites')}</Text>
-                  {pending.map((i, idx) => (
-                    <View key={i.id}>
+                  <MotionList>{pending.map((i, idx) => (
+                    <MotionItem key={i.id}><View key={i.id}>
                       {idx > 0 ? <Divider /> : null}
                       <Row style={{ justifyContent: 'space-between', paddingVertical: 6 }}>
                         <View style={{ flex: 1 }}>
@@ -391,8 +392,8 @@ function FamilyScreenSignedIn() {
                           try { await revokeInvitation.mutateAsync(i.id); toast(tr('u1.fam.revoked')); } catch (e) { toast(friendlyError(e), 'error'); }
                         }} />
                       </Row>
-                    </View>
-                  ))}
+                    </View></MotionItem>
+                  ))}</MotionList>
                 </Card>
               ) : null}
             </>

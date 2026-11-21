@@ -28,6 +28,7 @@ import { callNumber } from '@/lib/links';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const KINDS: PmaKind[] = ['iiu', 'fiv', 'icsi', 'tec', 'stimulation', 'other'];
 const ROUTES: PmaRoute[] = ['injection', 'oral', 'vaginal', 'patch', 'nasal', 'other'];
@@ -214,17 +215,17 @@ export default function PmaTracker() {
           <SectionTitle title={tr('pma.meds')} action={current.ended_on ? undefined : tr('pma.addMed')} onAction={current.ended_on ? undefined : () => { setEditMed(undefined); setMedOpen(true); }} />
           {!meds.length ? <Card tone="soft"><Text muted>{tr('pma.noMeds')}</Text></Card> : (
             <Card padded={false}>
-              {meds.map((m) => {
+              <MotionList>{meds.map((m) => {
                 const done = takenToday.get(m.id) ?? [];
                 const live = activeMeds.includes(m);
                 return (
-                  <ListRow key={m.id} icon={m.route === 'injection' ? 'crosshair' : 'package'} testID={`pma-med-${m.id}`}
+                  <MotionItem key={m.id}><ListRow key={m.id} icon={m.route === 'injection' ? 'crosshair' : 'package'} testID={`pma-med-${m.id}`}
                     title={m.name}
                     subtitle={[tr(`pma.route.${m.route}` as TKey), m.dose_text, m.take_time ? hhmm(m.take_time) : null, done.length ? tr('pma.takenAt', { time: formatTime(done[0].happened_at) }) : null].filter(Boolean).join(' · ')}
                     onPress={() => { setEditMed(m); setMedOpen(true); }}
-                    right={live ? <Button label={done.length ? tr('pma.again') : tr('pma.take')} size="sm" variant={done.length ? 'secondary' : 'primary'} onPress={() => void addLog('dose', m.id)} testID={`pma-take-${m.id}`} /> : undefined} />
+                    right={live ? <Button label={done.length ? tr('pma.again') : tr('pma.take')} size="sm" variant={done.length ? 'secondary' : 'primary'} onPress={() => void addLog('dose', m.id)} testID={`pma-take-${m.id}`} /> : undefined} /></MotionItem>
                 );
-              })}
+              })}</MotionList>
             </Card>
           )}
           <Text variant="small" muted>{tr('pma.forgot')}</Text>
@@ -243,11 +244,11 @@ export default function PmaTracker() {
           <SectionTitle title={tr('pma.journal')} action={logs.length ? tr('pma.share') : undefined} onAction={logs.length ? () => void share() : undefined} />
           {!logs.length ? <Card tone="soft"><Text muted>{tr('pma.noLogs')}</Text></Card> : (
             <Card padded={false}>
-              {logs.slice(0, 80).map((l) => (
-                <ListRow key={l.id} icon={STEP_ICON[l.kind]} title={label(l)}
+              <MotionList>{logs.slice(0, 80).map((l) => (
+                <MotionItem key={l.id}><ListRow key={l.id} icon={STEP_ICON[l.kind]} title={label(l)}
                   subtitle={`${formatDate(l.happened_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${l.note ? ` · ${l.note}` : ''}`}
-                  onPress={() => void removeLog(l)} />
-              ))}
+                  onPress={() => void removeLog(l)} /></MotionItem>
+              ))}</MotionList>
             </Card>
           )}
 

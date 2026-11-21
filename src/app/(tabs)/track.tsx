@@ -24,6 +24,7 @@ import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { formatDuration } from '@/lib/domain/dates';
 import { Tappable } from '@/components/Tappable';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby' | 'child' | null }) {
   const t = useTheme();
@@ -191,11 +192,11 @@ export default function Track() {
         {subject.type === 'family' && (
           <View style={{ gap: spacing.md }}>
             {pregnancy && <PregnancyTracking />}
-            {(children ?? []).map((c) => (
-              <Card key={c.id} onPress={() => router.push(`/child/${c.id}`)}>
+            <MotionList style={{ gap: spacing.md }}>{(children ?? []).map((c) => (
+              <MotionItem key={c.id}><Card key={c.id} onPress={() => router.push(`/child/${c.id}`)}>
                 <Row><Text weight="bold" style={{ flex: 1 }}>{c.first_name}</Text><Text variant="small" muted>{tr('pj.track.pick')}</Text></Row>
-              </Card>
-            ))}
+              </Card></MotionItem>
+            ))}</MotionList>
           </View>
         )}
         {(cycle || scope.scope === 'none') && subject.type !== 'family' ? <DailyActions /> : null}

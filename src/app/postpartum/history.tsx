@@ -20,6 +20,7 @@ import { type TKey } from '@/i18n';
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const trends = (): { key: keyof CheckinInput; label: string; positive: boolean }[] => [
   { key: 'feeling', label: tr('u5.pp_history.t_feeling'), positive: true },
@@ -55,12 +56,12 @@ export default function PostpartumHistory() {
       {list.length > 0 ? (
         <>
           <Card>
-            <View style={{ gap: spacing.lg }}>
+            <MotionList style={{ gap: spacing.lg }}>
               {trends().map((tt) => {
                 const pts = trendSeries(list, tt.key, today, 14);
-                return <MiniTrend key={tt.key} label={tt.label} points={pts} positive={tt.positive} description={describeTrend(pts, tt.positive)} />;
+                return <MotionItem key={tt.key}><MiniTrend key={tt.key} label={tt.label} points={pts} positive={tt.positive} description={describeTrend(pts, tt.positive)} /></MotionItem>;
               })}
-            </View>
+            </MotionList>
           </Card>
           <Text variant="caption" muted>{tr('u5.pp_history.disclaimer')}</Text>
 
@@ -81,9 +82,9 @@ export default function PostpartumHistory() {
             <>
               <SectionTitle title={tr('u5.pp_history.actions')} />
               <Card>
-                {actionsQ.data.slice(0, 10).map((a) => (
-                  <ListRow key={a.id} icon="check" title={ACTION_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind} subtitle={[formatDate(new Date(`${a.done_on}T12:00:00`), { day: 'numeric', month: 'long' }), a.note].filter(Boolean).join(' — ')} />
-                ))}
+                <MotionList>{actionsQ.data.slice(0, 10).map((a) => (
+                  <MotionItem key={a.id}><ListRow key={a.id} icon="check" title={ACTION_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind} subtitle={[formatDate(new Date(`${a.done_on}T12:00:00`), { day: 'numeric', month: 'long' }), a.note].filter(Boolean).join(' — ')} /></MotionItem>
+                ))}</MotionList>
               </Card>
             </>
           ) : null}

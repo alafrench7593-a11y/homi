@@ -43,6 +43,7 @@ import { notificationsSupported } from '@/lib/notifications';
 import type { Child, Sleep } from '@/lib/types';
 import { palette, spacing } from '@/theme/tokens';
 import { formatNumber, localeTag, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Tab = 'today' | 'profile' | 'alerts' | 'trends' | 'safety';
 const TABS = [
@@ -165,7 +166,7 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
         <View style={{ gap: spacing.sm }}>
           <View testID="sleep-next">
             <Card tone="soft">
-              {estimates.length ? estimates.map((l) => <Text key={l.key} weight={l.key === 'nap' || l.key === 'bedtime' ? 'bold' : undefined} testID={`sleep-line-${l.key}`}>{l.text}</Text>)
+              {estimates.length ? <MotionList>{estimates.map((l) => <MotionItem key={l.key}><Text key={l.key} weight={l.key === 'nap' || l.key === 'bedtime' ? 'bold' : undefined} testID={`sleep-line-${l.key}`}>{l.text}</Text></MotionItem>)}</MotionList>
                 : <Text variant="small" muted>{plan.state === 'asleep_night' || plan.state === 'night_waking' ? tr('u4.sp.nightNoNap') : tr('u4.sp.noteToEstimate')}</Text>}
               <Text variant="caption" muted style={{ marginTop: 4 }} testID="sleep-basis">{tr('u4.sp.basis', { basis: basisText(plan, name) })}</Text>
               <Row wrap style={{ marginTop: 4 }}>
@@ -392,7 +393,7 @@ function AlertsTab({ child, data }: { child: Child; data: PlanData }) {
         <SectionTitle title={tr('u4.sp.plannedToday')} />
         <View testID="notify-preview">
           <Card tone="soft">
-            {preview.length ? preview.map((n) => <Text key={n.id} variant="small">{`${clock(n.at)} — ${n.body}`}</Text>)
+            {preview.length ? <MotionList>{preview.map((n) => <MotionItem key={n.id}><Text key={n.id} variant="small">{`${clock(n.at)} — ${n.body}`}</Text></MotionItem>)}</MotionList>
               : <Text variant="small" muted>{tr('u4.sp.noneComing')}</Text>}
             <Text variant="caption" muted style={{ marginTop: 4 }}>
               {notificationsSupported ? tr('u4.sp.scheduledPhone') : tr('u4.sp.notOnWeb')}

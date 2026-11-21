@@ -18,6 +18,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Draft = { id?: string; title: string; kind: Routine['kind']; items: string; assignee: string | null };
 
@@ -74,8 +75,8 @@ export default function Routines() {
       ) : null}
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
       {q.data && !list.length ? <EmptyState icon="list" title={tr('u2.routines.none_title')} body={tr('u2.routines.none_body')} /> : null}
-      {list.map((r, i) => (
-        <StaggerItem key={r.id} index={i}>
+      <MotionList>{list.map((r, i) => (
+        <MotionItem key={r.id}><StaggerItem key={r.id} index={i}>
           <Card>
             <ListRow icon="list" title={r.title} subtitle={`${tr('u2.routines.steps', { count: r.items.length })}${r.default_assignee ? ` · ${labelOf(r.default_assignee)}` : ''}`} onPress={() => setDraft({ id: r.id, title: r.title, kind: r.kind, items: r.items.join('\n'), assignee: r.default_assignee })} />
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -83,8 +84,8 @@ export default function Routines() {
               <Button label={tr('u2.routines.delete')} size="sm" variant="ghost" onPress={() => remove(r)} />
             </Row>
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.routines.templates')} />
       <Row wrap>

@@ -26,6 +26,7 @@ import { useCommunityAi, useFollowMember, usePinPost } from '@/lib/data/hooks-so
 import { useReportConversation } from '@/lib/data/hooks-messages';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { getLocale, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Motifs de signalement ; `label` est traduit à la lecture (langue courante). */
 export const REPORT_REASONS: { key: ReportReason; readonly label: string }[] = [
@@ -383,8 +384,8 @@ export function CategorySheet({ visible, onClose, forums, selected, onSelect }: 
   return (
     <Sheet visible={visible} onClose={onClose} title={tr('cm1.categories.title')}>
       <ScrollView>
-        {[...forums].sort((a, b) => a.position - b.position).map((f) => (
-          <Tappable key={f.id} accessibilityRole="button" accessibilityState={{ selected: selected === f.id }} onPress={() => { onSelect(f.id); onClose(); }} testID={`category-${f.slug}`}
+        <MotionList>{[...forums].sort((a, b) => a.position - b.position).map((f) => (
+          <MotionItem key={f.id}><Tappable key={f.id} accessibilityRole="button" accessibilityState={{ selected: selected === f.id }} onPress={() => { onSelect(f.id); onClose(); }} testID={`category-${f.slug}`}
             style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.xs, minHeight: MIN_TOUCH, alignItems: 'center' }}>
             <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary + '14' }}><Icon name={spaceIcon(f)} size={18} color={t.colors.primary} /></View>
             <View style={{ flex: 1 }}>
@@ -392,8 +393,8 @@ export function CategorySheet({ visible, onClose, forums, selected, onSelect }: 
               <Text variant="caption" muted>{f.description}</Text>
             </View>
             {selected === f.id ? <Icon name="check" size={18} color={t.colors.primary} /> : null}
-          </Tappable>
-        ))}
+          </Tappable></MotionItem>
+        ))}</MotionList>
       </ScrollView>
     </Sheet>
   );

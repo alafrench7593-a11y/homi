@@ -27,6 +27,7 @@ import {
 import { copyText } from '@/features/bottle';
 import { groupOfPosition, itemHint, keyOfPosition, PREP_GROUPS, prepText } from '@/features/birth/partnerPrep';
 import type { ChecklistItem } from '@/lib/types';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 function ItemRow({ item, onToggle, onEdit }: { item: ChecklistItem & { _pending?: boolean }; onToggle: () => void; onEdit: () => void }) {
   const t = useTheme();
@@ -121,11 +122,11 @@ function PrepList({ list }: { list: PrepChecklist }) {
         ) : <Text variant="small" muted>{tr('bpp.sharedBy', { name: nameOf(list.created_by) })}</Text>}
         <Text variant="caption" muted>{tr('bpp.progress', { done, total: items.length })}</Text>
       </Card>
-      {itemsQ.isLoading && !itemsQ.data ? <Skeleton rows={4} /> : groups.map((g) => (
-        <ListGroup key={g.key} title={tr(`bpp.group.${g.key}` as TKey)} testID={`bpp-group-${g.key}`}>
+      {itemsQ.isLoading && !itemsQ.data ? <Skeleton rows={4} /> : <MotionList style={{ gap: spacing.md }}>{groups.map((g) => (
+        <MotionItem key={g.key}><ListGroup key={g.key} title={tr(`bpp.group.${g.key}` as TKey)} testID={`bpp-group-${g.key}`}>
           {g.items.map((i) => <ItemRow key={i.id} item={i} onToggle={() => void toggle(i)} onEdit={() => setEditing(i)} />)}
-        </ListGroup>
-      ))}
+        </ListGroup></MotionItem>
+      ))}</MotionList>}
       <Row wrap gap={spacing.sm}>
         <Button label={tr('bpp.addItem')} icon="plus" size="sm" variant="secondary" onPress={() => setEditing({ new: true })} testID="bpp-add" />
         <Button label={Platform.OS === 'web' ? tr('bpp.copy') : tr('bpp.shareText')} icon="share" size="sm" variant="ghost" onPress={() => void shareText()} testID="bpp-text" />

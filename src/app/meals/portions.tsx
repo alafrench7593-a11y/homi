@@ -24,6 +24,7 @@ import {
 } from '@/lib/data/hooks-foyerTools';
 import { expiryAlerts, expiryStatus, portionsLeft, sortBatches, useByFromDays, type PortionBatch, type PortionStorage } from '@/features/portions/domain';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const dShort = (d: string) => formatDate(d, { day: 'numeric', month: 'short' });
 
@@ -178,11 +179,11 @@ export default function Portions() {
   };
   return (
     <Screen back toolPlay={added} title={tr('pt.title')} subtitle={tr('pt.sub')} action={{ label: tr('pt.add'), icon: 'plus', onPress: () => { setEditing(null); setOpen(true); }, testID: 'pt-add' }}>
-      {alerts.map((b) => (
-        <Banner key={b.id} tone={expiryStatus(b.use_by, today) === 'expired' ? 'warning' : 'info'} icon="clock" title={b.label}>
+      <MotionList>{alerts.map((b) => (
+        <MotionItem key={b.id}><Banner key={b.id} tone={expiryStatus(b.use_by, today) === 'expired' ? 'warning' : 'info'} icon="clock" title={b.label}>
           <Text variant="small" testID={`pt-alert-${b.id}`}>{tr(`pt.alert.${expiryStatus(b.use_by, today)}` as TKey, { date: dShort(b.use_by!), count: portionsLeft(b, uses) })}</Text>
-        </Banner>
-      ))}
+        </Banner></MotionItem>
+      ))}</MotionList>
       {active.length ? <ListGroup title={tr('pt.active')} testID="pt-active"><View style={{ gap: spacing.md, padding: spacing.sm }}>{active.map((b) => batchCard(b, false))}</View></ListGroup>
         : <EmptyState icon="box" title={tr('pt.empty.title')} body={tr('pt.empty.body')} action={{ label: tr('pt.add'), icon: 'plus', onPress: () => { setEditing(null); setOpen(true); } }} />}
       {finished.length ? <ListGroup title={tr('pt.finished')}><View style={{ gap: spacing.md, padding: spacing.sm }}>{finished.slice(0, 10).map((b) => batchCard(b, true))}</View></ListGroup> : null}

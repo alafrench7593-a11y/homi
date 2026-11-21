@@ -17,6 +17,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const SECTIONS: NoteSection[] = ['contacts', 'kids', 'habits', 'school', 'health', 'home', 'codes', 'other'];
 const ICON: Record<NoteSection, 'phone' | 'smile' | 'clock' | 'book' | 'heart' | 'home' | 'key' | 'file-text'> = {
@@ -91,11 +92,11 @@ export default function Notebook() {
         <View key={s} style={{ gap: spacing.xs }}>
           <SectionTitle title={tr(`cm.nb.s.${s}` as TKey)} />
           <Card padded={false}>
-            {notes.filter((n) => n.section === s).map((n) => (
-              <ListRow key={n.id} icon={ICON[s]} title={n.title} testID={`nb-note-${n.id}`}
+            <MotionList>{notes.filter((n) => n.section === s).map((n) => (
+              <MotionItem key={n.id}><ListRow key={n.id} icon={ICON[s]} title={n.title} testID={`nb-note-${n.id}`}
                 subtitle={[children.find((c) => c.id === n.child_id)?.first_name, n.body].filter(Boolean).join(' · ') || undefined}
-                onPress={() => { setEditing(n); setOpen(true); }} />
-            ))}
+                onPress={() => { setEditing(n); setOpen(true); }} /></MotionItem>
+            ))}</MotionList>
           </Card>
         </View>
       ))}

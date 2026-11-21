@@ -40,6 +40,7 @@ import { UrgentRow } from './HubList';
 import { ProfileSwipe, ProfileSwitcher, useActiveProfileKey } from '@/components/ProfileSwitcher';
 import { ProfileStage } from '@/components/profileTransition';
 import { ToolSearchButton } from './ToolSearch';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const MAX_W = 720;
 /** Récents et favoris montrés en tête d'un onglet. */
@@ -99,7 +100,7 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
       <ProfileStage profileKey={profileKey}>
       <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>
         <View style={{ gap: spacing.sm }}>
-          {urgent.map((u) => <UrgentRow key={u.id} tool={u} />)}
+          <MotionList style={{ gap: spacing.sm }}>{urgent.map((u) => <MotionItem key={u.id}><UrgentRow key={u.id} tool={u} /></MotionItem>)}</MotionList>
           <ToolSearchButton testID={`hub-${id}-search`} />
           {/* Onglet Enfant : la garde de l'enfant affiché (son carnet s'il a une nounou confirmée, sinon « Mes gardes ») */}
           {hub === 'baby' ? <CareEntry childId={scope.childId ?? null} /> : null}
@@ -124,10 +125,10 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
               <Text variant="heading" accessibilityRole="header">{tr('u3.tools.others')}</Text>
               <Text variant="small" muted>{tr('u3.tools.othersB')}</Text>
             </View>
-            {others.map((o) => (
-              <ToolLinks key={o.key} ids={o.groups.flatMap((g) => g.items.slice(0, 2).map((x) => x.id))} subject={o.subject} title={o.title} profileInTitle
-                allOf={o.groups.map((g) => g.category)} testID={`hub-${id}-other-${o.key}`} />
-            ))}
+            <MotionList style={{ gap: spacing.lg }}>{others.map((o) => (
+              <MotionItem key={o.key}><ToolLinks key={o.key} ids={o.groups.flatMap((g) => g.items.slice(0, 2).map((x) => x.id))} subject={o.subject} title={o.title} profileInTitle
+                allOf={o.groups.map((g) => g.category)} testID={`hub-${id}-other-${o.key}`} /></MotionItem>
+            ))}</MotionList>
           </View>
         ) : null}
 

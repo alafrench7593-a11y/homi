@@ -44,6 +44,7 @@ import { t as tr, formatDate, formatTime, type TKey } from '@/i18n';
 import { homiKey, sortAgenda, type DeviceAgendaItem } from '@/lib/deviceCalendar';
 import { useDeviceAgenda } from '@/lib/deviceCalendar/hooks';
 import { AddToDeviceCalendar, DeviceCalendarEntry, DeviceEventSheet } from '@/features/deviceCalendar/DeviceCalendarParts';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type View_ = 'day' | 'week' | 'month' | 'agenda';
 const hm = (iso: string) => formatTime(iso);
@@ -249,12 +250,12 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const entryRow = (i: Entry, state?: DayState) => (isDevice(i) ? deviceRow(i, state) : itemRow(i, state));
   const dayList = (list: Entry[], testID?: string) => (
     <DayList testID={testID}>
-      {list.map((i, k) => (
-        <Flash key={i.key} on={moved === i.refId} color={t.colors.primary}>
+      <MotionList>{list.map((i, k) => (
+        <MotionItem key={i.key}><Flash key={i.key} on={moved === i.refId} color={t.colors.primary}>
           {k ? <DaySeparator /> : null}
           <DayRow r={entryRow(i)} first={k === 0} last={k === list.length - 1} />
-        </Flash>
-      ))}
+        </Flash></MotionItem>
+      ))}</MotionList>
     </DayList>
   );
 

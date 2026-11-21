@@ -23,6 +23,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr, tMaybe, type TKey } from '@/i18n';
 import { FavoriteStar, Pill } from './ToolRow';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Aperçu « geste → résultat » de l'outil (ou de son outil parent), s'il a une démo dans « Découvrir HOMI ». */
 export function toolPreview(tool: CatalogTool): { gesture: string; result: string } | null {
@@ -94,8 +95,8 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
         {tool.subs.length && !tool.locked ? (
           <View style={{ gap: 2 }}>
             <Text variant="caption" muted accessibilityRole="header">{tr('th.sheet.direct')}</Text>
-            {tool.subs.map((s) => (
-              <Tappable key={s.id} accessibilityRole="button" accessibilityLabel={[s.label, s.hint].filter(Boolean).join('. ')} testID={`tool-sheet-sub-${s.id}`}
+            <MotionList style={{ gap: 2 }}>{tool.subs.map((s) => (
+              <MotionItem key={s.id}><Tappable key={s.id} accessibilityRole="button" accessibilityLabel={[s.label, s.hint].filter(Boolean).join('. ')} testID={`tool-sheet-sub-${s.id}`}
                 onPress={() => { haptic('selection'); onStart({ ...e, tool: subAsTool(tool, s) }); }} bare pressScale={1} hoverLift={0}
                 style={({ pressed, hovered }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH, paddingVertical: 6, paddingHorizontal: 4, borderRadius: radius.md, backgroundColor: pressed || hovered ? t.colors.surfaceAlt : 'transparent' })}>
                 <Icon name={s.icon} size={18} color={t.colors.primary} />
@@ -104,8 +105,8 @@ export function ToolSheet({ entry, favorite, onToggleFavorite, onClose, onStart 
                   {s.hint ? <Text variant="caption" muted>{s.hint}</Text> : null}
                 </View>
                 <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-              </Tappable>
-            ))}
+              </Tappable></MotionItem>
+            ))}</MotionList>
           </View>
         ) : null}
       </View>

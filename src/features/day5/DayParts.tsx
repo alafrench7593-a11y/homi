@@ -18,6 +18,7 @@ import { Tappable } from '@/components/Tappable';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, MIN_TOUCH, radius, spacing, type Theme } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** État d'une ligne de journée. `later` : à venir (après « ensuite ») ; `anytime` : sans heure. */
 export type DayState = 'late' | 'now' | 'next' | 'later' | 'done' | 'past' | 'anytime';
@@ -165,12 +166,12 @@ export function DayTimeline({ rows, testID, footer, empty, style }: { rows: DayR
   if (!rows.length) return empty ? <>{empty}</> : null;
   return (
     <DayList testID={testID} footer={footer} style={style}>
-      {rows.map((r, i) => (
-        <React.Fragment key={r.key}>
+      <MotionList>{rows.map((r, i) => (
+        <MotionItem key={r.key}><React.Fragment key={r.key}>
           {i ? <DaySeparator /> : null}
           <DayRow r={r} first={i === 0} last={i === rows.length - 1} />
-        </React.Fragment>
-      ))}
+        </React.Fragment></MotionItem>
+      ))}</MotionList>
     </DayList>
   );
 }

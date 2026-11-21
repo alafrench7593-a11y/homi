@@ -23,6 +23,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const EFFECTS = ['mood', 'bleeding', 'pain', 'libido', 'skin', 'weight', 'headache', 'nausea', 'other'] as const;
 type Effect = (typeof EFFECTS)[number];
@@ -85,9 +86,9 @@ export default function ContraceptionJournal() {
       <SectionTitle title={tr('cj.history')} action={rows.length ? tr('cj.share') : undefined} onAction={rows.length ? () => void share() : undefined} />
       {!rows.length ? <EmptyState icon="edit-3" title={tr('cj.none')} body={tr('cj.noneD')} /> : (
         <Card padded={false}>
-          {rows.slice(0, 90).map((l) => (
-            <ListRow key={l.id} icon="edit-3" title={label(l)} subtitle={`${formatDate(l.logged_on, { weekday: 'short', day: 'numeric', month: 'short' })}${l.note ? ` · ${l.note}` : ''}`} onPress={() => void remove(l.id)} />
-          ))}
+          <MotionList>{rows.slice(0, 90).map((l) => (
+            <MotionItem key={l.id}><ListRow key={l.id} icon="edit-3" title={label(l)} subtitle={`${formatDate(l.logged_on, { weekday: 'short', day: 'numeric', month: 'short' })}${l.note ? ` · ${l.note}` : ''}`} onPress={() => void remove(l.id)} /></MotionItem>
+          ))}</MotionList>
         </Card>
       )}
       <Button label={tr('cj.prepare')} icon="clipboard" variant="secondary" onPress={() => router.push('/contraception/consultation')} />

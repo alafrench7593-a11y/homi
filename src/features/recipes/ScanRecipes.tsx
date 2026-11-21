@@ -14,6 +14,7 @@ import { usePantry } from '@/lib/data/hooks-stocks';
 import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { RecipeCard } from './RecipeCard';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export function ScanRecipes({ name }: { name: string | null | undefined }) {
   const { data: all } = useRecipes();
@@ -28,7 +29,7 @@ export function ScanRecipes({ name }: { name: string | null | undefined }) {
       {adv.precautions.length ? (
         <View testID="scan-precautions"><Banner tone="warning" title={tr('rc.scan.precautions')}>{adv.precautions.map((p) => `• ${p.text}${p.alternative ? ` ${tr('rc.scan.alt')} ${p.alternative}` : ''}`).join('\n')}</Banner></View>
       ) : null}
-      {adv.recipes.length ? adv.recipes.slice(0, 4).map((r) => <RecipeCard key={r.id} r={r} />) : <Text variant="small" muted>{adv.keys.length ? tr('rc.scan.noRecipe') : tr('rc.scan.unknown')}</Text>}
+      {adv.recipes.length ? <MotionList style={{ gap: spacing.xs }}>{adv.recipes.slice(0, 4).map((r) => <MotionItem key={r.id}><RecipeCard key={r.id} r={r} /></MotionItem>)}</MotionList> : <Text variant="small" muted>{adv.keys.length ? tr('rc.scan.noRecipe') : tr('rc.scan.unknown')}</Text>}
       {add.length ? <Button label={tr('rc.scan.addPantry', { list: add.map((k) => INGREDIENTS[k].name).join(', ') })} icon="plus" size="sm" variant="secondary" onPress={() => void setPantry([...pantry, ...add]).catch(() => undefined)} /> : null}
       <Button label={tr('rc.pantry.open')} icon="package" size="sm" variant="ghost" onPress={() => router.push('/meals/pantry')} testID="scan-open-pantry" />
       <Text variant="caption" muted>{tr('rc.scan.note')}</Text>

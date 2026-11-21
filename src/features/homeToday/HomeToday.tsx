@@ -43,6 +43,7 @@ import { getTodayDoneComponent, type DoneMarkProps } from './DoneMark';
 import { TodayAgendaRow, TodayFocus } from './TodayTaskRow';
 import { isEmptyToday, todayTimeline, type CustodyToday, type TimelineEntry, type TodayProfile, type TodayTask } from './todayModel';
 import { useCompleteToday, useHomeToday, type TodayPerson } from './useHomeToday';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Lignes de chronologie affichées sur l'accueil (le reste : « Voir toute l'organisation »). */
 const MAX_ROWS = 7;
@@ -206,14 +207,14 @@ export function TodayNext({ scene, art = 'foyer', cascadeIndex = 0, compactEmpty
                 ) : null}
                 {view.urgent.length ? (
                   <DayList testID="home-urgent-list">
-                    {view.urgent.map((x, i) => (
-                      <React.Fragment key={x.id}>
+                    <MotionList>{view.urgent.map((x, i) => (
+                      <MotionItem key={x.id}><React.Fragment key={x.id}>
                         {i ? <DaySeparator /> : null}
                         <TodayAgendaRow x={x} owner={d.person(x.ownerId)} creator={x.creatorId ? d.person(x.creatorId) : null}
                           celebrate={!!held?.ids.includes(x.id)} busy={!!busy} onComplete={onComplete}
                           state={x.late || (x.timed && x.dueAt && Date.parse(x.dueAt) < view.now) ? 'late' : x.timed ? 'later' : 'anytime'} first={i === 0} last={i === view.urgent.length - 1} />
-                      </React.Fragment>
-                    ))}
+                      </React.Fragment></MotionItem>
+                    ))}</MotionList>
                   </DayList>
                 ) : null}
               </DaySection>
@@ -248,12 +249,12 @@ export function TodayAgenda({ scene, cascadeIndex = 0, caption }: { scene: Today
           {caption ? <Text variant="caption" muted testID="home-agenda-for" style={{ paddingHorizontal: spacing.xxs }}>{caption}</Text> : null}
           {shown.length ? (
             <DayList testID="home-today-tasks" footer={links}>
-              {shown.map((e, i) => (
-                <Animated.View key={e.key} layout={layout}>
+              <MotionList>{shown.map((e, i) => (
+                <MotionItem key={e.key}><Animated.View key={e.key} layout={layout}>
                   {i ? <DaySeparator /> : null}
                   <TimelineRow e={e} state={view.states.get(e.key) ?? 'later'} person={d.person} held={held} busy={busy} onComplete={onComplete} first={i === 0} last={i === shown.length - 1} />
-                </Animated.View>
-              ))}
+                </Animated.View></MotionItem>
+              ))}</MotionList>
             </DayList>
           ) : (
             <View style={{ gap: 2, paddingHorizontal: spacing.xxs }}>

@@ -20,6 +20,7 @@ import { PRODUCT_CATEGORIES, type ProductCategory } from '@/lib/domain/productCr
 import { parseQuantity } from '../../../supabase/functions/_shared/open-prices';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const KINDS: ProductPrice['store_kind'][] = ['pharmacy', 'supermarket', 'baby_store', 'brand', 'online', 'other'];
 const today = () => new Date().toISOString().slice(0, 10);
@@ -86,18 +87,18 @@ function Editor({ p, onClose }: { p: KidProduct; onClose: () => void }) {
       </Row>
 
       <SectionTitle title={tr('pr.prices')} />
-      {(prices.data ?? []).filter((x) => x.product_id === p.id).map((x) => <Text key={x.id} variant="small">• {x.price} € · {x.store_name} · {formatDate(`${x.observed_on}T12:00:00`)} · {tr(`pr.priceSrc.${x.source}` as TKey)}</Text>)}
+      <MotionList>{(prices.data ?? []).filter((x) => x.product_id === p.id).map((x) => <MotionItem key={x.id}><Text key={x.id} variant="small">• {x.price} € · {x.store_name} · {formatDate(`${x.observed_on}T12:00:00`)} · {tr(`pr.priceSrc.${x.source}` as TKey)}</Text></MotionItem>)}</MotionList>
       <Button label={tr('pr.admin.fetchPrices')} icon="download" size="sm" variant="secondary" onPress={() => loadOpenPrices()} loading={fetchPrices.isPending} testID="product-fetch-prices" />
       {found ? (
         <View testID="open-prices-result" style={{ gap: 4 }}>
           {found.message ? <Text variant="caption" muted>{found.message}</Text> : null}
           {!found.list.length && !found.message ? <Text variant="caption" muted>{tr('pr.admin.noOpenPrices')}</Text> : null}
-          {found.list.map((x) => (
-            <Row key={x.id} wrap style={{ alignItems: 'center' }}>
+          <MotionList style={{ gap: 4 }}>{found.list.map((x) => (
+            <MotionItem key={x.id}><Row key={x.id} wrap style={{ alignItems: 'center' }}>
               <Text variant="small" style={{ flex: 1 }}>{x.price} € · {x.store_name}{x.store_city ? `, ${x.store_city}` : ''} · {formatDate(`${x.observed_on}T12:00:00`)}</Text>
               <Button label={tr('pr.admin.keep')} size="sm" variant="ghost" onPress={() => keepOpenPrice(x)} />
-            </Row>
-          ))}
+            </Row></MotionItem>
+          ))}</MotionList>
         </View>
       ) : null}
       <Text variant="small" weight="bold" style={{ marginTop: spacing.xs }}>{tr('pr.admin.manualPrice')}</Text>
@@ -158,8 +159,8 @@ export default function AdminProducts() {
       </Row>
       <Field label={tr('pr.admin.barcode')} value={code} onChangeText={setCode} keyboardType="number-pad" maxLength={14} testID="product-barcode" />
       <Button label={tr('pr.admin.add')} icon="plus" onPress={() => add()} loading={lookup.isPending || save.isPending} testID="product-add" />
-      {products.data.map((p) => (
-        <View key={p.id} style={{ gap: spacing.xs }}>
+      <MotionList>{products.data.map((p) => (
+        <MotionItem key={p.id}><View key={p.id} style={{ gap: spacing.xs }}>
           <Card>
             <Row style={{ justifyContent: 'space-between' }}>
               <Text weight="bold" style={{ flex: 1 }}>{p.name}</Text>
@@ -172,8 +173,8 @@ export default function AdminProducts() {
             </Row>
           </Card>
           {editing === p.id ? <Editor p={p} onClose={() => setEditing(null)} /> : null}
-        </View>
-      ))}
+        </View></MotionItem>
+      ))}</MotionList>
     </Screen>
   );
 }

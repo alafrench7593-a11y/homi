@@ -21,6 +21,7 @@ import {
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const QUICK = ['feeling', 'fatigue', 'stress', 'sleep_quality'];
 
@@ -93,11 +94,11 @@ export default function PostpartumCheckin() {
         </>
       ) : (
       <Card>
-        <View style={{ gap: spacing.md }}>
+        <MotionList style={{ gap: spacing.md }}>
           {SCALES.filter((s) => QUICK.includes(s.key)).map((s) => (
-            <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
+            <MotionItem key={s.key}><Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} /></MotionItem>
           ))}
-        </View>
+        </MotionList>
       </Card>
       )}
 
@@ -113,9 +114,9 @@ export default function PostpartumCheckin() {
       {more ? (
         <Card>
           <View style={{ gap: spacing.md }}>
-            {SCALES.filter((s) => !QUICK.includes(s.key)).map((s) => (
-              <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
-            ))}
+            <MotionList style={{ gap: spacing.md }}>{SCALES.filter((s) => !QUICK.includes(s.key)).map((s) => (
+              <MotionItem key={s.key}><Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} /></MotionItem>
+            ))}</MotionList>
             <Field label={tr('u5.pp_checkin.comment')} optional multiline value={v.comment ?? ''} onChangeText={(x) => set('comment', x)} maxLength={3000} style={{ minHeight: 90, textAlignVertical: 'top' }} />
           </View>
         </Card>

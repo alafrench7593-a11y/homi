@@ -29,6 +29,7 @@ import type { StatsPeriod } from '@/lib/domain/bottleSession';
 import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const shortDay = (key: string) => formatDate(new Date(`${key}T12:00:00`), { weekday: 'short' });
 
@@ -173,14 +174,14 @@ function BottlesOnlyHistory() {
             <Text variant="caption" muted>{tr('u6.bhist.chart_note')}</Text>
           </MatteSurface>
           <MatteSurface radius={radius.lg} padded={spacing.sm}>
-            {week.map((d, i) => (
-              <Row key={d.key} style={{ paddingVertical: 10, paddingHorizontal: spacing.xs, borderBottomWidth: i === week.length - 1 ? 0 : 1, borderColor: t.material.lines.separator }}>
+            <MotionList>{week.map((d, i) => (
+              <MotionItem key={d.key}><Row key={d.key} style={{ paddingVertical: 10, paddingHorizontal: spacing.xs, borderBottomWidth: i === week.length - 1 ? 0 : 1, borderColor: t.material.lines.separator }}>
                 <Text style={{ flex: 1 }}>{d.label}</Text>
                 <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }}>
                   {d.count ? `${tr('u6.bhist.count', { count: d.count })}${d.consumedCount ? tr('u6.bhist.row_drunk', { n: d.consumedTotal }) : ''}${d.preparedCount ? tr('u6.bhist.row_prepared', { n: d.preparedTotal }) : ''}` : '—'}
                 </Text>
-              </Row>
-            ))}
+              </Row></MotionItem>
+            ))}</MotionList>
           </MatteSurface>
         </>
       ) : null}

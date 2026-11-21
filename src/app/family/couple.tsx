@@ -22,6 +22,7 @@ import { mondayOf } from '@/lib/domain/custody';
 import { DOMAINS } from '@/lib/domain/mentalLoad';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function CoupleWeek() {
   const toast = useToast();
@@ -73,13 +74,13 @@ export default function CoupleWeek() {
       </Card>}
       <SectionTitle title={tr('cm.cp.s1')} />
       <Card padded={false} testID="cp-events">
-        {events.length ? events.slice(0, 12).map((e) => <ListRow key={e.id} icon="calendar" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'long', day: 'numeric', hour: e.all_day ? undefined : '2-digit', minute: e.all_day ? undefined : '2-digit' })} />)
+        {events.length ? <MotionList>{events.slice(0, 12).map((e) => <MotionItem key={e.id}><ListRow key={e.id} icon="calendar" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'long', day: 'numeric', hour: e.all_day ? undefined : '2-digit', minute: e.all_day ? undefined : '2-digit' })} /></MotionItem>)}</MotionList>
           : <ListRow icon="calendar" title={tr('cm.cp.noEvents')} onPress={() => router.push('/calendar')} />}
       </Card>
       <SectionTitle title={tr('cm.cp.s2')} />
       <Card testID="cp-tasks">
         <Text variant="small">{tr('cm.cp.open', { count: open.length })}</Text>
-        {perPerson.map((p) => <Text key={p.id} variant="small">• {p.label} : {p.n}</Text>)}
+        <MotionList>{perPerson.map((p) => <MotionItem key={p.id}><Text key={p.id} variant="small">• {p.label} : {p.n}</Text></MotionItem>)}</MotionList>
         <Text variant="small">• {tr('cm.cp.nobody')} : {open.filter((x) => !x.assignee_id).length}</Text>
       </Card>
       <SectionTitle title={tr('cm.cp.s3')} />

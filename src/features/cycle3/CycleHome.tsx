@@ -34,6 +34,7 @@ import { CAL, LockedCard, Pill, useLocked } from './ui';
 import { useUiStore } from '@/lib/store';
 import { syncCycleWidget, widgetContent } from '@/widgets/syncCycleWidget';
 import { BRAND } from '@/config/brand';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const fmt = (iso: string) => formatDate(`${iso}T12:00:00`, { day: 'numeric', month: 'short' });
 
@@ -141,9 +142,9 @@ export function CycleHome({ goal }: { goal: Goal }) {
 
       {/* Jour du cycle · prochaines règles · fenêtre fertile */}
       <View testID="c3-facts" style={{ gap: 4 }}>
-        {facts.map((f) => (
-          <Row key={f.id} gap={8}><Icon name={f.icon as never} size={15} color={t.colors.textMuted} /><Text style={{ flex: 1 }} testID={`c3-fact-${f.id}`}>{f.text}</Text></Row>
-        ))}
+        <MotionList style={{ gap: 4 }}>{facts.map((f) => (
+          <MotionItem key={f.id}><Row key={f.id} gap={8}><Icon name={f.icon as never} size={15} color={t.colors.textMuted} /><Text style={{ flex: 1 }} testID={`c3-fact-${f.id}`}>{f.text}</Text></Row></MotionItem>
+        ))}</MotionList>
         <Text variant="caption" muted>{tr('c3.home.estimates')}</Text>
       </View>
 

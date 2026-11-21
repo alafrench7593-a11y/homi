@@ -21,6 +21,7 @@ import { ACTION_KINDS, PLAN_REST_IDEAS, PLAN_TASK_IDEAS } from '@/lib/domain/pos
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type ContactDraft = { id?: string; kind: 'trusted' | 'professional'; name: string; relation: string; phone: string; email: string; note: string };
 const PHONE_RE = /^[0-9+ ().-]{2,30}$/;
@@ -89,8 +90,8 @@ export default function PostpartumSupport() {
     return (
       <Card>
         {list.length === 0 ? <Text variant="small" muted>{kind === 'trusted' ? tr('u5.pp_support.empty_t') : tr('u5.pp_support.empty_p')}</Text> : null}
-        {list.map((c) => (
-          <ListRow
+        <MotionList>{list.map((c) => (
+          <MotionItem key={c.id}><ListRow
             key={c.id}
             icon={kind === 'trusted' ? 'user' : 'briefcase'}
             title={c.name}
@@ -103,8 +104,8 @@ export default function PostpartumSupport() {
                 <IconButton icon="trash-2" label={tr('u5.pp_support.remove', { name: c.name })} onPress={() => removeContact(c)} />
               </Row>
             )}
-          />
-        ))}
+          /></MotionItem>
+        ))}</MotionList>
         <Button label={kind === 'trusted' ? tr('u5.pp_support.add_t') : tr('u5.pp_support.add_p')} icon="plus" size="sm" variant="secondary" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={() => { setErrors({}); setDraft({ kind, name: '', relation: '', phone: '', email: '', note: '' }); }} />
       </Card>
     );

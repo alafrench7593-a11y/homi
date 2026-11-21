@@ -19,6 +19,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { accentOf, MentionText, PremiumBadge, ProfileBannerView } from '@/features/communitySocial';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export interface ProfileHeaderData {
   pseudonym: string; handle?: string | null; bio?: string | null; journey_label?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
@@ -135,7 +136,7 @@ export function ProfileTabs({ handle, mine }: { handle: string | null; mine: boo
   if (mine) options.push({ value: 'saved', label: tr('cm1.profile.tabSaved'), id: 'Enregistrés' });
   const forumOf = (p: FeedPost) => forums.find((f) => f.id === p.forum_id) ?? null;
   const list = (q: { data?: FeedPost[]; isLoading: boolean }, empty: string) => (q.isLoading && !q.data ? <Skeleton kind="card" rows={2} /> : q.data?.length
-    ? <View style={{ gap: spacing.sm }}>{q.data.map((p) => <PostCard key={p.id} post={p} forum={forumOf(p)} />)}</View>
+    ? <MotionList style={{ gap: spacing.sm }}>{q.data.map((p) => <MotionItem key={p.id}><PostCard key={p.id} post={p} forum={forumOf(p)} /></MotionItem>)}</MotionList>
     : <EmptyState icon="message-square" title={empty} />);
   return (
     <View style={{ gap: spacing.sm }} testID="profile-tabs">
@@ -144,7 +145,7 @@ export function ProfileTabs({ handle, mine }: { handle: string | null; mine: boo
       </ScrollView>
       {tab === 'posts' ? list(posts, mine ? tr('cm1.profile.emptyMine') : tr('cm1.profile.emptyPosts')) : null}
       {tab === 'replies' ? (comments.isLoading && !comments.data ? <Skeleton kind="list" rows={2} /> : comments.data?.length
-        ? <View style={{ gap: spacing.sm }}>{comments.data.map((c) => <CommentRow key={c.id} c={c} />)}</View>
+        ? <MotionList style={{ gap: spacing.sm }}>{comments.data.map((c) => <MotionItem key={c.id}><CommentRow key={c.id} c={c} /></MotionItem>)}</MotionList>
         : <EmptyState icon="message-circle" title={tr('cm1.profile.emptyReplies')} />) : null}
       {tab === 'photos' ? <PhotosGrid posts={posts.data ?? []} /> : null}
       {tab === 'saved' && mine ? (

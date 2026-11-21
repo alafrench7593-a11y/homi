@@ -18,6 +18,7 @@ import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { DOMAIN_ICON } from '@/features/missions/domainIcons';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export { DOMAIN_ICON };
 
@@ -38,7 +39,7 @@ export default function Domains() {
       {people.length < 2 ? <Banner tone="info" icon="user-plus" action={<Button label={tr('cm.dom.invite')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => router.push('/settings/family')} />}>{tr('cm.dom.alone')}</Banner> : null}
       {counts.length ? (
         <Card tone="soft" testID="dom-summary">
-          {counts.map((p) => <Text key={p.id} variant="small">{tr('cm.dom.carries', { person: p.label, count: p.n })}</Text>)}
+          <MotionList>{counts.map((p) => <MotionItem key={p.id}><Text key={p.id} variant="small">{tr('cm.dom.carries', { person: p.label, count: p.n })}</Text></MotionItem>)}</MotionList>
           <Text variant="caption" muted>{tr('cm.dom.free', { count: DOMAINS.filter((k) => !owner.get(k)).length })}</Text>
         </Card>
       ) : null}

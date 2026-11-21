@@ -24,6 +24,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 interface TDraft { name: string; dose: string; times: string; frequency: Treatment['frequency']; weekdays: number[]; start: string; end: string; instructions: string; prescriber: string; reminders: boolean; active: boolean }
 const emptyT = (): TDraft => ({ name: '', dose: '', times: '', frequency: 'daily', weekdays: [], start: toFrDate(todayISO()), end: '', instructions: '', prescriber: '', reminders: true, active: true });
@@ -190,11 +191,11 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
       ))}
 
       <SectionTitle title={tr('nd.t.list')} />
-      {(treatments ?? []).map((t) => (
-        <Card key={t.id}>
+      <MotionList style={{ gap: spacing.sm }}>{(treatments ?? []).map((t) => (
+        <MotionItem key={t.id}><Card key={t.id}>
           <ListRow icon="clipboard" testID={tid(`treatment-${t.name}`)} title={t.name} subtitle={`${t.dose_text} · ${t.frequency === 'as_prescribed' ? tr('nd.t.freq.as_prescribed') : t.times.join(', ')} · ${tr('nd.t.from', { date: formatDateFr(t.start_date) })}${t.end_date ? ` ${tr('nd.t.to', { date: formatDateFr(t.end_date) })}` : ''}${t.active ? '' : ` · ${tr('nd.t.paused')}`}`} onPress={() => edit(t)} />
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
       <Button label={isChild ? tr('nd.t.add') : tr('med.addMine')} icon="plus" onPress={() => edit('new')} testID={tid('treatment-add')} />
 
       <Sheet visible={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? tr('nd.t.add') : tr('nd.t.edit')}>

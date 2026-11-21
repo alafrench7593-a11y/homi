@@ -23,6 +23,7 @@ import type { IconName } from '@/components/ui';
 import { t as tr } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 function EntryCard({ to, icon, title, sub, testID }: { to: '/scanner/product' | '/scanner/food'; icon: IconName; title: string; sub: string; testID: string }) {
   const t = useTheme();
@@ -83,7 +84,7 @@ export default function ScannerHub() {
       {historyQ.isLoading && !history ? <Skeleton kind="card" rows={2} /> : historyQ.isError && !history ? (
         <ErrorView error={historyQ.error} onRetry={() => void historyQ.refetch()} title={tr('u8.hub.listErr')} />
       ) : recent.length ? (
-        <View style={{ gap: spacing.sm }}>{recent.map((s) => <ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} />)}</View>
+        <MotionList style={{ gap: spacing.sm }}>{recent.map((s) => <MotionItem key={s.id}><ScanListRow key={s.id} s={s} favorite={favIds.has(s.id)} /></MotionItem>)}</MotionList>
       ) : last ? null : (
         <EmptyState icon="maximize" title={tr('u8.hub.none')} body={tr('u8.hub.noneBody')} action={{ label: tr('u8.hub.firstScan'), icon: 'camera', onPress: () => router.push('/scanner/product') }} />
       )}
@@ -91,7 +92,7 @@ export default function ScannerHub() {
       {favorites.length ? (
         <>
           <SectionTitle title={tr('u8.hub.favorites')} action={tr('u8.hub.seeAll')} onAction={() => router.push({ pathname: '/scanner/history', params: { filter: 'favorites' } })} />
-          <View style={{ gap: spacing.sm }}>{favorites.map((s) => <ScanListRow key={s.id} s={s} favorite />)}</View>
+          <MotionList style={{ gap: spacing.sm }}>{favorites.map((s) => <MotionItem key={s.id}><ScanListRow key={s.id} s={s} favorite /></MotionItem>)}</MotionList>
         </>
       ) : null}
 

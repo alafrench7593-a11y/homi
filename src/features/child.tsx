@@ -50,6 +50,7 @@ import { Tappable } from '@/components/Tappable';
 import { isBottleChild } from '@/lib/domain/bottleTimer';
 import { useUiStore } from '@/lib/store';
 import { toastSaved } from '@/features/saveOutcome';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
@@ -348,14 +349,14 @@ export function GrowthTab({ child }: { child: Child }) {
       {measurementsQ.isLoading && !measurements ? <Skeleton kind="list" rows={2} /> : measurementsQ.isError && !measurements ? (
         <ErrorView error={measurementsQ.error} onRetry={() => void measurementsQ.refetch()} title={tr('u7.child.measuresError')} />
       ) : <Card>
-        {(measurements ?? []).slice().reverse().map((x) => (
-          <ListRow
+        <MotionList>{(measurements ?? []).slice().reverse().map((x) => (
+          <MotionItem key={x.id}><ListRow
             key={x.id}
             title={[x.weight_kg != null ? `${fmt(x.weight_kg, 3)} kg` : null, x.height_cm != null ? `${fmt(x.height_cm)} cm` : null, x.head_cm != null ? tr('u7.child.hc', { v: fmt(x.head_cm) }) : null].filter(Boolean).join(' · ')}
             subtitle={[fd(x.measured_on), x.source === 'professional' ? tr('u7.child.pro') : tr('u7.child.homeLower'), x.note].filter(Boolean).join(' · ')}
             right={<IconButton icon="trash-2" label={tr('u7.child.delMeasureOn', { date: fd(x.measured_on) })} size={18} onPress={() => remove(x)} />}
-          />
-        ))}
+          /></MotionItem>
+        ))}</MotionList>
         {!measurements?.length && <Text muted>{tr('u7.child.noMeasures')}</Text>}
       </Card>}
     </>
@@ -477,15 +478,15 @@ export function MilestonesTab({ child }: { child: Child }) {
             <View key={year} style={{ gap: spacing.xs }}>
               <Text weight="bold">{year === NO_DATE ? tr('u7.child.noDate') : year}</Text>
               <Card>
-                {list.map((x) => (
-                  <ListRow
+                <MotionList>{list.map((x) => (
+                  <MotionItem key={x.id}><ListRow
                     key={x.id}
                     icon={meta(x.kind).icon}
                     title={x.title}
                     subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? fd(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
                     right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.title })} size={18} onPress={() => remove(x)} />}
-                  />
-                ))}
+                  /></MotionItem>
+                ))}</MotionList>
               </Card>
             </View>
           ))}
@@ -609,8 +610,8 @@ export function HealthTab({ child }: { child: Child }) {
           <View key={k.value} style={{ gap: spacing.xs }}>
             <SectionTitle title={k.label} action={tr('u7.child.add')} onAction={() => start(k.value)} />
             <Card>
-              {list.map((x) => (
-                <View key={x.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+              <MotionList>{list.map((x) => (
+                <MotionItem key={x.id}><View key={x.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
                   {k.value === 'vaccine_to_check' && (
                     <Tappable
                       accessibilityRole="checkbox"
@@ -631,8 +632,8 @@ export function HealthTab({ child }: { child: Child }) {
                       right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.label })} size={18} onPress={() => remove(x)} />}
                     />
                   </View>
-                </View>
-              ))}
+                </View></MotionItem>
+              ))}</MotionList>
               {!list.length && <Text variant="small" muted>{k.hint}</Text>}
             </Card>
           </View>
@@ -770,15 +771,15 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
       {introsQ.isLoading && !intros ? <Skeleton kind="list" rows={2} /> : introsQ.isError && !intros ? (
         <ErrorView error={introsQ.error} onRetry={() => void introsQ.refetch()} title={tr('u7.child.foodsError')} />
       ) : <Card>
-        {(intros ?? []).map((i) => (
-          <ListRow
+        <MotionList>{(intros ?? []).map((i) => (
+          <MotionItem key={i.id}><ListRow
             key={i.id}
             icon={isAllergen(i.food_name) ? 'alert-circle' : 'feather'}
             title={i.food_name}
             subtitle={[tr('u7.child.firstTimeDate', { date: fd(i.first_tried_on) }), isAllergen(i.food_name) ? tr('u7.child.majorAllergenLower') : null, i.reaction_note].filter(Boolean).join(' · ')}
             onPress={() => { setEditing(i); setEditNote(i.reaction_note ?? ''); }}
-          />
-        ))}
+          /></MotionItem>
+        ))}</MotionList>
         {!intros?.length && <Text muted>{tr('u7.child.foodsAlsoHere')}</Text>}
       </Card>}
 

@@ -35,6 +35,7 @@ import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Tab = 'forYou' | 'profile' | 'follow' | 'treatments';
 const FOR_YOU: Tab = 'forYou';
@@ -205,10 +206,10 @@ function FollowUp({ childId }: { childId: string }) {
         <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
       ) : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (
         <Card>
-          {entries.map((e) => (
-            <ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
-              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} />
-          ))}
+          <MotionList>{entries.map((e) => (
+            <MotionItem key={e.id}><ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
+              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} /></MotionItem>
+          ))}</MotionList>
         </Card>
       )}
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('nd.entry.add')}>

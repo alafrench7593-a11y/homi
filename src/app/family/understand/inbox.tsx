@@ -26,6 +26,7 @@ import { uuid } from '@/lib/uuid';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Inbox() {
   const t = useTheme();
@@ -71,11 +72,11 @@ export default function Inbox() {
         <EmptyState icon="message-circle" title={tr('und.inbox.empty')} body={tr('und.inbox.emptyB')} />
       ) : (
         <StaggerList gap={spacing.sm} testID="und-thread">
-          {list.map((m) => {
+          <MotionList>{list.map((m) => {
             const mine = m.author_id === me;
             const mission = m.task_id ? missions.all.find((x) => x.id === m.task_id) ?? null : null;
             return (
-              <View key={m.id} testID={`und-msg-${m.id}`} accessibilityLabel={`${mine ? tr('und.inbox.mine') : tr('und.inbox.from')}. ${m.body}`}
+              <MotionItem key={m.id}><View key={m.id} testID={`und-msg-${m.id}`} accessibilityLabel={`${mine ? tr('und.inbox.mine') : tr('und.inbox.from')}. ${m.body}`}
                 style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '92%', borderRadius: radius.lg, padding: spacing.sm, gap: 6,
                   backgroundColor: mine ? t.material.lines.controlFill : t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
                 <Row gap={spacing.xs} style={{ alignItems: 'center', justifyContent: 'space-between' }}>
@@ -101,9 +102,9 @@ export default function Inbox() {
                     )}
                   </View>
                 ) : null}
-              </View>
+              </View></MotionItem>
             );
-          })}
+          })}</MotionList>
         </StaggerList>
       )}
 

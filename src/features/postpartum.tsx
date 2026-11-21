@@ -18,6 +18,7 @@ import { usePostpartumCheckins, usePostpartumSettings, useSharedWithMe } from '@
 import { todayISO } from '@/lib/domain/dates';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatDate } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 // ------------------------------------------------------------------ échelle 1 à 5
 export function Scale({ label, value, onChange, low, high }: { label: string; value: number | null; onChange: (v: number | null) => void; low: string; high: string }) {
@@ -90,13 +91,13 @@ export function SupportPlanCard({ plan, country }: { plan: SupportPlan; country?
     <Card tone="soft">
       <Text weight="bold">{plan.title}</Text>
       <Text variant="small" style={{ marginTop: 4 }}>{plan.message}</Text>
-      <View style={{ marginTop: spacing.xs }}>
+      <MotionList style={{ marginTop: spacing.xs }}>
         {plan.actions.map((a, i) => (
-          <StaggerItem key={a.key} index={i}>
+          <MotionItem key={a.key}><StaggerItem key={a.key} index={i}>
             <ListRow icon={a.to ? 'arrow-right-circle' : 'check-circle'} title={a.label} subtitle={a.detail} onPress={a.to ? () => router.push(a.to as never) : undefined} />
-          </StaggerItem>
+          </StaggerItem></MotionItem>
         ))}
-      </View>
+      </MotionList>
       <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u1.pp.leads')}</Text>
     </Card>
   );

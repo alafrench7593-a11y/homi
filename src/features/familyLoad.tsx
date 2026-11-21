@@ -23,6 +23,7 @@ import { formatDate, formatTime, t as tr } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 export const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -311,7 +312,7 @@ export function RequestCard({ r, tasks }: { r: CareRequest; tasks: FamilyTask[] 
 export function ChildEssentials({ large }: { large?: boolean }) {
   const { data: children } = useChildren();
   if (!children?.length) return null;
-  return <View style={{ gap: spacing.xs }}>{children.map((c) => <ChildEssentialCard key={c.id} child={c} large={large} />)}</View>;
+  return <MotionList style={{ gap: spacing.xs }}>{children.map((c) => <MotionItem key={c.id}><ChildEssentialCard key={c.id} child={c} large={large} /></MotionItem>)}</MotionList>;
 }
 
 function ChildEssentialCard({ child, large }: { child: Child; large?: boolean }) {

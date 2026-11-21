@@ -18,6 +18,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { addDays, formatDateFr, todayISO } from '@/lib/domain/dates';
 import { t as tr } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function ChildSchool() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -69,10 +70,10 @@ export default function ChildSchool() {
         <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
       ) : !entries?.length ? <EmptyState icon="book" title={tr('sc.none')} /> : (
         <Card>
-          {entries.map((e) => (
-            <ListRow key={e.id} icon="book" title={e.title} subtitle={`${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
-              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} />
-          ))}
+          <MotionList>{entries.map((e) => (
+            <MotionItem key={e.id}><ListRow key={e.id} icon="book" title={e.title} subtitle={`${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
+              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} /></MotionItem>
+          ))}</MotionList>
         </Card>
       )}
     </Screen>

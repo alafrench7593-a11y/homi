@@ -19,6 +19,7 @@ import { mondayOf } from '@/lib/domain/custody';
 import { LEVEL_ICON, LEVELS, myHistory, weekPair, type Level } from './barometer';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const levelLabel = (l: Level) => tr(`p2.bm.level.${l}` as TKey);
 
@@ -91,8 +92,8 @@ export function BarometerCard() {
         </Row>
         {mine ? <Text variant="caption" muted testID="bm-status">{mine.shared ? tr('p2.bm.isShared', { name: partner?.name ?? '' }) : tr('p2.bm.isPrivate')}</Text> : null}
       </Card>
-      {shared.map((s) => (
-        <Card key={s.id} tone="soft" testID="bm-partner">
+      <MotionList style={{ gap: spacing.sm }}>{shared.map((s) => (
+        <MotionItem key={s.id}><Card key={s.id} tone="soft" testID="bm-partner">
           <Text variant="small" muted>{tr('p2.bm.partnerShared', { name: partner?.name ?? tr('und.inbox.from') })}</Text>
           <Row style={{ alignItems: 'center', marginTop: 4 }}>
             <Icon name={LEVEL_ICON[s.level]} size={18} color={t.colors.primary} />
@@ -100,17 +101,17 @@ export function BarometerCard() {
           </Row>
           {s.word ? <Text variant="small">{s.word}</Text> : null}
           <Text variant="caption" muted>{tr('p2.bm.partnerNote')}</Text>
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
       {history.length ? (
         <View style={{ gap: 4 }} testID="bm-history">
           <Text variant="label">{tr('p2.bm.history')}</Text>
-          {history.map((h) => (
-            <Row key={h.id} style={{ alignItems: 'center' }}>
+          <MotionList style={{ gap: 4 }}>{history.map((h) => (
+            <MotionItem key={h.id}><Row key={h.id} style={{ alignItems: 'center' }}>
               <Icon name={LEVEL_ICON[h.level]} size={16} color={t.colors.textMuted} />
               <Text variant="small" style={{ flex: 1 }}>{tr('p2.bm.weekOf', { date: formatDate(`${h.week_of}T12:00:00`, { day: 'numeric', month: 'short' }) })} · {levelLabel(h.level)}{h.word ? ` · ${h.word}` : ''}</Text>
-            </Row>
-          ))}
+            </Row></MotionItem>
+          ))}</MotionList>
         </View>
       ) : null}
     </View>

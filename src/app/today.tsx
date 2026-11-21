@@ -27,6 +27,7 @@ import type { Bottle, Breastfeed, Diaper, FeedPost, Meal, Sleep } from '@/lib/ty
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
@@ -101,9 +102,9 @@ export default function Today() {
     <Screen back title={moment === 'morning' ? tr('trk.digest.morning') : tr('trk.digest.evening')} subtitle={digest.title}>
       <Segmented label={tr('trk.digest.moment')} value={moment} onChange={(v) => setMoment(v as DigestMoment)} options={[{ value: 'morning', label: tr('trk.digest.morningOpt') }, { value: 'evening', label: tr('trk.digest.eveningOpt') }]} />
       <Text variant="small" muted>{digest.subtitle}</Text>
-      <View style={{ gap: spacing.sm }} testID="digest-items">
+      <MotionList style={{ gap: spacing.sm }} testID="digest-items">
         {digest.items.filter((i) => i.key !== 'question').map((it, i) => (
-          <Appear key={it.key} kind="soft" delay={0.05 * i}>
+          <MotionItem key={it.key}><Appear key={it.key} kind="soft" delay={0.05 * i}>
             <Tappable accessibilityRole={it.link ? 'button' : 'text'} accessibilityLabel={`${it.title}${it.detail ? `. ${it.detail}` : ''}`} disabled={!it.link}
               onPress={() => it.link && router.push(it.link as never)} testID={`digest-${it.key}`}
               style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 12, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
@@ -116,9 +117,9 @@ export default function Today() {
               </View>
               {it.premium ? <Text variant="caption" color={t.colors.gold}>{tr('trk.digest.premium')}</Text> : it.link ? <Icon name="chevron-right" size={18} color={t.colors.textMuted} /> : null}
             </Tappable>
-          </Appear>
+          </Appear></MotionItem>
         ))}
-      </View>
+      </MotionList>
       {question ? (
         <Card testID="digest-question">
           <Row gap={6}><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text variant="caption" weight="bold" muted>{tr('trk.digest.question')}</Text></Row>

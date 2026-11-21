@@ -21,6 +21,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Exhausted() {
   const toast = useToast();
@@ -83,7 +84,7 @@ export default function Exhausted() {
       {past.length ? (
         <Card tone="soft">
           <Text variant="label">{tr('cm.ex.history')}</Text>
-          {past.slice(0, 6).map((p) => <Text key={p.id} variant="small">{formatDate(p.created_at, { day: 'numeric', month: 'short' })} · {tr(`cm.ex.r.${exhaustionLevel(p.answers).level}` as TKey)}</Text>)}
+          <MotionList>{past.slice(0, 6).map((p) => <MotionItem key={p.id}><Text key={p.id} variant="small">{formatDate(p.created_at, { day: 'numeric', month: 'short' })} · {tr(`cm.ex.r.${exhaustionLevel(p.answers).level}` as TKey)}</Text></MotionItem>)}</MotionList>
         </Card>
       ) : null}
       <Text variant="caption" muted>{tr('cm.ex.private')}</Text>

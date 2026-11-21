@@ -28,6 +28,7 @@ import { useSleepAssistantContext } from '@/features/sleepAssistant';
 import type { Child } from '@/lib/types';
 import { AuraGlyph } from './AuraMark';
 import { creditActionFor, journalPayload } from './model';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Kind = 'sleep' | 'cycle' | 'mood' | 'load';
 
@@ -45,17 +46,17 @@ export function AuraDiaryAnalysis({ pages, testID = 'aura-analysis-diary' }: { p
   return (
     <AnalysisShell kind="diary" payload={payload} testID={testID}>
       <Text variant="small" muted>{tr('aura.an.pick')}</Text>
-      {recent.map((p) => {
+      <MotionList>{recent.map((p) => {
         const on = chosen.has(p.id);
         return (
-          <Tappable key={p.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} testID="aura-analysis-page"
+          <MotionItem key={p.id}><Tappable key={p.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} testID="aura-analysis-page"
             onPress={() => setChosen((s) => { const n = new Set(s); if (n.has(p.id)) n.delete(p.id); else if (n.size < MAX_JOURNAL_ENTRIES) n.add(p.id); return n; })}
             style={{ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 4 }}>
             <Icon name={on ? 'check-square' : 'square'} size={20} color={on ? t.colors.primary : t.colors.textMuted} />
             <Text variant="small" style={{ flex: 1 }} numberOfLines={1}>{`${formatDate(p.checked_at, { day: 'numeric', month: 'short' })} — ${p.journal ?? ''}`}</Text>
-          </Tappable>
+          </Tappable></MotionItem>
         );
-      })}
+      })}</MotionList>
     </AnalysisShell>
   );
 }
@@ -79,9 +80,9 @@ function AnalysisShell({ kind, payload, testID, children }: { kind: Kind | 'diar
       {!payload ? <Text variant="small" muted testID={`${testID}-empty`}>{tr(kind === 'diary' ? 'aura.an.pickFirst' : 'aura.an.none')}</Text> : (
         <>
           <Text variant="small" muted>{tr('aura.an.body')}</Text>
-          <View style={{ gap: 2, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} testID={`${testID}-preview`}>
-            {rows.map((r) => <Text key={r.key} variant="caption">{`${tr(`aura.an.f.${r.key}` as TKey)} : ${r.value}`}</Text>)}
-          </View>
+          <MotionList style={{ gap: 2, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} testID={`${testID}-preview`}>
+            {rows.map((r) => <MotionItem key={r.key}><Text key={r.key} variant="caption">{`${tr(`aura.an.f.${r.key}` as TKey)} : ${r.value}`}</Text></MotionItem>)}
+          </MotionList>
           <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Text variant="small" style={{ flex: 1 }}>{tr('aura.an.consent')}</Text>
             <Toggle label={tr('aura.an.consent')} value={agreed} onChange={setAgreed} />

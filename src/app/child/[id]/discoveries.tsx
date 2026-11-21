@@ -42,6 +42,7 @@ import { recentlyOffered } from '@/lib/domain/dayTimeline';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import type { Recipe } from '@/lib/recipes/types';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Filter = 'all' | 'to_discover' | 'discovered' | 'retry' | 'favorites' | 'reaction';
 const BASIC_FILTERS: Filter[] = ['all', 'favorites'];
@@ -247,35 +248,35 @@ export default function Discoveries() {
       {/* Allergènes : toujours gratuit */}
       <SectionTitle title={tr('dc.allergens')} />
       <Banner tone="info" icon="info">{tr('dc.allergensHint')}</Banner>
-      <View style={{ gap: 6 }} testID="dc-allergens">
+      <MotionList style={{ gap: 6 }} testID="dc-allergens">
         {allergenFoods.map((f) => {
           const e = byKey.get(f.key);
           const st = displayState(e, f, age);
           return (
-            <Tappable key={f.key} accessibilityRole="button" onPress={() => setOpen(f)} testID={`dc-allergen-${f.key}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52 }}>
+            <MotionItem key={f.key}><Tappable key={f.key} accessibilityRole="button" onPress={() => setOpen(f)} testID={`dc-allergen-${f.key}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52 }}>
               <FoodArt food={f} size={44} />
               <View style={{ flex: 1 }}>
                 <Text weight="bold">{f.name}</Text>
                 <Text variant="caption" muted>{allergenLabel(f.allergen!)} · {tr(`dc.state.${st}` as TKey)}{e?.reaction ? ` · ${tr('dc.reactionNoted')}` : ''}</Text>
               </View>
               <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-            </Tappable>
+            </Tappable></MotionItem>
           );
         })}
-      </View>
+      </MotionList>
 
       {/* Historique */}
       <SectionTitle title={tr('dc.history')} />
       <Text variant="caption" muted>{premium ? tr('dc.historyFull') : tr('dc.historyRecent')}</Text>
       {history.length ? (
-        <View style={{ gap: 4 }} testID="dc-history">
+        <MotionList style={{ gap: 4 }} testID="dc-history">
           {history.slice(0, premium ? 200 : 40).map((h) => (
-            <View key={h.id} testID={`dc-h-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 40 }}>
+            <MotionItem key={h.id}><View key={h.id} testID={`dc-h-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 40 }}>
               <Text variant="caption" muted style={{ width: 72 }}>{day(h.tasted_on)}</Text>
               <Text style={{ flex: 1 }}>{h.food_name} · {tastingLine(h)}</Text>
-            </View>
+            </View></MotionItem>
           ))}
-        </View>
+        </MotionList>
       ) : <Text muted variant="small">{tr('dc.historyNone')}</Text>}
       {!premium && tastings.length > history.length ? (
         <PremiumSection feature="diversification" name={name} preview={<Text variant="small">{tr('dc.historyMore', { count: tastings.length - history.length })}</Text>}><View /></PremiumSection>
@@ -448,14 +449,14 @@ function FoodSheet({ blwDefault, food, child, age, entry, entries, tastings, rec
           <View style={{ gap: 2 }} testID="dc-sheet-history">
             <Text variant="small" weight="bold">{tr('dc.sheet.history')}</Text>
             {mine.length > 1 ? <Text variant="caption" muted testID="dc-sheet-counts">{tr('ref.counts', { offered: mine.length, refused: mine.filter((x) => x.status === 'refused').length })}</Text> : null}
-            {mine.slice(0, premium ? 50 : 5).map((h) => <Text key={h.id} variant="caption" muted>{day(h.tasted_on)} · {tastingLine(h)}</Text>)}
+            <MotionList style={{ gap: 2 }}>{mine.slice(0, premium ? 50 : 5).map((h) => <MotionItem key={h.id}><Text key={h.id} variant="caption" muted>{day(h.tasted_on)} · {tastingLine(h)}</Text></MotionItem>)}</MotionList>
           </View>
         ) : null}
 
         <Text variant="small" weight="bold">{tr('dc.sheet.recipes', { food: food.name })}</Text>
         <PremiumSection feature="diversification" name={child.first_name} preview={<Text variant="small">{tr('dc.sheet.recipesHint')}</Text>} testID="dc-recipes-locked">
           <Text variant="caption" muted>{tr('dc.sheet.recipesHint')}</Text>
-          {ideas.length ? ideas.slice(0, 6).map((r) => <RecipeLine key={r.id} r={r} onOpen={() => { onClose(); router.push(`/meals/${r.slug}`); }} />)
+          {ideas.length ? <MotionList>{ideas.slice(0, 6).map((r) => <MotionItem key={r.id}><RecipeLine key={r.id} r={r} onOpen={() => { onClose(); router.push(`/meals/${r.slug}`); }} /></MotionItem>)}</MotionList>
             : <Text variant="small" muted testID="dc-recipes-none">{tr('dc.sheet.recipesNone', { food: food.name })}</Text>}
         </PremiumSection>
         {entry ? <Button label={tr('dc.sheet.delete')} variant="ghost" icon="trash-2" onPress={remove} testID="dc-delete" /> : null}
@@ -578,14 +579,14 @@ function RefusalsSection({ tastings, name, onOpen }: { tastings: Tasting[]; name
     <View style={{ gap: spacing.xs }} testID="dc-refusals">
       <SectionTitle title={tr('ref.title')} />
       <Text variant="caption" muted>{tr('ref.intro', { name })}</Text>
-      {list.length ? list.slice(0, 20).map((r) => (
-        <Tappable key={r.key} accessibilityRole="button" onPress={() => r.food_key && onOpen(r.food_key)} testID={`dc-refusal-${r.food_key ?? r.food_name}`}
+      {list.length ? <MotionList style={{ gap: spacing.xs }}>{list.slice(0, 20).map((r) => (
+        <MotionItem key={r.key}><Tappable key={r.key} accessibilityRole="button" onPress={() => r.food_key && onOpen(r.food_key)} testID={`dc-refusal-${r.food_key ?? r.food_name}`}
           style={{ minHeight: 48, justifyContent: 'center', gap: 2 }}>
           <Text weight="bold">{r.food_name}</Text>
           <Text variant="caption" muted>{[tr('ref.line', { offered: r.offered, refused: r.refused }), tr('ref.last', { date: day(r.lastRefused) }),
             r.lastStatus !== 'refused' ? tr('ref.since', { status: tr(`dc.status.${r.lastStatus}` as TKey).toLowerCase(), date: day(r.lastOffered) }) : null].filter(Boolean).join(' · ')}</Text>
-        </Tappable>
-      )) : <Text variant="small" muted testID="dc-refusals-none">{tr('ref.none')}</Text>}
+        </Tappable></MotionItem>
+      ))}</MotionList> : <Text variant="small" muted testID="dc-refusals-none">{tr('ref.none')}</Text>}
     </View>
   );
 }
@@ -597,12 +598,12 @@ function BlwJournal({ tastings, name, onOpen }: { tastings: Tasting[]; name: str
     <View style={{ gap: spacing.xs }} testID="dc-blw">
       <SectionTitle title={tr('blw.title')} />
       <Text variant="caption" muted>{tr('blw.intro', { name })}</Text>
-      {list.length ? list.slice(0, 20).map((h) => (
-        <Tappable key={h.id} accessibilityRole="button" onPress={() => h.food_key && onOpen(h.food_key)} testID={`dc-blw-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 44 }}>
+      {list.length ? <MotionList style={{ gap: spacing.xs }}>{list.slice(0, 20).map((h) => (
+        <MotionItem key={h.id}><Tappable key={h.id} accessibilityRole="button" onPress={() => h.food_key && onOpen(h.food_key)} testID={`dc-blw-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 44 }}>
           <Text variant="caption" muted style={{ width: 72 }}>{day(h.tasted_on)}</Text>
           <Text style={{ flex: 1 }}>{h.food_name} · {tastingLine(h)}</Text>
-        </Tappable>
-      )) : <Text variant="small" muted testID="dc-blw-none">{tr('blw.none')}</Text>}
+        </Tappable></MotionItem>
+      ))}</MotionList> : <Text variant="small" muted testID="dc-blw-none">{tr('blw.none')}</Text>}
     </View>
   );
 }

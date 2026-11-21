@@ -25,6 +25,7 @@ import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Filter = 'today' | 'upcoming' | 'unassigned' | 'done';
 
@@ -160,7 +161,7 @@ export default function FamilyHome() {
       ) : tipsOff ? <Button label={tr('u2.fam.show_tips')} size="sm" variant="ghost" onPress={() => setTipsOff(false)} /> : null}
 
       {open.length || recent.length ? <SectionTitle title={tr('u2.fam.requests')} /> : null}
-      {[...open, ...recent].map((r, i) => <StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem>)}
+      <MotionList>{[...open, ...recent].map((r, i) => <MotionItem key={r.id}><StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem></MotionItem>)}</MotionList>
 
       <SectionTitle title={tr('u2.fam.tasks')} />
       {(() => {
@@ -175,11 +176,11 @@ export default function FamilyHome() {
       {tasksQ.data && list.length === 0 ? (
         <EmptyState icon="check-square" title={filter === 'done' ? tr('u2.fam.empty_done') : tr('u2.fam.empty_todo')} body={filter === 'today' ? tr('u2.fam.empty_body') : undefined} action={filter !== 'done' ? { label: tr('u2.fam.add_task'), onPress: () => setCreating(true) } : undefined} />
       ) : null}
-      {list.map((task, i) => (
-        <StaggerItem key={task.id} index={i}>
+      <MotionList>{list.map((task, i) => (
+        <MotionItem key={task.id}><StaggerItem key={task.id} index={i}>
           <TaskRow task={task} onEdit={setEditing} onPropose={(x) => { setProposeHint(false); setRequest({ kind: 'take_task', taskId: x.id }); }} />
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.fam.organise')} />
       <ToolLinks ids={['family_nights', 'family_metime', 'family_routines', 'family_calendar', 'family_review', 'family_history', 'family_urgent']} allOf={['family', 'couple']} testID="family-tools" />

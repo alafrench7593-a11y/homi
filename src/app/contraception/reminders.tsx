@@ -22,6 +22,7 @@ import type { ContraceptionMethod, ContraceptionMethodKind } from '@/lib/types-f
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const fd = (iso: string, withYear = true) => formatDate(`${iso}T00:00:00Z`, { day: 'numeric', month: 'long', ...(withYear ? { year: 'numeric' as const } : {}), timeZone: 'UTC' });
 
@@ -109,15 +110,15 @@ export default function ContraceptionRemindersScreen() {
         <ErrorView error={methodsQ.error} onRetry={() => void methodsQ.refetch()} title={tr('u7.contra.index.contraError')} />
       ) : (
       <Card>
-        {list.map((m) => (
-          <ListRow
+        <MotionList>{list.map((m) => (
+          <MotionItem key={m.id}><ListRow
             key={m.id}
             icon="shield"
             title={`${m.label || methodTitle(m.method)}${m.active ? '' : tr('u7.contra.rem.stopped')}`}
             subtitle={[m.started_on ? tr('u7.contra.index.since', { date: fd(m.started_on) }) : null, m.renewal_due_on ? tr('u7.contra.index.renewOn', { date: fd(m.renewal_due_on) }) : null].filter(Boolean).join(' · ') || undefined}
             onPress={() => open(m)}
-          />
-        ))}
+          /></MotionItem>
+        ))}</MotionList>
         {!list.length ? <Text muted>{tr('u7.contra.rem.none')}</Text> : null}
       </Card>
       )}

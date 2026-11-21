@@ -27,6 +27,7 @@ import { Choices, CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/feature
 import { fmtDay, fmtDayYear } from '@/features/cycle/format';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const A4 = ['yes', 'no', 'unsure', 'prefer_not'] as const;
 const A3 = ['yes', 'no', 'unsure'] as const;
@@ -180,13 +181,13 @@ export default function IntimacyScreen() {
           {list.length ? <Button label={showList ? tr('cy.sex.hide') : tr('cy.sex.show')} size="sm" variant="ghost" onPress={() => setShowList((v) => !v)} /> : null}
         </View>
         {!list.length ? <Ink variant="small" soft>{tr('cy.sex.empty')}</Ink> : !showList ? <Ink variant="small" soft>{tr('cy.sex.hiddenCount', { count: list.length })}</Ink> : null}
-        {showList ? list.slice(0, 60).map((l) => (
-          <View key={l.id} style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs }}>
+        {showList ? <MotionList>{list.slice(0, 60).map((l) => (
+          <MotionItem key={l.id}><View key={l.id} style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs }}>
             <Ink variant="small" style={{ flex: 1, minWidth: 140 }}>{fmtDayYear(l.occurred_on)}</Ink>
             <Button label={tr('common.edit')} size="sm" variant="ghost" onPress={() => router.replace(`/cycle/intimacy?id=${l.id}` as never)} />
             <Button label={tr('common.delete')} size="sm" variant="ghost" onPress={() => remove(l)} />
-          </View>
-        )) : null}
+          </View></MotionItem>
+        ))}</MotionList> : null}
         {showList && list.length ? <Button label={tr('cy.sex.deleteAll')} variant="ghost" icon="trash-2" onPress={removeAll} full /> : null}
       </Glass>
       <Ink variant="caption" soft>{tr('cy.private')}</Ink>

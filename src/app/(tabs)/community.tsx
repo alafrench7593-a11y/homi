@@ -31,6 +31,7 @@ import type { FeedPost } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Mode = 'foryou' | 'following' | 'recent' | 'saved';
 const MODES: { value: Mode; readonly label: string }[] = [
@@ -184,13 +185,13 @@ export default function Community() {
         <Card testID="community-waiting">
           <Row><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm1.feed.waitingTitle')}</Text></Row>
           <Text variant="caption" muted>{tr('cm1.feed.waitingSub')}</Text>
-          {waiting.map((p) => (
-            <Tappable key={p.id} accessibilityRole="button" accessibilityLabel={tr('cm1.feed.openA11y', { title: p.title ?? p.body })} onPress={() => router.push(`/community/post/${p.id}`)}
+          <MotionList>{waiting.map((p) => (
+            <MotionItem key={p.id}><Tappable key={p.id} accessibilityRole="button" accessibilityLabel={tr('cm1.feed.openA11y', { title: p.title ?? p.body })} onPress={() => router.push(`/community/post/${p.id}`)}
               style={{ minHeight: MIN_TOUCH, justifyContent: 'center', borderTopWidth: 1, borderTopColor: t.colors.border, paddingVertical: 6 }}>
               <Text weight="medium" numberOfLines={2} intentionalTruncation>{p.title ?? p.body}</Text>
               <Text variant="caption" muted>{`${forumOf(p)?.title ?? ''} · ${p.comment_count ? tr('cm1.replies', { count: p.comment_count }) : tr('cm1.noReplyYet')}`}</Text>
-            </Tappable>
-          ))}
+            </Tappable></MotionItem>
+          ))}</MotionList>
         </Card>
       ) : null}
       {mode === 'following' && !searching && !filters && !subs.ids.length && !(groups.data ?? []).some((g) => g.is_member) ? (

@@ -27,6 +27,7 @@ import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens';
 import { localeTag, t as tr } from '@/i18n';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
 // Accents choisis par le parent (noms conservés) : teintes harmonisées HOMI, encres lisibles sur fond clair
@@ -89,11 +90,11 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
   }
   return (
     <View style={{ gap: 6, marginTop: spacing.xs }} testID="poll">
-      {poll.options.map((o) => {
+      <MotionList style={{ gap: 6 }}>{poll.options.map((o) => {
         const pct = pollPercent(o.votes, poll.total);
         const selected = picked.includes(o.id) || (showResults && o.mine);
         return (
-          <Tappable key={o.id} accessibilityRole={poll.multiple ? 'checkbox' : 'radio'} accessibilityState={{ checked: selected, disabled: poll.closed }}
+          <MotionItem key={o.id}><Tappable key={o.id} accessibilityRole={poll.multiple ? 'checkbox' : 'radio'} accessibilityState={{ checked: selected, disabled: poll.closed }}
             accessibilityLabel={`${o.label}${showResults ? `, ${tr('cm1.poll.pct', { pct })}` : ''}`} disabled={poll.closed || vote.isPending}
             onPress={() => {
               if (poll.multiple) setPicked((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]));
@@ -107,9 +108,9 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
               <Text style={{ flex: 1 }} weight={selected ? 'bold' : 'regular'}>{o.label}</Text>
               {showResults ? <Text variant="small" weight="bold">{tr('cm1.poll.pct', { pct })}</Text> : null}
             </Row>
-          </Tappable>
+          </Tappable></MotionItem>
         );
-      })}
+      })}</MotionList>
       {poll.multiple && !poll.closed && picked.length ? <Button label={tr('cm1.poll.vote')} size="sm" onPress={() => void send(picked)} loading={vote.isPending} testID="poll-vote" /> : null}
       <Text variant="caption" muted>
         {[tr('cm1.poll.participations', { count: poll.total }), poll.multiple ? tr('cm1.poll.multiple') : null, poll.closed ? tr('cm1.poll.closed') : poll.closes_at ? tr('cm1.poll.until', { date: new Date(poll.closes_at).toLocaleDateString(localeTag(), { day: 'numeric', month: 'long' }) }) : null, tr('cm1.poll.anonymous')].filter(Boolean).join(' · ')}

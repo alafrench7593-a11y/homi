@@ -34,6 +34,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Référence stable : un nouveau tableau à chaque lecture du store provoquerait des rendus sans fin. */
 const NO_QUESTIONS: string[] = [];
@@ -139,7 +140,7 @@ export default function Grow() {
       </ScrollView>
 
       <View style={{ gap: spacing.sm }} testID="gr-steps">
-        {list.length ? list.map((s) => <StepCard key={s.key} s={s} row={byKey.get(s.key)} locked={!stepAvailable(s, premium)} onPress={() => openStep(s)} child={child} />)
+        {list.length ? <MotionList style={{ gap: spacing.sm }}>{list.map((s) => <MotionItem key={s.key}><StepCard key={s.key} s={s} row={byKey.get(s.key)} locked={!stepAvailable(s, premium)} onPress={() => openStep(s)} child={child} /></MotionItem>)}</MotionList>
           : <Text muted variant="small">{band === '36_72' ? tr('gr.beyond') : tr('gr.noneInBand')}</Text>}
       </View>
       {!premium ? <Text variant="caption" muted testID="gr-free-note">{tr('gr.freeNote')}</Text> : null}

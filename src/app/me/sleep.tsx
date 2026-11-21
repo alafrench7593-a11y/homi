@@ -27,6 +27,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const qualityLabels = () => [tr('u8.sleep.q1'), tr('u8.sleep.q2'), tr('u8.sleep.q3'), tr('u8.sleep.q4'), tr('u8.sleep.q5')];
 const fatigueLabels = () => [tr('u8.sleep.f1'), tr('u8.sleep.f2'), tr('u8.sleep.f3'), tr('u8.sleep.f4'), tr('u8.sleep.f5')];
@@ -394,8 +395,8 @@ export default function MySleepScreen() {
 
             <SectionTitle title={tipsTitle} />
             <Text variant="small" muted>{tr('u8.sleep.tipsIntro')}</Text>
-            {tips.map((tip) => (
-              <Card key={tip.key} tone="lavender">
+            <MotionList style={{ gap: spacing.md }}>{tips.map((tip) => (
+              <MotionItem key={tip.key}><Card key={tip.key} tone="lavender">
                 <Row style={{ alignItems: 'flex-start' }}>
                   <Icon name={tip.icon as IconName} color={t.colors.lavender} />
                   <View style={{ flex: 1, gap: 4 }}>
@@ -403,8 +404,8 @@ export default function MySleepScreen() {
                     <Text variant="small">{tip.text}</Text>
                   </View>
                 </Row>
-              </Card>
-            ))}
+              </Card></MotionItem>
+            ))}</MotionList>
             <Banner tone="info" title={tr('u8.sleep.whenTitle')}>
               {tr('u8.sleep.whenBody')}
             </Banner>

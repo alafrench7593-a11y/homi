@@ -20,6 +20,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { usePeople } from '@/lib/data/hooks-family-load';
 import { useDeleteMoment, useMoments, useOtherParent, useProposeMoment, useRespondMoment } from '@/lib/data/hooks-calmMoments';
 import { ideaOf, momentActions, splitMoments, suggestedIdeas, type Moment, type MomentAction } from '@/features/moments/domain';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const ideaTitle = (k: string) => tr(`mom.idea.${k}.title` as TKey);
 const ideaSub = (k: string) => tr(`mom.idea.${k}.sub` as TKey);
@@ -120,26 +121,26 @@ export default function CoupleMoments() {
       <Text muted>{tr('mom.intro')}</Text>
       {!other ? <><Banner tone="info" icon="users">{tr('mom.noPartner')}</Banner><InviteOtherParent testID="mom-invite" /></> : null}
 
-      {split.toAnswer.map((m) => (
-        <Card key={m.id} testID={`mom-in-${m.idea_key}`}>
+      <MotionList>{split.toAnswer.map((m) => (
+        <MotionItem key={m.id}><Card key={m.id} testID={`mom-in-${m.idea_key}`}>
           <Text variant="caption" muted>{tr('mom.fromName', { name: nameOf(m.from_user) })}</Text>
           <Text weight="bold">{ideaTitle(m.idea_key)}</Text>
           <Text variant="small" muted>{ideaSub(m.idea_key)}</Text>
           {buttons(m, ['accept', 'plan', 'decline'])}
           <Text variant="caption" muted>{tr('mom.noJustify')}</Text>
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
 
       {split.upcoming.length ? (
         <View style={{ gap: spacing.sm }} testID="mom-upcoming">
           <Text variant="heading" accessibilityRole="header">{tr('mom.upcoming')}</Text>
-          {split.upcoming.map((m) => (
-            <Card key={m.id} testID={`mom-up-${m.idea_key}`}>
+          <MotionList style={{ gap: spacing.sm }}>{split.upcoming.map((m) => (
+            <MotionItem key={m.id}><Card key={m.id} testID={`mom-up-${m.idea_key}`}>
               <Text weight="bold">{ideaTitle(m.idea_key)}</Text>
               <Text variant="small" muted>{m.planned_at ? formatDate(m.planned_at, LONG) : tr('mom.toPlan')}{m._pending ? ` · ${tr('mom.pending')}` : ''}</Text>
               {buttons(m, ['plan', 'done', 'cancel'])}
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </View>
       ) : null}
 

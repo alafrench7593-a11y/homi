@@ -20,11 +20,13 @@
  *                  panneau de verre) — sauf visionneuse plein écran justifiée ;
  *      segments  : un rôle « tab » posé à la main doit venir avec un indicateur qui glisse (useIndicator,
  *                  useLiquidIndicator, Lens) ; `ChoiceGroup` / `Segmented` / `GlassSegmentedControl` en ont un ;
- *      listes    : un fichier qui SUPPRIME ou AJOUTE des entrées et les rend avec `.map(` doit animer l'ajout et la
- *                  suppression (MotionList / MotionItem, ListGroup — animé à la source —, `entering` / `exiting` /
- *                  `layout`, ReorderList) ;
- *      coche     : une case « fait » posée à la main (rôle checkbox hors Chip) doit dessiner sa coche
- *                  (CompletionCheck, SuccessCheck, DrawCheck, CheckMark, TaskCheck).
+ *      listes    : sur un écran qui écrit des données (mutation, insert, delete), toute liste d'ENTRÉES rendue par
+ *                  `.map((x) => <… key={x.id}>)` anime l'ajout et la suppression : MotionItem (dans MotionList),
+ *                  `entering` / `layout`, ou rangées d'un ListGroup / ReorderList (animés à la source). Les listes
+ *                  virtualisées (FlatList / VirtualList) ne sont pas comptées (recyclage : on n'anime que l'élément touché) ;
+ *      coche     : dans un fichier qui pose des cases à cocher (rôle checkbox hors Chip), aucune coche FIGÉE
+ *                  (pictogramme « check » posé tel quel) : la coche se trace (CheckMark, CompletionCheck,
+ *                  SuccessCheck) ; une case sans coche (sélection par contour et graisse) passe.
  *  Une route est CONFORME si tous ses critères applicables passent.
  */
 import fs from 'node:fs';
@@ -109,7 +111,6 @@ function resolveImport(from, spec) {
 
 // ------------------------------------------------------------------------------------------- analyse d'un fichier
 const RAW_PRESS = new Set(['Pressable', 'TouchableOpacity', 'TouchableHighlight', 'TouchableWithoutFeedback', 'TouchableNativeFeedback']);
-const LIST_MOTION = /\b(MotionList|MotionItem|ListGroup|ReorderList|StaggerItem[^>]*fresh)\b|\b(entering|exiting|layout)=\{/;
 const SLIDING = /\b(useIndicator|useLiquidIndicator|useLensSlide|Lens|GlassSegmentedControl|ChoiceGroup|Segmented|GlassTabBar)\b/;
 const DRAWN_CHECK = /\b(CompletionCheck|SuccessCheck|DrawCheck|CheckMark|TaskCheck|CompletionGlow)\b/;
 const cache = new Map();
@@ -120,7 +121,7 @@ function analyse(file) {
   const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
   const imports = [];
   const rnNames = new Set();
-  const res = { file: rel(file), imports, rawPress: [], rawPressOk: 0, rawModal: [], tabs: 0, checkboxes: 0, usesScreen: false, sheets: 0 };
+  const res = { file: rel(file), imports, rawPress: [], rawPressOk: 0, rawModal: [], tabs: 0, checkboxes: 0, staticChecks: 0, usesScreen: false, sheets: 0 };
   sf.forEachChild((n) => {
     if (ts.isImportDeclaration(n) || ts.isExportDeclaration(n)) {
       const spec = n.moduleSpecifier && ts.isStringLiteral(n.moduleSpecifier) ? n.moduleSpecifier.text : null;
@@ -155,6 +156,8 @@ function analyse(file) {
       const role = attrText(attrs, 'accessibilityRole') ?? attrText(attrs, 'role') ?? '';
       if (/["']tab["']/.test(role)) res.tabs++;
       if (/["']checkbox["']/.test(role) && tag !== 'Chip') res.checkboxes++;
+      // coche FIGÉE : pictogramme « check » posé tel quel (au lieu d'une coche qui se trace)
+      if (/^(Icon|Feather|MaterialCommunityIcons|Ionicons)$/.test(tag) && /^["'](check|check-circle|check-square|check-bold|checkbox-marked(-circle)?)["']$/.test(attrText(attrs, 'name') ?? '')) res.staticChecks++;
     }
     ts.forEachChild(n, visit);
   };
@@ -162,12 +165,37 @@ function analyse(file) {
   const code = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   res.sliding = SLIDING.test(code);
   res.drawnCheck = DRAWN_CHECK.test(code);
-  res.listMotion = LIST_MOTION.test(code);
   res.segmentsUsed = /<(Segmented|ChoiceGroup|GlassSegmentedControl|GlassTabBar)\b/.test(code);
-  // Ajout / suppression d'entrées rendues en liste (journaux, listes, tâches…)
-  const mutates = /\b(remove|delete|del|archive|addItem|insertRow|deleteRow|removeItem|deleteEntry|removeEntry)\w*\s*\(|\.delete\(\)|\.from\([^)]*\)\s*\.insert\(/i.test(code);
-  const rendersList = /\.map\(\s*\(?[\w{},\s:]*\)?\s*=>\s*\(?\s*<[A-Z]/.test(code) && /\bkey=\{/.test(code);
-  res.dynamicList = mutates && rendersList;
+  // Listes d'ENTRÉES : `.map((x) => <El key={x.id} …>)` (clé = identifiant d'une donnée enregistrée). Animée si l'élément
+  // rendu est un MotionItem, porte `entering` / `layout`, ou vit dans un ListGroup / ReorderList (animés à la source).
+  res.entryLists = [];
+  const visitMaps = (n, anc) => {
+    if (ts.isCallExpression(n) && ts.isPropertyAccessExpression(n.expression) && n.expression.name.text === 'map' && n.arguments.length) {
+      const fn = n.arguments[0];
+      if ((ts.isArrowFunction(fn) || ts.isFunctionExpression(fn)) && fn.parameters[0] && ts.isIdentifier(fn.parameters[0].name)) {
+        const p = fn.parameters[0].name.text;
+        let b = fn.body;
+        while (b && ts.isParenthesizedExpression(b)) b = b.expression;
+        if (b && ts.isBlock(b)) { const r = b.statements.filter(ts.isReturnStatement); b = r.length === 1 ? r[0].expression : null; while (b && ts.isParenthesizedExpression(b)) b = b.expression; }
+        if (b && (ts.isJsxElement(b) || ts.isJsxSelfClosingElement(b))) {
+          const op = ts.isJsxElement(b) ? b.openingElement : b;
+          const tag = op.tagName.getText(sf);
+          const key = attrText(op.attributes, 'key') ?? '';
+          // receveur constant (CATALOGUE, OPTIONS…) = catalogue figé, pas des entrées enregistrées
+          const recv = n.expression.expression.getText(sf);
+          const staticRecv = /^[A-Z][A-Z0-9_]*$/.test(recv) || /^Object\.(keys|entries|values)\([A-Z][A-Z0-9_]*\)$/.test(recv);
+          if (!staticRecv && new RegExp(`^\\{\\s*(String\\()?${p}\\.(id|key|uuid)\\b`).test(key) && tag !== 'Chip') {
+            const animated = tag === 'MotionItem' || !!attrText(op.attributes, 'entering') || !!attrText(op.attributes, 'layout') || anc.some((t) => t === 'ListGroup' || t === 'ReorderList');
+            res.entryLists.push({ line: sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1, tag, animated });
+          }
+        }
+      }
+    }
+    const tagHere = ts.isJsxElement(n) ? n.openingElement.tagName.getText(sf) : null;
+    ts.forEachChild(n, (c) => visitMaps(c, tagHere ? [...anc, tagHere] : anc));
+  };
+  visitMaps(sf, []);
+  res.mutates = /\buseMutation\b|\bmutateAsync\b|\.insert\(|\.delete\(|\.upsert\(|\bdeleteRow\b|\binsertRow\b/.test(code);
   cache.set(file, res);
   return res;
 }
@@ -207,19 +235,20 @@ export function audit() {
     const hasSeg = tabFiles.length || files.some((a) => a.segmentsUsed);
     crit.segments = !hasSeg ? 'n/a' : tabFiles.some((a) => !a.sliding) ? 'fail' : 'ok';
     // listes
-    const dyn = files.filter((a) => a.dynamicList);
-    crit.lists = !dyn.length ? 'n/a' : dyn.some((a) => !a.listMotion) ? 'fail' : 'ok';
+    const mut = files.some((a) => a.mutates);
+    const lists = mut ? files.flatMap((a) => a.entryLists.map((l) => ({ ...l, file: a.file }))) : [];
+    crit.lists = !lists.length ? 'n/a' : lists.some((l) => !l.animated) ? 'fail' : 'ok';
     // coche
     const boxes = files.filter((a) => a.checkboxes);
-    crit.check = !boxes.length ? 'n/a' : boxes.some((a) => !a.drawnCheck) ? 'fail' : 'ok';
+    crit.check = !boxes.length ? 'n/a' : boxes.some((a) => a.staticChecks) ? 'fail' : 'ok';
     const failing = Object.entries(crit).filter(([, v]) => v === 'fail').map(([k]) => k);
     return {
       route, file: rel(file), crit, conform: failing.length === 0, failing,
       detail: {
         rawPress: raw, rawModal: modals,
-        listFiles: dyn.filter((a) => !a.listMotion).map((a) => a.file),
+        listFiles: lists.filter((l) => !l.animated).map((l) => `${l.file}:${l.line}`),
         tabFiles: tabFiles.filter((a) => !a.sliding).map((a) => a.file),
-        checkFiles: boxes.filter((a) => !a.drawnCheck).map((a) => a.file),
+        checkFiles: boxes.filter((a) => a.staticChecks).map((a) => a.file),
         exception: crit.header === 'exception' ? HEADER_EXCEPTIONS[route] : undefined,
       },
       own: own.file,

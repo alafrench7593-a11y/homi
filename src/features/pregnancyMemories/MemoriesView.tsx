@@ -23,6 +23,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { byTrimester, MAX_PHOTOS, MEMORY_KINDS, parseWeek, validateMemory, weekOn, type MemoryKind, type PregnancyMemory } from './domain';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const LONG = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' } as const;
 
@@ -136,8 +137,8 @@ export function MemoriesView({ openNew }: { openNew?: boolean }) {
       {groups.map((g, gi) => (
         <View key={`${g.trimester ?? 'x'}-${gi}`} style={{ gap: spacing.sm }}>
           <SectionTitle title={g.trimester ? tr(`pmem.tri.${g.trimester}` as TKey) : tr('pmem.tri.none')} />
-          {g.items.map((m) => (
-            <Card key={m.id} onPress={() => setSheet({ memory: m })} accessibilityLabel={tr('pmem.cardA11y', { date: formatDate(`${m.happened_on}T12:00:00`, LONG) })} testID={`pm-card-${m.happened_on}`}>
+          <MotionList style={{ gap: spacing.sm }}>{g.items.map((m) => (
+            <MotionItem key={m.id}><Card key={m.id} onPress={() => setSheet({ memory: m })} accessibilityLabel={tr('pmem.cardA11y', { date: formatDate(`${m.happened_on}T12:00:00`, LONG) })} testID={`pm-card-${m.happened_on}`}>
               <View style={{ gap: 4 }}>
                 <Text variant="caption" muted>
                   {[formatDate(`${m.happened_on}T12:00:00`, LONG), m.week_sa != null ? tr('pmem.weekShort', { n: m.week_sa }) : null, tr(`pmem.kind.${m.kind}` as TKey), m._pending ? tr('pmem.pending') : null].filter(Boolean).join(' · ')}
@@ -150,8 +151,8 @@ export function MemoriesView({ openNew }: { openNew?: boolean }) {
                   </ScrollView>
                 ) : null}
               </View>
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </View>
       ))}
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs }}>

@@ -34,6 +34,7 @@ import { creatorActionsFor, isPurchase, isTerminal, quickRepliesFor, viewerOf, t
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Panel = null | 'decline' | 'postpone' | 'ask' | 'reassign';
 const TOAST: Record<MissionAction, TKey> = {
@@ -239,21 +240,21 @@ export default function MissionDetail() {
       <Cascade index={3} style={{ gap: spacing.xs }}>
         <Text variant="heading" accessibilityRole="header">{tr('mis.detail.history')}</Text>
         <MatteSurface testID="mission-history" padded={spacing.sm} style={{ gap: 0 }}>
-          {history.isLoading && !history.data ? <Skeleton kind="card" rows={1} /> : (history.data ?? []).map((e) => {
+          {history.isLoading && !history.data ? <Skeleton kind="card" rows={1} /> : <MotionList style={{ gap: 0 }}>{(history.data ?? []).map((e) => {
             const to = (e.detail as { to?: string }).to;
             const label = tr(`mis.ev.${e.kind}` as TKey, { person: nameOf(to), when: to && e.kind === 'postponed' ? fmtWhen(to) : '' });
             const n = (e.detail as { note?: string }).note;
             return (
-              <View key={e.id} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.xs, minHeight: MIN_TOUCH, alignItems: 'flex-start' }}>
+              <MotionItem key={e.id}><View key={e.id} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.xs, minHeight: MIN_TOUCH, alignItems: 'flex-start' }}>
                 <View style={{ width: 24, alignItems: 'center', paddingTop: 2 }}><Icon name={EV_ICON[e.kind] ?? 'circle'} size={16} color={t.colors.textMuted} /></View>
                 <View style={{ flex: 1 }}>
                   <Text weight="medium">{label}</Text>
                   {n ? <Text variant="small">« {n} »</Text> : null}
                   <Text variant="caption" muted>{tr('mis.ev.by', { person: e.actor_id === me ? tr('u7.people.you') : nameOf(e.actor_id), when: formatDate(e.created_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</Text>
                 </View>
-              </View>
+              </View></MotionItem>
             );
-          })}
+          })}</MotionList>}
         </MatteSurface>
       </Cascade>
     </Screen>

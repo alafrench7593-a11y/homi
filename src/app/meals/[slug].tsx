@@ -29,6 +29,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const ageText = (m: number) => (m < 24 ? tr('vx.ageMonths', { count: m }) : tr('vx.ageYears', { count: Math.round(m / 12) }));
 
@@ -106,16 +107,16 @@ export default function RecipeDetail() {
         <IconButton icon="plus" label={tr('rc.moreServings')} onPress={() => setServings(Math.min(20, n + 1))} />
       </Row>
       <Card>
-        {r.ingredients.map((x) => {
+        <MotionList>{r.ingredients.map((x) => {
           const d = INGREDIENTS[x.key];
           const isNew = fresh.includes(x.key);
           return (
-            <View key={x.key + (x.note ?? '')} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: 5 }} testID={`ing-${x.key}`}>
+            <MotionItem key={x.key + (x.note ?? '')}><View key={x.key + (x.note ?? '')} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: 5 }} testID={`ing-${x.key}`}>
               <Text weight="bold" style={{ minWidth: 84 }}>{formatQty(scaleQty(x.qty, r.servings, n, x.unit), x.unit)}</Text>
               <Text style={{ flex: 1 }}>{d?.name ?? x.key}{x.note ? ` (${x.note})` : ''}{x.optional ? ` · ${tr('rc.optional')}` : ''}{isNew && profile.name ? ` · ${tr('rc.newFor', { name: profile.name })}` : ''}</Text>
-            </View>
+            </View></MotionItem>
           );
-        })}
+        })}</MotionList>
       </Card>
       <View testID="recipe-allergens" style={{ gap: 4 }}>
         <Text variant="caption" weight="bold" muted>{tr('rc.allergens')}</Text>

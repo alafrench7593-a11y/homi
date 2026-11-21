@@ -18,6 +18,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 import { formatTime, t as tr } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const HOURS = [1, 2, 3, 4, 8, 12];
 
@@ -53,9 +54,9 @@ export default function OffDuty() {
   }
   return (
     <Screen back title={toolName('offduty')} subtitle={toolBlurb('offduty')}>
-      {theirs.map((p) => (
-        <Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner>
-      ))}
+      <MotionList>{theirs.map((p) => (
+        <MotionItem key={p.id}><Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner></MotionItem>
+      ))}</MotionList>
       {mine ? (
         <Card tone="lavender" testID="off-active">
           <Text variant="title">{tr('cm.off.active')}</Text>

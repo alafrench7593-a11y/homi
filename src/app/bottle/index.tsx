@@ -14,6 +14,7 @@ import { BottleChildRow } from '@/features/bottleList';
 import { useBottleChildren, useBottleTimers } from '@/lib/data/hooks-bottle';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function BottleTimers() {
   const childrenQ = useBottleChildren();
@@ -38,7 +39,7 @@ export default function BottleTimers() {
         />
       ) : (
         <MatteSurface radius={radius.lg} padded={spacing.xs} testID="bottle-children">
-          {sorted.map((c, i) => <BottleChildRow key={c.id} child={c} last={i === sorted.length - 1} />)}
+          <MotionList>{sorted.map((c, i) => <MotionItem key={c.id}><BottleChildRow key={c.id} child={c} last={i === sorted.length - 1} /></MotionItem>)}</MotionList>
         </MatteSurface>
       )}
       {sorted.length ? (

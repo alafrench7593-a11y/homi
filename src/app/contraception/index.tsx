@@ -23,6 +23,7 @@ import { AVOID_DISCLAIMER, AVOID_NO_SAFE_DAYS, methodTitle } from '@/content/fer
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { PillToday, dailyKindFor } from '@/features/cycle/PillToday';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function ContraceptionScreen() {
   const t = useTheme();
@@ -98,18 +99,18 @@ export default function ContraceptionScreen() {
         <EmptyState icon="shield" title={tr('u7.contra.index.noMethod')} body={tr('u7.contra.index.noMethodBody')} action={{ label: tr('u7.contra.index.addMethod'), onPress: () => router.push('/contraception/reminders' as never) }} />
       ) : (
       <Card>
-        {active.map((m) => {
+        <MotionList>{active.map((m) => {
           const left = m.renewal_due_on ? daysBetween(today, m.renewal_due_on) : null;
           return (
-            <ListRow
+            <MotionItem key={m.id}><ListRow
               key={m.id}
               icon="shield"
               title={m.label || methodTitle(m.method)}
               subtitle={[m.started_on ? tr('u7.contra.index.since', { date: fd(m.started_on) }) : null, m.renewal_due_on ? (left != null && left < 0 ? tr('u7.contra.index.overdue', { date: fd(m.renewal_due_on) }) : tr('u7.contra.index.renewOn', { date: fd(m.renewal_due_on) })) : null].filter(Boolean).join(' · ') || undefined}
               onPress={() => router.push('/contraception/reminders' as never)}
-            />
+            /></MotionItem>
           );
-        })}
+        })}</MotionList>
       </Card>
       )}
 

@@ -13,19 +13,20 @@ import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Règles du mot de passe, cochées au fil de la saisie. */
 export function PasswordRules({ value }: { value: string }) {
   const t = useTheme();
   return (
-    <View accessibilityLabel={tr('auth.rules.a11y')} style={{ gap: 2, marginTop: -4 }}>
+    <MotionList accessibilityLabel={tr('auth.rules.a11y')} style={{ gap: 2, marginTop: -4 }}>
       {passwordRules(value).map((r) => (
-        <Row key={r.key} gap={6} style={{ alignItems: 'center' }}>
+        <MotionItem key={r.key}><Row key={r.key} gap={6} style={{ alignItems: 'center' }}>
           <Icon name={r.ok ? 'check-circle' : 'circle'} size={14} color={r.ok ? t.colors.success : t.colors.textMuted} />
           <Text variant="small" color={r.ok ? t.colors.success : t.colors.textMuted} accessibilityLabel={tr(r.ok ? 'auth.rules.ok' : 'auth.rules.todo', { rule: r.label })}>{r.label}</Text>
-        </Row>
+        </Row></MotionItem>
       ))}
-    </View>
+    </MotionList>
   );
 }
 

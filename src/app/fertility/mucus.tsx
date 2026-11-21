@@ -31,6 +31,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const SIGN_COLOUR = { less_fertile: '#C9C0D6', intermediate: '#E9CFA4', potentially_fertile: '#7FB6E8', see_professional: '#C8283F', none: '#B9B9C6' } as const;
 
@@ -272,8 +273,8 @@ export default function MucusScreen() {
         <>
           <SectionTitle title={tr('u3.fertBody.mine')} />
           <Card>
-            {(obs ?? []).filter((o) => o.cervical_mucus || o.mucus_texture || o.mucus_sensation).slice(0, 20).map((o) => (
-              <ListRow
+            <MotionList>{(obs ?? []).filter((o) => o.cervical_mucus || o.mucus_texture || o.mucus_sensation).slice(0, 20).map((o) => (
+              <MotionItem key={o.id}><ListRow
                 key={o.id}
                 icon="droplet"
                 title={formatDateFr(o.observed_on)}
@@ -285,8 +286,8 @@ export default function MucusScreen() {
                     <IconButton icon="trash-2" label={tr('u3.fertBody.delA11y', { date: formatDateFr(o.observed_on) })} onPress={() => remove(o.id, o.observed_on, o.photo_path)} />
                   </Row>
                 )}
-              />
-            ))}
+              /></MotionItem>
+            ))}</MotionList>
           </Card>
         </>
       ) : null}

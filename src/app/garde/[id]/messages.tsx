@@ -18,6 +18,7 @@ import { formatDateFr, formatTime } from '@/lib/domain/dates';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useCareChild, useCareMemberNames, useCareMessages, useSendCareMessage } from '@/lib/data/hooks-nounou';
 import { ToggleRow, useAuthorLabel } from '@/features/nounou/CareUI';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function CareMessages() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -53,13 +54,13 @@ export default function CareMessages() {
       {msgs.isLoading && !msgs.data ? <Skeleton rows={3} /> : msgs.isError && !msgs.data ? (
         <ErrorView error={msgs.error} onRetry={() => void msgs.refetch()} />
       ) : !msgs.data?.length ? <EmptyState icon="message-circle" title={tr('nn.msg.empty')} body={tr('nn.msg.emptyBody')} /> : (
-        <View style={{ gap: spacing.xs }}>
+        <MotionList style={{ gap: spacing.xs }}>
           {msgs.data.map((m) => {
             const mine = m.author_id === me || m._pending;
             const d = m.created_at.slice(0, 10);
             const header = d !== lastDay ? (lastDay = d) : null;
             return (
-              <React.Fragment key={m.id}>
+              <MotionItem key={m.id}><React.Fragment key={m.id}>
                 {header ? <Text variant="caption" muted center style={{ marginTop: spacing.xs }}>{formatDateFr(d)}</Text> : null}
                 <View testID="care-msg" accessible accessibilityLabel={`${m.important ? tr('nn.msg.important') + ', ' : ''}${authorOf(m.author_id, null)}, ${formatTime(m.created_at)} : ${m.body}`}
                   style={{ alignSelf: mine ? 'flex-end' : 'flex-start', maxWidth: '88%', borderRadius: radius.lg, padding: spacing.sm,
@@ -69,10 +70,10 @@ export default function CareMessages() {
                   <Text selectable>{m.body}</Text>
                   <Text variant="caption" muted>{authorOf(m.author_id, null)} · {formatTime(m.created_at)}{m._pending ? ` · ${tr('nn.pending')}` : ''}</Text>
                 </View>
-              </React.Fragment>
+              </React.Fragment></MotionItem>
             );
           })}
-        </View>
+        </MotionList>
       )}
       <Card>
         <Field label={tr('nn.msg.field')} value={body} onChangeText={setBody} multiline maxLength={2000} testID="care-msg-body" />

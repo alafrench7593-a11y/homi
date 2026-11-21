@@ -34,6 +34,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const SOURCE_KEYS: Vaccination['source'][] = ['carnet', 'professional', 'parent'];
 const ageLabel = (m: number, to?: number) => (to ? (m >= 24 ? tr('vx.ageYearsRange', { a: Math.round(m / 12), b: Math.round(to / 12) }) : tr('vx.ageMonthsRange', { a: m, b: to })) : m >= 24 ? tr('vx.ageYears', { count: Math.round(m / 12) }) : tr('vx.ageMonths', { count: m }));
@@ -170,11 +171,11 @@ export default function Vaccines() {
           <Text variant="small">{tr('vx.calendarBody', { updated: formatDate(`${calendar.updated}T12:00:00`, { month: 'long', year: 'numeric' }), checked: fmt(calendar.checked) })}</Text>
           <Text variant="caption" muted testID="vaccine-version">{tr('vx.version', { version: calendar.version, country: calendar.country })}</Text>
           {!supported ? <Text variant="small" weight="bold">{tr('vx.otherCountry')}</Text> : null}
-          {Object.values(calendar.sources).map((s) => (
-            <Tappable key={s.key} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 36, justifyContent: 'center' }}>
+          <MotionList>{Object.values(calendar.sources).map((s) => (
+            <MotionItem key={s.key}><Tappable key={s.key} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 36, justifyContent: 'center' }}>
               <Text variant="caption" color={t.colors.primary}>{s.label} ({fmt(s.published)})</Text>
-            </Tappable>
-          ))}
+            </Tappable></MotionItem>
+          ))}</MotionList>
         </Banner>
       </View>
 
@@ -184,13 +185,13 @@ export default function Vaccines() {
         <Card key={`${v.months}-${v.toMonths ?? ''}`}>
           <View testID={`vaccine-next-${v.months}`}>
             <Text weight="bold">{ageLabel(v.months, v.toMonths)} · {v.toMonths ? `${fmt(v.date)} – ${fmt(v.doses[0].dateTo!)}` : tr('vx.around', { date: fmt(v.date) })}</Text>
-            {v.doses.map((x) => (
-              <View key={x.key} style={{ marginTop: 4 }}>
+            <MotionList>{v.doses.map((x) => (
+              <MotionItem key={x.key}><View key={x.key} style={{ marginTop: 4 }}>
                 <Text variant="small">{x.label} — {x.dose} · <Text variant="small" weight="bold">{tr(x.status === 'mandatory' ? 'vx.mandatory' : 'vx.recommended')}</Text></Text>
                 <StateChip d={x} />
                 {x.shifted ? <Text variant="caption" muted>{tr('vx.shifted')}</Text> : null}
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
             <Row wrap style={{ marginTop: spacing.xs }}>
               <Button label={tr('vx.remind')} icon="bell" size="sm" variant="secondary" testID={`vaccine-remind-${v.months}`} onPress={() => remindVisit(v)} />
               <Button label={tr('vx.more')} size="sm" variant="ghost" onPress={() => { setVisit(v); setDoneDate(toFrDate(todayISO())); }} testID={`vaccine-open-${v.months}`} />
@@ -200,8 +201,8 @@ export default function Vaccines() {
       ))}
 
       {open.length ? <SectionTitle title={tr('vx.appointments')} /> : null}
-      {open.map((a) => (
-        <Card key={a.id}>
+      <MotionList>{open.map((a) => (
+        <MotionItem key={a.id}><Card key={a.id}>
           <View testID={`vaccine-appt-${a.id}`}>
             <Text weight="bold">{a.title}</Text>
             <Text variant="small" muted>{appointmentWhen(a)}{a.location_label ? ` · ${a.location_label}` : ''}</Text>
@@ -215,20 +216,20 @@ export default function Vaccines() {
               <Button label={tr('care.cal.documents')} icon="paperclip" size="sm" variant="ghost" onPress={() => setDocsFor({ table: 'appointments', id: a.id, ids: a.document_ids ?? [] })} />
             </Row>
           </View>
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
       {doneAppts.length ? <Text variant="caption" muted>{tr('vx.doneAppts', { count: doneAppts.length })}</Text> : null}
       {postponements.length ? <SectionTitle title={tr('vx.postponedTitle')} /> : null}
-      {(schedule ?? []).filter((x) => x.state === 'postponed').map((x) => (
-        <Card key={x.key}>
+      <MotionList>{(schedule ?? []).filter((x) => x.state === 'postponed').map((x) => (
+        <MotionItem key={x.key}><Card key={x.key}>
           <View testID={`vaccine-postponed-${x.key}`}>
             <Text weight="bold">{x.label}</Text>
             <Text variant="small" muted>{x.dose}{x.postponedTo ? ` · ${tr('vx.until', { date: fmt(x.postponedTo) })}` : ''}</Text>
             {postponements.find((p) => p.calendar_key === x.key)?.note ? <Text variant="small" muted>{postponements.find((p) => p.calendar_key === x.key)!.note}</Text> : null}
             <Button label={tr('vx.postponeCancel')} size="sm" variant="ghost" onPress={() => child && postpone.mutate({ child, keys: [x.key], to: null, note: null, cancel: true })} style={{ alignSelf: 'flex-start' }} />
           </View>
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('vx.calendar')} />
       {/* Fil des vaccins : chaque visite est une perle (faite, c'est le moment, prévue, plus tard) ; « Fait aujourd'hui » en un geste */}
@@ -260,8 +261,8 @@ export default function Vaccines() {
 
       <SectionTitle title={tr('vx.registry')} />
       {!vaccinations.length && !loading ? <EmptyState icon="shield" title={tr('vx.none')} body={tr('vx.noneBody')} /> : null}
-      {vaccinations.map((v, i) => (
-        <StaggerItem key={v.id} index={i}>
+      <MotionList>{vaccinations.map((v, i) => (
+        <MotionItem key={v.id}><StaggerItem key={v.id} index={i}>
           <Card style={{ paddingVertical: 4 }}>
             {/* pièce jointe et suppression à côté de la ligne et non dedans : un bouton dans un bouton est invalide sur le web */}
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -274,23 +275,23 @@ export default function Vaccines() {
             </View>
             <AttachedDocs ids={v.document_ids} />
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
       <Button label={tr('vx.otherAppointment')} variant="ghost" icon="calendar" onPress={() => router.push(`/appointments?child=${child.id}`)} />
 
       {/* Une visite du calendrier : rappel, rendez-vous, « fait » */}
       <Sheet visible={!!visit} onClose={() => setVisit(null)} title={visit ? ageLabel(visit.months, visit.toMonths) : ''}>
         {visit ? (
           <View style={{ gap: spacing.sm }}>
-            {visit.doses.map((x) => (
-              <View key={x.key}>
+            <MotionList style={{ gap: spacing.sm }}>{visit.doses.map((x) => (
+              <MotionItem key={x.key}><View key={x.key}>
                 <Text weight="bold">{x.label}</Text>
                 <Text variant="small">{x.dose} · {tr(x.status === 'mandatory' ? 'vx.mandatory' : 'vx.recommended')}</Text>
                 {x.note ? <Text variant="caption" muted>{x.note}</Text> : null}
                 <StateChip d={x} />
                 {x.state === 'done' ? <Button label={tr('vx.undo')} size="sm" variant="ghost" onPress={() => act.undo.mutate(x.key)} /> : null}
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
             <Text variant="caption" muted>{tr('vx.indicative')}</Text>
             {visit.doses.some((x) => x.state !== 'done') ? (
               <>

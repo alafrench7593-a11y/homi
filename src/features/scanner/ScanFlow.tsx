@@ -37,6 +37,7 @@ import { DemoTag, RecallCard } from './components';
 import { useScanWizard, type ScanWizard } from './useScanWizard';
 import { StepProgress, StepStage } from './WizardChrome';
 import { stepIndex, WIZARD_STEPS } from './wizard';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const OPENED_KEY = 'openedDaysAgo';
 const cameraAvailable = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -169,7 +170,7 @@ function RecallsBlock({ w }: { w: ScanWizard }) {
   return (
     <View style={{ gap: spacing.sm }} testID="scan-recalls">
       <SectionTitle title={tr('u6.sc.recalls_title')} />
-      {w.lookup.recalls.map((r) => <RecallCard key={r.id} r={{ ...r, lot_numbers: r.lot_numbers ?? [], match: r.match ?? 'gtin' }} />)}
+      <MotionList style={{ gap: spacing.sm }}>{w.lookup.recalls.map((r) => <MotionItem key={r.id}><RecallCard key={r.id} r={{ ...r, lot_numbers: r.lot_numbers ?? [], match: r.match ?? 'gtin' }} /></MotionItem>)}</MotionList>
       <Text variant="caption" muted>{RECALL_DISCLAIMER}</Text>
     </View>
   );
@@ -414,8 +415,8 @@ function DetailsStep({ w }: { w: ScanWizard }) {
           <SectionTitle title={tr('u6.sf.questions')} />
           <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }}>
             <Text variant="caption" muted>{tr('u6.sf.questions_note')}</Text>
-            {w.questions.map((q, i) => (
-              <View key={q.key} style={{ gap: 4 }}>
+            <MotionList style={{ gap: spacing.sm }}>{w.questions.map((q, i) => (
+              <MotionItem key={q.key}><View key={q.key} style={{ gap: 4 }}>
                 {i > 0 ? <Divider /> : null}
                 <Text weight="medium">{q.label}{q.critical ? ' *' : ''}</Text>
                 <Text variant="caption" muted>{q.why}</Text>
@@ -429,8 +430,8 @@ function DetailsStep({ w }: { w: ScanWizard }) {
                 ) : q.key === OPENED_KEY ? (
                   <Field label={tr('u6.sf.days')} optional keyboardType="number-pad" value={w.openedText} onChangeText={w.setOpenedText} maxLength={4} />
                 ) : null}
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
             <Text variant="caption" muted>{tr('u6.sf.unanswered')}</Text>
           </MatteSurface>
         </>

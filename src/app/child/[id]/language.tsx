@@ -25,6 +25,7 @@ import { ChildToolGate, useParentChild } from '@/features/childTools/ChildToolGa
 import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const KIND_ICON: Record<LanguageKind, IconName> = { word: 'message-circle', sentence: 'message-square', language: 'globe', note: 'edit-3' };
 const range = (a: number, b: number) => (b >= 24 && a % 12 === 0 && b % 12 === 0 ? tr('gr.rangeYears', { a: a / 12, b: b / 12 }) : tr('gr.rangeMonths', { a, b }));
@@ -70,15 +71,15 @@ function LanguageBody({ child }: { child: Child }) {
       </View>
 
       <SectionTitle title={tr('p2.lg.frise')} />
-      {groups.length ? groups.map((g) => (
-        <ListGroup key={g.key} title={g.month ? formatDate(`${g.month}T12:00:00`, { month: 'long', year: 'numeric' }).replace(/^./, (x) => x.toUpperCase()) : tr('p2.lg.undated')} testID={`lg-month-${g.key}`}>
+      {groups.length ? <MotionList>{groups.map((g) => (
+        <MotionItem key={g.key}><ListGroup key={g.key} title={g.month ? formatDate(`${g.month}T12:00:00`, { month: 'long', year: 'numeric' }).replace(/^./, (x) => x.toUpperCase()) : tr('p2.lg.undated')} testID={`lg-month-${g.key}`}>
           {g.entries.map((e) => (
             <ListRow key={e.id} icon={KIND_ICON[e.kind]} title={e.kind === 'sentence' ? tr('p2.lg.quote', { text: e.text }) : e.text}
               subtitle={[tr(`p2.lg.k.${e.kind}` as TKey), e.said_on ? formatDate(`${e.said_on}T12:00:00`, { day: 'numeric', month: 'short' }) : null, e.language, e.note, e._pending ? tr('fx.pending') : null].filter(Boolean).join(' · ')}
               onPress={e._pending ? undefined : () => setOpen({ kind: e.kind, entry: e })} testID={`lg-entry-${e.id}`} />
           ))}
-        </ListGroup>
-      )) : (
+        </ListGroup></MotionItem>
+      ))}</MotionList> : (
         <Card testID="lg-empty">
           <Text weight="bold">{tr('p2.lg.emptyT', { name: child.first_name })}</Text>
           <Text variant="small" muted>{tr('p2.lg.emptyB')}</Text>
@@ -98,15 +99,15 @@ function LanguageBody({ child }: { child: Child }) {
         {showRefs ? (
           <View style={{ gap: spacing.sm, marginTop: spacing.sm }} testID="lg-refs-list">
             <Banner tone="info" icon="info">{tr('p2.lg.refsNote')}</Banner>
-            {languageMilestones().map((s) => (
-              <View key={s.key} style={{ gap: 2 }}>
+            <MotionList style={{ gap: spacing.sm }}>{languageMilestones().map((s) => (
+              <MotionItem key={s.key}><View key={s.key} style={{ gap: 2 }}>
                 <Text weight="medium">{s.title}</Text>
                 <Text variant="caption" muted>{tr('gr.around', { range: range(s.around[0], s.around[1]) })} · {tr('p2.lg.indicative')}</Text>
                 <Tappable accessibilityRole="link" onPress={() => openLink(STEP_SOURCES[s.source].url, toast)} style={{ minHeight: 32, justifyContent: 'center' }}>
                   <Text variant="caption" color={t.colors.primary}>{STEP_SOURCES[s.source].label}</Text>
                 </Tappable>
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
           </View>
         ) : null}
       </Card>

@@ -25,6 +25,7 @@ import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Draft = { mode: 'add'; uri: string } | { mode: 'edit'; photo: ChildPhoto };
 
@@ -104,14 +105,14 @@ export default function ChildAlbum() {
         <ErrorView error={photosQ.error} onRetry={() => void photosQ.refetch()} title={tr('alb.errLoad')} />
       ) : !total ? (
         <EmptyState icon="image" title={tr('alb.empty')} body={tr('alb.emptyBody', { name })} />
-      ) : groups.map((g) => (
-        <View key={g.key} style={{ gap: spacing.xs }}>
+      ) : <MotionList>{groups.map((g) => (
+        <MotionItem key={g.key}><View key={g.key} style={{ gap: spacing.xs }}>
           <SectionTitle title={capitalize(formatDate(`${g.key}-01T12:00:00`, { month: 'long', year: 'numeric' }))} />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }} testID={`album-month-${g.key}`}>
             {g.items.map((p) => <Thumb key={p.id} photo={p} onPress={() => setViewing(p)} />)}
           </View>
-        </View>
-      ))}
+        </View></MotionItem>
+      ))}</MotionList>}
 
       {draft ? (
         <PhotoForm

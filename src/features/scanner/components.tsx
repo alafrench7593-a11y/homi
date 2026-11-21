@@ -21,6 +21,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
 import { resultTiles, type ResultTile } from './wizard';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Résultat tel qu'enregistré (analyse des règles + allergènes déclarés par la base produit). */
 export type StoredAnalysis = ScanAnalysis & { declaredAllergens?: string[] };
@@ -128,15 +129,15 @@ export function SourcesList({ sources, dataSource }: { sources: ScanSource[]; da
       {dataSource.url ? <Button label={tr('u6.sc.open_origin')} size="sm" variant="ghost" icon="external-link" style={{ alignSelf: 'flex-start' }} onPress={() => open(dataSource.url)} /> : null}
       <Divider />
       <Text variant="label" style={{ marginTop: spacing.xs }}>{tr('u6.sc.rules_sources')}</Text>
-      {sources.map((s, i) => (
-        <View key={s.id} style={{ paddingVertical: 4 }}>
+      <MotionList>{sources.map((s, i) => (
+        <MotionItem key={s.id}><View key={s.id} style={{ paddingVertical: 4 }}>
           <Text variant="small">{`[${i + 1}] ${s.publisher} — ${s.label}`}</Text>
           <Text variant="caption" muted>
             {`${s.published_on ? `${tr('u6.sc.published_cap', { date: frDate(s.published_on) })} · ` : ''}${tr('u6.sc.consulted', { date: frDate(s.consulted_on) })}${s.review === 'to_review' ? ` · ${tr('u6.sc.under_review')}` : ''}`}
           </Text>
           <Button label={tr('u6.sc.open_source')} size="sm" variant="ghost" icon="external-link" style={{ alignSelf: 'flex-start' }} onPress={() => open(s.url)} />
-        </View>
-      ))}
+        </View></MotionItem>
+      ))}</MotionList>
     </Card>
   );
 }
@@ -303,13 +304,13 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
 
       <SectionTitle title={tr('u6.sc.findings')} />
       <Card>
-        {a.findings.length ? a.findings.map((f, i) => (
+        {a.findings.length ? <MotionList>{a.findings.map((f, i) => (
           // Les constats apparaissent un à un ; aucun effet ne suggère qu'un produit est « sûr »
-          <StaggerItem key={f.id} index={i + 2}>
+          <MotionItem key={f.id}><StaggerItem key={f.id} index={i + 2}>
             {i > 0 ? <Divider /> : null}
             <FindingRow f={f} index={index} />
-          </StaggerItem>
-        )) : <Text variant="small">{tr('u6.sc.no_rules')}</Text>}
+          </StaggerItem></MotionItem>
+        ))}</MotionList> : <Text variant="small">{tr('u6.sc.no_rules')}</Text>}
       </Card>
 
       {a.kind === 'product' ? <ProductDetails a={a} /> : <FoodDetails a={a} />}

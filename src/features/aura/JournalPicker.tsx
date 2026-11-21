@@ -16,6 +16,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { journalPayload } from './model';
 import { MAX_JOURNAL_ENTRIES } from '../../../supabase/functions/_shared/aura-data';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export function JournalPicker({ journal, cost, onClose, onSend }: {
   journal: 'mood' | 'diary' | null; cost: number; onClose: () => void;
@@ -37,10 +38,10 @@ export function JournalPicker({ journal, cost, onClose, onSend }: {
       <View style={{ gap: spacing.sm }} testID="aura-journal-sheet">
         <Text variant="small" muted>{tr('aura.journal.body')}</Text>
         <Text variant="label">{tr(journal === 'diary' ? 'aura.journal.diary' : 'aura.journal.mood')}</Text>
-        {!rows.length ? <Text muted testID="aura-journal-empty">{tr('aura.journal.empty')}</Text> : rows.map((r) => {
+        {!rows.length ? <Text muted testID="aura-journal-empty">{tr('aura.journal.empty')}</Text> : <MotionList style={{ gap: spacing.sm }}>{rows.map((r) => {
           const on = chosen.has(r.id);
           return (
-            <Tappable key={r.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} onPress={() => toggle(r.id)} testID="aura-journal-entry"
+            <MotionItem key={r.id}><Tappable key={r.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} onPress={() => toggle(r.id)} testID="aura-journal-entry"
               style={{ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.sm, borderRadius: radius.md, borderWidth: 1, borderColor: on ? t.colors.primary : t.colors.border, backgroundColor: on ? t.colors.accentSoft : t.colors.surface }}>
               <Icon name={on ? 'check-square' : 'square'} size={20} color={on ? t.colors.primary : t.colors.textMuted} />
               <View style={{ flex: 1, gap: 2 }}>
@@ -48,9 +49,9 @@ export function JournalPicker({ journal, cost, onClose, onSend }: {
                 {r.feelings.length ? <Text variant="caption" muted>{r.feelings.slice(0, 4).map(feelingLabel).join(', ')}</Text> : null}
                 {journal === 'diary' && r.journal ? <Text variant="caption" muted numberOfLines={2}>{r.journal}</Text> : null}
               </View>
-            </Tappable>
+            </Tappable></MotionItem>
           );
-        })}
+        })}</MotionList>}
         <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Text style={{ flex: 1 }} variant="small">{tr('aura.journal.consent', { count: chosen.size })}</Text>
           <Toggle label={tr('aura.journal.consent', { count: chosen.size })} value={agreed} onChange={setAgreed} />

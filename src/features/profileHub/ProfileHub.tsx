@@ -30,6 +30,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const KIND_ICON: Record<MyDayItem['kind'], IconName> = { reminder: 'bell', appointment: 'calendar', event: 'star', task: 'check-square', night: 'moon', me_time: 'sun', activity: 'award' };
 const nowHHMM = () => { const d = new Date(); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
@@ -118,8 +119,8 @@ export function MyDayCard() {
       </Row>
       {shown.length ? (
         <View style={{ marginTop: spacing.xs }}>
-          {shown.map((i) => (
-            <ListRow key={i.key} icon={KIND_ICON[i.kind]} testID={`hub-day-${i.kind}`}
+          <MotionList>{shown.map((i) => (
+            <MotionItem key={i.key}><ListRow key={i.key} icon={KIND_ICON[i.kind]} testID={`hub-day-${i.kind}`}
               title={isDone(i) ? `${i.title} ✓` : i.title}
               subtitle={[i.every ? tr('hub.day.every', { from: i.every.fromHour, to: i.every.toHour, min: i.every.minutes }) : i.time ?? tr('hub.day.allDay'), isDone(i) ? tr('nt.done') : tr(`hub.kind.${i.kind}` as TKey)].join(' · ')}
               onPress={() => go(i)}
@@ -132,8 +133,8 @@ export function MyDayCard() {
                     <CheckMark checked={!!(isDone(i))} size={18} color="#FFFFFF" />
                   </View>
                 </Tappable>
-              ) : undefined} />
-          ))}
+              ) : undefined} /></MotionItem>
+          ))}</MotionList>
           {items.length > shown.length ? <Text variant="small" muted style={{ marginTop: 4 }}>{tr('hub.day.more', { count: items.length - shown.length })}</Text> : null}
         </View>
       ) : (

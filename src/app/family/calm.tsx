@@ -26,6 +26,7 @@ import {
   CALM_TEMPLATES, calmTitle, draftDueAt, repliesFor, splitRequests, stateLabel, templateOf, validateDraft,
   type CalmItem, type CalmReply, type CalmTemplateKey,
 } from '@/features/calm/domain';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const REPLY_ICON: Record<CalmReply, 'thumbs-up' | 'x' | 'check'> = { accept: 'thumbs-up', decline: 'x', complete: 'check' };
 
@@ -163,8 +164,8 @@ export default function CalmMode() {
       {split.received.length ? (
         <View style={{ gap: spacing.sm }} testID="calm-received">
           <Text variant="heading" accessibilityRole="header">{tr('calm.received')}</Text>
-          {split.received.map((it) => (
-            <Card key={it.id} testID={`calm-in-${it.template_key}`}>
+          <MotionList style={{ gap: spacing.sm }}>{split.received.map((it) => (
+            <MotionItem key={it.id}><Card key={it.id} testID={`calm-in-${it.template_key}`}>
               <Text weight="bold">{titleOf(it)}</Text>
               <Text variant="small" muted>{[subOf(it), tr('calm.from', { name: nameOf(it.from_user) }), stateLabel(it.state)].filter(Boolean).join(' · ')}</Text>
               <Row wrap gap={spacing.xs}>
@@ -173,24 +174,24 @@ export default function CalmMode() {
                     loading={reply.isPending && reply.variables?.taskId === it.task_id && reply.variables?.action === r} onPress={() => void answer(it, r)} testID={`calm-reply-${r}-${it.template_key}`} />
                 ))}
               </Row>
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </View>
       ) : null}
 
       {split.sent.length ? (
         <View style={{ gap: spacing.sm }} testID="calm-sent">
           <Text variant="heading" accessibilityRole="header">{tr('calm.sentTitle')}</Text>
-          {split.sent.map((it) => (
-            <Card key={it.id} testID={`calm-out-${it.template_key}`}>
+          <MotionList style={{ gap: spacing.sm }}>{split.sent.map((it) => (
+            <MotionItem key={it.id}><Card key={it.id} testID={`calm-out-${it.template_key}`}>
               <Text weight="bold">{titleOf(it)}</Text>
               <Text variant="small" muted>{[subOf(it), tr('calm.to', { name: nameOf(it.to_user) }), stateLabel(it.state)].filter(Boolean).join(' · ')}</Text>
               <Row wrap gap={spacing.xs}>
                 <Button label={tr('calm.changeTime')} icon="clock" size="sm" variant="secondary" onPress={() => setEditing(it)} testID={`calm-time-${it.template_key}`} />
                 <Button label={tr('calm.cancel')} size="sm" variant="ghost" onPress={() => void answer(it, 'cancel')} testID={`calm-cancel-${it.template_key}`} />
               </Row>
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </View>
       ) : null}
 

@@ -13,6 +13,7 @@ import { THREAD_LABEL, type ThreadState } from '@/lib/domain/dayThread';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const NODE = 22;
 /** Largeur en dessous de laquelle le texte d'une ligne ne descend pas : les boutons d'action passent alors dessous. */
@@ -80,14 +81,14 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
         </View>
         {caption ? <Text variant="caption" muted>{caption}</Text> : null}
         {!rows.length ? empty ?? null : (
-          <View style={{ marginTop: spacing.xs }}>
+          <MotionList style={{ marginTop: spacing.xs }}>
             {rows.map((r, i) => {
               const last = i === rows.length - 1;
               const hot = r.state === 'next' || r.state === 'now';
               const color = r.state === 'done' ? gold : hot ? accent : r.state === 'late' ? t.colors.heart : line;
               const faded = r.state === 'past' || r.state === 'todo' || r.state === 'anytime';
               return (
-                <View key={r.key} style={{ flexDirection: 'row', gap: spacing.md }}>
+                <MotionItem key={r.key}><View key={r.key} style={{ flexDirection: 'row', gap: spacing.md }}>
                   <View style={{ width: NODE, alignItems: 'center' }}>
                     {hot ? <Pulse color={accent} icon={r.icon ?? 'circle'} /> : (
                       <View style={{ width: NODE, height: NODE, borderRadius: NODE, alignItems: 'center', justifyContent: 'center',
@@ -131,10 +132,10 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
                       ) : null}
                     </View>
                   </Tappable>
-                </View>
+                </View></MotionItem>
               );
             })}
-          </View>
+          </MotionList>
         )}
       </View>
     </GlassSurface>

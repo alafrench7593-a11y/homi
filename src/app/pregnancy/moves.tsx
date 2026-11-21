@@ -20,6 +20,7 @@ import { callNumber } from '@/lib/links';
 import { formatDate, formatTime, t as tr } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Level = 1 | 2 | 3;
 const LEVELS: { v: Level; key: 'less' | 'usual' | 'more' }[] = [{ v: 1, key: 'less' }, { v: 2, key: 'usual' }, { v: 3, key: 'more' }];
@@ -67,11 +68,11 @@ export default function PregnancyMoves() {
       <SectionTitle title={tr('pm.history')} />
       {!logs.length ? <EmptyState icon="activity" title={tr('pm.none')} body={tr('pm.noneD')} /> : (
         <Card padded={false}>
-          {logs.slice(0, 60).map((l) => (
-            <ListRow key={l.id} icon="activity" title={tr(`pm.level.${LEVELS.find((x) => x.v === l.intensity)?.key ?? 'usual'}`)}
+          <MotionList>{logs.slice(0, 60).map((l) => (
+            <MotionItem key={l.id}><ListRow key={l.id} icon="activity" title={tr(`pm.level.${LEVELS.find((x) => x.v === l.intensity)?.key ?? 'usual'}`)}
               subtitle={`${formatDate(l.logged_at, { weekday: 'short', day: 'numeric', month: 'short' })} · ${formatTime(l.logged_at)}${l.note ? ` · ${l.note}` : ''}`}
-              onPress={async () => { if (await confirm(tr('common.delete'), tr('pm.deleteQ'), tr('common.delete'))) await del.mutateAsync(l.id).catch((e) => toast(friendlyError(e), 'error')); }} />
-          ))}
+              onPress={async () => { if (await confirm(tr('common.delete'), tr('pm.deleteQ'), tr('common.delete'))) await del.mutateAsync(l.id).catch((e) => toast(friendlyError(e), 'error')); }} /></MotionItem>
+          ))}</MotionList>
         </Card>
       )}
       <Button label={tr('pm.call15')} icon="phone" variant="secondary" onPress={() => callNumber('15', toast)} />

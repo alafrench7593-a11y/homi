@@ -2,18 +2,20 @@
  * LISTES VIVANTES — une entrée ajoutée apparaît À SA PLACE, une entrée supprimée se replie et les voisines referment
  * l'espace (Reanimated, animations de mise en page sur le fil UI).
  *
- *   <MotionList>{entries.map((e) => <MotionItem key={e.id}><EntryRow … /></MotionItem>)}</MotionList>
+ *   <MotionList style={{ gap: 8 }}>{entries.map((e) => <MotionItem key={e.id}><EntryRow … /></MotionItem>)}</MotionList>
  *
  * Règles (docs/DA_LIQUID_GLASS.md § 11) :
  *  - JAMAIS au montage : les entrées présentes au premier affichage de la liste (ou à l'arrivée des données, `ready`)
  *    sont posées sans animation ; seule une entrée montée APRÈS joue l'apparition ;
- *  - quitter l'écran ne rejoue rien (`LayoutAnimationConfig skipExiting`) : seule une suppression réelle se replie ;
+ *  - quitter l'écran ne rejoue rien (`LayoutAnimationConfig skipExiting` sur la vue de la liste) : seule une
+ *    suppression réelle se replie ;
  *  - longue liste (> `LIST_MOTION.layoutMax` entrées) : seul l'élément touché s'anime (pas de glissement des voisines) ;
  *  - 'off' (Réduire les animations, économie d'énergie) : changement immédiat ; 'minimal' (nuit) : fondu court.
  * Rien ne tourne au repos : une animation de mise en page n'existe que pendant le changement.
+ * `MotionList` est une vraie `View` (mêmes props) : elle remplace le conteneur de la liste sans changer la mise en page.
  */
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type ViewProps } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
 import { durations } from './curves';
 import { useMotion, type MotionLevel } from './useMotion';
@@ -43,27 +45,25 @@ export function listItemMotion(level: MotionLevel, o: { animateIn: boolean; coun
 type Ctx = { settled: React.MutableRefObject<boolean>; count: number };
 const ListCtx = createContext<Ctx | null>(null);
 
-export function MotionList({ children, style, gap, ready = true, testID }: {
-  children: React.ReactNode;
-  style?: StyleProp<ViewStyle>;
+export function MotionList({ children, style, gap, ready = true, ...rest }: ViewProps & {
+  children?: React.ReactNode;
   gap?: number;
   /** false tant que les données ne sont pas arrivées : rien ne s'anime avant le premier affichage réel */
   ready?: boolean;
-  testID?: string;
 }) {
   const settled = useRef(false);
   useEffect(() => { if (ready) settled.current = true; }, [ready]);
   const count = React.Children.count(children);
   return (
     <LayoutAnimationConfig skipExiting>
-      <ListCtx.Provider value={{ settled, count }}>
-        <View testID={testID} style={[gap != null ? { gap } : null, style]}>{children}</View>
-      </ListCtx.Provider>
+      <View {...rest} style={[gap != null ? { gap } : null, style]}>
+        <ListCtx.Provider value={{ settled, count }}>{children}</ListCtx.Provider>
+      </View>
     </LayoutAnimationConfig>
   );
 }
 
-export function MotionItem({ children, style, testID }: { children: React.ReactNode; style?: StyleProp<ViewStyle>; testID?: string }) {
+export function MotionItem({ children, style, testID }: { children?: React.ReactNode; style?: ViewProps['style']; testID?: string }) {
   const m = useMotion();
   const ctx = useContext(ListCtx);
   // Décidé au montage, une fois : l'entrée est-elle arrivée après le premier affichage de sa liste ?

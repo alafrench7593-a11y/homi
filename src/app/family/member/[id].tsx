@@ -23,6 +23,7 @@ import { DEFAULT_SHARE, useFamilyProfiles } from '@/lib/data/hooks-couple';
 import { isTerminal, missionHref } from '@/lib/domain/missions';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function MemberProfile() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -64,9 +65,9 @@ export default function MemberProfile() {
       <SectionTitle title={tr('cp2.member.missions')} />
       <View testID="member-missions">
         {!allowed('share_missions') ? notShared : missions.length ? (
-          <StaggerList>{missions.map((m) => (
-            <ListRow key={m.id} icon="check-square" title={m.title} right={<StateLabel state={m.mission_state} />} onPress={() => router.push(missionHref(m.id) as never)} />
-          ))}</StaggerList>
+          <StaggerList><MotionList>{missions.map((m) => (
+            <MotionItem key={m.id}><ListRow key={m.id} icon="check-square" title={m.title} right={<StateLabel state={m.mission_state} />} onPress={() => router.push(missionHref(m.id) as never)} /></MotionItem>
+          ))}</MotionList></StaggerList>
         ) : <Text variant="small" muted>{tr('cp2.member.noMissions')}</Text>}
       </View>
 
@@ -86,16 +87,16 @@ export default function MemberProfile() {
 
       <SectionTitle title={tr('cp2.member.calendar')} />
       <View testID="member-calendar">
-        {!allowed('share_calendar') ? notShared : calendar.length ? calendar.map((e) => (
-          <ListRow key={e.id} icon="calendar" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'short', day: 'numeric', month: 'short', hour: e.all_day ? undefined : '2-digit', minute: e.all_day ? undefined : '2-digit' })} onPress={() => router.push('/calendar')} />
-        )) : <Text variant="small" muted>{tr('cp2.member.noCalendar')}</Text>}
+        {!allowed('share_calendar') ? notShared : calendar.length ? <MotionList>{calendar.map((e) => (
+          <MotionItem key={e.id}><ListRow key={e.id} icon="calendar" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'short', day: 'numeric', month: 'short', hour: e.all_day ? undefined : '2-digit', minute: e.all_day ? undefined : '2-digit' })} onPress={() => router.push('/calendar')} /></MotionItem>
+        ))}</MotionList> : <Text variant="small" muted>{tr('cp2.member.noCalendar')}</Text>}
       </View>
 
       <SectionTitle title={tr('cp2.member.activities')} />
       <View testID="member-activities">
-        {!allowed('share_activities') ? notShared : activities.length ? activities.map((e) => (
-          <ListRow key={e.id} icon="smile" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'short', day: 'numeric', month: 'short' })} />
-        )) : <Text variant="small" muted>{tr('cp2.member.noActivities')}</Text>}
+        {!allowed('share_activities') ? notShared : activities.length ? <MotionList>{activities.map((e) => (
+          <MotionItem key={e.id}><ListRow key={e.id} icon="smile" title={e.title} subtitle={formatDate(e.starts_at, { weekday: 'short', day: 'numeric', month: 'short' })} /></MotionItem>
+        ))}</MotionList> : <Text variant="small" muted>{tr('cp2.member.noActivities')}</Text>}
       </View>
       {isMe ? <ListRow icon="sliders" title={tr('cp2.info.title')} subtitle={tr('cp2.info.sub')} onPress={() => router.push('/family/my-info')} testID="member-my-info" /> : null}
     </Screen>

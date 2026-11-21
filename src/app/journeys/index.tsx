@@ -23,6 +23,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { ObjectivePicker } from '@/features/cycle/Objective';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /**
  * Parcours proposés, plus le simple suivi du cycle (conservé). Le post-partum n'est plus une catégorie indépendante :
@@ -120,15 +121,15 @@ export default function Journeys() {
         <>
           <SectionTitle title={tr('pj.manager.active')} />
           <Card>
-            {js.active.length ? js.active.map((j) => (
-              <ListRow
+            {js.active.length ? <MotionList>{js.active.map((j) => (
+              <MotionItem key={j.id}><ListRow
                 key={j.id}
                 icon={JOURNEY_ICON[j.type]}
                 title={profileLabel(j, allChildren)}
                 subtitle={journeyDates(j)}
                 right={<Button label={tr('pj.end.button')} size="sm" variant="secondary" onPress={() => end(j)} testID={`end-${j.type}`} />}
-              />
-            )) : <Text muted testID="no-active">{tr('pj.manager.noneActive')}</Text>}
+              /></MotionItem>
+            ))}</MotionList> : <Text muted testID="no-active">{tr('pj.manager.noneActive')}</Text>}
           </Card>
           {js.active.filter((r) => r.type !== 'pregnancy').length + (pregnancy ? 1 : 0) > 1 ? <Text variant="small" muted>{tr('pj.manager.multi')}</Text> : null}
 
@@ -170,9 +171,9 @@ export default function Journeys() {
 
           <SectionTitle title={tr('pj.manager.previous')} />
           <Card>
-            {js.archived.length ? js.archived.map((j) => (
-              <ListRow key={j.id} icon={JOURNEY_ICON[j.type]} title={profileLabel(j, allChildren)} subtitle={`${journeyDates(j)}${j.end_reason ? ` · ${tr(`pj.reason.${j.end_reason}` as TKey)}` : ''}`} onPress={() => router.push(`/journeys/${j.id}`)} />
-            )) : <Text muted testID="no-archived">{tr('pj.manager.noneArchived')}</Text>}
+            {js.archived.length ? <MotionList>{js.archived.map((j) => (
+              <MotionItem key={j.id}><ListRow key={j.id} icon={JOURNEY_ICON[j.type]} title={profileLabel(j, allChildren)} subtitle={`${journeyDates(j)}${j.end_reason ? ` · ${tr(`pj.reason.${j.end_reason}` as TKey)}` : ''}`} onPress={() => router.push(`/journeys/${j.id}`)} /></MotionItem>
+            ))}</MotionList> : <Text muted testID="no-archived">{tr('pj.manager.noneArchived')}</Text>}
           </Card>
           <Banner tone="info">{tr('pj.manager.privacy')}</Banner>
         </>
@@ -180,9 +181,9 @@ export default function Journeys() {
 
       <ChangeSheet req={pending} onClose={() => setPending(null)} onConfirm={(m) => void confirmChange(m)} busy={busy} />
       <Sheet visible={!!pickChild} onClose={() => setPickChild(null)} title={pickChild ? tr(`pj.choice.${pickChild}` as TKey) : ''}>
-        {pickChild && kidsFor(pickChild).map((c) => (
-          <ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => chooseChild(c.id, pickChild)} />
-        ))}
+        {pickChild && <MotionList>{kidsFor(pickChild).map((c) => (
+          <MotionItem key={c.id}><ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => chooseChild(c.id, pickChild)} /></MotionItem>
+        ))}</MotionList>}
         <Button label={tr('pj.addChild')} icon="plus" variant="secondary" onPress={() => { setPickChild(null); router.push('/profiles/new?kind=child'); }} full testID="add-child" />
       </Sheet>
       <ObjectivePicker visible={objOpen} onClose={() => setObjOpen(false)} onPick={(o) => choose(o)} />

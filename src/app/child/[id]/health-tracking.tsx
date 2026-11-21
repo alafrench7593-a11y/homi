@@ -25,6 +25,7 @@ import { insertOrQueue } from '@/lib/offline';
 import { csvCell, safeFileName } from '@/lib/csv';
 import { spacing } from '@/theme/tokens';
 import { formatNumber, localeTag, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 interface Tracker { id: string; child_id: string; kind: 'measure' | 'observation'; label: string; unit: string | null; plan_note: string | null; plan_by: string | null; plan_date: string | null; low_threshold: number | null; high_threshold: number | null; thresholds_from_plan: boolean; contexts: string[]; active: boolean }
 interface Entry { id: string; tracker_id: string; at: string; value: number | null; context: string | null; note: string | null; source: 'parent' | 'imported' | 'professional' }
@@ -134,19 +135,19 @@ export default function HealthTracking() {
       {trackersQ.data && entriesQ.isError && !entriesQ.data ? <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} title={tr('u4.ht.errNotes')} /> : null}
       {trackersQ.data && !trackers.length ? <EmptyState icon="activity" title={tr('u4.ht.emptyTitle')} body={tr('u4.ht.emptyBody')} /> : null}
 
-      {trackers.map((trk, i) => {
+      <MotionList>{trackers.map((trk, i) => {
         const list = (entriesQ.data ?? []).filter((e) => e.tracker_id === trk.id);
         const points = list.filter((e) => e.value != null).slice(0, 60).reverse().map((e) => ({ x: Date.parse(e.at), y: Number(e.value) }));
         return (
-          <StaggerItem key={trk.id} index={i}>
+          <MotionItem key={trk.id}><StaggerItem key={trk.id} index={i}>
             <Card>
               <Text weight="bold">{trk.label}{trk.unit ? ` (${trk.unit})` : ''}</Text>
               {trk.plan_by ? <Text variant="caption" muted>{tr('u4.ht.plan', { by: trk.plan_by })}{trk.plan_date ? `, ${new Date(trk.plan_date).toLocaleDateString(localeTag())}` : ''}{trk.thresholds_from_plan && (trk.low_threshold != null || trk.high_threshold != null) ? tr('u4.ht.thr', { low: trk.low_threshold ?? '—', high: trk.high_threshold ?? '—' }) : ''}</Text> : <Text variant="caption" muted>{tr('u4.ht.noPlan')}</Text>}
               {trk.plan_note ? <Text variant="small" style={{ marginTop: 4 }}>{tr('u4.ht.instr', { note: trk.plan_note })}</Text> : null}
               {points.length >= 2 ? <View style={{ marginTop: spacing.xs }}><LineChart points={points} unit={trk.unit ?? ''} accessibilityLabel={tr('u4.ht.evolution', { label: trk.label })} formatX={(x) => new Date(x).toLocaleDateString(localeTag(), { day: 'numeric', month: 'short' })} /></View> : null}
-              {list.slice(0, 4).map((e) => (
-                <ListRow key={e.id} icon={e.source === 'professional' ? 'check-circle' : e.source === 'imported' ? 'download' : 'user'} title={`${new Date(e.at).toLocaleString(localeTag(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${e.value != null ? ` · ${formatNumber(Number(e.value), { maximumFractionDigits: 6 })} ${trk.unit ?? ''}` : ''}${e.context ? ` · ${e.context}` : ''}`} subtitle={[sourceLabel(e.source), e.note].filter(Boolean).join(' — ')} />
-              ))}
+              <MotionList>{list.slice(0, 4).map((e) => (
+                <MotionItem key={e.id}><ListRow key={e.id} icon={e.source === 'professional' ? 'check-circle' : e.source === 'imported' ? 'download' : 'user'} title={`${new Date(e.at).toLocaleString(localeTag(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${e.value != null ? ` · ${formatNumber(Number(e.value), { maximumFractionDigits: 6 })} ${trk.unit ?? ''}` : ''}${e.context ? ` · ${e.context}` : ''}`} subtitle={[sourceLabel(e.source), e.note].filter(Boolean).join(' — ')} /></MotionItem>
+              ))}</MotionList>
               <Row wrap style={{ marginTop: spacing.xs }}>
                 <Button label={trk.kind === 'measure' ? tr('u4.ht.noteMeasure') : tr('u4.ht.noteObs')} icon="plus" size="sm" onPress={() => setEntryFor(trk)} />
                 <Button label={tr('u4.ht.edit')} size="sm" variant="secondary" onPress={() => setEditing({ ...trk, low: trk.low_threshold != null ? String(trk.low_threshold) : '', high: trk.high_threshold != null ? String(trk.high_threshold) : '', plan_date: trk.plan_date ? new Date(trk.plan_date).toLocaleDateString('fr-FR') : undefined })} />
@@ -154,9 +155,9 @@ export default function HealthTracking() {
                 <Button label={tr('u4.ht.delete')} size="sm" variant="ghost" onPress={() => removeTracker(trk)} />
               </Row>
             </Card>
-          </StaggerItem>
+          </StaggerItem></MotionItem>
         );
-      })}
+      })}</MotionList>
 
       <SectionTitle title={tr('u4.ht.createTitle')} />
       <Row wrap>
@@ -165,9 +166,9 @@ export default function HealthTracking() {
       </Row>
 
       <Sheet visible={pick} onClose={() => setPick(false)} title={tr('u4.ht.pickTitle')}>
-        <View style={{ gap: spacing.xs }}>
-          {activeTrackers.map((x) => <ListRow key={x.id} icon={x.kind === 'measure' ? 'activity' : 'edit-3'} title={x.label} subtitle={x.kind === 'measure' ? tr('u4.ht.measure') : tr('u4.ht.observation')} onPress={() => { setPick(false); setEntryFor(x); }} />)}
-        </View>
+        <MotionList style={{ gap: spacing.xs }}>
+          {activeTrackers.map((x) => <MotionItem key={x.id}><ListRow key={x.id} icon={x.kind === 'measure' ? 'activity' : 'edit-3'} title={x.label} subtitle={x.kind === 'measure' ? tr('u4.ht.measure') : tr('u4.ht.observation')} onPress={() => { setPick(false); setEntryFor(x); }} /></MotionItem>)}
+        </MotionList>
       </Sheet>
 
       <Sheet visible={!!editing} onClose={() => setEditing(null)} title={editing?.id ? tr('u4.ht.editTracker') : tr('u4.ht.newTracker')}>

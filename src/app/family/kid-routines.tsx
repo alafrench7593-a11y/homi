@@ -21,6 +21,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Pictogrammes proposés (Material Community Icons, vérifiés dans la police embarquée). */
 export const PICTOS = [
@@ -141,11 +142,11 @@ export default function KidRoutines() {
       <Text muted>{tr('kr.intro')}</Text>
       {q.isLoading ? <Loading /> : !list.length ? (
         <EmptyState icon="sun" title={tr('kr.none')} body={tr('kr.noneD')} action={{ label: tr('kr.new'), onPress: () => { setEditing(undefined); setOpen(true); } }} />
-      ) : list.map((r) => {
+      ) : <MotionList>{list.map((r) => {
         const done = checks.filter((c) => c.routine_id === r.id).length;
         const who = children.find((c) => c.id === r.child_id)?.first_name;
         return (
-          <Card key={r.id} testID={`kr-routine-${r.id}`}>
+          <MotionItem key={r.id}><Card key={r.id} testID={`kr-routine-${r.id}`}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
               <View style={{ flex: 1 }}>
                 <Text weight="bold">{r.title}</Text>
@@ -157,9 +158,9 @@ export default function KidRoutines() {
               {r.steps.map((s, i) => <Picto key={i} name={s.icon} size={26} />)}
             </View>
             <Button label={tr('kr.kidMode')} icon="smile" onPress={() => router.push(`/family/kid-routine/${r.id}` as never)} testID={`kr-open-${r.id}`} />
-          </Card>
+          </Card></MotionItem>
         );
-      })}
+      })}</MotionList>}
       <SectionTitle title={tr('kr.tips')} />
       <Banner tone="info" icon="heart">{tr('kr.tipsD')}</Banner>
       <RoutineEditor routine={editing} visible={open} onClose={() => setOpen(false)} />

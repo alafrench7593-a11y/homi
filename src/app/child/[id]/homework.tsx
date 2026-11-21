@@ -23,6 +23,7 @@ import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function HomeworkScreen() {
   const state = useParentChild();
@@ -80,7 +81,7 @@ function HomeworkBody({ child }: { child: Child }) {
       {late.length ? (
         <>
           <SectionTitle title={tr('p2.hw.late')} subtitle={tr('p2.hw.lateSub')} />
-          <View style={{ gap: 6 }} testID="hw-late">{late.map((h) => <HwRow key={h.id} h={h} onToggle={() => void toggle(h)} onOpen={() => setOpen({ h })} showDate />)}</View>
+          <MotionList style={{ gap: 6 }} testID="hw-late">{late.map((h) => <MotionItem key={h.id}><HwRow key={h.id} h={h} onToggle={() => void toggle(h)} onOpen={() => setOpen({ h })} showDate /></MotionItem>)}</MotionList>
         </>
       ) : null}
       {/* une seule carte pour la semaine : les jours sans devoir tiennent sur une ligne */}
@@ -90,7 +91,7 @@ function HomeworkBody({ child }: { child: Child }) {
             {d.items.length ? (
               <>
                 <Text weight="bold" color={d.date === today ? theme.colors.primary : undefined}>{dayLabel(d.date)}{d.date === today ? ` · ${tr('u1.appt.today')}` : ''}</Text>
-                <View style={{ gap: 2, marginTop: 4 }}>{d.items.map((h) => <HwRow key={h.id} h={h} onToggle={() => void toggle(h)} onOpen={() => setOpen({ h })} />)}</View>
+                <MotionList style={{ gap: 2, marginTop: 4 }}>{d.items.map((h) => <MotionItem key={h.id}><HwRow key={h.id} h={h} onToggle={() => void toggle(h)} onOpen={() => setOpen({ h })} /></MotionItem>)}</MotionList>
               </>
             ) : (
               <Row style={{ alignItems: 'baseline' }}>

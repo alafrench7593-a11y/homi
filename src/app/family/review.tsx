@@ -20,6 +20,7 @@ import { weeklyReview } from '@/lib/domain/familyLoad';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function WeeklyReview() {
   const t = useTheme();
@@ -76,8 +77,8 @@ export default function WeeklyReview() {
 
       <SectionTitle title={tr('u2.review.next_week')} />
       <Card>
-        {week.map((a) => <ListRow key={a.id} icon="calendar" title={a.title} subtitle={fmtWhen(a.starts_at)} />)}
-        {r.upcoming.map((x) => <ListRow key={x.id} icon="check-square" title={x.title} subtitle={`${fmtWhen(x.due_at!)} · ${labelOf(x.assignee_id)}`} />)}
+        <MotionList>{week.map((a) => <MotionItem key={a.id}><ListRow key={a.id} icon="calendar" title={a.title} subtitle={fmtWhen(a.starts_at)} /></MotionItem>)}</MotionList>
+        <MotionList>{r.upcoming.map((x) => <MotionItem key={x.id}><ListRow key={x.id} icon="check-square" title={x.title} subtitle={`${fmtWhen(x.due_at!)} · ${labelOf(x.assignee_id)}`} /></MotionItem>)}</MotionList>
         {!week.length && !r.upcoming.length ? <Text variant="small" muted>{tr('u2.review.nothing_next')}</Text> : null}
       </Card>
 

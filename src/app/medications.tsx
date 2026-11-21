@@ -24,6 +24,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 interface Row4 { key: string; time: string; who: string; childId: string | null; name: string; dose: string; treatmentId: string; scheduledFor: string; log: { id: string; status: 'taken' | 'snoozed' | 'skipped' } | null }
 
@@ -80,11 +81,11 @@ export default function Medications() {
       <SectionTitle title={tr('med.today')} />
       <Card testID="med-today">
         {rows.length ? <Text variant="small" muted style={{ marginBottom: 4 }}>{tr('med.todayCount', { done, total: rows.length })}</Text> : <Text muted>{tr('med.todayNone')}</Text>}
-        {rows.map((r) => {
+        <MotionList>{rows.map((r) => {
           const taken = r.log?.status === 'taken';
           const title = `${r.who} · ${r.name}`;
           return (
-            <Row key={r.key} style={{ alignItems: 'center', gap: spacing.md, paddingVertical: 8 }}>
+            <MotionItem key={r.key}><Row key={r.key} style={{ alignItems: 'center', gap: spacing.md, paddingVertical: 8 }}>
               <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: taken }} aria-checked={taken}
                 accessibilityLabel={taken ? tr('med.untick', { title }) : tr('med.tick', { title })} onPress={() => void toggle(r)} hitSlop={8} testID={`med-check-${r.key}`}
                 style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: taken ? th.colors.success : th.colors.primary, backgroundColor: taken ? th.colors.success : 'transparent' }}>
@@ -95,9 +96,9 @@ export default function Medications() {
                 <Text variant="small">{r.name} — {r.dose}</Text>
                 <Text variant="caption" weight="bold" color={taken ? th.colors.success : undefined} muted={!r.log}>{tr(`med.status.${r.log?.status ?? 'todo'}` as TKey)}</Text>
               </View>
-            </Row>
+            </Row></MotionItem>
           );
-        })}
+        })}</MotionList>
       </Card>
 
       <SectionTitle title={tr('med.who')} />

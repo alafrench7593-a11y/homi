@@ -22,6 +22,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const PATTERN_KEYS: CustodyPattern[] = ['week', '2255', '223', 'custom'];
 const hhmm = (v: string | null) => (v ? v.slice(0, 5) : '');
@@ -232,11 +233,11 @@ export default function Custody() {
           <SectionTitle title={tr('cu.exceptions')} action={tr('cu.addException')} onAction={() => setExOpen(true)} />
           {!ex.length ? <Card tone="soft"><Text muted>{tr('cu.noExceptions')}</Text></Card> : (
             <Card padded={false}>
-              {ex.map((e) => (
-                <ListRow key={e.id} icon="shuffle" title={`${label(e.side)}${e.note ? ` · ${e.note}` : ''}`}
+              <MotionList>{ex.map((e) => (
+                <MotionItem key={e.id}><ListRow key={e.id} icon="shuffle" title={`${label(e.side)}${e.note ? ` · ${e.note}` : ''}`}
                   subtitle={e.from_on === e.to_on ? formatDate(e.from_on, { weekday: 'short', day: 'numeric', month: 'short' }) : tr('cu.range', { from: formatDate(e.from_on, { day: 'numeric', month: 'short' }), to: formatDate(e.to_on, { day: 'numeric', month: 'short' }) })}
-                  onPress={() => void removeException(e.id)} />
-              ))}
+                  onPress={() => void removeException(e.id)} /></MotionItem>
+              ))}</MotionList>
             </Card>
           )}
           <Banner tone="info" icon="users">{tr('cu.help')}</Banner>
