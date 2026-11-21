@@ -58,6 +58,48 @@ export function loadAggregate(rows: readonly LoadRow[], me: string | null | unde
   };
 }
 
+/**
+ * Biberons d'un enfant sur 7 jours (ticket 5) : moyennes calculées SUR LE TÉLÉPHONE, âge en mois seulement.
+ * Moins de 3 jours notés → `null` : l'écran dit clairement qu'il n'y a pas assez de données (aucune conclusion inventée).
+ */
+export const BOTTLE_MIN_DAYS = 3;
+export function bottleAggregate(
+  bottles: readonly { at: string; consumed_ml: number | null }[], birthDate: string | null | undefined, now = new Date(), windowDays = 7,
+) {
+  const since = now.getTime() - windowDays * DAY;
+  const recent = bottles.filter((b) => { const t = Date.parse(b.at); return t >= since && t <= now.getTime(); }).sort((a, b) => a.at.localeCompare(b.at));
+  const dayOf = (iso: string) => { const d = new Date(iso); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; };
+  const days = new Map<string, { n: number; ml: number; withMl: boolean }>();
+  for (const b of recent) {
+    const k = dayOf(b.at);
+    const cur = days.get(k) ?? { n: 0, ml: 0, withMl: false };
+    cur.n += 1;
+    if (b.consumed_ml != null) { cur.ml += b.consumed_ml; cur.withMl = true; }
+    days.set(k, cur);
+  }
+  if (days.size < BOTTLE_MIN_DAYS) return null;
+  const gaps: number[] = [];
+  for (let i = 1; i < recent.length; i++) gaps.push((Date.parse(recent[i].at) - Date.parse(recent[i - 1].at)) / 60_000);
+  const mlDays = [...days.values()].filter((d) => d.withMl);
+  const birth = birthDate ? Date.parse(birthDate) : NaN;
+  return {
+    window_days: windowDays,
+    days_noted: days.size,
+    age_months: Number.isFinite(birth) ? Math.max(0, Math.floor((now.getTime() - birth) / (30.44 * DAY))) : null,
+    avg_bottles_per_day: r1(recent.length / days.size),
+    avg_ml_per_day: mlDays.length ? Math.round(mlDays.reduce((s, d) => s + d.ml, 0) / mlDays.length) : null,
+    avg_gap_minutes: gaps.length ? Math.round(gaps.reduce((s, g) => s + g, 0) / gaps.length) : null,
+  };
+}
+
+/** Période couverte par une analyse, affichée AVANT l'envoi (clé de traduction + nombre de jours éventuel). */
+export function analysisPeriod(kind: string, data: Record<string, unknown> | null): { key: string; days: number | null } {
+  if (kind === 'cycle') return { key: 'sa.an.period.cycles', days: null };
+  if (kind === 'diary') return { key: 'sa.an.period.pages', days: null };
+  const days = typeof data?.window_days === 'number' ? data.window_days : kind === 'sleep' ? 7 : kind === 'load' ? 30 : null;
+  return { key: 'sa.an.period.days', days };
+}
+
 /** Lignes lisibles de l'aperçu « ce qui sera envoyé » : clé → valeur (sans transformation). */
 export function previewRows(data: Record<string, unknown>): { key: string; value: string }[] {
   const out: { key: string; value: string }[] = [];

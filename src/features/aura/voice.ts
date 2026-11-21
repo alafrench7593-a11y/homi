@@ -137,3 +137,34 @@ export function startBrowserDictation(h: { onText: (text: string, final: boolean
   try { r.start(); } catch { return null; }
   return { stop: () => { try { r.stop(); } catch { /* déjà arrêtée */ } }, abort: () => { try { r.abort(); } catch { /* déjà arrêtée */ } } };
 }
+
+// ------------------------------------------------------------------------------------------------- état réel
+/**
+ * État RÉEL de la voix sur cet appareil (ticket 5), avec la raison exacte quand une capacité manque :
+ *  - lecture : `ok`, `needs_build` (téléphone : le module natif ExpoSpeech n'est pas dans cette version compilée de
+ *    l'app — il faut une nouvelle compilation EAS), `browser_missing` (navigateur sans `speechSynthesis`) ;
+ *  - dictée : `browser` (reconnaissance du navigateur), `keyboard` (micro du clavier du téléphone), `browser_missing`
+ *    (navigateur sans `SpeechRecognition`). Aucun module de reconnaissance natif n'est installé (décision en attente).
+ * L'écrit reste toujours disponible.
+ */
+export interface VoiceStatus { tts: 'ok' | 'needs_build' | 'browser_missing'; dictation: 'browser' | 'keyboard' | 'browser_missing' }
+export function voiceStatus(): VoiceStatus {
+  const web = Platform.OS === 'web';
+  const d = dictationMode();
+  return {
+    tts: canSpeak() ? 'ok' : web ? 'browser_missing' : 'needs_build',
+    dictation: d === 'none' ? 'browser_missing' : d,
+  };
+}
+
+/** Phase de la dictée affichée sous le champ : écoute → traitement (après « Arrêter ») → fin (texte à relire) ou erreur. */
+export type DictationPhase = 'idle' | 'listening' | 'processing' | 'done' | 'error';
+export function nextDictationPhase(phase: DictationPhase, ev: 'start' | 'stop' | 'end' | 'error' | 'cancel', hasText = false): DictationPhase {
+  switch (ev) {
+    case 'start': return 'listening';
+    case 'stop': return phase === 'listening' ? 'processing' : phase;
+    case 'error': return 'error';
+    case 'cancel': return 'idle';
+    case 'end': return phase === 'error' ? 'error' : hasText ? 'done' : 'idle';
+  }
+}

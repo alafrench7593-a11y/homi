@@ -23,14 +23,14 @@ import { uuid } from '@/lib/uuid';
 import { useEntitlement } from '@/lib/data/hooks-premium';
 import { MAX_JOURNAL_ENTRIES } from '../../../supabase/functions/_shared/aura-data';
 import { askAura, type AuraServerReply } from './api';
-import { previewRows, sleepAggregate } from './analysis';
+import { analysisPeriod, previewRows, sleepAggregate } from './analysis';
 import { useSleepAssistantContext } from '@/features/sleepAssistant';
 import type { Child } from '@/lib/types';
 import { AuraGlyph } from './AuraMark';
 import { creditActionFor, journalPayload } from './model';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
-type Kind = 'sleep' | 'cycle' | 'mood' | 'load';
+type Kind = 'sleep' | 'cycle' | 'mood' | 'load' | 'bottle';
 
 export function AuraAnalysis({ kind, data, testID }: { kind: Kind; data: Record<string, unknown> | null; testID?: string }) {
   return <AnalysisShell kind={kind} payload={data} testID={testID ?? `aura-analysis-${kind}`} />;
@@ -77,8 +77,9 @@ function AnalysisShell({ kind, payload, testID, children }: { kind: Kind | 'diar
         <Text weight="bold" accessibilityRole="header" style={{ flex: 1 }}>{tr('aura.an.title')}</Text>
       </Row>
       {children}
-      {!payload ? <Text variant="small" muted testID={`${testID}-empty`}>{tr(kind === 'diary' ? 'aura.an.pickFirst' : 'aura.an.none')}</Text> : (
+      {!payload ? <Text variant="small" muted testID={`${testID}-empty`}>{tr(kind === 'diary' ? 'aura.an.pickFirst' : kind === 'bottle' ? 'sa.an.bottleNone' : 'aura.an.none')}</Text> : (
         <>
+          <Text variant="small" testID={`${testID}-period`}>{(() => { const p = analysisPeriod(kind, payload); return tr(p.key as never, { count: p.days ?? 0 }); })()}</Text>
           <Text variant="small" muted>{tr('aura.an.body')}</Text>
           <MotionList style={{ gap: 2, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt }} testID={`${testID}-preview`}>
             {rows.map((r) => <MotionItem key={r.key}><Text key={r.key} variant="caption">{`${tr(`aura.an.f.${r.key}` as TKey)} : ${r.value}`}</Text></MotionItem>)}
@@ -101,6 +102,7 @@ function AnalysisShell({ kind, payload, testID, children }: { kind: Kind | 'diar
       {result ? (
         <View style={{ gap: spacing.xs }} testID={`${testID}-result`} accessibilityLiveRegion="polite">
           <Text variant="label">{tr('aura.an.result')}</Text>
+          {result.demo ? <Text variant="caption" color={t.colors.lavender} testID={`${testID}-simulated`}>{tr('aura.mode.demo')}</Text> : null}
           {result.safety && result.safety !== 'none' ? <Text variant="small">{result.answer}</Text> : <Markdown source={result.answer ?? ''} />}
           <Text variant="caption" muted>{`${result.footer ?? tr('aura.aiNote')} ${result.credits?.charged ? tr('aura.charged', { count: result.credits.cost ?? 0 }) : tr('aura.notCharged')}`}</Text>
         </View>

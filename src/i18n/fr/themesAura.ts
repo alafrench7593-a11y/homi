@@ -13,7 +13,7 @@ export const themesAura = {
   'tp.alwaysDark': "Toujours sombre",
   // Aura : présentation unique, relançable
   'ta.intro.a11y': "Présentation d’Aura",
-  'ta.intro.hello': "Salut, moi c’est Aura, l’assistante de HOMI. Je peux t’aider à retrouver un outil et te montrer comment l’utiliser. Tu peux m’écrire ou me parler. On commence par quoi ?",
+  'ta.intro.hello': "Salut, moi c’est Aura, l’assistante de HOMI. Je t’aide à trouver le bon outil, à comprendre un écran et, seulement si tu choisis de les partager, à analyser certaines de tes données. On commence par quoi ?",
   'ta.intro.talk': "Parler à Aura",
   'ta.intro.write': "Écrire",
   'ta.intro.later': "Plus tard",

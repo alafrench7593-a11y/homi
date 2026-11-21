@@ -11,7 +11,7 @@ export const themesAura = {
   'tp.more': "Altre impostazioni di aspetto",
   'tp.alwaysDark': "Sempre scuro",
   'ta.intro.a11y': "Presentazione di Aura",
-  'ta.intro.hello': "Ciao, sono Aura, l’assistente di HOMI. Posso aiutarti a trovare uno strumento e mostrarti come usarlo. Puoi scrivermi o parlarmi. Da cosa iniziamo?",
+  'ta.intro.hello': "Ciao, sono Aura, l’assistente di HOMI. Ti aiuto a trovare lo strumento giusto, a capire una schermata e, solo se scegli di condividerli, ad analizzare alcuni dei tuoi dati. Da cosa iniziamo?",
   'ta.intro.talk': "Parla con Aura",
   'ta.intro.write': "Scrivi",
   'ta.intro.later': "Più tardi",

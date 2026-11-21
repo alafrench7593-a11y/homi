@@ -16,6 +16,8 @@ import { GlassCard } from '@/components/glass';
 import { Button, Chip, Field, ListRow, SectionTitle, Text } from '@/components/ui';
 import { Cascade, ContentSwap } from '@/motion';
 import { HelpLine, InviteOtherParent } from '@/features/couple/CoupleKit';
+import { AuraGlyph } from '@/features/aura/AuraMark';
+import { TRANSLATOR_GOALS, translatorRoute } from '@/features/aura/translator';
 import { useUserId } from '@/lib/auth';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useCoupleMessages, useGrammar, useMyFeelings, usePartner, useSaveFeeling, useSeenAt } from '@/lib/data/hooks-couple';
@@ -53,6 +55,19 @@ export default function Understand() {
         <ListRow icon="message-circle" title={tr('und.inbox.entry')} testID="und-inbox"
           subtitle={unread ? tr('und.inbox.unread', { count: unread }) : tr('und.inbox.private')} onPress={() => router.push('/family/understand/inbox')} />
       </Cascade>
+
+      {/* Aura, à la demande : trois aides d'écriture ; le résultat revient en BROUILLON modifiable, rien n'est envoyé */}
+      <View testID="und-aura" style={{ gap: spacing.xs }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+          <AuraGlyph size={20} />
+          <Text weight="bold" accessibilityRole="header" style={{ flex: 1 }}>{tr('sa.und.title')}</Text>
+        </View>
+        <Text variant="small" muted>{tr('sa.und.intro')}</Text>
+        {TRANSLATOR_GOALS.map((g) => (
+          <ListRow key={g} icon={g === 'reformulate' ? 'feather' : g === 'need' ? 'heart' : 'message-square'} title={tr(`sa.und.${g}` as never)} subtitle={tr(`sa.und.${g}.d` as never)}
+            testID={`und-aura-${g}`} onPress={() => router.push(translatorRoute(g) as never)} />
+        ))}
+      </View>
 
       <SectionTitle title={tr('und.feel.title')} subtitle={tr('und.feel.hint')} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }} testID="und-feelings" accessibilityRole="none">

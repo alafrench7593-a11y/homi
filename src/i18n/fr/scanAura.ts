@@ -1,0 +1,65 @@
+/** Tickets 4 et 5 (21/11/2026) : « Scanner un document » dans Papiers de la famille ; Aura (états clairs, voix, outils). */
+export const scanAura = {
+  // Papiers de la famille → scanner
+  'sa.pp.scan': 'Scanner un document',
+  'sa.pp.scanHint': 'Ouvre l’appareil photo : tu recadres, tu nommes, tu choisis le profil, puis tu enregistres.',
+  'sa.pp.import': 'Importer une photo',
+  'sa.pp.forChild': 'Le document sera rangé dans le profil de {name} (modifiable avant d’enregistrer).',
+  'sa.pp.forFamily': 'Le document sera rangé pour la famille (profil modifiable avant d’enregistrer).',
+  'sa.scan.backPapers': 'Retour aux papiers de la famille',
+  'sa.scan.saveFailed': 'Le document n’a pas été enregistré',
+  'sa.scan.saveFailedBody': 'Rien n’a été conservé à moitié. Tes pages sont toujours là : réessaie quand tu veux.',
+  'sa.scan.retry': 'Réessayer l’enregistrement',
+  'sa.scan.deniedTitle': 'Appareil photo non autorisé',
+  'sa.scan.deniedWeb': 'Ton navigateur bloque l’appareil photo. Autorise-le dans les réglages du site, ou importe une photo.',
+  'sa.scan.canceled': 'Prise de vue annulée. Tu peux reprendre une photo ou en importer une.',
+  'sa.scan.openSettings': 'Ouvrir les Réglages',
+
+  // Aura : voix
+  'sa.voice.failed': 'La dictée n’a pas fonctionné. Réessaie, ou écris ta question.',
+  'sa.voice.done': 'Dictée terminée : relis ton message, corrige-le si besoin, puis envoie-le.',
+  'sa.voice.canceled': 'Dictée annulée : ton texte d’avant est revenu.',
+  'sa.voice.processing': 'Je termine la transcription…',
+  'sa.voice.title': 'Voix sur cet appareil',
+  'sa.voice.tts.ok': 'Lecture à voix haute : disponible (voix du système), sur demande seulement.',
+  'sa.voice.tts.needs_build': 'Lecture à voix haute : indisponible dans cette version de l’app (le module expo-speech n’y est pas encore compilé). L’écrit reste disponible.',
+  'sa.voice.tts.browser_missing': 'Lecture à voix haute : ce navigateur n’a pas de synthèse vocale (speechSynthesis). L’écrit reste disponible.',
+  'sa.voice.dict.browser': 'Dictée : reconnaissance vocale du navigateur ; le micro est demandé au premier appui.',
+  'sa.voice.dict.keyboard': 'Dictée : utilise le micro du clavier du téléphone (aucun module de reconnaissance dans l’app).',
+  'sa.voice.dict.browser_missing': 'Dictée : ce navigateur n’a pas de reconnaissance vocale (Web Speech). Écris ta question.',
+
+  // Aura : états
+  'sa.aura.local.chosen': 'Tu as choisi le mode sans IA dans les réglages d’Aura.',
+  'sa.aura.local.off': 'Le serveur a répondu que l’IA est coupée ou pas encore configurée : Aura cherche sans IA en attendant.',
+  'sa.aura.local.soon': 'Aura en ligne (IA) n’est pas encore ouverte dans cette version de l’app : en attendant, je cherche dans tes outils et tes articles.',
+  'sa.aura.useAi': 'Revenir à Aura en ligne',
+  'sa.aura.blockedSub': 'Pour écrire à Aura en ligne, il faut HOMI Premium actif.',
+  'sa.aura.blockedConsent': 'Pour écrire à Aura, donne d’abord ton accord (ce qui est envoyé, et à qui).',
+  'sa.aura.seeOffer': 'Voir l’offre Premium',
+  'sa.aura.giveConsent': 'Lire et donner mon accord',
+  'sa.aura.buyCredits': 'Ajouter des crédits',
+
+  // Se comprendre
+  'sa.und.title': 'Avec Aura, si tu veux',
+  'sa.und.intro': 'Aura t’aide à trouver les mots. Elle te propose trois formulations ; tu choisis, tu modifies, et rien n’est envoyé sans toi.',
+  'sa.und.reformulate': 'Reformuler un message',
+  'sa.und.reformulate.d': 'Dire la même chose, en plus doux.',
+  'sa.und.need': 'Exprimer un besoin calmement',
+  'sa.und.need.d': 'Ce dont tu as besoin, sans reproche.',
+  'sa.und.need.hint': 'Écris ce dont tu as besoin, avec tes mots. Aura te propose trois façons calmes de le dire.',
+  'sa.und.need.field': 'Ce dont j’ai besoin',
+  'sa.und.discussion': 'Préparer une discussion',
+  'sa.und.discussion.d': 'Une première phrase pour ouvrir le sujet.',
+  'sa.und.discussion.hint': 'Écris le sujet dont tu veux parler. Aura te propose trois façons d’ouvrir la discussion.',
+  'sa.und.discussion.field': 'Le sujet dont je veux parler',
+  'sa.und.draftNote': 'Le texte choisi devient un brouillon : tu le relis et le modifies avant tout envoi.',
+
+  // Analyses
+  'sa.an.period.days': { one: 'Période : le dernier jour', other: 'Période : les {count} derniers jours' },
+  'sa.an.period.cycles': 'Période : les cycles notés',
+  'sa.an.period.pages': 'Période : les pages que tu coches',
+  'sa.an.bottleNone': 'Pas assez de biberons notés pour une analyse utile : il faut au moins 3 jours notés sur les 7 derniers. Les totaux restent calculés par l’app.',
+  'aura.an.f.avg_bottles_per_day': 'Biberons par jour noté',
+  'aura.an.f.avg_ml_per_day': 'Lait bu par jour (ml)',
+  'aura.an.f.avg_gap_minutes': 'Écart moyen entre biberons (minutes)',
+};

@@ -16,7 +16,7 @@ import type { SearchOutcome } from '@/lib/domain/toolSearch';
 import type { LocalAnswer } from '@/lib/localAI/engine';
 import { AURA_THEMES, AURA_THEME_IDS, toAuraTheme, type AuraTheme } from '../../../supabase/functions/_shared/aura-prompt';
 import { auraCreditAction } from '../../../supabase/functions/_shared/aura-data';
-import { MAX_ENTRY_TEXT, MAX_JOURNAL_ENTRIES } from '../../../supabase/functions/_shared/aura-data';
+import { MAX_ENTRY_TEXT, MAX_JOURNAL_ENTRIES, type AuraAnalysisKind } from '../../../supabase/functions/_shared/aura-data';
 import type { AuraAction, AuraCatalogEntry } from '../../../supabase/functions/_shared/aura-tools';
 import type { CreditAction } from '@/lib/credits/model';
 
@@ -77,7 +77,7 @@ export const isNetworkError = (code: unknown) => ['network', 'timeout', 'offline
 
 export type AuraRequestKind = 'chat' | 'reformulate' | 'analysis';
 /** Action facturée d'une demande — identique au serveur (aura-data.ts). */
-export function creditActionFor(kind: AuraRequestKind, o: { journal?: boolean; analysis?: 'sleep' | 'cycle' | 'mood' | 'diary' | 'load' | null } = {}): CreditAction {
+export function creditActionFor(kind: AuraRequestKind, o: { journal?: boolean; analysis?: AuraAnalysisKind | null } = {}): CreditAction {
   return auraCreditAction(kind, { journal: !!o.journal, analysis: o.analysis ?? null });
 }
 
