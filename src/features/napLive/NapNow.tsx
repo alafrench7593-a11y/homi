@@ -86,21 +86,22 @@ export function NapHero({ child, state, now, actions }: { child: Child; state: N
     : progress === 'inside' ? tr('nn.inside', { low: w!.low!, high: w!.high! })
     : progress === 'beyond' ? tr('nn.beyond', { low: w!.low!, high: w!.high! }) : null;
   return (
-    <Glass variant="card" radius={radius.xl} testID="nap-hero" contentStyle={{ padding: spacing.lg, gap: spacing.sm }}>
-      <Text variant="heading" testID="nap-hero-title" accessibilityRole="header">{title}</Text>
+    // Planche 1 du brief client : UNE donnée en grand, centrée, la période juste dessous, puis l'action
+    <Glass variant="card" radius={radius.xl} testID="nap-hero" contentStyle={{ padding: spacing.lg, gap: spacing.sm, alignItems: 'center' }}>
+      <Text variant="small" weight="medium" muted testID="nap-hero-title" accessibilityRole="header" style={{ textAlign: 'center' }}>{title}</Text>
       {elapsed != null ? (
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs }} accessible accessibilityLabel={`${span(elapsed)} ${tr(state.open ? 'nn.elapsedLabel' : 'nn.awakeLabel')}`}>
-          <Text testID="nap-hero-elapsed" maxFontSizeMultiplier={1.3} style={[{ fontSize: 56, lineHeight: 62, letterSpacing: -1.5, fontFamily: fonts.display, color: t.colors.text }, TABULAR]}>{span(elapsed)}</Text>
+        <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${span(elapsed)} ${tr(state.open ? 'nn.elapsedLabel' : 'nn.awakeLabel')}`}>
+          <Text testID="nap-hero-elapsed" maxFontSizeMultiplier={1.3} style={[{ fontSize: 60, lineHeight: 66, letterSpacing: -1.5, fontFamily: fonts.display, color: t.colors.text, textAlign: 'center' }, TABULAR]}>{span(elapsed)}</Text>
           <Text variant="small" muted>{tr(state.open ? 'nn.elapsedLabel' : 'nn.awakeLabel')}</Text>
         </View>
       ) : null}
       {status ? (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }} testID={`nap-hero-${progress}`}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, maxWidth: '100%' }} testID={`nap-hero-${progress}`}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: progress === 'beyond' ? t.colors.text : t.colors.primary }} />
-          <Text variant="small" weight="medium" style={{ flex: 1 }}>{status}</Text>
+          <Text variant="small" weight="medium" style={{ flexShrink: 1, textAlign: 'center' }}>{status}</Text>
         </View>
       ) : null}
-      <View style={{ marginTop: spacing.xs }}>{actions}</View>
+      <View style={{ marginTop: spacing.xs, alignSelf: 'stretch' }}>{actions}</View>
     </Glass>
   );
 }

@@ -127,4 +127,11 @@ export const napnow = {
   "aura.demo.nap.ok": "Réponse simulée (démonstration). Endormissement à {start}. Sur les {count} dernières siestes comparables, {inRange} ont duré entre {low} et {high} minutes. Si ce rythme se répète aujourd’hui, le réveil pourrait se situer entre {from} et {to}. C’est une indication tirée de l’historique, pas une consigne.",
   "aura.demo.nap.beyond": "La sieste dure déjà plus longtemps que d’habitude : c’est simplement plus long que ses siestes récentes.",
   "aura.demo.nap.none": "Réponse simulée (démonstration). Endormissement à {start}. {count} sieste(s) comparable(s) seulement, ou trop différentes : la fenêtre de réveil n’est pas estimée. Continue de noter ses siestes, elle apparaîtra d’elle-même.",
-};
+  "nn.home.today": "Aujourd’hui",
+  "nn.home.ongoingTitle": "Sieste en cours",
+  "nn.home.lastTitle": "Dernière sieste",
+  "nn.home.since": "Depuis {time}",
+  "nn.home.see": "Voir la sieste",
+  "nn.home.tools": "Outils",
+  "nn.app.title": "Sommeil",
+} as const;

@@ -127,4 +127,11 @@ export const napnow = {
   "aura.demo.nap.ok": "Risposta simulata (dimostrazione). Addormentato alle {start}. Degli ultimi {count} sonnellini confrontabili, {inRange} sono durati tra {low} e {high} minuti. Se questo ritmo si ripete oggi, il risveglio potrebbe cadere tra le {from} e le {to}. È un’indicazione tratta dalla storia, non una consegna.",
   "aura.demo.nap.beyond": "Il sonnellino dura già più del solito: è semplicemente più lungo dei recenti.",
   "aura.demo.nap.none": "Risposta simulata (dimostrazione). Addormentato alle {start}. Solo {count} sonnellino/i confrontabile/i, o troppo diversi: nessuna finestra stimata. Continua ad annotare, apparirà da sola.",
+  "nn.home.today": "Oggi",
+  "nn.home.ongoingTitle": "Sonnellino in corso",
+  "nn.home.lastTitle": "Ultimo sonnellino",
+  "nn.home.since": "Dalle {time}",
+  "nn.home.see": "Vedi il sonnellino",
+  "nn.home.tools": "Strumenti",
+  "nn.app.title": "Sonno",
 };

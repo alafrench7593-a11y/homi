@@ -99,7 +99,7 @@ function PlannerBody({ child, tab, setTab, nap }: { child: Child; tab: Tab; setT
   useSleepNotificationSync(child, plan, profile);
   const age = childAge(child.birth_date);
   return (
-    <Screen back title={tr('u4.sp.titleOf', { name: child.first_name })} subtitle={plan?.age.corrected ? tr('u4.sp.corrected', { age: age.label }) : age.label}>
+    <Screen back title={tr('nn.app.title')} subtitle={`${child.first_name} · ${plan?.age.corrected ? tr('u4.sp.corrected', { age: age.label }) : age.label}`}>
       {/* Sections : un sélecteur de verre sur une ligne ; Profil et Notifications réunis dans « Réglages » */}
       <GlassSegmentedControl testID="sleep-tabs" label={tr('nn.tab.label')} value={tab === 'alerts' ? 'profile' : tab} onChange={(v) => setTab(v)}
         options={[

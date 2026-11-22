@@ -127,4 +127,11 @@ export const napnow = {
   "aura.demo.nap.ok": "Simulierte Antwort (Demo). Eingeschlafen um {start}. Von den letzten {count} vergleichbaren Schläfchen dauerten {inRange} zwischen {low} und {high} Minuten. Wenn sich dieser Rhythmus heute wiederholt, könnte das Aufwachen zwischen {from} und {to} liegen. Ein Hinweis aus dem Verlauf, keine Anweisung.",
   "aura.demo.nap.beyond": "Das Schläfchen dauert schon länger als sonst: einfach länger als die letzten.",
   "aura.demo.nap.none": "Simulierte Antwort (Demo). Eingeschlafen um {start}. Nur {count} vergleichbare(s) Schläfchen oder zu unterschiedlich: kein Aufwachfenster. Trag weiter ein, es erscheint von selbst.",
+  "nn.home.today": "Heute",
+  "nn.home.ongoingTitle": "Schläfchen läuft",
+  "nn.home.lastTitle": "Letztes Schläfchen",
+  "nn.home.since": "Seit {time}",
+  "nn.home.see": "Schläfchen ansehen",
+  "nn.home.tools": "Tools",
+  "nn.app.title": "Schlaf",
 };

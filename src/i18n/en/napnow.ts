@@ -127,4 +127,11 @@ export const napnow = {
   "aura.demo.nap.ok": "Simulated answer (demo). Fell asleep at {start}. Of the last {count} comparable naps, {inRange} lasted between {low} and {high} minutes. If this rhythm repeats today, waking could fall between {from} and {to}. This is an indication drawn from the history, not an instruction.",
   "aura.demo.nap.beyond": "The nap is already longer than usual: it is simply longer than recent naps.",
   "aura.demo.nap.none": "Simulated answer (demo). Fell asleep at {start}. Only {count} comparable nap(s), or too different: no wake window is estimated. Keep logging naps and it will appear on its own.",
+  "nn.home.today": "Today",
+  "nn.home.ongoingTitle": "Nap in progress",
+  "nn.home.lastTitle": "Last nap",
+  "nn.home.since": "Since {time}",
+  "nn.home.see": "See the nap",
+  "nn.home.tools": "Tools",
+  "nn.app.title": "Sleep",
 };
