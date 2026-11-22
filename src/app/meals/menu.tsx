@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
@@ -18,7 +17,8 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { generateMenu, moveSlot, replaceSlot, shoppingList, type MenuOptions, type MenuSlot } from '@/lib/recipes/engine';
 import { MEALS, type Meal } from '@/lib/recipes/types';
 import { usePantry } from '@/lib/data/hooks-stocks';
-import { t as tr } from '@/i18n';
+import { formatDate, t as tr } from '@/i18n';
+import { HmHero } from '@/features/homeTrack/kit';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -111,11 +111,10 @@ export default function MenuScreen() {
       action={slots
         ? { label: tr('rc.menu.toShopping'), icon: 'shopping-cart', onPress: () => makeList(), disabled: createList.isPending, testID: 'menu-to-shopping' }
         : { label: tr('rc.menu.generate'), icon: 'refresh-cw', onPress: generate, testID: 'menu-generate' }}>
-      <TodaySummary title={tr('rc.menu.title')} items={[
-        { icon: 'calendar', value: String(days), label: tr('mb.rc.days') },
-        { icon: 'coffee', value: slots ? String(slots.length) : String(days * meals.length), label: tr('mb.rc.planned') },
-        { icon: 'users', value: String(servings), label: tr('mb.rc.portions') },
-      ]} />
+      {/* Donnée principale : les repas du menu (pas encore de menu : « rien de prévu », jamais un nombre deviné) */}
+      <HmHero testID="hm-menu-hero" value={slots ? String(slots.length) : null} emptyLabel={tr('hm.menu.none')}
+        unit={slots ? tr('hm.menu.unit', { days, servings }) : null}
+        caption={saved.plan ? tr('hm.menu.saved', { date: formatDate(saved.plan.created_at, { weekday: 'short', day: 'numeric', month: 'short' }) }) : null} />
       {aud === 'pregnancy' ? (
         <View style={{ gap: 4 }}>
           <Text variant="small" muted>{tr('rc.menu.trimesterHint')}</Text>

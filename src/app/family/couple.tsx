@@ -24,13 +24,16 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { spacing } from '@/theme/tokens';
+import { CoupleWeekTrack } from '@/features/homeTrack/CoupleWeekTrack';
+import { useUrlWeek } from '@/features/homeTrack/kit';
 
 export default function CoupleWeek() {
   const toast = useToast();
   const inv = useInvalidate();
   const hid = useHouseholdId();
   const { people, labelOf } = usePeople();
-  const week = mondayOf(addDays(todayISO(), 1));
+  // Semaine sélectionnée gardée dans l'adresse (« ?week= ») ; par défaut celle qui vient, comme avant
+  const [week, setWeek] = useUrlWeek(mondayOf(addDays(todayISO(), 1)));
   const until = addDays(week, 7);
   const events = (useFamilyEvents().data ?? []).filter((e) => e.starts_at.slice(0, 10) >= todayISO() && e.starts_at.slice(0, 10) < until);
   const open = (useFamilyTasks().data ?? []).filter((x) => x.status === 'todo');
@@ -40,7 +43,6 @@ export default function CoupleWeek() {
   // l'agenda ; les zones de texte libre sont masquées (rien n'est effacé, rien n'est dit à l'autre)
   const calm = useCalmMode().active;
   const current = (checkQ.data ?? []).find((c) => c.week_of === week);
-  const past = (checkQ.data ?? []).filter((c) => c.week_of !== week).slice(0, 4);
   const [heavy, setHeavy] = useState('');
   const [decisions, setDecisions] = useState('');
   const [thanks, setThanks] = useState('');
@@ -62,6 +64,7 @@ export default function CoupleWeek() {
 
   return (
     <Screen back title={toolName('couple_week')} subtitle={tr('cm.cp.week', { date: formatDate(week, { day: 'numeric', month: 'long' }) })}>
+      <CoupleWeekTrack week={week} onWeek={setWeek} checkins={checkQ.data ?? []} hidden={calm} />
       <Text muted>{tr('cm.cp.intro')}</Text>
       <InviteOtherParent testID="cp-invite" />
       <Card padded={false} testID="cp-calm">
@@ -99,17 +102,6 @@ export default function CoupleWeek() {
         <Field label={tr('cm.cp.thanks')} optional value={thanks} onChangeText={setThanks} maxLength={500} placeholder={tr('cm.cp.thanksPh')} />
         <Button label={tr('common.save')} loading={busy} onPress={() => void save()} testID="cp-save" />
       </Card>
-      {past.length ? (
-        <>
-          <SectionTitle title={tr('cm.cp.past')} />
-          <MotionList style={{ gap: spacing.md }}>{past.map((c) => (
-            <MotionItem key={c.id}><Card key={c.id} tone="soft">
-              <Text weight="bold">{formatDate(c.week_of, { day: 'numeric', month: 'long' })}</Text>
-              {c.decisions ? <Text variant="small">{c.decisions}</Text> : null}
-            </Card></MotionItem>
-          ))}</MotionList>
-        </>
-      ) : null}
       </>}
       <Text variant="caption" muted>{tr('cm.cp.private')}</Text>
     </Screen>

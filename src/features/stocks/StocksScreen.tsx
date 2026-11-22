@@ -5,9 +5,8 @@
  */
 import React from 'react';
 import { View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, haptic, SectionTitle } from '@/components/ui';
@@ -21,6 +20,7 @@ import { BABY_STOCK_CATEGORIES, categoryInfo, needsAttention, STOCK_CATEGORIES }
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { StockFixTray, StockHero } from '@/features/homeTrack/StockTrack';
 
 export function StocksScreen({ baby = false }: { baby?: boolean }) {
   const q = useStocks();
@@ -33,7 +33,10 @@ export function StocksScreen({ baby = false }: { baby?: boolean }) {
   const suggested = attention.filter((s) => s.restock_state === 'suggested');
   const toValidate = attention.filter((s) => s.restock_state === 'bought').length;
   const pantryCount = baby ? 0 : q.all.filter((s) => s.ingredient_key).length;
-  const open = (id: string) => router.push(`/family/stocks/${id}` as never);
+  // Fiche d'un stock (Tray) gardée dans l'adresse (« ?stock= ») : correction rapide de la quantité estimée
+  const { stock: stockParam } = useLocalSearchParams<{ stock?: string }>();
+  const opened = stockParam ? list.find((s) => s.id === stockParam) ?? null : null;
+  const open = (id: string) => router.setParams({ stock: id } as never);
 
   async function act(id: string, action: 'confirm' | 'dismiss') {
     try {
@@ -47,11 +50,7 @@ export function StocksScreen({ baby = false }: { baby?: boolean }) {
   return (
     <Screen back title={tr(baby ? 'stk.titleBaby' : 'stk.title')} subtitle={tr('stk.sub')}>
       <DemoPerson />
-      <TodaySummary title={tr('stk.summary')} items={[
-        { icon: 'bell', value: String(attention.length), label: tr('stk.sum.attention') },
-        { icon: 'package', value: String(list.length), label: tr('stk.sum.tracked') },
-        { icon: 'check-circle', value: String(toValidate), label: tr('stk.sum.toValidate') },
-      ]} testID="stocks-summary" />
+      <StockHero list={list} labelOf={labelOf} />
       <View style={{ flexDirection: 'row', gap: spacing.xs, flexWrap: 'wrap' }}>
         <Button label={tr('stk.add')} icon="plus" onPress={() => router.push((baby ? '/family/stocks/new?category=diapers' : '/family/stocks/new') as never)} testID="stock-add" />
         <Button label={tr('stk.openShopping')} icon="shopping-cart" variant="secondary" onPress={() => router.push('/meals/shopping')} testID="stock-open-shopping" />
@@ -85,6 +84,7 @@ export function StocksScreen({ baby = false }: { baby?: boolean }) {
           })}
         </>
       )}
+      <StockFixTray stock={opened} labelOf={labelOf} onClose={() => router.setParams({ stock: undefined } as never)} />
     </Screen>
   );
 }

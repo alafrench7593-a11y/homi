@@ -20,6 +20,7 @@ import { prepDue, upcomingPrep, type PrepItem } from '@/lib/domain/mentalLoad';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { PrepTrack } from '@/features/homeTrack/PrepTrack';
 
 export default function Prep() {
   const toast = useToast();
@@ -57,6 +58,7 @@ export default function Prep() {
 
   return (
     <Screen back title={toolName('family_prep')} subtitle={toolBlurb('family_prep')}>
+      <PrepTrack items={items} done={done} today={today} title={title} hid={hid} />
       <Text muted>{tr('cm.prep.intro')}</Text>
       {!items.length ? <EmptyState icon="calendar" title={tr('cm.prep.none')} body={tr('cm.prep.noneD')} /> : items.map((it) => {
         const st = state(it);

@@ -5,7 +5,8 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { MeTimeTrack } from '@/features/homeTrack/MeTimeTrack';
+import { mondayOfDay } from '@/lib/domain/homeTrack';
 import { EmptyState } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
@@ -89,11 +90,7 @@ export default function MeTime() {
     <Screen back title={tr('u2.metime.title')} subtitle={tr('u2.metime.subtitle')}
       action={slots[0] ? { label: tr('u2.metime.book_range', { range: `${hm(slots[0].starts_at)} – ${hm(new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString())}` }), icon: 'sun', disabled: save.isPending, testID: 'metime-next-slot',
         onPress: () => reserve({ starts_at: slots[0].starts_at, ends_at: new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString() }, false) } : undefined}>
-      <TodaySummary title={tr('u2.metime.my_time')} items={[
-        { icon: 'sun', value: String(mine.length), label: mine.length > 1 ? tr('u2.metime.booked_pl') : tr('u2.metime.booked_one') },
-        { icon: 'clock', value: mine[0] ? hm([...mine].sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0].starts_at) : '—', label: tr('u2.metime.next') },
-        { icon: 'calendar', value: String(slots.length), label: which === 'today' ? tr('u2.metime.free_today') : tr('u2.metime.free_tomorrow') },
-      ]} />
+      <MeTimeTrack shifts={shifts} me={me ?? null} thisWeek={mondayOfDay(todayISO())} />
       <SectionTitle title={tr('u2.metime.my_booked')} />
       {mine.length === 0 ? <EmptyState icon="sun" title={tr('u2.metime.none_title')} body={tr('u2.metime.none_body')} /> : null}
       <MotionList style={{ gap: spacing.md }}>{mine.map((s, i) => (

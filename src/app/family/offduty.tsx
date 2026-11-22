@@ -19,6 +19,10 @@ import { spacing } from '@/theme/tokens';
 import { formatTime, t as tr } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { HmHero } from '@/features/homeTrack/kit';
+import { useNow } from '@/lib/data/hooks-bottle';
+import { minutesLeft } from '@/lib/domain/homeTrack';
+import { span } from '@/lib/domain/sleepPlanner';
 
 const HOURS = [1, 2, 3, 4, 8, 12];
 
@@ -32,6 +36,7 @@ export default function OffDuty() {
   const periods = (useOffDuty().data ?? []).filter((p) => Date.parse(p.ends_at) > Date.now());
   const mine = periods.find((p) => p.user_id === me);
   const theirs = periods.filter((p) => p.user_id !== me);
+  const now = useNow(30_000);
   const start = useStartOffDuty();
   const stop = useStopOffDuty();
   const [hours, setHours] = useState(3);
@@ -54,6 +59,10 @@ export default function OffDuty() {
   }
   return (
     <Screen back title={toolName('offduty')} subtitle={toolBlurb('offduty')}>
+      {/* La pause en cours en grand (temps restant, fin, relais) ; aucune pause : « pas de pause en cours », jamais 0 */}
+      <HmHero testID="hm-off-hero" value={mine ? span(minutesLeft(mine.ends_at, now)) : null} emptyLabel={tr('hm.off.none')}
+        unit={mine ? tr('hm.off.unit', { time: formatTime(mine.ends_at) }) : null}
+        caption={mine ? tr('hm.off.relay', { person: mine.relay_contact_id ? (circleName(circle, mine.relay_contact_id) ?? '') : labelOf(mine.relay_to) }) : theirs.length ? tr('hm.off.theirs', { count: theirs.length }) : null} />
       <MotionList style={{ gap: spacing.md }}>{theirs.map((p) => (
         <MotionItem key={p.id}><Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner></MotionItem>
       ))}</MotionList>

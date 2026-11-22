@@ -18,6 +18,8 @@ import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { router, useLocalSearchParams } from 'expo-router';
+import { NoteFixTray, NoteHero } from '@/features/homeTrack/NoteTrack';
 
 const SECTIONS: NoteSection[] = ['contacts', 'kids', 'habits', 'school', 'health', 'home', 'codes', 'other'];
 const ICON: Record<NoteSection, 'phone' | 'smile' | 'clock' | 'book' | 'heart' | 'home' | 'key' | 'file-text'> = {
@@ -78,11 +80,16 @@ export default function Notebook() {
   const children = useChildren().data ?? [];
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<HouseNote | undefined>();
-  const [filter, setFilter] = useState<NoteSection | null>(null);
+  // Rubrique et fiche ouvertes gardées dans l'adresse (« ?section=codes&note=… ») : revenir retrouve la même lecture
+  const qp = useLocalSearchParams<{ section?: string; note?: string }>();
+  const filter = SECTIONS.includes(qp.section as NoteSection) ? (qp.section as NoteSection) : null;
+  const setFilter = (s: NoteSection | null) => router.setParams({ section: s ?? undefined } as never);
   const notes = (q.data ?? []).filter((n) => !filter || n.section === filter);
+  const opened = qp.note ? (q.data ?? []).find((n) => n.id === qp.note) ?? null : null;
   return (
     <Screen back title={toolName('house_notebook')} subtitle={toolBlurb('house_notebook')}
       action={{ label: tr('cm.nb.new'), icon: 'plus', onPress: () => { setEditing(undefined); setOpen(true); }, testID: 'nb-new' }}>
+      <NoteHero notes={q.data ?? []} />
       <Text muted>{tr('cm.nb.intro')}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         <Chip label={tr('cm.nb.all')} selected={!filter} onPress={() => setFilter(null)} />
@@ -95,12 +102,14 @@ export default function Notebook() {
             <MotionList>{notes.filter((n) => n.section === s).map((n) => (
               <MotionItem key={n.id}><ListRow key={n.id} icon={ICON[s]} title={n.title} testID={`nb-note-${n.id}`}
                 subtitle={[children.find((c) => c.id === n.child_id)?.first_name, n.body].filter(Boolean).join(' · ') || undefined}
-                onPress={() => { setEditing(n); setOpen(true); }} /></MotionItem>
+                onPress={() => router.setParams({ note: n.id } as never)} /></MotionItem>
             ))}</MotionList>
           </Card>
         </View>
       ))}
       <Banner tone="info" icon="users">{tr('cm.nb.shared')}</Banner>
+      <NoteFixTray note={opened} childName={opened?.child_id ? children.find((c) => c.id === opened.child_id)?.first_name ?? null : null}
+        onClose={() => router.setParams({ note: undefined } as never)} onFullForm={() => { if (opened) { setEditing(opened); setOpen(true); } }} />
       <NoteEditor note={editing} visible={open} onClose={() => setOpen(false)} />
     </Screen>
   );

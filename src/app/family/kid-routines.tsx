@@ -22,6 +22,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { KidRoutineTrack } from '@/features/homeTrack/KidRoutineTrack';
 
 /** Pictogrammes proposés (Material Community Icons, vérifiés dans la police embarquée). */
 export const PICTOS = [
@@ -139,7 +140,7 @@ export default function KidRoutines() {
   return (
     <Screen back title={toolName('kid_routines')} subtitle={toolBlurb('kid_routines')}
       action={{ label: tr('kr.new'), icon: 'plus', onPress: () => { setEditing(undefined); setOpen(true); }, testID: 'kr-new' }}>
-      <Text muted>{tr('kr.intro')}</Text>
+      {list.length ? <KidRoutineTrack routines={list} /> : <Text muted>{tr('kr.intro')}</Text>}
       {q.isLoading ? <Loading /> : !list.length ? (
         <EmptyState icon="sun" title={tr('kr.none')} body={tr('kr.noneD')} action={{ label: tr('kr.new'), onPress: () => { setEditing(undefined); setOpen(true); } }} />
       ) : <MotionList style={{ gap: spacing.md }}>{list.map((r) => {

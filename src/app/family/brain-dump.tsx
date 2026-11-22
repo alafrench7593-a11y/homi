@@ -16,6 +16,7 @@ import { parseBrainDump, taskCategoryOf, type DumpItem, type DumpKind } from '@/
 import { todayISO } from '@/lib/domain/dates';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { HmHero } from '@/features/homeTrack/kit';
 import { spacing } from '@/theme/tokens';
 
 const KINDS: DumpKind[] = ['task', 'appointment', 'event', 'shopping', 'admin'];
@@ -59,11 +60,17 @@ export default function BrainDump() {
   }
 
   return (
-    <Screen back title={toolName('brain_dump')} subtitle={toolBlurb('brain_dump')}>
+    <Screen back title={toolName('brain_dump')} subtitle={toolBlurb('brain_dump')}
+      action={rows.length
+        ? { label: tr('cm.dump.save', { count: rows.filter((r) => r.keep).length }), icon: 'check', onPress: () => save(), loading: busy, disabled: !rows.some((r) => r.keep), testID: 'dump-save' }
+        : { label: tr('cm.dump.sort'), icon: 'shuffle', onPress: sort, disabled: text.trim().length < 2, testID: 'dump-sort' }}>
+      {/* Le tri en un regard : éléments gardés en grand (valeurs provisoires, rien n'est écrit avant « Enregistrer ») */}
+      <HmHero testID="hm-dump-hero" value={rows.length ? String(rows.filter((r) => r.keep).length) : null} emptyLabel={tr('hm.dump.none')}
+        unit={rows.length ? tr('hm.dump.unit') : null}
+        split={rows.length ? [{ label: tr('hm.dump.kept'), value: String(rows.filter((r) => r.keep).length), testID: 'hm-dump-kept' }, { label: tr('hm.dump.dropped'), value: String(rows.filter((r) => !r.keep).length), testID: 'hm-dump-dropped' }] : undefined} />
       <Text muted>{tr('cm.dump.intro')}</Text>
       <Card>
         <Field label={tr('cm.dump.field')} value={text} onChangeText={setText} multiline maxLength={3000} placeholder={tr('cm.dump.ph')} testID="dump-text" />
-        <Button label={tr('cm.dump.sort')} icon="shuffle" onPress={sort} disabled={text.trim().length < 2} testID="dump-sort" />
       </Card>
       {rows.length ? (
         <>
@@ -86,7 +93,6 @@ export default function BrainDump() {
               {r.domain && ownerOf.get(r.domain) && r.kind !== 'event' ? <Text variant="caption" muted>{tr('cm.dump.domainOwner', { domain: tr(`cm.domain.${r.domain}` as TKey), person: labelOf(ownerOf.get(r.domain)) })}</Text> : null}
             </Card>
           ))}
-          <Button label={tr('cm.dump.save', { count: rows.filter((r) => r.keep).length })} icon="check" loading={busy} onPress={() => void save()} testID="dump-save" />
         </>
       ) : null}
       <Banner tone="info" icon="lock">{tr('cm.dump.private')}</Banner>

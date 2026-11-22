@@ -5,7 +5,6 @@
 import React, { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, Card, Field, ListGroup, ListRow, Text } from '@/components/ui';
@@ -19,6 +18,7 @@ import { addDays, formatDateFr, todayISO } from '@/lib/domain/dates';
 import { t as tr } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { SchoolTrack } from '@/features/homeTrack/SchoolTrack';
 
 export default function ChildSchool() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -41,14 +41,10 @@ export default function ChildSchool() {
     try { await add.mutateAsync({ child_id: id, kind: 'school', title: title.trim(), body: body.trim() || null, occurred_on: todayISO() }); setTitle(''); setBody(''); }
     catch (e) { toast(friendlyError(e), 'error'); }
   }
-  const last = entries?.[0];
   return (
     <Screen back title={toolName('kid_school')} subtitle={child?.first_name}
       action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), testID: 'school-save', disabled: add.isPending }}>
-      <TodaySummary title={tr('mb.sc.title')} items={[
-        { icon: 'book', value: loadFailed ? '—' : String(entries?.length ?? 0), label: tr('mb.sc.count') },
-        { icon: 'clock', value: last ? formatDateFr(last.occurred_on) : '—', label: tr('mb.sc.last') },
-      ]} />
+      <SchoolTrack homework={homework} thisWeek={wk} />
       <Text muted>{tr('sc.schoolIntro')}</Text>
       <ListGroup testID="school-tools">
         <ListRow icon="check-square" title={tr('p2.hw.title')} subtitle={hwLeft ? tr('p2.hw.left', { count: hwLeft }) : tr('p2.hw.entrySub')}

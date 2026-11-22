@@ -21,6 +21,7 @@ import { useFamilyProfiles } from '@/lib/data/hooks-couple';
 import { childAge } from '@/lib/domain/child';
 import { isTerminal } from '@/lib/domain/missions';
 import { spacing } from '@/theme/tokens';
+import { HouseholdHomeCard } from '@/features/homeTrack/HouseholdHomeCard';
 import { t as tr, type TKey } from '@/i18n';
 
 export default function MyPlace() {
@@ -48,6 +49,8 @@ export default function MyPlace() {
 
   return (
     <Screen back title={tr('cp2.place.title')} subtitle={tr('cp2.place.sub')}>
+      {/* Le foyer en un regard (relais à consulter, tâches ouvertes, prochain événement selon les droits) */}
+      <HouseholdHomeCard />
       <InviteOtherParent testID="place-invite" />
       <SectionTitle title={tr('cp2.place.children')} />
       <GlassCard testID="place-children">
