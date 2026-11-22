@@ -18,6 +18,7 @@ import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { useUserId } from '@/lib/auth';
 import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
 import { loadAggregate } from '@/features/aura/analysis';
+import { LoadTrack } from '@/features/homeTrack/LoadTrack';
 
 const MEASURES: (keyof Omit<LoadRow, 'person'>)[] = ['thought', 'done', 'assigned', 'domains'];
 
@@ -32,6 +33,7 @@ export default function MentalLoad() {
   const me = useUserId();
   return (
     <Screen back title={toolName('mental_load')} subtitle={toolBlurb('mental_load')}>
+      <LoadTrack tasks={tasks} people={people.map((p) => p.id)} labelOf={labelOf} />
       <Text muted>{tr('cm.load.intro')}</Text>
       {!any ? <EmptyState icon="pie-chart" title={tr('cm.load.none')} body={tr('cm.load.noneD')} action={{ label: toolName('brain_dump'), onPress: () => router.push('/family/brain-dump') }} /> : MEASURES.map((m) => {
         const s = shares(rows, m);

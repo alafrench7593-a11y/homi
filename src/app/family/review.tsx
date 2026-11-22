@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { HmHero } from '@/features/homeTrack/kit';
 import { Skeleton } from '@/components/States';
 import { ProgressBar, StaggerItem } from '@/components/Motion';
 import { Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -36,12 +36,14 @@ export default function WeeklyReview() {
 
   return (
     <Screen back title={tr('u2.review.title')} subtitle={tr('u2.review.subtitle')}>
-      <TodaySummary title={tr('u2.review.this_week')} items={[
-        { icon: 'check-square', value: String(r.doneCount), label: tr('u2.review.tasks_done') },
-        { icon: 'repeat', value: String(r.requests.total), label: tr('u2.review.requests') },
-        { icon: 'moon', value: String(r.nightsCount), label: tr('u2.review.nights') },
-        { icon: 'sun', value: String(r.restCount), label: tr('u2.review.me_time') },
-      ]} />
+      {/* La semaine en un regard : tâches faites en grand (rien de fait = « rien de noté », jamais 0), puis des
+          compteurs de natures différentes, chacun dans sa case (rien n'est additionné entre eux) */}
+      <HmHero testID="hm-review-hero" value={tasksQ.data && r.doneCount ? String(r.doneCount) : null} unit={tr('hm.review.unit', { count: r.doneCount })} emptyLabel={tr('hm.review.none')}
+        split={[
+          { label: tr('u2.review.requests'), value: String(r.requests.total), testID: 'hm-review-req' },
+          { label: tr('u2.review.nights'), value: String(r.nightsCount), testID: 'hm-review-nights' },
+          { label: tr('u2.review.me_time'), value: String(r.restCount), testID: 'hm-review-rest' },
+        ]} />
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton kind="card" rows={2} /> : null}
       <Card>
         <Text weight="bold">{r.doneCount ? tr('u2.review.done_week', { count: r.doneCount }) : tr('u2.review.done_none')}</Text>

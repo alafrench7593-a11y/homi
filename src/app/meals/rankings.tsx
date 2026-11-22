@@ -6,7 +6,8 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { HmHero } from '@/features/homeTrack/kit';
+import { router, useLocalSearchParams } from 'expo-router';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Button, Chip, Row, Text } from '@/components/ui';
 import { RecipeCard } from '@/features/recipes/RecipeCard';
@@ -25,8 +26,12 @@ export default function Rankings() {
   const { profile } = useFoodProfile();
   const fav = useRecipeFavorites();
   const kidProfile = profile.audience === 'baby' || profile.audience === 'child';
-  const [band, setBand] = useState<AgeBand>(kidProfile && profile.ageMonths != null ? bandFor(profile.ageMonths) : 'y4_6');
-  const [kind, setKind] = useState<Kind>('recommended');
+  // Classement et tranche d'âge gardés dans l'adresse (« ?kind=quick&band=… ») : ouvrir une recette puis revenir les retrouve
+  const qp = useLocalSearchParams<{ kind?: string; band?: string }>();
+  const band: AgeBand = AGE_BANDS.includes(qp.band as AgeBand) ? (qp.band as AgeBand) : kidProfile && profile.ageMonths != null ? bandFor(profile.ageMonths) : 'y4_6';
+  const kind: Kind = KINDS.includes(qp.kind as Kind) ? (qp.kind as Kind) : 'recommended';
+  const setBand = (b: AgeBand) => router.setParams({ band: b } as never);
+  const setKind = (k: Kind) => router.setParams({ kind: k } as never);
   const [shown, setShown] = useState(20);
 
   const ranked = useMemo(() => {
@@ -51,11 +56,8 @@ export default function Rankings() {
 
   return (
     <Screen back title={tr('rc.rank.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : undefined}>
-      <TodaySummary title={tr(`rc.band.${band}` as TKey)} items={[
-        { icon: 'award', value: String(ranked.length), label: tr('mb.rc.ranked') },
-        { icon: 'zap', value: String(ranked.filter((x) => x.r.prepMin + x.r.cookMin <= 30).length), label: tr('mb.rc.quick') },
-        { icon: 'star', value: String(ranked.filter((x) => fav.ids.includes(x.r.id)).length), label: tr('mb.rc.favorites') },
-      ]} />
+      <HmHero testID="hm-rank-hero" value={all ? String(ranked.length) : null} unit={tr('hm.rank.unit', { band: tr(`rc.band.${band}` as TKey), kind: tr(`rc.rank.${kind}` as TKey) })}
+        split={[{ label: tr('mb.rc.quick'), value: String(ranked.filter((x) => x.r.prepMin + x.r.cookMin <= 30).length), testID: 'hm-rank-quick' }, { label: tr('mb.rc.favorites'), value: String(ranked.filter((x) => fav.ids.includes(x.r.id)).length), testID: 'hm-rank-fav' }]} />
       <Row wrap>{KINDS.map((k) => <Chip key={k} label={tr(`rc.rank.${k}` as TKey)} selected={kind === k} onPress={() => { setKind(k); setShown(20); }} />)}</Row>
       <Text variant="caption" muted>{tr(`rc.rank.${kind}.hint` as TKey)}</Text>
       <Text variant="small" weight="bold">{tr('rc.rank.band')}</Text>

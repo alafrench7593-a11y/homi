@@ -24,6 +24,7 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { createTapGuard, papersScanParams } from '@/lib/documents/scanFlow';
 import { spacing } from '@/theme/tokens';
+import { PaperTrack } from '@/features/homeTrack/PaperTrack';
 
 const PARENT_TOO: PaperKind[] = ['id_card', 'passport', 'id_photo'];
 
@@ -108,6 +109,7 @@ export default function Papers() {
 
   return (
     <Screen back title={toolName('family_papers')} subtitle={toolBlurb('family_papers')}>
+      <PaperTrack papers={papers} today={today} nameOf={(id) => (id ? children.find((c) => c.id === id)?.first_name ?? null : null)} />
       <Text muted>{tr('cm.pp.intro')}</Text>
       <View style={{ gap: spacing.xs }} testID="pp-scan-block">
         <Button label={tr('sa.pp.scan')} icon="camera" size="lg" full onPress={() => openScanner(true)} testID="pp-scan"

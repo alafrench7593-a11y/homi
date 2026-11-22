@@ -45,6 +45,7 @@ import { homiKey, sortAgenda, type DeviceAgendaItem } from '@/lib/deviceCalendar
 import { useDeviceAgenda } from '@/lib/deviceCalendar/hooks';
 import { AddToDeviceCalendar, DeviceCalendarEntry, DeviceEventSheet } from '@/features/deviceCalendar/DeviceCalendarParts';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { parseIsoDay } from '@/lib/domain/journalTrack';
 
 type View_ = 'day' | 'week' | 'month' | 'agenda';
 const hm = (iso: string) => formatTime(iso);
@@ -66,9 +67,14 @@ type Draft = { id?: string; title: string; kind: EventKind; date: string; from: 
 export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
   const t = useTheme();
   const toast = useToast();
-  const params = useLocalSearchParams<{ view?: View_; new?: string }>();
-  const [view, setView] = useState<View_>(params.view ?? 'week');
-  const [cursor, setCursor] = useState(todayISO());
+  const params = useLocalSearchParams<{ view?: View_; new?: string; day?: string }>();
+  // Vue et jour affichés gardés dans l'adresse (« ?view=day&day=2026-11-24 ») : ouvrir un événement puis revenir
+  // retrouve la même période (22/11/2026)
+  const view: View_ = params.view && ['day', 'week', 'month', 'agenda'].includes(params.view) ? params.view : 'week';
+  const setView = (v: View_) => router.setParams({ view: v } as never);
+  const cursor = parseIsoDay(params.day) ?? todayISO();
+  const setCursor = (v: string | ((c: string) => string)) => router.setParams({ day: typeof v === 'function' ? v(cursor) : v } as never);
+  const pickDay = (d: string) => router.setParams({ day: d, view: 'day' } as never);
   const [draft, setDraft] = useState<Draft | null>(null);
   /** Occurrence touchée (événement répété) : celle qui part vers le calendrier de l'iPhone si la série ne peut pas l'être. */
   const [openedAt, setOpenedAt] = useState<string | null>(null);
@@ -286,7 +292,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
           </DaySection>
         );
       })()}
-      <WeekStrip cursor={cursor} counts={(d) => entriesOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; setCursor(d); setView('day'); }} />
+      <WeekStrip cursor={cursor} counts={(d) => entriesOnDay(weekItems, d).length} onPick={(d) => { dir.current = 0; pickDay(d); }} />
       <Segmented label={tr('u3.cal.view')} value={view} onChange={(v) => { dir.current = 0; setView(v); haptic('selection'); }} options={[{ value: 'day', label: tr('u3.cal.dayShort') }, { value: 'week', label: tr('u3.cal.vWeek') }, { value: 'month', label: tr('u3.cal.vMonth') }, { value: 'agenda', label: tr('u3.cal.vAgenda') }]} />
       <Row style={{ justifyContent: 'space-between' }}>
         {view !== 'agenda' ? <IconButton icon="chevron-left" label={tr('u3.cal.prevP')} onPress={() => move(-1)} /> : <View />}
@@ -302,7 +308,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
 
       <SlideSwap key={`${view}:${range[0]}`} dir={dir.current}>
       {view === 'month' ? (
-        <MonthView cursor={cursor} items={items} extra={(d) => deviceOnDay(deviceItems, d).length} onPick={(d) => { setCursor(d); setView('day'); }} />
+        <MonthView cursor={cursor} items={items} extra={(d) => deviceOnDay(deviceItems, d).length} onPick={(d) => { pickDay(d); }} />
       ) : view === 'day' ? (
         <View style={{ gap: spacing.xs }}>
           {entriesOnDay(items, cursor).length ? dayList(entriesOnDay(items, cursor), 'cal-day-list') : <Text variant="small" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('u3.cal.nothingDay')}</Text>}
@@ -313,7 +319,7 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
           if (view === 'agenda' && !list.length) return null;
           return (
             <View key={d} style={{ gap: spacing.xs }}>
-              <Tappable onPress={() => { haptic('selection'); setCursor(d); setView('day'); }} accessibilityRole="button" accessibilityLabel={tr('u3.cal.seeDay', { day: longDay(d) })}
+              <Tappable onPress={() => { haptic('selection'); pickDay(d); }} accessibilityRole="button" accessibilityLabel={tr('u3.cal.seeDay', { day: longDay(d) })}
                 style={{ minHeight: 36, justifyContent: 'center', paddingHorizontal: spacing.xxs }}>
                 <Text variant="label" color={d === todayISO() ? t.colors.primary : t.colors.text}>{longDay(d)}{d === todayISO() ? tr('u3.cal.todaySfx') : ''}</Text>
               </Tappable>

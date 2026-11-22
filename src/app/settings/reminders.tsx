@@ -24,6 +24,7 @@ import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatDate } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ReminderTrack } from '@/features/homeTrack/ReminderTrack';
 
 const categories = (): { value: Reminder['category']; label: string }[] => [
   { value: 'custom', label: tr('u1.rem.cat.custom') },
@@ -270,6 +271,7 @@ export default function RemindersScreen() {
         </Banner>
       ) : null}
 
+      {reminders ? <ReminderTrack reminders={list} onEdit={(r) => { setEditing(r); setOpen(true); }} /> : null}
       {isLoading ? <Loading /> : error ? (
         <Banner tone="danger" title={tr('u1.rem.loadError')} action={<Button label={tr('u1.rem.retry')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => refetch()} />}>{friendlyError(error)}</Banner>
       ) : list.length === 0 ? (
