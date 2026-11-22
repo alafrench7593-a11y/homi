@@ -17,7 +17,7 @@ import { INTIMATE_SYMPTOMS, SYMPTOM_KEYS, symptomKeysOf, type SymptomKey } from 
 import { itemsOfDay, stripDays, type DayItem } from '@/lib/domain/cycleTrack';
 import { t as tr, type TKey } from '@/i18n';
 import type { IconName } from '@/components/ui';
-import { CycleDayPanel, dayLong, useCycleDay } from './CycleDayPanel';
+import { CycleDayPanel, dayInline, dayLong, useCycleDay } from './CycleDayPanel';
 import { CycleEntrySheet, type EditorSpec } from './CycleEntrySheet';
 
 const symLabel = (k: string) => tr(`cy.sym.${k}` as TKey);
@@ -53,7 +53,7 @@ export function SymptomJournal() {
   const options = SYMPTOM_KEYS.filter((k) => prefs.track_intercourse || !INTIMATE_SYMPTOMS.includes(k)).map((k) => ({ value: k, label: symLabel(k) }));
 
   const editor = (log: SymptomLog): EditorSpec => ({
-    title: tr('cy.tk.sym.fixTitle', { date: dayLong(log.logged_on) }),
+    title: tr('cy.tk.sym.fixTitle', { date: dayInline(log.logged_on) }),
     fields: [
       { key: 'keys', kind: 'multi', label: tr('cy.sym.list'), options },
       { key: 'mood', kind: 'scale', label: tr('cy.sym.mood'), min: 1, max: 5, allowNone: true, low: tr('cy.scale.low'), high: tr('cy.scale.high') },
@@ -84,7 +84,7 @@ export function SymptomJournal() {
 
   return (
     <>
-      <CycleDayPanel testID="ck-sym" label={tr('cy.tk.sym.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-sym" label={tr('cy.tk.sym.label')} day={day} mode="marks"
         hero={today.length ? String(keysCount || today.length) : null}
         unit={today.length ? (keysCount ? tr('cy.tk.sym.unit', { count: keysCount }) : tr('cy.tk.sym.otherUnit', { count: today.length })) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward}
@@ -118,7 +118,7 @@ export function PainJournal() {
   ] : [];
 
   const editor = (log: SymptomLog): EditorSpec => ({
-    title: tr('cy.tk.pain.fixTitle', { date: dayLong(log.logged_on) }),
+    title: tr('cy.tk.pain.fixTitle', { date: dayInline(log.logged_on) }),
     fields: [{ key: 'v', kind: 'scale', label: tr('cy.tk.pain.scale'), min: 0, max: 10, low: tr('cy.tk.pain.low'), high: tr('cy.tk.pain.high') }],
     initial: { v: log.pain_intensity ?? null },
     heroOf: (d) => (d.v == null ? tr('cy.tk.nothing') : `${d.v}/10`),
@@ -139,7 +139,7 @@ export function PainJournal() {
 
   return (
     <>
-      <CycleDayPanel testID="ck-pain" label={tr('cy.tk.pain.label')} day={day} mode="scale" max={10}
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-pain" label={tr('cy.tk.pain.label')} day={day} mode="scale" max={10}
         hero={sel ? String(sel.value) : null} unit={sel ? tr('cy.tk.pain.unit') : null} heroA11y={sel ? tr('cy.tk.pain.row', { n: sel.value }) : undefined}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward}
         bubbleOf={(d) => (d.value == null ? tr('cy.tk.nothing') : `${d.value}/10`)}

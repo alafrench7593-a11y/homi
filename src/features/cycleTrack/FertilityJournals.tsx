@@ -20,7 +20,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import type { PmaLog } from '@/lib/data/hooks-tools6';
 import { clockOf, itemsOfDay, localDay, moveToDay, stripDays, withClock } from '@/lib/domain/cycleTrack';
 import { CERVICAL_MUCUS, type CervicalMucus, type IntercourseLog } from '@/lib/types-fertility';
-import { CycleDayPanel, dayLong, useCycleDay } from './CycleDayPanel';
+import { CycleDayPanel, dayInline, dayLong, useCycleDay } from './CycleDayPanel';
 import { CycleEntrySheet, type EditorSpec } from './CycleEntrySheet';
 
 const failed = (e: unknown) => tr('cy.tk.edit.failed', { reason: friendlyError(e) });
@@ -80,7 +80,7 @@ export function TestJournal() {
   });
   return (
     <>
-      <CycleDayPanel testID="ck-ts" label={tr('cy.tk.ts.label')} day={day} mode="marks"
+      <CycleDayPanel loading={(ovuQ.isLoading && !ovuQ.data) || (pregQ.isLoading && !pregQ.data)} testID="ck-ts" label={tr('cy.tk.ts.label')} day={day} mode="marks"
         hero={latest ? resultLabel(latest.row.result) : null} unit={latest ? tr('cy.tk.ts.unit', { kind: kindLabel(latest.table), time: formatTime(latest.at), count: list.length }) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward} bubbleOf={notesBubble} describe={notesBubble}
         rows={list.map((x) => ({ id: x.id, time: formatTime(x.at), icon: 'check-circle', title: `${kindLabel(x.table)} · ${resultLabel(x.row.result)}`, detail: null, onPress: () => sh.open(x.id) }))} />
@@ -106,7 +106,7 @@ export function MucusJournal() {
   const sel = items.find((x) => x.day === day) ?? null;
   const [visible, setVisible] = useState(false);
   const editor = (o: NonNullable<typeof sel>['obs']): EditorSpec => ({
-    title: tr('cy.tk.mu.fixTitle', { date: dayLong(o.observed_on) }),
+    title: tr('cy.tk.mu.fixTitle', { date: dayInline(o.observed_on) }),
     fields: [
       { key: 'mucus', kind: 'choice', label: tr('cy.tk.mu.aspect'), options: CERVICAL_MUCUS.map((m) => ({ value: m.value, label: m.label })) },
       { key: 'note', kind: 'text', label: tr('cy.sym.note'), maxLength: 500, multiline: true },
@@ -124,7 +124,7 @@ export function MucusJournal() {
   });
   return (
     <>
-      <CycleDayPanel testID="ck-mu" label={tr('cy.tk.mu.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-mu" label={tr('cy.tk.mu.label')} day={day} mode="marks"
         hero={sel ? mucusLabel(sel.obs.cervical_mucus) : null} unit={sel ? tr('cy.tk.mu.unit') : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward}
         bubbleOf={(d) => { const o = items.find((x) => x.day === d.day); return o ? mucusLabel(o.obs.cervical_mucus) : tr('cy.tk.nothing'); }}
@@ -174,7 +174,7 @@ export function IntimacyJournal() {
   });
   return (
     <>
-      <CycleDayPanel testID="ck-sx" label={tr('cy.tk.sx.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-sx" label={tr('cy.tk.sx.label')} day={day} mode="marks"
         hero={list.length ? String(list.length) : null} unit={list.length ? tr('cy.tk.sx.unit', { count: list.length }) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward} bubbleOf={notesBubble} describe={notesBubble}
         rows={list.map((x) => ({ id: x.id, time: x.log.occurred_time ? x.log.occurred_time.slice(0, 5) : null, icon: 'lock', title: tr('cy.tk.sx.hero'), detail: [protection(x.log), x.log.note].filter(Boolean).join(' · ') || null, onPress: () => sh.open(x.id) }))} />

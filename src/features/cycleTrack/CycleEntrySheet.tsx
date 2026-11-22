@@ -8,7 +8,7 @@
  * Champs génériques : jour (±1 j), heure (±5 min), choix, choix multiples, échelle (0–10, 1–5), texte.
  */
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useTray } from '@/components/reacticx/tray';
 import { GlassButton } from '@/components/glass';
 import { confirm } from '@/components/Overlays';
@@ -65,6 +65,7 @@ export function CycleEntrySheet({ open, onOpenChange, testID, title, hero, heroL
 function CycleEditor({ spec, testID, onClose }: { spec: EditorSpec; testID: string; onClose: () => void }) {
   const t = useTheme();
   const { goBack } = useTray();
+  const { height } = useWindowDimensions();
   const [draft, setDraft] = useState<Draft>(spec.initial);
   const g = useGuardedSave();
   const today = todayISO();
@@ -105,8 +106,12 @@ function CycleEditor({ spec, testID, onClose }: { spec: EditorSpec; testID: stri
       <Text variant="small" muted center style={TABULAR} testID={`${testID}-state`}>
         {changed ? tr('cy.tk.edit.provisional', { value: spec.heroOf(spec.initial) }) : tr('cy.tk.edit.recorded')}
       </Text>
-      {spec.fields.map((f) => <FieldView key={f.key} f={f} value={draft[f.key]} onChange={(v) => set(f.key, v)} error={fieldError(f)} testID={`${testID}-${f.key}`} />)}
+      {/* Orientation (urgence, consulter) toujours visible au-dessus des champs */}
       {spec.notice?.(draft)}
+      {/* Champs dans une zone qui défile : les actions restent visibles même avec une longue liste (symptômes) */}
+      <ScrollView style={{ maxHeight: Math.max(220, height * 0.42) }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: spacing.sm }}>
+        {spec.fields.map((f) => <FieldView key={f.key} f={f} value={draft[f.key]} onChange={(v) => set(f.key, v)} error={fieldError(f)} testID={`${testID}-${f.key}`} />)}
+      </ScrollView>
       {blocking && changed ? <Text variant="small" color={t.colors.danger} testID={`${testID}-blocking`}>{blocking}</Text> : null}
       <EditActions onCancel={cancel} onSave={save} canSave={changed && !invalid && !blocking} busy={g.busy} error={g.error} testID={testID} />
       {spec.onDelete ? <GlassButton variant="tertiary" icon="trash-2" label={spec.deleteLabel ?? tr('cy.tk.edit.delete')} testID={`${testID}-delete`} disabled={g.busy} onPress={() => void remove()} /> : null}

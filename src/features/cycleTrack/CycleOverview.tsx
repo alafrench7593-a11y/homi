@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import { Glass } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Text, type IconName } from '@/components/ui';
-import { formatDate, t as tr } from '@/i18n';
+import { formatDate, formatTime, t as tr } from '@/i18n';
 import { usePeriods, useTests } from '@/lib/data/hooks';
 import { useCyclePreferences } from '@/lib/data/hooks-cycle';
 import { useAllSymptomLogs, useBleedingLogs, useCycleJournal, useDischargeLogs } from '@/lib/data/hooks-cycle2';
@@ -25,7 +25,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
-import { CycleDayPanel, dayLong, TABULAR, useCycleDay } from './CycleDayPanel';
+import { CycleDayPanel, TABULAR, useCycleDay } from './CycleDayPanel';
 
 export type CycleApp = 'period' | 'symptoms' | 'pain' | 'discharge' | 'bleeding' | 'journal' | 'tests' | 'mucus' | 'temperature' | 'intimacy' | 'contraception';
 /** Apps jamais montrées sur l'accueil (données intimes) */
@@ -164,7 +164,7 @@ export function CycleHomeLast() {
   if (prefs.hide_on_home || !last) return null;
   const today = todayISO();
   const when = last.item.day === today ? tr('cy.tk.home.today') : formatDate(`${last.item.day}T12:00:00`, { weekday: 'long', day: 'numeric', month: 'long' });
-  const value = last.item.detail ?? appName(last.app);
+  const value = last.item.detail ?? (last.item.at ? formatTime(last.item.at) : appName(last.app));
   return (
     <Tappable accessibilityRole="button" testID="ck-home-last" onPress={() => router.push(APP_META[last.app].href(last.item.day) as never)}
       accessibilityLabel={`${tr('cy.tk.home.title')}. ${appName(last.app)}, ${value}, ${when}. ${tr('cy.tk.openApp')}`}
@@ -178,7 +178,7 @@ export function CycleHomeLast() {
           <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
         </View>
         <Text weight="bold" style={[{ fontSize: 26, lineHeight: 32 }, TABULAR]} numberOfLines={1}>{value}</Text>
-        <Text variant="small" muted>{`${appName(last.app)} · ${when === tr('cy.tk.home.today') ? when : dayLong(last.item.day)}`}</Text>
+        <Text variant="small" muted>{value === appName(last.app) ? when : `${appName(last.app)} · ${when}`}</Text>
       </Glass>
     </Tappable>
   );

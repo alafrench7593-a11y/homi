@@ -3,6 +3,7 @@ export const cycleTrack = {
   "cy.tk.nothing": "Nothing logged",
   "cy.tk.nothingDay": "Nothing logged that day",
   "cy.tk.notes": {"one": "{count} entry", "other": "{count} entries"},
+  "cy.tk.loading": "Reading your entries…",
   "cy.tk.allDay": "All day",
   "cy.tk.dayEntries": "Logged on {date}",
   "cy.tk.openToFix": "Open to review or correct",

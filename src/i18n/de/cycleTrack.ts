@@ -3,6 +3,7 @@ export const cycleTrack = {
   "cy.tk.nothing": "Nichts eingetragen",
   "cy.tk.nothingDay": "An diesem Tag nichts eingetragen",
   "cy.tk.notes": {"one": "{count} Eintrag", "other": "{count} Einträge"},
+  "cy.tk.loading": "Deine Einträge werden gelesen…",
   "cy.tk.allDay": "Ganzer Tag",
   "cy.tk.dayEntries": "Eingetragen am {date}",
   "cy.tk.openToFix": "Öffnen zum Ansehen oder Korrigieren",

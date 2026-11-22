@@ -67,7 +67,7 @@ export function DischargeJournal() {
   });
   return (
     <>
-      <CycleDayPanel testID="ck-dis" label={tr('cy.tk.dis.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-dis" label={tr('cy.tk.dis.label')} day={day} mode="marks"
         hero={list.length ? String(list.length) : null} unit={list.length ? tr('cy.tk.dis.unit', { count: list.length }) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward} bubbleOf={notesBubble} describe={notesBubble}
         rows={list.map((x) => ({ id: x.id, time: formatTime(x.at), icon: 'droplet', title: L.summary(x.log) || tr('cy.dis.noDetail'), detail: x.log.note, onPress: () => sh.open(x.id) }))} />
@@ -120,7 +120,7 @@ export function BleedingJournal() {
   });
   return (
     <>
-      <CycleDayPanel testID="ck-bl" label={tr('cy.tk.bl.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-bl" label={tr('cy.tk.bl.label')} day={day} mode="marks"
         hero={list.length ? String(list.length) : null} unit={list.length ? tr('cy.tk.bl.unit', { count: list.length }) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward} bubbleOf={notesBubble} describe={notesBubble}
         rows={list.map((x) => ({ id: x.id, time: null, icon: 'alert-triangle', title: kind(x.log.kind), detail: [amt(x.log.amount), x.log.pain ? tr('cy.bl.withPain') : null, x.log.note].filter(Boolean).join(' · ') || null, onPress: () => sh.open(x.id) }))} />
@@ -163,7 +163,7 @@ export function CycleNotesJournal() {
   });
   return (
     <>
-      <CycleDayPanel testID="ck-jr" label={tr('cy.tk.jr.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-jr" label={tr('cy.tk.jr.label')} day={day} mode="marks"
         hero={list.length ? String(list.length) : null} unit={list.length ? tr('cy.tk.jr.unit', { count: list.length }) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward} bubbleOf={notesBubble} describe={notesBubble}
         rows={list.map((x) => ({ id: x.id, time: null, icon: 'edit-3', title: firstLine(x.log.body), detail: x.log.mood ? tr('cy.jr.moodValue', { n: x.log.mood }) : null, onPress: () => sh.open(x.id) }))} />
@@ -214,7 +214,7 @@ export function ContraceptionEffectJournal() {
   const rows: JournalRow[] = list.map((x) => ({ id: x.id, time: null, icon: 'pen-tool' as IconName, title: effectLabel(x.log), detail: note(x.log as { note?: string | null }), onPress: () => sh.open(x.id) }));
   return (
     <View>
-      <CycleDayPanel testID="ck-cj" label={tr('cy.tk.cj.label')} day={day} mode="marks"
+      <CycleDayPanel loading={q.isLoading && !q.data} testID="ck-cj" label={tr('cy.tk.cj.label')} day={day} mode="marks"
         hero={list.length ? String(list.length) : null} unit={list.length ? tr('cy.tk.cj.unit', { count: list.length }) : null}
         strip={strip} onSelect={setDay} onShift={shift} canForward={canForward} bubbleOf={notesBubble} describe={notesBubble} rows={rows} />
       {sel ? (

@@ -20,6 +20,8 @@ import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { CycleDayStrip } from './CycleDayStrip';
 
 export const TABULAR = { fontVariant: ['tabular-nums' as const] };
+/** Jour dans une phrase (« corriger la douleur du dimanche 22 novembre ») */
+export const dayInline = (iso: string) => formatDate(`${iso}T12:00:00`, { weekday: 'long', day: 'numeric', month: 'long' });
 export const dayLong = (iso: string) => formatDate(`${iso}T12:00:00`, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase());
 
 /**
@@ -38,11 +40,13 @@ export function useCycleDay(param = 'date') {
 
 export interface JournalRow { id: string; time: string | null; icon: IconName; title: string; detail?: string | null; a11y?: string; onPress: () => void }
 
-export function CycleDayPanel({ testID, label, day, hero, unit, heroA11y, strip, mode, max, bubbleOf, describe, onSelect, onShift, canForward, rows, footer }: {
+export function CycleDayPanel({ testID, label, day, loading, hero, unit, heroA11y, strip, mode, max, bubbleOf, describe, onSelect, onShift, canForward, rows, footer }: {
   testID: string;
   /** Ce que mesure le journal (« Douleur la plus forte notée », « Symptômes notés ») */
   label: string;
   day: string;
+  /** Lecture en cours : ni « rien de noté », ni liste (on ne sait pas encore) */
+  loading?: boolean;
   /** Donnée principale du jour ; null = rien de noté */
   hero: string | null;
   unit?: string | null;
@@ -65,7 +69,9 @@ export function CycleDayPanel({ testID, label, day, hero, unit, heroA11y, strip,
         <Text variant="label" muted accessibilityRole="header">{label}</Text>
         <Text variant="small" weight="medium" testID={`${testID}-day`}>{dayLong(day)}</Text>
         <View accessible accessibilityLabel={heroA11y ?? (hero ? [hero, unit].filter(Boolean).join(' ') : tr('cy.tk.nothing'))} style={{ alignItems: 'center', gap: 2, paddingVertical: spacing.xs }}>
-          {hero ? (
+          {loading ? (
+            <Text testID={`${testID}-loading`} style={{ fontSize: 30, lineHeight: 38, fontFamily: fonts.display, color: t.colors.textMuted }} accessibilityLabel={tr('cy.tk.loading')}>…</Text>
+          ) : hero ? (
             <Text testID={`${testID}-hero`} maxFontSizeMultiplier={1.3} numberOfLines={1} adjustsFontSizeToFit
               style={[{ fontSize: 56, lineHeight: 62, letterSpacing: -1.5, fontFamily: fonts.display, color: t.colors.text }, TABULAR]}>{hero}</Text>
           ) : (
@@ -78,7 +84,7 @@ export function CycleDayPanel({ testID, label, day, hero, unit, heroA11y, strip,
       </Glass>
       <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md, gap: 2 }} testID={`${testID}-list`}>
         <Text variant="label">{tr('cy.tk.dayEntries', { date: formatDate(`${day}T12:00:00`, { weekday: 'short', day: 'numeric', month: 'short' }) })}</Text>
-        {rows.length ? rows.map((r) => (
+        {loading ? null : rows.length ? rows.map((r) => (
           <Tappable key={r.id} accessibilityRole="button" testID={`${testID}-row-${r.id}`} onPress={r.onPress}
             accessibilityLabel={r.a11y ?? [r.time ?? tr('cy.tk.allDay'), r.title, r.detail, tr('cy.tk.openToFix')].filter(Boolean).join('. ')}
             style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.6 : 1, paddingVertical: 4 })}>
