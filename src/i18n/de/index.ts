@@ -106,3 +106,4 @@ export { scanAura } from './scanAura';
 export { napnow } from './napnow';
 export { journalTrack } from './journalTrack';
 export { breastTrack } from './breastTrack';
+export { curveTrack } from './curveTrack';

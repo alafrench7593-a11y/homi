@@ -97,10 +97,17 @@ export function NapSessionTray({ child, all, session, open, onOpenChange, onAnal
   );
 }
 
+/**
+ * Dernier enregistrement de la fiche : un second appui sur « Enregistrer » qui tombe, pendant le retour à la vue de la
+ * session, sur le bouton situé au même endroit (« Modifier la fin ») est ignoré pendant 800 ms.
+ */
+let lastSavedAt = 0;
+const justSaved = () => Date.now() - lastSavedAt < 800;
+
 /** Pousse une vue dans la même feuille (transition latérale du Tray). */
 function PushView({ view, icon, label, testID, variant }: { view: string; icon: 'clock' | 'bar-chart-2'; label: string; testID: string; variant: 'secondary' | 'tertiary' }) {
   const { setView } = useTray();
-  return <GlassButton variant={variant} icon={icon} label={label} testID={testID} onPress={() => setView(view)} />;
+  return <GlassButton variant={variant} icon={icon} label={label} testID={testID} onPress={() => { if (!justSaved()) setView(view); }} />;
 }
 
 const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
@@ -138,6 +145,7 @@ function EditEndView({ child, session, all, onSaved }: { child: Child; session: 
     try {
       await act.edit(session, { started_at: start, ended_at: end, kind: session.kind === 'night' ? 'night' : 'nap' }, all as Sleep[]);
       haptic('success');
+      lastSavedAt = Date.now();
       onSaved?.({ ...session, ended_at: end.toISOString() });
       goBack();
     } catch (e) {

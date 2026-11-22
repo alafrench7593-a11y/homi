@@ -3,13 +3,13 @@
  * Aucune cible, aucune comparaison, aucune interprétation, aucune recommandation de régime.
  */
 import { insertOrQueue } from '@/lib/offline';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Share, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { LineChart } from '@/components/Charts';
+import { MeasureCurve, MeasureTray } from '@/components/measureCurve';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Field, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
@@ -18,6 +18,8 @@ import { useUserId } from '@/lib/auth';
 import { backend, eq } from '@/lib/backend';
 import { useActivePregnancy, useInvalidate, useMaternalWeights, useProfile, useUpdateProfile } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
+import { useCorrectMeasure } from '@/lib/data/hooks-measures';
+import { toCurvePoints } from '@/lib/domain/measureCurve';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { toFrDate } from '@/lib/validation';
@@ -118,8 +120,13 @@ export default function WeightScreen() {
     });
   }
 
-  // Dates calendaires : abscisse à 0 h UTC et étiquettes lues en UTC (sinon la veille s'affiche à l'ouest de Greenwich)
-  const points = (weights ?? []).map((w) => ({ x: Date.parse(`${w.measured_on.slice(0, 10)}T00:00:00Z`), y: Number(w.weight_kg), label: formatDate(w.measured_on, { day: 'numeric', month: 'long', timeZone: 'UTC' }) }));
+  // Courbe : une pesée notée = un point (jour civil à 0 h UTC), rien d'interpolé ; toucher un point ouvre sa fiche
+  const points = useMemo(() => toCurvePoints(weights ?? [], (w) => ({ id: w.id, date: w.measured_on, value: w.weight_kg, note: w.note })), [weights]);
+  const correct = useCorrectMeasure('maternal_weights');
+  const [trayId, setTrayId] = useState<string | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const trayRow = trayId ? (weights ?? []).find((w) => w.id === trayId) ?? null : null;
+  const openWeight = (id: string) => { setTrayId(id); setTrayOpen(true); };
 
   const loading = weightsQ.isLoading && !weights;
   const failed = weightsQ.isError && !weights;
@@ -168,10 +175,13 @@ export default function WeightScreen() {
 
             {loading ? <Skeleton kind="card" rows={1} /> : failed ? (
               <ErrorView error={weightsQ.error} onRetry={() => void weightsQ.refetch()} title={tr('u2.weight.load_error')} />
-            ) : points.length >= 2 ? (
-              <Card><Text weight="bold">{tr('u2.weight.mine')}</Text><LineChart points={points} unit="kg" accessibilityLabel={tr('u2.weight.chart_a11y')} formatX={(x) => formatDate(x, { day: 'numeric', month: 'short', timeZone: 'UTC' })} /></Card>
             ) : (
-              <Card tone="soft"><Text muted>{tr('u2.weight.chart_needs_two')}</Text></Card>
+              <Card testID="weight-curve-card">
+                <Text weight="bold">{tr('u2.weight.mine')}</Text>
+                <View style={{ marginTop: spacing.sm }}>
+                  <MeasureCurve points={points} unit="kg" digits={1} minYSpan={2} periods={['1m', '3m']} onOpen={openWeight} title={tr('u2.weight.chart_a11y')} testID="weight-curve" />
+                </View>
+              </Card>
             )}
             <Banner tone="info">{tr('u2.weight.banner')}</Banner>
 
@@ -182,7 +192,7 @@ export default function WeightScreen() {
         ListEmptyComponent={loading || failed ? null : <EmptyState icon="trending-up" title={tr('u2.weight.none_title')} body={tr('u2.weight.none_body')} />}
         renderItem={({ item: w }) => (
           <Card style={{ paddingVertical: spacing.xs }}>
-            <ListRow title={`${String(w.weight_kg).replace('.', ',')} kg`} subtitle={[formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }), w.note, w.professional_note ? tr('u2.weight.pro_prefix', { note: w.professional_note }) : null].filter(Boolean).join(' · ')} right={<Button label={tr('u2.weight.delete')} size="sm" variant="ghost" loading={busy === `del-${w.id}`} accessibilityLabel={tr('u2.weight.delete_a11y', { date: formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) })} onPress={() => remove(w.id)} />} />
+            <ListRow onPress={() => openWeight(w.id)} title={`${String(w.weight_kg).replace('.', ',')} kg`} subtitle={[formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }), w.note, w.professional_note ? tr('u2.weight.pro_prefix', { note: w.professional_note }) : null].filter(Boolean).join(' · ')} right={<Button label={tr('u2.weight.delete')} size="sm" variant="ghost" loading={busy === `del-${w.id}`} accessibilityLabel={tr('u2.weight.delete_a11y', { date: formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) })} onPress={() => remove(w.id)} />} />
           </Card>
         )}
         ListFooterComponent={(
@@ -201,6 +211,10 @@ export default function WeightScreen() {
           </View>
         )}
       />
+      <MeasureTray testID="weight-tray" open={trayOpen} onOpenChange={setTrayOpen} title={tr('ct.weight.tray')} unit="kg" digits={1} step={0.1} min={25} max={300}
+        item={trayRow ? { id: trayRow.id, value: Number(trayRow.weight_kg), date: trayRow.measured_on, note: trayRow.note, details: trayRow.professional_note ? [tr('u2.weight.pro_prefix', { note: trayRow.professional_note })] : [] } : null}
+        onSave={async (it, v) => { await correct.mutateAsync({ id: it.id, patch: { weight_kg: v } }); }}
+        onSaved={() => toast(tr('ct.edit.saved'))} />
     </Screen>
   );
 }
