@@ -1,13 +1,15 @@
 /**
  * Mon évolution : tendances simples sur 14 jours et historique des points du jour.
  * Descriptif uniquement : pas de moyenne « notée », pas de récompense, pas de pénalité.
+ * 22/11/2026 : bilans datés en tête (quatorze jours, « rien de noté », fiche de correction : CheckinDays).
  */
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { HistoryHeader } from '@/components/MiniApp';
-import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { ErrorView, Skeleton } from '@/components/States';
+import { CheckinDays } from '@/features/pregTrack/CheckinDays';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
 import { Button, Card, ListRow, SectionTitle, Text } from '@/components/ui';
@@ -49,9 +51,8 @@ export default function PostpartumHistory() {
       action={{ label: list.some((c) => c.checkin_date === today) ? tr('u5.pp_history.reread') : tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push('/postpartum/checkin'), testID: 'pp-history-action' }}>
       {q.isLoading && !q.data ? <Skeleton kind="card" rows={3} /> : null}
       {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
-      {q.data && list.length === 0 ? (
-        <EmptyState icon="trending-up" title={tr('u5.pp_history.empty_t')} body={tr('u5.pp_history.empty_b')} action={{ label: tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push('/postpartum/checkin') }} />
-      ) : null}
+      {q.data ? <CheckinDays list={list} /> : null}
+      {q.data && list.length === 0 ? <Text variant="small" muted>{tr('u5.pp_history.empty_b')}</Text> : null}
 
       {list.length > 0 ? (
         <>

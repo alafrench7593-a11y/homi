@@ -1,4 +1,7 @@
-/** Listes de préparation : valise de maternité, affaires de bébé, démarches… */
+/**
+ * Listes de préparation : valise de maternité, affaires de bébé, démarches…
+ * 22/11/2026 : dans une liste ouverte, « Restant (n) / Fait (n) » remplace l'ancien repli des éléments cochés.
+ */
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
@@ -18,6 +21,7 @@ import type { Checklist, ChecklistItem, ChecklistKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { GlassSegmentedControl } from '@/components/glass';
 import { progressOf } from '@/lib/domain/quickPicks';
 import { t as tr } from '@/i18n';
 import { CheckMark } from '@/motion/CheckMark';
@@ -43,7 +47,7 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
   const [label, setLabel] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
-  const [showDone, setShowDone] = useState(false);
+  const [view, setView] = useState<'left' | 'done'>('left');
   const done = (items ?? []).filter((i) => i.done).length;
   const prog = progressOf(items ?? []);
   // À faire d'abord (dans l'ordre de la liste), les éléments cochés repliés en bas
@@ -125,6 +129,10 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
           <Text weight="bold" color={t.colors.primary} testID="list-pct">{prog.pct} %</Text>
         </Row>
         <ProgressBar done={done} total={items?.length ?? 0} />
+        {items?.length ? (
+          <GlassSegmentedControl testID="list-view" label={tr('pg.l.viewLabel')} value={view} onChange={(v) => { haptic('selection'); setView(v); }}
+            options={[{ value: 'left' as const, label: tr('pg.l.left', { count: todo.length }), testID: 'list-view-left' }, { value: 'done' as const, label: tr('pg.l.done', { count: doneList.length }), testID: 'list-view-done' }]} />
+        ) : null}
         {/* ajout rapide en haut : Entrée ajoute et garde le clavier ouvert pour enchaîner */}
         <Row style={{ alignItems: 'flex-end' }}>
           <View style={{ flex: 1 }}>
@@ -136,7 +144,7 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
           <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title={tr('u2.lists.load_error')} />
         ) : (
           <View>
-            <MotionList>{[...todo, ...(showDone ? doneList : [])].map((item) => (
+            <MotionList>{(view === 'done' ? doneList : todo).map((item) => (
               <MotionItem key={item.id}><View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Tappable
                   accessibilityRole="checkbox"
@@ -154,10 +162,8 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
               </View></MotionItem>
             ))}</MotionList>
             {!items?.length && <Text muted>{tr('u2.lists.empty')}</Text>}
-            {items?.length && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>{tr('u2.lists.all_done')}</Text> : null}
-            {doneList.length ? (
-              <Button label={showDone ? tr('u2.lists.hide_done') : tr('u2.lists.show_done', { count: doneList.length })} icon={showDone ? 'chevron-up' : 'chevron-down'} size="sm" variant="ghost" onPress={() => setShowDone((v) => !v)} style={{ alignSelf: 'flex-start' }} testID="list-toggle-done" />
-            ) : null}
+            {items?.length && view === 'left' && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>{tr('u2.lists.all_done')}</Text> : null}
+            {items?.length && view === 'done' && !doneList.length ? <Text muted center style={{ paddingVertical: spacing.sm }} testID="list-none-done">{tr('pg.l.noneDone')}</Text> : null}
           </View>
         )}
         <Button label={tr('u2.lists.delete_list')} icon="trash-2" variant="ghost" size="sm" loading={removing} onPress={removeList} style={{ alignSelf: 'flex-start' }} />

@@ -1,5 +1,8 @@
 /**
- * Mouvements de bébé (script 38 « Il ne sent jamais les coups ») : noter ce que l'on sent, jour après jour, pour
+ * Mouvements de bébé. 22/11/2026 : séance de comptage (famille « temps et sessions », src/features/pregTrack/
+ * KickSession.tsx) en tête — compte en grand, minuteur tiré de la donnée, sept jours, fiche de correction ; l'action
+ * principale commence la séance puis note chaque mouvement senti.
+ * Script 38 « Il ne sent jamais les coups » : noter ce que l'on sent, jour après jour, pour
  * apprendre à connaître son bébé et le montrer à la sage-femme. Aucun « compte à atteindre », aucune réassurance :
  * si le bébé bouge moins que d'habitude ou plus du tout, on appelle la maternité, de jour comme de nuit.
  * Les notes sont les mêmes que celles de « Comment je me sens » (symptôme « mouvements ») : rien n'est dupliqué.
@@ -8,7 +11,6 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
 import { EmptyState } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, ListRow, SectionTitle, Text } from '@/components/ui';
@@ -21,6 +23,7 @@ import { formatDate, formatTime, t as tr } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { KickNow, useKickMain, useKickState } from '@/features/pregTrack/KickSession';
 
 type Level = 1 | 2 | 3;
 const LEVELS: { v: Level; key: 'less' | 'usual' | 'more' }[] = [{ v: 1, key: 'less' }, { v: 2, key: 'usual' }, { v: 3, key: 'more' }];
@@ -35,7 +38,8 @@ export default function PregnancyMoves() {
   const [note, setNote] = useState('');
   const week = pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null;
   const logs = useMemo(() => (logsQ.data ?? []).filter((l) => l.symptom === 'movements'), [logsQ.data]);
-  const today = logs.filter((l) => new Date(l.logged_at).toDateString() === new Date().toDateString());
+  const kicks = useKickState();
+  const main = useKickMain(kicks.live);
 
   async function add() {
     if (!level) return toast(tr('pm.pick'), 'info');
@@ -47,15 +51,14 @@ export default function PregnancyMoves() {
   }
 
   return (
-    <Screen back title={toolName('preg_moves')} subtitle={week != null ? tr('pm.week', { week }) : undefined}
-      action={{ label: tr('pm.add'), icon: 'plus', onPress: () => void add(), testID: 'moves-save', disabled: save.isPending }}>
+    <Screen back title={toolName('preg_moves')} subtitle={kicks.live ? tr('pg.k.subtitleLive') : week != null ? tr('pm.week', { week }) : undefined}
+      toolRunning={!!kicks.live} action={{ ...main, disabled: !kicks.q.data }}>
+      <KickNow sessions={kicks.sessions} live={kicks.live} loading={!kicks.q.data} />
+      <Text variant="caption" muted>{tr('pg.k.notAdvice')}</Text>
       <Banner tone="warning" icon="phone" action={<Button label={tr('pm.callMaternity')} icon="phone" variant="secondary" onPress={() => router.push('/emergency')} />}>
         {tr('pm.safety')}
       </Banner>
-      <TodaySummary title={tr('pm.today')} items={[
-        { icon: 'activity', value: String(today.length), label: tr('pm.todayCount') },
-        { icon: 'clock', value: logs[0] ? formatTime(logs[0].logged_at) : '—', label: tr('pm.last') },
-      ]} />
+      <SectionTitle title={tr('pg.k.feelTitle')} />
       <Card>
         <Text weight="bold">{tr('pm.how')}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: spacing.xs }}>
@@ -63,6 +66,7 @@ export default function PregnancyMoves() {
         </View>
         <Field label={tr('pm.note')} optional value={note} onChangeText={setNote} maxLength={300} placeholder={tr('pm.notePh')} />
         {level === 1 && <Banner tone="danger" icon="phone">{tr('pm.lessWarning')}</Banner>}
+        <Button label={tr('pm.add')} icon="plus" variant="secondary" onPress={() => void add()} disabled={save.isPending} testID="moves-save" />
       </Card>
       <Text variant="caption" muted>{tr('pm.hint')}</Text>
       <SectionTitle title={tr('pm.history')} />

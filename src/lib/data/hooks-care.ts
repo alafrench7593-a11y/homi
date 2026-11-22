@@ -8,6 +8,7 @@
 import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
+import { KICK } from '../domain/pregTrack';
 import { useUserId } from '../auth';
 import { withIdempotentId } from '../idempotency';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
@@ -26,9 +27,10 @@ export interface PregnancySymptomLog {
   frequency: Frequency | null; note: string | null; week_sa: number | null; logged_at: string;
 }
 
+/** Symptômes et ressentis notés (hors séances de comptage des mouvements `kick_count`, lues par `useKickRows`). */
 export function usePregnancySymptoms(limit = 60) {
   const uid = useUserId();
-  return useRows<PregnancySymptomLog>(['pregnancy_symptom_logs', uid], uid ? { table: 'pregnancy_symptom_logs', filters: [eq('user_id', uid)], order: [{ col: 'logged_at', asc: false }], limit } : null);
+  return useRows<PregnancySymptomLog>(['pregnancy_symptom_logs', uid, String(limit)], uid ? { table: 'pregnancy_symptom_logs', filters: [eq('user_id', uid), { col: 'symptom', op: 'neq', value: KICK }], order: [{ col: 'logged_at', asc: false }], limit } : null);
 }
 
 export function useSaveSymptoms() {
