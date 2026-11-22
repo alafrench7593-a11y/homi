@@ -75,6 +75,7 @@ export function ScaleWeek({ items, config, title, trayTitle, testID }: { items: 
         {days.map((d) => {
           const on = d.day === selected.day;
           const y = d.last ? ((n - d.last) / (n - 1)) * (TRACK_H - 22) : 0;
+          const dotId = [testID, 'day', d.day, d.last ? 'known' : 'unknown'].join('-');
           return (
             <Tappable key={d.day} testID={`${testID}-day-${d.day}`} accessibilityRole="button" accessibilityState={{ selected: on }}
               accessibilityLabel={`${formatDate(`${d.day}T12:00:00`, { weekday: 'long', day: 'numeric' })} : ${d.last ? label(d.last) : tr('ht.none')}`}
@@ -83,11 +84,11 @@ export function ScaleWeek({ items, config, title, trayTitle, testID }: { items: 
               <View style={{ height: TRACK_H, width: '100%', alignItems: 'center', borderRadius: 10, borderWidth: on ? 1.5 : 0, borderColor: t.colors.text }}>
                 <View style={{ position: 'absolute', top: 11, bottom: 11, width: 1, backgroundColor: t.colors.border }} />
                 {d.last ? (
-                  <View testID={`${testID}-day-${d.day}-k`} style={{ position: 'absolute', top: y, width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.text }}>
+                  <View testID={dotId} style={{ position: 'absolute', top: y, width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.text }}>
                     <Icon name={config.icons[d.last - 1]} size={12} color={t.colors.surface} />
                   </View>
                 ) : (
-                  <View testID={`${testID}-day-${d.day}-u`} style={{ position: 'absolute', bottom: 4, width: 18, height: 14, borderRadius: 5, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.textMuted }} />
+                  <View testID={dotId} style={{ position: 'absolute', bottom: 4, width: 18, height: 14, borderRadius: 5, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.textMuted }} />
                 )}
               </View>
               <Text variant="caption" muted={!on} weight={on ? 'bold' : undefined}>{formatDate(`${d.day}T12:00:00`, { weekday: 'narrow' })}</Text>
@@ -159,7 +160,7 @@ function ScaleEditView({ item, config }: { item: ScaleItem; config: ScaleConfig 
       <Text testID="ht-scale-edit-hero" accessibilityLiveRegion="polite" maxFontSizeMultiplier={1.3}
         style={[HERO, { color: changed ? t.colors.primary : t.colors.text, textAlign: 'center', fontSize: 40, lineHeight: 46 }]}>{value ? config.labels[value - 1] : tr('ht.scale.noLevel')}</Text>
       <Text weight="bold" center style={TABULAR} testID="ht-scale-edit-proposed">
-        {changed && at ? tr('ht.obs.proposed', { time: clock(at) }) : tr('ht.obs.recorded', { what: item.value ? config.labels[item.value - 1] : tr('ht.scale.noLevel'), time: clock(at0) })}
+        {changed && at ? tr('ht.obs.proposed', { what: value ? config.labels[value - 1] : tr('ht.scale.noLevel'), time: clock(at) }) : tr('ht.obs.recorded', { what: item.value ? config.labels[item.value - 1] : tr('ht.scale.noLevel'), time: clock(at0) })}
       </Text>
       <View style={{ flexDirection: 'row', gap: 6 }} accessibilityRole="radiogroup" accessibilityLabel={tr('ht.scale.levelLabel')}>
         {config.labels.map((l, i) => {

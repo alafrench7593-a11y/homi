@@ -179,7 +179,7 @@ function ObsEditView({ obs }: { obs: Observation }) {
       <Text testID="ht-obs-edit-hero" accessibilityLiveRegion="polite" maxFontSizeMultiplier={1.3}
         style={[HERO, { color: changed ? t.colors.primary : t.colors.text, textAlign: 'center', fontSize: 44, lineHeight: 50 }, TABULAR]}>{heroNow}</Text>
       <Text weight="bold" center style={TABULAR} testID="ht-obs-edit-proposed">
-        {changed && at ? tr('ht.obs.proposed', { time: clock(at) }) : tr('ht.obs.recorded', { what: heroBefore, time: clock(at0) })}
+        {changed && at ? tr('ht.obs.proposed', { what: heroNow, time: clock(at) }) : tr('ht.obs.recorded', { what: heroBefore, time: clock(at0) })}
       </Text>
       {changed ? <Text variant="small" muted center testID="ht-obs-edit-before">{tr('ht.obs.before', { what: heroBefore, time: clock(at0) })}</Text> : null}
       {isTemp ? (

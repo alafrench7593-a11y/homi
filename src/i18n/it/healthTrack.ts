@@ -20,7 +20,7 @@ export const healthTrack = {
   "ht.obs.count": {"one": "{count} osservazione", "other": "{count} osservazioni"},
   "ht.obs.trayTitle": "Osservazione · {name}",
   "ht.obs.fixTitle": "Correggi l’osservazione",
-  "ht.obs.proposed": "Nuova ora: {time}",
+  "ht.obs.proposed": "Proposto: {what} alle {time}",
   "ht.obs.recorded": "Annotato: {what} alle {time}",
   "ht.obs.before": "Prima: {what} alle {time}",
   "ht.obs.tempLabel": "Temperatura",
