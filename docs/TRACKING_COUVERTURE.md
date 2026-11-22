@@ -1,0 +1,144 @@
+# Couverture du tracking — catalogue « Mes apps » (généré le 22/11/2026, registre src/lib/journeys/tools.ts)
+
+Légende statut : FAIT = observé dans l’aperçu web Chromium (vraie app, démo locale) ; Deno = fonction `assistant` avec modèle simulé. Rien n’est encore vérifié sur simulateur iOS ni sur iPhone.
+
+Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
+
+| Mini-app (id) | Profils | Catégorie | Famille de geste | Donnée suivie | Remontée accueil / catégorie | Aura · prix | Test / statut |
+|---|---|---|---|---|---|---|---|
+| baby_breastfeed | baby, postpartum | feeding | Temps et sessions | tétées (breastfeeds, côté) | accueil : tétée en cours / dernière | — | EN COURS (agent Allaitement) |
+| baby_bottle | baby | feeding | Mesures et quantités | biberons (ml) | accueil : dernier biberon ; catégorie Alimentation : ml/jour | analyse biberons existante · 3 crédits | EN COURS (agent Biberons) |
+| baby_bottle_timer | baby, postpartum | feeding | Temps et sessions | minuteur biberon | accueil : dernier biberon | — | EN COURS (agent Biberons) |
+| baby_bottle_history | baby | feeding | Mesures et quantités | historique biberons | catégorie Alimentation | analyse existante · 3 crédits | EN COURS (agent Biberons) |
+| bottle_scoops | baby, postpartum | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
+| baby_foods | bébé, enfant | feeding | Journaux | dégustations par aliment | catégorie Alimentation : aliments découverts | — | EN COURS (agent Journaux) |
+| meals | MEAL_SCOPES | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
+| meal_menu | ...MEAL_SCOPES, pregnancy, family | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
+| meal_pantry | ...MEAL_SCOPES, pregnancy, family | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
+| meal_rankings | ...KID, family | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
+| preg_eat | pregnancy | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
+| scan_food | tous | feeding | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| kid_sleep | bébé, enfant | sleep | Temps et sessions | sessions de sommeil (mode nuit /night) | idem Sommeil (même table) | — | PARTIEL : même donnée, écran nuit non refait |
+| kid_sleep_rhythm | bébé, enfant | sleep | Temps et sessions | sessions de sommeil (table sleeps) | accueil : sieste en cours / dernière ; catégorie Sommeil : jour + 7 jours | fenêtre indicative + analyse d’une session · 3 crédits | FAIT · Chromium + Deno |
+| sleep_help | bébé, enfant | sleep | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| baby_night_help | baby | sleep | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| family_nights | baby, child, family, postpartum, pregnancy | sleep | Foyer et relais | tours de nuit + transmission de la journée (/family/relay) | accueil : « Relais parent » ; brouillon = mêmes tables | — | FAIT (transmission) · Chromium ; tours de nuit inchangés |
+| sleep | ADULT | sleep | Temps et sessions | sommeil de la mère | — | — | À FAIRE |
+| baby_daily | baby | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| baby_diaper | baby | care | Journaux | couches | catégorie Soins : nombre/jour | — | EN COURS (agent Biberons) |
+| kid_teeth | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| scan_product | tous | care | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| scan_history | tous | care | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| scan_compare | tous | care | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| kid_products | ...KID, family, pregnancy, none | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| journal | ...KID, family | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_profile | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_grow | bébé, enfant | care | Mesures et quantités | mesures datées (child_measurements) | dernière mesure | — | EN COURS (agent Croissance) |
+| kid_mood | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_album | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
+| appointments | tous | health | Journaux et rendez-vous | rendez-vous | accueil : prochain rendez-vous | — | EN COURS (agent Journaux) |
+| consult_questions | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| documents | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| health_book | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_vaccines | bébé, enfant | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_health | bébé, enfant | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_treatments | bébé, enfant | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| medications | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| kid_steps | child | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| summary | ...KID, pregnancy, family | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| mood | ADULT | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| me_diary | ADULT | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| exhaustion_check | foyer, couple | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| scan_avoid | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| recall_alerts | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| emergency | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| ask | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| local_ai | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| library | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| guides | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| videos | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
+| sources | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| cycle_home | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_calendar | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_symptoms | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_pain | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_discharge | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_bleeding | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_journal | cycle | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_stats | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_advice | CYCLE | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| cycle_month | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_export | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| cycle_guides | CYCLE | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| cycle_kit | CYCLE | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| avoid_contraception | avoid | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| avoid_methods | avoid | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| avoid_emergency | avoid | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| avoid_reminders | avoid | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| avoid_consult | avoid | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| contraception_journal | avoid | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_cycle | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_tests | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_mucus | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_temperature | ttc | cycle | Mesures et quantités | température basale | — | — | EN COURS (agent Croissance) |
+| ttc_intimacy | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_exams | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_understand | ttc | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| ttc_consult | ttc | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| ttc_reminders | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| pma_tracker | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
+| ttc_start_pregnancy | ME | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| preg_evolution | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| preg_weight | pregnancy | pregnancy | Mesures et quantités | poids de grossesse | dernière mesure | — | EN COURS (agent Croissance) |
+| preg_feel | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| preg_moves | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| preg_calendar | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| preg_names | pregnancy, ttc | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| preg_lists | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| pp_recovery | postpartum, baby, none | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| pp_checkin | postpartum, baby, none | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| pp_history | postpartum, baby, none | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| pp_body | postpartum, baby, none | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| pp_mental | postpartum, baby, none | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| pp_support | postpartum, baby, none | pregnancy | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| pp_partner | postpartum, baby | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
+| kid_school | bébé, enfant | school | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| kid_card | bébé, enfant | school | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| kid_routines | child, family | school | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| custody | ...KID, family | school | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| childcare | ...KID, family | school | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| mental_load | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_domains | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| couple_week | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| couple_understand | foyer, couple | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| family_review | family | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_metime | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| offduty | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_difficult | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_urgent | baby, child, family, postpartum | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| family_sos | baby, child, family, postpartum | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| solo_parent | tous | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_calendar | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_tasks | foyer, couple | family | Foyer et relais | tâches | accueil foyer : tâches ouvertes | — | EN COURS (agent Journaux) |
+| family_missions | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_my_place | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_routines | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_history | family | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| brain_dump | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_prep | foyer, couple | family | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
+| family_shopping | foyer, couple | family | Foyer et relais | courses | — | — | EN COURS (agent Journaux) |
+| family_stocks | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| house_notebook | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| family_papers | tous | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| reminders | tous | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| nearby | tous | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
+| community | tous | community | À classer | — | — | — | À FAIRE |
+| settings | tous | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| notifications | tous | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| journeys | tous | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| home_settings | tous | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| account_delete | tous | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| sign_out | tous | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| my_info | foyer, couple | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| preg_edit | pregnancy | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |
+| preg_end | pregnancy | account | Compte et réglages | — | — | — | SANS SUIVI (réglages) |

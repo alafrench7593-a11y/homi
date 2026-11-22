@@ -67,3 +67,15 @@ describe('jours sans saisie, minuit, heures invalides', () => {
     expect(proposedEnd(s, '14h20')).not.toBeNull();
   });
 });
+
+describe('relais : couches et tétées de l’enfant seulement', () => {
+  it('lit les couches et tétées depuis la dernière transmission, jamais celles de Noé', () => {
+    const items = relayItems({
+      childId: 'lina', since: relaySince(null, NOW), now: NOW, sleeps: [], bottles: [],
+      diapers: [{ id: 'd1', child_id: 'lina', at: iso(23, 9, 0), wet: true, stool: false }, { id: 'dn', child_id: 'noe', at: iso(23, 9, 5), wet: true, stool: true }],
+      breastfeeds: [{ id: 'f1', child_id: 'lina', started_at: iso(23, 11, 7), ended_at: iso(23, 11, 24), side: 'right' }],
+    });
+    expect(items.map((i) => i.id)).toEqual(['d1', 'f1']);
+    expect(items[1]).toMatchObject({ kind: 'breastfeed', minutes: 17, side: 'right' });
+  });
+});

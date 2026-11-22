@@ -2,9 +2,10 @@
  * Relais de nuit : qui se lève quelle nuit. Alterné, fixe ou personnalisé — y compris pour une
  * famille monoparentale ou un réseau d'aidants. Aucun score nocturne, aucun compteur par personne.
  */
+import { Glass, GlassButton } from '@/components/glass';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { BottleRelaysSection } from '@/features/feeding/BottleRelays';
 import { TodaySummary } from '@/components/MiniApp';
@@ -19,7 +20,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { planNights, shiftConflicts, type CareShift, type NightPattern } from '@/lib/domain/familyLoad';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { GlassSurface } from '@/components/Glass';
 import { Icon } from '@/components/ui';
 import { tint } from '@/components/ToolGlyph';
@@ -88,6 +89,13 @@ export default function NightRelay() {
     <Screen back title={tr('u2.nights.title')} subtitle={tr('u2.nights.subtitle')}
       action={myPending ? { label: tr('u2.nights.confirm_next'), icon: 'check', onPress: () => setStatus(myPending, 'confirmed', tr('u2.nights.confirmed_toast')), testID: 'nights-confirm-next' }
         : plan.length ? { label: tr('u2.nights.save_plan', { count: plan.length }), icon: 'calendar', onPress: submit, disabled: save.isPending, testID: 'nights-save-plan' } : undefined}>
+      {/* Une seule app « Relais » : les tours de nuit ET la transmission de la journée (22/11/2026) */}
+      <Glass variant="card" radius={radius.xl} testID="nights-day-relay" contentStyle={{ padding: spacing.md, gap: spacing.xs }}>
+        <Text weight="bold">{tr('nn.relay.dayCard')}</Text>
+        <Text variant="small" muted>{tr('nn.relay.dayBody')}</Text>
+        <GlassButton variant="secondary" icon="send" label={tr('nn.relay.dayOpen')} testID="nights-open-day-relay" style={{ alignSelf: 'flex-start' }}
+          onPress={() => router.push('/family/relay' as never)} />
+      </Glass>
       <TodaySummary items={[
         { icon: 'moon', value: tonight ? labelOf(tonight.user_id) : '—', label: tr('u2.nights.tonight') },
         { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: tr('u2.nights.my_upcoming') },

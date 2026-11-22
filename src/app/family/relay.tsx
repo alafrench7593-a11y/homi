@@ -17,7 +17,7 @@ import { formatDate, t as tr } from '@/i18n';
 import { eq } from '@/lib/backend';
 import { useActiveSubject, useChildren, useRows } from '@/lib/data/hooks';
 import { useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
-import { relayItems, relaySince, type BottleLike, type RelayItem } from '@/lib/domain/relayDraft';
+import { relayItems, relaySince, type BottleLike, type BreastfeedLike, type DiaperLike, type RelayItem } from '@/lib/domain/relayDraft';
 import { clock, span } from '@/lib/domain/sleepPlanner';
 import type { Child, Sleep } from '@/lib/types';
 import { useRelayStore } from '@/features/relay/relayStore';
@@ -42,9 +42,17 @@ export default function RelayScreen() {
   return <Draft key={child.id} child={child} />;
 }
 
+const SIDE: Record<'left' | 'right' | 'both', 'nn.relay.left' | 'nn.relay.right' | 'nn.relay.both'> = { left: 'nn.relay.left', right: 'nn.relay.right', both: 'nn.relay.both' };
+function title(i: RelayItem): string {
+  return tr(i.kind === 'sleep' ? 'nn.relay.sleepEnd' : i.kind === 'bottle' ? 'nn.relay.bottle' : i.kind === 'diaper' ? 'nn.relay.diaper' : 'nn.relay.feed');
+}
+function detail(i: RelayItem): string {
+  if (i.kind === 'sleep' || i.kind === 'breastfeed') return `${clock(new Date(i.start))} – ${i.end ? clock(new Date(i.end)) : '…'} · ${span(i.minutes)}${i.kind === 'breastfeed' ? ` · ${tr(SIDE[i.side])}` : ''}`;
+  if (i.kind === 'bottle') return i.ml != null ? `${i.ml} ml` : tr('nn.relay.noQty');
+  return [i.wet ? tr('nn.relay.wet') : null, i.stool ? tr('nn.relay.stool') : null].filter(Boolean).join(' · ') || tr('nn.relay.dry');
+}
 function line(i: RelayItem): string {
-  if (i.kind === 'sleep') return `${tr('nn.relay.sleep')} · ${clock(new Date(i.start))} – ${i.end ? clock(new Date(i.end)) : '…'} · ${span(i.minutes)}${i.note ? ` · ${i.note}` : ''}`;
-  return `${tr('nn.relay.bottle')} · ${clock(new Date(i.at))}${i.ml != null ? ` · ${i.ml} ml` : ''}`;
+  return `${title(i)} · ${i.kind === 'bottle' || i.kind === 'diaper' ? `${clock(new Date(i.at))} · ` : ''}${detail(i)}${i.kind === 'sleep' && i.note ? ` · ${i.note}` : ''}`;
 }
 
 function Draft({ child }: { child: Child }) {
@@ -57,7 +65,11 @@ function Draft({ child }: { child: Child }) {
   const markSent = useRelayStore((s) => s.markSent);
   const since = relaySince(last?.at, now);
   const bottlesQ = useRows<BottleLike>(['bottles', child.id, 'relay'], { table: 'bottles', filters: [eq('child_id', child.id)], order: [{ col: 'at', asc: false }], limit: 60 });
-  const items = useMemo(() => relayItems({ childId: child.id, since, now, sleeps: (sleeps ?? []) as Sleep[], bottles: bottlesQ.data ?? [] }), [child.id, since, now, sleeps, bottlesQ.data]);
+  const diapersQ = useRows<DiaperLike>(['diapers', child.id, 'relay'], { table: 'diapers', filters: [eq('child_id', child.id)], order: [{ col: 'at', asc: false }], limit: 60 });
+  const feedsQ = useRows<BreastfeedLike>(['breastfeeds', child.id, 'relay'], { table: 'breastfeeds', filters: [eq('child_id', child.id)], order: [{ col: 'started_at', asc: false }], limit: 60 });
+  const items = useMemo(() => relayItems({ childId: child.id, since, now, sleeps: (sleeps ?? []) as Sleep[], bottles: bottlesQ.data ?? [], diapers: diapersQ.data ?? [], breastfeeds: feedsQ.data ?? [] }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [child.id, since.getTime(), Math.floor(now.getTime() / 60_000), sleeps, bottlesQ.data, diapersQ.data, feedsQ.data]);
   const [removed, setRemoved] = useState<Set<string>>(new Set());
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -103,10 +115,8 @@ function Draft({ child }: { child: Child }) {
                     <Icon name={on ? 'check-square' : 'square'} size={20} color={t.colors.text} />
                     <Text style={[{ minWidth: 64 }, TABULAR]} weight="bold" numberOfLines={1}>{clock(new Date(i.at))}</Text>
                     <View style={{ flex: 1, gap: 2 }}>
-                      <Text weight="medium">{i.kind === 'sleep' ? tr('nn.relay.sleepEnd') : tr('nn.relay.bottle')}</Text>
-                      <Text variant="small" muted style={TABULAR} testID={`relay-item-detail-${i.kind}`}>
-                        {i.kind === 'sleep' ? `${clock(new Date(i.start))} – ${i.end ? clock(new Date(i.end)) : '…'} · ${span(i.minutes)}` : i.ml != null ? `${i.ml} ml` : tr('nn.relay.noQty')}
-                      </Text>
+                      <Text weight="medium">{title(i)}</Text>
+                      <Text variant="small" muted style={TABULAR} testID={`relay-item-detail-${i.kind}`}>{detail(i)}</Text>
                       {i.kind === 'sleep' && i.note ? <Text variant="small" muted>{i.note}</Text> : null}
                     </View>
                   </Glass>
@@ -128,6 +138,7 @@ function Draft({ child }: { child: Child }) {
           </View>
         </>
       )}
+      <GlassButton variant="tertiary" icon="repeat" label={tr('nn.relay.nights')} testID="relay-open-nights" onPress={() => router.push('/family/nights' as never)} />
       <GlassButton variant="tertiary" icon="moon" label={tr('nn.home.open')} testID="relay-open-sleep" onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id } } as never)} />
     </Screen>
   );
