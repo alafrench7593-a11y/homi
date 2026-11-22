@@ -14,6 +14,7 @@
  * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
 import { NapHomeCard } from '@/features/napLive/NapHomeCard';
+import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
@@ -248,6 +249,7 @@ export default function Home() {
           <ProfileStage profileKey={profileKey} style={{ gap: spacing.md }} testID="home-stage">
           {/* Maintenant : la sieste de l'enfant affiché passe avant tout le reste (en cours ou dernière du jour) */}
           {childScope && child ? <NapHomeCard child={child} /> : null}
+          {childScope && child ? <BreastHomeCard child={child} /> : null}
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;

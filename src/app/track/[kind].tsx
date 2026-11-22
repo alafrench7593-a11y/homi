@@ -32,6 +32,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { FeedIssuesToday, MilkStockLink } from '@/features/feeding/TrackLinks';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
+import { FeedRoute } from '@/features/breastTrack/FeedRoute';
 import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
@@ -80,7 +81,10 @@ function TrackToday({ kind, childId }: { kind: LogKind; childId: string }) {
 }
 
 export default function TrackEntryRoute() {
-  const params = useLocalSearchParams<{ kind: string }>();
+  const params = useLocalSearchParams<{ kind: string; id?: string; manual?: string }>();
+  // Allaitement et tire-lait : la mini-app (séance en direct, journée, fiches) ; le formulaire complet reste
+  // accessible pour une saisie passée (?manual=1) ou une modification (?id=)
+  if ((params.kind === 'breastfeed' || params.kind === 'pumping') && !params.id && params.manual !== '1') return <FeedRoute kind={params.kind} />;
   if (params.kind && !(params.kind in LOG_TABLE)) {
     return (
       <Screen back title={tr('u7.track.notFoundTitle')}>
