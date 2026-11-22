@@ -16,12 +16,14 @@ import type { Child, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing } from '@/theme/tokens';
 import { napState } from './NapNow';
+import { isDayNap } from '@/lib/domain/sleepSummary';
 
 export function NapHomeCard({ child }: { child: Child }) {
   const t = useTheme();
   const { sleeps, now } = useSleepPlan(child);
   const st = napState(child, (sleeps ?? []) as Sleep[], now);
-  const last = st.open ?? [...st.today].filter((s) => s.ended_at).sort((a, b) => b.started_at.localeCompare(a.started_at))[0] ?? null;
+  // « Dernière sieste » : jamais une nuit (même règle que la catégorie : isDayNap)
+  const last = st.open ?? [...st.today].filter((s) => s.ended_at && isDayNap(s)).sort((a, b) => b.started_at.localeCompare(a.started_at))[0] ?? null;
   if (!last) return null;
   const minutes = Math.max(0, Math.round(((last.ended_at ? Date.parse(last.ended_at) : now.getTime()) - Date.parse(last.started_at)) / 60_000));
   const title = st.open ? tr('nn.home.ongoing', { name: child.first_name, time: clock(new Date(last.started_at)) }) : tr('nn.home.last', { name: child.first_name });

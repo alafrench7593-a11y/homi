@@ -11,6 +11,20 @@ export interface SleepLike { id: string; child_id: string; started_at: string; e
 
 export interface DaySleep { day: string; minutes: number | null; sessions: SleepLike[] }
 
+/**
+ * Sieste de jour ? `kind` 'nap' ; sans type : commencée entre 7 h et 20 h (heure locale) et, si terminée, le même jour —
+ * même règle que nap-window.ts. Une nuit sans type (ex. 1 h 20 → 11 h 20) n'est jamais comptée comme une sieste.
+ */
+export function isDayNap(s: SleepLike): boolean {
+  if (s.kind === 'nap') return true;
+  if (s.kind === 'night') return false;
+  const a = new Date(s.started_at);
+  if (a.getHours() < 7 || a.getHours() >= 20) return false;
+  if (!s.ended_at) return true;
+  const b = new Date(s.ended_at);
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
 const MIN = 60_000;
 const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -21,7 +35,7 @@ export const sessionMinutes = (s: SleepLike, now: Date) => Math.max(0, Math.roun
 
 /** Minutes de sommeil par jour civil local, des `days` derniers jours jusqu'à `now` inclus (plus ancien d'abord). */
 export function sleepByDay(all: readonly SleepLike[], childId: string, now: Date, days: number, kind: 'nap' | 'all' = 'nap'): DaySleep[] {
-  const mine = all.filter((s) => s.child_id === childId && (kind === 'all' || s.kind !== 'night'));
+  const mine = all.filter((s) => s.child_id === childId && (kind === 'all' || isDayNap(s)));
   const first = startOfDay(addDays(now, -(days - 1)));
   const out: DaySleep[] = [];
   for (let i = 0; i < days; i++) {
@@ -45,7 +59,7 @@ export function periodTotal(days: readonly DaySleep[]): { minutes: number | null
 
 /** Dernière sieste (en cours d'abord, sinon la plus récente terminée) de cet enfant. */
 export function lastNap(all: readonly SleepLike[], childId: string): SleepLike | null {
-  const mine = all.filter((s) => s.child_id === childId && s.kind !== 'night');
+  const mine = all.filter((s) => s.child_id === childId && isDayNap(s));
   return mine.find((s) => !s.ended_at) ?? [...mine].filter((s) => s.ended_at).sort((a, b) => b.ended_at!.localeCompare(a.ended_at!))[0] ?? null;
 }
 

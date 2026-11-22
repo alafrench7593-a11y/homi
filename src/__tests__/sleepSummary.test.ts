@@ -79,3 +79,12 @@ describe('relais : couches et tétées de l’enfant seulement', () => {
     expect(items[1]).toMatchObject({ kind: 'breastfeed', minutes: 17, side: 'right' });
   });
 });
+
+describe('siestes et nuits sans type', () => {
+  it('une nuit sans type (1 h 20 → 11 h 20) n’est ni la dernière sieste ni comptée dans les siestes', () => {
+    const night: SleepLike = { id: 'n', child_id: 'lina', started_at: iso(23, 1, 20), ended_at: iso(23, 11, 20), note: null, kind: null };
+    const nap: SleepLike = { id: 'a', child_id: 'lina', started_at: iso(23, 7, 20), ended_at: iso(23, 8, 50), note: null, kind: null };
+    expect(lastNap([night, nap], 'lina')!.id).toBe('a');
+    expect(sleepByDay([night, nap], 'lina', NOW, 1)[0].minutes).toBe(90);
+  });
+});
