@@ -4,6 +4,7 @@
  * brosser dès la première dent, prévoir un contrôle) — au lieu de compteurs à zéro.
  */
 import { insertOrQueue } from '@/lib/offline';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -104,7 +105,7 @@ export default function Teeth() {
             </View>
           ) : null}
 
-          <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, padding: spacing.md, gap: spacing.sm }}>
+          <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md, gap: spacing.sm }}>
             {teeth.length ? (
               <View testID="teeth-summary" style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.xs }}>
                 <Text weight="bold" style={{ fontVariant: ['tabular-nums'] }}>{tr('h5.teeth.summary', { n: teeth.length })}</Text>

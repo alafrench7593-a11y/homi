@@ -25,6 +25,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius as R } from '@/theme/tokens';
 import { glassSpec, resolveGlassTier, type GlassSpec, type GlassTier, type GlassVariant } from '@/theme/glass';
 import { BLUR_OK, LIQUID_GLASS_NATIVE, NativeGlass, useReduceTransparency } from '../surfaces/nativeGlass';
+import { GlassRim } from './GlassRim';
 
 /** Niveau imposé à tout un sous-arbre (galerie de QA, tests). L'accessibilité garde la priorité. */
 const GlassTierContext = createContext<GlassTier | null>(null);
@@ -88,9 +89,13 @@ export function GlassMaterial({ variant = 'chrome', radius = R.xl, edges = 'all'
           <View testID={`${testID}-veil`} style={[StyleSheet.absoluteFill, { backgroundColor: spec.veil }]} />
           {reflet ? <LinearGradient testID={`${testID}-reflet`} colors={spec.highlight} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.reflet} /> : null}
           <View style={[StyleSheet.absoluteFill, corner, open, { borderWidth: 1, borderColor: spec.edge }]} />
+          {edges === 'all' ? <GlassRim radius={radius} /> : null}
         </>
       ) : (
-        <View testID={`${testID}-opaque`} style={[StyleSheet.absoluteFill, corner, open, { backgroundColor: spec.opaque, borderWidth: StyleSheet.hairlineWidth, borderColor: spec.opaqueEdge }]} />
+        <>
+          <View testID={`${testID}-opaque`} style={[StyleSheet.absoluteFill, corner, open, { backgroundColor: spec.opaque, borderWidth: StyleSheet.hairlineWidth, borderColor: spec.opaqueEdge }]} />
+          {edges === 'all' ? <GlassRim radius={radius} strength={0.6} /> : null}
+        </>
       )}
     </View>
   );

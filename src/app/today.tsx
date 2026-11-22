@@ -5,6 +5,7 @@
  * bilan du soir. Rien n'est inventé ni culpabilisant ; une rubrique sans donnée n'apparaît pas.
  */
 import React, { useMemo } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -107,7 +108,7 @@ export default function Today() {
           <MotionItem key={it.key}><Appear key={it.key} kind="soft" delay={0.05 * i}>
             <Tappable accessibilityRole={it.link ? 'button' : 'text'} accessibilityLabel={`${it.title}${it.detail ? `. ${it.detail}` : ''}`} disabled={!it.link}
               onPress={() => it.link && router.push(it.link as never)} testID={`digest-${it.key}`}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 12, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
+              style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, minHeight: MIN_TOUCH + 12, borderRadius: radius.lg, backgroundColor: t.colors.surface, ...glassEdge(t) }}>
               <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: (it.premium ? t.colors.gold : t.colors.primary) + '1F' }}>
                 <Icon name={it.icon as IconName} size={18} color={it.premium ? t.colors.gold : t.colors.primary} />
               </View>

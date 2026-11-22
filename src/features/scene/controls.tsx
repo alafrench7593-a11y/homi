@@ -12,6 +12,7 @@
  * il se pose sans mouvement.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Pressable, View, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Icon, Text, haptic, type IconName } from '@/components/ui';
@@ -60,7 +61,7 @@ function DefaultMemberSelector({ label, options, value, onChange, testID }: Memb
   // Plusieurs lignes si besoin (petit écran, texte agrandi) : jamais de défilement horizontal caché
   return (
     <View accessibilityRole="radiogroup" accessibilityLabel={label} testID={testID}
-      style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, padding: 4, borderRadius: radius.lg, backgroundColor: t.material.lines.controlFill, borderWidth: 1, borderColor: t.colors.border }}>
+      style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, padding: 4, borderRadius: radius.lg, backgroundColor: t.material.lines.controlFill, ...glassEdge(t) }}>
       {box ? (
         <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: 0, left: 0, borderRadius: radius.pill, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.tokens.border.active }, ind]} />
       ) : null}
@@ -113,7 +114,7 @@ function DefaultDataTile({ value, label, context, empty, icon, tone = 'calm', on
       {value != null && context ? <Text variant="caption" muted numberOfLines={2}>{context}</Text> : null}
     </View>
   );
-  const style = { flex: 1, minWidth: 84, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.tokens.surface.opaque, borderWidth: 1, borderColor: t.colors.border };
+  const style = { flex: 1, minWidth: 84, padding: spacing.sm, borderRadius: radius.md, backgroundColor: t.tokens.surface.opaque, ...glassEdge(t) };
   if (!onPress) return <View testID={testID} accessible accessibilityLabel={a11y} style={style}>{body}</View>;
   return <Tappable testID={testID} accessibilityRole="button" accessibilityLabel={a11y} onPress={onPress} style={style}>{body}</Tappable>;
 }

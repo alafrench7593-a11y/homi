@@ -9,6 +9,7 @@
  * Ici, le PERSONNAGE d'Aura est sa lentille (`AuraOrb`) ; le robot compagnon reste dans la conversation.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { router, usePathname } from 'expo-router';
@@ -35,7 +36,7 @@ export function AuraHomeEntry() {
     <Tappable accessibilityRole="button" accessibilityLabel={tr('ta.home.a11y')} accessibilityHint={tr('ta.home.askSub')} testID="home-aura"
       onPress={() => { haptic('selection'); router.push('/assistant'); }}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs,
-        borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+        borderRadius: radius.lg, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
       <AuraOrb size={34} testID="home-aura-lens" />
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text weight="bold">{tr('ta.home.ask')}</Text>

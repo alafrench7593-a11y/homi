@@ -14,6 +14,7 @@
  * de boutons et leurs états, liste groupée, filtres et statuts, sélecteur, interrupteur.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Text as RNText, View } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Screen } from '@/components/Screen';
@@ -184,7 +185,7 @@ function ChartSwatches() {
   const heights = [26, 40, 32, 46, 22, 36];
   return (
     <View testID="chart-swatches" accessible accessibilityRole="image" accessibilityLabel={tr('v6.palette.chartsA11y')}
-      style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, height: 60, paddingTop: spacing.xs, paddingHorizontal: spacing.sm, borderRadius: radius.md, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
+      style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, height: 60, paddingTop: spacing.xs, paddingHorizontal: spacing.sm, borderRadius: radius.md, overflow: 'hidden', backgroundColor: t.colors.surface, ...glassEdge(t) }}>
       {t.tokens.chart.map((c, i) => <View key={c} style={{ flex: 1, height: heights[i % heights.length], borderTopLeftRadius: 6, borderTopRightRadius: 6, backgroundColor: c }} />)}
     </View>
   );
@@ -295,7 +296,7 @@ export default function AppearanceScreen() {
         <ChartSwatches />
 
         {/* Halo : réservé à l'accueil, à l'entrée et à l'onboarding ; ici, aperçu avec le bouton « sur le halo » */}
-        <View testID="appearance-preview" style={{ alignItems: 'center', justifyContent: 'center', minHeight: 220, borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.background, borderWidth: 1, borderColor: t.colors.border }}>
+        <View testID="appearance-preview" style={{ alignItems: 'center', justifyContent: 'center', minHeight: 220, borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.background, ...glassEdge(t) }}>
           <CoralHalo size={260} style={{ position: 'absolute' }} testID="appearance-halo" />
           <Button label={tr('v5.ds.onHero')} variant="onHero" testID="preview-primary" onPress={() => undefined} />
         </View>

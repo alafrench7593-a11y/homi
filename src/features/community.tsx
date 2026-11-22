@@ -4,6 +4,7 @@
  * feuilles de signalement et de catégories. Identité graphique propre à HOMI.
  */
 import { useBounceOn } from '@/components/Motion';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useState } from 'react';
 import { Animated, Image, Modal, Pressable, ScrollView, Share, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
@@ -109,7 +110,7 @@ export function Avatar({ path, preset, size = 44, anonymous, label }: { path?: s
   const t = useTheme();
   if (anonymous || (!path && !preset)) {
     return (
-      <View accessibilityLabel={label} style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: t.colors.border }}>
+      <View accessibilityLabel={label} style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt, ...glassEdge(t) }}>
         <Icon name={anonymous ? 'eye-off' : 'user'} size={size * 0.45} color={t.colors.textMuted} />
       </View>
     );

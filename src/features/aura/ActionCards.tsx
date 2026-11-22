@@ -8,6 +8,7 @@
  *  - « Choisir des pages à partager » : ouvre le sélecteur (consentement explicite).
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Button, Field, Icon, Text } from '@/components/ui';
@@ -28,7 +29,7 @@ type MissionAction = Extract<AuraAction, { type: 'mission' }>;
 function CardShell({ children, testID }: { children: React.ReactNode; testID?: string }) {
   const t = useTheme();
   return (
-    <View testID={testID} style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, gap: spacing.xs }}>
+    <View testID={testID} style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md, gap: spacing.xs }}>
       {children}
       <Text variant="caption" muted>{tr('aura.act.proposal')}</Text>
     </View>

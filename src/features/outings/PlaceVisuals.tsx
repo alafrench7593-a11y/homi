@@ -4,6 +4,7 @@
  * carte de lieu et fiche simple.
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Image, Linking, Platform, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from 'react-native-svg';
 import { GlassSurface } from '@/components/Glass';
@@ -171,7 +172,7 @@ export function PlaceSheet({ place, distance, onClose }: { place: FamilyPlace | 
 export function MapUnavailable({ height = 220 }: { height?: number }) {
   const t = useTheme();
   return (
-    <View style={{ height, borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', padding: spacing.md, backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', borderWidth: 1, borderColor: t.colors.border, gap: 6 }} testID="out-map-unavailable">
+    <View style={{ height, borderRadius: 24, overflow: 'hidden', alignItems: 'center', justifyContent: 'center', padding: spacing.md, backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', ...glassEdge(t), gap: 6 }} testID="out-map-unavailable">
       <Icon name="map" size={26} color={t.colors.lavender} />
       <Text weight="bold" center>{tr('out.mapUnavailable')}</Text>
       <Text variant="caption" muted center>{tr('out.mapUnavailableBody')}</Text>

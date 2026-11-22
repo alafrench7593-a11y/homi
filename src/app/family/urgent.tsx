@@ -3,6 +3,7 @@
  * Gros boutons, aucun formulaire long, aucune animation. Ne remplace pas les services d'urgence.
  */
 import React, { useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +28,7 @@ function Big({ icon, label, onPress, tone }: { icon: IconName; label: string; on
   const t = useTheme();
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }}
-      style={({ pressed }) => ({ minHeight: 76, borderRadius: radius.lg, padding: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: tone === 'danger' ? t.colors.dangerSoft : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, opacity: pressed ? 0.85 : 1 })}>
+      style={({ pressed }) => ({ minHeight: 76, borderRadius: radius.lg, padding: spacing.md, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: tone === 'danger' ? t.colors.dangerSoft : t.colors.surface, ...glassEdge(t), opacity: pressed ? 0.85 : 1 })}>
       <Icon name={icon} size={26} color={tone === 'danger' ? t.colors.danger : t.colors.primary} />
       <Text weight="bold" style={{ fontSize: 19, flex: 1 }}>{label}</Text>
     </Tappable>

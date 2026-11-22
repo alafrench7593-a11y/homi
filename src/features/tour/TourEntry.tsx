@@ -9,6 +9,7 @@
  * La relance (« Revoir la visite guidée ») est dans Réglages et dans la feuille de l'avatar (`startTour`).
  */
 import React, { useEffect, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { GlassButton, GlassIconButton } from '@/components/glass';
@@ -64,7 +65,7 @@ export function TourOfferStep() {
         <Text variant="title" accessibilityRole="header">{tr('tour.offer.title')}</Text>
         <Text muted>{tr('tour.offer.body')}</Text>
       </View>
-      <View style={{ gap: spacing.xs, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+      <View style={{ gap: spacing.xs, padding: spacing.md, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface }}>
         {items.map((k) => (
           <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <Icon name="check" size={16} color={t.colors.primary} />
@@ -91,7 +92,7 @@ export function TourResumeCard() {
   if (!owner || !allowed || !showResumeCard(p, { caregiverOnly, emergency: false })) return null;
   const label = p.status === 'offered' ? tr('tour.resume.start') : tr('tour.resume.title', { n: p.step + 1, total: TOUR_LENGTH });
   return (
-    <View testID="tour-resume" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingLeft: spacing.sm, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+    <View testID="tour-resume" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingLeft: spacing.sm, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface }}>
       <Icon name="compass" size={18} color={t.colors.primary} />
       <GlassButton label={label} variant="tertiary" size="sm" onPress={startTour} testID="tour-resume-start" style={{ flex: 1, alignItems: 'flex-start' }} />
       <GlassIconButton icon="x" label={tr('tour.resume.hide')} plain size={44} onPress={() => tourDispatch({ type: 'hideResume' })} testID="tour-resume-hide" />

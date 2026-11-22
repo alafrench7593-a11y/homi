@@ -9,6 +9,7 @@
  * Gratuit : aliments essentiels de chaque catégorie, 15 fiches par enfant, sécurité, historique de 30 jours.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Animated, ScrollView, View, useWindowDimensions } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -213,7 +214,7 @@ export default function Discoveries() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
             {recent.map((k) => { const f = FOOD_BY_KEY[k]; return f ? (
               <Tappable key={k} accessibilityRole="button" accessibilityLabel={f.name} onPress={() => openFood(f)} testID={`dc-recent-${k}`}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 4, paddingRight: 12, paddingVertical: 4, borderRadius: 999, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 4, paddingRight: 12, paddingVertical: 4, borderRadius: 999, ...glassEdge(t), backgroundColor: t.colors.surface }}>
                 <FoodArt food={f} size={30} /><Text variant="small" weight="bold">{f.name}</Text><Icon name="plus" size={14} color={t.colors.primary} />
               </Tappable>
             ) : null; })}

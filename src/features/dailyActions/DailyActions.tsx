@@ -5,6 +5,7 @@
  * Quatre raccourcis au maximum, personnalisables par profil ; jamais un outil sans rapport avec le profil.
  */
 import React, { useMemo, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { BlurView } from 'expo-blur';
@@ -241,7 +242,7 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="caption" muted>{tr(PROFILE_SUB[ctx.profile])}</Text>
             </View>
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.seeAllA11y')} onPress={() => setAll(true)} testID="track-see-all"
-              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surfaceAlt }}>
+              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', ...glassEdge(t), backgroundColor: t.colors.surfaceAlt }}>
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>
@@ -295,7 +296,7 @@ function Capsule({ m }: { m: ActionModel }) {
     <View testID={`track-card-${m.key}`} style={{ width: 128 }}>
       <Tappable accessibilityRole="button" accessibilityLabel={`${actionLabel(m.key)}. ${m.info}`} accessibilityHint={tr('trk.cards.openHint')}
         onPress={() => { haptic('selection'); m.onOpen(); }} pressScale={reduce ? 1 : 0.97}
-        style={{ flexGrow: 1, minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: t.colors.border }}>
+        style={{ flexGrow: 1, minHeight: 132, borderRadius: 22, padding: 10, gap: 6, backgroundColor: t.colors.surfaceAlt, ...glassEdge(t) }}>
         <View style={{ width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center', backgroundColor: alpha(ink, dark ? 0.14 : 0.1) }}>
           <ActionGlyph k={m.key} color={ink} size={24} />
         </View>

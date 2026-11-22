@@ -4,6 +4,7 @@
  * Texte seulement (pas de photo dans cette première version), 2 000 caractères au plus.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { FlatList, Keyboard, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -133,7 +134,7 @@ export default function Conversation() {
               </Text>
             ) : null}
             {near ? <Text variant="caption" color={error === 'too_long' ? t.colors.danger : t.colors.textMuted} center>{tr('dm.chars', { n: text.length, max: DM_MAX_LENGTH })}</Text> : null}
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6, opacity: canWrite ? 1 : 0.6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: 6, opacity: canWrite ? 1 : 0.6 }}>
               <TextInput
                 value={text}
                 onChangeText={setText}

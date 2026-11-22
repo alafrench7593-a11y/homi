@@ -13,6 +13,7 @@
  * (usePop, coupé avec Réduire les animations). Rien ne bouge pendant la lecture.
  */
 import React from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Animated, StyleSheet, View, type GestureResponderEvent } from 'react-native';
 import { usePop } from '@/components/Motion';
 import { openTool } from '@/components/ToolCard';
@@ -37,7 +38,7 @@ export function HubGroup({ title, children, testID, footer }: { title?: string; 
   return (
     <View style={{ gap: spacing.xs }} testID={testID}>
       {title ? <Text variant="heading" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{title}</Text> : null}
-      <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, overflow: 'hidden' }}>
+      <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), overflow: 'hidden' }}>
         {rows.map((row, i) => <Ctx.Provider key={(row as { key?: React.Key }).key ?? i} value={{ first: i === 0 }}>{row}</Ctx.Provider>)}
       </View>
       {footer}

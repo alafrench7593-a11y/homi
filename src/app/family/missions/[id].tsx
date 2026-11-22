@@ -12,6 +12,7 @@
  *  - Historique sobre (surface mate), ajout seul, écrit par le serveur. Jamais de « vu à… ».
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -210,7 +211,7 @@ export default function MissionDetail() {
               {doc.data?.[0] ? <Meta icon="paperclip" text={tr('mis.detail.doc', { title: doc.data[0].title })} /> : null}
             </View>
             {isPurchase(m) ? (
-              <View testID="mission-shopping" style={{ gap: spacing.xs, padding: spacing.sm, borderRadius: radius.md, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.material.lines.controlFill }}>
+              <View testID="mission-shopping" style={{ gap: spacing.xs, padding: spacing.sm, borderRadius: radius.md, ...glassEdge(t), backgroundColor: t.material.lines.controlFill }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
                   <Icon name={item?.checked ? 'check-circle' : 'shopping-cart'} size={20} color={item?.checked ? t.colors.success : t.colors.primary} />
                   <View style={{ flex: 1 }}>

@@ -8,6 +8,7 @@
  * épais, chiffre en gras, état « sélectionné » annoncé). ‹ › décalent la semaine ; jamais au-delà d'aujourd'hui.
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { Tappable } from '@/components/Tappable';
 import { haptic, Icon, Text } from '@/components/ui';
@@ -67,7 +68,7 @@ export function CycleDayStrip({ days, selected, onSelect, onShift, canForward, m
           {sel && rowW ? (
             <>
               <View onLayout={(e) => setBubbleW(e.nativeEvent.layout.width)} testID={`${testID}-bubble`}
-                style={{ position: 'absolute', left, top: 0, height: BUBBLE_H, paddingHorizontal: 10, borderRadius: radius.pill, justifyContent: 'center', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
+                style={{ position: 'absolute', left, top: 0, height: BUBBLE_H, paddingHorizontal: 10, borderRadius: radius.pill, justifyContent: 'center', backgroundColor: t.colors.surface, ...glassEdge(t) }}>
                 <Text variant="small" weight="bold" style={TABULAR} numberOfLines={1}>{bubbleOf(sel)}</Text>
               </View>
               <View style={{ position: 'absolute', left: center - 0.75, top: BUBBLE_H, height: 6, borderLeftWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.textMuted }} />

@@ -11,6 +11,7 @@
  *    existant, inchangé).
  */
 import React, { useCallback } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
@@ -84,7 +85,7 @@ export function ToolsIntro({ premium, onDone }: { premium: boolean | undefined; 
 export function PreviewBanner() {
   const t = useTheme();
   return (
-    <View testID="tools-preview" style={{ gap: spacing.xs, padding: spacing.sm, borderRadius: radius.md, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+    <View testID="tools-preview" style={{ gap: spacing.xs, padding: spacing.sm, borderRadius: radius.md, ...glassEdge(t), backgroundColor: t.colors.surface }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
         <Icon name="lock" size={16} color={t.colors.primary} />
         <Text weight="bold" style={{ flex: 1, minWidth: 0 }}>{tr('mt.preview.title')}</Text>

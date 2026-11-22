@@ -5,6 +5,7 @@
  *  - ni l'un ni l'autre → l'onglet propose d'ajouter un enfant ou une grossesse (jamais un cul-de-sac).
  */
 import React from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -23,7 +24,7 @@ function AddChildOrPregnancy() {
   return (
     <Screen account title={tr('nav.hub.child.title')} subtitle={tr('nav.childEmpty.sub')} tool={false} bottomInset={TAB_SCREEN_INSET}>
       <ProfileSwitcher testID="hub-baby-profiles" />
-      <View testID="child-tab-empty" style={{ gap: spacing.md, padding: spacing.lg, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+      <View testID="child-tab-empty" style={{ gap: spacing.md, padding: spacing.lg, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface }}>
         <View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: t.material.lines.iconWell }}>
           <Icon name="smile" size={24} color={t.colors.primary} />
         </View>

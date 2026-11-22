@@ -7,6 +7,7 @@
  * ne s'affiche pas (pas de rangée de zéros). Même donnée source que Sommeil, la catégorie et le relais.
  */
 import React, { useEffect, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Glass } from '@/components/glass';
@@ -77,7 +78,7 @@ export function NapHomeCard({ child }: { child: Child }) {
       <Tappable accessibilityRole="button" accessibilityLabel={`${title}, ${child.first_name}. ${open ? span(minutes) : big}. ${sub}. ${tr('nn.home.see')}`} testID="home-nap" onPress={openNap}>
         <StageHero eyebrow={`${title} · ${child.first_name}`} value={big} caption={sub} detail={last.note ? `« ${last.note} »` : null}
           a11y={`${title}, ${child.first_name}. ${open ? span(minutes) : big}. ${sub}`} size={open ? 56 : 64} testID="home-nap-stage">
-          <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }} testID="home-nap-see">
+          <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, ...glassEdge(t), backgroundColor: t.colors.surface }} testID="home-nap-see">
             <Text variant="small" weight="bold">{tr('nn.home.see')}</Text>
             <Icon name="arrow-right" size={14} color={t.colors.text} />
           </View>

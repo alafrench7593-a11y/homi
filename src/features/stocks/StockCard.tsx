@@ -4,6 +4,7 @@
  * Ton sans culpabilisation : « à prévoir », jamais « en retard », « oublié » ni « urgent ».
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { Button, Card, Chip, Field, Icon, Segmented, Text } from '@/components/ui';
 import { tint } from '@/components/ToolGlyph';
@@ -46,7 +47,7 @@ export function StockCard({ stock, labelOf, onOpen }: { stock: Stock; labelOf: (
     stock.responsible_id ? labelOf(stock.responsible_id) : null].filter(Boolean).join(' · ');
   return (
     <LiftCard testID={`stock-${stock.id}`} accessibilityLabel={`${productLabelOf(stock)}. ${meta}`} onOpen={onOpen} radius={radius.lg} shadowColor={t.tokens.shadowColor}
-      style={{ padding: spacing.md, gap: spacing.xs, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
+      style={{ padding: spacing.md, gap: spacing.xs, borderRadius: radius.lg, backgroundColor: t.colors.surface, ...glassEdge(t) }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
         <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.primary, t.isDark ? 0.2 : 0.1) }}>
           <Icon name={cat.icon} size={20} color={t.colors.primary} />

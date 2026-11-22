@@ -4,6 +4,7 @@
  * Accessible depuis les réglages d'Aura quand l'assistant en ligne est ouvert.
  */
 import React, { useMemo, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { aiAssistantOnline } from '@/config/features';
 import { AiComingSoonScreen } from '@/features/AiComingSoon';
 import { View } from 'react-native';
@@ -198,7 +199,7 @@ function Ask() {
             accessibilityLabel={tr('u3.ask.pose', { q: s })}
             disabled={blocked}
             onPress={() => go(s)}
-            style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, minHeight: 44, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border, opacity: blocked ? 0.5 : 1 })}
+            style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.sm, minHeight: 44, borderRadius: radius.md, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, ...glassEdge(t), opacity: blocked ? 0.5 : 1 })}
           >
             <Icon name="message-circle" size={16} color={t.colors.lavender} />
             <Text variant="small" style={{ flex: 1 }}>{s}</Text>

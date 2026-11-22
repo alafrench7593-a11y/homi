@@ -4,6 +4,7 @@
  * Style doux, repères illustrés. Sans clé ou si le chargement échoue : état « carte indisponible ».
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { mapsConfigured, placesProvider } from '@/lib/data/hooks-outings';
 import { OsmMap } from './OsmMap';
@@ -76,5 +77,5 @@ function GoogleFamilyMap({ center, places, radius, height = 320, onSelect, inter
   }, [ok, center.lat, center.lon, places, radius, interactive]);
 
   if (!ok || failed) return <MapUnavailable height={height} />;
-  return <View ref={ref} testID="out-map" accessibilityLabel={tr('out.mapA11y')} style={{ height, borderRadius: 24, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border, backgroundColor: '#F4F0FA' }} />;
+  return <View ref={ref} testID="out-map" accessibilityLabel={tr('out.mapA11y')} style={{ height, borderRadius: 24, overflow: 'hidden', ...glassEdge(t), backgroundColor: '#F4F0FA' }} />;
 }

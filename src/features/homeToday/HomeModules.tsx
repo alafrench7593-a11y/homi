@@ -5,6 +5,7 @@
  * Aucune carte n'est étirée par son conteneur : hauteurs dictées par le contenu (ni `flex: 1` vertical, ni hauteur en %).
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { useToast } from '@/components/Overlays';
@@ -56,7 +57,7 @@ export function HomeCardSkeleton() {
   const t = useTheme();
   return (
     <SkeletonPulse label={tr('common.loadingA11y')} testID="home-main-skeleton"
-      style={{ borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.md, gap: spacing.sm, minHeight: 168 }}>
+      style={{ borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface, padding: spacing.md, gap: spacing.sm, minHeight: 168 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
         <SkeletonBone width={52} height={52} radius={26} />
         <View style={{ flex: 1, gap: 8 }}>

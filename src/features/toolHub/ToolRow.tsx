@@ -16,6 +16,7 @@
  * l'enfoncement perçu (`openTool`). Rangée mémoïsée (React.memo).
  */
 import React from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Tappable } from '@/components/Tappable';
@@ -114,7 +115,7 @@ export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorit
           pressRetentionOffset={16}
           pressScale={1} hoverLift={0} bare
           testID={`tool-row-press-${tool.id}`}
-          style={({ pressed, hovered }) => [StyleSheet.absoluteFill, { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: pressed || hovered ? t.colors.surfaceAlt : t.colors.surface }]}
+          style={({ pressed, hovered }) => [StyleSheet.absoluteFill, { borderRadius: radius.lg, ...glassEdge(t), backgroundColor: pressed || hovered ? t.colors.surfaceAlt : t.colors.surface }]}
         />
         {/* en-tête : pictogramme, nom (la place de l'étoile est réservée) ; la description occupe ensuite TOUTE la largeur */}
         <View pointerEvents="box-none" style={{ paddingVertical: spacing.sm, paddingHorizontal: spacing.sm, gap: 6, minHeight: TOOL_ROW_MIN_HEIGHT, justifyContent: 'center' }}>
@@ -129,7 +130,7 @@ export const ToolRow = React.memo(function ToolRow({ tool, otherProfile, favorit
               {compact && !otherProfile ? null : <Pill label={pill} />}
               {free ? <Pill label={tr('th.ui.free')} tone="accent" /> : null}
               {locked ? (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, minHeight: 22, borderRadius: radius.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surfaceAlt }} testID={`tool-locked-${tool.id}`}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, minHeight: 22, borderRadius: radius.pill, ...glassEdge(t), backgroundColor: t.colors.surfaceAlt }} testID={`tool-locked-${tool.id}`}>
                   <Icon name="lock" size={11} color={t.colors.textMuted} />
                   <Text variant="caption" muted>{tr('mt.lockedA11y')}</Text>
                 </View>
@@ -175,7 +176,7 @@ export function ToolRowsSkeleton({ rows = 4, testID = 'tool-rows-skeleton' }: { 
   return (
     <SkeletonPulse label={tr('common.loadingA11y')} testID={testID}>
       {Array.from({ length: rows }, (_, i) => (
-        <View key={i} style={{ marginTop: i ? spacing.xs : 0, minHeight: TOOL_ROW_MIN_HEIGHT, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, backgroundColor: t.colors.surface, padding: spacing.sm, gap: 8, justifyContent: 'center' }}>
+        <View key={i} style={{ marginTop: i ? spacing.xs : 0, minHeight: TOOL_ROW_MIN_HEIGHT, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface, padding: spacing.sm, gap: 8, justifyContent: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <SkeletonBone width={GLYPH} height={GLYPH} radius={GLYPH / 2} />
             <SkeletonBone width="48%" height={16} />

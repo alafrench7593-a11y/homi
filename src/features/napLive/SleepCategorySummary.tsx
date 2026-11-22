@@ -8,6 +8,7 @@
  *    affiche ses sessions, chacune ouvre la mini-app sur elle.
  */
 import React, { useMemo } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Glass, GlassSegmentedControl } from '@/components/glass';
@@ -100,7 +101,7 @@ function Summary({ child }: { child: Child }) {
                       <View pointerEvents="none" testID="sleep-cat-bubble"
                         style={{ position: 'absolute', zIndex: 2, left: -24, right: -24, alignItems: 'center',
                           bottom: (d.minutes != null ? Math.max(6, Math.round((d.minutes / max) * BAR_H)) : 14) + 4 }}>
-                        <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: t.colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border }}>
+                        <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: t.colors.surface, ...glassEdge(t) }}>
                           <Text variant="caption" weight="bold" numberOfLines={1} style={{ fontVariant: ['tabular-nums'] }}>{d.minutes != null ? span(d.minutes) : tr('nn.cat.none')}</Text>
                         </View>
                       </View>

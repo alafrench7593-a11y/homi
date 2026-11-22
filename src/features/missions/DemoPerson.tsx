@@ -5,6 +5,7 @@
  * Rien de tel n'existe avec un vrai compte : chacun répond depuis le sien.
  */
 import React from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Pressable, View } from 'react-native';
 import { isDemo } from '@/lib/backend';
 import { usePeople } from '@/lib/data/hooks-family-load';
@@ -33,7 +34,7 @@ export function DemoPerson() {
       onPress={() => sw.mutateAsync(other?.id).catch((e) => toast(friendlyError(e), 'error'))}
       // maxWidth : sans borne, la pastille (alignSelf flex-start) prenait la largeur de son contenu et sortait de l'écran à 320 px (audit 09)
       style={({ pressed }) => ({ alignSelf: 'flex-start', maxWidth: '100%', flexDirection: 'row', flexWrap: 'wrap', rowGap: 2, alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH, paddingLeft: 6, paddingRight: spacing.sm,
-        borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.material.lines.controlFill, opacity: sw.isPending ? 0.6 : 1 })}>
+        borderRadius: radius.pill, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.material.lines.controlFill, opacity: sw.isPending ? 0.6 : 1 })}>
       <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: t.material.lines.iconWell }}>
         <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('mis.demo.badge')}</Text>
       </View>

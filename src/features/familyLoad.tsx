@@ -3,6 +3,7 @@
  * carte de demande. Couleurs : uniquement celles du thème existant.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Animated, Pressable, View } from 'react-native';
 import { usePressMotion } from '@/components/Motion';
 import { DrawCheck } from '@/components/MotionKit';
@@ -231,7 +232,7 @@ function QuickTile({ label, icon, onPress, color }: { label: string; icon: React
   const press = usePressMotion();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers} style={{ width: '48.5%' }}>
-      <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, gap: 4 }, press.style]}>
+      <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface, gap: 4 }, press.style]}>
         <Icon name={icon} size={18} color={color} />
         <Text variant="small" weight="bold">{label}</Text>
       </Animated.View>
@@ -386,7 +387,7 @@ export function FamilyHomeCard() {
           </Row>
         </Card>
       ) : null}
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
         <Icon name="wind" size={16} color={t.colors.primary} />
         <Text variant="small" weight="bold">{tr('u6.fl.hard_day')}</Text>
       </Tappable>

@@ -6,6 +6,7 @@
  *  - HelpLine : ligne sobre vers un professionnel de santé et les ressources d'aide de l'app (« Je craque », numéros).
  */
 import React, { useEffect, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
@@ -56,7 +57,7 @@ export function ConfirmSend({ visible, name, text, busy, onConfirm, onClose, tes
     <Sheet visible={visible} onClose={onClose} title={tr('und.confirm.title')}>
       <View style={{ gap: spacing.sm }} testID={testID}>
         <Text variant="small" weight="bold" testID={`${testID}-to`}>{tr('und.confirm.to', { name })}</Text>
-        <View style={{ borderRadius: radius.md, borderWidth: 1, borderColor: t.colors.border, padding: spacing.sm, backgroundColor: t.colors.surface }}>
+        <View style={{ borderRadius: radius.md, ...glassEdge(t), padding: spacing.sm, backgroundColor: t.colors.surface }}>
           <Text testID={`${testID}-text`} selectable>{text}</Text>
         </View>
         <Button label={tr('und.confirm.go')} icon="send" full loading={busy} onPress={onConfirm} testID={`${testID}-go`} />

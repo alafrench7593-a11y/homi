@@ -15,6 +15,7 @@
  *    `Screen`, portée clavier existante).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { VirtualList } from '@/components/States';
 import { AppState, FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -362,7 +363,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     <View style={{ gap: spacing.md, marginBottom: spacing.sm }}>
       {/* Accès d’abord (abonnement actif, accord) : visible sans défiler, même à 320 × 568 */}
       {needsSub ? (
-        <View testID="aura-needs-sub" style={{ gap: spacing.sm, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+        <View testID="aura-needs-sub" style={{ gap: spacing.sm, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md }}>
           <Text variant="small">{tr(inTrial ? 'aura.sub.trial' : 'aura.sub.none')}</Text>
           <Button label={tr('aura.consent.local')} icon="search" full onPress={() => setForceLocal(true)} testID="aura-sub-local" />
           <Button label={tr('aura.sub.see')} variant="ghost" full onPress={() => router.push('/settings/subscription')} testID="aura-sub-see" />
@@ -370,7 +371,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       ) : null}
 
       {remote && !consented && !needsSub ? (
-        <View testID="aura-consent" style={{ gap: spacing.sm, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+        <View testID="aura-consent" style={{ gap: spacing.sm, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md }}>
           <Text weight="bold" accessibilityRole="header">{tr('aura.consent.title')}</Text>
           <Text variant="small" muted>{tr('aura.consent.body')}</Text>
           <Button label={tr('aura.consent.accept')} icon="check" full loading={setConsent.isPending} testID="aura-consent-accept"
@@ -388,7 +389,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             <Icon name={mode === 'online' ? 'cloud' : mode === 'demo' ? 'play-circle' : 'smartphone'} size={14} color={t.colors.text} />
             <Text variant="caption" weight="bold">{modeLabel}</Text>
           </View>
-          <View style={{ alignSelf: 'stretch', backgroundColor: t.colors.surface, borderRadius: radius.lg, borderTopLeftRadius: empty ? radius.lg : 6, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+          <View style={{ alignSelf: 'stretch', backgroundColor: t.colors.surface, borderRadius: radius.lg, borderTopLeftRadius: empty ? radius.lg : 6, ...glassEdge(t), padding: spacing.md }}>
             <Text variant="small" testID="aura-hello">{tr(remote ? 'aura.hello' : 'aura.helloLocal')}</Text>
             {localReason ? <Text variant="caption" muted testID="aura-local-reason" style={{ marginTop: 4 }}>{tr(`sa.aura.local.${localReason}` as never)}</Text> : null}
             {localReason === 'chosen' && (aiAssistantOnline() || (isDemo && !hasRealBackend)) ? (
@@ -400,7 +401,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
 
 
       {toolCtx ? (
-        <View testID="aura-tool-context" style={{ gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+        <View testID="aura-tool-context" style={{ gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md }}>
           <Text variant="label" accessibilityRole="header" testID="aura-tool-name">{tr('ta.ctx.title', { tool: toolName })}</Text>
           <Text variant="caption" muted>{tr('ta.ctx.note', { tool: toolName })}</Text>
           {(['ta.ctx.how', 'ta.ctx.what'] as const).map((k) => (
@@ -436,7 +437,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           <Text variant="caption" muted style={{ letterSpacing: 1, textTransform: 'uppercase' }}>{tr('aura.ideas')}</Text>
           {themeSuggestions(suggestTheme).map((k) => (
             <Tappable key={k} accessibilityRole="button" accessibilityLabel={tr('aura.ask', { q: tr(k) })} disabled={blockedByConsent || sending} onPress={() => void send(tr(k))} testID="aura-suggestion"
-              style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.md, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, opacity: blockedByConsent ? 0.5 : 1 })}>
+              style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.md, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, opacity: blockedByConsent ? 0.5 : 1 })}>
               <Icon name="message-circle" size={16} color={t.colors.lavender} />
               <Text variant="small" style={{ flex: 1 }}>{tr(k)}</Text>
             </Tappable>
@@ -485,7 +486,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               <Button label={tr('ta.voice.cancel')} variant="ghost" size="sm" onPress={cancelDictation} testID="aura-mic-cancel" />
             </View>
           ) : voiceNote ? <Text variant="caption" muted={phase !== 'error'} color={phase === 'error' ? t.colors.warning : undefined} center testID="aura-voice-note">{voiceNote}</Text> : null}
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: 6 }}>
             {dictation !== 'none' ? (
               <Tappable accessibilityRole="button" accessibilityLabel={listening ? tr('ta.voice.end') : tr('ta.voice.talk')} accessibilityState={{ disabled: blockedByConsent, busy: listening }}
                 disabled={blockedByConsent} onPress={onMic} testID="aura-mic"
@@ -596,7 +597,7 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
   onConsent: (r: Extract<Reply, { kind: 'error' }>) => void;
 }) {
   const t = useTheme();
-  const bubble = { backgroundColor: t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, gap: spacing.sm } as const;
+  const bubble = { backgroundColor: t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, ...glassEdge(t), gap: spacing.sm } as const;
   if (reply.kind === 'pending') {
     return (
       // Aura prépare sa réponse : le robot réfléchit (trois points dans sa visière, cœur qui tourne) ; le texte le dit

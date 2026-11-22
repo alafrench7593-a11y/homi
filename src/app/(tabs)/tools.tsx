@@ -17,6 +17,7 @@
  * l'écran le dit et propose les catégories — jamais de résultat au hasard. Résultats : apparition en décalé léger.
  */
 import React, { useMemo, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -209,7 +210,7 @@ function ToolsSkeleton({ tileW, cols }: { tileW: number; cols: number }) {
         <SkeletonBone width="40%" height={20} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
           {Array.from({ length: cols * 2 }, (_, i) => (
-            <View key={i} style={{ width: tileW, minHeight: TOOL_TILE.minHeight, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, alignItems: 'center', paddingTop: spacing.sm, gap: 8 }}>
+            <View key={i} style={{ width: tileW, minHeight: TOOL_TILE.minHeight, borderRadius: radius.lg, backgroundColor: t.colors.surface, ...glassEdge(t), alignItems: 'center', paddingTop: spacing.sm, gap: 8 }}>
               <SkeletonBone width={TOOL_TILE.glyph} height={TOOL_TILE.glyph} radius={TOOL_TILE.glyph / 2} />
               <SkeletonBone width="70%" height={12} />
             </View>
@@ -225,7 +226,7 @@ function ToolsSkeleton({ tileW, cols }: { tileW: number; cols: number }) {
 function CommunityBlock({ tool, favorite, onToggleFavorite, onOpen }: { tool: CatalogTool; favorite: boolean; onToggleFavorite: () => void; onOpen: () => void }) {
   const t = useTheme();
   return (
-    <View testID="tools-community" style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }}>
+    <View testID="tools-community" style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface }}>
       <Text variant="caption" weight="medium" muted>{tr('th.ui.communityHead')}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
         <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} size={44} />

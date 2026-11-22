@@ -1,5 +1,6 @@
 /** Cartes de l'accueil personnalisé. */
 import { ProgressBar } from '@/components/Motion';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
@@ -39,7 +40,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
   const n = Math.max(1, babies?.length ?? 1);
   const orbSize = n === 1 ? 168 : n === 2 ? 120 : 92;
   const pct = Math.max(2, Math.min(100, Math.round((p.weeksSA / 41) * 100)));
-  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, gap: 2 } as const;
+  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, ...glassEdge(t), gap: 2 } as const;
   return (
     <View style={{ gap: spacing.xs }}>
       <Tappable
@@ -48,7 +49,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
         onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
         pressScale={0.99}
       >
-        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
+        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, ...glassEdge(t), padding: spacing.md, minHeight: 236 }}>
           <LinearGradient colors={[alpha(t.tokens.decor.c, 0), alpha(t.tokens.decor.c, t.isDark ? 0.16 : 0.24)]} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? tr('u5.home.preg_many', { n }) : tr('u5.home.preg')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
@@ -111,7 +112,7 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
   ];
 
   return (
-    <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, gap: spacing.sm }}>
+    <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, ...glassEdge(t), padding: spacing.md, gap: spacing.sm }}>
       <View style={{ alignItems: 'center' }}>
         <DayClock events={events} size={compact ? 220 : 290} label={tr('u5.home.day_of', { name: child.first_name })}>
           {openSleep ? (

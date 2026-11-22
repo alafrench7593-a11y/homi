@@ -5,6 +5,7 @@
  * Tant que les tuiles chargent, un fond doux est visible ; si elles ne chargent pas, les repères et la liste restent.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Image, Linking, PanResponder, StyleSheet, View } from 'react-native';
 import { Icon, IconButton, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -84,7 +85,7 @@ export function OsmMap({ center, places, height = 320, onSelect, interactive = t
   const moved = !!view || zoom != null;
   return (
     <View onLayout={(e) => setW(Math.max(200, Math.round(e.nativeEvent.layout.width)))} testID="out-map" accessibilityLabel={tr('out.mapA11y')}
-      style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', borderWidth: 1, borderColor: t.colors.border }}
+      style={{ height, borderRadius: 24, overflow: 'hidden', backgroundColor: t.isDark ? '#2A2440' : '#F4F0FA', ...glassEdge(t) }}
       {...pan.panHandlers}>
       {tiles.map((tile) => (
         <Image key={tile.key} source={{ uri: tile.url }} accessibilityIgnoresInvertColors testID="out-map-tile"

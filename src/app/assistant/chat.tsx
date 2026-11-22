@@ -1,5 +1,6 @@
 /** Conversation avec l'assistant (réponses structurées, diffusion progressive, orientation urgente). */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { aiAssistantOnline } from '@/config/features';
 import { AiComingSoonScreen } from '@/features/AiComingSoon';
 import { ActivityIndicator, FlatList, Keyboard, TextInput, View } from 'react-native';
@@ -435,7 +436,7 @@ function Chat() {
             <View key={m.id} style={{ gap: spacing.xs }}>
               <View
                 accessibilityLiveRegion={m.streaming ? 'polite' : 'none'}
-                style={{ backgroundColor: m.error ? t.colors.dangerSoft : t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, gap: spacing.sm }}
+                style={{ backgroundColor: m.error ? t.colors.dangerSoft : t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, ...glassEdge(t), gap: spacing.sm }}
               >
                 {!!m.devMode && <Text variant="caption" color={t.colors.lavender}>{m.devMode}</Text>}
                 {m.streaming ? (
@@ -489,7 +490,7 @@ function Chat() {
           </Text>
         )}
         {tooLong && <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.chars', { n: input.length, max: MAX_QUESTION_LENGTH })}</Text>}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: 6 }}>
           <TextInput
             value={input}
             onChangeText={setInput}

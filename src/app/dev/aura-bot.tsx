@@ -5,6 +5,7 @@
  * ailleurs, retour à l'accueil.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { ScrollView, View } from 'react-native';
 import { Redirect, router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,7 +41,7 @@ export default function AuraBotGallery() {
     timers.current = SCENE.map(([st, ms]) => { const id = setTimeout(() => setScene(st), at); at += ms; return id; });
   };
   if (!dev && !isDemo) return grace ? <View style={{ flex: 1, backgroundColor: t.colors.background }} /> : <Redirect href="/" />;
-  const card = { backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.sm } as const;
+  const card = { backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.sm } as const;
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.background }} testID="aura-bot-gallery">
       <StatusBar style={t.isDark ? 'light' : 'dark'} />

@@ -12,6 +12,7 @@
  * Uniquement des jetons du thème (contrastes ≥ 4,5:1 testés : statuts sur leur teinte, textes sur la surface).
  */
 import React from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { haptic, Icon, Text, type IconName } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
@@ -83,7 +84,7 @@ export function DayRail({ time, state, first, last, timeSub }: { time: string; s
 export function DayList({ children, testID, style, footer }: { children: React.ReactNode; testID?: string; style?: StyleProp<ViewStyle>; footer?: React.ReactNode }) {
   const t = useTheme();
   return (
-    <View testID={testID} style={[{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, paddingVertical: spacing.xxs, overflow: 'hidden' }, style]}>
+    <View testID={testID} style={[{ backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), paddingVertical: spacing.xxs, overflow: 'hidden' }, style]}>
       {children}
       {footer ? <View style={{ paddingHorizontal: spacing.md, borderTopWidth: StyleSheet.hairlineWidth, borderColor: t.material.lines.separator }}>{footer}</View> : null}
     </View>
@@ -211,7 +212,7 @@ export function BriefStrip({ items, title, testID }: { items: BriefItem[]; title
   return (
     <View style={{ gap: spacing.xs }} testID={testID} accessibilityRole="summary" accessibilityLabel={`${title ?? tr('d5.brief')} : ${items.map((i) => `${i.label} ${i.value}`).join(', ')}`}>
       {title ? <Text variant="label" muted accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{title}</Text> : null}
-      <View style={{ flexDirection: 'row', backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, paddingVertical: spacing.sm }}>
+      <View style={{ flexDirection: 'row', backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), paddingVertical: spacing.sm }}>
         {items.map((it, i) => (
           <View key={i} testID={it.testID} style={{ flex: 1, minWidth: 0, paddingHorizontal: spacing.sm, gap: 2, borderLeftWidth: i ? StyleSheet.hairlineWidth : 0, borderColor: t.material.lines.separator }}>
             <Text weight="bold" style={{ fontSize: it.value.length > 6 ? 17 : 22, lineHeight: 28, fontVariant: ['tabular-nums'] }} numberOfLines={1} adjustsFontSizeToFit>{it.value}</Text>

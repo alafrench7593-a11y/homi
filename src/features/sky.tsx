@@ -3,6 +3,7 @@
  * et où se posent les moments du jour (repas, siestes, changes, rendez-vous, rappels).
  */
 import { hourTick } from '@/i18n/formats';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useMemo } from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
@@ -209,7 +210,7 @@ export function UniverseGrid() {
         <Tappable key={u.label} accessibilityRole="button" accessibilityLabel={tr(u.label as never)} onPress={() => router.push(u.href as never)} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
           {({ pressed }) => (
             <>
-              <View style={{ width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
+              <View style={{ width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, ...glassEdge(t) }}>
                 <Icon name={u.icon} size={21} color={u.href === '/emergency' ? t.colors.heart : t.colors.text} />
               </View>
               <Text variant="caption" center>{tr(u.label as never)}</Text>

@@ -10,6 +10,7 @@
  * (mêmes props `SurfaceProps`). Aucune couleur écrite en dur ici.
  */
 import React from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { GlowCard } from '@/components/GlowCard';
 import { GlassSurface } from '@/components/Glass';
@@ -47,7 +48,7 @@ function DefaultSmoked({ children, style, padded = spacing.md, testID }: Surface
 function DefaultMatte({ children, style, padded = spacing.md, testID }: SurfaceProps) {
   const t = useTheme();
   return (
-    <View testID={testID} style={[{ backgroundColor: t.tokens.surface.opaque, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: padded }, style]}>
+    <View testID={testID} style={[{ backgroundColor: t.tokens.surface.opaque, borderRadius: radius.lg, ...glassEdge(t), padding: padded }, style]}>
       {children}
     </View>
   );
