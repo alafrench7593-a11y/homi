@@ -12,6 +12,7 @@ import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { t as tr, formatDate, getLocale } from '@/i18n';
+import { CycleWeek } from '@/features/cycleTrack/CycleOverview';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { EstimateLine, fmt, JourneyArticles, MonthCalendar, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useContraceptionMethods, useCycleEstimates } from '@/lib/data/hooks-fertility';
@@ -55,6 +56,8 @@ export default function ContraceptionScreen() {
         { icon: 'shield', value: active[0] ? active[0].label || methodTitle(active[0].method) : '—', label: tr('u7.contra.index.myMethod') },
         { icon: 'calendar', value: w ? fmt(w.nextPeriod) : '—', label: tr('u7.contra.index.nextPeriodEst') },
       ]} />
+      {/* Ma semaine : jour choisi (adresse), suivis notés ce jour-là → chacun ouvre son app */}
+      <CycleWeek />
       {/* Prise du jour en un geste (pilule, patch, anneau) */}
       {active.find((m) => dailyKindFor(m.method)) ? <PillToday method={active.find((m) => dailyKindFor(m.method))!.method} /> : null}
       <Banner tone="warning" title={tr('u7.contra.index.alwaysPossible')}>{AVOID_DISCLAIMER}</Banner>

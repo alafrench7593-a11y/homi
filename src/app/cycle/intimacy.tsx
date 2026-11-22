@@ -25,6 +25,7 @@ import { toFrDate } from '@/lib/validation';
 import type { IntercourseLog } from '@/lib/types-fertility';
 import { Choices, CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { fmtDay, fmtDayYear } from '@/features/cycle/format';
+import { IntimacyJournal } from '@/features/cycleTrack/FertilityJournals';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -181,6 +182,8 @@ export default function IntimacyScreen() {
           {list.length ? <Button label={showList ? tr('cy.sex.hide') : tr('cy.sex.show')} size="sm" variant="ghost" onPress={() => setShowList((v) => !v)} /> : null}
         </View>
         {!list.length ? <Ink variant="small" soft>{tr('cy.sex.empty')}</Ink> : !showList ? <Ink variant="small" soft>{tr('cy.sex.hiddenCount', { count: list.length })}</Ink> : null}
+        {/* Journal du jour (privé, visible seulement après « Afficher ») : bande de 7 jours, fiche de correction */}
+        {showList ? <IntimacyJournal /> : null}
         {showList ? <MotionList>{list.slice(0, 60).map((l) => (
           <MotionItem key={l.id}><View key={l.id} style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: spacing.xs }}>
             <Ink variant="small" style={{ flex: 1, minWidth: 140 }}>{fmtDayYear(l.occurred_on)}</Ink>

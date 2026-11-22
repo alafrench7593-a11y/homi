@@ -30,6 +30,7 @@ import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MucusJournal } from '@/features/cycleTrack/FertilityJournals';
 import { t as tr } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
@@ -174,6 +175,8 @@ export default function MucusScreen() {
   return (
     <Screen back title={tr('u3.fertMucus.title')} subtitle={tr('u3.fertMucus.subtitle')}
       action={{ label: tr('u3.fertMucus.saveObs'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'mucus-save' }}>
+      {/* Journal de la glaire : jour choisi (adresse), bande de 7 jours, fiche de correction */}
+      <MucusJournal />
       <TodaySummary title={tr('u3.fertBody.lastObs')} items={[
         { icon: 'droplet', value: lastObs ? mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '—' : '—', label: lastObs ? formatDateFr(lastObs.observed_on, false) : tr('u3.fertMucus.aspect') },
         { icon: 'calendar', value: String(cycles[0]?.days.length ?? 0), label: tr('u3.fertMucus.daysCycle') },

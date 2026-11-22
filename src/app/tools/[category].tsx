@@ -14,6 +14,7 @@
 import { SleepCategorySummary } from '@/features/napLive/SleepCategorySummary';
 import { FeedingCategorySummary } from '@/features/quickTrack/FeedingCategorySummary';
 import { CareCategorySummary } from '@/features/quickTrack/CareCategorySummary';
+import { CycleCategorySummary } from '@/features/cycleTrack/CycleOverview';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
@@ -103,6 +104,7 @@ function ToolCategory() {
           {category === 'sleep' ? <SleepCategorySummary /> : null}
           {category === 'feeding' ? <FeedingCategorySummary /> : null}
           {category === 'care' ? <CareCategorySummary /> : null}
+          {category === 'cycle' ? <View style={{ marginBottom: spacing.sm }}><CycleCategorySummary /></View> : null}
         </>}
         ListEmptyComponent={loading ? <ToolRowsSkeleton rows={5} testID="tools-category-skeleton" /> : (
           <EmptyState icon="compass" title={tr('th.ui.catEmpty')} body={tr('th.ui.catEmptyB')}

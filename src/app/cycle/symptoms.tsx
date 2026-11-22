@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { Button, Field, haptic, Row } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
@@ -20,6 +19,7 @@ import { INTIMATE_SYMPTOMS, SYMPTOM_KEYS, symptomKeysOf, type SymptomKey } from 
 import { toFrDate } from '@/lib/validation';
 import { Choices, Glass, Ink, Rise, Scale, useCyclePalette } from '@/features/cycle/kit';
 import { fmtDay } from '@/features/cycle/format';
+import { SymptomJournal } from '@/features/cycleTrack/SymptomJournals';
 import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
@@ -32,6 +32,8 @@ export default function SymptomsScreen() {
   const { prefs } = useCyclePreferences();
   const logsQ = useAllSymptomLogs();
   const [dateText, setDateText] = useState(toFrDate(params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : todayISO()));
+  // Le jour choisi dans le journal (adresse « ?date= ») place le formulaire sur ce jour
+  useEffect(() => { if (params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date)) setDateText(toFrDate(params.date)); }, [params.date]);
   const iso = frToISO(dateText);
   const existing = useMemo(() => (iso ? (logsQ.data ?? []).filter((l) => l.logged_on === iso) : []), [logsQ.data, iso]);
   const [keys, setKeys] = useState<SymptomKey[]>([]);
@@ -80,12 +82,8 @@ export default function SymptomsScreen() {
   return (
     <Screen back title={tr('cy.sym.title')} subtitle={tr('cy.sym.subtitle')}
       action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), disabled: busy, testID: 'sym-save' }}>
-      {/* La fiche du jour, en un coup d'œil (se met à jour pendant la saisie) */}
-      <TodaySummary title={iso ? fmtDay(iso) : tr('cy.sym.date')} items={[
-        { icon: 'activity', value: String(keys.length), label: tr('cy.sym.list') },
-        { icon: 'smile', value: mood ? `${mood}/5` : '—', label: tr('cy.sym.mood') },
-        { icon: 'zap', value: energy ? `${energy}/5` : '—', label: tr('cy.sym.energy') },
-      ]} />
+      {/* Journal des symptômes : jour choisi (adresse), bande de 7 jours, lignes du jour → fiche de correction */}
+      <SymptomJournal />
       <Rise>
         <Glass>
           <Field label={tr('cy.sym.date')} value={dateText} onChangeText={setDateText} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} error={err ?? undefined} />

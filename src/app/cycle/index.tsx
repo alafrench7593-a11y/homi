@@ -33,6 +33,7 @@ import { GoldCycleRing } from '@/features/cycle/GoldCycleRing';
 import { QuickToday } from '@/features/cycle/QuickToday';
 import { AdviceCard } from '@/features/cycle/AdviceCard';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
+import { CycleWeek } from '@/features/cycleTrack/CycleOverview';
 import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { rank } from '@/lib/advice/types';
@@ -221,6 +222,9 @@ function CycleHub() {
 
       {/* Aujourd'hui en un geste : flux, symptômes fréquents, humeur — chaque touche enregistre */}
       <QuickToday openPeriod={open ?? null} />
+
+      {/* Ma semaine : jour choisi (adresse « ?day= »), suivis notés ce jour-là → chacun ouvre son app sur ce jour */}
+      <CycleWeek />
 
       {/* Détail de la roue (ovulation estimée, jours mesurés, fiabilité) : à la demande */}
       {ring ? (

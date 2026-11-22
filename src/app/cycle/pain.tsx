@@ -21,6 +21,7 @@ import { Bars } from '@/features/cycle/Bars';
 import { BodyMap, IntensityMeter, PAIN_ZONES, type PainZone } from '@/features/cycle/PainKit';
 import { Choices, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { fmtDay } from '@/features/cycle/format';
+import { PainJournal } from '@/features/cycleTrack/SymptomJournals';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
@@ -43,6 +44,8 @@ export default function PainScreen() {
   const logsQ = useAllSymptomLogs();
   const { data: periods } = usePeriods();
   const [day, setDay] = useState(toFrDate(params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : todayISO()));
+  // Le jour choisi sur l'échelle (adresse « ?date= ») place le formulaire sur ce jour
+  useEffect(() => { if (params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date)) setDay(toFrDate(params.date)); }, [params.date]);
   const iso = frToISO(day);
   const current = useMemo(() => (iso ? (logsQ.data ?? []).find((l) => l.logged_on === iso) ?? null : null), [logsQ.data, iso]);
 
@@ -107,6 +110,8 @@ export default function PainScreen() {
   return (
     <Screen back title={tr('cy.pain.title')} subtitle={tr('cy.pain.subtitle')}
       action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), disabled: busy, testID: 'pain-save' }}>
+      {/* Échelle d'intensité : jour choisi (adresse), une barre par jour, « rien de noté » ≠ 0/10, fiche de correction */}
+      <PainJournal />
       <Rise>
         <Glass>
           <Field label={tr('cy.sym.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />
