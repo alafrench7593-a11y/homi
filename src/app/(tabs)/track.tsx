@@ -1,5 +1,6 @@
 /** Onglet Suivi : selon le profil choisi (enfant, grossesse, moi). */
 import React, { useMemo, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -86,7 +87,7 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
         accessibilityRole="button"
         accessibilityLabel={openSleep ? tr('trk.night.a11yOpen') : tr('trk.night.a11yStart')}
         onPress={() => { haptic('light'); router.push('/night'); }}
-        style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.tokens.inverse.fill, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
+        style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.tokens.inverse.fill, ...whoopEdge(t, t.tokens.inverse.fill), flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
       >
         <WhoopSheen radius={radius.lg} />
         <Icon name="moon" color={t.tokens.inverse.accent} />

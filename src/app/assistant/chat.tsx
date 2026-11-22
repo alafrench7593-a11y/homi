@@ -1,5 +1,6 @@
 /** Conversation avec l'assistant (réponses structurées, diffusion progressive, orientation urgente). */
 import React, { useEffect, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import { aiAssistantOnline } from '@/config/features';
 import { AiComingSoonScreen } from '@/features/AiComingSoon';
@@ -427,7 +428,7 @@ function Chat() {
         )}
         renderItem={({ item: m }) => (
           m.role === 'user' ? (
-            <View key={m.id} style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.colors.primary, padding: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
+            <View key={m.id} style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), padding: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
               <Text color={t.colors.primaryText}>{m.content}</Text>
             </View>
           ) : m.safety && m.safety !== 'none' ? (
@@ -505,7 +506,7 @@ function Chat() {
           />
           {sending ? (
             <Tappable accessibilityRole="button" accessibilityLabel={tr('u8.chat.stop')} onPress={() => abortRef.current?.abort()} testID="chat-stop"
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="square" color={t.colors.primaryText} size={18} />
             </Tappable>
           ) : (
@@ -515,7 +516,7 @@ function Chat() {
               disabled={blocked || input.trim().length < 2}
               onPress={() => send()}
               testID="chat-send"
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center', opacity: blocked || input.trim().length < 2 ? 0.4 : 1 }}
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), alignItems: 'center', justifyContent: 'center', opacity: blocked || input.trim().length < 2 ? 0.4 : 1 }}
             >
               <Icon name="arrow-up" color={t.colors.primaryText} />
             </Tappable>

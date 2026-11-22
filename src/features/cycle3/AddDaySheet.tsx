@@ -5,6 +5,7 @@
  * dans le cycle (textes exacts) avec, si besoin, les informations de contraception d'urgence (gratuites).
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -266,7 +267,7 @@ function ScaleRow({ label, max, min = 1, value, onChange, valueLabel, testID }: 
           const on = value === n;
           return (
             <Tappable key={n} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={`${label} ${n}`} onPress={() => { haptic('selection'); onChange(on ? null : n); }}
-              style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt }}>
+              style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt , ...(on ? whoopEdge(t, t.colors.primary) : null)}}>
               <Text weight="bold" color={on ? t.colors.primaryText : t.colors.text}>{String(n)}</Text>
             </Tappable>
           );

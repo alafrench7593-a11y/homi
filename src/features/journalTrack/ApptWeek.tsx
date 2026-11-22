@@ -8,6 +8,7 @@
  * Un jour sans rendez-vous affiche « Rien de prévu » en pointillé, jamais un zéro.
  */
 import React from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View } from 'react-native';
 import { Glass, GlassButton } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
@@ -65,7 +66,7 @@ export function ApptWeek<T extends ApptLike & { title: string }>({ list, day, no
               accessibilityLabel={`${formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}. ${appts.length ? tr('jt.week.count', { count: appts.length }) : tr('jt.week.none')}`}
               onPress={() => pick(d)} style={{ flex: 1, alignItems: 'center', gap: 4, minHeight: MIN_TOUCH, paddingVertical: 4 }}>
               <Text variant="caption" muted={!on} weight={on ? 'bold' : 'regular'}>{formatDate(date, { weekday: 'short' }).replace('.', '')}</Text>
-              <View style={{ width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.text : 'transparent', borderWidth: isToday && !on ? 1.5 : 0, borderColor: t.colors.text }}>
+              <View style={{ width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.text : 'transparent', ...(on ? whoopEdge(t, t.colors.text) : null), borderWidth: isToday && !on ? 1.5 : 0, borderColor: t.colors.text }}>
                 <Text weight="bold" color={on ? t.colors.background : t.colors.text} style={TABULAR}>{date.getDate()}</Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 3, height: 6 }}>

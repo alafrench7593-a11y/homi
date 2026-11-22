@@ -11,6 +11,7 @@
  * Aucune dose n'est proposée, calculée ni modifiée ici.
  */
 import React, { useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View } from 'react-native';
 import { useTray } from '@/components/reacticx/tray';
 import { Glass, GlassSegmentedControl } from '@/components/glass';
@@ -88,7 +89,7 @@ export function DoseDay({ days, selected, onSelectDay, rows, onToggle, onAnswer,
               <Text weight="bold" style={[{ width: 56 }, TABULAR]}>{clock(new Date(r.scheduledFor))}</Text>
               <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: taken }} aria-checked={taken}
                 accessibilityLabel={taken ? tr('med.untick', { title }) : tr('med.tick', { title })} onPress={() => onToggle(r)} hitSlop={8} testID={`med-check-${r.key}`}
-                style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderStyle: r.log ? 'solid' : 'dashed', borderColor: taken ? t.colors.text : t.colors.textMuted, backgroundColor: taken ? t.colors.text : 'transparent' }}>
+                style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderStyle: r.log ? 'solid' : 'dashed', borderColor: taken ? t.colors.text : t.colors.textMuted, backgroundColor: taken ? t.colors.text : 'transparent' , ...(taken ? whoopEdge(t, t.colors.text) : null)}}>
                 {r.log && !taken ? <Icon name={STATUS_ICON[r.log.status]} size={16} color={t.colors.textMuted} /> : <CheckMark checked={taken} size={20} color={t.colors.surface} />}
               </Tappable>
               <Tappable accessibilityRole="button" testID={`ht-dose-row-${r.key}`} onPress={() => open(r.key)}

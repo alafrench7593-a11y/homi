@@ -12,6 +12,7 @@
  * Couche de lecture reprise de src/features/napLive/NapCompareChart.tsx ; dessin Skia chargé comme SkiaHost.web.tsx.
  */
 import React, { useMemo, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Platform, View, type GestureResponderEvent } from 'react-native';
 import { GlassButton, GlassSegmentedControl } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
@@ -141,7 +142,7 @@ export function MeasureCurve({ points, unit, digits, title, minYSpan, periods = 
             {/* Bulle de la mesure sélectionnée : « 72 cm » au-dessus du point */}
             {proj && sel ? (
               <View pointerEvents="none" testID={`${testID}-bubble`} style={{ position: 'absolute', width: BUBBLE_W, alignItems: 'center', left: Math.max(0, Math.min(width - BUBBLE_W, proj.px(sel.x) - BUBBLE_W / 2)), top: Math.max(0, proj.py(sel.y) - 46) }}>
-                <View style={{ backgroundColor: t.colors.text, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 }}>
+                <View style={{ backgroundColor: t.colors.text, ...whoopEdge(t, t.colors.text), borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 }}>
                   <Text style={[TABULAR, { color: t.colors.surface, fontFamily: fonts.bodyBold, fontSize: 15, lineHeight: 20 }]} numberOfLines={1}>{valueText(sel.y)}</Text>
                 </View>
               </View>

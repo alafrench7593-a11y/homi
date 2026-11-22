@@ -3,6 +3,7 @@
  * toucher, état sélectionné bien visible), verrouillage biométrique de la session, couleurs du calendrier sombre.
  */
 import React from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Animated, Platform, Pressable, View } from 'react-native';
 import { create } from 'zustand';
 import * as LA from 'expo-local-authentication';
@@ -132,7 +133,7 @@ export function LockedCard({ testID }: { testID?: string }) {
       <Icon name="lock" color={CAL.soft} />
       <Text weight="bold" color={CAL.text}>{tr('c3.priv.locked')}</Text>
       <Text variant="small" color={CAL.soft}>{tr('c3.priv.lockedBody')}</Text>
-      <View style={{ marginTop: 4, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: t.colors.primary }}>
+      <View style={{ marginTop: 4, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
         <Text weight="bold" color={t.colors.primaryText}>{tr('c3.priv.unlock')}</Text>
       </View>
     </Tappable>

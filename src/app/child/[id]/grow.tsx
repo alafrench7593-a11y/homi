@@ -7,6 +7,7 @@
  * Gratuit : étapes principales, sécurité, sources, résumé à l'écran. Premium : toutes les étapes, activités, PDF.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Platform, ScrollView, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -212,7 +213,7 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
     {quick ? (
       <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, bottom: 0, right: spacing.sm + 4, justifyContent: 'center' }}>
         <Tappable bare accessibilityRole="button" accessibilityLabel={`${tr('mb.gr.quickObserved')} — ${s.title}`} onPress={() => void quickObserved()} hitSlop={8} testID={`gr-quick-${s.key}`}
-          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary }}>
+          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
           <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('mb.gr.quickObserved')}</Text>
         </Tappable>
       </View>

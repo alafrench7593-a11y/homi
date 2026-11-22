@@ -4,6 +4,7 @@
  * feuilles de signalement et de catégories. Identité graphique propre à HOMI.
  */
 import { useBounceOn } from '@/components/Motion';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useState } from 'react';
 import { Animated, Image, Modal, Pressable, ScrollView, Share, useWindowDimensions, View } from 'react-native';

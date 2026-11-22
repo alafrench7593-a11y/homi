@@ -15,6 +15,7 @@
  *    `Screen`, portée clavier existante).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import { VirtualList } from '@/components/States';
 import { AppState, FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
@@ -502,7 +503,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             />
             <Tappable accessibilityRole="button" accessibilityLabel={remote ? tr('aura.sendCost', { count: askCost }) : tr('aura.send')} accessibilityState={{ disabled: sending || input.trim().length < 2 || blockedByConsent, busy: sending }}
               disabled={sending || input.trim().length < 2 || blockedByConsent} onPress={() => void send()} testID="aura-send"
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.tokens.action.fill, alignItems: 'center', justifyContent: 'center', opacity: sending || input.trim().length < 2 || blockedByConsent ? 0.4 : 1 }}>
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.tokens.action.fill, ...whoopEdge(t, t.tokens.action.fill), alignItems: 'center', justifyContent: 'center', opacity: sending || input.trim().length < 2 || blockedByConsent ? 0.4 : 1 }}>
               <Icon name="arrow-up" color={t.tokens.action.text} />
             </Tappable>
           </View>
@@ -525,7 +526,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           ListHeaderComponent={header}
           contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.lg, gap: spacing.md }}
           renderItem={({ item: m }) => (m.role === 'user' ? (
-            <View testID="aura-msg-user" style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.tokens.action.fill, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
+            <View testID="aura-msg-user" style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.tokens.action.fill, ...whoopEdge(t, t.tokens.action.fill), paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
               <Text color={t.tokens.action.text}>{m.text}</Text>
             </View>
           ) : (

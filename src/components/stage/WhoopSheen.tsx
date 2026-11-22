@@ -46,3 +46,19 @@ export function WhoopSheen({ radius, accent, line = true }: { radius: number; ac
     </View>
   );
 }
+
+/**
+ * Finition Whoop en STYLE SEUL, pour les cadres noirs dessinés à la main (pastille sélectionnée, aplat d'action) :
+ * arête lumineuse, ligne claire interne en haut, fond qui s'assombrit vers le bas (ombre interne), ombre douce.
+ * Ne fait rien si `fill` n'est pas sombre dans le thème courant (un aplat clair en thème sombre reste tel quel).
+ */
+export function whoopEdge(t: ReturnType<typeof useTheme>, fill: string | null | undefined): ViewStyle {
+  if (t.name === 'night' || !isDarkFill(fill)) return {};
+  const light = t.tokens.inverse.text;
+  const deep = t.tokens.inverse.fill;
+  return {
+    borderWidth: 1,
+    borderColor: alpha(light, 0.12),
+    boxShadow: `inset 0 1px 0 ${alpha(light, 0.22)}, inset 0 -14px 22px ${alpha(deep, 0.6)}, 0 6px 16px ${alpha(t.tokens.shadowColor, 0.18)}`,
+  } as ViewStyle;
+}

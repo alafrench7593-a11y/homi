@@ -4,6 +4,7 @@
  * et la présente : réponse, points clés, quand demander conseil, article et sources. Aucune question ne quitte le téléphone.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { useKeyboardVisible } from '@/components/keyboard';
 import { aiAssistantOnline } from '@/config/features';
 import { FlatList, Keyboard, Linking, TextInput, View } from 'react-native';
@@ -95,7 +96,7 @@ function AnswerCard({ m }: { m: Msg }) {
         ) : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           <Tappable accessibilityRole="button" onPress={() => router.push(`/article/${a.main!.slug}`)} testID="local-read"
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.primary }}>
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
             <Icon name="book-open" size={14} color={t.colors.primaryText} />
             <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('u8.local.read')}</Text>
           </Tappable>
@@ -210,7 +211,7 @@ export default function LocalAssistant() {
         )}
         renderItem={({ item: m }) => (
           <View style={{ gap: spacing.sm }}>
-            <View style={{ alignSelf: 'flex-end', maxWidth: '85%', backgroundColor: t.colors.primary, borderRadius: 20, borderBottomRightRadius: 6, paddingHorizontal: 14, paddingVertical: 10 }}>
+            <View style={{ alignSelf: 'flex-end', maxWidth: '85%', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), borderRadius: 20, borderBottomRightRadius: 6, paddingHorizontal: 14, paddingVertical: 10 }}>
               <Text color={t.colors.primaryText}>{m.q}</Text>
             </View>
             <AnswerCard m={m} />

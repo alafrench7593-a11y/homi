@@ -4,6 +4,7 @@
  * message culpabilisant. Parents de l'enfant seulement (RLS) ; hors ligne : saisie gardée puis envoyée.
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -114,7 +115,7 @@ function HwRow({ h, onToggle, onOpen, showDate }: { h: Homework; onToggle: () =>
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44 }}>
       <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${h.subject} : ${h.instructions}`} onPress={onToggle} hitSlop={8} testID={`hw-check-${h.id}`}
-        style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: done ? 0 : 2, borderColor: t.colors.primary, backgroundColor: done ? t.tokens.action.fill : 'transparent' }}>
+        style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: done ? 0 : 2, borderColor: t.colors.primary, backgroundColor: done ? t.tokens.action.fill : 'transparent' , ...(done ? whoopEdge(t, t.tokens.action.fill) : null)}}>
         <CheckMark checked={!!done} size={17} color={t.tokens.action.text} />
       </Tappable>
       <Tappable bare accessibilityRole="button" onPress={h._pending ? () => undefined : onOpen} style={{ flex: 1 }} testID={`hw-row-${h.id}`}>

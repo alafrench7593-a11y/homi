@@ -4,6 +4,7 @@
  * (`DemoTarget`) et SON résultat (`useDemo().done`). Valeurs d'exemple constantes : aucune donnée du foyer.
  */
 import React, { useEffect, useMemo } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { MatteSurface } from '@/components/surfaces';

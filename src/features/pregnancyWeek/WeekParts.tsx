@@ -9,6 +9,7 @@
  * Rien ne bouge pendant la lecture : pas de boucle, pas de fond animé (seul l'appui sur une case répond).
  */
 import React, { useEffect, useRef } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { CoralHalo } from '@/components/CoralHalo';
 import { FetusArt } from '@/components/FetusArt';
@@ -128,7 +129,7 @@ function MilestoneLine({ m }: { m: Milestone }) {
   const now = m.state === 'now';
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 40 }} testID={`preg-milestone-${m.key}`}>
-      <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: now ? t.colors.primary : linesOf(t).iconWell }}>
+      <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: now ? t.colors.primary : linesOf(t).iconWell , ...(now ? whoopEdge(t, t.colors.primary) : null)}}>
         <Icon name={icon} size={14} color={now ? t.colors.primaryText : m.state === 'done' ? t.colors.textMuted : t.colors.primary} />
       </View>
       <View style={{ flex: 1, minWidth: 0 }}>

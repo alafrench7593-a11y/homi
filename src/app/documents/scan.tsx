@@ -8,6 +8,7 @@
  * Tout le traitement d'image a lieu sur l'appareil. Les copies temporaires sont effacées.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Image, Linking, PanResponder, Platform, View, useWindowDimensions } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -271,7 +272,7 @@ export default function ScanScreen() {
       <Screen title={tr('docs.saved.title')}>
         <Appear kind="pop" delay={0.05}>
           <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
-            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
               <Icon name="check" size={44} color={t.colors.primaryText} />
             </View>
             <Text center>{share ? tr('docs.saved.shared') : tr('docs.saved.private')}</Text>

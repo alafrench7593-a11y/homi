@@ -5,6 +5,7 @@
  * Quatre raccourcis au maximum, personnalisables par profil ; jamais un outil sans rapport avec le profil.
  */
 import React, { useMemo, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
@@ -326,7 +327,7 @@ function Row({ m }: { m: ActionModel }) {
         </View>
       </Tappable>
       <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={8} onPress={m.onAdd}
-        style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+        style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
         <Icon name={m.active ? 'sun' : 'plus'} size={18} color={t.colors.primaryText} />
       </Tappable>
     </View>

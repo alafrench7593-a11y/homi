@@ -4,6 +4,7 @@
  * Texte seulement (pas de photo dans cette première version), 2 000 caractères au plus.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import { FlatList, Keyboard, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -149,7 +150,7 @@ export default function Conversation() {
                 style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
               />
               <Tappable accessibilityRole="button" accessibilityLabel={tr('dm.send')} disabled={!!error || !canWrite} onPress={submit} testID="dm-send"
-                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.tokens.action.fill, alignItems: 'center', justifyContent: 'center', opacity: error || !canWrite ? 0.4 : 1 }}>
+                style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.tokens.action.fill, ...whoopEdge(t, t.tokens.action.fill), alignItems: 'center', justifyContent: 'center', opacity: error || !canWrite ? 0.4 : 1 }}>
                 <Icon name="arrow-up" color={t.tokens.action.text} />
               </Tappable>
             </View>

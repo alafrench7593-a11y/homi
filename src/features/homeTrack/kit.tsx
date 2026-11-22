@@ -11,6 +11,7 @@
  *    l'écriture échoue.
  */
 import { CheckMark } from '@/motion/CheckMark';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -122,7 +123,7 @@ export function HmWeek({ day, onSelect, marks, countLabel, testID = 'hm-week', t
               accessibilityLabel={`${formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}. ${n == null ? tr('hm.nothing') : countLabel(n)}`}
               onPress={() => pick(d)} style={{ flex: 1, alignItems: 'center', gap: 3, minHeight: MIN_TOUCH, paddingVertical: 2 }}>
               <Text variant="caption" muted={!on} weight={on ? 'bold' : 'regular'}>{formatDate(date, { weekday: 'short' }).replace('.', '')}</Text>
-              <View style={{ width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.text : 'transparent', borderWidth: d === today && !on ? 1.5 : 0, borderColor: t.colors.text }}>
+              <View style={{ width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.text : 'transparent', ...(on ? whoopEdge(t, t.colors.text) : null), borderWidth: d === today && !on ? 1.5 : 0, borderColor: t.colors.text }}>
                 <Text weight="bold" color={on ? t.colors.background : t.colors.text} style={TABULAR}>{date.getDate()}</Text>
               </View>
               {n == null ? <View style={{ width: 16, height: 14, borderRadius: 7, borderWidth: 1, borderStyle: 'dashed', borderColor: t.colors.border }} />
@@ -270,7 +271,7 @@ function FieldEditor({ f, value, onChange, testID }: { f: HmField; value: string
             const on = value === String(i);
             return (
               <Tappable key={`${i}-${o}`} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={o} testID={`${testID}-${i}`} onPress={() => { haptic('selection'); onChange(String(i)); }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderWidth: on ? 2 : 1, borderColor: on ? t.colors.text : t.colors.border, backgroundColor: on ? t.colors.text : 'transparent' }}>
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderWidth: on ? 2 : 1, borderColor: on ? t.colors.text : t.colors.border, backgroundColor: on ? t.colors.text : 'transparent' , ...(on ? whoopEdge(t, t.colors.text) : null)}}>
                 <CheckMark checked={on} size={15} color={t.colors.background} />
                 <Text weight={on ? 'bold' : 'medium'} color={on ? t.colors.background : t.colors.text}>{o}</Text>
               </Tappable>

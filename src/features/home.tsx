@@ -1,5 +1,6 @@
 /** Cartes de l'accueil personnalisé. */
 import { ProgressBar } from '@/components/Motion';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import React from 'react';
 import { Pressable, View } from 'react-native';
@@ -140,7 +141,7 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
         ))}
       </View>
       {openSleep && (
-        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: t.tokens.inverse.fill, alignItems: 'center', justifyContent: 'center' }}>
+        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: t.tokens.inverse.fill, ...whoopEdge(t, t.tokens.inverse.fill), alignItems: 'center', justifyContent: 'center' }}>
           <Text weight="medium" color={t.tokens.inverse.text}>{tr('u5.home.open_night')}</Text>
         </Tappable>
       )}
