@@ -43,6 +43,8 @@ import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import type { Recipe } from '@/lib/recipes/types';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { FoodJournalTray, TastingJournal, type JournalFood } from '@/features/journalTrack/FoodJournal';
+import { foodGroupKey, tastingsByFood } from '@/lib/domain/journalTrack';
 
 type Filter = 'all' | 'to_discover' | 'discovered' | 'retry' | 'favorites' | 'reaction';
 const BASIC_FILTERS: Filter[] = ['all', 'favorites'];
@@ -63,7 +65,7 @@ const RECENT_HINT_KEY = ['pa', 'dc', 'recentHint'].join('.');
 
 export default function Discoveries() {
   const t = useTheme();
-  const { id, mode, focus } = useLocalSearchParams<{ id: string; mode?: string; focus?: string }>();
+  const { id, mode, focus, food: foodParam } = useLocalSearchParams<{ id: string; mode?: string; focus?: string; food?: string }>();
   const child = useChild(id);
   // 120 : arrivée en mode « diversification menée par l'enfant » (la fiche propose ce mode par défaut) ; 123 : refus en tête
   const blwDefault = mode === 'blw';
@@ -82,6 +84,8 @@ export default function Discoveries() {
   const [open, setOpen] = useState<FoodDef | null>(null);
   const [reacting, setReacting] = useState(false);
   const [celebrate, setCelebrate] = useState<FoodDef | null>(null);
+  // Journal d'un aliment (Tray) : l'aliment ouvert est gardé dans l'adresse (« ?food= ») pour qu'un retour le retrouve
+  const [journalOpen, setJournalOpen] = useState(!!foodParam);
   const { width } = useWindowDimensions();
   const [boxW, setBoxW] = useState(0);
 
@@ -97,6 +101,13 @@ export default function Discoveries() {
   const recent = recentlyOffered(tastings, today).filter((k) => FOOD_BY_KEY[k]);
   const recentTitle = tMaybe(RECENT_KEY) ?? tr('dc.historyRecent');
   const recentHint = tMaybe(RECENT_HINT_KEY);
+  const journalFood = useMemo<JournalFood | null>(() => {
+    if (!foodParam) return null;
+    const g = tastingsByFood(tastings).find((x) => x.key === foodParam);
+    const def = FOOD_BY_KEY[foodParam];
+    return g ? { key: g.key, food_key: g.food_key, name: g.food_name } : def ? { key: def.key, food_key: def.key, name: def.name } : null;
+  }, [foodParam, tastings]);
+  const openJournal = (f: JournalFood) => { router.setParams({ food: f.key } as never); setJournalOpen(true); };
   const ideas = useMemo(() => ideasForAge(entries, age, 6, child?.allergies_declared ?? []), [entries, age, child?.allergies_declared]);
 
   const list = useMemo(() => FOODS.filter((f) => {
@@ -169,6 +180,8 @@ export default function Discoveries() {
           <Text variant="caption" muted>{tr('dc.hero.rhythm')}</Text>
         </View>
       </GlassSurface>
+
+      <TastingJournal tastings={tastings} onOpen={openJournal} />
 
       <TodaySummary title={tr('dc.history')} testID="dc-summary" items={[
         { icon: 'check-circle', value: String(FOODS.filter((f) => displayState(byKey.get(f.key), f, age) === 'discovered').length), label: tr('dc.filter.discovered') },
@@ -271,10 +284,11 @@ export default function Discoveries() {
       {history.length ? (
         <MotionList style={{ gap: 4 }} testID="dc-history">
           {history.slice(0, premium ? 200 : 40).map((h) => (
-            <MotionItem key={h.id}><View key={h.id} testID={`dc-h-${h.id}`} style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 40 }}>
+            <MotionItem key={h.id}><Tappable key={h.id} testID={`dc-h-${h.id}`} accessibilityRole="button" onPress={() => openJournal({ key: foodGroupKey(h), food_key: h.food_key, name: h.food_name })}
+              style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: 44 }}>
               <Text variant="caption" muted style={{ width: 72 }}>{day(h.tasted_on)}</Text>
               <Text style={{ flex: 1 }}>{h.food_name} · {tastingLine(h)}</Text>
-            </View></MotionItem>
+            </Tappable></MotionItem>
           ))}
         </MotionList>
       ) : <Text muted variant="small">{tr('dc.historyNone')}</Text>}
@@ -296,6 +310,10 @@ export default function Discoveries() {
 
       <FoodSheet blwDefault={blwDefault} food={open} child={child} age={age} entry={open ? byKey.get(open.key) : undefined} entries={entries} tastings={tastings} recipes={recipes ?? []} premium={premium}
         onClose={() => setOpen(null)} onDiscovered={(f) => { setOpen(null); setCelebrate(f); }} onQuota={() => access.showPreview(<Text variant="small">{tr('dc.quotaPreview', { name })}</Text>, { used: entries.length, quota: 15, unit: tr('dc.quotaUnit') })} />
+      <FoodJournalTray child={child} food={journalFood} tastings={tastings} open={journalOpen && !!journalFood}
+        entry={journalFood ? entries.find((e) => (e.food_key ? e.food_key === journalFood.food_key : foodGroupKey(e) === journalFood.key)) : undefined}
+        onOpenChange={(v) => { setJournalOpen(v); if (!v) router.setParams({ food: undefined } as never); }}
+        onOpenSheet={journalFood?.food_key && FOOD_BY_KEY[journalFood.food_key] ? () => openFood(FOOD_BY_KEY[journalFood.food_key!]) : undefined} />
       <ReactionSheet visible={reacting} child={child} entries={entries} onClose={() => setReacting(false)} />
       <Celebration food={celebrate} name={name} onDone={() => setCelebrate(null)} />
     </Screen>

@@ -1,6 +1,6 @@
 /** Rendez-vous du foyer : à venir et passés, ajout / modification / suppression, rappel facultatif. */
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
@@ -22,9 +22,11 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { countdown } from '@/lib/domain/dayThread';
 import { spacing } from '@/theme/tokens';
-import { t as tr, formatDate } from '@/i18n';
+import { t as tr, formatDate, type TKey } from '@/i18n';
 import { AddToDeviceCalendar } from '@/features/deviceCalendar/DeviceCalendarParts';
 import { CheckMark } from '@/motion/CheckMark';
+import { ApptWeek } from '@/features/journalTrack/ApptWeek';
+import { apptStatus, initialDay, isoDay } from '@/lib/domain/journalTrack';
 
 const kinds = (): { value: AppointmentKind; label: string; icon: IconName }[] => [
   { value: 'consultation', label: tr('u1.appt.kind.consultation'), icon: 'user' },
@@ -77,16 +79,22 @@ export default function AppointmentsScreen() {
   const [newQ, setNewQ] = useState('');
 
   // Profil affiché : par défaut, seulement ses rendez-vous ; ceux d'une ancienne grossesse restent dans « Mes parcours précédents »
-  const qp = useLocalSearchParams<{ child?: string; for?: string; all?: string }>();
+  const qp = useLocalSearchParams<{ child?: string; for?: string; all?: string; day?: string }>();
+  // Semaine : jour sélectionné gardé dans l'adresse (« ?day= ») ; ouvrir un rendez-vous puis revenir retrouve ce jour
+  const now = new Date();
+  const selDay = initialDay(qp.day, now);
+  const selectDay = (d: string) => router.setParams({ day: d } as never);
+  const [marking, setMarking] = useState(false);
+  const markInflight = useRef(false);
   const { subject } = useActiveSubject();
   const [everyone, setEveryone] = useState(qp.all === '1');
   const focus: Concern | null = qp.child ? `child:${qp.child}` : qp.for === 'pregnancy' ? 'pregnancy' : subject.type === 'child' ? `child:${subject.id}` : subject.type === 'pregnancy' ? 'pregnancy' : null;
-  const { upcoming, past } = useMemo(() => {
+  const { upcoming, past, shown } = useMemo(() => {
     const cutoff = Date.now() - 3600_000;
     const all = (appointments ?? [])
       .filter((a) => !a.pregnancy_id || a.pregnancy_id === pregnancy?.id)
       .filter((a) => everyone || !focus || (focus === 'pregnancy' ? !!a.pregnancy_id : a.child_id === focus.slice(6)));
-    return { upcoming: all.filter((a) => Date.parse(a.starts_at) >= cutoff), past: all.filter((a) => Date.parse(a.starts_at) < cutoff).reverse() };
+    return { upcoming: all.filter((a) => Date.parse(a.starts_at) >= cutoff), past: all.filter((a) => Date.parse(a.starts_at) < cutoff).reverse(), shown: all };
   }, [appointments, pregnancy?.id, everyone, focus]);
   const reminderFor = (id: string) => reminders?.find((r) => r.appointment_id === id);
 
@@ -115,9 +123,25 @@ export default function AppointmentsScreen() {
   }, [params.new, params.at, params.child, params.concern]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusLabel = focus ? (focus === 'pregnancy' ? tr('u1.appt.pregnancy') : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
 
-  function openNew() {
+  function openNew(day?: string) {
     setErrors({});
-    setDraft(emptyDraft(focus && (focus !== 'pregnancy' || pregnancy) ? focus : 'me'));
+    const d = emptyDraft(focus && (focus !== 'pregnancy' || pregnancy) ? focus : 'me');
+    setDraft(day ? { ...d, date: toFrDate(day) } : d);
+  }
+
+  /** Réalisé / pas encore : même table, même écriture que le formulaire ; une seule écriture même en double appui. */
+  async function markDone(a: Appointment, done: boolean) {
+    if (markInflight.current) return;
+    markInflight.current = true; setMarking(true);
+    try {
+      await backend.update('appointments', { completed_at: done ? new Date().toISOString() : null }, [eq('id', a.id)]);
+      inv('appointments');
+      haptic('success');
+      toast(done ? tr('jt.appt.markedDone') : tr('jt.appt.reopened'));
+      setDraft(null);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
+    } finally { markInflight.current = false; setMarking(false); }
   }
 
   function openEdit(a: Appointment) {
@@ -179,6 +203,7 @@ export default function AppointmentsScreen() {
       haptic('success');
       toast(draft.id ? tr('u1.appt.modified') : tr('u1.appt.added'));
       setDraft(null);
+      selectDay(isoDay(new Date(startsAt)));
     } catch (err) {
       toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
     } finally {
@@ -286,7 +311,7 @@ export default function AppointmentsScreen() {
 
   return (
     <Screen back title={tr('u1.appt.title')} subtitle={tr('u1.appt.subtitle')}
-      action={{ label: tr('u1.appt.addAppt'), icon: 'plus', onPress: openNew, testID: 'appointments-add' }}>
+      action={{ label: tr('u1.appt.addAppt'), icon: 'plus', onPress: () => openNew(selDay), testID: 'appointments-add' }}>
       {loadFailed ? <ErrorView error={appointmentsQ.error} onRetry={() => void appointmentsQ.refetch()} title={tr('u1.appt.loadError')} /> : null}
       {!isLoading && !loadFailed ? (() => {
         const next = upcoming[0];
@@ -304,6 +329,10 @@ export default function AppointmentsScreen() {
           <Chip label={tr('u1.appt.forName', { name: focusLabel })} selected={!everyone} onPress={() => setEveryone(false)} />
           <Chip label={tr('u1.appt.wholeFamily')} selected={everyone} onPress={() => setEveryone(true)} />
         </Row>
+      ) : null}
+      {!loadFailed ? (
+        <ApptWeek list={shown} day={selDay} now={now} onSelectDay={selectDay} onOpen={openEdit} onAdd={openNew}
+          kindLabel={(a) => kindMeta(a.kind).label} detail={(a) => [concernLabel(a), a.location_label].filter(Boolean).join(' · ') || null} />
       ) : null}
       {upcoming[0] ? NextCard({ a: upcoming[0] }) : null}
       {upcoming.length > 1 ? <SectionTitle title={tr('u1.appt.then')} /> : null}
@@ -361,6 +390,19 @@ export default function AppointmentsScreen() {
               const who = concernLabel(saved);
               return <AddToDeviceCalendar source={{ kind: 'appointment', appointment: { id: saved.id, title: saved.title, starts_at: saved.starts_at, location_label: saved.location_label }, leadMinutes: leadOf(reminderFor(saved.id), saved.starts_at) }}
                 title={saved.title} notes={who ? tr('ical.note.for', { name: who }) : null} testID="appt-ical" />;
+            })()}
+            {(() => {
+              // Réalisé : seulement si le rendez-vous a commencé (ou est passé) ; « reporté » n'existe pas dans la donnée
+              const a = draft.id ? appointments?.find((x) => x.id === draft.id) : undefined;
+              if (!a || Date.parse(a.starts_at) > Date.now()) return null;
+              const st = apptStatus(a, new Date());
+              return (
+                <View style={{ gap: 4 }} testID="appt-status">
+                  <Text variant="small" muted>{st === 'done' && a.completed_at ? tr('jt.appt.doneOn', { when: fmtWhen(a.completed_at) }) : tr(`jt.status.${st}` as TKey)}</Text>
+                  <Button label={st === 'done' ? tr('jt.appt.reopen') : tr('jt.appt.markDone')} icon={st === 'done' ? 'rotate-ccw' : 'check-circle'} variant="secondary"
+                    loading={marking} onPress={() => void markDone(a, st !== 'done')} testID="appt-mark-done" />
+                </View>
+              );
             })()}
             {!!draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); return a ? remove(a) : undefined; }} />}
           </>
