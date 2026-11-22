@@ -4,6 +4,7 @@
  * Purement descriptive : aucune zone « normale » ou « anormale ».
  */
 import React from 'react';
+import { AMBIENT_LOOPS } from '@/motion/ambient';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 import { palette, fonts } from '@/theme/tokens';
@@ -142,11 +143,11 @@ export function WeeksRing({ week, total = 41, size, children }: { week: number; 
       Animated.timing(wave, { isInteraction: false, toValue: 1, duration: 2600, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
       ambientDelay(700),
       Animated.timing(wave, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: false }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     const b = Animated.loop(Animated.sequence([
       Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
       Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     a.start(); b.start();
     return () => { a.stop(); b.stop(); };
   }, [reduce, wave, pulse]);

@@ -13,6 +13,7 @@
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
 import { useSwipeExclude } from '@/components/ProfileSwitcher';
+import { AMBIENT_LOOPS } from '@/motion/ambient';
 import { linkFrame } from '@/components/linkFrame';
 import { NightsHelpCard } from '@/features/sleepHelpCard';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
@@ -165,7 +166,7 @@ function Motes({ dark, count = 7 }: { dark: boolean; count?: number }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (reduce) return;
-    const loop = Animated.loop(Animated.timing(v, { isInteraction: false, toValue: 1, duration: 9000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }));
+    const loop = Animated.loop(Animated.timing(v, { isInteraction: false, toValue: 1, duration: 9000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
@@ -193,7 +194,7 @@ function BreathingHalo({ size, dark, moment }: { size: number; dark: boolean; mo
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);

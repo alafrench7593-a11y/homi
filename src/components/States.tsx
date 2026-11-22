@@ -9,6 +9,7 @@
  *   </QueryView>
  */
 import React, { useEffect, useRef } from 'react';
+import { AMBIENT_LOOPS } from '@/motion/ambient';
 import { Animated, FlatList, type FlatListProps, type ListRenderItem, View } from 'react-native';
 import { Shimmer, StaggerItem, useShake } from '@/components/Motion';
 import { Appear } from '@/components/Appear';
@@ -79,7 +80,7 @@ export function EmptyState({ icon = 'inbox', title, body, action }: EmptyProps) 
       ambientDelay(900),
       springTo(float, 0, 'gentle', false, true),
       ambientDelay(900),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [float, reduce]);

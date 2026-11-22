@@ -20,7 +20,8 @@
  * dernier élément d'une page (vérifié en défilant jusqu'en bas, e2e/navigation.py).
  */
 import { useMemo, useState } from 'react';
-import { Image, Pressable, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, View } from 'react-native';
+import { useAppWidth } from './appFrame';
 import Animated from 'react-native-reanimated';
 import { router } from 'expo-router';
 import type { BottomTabBarProps } from 'expo-router/tabs';
@@ -114,7 +115,8 @@ export function DockActionButton({ route, size = 48, onQuickAdd }: { route: stri
 }
 
 export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
-  const { width } = useWindowDimensions();
+  // largeur de l'APP (cadre téléphone sur le web large), pas de la fenêtre : la barre ne déborde plus du cadre
+  const width = useAppWidth();
   const [open, setOpen] = useState(false);
   const { data: kids } = useTrackedChildren();
   const pregnancy = useActivePregnancy();

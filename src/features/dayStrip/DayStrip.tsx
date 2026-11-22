@@ -23,7 +23,7 @@ function NowPearl({ color }: { color: string }) {
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: 1200, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 3 }); // AMBIENT_LOOPS (src/motion/ambient.ts) : pulsations à l'arrivée puis repos
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);

@@ -6,6 +6,7 @@
  * Décoratif : une seule description pour les lecteurs d'écran.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AMBIENT_LOOPS } from '@/motion/ambient';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 import { useLowPower } from '@/lib/lowPower';
@@ -74,7 +75,7 @@ function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity:
     const loop = Animated.loop(Animated.sequence([
       ambientDelay(900),
       Animated.timing(sweep, { isInteraction: false, toValue: 1, duration: 3400, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [still, h, sweep]);
@@ -129,7 +130,7 @@ function useLoop(ms: number, still: boolean) {
     const anim = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     anim.start();
     return () => anim.stop();
   }, [ms, still, v]);

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { WEB_FRAME, webFrameOn } from '@/components/appFrame';
 import { ActivityIndicator, Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -267,13 +268,11 @@ export default function RootLayout() {
 function WebFrame({ children }: { children: React.ReactNode }) {
   const { width } = useWindowDimensions();
   // Contrôle de la mise en page tablette / ordinateur (tests) : localStorage « toietmoi.frame » = « off »
-  let off = false;
-  try { off = Platform.OS === 'web' && globalThis.localStorage?.getItem('toietmoi.frame') === 'off'; } catch { off = false; }
   const t = useTheme();
-  if (Platform.OS !== 'web' || width < 600 || off) return <>{children}</>;
+  if (!webFrameOn(width)) return <>{children}</>;
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.backgroundAlt, padding: 24 }}>
-      <View style={{ flex: 1, width: 420, maxHeight: 900, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border, shadowColor: t.tokens.shadowColor, shadowOpacity: 0.12, shadowRadius: 40, shadowOffset: { width: 0, height: 16 } }}>
+      <View style={{ flex: 1, width: WEB_FRAME.width, maxHeight: WEB_FRAME.maxHeight, borderRadius: 40, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border, shadowColor: t.tokens.shadowColor, shadowOpacity: 0.12, shadowRadius: 40, shadowOffset: { width: 0, height: 16 } }}>
         {children}
       </View>
     </View>
