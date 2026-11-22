@@ -15,6 +15,7 @@
  */
 import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
+import { BottleHomeCard } from '@/features/quickTrack/BottleLog';
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
@@ -250,6 +251,7 @@ export default function Home() {
           {/* Maintenant : la sieste de l'enfant affiché passe avant tout le reste (en cours ou dernière du jour) */}
           {childScope && child ? <NapHomeCard child={child} /> : null}
           {childScope && child ? <BreastHomeCard child={child} /> : null}
+          {childScope && child ? <BottleHomeCard child={child} /> : null}
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;

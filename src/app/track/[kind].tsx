@@ -8,11 +8,11 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
-import { backend, eq } from '@/lib/backend';
+import { eq } from '@/lib/backend';
 import { BackendError } from '@/lib/backend/types';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { goBack } from '@/lib/links';
-import { useOfflineStore } from '@/lib/offline';
+import { guardedLogUpdate, OfflineEditError } from '@/lib/data/hooks-quickTrack';
 import { useActiveSubject, useAddLog, useChild, useTrackedChildren, useDeleteRow, useInvalidate, useLogs, useRows } from '@/lib/data/hooks';
 import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
@@ -33,6 +33,7 @@ import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { FeedIssuesToday, MilkStockLink } from '@/features/feeding/TrackLinks';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
 import { FeedRoute } from '@/features/breastTrack/FeedRoute';
+import { DiaperLog } from '@/features/quickTrack/DiaperLog';
 import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
@@ -100,7 +101,7 @@ function TrackEntry() {
   const toast = useToast();
   const inv = useInvalidate();
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string; relay?: string }>();
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string; relay?: string; diaper?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: tracked } = useTrackedChildren();
   const { data: bottleChildren } = useBottleChildren();
@@ -277,16 +278,10 @@ function TrackEntry() {
     try {
       if (editing) {
         if (!formReady) return; // entrée pas encore chargée : rien n'est écrasé
-        if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return setError(offlineEdit());
-        // L'enfant et le foyer de l'entrée ne changent jamais lors d'une modification
-        const { household_id: _h, child_id: _c, ...patch } = row; // eslint-disable-line @typescript-eslint/no-unused-vars
-        // F-05 : la mise à jour ne passe que si l'entrée n'a pas changé depuis son ouverture
-        const orig = originalRef.current ?? {};
-        const guards = Object.keys(patch)
-          .filter((k) => k in orig && (orig[k] === null || ['string', 'number', 'boolean'].includes(typeof orig[k])))
-          .map((k) => (orig[k] === null ? { col: k, op: 'is' as const, value: null } : eq(k, orig[k] as string | number | boolean)));
-        const updated = await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id), ...guards]);
-        if (Array.isArray(updated) && updated.length === 0) {
+        // Même écriture que les fiches de correction rapide : réseau exigé, F-05 (entrée inchangée depuis son
+        // ouverture), enfant et foyer jamais modifiés (src/lib/data/hooks-quickTrack.ts)
+        const updated = await guardedLogUpdate(kind, params.id!, row, originalRef.current ?? {});
+        if (updated === 'changed') {
           inv(LOG_TABLE[kind]);
           return setError(tr('u7.track.changedMeanwhile'));
         }
@@ -322,7 +317,7 @@ function TrackEntry() {
         goBack('/(tabs)/track');
       }
     } catch (e) {
-      setError(editing && e instanceof BackendError && e.isNetwork ? offlineEdit() : friendlyError(e, tr('u7.track.saveFail')));
+      setError(editing && (e instanceof OfflineEditError || (e instanceof BackendError && e.isNetwork)) ? offlineEdit() : friendlyError(e, tr('u7.track.saveFail')));
     } finally {
       setSaving(false);
     }
@@ -461,6 +456,9 @@ function TrackEntry() {
           empty={kind === 'diaper' ? tr('u7.track.emptyDiaper') : tr('u7.track.emptyToday')}
         />
       ) : null}
+      {/* Couches : dernier change en évidence + historique horodaté ; une ligne ouvre sa fiche pour corriger l'heure ou
+          le type (`?diaper=` l'ouvre directement, lien depuis la catégorie Soins) */}
+      {!editing && kind === 'diaper' && child ? <DiaperLog key={childId} child={child} focusId={params.diaper ?? null} onFocusDone={() => router.setParams({ diaper: undefined } as never)} /> : null}
       {!editing && (kind === 'diaper' || kind === 'breastfeed') ? <Text variant="label" muted style={{ marginTop: spacing.xs }}>{tr('u7.track.orDetail')}</Text> : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 

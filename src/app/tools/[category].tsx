@@ -12,6 +12,8 @@
  * Compte qui n'est QUE nounou : les outils du foyer ne le concernent pas → « Mes gardes » (comme l'onglet Outils).
  */
 import { SleepCategorySummary } from '@/features/napLive/SleepCategorySummary';
+import { FeedingCategorySummary } from '@/features/quickTrack/FeedingCategorySummary';
+import { CareCategorySummary } from '@/features/quickTrack/CareCategorySummary';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
@@ -99,6 +101,8 @@ function ToolCategory() {
           {premium === false && category !== 'account' ? <View style={{ marginBottom: spacing.sm }}><PreviewBanner /></View> : null}
           {/* Niveau 2 du tracking : résumé de la catégorie pour l'enfant affiché (mêmes sessions que la mini-app) */}
           {category === 'sleep' ? <SleepCategorySummary /> : null}
+          {category === 'feeding' ? <FeedingCategorySummary /> : null}
+          {category === 'care' ? <CareCategorySummary /> : null}
         </>}
         ListEmptyComponent={loading ? <ToolRowsSkeleton rows={5} testID="tools-category-skeleton" /> : (
           <EmptyState icon="compass" title={tr('th.ui.catEmpty')} body={tr('th.ui.catEmptyB')}
