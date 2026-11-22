@@ -22,6 +22,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { Sheet, useToast } from '@/components/Overlays';
 import { BottleNotificationSettings, noRecommendationNote, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { BottleSessionCard, openBottleEntry } from '@/features/bottleSession';
+import { BottleLog, BottleQuickLog } from '@/features/quickTrack/BottleLog';
 import { BottleStatsTiles, childMorphId } from '@/features/bottleStats';
 import { TimePicker } from '@/features/tracking';
 import { useChild, useLogs, useMemberships } from '@/lib/data/hooks';
@@ -46,7 +47,7 @@ type SheetKind = 'start' | 'edit' | null;
 export default function BottleReminderScreen() {
   const toast = useToast();
   const th = useTheme();
-  const params = useLocalSearchParams<{ childId: string; edit?: string }>();
+  const params = useLocalSearchParams<{ childId: string; edit?: string; bottle?: string }>();
   const childId = params.childId ?? '';
   const childrenQ = useBottleChildren();
   const membershipsQ = useMemberships();
@@ -180,6 +181,11 @@ export default function BottleReminderScreen() {
 
         {/* 1. biberon en direct : point focal */}
         <BottleSessionCard key={childId} child={child} onRecordPast={() => (upcoming ? openSlot(childId, upcoming, active?.id) : openBottleEntry(childId, active?.id))} />
+
+        {/* 1 bis. saisie à une main (quantité reprise de la dernière prise) ; dernier biberon et historique, chaque ligne
+            ouvre sa fiche pour corriger l'heure ou la quantité (`?bottle=` l'ouvre directement) */}
+        <BottleQuickLog key={`q-${childId}`} child={child} bottles={week} />
+        <BottleLog key={`l-${childId}`} child={child} bottles={week} focusId={params.bottle ?? null} onFocusDone={() => router.setParams({ bottle: undefined } as never)} />
 
         {/* 2. synthèse : période + tuiles (ouvrent l'historique) */}
         {weekQ.isLoading && !weekQ.data ? <Skeleton kind="card" rows={1} /> : weekQ.isError && !weekQ.data ? (
