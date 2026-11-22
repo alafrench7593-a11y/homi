@@ -16,6 +16,7 @@ import { ICON_FILL, ICON_STROKE } from '@/brand/icons';
 import { auraMotion, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { AURA } from '@/theme/toolLogo';
+import { AuraBot } from './AuraBot';
 
 /** Bulle arrondie (même rayon que les pictogrammes HOMI) et éclat. */
 export const AURA_BUBBLE = 'M4.25 9.25A4.75 4.75 0 0 1 9 4.5h4.5a4.75 4.75 0 0 1 4.75 4.75v2.5a4.75 4.75 0 0 1-4.75 4.75H10.2l-3.7 3v-3.55A4.75 4.75 0 0 1 4.25 11.75z';
@@ -24,7 +25,15 @@ export const AURA_DOTS: [number, number, number][] = [[8.6, 10.5, 0.95], [11.25,
 /** Éclat à quatre branches de la signature (grille 64). */
 export const AURA_STAR = 'M32 18 C33 27 37 31 46 32 C37 33 33 37 32 46 C31 37 27 33 18 32 C27 31 31 27 32 18 Z';
 
-export function AuraGlyph({ size = 24, color, tone, active = false }: { size?: number; color?: string; tone?: string | null; active?: boolean }) {
+/**
+ * Pictogramme d'Aura : depuis le 22/11/2026 (décision de la propriétaire), le ROBOT d'Aura remplace la bulle partout où
+ * l'IA apparaît ; immobile, au moins 24 px pour rester lisible. L'ancien tracé reste dans `AuraBubbleGlyph`.
+ */
+export function AuraGlyph({ size = 24 }: { size?: number; color?: string; tone?: string | null; active?: boolean }) {
+  return <AuraBot size={Math.max(24, size + 4)} still />;
+}
+
+export function AuraBubbleGlyph({ size = 24, color, tone, active = false }: { size?: number; color?: string; tone?: string | null; active?: boolean }) {
   const t = useTheme();
   const ink = color ?? t.colors.text;
   const plate = tone === undefined ? t.colors.primary : tone;
@@ -39,7 +48,7 @@ export function AuraGlyph({ size = 24, color, tone, active = false }: { size?: n
 
 /** Avatar d'Aura : la signature animée (`AuraOrb`). `thinking` : Aura prépare une réponse. */
 export function AuraAvatar({ size = 40, thinking = false, testID }: { size?: number; thinking?: boolean; testID?: string }) {
-  return <AuraOrb size={size} thinking={thinking} testID={testID} />;
+  return <AuraBot size={size} state={thinking ? 'thinking' : 'idle'} still={!thinking} testID={testID} />;
 }
 
 /**
@@ -52,8 +61,14 @@ export function AuraAvatar({ size = 40, thinking = false, testID }: { size?: num
  * Couleurs : marque d'Aura (`AURA`, src/theme/toolLogo.ts), identiques dans les cinq palettes.
  */
 export function AuraOrb({ size = 44, thinking = false, gather = false, testID }: { size?: number; thinking?: boolean; testID?: string;
-  /** Arrivée sur le paywall : les trois lumières se rapprochent dans le verre puis l'orbe se stabilise (une fois, aucune boucle) */
+  /** Arrivée (paywall) : le robot fait coucou une fois puis se pose (aucune boucle) */
   gather?: boolean }) {
+  // 22/11/2026 : le robot d'Aura remplace la lentille partout (immobile au repos ; coucou à l'arrivée ; réfléchit)
+  return <AuraBot size={size} state={thinking ? 'thinking' : gather ? 'greet' : 'idle'} still={!thinking && !gather} testID={testID} />;
+}
+
+/** Ancienne signature (lentille de verre), gardée pour la galerie de contrôle. */
+export function AuraLens({ size = 44, thinking = false, gather = false, testID }: { size?: number; thinking?: boolean; testID?: string; gather?: boolean }) {
   const m = useMotion();
   const uid = `ao${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const enter = useSharedValue(m.level === 'full' ? 0 : 1);

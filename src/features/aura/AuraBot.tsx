@@ -5,7 +5,7 @@
  * poudré, visière ovale bleu de nuit (l'identité d'Aura) tramée de points fins ; ses YEUX et sa BOUCHE sont des points
  * lumineux arrondis corail et ambre ; un cœur turquoise brille sur son torse en galet ; deux petits bras arrondis à
  * mains simples ; une lueur corail sous le corps et une ombre de contact au sol (il ne touche pas terre).
- * La signature `AuraOrb` (lentille) reste le signe d'Aura ailleurs dans l'application ; le robot est le personnage du chat.
+ * La signature `AuraOrb` dessine désormais le robot (22/11/2026) : le robot est l'image d'Aura PARTOUT dans l'application.
  *
  * États (`state`) :
  *  - idle      : flotte doucement, cligne des yeux de temps en temps, le cœur pulse à peine ;

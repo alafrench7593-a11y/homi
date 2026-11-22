@@ -24,6 +24,7 @@ import { Image, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-n
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 import { HOMI_ICONS, type HomiIconName } from '@/brand/icons/paths';
+import { AuraBot } from '@/features/aura/AuraBot';
 import type { HomiIconDef } from '@/brand/icons/geometry';
 import { glassPlate } from '@/brand/toolGlass/glass';
 import { TOOL_SYMBOLS } from '@/brand/toolGlass/symbols';
@@ -70,7 +71,21 @@ export interface ToolLogoProps {
   testID?: string;
 }
 
-export function ToolLogo({ id, icon: forcedIcon, category: forcedCat, audience, size = 44, variant, play = 0, running = false, pressed = false, disabled = false, urgent, motion: forcedMotion, style, testID }: ToolLogoProps) {
+/** Logos de la famille Aura (outils d'IA) : depuis le 22/11/2026, le ROBOT d'Aura remplace la bulle, partout. */
+export function ToolLogo(props: ToolLogoProps) {
+  const cat = props.category ?? toolLogoDef(props.id, props.urgent)?.category;
+  if (cat === 'aura') {
+    const size = props.size ?? 44;
+    return (
+      <View style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, props.style]} testID={props.testID}>
+        <AuraBot size={size} still />
+      </View>
+    );
+  }
+  return <ToolLogoGlass {...props} />;
+}
+
+function ToolLogoGlass({ id, icon: forcedIcon, category: forcedCat, audience, size = 44, variant, play = 0, running = false, pressed = false, disabled = false, urgent, motion: forcedMotion, style, testID }: ToolLogoProps) {
   const t = useTheme();
   const m = useMotion();
   const def = toolLogoDef(id, urgent);

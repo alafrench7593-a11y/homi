@@ -24,6 +24,7 @@ import { AURA } from '@/theme/toolLogo';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { AuraOrb } from './AuraMark';
+import { AuraBot } from './AuraBot';
 import { auraToolContext, introChoices, introRoute, shouldShowAuraIntro } from './intro';
 import { dictationMode } from './voice';
 
@@ -62,6 +63,11 @@ export function AuraToolButton({ toolId }: { toolId: string }) {
  * rapprochent du centre puis se stabilisent ; l'éclat apparaît ensuite. Une seule fois ; Réduire les animations : pose finale.
  */
 export function AuraIntroLens({ size = 112, testID = 'aura-intro-lens' }: { size?: number; testID?: string }) {
+  // 22/11/2026 : le robot d'Aura remplace la lentille (coucou une fois, puis pose)
+  return <AuraBot size={size} state="greet" testID={testID} />;
+}
+
+export function AuraIntroLensGlass({ size = 112, testID = 'aura-intro-lens' }: { size?: number; testID?: string }) {
   const m = useMotion();
   const k = useSharedValue(m.level === 'full' ? 0 : 1);
   const star = useSharedValue(m.level === 'full' ? 0 : 1);
