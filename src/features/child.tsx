@@ -12,9 +12,11 @@ import { TodaySummary } from '@/components/MiniApp';
 import React, { useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
-import { LineChart, StatPill } from '@/components/Charts';
-import { GrowthChart } from '@/components/GrowthChart';
-import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
+import { StatPill } from '@/components/Charts';
+import { MeasureCurve, MeasureTray, type CurveReference } from '@/components/measureCurve';
+import { ageInMonths, describePosition, referenceCurves, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator, type Sex } from '@/lib/domain/growthStandards';
+import { dayMs, DAY_MS, toCurvePoints } from '@/lib/domain/measureCurve';
+import { useCorrectMeasure } from '@/lib/data/hooks-measures';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { t as tr, formatDate, formatNumber, type TKey } from '@/i18n';
@@ -194,11 +196,25 @@ function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; on
 // ---------------------------------------------------------------- Croissance
 type Metric = 'weight_kg' | 'height_cm' | 'head_cm';
 const WHO_IND: Record<Metric, GrowthIndicator> = { weight_kg: 'weight', height_cm: 'length', head_cm: 'head' };
-const METRICS: { key: Metric; unit: string; min: number; max: number; digits: number }[] = [
-  { key: 'weight_kg', unit: 'kg', min: 0.3, max: 80, digits: 3 },
-  { key: 'height_cm', unit: 'cm', min: 20, max: 180, digits: 1 },
-  { key: 'head_cm', unit: 'cm', min: 20, max: 65, digits: 1 },
+const METRICS: { key: Metric; unit: string; min: number; max: number; digits: number; step: number; minSpan: number }[] = [
+  { key: 'weight_kg', unit: 'kg', min: 0.3, max: 80, digits: 3, step: 0.05, minSpan: 1 },
+  { key: 'height_cm', unit: 'cm', min: 20, max: 180, digits: 1, step: 0.5, minSpan: 4 },
+  { key: 'head_cm', unit: 'cm', min: 20, max: 65, digits: 1, step: 0.5, minSpan: 2 },
 ];
+
+/**
+ * Repère OMS discret pour la courbe datée : bande 15e–85e et médiane, de l'âge de la première à celui de la dernière
+ * mesure (bornes 0–60 mois), converties en dates depuis la naissance. Aucune interprétation n'y est attachée.
+ */
+function whoReference(ind: GrowthIndicator, sex: Sex, birthISO: string, fromISO: string, toISO: string): CurveReference | null {
+  const a = Math.max(0, ageInMonths(birthISO, fromISO) - 0.5);
+  const b = Math.min(WHO_MAX_MONTHS, ageInMonths(birthISO, toISO) + 0.5);
+  if (!(b > a)) return null;
+  const birth = dayMs(birthISO);
+  const at = (m: number) => birth + m * (365.25 / 12) * DAY_MS;
+  const curves = referenceCurves(ind, sex, a, b, Math.max(0.1, (b - a) / 40));
+  return { band: curves.map((c) => ({ x: at(c.m), lo: c.v[15], hi: c.v[85] })), median: curves.map((c) => ({ x: at(c.m), y: c.v[50] })) };
+}
 const metricLabel = (k: Metric) => tr(`u7.child.metric.${k}` as TKey);
 
 export function GrowthTab({ child }: { child: Child }) {
@@ -236,9 +252,15 @@ export function GrowthTab({ child }: { child: Child }) {
   const tooOld = (measurements ?? []).some((x) => x[metric] != null && ageInMonths(child.birth_date, x.measured_on) > WHO_MAX_MONTHS);
   const lastAge = agePoints.slice().sort((a, b) => a.m - b.m).at(-1);
   const position = whoSex && lastAge ? describePosition(WHO_IND[metric], whoSex, lastAge.m, lastAge.y) : null;
-  const points = (measurements ?? [])
-    .filter((x) => x[metric] != null)
-    .map((x) => ({ x: Date.parse(`${x.measured_on.slice(0, 10)}T00:00:00Z`), y: Number(x[metric]), label: fd(x.measured_on, false) }));
+  // Courbe : une mesure enregistrée = un point (aucune interpolation) ; repère OMS discret si affiché
+  const curvePoints = useMemo(() => toCurvePoints(measurements ?? [], (x) => ({ id: x.id, date: x.measured_on, value: x[metric], note: x.note })), [measurements, metric]);
+  const reference = useMemo(() => (whoOn && whoSex && curvePoints.length
+    ? whoReference(WHO_IND[metric], whoSex, child.birth_date, curvePoints[0].date, curvePoints[curvePoints.length - 1].date) : null), [whoOn, whoSex, curvePoints, metric, child.birth_date]);
+  const correct = useCorrectMeasure('child_measurements');
+  const [trayId, setTrayId] = useState<string | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const trayRow = trayId ? (measurements ?? []).find((x) => x.id === trayId) ?? null : null;
+  const openMeasure = (id: string) => { setTrayId(id); setTrayOpen(true); };
 
   // Dernière valeur connue de chaque mesure (saisies de la famille) : affichée en tuiles et reprise d'un geste dans le formulaire
   const sortedM = [...(measurements ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on));
@@ -304,20 +326,19 @@ export function GrowthTab({ child }: { child: Child }) {
         { icon: 'circle', value: lastOf('head_cm') ? `${fmt(lastOf('head_cm')!.head_cm!)} cm` : '—', label: tr('u7.child.headShort') },
       ]} />
       <Segmented label={tr('u7.child.displayedMeasure')} value={metric} onChange={setMetric} options={METRICS.map((x) => ({ value: x.key, label: x.key === 'head_cm' ? tr('u7.child.headShort') : metricLabel(x.key) }))} />
-      {whoOn && whoSex && agePoints.length >= 1 ? (
-        <Card>
-          <Text weight="bold">{tr('u7.child.whoRef', { label: metricLabel(metric), unit: m.unit })}</Text>
-          <GrowthChart indicator={WHO_IND[metric]} sex={whoSex} points={agePoints} unit={m.unit} accessibilityLabel={tr('u7.child.whoA11y', { label: metricLabel(metric), name: child.first_name })} />
-          {position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('u7.child.lastMeasureText', { text: `${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}` })}</Text> : null}
-        </Card>
-      ) : points.length >= 2 ? (
-        <Card>
-          <Text weight="bold">{metricLabel(metric)} ({m.unit})</Text>
-          <LineChart points={points} unit={m.unit} accessibilityLabel={tr('u7.child.chartA11y', { label: metricLabel(metric).toLowerCase(), name: child.first_name })} formatX={(x) => formatDate(x, { month: 'short', year: '2-digit', timeZone: 'UTC' })} />
-        </Card>
-      ) : (
-        <Card tone="soft"><Text muted>{points.length === 1 ? tr('u7.child.addSecond') : tr('u7.child.addTwo')}</Text></Card>
-      )}
+      <Card testID="growth-curve-card">
+        <Text weight="bold">{whoOn && whoSex && reference ? tr('u7.child.whoRef', { label: metricLabel(metric), unit: m.unit }) : `${metricLabel(metric)} (${m.unit})`}</Text>
+        <View style={{ marginTop: spacing.sm }}>
+          <MeasureCurve key={metric} points={curvePoints} unit={m.unit} digits={m.digits} minYSpan={m.minSpan} periods={['3m', '1y']} onOpen={openMeasure}
+            title={tr('ct.growth.title', { label: metricLabel(metric), name: child.first_name })}
+            reference={reference} referenceLabel={tr('ct.growth.ref')} testID="growth-curve" />
+        </View>
+        {whoOn && position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('u7.child.lastMeasureText', { text: `${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}` })}</Text> : null}
+      </Card>
+      <MeasureTray testID="growth-tray" open={trayOpen} onOpenChange={setTrayOpen} title={metricLabel(metric)} unit={m.unit} digits={m.digits} step={m.step} min={m.min} max={m.max}
+        item={trayRow && trayRow[metric] != null ? { id: trayRow.id, value: Number(trayRow[metric]), date: trayRow.measured_on, note: trayRow.note, details: [trayRow.source === 'professional' ? tr('u7.child.professional') : tr('u7.child.home')] } : null}
+        onSave={async (it, v) => { await correct.mutateAsync({ id: it.id, patch: { [metric]: v } }); }}
+        onSaved={() => toast(tr('ct.edit.saved'), 'success')} />
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Text variant="small" weight="medium" style={{ flex: 1 }}>{tr('u7.child.showWho')}</Text>
         <Toggle value={whoOn} onChange={setWhoOn} label={tr('u7.child.showWhoA11y')} />
@@ -352,6 +373,7 @@ export function GrowthTab({ child }: { child: Child }) {
         <MotionList>{(measurements ?? []).slice().reverse().map((x) => (
           <MotionItem key={x.id}><ListRow
             key={x.id}
+            onPress={x[metric] != null ? () => openMeasure(x.id) : undefined}
             title={[x.weight_kg != null ? `${fmt(x.weight_kg, 3)} kg` : null, x.height_cm != null ? `${fmt(x.height_cm)} cm` : null, x.head_cm != null ? tr('u7.child.hc', { v: fmt(x.head_cm) }) : null].filter(Boolean).join(' · ')}
             subtitle={[fd(x.measured_on), x.source === 'professional' ? tr('u7.child.pro') : tr('u7.child.homeLower'), x.note].filter(Boolean).join(' · ')}
             right={<IconButton icon="trash-2" label={tr('u7.child.delMeasureOn', { date: fd(x.measured_on) })} size={18} onPress={() => remove(x)} />}

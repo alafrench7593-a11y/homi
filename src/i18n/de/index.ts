@@ -104,3 +104,4 @@ export { mestools } from './mestools';
 export { account5 } from './account5';
 export { scanAura } from './scanAura';
 export { napnow } from './napnow';
+export { curveTrack } from './curveTrack';
