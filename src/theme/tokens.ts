@@ -3,7 +3,7 @@
  *
  * Tout ce qui est couleur d'interface part d'ici : `PALETTE_SPECS[thème][clair|sombre|nuit]` → `buildTheme` →
  * `useTheme()` (`tokens`, `colors`, `material`). Aucun composant ne connaît le nom d'un thème.
- * Thèmes (ordre du sélecteur « Personnaliser l'accueil ») : Blanc nacré, Noir graphite, Beige sable, Olive HOMI (défaut
+ * Thèmes (ordre du sélecteur « Personnaliser l'accueil ») : Blanc nacré, Noir graphite, Beige sable (Olive HOMI retirée le 22/11/2026 ; défaut : Blanc nacré
  * d'une nouvelle installation), Brume lavande, Bleu glacier, Rose poudré, Nuit améthyste — couleurs de départ de la
  * propriétaire dans `THEME_STARTS`. Noir graphite et Nuit améthyste sont sombres par nature (`effectiveMode`).
  * Jetons partagés : fond, surfaces, contours, texte, texte secondaire, accent, texte sur accent, LUEUR INTERNE (`glow`).
@@ -106,7 +106,7 @@ export const palette = {
 // ======================================================================== Thèmes d'accueil (v7, huit thèmes)
 /**
  * v7 (21/11/2026, brief « Refonte Apple premium et intégration d'Aura ») : HUIT thèmes, dans l'ordre du sélecteur
- * « Personnaliser l'accueil » — Blanc nacré, Noir graphite, Beige sable, Olive HOMI, Brume lavande, Bleu glacier,
+ * « Personnaliser l'accueil » — Blanc nacré, Noir graphite, Beige sable, Brume lavande, Bleu glacier,
  * Rose poudré, Nuit améthyste. Ils REMPLACENT les cinq palettes v6 (même mécanique : `PALETTE_SPECS` → `buildTheme` →
  * `useTheme()`), avec les couleurs de départ de la propriétaire (fond / surface / accent / texte) reprises telles quelles.
  *
@@ -118,20 +118,22 @@ export const palette = {
  *  - `glow` : LUEUR INTERNE (pictogrammes de verre, lentille de l'onglet actif, bouton +) — décor, jamais un texte.
  *
  * Migration (`migratePalette`) : chaque ancienne palette devient le thème le plus proche (v6 Rose poudré et pêche → Rose
- * poudré, Lavande → Brume lavande, Bleu nuit → Bleu glacier, Sauge → Olive HOMI, Champagne → Beige sable ; v3/v4 →
- * Rose poudré, comme avant). Une nouvelle installation part d'Olive HOMI, la référence de la propriétaire.
+ * poudré, Lavande → Brume lavande, Bleu nuit → Bleu glacier, Sauge → Blanc nacré, Champagne → Beige sable ; v3/v4 →
+ * Rose poudré, comme avant). Une nouvelle installation part de Blanc nacré (noir en apparence sombre).
  *
  * AUCUN composant ne connaît le nom d'un thème : ils lisent `useTheme()` (`tokens`, `colors`, `material`). Seuls ce
  * fichier, le fournisseur de thème, le magasin, le sélecteur (src/features/themePicker) et Réglages → Apparence
  * manipulent `PaletteName`.
  */
-export type PaletteName = 'nacre' | 'graphite' | 'sable' | 'olive' | 'lavande' | 'glacier' | 'rose' | 'amethyste';
+export type PaletteName = 'nacre' | 'graphite' | 'sable' | 'lavande' | 'glacier' | 'rose' | 'amethyste';
 /** Choix enregistré : un thème fixe, ou « Adaptatif » (le thème suit le profil affiché). */
 export type PaletteChoice = 'adaptive' | PaletteName;
 /** Ordre du sélecteur (deux colonnes, ligne par ligne) = ordre du tableau de la propriétaire. */
-export const PALETTE_NAMES: PaletteName[] = ['nacre', 'graphite', 'sable', 'olive', 'lavande', 'glacier', 'rose', 'amethyste'];
-export const SIGNATURE_PALETTE: PaletteName = 'olive';
-/** Nouvelle installation : Olive HOMI. Les personnes déjà inscrites gardent leur choix (migré, voir `migratePalette`). */
+export const PALETTE_NAMES: PaletteName[] = ['nacre', 'graphite', 'sable', 'lavande', 'glacier', 'rose', 'amethyste'];
+/** Palette de marque et par défaut (22/11/2026, décision de la propriétaire : « noir ou blanc ») : Nacre — blanc nacré
+ * en clair, noir profond en sombre, accent ardoise. L'olive est retirée de l'application. */
+export const SIGNATURE_PALETTE: PaletteName = 'nacre';
+/** Nouvelle installation : Blanc nacré. Les personnes déjà inscrites gardent leur choix (migré, voir `migratePalette`). */
 export const DEFAULT_PALETTE: PaletteName = SIGNATURE_PALETTE;
 
 export interface StatusColors { success: Hex; warning: Hex; danger: Hex; info: Hex }
@@ -215,7 +217,7 @@ function lightTone(s: {
     lens: mixHex(s.surface, WHITE, 0.75), iconWell: mixHex(paper, s.decor[0], 0.2),
     tint: { soft: mixHex(paper, s.decor[0], 0.13), lavender: mixHex(paper, s.decor[2], 0.16), gold: mixHex(paper, '#F0BC6C', 0.16) },
     accent: s.accent, third: s.third,
-    // l'action principale EST l'accent du thème (référence : « J'accepte » olive sur l'accueil Olive HOMI)
+    // l'action principale EST l'accent du thème (référence : « J'accepte » sur l'accueil)
     action: { fill: s.accent[0], text: WHITE }, onHero: { fill: WHITE, text: s.text },
     gold: s.gold, heart: s.heart, overlay: alpha(s.text, 0.36), shadowInk: rgbOf(s.line),
     status: s.status,
@@ -268,7 +270,6 @@ export const THEME_STARTS: Record<PaletteName, { bg: Hex; surface: Hex; accent: 
   nacre: { bg: '#F4F5F8', surface: '#FFFFFF', accent: '#424957', text: '#191D26' },
   graphite: { bg: '#111214', surface: '#24262B', accent: '#E3E5EB', text: '#F5F6F8' },
   sable: { bg: '#F6EDE2', surface: '#FFF6E9', accent: '#674B36', text: '#2D2119' },
-  olive: { bg: '#EBEDDF', surface: '#F8F5E8', accent: '#485532', text: '#252D1A' },
   lavande: { bg: '#F7F4FB', surface: '#EDE4F6', accent: '#674A8B', text: '#352345' },
   glacier: { bg: '#EDF4FA', surface: '#DBE9F4', accent: '#315B79', text: '#172C3B' },
   rose: { bg: '#FAF0F3', surface: '#F3DDE5', accent: '#854964', text: '#392331' },
@@ -305,19 +306,6 @@ const SABLE_DARK = darkTone({
   bg: '#181410', surface: '#221C16', raised: '#2D261E', sunken: '#120F0B', text: '#F6EFE6', textMuted: '#C5B8A7', line: '#FFEBD2', ink: '#2A2118',
   accent: ['#E7C9A6', '#EFBBA4'], third: '#DCC0DF', gold: '#E0B062', heart: '#F2A6BA',
   status: { success: '#9BDD9C', warning: '#FFB86B', danger: '#FF857C', info: '#A6C6F2' },
-});
-
-// ---------------------------------------------------------------- 4. Olive HOMI (référence de la démo)
-const OLIVE_DECOR: [Hex, Hex, Hex] = ['#B5C18F', '#D9CB93', '#A7B89C'];
-const OLIVE_LIGHT = lightTone({
-  ...S.olive, sunken: '#E0E3D1', textMuted: '#4D5640', line: '#34401F',
-  accent: [S.olive.accent, '#6A5418'], third: '#664B79', gold: '#6C500E', heart: '#9C3550',
-  status: { success: '#1D6233', warning: '#844400', danger: '#B3111B', info: '#1F5598' }, decor: OLIVE_DECOR,
-});
-const OLIVE_DARK = darkTone({
-  bg: '#13160F', surface: '#1C2117', raised: '#262C1F', sunken: '#0E110B', text: '#EEF0E4', textMuted: '#B7BDA6', line: '#E4ECCF', ink: S.olive.text,
-  accent: ['#C5D49B', '#E3D49A'], third: '#D9C2E8', gold: '#E8C583', heart: '#F2A6BA',
-  status: { success: '#8FE0A4', warning: '#F5C872', danger: '#FF857C', info: '#9FC6F5' },
 });
 
 // ---------------------------------------------------------------- 5. Brume lavande
@@ -370,7 +358,6 @@ export const PALETTE_SPECS: Record<PaletteName, PaletteSpec> = {
   nacre: { scheme: 'light', decor: NACRE_DECOR, wash: ['#E9ECF2', '#E4EAF4', '#EEEAF5'], glow: { light: '#FFFFFF', dark: '#E8EEFF' }, swatch: ['#FFFFFF', '#DCE0E8'], light: NACRE_LIGHT, dark: NACRE_DARK, night: nightTone(NACRE_DARK) },
   graphite: { scheme: 'dark', decor: ['#8E939E', '#6F7684', '#B9BEC9'], wash: ['#2C2F35', '#292C33', '#30323A'], glow: { light: '#FFE3A6', dark: '#FFE3A6' }, swatch: ['#55585F', '#26282D'], light: GRAPHITE_DARK, dark: GRAPHITE_DARK, night: nightTone(GRAPHITE_DARK) },
   sable: { scheme: 'light', decor: SABLE_DECOR, wash: ['#F9EFDB', '#FBEAE1', '#F2EAE1'], glow: { light: '#FFF1D2', dark: '#FFE2B8' }, swatch: ['#FBF1E6', '#E9D2BC'], light: SABLE_LIGHT, dark: SABLE_DARK, night: nightTone(SABLE_DARK) },
-  olive: { scheme: 'light', decor: OLIVE_DECOR, wash: ['#EDF0DF', '#F5EFD6', '#E8EEE3'], glow: { light: '#FFF2B8', dark: '#F6E7A4' }, swatch: ['#64713E', '#48532C'], light: OLIVE_LIGHT, dark: OLIVE_DARK, night: nightTone(OLIVE_DARK) },
   lavande: { scheme: 'light', decor: LAVANDE_DECOR, wash: ['#ECE5FB', '#F8E6F8', '#E4EAFC'], glow: { light: '#FFF0D2', dark: '#FFE6C4' }, swatch: ['#EDE6FA', '#CBB9EC'], light: LAVANDE_LIGHT, dark: LAVANDE_DARK, night: nightTone(LAVANDE_DARK) },
   glacier: { scheme: 'light', decor: GLACIER_DECOR, wash: ['#DDEEF7', '#DCEFF2', '#E8ECFA'], glow: { light: '#FFFFFF', dark: '#E2F3FF' }, swatch: ['#EAF3FA', '#BCD3E6'], light: GLACIER_LIGHT, dark: GLACIER_DARK, night: nightTone(GLACIER_DARK) },
   rose: { scheme: 'light', decor: ROSE_DECOR, wash: [NEUTRALS.mist, NEUTRALS.peach, NEUTRALS.lilac], glow: { light: '#FFE9D6', dark: '#FFD9C8' }, swatch: ['#F8E7EC', '#E5BFCD'], light: ROSE_LIGHT, dark: ROSE_DARK, night: nightTone(ROSE_DARK) },
@@ -390,12 +377,14 @@ export const PALETTES = Object.fromEntries(
 
 /**
  * Préférences enregistrées par les versions précédentes → thème le plus proche (sans perdre le choix de la personne) :
- *  - v6 : homi (Rose poudré et pêche) → rose, lavande → lavande, nuit (Bleu nuit et cyan) → glacier, sauge → olive,
+ *  - v6 : homi (Rose poudré et pêche) → rose, lavande → lavande, nuit (Bleu nuit et cyan) → glacier, sauge → nacre (Olive retirée), olive → nacre,
  *    champagne → sable ;
  *  - v3 / v4 (déjà lues comme « Rose poudré et pêche » en v6) → rose.
  */
 export const LEGACY_PALETTE: Record<string, PaletteName> = {
-  homi: 'rose', nuit: 'glacier', sauge: 'olive', champagne: 'sable',
+  homi: 'rose', nuit: 'glacier', sauge: 'nacre', champagne: 'sable',
+  // Olive HOMI retirée le 22/11/2026 : le choix enregistré passe à la palette par défaut (Nacre)
+  olive: 'nacre',
   auto: 'rose', peche: 'rose', lilas: 'rose', lagune: 'rose', ambre: 'rose',
   turquoise: 'rose', menthe: 'rose', aurore: 'rose', iris: 'rose', crepuscule: 'rose',
 };
@@ -416,10 +405,10 @@ export type ProfileKind = 'me' | 'pregnancy' | 'child' | 'postpartum' | 'family'
 export const PROFILE_KINDS: ProfileKind[] = ['me', 'pregnancy', 'child', 'postpartum', 'family'];
 /**
  * Mode Adaptatif — correspondance FIXE profil → thème (testée), reprise de la v6 avec les thèmes les plus proches :
- * moi → Rose poudré · grossesse → Brume lavande · enfant → Olive HOMI · post-partum → Beige sable · famille → Bleu glacier.
+ * moi → Rose poudré · grossesse → Brume lavande · enfant → Nacre (Olive retirée le 22/11/2026) · post-partum → Beige sable · famille → Bleu glacier.
  */
 export const ADAPTIVE_PALETTE: Record<ProfileKind, PaletteName> = {
-  me: 'rose', pregnancy: 'lavande', child: 'olive', postpartum: 'sable', family: 'glacier',
+  me: 'rose', pregnancy: 'lavande', child: 'nacre', postpartum: 'sable', family: 'glacier',
 };
 /** Thème affiché pour un choix et un profil (pur, testé). */
 export function resolvePalette(choice: string | null | undefined, profile: ProfileKind | null | undefined): PaletteName {
@@ -969,7 +958,7 @@ export function innerLight(t: Theme, tint: string): { color: string; opacity: nu
 /**
  * Sélecteur de thème (« Personnaliser l'accueil », référence 01 de la propriétaire, 21/11/2026) : vignette active
  * cerclée d'un LISERÉ LUMINEUX clair et doré, coche dans une pastille nacrée cerclée d'or. Mêmes valeurs pour les huit
- * vignettes (elles montrent chacune leur thème, pas celui de l'app). Contraste : coche encre sur nacre 15,0:1, cercle d’or sur vignette olive 5,0:1 ;
+ * vignettes (elles montrent chacune leur thème, pas celui de l'app). Contraste : coche encre sur nacre 15,0:1, cercle d’or sur vignette sable ;
  * pastille nacrée cerclée d'or lisible sur les vignettes claires comme sombres (le contour d'or et la coche portent
  * la sélection, avec l'état « coché » annoncé).
  */

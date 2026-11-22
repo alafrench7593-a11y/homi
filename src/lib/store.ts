@@ -182,7 +182,7 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       themePreference: 'system', // v2 : suit le réglage clair / sombre du téléphone
-      palettePreference: DEFAULT_PALETTE, // v7 : Olive HOMI pour une nouvelle installation (les choix existants sont migrés)
+      palettePreference: DEFAULT_PALETTE, // Blanc nacré pour une nouvelle installation (Olive retirée le 22/11/2026) (les choix existants sont migrés)
       setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, themePreview: null, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
       themePreview: null,
       previewTheme: (p) => set((st) => ((PALETTE_NAMES as string[]).includes(p) && st.themePreview !== p ? { themePreview: p } : {})),

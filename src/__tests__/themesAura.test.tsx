@@ -57,16 +57,16 @@ async function press(r: ReactTestRenderer, id: string) {
 }
 
 beforeEach(() => {
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'olive', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null, auraIntroSeen: {}, auraIntroRequested: false }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'glacier', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null, auraIntroSeen: {}, auraIntroRequested: false }); });
 });
 
 describe('sélecteur « Personnaliser l’accueil »', () => {
   it('huit thèmes dans l’ordre du tableau ; libellé de chaque vignette ≥ 4,5:1 sur ses deux arrêts', () => {
-    expect(PICKER_THEMES).toEqual(['nacre', 'graphite', 'sable', 'olive', 'lavande', 'glacier', 'rose', 'amethyste']);
+    expect(PICKER_THEMES).toEqual(['nacre', 'graphite', 'sable', 'lavande', 'glacier', 'rose', 'amethyste']);
     const weak = PICKER_THEMES.map((p) => [p, swatchInkContrast(p)] as const).filter(([, r]) => r < 4.5);
     expect(weak).toEqual([]);
-    expect(pickerSelected(null, 'olive', 'me')).toBe('olive');
-    expect(pickerSelected('sable', 'olive', 'me')).toBe('sable');
+    expect(pickerSelected(null, 'glacier', 'me')).toBe('glacier');
+    expect(pickerSelected('sable', 'glacier', 'me')).toBe('sable');
     expect(pickerSelected(null, 'adaptive', 'pregnancy')).toBe('lavande');
   });
 
@@ -76,15 +76,15 @@ describe('sélecteur « Personnaliser l’accueil »', () => {
     for (const p of PALETTE_NAMES) expect(byId(r, `theme-${p}`).length).toBeGreaterThan(0);
     await press(r, 'theme-amethyste');
     expect(seen!.colors.background).toBe(THEME_STARTS.amethyste.bg);
-    expect(useUiStore.getState().palettePreference).toBe('olive');
+    expect(useUiStore.getState().palettePreference).toBe('glacier');
     // coche perceptible sans la couleur : état « coché » annoncé
     expect(byId(r, 'theme-amethyste')[0].props.accessibilityState).toMatchObject({ checked: true });
-    expect(byId(r, 'theme-olive')[0].props.accessibilityState).toMatchObject({ checked: false });
+    expect(byId(r, 'theme-glacier')[0].props.accessibilityState).toMatchObject({ checked: false });
     // fermeture sans validation (voile, geste, retour)
     await act(async () => { useUiStore.getState().cancelThemePreview(); });
     await flush(80);
-    expect(seen!.colors.background).toBe(THEME_STARTS.olive.bg);
-    expect(useUiStore.getState().palettePreference).toBe('olive');
+    expect(seen!.colors.background).toBe(THEME_STARTS.glacier.bg);
+    expect(useUiStore.getState().palettePreference).toBe('glacier');
     r.unmount();
   });
 

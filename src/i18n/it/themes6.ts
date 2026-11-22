@@ -8,8 +8,6 @@ export const themes6 = {
   'v6.palette.graphite.d': "Nero profondo, grigio luminoso, sempre scuro",
   'v6.palette.sable': "Beige sabbia",
   'v6.palette.sable.d': "Sabbia calda, crema, marrone cacao",
-  'v6.palette.olive': "Oliva HOMI",
-  'v6.palette.olive.d': "Verde oliva, crema morbida: la firma di HOMI",
   'v6.palette.lavande': "Nebbia lavanda",
   'v6.palette.lavande.d': "Lavanda nebbiosa, malva, viola profondo",
   'v6.palette.glacier': "Blu ghiaccio",

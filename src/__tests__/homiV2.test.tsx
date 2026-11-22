@@ -86,11 +86,11 @@ describe('préférences d’apparence (v7 : huit thèmes, Système / Clair / Som
     expect(s().appearanceByUser.alice).toEqual({ theme: 'light', palette: 'rose' }); // premier compte : garde l'existant (migré)
     act(() => { s().setTheme('dark'); });
     act(() => { s().switchAppearanceOwner('bob'); });
-    expect([s().themePreference, s().palettePreference]).toEqual(['system', 'olive']);
+    expect([s().themePreference, s().palettePreference]).toEqual(['system', 'nacre']);
     act(() => { s().setTheme('system'); });
     act(() => { s().switchAppearanceOwner('alice'); });
     expect([s().themePreference, s().palettePreference]).toEqual(['dark', 'rose']);
-    expect(s().appearanceByUser.bob).toEqual({ theme: 'system', palette: 'olive' });
+    expect(s().appearanceByUser.bob).toEqual({ theme: 'system', palette: 'nacre' });
   });
   it('migration v7 : chaque palette enregistrée (compte actif et autres comptes) devient le thème le plus proche, l’apparence est conservée', () => {
     const out = migrateAppearance({
@@ -100,7 +100,7 @@ describe('préférences d’apparence (v7 : huit thèmes, Système / Clair / Som
         carla: { theme: 'light', palette: 'champagne' as never }, dan: { theme: 'light', palette: 'lagune' as never }, eve: { theme: 'dark', palette: 'lavande' },
       },
     });
-    expect(out.palettePreference).toBe('olive');
+    expect(out.palettePreference).toBe('nacre');
     expect(out.appearanceByUser).toEqual({
       alice: { theme: 'dark', palette: 'rose' }, bob: { theme: 'system', palette: 'glacier' },
       carla: { theme: 'light', palette: 'sable' }, dan: { theme: 'light', palette: 'rose' }, eve: { theme: 'dark', palette: 'lavande' },
@@ -121,7 +121,7 @@ describe('préférences d’apparence (v7 : huit thèmes, Système / Clair / Som
     expect(useUiStore.getState().appearanceByUser.alice).toEqual({ theme: 'dark', palette: 'glacier' });
     // un autre compte part du thème par défaut ; le premier retrouve le sien
     await act(async () => { useUiStore.getState().switchAppearanceOwner('bob'); });
-    expect(seen!.palette).toBe('olive');
+    expect(seen!.palette).toBe('nacre');
     await act(async () => { useUiStore.getState().switchAppearanceOwner('alice'); });
     expect(seen!.palette).toBe('glacier');
     // un choix v7 survit à la restauration
@@ -141,7 +141,7 @@ describe('préférences d’apparence (v7 : huit thèmes, Système / Clair / Som
     await act(async () => { useUiStore.setState({ palettePreference: 'adaptive', adaptiveProfile: 'me' }); });
     await render(<Probe />);
     expect(seen!.palette).toBe('rose');
-    for (const [profile, palette] of [['pregnancy', 'lavande'], ['child', 'olive'], ['postpartum', 'sable'], ['family', 'glacier'], ['me', 'rose']] as const) {
+    for (const [profile, palette] of [['pregnancy', 'lavande'], ['child', 'nacre'], ['postpartum', 'sable'], ['family', 'glacier'], ['me', 'rose']] as const) {
       await act(async () => { useUiStore.getState().setAdaptiveProfile(profile); });
       expect(seen!.palette).toBe(palette);
       expect(seen!.colors.primary).toBe(PALETTES[palette].ink[0]);
@@ -155,30 +155,30 @@ describe('préférences d’apparence (v7 : huit thèmes, Système / Clair / Som
     await act(async () => { useUiStore.getState().setPalette('glacier'); useUiStore.getState().setTheme('dark'); });
     expect(seen!.palette).toBe('glacier');
     await act(async () => { useUiStore.getState().resetAppearance(); });
-    expect([useUiStore.getState().themePreference, useUiStore.getState().palettePreference]).toEqual(['system', 'olive']);
-    expect(useUiStore.getState().appearanceByUser.alice).toEqual({ theme: 'system', palette: 'olive' });
-    expect(seen!.palette).toBe('olive');
+    expect([useUiStore.getState().themePreference, useUiStore.getState().palettePreference]).toEqual(['system', 'nacre']);
+    expect(useUiStore.getState().appearanceByUser.alice).toEqual({ theme: 'system', palette: 'nacre' });
+    expect(seen!.palette).toBe('nacre');
   });
 });
 
 describe('sélecteur « Personnaliser l’accueil » : aperçu, annulation, application, relancement', () => {
   it('l’aperçu s’affiche partout tout de suite sans rien enregistrer ; fermer rétablit le thème confirmé', async () => {
-    await act(async () => { useUiStore.setState({ palettePreference: 'olive', themePreview: null }); });
+    await act(async () => { useUiStore.setState({ palettePreference: 'nacre', themePreview: null }); });
     await render(<Probe />);
     act(() => { useUiStore.getState().switchAppearanceOwner('alice'); });
     await act(async () => { useUiStore.getState().previewTheme('amethyste'); });
     expect(seen!.palette).toBe('amethyste');
     expect(seen!.isDark).toBe(true);
-    expect(useUiStore.getState().palettePreference).toBe('olive');
-    expect(useUiStore.getState().appearanceByUser.alice.palette).toBe('olive');
+    expect(useUiStore.getState().palettePreference).toBe('nacre');
+    expect(useUiStore.getState().appearanceByUser.alice.palette).toBe('nacre');
     await act(async () => { useUiStore.getState().previewTheme('sable'); });
     expect(seen!.palette).toBe('sable');
     await act(async () => { useUiStore.getState().cancelThemePreview(); });
-    expect(seen!.palette).toBe('olive');
+    expect(seen!.palette).toBe('nacre');
     expect(useUiStore.getState().themePreview).toBeNull();
   });
   it('« Appliquer le thème » enregistre le thème pour le compte actif ; l’aperçu n’est jamais persisté', async () => {
-    await act(async () => { useUiStore.setState({ palettePreference: 'olive', themePreview: null }); });
+    await act(async () => { useUiStore.setState({ palettePreference: 'nacre', themePreview: null }); });
     await render(<Probe />);
     act(() => { useUiStore.getState().switchAppearanceOwner('alice'); });
     await act(async () => { useUiStore.getState().previewTheme('lavande'); });
@@ -186,7 +186,7 @@ describe('sélecteur « Personnaliser l’accueil » : aperçu, annulation, appl
     const persistOpts = useUiStore.persist.getOptions();
     const saved = persistOpts.partialize!(useUiStore.getState()) as Record<string, unknown>;
     expect(saved.themePreview).toBeUndefined();
-    expect(saved.palettePreference).toBe('olive');
+    expect(saved.palettePreference).toBe('nacre');
     await act(async () => { useUiStore.getState().applyThemePreview(); });
     expect(seen!.palette).toBe('lavande');
     expect(useUiStore.getState().palettePreference).toBe('lavande');

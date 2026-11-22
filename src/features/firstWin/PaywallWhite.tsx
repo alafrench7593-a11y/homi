@@ -1,12 +1,12 @@
 /**
- * Paywall blanc « Apple Premium · Liquid Glass » (refonte du 21/11/2026) — VUE pure, données reçues en propriétés.
+ * Paywall blanc « Apple Premium · Liquid Glass » (accent Blanc nacré depuis le retrait de l'olive, 22/11/2026) (refonte du 21/11/2026) — VUE pure, données reçues en propriétés.
  *
  * Ordre : (1) croix visible (retour à la démo, résultat gardé) ; (2) titre lié au besoin ; (3) aperçu du résultat dans
  * le VRAI composant + Aura (orbe dont les trois lumières se rapprochent à l'arrivée, message prédéfini de deux lignes,
  * « Une question ? ») ; (4) formules — Premium mensuel en tête et présélectionné, l'annuel en second, « Autres formules »
  * (6 mois, Famille) — avec un indicateur de verre qui glisse ; (5) frise de facturation, puis bouton et conditions dans
  * le pied ; (6) preuve sociale vérifiée, « Tout est parti d'une maman et de son idée », Restaurer · Conditions ·
- * Confidentialité. Fond #FFFFFF sur toute la surface (thème clair Olive HOMI imposé), prix et dates sur fond plein.
+ * Confidentialité. Fond #FFFFFF sur toute la surface (thème clair Blanc nacré imposé), prix et dates sur fond plein.
  * Le prix et le bouton sont utilisables dès l'arrivée (l'animation d'Aura ne bloque rien). Aucun appel IA ni son.
  */
 import React, { useState } from 'react';
@@ -38,7 +38,7 @@ import { TimelineBlock, type PaywallViewProps } from './PaywallView';
 export const PAYWALL_WHITE = NEUTRALS.white;
 
 export function PaywallWhite(props: PaywallViewProps) {
-  return <ThemeScope mode="light" palette="olive"><WhiteBody {...props} /></ThemeScope>;
+  return <ThemeScope mode="light" palette="nacre"><WhiteBody {...props} /></ThemeScope>;
 }
 
 function WhiteBody(props: PaywallViewProps) {

@@ -178,7 +178,7 @@ async function press(r: ReactTestRenderer, id: string) {
 
 describe('ticket 6 — Réglages › Apparence : le même sélecteur que le bouton palette', () => {
   beforeEach(() => {
-    act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'olive', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null }); });
+    act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'glacier', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null }); });
   });
   it('aperçu → Annuler : thème confirmé rétabli, rien d’enregistré', async () => {
     const r = await render(<ThemePickerInline />);
@@ -186,8 +186,8 @@ describe('ticket 6 — Réglages › Apparence : le même sélecteur que le bout
     await press(r, 'theme-nacre');
     expect(seen!.colors.background).toBe(THEME_STARTS.nacre.bg);
     await press(r, 'theme-inline-cancel');
-    expect(seen!.colors.background).toBe(THEME_STARTS.olive.bg);
-    expect(useUiStore.getState().palettePreference).toBe('olive');
+    expect(seen!.colors.background).toBe(THEME_STARTS.glacier.bg);
+    expect(useUiStore.getState().palettePreference).toBe('glacier');
     r.unmount();
   });
   it('passage rapide entre les 8 thèmes puis Appliquer : le dernier est enregistré', async () => {
@@ -205,7 +205,7 @@ describe('ticket 6 — Réglages › Apparence : le même sélecteur que le bout
     expect(useUiStore.getState().themePreview).toBe('sable');
     await act(async () => { r.unmount(); });
     expect(useUiStore.getState().themePreview).toBeNull();
-    expect(useUiStore.getState().palettePreference).toBe('olive');
+    expect(useUiStore.getState().palettePreference).toBe('glacier');
     expect(contrastRatio('#000000', '#FFFFFF')).toBeGreaterThan(20);
   });
 });

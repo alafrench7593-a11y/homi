@@ -159,16 +159,15 @@ describe.each(CASES)('palette %s, thème %s', (paletteName, mode) => {
 // Thèmes v7 (brief de la propriétaire, 21/11/2026) : couleurs de DÉPART reprises telles quelles (fond / surface / accent /
 // texte), ordre du sélecteur, défaut d'une nouvelle installation. Toute modification doit être volontaire (ce test et
 // docs/THEMES_AURA.md).
-it('huit thèmes : couleurs de départ de la propriétaire, ordre du sélecteur, Olive HOMI par défaut', () => {
-  expect(PALETTE_NAMES).toEqual(['nacre', 'graphite', 'sable', 'olive', 'lavande', 'glacier', 'rose', 'amethyste']);
-  expect(SIGNATURE_PALETTE).toBe('olive');
-  expect(DEFAULT_PALETTE).toBe('olive');
-  expect(themes.light).toBe(themeFor('light', 'olive'));
+it('sept thèmes : couleurs de départ de la propriétaire, ordre du sélecteur, Blanc nacré par défaut (Olive retirée le 22/11/2026)', () => {
+  expect(PALETTE_NAMES).toEqual(['nacre', 'graphite', 'sable', 'lavande', 'glacier', 'rose', 'amethyste']);
+  expect(SIGNATURE_PALETTE).toBe('nacre');
+  expect(DEFAULT_PALETTE).toBe('nacre');
+  expect(themes.light).toBe(themeFor('light', 'nacre'));
   expect(THEME_STARTS).toEqual({
     nacre: { bg: '#F4F5F8', surface: '#FFFFFF', accent: '#424957', text: '#191D26' },
     graphite: { bg: '#111214', surface: '#24262B', accent: '#E3E5EB', text: '#F5F6F8' },
     sable: { bg: '#F6EDE2', surface: '#FFF6E9', accent: '#674B36', text: '#2D2119' },
-    olive: { bg: '#EBEDDF', surface: '#F8F5E8', accent: '#485532', text: '#252D1A' },
     lavande: { bg: '#F7F4FB', surface: '#EDE4F6', accent: '#674A8B', text: '#352345' },
     glacier: { bg: '#EDF4FA', surface: '#DBE9F4', accent: '#315B79', text: '#172C3B' },
     rose: { bg: '#FAF0F3', surface: '#F3DDE5', accent: '#854964', text: '#392331' },
@@ -219,7 +218,7 @@ it('lueur interne : un jeton par thème et par apparence (décor), éteinte la n
 });
 
 it('halo : jeton dédié aux teintes du thème, éteint la nuit', () => {
-  expect(themes.light.tokens.halo).toMatchObject({ color: PALETTE_SPECS.olive.decor[0], color2: PALETTE_SPECS.olive.decor[1], color3: PALETTE_SPECS.olive.decor[2] });
+  expect(themes.light.tokens.halo).toMatchObject({ color: PALETTE_SPECS.nacre.decor[0], color2: PALETTE_SPECS.nacre.decor[1], color3: PALETTE_SPECS.nacre.decor[2] });
   expect(themes.light.tokens.halo.intensity).toBeGreaterThan(0);
   expect(themes.dark.tokens.halo.intensity).toBeGreaterThan(0);
   expect(themes.night.tokens.halo.intensity).toBe(0);
@@ -253,15 +252,15 @@ it('neutres paramétrés par thème : fonds, texte et accents différents d’un
 });
 
 it('mode Adaptatif : correspondance fixe profil → thème, un thème par profil', () => {
-  expect(ADAPTIVE_PALETTE).toEqual({ me: 'rose', pregnancy: 'lavande', child: 'olive', postpartum: 'sable', family: 'glacier' });
+  expect(ADAPTIVE_PALETTE).toEqual({ me: 'rose', pregnancy: 'lavande', child: 'nacre', postpartum: 'sable', family: 'glacier' });
   expect(new Set(PROFILE_KINDS.map((k) => ADAPTIVE_PALETTE[k])).size).toBe(PROFILE_KINDS.length);
   for (const k of PROFILE_KINDS) expect(resolvePalette('adaptive', k)).toBe(ADAPTIVE_PALETTE[k]);
-  expect(resolvePalette('adaptive', null)).toBe('olive');
+  expect(resolvePalette('adaptive', null)).toBe('nacre');
   // un thème fixe ne suit pas le profil ; une ancienne préférence devient le thème le plus proche
   expect(resolvePalette('glacier', 'pregnancy')).toBe('glacier');
-  expect(resolvePalette('sauge', 'pregnancy')).toBe('olive');
+  expect(resolvePalette('sauge', 'pregnancy')).toBe('nacre');
   expect(resolvePalette('lilas', 'pregnancy')).toBe('rose');
-  expect(resolvePalette(undefined, 'family')).toBe('olive');
+  expect(resolvePalette(undefined, 'family')).toBe('nacre');
 });
 
 it('Noir graphite et Nuit améthyste sont sombres par nature ; les autres suivent l’apparence', () => {
@@ -287,11 +286,12 @@ it('Rose poudré (héritier de l’identité v5) : sombre prune-anthracite (jama
 it('migration : chaque ancienne palette devient le thème le plus proche ; un choix v7 est conservé ; rien → défaut', () => {
   // v6 → thème le plus proche (sans perdre le choix de la personne)
   expect([migratePalette('homi'), migratePalette('lavande'), migratePalette('nuit'), migratePalette('sauge'), migratePalette('champagne')])
-    .toEqual(['rose', 'lavande', 'glacier', 'olive', 'sable']);
+    .toEqual(['rose', 'lavande', 'glacier', 'nacre', 'sable']);
+  expect(migratePalette('nacre')).toBe('nacre'); // Olive HOMI retirée : le choix enregistré passe au défaut
   // v3 / v4 / Auto : lues comme « Rose poudré et pêche » en v6 → Rose poudré
   for (const old of ['auto', 'peche', 'lilas', 'lagune', 'ambre', 'turquoise', 'menthe', 'aurore', 'iris', 'crepuscule']) expect(migratePalette(old)).toBe('rose');
   // nouvelle installation, valeur inconnue : Olive HOMI
-  for (const v of ['inconnue', null, undefined, '']) expect(migratePalette(v)).toBe('olive');
+  for (const v of ['inconnue', null, undefined, '']) expect(migratePalette(v)).toBe('nacre');
   for (const p of PALETTE_NAMES) { expect(migratePalette(p)).toBe(p); expect(Object.keys(LEGACY_PALETTE)).not.toContain(p); }
   expect(migratePalette('adaptive')).toBe('adaptive');
 });

@@ -343,7 +343,7 @@ l'avant). Captures : `scratchpad/paywall2/avant/` et `scratchpad/paywall2/apres/
 - **Parcours** : `profile` (étape de vie + besoins révélés dessous, un seul « Continuer ») → `demo` (consigne courte
   d'Aura, résultat gardé dans le vrai composant, bouton lié au besoin qui ouvre l'offre). L'écran « résultat » est
   retiré. Anciennes adresses `?step=stage|need|result` relues par `parseStep`.
-- **Paywall W** (`PaywallWhite.tsx`, direction intégrée) : fond #FFFFFF (thème clair Olive HOMI imposé par `ThemeScope`),
+- **Paywall W** (`PaywallWhite.tsx`, direction intégrée) : fond #FFFFFF (thème clair Blanc nacré imposé par `ThemeScope`),
   croix → retour à la démo avec le résultat, titre du besoin (A/B `paywall_title_v1` conservé), aperçu du résultat +
   orbe d'Aura qui se rassemble (`AuraOrb gather`, une fois, aucune boucle), message prédéfini, « Une question ? »
   (réponses calculées depuis la formule et les droits : `helpAnswers`, aucun appel IA), mensuel en tête et présélectionné

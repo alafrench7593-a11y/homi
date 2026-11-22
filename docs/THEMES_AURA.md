@@ -63,3 +63,10 @@ Lentille d’Aura immobile au repos ; à l’ouverture de la présentation, troi
 ## 7. Vérifications et limites
 
 Voir le rapport de livraison (chiffres). Limites non testables ici : iPhone réel (verre natif iOS 26, Dynamic Type réel, VoiceOver réel, haptique), lecture vocale native (demande une compilation), dictée du clavier iOS, réponses de Gemini réel (aucun appel au modèle), co-parent sur deux appareils. Le texte agrandi est simulé sur le web.
+
+## 22/11/2026 — Olive HOMI retirée
+
+Décision de la propriétaire : plus d'olive dans l'application. Sept thèmes ; défaut d'une nouvelle installation et
+palette de marque : **Blanc nacré** (blanc en clair, noir en sombre, accent ardoise). Un choix enregistré « olive » (ou
+l'ancien « sauge ») est lu comme Blanc nacré (`LEGACY_PALETTE`) ; le profil « enfant » du mode Adaptatif passe à Blanc
+nacré. Le paywall blanc prend l'accent Blanc nacré.

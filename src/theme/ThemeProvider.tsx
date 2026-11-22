@@ -60,7 +60,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Thème imposé à une partie de l'écran (paywall blanc : clair, Olive HOMI, quel que soit le réglage) ; « Réduire les
+ * Thème imposé à une partie de l'écran (paywall blanc : clair, Blanc nacré, quel que soit le réglage) ; « Réduire les
  * animations » et la phase du ciel restent ceux de l'appareil.
  */
 export function ThemeScope({ mode, palette, children }: { mode: ThemeName; palette: PaletteName; children: React.ReactNode }) {
