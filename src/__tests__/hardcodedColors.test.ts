@@ -26,6 +26,8 @@ const RGBA = /rgba?\(/g;
 
 /** Fichiers d'illustration, de logo ou de couleurs sémantiques de contenu (chemins relatifs à src/). */
 const ALLOW: Record<string, string> = {
+  // code repris (licence MIT) : palettes par défaut jamais utilisées, HOMI passe toujours sa palette de thème
+  'components/reacticx/tray/const.ts': 'palettes par défaut de Reacticx (Tray), remplacées par le thème HOMI',
   // illustrations et logo
   'components/Illustrations.tsx': 'illustrations vectorielles',
   'components/FetusArt.tsx': 'illustration du fœtus',

@@ -11,6 +11,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { AnalyzeWithAI } from '@/features/credits/AnalyzeWithAI';
 import { Markdown } from '@/components/Markdown';
+import { Glass } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Row, Text, Toggle } from '@/components/ui';
 import { hasRealBackend, isDemo } from '@/lib/backend';
@@ -30,10 +31,10 @@ import { AuraGlyph } from './AuraMark';
 import { creditActionFor, journalPayload } from './model';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
-type Kind = 'sleep' | 'cycle' | 'mood' | 'load' | 'bottle';
+type Kind = 'sleep' | 'cycle' | 'mood' | 'load' | 'bottle' | 'nap';
 
-export function AuraAnalysis({ kind, data, testID }: { kind: Kind; data: Record<string, unknown> | null; testID?: string }) {
-  return <AnalysisShell kind={kind} payload={data} testID={testID ?? `aura-analysis-${kind}`} />;
+export function AuraAnalysis({ kind, data, testID, followUps }: { kind: Kind; data: Record<string, unknown> | null; testID?: string; followUps?: React.ReactNode }) {
+  return <AnalysisShell kind={kind} payload={data} testID={testID ?? `aura-analysis-${kind}`} followUps={followUps} />;
 }
 
 /** Journal intime : synthèse des pages COCHÉES par la personne. */
@@ -61,17 +62,22 @@ export function AuraDiaryAnalysis({ pages, testID = 'aura-analysis-diary' }: { p
   );
 }
 
-function AnalysisShell({ kind, payload, testID, children }: { kind: Kind | 'diary'; payload: Record<string, unknown> | null; testID: string; children?: React.ReactNode }) {
+function AnalysisShell({ kind, payload, testID, children, followUps }: { kind: Kind | 'diary'; payload: Record<string, unknown> | null; testID: string; children?: React.ReactNode; followUps?: React.ReactNode }) {
   const t = useTheme();
   const [agreed, setAgreed] = useState(false);
   const [result, setResult] = useState<AuraServerReply | null>(null);
+  // Données analysées : si elles changent ensuite (sieste modifiée, supprimée), l'analyse affichée est signalée
+  // comme à relancer — jamais recalculée (ni facturée) automatiquement à l'affichage
+  const payloadKey = JSON.stringify(payload ?? null);
+  const [analysedKey, setAnalysedKey] = useState<string | null>(null);
+  const stale = !!result && analysedKey !== null && analysedKey !== stableKey(kind, payloadKey);
   const action = creditActionFor('analysis', { analysis: kind });
   const demoBackend = isDemo && !hasRealBackend;
   const rows = payload ? previewRows(payload) : [];
   // L'essai de 3 jours ouvre les outils, pas l'IA : aucun crédit d'essai, on le dit honnêtement
   const trial = useEntitlement().state === 'trial' && (aiAssistantOnline() || demoBackend);
   return (
-    <View testID={testID} style={{ gap: spacing.sm, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md }}>
+    <Glass variant="card" radius={radius.xl} testID={testID} contentStyle={{ gap: spacing.sm, padding: spacing.md }}>
       <Row style={{ alignItems: 'center' }}>
         <AuraGlyph size={22} />
         <Text weight="bold" accessibilityRole="header" style={{ flex: 1 }}>{tr('aura.an.title')}</Text>
@@ -94,7 +100,7 @@ function AnalysisShell({ kind, payload, testID, children }: { kind: Kind | 'diar
               demo={demoBackend}
               testID={`${testID}-ai`}
               run={({ requestId }) => askAura({ kind: 'analysis', analysis: { kind, data: payload }, data_consent: true, lang: getLocale(), request_id: requestId || uuid(), credit_action: action })}
-              onResult={setResult}
+              onResult={(r) => { setResult(r); setAnalysedKey(stableKey(kind, payloadKey)); }}
             />
           ) : null}
         </>
@@ -105,10 +111,21 @@ function AnalysisShell({ kind, payload, testID, children }: { kind: Kind | 'diar
           {result.demo ? <Text variant="caption" color={t.colors.lavender} testID={`${testID}-simulated`}>{tr('aura.mode.demo')}</Text> : null}
           {result.safety && result.safety !== 'none' ? <Text variant="small">{result.answer}</Text> : <Markdown source={result.answer ?? ''} />}
           <Text variant="caption" muted>{`${result.footer ?? tr('aura.aiNote')} ${result.credits?.charged ? tr('aura.charged', { count: result.credits.cost ?? 0 }) : tr('aura.notCharged')}`}</Text>
+          {stale ? <Text variant="small" weight="medium" testID={`${testID}-stale`}>{tr('nn.an.stale')}</Text> : null}
+          {followUps ? <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>{followUps}</View> : null}
         </View>
       ) : null}
-    </View>
+    </Glass>
   );
+}
+
+/**
+ * Clé de comparaison des données analysées. Sieste en cours : la durée écoulée avance seule (elle ne rend pas l'analyse
+ * périmée) ; seules les siestes comparées et l'heure d'endormissement comptent.
+ */
+function stableKey(kind: string, payloadKey: string): string {
+  if (kind !== 'nap') return payloadKey;
+  try { const d = JSON.parse(payloadKey) as Record<string, unknown> | null; return JSON.stringify(d ? { s: d.started_hm, c: d.comparable_minutes } : null); } catch { return payloadKey; }
 }
 
 /** Sommeil d'un enfant : moyennes de la semaine (les mêmes que « M'aider pour les nuits »), âge en mois seulement. */

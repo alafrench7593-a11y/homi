@@ -96,6 +96,7 @@ export function bottleAggregate(
 export function analysisPeriod(kind: string, data: Record<string, unknown> | null): { key: string; days: number | null } {
   if (kind === 'cycle') return { key: 'sa.an.period.cycles', days: null };
   if (kind === 'diary') return { key: 'sa.an.period.pages', days: null };
+  if (kind === 'nap') return { key: 'sa.an.period.days', days: typeof data?.period_days === 'number' ? data.period_days : 14 };
   const days = typeof data?.window_days === 'number' ? data.window_days : kind === 'sleep' ? 7 : kind === 'load' ? 30 : null;
   return { key: 'sa.an.period.days', days };
 }
@@ -111,4 +112,23 @@ export function previewRows(data: Record<string, unknown>): { key: string; value
     else out.push({ key, value: String(v) });
   }
   return out;
+}
+
+/**
+ * Sieste en cours : ce qui part pour « Analyser avec Aura » — l'heure d'endormissement, la durée écoulée et les DURÉES
+ * des siestes comparables (nap-window.ts) ; jamais un prénom, une date, une note ni un identifiant. Le serveur
+ * recalcule plage, nombre dans la plage et fenêtre à partir de ces durées.
+ */
+export function napPayload(o: { startedAt: string; now: Date; ongoing: boolean; ageMonths: number | null; samples: readonly { started_at: string; minutes: number }[] }) {
+  const s = new Date(o.startedAt);
+  const hm = `${String(s.getHours()).padStart(2, '0')}:${String(s.getMinutes()).padStart(2, '0')}`;
+  const oldest = o.samples.length ? Date.parse(o.samples[o.samples.length - 1].started_at) : null;
+  return {
+    age_months: o.ageMonths,
+    started_hm: hm,
+    elapsed_minutes: Math.max(0, Math.round((o.now.getTime() - s.getTime()) / 60_000)),
+    ongoing: o.ongoing,
+    comparable_minutes: o.samples.map((x) => x.minutes),
+    period_days: oldest != null ? Math.max(1, Math.ceil((s.getTime() - oldest) / DAY)) : 0,
+  };
 }

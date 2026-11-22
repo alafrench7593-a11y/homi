@@ -20,7 +20,11 @@ import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { BarChart } from '@/components/Charts';
 import { PremiumSection } from '@/components/Premium';
-import { AuraSleepAnalysis } from '@/features/aura/AuraAnalysis';
+import { AuraAnalysis, AuraSleepAnalysis } from '@/features/aura/AuraAnalysis';
+import { napPayload } from '@/features/aura/analysis';
+import { NapDayBand, NapFacts, NapHero, napState } from '@/features/napLive/NapNow';
+import { NapSessionTray } from '@/features/napLive/NapSessionTray';
+import { GlassButton, GlassSegmentedControl } from '@/components/glass';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
@@ -62,7 +66,7 @@ function ageTips(months: number): string[] {
 }
 
 export default function SleepPlanner() {
-  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string }>();
+  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string; nap?: string }>();
   const childId = params.childId;
   const child = useChild(childId);
   const childrenQ = useChildren();
@@ -86,22 +90,26 @@ export default function SleepPlanner() {
       </Screen>
     );
   }
-  return <PlannerBody child={child} tab={tab} setTab={setTab} />;
+  return <PlannerBody child={child} tab={tab} setTab={setTab} nap={typeof params.nap === 'string' ? params.nap : null} />;
 }
 
-function PlannerBody({ child, tab, setTab }: { child: Child; tab: Tab; setTab: (t: Tab) => void }) {
+function PlannerBody({ child, tab, setTab, nap }: { child: Child; tab: Tab; setTab: (t: Tab) => void; nap: string | null }) {
   const data = useSleepPlan(child);
   const { plan, profile } = data;
   useSleepNotificationSync(child, plan, profile);
   const age = childAge(child.birth_date);
   return (
     <Screen back title={tr('u4.sp.titleOf', { name: child.first_name })} subtitle={plan?.age.corrected ? tr('u4.sp.corrected', { age: age.label }) : age.label}>
-      <Row wrap testID="sleep-tabs">
-        {TABS.map((x) => <Chip key={x.key} label={tr(x.label)} selected={tab === x.key} onPress={() => setTab(x.key)} accessibilityLabel={tr('u4.sp.tabA11y', { label: tr(x.label) })} />)}
-      </Row>
-      {tab === 'today' ? <TodayTab child={child} data={data} goSafety={() => setTab('safety')} goProfile={() => setTab('profile')} /> : null}
-      {tab === 'profile' ? <ProfileTab child={child} profile={profile} /> : null}
-      {tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
+      {/* Sections : un sélecteur de verre sur une ligne ; Profil et Notifications réunis dans « Réglages » */}
+      <GlassSegmentedControl testID="sleep-tabs" label={tr('nn.tab.label')} value={tab === 'alerts' ? 'profile' : tab} onChange={(v) => setTab(v)}
+        options={[
+          { value: 'today' as Tab, label: tr('u4.sp.tab.today'), testID: 'sleep-tab-today' },
+          { value: 'trends' as Tab, label: tr('u4.sp.tab.trends'), testID: 'sleep-tab-trends' },
+          { value: 'profile' as Tab, label: tr('nn.tab.settings'), testID: 'sleep-tab-settings' },
+        ]} />
+      {tab === 'today' ? <TodayTab child={child} data={data} focusNap={nap} goSafety={() => setTab('safety')} goProfile={() => setTab('profile')} /> : null}
+      {tab === 'profile' || tab === 'alerts' ? <ProfileTab child={child} profile={profile} /> : null}
+      {tab === 'profile' || tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
       {tab === 'trends' ? <TrendsTab child={child} data={data} /> : null}
       {/* « Analyser avec HOMI Aura » : moyennes de la semaine, âge en mois, après aperçu et accord (docs/HOMI_AURA.md) */}
       {tab === 'trends' ? <AuraSleepAnalysis child={child} /> : null}
@@ -115,7 +123,7 @@ type PlanData = ReturnType<typeof useSleepPlan>;
 
 // ─── Aujourd'hui ───────────────────────────────────────────────────────────────────────────────────
 
-function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: PlanData; goSafety: () => void; goProfile: () => void }) {
+function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child; data: PlanData; focusNap: string | null; goSafety: () => void; goProfile: () => void }) {
   const premium = usePremium();
   const toast = useToast();
   const saveReminder = useSaveReminder();
@@ -124,6 +132,14 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
   const { plan, sleeps, profile, feedback, now, loading } = data;
   const [editing, setEditing] = useState<Sleep | null>(null);
   const feeds = useNightFeeds(child.id);
+  const nap = useMemo(() => napState(child, sleeps as Sleep[], now), [child, sleeps, now]);
+  const [factsOpen, setFactsOpen] = useState(0);
+  // Session sélectionnée (lien « ?nap= » depuis l'accueil) et sa feuille ; la sélection est gardée dans l'adresse :
+  // au retour d'Aura, le même point est sélectionné
+  const [selNap, setSelNap] = useState<string | null>(focusNap);
+  const [traySession, setTraySession] = useState<Sleep | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const openSession = (s: Sleep) => { setSelNap(s.id); router.setParams({ nap: s.id }); setTraySession(s); setTrayOpen(true); };
   const night = useMemo(() => lastNightReport(sleeps, child.id, feeds, now), [sleeps, feeds, child.id, now]);
   const name = child.first_name;
   if (loading || !plan) return <Skeleton rows={3} />;
@@ -145,21 +161,28 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
 
   return (
     <View style={{ gap: spacing.sm }}>
-      <TodaySummary testID="sleep-today" items={[
-        { icon: 'sun', value: String(plan.napsDone ?? 0), label: tr('u4.sp.sumNaps', { count: plan.napsDone ?? 0 }) },
-        { icon: 'clock', value: plan.daySleepMinutes ? span(plan.daySleepMinutes) : '—', label: tr('u4.sp.sumDay') },
-        { icon: 'moon', value: night ? String(night.wakings) : '—', label: tr('u4.sp.sumWakings') },
-      ]} />
-      <DayStrip testID="sleep-day-strip" title={tr('u4.sp.dayStrip')} now={nowMinute(now, now)}
-        events={toDayEvents('sleep', sleeps.filter((x) => x.child_id === child.id), now, now)}
-        empty={tr('u4.sp.stripEmpty', { name })} />
-      <Card>
-        <Text variant="heading" testID="sleep-state">{state.text}</Text>
-        {plan.assumedWake ? <Text variant="caption" muted>{tr('u4.sp.assumed', { time: hm(profile?.usual_wake) })}</Text> : null}
-        {plan.state === 'stale' ? <Text variant="small" muted>{tr('u4.sp.stale')}</Text> : null}
-        <View style={{ marginTop: spacing.sm }}><SleepRecordButtons child={child} plan={plan} /></View>
-        {plan.state === 'asleep_nap' ? <View style={{ marginTop: spacing.sm }}><WakeCheckReminder child={child} /></View> : null}
-      </Card>
+      {/* 1 · Premier regard : qui, depuis quand, où en est la sieste, la commande utile */}
+      <NapHero child={child} state={nap} now={now} actions={(
+        <View style={{ gap: spacing.sm }}>
+          <SleepRecordButtons child={child} plan={plan} />
+          {plan.assumedWake ? <Text variant="caption" muted>{tr('u4.sp.assumed', { time: hm(profile?.usual_wake) })}</Text> : null}
+          {plan.state === 'stale' ? <Text variant="small" muted>{tr('u4.sp.stale')}</Text> : null}
+        </View>
+      )} />
+      {/* 2 · Exploration : la journée, touchable */}
+      <NapDayBand child={child} state={nap} now={now} onEdit={setEditing} selectedId={selNap}
+        onSelect={(id) => { setSelNap(id); if (id && id !== 'window') router.setParams({ nap: id }); }} onOpenSession={openSession} />
+      {/* 3 · Interprétation : faits calculés (gratuits), puis Aura (crédits annoncés) */}
+      <NapFacts state={nap} open={factsOpen} />
+      {plan.state === 'asleep_nap' ? <WakeCheckReminder child={child} /> : null}
+      {nap.open && nap.window ? (
+        <AuraAnalysis kind="nap" testID="aura-analysis-nap"
+          data={napPayload({ startedAt: nap.open.started_at, now, ongoing: true, ageMonths: childAge(child.birth_date).months ?? null, samples: nap.window.samples })}
+          followUps={<>
+            <GlassButton size="sm" variant="secondary" icon="list" label={tr('nn.an.compare')} onPress={() => setFactsOpen((v) => v + 1)} testID="nap-an-compare" />
+            <GlassButton size="sm" variant="tertiary" icon="repeat" label={tr('nn.an.relay')} onPress={() => router.push('/family/missions')} testID="nap-an-relay" />
+          </>} />
+      ) : null}
 
       <PremiumSection feature="sleep_insights" name={name}
         preview={<Text variant="small">{tr('u4.sp.previewPrem', { state: state.text, name, basis: plan.samples ? tr('u4.sp.basisSamples', { n: plan.samples }) : tr('u4.sp.basisAge') })}</Text>}>
@@ -191,12 +214,16 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
         </Banner>
       ) : null}
 
+      <GlassButton variant="tertiary" icon="shield" label={tr('u4.sp.tab.safety')} onPress={goSafety} testID="sleep-safety-link" />
       <Row wrap>
         <Button size="sm" variant="secondary" icon="heart" label={tr('u4.nh.title')} onPress={() => router.push(`/sleep/help/${child.id}` as never)} testID="sleep-help-link" />
         <Button size="sm" variant="ghost" icon="moon" label={tr('u4.tonight.title')} onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
         <Button size="sm" variant="ghost" icon="edit-3" label={tr('u4.sl.logPast')} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'sleep', child: child.id } })} />
       </Row>
       <SleepEditSheet child={child} sleep={editing} all={sleeps as Sleep[]} onClose={() => setEditing(null)} />
+      <NapSessionTray child={child} all={sleeps as Sleep[]} session={traySession ? (sleeps as Sleep[]).find((x) => x.id === traySession.id) ?? null : null}
+        open={trayOpen} onOpenChange={setTrayOpen} onEdit={setEditing}
+        onAnalyze={(s) => router.push({ pathname: '/assistant/session', params: { child: child.id, sleep: s.id } } as never)} />
     </View>
   );
 }

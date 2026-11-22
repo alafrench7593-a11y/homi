@@ -13,6 +13,7 @@
  * édition SUR PLACE (le même éditeur que Réglages › Mon accueil).
  * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
+import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
@@ -245,6 +246,8 @@ export default function Home() {
           {/* Rendu PAR PROFIL : au changement de profil, l'ancien tableau de bord s'efface, le nouveau est monté à neuf
               (vraies données du nouveau profil) et ses cartes entrent en cascade (`profileTransition`) */}
           <ProfileStage profileKey={profileKey} style={{ gap: spacing.md }} testID="home-stage">
+          {/* Maintenant : la sieste de l'enfant affiché passe avant tout le reste (en cours ou dernière du jour) */}
+          {childScope && child ? <NapHomeCard child={child} /> : null}
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;

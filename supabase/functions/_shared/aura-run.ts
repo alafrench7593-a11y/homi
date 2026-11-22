@@ -120,7 +120,7 @@ export async function runAura(deps: AuraDeps, raw: unknown): Promise<AuraResult>
   // 6) GEMINI
   const catalog = kind === 'chat' ? sanitizeCatalog(b.tools) : [];
   const dataText = journal ? JSON.stringify(journal) : analysis ? JSON.stringify({ kind: analysisKind, ...analysis }) : null;
-  const system = buildAuraSystemPrompt({ lang, kind, theme, today, data: dataText, catalogSize: catalog.length });
+  const system = buildAuraSystemPrompt({ lang, kind, theme, today, data: dataText, catalogSize: catalog.length, analysisKind });
   try {
     if (kind === 'reformulate') {
       const out = await deps.turn(cfg, {

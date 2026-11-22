@@ -16,6 +16,7 @@ export const APP_ROUTES: readonly string[] = [
   '/assistant/chat',
   '/assistant/history',
   '/assistant/local',
+  '/assistant/session',
   '/auth/callback',
   '/auth/forgot',
   '/auth/reset',

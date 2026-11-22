@@ -262,12 +262,13 @@ export function SleepEditSheet({ child, sleep, all, onClose }: { child: Child; s
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [kind, setKind] = useState<'nap' | 'night'>('nap');
+  const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const id = sleep?.id;
   React.useEffect(() => {
     if (!sleep) return;
-    setStart(hhmm(new Date(sleep.started_at))); setEnd(sleep.ended_at ? hhmm(new Date(sleep.ended_at)) : ''); setKind(sleepKind(sleep)); setError(null);
+    setStart(hhmm(new Date(sleep.started_at))); setEnd(sleep.ended_at ? hhmm(new Date(sleep.ended_at)) : ''); setKind(sleepKind(sleep)); setNote(sleep.note ?? ''); setError(null);
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!sleep) return null;
   async function save() {
@@ -279,7 +280,7 @@ export function SleepEditSheet({ child, sleep, all, onClose }: { child: Child; s
     if (e !== null) { b = new Date(a.getFullYear(), a.getMonth(), a.getDate(), 0, e); if (b <= a) b.setDate(b.getDate() + 1); }
     if (!sleep!.ended_at && b === null) b = null;
     setBusy(true);
-    try { await act.edit(sleep!, { started_at: a, ended_at: b, kind }, all); toast(tr('u4.sl.edited'), 'success'); onClose(); } catch (err) { setError(errText(err)); } finally { setBusy(false); }
+    try { await act.edit(sleep!, { started_at: a, ended_at: b, kind, note: note.trim() || null }, all); toast(tr('u4.sl.edited'), 'success'); onClose(); } catch (err) { setError(errText(err)); } finally { setBusy(false); }
   }
   async function del() {
     if (!(await confirm(tr('u4.sl.delQ'), tr('u4.sl.delBody'), tr('u4.sl.delete')))) return;
@@ -293,6 +294,7 @@ export function SleepEditSheet({ child, sleep, all, onClose }: { child: Child; s
           <View style={{ flex: 1 }}><Field label={tr('u4.sl.fellAsleep')} value={start} onChangeText={setStart} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-start" /></View>
           <View style={{ flex: 1 }}><Field label={tr('u4.sl.wake')} optional={!sleep.ended_at} value={end} onChangeText={setEnd} placeholder={sleep.ended_at ? '' : tr('u4.sl.ongoing')} keyboardType="numbers-and-punctuation" maxLength={5} testID="sleep-edit-end" /></View>
         </Row>
+        <Field label={tr('nn.edit.note')} optional value={note} onChangeText={setNote} placeholder={tr('nn.edit.notePh')} maxLength={1000} multiline testID="sleep-edit-note" />
         {error ? <Text variant="small" color={t.colors.danger}>{error}</Text> : null}
         <Button label={tr('u4.sl.save')} onPress={save} loading={busy} testID="sleep-edit-save" />
         <Button label={tr('u4.sl.deleteBtn')} variant="ghost" icon="trash-2" onPress={del} testID="sleep-edit-delete" />

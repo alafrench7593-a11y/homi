@@ -242,7 +242,7 @@ export function audit() {
   const routes = routeFiles().map((f) => ({ file: f, route: routeOf(f) })).sort((a, b) => a.route.localeCompare(b.route));
   const lib = walk(path.join(SRC, 'components')).concat(walk(path.join(SRC, 'motion'))).map(analyse);
   const libRawPress = lib.flatMap((a) => a.rawPress.map((x) => `${a.file}:${x}`));
-  const libRawModal = lib.flatMap((a) => a.rawModal.map((x) => `${a.file}:${x}`)).filter((x) => !/Overlays\.tsx|GlassOverlays\.tsx/.test(x));
+  const libRawModal = lib.flatMap((a) => a.rawModal.map((x) => `${a.file}:${x}`)).filter((x) => !/Overlays\.tsx|GlassOverlays\.tsx|reacticx\/tray\/index\.tsx/.test(x)); // le Tray (Reacticx) est lui-même une primitive de feuille
   const rows = routes.map(({ file, route }) => {
     const files = closure(file).map(analyse);
     const own = analyse(file);

@@ -29,3 +29,6 @@ au-fil-de-nous-source*.zip
 assets/brand/preview/
 supabase/.temp/
 .env.eas-simulator
+
+# Skia web (aperçu de développement) : copié à l'installation, jamais versionné
+public/canvaskit.wasm

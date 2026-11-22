@@ -42,7 +42,7 @@ export function simulatedTurn(o: GeminiRequestOptions, today: string): GeminiTur
     return { text: JSON.stringify({ options }), calls: [], parts: [], finishReason: 'STOP' };
   }
   const contents: GeminiContent[] = o.contents ?? [];
-  if (!o.functions) return { text: tr('aura.demo.analysis'), calls: [], parts: [], finishReason: 'STOP' };
+  if (!o.functions) return { text: simulatedAnalysis(o.system ?? ''), calls: [], parts: [], finishReason: 'STOP' };
   const firstUser = [...contents].reverse().find((c) => c.role === 'user' && typeof c.parts[0]?.text === 'string');
   const q = fold(String(firstUser?.parts[0]?.text ?? ''));
   const last = contents[contents.length - 1];
@@ -99,4 +99,26 @@ export function createAuraDemo(c: AuraDemoCtx) {
     }
     return { ...out.body, demo: true };
   };
+}
+
+/**
+ * Analyse SIMULÉE (démonstration, aucun modèle) : pour la sieste en cours, le texte reprend UNIQUEMENT les chiffres
+ * recalculés par le serveur (aura-data.ts → bloc de données du prompt) ; il commence par « Réponse simulée ».
+ */
+function simulatedAnalysis(system: string): string {
+  const m = /\{"kind":"nap".*\}/.exec(system);
+  if (!m) return tr('aura.demo.analysis');
+  let d: Record<string, unknown>;
+  try { d = JSON.parse(m[0]) as Record<string, unknown>; } catch { return tr('aura.demo.analysis'); }
+  if (d.status !== 'ok') return tr('aura.demo.nap.none', { start: String(d.started_hm ?? ''), count: Number(d.comparable_count ?? 0) });
+  if (d.ongoing === false) {
+    const dur = Number(d.elapsed_minutes); const low = Number(d.range_low_minutes); const high = Number(d.range_high_minutes);
+    const where = dur > high ? 'longer' : dur < low ? 'shorter' : 'inside';
+    return tr('aura.demo.nap.done', { start: String(d.started_hm), dur, count: Number(d.comparable_count), inRange: Number(d.in_range_count), low, high, where: tr(`aura.demo.nap.where.${where}` as never) });
+  }
+  const base = tr('aura.demo.nap.ok', {
+    start: String(d.started_hm), count: Number(d.comparable_count), inRange: Number(d.in_range_count), low: Number(d.range_low_minutes), high: Number(d.range_high_minutes),
+    from: String(d.window_from), to: String(d.window_to),
+  });
+  return d.progress === 'beyond' ? `${base} ${tr('aura.demo.nap.beyond')}` : base;
 }

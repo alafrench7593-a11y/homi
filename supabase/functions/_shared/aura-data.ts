@@ -4,8 +4,11 @@
  * schémas fermés, nombres bornés, listes de mots-clés courts, textes tronqués, aucun nom ni identifiant.
  * Rien n'est enregistré : les données servent à une seule réponse.
  */
+import { addMinutesHM, napProgress, napRange, NAP_RULE } from './nap-window.ts';
+
 // 'bottle' (21/11/2026, ticket 5) : biberons des 7 derniers jours, agrégats seulement (facturé comme « tool_analysis »)
-export const AURA_ANALYSIS_KINDS = ['sleep', 'cycle', 'mood', 'diary', 'load', 'bottle'] as const;
+// 'nap' (22/11/2026) : sieste en cours — durées des siestes comparables ; la fenêtre est RECALCULÉE ici (nap-window.ts)
+export const AURA_ANALYSIS_KINDS = ['sleep', 'cycle', 'mood', 'diary', 'load', 'bottle', 'nap'] as const;
 export type AuraAnalysisKind = (typeof AURA_ANALYSIS_KINDS)[number];
 
 export const MAX_JOURNAL_ENTRIES = 14;
@@ -46,6 +49,23 @@ export function sanitizeAnalysis(kind: AuraAnalysisKind, raw: unknown): Record<s
         avg_naps: num(d.avg_naps, 0, 8, 1), avg_nap_minutes: num(d.avg_nap_minutes, 0, 600), avg_wakeups: num(d.avg_wakeups, 0, 20, 1), usual_bedtime: hm(d.usual_bedtime),
       };
       break;
+    case 'nap': {
+      // Seules des durées et une heure partent ; plage, nombre dans la plage et fenêtre sont recalculés par le serveur
+      const started = hm(d.started_hm);
+      const minutes = (Array.isArray(d.comparable_minutes) ? d.comparable_minutes : []).slice(0, NAP_RULE.maxSamples)
+        .map((m) => num(m, NAP_RULE.minMinutes, NAP_RULE.maxMinutes)).filter((m): m is number => m != null);
+      if (!started) return null;
+      const r = napRange(minutes);
+      const elapsed = num(d.elapsed_minutes, 0, 600);
+      return {
+        age_months: num(d.age_months, 0, 72), started_hm: started, elapsed_minutes: elapsed, ongoing: d.ongoing === true,
+        comparable_minutes: minutes, comparable_count: minutes.length, period_days: num(d.period_days, 0, NAP_RULE.windowDays),
+        status: r.status, range_low_minutes: r.low, range_high_minutes: r.high, in_range_count: r.inRange,
+        window_from: r.low != null ? addMinutesHM(started, r.low) : null, window_to: r.high != null ? addMinutesHM(started, r.high) : null,
+        progress: elapsed != null && d.ongoing === true ? napProgress(r, elapsed) : 'none',
+        rule: `last ${NAP_RULE.maxSamples} finished daytime naps of the same child, start within ±${NAP_RULE.slotMinutes / 60} h, last ${NAP_RULE.windowDays} days; central range drops floor(n/6) at each end; no window under ${NAP_RULE.minSamples} naps or if the range exceeds ${NAP_RULE.maxSpreadMinutes} min`,
+      };
+    }
     case 'bottle':
       out = {
         window_days: num(d.window_days, 1, 14), days_noted: num(d.days_noted, 0, 14), age_months: num(d.age_months, 0, 72),
