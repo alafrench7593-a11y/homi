@@ -208,3 +208,25 @@ describe('mode exercice : rien n’est écrit', () => {
     expect(TOUR_LENGTH).toBe(7);
   });
 });
+
+describe('visite : plus d’apparition « au hasard » (22/11/2026)', () => {
+  const { leftStep, tourReducer: r, freshProgress: fresh } = require('@/features/tour/model');
+  it('quitter l’écran de l’étape après y être arrivé met la visite en pause', () => {
+    expect(leftStep({ stepIndex: 0, arrivedAt: 0, path: '/premium', formOpen: false })).toBe(true);
+    expect(leftStep({ stepIndex: 0, arrivedAt: 0, path: '/', formOpen: false })).toBe(false);
+  });
+  it('lancée depuis Réglages (pas encore arrivée) : pas de pause, la pastille emmène à l’étape', () => {
+    expect(leftStep({ stepIndex: 0, arrivedAt: null, path: '/settings/help', formOpen: false })).toBe(false);
+  });
+  it('formulaire ouvert depuis « Enregistrer une action » : la visite attend sans se mettre en pause', () => {
+    expect(leftStep({ stepIndex: 3, arrivedAt: 3, path: '/bottle/x', formOpen: true })).toBe(false);
+  });
+  it('l’étape qui avance par une navigation (agenda → /calendar) ne compte pas comme une sortie', () => {
+    expect(leftStep({ stepIndex: 6, arrivedAt: 5, path: '/calendar', formOpen: false })).toBe(false);
+  });
+  it('pause automatique : la carte de reprise masquée par la personne reste masquée', () => {
+    const hidden = { ...fresh(), status: 'running', resumeHidden: true };
+    expect(r(hidden, { type: 'later', auto: true }).resumeHidden).toBe(true);
+    expect(r(hidden, { type: 'later' }).resumeHidden).toBe(false);
+  });
+});

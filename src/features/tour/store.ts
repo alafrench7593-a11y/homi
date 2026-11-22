@@ -4,13 +4,15 @@
  * Toute la logique d'enchaînement est dans le réducteur pur (`model.ts`).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { router } from 'expo-router';
 import { beginPractice } from '@/lib/practice';
+import { useUiStore } from '@/lib/store';
 import { freshProgress, tourReducer, TOUR_STEPS, type TourAction, type TourEvent, type TourProgress } from './model';
 
-export interface ToolHintState { id: string; title: string; body: string }
+export interface ToolHintState { id: string; title: string; body: string; /** Écran d'où l'outil a été ouvert. */ from?: string }
 
 interface TourState {
   /** Progression par compte (identifiant du compte → progression). */
@@ -57,7 +59,9 @@ export const useTourStore = create<TourState>()(
       setOwner: (owner) => { if (get().owner !== owner) { syncPractice(false); set({ owner, practice: false, finished: false, hint: null }); } },
       dispatch: (a) => {
         const { owner, byUser, practice } = get();
-        if (!owner) return;
+        // Avant la lecture de la progression enregistrée, une action serait écrasée par la fusion (visite relancée,
+        // aide déjà vue remontrée) : elle est ignorée.
+        if (!owner || !useTourStore.persist.hasHydrated()) return;
         const prev = byUser[owner] ?? freshProgress();
         const next = tourReducer(prev, a);
         if (next === prev) return;
@@ -106,7 +110,7 @@ export const tourDispatch = (a: TourAction) => useTourStore.getState().dispatch(
 let emergencyCallAt: number | null = null;
 export function markEmergencyCall() {
   emergencyCallAt = Date.now();
-  tourDispatch({ type: 'later' });
+  tourDispatch({ type: 'later', auto: true });
   useTourStore.getState().closeHint();
 }
 export const lastEmergencyCall = () => emergencyCallAt;
@@ -125,6 +129,7 @@ export const tourProfileCount = () => profileCount;
 /** Écran affiché (tenu à jour par la superposition) : une reprise sur l'écran même de l'étape ne navigue pas. */
 let shownPath = '';
 export function setTourShownPath(p: string) { shownPath = p; }
+export const tourShownPath = () => shownPath;
 
 /**
  * Lance (ou reprend) la visite et emmène sur l'écran de l'étape courante : Réglages, feuille de l'avatar, accueil.
@@ -138,4 +143,19 @@ export function startTour() {
   const step = TOUR_STEPS[p?.step ?? 0];
   const to = step?.goTo ?? '/';
   if (to !== shownPath) router.navigate(to as never);
+}
+
+/** Les deux magasins persistés (visite, interface) sont-ils relus ? Rien ne s'affiche ni ne s'enregistre avant. */
+const bothHydrated = () => useTourStore.persist.hasHydrated() && useUiStore.persist.hasHydrated();
+export function useStoresHydrated(): boolean {
+  const [ok, setOk] = useState(bothHydrated);
+  useEffect(() => {
+    if (ok) return;
+    const check = () => { if (bothHydrated()) setOk(true); };
+    const a = useTourStore.persist.onFinishHydration(check);
+    const b = useUiStore.persist.onFinishHydration(check);
+    check();
+    return () => { a(); b(); };
+  }, [ok]);
+  return ok;
 }

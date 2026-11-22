@@ -367,7 +367,9 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
     if (!target || target.id === child.id) { Animated.spring(x, { toValue: 0, useNativeDriver: NATIVE_DRIVER }).start(); return; }
     haptic('selection');
     if (reduce) { x.setValue(0); setSubject({ type: 'child', id: target.id }); return; }
-    Animated.timing(x, { toValue: -dir * 340, duration: 160, useNativeDriver: NATIVE_DRIVER }).start(() => { x.setValue(dir * 120); setSubject({ type: 'child', id: target.id }); Animated.spring(x, { toValue: 0, tension: 160, friction: 20, useNativeDriver: NATIVE_DRIVER }).start(); });
+    // Garde : si un autre profil a été choisi pendant le glissement (avatar touché), ce rappel tardif ne l'écrase pas
+    const from = JSON.stringify(useUiStore.getState().subject);
+    Animated.timing(x, { toValue: -dir * 340, duration: 160, useNativeDriver: NATIVE_DRIVER }).start(() => { x.setValue(dir * 120); if (JSON.stringify(useUiStore.getState().subject) === from) setSubject({ type: 'child', id: target.id }); Animated.spring(x, { toValue: 0, tension: 160, friction: 20, useNativeDriver: NATIVE_DRIVER }).start(); });
   };
   // La carte a son propre glissement (enfant suivant / précédent) : le glissement entre profils de l'accueil lui cède la place
   const cardSwipe = useSwipeExclude();

@@ -8,16 +8,16 @@
  *    l'ouverture ; immobile avec Réduire les animations ; aucune boucle au repos).
  * Ici, le PERSONNAGE d'Aura est sa lentille (`AuraOrb`) ; le robot compagnon reste dans la conversation.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { GlassIconButton, GlassModal } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { Button, haptic, Icon, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { useUiStore } from '@/lib/store';
-import { useTourProgress, useTourStore } from '@/features/tour/store';
+import { useStoresHydrated, useTourProgress, useTourStore } from '@/features/tour/store';
 import { auraMotion, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { AURA } from '@/theme/toolLogo';
@@ -137,7 +137,15 @@ export function AuraIntroHost() {
   const tour = useTourProgress();
   const tourBusy = useTourStore((s) => s.finished || !!s.hint);
   const busy = tour.status === 'running' || tourBusy;
-  const want = shouldShowAuraIntro({ userId, seen, requested, busy });
+  const hydrated = useStoresHydrated();
+  const pathname = usePathname();
+  // Une visite ou une aide a déjà présenté l'application dans cette session : la présentation d'Aura n'arrive plus
+  // d'elle-même 1,2 s après (elle surgissait sur l'écran ouvert). Relance possible depuis Réglages › Aide et Aura.
+  const introduced = useRef(false);
+  if (busy) introduced.current = true;
+  // Présentation spontanée : sur l'accueil seulement, après relecture des préférences ; relance demandée : partout
+  const auto = hydrated && !introduced.current && pathname === '/';
+  const want = shouldShowAuraIntro({ userId, seen, requested, busy }) && (requested || auto);
   const [ready, setReady] = useState(false);
   useEffect(() => {
     if (!want) { setReady(false); return; }

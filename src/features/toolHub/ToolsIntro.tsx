@@ -22,6 +22,7 @@ import { useAccess } from '@/lib/data/hooks-access';
 import { isLockedFor } from '@/lib/premium/access';
 import type { CatalogTool } from '@/lib/domain/toolCatalog';
 import { useUiStore } from '@/lib/store';
+import { useStoresHydrated } from '@/features/tour/store';
 import { Cascade } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -44,10 +45,12 @@ export function useToolLock(): { premium: boolean | undefined; locked: ((tool: C
 
 /** Introduction vue par ce compte ? `show()` la rouvre, `hide()` la ferme (et s'en souvient). */
 export function useToolsIntro(): { open: boolean; show: () => void; hide: () => void } {
-  const uid = useAuth().session?.userId ?? 'anon';
-  const seen = useUiStore((s) => !!s.toolsIntroSeen?.[uid]);
+  const uid = useAuth().session?.userId ?? null;
+  const seen = useUiStore((s) => (uid ? !!s.toolsIntroSeen?.[uid] : true));
   const set = useUiStore((s) => s.setToolsIntroSeen);
-  return { open: !seen, show: () => set(uid, false), hide: () => set(uid, true) };
+  // Sans compte encore lu, ou avant la relecture des préférences : rien (sinon la carte clignotait puis revenait)
+  const hydrated = useStoresHydrated();
+  return { open: hydrated && !!uid && !seen, show: () => { if (uid) set(uid, false); }, hide: () => { if (uid) set(uid, true); } };
 }
 
 export function ToolsIntro({ premium, onDone }: { premium: boolean | undefined; onDone: () => void }) {

@@ -117,7 +117,8 @@ export type TourAction =
   | { type: 'next' }
   | { type: 'skipStep' }
   | { type: 'back' }
-  | { type: 'later' }
+  /** `auto` : pause décidée par l'application (urgence, écran verrouillé, sortie de l'étape) — un « masquer » reste respecté. */
+  | { type: 'later'; auto?: boolean }
   | { type: 'quit' }
   | { type: 'offer' }
   | { type: 'hideResume' }
@@ -158,7 +159,7 @@ export function tourReducer(p: TourProgress, a: TourAction): TourProgress {
     case 'back':
       return p.status === 'running' && p.step > 0 ? stamp({ ...p, step: p.step - 1 }) : p;
     case 'later':
-      return p.status === 'running' || p.status === 'offered' ? stamp({ ...p, status: 'paused', resumeHidden: false }) : p;
+      return p.status === 'running' || p.status === 'offered' ? stamp({ ...p, status: 'paused', resumeHidden: a.auto ? p.resumeHidden : false }) : p;
     case 'quit':
       return p.status === 'done' ? p : stamp({ ...p, status: 'skipped' });
     case 'hideResume':
@@ -236,4 +237,18 @@ export function holeFor(r: Rect, pad: number, screen: { width: number; height: n
   const right = Math.min(screen.width - 2, r.x + r.width + pad);
   const bottom = Math.min(screen.height - 2, r.y + r.height + pad);
   return { x, y, width: Math.max(0, right - x), height: Math.max(0, bottom - y) };
+}
+
+// ------------------------------------------------------------------------------------------------ sortie de l'étape
+/**
+ * La personne a QUITTÉ l'écran de l'étape (elle y était, l'adresse a changé, l'étape n'a pas avancé) : la visite se met
+ * en pause au lieu de la suivre partout (cause des « visites aléatoires » : une visite en cours réapparaissait sur chaque
+ * onglet, sur le paywall et sur Aura jusqu'à la fermeture de l'application). Exception : le formulaire ouvert depuis
+ * l'étape « Enregistrer une action ». Lancée depuis un autre écran (Réglages), la visite n'est pas encore « arrivée » :
+ * la pastille « Reprendre » reste jusqu'à l'écran de l'étape.
+ */
+export function leftStep(o: { stepIndex: number; arrivedAt: number | null; path: string; formOpen: boolean }): boolean {
+  const step = TOUR_STEPS[o.stepIndex];
+  if (!step || o.formOpen || o.arrivedAt !== o.stepIndex) return false;
+  return !stepOnScreen(step, o.path);
 }

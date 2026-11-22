@@ -4,7 +4,7 @@
  *  - 'minimal' (nuit) : fondu court sans déplacement ni décalage ;
  *  - transform + opacity uniquement, sur le fil UI ; animation annulée au démontage.
  */
-import React, { useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { cascade, durations } from './curves';
@@ -15,9 +15,18 @@ export function cascadeDelay(index: number, step: number = cascade.stepMs, max: 
   return Math.min(Math.max(0, index) * step, max);
 }
 
+/**
+ * Contenu REMONTÉ par un changement de profil (`ProfileStage`) : les cartes arrivent déjà visibles — le changement de
+ * profil a sa propre transition. Sans cela, chaque carte repartait à l'opacité 0 et l'on voyait le fond nu (noir en
+ * sombre) pendant 0,3 à 0,9 s : l'« écran noir » au changement de profil.
+ */
+export const CascadeSettled = createContext(false);
+
 /** Style animé d'apparition en cascade, à poser sur une Animated.View. */
 export function useCascade(index = 0, opts: { distance?: number; ms?: number } = {}) {
-  const m = useMotion();
+  const motion = useMotion();
+  const settled = useContext(CascadeSettled);
+  const m = settled ? { ...motion, off: true } : motion;
   const distance = opts.distance ?? cascade.distance;
   const ms = opts.ms ?? durations.entrance;
   // État final immédiat quand le mouvement est coupé (pas de flash d'opacité 0 au montage)

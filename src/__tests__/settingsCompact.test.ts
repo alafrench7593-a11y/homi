@@ -54,7 +54,7 @@ describe('visite guidée : jamais mise en pause à tort (régression 21/11/2026)
     const entry = fs.readFileSync('src/features/tour/TourEntry.tsx', 'utf8');
     const overlay = fs.readFileSync('src/features/tour/TourOverlay.tsx', 'utf8');
     expect(entry).toMatch(/gateFor\(path, premium, access\.data \?\? null, \{ visit: isDemo \}\)/);
-    expect(overlay).toMatch(/gate === 'locked'[^\n]*tourDispatch\(\{ type: 'later' \}\)/);
+    expect(overlay).toMatch(/gate === 'locked'[^\n]*tourDispatch\(\{ type: 'later', auto: true \}\)/);
     expect(overlay).not.toMatch(/!open && TOUR_STEPS/);
   });
 });

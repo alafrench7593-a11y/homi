@@ -37,10 +37,10 @@ import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { anchorEntries, measureNode, onAnchorsChange, type AnchorEntry } from './anchors';
 import {
-  bubblePlacement, emergencyRecent, holeFor, isEmergencyPath, isTabPath, overlayActive, rectVisible, stepAnchors, stepOnScreen, TOUR_LENGTH, TOUR_STEPS, unionRect,
+  bubblePlacement, emergencyRecent, holeFor, isEmergencyPath, isTabPath, leftStep, overlayActive, rectVisible, stepAnchors, stepOnScreen, TOUR_LENGTH, TOUR_STEPS, unionRect,
   type GestureHint, type Rect, type TourStep,
 } from './model';
-import { lastEmergencyCall, setTourShownPath, tourDispatch, tourEvent, tourProfileCount, useTourProgress, useTourStore } from './store';
+import { lastEmergencyCall, setTourShownPath, tourDispatch, tourEvent, tourProfileCount, useStoresHydrated, useTourProgress, useTourStore } from './store';
 import { ToolHintBubble } from './ToolHint';
 import { TourHand } from './TourHand';
 import { useScreenGate } from './TourEntry';
@@ -114,9 +114,12 @@ export function TourHost() {
   const finished = useTourStore((s) => s.finished);
   const practice = useTourStore((s) => s.practice);
   const toast = useToast();
+  const hydrated = useStoresHydrated();
 
   // ---- événements réels : navigation, catégorie ouverte, formulaire refermé
   const formOpen = useRef(false);
+  /** Étape dont l'écran a été atteint (la visite y était) : en sortir sans la faire met la visite en pause. */
+  const arrivedAt = useRef<number | null>(null);
   useEffect(() => {
     setTourShownPath(pathname);
     tourEvent({ type: 'route', path: pathname });
@@ -124,9 +127,21 @@ export function TourHost() {
     if (cat) tourEvent({ type: 'categoryOpened', id: cat[1] });
     if (formOpen.current && isTabPath(pathname)) { formOpen.current = false; tourEvent({ type: 'quickFormClosed' }); }
     else if (useTourStore.getState().pendingQuick && !isTabPath(pathname)) { formOpen.current = true; useTourStore.setState({ pendingQuick: false }); }
-  }, [pathname]);
+    // Après les événements (l'étape a peut-être avancé) : sortie de l'étape → pause, sinon arrivée notée
+    const st = useTourStore.getState();
+    const cur = st.owner ? st.byUser[st.owner] : null;
+    if (!cur || cur.status !== 'running') { arrivedAt.current = null; return; }
+    if (leftStep({ stepIndex: cur.step, arrivedAt: arrivedAt.current, path: pathname, formOpen: formOpen.current })) {
+      arrivedAt.current = null;
+      tourDispatch({ type: 'later', auto: true });
+      return;
+    }
+    if (arrivedAt.current !== cur.step) arrivedAt.current = TOUR_STEPS[cur.step] && stepOnScreen(TOUR_STEPS[cur.step], pathname) ? cur.step : null;
+  }, [pathname, progress.step, progress.status]);
   // ---- profil changé dans le magasin ; favori ajouté / retiré
   useEffect(() => useUiStore.subscribe((s, prev) => {
+    // La relecture du magasin au lancement n'est pas un changement de profil fait par la personne
+    if (!useUiStore.persist.hasHydrated() || !useTourStore.persist.hasHydrated()) return;
     if (s.subject !== prev.subject && JSON.stringify(s.subject) !== JSON.stringify(prev.subject)) tourEvent({ type: 'profileChanged' });
     if (s.toolFavorites !== prev.toolFavorites) {
       const added = s.toolFavorites.find((x) => !prev.toolFavorites.includes(x));
@@ -141,13 +156,15 @@ export function TourHost() {
     return onPracticeWrite(() => { if (Date.now() - last > 1000) { last = Date.now(); toast(tr('tour.practice.done'), 'success'); } });
   }, [toast]);
   // La visite se ferme d'elle-même pendant une urgence ou pour un compte nounou (rien n'est perdu : « Plus tard »)
-  useEffect(() => { if (progress.status === 'running' && (caregiverOnly || emergency)) tourDispatch({ type: 'later' }); }, [progress.status, caregiverOnly, emergency]);
+  useEffect(() => { if (progress.status === 'running' && (caregiverOnly || emergency)) tourDispatch({ type: 'later', auto: true }); }, [progress.status, caregiverOnly, emergency]);
 
   // Écran recouvert par l'écran Premium (verrouillage strict) : la visite ne s'y pose pas ; elle attend (« Plus tard »).
   // Droit encore en vérification : la visite attend la réponse sans se mettre en pause (sinon elle s'arrêtait dès son lancement)
   const gate = useScreenGate(pathname);
   const step = active && gate === 'open' ? TOUR_STEPS[progress.step] : null;
-  useEffect(() => { if (active && gate === 'locked' && TOUR_STEPS[progress.step] && stepOnScreen(TOUR_STEPS[progress.step], pathname)) tourDispatch({ type: 'later' }); }, [active, gate, progress.step, pathname]);
+  useEffect(() => { if (active && gate === 'locked' && TOUR_STEPS[progress.step] && stepOnScreen(TOUR_STEPS[progress.step], pathname)) tourDispatch({ type: 'later', auto: true }); }, [active, gate, progress.step, pathname]);
+  // Rien avant la relecture de la progression et de l'interface (sinon : visite ou aide affichée puis effacée)
+  if (!hydrated) return null;
   return (
     <>
       {step && stepOnScreen(step, pathname) ? <Spotlight step={step} index={progress.step} path={pathname} /> : null}

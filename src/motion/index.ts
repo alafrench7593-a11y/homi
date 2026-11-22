@@ -6,7 +6,7 @@
 export { bezier, cardLift, cascade, counter, curves, dampingRatio, durations, morph, press, springs, type Curve, type CurveName, type SpringName } from './curves';
 export { motionDelay, motionDuration, motionFor, motionSpring, motionTiming, resolveMotionLevel, useMotion, type Motion, type MotionLevel } from './useMotion';
 export { motionHaptic, type MotionHaptic } from './haptics';
-export { Cascade, cascadeDelay, useCascade } from './Cascade';
+export { Cascade, CascadeSettled, cascadeDelay, useCascade } from './Cascade';
 export { PressableScale, usePressScale } from './PressableScale';
 export { DetailEnter, LiftCard, useCardLift } from './CardTransition';
 export { AnimatedNumber, formatCounter, localeSeparators } from './AnimatedNumber';

@@ -13,7 +13,7 @@ import { useDemoInset } from '@/components/demoInset';
 import { Text } from '@/components/ui';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
-import { lastEmergencyCall, useTourStore } from './store';
+import { lastEmergencyCall, tourShownPath, useTourStore } from './store';
 import { emergencyRecent, isEmergencyPath, shouldHint } from './model';
 
 /** Ouverture réelle d'un outil (src/components/ToolCard.tsx `openTool`) : décide s'il faut montrer son aide. */
@@ -23,7 +23,7 @@ export function maybeToolHint(o: { id: string; urgent?: boolean; title: string; 
   if (!o.body) return;
   const emergency = (o.path ? isEmergencyPath(o.path) : false) || emergencyRecent(lastEmergencyCall(), Date.now());
   if (!shouldHint({ id: o.id, urgent: o.urgent, seen: st.hintsSeen, off: st.hintsOff, touring: p?.status === 'running', emergency })) return;
-  st.showHint({ id: o.id, title: o.title, body: o.body });
+  st.showHint({ id: o.id, title: o.title, body: o.body, from: tourShownPath() });
 }
 
 export function ToolHintBubble() {
@@ -33,18 +33,22 @@ export function ToolHintBubble() {
   const insets = useSafeAreaInsets();
   const demoInset = useDemoInset();
   const pathname = usePathname();
-  // L'aide accompagne l'écran de l'outil : elle se ferme quand on en part (deuxième changement d'adresse)
-  const track = useRef<{ id: string; path: string; changes: number } | null>(null);
+  // L'aide accompagne l'écran de l'outil : on note l'écran d'ORIGINE (où l'outil a été touché), puis l'écran de l'outil ;
+  // elle se ferme dès qu'on quitte ce dernier. Si l'outil ne s'ouvre pas (écran verrouillé, même adresse), elle se
+  // ferme au bout de 4 s au lieu de suivre la personne sur les écrans suivants.
+  const track = useRef<{ id: string; tool: string | null } | null>(null);
   useEffect(() => {
     if (!hint) { track.current = null; return; }
+    if (!track.current || track.current.id !== hint.id) track.current = { id: hint.id, tool: null };
     const cur = track.current;
-    if (!cur || cur.id !== hint.id) { track.current = { id: hint.id, path: pathname, changes: 0 }; return; }
-    if (cur.path === pathname) return;
-    cur.path = pathname;
-    cur.changes++;
-    // 1er changement : l'arrivée sur l'outil ; 2e : on le quitte
-    if (cur.changes >= 2) close();
+    if (cur.tool == null) { if (pathname !== (hint.from ?? '')) cur.tool = pathname; return; }
+    if (pathname !== cur.tool) close();
   }, [hint, pathname, close]);
+  useEffect(() => {
+    if (!hint) return;
+    const id = setTimeout(() => { if (track.current?.id === hint.id && track.current.tool == null) close(); }, 4000);
+    return () => clearTimeout(id);
+  }, [hint, close]);
   useEffect(() => { if (hint) AccessibilityInfo.announceForAccessibility?.(`${hint.title}. ${hint.body}`); }, [hint]);
   if (!hint || isEmergencyPath(pathname)) return null;
   return (
