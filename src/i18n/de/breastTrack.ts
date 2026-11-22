@@ -118,4 +118,7 @@ export const breastTrack = {
   "bt.pump.badMl": "Ungültige Menge (0 bis 1000 ml)",
   "bt.pump.was": "Vorher: {ml} ml",
   "bt.pump.manual": "Vergangenes Abpumpen eintragen",
+  "bt.stage.live": "Stillen läuft",
+  "bt.stage.last": "Letztes Stillen",
+  "bt.stage.open": "Stillen ansehen",
 };

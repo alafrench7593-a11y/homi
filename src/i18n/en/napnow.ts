@@ -137,4 +137,13 @@ export const napnow = {
   "nn.tray.start": "Start",
   "nn.tray.wake": "Woke up",
   "nn.tray.ongoing": "Ongoing",
+  "nn.aura.title": "Aura",
+  "nn.aura.context": "{name}’s sleep",
+  "nn.aura.fact": "“{name} slept {duration} ({range}).”",
+  "nn.aura.placeholder": "A question about this nap?",
+  "nn.aura.send": "Prepare the question for Aura",
+  "nn.aura.costNote": "Your question opens in Aura: you see the cost before sending.",
+  "nn.aura.draft": "{name}’s nap, {range} ({duration}). {question}",
+  "nn.home.dayLog": "Today’s log",
+  "nn.eyebrow.awake": "Awake",
 };

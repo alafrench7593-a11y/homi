@@ -11,6 +11,7 @@ import { spacing, typography } from '@/theme/tokens';
 import { timeTo } from '@/theme/motion';
 import { cappedScale, useFontScale } from '@/theme/fontScale';
 import { fitTitleSize } from './layoutFit';
+import { BRAND } from '@/config/brand';
 import { ScreenChromeContext, ScreenFocusContext, ScreenReorderScrollContext, type ScrollerEntry } from './screenChrome';
 import Reanimated, { useAnimatedRef, useScrollOffset, useSharedValue } from 'react-native-reanimated';
 import { IconButton, Text } from './ui';
@@ -82,6 +83,10 @@ interface ScreenProps {
 
 /** Routes des écrans d'onglet (barre du bas) : arrivée en fondu bref, sans déplacement. */
 export const TAB_PATHS = new Set(['/', '/health', '/baby', '/household', '/community', '/agenda', '/track', '/tools', '/ask', '/moi', '/profile']);
+
+/** En-tête de mini-app (planche 4 du brief client) : pictogramme 44 pt dans son support, nom 24 pt. */
+const APP_GLYPH = 44;
+const APP_TITLE: TextStyle = { fontSize: 24, lineHeight: 30, letterSpacing: -0.3 };
 
 /** En dessous de cette hauteur visible (paysage, écran partagé, clavier ouvert), l'en-tête est replié d'office. */
 export const HEADER_TIGHT_HEIGHT = 520;
@@ -204,10 +209,12 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
     >
       {/* v5 : fond uni — plus de lueur derrière le titre */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }} testID={tool ? `miniapp-${tool.id}` : undefined}>
-        {origin ? <ArrivalGlyph origin={origin} size={glyphSize - 8} /> : tool ? <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={glyphSize} play={1 + toolPlay} active={toolRunning} /> : titleLogo ?? null}
-        <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
-          <Text variant="title" accessibilityRole="header" style={[titleStyle, NO_HYPHENS]} testID="screen-title">{title}</Text>
-          {subtitle ? <Text muted>{subtitle}</Text> : null}
+        {origin ? <ArrivalGlyph origin={origin} size={glyphSize - 8} /> : tool ? <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} urgent={tool.urgent} size={tool ? APP_GLYPH : glyphSize} play={1 + toolPlay} active={toolRunning} /> : titleLogo ?? null}
+        <View style={{ flex: 1, minWidth: 0, gap: tool ? 2 : 4 }}>
+          {/* Mini-app (planche 4 du brief client) : nom sobre de taille moyenne, sous-titre court — jamais un titre énorme
+              qui repousse la donnée et l'action ; les autres écrans gardent leur grand titre */}
+          <Text variant="title" accessibilityRole="header" style={[tool ? APP_TITLE : titleStyle, NO_HYPHENS]} maxFontSizeMultiplier={tool ? 1.4 : undefined} testID="screen-title">{title}</Text>
+          {subtitle ? <Text variant={tool ? 'small' : undefined} muted numberOfLines={tool ? 2 : undefined}>{subtitle}</Text> : null}
         </View>
       </View>
     </View>
@@ -234,6 +241,13 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
         ) : (
           <View style={{ width: title ? spacing.md : 4 }} />
         )}
+        {/* Mini-app : mot-symbole HOMI centré au-dessus du nom (planche 4), effacé quand le titre compact prend sa place */}
+        {tool && title ? (
+          <Animated.View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
+            style={{ position: 'absolute', left: 0, right: 0, alignItems: 'center', opacity: Animated.subtract(1, compactV) }} testID="screen-app-wordmark">
+            <Text variant="caption" weight="bold" style={{ letterSpacing: 3 }} color={t.colors.text}>{BRAND.name.toUpperCase()}</Text>
+          </Animated.View>
+        ) : null}
         {/* Titre compact (en-tête replié) : une ligne ; le titre complet reste dans le grand titre et pour les lecteurs d'écran */}
         <Animated.View style={{ flex: 1, minWidth: 0, opacity: compactV }} pointerEvents="none"
           accessibilityElementsHidden={!(mode.compact && !scroll)} importantForAccessibility={mode.compact && !scroll ? 'auto' : 'no-hide-descendants'}

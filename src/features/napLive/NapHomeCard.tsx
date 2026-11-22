@@ -2,14 +2,14 @@
  * Accueil — planche 1 du brief client (« Accueil, Sommeil et Aura ») : section « Aujourd'hui », une carte de verre
  * dense avec le pictogramme dans un support rond, « Sieste en cours », le minuteur HH:MM:SS qui avance à la seconde,
  * « Depuis 13 h 10 » et une seule action « Voir la sieste ». Sieste terminée : « Dernière sieste », « 1 h 25 », heures,
- * note. Dessous, deux tuiles : « Relais parent » et « Outils ».
+ * note. Dessous, deux tuiles : « Relais parent » et « Journal » (l'entrée « Mes apps » est déjà au-dessus).
  * Un toucher ouvre Sommeil avec CETTE session sélectionnée (« /sleep/<enfant>?nap=<session> »). Rien du jour : la carte
  * ne s'affiche pas (pas de rangée de zéros). Même donnée source que Sommeil, la catégorie et le relais.
  */
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { Glass, GlassButton } from '@/components/glass';
+import { Glass } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Text, type IconName } from '@/components/ui';
 import { t as tr } from '@/i18n';
@@ -17,8 +17,9 @@ import { useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { clock, span } from '@/lib/domain/sleepPlanner';
 import type { Child, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, radius, spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { napState } from './NapNow';
+import { StageHero } from '@/components/stage/StageHero';
 import { isDayNap } from '@/lib/domain/sleepSummary';
 
 /** 2 542 s → « 00:42:22 » (minuteur de la planche : heures sur deux chiffres). */
@@ -72,30 +73,21 @@ export function NapHomeCard({ child }: { child: Child }) {
   return (
     <View style={{ gap: spacing.sm }}>
       <Text variant="title" accessibilityRole="header" testID="home-today-title">{tr('nn.home.today')}</Text>
+      {/* Scène « Whoop / Keynote » : minuteur géant sur verre sombre, une seule action */}
       <Tappable accessibilityRole="button" accessibilityLabel={`${title}, ${child.first_name}. ${open ? span(minutes) : big}. ${sub}. ${tr('nn.home.see')}`} testID="home-nap" onPress={openNap}>
-        <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.lg, gap: spacing.xs }}>
-          {/* pictogramme dans un support de verre rond, comme sur la planche */}
-          <Glass variant="card" radius={26} style={{ width: 52, height: 52, marginBottom: spacing.xs }} contentStyle={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="moon" size={22} color={t.colors.text} />
-          </Glass>
-          <Text weight="bold" style={{ fontSize: 20 }} numberOfLines={1}>{title}</Text>
-          {/* minuteur : chiffres de largeur fixe pour qu'ils ne dansent pas à chaque seconde */}
-          <Text testID="home-nap-duration" maxFontSizeMultiplier={1.3} accessibilityLiveRegion="none"
-            style={{ fontSize: 44, lineHeight: 50, letterSpacing: -0.5, fontFamily: fonts.display, color: t.colors.text, fontVariant: ['tabular-nums'] }}>{big}</Text>
-          <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }} testID="home-nap-sub">{sub}</Text>
-          {last.note ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Icon name="message-square" size={14} color={t.colors.textMuted} />
-              <Text variant="small" muted numberOfLines={1} style={{ flex: 1 }}>{last.note}</Text>
-            </View>
-          ) : null}
-          <GlassButton variant="secondary" size="sm" label={tr('nn.home.see')} testID="home-nap-see" style={{ alignSelf: 'center', marginTop: spacing.sm }} onPress={openNap} />
-        </Glass>
+        <StageHero eyebrow={`${title} · ${child.first_name}`} value={big} caption={sub} detail={last.note ? `« ${last.note} »` : null}
+          a11y={`${title}, ${child.first_name}. ${open ? span(minutes) : big}. ${sub}`} size={open ? 56 : 64} testID="home-nap-stage">
+          <View style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface }} testID="home-nap-see">
+            <Text variant="small" weight="bold">{tr('nn.home.see')}</Text>
+            <Icon name="arrow-right" size={14} color={t.colors.text} />
+          </View>
+        </StageHero>
       </Tappable>
       {/* Deux tuiles de la planche : le relais (lit les mêmes sessions) et les outils */}
       <View style={{ flexDirection: 'row', gap: spacing.sm }}>
         <Tile icon="users" label={tr('nn.home.relay')} testID="home-relay" onPress={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)} />
-        <Tile icon="briefcase" label={tr('nn.home.tools')} testID="home-nap-tools" onPress={() => router.push('/tools' as never)} />
+        {/* « Outils » existe déjà juste au-dessus (« Mes apps ») : la seconde tuile ouvre le journal du jour (planche 2) */}
+        <Tile icon="list" label={tr('nn.home.dayLog')} testID="home-nap-journal" onPress={() => router.push('/track' as never)} />
       </View>
     </View>
   );

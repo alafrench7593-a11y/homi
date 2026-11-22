@@ -6,10 +6,11 @@
  * La feuille se tire vers le bas pour se fermer ; Réduire les animations est respecté par le Tray.
  */
 import React, { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
+import { router } from 'expo-router';
 import { Tray, useTray } from '@/components/reacticx/tray';
 import { Glass, GlassButton } from '@/components/glass';
-import { Field, haptic, Icon, Text } from '@/components/ui';
+import { Field, haptic, Icon, IconButton, Text } from '@/components/ui';
 import { useSleepActions } from '@/lib/data/hooks-sleepPlanner';
 import { proposedEnd } from '@/lib/domain/sleepSummary';
 import { useMotion } from '@/motion';
@@ -20,6 +21,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing } from '@/theme/tokens';
 import { napWindow, type NapRecord } from '../../../supabase/functions/_shared/nap-window';
 import { NapCompare } from './SkiaHost';
+import { DarkGlassMaterial, useDarkGlassBase } from '@/components/stage/StageHero';
 
 const TABULAR = { fontVariant: ['tabular-nums' as const] };
 
@@ -84,6 +86,9 @@ export function NapSessionTray({ child, all, session, open, onOpenChange, onAnal
                 <GlassButton variant="tertiary" icon="edit-2" label={tr('nn.sel.edit')} testID="nap-tray-edit" onPress={() => { onOpenChange(false); onEdit(session); }} />
               </View>
             </View>
+            {/* Panneau Aura sombre (planche 1) : la phrase factuelle de la sieste et une question préparée. Rien n'est
+                envoyé ici : la question s'ouvre en brouillon dans Aura, où le coût s'affiche avant l'envoi. */}
+            <AuraAsk child={child} session={session} minutes={f.minutes} range={range} onLeave={() => onOpenChange(false)} />
           </View>
         </Tray.View>
         <Tray.View id="edit">
@@ -192,6 +197,35 @@ function EditEndView({ child, session, all, onSaved }: { child: Child; session: 
         <View style={{ flex: 1 }}><GlassButton variant="tertiary" full label={tr('nn.edit.cancel')} testID="nap-edit-cancel" onPress={cancel} /></View>
         <View style={{ flex: 1 }}><GlassButton variant="primary" full label={tr('nn.edit.save')} testID="nap-edit-save" disabled={!changed || !end || busy} onPress={save} /></View>
       </View>
+    </View>
+  );
+}
+
+function AuraAsk({ child, session, minutes, range, onLeave }: { child: Child; session: Sleep; minutes: number; range: string; onLeave: () => void }) {
+  const t = useTheme();
+  const inv = t.tokens.inverse;
+  const base = useDarkGlassBase();
+  const [q, setQ] = useState('');
+  const send = () => {
+    const question = q.trim();
+    if (!question) return;
+    haptic('light'); onLeave();
+    const draft = tr('nn.aura.draft', { name: child.first_name, range, duration: span(minutes), question });
+    router.push({ pathname: '/assistant', params: { tool: 'kid_sleep', draft } } as never);
+  };
+  return (
+    <View testID="nap-tray-aura" style={{ marginTop: spacing.xs, borderRadius: radius.xl, overflow: 'hidden', backgroundColor: base, borderWidth: 1, borderColor: inv.edge, padding: spacing.md, gap: spacing.sm }}>
+      <DarkGlassMaterial />
+      <Text weight="bold" style={{ fontSize: 20 }} color={inv.text} accessibilityRole="header">{tr('nn.aura.title')}</Text>
+      <Text variant="caption" color={inv.textMuted}>{tr('nn.aura.context', { name: child.first_name })}</Text>
+      <Text color={inv.text} testID="nap-tray-aura-fact">{tr('nn.aura.fact', { name: child.first_name, duration: span(minutes), range })}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, borderRadius: 999, borderWidth: 1, borderColor: inv.edge, paddingLeft: spacing.md }}>
+        <TextInput value={q} onChangeText={setQ} placeholder={tr('nn.aura.placeholder')} placeholderTextColor={inv.textMuted} testID="nap-tray-aura-input"
+          accessibilityLabel={tr('nn.aura.placeholder')} returnKeyType="send" onSubmitEditing={send} maxLength={300}
+          style={{ flex: 1, minHeight: 44, color: inv.text, fontFamily: fonts.body, fontSize: 15 }} />
+        <IconButton icon="send" label={tr('nn.aura.send')} onPress={send} disabled={!q.trim()} color={inv.text} testID="nap-tray-aura-send" />
+      </View>
+      <Text variant="caption" color={inv.textMuted}>{tr('nn.aura.costNote')}</Text>
     </View>
   );
 }

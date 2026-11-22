@@ -118,4 +118,7 @@ export const breastTrack = {
   "bt.pump.badMl": "Invalid amount (0 to 1000 ml)",
   "bt.pump.was": "Before: {ml} ml",
   "bt.pump.manual": "Log a past session",
+  "bt.stage.live": "Feed in progress",
+  "bt.stage.last": "Last feed",
+  "bt.stage.open": "See the feed",
 };

@@ -13,6 +13,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useTray } from '@/components/reacticx/tray';
+import { StageHero } from '@/components/stage/StageHero';
 import { Glass, GlassButton } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
@@ -166,17 +167,10 @@ export function BottleLog({ child, bottles, focusId, onFocusDone }: { child: Chi
         <Tappable accessibilityRole="button" testID="qt-bottle-last" onPress={() => open(last.id)} disabled={!!last._pending}
           accessibilityLabel={`${tr('qt.b.lastTitle', { name: child.first_name })}. ${mlText(last.consumed_ml)}. ${clock(new Date(last.at))}. ${agoLabel(last.at, now)}`}
           style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}>
-          <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md, gap: 4 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-              <Text variant="small" weight="medium" style={{ flex: 1 }}>{tr('qt.b.lastTitle', { name: child.first_name })}</Text>
-              <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm, flexWrap: 'wrap' }}>
-              <Text testID="qt-bottle-last-ml" maxFontSizeMultiplier={1.3} style={[{ fontSize: 40, lineHeight: 46, letterSpacing: -1 }, HERO_FONT, { color: t.colors.text }, TABULAR]}>{mlText(last.consumed_ml)}</Text>
-              <Text weight="bold" style={TABULAR}>{tr('qt.b.atClock', { time: clock(new Date(last.at)) })}</Text>
-            </View>
-            <Text variant="small" muted testID="qt-bottle-last-ago">{agoLabel(last.at, now)}</Text>
-          </Glass>
+          {/* Scène « Whoop / Keynote » : la dernière quantité bue en très grand ; pas d'anneau (aucun objectif inventé) */}
+          <StageHero testID="qt-bottle-stage" eyebrow={tr('qt.b.lastTitle', { name: child.first_name })} value={mlText(last.consumed_ml)}
+            caption={tr('qt.b.atClock', { time: clock(new Date(last.at)) })} detail={agoLabel(last.at, now)} size={64}
+            a11y={`${tr('qt.b.lastTitle', { name: child.first_name })}. ${mlText(last.consumed_ml)}. ${clock(new Date(last.at))}. ${agoLabel(last.at, now)}`} />
         </Tappable>
       ) : (
         <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md }} testID="qt-bottle-none">

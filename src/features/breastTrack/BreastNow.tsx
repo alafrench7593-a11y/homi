@@ -10,6 +10,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
+import { StageHero } from '@/components/stage/StageHero';
 import { Glass, GlassButton } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
@@ -144,24 +145,24 @@ export function BreastHero({ child, feeds, now, onOpen }: { child: Child; feeds:
   };
   const lastDone = last && !last.ongoing ? last.feed : null;
   return (
-    <Glass variant="card" radius={radius.xl} testID="bt-hero" contentStyle={{ padding: spacing.lg, gap: spacing.sm }}>
-      <Text variant="heading" testID="bt-hero-title" accessibilityRole="header">{title}</Text>
-      {open && secs.total != null ? (
-        <View accessible accessibilityLabel={tr('bt.hero.elapsedA11y', { dur: span(Math.floor(secs.total / 60)) })} style={{ alignItems: 'center', paddingVertical: spacing.xs }}>
-          <Text testID="bt-hero-timer" maxFontSizeMultiplier={1.3} style={[{ fontSize: 72, lineHeight: 80, letterSpacing: -2, fontFamily: fonts.display, color: t.colors.text }, TABULAR]}>{stopwatch(secs.total)}</Text>
-          <Text variant="small" muted style={TABULAR} testID="bt-hero-sides">{tr('bt.hero.sides', { left: stopwatch(secs.left ?? 0), right: stopwatch(secs.right ?? 0) })}</Text>
-        </View>
-      ) : lastDone ? (
-        <Tappable accessibilityRole="button" onPress={() => onOpen(lastDone.id)} testID="bt-hero-last" style={{ paddingVertical: spacing.xs }}>
-          <Text style={TABULAR} weight="bold">{feedLine(lastDone as FeedLike, now)}</Text>
-        </Tappable>
+    <View testID="bt-hero" style={{ gap: spacing.sm }}>
+      {/* Scène « Whoop / Keynote » : le minuteur géant sur verre sombre ; anneau = part du côté en cours dans la tétée */}
+      <StageHero testID="bt-stage" eyebrow={open ? tr('bt.stage.live') : tr('bt.stage.last')}
+        value={open && secs.total != null ? stopwatch(secs.total) : lastDone?.ended_at ? span(Math.max(0, Math.round((Date.parse(lastDone.ended_at) - Date.parse(lastDone.started_at)) / 60000))) : '—'}
+        caption={title}
+        detail={open && secs.total != null ? tr('bt.hero.sides', { left: stopwatch(secs.left ?? 0), right: stopwatch(secs.right ?? 0) }) : lastDone ? feedLine(lastDone as FeedLike, now) : null}
+        progress={open && secs.total ? Math.min(1, ((side === 'right' ? secs.right : secs.left) ?? 0) / Math.max(1, secs.total)) : null}
+        ringLabel={open && side ? sideLabel(side) : null} size={68}
+        a11y={[title, open && secs.total != null ? tr('bt.hero.elapsedA11y', { dur: span(Math.floor(secs.total / 60)) }) : null].filter(Boolean).join('. ')} />
+      {!open && lastDone ? (
+        <GlassButton variant="secondary" size="sm" icon="chevron-right" label={tr('bt.stage.open')} testID="bt-hero-last" style={{ alignSelf: 'flex-start' }} onPress={() => onOpen(lastDone.id)} />
       ) : null}
       <SidePicker running={!!open} current={side} last={lastDone?.side ?? null} seconds={{ left: secs.left, right: secs.right }} onPick={pick} busy={busy} />
       {open ? <GlassButton variant="primary" size="lg" full icon="square" label={tr('bt.finish')} testID="bt-finish" disabled={busy}
         onPress={() => void run(() => act.finish(open, new Date()), tr('bt.finished', { dur: span(Math.round((secs.total ?? 0) / 60)) }))} /> : null}
       {error ? <Text variant="small" color={t.colors.danger} testID="bt-error" accessibilityLiveRegion="assertive">{error}</Text> : null}
       <Text variant="caption" muted>{open ? tr('bt.hero.sameFeed') : tr('bt.hero.howto')}</Text>
-    </Glass>
+    </View>
   );
 }
 

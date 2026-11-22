@@ -15,6 +15,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { StageHero } from '@/components/stage/StageHero';
 import { Glass, GlassButton } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { haptic, Icon, Text } from '@/components/ui';
@@ -85,24 +86,19 @@ export function NapHero({ child, state, now, actions }: { child: Child; state: N
   const status = progress === 'before' ? tr('nn.before', { from: from!, to: to! })
     : progress === 'inside' ? tr('nn.inside', { low: w!.low!, high: w!.high! })
     : progress === 'beyond' ? tr('nn.beyond', { low: w!.low!, high: w!.high! }) : null;
+  const ring = state.open && w?.high ? Math.min(1, (elapsed ?? 0) / w.high) : null;
+  const value = elapsed != null ? span(elapsed) : '—';
+  const unit = elapsed != null ? tr(state.open ? 'nn.elapsedLabel' : 'nn.awakeLabel') : null;
   return (
-    // Planche 1 du brief client : UNE donnée en grand, centrée, la période juste dessous, puis l'action
-    <Glass variant="card" radius={radius.xl} testID="nap-hero" contentStyle={{ padding: spacing.lg, gap: spacing.sm, alignItems: 'center' }}>
-      <Text variant="small" weight="medium" muted testID="nap-hero-title" accessibilityRole="header" style={{ textAlign: 'center' }}>{title}</Text>
-      {elapsed != null ? (
-        <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${span(elapsed)} ${tr(state.open ? 'nn.elapsedLabel' : 'nn.awakeLabel')}`}>
-          <Text testID="nap-hero-elapsed" maxFontSizeMultiplier={1.3} style={[{ fontSize: 60, lineHeight: 66, letterSpacing: -1.5, fontFamily: fonts.display, color: t.colors.text, textAlign: 'center' }, TABULAR]}>{span(elapsed)}</Text>
-          <Text variant="small" muted>{tr(state.open ? 'nn.elapsedLabel' : 'nn.awakeLabel')}</Text>
-        </View>
-      ) : null}
-      {status ? (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, maxWidth: '100%' }} testID={`nap-hero-${progress}`}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: progress === 'beyond' ? t.colors.text : t.colors.primary }} />
-          <Text variant="small" weight="medium" style={{ flexShrink: 1, textAlign: 'center' }}>{status}</Text>
-        </View>
-      ) : null}
-      <View style={{ marginTop: spacing.xs, alignSelf: 'stretch' }}>{actions}</View>
-    </Glass>
+    // Scène « Whoop / Keynote » : la donnée en très grand sur verre sombre, anneau tiré de la fenêtre réelle (rempli
+    // jusqu'à la borne haute indicative), la commande juste dessous, hors de la scène (contraste garanti)
+    <View style={{ gap: spacing.sm }}>
+      <StageHero testID="nap-hero" eyebrow={state.open ? tr('nn.home.ongoingTitle') : state.lastWake ? tr('nn.eyebrow.awake') : tr('nn.app.title')}
+        value={value} caption={title} detail={status}
+        progress={ring} ringLabel={ring != null ? to : null} size={68}
+        a11y={[title, elapsed != null ? `${span(elapsed)} ${unit}` : null, status].filter(Boolean).join('. ')} />
+      <View>{actions}</View>
+    </View>
   );
 }
 

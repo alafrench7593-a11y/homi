@@ -118,4 +118,7 @@ export const breastTrack = {
   "bt.pump.badMl": "Cantidad no válida (0 a 1000 ml)",
   "bt.pump.was": "Antes: {ml} ml",
   "bt.pump.manual": "Anotar una extracción pasada",
+  "bt.stage.live": "Toma en curso",
+  "bt.stage.last": "Última toma",
+  "bt.stage.open": "Ver la toma",
 };
