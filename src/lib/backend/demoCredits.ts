@@ -135,12 +135,14 @@ export function createCredits(c: CreditsCtx) {
     if (!me) return null;
     const payer = payerOf(me);
     const a = T('credit_accounts').find((x) => x.payer_id === (payer?.payer ?? me));
+    // Réservé = réservations encore « held » (comme v_held de credits_status) : visible PENDANT une analyse
+    const held = a ? T('credit_reservations').filter((r) => r.account_id === a.id && r.status === 'held').reduce((n, r) => n + Number(r.cost), 0) : 0;
     const used = a ? T('credit_ledger').filter((l) => l.account_id === a.id && l.kind === 'debit' && a.period_start && l.created_at >= a.period_start)
       .reduce((n, l) => n - Number(l.amount), 0) : 0;
     return {
       subscribed: !!payer, tier: payer?.tier ?? a?.tier ?? null, holder_kind: a?.holder_kind ?? (payer?.tier === 'family' ? 'household' : 'user'),
       payer_is_me: payer ? payer.payer === me : null, monthly_allowance: a?.monthly_allowance ?? 0, monthly_remaining: a?.monthly_balance ?? 0,
-      purchased_remaining: a?.purchased_balance ?? 0, reserved: 0, used_this_period: used, period_start: a?.period_start ?? null,
+      purchased_remaining: a?.purchased_balance ?? 0, reserved: held, used_this_period: used, period_start: a?.period_start ?? null,
       next_renewal: a?.period_end ?? null, ai_enabled: !!settings().ai_enabled,
     };
   }

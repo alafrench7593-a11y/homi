@@ -141,6 +141,7 @@ export const APP_ROUTES: readonly string[] = [
   '/family/pets',
   '/family/pets/[id]',
   '/family/prep',
+  '/family/relay',
   '/family/review',
   '/family/routines',
   '/family/solo',

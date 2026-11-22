@@ -160,12 +160,41 @@ function Landing({ fresh, children, style }: { fresh: boolean; children?: React.
   return <Animated.View style={[style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }, { scaleY: v.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) }] }]}>{children}</Animated.View>;
 }
 
-export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, onOpenSession }: {
+/**
+ * Taille d'un segment qui SUIT la donnée : après une correction enregistrée, le début reste ancré et la longueur
+ * passe de l'ancienne à la nouvelle valeur sur la même échelle ; l'ancienne fin reste marquée en pointillé un
+ * instant. Réduire les animations : pas d'animation, mais l'ancienne fin reste visible (avant / après lisibles).
+ */
+function Sized({ left, width, children, muted }: { left: number; width: number; children: React.ReactNode; muted: string }) {
+  const m = useMotion();
+  const w = useRef(new Animated.Value(width)).current;
+  const prev = useRef(width);
+  const [ghost, setGhost] = useState<number | null>(null);
+  useEffect(() => {
+    if (Math.abs(prev.current - width) < 0.5) return;
+    const old = prev.current; prev.current = width;
+    setGhost(old);
+    const clear = setTimeout(() => setGhost(null), m.off ? 4000 : 2200);
+    if (m.off) w.setValue(width);
+    else Animated.timing(w, { toValue: width, duration: 650, easing: Easing.bezier(0.2, 0.9, 0.2, 1), useNativeDriver: false }).start();
+    return () => clearTimeout(clear);
+  }, [width, m.off, w]);
+  return (
+    <>
+      {ghost != null ? <View pointerEvents="none" testID="nap-band-ghost" style={{ position: 'absolute', left, width: ghost, top: 16, height: 32, borderRadius: 8, borderWidth: 1.5, borderStyle: 'dashed', borderColor: muted }} /> : null}
+      <Animated.View style={{ position: 'absolute', left, top: 16, height: 32, width: w }}>{children}</Animated.View>
+    </>
+  );
+}
+
+export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, onOpenSession, focusId, onClearFocus }: {
   child: Child; state: NapState; now: Date; onEdit: (s: Sleep) => void;
   /** Sélection pilotée (lien « ?nap= », retour d'Aura) ; `onSelect` la tient à jour. */
   selectedId?: string | null; onSelect?: (id: string | null) => void;
   /** Toucher bref sur une session (sans glisser) : sa feuille s'ouvre. */
   onOpenSession?: (s: Sleep) => void;
+  /** Session ouverte : la frise zoome sur elle (échelle FIGÉE tant qu'elle reste ouverte) ; null : toute la journée. */
+  focusId?: string | null; onClearFocus?: () => void;
 }) {
   const t = useTheme();
   const items = useMemo(() => bandItems(state, now), [state, now]);
@@ -184,10 +213,24 @@ export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, on
   useEffect(() => { seen.current = new Set(naps.map((n) => n.id)); });
   // Sélection tenue à jour si la sieste a été modifiée ou supprimée
   useEffect(() => { if (sel && !items.some((i) => i.id === sel.id)) setSel(null); else if (sel) setSelState(items.find((i) => i.id === sel.id)!); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [items]);
-  const x = (m: number) => ((Math.min(TO, Math.max(FROM, m)) - FROM) / (TO - FROM)) * width;
+  // Zoom sur la session ouverte : bornes calculées UNE fois à l'ouverture (heures pleines, au moins 3 h), puis
+  // figées — une correction de la fin se voit sur la même échelle
+  const [zoom, setZoom] = useState<{ id: string; lo: number; hi: number } | null>(null);
+  useEffect(() => {
+    if (!focusId) { setZoom(null); return; }
+    if (zoom?.id === focusId) return;
+    const it = items.find((i) => i.id === focusId && i.kind === 'nap');
+    if (!it) return;
+    const lo = Math.max(0, Math.floor((it.start - 60) / 60) * 60);
+    setZoom({ id: focusId, lo, hi: Math.min(1440, Math.max(lo + 180, Math.ceil((it.end + 30) / 60) * 60)) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusId, items]);
+  const LO = zoom?.lo ?? FROM; const HI = zoom?.hi ?? TO;
+  const ticks = zoom ? Array.from({ length: Math.floor((HI - LO) / 60) + 1 }, (_, k) => LO / 60 + k) : TICKS;
+  const x = (m: number) => ((Math.min(HI, Math.max(LO, m)) - LO) / (HI - LO)) * width;
   const touch = (e: GestureResponderEvent) => {
     if (!width) return;
-    const m = FROM + (Math.max(0, Math.min(width, e.nativeEvent.locationX)) / width) * (TO - FROM);
+    const m = LO + (Math.max(0, Math.min(width, e.nativeEvent.locationX)) / width) * (HI - LO);
     const p = pickAt(items, m);
     if (p?.id !== sel?.id) { if (p) haptic('selection'); setSel(p); }
   };
@@ -202,6 +245,11 @@ export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, on
         <Text variant="label" accessibilityRole="header">{tr('nn.band.title')}</Text>
         <Text variant="small" muted style={TABULAR} testID="nap-band-total">{naps.length ? tr('nn.band.total', { count: naps.length, total: span(total) }) : tr('nn.band.none')}</Text>
       </View>
+      {zoom ? (
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: -4 }}>
+          <GlassButton size="sm" variant="tertiary" icon="maximize-2" label={tr('nn.band.allDay')} testID="nap-band-all-day" onPress={() => { setZoom(null); onClearFocus?.(); }} />
+        </View>
+      ) : null}
       {/* Lecture : sélection courante (au-dessus de la bande, jamais sous le doigt) */}
       <View style={{ minHeight: 44, justifyContent: 'center' }} accessibilityLiveRegion="polite" testID="nap-band-selection">
         {selText ? (
@@ -224,7 +272,7 @@ export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, on
         onResponderRelease={(e) => {
           // Toucher bref sur une session : sa feuille ; glissement : lecture seule (la sélection reste)
           if (moved.current || !onOpenSession || !width) return;
-          const m = FROM + (Math.max(0, Math.min(width, e.nativeEvent.locationX)) / width) * (TO - FROM);
+          const m = LO + (Math.max(0, Math.min(width, e.nativeEvent.locationX)) / width) * (HI - LO);
           const p = pickAt(items, m);
           if (p?.sleep) onOpenSession(p.sleep);
         }}
@@ -236,7 +284,7 @@ export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, on
       >
         {/* Rien de noté : ligne pointillée */}
         <View style={{ position: 'absolute', left: 0, right: 0, top: 31, borderTopWidth: 2, borderStyle: 'dotted', borderColor: t.colors.textMuted, opacity: 0.45 }} />
-        {width ? items.map((i) => {
+        {width ? items.filter((i) => i.end > LO && i.start < HI).map((i) => {
           const left = x(i.start); const w = Math.max(i.kind === 'nap' ? 6 : 10, x(i.end) - left);
           const on = sel?.id === i.id;
           if (i.kind === 'window') {
@@ -247,21 +295,23 @@ export function NapDayBand({ child, state, now, onEdit, selectedId, onSelect, on
             );
           }
           return (
-            <Landing key={i.id} fresh={fresh(i.id)} style={{ position: 'absolute', left, width: w, top: 16, height: 32 }}>
+            <Sized key={i.id} left={left} width={w} muted={t.colors.textMuted}>
+            <Landing fresh={fresh(i.id)} style={{ flex: 1 }}>
               <View testID={`nap-band-nap-${i.id}`} style={{ flex: 1, borderRadius: 8, backgroundColor: t.colors.text, opacity: on ? 1 : 0.86, borderWidth: on ? 2 : 0, borderColor: t.colors.primary }}>
                 {i.ongoing ? <View style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 6, borderTopRightRadius: 8, borderBottomRightRadius: 8, backgroundColor: t.colors.primary }} /> : null}
               </View>
               {i.sleep?.note ? <View testID="nap-band-note-dot" style={{ position: 'absolute', top: -9, left: Math.max(0, w / 2 - 4), width: 8, height: 8, borderRadius: 4, backgroundColor: t.colors.primary, borderWidth: 1.5, borderColor: t.colors.background }} /> : null}
             </Landing>
+            </Sized>
           );
         }) : null}
         {/* Maintenant */}
-        {width && minuteOfDay(now) >= FROM && minuteOfDay(now) <= TO ? <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 4, bottom: 4, width: 2, borderRadius: 1, backgroundColor: t.colors.primary }} /> : null}
+        {width && minuteOfDay(now) >= LO && minuteOfDay(now) <= HI ? <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 4, bottom: 4, width: 2, borderRadius: 1, backgroundColor: t.colors.primary }} /> : null}
         {sel && width ? <View pointerEvents="none" style={{ position: 'absolute', left: x((sel.start + sel.end) / 2) - 1, top: 0, height: 10, width: 2, backgroundColor: t.colors.text }} /> : null}
       </View>
       {/* Axe : heures alignées sous leurs repères */}
       <View style={{ height: 16 }}>
-        {width ? TICKS.map((h) => (
+        {width ? ticks.map((h) => (
           <Text key={h} variant="caption" muted style={[{ position: 'absolute', left: x(h * 60) - 12, width: 24, textAlign: 'center' }, TABULAR]}>{`${h}h`}</Text>
         )) : null}
       </View>

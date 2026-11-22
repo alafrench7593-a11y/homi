@@ -46,7 +46,8 @@ function Body({ child, sleepId }: { child: Child; sleepId: string }) {
           <Text weight="bold" style={{ flex: 1, fontVariant: ['tabular-nums'] }}>{tr('nn.ses.context', { name: child.first_name, range, dur: span(f.minutes) })}</Text>
         </View>
         {s.note ? <Text variant="small" muted testID="aura-session-note">{`« ${s.note} »`}</Text> : null}
-        {f.w.samples.length ? <NapCompare samples={f.w.samples} current={{ started_at: s.started_at, minutes: f.minutes, label: tr('nn.tray.this') }} low={f.w.low} high={f.w.high} height={130} /> : null}
+        {f.w.samples.length ? <NapCompare samples={f.w.samples} current={{ started_at: s.started_at, minutes: f.minutes, label: tr('nn.tray.this'), id: s.id }} low={f.w.low} high={f.w.high} height={130}
+          onOpen={(id) => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, nap: id } } as never)} /> : null}
       </Glass>
       <AuraAnalysis kind="nap" testID="aura-analysis-nap"
         data={napPayload({ startedAt: s.started_at, now: s.ended_at ? new Date(s.ended_at) : now, ongoing: !s.ended_at, ageMonths: childAge(child.birth_date).months ?? null, samples: f.w.samples })}

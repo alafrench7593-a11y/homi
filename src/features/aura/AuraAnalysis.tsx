@@ -70,6 +70,7 @@ function AnalysisShell({ kind, payload, testID, children, followUps }: { kind: K
   // comme à relancer — jamais recalculée (ni facturée) automatiquement à l'affichage
   const payloadKey = JSON.stringify(payload ?? null);
   const [analysedKey, setAnalysedKey] = useState<string | null>(null);
+  const [analysedAt, setAnalysedAt] = useState<Date | null>(null);
   const stale = !!result && analysedKey !== null && analysedKey !== stableKey(kind, payloadKey);
   const action = creditActionFor('analysis', { analysis: kind });
   const demoBackend = isDemo && !hasRealBackend;
@@ -100,7 +101,7 @@ function AnalysisShell({ kind, payload, testID, children, followUps }: { kind: K
               demo={demoBackend}
               testID={`${testID}-ai`}
               run={({ requestId }) => askAura({ kind: 'analysis', analysis: { kind, data: payload }, data_consent: true, lang: getLocale(), request_id: requestId || uuid(), credit_action: action })}
-              onResult={(r) => { setResult(r); setAnalysedKey(stableKey(kind, payloadKey)); }}
+              onResult={(r) => { setResult(r); setAnalysedKey(stableKey(kind, payloadKey)); setAnalysedAt(new Date()); }}
             />
           ) : null}
         </>
@@ -108,6 +109,7 @@ function AnalysisShell({ kind, payload, testID, children, followUps }: { kind: K
       {result ? (
         <View style={{ gap: spacing.xs }} testID={`${testID}-result`} accessibilityLiveRegion="polite">
           <Text variant="label">{tr('aura.an.result')}</Text>
+          {analysedAt ? <Text variant="caption" muted testID={`${testID}-date`}>{tr('nn.an.dated', { date: formatDate(analysedAt, { day: 'numeric', month: 'long' }), time: `${String(analysedAt.getHours()).padStart(2, '0')}:${String(analysedAt.getMinutes()).padStart(2, '0')}` })}</Text> : null}
           {result.demo ? <Text variant="caption" color={t.colors.lavender} testID={`${testID}-simulated`}>{tr('aura.mode.demo')}</Text> : null}
           {result.safety && result.safety !== 'none' ? <Text variant="small">{result.answer}</Text> : <Markdown source={result.answer ?? ''} />}
           <Text variant="caption" muted>{`${result.footer ?? tr('aura.aiNote')} ${result.credits?.charged ? tr('aura.charged', { count: result.credits.cost ?? 0 }) : tr('aura.notCharged')}`}</Text>

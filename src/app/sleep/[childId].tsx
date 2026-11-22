@@ -29,10 +29,10 @@ import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text 
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
-import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons, SleepTimeline } from '@/features/sleep';
+import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons } from '@/features/sleep';
 import { WakeCheckReminder } from '@/features/sleepWakeCheck';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useChildren, useInvalidate, useMemberships, usePremium, useReminders, useRows } from '@/lib/data/hooks';
+import { useChild, useChildren, useInvalidate, useMemberships, useReminders, useRows } from '@/lib/data/hooks';
 import { openLink } from '@/lib/links';
 import { friendlyError, useDeleteReminder, useSaveReminder } from '@/lib/data/hooks-settings';
 import { saveSleepProfile, useNightFeeds, useSleepNotificationSync, useSleepPlan, type SleepProfileRow } from '@/lib/data/hooks-sleepPlanner';
@@ -124,7 +124,6 @@ type PlanData = ReturnType<typeof useSleepPlan>;
 // ─── Aujourd'hui ───────────────────────────────────────────────────────────────────────────────────
 
 function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child; data: PlanData; focusNap: string | null; goSafety: () => void; goProfile: () => void }) {
-  const premium = usePremium();
   const toast = useToast();
   const saveReminder = useSaveReminder();
   const deleteReminder = useDeleteReminder();
@@ -137,9 +136,11 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
   // Session sélectionnée (lien « ?nap= » depuis l'accueil) et sa feuille ; la sélection est gardée dans l'adresse :
   // au retour d'Aura, le même point est sélectionné
   const [selNap, setSelNap] = useState<string | null>(focusNap);
+  // Session ouverte (lien de l'accueil, toucher sur la frise) : la frise zoome sur elle à échelle figée
+  const [zoomNap, setZoomNap] = useState<string | null>(focusNap);
   const [traySession, setTraySession] = useState<Sleep | null>(null);
   const [trayOpen, setTrayOpen] = useState(false);
-  const openSession = (s: Sleep) => { setSelNap(s.id); router.setParams({ nap: s.id }); setTraySession(s); setTrayOpen(true); };
+  const openSession = (s: Sleep) => { setSelNap(s.id); setZoomNap(s.id); router.setParams({ nap: s.id }); setTraySession(s); setTrayOpen(true); };
   const night = useMemo(() => lastNightReport(sleeps, child.id, feeds, now), [sleeps, feeds, child.id, now]);
   const name = child.first_name;
   if (loading || !plan) return <Skeleton rows={3} />;
@@ -171,7 +172,8 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
       )} />
       {/* 2 · Exploration : la journée, touchable */}
       <NapDayBand child={child} state={nap} now={now} onEdit={setEditing} selectedId={selNap}
-        onSelect={(id) => { setSelNap(id); if (id && id !== 'window') router.setParams({ nap: id }); }} onOpenSession={openSession} />
+        onSelect={(id) => { setSelNap(id); if (id && id !== 'window') router.setParams({ nap: id }); }} onOpenSession={openSession}
+        focusId={zoomNap} onClearFocus={() => setZoomNap(null)} />
       {/* 3 · Interprétation : faits calculés (gratuits), puis Aura (crédits annoncés) */}
       <NapFacts state={nap} open={factsOpen} />
       {plan.state === 'asleep_nap' ? <WakeCheckReminder child={child} /> : null}
@@ -202,11 +204,7 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
         </View>
       </PremiumSection>
 
-      <SectionTitle title={tr('u4.sl.dayPlan')} />
-      <Card>
-        <SleepTimeline plan={plan} showEstimates={premium} now={now} onEdit={(id) => setEditing((sleeps as Sleep[]).find((s) => s.id === id) ?? null)} />
-        <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u4.sp.touchEdit')}</Text>
-      </Card>
+      {/* « Planning de la journée » fusionné dans la frise (22/11/2026) : sessions touchables sous la frise */}
 
       {persistent ? (
         <Banner tone="info" title={tr('u4.nh.lasting')} action={<Button size="sm" variant="secondary" label={tr('u4.sp.prepInfo')} onPress={goSafety} testID="sleep-pro-link" />}>
@@ -214,7 +212,11 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
         </Banner>
       ) : null}
 
-      <GlassButton variant="tertiary" icon="shield" label={tr('u4.sp.tab.safety')} onPress={goSafety} testID="sleep-safety-link" />
+      <Row wrap>
+        <GlassButton variant="secondary" icon="grid" label={tr('nn.cat.open')} onPress={() => router.push('/tools/sleep' as never)} testID="sleep-category-link" />
+        <GlassButton variant="secondary" icon="send" label={tr('nn.home.relay')} onPress={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)} testID="sleep-relay-link" />
+        <GlassButton variant="tertiary" icon="shield" label={tr('u4.sp.tab.safety')} onPress={goSafety} testID="sleep-safety-link" />
+      </Row>
       <Row wrap>
         <Button size="sm" variant="secondary" icon="heart" label={tr('u4.nh.title')} onPress={() => router.push(`/sleep/help/${child.id}` as never)} testID="sleep-help-link" />
         <Button size="sm" variant="ghost" icon="moon" label={tr('u4.tonight.title')} onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
@@ -223,6 +225,8 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
       <SleepEditSheet child={child} sleep={editing} all={sleeps as Sleep[]} onClose={() => setEditing(null)} />
       <NapSessionTray child={child} all={sleeps as Sleep[]} session={traySession ? (sleeps as Sleep[]).find((x) => x.id === traySession.id) ?? null : null}
         open={trayOpen} onOpenChange={setTrayOpen} onEdit={setEditing}
+        onRelay={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)}
+        onOpenOther={(id) => { const o = (sleeps as Sleep[]).find((x) => x.id === id); if (o) setTimeout(() => openSession(o), 350); }}
         onAnalyze={(s) => router.push({ pathname: '/assistant/session', params: { child: child.id, sleep: s.id } } as never)} />
     </View>
   );

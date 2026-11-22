@@ -1932,6 +1932,9 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       return JSON.parse(JSON.stringify(out)) as R[];
     },
     async update<R>(table: string, patch: Row, filters: Filter[]) {
+      // Recette (démonstration uniquement) : fait échouer la prochaine écriture pour tester la conservation du brouillon
+      const g = globalThis as { __HOMI_DEMO_FAIL_NEXT_WRITE?: boolean };
+      if (g.__HOMI_DEMO_FAIL_NEXT_WRITE) { g.__HOMI_DEMO_FAIL_NEXT_WRITE = false; throw new BackendError(tr('home.offline'), 'demo_test_failure', undefined, 503); }
       await load();
       if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));

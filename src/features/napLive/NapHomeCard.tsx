@@ -6,7 +6,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { Glass } from '@/components/glass';
+import { Glass, GlassButton } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Text } from '@/components/ui';
 import { t as tr } from '@/i18n';
@@ -27,6 +27,7 @@ export function NapHomeCard({ child }: { child: Child }) {
   const title = st.open ? tr('nn.home.ongoing', { name: child.first_name, time: clock(new Date(last.started_at)) }) : tr('nn.home.last', { name: child.first_name });
   const range = tr('nn.tray.range', { from: clock(new Date(last.started_at)), to: last.ended_at ? clock(new Date(last.ended_at)) : '…' });
   return (
+    <View style={{ gap: spacing.xs }}>
     <Tappable accessibilityRole="button" accessibilityLabel={`${title}. ${span(minutes)}. ${range}. ${tr('nn.home.open')}`} testID="home-nap"
       onPress={() => router.push({ pathname: '/sleep/[childId]', params: { childId: child.id, nap: last.id } } as never)}>
       <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md, gap: 6 }}>
@@ -47,5 +48,9 @@ export function NapHomeCard({ child }: { child: Child }) {
         ) : null}
       </Glass>
     </Tappable>
+    {/* Juste dessous : le relais (lit les mêmes sessions) */}
+    <GlassButton variant="secondary" icon="send" label={tr('nn.home.relay')} testID="home-relay" style={{ alignSelf: 'flex-start' }}
+      onPress={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)} />
+    </View>
   );
 }

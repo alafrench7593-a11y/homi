@@ -16,6 +16,7 @@
  */
 
 export interface NapRecord {
+  id?: string;
   child_id: string;
   started_at: string;
   ended_at: string | null;
@@ -34,7 +35,7 @@ export const NAP_RULE = {
   dayEndHour: 20,
 } as const;
 
-export interface NapSample { started_at: string; minutes: number }
+export interface NapSample { started_at: string; minutes: number; /** Identifiant de la session (application), pour ouvrir l'événement d'origine. */ id?: string }
 
 export type NapWindowStatus = 'ok' | 'insufficient' | 'dispersed';
 
@@ -83,7 +84,7 @@ export function comparableNaps(all: readonly NapRecord[], childId: string, curre
     .filter((r) => slotGap(localMinuteOfDay(r.started_at), slot) <= NAP_RULE.slotMinutes)
     .sort((a, b) => Date.parse(b.started_at) - Date.parse(a.started_at))
     .slice(0, NAP_RULE.maxSamples)
-    .map((r) => ({ started_at: r.started_at, minutes: minutesOf(r.started_at, r.ended_at!) }));
+    .map((r) => ({ started_at: r.started_at, minutes: minutesOf(r.started_at, r.ended_at!), ...(r.id ? { id: r.id } : {}) }));
 }
 
 /** Plage centrale et statut à partir de DURÉES seules (ce que recalcule le serveur). */
