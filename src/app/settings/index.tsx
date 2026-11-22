@@ -137,6 +137,7 @@ export default function SettingsScreen() {
             <Divider />
             <ListRow icon="cpu" title={tr('settings.services')} subtitle={tr('settings.services.sub')} onPress={() => router.push('/settings/services')} />
             <ListRow icon="layers" title={tr('glass.gallery')} subtitle={tr('glass.gallery.sub')} onPress={() => router.push('/dev/glass' as never)} testID="settings-glass-gallery" />
+            <ListRow icon="sliders" title={tr('lq.entry')} subtitle={tr('lq.entrySub')} onPress={() => router.push('/dev/liquid-glass' as never)} testID="settings-liquid-lab" />
             <ListRow icon="grid" title={tr('intro6.icons.gallery')} subtitle={tr('intro6.icons.gallerySub')} onPress={() => router.push('/dev/icons' as never)} testID="settings-icon-gallery" />
           </>
         ) : null}

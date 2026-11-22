@@ -12,6 +12,8 @@ import { useAutoNotificationsSync } from '@/lib/data/hooks-autoNotifs';
 import { AuraIntroHost } from '@/features/aura/AuraEntry';
 import { useBackendMode } from '@/lib/demoMode';
 import { useUiStore } from '@/lib/store';
+import { useLensStore } from '@/components/glass/liquid/store';
+import { LiquidLabPanel } from '@/features/dev/LiquidLabPanel';
 
 /** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
 function DigestSync() {
@@ -36,6 +38,7 @@ export default function TabsLayout() {
   // recouvrait l'accueil et captait les premiers touchers de la visite ; Aura reste ouverte depuis son bouton.
   const { isDemo } = useBackendMode();
   const auraAsked = useUiStore((s) => s.auraIntroRequested);
+  const labOpen = useLensStore((s) => s.labOpen);
   const segments = useSegments() as string[];
   const leaf = segments[segments.length - 1] ?? '';
   if (ready && !session) return <Redirect href="/welcome" />;
@@ -67,6 +70,8 @@ export default function TabsLayout() {
     </Tabs>
     {/* Présentation d'Aura : une fois par compte, à la première arrivée (hors visite guidée), relançable */}
     {session && (!isDemo || auraAsked) ? <AuraIntroHost /> : null}
+    {/* Laboratoire du verre liquide (/dev/liquid-glass) : panneau de réglage par-dessus l'Accueil réel */}
+    {labOpen ? <LiquidLabPanel /> : null}
     </>
   );
 }

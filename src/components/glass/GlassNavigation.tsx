@@ -25,6 +25,8 @@ import { Icon, Text, type IconName } from '../ui';
 import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import { TabLight } from '@/brand/toolGlass/TabLight';
 import { Glass, useGlass } from './Glass';
+import { LiquidLensMaterial } from './liquid/LiquidLens';
+import type { LensParams } from './liquid/params';
 
 // ---------------------------------------------------------------------------------------------- barre d'onglets
 export interface GlassTab {
@@ -62,6 +64,11 @@ export interface GlassTabBarProps {
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  /**
+   * Verre LIQUIDE (réfraction de la lèvre, reflet orienté, frange réglable : `./liquid`). Absent : verre « chrome »
+   * habituel. Réglé en direct par le laboratoire `/dev/liquid-glass`.
+   */
+  liquid?: LensParams;
 }
 
 export const GLASS_TAB_BAR = { height: 60, inset: 4, floatMargin: 12, floatGap: 8 } as const;
@@ -119,7 +126,7 @@ function TabItem({ tab, active, labelSize, iconsOnly, onPress, onLongPress, onLa
   );
 }
 
-export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, centerAfter, floating = true, bottomInset, labelSize = 11, iconsOnly = false, accessibilityLabel, style, testID = 'glass-tab-bar' }: GlassTabBarProps) {
+export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, centerAfter, floating = true, bottomInset, labelSize = 11, iconsOnly = false, accessibilityLabel, style, testID = 'glass-tab-bar', liquid }: GlassTabBarProps) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { spec } = useGlass('chrome');
@@ -138,7 +145,7 @@ export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, ce
   return (
     <View pointerEvents="box-none" testID={testID}
       style={[floating ? { paddingHorizontal: GLASS_TAB_BAR.floatMargin, paddingBottom: Math.max(safe, GLASS_TAB_BAR.floatGap) } : null, style]}>
-      <Glass variant="chrome" radius={radius} edges={floating ? 'all' : 'top'} testID={`${testID}-glass`}
+      <TabBarMaterial liquid={liquid} radius={radius} floating={floating} testID={`${testID}-glass`}
         contentStyle={{ paddingHorizontal: GLASS_TAB_BAR.inset, paddingTop: GLASS_TAB_BAR.inset, paddingBottom: GLASS_TAB_BAR.inset + (floating ? 0 : safe) }}>
         <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel ?? tr('glass.tabs')} style={styles.tabRow}>
           {/* LENTILLE de l'onglet actif (référence 03 / 04, 21/11/2026) : verre bombé qui glisse d'un onglet à l'autre —
@@ -159,7 +166,22 @@ export function GlassTabBar({ tabs, activeKey, onChange, onLongPress, center, ce
           {center ? <View style={styles.center}>{center}</View> : null}
           {tabs.slice(split).map(item)}
         </View>
-      </Glass>
+      </TabBarMaterial>
+    </View>
+  );
+}
+
+/** Support de la barre : verre « chrome » habituel, ou verre LIQUIDE (calque sous les onglets, qui restent nets). */
+function TabBarMaterial({ liquid, radius, floating, testID, contentStyle, children }: {
+  liquid?: LensParams; radius: number; floating: boolean; testID: string; contentStyle: ViewStyle; children: React.ReactNode;
+}) {
+  if (!liquid) {
+    return <Glass variant="chrome" radius={radius} edges={floating ? 'all' : 'top'} testID={testID} contentStyle={contentStyle}>{children}</Glass>;
+  }
+  return (
+    <View testID={testID} style={{ borderRadius: radius }}>
+      <LiquidLensMaterial radius={radius} params={liquid} testID={`${testID}-liquid`} />
+      <View style={contentStyle}>{children}</View>
     </View>
   );
 }

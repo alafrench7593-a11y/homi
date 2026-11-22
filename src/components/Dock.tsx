@@ -44,6 +44,7 @@ import { TAB_IMAGES, TAB_LIT } from '@/brand/tabs';
 import { TabLight } from '@/brand/toolGlass/TabLight';
 import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
 import { useDockActionFor, type DockAction } from './dockAction';
+import { useLensStore } from './glass/liquid/store';
 import { useKeyboardVisible } from './keyboard';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
@@ -139,6 +140,10 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
   const keyboard = useKeyboardVisible();
   const caregiver = isCaregiverOnly(useMemberships().data);
+  // Verre liquide : d'abord sur l'Accueil seul (et partout pendant le laboratoire), en attendant la validation du rendu
+  const lens = useLensStore((st) => st.params);
+  const lab = useLensStore((st) => st.labOpen);
+  const liquid = activeName === 'index' || lab ? lens : undefined;
 
   const glassTabs: GlassTab[] = tabs.map(({ tab, route }, i) => ({
     key: route.name,
@@ -202,6 +207,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
           iconsOnly={layout.iconsOnly}
           accessibilityLabel={tr('nav.tablist')}
           style={{ width: Math.min(width, 600) }}
+          liquid={liquid}
         />
       </View>
       <QuickActionSheet visible={open} family={activeName === 'household'} onClose={() => setOpen(false)} />

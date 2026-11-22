@@ -99,6 +99,7 @@ export const APP_ROUTES: readonly string[] = [
   '/dev/aura-bot',
   '/dev/glass',
   '/dev/icons',
+  '/dev/liquid-glass',
   '/dev/paywall',
   '/discover',
   '/discover/tool/[id]',
