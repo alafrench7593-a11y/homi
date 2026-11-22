@@ -23,6 +23,7 @@ import { spacing } from '@/theme/tokens';
 import { localeTag, t as tr } from '@/i18n';
 import { toastSaved } from '@/features/saveOutcome';
 import { useTapShield } from '@/features/tapShield';
+import { ScaleWeek, type ScaleConfig } from '@/features/healthTrack/ScaleWeek';
 
 type Scales = Partial<Record<(typeof WELLBEING_SCALES)[number]['key'], 1 | 2 | 3>>;
 interface Entry { id: string; at: string; mood: number | null; unusual_event: string | null; note: string | null; crying: number | null; irritability: number | null; energy: number | null; appetite: number | null; sleep: number | null; digestive_comfort: number | null }
@@ -91,6 +92,7 @@ export default function ChildWellbeing() {
   const weekAgo = Date.now() - 7 * 86400_000;
   const lastMood = todayEntries.find((e) => e.mood)?.mood;
   const empty = !mood && !Object.keys(scales).length && !unusual.trim() && !note.trim();
+  const scaleConfig: ScaleConfig = { labels: MOODS, icons: [...MOOD_ICONS], table: 'child_wellbeing', timeCol: 'at', valueCol: 'mood', required: false };
 
   return (
     <Screen back title={tr('u4.wb.title')} subtitle={child ? tr('u4.wb.subtitle', { name: child.first_name }) : undefined}
@@ -139,6 +141,12 @@ export default function ChildWellbeing() {
       </Card>
       ) : null}
       <Text variant="caption" muted>{tr('u4.wb.caveat')}</Text>
+
+      {/* Échelle des 7 derniers jours : explorer un jour, ouvrir un relevé, corriger son niveau ou son heure */}
+      {entries.length ? (
+        <ScaleWeek testID="wellbeing-scale" config={scaleConfig} title={tr('ht.wb.weekTitle')} trayTitle={child ? tr('ht.wb.trayTitle', { name: child.first_name }) : tr('u4.wb.title')}
+          items={entries.map((e) => ({ id: e.id, at: e.at, value: e.mood, detail: [...WELLBEING_SCALES.map((s) => (e[s.key] ? `${s.label} : ${s.levels[(e[s.key] as number) - 1].toLowerCase()}` : null)), e.unusual_event].filter(Boolean).join(' · ') || null, note: e.note, raw: e as unknown as Record<string, unknown> }))} />
+      ) : null}
 
       <HistoryHeader title={tr('u4.wb.previous')} count={entries.length || undefined} />
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}

@@ -7,11 +7,13 @@
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { Banner, Card, Chip, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
+import { DoseDay, type DoseAnswer, type DoseRow } from '@/features/healthTrack/DoseDay';
+import { dayStarts } from '@/lib/domain/healthTrack';
+import { dayKey } from '@/lib/domain/quickTrack';
 import { ChildAvatar } from '@/features/childAvatar';
 import { dosesFor } from '@/features/needs';
 import { TreatmentsPanel, type TreatmentScope } from '@/features/treatments/TreatmentsPanel';
@@ -20,53 +22,51 @@ import { useNow } from '@/lib/data/hooks-bottle';
 import { useLogDose } from '@/lib/data/hooks-needs';
 import { useDoseLogsSince, useFamilyChildTreatments, useLogMyDose, useMyTreatments, useUnlogDose } from '@/lib/data/hooks-myTreatments';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
-import { t as tr, type TKey } from '@/i18n';
-import { CheckMark } from '@/motion/CheckMark';
-import { MotionItem, MotionList } from '@/motion/ListMotion';
-
-interface Row4 { key: string; time: string; who: string; childId: string | null; name: string; dose: string; treatmentId: string; scheduledFor: string; log: { id: string; status: 'taken' | 'snoozed' | 'skipped' } | null }
+import { t as tr } from '@/i18n';
 
 export default function Medications() {
-  const params = useLocalSearchParams<{ who?: string; dose?: string; time?: string }>();
-  const th = useTheme();
+  const params = useLocalSearchParams<{ who?: string; dose?: string; time?: string; day?: string }>();
   const toast = useToast();
   const now = useNow(60_000);
   const children = useChildren().data ?? [];
   const js = useJourneyState();
   const [who, setWho] = useState<string>(params.who && params.who !== 'me' && children.some((c) => c.id === params.who) ? params.who : params.who ?? 'me');
-  const dayStart = useMemo(() => { const d = new Date(now); d.setHours(0, 0, 0, 0); return d; }, [now.toDateString()]); // eslint-disable-line react-hooks/exhaustive-deps
+  // 7 derniers jours (prises prévues et réponses notées) ; le jour choisi reste dans l'adresse (`?day=`)
+  const starts = useMemo(() => dayStarts(now, 7), [now.toDateString()]); // eslint-disable-line react-hooks/exhaustive-deps
   const mine = useMyTreatments().data ?? [];
   const childT = useFamilyChildTreatments().data ?? [];
-  const logs = useDoseLogsSince(dayStart.toISOString());
+  const logs = useDoseLogsSince(starts[0].toISOString());
   const logMine = useLogMyDose();
   const logChild = useLogDose();
   const unlog = useUnlogDose();
 
-  const rows: Row4[] = useMemo(() => {
-    const out: Row4[] = [];
+  const days = useMemo(() => starts.map((dayStart) => {
+    const out: DoseRow[] = [];
     for (const d of dosesFor(dayStart, mine, logs.mine ?? [])) {
-      out.push({ key: `me-${d.treatment.id}-${d.time}`, time: d.time, who: tr('med.me'), childId: null, name: d.treatment.name, dose: d.treatment.dose_text, treatmentId: d.treatment.id, scheduledFor: d.scheduledFor, log: d.log });
+      out.push({ key: `me-${d.treatment.id}-${d.scheduledFor}`, time: d.time, who: tr('med.me'), childId: null, name: d.treatment.name, dose: d.treatment.dose_text, treatmentId: d.treatment.id, scheduledFor: d.scheduledFor, log: d.log });
     }
     for (const c of children) {
       for (const d of dosesFor(dayStart, childT.filter((t) => t.child_id === c.id), logs.child ?? [])) {
-        out.push({ key: `${c.id}-${d.treatment.id}-${d.time}`, time: d.time, who: c.first_name, childId: c.id, name: d.treatment.name, dose: d.treatment.dose_text, treatmentId: d.treatment.id, scheduledFor: d.scheduledFor, log: d.log });
+        out.push({ key: `${c.id}-${d.treatment.id}-${d.scheduledFor}`, time: d.time, who: c.first_name, childId: c.id, name: d.treatment.name, dose: d.treatment.dose_text, treatmentId: d.treatment.id, scheduledFor: d.scheduledFor, log: d.log });
       }
     }
-    return out.sort((a, b) => a.time.localeCompare(b.time) || a.who.localeCompare(b.who));
-  }, [dayStart, mine, childT, children, logs.mine, logs.child]);
-  const done = rows.filter((r) => r.log?.status === 'taken').length;
+    return { day: dayKey(dayStart), rows: out.sort((a, b) => a.time.localeCompare(b.time) || a.who.localeCompare(b.who)) };
+  }), [starts, mine, childT, children, logs.mine, logs.child]);
+  const today = days[days.length - 1];
+  const selected = days.find((d) => d.day === params.day) ?? today;
 
-  async function toggle(r: Row4) {
+  // Première réponse (case à cocher ou fiche) : même chemin, file hors connexion comprise ; heure réelle notée
+  const answer: DoseAnswer = async (r, at, status) => {
+    const v = { treatment_id: r.treatmentId, scheduled_for: r.scheduledFor, status, existingId: r.log?.id, logged_at: (at ?? new Date()).toISOString() };
+    const res = r.childId ? await logChild.mutateAsync(v) : await logMine.mutateAsync(v);
+    if (res === 'queued') toast(tr('u7.track.queued'), 'info');
+  };
+  async function toggle(r: DoseRow) {
     haptic('success');
     try {
       if (r.log?.status === 'taken') await unlog.mutateAsync({ table: r.childId ? 'treatment_logs' : 'my_treatment_logs', id: r.log.id });
-      else {
-        const v = { treatment_id: r.treatmentId, scheduled_for: r.scheduledFor, status: 'taken' as const, existingId: r.log?.id };
-        const res = r.childId ? await logChild.mutateAsync(v) : await logMine.mutateAsync(v);
-        if (res === 'queued') toast(tr('u7.track.queued'), 'info');
-      }
+      else await answer(r, undefined, 'taken');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
@@ -79,27 +79,8 @@ export default function Medications() {
       {showPregnant ? <Banner tone="info">{tr('med.pregnant')}</Banner> : null}
 
       <SectionTitle title={tr('med.today')} />
-      <Card testID="med-today">
-        {rows.length ? <Text variant="small" muted style={{ marginBottom: 4 }}>{tr('med.todayCount', { done, total: rows.length })}</Text> : <Text muted>{tr('med.todayNone')}</Text>}
-        <MotionList>{rows.map((r) => {
-          const taken = r.log?.status === 'taken';
-          const title = `${r.who} · ${r.name}`;
-          return (
-            <MotionItem key={r.key}><Row key={r.key} style={{ alignItems: 'center', gap: spacing.md, paddingVertical: 8 }}>
-              <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: taken }} aria-checked={taken}
-                accessibilityLabel={taken ? tr('med.untick', { title }) : tr('med.tick', { title })} onPress={() => void toggle(r)} hitSlop={8} testID={`med-check-${r.key}`}
-                style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: taken ? th.colors.success : th.colors.primary, backgroundColor: taken ? th.colors.success : 'transparent' }}>
-                <CheckMark checked={!!taken} size={22} color="#FFFFFF" />
-              </Tappable>
-              <View style={{ flex: 1 }}>
-                <Text weight="bold">{r.time} · {r.who}</Text>
-                <Text variant="small">{r.name} — {r.dose}</Text>
-                <Text variant="caption" weight="bold" color={taken ? th.colors.success : undefined} muted={!r.log}>{tr(`med.status.${r.log?.status ?? 'todo'}` as TKey)}</Text>
-              </View>
-            </Row></MotionItem>
-          );
-        })}</MotionList>
-      </Card>
+      <DoseDay days={days} selected={selected.day} onSelectDay={(day) => router.setParams({ day } as never)} rows={selected.rows}
+        onToggle={(r) => void toggle(r)} onAnswer={answer} isToday={selected.day === today.day} />
 
       <SectionTitle title={tr('med.who')} />
       <Row wrap style={{ gap: 6 }}>

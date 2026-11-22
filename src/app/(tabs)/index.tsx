@@ -17,6 +17,8 @@ import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
 import { BottleHomeCard } from '@/features/quickTrack/BottleLog';
 import { CycleHomeLast } from '@/features/cycleTrack/CycleOverview';
+import { PregnancyHomeCard } from '@/features/pregTrack/PregnancyHomeCard';
+import { HealthHomeCard } from '@/features/healthTrack/HealthCategorySummary';
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
@@ -255,6 +257,9 @@ export default function Home() {
           {childScope && child ? <BottleHomeCard child={child} /> : null}
           {/* Profil cycle : dernière saisie du cycle (jamais l'intime ; rien si « masquer sur l'accueil ») → son app sur ce jour */}
           {cycleMode ? <CycleHomeLast /> : null}
+          {childScope && child ? <HealthHomeCard child={child} /> : null}
+          {/* Profil grossesse : séance de mouvements en cours, prochain rendez-vous, dernier ressenti (rien sinon) */}
+          {scope.scope === 'pregnancy' && pregnancy ? <PregnancyHomeCard /> : null}
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;

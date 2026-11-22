@@ -111,3 +111,4 @@ export { quickTrack } from './quickTrack';
 export { dayjournal } from './dayjournal';
 export { pregTrack } from './pregTrack';
 export { cycleTrack } from './cycleTrack';
+export { healthTrack } from './healthTrack';

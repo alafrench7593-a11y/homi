@@ -7,7 +7,7 @@
  */
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
@@ -26,6 +26,7 @@ import { csvCell, safeFileName } from '@/lib/csv';
 import { spacing } from '@/theme/tokens';
 import { formatNumber, localeTag, t as tr } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ObservationLog } from '@/features/healthTrack/ObservationLog';
 
 interface Tracker { id: string; child_id: string; kind: 'measure' | 'observation'; label: string; unit: string | null; plan_note: string | null; plan_by: string | null; plan_date: string | null; low_threshold: number | null; high_threshold: number | null; thresholds_from_plan: boolean; contexts: string[]; active: boolean }
 interface Entry { id: string; tracker_id: string; at: string; value: number | null; context: string | null; note: string | null; source: 'parent' | 'imported' | 'professional' }
@@ -121,13 +122,17 @@ export default function HealthTracking() {
   }
   return (
     <Screen back title={tr('u4.ht.title')} subtitle={child ? tr('u4.ht.subtitle', { name: child.first_name }) : undefined}
-      action={{ label: activeTrackers.length ? tr('u4.ht.noteNow') : tr('u4.ht.create'), icon: 'plus', onPress: quickNote, testID: 'health-main-action' }}>
+      action={{ label: tr('ht.obs.add'), icon: 'plus', onPress: () => child && router.push({ pathname: '/track/[kind]', params: { kind: 'observation', child: child.id } } as never), testID: 'health-main-action' }}>
+      {/* Observations du quotidien (température, symptômes) : donnée principale, courbe, journal de la semaine, correction */}
+      {child ? <ObservationLog child={child} /> : null}
+      <SectionTitle title={tr('ht.obs.trackersTitle')} />
       <TodaySummary items={[
         { icon: 'activity', value: String(activeTrackers.length), label: tr('u4.ht.sumTrackers') },
         { icon: 'edit-3', value: String(todayCount), label: tr('u4.ht.sumToday') },
         { icon: 'clock', value: lastEntry ? new Date(lastEntry.at).toLocaleDateString(localeTag(), { day: 'numeric', month: 'short' }) : '—', label: tr('u4.ht.sumLast') },
       ]} />
       <Banner tone="info" icon="info">{tr('u4.ht.banner')}</Banner>
+      {activeTrackers.length ? <Button label={tr('u4.ht.noteNow')} icon="edit-3" variant="secondary" size="sm" onPress={quickNote} testID="health-tracker-note" /> : null}
 
       {trackersQ.isLoading && !trackersQ.data ? <Skeleton kind="card" rows={2} /> : null}
       {/* Erreur réseau : jamais présentée comme « aucun suivi » */}
