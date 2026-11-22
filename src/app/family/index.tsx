@@ -26,6 +26,7 @@ import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { splitRemaining } from '@/lib/domain/journalTrack';
 
 type Filter = 'today' | 'upcoming' | 'unassigned' | 'done';
 
@@ -63,6 +64,9 @@ export default function FamilyHome() {
     if (filter === 'unassigned') return todo.filter((t) => !t.assignee_id);
     return tasks.filter((t) => t.status === 'done').sort((a, b) => ((a.done_at ?? '') < (b.done_at ?? '') ? 1 : -1)).slice(0, 30);
   }, [tasks, filter, day]);
+
+  // Ce qui RESTE d'abord ; ce qui a été fait aujourd'hui ensuite (qui et quand), rouvrable selon les droits
+  const doneToday = useMemo(() => splitRemaining(tasks.filter((x) => x.status === 'done' && x.done_at && sameLocalDay(x.done_at, day)), () => true, (x) => x.done_at).done, [tasks, day]);
 
   const signals = useMemo(() => (tipsOff || !me ? [] : overloadSignals({ tasks, requests, shifts: shifts ?? [], me, day, myDeclaredFatigue: mySleep?.[0]?.log_date === day ? mySleep[0].fatigue : null })), [tasks, requests, shifts, me, day, tipsOff, mySleep]);
 
@@ -176,11 +180,20 @@ export default function FamilyHome() {
       {tasksQ.data && list.length === 0 ? (
         <EmptyState icon="check-square" title={filter === 'done' ? tr('u2.fam.empty_done') : tr('u2.fam.empty_todo')} body={filter === 'today' ? tr('u2.fam.empty_body') : undefined} action={filter !== 'done' ? { label: tr('u2.fam.add_task'), onPress: () => setCreating(true) } : undefined} />
       ) : null}
-      <MotionList style={{ gap: spacing.md }}>{list.map((task, i) => (
+      {tasksQ.data && filter !== 'done' && list.length ? <Text variant="label" testID="family-remaining" style={{ fontVariant: ['tabular-nums'] }}>{tr('jt.task.remaining', { count: list.length })}</Text> : null}
+      {/* ready : les tâches présentes à l'arrivée des données sont posées sans animation d'entrée (sur le web, une entrée
+          figée laissait les lignes en position absolue : la liste ne prenait plus de hauteur) */}
+      <MotionList ready={!!tasksQ.data} style={{ gap: spacing.md }}>{list.map((task, i) => (
         <MotionItem key={task.id}><StaggerItem key={task.id} index={i}>
           <TaskRow task={task} onEdit={setEditing} onPropose={(x) => { setProposeHint(false); setRequest({ kind: 'take_task', taskId: x.id }); }} />
         </StaggerItem></MotionItem>
       ))}</MotionList>
+      {filter === 'today' && doneToday.length ? (
+        <View style={{ gap: spacing.sm }} testID="family-done-today">
+          <SectionTitle title={tr('jt.task.doneToday', { count: doneToday.length })} subtitle={tr('jt.task.doneTodaySub')} />
+          <View style={{ gap: spacing.md }}>{doneToday.map((task) => <TaskRow key={task.id} task={task} onEdit={setEditing} />)}</View>
+        </View>
+      ) : null}
 
       <SectionTitle title={tr('u2.fam.organise')} />
       <ToolLinks ids={['family_nights', 'family_metime', 'family_routines', 'family_calendar', 'family_review', 'family_history', 'family_urgent']} allOf={['family', 'couple']} testID="family-tools" />

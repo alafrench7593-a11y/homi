@@ -9,6 +9,7 @@ import { backend, eq } from '../backend';
 import { useUserId } from '../auth';
 import { useInvalidate, useRows } from './hooks';
 import { todayISO } from '../domain/dates';
+import { firstTriedAfter, foodGroupKey, foodJournal } from '../domain/journalTrack';
 import type { ChildStep, FoodEntry, FoodStatus, Grasp, Method, Outcome, Tasting, Texture } from '../domain/discoveries';
 import { NEARBY_CONFIG, geocodeUrl, overpassQuery, parseGeocode, parseOverpass, type Place, type PlaceKind, type Town } from '../domain/nearby';
 import type { StepStatus } from '@/content/discoveries/steps';
@@ -91,6 +92,43 @@ export function useDeleteFood() {
     onSuccess: () => inv('food_introductions', 'food_tastings'),
   });
 }
+/**
+ * Journal d'un aliment (22/11/2026) : ajoute OU corrige UNE dégustation (food_tastings), puis garde la fiche de
+ * l'aliment (food_introductions) cohérente avec son journal : première date = la plus ancienne dégustation, statut =
+ * celui de la plus récente. La note de la fiche, la réaction et le favori ne sont jamais touchés ; une note de
+ * dégustation n'est jamais interprétée (aucune réaction ni allergie déduite). Mêmes tables et mêmes invalidations que
+ * useSaveFood (formulaire manuel), qui, lui, réécrit la note de la fiche à chaque saisie.
+ */
+export function useSaveTasting() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: {
+      child: { id: string; household_id: string }; food: { key: string | null; name: string }; entry?: FoodEntry | null;
+      /** ligne corrigée (absente : ajout) */ tasting?: Tasting | null;
+      date: string; status: Tasting['status']; note: string | null; all: readonly Tasting[];
+    }) => {
+      const outcome: Outcome | null = v.status === 'refused' ? 'refused' : v.tasting?.outcome === 'refused' ? null : (v.tasting?.outcome ?? null);
+      let id = v.tasting?.id ?? null;
+      if (v.tasting) {
+        await backend.update('food_tastings', { tasted_on: v.date, status: v.status, note: v.note, outcome }, [eq('id', v.tasting.id)]);
+      } else {
+        const [row] = await backend.insert<Tasting>('food_tastings', {
+          child_id: v.child.id, household_id: v.child.household_id, food_key: v.food.key, food_name: v.food.name, tasted_on: v.date,
+          status: v.status, reaction: false, reaction_note: null, texture: v.entry?.texture ?? null, preparation: v.entry?.preparation ?? null, note: v.note,
+          method: null, grasp: null, outcome,
+        });
+        id = row?.id ?? 'new';
+      }
+      const key = foodGroupKey({ food_key: v.food.key, food_name: v.food.name });
+      const after = foodJournal([...v.all.filter((x) => x.id !== v.tasting?.id), { ...(v.tasting ?? {}), id: id ?? 'new', food_key: v.food.key, food_name: v.food.name, tasted_on: v.date, status: v.status, created_at: v.tasting?.created_at ?? new Date().toISOString() } as Tasting], key);
+      const sync = { status: after[0]?.status ?? v.status, first_tried_on: firstTriedAfter(after, key, null, null) };
+      if (v.entry) await backend.update('food_introductions', { ...sync, food_key: v.food.key }, [eq('id', v.entry.id)]);
+      else await backend.insert('food_introductions', { child_id: v.child.id, household_id: v.child.household_id, food_key: v.food.key, food_name: v.food.name, favorite: false, ...sync });
+    },
+    onSuccess: () => inv('food_introductions', 'food_tastings'),
+  });
+}
+
 export function useDeleteTasting() {
   const inv = useInvalidate();
   return useMutation({ mutationFn: (id: string) => backend.remove('food_tastings', [eq('id', id)]), onSuccess: () => inv('food_tastings') });

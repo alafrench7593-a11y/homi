@@ -19,11 +19,13 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { CATEGORIES, QUICK_ACTIONS, REQUEST_LABEL, categoryOf, sameLocalDay, type CareRequest, type FamilyTask, type RequestKind } from '@/lib/domain/familyLoad';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { formatDate, formatTime, t as tr } from '@/i18n';
+import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { taskToggle } from '@/lib/domain/journalTrack';
+import { clock } from '@/lib/domain/sleepPlanner';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 export const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -45,13 +47,18 @@ export function splitLocal(iso: string | null) {
 }
 
 // ------------------------------------------------------------------ ligne de tâche
+/** « aujourd'hui à 14 h 05 » / « jeu. 22 janv. à 14 h 05 » */
+const doneWhen = (iso: string) => (sameLocalDay(iso, todayISO()) ? tr('jt.task.today', { time: clock(new Date(iso)) }) : tr('jt.task.onDay', { day: formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short' }), time: clock(new Date(iso)) }));
 export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit: (t: FamilyTask) => void; onPropose?: (t: FamilyTask) => void }) {
   const t = useTheme();
   const toast = useToast();
   const save = useSaveTask();
   const reduce = useReduceMotion();
-  const { labelOf } = usePeople();
+  const { labelOf, me } = usePeople();
   const [optimistic, setOptimistic] = useState<boolean | null>(null);
+  // Droits (22/11/2026) : une mission confiée ne se termine que par son destinataire et ne se rouvre pas ; double appui ignoré
+  const right = taskToggle(task as FamilyTask & { mission_state?: string | null }, me ?? null);
+  const inflight = useRef(false);
   const done = optimistic ?? task.status === 'done';
   const press = usePressMotion({ pressed: 0.9 });
   const strike = useRef(new Animated.Value(done ? 1 : 0)).current;   // trait qui raye le titre
@@ -63,6 +70,8 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
   useEffect(() => { setOptimistic(null); strike.setValue(task.status === 'done' ? 1 : 0); fill.setValue(task.status === 'done' ? 1 : 0); leave.setValue(1); }, [task.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function toggle() {
+    if (!right.allowed || inflight.current) return;
+    inflight.current = true;
     const next = !done;
     haptic(next ? 'success' : 'light');
     setOptimistic(next);
@@ -81,15 +90,21 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
     } catch (e) {
       setOptimistic(null); fill.setValue(done ? 1 : 0); strike.setValue(done ? 1 : 0); leave.setValue(1);
       toast(friendlyError(e), 'error');
-    }
+    } finally { inflight.current = false; }
   }
+  // Qui a validé et quand : seulement si la donnée existe (done_by / done_at), jamais deviné
+  const doneLine = task.status === 'done' && (task.done_by || task.done_at)
+    ? (task.done_by && task.done_at ? tr('jt.task.doneByAt', { who: labelOf(task.done_by), when: doneWhen(task.done_at) })
+      : task.done_by ? tr('jt.task.doneBy', { who: labelOf(task.done_by) }) : tr('jt.task.doneAt', { when: doneWhen(task.done_at!) }))
+    : null;
 
   return (
     <Animated.View style={{ opacity: leave, transform: [{ translateX: leave.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }, { scale: leave.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }}>
       <Card style={{ paddingVertical: spacing.xs }}>
         <Row style={{ alignItems: 'center' }}>
-          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${task.title} : ${done ? tr('u6.fl.state_done') : tr('u6.fl.state_todo')}`} onPress={toggle} {...press.handlers} hitSlop={8}>
-            <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderColor: done ? t.colors.success : t.colors.border }, press.style]}>
+          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done, disabled: !right.allowed }} accessibilityLabel={`${task.title} : ${done ? tr('u6.fl.state_done') : tr('u6.fl.state_todo')}`} accessibilityHint={right.block ? tr(`jt.task.block.${right.block}` as TKey) : undefined}
+            disabled={!right.allowed} onPress={toggle} {...press.handlers} hitSlop={8} testID={`task-check-${task.id}`}>
+            <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderColor: done ? t.colors.success : t.colors.border, opacity: right.allowed ? 1 : 0.45, borderStyle: right.allowed ? 'solid' : 'dashed' }, press.style]}>
               <Animated.View style={{ position: 'absolute', width: 30, height: 30, borderRadius: 15, backgroundColor: t.colors.success, transform: [{ scale: fill }] }} />
               {done ? <DrawCheck size={22} color={t.colors.surface} play={optimistic === true} /> : null}
             </Animated.View>
@@ -106,6 +121,8 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
               {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? tr('u6.fl.recurring') : null, task.essential ? tr('u6.fl.essential_tag') : null].filter(Boolean).join(' · ')}
             </Text>
             {late ? <Text variant="caption" color={t.colors.gold}>{tr('u6.fl.late')}</Text> : null}
+            {doneLine ? <Text variant="caption" color={t.colors.success} style={{ fontVariant: ['tabular-nums'] }} testID={`task-done-by-${task.id}`}>{doneLine}</Text> : null}
+            {right.block && right.block !== 'cancelled' ? <Text variant="caption" muted testID={`task-block-${task.id}`}>{tr(`jt.task.block.${right.block}` as TKey, { who: labelOf(task.assignee_id) })}</Text> : null}
           </Tappable>
           {onPropose && !done ? <Button label={tr('u6.fl.propose')} size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={tr('u6.fl.propose_a11y', { title: task.title })} /> : null}
         </Row>

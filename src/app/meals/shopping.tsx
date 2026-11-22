@@ -30,6 +30,10 @@ import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { CheckMark } from '@/motion/CheckMark';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { splitRemaining } from '@/lib/domain/journalTrack';
+import { clock } from '@/lib/domain/sleepPlanner';
+import { sameLocalDay } from '@/lib/domain/familyLoad';
+import { todayISO } from '@/lib/domain/dates';
 
 const RECIPE_UNITS = ['g', 'ml', 'u', 'cs', 'cc', 'pincee'];
 const qtyText = (i: ShoppingItem) => (i.qty == null ? '' : i.unit && !RECIPE_UNITS.includes(i.unit) ? formatStockQty(i.qty, i.unit) : formatQty(Number(i.qty), (i.unit ?? null) as Unit | null));
@@ -58,6 +62,8 @@ export default function Shopping() {
   const [category, setCategory] = useState<StockCategory | null>(null);
   const [assignee, setAssignee] = useState<string | null>(null);
   const [dup, setDup] = useState<ShoppingItem | null>(null);
+  // Un appui = une écriture : un second appui pendant l'enregistrement du même article est ignoré
+  const pending = useRef(new Set<string>());
   const missionOf = useMemo(() => new Map(missions.filter((m) => m.shopping_item_id).map((m) => [m.shopping_item_id as string, m])), [missions]);
 
   if (loading && !list) return <Screen back title={tr('rc.shopping.open')}><Skeleton rows={5} /></Screen>;
@@ -74,8 +80,10 @@ export default function Shopping() {
   const home = items.filter((i) => i.at_home);
   const left = toBuy.filter((i) => !i.checked).length;
   const groups = duplicateGroups(toBuy);
-  const byCategory = toBuy.filter((i) => i.category && !i.ingredient_key);
-  const byAisle = toBuy.filter((i) => !(i.category && !i.ingredient_key));
+  // Ce qui RESTE à acheter, rangé par rayon ; ce qui est déjà dans le chariot ensuite (qui et quand), décochable
+  const { remaining, done: inCart } = splitRemaining(toBuy, (i) => i.checked, (i) => i.checked_at);
+  const byCategory = remaining.filter((i) => i.category && !i.ingredient_key);
+  const byAisle = remaining.filter((i) => !(i.category && !i.ingredient_key));
   const aisles = AISLE_ORDER.filter((a) => byAisle.some((i) => i.aisle === a)).concat(byAisle.some((i) => !AISLE_ORDER.includes(i.aisle as never)) ? ['epicerie'] : []);
 
   function reset() { setLabel(''); setQty(''); setUnit(null); setBrand(''); setSize(''); setCategory(null); setAssignee(null); setDup(null); }
@@ -104,14 +112,23 @@ export default function Shopping() {
   const row = (i: ShoppingItem) => {
     const m = missionOf.get(i.id);
     const sub = [i.brand, i.size, qtyText(i), i.assignee_id ? (i.assignee_id === me ? tr('shp.byYou') : tr('shp.by', { person: labelOf(i.assignee_id) })) : null].filter(Boolean).join(' · ');
+    // Qui a coché et quand : seulement si la donnée existe
+    const when = i.checked && i.checked_at ? (sameLocalDay(i.checked_at, todayISO()) ? clock(new Date(i.checked_at)) : formatDate(i.checked_at, { day: 'numeric', month: 'short' })) : null;
+    const who = i.checked && i.checked_by ? labelOf(i.checked_by) : null;
+    const checkedLine = i.checked && (who || when) ? (who && when ? tr('jt.shop.checkedByAt', { who, when }) : who ? tr('jt.shop.checkedBy', { who }) : tr('jt.shop.checkedAt', { when: when! })) : null;
     return (
       <Tappable key={i.id} testID={`shop-${i.ingredient_key ?? i.label}`} accessibilityRole="checkbox" accessibilityState={{ checked: i.checked }} accessibilityLabel={`${i.label} ${sub}`}
-        onPress={() => { haptic('selection'); toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error') }); }}
+        onPress={() => {
+          if (pending.current.has(i.id)) return;
+          pending.current.add(i.id); haptic('selection');
+          toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error'), onSettled: () => pending.current.delete(i.id) });
+        }}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
         <View style={{ width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: i.checked ? t.colors.gold : t.colors.textMuted, backgroundColor: i.checked ? t.colors.gold : 'transparent' }}><CheckMark checked={!!i.checked} size={18} color="#FFFFFF" /></View>
         <View style={{ flex: 1 }}>
           <Text style={{ textDecorationLine: i.checked ? 'line-through' : 'none' }} muted={i.checked}>{i.label.charAt(0).toUpperCase() + i.label.slice(1)}</Text>
           {sub ? <Text variant="caption" muted>{sub}</Text> : null}
+          {checkedLine ? <Text variant="caption" color={t.colors.success} style={{ fontVariant: ['tabular-nums'] }} testID={`shop-checked-by-${i.id}`}>{checkedLine}</Text> : null}
         </View>
         {m ? <Icon name="send" size={14} color={t.colors.primary} /> : null}
         {i.stock_id ? <Icon name="package" size={14} color={t.colors.primary} /> : null}
@@ -195,6 +212,13 @@ export default function Shopping() {
           <Card>{byAisle.filter((i) => i.aisle === a || (a === 'epicerie' && !AISLE_ORDER.includes(i.aisle as never))).map(row)}</Card>
         </Cascade>
       ))}
+      {toBuy.length && !remaining.length ? <Text weight="bold" testID="shop-all-done">{tr('jt.shop.allDone')}</Text> : null}
+      {inCart.length ? (
+        <View style={{ gap: 2 }} testID="shop-in-cart">
+          <SectionTitle title={tr('jt.shop.inCart', { count: inCart.length })} subtitle={tr('jt.shop.inCartSub')} />
+          <Card>{inCart.map(row)}</Card>
+        </View>
+      ) : null}
       {home.length ? <><SectionTitle title={tr('rc.shopping.atHome')} /><Card>{home.map(row)}</Card></> : null}
 
       {(history.data ?? []).length ? (
