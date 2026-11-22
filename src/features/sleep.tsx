@@ -8,6 +8,7 @@
  *    notifications, apprentissage des retours, tendances.
  * Jamais de promesse ni d'obligation : ce sont des estimations, les signes de fatigue de l'enfant priment.
  */
+import { isDarkFill, WhoopSheen } from '@/components/stage/WhoopSheen';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -81,6 +82,7 @@ export function BigButton({ label, icon, onPress, testID, tone = 'primary', hint
   return (
     <Tappable testID={testID} accessibilityRole="button" accessibilityLabel={hint ? `${label}. ${hint}` : label} onPress={loading ? undefined : onPress}
       style={({ pressed }) => ({ flexGrow: 1, flexBasis: '45%', minHeight: 76, borderRadius: radius.lg, backgroundColor: bg, opacity: pressed || loading ? 0.85 : 1, alignItems: 'center', justifyContent: 'center', gap: 4, padding: spacing.sm })}>
+      {isDarkFill(bg) ? <WhoopSheen radius={radius.lg} /> : null}
       <Icon name={icon} color={fg} />
       <Text weight="bold" center color={fg}>{label}</Text>
     </Tappable>

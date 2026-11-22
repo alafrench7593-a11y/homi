@@ -22,6 +22,7 @@ import { fonts, radius, spacing } from '@/theme/tokens';
 import { napWindow, type NapRecord } from '../../../supabase/functions/_shared/nap-window';
 import { NapCompare } from './SkiaHost';
 import { DarkGlassMaterial, useDarkGlassBase } from '@/components/stage/StageHero';
+import { WhoopSheen } from '@/components/stage/WhoopSheen';
 
 const TABULAR = { fontVariant: ['tabular-nums' as const] };
 
@@ -216,6 +217,7 @@ function AuraAsk({ child, session, minutes, range, onLeave }: { child: Child; se
   return (
     <View testID="nap-tray-aura" style={{ marginTop: spacing.xs, borderRadius: radius.xl, overflow: 'hidden', backgroundColor: base, borderWidth: 1, borderColor: inv.edge, padding: spacing.md, gap: spacing.sm }}>
       <DarkGlassMaterial />
+      <WhoopSheen radius={radius.xl} />
       <Text weight="bold" style={{ fontSize: 20 }} color={inv.text} accessibilityRole="header">{tr('nn.aura.title')}</Text>
       <Text variant="caption" color={inv.textMuted}>{tr('nn.aura.context', { name: child.first_name })}</Text>
       <Text color={inv.text} testID="nap-tray-aura-fact">{tr('nn.aura.fact', { name: child.first_name, duration: span(minutes), range })}</Text>

@@ -30,6 +30,7 @@ import { t as tr } from '@/i18n';
 import { useToast } from '../Overlays';
 import { BUTTON, Icon, Text, type IconName } from '../ui';
 import { GlassMaterial, glassShadow, useGlass } from './Glass';
+import { isDarkFill, WhoopSheen } from '../stage/WhoopSheen';
 
 export type GlassButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive';
 export type GlassButtonState = 'idle' | 'loading' | 'success' | 'error';
@@ -132,7 +133,9 @@ export function GlassButton({ label, variant = 'secondary', size = 'md', icon, g
           style={[styles.body, { minHeight: h, borderRadius: r, paddingHorizontal: variant === 'tertiary' ? BUTTON.padX.sm : BUTTON.padX[size], boxShadow: shadow }, solid && { backgroundColor: c.fill as string }, p.style]}>
           {glass ? <GlassMaterial variant="chrome" radius={r} testID={testID ?? 'glass-button'} /> : null}
           {/* Aplat : reflet de verre en haut (lumière), sans toucher au contraste du libellé (testé) */}
-          {solid && t.name !== 'night' ? <LinearGradient pointerEvents="none" colors={[spec.highlight[0], spec.highlight[1]]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[styles.sheen, { borderTopLeftRadius: r, borderTopRightRadius: r, opacity: t.isDark ? 1 : 0.34 }]} /> : null}
+          {/* Aplat NOIR : finition Whoop (profondeur, arête lumineuse, filet d'accent) ; autres aplats : reflet de verre */}
+          {solid && t.name !== 'night' && isDarkFill(c.fill) ? <WhoopSheen radius={r} />
+            : solid && t.name !== 'night' ? <LinearGradient pointerEvents="none" colors={[spec.highlight[0], spec.highlight[1]]} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[styles.sheen, { borderTopLeftRadius: r, borderTopRightRadius: r, opacity: t.isDark ? 1 : 0.34 }]} /> : null}
           {/* Voile d'appui (aucun décalage de mise en page) */}
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: r, backgroundColor: solid ? c.fg : spec.press }, veilStyle]} />
           <View style={[styles.row, { gap: size === 'sm' ? 6 : 8, opacity: state !== 'idle' ? 0 : off ? DISABLED : 1 }]}>

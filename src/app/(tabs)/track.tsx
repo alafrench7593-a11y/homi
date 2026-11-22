@@ -12,6 +12,7 @@ import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, List
 import { Timeline, type LogItem } from '@/features/tracking';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { DayJournal } from '@/features/dayJournal/DayJournal';
+import { WhoopSheen } from '@/components/stage/WhoopSheen';
 import { QuickEntry } from '@/features/quickEntry';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
@@ -87,6 +88,7 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
         onPress={() => { haptic('light'); router.push('/night'); }}
         style={({ pressed }) => ({ borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.tokens.inverse.fill, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.9 : 1 })}
       >
+        <WhoopSheen radius={radius.lg} />
         <Icon name="moon" color={t.tokens.inverse.accent} />
         <View style={{ flex: 1 }}>
           <Text weight="bold" color={t.tokens.inverse.text}>{openSleep ? tr('trk.night.ongoing') : tr('trk.night.title')}</Text>

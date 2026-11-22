@@ -5,6 +5,7 @@
  * API stable : ~218 écrans en dépendent ; toute évolution ajoute des options, n'en retire aucune.
  */
 import { CardLens } from './glass/liquid/CardLens';
+import { isDarkFill, WhoopSheen } from './stage/WhoopSheen';
 import React from 'react';
 import {
   ActivityIndicator, Animated, Easing, InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text as RNText, TextInput, View,
@@ -158,6 +159,7 @@ function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLa
   ) : (
     <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'danger' ? bannerColors(t).danger.edge : t.tokens.inverse.edge, padding: padded ? spacing.md : 0 },
       t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) }, style]}>
+      {tone === 'night' && t.name !== 'night' ? <WhoopSheen radius={radius.lg} /> : null}
       {children}
     </View>
   );
@@ -432,6 +434,8 @@ export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRi
         variant === 'onHero' && !off && t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) },
         pressStyle,
       ]}>
+        {/* Aplat NOIR : finition Whoop (profondeur, arête lumineuse, filet d'accent) */}
+        {solid && !link && t.name !== 'night' && isDarkFill(c.bg) ? <WhoopSheen radius={radiusPx} /> : null}
         {/* Survol puis appui : voile de teinte (sans décalage de mise en page) */}
         {!link ? <ReAnimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx, backgroundColor: c.veil }, veilStyle]} /> : null}
         {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante ;
