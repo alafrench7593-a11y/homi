@@ -8,7 +8,7 @@
  *    affiche ses sessions, chacune ouvre la mini-app sur elle.
  */
 import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Glass, GlassSegmentedControl } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
@@ -26,6 +26,8 @@ const TABULAR = { fontVariant: ['tabular-nums' as const] };
 type Period = 'day' | 'week';
 /** Hauteur de la zone des barres (pt) : hauteurs calculées en points, jamais en pourcentage d'un parent sans hauteur. */
 const BAR_H = 84;
+/** Place réservée au-dessus des barres pour la bulle de valeur du jour sélectionné. */
+const BUBBLE_H = 26;
 
 export function SleepCategorySummary() {
   const { subject } = useActiveSubject();
@@ -92,7 +94,17 @@ function Summary({ child }: { child: Child }) {
                   accessibilityRole="button" accessibilityState={{ selected: on }}
                   accessibilityLabel={`${formatDate(`${d.day}T12:00:00`, { weekday: 'long', day: 'numeric' })} : ${d.minutes != null ? span(d.minutes) : tr('nn.cat.none')}`}
                   onPress={() => { haptic('selection'); router.setParams({ day: d.day } as never); }}>
-                  <View style={{ height: BAR_H, width: '100%', justifyContent: 'flex-end' }}>
+                  <View style={{ height: BAR_H + BUBBLE_H, width: '100%', justifyContent: 'flex-end' }}>
+                    {/* Planche 2 : bulle de valeur au-dessus de la barre sélectionnée (« 1 h 25 ») */}
+                    {on ? (
+                      <View pointerEvents="none" testID="sleep-cat-bubble"
+                        style={{ position: 'absolute', zIndex: 2, left: -24, right: -24, alignItems: 'center',
+                          bottom: (d.minutes != null ? Math.max(6, Math.round((d.minutes / max) * BAR_H)) : 14) + 4 }}>
+                        <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: t.colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border }}>
+                          <Text variant="caption" weight="bold" numberOfLines={1} style={{ fontVariant: ['tabular-nums'] }}>{d.minutes != null ? span(d.minutes) : tr('nn.cat.none')}</Text>
+                        </View>
+                      </View>
+                    ) : null}
                     {d.minutes != null ? (
                       <View style={{ height: Math.max(6, Math.round((d.minutes / max) * BAR_H)), borderRadius: 6, backgroundColor: t.colors.text, opacity: on ? 1 : 0.55, borderWidth: on ? 2 : 0, borderColor: t.colors.primary }} />
                     ) : (

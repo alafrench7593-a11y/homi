@@ -134,4 +134,7 @@ export const napnow = {
   "nn.home.see": "Vedi il sonnellino",
   "nn.home.tools": "Strumenti",
   "nn.app.title": "Sonno",
+  "nn.tray.start": "Inizio",
+  "nn.tray.wake": "Risveglio",
+  "nn.tray.ongoing": "In corso",
 };

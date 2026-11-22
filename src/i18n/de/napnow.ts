@@ -134,4 +134,7 @@ export const napnow = {
   "nn.home.see": "Schläfchen ansehen",
   "nn.home.tools": "Tools",
   "nn.app.title": "Schlaf",
+  "nn.tray.start": "Beginn",
+  "nn.tray.wake": "Aufgewacht",
+  "nn.tray.ongoing": "Läuft",
 };

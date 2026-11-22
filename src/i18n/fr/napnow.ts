@@ -134,4 +134,7 @@ export const napnow = {
   "nn.home.see": "Voir la sieste",
   "nn.home.tools": "Outils",
   "nn.app.title": "Sommeil",
+  "nn.tray.start": "Début",
+  "nn.tray.wake": "Réveil",
+  "nn.tray.ongoing": "En cours",
 } as const;

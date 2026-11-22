@@ -6,7 +6,7 @@
  * La feuille se tire vers le bas pour se fermer ; Réduire les animations est respecté par le Tray.
  */
 import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Tray, useTray } from '@/components/reacticx/tray';
 import { Glass, GlassButton } from '@/components/glass';
 import { Field, haptic, Icon, Text } from '@/components/ui';
@@ -58,7 +58,16 @@ export function NapSessionTray({ child, all, session, open, onOpenChange, onAnal
               <Tray.Close><Icon name="x" size={20} color={t.colors.text} /></Tray.Close>
             </View>
             <Text testID="nap-tray-duration" maxFontSizeMultiplier={1.3} style={[{ fontSize: 64, lineHeight: 70, letterSpacing: -2, fontFamily: fonts.display, color: t.colors.text }, TABULAR]}>{span(f.minutes)}</Text>
-            <Text weight="bold" style={TABULAR} testID="nap-tray-range">{range}</Text>
+            {/* Planche 1 : Début | Réveil dans un panneau de verre dense (lecture immédiate) */}
+            <Glass variant="card" radius={radius.lg} testID="nap-tray-range" accessible accessibilityLabel={range}
+              contentStyle={{ flexDirection: 'row', alignItems: 'stretch', paddingVertical: spacing.sm }}>
+              {([['nn.tray.start', clock(new Date(session.started_at))], ['nn.tray.wake', session.ended_at ? clock(new Date(session.ended_at)) : tr('nn.tray.ongoing')]] as const).map(([k, v], i) => (
+                <View key={k} style={{ flex: 1, paddingHorizontal: spacing.md, gap: 2, borderLeftWidth: i ? StyleSheet.hairlineWidth : 0, borderLeftColor: t.colors.border }}>
+                  <Text variant="caption" muted>{tr(k)}</Text>
+                  <Text weight="bold" style={[{ fontSize: 18 }, TABULAR]}>{v}</Text>
+                </View>
+              ))}
+            </Glass>
             {session.note ? (
               <Glass variant="card" radius={radius.lg} contentStyle={{ padding: spacing.sm, flexDirection: 'row', gap: spacing.xs }} testID="nap-tray-note">
                 <Icon name="message-square" size={16} color={t.colors.primary} />
