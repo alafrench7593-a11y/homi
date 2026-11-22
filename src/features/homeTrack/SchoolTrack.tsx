@@ -4,6 +4,7 @@
  *    coché (qui, quand) si c'est noté ; aucun devoir : « rien de noté » ;
  *  · les devoirs de la semaine (jour en colonne fixe) ; un devoir ouvre sa fiche dans l'app Devoirs (cocher, corriger).
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -31,16 +32,16 @@ export function SchoolTrack({ homework, thisWeek }: { homework: readonly Homewor
     <View style={{ gap: spacing.sm }} testID="hm-sc">
       <HmWeekStepper monday={week} onSelect={setWeek} testID="hm-sc-week" />
       <HmHero testID="hm-sc-hero" value={list.length ? String(left.length) : null} unit={tr('hm.sc.unit', { count: list.length })} emptyLabel={tr('hm.sc.none')}
-        split={list.length ? [{ label: tr('hm.left'), value: String(left.length), testID: 'hm-sc-left' }, { label: tr('hm.done'), value: String(done.length), testID: 'hm-sc-done' }] : undefined}
+        split={list.length ? [{ label: tr('hm.left'), value: String(left.length), testID: 'hm-sc-left' }, { label: tr('hm.doneCell'), value: String(done.length), testID: 'hm-sc-done' }] : undefined}
         caption={caption} />
       {list.length ? (
-        <View testID="hm-sc-list">
+        <MotionList testID="hm-sc-list">
           {[...left, ...done].map((h) => (
-            <HmRow key={h.id} time={formatDate(h.due_on, { weekday: 'short', day: 'numeric' })} icon={h.done_at ? 'check-circle' : 'circle'} faded={!!h.done_at}
-              title={h.subject} detail={[h.done_at ? tr('hm.done') : tr('hm.sc.todo'), h.instructions].filter(Boolean).join(' · ')}
-              testID={`hm-sc-row-${h.id}`} onPress={() => router.push(homeworkLink(h) as never)} />
+            <MotionItem key={h.id}><HmRow key={h.id} time={formatDate(h.due_on, { weekday: 'short', day: 'numeric' })} icon={h.done_at ? 'check-circle' : 'circle'} faded={!!h.done_at}
+              title={h.subject} detail={[h.done_at ? tr('hm.doneCell') : tr('hm.sc.todo'), h.instructions].filter(Boolean).join(' · ')}
+              testID={`hm-sc-row-${h.id}`} onPress={() => router.push(homeworkLink(h) as never)} /></MotionItem>
           ))}
-        </View>
+        </MotionList>
       ) : null}
     </View>
   );

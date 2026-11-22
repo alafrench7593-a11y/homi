@@ -6,6 +6,7 @@
  *    le merci en valeurs provisoires, Annuler, Enregistrer verrouillé, brouillon gardé si l'écriture échoue.
  *  · Mode embrouille actif : aucun texte libre n'est montré (même règle que l'écran), seulement le compte.
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { GlassButton } from '@/components/glass';
@@ -39,11 +40,11 @@ export function CoupleWeekTrack({ week, onWeek, checkins, hidden }: { week: stri
       {recent.length ? (
         <View testID="hm-cp-list">
           <Text variant="label" muted>{tr('hm.cp.recent')}</Text>
-          {recent.map((c) => (
-            <HmRow key={c.id} time={formatDate(c.week_of, { day: 'numeric', month: 'short' })} icon="message-square" title={weekLabel(c.week_of)}
+          <MotionList>{recent.map((c) => (
+            <MotionItem key={c.id}><HmRow key={c.id} time={formatDate(c.week_of, { day: 'numeric', month: 'short' })} icon="message-square" title={weekLabel(c.week_of)}
               detail={tr('hm.cp.filled', { count: checkinFilled(c) ?? 0 })} testID={`hm-cp-row-${c.week_of}`}
-              onPress={hidden ? undefined : () => { onWeek(c.week_of); setOpenWeek(c.week_of); }} />
-          ))}
+              onPress={hidden ? undefined : () => { onWeek(c.week_of); setOpenWeek(c.week_of); }} /></MotionItem>
+          ))}</MotionList>
         </View>
       ) : null}
       {openWeek && !hidden ? (

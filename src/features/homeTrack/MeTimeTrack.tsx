@@ -6,6 +6,7 @@
  *    (valeurs provisoires, Annuler, Enregistrer verrouillé, brouillon gardé), écrit par `useUpdateShift`.
  *  Les créneaux de plus de 14 jours ne sont pas chargés par l'écran : une semaine plus ancienne apparaît vide.
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui';
@@ -38,11 +39,11 @@ export function MeTimeTrack({ shifts, me, thisWeek }: { shifts: readonly CareShi
       <HmHero testID="hm-mt-hero" value={minutes == null ? null : span(minutes)} unit={tr('hm.mt.unit')} emptyLabel={tr('hm.mt.none')}
         split={list.length ? [{ label: tr('hm.mt.coming'), value: String(list.length - past), testID: 'hm-mt-coming' }, { label: tr('hm.mt.past'), value: String(past), testID: 'hm-mt-past' }] : undefined} />
       {list.length ? (
-        <View testID="hm-mt-list">
-          {list.map((s) => <HmRow key={s.id} time={clock(new Date(s.starts_at))} icon="sun" testID={`hm-mt-row-${s.id}`}
+        <MotionList testID="hm-mt-list">
+          {list.map((s) => <MotionItem key={s.id}><HmRow key={s.id} time={clock(new Date(s.starts_at))} icon="sun" testID={`hm-mt-row-${s.id}`}
             title={formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'short' })} detail={[range(s), span((Date.parse(s.ends_at) - Date.parse(s.starts_at)) / 60000), s.note].filter(Boolean).join(' · ')}
-            onPress={() => setOpenId(s.id)} />)}
-        </View>
+            onPress={() => setOpenId(s.id)} /></MotionItem>)}
+        </MotionList>
       ) : <HmEmpty label={tr('hm.mt.noneList')} />}
       {opened ? (
         <HmFixTray open onOpenChange={(v) => { if (!v) setOpenId(null); }} testID="hm-mt-tray"

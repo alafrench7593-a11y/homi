@@ -2,7 +2,7 @@
 export const homeTrack = {
   "hm.nothing": "Nothing logged",
   "hm.left": "Left",
-  "hm.done": "Done",
+  "hm.doneCell": "Done",
   "hm.week.title": "Week of {from} to {to}",
   "hm.week.prev": "Previous week",
   "hm.week.next": "Next week",
@@ -135,12 +135,12 @@ export const homeTrack = {
   "hm.sc.lastBy": "Last ticked: {subject} · {who} · {when}",
   "hm.sc.lastAt": "Last ticked: {subject} · {when}",
   "hm.sc.todo": "To do",
-  "hm.load.unit": "tasks done this week, per adult",
+  "hm.load.unit": {"one": "task done this week, per adult", "other": "tasks done this week, per adult"},
   "hm.load.none": "No task marked done this week",
   "hm.load.unassigned": {"one": "{count} open task with nobody", "other": "{count} open tasks with nobody"},
   "hm.load.count": {"one": "{count} task done", "other": "{count} tasks done"},
   "hm.load.ofDay": "Done on {day}",
   "hm.load.assigned": "Assigned to {who}",
-  "hm.review.unit": "tasks done together this week",
+  "hm.review.unit": {"one": "task done together this week", "other": "tasks done together this week"},
   "hm.review.none": "No task marked done this week",
 };

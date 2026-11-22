@@ -10,6 +10,7 @@
  *    PROVISOIRES, Annuler restitue l'original, Enregistrer verrouillé contre le double appui, brouillon gardé si
  *    l'écriture échoue.
  */
+import { CheckMark } from '@/motion/CheckMark';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -111,13 +112,13 @@ export function HmWeek({ day, onSelect, marks, countLabel, testID = 'hm-week', t
           <Icon name="chevron-right" size={22} color={t.colors.text} />
         </Tappable>
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }} accessibilityRole="tablist">
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         {days.map((d) => {
           const on = d === day;
           const n = marks[d] ?? null;
           const date = dayDate(d);
           return (
-            <Tappable key={d} accessibilityRole="tab" accessibilityState={{ selected: on }} testID={`${testID}-day-${d}`}
+            <Tappable key={d} accessibilityRole="button" accessibilityState={{ selected: on }} testID={`${testID}-day-${d}`}
               accessibilityLabel={`${formatDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}. ${n == null ? tr('hm.nothing') : countLabel(n)}`}
               onPress={() => pick(d)} style={{ flex: 1, alignItems: 'center', gap: 3, minHeight: MIN_TOUCH, paddingVertical: 2 }}>
               <Text variant="caption" muted={!on} weight={on ? 'bold' : 'regular'}>{formatDate(date, { weekday: 'short' }).replace('.', '')}</Text>
@@ -239,14 +240,20 @@ function HmEditor({ testID, title, fields, initial, validate, onSave, onDone, on
   const invalid = validate ? validate(draft) : null;
   const set = (k: string, v: string) => { save.setError(null); setDraft((d) => ({ ...d, [k]: v })); };
   const cancel = () => { setDraft(initial); save.setError(null); setView('entry'); };
-  const submit = async () => { if (await save.run(() => onSave(draft))) onDone(); };
+  // Après un enregistrement réussi, la fiche reste un instant (bouton verrouillé) : le second appui d'un double appui
+  // tombe sur le bouton désactivé, jamais sur l'écran situé dessous
+  const [closing, setClosing] = useState(false);
+  const submit = async () => {
+    if (closing) return;
+    if (await save.run(() => onSave(draft))) { setClosing(true); haptic('success'); setTimeout(onDone, 400); }
+  };
   return (
     <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.sm }} testID={testID}>
       <EditHeader title={title} />
       {fields.map((f) => <FieldEditor key={f.key} f={f} value={draft[f.key] ?? ''} onChange={(v) => set(f.key, v)} testID={`${testID}-${f.key}`} />)}
       {dirty ? <Text variant="caption" muted testID={`${testID}-provisional`}>{tr('hm.fix.provisional')}</Text> : null}
       {invalid && dirty ? <Text variant="small" color={t.colors.danger} testID={`${testID}-invalid`}>{invalid}</Text> : null}
-      <EditActions onCancel={cancel} onSave={() => void submit()} canSave={dirty && !invalid} busy={save.busy} error={save.error} testID={testID} />
+      <EditActions onCancel={cancel} onSave={() => void submit()} canSave={dirty && !invalid && !closing} busy={save.busy || closing} error={save.error} testID={testID} />
       {onDelete ? <GlassButton variant="destructive" icon="trash-2" label={deleteLabel ?? tr('hm.fix.delete')} testID={`${testID}-delete`} onPress={onDelete} /> : null}
     </View>
   );
@@ -264,7 +271,7 @@ function FieldEditor({ f, value, onChange, testID }: { f: HmField; value: string
             return (
               <Tappable key={`${i}-${o}`} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={o} testID={`${testID}-${i}`} onPress={() => { haptic('selection'); onChange(String(i)); }}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderWidth: on ? 2 : 1, borderColor: on ? t.colors.text : t.colors.border, backgroundColor: on ? t.colors.text : 'transparent' }}>
-                {on ? <Icon name="check" size={15} color={t.colors.background} /> : null}
+                <CheckMark checked={on} size={15} color={t.colors.background} />
                 <Text weight={on ? 'bold' : 'medium'} color={on ? t.colors.background : t.colors.text}>{o}</Text>
               </Tappable>
             );
@@ -283,7 +290,7 @@ function FieldEditor({ f, value, onChange, testID }: { f: HmField; value: string
           <Tappable key={`${i}-${o}`} accessibilityRole="checkbox" accessibilityState={{ checked: on.has(i) }} accessibilityLabel={o} testID={`${testID}-${i}`} onPress={() => flip(i)}
             style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }}>
             <View style={{ width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: t.colors.text, backgroundColor: on.has(i) ? t.colors.text : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-              {on.has(i) ? <Icon name="check" size={15} color={t.colors.background} /> : null}
+              <CheckMark checked={on.has(i)} size={15} color={t.colors.background} />
             </View>
             <Text style={{ flex: 1 }}>{o}</Text>
           </Tappable>
@@ -301,13 +308,16 @@ function FieldEditor({ f, value, onChange, testID }: { f: HmField; value: string
     const minus = f.kind === 'time' ? tr('hm.fix.minus5') : tr('hm.fix.minus', { n: f.step });
     const plus = f.kind === 'time' ? tr('hm.fix.plus5') : tr('hm.fix.plus', { n: f.step });
     return (
+      <View style={{ gap: 4 }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
         <GlassButton variant="secondary" label={minus} testID={`${testID}-minus`} onPress={() => step(-1)} />
         <View style={{ flex: 1 }}>
           <Field label={f.kind === 'number' && f.unit ? `${f.label} (${f.unit})` : f.label} value={value} onChangeText={onChange} keyboardType={f.kind === 'number' ? 'decimal-pad' : 'numbers-and-punctuation'}
-            maxLength={f.kind === 'time' ? 5 : 8} hint={f.hint} testID={testID} style={TABULAR} />
+            maxLength={f.kind === 'time' ? 5 : 8} testID={testID} style={TABULAR} />
         </View>
         <GlassButton variant="secondary" label={plus} testID={`${testID}-plus`} onPress={() => step(1)} />
+      </View>
+      {f.hint ? <Text variant="caption" muted>{f.hint}</Text> : null}
       </View>
     );
   }

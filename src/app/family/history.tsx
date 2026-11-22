@@ -4,6 +4,7 @@
  * sans modification = « rien de noté »), modifications du jour en grand puis la liste (heure en colonne fixe, qui,
  * quoi). Rien ne se corrige ici : c'est la trace de ce qui a été fait dans « Tâches ».
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
@@ -40,23 +41,23 @@ export default function FamilyHistory() {
       {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
       {q.data ? (
         <>
-          <HmHero testID="hm-hist-hero" value={ofDay.length ? String(ofDay.length) : null} unit={tr('hm.hist.unit', { day: dayLabel })} emptyLabel={tr('hm.hist.none', { day: dayLabel })}
+          <HmHero testID="hm-hist-hero" value={ofDay.length ? String(ofDay.length) : null} unit={tr('hm.hist.unit', { count: ofDay.length, day: dayLabel })} emptyLabel={tr('hm.hist.none', { day: dayLabel })}
             split={ofDay.length ? [
               { label: tr('u2.history.completed'), value: String(ofDay.filter((e) => e.kind === 'done').length), testID: 'hm-hist-done' },
               { label: tr('u2.history.delegated'), value: String(ofDay.filter((e) => e.kind === 'assigned').length), testID: 'hm-hist-assigned' },
             ] : undefined} />
           <HmWeek day={day} onSelect={setDay} marks={marks} countLabel={(n) => tr('hm.hist.count', { count: n })} testID="hm-hist-week" />
           {ofDay.length ? (
-            <View testID="hm-hist-list" style={{ gap: spacing.xs }}>
+            <MotionList testID="hm-hist-list" style={{ gap: spacing.xs }}>
               {ofDay.map((e) => {
                 const k = KIND[e.kind] ?? { label: '', icon: 'circle' as IconName };
                 const kLabel = KIND[e.kind] ? tr(k.label as never) : e.kind;
                 const task = tasks?.find((t) => t.id === e.task_id);
                 const to = e.kind === 'assigned' && typeof e.detail?.to === 'string' ? tr('u2.history.to', { name: labelOf(e.detail.to as string) }) : '';
-                return <HmRow key={e.id} time={clock(new Date(e.created_at))} icon={k.icon} title={`« ${task?.title ?? tr('u2.history.deleted_task')} »`}
-                  detail={`${labelOf(e.actor_id)} ${kLabel}${to}`} testID={`hm-hist-row-${e.id}`} />;
+                return <MotionItem key={e.id}><HmRow key={e.id} time={clock(new Date(e.created_at))} icon={k.icon} title={`« ${task?.title ?? tr('u2.history.deleted_task')} »`}
+                  detail={`${labelOf(e.actor_id)} ${kLabel}${to}`} testID={`hm-hist-row-${e.id}`} /></MotionItem>;
               })}
-            </View>
+            </MotionList>
           ) : <HmEmpty testID="hm-hist-empty" />}
           <Text variant="caption" muted>{tr('hm.hist.window')}</Text>
         </>

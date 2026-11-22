@@ -2,7 +2,7 @@
 export const homeTrack = {
   "hm.nothing": "Rien de noté",
   "hm.left": "Reste",
-  "hm.done": "Fait",
+  "hm.doneCell": "Fait",
   "hm.week.title": "Semaine du {from} au {to}",
   "hm.week.prev": "Semaine précédente",
   "hm.week.next": "Semaine suivante",
@@ -135,12 +135,12 @@ export const homeTrack = {
   "hm.sc.lastBy": "Dernier coché : {subject} · {who} · {when}",
   "hm.sc.lastAt": "Dernier coché : {subject} · {when}",
   "hm.sc.todo": "À faire",
-  "hm.load.unit": "tâches faites cette semaine, par adulte",
+  "hm.load.unit": {"one": "tâche faite cette semaine, par adulte", "other": "tâches faites cette semaine, par adulte"},
   "hm.load.none": "Aucune tâche faite notée cette semaine",
   "hm.load.unassigned": {"one": "{count} tâche ouverte sans personne", "other": "{count} tâches ouvertes sans personne"},
   "hm.load.count": {"one": "{count} tâche faite", "other": "{count} tâches faites"},
   "hm.load.ofDay": "Fait le {day}",
   "hm.load.assigned": "Confiée à {who}",
-  "hm.review.unit": "tâches faites ensemble cette semaine",
+  "hm.review.unit": {"one": "tâche faite ensemble cette semaine", "other": "tâches faites ensemble cette semaine"},
   "hm.review.none": "Aucune tâche faite notée cette semaine",
 };

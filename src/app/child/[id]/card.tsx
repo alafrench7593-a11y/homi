@@ -5,6 +5,7 @@
  * Les données sont celles déjà saisies dans « Suivi santé » (allergies, traitements, contacts) ; ici on ajoute
  * « ce qui l'apaise » et « à savoir », et on exporte le tout.
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -87,10 +88,10 @@ export default function ChildCard() {
       {/* Donnée principale : les allergies notées (aucune : « aucune allergie notée », jamais un zéro inventé) */}
       <HmHero testID="hm-kc-hero" value={allergies.length ? String(allergies.length) : null} emptyLabel={tr('kc.noneNoted')}
         unit={allergies.length ? tr('hm.kc.unit', { count: allergies.length, list: allergies.join(', ') }) : null}
-        split={[
+        split={of('treatment').length || of('contact').length ? [
           { label: tr('kc.sec.treatment'), value: String(of('treatment').length), testID: 'hm-kc-treat' },
           { label: tr('kc.sec.contact'), value: String(of('contact').length), testID: 'hm-kc-contact' },
-        ]} />
+        ] : undefined} />
       <Text muted>{tr('kc.intro')}</Text>
       <Card tone="soft" testID="kid-card-allergies">
         <Text weight="bold" color={allergies.length ? t.colors.danger : undefined}>{tr('kc.sec.allergy')}</Text>
@@ -116,7 +117,7 @@ export default function ChildCard() {
             )}
             {rows.length ? (
               <Card padded={false}>
-                {rows.map((i) => <ListRow key={i.id} icon={s.icon} title={i.label} subtitle={i.details ?? undefined} danger={s.danger} onPress={editable ? () => setFixing(i) : undefined} testID={`kid-card-item-${i.id}`} />)}
+                <MotionList>{rows.map((i) => <MotionItem key={i.id}><ListRow key={i.id} icon={s.icon} title={i.label} subtitle={i.details ?? undefined} danger={s.danger} onPress={editable ? () => setFixing(i) : undefined} testID={`kid-card-item-${i.id}`} /></MotionItem>)}</MotionList>
               </Card>
             ) : <Text variant="small" muted>{tr(`kc.empty.${s.kind}` as TKey)}</Text>}
           </View>

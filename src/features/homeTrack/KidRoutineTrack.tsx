@@ -5,6 +5,7 @@
  *  · une routine du jour → sa fiche (Tray) : cocher / décocher les étapes de CE jour en valeurs provisoires, Annuler,
  *    Enregistrer verrouillé (écrit par `useToggleKidStep`, comme le mode enfant).
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui';
@@ -38,17 +39,17 @@ export function KidRoutineTrack({ routines }: { routines: readonly KidRoutine[] 
     <View style={{ gap: spacing.sm }} testID="hm-kr">
       <HmHero testID="hm-kr-hero" value={p && p.done ? String(p.done) : null} unit={p ? tr('hm.kr.unit', { total: p.total, day: dayLabel }) : null}
         emptyLabel={tr('hm.kr.none', { day: dayLabel })}
-        split={p ? [{ label: tr('hm.left'), value: String(p.remaining), testID: 'hm-kr-left' }, { label: tr('hm.done'), value: String(p.done), testID: 'hm-kr-done' }] : undefined}
+        split={p && p.done ? [{ label: tr('hm.left'), value: String(p.remaining), testID: 'hm-kr-left' }, { label: tr('hm.doneCell'), value: String(p.done), testID: 'hm-kr-done' }] : undefined}
         caption={lastLine} />
       <HmWeek day={day} onSelect={setDay} marks={marks} countLabel={(n) => tr('hm.kr.count', { count: n })} testID="hm-kr-week" />
       {live.length ? (
         <View>
           <Text variant="label" muted>{tr('hm.kr.ofDay', { day: dayLabel })}</Text>
-          {live.map((r) => {
+          <MotionList>{live.map((r) => {
             const s = p?.perRoutine[r.id];
-            return <HmRow key={r.id} icon="check-square" title={r.title} testID={`hm-kr-open-${r.id}`}
-              detail={s && s.done ? tr('hm.kr.progress', { done: s.done, total: s.total }) : tr('hm.nothing')} onPress={() => setOpenId(r.id)} />;
-          })}
+            return <MotionItem key={r.id}><HmRow key={r.id} icon="check-square" title={r.title} testID={`hm-kr-open-${r.id}`}
+              detail={s && s.done ? tr('hm.kr.progress', { done: s.done, total: s.total }) : tr('hm.nothing')} onPress={() => setOpenId(r.id)} /></MotionItem>;
+          })}</MotionList>
         </View>
       ) : <HmEmpty label={tr('hm.kr.noRoutine')} />}
       {opened ? (

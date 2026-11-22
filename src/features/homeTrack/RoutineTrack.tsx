@@ -5,6 +5,7 @@
  *  · tâches de routine du jour en grand, « reste / fait » ; la liste du jour avec la case à cocher de « Tâches »
  *    (droits des missions, double appui ignoré, qui et quand une fois faite).
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui';
@@ -32,17 +33,17 @@ export function RoutineTrack({ tasks, routines, onEdit }: { tasks: readonly Fami
   return (
     <View style={{ gap: spacing.sm }} testID="hm-rt">
       <HmHero testID="hm-rt-hero" value={list.length ? String(left) : null} unit={tr('hm.rt.unit', { count: list.length, day: dayLabel })} emptyLabel={tr('hm.rt.none', { day: dayLabel })}
-        split={list.length ? [{ label: tr('hm.left'), value: String(left), testID: 'hm-rt-left' }, { label: tr('hm.done'), value: String(list.length - left), testID: 'hm-rt-done' }] : undefined} />
+        split={list.length ? [{ label: tr('hm.left'), value: String(left), testID: 'hm-rt-left' }, { label: tr('hm.doneCell'), value: String(list.length - left), testID: 'hm-rt-done' }] : undefined} />
       <HmWeek day={day} onSelect={setDay} marks={marks} countLabel={(n) => tr('hm.rt.count', { count: n })} testID="hm-rt-week" />
       {list.length ? (
-        <View style={{ gap: spacing.sm }} testID="hm-rt-list">
+        <MotionList style={{ gap: spacing.sm }} testID="hm-rt-list">
           {list.map((t) => (
-            <View key={t.id} style={{ gap: 2 }}>
+            <MotionItem key={t.id}><View key={t.id} style={{ gap: 2 }}>
               {routineOf(t) ? <Text variant="caption" muted>{routineOf(t)}</Text> : null}
               <TaskRow task={t} onEdit={onEdit} />
-            </View>
+            </View></MotionItem>
           ))}
-        </View>
+        </MotionList>
       ) : <HmEmpty testID="hm-rt-empty" />}
     </View>
   );

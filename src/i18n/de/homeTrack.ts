@@ -2,7 +2,7 @@
 export const homeTrack = {
   "hm.nothing": "Nichts eingetragen",
   "hm.left": "Offen",
-  "hm.done": "Erledigt",
+  "hm.doneCell": "Erledigt",
   "hm.week.title": "Woche vom {from} bis {to}",
   "hm.week.prev": "Vorherige Woche",
   "hm.week.next": "Nächste Woche",
@@ -135,12 +135,12 @@ export const homeTrack = {
   "hm.sc.lastBy": "Zuletzt abgehakt: {subject} · {who} · {when}",
   "hm.sc.lastAt": "Zuletzt abgehakt: {subject} · {when}",
   "hm.sc.todo": "Zu erledigen",
-  "hm.load.unit": "diese Woche erledigte Aufgaben, pro Erwachsenem",
+  "hm.load.unit": {"one": "diese Woche erledigte Aufgabe, pro Erwachsenem", "other": "diese Woche erledigte Aufgaben, pro Erwachsenem"},
   "hm.load.none": "Diese Woche keine erledigte Aufgabe eingetragen",
   "hm.load.unassigned": {"one": "{count} offene Aufgabe ohne Person", "other": "{count} offene Aufgaben ohne Person"},
   "hm.load.count": {"one": "{count} Aufgabe erledigt", "other": "{count} Aufgaben erledigt"},
   "hm.load.ofDay": "Erledigt am {day}",
   "hm.load.assigned": "An {who} vergeben",
-  "hm.review.unit": "diese Woche gemeinsam erledigte Aufgaben",
+  "hm.review.unit": {"one": "diese Woche gemeinsam erledigte Aufgabe", "other": "diese Woche gemeinsam erledigte Aufgaben"},
   "hm.review.none": "Diese Woche keine erledigte Aufgabe eingetragen",
 };

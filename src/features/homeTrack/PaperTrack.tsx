@@ -6,6 +6,7 @@
  *    « ?paper= ») pour corriger la date d'échéance : valeur provisoire, Annuler, Enregistrer verrouillé, brouillon
  *    gardé si l'écriture échoue (même écriture que la fiche du papier : family_papers.expires_on).
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -46,12 +47,12 @@ export function PaperTrack({ papers, today, nameOf }: { papers: readonly FamilyP
       {dated.length ? (
         <View testID="hm-pp-list">
           <Text variant="label" muted>{tr('hm.pp.dates')}</Text>
-          {dated.map((p) => {
+          <MotionList>{dated.map((p) => {
             const d = daysUntil(today, p.expires_on!);
-            return <HmRow key={p.id} time={formatDate(p.expires_on!, { day: 'numeric', month: 'short' })} icon={d < 0 ? 'alert-triangle' : d <= 60 ? 'clock' : 'check-circle'}
+            return <MotionItem key={p.id}><HmRow key={p.id} time={formatDate(p.expires_on!, { day: 'numeric', month: 'short' })} icon={d < 0 ? 'alert-triangle' : d <= 60 ? 'clock' : 'check-circle'}
               title={label(p)} detail={`${tr(d < 0 ? 'hm.pp.sinceShort' : 'hm.pp.untilShort', { count: Math.abs(d) })} · ${long(p.expires_on!)}`}
-              testID={`hm-pp-row-${p.kind}`} onPress={() => router.setParams({ paper: p.id } as never)} />;
-          })}
+              testID={`hm-pp-row-${p.kind}`} onPress={() => router.setParams({ paper: p.id } as never)} /></MotionItem>;
+          })}</MotionList>
         </View>
       ) : null}
       {opened ? (

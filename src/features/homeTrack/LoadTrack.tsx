@@ -7,6 +7,7 @@
  *  · la liste du jour : heure en colonne fixe, tâche, qui l'a faite. Rouvrir ou corriger se fait dans « Tâches ».
  *  Aucun score : des nombres de tâches, de même nature, à lire à deux.
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -30,17 +31,17 @@ export function LoadTrack({ tasks, people, labelOf }: { tasks: readonly FamilyTa
   const dayLabel = formatDate(dayDate(day), { weekday: 'long', day: 'numeric', month: 'long' });
   return (
     <View style={{ gap: spacing.sm }} testID="hm-load">
-      <HmHero testID="hm-load-hero" value={share.total == null ? null : String(share.total)} unit={tr('hm.load.unit')} emptyLabel={tr('hm.load.none')}
+      <HmHero testID="hm-load-hero" value={share.total == null ? null : String(share.total)} unit={tr('hm.load.unit', { count: share.total ?? 0 })} emptyLabel={tr('hm.load.none')}
         split={share.rows.map((r) => ({ label: labelOf(r.id), value: String(r.done), testID: `hm-load-p-${r.id}` }))}
         caption={share.unassigned ? tr('hm.load.unassigned', { count: share.unassigned }) : null} />
       <HmWeek day={day} onSelect={setDay} marks={marks} countLabel={(n) => tr('hm.load.count', { count: n })} testID="hm-load-week" />
       <Text variant="label" muted>{tr('hm.load.ofDay', { day: dayLabel })}</Text>
       {ofDay.length ? (
-        <View testID="hm-load-list">
-          {ofDay.map((t) => <HmRow key={t.id} time={clock(new Date(t.done_at!))} icon="check-circle" title={t.title} testID={`hm-load-row-${t.id}`}
+        <MotionList testID="hm-load-list">
+          {ofDay.map((t) => <MotionItem key={t.id}><HmRow key={t.id} time={clock(new Date(t.done_at!))} icon="check-circle" title={t.title} testID={`hm-load-row-${t.id}`}
             detail={t.done_by ? tr('jt.task.doneBy', { who: labelOf(t.done_by) }) : t.assignee_id ? tr('hm.load.assigned', { who: labelOf(t.assignee_id) }) : null}
-            onPress={() => router.push('/family' as never)} />)}
-        </View>
+            onPress={() => router.push('/family' as never)} /></MotionItem>)}
+        </MotionList>
       ) : <HmEmpty testID="hm-load-empty" />}
     </View>
   );

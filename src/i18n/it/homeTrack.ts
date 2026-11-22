@@ -2,7 +2,7 @@
 export const homeTrack = {
   "hm.nothing": "Niente annotato",
   "hm.left": "Resta",
-  "hm.done": "Fatto",
+  "hm.doneCell": "Fatto",
   "hm.week.title": "Settimana dal {from} al {to}",
   "hm.week.prev": "Settimana precedente",
   "hm.week.next": "Settimana successiva",
@@ -135,12 +135,12 @@ export const homeTrack = {
   "hm.sc.lastBy": "Ultimo spuntato: {subject} · {who} · {when}",
   "hm.sc.lastAt": "Ultimo spuntato: {subject} · {when}",
   "hm.sc.todo": "Da fare",
-  "hm.load.unit": "attività fatte questa settimana, per adulto",
+  "hm.load.unit": {"one": "attività fatta questa settimana, per adulto", "other": "attività fatte questa settimana, per adulto"},
   "hm.load.none": "Nessuna attività fatta annotata questa settimana",
   "hm.load.unassigned": {"one": "{count} attività aperta senza nessuno", "other": "{count} attività aperte senza nessuno"},
   "hm.load.count": {"one": "{count} attività fatta", "other": "{count} attività fatte"},
   "hm.load.ofDay": "Fatto il {day}",
   "hm.load.assigned": "Affidata a {who}",
-  "hm.review.unit": "attività fatte insieme questa settimana",
+  "hm.review.unit": {"one": "attività fatta insieme questa settimana", "other": "attività fatte insieme questa settimana"},
   "hm.review.none": "Nessuna attività fatta annotata questa settimana",
 };

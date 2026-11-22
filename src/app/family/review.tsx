@@ -38,7 +38,7 @@ export default function WeeklyReview() {
     <Screen back title={tr('u2.review.title')} subtitle={tr('u2.review.subtitle')}>
       {/* La semaine en un regard : tâches faites en grand (rien de fait = « rien de noté », jamais 0), puis des
           compteurs de natures différentes, chacun dans sa case (rien n'est additionné entre eux) */}
-      <HmHero testID="hm-review-hero" value={tasksQ.data && r.doneCount ? String(r.doneCount) : null} unit={tr('hm.review.unit')} emptyLabel={tr('hm.review.none')}
+      <HmHero testID="hm-review-hero" value={tasksQ.data && r.doneCount ? String(r.doneCount) : null} unit={tr('hm.review.unit', { count: r.doneCount })} emptyLabel={tr('hm.review.none')}
         split={[
           { label: tr('u2.review.requests'), value: String(r.requests.total), testID: 'hm-review-req' },
           { label: tr('u2.review.nights'), value: String(r.nightsCount), testID: 'hm-review-nights' },

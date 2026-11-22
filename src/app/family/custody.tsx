@@ -208,7 +208,7 @@ export default function Custody() {
             {[0, 1, 2, 3].map((w) => (
               <View key={w} style={{ flexDirection: 'row', gap: 4, marginTop: 4 }}>
                 {days.slice(w * 7, w * 7 + 7).map((d) => (
-                  <Tappable key={d.date} testID={`cu-day-${d.date}`} accessibilityRole="tab" accessibilityState={{ selected: d.date === day }} onPress={() => setDay(d.date)}
+                  <Tappable key={d.date} testID={`cu-day-${d.date}`} accessibilityRole="button" accessibilityState={{ selected: d.date === day }} onPress={() => setDay(d.date)}
                     accessibilityLabel={`${formatDate(d.date, { weekday: 'long', day: 'numeric', month: 'long' })} : ${label(d.side)}${d.handover ? `, ${tr('cu.handover')}` : ''}`}
                     style={{ flex: 1, height: 46, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: colors[d.side],
                       borderWidth: d.date === day ? 2.5 : d.date === today ? 1.5 : d.exception ? 1 : 0, borderColor: d.date === day ? t.colors.text : d.date === today ? t.colors.primary : t.colors.border, borderStyle: d.exception && d.date !== day && d.date !== today ? 'dashed' : 'solid' }}>

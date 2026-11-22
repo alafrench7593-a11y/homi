@@ -5,6 +5,7 @@
  * Couple, mes informations. Construit avec l'existant (mêmes requêtes et écrans) ; aucune carte n'ouvre sur les
  * données personnelles de l'autre adulte (cycle, grossesse non partagée, santé, journal, ressentis).
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -55,11 +56,11 @@ export default function MyPlace() {
       <SectionTitle title={tr('cp2.place.children')} />
       <GlassCard testID="place-children">
         {children?.length ? (
-          <View style={{ gap: 0 }}>
+          <MotionList style={{ gap: 0 }}>
             {children.map((c) => (
-              <ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}` as never)} />
+              <MotionItem key={c.id}><ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}` as never)} /></MotionItem>
             ))}
-          </View>
+          </MotionList>
         ) : <Text variant="small" muted>{tr('cp2.place.noChildren')}</Text>}
       </GlassCard>
 
@@ -71,12 +72,12 @@ export default function MyPlace() {
       </StaggerList>
 
       <SectionTitle title={tr('cp2.members.title')} />
-      <View testID="place-adults">
+      <MotionList testID="place-adults">
         {adults.map((p) => (
-          <ListRow key={p.id} leading={<UserAvatar path={p.avatarPath} initial={p.initial} size={32} />} title={p.id === me ? `${p.name} (${p.label})` : p.name}
-            subtitle={labelOf(p.id, p.role)} onPress={() => router.push(`/family/member/${p.id}` as never)} testID={`place-adult-${p.id === me ? 'me' : 'other'}`} />
+          <MotionItem key={p.id}><ListRow key={p.id} leading={<UserAvatar path={p.avatarPath} initial={p.initial} size={32} />} title={p.id === me ? `${p.name} (${p.label})` : p.name}
+            subtitle={labelOf(p.id, p.role)} onPress={() => router.push(`/family/member/${p.id}` as never)} testID={`place-adult-${p.id === me ? 'me' : 'other'}`} /></MotionItem>
         ))}
-      </View>
+      </MotionList>
       <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('cp2.place.private')}</Text>
     </Screen>
   );
