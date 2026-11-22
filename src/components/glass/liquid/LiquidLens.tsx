@@ -17,26 +17,27 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha } from '@/theme/tokens';
 import { NativeGlass, useReduceTransparency } from '../../surfaces/nativeGlass';
-import { lensFrame, type LiquidLensProps } from './frame';
+import { cornersOf, lensFrame, type LiquidLensProps } from './frame';
 
 export function supportsSvgBackdrop(): boolean { return false; }
 
-export function LiquidLensMaterial({ radius, params, testID = 'liquid-lens' }: LiquidLensProps) {
+export function LiquidLensMaterial({ radius, params, testID = 'liquid-lens', edges = 'all', refract = true, fill }: LiquidLensProps) {
+  const corner = cornersOf(radius, edges);
   const t = useTheme();
   const opaque = useReduceTransparency();
-  const frame = lensFrame(t, params, radius, opaque);
+  const frame = lensFrame(t, params, radius, opaque, fill);
   const light = t.tokens.inverse.text;
   const a = (params.lightAngle * Math.PI) / 180;
   const start = { x: 0.5 - Math.cos(a) * 0.5, y: 0.5 + Math.sin(a) * 0.5 };
-  const native = !opaque && NativeGlass;
+  const native = !opaque && refract && NativeGlass;
   return (
-    <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID={testID} style={[StyleSheet.absoluteFill, frame.outer]}>
-      <View style={[StyleSheet.absoluteFill, { borderRadius: radius, overflow: 'hidden' }]}>
+    <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID={testID} style={[StyleSheet.absoluteFill, frame.outer, corner]}>
+      <View style={[StyleSheet.absoluteFill, corner, { overflow: 'hidden' }]}>
         {native && NativeGlass ? (
           <NativeGlass style={StyleSheet.absoluteFill} glassEffectStyle={params.frost > 4 ? 'regular' : 'clear'} isInteractive
             tintColor={alpha(t.colors.surface, params.tint)} colorScheme={t.isDark ? 'dark' : 'light'} testID={`${testID}-native`} />
-        ) : opaque || Platform.OS === 'android' ? (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: opaque ? t.colors.surface : alpha(t.colors.surface, Math.max(0.86, params.tint)) }]} />
+        ) : opaque || Platform.OS === 'android' || !refract ? (
+          <View testID={`${testID}-fill`} style={[StyleSheet.absoluteFill, fill ? { backgroundColor: fill } : { backgroundColor: opaque ? t.colors.surface : alpha(t.colors.surface, Math.max(0.86, params.tint)) }]} />
         ) : (
           <>
             <BlurView intensity={Math.round(30 + params.frost * 6)} tint={t.isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
@@ -48,7 +49,7 @@ export function LiquidLensMaterial({ radius, params, testID = 'liquid-lens' }: L
             start={start} end={{ x: 1 - start.x, y: 1 - start.y }} style={StyleSheet.absoluteFill} />
         ) : null}
       </View>
-      {native ? null : <View style={[StyleSheet.absoluteFill, { borderRadius: radius }, frame.lip]} />}
+      {native ? null : <View style={[StyleSheet.absoluteFill, corner, frame.lip, edges === 'top' ? { borderBottomWidth: 0 } : null]} />}
     </View>
   );
 }

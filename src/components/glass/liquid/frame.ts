@@ -7,9 +7,23 @@ import { alpha } from '@/theme/tokens';
 import type { useTheme } from '@/theme/ThemeProvider';
 import type { LensParams } from './params';
 
-export interface LiquidLensProps { radius: number; params: LensParams; testID?: string }
+export interface LiquidLensProps {
+  radius: number; params: LensParams; testID?: string;
+  /** `top` : feuille collée en bas, seuls les coins du haut sont arrondis */
+  edges?: 'all' | 'top';
+  /**
+   * `false` : carte de contenu posée sur le fond uni de la page — même lèvre, même reflet, même ombre, sans filtre de
+   * réfraction (rien à réfracter derrière ; un filtre par carte coûterait au défilement).
+   */
+  refract?: boolean;
+  /** Remplissage imposé (carte de contenu : surface du thème, lisibilité des textes) */
+  fill?: string;
+}
 
-export function lensFrame(t: ReturnType<typeof useTheme>, p: LensParams, radius: number, opaque: boolean): { outer: ViewStyle; fill: ViewStyle; lip: ViewStyle } {
+/** Rayons par coin (feuille collée en bas : coins du bas droits). */
+export const cornersOf = (radius: number, edges: 'all' | 'top' = 'all') => (edges === 'top' ? { borderTopLeftRadius: radius, borderTopRightRadius: radius, borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : { borderRadius: radius });
+
+export function lensFrame(t: ReturnType<typeof useTheme>, p: LensParams, radius: number, opaque: boolean, fill?: string): { outer: ViewStyle; fill: ViewStyle; lip: ViewStyle } {
   const light = t.tokens.inverse.text;
   const ink = t.tokens.shadowColor;
   const a = (p.lightAngle * Math.PI) / 180;
@@ -21,7 +35,7 @@ export function lensFrame(t: ReturnType<typeof useTheme>, p: LensParams, radius:
       borderRadius: radius,
       boxShadow: p.shadow > 0 ? `0 ${Math.round(4 + 10 * p.shadow)}px ${Math.round(12 + 26 * p.shadow)}px ${alpha(ink, (t.isDark ? 0.5 : 0.22) * p.shadow)}, 0 1px 2px ${alpha(ink, (t.isDark ? 0.4 : 0.12) * p.shadow)}` : undefined,
     } as ViewStyle,
-    fill: { backgroundColor: opaque ? t.colors.surface : alpha(t.colors.surface, p.tint) },
+    fill: { backgroundColor: fill ?? (opaque ? t.colors.surface : alpha(t.colors.surface, p.tint)) },
     lip: {
       borderWidth: 1,
       borderColor: alpha(light, opaque ? 0.5 : t.isDark ? 0.16 + 0.2 * p.highlight : 0.45 + 0.4 * p.highlight),

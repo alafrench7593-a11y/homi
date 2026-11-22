@@ -19,13 +19,13 @@
  */
 import React, { createContext, useContext } from 'react';
 import { Platform, StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius as R } from '@/theme/tokens';
 import { glassSpec, resolveGlassTier, type GlassSpec, type GlassTier, type GlassVariant } from '@/theme/glass';
 import { BLUR_OK, LIQUID_GLASS_NATIVE, NativeGlass, useReduceTransparency } from '../surfaces/nativeGlass';
 import { GlassRim } from './GlassRim';
+import { LiquidLensMaterial } from './liquid/LiquidLens';
+import { useLensStore } from './liquid/store';
 
 /** Niveau imposé à tout un sous-arbre (galerie de QA, tests). L'accessibilité garde la priorité. */
 const GlassTierContext = createContext<GlassTier | null>(null);
@@ -39,7 +39,6 @@ const GlassBlurTargetContext = createContext<React.RefObject<View | null> | null
 export const GlassBlurTarget = GlassBlurTargetContext.Provider;
 
 const ANDROID_BLUR_API = 31;
-const ANDROID_BLUR_METHOD = 'dimezisBlurViewSdk31Plus' as const;
 
 /** Niveau de verre réellement rendu ici (réglages d'accessibilité, thème, plateforme, niveau imposé). */
 export function useGlassTier(forced?: GlassTier | null): GlassTier {
@@ -74,23 +73,23 @@ export interface GlassMaterialProps {
 /** Sous-couche de verre : à poser en premier enfant d'un conteneur à coins arrondis (elle le remplit). */
 export function GlassMaterial({ variant = 'chrome', radius = R.xl, edges = 'all', reflet = true, tier: forced, testID = 'glass' }: GlassMaterialProps) {
   const { spec, tier } = useGlass(variant, forced);
-  const target = useContext(GlassBlurTargetContext);
+  const lens = useLensStore((st) => st.params);
+  // Verre LIQUIDE PARTOUT (rendu validé le 22/11/2026) : il remplace le niveau « flou » (web, iOS < 26), avec les
+  // réglages du laboratoire. Barres, boutons, recherche, sélecteurs, feuilles, menus : lentille complète (réfraction).
+  // Cartes de contenu (`card`) : même lèvre, reflet et ombre, sur la surface du thème (lisibilité des textes), sans
+  // filtre de réfraction. Inchangés : verre natif iOS 26 (déjà le Liquid Glass d'Apple) et opaque (Réduire la
+  // transparence, nuit, niveau imposé).
+  const liquid = tier === 'blur';
   const corner = cornerOf(radius, edges);
   const open = edges === 'top' ? { borderBottomWidth: 0 } : null;
   return (
     <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden
       testID={`${testID}-material`} style={[StyleSheet.absoluteFill, corner, styles.clip]}>
-      {tier === 'native' && NativeGlass ? (
+      {liquid ? (
+        <LiquidLensMaterial radius={radius} params={lens} edges={edges} testID={`${testID}-liquid`}
+          refract={variant !== 'card'} fill={variant === 'card' ? spec.veil : undefined} />
+      ) : tier === 'native' && NativeGlass ? (
         <NativeGlass testID={`${testID}-native`} style={[StyleSheet.absoluteFill, corner]} glassEffectStyle={spec.nativeStyle} tintColor={spec.nativeTint} colorScheme={spec.colorScheme} />
-      ) : tier === 'blur' ? (
-        <>
-          <BlurView testID={`${testID}-blur`} intensity={spec.blur} tint={Platform.OS === 'web' ? spec.blurTintWeb : spec.blurTint} style={StyleSheet.absoluteFill}
-            {...(Platform.OS === 'android' && target ? { blurTarget: target, blurMethod: ANDROID_BLUR_METHOD } : null)} />
-          <View testID={`${testID}-veil`} style={[StyleSheet.absoluteFill, { backgroundColor: spec.veil }]} />
-          {reflet ? <LinearGradient testID={`${testID}-reflet`} colors={spec.highlight} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.reflet} /> : null}
-          <View style={[StyleSheet.absoluteFill, corner, open, { borderWidth: 1, borderColor: spec.edge }]} />
-          {edges === 'all' ? <GlassRim radius={radius} /> : null}
-        </>
       ) : (
         <>
           <View testID={`${testID}-opaque`} style={[StyleSheet.absoluteFill, corner, open, { backgroundColor: spec.opaque, borderWidth: StyleSheet.hairlineWidth, borderColor: spec.opaqueEdge }]} />

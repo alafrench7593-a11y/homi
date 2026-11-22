@@ -140,10 +140,8 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
   // reste montée (mesures des libellés conservées) mais hors mise en page : ni visible, ni touchable, ni annoncée
   const keyboard = useKeyboardVisible();
   const caregiver = isCaregiverOnly(useMemberships().data);
-  // Verre liquide : d'abord sur l'Accueil seul (et partout pendant le laboratoire), en attendant la validation du rendu
-  const lens = useLensStore((st) => st.params);
-  const lab = useLensStore((st) => st.labOpen);
-  const liquid = activeName === 'index' || lab ? lens : undefined;
+  // Verre liquide (rendu validé le 22/11/2026) : sur tous les onglets
+  const liquid = useLensStore((st) => st.params);
 
   const glassTabs: GlassTab[] = tabs.map(({ tab, route }, i) => ({
     key: route.name,
@@ -174,7 +172,7 @@ export function Dock({ state, navigation, descriptors }: BottomTabBarProps) {
     return (
       <View pointerEvents="box-none" testID="dock" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center', display: keyboard ? 'none' : 'flex' }}>
         <GlassTabBar testID="tab-bar-glass" tabs={[{ key: 'garde', label: tr('nn.home.title'), icon: 'briefcase', glyph: 'notebook', testID: 'tab-garde' }]} activeKey=""
-          onChange={() => router.push('/garde' as never)} center={<CareAddButton size={g.action} />} centerAfter={1} floating={g.floating}
+          onChange={() => router.push('/garde' as never)} center={<CareAddButton size={g.action} />} centerAfter={1} floating={g.floating} liquid={liquid}
           labelSize={layout.fontSize} accessibilityLabel={tr('nav.tablist')} style={{ width: Math.min(width, 600) }} />
       </View>
     );

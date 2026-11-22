@@ -4,7 +4,7 @@
  * famille de commandes (src/components/controls), voiles d'état.
  * API stable : ~218 écrans en dépendent ; toute évolution ajoute des options, n'en retire aucune.
  */
-import { GlassRim } from './glass/GlassRim';
+import { CardLens } from './glass/liquid/CardLens';
 import React from 'react';
 import {
   ActivityIndicator, Animated, Easing, InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text as RNText, TextInput, View,
@@ -836,7 +836,7 @@ export function ListGroup({ children, title, footer, testID, style }: { children
     <View style={[{ gap: spacing.xs }, style]} testID={testID}>
       {title ? <Text variant="label" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{title}</Text> : null}
       <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, overflow: 'hidden', boxShadow: physicalShadow('low', t.isDark) }}>
-        <GlassRim radius={radius.lg} />
+        <CardLens radius={radius.lg} />
         {/* Liste vivante (à la source) : une rangée ajoutée apparaît à sa place, une rangée supprimée se replie */}
         <MotionList>
           {rows.map((row, i) => (

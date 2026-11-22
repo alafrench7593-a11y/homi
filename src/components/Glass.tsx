@@ -14,7 +14,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { glassOf, physicalShadow, radius as R, surfaceShadow, type ElevationLevel, type ShadowLayer } from '@/theme/tokens';
 import { parseColor } from '@/theme/contrast';
 import { Surface } from './surfaces/Surface';
-import { GlassRim } from './glass/GlassRim';
+import { CardLens } from './glass/liquid/CardLens';
 import { LIQUID_GLASS_NATIVE, useReduceTransparency } from './surfaces/nativeGlass';
 
 export { LIQUID_GLASS_NATIVE, useReduceTransparency };
@@ -56,8 +56,8 @@ export function GlassSurface({
         style,
       ]}
     >
-      {/* Liquid Glass partout (22/11/2026) : liseré spéculaire commun sous le contenu */}
-      <GlassRim radius={radius} />
+      {/* Verre liquide partout (22/11/2026) : lèvre, reflet orienté et ombre du laboratoire, sous le contenu */}
+      <CardLens radius={radius} />
       {children}
     </View>
   );

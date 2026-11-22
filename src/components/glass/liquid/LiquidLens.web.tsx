@@ -18,7 +18,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { useReduceTransparency } from '../../surfaces/nativeGlass';
 import { displacementMap, highlightMap } from './maps';
 import type { LensParams } from './params';
-import { lensFrame, type LiquidLensProps } from './frame';
+import { cornersOf, lensFrame, type LiquidLensProps } from './frame';
 
 let seq = 0;
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -70,7 +70,7 @@ function buildFilter(id: string, w: number, h: number, map: string, p: LensParam
   return f;
 }
 
-export function LiquidLensMaterial({ radius, params, testID = 'liquid-lens' }: LiquidLensProps) {
+export function LiquidLensMaterial({ radius, params, testID = 'liquid-lens', edges = 'all', refract = true, fill }: LiquidLensProps) {
   const t = useTheme();
   const opaque = useReduceTransparency();
   const ref = useRef<View>(null);
@@ -78,48 +78,55 @@ export function LiquidLensMaterial({ radius, params, testID = 'liquid-lens' }: L
   const id = useMemo(() => `homi-lens-${++seq}`, []);
   const svgMode = useMemo(() => supportsSvgBackdrop(), []);
   const w = Math.round(size.w), h = Math.round(size.h);
-  const geo = { width: w, height: h, radius: Math.min(radius, h / 2) };
+  // feuille collée en bas : la lèvre n'existe qu'en haut et sur les côtés (contour prolongé sous le bord de l'écran)
+  const r = Math.min(radius, edges === 'top' ? radius : h / 2);
+  const geo = { width: w, height: edges === 'top' ? h + r * 2 + params.bezel : h, radius: r };
+  const crop = (d: Uint8ClampedArray) => (edges === 'top' ? d.subarray(0, w * h * 4) : d);
+  // petits éléments (boutons ronds, puces) : la lèvre et la réfraction suivent la taille (la barre garde les réglages)
+  const small = Math.min(w, h);
+  const fit = small >= 56 ? params : { ...params, bezel: Math.min(params.bezel, Math.max(4, small * 0.3)), refraction: Math.min(params.refraction, Math.max(2, small * 0.3)) };
 
   // Cartes : recalculées seulement si la taille ou un réglage change (jamais à chaque image)
   const maps = useMemo(() => {
     if (!w || !h || opaque) return null;
     return {
-      lens: svgMode && params.refraction > 0 ? toDataUrl(displacementMap(geo, params), w, h) : '',
-      light: params.highlight > 0 ? toDataUrl(highlightMap(geo, params), w, h) : '',
+      lens: refract && svgMode && params.refraction > 0 ? toDataUrl(crop(displacementMap(geo, fit)), w, h) : '',
+      light: params.highlight > 0 ? toDataUrl(crop(highlightMap(geo, fit)), w, h) : '',
     };
-  }, [w, h, radius, opaque, svgMode, params.bezel, params.thickness, params.refraction, params.highlight, params.lightAngle]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [w, h, radius, edges, refract, opaque, svgMode, params.bezel, params.thickness, params.refraction, params.highlight, params.lightAngle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Filtre SVG + backdrop-filter posés directement sur le nœud DOM (style que react-native-web ne transmet pas)
   useEffect(() => {
     const node = ref.current as unknown as HTMLElement | null;
     if (!node || !w || !h) return undefined;
-    if (opaque) { node.style.backdropFilter = ''; node.style.setProperty('-webkit-backdrop-filter', ''); return undefined; }
+    if (opaque || !refract) { node.style.backdropFilter = ''; node.style.setProperty('-webkit-backdrop-filter', ''); return undefined; }
     if (!svgMode || !maps?.lens) {
       const css = `blur(${Math.max(6, params.frost * 2 + 6)}px) saturate(1.6)`;
       node.style.backdropFilter = css; node.style.setProperty('-webkit-backdrop-filter', css);
       return undefined;
     }
     const svg = el('svg', { width: 0, height: 0, 'aria-hidden': 'true', style: 'position:absolute;width:0;height:0;pointer-events:none' });
-    svg.appendChild(buildFilter(id, w, h, maps.lens, params));
+    svg.appendChild(buildFilter(id, w, h, maps.lens, fit));
     document.body.appendChild(svg);
     node.style.backdropFilter = `url(#${id})`;
     node.setAttribute('data-lens', 'svg');
     return () => { svg.remove(); node.style.backdropFilter = ''; };
-  }, [id, w, h, opaque, svgMode, maps, params]);
+  }, [id, w, h, opaque, refract, svgMode, maps, params]);
 
   const onLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
     setSize((s) => (Math.round(s.w) === Math.round(width) && Math.round(s.h) === Math.round(height) ? s : { w: width, h: height }));
   };
-  const frame = lensFrame(t, params, radius, opaque);
+  const frame = lensFrame(t, fit, radius, opaque, fill);
+  const corner = cornersOf(radius, edges);
   return (
     <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID={testID}
-      onLayout={onLayout} style={[StyleSheet.absoluteFill, frame.outer]}>
-      <View ref={ref} testID={`${testID}-backdrop`} style={[StyleSheet.absoluteFill, { borderRadius: radius, overflow: 'hidden' }, frame.fill]} />
+      onLayout={onLayout} style={[StyleSheet.absoluteFill, frame.outer, corner]}>
+      <View ref={ref} testID={`${testID}-backdrop`} style={[StyleSheet.absoluteFill, corner, { overflow: 'hidden' }, frame.fill]} />
       {!opaque && maps?.light ? (
-        <Image source={{ uri: maps.light }} testID={`${testID}-light`} style={[StyleSheet.absoluteFill, { borderRadius: radius, width: '100%', height: '100%' }]} resizeMode="stretch" />
+        <Image source={{ uri: maps.light }} testID={`${testID}-light`} style={[StyleSheet.absoluteFill, corner, { width: '100%', height: '100%' }]} resizeMode="stretch" />
       ) : null}
-      <View style={[StyleSheet.absoluteFill, { borderRadius: radius }, frame.lip]} />
+      <View style={[StyleSheet.absoluteFill, corner, frame.lip, edges === 'top' ? { borderBottomWidth: 0 } : null]} />
     </View>
   );
 }

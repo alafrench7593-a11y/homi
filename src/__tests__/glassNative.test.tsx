@@ -60,9 +60,9 @@ it('Réduire la transparence passe avant le verre natif : surface opaque', async
   expect(host(r, 'g-native').length).toBe(0);
 });
 
-it('mode nuit : opaque ; niveau « flou » imposé : flou au lieu du verre natif', async () => {
+it('mode nuit : opaque ; niveau « flou » imposé : verre liquide au lieu du verre natif', async () => {
   const blur = await render(<GlassTierProvider value="blur"><Glass testID="g"><View /></Glass></GlassTierProvider>);
-  expect(host(blur, 'g-blur').length).toBe(1);
+  expect(host(blur, 'g-liquid').length).toBe(1);
   expect(host(blur, 'g-native').length).toBe(0);
   act(() => { useUiStore.setState({ nightMode: true }); });
   const night = await render(<Glass testID="g"><View /></Glass>);

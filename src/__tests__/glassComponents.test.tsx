@@ -69,13 +69,17 @@ afterEach(async () => {
 });
 
 describe('matériau Glass : trois niveaux', () => {
-  it('par défaut (iOS < 26, web) : flou réel + voile de contraste + reflet, jamais un simple fond translucide', async () => {
+  it('par défaut (iOS < 26, web) : le verre flottant est LIQUIDE (lentille réglée au laboratoire), jamais un simple fond', async () => {
     const r = await render(<Glass testID="g"><View /></Glass>);
-    expect(has(r, 'g-blur')).toBe(true);
-    expect(has(r, 'g-veil')).toBe(true);
-    expect(has(r, 'g-reflet')).toBe(true);
+    expect(has(r, 'g-material')).toBe(true);
+    expect(has(r, 'g-liquid')).toBe(true);
     expect(has(r, 'g-opaque')).toBe(false);
-    expect(r.root.findAll((n) => n.props.testID === 'g-blur' && n.props.intensity > 0).length).toBeGreaterThan(0);
+  });
+  it('carte de contenu (iOS < 26, web) : verre liquide sans réfraction, sur un voile de contraste (lisibilité)', async () => {
+    const r = await render(<Glass testID="g" variant="card"><View /></Glass>);
+    expect(has(r, 'g-liquid')).toBe(true);
+    expect(has(r, 'g-liquid-fill')).toBe(true);
+    expect(has(r, 'g-opaque')).toBe(false);
   });
   it.each(['chrome', 'card', 'sheet'] as const)('Réduire la transparence → surface opaque du thème, même forme (%s)', async (variant) => {
     reduceTransparency = true;
@@ -394,11 +398,11 @@ describe('GlassMenu, GlassModal, GlassSheet, GlassToast', () => {
   it('feuille : le Sheet existant (poignée, fermeture, défilement) avec un panneau de verre — et opaque si demandé', async () => {
     const r = await render(<GlassSheet visible onClose={() => undefined} title="Ajouter"><View testID="inside" /></GlassSheet>);
     for (const id of ['sheet', 'sheet-handle', 'sheet-backdrop', 'sheet-scroll', 'inside']) expect(has(r, id)).toBe(true);
-    expect(has(r, 'sheet-panel-blur')).toBe(true);
+    expect(has(r, 'sheet-panel-liquid')).toBe(true);
     reduceTransparency = true;
     const o = await render(<GlassSheet visible onClose={() => undefined} title="Ajouter"><View /></GlassSheet>);
     expect(has(o, 'sheet-panel-opaque')).toBe(true);
-    expect(has(o, 'sheet-panel-blur')).toBe(false);
+    expect(has(o, 'sheet-panel-liquid')).toBe(false);
   });
   it.each(['success', 'info', 'error'] as const)('toast %s : annoncé (alerte polie), reste 3 s puis prévient qu’il a fini', async (tone) => {
     reduceMotion = true;
