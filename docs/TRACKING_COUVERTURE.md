@@ -2,16 +2,16 @@
 
 Légende statut : FAIT = observé dans l’aperçu web Chromium (vraie app, démo locale) ; Deno = fonction `assistant` avec modèle simulé. Rien n’est encore vérifié sur simulateur iOS ni sur iPhone.
 
-Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
+Synthèse : FAIT 13, PARTIEL 2, SANS 9, À 112
 
 | Mini-app (id) | Profils | Catégorie | Famille de geste | Donnée suivie | Remontée accueil / catégorie | Aura · prix | Test / statut |
 |---|---|---|---|---|---|---|---|
-| baby_breastfeed | baby, postpartum | feeding | Temps et sessions | tétées (breastfeeds, côté) | accueil : tétée en cours / dernière | — | EN COURS (agent Allaitement) |
-| baby_bottle | baby | feeding | Mesures et quantités | biberons (ml) | accueil : dernier biberon ; catégorie Alimentation : ml/jour | analyse biberons existante · 3 crédits | EN COURS (agent Biberons) |
-| baby_bottle_timer | baby, postpartum | feeding | Temps et sessions | minuteur biberon | accueil : dernier biberon | — | EN COURS (agent Biberons) |
-| baby_bottle_history | baby | feeding | Mesures et quantités | historique biberons | catégorie Alimentation | analyse existante · 3 crédits | EN COURS (agent Biberons) |
+| baby_breastfeed | baby, postpartum | feeding | Temps et sessions | tétées (breastfeeds, côté) | accueil : tétée en cours / dernière | — | FAIT · Chromium (migration `segments` non déployée) |
+| baby_bottle | baby | feeding | Mesures et quantités | biberons (ml) | accueil : dernier biberon ; catégorie Alimentation : ml/jour | analyse biberons existante · 3 crédits | FAIT · Chromium |
+| baby_bottle_timer | baby, postpartum | feeding | Temps et sessions | minuteur biberon | accueil : dernier biberon | — | PARTIEL : minuteur existant conservé, saisie à une main ajoutée à côté |
+| baby_bottle_history | baby | feeding | Mesures et quantités | historique biberons | catégorie Alimentation | analyse existante · 3 crédits | FAIT · Chromium |
 | bottle_scoops | baby, postpartum | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
-| baby_foods | bébé, enfant | feeding | Journaux | dégustations par aliment | catégorie Alimentation : aliments découverts | — | EN COURS (agent Journaux) |
+| baby_foods | bébé, enfant | feeding | Journaux | dégustations par aliment | catégorie Alimentation : aliments découverts | — | FAIT · Chromium |
 | meals | MEAL_SCOPES | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
 | meal_menu | ...MEAL_SCOPES, pregnancy, family | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
 | meal_pantry | ...MEAL_SCOPES, pregnancy, family | feeding | Journaux | repas / menus | catégorie Alimentation | — | À FAIRE |
@@ -25,7 +25,7 @@ Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
 | family_nights | baby, child, family, postpartum, pregnancy | sleep | Foyer et relais | tours de nuit + transmission de la journée (/family/relay) | accueil : « Relais parent » ; brouillon = mêmes tables | — | FAIT (transmission) · Chromium ; tours de nuit inchangés |
 | sleep | ADULT | sleep | Temps et sessions | sommeil de la mère | — | — | À FAIRE |
 | baby_daily | baby | care | Journaux | journal santé / soins | — | — | À FAIRE |
-| baby_diaper | baby | care | Journaux | couches | catégorie Soins : nombre/jour | — | EN COURS (agent Biberons) |
+| baby_diaper | baby | care | Journaux | couches | catégorie Soins : nombre/jour | — | FAIT · Chromium |
 | kid_teeth | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
 | scan_product | tous | care | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
 | scan_history | tous | care | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
@@ -33,10 +33,10 @@ Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
 | kid_products | ...KID, family, pregnancy, none | care | Journaux | journal santé / soins | — | — | À FAIRE |
 | journal | ...KID, family | care | Journaux | journal santé / soins | — | — | À FAIRE |
 | kid_profile | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
-| kid_grow | bébé, enfant | care | Mesures et quantités | mesures datées (child_measurements) | dernière mesure | — | EN COURS (agent Croissance) |
+| kid_grow | bébé, enfant | care | Mesures et quantités | mesures datées (child_measurements) | dernière mesure | — | FAIT · Chromium |
 | kid_mood | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
 | kid_album | bébé, enfant | care | Journaux | journal santé / soins | — | — | À FAIRE |
-| appointments | tous | health | Journaux et rendez-vous | rendez-vous | accueil : prochain rendez-vous | — | EN COURS (agent Journaux) |
+| appointments | tous | health | Journaux et rendez-vous | rendez-vous | accueil : prochain rendez-vous | — | FAIT · Chromium |
 | consult_questions | tous | health | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
 | documents | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
 | health_book | tous | health | Journaux | journal santé / soins | — | — | À FAIRE |
@@ -80,7 +80,7 @@ Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
 | ttc_cycle | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
 | ttc_tests | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
 | ttc_mucus | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
-| ttc_temperature | ttc | cycle | Mesures et quantités | température basale | — | — | EN COURS (agent Croissance) |
+| ttc_temperature | ttc | cycle | Mesures et quantités | température basale | — | — | FAIT · Chromium |
 | ttc_intimacy | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
 | ttc_exams | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
 | ttc_understand | ttc | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
@@ -89,7 +89,7 @@ Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
 | pma_tracker | ttc | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | À FAIRE |
 | ttc_start_pregnancy | ME | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
 | preg_evolution | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
-| preg_weight | pregnancy | pregnancy | Mesures et quantités | poids de grossesse | dernière mesure | — | EN COURS (agent Croissance) |
+| preg_weight | pregnancy | pregnancy | Mesures et quantités | poids de grossesse | dernière mesure | — | FAIT · Chromium |
 | preg_feel | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
 | preg_moves | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
 | preg_calendar | pregnancy | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | À FAIRE |
@@ -119,14 +119,14 @@ Synthèse : EN 12, FAIT 2, PARTIEL 1, SANS 9, À 112
 | family_sos | baby, child, family, postpartum | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
 | solo_parent | tous | couple | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | family_calendar | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
-| family_tasks | foyer, couple | family | Foyer et relais | tâches | accueil foyer : tâches ouvertes | — | EN COURS (agent Journaux) |
+| family_tasks | foyer, couple | family | Foyer et relais | tâches | accueil foyer : tâches ouvertes | — | FAIT · Chromium |
 | family_missions | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | family_my_place | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | family_routines | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | family_history | family | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | brain_dump | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | family_prep | foyer, couple | family | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | À FAIRE (favoris/reprise) |
-| family_shopping | foyer, couple | family | Foyer et relais | courses | — | — | EN COURS (agent Journaux) |
+| family_shopping | foyer, couple | family | Foyer et relais | courses | — | — | FAIT · Chromium |
 | family_stocks | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | house_notebook | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
 | family_papers | tous | family | Foyer et relais | données du foyer | accueil foyer | — | À FAIRE |
