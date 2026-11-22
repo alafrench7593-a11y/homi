@@ -5,6 +5,8 @@
  * Jamais « c'est normal », « aucun danger » ni « inutile de consulter » ; aucun diagnostic.
  * Symptôme intense, inhabituel ou inquiétant : informations de sécurité et contacts (maternité, professionnel, urgences).
  * Données strictement personnelles (jamais visibles du foyer). Gratuit.
+ * 22/11/2026 : l'historique devient un journal daté (sept jours, « rien de noté », fiche de correction dans le Tray :
+ * src/features/pregTrack/FeelJournal.tsx).
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -28,7 +30,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
-import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { FeelJournal } from '@/features/pregTrack/FeelJournal';
 
 const FREQS: Frequency[] = ['once', 'several', 'continuous'];
 const symLabel = (k: string) => tr(`care.sym.${k}` as TKey);
@@ -155,26 +157,7 @@ export default function Feel() {
       )}
 
       <SectionTitle title={tr('care.feel.history')} />
-      {!logs.length ? <EmptyState icon="feather" title={tr('care.feel.none')} body={tr('care.feel.noneBody')} /> : null}
-      <MotionList style={{ gap: spacing.md }}>{logs.slice(0, 30).map((l) => (
-        <MotionItem key={l.id}><Card key={l.id} style={{ paddingVertical: spacing.sm }}>
-          <View testID={`feel-entry-${l.id}`}>
-            <Row style={{ alignItems: 'center' }}>
-              <View style={{ flex: 1 }}>
-                <Text weight="bold">{symLabel(l.symptom)}{l.intensity ? ` · ${tr(`care.feel.int${l.intensity}` as TKey).toLowerCase()}` : ''}</Text>
-                <Text variant="caption" muted>
-                  {formatDate(l.logged_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  {l.week_sa != null ? ` · ${tr('care.cal.sa', { w: l.week_sa })}` : ''}
-                  {l.frequency ? ` · ${tr(`care.feel.freq.${l.frequency}` as TKey).toLowerCase()}` : ''}
-                </Text>
-                {l.note ? <Text variant="small" muted>{l.note}</Text> : null}
-              </View>
-              <Button label={tr('care.feel.edit')} size="sm" variant="ghost" onPress={() => edit(l)} testID={`feel-edit-${l.id}`} />
-              <Button label={tr('common.delete')} size="sm" variant="ghost" onPress={() => remove(l)} testID={`feel-delete-${l.id}`} />
-            </Row>
-          </View>
-        </Card></MotionItem>
-      ))}</MotionList>
+      {!logs.length ? <EmptyState icon="feather" title={tr('care.feel.none')} body={tr('care.feel.noneBody')} /> : <FeelJournal logs={logs} onFullEdit={edit} onDelete={remove} />}
       <Text variant="caption" muted>{NOT_ADVICE}</Text>
       <Tappable accessibilityRole="link" onPress={() => router.push('/emergency')} style={{ minHeight: 40, justifyContent: 'center' }}>
         <Text variant="small" weight="bold" color={t.colors.primary}>{tr('care.feel.emergencyLink')}</Text>
