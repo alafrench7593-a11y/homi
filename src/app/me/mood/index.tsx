@@ -28,10 +28,18 @@ import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
 import { moodAggregate } from '@/features/aura/analysis';
 import type { MoodCheckin } from '@/lib/types';
 import { useMotion } from '@/motion/useMotion';
+import { ScaleWeek, type ScaleConfig, type ScaleItem } from '@/features/healthTrack/ScaleWeek';
+import { MOOD_ICON, MOODS } from '@/features/mood/model';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing, typography } from '@/theme/tokens';
 import { formatNumber, t as tr } from '@/i18n';
+
+const MOOD_SCALE = (): ScaleConfig => ({ labels: MOODS.map((m) => moodLabel(m)), icons: MOODS.map((m) => MOOD_ICON[m]), table: 'mood_checkins', timeCol: 'checked_at', valueCol: 'mood', required: true });
+const scaleItems = (moods: readonly MoodCheckin[]): ScaleItem[] => moods.map((m) => ({
+  id: m.id, at: m.checked_at, value: m.mood, detail: m.feelings.length ? m.feelings.map(feelingLabel).join(', ') : null, note: m.journal?.trim() ? m.journal : null,
+  raw: m as unknown as Record<string, unknown>,
+}));
 
 export default function MoodScreen() {
   const t = useTheme();
@@ -120,6 +128,11 @@ export default function MoodScreen() {
                   value={week.pages ? formatNumber(week.pages) : null} context={tr('u8.mood.last7')} emptyText={tr('mj.week.noPages')}
                   onPress={() => router.push('/me/diary')} />
               </View>
+            ) : null}
+
+            {/* Échelle des 7 derniers jours : explorer un jour, ouvrir un bilan, corriger son niveau ou son heure */}
+            {!loading && !failed && moods?.length ? (
+              <ScaleWeek testID="mood-scale" items={scaleItems(moods)} config={MOOD_SCALE()} title={tr('ht.mood.weekTitle')} trayTitle={tr('ht.mood.trayTitle')} />
             ) : null}
 
             {/* « Analyser avec HOMI Aura » : agrégats du mois seulement, après aperçu et accord (docs/HOMI_AURA.md) */}

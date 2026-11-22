@@ -130,10 +130,11 @@ export function useLogDose() {
   const hid = useHouseholdId();
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: async (v: { treatment_id: string; scheduled_for: string; status: TreatmentLog['status']; note?: string | null; existingId?: string | null }) => {
+    mutationFn: async (v: { treatment_id: string; scheduled_for: string; status: TreatmentLog['status']; note?: string | null; existingId?: string | null; logged_at?: string }) => {
       // Hors connexion (07/11/2026) : la réponse est gardée sur le téléphone et envoyée au retour du réseau.
       // Une seule réponse par prise (treatment_id, scheduled_for) : la nouvelle remplace l'ancienne.
-      const res = await insertOrQueue('treatment_logs', { status: v.status, note: v.note ?? null, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, household_id: hid },
+      // `logged_at` (heure de la réponse, 22/11/2026) : remis à l'heure réelle quand une réponse en remplace une autre.
+      const res = await insertOrQueue('treatment_logs', { status: v.status, note: v.note ?? null, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, household_id: hid, ...(v.logged_at ? { logged_at: v.logged_at } : {}) },
         { conflict: 'treatment_id,scheduled_for', merge: true });
       if (v.status !== 'snoozed') await cancelDoseFollowUp(v.treatment_id, v.scheduled_for).catch(() => undefined);
       return res;

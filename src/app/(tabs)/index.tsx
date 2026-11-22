@@ -16,6 +16,7 @@
 import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
 import { BottleHomeCard } from '@/features/quickTrack/BottleLog';
+import { HealthHomeCard } from '@/features/healthTrack/HealthCategorySummary';
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
@@ -252,6 +253,7 @@ export default function Home() {
           {childScope && child ? <NapHomeCard child={child} /> : null}
           {childScope && child ? <BreastHomeCard child={child} /> : null}
           {childScope && child ? <BottleHomeCard child={child} /> : null}
+          {childScope && child ? <HealthHomeCard child={child} /> : null}
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;

@@ -34,6 +34,7 @@ import { FeedIssuesToday, MilkStockLink } from '@/features/feeding/TrackLinks';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
 import { FeedRoute } from '@/features/breastTrack/FeedRoute';
 import { DiaperLog } from '@/features/quickTrack/DiaperLog';
+import { ObservationLog } from '@/features/healthTrack/ObservationLog';
 import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
@@ -459,6 +460,7 @@ function TrackEntry() {
       {/* Couches : dernier change en évidence + historique horodaté ; une ligne ouvre sa fiche pour corriger l'heure ou
           le type (`?diaper=` l'ouvre directement, lien depuis la catégorie Soins) */}
       {!editing && kind === 'diaper' && child ? <DiaperLog key={childId} child={child} focusId={params.diaper ?? null} onFocusDone={() => router.setParams({ diaper: undefined } as never)} /> : null}
+      {!editing && kind === 'observation' && child ? <ObservationLog key={childId} child={child} /> : null}
       {!editing && (kind === 'diaper' || kind === 'breastfeed') ? <Text variant="label" muted style={{ marginTop: spacing.xs }}>{tr('u7.track.orDetail')}</Text> : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 

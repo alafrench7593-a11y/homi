@@ -104,9 +104,9 @@ export function useLogMyDose() {
   const userId = useUserId();
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: async (v: { treatment_id: string; scheduled_for: string; status: MyTreatmentLog['status']; note?: string | null; existingId?: string | null }) => {
+    mutationFn: async (v: { treatment_id: string; scheduled_for: string; status: MyTreatmentLog['status']; note?: string | null; existingId?: string | null; logged_at?: string }) => {
       // Hors connexion : gardée sur le téléphone, envoyée au retour du réseau (une réponse par prise)
-      const res = await insertOrQueue('my_treatment_logs', { status: v.status, note: v.note ?? null, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, user_id: userId },
+      const res = await insertOrQueue('my_treatment_logs', { status: v.status, note: v.note ?? null, treatment_id: v.treatment_id, scheduled_for: v.scheduled_for, user_id: userId, ...(v.logged_at ? { logged_at: v.logged_at } : {}) },
         { conflict: 'treatment_id,scheduled_for', merge: true });
       if (v.status !== 'snoozed') await cancelDoseFollowUp(v.treatment_id, v.scheduled_for).catch(() => undefined);
       return res;
