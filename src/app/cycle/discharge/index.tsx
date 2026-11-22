@@ -11,6 +11,7 @@ import { useDischargeLabels } from '@/features/cycle/discharge';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { fmtDay } from '@/features/cycle/format';
 import { formatTime, t as tr } from '@/i18n';
+import { DischargeJournal } from '@/features/cycleTrack/ObservationJournals';
 import { spacing } from '@/theme/tokens';
 
 export default function DischargeList() {
@@ -21,6 +22,8 @@ export default function DischargeList() {
   return (
     <Screen back title={tr('cy.dis.title')} subtitle={tr('cy.dis.subtitle')}
       action={{ label: tr('cy.dis.new'), icon: 'plus', onPress: () => router.push('/cycle/discharge/new' as never), testID: 'discharge-new' }}>
+      {/* Journal du jour : jour choisi (adresse), bande de 7 jours, observations du jour → fiche de correction */}
+      <DischargeJournal />
       <Glass onPress={() => router.push('/cycle/guides' as never)} accessibilityLabel={tr('cy.nav.guides')}>
         <Row><CycleIcon name="guide" color={c.mauve} /><Ink weight="bold" style={{ flex: 1 }}>{tr('cy.nav.guides')}</Ink></Row>
         <Ink variant="small" soft>{tr('cy.dis.guidesHint')}</Ink>

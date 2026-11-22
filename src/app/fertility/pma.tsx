@@ -26,6 +26,8 @@ import { toFrDate } from '@/lib/validation';
 import { exportTextFile } from '@/lib/exportData';
 import { callNumber } from '@/lib/links';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { PmaJournal } from '@/features/cycleTrack/FertilityJournals';
+import { localDay } from '@/lib/domain/cycleTrack';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -165,10 +167,6 @@ export default function PmaTracker() {
       toast(kind === 'dose' ? tr('pma.taken') : tr('pma.stepSaved'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
-  async function removeLog(l: PmaLog) {
-    if (!(await confirm(tr('common.delete'), tr('pma.deleteLogQ'), tr('common.delete')))) return;
-    try { await backend.remove('pma_logs', [eq('id', l.id)]); inv('pma_logs'); } catch (e) { toast(friendlyError(e), 'error'); }
-  }
   async function endProtocol() {
     if (!current || !(await confirm(tr('pma.end'), tr('pma.endQ'), tr('pma.end'), false))) return;
     try {
@@ -242,12 +240,14 @@ export default function PmaTracker() {
           </Card>
 
           <SectionTitle title={tr('pma.journal')} action={logs.length ? tr('pma.share') : undefined} onAction={logs.length ? () => void share() : undefined} />
+          {/* Journal du jour : jour choisi (adresse), bande de 7 jours, prises et étapes → fiche de correction */}
+          {logs.length ? <PmaJournal logs={logs} labelOf={label} iconOf={(l) => STEP_ICON[l.kind]} startedOn={current.started_on} /> : null}
           {!logs.length ? <Card tone="soft"><Text muted>{tr('pma.noLogs')}</Text></Card> : (
             <Card padded={false}>
               <MotionList>{logs.slice(0, 80).map((l) => (
                 <MotionItem key={l.id}><ListRow key={l.id} icon={STEP_ICON[l.kind]} title={label(l)}
                   subtitle={`${formatDate(l.happened_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${l.note ? ` · ${l.note}` : ''}`}
-                  onPress={() => void removeLog(l)} /></MotionItem>
+                  onPress={() => router.setParams({ date: localDay(l.happened_at) } as never)} /></MotionItem>
               ))}</MotionList>
             </Card>
           )}

@@ -17,6 +17,7 @@ import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { CycleIcon, Glass, Ink, Rise, Scale, useCyclePalette } from '@/features/cycle/kit';
 import { fmtDayYear } from '@/features/cycle/format';
+import { CycleNotesJournal } from '@/features/cycleTrack/ObservationJournals';
 import { t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
@@ -35,7 +36,9 @@ export default function JournalScreen() {
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState('');
 
-  function reset() { setEditing(null); setDay(toFrDate(todayISO())); setBody(''); setMood(null); setErr(null); }
+  // Le jour choisi dans le journal (adresse « ?date= ») devient le jour d'une nouvelle note
+  React.useEffect(() => { if (!editing && params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date)) setDay(toFrDate(params.date)); }, [params.date]); // eslint-disable-line react-hooks/exhaustive-deps
+  function reset() { setEditing(null); setDay(toFrDate(params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date) ? params.date : todayISO())); setBody(''); setMood(null); setErr(null); }
   function edit(e: JournalEntry) { setEditing(e); setDay(toFrDate(e.entry_on)); setBody(e.body); setMood(e.mood); setErr(null); haptic('selection'); }
 
   async function save() {
@@ -60,6 +63,7 @@ export default function JournalScreen() {
   return (
     <Screen back title={tr('cy.jr.title')} subtitle={tr('cy.jr.subtitle')}
       action={{ label: editing ? tr('cy.period.update') : tr('common.save'), icon: 'check', onPress: () => save(), disabled: busy, testID: 'journal-save' }}>
+      <CycleNotesJournal />
       <Glass>
         <Ink variant="heading">{editing ? tr('cy.jr.editTitle') : tr('cy.jr.newTitle')}</Ink>
         <Field label={tr('cy.jr.date')} value={day} onChangeText={setDay} keyboardType="numbers-and-punctuation" placeholder={tr('cy.datePh')} />

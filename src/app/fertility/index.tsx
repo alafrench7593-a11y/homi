@@ -13,6 +13,7 @@ import { Banner, Button, Card, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { ErrorView, Skeleton } from '@/components/States';
 import { t as tr } from '@/i18n';
+import { CycleWeek } from '@/features/cycleTrack/CycleOverview';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { EstimateLine, fmt, JourneyArticles, MonthCalendar, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useUserId } from '@/lib/auth';
@@ -74,6 +75,8 @@ export default function FertilityScreen() {
         { icon: 'heart', value: w ? `${fmt(w.start)} – ${fmt(w.end)}` : '—', label: tr('u3.fertIdx.win') },
         { icon: 'circle', value: w ? fmt(w.ovulation) : '—', label: tr('u3.fertIdx.ov') },
       ]} />
+      {/* Ma semaine : jour choisi (adresse), suivis notés ce jour-là → chacun ouvre son app */}
+      <CycleWeek />
       <Banner tone="warning" title={tr('u3.fertIdx.warnT')}>{TTC_DISCLAIMER}</Banner>
 
       {cycleQ.isLoading && !cycleQ.data ? <Skeleton kind="card" rows={1} /> : cycleQ.isError && !cycleQ.data ? (

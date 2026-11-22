@@ -16,6 +16,7 @@
 import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
 import { BottleHomeCard } from '@/features/quickTrack/BottleLog';
+import { CycleHomeLast } from '@/features/cycleTrack/CycleOverview';
 import { BadgeDot } from '@/components/Motion';
 import React, { useMemo, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
@@ -252,6 +253,8 @@ export default function Home() {
           {childScope && child ? <NapHomeCard child={child} /> : null}
           {childScope && child ? <BreastHomeCard child={child} /> : null}
           {childScope && child ? <BottleHomeCard child={child} /> : null}
+          {/* Profil cycle : dernière saisie du cycle (jamais l'intime ; rien si « masquer sur l'accueil ») → son app sur ce jour */}
+          {cycleMode ? <CycleHomeLast /> : null}
           {modules.map((key, i) => {
             const node = cards[key];
             if (!node) return null;
