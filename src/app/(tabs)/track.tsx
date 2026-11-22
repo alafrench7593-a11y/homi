@@ -11,6 +11,7 @@ import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, EmptyStateCard, haptic, Icon, type IconName, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui-extra';
 import { Timeline, type LogItem } from '@/features/tracking';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
+import { DayJournal } from '@/features/dayJournal/DayJournal';
 import { QuickEntry } from '@/features/quickEntry';
 import { DayRibbon, SleepNights } from '@/features/motionViz';
 import { useActivePregnancy, useActiveSubject, useChildren, useLogs, useOpenSleep, usePregnancies, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
@@ -76,7 +77,9 @@ function ChildTracking({ childId, journey }: { childId: string; journey?: 'baby'
 
   return (
     <View style={{ gap: spacing.md }}>
-      {/* Cartes de suivi en premier : quatre actions utiles au profil, les autres dans « Voir tous les suivis » */}
+      {/* Planche 2 du brief client : le journal du jour (toutes natures mélangées par heure) passe en premier */}
+      <DayJournal child={child} sleeps={sleeps} bottles={bottles} diapers={diapers} breastfeeds={feeds} loadedDays={days} />
+      {/* Cartes de suivi : quatre actions utiles au profil, les autres dans « Voir tous les suivis » */}
       <DailyActions child={child} journey={journey ?? null} />
       <Tappable
         accessibilityRole="button"

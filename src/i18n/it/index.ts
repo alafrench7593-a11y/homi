@@ -108,3 +108,4 @@ export { journalTrack } from './journalTrack';
 export { breastTrack } from './breastTrack';
 export { curveTrack } from './curveTrack';
 export { quickTrack } from './quickTrack';
+export { dayjournal } from './dayjournal';
