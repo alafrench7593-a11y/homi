@@ -38,7 +38,7 @@ Chromium (démo, 23/11) : double appui = 1 ligne ; saisie visible dans Sommeil e
 
 ## À développer (par priorité)
 1. Mission : choisir directement le membre (aujourd’hui choisi dans le formulaire) ; doublons de rendez-vous le même jour.
-5. ~~Masquer les prénoms~~ fait (`_shared/aura-privacy.ts`, test `auraPrivacy`), **à déployer** ; mesurer en prod la part traitée sans IA (événement `aura_local_hit`).
+5. ~~Masquer les prénoms~~ fait et déployé (v10, 23/11) ; mesurer en prod la part traitée sans IA (événement `aura_local_hit`).
 6. Guidage : surligner l’élément précis dans l’écran ouvert (ancres de la visite guidée `features/tour`).
 
 ## Coût IA en production (estimation, hypothèses explicites)
