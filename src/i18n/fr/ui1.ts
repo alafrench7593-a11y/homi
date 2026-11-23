@@ -245,7 +245,7 @@ export const ui1 = {
   'u1.priv.crash': 'Rapports de plantage',
   'u1.priv.crashD': 'Envoi automatique d’informations techniques en cas d’erreur.',
   'u1.priv.retention': 'Durée de conservation de l’historique',
-  'u1.priv.retentionD': 'Durée maximale pendant laquelle tu souhaites que ton historique soit conservé. Tu peux aussi supprimer chaque entrée à tout moment.',
+  'u1.priv.retentionD': 'S’applique chaque nuit à ton historique personnel : conversations avec Aura, journal et humeur, scans de produits. Les suivis partagés du foyer (enfants, documents, agenda) restent tant que le foyer existe. Tu peux aussi supprimer chaque entrée à tout moment.',
   'u1.priv.months': { one: '{count} mois', other: '{count} mois' },
   'u1.priv.years': { one: '{count} an', other: '{count} ans' },
   'u1.priv.exportD': 'Un fichier lisible (JSON) contenant tout ce que tu as saisi : profil, consentements, suivi, rappels, conversations, foyers. Les fichiers du coffre se téléchargent séparément depuis Documents.',

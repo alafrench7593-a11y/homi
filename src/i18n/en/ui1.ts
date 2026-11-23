@@ -248,7 +248,7 @@ export const ui1: Messages<typeof fr> = {
   'u1.priv.crash': 'Crash reports',
   'u1.priv.crashD': 'Technical information is sent automatically when an error occurs.',
   'u1.priv.retention': 'History retention period',
-  'u1.priv.retentionD': 'The maximum time you want your history to be kept. You can also delete each entry at any time.',
+  'u1.priv.retentionD': 'Applied every night to your personal history: Aura conversations, journal and mood, product scans. Shared household records (children, documents, calendar) stay as long as the household exists. You can also delete any entry at any time.',
   'u1.priv.months': { one: '{count} month', other: '{count} months' },
   'u1.priv.years': { one: '{count} year', other: '{count} years' },
   'u1.priv.exportD': 'A readable file (JSON) containing everything you have entered: profile, consents, tracking, reminders, conversations, households. Vault files are downloaded separately from Documents.',

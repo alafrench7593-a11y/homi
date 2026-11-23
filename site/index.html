@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HOMI — Your Family, One Home</title>
+<meta name="description" content="HOMI réunit la grossesse, les enfants et la vie du foyer au même endroit, à partager entre parents. Essayez la démonstration avec une famille fictive.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.png">
+<style>
+  :root {
+    --ink: #1F1B1A; --ivory: #FBF4F2; --sand: #EFE2DA; --muted: #5C524E; --line: rgba(31, 27, 26, 0.12);
+    --card: rgba(255, 255, 255, 0.72); --radius: 22px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--ivory); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  a { color: inherit; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  header { padding: 22px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  header img { height: 30px; width: auto; display: block; }
+  header nav a { text-decoration: none; font-weight: 600; font-size: 15px; padding: 10px 14px; border-radius: 999px; }
+  header nav a:hover { background: var(--sand); }
+  .hero { padding: 48px 0 32px; display: grid; gap: 28px; }
+  h1 { font-size: clamp(34px, 7vw, 60px); line-height: 1.05; letter-spacing: -0.02em; margin: 0; max-width: 14ch; }
+  .lead { font-size: clamp(18px, 2.4vw, 21px); color: var(--muted); max-width: 46ch; margin: 0; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 17px; }
+  .btn.primary { background: var(--ink); color: var(--ivory); }
+  .btn.secondary { background: var(--card); border: 1px solid var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .btn:focus-visible, header nav a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .note { font-size: 14px; color: var(--muted); margin: 0; }
+  .grid { display: grid; gap: 14px; grid-template-columns: 1fr; padding: 24px 0 40px; }
+  @media (min-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 10px 30px rgba(31, 27, 26, 0.06); }
+  .card h2 { font-size: 19px; margin: 0 0 8px; }
+  .card p { margin: 0; color: var(--muted); font-size: 16px; }
+  .band { background: var(--sand); border-radius: var(--radius); padding: 28px 22px; margin: 8px 0 48px; display: grid; gap: 10px; }
+  .band h2 { margin: 0; font-size: 22px; }
+  .band p { margin: 0; color: var(--muted); max-width: 64ch; }
+  footer { border-top: 1px solid var(--line); padding: 26px 0 40px; font-size: 14px; color: var(--muted); }
+  footer ul { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  footer a { text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a href="/" aria-label="HOMI, accueil"><img src="/homi-logo-encre.svg" alt="HOMI" width="98" height="30"></a>
+      <nav aria-label="Principal"><a href="/demo/">Démo</a><a href="/app/">Ouvrir l’app</a></nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="titre">
+        <h1 id="titre">Toute la famille, au même endroit.</h1>
+        <p class="lead">Grossesse, bébé, enfants, maison : HOMI garde le fil de ce qui se vit à plusieurs et le partage avec les bonnes personnes, rien de plus.</p>
+        <div class="ctas">
+          <a class="btn primary" href="/demo/start/sample">Essayer la démo</a>
+          <a class="btn secondary" href="/app/">Ouvrir l’app familiale</a>
+        </div>
+        <p class="note">La démo utilise une famille fictive, sans compte : rien n’est envoyé, tout reste dans votre navigateur.</p>
+      </section>
+
+      <section class="grid" aria-label="Ce que fait HOMI">
+        <article class="card"><h2>Le quotidien du bébé</h2><p>Siestes, tétées par côté, biberons, couches : une saisie à une main, corrigeable après coup, et la journée en un coup d’œil.</p></article>
+        <article class="card"><h2>La grossesse</h2><p>Semaine par semaine, mouvements du bébé, rendez-vous et questions à poser, au même endroit que le reste de la famille.</p></article>
+        <article class="card"><h2>Le foyer à deux</h2><p>Relais entre parents, tâches et missions, agenda familial : chacun voit qui s’occupe de quoi.</p></article>
+        <article class="card"><h2>Aura, l’assistante</h2><p>Elle retrouve le bon outil et prépare une saisie en un appui. Rien n’est enregistré ni envoyé sans votre geste.</p></article>
+      </section>
+
+      <section class="band" aria-labelledby="partage">
+        <h2 id="partage">Partager, sans tout montrer</h2>
+        <p>Chaque personne invitée n’accède qu’à ce que vous choisissez : un enfant plutôt qu’un autre, le quotidien sans la santé, la grossesse ou non. Un rendez-vous noté « pour moi » reste privé.</p>
+      </section>
+    </main>
+
+    <footer>
+      <ul>
+        <li><a href="/confidentialite/">Confidentialité</a></li>
+        <li><a href="/cgu/">Conditions d’utilisation</a></li>
+        <li><a href="/mentions-legales/">Mentions légales</a></li>
+        <li><a href="/aide/">Aide</a></li>
+        <li><a href="/suppression-compte/">Supprimer mon compte</a></li>
+      </ul>
+      <p>HOMI n’est pas un dispositif médical et ne remplace pas l’avis d’un professionnel de santé. En cas d’urgence : 15 ou 112.</p>
+    </footer>
+  </div>
+</body>
+</html>

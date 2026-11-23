@@ -32,3 +32,4 @@ supabase/.temp/
 
 # Skia web (aperçu de développement) : copié à l'installation, jamais versionné
 public/canvaskit.wasm
+supabase/.branches/

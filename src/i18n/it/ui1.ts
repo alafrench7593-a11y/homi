@@ -248,7 +248,7 @@ export const ui1: Messages<typeof fr> = {
   "u1.priv.crash": "Segnalazioni di arresto anomalo",
   "u1.priv.crashD": "Invio automatico di informazioni tecniche in caso di errore.",
   "u1.priv.retention": "Durata di conservazione della cronologia",
-  "u1.priv.retentionD": "Durata massima per cui vuoi che la tua cronologia venga conservata. Puoi anche eliminare ogni voce in qualsiasi momento.",
+  "u1.priv.retentionD": "Si applica ogni notte alla tua cronologia personale: conversazioni con Aura, diario e umore, scansioni di prodotti. I dati condivisi della famiglia (figli, documenti, agenda) restano finché esiste la famiglia. Puoi anche eliminare ogni voce in qualsiasi momento.",
   "u1.priv.months": {"one": "{count} mese", "other": "{count} mesi"},
   "u1.priv.years": {"one": "{count} anno", "other": "{count} anni"},
   "u1.priv.exportD": "Un file leggibile (JSON) contenente tutto ciò che hai inserito: profilo, consensi, monitoraggio, promemoria, conversazioni, famiglie. I file della cassaforte si scaricano separatamente da Documenti.",

@@ -248,7 +248,7 @@ export const ui1: Messages<typeof fr> = {
   "u1.priv.crash": "Informes de errores",
   "u1.priv.crashD": "Envío automático de información técnica en caso de error.",
   "u1.priv.retention": "Tiempo de conservación del historial",
-  "u1.priv.retentionD": "Tiempo máximo durante el que quieres que se conserve tu historial. También puedes eliminar cada registro en cualquier momento.",
+  "u1.priv.retentionD": "Se aplica cada noche a tu historial personal: conversaciones con Aura, diario y estado de ánimo, escaneos de productos. Los registros compartidos del hogar (niños, documentos, agenda) se conservan mientras exista el hogar. También puedes borrar cada entrada en cualquier momento.",
   "u1.priv.months": {"one": "{count} mes", "other": "{count} meses"},
   "u1.priv.years": {"one": "{count} año", "other": "{count} años"},
   "u1.priv.exportD": "Un archivo legible (JSON) con todo lo que has introducido: perfil, consentimientos, seguimiento, recordatorios, conversaciones, hogares. Los archivos de la caja fuerte se descargan por separado desde Documentos.",
