@@ -694,6 +694,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (ownerCol && r[ownerCol] == null && me) r[ownerCol] = me;
     r.id ??= uuid();
     r.created_at ??= nowIso();
+    // Même défaut que le serveur (offduty_periods.starts_at default now()) : la pause commence à l'enregistrement
+    if (table === 'offduty_periods') r.starts_at ??= r.created_at;
     absents.beforeInsert(table, r);
     if (table === 'household_stocks' || table === 'shopping_items') {
       if (table === 'household_stocks' && r.ingredient_key && T(table).some((x) => x.household_id === r.household_id && x.ingredient_key === r.ingredient_key)) throw new BackendError(tr('l2.dm.forbidden'), '23505');

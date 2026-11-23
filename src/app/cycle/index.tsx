@@ -5,7 +5,7 @@
  * Les dates calculées sont TOUJOURS des estimations : elles ne garantissent rien et ne remplacent pas une contraception.
  * Parcours « concevoir » ou « éviter » : leur écran dédié s'ouvre d'abord (sauf ?all=1, depuis ces écrans).
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -107,6 +107,15 @@ function CycleHub() {
     setEditing(p); setStart(toFrDate(p.start_date)); setEnd(p.end_date ? toFrDate(p.end_date) : ''); setFlow(p.flow); setNote(p.note ?? ''); setErrors({});
     haptic('selection');
   }
+  // Lien direct vers la saisie des règles d'un cycle (barres de Statistiques / Résumé du mois : `?period=<id>`) :
+  // le formulaire de correction existant s'ouvre une fois sur elle, puis l'adresse est nettoyée.
+  const { period: focusPeriod } = useLocalSearchParams<{ period?: string }>();
+  useEffect(() => {
+    const p = focusPeriod ? entries.find((x) => x.id === focusPeriod) : undefined;
+    if (!p) return;
+    edit(p);
+    router.setParams({ period: undefined } as never);
+  }, [focusPeriod, entries]); // eslint-disable-line react-hooks/exhaustive-deps
   function resetForm() { setEditing(null); setStart(toFrDate(today)); setEnd(''); setFlow(null); setNote(''); setErrors({}); }
 
   async function savePeriod() {

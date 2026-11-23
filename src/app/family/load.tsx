@@ -1,6 +1,8 @@
 /**
  * « Qui y pense » : sur les 30 derniers jours, qui a noté les choses à faire (penser), qui les a faites, à qui elles
  * sont confiées, et qui porte quels domaines. Présenté sans jugement, pour en parler à deux.
+ * 23/11/2026 : correction directe — porteur d'un domaine ou d'une tâche changé dans une fiche (LoadFix), tâche ou
+ * domaine ouvert gardé dans l'adresse ; lecture seule sans droit d'édition.
  */
 import React from 'react';
 import { View } from 'react-native';
@@ -19,6 +21,7 @@ import { useUserId } from '@/lib/auth';
 import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
 import { loadAggregate } from '@/features/aura/analysis';
 import { LoadTrack } from '@/features/homeTrack/LoadTrack';
+import { LoadFix } from '@/features/finishFamily/LoadFix';
 
 const MEASURES: (keyof Omit<LoadRow, 'person'>)[] = ['thought', 'done', 'assigned', 'domains'];
 
@@ -33,7 +36,7 @@ export default function MentalLoad() {
   const me = useUserId();
   return (
     <Screen back title={toolName('mental_load')} subtitle={toolBlurb('mental_load')}>
-      <LoadTrack tasks={tasks} people={people.map((p) => p.id)} labelOf={labelOf} />
+      <LoadTrack tasks={tasks} people={people.map((p) => p.id)} labelOf={labelOf} onOpen={(id) => router.setParams({ task: id } as never)} />
       <Text muted>{tr('cm.load.intro')}</Text>
       {!any ? <EmptyState icon="pie-chart" title={tr('cm.load.none')} body={tr('cm.load.noneD')} action={{ label: toolName('brain_dump'), onPress: () => router.push('/family/brain-dump') }} /> : MEASURES.map((m) => {
         const s = shares(rows, m);
@@ -57,6 +60,8 @@ export default function MentalLoad() {
           </Card>
         );
       })}
+      {/* Qui porte quoi : changer le porteur d'un domaine ou d'une tâche dans une fiche (mêmes écritures que Domaines / Tâches) */}
+      <LoadFix tasks={tasks} domains={domains} people={people} labelOf={labelOf} />
       <Banner tone="info" icon="heart">{tr('cm.load.talk')}</Banner>
       {/* « Analyser avec HOMI Aura » (plan d'action) : comptes « moi / l'autre adulte » et catégories, après accord */}
       {any ? <AuraAnalysis kind="load" data={loadAggregate(rows, me, tasks as { category?: string | null; created_at: string }[])} /> : null}

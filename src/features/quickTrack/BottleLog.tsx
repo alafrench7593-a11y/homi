@@ -8,6 +8,8 @@
  *    fiche (Tray) pour corriger l'heure ou la quantité. `focusId` ouvre directement la fiche d'un biberon (lien
  *    depuis la catégorie Alimentation ou l'accueil).
  *  · `BottleHomeCard` : dernier biberon (heure, ml, « il y a … ») pour l'accueil (non inséré ici).
+ * 23/11/2026 : un biberon donné avec le minuteur (biberon en direct, même table bottles) s'ouvre dans la MÊME fiche ;
+ * sa durée bue s'y corrige aussi (début, fin et pauses recalculés ensemble : src/lib/domain/finishTrack.ts).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
@@ -32,6 +34,9 @@ import type { BottleRecord } from '@/lib/types-bottle';
 import type { Child } from '@/lib/types';
 import { uuid } from '@/lib/uuid';
 import { useTheme } from '@/theme/ThemeProvider';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { bottleDurationMin, bottleTimingPatch, clampBottleMinutes, type TimedBottle } from '@/lib/domain/finishTrack';
+import { span } from '@/lib/domain/sleepPlanner';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { EditActions, EditHeader, EntryTray, HERO, TABULAR, TimeEditor, useGuardedSave } from './EntryTray';
 
@@ -182,8 +187,8 @@ export function BottleLog({ child, bottles, focusId, onFocusDone }: { child: Chi
           {groups.map((g) => (
             <View key={g.k} style={{ gap: 2 }}>
               <Text variant="label" style={{ marginTop: 4 }}>{g.k === today ? tr('qt.today') : tr('qt.yesterday')}</Text>
-              {g.rows.map((b) => (
-                <Tappable key={b.id} accessibilityRole="button" testID={`qt-bottle-row-${b.id}`} onPress={() => open(b.id)} disabled={!!b._pending}
+              <MotionList style={{ gap: 2 }}>{g.rows.map((b) => (
+                <MotionItem key={b.id}><Tappable key={b.id} accessibilityRole="button" testID={`qt-bottle-row-${b.id}`} onPress={() => open(b.id)} disabled={!!b._pending}
                   accessibilityLabel={`${clock(new Date(b.at))}, ${mlText(b.consumed_ml)}. ${tr('qt.openToFix')}`}
                   style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.6 : 1 })}>
                   <Text weight="bold" style={[{ width: 72 }, TABULAR]}>{clock(new Date(b.at))}</Text>
@@ -191,8 +196,8 @@ export function BottleLog({ child, bottles, focusId, onFocusDone }: { child: Chi
                   {b.note ? <Icon name="message-square" size={14} color={t.colors.primary} /> : null}
                   {/* Noté hors ligne, encore en file : son identifiant n'existe pas encore sur le serveur, pas de correction */}
                   {b._pending ? <Text variant="caption" muted>{tr('qt.pending')}</Text> : <Icon name="chevron-right" size={16} color={t.colors.textMuted} />}
-                </Tappable>
-              ))}
+                </Tappable></MotionItem>
+              ))}</MotionList>
             </View>
           ))}
           <GlassButton variant="tertiary" size="sm" icon="list" label={tr('qt.b.allHistory')} testID="qt-bottle-all" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }}
@@ -215,12 +220,13 @@ export function BottleEntryTray({ child, bottle, open, onOpenChange }: { child: 
       hero={mlText(bottle.consumed_ml)}
       lines={[
         tr('qt.b.atClock', { time: clock(at) }) + ` · ${formatDate(at, { weekday: 'long', day: 'numeric', month: 'long' })}`,
+        bottleDurationMin(bottle as unknown as TimedBottle) != null ? tr('ft.bt.duration', { duration: span(bottleDurationMin(bottle as unknown as TimedBottle)!) }) : null,
         bottle.prepared_ml != null ? tr('qt.b.prepared', { n: bottle.prepared_ml }) : null,
         bottle.milk_type ? bottle.milk_type : null,
         bottle.note ? tr('qt.note', { note: bottle.note }) : null,
       ]}
       editLabel={tr('qt.b.fix')}
-      editor={<BottleEditView key={`${bottle.id}:${bottle.at}:${bottle.consumed_ml}`} bottle={bottle} />}
+      editor={<BottleEditView key={`${bottle.id}:${bottle.at}:${bottle.consumed_ml}:${(bottle as unknown as TimedBottle).ended_at ?? ''}`} bottle={bottle} />}
       onFullForm={() => router.push({ pathname: '/track/[kind]', params: { kind: 'bottle', child: child.id, id: bottle.id } } as never)} />
   );
 }
@@ -232,15 +238,18 @@ function BottleEditView({ bottle }: { bottle: BottleRow }) {
   const at0 = new Date(bottle.at);
   const [text, setText] = useState(hhmm(at0));
   const [ml, setMl] = useState<number | null>(bottle.consumed_ml);
+  // Biberon donné avec le minuteur : la durée bue (minutes) se corrige aussi ; saisie sans minuteur : null
+  const dur0 = bottleDurationMin(bottle as unknown as TimedBottle);
+  const [dur, setDur] = useState<number | null>(dur0);
   const g = useGuardedSave();
   const at = proposedTime(bottle.at, text);
   const qtyErr = bottleEditError({ consumed: ml, prepared: bottle.prepared_ml });
-  const changed = (!!at && at.getTime() !== at0.getTime()) || ml !== bottle.consumed_ml;
+  const changed = (!!at && at.getTime() !== at0.getTime()) || ml !== bottle.consumed_ml || dur !== dur0;
   const step = (d: number) => { const b = at ?? at0; const n = new Date(b.getTime() + d * MIN); if (n.getTime() <= Date.now()) setText(hhmm(n)); g.setError(null); };
-  const cancel = () => { setText(hhmm(at0)); setMl(bottle.consumed_ml); g.setError(null); goBack(); };
+  const cancel = () => { setText(hhmm(at0)); setMl(bottle.consumed_ml); setDur(dur0); g.setError(null); goBack(); };
   const save = () => g.run(async () => {
     if (!at || qtyErr) return tr('qt.edit.invalid');
-    const res = await edit(bottle.id, { at: at.toISOString(), consumed_ml: ml }, bottle as unknown as Record<string, unknown>);
+    const res = await edit(bottle.id, { ...bottleTimingPatch(bottle as unknown as TimedBottle, at, dur), consumed_ml: ml }, bottle as unknown as Record<string, unknown>);
     if (res === 'changed') return tr('qt.edit.changedMeanwhile');
     haptic('success');
     goBack();
@@ -260,6 +269,17 @@ function BottleEditView({ bottle }: { bottle: BottleRow }) {
       </View>
       {qtyErr === 'over' ? <Text variant="small" color={t.colors.danger} testID="qt-bottle-edit-over">{tr('qt.b.overPrepared', { n: bottle.prepared_ml ?? 0 })}</Text> : null}
       <TimeEditor text={text} onText={(v) => { setText(v); g.setError(null); }} onStep={step} valid={!!at} testID="qt-bottle-edit" />
+      {dur != null ? (
+        <View style={{ gap: 4 }} testID="qt-bottle-edit-duration">
+          <Text variant="label">{tr('ft.bt.durationLabel')}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+            <GlassButton variant="secondary" label={tr('ft.bt.minus1')} testID="qt-bottle-edit-dur-minus" disabled={dur <= 1} onPress={() => { setDur(clampBottleMinutes(dur - 1)); g.setError(null); }} />
+            <Text weight="bold" center style={[{ flex: 1, fontSize: 20 }, TABULAR]} testID="qt-bottle-edit-dur" accessibilityLiveRegion="polite">{span(dur)}</Text>
+            <GlassButton variant="secondary" label={tr('ft.bt.plus1')} testID="qt-bottle-edit-dur-plus" disabled={dur >= 120} onPress={() => { setDur(clampBottleMinutes(dur + 1)); g.setError(null); }} />
+          </View>
+          {dur !== dur0 && dur0 != null ? <Text variant="caption" muted testID="qt-bottle-edit-dur-before">{tr('ft.bt.durationBefore', { duration: span(dur0) })}</Text> : null}
+        </View>
+      ) : null}
       <EditActions onCancel={cancel} onSave={save} canSave={changed && !!at && !qtyErr} busy={g.busy} error={g.error} testID="qt-bottle-edit" />
     </View>
   );

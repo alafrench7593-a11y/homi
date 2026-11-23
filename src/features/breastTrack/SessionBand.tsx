@@ -15,6 +15,7 @@ import { Tappable } from '@/components/Tappable';
 import { haptic, Icon, Text } from '@/components/ui';
 import { t as tr } from '@/i18n';
 import { useMotion } from '@/motion';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
@@ -187,18 +188,18 @@ export function SessionBand({ title, total, items, lanes, now, selectedId, onSel
       </View>
       <Legend items={legend} />
       {items.length ? (
-        <View style={{ gap: 2 }} testID={`${testID}-list`}>
+        <MotionList style={{ gap: 2 }} testID={`${testID}-list`}>
           {[...items].reverse().map((i) => (
-            <Tappable key={i.id} accessibilityRole="button" accessibilityLabel={i.note ? `${i.text}. ${tr('bt.row.noteA11y', { note: i.note })}` : i.text}
+            <MotionItem key={i.id}><Tappable key={i.id} accessibilityRole="button" accessibilityLabel={i.note ? `${i.text}. ${tr('bt.row.noteA11y', { note: i.note })}` : i.text}
               onPress={() => { setSel(i.id); onOpen(i.id); }} testID={`${testID}-row`}
               style={{ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
               <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: i.ongoing ? t.colors.primary : t.colors.text }} />
               <Text style={[{ flex: 1 }, TABULAR]}>{i.text}</Text>
               {i.note ? <Icon name="message-square" size={16} color={t.colors.primary} /> : null}
               <Icon name="chevron-right" size={16} color={t.colors.textMuted} />
-            </Tappable>
+            </Tappable></MotionItem>
           ))}
-        </View>
+        </MotionList>
       ) : null}
     </Glass>
   );

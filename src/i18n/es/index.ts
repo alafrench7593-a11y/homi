@@ -120,3 +120,6 @@ export { restTrack } from './restTrack';
 export { readTrack } from './readTrack';
 export { careTrack } from './careTrack';
 export { webDemo } from './webDemo';
+export { finishTrack } from './finishTrack';
+export { finishMeals } from './finishMeals';
+export { finishFamily } from './finishFamily';

@@ -20,6 +20,7 @@ import { clock } from '@/lib/domain/sleepPlanner';
 import { dayKey, diaperPatch, diaperType, hhmm, lastDiaper, proposedTime, type DiaperType } from '@/lib/domain/quickTrack';
 import type { Child, Diaper } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { EditActions, EditHeader, EntryTray, HERO, TABULAR, TimeEditor, useGuardedSave } from './EntryTray';
 
@@ -66,10 +67,10 @@ export function DiaperLog({ child, focusId, onFocusDone }: { child: Child; focus
           {groups.map((g) => (
             <View key={g.k} style={{ gap: 2 }}>
               <Text variant="label" style={{ marginTop: 4 }}>{g.k === today ? tr('qt.today') : tr('qt.yesterday')}{` · ${tr('qt.d.count', { count: g.rows.length })}`}</Text>
-              {g.rows.map((d) => {
+              <MotionList style={{ gap: 2 }}>{g.rows.map((d) => {
                 const ty = diaperType(d);
                 return (
-                  <Tappable key={d.id} accessibilityRole="button" testID={`qt-diaper-row-${d.id}`} onPress={() => open(d.id)}
+                  <MotionItem key={d.id}><Tappable key={d.id} accessibilityRole="button" testID={`qt-diaper-row-${d.id}`} onPress={() => open(d.id)}
                     accessibilityLabel={`${clock(new Date(d.at))}, ${diaperLabel(ty)}. ${tr('qt.openToFix')}`}
                     style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.6 : 1 })}>
                     <Text weight="bold" style={[{ width: 72 }, TABULAR]}>{clock(new Date(d.at))}</Text>
@@ -77,9 +78,9 @@ export function DiaperLog({ child, focusId, onFocusDone }: { child: Child; focus
                     <Text style={{ flex: 1 }}>{diaperLabel(ty)}</Text>
                     {d.note ? <Icon name="message-square" size={14} color={t.colors.primary} /> : null}
                     <Icon name="chevron-right" size={16} color={t.colors.textMuted} />
-                  </Tappable>
+                  </Tappable></MotionItem>
                 );
-              })}
+              })}</MotionList>
             </View>
           ))}
         </Glass>

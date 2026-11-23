@@ -2,6 +2,7 @@
  * « Vider ma tête » : on écrit en vrac tout ce qu'on a en tête ; l'application propose un rangement (tâche,
  * rendez-vous, course, papier) et la personne qui porte ce domaine, avec la date si elle est écrite. Rien n'est
  * enregistré sans validation ; chaque élément reste modifiable. Rangement local (aucune IA en ligne, rien n'est envoyé).
+ * 23/11/2026 : « Noté par toi » jour par jour (DumpNoted), tâche ouverte dans l'adresse et corrigée dans une fiche.
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -9,7 +10,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, Text } from '@/components/ui';
-import { usePeople, useSaveEvent, useBatchTasks } from '@/lib/data/hooks-family-load';
+import { useFamilyTasks, usePeople, useSaveEvent, useBatchTasks } from '@/lib/data/hooks-family-load';
 import { useDomains } from '@/lib/data/hooks-mental';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { parseBrainDump, taskCategoryOf, type DumpItem, type DumpKind } from '@/lib/domain/mentalLoad';
@@ -17,15 +18,18 @@ import { todayISO } from '@/lib/domain/dates';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { HmHero } from '@/features/homeTrack/kit';
+import { DumpNoted } from '@/features/finishFamily/DumpNoted';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { spacing } from '@/theme/tokens';
 
 const KINDS: DumpKind[] = ['task', 'appointment', 'event', 'shopping', 'admin'];
-type Row = DumpItem & { assignee: string | null; keep: boolean };
+type Row = DumpItem & { id: string; assignee: string | null; keep: boolean };
 
 export default function BrainDump() {
   const toast = useToast();
   const { people, labelOf, me } = usePeople();
   const domains = useDomains().data ?? [];
+  const tasksQ = useFamilyTasks();
   const batch = useBatchTasks();
   const saveEvent = useSaveEvent();
   const [text, setText] = useState('');
@@ -36,7 +40,7 @@ export default function BrainDump() {
   function sort() {
     const items = parseBrainDump(text, todayISO());
     if (!items.length) return toast(tr('cm.dump.empty'), 'info');
-    setRows(items.map((i) => ({ ...i, assignee: (i.domain && ownerOf.get(i.domain)) || me || null, keep: true })));
+    setRows(items.map((i, n) => ({ ...i, id: `${Date.now()}-${n}`, assignee: (i.domain && ownerOf.get(i.domain)) || me || null, keep: true })));
   }
   const patch = (i: number, p: Partial<Row>) => setRows((r) => r.map((x, j) => (j === i ? { ...x, ...p } : x)));
 
@@ -65,9 +69,10 @@ export default function BrainDump() {
         ? { label: tr('cm.dump.save', { count: rows.filter((r) => r.keep).length }), icon: 'check', onPress: () => save(), loading: busy, disabled: !rows.some((r) => r.keep), testID: 'dump-save' }
         : { label: tr('cm.dump.sort'), icon: 'shuffle', onPress: sort, disabled: text.trim().length < 2, testID: 'dump-sort' }}>
       {/* Le tri en un regard : éléments gardés en grand (valeurs provisoires, rien n'est écrit avant « Enregistrer ») */}
-      <HmHero testID="hm-dump-hero" value={rows.length ? String(rows.filter((r) => r.keep).length) : null} emptyLabel={tr('hm.dump.none')}
-        unit={rows.length ? tr('hm.dump.unit') : null}
-        split={rows.length ? [{ label: tr('hm.dump.kept'), value: String(rows.filter((r) => r.keep).length), testID: 'hm-dump-kept' }, { label: tr('hm.dump.dropped'), value: String(rows.filter((r) => !r.keep).length), testID: 'hm-dump-dropped' }] : undefined} />
+      {rows.length ? (
+        <HmHero testID="hm-dump-hero" value={String(rows.filter((r) => r.keep).length)} emptyLabel={tr('hm.dump.none')} unit={tr('hm.dump.unit')}
+          split={[{ label: tr('hm.dump.kept'), value: String(rows.filter((r) => r.keep).length), testID: 'hm-dump-kept' }, { label: tr('hm.dump.dropped'), value: String(rows.filter((r) => !r.keep).length), testID: 'hm-dump-dropped' }]} />
+      ) : null}
       <Text muted>{tr('cm.dump.intro')}</Text>
       <Card>
         <Field label={tr('cm.dump.field')} value={text} onChangeText={setText} multiline maxLength={3000} placeholder={tr('cm.dump.ph')} testID="dump-text" />
@@ -75,8 +80,8 @@ export default function BrainDump() {
       {rows.length ? (
         <>
           <Text variant="small" muted>{tr('cm.dump.check')}</Text>
-          {rows.map((r, i) => (
-            <Card key={i} testID={`dump-item-${i}`} style={{ opacity: r.keep ? 1 : 0.5 }}>
+          <MotionList style={{ gap: spacing.md }}>{rows.map((r, i) => (
+            <MotionItem key={r.id}><Card testID={`dump-item-${i}`} style={{ opacity: r.keep ? 1 : 0.5 }}>
               <Row>
                 <Text weight="bold" style={{ flex: 1 }}>{r.text}</Text>
                 <IconButton icon={r.keep ? 'x' : 'rotate-ccw'} label={r.keep ? tr('cm.dump.drop') : tr('cm.dump.restore')} onPress={() => patch(i, { keep: !r.keep })} />
@@ -91,11 +96,13 @@ export default function BrainDump() {
                 </View>
               ) : null}
               {r.domain && ownerOf.get(r.domain) && r.kind !== 'event' ? <Text variant="caption" muted>{tr('cm.dump.domainOwner', { domain: tr(`cm.domain.${r.domain}` as TKey), person: labelOf(ownerOf.get(r.domain)) })}</Text> : null}
-            </Card>
-          ))}
+            </Card></MotionItem>
+          ))}</MotionList>
         </>
       ) : null}
       <Banner tone="info" icon="lock">{tr('cm.dump.private')}</Banner>
+      {/* Ce que j'ai noté, jour par jour (jour et tâche ouverte gardés dans l'adresse), corrigeable dans une fiche */}
+      <DumpNoted tasks={tasksQ.data ?? []} me={me} people={people} labelOf={labelOf} />
       <Row wrap style={{ gap: spacing.xs }}>
         <Button label={toolName('family_domains')} size="sm" variant="secondary" icon="users" onPress={() => router.push('/family/domains')} />
         <Button label={toolName('family_tasks')} size="sm" variant="ghost" icon="check-square" onPress={() => router.push('/family')} />

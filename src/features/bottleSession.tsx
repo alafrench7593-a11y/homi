@@ -39,7 +39,7 @@ import { alpha, fonts, radius, spacing, typography } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
 export interface RunningBottle { id: string; started_at: string; paused_at: string | null; paused_seconds: number; ended_at: string | null; prepared_ml: number | null }
-export interface SessionResult { seconds: number; consumed: number | null; prepared: number | null; next: string | null }
+export interface SessionResult { id: string; seconds: number; consumed: number | null; prepared: number | null; next: string | null }
 
 /** Dimensions (une seule source, testées) : la commande principale et les places latérales ne changent jamais. */
 export const SESSION = { orb: 88, side: 56, slot: 92, dialMax: 232 } as const;
@@ -129,7 +129,7 @@ export function useBottleSession(child: Child) {
     if (!ok) return false;
     settled.current.add(running.id);
     toast(next ? tr('u4.bi.savedNext', { time: atClock(next) }) : tr('u4.bi.saved'));
-    setResult({ seconds: secs, consumed: c, prepared: p, next });
+    setResult({ id: running.id, seconds: secs, consumed: c, prepared: p, next });
     return true;
   }
 
@@ -230,7 +230,11 @@ export function sessionLayout(width: number, height: number): { dial: number; ga
   return { dial, gap: short ? spacing.xs : spacing.md };
 }
 
-export function BottleSessionCard({ child, onRecordPast }: { child: Child; onRecordPast: () => void }) {
+/**
+ * `onFix` : une fois le minuteur arrêté, « Corriger ce biberon » ouvre la MÊME fiche de correction que la saisie à une
+ * main (table bottles, src/features/quickTrack/BottleLog.tsx) : heure, quantité bue et durée.
+ */
+export function BottleSessionCard({ child, onRecordPast, onFix }: { child: Child; onRecordPast: () => void; onFix?: (bottleId: string) => void }) {
   const t = useTheme();
   const m = useMotion();
   const s = useBottleSession(child);
@@ -310,6 +314,7 @@ export function BottleSessionCard({ child, onRecordPast }: { child: Child; onRec
       {s.result && !active ? (
         <View accessibilityLiveRegion="polite" testID="bottle-session-result" style={{ alignSelf: 'stretch', alignItems: 'center' }}>
           <Text variant="small" center>{s.result.next ? tr('u4.bi.savedNext', { time: atClock(s.result.next) }) : tr('u4.bi.saved')}</Text>
+          {onFix ? <SecondaryButton label={tr('ft.bt.fix')} icon="clock" size="sm" onPress={() => onFix(s.result!.id)} testID="bottle-session-fix" style={{ marginTop: spacing.xs }} /> : null}
         </View>
       ) : null}
 

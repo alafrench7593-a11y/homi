@@ -27,4 +27,21 @@ describe('purge du cache quand un accès est retiré', () => {
     expect(qc.getQueryData(['pregnancies', 'h1'])).toBeUndefined();
     expect(qc.getQueryData(['bottles', 'K2', '7'])).toEqual([{ id: 'b2' }]);
   });
+  it('course réelle (préproduction) : la liste des enfants est déjà rechargée SANS l’enfant retiré → purge quand même', () => {
+    const qc = seeded();
+    qc.setQueryData(['children', 'h1'], [{ id: 'K1', first_name: 'Lina' }]); // déjà rechargée
+    expect(purgeForScope(qc, { child_scope: ['K1'], pregnancy_access: true })).toBe(0); // sans mémoire : rien
+    expect(purgeForScope(qc, { child_scope: ['K1'], pregnancy_access: true }, ['K1', 'K2'])).toBe(2);
+    expect(qc.getQueryData(['bottles', 'K2', '7'])).toBeUndefined();
+  });
+  it('réouverture après un retrait : liste des enfants déjà sans l’enfant, ses lignes en cache le trahissent → purgées', () => {
+    const qc = new QueryClient({ defaultOptions: { queries: { gcTime: Infinity } } });
+    qc.setQueryData(['children', 'h1'], [{ id: 'K1' }]);
+    qc.setQueryData(['u', 'bottles', 'K2', 'last'], [{ id: 'b2', child_id: 'K2', consumed_ml: 90 }]);
+    qc.setQueryData(['u', 'bottles', 'K1', 'last'], [{ id: 'b1', child_id: 'K1' }]);
+    qc.setQueryData(['u', 'bottle_timers', 'child', 'K2'], null);
+    expect(purgeForScope(qc, { child_scope: ['K1'] })).toBe(2);
+    expect(qc.getQueryData(['u', 'bottles', 'K2', 'last'])).toBeUndefined();
+    expect(qc.getQueryData(['u', 'bottles', 'K1', 'last'])).toBeDefined();
+  });
 });

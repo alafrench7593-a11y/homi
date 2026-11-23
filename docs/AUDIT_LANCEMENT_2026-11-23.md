@@ -71,6 +71,14 @@ Panne de l'IA simulée : **0 appel serveur**, les cartes d'action et les outils 
 - Tableau par outil (`docs/TRACKING_COUVERTURE.md`, état au 22/11, **pas mis à jour après la vague 3**) : FAIT 51 · PARTIEL 15 · SANS SUIVI 30 · À FAIRE 40 (136 lignes).
 - Promis mais absent ou partiel (exemples du tableau) : écran nuit du sommeil enfant non refait ; repas, menus et garde-manger « donnée principale seulement » ; mesures de biberon en cuillères à faire.
 
+## 5 bis. Finitions (même jour, après le rapport)
+
+- **Lisibilité du texte sur le verre** : le verre liquide floutait à peine (flou 1,5, voile 24 %) ; sur la barre d'onglets, le contenu se lisait à travers les libellés (« Moi » à 2,6:1). Plancher de lisibilité pour tout verre qui porte du texte (flou ≥ 8, voile ≥ 55 %) ; sur iOS 26 le style passe de `clear` à `regular`. Captures avant/après. Aucun texte blanc posé à nu sur un fond clair trouvé sur 249 routes (les 28 cas détectés étaient des boutons foncés masqués par la barre ou l'en-tête au moment de la capture).
+- **13 erreurs de typage** apparaissant dès `expo start` (types générés) : corrigées par un type explicite des styles animés.
+- **Outils incomplets** : 0 « À FAIRE », 0 « PARTIEL » (98 FAIT, 38 SANS SUIVI, 136 lignes). Les 15 derniers (repas, vaccins, cycle, mode nuit, école, minuteur biberon, 6 outils famille/couple) ont la donnée en grand, l'élément ouvert dans l'adresse et une fiche de correction ; testés avec le backend de démonstration ; ouverts sans erreur dans Chromium sauf cycle (Premium, pas de parcours cycle dans la démo) ; parcours complet rejoué dans Chromium sur « Ma place » (correction, double appui, réouverture).
+- **Vaccins** : « 0 / 0 / 0 » pour un enfant de 13 mois sans dose notée → « 15 à vérifier » (doses passées non notées) ; « à venir » compte les doses dues ou proches.
+- Suite complète : **242 suites, 4565 tests, 0 échec** ; typecheck sans erreur ; couverture visuelle 93,1 %.
+
 ## 6. Reste à vérifier (non fait)
 
 - **iPhone réel** : clavier natif (barre « Suivant/OK » des pavés numériques), gestes des tiroirs, rendu Liquid Glass iOS 26, grande taille de texte système, petit iPhone (SE).
