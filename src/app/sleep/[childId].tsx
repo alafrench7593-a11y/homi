@@ -11,7 +11,7 @@
  */
 import { useTheme } from '@/theme/ThemeProvider';
 import { Tappable } from '@/components/Tappable';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -66,7 +66,7 @@ function ageTips(months: number): string[] {
 }
 
 export default function SleepPlanner() {
-  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string; nap?: string }>();
+  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string; nap?: string; fix?: string }>();
   const childId = params.childId;
   const child = useChild(childId);
   const childrenQ = useChildren();
@@ -90,10 +90,10 @@ export default function SleepPlanner() {
       </Screen>
     );
   }
-  return <PlannerBody child={child} tab={tab} setTab={setTab} nap={typeof params.nap === 'string' ? params.nap : null} />;
+  return <PlannerBody child={child} tab={tab} setTab={setTab} nap={typeof params.nap === 'string' ? params.nap : null} fix={typeof params.fix === 'string' ? params.fix : null} />;
 }
 
-function PlannerBody({ child, tab, setTab, nap }: { child: Child; tab: Tab; setTab: (t: Tab) => void; nap: string | null }) {
+function PlannerBody({ child, tab, setTab, nap, fix }: { child: Child; tab: Tab; setTab: (t: Tab) => void; nap: string | null; fix: string | null }) {
   const data = useSleepPlan(child);
   const { plan, profile } = data;
   useSleepNotificationSync(child, plan, profile);
@@ -107,7 +107,7 @@ function PlannerBody({ child, tab, setTab, nap }: { child: Child; tab: Tab; setT
           { value: 'trends' as Tab, label: tr('u4.sp.tab.trends'), testID: 'sleep-tab-trends' },
           { value: 'profile' as Tab, label: tr('nn.tab.settings'), testID: 'sleep-tab-settings' },
         ]} />
-      {tab === 'today' ? <TodayTab child={child} data={data} focusNap={nap} goSafety={() => setTab('safety')} goProfile={() => setTab('profile')} /> : null}
+      {tab === 'today' ? <TodayTab child={child} data={data} focusNap={nap} fixTo={fix} goSafety={() => setTab('safety')} goProfile={() => setTab('profile')} /> : null}
       {tab === 'profile' || tab === 'alerts' ? <ProfileTab child={child} profile={profile} /> : null}
       {tab === 'profile' || tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
       {tab === 'trends' ? <TrendsTab child={child} data={data} /> : null}
@@ -123,7 +123,7 @@ type PlanData = ReturnType<typeof useSleepPlan>;
 
 // ─── Aujourd'hui ───────────────────────────────────────────────────────────────────────────────────
 
-function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child; data: PlanData; focusNap: string | null; goSafety: () => void; goProfile: () => void }) {
+function TodayTab({ child, data, focusNap, fixTo, goSafety, goProfile }: { child: Child; data: PlanData; focusNap: string | null; fixTo: string | null; goSafety: () => void; goProfile: () => void }) {
   const toast = useToast();
   const saveReminder = useSaveReminder();
   const deleteReminder = useDeleteReminder();
@@ -141,6 +141,18 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
   const [traySession, setTraySession] = useState<Sleep | null>(null);
   const [trayOpen, setTrayOpen] = useState(false);
   const openSession = (s: Sleep) => { setSelNap(s.id); setZoomNap(s.id); router.setParams({ nap: s.id }); setTraySession(s); setTrayOpen(true); };
+  // Carte d'Aura « Corriger cette sieste » (?nap=…&fix=HH:MM) : la fiche s'ouvre une fois, sur la modification de la
+  // fin, avec l'heure proposée en valeur provisoire (Annuler / Enregistrer restent au parent)
+  const [fixView, setFixView] = useState<string | null>(fixTo);
+  const fixOpened = useRef(false);
+  useEffect(() => {
+    if (fixOpened.current || !fixTo || !focusNap || !sleeps) return;
+    const s = (sleeps as Sleep[]).find((x) => x.id === focusNap && x.child_id === child.id);
+    if (!s) return;
+    fixOpened.current = true;
+    openSession(s);
+    router.setParams({ fix: undefined } as never);
+  }, [fixTo, focusNap, sleeps]); // eslint-disable-line react-hooks/exhaustive-deps
   const night = useMemo(() => lastNightReport(sleeps, child.id, feeds, now), [sleeps, feeds, child.id, now]);
   const name = child.first_name;
   if (loading || !plan) return <Skeleton rows={3} />;
@@ -224,7 +236,8 @@ function TodayTab({ child, data, focusNap, goSafety, goProfile }: { child: Child
       </Row>
       <SleepEditSheet child={child} sleep={editing} all={sleeps as Sleep[]} onClose={() => setEditing(null)} />
       <NapSessionTray child={child} all={sleeps as Sleep[]} session={traySession ? (sleeps as Sleep[]).find((x) => x.id === traySession.id) ?? null : null}
-        open={trayOpen} onOpenChange={setTrayOpen} onEdit={setEditing}
+        open={trayOpen} onOpenChange={(o) => { setTrayOpen(o); if (!o) setFixView(null); }} onEdit={setEditing}
+        initialView={fixView ? 'edit' : 'session'} proposedEndText={fixView}
         onRelay={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)}
         onOpenOther={(id) => { const o = (sleeps as Sleep[]).find((x) => x.id === id); if (o) setTimeout(() => openSession(o), 350); }}
         onAnalyze={(s) => router.push({ pathname: '/assistant/session', params: { child: child.id, sleep: s.id } } as never)} />

@@ -35,7 +35,11 @@ export function sessionFacts(child: Child, all: readonly Sleep[], s: Sleep) {
   return { minutes, w, where };
 }
 
-export function NapSessionTray({ child, all, session, open, onOpenChange, onAnalyze, onEdit, onRelay, onSaved, onOpenOther }: {
+export function NapSessionTray({ child, all, session, open, onOpenChange, onAnalyze, onEdit, onRelay, onSaved, onOpenOther, initialView = 'session', proposedEndText }: {
+  /** Ouverture directe sur la modification (carte d'Aura « Corriger cette sieste ») */
+  initialView?: 'session' | 'edit';
+  /** Fin PROPOSÉE (« 14:20 ») : valeur provisoire, rien n'est enregistré avant Enregistrer */
+  proposedEndText?: string | null;
   child: Child; all: readonly Sleep[]; session: Sleep | null; open: boolean; onOpenChange: (v: boolean) => void;
   onAnalyze: (s: Sleep) => void; onEdit: (s: Sleep) => void; onRelay?: () => void;
   /** Correction enregistrée (la frise anime alors le segment) */
@@ -51,7 +55,7 @@ export function NapSessionTray({ child, all, session, open, onOpenChange, onAnal
     : tr(f.where === 'inside' ? 'nn.tray.vsInside' : f.where === 'longer' ? 'nn.tray.vsLonger' : 'nn.tray.vsShorter', { low: f.w.low!, high: f.w.high! });
   const palette = { surface: 'transparent', border: t.colors.border, handle: t.colors.textMuted, text: t.colors.text, mutedText: t.colors.textMuted, backdrop: t.colors.overlay };
   return (
-    <Tray open={open} onOpenChange={onOpenChange} defaultView="session" palette={palette} theme={t.isDark ? 'dark' : 'light'} radius={34}
+    <Tray open={open} onOpenChange={onOpenChange} defaultView={initialView} palette={palette} theme={t.isDark ? 'dark' : 'light'} radius={34}
       motion={{ viewAxis: 'x', viewSlide: 60, viewStartScale: 1 }}>
       <Tray.Content surface={<Glass variant="sheet" radius={34} style={{ flex: 1 }} />}>
         <Tray.View id="session">
@@ -93,7 +97,7 @@ export function NapSessionTray({ child, all, session, open, onOpenChange, onAnal
           </View>
         </Tray.View>
         <Tray.View id="edit">
-          <EditEndView key={`${session.id}:${session.ended_at}`} child={child} session={session} all={all} onSaved={onSaved} />
+          <EditEndView key={`${session.id}:${session.ended_at}:${proposedEndText ?? ''}`} child={child} session={session} all={all} onSaved={onSaved} initialText={proposedEndText ?? null} />
         </Tray.View>
         <Tray.View id="compare">
           <View style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.sm }} testID="nap-tray-compare">
@@ -134,13 +138,13 @@ const MIN = 60_000;
  * par la MÊME opération que la feuille de modification (useSleepActions.edit), une seule écriture même en double appui ;
  * en cas d'échec, le brouillon reste affiché avec le message.
  */
-function EditEndView({ child, session, all, onSaved }: { child: Child; session: Sleep; all: readonly Sleep[]; onSaved?: (s: Sleep) => void }) {
+function EditEndView({ child, session, all, onSaved, initialText }: { child: Child; session: Sleep; all: readonly Sleep[]; onSaved?: (s: Sleep) => void; initialText?: string | null }) {
   const t = useTheme();
   const m = useMotion();
   const { goBack } = useTray();
   const act = useSleepActions(child);
   const end0 = new Date(session.ended_at ?? Date.now());
-  const [text, setText] = useState(hhmm(end0));
+  const [text, setText] = useState(initialText && /^\d{1,2}:\d{2}$/.test(initialText) ? initialText : hhmm(end0));
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const inflight = useRef(false);

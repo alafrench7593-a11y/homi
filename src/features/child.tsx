@@ -218,7 +218,7 @@ function whoReference(ind: GrowthIndicator, sex: Sex, birthISO: string, fromISO:
 }
 const metricLabel = (k: Metric) => tr(`u7.child.metric.${k}` as TKey);
 
-export function GrowthTab({ child }: { child: Child }) {
+export function GrowthTab({ child, focus }: { child: Child; /** Carte d'Aura « Ajouter un poids » : curseur posé dans ce champ */ focus?: 'weight_kg' | 'height_cm' | 'head_cm' | null }) {
   const toast = useToast();
   const inv = useInvalidate();
   const write = useSafeWrite();
@@ -357,10 +357,10 @@ export function GrowthTab({ child }: { child: Child }) {
           <Field label={tr('u7.child.date')} value={date} onChangeText={setDate} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.date} />
           {sortedM.length ? <Chip icon="copy" label={tr('u7.child.prefill')} onPress={prefillLast} testID="growth-prefill" /> : null}
           <Row style={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
-            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} autoFocus={focus === 'weight_kg'} testID="growth-field-weight_kg" optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} autoFocus={focus === 'height_cm'} testID="growth-field-height_cm" optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
           </Row>
-          <Field label={tr('u7.child.metric.head_cm')} optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
+          <Field label={tr('u7.child.metric.head_cm')} autoFocus={focus === 'head_cm'} testID="growth-field-head_cm" optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
           <Segmented label={tr('u7.child.measureTaken')} value={source} onChange={setSource} options={[{ value: 'professional', label: tr('u7.child.byPro') }, { value: 'home', label: tr('u7.child.atHome') }]} />
           <Field label={tr('u7.child.note')} optional value={note} onChangeText={setNote} maxLength={1000} />
           <Button label={tr('u7.child.saveMeasure')} loading={saving} onPress={add} />

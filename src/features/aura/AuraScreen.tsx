@@ -56,6 +56,8 @@ import { assessSafety, urgentContacts, type UrgentContact } from '../../../supab
 import { MAX_QUESTION_LENGTH, todayIso } from '../../../supabase/functions/_shared/assistant-format';
 import { sanitizeActions } from '../../../supabase/functions/_shared/aura-tools';
 import { ActionCards } from './ActionCards';
+import { IntentCard } from './IntentCard';
+import { matchIntent, type AuraIntent } from '@/lib/aura/intents';
 import { AuraBot } from './AuraBot';
 import { useAuraBot, type AuraBotState } from './useAuraBot';
 import { EmotionTranslator } from './EmotionTranslator';
@@ -78,7 +80,9 @@ type Reply =
   | LocalReply
   | { kind: 'safety'; level: 'medical_urgent' | 'crisis'; contacts: UrgentContact[]; message: string }
   | { kind: 'error'; error: AuraErrorKind; question: string; requestId: string; journal?: unknown }
-  | { kind: 'pending' };
+  | { kind: 'pending' }
+  /** Intention reconnue sur le téléphone (sans IA ni crédit) : carte d'action recalculée à l'affichage et à l'appui */
+  | { kind: 'intent'; intent: AuraIntent };
 interface Msg { id: string; role: 'user' | 'aura'; text?: string; reply?: Reply }
 
 let INDEX: { n: number; index: KbIndex } | null = null;
@@ -269,7 +273,15 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       haptic('warning');
       return;
     }
-    // 2) Mode local : recherche honnête
+    // 2) Demandes évidentes (ouvrir l'outil du quotidien, corriger une sieste, préparer le relais, ajouter un poids,
+    //    changer d'enfant, outils grossesse) : règle LOCALE, carte d'action en un appui, aucun appel au modèle
+    const intent = matchIntent(question);
+    if (intent) {
+      const reply: Reply = { kind: 'intent', intent };
+      if (opts.retryOf) replace(auraId, reply); else push(userMsg, { id: auraId, role: 'aura', reply });
+      return;
+    }
+    // 3) Mode local : recherche honnête
     if (!remote) {
       const reply = local(question);
       if (opts.retryOf) replace(auraId, reply); else push(userMsg, { id: auraId, role: 'aura', reply });
@@ -634,6 +646,16 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
           {auraErrorAction(reply.error) === 'consent' ? <Button label={tr('sa.aura.giveConsent')} icon="check" size="sm" variant="secondary" onPress={() => onConsent(reply)} testID="aura-err-consent" /> : null}
           <Button label={tr('aura.tryLocal')} icon="search" size="sm" variant="ghost" onPress={() => onLocal(reply.question)} testID="aura-try-local" />
         </Row>
+      </View>
+    );
+  }
+  if (reply.kind === 'intent') {
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
+        <AuraBot size={BOT_SIZE} state={bot.state} still={bot.still} testID="aura-reply-bot" />
+        <View style={[bubble, { flex: 1 }]} accessibilityLiveRegion="polite">
+          <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} />
+        </View>
       </View>
     );
   }

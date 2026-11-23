@@ -24,7 +24,7 @@ import { spacing } from '@/theme/tokens';
 import { formatDate, formatNumber, t as tr } from '@/i18n';
 
 export default function ChildProfile() {
-  const params = useLocalSearchParams<{ id: string; tab?: string }>();
+  const params = useLocalSearchParams<{ id: string; tab?: string; focus?: string }>();
   const toast = useToast();
   const inv = useInvalidate();
   const childrenQ = useChildren();
@@ -111,7 +111,7 @@ export default function ChildProfile() {
       <ChildTabs value={tab} onChange={setTab} />
 
       {tab === 'apercu' && <OverviewTab child={child} onTab={setTab} />}
-      {tab === 'croissance' && <GrowthTab child={child} />}
+      {tab === 'croissance' && <GrowthTab child={child} focus={params.focus === 'weight_kg' || params.focus === 'height_cm' || params.focus === 'head_cm' ? params.focus : null} />}
       {tab === 'etapes' && <MilestonesTab child={child} />}
       {tab === 'sante' && <HealthTab child={child} />}
       {tab === 'alimentation' && <FoodsTab child={child} />}
