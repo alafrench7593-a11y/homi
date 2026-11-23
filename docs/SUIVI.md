@@ -30,3 +30,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Web (23/11) : /start/offers affiche le vrai paywall en vitrine (grille indicative, « Disponible sur l'app iPhone », aucun achat ni requête boutique).
 - Audit final avant build (23/11) : HOMI_FINAL_PREBUILD_AUDIT.md — BUILD BLOQUÉ (4 points non vérifiables sans iPhone : achats sandbox, compte/Apple, natif, performance).
 - Compte (23/11) : « Supprimer mon compte » dans le menu Compte ; suppression = une feuille, une case « je comprends », un bouton (plus de mot à taper). Vérifié démo web.
+- Avant build (23/11) : « mode enfant » retiré (aucun écran pour l'enfant ; ancienne adresse → version imprimable) ; relais juste après minuit (soirée conservée : début = min(minuit, maintenant − 12 h)).

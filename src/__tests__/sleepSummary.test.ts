@@ -101,3 +101,13 @@ describe('audit final : 14 h 20 → 15 h 30 = 1 h 10 partout ; début corrigé 1
     expect(relayItems({ childId: 'lina', since: relaySince(null, now), now, sleeps: fixed, bottles: [] })[0]).toMatchObject({ id: 's', minutes: 70 });
   });
 });
+
+describe('relais juste après minuit (audit final)', () => {
+  it('à 0 h 30, le biberon de 23 h reste dans le relais ; l’après-midi, le relais part de minuit', () => {
+    const at = new Date(2026, 10, 24, 0, 30);
+    expect(relaySince(null, at).getTime()).toBe(new Date(2026, 10, 23, 12, 30).getTime());
+    const items = relayItems({ childId: 'lina', since: relaySince(null, at), now: at, sleeps: [], bottles: [{ id: 'b23', child_id: 'lina', at: iso(23, 23, 0), consumed_ml: 150 }] });
+    expect(items.map((i) => i.id)).toEqual(['b23']);
+    expect(relaySince(null, new Date(2026, 10, 23, 15, 20)).getTime()).toBe(new Date(2026, 10, 23).getTime());
+  });
+});

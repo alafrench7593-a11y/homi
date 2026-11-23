@@ -1,6 +1,6 @@
 /**
  * Routines en pictogrammes pour l'enfant (3–10 ans) : « le matin », « le soir », « après l'école »… chaque étape
- * est un grand pictogramme que l'enfant coche lui-même sur le téléphone ou la tablette (mode enfant).
+ * est un grand pictogramme ; la routine s'imprime (aucun écran pour l'enfant, audit final du 23/11/2026).
  * Les parents créent et modifient les routines ici ; les cases cochées du jour sont partagées dans le foyer.
  */
 import React, { useState } from 'react';
@@ -159,9 +159,9 @@ export default function KidRoutines() {
               {r.steps.map((s, i) => <Picto key={i} name={s.icon} size={26} />)}
             </View>
             <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-              <Button label={tr('kr.kidMode')} icon="smile" onPress={() => router.push(`/family/kid-routine/${r.id}` as never)} testID={`kr-open-${r.id}`} style={{ flex: 1 }} />
-              {/* Sans écran pour l'enfant : la routine imprimée, à afficher dans la chambre ou la salle de bain */}
-              <Button label={tr('pst.print')} icon="printer" variant="secondary" onPress={() => router.push(`/print?kind=routine&routine=${r.id}` as never)} testID={`kr-print-${r.id}`} style={{ flex: 1 }} />
+              {/* Sans écran pour l'enfant (audit final, 23/11/2026) : plus de « mode enfant » ; la routine se vit imprimée,
+                  affichée dans la chambre ou la salle de bain. Le parent coche la journée dans le suivi (KidRoutineTrack). */}
+              <Button label={tr('pst.print')} icon="printer" onPress={() => router.push(`/print?kind=routine&routine=${r.id}` as never)} testID={`kr-print-${r.id}`} style={{ flex: 1 }} />
             </View>
           </Card></MotionItem>
         );

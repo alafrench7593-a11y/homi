@@ -47,6 +47,9 @@ export function relayItems(o: {
 /** Début du brouillon : dernière transmission de cet enfant, sinon minuit du jour. */
 export function relaySince(lastSentAt: string | null | undefined, now: Date): Date {
   const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // Audit final (23/11/2026) : juste après minuit, la soirée ne doit pas disparaître du relais (biberon de 23 h vu à
+  // 0 h 30) — le début par défaut est le plus tôt entre minuit et 12 h avant maintenant
+  const start = new Date(Math.min(midnight.getTime(), now.getTime() - 12 * 3_600_000));
   const last = lastSentAt ? new Date(lastSentAt) : null;
-  return last && last.getTime() > midnight.getTime() && last.getTime() <= now.getTime() ? last : midnight;
+  return last && last.getTime() > start.getTime() && last.getTime() <= now.getTime() ? last : start;
 }
