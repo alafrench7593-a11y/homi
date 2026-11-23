@@ -3,6 +3,7 @@
 Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `docs/TUTOS_CONFIGURATION.md`, iPhone : `docs/SCENARIO_IPHONE.md`.
 
 ## Fait (23/11/2026)
+- Réconciliation : 136 lignes = 127 outils + 9 entrées de compte ; 127/127 ouverts depuis leur entrée (passes base, éviter, projet bébé, cycle, post-partum ; démo Premium).
 - Préprod : migrations 20261206 + 20261207 validées depuis l'interface ; déployées en prod (148 migrations).
 - Contrôles confidentialité documentés (audit § 7.2) ; conservation `20261208000100` écrite, **non déployée en prod** (tuto § 7).
 - Corrections : saisie agenda (14H30, date sans année), textes superposés web (Relais de nuit), lisibilité barre d'onglets,
@@ -12,7 +13,6 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Build 13 sur TestFlight (commit 7f0d7ff) ; ne contient pas les corrections suivantes.
 
 ## Ouvert
-- 127 outils depuis leur entrée : 123 OK, 14 rejoués (guides à ouverture directe, `ttc_mucus`).
 - iPhone réel (scénario) ; liens Vercel publics (accès connecteur : lecture seule, projet invisible).
 - Risques : prénoms dans les textes envoyés à Aura ; analytics grossesse ↔ compte ; journal du foyer sans purge.
 - Google OAuth (identifiants à fournir). Build 14 : seulement sur ordre.
