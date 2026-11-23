@@ -17,6 +17,7 @@ import { CareCategorySummary } from '@/features/quickTrack/CareCategorySummary';
 import { PregnancyCategorySummary } from '@/features/pregTrack/PregnancyHomeCard';
 import { CycleCategorySummary } from '@/features/cycleTrack/CycleOverview';
 import { HealthCategorySummary } from '@/features/healthTrack/HealthCategorySummary';
+import { CareTrackCategory } from '@/features/careTrack/CareTrackCategory';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
@@ -109,6 +110,7 @@ function ToolCategory() {
           {category === 'pregnancy' ? <PregnancyCategorySummary /> : null}
           {category === 'cycle' ? <View style={{ marginBottom: spacing.sm }}><CycleCategorySummary /></View> : null}
           {category === 'health' ? <View style={{ marginBottom: spacing.sm }}><HealthCategorySummary /></View> : null}
+          {category === 'care' || category === 'health' || category === 'sleep' ? <CareTrackCategory category={category} /> : null}
         </>}
         ListEmptyComponent={loading ? <ToolRowsSkeleton rows={5} testID="tools-category-skeleton" /> : (
           <EmptyState icon="compass" title={tr('th.ui.catEmpty')} body={tr('th.ui.catEmptyB')}

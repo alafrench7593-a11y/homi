@@ -117,3 +117,4 @@ export { homeTrack } from './homeTrack';
 export { auraIntents } from './auraIntents';
 export { restTrack } from './restTrack';
 export { readTrack } from './readTrack';
+export { careTrack } from './careTrack';

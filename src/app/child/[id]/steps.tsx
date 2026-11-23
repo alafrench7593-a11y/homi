@@ -20,6 +20,7 @@ import { ChecklistDetail } from '@/app/lists';
 import { t as tr, type TKey } from '@/i18n';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { useTapShield } from '@/features/tapShield';
+import { StepsTrack } from '@/features/careTrack/StepsTrack';
 
 const STEP_KEYS = ['doctor', 'school', 'observe', 'assessment', 'pco', 'adjust', 'mdph', 'association', 'relay', 'documents'] as const;
 export const stepsTitle = (firstName: string) => `${tr('ks.listTitle')} · ${firstName}`.slice(0, 80);
@@ -60,7 +61,10 @@ export default function ChildSteps() {
       <Text muted>{tr('ks.intro')}</Text>
       <Banner tone="info">{tr('ks.disclaimer')}</Banner>
       {listsQ.isLoading && !listsQ.data ? <Skeleton rows={4} /> : list ? (
-        <ChecklistDetail list={list} onClose={() => router.back()} />
+        <>
+          <StepsTrack listId={list.id} />
+          <ChecklistDetail list={list} onClose={() => router.back()} />
+        </>
       ) : (
         <Card>
           <Text weight="bold">{tr('ks.startTitle')}</Text>

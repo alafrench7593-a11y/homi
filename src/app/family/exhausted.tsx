@@ -17,11 +17,11 @@ import { useExhaustionCheckins } from '@/lib/data/hooks-mental';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { EXHAUSTION_QUESTIONS, exhaustionLevel, type ExhaustionLevel } from '@/lib/domain/mentalLoad';
 import { callNumber } from '@/lib/links';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { t as tr, type TKey } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
-import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ExhaustionTrack } from '@/features/careTrack/ExhaustionTrack';
 
 export default function Exhausted() {
   const toast = useToast();
@@ -48,6 +48,8 @@ export default function Exhausted() {
 
   return (
     <Screen back title={toolName('exhaustion_check')} subtitle={toolBlurb('exhaustion_check')}>
+      {/* Suivi : dernier bilan en grand, bilans passés, fiche de correction (bilan gardé dans l'adresse) */}
+      <ExhaustionTrack checks={past} />
       <Text muted>{tr('cm.ex.intro')}</Text>
       {!result ? (
         <>
@@ -81,12 +83,6 @@ export default function Exhausted() {
         {help.crisis ? <View style={{ flex: 1 }}><Button label={help.crisis} icon="phone" variant="secondary" onPress={() => callNumber(help.crisis!, toast)} /></View> : null}
         <View style={{ flex: 1 }}><Button label={help.urgent} icon="phone" variant="secondary" onPress={() => callNumber(help.urgent, toast)} /></View>
       </View>
-      {past.length ? (
-        <Card tone="soft">
-          <Text variant="label">{tr('cm.ex.history')}</Text>
-          <MotionList>{past.slice(0, 6).map((p) => <MotionItem key={p.id}><Text key={p.id} variant="small">{formatDate(p.created_at, { day: 'numeric', month: 'short' })} · {tr(`cm.ex.r.${exhaustionLevel(p.answers).level}` as TKey)}</Text></MotionItem>)}</MotionList>
-        </Card>
-      ) : null}
       <Text variant="caption" muted>{tr('cm.ex.private')}</Text>
     </Screen>
   );

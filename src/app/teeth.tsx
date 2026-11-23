@@ -4,15 +4,15 @@
  * brosser dès la première dent, prévoir un contrôle) — au lieu de compteurs à zéro.
  */
 import { insertOrQueue } from '@/lib/offline';
-import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Chip, Field, haptic, ListGroup, ListRow, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListGroup, ListRow, Row, Text } from '@/components/ui';
 import { FIRST_TEETH, TeethMap } from '@/features/teeth/TeethMap';
+import { TeethHero, TeethList } from '@/features/careTrack/TeethTrack';
 import { PRIMARY_TEETH } from '@/lib/domain/childCare';
 import { useSaveReminder } from '@/lib/data/hooks-settings';
 import { toFrDate } from '@/lib/validation';
@@ -21,13 +21,11 @@ import { useActiveSubject, useTrackedChildren, useInvalidate } from '@/lib/data/
 import { useMilestones } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
-import { useTheme } from '@/theme/ThemeProvider';
-import { radius, spacing } from '@/theme/tokens';
-import { formatDate, t as tr } from '@/i18n';
+import { spacing } from '@/theme/tokens';
+import { t as tr } from '@/i18n';
 
 
 export default function Teeth() {
-  const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const params = useLocalSearchParams<{ child?: string }>();
@@ -46,7 +44,6 @@ export default function Teeth() {
   const [note, setNote] = useState('');
   const pickedRow = picked ? teeth.find((m) => m.title === picked) : undefined;
   const saveReminder = useSaveReminder();
-  const lastDate = teeth.map((m) => m.happened_on).filter(Boolean).sort().pop() ?? null;
   // « Noter la première dent » : ouvre la fiche d'une incisive centrale du bas (souvent la première, jamais une norme)
   const firstLabel = PRIMARY_TEETH.find((d) => FIRST_TEETH.has(d.id))?.label ?? PRIMARY_TEETH[0].label;
 
@@ -105,16 +102,11 @@ export default function Teeth() {
             </View>
           ) : null}
 
-          <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md, gap: spacing.sm }}>
-            {teeth.length ? (
-              <View testID="teeth-summary" style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: spacing.xs }}>
-                <Text weight="bold" style={{ fontVariant: ['tabular-nums'] }}>{tr('h5.teeth.summary', { n: teeth.length })}</Text>
-                {lastDate ? <Text variant="small" muted>{tr('h5.teeth.lastOn', { date: formatDate(lastDate, { day: 'numeric', month: 'short', year: 'numeric' }) })}</Text> : null}
-              </View>
-            ) : null}
+          <TeethHero teeth={teeth} />
+          <Card style={{ gap: spacing.sm }}>
             <TeethMap present={new Set(teeth.map((m) => m.title))} onPick={open} hintFirst={!teeth.length} />
             <Text variant="caption" muted center>{tr('u5.teeth.tap')}</Text>
-          </View>
+          </Card>
 
           {!teeth.length ? (
             <ListGroup title={tr('h5.teeth.now')} testID="teeth-next">
@@ -124,12 +116,7 @@ export default function Teeth() {
             </ListGroup>
           ) : (
             <>
-              <ListGroup title={tr('h5.teeth.list')} testID="teeth-list">
-                {[...teeth].sort((x, y) => (x.happened_on ?? '').localeCompare(y.happened_on ?? '')).map((m) => (
-                  <ListRow key={m.id} icon="check" title={m.title} subtitle={m.note ?? undefined} onPress={() => open(m.title)}
-                    value={m.happened_on ? formatDate(m.happened_on, { day: '2-digit', month: '2-digit', year: 'numeric' }) : undefined} />
-                ))}
-              </ListGroup>
+              <TeethList teeth={teeth} birthDate={child.birth_date} />
               <ListGroup title={tr('h5.teeth.care')} testID="teeth-care">
                 <ListRow icon="bell" title={tr('u5.teeth.b_rem')} subtitle={tr('h5.teeth.remSub')} onPress={hygieneReminder} />
                 <ListRow icon="calendar" title={tr('u5.teeth.b_dentist')} subtitle={tr('h5.teeth.dentistSub')} onPress={() => router.push('/appointments')} />
