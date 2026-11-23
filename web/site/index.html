@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HOMI — Le carnet partagé de la famille : sommeil, repas, relais</title>
+<meta name="description" content="HOMI réunit la journée de bébé en un coup d’œil : sommeil, biberons, allaitement, croissance. Corrige une entrée, tout se met à jour ; passe le relais en un message. Essaie la démo sans compte.">
+<meta name="robots" content="{{ROBOTS}}">
+<link rel="canonical" href="{{SITE_URL}}/">
+<meta name="theme-color" content="#FBF4F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A1217" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="HOMI">
+<meta property="og:title" content="HOMI — Sa journée, en un coup d’œil.">
+<meta property="og:description" content="Sommeil, repas, relais entre parents et 75 outils trouvés avec tes mots. Démo sans compte.">
+<meta property="og:url" content="{{SITE_URL}}/">
+<meta property="og:image" content="{{SITE_URL}}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="HOMI — Sa journée, en un coup d’œil.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/site/site.css?v={{VERSION}}">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"HOMI","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Web","inLanguage":"fr","url":"{{SITE_URL}}/","description":"Le carnet partagé de la famille : sommeil, repas, relais entre parents."}</script>
+</head>
+<body>
+<a class="skip" href="#ouverture">Aller au contenu</a>
+
+<header class="nav" role="banner">
+  <nav class="nav-bar glass" aria-label="Navigation principale">
+    <a class="nav-logo" href="/" aria-label="HOMI, accueil">{{LOGO}}</a>
+    <ul class="nav-links">
+      <li><a href="#sommeil">Sommeil</a></li>
+      <li><a href="#relais">Relais</a></li>
+      <li><a href="#outils">Outils</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a class="btn btn-ghost btn-sm" href="/app" data-cta="nav-app">Ouvrir HOMI</a>
+      <a class="btn btn-primary btn-sm" href="/demo" data-cta="nav-demo">Essayer la démo</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- OUVERTURE -->
+  <section id="ouverture" class="chapter hero" aria-labelledby="t-ouverture">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Le carnet partagé de la famille</p>
+        <h1 id="t-ouverture" class="display">Sa journée, en un coup d’œil.</h1>
+        <p class="lead">Sommeil, biberons, tétées, couches : tout ce que vit bébé, noté en un geste et lisible par les deux parents.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary btn-lg" href="/demo" data-cta="hero-demo">Essayer la démo</a>
+          <a class="btn btn-secondary btn-lg" href="/app" data-cta="hero-app">Ouvrir HOMI</a>
+        </div>
+        <p class="fine">Démo sans compte, avec une famille fictive. Rien n’est enregistré sur nos serveurs.</p>
+      </div>
+
+      <figure class="journal card" aria-labelledby="journal-title">
+        <figcaption class="journal-head">
+          <span class="avatar" aria-hidden="true">L</span>
+          <span><strong id="journal-title">Journal de Léa</strong><span class="muted"> · 7 mois · aujourd’hui</span></span>
+        </figcaption>
+        <ol class="timeline">
+          <li><time>07:05</time><span class="dot dot-sleep" aria-hidden="true"></span><span>Réveil</span></li>
+          <li><time>07:20</time><span class="dot dot-feed" aria-hidden="true"></span><span>Biberon <b>180 ml</b></span></li>
+          <li><time>09:10</time><span class="dot dot-sleep" aria-hidden="true"></span><span>Sieste <b>45 min</b></span></li>
+          <li><time>11:40</time><span class="dot dot-meal" aria-hidden="true"></span><span>Repas · purée de carotte</span></li>
+          <li class="is-nap"><time>13:10</time><span class="dot dot-sleep" aria-hidden="true"></span><span>Sieste <b data-bind="nap">1 h 25</b> <span class="muted">· jusqu’à <span data-bind="napEnd">14:35</span></span></span></li>
+          <li><time>15:00</time><span class="dot dot-feed" aria-hidden="true"></span><span>Tétée <b>12 min</b> · sein gauche</span></li>
+          <li><time>16:20</time><span class="dot dot-care" aria-hidden="true"></span><span>Couche</span></li>
+        </ol>
+        <p class="journal-foot"><span>Siestes du jour</span><b data-bind="total">2 h 10</b></p>
+      </figure>
+    </div>
+  </section>
+
+  <!-- SOMMEIL -->
+  <section id="sommeil" class="chapter" aria-labelledby="t-sommeil">
+    <div class="wrap narrow">
+      <p class="eyebrow">Sommeil</p>
+      <h2 id="t-sommeil" class="display">Une correction, et tout est à jour.</h2>
+      <p class="lead">Léa s’est réveillée à 14 h 20, pas à 14 h 35. Tu corriges l’heure : la sieste, le total du jour et le résumé pour l’autre parent suivent.</p>
+
+      <div class="sleep card" data-sleep>
+        <div class="sleep-row">
+          <div>
+            <p class="label">Sieste de l’après-midi</p>
+            <p class="big"><span data-bind="nap">1 h 25</span></p>
+            <p class="muted">13:10 → <span data-bind="napEnd">14:35</span></p>
+          </div>
+          <div class="sleep-total">
+            <p class="label">Total des siestes</p>
+            <p class="big"><span data-bind="total">2 h 10</span></p>
+            <p class="delta" data-bind="delta" aria-hidden="true">&nbsp;</p>
+          </div>
+        </div>
+        <div class="track" role="img" aria-label="Frise de l’après-midi, de 12 h à 16 h" data-bind-label="track">
+          <div class="track-hours" aria-hidden="true"><span>12h</span><span>13h</span><span>14h</span><span>15h</span><span>16h</span></div>
+          <div class="track-bar"><div class="seg" data-seg></div><div class="seg-cut" data-cut aria-hidden="true"></div></div>
+        </div>
+        <div class="sleep-actions">
+          <button type="button" class="btn btn-primary" data-correct aria-pressed="false">Corriger la fin : 14 h 20</button>
+          <button type="button" class="btn btn-ghost" data-undo hidden>Revenir à 14 h 35</button>
+        </div>
+        <p class="sr-only" aria-live="polite" data-live></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELAIS -->
+  <section id="relais" class="chapter" aria-labelledby="t-relais">
+    <div class="wrap narrow">
+      <p class="eyebrow">Relais</p>
+      <h2 id="t-relais" class="display">À toi de prendre le relais.</h2>
+      <p class="lead">En fin de journée, HOMI prépare le résumé pour Karim. Tu le relis, tu l’envoies. Rien ne part sans toi.</p>
+      <article class="relay card" aria-labelledby="relay-title">
+        <header class="relay-head">
+          <span class="pill">Brouillon à relire</span>
+          <h3 id="relay-title">Pour Karim · 17 h 00</h3>
+        </header>
+        <ul class="relay-list">
+          <li>Siestes : 45 min ce matin, puis <b data-bind="nap">1 h 25</b> (13 h 10 – <span data-bind="napEndH">14 h 35</span>). Total <b data-bind="total">2 h 10</b>.</li>
+          <li>Dernière tétée à 15 h 00, sein gauche, 12 min.</li>
+          <li>Couche changée à 16 h 20.</li>
+          <li>Prochain biberon vers 18 h 30.</li>
+        </ul>
+        <p class="relay-sync muted" data-bind="relaySync">Les chiffres viennent du journal : corrige-les là-haut, ils changent ici.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- OUTILS ET ASSISTANT -->
+  <section id="outils" class="chapter" aria-labelledby="t-outils">
+    <div class="wrap narrow">
+      <p class="eyebrow">Outils et assistant</p>
+      <h2 id="t-outils" class="display">Trouve le bon outil avec tes mots.</h2>
+      <p class="lead">Écris ce qui se passe, comme tu le dirais. HOMI ouvre le bon outil, parmi <span data-bind="toolCount">75</span> pour un bébé.</p>
+
+      <form class="ask card" role="search" data-ask action="/demo" method="get">
+        <label for="ask-input" class="label">Ce dont tu as besoin</label>
+        <div class="ask-field">
+          <input id="ask-input" name="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Mon bébé prend le sein" aria-describedby="ask-help" aria-controls="ask-results">
+          <button class="btn btn-primary" type="submit">Chercher</button>
+        </div>
+        <p id="ask-help" class="muted small">Exemples :
+          <button type="button" class="chip" data-example>Mon bébé prend le sein</button>
+          <button type="button" class="chip" data-example>Où j’ajoute son poids ?</button>
+          <button type="button" class="chip" data-example>Il ne dort pas la nuit</button>
+        </p>
+        <div id="ask-results" class="results" aria-live="polite"></div>
+      </form>
+
+      <div class="explore" data-explore>
+        <div class="tabs" role="tablist" aria-label="Explorer les outils">
+          <button type="button" role="tab" id="tab-need" aria-selected="true" aria-controls="panel-need">Par besoin</button>
+          <button type="button" role="tab" id="tab-stage" aria-selected="false" aria-controls="panel-stage" tabindex="-1">Par étape</button>
+        </div>
+        <div role="tabpanel" id="panel-need" aria-labelledby="tab-need" class="panel" data-panel="need"><p class="muted">Chargement des outils…</p></div>
+        <div role="tabpanel" id="panel-stage" aria-labelledby="tab-stage" class="panel" data-panel="stage" hidden></div>
+      </div>
+      <p class="fine">Aura, l’assistante de HOMI, t’aide à t’y retrouver. Elle n’est pas une professionnelle de santé et ne calcule jamais de dose de médicament. Les minuteurs, rappels et calculs fonctionnent sans elle.</p>
+    </div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section id="commencer" class="chapter finale" aria-labelledby="t-fin">
+    <div class="wrap narrow center">
+      <h2 id="t-fin" class="display">Commencer avec HOMI.</h2>
+      <p class="lead">Découvre la démo avec une famille fictive, ou ouvre ton espace pour retrouver ta famille.</p>
+      <div class="cta-row center">
+        <a class="btn btn-primary btn-lg" href="/demo" data-cta="end-demo">Essayer la démo</a>
+        <a class="btn btn-secondary btn-lg" href="/app" data-cta="end-app">Ouvrir HOMI</a>
+      </div>
+      <p class="fine">L’application iPhone arrive bientôt.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <p>{{LOGO}}</p>
+    <ul>
+      <li><a href="/mentions-legales/">Mentions légales</a></li>
+      <li><a href="/confidentialite/">Confidentialité</a></li>
+      <li><a href="/cgu/">Conditions d’utilisation</a></li>
+      <li><a href="/aide/">Aide</a></li>
+      <li><a href="/suppression-compte/">Supprimer mon compte</a></li>
+    </ul>
+    <p class="muted small">Éditeur : David PRINCIVIL EI · Contact : <a href="mailto:homixyz@gmail.com">homixyz@gmail.com</a></p>
+  </div>
+</footer>
+
+<script src="/site/search.js?v={{VERSION}}" defer></script>
+<script src="/site/site.js?v={{VERSION}}" defer></script>
+</body>
+</html>

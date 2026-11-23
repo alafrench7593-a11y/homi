@@ -40,8 +40,11 @@ export function usePlans() {
   return { mode, ...q };
 }
 
-/** Sur le web, pas d'achat intégré (hors démonstration) : l'abonnement se prend dans l'application mobile. */
-export const webWithoutPurchase = (mode: string) => Platform.OS === 'web' && mode !== 'test';
+/**
+ * Sur le web, pas d'achat intégré : l'abonnement se prend dans l'application mobile. Démonstration comprise depuis le
+ * 23/11/2026 (site public : aucun tarif ni essai affiché tant que l'app n'est pas en vente). `mode` reste en paramètre.
+ */
+export const webWithoutPurchase = (_mode: string) => Platform.OS === 'web';
 
 // ---------------------------------------------------------------- en-tête
 export function PremiumHero() {

@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useScopePurge } from '@/lib/data/useScopePurge';
 import { WEB_FRAME, webFrameOn } from '@/components/appFrame';
 import { ActivityIndicator, Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { router, Stack, usePathname } from 'expo-router';
+import { router, Stack, useGlobalSearchParams, usePathname } from 'expo-router';
+import { rememberReturnTo } from '@/lib/returnTo';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
 import { useFonts } from 'expo-font';
@@ -170,10 +171,31 @@ function Bootstrap() {
 function SessionGuard() {
   const { session, ready } = useAuth();
   const pathname = usePathname();
+  const params = useGlobalSearchParams();
   useEffect(() => {
-    if (ready && !session && pathname && !isPublicRoute(pathname)) router.replace('/welcome');
+    if (ready && !session && pathname && !isPublicRoute(pathname)) {
+      // Retour après connexion : l'adresse demandée (avec ses paramètres) est notée pour l'onglet courant
+      const query = Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.search : queryOf(params);
+      rememberReturnTo(pathname + query);
+      router.replace('/welcome');
+    }
+  }, [ready, session, pathname, params]);
+  // Web : l'accueil de l'application a l'adresse « / », où le serveur sert la page publique. L'adresse affichée devient
+  // /app (même écran après une actualisation, via le lancement) ; l'historique du navigateur n'est pas allongé.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !ready || !session || pathname !== '/' || typeof window === 'undefined') return undefined;
+    // après la mise à jour de l'adresse par le routeur (sinon il réécrit « / » derrière nous)
+    const id = setTimeout(() => {
+      if (window.location.pathname === '/') window.history.replaceState(window.history.state, '', '/app' + window.location.search + window.location.hash);
+    }, 60);
+    return () => clearTimeout(id);
   }, [ready, session, pathname]);
   return null;
+}
+
+function queryOf(params: Record<string, string | string[] | undefined>): string {
+  const q = Object.entries(params).flatMap(([k, v]) => (v == null ? [] : (Array.isArray(v) ? v : [v]).map((x) => `${encodeURIComponent(k)}=${encodeURIComponent(x)}`)));
+  return q.length ? `?${q.join('&')}` : '';
 }
 
 function SessionLoading() {
