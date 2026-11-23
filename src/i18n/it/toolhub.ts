@@ -387,7 +387,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.kid_card.d': 'Prepara una scheda con allergie e abitudini del tuo bambino per chi lo accudisce.',
   'th.kid_card.k': 'scheda; allergie; abitudini; cosa lo calma; babysitter; tata; nonni; condividere; trasmettere; istruzioni; affidare il bambino',
   'th.kid_routines': 'Routine a immagini',
-  'th.kid_routines.d': 'Crea le routine del mattino e della sera a immagini, che il tuo bambino spunta da solo.',
+  'th.kid_routines.d': 'Routine del mattino e della sera a immagini, da stampare, senza schermo.',
   'th.kid_routines.k': 'routine; mattino; sera; pittogrammi; immagini; autonomia; prepararsi per la scuola; rituale; tabella delle routine',
   'th.custody': 'Affido condiviso',
   'th.custody.d': 'Vedi da chi è il bambino oggi e prepara il prossimo passaggio tra le due case.',

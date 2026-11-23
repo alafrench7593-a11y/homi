@@ -387,7 +387,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.kid_card.d': 'Erstelle ein Infoblatt mit Allergien und Gewohnheiten deines Kindes für Betreuende.',
   'th.kid_card.k': 'Infoblatt; Allergien; Gewohnheiten; was beruhigt; Babysitter; Tagesmutter; Großeltern; teilen; weitergeben; Hinweise; betreuen lassen',
   'th.kid_routines': 'Routinen in Bildern',
-  'th.kid_routines.d': 'Erstelle Morgen- und Abendroutinen in Bildern, die dein Kind selbst abhakt.',
+  'th.kid_routines.d': 'Morgen- und Abendroutinen in Bildern zum Ausdrucken, ohne Bildschirm.',
   'th.kid_routines.k': 'Routine; Routinen; Morgen; Abend; Piktogramme; Bilder; Selbstständigkeit; für die Schule fertig machen; Ritual; Routineplan',
   'th.custody': 'Wechselmodell',
   'th.custody.d': 'Sieh, bei wem das Kind heute ist, und bereite die nächste Übergabe vor.',

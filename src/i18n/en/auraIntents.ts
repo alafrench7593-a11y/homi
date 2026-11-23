@@ -88,4 +88,12 @@ export const auraIntents = {
   "aura.it5.openDiaper": "Open Nappies",
   "aura.it5.feeds": "{name}: {count} feed(s) since midnight, {d} in total (from what was logged).",
   "aura.it5.noFeed": "No feed logged for {name} since midnight.",
+  "aura.it6.print.routine": "Print a routine",
+  "aura.it6.print.nownext": "Print a Now / Next",
+  "aura.it6.print.cards": "Make communication cards",
+  "aura.it6.print.story": "Write a social story",
+  "aura.it6.print.checklist": "Print a checklist",
+  "aura.it6.printHint": "You prepare and check it; your child uses it on paper, no screen.",
+  "aura.it6.routine": "Breaking getting ready into small visible steps often helps: one action per card, in order, shown where it happens. You choose the steps; nothing is saved without you.",
+  "aura.it6.routineOpen": "Set up the routine step by step",
 };

@@ -88,4 +88,12 @@ export const auraIntents = {
   "aura.it5.openDiaper": "Abrir Pañales",
   "aura.it5.feeds": "{name}: {count} toma(s) desde medianoche, {d} en total (según lo registrado).",
   "aura.it5.noFeed": "No hay tomas de {name} desde medianoche.",
+  "aura.it6.print.routine": "Imprimir una rutina",
+  "aura.it6.print.nownext": "Imprimir un Ahora / Después",
+  "aura.it6.print.cards": "Preparar tarjetas de comunicación",
+  "aura.it6.print.story": "Escribir una historia social",
+  "aura.it6.print.checklist": "Imprimir una lista",
+  "aura.it6.printHint": "Tú lo preparas y revisas; tu hijo lo usa en papel, sin pantalla.",
+  "aura.it6.routine": "Dividir la preparación en pasos pequeños y visibles suele ayudar: una acción por tarjeta, en orden, colocada donde se hace. Tú eliges los pasos; nada se guarda sin ti.",
+  "aura.it6.routineOpen": "Preparar la rutina paso a paso",
 };

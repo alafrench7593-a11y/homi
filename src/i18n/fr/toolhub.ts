@@ -402,7 +402,7 @@ export const toolhub = {
   'th.kid_card.d': 'Prépare une fiche avec les allergies et les habitudes de ton enfant pour qui le garde.',
   'th.kid_card.k': 'fiche; allergies; habitudes; ce qui l’apaise; baby-sitter; nounou; grands-parents; partager; transmettre; consignes; faire garder',
   'th.kid_routines': 'Routines en images',
-  'th.kid_routines.d': 'Crée les routines du matin et du soir en images, que ton enfant coche lui-même.',
+  'th.kid_routines.d': 'Routines du matin et du soir en images, à imprimer et afficher, sans écran.',
   'th.kid_routines.k': 'routine; routines; matin; soir; pictogrammes; images; autonomie; se préparer pour l’école; rituel; tableau de routine',
   'th.custody': 'Garde alternée',
   'th.custody.d': 'Vois chez qui est l’enfant aujourd’hui et prépare la prochaine passation entre les foyers.',

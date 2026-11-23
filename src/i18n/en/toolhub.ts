@@ -387,7 +387,7 @@ export const toolhub: Messages<typeof fr> = {
   'th.kid_card.d': 'Prepare a sheet with your child’s allergies and habits, to share with whoever looks after them.',
   'th.kid_card.k': 'sheet; allergies; habits; what soothes them; babysitter; childminder; grandparents; share; hand over; instructions',
   'th.kid_routines': 'Picture routines',
-  'th.kid_routines.d': 'Create morning and evening routines in pictures that your child ticks off themselves.',
+  'th.kid_routines.d': 'Morning and evening routines in pictures, to print and put up, no screen.',
   'th.kid_routines.k': 'routine; routines; morning; evening; pictograms; pictures; independence; getting ready for school; ritual; routine chart',
   'th.custody': 'Shared custody',
   'th.custody.d': 'See whose home the child is at today and prepare the next hand-over between the two households.',

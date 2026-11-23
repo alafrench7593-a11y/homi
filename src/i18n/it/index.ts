@@ -123,3 +123,4 @@ export { webDemo } from './webDemo';
 export { finishTrack } from './finishTrack';
 export { finishMeals } from './finishMeals';
 export { finishFamily } from './finishFamily';
+export { printStudio } from './printStudio';

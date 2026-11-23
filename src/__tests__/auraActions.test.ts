@@ -213,3 +213,20 @@ describe('guidage sans IA', () => {
     expect(r).toMatchObject({ status: 'ready', href: '/family/load', hint: 'th.mental_load.problem' });
   });
 });
+
+describe('Print Studio et routines (Neuro)', () => {
+  it.each([
+    ['Mon fils de 7 ans avec TDAH met 45 minutes à se préparer', { kind: 'routine_help' }],
+    ['le matin c’est la galère pour s’habiller', { kind: 'routine_help' }],
+    ['getting ready takes forever, he has ADHD', { kind: 'routine_help' }],
+    ['je veux imprimer sa routine du soir', { kind: 'print_support', support: 'routine' }],
+    ['fais-moi des cartes de communication', { kind: 'print_support', support: 'cards' }],
+    ['une histoire sociale pour le dentiste', { kind: 'print_support', support: 'story' }],
+    ['un tableau maintenant ensuite', { kind: 'print_support', support: 'nownext' }],
+  ])('« %s »', (q, expected) => { expect(matchIntent(q)).toEqual(expected); });
+  it('destinations réelles (Print Studio, Routines)', () => {
+    expect(resolveIntent({ kind: 'print_support', support: 'cards' }, ctx())).toMatchObject({ status: 'ready', href: '/print?kind=cards' });
+    const r = resolveIntent({ kind: 'routine_help' }, ctx());
+    expect(r.status === 'list' && r.items.map((x) => x.href)).toEqual(['/family/kid-routines', '/print?kind=routine', '/print?kind=nownext']);
+  });
+});

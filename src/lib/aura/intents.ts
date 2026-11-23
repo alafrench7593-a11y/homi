@@ -38,13 +38,17 @@ export type AuraIntent =
   | { kind: 'bottles_today'; childId?: string | null }
   /** Aura 2.0 — lectures sans IA : dernière couche ; tétées du jour */
   | { kind: 'last_diaper'; childId?: string | null }
-  | { kind: 'feeds_today'; childId?: string | null };
+  | { kind: 'feeds_today'; childId?: string | null }
+  /** Print Studio : support imprimable (routine, Maintenant/Ensuite, cartes, histoire sociale, checklist) */
+  | { kind: 'print_support'; support: 'routine' | 'nownext' | 'cards' | 'story' | 'checklist' }
+  /** Routine difficile (« met 45 minutes à se préparer ») : routine en micro-étapes, imprimable, validée par le parent */
+  | { kind: 'routine_help' };
 
 /** Jour cité, gardé RELATIF (résolu avec l'horloge du moment) : +n jours, prochain jour de semaine (0 = dimanche), JJ/MM. */
 export type When = { rel: number } | { weekday: number } | { day: number; month: number; year?: number };
 
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -98,6 +102,15 @@ export function matchIntent(question: string): AuraIntent | null {
   if (side && has(q, /\b(sein|tete|tetee|allait\w*|breast\w*|nurs\w*|feed\w*)\b/) && has(q, /\b(commence\w*|demarre\w*|lance\w*|start\w*|begin\w*|mets|met|je donne|donne)\b/)) {
     return { kind: 'start_breastfeed', side };
   }
+  // 02 bis) Supports imprimables et routines (TDAH, autisme ou simplement des matins difficiles)
+  const print = has(q, /\b(imprim\w*|pdf|printable|print)\b/);
+  if (has(q, /\b(histoires? sociales?|social stor\w*)\b/)) return { kind: 'print_support', support: 'story' };
+  if (has(q, /\b(cartes? de communication|pictogrammes?|pictos?|communication cards?|picture cards?|pecs)\b/)) return { kind: 'print_support', support: 'cards' };
+  if (has(q, /\b(maintenant ensuite|now next|first then|d abord ensuite)\b/)) return { kind: 'print_support', support: 'nownext' };
+  if (print && has(q, /\b(checklist|liste a cocher|check list)\b/)) return { kind: 'print_support', support: 'checklist' };
+  if (print && has(q, /\b(routine\w*|planning)\b/)) return { kind: 'print_support', support: 'routine' };
+  if (has(q, /\b(routine\w*|se preparer|s habiller|habillage|get(ting)? ready|get dressed|morning routine|bedtime routine)\b/)
+    && has(q, /\b(met|mets|prend|prends|minutes?|heure|long|lent\w*|difficile\w*|galere|crise\w*|takes?|slow|hard|struggle\w*|tdah|adhd|autis\w*|tsa)\b/)) return { kind: 'routine_help' };
   // 03) Lectures : médicament donné ? biberons du jour ?
   if (has(q, /\b(medicament\w*|medoc\w*|traitement\w*|sirop|doliprane|vitamine\w*|dose|medicine\w*|medication\w*|meds|syrup)\b/) && has(q, /\b(donne\w*|pris|prise|est ce que|j ai|deja|given|gave|took|taken|did i|have i|has he|has she)\b/)) {
     return { kind: 'med_check', period: has(q, /\b(matin|morning)\b/) ? 'morning' : 'today' };
@@ -259,6 +272,15 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
       href: `/appointments?new=quick&at=${encodeURIComponent(at.toISOString())}&title=${encodeURIComponent(title)}${childQs}`,
       hint: ctx.t(intent.time ? 'aura.it3.apptHint' : 'aura.it3.apptHintNoTime'), ...(who ? { childName: who.first_name } : {}),
     };
+  }
+
+  if (intent.kind === 'print_support') return { status: 'ready', label: ctx.t(`aura.it6.print.${intent.support}`), href: `/print?kind=${intent.support}`, hint: ctx.t('aura.it6.printHint') };
+  if (intent.kind === 'routine_help') {
+    return { status: 'list', label: ctx.t('aura.it6.routine'), items: [
+      { label: ctx.t('aura.it6.routineOpen'), href: '/family/kid-routines' },
+      { label: ctx.t('aura.it6.print.routine'), href: '/print?kind=routine' },
+      { label: ctx.t('aura.it6.print.nownext'), href: '/print?kind=nownext' },
+    ] };
   }
 
   const child = pickChild(intent, ctx);

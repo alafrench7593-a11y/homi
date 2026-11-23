@@ -88,4 +88,12 @@ export const auraIntents = {
   "aura.it5.openDiaper": "Apri Pannolini",
   "aura.it5.feeds": "{name}: {count} poppata/e da mezzanotte, {d} in totale (secondo le registrazioni).",
   "aura.it5.noFeed": "Nessuna poppata di {name} da mezzanotte.",
+  "aura.it6.print.routine": "Stampa una routine",
+  "aura.it6.print.nownext": "Stampa un Ora / Dopo",
+  "aura.it6.print.cards": "Prepara carte di comunicazione",
+  "aura.it6.print.story": "Scrivi una storia sociale",
+  "aura.it6.print.checklist": "Stampa una checklist",
+  "aura.it6.printHint": "Lo prepari e lo rileggi tu; il bambino lo usa su carta, senza schermo.",
+  "aura.it6.routine": "Dividere la preparazione in piccoli passi visibili spesso aiuta: un’azione per carta, in ordine, appesa dove si fa. Scegli tu i passi; nulla viene salvato senza di te.",
+  "aura.it6.routineOpen": "Prepara la routine passo per passo",
 };

@@ -88,4 +88,12 @@ export const auraIntents = {
   "aura.it5.openDiaper": "Windeln öffnen",
   "aura.it5.feeds": "{name}: {count} Stillmahlzeit(en) seit Mitternacht, insgesamt {d} (laut Einträgen).",
   "aura.it5.noFeed": "Seit Mitternacht ist kein Stillen von {name} eingetragen.",
+  "aura.it6.print.routine": "Routine drucken",
+  "aura.it6.print.nownext": "Jetzt / Danach drucken",
+  "aura.it6.print.cards": "Kommunikationskarten erstellen",
+  "aura.it6.print.story": "Soziale Geschichte schreiben",
+  "aura.it6.print.checklist": "Checkliste drucken",
+  "aura.it6.printHint": "Du bereitest es vor und prüfst es; dein Kind nutzt es auf Papier, ohne Bildschirm.",
+  "aura.it6.routine": "Das Fertigmachen in kleine sichtbare Schritte zu teilen hilft oft: eine Handlung pro Karte, der Reihe nach, dort aufgehängt, wo sie passiert. Du wählst die Schritte; nichts wird ohne dich gespeichert.",
+  "aura.it6.routineOpen": "Routine in Schritten einrichten",
 };

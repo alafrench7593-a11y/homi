@@ -144,7 +144,7 @@ export const tools6: Messages<typeof fr> = {
   'rc.official': 'See all recalls on RappelConso',
   'rc.history': 'My scanner history',
 
-  'kr.intro': 'One picture per step, which your child taps once it’s done. They can see where they are without being told again: calmer mornings and evenings.',
+  'kr.intro': 'One picture per step, printed and put up where it happens (bathroom, hallway). Your child sees where they are without being told again, and without a screen: calmer mornings and evenings.',
   'kr.none': 'No routine yet',
   'kr.noneD': 'Start with the morning or evening one: the steps are already suggested, just adapt them.',
   'kr.new': 'New routine',

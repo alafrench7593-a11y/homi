@@ -254,6 +254,7 @@ export const APP_ROUTES: readonly string[] = [
   '/pregnancy/start',
   '/pregnancy/weight',
   '/premium',
+  '/print',
   '/products',
   '/products/[id]',
   '/products/compare',

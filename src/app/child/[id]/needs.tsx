@@ -204,6 +204,8 @@ function FollowUp({ childId }: { childId: string }) {
       </Row>
       <Button label={tr('nd.entry.add')} icon="plus" onPress={() => { setKind(filter ?? 'observation'); setOpen(true); }} testID="entry-add" />
       <ToolLinks ids={['appointments', 'documents']} subject={childId ? { type: 'child', id: childId } : null} testID="needs-tools" />
+      {/* Kit imprimable : routines, Maintenant / Ensuite, cartes de communication, histoires sociales (sans écran pour l'enfant) */}
+      <Button label={tr('pst.title')} icon="printer" variant="secondary" onPress={() => router.push('/print?kind=cards' as never)} testID="needs-print" />
       {isLoading && !entries ? <Skeleton rows={3} /> : entriesQ.isError && !entries ? (
         <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
       ) : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (

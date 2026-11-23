@@ -2,6 +2,7 @@
  * Export RGPD de toutes les données de la personne : fichier JSON (portabilité) et PDF lisible.
  * Les fichiers sont créés sur l'appareil puis partagés ; rien n'est envoyé ailleurs.
  */
+import { printHtmlWeb } from '@/lib/print/printSheet';
 import { Platform } from 'react-native';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -164,7 +165,8 @@ export async function exportPdf(data: unknown, email: string | null): Promise<'f
   const Print = require('expo-print') as typeof import('expo-print');
   const html = exportHtml(data, email);
   if (Platform.OS === 'web') {
-    await Print.printAsync({ html });
+    // expo-print web imprimerait la page de l'appli, pas l'export : cadre isolé (src/lib/print/printSheet.ts)
+    await printHtmlWeb(html);
     return 'print';
   }
   purgeExportFiles();

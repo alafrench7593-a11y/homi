@@ -158,7 +158,11 @@ export default function KidRoutines() {
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginVertical: spacing.xs }}>
               {r.steps.map((s, i) => <Picto key={i} name={s.icon} size={26} />)}
             </View>
-            <Button label={tr('kr.kidMode')} icon="smile" onPress={() => router.push(`/family/kid-routine/${r.id}` as never)} testID={`kr-open-${r.id}`} />
+            <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+              <Button label={tr('kr.kidMode')} icon="smile" onPress={() => router.push(`/family/kid-routine/${r.id}` as never)} testID={`kr-open-${r.id}`} style={{ flex: 1 }} />
+              {/* Sans écran pour l'enfant : la routine imprimée, à afficher dans la chambre ou la salle de bain */}
+              <Button label={tr('pst.print')} icon="printer" variant="secondary" onPress={() => router.push(`/print?kind=routine&routine=${r.id}` as never)} testID={`kr-print-${r.id}`} style={{ flex: 1 }} />
+            </View>
           </Card></MotionItem>
         );
       })}</MotionList>}
