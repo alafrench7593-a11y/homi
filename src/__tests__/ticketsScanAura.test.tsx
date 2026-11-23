@@ -266,7 +266,8 @@ describe('Ticket 5 — écran d’Aura (réponses du serveur SIMULÉES)', () => 
     for (const code of ['ai_disabled', 'ai_not_configured', 'coming_soon']) {
       fail(code, 503);
       const r = await render(<AuraScreen />);
-      await say(r, 'Où noter sa sieste ?');
+      // question qui demande une interprétation (une demande évidente reçoit une carte locale, sans serveur)
+      await say(r, 'Quel outil pour les courses ?');
       await until(() => has(r, 'aura-local-reply'));
       expect([code, allText(r)]).toEqual([code, expect.stringContaining('Mode local, sans IA')]);
       expect(allText(r)).toContain('Le serveur a répondu que l’IA est coupée');
@@ -302,9 +303,19 @@ describe('Ticket 5 — écran d’Aura (réponses du serveur SIMULÉES)', () => 
     r.unmount();
   });
 
-  it('démonstration de bout en bout (modèle SIMULÉ) : « Où noter sa sieste ? » propose d’ouvrir le suivi du sommeil', async () => {
+  it('demande évidente (« Où noter sa sieste ? ») : carte d’action LOCALE, aucun appel au serveur ni crédit', async () => {
+    const inv = jest.spyOn(auraApi, 'askAura');
     const r = await render(<AuraScreen />);
     await say(r, 'Où noter sa sieste ?');
+    await until(() => has(r, 'aura-intent'));
+    expect(inv).not.toHaveBeenCalled();
+    expect(allText(r)).toContain('sans IA ni crédit');
+    r.unmount();
+  });
+
+  it('démonstration de bout en bout (modèle SIMULÉ) : une question ouverte reçoit une réponse et une carte « Ouvrir … »', async () => {
+    const r = await render(<AuraScreen />);
+    await say(r, 'Quel outil pour les courses ?');
     await until(() => has(r, 'aura-reply'));
     expect(allText(r)).toContain('Démonstration : réponses simulées, aucune IA');
     expect(r.root.findAll((n) => typeof n.props.testID === 'string' && /^aura-action-open/.test(n.props.testID)).length).toBeGreaterThan(0);

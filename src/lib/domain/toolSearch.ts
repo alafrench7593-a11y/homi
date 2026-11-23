@@ -218,6 +218,16 @@ export function searchCatalog(tools: readonly CatalogTool[], query: string, max 
       if (prev) prev.score = Math.max(prev.score, boost); else hits.push({ tool, score: boost });
     });
   }
+  // nom EXACT d'un outil (« Mon poids pendant la grossesse ») : il passe devant les intentions et les voisins (audit du
+  // 23/11/2026 : 4 outils sur 127 en français, 6 en anglais n'étaient pas retrouvés par leur propre nom)
+  const exact = entries.filter((e) => ` ${foldText(e.tool.label)} ` === folded);
+  if (exact.length) {
+    const top = Math.max(1, ...hits.map((h) => h.score));
+    for (const e of exact) {
+      const prev = hits.find((h) => h.tool.id === e.tool.id);
+      if (prev) prev.score = top * 3; else hits.push({ tool: e.tool, score: top * 3 });
+    }
+  }
   if (!hits.length) return { results: [], understood: false, tokens };
   // une fonction nommée peut être indexée deux fois (entrée à plat ET fonction de son outil) : une seule ligne
   const unique = new Map<string, SearchHit>();
