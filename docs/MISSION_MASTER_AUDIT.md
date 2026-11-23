@@ -13,7 +13,7 @@ Méthode : registre des outils (`src/lib/journeys/tools.ts`) et routes réelles,
 | Food Explorer | `child/[id]/discoveries`, `meals/*` | découvertes, repas, courses | réutilisé |
 | Santé Express | `health-tracking`, `appointments`, `consult/questions`, `documents` | complet | réutilisé ; Aura prépare les RDV |
 | Parent Pause | `family/exhausted`, `offduty`, `me-time`, `sos` | complet | réutilisé |
-| Garde Secours | `childcare`, `family/urgent`, `custody` | partiel (pas de contacts « garde de secours » dédiés) | à faire |
+| Garde Secours | `childcare`, `family/urgent`, `custody`, cercle `family/solo` | fait (23/11) : SMS prérempli depuis Urgence, fiche de garde imprimable (allergies, traitements, contacts, profil sensoriel) | réutilisé, sans nouvelle table |
 | Autonomie | `kid_routines`, `kid_steps` | routines | supports imprimables ajoutés |
 | École | `child/[id]/school`, `homework` | complet | réutilisé |
 | Coparentalité | `family/custody`, `expenses`, `history`, droits par enfant (RLS) | complet, droits corrigés 23/11 | réutilisé |

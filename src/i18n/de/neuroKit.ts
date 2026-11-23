@@ -35,4 +35,6 @@ export const neuroKit = {
   "nds.sit.intensity": "Intensität (1 bis 5)",
   "nds.sit.err": "Gib an, was passiert ist.",
   "nds.sit.helps": "Was am häufigsten hilft: {list}",
+  "nds.care.print": "Betreuungsblatt drucken",
+  "nds.care.printTitle": "Betreuungsblatt · {name}",
 } as const;

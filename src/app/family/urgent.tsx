@@ -4,13 +4,14 @@
  */
 import React, { useRef, useState } from 'react';
 import { glassEdge } from '@/components/glass/GlassRim';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
 import { useToast } from '@/components/Overlays';
-import { callNumber, goBack } from '@/lib/links';
-import { haptic, Icon, type IconName, Text } from '@/components/ui';
+import { callNumber, goBack, openLink } from '@/lib/links';
+import { smsLink } from '@/lib/domain/soloParent';
+import { Button, haptic, Icon, type IconName, Text } from '@/components/ui';
 import { ChildEssentials } from '@/features/familyLoad';
 import { useBatchTasks, useCreateRequest, useFamilyTasks } from '@/lib/data/hooks-family-load';
 import { useTrustedContacts } from '@/lib/data/hooks-postpartum';
@@ -74,7 +75,9 @@ export default function OrgEmergency() {
       <Big icon="phone" label={tr('u2.urgent.call_trusted')} onPress={() => setShowContacts((v) => !v)} />
       {showContacts ? (
         <View style={{ gap: spacing.xs }}>
-          <MotionList style={{ gap: spacing.xs }}>{(contacts ?? []).filter((c) => c.phone).map((c) => <MotionItem key={c.id}><Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => callNumber(c.phone!, toast)} /></MotionItem>)}</MotionList>
+          <MotionList style={{ gap: spacing.xs }}>{(contacts ?? []).filter((c) => c.phone).map((c) => <MotionItem key={c.id}><View style={{ gap: 4 }}><Big key={c.id} icon="phone-call" label={`${c.name}${c.relation ? ` (${c.relation})` : ''}`} onPress={() => callNumber(c.phone!, toast)} />
+            {/* Garde de secours : SMS déjà écrit, envoyé par le parent lui-même depuis Messages */}
+            <Button label={tr('sol.ask.sms')} icon="message-circle" variant="secondary" size="sm" testID={`urgent-sms-${c.id}`} onPress={() => openLink(smsLink(c.phone!, tr('sol.ask.emergency', { name: c.name }), Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web'), toast)} /></View></MotionItem>)}</MotionList>
           {!(contacts ?? []).some((c) => c.phone) ? <Text>{tr('u2.urgent.no_number')}</Text> : null}
         </View>
       ) : null}
