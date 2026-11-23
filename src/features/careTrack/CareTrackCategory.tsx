@@ -30,7 +30,7 @@ import type { Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
-interface LineSpec { key: string; icon: IconName; label: string; value: string; sub?: string | null; onPress: () => void }
+export interface LineSpec { key: string; icon: IconName; label: string; value: string; sub?: string | null; onPress: () => void }
 
 function Line({ l }: { l: LineSpec }) {
   const t = useTheme();
@@ -49,7 +49,8 @@ function Line({ l }: { l: LineSpec }) {
   );
 }
 
-function Panel({ lines, testID }: { lines: LineSpec[]; testID: string }) {
+/** Panneau « Noté aujourd'hui » d'une catégorie (aussi utilisé par les repas et les vaccins, finishMeals). */
+export function Panel({ lines, testID }: { lines: LineSpec[]; testID: string }) {
   if (!lines.length) return null;
   return (
     <Glass variant="card" radius={radius.xl} style={{ marginBottom: spacing.sm }} contentStyle={{ padding: spacing.md, gap: 4 }} testID={testID}>
