@@ -115,6 +115,7 @@ export { healthTrack } from './healthTrack';
 export { liquidLab } from './liquidLab';
 export { homeTrack } from './homeTrack';
 export { auraIntents } from './auraIntents';
+export { nextStep } from './nextStep';
 export { restTrack } from './restTrack';
 export { readTrack } from './readTrack';
 export { careTrack } from './careTrack';

@@ -13,6 +13,7 @@
  * édition SUR PLACE (le même éditeur que Réglages › Mon accueil).
  * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
+import { NextStepCard } from '@/features/nextStep/NextStepCard';
 import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
 import { BottleHomeCard } from '@/features/quickTrack/BottleLog';
@@ -173,7 +174,7 @@ export default function Home() {
   const art = scope.scope === 'pregnancy' ? 'grossesse' : scope.scope === 'baby' || scope.scope === 'postpartum' ? 'bebe' : scope.scope === 'child' ? 'enfants' : cycleMode ? 'cycle' : 'foyer';
   const cards: Record<HomeModuleKey, React.ReactNode> = {
     // (2) Prochaine action importante : prochain événement, puis ce qui attend une réponse
-    next: <TodayNext scene={scene} art={art} compactEmpty />,
+    next: <View style={{ gap: spacing.sm }}>{childScope && child && !mainLoading ? <NextStepCard child={child} /> : null}<TodayNext scene={scene} art={art} compactEmpty /></View>,
     // (3) Actions rapides du profil (personnalisables) ; carrousel : son défilement passe avant le glissement de profil
     quick: mainLoading ? null : <DailyActions />,
     // (4) Résumé du profil sélectionné
