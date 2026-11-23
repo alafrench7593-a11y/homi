@@ -4,6 +4,7 @@
  * sujets consultés, publications aimées — calculé sur le téléphone), « Abonnements », « Récent », « Enregistrés ».
  * Recherche de sujets et de membres, catégories principales + « Toutes les catégories », groupes, filtres avancés (Premium),
  * discussions qui attendent une réponse, bouton « Publier ». Aucun classement de membres.
+ * 22/11/2026 : « Reprendre » (favoris enregistrés, dernière catégorie lue) quand la donnée existe ; fil choisi dans l.adresse.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -19,6 +20,8 @@ import { CategorySheet, PostCard, spaceIcon } from '@/features/community';
 import { MessagesHeaderButton } from '@/features/communityMessages';
 import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { FeedTabs, FiltersButton, FiltersSheet, FollowButton, MemberRow } from '@/features/communitySocial';
+import { CommunityResume } from '@/features/restTrack/CommunityResume';
+import { lastReadCategory } from '@/lib/domain/restTrack';
 import { useActivePregnancy, useCommunityProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useCommunityFeed, useCommunitySearch, useSavedPosts, useSpaces } from '@/lib/data/hooks-community';
 import { type AdvancedFilters, useAdvancedSearch, useForumSubscriptions, useGroups, useSavedFolders, useSearchMembers, useToggleForumSubscription, useTopicViews } from '@/lib/data/hooks-social';
@@ -90,6 +93,9 @@ export default function Community() {
   }), [spaces.mine, subs.ids, children, pregnancy, views.map, groups.data, feed.data]);
 
   const current = spaces.all.find((f) => f.id === forumId) ?? null;
+  const lastView = lastReadCategory(views.data ?? []);
+  const lastForum = lastView ? spaces.all.find((f) => f.id === lastView.forum_id) ?? null : null;
+  const lastRead = lastForum && lastView?.last_at ? { forum: lastForum, at: lastView.last_at } : null;
   const forumOf = (p: FeedPost) => spaces.all.find((f) => f.id === p.forum_id) ?? null;
   const active = filters ? advanced : searching ? search : mode === 'saved' ? saved : feed;
   const listLoading = active.isLoading && !active.data && !(searching && memberOnly);
@@ -140,6 +146,11 @@ export default function Community() {
           </Card>
         </Tappable>
       ) : null}
+      {/* 22/11/2026 : reprendre (favoris enregistrés, dernière catégorie lue) — seulement si la donnée existe */}
+      {!searching && mode === 'foryou' && !forumId && !filters ? (
+        <CommunityResume savedCount={saved.data?.length ?? 0} last={lastRead ? { title: lastRead.forum.title, at: lastRead.at } : null}
+          onSaved={() => { setMode('saved'); router.setParams({ mode: 'saved' } as never); }} onLast={() => lastRead && setForumId(lastRead.forum.id)} />
+      ) : null}
       <Field label={tr('cm1.feed.search')} placeholder={tr('cm1.feed.searchPlaceholder')} value={q} onChangeText={setQ} returnKeyType="search" autoCorrect={false} autoCapitalize="none" testID="community-search" />
       {searching ? (
         members.data?.length ? (
@@ -151,7 +162,7 @@ export default function Community() {
           </Card>
         ) : memberOnly && !members.isLoading ? <Text variant="small" muted>{tr('cm1.feed.noMember')}</Text> : null
       ) : (
-        <FeedTabs value={mode} onChange={(m) => { setMode(m); setFilters(null); }} options={MODES} />
+        <FeedTabs value={mode} onChange={(m) => { setMode(m); setFilters(null); router.setParams({ mode: m === 'foryou' ? undefined : m } as never); }} options={MODES} />
       )}
       {!searching ? (
         <Row gap={6}>

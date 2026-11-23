@@ -2,6 +2,8 @@
  * Espace Nounou d'un enfant : carnet de liaison du jour (chronologie, auteur et heure de chaque saisie), ajout rapide
  * à une main, sieste en cours terminée d'un appui, liens vers la journée, les photos, les messages et — pour les
  * parents — les accès et réglages. Les saisies sont celles du suivi existant (mêmes tables).
+ * 22/11/2026 : journal d'un jour choisi (jour dans l'adresse), saisies du jour en grand, heure en colonne fixe,
+ * correction de l'heure et de la note dans une fiche (CareJournal).
  */
 import React, { useEffect } from 'react';
 import { AppState, View } from 'react-native';
@@ -21,7 +23,9 @@ import { useOfflineStore } from '@/lib/offline';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { purgeExpiredCarePhotos, useCareChild, useCareDay, useCareMemberNames, useEndSleep } from '@/lib/data/hooks-nounou';
 import { flushCareOutbox } from '@/lib/nounou/photoUpload';
-import { AbsenceNote, CareRow, useAuthorLabel } from '@/features/nounou/CareUI';
+import { AbsenceNote, useAuthorLabel } from '@/features/nounou/CareUI';
+import { CareDayHero, CareDayStepper, CareJournal } from '@/features/restTrack/CareJournal';
+import { initialDay } from '@/lib/domain/journalTrack';
 
 const QUICK: { type: string; icon: IconName; label: TKey }[] = [
   { type: 'bottle', icon: 'droplet', label: 'nn.kind.bottle' },
@@ -48,11 +52,14 @@ function QuickTile({ icon, label, onPress, testID, tone }: { icon: IconName; lab
 }
 
 export default function CareSpace() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, day: dayParam } = useLocalSearchParams<{ id: string; day?: string }>();
   const me = useUserId();
   const toast = useToast();
   const { child, role, loading, photosAllowed } = useCareChild(id);
-  const day = todayISO();
+  // 22/11/2026 : jour du journal gardé dans l'adresse (« ?day= ») ; jamais après aujourd'hui
+  const today = todayISO();
+  const picked = initialDay(dayParam, new Date());
+  const day = picked > today ? today : picked;
   const dayQ = useCareDay(child ? id : null, day);
   const names = useCareMemberNames(child?.household_id);
   const authorOf = useAuthorLabel(names.data);
@@ -78,7 +85,7 @@ export default function CareSpace() {
     );
   }
   const items = dayQ.items ?? [];
-  const openSleep = items.find((i) => i.kind === 'sleep' && !i.endAt && !i.pending);
+  const openSleep = day === today ? items.find((i) => i.kind === 'sleep' && !i.endAt && !i.pending) : undefined;
   const go = (type: string) => router.push(`/garde/${id}/ajouter?type=${type}` as never);
   return (
     <Screen back title={tr('nn.space.of', { name: child.first_name })} subtitle={role === 'caregiver' ? tr('nn.space.subCaregiver') : tr('nn.space.subParent')} tool={false}>
@@ -96,18 +103,18 @@ export default function CareSpace() {
         {role === 'caregiver' && photosAllowed ? <QuickTile icon="camera" label={tr('nn.kind.photo')} onPress={() => router.push(`/garde/${id}/photo` as never)} testID="care-quick-photo" /> : null}
         <QuickTile icon="alert-triangle" label={tr('nn.kind.important')} tone="danger" onPress={() => go('important')} testID="care-quick-important" />
       </View>
-      <Card>
-        <Text variant="heading">{tr('nn.journal.today')}</Text>
-        {dayQ.isLoading && !dayQ.items ? <Skeleton rows={3} /> : dayQ.isError && !dayQ.items ? (
-          <ErrorView error={dayQ.error} onRetry={() => void dayQ.refetch()} />
-        ) : !items.length ? (
-          <Text muted style={{ marginTop: spacing.xs }} testID="care-journal-empty">{tr('nn.journal.empty')}</Text>
-        ) : items.map((it) => (
-          <CareRow key={`${it.kind}-${it.id}`} item={it} author={authorOf(it.authorId, it.origin)} ending={endSleep.isPending}
-            onEndSleep={() => endSleep.mutateAsync(it.id).catch((e) => toast(friendlyError(e), 'error'))} />
-        ))}
-        <View style={{ marginTop: spacing.xs }}><AbsenceNote /></View>
-      </Card>
+      {/* 22/11/2026 : journal de garde d'un jour (heure en colonne fixe, fiche de correction) — CareJournal */}
+      <Text variant="heading" accessibilityRole="header">{tr('nn.journal.today')}</Text>
+      <CareDayStepper day={day} onSelect={(d) => router.setParams({ day: d === today ? undefined : d } as never)} />
+      {dayQ.isLoading && !dayQ.items ? <Skeleton rows={3} /> : dayQ.isError && !dayQ.items ? (
+        <ErrorView error={dayQ.error} onRetry={() => void dayQ.refetch()} />
+      ) : (
+        <>
+          <CareDayHero items={items} day={day} authorOf={authorOf} />
+          <CareJournal items={items} authorOf={authorOf} />
+        </>
+      )}
+      <AbsenceNote />
       <View style={{ gap: spacing.xs }}>
         <Button label={tr('nn.day.title', { name: child.first_name })} icon="calendar" variant="secondary" full onPress={() => router.push(`/garde/${id}/journee` as never)} testID="care-open-day" />
         <Button label={tr('nn.album.title')} icon="image" variant="secondary" full onPress={() => router.push(`/garde/${id}/photos` as never)} testID="care-open-photos" />

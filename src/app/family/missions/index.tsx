@@ -7,6 +7,7 @@
  * échéance, et pour mes missions l'étape suivante « Je m'en occupe » / « Mission terminée ») ; une mission terminée ou
  * annulée quitte la liste et rejoint « Terminées » (historique paginé). Toucher une ligne ouvre le détail.
  * Pas de classement, pas de compteur par personne, pas de « vu ».
+ * 22/11/2026 : « Fait, jour par jour » (MissionsDays) : missions faites le jour choisi, qui et quand, semaine touchable.
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -20,6 +21,7 @@ import { MatteSurface, useListLayout } from '@/features/scene';
 import { MissionRow, MissionTiles } from '@/features/missions/MissionCard';
 import { MissionQuickAction } from '@/features/missions/MissionQuickAction';
 import { DemoPerson } from '@/features/missions/DemoPerson';
+import { MissionsDays } from '@/features/restTrack/MissionsDays';
 import { usePeople } from '@/lib/data/hooks-family-load';
 import { useMissions } from '@/lib/data/hooks-missions';
 import { isTerminal, missionHref } from '@/lib/domain/missions';
@@ -32,7 +34,7 @@ export default function Missions() {
   const params = useLocalSearchParams<{ tab?: string }>();
   const [tab, setTab] = useState<Tab>(params.tab === 'sent' ? 'sent' : 'received');
   const q = useMissions();
-  const { personOf, people } = usePeople();
+  const { personOf, people, labelOf } = usePeople();
   const layout = useListLayout();
   const m = useMotion();
   // Missions qui viennent d'être terminées ici : la coche s'est tracée, la ligne part tout de suite (sans attendre le serveur)
@@ -78,6 +80,8 @@ export default function Missions() {
           </MatteSurface>
         </Cascade>
       )}
+      {/* 22/11/2026 : fait, jour par jour (qui, quand) — jour dans l'adresse */}
+      {q.data ? <><Text variant="heading" accessibilityRole="header">{tr('rs.mis.title')}</Text><MissionsDays all={q.all} labelOf={labelOf} /></> : null}
       <View testID="mission-history-entry">
         <ListRow icon="check-circle" title={tr('cp2.mis.history')} subtitle={doneCount ? tr('cp2.mis.historySub', { count: doneCount }) : tr('cp2.mis.historyNone')}
           onPress={() => router.push('/family/missions/done')} testID="mission-history" />
