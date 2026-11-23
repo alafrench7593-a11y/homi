@@ -1,3 +1,4 @@
+import { demoFamilyPlans, demoPlans } from '@/lib/premium/plans';
 /**
  * Données du paywall « première réussite » : catalogue (boutique ou grille de démonstration), droits du compte, variante A/B.
  * Le catalogue est relu à chaque changement de compte : l'éligibilité à l'essai dépend du compte (demo_trial_used,
@@ -24,7 +25,7 @@ export function usePremiumState(): boolean | undefined {
   return q.data === undefined ? undefined : q.data === true;
 }
 
-export function useOfferCatalog(): { cards: OfferCard[]; catalog: CatalogState; refetch: () => void; mode: string } {
+export function useOfferCatalog(showcase = false): { cards: OfferCard[]; catalog: CatalogState; refetch: () => void; mode: string } {
   useBackendMode(); // relu quand la démonstration s'ouvre
   const { session } = useAuth();
   const mode = getPurchaseMode();
@@ -36,6 +37,9 @@ export function useOfferCatalog(): { cards: OfferCard[]; catalog: CatalogState; 
   const cards = useMemo(() => offerCards(prem.data ?? [], fam.data ?? [], localeTag()), [prem.data, fam.data]);
   const networkError = /network|offline|internet|fetch|timed? ?out/i.test(String((prem.error as { message?: string } | null)?.message ?? ''));
   const catalog = catalogState({ mode, online, isLoading: prem.isLoading, isError: prem.isError, count: (prem.data ?? []).length, web: Platform.OS === 'web', networkError });
+  // Vitrine web : grille prévue (indicative), sans boutique ni démonstration
+  const showcaseCards = useMemo(() => (showcase ? offerCards(demoPlans(localeTag()), demoFamilyPlans(localeTag()), localeTag()) : []), [showcase]);
+  if (showcase) return { cards: showcaseCards, catalog: 'ready', mode, refetch: () => undefined };
   return { cards, catalog, mode, refetch: () => { void prem.refetch(); void fam.refetch(); } };
 }
 

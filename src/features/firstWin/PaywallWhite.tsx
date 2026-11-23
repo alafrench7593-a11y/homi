@@ -49,6 +49,7 @@ function WhiteBody(props: PaywallViewProps) {
   const card = cards.find((c) => c.key === selectedKey) ?? null;
   const pv = phaseView(phase);
   const buyable = canBuy(catalog, phase, !!card);
+  const [webInfo, setWebInfo] = useState(false);
   const [help, setHelp] = useState(false);
   const [story, setStory] = useState(false);
   const Demo = result ? DEMOS[result.kind] : null;
@@ -94,13 +95,22 @@ function WhiteBody(props: PaywallViewProps) {
         {pv && phase !== 'buying' && phase !== 'restoring' ? (
           <View accessibilityLiveRegion="polite" testID={`fw-pw-state-${phase}`}><Banner tone={pv.tone}>{tr(pv.text)}</Banner></View>
         ) : null}
-        {props.needsAccount && buyable ? <Text variant="caption" muted center style={NO_HYPHENS} testID="fw-pw-account-note">{tr('fw.pw.accountNote')}</Text> : null}
+        {props.needsAccount && buyable && !props.webShowcase ? <Text variant="caption" muted center style={NO_HYPHENS} testID="fw-pw-account-note">{tr('fw.pw.accountNote')}</Text> : null}
+        {props.webShowcase ? (
+          <View style={{ gap: spacing.xs }} testID="fw-pw-web">
+            {webInfo ? <View accessibilityLiveRegion="polite"><Banner tone="info">{tr('fw.pw.webInfo')}</Banner></View> : null}
+            <Button label={tr('fw.pw.webCta')} icon="smartphone" size="lg" full onPress={() => setWebInfo(true)} testID="fw-pw-cta" />
+            <Button label={tr('auth.signUp')} variant="secondary" full onPress={props.onSignUp} testID="fw-pw-web-signup" />
+            <Button label={tr('webDemo.openDemo')} variant="ghost" size="sm" onPress={props.onDemo} testID="fw-pw-web-demo" />
+          </View>
+        ) : (
         <Button label={card && catalog === 'ready' ? ctaFor(card.plan, { needsAccount: props.needsAccount }) : tr('fw.pw.buyUnavailable')} size="lg" full
           loading={phase === 'buying' || phase === 'restoring'} disabled={!buyable}
           onPress={props.onBuy} accessibilityHint={card ? termsFor(card.plan) : undefined} testID="fw-pw-cta" />
-        {card && catalog === 'ready' ? <Text variant="small" center style={NO_HYPHENS} testID="fw-pw-terms-line">{termsFor(card.plan)}</Text> : null}
+        )}
+        {card && catalog === 'ready' ? <Text variant="small" center style={NO_HYPHENS} testID="fw-pw-terms-line">{props.webShowcase ? `${tr('fw.pw.webPrices')} ${termsFor(card.plan)}` : termsFor(card.plan)}</Text> : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: spacing.xs }}>
-          <LinkButton label={tr('fw.pw.restore')} onPress={props.onRestore} disabled={phase === 'buying' || phase === 'restoring' || catalog === 'unavailable'} testID="fw-pw-restore" />
+          {props.webShowcase ? null : <LinkButton label={tr('fw.pw.restore')} onPress={props.onRestore} disabled={phase === 'buying' || phase === 'restoring' || catalog === 'unavailable'} testID="fw-pw-restore" />}
           <LinkButton label={tr('fw.pw.terms')} onPress={() => props.onLegal('terms')} testID="fw-pw-terms" />
           <LinkButton label={tr('fw.pw.privacy')} onPress={() => props.onLegal('privacy')} testID="fw-pw-privacy" />
         </View>

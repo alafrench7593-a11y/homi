@@ -29,17 +29,17 @@ import { PaywallWhite } from './PaywallWhite';
 /** Direction retenue après la critique des trois maquettes (docs/PAYWALL_ONBOARDING.md § 5). */
 export const INTEGRATED_DIRECTION: Direction = 'W';
 
-export function FirstWinOffers() {
+export function FirstWinOffers({ webShowcase = false }: { webShowcase?: boolean } = {}) {
   const th = useTheme();
   const { resume } = useLocalSearchParams<{ resume?: string }>();
   const { session, ready } = useAuth();
   const premium = usePremiumState();
   const inv = useInvalidate();
   const variant = useTitleVariant();
-  const [demoReady, setDemoReady] = useState(Platform.OS !== 'web' || isDemo);
+  const [demoReady, setDemoReady] = useState(Platform.OS !== 'web' || isDemo || webShowcase);
   // Version web : pas d'achat intégré ; la démonstration (faux magasin, grille signalée) remplace la boutique
   useEffect(() => { if (!demoReady) void enterDemoMode().then(() => setDemoReady(true)); }, [demoReady]);
-  const { cards, catalog, refetch } = useOfferCatalog();
+  const { cards, catalog, refetch } = useOfferCatalog(webShowcase);
   const [p, setP] = useState<FirstWinProgress | null | undefined>(undefined);
   useEffect(() => { void loadProgress().then(setP); }, []);
   const [selected, setSelected] = useState<string | null>(null);
@@ -132,7 +132,7 @@ export function FirstWinOffers() {
   return (
     <PaywallWhite direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
       onSelect={select} catalog={catalog} phase={phase} aiOnline={aiAssistantOnline()} now={now} reminder={Platform.OS === 'ios' || Platform.OS === 'android'} resume={resume === '1' && !!session}
-      needsAccount={!session} onBuy={() => void buy()} onRetry={refetch} onRestore={() => void restore()} onClose={close}
+      needsAccount={!session} webShowcase={webShowcase} onSignUp={() => router.push('/auth/sign-up')} onDemo={() => router.replace('/demo' as never)} onBuy={() => void buy()} onRetry={refetch} onRestore={() => void restore()} onClose={close}
       onLegal={(doc) => router.push(`/legal/${doc}`)}
       onHelp={() => void track('aura_help_opened', props)} onStory={() => void track('story_opened', props)} />
   );

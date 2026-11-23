@@ -51,6 +51,10 @@ export interface PaywallViewProps {
   resume?: boolean;
   /** Pas encore de compte : petite note « compte juste avant de payer » */
   needsAccount?: boolean;
+  /** Web (23/11/2026) : vrai paywall en VITRINE — grille indicative, aucun achat ; l'abonnement se prend dans l'app iPhone */
+  webShowcase?: boolean;
+  onSignUp?: () => void;
+  onDemo?: () => void;
   onBuy: () => void;
   onRetry: () => void;
   onRestore: () => void;
