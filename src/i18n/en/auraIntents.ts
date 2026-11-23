@@ -80,4 +80,12 @@ export const auraIntents = {
   "aura.it4.bottles": "{name}: {count} bottle(s) since midnight, {ml} ml in total (from what was logged).",
   "aura.it4.noBottle": "No bottle logged for {name} since midnight.",
   "aura.it4.openBottles": "See bottle history",
+  "aura.it5.noDiaper": "No nappy logged for {name} in the last three days.",
+  "aura.it5.lastDiaper": "{name}’s last nappy: {at}, {ago} ago ({what}).",
+  "aura.it5.wet": "wet",
+  "aura.it5.stool": "dirty",
+  "aura.it5.both": "wet and dirty",
+  "aura.it5.openDiaper": "Open Nappies",
+  "aura.it5.feeds": "{name}: {count} feed(s) since midnight, {d} in total (from what was logged).",
+  "aura.it5.noFeed": "No feed logged for {name} since midnight.",
 };

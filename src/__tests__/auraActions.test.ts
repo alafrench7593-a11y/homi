@@ -181,3 +181,35 @@ describe('lectures sans IA : médicament, biberons', () => {
     expect(r.status === 'answer' && r.text).toContain('"ml":270');
   });
 });
+
+describe('lectures : dernière couche, tétées du jour', () => {
+  it.each([
+    ['C’était quand sa dernière couche ?', { kind: 'last_diaper' }],
+    ['when was his last diaper', { kind: 'last_diaper' }],
+    ['combien de tétées aujourd’hui ?', { kind: 'feeds_today' }],
+    ['how many feeds today', { kind: 'feeds_today' }],
+  ])('« %s »', (q, expected) => { expect(matchIntent(q)).toEqual(expected); });
+  it('« je change sa couche » reste une ouverture d’outil', () => { expect(matchIntent('Il a fait caca, je change sa couche')?.kind).toBe('open_tool'); });
+  it('dernière couche : heure, délai, nature ; aucune → le dit', () => {
+    const r = resolveIntent({ kind: 'last_diaper' }, ctx({ diapers: [{ at: iso(23, 14, 30), wet: true, stool: false }, { at: iso(23, 10, 0), wet: true, stool: true }] }));
+    expect(r.status === 'answer' && r.text).toContain('"at":"14:30"');
+    expect(r.status === 'answer' && r.text).toContain('"ago":"1 h 30"');
+    expect(resolveIntent({ kind: 'last_diaper' }, ctx({ diapers: [] }))).toMatchObject({ status: 'answer', text: expect.stringContaining('noDiaper') });
+  });
+  it('tétées du jour : nombre et durée, hier exclu', () => {
+    const feeds = [{ started_at: iso(23, 9, 0), ended_at: iso(23, 9, 15) }, { started_at: iso(23, 13, 0), ended_at: iso(23, 13, 20) }, { started_at: iso(22, 23, 0), ended_at: iso(22, 23, 30) }];
+    const r = resolveIntent({ kind: 'feeds_today' }, ctx({ feeds }));
+    expect(r.status === 'answer' && r.text).toContain('"count":2');
+    expect(r.status === 'answer' && r.text).toContain('"d":"35 min"');
+  });
+});
+
+import { isGuideQuestion } from '@/lib/aura/intents';
+describe('guidage sans IA', () => {
+  it.each(['Comment partager les tâches avec mon conjoint ?', 'Où se trouve le suivi des vaccins ?', 'je veux suivre les nuits de mon fils', 'where is the growth chart', 'how do I share tasks'])('« %s » = guidage', (q) => { expect(isGuideQuestion(q)).toBe(true); });
+  it.each(['Comment gérer la fatigue des premières semaines ?'.replace('Comment gérer', 'Pourquoi'), 'Il pleure le soir, que faire ?'])('« %s » ≠ guidage', (q) => { expect(isGuideQuestion(q)).toBe(false); });
+  it('outil expliqué en une phrase avec son bouton', () => {
+    const r = resolveIntent({ kind: 'open_tool', toolId: 'mental_load', explain: true }, ctx({ catalog: [{ id: 'mental_load', label: 'Charge mentale', href: '/family/load' }] }));
+    expect(r).toMatchObject({ status: 'ready', href: '/family/load', hint: 'th.mental_load.problem' });
+  });
+});

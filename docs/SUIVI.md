@@ -14,7 +14,7 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Build 13 sur TestFlight (commit 7f0d7ff) ; ne contient pas les corrections suivantes.
 
 ## Ouvert
-- Aura 2.0 : voir `docs/AURA_IMPLEMENTATION.md` (sieste, biberon, sommeil du jour, RDV, mission, tétée par côté, lectures médicament et biberons faits ; guidage « montre-moi » à faire ; fonction `assistant` à redéployer).
+- Aura 2.0 : voir `docs/AURA_IMPLEMENTATION.md` (sieste, biberon, sommeil du jour, RDV, mission (envoi vérifié), tétée par côté, lectures (médicament, biberons, couche, tétées), guidage sans IA faits ; 4 661 tests OK ; fonction `assistant` à redéployer).
 
 - iPhone réel (scénario) ; liens Vercel publics (accès connecteur : lecture seule, projet invisible).
 - Risques : prénoms envoyés à Gemini (correctif écrit, fonction `assistant` À DÉPLOYER) ; analytics grossesse ↔ compte ; journal du foyer sans purge.

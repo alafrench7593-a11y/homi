@@ -32,6 +32,8 @@ function useIntentContext(intent: AuraIntent, catalog: CatalogTool[], allTools: 
   const needsSleeps = intent.kind === 'fix_sleep_end' || intent.kind === 'log_sleep' || intent.kind === 'sleep_today';
   const sleeps = useLogs<Sleep>('sleep', needsSleeps ? childId : null, 2, { includePending: intent.kind !== 'fix_sleep_end' });
   const bottles = useLogs<{ at: string; consumed_ml: number | null; child_id: string }>('bottle', intent.kind === 'log_bottle' || intent.kind === 'bottles_today' ? childId : null, 1, { includePending: true });
+  const diapers = useLogs<{ at: string; wet: boolean; stool: boolean; child_id: string }>('diaper', intent.kind === 'last_diaper' ? childId : null, 3, { includePending: true });
+  const feeds = useLogs<{ started_at: string; ended_at: string | null; child_id: string }>('breastfeed', intent.kind === 'feeds_today' ? childId : null, 1, { includePending: true });
   const treatments = useTreatments(intent.kind === 'med_check' ? childId : null);
   const day0 = new Date(); day0.setHours(0, 0, 0, 0);
   const doses = useTreatmentLogs(intent.kind === 'med_check' ? (treatments.data ?? []).map((x) => x.id) : [], day0.toISOString());
@@ -49,6 +51,8 @@ function useIntentContext(intent: AuraIntent, catalog: CatalogTool[], allTools: 
     bottles: bottles.data ?? [],
     treatments: treatments.data ?? [],
     doses: doses.data ?? [],
+    diapers: diapers.data ?? [],
+    feeds: feeds.data ?? [],
     now: new Date(),
     t: (k, v) => tr(k as TKey, v as never),
     clock: (d) => clock(d),

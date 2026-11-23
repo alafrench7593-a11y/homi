@@ -80,4 +80,12 @@ export const auraIntents = {
   "aura.it4.bottles": "{name} : {count} biberon(s) depuis minuit, {ml} ml au total (d’après les saisies).",
   "aura.it4.noBottle": "Aucun biberon de {name} n’est noté depuis minuit.",
   "aura.it4.openBottles": "Voir l’historique des biberons",
+  "aura.it5.noDiaper": "Aucune couche de {name} n’est notée ces trois derniers jours.",
+  "aura.it5.lastDiaper": "Dernière couche de {name} : {at}, il y a {ago} ({what}).",
+  "aura.it5.wet": "pipi",
+  "aura.it5.stool": "selles",
+  "aura.it5.both": "pipi et selles",
+  "aura.it5.openDiaper": "Ouvrir Couches",
+  "aura.it5.feeds": "{name} : {count} tétée(s) depuis minuit, {d} au total (d’après les saisies).",
+  "aura.it5.noFeed": "Aucune tétée de {name} n’est notée depuis minuit.",
 } as const;

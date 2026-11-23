@@ -80,4 +80,12 @@ export const auraIntents = {
   "aura.it4.bottles": "{name}: {count} biberon da mezzanotte, {ml} ml in totale (secondo le registrazioni).",
   "aura.it4.noBottle": "Nessun biberon di {name} registrato da mezzanotte.",
   "aura.it4.openBottles": "Vedi lo storico dei biberon",
+  "aura.it5.noDiaper": "Nessun pannolino di {name} negli ultimi tre giorni.",
+  "aura.it5.lastDiaper": "Ultimo pannolino di {name}: {at}, {ago} fa ({what}).",
+  "aura.it5.wet": "pipì",
+  "aura.it5.stool": "cacca",
+  "aura.it5.both": "pipì e cacca",
+  "aura.it5.openDiaper": "Apri Pannolini",
+  "aura.it5.feeds": "{name}: {count} poppata/e da mezzanotte, {d} in totale (secondo le registrazioni).",
+  "aura.it5.noFeed": "Nessuna poppata di {name} da mezzanotte.",
 };

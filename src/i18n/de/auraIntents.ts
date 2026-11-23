@@ -80,4 +80,12 @@ export const auraIntents = {
   "aura.it4.bottles": "{name}: {count} Fläschchen seit Mitternacht, insgesamt {ml} ml (laut Einträgen).",
   "aura.it4.noBottle": "Seit Mitternacht ist kein Fläschchen von {name} eingetragen.",
   "aura.it4.openBottles": "Fläschchenverlauf ansehen",
+  "aura.it5.noDiaper": "In den letzten drei Tagen ist keine Windel von {name} eingetragen.",
+  "aura.it5.lastDiaper": "Letzte Windel von {name}: {at}, vor {ago} ({what}).",
+  "aura.it5.wet": "nass",
+  "aura.it5.stool": "Stuhl",
+  "aura.it5.both": "nass und Stuhl",
+  "aura.it5.openDiaper": "Windeln öffnen",
+  "aura.it5.feeds": "{name}: {count} Stillmahlzeit(en) seit Mitternacht, insgesamt {d} (laut Einträgen).",
+  "aura.it5.noFeed": "Seit Mitternacht ist kein Stillen von {name} eingetragen.",
 };
