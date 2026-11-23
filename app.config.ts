@@ -158,7 +158,8 @@ const config: ExpoConfig = {
     // iOS / paquet Android + empreinte SHA-1), lues à la construction depuis l'environnement, jamais écrites dans le dépôt.
     ['react-native-maps', { iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_IOS_API_KEY, androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY }],
   ],
-  experiments: { typedRoutes: true },
+  // Web : la même app servie sous un sous-chemin (site public : /demo = démonstration, /app = app familiale)
+  experiments: { typedRoutes: true, ...(process.env.EXPO_BASE_URL ? { baseUrl: process.env.EXPO_BASE_URL } : {}) },
   extra: {
     eas: { projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? '7ae940a8-0ecd-45e4-a1c9-0b5bfa6255dc' },
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL,

@@ -15,7 +15,7 @@
  * `MotionList` est une vraie `View` (mêmes props) : elle remplace le conteneur de la liste sans changer la mise en page.
  */
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { View, type ViewProps } from 'react-native';
+import { Platform, View, type ViewProps } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeOut, LayoutAnimationConfig, LinearTransition } from 'react-native-reanimated';
 import { durations } from './curves';
 import { useMotion, type MotionLevel } from './useMotion';
@@ -70,6 +70,10 @@ export function MotionItem({ children, style, testID, pointerEvents }: { childre
   // Décidé au montage, une fois : l'entrée est-elle arrivée après le premier affichage de sa liste ?
   const [animateIn] = useState(() => !!ctx?.settled.current);
   const a = listItemMotion(m.level, { animateIn, count: ctx?.count ?? 0 });
+  // Web : les animations de mise en page de Reanimated laissaient l'entrée en `position: absolute` après son
+  // apparition (conteneur de hauteur 0, texte superposé au bloc suivant — Relais de nuit, signalé le 23/11/2026).
+  // Sur le web, l'entrée est posée sans animation ; iOS et Android gardent l'apparition et le repli.
+  if (Platform.OS === 'web') return <View testID={testID} style={style} pointerEvents={pointerEvents}>{children}</View>;
   return (
     <Animated.View testID={testID} style={style} pointerEvents={pointerEvents} entering={a.entering} exiting={a.exiting} layout={a.layout}>
       {children}

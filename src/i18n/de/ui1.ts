@@ -248,7 +248,7 @@ export const ui1: Messages<typeof fr> = {
   "u1.priv.crash": "Absturzberichte",
   "u1.priv.crashD": "Automatisches Senden technischer Infos bei einem Fehler.",
   "u1.priv.retention": "Speicherdauer des Verlaufs",
-  "u1.priv.retentionD": "Maximale Dauer, für die dein Verlauf gespeichert werden soll. Du kannst auch jeden Eintrag jederzeit löschen.",
+  "u1.priv.retentionD": "Wird jede Nacht auf deinen persönlichen Verlauf angewendet: Gespräche mit Aura, Tagebuch und Stimmung, Produktscans. Gemeinsame Einträge des Haushalts (Kinder, Dokumente, Kalender) bleiben, solange der Haushalt besteht. Du kannst jeden Eintrag auch jederzeit löschen.",
   "u1.priv.months": {"one": "{count} Monat", "other": "{count} Monate"},
   "u1.priv.years": {"one": "{count} Jahr", "other": "{count} Jahre"},
   "u1.priv.exportD": "Eine lesbare Datei (JSON) mit allem, was du eingegeben hast: Profil, Einwilligungen, Einträge, Erinnerungen, Unterhaltungen, Haushalte. Dateien aus dem Tresor lädst du separat unter Dokumente herunter.",
