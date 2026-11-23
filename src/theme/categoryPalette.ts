@@ -17,16 +17,18 @@ import type { Theme } from './tokens';
 export type CategoryKey = 'feeding' | 'sleep' | 'care' | 'health' | 'cycle' | 'pregnancy' | 'school' | 'couple' | 'family';
 
 /** Teinte de référence (fond clair) de chaque catégorie. */
+// 23/11/2026 (décision de la propriétaire) : noir et gris uniquement ; chaque catégorie garde une nuance DISTINCTE
+// (le nom et le pictogramme restent sur chaque carte : la couleur n'est jamais le seul repère)
 export const CATEGORY_HUE: Record<CategoryKey, string> = {
-  feeding: '#2F6FD6', // bleu : repas de bébé (lumière « bébé » des logos)
-  sleep: '#5B55C9', // indigo : nuits et sommeil
-  care: '#0E7F63', // menthe : soins et croissance (lumière « enfant »)
-  health: '#C8364B', // framboise : santé
-  cycle: '#C93A78', // rose : cycle (lumière « femme »)
-  pregnancy: '#9A4CB8', // mauve : grossesse
-  school: '#1F7F9C', // bleu canard : école et activités
-  couple: '#C8532F', // pêche-corail : couple (lumière « couple »)
-  family: '#A86108', // ambre : foyer (lumière « famille »)
+  feeding: '#3A3A3E', // anthracite : repas de bébé
+  sleep: '#46464C', // ardoise : nuits et sommeil
+  care: '#52525A', // gris fumé : soins et croissance
+  health: '#5E5E64', // gris moyen : santé
+  cycle: '#2E2E32', // graphite : cycle
+  pregnancy: '#6A6A70', // gris perle foncé : grossesse
+  school: '#404046', // gris acier : école et activités
+  couple: '#585860', // gris tourterelle : couple
+  family: '#4C4C52', // gris plomb : foyer
 };
 
 export interface CategoryColors { accent: string; soft: string; edge: string }
