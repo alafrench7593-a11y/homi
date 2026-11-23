@@ -26,6 +26,7 @@ import { BLUR_OK, LIQUID_GLASS_NATIVE, NativeGlass, useReduceTransparency } from
 import { GlassRim } from './GlassRim';
 import { LiquidLensMaterial } from './liquid/LiquidLens';
 import { useLensStore } from './liquid/store';
+import { legibleLens } from './liquid/params';
 
 /** Niveau imposé à tout un sous-arbre (galerie de QA, tests). L'accessibilité garde la priorité. */
 const GlassTierContext = createContext<GlassTier | null>(null);
@@ -86,7 +87,7 @@ export function GlassMaterial({ variant = 'chrome', radius = R.xl, edges = 'all'
     <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden
       testID={`${testID}-material`} style={[StyleSheet.absoluteFill, corner, styles.clip]}>
       {liquid ? (
-        <LiquidLensMaterial radius={radius} params={lens} edges={edges} testID={`${testID}-liquid`}
+        <LiquidLensMaterial radius={radius} params={variant === 'card' ? lens : legibleLens(lens)} edges={edges} testID={`${testID}-liquid`}
           refract={variant !== 'card'} fill={variant === 'card' ? spec.veil : undefined} />
       ) : tier === 'native' && NativeGlass ? (
         <NativeGlass testID={`${testID}-native`} style={[StyleSheet.absoluteFill, corner]} glassEffectStyle={spec.nativeStyle} tintColor={spec.nativeTint} colorScheme={spec.colorScheme} />

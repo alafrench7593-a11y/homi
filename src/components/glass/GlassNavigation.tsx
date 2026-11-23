@@ -26,7 +26,7 @@ import { HomiIcon, type HomiIconName } from '@/brand/icons';
 import { TabLight } from '@/brand/toolGlass/TabLight';
 import { Glass, useGlass } from './Glass';
 import { LiquidLensMaterial } from './liquid/LiquidLens';
-import type { LensParams } from './liquid/params';
+import { legibleLens, type LensParams } from './liquid/params';
 
 // ---------------------------------------------------------------------------------------------- barre d'onglets
 export interface GlassTab {
@@ -180,7 +180,7 @@ function TabBarMaterial({ liquid, radius, floating, testID, contentStyle, childr
   }
   return (
     <View testID={testID} style={{ borderRadius: radius }}>
-      <LiquidLensMaterial radius={radius} params={liquid} testID={`${testID}-liquid`} />
+      <LiquidLensMaterial radius={radius} params={legibleLens(liquid)} testID={`${testID}-liquid`} />
       <View style={contentStyle}>{children}</View>
     </View>
   );

@@ -76,3 +76,15 @@ export function parseLens(text: string): LensParams | null {
     return normalizeLens(v as Record<string, unknown>);
   } catch { return null; }
 }
+
+/**
+ * Plancher de LISIBILITÉ pour un verre qui porte du texte (barre d'onglets, boutons, recherche, feuilles) — audit du
+ * 23/11/2026 : avec le préréglage (flou 1,5, voile 24 %), le contenu qui défile dessous restait presque net et les
+ * libellés se lisaient mal (« Moi » mesuré à 2,6:1) ; sur iOS 26, ce flou choisissait le style `clear`, qu'Apple réserve
+ * aux fonds de type photo. La lèvre, la réfraction des bords et le reflet restent ceux du laboratoire.
+ */
+export const LEGIBLE_FROST = 8;
+export const LEGIBLE_TINT = 0.55;
+export function legibleLens(p: LensParams): LensParams {
+  return { ...p, frost: Math.max(p.frost, LEGIBLE_FROST), tint: Math.max(p.tint, LEGIBLE_TINT) };
+}

@@ -13,6 +13,7 @@
  *   const p = usePress();
  *   <Pressable onPressIn={p.onPressIn} onPressOut={p.onPressOut}><Animated.View style={p.style}>…</Animated.View></Pressable>
  */
+import type { ViewStyle } from 'react-native';
 import { useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { press } from './curves';
 import { motionHaptic, type MotionHaptic } from './haptics';
@@ -22,7 +23,9 @@ export interface PressMotion {
   /** 0 au repos, 1 enfoncé */
   progress: SharedValue<number>;
   /** échelle animée, à poser sur la surface (pas sur le cadre tactile) */
-  style: ReturnType<typeof useAnimatedStyle>;
+  // Type explicite (vue) : avec les types générés par `expo start`, le type par défaut d'un style animé ne s'assignait
+  // plus à `Animated.View` (13 erreurs de typage, 23/11/2026)
+  style: ReturnType<typeof useAnimatedStyle<ViewStyle>>;
   onPressIn: () => void;
   onPressOut: () => void;
 }
@@ -32,7 +35,7 @@ export function usePress(opts: { scale?: number; haptic?: MotionHaptic; disabled
   const progress = useSharedValue(0);
   const depth = 1 - (opts.scale ?? press.scale);
   const still = m.off;
-  const style = useAnimatedStyle(() => ({ transform: [{ scale: still ? 1 : 1 - depth * progress.value }] }));
+  const style = useAnimatedStyle<ViewStyle>(() => ({ transform: [{ scale: still ? 1 : 1 - depth * progress.value }] }));
   return {
     progress,
     style,
