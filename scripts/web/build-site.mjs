@@ -59,6 +59,7 @@ for (const w of ['600SemiBold', '800ExtraBold']) {
   cpSync(path.join(root, `node_modules/@expo-google-fonts/manrope/${w}/Manrope_${w}.ttf`), path.join(dist, `site/fonts/Manrope_${w}.ttf`));
 }
 cpSync(path.join(site, 'og.png'), path.join(dist, 'og.png'));
+cpSync(path.join(site, 'screens'), path.join(dist, 'site/screens'), { recursive: true });
 
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());

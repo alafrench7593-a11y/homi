@@ -5,18 +5,59 @@
   doc.classList.add('js');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ------------------------------------------------------------ apparition des chapitres (jamais bloquante)
-  var revealables = document.querySelectorAll('.chapter .wrap > *, .hero-copy > *, .journal');
-  if (!reduce && 'IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    revealables.forEach(function (el) {
-      // le premier écran est visible tout de suite : pas d'intro qui bloque
-      if (el.closest('.hero')) return;
-      el.classList.add('reveal');
-      io.observe(el);
+  // ------------------------------------------------------------ mouvement (jamais bloquant : contenu présent sans JS)
+  if (!reduce) doc.classList.add('motion');
+  var io = !reduce && 'IntersectionObserver' in window ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -10% 0px' }) : null;
+  document.querySelectorAll('.lines').forEach(function (el) {
+    // titre du premier écran : révélé tout de suite (pas d'intro qui bloque)
+    if (!io || el.closest('.hero')) { requestAnimationFrame(function () { el.classList.add('in'); }); return; }
+    io.observe(el);
+  });
+  document.querySelectorAll('.chapter:not(.hero) .wrap > *:not(.display):not(.story-phone), .story-steps > .fine, .hero-copy > *:not(h1)').forEach(function (el) {
+    if (!io || el.closest('.hero')) return;
+    el.classList.add('reveal'); io.observe(el);
+  });
+
+  // parallaxe des sphères chromées + ombre de la barre
+  var orbs = Array.prototype.slice.call(document.querySelectorAll('.orb'));
+  var nav = document.querySelector('.nav-bar');
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function () {
+      var y = window.scrollY;
+      if (!reduce) orbs.forEach(function (o) { o.style.transform = 'translate3d(0,' + (y * parseFloat(o.dataset.depth || 0)).toFixed(1) + 'px,0)'; });
+      if (nav) nav.style.boxShadow = y > 12 ? '0 14px 40px rgba(20,20,30,.16)' : '';
+      ticking = false;
     });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // téléphone du premier écran : léger relief au pointeur (souris uniquement)
+  var tilt = document.querySelector('[data-tilt]');
+  if (tilt && !reduce && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    window.addEventListener('pointermove', function (e) {
+      var rx = (e.clientY / window.innerHeight - .5) * -6, ry = (e.clientX / window.innerWidth - .5) * 8;
+      tilt.style.transform = 'perspective(1200px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+    });
+  }
+
+  // l'app : l'étape au centre de l'écran choisit l'écran affiché dans le téléphone
+  var steps = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
+  var screens = Array.prototype.slice.call(document.querySelectorAll('[data-screen]'));
+  function show(i) {
+    screens.forEach(function (sc) { sc.classList.toggle('is-on', sc.dataset.screen === String(i)); });
+    steps.forEach(function (st) { st.classList.toggle('is-on', st.dataset.step === String(i)); });
+  }
+  if (steps.length && 'IntersectionObserver' in window) {
+    var so = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) show(e.target.dataset.step); });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(function (st) { so.observe(st); });
+    show(0);
   }
 
   // ------------------------------------------------------------ sieste de Léa : 13:10 → 14:35 (1 h 25), corrigée à 14:20 (1 h 10)
@@ -146,6 +187,13 @@
     var stage = document.querySelector('[data-panel="stage"]');
     if (need) need.innerHTML = groups(api.categories(), true);
     if (stage) stage.innerHTML = groups(api.stages(), false);
+    var mq = document.querySelector('[data-marquee]');
+    if (mq) {
+      var names = [];
+      api.categories().forEach(function (g) { g.items.forEach(function (t) { if (names.indexOf(t.label) < 0) names.push(t.label); }); });
+      var row = names.slice(0, 28).map(function (n) { return '<span>' + esc(n) + '</span>'; }).join('');
+      mq.innerHTML = row + row;
+    }
   });
   var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
   function select(tab) {

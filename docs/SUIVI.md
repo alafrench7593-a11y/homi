@@ -13,6 +13,8 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Web : build local vérifié — `/` site sans requête externe, `/demo` 0 requête backend, `/app` reliée à la prod.
 - Build 13 sur TestFlight (commit 7f0d7ff) ; ne contient pas les corrections suivantes.
 
+- Site web (23/11) : refonte aux couleurs de l'app (Blanc nacré : fond perle, sphères chromées, noir premium, verre), motion design (lignes révélées, parallaxe, téléphone collant avec 5 vrais écrans, bandeau d'outils), mène à /app (cartes → /outil/<id>) ; e2e site 14/14, /app 16/16. Doc : docs/SITE_WEB.md.
+
 ## Ouvert
 - Mission Master : `docs/MISSION_MASTER_AUDIT.md` (Print Studio, profil sensoriel et journal de situations, Garde Secours, mode parent TDAH faits ; design, tests natifs, Reddit à faire).
 

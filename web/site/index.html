@@ -7,8 +7,8 @@
 <meta name="description" content="HOMI réunit la journée de bébé en un coup d’œil : sommeil, biberons, allaitement, croissance. Corrige une entrée, tout se met à jour ; passe le relais en un message. Ouvre HOMI dans ton navigateur.">
 <meta name="robots" content="{{ROBOTS}}">
 <link rel="canonical" href="{{SITE_URL}}/">
-<meta name="theme-color" content="#FBF4F2" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1A1217" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ECECEF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="HOMI">
@@ -25,12 +25,14 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"HOMI","applicationCategory":"LifestyleApplication","operatingSystem":"iOS, Web","inLanguage":"fr","url":"{{SITE_URL}}/","description":"Le carnet partagé de la famille : sommeil, repas, relais entre parents."}</script>
 </head>
 <body>
+<div class="pearl" aria-hidden="true"><span class="orb orb-a" data-depth="0.18"></span><span class="orb orb-b" data-depth="-0.12"></span><span class="orb orb-c" data-depth="0.28"></span></div>
 <a class="skip" href="#ouverture">Aller au contenu</a>
 
 <header class="nav" role="banner">
   <nav class="nav-bar glass" aria-label="Navigation principale">
     <a class="nav-logo" href="/" aria-label="HOMI, accueil">{{LOGO}}</a>
     <ul class="nav-links">
+      <li><a href="#app">L’app</a></li>
       <li><a href="#sommeil">Sommeil</a></li>
       <li><a href="#relais">Relais</a></li>
       <li><a href="#outils">Outils</a></li>
@@ -48,7 +50,7 @@
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">Le carnet partagé de la famille</p>
-        <h1 id="t-ouverture" class="display">Sa journée, en un coup d’œil.</h1>
+        <h1 id="t-ouverture" class="display lines"><span class="line"><span>Sa journée,</span></span> <span class="line"><span>en un coup d’œil.</span></span></h1>
         <p class="lead">Sommeil, biberons, tétées, couches : tout ce que vit bébé, noté en un geste et lisible par les deux parents.</p>
         <div class="cta-row">
           <a class="btn btn-primary btn-lg" href="/app" data-cta="hero-app">Ouvrir HOMI</a>
@@ -57,7 +59,7 @@
         <p class="fine">HOMI s’ouvre dans ton navigateur : tes données restent dans ton espace, partagé seulement avec les membres de ton foyer.</p>
       </div>
 
-      <figure class="journal card" aria-labelledby="journal-title">
+      <div class="phone tilt" data-tilt><div class="phone-notch" aria-hidden="true"></div><figure class="journal" aria-labelledby="journal-title">
         <figcaption class="journal-head">
           <span class="avatar" aria-hidden="true">L</span>
           <span><strong id="journal-title">Journal de Léa</strong><span class="muted"> · 7 mois · aujourd’hui</span></span>
@@ -72,15 +74,43 @@
           <li><time>16:20</time><span class="dot dot-care" aria-hidden="true"></span><span>Couche</span></li>
         </ol>
         <p class="journal-foot"><span>Siestes du jour</span><b data-bind="total">2 h 10</b></p>
-      </figure>
+      </figure></div>
     </div>
+  </section>
+
+
+  <!-- L'APPLICATION : vrais écrans, téléphone collant au défilement -->
+  <section id="app" class="chapter story" aria-labelledby="t-app">
+    <div class="wrap story-grid">
+      <div class="story-phone" aria-hidden="true">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <img class="screen is-on" data-screen="0" src="/site/screens/accueil.webp" alt="" width="390" height="844" decoding="async">
+          <img class="screen" data-screen="1" src="/site/screens/allaitement.webp" alt="" width="390" height="844" loading="lazy" decoding="async">
+          <img class="screen" data-screen="2" src="/site/screens/sommeil.webp" alt="" width="390" height="844" loading="lazy" decoding="async">
+          <img class="screen" data-screen="3" src="/site/screens/outils.webp" alt="" width="390" height="844" loading="lazy" decoding="async">
+          <img class="screen" data-screen="4" src="/site/screens/aura.webp" alt="" width="390" height="844" loading="lazy" decoding="async">
+        </div>
+      </div>
+      <div class="story-steps">
+        <p class="eyebrow">L’application</p>
+        <h2 id="t-app" class="display lines"><span class="line"><span>Toute la famille,</span></span> <span class="line"><span>au même endroit.</span></span></h2>
+        <article class="step" data-step="0"><h3>Aujourd’hui</h3><p>L’accueil réunit ce qui compte maintenant : la dernière tétée, la sieste en cours, ce qui attend une réponse.</p></article>
+        <article class="step" data-step="1"><h3>Un geste par moment</h3><p>Gauche ou droite, et le chronomètre part. Tu changes de côté sans créer une autre tétée.</p></article>
+        <article class="step" data-step="2"><h3>Le sommeil, lisible</h3><p>Les siestes s’alignent sur la journée. Une heure à corriger ? Tu touches la sieste, tout se recalcule.</p></article>
+        <article class="step" data-step="3"><h3>Mes apps</h3><p>Chaque besoin a son outil, rangé par moment de vie. Tu n’ouvres que ce qui te concerne.</p></article>
+        <article class="step" data-step="4"><h3>Aura</h3><p>Écris comme tu parles. Aura ouvre le bon outil et prépare les messages, sans jamais remplacer un professionnel de santé.</p></article>
+        <p class="fine">Écrans réels de l’application, avec une famille fictive.</p>
+      </div>
+    </div>
+    <div class="marquee" aria-hidden="true"><div class="marquee-track" data-marquee></div></div>
   </section>
 
   <!-- SOMMEIL -->
   <section id="sommeil" class="chapter" aria-labelledby="t-sommeil">
     <div class="wrap narrow">
       <p class="eyebrow">Sommeil</p>
-      <h2 id="t-sommeil" class="display">Une correction, et tout est à jour.</h2>
+      <h2 id="t-sommeil" class="display lines"><span class="line"><span>Une correction,</span></span> <span class="line"><span>et tout est à jour.</span></span></h2>
       <p class="lead">Léa s’est réveillée à 14 h 20, pas à 14 h 35. Tu corriges l’heure : la sieste, le total du jour et le résumé pour l’autre parent suivent.</p>
 
       <div class="sleep card" data-sleep>
@@ -113,7 +143,7 @@
   <section id="relais" class="chapter" aria-labelledby="t-relais">
     <div class="wrap narrow">
       <p class="eyebrow">Relais</p>
-      <h2 id="t-relais" class="display">À toi de prendre le relais.</h2>
+      <h2 id="t-relais" class="display lines"><span class="line"><span>À toi de prendre</span></span> <span class="line"><span>le relais.</span></span></h2>
       <p class="lead">En fin de journée, HOMI prépare le résumé pour Karim. Tu le relis, tu l’envoies. Rien ne part sans toi.</p>
       <article class="relay card" aria-labelledby="relay-title">
         <header class="relay-head">
@@ -135,7 +165,7 @@
   <section id="outils" class="chapter" aria-labelledby="t-outils">
     <div class="wrap narrow">
       <p class="eyebrow">Outils et assistant</p>
-      <h2 id="t-outils" class="display">Trouve le bon outil avec tes mots.</h2>
+      <h2 id="t-outils" class="display lines"><span class="line"><span>Trouve le bon outil</span></span> <span class="line"><span>avec tes mots.</span></span></h2>
       <p class="lead">Écris ce qui se passe, comme tu le dirais. HOMI ouvre le bon outil, parmi <span data-bind="toolCount">75</span> pour un bébé.</p>
 
       <form class="ask card" role="search" data-ask action="/app" method="get">
@@ -167,7 +197,7 @@
   <!-- CONCLUSION -->
   <section id="commencer" class="chapter finale" aria-labelledby="t-fin">
     <div class="wrap narrow center">
-      <h2 id="t-fin" class="display">Commencer avec HOMI.</h2>
+      <h2 id="t-fin" class="display lines"><span class="line"><span>Commencer</span></span> <span class="line"><span>avec HOMI.</span></span></h2>
       <p class="lead">Ouvre ton espace pour retrouver ta famille, ou crée ton compte en une minute.</p>
       <div class="cta-row center">
         <a class="btn btn-primary btn-lg" href="/app" data-cta="end-app">Ouvrir HOMI</a>

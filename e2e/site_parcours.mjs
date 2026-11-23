@@ -38,9 +38,9 @@ const inView = async (loc) => { const b = await loc.boundingBox(); return !!b &&
 check('premier écran : « Ouvrir HOMI » visible sans défiler', await inView(appBtn));
 check('premier écran : « Créer mon compte » visible sans défiler', await inView(page.locator('[data-cta="hero-signup"]')));
 check('aucun lien vers la démo sur le site', (await page.locator('a[href*="demo"]').count()) === 0);
-check('titre « Sa journée, en un coup d’œil. »', (await page.locator('h1').innerText()).includes('Sa journée, en un coup d’œil.'));
+check('titre « Sa journée, en un coup d’œil. »', (await page.locator('h1').innerText()).replace(/\s+/g, ' ').includes('Sa journée, en un coup d’œil.'));
 await shot('01-ouverture');
-await page.locator('.journal').scrollIntoViewIfNeeded();
+await page.locator('.journal').evaluate((e) => e.scrollIntoView({ block: 'center' })); await page.waitForTimeout(400);
 await shot('02-journal-lea');
 const journalFont = await page.locator('.timeline li').first().evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
 check('journal de Léa lisible sur téléphone (≥ 16 px)', journalFont >= 16, `${journalFont}px`);
