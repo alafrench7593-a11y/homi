@@ -51,8 +51,13 @@ export function timesIn(text: string): string[] {
   return out;
 }
 
+const EXPLAIN = /^\s*(comment (utiliser|fonctionne|marche|ca marche|ca fonctionne|on utilise|s'utilise|s’utilise)|a quoi sert|a quoi servent|c'est quoi|c’est quoi|qu'est-ce que|qu’est-ce que|how (do i|do you|to) use|how does|what is .* for|what's .* for|what does .* do)\b/;
+
 export function matchIntent(question: string): AuraIntent | null {
   const q = foldText(question);
+  // Questions d'EXPLICATION (« Comment utiliser Biberon ? », « À quoi sert le relais ? », bouton « Comment ça marche ? »
+  // des outils) : Aura explique, elle ne répond pas par une carte « Ouvrir » (audit du 23/11/2026)
+  if (EXPLAIN.test(q)) return null;
   const times = timesIn(question);
   const sleepy = has(q, /\b(sieste\w*|dodo|dormi\w*|dort|endormi\w*|reveil\w*|nap|naps|slept|asleep|woke|wake|waking|sleep\w*)\b/);
   const fixCue = has(q, /\b(mis|mise|note|notee|saisi\w*|corrig\w*|tromp\w*|erreur|en fait|mais|plutot|wrong|actually|but|instead|fix|typed|entered|logged)\b/);

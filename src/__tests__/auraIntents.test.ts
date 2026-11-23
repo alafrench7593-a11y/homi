@@ -104,4 +104,12 @@ describe('résolution avec les données et droits actuels', () => {
     expect(memberCan({ role: 'caregiver', can_view: ['daily'], can_edit: ['daily'], child_scope: ['a'] }, 'edit', 'daily', 'b')).toBe(false);
     expect(memberCan(null, 'view', 'daily')).toBe(false);
   });
+  it('questions d’explication (bouton « Comment ça marche ? » des outils) : jamais détournées en carte « Ouvrir »', () => {
+    for (const q of ['Comment utiliser Biberon ?', 'À quoi sert Relais ?', 'À quoi sert Grossesse ?', 'Comment ça marche, l’allaitement ?', 'How do I use Bottle?', 'What is Handover for?', 'How does Diapers work?']) {
+      expect(matchIntent(q)).toBeNull();
+    }
+    // les demandes d'action restent reconnues
+    expect(matchIntent('il vient de finir son bib')).toEqual({ kind: 'open_tool', toolId: 'baby_bottle' });
+    expect(matchIntent('Prépare le relais pour son père')?.kind).toBe('prepare_relay');
+  });
 });
