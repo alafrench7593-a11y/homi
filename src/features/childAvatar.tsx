@@ -7,8 +7,11 @@ import { backend } from '@/lib/backend';
 import { initials } from '@/lib/domain/child';
 import type { Child } from '@/lib/types';
 import { t as tr } from '@/i18n';
+import { useTheme } from '@/theme/ThemeProvider';
+import { PEARL, usesPearl } from '@/theme/glass';
 
 export function ChildAvatar({ child, size = 40 }: { child: Pick<Child, 'id' | 'first_name' | 'photo_path'>; size?: number }) {
+  const t = useTheme();
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
@@ -18,7 +21,7 @@ export function ChildAvatar({ child, size = 40 }: { child: Pick<Child, 'id' | 'f
   }, [child.photo_path]);
   if (url) return <Image source={{ uri: url }} style={{ width: size, height: size, borderRadius: size / 2 }} accessibilityLabel={tr('u5.avatar.photo', { name: child.first_name })} />;
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: initialsColor(child.id), alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no">
+    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: usesPearl(t) ? PEARL.avatar : initialsColor(child.id), alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no">
       <Text variant={size > 48 ? 'heading' : 'small'} weight="bold" color="#1C1533">{initials(child.first_name)}</Text>
     </View>
   );

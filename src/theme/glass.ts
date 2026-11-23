@@ -168,3 +168,18 @@ export function resolveGlassTier(o: { reduceTransparency: boolean; night: boolea
   if (o.nativeGlass) return 'native';
   return o.blur ? 'blur' : 'opaque';
 }
+
+/**
+ * Fond perle « Blanc nacré » (maquette validée le 23/11/2026) : couleurs du fond, des reflets, des sphères chromées et
+ * du verre translucide des cartes. Seul le thème Blanc nacré en clair l'utilise (`usesPearl`).
+ */
+export const PEARL = {
+  base: ['#F6F6F7', '#DEDEE2', '#EDEDF0', '#D9D9DD'] as const,
+  sheen: ['rgba(255,255,255,0)', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0)'] as const,
+  orb: ['#FFFFFF', '#E2E2E5', '#B4B4B9', '#7E7E84', '#5E5E64'] as const,
+  /** remplissage des cartes : 74 % de blanc (texte secondaire ≥ 4,5:1 même au-dessus d'une sphère) */
+  cardFill: 'rgba(255,255,255,0.74)',
+  /** pastille d'initiales des enfants (sans couleur par enfant : noir et gris uniquement) */
+  avatar: '#CFCFD4',
+};
+export const usesPearl = (t: Pick<Theme, 'palette' | 'isDark'>) => t.palette === 'nacre' && !t.isDark;

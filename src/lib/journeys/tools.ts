@@ -35,7 +35,8 @@ const ME: Scope[] = ['avoid', 'ttc', 'cycle', 'none'];
 const ADULT: Scope[] = [...ME, 'pregnancy', 'postpartum'];
 const KID: Scope[] = ['baby', 'child'];
 const ALL = SCOPES;
-const CYCLE: Scope[] = ['avoid', 'ttc', 'cycle'];
+// Cycle menstruel toujours proposé dans « Moi » (aussi sans parcours cycle, ex. pendant une grossesse) : le rayon ne disparaît plus
+const CYCLE: Scope[] = ['avoid', 'ttc', 'cycle', 'none'];
 /** « À deux » (04/11/2026) : la charge mentale ne commence pas avec un enfant — tâches, agenda et relais sont ouverts à tous. */
 const TOGETHER: Scope[] = [...ADULT, 'baby', 'child', 'family'];
 
@@ -319,6 +320,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'family_routines', category: 'family', theme: 'tasks', icon: 'list', scopes: TOGETHER, href: () => '/family/routines' },
   { id: 'family_history', category: 'family', theme: 'tasks', icon: 'rewind', scopes: ['family'], href: () => '/family/history' },
   { id: 'brain_dump', category: 'family', theme: 'tasks', icon: 'download', scopes: TOGETHER, href: () => '/family/brain-dump' },
+  { id: 'focus_day', category: 'family', theme: 'tasks', icon: 'target', scopes: TOGETHER, href: () => '/family/focus' },
   { id: 'family_prep', category: 'family', theme: 'calendar', icon: 'fast-forward', scopes: TOGETHER, href: () => '/family/prep' },
   { id: 'family_shopping', category: 'family', theme: 'tasks', icon: 'shopping-cart', scopes: TOGETHER, also: ['feeding'], href: () => '/meals/shopping' },
   { id: 'family_stocks', category: 'family', theme: 'tasks', icon: 'package', scopes: TOGETHER, also: ['care'], href: () => '/family/stocks' },
@@ -534,7 +536,7 @@ const SCREEN_RULES: { prefix: string; scopes: Scope[]; subOnly?: boolean }[] = [
   { prefix: '/postpartum/partner', scopes: SCOPES },
   // Personnes de confiance : ouvertes depuis « Journée difficile » et « Je craque » (outils de toutes les portées)
   { prefix: '/postpartum/support', scopes: SCOPES },
-  { prefix: '/cycle', scopes: ['avoid', 'ttc', 'cycle'] },
+  { prefix: '/cycle', scopes: ['avoid', 'ttc', 'cycle', 'none'] },
   { prefix: '/pregnancy', scopes: ['pregnancy'] },
   { prefix: '/bottle', scopes: ['baby', 'postpartum'] },
   // « /track » seul est l'onglet Suivi (pour tous) ; « /track/biberon… » est une saisie pour un enfant né

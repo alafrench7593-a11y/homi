@@ -23,9 +23,9 @@ const CTXS: ScopeCtx[] = [
  * 126 outils rangés dans les 9 catégories + l'espace Communauté (120 avant le reclassement du 18/11/2026 ; 123 avant
  * l'entrée au registre de « Garde et nounou », « Se comprendre » et « Ma place dans la famille », le 21/11/2026).
  */
-const BASELINE_TOOLS = 127;
+const BASELINE_TOOLS = 128;
 const BASELINE_THEMES = 17;
-const BASELINE_LEGACY = 138;
+const BASELINE_LEGACY = 139;
 
 const csvCell = (v: string) => (/[",\n;]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
 

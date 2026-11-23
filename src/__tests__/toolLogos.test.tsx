@@ -97,7 +97,7 @@ describe('familles d’animation', () => {
 describe('verre dépoli de la propriétaire + lumière par public', () => {
   it('les 134 outils fournis + 2 entrées de compte (supprimer, se déconnecter) ont symbole et plaque (aucun manquant, aucun en trop)', () => {
     expect(Object.keys(TOOL_ICON).sort()).toEqual(Object.keys(TOOL_SYMBOLS).sort());
-    expect(Object.keys(TOOL_SYMBOLS)).toHaveLength(136);
+    expect(Object.keys(TOOL_SYMBOLS)).toHaveLength(137);
     for (const d of TOOLS) expect(toolLogoDef(d.id)?.symbol).toBe(d.id);
     for (const [id, d] of Object.entries(TOOL_SYMBOLS)) { expect(d).toMatch(/^[Mm]/); expect(TOOL_GLASS_CATEGORY[id]).toBeTruthy(); }
     for (const f of new Set(Object.values(TOOL_GLASS_CATEGORY))) expect(fs.readFileSync(`assets/brand/tool-glass/glass/${f}.png`)[25]).toBe(6); // RGBA

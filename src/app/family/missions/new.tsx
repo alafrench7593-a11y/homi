@@ -57,7 +57,7 @@ function fromTemplate(tpl: MissionTemplate | null): Draft {
 }
 
 export default function NewMission() {
-  const params = useLocalSearchParams<{ template?: string; pet?: string }>();
+  const params = useLocalSearchParams<{ template?: string; pet?: string; title?: string; date?: string; time?: string }>();
   const t = useTheme();
   const m = useMotion();
   const toast = useToast();
@@ -70,7 +70,14 @@ export default function NewMission() {
   const others = people.filter((p) => p.id !== me);
   const [clientId] = useState(() => uuid()); // même envoi rejoué = même mission
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [d, setD] = useState<Draft>(() => ({ ...fromTemplate(MISSION_TEMPLATES.find((x) => x.key === params.template) ?? null), pet: typeof params.pet === 'string' ? params.pet : null }));
+  // Pré-remplissage depuis Aura (« rappelle à mon conjoint de … demain ») : titre, date JJ/MM/AAAA, heure ; à vérifier avant l'envoi
+  const [d, setD] = useState<Draft>(() => {
+    const base = { ...fromTemplate(MISSION_TEMPLATES.find((x) => x.key === params.template) ?? null), pet: typeof params.pet === 'string' ? params.pet : null };
+    if (typeof params.title === 'string' && params.title.trim()) base.title = params.title.trim().slice(0, 120);
+    if (typeof params.date === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(params.date)) base.date = params.date;
+    if (typeof params.time === 'string' && /^\d{1,2}h\d{2}$|^\d{1,2}:\d{2}$/.test(params.time)) base.time = params.time;
+    return base;
+  });
   const pets = useHouseholdPets().data ?? [];
   const [step, setStep] = useState(0);
   const leaving = useRef(false);

@@ -148,7 +148,7 @@ export const tools6 = {
   'rc.history': 'Mon historique du scanner',
 
   // ---------------------------------------------------------------- routines en pictogrammes
-  'kr.intro': 'Une image par étape, que ton enfant touche quand c’est fait. Il voit où il en est sans qu’on ait à répéter : on gagne du calme le matin et le soir.',
+  'kr.intro': 'Une image par étape, imprimée et affichée là où ça se passe (salle de bain, entrée). Ton enfant voit où il en est sans qu’on ait à répéter, et sans écran : on gagne du calme le matin et le soir.',
   'kr.none': 'Pas encore de routine',
   'kr.noneD': 'Commence par celle du matin ou du soir : les étapes sont déjà proposées, il suffit de les adapter.',
   'kr.new': 'Nouvelle routine',

@@ -161,6 +161,7 @@ const RAW: Record<string, M> = {
   family_routines: st(['household']),
   family_history: st(['household']),
   brain_dump: st(['household', 'parent']),
+  focus_day: st(['household', 'parent']),
   family_prep: st(['household']),
   family_shopping: st(['household', 'couple']),
   family_stocks: st(['household']),

@@ -86,6 +86,47 @@ Panne de l'IA simulée : **0 appel serveur**, les cartes d'action et les outils 
 - Comptes : deuxième parent à droits limités joué en base (PG16), pas dans l'interface ; compte grossesse seul joué via Aura uniquement.
 - Retrait de droits joué en navigateur (seulement en test unitaire).
 
+## 7. Reprise (23/11, après-midi) — préproduction, contrôles ouverts, réconciliation, web
+
+### 7.1 Préproduction (Supabase local, familles fictives)
+
+Base Supabase locale au niveau de la production (146 migrations), puis `20261206000100_tetee_cotes.sql` et
+`20261207000100_confidentialite_audit.sql` appliquées **dans cet ordre**. Comptes fictifs : Alice (propriétaire),
+Bob (co-parent complet), Claire (limitée à Lou, sans la grossesse), David (autre foyer).
+
+| Vérification depuis l'interface | Avant les migrations | Après |
+|---|---|---|
+| Claire ne voit que Lou (accueil, Mes apps, Aura, journal du foyer) | fuite B1 (journal) et B2 (relais biberon) reproduites | **OK** |
+| RDV privé d'Alice : invisible pour Bob et Claire, y compris dans le flux calendrier | fuite B3 reproduite (flux iCal) | **OK** |
+| Retrait de Zélie à Claire : données effacées du cache | entrées de Zélie restées en cache (2 causes) | **OK** : 0 entrée de Zélie après le retrait et après réouverture (correctif `useScopePurge`) |
+| Tétée saisie par côté, relue après déconnexion / reconnexion | côtés non enregistrés | **OK** (gauche 1 min / droite 1 min relus) |
+| Fichiers et photos (stockage) : Claire lit la photo de Lou, rien de Zélie, pas le document privé d'Alice ; ne peut ni lister ni déposer dans le dossier de Zélie ; Bob tout sauf le privé ; David rien | — | **OK** (matrice complète) |
+
+Production : les deux migrations ont depuis été appliquées en production avec l'accord de la propriétaire
+(148 migrations, vérifié en lecture). **B1, B2, B3 ne bloquent plus.**
+
+### 7.2 Contrôles ouverts (données fictives)
+
+| Sujet | Constat | Gravité | État |
+|---|---|---|---|
+| Fonctions serveur | jeton vérifié dans chaque fonction ; droits relus côté serveur | — | OK (revue du code) |
+| Journaux serveur | aucune donnée personnelle écrite (identifiants techniques seulement) | — | OK |
+| Rapports de plantage (Sentry) | désactivés sauf accord ; contenu nettoyé (pas de texte saisi, pas d'e-mail) | — | OK |
+| Données transmises à Aura | contexte sommeil sans prénom ; **les textes libres (question, journal) partent tels quels** vers le fournisseur d'IA, prénoms compris | important | **ouvert** : masquage des prénoms à ajouter |
+| Mesure d'audience | `analytics_events` relie l'étape « grossesse » à l'identifiant du compte | important | **ouvert** : pseudonymiser ou retirer l'étape |
+| Journal d'activité du foyer | jamais purgé | moyen | **ouvert** |
+| Cache sur l'appareil | 7 jours, en clair ; données intimes et de santé déjà exclues ; le reste (suivis des enfants) y figure | moyen | accepté pour la bêta, à chiffrer avant lancement |
+| `storage-cleanup` | fonction absente de `config.toml` | faible | ouvert |
+
+**Durée de conservation configurée, aujourd'hui, en production : aucune.** Le réglage « Durée de conservation » (6 à
+120 mois, 36 par défaut) n'était appliqué nulle part et aucune purge n'était planifiée. Correctif :
+`20261208000100_conservation.sql` (testé en base éphémère, `98zq_conservation.sql`) — chaque nuit à 3 h 17 UTC :
+historique personnel (conversations Aura, retours, humeur et journal intime, scans) au-delà de la durée choisie par
+chaque personne ; notifications 90 jours ; mesure d'audience 13 mois ; fichiers en échec de suppression 30 jours ;
+photos de l'espace nounou selon la durée du foyer ; réserves de crédits orphelines. Les suivis partagés du foyer
+restent tant que le foyer existe. **Non déployée en production** : à appliquer sur ta validation (tuto dans
+`docs/TUTOS_CONFIGURATION.md`, § 7).
+
 ## Environnements
 
 - Chromium (Playwright) 402×874, 375×667, 320×568 ; démo locale, horloge figée au 23/11/2026 15 h 20 Paris.

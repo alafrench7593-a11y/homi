@@ -39,3 +39,13 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## Économie de crédits (règle permanente de la propriétaire)
+
+- Lire d'abord `docs/SUIVI.md` (état d'avancement compact) et la doc existante ; jamais d'audit complet sans nécessité.
+- Recherches ciblées (grep, plages de lignes) plutôt que lecture intégrale ; pas de sous-agents ni d'appels parallèles non indispensables.
+- Réutiliser composants, hooks et services existants ; modifications minimales et cohérentes.
+- Réponses limitées aux résultats, tests et blocages ; pas de longs extraits de code du dépôt.
+- Outils locaux pour le déterministe ; GitHub seulement sur besoin concret ; aucune dépendance sans nécessité vérifiée.
+- Ne pas relancer des tests inchangés ; ne jamais sacrifier les contrôles de sécurité et les tests essentiels.
+- Tenir `docs/SUIVI.md` à jour (une ligne par travail terminé).

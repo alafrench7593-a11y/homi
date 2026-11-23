@@ -113,6 +113,7 @@ export const ASK_IT: Record<string, string> = {
   'kid_routines': 'Come aiutare mio figlio a essere autonomo al mattino?',
   'custody': 'Come organizzare l’affidamento condiviso per un bambino piccolo?',
   'brain_dump': 'Come alleggerire il mio carico mentale?',
+  'focus_day': 'Da dove inizio quando tutto è troppo?',
   'family_domains': 'Come dividere meglio i compiti in due?',
   'family_missions': 'Come dividerci i compiti senza dover ricordare tutto all’altro?',
   'family_responsibilities': 'Come dividere in due gli ambiti della casa?',

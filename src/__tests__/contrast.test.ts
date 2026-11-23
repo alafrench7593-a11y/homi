@@ -165,7 +165,7 @@ it('sept thèmes : couleurs de départ de la propriétaire, ordre du sélecteur,
   expect(DEFAULT_PALETTE).toBe('nacre');
   expect(themes.light).toBe(themeFor('light', 'nacre'));
   expect(THEME_STARTS).toEqual({
-    nacre: { bg: '#F4F5F8', surface: '#FFFFFF', accent: '#424957', text: '#191D26' },
+    nacre: { bg: '#ECECEF', surface: '#FFFFFF', accent: '#111113', text: '#0B0B0C' },
     graphite: { bg: '#111214', surface: '#24262B', accent: '#E3E5EB', text: '#F5F6F8' },
     sable: { bg: '#F6EDE2', surface: '#FFF6E9', accent: '#674B36', text: '#2D2119' },
     lavande: { bg: '#F7F4FB', surface: '#EDE4F6', accent: '#674A8B', text: '#352345' },

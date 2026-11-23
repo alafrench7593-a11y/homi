@@ -153,3 +153,29 @@ Compte existant : `homixyz@gmail.com` (Premium offert via RevenueCat, 994 crédi
 - Offrir Premium à un autre compte dans RevenueCat : https://app.revenuecat.com → projet HOMI → **Customers** →
   chercher l'identifiant (`user_id` Supabase) → **Grant entitlement** → `HOMI_PREMIUM` → durée.
   Doc : https://www.revenuecat.com/docs/dashboard-and-metrics/customer-profile#granting-promotional-entitlements
+
+---
+
+## 7. Activer la conservation des données en production (migration `20261208000100_conservation.sql`)
+
+Ce que ça fait : purge chaque nuit (3 h 17 UTC) l'historique personnel au-delà de la durée choisie par chaque
+personne, les notifications de plus de 90 jours et la mesure d'audience de plus de 13 mois. Les suivis des enfants
+ne sont pas touchés. Retour arrière en une ligne (en bas).
+
+1. Ouvrir https://github.com/alafrench7593-a11y/homi/blob/homi/fondations/supabase/migrations/20261208000100_conservation.sql
+   → bouton **Copy raw file** (icône deux carrés, en haut à droite du fichier).
+2. Ouvrir l'éditeur SQL de production : https://supabase.com/dashboard/project/ploatloxxigplpdsqyri/sql/new
+3. Coller → **Run**. Attendu : « Success. No rows returned ».
+4. Enregistrer la migration comme appliquée (pour que les prochains déploiements ne la rejouent pas) : dans le même
+   éditeur, nouvelle requête :
+   `insert into supabase_migrations.schema_migrations (version, name) values ('20261208000100', 'conservation') on conflict do nothing;`
+   → **Run**.
+5. **Vérifier** : https://supabase.com/dashboard/project/ploatloxxigplpdsqyri/integrations/cron/jobs → une tâche
+   `homi-conservation`, planification `17 3 * * *`. Ou en SQL : `select jobname, schedule from cron.job;`
+6. Premier passage à blanc (facultatif, compte le nombre de lignes purgées) : `select public.purge_by_retention();`
+   Attention : cette commande supprime réellement les lignes au-delà des durées.
+
+*(Je peux le faire à ta place : réponds « applique la conservation en prod ».)*
+
+Retour arrière : `select cron.unschedule('homi-conservation'); drop function public.purge_by_retention();`
+Doc pg_cron : https://supabase.com/docs/guides/cron

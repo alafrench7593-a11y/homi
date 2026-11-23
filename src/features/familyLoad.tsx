@@ -12,6 +12,8 @@ import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { useChildren } from '@/lib/data/hooks';
 import { useHealthItems } from '@/lib/data/hooks-family';
+import { useNeedEntries } from '@/lib/data/hooks-needs';
+import { latestSensory, sensoryLines, type Sense, type SenseLevel } from '@/lib/neuro/structured';
 import { childAge } from '@/lib/domain/child';
 import type { Child } from '@/lib/types';
 import { useCareRequests, useCareShifts, useCreateRequest, useDeleteTask, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
@@ -353,6 +355,8 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
   const allergies = [...new Set([...(child.allergies_declared ?? []), ...(items ?? []).filter((i) => i.kind === 'allergy').map((i) => i.label)])];
   const treatments = (items ?? []).filter((i) => i.kind === 'treatment' && !i.done_on);
   const contacts = (items ?? []).filter((i) => i.kind === 'contact');
+  const { data: needEntries } = useNeedEntries(child.id, 'observation');
+  const sensory = latestSensory(needEntries);
   const v = large ? 'body' : 'small';
   return (
     <Card>
@@ -361,6 +365,16 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
       {treatments.length ? <Text variant={v}>{tr('u6.fl.treatments', { list: treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ') })}</Text> : null}
       {contacts.length ? <Text variant={v}>{tr('u6.fl.contacts', { list: contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ') })}</Text> : null}
       <Text variant="caption" muted>{tr('u6.fl.essentials_note')}</Text>
+      {/* Garde de secours : fiche papier pour la personne qui garde (allergies, traitements, contacts, profil sensoriel) */}
+      <Button label={tr('nds.care.print')} icon="printer" variant="secondary" size="sm" testID={`care-print-${child.id}`} onPress={() => {
+        const lines = [
+          tr('u6.fl.allergies', { list: allergies.length ? allergies.join(', ') : tr('u6.fl.none_noted') }),
+          ...(treatments.length ? [tr('u6.fl.treatments', { list: treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ') })] : []),
+          ...(contacts.length ? [tr('u6.fl.contacts', { list: contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ') })] : []),
+          ...(sensory ? sensoryLines(sensory.profile, (x: Sense) => tr(`nds.sense.${x}` as TKey), (l: SenseLevel) => tr(`nds.level.${l}` as TKey), tr('nds.calms'), tr('nds.avoid')) : []),
+        ];
+        router.push(`/print?kind=checklist&title=${encodeURIComponent(tr('nds.care.printTitle', { name: child.first_name }))}&lines=${encodeURIComponent(lines.join('\n'))}` as never);
+      }} />
     </Card>
   );
 }

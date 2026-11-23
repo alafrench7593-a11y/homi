@@ -36,6 +36,8 @@ import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
+import { SensoryProfileCard, SituationJournal } from '@/features/neuro/NeuroPanels';
+import { parseSensory, parseSituation } from '@/lib/neuro/structured';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Tab = 'forYou' | 'profile' | 'follow' | 'treatments';
@@ -103,6 +105,7 @@ export default function ChildNeeds() {
       ]} />
       {current === FOR_YOU && <ForYou childId={child.id} childName={child.first_name} kinds={needs?.kinds ?? []} onPickCategories={() => setTab('profile')} onTreatments={() => setTab('treatments')} />}
       {current === 'profile' && <NeedsProfile childId={child.id} />}
+      {current === 'profile' && <SensoryProfileCard childId={child.id} />}
       {current === 'follow' && <FollowUp childId={child.id} />}
       {current === 'treatments' && <ChildDoseTrack child={child} />}
       {current === 'treatments' && <TreatmentsPanel scope={{ kind: 'child', childId: child.id, childName: child.first_name }} noteDose={params.dose} askTime={params.time} />}
@@ -170,6 +173,15 @@ function NeedsProfile({ childId }: { childId: string }) {
   );
 }
 
+/** Entrées structurées (profil sensoriel, situation) : résumé lisible au lieu du corps encodé. */
+function entryDetail(body: string | null): string {
+  if (!body) return '';
+  const sit = parseSituation(body);
+  if (sit) return [sit.before && `${tr('nds.sit.before')} : ${sit.before}`, sit.helped && `${tr('nds.sit.helped')} : ${sit.helped}`, sit.intensity ? `${sit.intensity}/5` : ''].filter(Boolean).map((x) => ` · ${x}`).join('');
+  if (parseSensory(body)) return '';
+  return ` · ${body}`;
+}
+
 // ---------------------------------------------------------------- suivi
 function FollowUp({ childId }: { childId: string }) {
   const toast = useToast();
@@ -203,13 +215,16 @@ function FollowUp({ childId }: { childId: string }) {
         {ENTRY_KINDS.map((k) => <Chip key={k} label={tr(`nd.entry.${k}` as TKey)} selected={filter === k} onPress={() => setFilter(filter === k ? null : k)} />)}
       </Row>
       <Button label={tr('nd.entry.add')} icon="plus" onPress={() => { setKind(filter ?? 'observation'); setOpen(true); }} testID="entry-add" />
+      <SituationJournal childId={childId} />
       <ToolLinks ids={['appointments', 'documents']} subject={childId ? { type: 'child', id: childId } : null} testID="needs-tools" />
+      {/* Kit imprimable : routines, Maintenant / Ensuite, cartes de communication, histoires sociales (sans écran pour l'enfant) */}
+      <Button label={tr('pst.title')} icon="printer" variant="secondary" onPress={() => router.push('/print?kind=cards' as never)} testID="needs-print" />
       {isLoading && !entries ? <Skeleton rows={3} /> : entriesQ.isError && !entries ? (
         <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
       ) : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (
         <Card>
           <MotionList>{entries.map((e) => (
-            <MotionItem key={e.id}><ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
+            <MotionItem key={e.id}><ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${entryDetail(e.body)}`}
               onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} /></MotionItem>
           ))}</MotionList>
         </Card>

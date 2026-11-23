@@ -15,6 +15,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { WebInteractionStyles } from '@/components/WebInteractionStyles';
 import { ThemeProvider, useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { AdaptiveProfileSync } from '@/theme/AdaptiveProfileSync';
+import { PearlBackdrop } from '@/components/glass/PearlBackdrop';
+import { usesPearl } from '@/theme/glass';
+import { useReduceTransparency } from '@/components/surfaces/nativeGlass';
 import { MorphHost } from '@/motion/Morph';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { I18nProvider } from '@/i18n/I18nProvider';
@@ -312,6 +315,7 @@ function WebFrame({ children }: { children: React.ReactNode }) {
 function Backdrop() {
   const t = useTheme();
   const reduce = useReduceMotion();
+  const reduceTransparency = useReduceTransparency();
   // voile du mode précédent, qui s'efface quand le mode change
   const [veil, setVeil] = useState<string | null>(null);
   const prevBg = useRef(t.colors.background);
@@ -327,6 +331,8 @@ function Backdrop() {
   }, [t.colors.background, reduce, fade]);
   return (
     <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', backgroundColor: t.colors.background }} testID={t.isDark ? 'bg-night' : 'bg-powder'}>
+      {/* Blanc nacré en clair : fond perle, reflets et sphères chromées (uni si « Réduire la transparence ») */}
+      {usesPearl(t) && !reduceTransparency ? <PearlBackdrop /> : null}
       {veil ? <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: veil, opacity: fade }]} /> : null}
     </View>
   );

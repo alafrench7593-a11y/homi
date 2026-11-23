@@ -19,7 +19,7 @@ import { BreastNow } from './BreastNow';
 import { PumpNow } from './PumpNow';
 
 export function FeedRoute({ kind }: { kind: 'breastfeed' | 'pumping' }) {
-  const params = useLocalSearchParams<{ child?: string; feed?: string }>();
+  const params = useLocalSearchParams<{ child?: string; feed?: string; start?: string }>();
   const { data: children, isLoading } = useTrackedChildren();
   const { subject } = useActiveSubject();
   const childId = params.child || (subject.type === 'child' && children?.some((c) => c.id === subject.id) ? subject.id : children?.[0]?.id) || '';
@@ -47,7 +47,7 @@ export function FeedRoute({ kind }: { kind: 'breastfeed' | 'pumping' }) {
         </Row>
       ) : null}
       {kind === 'breastfeed'
-        ? <BreastNow key={child.id} child={child} focusFeed={typeof params.feed === 'string' ? params.feed : null} />
+        ? <BreastNow key={child.id} child={child} focusFeed={typeof params.feed === 'string' ? params.feed : null} startSide={params.start === 'left' || params.start === 'right' ? params.start : null} />
         : <PumpNow key={child.id} child={child} />}
     </Screen>
   );

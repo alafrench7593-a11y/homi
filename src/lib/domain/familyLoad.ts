@@ -175,7 +175,7 @@ export const REQUEST_LABEL: Record<RequestKind, string> = localized(labelsOf(QUI
 // ------------------------------------------------------------------ dates (heure locale)
 const dayKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 export const sameLocalDay = (iso: string, day: string) => dayKey(new Date(iso)) === day;
-const atLocal = (day: string, hour: number, minute = 0) => {
+export const atLocal = (day: string, hour: number, minute = 0) => {
   const [y, m, d] = day.split('-').map(Number);
   return new Date(y, m - 1, d, hour, minute, 0, 0);
 };

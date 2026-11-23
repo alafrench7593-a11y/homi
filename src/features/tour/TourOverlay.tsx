@@ -57,8 +57,12 @@ const STRIP_H = 56;
 const GAP = 12;
 const VEIL = 2400;
 /** Mesure de l'élément : à chaque image (≈ 30 ms) pendant `SETTLE_MS` après une étape ou un défilement, puis au repos. */
-const MEASURE_FAST_MS = 32;
-const MEASURE_IDLE_MS = 450;
+// Cadence de mesure : chaque mesure force une mise en page (web) ; 32 ms relancés à chaque onLayout ralentissaient
+// toute l'appli pendant la visite (animations des listes = onLayout en continu)
+const MEASURE_FAST_MS = 80;
+const MEASURE_IDLE_MS = 900;
+/** Un changement d'ancre ne relance la phase rapide qu'une fois par fenêtre (sinon boucle rapide sans fin). */
+const RESETTLE_GAP_MS = 2000;
 const SETTLE_MS = 700;
 /** Arrivée de la découpe : elle part de l'élément agrandi de `ARRIVE_GROW` (jamais du centre de l'écran). */
 const ARRIVE_GROW = 10;
@@ -226,7 +230,10 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
     const loop = () => {
       void run().then(() => {
         if (!alive) return;
-        timer = setTimeout(loop, Date.now() - settleFrom.current < SETTLE_MS ? MEASURE_FAST_MS : MEASURE_IDLE_MS);
+        const base = Date.now() - settleFrom.current < SETTLE_MS ? MEASURE_FAST_MS : MEASURE_IDLE_MS;
+        // une mesure tombe juste après le délai « introuvable » (la bulle « Passer l'étape » n'attend pas la cadence lente)
+        const untilLost = started + NOT_FOUND_MS + 20 - Date.now();
+        timer = setTimeout(loop, untilLost > 0 ? Math.min(base, Math.max(MEASURE_FAST_MS, untilLost)) : base);
       });
     };
     const measure = async () => {
@@ -265,8 +272,13 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
       if (present.length) await tryReveal(present[0]);
     };
     loop();
-    const off = onAnchorsChange(() => { settleFrom.current = Date.now(); void run(); });
-    return () => { alive = false; if (timer) clearTimeout(timer); off(); };
+    let pending: ReturnType<typeof setTimeout> | null = null;
+    const off = onAnchorsChange(() => {
+      if (Date.now() - settleFrom.current > RESETTLE_GAP_MS) settleFrom.current = Date.now();
+      // rafale de onLayout (animation) : une seule mesure
+      if (!pending) pending = setTimeout(() => { pending = null; void run(); }, MEASURE_FAST_MS);
+    });
+    return () => { alive = false; if (timer) clearTimeout(timer); if (pending) clearTimeout(pending); off(); };
   }, [ids, touchIds, frame, insets.top, insets.bottom, demoInset, path]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- annonce (VoiceOver / TalkBack) : compteur, titre et texte de l'étape
@@ -527,7 +539,7 @@ function TourFinished() {
     // l'éditeur vient de s'ouvrir sous la carte : on le remonte (une fois) pour que la liste et le doigt restent visibles
     const reveal = setTimeout(() => { void anchorEntries('home-editor').find((x) => x.focused())?.reveal(); }, 350);
     void run();
-    const id = setInterval(() => { void run(); }, 500);
+    const id = setInterval(() => { void run(); }, 1000);
     return () => { alive = false; clearInterval(id); clearTimeout(reveal); };
   }, []);
   useEffect(() => { AccessibilityInfo.announceForAccessibility?.(`${tr('tour.done.title')}. ${tr('tour.done.body')}`); }, []);
