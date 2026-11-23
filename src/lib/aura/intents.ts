@@ -25,10 +25,19 @@ export type AuraIntent =
   /** Aura 2.0 — enregistrer un biberon bu « il vient de boire 150 ml » (heure : maintenant) */
   | { kind: 'log_bottle'; ml: number; childId?: string | null }
   /** Aura 2.0 — lecture sans IA : sommeil total d'aujourd'hui */
-  | { kind: 'sleep_today'; childId?: string | null };
+  | { kind: 'sleep_today'; childId?: string | null }
+  /** Aura 2.0 — rendez-vous « chez le pédiatre mardi à 10 h » : formulaire pré-rempli, confirmé par le parent */
+  | { kind: 'add_appointment'; title: string | null; when: When | null; time: string | null; childId?: string | null }
+  /** Aura 2.0 — tâche confiée « rappelle à mon conjoint de préparer le sac demain » : mission pré-remplie */
+  | { kind: 'assign_task'; title: string; when: When | null; time: string | null }
+  /** Aura 2.0 — « je commence à allaiter à gauche » : séance ouverte, le côté démarre à l'appui */
+  | { kind: 'start_breastfeed'; side: 'left' | 'right'; childId?: string | null };
+
+/** Jour cité, gardé RELATIF (résolu avec l'horloge du moment) : +n jours, prochain jour de semaine (0 = dimanche), JJ/MM. */
+export type When = { rel: number } | { weekday: number } | { day: number; month: number; year?: number };
 
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -67,6 +76,21 @@ export function matchIntent(question: string): AuraIntent | null {
   const times = timesIn(question);
   const sleepy = has(q, /\b(sieste\w*|dodo|dormi\w*|dort|endormi\w*|reveil\w*|nap|naps|slept|asleep|woke|wake|waking|sleep\w*)\b/);
   const fixCue = has(q, /\b(mis|mise|note|notee|saisi\w*|corrig\w*|tromp\w*|erreur|en fait|mais|plutot|wrong|actually|but|instead|fix|typed|entered|logged)\b/);
+  // 00) Tâche confiée à un proche (avant le rendez-vous : « rappelle à mon conjoint de prendre rendez-vous »)
+  const task = /\b(?:rappelle|rappeler|demande|demander|dis|dire|remind|ask|tell)\s+(?:[àa]|to)?\s*(?:mon|ma|son|sa|my|his|her|the)?\s*(conjoint|conjointe|mari|femme|époux|epoux|épouse|epouse|compagnon|compagne|partenaire|chéri|cheri|chérie|cherie|papa|maman|père|pere|mère|mere|husband|wife|partner|dad|mum|mom)\s+(?:de\s+|d['’]\s*|to\s+)(.+)$/iu.exec(question.trim());
+  if (task) {
+    const title = cleanTitle(task[2]);
+    if (title.length >= 3) return { kind: 'assign_task', title, when: whenIn(q), time: times[0] ?? null };
+  }
+  // 01) Rendez-vous
+  if (has(q, /\b(rendez vous|rdv|appointment|appt|consultation)\b/) && (whenIn(q) || times.length || has(q, /\b(ajoute\w*|note\w*|prends?|pris|programme\w*|planifi\w*|cale\w*|add|book\w*|schedule\w*)\b/))) {
+    return { kind: 'add_appointment', title: apptTitle(q), when: whenIn(q), time: times[0] ?? null };
+  }
+  // 02) Démarrer une tétée d'un côté
+  const side = has(q, /\b(gauche|left)\b/) ? 'left' : has(q, /\b(droite|droit|right)\b/) ? 'right' : null;
+  if (side && has(q, /\b(sein|tete|tetee|allait\w*|breast\w*|nurs\w*|feed\w*)\b/) && has(q, /\b(commence\w*|demarre\w*|lance\w*|start\w*|begin\w*|mets|met|je donne|donne)\b/)) {
+    return { kind: 'start_breastfeed', side };
+  }
   // 0) Lecture : « combien il a dormi aujourd'hui ? » (sans IA, données du foyer)
   if (has(q, /\b(combien|how (much|long))\b/) && has(q, /\b(dormi|dort|sommeil|slept|sleep)\b/)) return { kind: 'sleep_today' };
   // 0 bis) Enregistrer : deux heures + endormissement/réveil, SANS indice de correction (« s'est endormi à 14 h 20 et
@@ -193,6 +217,31 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
     return { status: 'list', label: ctx.t('aura.it.pregnancyTools'), items: list.map((x) => ({ label: ctx.t('aura.it.open', { name: x.label }), href: x.href })) };
   }
 
+  // ---- Aura 2.0 : formulaires pré-remplis (le parent vérifie et enregistre ; rappel, confidentialité, droits : ceux du formulaire)
+  if (intent.kind === 'assign_task') {
+    const due = intent.when ? resolveWhen(intent.when, ctx.now) : null;
+    const qs = [`title=${encodeURIComponent(intent.title)}`, due ? `date=${frDay(due)}` : '', intent.time ? `time=${intent.time.replace(':', 'h')}` : ''].filter(Boolean).join('&');
+    return { status: 'ready', label: ctx.t('aura.it3.task', { title: intent.title }), href: `/family/missions/new?${qs}`, hint: ctx.t(due ? 'aura.it3.taskHint' : 'aura.it3.taskHintNoDate') };
+  }
+  if (intent.kind === 'add_appointment') {
+    const pediatric = !!intent.title && /Pédiatre|Vaccin|PMI|Orthophoniste/.test(intent.title);
+    const named = ctx.children.find((c) => intent.childId === c.id);
+    const who = named ?? (pediatric ? pickChild(intent, ctx) : null);
+    if (who === 'ask') return askChild(intent, ctx);
+    if (who && !memberCan(ctx.member, 'edit', 'health', who.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: who.first_name }) };
+    const day = intent.when ? resolveWhen(intent.when, ctx.now) : null;
+    const title = intent.title ?? ctx.t('aura.it3.apptDefault');
+    const childQs = who ? `&child=${who.id}` : '';
+    if (!day) return { status: 'ready', label: ctx.t('aura.it3.apptNoDate', { title }), href: `/appointments?new=quick${childQs}`, hint: ctx.t('aura.it3.apptHintNoDate') };
+    const [h, mi] = (intent.time ?? '09:00').split(':').map(Number);
+    const at = new Date(day.getFullYear(), day.getMonth(), day.getDate(), h, mi);
+    return {
+      status: 'ready', label: ctx.t('aura.it3.appt', { title, date: frDay(at).slice(0, 5), time: ctx.clock(at) }),
+      href: `/appointments?new=quick&at=${encodeURIComponent(at.toISOString())}&title=${encodeURIComponent(title)}${childQs}`,
+      hint: ctx.t(intent.time ? 'aura.it3.apptHint' : 'aura.it3.apptHintNoTime'), ...(who ? { childName: who.first_name } : {}),
+    };
+  }
+
   const child = pickChild(intent, ctx);
   if (child === 'ask') return askChild(intent, ctx);
 
@@ -224,6 +273,10 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
   }
 
   // ---- Aura 2.0 : lecture et écritures préparées (droits relus ici ET au moment d'écrire ; RLS côté serveur)
+  if (intent.kind === 'start_breastfeed') {
+    if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }), alternative: { label: ctx.t('aura.it.open', { name: ctx.t('aura.it.tool.baby_breastfeed') }), href: `/track/breastfeed?child=${child.id}` } };
+    return { status: 'ready', label: named(`aura.it3.bf.${intent.side}`, child.first_name), href: `/track/breastfeed?child=${child.id}&start=${intent.side}`, childName: child.first_name, hint: ctx.t('aura.it3.bfHint') };
+  }
   if (intent.kind === 'sleep_today') {
     if (!memberCan(ctx.member, 'view', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noAccess', { name: child.first_name }) };
     const min = sleepMinutesToday(ctx.sleeps.filter((x) => x.child_id === child.id), ctx.now);
@@ -314,3 +367,48 @@ export function sleepMinutesToday(sleeps: SleepLike[], now: Date): number {
   }
   return Math.round(total);
 }
+
+// ---------------------------------------------------------------- Aura 2.0 : dates, titres
+
+const WEEKDAYS: [RegExp, number][] = [[/\b(dimanche|sunday)\b/, 0], [/\b(lundi|monday)\b/, 1], [/\b(mardi|tuesday)\b/, 2], [/\b(mercredi|wednesday)\b/, 3], [/\b(jeudi|thursday)\b/, 4], [/\b(vendredi|friday)\b/, 5], [/\b(samedi|saturday)\b/, 6]];
+
+/** Jour cité dans un texte replié (foldText) : relatif, jour de semaine ou JJ MM [AA]. */
+export function whenIn(q: string): When | null {
+  if (/\b(apres demain|day after tomorrow)\b/.test(q)) return { rel: 2 };
+  if (/\b(demain|tomorrow)\b/.test(q)) return { rel: 1 };
+  if (/\b(aujourd hui|ce soir|ce matin|cet apres midi|today|tonight|this (morning|afternoon|evening))\b/.test(q)) return { rel: 0 };
+  for (const [re, d] of WEEKDAYS) if (re.test(q)) return { weekday: d };
+  const m = /\b([0-3]?\d) ([01]?\d)(?: (\d{2,4}))?\b/.exec(q.replace(/\b(\d{1,2})h\b/g, ''));
+  if (m && Number(m[1]) >= 1 && Number(m[1]) <= 31 && Number(m[2]) >= 1 && Number(m[2]) <= 12) {
+    return { day: Number(m[1]), month: Number(m[2]), ...(m[3] ? { year: m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3]) } : {}) };
+  }
+  return null;
+}
+
+/** Date réelle d'un `When` : jamais dans le passé (jour de semaine = la prochaine occurrence, JJ/MM passé = l'an prochain). */
+export function resolveWhen(w: When, now: Date): Date {
+  const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if ('rel' in w) return new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + w.rel);
+  if ('weekday' in w) { const diff = (w.weekday - d0.getDay() + 7) % 7 || 7; return new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + diff); }
+  let d = new Date(w.year ?? d0.getFullYear(), w.month - 1, w.day);
+  if (!w.year && d < d0) d = new Date(d0.getFullYear() + 1, w.month - 1, w.day);
+  return d;
+}
+
+const APPT_TITLES: [RegExp, string][] = [
+  [/\b(pediatre|pediatrician|pediatric\w*)\b/, 'Pédiatre'], [/\b(dentiste|dentist)\b/, 'Dentiste'], [/\b(medecin|docteur|generaliste|doctor|gp)\b/, 'Médecin'],
+  [/\b(sage femme|midwife)\b/, 'Sage-femme'], [/\b(gyneco\w*|gyn\w*)\b/, 'Gynécologue'], [/\b(vaccin\w*|vaccination)\b/, 'Vaccin'],
+  [/\b(echo|echographie|ultrasound|scan)\b/, 'Échographie'], [/\b(orthophonist\w*|speech therap\w*)\b/, 'Orthophoniste'], [/\b(pmi)\b/, 'PMI'],
+  [/\b(kine\w*|physio\w*)\b/, 'Kinésithérapeute'], [/\b(osteo\w*)\b/, 'Ostéopathe'], [/\b(ophtalmo\w*|eye doctor)\b/, 'Ophtalmologue'],
+];
+export function apptTitle(q: string): string | null { for (const [re, t] of APPT_TITLES) if (re.test(q)) return t; return null; }
+
+/** Titre d'une tâche : sans les mots de date et d'heure de fin de phrase, première lettre en majuscule. */
+export function cleanTitle(raw: string): string {
+  let t = raw.trim().replace(/[.!?…]+$/, '');
+  t = t.replace(/\s+(?:(?:pour|avant|d[’']ici)\s+)?(?:apr[eè]s[- ]demain|demain|aujourd['’]hui|ce soir|ce matin|tomorrow|today|tonight|(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|monday|tuesday|wednesday|thursday|friday|saturday|sunday)(?:\s+(?:prochain|matin|soir))?|le\s+\d{1,2}[/.]\d{1,2}(?:[/.]\d{2,4})?)\b.*$/iu, '');
+  t = t.replace(/\s+(?:à|a|at|vers)\s+\d{1,2}\s*(?:h|:)\s*\d{0,2}.*$/iu, '').trim().slice(0, 120);
+  return t ? t[0].toUpperCase() + t.slice(1) : t;
+}
+
+const frDay = (d: Date) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;

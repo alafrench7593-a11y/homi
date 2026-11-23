@@ -113,7 +113,7 @@ function SidePicker({ running, current, last, seconds, onPick, busy }: {
   );
 }
 
-export function BreastHero({ child, feeds, now, onOpen }: { child: Child; feeds: readonly Breastfeed[]; now: Date; onOpen: (id: string) => void }) {
+export function BreastHero({ child, feeds, now, onOpen, autoStart }: { child: Child; feeds: readonly Breastfeed[]; now: Date; onOpen: (id: string) => void; autoStart?: BreastSide | null }) {
   const t = useTheme();
   const toast = useToast();
   const act = useBreastActions(child);
@@ -143,6 +143,15 @@ export function BreastHero({ child, feeds, now, onOpen }: { child: Child; feeds:
     if (!open) return void run(() => act.start(s, new Date()), tr('bt.started', { side: sideLabel(s) }));
     if (side !== s) return void run(() => act.switchSide(open, new Date()), tr('bt.switched', { side: sideLabel(s) }));
   };
+  // Depuis Aura (« je commence à gauche » → « Démarrer à gauche ») : le côté démarre UNE fois, données chargées ;
+  // le paramètre est retiré aussitôt (un retour sur l'écran ne relance rien) ; le chronomètre tourne ensuite sans IA
+  const autoDone = useRef(false);
+  useEffect(() => {
+    if (!autoStart || autoDone.current) return;
+    autoDone.current = true;
+    router.setParams({ start: undefined } as never);
+    pick(autoStart);
+  }, [autoStart]); // eslint-disable-line react-hooks/exhaustive-deps
   const lastDone = last && !last.ongoing ? last.feed : null;
   return (
     <View testID="bt-hero" style={{ gap: spacing.sm }}>
@@ -195,7 +204,7 @@ function DayTotals({ child, feeds, now }: { child: Child; feeds: readonly Breast
   );
 }
 
-export function BreastNow({ child, focusFeed }: { child: Child; focusFeed?: string | null }) {
+export function BreastNow({ child, focusFeed, startSide }: { child: Child; focusFeed?: string | null; startSide?: BreastSide | null }) {
   const q = useLogs<Breastfeed>('breastfeed', child.id, 8, { includePending: true });
   const feeds = useMemo(() => (q.data ?? []).filter((f) => f.child_id === child.id), [q.data, child.id]);
   const anyOpen = feeds.some((f) => isOngoing(f as FeedLike, new Date()));
@@ -216,7 +225,7 @@ export function BreastNow({ child, focusFeed }: { child: Child; focusFeed?: stri
   const listText = today.map((i) => i.text).join('. ');
   return (
     <View style={{ gap: spacing.sm }}>
-      <BreastHero child={child} feeds={feeds} now={now} onOpen={openFeed} />
+      <BreastHero child={child} feeds={feeds} now={now} onOpen={openFeed} autoStart={q.data ? startSide ?? null : null} />
       {q.isError && !q.data ? <Banner tone="danger">{tr('bt.err.load')}</Banner> : null}
       <DayTotals child={child} feeds={feeds} now={now} />
       <SessionBand title={tr('bt.band.title')} total={day.count ? tr('bt.band.total', { count: day.count, total: day.minutes != null ? span(day.minutes) : '—' }) : tr('bt.band.none')}

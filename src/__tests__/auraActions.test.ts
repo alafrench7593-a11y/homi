@@ -84,3 +84,68 @@ describe('préparation (rien n’est écrit ici)', () => {
     expect(resolveIntent({ kind: 'sleep_today' }, ctx({ sleeps: [] }))).toMatchObject({ status: 'answer', text: expect.stringContaining('noSleepToday') });
   });
 });
+
+// ---------------------------------------------------------------- rendez-vous, tâche confiée, tétée par côté
+import { apptTitle, cleanTitle, resolveWhen, whenIn } from '@/lib/aura/intents';
+import { foldText } from '@/lib/domain/toolSearch';
+
+describe('rendez-vous, tâche, tétée : reconnaissance', () => {
+  it.each([
+    ['Ajoute un rendez-vous chez le pédiatre mardi à 10 h', { kind: 'add_appointment', title: 'Pédiatre', when: { weekday: 2 }, time: '10:00' }],
+    ['rdv dentiste demain 14h30', { kind: 'add_appointment', title: 'Dentiste', when: { rel: 1 }, time: '14:30' }],
+    ['book a pediatrician appointment on friday at 9:30 am', { kind: 'add_appointment', title: 'Pédiatre', when: { weekday: 5 }, time: '09:30' }],
+    ['note le rendez-vous vaccin le 12/12', { kind: 'add_appointment', title: 'Vaccin', when: { day: 12, month: 12 }, time: null }],
+    ['Rappelle à mon conjoint de préparer le sac de crèche demain', { kind: 'assign_task', title: 'Préparer le sac de crèche', when: { rel: 1 }, time: null }],
+    ['demande à mon mari d’acheter du lait ce soir', { kind: 'assign_task', title: 'Acheter du lait', when: { rel: 0 }, time: null }],
+    ['remind my partner to book the swimming class', { kind: 'assign_task', title: 'Book the swimming class', when: null, time: null }],
+    ['Rappelle à mon conjoint de prendre rendez-vous chez le dentiste', { kind: 'assign_task', title: 'Prendre rendez-vous chez le dentiste', when: null, time: null }],
+    ['Je commence à allaiter à gauche', { kind: 'start_breastfeed', side: 'left' }],
+    ['start breastfeeding on the right', { kind: 'start_breastfeed', side: 'right' }],
+  ])('« %s »', (q, expected) => { expect(matchIntent(q)).toEqual(expected); });
+  it('« elle tète à gauche » sans demande de démarrage : simple ouverture d’Allaitement', () => {
+    expect(matchIntent('elle a tété à gauche')?.kind).toBe('open_tool');
+  });
+});
+
+describe('dates : jamais dans le passé', () => {
+  const MON = new Date(2026, 10, 23, 16, 0); // lundi 23/11/2026
+  it('jour de semaine = prochaine occurrence ; même jour = semaine suivante', () => {
+    expect(resolveWhen({ weekday: 2 }, MON).getDate()).toBe(24);
+    expect(resolveWhen({ weekday: 1 }, MON).getDate()).toBe(30);
+  });
+  it('JJ/MM passé → l’an prochain', () => { expect(resolveWhen({ day: 2, month: 1 }, MON).getFullYear()).toBe(2027); });
+  it('heure seule ≠ date', () => { expect(whenIn(foldText('à 10 h 30'))).toBeNull(); });
+  it('titres', () => { expect(apptTitle(foldText('chez la sage-femme'))).toBe('Sage-femme'); expect(cleanTitle('sortir le chien samedi à 9 h')).toBe('Sortir le chien'); });
+});
+
+describe('rendez-vous, tâche, tétée : destinations (formulaire pré-rempli, rien d’écrit)', () => {
+  const two = { activeChildId: null, children: [{ id: 'lina', first_name: 'Lina' }, { id: 'noe', first_name: 'Noé' }] };
+  it('rendez-vous pédiatre : formulaire Rendez-vous rempli (date, heure, enfant)', () => {
+    const r = resolveIntent({ kind: 'add_appointment', title: 'Pédiatre', when: { weekday: 2 }, time: '10:00' }, ctx());
+    expect(r.status).toBe('ready');
+    if (r.status !== 'ready') return;
+    expect(r.href).toMatch(/^\/appointments\?new=quick&at=/);
+    expect(new Date(decodeURIComponent(r.href.split('at=')[1].split('&')[0])).getHours()).toBe(10);
+    expect(r.href).toContain('child=lina');
+  });
+  it('rendez-vous pédiatre avec deux enfants : Aura demande lequel', () => {
+    expect(resolveIntent({ kind: 'add_appointment', title: 'Pédiatre', when: { rel: 1 }, time: null }, ctx(two)).status).toBe('ask');
+  });
+  it('rendez-vous dentiste (adulte) : aucun enfant imposé', () => {
+    const r = resolveIntent({ kind: 'add_appointment', title: 'Dentiste', when: { rel: 1 }, time: '14:30' }, ctx(two));
+    expect(r).toMatchObject({ status: 'ready' }); if (r.status === 'ready') expect(r.href).not.toContain('child=');
+  });
+  it('lecture seule santé : pas de rendez-vous d’enfant proposé', () => {
+    const viewer: MemberLike = { role: 'coparent', can_view: ['health'], can_edit: [], child_scope: ['lina'] };
+    expect(resolveIntent({ kind: 'add_appointment', title: 'Pédiatre', when: { rel: 1 }, time: null }, ctx({ member: viewer })).status).toBe('unavailable');
+  });
+  it('tâche : formulaire Missions rempli (titre, date)', () => {
+    const r = resolveIntent({ kind: 'assign_task', title: 'Préparer le sac de crèche', when: { rel: 1 }, time: null }, ctx());
+    expect(r).toMatchObject({ status: 'ready', href: '/family/missions/new?title=Pr%C3%A9parer%20le%20sac%20de%20cr%C3%A8che&date=24/11/2026' });
+  });
+  it('tétée : séance ouverte avec le côté ; lecture seule → refus', () => {
+    expect(resolveIntent({ kind: 'start_breastfeed', side: 'left' }, ctx())).toMatchObject({ status: 'ready', href: '/track/breastfeed?child=lina&start=left' });
+    const viewer: MemberLike = { role: 'coparent', can_view: ['daily'], can_edit: [], child_scope: ['lina'] };
+    expect(resolveIntent({ kind: 'start_breastfeed', side: 'left' }, ctx({ member: viewer })).status).toBe('unavailable');
+  });
+});
