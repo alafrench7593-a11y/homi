@@ -9,12 +9,24 @@ import type { QueryClient } from '@tanstack/react-query';
 
 export interface ScopeLike { child_scope?: string[] | null; pregnancy_access?: boolean | null }
 
-/** Identifiants des enfants présents dans le cache (liste `children` et clés des requêtes). */
+/**
+ * Identifiants des enfants présents dans le cache : liste `children` ET colonne `child_id` de toute ligne en cache
+ * (préproduction du 23/11/2026 : à la réouverture de l'app, la liste des enfants est déjà rechargée sans l'enfant
+ * retiré alors que ses biberons, siestes… restaient dans le cache restauré du téléphone).
+ */
 function cachedChildIds(qc: QueryClient): Set<string> {
   const ids = new Set<string>();
+  const scan = (v: unknown, depth: number) => {
+    if (depth > 3 || v == null || typeof v !== 'object') return;
+    if (Array.isArray(v)) { for (const x of v) scan(x, depth + 1); return; }
+    const o = v as Record<string, unknown>;
+    if (typeof o.child_id === 'string') ids.add(o.child_id);
+    for (const k of ['pages', 'rows', 'data', 'items']) if (k in o) scan(o[k], depth + 1);
+  };
   for (const q of qc.getQueryCache().getAll()) {
     const data = q.state.data;
     if (q.queryKey.includes('children') && Array.isArray(data)) for (const c of data as { id?: unknown }[]) if (typeof c?.id === 'string') ids.add(c.id);
+    scan(data, 0);
   }
   return ids;
 }
@@ -22,9 +34,12 @@ function cachedChildIds(qc: QueryClient): Set<string> {
 const PREGNANCY_TABLES = ['pregnancies', 'expected_babies', 'pregnancy_memories', 'pregnancy_symptom_logs', 'maternal_weights', 'pregnancy'];
 
 /** Purge du cache pour un périmètre ; renvoie le nombre de requêtes supprimées. */
-export function purgeForScope(qc: QueryClient, scope: ScopeLike): number {
+export function purgeForScope(qc: QueryClient, scope: ScopeLike, knownChildIds: readonly string[] = []): number {
   const allowed = scope.child_scope && scope.child_scope.length ? new Set(scope.child_scope) : null;
-  const removed = allowed ? [...cachedChildIds(qc)].filter((id) => !allowed.has(id)) : [];
+  // Enfants connus AVANT le changement (préproduction, 23/11/2026) : la liste `children` peut être rechargée, déjà
+  // sans l'enfant retiré, avant l'arrivée des nouveaux droits ; le cache ne suffit donc pas à le retrouver.
+  const known = new Set([...cachedChildIds(qc), ...knownChildIds]);
+  const removed = allowed ? [...known].filter((id) => !allowed.has(id)) : [];
   const gone = new Set(removed);
   const noPregnancy = scope.pregnancy_access === false;
   let n = 0;
