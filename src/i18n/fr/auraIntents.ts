@@ -32,6 +32,7 @@ export const auraIntents = {
   "aura.it.fixNap": "Corriger cette sieste",
   "aura.it.fixNap.named": "Corriger la sieste de {name}",
   "aura.it.fixHint": "Sieste {range} : la fin proposée est {to}. Rien n’est enregistré avant ta validation.",
+  "aura.it.fixHintOpen": "Sieste {range} : la fiche s’ouvre pour corriger l’heure. Rien n’est enregistré avant ta validation.",
   "aura.it.reply": "Voici l’écran pour le faire.",
   "aura.it.local": "Réponse sur ton téléphone, sans IA ni crédit.",
   "aura.it.changed": "Les données ont changé depuis cette carte : voici ce qui est possible maintenant.",

@@ -32,6 +32,7 @@ export const auraIntents = {
   "aura.it.fixNap": "Correct this nap",
   "aura.it.fixNap.named": "Correct {name}’s nap",
   "aura.it.fixHint": "Nap {range}: the proposed end is {to}. Nothing is saved until you confirm.",
+  "aura.it.fixHintOpen": "Nap {range}: the entry opens so you can fix the time. Nothing is saved until you confirm.",
   "aura.it.reply": "Here is the screen to do it.",
   "aura.it.local": "Answered on your phone, no AI, no credit.",
   "aura.it.changed": "The data changed since this card: here is what is possible now.",

@@ -32,6 +32,7 @@ export const auraIntents = {
   "aura.it.fixNap": "Correggi questo sonnellino",
   "aura.it.fixNap.named": "Correggi il sonnellino di {name}",
   "aura.it.fixHint": "Sonnellino {range}: la fine proposta è {to}. Nulla viene salvato prima della tua conferma.",
+  "aura.it.fixHintOpen": "Pisolino {range}: la scheda si apre per correggere l’orario. Nulla viene salvato prima della tua conferma.",
   "aura.it.reply": "Ecco la schermata per farlo.",
   "aura.it.local": "Risposta sul telefono, senza IA né crediti.",
   "aura.it.changed": "I dati sono cambiati da questa scheda: ecco cosa è possibile ora.",

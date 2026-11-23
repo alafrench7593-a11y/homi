@@ -113,3 +113,22 @@ describe('résolution avec les données et droits actuels', () => {
     expect(matchIntent('Prépare le relais pour son père')?.kind).toBe('prepare_relay');
   });
 });
+
+describe('« Je me suis trompé sur sa dernière sieste » (site web, 23/11/2026)', () => {
+  it('reconnue sans heure, en français et en anglais', () => {
+    expect(matchIntent('Je me suis trompé sur sa dernière sieste')).toEqual({ kind: 'fix_sleep_end', wrong: null, right: null });
+    expect(matchIntent('I made a mistake on her last nap')).toEqual({ kind: 'fix_sleep_end', wrong: null, right: null });
+  });
+  it('un enfant affiché : la dernière sieste s’ouvre en modification, sans valeur proposée', () => {
+    const r = resolveIntent({ kind: 'fix_sleep_end', wrong: null, right: null }, base());
+    expect(r).toMatchObject({ status: 'ready', href: '/sleep/lina?nap=aprem&edit=1' });
+  });
+  it('ambigu (deux enfants, aucun affiché) : demande de précision avec les prénoms', () => {
+    const r = resolveIntent({ kind: 'fix_sleep_end', wrong: null, right: null }, base({ activeChildId: null, children: [{ id: 'lina', first_name: 'Lina' }, { id: 'noe', first_name: 'Noé' }] }));
+    expect(r.status).toBe('ask');
+    if (r.status !== 'ask') return;
+    expect(r.options.map((o) => o.label)).toEqual(['Lina', 'Noé']);
+    const noe = resolveIntent(r.options[1].intent, base({ activeChildId: null, children: [{ id: 'lina', first_name: 'Lina' }, { id: 'noe', first_name: 'Noé' }] }));
+    expect(noe).toMatchObject({ status: 'ready', href: '/sleep/noe?nap=noe&edit=1', childName: 'Noé' });
+  });
+});

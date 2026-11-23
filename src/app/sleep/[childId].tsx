@@ -66,7 +66,7 @@ function ageTips(months: number): string[] {
 }
 
 export default function SleepPlanner() {
-  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string; nap?: string; fix?: string }>();
+  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string; nap?: string; fix?: string; edit?: string }>();
   const childId = params.childId;
   const child = useChild(childId);
   const childrenQ = useChildren();
@@ -90,7 +90,7 @@ export default function SleepPlanner() {
       </Screen>
     );
   }
-  return <PlannerBody child={child} tab={tab} setTab={setTab} nap={typeof params.nap === 'string' ? params.nap : null} fix={typeof params.fix === 'string' ? params.fix : null} />;
+  return <PlannerBody child={child} tab={tab} setTab={setTab} nap={typeof params.nap === 'string' ? params.nap : null} fix={typeof params.fix === 'string' ? params.fix : params.edit === '1' ? 'edit' : null} />;
 }
 
 function PlannerBody({ child, tab, setTab, nap, fix }: { child: Child; tab: Tab; setTab: (t: Tab) => void; nap: string | null; fix: string | null }) {
@@ -143,7 +143,10 @@ function TodayTab({ child, data, focusNap, fixTo, goSafety, goProfile }: { child
   const openSession = (s: Sleep) => { setSelNap(s.id); setZoomNap(s.id); router.setParams({ nap: s.id }); setTraySession(s); setTrayOpen(true); };
   // Carte d'Aura « Corriger cette sieste » (?nap=…&fix=HH:MM) : la fiche s'ouvre une fois, sur la modification de la
   // fin, avec l'heure proposée en valeur provisoire (Annuler / Enregistrer restent au parent)
-  const [fixView, setFixView] = useState<string | null>(fixTo);
+  // « ?edit=1 » (Aura, « je me suis trompé sur sa dernière sieste ») : la fiche s'ouvre, sans heure proposée
+  const editOnly = fixTo === 'edit';
+  const [fixView, setFixView] = useState<string | null>(editOnly ? null : fixTo);
+  const [editView, setEditView] = useState(editOnly);
   const fixOpened = useRef(false);
   useEffect(() => {
     if (fixOpened.current || !fixTo || !focusNap || !sleeps) return;
@@ -151,7 +154,7 @@ function TodayTab({ child, data, focusNap, fixTo, goSafety, goProfile }: { child
     if (!s) return;
     fixOpened.current = true;
     openSession(s);
-    router.setParams({ fix: undefined } as never);
+    router.setParams({ fix: undefined, edit: undefined } as never);
   }, [fixTo, focusNap, sleeps]); // eslint-disable-line react-hooks/exhaustive-deps
   const night = useMemo(() => lastNightReport(sleeps, child.id, feeds, now), [sleeps, feeds, child.id, now]);
   const name = child.first_name;
@@ -236,8 +239,8 @@ function TodayTab({ child, data, focusNap, fixTo, goSafety, goProfile }: { child
       </Row>
       <SleepEditSheet child={child} sleep={editing} all={sleeps as Sleep[]} onClose={() => setEditing(null)} />
       <NapSessionTray child={child} all={sleeps as Sleep[]} session={traySession ? (sleeps as Sleep[]).find((x) => x.id === traySession.id) ?? null : null}
-        open={trayOpen} onOpenChange={(o) => { setTrayOpen(o); if (!o) setFixView(null); }} onEdit={setEditing}
-        initialView={fixView ? 'edit' : 'session'} proposedEndText={fixView}
+        open={trayOpen} onOpenChange={(o) => { setTrayOpen(o); if (!o) { setFixView(null); setEditView(false); } }} onEdit={setEditing}
+        initialView={fixView || editView ? 'edit' : 'session'} proposedEndText={fixView}
         onRelay={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)}
         onOpenOther={(id) => { const o = (sleeps as Sleep[]).find((x) => x.id === id); if (o) setTimeout(() => openSession(o), 350); }}
         onAnalyze={(s) => router.push({ pathname: '/assistant/session', params: { child: child.id, sleep: s.id } } as never)} />

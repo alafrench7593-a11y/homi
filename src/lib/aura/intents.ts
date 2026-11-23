@@ -15,7 +15,7 @@ export type Metric = 'weight_kg' | 'height_cm' | 'head_cm';
 
 export type AuraIntent =
   | { kind: 'open_tool'; toolId: string; childId?: string | null }
-  | { kind: 'fix_sleep_end'; wrong: string | null; right: string; childId?: string | null; sleepId?: string | null }
+  | { kind: 'fix_sleep_end'; wrong: string | null; right: string | null; childId?: string | null; sleepId?: string | null }
   | { kind: 'prepare_relay'; childId?: string | null }
   | { kind: 'add_measure'; metric: Metric; childId?: string | null }
   | { kind: 'switch_child' }
@@ -64,6 +64,10 @@ export function matchIntent(question: string): AuraIntent | null {
   // 1) Corriger la fin d'une sieste : une heure + le sommeil + un indice de correction
   if (times.length && sleepy && (fixCue || times.length >= 2)) {
     return { kind: 'fix_sleep_end', wrong: times.length >= 2 ? times[0] : null, right: times[times.length - 1] };
+  }
+  // 1 bis) « Je me suis trompé sur sa dernière sieste » (sans heure) : la bonne entrée s'ouvre sur sa modification
+  if (sleepy && has(q, /\b(tromp\w*|erreur|corrig\w*|modifi\w*|rectifi\w*|wrong|mistake|fix|edit|correct)\b/)) {
+    return { kind: 'fix_sleep_end', wrong: null, right: null };
   }
   // 2) Relais
   if (has(q, /\b(relais|relaye\w*|transmet\w*|transmission|handover|hand over|handoff|hand off)\b/) || has(q, /\bpass\w* (le relais|the baton)\b/)) {
@@ -218,7 +222,7 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
   const s = candidates[0];
   return {
     status: 'ready', label: named('aura.it.fixNap', child.first_name), childName: child.first_name,
-    href: `${sleepRoute}?nap=${s.id}&fix=${intent.right}`,
-    hint: ctx.t('aura.it.fixHint', { range: range(s), to: intent.right.replace(':', ' h ') }),
+    href: intent.right ? `${sleepRoute}?nap=${s.id}&fix=${intent.right}` : `${sleepRoute}?nap=${s.id}&edit=1`,
+    hint: intent.right ? ctx.t('aura.it.fixHint', { range: range(s), to: intent.right.replace(':', ' h ') }) : ctx.t('aura.it.fixHintOpen', { range: range(s) }),
   };
 }

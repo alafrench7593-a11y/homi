@@ -32,6 +32,7 @@ export const auraIntents = {
   "aura.it.fixNap": "Dieses Schläfchen korrigieren",
   "aura.it.fixNap.named": "Schläfchen von {name} korrigieren",
   "aura.it.fixHint": "Schläfchen {range}: vorgeschlagenes Ende {to}. Nichts wird vor deiner Bestätigung gespeichert.",
+  "aura.it.fixHintOpen": "Schläfchen {range}: Der Eintrag öffnet sich zum Korrigieren der Uhrzeit. Nichts wird gespeichert, bevor du bestätigst.",
   "aura.it.reply": "Hier ist der Bildschirm dafür.",
   "aura.it.local": "Auf deinem Telefon beantwortet, ohne KI und ohne Guthaben.",
   "aura.it.changed": "Die Daten haben sich seit dieser Karte geändert: Das ist jetzt möglich.",
