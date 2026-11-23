@@ -85,7 +85,7 @@ export const cocoon = {
   'coc.info.bottle': 'Dernier biberon',
   'coc.info.diaper': 'Dernière couche',
   'coc.info.meal': 'Dernier repas',
-  'coc.info.sleep': 'Sommeil aujourd’hui',
+  'coc.info.sleep': 'Sommeil du jour',
   'coc.info.next': 'Prochain événement',
   'coc.info.none': 'Rien de noté',
   'coc.info.nothingPlanned': 'Rien de prévu',
