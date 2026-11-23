@@ -180,7 +180,7 @@ export function IntroFlow({ initialPage = 0, initialProfile = null, onProfile, o
 }
 
 /** Une page : glisse avec `pos` (largeur entière) et s'efface en s'éloignant ; cachée aux lecteurs hors de l'écran. */
-function Page({ index, width, dir, off, pos, children }: { index: number; width: number; dir: number; off: boolean; pos: SharedValue<number>; children: React.ReactNode }) {
+export function Page({ index, width, dir, off, pos, children }: { index: number; width: number; dir: number; off: boolean; pos: SharedValue<number>; children: React.ReactNode }) {
   const a = useAnimatedStyle(() => {
     const d = index - pos.value;
     return { opacity: off ? (Math.abs(d) < 0.5 ? 1 : 0) : 1 - Math.min(1, Math.abs(d)) * 0.85, transform: [{ translateX: off ? (Math.abs(d) < 0.5 ? 0 : width * 2) : d * width * dir }] };
@@ -243,7 +243,7 @@ function TableauPage({ profile, n, active }: { profile: IntroProfile; n: number;
 }
 
 /** Dernière page — la marque, une phrase, la langue, la confidentialité (les trois actions sont dans le pied). */
-function EndPage({ onLanguage, short }: { onLanguage: (code: string) => void; short: boolean }) {
+export function EndPage({ onLanguage, short }: { onLanguage: (code: string) => void; short: boolean }) {
   const t = useTheme();
   const locale = getLocale();
   return (

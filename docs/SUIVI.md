@@ -31,3 +31,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Audit final avant build (23/11) : HOMI_FINAL_PREBUILD_AUDIT.md — BUILD BLOQUÉ (4 points non vérifiables sans iPhone : achats sandbox, compte/Apple, natif, performance).
 - Compte (23/11) : « Supprimer mon compte » dans le menu Compte ; suppression = une feuille, une case « je comprends », un bouton (plus de mot à taper). Vérifié démo web.
 - Avant build (23/11) : « mode enfant » retiré (aucun écran pour l'enfant ; ancienne adresse → version imprimable) ; relais juste après minuit (soirée conservée : début = min(minuit, maintenant − 12 h)).
+- Intro (24/11) : présentation Keynote en 7 tableaux au premier lancement (/intro → « Commencer » → /start), Passer, Précédent, progression qui suit le doigt ; vérifiée web 390 et 320 px.

@@ -33,16 +33,27 @@ export const INTRO_SCENES: Record<IntroProfile, [IntroScene, IntroScene, IntroSc
 /** Pages de l'introduction : « Je suis… », trois tableaux, « Commencer ». */
 export const INTRO_PAGES = 5;
 export const LAST_PAGE = INTRO_PAGES - 1;
-export function clampPage(n: number): number {
+export function clampPage(n: number, last?: number): number {
   'worklet';
-  return Math.max(0, Math.min(LAST_PAGE, Math.round(Number.isFinite(n) ? n : 0)));
+  // pas de paramètre par défaut dans un worklet (règle du projet) : la borne est résolue ici
+  const max = last === undefined ? LAST_PAGE : last;
+  return Math.max(0, Math.min(max, Math.round(Number.isFinite(n) ? n : 0)));
 }
+
+/**
+ * Présentation « Keynote » de première ouverture (audit du 24/11/2026) : HOMI en 7 tableaux, puis « Commencer ».
+ * Chaque tableau = un grand titre, une phrase, une vraie scène de l'application (données d'exemple).
+ */
+export const KEYNOTE_SLIDES = ['brand', 'parenting', 'child', 'organize', 'community', 'aura', 'yours'] as const;
+export type KeynoteSlide = (typeof KEYNOTE_SLIDES)[number];
+export const KEYNOTE_PAGES = KEYNOTE_SLIDES.length + 1;
+export const KEYNOTE_LAST = KEYNOTE_PAGES - 1;
 
 /**
  * Geste horizontal relâché → page visée (seuil : le tiers de la largeur, ou un lancer > 500 px/s). Sans profil
  * choisi, on ne passe pas au-delà de « Je suis… » par le geste (il faut choisir, ou « Passer »).
  */
-export function swipeTarget(o: { page: number; dx: number; vx: number; width: number; rtl: boolean; hasProfile: boolean }): number {
+export function swipeTarget(o: { page: number; dx: number; vx: number; width: number; rtl: boolean; hasProfile: boolean; last?: number }): number {
   'worklet';
   const d = o.rtl ? -o.dx : o.dx;
   const v = o.rtl ? -o.vx : o.vx;
@@ -50,7 +61,7 @@ export function swipeTarget(o: { page: number; dx: number; vx: number; width: nu
   if (d < -o.width / 3 || v < -500) next = o.page + 1;
   else if (d > o.width / 3 || v > 500) next = o.page - 1;
   if (!o.hasProfile && o.page === 0 && next > 0) return 0;
-  return clampPage(next);
+  return clampPage(next, o.last ?? LAST_PAGE);
 }
 
 /** Situations de la première question de l'onboarding (`SituationStep`) préremplies par le profil choisi. */

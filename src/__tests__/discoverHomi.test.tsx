@@ -341,9 +341,9 @@ describe('enchaînement', () => {
     expect(swipeStep(LAST_STEP, -120)).toBe(LAST_STEP);
     expect(swipeStep(2, -80, 0, true)).toBe(1);
   });
-  it('la première ouverture mène au parcours « première réussite » (/start, 03/12/2026), plus à la keynote ; /cinematic redirige vers la keynote', () => {
+  it('la première ouverture mène à la présentation Keynote (/intro, 24/11/2026), puis au parcours « première réussite » ; /cinematic redirige vers la keynote', () => {
     const launch = fs.readFileSync('src/features/launch/Launch.tsx', 'utf8');
-    expect(launch).toMatch(/!introSeen\) return <Redirect href=\{'\/start' as never\} \/>/);
+    expect(launch).toMatch(/!introSeen\) return <Redirect href=\{'\/intro' as never\} \/>/);
     expect(launch).not.toMatch(/Redirect href=\{'\/discover'/);
     expect(fs.readFileSync('src/app/cinematic.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
     expect(fs.readFileSync('src/app/settings/help.tsx', 'utf8')).toMatch(/\/discover\?replay=1/);
