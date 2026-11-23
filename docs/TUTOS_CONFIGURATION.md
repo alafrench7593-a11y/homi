@@ -42,8 +42,26 @@ fournisseur « apple ».
    Return URL `https://ploatloxxigplpdsqyri.supabase.co/auth/v1/callback`.
 2. https://developer.apple.com/account/resources/authkeys/list → **+** → cocher **Sign in with Apple** → télécharger
    la clé `.p8` (une seule fois possible) et noter le **Key ID** et ton **Team ID** (`L5HM8RN2QD`).
-3. Générer le secret (JWT) avec l'outil de la doc Supabase (section « Generate a client secret ») puis l'ajouter dans
-   le fournisseur Apple de Supabase, et ajouter `app.homi.family.web` aux Client IDs.
+3. Générer le secret : Supabase refuse le `.p8` brut (« Secret key should be a JWT »). Sur ton ordinateur, dans le
+   dossier du `.p8`, enregistrer ce script sous `apple-secret.mjs` (Node seul, rien à installer) :
+
+   ```js
+   import { createPrivateKey, sign } from 'node:crypto';
+   import { readFileSync } from 'node:fs';
+   const [, , p8, keyId, teamId, clientId] = process.argv;
+   const b64 = (o) => Buffer.from(typeof o === 'string' ? o : JSON.stringify(o)).toString('base64url');
+   const now = Math.floor(Date.now() / 1000);
+   const head = b64({ alg: 'ES256', kid: keyId });
+   const body = b64({ iss: teamId, iat: now, exp: now + 180 * 24 * 3600, aud: 'https://appleid.apple.com', sub: clientId });
+   const sig = sign('sha256', Buffer.from(`${head}.${body}`), { key: createPrivateKey(readFileSync(p8)), dsaEncoding: 'ieee-p1363' }).toString('base64url');
+   console.log(`${head}.${body}.${sig}`);
+   ```
+
+   puis : `node apple-secret.mjs AuthKey_XXXXXXXXXX.p8 <Key ID> L5HM8RN2QD app.homi.family.web`
+   Coller la ligne affichée (commence par `eyJ`) dans « Secret Key (for OAuth) » du fournisseur Apple de Supabase et
+   ajouter `app.homi.family.web` aux Client IDs (séparés par une virgule). **Expire au bout de 6 mois** (limite Apple) :
+   le régénérer avant, sinon la connexion Apple sur le web s'arrête.
+   Pour l'iPhone seul : laisser ce champ VIDE (le message « Secret key should be a JWT » vient d'un champ rempli).
 
 ---
 
