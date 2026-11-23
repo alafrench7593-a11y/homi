@@ -22,3 +22,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Risques : prénoms masqués avant Gemini (déployé, v10) ; analytics grossesse ↔ compte ; journal du foyer sans purge.
 - Google OAuth (identifiants à fournir). Build 14 : seulement sur ordre.
 - Fusion : PR #1 (main = homi/fondations, ancien main dans archive/main-2026-11-13) ; maquette design à valider.
+- Design (23/11) : Blanc nacré en noir et gris, fond perle (reflets + sphères chromées), cartes en verre translucide, initiales d'enfants en gris ; opaque si « Réduire la transparence ». Reste : points de « Mes apps », robot Aura, pictogrammes de la barre d'onglets.

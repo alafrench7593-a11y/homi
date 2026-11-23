@@ -14,6 +14,8 @@ import { useBackendMode } from '@/lib/demoMode';
 import { useUiStore } from '@/lib/store';
 import { useLensStore } from '@/components/glass/liquid/store';
 import { LiquidLabPanel } from '@/features/dev/LiquidLabPanel';
+import { usesPearl } from '@/theme/glass';
+import { useReduceTransparency } from '@/components/surfaces/nativeGlass';
 
 /** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
 function DigestSync() {
@@ -33,6 +35,9 @@ const CAREGIVER_TABS = new Set(['profile', 'community', 'moi']);
 export default function TabsLayout() {
   const { session, ready } = useAuth();
   const t = useTheme();
+  // Fond perle (Blanc nacré) : la scène reste transparente pour laisser voir le fond commun
+  const reduceTransparency = useReduceTransparency();
+  const pearl = usesPearl(t) && !reduceTransparency;
   const caregiver = isCaregiverOnly(useMemberships().data);
   // Visite sans compte (ticket 1) : la présentation d'Aura ne s'ouvre pas d'elle-même 1,2 s après l'arrivée — elle
   // recouvrait l'accueil et captait les premiers touchers de la visite ; Aura reste ouverte depuis son bouton.
@@ -54,7 +59,7 @@ export default function TabsLayout() {
     {/* Refonte du 17/11/2026 : Aujourd'hui · Moi · [action centrale] · Enfant · Famille. « Outils » : entrée fixe en tête
         d'Aujourd'hui et dans l'action centrale ; Communauté : bouton en haut à droite des écrans d'onglet.
         Les autres routes d'onglet restent valides hors de la barre (`href: null`) : liens profonds, notifications, tests. */}
-    <Tabs detachInactiveScreens backBehavior="history" screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: t.colors.background }, freezeOnBlur: true, animation: 'none' }} tabBar={(props) => <Dock {...props} />}>
+    <Tabs detachInactiveScreens backBehavior="history" screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: pearl ? 'transparent' : t.colors.background }, freezeOnBlur: true, animation: 'none' }} tabBar={(props) => <Dock {...props} />}>
       <Tabs.Screen name="index" options={{ title: tr('nav.tab.today') }} />
       <Tabs.Screen name="health" options={{ title: tr('nav.tab.me') }} />
       <Tabs.Screen name="baby" options={{ title: tr('nav.tab.child') }} />

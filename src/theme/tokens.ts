@@ -267,7 +267,7 @@ function nightTone(d: PaletteTone): NightTone {
  * (thèmes clairs) et sombres (thèmes sombres). Verrouillées par src/__tests__/contrast.test.ts.
  */
 export const THEME_STARTS: Record<PaletteName, { bg: Hex; surface: Hex; accent: Hex; text: Hex }> = {
-  nacre: { bg: '#F4F5F8', surface: '#FFFFFF', accent: '#424957', text: '#191D26' },
+  nacre: { bg: '#ECECEF', surface: '#FFFFFF', accent: '#111113', text: '#0B0B0C' },
   graphite: { bg: '#111214', surface: '#24262B', accent: '#E3E5EB', text: '#F5F6F8' },
   sable: { bg: '#F6EDE2', surface: '#FFF6E9', accent: '#674B36', text: '#2D2119' },
   lavande: { bg: '#F7F4FB', surface: '#EDE4F6', accent: '#674A8B', text: '#352345' },
@@ -278,15 +278,16 @@ export const THEME_STARTS: Record<PaletteName, { bg: Hex; surface: Hex; accent: 
 const S = THEME_STARTS;
 
 // ---------------------------------------------------------------- 1. Blanc nacré
-const NACRE_DECOR: [Hex, Hex, Hex] = ['#BFC6D4', '#A9B9D3', '#D3CBE3'];
+// 23/11/2026 (décision de la propriétaire) : noir et gris uniquement, boutons noir premium
+const NACRE_DECOR: [Hex, Hex, Hex] = ['#C4C5CA', '#AEAFB5', '#D6D6DA'];
 const NACRE_LIGHT = lightTone({
-  ...S.nacre, sunken: '#E8EAF0', textMuted: '#4F5664', line: '#2A3140',
-  accent: [S.nacre.accent, '#2F5689'], third: '#5E47A6', gold: '#734B10', heart: '#A3345C',
+  ...S.nacre, sunken: '#E4E4E7', textMuted: '#4F5056', line: '#2A2A2E',
+  accent: [S.nacre.accent, '#3A3A3E'], third: '#46464C', gold: '#5A5A60', heart: '#3A3A3E',
   status: STATUS.light, decor: NACRE_DECOR,
 });
 const NACRE_DARK = darkTone({
-  bg: '#121419', surface: '#1D2027', raised: '#262A33', sunken: '#0D0F13', text: '#F2F4F8', textMuted: '#AEB4C0', line: '#DCE4F2', ink: '#191D26',
-  accent: ['#C9D3E6', '#A9C3EA'], third: '#C9B6FF', gold: '#EDC583', heart: '#F4A3C0', status: { ...STATUS.dark, danger: '#FF8C8C' },
+  bg: '#121214', surface: '#1C1C1E', raised: '#262628', sunken: '#0B0B0C', text: '#F4F4F5', textMuted: '#B0B0B6', line: '#E4E4E8', ink: '#0B0B0C',
+  accent: ['#E8E8EB', '#C8C8CD'], third: '#C4C4CA', gold: '#D8D8DC', heart: '#E0E0E4', status: { ...STATUS.dark, danger: '#FF8C8C' },
 });
 
 // ---------------------------------------------------------------- 2. Noir graphite (sombre par nature)
@@ -355,7 +356,7 @@ const AMETHYSTE_DARK = darkTone({
 
 /** Les huit thèmes. Ordre de `decor` et `wash` : accent principal, second accent, accent rare. */
 export const PALETTE_SPECS: Record<PaletteName, PaletteSpec> = {
-  nacre: { scheme: 'light', decor: NACRE_DECOR, wash: ['#E9ECF2', '#E4EAF4', '#EEEAF5'], glow: { light: '#FFFFFF', dark: '#E8EEFF' }, swatch: ['#FFFFFF', '#DCE0E8'], light: NACRE_LIGHT, dark: NACRE_DARK, night: nightTone(NACRE_DARK) },
+  nacre: { scheme: 'light', decor: NACRE_DECOR, wash: ['#EAEAED', '#E4E4E8', '#EFEFF1'], glow: { light: '#FFFFFF', dark: '#F0F0F2' }, swatch: ['#FFFFFF', '#D8D8DC'], light: NACRE_LIGHT, dark: NACRE_DARK, night: nightTone(NACRE_DARK) },
   graphite: { scheme: 'dark', decor: ['#8E939E', '#6F7684', '#B9BEC9'], wash: ['#2C2F35', '#292C33', '#30323A'], glow: { light: '#FFE3A6', dark: '#FFE3A6' }, swatch: ['#55585F', '#26282D'], light: GRAPHITE_DARK, dark: GRAPHITE_DARK, night: nightTone(GRAPHITE_DARK) },
   sable: { scheme: 'light', decor: SABLE_DECOR, wash: ['#F9EFDB', '#FBEAE1', '#F2EAE1'], glow: { light: '#FFF1D2', dark: '#FFE2B8' }, swatch: ['#FBF1E6', '#E9D2BC'], light: SABLE_LIGHT, dark: SABLE_DARK, night: nightTone(SABLE_DARK) },
   lavande: { scheme: 'light', decor: LAVANDE_DECOR, wash: ['#ECE5FB', '#F8E6F8', '#E4EAFC'], glow: { light: '#FFF0D2', dark: '#FFE6C4' }, swatch: ['#EDE6FA', '#CBB9EC'], light: LAVANDE_LIGHT, dark: LAVANDE_DARK, night: nightTone(LAVANDE_DARK) },

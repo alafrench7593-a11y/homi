@@ -13,6 +13,7 @@ import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'reac
 import { useTheme } from '@/theme/ThemeProvider';
 import { glassOf, physicalShadow, radius as R, surfaceShadow, type ElevationLevel, type ShadowLayer } from '@/theme/tokens';
 import { parseColor } from '@/theme/contrast';
+import { PEARL, usesPearl } from '@/theme/glass';
 import { Surface } from './surfaces/Surface';
 import { CardLens } from './glass/liquid/CardLens';
 import { LIQUID_GLASS_NATIVE, useReduceTransparency } from './surfaces/nativeGlass';
@@ -47,7 +48,10 @@ export function GlassSurface({
   // v5 : surface OPAQUE, sans flou ni reflet ; un ancien remplissage violet ou translucide devient la surface du thème
   let translucent = false;
   try { translucent = parseColor(fill).a < 1; } catch { translucent = false; }
-  const color = LEGACY_VIOLET.test(fill) || translucent ? t.colors.surface : fill;
+  const base = LEGACY_VIOLET.test(fill) || translucent ? t.colors.surface : fill;
+  // Blanc nacré en clair : verre translucide (74 % de blanc, texte secondaire ≥ 4,5:1 même sur une sphère chromée)
+  const pearl = useReduceTransparency() === false && usesPearl(t) && base === t.colors.surface;
+  const color = pearl ? PEARL.cardFill : base;
   return (
     <View
       style={[
