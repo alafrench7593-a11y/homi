@@ -6,7 +6,8 @@
  * n'est interprétée. Si quelque chose préoccupe le parent : résumé factuel de ses notes pour le pédiatre.
  * Gratuit : étapes principales, sécurité, sources, résumé à l'écran. Premium : toutes les étapes, activités, PDF.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Platform, ScrollView, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,7 +17,7 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
 import { Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Chip, Field, Icon, Row, SectionTitle, Text, haptic } from '@/components/ui';
+import { Banner, Button, Chip, Field, Icon, ListGroup, ListRow, Row, SectionTitle, Text, haptic } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useChild, useChildren, useMemberships, usePremium } from '@/lib/data/hooks';
 import { openLink } from '@/lib/links';
@@ -33,6 +34,8 @@ import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Référence stable : un nouveau tableau à chaque lecture du store provoquerait des rendus sans fin. */
 const NO_QUESTIONS: string[] = [];
@@ -96,8 +99,8 @@ export default function Grow() {
     <Screen back title={tr('gr.title')} subtitle={tr('gr.subtitle', { name, age: tr('dc.age', { count: age }) })}
       action={nextStep ? { label: tr('mb.gr.action'), icon: 'check-circle', onPress: () => openStep(nextStep), testID: 'gr-main-action' } : undefined}>
       <View testID="grow" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(255,214,190,0.05)'] : ['rgba(255,250,246,0.18)', 'rgba(255,244,234,0.12)', 'rgba(253,235,224,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 2200, borderRadius: 32 }} />
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={26} padded={spacing.md}>
+      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(233,207,164,0.05)'] : ['rgba(247,244,251,0.18)', 'rgba(244,240,250,0.12)', 'rgba(246,236,218,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2200, borderRadius: 32 }} />
+      <GlassSurface fill={t.colors.surface} depth={2} radius={26} padded={spacing.md}>
         <View style={{ gap: 6 }} testID="gr-hero">
           <Text variant="heading">{tr('gr.heroTitle', { name })}</Text>
           <Text variant="small">{tr('gr.rhythm')}</Text>
@@ -109,12 +112,18 @@ export default function Grow() {
         { icon: 'calendar', value: tr(`gr.band.${current.key}` as TKey), label: tr('mb.gr.band') },
       ]} />
 
+      {/* 30/11/2026 : journal du langage (129) et jeux adaptés à l'âge (132) de cet enfant */}
+      <ListGroup testID="gr-more">
+        <ListRow icon="message-circle" title={tr('p2.lg.title')} subtitle={tr('p2.lg.entrySub', { name })} onPress={() => router.push(`/child/${child.id}/language` as never)} testID="gr-language" />
+        <ListRow icon="smile" title={tr('p2.gm.title')} subtitle={tr('p2.gm.entrySub')} onPress={() => router.push(`/child/${child.id}/games` as never)} testID="gr-games" />
+      </ListGroup>
+
       <SectionTitle title={tr('gr.recent')} />
       {recent.length ? (
         <View style={{ gap: 6 }} testID="gr-recent">
           {recent.map((r) => { const s = STEP_BY_KEY[r.step_key]; return s ? (
             <Tappable key={r.id} accessibilityRole="button" onPress={() => openStep(s)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44 }}>
-              <Icon name={r.status === 'observed' ? 'check-circle' : 'loader'} size={18} color={r.status === 'observed' ? (t.colors.success ?? '#3E8E41') : t.colors.primary} />
+              <Icon name={r.status === 'observed' ? 'check-circle' : 'loader'} size={18} color={r.status === 'observed' ? t.colors.success : t.colors.primary} />
               <Text style={{ flex: 1 }}>{s.title}</Text>
               <Text variant="caption" muted>{r.observed_on ? formatDate(`${r.observed_on}T12:00:00`, { day: 'numeric', month: 'short' }) : tr(`gr.status.${r.status}` as TKey)}</Text>
             </Tappable>
@@ -132,12 +141,12 @@ export default function Grow() {
       </ScrollView>
 
       <View style={{ gap: spacing.sm }} testID="gr-steps">
-        {list.length ? list.map((s) => <StepCard key={s.key} s={s} row={byKey.get(s.key)} locked={!stepAvailable(s, premium)} onPress={() => openStep(s)} child={child} />)
+        {list.length ? <MotionList style={{ gap: spacing.sm }}>{list.map((s) => <MotionItem key={s.key}><StepCard key={s.key} s={s} row={byKey.get(s.key)} locked={!stepAvailable(s, premium)} onPress={() => openStep(s)} child={child} /></MotionItem>)}</MotionList>
           : <Text muted variant="small">{band === '36_72' ? tr('gr.beyond') : tr('gr.noneInBand')}</Text>}
       </View>
       {!premium ? <Text variant="caption" muted testID="gr-free-note">{tr('gr.freeNote')}</Text> : null}
 
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.58)'} depth={1} radius={22} padded={spacing.md}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={22} padded={spacing.md}>
         <View style={{ gap: 6 }}>
           <Text weight="bold">{tr('gr.summary')}</Text>
           <Text variant="small">{tr('gr.summaryHint')}</Text>
@@ -161,22 +170,28 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
   const toast = useToast();
   const save = useSaveStep();
   const st = row?.status;
+  // Double appui sur « Observé » : une seule étape enregistrée (l'étape n'est relue qu'après l'envoi)
+  const sending = useRef(false);
+  const { arm, shielded } = useTapShield();
   /** « Observé » en un geste (date du jour, modifiable ensuite en touchant la carte). */
   async function quickObserved() {
+    if (sending.current || shielded()) return;
+    sending.current = true;
     try {
       await save.mutateAsync({ child, key: s.key, existing: row ?? null, status: 'observed', date: todayISO(), note: row?.note ?? null });
+      arm();
       haptic('success');
       toast(tr('gr.saved'), 'success');
-    } catch (e) { toast(friendlyError(e), 'error'); }
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; }
   }
-  const tint = st === 'observed' ? (t.colors.success ?? '#3E8E41') : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
+  const tint = st === 'observed' ? t.colors.success : st === 'in_progress' ? t.colors.primary : t.colors.textMuted;
   const quick = !locked && st !== 'observed';
   // Le bouton « Observé » est posé SUR la carte et non dedans : un bouton dans un bouton est invalide sur le web
   return (
     <View>
     <Tappable accessibilityRole="button" onPress={onPress} testID={`gr-step-${s.key}`}
       accessibilityLabel={`${s.title}. ${tr('gr.around', { range: range(s.around[0], s.around[1]) })}${st ? `. ${tr(`gr.status.${st}` as TKey)}` : ''}${locked ? `. ${tr('gr.locked')}` : ''}`}>
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.6)'} depth={1} radius={20} padded={spacing.sm + 4}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={20} padded={spacing.sm + 4}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
           <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: tint }}>
             <Icon name={locked ? 'lock' : st === 'observed' ? 'check' : st === 'in_progress' ? 'loader' : st === 'not_tracked' ? 'eye-off' : 'circle'} size={16} color={tint} />
@@ -198,7 +213,7 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
     {quick ? (
       <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, bottom: 0, right: spacing.sm + 4, justifyContent: 'center' }}>
         <Tappable bare accessibilityRole="button" accessibilityLabel={`${tr('mb.gr.quickObserved')} — ${s.title}`} onPress={() => void quickObserved()} hitSlop={8} testID={`gr-quick-${s.key}`}
-          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary }}>
+          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
           <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('mb.gr.quickObserved')}</Text>
         </Tappable>
       </View>
@@ -217,7 +232,7 @@ function SourceLink({ s }: { s: { label: string; url: string; published?: string
   );
 }
 
-function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | null; row?: ChildStep; child: { id: string; household_id: string; first_name: string }; premium: boolean; onClose: () => void }) {
+function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | null; row?: ChildStep; child: { id: string; household_id: string; first_name: string; birth_date?: string | null }; premium: boolean; onClose: () => void }) {
   const t = useTheme();
   const toast = useToast();
   const save = useSaveStep();
@@ -239,6 +254,8 @@ function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | nul
     const iso = status === 'observed' ? frToISO(date) : null;
     if (status === 'observed' && !iso) return setErr(tr('dc.err.date'));
     if (iso && iso > todayISO()) return setErr(tr('dc.err.future'));
+    // Une étape observée ne peut pas précéder la naissance (date saisie à la main)
+    if (iso && child.birth_date && iso < child.birth_date) return setErr(tr('u7.child.err.beforeBirth'));
     try {
       await save.mutateAsync({ child, key: s.key, existing: row ?? null, status, date: iso, note: note.trim() || null });
       haptic('success');

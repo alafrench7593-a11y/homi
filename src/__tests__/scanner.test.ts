@@ -330,7 +330,7 @@ describe('explication IA : l’IA reformule, elle ne décide pas', () => {
     expect(sanitizePayload({ ...payload, verdict: 'Totalement sûr' })).toBeNull();
   });
   it('rejette promesse d’innocuité, autre verdict, informations manquantes ignorées, JSON invalide', () => {
-    const ok = JSON.stringify({ summary: 'Informations insuffisantes : la composition manque [1].', points: ['La liste des ingrédients n’est pas disponible.'], missing: ['Liste des ingrédients'], next_step: 'Photographiez la liste.' });
+    const ok = JSON.stringify({ summary: 'Informations insuffisantes : la composition manque [1].', points: ['La liste des ingrédients n’est pas disponible.'], missing: ['Liste des ingrédients'], next_step: 'Photographie la liste.' });
     expect(checkExplanation(ok, payload).ok).toBe(true);
     const bad = (o: object) => checkExplanation(JSON.stringify({ summary: 's', points: ['p'], missing: ['m'], next_step: 'n', ...o }), payload);
     expect(bad({ summary: 'Ce produit est sans danger.' })).toEqual({ ok: false, reason: 'forbidden:sans danger' });
@@ -350,7 +350,7 @@ describe('lecture locale et texte lu', () => {
     expect(localTextRecognitionAvailable()).toBe(false);
     await expect(readTextFromImage('file:///x.jpg')).rejects.toBeInstanceOf(LocalRecognitionUnavailable);
     await expect(readBarcodesFromImage('file:///x.jpg')).rejects.toThrow(LOCAL_RECOGNITION_UNAVAILABLE);
-    expect(LOCAL_RECOGNITION_UNAVAILABLE).toBe('Lecture locale indisponible ici : utilisez la saisie manuelle');
+    expect(LOCAL_RECOGNITION_UNAVAILABLE).toBe('Lecture locale indisponible ici : utilise la saisie manuelle');
   });
   it('extrait la liste des ingrédients, le code imprimé et un indice de lisibilité', () => {
     const text = 'CRÈME CHANGE\nIngrédients : Aqua, Zinc Oxide,\nGlycerin, Parfum.\nÀ conserver au sec.\n3 017620 422003';
@@ -367,7 +367,7 @@ describe('assemblage du parcours', () => {
   const candidate = fromProductRow({ barcode: '0000000000062', name: 'Lingettes démo', category: 'wipes', ingredients_text: 'Aqua, Phenoxyethanol', data_source: 'Base fictive', data_retrieved_at: '2026-10-16', is_demo: true }) as ProductCandidate;
   it('mode démonstration : tout résultat est étiqueté « Données de démonstration »', () => {
     const subject = { candidate: null, name: 'Purée maison', brand: null, barcode: null, imageUrl: null };
-    expect(subjectDataSource(subject, true)).toMatchObject({ is_demo: true, label: `Saisie par vous — ${DEMO_LABEL}` });
+    expect(subjectDataSource(subject, true)).toMatchObject({ is_demo: true, label: `Saisie par toi — ${DEMO_LABEL}` });
     expect(subjectDataSource(subject, false)).toMatchObject({ is_demo: false });
     const input = buildProductInput({ candidate, name: candidate.name, brand: null, barcode: candidate.barcode, imageUrl: null },
       { type: 'wipes', ingredientsText: candidate.ingredients_text!, ingredientsOrigin: 'database', precautionsText: '', periodAfterOpening: '', exposure: null, zone: null },

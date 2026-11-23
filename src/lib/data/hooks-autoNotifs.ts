@@ -9,7 +9,7 @@ import { useUserId } from '../auth';
 import { useAppointments, useChildren, useInvalidate, useReminders, useRows } from './hooks';
 import { useFamilyTasks } from './hooks-family-load';
 import { useFamilyPapers, usePrepDone } from './hooks-mental';
-import { DEFAULT_AUTO_PREFS, planAutoNotifications, type AutoPrefs, type AutoTexts } from '../domain/autoNotifs';
+import { DEFAULT_AUTO_PREFS, planAutoNotifications, serverNotificationSettings, type AutoPrefs, type AutoTexts } from '../domain/autoNotifs';
 import { upcomingPrep } from '../domain/mentalLoad';
 import { remindersOn } from '../domain/myDay';
 import { useDoseLogsSince } from './hooks-myTreatments';
@@ -27,7 +27,18 @@ export function useAutoPrefs() {
 }
 export function useSaveAutoPrefs() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: setAutoPrefs, onSuccess: (_d, p) => qc.setQueryData(['auto-notif-prefs'], p) });
+  return useMutation({
+    mutationFn: async (p: AutoPrefs) => {
+      await setAutoPrefs(p);
+      // Heures calmes et écran verrouillé aussi appliqués par le serveur (send-push) : au mieux, jamais bloquant
+      if (backend.mode !== 'demo') {
+        let tz: string | undefined;
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { tz = undefined; }
+        await backend.insert('notification_settings', { ...serverNotificationSettings(p, tz) }, { onConflict: 'user_id' }).catch(() => undefined);
+      }
+    },
+    onSuccess: (_d, p) => qc.setQueryData(['auto-notif-prefs'], p),
+  });
 }
 
 const texts = (): AutoTexts => ({

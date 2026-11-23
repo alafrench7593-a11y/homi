@@ -14,7 +14,7 @@ export interface Source { title: string; publisher: string; url: string }
 const SOURCES_FR: Record<string, Source> = {
   mpj: { title: 'Le baby blues et la dépression post-partum', publisher: '1000 premiers jours (Santé publique France)', url: 'https://www.1000-premiers-jours.fr/fr/le-baby-blues-et-la-depression-post-partum' },
   ministere: { title: 'Dépression post-partum : un accompagnement possible', publisher: 'Ministère de la Santé', url: 'https://sante.gouv.fr/prevention-en-sante/sante-des-populations/sante-des-femmes/article/depression-post-partum-un-accompagnement-possible' },
-  awhonn: { title: 'Sauvez votre vie : signaux d’alerte post-accouchement (version française)', publisher: 'AWHONN — association américaine des infirmières en santé des femmes et périnatalité', url: 'https://www.stelizabeth.com/care/wp-content/uploads/2025/10/AWOHNN-save-YourLife-Heandout-French.pdf' },
+  awhonn: { title: 'Sauve ta vie : signaux d’alerte post-accouchement (version française)', publisher: 'AWHONN — association américaine des infirmières en santé des femmes et périnatalité', url: 'https://www.stelizabeth.com/care/wp-content/uploads/2025/10/AWOHNN-save-YourLife-Heandout-French.pdf' },
   crise: { title: 'Que faire et à qui s’adresser face à une crise suicidaire ?', publisher: 'Ministère de la Santé', url: 'https://sante.gouv.fr/prevention-en-sante/sante-mentale/la-prevention-du-suicide/article/que-faire-et-a-qui-s-adresser-face-a-une-crise-suicidaire' },
 };
 /** Anglais : seule la présentation de l'éditeur change ; les titres des sources restent dans leur langue d'origine. */
@@ -45,7 +45,7 @@ const UNDERSTAND_FR: Section[] = [
     body: [
       'Certains signes peuvent justifier une consultation : une tristesse qui s’installe, la perte d’intérêt ou de plaisir, une anxiété importante, un sentiment de désespoir, une culpabilité excessive, des difficultés à dormir même quand l’occasion de se reposer existe, un épuisement émotionnel, des difficultés à faire face au quotidien, une impression de détachement ou de difficulté à créer un lien avec le bébé, le sentiment d’être dépassée.',
       'Ces manifestations peuvent avoir plusieurs causes. Seul un professionnel peut en faire l’évaluation — cette application ne le fait pas.',
-      'Les repères officiels invitent à en parler si cela dure plus de deux semaines, et dans tous les cas au moindre doute. Si c’est intense ou que cela s’aggrave, n’attendez pas : vous pouvez en parler dès aujourd’hui.',
+      'Les repères officiels invitent à en parler si cela dure plus de deux semaines, et dans tous les cas au moindre doute. Si c’est intense ou que cela s’aggrave, n’attends pas : tu peux en parler dès aujourd’hui.',
       'La dépression post-partum est fréquente — elle concerne 15 à 20 % des femmes ayant accouché d’après l’enquête nationale périnatale 2021 — et elle se soigne. Elle peut aussi toucher les pères.',
     ],
     sources: ['mpj', 'ministere'],
@@ -54,17 +54,17 @@ const UNDERSTAND_FR: Section[] = [
     id: 'who',
     title: 'À qui en parler',
     body: [
-      'Votre sage-femme, votre médecin traitant, un centre de PMI, un psychologue (le dispositif « Mon soutien psy » est pris en charge par l’Assurance maladie) ou une consultation de psychiatrie périnatale à l’hôpital.',
-      'L’entretien postnatal précoce, prévu entre la 4e et la 8e semaine après l’accouchement, est un moment dédié pour parler de vous. Vous pouvez aussi demander à en parler avant.',
+      'Ta sage-femme, ton médecin traitant, un centre de PMI, un psychologue (le dispositif « Mon soutien psy » est pris en charge par l’Assurance maladie) ou une consultation de psychiatrie périnatale à l’hôpital.',
+      'L’entretien postnatal précoce, prévu entre la 4e et la 8e semaine après l’accouchement, est un moment dédié pour parler de toi. Tu peux aussi demander à en parler avant.',
       'Lieux d’accueil parents-enfants et groupes de parents permettent de rompre l’isolement.',
     ],
     sources: ['mpj'],
   },
   {
     id: 'urgent',
-    title: 'Si vous êtes en danger',
+    title: 'Si tu es en danger',
     body: [
-      'Si vous avez des pensées de vous faire du mal, de ne plus être là, ou de faire du mal à votre bébé, ou si vous vous sentez très confuse : appelez maintenant le 3114 (gratuit, confidentiel, 24 h/24), ou le 15 ou le 112 si le danger est immédiat.',
+      'Si tu as des pensées de te faire du mal, de ne plus être là, ou de faire du mal à ton bébé, ou si tu te sens très confuse : appelle maintenant le 3114 (gratuit, confidentiel, 24 h/24), ou le 15 ou le 112 si le danger est immédiat.',
       'Ce ne sont pas des pensées dont il faut avoir honte. Elles sont un signal qu’il faut de l’aide, tout de suite.',
     ],
     sources: ['crise'],
@@ -85,8 +85,8 @@ const PARTNER_FR: Section[] = [
     id: 'difference',
     title: 'Fatigue, baby blues, ou plus que ça ?',
     body: [
-      'Si la tristesse, l’anxiété ou l’épuisement s’installent, s’intensifient, ou l’empêchent de faire face au quotidien, cela mérite l’avis d’un professionnel. Vous n’avez pas à trancher : votre rôle est d’écouter et de faciliter l’accès à l’aide.',
-      'Les pères et les co-parents peuvent aussi traverser une dépression après une naissance. Prenez soin de vous également.',
+      'Si la tristesse, l’anxiété ou l’épuisement s’installent, s’intensifient, ou l’empêchent de faire face au quotidien, cela mérite l’avis d’un professionnel. Tu n’as pas à trancher : ton rôle est d’écouter et de faciliter l’accès à l’aide.',
+      'Les pères et les co-parents peuvent aussi traverser une dépression après une naissance. Prends soin de toi également.',
     ],
     sources: ['mpj', 'ministere'],
   },
@@ -94,8 +94,8 @@ const PARTNER_FR: Section[] = [
     id: 'listen',
     title: 'Écouter sans minimiser',
     body: [
-      'Évitez « c’est normal, ça va passer » ou « tu as tout pour être heureuse ». Accueillez ce qu’elle dit, sans chercher à corriger ses émotions.',
-      'Ne lisez pas en cachette ce qui ne vous est pas destiné : ce qu’elle partage dans l’application, elle l’a choisi.',
+      'Évite « c’est normal, ça va passer » ou « tu as tout pour être heureuse ». Accueille ce qu’elle dit, sans chercher à corriger ses émotions.',
+      'Ne lis pas en cachette ce qui ne t’est pas destiné : ce qu’elle partage dans l’application, elle l’a choisi.',
     ],
     sources: [],
   },
@@ -103,8 +103,8 @@ const PARTNER_FR: Section[] = [
     id: 'help',
     title: 'Aider concrètement',
     body: [
-      'Partagez les nuits (biberons, réveils), prenez en charge les repas, les courses, le linge et les visites sans qu’elle ait à le demander.',
-      'Protégez ses temps de repos : vous gérez le bébé, le téléphone et la porte.',
+      'Partage les nuits (biberons, réveils), prends en charge les repas, les courses, le linge et les visites sans qu’elle ait à le demander.',
+      'Protège ses temps de repos : tu gères le bébé, le téléphone et la porte.',
     ],
     sources: [],
   },
@@ -112,7 +112,7 @@ const PARTNER_FR: Section[] = [
     id: 'consult',
     title: 'Encourager une consultation, sans culpabiliser',
     body: [
-      'Proposez plutôt qu’imposer : « Si tu le souhaites, je peux t’aider à prendre rendez-vous. » Offrez de garder le bébé pendant le rendez-vous, ou de l’accompagner.',
+      'Propose plutôt qu’imposer : « Si tu le souhaites, je peux t’aider à prendre rendez-vous. » Offre de garder le bébé pendant le rendez-vous, ou de l’accompagner.',
       'Sage-femme, médecin traitant, PMI ou psychologue peuvent la recevoir.',
     ],
     sources: ['mpj'],
@@ -121,7 +121,7 @@ const PARTNER_FR: Section[] = [
     id: 'urgent',
     title: 'Quand demander une aide urgente',
     body: [
-      'Si elle parle de se faire du mal, de ne plus être là, de faire du mal au bébé, ou si elle semble très confuse : ne la laissez pas seule, mettez le bébé en sécurité et appelez le 3114, ou le 15 / 112 si le danger est immédiat.',
+      'Si elle parle de se faire du mal, de ne plus être là, de faire du mal au bébé, ou si elle semble très confuse : ne la laisse pas seule, mets le bébé en sécurité et appelle le 3114, ou le 15 / 112 si le danger est immédiat.',
     ],
     sources: ['crise'],
   },
@@ -144,7 +144,7 @@ export const PHRASES_TO_AVOID = ['C’est normal, ça va passer', 'Tu as tout po
  * adaptée aux numéros français). L'application ne juge jamais si un symptôme est « normal ».
  */
 const RECOVERY_WARNINGS_FR = {
-  call15: ['Douleur dans la poitrine', 'Difficulté à respirer ou essoufflement', 'Convulsions', 'Pensées de vous faire du mal ou de faire du mal à quelqu’un'],
+  call15: ['Douleur dans la poitrine', 'Difficulté à respirer ou essoufflement', 'Convulsions', 'Pensées de te faire du mal ou de faire du mal à quelqu’un'],
   callPro: [
     'Saignement qui remplit une serviette en une heure, ou caillots de la taille d’un œuf ou plus',
     'Cicatrice (épisiotomie, césarienne) qui ne guérit pas, rouge ou qui suinte',

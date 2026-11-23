@@ -6,10 +6,12 @@
  *  · Grossesse multiple ou suivi particulier : aucun calendrier supplémentaire automatique ; on enregistre celui
  *    de l'équipe médicale.
  * Gratuit : ces informations ne passent jamais par Premium.
+ * 22/11/2026 : semaine des rendez-vous en tête (ApptWeek : prévu / réalisé / à confirmer, jour dans l'adresse,
+ * « Ajouter » pré-rempli au jour choisi) — mêmes rendez-vous que la liste ci-dessous.
  */
 import React, { useMemo, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
@@ -19,13 +21,16 @@ import { AppointmentSheet, AttachedDocs, appointmentWhen, DocumentsSheet, Remind
 import { useActivePregnancy, useAppointments } from '@/lib/data/hooks';
 import { useCalendarAppointments, type CareAppointment } from '@/lib/data/hooks-care';
 import { APPOINTMENT_CHOICES, confirmedOutsideWindow, pregnancySummary, ultrasoundWindows, WINDOW_CHOICES, windowState, type EchoKey, type EchoWindow } from '@/lib/domain/pregnancyCare';
-import { todayISO } from '@/lib/domain/dates';
+import { todayISO, type ISODate } from '@/lib/domain/dates';
 import { CARE_SOURCES } from '@/content/pregnancyCare';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { daysUntil, pregnancyThread, type PregThreadItem } from '@/lib/domain/pregnancyThread';
 import { PregnancyThread } from '@/features/pregnancyThread';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ApptWeek } from '@/features/journalTrack/ApptWeek';
+import { initialDay } from '@/lib/domain/journalTrack';
 
 const dayLabel = (iso: string) => formatDate(`${iso}T12:00:00`, { day: 'numeric', month: 'long' });
 const saLabel = ([w, d]: [number, number]) => (d ? tr('care.cal.saPlus', { w, d }) : tr('care.cal.sa', { w }));
@@ -35,7 +40,11 @@ export default function PregnancyCalendar() {
   const pregnancy = useActivePregnancy();
   const echoQ = useCalendarAppointments({ pregnancyId: pregnancy?.id, kind: 'ultrasound' });
   const all = useAppointments({}).data;
-  const [editing, setEditing] = useState<{ key: EchoKey | null; appt: CareAppointment | null; window: EchoWindow | null } | null>(null);
+  const [editing, setEditing] = useState<{ key: EchoKey | null; appt: CareAppointment | null; window: EchoWindow | null; day?: string } | null>(null);
+  // Agenda (22/11/2026) : jour choisi gardé dans l'adresse — ouvrir un rendez-vous puis revenir retrouve ce jour
+  const qp = useLocalSearchParams<{ day?: string }>();
+  const now = new Date();
+  const selDay = initialDay(qp.day, now);
   const [reminding, setReminding] = useState<{ window: EchoWindow | null; appt: CareAppointment | null } | null>(null);
   const [docsFor, setDocsFor] = useState<CareAppointment | null>(null);
   const today = todayISO();
@@ -52,8 +61,8 @@ export default function PregnancyCalendar() {
   const name = (k: EchoKey) => tr(`care.cal.${k}` as TKey);
 
   return (
-    <Screen back title={tr('care.cal.title')} subtitle={tr('care.cal.subtitle')}
-      action={{ label: tr('care.cal.addTeam'), icon: 'plus', onPress: () => setEditing({ key: null, appt: null, window: null }), testID: 'preg-cal-add-team' }}>
+    // une seule action « Ajouter » : celle de la semaine, pré-remplie au jour choisi
+    <Screen back title={tr('care.cal.title')} subtitle={tr('care.cal.subtitle')}>
       <View testID="preg-cal-summary" style={{ gap: spacing.xs }}>
         <TodaySummary title={tr('care.cal.due', { date: formatDate(`${s.due}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })} items={[
           { icon: 'moon', label: tr('care.cal.sa.label'), value: s.extraDays ? tr('care.cal.saPlus', { w: s.weeksSA, d: s.extraDays }) : tr('care.cal.sa', { w: s.weeksSA }) },
@@ -65,6 +74,12 @@ export default function PregnancyCalendar() {
           <Button label={tr('care.cal.fixDate')} size="sm" variant="ghost" icon="edit-3" onPress={() => router.push('/pregnancy/edit')} testID="preg-cal-fix" />
         </Row>
       </View>
+
+      <ApptWeek list={[...echoAppts, ...others]} day={selDay} now={now} onSelectDay={(d) => router.setParams({ day: d } as never)}
+        onOpen={(a) => { const k = (a.calendar_keys ?? []).find((x) => windows.some((w) => w.key === x)) as EchoKey | undefined; setEditing({ key: k ?? null, appt: a, window: k ? windows.find((w) => w.key === k) ?? null : null }); }}
+        onAdd={(d) => setEditing({ key: null, appt: null, window: null, day: d })}
+        kindLabel={(a) => { const k = (a.calendar_keys ?? []).find((x) => windows.some((w) => w.key === x)) as EchoKey | undefined; return k ? name(k) : tr(`u1.appt.kind.${a.kind}` as TKey); }}
+        detail={(a) => a.location_label || null} />
 
       <PregnancyThread
         title={tr('pc.cal.thread' as TKey)}
@@ -95,24 +110,24 @@ export default function PregnancyCalendar() {
       />
 
       {multiple ? <View testID="preg-cal-multiple"><Banner tone="info" title={tr('care.cal.multipleTitle')}>{tr('care.cal.multipleBody')}</Banner></View> : null}
-      {moved.map((m) => {
+      <MotionList style={{ gap: spacing.md }}>{moved.map((m) => {
         const a = echoAppts.find((x) => x.id === m.id)!;
         return (
-          <View key={m.id} testID={`preg-cal-moved-${m.key}`}>
+          <MotionItem key={m.id}><View key={m.id} testID={`preg-cal-moved-${m.key}`}>
             <Banner tone="warning" title={tr('care.cal.movedTitle', { name: name(m.key) })}>
               <Text variant="small">{tr('care.cal.movedBody', { when: appointmentWhen(a), from: dayLabel(m.window.from), to: dayLabel(m.window.to) })}</Text>
               <Button label={tr('care.cal.movedEdit')} size="sm" variant="secondary" onPress={() => setEditing({ key: m.key, appt: a, window: m.window })} />
             </Banner>
-          </View>
+          </View></MotionItem>
         );
-      })}
+      })}</MotionList>
 
       <SectionTitle title={tr('care.cal.echos')} />
-      {windows.map((w) => {
+      <MotionList style={{ gap: spacing.md }}>{windows.map((w) => {
         const appt = byKey(w.key);
         const st = windowState(w, today);
         return (
-          <Card key={w.key}>
+          <MotionItem key={w.key}><Card key={w.key}>
             <View testID={`echo-${w.key}`} style={{ gap: 4 }}>
               <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <Text weight="bold" style={{ flex: 1 }}>{name(w.key)}</Text>
@@ -144,17 +159,17 @@ export default function PregnancyCalendar() {
                 </>
               )}
             </View>
-          </Card>
+          </Card></MotionItem>
         );
-      })}
+      })}</MotionList>
 
       <SectionTitle title={tr('care.cal.team')} />
       <Text variant="small" muted>{tr('care.cal.teamBody')}</Text>
-      {others.map((a) => (
-        <Tappable key={a.id} accessibilityRole="button" onPress={() => setEditing({ key: null, appt: a, window: null })}>
+      <MotionList style={{ gap: spacing.md }}>{others.map((a) => (
+        <MotionItem key={a.id}><Tappable key={a.id} accessibilityRole="button" onPress={() => setEditing({ key: null, appt: a, window: null })}>
           <Card><Text weight="bold">{a.title}</Text><Text variant="small" muted>{appointmentWhen(a)}{a.location_label ? ` · ${a.location_label}` : ''}</Text></Card>
-        </Tappable>
-      ))}
+        </Tappable></MotionItem>
+      ))}</MotionList>
 
       <View style={{ gap: 2 }}>
         <Text variant="caption" muted>{tr('care.cal.sources')}</Text>
@@ -171,6 +186,7 @@ export default function PregnancyCalendar() {
         onClose={() => setEditing(null)}
         existing={editing?.appt ?? null}
         window={editing?.window ?? null}
+        suggestedDay={(editing?.day ?? null) as ISODate | null}
         base={{
           kind: editing?.key ? 'ultrasound' : editing?.appt?.kind ?? 'consultation',
           title: editing?.key ? name(editing.key) : tr('care.cal.teamDefault'),

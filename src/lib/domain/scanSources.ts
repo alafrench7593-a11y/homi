@@ -91,7 +91,7 @@ const SCAN_SOURCES_FR: Record<string, ScanSource> = {
     url: 'https://www.sante.fr/node/1871139', published_on: null, consulted_on: C, review: 'verified',
   },
   'spf-pas-a-pas': {
-    id: 'spf-pas-a-pas', label: 'Pas à pas, votre enfant mange comme un grand (diversification jusqu’à 3 ans)', publisher: 'Santé publique France',
+    id: 'spf-pas-a-pas', label: 'Pas à pas, ton enfant mange comme un grand (diversification jusqu’à 3 ans)', publisher: 'Santé publique France',
     url: 'https://www.santepubliquefrance.fr/determinants-de-sante/nutrition-et-activite-physique/documents/brochure/pas-a-pas-votre-enfant-mange-comme-un-grand',
     published_on: null, consulted_on: C, review: 'to_review',
   },

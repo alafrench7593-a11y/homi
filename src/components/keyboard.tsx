@@ -12,6 +12,7 @@
  */
 import React from 'react';
 import { Keyboard, Platform, TextInput, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { ScreenChromeContext } from './screenChrome';
 
 type Measurable = { measureInWindow?: (cb: (x: number, y: number, width: number, height: number) => void) => void };
 type Box = { x: number; y: number; width: number; height: number };
@@ -42,15 +43,25 @@ export function revealOffset(p: { fieldTop: number; fieldBottom: number; viewTop
  * comptent comme la même ligne). Renvoie l'index du champ qui suit `current`, ou -1.
  */
 export function nextInVisualOrder(boxes: (Box | null)[], current: number): number {
+  if (!boxes[current]) return -1;
+  const order = visualOrder(boxes);
+  const at = order.indexOf(current);
+  return at >= 0 && at + 1 < order.length ? order[at + 1] : -1;
+}
+
+/** Index des champs visibles (mesurés, taille non nulle) dans l'ordre visuel : la même règle pour « Suivant » et pour « OK ». */
+export function visualOrder(boxes: (Box | null)[]): number[] {
   const ROW = 8;
-  const cur = boxes[current];
-  if (!cur) return -1;
-  const order = boxes
+  return boxes
     .map((b, i) => ({ b, i }))
     .filter((e): e is { b: Box; i: number } => !!e.b && e.b.width > 0 && e.b.height > 0)
-    .sort((a, b) => (Math.abs(a.b.y - b.b.y) <= ROW ? a.b.x - b.b.x : a.b.y - b.b.y));
-  const at = order.findIndex((e) => e.i === current);
-  return at >= 0 && at + 1 < order.length ? order[at + 1].i : -1;
+    .sort((a, b) => (Math.abs(a.b.y - b.b.y) <= ROW ? a.b.x - b.b.x : a.b.y - b.b.y))
+    .map((e) => e.i);
+}
+
+/** Pavés iOS sans touche Retour : `Field` leur ajoute une barre « Suivant / OK » au-dessus du clavier. */
+export function needsKeyboardAccessory(keyboardType: string | undefined, os: string = Platform.OS): boolean {
+  return os === 'ios' && (keyboardType === 'number-pad' || keyboardType === 'decimal-pad' || keyboardType === 'phone-pad');
 }
 
 /** Lance `cb` quand le clavier est affiché (ou peu après s'il l'est déjà / s'il n'y a pas de clavier logiciel). */
@@ -97,7 +108,10 @@ export interface KeyboardScope {
   register: (entry: FieldEntry) => () => void;
   /** Champ suivant ; `false` s'il n'y en a pas (le clavier est alors fermé). */
   focusNext: (input: TextInput | null) => Promise<boolean>;
-  /** Le champ est-il le dernier champ inscrit (pour « OK » au lieu de « Suivant ») ? */
+  /**
+   * Le champ est-il le dernier dans l'ordre visuel (pour « OK » au lieu de « Suivant ») ? Même ordre que `focusNext` ;
+   * tant qu'aucun champ n'a pu être mesuré (premier rendu, tests), l'ordre d'inscription sert de repli.
+   */
   isLast: (entry: FieldEntry) => boolean;
   subscribe: (cb: () => void) => () => void;
   version: () => number;
@@ -113,16 +127,47 @@ type ScrollTarget = Measurable & { scrollTo?: (o: { x?: number; y: number; anima
 /**
  * Portée clavier d'une zone qui défile (ScrollView de `Screen` ou de `Sheet`) : à brancher sur `ref` et `onScroll`.
  */
-export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | null>) {
+export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | null>, opts?: { chrome?: boolean }) {
   const offset = React.useRef(0);
+  // Zone inscrite auprès de l'écran (en-tête qui se replie, `useScreenScroll`) ; une feuille (Sheet) ne s'inscrit pas
+  const chromeCtx = React.useContext(ScreenChromeContext);
+  const chrome = opts?.chrome === false ? null : chromeCtx;
+  React.useEffect(() => chrome?.register({ ref: scrollRef, offset: () => offset.current }), [chrome, scrollRef]);
   const entries = React.useRef<FieldEntry[]>([]);
   const listeners = React.useRef(new Set<() => void>());
   const ver = React.useRef(0);
   const lastFocused = React.useRef<TextInput | null>(null);
   const pending = React.useRef<(() => void) | null>(null);
+  // Dernières positions mesurées des champs : `isLast` (synchrone, appelé au rendu) suit ainsi l'ordre visuel de `focusNext`
+  const boxes = React.useRef(new WeakMap<FieldEntry, Box | null>());
+  const measuring = React.useRef(false);
+  const alive = React.useRef(true);
 
   const scope = React.useMemo<KeyboardScope>(() => {
     const bump = () => { ver.current += 1; listeners.current.forEach((l) => l()); };
+    const usable = () => entries.current.filter((e) => e.editable() && e.ref.current);
+    const lastEntry = (): FieldEntry | null => {
+      const list = usable();
+      const order = visualOrder(list.map((e) => boxes.current.get(e) ?? null));
+      if (order.length) return list[order[order.length - 1]];
+      const all = entries.current.filter((e) => e.editable());
+      return all.length ? all[all.length - 1] : null;
+    };
+    // Mesure différée (après la mise en page) ; ne redessine les champs que si le « dernier » a changé
+    const refreshOrder = () => {
+      if (measuring.current) return;
+      measuring.current = true;
+      void Promise.resolve().then(async () => {
+        measuring.current = false;
+        const list = usable();
+        if (!list.length) return;
+        const before = lastEntry();
+        const measured = await Promise.all(list.map((e) => measure(e.ref.current as unknown as Measurable)));
+        if (!alive.current) return;
+        list.forEach((e, i) => boxes.current.set(e, measured[i]));
+        if (lastEntry() !== before) bump();
+      });
+    };
     const scrollToReveal = async (input: TextInput | null) => {
       const scroller = scrollRef.current;
       if (!input || !scroller) return;
@@ -141,28 +186,31 @@ export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | nu
     return {
       reveal: (input) => {
         lastFocused.current = input;
+        refreshOrder();
         pending.current?.();
         pending.current = whenKeyboardShown(() => { pending.current = null; void scrollToReveal(input); });
       },
       register: (entry) => {
         entries.current.push(entry);
         bump();
-        return () => { entries.current = entries.current.filter((e) => e !== entry); bump(); };
+        refreshOrder();
+        return () => { entries.current = entries.current.filter((e) => e !== entry); boxes.current.delete(entry); bump(); };
       },
       focusNext: async (input) => {
-        const list = entries.current.filter((e) => e.editable() && e.ref.current);
+        const list = usable();
         const current = list.findIndex((e) => e.ref.current === input);
         if (current >= 0) {
-          const boxes = await Promise.all(list.map((e) => measure(e.ref.current as unknown as Measurable)));
-          const next = nextInVisualOrder(boxes, current);
+          const measured = await Promise.all(list.map((e) => measure(e.ref.current as unknown as Measurable)));
+          list.forEach((e, i) => boxes.current.set(e, measured[i]));
+          const next = nextInVisualOrder(measured, current);
           if (next >= 0) { list[next].ref.current?.focus(); return true; }
         }
         Keyboard.dismiss();
         return false;
       },
       isLast: (entry) => {
-        const list = entries.current.filter((e) => e.editable());
-        return list.length === 0 || list[list.length - 1] === entry;
+        const last = lastEntry();
+        return last === null || last === entry;
       },
       subscribe: (cb) => { listeners.current.add(cb); return () => { listeners.current.delete(cb); }; },
       version: () => ver.current,
@@ -179,9 +227,17 @@ export function useKeyboardScopeFor(scrollRef: React.RefObject<ScrollTarget | nu
     };
   }, [scrollRef]);
 
-  React.useEffect(() => () => { pending.current?.(); }, []);
+  React.useEffect(() => { alive.current = true; return () => { alive.current = false; pending.current?.(); }; }, []);
+  // Web : le clavier s'ouvre APRÈS le focus (zone visible réduite) ; le champ actif est alors ramené en vue
+  React.useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    startWebKeyboard();
+    const f = () => { if (webKb.open && lastFocused.current && stillFocused(lastFocused.current)) scope.reveal(lastFocused.current); };
+    webKb.subs.add(f);
+    return () => { webKb.subs.delete(f); };
+  }, [scope]);
 
-  const onScroll = React.useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => { offset.current = e.nativeEvent.contentOffset.y; }, []);
+  const onScroll = React.useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => { offset.current = e.nativeEvent.contentOffset.y; chrome?.onScroll(e); }, [chrome]);
   return { scope, onScroll };
 }
 
@@ -191,11 +247,56 @@ export function useRevealOnFocus(ref: React.RefObject<TextInput | null>) {
   return React.useCallback(() => { scope?.reveal(ref.current); }, [scope, ref]);
 }
 
-/** Le clavier logiciel est-il affiché ? (iOS : dès qu'il commence à monter ; web : jamais.) */
+/**
+ * Web : le clavier logiciel des navigateurs mobiles ne déclenche aucun événement `Keyboard` ; il RÉDUIT la zone
+ * visible (`visualViewport`, ou la fenêtre sur Android). On le considère ouvert quand un champ de saisie a le focus
+ * ET que la hauteur visible a perdu au moins `WEB_KEYBOARD_MIN` px par rapport à la plus grande hauteur vue à la
+ * même largeur (logique pure, testée).
+ */
+export const WEB_KEYBOARD_MIN = 120;
+export function webKeyboardOpen(p: { editing: boolean; height: number; maxHeight: number }): boolean {
+  return p.editing && p.maxHeight - p.height >= WEB_KEYBOARD_MIN;
+}
+
+type WebWin = { innerWidth: number; innerHeight: number; visualViewport?: { height: number; addEventListener: (t: string, f: () => void) => void; removeEventListener: (t: string, f: () => void) => void } | null; addEventListener: (t: string, f: () => void, o?: boolean) => void; removeEventListener: (t: string, f: () => void, o?: boolean) => void };
+const webKb = { open: false, maxH: 0, width: 0, subs: new Set<() => void>(), started: false };
+function webEditing(): boolean {
+  const d = (globalThis as { document?: { activeElement?: { tagName?: string; type?: string; isContentEditable?: boolean } | null } }).document;
+  const a = d?.activeElement;
+  if (!a) return false;
+  if (a.tagName === 'TEXTAREA' || a.isContentEditable) return true;
+  return a.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|range|color|file|hidden|reset|image)$/i.test(a.type ?? '');
+}
+function startWebKeyboard() {
+  const w = globalThis as unknown as WebWin;
+  if (webKb.started || typeof w.addEventListener !== 'function') return;
+  webKb.started = true;
+  const update = () => {
+    const h = w.visualViewport?.height ?? w.innerHeight;
+    if (w.innerWidth !== webKb.width) { webKb.width = w.innerWidth; webKb.maxH = 0; }
+    // la plus grande hauteur n'est retenue que sans champ actif (sinon le clavier fausserait la référence)
+    if (!webEditing() || h > webKb.maxH) webKb.maxH = Math.max(webKb.maxH, h);
+    const open = webKeyboardOpen({ editing: webEditing(), height: h, maxHeight: webKb.maxH });
+    if (open !== webKb.open) { webKb.open = open; webKb.subs.forEach((f) => f()); }
+  };
+  w.addEventListener('resize', update);
+  w.addEventListener('focusin', update, true);
+  w.addEventListener('focusout', () => setTimeout(update, 0), true);
+  w.visualViewport?.addEventListener('resize', update);
+  update();
+}
+
+/** Le clavier logiciel est-il affiché ? (iOS : dès qu'il commence à monter ; web : zone visible réduite pendant une saisie.) */
 export function useKeyboardVisible() {
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(() => (Platform.OS === 'web' ? webKb.open : false));
   React.useEffect(() => {
-    if (Platform.OS === 'web') return;
+    if (Platform.OS === 'web') {
+      startWebKeyboard();
+      const f = () => setVisible(webKb.open);
+      webKb.subs.add(f);
+      f();
+      return () => { webKb.subs.delete(f); };
+    }
     const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setVisible(true));
     const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setVisible(false));
     return () => { show.remove(); hide.remove(); };
@@ -205,3 +306,10 @@ export function useKeyboardVisible() {
 
 /** `behavior` commun des KeyboardAvoidingView de l'appli (le web n'a pas de clavier logiciel à éviter). */
 export const KEYBOARD_BEHAVIOR = Platform.OS === 'web' ? undefined : ('padding' as const);
+
+/**
+ * Fermeture du clavier au glissement. Sur le web, react-native-web ferme le clavier à CHAQUE défilement, y compris le
+ * défilement programmatique qui amène le champ en vue au focus : le curseur disparaissait aussitôt posé (audit du
+ * 23/11/2026, champ « Poids » ouvert depuis Aura). Le web n'a pas de clavier à fermer au glissement : on s'abstient.
+ */
+export const DISMISS_ON_DRAG = Platform.OS === 'web' ? ('none' as const) : ('on-drag' as const);

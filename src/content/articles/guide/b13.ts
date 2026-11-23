@@ -9,7 +9,7 @@ const S = {
   dev56: { label: 'Santé.fr (mpedia – AFPA) — De 5 à 6 ans, l’école élémentaire en ligne de mire', url: 'https://www.sante.fr/node/1093916', consulted_on: C, published: '2025-03-07' },
   recos5: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Les recommandations pour les enfants jusqu’à 5 ans', url: 'https://www.sante.fr/node/800511', consulted_on: C, published: '2023-10-10' },
   guideMB: { label: 'Santé publique France — Le guide Manger-Bouger pour les parents d’enfants de 4 à 11 ans', url: 'https://www.santepubliquefrance.fr/sites/default/files/cadic_files/documents/spf00005493.pdf', consulted_on: C, published: '2024-08-30' },
-  gouts: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Comment développer les goûts de votre enfant et son plaisir à manger ?', url: 'https://www.sante.fr/node/8364303', consulted_on: C, published: '2024-06-11' },
+  gouts: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Comment développer les goûts de ton enfant et son plaisir à manger ?', url: 'https://www.sante.fr/node/8364303', consulted_on: C, published: '2024-06-11' },
   programme: { label: 'Éduscol (ministère de l’Éducation nationale) — Programme de l’école maternelle (cycle 1), version consolidée', url: 'https://eduscol.education.gouv.fr/sites/default/files/document/programme-cycle-1-consolide-127565.pdf', consulted_on: C },
   ecrans: { label: 'Ministère chargé de la Santé — Écrans : des risques pour la santé physique et mentale des enfants, un accompagnement nécessaire', url: 'https://solidarites.gouv.fr/enfants-et-ecrans-des-risques-sanitaires-reels-un-accompagnement-necessaire', consulted_on: C, published: '2025-07-02' },
   guideEcrans: { label: 'MILDECA (drogues.gouv.fr) — Guide « Bien grandir dans un monde d’écrans » (Ville de Saint-Denis, enfants de 0 à 6 ans)', url: 'https://www.drogues.gouv.fr/sites/default/files/2024-07/Guide_Bien%20grandir%20dans%20un%20monde%20d%27ecrans.pdf', consulted_on: C, published: '2024-04' },
@@ -17,7 +17,7 @@ const S = {
   culture: { label: 'Ministère chargé des Solidarités — La santé des enfants et des parents est aussi culturelle : sensibilisation aux pratiques culturelles et artistiques', url: 'https://solidarites.gouv.fr/la-sante-des-enfants-et-des-parents-est-aussi-culturelle-sensibilisation-aux-pratiques-culturelles', consulted_on: C, published: '2021-10-27' },
   marinopoulos: { label: 'Ministère de la Culture — Rapport « Promouvoir et pérenniser l’éveil culturel et artistique de l’enfant de la naissance à 3 ans dans le lien à son parent » (S. Marinopoulos)', url: 'https://www.culture.gouv.fr/content/download/214595/2250125', consulted_on: C, published: '2019-01' },
   rituel: { label: 'Santé.fr (mpedia – AFPA) — Rituel du coucher, un moment à partager', url: 'https://www.sante.fr/node/1068916', consulted_on: C, published: '2023-09-01' },
-  jouets: { label: 'economie.gouv.fr (DGCCRF) — Nos conseils pour choisir les jouets de vos enfants en toute sécurité', url: 'https://www.economie.gouv.fr/particuliers/choix-conseil-achat-jouets-securite-enfants', consulted_on: C },
+  jouets: { label: 'economie.gouv.fr (DGCCRF) — Nos conseils pour choisir les jouets de tes enfants en toute sécurité', url: 'https://www.economie.gouv.fr/particuliers/choix-conseil-achat-jouets-securite-enfants', consulted_on: C },
   dgccrfJouets: { label: 'DGCCRF (economie.gouv.fr) — Comment la DGCCRF s’assure de la sécurité des jouets', url: 'https://www.economie.gouv.fr/dgccrf/comment-la-dgccrf-sassure-de-la-securite-des-jouets', consulted_on: C, published: '2023-12-18' },
   slime: { label: 'Anses — Le slime, une pâte très prisée : mise en garde sur ses risques', url: 'https://www.anses.fr/fr/content/le-slime-une-pate-tres-prisee-mais-pas-sans-risque', consulted_on: C, published: '2018-05-04' },
   piles: { label: 'Santé.fr (Ministère chargé de la Santé) — Piles bouton : prévention des risques d’ingestion par les jeunes enfants', url: 'https://www.sante.fr/node/1184265', consulted_on: C, published: '2024-12-16' },
@@ -34,9 +34,9 @@ const S = {
 } satisfies Record<string, ArticleSource>;
 
 /** Phrase de fin commune : l'article informe, il ne remplace pas un professionnel. */
-const FIN = '_Cet article vous informe ; il ne remplace pas l’avis du médecin, de la PMI ou des professionnels qui accompagnent votre enfant._';
-const URG = 'En cas d’urgence, appelez le **15** (SAMU) ou le **112**.';
-const SOUTIEN = 'Si vous vous sentez à bout, épuisé·e ou très seul·e, parlez-en à votre médecin ou à la PMI ; en cas de détresse ou d’idées noires, le **3114** répond jour et nuit. Si un enfant est en danger, appelez le **119**.';
+const FIN = '_Cet article t’informe ; il ne remplace pas l’avis du médecin, de la PMI ou des professionnels qui accompagnent ton enfant._';
+const URG = 'En cas d’urgence, appelle le **15** (SAMU) ou le **112**.';
+const SOUTIEN = 'Si tu te sens à bout, épuisé·e ou très seul·e, parles-en à ton médecin ou à la PMI ; en cas de détresse ou d’idées noires, le **3114** répond jour et nuit. Si un enfant est en danger, appelle le **119**.';
 
 const a = (x: Omit<LibArticle, 'status' | 'journeys'> & { journeys?: LibArticle['journeys'] }): LibArticle => ({
   journeys: ['child'], min_age_months: 36, max_age_months: 72, status: 'to_review', ...x,
@@ -70,11 +70,11 @@ Une journée « active » peut ressembler à ceci, sans rien d’exceptionnel :
 - **Des jeux de plein air le week-end** : balade en forêt, jeux de ballon en famille, barboter dans l’eau sous surveillance.
 
 Quelques idées pour faciliter les choses :
-- Laissez à portée de main un ballon, une corde à sauter, des craies pour dessiner une marelle.
-- Proposez des « défis » : aller jusqu’à l’arbre en sautant à pieds joints, marcher sur une ligne comme un funambule, imiter les animaux (le kangourou, le crabe, l’ours).
-- Coupez les longues périodes assises par une petite pause « on bouge » : une chanson mimée, une course jusqu’à la porte.
-- Bougez avec lui : les enfants reproduisent ce qu’ils voient, et un parent qui marche, joue ou danse donne envie de faire pareil.
-- Pensez à l’eau : proposez-lui à boire régulièrement, surtout quand il fait chaud ou après un jeu très actif.
+- Laisse à portée de main un ballon, une corde à sauter, des craies pour dessiner une marelle.
+- Propose des « défis » : aller jusqu’à l’arbre en sautant à pieds joints, marcher sur une ligne comme un funambule, imiter les animaux (le kangourou, le crabe, l’ours).
+- Coupe les longues périodes assises par une petite pause « on bouge » : une chanson mimée, une course jusqu’à la porte.
+- Bouge avec lui : les enfants reproduisent ce qu’ils voient, et un parent qui marche, joue ou danse donne envie de faire pareil.
+- Pense à l’eau : propose-lui à boire régulièrement, surtout quand il fait chaud ou après un jeu très actif.
 
 ## Questions fréquentes
 **Mon enfant va déjà à l’école toute la journée, faut-il en rajouter ?** L’activité physique en classe et les récréations comptent dans la journée. Le soir et le week-end, l’idée n’est pas de rajouter un programme, mais de privilégier le jeu libre et le plein air plutôt que les écrans.
@@ -86,7 +86,7 @@ Quelques idées pour faciliter les choses :
 **Comment faire quand il pleut ?** Une danse, un parcours avec des coussins, une chasse au trésor dans l’appartement ou une promenade bien couverte permettent de bouger malgré la météo.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant se fatigue très vite, s’essouffle ou se plaint souvent de douleurs en jouant, s’il tombe beaucoup plus que les enfants de son âge, ou si son développement moteur vous pose question. En cas de doute, n’hésitez pas à demander un avis. ${URG}
+Parles-en au médecin ou à la PMI si ton enfant se fatigue très vite, s’essouffle ou se plaint souvent de douleurs en jouant, s’il tombe beaucoup plus que les enfants de son âge, ou si son développement moteur te pose question. En cas de doute, n’hésite pas à demander un avis. ${URG}
 
 ${FIN}`,
   }),
@@ -125,20 +125,20 @@ Le programme de l’école maternelle organise l’activité physique autour de 
 - Imiter les animaux : marcher comme un ours (mains et pieds au sol), sauter comme un lapin, ramper comme un serpent.
 
 **Quelques repères de sécurité**
-- Dégagez l’espace : pas de meuble à angle vif, pas d’objet qui traîne au sol.
-- Évitez les chaussettes sur un sol glissant : pieds nus ou chaussures.
-- Pour la grimpe, restez à proximité sans faire à sa place : l’enfant apprend aussi à mesurer ce dont il est capable.
-- Ne laissez pas un enfant grimper près d’une fenêtre ou d’un balcon : aucun meuble ni objet escaladable à proximité.
+- Dégage l’espace : pas de meuble à angle vif, pas d’objet qui traîne au sol.
+- Évite les chaussettes sur un sol glissant : pieds nus ou chaussures.
+- Pour la grimpe, reste à proximité sans faire à sa place : l’enfant apprend aussi à mesurer ce dont il est capable.
+- Ne laisse pas un enfant grimper près d’une fenêtre ou d’un balcon : aucun meuble ni objet escaladable à proximité.
 
 ## Questions fréquentes
-**Mon enfant de 5 ans n’arrive pas encore à sauter à cloche-pied, faut-il s’inquiéter ?** Les âges donnés sont des repères moyens et non des examens. Proposez-lui des jeux variés, sans pression. Si plusieurs choses vous interrogent en même temps (équilibre, chutes fréquentes, fatigue), parlez-en à son médecin.
+**Mon enfant de 5 ans n’arrive pas encore à sauter à cloche-pied, faut-il s’inquiéter ?** Les âges donnés sont des repères moyens et non des examens. Propose-lui des jeux variés, sans pression. Si plusieurs choses t’interrogent en même temps (équilibre, chutes fréquentes, fatigue), parles-en à son médecin.
 
-**Il prend des risques sur les jeux, faut-il l’en empêcher ?** Laisser l’enfant essayer ce qui n’est pas dangereux fait partie de son apprentissage. Votre rôle est de choisir un cadre sûr (jeu adapté à l’âge, sol amortissant, pas de hauteur excessive) et de rester présent.
+**Il prend des risques sur les jeux, faut-il l’en empêcher ?** Laisser l’enfant essayer ce qui n’est pas dangereux fait partie de son apprentissage. Ton rôle est de choisir un cadre sûr (jeu adapté à l’âge, sol amortissant, pas de hauteur excessive) et de rester présent.
 
 **Comment l’occuper en appartement ?** Un parcours de coussins, une marelle au ruban adhésif, un jeu de « statues musicales » ou une danse permettent de bouger dans peu d’espace.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant perd des acquis, chute très souvent, boite, se plaint de douleurs qui reviennent ou semble très gêné dans ses mouvements par rapport aux enfants de son âge. Après une chute avec choc à la tête, somnolence, vomissements ou comportement inhabituel, appelez le **15**. ${URG}
+Consulte le médecin si ton enfant perd des acquis, chute très souvent, boite, se plaint de douleurs qui reviennent ou semble très gêné dans ses mouvements par rapport aux enfants de son âge. Après une chute avec choc à la tête, somnolence, vomissements ou comportement inhabituel, appelle le **15**. ${URG}
 
 ${FIN}`,
   }),
@@ -152,7 +152,7 @@ ${FIN}`,
 - Vers 3 ans, **partager et attendre son tour restent difficiles** : l’enfant commence tout juste à jouer avec les autres.
 - Vers 4–5 ans, il apprend à **respecter des règles dans un jeu collectif** et à mieux maîtriser ses émotions.
 - Les jeux simples (chat, cache-cache, 1-2-3 soleil, ronde) sont idéaux pour découvrir les règles en bougeant.
-- Votre rôle : expliquer, jouer avec lui, accepter que les règles soient parfois « arrangées » au début.
+- Ton rôle : expliquer, jouer avec lui, accepter que les règles soient parfois « arrangées » au début.
 
 ## Comprendre
 Les fiches mpedia reprises par Santé.fr décrivent une évolution nette. Entre 3 et 4 ans, l’enfant commence à jouer avec d’autres, mais partager ses jouets et attendre son tour lui coûte encore. Entre 4 et 5 ans, il nuance davantage ses émotions, boude moins, et **apprend à respecter des règles dans un jeu collectif**. À l’école, en deuxième année de maternelle, il apprend aussi à mieux connaître ses camarades, à les respecter et à partager.
@@ -168,27 +168,27 @@ Les fiches mpedia reprises par Santé.fr décrivent une évolution nette. Entre 
 - **Les relais** : porter un objet jusqu’à un arbre et revenir le passer au suivant.
 
 **Aider à respecter les règles**
-- Expliquez une seule règle à la fois, puis montrez en jouant une première partie « pour de faux ».
-- Pour les 3–4 ans, simplifiez : un terrain plus petit, peu de règles, des parties courtes.
-- Faites tourner les rôles : chacun est meneur à son tour.
-- Nommez les émotions : « Tu es déçu d’avoir été attrapé, je comprends. On rejoue ? »
-- Valorisez la manière de jouer plutôt que la victoire : « Tu as bien attendu ton tour. »
+- Explique une seule règle à la fois, puis montre en jouant une première partie « pour de faux ».
+- Pour les 3–4 ans, simplifie : un terrain plus petit, peu de règles, des parties courtes.
+- Fais tourner les rôles : chacun est meneur à son tour.
+- Nomme les émotions : « Tu es déçu d’avoir été attrapé, je comprends. On rejoue ? »
+- Valorise la manière de jouer plutôt que la victoire : « Tu as bien attendu ton tour. »
 
 **Sécurité**
-- Jouez dans un espace dégagé, loin de la route, d’un parking ou d’un point d’eau.
-- Pour cache-cache, fixez les limites à l’avance : jamais dans une voiture, un coffre, un placard qui se ferme, ni hors de la zone convenue.
+- Joue dans un espace dégagé, loin de la route, d’un parking ou d’un point d’eau.
+- Pour cache-cache, fixe les limites à l’avance : jamais dans une voiture, un coffre, un placard qui se ferme, ni hors de la zone convenue.
 
 ## Questions fréquentes
-**Mon enfant triche ou change les règles, que faire ?** À cet âge, l’enfant découvre ce qu’est une règle. Rappelez-la calmement, sans le gronder. Vous pouvez aussi décider ensemble d’une règle « maison » avant de commencer.
+**Mon enfant triche ou change les règles, que faire ?** À cet âge, l’enfant découvre ce qu’est une règle. Rappelle-la calmement, sans le gronder. Tu peux aussi décider ensemble d’une règle « maison » avant de commencer.
 
-**Il pleure à chaque fois qu’il perd.** Perdre s’apprend. Des parties courtes, où l’on rejoue tout de suite, et un adulte qui montre qu’il sait perdre avec le sourire aident beaucoup. Si les colères sont très fréquentes et intenses, parlez-en à son médecin.
+**Il pleure à chaque fois qu’il perd.** Perdre s’apprend. Des parties courtes, où l’on rejoue tout de suite, et un adulte qui montre qu’il sait perdre avec le sourire aident beaucoup. Si les colères sont très fréquentes et intenses, parles-en à son médecin.
 
-**Il ne veut pas jouer avec les autres au square.** Certains enfants observent longtemps avant de se lancer. Proposez-lui de jouer d’abord avec vous, puis d’inviter un autre enfant à vous rejoindre.
+**Il ne veut pas jouer avec les autres au square.** Certains enfants observent longtemps avant de se lancer. Propose-lui de jouer d’abord avec toi, puis d’inviter un autre enfant à te rejoindre.
 
 **À partir de quel âge peut-on jouer à des jeux d’équipe ?** Les jeux de coopération simples sont possibles très tôt. Les vrais jeux d’équipe, avec des règles plus nombreuses, deviennent plus faciles vers 5–6 ans.
 
 ## Quand demander conseil
-Parlez-en au médecin, à la PMI ou à l’enseignant si votre enfant semble ne jamais pouvoir jouer avec les autres, s’il est souvent mis à l’écart, ou si ses réactions (colères, retrait) vous inquiètent. ${SOUTIEN}
+Parles-en au médecin, à la PMI ou à l’enseignant si ton enfant semble ne jamais pouvoir jouer avec les autres, s’il est souvent mis à l’écart, ou si ses réactions (colères, retrait) t’inquiètent. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -212,40 +212,40 @@ La sécurité routière rappelle que le décret de décembre 2016 a rendu le cas
 ## Au quotidien
 **Choisir et régler l’équipement**
 - Un vélo à la bonne taille : assis sur la selle, l’enfant pose les pieds au sol.
-- Un casque à sa taille, bien ajusté (il ne bascule ni vers l’avant ni vers l’arrière), sangle attachée ; vérifiez le marquage CE et l’âge ou la taille indiqués.
+- Un casque à sa taille, bien ajusté (il ne bascule ni vers l’avant ni vers l’arrière), sangle attachée ; vérifie le marquage CE et l’âge ou la taille indiqués.
 - Pour la trottinette ou les rollers, des protections (genouillères, coudières) et des chaussures fermées.
-- Évitez les écharpes et cordons qui pendent, qui peuvent se prendre dans les roues.
+- Évite les écharpes et cordons qui pendent, qui peuvent se prendre dans les roues.
 
 **Apprendre pas à pas**
-- Commencez sur un terrain plat, dégagé et sans circulation : cour, parc, allée fermée.
+- Commence sur un terrain plat, dégagé et sans circulation : cour, parc, allée fermée.
 - Pour l’équilibre, beaucoup d’enfants progressent en avançant d’abord en poussant avec les pieds, selle basse, avant de pédaler.
-- Tenez l’enfant par l’épaule ou le haut du dos plutôt que par le guidon, pour lui laisser la direction.
-- Faites des séances courtes et arrêtez avant la fatigue : la chute vient souvent quand l’enfant est épuisé.
-- Félicitez les progrès (« Tu as tenu jusqu’à l’arbre ! ») plutôt que de comparer avec d’autres enfants.
+- Tiens l’enfant par l’épaule ou le haut du dos plutôt que par le guidon, pour lui laisser la direction.
+- Fais des séances courtes et arrête avant la fatigue : la chute vient souvent quand l’enfant est épuisé.
+- Félicite les progrès (« Tu as tenu jusqu’à l’arbre ! ») plutôt que de comparer avec d’autres enfants.
 
 **Rouler en sécurité**
 - À cet âge, l’enfant ne perçoit pas encore bien les dangers de la circulation : il roule à côté d’un adulte, sur des voies calmes ou protégées.
-- Apprenez-lui à s’arrêter au signal, à ne jamais traverser seul, à descendre du vélo pour traverser.
-- Montrez l’exemple : casque pour vous aussi, respect des feux et des passages piétons.
+- Apprends-lui à s’arrêter au signal, à ne jamais traverser seul, à descendre du vélo pour traverser.
+- Montre l’exemple : casque pour toi aussi, respect des feux et des passages piétons.
 
 ## Questions fréquentes
 **Le casque est-il obligatoire à trottinette ?** L’obligation légale décrite par la sécurité routière concerne le vélo pour les moins de 12 ans. Pour la trottinette et les rollers, le casque et les protections restent fortement conseillés.
 
 **Faut-il passer par une draisienne ?** Ce n’est pas indispensable. Ce qui compte, c’est que l’enfant apprenne l’équilibre à son rythme, sur un engin adapté à sa taille.
 
-**Il a peur depuis une chute.** Revenez à une étape plus facile, sur un terrain très sûr, et laissez-le décider quand il veut réessayer. La confiance revient souvent quand l’enfant sent qu’il garde le contrôle.
+**Il a peur depuis une chute.** Reviens à une étape plus facile, sur un terrain très sûr, et laisse-le décider quand il veut réessayer. La confiance revient souvent quand l’enfant sent qu’il garde le contrôle.
 
 **Peut-il rouler sur le trottoir ?** Les règles dépendent de l’âge et de la situation ; dans tous les cas, à 3–6 ans, l’enfant reste à portée de main d’un adulte et à l’écart de la circulation.
 
 ## Quand demander conseil
-Après une chute, appelez le **15** si votre enfant a perdu connaissance, vomit, est somnolent, a un comportement inhabituel, saigne beaucoup ou ne peut plus bouger un membre. Pour une douleur qui persiste après une chute, consultez le médecin. ${URG}
+Après une chute, appelle le **15** si ton enfant a perdu connaissance, vomit, est somnolent, a un comportement inhabituel, saigne beaucoup ou ne peut plus bouger un membre. Pour une douleur qui persiste après une chute, consulte le médecin. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'aire-de-jeux-trampoline-securite-3-6-ans',
     title: 'Aires de jeux, structures gonflables et trampolines : jouer en sécurité entre 3 et 6 ans',
-    summary: 'Comment repérer une aire de jeux adaptée à l’âge de votre enfant, quelles règles fixer et quelles précautions prendre avec les trampolines.',
+    summary: 'Comment repérer une aire de jeux adaptée à l’âge de ton enfant, quelles règles fixer et quelles précautions prendre avec les trampolines.',
     category: 'securite', tags: ['aire de jeux', 'square', 'toboggan', 'trampoline', 'parc de trampolines', 'structure gonflable', 'chute', 'sécurité'],
     sources: [S.airesJeux, S.trampoline, S.accidents],
     body_md: `## En bref
@@ -260,11 +260,11 @@ La DGCCRF encadre les aires collectives de jeux (écoles, squares municipaux, pa
 Pour les trampolines, une fiche de vigilance des ministères des Sports et de l’Éducation nationale décrit les accidents survenus dans des parcs : traumatismes de la colonne vertébrale après des saltos, blessures aux jambes quand un sauteur en fait rebondir un autre, chutes sur la tête ou le cou. Elle recommande notamment de répartir les enfants selon l’âge, la taille et le poids, de réserver des zones aux plus jeunes et d’interdire les contacts entre sauteurs.
 
 ## Au quotidien
-**Avant de laisser jouer votre enfant**
-- Repérez le panneau d’âge du jeu : un équipement prévu pour les plus grands peut être trop haut ou trop difficile pour un enfant de 3–4 ans.
-- Regardez le sol sous les jeux : il doit être amortissant et non dégradé.
-- Vérifiez que l’aire est bien séparée de la route ou d’un plan d’eau.
-- Repérez ce qui pourrait être cassé, instable ou coupant ; en cas de problème, signalez-le au gestionnaire dont les coordonnées sont affichées.
+**Avant de laisser jouer ton enfant**
+- Repère le panneau d’âge du jeu : un équipement prévu pour les plus grands peut être trop haut ou trop difficile pour un enfant de 3–4 ans.
+- Regarde le sol sous les jeux : il doit être amortissant et non dégradé.
+- Vérifie que l’aire est bien séparée de la route ou d’un plan d’eau.
+- Repère ce qui pourrait être cassé, instable ou coupant ; en cas de problème, signale-le au gestionnaire dont les coordonnées sont affichées.
 
 **Des règles simples à expliquer**
 - On descend le toboggan assis, les pieds devant, un par un.
@@ -273,23 +273,23 @@ Pour les trampolines, une fiche de vigilance des ministères des Sports et de l�
 - On retire écharpe, cordon de capuche ou collier avant de jouer, pour éviter qu’ils se coincent.
 
 **Trampolines et structures gonflables**
-- Respectez le nombre maximal de sauteurs indiqué par le fabricant ou par le parc, et ne mélangez pas petits et grands : des enfants de même âge et de même gabarit, dans une zone dédiée.
+- Respecte le nombre maximal de sauteurs indiqué par le fabricant ou par le parc, et ne mélange pas petits et grands : des enfants de même âge et de même gabarit, dans une zone dédiée.
 - Pas de salto ni d’acrobatie, pas de chahut, pas de bousculade.
 - Ne pas grimper aux filets ni s’asseoir sur les toiles ou bords quand d’autres sautent.
 - Un adulte reste à côté pendant toute la séance, et on arrête quand l’enfant fatigue.
 
-**Si vous signalez un problème**
+**Si tu signales un problème**
 La DGCCRF indique les ressources disponibles : SignalConso (signal.conso.gouv.fr) pour un problème avec un professionnel, et RappelConso (rappel.conso.gouv.fr) pour vérifier les produits rappelés.
 
 ## Questions fréquentes
-**À partir de quel âge mon enfant peut-il aller seul sur un jeu ?** Il n’y a pas d’âge unique : fiez-vous au panneau d’âge du jeu, aux capacités de votre enfant et restez toujours à proximité entre 3 et 6 ans.
+**À partir de quel âge mon enfant peut-il aller seul sur un jeu ?** Il n’y a pas d’âge unique : fie-toi au panneau d’âge du jeu, aux capacités de ton enfant et reste toujours à proximité entre 3 et 6 ans.
 
 **Le trampoline de jardin est-il adapté à un enfant de 4 ans ?** Il peut être source de plaisir, à condition de respecter les consignes du fabricant (âge, poids, nombre de sauteurs), de l’installer sur un sol dégagé et de surveiller en permanence. Les acrobaties et les sauts à plusieurs sont à éviter.
 
-**Mon enfant veut faire comme les grands sur la grande structure.** Expliquez-lui que ce jeu est prévu pour un autre âge et proposez un défi à sa mesure. L’envie de faire comme les grands est très présente à cet âge.
+**Mon enfant veut faire comme les grands sur la grande structure.** Explique-lui que ce jeu est prévu pour un autre âge et propose un défi à sa mesure. L’envie de faire comme les grands est très présente à cet âge.
 
 ## Quand demander conseil
-Appelez le **15** si, après une chute, votre enfant a perdu connaissance, vomit, est somnolent, se plaint du cou ou du dos, ne peut plus bouger un membre ou a un comportement inhabituel. Ne le déplacez pas s’il se plaint du cou ou du dos. Pour une douleur persistante, consultez le médecin. ${URG}
+Appelle le **15** si, après une chute, ton enfant a perdu connaissance, vomit, est somnolent, se plaint du cou ou du dos, ne peut plus bouger un membre ou a un comportement inhabituel. Ne le déplace pas s’il se plaint du cou ou du dos. Pour une douleur persistante, consulte le médecin. ${URG}
 
 ${FIN}`,
   }),
@@ -304,7 +304,7 @@ ${FIN}`,
 - Les balades à pied font partie des activités de plein air que recommande Santé publique France pour bouger en famille.
 - Une balade devient un jeu avec une **mission** : trouver, observer, ramasser, construire.
 - Contre les tiques : **vêtements longs et clairs, chaussures fermées, chapeau**, chemins plutôt que hautes herbes, et **inspection de tout le corps au retour**.
-- Ne laissez jamais votre enfant goûter une baie, une feuille ou un champignon cueilli : au moindre doute, appelez un **centre antipoison**.
+- Ne laisse jamais ton enfant goûter une baie, une feuille ou un champignon cueilli : au moindre doute, appelle un **centre antipoison**.
 
 ## Comprendre
 Le guide Manger-Bouger pour les parents d’enfants de 4 à 11 ans cite les balades à pied ou à vélo et les jeux de plein air (courir, sauter, lancer, barboter) parmi les moyens simples de bouger. Entre 3 et 6 ans, la nature offre en plus un terrain d’exploration : l’enfant pose mille questions, observe, compare, nomme ce qu’il voit.
@@ -321,29 +321,29 @@ Deux précautions reviennent dans les sources officielles. Santé.fr (RecoSanté
 - **Raconter** : au retour, dessiner ce que l’on a vu ou coller ses trouvailles dans un cahier.
 
 **Adapter la sortie à son âge**
-- Prévoyez une distance raisonnable et des pauses, avec de l’eau et un goûter.
-- Laissez-le marcher à son rythme et choisir parfois le chemin.
-- Fixez des règles claires : on reste en vue de l’adulte, on s’arrête aux croisements, on ne s’approche pas de l’eau seul.
+- Prévois une distance raisonnable et des pauses, avec de l’eau et un goûter.
+- Laisse-le marcher à son rythme et choisir parfois le chemin.
+- Fixe des règles claires : on reste en vue de l’adulte, on s’arrête aux croisements, on ne s’approche pas de l’eau seul.
 
 **Tiques : les bons réflexes (Santé.fr)**
 - Vêtements longs couvrant bras et jambes, de couleur claire, bas du pantalon dans les chaussettes, chaussures fermées, chapeau couvrant la tête et le cou.
-- Restez sur les sentiers, évitez broussailles, hautes herbes et fougères, et posez un tissu clair pour pique-niquer.
-- Au retour, examinez tout le corps, notamment les aisselles, les plis des genoux, le nombril, les organes génitaux, derrière les oreilles, le cou et le cuir chevelu ; recommencez le lendemain.
-- Si vous trouvez une tique, retirez-la sans attendre avec un tire-tique (vendu en pharmacie), sans appliquer de produit avant, puis désinfectez.
+- Reste sur les sentiers, évite broussailles, hautes herbes et fougères, et pose un tissu clair pour pique-niquer.
+- Au retour, examine tout le corps, notamment les aisselles, les plis des genoux, le nombril, les organes génitaux, derrière les oreilles, le cou et le cuir chevelu ; recommence le lendemain.
+- Si tu trouves une tique, retire-la sans attendre avec un tire-tique (vendu en pharmacie), sans appliquer de produit avant, puis désinfecte.
 
 **Plantes et baies (Anses)**
-- Apprenez à votre enfant qu’on regarde, on sent, on touche avec précaution, mais **on ne met rien à la bouche**.
-- Ne cueillez pas « par brassées » et, en cas de doute sur une plante, ne la consommez pas.
+- Apprends à ton enfant qu’on regarde, on sent, on touche avec précaution, mais **on ne met rien à la bouche**.
+- Ne cueille pas « par brassées » et, en cas de doute sur une plante, ne la consomme pas.
 
 ## Questions fréquentes
-**Mon enfant se plaint vite d’être fatigué en balade.** Raccourcissez le parcours, ajoutez un but (une cabane, un pont, un ruisseau) et des jeux en chemin. Le plaisir compte plus que la distance.
+**Mon enfant se plaint vite d’être fatigué en balade.** Raccourcis le parcours, ajoute un but (une cabane, un pont, un ruisseau) et des jeux en chemin. Le plaisir compte plus que la distance.
 
-**Faut-il mettre un répulsif contre les tiques ?** Santé.fr évoque éventuellement un répulsif cutané sur les zones découvertes. Demandez conseil au pharmacien ou au médecin pour un produit adapté à l’âge de votre enfant.
+**Faut-il mettre un répulsif contre les tiques ?** Santé.fr évoque éventuellement un répulsif cutané sur les zones découvertes. Demande conseil au pharmacien ou au médecin pour un produit adapté à l’âge de ton enfant.
 
-**Mon enfant a mangé une baie inconnue.** Contactez sans attendre un centre antipoison, même sans symptôme, en gardant si possible un morceau de la plante ou une photo.
+**Mon enfant a mangé une baie inconnue.** Contacte sans attendre un centre antipoison, même sans symptôme, en gardant si possible un morceau de la plante ou une photo.
 
 ## Quand demander conseil
-Après une morsure de tique, demandez conseil au médecin ou au pharmacien, notamment si la tête de la tique reste dans la peau ou si une rougeur apparaît autour de la morsure dans les jours ou semaines suivants. En cas d’ingestion d’une plante, appelez un centre antipoison ; appelez le **15** en cas de malaise, de difficulté à respirer ou de somnolence. ${URG}
+Après une morsure de tique, demande conseil au médecin ou au pharmacien, notamment si la tête de la tique reste dans la peau ou si une rougeur apparaît autour de la morsure dans les jours ou semaines suivants. En cas d’ingestion d’une plante, appelle un centre antipoison ; appelle le **15** en cas de malaise, de difficulté à respirer ou de somnolence. ${URG}
 
 ${FIN}`,
   }),
@@ -354,7 +354,7 @@ ${FIN}`,
     category: 'activites-eveil', tags: ['jardinage', 'potager', 'balcon', 'semis', 'plantes aromatiques', 'tomates cerises', 'goûter les légumes', 'plantes toxiques'],
     sources: [S.guideMB, S.gouts, S.plantes],
     body_md: `## En bref
-- Santé publique France suggère de faire pousser du **basilic en pot ou des tomates cerises en jardinière**, ou de créer un petit potager en famille si vous avez un jardin.
+- Santé publique France suggère de faire pousser du **basilic en pot ou des tomates cerises en jardinière**, ou de créer un petit potager en famille si tu as un jardin.
 - Les enfants acceptent plus volontiers de **goûter un légume qu’ils ont choisi, cueilli ou cuisiné**.
 - Jardiner, c’est aussi bouger : porter l’arrosoir, creuser, ratisser.
 - Précautions : vérifier ce que l’on plante, se laver les mains, et ne rien manger sans l’accord d’un adulte.
@@ -376,18 +376,18 @@ Côté sécurité, l’Anses conseille, au potager, de vérifier à quoi ressemb
 - Un calendrier dessiné pour suivre la croissance : « On a semé », « Ça sort ! », « On récolte ».
 
 **Faire le lien avec l’assiette**
-- Cueillez ensemble et préparez un plat simple : radis croquants, tomates en salade, herbes sur une omelette.
-- Laissez-le goûter sans obligation de finir : le fait d’avoir cultivé suffit souvent à donner envie d’essayer.
+- Cueille ensemble et prépare un plat simple : radis croquants, tomates en salade, herbes sur une omelette.
+- Laisse-le goûter sans obligation de finir : le fait d’avoir cultivé suffit souvent à donner envie d’essayer.
 
 **Précautions**
-- Lavez les mains après le jardinage, et lavez les légumes avant de les manger.
-- Gardez les outils pointus ou tranchants pour les adultes ; proposez des outils adaptés à sa taille.
-- Rangez engrais, produits de traitement et anti-limaces hors de portée, dans leur emballage d’origine.
-- Apprenez-lui à ne rien mettre à la bouche sans demander : certaines plantes ornementales ou sauvages sont toxiques, et l’Anses rappelle qu’en cas de doute il ne faut pas consommer.
+- Lave les mains après le jardinage, et lave les légumes avant de les manger.
+- Garde les outils pointus ou tranchants pour les adultes ; propose des outils adaptés à sa taille.
+- Range engrais, produits de traitement et anti-limaces hors de portée, dans leur emballage d’origine.
+- Apprends-lui à ne rien mettre à la bouche sans demander : certaines plantes ornementales ou sauvages sont toxiques, et l’Anses rappelle qu’en cas de doute il ne faut pas consommer.
 - Au soleil, chapeau, ombre aux heures chaudes et eau à volonté.
 
 ## Questions fréquentes
-**Mon enfant se lasse vite, que planter ?** Choisissez des plantes à pousse rapide (radis, cresson, haricots) et donnez-lui une tâche précise à chaque visite.
+**Mon enfant se lasse vite, que planter ?** Choisis des plantes à pousse rapide (radis, cresson, haricots) et donne-lui une tâche précise à chaque visite.
 
 **Il ne mange aucun légume, est-ce que ça vaut la peine ?** Le jardinage ne garantit rien, mais il crée une occasion positive de découvrir les légumes, sans pression. Proposer régulièrement, sans forcer, reste la clé.
 
@@ -396,7 +396,7 @@ Côté sécurité, l’Anses conseille, au potager, de vérifier à quoi ressemb
 **Et sans balcon ?** Des jardins partagés ou des fermes pédagogiques existent dans de nombreuses communes ; le guide Manger-Bouger suggère aussi de visiter une ferme ou un producteur pendant les vacances.
 
 ## Quand demander conseil
-Si votre enfant a avalé une plante, une baie ou un produit de jardin, contactez sans attendre un centre antipoison, même sans symptôme. Appelez le **15** en cas de malaise, de difficulté à respirer, de somnolence ou de convulsions. Pour une coupure profonde ou une piqûre qui gonfle beaucoup, consultez. ${URG}
+Si ton enfant a avalé une plante, une baie ou un produit de jardin, contacte sans attendre un centre antipoison, même sans symptôme. Appelle le **15** en cas de malaise, de difficulté à respirer, de somnolence ou de convulsions. Pour une coupure profonde ou une piqûre qui gonfle beaucoup, consulte. ${URG}
 
 ${FIN}`,
   }),
@@ -419,32 +419,32 @@ La Caf souligne qu’une grande part des noyades accidentelles concerne des enfa
 
 ## Au quotidien
 **Trouver une séance**
-- Renseignez-vous auprès de l’école, de la mairie, de la piscine municipale ou des clubs : certains proposent des stages bleus pendant les vacances.
+- Renseigne-toi auprès de l’école, de la mairie, de la piscine municipale ou des clubs : certains proposent des stages bleus pendant les vacances.
 - Le ministère met aussi à disposition des vidéos pour réaliser avec l’enfant, étape par étape, des gestes simples en piscine.
 
-**À la piscine avec vous**
-- Allez-y progressivement : jouer sur les marches, s’asperger, souffler dans l’eau pour faire des bulles.
-- Proposez des jeux : ramasser un objet au fond là où il a pied, faire « l’étoile » sur le ventre puis sur le dos en le soutenant, sauter dans vos bras.
-- Laissez-le aller à son rythme ; un enfant qui a peur progresse mieux si on ne le force pas.
-- Restez dans l’eau avec lui et à portée de bras.
+**À la piscine avec toi**
+- Vas-y progressivement : jouer sur les marches, s’asperger, souffler dans l’eau pour faire des bulles.
+- Propose des jeux : ramasser un objet au fond là où il a pied, faire « l’étoile » sur le ventre puis sur le dos en le soutenant, sauter dans tes bras.
+- Laisse-le aller à son rythme ; un enfant qui a peur progresse mieux si on ne le force pas.
+- Reste dans l’eau avec lui et à portée de bras.
 
 **Les règles de sécurité qui ne changent pas**
 - Un adulte responsable de la surveillance, et un seul, pour chaque enfant pendant la baignade, comme le recommande Santé.fr.
 - Une surveillance active et permanente, y compris en dehors des moments de baignade : des enfants échappent parfois à la vigilance au bord de l’eau.
-- Si votre enfant porte un équipement de flottaison, préférez des **brassards** aux bouées, et gardez-le à portée de bras : ce matériel ne remplace pas la surveillance.
+- Si ton enfant porte un équipement de flottaison, préfère des **brassards** aux bouées, et garde-le à portée de bras : ce matériel ne remplace pas la surveillance.
 - Pour une piscine privée, les dispositifs de sécurité doivent être activés et ne remplacent jamais la présence d’un adulte.
 
 ## Questions fréquentes
 **Mon enfant sait faire quelques mouvements, est-il en sécurité ?** Non : même un enfant à l’aise peut se noyer en quelques instants et sans bruit. La surveillance reste indispensable.
 
-**Il refuse de mettre la tête sous l’eau.** Commencez par le visage mouillé avec les mains, les bulles, un jeu de cache-cache derrière les mains. Ne forcez pas ; l’aisance vient avec des expériences agréables répétées.
+**Il refuse de mettre la tête sous l’eau.** Commence par le visage mouillé avec les mains, les bulles, un jeu de cache-cache derrière les mains. Ne force pas ; l’aisance vient avec des expériences agréables répétées.
 
 **Est-ce payant ?** La Caf indique que le dispositif d’aisance aquatique pour les 4–6 ans est gratuit ; les modalités dépendent des communes et des structures qui l’organisent.
 
 **Faut-il attendre l’école pour apprendre à nager ?** L’apprentissage des nages commence en général vers 6 ans, mais l’aisance aquatique peut le précéder dès 3–4 ans.
 
 ## Quand demander conseil
-Si votre enfant a bu la tasse et tousse longtemps, respire difficilement, est très fatigué ou a un comportement inhabituel dans les heures qui suivent, appelez le **15**. En cas de noyade, sortez l’enfant de l’eau, appelez immédiatement le **15** ou le **112** et suivez les consignes. Parlez au médecin d’une peur de l’eau très forte qui l’empêche de profiter des activités.
+Si ton enfant a bu la tasse et tousse longtemps, respire difficilement, est très fatigué ou a un comportement inhabituel dans les heures qui suivent, appelle le **15**. En cas de noyade, sors l’enfant de l’eau, appelle immédiatement le **15** ou le **112** et suis les consignes. Parle au médecin d’une peur de l’eau très forte qui l’empêche de profiter des activités.
 
 ${FIN}`,
   }),
@@ -464,25 +464,25 @@ ${FIN}`,
 ## Comprendre
 Les fiches mpedia reprises par Santé.fr encouragent les parents à lire des histoires à leur enfant ou à en inventer, à lui expliquer les mots qu’il ne comprend pas et à lui poser des **questions ouvertes** (qui n’appellent pas seulement un « oui » ou un « non »). Entre 4 et 5 ans, l’enfant raconte de petites histoires, enrichit beaucoup son vocabulaire, invente parfois des mots et peut tenir une vraie conversation.
 
-Le programme de l’école maternelle place le langage oral et écrit au centre des apprentissages : le vocabulaire y est enseigné de façon explicite (avec un repère d’au moins 2 500 mots en fin de grande section), et la lecture quotidienne d’histoires sert à la fois la compréhension et le plaisir de lire. Ce que vous faites à la maison prolonge naturellement ce travail.
+Le programme de l’école maternelle place le langage oral et écrit au centre des apprentissages : le vocabulaire y est enseigné de façon explicite (avec un repère d’au moins 2 500 mots en fin de grande section), et la lecture quotidienne d’histoires sert à la fois la compréhension et le plaisir de lire. Ce que tu fais à la maison prolonge naturellement ce travail.
 
 ## Au quotidien
 **Choisir les livres**
-- Variez les genres : albums illustrés, contes, documentaires sur les animaux ou les métiers, livres de comptines, imagiers pour les plus jeunes.
-- Laissez-le choisir, même si c’est le même livre pour la dixième fois : la répétition rassure et l’aide à mémoriser.
-- Proposez de temps en temps une histoire un peu plus longue, lue en plusieurs soirs.
+- Varie les genres : albums illustrés, contes, documentaires sur les animaux ou les métiers, livres de comptines, imagiers pour les plus jeunes.
+- Laisse-le choisir, même si c’est le même livre pour la dixième fois : la répétition rassure et l’aide à mémoriser.
+- Propose de temps en temps une histoire un peu plus longue, lue en plusieurs soirs.
 
 **Lire ensemble**
-- Installez-vous confortablement, l’enfant à côté de vous pour voir les images.
-- Lisez avec expression, changez de voix pour les personnages, ménagez le suspense avant de tourner la page.
-- Arrêtez-vous pour parler : « À ton avis, que va faire le loup ? », « Pourquoi il est triste ? »
-- Expliquez les mots nouveaux avec des gestes ou des exemples de sa vie.
-- Inventez des histoires à partir de son quotidien ou laissez-le raconter à son tour en s’aidant des images.
+- Installe-toi confortablement, l’enfant à côté de toi pour voir les images.
+- Lis avec expression, change de voix pour les personnages, ménage le suspense avant de tourner la page.
+- Arrête-toi pour parler : « À ton avis, que va faire le loup ? », « Pourquoi il est triste ? »
+- Explique les mots nouveaux avec des gestes ou des exemples de sa vie.
+- Invente des histoires à partir de son quotidien ou laisse-le raconter à son tour en s’aidant des images.
 
 **Le livre au coucher**
 - Le rituel du coucher décrit par mpedia (bain, pyjama, histoire, câlin) aide l’enfant à s’apaiser.
-- Fixez à l’avance le nombre d’histoires pour éviter les négociations, et gardez un moment court.
-- Préférez des histoires calmes le soir, et gardez les livres « qui font peur » pour la journée.
+- Fixe à l’avance le nombre d’histoires pour éviter les négociations, et garde un moment court.
+- Préfère des histoires calmes le soir, et garde les livres « qui font peur » pour la journée.
 
 **Les livres au fil de la journée**
 - Un coin lecture accessible, avec quelques livres à sa hauteur, renouvelés régulièrement.
@@ -490,16 +490,16 @@ Le programme de l’école maternelle place le langage oral et écrit au centre 
 - La bibliothèque ou la médiathèque de quartier pour varier sans acheter.
 
 ## Questions fréquentes
-**Mon enfant ne tient pas en place pendant la lecture.** Choisissez des livres courts, avec beaucoup d’images ou des éléments à chercher. Laissez-le bouger, tourner les pages ou mimer. Quelques minutes de plaisir valent mieux qu’une longue lecture subie.
+**Mon enfant ne tient pas en place pendant la lecture.** Choisis des livres courts, avec beaucoup d’images ou des éléments à chercher. Laisse-le bouger, tourner les pages ou mimer. Quelques minutes de plaisir valent mieux qu’une longue lecture subie.
 
 **Faut-il lui apprendre à lire avant le CP ?** L’école maternelle prépare progressivement à l’écrit (sons, lettres, geste d’écriture). À la maison, le plus utile reste de partager le plaisir des histoires et de parler avec lui.
 
-**Il veut toujours la même histoire.** C’est très fréquent à cet âge : connaître la suite lui procure du plaisir et de la sécurité. Vous pouvez proposer d’alterner « son » livre avec un nouveau.
+**Il veut toujours la même histoire.** C’est très fréquent à cet âge : connaître la suite lui procure du plaisir et de la sécurité. Tu peux proposer d’alterner « son » livre avec un nouveau.
 
 **Les livres audio ou les histoires sur écran, c’est pareil ?** Une histoire écoutée peut avoir sa place, mais rien ne remplace l’échange avec un adulte. Entre 3 et 6 ans, les repères officiels recommandent un usage des écrans exceptionnel et accompagné.
 
 ## Quand demander conseil
-Parlez-en au médecin, à la PMI ou à l’enseignant si votre enfant semble avoir du mal à comprendre ce qu’on lui dit, parle très peu ou de façon difficile à comprendre pour son âge, ou s’il ne réagit pas quand on l’appelle (un contrôle de l’audition peut être utile). En cas de doute, n’hésitez pas à consulter votre pédiatre.
+Parles-en au médecin, à la PMI ou à l’enseignant si ton enfant semble avoir du mal à comprendre ce qu’on lui dit, parle très peu ou de façon difficile à comprendre pour son âge, ou s’il ne réagit pas quand on l’appelle (un contrôle de l’audition peut être utile). En cas de doute, n’hésite pas à consulter ton pédiatre.
 
 ${FIN}`,
   }),
@@ -522,34 +522,34 @@ Le document de la PMI du Lot sur le jeu souligne qu’entre 3 et 6 ans, l’enfa
 
 ## Au quotidien
 **À la médiathèque**
-- Inscrivez votre enfant (les conditions d’inscription et d’emprunt varient selon les communes ; renseignez-vous à l’accueil ou sur le site de votre ville).
-- Laissez-le choisir quelques livres lui-même, puis ajoutez-en un ou deux de votre choix.
-- Repérez les animations : lectures d’histoires, ateliers, spectacles, expositions.
-- Faites-en une sortie régulière, par exemple un mercredi sur deux : le rituel donne envie d’y retourner.
+- Inscris ton enfant (les conditions d’inscription et d’emprunt varient selon les communes ; renseigne-toi à l’accueil ou sur le site de ta ville).
+- Laisse-le choisir quelques livres lui-même, puis ajoutes-en un ou deux de ton choix.
+- Repère les animations : lectures d’histoires, ateliers, spectacles, expositions.
+- Fais-en une sortie régulière, par exemple un mercredi sur deux : le rituel donne envie d’y retourner.
 
 **À la ludothèque**
-- Jouez sur place avec lui : c’est l’occasion de découvrir un jeu avant de l’emprunter.
-- Demandez conseil aux ludothécaires pour des jeux adaptés à son âge et à ses goûts.
-- Empruntez un jeu de société simple, un jeu de construction ou des déguisements, et rapportez-le pour en tester un autre.
+- Joue sur place avec lui : c’est l’occasion de découvrir un jeu avant de l’emprunter.
+- Demande conseil aux ludothécaires pour des jeux adaptés à son âge et à ses goûts.
+- Emprunte un jeu de société simple, un jeu de construction ou des déguisements, et rapporte-le pour en tester un autre.
 
 **Dans les maisons de quartier et centres sociaux**
 - Beaucoup proposent des ateliers parents-enfants (peinture, cuisine, musique), des sorties familiales ou des fêtes de quartier.
 - Les programmes sont souvent affichés sur place ou publiés par la mairie.
 
 **Bien vivre la sortie**
-- Choisissez un moment où votre enfant n’est ni fatigué ni affamé.
-- Expliquez les règles du lieu (on parle doucement, on range le jeu, on prend soin des livres).
-- Préparez un sac solide pour transporter les livres et notez la date de retour.
+- Choisis un moment où ton enfant n’est ni fatigué ni affamé.
+- Explique les règles du lieu (on parle doucement, on range le jeu, on prend soin des livres).
+- Prépare un sac solide pour transporter les livres et note la date de retour.
 
 ## Questions fréquentes
-**Mon enfant abîme les livres, puis-je quand même emprunter ?** Expliquez-lui comment on tourne les pages, gardez les livres empruntés dans un endroit à part et lisez-les avec lui au début. En cas d’accident, informez la bibliothèque : chaque lieu a ses règles.
+**Mon enfant abîme les livres, puis-je quand même emprunter ?** Explique-lui comment on tourne les pages, garde les livres empruntés dans un endroit à part et lis-les avec lui au début. En cas d’accident, informe la bibliothèque : chaque lieu a ses règles.
 
-**Les jeux de ludothèque sont-ils sûrs ?** Vérifiez comme pour un achat que le jeu correspond à l’âge de votre enfant et qu’il est complet et en bon état ; signalez une pièce cassée ou manquante.
+**Les jeux de ludothèque sont-ils sûrs ?** Vérifie comme pour un achat que le jeu correspond à l’âge de ton enfant et qu’il est complet et en bon état ; signale une pièce cassée ou manquante.
 
-**Il n’y a rien près de chez moi.** Renseignez-vous auprès de la mairie, de la PMI ou de la Caf : des bibliobus, des ludothèques itinérantes ou des animations ponctuelles existent dans certains territoires.
+**Il n’y a rien près de chez moi.** Renseigne-toi auprès de la mairie, de la PMI ou de la Caf : des bibliobus, des ludothèques itinérantes ou des animations ponctuelles existent dans certains territoires.
 
 ## Quand demander conseil
-Si vous vous sentez isolé·e avec votre enfant, ces lieux et la PMI peuvent aussi être des points d’appui : n’hésitez pas à parler de vos difficultés aux professionnels. ${SOUTIEN}
+Si tu te sens isolé·e avec ton enfant, ces lieux et la PMI peuvent aussi être des points d’appui : n’hésite pas à parler de tes difficultés aux professionnels. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -562,8 +562,8 @@ ${FIN}`,
     body_md: `## En bref
 - Vers 3–4 ans, le loto, les dominos et les petits personnages font partie des jeux appréciés ; vers 5–6 ans, l’enfant peut **participer à des jeux à règles**, collectifs ou de société.
 - Un bon jeu à cet âge a **peu de règles**, des parties **courtes** et un matériel solide.
-- Vérifiez l’**âge indiqué** et le **marquage CE** : beaucoup de jeux contiennent de petites pièces dangereuses pour les plus jeunes de la fratrie.
-- Perdre, attendre son tour, respecter la règle : tout cela s’apprend en jouant, avec votre aide.
+- Vérifie l’**âge indiqué** et le **marquage CE** : beaucoup de jeux contiennent de petites pièces dangereuses pour les plus jeunes de la fratrie.
+- Perdre, attendre son tour, respecter la règle : tout cela s’apprend en jouant, avec ton aide.
 
 ## Comprendre
 Le document de la PMI du Lot sur le jeu cite, pour les 3–4 ans, le loto, les dominos, les petits personnages et les jeux de construction, et pour les plus grands les jeux à règles. La fiche mpedia « De 4 à 5 ans » décrit la même évolution : à cet âge, l’enfant commence à nuancer et contrôler ses émotions, ses colères sont moins violentes et il apprend à respecter les règles d’un jeu collectif. Le même document de la PMI rappelle que le meilleur jouet est celui qui procure un plaisir renouvelé et correspond à l’âge et aux intérêts de l’enfant.
@@ -579,33 +579,33 @@ Jouer à un jeu de société fait travailler beaucoup de choses à la fois : com
 - **Jeux coopératifs**, où tous les joueurs gagnent ou perdent ensemble : idéaux pour les enfants qui supportent mal de perdre.
 
 **Avant d’acheter**
-- Lisez l’âge indiqué sur la boîte et les avertissements : la mention « Ne convient pas aux enfants de moins de 36 mois » signale souvent de petites pièces.
-- Vérifiez le marquage CE et, avant l’achat, la rubrique jouets de RappelConso.
-- Si un plus jeune vit à la maison, rangez les jeux à petites pièces en hauteur après la partie.
+- Lis l’âge indiqué sur la boîte et les avertissements : la mention « Ne convient pas aux enfants de moins de 36 mois » signale souvent de petites pièces.
+- Vérifie le marquage CE et, avant l’achat, la rubrique jouets de RappelConso.
+- Si un plus jeune vit à la maison, range les jeux à petites pièces en hauteur après la partie.
 
 **Pendant la partie**
-- Expliquez les règles en jouant un premier tour « pour essayer ».
-- Simplifiez si besoin : moins de cartes, un plateau plus court, une règle en moins.
-- Laissez l’enfant manipuler (lancer le dé, avancer son pion, compter à voix haute).
-- Arrêtez avant la lassitude ; mieux vaut une partie courte réussie qu’une longue partie qui finit en larmes.
+- Explique les règles en jouant un premier tour « pour essayer ».
+- Simplifie si besoin : moins de cartes, un plateau plus court, une règle en moins.
+- Laisse l’enfant manipuler (lancer le dé, avancer son pion, compter à voix haute).
+- Arrête avant la lassitude ; mieux vaut une partie courte réussie qu’une longue partie qui finit en larmes.
 
 **Apprendre à perdre et à gagner**
-- Ne le laissez pas gagner à chaque fois, mais adaptez la difficulté pour qu’il ait de vraies chances.
-- Montrez l’exemple : « J’ai perdu, dommage ! On fait la revanche ? »
-- Félicitez la façon de jouer (patience, honnêteté) plutôt que la victoire seule.
-- Accueillez sa déception sans la minimiser : « Tu aurais aimé gagner, c’est frustrant. »
+- Ne le laisse pas gagner à chaque fois, mais adapte la difficulté pour qu’il ait de vraies chances.
+- Montre l’exemple : « J’ai perdu, dommage ! On fait la revanche ? »
+- Félicite la façon de jouer (patience, honnêteté) plutôt que la victoire seule.
+- Accueille sa déception sans la minimiser : « Tu aurais aimé gagner, c’est frustrant. »
 
 ## Questions fréquentes
-**Mon enfant triche, est-ce grave ?** Entre 3 et 5 ans, l’enfant découvre ce qu’est une règle et teste ses limites. Rappelez-la calmement ; vers 5–6 ans, la règle devient plus facile à accepter.
+**Mon enfant triche, est-ce grave ?** Entre 3 et 5 ans, l’enfant découvre ce qu’est une règle et teste ses limites. Rappelle-la calmement ; vers 5–6 ans, la règle devient plus facile à accepter.
 
 **À quel âge commencer ?** Des jeux très simples (loto, paires) se partagent dès 3 ans. Les jeux avec stratégie viendront plus tard.
 
-**Il fait une crise dès qu’il perd.** Passez par des jeux coopératifs quelque temps, raccourcissez les parties et anticipez : « Parfois on gagne, parfois on perd, on verra ! »
+**Il fait une crise dès qu’il perd.** Passe par des jeux coopératifs quelque temps, raccourcis les parties et anticipe : « Parfois on gagne, parfois on perd, on verra ! »
 
 **Peut-on y jouer avec un plus petit ?** Oui en adaptant : le petit peut lancer le dé ou piocher, tandis que le grand compte. Attention aux petites pièces pour les moins de 3 ans.
 
 ## Quand demander conseil
-Si un enfant a avalé une petite pièce et tousse, s’étouffe ou respire difficilement, appelez le **15**. En cas de suspicion d’ingestion d’une pile bouton ou d’aimants, appelez immédiatement le **15** ou un centre antipoison, même sans symptôme. Si les colères sont très fréquentes et vous épuisent, parlez-en au médecin. ${SOUTIEN}
+Si un enfant a avalé une petite pièce et tousse, s’étouffe ou respire difficilement, appelle le **15**. En cas de suspicion d’ingestion d’une pile bouton ou d’aimants, appelle immédiatement le **15** ou un centre antipoison, même sans symptôme. Si les colères sont très fréquentes et t’épuisent, parles-en au médecin. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -619,7 +619,7 @@ ${FIN}`,
 - Vers 3–4 ans, les **briques et jeux de construction** font partie des jeux que la PMI cite pour cet âge, où l’attention se développe.
 - Entre 3 et 6 ans, briques, jeux de construction, puzzles et bricolage font partie des jeux conseillés par la PMI.
 - Ces jeux font découvrir les **formes, les tailles, l’équilibre et l’espace**, que l’école maternelle explore aussi.
-- Choisissez des jeux adaptés à l’âge, surtout si un enfant de moins de 3 ans vit à la maison.
+- Choisis des jeux adaptés à l’âge, surtout si un enfant de moins de 3 ans vit à la maison.
 
 ## Comprendre
 Le document de la PMI du Lot sur le jeu décrit, vers 3–4 ans, une autonomie croissante et une attention qui se développe, avec des jeux comme les briques, les jeux de construction et les découpages. Il place les briques, les jeux de construction et le bricolage parmi les jeux des 3–6 ans. Le programme de l’école maternelle prévoit, dans les premiers outils mathématiques, d’**explorer les solides et les formes planes** et de se familiariser avec des **motifs organisés** : construire une tour, reproduire un modèle ou faire un puzzle en sont des prolongements très concrets.
@@ -633,32 +633,32 @@ Ces jeux ont un autre atout : beaucoup d’enfants peuvent s’y plonger seuls, 
 - **Vers 5–6 ans** : reproduire un modèle simple, construire une maison pour ses figurines, puzzles plus complexes, bricolage avec des matériaux de récupération.
 
 **Jouer avec lui**
-- Construisez à côté de lui sans prendre la main : « Moi je fais une tour, tu fais quoi ? »
-- Mettez des mots sur ce qu’il fait : haut, bas, devant, derrière, à côté, plus grand, plus petit.
-- Proposez des défis : la tour la plus haute avant qu’elle tombe, un pont pour faire passer la petite voiture, une maison avec une porte.
-- Pour un puzzle, aidez-le à trier : d’abord les bords, puis les couleurs.
+- Construis à côté de lui sans prendre la main : « Moi je fais une tour, tu fais quoi ? »
+- Mets des mots sur ce qu’il fait : haut, bas, devant, derrière, à côté, plus grand, plus petit.
+- Propose des défis : la tour la plus haute avant qu’elle tombe, un pont pour faire passer la petite voiture, une maison avec une porte.
+- Pour un puzzle, aide-le à trier : d’abord les bords, puis les couleurs.
 
 **Organiser le rangement**
 - Une caisse ou un bac par type de jeu, avec une photo dessus pour qu’il range seul.
 - Un tapis de jeu où les constructions peuvent rester quelques jours : démonter trop vite peut le frustrer.
 
 **Sécurité**
-- Respectez l’âge indiqué : la mention « Ne convient pas aux enfants de moins de 36 mois » signale un risque lié aux petites pièces.
-- Ne laissez pas traîner les petites briques si un bébé ou un enfant de moins de 3 ans circule dans la pièce.
+- Respecte l’âge indiqué : la mention « Ne convient pas aux enfants de moins de 36 mois » signale un risque lié aux petites pièces.
+- Ne laisse pas traîner les petites briques si un bébé ou un enfant de moins de 3 ans circule dans la pièce.
 - Les coffrets contenant de petits aimants portent un avertissement « Ne convient pas aux enfants de moins de 8 ans » : à éviter à cet âge.
-- Vérifiez le marquage CE et l’état des jeux d’occasion (pièces cassées, échardes).
+- Vérifie le marquage CE et l’état des jeux d’occasion (pièces cassées, échardes).
 
 ## Questions fréquentes
-**Mon enfant démolit tout au lieu de construire.** Faire tomber une tour fait partie du plaisir et permet de comprendre l’équilibre. Proposez-lui de construire « pour faire tomber », puis de reconstruire.
+**Mon enfant démolit tout au lieu de construire.** Faire tomber une tour fait partie du plaisir et permet de comprendre l’équilibre. Propose-lui de construire « pour faire tomber », puis de reconstruire.
 
-**Il s’énerve quand ça ne tient pas.** Accompagnez-le : « Les grosses pièces en bas, c’est plus solide. » Félicitez l’effort et proposez une pause si la frustration monte.
+**Il s’énerve quand ça ne tient pas.** Accompagne-le : « Les grosses pièces en bas, c’est plus solide. » Félicite l’effort et propose une pause si la frustration monte.
 
-**Faut-il des jeux avec modèle ou des jeux libres ?** Les deux sont intéressants : le modèle entraîne l’observation, la construction libre nourrit l’imagination. Alternez selon ses envies.
+**Faut-il des jeux avec modèle ou des jeux libres ?** Les deux sont intéressants : le modèle entraîne l’observation, la construction libre nourrit l’imagination. Alterne selon ses envies.
 
 **Les jeux de construction sur tablette remplacent-ils les vrais ?** Non : manipuler de vrais objets fait travailler les mains, l’équilibre et l’espace. Entre 3 et 6 ans, l’écran reste exceptionnel et accompagné.
 
 ## Quand demander conseil
-Si votre enfant a avalé une petite pièce et tousse, s’étouffe ou respire mal, appelez le **15**. Si vous pensez qu’il a avalé un aimant ou une pile bouton, appelez immédiatement le **15** ou un centre antipoison, même s’il ne présente aucun signe. Parlez au médecin si votre enfant semble très maladroit de ses mains par rapport aux enfants de son âge. ${URG}
+Si ton enfant a avalé une petite pièce et tousse, s’étouffe ou respire mal, appelle le **15**. Si tu penses qu’il a avalé un aimant ou une pile bouton, appelle immédiatement le **15** ou un centre antipoison, même s’il ne présente aucun signe. Parle au médecin si ton enfant semble très maladroit de ses mains par rapport aux enfants de son âge. ${URG}
 
 ${FIN}`,
   }),
@@ -693,29 +693,29 @@ Jouer au docteur avant un rendez-vous, à l’école avant la rentrée, ou à la
 - **La cabane** : un drap sur deux chaises devient un château, une grotte ou une fusée.
 - **Les marionnettes** : une chaussette, deux boutons dessinés au feutre, et un spectacle derrière le canapé.
 
-**Votre place dans le jeu**
-- Entrez dans le jeu quand il vous invite, en suivant son scénario plutôt que d’imposer le vôtre.
-- Posez des questions ouvertes : « Et ensuite, que se passe-t-il ? », « Comment s’appelle ton personnage ? »
-- Laissez-le aussi jouer seul : c’est un signe d’autonomie, pas d’ennui.
-- Observez : le jeu révèle parfois une inquiétude dont il peut être utile de parler.
+**Ta place dans le jeu**
+- Entre dans le jeu quand il t’invite, en suivant son scénario plutôt que d’imposer le tien.
+- Pose des questions ouvertes : « Et ensuite, que se passe-t-il ? », « Comment s’appelle ton personnage ? »
+- Laisse-le aussi jouer seul : c’est un signe d’autonomie, pas d’ennui.
+- Observe : le jeu révèle parfois une inquiétude dont il peut être utile de parler.
 
 **Déguisements : les précautions (DGCCRF)**
-- Tenez les déguisements loin des bougies, des barbecues, des cheminées et de toute flamme.
-- Évitez les cordons longs autour du cou et les éléments qui pendent et peuvent s’accrocher.
-- Vérifiez le marquage CE, l’âge indiqué et l’absence de petites pièces détachables pour les plus jeunes.
-- Préférez un maquillage prévu pour les enfants et testez-le sur une petite zone ; démaquillez avant le coucher.
+- Tiens les déguisements loin des bougies, des barbecues, des cheminées et de toute flamme.
+- Évite les cordons longs autour du cou et les éléments qui pendent et peuvent s’accrocher.
+- Vérifie le marquage CE, l’âge indiqué et l’absence de petites pièces détachables pour les plus jeunes.
+- Préfère un maquillage prévu pour les enfants et teste-le sur une petite zone ; démaquille avant le coucher.
 
 ## Questions fréquentes
-**Mon fils veut se déguiser en princesse, ma fille en pompier.** À cet âge, le déguisement est une exploration de rôles. Laissez-le choisir librement : c’est de l’imaginaire, pas une déclaration.
+**Mon fils veut se déguiser en princesse, ma fille en pompier.** À cet âge, le déguisement est une exploration de rôles. Laisse-le choisir librement : c’est de l’imaginaire, pas une déclaration.
 
-**Il a un ami imaginaire, faut-il s’inquiéter ?** L’imaginaire est très riche entre 3 et 6 ans, et un compagnon imaginaire peut en faire partie. Parlez-en au médecin seulement si cela s’accompagne d’autres signes qui vous préoccupent (repli, angoisses importantes).
+**Il a un ami imaginaire, faut-il s’inquiéter ?** L’imaginaire est très riche entre 3 et 6 ans, et un compagnon imaginaire peut en faire partie. Parles-en au médecin seulement si cela s’accompagne d’autres signes qui te préoccupent (repli, angoisses importantes).
 
-**Il rejoue des scènes de dispute ou de violence.** Le jeu sert parfois à exprimer ce qui l’a marqué. Restez disponible, mettez des mots sur ce qu’il montre, et parlez-en à un professionnel si ces scènes sont très fréquentes ou s’il semble angoissé.
+**Il rejoue des scènes de dispute ou de violence.** Le jeu sert parfois à exprimer ce qui l’a marqué. Reste disponible, mets des mots sur ce qu’il montre, et parles-en à un professionnel si ces scènes sont très fréquentes ou s’il semble angoissé.
 
-**Mon enfant mélange le vrai et le faux.** Entre 3 et 6 ans, la frontière est encore mouvante. Vous pouvez l’aider en disant « Pour de vrai ou pour de faux ? ».
+**Mon enfant mélange le vrai et le faux.** Entre 3 et 6 ans, la frontière est encore mouvante. Tu peux l’aider en disant « Pour de vrai ou pour de faux ? ».
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant ne joue jamais à faire semblant, semble très isolé, ou si ses jeux révèlent une peur ou une souffrance persistantes. Si vous pensez qu’un enfant est en danger, appelez le **119**. En cas de brûlure par un déguisement qui a pris feu, refroidissez à l’eau tempérée et appelez le **15**.
+Parles-en au médecin ou à la PMI si ton enfant ne joue jamais à faire semblant, semble très isolé, ou si ses jeux révèlent une peur ou une souffrance persistantes. Si tu penses qu’un enfant est en danger, appelle le **119**. En cas de brûlure par un déguisement qui a pris feu, refroidis à l’eau tempérée et appelle le **15**.
 
 ${FIN}`,
   }),
@@ -744,10 +744,10 @@ Ces âges restent des repères : certains enfants dessinent beaucoup, d’autres
 - Des cahiers de coloriage, en complément du dessin libre.
 
 **Encourager sans juger**
-- Demandez-lui de raconter plutôt que de deviner : « Tu me racontes ton dessin ? » au lieu de « C’est quoi ? ».
-- Commentez ce que vous voyez : « Tu as mis beaucoup de bleu », « Ce personnage a l’air content ».
-- Évitez de corriger (« Un chien n’est pas violet ») : l’imagination n’a pas de règles.
-- Affichez quelques dessins : sur le frigo, dans un cadre, dans un classeur que l’on feuillette ensemble.
+- Demande-lui de raconter plutôt que de deviner : « Tu me racontes ton dessin ? » au lieu de « C’est quoi ? ».
+- Commente ce que tu vois : « Tu as mis beaucoup de bleu », « Ce personnage a l’air content ».
+- Évite de corriger (« Un chien n’est pas violet ») : l’imagination n’a pas de règles.
+- Affiche quelques dessins : sur le frigo, dans un cadre, dans un classeur que l’on feuillette ensemble.
 
 **Des idées pour varier**
 - Dessiner la suite d’une histoire lue ensemble.
@@ -757,24 +757,24 @@ Ces âges restent des repères : certains enfants dessinent beaucoup, d’autres
 - Dessiner en musique, au rythme d’un morceau lent puis rapide.
 
 **Tenue du crayon**
-- Montrez sans insister : pouce et index pincent le crayon, le majeur le soutient.
+- Montre sans insister : pouce et index pincent le crayon, le majeur le soutient.
 - Des activités de motricité fine (pâte à modeler, perles, pinces à linge) aident aussi la main.
-- La latéralité (droitier ou gaucher) se précise souvent pendant ces années : laissez-le choisir sa main.
+- La latéralité (droitier ou gaucher) se précise souvent pendant ces années : laisse-le choisir sa main.
 
 **Sécurité**
-- Respectez l’âge indiqué sur les feutres et crayons et rangez bouchons et petits embouts loin des plus jeunes.
+- Respecte l’âge indiqué sur les feutres et crayons et range bouchons et petits embouts loin des plus jeunes.
 
 ## Questions fréquentes
-**Mon enfant de 5 ans ne dessine que des gribouillis, est-ce inquiétant ?** Certains enfants s’intéressent peu au dessin. Proposez sans forcer et observez le reste de son développement. Si plusieurs choses vous questionnent (tenue des objets, langage, attention), parlez-en à son médecin ou à l’enseignant.
+**Mon enfant de 5 ans ne dessine que des gribouillis, est-ce inquiétant ?** Certains enfants s’intéressent peu au dessin. Propose sans forcer et observe le reste de son développement. Si plusieurs choses te questionnent (tenue des objets, langage, attention), parles-en à son médecin ou à l’enseignant.
 
-**Il dessine des choses tristes ou violentes.** Le dessin est un moyen d’expression. Invitez-le à raconter, sans dramatiser. Si ces dessins s’accompagnent d’un changement de comportement, d’angoisses ou de propos inquiétants, parlez-en à un professionnel.
+**Il dessine des choses tristes ou violentes.** Le dessin est un moyen d’expression. Invite-le à raconter, sans dramatiser. Si ces dessins s’accompagnent d’un changement de comportement, d’angoisses ou de propos inquiétants, parles-en à un professionnel.
 
-**Il est gaucher, faut-il le faire changer de main ?** Non. Laissez-le utiliser la main qui lui convient et adaptez l’installation (lumière, place de la feuille).
+**Il est gaucher, faut-il le faire changer de main ?** Non. Laisse-le utiliser la main qui lui convient et adapte l’installation (lumière, place de la feuille).
 
 **Il refuse de colorier « dans les traits ».** Le coloriage précis vient avec la maturité du geste, souvent entre 4 et 5 ans. Le dessin libre reste à privilégier.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant semble avoir beaucoup de mal à tenir un crayon ou de petits objets pour son âge, s’il perd des acquis, ou si plusieurs aspects de son développement vous inquiètent. En cas de doute, n’hésitez pas à consulter votre pédiatre. ${SOUTIEN}
+Consulte le médecin si ton enfant semble avoir beaucoup de mal à tenir un crayon ou de petits objets pour son âge, s’il perd des acquis, ou si plusieurs aspects de son développement t’inquiètent. En cas de doute, n’hésite pas à consulter ton pédiatre. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -788,7 +788,7 @@ ${FIN}`,
 - Vers 3 ans, beaucoup d’enfants **commencent à découper des formes simples avec des ciseaux adaptés**.
 - Peinture, collage et gommettes font partie des activités d’arts visuels pratiquées régulièrement à l’école maternelle.
 - Un atelier réussi, c’est surtout un **espace préparé** et un adulte qui laisse faire.
-- Choisissez du matériel adapté à l’âge, avec une notice en français et le marquage CE pour les kits créatifs.
+- Choisis du matériel adapté à l’âge, avec une notice en français et le marquage CE pour les kits créatifs.
 
 ## Comprendre
 La fiche mpedia « Entre 3 et 4 ans » décrit un enfant qui gagne en précision : il construit, commence à découper avec des ciseaux adaptés, tient mieux son crayon et explore crayon, peinture et gommettes. Le programme de l’école maternelle inclut les **arts visuels**, pratiqués seul ou en groupe, en mobilisant le langage et l’imaginaire.
@@ -811,27 +811,27 @@ La fiche mpedia « Entre 3 et 4 ans » décrit un enfant qui gagne en précision
 
 **Apprendre à utiliser les ciseaux**
 - Des ciseaux à bouts ronds, adaptés à sa main (il existe des modèles pour gauchers).
-- Montrez le geste : le pouce dessus, on ouvre et on ferme « comme la bouche d’un crocodile ».
+- Montre le geste : le pouce dessus, on ouvre et on ferme « comme la bouche d’un crocodile ».
 - On découpe assis, on pose les ciseaux fermés, on ne marche pas avec.
-- Gardez les cutters et ciseaux pointus pour les adultes.
+- Garde les cutters et ciseaux pointus pour les adultes.
 
 **Bien choisir le matériel**
 - Peintures et colles lavables, adaptées à l’âge indiqué sur l’emballage.
-- Pour les kits créatifs, vérifiez la notice en français, l’âge, le marquage CE et les éventuels avertissements (surveillance d’un adulte, petites pièces).
-- Les produits non conformes et dangereux repérés par la DGCCRF font l’objet de retraits ou de rappels publiés sur RappelConso : vous pouvez y vérifier un produit.
-- Lavez les mains après l’atelier, surtout après la peinture au doigt.
+- Pour les kits créatifs, vérifie la notice en français, l’âge, le marquage CE et les éventuels avertissements (surveillance d’un adulte, petites pièces).
+- Les produits non conformes et dangereux repérés par la DGCCRF font l’objet de retraits ou de rappels publiés sur RappelConso : tu peux y vérifier un produit.
+- Lave les mains après l’atelier, surtout après la peinture au doigt.
 
 ## Questions fréquentes
-**Il met de la peinture partout, j’ai du mal à le supporter.** Réduisez la quantité de peinture, choisissez un lieu facile à nettoyer (cuisine, extérieur) et prévoyez le rangement ensemble à la fin : cela fait partie de l’activité.
+**Il met de la peinture partout, j’ai du mal à le supporter.** Réduis la quantité de peinture, choisis un lieu facile à nettoyer (cuisine, extérieur) et prévois le rangement ensemble à la fin : cela fait partie de l’activité.
 
 **Il ne fait jamais ce que montre le modèle.** C’est son œuvre : laisser libre cours à son idée nourrit sa créativité plus que la reproduction d’un modèle.
 
 **À quel âge peut-il découper seul ?** Le découpage commence vers 3 ans avec des ciseaux adaptés, toujours sous surveillance. La précision s’améliore beaucoup jusqu’à 6 ans.
 
-**Les paillettes et perles sont-elles adaptées ?** Elles plaisent beaucoup, mais les petites perles sont dangereuses pour les plus jeunes de la fratrie : rangez-les hors de portée.
+**Les paillettes et perles sont-elles adaptées ?** Elles plaisent beaucoup, mais les petites perles sont dangereuses pour les plus jeunes de la fratrie : range-les hors de portée.
 
 ## Quand demander conseil
-Si votre enfant a avalé un produit (peinture, colle) ou s’en est mis dans les yeux, rincez et contactez un centre antipoison ; appelez le **15** en cas de gêne respiratoire, de malaise ou de somnolence. Pour une coupure qui saigne beaucoup ou qui semble profonde, consultez. ${URG}
+Si ton enfant a avalé un produit (peinture, colle) ou s’en est mis dans les yeux, rince et contacte un centre antipoison ; appelle le **15** en cas de gêne respiratoire, de malaise ou de somnolence. Pour une coupure qui saigne beaucoup ou qui semble profonde, consulte. ${URG}
 
 ${FIN}`,
   }),
@@ -845,7 +845,7 @@ ${FIN}`,
 - La pâte à modeler fait partie des **alternatives aux écrans** citées dans le guide « Bien grandir dans un monde d’écrans ».
 - Rouler, aplatir, découper la pâte fait travailler la **force et la précision des mains**, utiles pour le dessin et l’écriture.
 - L’Anses met en garde contre le **slime fait maison** : colles, lessives et produits contenant du **bore** manipulés de façon répétée peuvent irriter ou brûler la peau, et certains composés du bore sont toxiques.
-- Pour les pâtes achetées, vérifiez l’âge indiqué, le marquage CE et les précautions d’emploi.
+- Pour les pâtes achetées, vérifie l’âge indiqué, le marquage CE et les précautions d’emploi.
 
 ## Comprendre
 L’Anses a alerté sur les risques du slime, cette pâte élastique très à la mode. Les recettes maison associent souvent de la colle, de la lessive, des produits pour lentilles ou de l’acide borique. L’Anses a reçu des signalements de dermatites, de brûlures, de rougeurs et d’eczéma liés à la manipulation répétée de ces produits. Le bore et ses dérivés sont toxiques pour la fertilité et le développement de l’embryon et du fœtus, et les quantités utilisées dans les recettes dépassent les usages prévus. Des analyses de la DGCCRF sur des kits vendus dans le commerce ont aussi révélé des teneurs en bore supérieures à la limite autorisée pour certains produits, qui ont été retirés et rappelés.
@@ -863,30 +863,30 @@ La pâte à modeler classique, la pâte à sel ou la pâte maison à base d’in
 **La pâte à sel**
 - Une recette de cuisine simple à base de farine, de sel et d’eau, réalisée avec l’adulte.
 - On modèle, on fait sécher ou cuire avec un adulte, puis on peint.
-- Elle est très salée : rappelez à l’enfant qu’on ne la mange pas.
+- Elle est très salée : rappelle à l’enfant qu’on ne la mange pas.
 
 **Bien choisir une pâte achetée**
-- Respectez l’âge indiqué et les avertissements de l’emballage.
-- Vérifiez le marquage CE et consultez au besoin RappelConso.
-- Suivez les précautions d’emploi indiquées sur les kits.
+- Respecte l’âge indiqué et les avertissements de l’emballage.
+- Vérifie le marquage CE et consulte au besoin RappelConso.
+- Suis les précautions d’emploi indiquées sur les kits.
 
 **Le slime : les conseils de l’Anses**
-- Évitez que l’enfant manipule de façon répétée de l’acide borique et ses dérivés, quel que soit le produit qui les contient.
-- Limitez le contact prolongé et répété de la peau avec les lessives, détergents et colles.
-- Ne détournez pas de leur usage des produits pour les yeux, les lentilles ou le linge.
-- Si un kit est utilisé, respectez strictement ses précautions d’emploi, faites laver les mains après le jeu et gardez-le hors de portée des plus jeunes.
+- Évite que l’enfant manipule de façon répétée de l’acide borique et ses dérivés, quel que soit le produit qui les contient.
+- Limite le contact prolongé et répété de la peau avec les lessives, détergents et colles.
+- Ne détourne pas de leur usage des produits pour les yeux, les lentilles ou le linge.
+- Si un kit est utilisé, respecte strictement ses précautions d’emploi, fais laver les mains après le jeu et garde-le hors de portée des plus jeunes.
 
 ## Questions fréquentes
-**Mon enfant met la pâte à modeler à la bouche.** Rappelez la règle (« la pâte, ça se touche, ça ne se mange pas ») et restez à côté. S’il en a avalé une petite quantité et qu’il va bien, demandez conseil à un centre antipoison en ayant l’emballage sous les yeux.
+**Mon enfant met la pâte à modeler à la bouche.** Rappelle la règle (« la pâte, ça se touche, ça ne se mange pas ») et reste à côté. S’il en a avalé une petite quantité et qu’il va bien, demande conseil à un centre antipoison en ayant l’emballage sous les yeux.
 
 **La pâte maison à la farine est-elle sûre ?** Elle évite les produits chimiques du slime, mais reste à ne pas manger, surtout si elle est très salée.
 
-**Ses mains sont rouges après avoir joué au slime.** Arrêtez le jeu, rincez abondamment et demandez conseil au pharmacien ou au médecin si la rougeur persiste ou s’étend.
+**Ses mains sont rouges après avoir joué au slime.** Arrête le jeu, rince abondamment et demande conseil au pharmacien ou au médecin si la rougeur persiste ou s’étend.
 
-**Comment conserver la pâte ?** Dans une boîte hermétique, à l’abri de la chaleur ; jetez-la si elle sent mauvais ou change d’aspect.
+**Comment conserver la pâte ?** Dans une boîte hermétique, à l’abri de la chaleur ; jette-la si elle sent mauvais ou change d’aspect.
 
 ## Quand demander conseil
-Contactez un centre antipoison si votre enfant a avalé du slime, de la colle, de la lessive ou un produit contenant de l’acide borique. Appelez le **15** en cas de vomissements répétés, de malaise, de difficulté à respirer ou de somnolence. Consultez pour une irritation ou une brûlure de la peau qui ne s’améliore pas. ${URG}
+Contacte un centre antipoison si ton enfant a avalé du slime, de la colle, de la lessive ou un produit contenant de l’acide borique. Appelle le **15** en cas de vomissements répétés, de malaise, de difficulté à respirer ou de somnolence. Consulte pour une irritation ou une brûlure de la peau qui ne s’améliore pas. ${URG}
 
 ${FIN}`,
   }),
@@ -900,7 +900,7 @@ ${FIN}`,
 - Le guide « Bien grandir dans un monde d’écrans » propose de **transformer boîtes d’œufs, rouleaux de papier toilette ou bouchons** en jeux : une activité à très faible coût.
 - Santé publique France encourage à **initier les enfants au bricolage**, qui compte aussi dans l’activité du quotidien.
 - Les matériaux de récup’ laissent une grande place à l’imagination : une boîte devient voiture, maison ou robot.
-- Écartez tout ce qui présente un danger : **piles bouton**, petites pièces, objets coupants, emballages de produits ménagers.
+- Écarte tout ce qui présente un danger : **piles bouton**, petites pièces, objets coupants, emballages de produits ménagers.
 
 ## Comprendre
 Le guide réalisé par la Ville de Saint-Denis et diffusé par la MILDECA insiste sur l’intérêt d’activités simples et peu coûteuses pour remplacer les écrans. Le guide Manger-Bouger pour les parents d’enfants de 4 à 11 ans cite le bricolage et le jardinage parmi les activités à faire découvrir. Santé.fr rappelle enfin que les piles bouton, présentes dans de nombreux objets du quotidien, sont dangereuses en cas d’ingestion, même déchargées.
@@ -909,7 +909,7 @@ Bricoler demande de prévoir, d’essayer, de recommencer quand ça ne tient pas
 
 ## Au quotidien
 **La boîte à récup’**
-Gardez dans un carton : rouleaux de papier toilette ou d’essuie-tout, boîtes d’œufs, boîtes de céréales, pots de yaourt rincés, gros bouchons, chutes de tissu, laine, papier cadeau, magazines, pinces à linge.
+Garde dans un carton : rouleaux de papier toilette ou d’essuie-tout, boîtes d’œufs, boîtes de céréales, pots de yaourt rincés, gros bouchons, chutes de tissu, laine, papier cadeau, magazines, pinces à linge.
 
 **Des idées de bricolage**
 - **Jumelles** avec deux rouleaux collés et une ficelle courte.
@@ -926,21 +926,21 @@ Gardez dans un carton : rouleaux de papier toilette ou d’essuie-tout, boîtes 
 - Pour les 5–6 ans, de petits outils de bricolage adaptés (marteau léger, clous à grosse tête dans du polystyrène ou du carton épais) peuvent être utilisés avec l’adulte à côté.
 
 **Précautions**
-- **Piles bouton** : n’utilisez jamais d’objets électroniques usagés ou de vieilles télécommandes comme matériel de bricolage ; une pile bouton avalée est une urgence, même déchargée.
-- **Petites pièces** : bouchons, perles et boutons peuvent être avalés par les plus jeunes ; rangez-les hors de portée.
-- **Emballages de produits ménagers** : ne les utilisez pas, et ne transvasez jamais un produit dans un récipient alimentaire.
+- **Piles bouton** : n’utilise jamais d’objets électroniques usagés ou de vieilles télécommandes comme matériel de bricolage ; une pile bouton avalée est une urgence, même déchargée.
+- **Petites pièces** : bouchons, perles et boutons peuvent être avalés par les plus jeunes ; range-les hors de portée.
+- **Emballages de produits ménagers** : ne les utilise pas, et ne transvase jamais un produit dans un récipient alimentaire.
 - **Sacs plastiques et ficelles longues** : risque d’étouffement ou d’étranglement, surtout pour les plus petits.
-- Lavez soigneusement les pots et barquettes alimentaires avant de les utiliser.
+- Lave soigneusement les pots et barquettes alimentaires avant de les utiliser.
 
 ## Questions fréquentes
-**Mon enfant veut tout garder, la maison déborde.** Fixez une limite (une étagère, une caisse) et prenez des photos des créations avant de vous en séparer ensemble.
+**Mon enfant veut tout garder, la maison déborde.** Fixe une limite (une étagère, une caisse) et prends des photos des créations avant de t’en séparer ensemble.
 
-**Il se décourage quand ça ne tient pas.** Proposez des solutions plus simples (ruban adhésif plutôt que colle liquide) et valorisez l’essai : « Tu as eu une idée, on cherche comment la faire tenir. »
+**Il se décourage quand ça ne tient pas.** Propose des solutions plus simples (ruban adhésif plutôt que colle liquide) et valorise l’essai : « Tu as eu une idée, on cherche comment la faire tenir. »
 
 **Quelles colles utiliser ?** Des colles en bâton ou liquides prévues pour les enfants, adaptées à l’âge indiqué. Le pistolet à colle chaude reste dans les mains de l’adulte.
 
 ## Quand demander conseil
-En cas de suspicion d’ingestion d’une pile bouton, n’attendez pas de symptôme : appelez immédiatement un centre antipoison ou le **15**, ne faites pas vomir et ne donnez rien à boire ni à manger. Appelez aussi le **15** si votre enfant s’étouffe, respire mal ou a avalé un produit ménager. Consultez pour une coupure profonde ou qui saigne beaucoup. ${URG}
+En cas de suspicion d’ingestion d’une pile bouton, n’attends pas de symptôme : appelle immédiatement un centre antipoison ou le **15**, ne fais pas vomir et ne donne rien à boire ni à manger. Appelle aussi le **15** si ton enfant s’étouffe, respire mal ou a avalé un produit ménager. Consulte pour une coupure profonde ou qui saigne beaucoup. ${URG}
 
 ${FIN}`,
   }),
@@ -963,9 +963,9 @@ Entre 3 et 6 ans, beaucoup d’enfants se méfient des aliments nouveaux. Transf
 
 ## Au quotidien
 **Au marché ou au magasin**
-- Donnez-lui une mission : trouver trois légumes verts, choisir le fruit de la semaine, compter les pommes.
-- Laissez-le toucher (le velouté d’une pêche, le grain d’une poire), sentir les herbes, comparer les tailles et les couleurs.
-- Préparez ensemble les menus de quelques jours, en lui laissant un choix.
+- Donne-lui une mission : trouver trois légumes verts, choisir le fruit de la semaine, compter les pommes.
+- Laisse-le toucher (le velouté d’une pêche, le grain d’une poire), sentir les herbes, comparer les tailles et les couleurs.
+- Prépare ensemble les menus de quelques jours, en lui laissant un choix.
 
 **À la ferme ou chez un producteur**
 - Le guide Manger-Bouger propose de visiter une ferme ou un producteur pendant les vacances ou le week-end, pour comprendre comment poussent les fruits et légumes.
@@ -984,16 +984,16 @@ Entre 3 et 6 ans, beaucoup d’enfants se méfient des aliments nouveaux. Transf
 - Sécurité : plats chauds loin du bord, queues de casserole vers l’intérieur, couteaux et plaques réservés à l’adulte.
 
 ## Questions fréquentes
-**Il refuse de goûter, même après avoir cuisiné.** Ce n’est pas un échec : l’aliment devient familier. Reproposez-le plus tard, sous une autre forme, sans obligation ni marchandage.
+**Il refuse de goûter, même après avoir cuisiné.** Ce n’est pas un échec : l’aliment devient familier. Repropose-le plus tard, sous une autre forme, sans obligation ni marchandage.
 
 **Peut-on promettre un dessert s’il goûte ?** Santé publique France conseille de ne pas utiliser la nourriture comme récompense ou punition, pour ne pas donner plus de valeur au dessert qu’au légume.
 
-**Mon enfant ne mange que quelques aliments.** Une sélectivité marquée est fréquente à cet âge. Si elle est très restreinte, s’accompagne d’une perte de poids ou d’une fatigue, ou inquiète beaucoup la famille, parlez-en au médecin.
+**Mon enfant ne mange que quelques aliments.** Une sélectivité marquée est fréquente à cet âge. Si elle est très restreinte, s’accompagne d’une perte de poids ou d’une fatigue, ou inquiète beaucoup la famille, parles-en au médecin.
 
-**Quelle quantité proposer ?** Les quantités dépendent de l’âge, de l’appétit et de l’activité de chaque enfant : demandez conseil au médecin si vous avez un doute, et respectez son appétit.
+**Quelle quantité proposer ?** Les quantités dépendent de l’âge, de l’appétit et de l’activité de chaque enfant : demande conseil au médecin si tu as un doute, et respecte son appétit.
 
 ## Quand demander conseil
-Consultez le médecin en cas de perte de poids, de refus alimentaire très large, de troubles digestifs répétés ou si les repas sont devenus une source de conflit importante. En cas d’allergie connue ou suspectée, demandez un avis avant de faire goûter un aliment nouveau. En cas de réaction après un aliment (gonflement du visage, gêne pour respirer, malaise), appelez le **15**. ${URG}
+Consulte le médecin en cas de perte de poids, de refus alimentaire très large, de troubles digestifs répétés ou si les repas sont devenus une source de conflit importante. En cas d’allergie connue ou suspectée, demande un avis avant de faire goûter un aliment nouveau. En cas de réaction après un aliment (gonflement du visage, gêne pour respirer, malaise), appelle le **15**. ${URG}
 
 ${FIN}`,
   }),
@@ -1016,8 +1016,8 @@ La DGCCRF signale, parmi les points de vigilance sur les jouets électriques, le
 
 ## Au quotidien
 **Chanter ensemble**
-- Les comptines de votre enfance, dans votre langue ou celle de vos parents : la diversité des langues est une richesse.
-- Les chansons de l’école : demandez-lui de vous les apprendre, il en sera très fier.
+- Les comptines de ton enfance, dans ta langue ou celle de tes parents : la diversité des langues est une richesse.
+- Les chansons de l’école : demande-lui de te les apprendre, il en sera très fier.
 - Les chansons à gestes et les rondes, qui associent musique et mouvement.
 - Inventer des paroles sur un air connu pour raconter la journée ou accompagner le rangement.
 
@@ -1031,29 +1031,29 @@ La DGCCRF signale, parmi les points de vigilance sur les jouets électriques, le
 - Maracas : un pot bien fermé rempli de riz ou de lentilles.
 - Tambour : une casserole retournée et une cuillère en bois.
 - Guitare : des élastiques tendus sur une boîte à chaussures.
-- Vérifiez que rien ne peut s’ouvrir ni se détacher si un plus petit est dans les parages.
+- Vérifie que rien ne peut s’ouvrir ni se détacher si un plus petit est dans les parages.
 
 **Écouter de la musique**
-- Variez les styles : classique, musiques du monde, chansons pour enfants, jazz.
-- Proposez de dessiner ou de danser en écoutant.
+- Varie les styles : classique, musiques du monde, chansons pour enfants, jazz.
+- Propose de dessiner ou de danser en écoutant.
 - Certains lieux (médiathèques, conservatoires, salles de spectacle) proposent des concerts ou ateliers pour les jeunes enfants.
 
 **Protéger ses oreilles**
-- Baissez le volume des jouets sonores si besoin, et préférez des sons modérés.
-- Évitez les écouteurs et les casques audio à fort volume.
-- Lors d’un concert ou d’une fête bruyante, éloignez-vous des enceintes et proposez des pauses au calme ; des protections auditives adaptées aux enfants existent.
+- Baisse le volume des jouets sonores si besoin, et préfère des sons modérés.
+- Évite les écouteurs et les casques audio à fort volume.
+- Lors d’un concert ou d’une fête bruyante, éloigne-toi des enceintes et propose des pauses au calme ; des protections auditives adaptées aux enfants existent.
 
 ## Questions fréquentes
-**Je chante faux, est-ce un problème ?** Pas du tout : ce qui compte pour l’enfant, c’est de partager un moment avec vous.
+**Je chante faux, est-ce un problème ?** Pas du tout : ce qui compte pour l’enfant, c’est de partager un moment avec toi.
 
 **Faut-il l’inscrire à un cours d’éveil musical ?** C’est possible s’il en a envie, mais pas indispensable. Chanter et jouer à la maison apporte déjà beaucoup.
 
-**Il veut écouter la même chanson en boucle.** La répétition fait partie du plaisir à cet âge. Vous pouvez alterner avec d’autres morceaux.
+**Il veut écouter la même chanson en boucle.** La répétition fait partie du plaisir à cet âge. Tu peux alterner avec d’autres morceaux.
 
-**Il semble ne pas entendre quand on lui parle.** Parlez-en à son médecin : un contrôle de l’audition peut être utile, d’autant que l’audition joue un rôle important dans l’apprentissage du langage.
+**Il semble ne pas entendre quand on lui parle.** Parles-en à son médecin : un contrôle de l’audition peut être utile, d’autant que l’audition joue un rôle important dans l’apprentissage du langage.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant fait souvent répéter, monte le son très fort, ne réagit pas aux bruits, parle peu pour son âge, se plaint d’oreilles qui sifflent ou de douleur à l’oreille. En cas de suspicion d’ingestion d’une pile bouton provenant d’un jouet, appelez immédiatement le **15** ou un centre antipoison. ${URG}
+Consulte le médecin si ton enfant fait souvent répéter, monte le son très fort, ne réagit pas aux bruits, parle peu pour son âge, se plaint d’oreilles qui sifflent ou de douleur à l’oreille. En cas de suspicion d’ingestion d’une pile bouton provenant d’un jouet, appelle immédiatement le **15** ou un centre antipoison. ${URG}
 
 ${FIN}`,
   }),
@@ -1094,21 +1094,21 @@ Le guide Manger-Bouger pour les parents d’enfants de 4 à 11 ans cite la danse
 - Faire le clown : grimaces, chutes « pour de faux » sur un coussin, nez rouge.
 
 **Organiser l’espace**
-- Poussez la table basse, retirez les objets fragiles et les tapis qui glissent.
+- Pousse la table basse, retire les objets fragiles et les tapis qui glissent.
 - Pieds nus ou chaussures, pas de chaussettes sur un sol lisse.
-- Gardez de l’eau à portée de main après une danse endiablée.
+- Garde de l’eau à portée de main après une danse endiablée.
 
 ## Questions fréquentes
-**Mon enfant est timide et n’ose pas danser devant les autres.** Commencez à deux, sans spectateur, et dansez vous-même. La confiance vient en jouant, sans obligation de montrer.
+**Mon enfant est timide et n’ose pas danser devant les autres.** Commence à deux, sans spectateur, et danse toi-même. La confiance vient en jouant, sans obligation de montrer.
 
 **À partir de quel âge s’inscrire à un cours de danse ?** Des cours d’éveil existent pour les plus jeunes ; l’important est que l’enfant en ait envie et que le rythme reste léger. La danse libre à la maison suffit très bien à cet âge.
 
-**Il devient très excité après la danse.** Terminez par une musique lente, un jeu « au ralenti » ou quelques respirations allongé sur le tapis pour revenir au calme, surtout en fin de journée.
+**Il devient très excité après la danse.** Termine par une musique lente, un jeu « au ralenti » ou quelques respirations allongé sur le tapis pour revenir au calme, surtout en fin de journée.
 
 **La danse sur une vidéo, c’est une bonne idée ?** Entre 3 et 6 ans, les repères officiels recommandent un usage des écrans exceptionnel et accompagné. Une musique seule, sans image, laisse plus de place à l’invention.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant s’essouffle de façon inhabituelle, se plaint de douleurs articulaires répétées, chute très souvent ou semble très gêné dans sa coordination. Après une chute avec choc à la tête suivie de vomissements, de somnolence ou d’un comportement inhabituel, appelez le **15**. ${URG}
+Parles-en au médecin si ton enfant s’essouffle de façon inhabituelle, se plaint de douleurs articulaires répétées, chute très souvent ou semble très gêné dans sa coordination. Après une chute avec choc à la tête suivie de vomissements, de somnolence ou d’un comportement inhabituel, appelle le **15**. ${URG}
 
 ${FIN}`,
   }),
@@ -1133,7 +1133,7 @@ Le guide « Bien grandir dans un monde d’écrans » explique que l’écran do
 ## Au quotidien
 **Après l’école**
 - Beaucoup d’enfants rentrent fatigués et chargés d’émotions. Un goûter, un moment de câlin ou de jeu libre au calme permet de « décompresser ».
-- Évitez d’enchaîner immédiatement avec de nombreuses questions : la journée se raconte souvent plus tard, pendant le bain ou au coucher.
+- Évite d’enchaîner immédiatement avec de nombreuses questions : la journée se raconte souvent plus tard, pendant le bain ou au coucher.
 - Le guide « Bien grandir dans un monde d’écrans » suggère de raconter sa propre journée à l’enfant : cela l’invite à raconter la sienne.
 
 **Des activités calmes à proposer**
@@ -1152,18 +1152,18 @@ Le guide « Bien grandir dans un monde d’écrans » explique que l’écran do
 
 **Le rituel du coucher**
 - Les mêmes étapes chaque soir, dans le même ordre : bain ou toilette, pyjama, dents, histoire, câlin, lumière éteinte.
-- Fixez le nombre d’histoires à l’avance et gardez un temps court.
-- Couchez l’enfant encore éveillé pour qu’il apprenne à s’endormir seul.
+- Fixe le nombre d’histoires à l’avance et garde un temps court.
+- Couche l’enfant encore éveillé pour qu’il apprenne à s’endormir seul.
 
 ## Questions fréquentes
-**Mon enfant refuse les activités calmes et court partout le soir.** Une agitation en fin de journée peut traduire de la fatigue. Avancez un peu le rituel, baissez les lumières et le bruit, et proposez une activité calme avec vous plutôt que seul.
+**Mon enfant refuse les activités calmes et court partout le soir.** Une agitation en fin de journée peut traduire de la fatigue. Avance un peu le rituel, baisse les lumières et le bruit, et propose une activité calme avec toi plutôt que seul.
 
-**Il fait des crises au moment du coucher.** Un rituel prévisible et rassurant aide souvent. Si les difficultés de sommeil persistent et pèsent sur toute la famille, parlez-en au médecin.
+**Il fait des crises au moment du coucher.** Un rituel prévisible et rassurant aide souvent. Si les difficultés de sommeil persistent et pèsent sur toute la famille, parles-en au médecin.
 
 **Un dessin animé ne l’aide-t-il pas à se calmer ?** L’écran donne une impression de calme, mais il retarde l’endormissement. Les repères officiels conseillent de l’éviter au moins une heure avant le coucher.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant dort mal de façon durable, ronfle fort avec des pauses respiratoires, se réveille souvent avec des peurs intenses, ou s’il semble très fatigué ou irritable dans la journée. ${SOUTIEN}
+Consulte le médecin si ton enfant dort mal de façon durable, ronfle fort avec des pauses respiratoires, se réveille souvent avec des peurs intenses, ou s’il semble très fatigué ou irritable dans la journée. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -1186,35 +1186,35 @@ L’ennui est inconfortable sur le moment, pour l’enfant comme pour le parent.
 
 ## Au quotidien
 **Accueillir le « je m’ennuie »**
-- Reconnaissez ce qu’il ressent : « Tu ne sais pas quoi faire, c’est désagréable. »
-- Ne vous précipitez pas pour trouver la solution à sa place : « Je suis sûr que tu vas trouver une idée. »
-- Restez disponible sans organiser : vous pouvez faire vos propres activités à côté de lui.
+- Reconnais ce qu’il ressent : « Tu ne sais pas quoi faire, c’est désagréable. »
+- Ne te précipite pas pour trouver la solution à sa place : « Je suis sûr que tu vas trouver une idée. »
+- Reste disponible sans organiser : tu peux faire tes propres activités à côté de lui.
 
 **Préparer un environnement qui donne des idées**
 - Quelques jouets ouverts accessibles (cubes, figurines, tissus, cartons, crayons), plutôt qu’un grand nombre de jouets à fonction unique.
 - Une **boîte à idées** dessinée ensemble : il pioche une carte (« fais une cabane », « dessine ton rêve », « construis une tour ») quand il ne sait plus quoi faire.
-- Faites tourner les jouets : en ranger une partie quelques semaines leur redonne de l’intérêt.
+- Fais tourner les jouets : en ranger une partie quelques semaines leur redonne de l’intérêt.
 
 **Laisser du temps libre dans la semaine**
-- Évitez un emploi du temps trop rempli : école, activités et sorties fatiguent aussi.
-- Gardez des moments sans programme, à la maison ou dehors.
-- Limitez le recours à l’écran pour « occuper » : le guide décrit ce réflexe comme un cercle vicieux qui empêche l’autonomie de se développer.
+- Évite un emploi du temps trop rempli : école, activités et sorties fatiguent aussi.
+- Garde des moments sans programme, à la maison ou dehors.
+- Limite le recours à l’écran pour « occuper » : le guide décrit ce réflexe comme un cercle vicieux qui empêche l’autonomie de se développer.
 
 **Quand l’ennui dure**
-- Proposez une petite impulsion plutôt qu’une activité clé en main : poser une boîte vide et du ruban adhésif sur la table, sortir un livre, ouvrir la fenêtre pour écouter les oiseaux.
-- Invitez-le à participer à ce que vous faites : plier le linge, préparer le repas, arroser les plantes.
+- Propose une petite impulsion plutôt qu’une activité clé en main : poser une boîte vide et du ruban adhésif sur la table, sortir un livre, ouvrir la fenêtre pour écouter les oiseaux.
+- Invite-le à participer à ce que tu fais : plier le linge, préparer le repas, arroser les plantes.
 
 ## Questions fréquentes
-**Mon enfant n’arrive pas à jouer seul.** Jouer seul s’apprend. Commencez par jouer près de lui, puis éloignez-vous un peu en restant présent. Des moments courts, répétés, l’aident à prendre confiance.
+**Mon enfant n’arrive pas à jouer seul.** Jouer seul s’apprend. Commence par jouer près de lui, puis éloigne-toi un peu en restant présent. Des moments courts, répétés, l’aident à prendre confiance.
 
 **Il dit « je m’ennuie » dès qu’on éteint l’écran.** Les premiers temps sans écran sont souvent les plus difficiles. Avec quelques idées à portée de main et un peu de patience, la plupart des enfants retrouvent le goût de jouer.
 
 **Ne risque-t-il pas de prendre du retard s’il n’a pas d’activité ?** Le jeu libre fait partie des apprentissages : l’enfant y développe son imagination, son langage et son autonomie.
 
-**Il s’ennuie aussi à l’école.** Parlez-en avec l’enseignant pour comprendre ce qui se passe. S’il semble triste, fatigué ou ne veut plus y aller, parlez-en aussi au médecin.
+**Il s’ennuie aussi à l’école.** Parles-en avec l’enseignant pour comprendre ce qui se passe. S’il semble triste, fatigué ou ne veut plus y aller, parles-en aussi au médecin.
 
 ## Quand demander conseil
-Si votre enfant semble ne s’intéresser à rien, se replie, paraît triste ou fatigué depuis plusieurs semaines, ou si son comportement change nettement, parlez-en au médecin ou à la PMI. ${SOUTIEN}
+Si ton enfant semble ne s’intéresser à rien, se replie, paraît triste ou fatigué depuis plusieurs semaines, ou si son comportement change nettement, parles-en au médecin ou à la PMI. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -1228,7 +1228,7 @@ ${FIN}`,
 - Les repères intégrés au **carnet de santé depuis janvier 2025** prévoient, entre 3 et 6 ans, un **usage exceptionnel** des écrans, limité à des contenus éducatifs de qualité et **supervisé par un adulte**.
 - Le **jeu libre et les interactions** restent prioritaires.
 - Pas d’écran pendant les repas, au réveil, **au moins une heure avant le coucher**, ni dans la chambre de l’enfant.
-- La 3D est déconseillée avant 5 ans ; respectez les âges indiqués pour les films et les jeux vidéo.
+- La 3D est déconseillée avant 5 ans ; respecte les âges indiqués pour les films et les jeux vidéo.
 
 ## Comprendre
 Le ministère chargé de la Santé rappelle les risques d’une exposition excessive : sommeil de moins bonne qualité, activité physique réduite, troubles de la vue comme la myopie, et chez les plus jeunes moins d’échanges avec les adultes, ce qui peut freiner le langage, l’attention et les compétences sociales. Il conseille d’utiliser l’écran pour un objectif précis et une durée déterminée, de dialoguer sur les contenus, de partager les moments d’écran en famille et de montrer l’exemple.
@@ -1237,12 +1237,12 @@ Le guide « Bien grandir dans un monde d’écrans » précise que, après 3 ans
 
 ## Au quotidien
 **Mettre en place des règles simples**
-- Choisissez avec votre enfant **quand** (un moment prévu, par exemple un dessin animé le week-end) et **quoi** (un programme adapté à son âge).
-- Regardez avec lui et parlez de ce que vous avez vu : « Qu’est-ce qui t’a fait rire ? »
-- Utilisez une minuterie ou la fin de l’épisode comme signal d’arrêt, annoncé à l’avance.
-- Installez les écrans dans les pièces communes, pas dans la chambre.
-- Activez le contrôle parental, gratuit sur les appareils vendus en France depuis 2022, selon le guide.
-- Éteignez la télévision quand personne ne la regarde.
+- Choisis avec ton enfant **quand** (un moment prévu, par exemple un dessin animé le week-end) et **quoi** (un programme adapté à son âge).
+- Regarde avec lui et parle de ce que tu as vu : « Qu’est-ce qui t’a fait rire ? »
+- Utilise une minuterie ou la fin de l’épisode comme signal d’arrêt, annoncé à l’avance.
+- Installe les écrans dans les pièces communes, pas dans la chambre.
+- Active le contrôle parental, gratuit sur les appareils vendus en France depuis 2022, selon le guide.
+- Éteins la télévision quand personne ne la regarde.
 
 **Les moments sans écran**
 - Les repas, partagés et sans télévision.
@@ -1252,12 +1252,12 @@ Le guide « Bien grandir dans un monde d’écrans » précise que, après 3 ans
 
 **Les alternatives qui marchent (guide « Bien grandir dans un monde d’écrans »)**
 - Jeux de société, dessin, pâte à modeler, jeux de ballon, bac à sable.
-- Participer à la cuisine ou préparer ses affaires avec vous.
-- Un coin jeux et livres pour s’occuper pendant que vous préparez le repas.
+- Participer à la cuisine ou préparer ses affaires avec toi.
+- Un coin jeux et livres pour s’occuper pendant que tu prépares le repas.
 - Les maisons de quartier, ludothèques et médiathèques, souvent gratuites.
 - Laisser l’enfant s’ennuyer un peu : « Ne rien faire libère son imagination. »
 
-**Et vous ?**
+**Et toi ?**
 - Le ministère invite les parents à limiter leur propre usage en présence de l’enfant. Mettre son téléphone en mode avion à certains moments, comme le suggère le guide, aide à rester disponible.
 
 ## Questions fréquentes
@@ -1265,12 +1265,12 @@ Le guide « Bien grandir dans un monde d’écrans » précise que, après 3 ans
 
 **Les applications éducatives sont-elles une bonne idée ?** Les repères admettent des contenus éducatifs de qualité, en usage exceptionnel et accompagné. Rien ne remplace cependant la manipulation, le jeu et l’échange avec un adulte.
 
-**Je culpabilise de mettre un dessin animé pour cuisiner.** Vous n’êtes pas seul·e à jongler. Vous pouvez essayer progressivement des alternatives (coin jeux, aide en cuisine), en gardant l’écran pour des moments choisis.
+**Je culpabilise de mettre un dessin animé pour cuisiner.** Tu n’es pas seul·e à jongler. Tu peux essayer progressivement des alternatives (coin jeux, aide en cuisine), en gardant l’écran pour des moments choisis.
 
-**Comment gérer les crises à l’arrêt de l’écran ?** Prévenez avant la fin, proposez une activité de transition et restez ferme avec douceur. Les crises diminuent souvent quand les règles sont stables.
+**Comment gérer les crises à l’arrêt de l’écran ?** Préviens avant la fin, propose une activité de transition et reste ferme avec douceur. Les crises diminuent souvent quand les règles sont stables.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant réclame les écrans de façon très insistante, si ses colères à l’arrêt sont très fortes, s’il dort mal, parle peu pour son âge ou semble s’isoler. Le site jeprotegemonenfant.gouv.fr propose des repères aux familles. ${SOUTIEN}
+Parles-en au médecin ou à la PMI si ton enfant réclame les écrans de façon très insistante, si ses colères à l’arrêt sont très fortes, s’il dort mal, parle peu pour son âge ou semble s’isoler. Le site jeprotegemonenfant.gouv.fr propose des repères aux familles. ${SOUTIEN}
 
 ${FIN}`,
   }),
@@ -1284,7 +1284,7 @@ ${FIN}`,
     body_md: `## En bref
 - L’éveil artistique et culturel **favorise la curiosité, la construction et l’épanouissement** de l’enfant, selon le ministère chargé des Solidarités.
 - Des **théâtres et musées ont des espaces dédiés** à la petite enfance, et des guides existent pour accompagner les tout-petits au cinéma.
-- Au cinéma comme devant tout écran, **respectez les âges indiqués** pour les films.
+- Au cinéma comme devant tout écran, **respecte les âges indiqués** pour les films.
 - Une sortie réussie à cet âge est **courte, préparée** et respecte le rythme de l’enfant.
 
 ## Comprendre
@@ -1294,52 +1294,52 @@ Le ministère cite aussi, parmi les ressources, un guide pour emmener les tout-p
 
 ## Au quotidien
 **Choisir la sortie**
-- Repérez les programmations « jeune public » des théâtres, salles de spectacle, médiathèques, cinémas et musées de votre ville.
-- Vérifiez l’âge conseillé, la durée et l’horaire (évitez l’heure de la sieste ou la fin de journée si votre enfant est fatigué).
-- Au cinéma, respectez les âges indiqués pour les films ; les séances pour les plus jeunes sont souvent plus courtes.
-- Renseignez-vous sur les tarifs et les éventuelles gratuités auprès de chaque lieu.
+- Repère les programmations « jeune public » des théâtres, salles de spectacle, médiathèques, cinémas et musées de ta ville.
+- Vérifie l’âge conseillé, la durée et l’horaire (évite l’heure de la sieste ou la fin de journée si ton enfant est fatigué).
+- Au cinéma, respecte les âges indiqués pour les films ; les séances pour les plus jeunes sont souvent plus courtes.
+- Renseigne-toi sur les tarifs et les éventuelles gratuités auprès de chaque lieu.
 
 **Préparer**
-- Parlez de la sortie à l’avance : ce qu’on va voir, comment ça se passe (le noir dans la salle, le silence, les applaudissements).
-- Lisez un livre en lien avec le thème, regardez une image de l’œuvre ou de l’animal que vous verrez.
-- Prévoyez un goûter, de l’eau, un passage aux toilettes avant d’entrer.
+- Parle de la sortie à l’avance : ce qu’on va voir, comment ça se passe (le noir dans la salle, le silence, les applaudissements).
+- Lis un livre en lien avec le thème, regarde une image de l’œuvre ou de l’animal que tu verras.
+- Prévois un goûter, de l’eau, un passage aux toilettes avant d’entrer.
 
 **Au musée**
-- Choisissez quelques salles plutôt que tout le musée.
-- Proposez un jeu : trouver un chien dans les tableaux, compter les couleurs, imiter la pose d’une statue.
-- Laissez-le s’arrêter devant ce qui l’attire, même si ce n’est pas « l’œuvre importante ».
-- Renseignez-vous sur les ateliers, parcours ou livrets pour enfants.
+- Choisis quelques salles plutôt que tout le musée.
+- Propose un jeu : trouver un chien dans les tableaux, compter les couleurs, imiter la pose d’une statue.
+- Laisse-le s’arrêter devant ce qui l’attire, même si ce n’est pas « l’œuvre importante ».
+- Renseigne-toi sur les ateliers, parcours ou livrets pour enfants.
 
 **Au spectacle ou au cinéma**
-- Asseyez-vous près d’une sortie pour pouvoir sortir si votre enfant a peur ou s’agite.
-- Rassurez-le pendant les moments impressionnants : le noir, le bruit, un personnage qui fait peur.
-- Après, prolongez : dessiner, raconter, rejouer une scène.
+- Assieds-toi près d’une sortie pour pouvoir sortir si ton enfant a peur ou s’agite.
+- Rassure-le pendant les moments impressionnants : le noir, le bruit, un personnage qui fait peur.
+- Après, prolonge : dessiner, raconter, rejouer une scène.
 
 ## Questions fréquentes
-**Mon enfant ne tient pas assis longtemps, est-ce trop tôt ?** Choisissez des formats courts et pensés pour les jeunes enfants. Si la sortie s’arrête plus tôt que prévu, ce n’est pas un échec.
+**Mon enfant ne tient pas assis longtemps, est-ce trop tôt ?** Choisis des formats courts et pensés pour les jeunes enfants. Si la sortie s’arrête plus tôt que prévu, ce n’est pas un échec.
 
 **Le cinéma est-il un écran comme un autre ?** Une séance choisie, partagée et discutée en famille est différente d’un écran utilisé pour occuper. Les repères officiels recommandent toutefois un usage exceptionnel entre 3 et 6 ans et le respect des âges indiqués.
 
-**Il a eu peur pendant le spectacle.** Parlez-en ensuite, avec des mots simples : ce qui était pour de faux, ce qu’il a ressenti. Choisissez une prochaine sortie plus douce.
+**Il a eu peur pendant le spectacle.** Parles-en ensuite, avec des mots simples : ce qui était pour de faux, ce qu’il a ressenti. Choisis une prochaine sortie plus douce.
 
 **Les sorties culturelles coûtent cher.** Médiathèques, expositions en plein air, fêtes de quartier ou animations municipales sont souvent gratuites ou peu coûteuses ; les maisons de quartier en proposent aussi.
 
 ## Quand demander conseil
-Si votre enfant présente des peurs très intenses qui l’empêchent de sortir ou de dormir, ou si le bruit et la foule le mettent dans un état de détresse importante et répétée, parlez-en au médecin. Un malaise ou un accident pendant une sortie : appelez le **15** ou le **112**.
+Si ton enfant présente des peurs très intenses qui l’empêchent de sortir ou de dormir, ou si le bruit et la foule le mettent dans un état de détresse importante et répétée, parles-en au médecin. Un malaise ou un accident pendant une sortie : appelle le **15** ou le **112**.
 
 ${FIN}`,
   }),
   a({
     slug: 'activites-extrascolaires-3-6-ans-choisir',
     title: 'Activités extrascolaires entre 3 et 6 ans : en faut-il, et comment choisir ?',
-    summary: 'Éveil sportif, danse, musique, piscine, arts plastiques : comment savoir si une activité convient à votre enfant de 3 à 6 ans, sans surcharger sa semaine, et quelles démarches prévoir.',
+    summary: 'Éveil sportif, danse, musique, piscine, arts plastiques : comment savoir si une activité convient à ton enfant de 3 à 6 ans, sans surcharger sa semaine, et quelles démarches prévoir.',
     category: 'activites-eveil', tags: ['activités extrascolaires', 'éveil sportif', 'club', 'mercredi', 'inscription', 'certificat médical', 'questionnaire de santé', 'fatigue', 'rythme de l’enfant'],
     sources: [S.guideMB, S.licences, S.dev56],
     body_md: `## En bref
 - Une activité extrascolaire **n’est pas indispensable** entre 3 et 6 ans : le jeu libre, le plein air et les moments en famille comptent tout autant.
 - Santé publique France encourage à **tester plusieurs activités** ; changer d’activité à la rentrée n’est pas un problème tant que l’enfant reste actif.
 - Pour une licence sportive, le **certificat médical n’est plus obligatoire pour les mineurs** : un questionnaire de santé suffit si toutes les réponses sont négatives.
-- Veillez au **rythme** : école, trajets et activités fatiguent, et le sommeil reste essentiel à cet âge.
+- Veille au **rythme** : école, trajets et activités fatiguent, et le sommeil reste essentiel à cet âge.
 
 ## Comprendre
 Le guide Manger-Bouger pour les parents d’enfants de 4 à 11 ans propose de faire découvrir à l’enfant différentes activités : marche, vélo, piscine, jeux de plein air, sports d’équipe, danse. Il précise que changer d’activité chaque année est sans conséquence, tant que l’enfant bouge régulièrement. Il recommande aussi des activités sportives ou culturelles en famille.
@@ -1348,38 +1348,38 @@ Le ministère des Sports rappelle que, pour les mineurs, l’obligation de fourn
 
 ## Au quotidien
 **Se poser les bonnes questions**
-- Votre enfant a-t-il **envie** de cette activité, ou est-ce surtout votre projet ? Observez ce qui l’attire dans ses jeux.
+- Ton enfant a-t-il **envie** de cette activité, ou est-ce surtout ton projet ? Observe ce qui l’attire dans ses jeux.
 - La semaine laisse-t-elle encore du temps pour jouer librement, se reposer, voir la famille ?
-- L’horaire est-il compatible avec sa fatigue (éviter la fin de journée trop tardive) et avec votre organisation ?
+- L’horaire est-il compatible avec sa fatigue (éviter la fin de journée trop tardive) et avec ton organisation ?
 
 **Des activités adaptées à cet âge**
 - **Éveil sportif ou baby-gym** : courir, sauter, rouler, viser, dans un cadre ludique et varié plutôt que spécialisé.
 - **Activités aquatiques** : la piscine fait partie des activités citées par Santé publique France ; à cet âge, il s’agit surtout de se familiariser avec l’eau, toujours sous la surveillance d’un adulte.
 - **Danse, expression corporelle, cirque**.
 - **Éveil musical, chorale enfant, arts plastiques, théâtre**.
-- Les **accueils de loisirs** du mercredi ou des vacances proposent aussi des activités variées ; renseignez-vous auprès de votre mairie.
+- Les **accueils de loisirs** du mercredi ou des vacances proposent aussi des activités variées ; renseigne-toi auprès de ta mairie.
 
 **Bien démarrer**
-- Demandez une **séance d’essai** quand c’est possible.
-- Renseignez-vous sur l’encadrement, la taille du groupe et la durée des séances, qui doit rester courte à cet âge.
-- Pour une licence, remplissez le questionnaire de santé ; si une réponse est positive, prenez rendez-vous chez le médecin.
-- Parlez avec l’animateur ou l’enseignant de l’activité après quelques séances.
+- Demande une **séance d’essai** quand c’est possible.
+- Renseigne-toi sur l’encadrement, la taille du groupe et la durée des séances, qui doit rester courte à cet âge.
+- Pour une licence, remplis le questionnaire de santé ; si une réponse est positive, prends rendez-vous chez le médecin.
+- Parle avec l’animateur ou l’enseignant de l’activité après quelques séances.
 
 **Accepter qu’il change d’avis**
-- Encouragez-le à essayer quelques séances avant d’abandonner, sans le forcer durablement.
-- S’il n’en veut plus, cherchez à comprendre (fatigue, timidité, groupe, horaire) et essayez autre chose l’année suivante.
+- Encourage-le à essayer quelques séances avant d’abandonner, sans le forcer durablement.
+- S’il n’en veut plus, cherche à comprendre (fatigue, timidité, groupe, horaire) et essaie autre chose l’année suivante.
 
 ## Questions fréquentes
 **Combien d’activités par semaine à 4 ou 5 ans ?** Il n’existe pas de chiffre officiel. Une activité choisie suffit souvent ; l’essentiel est de garder du temps libre et du sommeil.
 
-**Mon enfant pleure à chaque séance.** La séparation, le bruit ou le groupe peuvent l’impressionner. Restez au début si c’est possible, puis éloignez-vous progressivement. Si cela dure, l’activité ou le moment ne sont peut-être pas adaptés pour l’instant.
+**Mon enfant pleure à chaque séance.** La séparation, le bruit ou le groupe peuvent l’impressionner. Reste au début si c’est possible, puis éloigne-toi progressivement. Si cela dure, l’activité ou le moment ne sont peut-être pas adaptés pour l’instant.
 
-**Faut-il un certificat médical pour l’éveil sportif ?** Pour les mineurs, le questionnaire de santé remplace le certificat dans la plupart des cas ; vérifiez auprès du club, et consultez si une réponse est positive.
+**Faut-il un certificat médical pour l’éveil sportif ?** Pour les mineurs, le questionnaire de santé remplace le certificat dans la plupart des cas ; vérifie auprès du club, et consulte si une réponse est positive.
 
-**Mon enfant est très fatigué depuis la rentrée.** Allégez la semaine, avancez l’heure du coucher et parlez-en au médecin si la fatigue persiste.
+**Mon enfant est très fatigué depuis la rentrée.** Allège la semaine, avance l’heure du coucher et parles-en au médecin si la fatigue persiste.
 
 ## Quand demander conseil
-Consultez le médecin si une réponse au questionnaire de santé est positive, si votre enfant se plaint de douleurs, d’essoufflement ou de malaises pendant l’effort, ou s’il est épuisé de façon durable. En cas de malaise ou de douleur dans la poitrine pendant un effort, appelez le **15**. ${URG}
+Consulte le médecin si une réponse au questionnaire de santé est positive, si ton enfant se plaint de douleurs, d’essoufflement ou de malaises pendant l’effort, ou s’il est épuisé de façon durable. En cas de malaise ou de douleur dans la poitrine pendant un effort, appelle le **15**. ${URG}
 
 ${FIN}`,
   }),

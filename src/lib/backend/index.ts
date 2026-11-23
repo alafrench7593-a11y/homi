@@ -1,9 +1,12 @@
 import { FEATURES } from '@/config/features';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDemoBackend } from './demo';
 import { createSupabaseBackend } from './supabase';
-import type { Backend } from './types';
+import { BackendError, type Backend } from './types';
+import { isPracticeActive, isReadOnlyRpc, recordPracticeWrite, simulated } from '@/lib/practice';
+import { t as tr } from '@/i18n';
 
 export * from './types';
 
@@ -15,9 +18,28 @@ const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || extra.supabaseAnonKey;
 const real: Backend | null = url && anon ? createSupabaseBackend(url, anon) : null;
 let demo: Backend | null = null;
 // La démonstration pose ses questions d'assistant à la fonction « assistant-demo » (sans compte, limitée)
-const getDemo = () => (demo ??= createDemoBackend({ strictPremium: FEATURES.demoStrictPremium, remoteAssistant: url && anon ? { url: url.replace(/\/$/, ''), anonKey: anon } : undefined }));
+const getDemo = () => (demo ??= createDemoBackend({ strictPremium: FEATURES.demoStrictPremium && !(Platform.OS === 'web' && FEATURES.webDemoOpen), remoteAssistant: url && anon ? { url: url.replace(/\/$/, ''), anonKey: anon } : undefined }));
 
-let active: Backend = real ?? getDemo();
+/**
+ * Web, adresse /demo (site public) sans session réelle dans ce navigateur : l'app DÉMARRE sur le moteur local de
+ * démonstration, avant toute requête. Sans cela, les premiers écrans lisaient le vrai backend (contenus publics)
+ * le temps de basculer. Une session réelle enregistrée garde le vrai backend : /demo propose alors un choix explicite.
+ */
+const DEMO_FLAG_KEY = 'toietmoi.demo-without-account.v1';
+function startsOnPublicDemo(): boolean {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return false;
+  try {
+    // Démo déjà choisie dans ce navigateur (actualisation d'un écran de la démo) : même moteur dès la première image
+    if (window.localStorage.getItem(DEMO_FLAG_KEY) === '1') return true;
+    if (!/^\/demo\/?$/.test(window.location.pathname)) return false;
+    for (let i = 0; i < window.localStorage.length; i++) {
+      if (/^sb-.*-auth-token$/.test(window.localStorage.key(i) ?? '')) return false;
+    }
+    return true;
+  } catch { return false; }
+}
+
+let active: Backend = real && !startsOnPublicDemo() ? real : getDemo();
 
 /** Vrai si la démonstration est active (sans clés, ou choisie « sans compte »). Liaison vivante. */
 export let isDemo = active.mode === 'demo';
@@ -26,7 +48,7 @@ export const hasRealBackend = !!real;
 /** Adresse publique du projet (sans secret) : sert à construire le lien d'abonnement d'agenda. */
 export const backendUrl: string | null = url ? url.replace(/\/$/, '') : null;
 
-const DEMO_FLAG = 'toietmoi.demo-without-account.v1';
+const DEMO_FLAG = DEMO_FLAG_KEY;
 const switchListeners = new Set<(reason: BackendSwitchReason) => void>();
 
 /**
@@ -35,10 +57,33 @@ const switchListeners = new Set<(reason: BackendSwitchReason) => void>();
  */
 export const backend: Backend = new Proxy({} as Backend, {
   get(_t, prop: string) {
+    // Visite guidée, mode exercice (src/lib/practice.ts) : aucune écriture ne part, les lectures passent
+    if (isPracticeActive()) {
+      const shielded = practiceShield(prop);
+      if (shielded) return shielded;
+    }
     const v = (active as unknown as Record<string, unknown>)[prop];
     return typeof v === 'function' ? (v as (...a: unknown[]) => unknown).bind(active) : v;
   },
 });
+
+/** Remplacement d'une méthode d'écriture pendant un exercice (null : la méthode passe telle quelle). */
+function practiceShield(prop: string): unknown {
+  switch (prop) {
+    case 'insert': return (table: string, rows: Record<string, unknown> | Record<string, unknown>[]) => simulated.insert(table, rows);
+    case 'update': return (table: string, patch: Record<string, unknown>) => simulated.update(table, patch);
+    case 'remove': return (table: string) => simulated.remove(table);
+    case 'rpc': return (fn: string, args?: Record<string, unknown>) => (isReadOnlyRpc(fn) ? active.rpc(fn, args) : simulated.rpc(fn));
+    case 'invoke': case 'invokeStream':
+      return (fn: string) => { recordPracticeWrite('invoke', fn); return Promise.reject(new BackendError(tr('tour.practice.blocked'), 'practice')); };
+    case 'storage': return {
+      ...active.storage,
+      upload: (bucket: string) => { recordPracticeWrite('upload', bucket); return Promise.resolve(); },
+      remove: (bucket: string) => { recordPracticeWrite('storageRemove', bucket); return Promise.resolve(); },
+    };
+    default: return null;
+  }
+}
 
 /**
  * `resume` : reprise, à l'ouverture, de la démonstration choisie lors d'une visite précédente.

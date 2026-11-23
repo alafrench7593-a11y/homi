@@ -28,6 +28,7 @@ import type { DocumentRow, ExtractionStatus, Reminder } from '@/lib/types';
 import { formatDate, formatTime, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const BUCKET = 'documents';
 const IMAGE_MIME = ['image/jpeg', 'image/png', 'image/webp'];
@@ -360,8 +361,8 @@ export default function DocumentDetail() {
                 <Button label={tr('docs.rem.add')} icon="bell" size="sm" variant="secondary" style={{ alignSelf: 'flex-start' }} onPress={() => proposeReminder(d.date, d.text)} />
               </View>
             ))}
-            {reminders.map((r) => (
-              <Row key={r.id} style={{ justifyContent: 'space-between' }}>
+            <MotionList>{reminders.map((r) => (
+              <MotionItem key={r.id}><Row key={r.id} style={{ justifyContent: 'space-between' }}>
                 <View style={{ flex: 1 }}>
                   <Text weight="medium">{r.title}</Text>
                   <Text variant="caption" muted>{r.schedule.type === 'once' ? `${formatDate(r.schedule.at)} · ${formatTime(r.schedule.at)}` : ''}</Text>
@@ -369,8 +370,8 @@ export default function DocumentDetail() {
                 <Toggle label={tr('docs.rem.enabled')} value={r.enabled} onChange={(v) => backend.update('reminders', { enabled: v }, [eq('id', r.id)]).then(() => inv('reminders')).catch((e) => toast(friendlyError(e), 'error'))} />
                 <IconButton icon="edit-2" label={tr('common.edit')} size={18} onPress={() => setReminder({ id: r.id, date: r.schedule.type === 'once' ? toFrDate(r.schedule.at.slice(0, 10)) : '', time: r.schedule.type === 'once' ? formatTime(r.schedule.at).replace(/\s?[AP]M$/i, '') : '09:00', lead: 'same', discreet: !r.body, label: r.title })} />
                 <IconButton icon="trash-2" label={tr('common.delete')} size={18} color={t.colors.textMuted} onPress={async () => { if (await confirm(tr('docs.rem.deleteTitle'), tr('docs.rem.deleteBody'), tr('common.delete'))) { try { await backend.remove('reminders', [eq('id', r.id)]); inv('reminders'); } catch (e) { toast(friendlyError(e), 'error'); } } }} />
-              </Row>
-            ))}
+              </Row></MotionItem>
+            ))}</MotionList>
           </Card>
         </>
       ) : null}
@@ -388,8 +389,8 @@ export default function DocumentDetail() {
             <Segmented label={tr('docs.sum.level')} options={[{ value: 'quick', label: tr('docs.sum.quick') }, { value: 'detailed', label: tr('docs.sum.detailed') }, { value: 'simple', label: tr('docs.sum.simple') }]} value={level} onChange={setLevel} />
             <Banner tone="info" icon="info">{tr('docs.sum.notice')}</Banner>
             {summary.unreadable ? <Banner tone="warning" title={tr('docs.sum.unreadableTitle')}>{tr('docs.sum.unreadable')}</Banner> : null}
-            {summary.sections.map((s, si) => (
-              <Appear key={s.key + level} kind="soft" delay={0.03 * si}>
+            <MotionList>{summary.sections.map((s, si) => (
+              <MotionItem key={s.key + level}><Appear key={s.key + level} kind="soft" delay={0.03 * si}>
                 <View style={{ gap: 4, marginTop: spacing.sm }}>
                   <Text variant="label">{tr(`docs.sec.${s.key}` as 'docs.sec.type')}</Text>
                   {s.items.map((it, i) => (
@@ -399,8 +400,8 @@ export default function DocumentDetail() {
                     </View>
                   ))}
                 </View>
-              </Appear>
-            ))}
+              </Appear></MotionItem>
+            ))}</MotionList>
             <Button label={tr('docs.openOriginal')} icon="external-link" variant="secondary" size="sm" style={{ alignSelf: 'flex-start', marginTop: spacing.md }} onPress={() => openOriginal(doc).catch(() => toast(tr('docs.err.open'), 'error'))} />
           </Card>
         </Appear>
@@ -409,6 +410,9 @@ export default function DocumentDetail() {
       {/* Actions */}
       <SectionTitle title={tr('docs.actions')} />
       <View style={{ gap: spacing.xs }}>
+        {['blood_test', 'exam_result', 'report', 'prenatal', 'pregnancy_report', 'postnatal'].includes(doc.category) ? (
+          <Button label={tr('lab.fromDocButton')} icon="activity" variant="secondary" onPress={() => router.push({ pathname: '/documents/labs', params: { doc: doc.id } })} full testID="doc-labs" />
+        ) : null}
         <Button label={tr('docs.export.one')} icon="share" variant="secondary" onPress={() => router.push(`/documents/export?ids=${doc.id}`)} full />
         {canEdit ? <Button label={doc.archived ? tr('docs.unarchive') : tr('docs.archive')} icon="archive" variant="secondary" onPress={() => patch({ archived: !doc.archived }, doc.archived ? tr('docs.unarchived') : tr('docs.archivedDone'))} full /> : null}
         {canEdit ? <Button label={tr('docs.delete.button')} icon="trash-2" variant="ghost" onPress={remove} full /> : null}

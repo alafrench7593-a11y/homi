@@ -1,11 +1,19 @@
 import React from 'react';
-import { Redirect } from 'expo-router';
+import { Redirect, useSegments } from 'expo-router';
 import { Tabs } from 'expo-router/tabs';
 import { useAuth } from '@/lib/auth';
+import { useMemberships } from '@/lib/data/hooks';
+import { isCaregiverOnly } from '@/lib/domain/nounou';
+import { useTheme } from '@/theme/ThemeProvider';
 import { Dock } from '@/components/Dock';
 import { t as tr } from '@/i18n';
 import { useDigestSync } from '@/lib/data/hooks-social';
 import { useAutoNotificationsSync } from '@/lib/data/hooks-autoNotifs';
+import { AuraIntroHost } from '@/features/aura/AuraEntry';
+import { useBackendMode } from '@/lib/demoMode';
+import { useUiStore } from '@/lib/store';
+import { useLensStore } from '@/components/glass/liquid/store';
+import { LiquidLabPanel } from '@/features/dev/LiquidLabPanel';
 
 /** Notifications du résumé quotidien : reprogrammées selon les réglages (nouvel appareil, réinstallation). */
 function DigestSync() {
@@ -19,28 +27,51 @@ function AutoNotificationsSync() {
   return null;
 }
 
+/** Routes d'onglet ouvertes à un compte nounou (les autres le renvoient vers « Mes gardes »). */
+const CAREGIVER_TABS = new Set(['profile', 'community', 'moi']);
+
 export default function TabsLayout() {
   const { session, ready } = useAuth();
+  const t = useTheme();
+  const caregiver = isCaregiverOnly(useMemberships().data);
+  // Visite sans compte (ticket 1) : la présentation d'Aura ne s'ouvre pas d'elle-même 1,2 s après l'arrivée — elle
+  // recouvrait l'accueil et captait les premiers touchers de la visite ; Aura reste ouverte depuis son bouton.
+  const { isDemo } = useBackendMode();
+  const auraAsked = useUiStore((s) => s.auraIntroRequested);
+  const labOpen = useLensStore((s) => s.labOpen);
+  const segments = useSegments() as string[];
+  const leaf = segments[segments.length - 1] ?? '';
   if (ready && !session) return <Redirect href="/welcome" />;
+  // Compte qui n'est QUE nounou : les écrans du foyer (accueil, Moi, Enfant, Famille, outils…) ne le concernent pas ;
+  // son accueil est « Mes gardes ». Profil, Communauté et « Moi communautaire » lui restent ouverts.
+  if (caregiver && !CAREGIVER_TABS.has(leaf)) return <Redirect href={'/garde' as never} />;
   return (
     <>
     {session ? <DigestSync /> : null}
     {session ? <AutoNotificationsSync /> : null}
-    <Tabs detachInactiveScreens screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' }, freezeOnBlur: true }} tabBar={(props) => <Dock {...props} />}>
-      <Tabs.Screen name="index" options={{ title: tr('tab.home') }} />
-      {/* Agenda (07/11/2026, demande de la propriétaire) : 3 onglets de chaque côté, « Outils » au centre exact */}
-      <Tabs.Screen name="agenda" options={{ title: tr('tab.agenda') }} />
-      <Tabs.Screen name="track" options={{ title: tr('tab.track') }} />
-      {/* Au centre exact de la barre ; appui long : ajout rapide (ancien bouton « + ») */}
-      <Tabs.Screen name="tools" options={{ title: tr('dock.tools') }} />
-      <Tabs.Screen name="community" options={{ title: tr('tab.community') }} />
-      <Tabs.Screen name="ask" options={{ title: tr('tab.ask') }} />
-      {/* « Moi » retiré de la barre (choix de la propriétaire) : profil communautaire depuis Communauté, compte privé depuis l'avatar ; la route reste (liens profonds) */}
+    {/* Fond de chaque onglet défini dès le premier rendu (couleur du thème : jamais de flash blanc au premier passage) ;
+        changement d'onglet sans animation du navigateur : l'écran arrive en fondu bref (`Screen`, voile frère). */}
+    {/* Refonte du 17/11/2026 : Aujourd'hui · Moi · [action centrale] · Enfant · Famille. « Outils » : entrée fixe en tête
+        d'Aujourd'hui et dans l'action centrale ; Communauté : bouton en haut à droite des écrans d'onglet.
+        Les autres routes d'onglet restent valides hors de la barre (`href: null`) : liens profonds, notifications, tests. */}
+    <Tabs detachInactiveScreens backBehavior="history" screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: t.colors.background }, freezeOnBlur: true, animation: 'none' }} tabBar={(props) => <Dock {...props} />}>
+      <Tabs.Screen name="index" options={{ title: tr('nav.tab.today') }} />
+      <Tabs.Screen name="health" options={{ title: tr('nav.tab.me') }} />
+      <Tabs.Screen name="baby" options={{ title: tr('nav.tab.child') }} />
+      <Tabs.Screen name="household" options={{ title: tr('nav.tab.family') }} />
+      {/* Hors de la barre : Communauté (bouton d'en-tête), Agenda (→ Famille), Suivi (→ Enfant), Outils (→ Aujourd'hui), Questions (→ Moi), Moi communautaire, Profil (avatar) */}
+      <Tabs.Screen name="community" options={{ title: tr('tab.community'), href: null }} />
+      <Tabs.Screen name="agenda" options={{ title: tr('tab.agenda'), href: null }} />
+      <Tabs.Screen name="track" options={{ title: tr('tab.track'), href: null }} />
+      <Tabs.Screen name="tools" options={{ title: tr('dock.tools'), href: null }} />
+      <Tabs.Screen name="ask" options={{ title: tr('tab.ask'), href: null }} />
       <Tabs.Screen name="moi" options={{ title: tr('tab.me'), href: null }} />
-      {/* Profil de la personne (07/11/2026, demande de la propriétaire) : dans la barre, à droite, avec sa photo ;
-          toujours aussi accessible depuis l'avatar en haut à droite */}
-      <Tabs.Screen name="profile" options={{ title: tr('tab.profile') }} />
+      <Tabs.Screen name="profile" options={{ title: tr('tab.profile'), href: null }} />
     </Tabs>
+    {/* Présentation d'Aura : une fois par compte, à la première arrivée (hors visite guidée), relançable */}
+    {session && (!isDemo || auraAsked) ? <AuraIntroHost /> : null}
+    {/* Laboratoire du verre liquide (/dev/liquid-glass) : panneau de réglage par-dessus l'Accueil réel */}
+    {labOpen ? <LiquidLabPanel /> : null}
     </>
   );
 }

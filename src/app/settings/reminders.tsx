@@ -23,6 +23,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatDate } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ReminderTrack } from '@/features/homeTrack/ReminderTrack';
 
 const categories = (): { value: Reminder['category']; label: string }[] => [
   { value: 'custom', label: tr('u1.rem.cat.custom') },
@@ -269,25 +271,26 @@ export default function RemindersScreen() {
         </Banner>
       ) : null}
 
+      {reminders ? <ReminderTrack reminders={list} onEdit={(r) => { setEditing(r); setOpen(true); }} /> : null}
       {isLoading ? <Loading /> : error ? (
         <Banner tone="danger" title={tr('u1.rem.loadError')} action={<Button label={tr('u1.rem.retry')} size="sm" variant="secondary" style={{ marginTop: 8, alignSelf: 'flex-start' }} onPress={() => refetch()} />}>{friendlyError(error)}</Banner>
       ) : list.length === 0 ? (
         <EmptyStateCard illustration="moon" title={tr('u1.rem.emptyTitle')} text={tr('u1.rem.emptyText')} />
       ) : (
         <Card>
-          {list.map((r, i) => {
+          <MotionList>{list.map((r, i) => {
             const next = r.enabled ? nextOccurrence(r.schedule) : null;
             return (
-              <View key={r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
+              <MotionItem key={r.id}><View key={r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
                 <Tappable accessibilityRole="button" accessibilityLabel={tr('u1.rem.editA11y', { title: r.title })} style={{ flex: 1, minHeight: 48, justifyContent: 'center', opacity: r.enabled ? 1 : 0.55 }} onPress={() => { setEditing(r); setOpen(true); }}>
                   <Text weight="medium">{r.title}{r.pregnancy_id ? ` · ${tr('u1.rem.myPregnancy')}` : ''}{r.shared ? ` · ${tr('rs.sharedTag')}` : ''}</Text>
                   <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : tr('u1.rem.fixSchedule')}</Text>
                   {next ? <Text variant="caption" muted>{tr('u1.rem.next', { date: formatDate(next, { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</Text> : null}
                 </Tappable>
                 <Toggle label={tr(r.enabled ? 'u1.rem.disableA11y' : 'u1.rem.enableA11y', { title: r.title })} value={r.enabled} onChange={(v) => onToggle(r, v)} />
-              </View>
+              </View></MotionItem>
             );
-          })}
+          })}</MotionList>
         </Card>
       )}
 
@@ -295,12 +298,12 @@ export default function RemindersScreen() {
         <>
           <SectionTitle title={tr('rs.fromOthers')} />
           <Card testID="rem-shared-list">
-            {fromOthers.map((r, i) => (
-              <View key={r.id} style={{ paddingVertical: spacing.xs, minHeight: 48, justifyContent: 'center', borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border, opacity: r.enabled ? 1 : 0.55 }}>
+            <MotionList>{fromOthers.map((r, i) => (
+              <MotionItem key={r.id}><View key={r.id} style={{ paddingVertical: spacing.xs, minHeight: 48, justifyContent: 'center', borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border, opacity: r.enabled ? 1 : 0.55 }}>
                 <Text weight="medium">{r.title}</Text>
                 <Text variant="small" muted>{validateSchedule(r.schedule) ? describeSchedule(r.schedule) : tr('u1.rem.fixSchedule')}{r.enabled ? '' : ` · ${tr('rs.off')}`}</Text>
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
             <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('rs.fromOthersD')}</Text>
           </Card>
         </>
@@ -310,8 +313,8 @@ export default function RemindersScreen() {
         <Card>
           <Text weight="bold">{tr('u1.rem.suggestions')}</Text>
           <Text variant="small" muted>{tr('u1.rem.suggestionsD')}</Text>
-          {suggestions.map((sg) => (
-            <View key={sg.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
+          <MotionList>{suggestions.map((sg) => (
+            <MotionItem key={sg.key}><View key={sg.key} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
               <Text style={{ flex: 1 }}>{sg.label}</Text>
               <Button label={tr('u1.rem.add')} size="sm" variant="secondary" onPress={async () => {
                 try {
@@ -319,8 +322,8 @@ export default function RemindersScreen() {
                   toast(tr('u1.rem.added'));
                 } catch (e) { toast(friendlyError(e), 'error'); }
               }} />
-            </View>
-          ))}
+            </View></MotionItem>
+          ))}</MotionList>
         </Card>
       )}
 

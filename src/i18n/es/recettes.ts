@@ -115,6 +115,7 @@ export const recettes: Messages<typeof fr> = {
   "rc.card.meta": "{min} min · {n} pers.",
   "rc.card.a11y": "{title}, {min} minutos",
   "rc.generatedImage": "Ilustración generada",
+  "rc.photoNotice": "Foto ilustrativa",
   "rc.for": "Para {name}",
   "rc.notFound": "Receta no encontrada",
   "rc.photo.credit": "Imagen: {author} · {license} · {rights}",

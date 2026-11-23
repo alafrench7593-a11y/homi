@@ -18,6 +18,7 @@ import { spacing } from '@/theme/tokens';
 import { useEmergencyNumbers } from './emergency';
 import { fmtDay, fmtDayYear } from './format';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette, type CycleIconName } from './kit';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const PRIO_ICON: Record<Priority, CycleIconName> = { info: 'guide', practical: 'symptoms', followup: 'calendar', consult: 'documents', prompt: 'reminders', emergency: 'bleeding' };
 
@@ -115,9 +116,9 @@ export function AdviceCard({ advice, isNew, compact, delay = 0 }: { advice: Advi
               {sources.length ? (
                 <Ink variant="caption" soft>{`${tr('adv.ui.sources')}${lang === 'fr' || lang === 'en' ? ' : ' : ': '}${sources.map((s) => s.org).filter((v, i, arr) => arr.indexOf(v) === i).join(', ')}`}</Ink>
               ) : null}
-              {sources.slice(0, 2).map((s) => (
-                <Button key={s.id} label={`${s.org} — ${s.title}`} variant="ghost" size="sm" icon="external-link" onPress={() => open(s.url)} />
-              ))}
+              <MotionList style={{ gap: 2 }}>{sources.slice(0, 2).map((s) => (
+                <MotionItem key={s.id}><Button key={s.id} label={`${s.org} — ${s.title}`} variant="ghost" size="sm" icon="external-link" onPress={() => open(s.url)} /></MotionItem>
+              ))}</MotionList>
               <Ink variant="caption" soft>{tr('adv.ui.reviewed', { date: fmtDayYear(advice.reviewedOn || ADVICE_REVIEWED_ON) })}</Ink>
             </View>
           ) : null}

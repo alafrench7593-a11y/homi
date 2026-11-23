@@ -4,9 +4,10 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, Loading } from '@/components/ui';
 import { PasswordRules } from '@/features/auth';
+import { EntryHero, EntryScreen, MattePanel } from '@/features/entry/EntryKit';
+import { entryErrorMessage } from '@/features/entry/authError';
 import { Platform } from 'react-native';
 import { backend } from '@/lib/backend';
 import { waitForSession } from '@/lib/authSession';
@@ -64,30 +65,38 @@ export default function ResetPassword() {
       toast(tr('auth.reset.done'));
       router.replace('/');
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : tr('auth.reset.failed'));
+      setError(entryErrorMessage(e, tr('auth.reset.failed')));
     } finally {
       inFlight.current = false;
       setLoading(false);
     }
   }
 
-  if (state === 'checking') return <Screen title={tr('auth.reset.title')}><Loading label={tr('auth.reset.checking')} /></Screen>;
+  if (state === 'checking') {
+    return (
+      <EntryScreen back={false}>
+        <EntryHero icon="key" title={tr('auth.reset.title')} testID="entry-hero" />
+        <Loading label={tr('auth.reset.checking')} />
+      </EntryScreen>
+    );
+  }
   if (state === 'invalid') {
     return (
-      <Screen back title={tr('auth.reset.title')}>
-        <Banner tone="warning" title={tr('auth.link.invalidTitle')}>{tr('auth.reset.invalidBody')}</Banner>
-        <Button label={tr('auth.link.newLink')} onPress={() => router.replace('/auth/forgot')} />
+      <EntryScreen footer={<Button label={tr('auth.link.newLink')} size="lg" full onPress={() => router.replace('/auth/forgot')} />}>
+        <EntryHero icon="link" title={tr('auth.link.invalidTitle')} lead={tr('auth.reset.invalidBody')} testID="entry-hero" />
         <Button label={tr('auth.signIn')} variant="ghost" onPress={() => router.replace('/auth/sign-in')} />
-      </Screen>
+      </EntryScreen>
     );
   }
   return (
-    <Screen back title={tr('auth.reset.title')}>
+    <EntryScreen footer={<Button label={tr('common.save')} size="lg" full loading={loading} disabled={loading} onPress={submit} testID="reset-submit" />}>
+      <EntryHero icon="key" title={tr('auth.reset.title')} testID="entry-hero" />
       {error ? <Banner tone="danger">{error}</Banner> : null}
-      <Field label={tr('auth.reset.newPassword')} value={password} onChangeText={setPassword} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" />
-      <PasswordRules value={password} />
-      <Field label={tr('auth.signUp.confirmPassword')} value={confirm} onChangeText={setConfirm} secureTextEntry revealable autoComplete="new-password" onSubmitEditing={submit} />
-      <Button label={tr('common.save')} size="lg" loading={loading} disabled={loading} onPress={submit} />
-    </Screen>
+      <MattePanel>
+        <Field label={tr('auth.reset.newPassword')} value={password} onChangeText={setPassword} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" />
+        <PasswordRules value={password} />
+        <Field label={tr('auth.signUp.confirmPassword')} value={confirm} onChangeText={setConfirm} secureTextEntry revealable autoComplete="new-password" onSubmitEditing={submit} />
+      </MattePanel>
+    </EntryScreen>
   );
 }

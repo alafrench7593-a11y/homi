@@ -86,8 +86,8 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
   it('communauté sans profil : invitation à créer son profil, fils et catégories', async () => {
     const r = await render(<CommunityTab />);
     const t = allText(r);
-    expect(t).toContain('Créez votre profil communautaire');
-    expect(t).toContain('Pour vous');
+    expect(t).toContain('Crée ton profil communautaire');
+    expect(t).toContain('Pour toi');
     expect(t).toContain('Récent');
     expect(t).toContain('Toutes les catégories');
     r.unmount();
@@ -99,7 +99,7 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     await flush();
     expect(allText(r)).toContain('@maman_iris');
     await pressId(r, 'profile-save');
-    expect(allText(r)).toContain('Acceptez les règles');
+    expect(allText(r)).toContain('Accepte les règles');
     const toggle = r.root.findAll((n) => n.props.accessibilityRole === 'switch' && typeof n.props.onPress === 'function')[0];
     await act(async () => { toggle.props.onPress(); });
     await pressId(r, 'profile-save');
@@ -116,7 +116,7 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     const anon = r.root.findAll((n) => n.props.accessibilityLabel === 'Anonyme' && typeof n.props.onPress === 'function')[0];
     await act(async () => { anon.props.onPress(); });
     await flush();
-    expect(allText(r)).toContain('Les autres membres ne verront ni votre pseudonyme');
+    expect(allText(r)).toContain('Les autres membres ne verront ni ton pseudonyme');
     await pressId(r, 'composer-publish');
     // Sujet médical : un avertissement s'affiche d'abord (aperçu), la publication part au second appui
     expect(allText(r)).toContain('Avant de publier');
@@ -133,9 +133,9 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     routerState.params = { id: p.id };
     const r = await render(<PostScreen />);
     const t = allText(r);
-    expect(t).toContain('Anonyme (vous)');
+    expect(t).toContain('Anonyme (toi)');
     expect(t).toContain('pas un avis médical');
-    expect(t).toContain('Vos réponses à votre publication anonyme restent anonymes.');
+    expect(t).toContain('Tes réponses à ta publication anonyme restent anonymes.');
     routerState.params = {};
     r.unmount();
   });
@@ -162,14 +162,16 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     await act(async () => { account.props.onPress(); });
     await flush(120);
     t = allText(r);
-    for (const x of ['Abonnement', 'Notifications', 'Confidentialité', 'Personnes bloquées', 'Sécurité', 'Aide', 'Exporter mes données', 'Supprimer mon compte', 'Se déconnecter', 'Ajouter un profil']) expect(t).toContain(x);
+    for (const x of ['Abonnement', 'Notifications', 'Confidentialité', 'Personnes bloquées', 'Sécurité', 'Aide', 'Exporter mes données', 'Supprimer mon compte', 'Ajouter un profil']) expect(t).toContain(x);
+    // Ligne de sortie partagée (SignOutRow) : « Se déconnecter », ou « Quitter la démo » en démonstration (tests sans serveur)
+    expect(t.includes('Se déconnecter') || t.includes('Quitter la démo')).toBe(true);
     r.unmount();
   });
 
   it('communauté : fils « Abonnements », groupes, recherche de membres', async () => {
     const r = await render(<CommunityTab />);
     const t = allText(r);
-    for (const x of ['Pour vous', 'Abonnements', 'Récent', 'Enregistrés', 'Groupes', 'Filtres']) expect(t).toContain(x);
+    for (const x of ['Pour toi', 'Abonnements', 'Récent', 'Enregistrés', 'Groupes', 'Filtres']) expect(t).toContain(x);
     await type(r, 'community-search', '@papa');
     await flush(200);
     expect(allText(r)).toContain('@papadenour');
@@ -182,7 +184,7 @@ describe(`nouveaux écrans (${Platform.OS})`, () => {
     const t = allText(r);
     expect(t).toContain('Bébés nés en janvier 2026');
     expect(t).not.toContain('Zélie');
-    expect(t).toContain('Créez votre groupe privé de parents');
+    expect(t).toContain('Crée ton groupe privé de parents');
     await pressId(r, 'join-cohort-birth-2026-01');
     await flush(200);
     const groups = await backend.rpc<{ name: string; is_member: boolean }[]>('community_groups_overview');

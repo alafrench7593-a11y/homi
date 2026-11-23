@@ -23,7 +23,7 @@ function NowPearl({ color }: { color: string }) {
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: 1200, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 3 }); // AMBIENT_LOOPS (src/motion/ambient.ts) : pulsations à l'arrivée puis repos
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
@@ -51,7 +51,7 @@ export function DayStrip({ title, events, now, legend, testID, empty }: {
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const thread = tint(t.isDark ? '#E7C08F' : '#B8865A', t.isDark ? 0.45 : 0.4);
+  const thread = tint(t.isDark ? '#E9CFA4' : '#76561D', t.isDark ? 0.45 : 0.4);
   const colorOf = (k: DayEvent['kind']) => (k === 'sleep' ? tint(gold, t.isDark ? 0.75 : 0.55) : k === 'feed' ? accent : k === 'bottle' ? accent : gold);
   const label = events.length
     ? tr('l5.daystrip.entries', { title, count: events.length })

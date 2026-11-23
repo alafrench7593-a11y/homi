@@ -30,9 +30,11 @@ import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MucusJournal } from '@/features/cycleTrack/FertilityJournals';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
-const SIGN_COLOUR = { less_fertile: '#C9B79C', intermediate: '#F2C46D', potentially_fertile: '#7FB6E8', see_professional: '#E0607E', none: '#B9B9C6' } as const;
+const SIGN_COLOUR = { less_fertile: '#C9C0D6', intermediate: '#E9CFA4', potentially_fertile: '#7FB6E8', see_professional: '#C8283F', none: '#B9B9C6' } as const;
 
 export default function MucusScreen() {
   const t = useTheme();
@@ -173,6 +175,8 @@ export default function MucusScreen() {
   return (
     <Screen back title={tr('u3.fertMucus.title')} subtitle={tr('u3.fertMucus.subtitle')}
       action={{ label: tr('u3.fertMucus.saveObs'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'mucus-save' }}>
+      {/* Journal de la glaire : jour choisi (adresse), bande de 7 jours, fiche de correction */}
+      <MucusJournal />
       <TodaySummary title={tr('u3.fertBody.lastObs')} items={[
         { icon: 'droplet', value: lastObs ? mucusLabel(lastObs.cervical_mucus as MucusCategory) ?? '—' : '—', label: lastObs ? formatDateFr(lastObs.observed_on, false) : tr('u3.fertMucus.aspect') },
         { icon: 'calendar', value: String(cycles[0]?.days.length ?? 0), label: tr('u3.fertMucus.daysCycle') },
@@ -272,8 +276,8 @@ export default function MucusScreen() {
         <>
           <SectionTitle title={tr('u3.fertBody.mine')} />
           <Card>
-            {(obs ?? []).filter((o) => o.cervical_mucus || o.mucus_texture || o.mucus_sensation).slice(0, 20).map((o) => (
-              <ListRow
+            <MotionList>{(obs ?? []).filter((o) => o.cervical_mucus || o.mucus_texture || o.mucus_sensation).slice(0, 20).map((o) => (
+              <MotionItem key={o.id}><ListRow
                 key={o.id}
                 icon="droplet"
                 title={formatDateFr(o.observed_on)}
@@ -285,17 +289,17 @@ export default function MucusScreen() {
                     <IconButton icon="trash-2" label={tr('u3.fertBody.delA11y', { date: formatDateFr(o.observed_on) })} onPress={() => remove(o.id, o.observed_on, o.photo_path)} />
                   </Row>
                 )}
-              />
-            ))}
+              /></MotionItem>
+            ))}</MotionList>
           </Card>
         </>
       ) : null}
 
       <Modal visible={!!viewing} transparent animationType="fade" onRequestClose={() => setViewing(null)}>
-        <Pressable accessibilityRole="button" accessibilityLabel={tr('u3.fertMucus.closePhoto')} onPress={() => setViewing(null)} style={{ flex: 1, backgroundColor: '#000d', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
+        <Tappable pressScale={1} hoverLift={0} accessibilityRole="button" accessibilityLabel={tr('u3.fertMucus.closePhoto')} onPress={() => setViewing(null)} style={{ flex: 1, backgroundColor: '#000d', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
           {viewing ? <Image source={{ uri: viewing }} style={{ width: '100%', height: '70%' }} resizeMode="contain" /> : null}
           <Text color="#fff" style={{ marginTop: spacing.sm }}>{tr('u3.fertMucus.tapClose')}</Text>
-        </Pressable>
+        </Tappable>
       </Modal>
     </Screen>
   );

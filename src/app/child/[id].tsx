@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { initialsColor } from '@/components/Illustrations';
+import { homiInitialsColor as initialsColor } from '@/features/homiColors';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Button, Icon, IconButton, Row, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
@@ -24,7 +24,7 @@ import { spacing } from '@/theme/tokens';
 import { formatDate, formatNumber, t as tr } from '@/i18n';
 
 export default function ChildProfile() {
-  const params = useLocalSearchParams<{ id: string; tab?: string }>();
+  const params = useLocalSearchParams<{ id: string; tab?: string; focus?: string }>();
   const toast = useToast();
   const inv = useInvalidate();
   const childrenQ = useChildren();
@@ -37,8 +37,9 @@ export default function ChildProfile() {
   const theme = useTheme();
   const [deleting, setDeleting] = useState(false);
   const { subject, setSubject } = useActiveSubject();
-  const initial = CHILD_TABS.some((x) => x.value === params.tab) ? (params.tab as ChildTab) : 'apercu';
-  const [tab, setTab] = useState<ChildTab>(initial);
+  // Onglet gardé dans l'adresse (`?tab=`) : ouvrir une fiche puis revenir retrouve le même onglet
+  const tab: ChildTab = CHILD_TABS.some((x) => x.value === params.tab) ? (params.tab as ChildTab) : 'apercu';
+  const setTab = (v: ChildTab) => router.setParams({ tab: v, moment: undefined } as never);
   const [editing, setEditing] = useState(false);
 
   if (!child) {
@@ -94,8 +95,8 @@ export default function ChildProfile() {
         {canPhoto ? (
           <Tappable accessibilityRole="button" accessibilityLabel={child.photo_path ? tr('pphoto.childChange', { name: child.first_name }) : tr('pphoto.childAdd', { name: child.first_name })} onPress={() => setPhotoOpen(true)} testID="child-photo">
             <ChildAvatar child={child} size={72} />
-            <View style={{ position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: palette.gold, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: theme.colors.background }}>
-              <Icon name="camera" size={13} color="#FFFFFF" />
+            <View style={{ position: 'absolute', right: -2, bottom: -2, width: 26, height: 26, borderRadius: 13, backgroundColor: theme.tokens.action.fill, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: theme.colors.background }}>
+              <Icon name="camera" size={13} color={theme.tokens.action.text} />
             </View>
           </Tappable>
         ) : <ChildAvatar child={child} size={64} />}
@@ -111,7 +112,7 @@ export default function ChildProfile() {
       <ChildTabs value={tab} onChange={setTab} />
 
       {tab === 'apercu' && <OverviewTab child={child} onTab={setTab} />}
-      {tab === 'croissance' && <GrowthTab child={child} />}
+      {tab === 'croissance' && <GrowthTab child={child} focus={params.focus === 'weight_kg' || params.focus === 'height_cm' || params.focus === 'head_cm' ? params.focus : null} />}
       {tab === 'etapes' && <MilestonesTab child={child} />}
       {tab === 'sante' && <HealthTab child={child} />}
       {tab === 'alimentation' && <FoodsTab child={child} />}

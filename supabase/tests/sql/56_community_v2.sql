@@ -62,7 +62,7 @@ reset role;
 set role authenticated; set request.jwt.claim.sub = :'C1';
 select tests.ok((select anonymous and pseudonym is null and is_op from public.comment_feed where body = 'Merci beaucoup, ça me rassure.'),
   'anonymat : la réponse de l''autrice anonyme reste anonyme');
-select tests.ok((select title from public.notifications where category = 'community_reply' order by created_at desc limit 1) = 'L’auteur·rice de la publication a répondu à votre commentaire',
+select tests.ok((select title from public.notifications where category = 'community_reply' order by created_at desc limit 1) = 'L’auteur·rice de la publication a répondu à ton commentaire',
   'anonymat : la notification ne révèle pas l''identité');
 select tests.ok((select deep_link from public.notifications where category = 'community_reply' order by created_at desc limit 1) like '/community/post/%?comment=%',
   'notification : ouvre directement le commentaire');

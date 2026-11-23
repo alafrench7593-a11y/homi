@@ -57,7 +57,7 @@ def confirm_modal(pg, label):
 def premium(pg, me, on):
     exp = (datetime.now(timezone.utc) + (timedelta(days=30) if on else timedelta(days=-1))).isoformat()
     mutate(pg, f"""s => {{ s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== '{me}');
-      s.tables.subscriptions.push({{ user_id: '{me}', status: '{'active' if on else 'expired'}', product_id: 'aufildenous_premium_monthly', store: 'test', period_type: 'monthly', expires_at: '{exp}', will_renew: {str(on).lower()} }}); }}""")
+      s.tables.subscriptions.push({{ user_id: '{me}', status: '{'active' if on else 'expired'}', product_id: 'homi_premium_monthly', store: 'test', period_type: 'monthly', expires_at: '{exp}', will_renew: {str(on).lower()} }}); }}""")
 
 
 def run(p):
@@ -68,7 +68,7 @@ def run(p):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     me = demo(pg, "s => s.session.userId")
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina')")
 

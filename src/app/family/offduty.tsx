@@ -2,6 +2,7 @@
  * « Je décroche » : pendant quelques heures (24 h au plus), l'autre parent prend le relais. Il est prévenu (demande
  * « besoin de repos »), et mes rappels personnels non médicaux sont mis en pause jusqu'à la fin, puis reprennent seuls.
  * Les rappels de médicament et les rappels partagés ne sont jamais coupés.
+ * 23/11/2026 : semaine dans l'adresse, pauses datées, fiche d'une pause ; la fin de MA pause en cours se corrige.
  */
 import React, { useState } from 'react';
 import { Platform, View } from 'react-native';
@@ -17,6 +18,13 @@ import { openLink } from '@/lib/links';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 import { formatTime, t as tr } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { HmHero } from '@/features/homeTrack/kit';
+import { useNow } from '@/lib/data/hooks-bottle';
+import { minutesLeft } from '@/lib/domain/homeTrack';
+import { span } from '@/lib/domain/sleepPlanner';
+import { OffDutyWeek } from '@/features/finishFamily/OffDutyWeek';
 
 const HOURS = [1, 2, 3, 4, 8, 12];
 
@@ -30,6 +38,7 @@ export default function OffDuty() {
   const periods = (useOffDuty().data ?? []).filter((p) => Date.parse(p.ends_at) > Date.now());
   const mine = periods.find((p) => p.user_id === me);
   const theirs = periods.filter((p) => p.user_id !== me);
+  const now = useNow(30_000);
   const start = useStartOffDuty();
   const stop = useStopOffDuty();
   const [hours, setHours] = useState(3);
@@ -51,10 +60,14 @@ export default function OffDuty() {
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
   return (
-    <Screen back title={tr('tool.offduty')} subtitle={tr('tool.offduty.sub')}>
-      {theirs.map((p) => (
-        <Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner>
-      ))}
+    <Screen back title={toolName('offduty')} subtitle={toolBlurb('offduty')}>
+      {/* La pause en cours en grand (temps restant, fin, relais) ; aucune pause : « pas de pause en cours », jamais 0 */}
+      <HmHero testID="hm-off-hero" value={mine ? span(minutesLeft(mine.ends_at, now)) : null} emptyLabel={tr('hm.off.none')}
+        unit={mine ? tr('hm.off.unit', { time: formatTime(mine.ends_at) }) : null}
+        caption={mine ? tr('hm.off.relay', { person: mine.relay_contact_id ? (circleName(circle, mine.relay_contact_id) ?? '') : labelOf(mine.relay_to) }) : theirs.length ? tr('hm.off.theirs', { count: theirs.length }) : null} />
+      <MotionList style={{ gap: spacing.md }}>{theirs.map((p) => (
+        <MotionItem key={p.id}><Banner key={p.id} tone="warning" icon="moon" title={tr('cm.off.theirs', { person: labelOf(p.user_id) })}>{tr('cm.off.theirsD', { time: formatTime(p.ends_at) })}</Banner></MotionItem>
+      ))}</MotionList>
       {mine ? (
         <Card tone="lavender" testID="off-active">
           <Text variant="title">{tr('cm.off.active')}</Text>
@@ -86,6 +99,8 @@ export default function OffDuty() {
           <Text variant="small" muted>{tr('cm.off.what')}</Text>
         </>
       )}
+      {/* Les pauses de la semaine (gardée dans l'adresse), datées ; ma pause en cours se corrige dans sa fiche (23/11/2026) */}
+      <OffDutyWeek me={me} labelOf={labelOf} now={now} relayName={(p) => (p.relay_contact_id ? (circleName(circle, p.relay_contact_id) ?? '') : labelOf(p.relay_to))} />
     </Screen>
   );
 }

@@ -6,34 +6,56 @@
  */
 import React from 'react';
 import { View } from 'react-native';
-import { usePathname } from 'expo-router';
+import { router, usePathname } from 'expo-router';
+import { IconButton } from '@/components/ui';
+import { parentRoute } from '@/lib/parentRoute';
+import { spacing } from '@/theme/tokens';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { Loading } from '@/components/ui';
 import { Paywall } from '@/features/Paywall';
 import { backend } from '@/lib/backend';
 import { useAuth } from '@/lib/auth';
 import { useAccess } from '@/lib/data/hooks-access';
 import { gateFor } from '@/lib/premium/access';
+import { useBackendMode } from '@/lib/demoMode';
 import { useTheme } from '@/theme/ThemeProvider';
 import { t as tr } from '@/i18n';
+
+/** La flèche Retour de l'écran verrouillé a-t-elle une destination ? Pas sur la racine « / » (accueil). */
+export function gateHasBack(pathname: string): boolean {
+  return ((pathname.split(/[?#]/)[0] ?? '').replace(/\/+$/, '') || '/') !== '/';
+}
 
 export function PremiumGate() {
   const { session } = useAuth();
   const pathname = usePathname() ?? '/';
   const th = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   // même clé que usePremium() : une seule lecture de has_premium pour toute l'application
   const q = useQuery({ queryKey: [session?.userId, 'subscriptions', 'premium'], queryFn: () => backend.rpc<boolean>('has_premium'), enabled: !!session, staleTime: 60_000 });
   const access = useAccess();
+  // Visite sans compte (famille d'exemple, données sur l'appareil) : écrans d'onglet parcourables, outils réservés
+  const { isDemo } = useBackendMode();
   if (!session) return null;
   // réponse inconnue après une erreur (hors connexion sans cache) : jamais d'ouverture par défaut
   const premium = q.data === true ? true : q.data === false || q.isError ? false : undefined;
-  const decision = gateFor(pathname, premium, access.data ?? null);
+  const decision = gateFor(pathname, premium, access.data ?? null, { visit: isDemo });
   if (decision === 'open') return null;
   return (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: insets.top, paddingBottom: insets.bottom }}
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: th.colors.background, paddingTop: topInset, paddingBottom: insets.bottom }}
       testID={decision === 'checking' ? 'premium-gate-checking' : 'premium-gate'} accessibilityViewIsModal>
+      {/* Retour visible (audit 01 N-05 / 09) : l'écran verrouillé couvre l'en-tête et la barre d'onglets. Sur l'accueil
+          (« / ») il n'y a nulle part où revenir : la flèche ne faisait rien, elle est masquée. */}
+      {gateHasBack(pathname) ? (
+        <View style={{ flexDirection: 'row', paddingHorizontal: spacing.sm }}>
+          <IconButton icon="arrow-left" label={tr('common.back')} testID="premium-gate-back"
+            onPress={() => (router.canGoBack() ? router.back() : router.replace(parentRoute(pathname) as never))} />
+        </View>
+      ) : null}
       {decision === 'checking' ? <Loading label={tr('pw.checking')} /> : <Paywall locked />}
     </View>
   );

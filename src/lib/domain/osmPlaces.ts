@@ -1,7 +1,7 @@
 /**
  * « Sorties près de chez moi », solution gratuite (logique pure, testée) : lieux PUBLICS trouvés dans OpenStreetMap
  * (API Overpass, sans clé), montrés sur un fond de carte OpenStreetMap, photos libres de Wikimedia Commons quand le
- * lieu en a une. Données contributives : présentées comme « non vérifiées par Au fil de nous ». Aucun lieu inventé.
+ * lieu en a une. Données contributives : présentées comme « non vérifiées par HOMI ». Aucun lieu inventé.
  *
  * Mêmes catégories que la recherche Google (cafés, restaurants, parcs, activités, et en filtre secondaire PMI et
  * accompagnement). Comme pour Google, les cafés et restaurants ne sont retenus que s'ils sont RENSEIGNÉS comme

@@ -1,6 +1,6 @@
 /**
- * Formules « Au fil de nous Premium » (logique pure, testée par Jest) : 1 mois, 6 mois, 12 mois — un seul droit
- * RevenueCat (AU_FIL_DE_NOUS_PREMIUM), les 3 formules donnent le même Premium.
+ * Formules « HOMI Premium » (logique pure, testée par Jest) : 1 mois, 6 mois, 12 mois — un seul droit
+ * RevenueCat (HOMI_PREMIUM), les 3 formules donnent le même Premium.
  *
  * Prix : TOUJOURS ceux de la boutique (App Store / Google Play) transmis par RevenueCat — priceString, price,
  * currencyCode. Le prix par mois et l'économie par rapport au mensuel sont CALCULÉS à partir de ces prix réels.
@@ -14,30 +14,44 @@
  *    « Subscription offers »), et la vérification d'éligibilité RevenueCat n'est pas disponible sur Android.
  */
 import type { PurchasesPackage, PurchasesStoreProduct } from 'react-native-purchases';
+import { FAMILY_PRODUCT_IDS, isCreditPack, tierOfProduct, type Tier } from '../../../supabase/functions/_shared/credits';
+
+/**
+ * Formule (26/11/2026) : « premium » (3 durées) ou « family » (Famille, niveau supérieur du même groupe d'abonnements).
+ * Elle est lue sur l'IDENTIFIANT DE PRODUIT (homi_family_* → family), jamais sur le type de package : un « Famille
+ * mensuel » ($rc_monthly ou package personnalisé) ne peut plus être confondu avec le Premium mensuel.
+ */
+export type PlanTier = Tier;
+export { FAMILY_PRODUCT_IDS, tierOfProduct };
 
 export type PlanPeriod = 'monthly' | 'six_months' | 'annual';
-export const PREMIUM_ENTITLEMENT = 'AU_FIL_DE_NOUS_PREMIUM';
+export const PREMIUM_ENTITLEMENT = 'HOMI_PREMIUM';
 export const PLAN_ORDER: PlanPeriod[] = ['annual', 'six_months', 'monthly'];
 export const PLAN_MONTHS: Record<PlanPeriod, number> = { monthly: 1, six_months: 6, annual: 12 };
+/** Identifiants App Store / Google Play, groupe d'abonnements « HOMI Premium » (propres à HOMI, distincts d'Au fil de nous). */
 export const PRODUCT_IDS: Record<PlanPeriod, string> = {
-  monthly: 'aufildenous_premium_monthly',
-  six_months: 'aufildenous_premium_6months',
-  annual: 'aufildenous_premium_annual',
+  monthly: 'homi_premium_monthly',
+  six_months: 'homi_premium_6months',
+  annual: 'homi_premium_annual',
 };
 /** Badges : 12 mois « MEILLEURE OFFRE », 6 mois « ÉCONOMISEZ », mensuel « SANS ENGAGEMENT LONGUE DURÉE ». */
 export const PLAN_BADGE: Record<PlanPeriod, 'best' | 'save' | 'flex'> = { annual: 'best', six_months: 'save', monthly: 'flex' };
 
 /** Grille tarifaire affichée UNIQUEMENT en démonstration (aucune boutique, aucun paiement). */
 export const DEMO_CURRENCY = 'EUR';
+/** Grille voulue (15/11/2026) : 14,99 € / mois ; 69,99 € / 6 mois (≈ 11,67 €/mois, −22 %) ; 119,99 € / an (≈ 10 €/mois, −33 %) ;
+ *  essai gratuit de 3 jours sur les trois formules. En boutique, prix et essai viennent TOUJOURS de StoreKit / Play. */
 export const DEMO_GRID: Record<PlanPeriod, { amount: number; trialDays: number }> = {
-  monthly: { amount: 10.99, trialDays: 3 },
-  six_months: { amount: 49.99, trialDays: 0 },
-  annual: { amount: 79.99, trialDays: 0 },
+  monthly: { amount: 14.99, trialDays: 3 },
+  six_months: { amount: 69.99, trialDays: 3 },
+  annual: { amount: 119.99, trialDays: 3 },
 };
 
 export interface Plan {
   /** Identifiant du produit de la boutique */
   id: string;
+  /** Formule, d'après l'identifiant du produit (absent : premium) */
+  tier?: PlanTier;
   period: PlanPeriod;
   months: number;
   /** Prix tel que formaté par la boutique (priceString) */
@@ -98,7 +112,12 @@ export function savingsPct(amount: number, months: number, monthlyAmount: number
   return pct >= 1 ? pct : null;
 }
 
-interface RawPlan { id: string; period: PlanPeriod; price: string; amount: number; currency: string; trialDays: number; demo: boolean; pkg?: PurchasesPackage }
+/** Prix ramené à un mois, arrondi au centime le plus proche (69,99 / 6 = 11,665 → 11,67 : correction du flottant binaire). */
+export function perMonthAmount(amount: number, months: number): number {
+  return Math.round((amount / months) * 100 + 1e-6) / 100;
+}
+
+interface RawPlan { id: string; tier: PlanTier; period: PlanPeriod; price: string; amount: number; currency: string; trialDays: number; demo: boolean; pkg?: PurchasesPackage }
 
 function finish(raw: RawPlan[], locale: string): Plan[] {
   const monthly = raw.find((p) => p.period === 'monthly');
@@ -108,19 +127,24 @@ function finish(raw: RawPlan[], locale: string): Plan[] {
     return {
       ...p,
       months,
-      perMonth: months > 1 && p.amount > 0 ? formatMoney(Math.round((p.amount / months) * 100) / 100, p.currency, locale) : null,
+      perMonth: months > 1 && p.amount > 0 ? formatMoney(perMonthAmount(p.amount, months), p.currency, locale) : null,
       savingsPct: sameCurrency ? savingsPct(p.amount, months, monthly!.amount) : null,
     };
   });
 }
 
-/** Packages de l'offre courante → formules (une par durée ; les autres packages sont ignorés). */
-export function buildPlans(pkgs: PurchasesPackage[], os: string, locale: string): Plan[] {
+/**
+ * Packages de l'offre courante → formules d'UNE formule (premium par défaut ; une par durée ; les autres packages —
+ * autre formule, packs de crédits — sont ignorés).
+ */
+export function buildPlans(pkgs: PurchasesPackage[], os: string, locale: string, tier: PlanTier = 'premium'): Plan[] {
   const raw: RawPlan[] = [];
   for (const pkg of pkgs) {
+    const id = pkg.product.identifier;
+    if (isCreditPack(id) || tierOfProduct(id) !== tier) continue;
     const period = packagePeriod(pkg);
     if (!period || raw.some((r) => r.period === period)) continue;
-    raw.push({ id: pkg.product.identifier, period, price: pkg.product.priceString, amount: pkg.product.price, currency: pkg.product.currencyCode, trialDays: trialDaysOf(pkg.product, os), demo: false, pkg });
+    raw.push({ id, tier, period, price: pkg.product.priceString, amount: pkg.product.price, currency: pkg.product.currencyCode, trialDays: trialDaysOf(pkg.product, os), demo: false, pkg });
   }
   return finish(raw, locale);
 }
@@ -128,9 +152,22 @@ export function buildPlans(pkgs: PurchasesPackage[], os: string, locale: string)
 /** Démonstration : grille prévue, calculs identiques (économies dérivées des montants, jamais écrites en dur). */
 export function demoPlans(locale: string): Plan[] {
   return finish(PLAN_ORDER.map((period) => ({
-    id: PRODUCT_IDS[period], period, price: formatMoney(DEMO_GRID[period].amount, DEMO_CURRENCY, locale), amount: DEMO_GRID[period].amount,
+    id: PRODUCT_IDS[period], tier: 'premium' as const, period, price: formatMoney(DEMO_GRID[period].amount, DEMO_CURRENCY, locale), amount: DEMO_GRID[period].amount,
     currency: DEMO_CURRENCY, trialDays: DEMO_GRID[period].trialDays, demo: true,
   })), locale);
+}
+
+/** Grille Famille affichée UNIQUEMENT en démonstration : 19,99 € / mois (en boutique : prix de StoreKit / Play). */
+export const DEMO_FAMILY_GRID = { monthly: { amount: 19.99, trialDays: 0 } } as const;
+
+/** Packs de crédits HOMI Aura, grille affichée UNIQUEMENT en démonstration (faux magasin) : 3,99 / 8,99 / 19,99 € (prix fixés le 20/11/2026). */
+export const DEMO_PACK_GRID = { homi_credits_300: 3.99, homi_credits_800: 8.99, homi_credits_2000: 19.99 } as const;
+
+/** Démonstration : formule Famille (mensuelle). */
+export function demoFamilyPlans(locale: string): Plan[] {
+  const g = DEMO_FAMILY_GRID.monthly;
+  return finish([{ id: FAMILY_PRODUCT_IDS.monthly, tier: 'family', period: 'monthly', price: formatMoney(g.amount, DEMO_CURRENCY, locale),
+    amount: g.amount, currency: DEMO_CURRENCY, trialDays: g.trialDays, demo: true }], locale);
 }
 
 /** Date du premier prélèvement (après l'essai éventuel) et du renouvellement suivant. */

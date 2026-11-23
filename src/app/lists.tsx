@@ -1,4 +1,7 @@
-/** Listes de préparation : valise de maternité, affaires de bébé, démarches… */
+/**
+ * Listes de préparation : valise de maternité, affaires de bébé, démarches…
+ * 22/11/2026 : dans une liste ouverte, « Restant (n) / Fait (n) » remplace l'ancien repli des éléments cochés.
+ */
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
@@ -18,8 +21,11 @@ import type { Checklist, ChecklistItem, ChecklistKind } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { GlassSegmentedControl } from '@/components/glass';
 import { progressOf } from '@/lib/domain/quickPicks';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type TemplateKind = Exclude<ChecklistKind, 'custom'>;
 const iconOf = (kind: ChecklistKind): IconName => (kind === 'custom' ? 'list' : (CHECKLIST_TEMPLATES[kind].icon as IconName));
@@ -41,7 +47,7 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
   const [label, setLabel] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
-  const [showDone, setShowDone] = useState(false);
+  const [view, setView] = useState<'left' | 'done'>('left');
   const done = (items ?? []).filter((i) => i.done).length;
   const prog = progressOf(items ?? []);
   // À faire d'abord (dans l'ordre de la liste), les éléments cochés repliés en bas
@@ -123,6 +129,10 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
           <Text weight="bold" color={t.colors.primary} testID="list-pct">{prog.pct} %</Text>
         </Row>
         <ProgressBar done={done} total={items?.length ?? 0} />
+        {items?.length ? (
+          <GlassSegmentedControl testID="list-view" label={tr('pg.l.viewLabel')} value={view} onChange={(v) => { haptic('selection'); setView(v); }}
+            options={[{ value: 'left' as const, label: tr('pg.l.left', { count: todo.length }), testID: 'list-view-left' }, { value: 'done' as const, label: tr('pg.l.done', { count: doneList.length }), testID: 'list-view-done' }]} />
+        ) : null}
         {/* ajout rapide en haut : Entrée ajoute et garde le clavier ouvert pour enchaîner */}
         <Row style={{ alignItems: 'flex-end' }}>
           <View style={{ flex: 1 }}>
@@ -134,8 +144,8 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
           <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title={tr('u2.lists.load_error')} />
         ) : (
           <View>
-            {[...todo, ...(showDone ? doneList : [])].map((item) => (
-              <View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <MotionList>{(view === 'done' ? doneList : todo).map((item) => (
+              <MotionItem key={item.id}><View key={item.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Tappable
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: item.done }}
@@ -144,18 +154,16 @@ export function ChecklistDetail({ list, onClose }: { list: Checklist; onClose: (
                   style={({ pressed }) => ({ flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH + 4, paddingVertical: 6, borderRadius: radius.md, opacity: pressed ? 0.7 : 1 })}
                 >
                   <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', borderWidth: item.done ? 0 : 2, borderColor: t.colors.border, backgroundColor: item.done ? t.colors.gold : 'transparent' }}>
-                    {item.done ? <Icon name="check" size={15} color="#FFFFFF" /> : null}
+                    <CheckMark checked={!!item.done} size={17} color="#FFFFFF" />
                   </View>
                   <Text style={{ flex: 1, textDecorationLine: item.done ? 'line-through' : 'none' }} muted={item.done}>{item.label}</Text>
                 </Tappable>
                 <IconButton icon="trash-2" size={17} color={t.colors.textMuted} label={tr('u2.lists.remove_item', { label: item.label })} onPress={() => removeItem(item)} />
-              </View>
-            ))}
+              </View></MotionItem>
+            ))}</MotionList>
             {!items?.length && <Text muted>{tr('u2.lists.empty')}</Text>}
-            {items?.length && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>{tr('u2.lists.all_done')}</Text> : null}
-            {doneList.length ? (
-              <Button label={showDone ? tr('u2.lists.hide_done') : tr('u2.lists.show_done', { count: doneList.length })} icon={showDone ? 'chevron-up' : 'chevron-down'} size="sm" variant="ghost" onPress={() => setShowDone((v) => !v)} style={{ alignSelf: 'flex-start' }} testID="list-toggle-done" />
-            ) : null}
+            {items?.length && view === 'left' && !todo.length ? <Text muted center style={{ paddingVertical: spacing.sm }}>{tr('u2.lists.all_done')}</Text> : null}
+            {items?.length && view === 'done' && !doneList.length ? <Text muted center style={{ paddingVertical: spacing.sm }} testID="list-none-done">{tr('pg.l.noneDone')}</Text> : null}
           </View>
         )}
         <Button label={tr('u2.lists.delete_list')} icon="trash-2" variant="ghost" size="sm" loading={removing} onPress={removeList} style={{ alignSelf: 'flex-start' }} />
@@ -263,16 +271,16 @@ export default function ListsScreen() {
           {open && <ChecklistDetail key={open.id} list={open} onClose={() => setOpenId(null)} />}
           <SectionTitle title={open ? tr('u2.lists.others') : tr('u2.lists.yours')} />
           <Card>
-            {lists.filter((l) => l.id !== openId).map((l) => {
+            <MotionList>{lists.filter((l) => l.id !== openId).map((l) => {
               const items = (allItems ?? []).filter((i) => i.checklist_id === l.id);
               const done = items.filter((i) => i.done).length;
               return (
-                <View key={l.id} style={{ gap: 4, paddingBottom: spacing.xs }}>
+                <MotionItem key={l.id}><View key={l.id} style={{ gap: 4, paddingBottom: spacing.xs }}>
                   <ListRow icon={iconOf(l.kind)} title={l.title} subtitle={items.length ? tr('u2.lists.done_of', { done, total: items.length, count: done }) : tr('u2.lists.blank')} onPress={() => setOpenId(l.id)} />
                   {items.length > 0 && <ProgressBar done={done} total={items.length} />}
-                </View>
+                </View></MotionItem>
               );
-            })}
+            })}</MotionList>
             {lists.every((l) => l.id === openId) && <Text muted>{tr('u2.lists.no_other')}</Text>}
           </Card>
         </>

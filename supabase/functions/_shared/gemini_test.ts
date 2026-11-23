@@ -6,7 +6,7 @@ async function assertRejects(fn: () => Promise<unknown>, cls: new (...a: any[]) 
   try { await fn(); } catch (e) { if (e instanceof cls) return; throw e; }
   throw new Error('aucune erreur levée');
 }
-import { buildGeminiBody, geminiGenerate, geminiStream, geminiText, GeminiError } from './gemini.ts';
+import { buildGeminiBody, geminiGenerate, geminiUsage, geminiStream, geminiText, GeminiError } from './gemini.ts';
 
 const cfg = { apiKey: 'cle-de-test', model: 'gemini-3.5-flash-lite' };
 
@@ -47,4 +47,18 @@ Deno.test('flux SSE découpé en morceaux arbitraires', async () => {
   const full = await geminiStream(cfg, { system: 's', turns: [{ role: 'user', text: 'q' }] }, (t) => { got.push(t); }, fake);
   assertEquals(full, 'Bonjour');
   assertEquals(got, ['Bon', 'jour']);
+});
+
+Deno.test('réflexion : fixée à minimal pour Gemini 3.x, absente pour les autres modèles', () => {
+  const o = { system: 's', turns: [{ role: 'user' as const, text: 'q' }] };
+  const g3 = buildGeminiBody(o, 'gemini-3.5-flash-lite').generationConfig as Record<string, unknown>;
+  assertEquals(g3.thinkingConfig, { thinkingLevel: 'minimal' });
+  const g2 = buildGeminiBody(o, 'gemini-2.5-flash').generationConfig as Record<string, unknown>;
+  assertEquals(g2.thinkingConfig, undefined);
+  assertEquals((buildGeminiBody(o).generationConfig as Record<string, unknown>).thinkingConfig, undefined);
+});
+
+Deno.test('jetons : lus depuis usageMetadata, sans aucun contenu', () => {
+  assertEquals(geminiUsage({ usageMetadata: { promptTokenCount: 2100, cachedContentTokenCount: 1800, candidatesTokenCount: 320, thoughtsTokenCount: 40 } }), { input: 2100, cached: 1800, output: 320, thoughts: 40 });
+  assertEquals(geminiUsage({}), null);
 });

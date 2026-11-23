@@ -54,7 +54,7 @@ describe('fil personnalisé', () => {
     expect(hintCategories([9], null)).toContain('diversification');
     expect(hintCategories([], 34)).toEqual(expect.arrayContaining(['grossesse', 'nouveau-ne']));
   });
-  it('« Pour vous » : catégories suivies et membres suivis remontent ; groupes privés exclus', () => {
+  it('« Pour toi » : catégories suivies et membres suivis remontent ; groupes privés exclus', () => {
     const order = personalizedOrder(posts, { journeyForumIds: [], subscribedForumIds: ['sommeil'] }, NOW).map((x) => x.id);
     expect(order).not.toContain('d');
     expect(order.indexOf('b')).toBeLessThan(order.indexOf('a'));
@@ -102,7 +102,7 @@ describe('résumé du matin et du soir', () => {
   it('rubriques masquées, question désactivée, aperçu Premium du rythme de sommeil', () => {
     const d = buildDigest({ moment: 'morning', now: NOW, hidden: ['events'], questionEnabled: false, childName: 'Lina', sleepPlannerTeaser: true, events: [{ title: 'X', at: '2026-10-22T14:00:00' }] });
     expect(d.items.map((x) => x.key)).toEqual(['sleep']);
-    expect(d.items[0]).toMatchObject({ title: 'Découvrez le rythme personnalisé de Lina', premium: true });
+    expect(d.items[0]).toMatchObject({ title: 'Découvre le rythme personnalisé de Lina', premium: true });
   });
   it('soir : bilan sans reproche (rien de noté = rien affiché)', () => {
     const empty = buildDigest({ moment: 'evening', now: NOW, questionEnabled: false, day: { bottles: 0, bottleMl: 0, feeds: 0, diapers: 0, sleepMinutes: 0, meals: 0 } });

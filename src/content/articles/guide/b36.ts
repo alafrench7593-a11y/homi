@@ -43,8 +43,8 @@ const S = {
   santeVaccinPreparer: { label: 'Santé.fr (contenu Vaccination Info Service / Santé publique France) — Mon enfant va être vacciné, comment le préparer ?', url: 'https://www.sante.fr/node/771723', consulted_on: C, published: '2023-09-20' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article vous informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de votre mairie ou d’un juriste._';
-const URG = 'En cas d’urgence vitale, appelez le **15** (Samu) ou le **112**.';
+const FIN = '_Cet article t’informe ; il ne remplace pas l’avis d’un professionnel de santé (médecin, sage-femme, chirurgien-dentiste, pédiatre, psychologue) ni, pour les démarches, celui de ta mairie ou d’un juriste._';
+const URG = 'En cas d’urgence vitale, appelle le **15** (Samu) ou le **112**.';
 
 const a = (x: Omit<LibArticle, 'status' | 'journeys'> & { journeys?: LibArticle['journeys'] }): LibArticle => ({
   journeys: ['child'], status: 'to_review', ...x,
@@ -63,7 +63,7 @@ export const GUIDE_B36: LibArticle[] = [
 - La roséole, aussi appelée exanthème subit ou « sixième maladie », est une infection virale fréquente du nourrisson : dans **90 % des cas**, elle survient **avant 2 ans**, le plus souvent entre 7 et 13 mois (Santé.fr, Vidal).
 - Elle se reconnaît souvent après coup : une **fièvre brusque**, entre 39 et 40 °C, pendant **3 à 4 jours**, puis de **petites taches rosées** sur le ventre, le torse et le dos au moment où la température redescend.
 - Le virus est **peu contagieux** ; il n’existe ni vaccin ni prévention particulière.
-- Avant 3 mois, toute fièvre demande une consultation rapide. Après 3 mois, consultez vite si la fièvre dépasse 40 °C, en cas de convulsions ou de changement de comportement.
+- Avant 3 mois, toute fièvre demande une consultation rapide. Après 3 mois, consulte vite si la fièvre dépasse 40 °C, en cas de convulsions ou de changement de comportement.
 
 ## Comprendre
 **Un virus très répandu.** Selon Santé.fr et Vidal, la roséole est due au virus herpès humain de type 6. Environ un enfant sur trois est touché, généralement entre 6 mois et 3 ans ; elle est rare après 4 ans et plus fréquente au printemps et à l’automne. Le virus se transmet par les sécrétions du nez et de la gorge, mais il est peu contagieux : Santé.fr indique que l’isolement de l’enfant n’est pas nécessaire.
@@ -78,40 +78,40 @@ C’est cette chronologie, fièvre puis éruption à la chute de la fièvre, qui
 
 ## Au quotidien
 **Pendant la fièvre**
-- Surveillez la température et notez-la avec l’heure, pour en parler au médecin.
-- Proposez à boire souvent : Santé.fr conseille de faire boire l’enfant abondamment.
-- Ne le couvrez pas trop et évitez qu’il ait trop chaud (pièce surchauffée, vêtements épais).
-- Les antibiotiques sont inutiles, puisqu’il s’agit d’un virus. Si un traitement contre la fièvre est utile pour le confort de votre enfant, c’est le médecin ou le pharmacien qui vous indique lequel et comment l’utiliser selon son âge et son poids ; Santé.fr rappelle que certains médicaments contre la fièvre sont à éviter chez l’enfant.
-- Observez son comportement : un bébé qui sourit, boit et réagit entre deux pics de fièvre donne plus d’informations qu’un chiffre sur le thermomètre.
+- Surveille la température et note-la avec l’heure, pour en parler au médecin.
+- Propose à boire souvent : Santé.fr conseille de faire boire l’enfant abondamment.
+- Ne le couvre pas trop et évite qu’il ait trop chaud (pièce surchauffée, vêtements épais).
+- Les antibiotiques sont inutiles, puisqu’il s’agit d’un virus. Si un traitement contre la fièvre est utile pour le confort de ton enfant, c’est le médecin ou le pharmacien qui t’indique lequel et comment l’utiliser selon son âge et son poids ; Santé.fr rappelle que certains médicaments contre la fièvre sont à éviter chez l’enfant.
+- Observe son comportement : un bébé qui sourit, boit et réagit entre deux pics de fièvre donne plus d’informations qu’un chiffre sur le thermomètre.
 
 **Pendant l’éruption**
 - Il n’y a rien à appliquer : les taches disparaissent seules en un à deux jours.
 - Un bain tiède et des vêtements amples suffisent.
-- Collectivité : selon Santé.fr, l’isolement n’est pas nécessaire. Renseignez-vous tout de même sur les règles d’accueil d’un enfant fiévreux auprès de la crèche ou de l’assistante maternelle.
+- Collectivité : selon Santé.fr, l’isolement n’est pas nécessaire. Renseigne-toi tout de même sur les règles d’accueil d’un enfant fiévreux auprès de la crèche ou de l’assistante maternelle.
 
 **Pour les frères et sœurs** : le virus est peu contagieux ; le lavage des mains et des jouets portés à la bouche reste une bonne habitude.
 
 ## Questions fréquentes
 **Mon bébé a eu 3 jours de fièvre sans autre signe, puis des boutons. Faut-il consulter maintenant que tout va bien ?**
-Si un médecin a vu votre enfant pendant la fièvre, signalez-lui l’éruption lors de la prochaine visite ou par téléphone. Si personne ne l’a examiné, un avis reste utile pour confirmer qu’il s’agit bien d’une roséole et non d’une autre maladie éruptive.
+Si un médecin a vu ton enfant pendant la fièvre, signale-lui l’éruption lors de la prochaine visite ou par téléphone. Si personne ne l’a examiné, un avis reste utile pour confirmer qu’il s’agit bien d’une roséole et non d’une autre maladie éruptive.
 
 **La fièvre ne baisse pas malgré le traitement. Est-ce grave ?**
-Vidal indique que la fièvre de la roséole résiste souvent aux traitements, sans que cela soit forcément dangereux. Ce qui compte, c’est l’état de votre enfant : s’il boit, s’il réagit, s’il n’a pas de convulsions. Au moindre doute, appelez le médecin ou le 15.
+Vidal indique que la fièvre de la roséole résiste souvent aux traitements, sans que cela soit forcément dangereux. Ce qui compte, c’est l’état de ton enfant : s’il boit, s’il réagit, s’il n’a pas de convulsions. Au moindre doute, appelle le médecin ou le 15.
 
 **Mon enfant va à la crèche. Doit-il rester à la maison ?**
 Santé.fr indique que l’isolement n’est pas nécessaire. En pratique, un enfant fiévreux est souvent plus à l’aise chez lui, et chaque structure applique ses propres règles.
 
 **Je suis enceinte et mon aîné a la roséole.**
-Santé.fr indique que la roséole ne semble pas avoir d’effet négatif pendant la grossesse. Signalez-le tout de même à votre sage-femme ou à votre médecin.
+Santé.fr indique que la roséole ne semble pas avoir d’effet négatif pendant la grossesse. Signale-le tout de même à ta sage-femme ou à ton médecin.
 
 ## Quand demander conseil
-Consultez rapidement si votre bébé a **moins de 3 mois** et a de la fièvre, quel que soit le chiffre. Après 3 mois, consultez sans attendre si la fièvre dépasse **40 °C**, en cas de **convulsions**, de confusion, de vomissements, de refus de boire ou de somnolence inhabituelle (Santé.fr, Vidal). Une éruption qui vous inquiète, qui s’étend ou qui s’accompagne d’un enfant très abattu demande aussi un avis médical. ${URG}
+Consulte rapidement si ton bébé a **moins de 3 mois** et a de la fièvre, quel que soit le chiffre. Après 3 mois, consulte sans attendre si la fièvre dépasse **40 °C**, en cas de **convulsions**, de confusion, de vomissements, de refus de boire ou de somnolence inhabituelle (Santé.fr, Vidal). Une éruption qui t’inquiète, qui s’étend ou qui s’accompagne d’un enfant très abattu demande aussi un avis médical. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'rougeole-reconnaitre-contagiosite-vaccin-ror-quand-consulter',
-    title: 'Rougeole : la reconnaître, comprendre sa contagiosité et protéger votre enfant',
+    title: 'Rougeole : la reconnaître, comprendre sa contagiosité et protéger ton enfant',
     summary: 'Rhume, yeux rouges, toux et forte fièvre, puis une éruption qui descend du visage vers les pieds : les signes de la rougeole, sa très grande contagiosité, la vaccination ROR et les situations qui imposent de consulter.',
     category: 'sante-enfant', tags: ['rougeole', 'vaccin ROR', 'eruption rougeole', 'signe de Koplik', 'contagion', 'maladie a declaration obligatoire', 'fievre eruption', 'vaccination obligatoire'],
     journeys: ['newborn', 'child'], safety_critical: true,
@@ -134,23 +134,23 @@ L’éruption est faite de petites taches rouges légèrement surélevées, sép
 **La situation en France.** Selon ameli, 117 cas ont été déclarés en 2023, 483 en 2024 (30 % hospitalisés) et 873 en 2025 (36 % hospitalisés). Dans deux cas sur trois, la vaccination était absente ou incomplète.
 
 ## Au quotidien
-**Vérifier la protection de votre enfant**
-- Ouvrez le carnet de santé : deux doses de ROR sont attendues, à 12 mois puis entre 16 et 18 mois. Si la première dose a été faite avant 12 mois, une troisième dose est nécessaire (Vaccination Info Service).
+**Vérifier la protection de ton enfant**
+- Ouvre le carnet de santé : deux doses de ROR sont attendues, à 12 mois puis entre 16 et 18 mois. Si la première dose a été faite avant 12 mois, une troisième dose est nécessaire (Vaccination Info Service).
 - Toutes les personnes nées depuis 1980 devraient avoir reçu deux doses, à au moins un mois d’intervalle. Un adulte qui ne retrouve pas son carnet doit se considérer comme non protégé et se faire vacciner.
 - Le vaccin est pris en charge à 100 % de 1 à 17 ans.
 
-**Si votre enfant a été en contact avec un malade**
-- Appelez le médecin sans attendre : une dose de vaccin **dans les 3 jours** suivant le contact peut éviter la maladie. Chez un nourrisson de moins de 12 mois, une dose peut être proposée dans les 72 heures, suivie des deux doses habituelles à partir de 12 mois.
-- Si la vaccination est impossible (grossesse, défenses immunitaires affaiblies), d’autres mesures existent dans les 6 jours : parlez-en au médecin.
+**Si ton enfant a été en contact avec un malade**
+- Appelle le médecin sans attendre : une dose de vaccin **dans les 3 jours** suivant le contact peut éviter la maladie. Chez un nourrisson de moins de 12 mois, une dose peut être proposée dans les 72 heures, suivie des deux doses habituelles à partir de 12 mois.
+- Si la vaccination est impossible (grossesse, défenses immunitaires affaiblies), d’autres mesures existent dans les 6 jours : parles-en au médecin.
 
 **Si la rougeole est suspectée**
-- Restez à la maison, évitez les visites et **appelez le médecin avant de vous déplacer** (Vaccination Info Service), pour ne pas contaminer une salle d’attente.
+- Reste à la maison, évite les visites et **appelle le médecin avant de te déplacer** (Vaccination Info Service), pour ne pas contaminer une salle d’attente.
 - Il n’existe pas de traitement spécifique : repos, boissons, et soins de confort indiqués par le médecin. Les antibiotiques n’agissent pas sur ce virus.
-- Prévenez la crèche, l’école et les proches fragiles (femme enceinte, bébé non vacciné, personne immunodéprimée).
+- Préviens la crèche, l’école et les proches fragiles (femme enceinte, bébé non vacciné, personne immunodéprimée).
 
 ## Questions fréquentes
 **Mon bébé a 9 mois et nous partons dans une zone où la rougeole circule.**
-Vaccination Info Service indique que la vaccination est possible dès 6 mois dans ce cas, avec des doses à 12 et 16–18 mois ensuite. Demandez conseil au médecin avant le départ.
+Vaccination Info Service indique que la vaccination est possible dès 6 mois dans ce cas, avec des doses à 12 et 16–18 mois ensuite. Demande conseil au médecin avant le départ.
 
 **Le vaccin peut-il donner la rougeole ?**
 Les effets les plus fréquents sont une douleur au point d’injection et parfois de la fièvre dans les jours qui suivent. Une réaction allergique est très rare (1 cas sur 450 000). Un lien avec l’autisme n’a jamais été confirmé : l’étude de 1998 à l’origine de cette crainte a été retirée, et une étude danoise de 2019 portant sur 650 000 enfants ne montre aucune augmentation du risque.
@@ -159,7 +159,7 @@ Les effets les plus fréquents sont une douleur au point d’injection et parfoi
 Seule une maladie certaine dispense de vaccin. Vaccination Info Service précise que le vaccin peut être fait même à une personne qui l’a déjà eue ou déjà reçu des doses.
 
 ## Quand demander conseil
-Appelez le médecin le jour même devant une forte fièvre avec toux, yeux rouges et éruption, surtout si votre enfant n’est pas vacciné ou a moins d’un an, ou après un contact avec un malade. Consultez en urgence si votre enfant respire vite ou difficilement, s’il est très somnolent, confus, s’il convulse, s’il a des maux de tête violents ou s’il refuse de boire. Une femme enceinte en contact avec la rougeole doit contacter rapidement sa sage-femme ou son médecin. ${URG}
+Appelle le médecin le jour même devant une forte fièvre avec toux, yeux rouges et éruption, surtout si ton enfant n’est pas vacciné ou a moins d’un an, ou après un contact avec un malade. Consulte en urgence si ton enfant respire vite ou difficilement, s’il est très somnolent, confus, s’il convulse, s’il a des maux de tête violents ou s’il refuse de boire. Une femme enceinte en contact avec la rougeole doit contacter rapidement sa sage-femme ou son médecin. ${URG}
 
 ${FIN}`,
   }),
@@ -174,7 +174,7 @@ ${FIN}`,
 - L’urticaire se reconnaît à des **plaques rosées en relief**, arrondies, bien délimitées, qui démangent, **changent de place** et disparaissent en moins de 48 heures sans laisser de trace (ameli).
 - Chez l’enfant, la cause la plus fréquente d’urticaire aiguë est une **infection** (rhinopharyngite, angine, otite, bronchite) ; une allergie vraie est **rare**.
 - Une poussée isolée disparaît le plus souvent seule en quelques heures. Une urticaire qui dure plus d’une semaine, s’étend à tout le corps ou s’accompagne de fièvre demande une consultation.
-- **Appelez le 15** si les lèvres, la langue ou les paupières gonflent, si votre enfant a du mal à respirer ou à avaler, ou s’il fait un malaise.
+- **Appelle le 15** si les lèvres, la langue ou les paupières gonflent, si ton enfant a du mal à respirer ou à avaler, ou s’il fait un malaise.
 
 ## Comprendre
 **Ce qui se passe dans la peau.** Selon ameli, l’urticaire est provoquée par l’activation de cellules immunitaires de la peau, les mastocytes, qui libèrent de l’histamine. Le nom vient de l’ortie : les plaques ressemblent à des piqûres d’orties. Une personne sur cinq fait au moins une urticaire aiguë au cours de sa vie.
@@ -187,22 +187,22 @@ ${FIN}`,
 
 ## Au quotidien
 **Pendant une poussée**
-- Observez les plaques : notez l’heure d’apparition, leur localisation et ce que votre enfant a mangé, pris ou fait dans les heures précédentes. Ces informations aident le médecin.
-- Photographiez l’éruption : elle a souvent disparu au moment de la consultation.
-- Habillez votre enfant de vêtements amples en coton ; évitez le bain très chaud, qui augmente les démangeaisons.
-- Gardez ses ongles courts pour limiter les lésions de grattage.
-- Ameli indique que des crèmes locales peuvent calmer, avec une efficacité souvent limitée : demandez conseil au pharmacien ou au médecin avant d’appliquer un produit, et n’utilisez jamais un médicament d’un autre membre de la famille.
+- Observe les plaques : note l’heure d’apparition, leur localisation et ce que ton enfant a mangé, pris ou fait dans les heures précédentes. Ces informations aident le médecin.
+- Photographie l’éruption : elle a souvent disparu au moment de la consultation.
+- Habille ton enfant de vêtements amples en coton ; évite le bain très chaud, qui augmente les démangeaisons.
+- Garde ses ongles courts pour limiter les lésions de grattage.
+- Ameli indique que des crèmes locales peuvent calmer, avec une efficacité souvent limitée : demande conseil au pharmacien ou au médecin avant d’appliquer un produit, et n’utilise jamais un médicament d’un autre membre de la famille.
 
 **Vérifier qu’il s’agit bien d’urticaire**
 Lors d’une première éruption, ameli conseille de faire confirmer le diagnostic, car l’urticaire peut ressembler à un eczéma. Les plaques d’urticaire sont mobiles et s’effacent en moins de 48 heures ; une lésion qui reste au même endroit plusieurs jours n’est probablement pas une urticaire.
 
 **Après la poussée**
-- Si une cause a été identifiée (aliment, médicament, contact), évitez-la, et signalez-la à l’école, à la crèche et à tout professionnel qui prescrit à votre enfant.
+- Si une cause a été identifiée (aliment, médicament, contact), évite-la, et signale-la à l’école, à la crèche et à tout professionnel qui prescrit à ton enfant.
 - Une urticaire survenue pendant un rhume ou une angine n’impose pas de bilan allergique : le médecin décide s’il est utile.
 
 ## Questions fréquentes
 **Mon enfant a des plaques après un repas. Est-ce une allergie ?**
-Pas forcément : certains aliments déclenchent une urticaire sans allergie, et une infection en cours est la cause la plus fréquente chez l’enfant. Une allergie vraie survient dans les deux heures et peut s’accompagner d’autres signes (vomissements, gonflement, gêne respiratoire) : dans ce cas, appelez le 15.
+Pas forcément : certains aliments déclenchent une urticaire sans allergie, et une infection en cours est la cause la plus fréquente chez l’enfant. Une allergie vraie survient dans les deux heures et peut s’accompagner d’autres signes (vomissements, gonflement, gêne respiratoire) : dans ce cas, appelle le 15.
 
 **Est-ce contagieux ?**
 L’urticaire elle-même ne se transmet pas. L’infection qui l’a provoquée, elle, peut l’être.
@@ -214,7 +214,7 @@ Ameli conseille de consulter le médecin traitant quand l’urticaire dure plus 
 Si l’enfant est en forme et sans fièvre, rien ne s’y oppose en général ; c’est l’infection associée qui peut justifier de rester à la maison.
 
 ## Quand demander conseil
-Selon ameli, consultez le médecin **dans la journée** si l’éruption s’étend à tout le corps, si elle s’accompagne de fièvre, ou si votre enfant a une urticaire avec une toux persistante. Consultez **dans les jours qui viennent** si les plaques forment de larges placards, si les démangeaisons persistent plus de 24 heures malgré les conseils reçus, si l’urticaire dure plus d’une semaine ou récidive, si les articulations sont gonflées et douloureuses, ou si votre enfant est asthmatique. Appelez le **15** ou le **112** sans tarder si les lèvres, la langue ou les paupières gonflent avec une sensation de brûlure, s’il a du mal à respirer ou à avaler, ou si l’éruption s’accompagne d’un malaise, d’une pâleur, de sueurs ou d’une perte de connaissance. ${URG}
+Selon ameli, consulte le médecin **dans la journée** si l’éruption s’étend à tout le corps, si elle s’accompagne de fièvre, ou si ton enfant a une urticaire avec une toux persistante. Consulte **dans les jours qui viennent** si les plaques forment de larges placards, si les démangeaisons persistent plus de 24 heures malgré les conseils reçus, si l’urticaire dure plus d’une semaine ou récidive, si les articulations sont gonflées et douloureuses, ou si ton enfant est asthmatique. Appelle le **15** ou le **112** sans tarder si les lèvres, la langue ou les paupières gonflent avec une sensation de brûlure, s’il a du mal à respirer ou à avaler, ou si l’éruption s’accompagne d’un malaise, d’une pâleur, de sueurs ou d’une perte de connaissance. ${URG}
 
 ${FIN}`,
   }),
@@ -222,7 +222,7 @@ ${FIN}`,
   a({
     slug: 'passer-du-lit-a-barreaux-au-lit-de-grand-quand-comment',
     title: 'Du lit à barreaux au « lit de grand » : quand et comment faire la transition',
-    summary: 'Pas d’âge obligatoire, mais des repères : l’enfant qui escalade, le lit à barreaux prévu jusqu’à 3 ans, la literie après 2 ans, la sécurité de la chambre et les gestes qui aident votre enfant à adopter son nouveau lit.',
+    summary: 'Pas d’âge obligatoire, mais des repères : l’enfant qui escalade, le lit à barreaux prévu jusqu’à 3 ans, la literie après 2 ans, la sécurité de la chambre et les gestes qui aident ton enfant à adopter son nouveau lit.',
     category: 'sommeil', tags: ['lit de grand', 'lit a barreaux', 'transition lit', 'escalade barreaux', 'barriere de lit', 'chambre enfant', 'rituel du coucher', 'sommeil 2 ans'],
     min_age_months: 18, max_age_months: 48, journeys: ['newborn', 'child'],
     sources: [S.mpediaMateriel, S.morpheeBonnesPratiques, S.dgccrfLitsHauteur, S.mpediaCoucher],
@@ -230,46 +230,46 @@ ${FIN}`,
 - Il n’existe pas d’âge fixé : les pédiatres de mpedia indiquent que le **lit à barreaux** s’utilise de la naissance à **3 ans environ**, et le Réseau Morphée conseille de retirer les barrières **dès que l’enfant commence à les escalader**.
 - Avant 2 ans, mpedia déconseille drap, couverture, couette et oreiller : la gigoteuse reste la référence. Le changement de lit se prépare donc souvent **après 2 ans**.
 - Les **lits en hauteur** ou superposés ne conviennent pas avant **6 ans** (DGCCRF, Réseau Morphée).
-- Le secret d’une transition douce : un moment calme, un rituel inchangé et une chambre sécurisée, puisque votre enfant pourra désormais se lever seul.
+- Le secret d’une transition douce : un moment calme, un rituel inchangé et une chambre sécurisée, puisque ton enfant pourra désormais se lever seul.
 
 ## Comprendre
 **Pourquoi changer de lit.** Le lit à barreaux protège un enfant qui ne sait pas encore descendre seul. Le jour où il escalade les barreaux, il risque une chute de plus haut qu’un simple lit : c’est pour cela que le Réseau Morphée recommande de retirer les barrières dès les premières tentatives d’escalade. Dans son article sur le matériel de sommeil, mpedia situe l’usage du lit à barreaux de 0 à 3 ans, avec des montants d’au moins 60 cm. Un enfant qui se sent à l’étroit, qui réclame « un lit comme les grands » ou dont le lit à barreaux doit servir à un nouveau bébé sont d’autres raisons fréquentes.
 
-**Pourquoi ne pas se presser.** Un lit ouvert donne à l’enfant la liberté de se lever, la nuit comme à l’heure de la sieste. Avant 2 ans, beaucoup d’enfants n’ont pas encore la maturité pour rester couchés ; et la literie d’un « lit de grand » (couette, oreiller) n’est pas conseillée avant cet âge selon mpedia, qui recommande la gigoteuse pour toutes les nuits et siestes jusqu’à 2 ans. Il n’y a donc pas d’urgence tant que votre enfant n’escalade pas et dort bien.
+**Pourquoi ne pas se presser.** Un lit ouvert donne à l’enfant la liberté de se lever, la nuit comme à l’heure de la sieste. Avant 2 ans, beaucoup d’enfants n’ont pas encore la maturité pour rester couchés ; et la literie d’un « lit de grand » (couette, oreiller) n’est pas conseillée avant cet âge selon mpedia, qui recommande la gigoteuse pour toutes les nuits et siestes jusqu’à 2 ans. Il n’y a donc pas d’urgence tant que ton enfant n’escalade pas et dort bien.
 
-**Un lit qui évolue avec l’âge.** Le Réseau Morphée rappelle que le lit doit évoluer avec l’enfant, que les lits en hauteur sont déconseillés avant 6 ans et à éviter en cas de somnambulisme. La fiche de la DGCCRF précise que le couchage en hauteur ne convient pas aux enfants de moins de 6 ans et que l’accès doit leur en être interdit. Pour un premier « lit de grand », privilégiez un lit bas, au plus près du sol.
+**Un lit qui évolue avec l’âge.** Le Réseau Morphée rappelle que le lit doit évoluer avec l’enfant, que les lits en hauteur sont déconseillés avant 6 ans et à éviter en cas de somnambulisme. La fiche de la DGCCRF précise que le couchage en hauteur ne convient pas aux enfants de moins de 6 ans et que l’accès doit leur en être interdit. Pour un premier « lit de grand », privilégie un lit bas, au plus près du sol.
 
 ## Au quotidien
 **Choisir le bon moment**
-- Évitez de cumuler les changements : arrivée d’un bébé, entrée à la crèche ou à l’école, déménagement, apprentissage de la propreté. Si un nouveau-né doit récupérer le lit à barreaux, faites la transition plusieurs semaines avant la naissance, ou gardez temporairement un couffin ou un berceau pour le bébé (mpedia situe l’usage du berceau jusqu’à 6 mois environ).
-- Choisissez une période où votre enfant dort bien et n’est pas malade.
+- Évite de cumuler les changements : arrivée d’un bébé, entrée à la crèche ou à l’école, déménagement, apprentissage de la propreté. Si un nouveau-né doit récupérer le lit à barreaux, fais la transition plusieurs semaines avant la naissance, ou garde temporairement un couffin ou un berceau pour le bébé (mpedia situe l’usage du berceau jusqu’à 6 mois environ).
+- Choisis une période où ton enfant dort bien et n’est pas malade.
 
 **Préparer la chambre**
 - Lit bas, matelas ferme et adapté aux dimensions du cadre (mpedia). Une petite barrière amovible ou un matelas posé au sol le long du lit amortit les premières chutes.
-- Sécurisez tout ce que votre enfant pourra atteindre debout la nuit : fenêtres, prises, meubles qui peuvent basculer, cordons de rideaux. Rien ne doit pouvoir s’enrouler autour du cou.
-- Gardez l’obscurité, avec au besoin une veilleuse très faible (Réseau Morphée). Les écrans n’ont pas leur place dans la chambre.
+- Sécurise tout ce que ton enfant pourra atteindre debout la nuit : fenêtres, prises, meubles qui peuvent basculer, cordons de rideaux. Rien ne doit pouvoir s’enrouler autour du cou.
+- Garde l’obscurité, avec au besoin une veilleuse très faible (Réseau Morphée). Les écrans n’ont pas leur place dans la chambre.
 
 **Accompagner la transition**
-- Impliquez votre enfant : choisir la housse de couette, installer le doudou, « inaugurer » le lit par une sieste.
-- Gardez le **même rituel du coucher**, court et identique chaque soir (histoire, câlin, chanson, doudou) : c’est lui qui rassure, pas le lit (Réseau Morphée).
-- S’il se relève, reconduisez-le calmement dans son lit, sans négociation ni longue discussion, autant de fois que nécessaire. Le Réseau Morphée conseille de rester ferme et de féliciter les progrès.
-- Certains parents laissent le lit à barreaux quelques jours dans la chambre à côté du nouveau lit ; d’autres préfèrent le retirer d’emblée. Suivez la réaction de votre enfant.
+- Implique ton enfant : choisir la housse de couette, installer le doudou, « inaugurer » le lit par une sieste.
+- Garde le **même rituel du coucher**, court et identique chaque soir (histoire, câlin, chanson, doudou) : c’est lui qui rassure, pas le lit (Réseau Morphée).
+- S’il se relève, reconduis-le calmement dans son lit, sans négociation ni longue discussion, autant de fois que nécessaire. Le Réseau Morphée conseille de rester ferme et de féliciter les progrès.
+- Certains parents laissent le lit à barreaux quelques jours dans la chambre à côté du nouveau lit ; d’autres préfèrent le retirer d’emblée. Suis la réaction de ton enfant.
 
 ## Questions fréquentes
 **Mon enfant de 20 mois escalade déjà ses barreaux.**
-Le Réseau Morphée conseille de retirer les barrières dès l’escalade, parce que la chute depuis le haut des barreaux est dangereuse. Passez à un lit bas avec un matelas au sol à côté, et sécurisez la chambre. Parlez-en au médecin lors de la prochaine visite si vous hésitez.
+Le Réseau Morphée conseille de retirer les barrières dès l’escalade, parce que la chute depuis le haut des barreaux est dangereuse. Passe à un lit bas avec un matelas au sol à côté, et sécurise la chambre. Parles-en au médecin lors de la prochaine visite si tu hésites.
 
 **Depuis le nouveau lit, il vient nous rejoindre toutes les nuits.**
 C’est fréquent les premières semaines. Le Réseau Morphée recommande que chacun dorme dans son lit, autant que possible, et de ramener l’enfant dans sa chambre avec le même geste calme à chaque fois. Les visites brèves à intervalles croissants aident l’enfant à se rendormir seul.
 
 **Faut-il un lit évolutif ou un lit une place ?**
-Les deux conviennent, à condition que le couchage soit bas et stable, sans espace où l’enfant pourrait se coincer. Évitez les lits en hauteur avant 6 ans.
+Les deux conviennent, à condition que le couchage soit bas et stable, sans espace où l’enfant pourrait se coincer. Évite les lits en hauteur avant 6 ans.
 
 **Et la couette ?**
 Après 2 ans, une couette légère ou une couverture peut remplacer la gigoteuse ; avant, mpedia recommande de s’en tenir à la gigoteuse.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la puéricultrice de PMI si les nuits se dégradent durablement après le changement de lit, si votre enfant se réveille en hurlant sans se laisser consoler, s’il se lève et déambule la nuit sans sembler éveillé, ou si vous avez un doute sur la sécurité de sa chambre. Après une chute avec perte de connaissance, vomissements ou somnolence, appelez le **15** ou le **112**.
+Parles-en au médecin ou à la puéricultrice de PMI si les nuits se dégradent durablement après le changement de lit, si ton enfant se réveille en hurlant sans se laisser consoler, s’il se lève et déambule la nuit sans sembler éveillé, ou si tu as un doute sur la sécurité de sa chambre. Après une chute avec perte de connaissance, vomissements ou somnolence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   }),
@@ -277,7 +277,7 @@ ${FIN}`,
   a({
     slug: 'toilette-quotidienne-enfant-1-a-10-ans-mains-douche-cheveux-oreilles-ongles',
     title: 'La toilette de 1 à 10 ans : mains, douche, cheveux, oreilles, ongles et apprendre à se laver seul',
-    summary: 'Un bain ou une douche n’est pas indispensable chaque jour, les cheveux tous les 2 ou 3 jours, jamais de coton-tige dans le conduit de l’oreille : les repères des pédiatres et de l’Assurance maladie pour une hygiène simple, et les étapes pour que votre enfant devienne autonome.',
+    summary: 'Un bain ou une douche n’est pas indispensable chaque jour, les cheveux tous les 2 ou 3 jours, jamais de coton-tige dans le conduit de l’oreille : les repères des pédiatres et de l’Assurance maladie pour une hygiène simple, et les étapes pour que ton enfant devienne autonome.',
     category: 'sante-enfant', tags: ['toilette enfant', 'hygiene enfant', 'lavage des mains', 'douche enfant', 'shampoing enfant', 'coton-tige', 'oreilles', 'ongles', 'se laver seul', 'autonomie'],
     min_age_months: 12, max_age_months: 132, journeys: ['newborn', 'child'],
     sources: [S.mpediaToilette, S.ameliCerumen, S.santeHygieneBebe],
@@ -286,7 +286,7 @@ ${FIN}`,
 - Le bain **n’est pas indispensable tous les jours** ; les cheveux se lavent **tous les 2 ou 3 jours** avec un shampoing doux.
 - Les oreilles se nettoient **à l’entrée du conduit seulement** : pas de coton-tige, qui pousse le cérumen et peut former un bouchon ou blesser (mpedia, ameli).
 - Les mains se lavent **après les toilettes, avant les repas** et quand elles sont sales : un marchepied devant le lavabo aide l’enfant à le faire seul.
-- **Ne laissez jamais un enfant seul dans la baignoire**, même à 2 ou 3 ans, même un instant.
+- **Ne laisse jamais un enfant seul dans la baignoire**, même à 2 ou 3 ans, même un instant.
 
 ## Comprendre
 **Une hygiène simple suffit.** La peau de l’enfant ne demande pas de produits multiples. Santé.fr conseille, pour le bébé, un savon simple, sans parfum ni antibactérien, et de limiter les lingettes ; ces principes restent valables en grandissant. Mpedia rappelle qu’un bain quotidien n’est pas indispensable : plus l’enfant grandit, plus il se salit en jouant, et le bain devient surtout un moment de détente apprécié. En cas de peau sèche ou d’eczéma, le pédiatre de mpedia conseille d’espacer les bains (un tous les deux ou trois jours), un savon surgras et une crème émolliente à la sortie de l’eau.
@@ -299,39 +299,39 @@ ${FIN}`,
 **Les mains.** Eau et savon, en frottant paumes, dos, entre les doigts et sous les ongles, puis bien sécher. Avant les repas, après les toilettes, après être rentré de l’extérieur, après avoir touché un animal ou s’être mouché. Un marchepied et un savon accessible rendent le geste possible sans aide (mpedia).
 
 **Le bain ou la douche.**
-- Température agréable, vérifiée avec le coude ou un thermomètre de bain ; l’eau du bain refroidit vite, rajoutez de l’eau chaude en écartant l’enfant du robinet (mpedia).
+- Température agréable, vérifiée avec le coude ou un thermomètre de bain ; l’eau du bain refroidit vite, rajoute de l’eau chaude en écartant l’enfant du robinet (mpedia).
 - Tapis antidérapant ou motifs autocollants au fond de la baignoire.
-- Jamais seul, même un instant : « un enfant peut se noyer dans très peu d’eau et sans faire le moindre bruit » (mpedia). Préparez tout avant, et ignorez le téléphone.
-- Vers 5–6 ans, beaucoup d’enfants préfèrent la douche ; restez à proximité tant qu’il n’est pas à l’aise avec le robinet.
+- Jamais seul, même un instant : « un enfant peut se noyer dans très peu d’eau et sans faire le moindre bruit » (mpedia). Prépare tout avant, et ignore le téléphone.
+- Vers 5–6 ans, beaucoup d’enfants préfèrent la douche ; reste à proximité tant qu’il n’est pas à l’aise avec le robinet.
 
-**Le visage.** À l’eau et au savon, en aidant l’enfant ; apprenez-lui à ne pas oublier le cou et derrière les oreilles.
+**Le visage.** À l’eau et au savon, en aidant l’enfant ; apprends-lui à ne pas oublier le cou et derrière les oreilles.
 
 **Les cheveux.** Shampoing doux, éventuellement spécial enfants, tous les 2 ou 3 jours. Une visière de bain ou la tête penchée en arrière limite le savon dans les yeux.
 
 **Les oreilles.** Entrée du conduit seulement, avec un linge humide ou le jet de la douche. Pas de coton-tige dans le conduit, ni pour l’enfant ni pour l’adulte.
 
-**Les ongles.** Vérifiez leur longueur à chaque toilette et coupez-les régulièrement avec des ciseaux à bout rond, sans laisser de pointes sur les côtés (mpedia). Vers 8–10 ans, montrez à votre enfant comment faire lui-même.
+**Les ongles.** Vérifie leur longueur à chaque toilette et coupe-les régulièrement avec des ciseaux à bout rond, sans laisser de pointes sur les côtés (mpedia). Vers 8–10 ans, montre à ton enfant comment faire lui-même.
 
 **La toilette intime.** Un nettoyage en surface, de l’avant vers l’arrière, à l’eau et au savon doux, puis sécher. Chez la fille, Santé.fr précise de ne pas frotter entre les lèvres ; chez le garçon non circoncis, de ne pas décalotter.
 
 **Apprendre à se laver seul, étape par étape**
-1. Entre 1 et 3 ans : il participe (se savonne, se rince avec le pommeau, se sèche avec vous).
-2. Entre 3 et 6 ans : il se lave sous votre regard, vous vérifiez les « oubliés » (cou, aisselles, pieds, fesses) et vous faites les cheveux.
-3. À partir de 6–7 ans : douche seul avec la porte ouverte, shampoing avec aide puis seul ; vous restez disponible.
+1. Entre 1 et 3 ans : il participe (se savonne, se rince avec le pommeau, se sèche avec toi).
+2. Entre 3 et 6 ans : il se lave sous ton regard, tu vérifies les « oubliés » (cou, aisselles, pieds, fesses) et tu fais les cheveux.
+3. À partir de 6–7 ans : douche seul avec la porte ouverte, shampoing avec aide puis seul ; tu restes disponible.
 4. Vers 9–10 ans : toilette complète seul, y compris ongles et cheveux ; un rappel des bases reste utile à l’approche de la puberté.
 
 ## Questions fréquentes
 **Mon enfant déteste le shampoing.**
-Espacez-les (tous les 2 ou 3 jours suffisent), utilisez une visière ou un gant sur les yeux, laissez-le tenir le pommeau et verser lui-même l’eau. Mpedia suggère jeux, chansons et jouets d’eau pour rendre le moment agréable.
+Espace-les (tous les 2 ou 3 jours suffisent), utilise une visière ou un gant sur les yeux, laisse-le tenir le pommeau et verser lui-même l’eau. Mpedia suggère jeux, chansons et jouets d’eau pour rendre le moment agréable.
 
 **Il a du cérumen visible dans l’oreille.**
-Nettoyez uniquement ce qui est visible à l’entrée, avec un linge humide. En cas de bouchon persistant ou de douleur, consultez le médecin : ameli précise qu’un bouchon non retiré peut grossir, durcir ou irriter le conduit.
+Nettoie uniquement ce qui est visible à l’entrée, avec un linge humide. En cas de bouchon persistant ou de douleur, consulte le médecin : ameli précise qu’un bouchon non retiré peut grossir, durcir ou irriter le conduit.
 
 **À quel âge peut-il rester seul dans la salle de bains ?**
 Il n’y a pas d’âge officiel. Tant que l’enfant est dans l’eau et jusqu’à ce qu’il maîtrise le robinet et l’équilibre, un adulte reste présent ou à portée de voix, porte ouverte.
 
 ## Quand demander conseil
-Consultez le médecin si la peau devient rouge, sèche, fissurée ou démange malgré une hygiène douce, en cas de douleur ou d’écoulement de l’oreille, de bouchon de cérumen persistant, d’ongle incarné, de rougeurs persistantes au niveau des parties intimes, ou si votre enfant refuse durablement toute toilette. Après un objet introduit dans l’oreille, ne tentez pas de le retirer vous-même et consultez. En cas de noyade ou de malaise dans le bain, appelez le **15** ou le **112**.
+Consulte le médecin si la peau devient rouge, sèche, fissurée ou démange malgré une hygiène douce, en cas de douleur ou d’écoulement de l’oreille, de bouchon de cérumen persistant, d’ongle incarné, de rougeurs persistantes au niveau des parties intimes, ou si ton enfant refuse durablement toute toilette. Après un objet introduit dans l’oreille, ne tente pas de le retirer toi-même et consulte. En cas de noyade ou de malaise dans le bain, appelle le **15** ou le **112**.
 
 ${FIN}`,
   }),
@@ -357,18 +357,18 @@ ${FIN}`,
 - une **oxyurose** : les petits vers blancs pondent autour de l’anus la nuit, l’enfant se gratte et, chez la fille, cela peut provoquer une vulvite avec parfois des difficultés à uriner ou des fuites (ameli, page sur les oxyures) ;
 - un **corps étranger** introduit dans le vagin (papier, coton, bille, crayon), qui provoque souvent un écoulement malodorant et demande une consultation urgente.
 
-**Ce que vous pouvez observer.** Une rougeur de la vulve, des démangeaisons ou des brûlures, des lèvres enflées et sensibles, parfois des pertes, une gêne pour uriner, un enfant qui se gratte ou se plaint en s’essuyant. Ameli décrit, selon la cause, des pertes blanchâtres épaisses, fluides et malodorantes, ou absentes en cas de simple irritation.
+**Ce que tu peux observer.** Une rougeur de la vulve, des démangeaisons ou des brûlures, des lèvres enflées et sensibles, parfois des pertes, une gêne pour uriner, un enfant qui se gratte ou se plaint en s’essuyant. Ameli décrit, selon la cause, des pertes blanchâtres épaisses, fluides et malodorantes, ou absentes en cas de simple irritation.
 
 **Les facteurs qui entretiennent l’irritation** : vêtements serrés ou synthétiques, bains moussants et produits parfumés, douches vaginales (à proscrire), humidité d’un maillot gardé longtemps, papier toilette parfumé, essuyage d’arrière en avant.
 
 ## Au quotidien
 **La toilette**
-- Une fois par jour, à l’eau tiède et au savon doux non parfumé, **en surface** : Santé.fr indique de ne pas frotter entre les lèvres de la vulve. Rincez et séchez en tamponnant.
+- Une fois par jour, à l’eau tiède et au savon doux non parfumé, **en surface** : Santé.fr indique de ne pas frotter entre les lèvres de la vulve. Rince et sèche en tamponnant.
 - Après les selles, un nettoyage à l’eau et au savon puis un bon rinçage, toujours **du sexe vers les fesses** (Santé.fr).
 - Pas de bain moussant, pas de gel parfumé, pas de lingettes au quotidien.
 
 **Aux toilettes**
-- Apprenez à votre fille à s’essuyer **de l’avant vers l’arrière**, et à ne pas se retenir d’uriner.
+- Apprends à ta fille à s’essuyer **de l’avant vers l’arrière**, et à ne pas se retenir d’uriner.
 - Genoux écartés et pieds sur un marchepied pour que l’urine ne reflue pas vers la vulve.
 
 **Les vêtements**
@@ -377,9 +377,9 @@ ${FIN}`,
 - Dormir sans culotte sous le pyjama peut aider à aérer en cas d’irritation.
 
 **En cas de démangeaisons**
-- Évitez les crèmes ou produits « intimes » sans avis : certains irritent davantage. Le pharmacien ou le médecin vous orientera.
+- Évite les crèmes ou produits « intimes » sans avis : certains irritent davantage. Le pharmacien ou le médecin t’orientera.
 - Ongles courts pour limiter les lésions de grattage.
-- Si les démangeaisons sont surtout nocturnes et touchent aussi l’anus, pensez aux oxyures : ameli indique que les parents peuvent chercher de petits vers blancs mobiles dans les selles, sur l’anus ou dans les sous-vêtements, et consulter en cas de doute.
+- Si les démangeaisons sont surtout nocturnes et touchent aussi l’anus, pense aux oxyures : ameli indique que les parents peuvent chercher de petits vers blancs mobiles dans les selles, sur l’anus ou dans les sous-vêtements, et consulter en cas de doute.
 
 ## Questions fréquentes
 **Ma fille de 5 ans a des pertes blanches. Est-ce inquiétant ?**
@@ -389,20 +389,20 @@ Des pertes peu abondantes, sans odeur et sans rougeur ni douleur peuvent être o
 Non : un savon doux sans parfum suffit. Ameli cite les savons intimes parmi les produits qui peuvent irriter.
 
 **Elle a mal en faisant pipi.**
-Une douleur en urinant peut venir de l’irritation de la vulve, mais aussi d’une infection urinaire, que ameli cite parmi les causes de vulvo-vaginite chez la petite fille. Consultez le médecin, qui pourra demander une analyse d’urine.
+Une douleur en urinant peut venir de l’irritation de la vulve, mais aussi d’une infection urinaire, que ameli cite parmi les causes de vulvo-vaginite chez la petite fille. Consulte le médecin, qui pourra demander une analyse d’urine.
 
 **Peut-elle aller à la piscine ?**
-Oui, en retirant le maillot mouillé dès la sortie et en rinçant à l’eau claire. Si une irritation est en cours, attendez la guérison.
+Oui, en retirant le maillot mouillé dès la sortie et en rinçant à l’eau claire. Si une irritation est en cours, attends la guérison.
 
 ## Quand demander conseil
-Consultez le médecin ou le pédiatre si la rougeur et les démangeaisons persistent après quelques jours de toilette douce, en cas de pertes épaisses ou malodorantes, de douleur ou de brûlure en urinant, de fièvre, de saignement, de petits vers visibles, ou si vous suspectez un corps étranger (consultation urgente selon ameli). Toute lésion inexpliquée, ou un changement de comportement associé, doit aussi être signalé au médecin. Si vous pensez qu’un enfant est en danger, appelez le **119**.
+Consulte le médecin ou le pédiatre si la rougeur et les démangeaisons persistent après quelques jours de toilette douce, en cas de pertes épaisses ou malodorantes, de douleur ou de brûlure en urinant, de fièvre, de saignement, de petits vers visibles, ou si tu suspectes un corps étranger (consultation urgente selon ameli). Toute lésion inexpliquée, ou un changement de comportement associé, doit aussi être signalé au médecin. Si tu penses qu’un enfant est en danger, appelle le **119**.
 
 ${FIN}`,
   }),
   // ------------------------------------------------------------ droits
   a({
     slug: 'allaiter-ou-tirer-son-lait-reprise-du-travail-droits-organisation-conservation',
-    title: 'Allaiter ou tirer son lait en reprenant le travail : vos droits, l’organisation et la conservation du lait',
+    title: 'Allaiter ou tirer son lait en reprenant le travail : tes droits, l’organisation et la conservation du lait',
     summary: 'Une heure par jour pour allaiter ou tirer son lait pendant un an, un local obligatoire au-delà de 100 salariés, un tire-lait pris en charge sur ordonnance, et des durées de conservation précises : ce que prévoient la loi et les pédiatres pour continuer l’allaitement après le congé maternité.',
     category: 'droits-demarches', tags: ['allaitement et travail', 'heure d allaitement', 'tirer son lait', 'tire-lait', 'local d allaitement', 'conservation lait maternel', 'reprise du travail', 'code du travail', 'allaitement mixte'],
     min_age_months: 0, max_age_months: 12, journeys: ['newborn'],
@@ -416,53 +416,53 @@ ${FIN}`,
 ## Comprendre
 **Trois façons d’organiser l’allaitement après la reprise** (mpedia) :
 1. **Allaitement exclusif en tirant son lait** au travail, pour couvrir les prises données par la crèche ou l’assistante maternelle. L’OMS recommande l’allaitement exclusif jusqu’à 6 mois ; mpedia ajoute que, pour les mères très contraintes, 4 mois d’allaitement exclusif restent très bénéfiques.
-2. **Allaitement mixte** : vous gardez les tétées où vous êtes présente (matin, soir, week-end, congés) et une préparation infantile remplace les autres, selon les conseils du médecin. Quelques jours d’habituation suffisent en général ; surveillez les engorgements, qui se soulagent à la main ou au tire-lait.
+2. **Allaitement mixte** : tu gardes les tétées où tu es présente (matin, soir, week-end, congés) et une préparation infantile remplace les autres, selon les conseils du médecin. Quelques jours d’habituation suffisent en général ; surveille les engorgements, qui se soulagent à la main ou au tire-lait.
 3. **Sevrage progressif**, commencé environ 3 semaines avant la reprise, total ou partiel.
 
-Mpedia rappelle que toutes ces options sont possibles, que le choix dépend de vos préférences et de vos contraintes, et que même si l’allaitement s’arrête, les premiers mois ont déjà apporté l’essentiel à votre bébé.
+Mpedia rappelle que toutes ces options sont possibles, que le choix dépend de tes préférences et de tes contraintes, et que même si l’allaitement s’arrête, les premiers mois ont déjà apporté l’essentiel à ton bébé.
 
-**Vos droits** (Service-Public.fr, articles L1225-30 à L1225-33 et R4152-13 et suivants du Code du travail) :
+**Tes droits** (Service-Public.fr, articles L1225-30 à L1225-33 et R4152-13 et suivants du Code du travail) :
 - une pause d’allaitement d’**une heure par jour**, répartie en deux périodes de 30 minutes ; sans accord avec l’employeur, elles se placent au milieu de chaque demi-journée ;
 - si l’employeur met à disposition un **local dédié** dans ou près des locaux, la durée est réduite à **20 minutes** ;
 - ces pauses ne sont pas rémunérées, sauf si un accord collectif le prévoit ;
 - dans les entreprises de **100 salariés ou plus**, le local doit être séparé des espaces de travail, aéré, éclairé, propre, avec un point d’eau à proximité et des sièges adaptés ; l’inspecteur du travail peut imposer son aménagement ;
-- en dessous de 100 salariés, aucun local n’est obligatoire, mais vous devez pouvoir vous reposer allongée dans des conditions convenables, et allaiter sur place ou à l’extérieur.
+- en dessous de 100 salariés, aucun local n’est obligatoire, mais tu dois pouvoir te reposer allongée dans des conditions convenables, et allaiter sur place ou à l’extérieur.
 
-Ces règles concernent les salariées ; les agents de la fonction publique relèvent de textes propres : renseignez-vous auprès de votre service des ressources humaines.
+Ces règles concernent les salariées ; les agents de la fonction publique relèvent de textes propres : renseigne-toi auprès de ton service des ressources humaines.
 
 ## Au quotidien
 **Avant la reprise**
-- Parlez-en à votre employeur ou aux ressources humaines quelques semaines avant : horaires des pauses, lieu, accès à un réfrigérateur. Mpedia présente le télétravail, même quelques jours par semaine, comme une aide précieuse.
-- Demandez une **ordonnance** pour un tire-lait : mpedia indique que la location est prise en charge par l’Assurance maladie quand le matériel est prescrit (maternité, médecin, sage-femme), à condition de renouveler l’ordonnance. Un modèle électrique à double pompage est recommandé pour un usage régulier.
-- Constituez de petites réserves (60 à 90 ml) à congeler, une fois la lactation bien installée, soit environ un mois après la naissance (mpedia).
-- Présentez le biberon ou une tasse à votre bébé avec une autre personne que vous, quelques jours avant.
+- Parles-en à ton employeur ou aux ressources humaines quelques semaines avant : horaires des pauses, lieu, accès à un réfrigérateur. Mpedia présente le télétravail, même quelques jours par semaine, comme une aide précieuse.
+- Demande une **ordonnance** pour un tire-lait : mpedia indique que la location est prise en charge par l’Assurance maladie quand le matériel est prescrit (maternité, médecin, sage-femme), à condition de renouveler l’ordonnance. Un modèle électrique à double pompage est recommandé pour un usage régulier.
+- Constitue de petites réserves (60 à 90 ml) à congeler, une fois la lactation bien installée, soit environ un mois après la naissance (mpedia).
+- Présente le biberon ou une tasse à ton bébé avec une autre personne que toi, quelques jours avant.
 
 **Au travail**
-- Lavez-vous soigneusement les mains avant chaque séance ; mpedia indique qu’une séance de double pompage ne dépasse pas 20 minutes.
-- Si le lait ne coule plus après une dizaine de minutes, mpedia suggère de relancer le réflexe d’éjection à la main ou avec le mode « stimulation » du tire-lait. Une photo ou une vidéo de votre bébé peut aider.
-- Conservez le lait au réfrigérateur du lieu de travail, puis transportez-le dans une glacière avec pack réfrigérant sans dépasser 15 °C : l’important est de ne jamais rompre la chaîne du froid.
+- Lave-toi soigneusement les mains avant chaque séance ; mpedia indique qu’une séance de double pompage ne dépasse pas 20 minutes.
+- Si le lait ne coule plus après une dizaine de minutes, mpedia suggère de relancer le réflexe d’éjection à la main ou avec le mode « stimulation » du tire-lait. Une photo ou une vidéo de ton bébé peut aider.
+- Conserve le lait au réfrigérateur du lieu de travail, puis transporte-le dans une glacière avec pack réfrigérant sans dépasser 15 °C : l’important est de ne jamais rompre la chaîne du froid.
 
 **La conservation** (mpedia, d’après l’Anses)
 - Température ambiante (19 à 22 °C) : **1 heure maximum**.
 - Réfrigérateur (4 °C ou moins) : **48 heures**.
-- Congélateur (−18 °C) : **4 mois** ; congelez dans les 24 heures suivant le tirage, après refroidissement au réfrigérateur, dans des contenants en verre ou polypropylène remplis aux trois quarts, datés.
+- Congélateur (−18 °C) : **4 mois** ; congèle dans les 24 heures suivant le tirage, après refroidissement au réfrigérateur, dans des contenants en verre ou polypropylène remplis aux trois quarts, datés.
 - Lait décongelé : au réfrigérateur, puis à utiliser dans les 24 heures ; jamais recongelé.
 - Réchauffage au bain-marie ou au chauffe-biberon, jamais au micro-ondes ; à donner dans la demi-heure, et jeter le reste.
 
-**Pour la personne qui garde votre bébé** : transmettez ces consignes par écrit, avec la date et l’heure de chaque contenant.
+**Pour la personne qui garde ton bébé** : transmets ces consignes par écrit, avec la date et l’heure de chaque contenant.
 
 ## Questions fréquentes
 **Mon employeur refuse les pauses d’allaitement.**
-Elles sont prévues par le Code du travail pendant un an à compter de la naissance. Rappelez les textes par écrit ; en cas de blocage, l’inspection du travail et les représentants du personnel peuvent vous aider.
+Elles sont prévues par le Code du travail pendant un an à compter de la naissance. Rappelle les textes par écrit ; en cas de blocage, l’inspection du travail et les représentants du personnel peuvent t’aider.
 
 **Ma lactation baisse depuis la reprise.**
-C’est fréquent au début, le temps que la lactation s’adapte au nouveau rythme. Les tétées du matin, du soir et du week-end, des séances de tirage régulières et un repos suffisant aident. Une consultante en lactation, une sage-femme ou la PMI peuvent vous accompagner.
+C’est fréquent au début, le temps que la lactation s’adapte au nouveau rythme. Les tétées du matin, du soir et du week-end, des séances de tirage régulières et un repos suffisant aident. Une consultante en lactation, une sage-femme ou la PMI peuvent t’accompagner.
 
 **Mon bébé refuse le biberon à la crèche.**
-Beaucoup de bébés compensent par des tétées plus fréquentes le soir et la nuit. Certaines structures proposent une tasse ou une cuillère. Parlez-en à l’équipe et au médecin si la prise de poids vous inquiète.
+Beaucoup de bébés compensent par des tétées plus fréquentes le soir et la nuit. Certaines structures proposent une tasse ou une cuillère. Parles-en à l’équipe et au médecin si la prise de poids t’inquiète.
 
 ## Quand demander conseil
-Consultez votre sage-femme, votre médecin ou la PMI en cas de sein rouge, chaud et douloureux avec fièvre, de crevasses qui ne guérissent pas, de baisse de lactation qui vous inquiète, ou si votre bébé mouille moins de couches, semble affamé en permanence ou ne prend pas de poids. Pour vos droits, votre service des ressources humaines, l’inspection du travail ou votre caisse d’Assurance maladie peuvent vous renseigner.
+Consulte ta sage-femme, ton médecin ou la PMI en cas de sein rouge, chaud et douloureux avec fièvre, de crevasses qui ne guérissent pas, de baisse de lactation qui t’inquiète, ou si ton bébé mouille moins de couches, semble affamé en permanence ou ne prend pas de poids. Pour tes droits, ton service des ressources humaines, l’inspection du travail ou ta caisse d’Assurance maladie peuvent te renseigner.
 
 ${FIN}`,
   }),
@@ -476,17 +476,17 @@ ${FIN}`,
     sources: [S.hasTnd, S.sospremaNouveauNe, S.sospremaSuivi, S.mpediaPrema],
     body_md: `## En bref
 - Un bébé est prématuré quand il naît **avant 37 semaines d’aménorrhée (SA)** ; le terme est fixé à 40 SA (SOS Préma, HAS).
-- L’**âge corrigé** est l’âge que votre bébé aurait s’il était né à terme : on le compte à partir de la **date prévue du terme**, et non de la naissance (SOS Préma).
+- L’**âge corrigé** est l’âge que ton bébé aurait s’il était né à terme : on le compte à partir de la **date prévue du terme**, et non de la naissance (SOS Préma).
 - Il sert à juger les acquisitions (motricité, éveil) à leur juste mesure. La HAS recommande d’en tenir compte **jusqu’à 2 ans d’âge réel** pour rechercher les signes d’alerte du développement.
 - Les **vaccins**, eux, se font à l’**âge réel**, sans retard (SOS Préma).
 
 ## Comprendre
 **Trois âges pour un même bébé.** SOS Préma distingue l’âge gestationnel (le nombre de semaines de grossesse à la naissance, fixe), l’âge réel ou chronologique (compté depuis la naissance) et l’âge corrigé, aussi appelé âge post-menstruel, « l’âge que l’enfant devrait avoir s’il était né à terme ». Le pédiatre de mpedia le résume ainsi : l’âge corrigé correspond à l’âge gestationnel, et on s’en sert pour juger les acquisitions motrices du bébé prématuré.
 
-**Le calcul.** Soustrayez de l’âge réel le nombre de semaines manquantes jusqu’à 40 SA.
+**Le calcul.** Soustrais de l’âge réel le nombre de semaines manquantes jusqu’à 40 SA.
 - Exemple de mpedia : une petite fille née à 34 SA, âgée de presque 7 semaines, a un âge corrigé de 41 semaines, soit **une semaine** d’âge corrigé.
 - Autre exemple : un bébé né à 32 SA a 8 semaines « d’avance ». À 5 mois d’âge réel, son âge corrigé est d’environ 3 mois.
-- Le plus simple : notez la date prévue du terme (elle figure dans le dossier de grossesse) et comptez l’âge de votre bébé à partir de cette date.
+- Le plus simple : note la date prévue du terme (elle figure dans le dossier de grossesse) et compte l’âge de ton bébé à partir de cette date.
 
 **Pourquoi c’est utile.** Un bébé né deux mois avant terme n’a pas eu ces deux mois de maturation : comparer son sourire, sa tenue de tête ou sa position assise à ceux d’un bébé né à terme du même âge réel serait injuste et source d’inquiétude. SOS Préma indique que l’âge corrigé sert de repère pour suivre le développement pendant la phase initiale. La HAS précise que, pour un enfant né avant 37 SA, le repérage des signes d’alerte tient compte de l’âge par rapport au terme **jusqu’à 2 ans d’âge chronologique**.
 
@@ -494,9 +494,9 @@ ${FIN}`,
 
 ## Au quotidien
 **Utiliser l’âge corrigé sans s’y perdre**
-- Notez les deux dates (naissance et terme prévu) en première page du carnet de santé et indiquez-les à chaque nouveau professionnel.
-- Pour les étapes du développement (tenir sa tête, se retourner, s’asseoir), les jeux et le matériel d’éveil, raisonnez en âge corrigé.
-- Pour les vaccins, raisonnez en âge réel : SOS Préma rappelle que les 11 vaccins obligatoires se font selon l’âge réel, sans délai ; pour les bébés nés avant 32 SA, la première injection est souvent faite avant la sortie de néonatologie.
+- Note les deux dates (naissance et terme prévu) en première page du carnet de santé et indique-les à chaque nouveau professionnel.
+- Pour les étapes du développement (tenir sa tête, se retourner, s’asseoir), les jeux et le matériel d’éveil, raisonne en âge corrigé.
+- Pour les vaccins, raisonne en âge réel : SOS Préma rappelle que les 11 vaccins obligatoires se font selon l’âge réel, sans délai ; pour les bébés nés avant 32 SA, la première injection est souvent faite avant la sortie de néonatologie.
 - Pour l’alimentation (diversification), le rythme est décidé avec le pédiatre, qui tient compte des deux âges.
 
 **Le suivi** (SOS Préma, HAS)
@@ -504,14 +504,14 @@ ${FIN}`,
 - Pour les enfants à haut risque, la HAS recommande des tests de repérage standardisés à 9, 18, 24 et 30–36 mois, puis à 4 et 5 ans, et un dépistage spécifique de l’autisme à 18 et 24 mois. Pour les risques modérés, une consultation de repérage chez le médecin traitant, de PMI ou scolaire.
 - Selon ses besoins, l’enfant peut être accompagné par un kinésithérapeute, un psychomotricien, un orthophoniste, un ophtalmologue ou un psychologue.
 
-**L’éveil.** Mpedia indique que les mêmes activités que pour un bébé né à terme conviennent, en respectant son grand besoin de sommeil : de courtes stimulations, de longues périodes de calme, et des câlins. Pour observer son regard, placez-vous près de lui quand il est éveillé et calme, et bougez très lentement.
+**L’éveil.** Mpedia indique que les mêmes activités que pour un bébé né à terme conviennent, en respectant son grand besoin de sommeil : de courtes stimulations, de longues périodes de calme, et des câlins. Pour observer son regard, place-toi près de lui quand il est éveillé et calme, et bouge très lentement.
 
 ## Questions fréquentes
 **Jusqu’à quand parler en âge corrigé ?**
 La HAS l’utilise jusqu’à 2 ans d’âge réel pour le repérage des signes d’alerte. Au-delà, les professionnels raisonnent le plus souvent en âge réel, tout en gardant en mémoire la prématurité.
 
 **Mon bébé de 6 mois ne tient pas assis. Faut-il s’inquiéter ?**
-Comptez d’abord son âge corrigé : né à 30 SA, il a environ 3 mois et demi d’âge corrigé, un âge où la position assise n’est pas attendue. Posez la question au médecin du réseau de suivi, qui évaluera l’ensemble de son développement.
+Compte d’abord son âge corrigé : né à 30 SA, il a environ 3 mois et demi d’âge corrigé, un âge où la position assise n’est pas attendue. Pose la question au médecin du réseau de suivi, qui évaluera l’ensemble de son développement.
 
 **L’âge corrigé change-t-il la date des examens du carnet de santé ?**
 Les examens obligatoires suivent le calendrier habituel ; la HAS indique que les signes d’appel y sont recherchés avec correction pour les prématurés jusqu’à 2 ans.
@@ -520,7 +520,7 @@ Les examens obligatoires suivent le calendrier habituel ; la HAS indique que les
 La HAS prévoit la correction pour tout enfant né avant 37 SA. La différence est faible mais réelle pendant les premiers mois.
 
 ## Quand demander conseil
-En dehors des visites programmées, SOS Préma conseille de consulter, surtout la première année, en cas de fièvre, de toux, de respiration sifflante, de vomissements, de refus de s’alimenter ou de comportement inhabituel. Parlez au médecin du réseau de suivi de toute inquiétude sur le regard, le tonus, les mouvements asymétriques, l’absence de sourire ou de babillage à l’âge corrigé attendu. Une difficulté à respirer, une pâleur ou une somnolence inhabituelle imposent d’appeler le **15** ou le **112**.
+En dehors des visites programmées, SOS Préma conseille de consulter, surtout la première année, en cas de fièvre, de toux, de respiration sifflante, de vomissements, de refus de s’alimenter ou de comportement inhabituel. Parle au médecin du réseau de suivi de toute inquiétude sur le regard, le tonus, les mouvements asymétriques, l’absence de sourire ou de babillage à l’âge corrigé attendu. Une difficulté à respirer, une pâleur ou une somnolence inhabituelle imposent d’appeler le **15** ou le **112**.
 
 ${FIN}`,
   }),
@@ -528,61 +528,61 @@ ${FIN}`,
   a({
     slug: 'expliquer-rendez-vous-examen-medical-enfant-sans-mentir-ni-dramatiser',
     title: 'Expliquer un rendez-vous ou un examen médical à son enfant, sans mentir ni dramatiser',
-    summary: 'Prise de sang, vaccin, dentiste, hôpital : les mots qui préparent sans effrayer, ce qu’il ne faut jamais dire (« ça ne fait pas mal »), votre place pendant le soin et ce qui aide après, d’après l’association SPARADRAP et Santé publique France.',
+    summary: 'Prise de sang, vaccin, dentiste, hôpital : les mots qui préparent sans effrayer, ce qu’il ne faut jamais dire (« ça ne fait pas mal »), ta place pendant le soin et ce qui aide après, d’après l’association SPARADRAP et Santé publique France.',
     category: 'sante-enfant', tags: ['preparer enfant examen', 'prise de sang enfant', 'vaccin enfant peur', 'dentiste enfant', 'hopital enfant', 'peur des piqures', 'sparadrap', 'patch anesthesiant', 'distraction'],
     journeys: ['newborn', 'child'],
     sources: [S.sparadrapAider, S.santeVaccinPreparer, S.sparadrapPriseSang],
     body_md: `## En bref
-- Expliquez **pourquoi** l’examen est nécessaire, **à quoi** il sert et **comment** il va se passer, avec des mots adaptés à l’âge ; SPARADRAP insiste : « évitez toujours le mensonge et la banalisation ».
-- Ne dites pas « ça ne fait pas mal » ni « n’aie pas peur » : l’enfant retient surtout « mal » et « peur » (SPARADRAP).
-- Votre **présence** pendant le soin est souvent possible et souhaitable ; des moyens existent pour **réduire la douleur** (patch anesthésiant pour une prise de sang ou un vaccin, allaitement ou solution sucrée pour le nourrisson).
-- Après, **consolez et félicitez**, même si tout s’est bien passé, et laissez votre enfant rejouer la scène.
+- Explique **pourquoi** l’examen est nécessaire, **à quoi** il sert et **comment** il va se passer, avec des mots adaptés à l’âge ; SPARADRAP insiste : « évitez toujours le mensonge et la banalisation ».
+- Ne dis pas « ça ne fait pas mal » ni « n’aie pas peur » : l’enfant retient surtout « mal » et « peur » (SPARADRAP).
+- Ta **présence** pendant le soin est souvent possible et souhaitable ; des moyens existent pour **réduire la douleur** (patch anesthésiant pour une prise de sang ou un vaccin, allaitement ou solution sucrée pour le nourrisson).
+- Après, **console et félicite**, même si tout s’est bien passé, et laisse ton enfant rejouer la scène.
 
 ## Comprendre
-**Pourquoi la vérité rassure.** Un enfant à qui l’on a promis « rien du tout » et qui sent une piqûre apprend qu’on ne peut pas se fier aux adultes : la fois suivante sera plus difficile. SPARADRAP recommande de tenir compte de son vécu : si c’est une première expérience, veillez à ce qu’elle se passe le mieux possible ; si les précédentes ont été pénibles, prenez ses appréhensions au sérieux au lieu de les banaliser.
+**Pourquoi la vérité rassure.** Un enfant à qui l’on a promis « rien du tout » et qui sent une piqûre apprend qu’on ne peut pas se fier aux adultes : la fois suivante sera plus difficile. SPARADRAP recommande de tenir compte de son vécu : si c’est une première expérience, veille à ce qu’elle se passe le mieux possible ; si les précédentes ont été pénibles, prends ses appréhensions au sérieux au lieu de les banaliser.
 
 **Ce qui aide, selon l’âge.**
-- *Nourrisson* : Santé.fr conseille de lui parler doucement sans montrer d’inquiétude, de le tenir assis sur vos genoux ou dans vos bras, de le mettre au sein si possible ou, sinon, de lui donner une solution sucrée au moins 2 minutes avant le geste ; doudou, jouet ou musique aident aussi.
-- *Tout-petit (1–3 ans)* : des explications simples juste avant, un objet familier, votre voix et votre contact.
+- *Nourrisson* : Santé.fr conseille de lui parler doucement sans montrer d’inquiétude, de le tenir assis sur tes genoux ou dans tes bras, de le mettre au sein si possible ou, sinon, de lui donner une solution sucrée au moins 2 minutes avant le geste ; doudou, jouet ou musique aident aussi.
+- *Tout-petit (1–3 ans)* : des explications simples juste avant, un objet familier, ta voix et ton contact.
 - *À partir de 3–4 ans* : expliquer la veille ou le matin même, avec une poupée, une marionnette, un livre ou une vidéo adaptés (SPARADRAP) ; vers 4 ans, les enfants aiment mimer l’examen avec une mallette de docteur.
-- *Enfant plus grand* : expliquez-lui ce qui va se passer, proposez-lui de respirer calmement et profondément au moment du geste, puis félicitez-le pour son courage (Santé.fr).
+- *Enfant plus grand* : explique-lui ce qui va se passer, propose-lui de respirer calmement et profondément au moment du geste, puis félicite-le pour son courage (Santé.fr).
 
-**La douleur se prévient.** SPARADRAP rappelle que les équipes disposent de moyens à mettre en place, même pour des soins peu douloureux mais impressionnants. Pour une prise de sang, un pansement contenant une crème qui « endort » la peau est posé au moins une heure avant ; Santé.fr indique que le médecin peut proposer un patch anesthésiant une heure avant un vaccin. Demandez-le à la prescription ou à la prise de rendez-vous.
+**La douleur se prévient.** SPARADRAP rappelle que les équipes disposent de moyens à mettre en place, même pour des soins peu douloureux mais impressionnants. Pour une prise de sang, un pansement contenant une crème qui « endort » la peau est posé au moins une heure avant ; Santé.fr indique que le médecin peut proposer un patch anesthésiant une heure avant un vaccin. Demande-le à la prescription ou à la prise de rendez-vous.
 
 ## Au quotidien
 **Avant**
-- Choisissez le moment de l’annonce selon l’âge : peu avant pour les petits, un ou deux jours avant pour les plus grands, afin de laisser place aux questions sans laisser l’angoisse grandir.
-- Décrivez les étapes concrètes. Pour une prise de sang, par exemple (SPARADRAP) : un élastique serré sur le bras, du froid sur la peau pour nettoyer, une aiguille très fine, « ça ne dure pas très longtemps », puis un coton et un pansement ; très peu de sang est prélevé, comme quelques gouttes dans une bouteille pleine, et le corps en refabrique.
-- Dites ce qu’il pourra sentir : « ça pique un peu », « ça serre », « c’est froid ». Et ce qu’il pourra faire : regarder ou tourner la tête, serrer votre main, souffler, compter.
-- Encouragez ses questions, sans insister s’il ne veut pas en savoir plus (SPARADRAP).
-- Pour le dentiste, jouez à compter les dents et à ouvrir grand la bouche ; pour l’hôpital, préparez ensemble le sac avec le doudou et un jeu.
+- Choisis le moment de l’annonce selon l’âge : peu avant pour les petits, un ou deux jours avant pour les plus grands, afin de laisser place aux questions sans laisser l’angoisse grandir.
+- Décris les étapes concrètes. Pour une prise de sang, par exemple (SPARADRAP) : un élastique serré sur le bras, du froid sur la peau pour nettoyer, une aiguille très fine, « ça ne dure pas très longtemps », puis un coton et un pansement ; très peu de sang est prélevé, comme quelques gouttes dans une bouteille pleine, et le corps en refabrique.
+- Dis ce qu’il pourra sentir : « ça pique un peu », « ça serre », « c’est froid ». Et ce qu’il pourra faire : regarder ou tourner la tête, serrer ta main, souffler, compter.
+- Encourage ses questions, sans insister s’il ne veut pas en savoir plus (SPARADRAP).
+- Pour le dentiste, joue à compter les dents et à ouvrir grand la bouche ; pour l’hôpital, prépare ensemble le sac avec le doudou et un jeu.
 
 **Pendant**
-- Restez à côté si vous le pouvez : SPARADRAP indique que la présence des parents est souvent possible et souhaitable, et qu’aucun texte ne l’interdit ; si vous ne voulez pas ou ne pouvez pas rester, c’est votre droit, sans culpabilité.
-- Rassurez et distrayez : tenez-lui la main, parlez, chantez, lisez, faites des bulles, comptez à l’envers.
-- Laissez-le s’exprimer sans parler à sa place ; ne niez pas ce qu’il ressent.
-- Si l’on vous demande de le tenir, faites-le avec douceur, sans l’immobiliser fermement. Si l’enfant ne se calme pas, interrompre le geste pour réessayer dans de meilleures conditions est parfois possible, sauf si le soin est urgent.
-- Ne le grondez pas, ne le menacez pas de partir s’il pleure, et ne lui demandez pas d’« être d’accord » : c’est aux adultes de porter la décision du soin (SPARADRAP).
+- Reste à côté si tu le peux : SPARADRAP indique que la présence des parents est souvent possible et souhaitable, et qu’aucun texte ne l’interdit ; si tu ne veux pas ou ne peux pas rester, c’est ton droit, sans culpabilité.
+- Rassure et distrais : tiens-lui la main, parle, chante, lis, fais des bulles, compte à l’envers.
+- Laisse-le s’exprimer sans parler à sa place ; ne nie pas ce qu’il ressent.
+- Si l’on te demande de le tenir, fais-le avec douceur, sans l’immobiliser fermement. Si l’enfant ne se calme pas, interrompre le geste pour réessayer dans de meilleures conditions est parfois possible, sauf si le soin est urgent.
+- Ne le gronde pas, ne le menace pas de partir s’il pleure, et ne lui demande pas d’« être d’accord » : c’est aux adultes de porter la décision du soin (SPARADRAP).
 
 **Après**
-- Consolez et félicitez, même si tout s’est bien passé.
-- Demandez-lui ce qu’il a aimé ou non, ce qui l’aurait aidé : son ressenti peut différer du vôtre.
-- Laissez-le rejouer la scène avec une peluche ou un dessin.
+- Console et félicite, même si tout s’est bien passé.
+- Demande-lui ce qu’il a aimé ou non, ce qui l’aurait aidé : son ressenti peut différer du tien.
+- Laisse-le rejouer la scène avec une peluche ou un dessin.
 
 **Les phrases à éviter** : « ça ne fait pas mal », « n’aie pas peur », « si tu bouges, ça sera pire », « le docteur va te faire une piqûre si tu n’es pas sage ». Le soin ne doit jamais servir de menace.
 
 ## Questions fréquentes
 **Mon enfant a très peur des piqûres depuis une mauvaise expérience.**
-Dites-le à l’équipe au moment de la prise de rendez-vous : patch anesthésiant, distraction, présence du parent, installation sur vos genoux. SPARADRAP indique que des solutions existent pour réduire la peur, et que le patch est très efficace contre la douleur de la prise de sang.
+Dis-le à l’équipe au moment de la prise de rendez-vous : patch anesthésiant, distraction, présence du parent, installation sur tes genoux. SPARADRAP indique que des solutions existent pour réduire la peur, et que le patch est très efficace contre la douleur de la prise de sang.
 
 **Faut-il le prévenir qu’il sera hospitalisé ?**
 Oui, avec des mots simples et vrais, sans détails anxiogènes : où il dormira, qui sera avec lui, ce qu’il pourra apporter. SPARADRAP propose des documents pour enfants selon le soin ou l’opération prévue.
 
 **Puis-je lui donner quelque chose contre la douleur avant un vaccin ?**
-Santé.fr indique qu’il n’est pas utile de donner un médicament avant la vaccination, la piqûre ne durant que quelques secondes ; demandez au médecin s’il propose un patch anesthésiant.
+Santé.fr indique qu’il n’est pas utile de donner un médicament avant la vaccination, la piqûre ne durant que quelques secondes ; demande au médecin s’il propose un patch anesthésiant.
 
 ## Quand demander conseil
-Parlez au médecin si la peur des soins devient envahissante (refus de tout examen, cauchemars, angoisse avant chaque rendez-vous), si votre enfant a vécu un soin traumatisant, ou si une maladie chronique impose des gestes répétés : un accompagnement par un psychologue ou une préparation spécifique à l’hôpital peut aider. Après un soin, consultez si un hématome gonfle beaucoup, si une douleur persiste ou si le point de piqûre devient rouge, chaud et douloureux.
+Parle au médecin si la peur des soins devient envahissante (refus de tout examen, cauchemars, angoisse avant chaque rendez-vous), si ton enfant a vécu un soin traumatisant, ou si une maladie chronique impose des gestes répétés : un accompagnement par un psychologue ou une préparation spécifique à l’hôpital peut aider. Après un soin, consulte si un hématome gonfle beaucoup, si une douleur persiste ou si le point de piqûre devient rouge, chaud et douloureux.
 
 ${FIN}`,
   }),

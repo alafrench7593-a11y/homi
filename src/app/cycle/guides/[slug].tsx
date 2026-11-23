@@ -4,7 +4,8 @@ import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { EmptyState } from '@/components/States';
-import { Button, Row } from '@/components/ui';
+import { Button, IconButton, Row } from '@/components/ui';
+import { useGuideReading } from '@/features/cycleTrack/readingStore';
 import { guideBySlug, guideLang, SOURCES } from '@/content/dischargeGuides';
 import { GuideArt } from '@/features/cycle/GuideArt';
 import { CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
@@ -28,10 +29,15 @@ export default function GuideScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const g = guideBySlug(slug ?? '');
   const lang = guideLang();
+  const { favorites, toggle, opened } = useGuideReading();
+  // Reprise de lecture : la fiche ouverte devient « à reprendre » dans la liste
+  React.useEffect(() => { if (g) opened(g.slug); }, [g?.slug]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!g) return <Screen back title={tr('cy.guides.title')}><EmptyState icon="book-open" title={tr('cy.guides.notFound')} /></Screen>;
   const x = g[lang];
   return (
-    <Screen back title={x.title}>
+    <Screen back title={x.title}
+      right={<IconButton icon="star" tone={favorites.includes(g.slug) ? 'filled' : 'plain'} testID="guide-fav"
+        label={favorites.includes(g.slug) ? tr('cy.tk.read.unfav', { title: x.title }) : tr('cy.tk.read.fav', { title: x.title })} onPress={() => toggle(g.slug)} />}>
       <Rise>
         <View style={{ alignItems: 'center' }}><GuideArt tone={g.tone} size={132} /></View>
       </Rise>

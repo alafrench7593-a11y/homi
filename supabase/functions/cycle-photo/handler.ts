@@ -62,7 +62,7 @@ export async function handleCyclePhoto(req: Request, deps: CyclePhotoDeps): Prom
 
   // 1) Consentement explicite, avant toute autre chose
   const consent = (body && typeof body === 'object' ? (body as Record<string, unknown>).consent : undefined) === true;
-  if (!consent) return reply({ error: 'consent_required', message: 'Votre accord explicite est nécessaire pour envoyer la photo à l’analyse.' }, 400);
+  if (!consent) return reply({ error: 'consent_required', message: 'Ton accord explicite est nécessaire pour envoyer la photo à l’analyse.' }, 400);
 
   // 2) Service configuré ? (aucune simulation de résultat)
   const cfg = deps.config();
@@ -73,12 +73,12 @@ export async function handleCyclePhoto(req: Request, deps: CyclePhotoDeps): Prom
   if (!input.ok) return reply({ error: input.error, message: input.message }, input.status);
 
   if (deps.rateLimit && !(await deps.rateLimit(auth.userId))) {
-    return reply({ error: 'rate_limited', message: 'Trop d’analyses demandées en une heure. Vous pouvez choisir l’aspect vous-même.' }, 429);
+    return reply({ error: 'rate_limited', message: 'Trop d’analyses demandées en une heure. Tu peux choisir l’aspect toi-même.' }, 429);
   }
 
   // 4) Preuve du consentement enregistrée en base AVANT tout envoi à l'IA (RGPD art. 9)
   if (deps.recordConsent && !(await deps.recordConsent(auth.userId))) {
-    return reply({ error: 'consent_not_recorded', message: 'Votre accord n’a pas pu être enregistré : la photo n’a pas été envoyée. Réessayez plus tard.' }, 503);
+    return reply({ error: 'consent_not_recorded', message: 'Ton accord n’a pas pu être enregistré : la photo n’a pas été envoyée. Réessaie plus tard.' }, 503);
   }
 
   let suggestion: CyclePhotoSuggestion;
@@ -94,7 +94,7 @@ export async function handleCyclePhoto(req: Request, deps: CyclePhotoDeps): Prom
   } catch (e) {
     // Réponse bloquée par les filtres : photo considérée comme inexploitable
     if (e instanceof GeminiError && e.blocked) suggestion = { ...UNANALYZABLE };
-    else return reply({ error: 'ai_unavailable', message: 'Analyse momentanément indisponible. Vous pouvez choisir l’aspect vous-même.' }, 502);
+    else return reply({ error: 'ai_unavailable', message: 'Analyse momentanément indisponible. Tu peux choisir l’aspect toi-même.' }, 502);
   }
   return reply({ status: 'ok', suggestion });
 }

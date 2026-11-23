@@ -4,7 +4,7 @@
  * aucune donnée de suivi (grossesse, enfants, sommeil, médicaments, documents) n'apparaît jamais ici.
  */
 import React, { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, type LayoutChangeEvent } from 'react-native';
 import { router } from 'expo-router';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Card, Chip, Icon, Row, Text } from '@/components/ui';
@@ -19,6 +19,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { accentOf, MentionText, PremiumBadge, ProfileBannerView } from '@/features/communitySocial';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { SlidingUnderline, useSlidingUnderline } from '@/components/controls/SlidingUnderline';
 
 export interface ProfileHeaderData {
   pseudonym: string; handle?: string | null; bio?: string | null; journey_label?: string | null; avatar_path?: string | null; avatar_preset?: string | null;
@@ -103,11 +105,11 @@ function PhotosGrid({ posts }: { posts: FeedPost[] }) {
 type Tab = 'posts' | 'replies' | 'photos' | 'saved';
 
 /** `id` : suffixe stable du testID (indépendant de la langue) ; à défaut, le libellé. */
-export function ProfileTab({ label, selected, onPress, id }: { label: string; selected: boolean; onPress: () => void; id?: string }) {
+export function ProfileTab({ label, selected, onPress, id, onLayout, underline = true }: { label: string; selected: boolean; onPress: () => void; id?: string; onLayout?: (e: LayoutChangeEvent) => void; underline?: boolean }) {
   const t = useTheme();
   return (
-    <Tappable accessibilityRole="tab" accessibilityState={{ selected }} onPress={onPress} testID={`profile-tab-${id ?? label}`}
-      style={{ minHeight: 44, paddingHorizontal: spacing.md, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: selected ? t.colors.primary : 'transparent' }}>
+    <Tappable accessibilityRole="tab" accessibilityState={{ selected }} onPress={onPress} testID={`profile-tab-${id ?? label}`} onLayout={onLayout}
+      style={{ minHeight: 44, paddingHorizontal: spacing.md, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: selected && underline ? t.colors.primary : 'transparent' }}>
       <Text weight={selected ? 'bold' : 'medium'} color={selected ? t.colors.primary : t.colors.textMuted}>{label}</Text>
     </Tappable>
   );
@@ -116,6 +118,8 @@ export function ProfileTab({ label, selected, onPress, id }: { label: string; se
 /** Onglets internes. `mine` : mes contenus (anonymes compris) et mes enregistrés / aimés. */
 export function ProfileTabs({ handle, mine }: { handle: string | null; mine: boolean }) {
   const [tab, setTab] = useState<Tab>('posts');
+  const t = useTheme();
+  const u = useSlidingUnderline<Tab>(tab);
   const [savedKind, setSavedKind] = useState<'saved' | 'liked'>('saved');
   const forums = useForums().data ?? [];
   const minePosts = useMyPosts();
@@ -135,16 +139,17 @@ export function ProfileTabs({ handle, mine }: { handle: string | null; mine: boo
   if (mine) options.push({ value: 'saved', label: tr('cm1.profile.tabSaved'), id: 'Enregistrés' });
   const forumOf = (p: FeedPost) => forums.find((f) => f.id === p.forum_id) ?? null;
   const list = (q: { data?: FeedPost[]; isLoading: boolean }, empty: string) => (q.isLoading && !q.data ? <Skeleton kind="card" rows={2} /> : q.data?.length
-    ? <View style={{ gap: spacing.sm }}>{q.data.map((p) => <PostCard key={p.id} post={p} forum={forumOf(p)} />)}</View>
+    ? <MotionList style={{ gap: spacing.sm }}>{q.data.map((p) => <MotionItem key={p.id}><PostCard key={p.id} post={p} forum={forumOf(p)} /></MotionItem>)}</MotionList>
     : <EmptyState icon="message-square" title={empty} />);
   return (
     <View style={{ gap: spacing.sm }} testID="profile-tabs">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} accessibilityRole="tablist">
-        {options.map((o) => <ProfileTab key={o.value} id={o.id} label={o.label} selected={tab === o.value} onPress={() => setTab(o.value)} />)}
+        {options.map((o) => <ProfileTab key={o.value} id={o.id} label={o.label} selected={tab === o.value} onPress={() => setTab(o.value)} onLayout={u.onItemLayout(o.value)} underline={false} />)}
+        <SlidingUnderline style={u.style} color={t.colors.primary} testID="profile-tabs-underline" />
       </ScrollView>
       {tab === 'posts' ? list(posts, mine ? tr('cm1.profile.emptyMine') : tr('cm1.profile.emptyPosts')) : null}
       {tab === 'replies' ? (comments.isLoading && !comments.data ? <Skeleton kind="list" rows={2} /> : comments.data?.length
-        ? <View style={{ gap: spacing.sm }}>{comments.data.map((c) => <CommentRow key={c.id} c={c} />)}</View>
+        ? <MotionList style={{ gap: spacing.sm }}>{comments.data.map((c) => <MotionItem key={c.id}><CommentRow key={c.id} c={c} /></MotionItem>)}</MotionList>
         : <EmptyState icon="message-circle" title={tr('cm1.profile.emptyReplies')} />) : null}
       {tab === 'photos' ? <PhotosGrid posts={posts.data ?? []} /> : null}
       {tab === 'saved' && mine ? (

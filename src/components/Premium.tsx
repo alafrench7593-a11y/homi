@@ -5,6 +5,7 @@
  * Aucun compte à rebours, aucune pression : « Plus tard » ferme simplement l'aperçu.
  */
 import React, { useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Sheet } from './Overlays';
@@ -42,7 +43,7 @@ export function PremiumPreviewHost() {
             </View>
           ) : null}
           {open.preview ? (
-            <View testID="premium-preview-real" style={{ borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, backgroundColor: t.colors.surfaceAlt, gap: 4 }}>
+            <View testID="premium-preview-real" style={{ borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md, backgroundColor: t.colors.surfaceAlt, gap: 4 }}>
               <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('u1.pr.previewHeader')}</Text>
               {open.preview}
             </View>

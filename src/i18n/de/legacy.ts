@@ -31,7 +31,7 @@ export const legacy: Messages<typeof fr> = {
   "ask.disclaimer": "KI-Assistent. Er ersetzt keine medizinische Fachperson.",
   "emergency.title": "Jetzt Hilfe nötig",
   "emergency.subtitle": "Diese Nummern sind kostenlos und ohne Konto erreichbar.",
-  "premium.title": "Au fil de nous Premium",
+  "premium.title": "HOMI Premium",
   "premium.locked": "Im Abo verfügbar",
   "demo.banner": "Demomodus: Deine Daten bleiben auf diesem Gerät.",
   "auth.signIn": "Anmelden",

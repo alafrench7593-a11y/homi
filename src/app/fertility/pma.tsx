@@ -26,7 +26,11 @@ import { toFrDate } from '@/lib/validation';
 import { exportTextFile } from '@/lib/exportData';
 import { callNumber } from '@/lib/links';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { PmaJournal } from '@/features/cycleTrack/FertilityJournals';
+import { localDay } from '@/lib/domain/cycleTrack';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const KINDS: PmaKind[] = ['iiu', 'fiv', 'icsi', 'tec', 'stimulation', 'other'];
 const ROUTES: PmaRoute[] = ['injection', 'oral', 'vaginal', 'patch', 'nasal', 'other'];
@@ -163,10 +167,6 @@ export default function PmaTracker() {
       toast(kind === 'dose' ? tr('pma.taken') : tr('pma.stepSaved'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
-  async function removeLog(l: PmaLog) {
-    if (!(await confirm(tr('common.delete'), tr('pma.deleteLogQ'), tr('common.delete')))) return;
-    try { await backend.remove('pma_logs', [eq('id', l.id)]); inv('pma_logs'); } catch (e) { toast(friendlyError(e), 'error'); }
-  }
   async function endProtocol() {
     if (!current || !(await confirm(tr('pma.end'), tr('pma.endQ'), tr('pma.end'), false))) return;
     try {
@@ -191,10 +191,10 @@ export default function PmaTracker() {
     try { await exportTextFile(lines.join('\n'), 'suivi-pma.txt', 'text/plain'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (protocolsQ.isLoading) return <Screen back title={tr('tool.pma_tracker')}><Loading /></Screen>;
+  if (protocolsQ.isLoading) return <Screen back title={toolName('pma_tracker')}><Loading /></Screen>;
 
   return (
-    <Screen back title={tr('tool.pma_tracker')} subtitle={tr('tool.pma_tracker.sub')}>
+    <Screen back title={toolName('pma_tracker')} subtitle={toolBlurb('pma_tracker')}>
       <Text muted>{tr('pma.intro')}</Text>
       <Banner tone="warning" icon="phone">{tr('pma.alert')}</Banner>
       {!current ? (
@@ -213,17 +213,17 @@ export default function PmaTracker() {
           <SectionTitle title={tr('pma.meds')} action={current.ended_on ? undefined : tr('pma.addMed')} onAction={current.ended_on ? undefined : () => { setEditMed(undefined); setMedOpen(true); }} />
           {!meds.length ? <Card tone="soft"><Text muted>{tr('pma.noMeds')}</Text></Card> : (
             <Card padded={false}>
-              {meds.map((m) => {
+              <MotionList>{meds.map((m) => {
                 const done = takenToday.get(m.id) ?? [];
                 const live = activeMeds.includes(m);
                 return (
-                  <ListRow key={m.id} icon={m.route === 'injection' ? 'crosshair' : 'package'} testID={`pma-med-${m.id}`}
+                  <MotionItem key={m.id}><ListRow key={m.id} icon={m.route === 'injection' ? 'crosshair' : 'package'} testID={`pma-med-${m.id}`}
                     title={m.name}
                     subtitle={[tr(`pma.route.${m.route}` as TKey), m.dose_text, m.take_time ? hhmm(m.take_time) : null, done.length ? tr('pma.takenAt', { time: formatTime(done[0].happened_at) }) : null].filter(Boolean).join(' · ')}
                     onPress={() => { setEditMed(m); setMedOpen(true); }}
-                    right={live ? <Button label={done.length ? tr('pma.again') : tr('pma.take')} size="sm" variant={done.length ? 'secondary' : 'primary'} onPress={() => void addLog('dose', m.id)} testID={`pma-take-${m.id}`} /> : undefined} />
+                    right={live ? <Button label={done.length ? tr('pma.again') : tr('pma.take')} size="sm" variant={done.length ? 'secondary' : 'primary'} onPress={() => void addLog('dose', m.id)} testID={`pma-take-${m.id}`} /> : undefined} /></MotionItem>
                 );
-              })}
+              })}</MotionList>
             </Card>
           )}
           <Text variant="small" muted>{tr('pma.forgot')}</Text>
@@ -240,13 +240,15 @@ export default function PmaTracker() {
           </Card>
 
           <SectionTitle title={tr('pma.journal')} action={logs.length ? tr('pma.share') : undefined} onAction={logs.length ? () => void share() : undefined} />
+          {/* Journal du jour : jour choisi (adresse), bande de 7 jours, prises et étapes → fiche de correction */}
+          {logs.length ? <PmaJournal logs={logs} labelOf={label} iconOf={(l) => STEP_ICON[l.kind]} startedOn={current.started_on} /> : null}
           {!logs.length ? <Card tone="soft"><Text muted>{tr('pma.noLogs')}</Text></Card> : (
             <Card padded={false}>
-              {logs.slice(0, 80).map((l) => (
-                <ListRow key={l.id} icon={STEP_ICON[l.kind]} title={label(l)}
+              <MotionList>{logs.slice(0, 80).map((l) => (
+                <MotionItem key={l.id}><ListRow key={l.id} icon={STEP_ICON[l.kind]} title={label(l)}
                   subtitle={`${formatDate(l.happened_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${l.note ? ` · ${l.note}` : ''}`}
-                  onPress={() => void removeLog(l)} />
-              ))}
+                  onPress={() => router.setParams({ date: localDay(l.happened_at) } as never)} /></MotionItem>
+              ))}</MotionList>
             </Card>
           )}
 

@@ -7,6 +7,7 @@ import { currentCycleDay } from '@/lib/domain/cycle';
 import { todayISO } from '@/lib/domain/dates';
 import { SectionTitle } from '@/components/ui';
 import { fmt, PeriodLogger, SymptomLogger, TestLogger } from '@/components/Fertility';
+import { TestJournal } from '@/features/cycleTrack/FertilityJournals';
 import { t as tr } from '@/i18n';
 
 function CycleTiles() {
@@ -27,6 +28,8 @@ export default function FertilityLogScreen() {
   return (
     <Screen back title={tr('u3.fertLog.title')} subtitle={tr('u3.fertLog.subtitle')}>
       <CycleTiles />
+      {/* Journal des tests : jour choisi (adresse), bande de 7 jours, chaque test → fiche de correction */}
+      <TestJournal />
       <SectionTitle title={tr('u3.fertLog.periods')} />
       <PeriodLogger />
       <SectionTitle title={tr('u3.fertLog.symp')} />

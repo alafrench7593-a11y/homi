@@ -4,6 +4,8 @@ import type { Messages } from '../types';
 export const mental: Messages<typeof fr> = {
   'tool.brain_dump': 'Empty my head',
   'tool.brain_dump.sub': 'Jot everything down, the app sorts it',
+  'tool.focus_day': "3 things today",
+  'tool.focus_day.sub': "3 priorities, the rest waits",
   'tool.family_domains': 'Hand over a domain',
   'tool.family_domains.sub': '“Vaccines are yours”: who carries what',
   'tool.mental_load': 'Who thinks of it?',
@@ -69,6 +71,12 @@ export const mental: Messages<typeof fr> = {
   'cm.domain.clothes.d': 'Sizes, seasons, shoes',
   'cm.domain.nights': 'Nights and wake-ups',
   'cm.domain.nights.d': 'Who gets up, which night',
+  'cm.domain.baby': 'Baby',
+  'cm.domain.baby.d': 'Nappies, bottles, baby things',
+  'cm.domain.childcare': 'Nursery and childcare',
+  'cm.domain.childcare.d': 'Bag, drop-offs, nursery, nanny',
+  'cm.domain.pets': 'Pets',
+  'cm.domain.pets.d': 'Walks, pet food, vet',
 
   'cm.load.intro': 'Over the last 30 days, based on the household organiser. It isn’t a contest: it’s a starting point to talk about it together.',
   'cm.load.none': 'No data yet',

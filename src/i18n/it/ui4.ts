@@ -3,8 +3,8 @@ import type { ui4 as fr } from '../fr/ui4';
 import type { Messages } from '../types';
 
 export const ui4: Messages<typeof fr> = {
-  "u4.story.strip.a11y": "Au fil de nous. {caption}. {scene} Apri la presentazione.",
-  "u4.story.strip.title": "Au fil de nous",
+  "u4.story.strip.a11y": "HOMI. {caption}. {scene} Apri la presentazione.",
+  "u4.story.strip.title": "HOMI",
   "u4.story.strip.cta": "La nostra storia",
   "u4.clock.a11y": "{label}. Nelle ultime 24 ore: {feeds} pasti, {sleeps} sonni, {diapers} cambi.",
   "u4.clock.sleep": "Sonno",

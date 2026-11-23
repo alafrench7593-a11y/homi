@@ -80,9 +80,10 @@ reset role;
 
 -- ================================================================ rendez-vous privés
 set role authenticated; set request.jwt.claim.sub = :'IRIS';
-insert into public.appointments (household_id, for_parent, kind, title, starts_at, private_to_creator)
-  values (:'FOYER', true, 'postnatal', 'Psychologue', now() + interval '2 days', true),
-         (:'FOYER', true, 'postnatal', 'Visite postnatale', now() + interval '3 days', false);
+-- 19/11/2026 : un rendez-vous « pour moi » n'est visible du foyer que partagé explicitement (shared_with_household)
+insert into public.appointments (household_id, for_parent, kind, title, starts_at, private_to_creator, shared_with_household)
+  values (:'FOYER', true, 'postnatal', 'Psychologue', now() + interval '2 days', true, null),
+         (:'FOYER', true, 'postnatal', 'Visite postnatale', now() + interval '3 days', false, true);
 select tests.ok(tests.count('select * from public.appointments where household_id = ''d1d1d1d1-0000-4000-8000-0000000000f0''') = 2, 'rendez-vous : Iris voit ses deux rendez-vous');
 set request.jwt.claim.sub = :'JULES';
 select tests.ok((select array_agg(title) from public.appointments where household_id = 'd1d1d1d1-0000-4000-8000-0000000000f0') = array['Visite postnatale'], 'rendez-vous : le rendez-vous privé n''est pas visible du conjoint, le partagé oui');

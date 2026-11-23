@@ -10,7 +10,7 @@ const S = {
   ameliSuivi: { label: 'ameli.fr — 4 examens de suivi médical entre les 4 ans et 10 ans de l’enfant', url: 'https://www.ameli.fr/assure/sante/themes/suivi-medical-de-l-enfant-et-de-l-adolescent/suivi-medical-entre-4-et-10-ans', consulted_on: C, published: '2026-02-18' },
   spf411: { label: 'Santé publique France — Alimentation des enfants de 4 à 11 ans : une campagne d’information pour guider les parents', url: 'https://www.santepubliquefrance.fr/index.php/presse/alimentation-des-enfants-de-4-a-11-ans-une-campagne-dinformation-pour-guider-les-parents', consulted_on: C, published: '2024-09-10' },
   spfShu: { label: 'Santé publique France — Syndrome hémolytique et urémique pédiatrique : les mesures de prévention', url: 'https://www.santepubliquefrance.fr/les-actualites/2022/syndrome-hemolytique-et-uremique-pediatrique-les-mesures-de-prevention-face-aux-risques-de-l-ete', consulted_on: C, published: '2022-07-19' },
-  santeGouts: { label: 'Santé.fr (Santé publique France — Manger Bouger) — Comment développer les goûts de votre enfant et son plaisir à manger ?', url: 'https://www.sante.fr/node/8364303', consulted_on: C, published: '2024-06-11' },
+  santeGouts: { label: 'Santé.fr (Santé publique France — Manger Bouger) — Comment développer les goûts de ton enfant et son plaisir à manger ?', url: 'https://www.sante.fr/node/8364303', consulted_on: C, published: '2024-06-11' },
   santeFL: { label: 'Santé.fr (Santé publique France — Manger Bouger) — Fruits et légumes : au moins 5 par jour', url: 'https://www.sante.fr/node/800561', consulted_on: C, published: '2023-10-11' },
   santeReduire: { label: 'Santé.fr (Santé publique France — Manger Bouger) — Réduire les boissons sucrées, aliments gras, sucrés, salés et ultra-transformés', url: 'https://www.sante.fr/node/1869521', consulted_on: C, published: '2024-06-14' },
   santeSel: { label: 'Santé.fr (Santé publique France — Manger Bouger) — Limiter les produits salés et le sel pour préserver sa santé', url: 'https://www.sante.fr/node/1869523', consulted_on: C, published: '2024-06-14' },
@@ -33,7 +33,7 @@ const K: Pick<LibArticle, 'journeys' | 'status'> & { min_age_months: number; max
   journeys: ['child'], min_age_months: 36, max_age_months: 131, status: 'to_review',
 };
 
-const FIN = 'Cet article vous informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, pédiatre, diététicien·ne).';
+const FIN = 'Cet article t’informe de façon générale et ne remplace pas l’avis d’un professionnel de santé (médecin, pédiatre, diététicien·ne).';
 
 export const GUIDE_B05: LibArticle[] = [
   {
@@ -59,7 +59,7 @@ Le petit-déjeuner « type » associe trois familles d’aliments :
 L’eau reste la boisson de référence. Les boissons sucrées et les jus n’ont pas besoin de faire partie du petit-déjeuner quotidien.
 
 ## Au quotidien
-**Des idées pour varier sur la semaine** (à adapter à l’appétit de votre enfant) :
+**Des idées pour varier sur la semaine** (à adapter à l’appétit de ton enfant) :
 - tartines de pain complet avec un peu de beurre, un verre de lait et une clémentine ;
 - bol de flocons d’avoine avec du lait et des morceaux de pomme ;
 - fromage blanc nature avec une banane écrasée et une tranche de pain ;
@@ -67,11 +67,11 @@ L’eau reste la boisson de référence. Les boissons sucrées et les jus n’on
 - yaourt nature, compote sans sucre ajouté et une petite tartine de confiture.
 
 **Les matins pressés**
-- Préparez la table ou le plateau la veille au soir : bols, pain tranché, fruits lavés.
-- Levez-vous quelques minutes plus tôt si c’est possible, pour éviter de manger debout en courant.
+- Prépare la table ou le plateau la veille au soir : bols, pain tranché, fruits lavés.
+- Lève-toi quelques minutes plus tôt si c’est possible, pour éviter de manger debout en courant.
 - Si l’enfant prend le bus très tôt, la Mallette des parents suggère une boisson ou un produit laitier à la maison, complétés par une petite collation (fruit, pain, fromage) avant le début des cours.
 
-**Lire les étiquettes des céréales** : comparez les produits d’un même rayon avec le Nutri-Score et préférez ceux qui sont complets et les moins sucrés. Les céréales présentées « pour enfants » sont souvent parmi les plus sucrées.
+**Lire les étiquettes des céréales** : compare les produits d’un même rayon avec le Nutri-Score et préfère ceux qui sont complets et les moins sucrés. Les céréales présentées « pour enfants » sont souvent parmi les plus sucrées.
 
 **Rendre l’enfant acteur** : à partir de 4 ou 5 ans, il peut choisir entre deux fruits, verser son lait, étaler sa tartine. Ces petites responsabilités donnent envie de manger.
 
@@ -80,16 +80,16 @@ L’eau reste la boisson de référence. Les boissons sucrées et les jus n’on
 Elles peuvent l’être si elles sont complètes et peu sucrées. Selon l’Assurance Maladie, les céréales du petit-déjeuner ne comptent comme produit céréalier intéressant que dans ce cas ; les versions fourrées, chocolatées ou très sucrées sont à réserver aux occasions.
 
 **Peut-on donner du pain blanc ?**
-Oui, mais varier avec du pain complet, aux céréales ou semi-complet apporte davantage de fibres. Si votre enfant n’aime pas le goût du complet, commencez par du semi-complet.
+Oui, mais varier avec du pain complet, aux céréales ou semi-complet apporte davantage de fibres. Si ton enfant n’aime pas le goût du complet, commence par du semi-complet.
 
 **Mon enfant veut toujours la même chose le matin…**
-Ce n’est pas un problème si le petit-déjeuner reste varié sur l’ensemble de ses composantes. Vous pouvez faire tourner les fruits et les produits laitiers tout en gardant la tartine qu’il aime.
+Ce n’est pas un problème si le petit-déjeuner reste varié sur l’ensemble de ses composantes. Tu peux faire tourner les fruits et les produits laitiers tout en gardant la tartine qu’il aime.
 
 **Faut-il ajouter un jus de fruits ?**
 Ce n’est pas nécessaire. Avant 11 ans, Santé publique France conseille de ne pas dépasser un demi-verre de jus par jour, et le fruit entier reste préférable.
 
 ## Quand demander conseil
-Parlez-en au médecin de votre enfant s’il est souvent fatigué le matin, s’il se plaint régulièrement de maux de ventre au réveil, si son appétit change nettement ou si sa courbe de croissance vous inquiète. Les examens de suivi prévus à 4, 5, 6 ans et entre 8 et 9 ans sont aussi l’occasion d’en parler. En cas de malaise, de gêne respiratoire ou de gonflement du visage après un aliment, appelez le **15** ou le **112**.
+Parles-en au médecin de ton enfant s’il est souvent fatigué le matin, s’il se plaint régulièrement de maux de ventre au réveil, si son appétit change nettement ou si sa courbe de croissance t’inquiète. Les examens de suivi prévus à 4, 5, 6 ans et entre 8 et 9 ans sont aussi l’occasion d’en parler. En cas de malaise, de gêne respiratoire ou de gonflement du visage après un aliment, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -118,37 +118,37 @@ La Mallette des parents rappelle que l’équilibre alimentaire se construit sur
 
 ## Au quotidien
 **Ajuster la soirée**
-- Gardez un dîner à heure régulière, ni trop tard ni trop copieux.
-- Évitez le grignotage après le dîner, devant un écran notamment.
-- Préservez un coucher régulier, pour un réveil moins difficile.
+- Garde un dîner à heure régulière, ni trop tard ni trop copieux.
+- Évite le grignotage après le dîner, devant un écran notamment.
+- Préserve un coucher régulier, pour un réveil moins difficile.
 
 **Ajuster le matin**
-- Réveillez votre enfant un peu plus tôt pour laisser à l’appétit le temps de venir : s’habiller d’abord, manger ensuite fonctionne pour certains enfants.
-- Proposez de petites quantités : un verre de lait ou un yaourt nature, quelques morceaux de fruit et une demi-tartine peuvent suffire.
-- Asseyez-vous avec lui, même si vous ne mangez pas : manger seul à la va-vite donne moins envie.
-- Laissez-le choisir entre deux options (fromage blanc ou lait, pomme ou banane).
+- Réveille ton enfant un peu plus tôt pour laisser à l’appétit le temps de venir : s’habiller d’abord, manger ensuite fonctionne pour certains enfants.
+- Propose de petites quantités : un verre de lait ou un yaourt nature, quelques morceaux de fruit et une demi-tartine peuvent suffire.
+- Assieds-toi avec lui, même si tu ne manges pas : manger seul à la va-vite donne moins envie.
+- Laisse-le choisir entre deux options (fromage blanc ou lait, pomme ou banane).
 
 **Emporter quelque chose**
-Si votre enfant part tôt (bus scolaire, garderie), la Mallette des parents propose une boisson ou un produit laitier à la maison, puis une petite collation (fruit, pain, fromage) à prendre avant les cours. Dans l’enseignement élémentaire, aucune collation n’est organisée par l’école : renseignez-vous auprès de l’enseignant ou de l’accueil périscolaire sur ce qui est possible.
+Si ton enfant part tôt (bus scolaire, garderie), la Mallette des parents propose une boisson ou un produit laitier à la maison, puis une petite collation (fruit, pain, fromage) à prendre avant les cours. Dans l’enseignement élémentaire, aucune collation n’est organisée par l’école : renseigne-toi auprès de l’enseignant ou de l’accueil périscolaire sur ce qui est possible.
 
 **Éviter les fausses bonnes idées**
 Les biscuits, viennoiseries et barres chocolatées dans le cartable sont riches en sucres et peu rassasiants. L’Anses recommande de privilégier les fruits frais, les produits laitiers nature, le pain et les fruits à coque (adaptés à l’âge) pour les collations, qui ne devraient répondre qu’à une vraie faim.
 
 ## Questions fréquentes
 **Faut-il le forcer à manger avant l’école ?**
-Non. Forcer risque d’associer le repas à une contrainte. Proposez, sans insister, et laissez-lui la possibilité d’emporter quelque chose.
+Non. Forcer risque d’associer le repas à une contrainte. Propose, sans insister, et laisse-lui la possibilité d’emporter quelque chose.
 
 **Il mange énormément au goûter et au dîner : est-ce lié ?**
 C’est possible : un goûter très copieux ou tardif réduit la faim du dîner, puis du lendemain matin. Un goûter d’un ou deux aliments, pas trop près du dîner, aide à retrouver un rythme.
 
 **Une boisson chocolatée suffit-elle ?**
-Un lait (chocolaté ou non) apporte un produit laitier. Si vous ajoutez du cacao sucré, dosez-le légèrement et complétez, si l’enfant le peut, avec un fruit ou un peu de pain.
+Un lait (chocolaté ou non) apporte un produit laitier. Si tu ajoutes du cacao sucré, dose-le légèrement et complète, si l’enfant le peut, avec un fruit ou un peu de pain.
 
 **Est-ce grave s’il ne mange rien certains matins ?**
-Ponctuellement, l’équilibre se rattrape sur la journée. Si cela devient systématique et s’accompagne de fatigue ou de difficultés en classe, parlez-en au médecin.
+Ponctuellement, l’équilibre se rattrape sur la journée. Si cela devient systématique et s’accompagne de fatigue ou de difficultés en classe, parles-en au médecin.
 
 ## Quand demander conseil
-Consultez le médecin si l’absence d’appétit est nouvelle et persistante, si elle s’accompagne d’une perte de poids, de maux de ventre fréquents, de nausées, d’une grande fatigue ou de changements d’humeur. Si vous percevez chez votre enfant une angoisse importante liée à l’école, parlez-en aussi à l’enseignant ou au médecin scolaire. Si vous-même vous sentez épuisé ou en détresse, le **3114** répond jour et nuit. En urgence, appelez le **15** ou le **112**.
+Consulte le médecin si l’absence d’appétit est nouvelle et persistante, si elle s’accompagne d’une perte de poids, de maux de ventre fréquents, de nausées, d’une grande fatigue ou de changements d’humeur. Si tu perçois chez ton enfant une angoisse importante liée à l’école, parles-en aussi à l’enseignant ou au médecin scolaire. Si toi-même tu sens épuisé ou en détresse, le **3114** répond jour et nuit. En urgence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -179,20 +179,20 @@ Santé publique France, dans ses repères pour les 4-11 ans, propose par exemple
 - du fromage blanc et une compote sans sucre ajouté ;
 - un morceau de fromage, du pain et quelques bâtonnets de concombre ;
 - un verre de lait et une banane ;
-- pour un enfant de plus de 6 ans, quelques amandes ou noisettes entières et un fruit (avant cet âge, préférez-les en poudre ou dans une préparation, en raison du risque d’étouffement).
+- pour un enfant de plus de 6 ans, quelques amandes ou noisettes entières et un fruit (avant cet âge, préfère-les en poudre ou dans une préparation, en raison du risque d’étouffement).
 
 **À la sortie de l’école**
-Préparez le goûter à l’avance dans une petite boîte : fruit entier, pain, fromage à pâte dure, compote en gourde sans sucre ajouté. Les produits frais comme les yaourts supportent mal plusieurs heures hors du réfrigérateur : l’Anses conseille de ne pas laisser un aliment plus de 2 heures à température ambiante.
+Prépare le goûter à l’avance dans une petite boîte : fruit entier, pain, fromage à pâte dure, compote en gourde sans sucre ajouté. Les produits frais comme les yaourts supportent mal plusieurs heures hors du réfrigérateur : l’Anses conseille de ne pas laisser un aliment plus de 2 heures à température ambiante.
 
 **Gérer les envies de gâteaux**
-Les gâteaux et biscuits ne sont pas interdits : gardez-les pour certains jours (le week-end, un anniversaire) plutôt que d’en faire une habitude quotidienne. Un gâteau fait maison permet de maîtriser la quantité de sucre et de matières grasses.
+Les gâteaux et biscuits ne sont pas interdits : garde-les pour certains jours (le week-end, un anniversaire) plutôt que d’en faire une habitude quotidienne. Un gâteau fait maison permet de maîtriser la quantité de sucre et de matières grasses.
 
 **Bien choisir en magasin**
-Comparez les biscuits et barres d’un même rayon grâce au Nutri-Score et préférez les meilleures notes. Méfiez-vous des emballages « spécial enfant », qui ne garantissent pas une meilleure composition.
+Compare les biscuits et barres d’un même rayon grâce au Nutri-Score et préfère les meilleures notes. Méfie-toi des emballages « spécial enfant », qui ne garantissent pas une meilleure composition.
 
 ## Questions fréquentes
 **Mon enfant a très faim à 16 h 30, puis ne dîne pas…**
-Proposez un goûter rassasiant mais modeste (pain et fromage, par exemple) et évitez de le servir trop tard. Si le dîner est très tardif, un goûter un peu plus consistant peut se justifier, à ajuster selon son appétit du soir.
+Propose un goûter rassasiant mais modeste (pain et fromage, par exemple) et évite de le servir trop tard. Si le dîner est très tardif, un goûter un peu plus consistant peut se justifier, à ajuster selon son appétit du soir.
 
 **Le jus de fruits est-il une bonne boisson pour le goûter ?**
 L’eau ou le lait sont préférables. Avant 11 ans, Santé publique France conseille de ne pas dépasser un demi-verre de jus par jour, et un jus ne compte pas comme une portion de fruits.
@@ -201,10 +201,10 @@ L’eau ou le lait sont préférables. Avant 11 ans, Santé publique France cons
 Oui, le rythme de quatre repas par jour reste le même. Le goûter peut être l’occasion de préparer quelque chose ensemble.
 
 **Et s’il goûte chez des amis ou à l’accueil périscolaire ?**
-Vous ne pouvez pas tout maîtriser, et ce n’est pas nécessaire : l’équilibre se juge sur plusieurs jours. Vous pouvez compenser au dîner avec des légumes et un fruit.
+Tu ne peux pas tout maîtriser, et ce n’est pas nécessaire : l’équilibre se juge sur plusieurs jours. Tu peux compenser au dîner avec des légumes et un fruit.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant réclame à manger en permanence, s’il ne mange presque rien d’autre que des produits sucrés, si sa courbe de poids s’emballe ou au contraire stagne, ou s’il a souvent mal au ventre après le goûter. En cas de gêne respiratoire, de gonflement des lèvres ou du visage ou de malaise après un aliment, appelez immédiatement le **15** ou le **112**.
+Parles-en au médecin si ton enfant réclame à manger en permanence, s’il ne mange presque rien d’autre que des produits sucrés, si sa courbe de poids s’emballe ou au contraire stagne, ou s’il a souvent mal au ventre après le goûter. En cas de gêne respiratoire, de gonflement des lèvres ou du visage ou de malaise après un aliment, appelle immédiatement le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -216,8 +216,8 @@ ${FIN}`,
     sources: [S.ansesHygiene, S.ameliRepas, S.spfShu],
     body_md: `## En bref
 - Un pique-nique se compose comme un repas : féculent, légumes ou fruit, source de protéines, produit laitier, et de l’eau.
-- Les aliments périssables ne devraient pas rester **plus de 2 heures à température ambiante** : prévoyez un sac isotherme avec un bloc réfrigérant.
-- Lavez-vous les mains avant de préparer, lavez soigneusement fruits et légumes crus, séparez le cru du cuit.
+- Les aliments périssables ne devraient pas rester **plus de 2 heures à température ambiante** : prévois un sac isotherme avec un bloc réfrigérant.
+- Lave-toi les mains avant de préparer, lave soigneusement fruits et légumes crus, sépare le cru du cuit.
 - Les aliments non consommés et restés au chaud ne se gardent pas pour le lendemain.
 
 ## Comprendre
@@ -235,33 +235,33 @@ Côté équilibre, les repères de l’Assurance Maladie s’appliquent aussi au
 - salade de lentilles et riz, quelques radis, une compote en gourde sans sucre ajouté.
 
 **Les règles de conservation**
-- Préparez la veille et gardez au réfrigérateur jusqu’au départ.
-- Utilisez un sac isotherme avec un bloc réfrigérant, surtout pour les produits laitiers frais, la viande, le poisson, les œufs et les salades composées.
+- Prépare la veille et garde au réfrigérateur jusqu’au départ.
+- Utilise un sac isotherme avec un bloc réfrigérant, surtout pour les produits laitiers frais, la viande, le poisson, les œufs et les salades composées.
 - Une gourde d’eau congelée la veille peut servir de pain de glace et rafraîchir le sac.
-- Privilégiez les aliments qui supportent mieux le transport : fruits entiers, pain, fromages à pâte dure, compotes en gourde fermée.
+- Privilégie les aliments qui supportent mieux le transport : fruits entiers, pain, fromages à pâte dure, compotes en gourde fermée.
 - Ce qui revient à la maison après plusieurs heures au chaud se jette, surtout les préparations à base de viande, de poisson, d’œufs ou de mayonnaise.
 
 **Les gestes d’hygiène**
-- Lavez-vous les mains à l’eau et au savon avant et pendant la préparation.
-- Utilisez une planche pour la viande et le poisson crus, une autre pour les aliments cuits et les légumes.
-- Lavez la boîte repas et la gourde chaque jour.
-- Apprenez à votre enfant à se laver les mains avant de manger ; prévoyez des lingettes ou du gel si aucun point d’eau n’est disponible.
+- Lave-toi les mains à l’eau et au savon avant et pendant la préparation.
+- Utilise une planche pour la viande et le poisson crus, une autre pour les aliments cuits et les légumes.
+- Lave la boîte repas et la gourde chaque jour.
+- Apprends à ton enfant à se laver les mains avant de manger ; prévois des lingettes ou du gel si aucun point d’eau n’est disponible.
 
 ## Questions fréquentes
 **Peut-on mettre du jambon ou du poulet dans un sandwich pour la journée ?**
-Oui, à condition de le garder au frais avec un bloc réfrigérant et de le consommer dans la journée. Sans moyen de garder au frais, préférez des aliments moins fragiles.
+Oui, à condition de le garder au frais avec un bloc réfrigérant et de le consommer dans la journée. Sans moyen de garder au frais, préfère des aliments moins fragiles.
 
 **Les œufs durs sont-ils une bonne idée ?**
 Oui, s’ils sont bien cuits, gardés au frais et consommés le jour même.
 
 **Faut-il éviter la mayonnaise ?**
-Les préparations à base de sauce, de viande ou d’œufs sont plus fragiles : gardez-les bien au frais, ou remplacez la sauce par un filet d’huile de colza ou d’olive.
+Les préparations à base de sauce, de viande ou d’œufs sont plus fragiles : garde-les bien au frais, ou remplace la sauce par un filet d’huile de colza ou d’olive.
 
 **Comment éviter le gaspillage du goûter rapporté intact ?**
-Discutez avec votre enfant de ce qu’il aime et de la taille des portions. Un fruit entier non entamé se garde ; un laitage resté longtemps au chaud, non.
+Discute avec ton enfant de ce qu’il aime et de la taille des portions. Un fruit entier non entamé se garde ; un laitage resté longtemps au chaud, non.
 
 ## Quand demander conseil
-Consultez rapidement si votre enfant présente une diarrhée, surtout si elle contient du sang, des vomissements répétés, de la fièvre ou des douleurs abdominales importantes après un repas. Santé publique France recommande de consulter immédiatement un médecin en cas de diarrhée sanglante, de grande fatigue, de pâleur ou de diminution des urines dans les jours qui suivent. En cas de signes de déshydratation, de somnolence inhabituelle ou de malaise, appelez le **15** ou le **112**.
+Consulte rapidement si ton enfant présente une diarrhée, surtout si elle contient du sang, des vomissements répétés, de la fièvre ou des douleurs abdominales importantes après un repas. Santé publique France recommande de consulter immédiatement un médecin en cas de diarrhée sanglante, de grande fatigue, de pâleur ou de diminution des urines dans les jours qui suivent. En cas de signes de déshydratation, de somnolence inhabituelle ou de malaise, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -275,7 +275,7 @@ ${FIN}`,
 - À l’école, le déjeuner suit des règles nutritionnelles nationales : 4 ou 5 plats, dont un plat principal avec garniture et un produit laitier.
 - Les menus sont souvent affichés ou publiés en ligne : les consulter permet d’adapter le dîner.
 - L’équilibre se juge sur la journée, voire sur plusieurs jours, pas sur un seul repas.
-- Si votre enfant mange peu à la cantine, mieux vaut en comprendre la raison que compenser par du grignotage.
+- Si ton enfant mange peu à la cantine, mieux vaut en comprendre la raison que compenser par du grignotage.
 
 ## Comprendre
 Selon le ministère de l’Éducation nationale, à l’école primaire, la cantine relève de la commune (ou de l’intercommunalité). Les repas respectent des règles nutritionnelles : quatre ou cinq plats par repas, dont un plat principal avec garniture et un produit laitier, des portions adaptées, une variété minimale des plats, et des règles pour l’eau, le pain, le sel et les sauces. L’objectif est aussi de réduire les sucres ajoutés et les graisses, notamment saturées.
@@ -286,23 +286,23 @@ La Mallette des parents rappelle que, depuis 2017, l’inscription à la cantine
 
 ## Au quotidien
 **Consulter le menu de la semaine**
-Le menu est souvent affiché à l’école ou disponible sur le site de la commune. En un coup d’œil, vous pouvez repérer ce que votre enfant a mangé à midi.
+Le menu est souvent affiché à l’école ou disponible sur le site de la commune. En un coup d’œil, tu peux repérer ce que ton enfant a mangé à midi.
 
 **Adapter le dîner**
 - Midi avec viande ou poisson : le soir, un plat à base d’œufs, de légumineuses ou simplement de légumes et de féculents suffit souvent.
-- Midi pauvre en légumes (ou légumes peu mangés) : misez sur une soupe, une poêlée ou des crudités le soir.
+- Midi pauvre en légumes (ou légumes peu mangés) : mise sur une soupe, une poêlée ou des crudités le soir.
 - Midi avec frites ou plat pané : le soir, un repas plus simple, avec légumes, féculent complet et produit laitier.
-- Pensez au fruit : en dessert ou au goûter.
+- Pense au fruit : en dessert ou au goûter.
 
 **Le mercredi et les vacances**
 Ces jours-là, le déjeuner se prend à la maison ou au centre de loisirs : les mêmes repères s’appliquent (féculent, légumes, une source de protéines, un produit laitier, un fruit).
 
 **Parler de la cantine**
-Demandez à votre enfant ce qu’il a aimé, sans interroger chaque bouchée. La Mallette des parents rappelle que les goûts se forment progressivement, notamment à la cantine : un aliment refusé à midi pourra être reproposé à la maison sous une autre forme.
+Demande à ton enfant ce qu’il a aimé, sans interroger chaque bouchée. La Mallette des parents rappelle que les goûts se forment progressivement, notamment à la cantine : un aliment refusé à midi pourra être reproposé à la maison sous une autre forme.
 
 ## Questions fréquentes
 **Il dit qu’il ne mange rien à la cantine…**
-Échangez avec l’équipe (animateurs, personnel de service) : le temps de repas, le bruit ou la fatigue jouent souvent. Un goûter consistant et un dîner équilibré aident à compenser, sans pour autant multiplier les collations.
+Échange avec l’équipe (animateurs, personnel de service) : le temps de repas, le bruit ou la fatigue jouent souvent. Un goûter consistant et un dîner équilibré aident à compenser, sans pour autant multiplier les collations.
 
 **Faut-il éviter de servir le même plat le soir ?**
 Ce n’est pas interdit, mais varier permet de diversifier les apports et le plaisir.
@@ -311,10 +311,10 @@ Ce n’est pas interdit, mais varier permet de diversifier les apports et le pla
 Un projet d’accueil individualisé (PAI) peut être mis en place avec l’école et le médecin. Selon le ministère, il peut prévoir un plat de substitution ou un panier repas fourni par la famille, sous sa responsabilité et en respectant la chaîne du froid.
 
 **La cantine coûte cher : existe-t-il des aides ?**
-Le tarif en primaire est fixé par la commune, souvent selon le quotient familial. Renseignez-vous auprès de la mairie ou de la caisse des écoles ; les familles en difficulté peuvent aussi solliciter l’assistante sociale.
+Le tarif en primaire est fixé par la commune, souvent selon le quotient familial. Renseigne-toi auprès de la mairie ou de la caisse des écoles ; les familles en difficulté peuvent aussi solliciter l’assistante sociale.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant mange très peu de façon durable, perd du poids, se plaint souvent de maux de ventre ou semble anxieux à l’idée d’aller à la cantine. Si un enfant allergique présente une gêne respiratoire, un gonflement du visage ou un malaise après un repas, appelez immédiatement le **15** ou le **112**.
+Parles-en au médecin si ton enfant mange très peu de façon durable, perd du poids, se plaint souvent de maux de ventre ou semble anxieux à l’idée d’aller à la cantine. Si un enfant allergique présente une gêne respiratoire, un gonflement du visage ou un malaise après un repas, appelle immédiatement le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -350,12 +350,12 @@ L’Assurance Maladie rappelle de son côté qu’il n’est pas nécessaire de 
 Pois chiches et semoule, lentilles et riz, haricots rouges et maïs : ces associations classiques combinent légumes secs et céréales.
 
 **Le faire accepter**
-- Partez des plats que votre enfant aime déjà (pâtes, galettes, gratins) et ajoutez-y des légumes secs.
-- Mixez une partie des lentilles dans une sauce tomate ou une soupe.
-- Proposez des galettes ou des beignets de pois chiches à manger avec les doigts.
+- Pars des plats que ton enfant aime déjà (pâtes, galettes, gratins) et ajoutes-y des légumes secs.
+- Mixe une partie des lentilles dans une sauce tomate ou une soupe.
+- Propose des galettes ou des beignets de pois chiches à manger avec les doigts.
 
 **Le jour du menu végétarien à la cantine**
-Le soir, vous pouvez servir un plat avec de la viande, du poisson ou des œufs, ou un autre repas végétarien : il n’y a pas d’obligation, l’important est la variété sur la semaine.
+Le soir, tu peux servir un plat avec de la viande, du poisson ou des œufs, ou un autre repas végétarien : il n’y a pas d’obligation, l’important est la variété sur la semaine.
 
 ## Questions fréquentes
 **Un repas végétarien apporte-t-il assez de protéines à un enfant ?**
@@ -365,13 +365,13 @@ Un repas qui associe légumes secs, féculents et produit laitier, ou qui contie
 Mieux vaut varier : le CNRC conseille de ne pas multiplier les plats à base de fromage ou d’œufs, et de donner une vraie place aux légumes secs.
 
 **Les produits végétaux transformés (steaks végétaux, nuggets végétaux) sont-ils une bonne solution ?**
-Ils peuvent dépanner, mais ils sont souvent ultra-transformés : comparez-les avec le Nutri-Score et lisez la liste des ingrédients. Les légumes secs simples restent la base.
+Ils peuvent dépanner, mais ils sont souvent ultra-transformés : compare-les avec le Nutri-Score et lis la liste des ingrédients. Les légumes secs simples restent la base.
 
 **Et si notre famille souhaite un régime entièrement végétarien pour l’enfant ?**
-Parlez-en avec le médecin ou un·e diététicien·ne, qui vous aidera à couvrir tous les besoins de croissance, notamment en fer, en calcium et en vitamines.
+Parles-en avec le médecin ou un·e diététicien·ne, qui t’aidera à couvrir tous les besoins de croissance, notamment en fer, en calcium et en vitamines.
 
 ## Quand demander conseil
-Consultez le médecin si votre enfant semble fatigué, pâle, s’il mange très peu de variété, si son poids ou sa taille stagnent, ou si vous envisagez d’exclure durablement des groupes d’aliments (viande et poisson, produits laitiers, œufs). Les ballonnements peuvent survenir quand on augmente trop vite les fibres : allez-y progressivement et faites boire de l’eau. En cas de malaise ou de difficulté à respirer après un repas, appelez le **15** ou le **112**.
+Consulte le médecin si ton enfant semble fatigué, pâle, s’il mange très peu de variété, si son poids ou sa taille stagnent, ou si tu envisages d’exclure durablement des groupes d’aliments (viande et poisson, produits laitiers, œufs). Les ballonnements peuvent survenir quand on augmente trop vite les fibres : vas-y progressivement et fais boire de l’eau. En cas de malaise ou de difficulté à respirer après un repas, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -409,13 +409,13 @@ La Mallette des parents rappelle que les aliments et boissons sucrés, y compris
 - Céréales complètes peu sucrées ou flocons d’avoine à la place de céréales fourrées.
 
 **Cuisiner maison**
-Faire soi-même un gâteau ou une compote permet de choisir la quantité de sucre : l’Anses souligne que les préparations maison aident à mieux connaître et contrôler les apports en sucres. Vous pouvez réduire progressivement le sucre indiqué dans vos recettes habituelles.
+Faire soi-même un gâteau ou une compote permet de choisir la quantité de sucre : l’Anses souligne que les préparations maison aident à mieux connaître et contrôler les apports en sucres. Tu peux réduire progressivement le sucre indiqué dans tes recettes habituelles.
 
 **Donner une place aux douceurs**
-Un dessert sucré ou un bonbon n’a pas besoin d’être un événement interdit. Réservez-les à des moments identifiés (une fête, un goûter du week-end) et évitez de les utiliser comme **récompense** ou comme **consolation** : cela leur donne une valeur particulière.
+Un dessert sucré ou un bonbon n’a pas besoin d’être un événement interdit. Réserve-les à des moments identifiés (une fête, un goûter du week-end) et évite de les utiliser comme **récompense** ou comme **consolation** : cela leur donne une valeur particulière.
 
 **Lire les étiquettes**
-Le Nutri-Score aide à comparer des produits d’un même rayon ; limitez ceux classés D ou E. Dans la liste des ingrédients, le sucre peut apparaître sous plusieurs noms (sirop de glucose, dextrose, saccharose…).
+Le Nutri-Score aide à comparer des produits d’un même rayon ; limite ceux classés D ou E. Dans la liste des ingrédients, le sucre peut apparaître sous plusieurs noms (sirop de glucose, dextrose, saccharose…).
 
 **Protéger les dents**
 Brossage des dents deux fois par jour avec un dentifrice fluoré adapté à l’âge, rendez-vous chez le dentiste au moins une fois par an, et pas d’aliment ni de boisson sucrée après le brossage du soir.
@@ -428,13 +428,13 @@ Santé publique France indique que les boissons « light » contiennent peu de c
 Ce sont aussi des sucres. Les mêmes repères de modération s’appliquent.
 
 **Mon enfant réclame des bonbons après l’école…**
-Fixez un cadre clair et prévisible (par exemple, pas de bonbons en semaine) et proposez un goûter qu’il aime. Un « non » posé calmement et tenu dans le temps est souvent mieux accepté qu’une négociation quotidienne.
+Fixe un cadre clair et prévisible (par exemple, pas de bonbons en semaine) et propose un goûter qu’il aime. Un « non » posé calmement et tenu dans le temps est souvent mieux accepté qu’une négociation quotidienne.
 
 **Que faire des bonbons des anniversaires ou de fêtes ?**
-Vous pouvez les ranger et les proposer de temps en temps au dessert ou au goûter, plutôt que tous d’un coup ou en grignotage.
+Tu peux les ranger et les proposer de temps en temps au dessert ou au goûter, plutôt que tous d’un coup ou en grignotage.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant prend du poids rapidement, s’il a une soif inhabituelle, urine beaucoup ou maigrit sans raison (ces signes doivent faire consulter rapidement), ou si vous constatez des taches ou douleurs dentaires (consultez le dentiste). Les examens M’T dents sont pris en charge tous les trois ans, de 3 à 24 ans. En cas de malaise, de somnolence inhabituelle ou de difficulté à respirer, appelez le **15** ou le **112**.
+Parles-en au médecin si ton enfant prend du poids rapidement, s’il a une soif inhabituelle, urine beaucoup ou maigrit sans raison (ces signes doivent faire consulter rapidement), ou si tu constates des taches ou douleurs dentaires (consulte le dentiste). Les examens M’T dents sont pris en charge tous les trois ans, de 3 à 24 ans. En cas de malaise, de somnolence inhabituelle ou de difficulté à respirer, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -463,14 +463,14 @@ Quant aux boissons « light », Santé publique France souligne qu’elles entre
 
 ## Au quotidien
 **Faire de l’eau la boisson naturelle de la famille**
-- Mettez une carafe d’eau sur la table à chaque repas.
-- Donnez à votre enfant sa propre gourde pour l’école et les activités.
-- Proposez de l’eau plate ou gazeuse, fraîche, avec une rondelle d’agrume, de concombre ou quelques feuilles de menthe pour changer.
+- Mets une carafe d’eau sur la table à chaque repas.
+- Donne à ton enfant sa propre gourde pour l’école et les activités.
+- Propose de l’eau plate ou gazeuse, fraîche, avec une rondelle d’agrume, de concombre ou quelques feuilles de menthe pour changer.
 
 **Faire évoluer les habitudes progressivement**
-- Commencez par supprimer les boissons sucrées des repas de la semaine.
-- Diluez de plus en plus les sirops, puis réservez-les aux occasions.
-- N’achetez plus de grandes bouteilles de soda « pour la maison » : ce qui n’est pas dans le placard ne se boit pas.
+- Commence par supprimer les boissons sucrées des repas de la semaine.
+- Dilue de plus en plus les sirops, puis réserve-les aux occasions.
+- N’achète plus de grandes bouteilles de soda « pour la maison » : ce qui n’est pas dans le placard ne se boit pas.
 
 **Montrer l’exemple**
 Les enfants imitent ce qu’ils voient : si les adultes boivent de l’eau à table, l’enfant suivra plus facilement.
@@ -483,16 +483,16 @@ Une boisson sucrée exceptionnelle n’est pas un problème. Ce qui compte, c’
 Non. Un fruit entier (orange, kiwi, clémentine, fraises selon la saison) apporte de la vitamine C, des fibres et rassasie mieux.
 
 **Les eaux aromatisées du commerce sont-elles de l’eau ?**
-Beaucoup contiennent du sucre ou des édulcorants. Lisez l’étiquette : si du sucre ou un édulcorant figure dans les ingrédients, elles relèvent des boissons sucrées ou « light ».
+Beaucoup contiennent du sucre ou des édulcorants. Lis l’étiquette : si du sucre ou un édulcorant figure dans les ingrédients, elles relèvent des boissons sucrées ou « light ».
 
 **Mon enfant ne boit pas assez d’eau, il n’aime pas ça…**
-Proposez-la fraîche, dans un verre ou une gourde qu’il a choisi, et à des moments réguliers (au réveil, aux repas, au retour de l’école, après le sport).
+Propose-la fraîche, dans un verre ou une gourde qu’il a choisi, et à des moments réguliers (au réveil, aux repas, au retour de l’école, après le sport).
 
 **Et le lait, compte-t-il comme boisson ?**
 Le lait est un produit laitier, c’est-à-dire un aliment. Il peut accompagner le petit-déjeuner ou le goûter, mais ne remplace pas l’eau pour se désaltérer.
 
 ## Quand demander conseil
-Consultez rapidement si votre enfant a une soif intense et inhabituelle, urine beaucoup, se lève la nuit pour boire ou maigrit sans raison. Par forte chaleur, en cas de fièvre, de diarrhée ou de vomissements, surveillez les signes de déshydratation (bouche sèche, urines rares et foncées, somnolence) : appelez le **15** ou le **112** s’il est abattu, difficile à réveiller ou ne parvient pas à boire.
+Consulte rapidement si ton enfant a une soif intense et inhabituelle, urine beaucoup, se lève la nuit pour boire ou maigrit sans raison. Par forte chaleur, en cas de fièvre, de diarrhée ou de vomissements, surveille les signes de déshydratation (bouche sèche, urines rares et foncées, somnolence) : appelle le **15** ou le **112** s’il est abattu, difficile à réveiller ou ne parvient pas à boire.
 
 ${FIN}`,
   },
@@ -522,24 +522,24 @@ ${FIN}`,
 - Une gourde personnelle pour l’école, le sport et les sorties, lavée chaque jour.
 - Une carafe sur la table à chaque repas.
 - Des moments repères : au réveil, au retour de l’école, après une activité physique, au coucher.
-- Par temps chaud, proposez à boire régulièrement sans attendre que l’enfant le demande.
+- Par temps chaud, propose à boire régulièrement sans attendre que l’enfant le demande.
 
 **Le lait au quotidien**
 - Un verre de lait au petit-déjeuner ou au goûter compte comme un produit laitier.
-- Si votre enfant aime le lait chocolaté, préférez du cacao en poudre peu sucré et dosez légèrement.
-- Les boissons végétales (soja, amande, avoine…) ne sont pas des produits laitiers : l’Assurance Maladie précise que les préparations au soja ne les remplacent pas. Parlez-en au médecin si votre enfant ne consomme pas de lait.
+- Si ton enfant aime le lait chocolaté, préfère du cacao en poudre peu sucré et dose légèrement.
+- Les boissons végétales (soja, amande, avoine…) ne sont pas des produits laitiers : l’Assurance Maladie précise que les préparations au soja ne les remplacent pas. Parles-en au médecin si ton enfant ne consomme pas de lait.
 
 **Café, thé, boissons énergisantes**
-- Ne proposez pas de café ni de thé aux enfants, même « juste un peu » : ces habitudes s’installent vite.
-- Expliquez à votre enfant, surtout en fin d’école primaire, ce que contiennent les boissons énergisantes (caféine et sucre) et pourquoi elles ne lui sont pas destinées.
-- Méfiez-vous des sodas au cola, qui associent sucre et caféine.
+- Ne propose pas de café ni de thé aux enfants, même « juste un peu » : ces habitudes s’installent vite.
+- Explique à ton enfant, surtout en fin d’école primaire, ce que contiennent les boissons énergisantes (caféine et sucre) et pourquoi elles ne lui sont pas destinées.
+- Méfie-toi des sodas au cola, qui associent sucre et caféine.
 
 ## Questions fréquentes
 **Les tisanes conviennent-elles aux enfants ?**
-Santé publique France cite les tisanes non sucrées parmi les boissons qui contribuent à l’hydratation. Servez-les tièdes ou froides, sans sucre ni miel ajouté, et évitez les thés, qui contiennent de la théine.
+Santé publique France cite les tisanes non sucrées parmi les boissons qui contribuent à l’hydratation. Sers-les tièdes ou froides, sans sucre ni miel ajouté, et évite les thés, qui contiennent de la théine.
 
 **Combien d’eau doit boire mon enfant ?**
-Les besoins varient avec l’âge, la chaleur et l’activité. L’essentiel est que l’eau soit disponible à volonté et proposée régulièrement ; demandez conseil au médecin si vous avez un doute.
+Les besoins varient avec l’âge, la chaleur et l’activité. L’essentiel est que l’eau soit disponible à volonté et proposée régulièrement ; demande conseil au médecin si tu as un doute.
 
 **Une boisson énergisante après le sport, c’est utile ?**
 Non. Pour un enfant, l’eau suffit pendant et après l’effort. Les boissons énergisantes sont déconseillées.
@@ -548,7 +548,7 @@ Non. Pour un enfant, l’eau suffit pendant et après l’effort. Les boissons �
 Il contient en général du sucre, et souvent de la théine (caféine) : il cumule les inconvénients des boissons sucrées et caféinées.
 
 ## Quand demander conseil
-Consultez rapidement si votre enfant a une soif excessive et inhabituelle, urine beaucoup ou maigrit. Si un enfant a bu par erreur une boisson énergisante ou du café en grande quantité et présente des palpitations, une agitation importante, des vomissements ou un malaise, appelez le **15** ou le **112**. En cas de forte chaleur avec fièvre, somnolence ou refus de boire, appelez aussi le **15**.
+Consulte rapidement si ton enfant a une soif excessive et inhabituelle, urine beaucoup ou maigrit. Si un enfant a bu par erreur une boisson énergisante ou du café en grande quantité et présente des palpitations, une agitation importante, des vomissements ou un malaise, appelle le **15** ou le **112**. En cas de forte chaleur avec fièvre, somnolence ou refus de boire, appelle aussi le **15**.
 
 ${FIN}`,
   },
@@ -585,24 +585,24 @@ L’Assurance Maladie, dans ses conseils pour prévenir le surpoids, recommande 
 - En dehors de ces moments, la cuisine « ferme » : on peut boire de l’eau à volonté.
 
 **Réduire les tentations**
-- Rangez biscuits et paquets hors de vue ; laissez plutôt une corbeille de fruits accessible.
-- Évitez d’acheter en grande quantité les produits que votre enfant grignote le plus.
-- Ne mangez pas devant les écrans, et limitez l’exposition aux publicités (programmes sans coupure, enregistrements).
+- Range biscuits et paquets hors de vue ; laisse plutôt une corbeille de fruits accessible.
+- Évite d’acheter en grande quantité les produits que ton enfant grignote le plus.
+- Ne mange pas devant les écrans, et limite l’exposition aux publicités (programmes sans coupure, enregistrements).
 
 **Répondre aux vraies causes**
-- Ennui : proposez une activité, une sortie, un jeu ; l’activité physique quotidienne est aussi recommandée.
-- Émotion : mettez des mots, proposez un câlin ou un moment calme plutôt qu’un aliment réconfort.
-- Faim réelle : vérifiez que les repas sont assez consistants (féculent à chaque repas, produit laitier, fruits et légumes).
+- Ennui : propose une activité, une sortie, un jeu ; l’activité physique quotidienne est aussi recommandée.
+- Émotion : mets des mots, propose un câlin ou un moment calme plutôt qu’un aliment réconfort.
+- Faim réelle : vérifie que les repas sont assez consistants (féculent à chaque repas, produit laitier, fruits et légumes).
 
 **Expliquer la publicité**
-À partir de 6-7 ans, vous pouvez regarder une publicité avec votre enfant et lui demander ce qu’elle cherche à lui faire acheter. Comprendre le mécanisme aide à prendre du recul.
+À partir de 6-7 ans, tu peux regarder une publicité avec ton enfant et lui demander ce qu’elle cherche à lui faire acheter. Comprendre le mécanisme aide à prendre du recul.
 
 ## Questions fréquentes
 **Grignoter un fruit entre les repas, est-ce grave ?**
 Un fruit est un meilleur choix qu’un biscuit, mais l’idéal reste de le placer au goûter ou au dessert pour garder des repas réguliers et préserver l’appétit.
 
 **Mon enfant dit tout le temps qu’il a faim…**
-Observez à quel moment il le dit (devant la télévision, après l’école, quand il s’ennuie). S’il a réellement faim aux repas et mange de bon appétit, la demande est peut-être liée à autre chose. Si sa faim semble excessive, parlez-en au médecin.
+Observe à quel moment il le dit (devant la télévision, après l’école, quand il s’ennuie). S’il a réellement faim aux repas et mange de bon appétit, la demande est peut-être liée à autre chose. Si sa faim semble excessive, parles-en au médecin.
 
 **Faut-il interdire totalement les chips et biscuits ?**
 Non : ils peuvent avoir leur place de temps en temps, à table ou au goûter, plutôt qu’en grignotage.
@@ -611,7 +611,7 @@ Non : ils peuvent avoir leur place de temps en temps, à table ou au goûter, pl
 Ils détournent l’attention des sensations de faim et de satiété, et réduisent les échanges. L’Assurance Maladie recommande des repas sans écran.
 
 ## Quand demander conseil
-Parlez-en au médecin si le grignotage s’accompagne d’une prise de poids rapide, si votre enfant semble manger pour calmer une angoisse ou de la tristesse, s’il cache de la nourriture, ou si les tensions autour de la nourriture deviennent pesantes pour la famille. Si vous vous sentez dépassé, le **3114** est joignable jour et nuit. En urgence, appelez le **15** ou le **112**.
+Parles-en au médecin si le grignotage s’accompagne d’une prise de poids rapide, si ton enfant semble manger pour calmer une angoisse ou de la tristesse, s’il cache de la nourriture, ou si les tensions autour de la nourriture deviennent pesantes pour la famille. Si tu te sens dépassé, le **3114** est joignable jour et nuit. En urgence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -646,20 +646,20 @@ Santé publique France recommande de proposer des fruits et légumes à chaque r
 - Dîner : soupe de légumes.
 
 **Quand le temps manque**
-Les légumes surgelés nature, en conserve ou en bocal ont une très bonne qualité nutritionnelle et se préparent vite. Gardez toujours au congélateur un sachet de légumes nature et une soupe prête.
+Les légumes surgelés nature, en conserve ou en bocal ont une très bonne qualité nutritionnelle et se préparent vite. Garde toujours au congélateur un sachet de légumes nature et une soupe prête.
 
 **Petit budget**
-Privilégiez les fruits et légumes de saison, moins chers en pleine récolte ; sur les marchés, les prix baissent souvent en fin de matinée.
+Privilégie les fruits et légumes de saison, moins chers en pleine récolte ; sur les marchés, les prix baissent souvent en fin de matinée.
 
 **L’intégrer partout**
-Ajoutez des légumes dans les gratins, les tartes salées ou sucrées, les sauces tomate maison, les omelettes, les pâtes. Une petite augmentation est déjà bénéfique.
+Ajoute des légumes dans les gratins, les tartes salées ou sucrées, les sauces tomate maison, les omelettes, les pâtes. Une petite augmentation est déjà bénéfique.
 
 **Les cuissons**
-Cuisez les légumes à la vapeur ou avec peu d’eau pour préserver les vitamines, selon l’Assurance Maladie.
+Cuis les légumes à la vapeur ou avec peu d’eau pour préserver les vitamines, selon l’Assurance Maladie.
 
 ## Questions fréquentes
 **Les compotes en gourde comptent-elles ?**
-Une compote sans sucre ajouté compte comme une portion de fruit. Lisez l’étiquette pour vérifier l’absence de sucres ajoutés.
+Une compote sans sucre ajouté compte comme une portion de fruit. Lis l’étiquette pour vérifier l’absence de sucres ajoutés.
 
 **Une soupe contenant cinq légumes compte-t-elle pour cinq portions ?**
 Non, un bol de soupe compte pour une portion, quel que soit le nombre de légumes qu’elle contient.
@@ -668,10 +668,10 @@ Non, un bol de soupe compte pour une portion, quel que soit le nombre de légume
 Santé publique France recommande le bio quand c’est possible, mais manger des fruits et légumes, bio ou non, reste la priorité.
 
 **Mon enfant ne mange que deux ou trois légumes…**
-Proposez-les souvent : Santé publique France indique qu’un légume préféré peut revenir plusieurs fois par semaine. Continuez en parallèle à proposer d’autres légumes, sans forcer.
+Propose-les souvent : Santé publique France indique qu’un légume préféré peut revenir plusieurs fois par semaine. Continue en parallèle à proposer d’autres légumes, sans forcer.
 
 ## Quand demander conseil
-Consultez si votre enfant refuse quasiment tous les fruits et légumes, s’il a des gencives qui saignent, une grande fatigue, des douleurs dans les jambes, des bleus inhabituels ou une perte de poids : ces signes doivent être examinés par un médecin. Si les refus alimentaires sont très nombreux et s’accompagnent d’une détresse au moment des repas, parlez-en aussi au médecin. En urgence, appelez le **15** ou le **112**.
+Consulte si ton enfant refuse quasiment tous les fruits et légumes, s’il a des gencives qui saignent, une grande fatigue, des douleurs dans les jambes, des bleus inhabituels ou une perte de poids : ces signes doivent être examinés par un médecin. Si les refus alimentaires sont très nombreux et s’accompagnent d’une détresse au moment des repas, parles-en aussi au médecin. En urgence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -683,7 +683,7 @@ ${FIN}`,
     sources: [S.santeGouts, S.santeFL, S.malletteAlim],
     body_md: `## En bref
 - Les goûts se construisent pendant l’enfance, au fil des expériences.
-- Face à un aliment nouveau, ne forcez pas mais **reproposez-le régulièrement** : il faut parfois une dizaine d’essais espacés.
+- Face à un aliment nouveau, ne force pas mais **repropose-le régulièrement** : il faut parfois une dizaine d’essais espacés.
 - Varier les préparations et les cuissons change l’aspect et le goût d’un même légume.
 - Laisser un choix, ajouter de la couleur et cuisiner ensemble donnent envie de goûter.
 
@@ -702,35 +702,35 @@ Un même légume change de visage selon qu’il est servi en vinaigrette, en sou
 Vapeur, four, papillote, gril, nature, en sauce ou légèrement épicé : chaque cuisson révèle des couleurs, des textures et des parfums différents.
 
 **Laisser un choix encadré**
-Proposez deux options d’une même catégorie : « carottes râpées ou concombre ? ». L’enfant se sent écouté, et il mange quand même un légume.
+Propose deux options d’une même catégorie : « carottes râpées ou concombre ? ». L’enfant se sent écouté, et il mange quand même un légume.
 
 **Garder un légume « refuge »**
-Proposez plusieurs fois par semaine un légume que votre enfant aime beaucoup (la tomate, par exemple), à côté des légumes à découvrir.
+Propose plusieurs fois par semaine un légume que ton enfant aime beaucoup (la tomate, par exemple), à côté des légumes à découvrir.
 
 **Soigner la présentation**
-Ajoutez de la couleur : légumes dans les pâtes, herbes fraîches sur le poisson, assiette avec plusieurs couleurs. Un poisson en papillote avec des herbes et des légumes en dés peut plaire davantage qu’un filet nature.
+Ajoute de la couleur : légumes dans les pâtes, herbes fraîches sur le poisson, assiette avec plusieurs couleurs. Un poisson en papillote avec des herbes et des légumes en dés peut plaire davantage qu’un filet nature.
 
 **Faire participer**
 Choisir un légume au marché, le laver, l’éplucher (avec un économe adapté), le mélanger : un enfant qui a préparé un plat a souvent plus envie d’y goûter.
 
 **Petites portions, sans pression**
-Servez une petite quantité du légume nouveau à côté d’aliments familiers. Pas de chantage, pas de dessert en récompense, pas de punition : goûter doit rester une proposition.
+Sers une petite quantité du légume nouveau à côté d’aliments familiers. Pas de chantage, pas de dessert en récompense, pas de punition : goûter doit rester une proposition.
 
 ## Questions fréquentes
 **Faut-il obliger à « goûter une bouchée » ?**
 Mieux vaut encourager sans obliger. L’enfant peut toucher, sentir, poser l’aliment sur le bord de son assiette : ce sont déjà des étapes vers le goût.
 
 **Peut-on « cacher » les légumes dans les plats ?**
-Mixer des légumes dans une sauce ou une soupe augmente les apports, mais n’aide pas l’enfant à reconnaître et apprécier le légume. Associez les deux approches : une version mixée, une version visible.
+Mixer des légumes dans une sauce ou une soupe augmente les apports, mais n’aide pas l’enfant à reconnaître et apprécier le légume. Associe les deux approches : une version mixée, une version visible.
 
 **Mon enfant mangeait de tout petit, il refuse tout depuis quelque temps…**
-La méfiance face à des aliments nouveaux, voire déjà connus, est fréquente chez le jeune enfant. Restez patient, continuez à proposer et à manger vous-même ces aliments devant lui.
+La méfiance face à des aliments nouveaux, voire déjà connus, est fréquente chez le jeune enfant. Reste patient, continue à proposer et à manger toi-même ces aliments devant lui.
 
 **Combien de temps dure cette période ?**
 Elle varie d’un enfant à l’autre. Ce qui compte est de garder une ambiance agréable à table et une offre variée.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant mange un nombre très restreint d’aliments, si les refus s’accompagnent de haut-le-cœur, de vomissements ou d’une grande anxiété, si son poids ou sa croissance ralentissent, ou si les repas sont devenus une source de conflit permanente. Si l’épuisement vous gagne, le **3114** est joignable jour et nuit. En cas de gêne respiratoire ou de gonflement après un aliment, appelez le **15** ou le **112**.
+Parles-en au médecin si ton enfant mange un nombre très restreint d’aliments, si les refus s’accompagnent de haut-le-cœur, de vomissements ou d’une grande anxiété, si son poids ou sa croissance ralentissent, ou si les repas sont devenus une source de conflit permanente. Si l’épuisement te gagne, le **3114** est joignable jour et nuit. En cas de gêne respiratoire ou de gonflement après un aliment, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -742,7 +742,7 @@ ${FIN}`,
     sources: [S.ameliAliments, S.ansesAvis, S.santeFL],
     body_md: `## En bref
 - Les fruits à coque **non salés** (noix, noisettes, amandes…) sont une bonne option de goûter.
-- **Avant 3-4 ans**, ne donnez pas de fruits à coque entiers : le risque d’étouffement est réel.
+- **Avant 3-4 ans**, ne donne pas de fruits à coque entiers : le risque d’étouffement est réel.
 - **Jusqu’à 6 ans**, l’Assurance Maladie conseille de les proposer en poudre ou intégrés à la cuisine.
 - Les fruits secs (raisins, abricots, dattes) sont riches en sucres naturels : à proposer de temps en temps.
 
@@ -753,7 +753,7 @@ Mais ces petits aliments durs et ronds présentent un **risque d’étouffement*
 
 Les **fruits secs** (raisins secs, abricots secs, dattes, figues) sont riches en vitamines et minéraux, mais aussi en sucres. Santé publique France conseille de les consommer occasionnellement. Ils ne remplacent pas un fruit frais.
 
-**Allergies.** L’arachide (cacahuète) et les fruits à coque font partie des allergènes à déclaration obligatoire. Si votre enfant a déjà réagi à l’un de ces aliments, suivez les consignes de son médecin.
+**Allergies.** L’arachide (cacahuète) et les fruits à coque font partie des allergènes à déclaration obligatoire. Si ton enfant a déjà réagi à l’un de ces aliments, suis les consignes de son médecin.
 
 ## Au quotidien
 **Avant 6 ans : en poudre ou cuisinés**
@@ -765,14 +765,14 @@ Les **fruits secs** (raisins secs, abricots secs, dattes, figues) sont riches en
 - Une petite poignée au goûter, avec un fruit et de l’eau.
 - L’enfant mange **assis**, au calme, sans courir ni jouer.
 - Pas de fruits à coque en voiture, pendant un jeu, devant un écran ou en s’endormant.
-- Choisissez-les **non salés** et non enrobés (ni caramélisés, ni chocolatés).
+- Choisis-les **non salés** et non enrobés (ni caramélisés, ni chocolatés).
 
 **Autres aliments à risque d’étouffement chez les plus jeunes**
-Raisins frais et tomates cerises entiers, bonbons durs, popcorn, morceaux de saucisse ronds : coupez les fruits ronds en quatre dans le sens de la longueur pour les plus jeunes, et restez à proximité pendant les repas.
+Raisins frais et tomates cerises entiers, bonbons durs, popcorn, morceaux de saucisse ronds : coupe les fruits ronds en quatre dans le sens de la longueur pour les plus jeunes, et reste à proximité pendant les repas.
 
 **Fruits secs**
 - Quelques abricots secs ou raisins secs peuvent accompagner un goûter de temps en temps.
-- Pensez au brossage des dents : les fruits secs collent aux dents.
+- Pense au brossage des dents : les fruits secs collent aux dents.
 
 ## Questions fréquentes
 **Mon enfant de 4 ans réclame des cacahuètes à l’apéritif…**
@@ -782,13 +782,13 @@ Avant 6 ans, mieux vaut proposer autre chose : bâtonnets de légumes, tomates c
 Ils contiennent des matières grasses de bonne qualité et sont recommandés par Santé publique France, en petite quantité et non salés.
 
 **Les barres de céréales aux fruits secs sont-elles un bon goûter ?**
-Beaucoup sont riches en sucres ajoutés. Comparez-les avec le Nutri-Score et lisez la liste d’ingrédients ; un fruit et un morceau de pain restent souvent un meilleur choix.
+Beaucoup sont riches en sucres ajoutés. Compare-les avec le Nutri-Score et lis la liste d’ingrédients ; un fruit et un morceau de pain restent souvent un meilleur choix.
 
 **Faut-il éviter les fruits à coque à l’école ?**
-Certaines écoles accueillent des enfants allergiques et demandent d’éviter ces aliments : respectez les consignes de l’établissement.
+Certaines écoles accueillent des enfants allergiques et demandent d’éviter ces aliments : respecte les consignes de l’établissement.
 
 ## Quand demander conseil
-**Étouffement : appelez immédiatement le 15 ou le 112** si votre enfant ne peut plus parler, tousser ou respirer, devient bleu ou perd connaissance. S’il tousse fort, laissez-le tousser sans lui taper dans le dos, ne mettez pas les doigts dans sa bouche et restez près de lui. Une formation aux gestes de premiers secours permet de connaître les gestes adaptés à l’âge. Après un épisode d’étouffement, même résolu, consultez un médecin si une toux, une gêne respiratoire ou un sifflement persistent. En cas de gonflement des lèvres, d’urticaire, de vomissements ou de gêne respiratoire après avoir mangé un fruit à coque, appelez le **15** ou le **112**.
+**Étouffement : appelle immédiatement le 15 ou le 112** si ton enfant ne peut plus parler, tousser ou respirer, devient bleu ou perd connaissance. S’il tousse fort, laisse-le tousser sans lui taper dans le dos, ne mets pas les doigts dans sa bouche et reste près de lui. Une formation aux gestes de premiers secours permet de connaître les gestes adaptés à l’âge. Après un épisode d’étouffement, même résolu, consulte un médecin si une toux, une gêne respiratoire ou un sifflement persistent. En cas de gonflement des lèvres, d’urticaire, de vomissements ou de gêne respiratoire après avoir mangé un fruit à coque, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -802,7 +802,7 @@ ${FIN}`,
 - Viande, poisson ou œufs **ne sont pas nécessaires à chaque repas** : on les alterne au fil de la semaine, avec les légumineuses.
 - Entre 4 et 6 ans, une portion correspond environ à **50 g** de viande, de volaille ou de poisson, ou **1 œuf**.
 - Vers 11 ans, la portion rejoint celle d’un adulte, environ 100 g ou 2 œufs.
-- Préférez la volaille et les morceaux maigres ; limitez la charcuterie (sauf jambon blanc et volaille) et les produits panés.
+- Préfère la volaille et les morceaux maigres ; limite la charcuterie (sauf jambon blanc et volaille) et les produits panés.
 
 ## Comprendre
 L’Assurance Maladie présente viande, poisson et œufs comme une famille d’aliments à consommer **en alternance**, pas forcément à chaque repas. Les légumineuses (lentilles, pois chiches, haricots) et les céréales peu raffinées sont des sources alternatives de protéines.
@@ -818,7 +818,7 @@ Une équivalence pratique : **50 g de viande = 50 g de poisson = 1 œuf**.
 - **Poisson** : deux fois par semaine, dont un poisson gras (sardine, maquereau, hareng, saumon).
 - **Viande rouge** (bœuf, porc, veau, agneau) : à limiter ; la volaille est à privilégier.
 - **Charcuterie** : avant 11 ans, à consommer seulement de temps en temps, à l’exception du jambon blanc et de la charcuterie de volaille, selon l’Assurance Maladie.
-- **Produits panés** (nuggets, cordons-bleus) et **burgers** : souvent ultra-transformés, à limiter ; lisez les étiquettes.
+- **Produits panés** (nuggets, cordons-bleus) et **burgers** : souvent ultra-transformés, à limiter ; lis les étiquettes.
 
 ## Au quotidien
 **Une semaine type, à titre d’exemple**
@@ -830,31 +830,31 @@ Une équivalence pratique : **50 g de viande = 50 g de poisson = 1 œuf**.
 - Le week-end : un plat familial, et des légumes secs dans un des repas.
 
 **Visualiser une portion**
-Pour un enfant de 4 à 6 ans, la portion représente environ la moitié de celle d’un adulte : 50 g de viande ou de poisson, ou un œuf. Pesez une fois une portion pour vous faire une idée, puis ajustez selon son appétit.
+Pour un enfant de 4 à 6 ans, la portion représente environ la moitié de celle d’un adulte : 50 g de viande ou de poisson, ou un œuf. Pèse une fois une portion pour te faire une idée, puis ajuste selon son appétit.
 
 **Choisir les produits**
-- Préférez les morceaux maigres et les préparations simples (rôti, escalope, filet).
-- Pour le poisson, variez les espèces et les lieux d’approvisionnement.
-- Pour les plats préparés, comparez les produits avec le Nutri-Score.
+- Préfère les morceaux maigres et les préparations simples (rôti, escalope, filet).
+- Pour le poisson, varie les espèces et les lieux d’approvisionnement.
+- Pour les plats préparés, compare les produits avec le Nutri-Score.
 
 **Cuisiner en sécurité**
-Faites bien cuire à cœur la viande hachée (steak haché, boulettes) : elle ne doit plus être rosée à l’intérieur.
+Fais bien cuire à cœur la viande hachée (steak haché, boulettes) : elle ne doit plus être rosée à l’intérieur.
 
 ## Questions fréquentes
 **Mon enfant ne mange presque pas de viande : faut-il s’inquiéter ?**
-Pas forcément. Le poisson, les œufs, les légumineuses associées aux féculents et les produits laitiers apportent aussi des protéines. Parlez-en au médecin si votre enfant mange peu de variété ou paraît fatigué.
+Pas forcément. Le poisson, les œufs, les légumineuses associées aux féculents et les produits laitiers apportent aussi des protéines. Parles-en au médecin si ton enfant mange peu de variété ou paraît fatigué.
 
 **Il réclame sans arrêt des nuggets…**
-Vous pouvez en servir de temps en temps, en les accompagnant de légumes. Des aiguillettes de poulet panées maison, cuites au four, sont une alternative appréciée.
+Tu peux en servir de temps en temps, en les accompagnant de légumes. Des aiguillettes de poulet panées maison, cuites au four, sont une alternative appréciée.
 
 **Faut-il servir de la viande le soir s’il en a mangé à la cantine ?**
 Non. Un dîner à base d’œufs, de légumineuses ou simplement de légumes, féculents et produit laitier convient très bien.
 
 **Le jambon blanc est-il une charcuterie à limiter ?**
-L’Assurance Maladie le cite comme la charcuterie à privilégier ; il contient tout de même du sel, alors gardez des quantités modérées.
+L’Assurance Maladie le cite comme la charcuterie à privilégier ; il contient tout de même du sel, alors garde des quantités modérées.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant refuse durablement plusieurs familles d’aliments, s’il est pâle et fatigué, si sa croissance ralentit, ou si vous envisagez une alimentation sans viande ni poisson : il vous aidera à couvrir ses besoins. En cas de diarrhée sanglante après un repas de viande hachée, consultez immédiatement. En cas de malaise ou de difficulté à respirer, appelez le **15** ou le **112**.
+Parles-en au médecin si ton enfant refuse durablement plusieurs familles d’aliments, s’il est pâle et fatigué, si sa croissance ralentit, ou si tu envisages une alimentation sans viande ni poisson : il t’aidera à couvrir ses besoins. En cas de diarrhée sanglante après un repas de viande hachée, consulte immédiatement. En cas de malaise ou de difficulté à respirer, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -865,7 +865,7 @@ ${FIN}`,
     tags: ['poisson', 'poisson gras', 'oméga-3', 'sardine', 'saumon', 'surgelé', 'sushi', 'poisson cru', 'arêtes'],
     sources: [S.santePoisson, S.ameliAliments, S.ansesHygiene],
     body_md: `## En bref
-- Proposez du poisson **deux fois par semaine**, dont un **poisson gras** (sardine, maquereau, hareng, saumon).
+- Propose du poisson **deux fois par semaine**, dont un **poisson gras** (sardine, maquereau, hareng, saumon).
 - Entre 4 et 6 ans, une portion représente environ **50 g** ; elle rejoint les 100 g d’un adulte vers 11 ans.
 - **Jusqu’à 6 ans**, pas de poisson cru ni de coquillages crus (donc pas de sushis au poisson cru).
 - Le poisson surgelé ou en conserve a les mêmes qualités nutritionnelles que le frais et coûte souvent moins cher.
@@ -892,26 +892,26 @@ Santé publique France recommande de manger du poisson deux fois par semaine, do
 Santé publique France conseille la papillote (au four ou au micro-ondes), quelques morceaux de citron dans le plat, un court-bouillon avec thym et laurier, ou un morceau de gingembre frais dans la poêle.
 
 **Les arêtes**
-Choisissez des filets, vérifiez-les du bout des doigts avant de servir, et émiettez le poisson pour les plus jeunes. Apprenez progressivement à votre enfant à repérer les arêtes.
+Choisis des filets, vérifie-les du bout des doigts avant de servir, et émiette le poisson pour les plus jeunes. Apprends progressivement à ton enfant à repérer les arêtes.
 
 **Petit budget**
-Le poisson surgelé (nature) et les conserves (sardines, maquereau, thon) sont économiques et pratiques. Attention aux poissons panés ou cuisinés en sauce, souvent plus riches en matières grasses : lisez l’étiquette et comparez avec le Nutri-Score.
+Le poisson surgelé (nature) et les conserves (sardines, maquereau, thon) sont économiques et pratiques. Attention aux poissons panés ou cuisinés en sauce, souvent plus riches en matières grasses : lis l’étiquette et compare avec le Nutri-Score.
 
 ## Questions fréquentes
 **Les bâtonnets de poisson panés comptent-ils ?**
-Ils contiennent du poisson, mais aussi de la panure et des matières grasses. Ils peuvent dépanner de temps en temps ; préférez les versions avec le meilleur Nutri-Score et alternez avec du poisson nature.
+Ils contiennent du poisson, mais aussi de la panure et des matières grasses. Ils peuvent dépanner de temps en temps ; préfère les versions avec le meilleur Nutri-Score et alterne avec du poisson nature.
 
 **Mon enfant de 5 ans peut-il manger des sushis ?**
 Avant 6 ans, pas de poisson cru. Les makis au concombre, à l’avocat, à l’omelette ou au poisson cuit sont possibles.
 
 **Et le poisson fumé ?**
-Le saumon fumé n’est pas cuit : pour les jeunes enfants, les précautions du poisson cru s’appliquent. Il est aussi salé : pour les plus grands, gardez-le pour des occasions, en petite quantité.
+Le saumon fumé n’est pas cuit : pour les jeunes enfants, les précautions du poisson cru s’appliquent. Il est aussi salé : pour les plus grands, garde-le pour des occasions, en petite quantité.
 
 **Il n’aime pas le poisson…**
-Reproposez-le régulièrement sous des formes différentes (émietté dans une purée, en rillettes, en papillote), sans forcer. Les goûts évoluent.
+Repropose-le régulièrement sous des formes différentes (émietté dans une purée, en rillettes, en papillote), sans forcer. Les goûts évoluent.
 
 ## Quand demander conseil
-Si une arête reste coincée dans la gorge et que votre enfant a du mal à avaler, bave beaucoup ou a mal, consultez rapidement. S’il ne peut plus respirer, tousser ou parler, appelez immédiatement le **15** ou le **112**. Une allergie au poisson se manifeste parfois par une urticaire, un gonflement des lèvres, des vomissements ou une gêne respiratoire : en cas de gêne respiratoire ou de malaise, appelez le **15** ou le **112**.
+Si une arête reste coincée dans la gorge et que ton enfant a du mal à avaler, bave beaucoup ou a mal, consulte rapidement. S’il ne peut plus respirer, tousser ou parler, appelle immédiatement le **15** ou le **112**. Une allergie au poisson se manifeste parfois par une urticaire, un gonflement des lèvres, des vomissements ou une gêne respiratoire : en cas de gêne respiratoire ou de malaise, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -922,9 +922,9 @@ ${FIN}`,
     tags: ['intoxication alimentaire', 'E. coli', 'SHU', 'syndrome hémolytique et urémique', 'steak haché', 'lait cru', 'fromage au lait cru', 'pâte à cookie crue', 'hygiène'],
     sources: [S.spfShu, S.ansesHygiene, S.ameliAliments],
     body_md: `## En bref
-- Faites **bien cuire à cœur** la viande hachée et les préparations à base de viande hachée : elles ne doivent plus être rosées.
+- Fais **bien cuire à cœur** la viande hachée et les préparations à base de viande hachée : elles ne doivent plus être rosées.
 - **Avant 5 ans**, pas de lait cru ni de fromages au lait cru, sauf les fromages à pâte pressée cuite (emmental, comté) ou pasteurisés.
-- Ne faites pas goûter de **pâte crue à base de farine** (pâte à cookies, à pizza, à gâteau).
+- Ne fais pas goûter de **pâte crue à base de farine** (pâte à cookies, à pizza, à gâteau).
 - Une **diarrhée avec du sang** chez un enfant impose de consulter immédiatement.
 
 ## Comprendre
@@ -936,24 +936,24 @@ L’Anses rappelle que la viande hachée doit être consommée bien cuite à cœ
 
 ## Au quotidien
 **En cuisine**
-- Lavez-vous les mains avant de préparer les repas.
-- Cuisez bien à cœur steaks hachés, boulettes, hamburgers, lasagnes ou sauce bolognaise : coupez pour vérifier que l’intérieur n’est plus rosé.
-- Séparez les aliments crus des aliments cuits ou prêts à manger ; utilisez une planche différente pour la viande crue.
-- Lavez soigneusement les légumes, la salade, les fruits et les herbes, surtout s’ils sont mangés crus.
-- Nettoyez ustensiles et plans de travail après contact avec de la viande crue ou des fromages au lait cru.
-- Réfrigérez rapidement les restes (pas plus de 2 heures à température ambiante, selon l’Anses) et réchauffez-les bien.
-- Maintenez la zone la plus froide du réfrigérateur à 4 °C.
+- Lave-toi les mains avant de préparer les repas.
+- Cuis bien à cœur steaks hachés, boulettes, hamburgers, lasagnes ou sauce bolognaise : coupe pour vérifier que l’intérieur n’est plus rosé.
+- Sépare les aliments crus des aliments cuits ou prêts à manger ; utilise une planche différente pour la viande crue.
+- Lave soigneusement les légumes, la salade, les fruits et les herbes, surtout s’ils sont mangés crus.
+- Nettoie ustensiles et plans de travail après contact avec de la viande crue ou des fromages au lait cru.
+- Réfrigère rapidement les restes (pas plus de 2 heures à température ambiante, selon l’Anses) et réchauffe-les bien.
+- Maintiens la zone la plus froide du réfrigérateur à 4 °C.
 
 **Au fromage**
-Pour les moins de 5 ans, choisissez des fromages pasteurisés ou à pâte pressée cuite (emmental, comté). Lisez l’étiquette : la mention « au lait cru » y figure.
+Pour les moins de 5 ans, choisis des fromages pasteurisés ou à pâte pressée cuite (emmental, comté). Lis l’étiquette : la mention « au lait cru » y figure.
 
 **En pâtisserie avec les enfants**
-Ne laissez pas goûter la pâte crue (cookies, gâteaux, pâte à pizza) : même sans œuf, la farine crue peut être contaminée.
+Ne laisse pas goûter la pâte crue (cookies, gâteaux, pâte à pizza) : même sans œuf, la farine crue peut être contaminée.
 
 **En sortie et à la ferme**
-- Ne faites pas boire d’eau non traitée (puits, rivière, source, torrent).
-- Évitez que l’enfant avale l’eau de baignade.
-- Pour les moins de 5 ans, évitez le contact avec les vaches, veaux, moutons, chèvres et leur environnement ; après tout contact avec des animaux, lavez les mains à l’eau et au savon avant de les porter à la bouche.
+- Ne fais pas boire d’eau non traitée (puits, rivière, source, torrent).
+- Évite que l’enfant avale l’eau de baignade.
+- Pour les moins de 5 ans, évite le contact avec les vaches, veaux, moutons, chèvres et leur environnement ; après tout contact avec des animaux, lave les mains à l’eau et au savon avant de les porter à la bouche.
 
 ## Questions fréquentes
 **Un steak haché « à point » suffit-il ?**
@@ -963,13 +963,13 @@ Pour un enfant, il doit être bien cuit à cœur, sans partie rosée à l’int�
 Oui, l’Assurance Maladie et l’Anses font une exception pour ces fromages à pâte pressée cuite.
 
 **Peut-on cuisiner quand on a une gastro-entérite ?**
-L’Anses conseille d’éviter de cuisiner pour les autres. Si personne ne peut vous remplacer, renforcez le lavage des mains et préparez des plats simples.
+L’Anses conseille d’éviter de cuisiner pour les autres. Si personne ne peut te remplacer, renforce le lavage des mains et prépare des plats simples.
 
 **Combien de temps garder les restes ?**
-Pour les plats cuisinés et produits très périssables sans date limite, l’Anses indique qu’une conservation de moins de 3 jours au réfrigérateur est souvent recommandée. Dans le doute, demandez conseil au commerçant ou jetez.
+Pour les plats cuisinés et produits très périssables sans date limite, l’Anses indique qu’une conservation de moins de 3 jours au réfrigérateur est souvent recommandée. Dans le doute, demande conseil au commerçant ou jette.
 
 ## Quand demander conseil
-Selon Santé publique France, l’infection se manifeste en général 3 à 4 jours après la contamination (10 jours au maximum) par une diarrhée souvent sanglante, des douleurs abdominales et parfois des vomissements. **Consultez immédiatement un médecin** si votre enfant a une diarrhée sanglante, ou si, dans les jours suivants, il est très fatigué, pâle, urine moins ou a des urines plus foncées. En cas de convulsions, de somnolence inhabituelle, de signes de déshydratation importante ou de malaise, appelez le **15** ou le **112**.
+Selon Santé publique France, l’infection se manifeste en général 3 à 4 jours après la contamination (10 jours au maximum) par une diarrhée souvent sanglante, des douleurs abdominales et parfois des vomissements. **Consulte immédiatement un médecin** si ton enfant a une diarrhée sanglante, ou si, dans les jours suivants, il est très fatigué, pâle, urine moins ou a des urines plus foncées. En cas de convulsions, de somnolence inhabituelle, de signes de déshydratation importante ou de malaise, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -983,7 +983,7 @@ ${FIN}`,
 - Les légumes secs (lentilles, pois chiches, haricots, pois cassés, fèves) sont à proposer **au moins deux fois par semaine**.
 - Riches en **fibres** et en **protéines végétales**, ils peuvent remplacer la viande s’ils sont associés à un féculent.
 - Les versions en conserve, en bocal ou surgelées sont prêtes en quelques minutes.
-- Augmentez-les **progressivement** et faites boire de l’eau pour limiter les ballonnements.
+- Augmente-les **progressivement** et fais boire de l’eau pour limiter les ballonnements.
 
 ## Comprendre
 Santé publique France recommande de manger des légumes secs au moins deux fois par semaine, pour toute la famille. L’Assurance Maladie reprend ce repère pour les enfants de 3 à 18 ans et précise que les légumineuses peuvent remplacer la viande.
@@ -999,7 +999,7 @@ Santé publique France recommande de manger des légumes secs au moins deux fois
 ## Au quotidien
 **Gagner du temps**
 - Les lentilles corail cuisent en une dizaine de minutes, sans trempage.
-- Les conserves et bocaux (pois chiches, haricots, lentilles) sont déjà cuits : rincez-les et utilisez-les directement.
+- Les conserves et bocaux (pois chiches, haricots, lentilles) sont déjà cuits : rince-les et utilise-les directement.
 - Les légumes secs bruts demandent parfois un trempage : le matin pour le soir, ou la veille pour le lendemain.
 
 **Des recettes qui plaisent souvent aux enfants**
@@ -1012,9 +1012,9 @@ Santé publique France recommande de manger des légumes secs au moins deux fois
 - gâteau au chocolat et aux haricots rouges, proposé par Santé publique France.
 
 **Les introduire en douceur**
-- Mélangez quelques lentilles à une sauce bolognaise, une soupe ou une purée.
-- Mixez-les au début (houmous, velouté), puis proposez-les entiers.
-- Servez une petite portion à côté d’un aliment que l’enfant aime.
+- Mélange quelques lentilles à une sauce bolognaise, une soupe ou une purée.
+- Mixe-les au début (houmous, velouté), puis propose-les entiers.
+- Sers une petite portion à côté d’un aliment que l’enfant aime.
 
 **Où les trouver**
 Rayon pâtes et riz, rayon bio ou vrac pour les légumes secs bruts, rayon conserves pour les versions cuites.
@@ -1024,16 +1024,16 @@ Rayon pâtes et riz, rayon bio ou vrac pour les légumes secs bruts, rayon conse
 Elles occupent une place à part : riches en fibres comme les légumes, elles apportent aussi des glucides comme les féculents et des protéines végétales.
 
 **Mon enfant a mal au ventre après les lentilles…**
-Commencez par de petites quantités, essayez les versions mixées (velouté, houmous), et faites-le boire suffisamment. Si les douleurs persistent, parlez-en au médecin.
+Commence par de petites quantités, essaie les versions mixées (velouté, houmous), et fais-le boire suffisamment. Si les douleurs persistent, parles-en au médecin.
 
 **Peut-on remplacer la viande par des légumineuses à chaque repas ?**
-Les légumineuses peuvent remplacer la viande dans certains repas. Si vous envisagez de supprimer durablement viande et poisson, demandez conseil au médecin ou à un·e diététicien·ne.
+Les légumineuses peuvent remplacer la viande dans certains repas. Si tu envisages de supprimer durablement viande et poisson, demande conseil au médecin ou à un·e diététicien·ne.
 
 **Les conserves sont-elles moins intéressantes ?**
-Non, ce sont des légumes secs déjà cuits, très pratiques. Rincez-les pour enlever une partie du sel de l’eau de conserve.
+Non, ce sont des légumes secs déjà cuits, très pratiques. Rince-les pour enlever une partie du sel de l’eau de conserve.
 
 ## Quand demander conseil
-Consultez si votre enfant présente des douleurs abdominales importantes ou persistantes, des troubles digestifs durables, ou une perte de poids. Une allergie (par exemple au soja, à l’arachide ou au lupin) se manifeste parfois par une urticaire, un gonflement, des vomissements ou une gêne respiratoire : en cas de gêne respiratoire ou de malaise, appelez le **15** ou le **112**.
+Consulte si ton enfant présente des douleurs abdominales importantes ou persistantes, des troubles digestifs durables, ou une perte de poids. Une allergie (par exemple au soja, à l’arachide ou au lupin) se manifeste parfois par une urticaire, un gonflement, des vomissements ou une gêne respiratoire : en cas de gêne respiratoire ou de malaise, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1060,10 +1060,10 @@ Santé publique France note aussi que les produits semi-complets peuvent être m
 
 ## Au quotidien
 **Faire évoluer les habitudes en douceur**
-- Remplacez une partie des pâtes habituelles par des pâtes complètes ou semi-complètes, puis augmentez la proportion.
-- Préférez le pain complet, aux céréales ou semi-complet pour les tartines et les sandwichs.
-- Utilisez de la farine complète (ou moitié-moitié) pour les crêpes, cakes et gâteaux.
-- Essayez le riz semi-complet, la semoule complète, le boulgour, le sarrasin.
+- Remplace une partie des pâtes habituelles par des pâtes complètes ou semi-complètes, puis augmente la proportion.
+- Préfère le pain complet, aux céréales ou semi-complet pour les tartines et les sandwichs.
+- Utilise de la farine complète (ou moitié-moitié) pour les crêpes, cakes et gâteaux.
+- Essaie le riz semi-complet, la semoule complète, le boulgour, le sarrasin.
 
 **Varier la place des féculents**
 - En plat principal, associés à des légumes et des légumes secs (pâtes aux légumes et pois chiches).
@@ -1071,17 +1071,17 @@ Santé publique France note aussi que les produits semi-complets peuvent être m
 - Sous forme de pain, au petit-déjeuner, au goûter ou au repas.
 
 **Relever sans alourdir**
-Plutôt que des pâtes nature avec beaucoup de beurre et de fromage, proposez une sauce tomate maison, du basilic, des légumes poêlés, un filet d’huile d’olive.
+Plutôt que des pâtes nature avec beaucoup de beurre et de fromage, propose une sauce tomate maison, du basilic, des légumes poêlés, un filet d’huile d’olive.
 
 **Les pommes de terre**
-Elles font partie des féculents. Préférez-les vapeur, au four, en purée maison ; les frites et chips restent occasionnelles.
+Elles font partie des féculents. Préfère-les vapeur, au four, en purée maison ; les frites et chips restent occasionnelles.
 
 **Bien choisir en magasin**
-Pour les céréales du petit-déjeuner, le pain de mie ou les biscottes, comparez avec le Nutri-Score les produits d’un même rayon, et lisez la liste des ingrédients : « complet » ou « intégral » doit y figurer.
+Pour les céréales du petit-déjeuner, le pain de mie ou les biscottes, compare avec le Nutri-Score les produits d’un même rayon, et lis la liste des ingrédients : « complet » ou « intégral » doit y figurer.
 
 ## Questions fréquentes
 **Mon enfant refuse le pain complet…**
-Commencez par du pain semi-complet ou aux céréales, ou alternez avec la baguette.
+Commence par du pain semi-complet ou aux céréales, ou alterne avec la baguette.
 
 **Les pâtes tous les jours, c’est trop ?**
 Non, les féculents peuvent être consommés tous les jours. L’important est de varier les céréales et d’accompagner les pâtes de légumes et d’une source de protéines.
@@ -1093,7 +1093,7 @@ Selon l’Assurance Maladie, seules les céréales complètes et non sucrées co
 La maladie cœliaque se traite par l’exclusion du gluten, sur avis médical. Riz, pommes de terre, quinoa, sarrasin, maïs et légumes secs sont alors des féculents possibles, en lisant attentivement les étiquettes.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant a souvent des douleurs abdominales, des ballonnements, une diarrhée ou une constipation persistante, s’il ne grandit ou ne grossit pas comme attendu, ou si vous suspectez une intolérance au gluten : n’excluez pas le gluten avant d’en avoir parlé, car cela peut fausser les examens. En cas de malaise ou de difficulté à respirer après un repas, appelez le **15** ou le **112**.
+Parles-en au médecin si ton enfant a souvent des douleurs abdominales, des ballonnements, une diarrhée ou une constipation persistante, s’il ne grandit ou ne grossit pas comme attendu, ou si tu suspectes une intolérance au gluten : n’exclus pas le gluten avant d’en avoir parlé, car cela peut fausser les examens. En cas de malaise ou de difficulté à respirer après un repas, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1106,7 +1106,7 @@ ${FIN}`,
     body_md: `## En bref
 - Santé publique France recommande **3 produits laitiers par jour** pendant l’enfance et l’adolescence (l’Assurance Maladie évoque 3 à 4).
 - Ils apportent des protéines, du **calcium** et de la vitamine D.
-- Préférez les produits laitiers **nature ou peu sucrés** ; crèmes dessert, glaces et barres lactées chocolatées ne comptent pas.
+- Préfère les produits laitiers **nature ou peu sucrés** ; crèmes dessert, glaces et barres lactées chocolatées ne comptent pas.
 - **Avant 5 ans**, pas de lait cru ni de fromage au lait cru, sauf l’emmental et le comté.
 
 ## Comprendre
@@ -1118,7 +1118,7 @@ Les produits laitiers (lait, yaourts, fromage blanc, petits-suisses, fromages) p
 
 **Entier ou demi-écrémé ?** La teneur en calcium est la même ; le lait demi-écrémé convient dès 3 ans.
 
-**Vitamine D.** Elle est surtout fabriquée par la peau sous l’effet du soleil : jouer dehors y contribue. Le médecin vous dira si un complément est nécessaire pour votre enfant.
+**Vitamine D.** Elle est surtout fabriquée par la peau sous l’effet du soleil : jouer dehors y contribue. Le médecin te dira si un complément est nécessaire pour ton enfant.
 
 **Peu sucrés, de préférence.** L’Anses recommande des produits laitiers nature ou peu sucrés, et les présente comme le moyen le plus pertinent de couvrir les besoins en calcium. Elle conseille notamment de les préférer aux pâtisseries et biscuits au goûter.
 
@@ -1130,29 +1130,29 @@ Les produits laitiers (lait, yaourts, fromage blanc, petits-suisses, fromages) p
 - Dîner : du fromage râpé sur les pâtes, ou un fromage blanc en dessert.
 
 **Sucrer soi-même, légèrement**
-Un yaourt nature avec un fruit écrasé, un peu de compote ou une petite cuillère de miel ou de confiture vous permet de doser vous-même le sucre, plutôt qu’un yaourt aromatisé. L’Anses recommande des produits laitiers nature ou peu sucrés.
+Un yaourt nature avec un fruit écrasé, un peu de compote ou une petite cuillère de miel ou de confiture te permet de doser toi-même le sucre, plutôt qu’un yaourt aromatisé. L’Anses recommande des produits laitiers nature ou peu sucrés.
 
 **Varier les fromages**
-Les fromages apportent du calcium mais aussi du sel et des graisses : variez-les et gardez des portions modestes. Les fromages à pâte fondue et les bleus sont parmi les plus salés ; la mozzarella l’est moins.
+Les fromages apportent du calcium mais aussi du sel et des graisses : varie-les et garde des portions modestes. Les fromages à pâte fondue et les bleus sont parmi les plus salés ; la mozzarella l’est moins.
 
 **Lire les étiquettes**
-Pour les moins de 5 ans, vérifiez la mention « au lait cru ». Les fromages pasteurisés et les pâtes pressées cuites (emmental, comté) peuvent être proposés.
+Pour les moins de 5 ans, vérifie la mention « au lait cru ». Les fromages pasteurisés et les pâtes pressées cuites (emmental, comté) peuvent être proposés.
 
 ## Questions fréquentes
 **Mon enfant n’aime pas le lait : comment faire ?**
 Le lait n’est pas indispensable s’il consomme d’autres produits laitiers : yaourts, fromage blanc, fromages, ou du lait intégré à une purée, une béchamel, un flan maison peu sucré.
 
 **Les boissons végétales peuvent-elles remplacer le lait ?**
-Elles ne sont pas équivalentes au lait sur le plan nutritionnel. Si votre enfant ne consomme pas de produits laitiers (choix familial, allergie, intolérance), demandez conseil au médecin.
+Elles ne sont pas équivalentes au lait sur le plan nutritionnel. Si ton enfant ne consomme pas de produits laitiers (choix familial, allergie, intolérance), demande conseil au médecin.
 
 **Allergie ou intolérance au lactose : quelle différence ?**
 L’Assurance Maladie rappelle que l’intolérance au lactose n’est pas une allergie. L’allergie aux protéines de lait de vache disparaît le plus souvent vers 3 à 5 ans. Dans les deux cas, le diagnostic et l’adaptation de l’alimentation se font avec un médecin.
 
 **Trop de produits laitiers, est-ce possible ?**
-Au-delà des repères, les produits laitiers peuvent prendre la place d’autres aliments et apporter beaucoup de graisses ou de sucres s’ils sont sucrés. Restez sur les repères et variez.
+Au-delà des repères, les produits laitiers peuvent prendre la place d’autres aliments et apporter beaucoup de graisses ou de sucres s’ils sont sucrés. Reste sur les repères et varie.
 
 ## Quand demander conseil
-Consultez si votre enfant présente des douleurs abdominales, des ballonnements, une diarrhée ou des éruptions cutanées répétées après les produits laitiers, s’il refuse tous les produits laitiers, ou s’il a des fractures à répétition. En cas d’urticaire étendue, de gonflement du visage, de vomissements avec malaise ou de gêne respiratoire après un aliment, appelez le **15** ou le **112**.
+Consulte si ton enfant présente des douleurs abdominales, des ballonnements, une diarrhée ou des éruptions cutanées répétées après les produits laitiers, s’il refuse tous les produits laitiers, ou s’il a des fractures à répétition. En cas d’urticaire étendue, de gonflement du visage, de vomissements avec malaise ou de gêne respiratoire après un aliment, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1166,7 +1166,7 @@ ${FIN}`,
 - L’Anses recommande de **ne pas ajouter de sel** lors de la préparation ni à table pour les enfants.
 - L’essentiel du sel consommé est **caché** : pain, fromages, charcuteries, plats préparés, soupes, biscuits, condiments.
 - Herbes, épices douces, aromates et citron permettent de donner du goût sans sel.
-- Quand vous salez, choisissez du **sel iodé**.
+- Quand tu sales, choisis du **sel iodé**.
 
 ## Comprendre
 Un excès de sel favorise l’hypertension artérielle, qui peut à son tour entraîner des maladies cardiovasculaires. Pour les adultes, Santé publique France fixe un repère de **5 g de sel par jour maximum**. Santé publique France précise que les enfants n’ont pas les mêmes besoins que les adultes, et qu’avant 1 an il ne faut pas saler les aliments du bébé.
@@ -1181,38 +1181,38 @@ Santé publique France donne des repères parlants : environ **1 g de sel** (un 
 
 ## Au quotidien
 **En cuisine**
-- Salez peu l’eau de cuisson des pâtes, du riz et des légumes, voire pas du tout.
-- Relevez les plats avec des herbes (persil, basilic, ciboulette, coriandre, fraîches, séchées ou surgelées), des aromates (ail, oignon, échalote), des épices douces (cumin, paprika doux, curcuma), un zeste ou un filet de citron.
-- Cuisinez maison quand vous le pouvez : vous maîtrisez la quantité de sel.
-- Ne resalez pas les conserves, déjà salées.
+- Sale peu l’eau de cuisson des pâtes, du riz et des légumes, voire pas du tout.
+- Relève les plats avec des herbes (persil, basilic, ciboulette, coriandre, fraîches, séchées ou surgelées), des aromates (ail, oignon, échalote), des épices douces (cumin, paprika doux, curcuma), un zeste ou un filet de citron.
+- Cuisine maison quand tu le peux : tu maîtrises la quantité de sel.
+- Ne resale pas les conserves, déjà salées.
 
 **À table**
-- Retirez la salière de la table, ou gardez-la pour les adultes.
-- Apprenez à votre enfant à goûter avant de saler.
+- Retire la salière de la table, ou garde-la pour les adultes.
+- Apprends à ton enfant à goûter avant de saler.
 
 **Au supermarché**
-- Limitez les plats préparés, charcuteries, biscuits apéritifs et snacks salés.
-- Pour les plats préparés, choisissez celui qui a le meilleur Nutri-Score dans son rayon.
-- Variez les fromages : les fromages à pâte fondue et les bleus sont très salés, la mozzarella l’est moins.
+- Limite les plats préparés, charcuteries, biscuits apéritifs et snacks salés.
+- Pour les plats préparés, choisis celui qui a le meilleur Nutri-Score dans son rayon.
+- Varie les fromages : les fromages à pâte fondue et les bleus sont très salés, la mozzarella l’est moins.
 
 **Pour l’apéritif ou les anniversaires**
-Remplacez chips et cacahuètes par des tomates cerises (coupées pour les plus jeunes), des radis, des bâtonnets de carotte ou de concombre avec du houmous, des dés de fromage.
+Remplace chips et cacahuètes par des tomates cerises (coupées pour les plus jeunes), des radis, des bâtonnets de carotte ou de concombre avec du houmous, des dés de fromage.
 
 ## Questions fréquentes
 **Mon enfant trouve les plats fades sans sel…**
-Réduisez petit à petit plutôt que d’un coup, et misez sur les herbes, les aromates et les épices douces, comme le conseille Santé publique France.
+Réduis petit à petit plutôt que d’un coup, et mise sur les herbes, les aromates et les épices douces, comme le conseille Santé publique France.
 
 **Le pain est-il trop salé pour un enfant ?**
-Le pain fait partie des féculents recommandés, mais il contient du sel : 4 tranches représentent environ 1 g de sel. Proposez-le à chaque repas en quantité adaptée à l’appétit, sans en faire un en-cas permanent.
+Le pain fait partie des féculents recommandés, mais il contient du sel : 4 tranches représentent environ 1 g de sel. Propose-le à chaque repas en quantité adaptée à l’appétit, sans en faire un en-cas permanent.
 
 **Le sel de mer ou le sel rose sont-ils meilleurs ?**
 Ce sont aussi du sel : les mêmes repères s’appliquent. Le sel iodé reste le choix conseillé quand on sale.
 
 **Les bouillons cubes sont-ils à éviter ?**
-Ils sont très salés : utilisez-les avec parcimonie, ou remplacez-les par des herbes et des légumes qui parfument le bouillon.
+Ils sont très salés : utilise-les avec parcimonie, ou remplace-les par des herbes et des légumes qui parfument le bouillon.
 
 ## Quand demander conseil
-Les examens de suivi (à 4, 5, 6 ans et entre 8 et 9 ans) sont l’occasion de parler de l’alimentation au médecin, notamment si votre enfant consomme beaucoup de produits salés, s’il est en surpoids ou s’il existe des antécédents d’hypertension dans la famille. Si un jeune enfant a avalé une grande quantité de sel (par exemple une salière), appelez le **15** ou un centre antipoison, même sans symptôme ; s’il vomit, est somnolent ou fait un malaise, appelez le **15** ou le **112**.
+Les examens de suivi (à 4, 5, 6 ans et entre 8 et 9 ans) sont l’occasion de parler de l’alimentation au médecin, notamment si ton enfant consomme beaucoup de produits salés, s’il est en surpoids ou s’il existe des antécédents d’hypertension dans la famille. Si un jeune enfant a avalé une grande quantité de sel (par exemple une salière), appelle le **15** ou un centre antipoison, même sans symptôme ; s’il vomit, est somnolent ou fait un malaise, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1225,7 +1225,7 @@ ${FIN}`,
     body_md: `## En bref
 - Les enfants ont besoin de matières grasses, mais pas de n’importe lesquelles.
 - Santé publique France recommande de privilégier les huiles de **colza, de noix et d’olive**.
-- Limitez les graisses saturées : charcuterie, beurre, crème, produits panés et frits.
+- Limite les graisses saturées : charcuterie, beurre, crème, produits panés et frits.
 - Avant 11 ans, la charcuterie reste **occasionnelle**, sauf le jambon blanc et la charcuterie de volaille.
 
 ## Comprendre
@@ -1235,33 +1235,33 @@ Les matières grasses font partie d’une alimentation équilibrée : elles appo
 
 **À limiter.** L’Assurance Maladie recommande, chez l’enfant de 3 à 18 ans, de limiter les graisses saturées (charcuterie, beurre, crème), les produits panés et frits, et de choisir des morceaux de viande maigres. Elle précise :
 - avant 11 ans, la charcuterie se consomme seulement de temps en temps, à l’exception du jambon blanc et de la charcuterie de volaille ;
-- les produits panés (nuggets) et les burgers sont souvent ultra-transformés : lisez les étiquettes.
+- les produits panés (nuggets) et les burgers sont souvent ultra-transformés : lis les étiquettes.
 
 Santé publique France rappelle aussi que les produits ultra-transformés sont souvent gras, sucrés ou salés et contiennent des additifs ; elle conseille de les réduire et de préférer, quand on les achète, ceux qui ont la liste d’additifs la plus courte.
 
 ## Au quotidien
 **Dans la cuisine familiale**
-- Assaisonnez les crudités et salades avec de l’huile de colza ou de noix, ou un mélange colza-olive.
-- Cuisinez avec de l’huile d’olive ou de colza.
-- Gardez le beurre pour la tartine du matin ou une touche sur les légumes, en petite quantité.
-- Préférez les cuissons vapeur, au four, en papillote, à la poêle avec peu de matière grasse.
+- Assaisonne les crudités et salades avec de l’huile de colza ou de noix, ou un mélange colza-olive.
+- Cuisine avec de l’huile d’olive ou de colza.
+- Garde le beurre pour la tartine du matin ou une touche sur les légumes, en petite quantité.
+- Préfère les cuissons vapeur, au four, en papillote, à la poêle avec peu de matière grasse.
 
 **Charcuterie et apéritif**
 - Le jambon blanc (de préférence avec le meilleur Nutri-Score) peut figurer dans le sandwich ou les pâtes.
 - Saucisson, chorizo, pâtés, rillettes et lardons restent occasionnels.
-- Pour l’apéritif familial, préférez des légumes à croquer, du houmous, des dés de fromage.
+- Pour l’apéritif familial, préfère des légumes à croquer, du houmous, des dés de fromage.
 
 **Frites, nuggets, panés : sans les bannir**
-- Gardez-les pour certains repas, accompagnés de légumes ou d’une salade.
-- Faites des frites au four avec un filet d’huile, et des panures maison (chapelure ou flocons d’avoine) cuites au four.
-- Comparez les produits surgelés panés avec le Nutri-Score.
+- Garde-les pour certains repas, accompagnés de légumes ou d’une salade.
+- Fais des frites au four avec un filet d’huile, et des panures maison (chapelure ou flocons d’avoine) cuites au four.
+- Compare les produits surgelés panés avec le Nutri-Score.
 
 **Lire les étiquettes**
-Le Nutri-Score permet de comparer des produits d’un même rayon ou consommés à la même occasion. Limitez ceux classés D ou E.
+Le Nutri-Score permet de comparer des produits d’un même rayon ou consommés à la même occasion. Limite ceux classés D ou E.
 
 ## Questions fréquentes
 **Faut-il donner du lait écrémé ou des produits allégés à un enfant ?**
-L’Assurance Maladie indique que le lait demi-écrémé convient dès 3 ans. Pour le reste, l’important est l’équilibre général de l’alimentation plutôt que le recours aux produits allégés. En cas de surpoids, demandez conseil au médecin, qui accompagnera les ajustements.
+L’Assurance Maladie indique que le lait demi-écrémé convient dès 3 ans. Pour le reste, l’important est l’équilibre général de l’alimentation plutôt que le recours aux produits allégés. En cas de surpoids, demande conseil au médecin, qui accompagnera les ajustements.
 
 **Le beurre est-il interdit ?**
 Non. Il peut être utilisé en petite quantité ; l’idée est de varier et de donner une large place aux huiles végétales recommandées.
@@ -1273,7 +1273,7 @@ Elles sont à la fois très sucrées et grasses : Santé publique France les cit
 Oui, ponctuellement. Ce qui compte, c’est la fréquence : pas tous les jours, et de préférence accompagnées de légumes.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant prend du poids rapidement, s’il existe dans la famille des antécédents de cholestérol élevé ou de maladie cardiovasculaire précoce, ou s’il a souvent mal au ventre après des repas gras. En cas de brûlure par de l’huile chaude en cuisine, refroidissez immédiatement la zone sous l’eau tempérée et appelez le **15** ou le **112** si la brûlure est étendue, profonde, ou touche le visage, les mains ou les parties génitales.
+Parles-en au médecin si ton enfant prend du poids rapidement, s’il existe dans la famille des antécédents de cholestérol élevé ou de maladie cardiovasculaire précoce, ou s’il a souvent mal au ventre après des repas gras. En cas de brûlure par de l’huile chaude en cuisine, refroidis immédiatement la zone sous l’eau tempérée et appelle le **15** ou le **112** si la brûlure est étendue, profonde, ou touche le visage, les mains ou les parties génitales.
 
 ${FIN}`,
   },
@@ -1320,26 +1320,26 @@ C’est aussi un moment de partage, qui développe l’autonomie, la motricité 
 
 **Les règles de sécurité**
 - Un adulte reste toujours à côté pendant l’utilisation des couteaux, de l’économe, des plaques et du four.
-- Tournez les manches des casseroles vers l’intérieur et utilisez de préférence les feux arrière.
-- Gardez les jeunes enfants à distance des plats chauds, de l’huile chaude et de la vapeur.
-- Rangez les couteaux et les appareils électriques (mixeur, robot) hors de portée après usage.
+- Tourne les manches des casseroles vers l’intérieur et utilise de préférence les feux arrière.
+- Garde les jeunes enfants à distance des plats chauds, de l’huile chaude et de la vapeur.
+- Range les couteaux et les appareils électriques (mixeur, robot) hors de portée après usage.
 - Un marchepied stable plutôt qu’une chaise pour atteindre le plan de travail.
 
 ## Questions fréquentes
 **Cuisiner avec un enfant prend du temps…**
-Commencez petit : une seule tâche pendant que vous préparez le repas, ou un atelier le week-end. Le temps passé est aussi un temps de jeu et d’échange.
+Commence petit : une seule tâche pendant que tu prépares le repas, ou un atelier le week-end. Le temps passé est aussi un temps de jeu et d’échange.
 
 **Mon enfant ne veut pas goûter ce qu’il a préparé…**
-Ne le forcez pas : la manipulation est déjà une étape. Il goûtera peut-être la prochaine fois.
+Ne le force pas : la manipulation est déjà une étape. Il goûtera peut-être la prochaine fois.
 
 **Les ustensiles spéciaux enfants sont-ils utiles ?**
-Un couteau à bout rond, un économe adapté à sa main et un tablier suffisent souvent. Vérifiez le marquage CE et l’âge indiqué pour les ustensiles vendus comme jouets.
+Un couteau à bout rond, un économe adapté à sa main et un tablier suffisent souvent. Vérifie le marquage CE et l’âge indiqué pour les ustensiles vendus comme jouets.
 
 **Peut-il lécher la cuillère du gâteau ?**
-Non si la pâte est crue, même sans œuf : la farine crue peut être contaminée. Proposez-lui plutôt de goûter le gâteau cuit.
+Non si la pâte est crue, même sans œuf : la farine crue peut être contaminée. Propose-lui plutôt de goûter le gâteau cuit.
 
 ## Quand demander conseil
-En cas de **brûlure**, refroidissez immédiatement la zone sous l’eau tempérée pendant plusieurs minutes, retirez ce qui n’adhère pas à la peau, et appelez le **15** ou le **112** si la brûlure est étendue, profonde, sur le visage, les mains ou les parties génitales, ou si l’enfant est très jeune. En cas de coupure qui saigne beaucoup ou ne s’arrête pas malgré une compression, appelez aussi le **15**. Une diarrhée sanglante dans les jours qui suivent la consommation de pâte crue ou de viande peu cuite doit faire consulter immédiatement.
+En cas de **brûlure**, refroidis immédiatement la zone sous l’eau tempérée pendant plusieurs minutes, retire ce qui n’adhère pas à la peau, et appelle le **15** ou le **112** si la brûlure est étendue, profonde, sur le visage, les mains ou les parties génitales, ou si l’enfant est très jeune. En cas de coupure qui saigne beaucoup ou ne s’arrête pas malgré une compression, appelle aussi le **15**. Une diarrhée sanglante dans les jours qui suivent la consommation de pâte crue ou de viande peu cuite doit faire consulter immédiatement.
 
 ${FIN}`,
   },
@@ -1366,39 +1366,39 @@ Manger ensemble ne veut pas dire repas parfaits : un repas simple partagé dans 
 
 ## Au quotidien
 **Créer une ambiance détendue**
-- Éteignez la télévision et posez les téléphones (adultes compris) loin de la table.
-- Fixez des horaires réguliers ; prévenez quelques minutes avant pour que l’enfant termine son jeu.
-- Laissez à l’enfant le temps de manger, sans se presser, comme le recommande l’Assurance Maladie.
-- Parlez d’autre chose que de la nourriture : la journée, un projet, un souvenir.
+- Éteins la télévision et pose les téléphones (adultes compris) loin de la table.
+- Fixe des horaires réguliers ; préviens quelques minutes avant pour que l’enfant termine son jeu.
+- Laisse à l’enfant le temps de manger, sans se presser, comme le recommande l’Assurance Maladie.
+- Parle d’autre chose que de la nourriture : la journée, un projet, un souvenir.
 
 **Impliquer l’enfant**
 - Mettre la table, servir l’eau, apporter le pain, choisir un légume pour la semaine.
 - Se servir soi-même (à partir de 4-5 ans), avec une petite portion d’abord et la possibilité de se resservir.
 
 **Éviter les pièges classiques**
-- **« Finis ton assiette »** : remplacez-le par « tu as encore faim ? ».
-- **Le dessert récompense** : servez le dessert prévu, qu’il ait mangé ou non son plat, sans en faire une monnaie d’échange.
+- **« Finis ton assiette »** : remplace-le par « tu as encore faim ? ».
+- **Le dessert récompense** : sers le dessert prévu, qu’il ait mangé ou non son plat, sans en faire une monnaie d’échange.
 - **Le chantage, la punition** : ils rendent le repas stressant et peuvent renforcer les refus.
-- **Le menu à la carte** : proposez un repas pour toute la famille, avec au moins un aliment que l’enfant accepte (le pain, un féculent), sans cuisiner un second plat.
+- **Le menu à la carte** : propose un repas pour toute la famille, avec au moins un aliment que l’enfant accepte (le pain, un féculent), sans cuisiner un second plat.
 
 **Quand il y a des tensions**
 Si un repas tourne au conflit, il vaut mieux arrêter calmement que d’insister. Le repas suivant est une nouvelle occasion.
 
 ## Questions fréquentes
 **Nos horaires ne permettent pas de dîner ensemble tous les soirs…**
-Faites ce qui est possible : un petit-déjeuner partagé, les repas du week-end, un adulte qui s’assoit avec l’enfant même s’il ne mange pas. La régularité compte plus que la perfection.
+Fais ce qui est possible : un petit-déjeuner partagé, les repas du week-end, un adulte qui s’assoit avec l’enfant même s’il ne mange pas. La régularité compte plus que la perfection.
 
 **Mon enfant se lève sans arrêt de table…**
 Pour les plus jeunes, rester assis longtemps est difficile. Un repas pas trop long, une chaise confortable, des pieds qui reposent sur un support, et des règles simples (on reste assis tant qu’on mange) aident.
 
 **Faut-il le laisser sortir de table s’il ne mange plus ?**
-Vous pouvez lui demander de rester quelques minutes pour partager le moment, puis le laisser sortir. S’il n’a pas mangé, ne compensez pas par un en-cas une heure après : attendez le repas suivant.
+Tu peux lui demander de rester quelques minutes pour partager le moment, puis le laisser sortir. S’il n’a pas mangé, ne compense pas par un en-cas une heure après : attends le repas suivant.
 
 **Les écrans l’aident à manger : sans eux, il ne mange rien…**
-La transition peut prendre quelques jours. Expliquez la nouvelle règle, proposez des petites portions et maintenez-la dans le calme.
+La transition peut prendre quelques jours. Explique la nouvelle règle, propose des petites portions et maintiens-la dans le calme.
 
 ## Quand demander conseil
-Parlez-en au médecin si les repas sont devenus une source de conflit permanent, si votre enfant semble anxieux à l’approche des repas, mange très peu de variété, perd du poids ou au contraire en prend rapidement. Si vous vous sentez à bout, le **3114** répond jour et nuit, gratuitement. Si un enfant est en danger dans sa famille, le **119** est joignable à toute heure. En urgence, appelez le **15** ou le **112**.
+Parles-en au médecin si les repas sont devenus une source de conflit permanent, si ton enfant semble anxieux à l’approche des repas, mange très peu de variété, perd du poids ou au contraire en prend rapidement. Si tu te sens à bout, le **3114** répond jour et nuit, gratuitement. Si un enfant est en danger dans sa famille, le **119** est joignable à toute heure. En urgence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1425,7 +1425,7 @@ Ces repères sont des **moyennes**. Un enfant très actif, en pleine poussée de
 
 ## Au quotidien
 **Servir petit, laisser se resservir**
-Servez une petite portion de chaque élément du repas. Si l’enfant a encore faim, il peut se resservir. Cela évite le gaspillage et les assiettes « montagne » décourageantes.
+Sers une petite portion de chaque élément du repas. Si l’enfant a encore faim, il peut se resservir. Cela évite le gaspillage et les assiettes « montagne » décourageantes.
 
 **Utiliser une vaisselle adaptée**
 Une assiette et des couverts à sa taille aident à proposer des quantités adaptées.
@@ -1442,10 +1442,10 @@ S’il mange peu à un repas, pas besoin de lui proposer un biscuit une heure pl
 
 ## Questions fréquentes
 **Mon enfant mange très peu, est-ce inquiétant ?**
-Certains enfants sont de « petits mangeurs ». Si sa croissance suit sa courbe, qu’il est en forme et actif, c’est rassurant. Parlez-en au médecin si vous avez un doute.
+Certains enfants sont de « petits mangeurs ». Si sa croissance suit sa courbe, qu’il est en forme et actif, c’est rassurant. Parles-en au médecin si tu as un doute.
 
 **Il mange plus que son grand frère…**
-Les besoins varient selon l’âge, la taille, l’activité et le moment de la croissance. Gardez des repas équilibrés et réguliers, et parlez-en au médecin si sa courbe de poids s’accélère.
+Les besoins varient selon l’âge, la taille, l’activité et le moment de la croissance. Garde des repas équilibrés et réguliers, et parles-en au médecin si sa courbe de poids s’accélère.
 
 **Faut-il le peser à la maison ?**
 Ce n’est pas nécessaire. Le suivi par le médecin, avec les courbes, est plus fiable et évite de focaliser l’enfant sur son poids.
@@ -1454,7 +1454,7 @@ Ce n’est pas nécessaire. Le suivi par le médecin, avec les courbes, est plus
 Il vaut mieux éviter : en cas de surpoids, le médecin accompagne des ajustements pour toute la famille, sans régime restrictif ni discours culpabilisant.
 
 ## Quand demander conseil
-Consultez le médecin si la courbe de poids ou de taille change d’allure (cassure, accélération), si votre enfant perd du poids, s’il refuse de manger plusieurs jours de suite, s’il semble préoccupé par son corps ou son poids, ou s’il a une faim et une soif inhabituelles. Si vous percevez chez lui une détresse ou des idées noires, le **3114** répond jour et nuit. En cas de malaise, appelez le **15** ou le **112**.
+Consulte le médecin si la courbe de poids ou de taille change d’allure (cassure, accélération), si ton enfant perd du poids, s’il refuse de manger plusieurs jours de suite, s’il semble préoccupé par son corps ou son poids, ou s’il a une faim et une soif inhabituelles. Si tu perçois chez lui une détresse ou des idées noires, le **3114** répond jour et nuit. En cas de malaise, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1481,10 +1481,10 @@ Côté école, le ministère de l’Éducation nationale précise qu’en primai
 
 ## Au quotidien
 **Faire ses courses**
-- Préparez une liste à partir des menus de la semaine, en tenant compte de la cantine.
-- Achetez les produits de base en format familial ou en vrac (riz, pâtes, semoule, lentilles, flocons d’avoine).
-- Comparez le prix au kilo, indiqué sur l’étiquette du rayon.
-- Les marques de distributeur ou premiers prix peuvent être de bonne qualité : comparez-les avec le Nutri-Score.
+- Prépare une liste à partir des menus de la semaine, en tenant compte de la cantine.
+- Achète les produits de base en format familial ou en vrac (riz, pâtes, semoule, lentilles, flocons d’avoine).
+- Compare le prix au kilo, indiqué sur l’étiquette du rayon.
+- Les marques de distributeur ou premiers prix peuvent être de bonne qualité : compare-les avec le Nutri-Score.
 
 **Les aliments malins**
 - légumes surgelés nature (haricots verts, épinards, poêlées sans sauce) ;
@@ -1507,16 +1507,16 @@ Boissons sucrées, biscuits individuels, céréales « enfant », produits apér
 Santé publique France le recommande quand c’est possible, mais la priorité reste de manger des fruits, des légumes, des légumes secs et des féculents complets, bio ou non.
 
 **Les surgelés ont-ils perdu leurs vitamines ?**
-Non, Santé publique France indique qu’ils conservent une très bonne qualité nutritionnelle. Choisissez-les nature, sans sauce ni panure.
+Non, Santé publique France indique qu’ils conservent une très bonne qualité nutritionnelle. Choisis-les nature, sans sauce ni panure.
 
 **Comment payer moins cher la cantine ?**
-Renseignez-vous auprès de la mairie ou de la caisse des écoles sur les tarifs selon le quotient familial. Pour le collège ou le lycée, le secrétariat de l’établissement peut vous orienter vers le fonds social.
+Renseigne-toi auprès de la mairie ou de la caisse des écoles sur les tarifs selon le quotient familial. Pour le collège ou le lycée, le secrétariat de l’établissement peut t’orienter vers le fonds social.
 
 **Et si nous avons du mal à remplir le réfrigérateur ?**
-Les centres communaux d’action sociale (CCAS), les assistantes sociales du département et les associations d’aide alimentaire peuvent vous accompagner. N’hésitez pas à les solliciter.
+Les centres communaux d’action sociale (CCAS), les assistantes sociales du département et les associations d’aide alimentaire peuvent t’accompagner. N’hésite pas à les solliciter.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI (jusqu’à 6 ans) si vous avez du mal à assurer une alimentation suffisante, si votre enfant perd du poids, semble souvent fatigué ou pâle. Une assistante sociale peut vous aider dans vos démarches. Si la situation vous pèse moralement, le **3114** répond jour et nuit. En urgence, appelez le **15** ou le **112**.
+Parles-en au médecin ou à la PMI (jusqu’à 6 ans) si tu as du mal à assurer une alimentation suffisante, si ton enfant perd du poids, semble souvent fatigué ou pâle. Une assistante sociale peut t’aider dans tes démarches. Si la situation te pèse moralement, le **3114** répond jour et nuit. En urgence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },

@@ -1,5 +1,5 @@
 /**
- * Abonnement « Au fil de nous Premium » — éléments d'interface partagés par la page Premium, la feuille Premium et la
+ * Abonnement « HOMI Premium » — éléments d'interface partagés par la page Premium, la feuille Premium et la
  * rubrique « Mon abonnement » du profil : formules (1 mois, 6 mois, 12 mois), conditions, avantages, état.
  * Prix : ceux de la boutique (ou la grille de démonstration, signalée comme telle). Aucun compte à rebours, aucun prix
  * barré, aucun bouton caché. Les droits restent décidés par le serveur (has_premium).
@@ -8,19 +8,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Linking, Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Banner, Button, Card, Icon, Row, SectionTitle, Text, type IconName } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { confirm, useToast } from '@/components/Overlays';
 import { LegalLink } from '@/features/auth';
+import { useAuth } from '@/lib/auth';
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement, usePremiumShare } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import type { EntitlementState } from '@/lib/premium/entitlement';
 import { billingDates, formatMoney, periodOfProduct, PLAN_BADGE, type Plan, type PlanPeriod } from '@/lib/premium/plans';
-import { getPurchaseMode, loadPlans, purchasesSdk } from '@/lib/purchaseMode';
+import { getPurchaseMode, loadPlans, manageUrl, purchasesSdk } from '@/lib/purchaseMode';
+import { subscriberSummary } from '@/features/premium/paywallModel';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NACRE, radius, spacing } from '@/theme/tokens';
+import { alpha, radius, spacing } from '@/theme/tokens';
 import { springTo } from '@/theme/motion';
 import { DrawCheck } from '@/components/MotionKit';
 import { Appear } from '@/components/Appear';
@@ -38,22 +40,27 @@ export function usePlans() {
   return { mode, ...q };
 }
 
-/** Sur le web, pas d'achat intégré (hors démonstration) : l'abonnement se prend dans l'application mobile. */
-export const webWithoutPurchase = (mode: string) => Platform.OS === 'web' && mode !== 'test';
+/**
+ * Sur le web, pas d'achat intégré : l'abonnement se prend dans l'application mobile. Démonstration comprise depuis le
+ * 23/11/2026 (site public : aucun tarif ni essai affiché tant que l'app n'est pas en vente). `mode` reste en paramètre.
+ */
+export const webWithoutPurchase = (_mode: string) => Platform.OS === 'web';
 
 // ---------------------------------------------------------------- en-tête
 export function PremiumHero() {
+  // aplat de l'action principale de la palette affichée (texte lisible, testé)
+  const hero = useTheme().tokens.action;
   return (
-    <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs }}>
+    <LinearGradient colors={[hero.fill, hero.fill]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs }}>
       <View testID="premium-hero">
         <Row>
-          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="star" size={18} color="#FFFFFF" />
+          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: alpha(hero.text, 0.18), alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="star" size={18} color={hero.text} />
           </View>
-          <Text variant="caption" weight="bold" color="#FFFFFF" style={{ letterSpacing: 1.6, flex: 1 }} accessibilityRole="header">{tr('sub2.page.title')}</Text>
+          <Text variant="caption" weight="bold" color={hero.text} style={{ letterSpacing: 1.6, flex: 1 }} accessibilityRole="header">{tr('sub2.page.title')}</Text>
         </Row>
-        <Text variant="heading" color="#FFFFFF" style={{ marginTop: spacing.sm }}>{tr('sub2.page.subtitle')}</Text>
-        <Text variant="small" color="#FFFFFF" style={{ marginTop: spacing.xs, opacity: 0.92 }}>{tr('sub2.page.oneAccess')}</Text>
+        <Text variant="heading" color={hero.text} style={{ marginTop: spacing.sm }}>{tr('sub2.page.subtitle')}</Text>
+        <Text variant="small" color={hero.text} style={{ marginTop: spacing.xs, opacity: 0.92 }}>{tr('sub2.page.oneAccess')}</Text>
       </View>
     </LinearGradient>
   );
@@ -69,8 +76,13 @@ export function PremiumActivated({ premium }: { premium: boolean }) {
   const t = useTheme();
   const prev = useRef(premium);
   const [shown, setShown] = useState(false);
+  // « Faux » doit avoir été RÉPONDU par le serveur : le simple chargement de la page chez une personne déjà abonnée
+  // (ou dont le Premium est partagé) n'est pas une activation.
+  const { session } = useAuth();
+  const answeredFalse = useRef(false);
+  if (useQueryClient().getQueryData([session?.userId, 'subscriptions', 'premium']) === false) answeredFalse.current = true;
   useEffect(() => {
-    if (premium && !prev.current) setShown(true);
+    if (premium && !prev.current && answeredFalse.current) setShown(true);
     prev.current = premium;
   }, [premium]);
   if (!shown || !premium) return null;
@@ -223,7 +235,12 @@ function Line({ label, value, testID }: { label: string; value: string; testID?:
 
 const storeName = (store: string | null | undefined) => (store === 'app_store' ? 'App Store' : store === 'play_store' ? 'Google Play' : store === 'test' ? tr('sub2.my.storeDemo') : store === 'promotional' ? tr('sub2.my.storePromo') : null);
 
-/** Carte « Mon abonnement » : formule, statut, dates, prix, partage, gestion officielle, restauration, documents. */
+/**
+ * Carte « Mon abonnement » : formule, statut, prochaine échéance ou fin d'accès si résilié, prix, ORIGINE (achat
+ * personnel, ou Premium partagé par l'autre adulte du foyer), gestion officielle (feuille Apple / page Google Play),
+ * restauration, documents. Un Premium partagé ne se gère pas ici : la facturation appartient à la personne abonnée.
+ * Sans abonnement : « Gérer mon abonnement » reste un lien vers la page Abonnements de la boutique.
+ */
 export function MySubscriptionCard({ showDiscover = true }: { showDiscover?: boolean }) {
   const t = useTheme();
   const toast = useToast();
@@ -238,8 +255,10 @@ export function MySubscriptionCard({ showDiscover = true }: { showDiscover?: boo
   const period = (sub?.period_type && sub.period_type !== 'trial' && sub.period_type !== 'lifetime' ? sub.period_type : periodOfProduct(sub?.product_id)) as PlanPeriod | null;
   const amount = sub?.price != null ? Number(sub.price) : null;
   const store = storeName(sub?.store);
-  const sharedBy = share.data?.shared_by;
   const sharedWith = share.data?.shared_with;
+  // Même résumé que l'écran Premium (paywallModel) : achat personnel en cours, ou Premium partagé
+  const summary = subscriberSummary(ent, share.data?.shared_by);
+  const shared = summary?.origin === 'shared';
 
   async function doRestore() {
     setBusy('restore');
@@ -263,6 +282,8 @@ export function MySubscriptionCard({ showDiscover = true }: { showDiscover?: boo
       toast(friendlyError(e), 'error');
     } finally { setBusy(null); }
   }
+  /** Lien direct vers la page Abonnements de la boutique (aucun abonnement connu ici, ou achats non configurés). */
+  const openStore = () => { void Linking.openURL(manageUrl()).catch(() => undefined); };
 
   const dateRows: { label: string; value: string; id: string }[] = [];
   if (own && sub) {
@@ -283,15 +304,21 @@ export function MySubscriptionCard({ showDiscover = true }: { showDiscover?: boo
         </View>
         <View style={{ flex: 1, gap: 4 }}>
           <Text weight="bold">{ent.premium ? tr('sub2.my.premium') : tr('sub2.my.free')}</Text>
-          <StatusPill state={ent.premium && !own ? 'active' : state} />
+          <StatusPill state={shared ? 'active' : state} />
         </View>
       </Row>
       {ent.premium || own ? (
         <Text variant="small" style={{ marginTop: spacing.xs }} testID="sub-message">
-          {ent.premium && !own ? (sharedBy?.display_name ? tr('sub2.page.sharedBy', { name: sharedBy.display_name }) : tr('sub2.page.sharedAnon')) : ent.message}
+          {shared ? summary!.message : ent.message}
         </Text>
       ) : null}
-      {own ? (
+      {shared ? (
+        <View style={{ marginTop: spacing.xs, gap: 2 }}>
+          <Line label={tr('sub3.origin.label')} value={summary!.originText} testID="my-sub-origin" />
+          <Text variant="caption" muted testID="my-sub-shared-note">{tr('sub3.shared.note')}</Text>
+        </View>
+      ) : null}
+      {own && !shared ? (
         <View style={{ marginTop: spacing.xs }}>
           {period ? <Line label={tr('sub2.my.plan')} value={planTitle(period)} testID="my-sub-plan" /> : null}
           <Line label={tr('sub2.my.status')} value={tr(`sub2.status.${state}` as TKey)} testID="my-sub-status" />
@@ -300,22 +327,23 @@ export function MySubscriptionCard({ showDiscover = true }: { showDiscover?: boo
             <Line label={tr('sub2.my.price')} value={tr('sub2.my.priceValue', { price: formatMoney(amount, sub.currency, localeTag()), per: period ? planPer(period) : '' }).trim()} testID="my-sub-price" />
           ) : null}
           {store ? <Line label={tr('sub2.my.store')} value={sub?.environment === 'sandbox' ? tr('sub2.my.sandbox', { store }) : store} testID="my-sub-store" /> : null}
+          {summary ? <Line label={tr('sub3.origin.label')} value={summary.originText} testID="my-sub-origin" /> : null}
         </View>
       ) : null}
-      {sharedWith && ent.premium ? <Text variant="small" style={{ marginTop: spacing.xs }} testID="my-sub-shared-with">{tr('sub2.my.sharedWith', { name: sharedWith.display_name || tr('sub2.my.someone') })}</Text> : null}
-      {ent.premium ? <Text variant="caption" muted style={{ marginTop: 2 }}>{tr('sub2.my.shareRule')}</Text> : null}
-      {ent.state === 'billing_issue' || ent.state === 'grace' ? <View style={{ marginTop: spacing.xs }}><Banner tone="warning">{tr('u1.sub.updatePayment')}</Banner></View> : null}
+      {sharedWith && summary?.origin === 'own' ? <Text variant="small" style={{ marginTop: spacing.xs }} testID="my-sub-shared-with">{tr('sub2.my.sharedWith', { name: sharedWith.display_name || tr('sub2.my.someone') })}</Text> : null}
+      {summary?.origin === 'own' ? <Text variant="caption" muted style={{ marginTop: 2 }}>{tr('sub2.my.shareRule')}</Text> : null}
+      {!shared && (ent.state === 'billing_issue' || ent.state === 'grace') ? <View style={{ marginTop: spacing.xs }}><Banner tone="warning">{tr('u1.sub.updatePayment')}</Banner></View> : null}
 
       <View style={{ gap: spacing.xs, marginTop: spacing.sm }}>
         {!ent.premium && showDiscover ? <Button label={tr('sub2.my.discover')} icon="star" onPress={() => router.push('/settings/subscription')} testID="my-sub-discover" full /> : null}
-        {own && mode !== 'unavailable' ? (
+        {own && !shared && mode !== 'unavailable' ? (
           <Button label={mode === 'test' ? tr('sub2.my.stopDemo') : tr('sub2.my.manage')} variant="secondary" icon="settings" loading={busy === 'manage'} onPress={doManage} testID="sub-manage" full />
-        ) : null}
-        {mode === 'unavailable' && own ? (
-          <Button label={tr('sub2.my.manage')} variant="secondary" icon="external-link" onPress={() => void purchasesSdk().manageSubscription().then((url) => url && Linking.openURL(url))} testID="sub-manage-link" full />
+        ) : !shared ? (
+          <Button label={tr('sub2.my.manage')} variant="ghost" icon="external-link" onPress={openStore}
+            accessibilityHint={tr(Platform.OS === 'android' ? 'sub3.manage.android' : 'sub3.manage.ios')} testID="sub-manage-link" full />
         ) : null}
         {mode !== 'unavailable' ? <Button label={tr('sub2.my.restore')} variant="ghost" icon="refresh-cw" loading={busy === 'restore'} onPress={doRestore} testID="sub-restore" full /> : null}
-        {own ? <Text variant="caption" muted>{tr('sub2.my.manageHint')}</Text> : null}
+        {own && !shared ? <Text variant="caption" muted>{tr('sub2.my.manageHint')}</Text> : null}
       </View>
       <Row wrap style={{ marginTop: spacing.xs }} testID="sub-legal-links">
         <LegalLink doc="terms">{tr('sub2.my.terms')}</LegalLink>

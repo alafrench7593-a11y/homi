@@ -5,10 +5,12 @@
  *  · Mon compte privé : profils de grossesse et d'enfants, abonnement, notifications, confidentialité, personnes
  *    bloquées, sécurité, aide, export, suppression du compte, déconnexion. Rien de cet espace n'est jamais public.
  */
+import { SignOutRow } from '@/features/account/SignOutRow';
 import React, { useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
 import { ErrorView, Skeleton } from '@/components/States';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, ListRow, Row, Segmented, SectionTitle, Text } from '@/components/ui';
@@ -25,6 +27,8 @@ import { BRAND } from '@/config/brand';
 import { MySubscriptionSection } from '@/features/subscription';
 import { localeTag, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Space = 'community' | 'account';
 
@@ -33,7 +37,7 @@ export default function Moi() {
   const [space, setSpace] = useState<Space>(params.tab === 'account' ? 'account' : 'community');
   return (
     <View style={{ flex: 1 }}>
-      <Screen back account title={tr('cm3.moi.title')} bottomInset={96}>
+      <Screen back account title={tr('cm3.moi.title')} bottomInset={TAB_SCREEN_INSET}>
         <Segmented label={tr('cm3.moi.space')} value={space} onChange={setSpace} options={[{ value: 'community', label: tr('cm3.moi.spaceCommunity') }, { value: 'account', label: tr('cm3.moi.spaceAccount') }]} />
         {space === 'community' ? <MyCommunity /> : <PrivateAccount />}
       </Screen>
@@ -88,19 +92,7 @@ function PrivateAccount() {
   const premium = usePremium();
   const blocks = useMyBlocks();
   const [help, setHelp] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  async function signOut() {
-    if (!(await confirm(tr('cm3.moi.signOutConfirm'), tr('cm3.moi.signOutBody'), tr('cm3.moi.signOut')))) return;
-    setBusy(true);
-    try {
-      await cancelAllLocal().catch(() => undefined);
-      await unregisterPushToken();
-      await backend.auth.signOut(false);
-      router.replace('/welcome');
-    } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
-  }
-
+  const helpNums = useHelpNumbers();
   return (
     <View style={{ gap: spacing.sm }} testID="moi-account">
       <Card>
@@ -112,7 +104,7 @@ function PrivateAccount() {
       <SectionTitle title={tr('cm3.moi.profiles')} />
       <Card>
         {pregnancy ? <ListRow icon="moon" title={tr('cm3.moi.pregnancy')} subtitle={pregnancyProgress(pregnancy.due_date).label} onPress={() => router.push('/pregnancy')} /> : null}
-        {(children ?? []).map((c) => <ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} />)}
+        <MotionList>{(children ?? []).map((c) => <MotionItem key={c.id}><ListRow key={c.id} icon="smile" title={c.first_name} subtitle={childAge(c.birth_date).label} onPress={() => router.push(`/child/${c.id}`)} /></MotionItem>)}</MotionList>
         <ListRow icon="plus" title={tr('cm3.moi.addProfile')} onPress={() => router.push('/profiles/new')} />
         <ListRow icon="compass" title={tr('cm3.moi.journeys')} subtitle={tr('cm3.moi.journeysSub')} onPress={() => router.push('/journeys')} />
         <ListRow icon="heart" title={tr('cm3.moi.me')} subtitle={tr('cm3.moi.meSub')} onPress={() => router.push('/me')} />
@@ -134,14 +126,15 @@ function PrivateAccount() {
       <Card>
         <ListRow icon="help-circle" title={tr('cm3.moi.help')} subtitle={tr('cm3.moi.helpSub')} onPress={() => setHelp(true)} />
         <ListRow icon="download" title={tr('cm3.moi.export')} subtitle={tr('cm3.moi.exportSub')} onPress={() => router.push('/settings/account')} />
-        <ListRow icon="trash-2" title={tr('cm3.moi.deleteAccount')} subtitle={tr('cm3.moi.deleteAccountSub')} danger onPress={() => router.push('/settings/account')} />
+        <ListRow icon="trash-2" title={tr('cm3.moi.deleteAccount')} subtitle={tr('cm3.moi.deleteAccountSub')} danger onPress={() => router.push('/settings/account?delete=1' as never)} />
       </Card>
-      <Button label={tr('cm3.moi.signOut')} variant="ghost" icon="log-out" loading={busy} onPress={signOut} testID="moi-sign-out" />
+      {/* Se déconnecter (visite : « Quitter la démo ») : même ligne de verre que Profil et Réglages */}
+      <SignOutRow testID="moi-sign-out" />
 
       <Sheet visible={help} onClose={() => setHelp(false)} title={tr('cm3.moi.help')}>
         <ListRow icon="mail" title={tr('cm3.moi.writeUs')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('cm3.moi.writeUsAt', { email: BRAND.supportEmail }), 'info'))} />
         <ListRow icon="book-open" title={tr('cm3.moi.rules')} onPress={() => { setHelp(false); router.push('/community/rules' as never); }} />
-        <ListRow icon="life-buoy" title={tr('cm3.moi.emergency')} subtitle="15 · 112 · 3114" danger onPress={() => { setHelp(false); router.push('/emergency'); }} />
+        <ListRow icon="life-buoy" title={tr('cm3.moi.emergency')} subtitle={helpNums.summary} danger onPress={() => { setHelp(false); router.push('/emergency'); }} />
         <Row><Text variant="caption" muted>{tr('cm3.moi.disclaimer')}</Text></Row>
       </Sheet>
     </View>

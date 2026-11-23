@@ -14,6 +14,7 @@ import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { deleteRevenueCatCustomer, revenueCatApi } from '../_shared/subscription-run.ts';
 import { revokeAppleFromCode } from '../_shared/apple.ts';
+import { readJsonBody } from '../_shared/body.ts';
 
 const PAGE = 100;
 
@@ -52,7 +53,8 @@ Deno.serve(withCors(async (req) => {
   const admin = adminClient();
   if (!(await rateLimit(admin, `delete:${auth.user.id}`, 3, 3600))) return json({ error: 'rate_limited' }, 429);
 
-  const body = await req.json().catch(() => ({}));
+  const body = await readJsonBody(req, 16 * 1024);
+  if (!body) return json({ error: 'too_large' }, 413);
   if (body?.confirm !== 'SUPPRIMER') return json({ error: 'confirmation_required' }, 400);
 
   // Photos intimes d'abord : en cas d'échec, le compte n'est pas supprimé et la personne peut réessayer
@@ -115,7 +117,7 @@ Deno.serve(withCors(async (req) => {
   const rcKey = Deno.env.get('REVENUECAT_SECRET_API_KEY');
   const revenuecat = await deleteRevenueCatCustomer(rcKey ? revenueCatApi(rcKey) : null, auth.user.id);
   if (revenuecat === 'failed') console.error('delete_account_revenuecat_pending');
-  const appleCode = typeof body?.apple_authorization_code === 'string' ? body.apple_authorization_code : undefined;
+  const appleCode = typeof body.apple_authorization_code === 'string' && body.apple_authorization_code.length <= 1024 ? body.apple_authorization_code : undefined;
   const apple = await revokeAppleFromCode(appleCode);
   if (apple === 'failed' || (appleCode && apple === 'not_configured')) console.error('delete_account_apple_' + apple);
   return json({ ok: true, apple, files_removed: files.length + avatars.length - pending + photos.length + cycle.count + community.count, files_pending: pending, revenuecat });

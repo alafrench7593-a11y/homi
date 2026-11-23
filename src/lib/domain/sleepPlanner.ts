@@ -107,7 +107,8 @@ export interface PlanningAge { months: number; weeks: number; corrected: boolean
  */
 export function planningAge(birthDate: string, profile: SleepProfile | null | undefined, now = new Date()): PlanningAge {
   const [y, m, d] = birthDate.slice(0, 10).split('-').map(Number);
-  let days = Math.max(0, Math.floor((now.getTime() - new Date(y, m - 1, d).getTime()) / DAY));
+  // Jours calendaires (dates locales comparées en UTC) : un changement d'heure ne retire jamais un jour
+  let days = Math.max(0, Math.round((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(y, m - 1, d)) / DAY));
   let corrected = false;
   const gw = profile?.gestational_weeks ?? null;
   if (profile?.use_corrected && gw && gw >= 22 && gw < 37 && days < 730) {
@@ -597,8 +598,10 @@ const dayKey = (ms: number) => { const d = new Date(ms); return `${d.getFullYear
 export function weekView(sleeps: SleepRecord[], childId: string, now = new Date(), days = 7): DayStat[] {
   const own = ownSleeps(sleeps, childId); const N = now.getTime();
   return Array.from({ length: days }, (_, k) => {
-    const d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1 - k)).getTime();
-    const d1 = d0 + DAY;
+    // Bornes en heure locale (et non « + 24 h ») : les jours de changement d'heure durent 23 h ou 25 h
+    const at = (dayOffset: number, hour: number) => new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1 - k) + dayOffset, hour).getTime();
+    const d0 = at(0, 0);
+    const d1 = at(1, 0);
     const stat: DayStat = { date: dayKey(d0), naps: 0, napMinutes: 0, nightMinutes: 0, wakings: 0, bedtime: null, wake: null };
     for (const s of own) {
       const a = t(s.started_at);
@@ -606,9 +609,9 @@ export function weekView(sleeps: SleepRecord[], childId: string, now = new Date(
         if (a >= d0 && a < d1) { stat.naps++; stat.napMinutes += Math.round(((s.ended_at ? t(s.ended_at) : N) - a) / MIN); }
       } else {
         // Nuit « du soir » : commencée entre midi ce jour et midi le lendemain
-        if (a >= d0 + 12 * 60 * MIN && a < d1 + 12 * 60 * MIN) { stat.nightMinutes += sleptMinutes(s, N); stat.wakings += wakingsOf(s); stat.bedtime ??= a; }
+        if (a >= at(0, 12) && a < at(1, 12)) { stat.nightMinutes += sleptMinutes(s, N); stat.wakings += wakingsOf(s); stat.bedtime ??= a; }
         // Réveil du matin de ce jour
-        if (s.ended_at && t(s.ended_at) >= d0 && t(s.ended_at) < d0 + 14 * 60 * MIN) stat.wake = t(s.ended_at);
+        if (s.ended_at && t(s.ended_at) >= d0 && t(s.ended_at) < at(0, 14)) stat.wake = t(s.ended_at);
       }
     }
     return stat;

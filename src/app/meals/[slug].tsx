@@ -28,6 +28,8 @@ import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const ageText = (m: number) => (m < 24 ? tr('vx.ageMonths', { count: m }) : tr('vx.ageYears', { count: Math.round(m / 12) }));
 
@@ -72,7 +74,7 @@ export default function RecipeDetail() {
   return (
     <Screen back title={r.title} right={<FavoriteButton icon="star" active={isFav} activeColor={t.colors.gold} labelOn={tr('rc.unfavorite')} labelOff={tr('rc.favorite')} onPress={() => fav.toggle.mutate(r.slug)} />}
       action={{ label: tr('rc.addToShopping'), icon: 'shopping-cart', onPress: () => addToShopping(), testID: 'add-shopping' }}>
-      <RecipeArt recipe={r} height={190} />
+      <RecipeArt recipe={r} height={190} notice />
       <TodaySummary title={tr('mb.rc.recipeTitle')} items={[
         { icon: 'clock', value: tr('mb.rc.minutes', { m: r.prepMin }), label: tr('mb.rc.prep') },
         { icon: 'thermometer', value: tr('mb.rc.minutes', { m: r.cookMin }), label: tr('mb.rc.cook') },
@@ -105,16 +107,16 @@ export default function RecipeDetail() {
         <IconButton icon="plus" label={tr('rc.moreServings')} onPress={() => setServings(Math.min(20, n + 1))} />
       </Row>
       <Card>
-        {r.ingredients.map((x) => {
+        <MotionList>{r.ingredients.map((x) => {
           const d = INGREDIENTS[x.key];
           const isNew = fresh.includes(x.key);
           return (
-            <View key={x.key + (x.note ?? '')} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: 5 }} testID={`ing-${x.key}`}>
+            <MotionItem key={x.key + (x.note ?? '')}><View key={x.key + (x.note ?? '')} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: 5 }} testID={`ing-${x.key}`}>
               <Text weight="bold" style={{ minWidth: 84 }}>{formatQty(scaleQty(x.qty, r.servings, n, x.unit), x.unit)}</Text>
               <Text style={{ flex: 1 }}>{d?.name ?? x.key}{x.note ? ` (${x.note})` : ''}{x.optional ? ` · ${tr('rc.optional')}` : ''}{isNew && profile.name ? ` · ${tr('rc.newFor', { name: profile.name })}` : ''}</Text>
-            </View>
+            </View></MotionItem>
           );
-        })}
+        })}</MotionList>
       </Card>
       <View testID="recipe-allergens" style={{ gap: 4 }}>
         <Text variant="caption" weight="bold" muted>{tr('rc.allergens')}</Text>
@@ -131,7 +133,8 @@ export default function RecipeDetail() {
             onPress={() => { haptic('selection'); setDoneSteps((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k])); }}
             style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', paddingVertical: 4 }}>
             <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? t.colors.gold : 'transparent', borderWidth: 2, borderColor: done ? t.colors.gold : t.colors.primary }}>
-              {done ? <Icon name="check" size={15} color="#FFFFFF" /> : <Text variant="caption" weight="bold" color={t.colors.primary}>{k + 1}</Text>}
+              {done ? null : <Text variant="caption" weight="bold" color={t.colors.primary}>{k + 1}</Text>}
+              <CheckMark checked={done} size={17} color="#FFFFFF" style={{ position: 'absolute' }} />
             </View>
             <Text style={{ flex: 1, opacity: done ? 0.55 : 1, textDecorationLine: done ? 'line-through' : 'none' }}>{s}</Text>
           </Tappable>

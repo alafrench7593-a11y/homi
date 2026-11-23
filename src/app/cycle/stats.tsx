@@ -2,9 +2,14 @@
  * Statistiques DESCRIPTIVES du cycle : longueur des cycles, durée des règles, flux, symptômes fréquents, bien-être moyen.
  * Aucune zone « normale / anormale », aucune interprétation : ce sont des comptes et des moyennes de ce qui a été saisi.
  * Chaque graphique a une alternative textuelle complète (lecteur d'écran) et les valeurs sont écrites à côté des barres.
+ * 23/11/2026 : longueurs de cycle en barres TACTILES (bulle valeur + date, comme les courbes de mesures) ; la période
+ * (`?n=6|12|all`) et le cycle choisi (`?cycle=AAAA-MM-JJ`) vivent dans l'adresse ; « Ouvrir la fiche » ouvre la saisie
+ * des règles qui ouvre ce cycle, dans le formulaire de correction existant (`/cycle?all=1&period=`).
  */
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { GlassSegmentedControl } from '@/components/glass';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
@@ -15,8 +20,12 @@ import { cycleStats } from '@/lib/domain/cycleV2';
 import { Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { Bars } from '@/features/cycle/Bars';
 import { fmtDay } from '@/features/cycle/format';
-import { formatNumber, t as tr, type TKey } from '@/i18n';
+import { formatDate, formatNumber, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { AuraAnalysis } from '@/features/aura/AuraAnalysis';
+import { cycleAggregate } from '@/features/aura/analysis';
+import { TouchBars } from '@/features/finishTrack/TouchBars';
+import { cycleBars, keepBar, parseCycleRange, usefulCycleRanges, type CycleRange } from '@/lib/domain/finishTrack';
 
 export default function StatsScreen() {
   const c = useCyclePalette();
@@ -25,9 +34,13 @@ export default function StatsScreen() {
   const s = useMemo(() => cycleStats(periodsQ.data ?? [], symptomsQ.data ?? []), [periodsQ.data, symptomsQ.data]);
   const dash = '—';
   const days = (n: number | null) => (n == null ? dash : tr('cy.st.daysValue', { n: formatNumber(n) }));
+  const qp = useLocalSearchParams<{ n?: string; cycle?: string }>();
+  const ranges = usefulCycleRanges(s.cycles.length);
+  const range: CycleRange = ranges.includes(parseCycleRange(qp.n)) ? parseCycleRange(qp.n) : 'all';
+  const bars = useMemo(() => cycleBars(periodsQ.data ?? [], s.cycles, range), [periodsQ.data, s.cycles, range]);
+  const selected = keepBar(bars, qp.cycle);
 
   if (periodsQ.isLoading && !periodsQ.data) return <Screen back title={tr('cy.st.title')}><Skeleton kind="card" rows={3} /></Screen>;
-  const recentCycles = s.cycles.slice(-8);
 
   return (
     <Screen back title={tr('cy.st.title')} subtitle={tr('cy.st.subtitle')}>
@@ -48,8 +61,18 @@ export default function StatsScreen() {
       <Rise delay={60}>
         <Glass>
           <Ink variant="heading">{tr('cy.st.lengths')}</Ink>
-          {recentCycles.length
-            ? <Bars label={tr('cy.st.lengths')} color={c.period} rows={recentCycles.map((x) => ({ label: tr('cy.st.cycleFrom', { date: fmtDay(x.start) }), value: x.length, display: days(x.length) }))} />
+          {ranges.length ? (
+            <GlassSegmentedControl label={tr('ft.cs.range')} value={range} testID="cs-range"
+              onChange={(v) => router.setParams({ n: v, cycle: undefined } as never)}
+              options={ranges.map((r) => ({ value: r, label: r === 'all' ? tr('ft.cs.rangeAll') : tr('ft.cs.rangeN', { n: Number(r) }) }))} />
+          ) : null}
+          {bars.length
+            ? <TouchBars testID="cs-bars" title={tr('cy.st.lengths')} bars={bars} selected={selected} colorOf={() => c.period}
+                onSelect={(b) => router.setParams({ cycle: b.id } as never)}
+                valueText={(b) => days(b.value)} dateText={(b) => tr('cy.st.cycleFrom', { date: fmtDay(b.date) })}
+                axisText={(b) => formatDate(`${b.date}T12:00:00`, { day: 'numeric', month: 'short' })}
+                canOpen={(b) => !!b.periodId}
+                onOpen={(b) => router.push({ pathname: '/cycle', params: { all: '1', period: b.periodId! } } as never)} />
             : <Ink soft>{tr('cy.st.needTwo')}</Ink>}
         </Glass>
       </Rise>
@@ -81,6 +104,8 @@ export default function StatsScreen() {
           {s.wellbeing.days ? <Ink variant="caption" soft>{tr('cy.st.basedOn', { count: s.wellbeing.days })}</Ink> : null}
         </Glass>
       </Rise>
+      {/* « Analyser avec HOMI Aura » : moyennes descriptives seulement, après aperçu et accord (docs/HOMI_AURA.md) */}
+      <AuraAnalysis kind="cycle" data={cycleAggregate(s)} />
       </View>
       </PremiumSection>
       <Ink variant="caption" soft>{tr('cy.st.notice')}</Ink>

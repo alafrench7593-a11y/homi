@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
 import { Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, IconButton, Row, SectionTitle, Text } from '@/components/ui';
@@ -17,21 +16,27 @@ import { useCreateShoppingList, useFoodProfile, useLatestMealPlan, useRecipeDisl
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { generateMenu, moveSlot, replaceSlot, shoppingList, type MenuOptions, type MenuSlot } from '@/lib/recipes/engine';
 import { MEALS, type Meal } from '@/lib/recipes/types';
-import { useUiStore } from '@/lib/store';
-import { t as tr } from '@/i18n';
+import { usePantry } from '@/lib/data/hooks-stocks';
+import { formatDate, t as tr } from '@/i18n';
+import { HmHero } from '@/features/homeTrack/kit';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MenuDayList, MenuSlotTray } from '@/features/finishMeals/MenuTrack';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { menuDayDate, menuDayIndex, parseSlotKey, savedItemOf, slotKey } from '@/lib/domain/finishMeals';
+import { todayISO } from '@/lib/domain/dates';
 
 export default function MenuScreen() {
   const t = useTheme();
   const toast = useToast();
-  const params = useLocalSearchParams<{ add?: string }>();
+  // Jour du menu et repas ouvert gardés dans l'adresse (« ?day=2&slot=2-dinner ») : ouvrir une recette puis revenir les retrouve
+  const params = useLocalSearchParams<{ add?: string; day?: string; slot?: string }>();
   const { data: all } = useRecipes();
   const { profile, members } = useFoodProfile();
   const fav = useRecipeFavorites();
   const dislikes = useRecipeDislikes();
-  const pantry = useUiStore((s) => s.pantry);
+  const pantry = usePantry().keys; // inventaire du foyer (serveur) : plus de copie locale
   const saved = useLatestMealPlan();
   const save = useSaveMealPlan();
   const createList = useCreateShoppingList();
@@ -78,6 +83,16 @@ export default function MenuScreen() {
     }
     setSlots(generateMenu(all, p, opts));
   };
+  // Dates réelles si le menu affiché est celui enregistré ; sinon il partira d'aujourd'hui une fois enregistré
+  const today = todayISO();
+  const isSaved = !!(saved.plan && slots && slots.length === saved.items.length && slots.every((s) => savedItemOf(saved.items, s)));
+  const start = isSaved && saved.plan ? saved.plan.start_date : today;
+  const dayIdx = menuDayIndex(params.day, days, start, today);
+  const setDay = (d: number) => router.setParams({ day: String(d), slot: undefined } as never);
+  const openKey = parseSlotKey(params.slot);
+  const openIdx = slots && openKey ? slots.findIndex((s) => s.day === openKey.day && s.meal === openKey.meal) : -1;
+  const openSlot = slots && openIdx >= 0 ? slots[openIdx] : null;
+  const titleOf = (id: string) => byId.get(id)?.title ?? null;
   const toggleMeal = (m: Meal) => setMeals((xs) => (xs.includes(m) ? xs.filter((x) => x !== m) : [...xs, m]));
 
   async function persist() {
@@ -111,11 +126,10 @@ export default function MenuScreen() {
       action={slots
         ? { label: tr('rc.menu.toShopping'), icon: 'shopping-cart', onPress: () => makeList(), disabled: createList.isPending, testID: 'menu-to-shopping' }
         : { label: tr('rc.menu.generate'), icon: 'refresh-cw', onPress: generate, testID: 'menu-generate' }}>
-      <TodaySummary title={tr('rc.menu.title')} items={[
-        { icon: 'calendar', value: String(days), label: tr('mb.rc.days') },
-        { icon: 'coffee', value: slots ? String(slots.length) : String(days * meals.length), label: tr('mb.rc.planned') },
-        { icon: 'users', value: String(servings), label: tr('mb.rc.portions') },
-      ]} />
+      {/* Donnée principale : les repas du menu (pas encore de menu : « rien de prévu », jamais un nombre deviné) */}
+      <HmHero testID="hm-menu-hero" value={slots ? String(slots.length) : null} emptyLabel={tr('hm.menu.none')}
+        unit={slots ? tr('hm.menu.unit', { days, servings }) : null}
+        caption={saved.plan ? tr('hm.menu.saved', { date: formatDate(saved.plan.created_at, { weekday: 'short', day: 'numeric', month: 'short' }) }) : null} />
       {aud === 'pregnancy' ? (
         <View style={{ gap: 4 }}>
           <Text variant="small" muted>{tr('rc.menu.trimesterHint')}</Text>
@@ -140,15 +154,17 @@ export default function MenuScreen() {
       {aud === 'pregnancy' ? <Banner tone="info">{tr('rc.menu.pregnancyNote')}</Banner> : null}
 
       {adding ? <Banner tone="info" title={tr('rc.menu.adding')}>{tr('rc.menu.addingBody', { title: (all ?? []).find((x) => x.slug === adding)?.title ?? '' })}</Banner> : null}
-      {slots ? Array.from({ length: days }, (_, d) => (
+      {slots ? <MenuDayList slots={slots} days={days} start={start} selected={dayIdx} onSelect={setDay} titleOf={titleOf} /> : null}
+      {/* Jour choisi (gardé dans l'adresse) en premier, puis les autres jours dans l'ordre */}
+      {slots ? [dayIdx, ...Array.from({ length: days }, (_, d) => d).filter((d) => d !== dayIdx)].map((d) => (
         <View key={d} style={{ gap: spacing.xs }} testID={`menu-day-${d}`}>
-          <SectionTitle title={tr('rc.menu.day', { n: d + 1 })} />
-          {meals.map((m) => {
+          <SectionTitle title={`${tr('rc.menu.day', { n: d + 1 })} · ${formatDate(`${menuDayDate(start, d)}T12:00:00`, { weekday: 'long', day: 'numeric', month: 'long' })}${d === dayIdx ? ` · ${tr('fm.menu.shown')}` : ''}`} />
+          <MotionList style={{ gap: spacing.xs }}>{meals.map((m) => ({ id: `${d}-${m}`, m })).map(({ id, m }) => {
             const idx = slots.findIndex((s) => s.day === d && s.meal === m);
             const s = slots[idx];
             const r = s ? byId.get(s.recipeId) : null;
             return (
-              <Card key={m}>
+              <MotionItem key={id}><Card>
                 <Text variant="caption" weight="bold" muted>{mealLabel(m).toUpperCase()}</Text>
                 {r ? (
                   <>
@@ -160,6 +176,7 @@ export default function MenuScreen() {
                       <Button label={tr('rc.menu.replace')} size="sm" variant="ghost" onPress={() => all && setSlots(replaceSlot(all, p, slots, idx, opts))} testID={`menu-replace-${d}-${m}`} />
                       <Button label={tr('rc.menu.move')} size="sm" variant="ghost" onPress={() => setMoving(idx)} />
                       {adding ? <Button label={tr('rc.menu.putHere')} size="sm" onPress={() => addRecipe(d, m)} /> : null}
+                      <Button label={tr('fm.fix')} icon="edit-3" size="sm" variant="secondary" onPress={() => router.setParams({ slot: slotKey(s) } as never)} testID={`fm-menu-fix-${d}-${m}`} />
                     </Row>
                   </>
                 ) : (
@@ -168,11 +185,17 @@ export default function MenuScreen() {
                     {adding ? <Button label={tr('rc.menu.putHere')} size="sm" onPress={() => addRecipe(d, m)} /> : null}
                   </Row>
                 )}
-              </Card>
+              </Card></MotionItem>
             );
-          })}
+          })}</MotionList>
         </View>
       )) : <Text muted>{tr('rc.menu.intro')}</Text>}
+      {openSlot && byId.get(openSlot.recipeId) ? (
+        <MenuSlotTray key={slotKey(openSlot)} slot={openSlot} mealName={mealLabel(openSlot.meal)} recipeTitle={byId.get(openSlot.recipeId)!.title}
+          date={menuDayDate(start, openSlot.day)!} saved={isSaved ? savedItemOf(saved.items, openSlot) : null}
+          onLocal={(patch) => setSlots((cur) => (cur ? cur.map((x, i) => (i === openIdx ? { ...x, ...(patch.servings != null ? { servings: patch.servings } : null), ...('note' in patch ? (patch.note ? { note: patch.note } : { note: undefined }) : null) } : x)) : cur))}
+          onClose={() => router.setParams({ slot: undefined } as never)} />
+      ) : null}
 
       {slots ? (
         <View style={{ gap: spacing.xs }}>

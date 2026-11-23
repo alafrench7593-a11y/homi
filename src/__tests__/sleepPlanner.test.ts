@@ -214,7 +214,7 @@ describe('notifications', () => {
   it('textes bienveillants, conformes et sans obligation', () => {
     const list = planSleepNotifications(plan, on, 'Lina', 'female', now);
     expect(list.map((n) => n.kind)).toEqual(['signs', 'nap', 'routine']);
-    expect(list[0].body).toMatch(/^Lina est éveillée depuis \d h \d\d\. Vous pouvez commencer à observer ses signes de fatigue\.$/);
+    expect(list[0].body).toMatch(/^Lina est éveillée depuis \d h \d\d\. Tu peux commencer à observer ses signes de fatigue\.$/);
     expect(list[1].body).toBe(`La prochaine sieste de Lina est estimée autour de ${clock(plan.nextNap!.at)}.`);
     expect(list[2].body).toBe('La routine du soir peut commencer dans 20 minutes.');
     for (const n of list) expect(n.body).not.toMatch(/doit|absolument|il faut/i);
@@ -251,7 +251,7 @@ describe('textes affichés', () => {
     const p = planDay({ childId: C, birthDate: BIRTH, sleeps: [night(20, 19, 30, 7, 0), nap(21, 9, 0, 10, 0), nap(21, 11, 20, 11, 20 + 0)].slice(0, 2).concat([nap(21, 11, 0, 11, 20)]), now });
     const lines = planLines(p, 'Lina', 'female', now).map((l) => l.text);
     expect(lines[0]).toMatch(/^Éveillée depuis 1 h 35$/);
-    expect(lines.join(' ')).toMatch(/Commencez tranquillement la routine vers \d+ h/);
+    expect(lines.join(' ')).toMatch(/Commence tranquillement la routine vers \d+ h/);
     expect(lines.join(' ')).toMatch(/Prochaine sieste estimée autour de \d+ h/);
     expect(lines.join(' ')).toMatch(/Coucher du soir estimé entre \d+ h( \d\d)? et \d+ h/);
     expect(lines.join(' ')).not.toMatch(/doit|absolument/i);

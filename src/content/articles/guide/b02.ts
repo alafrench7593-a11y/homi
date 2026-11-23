@@ -19,8 +19,8 @@ const S = {
 } satisfies Record<string, ArticleSource>;
 
 /** Phrase de fin commune : l'article informe, il ne remplace pas un professionnel. */
-const FIN = '_Cet article vous informe ; il ne remplace pas l’avis de la sage-femme, du médecin ou du diététicien qui vous accompagne._';
-const URG = 'En cas d’urgence, appelez le **15** (SAMU) ou le **112**.';
+const FIN = '_Cet article t’informe ; il ne remplace pas l’avis de la sage-femme, du médecin ou du diététicien qui t’accompagne._';
+const URG = 'En cas d’urgence, appelle le **15** (SAMU) ou le **112**.';
 
 const a = (x: Omit<LibArticle, 'status' | 'journeys'> & { journeys?: LibArticle['journeys'] }): LibArticle => ({ journeys: ['pregnant'], status: 'to_review', ...x });
 
@@ -29,51 +29,51 @@ export const GUIDE_B02: LibArticle[] = [
   a({
     slug: 'vegetarienne-enceinte-composer-ses-repas',
     title: 'Végétarienne et enceinte : bien composer ses repas',
-    summary: 'Poursuivre une alimentation végétarienne pendant la grossesse est possible si elle est bien équilibrée : les nutriments à surveiller et des idées concrètes pour vos assiettes.',
+    summary: 'Poursuivre une alimentation végétarienne pendant la grossesse est possible si elle est bien équilibrée : les nutriments à surveiller et des idées concrètes pour tes assiettes.',
     journeys: ['pregnant', 'ttc'],
     category: 'alimentation-grossesse', tags: ['végétarienne', 'végétarien', 'sans viande', 'protéines', 'fer', 'B12', 'DHA', 'légumineuses'],
     sources: [S.santeAlimentation, S.spfBrochure],
     body_md: `## En bref
 - Une alimentation **végétarienne bien équilibrée** peut être poursuivie pendant la grossesse, avec un suivi médical, idéalement dès le projet de bébé.
 - Cinq points d’attention : **protéines, fer, vitamine B12, iode et DHA** (un oméga-3).
-- Associer **légumineuses et céréales** dans la journée aide à couvrir les besoins en protéines ; œufs, produits laitiers et, si vous en mangez, poisson complètent.
-- Une supplémentation (fer, B12, iode) peut être proposée **sur avis médical** selon vos besoins.
+- Associer **légumineuses et céréales** dans la journée aide à couvrir les besoins en protéines ; œufs, produits laitiers et, si tu en manges, poisson complètent.
+- Une supplémentation (fer, B12, iode) peut être proposée **sur avis médical** selon tes besoins.
 
 ## Comprendre
-Pendant la grossesse, l’objectif n’est pas de manger deux fois plus mais « deux fois mieux » : une alimentation variée qui apporte au bébé et à vous-même tout ce dont vous avez besoin. Santé.fr rappelle qu’une alimentation végétarienne peut être maintenue si elle est équilibrée et accompagnée d’un suivi.
+Pendant la grossesse, l’objectif n’est pas de manger deux fois plus mais « deux fois mieux » : une alimentation variée qui apporte au bébé et à toi-même tout ce dont tu as besoin. Santé.fr rappelle qu’une alimentation végétarienne peut être maintenue si elle est équilibrée et accompagnée d’un suivi.
 
 Sans viande, certains nutriments demandent plus d’attention. Les **protéines** se trouvent dans les œufs, les produits laitiers, les légumineuses (lentilles, pois chiches, haricots secs) et les céréales ; associer les deux dernières dans la journée améliore leur complémentarité. Le **fer** d’origine végétale est moins bien absorbé, et Santé publique France rappelle que le thé bu pendant ou juste avant le repas réduit encore cette absorption. La **vitamine B12** est surtout présente dans les produits animaux. L’**iode** vient notamment du poisson de mer et du sel iodé. Le **DHA**, un oméga-3 utile au développement du bébé, se trouve dans les poissons gras, les œufs enrichis ou les microalgues.
 
 Seul un professionnel peut évaluer un éventuel manque, par exemple avec une prise de sang, et décider d’un complément.
 
 ## Au quotidien
-- **Légumineuses au moins deux fois par semaine**, et plus souvent si vous ne mangez pas de viande : dahl de lentilles corail avec du riz, chili sans viande, houmous avec du pain complet, salade de pois chiches cuits.
+- **Légumineuses au moins deux fois par semaine**, et plus souvent si tu ne manges pas de viande : dahl de lentilles corail avec du riz, chili sans viande, houmous avec du pain complet, salade de pois chiches cuits.
 - **Céréales complètes** : au moins un féculent complet par jour (pain, riz, pâtes complètes, flocons d’avoine, quinoa).
-- **Œufs bien cuits** : omelette, œuf dur, quiche maison bien cuite. Évitez les œufs crus ou peu cuits et les préparations maison à base d’œufs crus.
+- **Œufs bien cuits** : omelette, œuf dur, quiche maison bien cuite. Évite les œufs crus ou peu cuits et les préparations maison à base d’œufs crus.
 - **Produits laitiers** : environ deux par jour selon les repères 2026 de Santé publique France, pasteurisés ou à pâte pressée cuite, en retirant la croûte.
-- **Si vous mangez du poisson** : deux fois par semaine, dont un poisson gras (sardine, maquereau, hareng, saumon), toujours bien cuit.
+- **Si tu manges du poisson** : deux fois par semaine, dont un poisson gras (sardine, maquereau, hareng, saumon), toujours bien cuit.
 - **Sel iodé**, en petite quantité.
-- **Soja** : Santé publique France recommande d’éviter les produits à base de soja pendant la grossesse (boissons, desserts, compléments) ; la sauce soja occasionnelle reste possible. Variez donc les sources de protéines végétales.
-- **Thé** : prenez-le plutôt à distance des repas, pour ne pas gêner l’absorption du fer.
+- **Soja** : Santé publique France recommande d’éviter les produits à base de soja pendant la grossesse (boissons, desserts, compléments) ; la sauce soja occasionnelle reste possible. Varie donc les sources de protéines végétales.
+- **Thé** : prends-le plutôt à distance des repas, pour ne pas gêner l’absorption du fer.
 
 ### Exemple de journée
 Matin : pain complet, fromage à pâte pressée cuite, fruit. Midi : lentilles aux légumes et riz, yaourt. Goûter : fromage blanc et poignée de noix non salées. Soir : omelette, poêlée de légumes, pâtes complètes, compote.
 
 ## Questions fréquentes
 **Dois-je recommencer à manger de la viande ?**
-Non, rien ne l’impose si votre alimentation est variée et suivie. Parlez de vos habitudes dès la première consultation pour adapter le suivi.
+Non, rien ne l’impose si ton alimentation est variée et suivie. Parle de tes habitudes dès la première consultation pour adapter le suivi.
 
 **Faut-il prendre des compléments d’office ?**
-L’acide folique (vitamine B9) est conseillé à toutes, dès le projet de grossesse. Les autres compléments (fer, B12, iode) ne se prennent que sur prescription, selon vos besoins.
+L’acide folique (vitamine B9) est conseillé à toutes, dès le projet de grossesse. Les autres compléments (fer, B12, iode) ne se prennent que sur prescription, selon tes besoins.
 
 **Les galettes végétales du commerce sont-elles un bon choix ?**
-Elles dépannent. Lisez la liste des ingrédients : évitez celles à base de soja et privilégiez les produits peu transformés, au meilleur Nutri-Score.
+Elles dépannent. Lis la liste des ingrédients : évite celles à base de soja et privilégie les produits peu transformés, au meilleur Nutri-Score.
 
 **Et si je ne mange ni œufs ni produits laitiers ?**
 On parle alors d’alimentation végétalienne, qui demande un accompagnement plus rapproché (voir l’article dédié).
 
 ## Quand demander conseil
-Parlez-en à votre sage-femme ou à votre médecin si vous êtes très fatiguée, essoufflée, pâle, si vous perdez du poids ou si vous avez du mal à varier vos repas. Un diététicien peut vous aider à construire vos menus. ${URG}
+Parles-en à ta sage-femme ou à ton médecin si tu es très fatiguée, essoufflée, pâle, si tu perds du poids ou si tu as du mal à varier tes repas. Un diététicien peut t’aider à construire tes menus. ${URG}
 
 ${FIN}`,
   }),
@@ -87,22 +87,22 @@ ${FIN}`,
     body_md: `## En bref
 - Sans aucun produit animal, le risque de manque en **vitamine B12, fer, iode et acides gras essentiels** est réel pendant la grossesse.
 - Santé.fr recommande une **supplémentation vitaminique** et un **suivi rapproché**, y compris avec un diététicien.
-- Signalez votre alimentation **dès le projet de grossesse** ou la première consultation.
-- Il ne s’agit pas de vous juger : l’objectif est de protéger votre santé et celle de votre bébé.
+- Signale ton alimentation **dès le projet de grossesse** ou la première consultation.
+- Il ne s’agit pas de te juger : l’objectif est de protéger ta santé et celle de ton bébé.
 
 ## Comprendre
 L’alimentation végétalienne exclut viande, poisson, œufs, produits laitiers et souvent miel. Pendant la grossesse, les besoins de certains nutriments augmentent, et quelques-uns sont difficiles à obtenir sans produits animaux.
 
-La **vitamine B12** en est l’exemple le plus net : elle est presque absente des végétaux. Santé publique France rappelle que le végétalisme expose à une carence en B12, à évaluer avec un professionnel de santé qui peut prescrire un supplément. Le **fer** végétal est moins bien absorbé. L’**iode** et les **oméga-3 à longue chaîne** (DHA) sont surtout apportés par les produits de la mer. Le **calcium** demande aussi de l’attention sans produits laitiers : Santé publique France conseille d’en parler à un professionnel pour couvrir vos besoins.
+La **vitamine B12** en est l’exemple le plus net : elle est presque absente des végétaux. Santé publique France rappelle que le végétalisme expose à une carence en B12, à évaluer avec un professionnel de santé qui peut prescrire un supplément. Le **fer** végétal est moins bien absorbé. L’**iode** et les **oméga-3 à longue chaîne** (DHA) sont surtout apportés par les produits de la mer. Le **calcium** demande aussi de l’attention sans produits laitiers : Santé publique France conseille d’en parler à un professionnel pour couvrir tes besoins.
 
 Santé.fr décrit des risques sérieux en cas de carences et insiste sur deux points : une supplémentation et une surveillance attentive. Ce suivi permet d’ajuster les apports au fil des trimestres.
 
 ## Au quotidien
-- **Prenez rendez-vous avec un diététicien** dès que possible : il évaluera vos apports réels et proposera des menus adaptés.
-- **Ne commencez aucun complément de vous-même**, en particulier les produits « grossesse » ou enrichis cumulés : Santé.fr met en garde contre le risque de surdosage. Suivez la prescription.
+- **Prends rendez-vous avec un diététicien** dès que possible : il évaluera tes apports réels et proposera des menus adaptés.
+- **Ne commence aucun complément de toi-même**, en particulier les produits « grossesse » ou enrichis cumulés : Santé.fr met en garde contre le risque de surdosage. Suis la prescription.
 - **Légumineuses tous les jours** : lentilles, pois chiches, haricots, pois cassés, associées à des céréales complètes.
 - **Fruits à coque et graines** non salés : une petite poignée par jour (noix, amandes), et des huiles de colza ou de noix pour les oméga-3.
-- **Sources de calcium végétales** : certains légumes verts, légumes secs, amandes ; votre professionnel vous dira si cela suffit.
+- **Sources de calcium végétales** : certains légumes verts, légumes secs, amandes ; ton professionnel te dira si cela suffit.
 - **Soja** : Santé publique France recommande d’éviter les produits à base de soja pendant la grossesse. Cela réduit les options végétaliennes habituelles ; d’où l’intérêt d’un accompagnement pour varier.
 - **Sel iodé** en petite quantité.
 - **Thé** : à distance des repas pour ne pas gêner l’absorption du fer.
@@ -115,26 +115,26 @@ Santé.fr décrit des risques sérieux en cas de carences et insiste sur deux po
 
 ## Questions fréquentes
 **Puis-je rester végétalienne pendant toute ma grossesse ?**
-C’est une discussion à mener avec votre médecin ou votre sage-femme. Les recommandations insistent sur la supplémentation et le suivi rapproché plutôt que sur un arrêt imposé.
+C’est une discussion à mener avec ton médecin ou ta sage-femme. Les recommandations insistent sur la supplémentation et le suivi rapproché plutôt que sur un arrêt imposé.
 
 **Les boissons végétales remplacent-elles le lait ?**
-Elles n’ont pas la même composition. Celles au soja sont à éviter pendant la grossesse selon Santé publique France. Demandez conseil pour les autres.
+Elles n’ont pas la même composition. Celles au soja sont à éviter pendant la grossesse selon Santé publique France. Demande conseil pour les autres.
 
 **Les aliments enrichis en B12 suffisent-ils ?**
-Seul un professionnel peut le dire, au vu de vos apports et de vos analyses.
+Seul un professionnel peut le dire, au vu de tes apports et de tes analyses.
 
 **Et après la naissance ?**
-Parlez de votre projet d’allaitement avec votre professionnel : le suivi diététique et les compléments sont à réévaluer à ce moment-là.
+Parle de ton projet d’allaitement avec ton professionnel : le suivi diététique et les compléments sont à réévaluer à ce moment-là.
 
 ## Quand demander conseil
-Consultez sans tarder en cas de grande fatigue, d’essoufflement, de fourmillements dans les mains ou les pieds, de pâleur, de perte de poids ou si vous ne parvenez pas à suivre vos compléments. ${URG}
+Consulte sans tarder en cas de grande fatigue, d’essoufflement, de fourmillements dans les mains ou les pieds, de pâleur, de perte de poids ou si tu ne parviens pas à suivre tes compléments. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'manger-moins-de-viande-enceinte-flexitarien',
     title: 'Manger moins de viande pendant la grossesse : repères et idées',
-    summary: 'Vous mangez peu de viande ou souhaitez en réduire la quantité : comment équilibrer vos repas pendant la grossesse avec la volaille, le poisson, les œufs et les légumineuses.',
+    summary: 'Tu manges peu de viande ou souhaites en réduire la quantité : comment équilibrer tes repas pendant la grossesse avec la volaille, le poisson, les œufs et les légumineuses.',
     category: 'alimentation-grossesse', tags: ['flexitarien', 'moins de viande', 'légumineuses', 'volaille', 'protéines', 'repères'],
     sources: [S.spfBrochure, S.santeAlimentation, S.santeAliments],
     body_md: `## En bref
@@ -146,37 +146,37 @@ ${FIN}`,
 ## Comprendre
 Beaucoup de futures mères réduisent la viande, par goût, par dégoût passager ou pour des raisons de budget. Bonne nouvelle : les repères officiels vont dans ce sens. Dans sa brochure 2026, Santé publique France recommande de privilégier la volaille, de limiter les autres viandes (bœuf, porc, veau, agneau…) à 500 g par semaine et la charcuterie à 150 g par semaine.
 
-La viande apporte des protéines et du fer, en particulier la viande rouge. Si vous en mangez moins, il faut simplement veiller à trouver ces apports ailleurs : poisson, œufs, produits laitiers, légumineuses associées à des céréales. Santé publique France rappelle aussi que manger moins de viande et plus de produits de saison peut aider à maîtriser son budget.
+La viande apporte des protéines et du fer, en particulier la viande rouge. Si tu en manges moins, il faut simplement veiller à trouver ces apports ailleurs : poisson, œufs, produits laitiers, légumineuses associées à des céréales. Santé publique France rappelle aussi que manger moins de viande et plus de produits de saison peut aider à maîtriser son budget.
 
 Quelle que soit la viande, elle doit être **bien cuite à cœur** pendant la grossesse, pour prévenir la toxoplasmose : sans jus rosé à la coupe, selon ameli. Le foie et les produits à base de foie sont à éviter en raison de leur teneur en vitamine A.
 
 ## Au quotidien
-- **Planifiez la semaine** : par exemple deux repas de volaille, un ou deux de viande rouge, deux de poisson, deux ou trois avec légumineuses ou œufs.
-- **Associez** légumineuses et céréales : lentilles et riz, pois chiches et semoule, haricots rouges et maïs, pois cassés et pain.
-- **Mélangez** : un plat avec moitié moins de viande hachée et des lentilles (bolognaise, chili, farce de légumes).
+- **Planifie la semaine** : par exemple deux repas de volaille, un ou deux de viande rouge, deux de poisson, deux ou trois avec légumineuses ou œufs.
+- **Associe** légumineuses et céréales : lentilles et riz, pois chiches et semoule, haricots rouges et maïs, pois cassés et pain.
+- **Mélange** : un plat avec moitié moins de viande hachée et des lentilles (bolognaise, chili, farce de légumes).
 - **Œufs** : durs, en omelette, en quiche bien cuite. Pas d’œufs à la coque ni de mayonnaise maison.
-- **Poisson bien cuit** : papillote de cabillaud, sardines grillées, maquereau au four. Évitez espadon, marlin, siki, requin et lamproie ; limitez anguille, lotte, bar, dorade, raie et thon.
-- **Charcuterie** : préférez les produits à cuire (saucisses, boudin) bien cuits ; évitez rillettes, pâtés, foie gras, saucisson sec et jambon sec, ainsi que le jambon cuit non recuit.
-- **Fer** : prenez le thé à distance des repas.
+- **Poisson bien cuit** : papillote de cabillaud, sardines grillées, maquereau au four. Évite espadon, marlin, siki, requin et lamproie ; limite anguille, lotte, bar, dorade, raie et thon.
+- **Charcuterie** : préfère les produits à cuire (saucisses, boudin) bien cuits ; évite rillettes, pâtés, foie gras, saucisson sec et jambon sec, ainsi que le jambon cuit non recuit.
+- **Fer** : prends le thé à distance des repas.
 
 ### Idées de plats
 Curry de pois chiches et épinards, dahl de lentilles corail, galettes de haricots maison, gratin de pâtes complètes au poulet, omelette aux légumes, soupe de pois cassés.
 
 ## Questions fréquentes
 **Je n’ai plus du tout envie de viande depuis que je suis enceinte, est-ce un problème ?**
-Les dégoûts sont fréquents. Compensez avec poisson, œufs, produits laitiers et légumineuses, et parlez-en si cela dure ou si vous mangez peu.
+Les dégoûts sont fréquents. Compense avec poisson, œufs, produits laitiers et légumineuses, et parles-en si cela dure ou si tu manges peu.
 
 **Le steak haché doit-il être bien cuit ?**
 Oui, comme toutes les viandes : cuit à cœur, sans partie rosée.
 
 **Le jambon blanc est-il autorisé ?**
-Les charcuteries cuites prêtes à consommer, comme le jambon, sont déconseillées par Santé.fr sauf si vous les recuisez (dans un gratin, une quiche, une pizza bien chaude).
+Les charcuteries cuites prêtes à consommer, comme le jambon, sont déconseillées par Santé.fr sauf si tu les recuis (dans un gratin, une quiche, une pizza bien chaude).
 
 **Faut-il un complément de fer si je mange peu de viande ?**
 Seul un professionnel peut évaluer ce besoin, souvent à partir d’une prise de sang.
 
 ## Quand demander conseil
-Parlez-en lors du suivi si vous êtes très fatiguée, essoufflée, si vous mangez très peu ou si votre alimentation devient très restreinte. ${URG}
+Parles-en lors du suivi si tu es très fatiguée, essoufflée, si tu manges très peu ou si ton alimentation devient très restreinte. ${URG}
 
 ${FIN}`,
   }),
@@ -198,33 +198,33 @@ Santé.fr indique que les petites faims et les envies de grignoter sont courante
 
 Il n’est pas utile de culpabiliser. Le message des autorités de santé est de manger « deux fois mieux, pas deux fois plus » : les besoins n’augmentent que légèrement, même avec des jumeaux, selon Santé publique France. Céder de temps en temps à une envie fait partie de la vie ; c’est la répétition quotidienne de produits très sucrés ou gras qui peut peser sur la prise de poids et l’équilibre.
 
-Si les envies de sucre ou de gras deviennent difficiles à gérer, ameli rappelle qu’un diététicien ou un médecin peut vous accompagner, et aussi repérer un éventuel trouble du comportement alimentaire, qui peut réapparaître pendant la grossesse.
+Si les envies de sucre ou de gras deviennent difficiles à gérer, ameli rappelle qu’un diététicien ou un médecin peut t’accompagner, et aussi repérer un éventuel trouble du comportement alimentaire, qui peut réapparaître pendant la grossesse.
 
 ## Au quotidien
-- **Ne sautez pas de repas** : trois repas par jour limitent les fringales, et une collation peut s’ajouter à partir du 2e trimestre.
-- **Misez sur les fibres** aux repas : légumes, fruits, céréales complètes, légumineuses. Elles « calent » plus longtemps.
-- **Gardez une partie du repas pour plus tard** : Santé publique France suggère de manger le plat principal, puis de garder le produit laitier ou le fruit pour une petite faim.
-- **Buvez de l’eau** : elle aide à équilibrer l’appétit.
-- **Envie de sucré** : fruit entier, compote, yaourt nature avec un fruit, pain complet et un carré de chocolat. Préférez le fruit entier au jus, que Santé.fr range parmi les boissons sucrées.
+- **Ne saute pas de repas** : trois repas par jour limitent les fringales, et une collation peut s’ajouter à partir du 2e trimestre.
+- **Mise sur les fibres** aux repas : légumes, fruits, céréales complètes, légumineuses. Elles « calent » plus longtemps.
+- **Garde une partie du repas pour plus tard** : Santé publique France suggère de manger le plat principal, puis de garder le produit laitier ou le fruit pour une petite faim.
+- **Bois de l’eau** : elle aide à équilibrer l’appétit.
+- **Envie de sucré** : fruit entier, compote, yaourt nature avec un fruit, pain complet et un carré de chocolat. Préfère le fruit entier au jus, que Santé.fr range parmi les boissons sucrées.
 - **Envie de salé** : quelques fruits à coque non salés, bâtonnets de légumes avec une sauce au fromage blanc, pain complet avec du fromage à pâte pressée cuite.
 - **Envie d’un aliment à éviter** : fromage au lait cru → fromage à pâte pressée cuite sans la croûte, ou fromage bien cuit dans un plat chaud ; sushis → maki aux légumes ou poisson cuit ; tiramisu maison → version industrielle ou dessert sans œuf cru ; boisson alcoolisée → cocktail sans alcool maison.
-- **Courses** : n’achetez pas en grande quantité ce qui vous fait craquer, et gardez à portée de main des collations simples.
+- **Courses** : n’achète pas en grande quantité ce qui te fait craquer, et garde à portée de main des collations simples.
 
 ## Questions fréquentes
 **Les envies traduisent-elles un manque ?**
-Aucune source officielle ne permet de l’affirmer. Si vous vous sentez très fatiguée ou avez des envies inhabituelles (terre, glace en grande quantité, objets non alimentaires), parlez-en à votre professionnel de santé.
+Aucune source officielle ne permet de l’affirmer. Si tu te sens très fatiguée ou as des envies inhabituelles (terre, glace en grande quantité, objets non alimentaires), parles-en à ton professionnel de santé.
 
 **Puis-je manger du chocolat ?**
 Oui, avec modération. Le chocolat contient un peu de caféine, à prendre en compte avec le café et le thé.
 
 **Je grignote le soir, que faire ?**
-Vérifiez que votre dîner est assez complet (légumes, féculent, protéines) et prévoyez un produit laitier ou un fruit pour plus tard.
+Vérifie que ton dîner est assez complet (légumes, féculent, protéines) et prévois un produit laitier ou un fruit pour plus tard.
 
 **Les envies sont-elles plus fortes avec le diabète gestationnel ?**
-Pas nécessairement, mais si vous êtes concernée, l’équipe qui vous suit vous aidera à les intégrer à vos repas.
+Pas nécessairement, mais si tu es concernée, l’équipe qui te suit t’aidera à les intégrer à tes repas.
 
 ## Quand demander conseil
-Parlez-en à votre sage-femme ou à votre médecin si les envies s’accompagnent d’une prise de poids rapide, de pertes de contrôle répétées, de vomissements provoqués ou d’une grande détresse. En cas de souffrance psychique, le **3114** répond 24 h/24. ${URG}
+Parles-en à ta sage-femme ou à ton médecin si les envies s’accompagnent d’une prise de poids rapide, de pertes de contrôle répétées, de vomissements provoqués ou d’une grande détresse. En cas de souffrance psychique, le **3114** répond 24 h/24. ${URG}
 
 ${FIN}`,
   }),
@@ -249,53 +249,53 @@ Ces dégoûts ne sont pas une faute ni un caprice. Le principal enjeu est de gar
 ## Au quotidien
 ### Remplacer dans le même groupe
 - **Viande rejetée** → œufs bien cuits, poisson bien cuit, volaille froide en salade, légumineuses, produits laitiers.
-- **Poisson rejeté** → l’iode peut venir du sel iodé ; revenez au poisson quand ce sera possible, en commençant par un poisson blanc au goût doux.
+- **Poisson rejeté** → l’iode peut venir du sel iodé ; reviens au poisson quand ce sera possible, en commençant par un poisson blanc au goût doux.
 - **Légumes rejetés** → fruits, soupes froides (gaspacho, velouté froid), légumes râpés bien lavés, purées.
 - **Produits laitiers rejetés** → fromage à pâte pressée cuite en petits dés, yaourt bien frais, lait dans une préparation (semoule au lait, flan).
 - **Café rejeté** → parfait : Santé publique France conseille de toute façon de ne pas dépasser 3 tasses par jour.
 
 ### Gérer les odeurs
-- **Aérez** la cuisine et la maison régulièrement, comme le conseille ameli.
-- **Préférez le froid** : salades composées, sandwichs, taboulé, plats servis tièdes.
-- **Déléguez la cuisine** quand c’est possible, ou cuisinez fenêtre ouverte, hotte en marche.
-- **Évitez** la fumée de cigarette et les odeurs fortes.
-- Rangez les aliments entamés dans des **boîtes hermétiques** : le frigo sent moins, et c’est aussi plus hygiénique.
+- **Aère** la cuisine et la maison régulièrement, comme le conseille ameli.
+- **Préfère le froid** : salades composées, sandwichs, taboulé, plats servis tièdes.
+- **Délègue la cuisine** quand c’est possible, ou cuisine fenêtre ouverte, hotte en marche.
+- **Évite** la fumée de cigarette et les odeurs fortes.
+- Range les aliments entamés dans des **boîtes hermétiques** : le frigo sent moins, et c’est aussi plus hygiénique.
 
 ### Garder le cap
-- Ne restez **pas trop longtemps l’estomac vide** : petites quantités, souvent.
-- **Buvez entre les repas** plutôt que pendant.
-- Notez ce qui passe bien : cela aide à faire les courses et à préparer des repas sans y réfléchir.
+- Ne reste **pas trop longtemps l’estomac vide** : petites quantités, souvent.
+- **Bois entre les repas** plutôt que pendant.
+- Note ce qui passe bien : cela aide à faire les courses et à préparer des repas sans y réfléchir.
 
 ## Questions fréquentes
 **Mon bébé manque-t-il de quelque chose si je ne mange plus de viande pendant quelques semaines ?**
-Si vous compensez avec d’autres sources de protéines et de fer, l’alimentation peut rester équilibrée. Parlez-en lors de votre suivi si le dégoût dure.
+Si tu compenses avec d’autres sources de protéines et de fer, l’alimentation peut rester équilibrée. Parles-en lors de ton suivi si le dégoût dure.
 
 **Je ne supporte plus l’eau plate, que boire ?**
-Essayez l’eau gazeuse, l’eau très fraîche, aromatisée de rondelles de citron ou de concombre, ou des infusions froides. Limitez les boissons sucrées à un verre par jour.
+Essaie l’eau gazeuse, l’eau très fraîche, aromatisée de rondelles de citron ou de concombre, ou des infusions froides. Limite les boissons sucrées à un verre par jour.
 
 **Les dégoûts peuvent-ils durer toute la grossesse ?**
 Ils s’atténuent le plus souvent après le premier trimestre, mais certaines aversions persistent. L’essentiel est de trouver des remplaçants.
 
 **Est-ce que je peux me forcer ?**
-Inutile de vous forcer jusqu’au malaise. Proposez-vous l’aliment sous une autre forme, plus tard.
+Inutile de te forcer jusqu’au malaise. Propose-toi l’aliment sous une autre forme, plus tard.
 
 ## Quand demander conseil
-Consultez si vous ne parvenez plus à manger ni à boire, si vous perdez du poids, si vous vomissez plusieurs fois par jour ou si vous vous sentez très faible. Des urines foncées et rares, une bouche sèche ou des vertiges doivent faire consulter rapidement. ${URG}
+Consulte si tu ne parviens plus à manger ni à boire, si tu perds du poids, si tu vomis plusieurs fois par jour ou si tu te sens très faible. Des urines foncées et rares, une bouche sèche ou des vertiges doivent faire consulter rapidement. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'manger-avec-des-nausees-idees-de-repas',
     title: 'Manger malgré les nausées : idées de repas et de collations',
-    summary: 'Quand tout vous écœure, quelques principes simples et des idées concrètes, du réveil au coucher, pour continuer à vous alimenter.',
+    summary: 'Quand tout t’écœure, quelques principes simples et des idées concrètes, du réveil au coucher, pour continuer à t’alimenter.',
     max_week: 20,
     category: 'alimentation-grossesse', tags: ['nausées', 'mal au cœur', 'repas', 'collations', 'réveil', 'premier trimestre', 'idées'],
     sources: [S.ameliDigestion, S.santeAlimentation, S.spfBrochure],
     body_md: `## En bref
-- **Petites quantités, souvent** : ne laissez pas l’estomac vide trop longtemps.
-- **Mangez ce qui vous fait envie**, parmi les aliments autorisés.
-- **Buvez entre les repas** plutôt que pendant.
-- Préférez des aliments **froids, peu odorants**, peu gras et peu épicés.
+- **Petites quantités, souvent** : ne laisse pas l’estomac vide trop longtemps.
+- **Mange ce qui te fait envie**, parmi les aliments autorisés.
+- **Bois entre les repas** plutôt que pendant.
+- Préfère des aliments **froids, peu odorants**, peu gras et peu épicés.
 - Une petite collation **dès le réveil** aide souvent.
 
 ## Comprendre
@@ -305,43 +305,43 @@ Plusieurs conseils reviennent dans les sources officielles : fractionner les rep
 
 ## Au quotidien
 ### Au réveil
-Gardez près du lit quelque chose de simple : biscottes, pain grillé, quelques biscuits secs, un verre d’eau. Mangez avant de vous lever, puis levez-vous doucement.
+Garde près du lit quelque chose de simple : biscottes, pain grillé, quelques biscuits secs, un verre d’eau. Mange avant de te lever, puis lève-toi doucement.
 
 ### Dans la journée
 - **Toutes les deux à trois heures**, une petite prise : yaourt, fruit, tartine, fromage à pâte pressée cuite, compote, quelques amandes non salées.
 - **Plats froids ou tièdes** : taboulé, salade de pâtes, riz au lait, semoule, œuf dur, sandwich au poulet bien cuit, gaspacho.
-- **Féculents simples** : riz, pâtes, pommes de terre, pain. Ils sont souvent bien tolérés et apportent de l’énergie ; préférez-les complets quand ça passe, pour les fibres.
+- **Féculents simples** : riz, pâtes, pommes de terre, pain. Ils sont souvent bien tolérés et apportent de l’énergie ; préfère-les complets quand ça passe, pour les fibres.
 - **Goûts frais** : certaines futures mères tolèrent mieux un fruit très frais ou une boisson fraîche.
-- **Mangez lentement**, dans un endroit aéré.
+- **Mange lentement**, dans un endroit aéré.
 
 ### Boire
 - Petites gorgées **entre les repas**.
 - Eau plate ou gazeuse, bien fraîche, infusions froides.
-- Évitez la caféine, que ameli conseille de limiter en cas de nausées.
+- Évite la caféine, que ameli conseille de limiter en cas de nausées.
 
 ### Ce qui aide autour du repas
 - Aérer la pièce, cuisiner le moins possible soi-même, éviter la fumée de cigarette.
-- Ne pas vous allonger juste après avoir mangé.
-- Si vous vomissez : rincez-vous la bouche à l’eau, puis attendez au moins une heure avant de vous brosser les dents pour protéger l’émail, comme le recommande ameli.
+- Ne pas t’allonger juste après avoir mangé.
+- Si tu vomis : rince-toi la bouche à l’eau, puis attends au moins une heure avant de te brosser les dents pour protéger l’émail, comme le recommande ameli.
 
 ### Garder les bons réflexes de sécurité
-Même avec des nausées, gardez les précautions alimentaires de la grossesse : pas de lait cru, de viande ou de poisson crus, d’œufs crus. Les biscottes et le riz sont pratiques ; les plats préparés achetés doivent être réchauffés bien chauds.
+Même avec des nausées, garde les précautions alimentaires de la grossesse : pas de lait cru, de viande ou de poisson crus, d’œufs crus. Les biscottes et le riz sont pratiques ; les plats préparés achetés doivent être réchauffés bien chauds.
 
 ## Questions fréquentes
 **Mon bébé souffre-t-il si je mange peu pendant quelques semaines ?**
 Au premier trimestre, la prise de poids peut être faible ou nulle selon Santé publique France. En revanche, une perte de poids, une déshydratation ou l’impossibilité de garder quoi que ce soit doivent faire consulter.
 
 **Puis-je prendre des remèdes naturels ?**
-Demandez d’abord conseil : ameli rappelle que l’aromathérapie est contre-indiquée pendant la grossesse, et le gingembre se prend sur avis médical.
+Demande d’abord conseil : ameli rappelle que l’aromathérapie est contre-indiquée pendant la grossesse, et le gingembre se prend sur avis médical.
 
 **Mes vitamines de grossesse me donnent la nausée, puis-je les arrêter ?**
-N’arrêtez rien sans en parler. Votre médecin ou sage-femme peut adapter vos compléments si besoin.
+N’arrête rien sans en parler. Ton médecin ou sage-femme peut adapter tes compléments si besoin.
 
 **Est-ce que manger du sucré soulage ?**
-Certaines le ressentent, mais les produits très sucrés calent peu. Associez-les à un féculent ou un produit laitier.
+Certaines le ressentent, mais les produits très sucrés calent peu. Associe-les à un féculent ou un produit laitier.
 
 ## Quand demander conseil
-Ameli recommande de consulter si vous avez des nausées et vomissements en début de grossesse, sur rendez-vous ou en urgence selon leur intensité. Consultez rapidement si vous ne gardez ni liquides ni aliments, si vous perdez du poids, avez très soif, des urines rares et foncées, des vertiges ou une grande fatigue. ${URG}
+Ameli recommande de consulter si tu as des nausées et vomissements en début de grossesse, sur rendez-vous ou en urgence selon leur intensité. Consulte rapidement si tu ne gardes ni liquides ni aliments, si tu perds du poids, as très soif, des urines rares et foncées, des vertiges ou une grande fatigue. ${URG}
 
 ${FIN}`,
   }),
@@ -356,12 +356,12 @@ ${FIN}`,
 - La plupart des nausées restent gênantes mais **sans complication**.
 - On parle d’**hyperémèse gravidique** quand il y a une **perte de poids d’au moins 5 %**, une **déshydratation** ou un score de gravité élevé.
 - La priorité est de **boire** et de **consulter** si rien ne passe.
-- Des traitements existent : **ne restez pas seule** face à des vomissements qui durent.
+- Des traitements existent : **ne reste pas seule** face à des vomissements qui durent.
 
 ## Comprendre
 Ameli distingue deux situations. Les nausées et vomissements **sans complication** : perte de poids inférieure à 5 %, pas de déshydratation. Ils se prennent en charge à domicile. L’**hyperémèse gravidique** : perte de poids d’au moins 5 % par rapport au poids d’avant la grossesse, déshydratation ou score de gravité élevé. Un bilan est alors prescrit (prise de sang, échographie, contrôle de la thyroïde).
 
-Pour évaluer la gravité, le médecin ou la sage-femme utilise un questionnaire simple, le **score PUQE**, que vous pouvez remplir avant la consultation. Il ou elle regarde aussi la fréquence des vomissements, leur retentissement sur votre vie, votre poids, votre soif, votre fatigue, et contrôle tension, pouls, température et urines.
+Pour évaluer la gravité, le médecin ou la sage-femme utilise un questionnaire simple, le **score PUQE**, que tu peux remplir avant la consultation. Il ou elle regarde aussi la fréquence des vomissements, leur retentissement sur ta vie, ton poids, ta soif, ta fatigue, et contrôle tension, pouls, température et urines.
 
 Une hospitalisation peut être proposée en cas de vomissements importants mal tolérés, de déshydratation marquée, de perte de poids d’au moins 10 % ou d’un bilan sanguin perturbé. Elle permet une réhydratation par perfusion avec des vitamines, des médicaments contre les vomissements et un soutien psychologique.
 
@@ -370,30 +370,30 @@ Enfin, ameli précise que des vomissements qui persistent au-delà d’environ 9
 ## Au quotidien
 ### Boire avant tout
 - **Petites gorgées régulières**, entre les prises alimentaires : eau fraîche, eau gazeuse, bouillon, infusion froide.
-- Essayez des **aliments riches en eau** : compote, soupe, fruit frais, yaourt.
-- Surveillez vos **urines** : rares et foncées, elles signalent un manque d’eau.
+- Essaie des **aliments riches en eau** : compote, soupe, fruit frais, yaourt.
+- Surveille tes **urines** : rares et foncées, elles signalent un manque d’eau.
 
 ### Manger ce qui passe
-- Petites quantités, souvent, de ce qui vous fait envie : féculents simples, biscuits secs, aliments froids et peu odorants.
-- Aérez, évitez les odeurs fortes, la fumée et la caféine.
+- Petites quantités, souvent, de ce qui te fait envie : féculents simples, biscuits secs, aliments froids et peu odorants.
+- Aère, évite les odeurs fortes, la fumée et la caféine.
 
-### Protéger vos dents
-Après un vomissement, rincez-vous la bouche à l’eau ou avec un bain de bouche au bicarbonate ou au fluor, puis attendez au moins une heure avant le brossage. Signalez-le à votre dentiste.
+### Protéger tes dents
+Après un vomissement, rince-toi la bouche à l’eau ou avec un bain de bouche au bicarbonate ou au fluor, puis attends au moins une heure avant le brossage. Signale-le à ton dentiste.
 
 ### Les traitements
 - **Aucun médicament sans avis médical**, y compris en vente libre.
-- Le médecin peut adapter vos compléments, proposer un traitement et organiser un suivi, parfois avec une infirmière à domicile.
+- Le médecin peut adapter tes compléments, proposer un traitement et organiser un suivi, parfois avec une infirmière à domicile.
 - L’aromathérapie est contre-indiquée pendant la grossesse.
 
 ### Se faire soutenir
-L’hyperémèse épuise physiquement et moralement. Demandez de l’aide pour les repas, les enfants, le travail : un arrêt de travail peut être discuté avec votre médecin. Des associations de patientes existent, citées par ameli.
+L’hyperémèse épuise physiquement et moralement. Demande de l’aide pour les repas, les enfants, le travail : un arrêt de travail peut être discuté avec ton médecin. Des associations de patientes existent, citées par ameli.
 
 ## Questions fréquentes
 **Comment savoir si j’ai perdu 5 % de mon poids ?**
-Divisez votre poids d’avant grossesse par 20 : c’est environ 5 %. Par exemple, 3 kg pour 60 kg. Pesez-vous et notez-le pour la consultation.
+Divise ton poids d’avant grossesse par 20 : c’est environ 5 %. Par exemple, 3 kg pour 60 kg. Pèse-toi et note-le pour la consultation.
 
 **L’hyperémèse est-elle dangereuse pour le bébé ?**
-L’important est qu’elle soit prise en charge. Les soins décrits par ameli visent d’abord à corriger la déshydratation et à apporter des vitamines (notamment B1) à la mère. Posez vos questions à l’équipe qui vous suit.
+L’important est qu’elle soit prise en charge. Les soins décrits par ameli visent d’abord à corriger la déshydratation et à apporter des vitamines (notamment B1) à la mère. Pose tes questions à l’équipe qui te suit.
 
 **Faut-il forcément être hospitalisée ?**
 Non. Ameli précise que l’hospitalisation n’est nécessaire qu’en cas d’hyperémèse grave.
@@ -402,7 +402,7 @@ Non. Ameli précise que l’hospitalisation n’est nécessaire qu’en cas d’
 Des vomissements nouveaux en fin de grossesse doivent faire consulter : ils peuvent avoir une autre cause.
 
 ## Quand demander conseil
-Consultez **le jour même** si vous ne gardez aucun liquide depuis plusieurs heures, si vos urines sont très rares ou foncées, si vous avez des vertiges, un malaise, une perte de poids, du sang dans les vomissements, de la fièvre ou des douleurs au ventre. Appelez le **15** ou le **112** en cas de malaise, de confusion ou de grande faiblesse. Si vous vous sentez à bout, le **3114** répond 24 h/24.
+Consulte **le jour même** si tu ne gardes aucun liquide depuis plusieurs heures, si tes urines sont très rares ou foncées, si tu as des vertiges, un malaise, une perte de poids, du sang dans les vomissements, de la fièvre ou des douleurs au ventre. Appelle le **15** ou le **112** en cas de malaise, de confusion ou de grande faiblesse. Si tu te sens à bout, le **3114** répond 24 h/24.
 
 ${FIN}`,
   }),
@@ -418,10 +418,10 @@ ${FIN}`,
 - **Moins de viande, plus de légumineuses** : c’est conforme aux repères et plus économique.
 - Les **surgelés nature** et les **conserves simples** de légumes ou de légumineuses sont de bons alliés.
 - Les **aliments enrichis** et produits « spécial grossesse » ne sont pas nécessaires.
-- Des **aides** existent : parlez-en à la PMI ou à une assistante sociale.
+- Des **aides** existent : parles-en à la PMI ou à une assistante sociale.
 
 ## Comprendre
-Manger équilibré pendant la grossesse ne demande pas de produits chers ou spécifiques. Santé publique France rappelle que les produits de saison sont généralement moins coûteux, et que manger moins de viande en privilégiant les produits de saison peut compenser le coût d’autres achats, comme le bio si vous le souhaitez et le pouvez.
+Manger équilibré pendant la grossesse ne demande pas de produits chers ou spécifiques. Santé publique France rappelle que les produits de saison sont généralement moins coûteux, et que manger moins de viande en privilégiant les produits de saison peut compenser le coût d’autres achats, comme le bio si tu le souhaites et le peux.
 
 Les repères 2026 sont simples : au moins cinq fruits et légumes par jour, des féculents chaque jour dont au moins un complet, des légumineuses au moins deux fois par semaine, deux produits laitiers par jour, du poisson deux fois par semaine, de l’eau à volonté. Plusieurs de ces aliments (lentilles, pois chiches, riz, pâtes, flocons d’avoine, carottes, pommes, œufs) font partie des moins chers du rayon.
 
@@ -433,7 +433,7 @@ Santé publique France précise aussi que les aliments enrichis et les compléme
 - **Fruits et légumes de saison**, au marché en fin de matinée ou en vrac.
 - **Surgelés nature** (épinards, haricots verts, filets de poisson) : pratiques, sans gaspillage.
 - **Conserves** de légumineuses et de légumes (à rincer pour réduire le sel), de tomates, de sardines ou de maquereau.
-- **Marques distributeur** : comparez le prix au kilo et le Nutri-Score.
+- **Marques distributeur** : compare le prix au kilo et le Nutri-Score.
 - **Fromage à pâte pressée cuite à la coupe** ou en bloc, plutôt que râpé en sachet (déconseillé pendant la grossesse).
 
 ### Cuisiner malin
@@ -446,23 +446,23 @@ Santé publique France précise aussi que les aliments enrichis et les compléme
 Petit-déjeuner : flocons d’avoine au lait, pomme. Midi : salade de lentilles, carottes râpées bien lavées, yaourt. Goûter : pain, fromage, fruit. Soir : soupe de légumes, omelette, pâtes, compote.
 
 ### Les aides
-La PMI de votre département propose un suivi gratuit pendant la grossesse. Une assistante sociale (CAF, mairie, maternité) peut vous informer sur vos droits et sur les aides alimentaires près de chez vous.
+La PMI de ton département propose un suivi gratuit pendant la grossesse. Une assistante sociale (CAF, mairie, maternité) peut t’informer sur tes droits et sur les aides alimentaires près de chez toi.
 
 ## Questions fréquentes
 **Le bio est-il indispensable ?**
 Non. Santé publique France le conseille pour les fruits, légumes, légumineuses et féculents s’il est accessible, mais l’important est de manger varié.
 
 **Les conserves sont-elles moins bonnes ?**
-Les légumes et légumineuses en conserve gardent un intérêt nutritionnel. Choisissez-les nature et rincez-les.
+Les légumes et légumineuses en conserve gardent un intérêt nutritionnel. Choisis-les nature et rince-les.
 
 **Les compléments « grossesse » valent-ils leur prix ?**
-Ils ne sont pas recommandés sans avis médical et peuvent exposer à un surdosage. Suivez ce que vous prescrit votre professionnel.
+Ils ne sont pas recommandés sans avis médical et peuvent exposer à un surdosage. Suis ce que toi prescrit ton professionnel.
 
 **Comment manger du poisson sans trop dépenser ?**
 Sardines, maquereaux, harengs (y compris en conserve) et filets surgelés sont abordables. Les poissons fumés restent à éviter.
 
 ## Quand demander conseil
-Si vous avez du mal à manger à votre faim, parlez-en sans gêne à votre sage-femme, à la PMI ou à une assistante sociale : des solutions existent. Consultez aussi en cas de perte de poids ou de grande fatigue. ${URG} En cas de détresse, le **3114** est joignable 24 h/24.
+Si tu as du mal à manger à ta faim, parles-en sans gêne à ta sage-femme, à la PMI ou à une assistante sociale : des solutions existent. Consulte aussi en cas de perte de poids ou de grande fatigue. ${URG} En cas de détresse, le **3114** est joignable 24 h/24.
 
 ${FIN}`,
   }),
@@ -474,37 +474,37 @@ ${FIN}`,
     sources: [S.santeAliments, S.spfBrochure, S.santeListeriose],
     body_md: `## En bref
 - Une **liste préparée** à l’avance évite les oublis et les achats impulsifs.
-- Au rayon frais, vérifiez le **mode de fabrication** (lait cru ou pasteurisé) et la **date limite de consommation**.
+- Au rayon frais, vérifie le **mode de fabrication** (lait cru ou pasteurisé) et la **date limite de consommation**.
 - Certains produits pratiques sont **à éviter** pendant la grossesse : fromage râpé en sachet, saumon fumé, tarama, crustacés décortiqués cuits.
 - Le **Nutri-Score** aide à comparer des produits d’une même catégorie.
-- Rangez les produits frais **au réfrigérateur dès le retour**.
+- Range les produits frais **au réfrigérateur dès le retour**.
 
 ## Comprendre
 Pendant la grossesse, deux infections d’origine alimentaire sont particulièrement surveillées : la **listériose** et la **toxoplasmose**. S’y ajoute la **salmonellose**. Une partie de la prévention se joue dès les courses, en choisissant les bons produits. Santé.fr rappelle aussi que la congélation ne détruit pas Listeria : un produit à risque reste à risque, même congelé.
 
 ## Au quotidien
 ### Rayon fruits et légumes
-Fruits et légumes de saison, frais, surgelés nature ou en conserve. Évitez les **graines germées** crues. Prévoyez de bien laver ce qui se mange cru.
+Fruits et légumes de saison, frais, surgelés nature ou en conserve. Évite les **graines germées** crues. Prévois de bien laver ce qui se mange cru.
 
 ### Rayon crèmerie
-- **Oui** : yaourts, fromage blanc, lait pasteurisé ou UHT, fromages à pâte pressée cuite (comté, emmental, beaufort, gruyère, parmesan) à râper vous-même.
+- **Oui** : yaourts, fromage blanc, lait pasteurisé ou UHT, fromages à pâte pressée cuite (comté, emmental, beaufort, gruyère, parmesan) à râper toi-même.
 - **Non** : fromages au lait cru, fromages à croûte fleurie ou lavée (camembert, brie, munster…), pâtes pressées non cuites à affinage court (reblochon, morbier…), fromage râpé en sachet, substituts végétaux de fromage.
 
 ### Rayon boucherie, traiteur, charcuterie
 - **Oui** : volaille, viandes à cuire, saucisses à cuire.
-- **Non** : rillettes, pâtés, foie gras, produits en gelée, saucisson sec, jambon sec, jambon cuit si vous ne le recuisez pas, plats traiteur à base d’œufs crus.
+- **Non** : rillettes, pâtés, foie gras, produits en gelée, saucisson sec, jambon sec, jambon cuit si tu ne le recuis pas, plats traiteur à base d’œufs crus.
 
 ### Rayon poissonnerie
-- **Oui** : poissons à cuire (cabillaud, merlu, lieu, saumon, sardine, maquereau, hareng, truite…), crustacés crus à cuire vous-même.
-- **Non** : poissons crus, fumés ou marinés, tarama, coquillages crus, crustacés décortiqués vendus cuits. Évitez espadon, marlin, siki, requin et lamproie ; limitez thon, bar, dorade, lotte, raie, anguille.
+- **Oui** : poissons à cuire (cabillaud, merlu, lieu, saumon, sardine, maquereau, hareng, truite…), crustacés crus à cuire toi-même.
+- **Non** : poissons crus, fumés ou marinés, tarama, coquillages crus, crustacés décortiqués vendus cuits. Évite espadon, marlin, siki, requin et lamproie ; limite thon, bar, dorade, lotte, raie, anguille.
 
 ### Épicerie
-Légumineuses, féculents complets, conserves de poisson, sel iodé, huiles de colza, de noix et d’olive, fruits à coque non salés. Évitez les produits au soja et les produits « anti-cholestérol » (phytostérols).
+Légumineuses, féculents complets, conserves de poisson, sel iodé, huiles de colza, de noix et d’olive, fruits à coque non salés. Évite les produits au soja et les produits « anti-cholestérol » (phytostérols).
 
 ### Lire l’étiquette
-- **DLC** (« à consommer jusqu’au ») : ne la dépassez jamais.
-- **Lait cru ou pasteurisé** : vérifiez-le sur l’emballage des fromages et produits laitiers.
-- **Nutri-Score** : comparez des produits similaires ; limitez ceux classés D et E.
+- **DLC** (« à consommer jusqu’au ») : ne la dépasse jamais.
+- **Lait cru ou pasteurisé** : vérifie-le sur l’emballage des fromages et produits laitiers.
+- **Nutri-Score** : compare des produits similaires ; limite ceux classés D et E.
 - **Liste d’ingrédients** : une liste courte signale souvent un produit peu transformé.
 
 ### Le retour à la maison
@@ -515,7 +515,7 @@ Sac isotherme pour les produits frais, rangement immédiat au réfrigérateur r�
 Non : Santé.fr et Santé publique France le citent parmi les préparations à base de poisson cru à éviter.
 
 **Les plats préparés sont-ils déconseillés ?**
-Non, à condition de les réchauffer bien chauds et de respecter la date limite. Choisissez-les avec un bon Nutri-Score.
+Non, à condition de les réchauffer bien chauds et de respecter la date limite. Choisis-les avec un bon Nutri-Score.
 
 **Un fromage pasteurisé à croûte fleurie convient-il ?**
 Santé.fr déconseille ces fromages pendant la grossesse, qu’ils soient au lait cru ou pasteurisé, sauf bien cuits (gratin, tarte chaude).
@@ -524,21 +524,21 @@ Santé.fr déconseille ces fromages pendant la grossesse, qu’ils soient au lai
 Ils suivent les mêmes règles : un fromage bio au lait cru reste à éviter.
 
 ## Quand demander conseil
-En cas de fièvre, de courbatures ou de symptômes ressemblant à une grippe pendant la grossesse, consultez rapidement : ce peut être une listériose, qui se soigne mieux quand elle est traitée tôt. ${URG}
+En cas de fièvre, de courbatures ou de symptômes ressemblant à une grippe pendant la grossesse, consulte rapidement : ce peut être une listériose, qui se soigne mieux quand elle est traitée tôt. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'repas-au-travail-enceinte-lunch-box',
     title: 'Enceinte au travail : bien gérer la pause déjeuner et la lunch box',
-    summary: 'Cantine, gamelle, sandwich ou distributeur : comment manger équilibré et en sécurité sur votre lieu de travail pendant la grossesse.',
+    summary: 'Cantine, gamelle, sandwich ou distributeur : comment manger équilibré et en sécurité sur ton lieu de travail pendant la grossesse.',
     category: 'alimentation-grossesse', tags: ['travail', 'lunch box', 'gamelle', 'cantine', 'pause déjeuner', 'sandwich', 'collation'],
     sources: [S.santeAliments, S.ansesFrigo, S.spfBrochure],
     body_md: `## En bref
 - Une **lunch box** préparée la veille garde ses qualités si elle reste **au frais** jusqu’au repas.
-- Au **restaurant d’entreprise**, préférez les plats **cuits** et servis chauds.
-- Prévoyez des **collations** simples pour éviter les fringales.
-- **Ne sautez pas** le déjeuner, même en cas de réunion ou de nausées.
+- Au **restaurant d’entreprise**, préfère les plats **cuits** et servis chauds.
+- Prévois des **collations** simples pour éviter les fringales.
+- **Ne saute pas** le déjeuner, même en cas de réunion ou de nausées.
 
 ## Comprendre
 Pendant la grossesse, il est recommandé de prendre trois repas par jour sans en sauter, pour éviter les fringales et garder une énergie stable. Au travail, cela se heurte parfois aux horaires, au manque de réfrigérateur ou à une cantine peu adaptée. Quelques réflexes permettent de garder des repas variés tout en respectant les précautions de la grossesse : cuisson, conservation au froid et lavage des crudités.
@@ -547,43 +547,43 @@ L’Anses rappelle que les aliments doivent être conservés entre 0 et 4 °C au
 
 ## Au quotidien
 ### La lunch box
-- **Préparez-la la veille** et mettez-la tout de suite au réfrigérateur.
+- **Prépare-la la veille** et mets-la tout de suite au réfrigérateur.
 - **Transport** : sac isotherme avec pain de glace, surtout s’il fait chaud.
-- **Sur place** : rangez-la au réfrigérateur dès votre arrivée. Sans frigo, choisissez des aliments qui se conservent mieux (fromage à pâte pressée cuite, pain, fruits, légumes cuits) et gardez le sac isotherme fermé.
+- **Sur place** : range-la au réfrigérateur dès ton arrivée. Sans frigo, choisis des aliments qui se conservent mieux (fromage à pâte pressée cuite, pain, fruits, légumes cuits) et garde le sac isotherme fermé.
 - **Réchauffage** : bien chaud et à cœur, en remuant à mi-cuisson au micro-ondes.
 - Idées : salade de pâtes complètes, poulet rôti et légumes grillés ; riz, lentilles et carottes au cumin ; quiche maison bien cuite et salade ; restes de la veille réchauffés.
 
 ### La cantine ou le restaurant d’entreprise
 - **Plats chauds** cuits : viande ou poisson bien cuits, légumes cuits, féculents.
-- **Crudités** : si vous ne savez pas comment elles ont été lavées, Santé.fr conseille de les éviter et de préférer les légumes cuits.
-- **Fromages** : choisissez une pâte pressée cuite ou un yaourt.
-- **Desserts** : évitez les mousses et tiramisus maison à base d’œufs crus ; fruit, compote, yaourt sont de bons choix.
-- N’hésitez pas à **demander** comment un plat est préparé.
+- **Crudités** : si tu ne sais pas comment elles ont été lavées, Santé.fr conseille de les éviter et de préférer les légumes cuits.
+- **Fromages** : choisis une pâte pressée cuite ou un yaourt.
+- **Desserts** : évite les mousses et tiramisus maison à base d’œufs crus ; fruit, compote, yaourt sont de bons choix.
+- N’hésite pas à **demander** comment un plat est préparé.
 
 ### Le sandwich
-Pain (complet si possible), poulet ou œuf dur bien cuits, fromage à pâte pressée cuite, légumes lavés. Évitez jambon cru, saumon fumé, tarama et sauce mayonnaise maison.
+Pain (complet si possible), poulet ou œuf dur bien cuits, fromage à pâte pressée cuite, légumes lavés. Évite jambon cru, saumon fumé, tarama et sauce mayonnaise maison.
 
 ### Collations au bureau
-Fruits, compotes en gourde, fruits à coque non salés, pain complet, biscuits secs simples. Une bouteille d’eau sur le bureau aide à boire régulièrement. Évitez les distributeurs de boissons sucrées et limitez les cafés (3 tasses maximum par jour).
+Fruits, compotes en gourde, fruits à coque non salés, pain complet, biscuits secs simples. Une bouteille d’eau sur le bureau aide à boire régulièrement. Évite les distributeurs de boissons sucrées et limite les cafés (3 tasses maximum par jour).
 
 ### Les nausées au travail
-Grignotez de petites quantités régulièrement, aérez, sortez quelques minutes. Si les nausées gênent votre travail, parlez-en à votre médecin : le médecin du travail peut aussi proposer des aménagements.
+Grignote de petites quantités régulièrement, aère, sors quelques minutes. Si les nausées gênent ton travail, parles-en à ton médecin : le médecin du travail peut aussi proposer des aménagements.
 
 ## Questions fréquentes
 **Puis-je réchauffer deux fois un plat ?**
-Mieux vaut réchauffer seulement la portion que vous mangez, une seule fois, bien chaud.
+Mieux vaut réchauffer seulement la portion que tu manges, une seule fois, bien chaud.
 
 **Combien de temps une gamelle peut-elle rester hors du frigo ?**
 Le moins longtemps possible : au-delà de deux heures à température ambiante, les microbes peuvent se multiplier.
 
 **Ma cantine sert du poisson cru (tartare, sushis), que faire ?**
-Choisissez un autre plat : le poisson cru est déconseillé pendant la grossesse.
+Choisis un autre plat : le poisson cru est déconseillé pendant la grossesse.
 
 **J’ai faim en milieu de matinée, est-ce gênant ?**
 Non : une collation peut s’intégrer, comme un yaourt ou un fruit.
 
 ## Quand demander conseil
-Consultez en cas de fièvre, de douleurs, de vomissements importants ou de malaise au travail. ${URG} Pour adapter votre poste ou vos horaires, adressez-vous au médecin du travail.
+Consulte en cas de fièvre, de douleurs, de vomissements importants ou de malaise au travail. ${URG} Pour adapter ton poste ou tes horaires, adresse-toi au médecin du travail.
 
 ${FIN}`,
   }),
@@ -595,11 +595,11 @@ ${FIN}`,
     category: 'alimentation-grossesse', tags: ['restaurant', 'carte', 'menu', 'sortie', 'cuisson', 'crudités', 'dessert'],
     sources: [S.santeAliments, S.ameliToxo, S.spfBrochure],
     body_md: `## En bref
-- Au restaurant, on ne sait pas toujours comment les **crudités** ont été lavées : préférez les **légumes cuits**.
-- Demandez une **viande bien cuite**, sans partie rosée, et un **poisson cuit**.
-- Fromages : choisissez les **pâtes pressées cuites** ou passez au dessert.
-- Méfiez-vous des desserts **maison à base d’œufs crus** et des plats **flambés ou alcoolisés**.
-- **N’hésitez pas à demander** comment les plats sont préparés.
+- Au restaurant, on ne sait pas toujours comment les **crudités** ont été lavées : préfère les **légumes cuits**.
+- Demande une **viande bien cuite**, sans partie rosée, et un **poisson cuit**.
+- Fromages : choisis les **pâtes pressées cuites** ou passe au dessert.
+- Méfie-toi des desserts **maison à base d’œufs crus** et des plats **flambés ou alcoolisés**.
+- **N’hésite pas à demander** comment les plats sont préparés.
 
 ## Comprendre
 Sortir au restaurant reste un plaisir pendant la grossesse. Les précautions sont les mêmes qu’à la maison, avec une difficulté : on ne maîtrise ni le lavage, ni la cuisson, ni la conservation. Ameli conseille, au restaurant ou chez des amis, d’éviter les crudités et de préférer les légumes cuits, et de consommer la viande bien cuite. Santé.fr ajoute qu’on peut éviter les fruits, légumes et herbes crus dont on ne connaît pas le lavage.
@@ -612,35 +612,35 @@ L’alcool est à éviter totalement, y compris dans les plats et desserts : San
 - **À éviter** : carpaccio, tartare, poisson cru ou mariné (ceviche, gravlax), saumon fumé, huîtres et coquillages crus, foie gras, terrines et pâtés, charcuterie sèche, salades crues dont le lavage est inconnu.
 
 ### Les plats
-- Demandez une **cuisson à cœur** pour la viande : « bien cuite », y compris pour le burger et l’entrecôte.
-- **Poissons cuits** : grillés, au four, en papillote. Évitez espadon, marlin, requin.
-- **Crustacés et coquillages** : seulement bien cuits ; évitez les crustacés décortiqués servis froids.
+- Demande une **cuisson à cœur** pour la viande : « bien cuite », y compris pour le burger et l’entrecôte.
+- **Poissons cuits** : grillés, au four, en papillote. Évite espadon, marlin, requin.
+- **Crustacés et coquillages** : seulement bien cuits ; évite les crustacés décortiqués servis froids.
 - **Œufs** : omelette bien cuite, pas d’œuf mollet, poché ou au plat avec jaune coulant.
-- **Sauces** : méfiez-vous de la mayonnaise, de l’aïoli, de la sauce béarnaise ou hollandaise maison, souvent préparées avec des œufs peu cuits. Demandez.
+- **Sauces** : méfie-toi de la mayonnaise, de l’aïoli, de la sauce béarnaise ou hollandaise maison, souvent préparées avec des œufs peu cuits. Demande.
 - **Restaurant japonais** : makis aux légumes, à l’omelette bien cuite, brochettes cuites, riz, poisson cuit. Santé publique France recommande d’éviter les produits à base de soja ; la sauce soja reste possible de temps en temps.
 
 ### Fromages et desserts
 - Fromages à pâte pressée cuite (comté, beaufort, emmental, parmesan), sans la croûte. Fromage fondu bien chaud (tartiflette, raclette, gratin) convient aussi.
-- Desserts : préférez tartes cuites, crème brûlée ou flan cuits, sorbets, fruits cuits. Évitez mousse au chocolat, tiramisu, île flottante ou crème anglaise maison si les œufs sont peu cuits, et les desserts flambés ou au rhum.
+- Desserts : préfère tartes cuites, crème brûlée ou flan cuits, sorbets, fruits cuits. Évite mousse au chocolat, tiramisu, île flottante ou crème anglaise maison si les œufs sont peu cuits, et les desserts flambés ou au rhum.
 
 ### Les boissons
-Eau plate ou gazeuse, jus en petit verre, cocktails sans alcool. Pas de vin, même un verre. Limitez le café (3 tasses maximum par jour, en comptant ceux de la journée).
+Eau plate ou gazeuse, jus en petit verre, cocktails sans alcool. Pas de vin, même un verre. Limite le café (3 tasses maximum par jour, en comptant ceux de la journée).
 
 ### Oser demander
 Une phrase simple suffit : « Je suis enceinte, pouvez-vous me dire si ce plat contient des œufs crus / du fromage au lait cru, et cuire la viande à cœur ? »
 
 ## Questions fréquentes
 **Les pizzas sont-elles autorisées ?**
-Oui, bien cuites et servies chaudes. Évitez les garnitures ajoutées après cuisson, comme le jambon cru, le saumon fumé ou des crudités dont vous ignorez le lavage.
+Oui, bien cuites et servies chaudes. Évite les garnitures ajoutées après cuisson, comme le jambon cru, le saumon fumé ou des crudités dont tu ignores le lavage.
 
 **Puis-je manger une raclette ?**
-Le fromage bien fondu et chaud convient ; évitez la charcuterie crue ou sèche et choisissez du jambon cuit recuit ou du poulet.
+Le fromage bien fondu et chaud convient ; évite la charcuterie crue ou sèche et choisis du jambon cuit recuit ou du poulet.
 
 **Le restaurant ne sait pas me répondre, que faire ?**
-Choisissez le plat le plus simple et le plus cuit possible.
+Choisis le plat le plus simple et le plus cuit possible.
 
 ## Quand demander conseil
-Si vous avez de la fièvre, des courbatures, des diarrhées ou des vomissements dans les jours ou semaines qui suivent un repas, consultez votre médecin ou votre sage-femme en précisant que vous êtes enceinte. ${URG}
+Si tu as de la fièvre, des courbatures, des diarrhées ou des vomissements dans les jours ou semaines qui suivent un repas, consulte ton médecin ou ta sage-femme en précisant que tu es enceinte. ${URG}
 
 ${FIN}`,
   }),
@@ -651,8 +651,8 @@ ${FIN}`,
     category: 'alimentation-grossesse', tags: ['fast-food', 'livraison', 'plats à emporter', 'burger', 'pizza', 'kebab', 'poke bowl', 'sushis'],
     sources: [S.santeAliments, S.ameliToxo, S.santeListeriose],
     body_md: `## En bref
-- Les repas tout prêts dépannent : choisissez des plats **cuits et servis chauds**.
-- Évitez les garnitures **crues** (poisson, viande, œuf) et les sauces à base d’**œufs crus** maison.
+- Les repas tout prêts dépannent : choisis des plats **cuits et servis chauds**.
+- Évite les garnitures **crues** (poisson, viande, œuf) et les sauces à base d’**œufs crus** maison.
 - Un plat livré doit être **mangé rapidement** ou mis au **réfrigérateur sans tarder**.
 - Les **restes** se réchauffent bien chauds et se consomment rapidement.
 
@@ -663,21 +663,21 @@ Santé.fr rappelle que la listériose est favorisée par une mauvaise conservati
 
 ## Au quotidien
 ### Selon le type de repas
-- **Burger** : steak bien cuit (à demander), poulet cuit ou version végétarienne. Retirez la salade crue si vous doutez de son lavage. Les sauces industrielles en sachet sont préférables aux sauces maison à base d’œufs crus.
-- **Pizza** : bien cuite, servie chaude. Évitez les ingrédients ajoutés après cuisson (jambon cru, saumon fumé, crudités dont le lavage est incertain).
+- **Burger** : steak bien cuit (à demander), poulet cuit ou version végétarienne. Retire la salade crue si tu doutes de son lavage. Les sauces industrielles en sachet sont préférables aux sauces maison à base d’œufs crus.
+- **Pizza** : bien cuite, servie chaude. Évite les ingrédients ajoutés après cuisson (jambon cru, saumon fumé, crudités dont le lavage est incertain).
 - **Kebab, tacos, wrap** : viande bien cuite et chaude, crudités à éviter si le lavage est incertain.
-- **Cuisine asiatique** : riz sauté, nouilles, currys, plats mijotés, raviolis cuits. Évitez sushis et sashimis au poisson cru ainsi que les plats à base de tofu ou de soja, que Santé.fr déconseille pendant la grossesse (la sauce soja occasionnelle reste possible).
-- **Poke bowl** : choisissez une version au poulet ou au poisson cuit, avec des légumes cuits, et évitez le poisson cru.
-- **Boulangerie** : quiche ou tarte salée réchauffées, sandwich au poulet ou à l’œuf dur, fromage à pâte pressée cuite. Évitez sandwichs au jambon cru ou au saumon fumé.
-- **Plats traiteur en barquette** : vérifiez la date limite, réchauffez à cœur.
+- **Cuisine asiatique** : riz sauté, nouilles, currys, plats mijotés, raviolis cuits. Évite sushis et sashimis au poisson cru ainsi que les plats à base de tofu ou de soja, que Santé.fr déconseille pendant la grossesse (la sauce soja occasionnelle reste possible).
+- **Poke bowl** : choisis une version au poulet ou au poisson cuit, avec des légumes cuits, et évite le poisson cru.
+- **Boulangerie** : quiche ou tarte salée réchauffées, sandwich au poulet ou à l’œuf dur, fromage à pâte pressée cuite. Évite sandwichs au jambon cru ou au saumon fumé.
+- **Plats traiteur en barquette** : vérifie la date limite, réchauffe à cœur.
 
 ### La livraison
-- Mangez **dès réception**, ou placez le plat au réfrigérateur **dans les deux heures**.
-- Réchauffez **bien chaud et à cœur**, en remuant.
-- Ne gardez pas les restes plus de **trois jours** au réfrigérateur, selon Santé publique France.
+- Mange **dès réception**, ou place le plat au réfrigérateur **dans les deux heures**.
+- Réchauffe **bien chaud et à cœur**, en remuant.
+- Ne garde pas les restes plus de **trois jours** au réfrigérateur, selon Santé publique France.
 
 ### L’équilibre
-Un repas rapide de temps en temps ne déséquilibre pas une semaine. Complétez-le par un fruit, un yaourt, et privilégiez l’eau plutôt que les sodas (Santé publique France recommande au maximum un verre de boisson sucrée par jour, light compris). Pour le repas suivant, misez sur des légumes et des féculents complets.
+Un repas rapide de temps en temps ne déséquilibre pas une semaine. Complète-le par un fruit, un yaourt, et privilégie l’eau plutôt que les sodas (Santé publique France recommande au maximum un verre de boisson sucrée par jour, light compris). Pour le repas suivant, mise sur des légumes et des féculents complets.
 
 ## Questions fréquentes
 **Les frites sont-elles autorisées ?**
@@ -687,13 +687,13 @@ Oui, elles ne posent pas de problème de sécurité. Elles sont simplement grass
 Santé publique France recommande de les éviter pendant la grossesse.
 
 **Un plat livré tiède est-il encore bon ?**
-Réchauffez-le bien chaud avant de le manger, surtout s’il contient viande, poisson, œufs ou riz.
+Réchauffe-le bien chaud avant de le manger, surtout s’il contient viande, poisson, œufs ou riz.
 
 **Et les sushis cuits ?**
-Les makis à l’omelette bien cuite, aux légumes, à la crevette cuite par le restaurant ou au poisson cuit sont des options ; demandez la composition.
+Les makis à l’omelette bien cuite, aux légumes, à la crevette cuite par le restaurant ou au poisson cuit sont des options ; demande la composition.
 
 ## Quand demander conseil
-Consultez si vous présentez de la fièvre, des courbatures, des diarrhées ou des vomissements après un repas, en signalant votre grossesse. Consultez rapidement en cas de signes de déshydratation (urines rares et foncées, grande soif, vertiges) ou de forte douleur. ${URG}
+Consulte si tu présentes de la fièvre, des courbatures, des diarrhées ou des vomissements après un repas, en signalant ta grossesse. Consulte rapidement en cas de signes de déshydratation (urines rares et foncées, grande soif, vertiges) ou de forte douleur. ${URG}
 
 ${FIN}`,
   }),
@@ -707,7 +707,7 @@ ${FIN}`,
 - Plusieurs classiques des fêtes sont à éviter pendant la grossesse : **foie gras, huîtres et coquillages crus, saumon fumé, fromages au lait cru ou à croûte fleurie, alcool**.
 - Il existe de nombreuses **alternatives festives** et sûres.
 - Les **desserts maison à base d’œufs crus** et les desserts alcoolisés sont à éviter.
-- Prévenez vos hôtes à l’avance : c’est plus simple pour tout le monde.
+- Préviens tes hôtes à l’avance : c’est plus simple pour tout le monde.
 
 ## Comprendre
 Les menus de fête concentrent beaucoup d’aliments concernés par les précautions de la grossesse. Le **foie gras** et les produits en gelée sont cités par Santé.fr parmi les charcuteries à éviter (risque de listériose) ; le foie est aussi déconseillé en raison de sa richesse en vitamine A. Les **huîtres et autres coquillages crus**, le **saumon fumé ou mariné** et les **crustacés décortiqués vendus cuits** sont à éviter. Les **fromages** au lait cru, à croûte fleurie ou lavée sont déconseillés. Enfin, **zéro alcool** : aucun seuil n’est établi, et l’alcool persiste en partie dans les plats cuisinés et desserts.
@@ -730,10 +730,10 @@ Comté, beaufort, emmental, gruyère, parmesan, sans la croûte. Un fromage chau
 - **À éviter** : mousse au chocolat, tiramisu, bûche à la crème au beurre maison si les œufs ne sont pas cuits, desserts au rhum ou flambés. Les versions industrielles de ces desserts sont, selon Santé.fr, considérées comme peu à risque pour la salmonellose.
 
 ### Boissons
-Cocktails de jus et d’eau gazeuse, infusions glacées, boissons pétillantes sans alcool. Pensez aussi à boire de l’eau régulièrement au cours de ces longs repas.
+Cocktails de jus et d’eau gazeuse, infusions glacées, boissons pétillantes sans alcool. Pense aussi à boire de l’eau régulièrement au cours de ces longs repas.
 
 ### Le rythme des fêtes
-Les repas s’enchaînent et se prolongent : servez-vous de petites portions, levez-vous entre les plats, marchez un peu dans la journée. Les remontées acides sont fréquentes après un repas copieux ; attendre avant de vous coucher peut aider.
+Les repas s’enchaînent et se prolongent : sers-toi de petites portions, lève-toi entre les plats, marche un peu dans la journée. Les remontées acides sont fréquentes après un repas copieux ; attendre avant de te coucher peut aider.
 
 ## Questions fréquentes
 **Le foie gras mi-cuit en conserve est-il autorisé ?**
@@ -743,16 +743,16 @@ Santé.fr cite le foie gras parmi les charcuteries à éviter, et Santé publiqu
 Seulement bien cuites à cœur. Ameli conseille d’éviter les moules, huîtres et autres mollusques crus.
 
 **Un fond de champagne pour trinquer ?**
-Les autorités de santé recommandent zéro alcool pendant toute la grossesse. Trinquez avec une boisson pétillante sans alcool.
+Les autorités de santé recommandent zéro alcool pendant toute la grossesse. Trinque avec une boisson pétillante sans alcool.
 
 **La dinde aux marrons d’un traiteur ?**
 Oui, réchauffée bien chaude et consommée rapidement.
 
 **Que faire des restes du réveillon ?**
-Mettez-les au réfrigérateur dans les deux heures, gardez-les trois jours au maximum et réchauffez-les à cœur. Les plateaux restés longtemps sur la table sont à jeter.
+Mets-les au réfrigérateur dans les deux heures, garde-les trois jours au maximum et réchauffe-les à cœur. Les plateaux restés longtemps sur la table sont à jeter.
 
 ## Quand demander conseil
-Après les fêtes, consultez si vous avez de la fièvre, des courbatures, des maux de ventre, des diarrhées ou des vomissements. ${URG} Si l’ambiance des fêtes est difficile à vivre (fatigue, solitude, tensions), parlez-en à votre sage-femme ; le **3114** répond aussi 24 h/24.
+Après les fêtes, consulte si tu as de la fièvre, des courbatures, des maux de ventre, des diarrhées ou des vomissements. ${URG} Si l’ambiance des fêtes est difficile à vivre (fatigue, solitude, tensions), parles-en à ta sage-femme ; le **3114** répond aussi 24 h/24.
 
 ${FIN}`,
   }),
@@ -764,83 +764,83 @@ ${FIN}`,
     sources: [S.ameliToxo, S.ansesFrigo, S.santeAliments],
     body_md: `## En bref
 - Au barbecue, la viande doit être **cuite à cœur**, sans jus rosé : l’extérieur grillé ne suffit pas.
-- Utilisez des **ustensiles et plats différents** pour le cru et le cuit.
-- En pique-nique, gardez les aliments au **frais** dans une glacière et ne les laissez pas au soleil.
-- Lavez soigneusement **fruits, légumes et herbes** ; en cas de doute, préférez-les cuits.
-- Pensez à **boire** régulièrement quand il fait chaud.
+- Utilise des **ustensiles et plats différents** pour le cru et le cuit.
+- En pique-nique, garde les aliments au **frais** dans une glacière et ne les laisse pas au soleil.
+- Lave soigneusement **fruits, légumes et herbes** ; en cas de doute, préfère-les cuits.
+- Pense à **boire** régulièrement quand il fait chaud.
 
 ## Comprendre
 L’été multiplie les repas dehors, souvent plus difficiles à maîtriser. Deux points comptent particulièrement pendant la grossesse. La **cuisson** : ameli recommande de cuire la viande à cœur, à plus de 68 °C, sans jus rosé à la coupe, pour prévenir la toxoplasmose. Or le barbecue saisit vite l’extérieur, alors que le centre peut rester cru. La **chaîne du froid** : l’Anses rappelle que les aliments périssables se conservent entre 0 et 4 °C, et qu’un plat ne doit pas rester plus de deux heures à température ambiante avant d’être réfrigéré. Par forte chaleur, les microbes se multiplient plus vite.
 
 ## Au quotidien
 ### Au barbecue
-- **Coupez** un morceau au centre pour vérifier : la chair doit être uniforme, sans partie rouge ou rosée, et le jus clair.
-- Préférez les **morceaux fins** (brochettes, émincés, saucisses à cuire) qui cuisent plus régulièrement, ou précuisez au four.
-- **Évitez** les viandes marinées crues servies peu cuites, et ne réutilisez pas la marinade crue comme sauce sans la faire bouillir.
-- **Deux plats** : un pour la viande crue, un propre pour la viande cuite. Lavez la pince entre les deux usages.
+- **Coupe** un morceau au centre pour vérifier : la chair doit être uniforme, sans partie rouge ou rosée, et le jus clair.
+- Préfère les **morceaux fins** (brochettes, émincés, saucisses à cuire) qui cuisent plus régulièrement, ou précuis au four.
+- **Évite** les viandes marinées crues servies peu cuites, et ne réutilise pas la marinade crue comme sauce sans la faire bouillir.
+- **Deux plats** : un pour la viande crue, un propre pour la viande cuite. Lave la pince entre les deux usages.
 - **Poisson** : bien cuit, qui se détache en lamelles.
-- **Lavez-vous les mains** après avoir manipulé la viande crue.
+- **Lave-toi les mains** après avoir manipulé la viande crue.
 
 ### En pique-nique
-- **Glacière ou sac isotherme** avec pains de glace ; ouvrez-la le moins possible.
-- **Préparez la veille** et gardez au réfrigérateur jusqu’au départ.
+- **Glacière ou sac isotherme** avec pains de glace ; ouvre-la le moins possible.
+- **Prépare la veille** et garde au réfrigérateur jusqu’au départ.
 - **Aliments pratiques** : salade de pâtes ou de riz, taboulé, poulet rôti froid, œufs durs, tortilla bien cuite, fromage à pâte pressée cuite, légumes cuits, fruits lavés à la maison, pain.
 - **À éviter** : charcuterie sèche, pâtés et rillettes, salades composées à la mayonnaise maison, fromages au lait cru ou à croûte fleurie.
-- Jetez ce qui est resté **longtemps au soleil**.
+- Jette ce qui est resté **longtemps au soleil**.
 
 ### Salades composées
-Lavez soigneusement les crudités et les herbes à l’eau claire (ameli précise que le vinaigre n’est pas nécessaire). Évitez les graines germées crues. Ajoutez du poulet bien cuit, des œufs durs, du thon en conserve (à limiter) ou des pois chiches.
+Lave soigneusement les crudités et les herbes à l’eau claire (ameli précise que le vinaigre n’est pas nécessaire). Évite les graines germées crues. Ajoute du poulet bien cuit, des œufs durs, du thon en conserve (à limiter) ou des pois chiches.
 
 ### Chaleur
-Buvez souvent, même sans soif, mangez des aliments riches en eau (melon, pastèque, concombre lavés, soupes froides) et restez à l’ombre aux heures chaudes.
+Bois souvent, même sans soif, mange des aliments riches en eau (melon, pastèque, concombre lavés, soupes froides) et reste à l’ombre aux heures chaudes.
 
 ## Questions fréquentes
 **Les merguez et chipolatas sont-elles autorisées ?**
-Oui, ce sont des charcuteries à cuire : faites-les cuire complètement, jusqu’au centre.
+Oui, ce sont des charcuteries à cuire : fais-les cuire complètement, jusqu’au centre.
 
 **Le melon est-il déconseillé ?**
-Il ne figure pas parmi les aliments à éviter listés par Santé.fr. Lavez l’écorce avant de le couper et conservez-le au frais une fois entamé.
+Il ne figure pas parmi les aliments à éviter listés par Santé.fr. Lave l’écorce avant de le couper et conserve-le au frais une fois entamé.
 
 **La glace du marchand ambulant ?**
-Choisissez de préférence une glace emballée et vérifiez qu’elle est bien congelée.
+Choisis de préférence une glace emballée et vérifie qu’elle est bien congelée.
 
 **Je n’ai pas de glacière, que prévoir ?**
 Des aliments qui supportent mieux la température : fruits entiers, pain, fromage à pâte pressée cuite, fruits secs, biscuits.
 
 ## Quand demander conseil
-Consultez en cas de fièvre, de courbatures, de diarrhée ou de vomissements après un repas. Par forte chaleur, des maux de tête, des vertiges, une grande soif ou un malaise doivent faire consulter rapidement. ${URG}
+Consulte en cas de fièvre, de courbatures, de diarrhée ou de vomissements après un repas. Par forte chaleur, des maux de tête, des vertiges, une grande soif ou un malaise doivent faire consulter rapidement. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'repas-chez-les-autres-enceinte-oser-dire',
     title: 'Manger chez la famille ou des amis enceinte : oser en parler',
-    summary: 'Comment prévenir vos hôtes, refuser un plat sans vexer et proposer des solutions simples pour que les repas partagés restent agréables pendant la grossesse.',
+    summary: 'Comment prévenir tes hôtes, refuser un plat sans vexer et proposer des solutions simples pour que les repas partagés restent agréables pendant la grossesse.',
     category: 'alimentation-grossesse', tags: ['repas de famille', 'invitation', 'amis', 'dire non', 'belle-famille', 'précautions'],
     sources: [S.ameliToxo, S.santeAliments],
     body_md: `## En bref
-- Prévenir vos hôtes **à l’avance** facilite tout : ils peuvent adapter le menu.
-- Vous n’avez pas à annoncer votre grossesse si vous ne le souhaitez pas : un simple « je ne mange pas ça en ce moment » suffit.
-- Au moment du repas, privilégiez les **plats cuits** et servis chauds.
-- **Proposez d’apporter** un plat ou un dessert : vous êtes sûre d’avoir quelque chose qui vous convient.
+- Prévenir tes hôtes **à l’avance** facilite tout : ils peuvent adapter le menu.
+- Tu n’as pas à annoncer ta grossesse si tu ne le souhaites pas : un simple « je ne mange pas ça en ce moment » suffit.
+- Au moment du repas, privilégie les **plats cuits** et servis chauds.
+- **Propose d’apporter** un plat ou un dessert : tu es sûre d’avoir quelque chose qui te convient.
 
 ## Comprendre
 Les précautions alimentaires de la grossesse ne sont pas toujours connues de l’entourage, et elles ont évolué au fil des années. Une grand-mère peut proposer de bonne foi un foie gras maison ou des œufs mimosa à la mayonnaise faite main. Ameli conseille, au restaurant comme chez des amis, d’éviter les crudités et de préférer les légumes cuits, et de consommer la viande bien cuite. Santé.fr liste les aliments à éviter : fromages au lait cru ou à croûte fleurie, charcuteries prêtes à consommer, viande, poisson et coquillages crus, poisson fumé, œufs crus ou peu cuits et préparations maison qui en contiennent, alcool.
 
-Dire non à un plat n’est pas impoli : c’est une façon de prendre soin de vous et de votre bébé.
+Dire non à un plat n’est pas impoli : c’est une façon de prendre soin de toi et de ton bébé.
 
 ## Au quotidien
 ### Avant le repas
 - **Un message simple** : « Je suis enceinte et je dois éviter les fromages au lait cru, le poisson cru, la charcuterie et les œufs crus. Ne vous inquiétez pas, il y aura plein de choses que je pourrai manger ! »
-- **Si vous ne voulez pas l’annoncer** : « Je suis un régime particulier en ce moment » ou « je ne digère pas bien certains aliments ».
-- **Proposez d’apporter** quelque chose : une salade de légumes cuits, un gâteau, un fromage à pâte pressée cuite, une boisson sans alcool.
+- **Si tu ne veux pas l’annoncer** : « Je suis un régime particulier en ce moment » ou « je ne digère pas bien certains aliments ».
+- **Propose d’apporter** quelque chose : une salade de légumes cuits, un gâteau, un fromage à pâte pressée cuite, une boisson sans alcool.
 
 ### Pendant le repas
-- **Servez-vous vous-même** pour choisir les morceaux bien cuits.
-- **Demandez discrètement** si la mayonnaise ou la mousse sont faites maison.
-- **Viande** : demandez un morceau du bord ou bien cuit, ou remettez-le à cuire.
-- **Fromages** : prenez une pâte pressée cuite et retirez la croûte.
-- **Alcool** : un verre d’eau pétillante dans un verre à pied passe inaperçu si vous préférez.
+- **Sers-toi toi-même** pour choisir les morceaux bien cuits.
+- **Demande discrètement** si la mayonnaise ou la mousse sont faites maison.
+- **Viande** : demande un morceau du bord ou bien cuit, ou remets-le à cuire.
+- **Fromages** : prends une pâte pressée cuite et retire la croûte.
+- **Alcool** : un verre d’eau pétillante dans un verre à pied passe inaperçu si tu préfères.
 
 ### Les phrases qui aident
 - « Merci, ça a l’air délicieux, mais je vais me régaler avec le reste. »
@@ -848,57 +848,57 @@ Dire non à un plat n’est pas impoli : c’est une façon de prendre soin de v
 - « J’en reprendrai avec plaisir après la naissance ! »
 
 ### Si l’on insiste
-Restez simple et ferme. Un partenaire ou un proche peut relayer pour vous. Les recommandations officielles sont faciles à montrer, par exemple sur ameli.fr ou sante.fr.
+Reste simple et ferme. Un partenaire ou un proche peut relayer pour toi. Les recommandations officielles sont faciles à montrer, par exemple sur ameli.fr ou sante.fr.
 
 ## Questions fréquentes
 **J’ai mangé par erreur un aliment déconseillé, que faire ?**
-Pas de panique. Surveillez l’apparition de fièvre, de courbatures, de troubles digestifs dans les semaines qui suivent et parlez-en à votre sage-femme ou à votre médecin.
+Pas de panique. Surveille l’apparition de fièvre, de courbatures, de troubles digestifs dans les semaines qui suivent et parles-en à ta sage-femme ou à ton médecin.
 
 **Puis-je manger les légumes crus si c’est moi qui les ai lavés ?**
 Oui, s’ils ont été soigneusement lavés à l’eau.
 
 **Les crudités préparées par mes hôtes ?**
-Si vous ne savez pas comment elles ont été lavées, préférez les légumes cuits.
+Si tu ne sais pas comment elles ont été lavées, préfère les légumes cuits.
 
 **Et si on me reproche d’en faire trop ?**
-Ces précautions sont celles recommandées par les autorités de santé françaises. Vous avez le droit de les appliquer sans vous justifier.
+Ces précautions sont celles recommandées par les autorités de santé françaises. Tu as le droit de les appliquer sans te justifier.
 
 ## Quand demander conseil
-Si vous avez de la fièvre, des courbatures ou des troubles digestifs après un repas, consultez en précisant que vous êtes enceinte. ${URG} Si les remarques de l’entourage vous pèsent, parlez-en à votre sage-femme ; le **3114** est joignable 24 h/24 en cas de détresse.
+Si tu as de la fièvre, des courbatures ou des troubles digestifs après un repas, consulte en précisant que tu es enceinte. ${URG} Si les remarques de l’entourage te pèsent, parles-en à ta sage-femme ; le **3114** est joignable 24 h/24 en cas de détresse.
 
 ${FIN}`,
   }),
   a({
     slug: 'ramadan-jeune-grossesse',
     title: 'Ramadan et jeûne pendant la grossesse : en parler avant de décider',
-    summary: 'Jeûner enceinte soulève des questions d’hydratation, d’énergie et de suivi médical : les points à aborder avec votre sage-femme ou votre médecin et des repères pour les repas.',
+    summary: 'Jeûner enceinte soulève des questions d’hydratation, d’énergie et de suivi médical : les points à aborder avec ta sage-femme ou ton médecin et des repères pour les repas.',
     category: 'alimentation-grossesse', tags: ['ramadan', 'jeûne', 'religion', 'hydratation', 'iftar', 'suhoor', 'shour', 'diabète gestationnel'],
     sources: [S.santeAlimentation, S.spfBrochure, S.ameliDigestion],
     body_md: `## En bref
 - Les repères alimentaires de la grossesse recommandent **trois repas par jour sans en sauter** et de boire régulièrement : le jeûne s’en écarte.
-- Avant de jeûner, **parlez-en** à votre sage-femme ou à votre médecin : votre situation (nausées, diabète gestationnel, anémie, terme) compte beaucoup.
-- Si vous jeûnez, **apprenez les signes** qui doivent faire rompre le jeûne et consulter.
+- Avant de jeûner, **parles-en** à ta sage-femme ou à ton médecin : ta situation (nausées, diabète gestationnel, anémie, terme) compte beaucoup.
+- Si tu jeûnes, **apprends les signes** qui doivent faire rompre le jeûne et consulter.
 
 ## Comprendre
 Pendant la grossesse, Santé.fr conseille de prendre trois repas par jour sans en sauter, pour éviter les fringales et stabiliser la glycémie. Santé publique France recommande de boire de l’eau à volonté et davantage qu’en temps habituel. Un jeûne de la journée, surtout s’il tombe en période chaude ou de longues journées, réduit les apports et l’hydratation sur de nombreuses heures.
 
-Certaines situations rendent le jeûne particulièrement délicat : nausées et vomissements, diabète gestationnel ou autre maladie chronique, anémie, faible prise de poids, fin de grossesse, travail physique. Seul votre professionnel peut évaluer votre cas. Cette discussion se fait sans jugement : il s’agit de trouver avec vous la solution qui respecte vos convictions et votre santé.
+Certaines situations rendent le jeûne particulièrement délicat : nausées et vomissements, diabète gestationnel ou autre maladie chronique, anémie, faible prise de poids, fin de grossesse, travail physique. Seul ton professionnel peut évaluer ton cas. Cette discussion se fait sans jugement : il s’agit de trouver avec te la solution qui respecte tes convictions et ta santé.
 ## Au quotidien
-### Si vous décidez de jeûner, en accord avec votre professionnel
-- **Repas du soir** (rupture du jeûne) : commencez par boire, puis un repas complet avec légumes, féculents de préférence complets, protéines bien cuites, produit laitier et fruit. Évitez les repas très copieux, gras ou frits, qui favorisent les remontées acides.
-- **Repas de l’aube** : ne le sautez pas. Privilégiez des aliments qui calent : pain complet, flocons d’avoine, œufs bien cuits, produit laitier, fruits, eau.
+### Si tu décides de jeûner, en accord avec ton professionnel
+- **Repas du soir** (rupture du jeûne) : commence par boire, puis un repas complet avec légumes, féculents de préférence complets, protéines bien cuites, produit laitier et fruit. Évite les repas très copieux, gras ou frits, qui favorisent les remontées acides.
+- **Repas de l’aube** : ne le saute pas. Privilégie des aliments qui calent : pain complet, flocons d’avoine, œufs bien cuits, produit laitier, fruits, eau.
 - **Collation** dans la soirée : yaourt, fruit, fruits à coque non salés.
-- **Boire** : répartissez l’eau entre la rupture du jeûne et l’aube, par petites quantités régulières. Limitez le thé et le café, ainsi que les boissons sucrées.
+- **Boire** : répartis l’eau entre la rupture du jeûne et l’aube, par petites quantités régulières. Limite le thé et le café, ainsi que les boissons sucrées.
 - **Dattes et pâtisseries** : quelques dattes ont leur place ; les pâtisseries très sucrées sont à garder pour les occasions.
-- **Reposez-vous** pendant la journée, évitez les efforts et la chaleur.
-- **Couchez-vous** environ trois heures après le dernier repas si vous avez des remontées acides, comme le conseille ameli.
+- **Repose-toi** pendant la journée, évite les efforts et la chaleur.
+- **Couche-toi** environ trois heures après le dernier repas si tu as des remontées acides, comme le conseille ameli.
 
 ### Alternatives possibles
-Selon votre situation, vous pouvez en discuter avec votre sage-femme ou votre médecin : ne pas jeûner certains jours, ou décaler le jeûne après la grossesse ou l’allaitement, par exemple. Ces choix vous appartiennent ; le rôle du professionnel est de vous aider à protéger votre santé et celle du bébé.
+Selon ta situation, tu peux en discuter avec ta sage-femme ou ton médecin : ne pas jeûner certains jours, ou décaler le jeûne après la grossesse ou l’allaitement, par exemple. Ces choix t’appartiennent ; le rôle du professionnel est de t’aider à protéger ta santé et celle du bébé.
 
 ## Questions fréquentes
 **Le jeûne est-il possible avec un diabète gestationnel ?**
-Le diabète gestationnel demande des repas et collations répartis dans la journée et une surveillance de la glycémie : parlez-en impérativement à l’équipe qui vous suit avant toute décision.
+Le diabète gestationnel demande des repas et collations répartis dans la journée et une surveillance de la glycémie : parles-en impérativement à l’équipe qui te suit avant toute décision.
 
 **Et si j’ai des nausées ?**
 Les nausées justifient de manger souvent en petites quantités et de bien boire. Le jeûne risque de les aggraver et d’entraîner une déshydratation.
@@ -907,10 +907,10 @@ Les nausées justifient de manger souvent en petites quantités et de bien boire
 On ne peut pas le garantir pour chaque grossesse : c’est pourquoi un avis médical personnalisé est important.
 
 **Puis-je jeûner pendant l’allaitement ?**
-Les besoins en eau et en énergie restent élevés : demandez conseil à votre sage-femme ou à votre médecin.
+Les besoins en eau et en énergie restent élevés : demande conseil à ta sage-femme ou à ton médecin.
 
 ## Quand demander conseil
-Rompez le jeûne et consultez rapidement en cas de vertiges, malaise, maux de tête intenses, grande soif, urines rares et foncées, vomissements, contractions, douleurs au ventre ou si vous sentez moins bouger votre bébé. ${URG}
+Romps le jeûne et consulte rapidement en cas de vertiges, malaise, maux de tête intenses, grande soif, urines rares et foncées, vomissements, contractions, douleurs au ventre ou si tu sens moins bouger ton bébé. ${URG}
 
 ${FIN}`,
   }),
@@ -918,7 +918,7 @@ ${FIN}`,
   a({
     slug: 'diabete-gestationnel-composer-ses-repas',
     title: 'Diabète gestationnel : composer ses repas au quotidien',
-    summary: 'Glucides répartis, fibres, féculents complets, moins de sucres et de graisses : comment construire ses assiettes avec un diabète gestationnel, en lien avec l’équipe qui vous suit.',
+    summary: 'Glucides répartis, fibres, féculents complets, moins de sucres et de graisses : comment construire ses assiettes avec un diabète gestationnel, en lien avec l’équipe qui te suit.',
     min_week: 20,
     category: 'alimentation-grossesse', tags: ['diabète gestationnel', 'glycémie', 'glucides', 'féculents', 'sucre', 'fibres', 'repas', 'index glycémique'],
     sources: [S.ameliDiabete, S.santeDiabete, S.ameliSurpoids],
@@ -926,19 +926,19 @@ ${FIN}`,
 - Le premier traitement du diabète gestationnel repose sur l’**alimentation** et l’**activité physique**.
 - Les **glucides ne doivent pas être supprimés** : ils sont **répartis** sur la journée, à chaque repas.
 - L’alimentation conseillée est **pauvre en sucres et en graisses**, **riche en fibres**, avec **trois repas et deux collations**.
-- Les apports sont **personnalisés** : un diététicien peut vous aider à les traduire en menus.
+- Les apports sont **personnalisés** : un diététicien peut t’aider à les traduire en menus.
 
 ## Comprendre
 Le diabète gestationnel est une glycémie trop élevée qui apparaît pendant la grossesse, le plus souvent vers la fin du deuxième trimestre. Santé.fr indique que sa prise en charge commence par des mesures d’hygiène de vie : une alimentation pauvre en graisses et en sucres, riche en fibres, et des repas répartis sur la journée (trois repas et deux collations), associée à une activité physique régulière.
 
-Ameli précise que l’apport alimentaire est déterminé **au cas par cas**, selon votre poids, votre prise de poids et vos habitudes. Les glucides doivent être présents à chaque repas : « il est primordial de ne pas les éliminer complètement ». Les supprimer priverait votre bébé et vous-même d’une source d’énergie essentielle.
+Ameli précise que l’apport alimentaire est déterminé **au cas par cas**, selon ton poids, ta prise de poids et tes habitudes. Les glucides doivent être présents à chaque repas : « il est primordial de ne pas les éliminer complètement ». Les supprimer priverait ton bébé et toi-même d’une source d’énergie essentielle.
 
 Pour les futures mères en surpoids, ameli conseille de privilégier les aliments à index glycémique bas : céréales complètes, fruits, légumes, légumineuses, oléagineux non salés, produits laitiers non sucrés et eau. Ces repères sont utiles plus largement pour composer des repas qui font monter la glycémie plus progressivement.
 
 ## Au quotidien
 ### Construire l’assiette
 - **Légumes** à chaque repas, crus bien lavés ou cuits : ils apportent des fibres et du volume.
-- **Un féculent à chaque repas**, en quantité adaptée selon les conseils de votre équipe : pain complet, riz complet, pâtes complètes, quinoa, légumineuses.
+- **Un féculent à chaque repas**, en quantité adaptée selon les conseils de ton équipe : pain complet, riz complet, pâtes complètes, quinoa, légumineuses.
 - **Une source de protéines** : viande ou poisson bien cuits, œufs bien cuits, légumineuses.
 - **Un produit laitier** non sucré : yaourt nature, fromage blanc, fromage à pâte pressée cuite.
 - **Un fruit entier** plutôt qu’un jus.
@@ -957,23 +957,23 @@ Pour les futures mères en surpoids, ameli conseille de privilégier les aliment
 
 ### Exemple de journée
 Matin : pain complet, fromage blanc nature, fruit. Collation : yaourt nature et quelques amandes. Midi : crudités bien lavées, poulet bien cuit, lentilles, fruit. Collation : pain complet et fromage. Soir : soupe de légumes, poisson bien cuit, riz complet, yaourt nature.
-Cet exemple est indicatif : les quantités sont à définir avec votre équipe.
+Cet exemple est indicatif : les quantités sont à définir avec ton équipe.
 
 ## Questions fréquentes
 **Dois-je arrêter le pain et les pâtes ?**
-Non. Les féculents restent nécessaires ; c’est leur répartition et leur quantité qui sont ajustées. Préférez les versions complètes.
+Non. Les féculents restent nécessaires ; c’est leur répartition et leur quantité qui sont ajustées. Préfère les versions complètes.
 
 **Les édulcorants sont-ils une solution ?**
-Parlez-en avec l’équipe qui vous suit avant d’en consommer régulièrement : elle vous conseillera selon votre situation.
+Parles-en avec l’équipe qui te suit avant d’en consommer régulièrement : elle te conseillera selon ta situation.
 
 **Et si ma glycémie reste élevée malgré mes efforts ?**
 Ameli indique qu’une insuline est proposée si la glycémie n’est pas normalisée après environ dix jours de mesures hygiéno-diététiques. Ce n’est pas un échec : cela concerne un peu plus d’un diabète gestationnel sur quatre.
 
 **Puis-je faire un régime pour moins grossir ?**
-Non : les régimes amaigrissants sont contre-indiqués pendant la grossesse. Suivez les conseils personnalisés.
+Non : les régimes amaigrissants sont contre-indiqués pendant la grossesse. Suis les conseils personnalisés.
 
 ## Quand demander conseil
-Appelez l’équipe qui vous suit si vos glycémies sont souvent au-dessus des objectifs fixés, si vous avez du mal à manger, ou en cas de malaise, de sueurs, de tremblements. Consultez rapidement en cas de maux de tête intenses, de troubles de la vue, de gonflement brutal du visage ou des mains, de diminution des mouvements du bébé. ${URG}
+Appelle l’équipe qui te suit si tes glycémies sont souvent au-dessus des objectifs fixés, si tu as du mal à manger, ou en cas de malaise, de sueurs, de tremblements. Consulte rapidement en cas de maux de tête intenses, de troubles de la vue, de gonflement brutal du visage ou des mains, de diminution des mouvements du bébé. ${URG}
 
 ${FIN}`,
   }),
@@ -987,7 +987,7 @@ ${FIN}`,
     body_md: `## En bref
 - Santé.fr recommande des repas **répartis sur la journée** : **trois repas et deux collations**.
 - L’**activité physique régulière** fait partie du traitement : ameli cite environ **30 minutes, 3 à 5 fois par semaine**, en l’absence de contre-indication.
-- L’**autosurveillance de la glycémie** se fait selon le rythme indiqué par votre médecin, en général à jeun et après les repas.
+- L’**autosurveillance de la glycémie** se fait selon le rythme indiqué par ton médecin, en général à jeun et après les repas.
 - Un **carnet** (papier ou application) aide à faire le lien entre repas, activité et glycémie.
 
 ## Comprendre
@@ -995,45 +995,45 @@ Avec un diabète gestationnel, l’objectif est de garder une glycémie stable t
 
 L’activité physique aide les muscles à utiliser le sucre du sang. Ameli recommande, si la grossesse ne présente pas de contre-indication, une activité régulière d’environ 30 minutes par jour, 3 à 5 fois par semaine. En cas de surpoids, ameli décrit une intensité légère à modérée : on peut encore parler pendant l’effort.
 
-L’autosurveillance glycémique, avec un lecteur et des bandelettes, est indispensable en cas d’insuline et utile avec un traitement par alimentation seule si votre médecin ou sage-femme la conseille. La fréquence est personnalisée.
+L’autosurveillance glycémique, avec un lecteur et des bandelettes, est indispensable en cas d’insuline et utile avec un traitement par alimentation seule si ton médecin ou sage-femme la conseille. La fréquence est personnalisée.
 
 ## Au quotidien
 ### Organiser les collations
-- **Moments** : en milieu de matinée et dans l’après-midi, ou selon le plan défini avec votre équipe (parfois en soirée).
+- **Moments** : en milieu de matinée et dans l’après-midi, ou selon le plan défini avec ton équipe (parfois en soirée).
 - **Idées** : yaourt nature et quelques amandes ; pain complet et fromage à pâte pressée cuite ; fromage blanc nature et un fruit entier ; bâtonnets de légumes et houmous ; une poignée de noix non salées.
 - **À éviter** en collation : jus de fruits, biscuits sucrés, barres de céréales sucrées, viennoiseries.
 
 ### Bouger
 - **Marche**, natation, aquagym, yoga, vélo d’appartement, gymnastique douce : ce sont les activités citées par ameli. Une courte marche après le repas s’intègre facilement.
-- **Fractionnez** : trois fois dix minutes comptent aussi.
-- **Évitez** les sports à risque de chute ou de choc et la plongée.
-- **Limitez la sédentarité** : levez-vous régulièrement si vous travaillez assise.
-- **Hydratez-vous** et adaptez l’effort à la chaleur.
+- **Fractionne** : trois fois dix minutes comptent aussi.
+- **Évite** les sports à risque de chute ou de choc et la plongée.
+- **Limite la sédentarité** : lève-toi régulièrement si tu travailles assise.
+- **Hydrate-toi** et adapte l’effort à la chaleur.
 
 ### L’autosurveillance
-- Notez **l’heure, le résultat** et ce que vous avez mangé ou fait juste avant.
-- **Lavez-vous les mains** avant chaque mesure, comme on vous l’a montré.
-- Apportez votre carnet à chaque consultation.
-- Ne modifiez pas seule votre traitement : appelez l’équipe en cas de doute.
+- Note **l’heure, le résultat** et ce que tu as mangé ou fait juste avant.
+- **Lave-toi les mains** avant chaque mesure, comme on te l’a montré.
+- Apporte ton carnet à chaque consultation.
+- Ne modifie pas seule ton traitement : appelle l’équipe en cas de doute.
 
 ### Exemple d’organisation
-Petit-déjeuner, collation vers 10 h, déjeuner, marche de 15 à 20 minutes, collation vers 16 h, dîner, marche courte. Les mesures sont faites aux moments indiqués par votre médecin.
+Petit-déjeuner, collation vers 10 h, déjeuner, marche de 15 à 20 minutes, collation vers 16 h, dîner, marche courte. Les mesures sont faites aux moments indiqués par ton médecin.
 
 ## Questions fréquentes
 **Les collations sont-elles obligatoires ?**
-Elles font partie des recommandations de répartition. Si vous n’avez pas faim, parlez-en avec votre diététicien pour ajuster.
+Elles font partie des recommandations de répartition. Si tu n’as pas faim, parles-en avec ton diététicien pour ajuster.
 
 **Je suis trop fatiguée pour bouger, que faire ?**
-Commencez par de courtes marches et augmentez progressivement. Toute activité compte.
+Commence par de courtes marches et augmente progressivement. Toute activité compte.
 
 **Le diabète disparaît-il après l’accouchement ?**
-Santé.fr signale un risque accru de diabète de type 2 plus tard pour l’enfant, et ameli conseille aux femmes concernées de continuer à surveiller leur glycémie, à manger sainement et à bouger. Demandez à votre médecin quel suivi prévoir après la naissance.
+Santé.fr signale un risque accru de diabète de type 2 plus tard pour l’enfant, et ameli conseille aux femmes concernées de continuer à surveiller leur glycémie, à manger sainement et à bouger. Demande à ton médecin quel suivi prévoir après la naissance.
 
 **Faut-il se peser souvent ?**
-La prise de poids fait partie de la surveillance, selon Santé.fr : suivez le rythme de pesée conseillé par votre équipe.
+La prise de poids fait partie de la surveillance, selon Santé.fr : suis le rythme de pesée conseillé par ton équipe.
 
 ## Quand demander conseil
-Contactez l’équipe en cas de glycémies répétées hors objectifs, de malaise avec sueurs ou tremblements, de vomissements empêchant de manger. Consultez en urgence en cas de contractions, de saignements, de perte de liquide, de maux de tête intenses avec troubles de la vue ou de diminution des mouvements du bébé. ${URG}
+Contacte l’équipe en cas de glycémies répétées hors objectifs, de malaise avec sueurs ou tremblements, de vomissements empêchant de manger. Consulte en urgence en cas de contractions, de saignements, de perte de liquide, de maux de tête intenses avec troubles de la vue ou de diminution des mouvements du bébé. ${URG}
 
 ${FIN}`,
   }),
@@ -1080,7 +1080,7 @@ Santé.fr suggère aussi une collation du matin, comme un yaourt et/ou un fruit,
 De l’eau à volonté. Un verre de jus ou de boisson sucrée maximum par jour selon Santé publique France. Le thé est à prendre à distance des repas.
 
 ### Quand prendre sa collation ?
-Selon votre rythme : milieu de matinée si le petit-déjeuner est tôt, après-midi si le dîner est tardif. Évitez de grignoter en continu.
+Selon ton rythme : milieu de matinée si le petit-déjeuner est tôt, après-midi si le dîner est tardif. Évite de grignoter en continu.
 
 ### Selon le trimestre
 - **1er trimestre** : en cas de nausées, de petites prises fréquentes de ce qui passe bien (biscuits secs, pain, yaourt, fruit), et un en-cas dès le réveil.
@@ -1088,30 +1088,30 @@ Selon votre rythme : milieu de matinée si le petit-déjeuner est tôt, après-m
 - **3e trimestre** : si l’estomac manque de place, des repas un peu moins copieux et une ou deux collations aident à couvrir les besoins.
 
 ### Penser à la sécurité
-Même en collation, gardez les précautions de la grossesse : pas de fromage au lait cru ou à croûte fleurie, pas de charcuterie prête à consommer, fruits bien lavés.
+Même en collation, garde les précautions de la grossesse : pas de fromage au lait cru ou à croûte fleurie, pas de charcuterie prête à consommer, fruits bien lavés.
 
 ## Questions fréquentes
 **Je n’ai jamais faim entre les repas, dois-je prendre une collation ?**
-Non. Si vos repas sont complets et que vous n’avez pas faim, la collation n’est pas nécessaire.
+Non. Si tes repas sont complets et que tu n’as pas faim, la collation n’est pas nécessaire.
 
 **Les barres de céréales sont-elles un bon choix ?**
-Elles sont souvent sucrées. Vérifiez la liste d’ingrédients et le Nutri-Score, ou préférez un fruit et quelques amandes.
+Elles sont souvent sucrées. Vérifie la liste d’ingrédients et le Nutri-Score, ou préfère un fruit et quelques amandes.
 
 **Faut-il éviter les fruits à coque pendant la grossesse ?**
-Non, sauf si vous y êtes vous-même allergique : Santé publique France recommande même une petite poignée de fruits à coque non salés par jour.
+Non, sauf si tu y es toi-même allergique : Santé publique France recommande même une petite poignée de fruits à coque non salés par jour.
 
 **Et la nuit, si j’ai faim ?**
-Un produit laitier ou un fruit peut aider. Si les fringales nocturnes sont fréquentes, parlez-en à votre sage-femme.
+Un produit laitier ou un fruit peut aider. Si les fringales nocturnes sont fréquentes, parles-en à ta sage-femme.
 
 ## Quand demander conseil
-Parlez-en si vous avez souvent faim malgré des repas complets, si vous prenez ou perdez du poids rapidement, ou si vous avez des malaises. ${URG}
+Parles-en si tu as souvent faim malgré des repas complets, si tu prends ou perds du poids rapidement, ou si tu as des malaises. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'faim-grignotage-grossesse-reperes',
     title: 'Faim fréquente et grignotage pendant la grossesse : retrouver des repères',
-    summary: 'Vous avez l’impression d’avoir tout le temps faim : pourquoi, et comment organiser vos repas pour être rassasiée sans grignoter en continu.',
+    summary: 'Tu as l’impression d’avoir tout le temps faim : pourquoi, et comment organiser tes repas pour être rassasiée sans grignoter en continu.',
     category: 'alimentation-grossesse', tags: ['faim', 'grignotage', 'fringales', 'satiété', 'fibres', 'prise de poids', 'manger deux fois plus'],
     sources: [S.santePoids, S.spfBrochure, S.ameliSurpoids],
     body_md: `## En bref
@@ -1123,7 +1123,7 @@ ${FIN}`,
 ## Comprendre
 Santé.fr rappelle que les petites faims et envies de grignoter sont courantes, surtout en début de grossesse. Santé publique France précise que les besoins ne sont que légèrement supérieurs, même en cas de grossesse gémellaire. Manger « pour deux » n’est donc pas nécessaire, et un grignotage continu de produits sucrés ou gras peut contribuer à une prise de poids importante.
 
-La prise de poids est normale et progressive, plus marquée au dernier trimestre. Elle dépend de votre poids de départ ; une pesée une ou deux fois par mois suffit en général. Si vous pensez avoir pris trop de poids, Santé.fr conseille de demander des conseils adaptés à votre professionnel de santé plutôt que de faire un régime.
+La prise de poids est normale et progressive, plus marquée au dernier trimestre. Elle dépend de ton poids de départ ; une pesée une ou deux fois par mois suffit en général. Si tu penses avoir pris trop de poids, Santé.fr conseille de demander des conseils adaptés à ton professionnel de santé plutôt que de faire un régime.
 
 Ameli souligne qu’un diététicien ou un médecin peut aider à gérer les fringales et les envies de sucre, de gras ou de sel, et repérer un trouble du comportement alimentaire, qui peut réapparaître pendant la grossesse.
 
@@ -1136,35 +1136,35 @@ Ameli souligne qu’un diététicien ou un médecin peut aider à gérer les fri
 - **Protéines** au déjeuner et au dîner : viande ou poisson bien cuits, œufs bien cuits, légumineuses, produits laitiers.
 
 ### Des astuces simples
-- **Gardez le fruit ou le laitage** du repas pour une petite faim plus tard, comme le propose Santé publique France.
-- **Buvez de l’eau** : elle aide à équilibrer l’appétit.
-- **Mangez assise**, sans écran, en prenant votre temps.
-- **Préparez des collations** à l’avance pour éviter le placard à biscuits.
-- **Rangez hors de vue** les produits qui vous font craquer.
-- **Reposez-vous** autant que possible : la fatigue rend les repas plus difficiles à organiser.
-- **Bougez chaque jour** : la marche peut aussi aider à couper une envie.
+- **Garde le fruit ou le laitage** du repas pour une petite faim plus tard, comme le propose Santé publique France.
+- **Bois de l’eau** : elle aide à équilibrer l’appétit.
+- **Mange assise**, sans écran, en prenant ton temps.
+- **Prépare des collations** à l’avance pour éviter le placard à biscuits.
+- **Range hors de vue** les produits qui te font craquer.
+- **Repose-toi** autant que possible : la fatigue rend les repas plus difficiles à organiser.
+- **Bouge chaque jour** : la marche peut aussi aider à couper une envie.
 
 ### Repérer la faim et l’envie
-Avant de grignoter, demandez-vous : ai-je faim (ventre qui gargouille, fatigue, baisse d’énergie) ou envie (ennui, stress, habitude) ? Si c’est une envie, un verre d’eau, une courte marche ou un appel à une amie peuvent suffire. Si c’est la faim, une collation complète est plus adaptée qu’un biscuit.
+Avant de grignoter, demande-toi : ai-je faim (ventre qui gargouille, fatigue, baisse d’énergie) ou envie (ennui, stress, habitude) ? Si c’est une envie, un verre d’eau, une courte marche ou un appel à une amie peuvent suffire. Si c’est la faim, une collation complète est plus adaptée qu’un biscuit.
 
 ### Faire équipe
 Santé.fr note que changer ses habitudes avec son ou sa partenaire les rend plus faciles à tenir.
 
 ## Questions fréquentes
 **Faut-il manger plus au 3e trimestre ?**
-Les besoins augmentent un peu, mais restent modestes. Suivez votre appétit, avec des repas variés et, si besoin, une collation.
+Les besoins augmentent un peu, mais restent modestes. Suis ton appétit, avec des repas variés et, si besoin, une collation.
 
 **Je mange pour deux, mon entourage insiste : que répondre ?**
 Les autorités de santé recommandent de manger « deux fois mieux, pas deux fois plus ».
 
 **Le grignotage peut-il favoriser le diabète gestationnel ?**
-Une prise de poids excessive augmente le risque de diabète gestationnel et d’hypertension, selon Santé.fr. Parlez-en lors de votre suivi.
+Une prise de poids excessive augmente le risque de diabète gestationnel et d’hypertension, selon Santé.fr. Parles-en lors de ton suivi.
 
 **Je n’arrive plus à contrôler ce que je mange, à qui en parler ?**
-À votre sage-femme ou à votre médecin, sans honte : un accompagnement, par exemple avec un diététicien ou un psychologue, peut vous aider.
+À ta sage-femme ou à ton médecin, sans honte : un accompagnement, par exemple avec un diététicien ou un psychologue, peut t’aider.
 
 ## Quand demander conseil
-Consultez si vous prenez ou perdez du poids rapidement, si vous avez des crises de grignotage incontrôlables, des vomissements provoqués ou une grande détresse. Le **3114** répond 24 h/24 en cas de souffrance psychique. ${URG}
+Consulte si tu prends ou perds du poids rapidement, si tu as des crises de grignotage incontrôlables, des vomissements provoqués ou une grande détresse. Le **3114** répond 24 h/24 en cas de souffrance psychique. ${URG}
 
 ${FIN}`,
   }),
@@ -1178,8 +1178,8 @@ ${FIN}`,
     body_md: `## En bref
 - Température idéale : **entre 0 et 4 °C** au point le plus froid, à vérifier avec un **thermomètre**.
 - Viandes et poissons crus, préparations maison à base d’œufs et plats en sauce vont dans la **zone la plus froide**.
-- **Emballez** les aliments entamés, retirez les suremballages, ne surchargez pas.
-- **Nettoyez** régulièrement à l’eau savonneuse, puis rincez à l’eau légèrement javellisée.
+- **Emballe** les aliments entamés, retire les suremballages, ne surcharge pas.
+- **Nettoie** régulièrement à l’eau savonneuse, puis rince à l’eau légèrement javellisée.
 
 ## Comprendre
 La bactérie Listeria a une particularité : elle peut se multiplier au froid. C’est pourquoi un réfrigérateur bien réglé et bien entretenu est un élément important de la prévention de la listériose pendant la grossesse. Santé.fr rappelle de régler la température à 4 °C, de nettoyer souvent le réfrigérateur puis de le désinfecter à l’eau de Javel diluée, et de respecter les dates limites de consommation. Santé publique France ajoute qu’une mauvaise conservation favorise Listeria et que la congélation ne la détruit pas.
@@ -1188,40 +1188,40 @@ L’Anses détaille les bons gestes : contrôler régulièrement la température
 
 ## Au quotidien
 ### Régler et contrôler
-- Placez un **thermomètre** dans la zone la plus froide et vérifiez-le régulièrement.
+- Place un **thermomètre** dans la zone la plus froide et vérifie-le régulièrement.
 - Certains réfrigérateurs récents ont une **pastille** qui indique si la zone la plus froide est bien sous 4 °C.
-- **Limitez les ouvertures** fréquentes et prolongées, et vérifiez que la porte ferme bien : une condensation permanente peut signaler un défaut de joint.
+- **Limite les ouvertures** fréquentes et prolongées, et vérifie que la porte ferme bien : une condensation permanente peut signaler un défaut de joint.
 
 ### Ranger
 - **Zone la plus froide** (indiquée dans la notice) : viandes et poissons crus, préparations maison à base d’œufs crus, plats de viande en sauce.
-- **Retirez les suremballages** (cartons de yaourts, par exemple) pour limiter les contaminations et laisser circuler l’air.
-- **Ne surchargez pas** : le froid doit circuler.
-- **Emballez** les aliments entamés dans un film ou une boîte hermétique.
-- **Séparez le cru et le cuit** : pas de viande crue au-dessus d’un plat prêt à manger.
+- **Retire les suremballages** (cartons de yaourts, par exemple) pour limiter les contaminations et laisser circuler l’air.
+- **Ne surcharge pas** : le froid doit circuler.
+- **Emballe** les aliments entamés dans un film ou une boîte hermétique.
+- **Sépare le cru et le cuit** : pas de viande crue au-dessus d’un plat prêt à manger.
 - **Pas d’aliments chauds** directement au frigo, mais pas plus de **deux heures** à température ambiante avant de les y mettre.
 
 ### Nettoyer
-- Dès qu’il y a une salissure, et **régulièrement** : eau savonneuse, puis rinçage à l’eau légèrement javellisée. Évitez la Javel pure sur les parois.
-- **Désinfectez l’éponge** avant (eau javellisée ou chaleur) : elle peut être très chargée en bactéries.
-- **Dégivrez** régulièrement, et plus tôt si la glace se forme anormalement vite.
+- Dès qu’il y a une salissure, et **régulièrement** : eau savonneuse, puis rinçage à l’eau légèrement javellisée. Évite la Javel pure sur les parois.
+- **Désinfecte l’éponge** avant (eau javellisée ou chaleur) : elle peut être très chargée en bactéries.
+- **Dégivre** régulièrement, et plus tôt si la glace se forme anormalement vite.
 
 ### Dates et restes
-- **DLC** (« à consommer jusqu’au ») : ne la dépassez jamais. Consommez rapidement après ouverture.
+- **DLC** (« à consommer jusqu’au ») : ne la dépasse jamais. Consomme rapidement après ouverture.
 - **Restes** : trois jours maximum, réchauffés à cœur.
 - **Décongélation** : toujours au réfrigérateur, jamais à température ambiante.
 
 ## Questions fréquentes
 **Quelle est la zone la plus froide de mon frigo ?**
-Cela dépend du modèle : consultez la notice ou mesurez avec un thermomètre.
+Cela dépend du modèle : consulte la notice ou mesure avec un thermomètre.
 
 **Faut-il laver les aliments avant de les ranger ?**
-Lavez plutôt les fruits et légumes juste avant de les consommer. Retirer les emballages extérieurs suffit au rangement.
+Lave plutôt les fruits et légumes juste avant de les consommer. Retirer les emballages extérieurs suffit au rangement.
 
 **À quelle fréquence nettoyer ?**
 Dès qu’il y a une salissure et régulièrement ; pendant la grossesse, un nettoyage fréquent est conseillé par Santé.fr.
 
 **La porte du frigo convient-elle au lait ?**
-La porte est généralement la zone la moins froide : réservez-la aux produits les moins fragiles (boissons, condiments) et vérifiez la température avec un thermomètre.
+La porte est généralement la zone la moins froide : réserve-la aux produits les moins fragiles (boissons, condiments) et vérifie la température avec un thermomètre.
 
 ## Quand demander conseil
 Une fièvre, des courbatures ou des symptômes ressemblant à une grippe pendant la grossesse doivent faire consulter rapidement : la listériose se traite d’autant mieux que le traitement est commencé tôt. ${URG}
@@ -1235,10 +1235,10 @@ ${FIN}`,
     category: 'alimentation-grossesse', tags: ['hygiène', 'cuisine', 'lavage des mains', 'planche à découper', 'cuisson', 'toxoplasmose', 'listériose', 'salmonellose'],
     sources: [S.ameliToxo, S.santeListeriose, S.santeAliments],
     body_md: `## En bref
-- **Lavez-vous les mains** au savon au moins 30 secondes, ongles compris, avant de cuisiner et après avoir touché de la viande crue ou des légumes terreux.
-- **Rincez soigneusement** fruits, légumes et herbes à l’eau claire.
-- **Séparez le cru et le cuit**, nettoyez planches et ustensiles après chaque usage.
-- **Cuisez à cœur** viandes, poissons, coquillages et œufs.
+- **Lave-toi les mains** au savon au moins 30 secondes, ongles compris, avant de cuisiner et après avoir touché de la viande crue ou des légumes terreux.
+- **Rince soigneusement** fruits, légumes et herbes à l’eau claire.
+- **Sépare le cru et le cuit**, nettoie planches et ustensiles après chaque usage.
+- **Cuis à cœur** viandes, poissons, coquillages et œufs.
 
 ## Comprendre
 Trois infections d’origine alimentaire sont surveillées pendant la grossesse. La **toxoplasmose** concerne les femmes non immunisées, ce qu’indique une prise de sang en début de grossesse : le parasite peut être présent dans la viande peu cuite et sur les végétaux souillés de terre. La **listériose** concerne toutes les femmes enceintes, car on ne peut pas être immunisé : la bactérie se trouve dans certains produits laitiers, charcuteries et produits de la mer. La **salmonellose** est liée notamment aux œufs crus.
@@ -1252,15 +1252,15 @@ Une grande partie de la prévention se fait dans la cuisine, avec des gestes sim
 - Santé.fr ajoute de se laver les mains après avoir manipulé des aliments, même cuits.
 
 ### Les fruits, légumes et herbes
-- **Rincez à l’eau claire** pour retirer toute trace de terre ; le vinaigre n’est pas nécessaire selon ameli.
-- **Épluchez** si besoin et lavez sous l’eau courante les fraises, les salades feuille à feuille, les herbes aromatiques.
+- **Rince à l’eau claire** pour retirer toute trace de terre ; le vinaigre n’est pas nécessaire selon ameli.
+- **Épluche** si besoin et lave sous l’eau courante les fraises, les salades feuille à feuille, les herbes aromatiques.
 - Les **graines germées crues** sont à éviter.
-- En cas de doute sur le lavage, préférez-les **cuits**.
+- En cas de doute sur le lavage, préfère-les **cuits**.
 
 ### Planches, couteaux et plans de travail
 - Une planche pour le **cru**, une pour le **cuit** et les crudités, ou un lavage soigneux entre deux usages.
-- Nettoyez **surfaces et ustensiles après chaque usage**, surtout après avoir découpé de la viande crue.
-- Changez souvent les **torchons** et désinfectez les **éponges**.
+- Nettoie **surfaces et ustensiles après chaque usage**, surtout après avoir découpé de la viande crue.
+- Change souvent les **torchons** et désinfecte les **éponges**.
 
 ### La cuisson
 - **Viande** : à cœur, à plus de 68 °C, sans jus rosé à la coupe. Le micro-ondes n’est pas plus efficace que les autres modes de cuisson.
@@ -1282,10 +1282,10 @@ Oui, c’est même une excellente façon de partager les précautions.
 Ameli recommande un rinçage soigneux à l’eau claire et précise que le vinaigre n’est pas nécessaire.
 
 **Je suis immunisée contre la toxoplasmose, puis-je relâcher ?**
-Les précautions contre la toxoplasmose ne vous concernent plus, mais celles contre la listériose et la salmonellose restent valables.
+Les précautions contre la toxoplasmose ne te concernent plus, mais celles contre la listériose et la salmonellose restent valables.
 
 ## Quand demander conseil
-Consultez rapidement en cas de fièvre, de courbatures, de troubles digestifs ou de symptômes de type grippal pendant la grossesse. ${URG}
+Consulte rapidement en cas de fièvre, de courbatures, de troubles digestifs ou de symptômes de type grippal pendant la grossesse. ${URG}
 
 ${FIN}`,
   }),
@@ -1298,8 +1298,8 @@ ${FIN}`,
     body_md: `## En bref
 - Cuisiner en plus grande quantité **fait gagner du temps** quand la fatigue se fait sentir.
 - Les **restes** se gardent **trois jours maximum** au réfrigérateur et se **réchauffent à cœur**.
-- Mettez les plats au froid **dans les deux heures** qui suivent la cuisson.
-- **Décongelez toujours au réfrigérateur**, jamais à température ambiante.
+- Mets les plats au froid **dans les deux heures** qui suivent la cuisson.
+- **Décongèle toujours au réfrigérateur**, jamais à température ambiante.
 - La congélation ne détruit pas Listeria : elle ne « rattrape » pas un aliment à risque.
 
 ## Comprendre
@@ -1309,43 +1309,43 @@ Santé publique France et Santé.fr indiquent de réchauffer à cœur les restes
 
 ## Au quotidien
 ### Organiser une séance de cuisine
-- **Choisissez 2 ou 3 recettes** qui se conservent bien : soupe, dahl de lentilles, chili, ratatouille, gratin de légumes, poulet rôti, riz ou pâtes complètes, boulettes cuites.
-- **Faites cuire à cœur** viandes, poissons et œufs.
-- **Laissez tiédir** puis répartissez en **boîtes individuelles** hermétiques.
-- **Étiquetez** avec le nom du plat et la date.
-- **Au réfrigérateur** : ce que vous mangerez dans les trois jours. **Au congélateur** : le reste.
+- **Choisis 2 ou 3 recettes** qui se conservent bien : soupe, dahl de lentilles, chili, ratatouille, gratin de légumes, poulet rôti, riz ou pâtes complètes, boulettes cuites.
+- **Fais cuire à cœur** viandes, poissons et œufs.
+- **Laisse tiédir** puis répartis en **boîtes individuelles** hermétiques.
+- **Étiquette** avec le nom du plat et la date.
+- **Au réfrigérateur** : ce que tu mangeras dans les trois jours. **Au congélateur** : le reste.
 
 ### Réchauffer
 - **Bien chaud, à cœur**, en remuant au micro-ondes à mi-cuisson.
-- Réchauffez **seulement la portion** que vous allez manger.
+- Réchauffe **seulement la portion** que tu vas manger.
 - Un plat réchauffé et non terminé ne se remet pas au frigo.
 
 ### Congeler et décongeler
-- Congelez des plats **refroidis**, en portions.
-- **Décongelez au réfrigérateur** la veille, ou directement à la cuisson.
-- Ne recongelez pas un plat décongelé, sauf s’il a été recuit entre-temps.
+- Congèle des plats **refroidis**, en portions.
+- **Décongèle au réfrigérateur** la veille, ou directement à la cuisson.
+- Ne recongèle pas un plat décongelé, sauf s’il a été recuit entre-temps.
 
 ### Les aliments à ne pas préparer à l’avance
 Les préparations à base d’œufs crus (mayonnaise, mousse) restent à éviter. Les crudités se lavent et se préparent plutôt au moment du repas.
 
 ### Avec l’aide de l’entourage
-Proposer à vos proches de cuisiner un plat de plus est une belle façon de vous aider, en fin de grossesse comme après la naissance. Transmettez-leur ces règles simples.
+Proposer à tes proches de cuisiner un plat de plus est une belle façon de t’aider, en fin de grossesse comme après la naissance. Transmets-leur ces règles simples.
 
 ## Questions fréquentes
 **Le riz cuit peut-il être conservé ?**
 Oui, au réfrigérateur rapidement après la cuisson, comme les autres plats, et réchauffé bien chaud.
 
 **Combien de temps garder un plat au congélateur ?**
-Suivez les indications de votre congélateur et consommez de préférence dans les semaines qui suivent pour garder le goût.
+Suis les indications de ton congélateur et consomme de préférence dans les semaines qui suivent pour garder le goût.
 
 **Un reste de quatre jours sent bon, puis-je le manger ?**
 Pendant la grossesse, il est recommandé de ne pas dépasser trois jours, même si l’aspect et l’odeur semblent corrects.
 
 **Les plats préparés achetés en barquette ?**
-Respectez leur date limite et consommez-les rapidement après ouverture, bien réchauffés.
+Respecte leur date limite et consomme-les rapidement après ouverture, bien réchauffés.
 
 ## Quand demander conseil
-Consultez en cas de fièvre, de courbatures, de diarrhée ou de vomissements, en signalant votre grossesse. ${URG}
+Consulte en cas de fièvre, de courbatures, de diarrhée ou de vomissements, en signalant ta grossesse. ${URG}
 
 ${FIN}`,
   }),
@@ -1358,10 +1358,10 @@ ${FIN}`,
     sources: [S.ameliSurpoids, S.santePoids, S.spfBrochure],
     body_md: `## En bref
 - Les **régimes amaigrissants sont contre-indiqués** pendant la grossesse.
-- Un **objectif de prise de poids adapté à votre IMC** est fixé dès le début, avec un suivi régulier.
+- Un **objectif de prise de poids adapté à ton IMC** est fixé dès le début, avec un suivi régulier.
 - Les aliments à **index glycémique bas** sont à privilégier : céréales complètes, fruits, légumes, légumineuses, oléagineux non salés, produits laitiers non sucrés et eau.
-- L’**activité physique** est recommandée, quel que soit votre poids, sauf contre-indication.
-- Un **diététicien** peut vous accompagner sans jugement.
+- L’**activité physique** est recommandée, quel que soit ton poids, sauf contre-indication.
+- Un **diététicien** peut t’accompagner sans jugement.
 
 ## Comprendre
 En cas de surpoids ou d’obésité, la grossesse bénéficie d’un suivi un peu plus attentif. Ameli explique qu’un objectif de prise de poids adapté à l’IMC est défini dès le début, avec des pesées régulières et des conseils personnalisés. Une alimentation équilibrée associée à une activité physique légère à modérée et encadrée limite la prise de poids et réduit les risques d’hypertension, de diabète gestationnel et de bébé de poids élevé (macrosomie).
@@ -1379,10 +1379,10 @@ Après une **chirurgie de l’obésité** (chirurgie bariatrique), le risque de 
 - **Produits laitiers non sucrés**.
 - **Fruits entiers** plutôt que jus.
 - **Eau** comme boisson, boissons sucrées limitées (un verre maximum par jour, light compris).
-- Lisez les **étiquettes** et le **Nutri-Score** pour repérer les produits très gras, sucrés ou salés.
+- Lis les **étiquettes** et le **Nutri-Score** pour repérer les produits très gras, sucrés ou salés.
 
 ### Bouger
-Ameli conseille une activité d’intensité légère à modérée (on peut parler pendant l’effort), 30 à 60 minutes par jour, 3 à 5 jours par semaine : marche, natation, vélo d’appartement, yoga, gymnastique douce, aquagym. Les sports à risque de chute ou de choc et la plongée sont déconseillés. Limitez aussi le temps passé assise.
+Ameli conseille une activité d’intensité légère à modérée (on peut parler pendant l’effort), 30 à 60 minutes par jour, 3 à 5 jours par semaine : marche, natation, vélo d’appartement, yoga, gymnastique douce, aquagym. Les sports à risque de chute ou de choc et la plongée sont déconseillés. Limite aussi le temps passé assise.
 
 ### Le suivi
 - Pesée régulière, éventuellement **automesure de la tension** à domicile.
@@ -1392,19 +1392,19 @@ Ameli conseille une activité d’intensité légère à modérée (on peut parl
 
 ## Questions fréquentes
 **Puis-je essayer de ne pas grossir du tout ?**
-Non, sauf avis médical particulier. Un objectif adapté vous sera proposé ; ne vous restreignez pas seule.
+Non, sauf avis médical particulier. Un objectif adapté te sera proposé ; ne te restreins pas seule.
 
 **J’ai des fringales et des envies de sucré, qui peut m’aider ?**
-Un diététicien ou un médecin spécialiste peut vous aider à les gérer, ainsi que les nausées.
+Un diététicien ou un médecin spécialiste peut t’aider à les gérer, ainsi que les nausées.
 
 **J’ai eu des épisodes de boulimie, faut-il le dire ?**
 Oui. Ameli note qu’une boulimie connue peut reprendre pendant la grossesse ; un suivi attentif est alors proposé.
 
 **Le choix de la maternité dépend-il de mon poids ?**
-Il est discuté avec vous dès le début de grossesse, en tenant compte de votre IMC, de votre lieu de vie et de vos préférences.
+Il est discuté avec toi dès le début de grossesse, en tenant compte de ton IMC, de ton lieu de vie et de tes préférences.
 
 ## Quand demander conseil
-Parlez-en lors du suivi si votre prise de poids s’écarte de l’objectif ou si vous vous sentez jugée. Consultez rapidement en cas de maux de tête intenses, de troubles de la vue, de gonflement brutal, de saignements ou de contractions. ${URG} En cas de souffrance psychique, le **3114** répond 24 h/24.
+Parles-en lors du suivi si ta prise de poids s’écarte de l’objectif ou si tu te sens jugée. Consulte rapidement en cas de maux de tête intenses, de troubles de la vue, de gonflement brutal, de saignements ou de contractions. ${URG} En cas de souffrance psychique, le **3114** répond 24 h/24.
 
 ${FIN}`,
   }),
@@ -1417,8 +1417,8 @@ ${FIN}`,
     sources: [S.ameliDigestion, S.spfBrochure, S.santePoids],
     body_md: `## En bref
 - En fin de grossesse, la pression du bébé sur l’estomac favorise les **remontées acides** et une **satiété rapide**.
-- **Fractionnez** : des repas moins copieux, complétés par une ou deux collations.
-- **Couchez-vous environ trois heures** après le dîner.
+- **Fractionne** : des repas moins copieux, complétés par une ou deux collations.
+- **Couche-toi environ trois heures** après le dîner.
 - Contre la **constipation** : fibres, eau, marche.
 - La prise de poids est **plus marquée** au dernier trimestre : c’est attendu.
 
@@ -1430,20 +1430,20 @@ Les besoins, eux, restent à couvrir. Santé publique France rappelle que la pri
 ## Au quotidien
 ### Fractionner
 - Trois repas **moins copieux**, plus une collation le matin et/ou l’après-midi.
-- Gardez le **dessert pour plus tard** si vous êtes vite rassasiée.
-- **Mangez lentement** et mâchez bien.
+- Garde le **dessert pour plus tard** si tu es vite rassasiée.
+- **Mange lentement** et mâche bien.
 
 ### Limiter les remontées acides
-- **Évitez les repas trop copieux**, très gras, acides ou épicés.
-- **Ne vous penchez pas** en avant juste après le repas et évitez les efforts intenses.
-- **Dîner tôt** : ameli conseille d’attendre environ trois heures avant de vous coucher.
-- **Surélevez la tête du lit**.
-- **Buvez** de préférence entre les repas.
+- **Évite les repas trop copieux**, très gras, acides ou épicés.
+- **Ne te penche pas** en avant juste après le repas et évite les efforts intenses.
+- **Dîner tôt** : ameli conseille d’attendre environ trois heures avant de te coucher.
+- **Surélève la tête du lit**.
+- **Bois** de préférence entre les repas.
 
 ### Prévenir la constipation
 - **Fibres** augmentées progressivement : légumes verts, fruits frais, légumineuses, pain et céréales complets, fruits secs comme les pruneaux, fruits à coque non salés.
 - **Au moins 1,5 litre d’eau** par jour, soupes comprises, selon ameli.
-- **Marche** quotidienne si votre grossesse le permet ; levez-vous régulièrement si vous êtes assise longtemps.
+- **Marche** quotidienne si ta grossesse le permet ; lève-toi régulièrement si tu es assise longtemps.
 - **Toilettes** : à heure régulière, sans forcer, avec un petit marchepied sous les pieds.
 - **Aucun laxatif sans avis médical** : ameli précise que certains peuvent déclencher des contractions.
 
@@ -1452,19 +1452,19 @@ Velouté de légumes et tartine de pain complet au fromage ; omelette et poêlé
 
 ## Questions fréquentes
 **Je n’ai plus faim le soir, est-ce gênant ?**
-Un dîner léger convient si vos apports de la journée sont suffisants. Une collation dans l’après-midi peut compenser.
+Un dîner léger convient si tes apports de la journée sont suffisants. Une collation dans l’après-midi peut compenser.
 
 **Les brûlures d’estomac m’empêchent de dormir, que faire ?**
-Dînez plus tôt et plus léger, surélevez la tête du lit, et parlez-en à votre sage-femme ou médecin avant de prendre un médicament.
+Dîne plus tôt et plus léger, surélève la tête du lit, et parles-en à ta sage-femme ou médecin avant de prendre un médicament.
 
 **Faut-il préparer quelque chose pour la maternité ?**
-Des collations simples dans la valise (fruits secs, biscuits secs, compotes en gourde) sont pratiques pour l’accompagnant et pour vous si l’équipe l’autorise.
+Des collations simples dans la valise (fruits secs, biscuits secs, compotes en gourde) sont pratiques pour l’accompagnant et pour toi si l’équipe l’autorise.
 
 **Mes jambes gonflent, dois-je boire moins ?**
-Non, continuez à boire. Signalez tout gonflement, surtout s’il est brutal ou touche le visage et les mains.
+Non, continue à boire. Signale tout gonflement, surtout s’il est brutal ou touche le visage et les mains.
 
 ## Quand demander conseil
-Consultez rapidement en cas de douleur intense en haut du ventre ou sous les côtes, de maux de tête violents, de troubles de la vue, de gonflement brutal du visage ou des mains, de vomissements en fin de grossesse, de contractions régulières, de perte de liquide, de saignements ou de diminution des mouvements du bébé. ${URG}
+Consulte rapidement en cas de douleur intense en haut du ventre ou sous les côtes, de maux de tête violents, de troubles de la vue, de gonflement brutal du visage ou des mains, de vomissements en fin de grossesse, de contractions régulières, de perte de liquide, de saignements ou de diminution des mouvements du bébé. ${URG}
 
 ${FIN}`,
   }),

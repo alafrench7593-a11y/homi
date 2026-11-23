@@ -22,6 +22,7 @@ import type { Reminder } from '@/lib/types';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const hhmm = (iso: string) => { const d = new Date(iso); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
 const localISO = (iso: string) => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
@@ -160,13 +161,13 @@ export function RemindersSheet({ visible, onClose, choices, target, allDay, titl
         {dates.length ? <Text variant="caption" muted testID="care-rem-preview">{dates.map((d) => formatDate(d.toISOString(), { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })).join(' · ')}</Text> : null}
         <Button label={tr('care.rem.create')} icon="bell" full onPress={submit} loading={schedule.isPending} testID="care-rem-save" />
         {existing.length ? <Text variant="label">{tr('care.rem.existing')}</Text> : null}
-        {existing.map((r) => (
-          <Row key={r.id} style={{ alignItems: 'center' }}>
+        <MotionList style={{ gap: spacing.sm }}>{existing.map((r) => (
+          <MotionItem key={r.id}><Row key={r.id} style={{ alignItems: 'center' }}>
             <Icon name="bell" size={16} color={t.colors.textMuted} />
             <Text variant="small" style={{ flex: 1 }}>{r.schedule.type === 'once' ? formatDate(r.schedule.at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : r.title}</Text>
             <Button label={tr('common.delete')} size="sm" variant="ghost" onPress={() => remove.mutate(r.id)} />
-          </Row>
-        ))}
+          </Row></MotionItem>
+        ))}</MotionList>
         <Text variant="caption" muted>{tr('care.rem.lockScreen')}</Text>
       </View>
     </Sheet>
@@ -197,19 +198,19 @@ export function DocumentsSheet({ visible, onClose, target, selected, childId, pr
     <Sheet visible={visible} onClose={onClose} title={tr('care.doc.title')}>
       <View style={{ gap: spacing.xs }} testID="care-doc-sheet">
         {!list.length ? <Text variant="small" muted>{tr('care.doc.empty')}</Text> : null}
-        {list.slice(0, 40).map((d) => {
+        <MotionList style={{ gap: spacing.xs }}>{list.slice(0, 40).map((d) => {
           const on = ids.includes(d.id);
           return (
-            <Tappable key={d.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} testID={`care-doc-${d.id}`} onPress={() => setIds(on ? ids.filter((x) => x !== d.id) : [...ids, d.id])}
+            <MotionItem key={d.id}><Tappable key={d.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} testID={`care-doc-${d.id}`} onPress={() => setIds(on ? ids.filter((x) => x !== d.id) : [...ids, d.id])}
               style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
               <Icon name={on ? 'check-square' : 'square'} size={20} color={on ? t.colors.primary : t.colors.textMuted} />
               <View style={{ flex: 1 }}>
                 <Text weight="bold" numberOfLines={1}>{d.title}</Text>
                 {d.doc_date ? <Text variant="caption" muted>{toFrDate(d.doc_date)}</Text> : null}
               </View>
-            </Tappable>
+            </Tappable></MotionItem>
           );
-        })}
+        })}</MotionList>
         <Button label={tr('care.doc.new')} icon="camera" variant="secondary" onPress={() => { onClose(); router.push('/documents/scan' as never); }} />
         <Button label={tr('common.save')} full onPress={submit} loading={setDocs.isPending} testID="care-doc-save" />
         <Text variant="caption" muted>{tr('care.doc.private')}</Text>

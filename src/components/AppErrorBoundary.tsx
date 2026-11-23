@@ -7,23 +7,26 @@ import { View } from 'react-native';
 import { router, type ErrorBoundaryProps } from 'expo-router';
 import { Button, Icon, Text } from '@/components/ui';
 import { reportError } from '@/lib/crashReporting';
-import { spacing } from '@/theme/tokens';
+import { spacing, themes } from '@/theme/tokens';
+
+/** Hors de l'arbre des fournisseurs (l'erreur peut venir du thème lui-même) : couleurs de la palette par défaut, en clair. */
+const C = themes.light.colors;
 import { t as tr } from '@/i18n';
 
 export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   React.useEffect(() => { reportError(error); }, [error]);
   return (
-    <View accessibilityRole="alert" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg, gap: spacing.sm, backgroundColor: '#FFF6F2' }}>
-      <Icon name="alert-triangle" size={36} color="#C2416E" />
-      <Text variant="title" center color="#2A1B2E">{tr('error.screen.title')}</Text>
-      <Text center color="#5B4A5E" style={{ maxWidth: 340 }}>{tr('error.screen.body')}</Text>
+    <View accessibilityRole="alert" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg, gap: spacing.sm, backgroundColor: C.background }}>
+      <Icon name="alert-triangle" size={36} color={C.danger} />
+      <Text variant="title" center color={C.text}>{tr('error.screen.title')}</Text>
+      <Text center color={C.textMuted} style={{ maxWidth: 340 }}>{tr('error.screen.body')}</Text>
       <View style={{ gap: spacing.xs, alignSelf: 'stretch', maxWidth: 360, marginTop: spacing.sm }}>
         <Button label={tr('common.retry')} icon="refresh-cw" onPress={retry} full />
         <Button label={tr('error.screen.home')} variant="secondary" icon="home" onPress={() => { router.replace('/'); retry(); }} full />
       </View>
-      <Text variant="caption" center color="#5B4A5E" style={{ marginTop: spacing.sm }}>{tr('error.screen.emergency')}</Text>
+      <Text variant="caption" center color={C.textMuted} style={{ marginTop: spacing.sm }}>{tr('error.screen.emergency')}</Text>
       {/* Détail technique (aucune donnée personnelle) : à envoyer au support pour corriger le problème */}
-      <Text variant="caption" center color="#8A7A8C" selectable style={{ maxWidth: 360, marginTop: spacing.xs }} testID="error-detail">
+      <Text variant="caption" center color={C.textMuted} selectable style={{ maxWidth: 360, marginTop: spacing.xs }} testID="error-detail">
         {tr('error.screen.detail', { detail: `${error?.name ?? 'Error'}: ${(error?.message ?? '').slice(0, 160)}` })}
       </Text>
     </View>

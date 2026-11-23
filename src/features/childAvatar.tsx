@@ -1,7 +1,7 @@
 /** Photo facultative de l'enfant (espace privé du foyer, lien signé temporaire) ou ses initiales. */
 import React, { useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
-import { initialsColor } from '@/components/Illustrations';
+import { homiInitialsColor as initialsColor } from '@/features/homiColors';
 import { Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
 import { initials } from '@/lib/domain/child';
@@ -19,7 +19,7 @@ export function ChildAvatar({ child, size = 40 }: { child: Pick<Child, 'id' | 'f
   if (url) return <Image source={{ uri: url }} style={{ width: size, height: size, borderRadius: size / 2 }} accessibilityLabel={tr('u5.avatar.photo', { name: child.first_name })} />;
   return (
     <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: initialsColor(child.id), alignItems: 'center', justifyContent: 'center' }} accessibilityElementsHidden importantForAccessibility="no">
-      <Text variant={size > 48 ? 'heading' : 'small'} weight="bold" color="#2B2433">{initials(child.first_name)}</Text>
+      <Text variant={size > 48 ? 'heading' : 'small'} weight="bold" color="#1C1533">{initials(child.first_name)}</Text>
     </View>
   );
 }

@@ -2,6 +2,12 @@
 import { uuid } from '../uuid';
 import { t as tr } from '@/i18n';
 import { addDays, todayISO } from '../domain/dates';
+import { seedTodayHousehold } from './demoToday';
+import { seedChildcarePrep } from './demoChildcarePrep';
+import { seedAbsents } from './demoAbsents';
+import { seedFoyerTools } from './demoFoyerTools';
+import { seedPartiels2 } from './demoPartiels2';
+import { seedPartiels } from './demoPartiels';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -104,4 +110,16 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
       naps, quality, fatigue, mood, note, created_at: iso(ago * 24), updated_at: iso(ago * 24),
     });
   }
+
+  // « Aujourd'hui dans le foyer » : co-parent, missions et tâches du jour, événement, relais de ce soir
+  seedTodayHousehold({ userId, hid, childId: lina, T });
+  // « Avant la garde » : candidates, entretien, visite, planning, absences et pointages de Lina
+  seedChildcarePrep({ userId, hid, childId: lina, T });
+  // Laits infantiles de Lina et stock de lait maternel (27/11/2026)
+  seedAbsents({ userId, hid, childId: lina, T });
+  // Dépenses, animal et soins, portions préparées, lectures (outils du 28/11/2026)
+  seedFoyerTools({ userId, hid, childId: lina, T });
+  seedPartiels2({ userId, hid, babyId: lina, kidId: noe, T });
+  // Analyses, souvenir de grossesse, relais de biberons, tétées, DME et refus (numéros partiels du 29/11/2026)
+  seedPartiels({ userId, hid, childId: lina, T });
 }

@@ -5,6 +5,8 @@
  * Jamais « c'est normal », « aucun danger » ni « inutile de consulter » ; aucun diagnostic.
  * Symptôme intense, inhabituel ou inquiétant : informations de sécurité et contacts (maternité, professionnel, urgences).
  * Données strictement personnelles (jamais visibles du foyer). Gratuit.
+ * 22/11/2026 : l'historique devient un journal daté (sept jours, « rien de noté », fiche de correction dans le Tray :
+ * src/features/pregTrack/FeelJournal.tsx).
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -27,6 +29,8 @@ import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { frequentValues, withFrequentFirst } from '@/lib/domain/quickPicks';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
+import { FeelJournal } from '@/features/pregTrack/FeelJournal';
 
 const FREQS: Frequency[] = ['once', 'several', 'continuous'];
 const symLabel = (k: string) => tr(`care.sym.${k}` as TKey);
@@ -46,6 +50,8 @@ export default function Feel() {
   const del = useDeleteSymptom();
   const [d, setD] = useState<Draft>(EMPTY);
   const [cards, setCards] = useState<SymptomCard[] | null>(null);
+  // Les cartes (et leurs alertes de sécurité) remplacent le formulaire : un double appui sur « Enregistrer » ne les masque pas
+  const { arm, guard } = useTapShield();
   // Mes symptômes fréquents (d'après MES saisies) : en tête des choix et notables en un seul tap
   const frequent = useMemo(() => frequentValues(logs.map((l) => ({ value: l.symptom as SymptomKey, at: l.logged_at })), 4), [logs]);
   const options = useMemo(() => withFrequentFirst(symptomsFor(week), frequent), [week, frequent]);
@@ -69,6 +75,7 @@ export default function Feel() {
     const rows = d.symptoms.map((symptom) => ({ pregnancy_id: pregnancy?.id ?? null, symptom, intensity: d.intensity, started_at: startedAt(), frequency: d.frequency, note: d.note.trim() || null, week_sa: pregnancy ? week : null }));
     try {
       await save.mutateAsync({ id: d.id, rows });
+      arm();
       setCards(d.symptoms.map((symptom) => symptomCard({ symptom, intensity: d.intensity, frequency: d.frequency, weekSA: week, worried: d.worried })));
       toast(tr(d.id ? 'care.feel.updated' : 'care.feel.saved'), 'success');
       setD(EMPTY);
@@ -96,7 +103,7 @@ export default function Feel() {
   return (
     <Screen back title={tr('care.feel.title')} subtitle={pregnancy ? tr('care.feel.subtitle', { w: week }) : undefined}
       action={cards
-        ? { label: tr('care.feel.another'), icon: 'plus', onPress: () => setCards(null), testID: 'feel-another' }
+        ? { label: tr('care.feel.another'), icon: 'plus', onPress: guard(() => setCards(null)), testID: 'feel-another' }
         : { label: tr(d.id ? 'common.save' : 'care.feel.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'feel-save' }}>
       <TodaySummary items={[
         { icon: 'feather', value: String(todayCount), label: tr('care.feel.sumToday') },
@@ -150,26 +157,7 @@ export default function Feel() {
       )}
 
       <SectionTitle title={tr('care.feel.history')} />
-      {!logs.length ? <EmptyState icon="feather" title={tr('care.feel.none')} body={tr('care.feel.noneBody')} /> : null}
-      {logs.slice(0, 30).map((l) => (
-        <Card key={l.id} style={{ paddingVertical: spacing.sm }}>
-          <View testID={`feel-entry-${l.id}`}>
-            <Row style={{ alignItems: 'center' }}>
-              <View style={{ flex: 1 }}>
-                <Text weight="bold">{symLabel(l.symptom)}{l.intensity ? ` · ${tr(`care.feel.int${l.intensity}` as TKey).toLowerCase()}` : ''}</Text>
-                <Text variant="caption" muted>
-                  {formatDate(l.logged_at, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  {l.week_sa != null ? ` · ${tr('care.cal.sa', { w: l.week_sa })}` : ''}
-                  {l.frequency ? ` · ${tr(`care.feel.freq.${l.frequency}` as TKey).toLowerCase()}` : ''}
-                </Text>
-                {l.note ? <Text variant="small" muted>{l.note}</Text> : null}
-              </View>
-              <Button label={tr('care.feel.edit')} size="sm" variant="ghost" onPress={() => edit(l)} testID={`feel-edit-${l.id}`} />
-              <Button label={tr('common.delete')} size="sm" variant="ghost" onPress={() => remove(l)} testID={`feel-delete-${l.id}`} />
-            </Row>
-          </View>
-        </Card>
-      ))}
+      {!logs.length ? <EmptyState icon="feather" title={tr('care.feel.none')} body={tr('care.feel.noneBody')} /> : <FeelJournal logs={logs} onFullEdit={edit} onDelete={remove} />}
       <Text variant="caption" muted>{NOT_ADVICE}</Text>
       <Tappable accessibilityRole="link" onPress={() => router.push('/emergency')} style={{ minHeight: 40, justifyContent: 'center' }}>
         <Text variant="small" weight="bold" color={t.colors.primary}>{tr('care.feel.emergencyLink')}</Text>

@@ -8,6 +8,7 @@ import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useToast } from '@/components/Overlays';
 import { Tappable } from '@/components/Tappable';
 import { Button, haptic, Loading, Text } from '@/components/ui';
@@ -19,10 +20,13 @@ import { goBack } from '@/lib/links';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 export default function KidRoutineMode() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const toast = useToast();
   const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -47,7 +51,7 @@ export default function KidRoutineMode() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} testID="kid-mode"
-      contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md, alignSelf: 'center', width: '100%', maxWidth: 900 }}>
+      contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md, alignSelf: 'center', width: '100%', maxWidth: 900 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Tappable accessibilityRole="button" accessibilityLabel={tr('kr.parentsA11y')} accessibilityHint={tr('kr.parentsHint')} delayLongPress={600}
           onPress={() => toast(tr('kr.parentsHint'), 'info')} onLongPress={() => goBack('/family/kid-routines')} testID="kid-exit"
@@ -72,7 +76,7 @@ export default function KidRoutineMode() {
                 backgroundColor: ok ? t.colors.accentSoft : t.colors.surface, borderWidth: ok ? 3 : 1, borderColor: ok ? t.colors.success : t.colors.border, opacity: pressed ? 0.85 : 1 })}>
               <MaterialCommunityIcons name={s.icon as never} size={Math.min(84, tile * 0.5)} color={ok ? t.colors.success : t.colors.primary} />
               <Text weight="bold" center style={{ fontSize: 18, lineHeight: 22 }}>{s.label}</Text>
-              {ok ? <MaterialCommunityIcons name="check-circle" size={28} color={t.colors.success} style={{ position: 'absolute', top: 8, right: 8 }} /> : null}
+              <CheckMark checked={ok} size={30} color={t.colors.success} haptic style={{ position: 'absolute', top: 6, right: 6 }} />
             </Tappable>
           );
         })}

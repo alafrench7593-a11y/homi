@@ -18,25 +18,35 @@ import { applyTrialEligibility, billingDates } from '@/lib/purchases';
 import { trialDaysOf, type Plan } from '@/lib/premium/plans';
 
 const plan = (period: Plan['period'], id: string, trialDays: number): Plan => ({ id, period, months: period === 'annual' ? 12 : period === 'six_months' ? 6 : 1, price: 'x', amount: 1, currency: 'EUR', perMonth: null, savingsPct: null, trialDays, demo: false });
-const monthly = plan('monthly', 'aufildenous_premium_monthly', 3);
-const annual = plan('annual', 'aufildenous_premium_annual', 0);
+const monthly = plan('monthly', 'homi_premium_monthly', 3);
+const annual = plan('annual', 'homi_premium_annual', 0);
 
 beforeEach(() => mockCheck.mockReset());
 
 test('iOS éligible : l’essai de 3 jours du mensuel reste affiché ; seule la formule avec essai est vérifiée', async () => {
-  mockCheck.mockResolvedValue({ aufildenous_premium_monthly: { status: 2 } });
+  mockCheck.mockResolvedValue({ homi_premium_monthly: { status: 2 } });
   const out = await applyTrialEligibility([monthly, annual], 'ios');
   expect(out.map((p) => p.trialDays)).toEqual([3, 0]);
-  expect(mockCheck).toHaveBeenCalledWith(['aufildenous_premium_monthly']);
+  expect(mockCheck).toHaveBeenCalledWith(['homi_premium_monthly']);
 });
 
 test('iOS non éligible ou statut inconnu : prix normal, aucun essai promis', async () => {
-  mockCheck.mockResolvedValue({ aufildenous_premium_monthly: { status: 1 } });
+  mockCheck.mockResolvedValue({ homi_premium_monthly: { status: 1 } });
   expect((await applyTrialEligibility([monthly], 'ios'))[0].trialDays).toBe(0);
-  mockCheck.mockResolvedValue({ aufildenous_premium_monthly: { status: 0 } });
+  mockCheck.mockResolvedValue({ homi_premium_monthly: { status: 0 } });
   expect((await applyTrialEligibility([monthly], 'ios'))[0].trialDays).toBe(0);
   mockCheck.mockResolvedValue({});
   expect((await applyTrialEligibility([monthly], 'ios'))[0].trialDays).toBe(0);
+});
+
+test('iOS, 3 formules avec essai (grille 15/11/2026) : chacune vérifiée par Apple, l’essai n’est gardé que là où il est confirmé', async () => {
+  const six = plan('six_months', 'homi_premium_6months', 3);
+  const year = plan('annual', 'homi_premium_annual', 3);
+  mockCheck.mockResolvedValue({ homi_premium_monthly: { status: 2 }, homi_premium_6months: { status: 3 }, homi_premium_annual: { status: 2 } });
+  const out = await applyTrialEligibility([year, six, monthly], 'ios');
+  expect(mockCheck).toHaveBeenCalledWith(['homi_premium_annual', 'homi_premium_6months', 'homi_premium_monthly']);
+  // 6 mois : « aucune offre d'introduction » côté Apple → aucun essai promis
+  expect(out.map((p) => [p.id, p.trialDays])).toEqual([['homi_premium_annual', 3], ['homi_premium_6months', 0], ['homi_premium_monthly', 3]]);
 });
 
 test('iOS : erreur de la boutique → aucun essai promis', async () => {

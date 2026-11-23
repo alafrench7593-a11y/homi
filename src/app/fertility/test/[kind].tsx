@@ -198,7 +198,7 @@ export default function TestPhotoScreen() {
               {rules.map((r) => <Chip key={r.id} label={`${r.brand} — ${r.model}`} selected={ruleId === r.id} onPress={() => setRuleId(r.id)} />)}
               <Chip label={tr('u3.fertTest.other')} selected={ruleId === UNKNOWN_TEST_ID} onPress={() => setRuleId(UNKNOWN_TEST_ID)} />
             </View>
-            {errors.brand ? <Text variant="caption" color="#C2416E" style={{ marginTop: 4 }}>{errors.brand}</Text> : null}
+            {errors.brand ? <Text variant="caption" color="#A3243A" style={{ marginTop: 4 }}>{errors.brand}</Text> : null}
             {ruleId === UNKNOWN_TEST_ID && (
               <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
                 <Field label={tr('u3.fertTest.brandBox')} value={customBrand} onChangeText={setCustomBrand} error={errors.custom} maxLength={80} />

@@ -1,9 +1,11 @@
 /**
  * Communauté — composants partagés : avatars (illustrations originales ou photo), photos des publications,
  * carte de publication (réactions, commentaires, enregistrer, partager, menu modifier / supprimer / signaler / bloquer),
- * feuilles de signalement et de catégories. Identité graphique propre à Au fil de nous.
+ * feuilles de signalement et de catégories. Identité graphique propre à HOMI.
  */
 import { useBounceOn } from '@/components/Motion';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useState } from 'react';
 import { Animated, Image, Modal, Pressable, ScrollView, Share, useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
@@ -23,8 +25,10 @@ import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { BRAND } from '@/config/brand';
 import { accentOf, FolderSheet, MentionText, PollView, PremiumBadge, Tag } from '@/features/communitySocial';
 import { useCommunityAi, useFollowMember, usePinPost } from '@/lib/data/hooks-social';
+import { useReportConversation } from '@/lib/data/hooks-messages';
 import { usePremiumAccess } from '@/lib/data/hooks-premium';
 import { getLocale, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Motifs de signalement ; `label` est traduit à la lecture (langue courante). */
 export const REPORT_REASONS: { key: ReportReason; readonly label: string }[] = [
@@ -68,17 +72,17 @@ export function SpaceTile({ forum, selected, onPress }: { forum: Forum; selected
 /** Illustrations originales : un fond doux et un motif simple (aucun visage réel, aucune marque). */
 const PRESETS: Record<string, { bg: [string, string]; ink: string; d: string }> = {
   moon: { bg: ['#E7E1FF', '#C9BCFA'], ink: '#5B47B8', d: 'M38 14a18 18 0 1 0 12 30A16 16 0 0 1 38 14z' },
-  sun: { bg: ['#FFE9C7', '#FFC98F'], ink: '#C86A1A', d: 'M32 22a10 10 0 1 1 0 20a10 10 0 1 1 0-20zM32 8v7M32 49v7M8 32h7M49 32h7M15 15l5 5M44 44l5 5M49 15l-5 5M20 44l-5 5' },
+  sun: { bg: ['#F6ECDA', '#E9CFA4'], ink: '#76561D', d: 'M32 22a10 10 0 1 1 0 20a10 10 0 1 1 0-20zM32 8v7M32 49v7M8 32h7M49 32h7M15 15l5 5M44 44l5 5M49 15l-5 5M20 44l-5 5' },
   leaf: { bg: ['#DDF3E4', '#B7E3C4'], ink: '#2E7D4F', d: 'M16 48C16 26 30 14 50 14c0 20-12 34-34 34zM16 48l20-20' },
   cloud: { bg: ['#E2F0FB', '#BFDDF5'], ink: '#2F6E9E', d: 'M20 44a9 9 0 0 1 0-18a12 12 0 0 1 23-3a10 10 0 0 1 2 21z' },
-  star: { bg: ['#FFF2C9', '#FFDF85'], ink: '#B07A00', d: 'M32 12l6 13l14 2l-10 10l3 14l-13-7l-13 7l3-14l-10-10l14-2z' },
-  heart: { bg: ['#FFE0E8', '#FFB8CB'], ink: '#C2416E', d: 'M32 50S12 38 12 25a10 10 0 0 1 20-3a10 10 0 0 1 20 3c0 13-20 25-20 25z' },
+  star: { bg: ['#F6EFE4', '#E9CFA4'], ink: '#76561D', d: 'M32 12l6 13l14 2l-10 10l3 14l-13-7l-13 7l3-14l-10-10l14-2z' },
+  heart: { bg: ['#FBE8F1', '#F2C6DC'], ink: '#8E2A5A', d: 'M32 50S12 38 12 25a10 10 0 0 1 20-3a10 10 0 0 1 20 3c0 13-20 25-20 25z' },
   wave: { bg: ['#DDF5F4', '#AEE4E1'], ink: '#1F7C78', d: 'M10 30c6-6 11-6 16 0s10 6 16 0s10-6 16 0M10 42c6-6 11-6 16 0s10 6 16 0s10-6 16 0' },
-  flower: { bg: ['#FBE3F2', '#F2C0E0'], ink: '#A23C84', d: 'M32 24a6 6 0 1 1 0 12a6 6 0 1 1 0-12zM32 12a7 7 0 0 1 0 12M32 36a7 7 0 0 1 0 12M20 30a7 7 0 0 1 12 0M32 30a7 7 0 0 1 12 0' },
+  flower: { bg: ['#F4E8F7', '#E4C8EE'], ink: '#74348A', d: 'M32 24a6 6 0 1 1 0 12a6 6 0 1 1 0-12zM32 12a7 7 0 0 1 0 12M32 36a7 7 0 0 1 0 12M20 30a7 7 0 0 1 12 0M32 30a7 7 0 0 1 12 0' },
   bird: { bg: ['#E6EEFF', '#C3D3FF'], ink: '#3550A8', d: 'M12 38c10 2 18-2 22-10c4 6 10 8 18 6c-6 8-16 12-26 10c-6-1-10-3-14-6zM40 24l6-4' },
   whale: { bg: ['#DCEBF7', '#B3D2EC'], ink: '#24537D', d: 'M10 34c4-10 20-14 32-8c6 3 10 2 12-2c2 8-4 16-14 18c-12 3-26 0-30-8zM40 22c0-4 2-6 4-8' },
-  bear: { bg: ['#F3E6DA', '#E2C8B0'], ink: '#7A5233', d: 'M32 22a14 14 0 1 1 0 28a14 14 0 1 1 0-28zM20 22a5 5 0 1 1 0-1M44 22a5 5 0 1 1 0-1M28 36h1M35 36h1M30 42q2 2 4 0' },
-  rainbow: { bg: ['#FFE8E0', '#FFD0C2'], ink: '#B4533A', d: 'M12 46a20 20 0 0 1 40 0M18 46a14 14 0 0 1 28 0M24 46a8 8 0 0 1 16 0' },
+  bear: { bg: ['#F4F0FA', '#D9CCE6'], ink: '#584D72', d: 'M32 22a14 14 0 1 1 0 28a14 14 0 1 1 0-28zM20 22a5 5 0 1 1 0-1M44 22a5 5 0 1 1 0-1M28 36h1M35 36h1M30 42q2 2 4 0' },
+  rainbow: { bg: ['#EEE8FB', '#D9CCFA'], ink: '#5B2A86', d: 'M12 46a20 20 0 0 1 40 0M18 46a14 14 0 0 1 28 0M24 46a8 8 0 0 1 16 0' },
 };
 
 export function PresetAvatar({ preset, size = 44 }: { preset: string; size?: number }) {
@@ -107,7 +111,7 @@ export function Avatar({ path, preset, size = 44, anonymous, label }: { path?: s
   const t = useTheme();
   if (anonymous || (!path && !preset)) {
     return (
-      <View accessibilityLabel={label} style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: t.colors.border }}>
+      <View accessibilityLabel={label} style={{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt, ...glassEdge(t) }}>
         <Icon name={anonymous ? 'eye-off' : 'user'} size={size * 0.45} color={t.colors.textMuted} />
       </View>
     );
@@ -144,7 +148,7 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
   const w = Math.min(width, 900);
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose} accessibilityViewIsModal>
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('cm1.photo.close')} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(8,6,12,0.94)', alignItems: 'center', justifyContent: 'center' }}>
+      <Tappable pressScale={1} hoverLift={0} accessibilityRole="button" accessibilityLabel={tr('cm1.photo.close')} onPress={onClose} style={{ flex: 1, backgroundColor: 'rgba(8,6,12,0.94)', alignItems: 'center', justifyContent: 'center' }}>
         <CommunityImage path={ph.path} style={{ width: w, height: Math.min(height * 0.8, w / ratio) }} accessibilityLabel={tr('cm1.photo.position', { index: i + 1, total: photos.length })} />
         {photos.length > 1 ? (
           <Row style={{ marginTop: spacing.md }}>
@@ -153,25 +157,29 @@ export function PhotoViewer({ photos, index, onClose }: { photos: FeedPhoto[]; i
             <Chip label={tr('cm1.photo.next')} icon="chevron-right" onPress={() => setI((x) => (x + 1) % photos.length)} />
           </Row>
         ) : null}
-      </Pressable>
+      </Tappable>
     </Modal>
   );
 }
 
 // ─── Signaler / bloquer ────────────────────────────────────────────────────────────────────────────
 
-export function ReportSheet({ visible, onClose, postId, commentId, handle, anonymous }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string; handle?: string | null; anonymous?: boolean }) {
+export function ReportSheet({ visible, onClose, postId, commentId, handle, anonymous, conversationId, onBlocked }: { visible: boolean; onClose: () => void; postId?: string; commentId?: string; handle?: string | null; anonymous?: boolean;
+  /** Signalement depuis une conversation privée : les derniers messages de la personne sont joints pour la modération. */
+  conversationId?: string; onBlocked?: () => void }) {
   const toast = useToast();
   const reportM = useReport();
   const reportMember = useReportMember();
+  const reportConversation = useReportConversation();
   const blockM = useBlockAuthor();
   const blockMember = useBlockMember();
-  const pending = reportM.isPending || blockM.isPending || reportMember.isPending || blockMember.isPending;
+  const pending = reportM.isPending || blockM.isPending || reportMember.isPending || blockMember.isPending || reportConversation.isPending;
   const memberOnly = !postId && !commentId && !!handle;
   async function report(reason: ReportReason) {
     if (pending) return;
     try {
-      if (memberOnly) await reportMember.mutateAsync({ handle: handle!, reason });
+      if (memberOnly && conversationId) await reportConversation.mutateAsync({ id: conversationId, reason });
+      else if (memberOnly) await reportMember.mutateAsync({ handle: handle!, reason });
       else await reportM.mutateAsync({ postId, commentId, reason });
       toast(tr('cm1.report.thanks'));
       onClose();
@@ -187,6 +195,7 @@ export function ReportSheet({ visible, onClose, postId, commentId, handle, anony
       else await blockM.mutateAsync({ postId, commentId });
       toast(tr('cm1.report.blocked'));
       onClose();
+      onBlocked?.();
     } catch (e) {
       toast(friendlyError(e, tr('cm1.report.blockError')), 'error');
     }
@@ -302,7 +311,8 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
   return (
     <Card onPress={full ? undefined : openPost} accessibilityLabel={post.title ? tr('cm1.post.a11yTitled', { author, title: post.title }) : tr('cm1.post.a11y', { author })} testID={full ? 'post-full' : `post-${post.id}`}>
       <Row style={{ alignItems: 'center' }}>
-        <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? tr('cm1.post.viewProfileOf', { name: author }) : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar">
+        <Tappable accessibilityRole={post.author_handle ? 'button' : 'image'} accessibilityLabel={post.author_handle ? tr('cm1.post.viewProfileOf', { name: author }) : author} disabled={!post.author_handle} onPress={openProfile} testID="post-author-avatar"
+          style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
           <View style={accent ? { borderRadius: 22, borderWidth: 2, borderColor: accent, padding: 1 } : undefined}>
             <Avatar path={post.avatar_path} preset={post.avatar_preset} anonymous={post.anonymous} size={accent ? 34 : 38} />
           </View>
@@ -376,8 +386,8 @@ export function CategorySheet({ visible, onClose, forums, selected, onSelect }: 
   return (
     <Sheet visible={visible} onClose={onClose} title={tr('cm1.categories.title')}>
       <ScrollView>
-        {[...forums].sort((a, b) => a.position - b.position).map((f) => (
-          <Tappable key={f.id} accessibilityRole="button" accessibilityState={{ selected: selected === f.id }} onPress={() => { onSelect(f.id); onClose(); }} testID={`category-${f.slug}`}
+        <MotionList>{[...forums].sort((a, b) => a.position - b.position).map((f) => (
+          <MotionItem key={f.id}><Tappable key={f.id} accessibilityRole="button" accessibilityState={{ selected: selected === f.id }} onPress={() => { onSelect(f.id); onClose(); }} testID={`category-${f.slug}`}
             style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.xs, minHeight: MIN_TOUCH, alignItems: 'center' }}>
             <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary + '14' }}><Icon name={spaceIcon(f)} size={18} color={t.colors.primary} /></View>
             <View style={{ flex: 1 }}>
@@ -385,8 +395,8 @@ export function CategorySheet({ visible, onClose, forums, selected, onSelect }: 
               <Text variant="caption" muted>{f.description}</Text>
             </View>
             {selected === f.id ? <Icon name="check" size={18} color={t.colors.primary} /> : null}
-          </Tappable>
-        ))}
+          </Tappable></MotionItem>
+        ))}</MotionList>
       </ScrollView>
     </Sheet>
   );

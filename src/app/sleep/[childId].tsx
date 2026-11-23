@@ -9,8 +9,9 @@
  *    professionnel — toujours gratuits.
  * Les heures affichées sont des estimations personnalisables, jamais des obligations ni des promesses.
  */
+import { useTheme } from '@/theme/ThemeProvider';
 import { Tappable } from '@/components/Tappable';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -19,14 +20,19 @@ import { DayStrip } from '@/features/dayStrip/DayStrip';
 import { nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { BarChart } from '@/components/Charts';
 import { PremiumSection } from '@/components/Premium';
+import { AuraAnalysis, AuraSleepAnalysis } from '@/features/aura/AuraAnalysis';
+import { napPayload } from '@/features/aura/analysis';
+import { NapDayBand, NapFacts, NapHero, napState } from '@/features/napLive/NapNow';
+import { NapSessionTray } from '@/features/napLive/NapSessionTray';
+import { GlassButton, GlassSegmentedControl } from '@/components/glass';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
-import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons, SleepTimeline } from '@/features/sleep';
+import { FeedbackPrompt, SleepEditSheet, SleepRecordButtons } from '@/features/sleep';
 import { WakeCheckReminder } from '@/features/sleepWakeCheck';
 import { backend, eq } from '@/lib/backend';
-import { useChild, useChildren, useInvalidate, useMemberships, usePremium, useReminders, useRows } from '@/lib/data/hooks';
+import { useChild, useChildren, useInvalidate, useMemberships, useReminders, useRows } from '@/lib/data/hooks';
 import { openLink } from '@/lib/links';
 import { friendlyError, useDeleteReminder, useSaveReminder } from '@/lib/data/hooks-settings';
 import { saveSleepProfile, useNightFeeds, useSleepNotificationSync, useSleepPlan, type SleepProfileRow } from '@/lib/data/hooks-sleepPlanner';
@@ -41,6 +47,7 @@ import { notificationsSupported } from '@/lib/notifications';
 import type { Child, Sleep } from '@/lib/types';
 import { palette, spacing } from '@/theme/tokens';
 import { formatNumber, localeTag, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Tab = 'today' | 'profile' | 'alerts' | 'trends' | 'safety';
 const TABS = [
@@ -59,7 +66,7 @@ function ageTips(months: number): string[] {
 }
 
 export default function SleepPlanner() {
-  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string }>();
+  const params = useLocalSearchParams<{ childId: string; tab?: Tab; routine?: string; nap?: string; fix?: string; edit?: string }>();
   const childId = params.childId;
   const child = useChild(childId);
   const childrenQ = useChildren();
@@ -83,23 +90,29 @@ export default function SleepPlanner() {
       </Screen>
     );
   }
-  return <PlannerBody child={child} tab={tab} setTab={setTab} />;
+  return <PlannerBody child={child} tab={tab} setTab={setTab} nap={typeof params.nap === 'string' ? params.nap : null} fix={typeof params.fix === 'string' ? params.fix : params.edit === '1' ? 'edit' : null} />;
 }
 
-function PlannerBody({ child, tab, setTab }: { child: Child; tab: Tab; setTab: (t: Tab) => void }) {
+function PlannerBody({ child, tab, setTab, nap, fix }: { child: Child; tab: Tab; setTab: (t: Tab) => void; nap: string | null; fix: string | null }) {
   const data = useSleepPlan(child);
   const { plan, profile } = data;
   useSleepNotificationSync(child, plan, profile);
   const age = childAge(child.birth_date);
   return (
-    <Screen back title={tr('u4.sp.titleOf', { name: child.first_name })} subtitle={plan?.age.corrected ? tr('u4.sp.corrected', { age: age.label }) : age.label}>
-      <Row wrap testID="sleep-tabs">
-        {TABS.map((x) => <Chip key={x.key} label={tr(x.label)} selected={tab === x.key} onPress={() => setTab(x.key)} accessibilityLabel={tr('u4.sp.tabA11y', { label: tr(x.label) })} />)}
-      </Row>
-      {tab === 'today' ? <TodayTab child={child} data={data} goSafety={() => setTab('safety')} goProfile={() => setTab('profile')} /> : null}
-      {tab === 'profile' ? <ProfileTab child={child} profile={profile} /> : null}
-      {tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
+    <Screen back title={tr('nn.app.title')} subtitle={`${child.first_name} · ${plan?.age.corrected ? tr('u4.sp.corrected', { age: age.label }) : age.label}`}>
+      {/* Sections : un sélecteur de verre sur une ligne ; Profil et Notifications réunis dans « Réglages » */}
+      <GlassSegmentedControl testID="sleep-tabs" label={tr('nn.tab.label')} value={tab === 'alerts' ? 'profile' : tab} onChange={(v) => setTab(v)}
+        options={[
+          { value: 'today' as Tab, label: tr('u4.sp.tab.today'), testID: 'sleep-tab-today' },
+          { value: 'trends' as Tab, label: tr('u4.sp.tab.trends'), testID: 'sleep-tab-trends' },
+          { value: 'profile' as Tab, label: tr('nn.tab.settings'), testID: 'sleep-tab-settings' },
+        ]} />
+      {tab === 'today' ? <TodayTab child={child} data={data} focusNap={nap} fixTo={fix} goSafety={() => setTab('safety')} goProfile={() => setTab('profile')} /> : null}
+      {tab === 'profile' || tab === 'alerts' ? <ProfileTab child={child} profile={profile} /> : null}
+      {tab === 'profile' || tab === 'alerts' ? <AlertsTab child={child} data={data} /> : null}
       {tab === 'trends' ? <TrendsTab child={child} data={data} /> : null}
+      {/* « Analyser avec HOMI Aura » : moyennes de la semaine, âge en mois, après aperçu et accord (docs/HOMI_AURA.md) */}
+      {tab === 'trends' ? <AuraSleepAnalysis child={child} /> : null}
       {tab === 'safety' ? <SafetyTab child={child} data={data} /> : null}
       <Banner tone="info">{tr('u4.sp.banner')}</Banner>
     </Screen>
@@ -110,8 +123,7 @@ type PlanData = ReturnType<typeof useSleepPlan>;
 
 // ─── Aujourd'hui ───────────────────────────────────────────────────────────────────────────────────
 
-function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: PlanData; goSafety: () => void; goProfile: () => void }) {
-  const premium = usePremium();
+function TodayTab({ child, data, focusNap, fixTo, goSafety, goProfile }: { child: Child; data: PlanData; focusNap: string | null; fixTo: string | null; goSafety: () => void; goProfile: () => void }) {
   const toast = useToast();
   const saveReminder = useSaveReminder();
   const deleteReminder = useDeleteReminder();
@@ -119,6 +131,31 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
   const { plan, sleeps, profile, feedback, now, loading } = data;
   const [editing, setEditing] = useState<Sleep | null>(null);
   const feeds = useNightFeeds(child.id);
+  const nap = useMemo(() => napState(child, sleeps as Sleep[], now), [child, sleeps, now]);
+  const [factsOpen, setFactsOpen] = useState(0);
+  // Session sélectionnée (lien « ?nap= » depuis l'accueil) et sa feuille ; la sélection est gardée dans l'adresse :
+  // au retour d'Aura, le même point est sélectionné
+  const [selNap, setSelNap] = useState<string | null>(focusNap);
+  // Session ouverte (lien de l'accueil, toucher sur la frise) : la frise zoome sur elle à échelle figée
+  const [zoomNap, setZoomNap] = useState<string | null>(focusNap);
+  const [traySession, setTraySession] = useState<Sleep | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const openSession = (s: Sleep) => { setSelNap(s.id); setZoomNap(s.id); router.setParams({ nap: s.id }); setTraySession(s); setTrayOpen(true); };
+  // Carte d'Aura « Corriger cette sieste » (?nap=…&fix=HH:MM) : la fiche s'ouvre une fois, sur la modification de la
+  // fin, avec l'heure proposée en valeur provisoire (Annuler / Enregistrer restent au parent)
+  // « ?edit=1 » (Aura, « je me suis trompé sur sa dernière sieste ») : la fiche s'ouvre, sans heure proposée
+  const editOnly = fixTo === 'edit';
+  const [fixView, setFixView] = useState<string | null>(editOnly ? null : fixTo);
+  const [editView, setEditView] = useState(editOnly);
+  const fixOpened = useRef(false);
+  useEffect(() => {
+    if (fixOpened.current || !fixTo || !focusNap || !sleeps) return;
+    const s = (sleeps as Sleep[]).find((x) => x.id === focusNap && x.child_id === child.id);
+    if (!s) return;
+    fixOpened.current = true;
+    openSession(s);
+    router.setParams({ fix: undefined, edit: undefined } as never);
+  }, [fixTo, focusNap, sleeps]); // eslint-disable-line react-hooks/exhaustive-deps
   const night = useMemo(() => lastNightReport(sleeps, child.id, feeds, now), [sleeps, feeds, child.id, now]);
   const name = child.first_name;
   if (loading || !plan) return <Skeleton rows={3} />;
@@ -140,28 +177,36 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
 
   return (
     <View style={{ gap: spacing.sm }}>
-      <TodaySummary testID="sleep-today" items={[
-        { icon: 'sun', value: String(plan.napsDone ?? 0), label: tr('u4.sp.sumNaps', { count: plan.napsDone ?? 0 }) },
-        { icon: 'clock', value: plan.daySleepMinutes ? span(plan.daySleepMinutes) : '—', label: tr('u4.sp.sumDay') },
-        { icon: 'moon', value: night ? String(night.wakings) : '—', label: tr('u4.sp.sumWakings') },
-      ]} />
-      <DayStrip testID="sleep-day-strip" title={tr('u4.sp.dayStrip')} now={nowMinute(now, now)}
-        events={toDayEvents('sleep', sleeps.filter((x) => x.child_id === child.id), now, now)}
-        empty={tr('u4.sp.stripEmpty', { name })} />
-      <Card>
-        <Text variant="heading" testID="sleep-state">{state.text}</Text>
-        {plan.assumedWake ? <Text variant="caption" muted>{tr('u4.sp.assumed', { time: hm(profile?.usual_wake) })}</Text> : null}
-        {plan.state === 'stale' ? <Text variant="small" muted>{tr('u4.sp.stale')}</Text> : null}
-        <View style={{ marginTop: spacing.sm }}><SleepRecordButtons child={child} plan={plan} /></View>
-        {plan.state === 'asleep_nap' ? <View style={{ marginTop: spacing.sm }}><WakeCheckReminder child={child} /></View> : null}
-      </Card>
+      {/* 1 · Premier regard : qui, depuis quand, où en est la sieste, la commande utile */}
+      <NapHero child={child} state={nap} now={now} actions={(
+        <View style={{ gap: spacing.sm }}>
+          <SleepRecordButtons child={child} plan={plan} />
+          {plan.assumedWake ? <Text variant="caption" muted>{tr('u4.sp.assumed', { time: hm(profile?.usual_wake) })}</Text> : null}
+          {plan.state === 'stale' ? <Text variant="small" muted>{tr('u4.sp.stale')}</Text> : null}
+        </View>
+      )} />
+      {/* 2 · Exploration : la journée, touchable */}
+      <NapDayBand child={child} state={nap} now={now} onEdit={setEditing} selectedId={selNap}
+        onSelect={(id) => { setSelNap(id); if (id && id !== 'window') router.setParams({ nap: id }); }} onOpenSession={openSession}
+        focusId={zoomNap} onClearFocus={() => setZoomNap(null)} />
+      {/* 3 · Interprétation : faits calculés (gratuits), puis Aura (crédits annoncés) */}
+      <NapFacts state={nap} open={factsOpen} />
+      {plan.state === 'asleep_nap' ? <WakeCheckReminder child={child} /> : null}
+      {nap.open && nap.window ? (
+        <AuraAnalysis kind="nap" testID="aura-analysis-nap"
+          data={napPayload({ startedAt: nap.open.started_at, now, ongoing: true, ageMonths: childAge(child.birth_date).months ?? null, samples: nap.window.samples })}
+          followUps={<>
+            <GlassButton size="sm" variant="secondary" icon="list" label={tr('nn.an.compare')} onPress={() => setFactsOpen((v) => v + 1)} testID="nap-an-compare" />
+            <GlassButton size="sm" variant="tertiary" icon="repeat" label={tr('nn.an.relay')} onPress={() => router.push('/family/missions')} testID="nap-an-relay" />
+          </>} />
+      ) : null}
 
       <PremiumSection feature="sleep_insights" name={name}
         preview={<Text variant="small">{tr('u4.sp.previewPrem', { state: state.text, name, basis: plan.samples ? tr('u4.sp.basisSamples', { n: plan.samples }) : tr('u4.sp.basisAge') })}</Text>}>
         <View style={{ gap: spacing.sm }}>
           <View testID="sleep-next">
             <Card tone="soft">
-              {estimates.length ? estimates.map((l) => <Text key={l.key} weight={l.key === 'nap' || l.key === 'bedtime' ? 'bold' : undefined} testID={`sleep-line-${l.key}`}>{l.text}</Text>)
+              {estimates.length ? <MotionList>{estimates.map((l) => <MotionItem key={l.key}><Text key={l.key} weight={l.key === 'nap' || l.key === 'bedtime' ? 'bold' : undefined} testID={`sleep-line-${l.key}`}>{l.text}</Text></MotionItem>)}</MotionList>
                 : <Text variant="small" muted>{plan.state === 'asleep_night' || plan.state === 'night_waking' ? tr('u4.sp.nightNoNap') : tr('u4.sp.noteToEstimate')}</Text>}
               <Text variant="caption" muted style={{ marginTop: 4 }} testID="sleep-basis">{tr('u4.sp.basis', { basis: basisText(plan, name) })}</Text>
               <Row wrap style={{ marginTop: 4 }}>
@@ -174,11 +219,7 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
         </View>
       </PremiumSection>
 
-      <SectionTitle title={tr('u4.sl.dayPlan')} />
-      <Card>
-        <SleepTimeline plan={plan} showEstimates={premium} now={now} onEdit={(id) => setEditing((sleeps as Sleep[]).find((s) => s.id === id) ?? null)} />
-        <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u4.sp.touchEdit')}</Text>
-      </Card>
+      {/* « Planning de la journée » fusionné dans la frise (22/11/2026) : sessions touchables sous la frise */}
 
       {persistent ? (
         <Banner tone="info" title={tr('u4.nh.lasting')} action={<Button size="sm" variant="secondary" label={tr('u4.sp.prepInfo')} onPress={goSafety} testID="sleep-pro-link" />}>
@@ -187,11 +228,22 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
       ) : null}
 
       <Row wrap>
+        <GlassButton variant="secondary" icon="grid" label={tr('nn.cat.open')} onPress={() => router.push('/tools/sleep' as never)} testID="sleep-category-link" />
+        <GlassButton variant="secondary" icon="send" label={tr('nn.home.relay')} onPress={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)} testID="sleep-relay-link" />
+        <GlassButton variant="tertiary" icon="shield" label={tr('u4.sp.tab.safety')} onPress={goSafety} testID="sleep-safety-link" />
+      </Row>
+      <Row wrap>
         <Button size="sm" variant="secondary" icon="heart" label={tr('u4.nh.title')} onPress={() => router.push(`/sleep/help/${child.id}` as never)} testID="sleep-help-link" />
         <Button size="sm" variant="ghost" icon="moon" label={tr('u4.tonight.title')} onPress={() => router.push({ pathname: '/sleep/tonight', params: { child: child.id } } as never)} testID="sleep-tonight-link" />
         <Button size="sm" variant="ghost" icon="edit-3" label={tr('u4.sl.logPast')} onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'sleep', child: child.id } })} />
       </Row>
       <SleepEditSheet child={child} sleep={editing} all={sleeps as Sleep[]} onClose={() => setEditing(null)} />
+      <NapSessionTray child={child} all={sleeps as Sleep[]} session={traySession ? (sleeps as Sleep[]).find((x) => x.id === traySession.id) ?? null : null}
+        open={trayOpen} onOpenChange={(o) => { setTrayOpen(o); if (!o) { setFixView(null); setEditView(false); } }} onEdit={setEditing}
+        initialView={fixView || editView ? 'edit' : 'session'} proposedEndText={fixView}
+        onRelay={() => router.push({ pathname: '/family/relay', params: { child: child.id } } as never)}
+        onOpenOther={(id) => { const o = (sleeps as Sleep[]).find((x) => x.id === id); if (o) setTimeout(() => openSession(o), 350); }}
+        onAnalyze={(s) => router.push({ pathname: '/assistant/session', params: { child: child.id, sleep: s.id } } as never)} />
     </View>
   );
 }
@@ -199,6 +251,7 @@ function TodayTab({ child, data, goSafety, goProfile }: { child: Child; data: Pl
 // ─── Profil ────────────────────────────────────────────────────────────────────────────────────────
 
 function ProfileTab({ child, profile }: { child: Child; profile: SleepProfileRow | null }) {
+  const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const [wake, setWake] = useState(hm(profile?.usual_wake));
@@ -262,7 +315,7 @@ function ProfileTab({ child, profile }: { child: Child; profile: SleepProfileRow
         <Row wrap>{DIFFICULTIES.map((d) => <Chip key={d} label={DIFFICULTY_LABEL[d]} selected={diffs.includes(d)} onPress={() => setDiffs(diffs.includes(d) ? diffs.filter((x) => x !== d) : [...diffs, d])} />)}</Row>
         <Text variant="caption" muted>{tr('u4.sp.diffNote')}</Text>
       </Card>
-      {error ? <Text variant="small" color={palette.danger}>{error}</Text> : null}
+      {error ? <Text variant="small" color={t.colors.danger}>{error}</Text> : null}
       <Button label={tr('u4.sp.saveProfile')} onPress={save} loading={busy} testID="profile-save" />
       <BedtimeRoutine child={child} profileBedtime={hm(profile?.usual_bedtime)} />
     </View>
@@ -387,7 +440,7 @@ function AlertsTab({ child, data }: { child: Child; data: PlanData }) {
         <SectionTitle title={tr('u4.sp.plannedToday')} />
         <View testID="notify-preview">
           <Card tone="soft">
-            {preview.length ? preview.map((n) => <Text key={n.id} variant="small">{`${clock(n.at)} — ${n.body}`}</Text>)
+            {preview.length ? <MotionList>{preview.map((n) => <MotionItem key={n.id}><Text key={n.id} variant="small">{`${clock(n.at)} — ${n.body}`}</Text></MotionItem>)}</MotionList>
               : <Text variant="small" muted>{tr('u4.sp.noneComing')}</Text>}
             <Text variant="caption" muted style={{ marginTop: 4 }}>
               {notificationsSupported ? tr('u4.sp.scheduledPhone') : tr('u4.sp.notOnWeb')}
@@ -479,6 +532,7 @@ function TrendsTab({ child, data }: { child: Child; data: PlanData }) {
 // ─── Sécurité et professionnel (toujours gratuit) ──────────────────────────────────────────────────
 
 function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
+  const t = useTheme();
   const toast = useToast();
   const { sleeps, profile, now } = data;
   const age = childAge(child.birth_date);
@@ -499,7 +553,7 @@ function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u4.sp.officialSrc')}</Text>
         {SAFE_SLEEP_SOURCES.map((s) => (
           <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
-            <Text variant="caption" color={palette.lavenderInk} style={{ flex: 1 }}>
+            <Text variant="caption" color={t.colors.lavender} style={{ flex: 1 }}>
               {tr('u4.sp.srcLine', { label: s.label, pub: new Date(`${s.published}T12:00:00`).toLocaleDateString(localeTag()), cons: new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString(localeTag()) })}
             </Text>
           </Tappable>

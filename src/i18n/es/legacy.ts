@@ -31,7 +31,7 @@ export const legacy: Messages<typeof fr> = {
   "ask.disclaimer": "Asistente de inteligencia artificial. No sustituye a un profesional sanitario.",
   "emergency.title": "Necesito ayuda ahora",
   "emergency.subtitle": "Estos números son gratuitos y accesibles sin cuenta.",
-  "premium.title": "Au fil de nous Premium",
+  "premium.title": "HOMI Premium",
   "premium.locked": "Disponible con la suscripción",
   "demo.banner": "Modo demostración: tus datos se quedan en este dispositivo.",
   "auth.signIn": "Iniciar sesión",

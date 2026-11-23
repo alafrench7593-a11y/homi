@@ -1,27 +1,41 @@
-/** Primitives d'interface du design system « Au fil de nous ». */
-import { NATIVE_DRIVER } from '@/theme/tokens';
+/**
+ * Primitives d'interface du design system HOMI (règles et jetons : DESIGN_SYSTEM.md, src/theme/tokens.ts).
+ * v3 « désert sci-fi » : surfaces mates pour le contenu, verre givré / optique pour les commandes (src/components/surfaces),
+ * famille de commandes (src/components/controls), voiles d'état.
+ * API stable : ~218 écrans en dépendent ; toute évolution ajoute des options, n'en retire aucune.
+ */
+import { CardLens } from './glass/liquid/CardLens';
+import { isDarkFill, WhoopSheen } from './stage/WhoopSheen';
 import React from 'react';
 import {
-  ActivityIndicator, Animated, Easing, Pressable, StyleSheet, Text as RNText, TextInput, View,
+  ActivityIndicator, Animated, Easing, InputAccessoryView, Keyboard, Platform, Pressable, StyleSheet, Text as RNText, TextInput, View,
   type GestureResponderEvent, type PressableProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle,
   useWindowDimensions,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+import ReAnimated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { fonts, MIN_TOUCH, NACRE, radius, spacing, typeScale } from '@/theme/tokens';
+import {
+  alpha, bannerColors, cardTintOf, controlSize, fonts, glassOf, linesFor, linesOf, MIN_TOUCH, physicalShadow, primaryGradient, radius, spacing, themes, typeScale, typography,
+  type BannerTone, type Theme, type TypographyRole,
+} from '@/theme/tokens';
+import { GlowCard, type GlowEmphasis } from './GlowCard';
+import { ChoiceGroup } from './controls/ChoiceGroup';
+import { useMotion } from '@/motion/useMotion';
 import { useUiStore } from '@/lib/store';
 import { GlassSurface } from './Glass';
 import { linkFrame } from './linkFrame';
-import { usePop, usePressMotion, useShake, useTilt } from './Motion';
+import { usePop, usePressMotion, useShake } from './Motion';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { duration, feedback, hapticsSupported, interaction, shakeX, springTo, successPulse, timeTo } from '@/theme/motion';
 import { Tappable } from './Tappable';
 import { Appear } from './Appear';
-import { useKeyboardScope } from './keyboard';
+import { needsKeyboardAccessory, useKeyboardScope } from './keyboard';
 import { t as tr } from '@/i18n';
 import { friendlyErrorMessage } from '@/lib/errors';
 import { useToast } from './Overlays';
+import { cappedScale, useFontScale } from '@/theme/fontScale';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 
@@ -52,16 +66,29 @@ interface AppTextProps extends TextProps {
   italic?: boolean;
 }
 
+/**
+ * Variante → rôle typographique (tokens.ts) : le plafond d'agrandissement suit le rôle (un titre géant reste dans
+ * l'écran avec la plus grande taille de texte du téléphone, le texte courant grandit jusqu'à 1,7×).
+ */
+const ROLE: Record<Variant, TypographyRole> = { hero: 'display', title: 'headingXL', heading: 'headingM', body: 'bodyM', small: 'bodyS', caption: 'caption', label: 'label' };
+
+const IS_WEB = Platform.OS === 'web';
+
 export function Text({ variant = 'body', muted, color, weight, center, italic, style, intentionalTruncation, ...rest }: AppTextProps) {
   const t = useTheme();
   const display = variant === 'hero' || variant === 'title';
   const family = italic ? fonts.displayItalic : display ? fonts.display : variant === 'heading' ? fonts.displayMedium : weight === 'bold' ? fonts.bodyBold : weight === 'medium' || variant === 'label' ? fonts.bodyMedium : fonts.body;
   const scale = variant === 'label' ? typeScale.small : typeScale[variant];
+  const role = typography[ROLE[variant]];
+  // Web : le plafond d'agrandissement est publié (data-fsmax) pour l'audit de mise en page, qui simule la taille de
+  // texte du téléphone (react-native-web n'applique pas maxFontSizeMultiplier) — voir e2e/audit_ux_detect.js
+  const cap = rest.maxFontSizeMultiplier ?? role.maxScale;
+  const dataSet = IS_WEB ? (intentionalTruncation ? { truncate: 'intentional', fsmax: String(cap) } : { fsmax: String(cap) }) : intentionalTruncation ? { truncate: 'intentional' } : null;
   return (
     <RNText
-      maxFontSizeMultiplier={1.7}
-      style={[{ color: color ?? (muted ? t.colors.textMuted : t.colors.text), fontFamily: family, ...scale, textAlign: center ? 'center' : undefined }, variant === 'label' && { letterSpacing: 0.5 }, style]}
-      {...(intentionalTruncation ? ({ dataSet: { truncate: 'intentional' } } as object) : null)}
+      maxFontSizeMultiplier={role.maxScale}
+      style={[{ color: color ?? (muted ? t.colors.textMuted : t.colors.text), fontFamily: family, ...scale, textAlign: center ? 'center' : undefined }, variant === 'label' && { letterSpacing: typography.label.letterSpacing }, style]}
+      {...(dataSet ? ({ dataSet } as object) : null)}
       {...rest}
     />
   );
@@ -82,36 +109,57 @@ interface CardProps {
   accessibilityHint?: string;
   padded?: boolean;
   testID?: string;
+  /**
+   * v2 : carte mise en avant (filet lumineux en dégradé + halo, voir GlowCard). `selected` : carte choisie dans un
+   * groupe (au repos : contour statique discret) ; `emphasis` : action importante ou moment de validation.
+   * À réserver à UN élément à la fois ; jamais pour toutes les cartes d'une liste.
+   */
+  selected?: boolean;
+  emphasis?: GlowEmphasis;
 }
 
-export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID }: CardProps) {
+export function Card({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID, selected, emphasis }: CardProps) {
+  if (selected !== undefined || emphasis) {
+    return (
+      <GlowCard active={selected ?? true} emphasis={emphasis ?? 'selected'} onPress={onPress} style={style} padded={padded} testID={testID} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint}>
+        {children}
+      </GlowCard>
+    );
+  }
+  return <PlainCard {...{ children, onPress, tone, style, accessibilityLabel, accessibilityHint, padded, testID }} />;
+}
+
+function PlainCard({ children, onPress, tone = 'surface', style, accessibilityLabel, accessibilityHint, padded = true, testID }: CardProps) {
   const t = useTheme();
   const press = usePressMotion({ pressed: 0.985, hoverLift: -1 });
-  const tilt = useTilt(1);
+  const tint = cardTintOf(t);
   const bg = {
     surface: t.colors.surface,
-    soft: t.isDark ? 'rgba(231,192,143,0.10)' : 'rgba(250,234,223,0.7)',
-    lavender: t.isDark ? 'rgba(195,178,255,0.12)' : 'rgba(225,215,255,0.6)',
-    night: '#1E0F1A',
-    gold: t.isDark ? 'rgba(231,192,143,0.14)' : 'rgba(240,215,180,0.55)',
+    soft: tint.soft,
+    lavender: tint.lavender,
+    // Carte « nuit » : une scène graphite posée sur la page, même en clair (texte perle dessus)
+    night: t.tokens.inverse.fill,
+    gold: tint.gold,
     danger: t.colors.dangerSoft,
   }[tone];
-  // Verre liquide pour les cartes translucides ; les cartes pleines (nuit, alerte) restent opaques
-  const glass = tone !== 'night' && tone !== 'danger';
-  const content = glass ? (
+  // Verre lisible pour les cartes translucides ; les cartes pleines (nuit, alerte) restent opaques
+  const isGlass = tone !== 'night' && tone !== 'danger';
+  const content = isGlass ? (
     <GlassSurface
       fill={bg}
-      borderColor={tone === 'surface' ? t.colors.border : 'transparent'}
+      // Cartes teintées : liseré lumineux plus discret (la teinte suffit à les détacher), sans ombre portée
+      borderColor={tone === 'surface' ? undefined : glassOf(t).inset.edge}
       depth={onPress ? 2 : 1}
       padded={padded ? spacing.md : 0}
       shadow={tone === 'surface'}
-      sheen={onPress && tilt.enabled ? { x: tilt.rx, y: tilt.ry } : undefined}
       style={style}
     >
       {children}
     </GlassSurface>
   ) : (
-    <View style={[styles.card, { backgroundColor: bg, borderColor: 'transparent', padding: padded ? spacing.md : 0 }, style]}>
+    <View style={[styles.card, { backgroundColor: bg, borderColor: tone === 'danger' ? bannerColors(t).danger.edge : t.tokens.inverse.edge, padding: padded ? spacing.md : 0 },
+      t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) }, style]}>
+      {tone === 'night' && t.name !== 'night' ? <WhoopSheen radius={radius.lg} /> : null}
       {children}
     </View>
   );
@@ -123,13 +171,12 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
         onPress();
       }}
       {...press.handlers}
-      onLayout={tilt.onLayout}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       testID={testID}
     >
-      <Animated.View style={[press.style, tilt.style]} {...(tilt.webHandlers as object)}>
+      <Animated.View style={press.style}>
         {content}
       </Animated.View>
     </Pressable>
@@ -138,20 +185,37 @@ export function Card({ children, onPress, tone = 'surface', style, accessibility
 
 // ---------------------------------------------------------------- Bouton
 /**
- * Bouton unique de l'application (refonte 2026 : sobre, net, cohérent).
- * Hiérarchie : primary (plein), secondary (fond discret + liseré), outline (liseré couleur), ghost (sans fond),
- * danger (= destructive), night (mode nuit). Tailles sm / md / lg ; hauteur minimale, jamais fixe : un libellé long
- * passe à la ligne. Forme pilule ; bouton principal en dégradé cuivre doré avec reflet, secondaire en verre dépoli
- * au liseré champagne (refonte « moderne et élégante » du 26/10/2026), ombres chaudes et diffuses.
- * États : survol (web, 180 ms : voile de couleur), appui (enfoncement 0,98 + voile plus marqué), focus clavier
- * (anneau global, src/components/WebInteractionStyles.tsx), désactivé (atténué, sans ombre), chargement
- * (indicateur à la place du libellé, sans changement de taille). « Réduire les animations » : états immédiats.
- * Si `onPress` renvoie une promesse, le bouton affiche le chargement et ignore les appuis suivants jusqu'à la fin
- * (pas de double envoi). La confirmation de réussite reste à l'écran appelant, après la réussite réelle.
+ * Bouton unique de l'application (HOMI v5 « Lumière corail »).
+ * Forme : RECTANGLE AUX ANGLES SOUPLES (rayon 14, jamais une capsule), hauteur 52 (md) / 44 (sm) / 56 (lg) ; hauteur
+ * minimale, jamais fixe : un libellé long passe à la ligne. Aucun dégradé, aucune ombre épaisse, aucune icône
+ * décorative par défaut (une icône n'est affichée que si l'écran la demande).
+ * Variantes :
+ *  - `primary`   : l'action principale de l'écran — aplat profond (clair : prune ; sombre : corail), texte clair ;
+ *  - `onHero`    : action principale posée sur le halo corail (accueil, entrée) — surface claire OPAQUE + texte foncé ;
+ *  - `secondary` : sobre, teinte légère (creux) et texte encre ;
+ *  - `outline`   : contour fin, texte corail ;
+ *  - `ghost`     : sans fond, texte corail ;
+ *  - `link`      : lien texte (corail, souligné), cible ≥ 44 pt ;
+ *  - `icon`      : icône AVEC libellé visible dessous (tuile carrée, teinte légère) ;
+ *  - `danger` (= `destructive`) : rouge d'alerte, texte blanc ; `night` : thème nuit.
+ * États : pressé (échelle 0,98 + légère teinte, ressort Reanimated sur le fil UI, haptique légère à l'action) ;
+ * survol (web : teinte) ; focus visible (anneau de la couleur de focus, clavier et lecteur d'écran) ; chargement
+ * (indicateur à la place du libellé, taille stable, libellé conservé pour l'accessibilité, appuis suivants ignorés) ;
+ * succès (coche 900 ms) ; échec (tremblement + message) ; désactivé (fondu à 0,48).
+ * Les `onPressIn` / `onPressOut` / `onHoverIn` / `onHoverOut` / `onFocus` / `onBlur` de l'appelant sont COMPOSÉS
+ * avec ceux du bouton (ils n'écrasent plus l'animation interne). Cibles ≥ 44 pt (hitSlop en petite taille).
+ * Si `onPress` renvoie une promesse, le bouton affiche le chargement jusqu'à la fin (pas de double envoi). La
+ * confirmation de réussite reste à l'écran appelant, après la réussite réelle.
  */
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive' | 'night' | 'onHero' | 'link' | 'icon';
 interface ButtonProps extends Omit<PressableProps, 'style' | 'children' | 'onPress'> {
   label: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive' | 'night';
+  /**
+   * Libellé court (bouton pleine largeur) : si le libellé complet ne tient pas sur une ligne (petit écran, texte
+   * agrandi), le bouton retire d'abord son icône, puis affiche ce libellé. Le lecteur d'écran annonce toujours `label`.
+   */
+  shortLabel?: string;
+  variant?: ButtonVariant;
   icon?: IconName;
   /** Icône après le libellé (ex. flèche « suivant »). */
   iconRight?: IconName;
@@ -164,25 +228,52 @@ interface ButtonProps extends Omit<PressableProps, 'style' | 'children' | 'onPre
 
 /** Proportions du système de boutons (une seule source). */
 export const BUTTON = {
-  height: { sm: 40, md: 50, lg: 56 },
-  padX: { sm: 16, md: 24, lg: 28 },
-  radius: { sm: 20, md: 25, lg: 28 }, // pilule (moitié de la hauteur)
-  font: { sm: 14, md: 15, lg: 16 },
-  icon: { sm: 15, md: 17, lg: 18 },
+  height: { sm: 44, md: 52, lg: 56 },
+  padX: { sm: 16, md: 22, lg: 24 },
+  /** Rectangle aux angles souples (v5) : jamais la moitié de la hauteur */
+  radius: { sm: 12, md: 14, lg: 16 },
+  font: { sm: 14, md: 16, lg: 16 },
+  icon: { sm: 16, md: 18, lg: 18 },
   pressScale: 0.98,
+  /** Teinte ajoutée à la pression (voile) */
+  pressTint: 0.1,
+  /** Durée de la coche de succès après une action asynchrone réussie */
+  successMs: 900,
   hoverMs: 180,
   pressInMs: 110,
   pressOutMs: 200,
+  /** Anneau de focus : épaisseur et écart */
+  focusRing: 2,
+  focusOffset: 3,
 };
 
-/** Liseré discret, dérivé de la couleur du texte du thème (aucune nouvelle couleur). */
-export const hairline = (isDark: boolean) => (isDark ? 'rgba(240,217,207,0.18)' : 'rgba(135,83,63,0.16)');
-/** Dégradé des boutons principaux : reflet doré en haut, cuivre au centre, plus profond en bas. */
-export const PRIMARY_GRADIENT = (isDark: boolean): [string, string, string] => (isDark ? ['#F3D4A6', '#E7C08F', '#D6A874'] : ['#9C6650', '#87533F', '#764533']);
+/** Liseré discret des contrôles (jeton `lines.*.hairline`). */
+export const hairline = (isDark: boolean) => linesFor(isDark).hairline;
+export const hairlineOf = (t: Theme) => linesOf(t).hairline;
+/** Aplat des boutons principaux (ancien nom : il n'y a plus de dégradé). */
+export const PRIMARY_GRADIENT = primaryGradient;
 
 /** Seules les flèches « avancent » de 2 px au survol : un indice de direction, pas un effet. */
 const NUDGE: Partial<Record<IconName, 'x' | 'up'>> = { 'arrow-right': 'x', 'chevron-right': 'x', 'external-link': 'up', send: 'x', 'log-in': 'x' };
 
+/**
+ * Pression et survol sur le fil UI (Reanimated) : ressort « vif » à l'enfoncement, « doux » au relâchement (pas de
+ * rebond sur un contrôle répété des dizaines de fois par jour). Réduire les animations : état immédiat.
+ */
+function useButtonPress() {
+  const m = useMotion();
+  const press = useSharedValue(0);
+  const hover = useSharedValue(0);
+  return {
+    press, hover,
+    pressIn: () => { press.value = m.spring(1, 'vif'); },
+    pressOut: () => { press.value = m.spring(0, 'doux'); },
+    hoverIn: () => { hover.value = m.timing(1, BUTTON.hoverMs, 'standard'); },
+    hoverOut: () => { hover.value = m.timing(0, BUTTON.hoverMs, 'standard'); },
+  };
+}
+const easingStd = Easing.bezier(0.2, 0, 0, 1);
+/** Pression et survol (Animated) des boutons icône : enfoncement court, relâchement en ressort. */
 function useButtonMotion() {
   const reduce = useReduceMotion();
   const press = React.useRef(new Animated.Value(0)).current;
@@ -191,21 +282,55 @@ function useButtonMotion() {
     press, hover,
     handlers: {
       onPressIn: () => timeTo(press, 1, BUTTON.pressInMs, reduce, easingStd).start(),
-      // Relâchement : ressort à léger rebond (retour élastique subtil, quelques millièmes d'échelle)
       onPressOut: () => springTo(press, 0, 'release', reduce).start(),
       onHoverIn: () => timeTo(hover, 1, BUTTON.hoverMs, reduce, easingStd).start(),
       onHoverOut: () => timeTo(hover, 0, BUTTON.hoverMs, reduce, easingStd).start(),
     },
   };
 }
-const easingStd = Easing.bezier(0.2, 0, 0, 1);
+/** Libellés de bouton : retour à la ligne entre les mots seulement (pas de « Plu-tôt »). */
+const NO_HYPHENS = (IS_WEB ? { hyphens: 'manual' } : null) as unknown as TextStyle;
 
-export function Button({ label, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress, ...rest }: ButtonProps) {
-  const variant = v === 'destructive' ? 'danger' : v;
+/**
+ * Étape d'adaptation d'un bouton pleine largeur dont le libellé passe sur plusieurs lignes (logique pure, testée) :
+ * 0 = icône + libellé ; 1 = sans icône, marges intérieures réduites ; 2 = libellé court (si fourni) ;
+ * 3 = libellé 2 px plus petit (dernier recours, sans libellé court). On n'avance que si le libellé occupe plus d'une
+ * ligne ; jamais de retour en arrière tant que la largeur et le libellé ne changent pas.
+ */
+export const LABEL_STEP_MAX = 3;
+export function nextLabelStep(step: number, o: { lines: number; hasIcon: boolean; hasShort: boolean }): number {
+  if (o.lines <= 1 || step >= LABEL_STEP_MAX) return step;
+  if (step === 0) return 1;
+  if (step === 1 && o.hasShort) return 2;
+  return LABEL_STEP_MAX;
+}
+
+/** Couleurs d'une variante de bouton pour un thème (logique pure, testée par contrast.test.ts). */
+export function buttonColors(t: Theme, v: ButtonVariant): { bg: string; fg: string; border: string; veil: string } {
+  const lines = linesOf(t);
+  const nightC = t.name === 'night' ? t.colors : themes.night.colors;
+  switch (v === 'destructive' ? 'danger' : v) {
+    case 'primary': return { bg: t.tokens.action.fill, fg: t.tokens.action.text, border: 'transparent', veil: t.tokens.action.text };
+    case 'onHero': return { bg: t.tokens.onHero.fill, fg: t.tokens.onHero.text, border: 'transparent', veil: t.tokens.onHero.text };
+    case 'secondary': return { bg: lines.controlFill, fg: t.colors.text, border: 'transparent', veil: t.colors.text };
+    case 'outline': return { bg: 'transparent', fg: t.colors.primary, border: lines.hairline, veil: t.colors.primary };
+    case 'icon': return { bg: lines.controlFill, fg: t.colors.text, border: 'transparent', veil: t.colors.text };
+    case 'danger': return { bg: t.colors.danger, fg: t.tokens.text.onAccent, border: 'transparent', veil: t.tokens.text.onAccent };
+    case 'night': return { bg: nightC.primary, fg: nightC.primaryText, border: 'transparent', veil: nightC.primaryText };
+    case 'ghost':
+    case 'link':
+    default: return { bg: 'transparent', fg: t.colors.primary, border: 'transparent', veil: t.colors.primary };
+  }
+}
+
+export function Button({ label, shortLabel, variant: v = 'primary', icon, iconRight, loading, size = 'md', style, full, disabled, onPress,
+  onPressIn, onPressOut, onHoverIn, onHoverOut, onFocus, onBlur, hitSlop, ...rest }: ButtonProps) {
+  const variant: ButtonVariant = v === 'destructive' ? 'danger' : v;
   const t = useTheme();
   const reduce = useReduceMotion();
-  const m = useButtonMotion();
+  const p = useButtonPress();
   const [pending, setPending] = React.useState(false);
+  const [focused, setFocused] = React.useState(false);
   const toast = useToast();
   const running = React.useRef(false);
   const mounted = React.useRef(true);
@@ -214,32 +339,47 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
   const busy = React.useRef(new Animated.Value(isBusy ? 1 : 0)).current;
   React.useEffect(() => { timeTo(busy, isBusy ? 1 : 0, duration.fast, reduce).start(); }, [busy, isBusy, reduce]);
   const off = !!disabled;
-  // Désactivation animée (fondu), réussite (respiration) et échec (tremblement) : l'action part toujours tout de suite,
+  const link = variant === 'link';
+  const tile = variant === 'icon';
+  // Libellé trop long pour une ligne (bouton pleine largeur) : sans icône, puis libellé court
+  const fontScale = useFontScale();
+  // L'étape est liée au libellé : remise à 0 pendant le rendu quand il change (pas dans un effet, qui pouvait annuler
+  // une mesure déjà faite). Pas de remise à 0 sur la largeur : la mesure suivante ne viendrait pas si la rangée ne
+  // change pas de taille (le libellé resterait sur 2 lignes) ; un bouton qui s'élargit garde sa forme compacte.
+  const stepKey = `${label}|${shortLabel ?? ''}`;
+  const [lay, setLay] = React.useState({ key: stepKey, step: 0 });
+  const step = lay.key === stepKey ? lay.step : 0;
+  const adapt = (!!full || size === 'lg') && !tile;
+  const lineH = (BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0)) * cappedScale(fontScale, typography.button.maxScale);
+  const onLabelLayout = (e: { nativeEvent: { layout: { height: number } } }) => {
+    const lines = Math.round(e.nativeEvent.layout.height / lineH);
+    setLay((cur) => { const s = cur.key === stepKey ? cur.step : 0; const n = nextLabelStep(s, { lines, hasIcon: !!icon && s === 0, hasShort: !!shortLabel }); return n === s && cur.key === stepKey ? cur : { key: stepKey, step: n }; });
+  };
+  const shownIcon = step >= 1 ? undefined : icon;
+  const shownLabel = step >= 2 && shortLabel ? shortLabel : label;
+  // Désactivation (fondu), réussite (respiration) et échec (tremblement) : l'action part toujours tout de suite,
   // ces retours l'accompagnent seulement, après le résultat réel de la promesse.
   const offV = React.useRef(new Animated.Value(off ? 1 : 0)).current;
   React.useEffect(() => { timeTo(offV, off ? 1 : 0, feedback.disabledMs, reduce).start(); }, [offV, off, reduce]);
   const pulse = React.useRef(new Animated.Value(1)).current;
   const shake = React.useRef(new Animated.Value(0)).current;
-  const solid = variant === 'primary' || variant === 'danger' || variant === 'night';
+  const [done, setDone] = React.useState(false);
+  const doneV = React.useRef(new Animated.Value(0)).current;
+  const hideLabel = React.useMemo(() => Animated.add(busy, doneV).interpolate({ inputRange: [0, 1], outputRange: [1, 0], extrapolate: 'clamp' }), [busy, doneV]);
+  const c = buttonColors(t, variant);
+  const h = link ? MIN_TOUCH - 4 : tile ? 72 : BUTTON.height[size];
+  const iconSize = tile ? 22 : BUTTON.icon[size];
+  const radiusPx = BUTTON.radius[size];
+  const solid = variant === 'primary' || variant === 'danger' || variant === 'night' || variant === 'onHero';
 
-  const bg = { primary: t.colors.primary, secondary: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.72)', outline: 'transparent', ghost: t.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,250,246,0.5)', danger: t.colors.danger, night: '#D9B48A' }[variant];
-  const fg = {
-    primary: t.colors.primaryText, secondary: t.colors.text, outline: t.colors.primary, ghost: t.colors.primary,
-    danger: t.isDark ? t.colors.primaryText : '#FFFFFF', night: '#141831',
-  }[variant];
-  const border = { primary: 'transparent', secondary: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)', outline: t.colors.primary, ghost: t.isDark ? 'rgba(240,217,207,0.18)' : 'rgba(184,134,90,0.24)', danger: t.colors.danger, night: '#D9B48A' }[variant];
-  // Voile d'état : clair sur les boutons pleins (survol), teinte de la marque sur les boutons transparents
-  const veil = solid ? '#FFFFFF' : variant === 'secondary' ? t.colors.text : t.colors.primary;
-  const veilHover = solid ? 0.1 : variant === 'secondary' ? 0.05 : 0.08;
-  const veilPress = solid ? -1 : variant === 'secondary' ? 0.09 : 0.14; // -1 : assombrir les boutons pleins à l'appui
-  const h = BUTTON.height[size];
-  const iconSize = BUTTON.icon[size];
-  const nudge = (name: IconName) => {
-    const k = NUDGE[name];
-    if (!k) return undefined;
-    const d = m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 2] });
-    return { transform: k === 'x' ? [{ translateX: d }] : [{ translateX: d }, { translateY: Animated.multiply(d, -1) }] };
-  };
+  // Pression : échelle 0,98 (tuile icône : 0,96) + voile de teinte ; survol web : voile plus léger. Fil UI.
+  const scaleTo = tile ? 0.96 : BUTTON.pressScale;
+  const pressStyle = useAnimatedStyle(() => ({ transform: [{ scale: 1 - (1 - scaleTo) * p.press.value }] }));
+  const veilStyle = useAnimatedStyle(() => ({ opacity: Math.min(1, p.hover.value * (solid ? 0.08 : 0.05) + p.press.value * BUTTON.pressTint) }));
+  const nudgeX = useAnimatedStyle(() => ({ transform: [{ translateX: 2 * p.hover.value }] }));
+  const nudgeUp = useAnimatedStyle(() => ({ transform: [{ translateX: 2 * p.hover.value }, { translateY: -2 * p.hover.value }] }));
+  const nudge = (name: IconName) => (NUDGE[name] === 'x' ? nudgeX : NUDGE[name] === 'up' ? nudgeUp : undefined);
+
   const handlePress = (e: GestureResponderEvent) => {
     if (running.current || isBusy) return;
     haptic('light');
@@ -249,57 +389,76 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
       setPending(true);
       // Une action qui échoue sans gérer son erreur affiche au moins un message (jamais d'échec muet)
       (r as Promise<unknown>)
-        .then(() => { if (mounted.current) successPulse(pulse, reduce).start(); })
+        .then(() => {
+          if (!mounted.current) return;
+          successPulse(pulse, reduce).start();
+          setDone(true);
+          timeTo(doneV, 1, duration.fast, reduce).start();
+          setTimeout(() => { if (mounted.current) timeTo(doneV, 0, duration.fast, reduce).start(() => { if (mounted.current) setDone(false); }); }, BUTTON.successMs);
+        })
         .catch((err) => { if (!mounted.current) return; haptic('warning'); shakeX(shake, reduce).start(); toast(friendlyErrorMessage(err), 'error'); })
         .finally(() => { running.current = false; if (mounted.current) setPending(false); });
     }
   };
-  const radiusPx = BUTTON.radius[size];
+  const labelNode = shownLabel ? (
+    <Text weight="bold" color={c.fg} center maxFontSizeMultiplier={typography.button.maxScale}
+      style={[{ flexShrink: 1, minWidth: 0, fontSize: tile ? 13 : BUTTON.font[size] - (step >= 3 ? 2 : 0), lineHeight: tile ? 17 : BUTTON.font[size] + 6 - (step >= 3 ? 2 : 0), letterSpacing: 0.1 },
+        link && { textDecorationLine: 'underline' }, NO_HYPHENS]}>
+      {shownLabel}
+    </Text>
+  ) : null;
   return (
     <Animated.View style={[{ alignSelf: full ? 'stretch' : 'auto', maxWidth: '100%', minWidth: 0, opacity: offV.interpolate({ inputRange: [0, 1], outputRange: [1, feedback.disabledOpacity] }), borderRadius: radiusPx }, style,
-      { transform: [{ translateX: shake }, { scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, BUTTON.pressScale] }) }, { scale: pulse }] }]}>
+      { transform: [{ translateX: shake }, { scale: pulse }] }]}>
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={link ? 'link' : 'button'}
       accessibilityLabel={label}
       accessibilityState={{ disabled: off || isBusy, busy: isBusy }}
       disabled={off || isBusy}
-      hitSlop={size === 'sm' ? 5 : 0}
-      onPressIn={m.handlers.onPressIn}
-      onPressOut={m.handlers.onPressOut}
-      onHoverIn={m.handlers.onHoverIn}
-      onHoverOut={m.handlers.onHoverOut}
+      hitSlop={hitSlop ?? (size === 'sm' || link ? 4 : 0)}
+      onPressIn={(e) => { p.pressIn(); onPressIn?.(e); }}
+      onPressOut={(e) => { p.pressOut(); onPressOut?.(e); }}
+      onHoverIn={(e) => { p.hoverIn(); onHoverIn?.(e); }}
+      onHoverOut={(e) => { p.hoverOut(); onHoverOut?.(e); }}
+      onFocus={(e) => { setFocused(true); onFocus?.(e); }}
+      onBlur={(e) => { setFocused(false); onBlur?.(e); }}
       onPress={handlePress}
-      style={[
-        styles.button,
-        { minHeight: h, borderRadius: radiusPx, backgroundColor: bg, borderColor: border, paddingHorizontal: BUTTON.padX[size] },
-        // Profondeur subtile : ombre courte et douce sur les boutons pleins seulement (aucune ombre désactivé)
-        solid && !off && { shadowColor: variant === 'danger' ? t.colors.danger : t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: t.isDark ? 0.3 : 0.24, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 3 },
-        variant === 'secondary' && !off && { shadowColor: '#6B3F2E', shadowOpacity: t.isDark ? 0 : 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
-      ]}
       {...rest}
     >
-      {/* Bouton principal : dégradé cuivre doré (or champagne la nuit) */}
-      {variant === 'primary' && !off ? <LinearGradient pointerEvents="none" colors={PRIMARY_GRADIENT(t.isDark)} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: radiusPx }]} /> : null}
-      {/* Reflet intérieur d'1 px en haut des boutons pleins et du verre */}
-      {solid || variant === 'secondary' ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: radiusPx * 0.7, right: radiusPx * 0.7, height: 1, backgroundColor: solid ? 'rgba(255,236,214,0.38)' : 'rgba(255,255,255,0.9)' }} /> : null}
-      {/* Survol puis appui : voile d'état (sans décalage de mise en page) */}
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veil, opacity: m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, veilHover] }) }]} />
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx - 1, backgroundColor: veilPress < 0 ? '#000000' : veil, opacity: m.press.interpolate({ inputRange: [0, 1], outputRange: [0, veilPress < 0 ? 0.1 : veilPress], extrapolate: 'clamp' }) }]} />
-      {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante */}
-      <Animated.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: busy.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }}>
-        {icon && <Animated.View style={nudge(icon)}><Icon name={icon} size={iconSize} color={fg} /></Animated.View>}
-        {label ? (
-          <Text weight="bold" color={fg} center style={{ flexShrink: 1, minWidth: 0, fontSize: BUTTON.font[size], lineHeight: BUTTON.font[size] + 6, letterSpacing: 0.1 }}>
-            {label}
-          </Text>
-        ) : null}
-        {iconRight && <Animated.View style={nudge(iconRight)}><Icon name={iconRight} size={iconSize} color={fg} /></Animated.View>}
-      </Animated.View>
-      {isBusy ? (
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: busy }]}>
-          <ActivityIndicator size="small" color={fg} />
+      <ReAnimated.View style={[
+        styles.button,
+        { minHeight: h, borderRadius: radiusPx, backgroundColor: c.bg, borderColor: c.border, borderWidth: variant === 'outline' ? 1 : 0,
+          paddingHorizontal: link ? 2 : tile ? spacing.sm : step >= 1 ? BUTTON.padX.sm : BUTTON.padX[size] },
+        tile && { flexDirection: 'column', minWidth: 72, paddingVertical: spacing.xs, gap: 4 },
+        // Profondeur : seule la variante sur le halo garde une ombre de contact très légère (elle se détache de la lumière)
+        variant === 'onHero' && !off && t.name !== 'night' && { boxShadow: physicalShadow('low', t.isDark) },
+        pressStyle,
+      ]}>
+        {/* Aplat NOIR : finition Whoop (profondeur, arête lumineuse, filet d'accent) */}
+        {solid && !link && t.name !== 'night' && isDarkFill(c.bg) ? <WhoopSheen radius={radiusPx} /> : null}
+        {/* Survol puis appui : voile de teinte (sans décalage de mise en page) */}
+        {!link ? <ReAnimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radiusPx, backgroundColor: c.veil }, veilStyle]} /> : null}
+        {/* Chargement : le libellé s'efface en douceur au profit de l'indicateur, à taille constante ;
+            mesure sur la rangée (View : onLayout fiable sur toutes les plateformes, le web ne le rend pas sur Text) */}
+        <Animated.View onLayout={adapt ? onLabelLayout : undefined}
+          style={{ flexDirection: tile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center', gap: tile ? 4 : size === 'sm' ? 6 : 8, flexShrink: 1, minWidth: 0, maxWidth: '100%', opacity: hideLabel }}>
+          {shownIcon && <ReAnimated.View style={nudge(shownIcon)}><Icon name={shownIcon} size={iconSize} color={c.fg} /></ReAnimated.View>}
+          {labelNode}
+          {iconRight && <ReAnimated.View style={nudge(iconRight)}><Icon name={iconRight} size={iconSize} color={c.fg} /></ReAnimated.View>}
         </Animated.View>
-      ) : null}
+        {isBusy ? (
+          <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: busy }]}>
+            <ActivityIndicator size="small" color={c.fg} />
+          </Animated.View>
+        ) : null}
+        {done && !isBusy ? (
+          <Animated.View pointerEvents="none" testID="button-success" accessibilityLiveRegion="polite" style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center', opacity: doneV }]}>
+            <Icon name="check" size={iconSize + 3} color={c.fg} />
+          </Animated.View>
+        ) : null}
+      </ReAnimated.View>
+      {/* Focus visible (clavier, lecteur d'écran, natif et web) : anneau de la couleur de focus, autour du bouton */}
+      {focused ? <View pointerEvents="none" testID="button-focus-ring" style={{ position: 'absolute', top: -BUTTON.focusOffset, left: -BUTTON.focusOffset, right: -BUTTON.focusOffset, bottom: -BUTTON.focusOffset, borderRadius: radiusPx + BUTTON.focusOffset, borderWidth: BUTTON.focusRing, borderColor: t.tokens.focus }} /> : null}
     </Pressable>
     </Animated.View>
   );
@@ -309,11 +468,11 @@ export function Button({ label, variant: v = 'primary', icon, iconRight, loading
  * Bouton icône seule (retour, fermer, menu, partager…) : zone tactile de 48 px, pastille visible de 40 px aux coins de
  * 12 px. `plain` : sans fond (fond discret au survol), `filled` : fond discret + liseré, `primary` : plein.
  */
-export function IconButton({ icon, label, onPress, color, size = 20, style, tone = 'plain', disabled }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean }) {
+export function IconButton({ icon, label, onPress, color, size = 20, style, tone = 'plain', disabled, testID }: { icon: IconName; label: string; onPress: () => void; color?: string; size?: number; style?: StyleProp<ViewStyle>; tone?: 'plain' | 'filled' | 'primary'; disabled?: boolean; testID?: string }) {
   const t = useTheme();
   const m = useButtonMotion();
-  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? t.colors.surface : 'transparent';
-  const veil = tone === 'primary' ? '#FFFFFF' : t.colors.text;
+  const bg = tone === 'primary' ? t.colors.primary : tone === 'filled' ? linesOf(t).controlFill : 'transparent';
+  const veil = tone === 'primary' ? t.colors.primaryText : t.colors.text;
   const D = 40;
   return (
     <Pressable
@@ -327,10 +486,11 @@ export function IconButton({ icon, label, onPress, color, size = 20, style, tone
       }}
       {...m.handlers}
       hitSlop={6}
+      testID={testID}
       style={[{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', borderRadius: MIN_TOUCH / 2, opacity: disabled ? 0.45 : 1 }, style]}
     >
       <Animated.View style={{ width: D, height: D, borderRadius: D / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: bg,
-        borderWidth: tone === 'filled' ? 1 : 0, borderColor: hairline(t.isDark),
+        borderWidth: tone === 'filled' ? 1 : 0, borderColor: hairlineOf(t),
         transform: [{ scale: m.press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.94] }) }] }}>
         <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: D / 2, backgroundColor: veil, opacity: Animated.add(
           m.hover.interpolate({ inputRange: [0, 1], outputRange: [0, tone === 'primary' ? 0.12 : 0.07] }),
@@ -350,18 +510,19 @@ export function Fab({ icon, label, onPress, style, accessibilityHint, showLabel 
   const { width } = useWindowDimensions();
   const withLabel = showLabel && width >= 360;
   return (
-    <Animated.View style={[styles.fab, { backgroundColor: t.colors.primary, shadowColor: t.isDark ? '#000000' : '#6B3F2E' }, style, press.style]}>
+    <Animated.View style={[styles.fab, { backgroundColor: t.tokens.action.fill }, t.name !== 'night' && { boxShadow: physicalShadow('mid', t.isDark) }, style, press.style]}>
+      {/* Élément flottant : aplat de l'action principale (v5 : rectangle aux angles souples, ombre très légère) */}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
         accessibilityHint={accessibilityHint}
         onPress={() => { haptic('light'); onPress(); }}
         {...press.handlers}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: withLabel ? 22 : 0, borderRadius: 26, overflow: 'hidden' }}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, minWidth: 52, justifyContent: 'center', paddingHorizontal: withLabel ? 20 : 0, borderRadius: radius.md, overflow: 'hidden' }}
       >
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: '#FFFFFF', opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
-        <Icon name={icon} size={20} color={t.colors.primaryText} />
-        {withLabel ? <Text weight="bold" color={t.colors.primaryText} style={{ flexShrink: 1, fontSize: 15, letterSpacing: -0.15 }}>{label}</Text> : null}
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: t.tokens.action.text, opacity: press.hover.interpolate({ inputRange: [0, 1], outputRange: [0, 0.14] }) }]} />
+        <Icon name={icon} size={20} color={t.tokens.action.text} />
+        {withLabel ? <Text weight="bold" color={t.tokens.action.text} style={{ flexShrink: 1, fontSize: 15, letterSpacing: -0.15 }}>{label}</Text> : null}
       </Pressable>
     </Animated.View>
   );
@@ -396,12 +557,18 @@ export function FavoriteButton({ active, onPress, icon = 'heart', labelOn, label
 }
 
 // ---------------------------------------------------------------- Pastilles
+/**
+ * Pastille (`Chip`) — RÉSERVÉE aux FILTRES et aux STATUTS (v5) : seule forme en capsule de l'interface avec les
+ * pastilles d'état. Au repos : surface + contour fin ; choisie : aplat de l'action (prune en clair, corail en sombre)
+ * et texte clair ; `tone="lavender"` : teinte lilas + coche (choix secondaire). Sélection : petite impulsion d'échelle.
+ */
 export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel, testID }: { label: string; selected?: boolean; onPress?: () => void; icon?: IconName; tone?: 'lavender' | 'primary'; accessibilityLabel?: string; testID?: string }) {
   const t = useTheme();
-  const active = tone === 'lavender' ? t.colors.lavender : t.colors.primary;
-  const filled = selected && tone !== 'lavender';
+  const lilac = tone === 'lavender';
+  const filled = selected && !lilac;
   const press = usePressMotion({ pressed: 0.97, hoverLift: 0 });
   const pop = usePop(selected, 1.03);
+  const fg = filled ? t.tokens.action.text : selected ? t.colors.lavender : t.colors.text;
   return (
     <Animated.View style={[{ maxWidth: '100%' }, press.style, pop]}>
     <Pressable
@@ -411,58 +578,28 @@ export function Chip({ label, selected, onPress, icon, tone, accessibilityLabel,
       aria-checked={onPress ? !!selected : undefined}
       accessibilityLabel={accessibilityLabel ?? label}
       testID={testID}
+      // 44 px visibles + 2 px de chaque côté : cible ≥ 48 px sans alourdir les rangées de filtres
+      hitSlop={onPress ? { top: 2, bottom: 2 } : undefined}
       onPress={onPress ? () => { haptic('selection'); onPress(); } : undefined}
-      style={[styles.chip, { borderColor: selected ? active : hairline(t.isDark), backgroundColor: filled ? active : selected ? active + (t.isDark ? '33' : '1F') : t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.7)' }]}
+      style={[styles.chip, {
+        borderColor: filled ? t.tokens.action.fill : selected ? alpha(t.colors.lavender, 0.5) : hairlineOf(t),
+        backgroundColor: filled ? t.tokens.action.fill : selected ? cardTintOf(t).lavender : t.colors.surface,
+      }]}
     >
-      {icon && <Icon name={icon} size={15} color={filled ? t.colors.primaryText : selected ? active : t.colors.textMuted} />}
-      {label ? <Text variant="small" weight="medium" color={filled ? t.colors.primaryText : selected ? active : t.colors.text} style={{ flexShrink: 1 }}>{label}</Text> : null}
+      {selected && !filled ? <Icon name="check" size={14} color={t.colors.lavender} /> : null}
+      {icon && <Icon name={icon} size={15} color={filled ? t.tokens.action.text : selected ? t.colors.lavender : t.colors.textMuted} />}
+      {label ? <Text variant="small" weight={selected ? 'bold' : 'medium'} color={fg} style={{ flexShrink: 1 }}>{label}</Text> : null}
     </Pressable>
     </Animated.View>
   );
 }
 
+/**
+ * Sélecteur capsule (API historique) : délègue à `ChoiceGroup` (v3) — indicateur de verre teinté qui GLISSE vers le
+ * choix actif, lumière diffuse derrière lui, coche + gras en plus de la couleur.
+ */
 export function Segmented<T extends string>({ options, value, onChange, label }: { options: { value: T; label: string; testID?: string }[]; value: T; onChange: (v: T) => void; label: string }) {
-  const t = useTheme();
-  const reduce = useReduceMotion();
-  const [w, setW] = React.useState(0);
-  const found = options.findIndex((o) => o.value === value);
-  const idx = Math.max(0, found);
-  const x = React.useRef(new Animated.Value(idx)).current;
-  React.useEffect(() => { springTo(x, idx, 'gentle', reduce).start(); }, [x, idx, reduce]);
-  const PAD = 4, GAP = 4;
-  const segW = w ? (w - PAD * 2 - GAP * (options.length - 1)) / options.length : 0;
-  return (
-    <View accessibilityRole="radiogroup" accessibilityLabel={label} onLayout={(e) => setW(e.nativeEvent.layout.width)} style={[styles.segmented, { backgroundColor: t.colors.surfaceAlt, borderWidth: 1, borderColor: hairline(t.isDark) }]}>
-      {/* aucune option choisie (ex. situation pas encore indiquée) : pas de pastille, sinon elle masque le libellé de la 1re option */}
-      {segW > 0 && found >= 0 ? (
-        <Animated.View
-          pointerEvents="none"
-          style={{
-            position: 'absolute', top: PAD, bottom: PAD, left: PAD, width: segW, borderRadius: 999, backgroundColor: t.colors.primary,
-            shadowColor: t.isDark ? '#000000' : '#6B3F2E', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 },
-            transform: [{ translateX: x.interpolate({ inputRange: [0, Math.max(1, options.length - 1)], outputRange: [0, (segW + GAP) * Math.max(1, options.length - 1)] }) }],
-          }}
-        />
-      ) : null}
-      {options.map((o) => {
-        const sel = o.value === value;
-        return (
-          <Pressable
-            key={o.value}
-            accessibilityRole="radio"
-            accessibilityState={{ selected: sel, checked: sel }}
-            aria-checked={sel}
-            accessibilityLabel={o.label}
-            testID={o.testID}
-            onPress={() => { haptic('selection'); onChange(o.value); }}
-            style={[styles.segment, sel && !segW && { backgroundColor: t.colors.primary }]}
-          >
-            <Text variant="small" weight={sel ? 'bold' : 'medium'} color={sel ? t.colors.primaryText : t.colors.textMuted} center>{o.label}</Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
+  return <ChoiceGroup options={options} value={value} onChange={onChange} label={label} />;
 }
 
 // ---------------------------------------------------------------- Champ de formulaire
@@ -502,6 +639,12 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
     blurOnSubmit: false,
     onSubmitEditing: () => { void scope.focusNext(input.current); },
   } : {};
+  // iPhone : les pavés numériques n'ont pas de touche Retour. Une barre au-dessus du clavier porte « Suivant » (il reste
+  // un champ) ou « OK » (dernier champ, ou champ hors portée) et lance le même enchaînement que la touche Retour.
+  const accessoryId = `kb${React.useId().replace(/[^A-Za-z0-9]/g, '')}`;
+  const accessory = editable && !rest.multiline && rest.inputAccessoryViewID == null && needsKeyboardAccessory(rest.keyboardType, Platform.OS);
+  const accessoryNext = !!scope && !scope.isLast(entry);
+  const onAccessory = () => { if (scope) void scope.focusNext(input.current); else Keyboard.dismiss(); };
   const [focused, setFocused] = React.useState(false);
   const [shown, setShown] = React.useState(false);
   const reduce = useReduceMotion();
@@ -514,20 +657,23 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {label}
         {optional ? <Text variant="small" muted>{`  (${tr('common.optional')})`}</Text> : null}
       </Text>
-      <View style={[styles.input, { borderColor: error ? t.colors.danger : hairline(t.isDark), backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.78)' }]}>
+      {/* Champ = surface « inset » : un creux de verre au liseré fin, qui s'éclaire au focus (halo prune) */}
+      <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
-        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: 18, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
-        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: 22, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
+        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: radius.control + 1.5, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
+        {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: radius.control + 5, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
         <TextInput
           ref={input}
           placeholderTextColor={t.colors.textMuted}
           accessibilityLabel={label}
           accessibilityHint={hint}
           maxFontSizeMultiplier={1.6}
+          {...(IS_WEB ? ({ dataSet: { field: '1', fsmax: '1.6' } } as object) : null)}
           // Multiligne : le texte commence en haut du cadre (Android le centrait verticalement)
           style={[{ flex: 1, minWidth: 0, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, minHeight: MIN_TOUCH, paddingVertical: 10 }, rest.multiline ? { textAlignVertical: 'top' } : null, style as StyleProp<TextStyle>]}
           {...rest}
           {...chainProps}
+          {...(accessory ? { inputAccessoryViewID: accessoryId } : null)}
           secureTextEntry={secureTextEntry && !shown}
           onFocus={(e) => { setFocused(true); scope?.reveal(input.current); onFocus?.(e); }}
           onBlur={(e) => { setFocused(false); onBlur?.(e); }}
@@ -558,23 +704,42 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
       ) : hint ? (
         <Text variant="small" muted>{hint}</Text>
       ) : null}
+      {accessory ? (
+        <InputAccessoryView nativeID={accessoryId} backgroundColor={t.colors.surface}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: t.colors.border }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={accessoryNext ? tr('common.next') : tr('common.ok')}
+              onPress={onAccessory}
+              hitSlop={6}
+              testID="field-accessory"
+              style={({ pressed }) => ({ minHeight: MIN_TOUCH, minWidth: MIN_TOUCH, paddingHorizontal: spacing.md, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}
+            >
+              <Text weight="bold" color={t.colors.primary} maxFontSizeMultiplier={1.4}>{accessoryNext ? tr('common.next') : tr('common.ok')}</Text>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      ) : null}
     </Animated.View>
   );
 });
 
 // ---------------------------------------------------------------- Bandeaux & états
-export function Banner({ tone = 'info', icon, title, children, action }: { tone?: 'info' | 'warning' | 'danger' | 'demo' | 'success'; icon?: IconName; title?: string; children?: React.ReactNode; action?: React.ReactNode }) {
+/** Chaque ton de bandeau a son icône : le statut ne repose jamais sur la couleur seule (testé). */
+export const BANNER_ICON: Record<BannerTone, IconName> = { info: 'info', warning: 'alert-triangle', danger: 'alert-octagon', demo: 'smartphone', success: 'check-circle' };
+
+/**
+ * Bandeau d'information : fond teinté + liseré de la même teinte (jetons `bannerColors`, contraste testé), icône dans
+ * une pastille pour un repère visuel net. Le rouge reste réservé aux urgences et aux erreurs.
+ */
+export function Banner({ tone = 'info', icon, title, children, action }: { tone?: BannerTone; icon?: IconName; title?: string; children?: React.ReactNode; action?: React.ReactNode }) {
   const t = useTheme();
-  const c = {
-    info: { bg: t.isDark ? 'rgba(195,178,255,0.12)' : 'rgba(225,215,255,0.6)', fg: t.colors.lavender, icon: 'info' as IconName },
-    warning: { bg: t.isDark ? 'rgba(255,190,120,0.12)' : 'rgba(255,235,200,0.7)', fg: t.isDark ? '#F7C77E' : '#8A5A12', icon: 'alert-triangle' as IconName },
-    danger: { bg: t.colors.dangerSoft, fg: t.colors.danger, icon: 'alert-octagon' as IconName },
-    demo: { bg: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.6)', fg: t.colors.textMuted, icon: 'smartphone' as IconName },
-    success: { bg: t.isDark ? 'rgba(159,224,181,0.12)' : 'rgba(210,240,220,0.7)', fg: t.colors.success, icon: 'check-circle' as IconName },
-  }[tone];
+  const c = { ...bannerColors(t)[tone], icon: BANNER_ICON[tone] };
   return (
-    <View style={[styles.banner, { backgroundColor: c.bg }]} accessibilityRole={tone === 'danger' ? 'alert' : undefined}>
-      <Icon name={icon ?? c.icon} size={18} color={c.fg} />
+    <View style={[styles.banner, { backgroundColor: c.bg, borderColor: c.edge }]} accessibilityRole={tone === 'danger' ? 'alert' : undefined}>
+      <View style={[styles.bannerIcon, { backgroundColor: t.tokens.surface.veil }]}>
+        <Icon name={icon ?? c.icon} size={16} color={c.fg} />
+      </View>
       <View style={{ flex: 1, gap: 2 }}>
         {title ? <Text variant="small" weight="bold" color={tone === 'demo' ? t.colors.text : c.fg}>{title}</Text> : null}
         {typeof children === 'string' ? <BannerText text={children} fold={tone === 'info' || tone === 'demo'} accent={c.fg} /> : children}
@@ -595,9 +760,10 @@ function BannerText({ text, fold, accent }: { text: string; fold: boolean; accen
   const long = fold && text.length > FOLD_AT;
   return (
     <>
-      <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} accessibilityLabel={text}>{text}</Text>
+      <Text variant="small" color={t.colors.text} numberOfLines={long && !open ? 2 : undefined} intentionalTruncation={long && !open} accessibilityLabel={text}>{text}</Text>
       {long ? (
-        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={12} hoverLift={0} style={{ alignSelf: 'flex-start', paddingVertical: 2 }}>
+        // cible de 44 px de haut (le web ignore hitSlop), sans décaler la mise en page (marges négatives)
+        <Tappable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityLabel={open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')} hitSlop={12} hoverLift={0} style={{ alignSelf: 'flex-start', minHeight: MIN_TOUCH, justifyContent: 'center', marginVertical: -12, paddingRight: spacing.sm }}>
           <Text variant="caption" weight="bold" color={accent}>{open ? tr('u5.ui.collapse') : tr('u5.ui.read_more')}</Text>
         </Tappable>
       ) : null}
@@ -605,11 +771,22 @@ function BannerText({ text, fold, accent }: { text: string; fold: boolean; accen
   );
 }
 
-export function SectionTitle({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+/**
+ * En-tête de section : titre Space Grotesk (rôle `headingM`), sur-titre facultatif en capitales espacées (`overline`)
+ * et sous-titre facultatif en texte secondaire. L'action éventuelle est une vraie pilule (cible ≥ 40 px + hitSlop).
+ */
+export function SectionTitle({ title, action, onAction, overline, subtitle }: { title: string; action?: string; onAction?: () => void; overline?: string; subtitle?: string }) {
   const t = useTheme();
+  const head = <Text variant="heading" accessibilityRole="header" style={{ flexShrink: 1 }}>{title}</Text>;
   return (
     <View style={styles.sectionTitle}>
-      <Text variant="heading" accessibilityRole="header" style={{ flexShrink: 1 }}>{title}</Text>
+      {overline || subtitle ? (
+        <View style={{ flexShrink: 1, gap: 2 }}>
+          {overline ? <Text muted style={[typography.overline, { color: t.colors.textMuted }]} maxFontSizeMultiplier={typography.overline.maxScale}>{overline.toUpperCase()}</Text> : null}
+          {head}
+          {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
+        </View>
+      ) : head}
       {action && onAction ? (
         <Tappable onPress={onAction} accessibilityRole="button" hitSlop={6} style={({ pressed }) => [linkFrame(t.isDark), { alignSelf: 'center', opacity: pressed ? 0.8 : 1 }]}>
           <Text variant="small" weight="bold" color={t.colors.primary}>{action}</Text>
@@ -647,37 +824,79 @@ export function Row({ children, gap = spacing.sm, style, wrap, testID }: { child
 
 export function Divider() {
   const t = useTheme();
-  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: t.colors.border, marginVertical: spacing.xs }} />;
+  // `separator` et non `border` : en clair, le liseré blanc des cartes serait invisible sur le verre blanc
+  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: linesOf(t).separator, marginVertical: spacing.xs }} />;
 }
 
-export function ListRow({ icon, leading, title, subtitle, onPress, right, danger, testID }: { icon?: IconName; leading?: React.ReactNode; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean; testID?: string }) {
+/**
+ * Groupe de liste (v5) : UNE surface aux coins de carte, rangées séparées par des filets fins — remplace les cartes
+ * empilées pour les outils, réglages et événements. Titre de groupe facultatif (libellé au-dessus, hors surface).
+ * Les rangées (`ListRow`) reçoivent automatiquement le séparateur (pas avant la première).
+ */
+export function ListGroup({ children, title, footer, testID, style }: { children: React.ReactNode; title?: string; footer?: string; testID?: string; style?: StyleProp<ViewStyle> }) {
   const t = useTheme();
+  const rows = React.Children.toArray(children).filter(Boolean);
+  return (
+    <View style={[{ gap: spacing.xs }, style]} testID={testID}>
+      {title ? <Text variant="label" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{title}</Text> : null}
+      <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: t.colors.border, overflow: 'hidden', boxShadow: physicalShadow('low', t.isDark) }}>
+        <CardLens radius={radius.lg} />
+        {/* Liste vivante (à la source) : une rangée ajoutée apparaît à sa place, une rangée supprimée se replie */}
+        <MotionList>
+          {rows.map((row, i) => (
+            <MotionItem key={(row as { key?: React.Key }).key ?? i}>
+              <ListGroupRowContext.Provider value={{ inGroup: true, first: i === 0 }}>
+                {row}
+              </ListGroupRowContext.Provider>
+            </MotionItem>
+          ))}
+        </MotionList>
+      </View>
+      {footer ? <Text variant="caption" muted style={{ paddingHorizontal: spacing.xxs }}>{footer}</Text> : null}
+    </View>
+  );
+}
+const ListGroupRowContext = React.createContext<{ inGroup: boolean; first: boolean }>({ inGroup: false, first: true });
+
+/**
+ * Rangée de liste (v5) : icône cohérente (même famille, pastille ronde teintée), titre, sous-titre, valeur et/ou
+ * chevron. Dans un `ListGroup` : marges intérieures et filet fin au-dessus (aligné sur le texte, pas sur l'icône).
+ * `value` : texte à droite (ex. « 3 », « Activé »), chiffres tabulaires. Pression : légère teinte + échelle 0,99.
+ */
+export function ListRow({ icon, leading, title, subtitle, onPress, right, danger, testID, value, iconColor }: { icon?: IconName; leading?: React.ReactNode; title: string; subtitle?: string; onPress?: () => void; right?: React.ReactNode; danger?: boolean; testID?: string; value?: string; iconColor?: string }) {
+  const t = useTheme();
+  const g = React.useContext(ListGroupRowContext);
+  const hasLead = !!leading || !!icon;
   const inner = (
-    <View style={[styles.listRow]}>
+    <View style={[styles.listRow, g.inGroup && { paddingHorizontal: spacing.md, minHeight: 60 }]}>
+      {g.inGroup && !g.first ? <View pointerEvents="none" style={{ position: 'absolute', top: 0, right: 0, left: spacing.md + (hasLead ? 36 + spacing.sm : 0), height: StyleSheet.hairlineWidth, backgroundColor: linesOf(t).separator }} /> : null}
       {leading ? leading : icon && (
-        <View style={[styles.listIcon, { backgroundColor: danger ? t.colors.dangerSoft : t.colors.surfaceAlt }]}>
-          <Icon name={icon} size={18} color={danger ? t.colors.danger : t.colors.text} />
+        <View style={[styles.listIcon, { backgroundColor: danger ? t.colors.dangerSoft : linesOf(t).iconWell }]}>
+          <Icon name={icon} size={18} color={danger ? t.colors.danger : iconColor ?? t.colors.primary} />
         </View>
       )}
-      <View style={{ flex: 1, gap: 2 }}>
+      <View style={{ flex: 1, gap: 2, minWidth: 0 }}>
         <Text weight="medium" color={danger ? t.colors.danger : undefined}>{title}</Text>
         {subtitle ? <Text variant="small" muted>{subtitle}</Text> : null}
       </View>
+      {value ? <Text variant="small" muted style={{ fontVariant: ['tabular-nums'], flexShrink: 0, maxWidth: '40%', textAlign: 'right' }}>{value}</Text> : null}
       {right ?? (onPress ? <Icon name="chevron-right" size={18} color={t.colors.textMuted} /> : null)}
     </View>
   );
   return onPress ? (
-    <ListRowPress label={subtitle ? `${title}, ${subtitle}` : title} onPress={onPress} testID={testID}>{inner}</ListRowPress>
-  ) : inner;
+    <ListRowPress label={[title, subtitle, value].filter(Boolean).join(', ')} onPress={onPress} testID={testID} inGroup={g.inGroup}>{inner}</ListRowPress>
+  ) : testID ? <View testID={testID}>{inner}</View> : inner;
 }
 
-function ListRowPress({ label, onPress, children, testID }: { label: string; onPress: () => void; children: React.ReactNode; testID?: string }) {
-  const press = usePressMotion({ pressed: 0.985, hoverLift: 0 });
+function ListRowPress({ label, onPress, children, testID, inGroup }: { label: string; onPress: () => void; children: React.ReactNode; testID?: string; inGroup?: boolean }) {
+  const press = usePressMotion({ pressed: 0.99, hoverLift: 0 });
   const t = useTheme();
+  const [down, setDown] = React.useState(false);
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} testID={testID} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers}>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} testID={testID} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers}
+      onPressIn={() => { setDown(true); press.handlers.onPressIn(); }} onPressOut={() => { setDown(false); press.handlers.onPressOut(); }}>
       <Animated.View style={press.style}>
-        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 12, backgroundColor: t.colors.surfaceAlt, opacity: press.hover, marginHorizontal: -8 }]} />
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: inGroup ? 0 : 12, backgroundColor: t.colors.surfaceAlt, opacity: down ? 1 : press.hover, marginHorizontal: inGroup ? 0 : -8 }]} />
         {children}
       </Animated.View>
     </Pressable>
@@ -700,31 +919,36 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
       onPressOut={() => springTo(squish, 0, 'release', reduce).start()}
       onPress={() => { haptic('selection'); onChange(!value); }}
       hitSlop={8}
-      style={{ width: 52, height: 32, borderRadius: 16, padding: 3, backgroundColor: t.colors.border, justifyContent: 'center', overflow: 'hidden' }}
+      // Cible de 52 × 44 (le web ignore hitSlop) ; le rail visible garde ses 52 × 32
+      style={{ width: 52, height: MIN_TOUCH, justifyContent: 'center' }}
     >
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on }]} />
-      <Animated.View
-        style={{
-          width: 26, height: 26, borderRadius: 13, backgroundColor: '#fff',
-          shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 4, shadowOffset: { width: 0, height: 2 },
-          transform: [{ translateX: on.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }, { scaleX: squish.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
-        }}
-      />
+      {/* Rail éteint visible sur le verre blanc (l'ancien `border` blanc disparaissait en clair) */}
+      <View pointerEvents="none" style={{ width: 52, height: 32, borderRadius: 16, padding: 3, backgroundColor: linesOf(t).track, justifyContent: 'center', overflow: 'hidden' }}>
+        <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: 16, backgroundColor: t.colors.primary, opacity: on, overflow: 'hidden' }]} />
+        <Animated.View
+          style={{
+            width: 26, height: 26, borderRadius: 13, backgroundColor: t.tokens.surface.thumb,
+            borderWidth: StyleSheet.hairlineWidth, borderColor: linesOf(t).thumbEdge,
+            boxShadow: physicalShadow('low', t.isDark),
+            transform: [{ translateX: on.interpolate({ inputRange: [0, 1], outputRange: [0, 20] }) }, { scaleX: squish.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
+          }}
+        />
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
-  shadow: { shadowColor: '#6B3F2E', shadowOpacity: 0.08, shadowRadius: 24, shadowOffset: { width: 0, height: 10 }, elevation: 0 },
-  fab: { borderRadius: 26, shadowOpacity: 0.26, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
+  fab: { borderRadius: radius.md },
   button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: 44, maxWidth: '100%', borderRadius: 999, borderWidth: 1 },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: controlSize.chip, maxWidth: '100%', borderRadius: 999, borderWidth: 1, overflow: 'hidden' },
   segmented: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
   // marge intérieure réduite (8 → 4) : à 320 px, 4 options allemandes (« Woche ») ne se coupent plus au milieu du mot
   segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },
-  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 18, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
-  banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, alignItems: 'flex-start' },
+  input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: radius.control, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
+  banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, alignItems: 'flex-start', borderWidth: 1 },
+  bannerIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: -2 },
   // flexWrap : une action longue (allemand, italien, petit écran) passe sous le titre au lieu de sortir de l'écran
   sectionTitle: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', columnGap: spacing.sm, rowGap: spacing.xxs, marginTop: spacing.md },
   listRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingVertical: spacing.xs },

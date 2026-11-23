@@ -4,11 +4,12 @@
  */
 import React, { useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { BriefStrip, DayList, DayRow, DaySection, DaySeparator, type DayRowSpec } from '@/features/day5/DayParts';
+import { byClock, splitTimed } from '@/features/day5/summaryLines';
 import { PremiumSection } from '@/components/Premium';
-import { Banner, Button, Card, Chip, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Chip, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { ProfileSwitcher } from '@/components/Family';
 import { buildTextPdf } from '@/lib/documents/pdf';
@@ -47,16 +48,38 @@ function useChildSections(child: Child | null, period: SummaryPeriod) {
   return { sections, from, next };
 }
 
-function SectionsView({ sections }: { sections: SummarySection[] }) {
+/**
+ * Rubriques du résumé : un groupe par rubrique (titre au-dessus, une surface, filets fins). Le total d'abord, puis
+ * les faits horodatés en chronologie à horaires ALIGNÉS (colonne d'heures tabulaires, fil fin), du plus tôt au plus tard.
+ */
+function SectionsView({ sections, timeline }: { sections: SummarySection[]; timeline?: boolean }) {
   if (!sections.length) return <Text muted>{tr('u7.summary.empty')}</Text>;
   return (
-    <View style={{ gap: spacing.xs }}>
-      {sections.map((s) => (
-        <Card key={s.heading}>
-          <Text weight="bold">{s.heading}</Text>
-          {s.lines.map((l, i) => <Text key={i} variant="small">{`• ${l}`}</Text>)}
-        </Card>
-      ))}
+    <View style={{ gap: spacing.md }}>
+      {sections.map((s) => {
+        const timed = timeline ? s.lines.map((l) => ({ l, x: splitTimed(l) })) : s.lines.map((l) => ({ l, x: null }));
+        const facts = timed.filter((r) => !r.x).map((r) => r.l);
+        const rows: DayRowSpec[] = timed.filter((r) => r.x).map((r, i) => ({ key: `${i}-${r.l}`, time: r.x!.time, title: r.x!.text, state: 'later' as const, pill: null }))
+          .sort((a, b) => byClock(a.time, b.time));
+        return (
+          <DaySection key={s.heading} title={s.heading}>
+            <DayList>
+              {facts.map((l, i) => (
+                <View key={`f${i}`}>
+                  {i ? <DaySeparator /> : null}
+                  <Text style={{ paddingHorizontal: spacing.md, paddingVertical: spacing.sm }}>{l}</Text>
+                </View>
+              ))}
+              {rows.map((r, i) => (
+                <React.Fragment key={r.key}>
+                  {i || facts.length ? <DaySeparator /> : null}
+                  <DayRow r={r} first={i === 0} last={i === rows.length - 1} />
+                </React.Fragment>
+              ))}
+            </DayList>
+          </DaySection>
+        );
+      })}
     </View>
   );
 }
@@ -66,7 +89,7 @@ function FamilyDay({ child }: { child: Child }) {
   return (
     <View style={{ gap: 4 }} testID={`family-summary-${child.id}`}>
       <SectionTitle title={child.first_name} />
-      <SectionsView sections={sections.filter((s) => s.heading !== tr('l7.sum.h_growth'))} />
+      <SectionsView timeline sections={sections.filter((s) => s.heading !== tr('l7.sum.h_growth'))} />
     </View>
   );
 }
@@ -77,7 +100,9 @@ export default function SummaryScreen() {
   const { subject } = useActiveSubject();
   const { data: children } = useTrackedChildren();
   const pregnancy = useActivePregnancy();
-  const [period, setPeriod] = useState<SummaryPeriod>(params.period === 'week' || params.period === 'appointment' ? params.period : 'day');
+  // Période gardée dans l'adresse (`?period=`) : ouvrir une mini-app puis revenir retrouve la même période
+  const period: SummaryPeriod = params.period === 'week' || params.period === 'appointment' ? params.period : 'day';
+  const setPeriod = (p: SummaryPeriod) => router.setParams({ period: p === 'day' ? undefined : p } as never);
   const family = params.family === '1' || subject.type === 'family';
   const child = subject.type === 'child' ? (children ?? []).find((c) => c.id === subject.id) ?? null : null;
   const name = child?.first_name ?? (subject.type === 'pregnancy' ? tr('u7.summary.yourPregnancy') : null);
@@ -139,23 +164,22 @@ export default function SummaryScreen() {
         ? { label: Platform.OS === 'web' ? tr('u7.summary.downloadPdf') : tr('u7.summary.exportPdf'), icon: 'download', disabled: busy, onPress: () => void exportPdf('pdf'), testID: 'summary-export' } : undefined}>
       <ProfileSwitcher />
       {subject.type === 'child' || subject.type === 'pregnancy' ? (
-        <TodaySummary title={periodLabel(period)} items={[
-          { icon: 'layers', value: String(sections.length), label: tr('u7.summary.sectionsFilled', { count: sections.length }) },
-          { icon: 'list', value: String(sections.reduce((n, x) => n + x.lines.length, 0)), label: tr('u7.summary.itemsLogged') },
-          { icon: 'download', value: exportAccess.premium ? '∞' : exportQuota.status ? String(exportQuota.status.remaining) : '—', label: tr('u7.summary.exportsLeft') },
+        <BriefStrip title={periodLabel(period)} testID="summary-brief" items={[
+          { value: String(sections.length), label: tr('u7.summary.sectionsFilled', { count: sections.length }) },
+          { value: String(sections.reduce((n, x) => n + x.lines.length, 0)), label: tr('u7.summary.itemsLogged') },
         ]} />
       ) : null}
       {subject.type !== 'child' && subject.type !== 'pregnancy' ? <Banner tone="info">{tr('u7.summary.pickProfile')}</Banner> : (
         <>
           <View testID="summary-periods"><Row wrap>
-            {(['day', 'week', 'appointment'] as SummaryPeriod[]).map((p) => <Chip key={p} label={periodLabel(p)} selected={period === p} onPress={() => setPeriod(p)} />)}
+            {(['day', 'week', 'appointment'] as SummaryPeriod[]).map((p) => <Chip key={p} label={periodLabel(p)} selected={period === p} onPress={() => setPeriod(p)} testID={`summary-period-${p}`} />)}
           </Row></View>
           {period === 'appointment' && next ? <Text variant="small" muted>{tr('u7.summary.nextAppt', { title: next.title, date: formatDate(next.starts_at, LONG_DT) })}</Text> : null}
           <Text variant="caption" muted testID="summary-range">{subtitle}</Text>
           {locked ? (
             <PremiumSection feature="summaries" name={name} preview={<Text variant="small">{tr('u7.summary.lockedPreview', { count: sections.length, list: sections.map((s) => s.heading.toLowerCase()).slice(0, 3).join(', ') })}</Text>}><View /></PremiumSection>
           ) : (
-            <View testID="summary-sections"><SectionsView sections={sections} /></View>
+            <View testID="summary-sections"><SectionsView sections={sections} timeline={period === 'day'} /></View>
           )}
           {!locked && sections.length ? (
             <View style={{ gap: spacing.xs }}>

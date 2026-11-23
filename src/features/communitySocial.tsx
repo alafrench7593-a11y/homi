@@ -23,13 +23,18 @@ import { localizeGroupName, personalizedOrder, pollPercent, splitMentions, type 
 import { isPremiumRequired } from '@/lib/premium/features';
 import type { CommunityGroup, FeedPost, Forum, MemberCard } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
+import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { MIN_TOUCH, NACRE, radius, SKY_GRADIENTS, spacing } from '@/theme/tokens';
 import { localeTag, t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { SlidingUnderline, useSlidingUnderline } from '@/components/controls/SlidingUnderline';
 
 /** Couleurs d'accent : reprises des encres déjà utilisées dans l'application (aucune couleur existante modifiée). */
-export const ACCENT_COLOR: Record<ProfileAccent, string> = { rose: '#C2416E', lavande: '#7A5CE0', menthe: '#3C8C55', peche: '#D2693C', ciel: '#3A78B5', sable: '#B7791F' };
+// Accents choisis par le parent (noms conservés) : teintes harmonisées HOMI, encres lisibles sur fond clair
+export const ACCENT_COLOR: Record<ProfileAccent, string> = { rose: '#A8346A', lavande: '#5E44A8', menthe: '#286B40', peche: '#8A5A0E', ciel: '#2A609C', sable: '#76561D' };
 export const BANNER_COLORS: Record<ProfileBanner, [string, string, string]> = {
-  aube: SKY_GRADIENTS.dawn, nuit: SKY_GRADIENTS.dusk, prairie: ['#EAF7EC', '#E6F6F4', '#FFF4E0'], ocean: ['#E9F4FF', '#EAEDFF', '#E6F6F4'], nacre: NACRE,
+  aube: SKY_GRADIENTS.dawn, nuit: SKY_GRADIENTS.dusk, prairie: ['#EAF7EC', '#E6F6F4', '#F6ECDA'], ocean: ['#E9F4FF', '#EAEDFF', '#E6F6F4'], nacre: NACRE,
 };
 export const accentOf = (a?: string | null) => (a && a in ACCENT_COLOR ? ACCENT_COLOR[a as ProfileAccent] : null);
 
@@ -86,11 +91,11 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
   }
   return (
     <View style={{ gap: 6, marginTop: spacing.xs }} testID="poll">
-      {poll.options.map((o) => {
+      <MotionList style={{ gap: 6 }}>{poll.options.map((o) => {
         const pct = pollPercent(o.votes, poll.total);
         const selected = picked.includes(o.id) || (showResults && o.mine);
         return (
-          <Tappable key={o.id} accessibilityRole={poll.multiple ? 'checkbox' : 'radio'} accessibilityState={{ checked: selected, disabled: poll.closed }}
+          <MotionItem key={o.id}><Tappable key={o.id} accessibilityRole={poll.multiple ? 'checkbox' : 'radio'} accessibilityState={{ checked: selected, disabled: poll.closed }}
             accessibilityLabel={`${o.label}${showResults ? `, ${tr('cm1.poll.pct', { pct })}` : ''}`} disabled={poll.closed || vote.isPending}
             onPress={() => {
               if (poll.multiple) setPicked((p) => (p.includes(o.id) ? p.filter((x) => x !== o.id) : [...p, o.id]));
@@ -100,13 +105,13 @@ export function PollView({ post }: { post: Pick<FeedPost, 'id' | 'poll' | 'group
             style={{ minHeight: MIN_TOUCH, borderRadius: radius.md, borderWidth: 1, borderColor: selected ? t.colors.primary : t.colors.border, overflow: 'hidden', justifyContent: 'center' }}>
             {showResults ? <View style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, backgroundColor: t.colors.primary + (o.mine ? '2E' : '14') }} /> : null}
             <Row style={{ paddingHorizontal: spacing.sm }}>
-              {selected ? <Icon name="check" size={16} color={t.colors.primary} /> : null}
+              <CheckMark checked={!!selected} size={18} color={t.colors.primary} />
               <Text style={{ flex: 1 }} weight={selected ? 'bold' : 'regular'}>{o.label}</Text>
               {showResults ? <Text variant="small" weight="bold">{tr('cm1.poll.pct', { pct })}</Text> : null}
             </Row>
-          </Tappable>
+          </Tappable></MotionItem>
         );
-      })}
+      })}</MotionList>
       {poll.multiple && !poll.closed && picked.length ? <Button label={tr('cm1.poll.vote')} size="sm" onPress={() => void send(picked)} loading={vote.isPending} testID="poll-vote" /> : null}
       <Text variant="caption" muted>
         {[tr('cm1.poll.participations', { count: poll.total }), poll.multiple ? tr('cm1.poll.multiple') : null, poll.closed ? tr('cm1.poll.closed') : poll.closes_at ? tr('cm1.poll.until', { date: new Date(poll.closes_at).toLocaleDateString(localeTag(), { day: 'numeric', month: 'long' }) }) : null, tr('cm1.poll.anonymous')].filter(Boolean).join(' · ')}
@@ -175,18 +180,21 @@ export function GroupCard({ g, compact }: { g: CommunityGroup; compact?: boolean
 
 export function FeedTabs<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
   const t = useTheme();
+  const u = useSlidingUnderline<T>(value);
   return (
-    <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 2 }} accessibilityRole="tablist" testID="feed-tabs">
+    // Coupée à droite sur un écran étroit : elle va jusqu'au bord et s'estompe tant qu'elle peut défiler
+    <FadingScrollRow gap={2} accessibilityRole="tablist" testID="feed-tabs">
       {options.map((o) => {
         const selected = value === o.value;
         return (
-          <Tappable key={o.value} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => onChange(o.value)} testID={`feed-tab-${o.value}`}
-            style={{ minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: selected ? t.colors.primary : 'transparent' }}>
+          <Tappable key={o.value} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => onChange(o.value)} testID={`feed-tab-${o.value}`} onLayout={u.onItemLayout(o.value)}
+            style={{ minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, justifyContent: 'center', borderBottomWidth: 3, borderBottomColor: 'transparent' }}>
             <Text weight={selected ? 'bold' : 'medium'} color={selected ? t.colors.primary : t.colors.textMuted}>{o.label}</Text>
           </Tappable>
         );
       })}
-    </ScrollView>
+      <SlidingUnderline style={u.style} color={t.colors.primary} bottom={2} testID="feed-tabs-underline" />
+    </FadingScrollRow>
   );
 }
 
@@ -229,12 +237,14 @@ export function FiltersButton({ active, onOpen }: { active: boolean; onOpen: () 
   const t = useTheme();
   const access = usePremiumAccess('community_search');
   return (
-    <Button label={active ? tr('cm1.filters.active') : tr('cm1.filters.button')} icon="sliders" size="sm" variant={active ? 'primary' : 'secondary'}
-      onPress={() => (access.premium ? onOpen() : access.showPreview(
-        <Text variant="small">{tr('cm1.filters.example')}</Text>,
-      ))} testID="community-filters"
-      accessibilityLabel={access.premium ? tr('cm1.filters.title') : tr('cm1.filters.a11yPremium')}
-      style={!access.premium ? { borderColor: t.colors.gold } : undefined} />
+    <>
+      <Button label={active ? tr('cm1.filters.active') : tr('cm1.filters.button')} icon="sliders" size="sm" variant={active ? 'primary' : 'secondary'}
+        onPress={() => (access.premium ? onOpen() : access.showPreview(
+          <Text variant="small">{tr('cm1.filters.example')}</Text>,
+        ))} testID="community-filters"
+        accessibilityLabel={access.premium ? tr('cm1.filters.title') : tr('cm1.filters.a11yPremium')}
+        style={!access.premium ? { borderColor: t.colors.gold } : undefined} />
+    </>
   );
 }
 

@@ -4,10 +4,11 @@
 // L'identifiant RevenueCat (appUserID) est l'identifiant Supabase de l'utilisatrice.
 // Si REVENUECAT_SECRET_API_KEY est définie, la fiche abonné est relue dans l'API REST après chaque événement
 // (recommandation RevenueCat) ; sinon le contenu de l'événement est utilisé.
-// Droit attendu : REVENUECAT_ENTITLEMENT (défaut AU_FIL_DE_NOUS_PREMIUM) ; les événements d'un autre droit sont ignorés.
+// Droit attendu : REVENUECAT_ENTITLEMENT (défaut HOMI_PREMIUM) ; les événements d'un autre droit sont ignorés.
+// Packs de crédits (homi_credits_*, sans droit) : crédités au grand livre, idempotence sur la transaction.
 // Logique et tests : ../_shared/subscription-run.ts, ../_shared/subscription-run_test.ts
 import { adminClient } from '../_shared/http.ts';
-import { entitlementId, handleWebhook, revenueCatApi, supabaseDb } from '../_shared/subscription-run.ts';
+import { entitlementId, handleWebhook, revenueCatApi, supabaseCredits, supabaseDb } from '../_shared/subscription-run.ts';
 
 Deno.serve((req) => {
   const key = Deno.env.get('REVENUECAT_SECRET_API_KEY');
@@ -16,5 +17,7 @@ Deno.serve((req) => {
     entitlement: entitlementId(),
     api: key ? revenueCatApi(key) : null,
     db: supabaseDb(adminClient()),
+    // Crédits IA : packs consommables (NON_RENEWING_PURCHASE, remboursement) et octrois mensuels (docs/CREDITS_IA.md)
+    credits: supabaseCredits(adminClient()),
   });
 });

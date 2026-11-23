@@ -10,7 +10,7 @@ import { t as tr } from '@/i18n';
 import { estimateReadability, extractIngredientSection, extractPrecautions, extractPrintedBarcode } from '../domain/scanOcr';
 
 /** Constante française (API inchangée) ; le message de l'exception, lui, suit la langue en cours. */
-export const LOCAL_RECOGNITION_UNAVAILABLE = 'Lecture locale indisponible ici : utilisez la saisie manuelle';
+export const LOCAL_RECOGNITION_UNAVAILABLE = 'Lecture locale indisponible ici : utilise la saisie manuelle';
 
 export function localTextRecognitionAvailable(): boolean {
   return Platform.OS !== 'web' && !!NativeModules.TextRecognition;

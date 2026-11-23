@@ -58,3 +58,23 @@ export function useEmergencyRegion(): string {
   const region = useUiStore((s) => s.region);
   return region ?? defaultRegion(deviceRegion());
 }
+
+/** Numéros d'urgence du pays en une ligne (« 15 · 112 · 3114 » en France, « 911 » aux États-Unis…) — source : REGIONS. */
+export function emergencySummary(region: string): string {
+  return (REGIONS.find((x) => x.code === region) ?? REGIONS.find((x) => x.code === 'OTHER')!).emergency;
+}
+
+/** Ligne d'écoute de crise connue pour le pays (France : 3114, prévention du suicide), sinon null (aucune n'est inventée). */
+export function crisisLine(region: string): string | null {
+  return regionPhones(region).includes('3114') ? '3114' : null;
+}
+
+/**
+ * Numéros d'aide à afficher sur un écran (selon le PAYS, jamais écrits en dur) : la ligne d'écoute de crise s'il en
+ * existe une connue, le numéro d'urgence médicale (premier numéro du pays : 15 en France, 911 aux États-Unis) et le
+ * résumé « 15 · 112 · 3114 ».
+ */
+export function useHelpNumbers(): { region: string; summary: string; crisis: string | null; urgent: string } {
+  const region = useEmergencyRegion();
+  return { region, summary: emergencySummary(region), crisis: crisisLine(region), urgent: primaryEmergencyPhone(region) };
+}

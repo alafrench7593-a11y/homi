@@ -145,7 +145,7 @@ select tests.ok(tests.count($$select * from public.search_posts('parc')$$) = 0, 
 select tests.throws($$select public.join_group((select id from public.community_groups where name = 'Copines de la maternité'))$$, 'groupe privé : impossible de rejoindre sans invitation');
 reset role;
 set role authenticated; set request.jwt.claim.sub = :'S2';
-select tests.ok(tests.count($$select * from public.notifications where category = 'community_group' and title like '%vous invite%'$$) = 1, 'invitation : notification envoyée');
+select tests.ok(tests.count($$select * from public.notifications where category = 'community_group' and title like '%t’invite%'$$) = 1, 'invitation : notification envoyée');
 select tests.ok(tests.count($$select * from public.community_groups where kind = 'private'$$) = 1, 'invitation : le groupe est visible par la personne invitée');
 select tests.ok(tests.count($$select * from public.forum_feed where title = 'Rendez-vous'$$) = 0, 'invitation : contenu invisible avant d''accepter');
 select public.respond_group_invitation((select id from public.group_invitations where status = 'pending'), true);

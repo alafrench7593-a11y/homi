@@ -18,6 +18,7 @@ import { timeAgo } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const statusLabel = (): Record<string, string> => ({ visible: tr('u5.admin.st_visible'), hidden: tr('u5.admin.st_hidden'), pending_review: tr('u5.admin.st_pending'), removed: tr('u5.admin.st_removed') });
 const articleStatus = (): Record<string, string> => ({ draft: tr('u5.admin.as_draft'), in_review: tr('u5.admin.as_review'), published: tr('u5.admin.as_published'), archived: tr('u5.admin.as_archived') });
@@ -214,9 +215,9 @@ export default function AdminScreen() {
                 <Text variant="small" weight="bold">{tr('u5.admin.unrev_safety', { count: articleOverview.safetyUnreviewed.length })}</Text>
               ) : null}
               <Text variant="small">{tr('u5.admin.stale', { count: articleOverview.stale.length })}</Text>
-              {articleOverview.unreviewed.slice(0, 8).map((a) => (
-                <Text key={a.id} variant="caption" muted>{`• ${a.title}${a.is_safety_critical ? ` (${tr('u5.admin.safety')})` : ''}`}</Text>
-              ))}
+              <MotionList>{articleOverview.unreviewed.slice(0, 8).map((a) => (
+                <MotionItem key={a.id}><Text key={a.id} variant="caption" muted>{`• ${a.title}${a.is_safety_critical ? ` (${tr('u5.admin.safety')})` : ''}`}</Text></MotionItem>
+              ))}</MotionList>
               {articleOverview.unreviewed.length > 8 ? <Text variant="caption" muted>{tr('u5.admin.others', { count: articleOverview.unreviewed.length - 8 })}</Text> : null}
               <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u5.admin.no_invent')}</Text>
             </Card>

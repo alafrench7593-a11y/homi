@@ -1,14 +1,19 @@
-/** Dents de lait : noter la date d'apparition de chaque dent, sans comparaison ni « retard ». */
+/**
+ * Dents de lait : noter la date d'apparition de chaque dent, sans comparaison ni « retard ».
+ * v5 : schéma dentaire clair (`TeethMap`), et un état vide UTILE — « Que faire maintenant » (noter la première dent,
+ * brosser dès la première dent, prévoir un contrôle) — au lieu de compteurs à zéro.
+ */
 import { insertOrQueue } from '@/lib/offline';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
-import { ToothChart } from '@/features/childCare';
+import { Banner, Button, Card, Chip, Field, haptic, ListGroup, ListRow, Row, Text } from '@/components/ui';
+import { FIRST_TEETH, TeethMap } from '@/features/teeth/TeethMap';
+import { TeethHero, TeethList } from '@/features/careTrack/TeethTrack';
+import { PRIMARY_TEETH } from '@/lib/domain/childCare';
 import { useSaveReminder } from '@/lib/data/hooks-settings';
 import { toFrDate } from '@/lib/validation';
 import { backend, eq } from '@/lib/backend';
@@ -16,14 +21,11 @@ import { useActiveSubject, useTrackedChildren, useInvalidate } from '@/lib/data/
 import { useMilestones } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
-import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
-import { Tappable } from '@/components/Tappable';
-import { formatDate, t as tr } from '@/i18n';
+import { t as tr } from '@/i18n';
 
 
 export default function Teeth() {
-  const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const params = useLocalSearchParams<{ child?: string }>();
@@ -42,6 +44,8 @@ export default function Teeth() {
   const [note, setNote] = useState('');
   const pickedRow = picked ? teeth.find((m) => m.title === picked) : undefined;
   const saveReminder = useSaveReminder();
+  // « Noter la première dent » : ouvre la fiche d'une incisive centrale du bas (souvent la première, jamais une norme)
+  const firstLabel = PRIMARY_TEETH.find((d) => FIRST_TEETH.has(d.id))?.label ?? PRIMARY_TEETH[0].label;
 
   const open = (label: string) => {
     if (!child || busy) return;
@@ -83,7 +87,6 @@ export default function Teeth() {
 
   return (
     <Screen back title={tr('u5.teeth.title')} subtitle={child ? child.first_name : tr('u5.teeth.add_first')}>
-      <Banner tone="info">{tr('u5.teeth.banner')}</Banner>
       {childrenQ.isLoading && !children ? <Skeleton rows={4} /> : childrenQ.isError && !children ? (
         <ErrorView error={childrenQ.error} onRetry={() => void childrenQ.refetch()} />
       ) : !child ? (
@@ -92,40 +95,35 @@ export default function Teeth() {
         <ErrorView error={milestonesQ.error} onRetry={() => void milestonesQ.refetch()} title={tr('u5.teeth.err')} />
       ) : (
         <>
-          {(() => {
-            const dated = teeth.filter((m) => m.happened_on).sort((x, y) => (y.happened_on ?? '').localeCompare(x.happened_on ?? ''));
-            return (
-              <TodaySummary title={tr('u5.teeth.brief')} testID="teeth-summary" items={[
-                { icon: 'smile', value: `${teeth.length}/20`, label: tr('u5.teeth.count') },
-                { icon: 'calendar', value: dated[0]?.happened_on ? formatDate(dated[0].happened_on, { day: 'numeric', month: 'short' }) : '—', label: tr('u5.teeth.last') },
-              ]} />
-            );
-          })()}
-          <Card>
-            <ToothChart present={new Set(teeth.map((m) => m.title))} onPick={open} />
+          {!teeth.length ? (
+            <View style={{ gap: spacing.xs }} testID="teeth-empty">
+              <Text variant="heading" accessibilityRole="header">{tr('h5.teeth.emptyT')}</Text>
+              <Text muted>{tr('h5.teeth.emptyB')}</Text>
+            </View>
+          ) : null}
+
+          <TeethHero teeth={teeth} />
+          <Card style={{ gap: spacing.sm }}>
+            <TeethMap present={new Set(teeth.map((m) => m.title))} onPick={open} hintFirst={!teeth.length} />
             <Text variant="caption" muted center>{tr('u5.teeth.tap')}</Text>
           </Card>
-          {teeth.length ? (
-            <Card>
-              {[...teeth].sort((x, y) => (x.happened_on ?? '').localeCompare(y.happened_on ?? '')).map((m) => (
-                <Tappable key={m.id} accessibilityRole="button" onPress={() => open(m.title)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
-                  <Icon name="check-circle" size={18} color={t.colors.primary} />
-                  <View style={{ flex: 1 }}>
-                    <Text>{m.title}</Text>
-                    {m.note ? <Text variant="caption" muted>{m.note}</Text> : null}
-                  </View>
-                  {m.happened_on ? <Text variant="caption" muted>{formatDate(m.happened_on, { day: '2-digit', month: '2-digit', year: 'numeric' })}</Text> : null}
-                </Tappable>
-              ))}
-            </Card>
-          ) : null}
-          <Card tone="soft">
-            <Text weight="bold">{tr('u5.teeth.care')}</Text>
-            <Row wrap style={{ marginTop: spacing.xs }}>
-              <Button label={tr('u5.teeth.b_rem')} icon="bell" size="sm" variant="secondary" onPress={hygieneReminder} loading={saveReminder.isPending} />
-              <Button label={tr('u5.teeth.b_dentist')} icon="calendar" size="sm" variant="secondary" onPress={() => router.push('/appointments')} />
-            </Row>
-          </Card>
+
+          {!teeth.length ? (
+            <ListGroup title={tr('h5.teeth.now')} testID="teeth-next">
+              <ListRow icon="edit-3" title={tr('h5.teeth.step1')} subtitle={tr('h5.teeth.step1Sub')} onPress={() => open(firstLabel)} testID="teeth-step-first" />
+              <ListRow icon="bell" title={tr('h5.teeth.step2')} subtitle={tr('h5.teeth.step2Sub')} onPress={hygieneReminder} testID="teeth-step-brush" />
+              <ListRow icon="calendar" title={tr('h5.teeth.step3')} subtitle={tr('h5.teeth.step3Sub')} onPress={() => router.push('/appointments')} testID="teeth-step-dentist" />
+            </ListGroup>
+          ) : (
+            <>
+              <TeethList teeth={teeth} birthDate={child.birth_date} />
+              <ListGroup title={tr('h5.teeth.care')} testID="teeth-care">
+                <ListRow icon="bell" title={tr('u5.teeth.b_rem')} subtitle={tr('h5.teeth.remSub')} onPress={hygieneReminder} />
+                <ListRow icon="calendar" title={tr('u5.teeth.b_dentist')} subtitle={tr('h5.teeth.dentistSub')} onPress={() => router.push('/appointments')} />
+              </ListGroup>
+            </>
+          )}
+          <Banner tone="info">{tr('u5.teeth.banner')}</Banner>
           <Text variant="caption" muted>{tr('u5.teeth.warn')}</Text>
         </>
       )}

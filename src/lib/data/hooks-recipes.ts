@@ -3,10 +3,13 @@
  * du profil affiché, favoris, menus et listes de courses du foyer (partagés avec le coparent), réglages de l'enfant.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { getLocale } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
 import { useMutation } from '@tanstack/react-query';
-import { backend, eq } from '../backend';
+import { backend, BackendError, eq } from '../backend';
+import { updateIfVersion } from '../offlineConflicts';
+import type { StockCategory, StockUnit } from '../domain/stocks';
 import { useUserId } from '../auth';
+import { insertOrQueue } from '../offline';
 import { ensureHousehold, useActivePregnancy, useHouseholdId, useInvalidate, useRows, useTrackedChildren, useJourneyState } from './hooks';
 import { useScope } from './hooks-scope';
 import { localizeRecipes } from '../recipes/english';
@@ -17,6 +20,7 @@ import { bandFor, defaultBand, scoreRecipe, type AgeBand, type IngredientPrice, 
 import { pregnancyProgress } from '../domain/pregnancy';
 import { childAge } from '../domain/child';
 import { uuid } from '../uuid';
+import { derivedId, withIdempotentId } from '../idempotency';
 import type { Child } from '../types';
 import { toISODate } from '../domain/dates';
 import { loadEmbeddedRecipesModule, type EmbeddedRecipesModule } from '../lazyContent';
@@ -212,7 +216,17 @@ export function useSaveMealPlan() {
 
 // ---------------------------------------------------------------- liste de courses
 export interface ShoppingList { id: string; household_id: string; plan_id: string | null; title: string; created_at: string }
-export interface ShoppingItem { id: string; list_id: string; ingredient_key: string | null; label: string; qty: number | null; unit: ShoppingLine['unit']; aisle: string; at_home: boolean; checked: boolean; checked_by: string | null; position: number }
+export interface ShoppingItem {
+  id: string; list_id: string; household_id?: string; ingredient_key: string | null; label: string; qty: number | null; unit: ShoppingLine['unit'] | StockUnit | null; aisle: string; at_home: boolean;
+  checked: boolean; checked_by: string | null; checked_at?: string | null; position: number; version?: number;
+  // Courses et stocks (15/11/2026)
+  brand?: string | null; size?: string | null; category?: StockCategory | null; assignee_id?: string | null; stock_id?: string | null;
+  document_id?: string | null; created_by?: string | null; created_at?: string;
+}
+export interface ShoppingItemInput {
+  listId: string; householdId: string; label: string; position: number; qty?: number | null; unit?: StockUnit | null; brand?: string | null; size?: string | null;
+  category?: StockCategory | null; assignee_id?: string | null; stock_id?: string | null;
+}
 
 export function useLatestShoppingList() {
   const hid = useHouseholdId();
@@ -221,16 +235,25 @@ export function useLatestShoppingList() {
   const items = useRows<ShoppingItem>(['shopping_items', list?.id ?? ''], list ? { table: 'shopping_items', filters: [eq('list_id', list.id)], order: [{ col: 'position' }] } : null, { staleTime: 5_000 });
   return { list, items: items.data ?? [], loading: lists.isLoading || items.isLoading };
 }
+/** client_id déterministe d'un article de liste générée (uuid valide : préfixe de la liste + position). */
+export const listItemClientId = derivedId;
 export function useCreateShoppingList() {
   const hid = useHouseholdId();
   const inv = useInvalidate();
   return useMutation({
     mutationFn: async (v: { title: string; planId: string | null; lines: ShoppingLine[] }) => {
       const h = hid ?? (await ensureHousehold());
-      const id = uuid();
-      await backend.insert('shopping_lists', { id, household_id: h, plan_id: v.planId, title: v.title });
-      if (v.lines.length) await backend.insert('shopping_items', v.lines.map((l, n) => ({ list_id: id, household_id: h, ingredient_key: l.key, label: l.label, qty: l.qty, unit: l.unit, aisle: l.aisle, at_home: l.atHome, checked: false, position: n })));
-      return id;
+      // Audit 08 : liste et articles forment UNE saisie. id de liste stable tant qu'elle n'a pas abouti, articles à
+      // client_id dérivé (liste + position) : « Réessayer » après une coupure reprend la même liste, sans doublon ni
+      // liste vide orpheline (les articles déjà écrits sont ignorés, les manquants ajoutés).
+      return withIdempotentId('shopping_lists', { h, ...v }, async (id) => {
+        await backend.insert('shopping_lists', { id, household_id: h, plan_id: v.planId, title: v.title }, { onConflict: 'id', ignoreDuplicates: true });
+        if (v.lines.length) {
+          await backend.insert('shopping_items', v.lines.map((l, n) => ({ client_id: listItemClientId(id, n), list_id: id, household_id: h, ingredient_key: l.key, label: l.label, qty: l.qty, unit: l.unit, aisle: l.aisle, at_home: l.atHome, checked: false, position: n })),
+            { onConflict: 'household_id,client_id', ignoreDuplicates: true });
+        }
+        return id;
+      });
     },
     onSuccess: () => inv('shopping_lists', 'shopping_items'),
   });
@@ -239,16 +262,39 @@ export function useToggleShoppingItem() {
   const inv = useInvalidate();
   const userId = useUserId();
   return useMutation({
+    // Cocher publie « shopping.item_checked » côté serveur : mission liée terminée si c'est son destinataire, stock « à valider »
     mutationFn: (v: { id: string; checked: boolean }) => backend.update('shopping_items', { checked: v.checked, checked_by: v.checked ? userId : null, checked_at: v.checked ? new Date().toISOString() : null }, [eq('id', v.id)]),
-    onSuccess: () => inv('shopping_items'),
+    onSuccess: () => inv('shopping_items', 'household_stocks', 'family_tasks', 'family_task_events', 'notifications'),
   });
 }
 export function useAddShoppingItem() {
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: (v: { listId: string; householdId: string; label: string; position: number }) => backend.insert('shopping_items', { list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position }),
+    // client_id unique par foyer : un article ajouté hors ligne est envoyé au retour du réseau, sans doublon
+    // Audit 08 : double pression → même client_id (clé d'idempotence par contenu) → un seul article
+    mutationFn: (v: ShoppingItemInput) => withIdempotentId('shopping_items', v, (client_id) => insertOrQueue('shopping_items', {
+      client_id, list_id: v.listId, household_id: v.householdId, label: v.label, aisle: 'epicerie', position: v.position,
+      ...(v.qty != null ? { qty: v.qty } : {}), ...(v.unit ? { unit: v.unit } : {}), ...(v.brand ? { brand: v.brand } : {}), ...(v.size ? { size: v.size } : {}),
+      ...(v.category ? { category: v.category } : {}), ...(v.assignee_id ? { assignee_id: v.assignee_id } : {}), ...(v.stock_id ? { stock_id: v.stock_id } : {}),
+    })),
     onSuccess: () => inv('shopping_items'),
   });
+}
+/** Modification d'un article lu à une version (quantité, marque, taille, responsable…) : jamais d'écrasement silencieux. */
+export function useUpdateShoppingItem() {
+  const inv = useInvalidate();
+  return useMutation({
+    mutationFn: async (v: { id: string; version: number; patch: Record<string, unknown> }) => {
+      const out = await updateIfVersion<ShoppingItem>('shopping_items', v.id, v.version, v.patch);
+      if (out.status !== 'ok') throw new BackendError(out.status === 'conflict' ? tr('stk.err.conflict') : tr('stk.err.notFound'), out.status);
+      return out.row;
+    },
+    onSettled: () => inv('shopping_items', 'household_stocks'),
+  });
+}
+/** Articles déjà achetés (historique) : les plus récents d'abord. */
+export function useShoppingHistory(listId: string | null | undefined) {
+  return useRows<ShoppingItem>(['shopping_items', 'history', listId ?? ''], listId ? { table: 'shopping_items', filters: [eq('list_id', listId), eq('checked', true)], order: [{ col: 'checked_at', asc: false }], limit: 30 } : null);
 }
 
 // ---------------------------------------------------------------- recette personnelle (et création par l'équipe éditoriale)

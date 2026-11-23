@@ -12,19 +12,21 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
+import { CheckMark } from '@/motion/CheckMark';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Règles du mot de passe, cochées au fil de la saisie. */
 export function PasswordRules({ value }: { value: string }) {
   const t = useTheme();
   return (
-    <View accessibilityLabel={tr('auth.rules.a11y')} style={{ gap: 2, marginTop: -4 }}>
+    <MotionList accessibilityLabel={tr('auth.rules.a11y')} style={{ gap: 2, marginTop: -4 }}>
       {passwordRules(value).map((r) => (
-        <Row key={r.key} gap={6} style={{ alignItems: 'center' }}>
+        <MotionItem key={r.key}><Row key={r.key} gap={6} style={{ alignItems: 'center' }}>
           <Icon name={r.ok ? 'check-circle' : 'circle'} size={14} color={r.ok ? t.colors.success : t.colors.textMuted} />
           <Text variant="small" color={r.ok ? t.colors.success : t.colors.textMuted} accessibilityLabel={tr(r.ok ? 'auth.rules.ok' : 'auth.rules.todo', { rule: r.label })}>{r.label}</Text>
-        </Row>
+        </Row></MotionItem>
       ))}
-    </View>
+    </MotionList>
   );
 }
 
@@ -42,7 +44,7 @@ export function CheckRow({ checked, onChange, error, children, label }: { checke
         style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'center', minHeight: MIN_TOUCH, paddingVertical: 4 }}
       >
         <View style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: error ? t.colors.danger : t.colors.primary, backgroundColor: checked ? t.colors.primary : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-          {checked && <Icon name="check" size={16} color={t.colors.primaryText} />}
+          <CheckMark checked={!!checked} size={18} color={t.colors.primaryText} />
         </View>
         <View style={{ flex: 1 }}>{children}</View>
       </Tappable>
@@ -108,6 +110,7 @@ function AppleNativeButton({ onPress }: { onPress: () => void }) {
 
 /** Bouton « Renvoyer l'e-mail », utilisable une fois toutes les 60 secondes. */
 export function ResendButton({ onResend, label = tr('auth.resend'), initialSentAt = Date.now() }: { onResend: () => Promise<void>; label?: string; initialSentAt?: number | null }) {
+  const t = useTheme();
   const [sentAt, setSentAt] = useState<number | null>(initialSentAt);
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
@@ -136,7 +139,7 @@ export function ResendButton({ onResend, label = tr('auth.resend'), initialSentA
   return (
     <View style={{ gap: 4 }}>
       <Button label={remaining ? tr('auth.resendIn', { label, seconds: remaining }) : label} icon="send" variant="secondary" disabled={!!remaining} loading={busy} onPress={go} />
-      {msg ? <Text variant="small" color={msg.ok ? undefined : '#C2416E'} accessibilityLiveRegion="polite">{msg.text}</Text> : null}
+      {msg ? <Text variant="small" color={msg.ok ? undefined : t.colors.danger} accessibilityLiveRegion="polite">{msg.text}</Text> : null}
     </View>
   );
 }

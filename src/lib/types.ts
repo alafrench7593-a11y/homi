@@ -19,6 +19,9 @@ export interface Profile {
   theme: 'system' | 'light' | 'dark';
   /** Situation familiale (07/11/2026) : null = non renseignée. */
   family_situation?: FamilySituation | null;
+  /** Onboarding v2 (19/11/2026) : réponses du parcours d'accueil (lisibles par la personne seule). */
+  onboarding_answers?: Record<string, unknown> | null;
+  onboarding_version?: number | null;
   /** Photo de profil (07/11/2026) : chemin dans l'espace privé « profile-photos » ; null = initiale. */
   avatar_path?: string | null;
 }
@@ -41,6 +44,8 @@ export interface Pregnancy {
   id: string;
   household_id: string;
   carrier_user_id: string | null;
+  /** Partages choisis par la personne enceinte (19/11/2026) : l'essentiel (terme, semaine, rendez-vous), le médical. */
+  share_basics?: boolean | null; share_medical?: boolean | null;
   due_date: string;
   lmp_date: string | null;
   due_date_source: 'due_date' | 'lmp' | 'professional' | 'conception' | 'positive_test';
@@ -83,11 +88,11 @@ export interface Measurement { id: string; child_id: string; household_id: strin
 import type { StoolColor } from './domain/childCare';
 interface LogBase { id: string; client_id?: string | null; child_id: string; household_id: string; note?: string | null; created_by?: string | null; created_at?: string }
 export interface Bottle extends LogBase { at: string; prepared_ml: number | null; consumed_ml: number | null; milk_type: string | null }
-export interface Breastfeed extends LogBase { side: 'left' | 'right' | 'both'; started_at: string; ended_at: string | null }
+export interface Breastfeed extends LogBase { side: 'left' | 'right' | 'both'; started_at: string; ended_at: string | null; /** Passages par côté dans la même tétée (migration 20261206000100) */ segments?: { side: 'left' | 'right'; from: string; to: string | null }[] | null }
 export interface Pumping extends LogBase { at: string; amount_ml: number; side: 'left' | 'right' | 'both' | null }
 export interface Diaper extends LogBase { at: string; wet: boolean; stool: boolean; stool_color?: StoolColor | null; stool_consistency?: 'liquid' | 'soft' | 'formed' | 'hard' | null; blood_seen?: boolean }
 export interface Sleep extends LogBase { started_at: string; ended_at: string | null; wakeups: number; kind?: 'nap' | 'night' | null; wake_events?: { at: string; minutes?: number; back_at?: string; open?: boolean }[] }
-export interface Meal extends LogBase { at: string; description: string | null; foods: string[]; texture: 'smooth' | 'mashed' | 'pieces' | 'family' | null; reaction_note: string | null }
+export interface Meal extends LogBase { at: string; description: string | null; foods: string[]; texture: 'smooth' | 'mashed' | 'pieces' | 'family' | null; reaction_note: string | null; /** 123 : aliments refusés (parmi foods) */ refused_foods?: string[] }
 export type ObservationKind = 'temperature' | 'medication' | 'symptom' | 'note' | 'vomit' | 'regurgitation' | 'diarrhea' | 'abdominal_pain' | 'bloating' | 'crying';
 export interface Observation extends LogBase { at: string; kind: ObservationKind; value_num: number | null; label: string | null; temp_method?: 'rectal' | 'axillary' | 'ear' | 'forehead' | 'other' | null; intensity?: 1 | 2 | 3 | null }
 
@@ -108,8 +113,13 @@ export type AppointmentKind = 'consultation' | 'ultrasound' | 'exam' | 'blood_te
 export interface Appointment {
   id: string; household_id: string; pregnancy_id: string | null; child_id: string | null; for_parent: boolean;
   kind: AppointmentKind; title: string; starts_at: string; location_label: string | null; notes: string | null; questions: string[];
+  /** Rendez-vous « pour moi » partagé volontairement avec le foyer (19/11/2026 ; sinon réservé à son autrice). */
+  shared_with_household?: boolean | null;
+  /** Parcours du rendez-vous (« fertility » : calendrier des examens, 30/11/2026) et note personnelle après l'examen. */
+  care_track?: 'fertility' | null; result_note?: string | null;
   /** Réservé à la personne qui l'a créé (non visible du foyer). */
   private_to_creator?: boolean; created_by?: string | null;
+  completed_at?: string | null;
 }
 
 export interface Reminder {
@@ -123,7 +133,7 @@ export interface Reminder {
 }
 
 export interface AppNotification {
-  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'community_follow' | 'community_mention' | 'community_group' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
+  id: string; user_id: string; category: 'reminder' | 'community_reply' | 'community_comment' | 'community_like' | 'community_saved' | 'community_moderation' | 'community_follow' | 'community_message' | 'community_mention' | 'community_group' | 'assistant' | 'subscription' | 'product_recall' | 'system' | 'family';
   title: string; body: string | null; deep_link: string | null; payload: Record<string, unknown>; read_at: string | null; created_at: string;
 }
 

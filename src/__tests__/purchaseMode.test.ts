@@ -39,6 +39,8 @@ test('retour au vrai serveur : plus d’achat simulé', async () => {
   mockBackend.mode = 'demo';
   expect(getPurchaseMode()).toBe('test');
   const [plans0] = await getPlans();
+  // en démonstration, la grille demande si l'essai a déjà été utilisé (demo_trial_used) : appel local, hors sujet ici
+  mockBackend.rpc.mockClear();
   mockBackend.mode = 'supabase';
   expect(getPurchaseMode()).toBe('unavailable');
   // Hors démonstration et sans clé : aucune grille de prix (jamais de prix inventé), aucun achat

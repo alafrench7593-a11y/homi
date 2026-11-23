@@ -7,15 +7,45 @@ import { fonts } from '@/theme/tokens';
 import { Text } from './ui';
 import { AnimatedCircle, AnimatedPath, useProgress } from './MotionKit';
 import { Animated } from 'react-native';
+import { formatNumber } from '@/i18n';
+
+/** Valeur d'axe / de point au format de la langue (« 62,7 » en français, « 62.7 » en anglais), 1 décimale au plus. */
+export function chartNumber(v: number, decimals = 1): string {
+  return formatNumber(v, { maximumFractionDigits: decimals, minimumFractionDigits: 0 });
+}
+
+/**
+ * Lisibilité d'un histogramme selon le nombre de barres (pur, testé). Jusqu'à 10 barres (7 jours) : libellé et
+ * valeur sur chaque barre. Au-delà (30 jours : décision audit 09 — 30 barres quotidiennes plutôt qu'une agrégation
+ * par semaine, pour que « 30 jours » montre bien chaque jour) : barres fines, libellé (numéro du jour) une barre
+ * sur 5 et la dernière, valeur seulement sur la dernière barre et sur la plus haute ; toutes les valeurs restent
+ * lues par le lecteur d'écran.
+ */
+export function barChartLayout(values: number[]): { compact: boolean; showLabel: (i: number) => boolean; showValue: (i: number) => boolean } {
+  const n = values.length;
+  if (n <= 10) return { compact: false, showLabel: () => true, showValue: (i) => values[i] > 0 };
+  const step = n <= 16 ? 2 : 5;
+  const last = n - 1;
+  const maxI = values.reduce((best, v, i) => (v > values[best] ? i : best), 0);
+  return {
+    compact: true,
+    // le dernier libellé est toujours montré ; celui qui le précède de trop près est omis (pas de chevauchement)
+    showLabel: (i) => i === last || (i % step === 0 && last - i >= Math.ceil(step / 2)),
+    showValue: (i) => values[i] > 0 && (i === last || i === maxI),
+  };
+}
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
-export function BarChart({ data, unit, height = 150, accessibilityLabel }: { data: { label: string; value: number }[]; unit: string; height?: number; accessibilityLabel: string }) {
+export function BarChart({ data, unit, height = 150, accessibilityLabel }: { data: { label: string; value: number; date?: Date }[]; unit: string; height?: number; accessibilityLabel: string }) {
   const t = useTheme();
   const max = Math.max(1, ...data.map((d) => d.value));
   const w = 320;
-  const bw = (w - 16) / data.length;
-  const summary = data.map((d) => `${d.label} : ${d.value} ${unit}`).join(', ');
+  const bw = (w - 16) / Math.max(1, data.length);
+  const lay = barChartLayout(data.map((d) => d.value));
+  // Beaucoup de barres (30 jours) : le jour du mois (« 14 ») plutôt que le jour de la semaine répété
+  const labelOf = (d: { label: string; date?: Date }) => (lay.compact && d.date ? String(d.date.getDate()) : d.label);
+  const summary = data.map((d) => `${d.date && lay.compact ? `${d.label} ${d.date.getDate()}` : d.label} : ${chartNumber(d.value)} ${unit}`).join(', ');
   // Les barres montent l'une après l'autre quand les données (réelles) changent
   const grow = useProgress(data.map((d) => d.value).join('|'), 700 + data.length * 60);
   const n = data.length;
@@ -24,17 +54,20 @@ export function BarChart({ data, unit, height = 150, accessibilityLabel }: { dat
       <Svg width="100%" height={height + 28} viewBox={`0 0 ${w} ${height + 28}`}>
         {data.map((d, i) => {
           const h = Math.max((d.value / max) * (height - 18), 2);
-          const x = 8 + i * bw + bw * 0.18;
+          const x = 8 + i * bw + bw * (lay.compact ? 0.15 : 0.18);
+          const barW = bw * (lay.compact ? 0.7 : 0.64);
           const start = (i / Math.max(n, 1)) * 0.5;
           const ah = grow.interpolate({ inputRange: [start, Math.min(1, start + 0.5)], outputRange: [2, h], extrapolate: 'clamp' });
           const ay = grow.interpolate({ inputRange: [start, Math.min(1, start + 0.5)], outputRange: [height - 2, height - h], extrapolate: 'clamp' });
           return (
             <G key={i}>
-              <AnimatedRect x={x} y={ay} width={bw * 0.64} height={ah} rx={8} fill={i === data.length - 1 ? t.colors.primary : t.colors.accent} opacity={i === data.length - 1 ? 1 : 0.65} />
-              {d.value > 0 && (
-                <SvgText x={x + bw * 0.32} y={height - h - 6} fontSize={11} fill={t.colors.textMuted} textAnchor="middle" fontFamily={fonts.bodyMedium}>{d.value}</SvgText>
+              <AnimatedRect x={x} y={ay} width={barW} height={ah} rx={Math.min(8, barW / 2)} fill={i === data.length - 1 ? t.colors.primary : t.colors.accent} opacity={i === data.length - 1 ? 1 : 0.65} />
+              {lay.showValue(i) && (
+                <SvgText x={x + barW / 2} y={height - h - 6} fontSize={11} fill={t.colors.textMuted} textAnchor="middle" fontFamily={fonts.bodyMedium}>{chartNumber(d.value)}</SvgText>
               )}
-              <SvgText x={x + bw * 0.32} y={height + 18} fontSize={11.5} fill={t.colors.textMuted} textAnchor="middle" fontFamily={fonts.body}>{d.label}</SvgText>
+              {lay.showLabel(i) ? (
+                <SvgText x={x + barW / 2} y={height + 18} fontSize={11.5} fill={t.colors.textMuted} textAnchor="middle" fontFamily={fonts.body}>{labelOf(d)}</SvgText>
+              ) : null}
             </G>
           );
         })}
@@ -58,7 +91,7 @@ export function LineChart({ points, unit, height = 170, accessibilityLabel, form
   const px = (x: number) => pad.l + ((x - minX) / (maxX - minX || 1)) * (w - pad.l - pad.r);
   const py = (y: number) => pad.t + (1 - (y - minY) / (maxY - minY || 1)) * (height - pad.t - pad.b);
   const d = points.map((p, i) => `${i ? 'L' : 'M'}${px(p.x).toFixed(1)} ${py(p.y).toFixed(1)}`).join(' ');
-  const summary = points.map((p) => `${p.label ?? (formatX ? formatX(p.x) : p.x)} : ${p.y} ${unit}`).join(', ');
+  const summary = points.map((p) => `${p.label ?? (formatX ? formatX(p.x) : p.x)} : ${chartNumber(p.y, 2)} ${unit}`).join(', ');
   // La courbe se trace de gauche à droite ; les points apparaissent quand le trait les atteint
   let len = 0;
   for (let i = 1; i < points.length; i++) len += Math.hypot(px(points[i].x) - px(points[i - 1].x), py(points[i].y) - py(points[i - 1].y));
@@ -72,7 +105,7 @@ export function LineChart({ points, unit, height = 170, accessibilityLabel, form
           return (
             <G key={f}>
               <Line x1={pad.l} x2={w - pad.r} y1={y} y2={y} stroke={t.colors.border} strokeDasharray="3 5" />
-              <SvgText x={pad.l - 6} y={y + 4} fontSize={10.5} fill={t.colors.textMuted} textAnchor="end" fontFamily={fonts.body}>{v.toFixed(1)}</SvgText>
+              <SvgText x={pad.l - 6} y={y + 4} fontSize={10.5} fill={t.colors.textMuted} textAnchor="end" fontFamily={fonts.body}>{chartNumber(v)}</SvgText>
             </G>
           );
         })}

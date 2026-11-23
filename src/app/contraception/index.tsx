@@ -12,7 +12,9 @@ import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { t as tr, formatDate, getLocale } from '@/i18n';
-import { EstimateLine, fmt, JourneyArticles, MonthCalendar, NavCard, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
+import { CycleWeek } from '@/features/cycleTrack/CycleOverview';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { EstimateLine, fmt, JourneyArticles, MonthCalendar, num, RELIABILITY_LABEL, type CalendarStyle } from '@/components/Fertility';
 import { useContraceptionMethods, useCycleEstimates } from '@/lib/data/hooks-fertility';
 import { addDays, daysBetween, todayISO } from '@/lib/domain/dates';
 
@@ -22,6 +24,7 @@ import { AVOID_DISCLAIMER, AVOID_NO_SAFE_DAYS, methodTitle } from '@/content/fer
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { PillToday, dailyKindFor } from '@/features/cycle/PillToday';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function ContraceptionScreen() {
   const t = useTheme();
@@ -53,6 +56,8 @@ export default function ContraceptionScreen() {
         { icon: 'shield', value: active[0] ? active[0].label || methodTitle(active[0].method) : '—', label: tr('u7.contra.index.myMethod') },
         { icon: 'calendar', value: w ? fmt(w.nextPeriod) : '—', label: tr('u7.contra.index.nextPeriodEst') },
       ]} />
+      {/* Ma semaine : jour choisi (adresse), suivis notés ce jour-là → chacun ouvre son app */}
+      <CycleWeek />
       {/* Prise du jour en un geste (pilule, patch, anneau) */}
       {active.find((m) => dailyKindFor(m.method)) ? <PillToday method={active.find((m) => dailyKindFor(m.method))!.method} /> : null}
       <Banner tone="warning" title={tr('u7.contra.index.alwaysPossible')}>{AVOID_DISCLAIMER}</Banner>
@@ -97,18 +102,18 @@ export default function ContraceptionScreen() {
         <EmptyState icon="shield" title={tr('u7.contra.index.noMethod')} body={tr('u7.contra.index.noMethodBody')} action={{ label: tr('u7.contra.index.addMethod'), onPress: () => router.push('/contraception/reminders' as never) }} />
       ) : (
       <Card>
-        {active.map((m) => {
+        <MotionList>{active.map((m) => {
           const left = m.renewal_due_on ? daysBetween(today, m.renewal_due_on) : null;
           return (
-            <ListRow
+            <MotionItem key={m.id}><ListRow
               key={m.id}
               icon="shield"
               title={m.label || methodTitle(m.method)}
               subtitle={[m.started_on ? tr('u7.contra.index.since', { date: fd(m.started_on) }) : null, m.renewal_due_on ? (left != null && left < 0 ? tr('u7.contra.index.overdue', { date: fd(m.renewal_due_on) }) : tr('u7.contra.index.renewOn', { date: fd(m.renewal_due_on) })) : null].filter(Boolean).join(' · ') || undefined}
               onPress={() => router.push('/contraception/reminders' as never)}
-            />
+            /></MotionItem>
           );
-        })}
+        })}</MotionList>
       </Card>
       )}
 
@@ -120,19 +125,15 @@ export default function ContraceptionScreen() {
       </Card>
 
       <SectionTitle title={tr('u7.contra.index.myFollowUp')} />
-      <NavCard items={[
-        { icon: 'grid', title: tr('cy.nav.full'), subtitle: tr('cy.nav.full.hint'), to: '/cycle?all=1' },
-        { icon: 'edit-3', title: tr('u7.contra.index.logTitle'), subtitle: tr('u7.contra.index.logSub'), to: '/contraception/log' },
-        { icon: 'rotate-ccw', title: tr('u7.contra.history.title'), subtitle: tr('u7.contra.index.historySub'), to: '/contraception/history' },
-        { icon: 'bell', title: tr('u7.contra.index.reminders'), subtitle: tr('u7.contra.index.remindersSub'), to: '/contraception/reminders' },
-      ]} />
+      <ToolLinks ids={['cycle_home', 'avoid_reminders', 'contraception_journal']} testID="contra-tools" />
+      {/* Sous-pages de cet écran (noter une prise, relire l'historique) : pas des outils du catalogue */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+        <Button label={tr('u7.contra.index.logTitle')} icon="edit-3" variant="secondary" size="sm" onPress={() => router.push('/contraception/log' as never)} testID="contra-log" />
+        <Button label={tr('u7.contra.history.title')} icon="rotate-ccw" variant="ghost" size="sm" onPress={() => router.push('/contraception/history' as never)} testID="contra-history" />
+      </View>
 
       <SectionTitle title={tr('u7.contra.index.learn')} />
-      <NavCard items={[
-        { icon: 'book', title: tr('u7.contra.index.methodsTitle'), subtitle: tr('u7.contra.index.methodsSub'), to: '/contraception/methods' },
-        { icon: 'alert-circle', title: tr('u7.contra.index.emergTitle'), subtitle: tr('u7.contra.index.emergSub'), to: '/contraception/emergency' },
-        { icon: 'help-circle', title: tr('u7.contra.index.questionsTitle'), subtitle: tr('u7.contra.index.questionsSub'), to: '/contraception/consultation' },
-      ]} />
+      <ToolLinks ids={['avoid_methods', 'avoid_emergency', 'avoid_consult']} allOf="cycle" testID="contra-learn" />
       <JourneyArticles journey="avoid" />
     </Screen>
   );

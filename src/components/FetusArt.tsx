@@ -12,6 +12,7 @@ import { useReduceMotion } from '@/theme/ThemeProvider';
 import { FetusOrb } from './FetusOrb';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { t as tr } from '@/i18n';
+import { useScreenFocused } from './screenChrome';
 
 export function foetusImageFor(week: number) {
   const available = Object.keys(FOETUS_IMAGES).map(Number).sort((a, b) => a - b);
@@ -30,16 +31,21 @@ interface Props {
   hue?: 'rose' | 'lavande' | 'or';
   interactive?: boolean;
   accessibilityLabel?: string;
+  /** Image fixe (écran de suivi lu : ni flottement, ni battement, ni étincelle du liseré) — v5, semaine de grossesse */
+  still?: boolean;
 }
 
-export function FetusArt({ week, growth, size = 260, hue, interactive = true, accessibilityLabel }: Props) {
+export function FetusArt({ week, growth, size = 260, hue, interactive = true, accessibilityLabel, still }: Props) {
   const source = foetusImageFor(week);
   if (!source) return <FetusOrb growth={growth} size={size} hue={hue} interactive={interactive} accessibilityLabel={accessibilityLabel} />;
-  return <FetusImage source={source} size={size} interactive={interactive} accessibilityLabel={accessibilityLabel} />;
+  return <FetusImage source={source} size={size} interactive={interactive} accessibilityLabel={accessibilityLabel} forceStill={still} />;
 }
 
-function FetusImage({ source, size, interactive, accessibilityLabel }: { source: NonNullable<ReturnType<typeof foetusImageFor>>; size: number; interactive: boolean; accessibilityLabel?: string }) {
+function FetusImage({ source, size, interactive, accessibilityLabel, forceStill }: { source: NonNullable<ReturnType<typeof foetusImageFor>>; size: number; interactive: boolean; accessibilityLabel?: string; forceStill?: boolean }) {
   const reduce = useReduceMotion();
+  // boucles décoratives (flottement, battement, liseré) : arrêtées aussi quand l'écran n'est pas affiché
+  const focused = useScreenFocused();
+  const still = reduce || !focused || !!forceStill;
   const tilt = useRef(new Animated.Value(0)).current;
   const float = useRef(new Animated.Value(0)).current;
   const fade = useRef(new Animated.Value(0)).current;
@@ -51,18 +57,18 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
   }, [source, fade, reduce]);
 
   useEffect(() => {
-    if (reduce) return;
+    if (still) return;
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(float, { isInteraction: false, toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(float, { isInteraction: false, toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
     ]));
     loop.start();
     return () => loop.stop();
-  }, [reduce, float]);
+  }, [still, float]);
 
   // Lueur du cœur : animation décorative (≈ 1 battement/s pour rester douce), ne mesure rien
   useEffect(() => {
-    if (reduce) return;
+    if (still) return;
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(beat, { isInteraction: false, toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(beat, { isInteraction: false, toValue: 0.35, duration: 160, useNativeDriver: NATIVE_DRIVER }),
@@ -71,7 +77,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
     ]));
     loop.start();
     return () => loop.stop();
-  }, [reduce, beat]);
+  }, [still, beat]);
 
   const pan = useMemo(() => PanResponder.create({
     onMoveShouldSetPanResponder: (_e, gs) => interactive && Math.abs(gs.dx) > 4,
@@ -91,14 +97,14 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
       style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
     >
       <Animated.View style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', opacity: fade, transform: [{ perspective: 800 }, { translateY }, { rotateY }] }}>
-        {/* image agrandie : son liseré sombre d'origine sort du cercle, remplacé par le fil doré */}
+        {/* image agrandie : son liseré sombre d'origine sort du cercle, remplacé par un liseré nacré lilas (HOMI) */}
         <Image source={source} style={{ position: 'absolute', width: size * 1.22, height: size * 1.22, left: -size * 0.11, top: -size * 0.11 }} resizeMode="cover" />
-        <GoldRim size={size} still={reduce} />
+        <GoldRim size={size} still={still} />
         <Animated.View testID="fetus-heart" pointerEvents="none" style={{
           position: 'absolute', left: size * 0.47, top: size * 0.47, width: size * 0.07, height: size * 0.07, borderRadius: size,
-          backgroundColor: 'rgba(255,120,150,0.9)', shadowColor: '#FF7896', shadowOpacity: 0.9, shadowRadius: size * 0.05, shadowOffset: { width: 0, height: 0 },
-          opacity: reduce ? 0.7 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
-          transform: [{ scale: reduce ? 1 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.35] }) }],
+          backgroundColor: 'rgba(255,156,195,0.9)', shadowColor: '#FF9CC3', shadowOpacity: 0.9, shadowRadius: size * 0.05, shadowOffset: { width: 0, height: 0 },
+          opacity: reduce || forceStill ? 0.7 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
+          transform: [{ scale: reduce || forceStill ? 1 : beat.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.35] }) }],
         }} />
       </Animated.View>
     </View>
@@ -106,8 +112,8 @@ function FetusImage({ source, size, interactive, accessibilityLabel }: { source:
 }
 
 /**
- * Bord de la bulle : un fil d'or fin (comme le logo), doublé d'un second fil plus léger, avec une étincelle
- * de lumière qui glisse le long du fil. Immobile si les animations sont réduites.
+ * Bord de la bulle : un liseré nacré lilas et perle (HOMI ; il remplace le fil d'or d'« Au fil de nous »), doublé d'un
+ * second trait plus léger, avec une étincelle de lumière qui glisse le long du bord. Immobile si les animations sont réduites.
  */
 function GoldRim({ size, still }: { size: number; still: boolean }) {
   const spin = useRef(new Animated.Value(0)).current;
@@ -128,31 +134,31 @@ function GoldRim({ size, still }: { size: number; still: boolean }) {
   const rot = (v: Animated.Value, from: number, dir = 1) => ({ transform: [{ rotate: v.interpolate({ inputRange: [0, 1], outputRange: [`${from}deg`, `${from + dir * 360}deg`] }) }] });
   return (
     <View pointerEvents="none" style={full} testID="fetus-gold-rim">
-      {/* fils fixes : un trait d'or net et un second, plus fin et plus pâle */}
+      {/* traits fixes : un liseré lilas net et un second, plus fin et plus pâle */}
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         <Defs>
           <LinearGradient id="rimGold" x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor="#FFF6DC" />
-            <Stop offset="0.5" stopColor="#FFD58A" />
-            <Stop offset="1" stopColor="#FFE7A8" />
+            <Stop offset="0" stopColor="#F7F4FB" />
+            <Stop offset="0.5" stopColor="#CDBEFA" />
+            <Stop offset="1" stopColor="#E4DAFB" />
           </LinearGradient>
         </Defs>
-        <Circle cx={r} cy={r} r={r1} stroke="#FFC861" strokeOpacity={0.22} strokeWidth={9} fill="none" />
-        <Circle cx={r} cy={r} r={r1} stroke="#FFC861" strokeOpacity={0.45} strokeWidth={4.5} fill="none" />
+        <Circle cx={r} cy={r} r={r1} stroke="#B9A6F2" strokeOpacity={0.22} strokeWidth={9} fill="none" />
+        <Circle cx={r} cy={r} r={r1} stroke="#B9A6F2" strokeOpacity={0.45} strokeWidth={4.5} fill="none" />
         <Circle cx={r} cy={r} r={r1} stroke="url(#rimGold)" strokeWidth={2} fill="none" />
-        <Circle cx={r} cy={r} r={r2} stroke="#FFE7B0" strokeOpacity={0.35} strokeWidth={0.8} fill="none" />
+        <Circle cx={r} cy={r} r={r2} stroke="#E4DAFB" strokeOpacity={0.35} strokeWidth={0.8} fill="none" />
       </Svg>
       {/* étincelle qui file le long du fil (traînée qui s'estompe) */}
       <Animated.View style={[full, { opacity: still ? 0 : 1 }, rot(spin, -90)]}>
         <Svg width={size} height={size}>
-          <Circle cx={r} cy={r} r={r1} stroke="#FFE7B0" strokeOpacity={0.45} strokeWidth={5} strokeLinecap="round" strokeDasharray={`${c1 * 0.16} ${c1}`} fill="none" />
-          <Circle cx={r} cy={r} r={r1} stroke="#FFF6DE" strokeOpacity={0.9} strokeWidth={3} strokeLinecap="round" strokeDasharray={`${c1 * 0.07} ${c1}`} strokeDashoffset={-c1 * 0.09} fill="none" />
+          <Circle cx={r} cy={r} r={r1} stroke="#E4DAFB" strokeOpacity={0.45} strokeWidth={5} strokeLinecap="round" strokeDasharray={`${c1 * 0.16} ${c1}`} fill="none" />
+          <Circle cx={r} cy={r} r={r1} stroke="#F7F4FB" strokeOpacity={0.9} strokeWidth={3} strokeLinecap="round" strokeDasharray={`${c1 * 0.07} ${c1}`} strokeDashoffset={-c1 * 0.09} fill="none" />
           <Circle cx={r} cy={r} r={r1} stroke="#FFFFFF" strokeWidth={5} strokeLinecap="round" strokeDasharray={`${c1 * 0.012} ${c1}`} strokeDashoffset={-c1 * 0.148} fill="none" />
         </Svg>
       </Animated.View>
       <Animated.View style={[full, { opacity: still ? 0 : 0.8 }, rot(spin2, 90, -1)]}>
         <Svg width={size} height={size}>
-          <Circle cx={r} cy={r} r={r2} stroke="#FFE7B0" strokeOpacity={0.7} strokeWidth={1.4} strokeLinecap="round" strokeDasharray={`${c2 * 0.05} ${c2}`} fill="none" />
+          <Circle cx={r} cy={r} r={r2} stroke="#E4DAFB" strokeOpacity={0.7} strokeWidth={1.4} strokeLinecap="round" strokeDasharray={`${c2 * 0.05} ${c2}`} fill="none" />
         </Svg>
       </Animated.View>
     </View>

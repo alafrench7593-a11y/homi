@@ -51,7 +51,8 @@ export interface SleepDay { naps: number; napMinutes: number; nightMinutes: numb
 /** Totaux pour une journée : siestes (début entre 7 h et 19 h) et nuit (début le soir ou la nuit), réveils notés. */
 export function sleepDay(sleeps: SleepLog[], day: Date, now = new Date()): SleepDay {
   const start = new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime();
-  const end = start + 86_400_000;
+  // Lendemain 0 h en heure locale (et non « + 24 h ») : les jours de changement d'heure durent 23 h ou 25 h
+  const end = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1).getTime();
   const r: SleepDay = { naps: 0, napMinutes: 0, nightMinutes: 0, nightWakeups: 0 };
   for (const s of sleeps) {
     const a = Date.parse(s.started_at);

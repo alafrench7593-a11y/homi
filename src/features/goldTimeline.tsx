@@ -13,6 +13,7 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export type GoldState = 'done' | 'now' | 'planned' | 'later';
 
@@ -40,7 +41,7 @@ function Pulse({ color }: { color: string }) {
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: 1200, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 3 }); // AMBIENT_LOOPS (src/motion/ambient.ts) : pulsations à l'arrivée puis repos
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
@@ -55,9 +56,9 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const line = tint(t.isDark ? '#E7C08F' : '#B8865A', 0.55);
+  const line = tint(t.isDark ? '#E9CFA4' : '#76561D', 0.55);
   return (
-    <View testID={testID}>
+    <MotionList testID={testID}>
       {items.map((it, i) => {
         const last = i === items.length - 1;
         const now = it.state === 'now';
@@ -88,7 +89,7 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
           </View>
         );
         return (
-          <View key={it.key} style={{ flexDirection: 'row', gap: spacing.md }}>
+          <MotionItem key={it.key}><View key={it.key} style={{ flexDirection: 'row', gap: spacing.md }}>
             <View style={{ width: NODE, alignItems: 'center' }}>
               <View style={{ width: NODE, height: NODE, alignItems: 'center', justifyContent: 'center' }}>
                 {now ? <Pulse color={accent} /> : null}
@@ -119,9 +120,9 @@ export function GoldTimeline({ items, testID }: { items: GoldItem[]; testID?: st
                 </View>
               )}
             </View>
-          </View>
+          </View></MotionItem>
         );
       })}
-    </View>
+    </MotionList>
   );
 }

@@ -19,7 +19,7 @@ export const FOOD_CATEGORIES: FoodCategory[] = ['veg', 'fruit', 'starch', 'cerea
 export type SourceKey = 'spf' | 'anses_miel' | 'lait_cru' | 'ameli_quincke';
 type DiscoverySource = { label: string; url: string; published?: string; consulted: string };
 const DISCOVERY_SOURCES_FR: Record<SourceKey, DiscoverySource> = {
-  spf: { label: 'Santé publique France — Pas à pas, votre enfant mange comme un grand', url: 'https://www.santepubliquefrance.fr/determinants-de-sante/nutrition-et-activite-physique/documents/brochure/pas-a-pas-votre-enfant-mange-comme-un-grand', published: '2022-05-24', consulted: '2026-10-22' },
+  spf: { label: 'Santé publique France — Pas à pas, ton enfant mange comme un grand', url: 'https://www.santepubliquefrance.fr/determinants-de-sante/nutrition-et-activite-physique/documents/brochure/pas-a-pas-votre-enfant-mange-comme-un-grand', published: '2022-05-24', consulted: '2026-10-22' },
   anses_miel: { label: 'ANSES — Pas de miel pour les enfants de moins d’un an', url: 'https://www.anses.fr/fr/content/pas-de-miel-les-enfants-de-moins-dun-an', published: '2023-10-31', consulted: '2026-10-19' },
   lait_cru: { label: 'Pas de fromages au lait cru avant 5 ans (rappel des autorités sanitaires)', url: 'https://www.larevuedupraticien.fr/article/pas-de-fromages-au-lait-cru-avant-5-ans', published: '2023-07-31', consulted: '2026-10-19' },
   ameli_quincke: { label: 'ameli.fr — Œdème de Quincke : les bons réflexes', url: 'https://www.ameli.fr/assure/sante/urgence/pathologies/oedeme-quincke', published: '2026-03-11', consulted: '2026-10-22' },
@@ -52,13 +52,13 @@ const FOODS_FR: FoodDef[] = [
   // ---------------------------------------------------------------- légumes
   F('carrot', 'Carotte', 'veg', '#F08A2B', SMOOTH, { ing: 'carrot', care: 'Crue, elle se râpe très finement.' }),
   F('zucchini', 'Courgette', 'veg', '#7DA548', `${SMOOTH} La peau se retire au début si elle gêne.`, { ing: 'zucchini' }),
-  F('green_beans', 'Haricots verts', 'veg', '#5E9E3A', 'Bien cuits puis mixés : choisissez des haricots extra-fins, moins fibreux.', { ing: 'green_beans' }),
+  F('green_beans', 'Haricots verts', 'veg', '#5E9E3A', 'Bien cuits puis mixés : choisis des haricots extra-fins, moins fibreux.', { ing: 'green_beans' }),
   F('pumpkin', 'Potiron', 'veg', '#E07B24', 'Cuit à la vapeur, sa chair devient très douce et facile à écraser.', { ing: 'pumpkin' }),
   F('butternut', 'Courge butternut', 'veg', '#E8A33C', 'Rôtie ou vapeur, elle s’écrase à la fourchette.', { ing: 'butternut' }),
   F('sweet_potato', 'Patate douce', 'veg', '#E8823A', 'Vapeur ou au four, puis écrasée : texture fondante.', { ing: 'sweet_potato' }),
   F('broccoli', 'Brocoli', 'veg', '#3E8E41', 'Les fleurettes bien cuites s’écrasent facilement ; plus tard, de petits bouquets fondants se tiennent à la main.', { ing: 'broccoli' }),
   F('cauliflower', 'Chou-fleur', 'veg', '#E9E2CB', 'Très cuit et mixé, mélangé à une pomme de terre pour l’adoucir.', { ing: 'cauliflower' }),
-  F('spinach', 'Épinards', 'veg', '#2F6B2F', 'Hachés et cuits, à mélanger à une purée de pomme de terre.', { ing: 'spinach', care: 'Les épinards cuits se consomment rapidement : ne les gardez pas d’un repas à l’autre à température ambiante.' }),
+  F('spinach', 'Épinards', 'veg', '#2F6B2F', 'Hachés et cuits, à mélanger à une purée de pomme de terre.', { ing: 'spinach', care: 'Les épinards cuits se consomment rapidement : ne les garde pas d’un repas à l’autre à température ambiante.' }),
   F('leek', 'Poireau', 'veg', '#A8C686', 'Le blanc, bien cuit et mixé, est plus doux que le vert.', { ing: 'leek' }),
   F('peas', 'Petits pois', 'veg', '#8CC152', 'Mixés puis passés pour retirer les peaux au début.', { ing: 'peas', care: ROUND }),
   F('beetroot', 'Betterave', 'veg', '#8E1F4A', 'Cuite, mixée avec une pomme de terre : la couleur rose amuse souvent.', { ing: 'beetroot' }),
@@ -67,7 +67,7 @@ const FOODS_FR: FoodDef[] = [
   F('fennel', 'Fenouil', 'veg', '#D6E3A8', 'Braisé ou vapeur, mixé : goût anisé doux.', { ing: 'fennel' }),
   F('celeriac', 'Céleri-rave', 'veg', '#E4DDC4', 'En purée avec de la pomme de terre.', { ing: 'celeriac', allergen: 'celery' }),
   F('parsnip', 'Panais', 'veg', '#EADBB0', 'Vapeur puis écrasé : saveur légèrement sucrée.', { ing: 'parsnip' }),
-  F('turnip', 'Navet', 'veg', '#E8E1EE', 'Choisissez de jeunes navets, plus doux, bien cuits.', { ing: 'turnip' }),
+  F('turnip', 'Navet', 'veg', '#E8E1EE', 'Choisis de jeunes navets, plus doux, bien cuits.', { ing: 'turnip' }),
   F('cucumber', 'Concombre', 'veg', '#7FB36A', 'Pelé, épépiné, râpé finement ou en bâtonnets fondants plus tard.', { ing: 'cucumber' }),
   F('bell_pepper', 'Poivron', 'veg', '#D8342A', 'Cuit et pelé, il devient doux et fondant.', { ing: 'bell_pepper' }),
   F('avocado', 'Avocat', 'veg', '#6E9B3C', 'Bien mûr, simplement écrasé : aucune cuisson nécessaire.', { ing: 'avocado' }),
@@ -107,7 +107,7 @@ const FOODS_FR: FoodDef[] = [
   F('gnocchi', 'Gnocchis', 'starch', '#EAD7A0', 'Coupés en morceaux fondants.', { ing: 'gnocchi', allergen: 'gluten' }),
   // ---------------------------------------------------------------- céréales
   F('infant_cereal', 'Céréales infantiles', 'cereal', '#F1DDAA', 'Sans sucre ajouté, délayées dans son lait habituel.', { ing: 'infant_cereal' }),
-  F('bread', 'Pain', 'cereal', '#D8A866', 'Plus tard, une croûte ou une mouillette à tenir.', { ing: 'wholemeal_bread', allergen: 'gluten', care: 'Le pain imbibé de salive peut se détacher en gros morceau : surveillez et proposez de petits morceaux.' }),
+  F('bread', 'Pain', 'cereal', '#D8A866', 'Plus tard, une croûte ou une mouillette à tenir.', { ing: 'wholemeal_bread', allergen: 'gluten', care: 'Le pain imbibé de salive peut se détacher en gros morceau : surveille et propose de petits morceaux.' }),
   F('oats', 'Flocons d’avoine', 'cereal', '#E6CF9C', 'Cuits en porridge dans du lait.', { allergen: 'gluten' }),
   F('buckwheat', 'Sarrasin', 'cereal', '#9A7B5B', 'En galette fine ou en farine dans une bouillie.', { ing: 'buckwheat_flour' }),
   F('corn', 'Maïs', 'cereal', '#F2C83B', 'En polenta ou mixé.', { ing: 'corn', care: 'Grains entiers : à écraser avant 5 ans.' }),
@@ -128,8 +128,8 @@ const FOODS_FR: FoodDef[] = [
   F('lamb', 'Agneau', 'meat', '#B5654E', 'Mijoté longtemps, dégraissé, mixé.', { ing: 'lamb' }),
   F('ham', 'Jambon cuit', 'meat', '#F0A9A5', 'Jambon blanc découenné, mixé, en petite quantité (il est salé).', { ing: 'ham' }),
   // ---------------------------------------------------------------- poissons
-  F('white_fish', 'Cabillaud', 'fish', '#EDE6DA', 'Cuit à la vapeur, émietté sans arêtes, mixé.', { ing: 'white_fish', allergen: 'fish', care: 'Vérifiez soigneusement l’absence d’arêtes.' }),
-  F('salmon', 'Saumon', 'fish', '#F28C6B', 'Cuit à cœur, émietté sans arêtes.', { ing: 'salmon', allergen: 'fish', care: 'Variez les poissons, comme le recommande Santé publique France.' }),
+  F('white_fish', 'Cabillaud', 'fish', '#EDE6DA', 'Cuit à la vapeur, émietté sans arêtes, mixé.', { ing: 'white_fish', allergen: 'fish', care: 'Vérifie soigneusement l’absence d’arêtes.' }),
+  F('salmon', 'Saumon', 'fish', '#F28C6B', 'Cuit à cœur, émietté sans arêtes.', { ing: 'salmon', allergen: 'fish', care: 'Varie les poissons, comme le recommande Santé publique France.' }),
   F('hake', 'Merlu', 'fish', '#E8E0D3', 'Vapeur, émietté sans arêtes.', { ing: 'hake', allergen: 'fish' }),
   F('trout', 'Truite', 'fish', '#E9A28A', 'Cuite à cœur, émiettée sans arêtes.', { ing: 'trout', allergen: 'fish' }),
   F('sardine', 'Sardine', 'fish', '#8A9AA6', 'En conserve, égouttée, écrasée avec ses arêtes molles.', { ing: 'sardines_can', allergen: 'fish' }),
@@ -144,7 +144,7 @@ const FOODS_FR: FoodDef[] = [
   F('comte', 'Comté', 'dairy', '#E8C66E', 'Râpé et fondu dans une purée.', { ing: 'comte', allergen: 'milk' }),
   F('mozzarella', 'Mozzarella', 'dairy', '#F7F4EE', 'Au lait pasteurisé, en petits dés fondus.', { ing: 'mozzarella', allergen: 'milk' }),
   F('ricotta', 'Ricotta', 'dairy', '#F6F2E9', 'Au lait pasteurisé, mélangée à un légume.', { ing: 'ricotta', allergen: 'milk' }),
-  F('raw_milk_cheese', 'Fromage au lait cru', 'dairy', '#E3C98F', 'À éviter chez le jeune enfant : préférez les fromages au lait pasteurisé et les fromages à pâte pressée cuite.', { minMonths: 60, allergen: 'milk', source: 'lait_cru' }),
+  F('raw_milk_cheese', 'Fromage au lait cru', 'dairy', '#E3C98F', 'À éviter chez le jeune enfant : préfère les fromages au lait pasteurisé et les fromages à pâte pressée cuite.', { minMonths: 60, allergen: 'milk', source: 'lait_cru' }),
   // ---------------------------------------------------------------- matières grasses
   F('rapeseed_oil', 'Huile de colza', 'fat', '#E9C84A', 'Une cuillère à café dans la purée (Santé publique France).', { ing: 'rapeseed_oil' }),
   F('olive_oil', 'Huile d’olive', 'fat', '#B8B04A', 'Une cuillère à café dans la purée, en alternance avec d’autres huiles.'),
@@ -177,12 +177,12 @@ const FOODS_FR: FoodDef[] = [
   F('honey', 'Miel', 'other', '#E2A52B', 'Jamais avant 1 an (risque de botulisme infantile, ANSES). Ensuite, comme tout produit sucré, le plus tard possible.', { minMonths: 12, source: 'anses_miel' }),
   F('cocoa', 'Cacao', 'other', '#6B3E26', 'Non sucré, une pincée plus tard ; les produits sucrés le plus tard possible.', { ing: 'cocoa' }),
   F('plant_drink', 'Boisson végétale', 'other', '#EFE7D6', 'Ne remplace pas le lait et ne convient pas avant 1 an (Santé publique France).', { ing: 'almond_milk', minMonths: 12, source: 'spf' }),
-  F('cow_milk', 'Lait de vache', 'other', '#F8F6F0', 'En petite quantité dans une préparation (purée, laitage) ; le lait maternel ou infantile reste sa boisson lait principale. Demandez conseil au professionnel qui le suit.', { ing: 'milk', allergen: 'milk' }),
+  F('cow_milk', 'Lait de vache', 'other', '#F8F6F0', 'En petite quantité dans une préparation (purée, laitage) ; le lait maternel ou infantile reste sa boisson lait principale. Demande conseil au professionnel qui le suit.', { ing: 'milk', allergen: 'milk' }),
   F('olive', 'Olives', 'other', '#3F3A2E', 'Dénoyautées et finement hachées, plus tard (elles sont salées).', { ing: 'olives', care: 'Entières : à couper en quatre jusqu’à 5 ans.' }),
 ];
 
 const DISCOVERY_SOURCE_LABELS_EN: Record<SourceKey, string> = {
-  spf: 'Santé publique France — Pas à pas, votre enfant mange comme un grand (French public health agency leaflet)',
+  spf: 'Santé publique France — Pas à pas, ton enfant mange comme un grand (French public health agency leaflet)',
   anses_miel: 'ANSES — No honey for children under one year (French food safety agency)',
   lait_cru: 'No raw-milk cheese before age 5 (reminder from the French health authorities)',
   ameli_quincke: 'ameli.fr — Angioedema: the right reflexes (French national health insurance)',

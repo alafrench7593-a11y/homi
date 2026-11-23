@@ -13,18 +13,71 @@
 import type { AccessInfo, PaidTool } from './offers';
 
 const FREE: RegExp[] = [
-  /^\/welcome\/?$/, /^\/intro\/?$/, /^\/cinematic\/?$/, /^\/auth\//, /^\/legal\//, /^\/onboarding\/?$/,
+  /^\/welcome\/?$/, /^\/intro\/?$/, /^\/cinematic\/?$/, /^\/discover(\/.*)?$/, /^\/auth\//, /^\/legal\//, /^\/onboarding\/?$/,
   /^\/journeys(\/.*)?$/, /^\/profiles\/new\/?$/,
   /^\/(profile|moi)\/?$/,
-  /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|family|sync)\/?$/,
-  /^\/premium\/?$/, /^\/feedback\/?$/, /^\/sources\/?$/, /^\/admin(\/.*)?$/,
+  /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|credits|family|sync|help)\/?$/,
+  /^\/premium\/?$/, /^\/start(\/.*)?$/, /^\/feedback\/?$/, /^\/sources\/?$/, /^\/admin(\/.*)?$/,
+  // Galerie de QA (mode développeur / démonstration) : aucun contenu d'abonnement
+  /^\/dev(\/.*)?$/,
   // Urgences et sécurité : jamais derrière un abonnement
   /^\/emergency\/?$/, /^\/cycle\/emergency\/?$/, /^\/contraception\/emergency\/?$/, /^\/postpartum\/support\/?$/, /^\/family\/(sos|urgent)\/?$/,
   // Alertes officielles de rappel de produits : information de sécurité
   /^\/scanner\/recalls\/?$/,
+  // Espace nounou (21/11/2026) : rejoindre une garde (lien d'invitation) et l'accueil « Mes gardes » d'une personne
+  // invitée qui n'est pas encore nounou dans le foyer. Le contenu d'une garde reste derrière l'accès confirmé.
+  /^\/garde\/?$/, /^\/garde\/rejoindre\/?$/,
 ];
 
+/**
+ * APERÇU du catalogue « Mes outils » (ticket 3, 21/11/2026) : la liste des outils et des catégories (noms, phrases,
+ * pictogrammes, favoris locaux) s'affiche à tout compte connecté, avec les outils réservés marqués d'un cadenas et une
+ * introduction à Premium AVANT l'offre. Aucune donnée privée sur ces écrans ; ouvrir un outil réservé mène toujours à
+ * son écran, couvert par l'écran Premium sans droit confirmé (règle inchangée ci-dessous).
+ */
+export const PREVIEW_ROUTES: RegExp[] = [/^\/tools\/?$/, /^\/tools\/[^/]+\/?$/];
+
+/**
+ * VISITE sans compte (« Découvrir sans compte », ticket 1) : sur la famille d'exemple (données fictives sur l'appareil,
+ * backend de démonstration), les ÉCRANS D'ONGLET se parcourent sans abonnement pour que la visite soit utilisable
+ * (accueil, Moi, Enfant, Famille), ainsi que l’apparence et la personnalisation de l’accueil (réglages locaux). Chaque outil reste réservé (écran Premium par-dessus, retour visible), les achats
+ * restent simulés (src/lib/purchaseMode.ts). Ne s'applique JAMAIS à un vrai compte : `visit` n'est vrai qu'en
+ * démonstration (src/components/PremiumGate.tsx).
+ */
+export const VISIT_ROUTES: RegExp[] = [/^\/$/, /^\/(health|baby|household)\/?$/, /^\/settings\/(appearance|home)\/?$/];
+
 const AI_ROUTES: RegExp[] = [/^\/ask\/?$/, /^\/assistant(\/.*)?$/];
+
+/**
+ * Écrans de garde ouverts à une nounou (caregiver) sans Premium (13/11/2026, la famille paie) : suivi des
+ * enfants confiés, tâches et organisation du foyer, courses, agenda, documents partagés. Le serveur décide
+ * toujours de ce qu'elle voit et écrit (domaines, enfants autorisés, documents partagés) ; ces écrans ne
+ * lui donnent aucun droit de plus. Miroir de 20261113000100_caregiver_premium.sql.
+ */
+export const CAREGIVER_ROUTES: RegExp[] = [
+  /^\/$/, /^\/today\/?$/, /^\/(track|agenda)(\/.*)?$/, /^\/bottle(\/.*)?$/, /^\/sleep(\/.*)?$/, /^\/night(\/.*)?$/,
+  /^\/child\/[^/]+(\/.*)?$/, /^\/teeth\/?$/, /^\/family(\/.*)?$/, /^\/calendar\/?$/, /^\/lists\/?$/,
+  /^\/meals\/shopping\/?$/, /^\/documents\/?$/, /^\/documents\/[^/]+\/?$/, /^\/notifications\/?$/,
+  // Espace nounou (21/11/2026) : « Mes gardes », carnet, photos, messages (le serveur vérifie l'accès confirmé)
+  /^\/garde(\/.*)?$/,
+  // Laits infantiles (20/11/2026) : la nounou consulte le lait de l'enfant (le serveur ne lui ouvre que la lecture)
+  /^\/feeding\/formula\/?$/,
+];
+
+/**
+ * Écrans d'adultes jamais ouverts par le seul rôle de nounou (21/11/2026) : couple, charge mentale, temps pour soi,
+ * difficultés des parents, papiers. Le serveur ne lui renvoie déjà rien (RLS) ; l'écran reste fermé aussi.
+ */
+export const CAREGIVER_DENIED: RegExp[] = [
+  /^\/family\/(couple|load|domains|prep|review|me-time|exhausted|difficult|solo|offduty|brain-dump|papers)(\/.*)?$/,
+  // Outils du 20/11/2026 réservés aux parents : embrouille, moments à deux, coparent au jour J, dépenses, animaux, Espace Papa
+  /^\/family\/(calm|moments|birth-partner|expenses|pets|my-place)(\/.*)?$/,
+  // Numéros complétés le 30/11/2026, réservés aux parents : se comprendre (intimité sans pression), langage, jeux,
+  // activités et devoirs de l'enfant (ChildToolGate), suivi des analyses médicales
+  /^\/family\/understand(\/.*)?$/,
+  /^\/child\/[^/]+\/(language|games|activities|homework)\/?$/,
+  /^\/documents\/labs\/?$/,
+];
 
 /** Écrans d'un outil vendu à vie (ancienne offre) : restent ouverts à qui l'a acheté. */
 const TOOL_ROUTES: Record<PaidTool, RegExp[]> = {
@@ -52,20 +105,30 @@ export type GateDecision = 'open' | 'checking' | 'locked';
  * Décision d'affichage pour l'écran `path`.
  *  - premium : réponse de has_premium (undefined tant qu'elle n'est pas connue) ;
  *  - access : réponse de my_access (offre IA, outils achetés), facultative.
+ *  - opts.visit : visite de démonstration sans compte (écrans d'onglet seulement, voir VISIT_ROUTES).
  * Un droit inconnu n'ouvre jamais un écran réservé (« vérification » puis écran Premium).
  */
-export function gateFor(path: string, premium: boolean | undefined, access?: AccessInfo | null): GateDecision {
+export function gateFor(path: string, premium: boolean | undefined, access?: AccessInfo | null, opts?: { visit?: boolean }): GateDecision {
   const p = clean(path);
   if (isFreeRoute(p)) return 'open';
+  if (PREVIEW_ROUTES.some((r) => r.test(p))) return 'open';
+  if (opts?.visit && VISIT_ROUTES.some((r) => r.test(p))) return 'open';
   if (premium === true) return 'open';
   if (access?.strict === false) return 'open';
   if (access?.ai && AI_ROUTES.some((r) => r.test(p))) return 'open';
+  if (access?.caregiver && CAREGIVER_ROUTES.some((r) => r.test(p)) && !CAREGIVER_DENIED.some((r) => r.test(p))) return 'open';
   if (access) {
     for (const t of access.tools) {
       if (t.owned && TOOL_ROUTES[t.key as PaidTool]?.some((r) => r.test(p))) return 'open';
     }
   }
   return premium === undefined ? 'checking' : 'locked';
+}
+
+/** Outil réservé pour ce compte (cadenas dans « Mes outils ») : jamais quand le droit est encore inconnu. */
+export function isLockedFor(href: string | null | undefined, premium: boolean | undefined, access?: AccessInfo | null): boolean {
+  if (!href || premium !== false) return false;
+  return gateFor(href, premium, access) === 'locked';
 }
 
 /** Tables de suivi réservées au Premium (miroir exact de la migration 20261108000300_premium_strict.sql). */

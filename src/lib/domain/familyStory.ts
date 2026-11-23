@@ -1,5 +1,5 @@
 /**
- * « Au fil de nous » — l'histoire d'une femme et de son enfant, de l'avant-grossesse aux dix ans de l'enfant
+ * « HOMI » — l'histoire d'une femme et de son enfant, de l'avant-grossesse aux dix ans de l'enfant
  * (logique pure, testée). Une seule et même femme, un seul et même enfant d'une étape à l'autre.
  *
  *  1. sceneFor()   : l'étape à montrer pour le profil affiché (cycle → femme seule ; grossesse → ventre selon la
@@ -80,12 +80,12 @@ const STORY_CHAPTERS_FR: StoryChapter[] = [
   { key: 'early', title: 'Les premières semaines', text: 'Rien ne se voit encore, et pourtant tout change déjà.', scene: { belly: bellyForWeek(16), multiple: false, kids: [] } },
   { key: 'round', title: 'Un ventre qui s’arrondit', text: 'Semaine après semaine, la vie prend sa place.', scene: { belly: bellyForWeek(28), multiple: false, kids: [] } },
   { key: 'term', title: 'Bientôt', text: 'Les derniers jours d’attente, le ventre bien rond.', scene: { belly: bellyForWeek(39), multiple: false, kids: [] } },
-  { key: 'birth', title: 'La rencontre', text: 'Votre bébé dans vos bras, tout contre vous.', scene: { belly: 0, multiple: false, kids: one(0.04) } },
-  { key: 'sitting', title: 'Tenir assis', text: 'Votre bébé découvre le monde à hauteur de tapis.', scene: { belly: 0, multiple: false, kids: one(0.7) } },
-  { key: 'steps', title: 'Les premiers pas', text: 'Debout, une main dans la vôtre : le premier élan.', scene: { belly: 0, multiple: false, kids: one(1.15) } },
-  { key: 'little', title: 'À vos côtés', text: 'Un petit enfant qui marche près de sa mère.', scene: { belly: 0, multiple: false, kids: one(3) } },
+  { key: 'birth', title: 'La rencontre', text: 'Ton bébé dans tes bras, tout contre toi.', scene: { belly: 0, multiple: false, kids: one(0.04) } },
+  { key: 'sitting', title: 'Tenir assis', text: 'Ton bébé découvre le monde à hauteur de tapis.', scene: { belly: 0, multiple: false, kids: one(0.7) } },
+  { key: 'steps', title: 'Les premiers pas', text: 'Debout, une main dans la tienne : le premier élan.', scene: { belly: 0, multiple: false, kids: one(1.15) } },
+  { key: 'little', title: 'À tes côtés', text: 'Un petit enfant qui marche près de sa mère.', scene: { belly: 0, multiple: false, kids: one(3) } },
   { key: 'growing', title: 'Grandir', text: 'L’école, les amis, les grandes questions.', scene: { belly: 0, multiple: false, kids: one(6) } },
-  { key: 'ten', title: 'Dix ans, main dans la main', text: 'Votre enfant a grandi, et votre main est toujours là.', scene: { belly: 0, multiple: false, kids: one(10) } },
+  { key: 'ten', title: 'Dix ans, main dans la main', text: 'Ton enfant a grandi, et ta main est toujours là.', scene: { belly: 0, multiple: false, kids: one(10) } },
 ];
 const STORY_CHAPTERS_TEXT_EN: Record<string, { title: string; text: string }> = {
   before: { title: 'Before', text: 'A woman, her rhythm, her wishes. The story starts with her.' },
@@ -352,13 +352,14 @@ export interface StoryPalette {
   shadow: string;
 }
 export const DAY_PALETTE: StoryPalette = {
-  id: 'day', dressLight: '#F0CBC4',
-  line: '#7A5546', skin: '#E7C9B8', hair: '#6E4A3A', dress: '#E3B3AE', dressShade: '#D59F9A', sleeve: '#E3B3AE',
-  kidTop: '#F6E8DC', kidBottom: '#B89C8C', swaddle: '#FBF1EA', shoe: '#7A5546', shadow: 'rgba(122,85,70,0.16)',
+  // HOMI (13/11/2026) : robe lilas, traits encre violette, tons perle et champagne (plus de rose poudré ni de brun)
+  id: 'day', dressLight: '#E4DAFB',
+  line: '#584D72', skin: '#E7C9B8', hair: '#3E3557', dress: '#CDBEFA', dressShade: '#B9A8F0', sleeve: '#CDBEFA',
+  kidTop: '#F6ECDA', kidBottom: '#8E84A8', swaddle: '#F7F4FB', shoe: '#584D72', shadow: 'rgba(28,21,51,0.14)',
 };
 export const NIGHT_PALETTE: StoryPalette = {
   id: 'night', dressLight: '#A97CA2',
-  line: '#F0D9CF', skin: '#C9A6A4', hair: '#5A3E52', dress: '#8E6488', dressShade: '#7B5577', sleeve: '#8E6488',
+  line: '#E4DAFB', skin: '#C9A6A4', hair: '#5A3E52', dress: '#8E6488', dressShade: '#7B5577', sleeve: '#8E6488',
   kidTop: '#D9C6D6', kidBottom: '#6F6489', swaddle: '#E7DCE6', shoe: '#3E3557', shadow: 'rgba(10,12,30,0.35)',
 };
 

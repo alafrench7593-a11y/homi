@@ -11,6 +11,7 @@ import { useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { DangerPanel, RecoveryWarnings, Scale, SupportPlanCard } from '@/features/postpartum';
 import { PostpartumExpress } from '@/features/postpartumExpress';
+import { BodyFields } from '@/features/postpartumCare/BodyFields';
 import { usePostpartumCheckins, usePostpartumSettings, useSaveCheckin } from '@/lib/data/hooks-postpartum';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import {
@@ -20,13 +21,14 @@ import {
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const QUICK = ['feeling', 'fatigue', 'stress', 'sleep_quality'];
 
 const EMPTY: CheckinInput = {
   checkin_date: '', feeling: null, mood: null, fatigue: null, stress: null, sleep_quality: null, supported: null, coping: null,
   rest_need: null, help_need: null, needs: [], need_other: null, comment: null, physical_fatigue: null, pain: null, pain_note: null,
-  recovery: null, feeding_note: null, difficulties: null, urgent_orientation_shown: false,
+  recovery: null, feeding_note: null, difficulties: null, scar_feeling: null, perineum_feeling: null, bleeding: null, urgent_orientation_shown: false,
 };
 
 export default function PostpartumCheckin() {
@@ -50,7 +52,7 @@ export default function PostpartumCheckin() {
     setV(rest);
     setScales(true);
     setMore([rest.mood, rest.supported, rest.coping, rest.rest_need, rest.help_need, rest.comment].some((x) => x != null));
-    setPhysical([rest.physical_fatigue, rest.pain, rest.recovery, rest.pain_note, rest.feeding_note, rest.difficulties].some((x) => x != null));
+    setPhysical([rest.physical_fatigue, rest.pain, rest.recovery, rest.pain_note, rest.feeding_note, rest.difficulties, rest.scar_feeling, rest.perineum_feeling, rest.bleeding].some((x) => x != null));
   }, [existing?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = <K extends keyof CheckinInput>(k: K, val: CheckinInput[K]) => { setV((cur) => ({ ...cur, [k]: val })); setSaved(false); };
@@ -92,11 +94,11 @@ export default function PostpartumCheckin() {
         </>
       ) : (
       <Card>
-        <View style={{ gap: spacing.md }}>
+        <MotionList style={{ gap: spacing.md }}>
           {SCALES.filter((s) => QUICK.includes(s.key)).map((s) => (
-            <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
+            <MotionItem key={s.key}><Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} /></MotionItem>
           ))}
-        </View>
+        </MotionList>
       </Card>
       )}
 
@@ -112,9 +114,9 @@ export default function PostpartumCheckin() {
       {more ? (
         <Card>
           <View style={{ gap: spacing.md }}>
-            {SCALES.filter((s) => !QUICK.includes(s.key)).map((s) => (
-              <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
-            ))}
+            <MotionList style={{ gap: spacing.md }}>{SCALES.filter((s) => !QUICK.includes(s.key)).map((s) => (
+              <MotionItem key={s.key}><Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} /></MotionItem>
+            ))}</MotionList>
             <Field label={tr('u5.pp_checkin.comment')} optional multiline value={v.comment ?? ''} onChangeText={(x) => set('comment', x)} maxLength={3000} style={{ minHeight: 90, textAlignVertical: 'top' }} />
           </View>
         </Card>
@@ -127,6 +129,8 @@ export default function PostpartumCheckin() {
             {PHYSICAL_SCALES.map((s) => (
               <Scale key={s.key} label={s.label} low={s.low} high={s.high} value={v[s.key] as number | null} onChange={(x) => set(s.key, x as never)} />
             ))}
+            <BodyFields scar={v.scar_feeling ?? null} perineum={v.perineum_feeling ?? null} bleeding={v.bleeding ?? null}
+              onScar={(x) => set('scar_feeling', x)} onPerineum={(x) => set('perineum_feeling', x)} onBleeding={(x) => set('bleeding', x)} />
             <Field label={tr('u5.pp_checkin.pain_note')} optional value={v.pain_note ?? ''} onChangeText={(x) => set('pain_note', x)} maxLength={500} />
             <Field label={tr('u5.pp_checkin.feeding')} hint={tr('u5.pp_checkin.feeding_hint')} optional multiline value={v.feeding_note ?? ''} onChangeText={(x) => set('feeding_note', x)} maxLength={1000} />
             <Field label={tr('u5.pp_checkin.difficulties')} optional multiline value={v.difficulties ?? ''} onChangeText={(x) => set('difficulties', x)} maxLength={1000} />

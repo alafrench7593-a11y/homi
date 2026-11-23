@@ -45,7 +45,7 @@ export const lib3: Messages<typeof fr> = {
   'l3.notif.ch_community': 'Community',
   'l3.notif.ch_reminders': 'Reminders',
   'l3.notif.ch_sleep': 'Sleep (estimates)',
-  'l3.notif.lock_body': 'Open Au fil de nous to see the details.',
+  'l3.notif.lock_body': 'Open HOMI to see the details.',
   'l3.notif.lock_title': 'Treatment reminder',
   'l3.notif.test_body': 'You will receive your reminders here, even when the app is closed.',
   'l3.notif.test_title': 'Reminders are working',

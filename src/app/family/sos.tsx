@@ -6,10 +6,11 @@
  *      de confiance, le relais du foyer, les numéros d'écoute ; 4. en parler au pédiatre.
  * Les contacts sont ceux déjà saisis dans « Soutien » ; rien de nouveau n'est stocké.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { useToast } from '@/components/Overlays';
 import { Tappable } from '@/components/Tappable';
 import { haptic, Icon, type IconName, Text } from '@/components/ui';
@@ -21,6 +22,9 @@ import { callNumber, goBack } from '@/lib/links';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { useTapShield } from '@/features/tapShield';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 function Big({ icon, label, sub, onPress, tone, testID }: { icon: IconName; label: string; sub?: string; onPress: () => void; tone?: 'danger' | 'calm'; testID?: string }) {
   const t = useTheme();
@@ -40,9 +44,20 @@ function Big({ icon, label, sub, onPress, tone, testID }: { icon: IconName; labe
 export default function FamilySos() {
   const t = useTheme();
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const toast = useToast();
+  const help = useHelpNumbers();
   const hid = useHouseholdId();
   const ask = useCreateRequest();
+  // Double appui sur « Demander le relais » : une seule demande envoyée au foyer
+  const sending = useRef(false);
+  const { arm, shielded } = useTapShield();
+  const askRelay = () => {
+    if (sending.current || shielded()) return;
+    sending.current = true;
+    ask.mutateAsync({ kind: 'relay', message: tr('sos.relayMsg') }).then(() => { arm(); toast(tr('sos.relaySent')); }).catch((e) => toast(friendlyError(e), 'error')).finally(() => { sending.current = false; });
+  };
   const { data: contacts } = useTrustedContacts();
   const [left, setLeft] = useState<number | null>(null);
   useEffect(() => {
@@ -54,7 +69,7 @@ export default function FamilySos() {
   const people = (contacts ?? []).filter((c) => c.phone);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }} testID="family-sos">
+    <ScrollView style={{ flex: 1, backgroundColor: t.colors.background }} contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.sm }} testID="family-sos">
       <Tappable accessibilityRole="button" accessibilityLabel={tr('u2.urgent.back_label')} onPress={() => goBack()} style={{ minHeight: 44, justifyContent: 'center' }}>
         <Text weight="bold" color={t.colors.primary}>{tr('u2.urgent.back')}</Text>
       </Tappable>
@@ -70,13 +85,14 @@ export default function FamilySos() {
         sub={left == null ? tr('sos.breatheD') : undefined} onPress={() => setLeft(left == null || left === 0 ? 120 : null)} />
 
       <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('sos.step3')}</Text>
-      {people.map((c) => (
-        <Big key={c.id} icon="phone" label={c.name} sub={c.relation ?? undefined} onPress={() => callNumber(c.phone!, toast)} />
-      ))}
+      <MotionList style={{ gap: spacing.sm }}>{people.map((c) => (
+        <MotionItem key={c.id}><Big key={c.id} icon="phone" label={c.name} sub={c.relation ?? undefined} onPress={() => callNumber(c.phone!, toast)} /></MotionItem>
+      ))}</MotionList>
       {!people.length ? <Big icon="user-plus" label={tr('sos.addContact')} sub={tr('sos.addContactD')} onPress={() => router.push('/postpartum/support')} /> : null}
-      {hid ? <Big icon="users" label={tr('sos.relay')} sub={tr('sos.relayD')} onPress={() => ask.mutateAsync({ kind: 'relay', message: tr('sos.relayMsg') }).then(() => toast(tr('sos.relaySent'))).catch((e) => toast(friendlyError(e), 'error'))} /> : null}
-      <Big icon="headphones" label={tr('sos.line')} sub={tr('sos.lineD')} onPress={() => callNumber('3114', toast)} />
-      <Big icon="alert-octagon" tone="danger" label={tr('sos.medical')} sub={tr('sos.medicalD')} onPress={() => callNumber('15', toast)} />
+      {hid ? <Big icon="users" label={tr('sos.relay')} sub={tr('sos.relayD')} onPress={askRelay} /> : null}
+      {/* Ligne d'écoute : seulement si le pays en a une connue (France : 3114) ; urgence médicale du pays */}
+      {help.crisis ? <Big icon="headphones" label={tr('sos.line')} sub={tr('sos.lineD')} onPress={() => callNumber(help.crisis!, toast)} /> : null}
+      <Big icon="alert-octagon" tone="danger" label={tr('sos.medical')} sub={tr('sos.medicalD')} onPress={() => callNumber(help.urgent, toast)} />
 
       <Text variant="label" style={{ marginTop: spacing.sm }}>{tr('sos.step4')}</Text>
       <Text>{tr('sos.step4D')}</Text>

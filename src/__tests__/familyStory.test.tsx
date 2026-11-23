@@ -57,7 +57,7 @@ describe('étape selon le profil affiché', () => {
     expect(s.belly).toBeGreaterThan(0.5);
   });
   it('légendes et descriptions accessibles', () => {
-    expect(storyCaption({ scope: 'cycle' })).toBe('Votre histoire, à votre rythme');
+    expect(storyCaption({ scope: 'cycle' })).toBe('Ton histoire, à ton rythme');
     expect(storyCaption({ scope: 'pregnancy', weeksLabel: '24 SA' })).toBe('Le ventre s’arrondit · 24 SA');
     expect(storyCaption({ scope: 'baby', child: kid('a', 10), childName: 'Lina', twinNames: ['Noé'], childAgeLabel: '10 jours' })).toBe('Lina et Noé, 10 jours');
     expect(storyA11y(WOMAN_ALONE)).toMatch(/femme seule/);
@@ -116,8 +116,8 @@ describe('poses', () => {
     const e = elbow([0, 0], [100, 0], 10, 10);
     expect(Math.hypot(e.h[0], e.h[1])).toBeLessThanOrEqual(20); // main hors de portée : bras tendu, jamais allongé
   });
-  it('traits brun chaud le jour, tons bleu nuit et prune la nuit', () => {
-    expect(DAY_PALETTE.line).toBe('#7A5546');
+  it('traits encre violette HOMI le jour (plus de brun chaud), tons bleu nuit et prune la nuit', () => {
+    expect(DAY_PALETTE.line).toBe('#584D72');
     expect(poseSvg(poseFor(WOMAN_ALONE), NIGHT_PALETTE)).toContain(NIGHT_PALETTE.dress);
   });
 });

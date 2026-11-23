@@ -105,12 +105,12 @@ export function crossedOvulationEstimate(
 }
 
 export const EVENT_COLOURS: Record<DayEventKind, string> = {
-  period: '#E0607E',
+  period: '#C2477E', // framboise HOMI
   mucus: '#7FB6E8',
-  temperature: '#F2A65A',
+  temperature: '#1C6672',
   ovulation_test: '#9B7FD4',
   pregnancy_test: '#4FB39A',
-  symptom: '#C9A227',
+  symptom: '#8A5A0E', // ambre : attention, sans alarme
   intercourse: '#D46FA8',
   note: '#8C8C99',
 };

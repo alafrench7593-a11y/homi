@@ -1,3 +1,4 @@
+import { BRAND } from '@/config/brand';
 /**
  * Offre Premium : états de l'abonnement (essai, fin d'essai, renouvellement, annulation, grâce, paiement refusé,
  * expiration), webhook RevenueCat, dates affichées, quotas, fonctions réservées vérifiées par le moteur local,
@@ -56,13 +57,13 @@ describe('webhook RevenueCat → abonnement', () => {
   const ev = (type: string, extra: Record<string, unknown> = {}) => ({ type, app_user_id: 'u', event_timestamp_ms: NOW.getTime(), ...extra });
   const now = NOW.getTime();
   it('achat avec essai, puis conversion (renouvellement) en abonnement payant', () => {
-    expect(subscriptionFromEvent(ev('INITIAL_PURCHASE', { period_type: 'TRIAL', store: 'APP_STORE' }), now + 3 * 864e5, 'aufildenous_premium_monthly', 'AU_FIL_DE_NOUS_PREMIUM', now))
+    expect(subscriptionFromEvent(ev('INITIAL_PURCHASE', { period_type: 'TRIAL', store: 'APP_STORE' }), now + 3 * 864e5, 'homi_premium_monthly', 'HOMI_PREMIUM', now))
       .toMatchObject({ status: 'trial', period_type: 'monthly', store: 'app_store', will_renew: true, trial_ends_at: new Date(now + 3 * 864e5).toISOString() });
-    expect(subscriptionFromEvent(ev('RENEWAL', { period_type: 'NORMAL' }), now + 33 * 864e5, 'aufildenous_premium_monthly', 'AU_FIL_DE_NOUS_PREMIUM', now))
+    expect(subscriptionFromEvent(ev('RENEWAL', { period_type: 'NORMAL' }), now + 33 * 864e5, 'homi_premium_monthly', 'HOMI_PREMIUM', now))
       .toMatchObject({ status: 'active', period_type: 'monthly', will_renew: true });
   });
   it('annulation : droits jusqu’à l’échéance ; expiration ensuite', () => {
-    expect(subscriptionFromEvent(ev('CANCELLATION'), now + 3 * 864e5, 'aufildenous_premium_monthly', 'AU_FIL_DE_NOUS_PREMIUM', now)).toMatchObject({ status: 'cancelled', will_renew: false });
+    expect(subscriptionFromEvent(ev('CANCELLATION'), now + 3 * 864e5, 'homi_premium_monthly', 'HOMI_PREMIUM', now)).toMatchObject({ status: 'cancelled', will_renew: false });
     expect(mapStatus('CANCELLATION', now - 1, now)).toBe('expired');
     expect(subscriptionFromEvent(ev('EXPIRATION'), now - 1, 'x', 'premium', now)).toMatchObject({ status: 'expired', will_renew: false });
   });
@@ -220,7 +221,7 @@ describe('widgets : rien de sensible sur l’écran verrouillé sans accord', ()
   it('grossesse, rendez-vous et prénom masqués par défaut', () => {
     const w = widgetSnapshot({ scope: 'pregnancy', weeksSA: 24, nextAppointment: { title: 'Échographie', at: '2026-10-25T09:00:00Z' } });
     expect(JSON.stringify(w)).not.toMatch(/24 SA|Échographie/);
-    expect(w.title).toBe('Au fil de nous');
+    expect(w.title).toBe(BRAND.name);
     const ok = widgetSnapshot({ scope: 'pregnancy', weeksSA: 24 }, { lockScreenDetails: true });
     expect(ok.lines[0].value).toBe('24 SA');
   });

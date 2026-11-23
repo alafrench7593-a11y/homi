@@ -13,6 +13,8 @@ import { AppState } from 'react-native';
 import { create } from 'zustand';
 import { backend, BackendError } from './backend';
 import { t as tr } from '@/i18n';
+import { conflictTarget } from './offlineConflicts';
+import { isPracticeActive, recordPracticeWrite } from './practice';
 
 export interface PendingOp {
   id: string;
@@ -54,8 +56,13 @@ function uuidLike(): string {
   });
 }
 
+/** Préfixe d'une réponse serveur mise en file (ex. « rpc:mission_respond ») : rejouée telle quelle, une fois. */
+export const RPC_PREFIX = 'rpc:';
+
 async function send(op: Pick<PendingOp, 'table' | 'row' | 'conflict' | 'merge'>) {
-  const conflict = op.conflict ?? ('client_id' in op.row ? 'client_id' : 'id');
+  // 19/11/2026 : une réponse idempotente du serveur (« Je m'en occupe », « Mission terminée ») peut attendre le réseau
+  if (op.table.startsWith(RPC_PREFIX)) { await backend.rpc(op.table.slice(RPC_PREFIX.length), op.row); return; }
+  const conflict = op.conflict ?? conflictTarget(op.table, op.row);
   await backend.insert(op.table, op.row, { onConflict: conflict, ignoreDuplicates: !op.merge });
 }
 
@@ -136,6 +143,8 @@ export function loadQueue(): Promise<void> {
 }
 
 export async function enqueue(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean } = {}) {
+  // Visite guidée, mode exercice : rien n'est mis en attente (sinon l'exercice partirait au retour du réseau)
+  if (isPracticeActive()) { recordPracticeWrite('queue', table); return; }
   // Jamais d'écriture de la file pendant sa lecture au démarrage (sinon l'une écrase l'autre)
   if (loading) await loading;
   const id = String(row.client_id ?? row.id ?? uuidLike());
@@ -151,6 +160,7 @@ export async function enqueue(table: string, row: PendingOp['row'], opts: { conf
 export async function insertOrQueue(table: string, input: Record<string, unknown>, opts: { conflict?: string; merge?: boolean } = {}): Promise<'sent' | 'queued'> {
   const row = 'client_id' in input || 'id' in input || opts.conflict ? input : { id: uuidLike(), ...input };
   const op = { table, row, ...opts };
+  if (isPracticeActive()) { recordPracticeWrite('insert', table); return 'sent'; }
   if (backend.mode === 'demo') {
     await send(op);
     return 'sent';
@@ -166,7 +176,34 @@ export async function insertOrQueue(table: string, input: Record<string, unknown
     // Réseau coupé, session à rafraîchir, serveur indisponible : gardée sur le téléphone (jamais perdue)
     if (isTransient(e)) {
       await enqueue(table, row, opts);
+      scheduleRetry(); // réseau « présent » mais serveur injoignable : nouvel essai sans attendre un changement de réseau
       return 'queued';
+    }
+    throw e;
+  }
+}
+
+/**
+ * Appel d'une fonction serveur IDEMPOTENTE (rejouer la même réponse ne change rien : mission_respond renvoie
+ * « inchangé »). Hors connexion ou serveur injoignable : mise en file, une seule fois (même appel déjà en file →
+ * rien de plus), envoyée au retour du réseau. Renvoie le résultat, ou `queued` si l'appel attend le réseau.
+ */
+export async function rpcOrQueue<T>(fn: string, args: Record<string, unknown>): Promise<{ queued: true } | { queued: false; result: T }> {
+  const table = RPC_PREFIX + fn;
+  const key = JSON.stringify(args);
+  const queue = async () => {
+    if (!useOfflineStore.getState().pending.some((op) => op.table === table && JSON.stringify(op.row) === key)) await enqueue(table, args);
+    return { queued: true as const };
+  };
+  if (isPracticeActive()) { recordPracticeWrite('rpc', fn); return { queued: false, result: null as T }; }
+  if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return queue();
+  try {
+    return { queued: false, result: await backend.rpc<T>(fn, args) };
+  } catch (e) {
+    if (backend.mode !== 'demo' && isTransient(e)) {
+      const out = await queue();
+      scheduleRetry();
+      return out;
     }
     throw e;
   }
@@ -174,7 +211,8 @@ export async function insertOrQueue(table: string, input: Record<string, unknown
 
 export async function flushQueue(): Promise<number> {
   const st = useOfflineStore.getState();
-  if (st.syncing || !st.pending.length || backend.mode === 'demo' || !queueOwner) return 0;
+  // Pendant un exercice de la visite, la file attend : ses envois réels repartiront juste après
+  if (st.syncing || !st.pending.length || backend.mode === 'demo' || !queueOwner || isPracticeActive()) return 0;
   useOfflineStore.setState({ syncing: true });
   let sent = 0;
   const batch = st.pending;
@@ -204,6 +242,10 @@ export async function flushQueue(): Promise<number> {
   const arrived = now.pending.filter((op) => !processed.has(op));
   useOfflineStore.setState({ pending: [...remaining, ...arrived], conflicts: [...now.conflicts, ...newConflicts], syncing: false });
   await save();
+  // Audit 08 : serveur indisponible (500, délai dépassé) alors que le réseau est là → nouvel essai automatique, espacé.
+  // Avant, la saisie attendait un changement de réseau ou un retour au premier plan, parfois des heures.
+  if (stalled) scheduleRetry();
+  else if (!useOfflineStore.getState().pending.some((o) => o.owner == null || o.owner === queueOwner)) resetRetry();
   // Saisies arrivées pendant l'envoi : nouvel envoi si le réseau est là
   if (arrived.length && useOfflineStore.getState().online) sent += await flushQueue();
   return sent;
@@ -214,7 +256,11 @@ export async function flushQueue(): Promise<number> {
  * (Réglages > Synchronisation) au lieu d'être perdue ; une erreur passagère la met simplement en file.
  */
 export async function recordRefused(table: string, row: PendingOp['row'], opts: { conflict?: string; merge?: boolean }, e: unknown) {
-  if (isTransient(e)) return enqueue(table, row, opts);
+  if (isTransient(e)) {
+    await enqueue(table, row, opts);
+    scheduleRetry();
+    return;
+  }
   if (loading) await loading;
   const op: PendingOp = { id: String(row.client_id ?? row.id ?? uuidLike()), table, row, queuedAt: new Date().toISOString(), owner: queueOwner, ...opts };
   useOfflineStore.setState((s) => ({ conflicts: [...s.conflicts, refusal(op, e)] }));
@@ -236,8 +282,30 @@ export async function discardConflict(id: string) {
 
 let onSyncedCb: ((n: number) => void) | undefined;
 
+/** Délais des nouveaux essais automatiques après une erreur passagère (5 s, 15 s, 30 s, 1 min, 2 min, puis 5 min). */
+export const RETRY_DELAYS_MS = [5_000, 15_000, 30_000, 60_000, 120_000, 300_000] as const;
+let autoRetry = false;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+let retryAttempt = 0;
+function scheduleRetry() {
+  if (!autoRetry || retryTimer) return;
+  const delay = RETRY_DELAYS_MS[Math.min(retryAttempt, RETRY_DELAYS_MS.length - 1)];
+  retryAttempt++;
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    // Hors ligne : rien à faire ici, le retour du réseau relance l'envoi
+    if (useOfflineStore.getState().online) void flushQueue().then((n) => n && onSyncedCb?.(n));
+  }, delay);
+}
+function resetRetry() {
+  retryAttempt = 0;
+  if (retryTimer) clearTimeout(retryTimer);
+  retryTimer = null;
+}
+
 export function startOfflineSync(onSynced?: (n: number) => void) {
   onSyncedCb = onSynced;
+  autoRetry = true;
   loadQueue().then(() => flushQueue().then((n) => n && onSynced?.(n)));
   const offNet = NetInfo.addEventListener((state) => {
     const online = state.isConnected !== false && state.isInternetReachable !== false;
@@ -252,6 +320,24 @@ export function startOfflineSync(onSynced?: (n: number) => void) {
   return () => {
     offNet();
     appSub.remove();
+    autoRetry = false;
+    resetRetry();
     if (onSyncedCb === onSynced) onSyncedCb = undefined;
   };
+}
+
+/**
+ * L'appareil n'appartient plus à ce foyer (retrait par la propriétaire, départ) : les saisies en attente et les refus
+ * gardés pour ce foyer sont effacés du téléphone (le serveur les refuserait ; ils ne doivent plus rester lisibles ici).
+ * Renvoie le nombre d'entrées retirées.
+ */
+export async function purgeQueueForHousehold(householdId: string): Promise<number> {
+  if (loading) await loading;
+  const { pending, conflicts } = useOfflineStore.getState();
+  const keep = (op: PendingOp) => op.row?.household_id !== householdId;
+  const removed = pending.filter((o) => !keep(o)).length + conflicts.filter((o) => !keep(o)).length;
+  if (!removed) return 0;
+  useOfflineStore.setState({ pending: pending.filter(keep), conflicts: conflicts.filter(keep) });
+  await save();
+  return removed;
 }

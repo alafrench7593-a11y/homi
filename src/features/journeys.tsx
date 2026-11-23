@@ -15,10 +15,12 @@ import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import type { CloseMode, JourneyRow, JourneyType } from '@/lib/journeys/model';
 import type { Child } from '@/lib/types';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { toISODate } from '@/lib/domain/dates';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export const JOURNEY_ICON: Record<JourneyType, IconName> = {
   avoid: 'shield', ttc: 'sunrise', cycle: 'calendar', pregnancy: 'moon', postpartum: 'heart', baby: 'smile', child: 'users',
@@ -109,8 +111,8 @@ export function ChildHomeCard({ child }: { child: Child }) {
       <Text variant="small" muted>{childAge(child.birth_date).label}</Text>
       {active.length ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('pj.child.treatments', { count: active.length })}</Text> : null}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.sm }}>
-        {link('trending-up', tr('tool.kid_growth'), `/child/${child.id}/growth`)}
-        {link('compass', tr('tool.kid_needs'), `/child/${child.id}/needs`, 'home-needs')}
+        {link('trending-up', toolName('kid_growth'), `/child/${child.id}/growth`)}
+        {link('compass', toolName('kid_needs'), `/child/${child.id}/needs`, 'home-needs')}
         {link('smile', tr('pj.child.profile'), `/child/${child.id}`)}
       </View>
     </Card>
@@ -137,8 +139,8 @@ export function FamilyOverview() {
     <View style={{ gap: spacing.xs }}>
       <Card>
         <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{tr('pj.family.title')}</Text>
-        {rows.map((r) => (
-          <Tappable key={r.key} accessibilityRole="button" accessibilityLabel={`${r.title}, ${r.sub}`} onPress={() => { haptic('selection'); r.onPress(); }}
+        <MotionList>{rows.map((r) => (
+          <MotionItem key={r.key}><Tappable key={r.key} accessibilityRole="button" accessibilityLabel={`${r.title}, ${r.sub}`} onPress={() => { haptic('selection'); r.onPress(); }}
             style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 52, opacity: pressed ? 0.7 : 1 })}>
             <Icon name={r.icon} color={t.colors.primary} />
             <View style={{ flex: 1 }}>
@@ -146,8 +148,8 @@ export function FamilyOverview() {
               <Text variant="small" muted>{r.sub}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
-          </Tappable>
-        ))}
+          </Tappable></MotionItem>
+        ))}</MotionList>
       </Card>
       <FamilyHomeCard />
     </View>

@@ -19,6 +19,7 @@ import type { CommunityAlbum } from '@/lib/types';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 function AlbumCard({ a }: { a: CommunityAlbum }) {
   const t = useTheme();
@@ -62,12 +63,12 @@ export default function Albums() {
       <Button label={tr('cm3.albums.create')} icon="plus" onPress={() => (access.require(<Text variant="small">{tr('cm3.albums.createPreview')}</Text>) ? setCreating(true) : undefined)} testID="album-create" />
       {!access.premium ? <Row gap={6}><PremiumBadge /><Text variant="caption" muted style={{ flex: 1 }}>{tr('cm3.albums.freeViewing')}</Text></Row> : null}
       <SectionTitle title={tr('cm3.albums.mine')} />
-      {albums.isLoading && !albums.data ? <Skeleton kind="list" rows={2} /> : mine.length ? <View style={{ gap: spacing.sm }}>{mine.map((a) => <AlbumCard key={a.id} a={a} />)}</View>
+      {albums.isLoading && !albums.data ? <Skeleton kind="list" rows={2} /> : mine.length ? <MotionList style={{ gap: spacing.sm }}>{mine.map((a) => <MotionItem key={a.id}><AlbumCard key={a.id} a={a} /></MotionItem>)}</MotionList>
         : <EmptyState icon="image" title={tr('cm3.albums.emptyTitle')} body={tr('cm3.albums.metadata')} />}
       {shared.length ? (
         <>
           <SectionTitle title={tr('cm3.albums.sharedWithMe')} />
-          <View style={{ gap: spacing.sm }}>{shared.map((a) => <AlbumCard key={a.id} a={a} />)}</View>
+          <MotionList style={{ gap: spacing.sm }}>{shared.map((a) => <MotionItem key={a.id}><AlbumCard key={a.id} a={a} /></MotionItem>)}</MotionList>
         </>
       ) : null}
       <Sheet visible={creating} onClose={() => setCreating(false)} title={tr('cm3.albums.newTitle')}>

@@ -1,0 +1,30 @@
+parcours,scénario de panne,attendu,observé (avant),statut,preuve
+tâches (ajout rapide),hors ligne pendant la saisie puis reconnexion,"mise en file, message honnête, un seul envoi","un seul envoi, mais toast « Ajoutée » (faux)",corrigé (message),e2e S1_hors_ligne_file_puis_un_seul_envoi / S1_message_honnete_hors_ligne
+tâches (ajout rapide),500 au premier envoi (réseau présent),"message honnête, nouvel essai automatique, une ligne","toast « Ajoutée », restée en file sans essai",corrigé,e2e S2_* ; Jest F2
+tâches (ajout rapide),réponse perdue après écriture réussie,"rejeu même client_id, une ligne, file vidée","une ligne écrite, file jamais vidée (pas d'essai)",corrigé,e2e S3_reponse_perdue_rejeu_sans_doublon ; Jest F2
+tâches (ajout rapide),double pression (deux clics simultanés),un seul effet serveur,2 tâches,corrigé,e2e S4_double_pression_un_seul_effet
+tâches (fiche),deux membres modifient le même champ,"conflit détecté, rien écrasé, message clair",titre de l'autre écrasé en silence,corrigé,e2e S6_* ; Jest F3 ; SQL 98v concurrence
+tâches (fiche),deux membres modifient des champs différents,les deux modifications gardées,note de l'autre effacée,corrigé,e2e S6b_champs_differents_les_deux_gardes ; Jest F3
+tâches (case « fait »),les deux cochent « fait »,"pas d'erreur, un seul task.completed",dernier gagne (même valeur),OK + verrouillé,Jest F3 « même sens » ; SQL 98v « double fait »
+tâches (lot / routine),réponse perdue puis nouvel essai,aucun doublon,doublons (client_id tiré à chaque essai),corrigé (revue),hooks-family-load useBatchTasks ; Jest F4
+demande d'aide (SOS relais),réponse perdue puis « Réessayer »,"erreur affichée, une seule demande","erreur affichée, 2 demandes",corrigé,e2e S5_* ; SQL 98v
+rendez-vous,réponse perdue puis « Réessayer »,un seul rendez-vous,doublon (id serveur à chaque essai),corrigé,SQL 98v « rendez-vous » ; Jest F4
+médicaments (mes traitements),traitement créé puis rappels en échec ; « Réessayer »,un seul traitement,second traitement créé,corrigé,SQL 98v « traitement renvoyé »
+médicaments (prise),hors ligne / rejeu,une réponse par prise,une réponse par prise,OK,Jest offlineQueue (existant)
+courses (article),double pression / rejeu,un article,un article au rejeu ; 2 sur double pression,corrigé,Jest F4 ; SQL 98v
+courses (liste générée),échec au milieu (articles) puis « Réessayer »,"même liste complétée, pas de liste vide","liste vide orpheline + seconde liste",corrigé,SQL 98v « liste générée reprise »
+courses (cocher),cochage opposé concurrent,conflit montré,dernier gagne,limite (non corrigé),docs/audit/08 § 4
+missions,accepter deux fois (double pression / réponse perdue),"« déjà fait », un seul article de courses","un seul article",OK,SQL 98v « mission acceptée deux fois »
+missions,création refusée au milieu (destinataire hors foyer),rien d'écrit,rien d'écrit,OK,SQL 98v « tout ou rien »
+stocks,deux membres changent la quantité,conflit détecté,conflit détecté,OK,SQL 98v « stock »
+stocks (achat validé),réponse perdue puis nouvel essai,"compté une fois, affiché comme fait","compté une fois, faux « conflit » affiché",corrigé,Jest F5 ; SQL 98v « achat rejoué »
+stocks (garde-manger local),migration rejouée depuis deux onglets,2 stocks,2 stocks,OK,e2e S9_garde_manger_*
+biberon / sommeil / couches,coupure et rejeu de la file,une ligne par saisie,une ligne,OK + verrouillé,Jest F2 « réponse perdue » ; offlineQueue
+humeur / journal,double pression,un enregistrement,un enregistrement (verrou busy),OK (revue),src/features/mood/useMoodJournal.ts
+documents (plusieurs fichiers),échec au 2e fichier,rien à moitié enregistré,fiche pointant vers un fichier effacé,corrigé (revue),src/app/documents/scan.tsx
+invitations,double pression,un lien,deux liens possibles,limite (non corrigé),docs/audit/08 § 4
+toutes requêtes de données,serveur qui ne répond pas,"délai max 30 s, message clair",attente infinie,corrigé,Jest F1
+reprise,fermeture de l'onglet en pleine file puis réouverture,envoyée une fois,envoyée une fois,OK,e2e S7_reouverture_file_envoyee_une_fois
+déconnexion,file non vide puis autre compte,"avertissement, jamais envoyée sous l'autre compte","jamais envoyée, mais « Vos données restent enregistrées »",corrigé (message),e2e S8_*
+données anciennes,"file sans compte, cache illisible, apparence « night »",démarrage normal ; file envoyée une fois,OK,OK,e2e S9_* ; Jest F3 « cache ancien format »
+données anciennes (serveur),lignes sans client_id / version,modifiables ; NULL multiples admis,OK,OK,SQL 98v « données antérieures »

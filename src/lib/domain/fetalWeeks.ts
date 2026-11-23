@@ -144,14 +144,14 @@ const STAGES_FR: Stage[] = [
     mother: ['Les nausées peuvent être présentes, puis s’atténuer chez beaucoup de personnes autour de la fin du 1er trimestre.', 'C’est souvent la période de la première échographie.'] },
   { from: 14, to: 19, baby: ['Le bébé bouge beaucoup, même si on ne le sent pas encore toujours.', 'Les traits du visage s’affinent.'],
     mother: ['Beaucoup de personnes retrouvent un peu d’énergie.', 'Les premiers mouvements peuvent être perçus entre 16 et 22 SA environ.'] },
-  { from: 20, to: 27, baby: ['Le bébé entend des sons, dont votre voix.', 'Il alterne des périodes d’éveil et de sommeil.'],
+  { from: 20, to: 27, baby: ['Le bébé entend des sons, dont ta voix.', 'Il alterne des périodes d’éveil et de sommeil.'],
     mother: ['Le ventre s’arrondit ; le dos peut être sollicité.', 'C’est souvent la période de l’échographie du 2e trimestre.'] },
   { from: 28, to: 33, baby: ['Le bébé prend du poids et ses poumons poursuivent leur maturation.', 'Il ouvre les yeux par moments.'],
-    mother: ['Le sommeil peut devenir moins confortable.', 'Signalez toute diminution nette des mouvements du bébé.'] },
+    mother: ['Le sommeil peut devenir moins confortable.', 'Signale toute diminution nette des mouvements du bébé.'] },
   { from: 34, to: 37, baby: ['Le bébé prend des forces et des réserves.', 'Il se positionne souvent pour la naissance.'],
-    mother: ['Des contractions irrégulières peuvent apparaître.', 'Pensez à préparer la valise et les papiers.'] },
+    mother: ['Des contractions irrégulières peuvent apparaître.', 'Pense à préparer la valise et les papiers.'] },
   { from: 38, to: 45, baby: ['Le bébé est prêt à naître : il continue de grandir jusqu’à la naissance.'],
-    mother: ['Le terme approche : suivez les consignes de votre maternité pour savoir quand venir.'] },
+    mother: ['Le terme approche : suis les consignes de ta maternité pour savoir quand venir.'] },
 ];
 
 const STAGES_EN: Stage[] = [

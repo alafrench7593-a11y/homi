@@ -66,7 +66,7 @@ export const onboarding: Messages<typeof fr> = {
   "onb.ready.children": {"one": "{count} perfil de hijo/a creado", "other": "{count} perfiles de hijos creados"},
   "onb.ready.reminders": {"zero": "Ningún recordatorio programado", "one": "{count} recordatorio programado", "other": "{count} recordatorios programados"},
   "onb.ready.cycle": "Tu ciclo: anota tu próxima regla para obtener estimaciones",
-  "onb.ready.community": "La comunidad te espera en Herramientas",
+  'onb.ready.community': 'La comunidad te espera en Mis apps',
   "onb.ready.privacy": "Tus datos son privados por defecto",
   "onb.ready.cta": "Descubrir mi espacio",
   "journeys.title": "Mis recorridos",

@@ -5,7 +5,7 @@
  * d'expiration. Par démarche (inscription à l'école, CAF, carte d'identité de l'enfant, cantine, voyage, santé) :
  * la liste INDICATIVE des papiers, ce qui manque ou expire, et l'envoi du dossier en un PDF.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -21,7 +21,10 @@ import { toFrDate } from '@/lib/validation';
 import { openLink } from '@/lib/links';
 import { useTheme } from '@/theme/ThemeProvider';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { createTapGuard, papersScanParams } from '@/lib/documents/scanFlow';
 import { spacing } from '@/theme/tokens';
+import { PaperTrack } from '@/features/homeTrack/PaperTrack';
 
 const PARENT_TOO: PaperKind[] = ['id_card', 'passport', 'id_photo'];
 
@@ -95,11 +98,25 @@ export default function Papers() {
     return { k, childId, p: find(k, childId) };
   }) : []), [proc, who, papers, children]); // eslint-disable-line react-hooks/exhaustive-deps
   const procIds = procList.map((x) => x.p?.document_id).filter(Boolean) as string[];
+  // « Scanner un document » : action principale ; verrou synchrone contre les doubles appuis (une seule ouverture)
+  const guard = useRef(createTapGuard()).current;
+  const openScanner = (camera: boolean) => void guard.run(async () => {
+    router.push({ pathname: '/documents/scan', params: papersScanParams({ childId: who, camera }) });
+    await new Promise((r) => setTimeout(r, 700));
+  });
+  const whoName = who ? children.find((c) => c.id === who)?.first_name ?? '' : '';
   const color = (s: PaperStatus) => (s === 'ok' ? t.colors.success : s === 'missing' || s === 'no_photo' ? t.colors.textMuted : t.colors.danger);
 
   return (
-    <Screen back title={tr('tool.family_papers')} subtitle={tr('tool.family_papers.sub')}>
+    <Screen back title={toolName('family_papers')} subtitle={toolBlurb('family_papers')}>
+      <PaperTrack papers={papers} today={today} nameOf={(id) => (id ? children.find((c) => c.id === id)?.first_name ?? null : null)} />
       <Text muted>{tr('cm.pp.intro')}</Text>
+      <View style={{ gap: spacing.xs }} testID="pp-scan-block">
+        <Button label={tr('sa.pp.scan')} icon="camera" size="lg" full onPress={() => openScanner(true)} testID="pp-scan"
+          accessibilityHint={tr('sa.pp.scanHint')} />
+        <Button label={tr('sa.pp.import')} icon="image" variant="secondary" full onPress={() => openScanner(false)} testID="pp-import" />
+        <Text variant="caption" muted testID="pp-scan-for">{whoName ? tr('sa.pp.forChild', { name: whoName }) : tr('sa.pp.forFamily')}</Text>
+      </View>
       {alerts.length ? <Banner tone="warning" icon="clock" title={tr('cm.pp.alerts', { count: alerts.length })}>{alerts.map((p) => `${tr(`cm.pp.k.${p.kind}` as TKey)}${p.child_id ? ` (${children.find((c) => c.id === p.child_id)?.first_name ?? ''})` : ''} : ${formatDate(p.expires_on!, { day: 'numeric', month: 'short', year: 'numeric' })}`).join('\n')}</Banner> : null}
 
       <SectionTitle title={tr('cm.pp.procedures')} />

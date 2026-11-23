@@ -114,6 +114,7 @@ export const cocoon: Messages<typeof fr> = {
   "coc.keep.digest": "Riepilogo del giorno",
   "coc.article.title": "Da leggere",
   "coc.article.read": "Leggi",
+  "coc.article.readFull": "Leggi l’articolo",
   "coc.add.button": "Aggiungi",
   "coc.add.a11y": "Aggiungi un evento per {name}",
   "coc.add.title": "Aggiungi per {name}",

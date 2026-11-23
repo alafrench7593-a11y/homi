@@ -55,14 +55,24 @@ export async function capturePhoto(): Promise<string | null | 'denied'> {
   return res.assets[0].uri;
 }
 
-export async function pickPhotos(multiple: boolean): Promise<{ uri: string; name: string; mimeType?: string | null; size?: number | null }[] | 'denied'> {
-  if (Platform.OS !== 'web') {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) return 'denied';
+export interface PickedPhoto { uri: string; name: string; mimeType?: string | null; size?: number | null; width?: number | null; height?: number | null }
+
+/**
+ * Choix de photos dans la galerie. AUCUNE autorisation n'est demandée avant : le sélecteur du système (iOS 14+,
+ * Android 13+) s'ouvre sans accès à la photothèque et ne remet à l'application que les images choisies. Exiger
+ * l'accès complet bloquait définitivement l'ajout de photos dès qu'il avait été refusé une fois, ou limité.
+ * 'denied' = le système a refusé d'ouvrir le sélecteur faute d'autorisation (anciens appareils).
+ */
+export async function pickPhotos(multiple: boolean): Promise<PickedPhoto[] | 'denied'> {
+  let res: ImagePicker.ImagePickerResult;
+  try {
+    res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.92, allowsMultipleSelection: multiple, selectionLimit: multiple ? 20 : 1, exif: false });
+  } catch (e) {
+    if (/permission/i.test(e instanceof Error ? e.message : String(e))) return 'denied';
+    throw e;
   }
-  const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.92, allowsMultipleSelection: multiple, selectionLimit: multiple ? 20 : 1, exif: false });
-  if (res.canceled) return [];
-  return res.assets.map((a) => ({ uri: a.uri, name: a.fileName ?? `photo-${Date.now()}.jpg`, mimeType: a.mimeType ?? 'image/jpeg', size: a.fileSize }));
+  if (!res || res.canceled) return [];
+  return (res.assets ?? []).map((a) => ({ uri: a.uri, name: a.fileName ?? `photo-${Date.now()}.jpg`, mimeType: a.mimeType ?? 'image/jpeg', size: a.fileSize, width: a.width || null, height: a.height || null }));
 }
 
 export async function pickFiles(multiple: boolean) {

@@ -1,0 +1,22 @@
+/** HOMI — navigation à 5 onglets, hubs Santé / Bébé / Famille, recherche universelle des outils, ajout rapide (13/11/2026). */
+export const nav = {
+  'nav.tab.health': 'Santé',
+  'nav.tab.baby': 'Bébé',
+  'nav.tab.family': 'Famille',
+  'nav.tablist': 'Navigation principale',
+  'nav.quickAdd': 'Ajout rapide',
+  'nav.quickAddHint': 'Biberon, tétée, couche, sommeil, humeur…',
+  'nav.search.button': 'Rechercher une app',
+  'nav.search.title': 'Rechercher une app',
+  'nav.search.ph': 'Biberon, sommeil, rendez-vous…',
+  'nav.search.hint': 'Tape quelques lettres : les outils de tous tes profils apparaissent, avec tes favoris et tes outils récents.',
+  'nav.search.favs': 'Mes favoris',
+  'nav.search.recents': 'Ouverts récemment',
+  'nav.search.count': { one: '{count} outil', other: '{count} outils' },
+  'nav.search.empty': 'Aucun outil ne correspond',
+  'nav.search.emptyB': 'Essaie un autre mot, ou parcours tous les outils.',
+  'nav.hub.family.title': 'Famille',
+  'nav.hub.family.sub': 'Agenda, tâches, relais de nuit et temps pour soi',
+  'nav.hub.empty': 'Rien ici pour ce profil',
+  'nav.hub.emptyB': 'Choisis un autre profil ci-dessus, ou modifie ton parcours.',
+};

@@ -7,7 +7,7 @@
  */
 import { t as tr } from '@/i18n';
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { usePathname } from 'expo-router';
 import { Icon, Text, type IconName } from './ui';
 import { GlassSurface } from './Glass';
@@ -29,26 +29,29 @@ export function useToolAccent() {
 export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?: string; items: SummaryItem[]; testID?: string }) {
   const t = useTheme();
   const accent = useToolAccent();
+  // colonnes : 3 au plus ; 4 valeurs → grille 2 × 2 (jamais une valeur seule sur sa ligne)
+  const cols = items.length === 4 || items.length === 2 ? 2 : Math.min(3, items.length);
   return (
     <View style={{ gap: spacing.xs }} testID={testID ?? 'miniapp-today'} accessibilityRole="summary" accessibilityLabel={`${title} : ${items.map((i) => `${i.label} ${i.value}`).join(', ')}`}>
       <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{title}</Text>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-        {items.map((it, i) => (
-          <GlassSurface key={i} fill={t.colors.surface} depth={1} radius={20} style={{ flexGrow: 1, flexBasis: items.length > 2 ? '30%' : '45%', minWidth: 96 }}>
-            {/* Marge latérale 10 px (au lieu de 16) : « Symptômes », « (estimation) » tiennent sur leur ligne dans une tuile de 100 px */}
-            <View style={{ paddingVertical: spacing.md, paddingHorizontal: 10, gap: 4 }} testID={it.testID}>
-              {it.icon ? (
-                <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(accent, t.isDark ? 0.22 : 0.14) }}>
-                  <Icon name={it.icon} size={15} color={accent} />
-                </View>
-              ) : null}
-              {/* Pas de limite de lignes : valeur et libellé restent entiers (jamais « … »), la tuile s'adapte */}
-              <Text weight="bold" style={valueStyle(it.value, items.length)}>{it.value}</Text>
-              <Text variant="caption" muted style={Platform.OS === 'web' ? ({ hyphens: 'auto' } as object) : undefined}>{it.label}</Text>
+      {/* Direction « verre minéral » (20/11/2026) : UNE surface de lecture opaque, valeurs séparées par des filets —
+          plus de trio de cartes identiques. La couleur de l'outil marque la première valeur (la plus utile). */}
+      <GlassSurface fill={t.colors.surface} depth={1} radius={20}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+          {items.map((it, i) => (
+            <View key={i} testID={it.testID}
+              style={{ flexGrow: 1, flexBasis: cols === 3 ? '30%' : '45%', minWidth: 92, paddingVertical: spacing.md, paddingHorizontal: 12, gap: 3,
+                borderLeftWidth: i % cols === 0 ? 0 : StyleSheet.hairlineWidth, borderTopWidth: i >= cols ? StyleSheet.hairlineWidth : 0, borderColor: t.colors.border }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                {it.icon ? <Icon name={it.icon} size={14} color={i === 0 ? accent : t.colors.textMuted} /> : null}
+                <Text variant="caption" muted style={[{ flexShrink: 1 }, Platform.OS === 'web' ? ({ hyphens: 'auto' } as object) : null]}>{it.label}</Text>
+              </View>
+              {/* Pas de limite de lignes : valeur et libellé restent entiers (jamais « … ») ; chiffres tabulaires */}
+              <Text weight="bold" color={i === 0 ? accent : undefined} style={[valueStyle(it.value, items.length), { fontVariant: ['tabular-nums'] }]}>{it.value}</Text>
             </View>
-          </GlassSurface>
-        ))}
-      </View>
+          ))}
+        </View>
+      </GlassSurface>
     </View>
   );
 }

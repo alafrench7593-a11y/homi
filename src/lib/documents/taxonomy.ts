@@ -12,7 +12,9 @@ export type DocCategory =
   | 'exam_result' | 'consultation' | 'hospital' | 'certificate' | 'vaccination' | 'allergy' | 'chronic' | 'dental' | 'eye' | 'physio' | 'psych' | 'gyneco'
   | 'prenatal' | 'pregnancy_report' | 'maternity' | 'birth' | 'postnatal'
   | 'health_book' | 'growth' | 'development'
-  | 'insurance' | 'admin' | 'invoice' | 'appointment' | 'personal' | 'custom';
+  | 'insurance' | 'admin' | 'invoice' | 'appointment' | 'personal' | 'custom'
+  // 25/11/2026 : contrats et papiers de la garde (coffre-fort des contrats, « Avant la garde »)
+  | 'childcare';
 
 export interface CategoryDef { value: DocCategory; group: DocGroup; icon: IconName; medical: boolean }
 
@@ -44,6 +46,7 @@ export const CATEGORIES: CategoryDef[] = [
   { value: 'development', group: 'child', icon: 'star', medical: true },
   { value: 'insurance', group: 'other', icon: 'umbrella', medical: false },
   { value: 'admin', group: 'other', icon: 'briefcase', medical: false },
+  { value: 'childcare', group: 'child', icon: 'users', medical: false },
   { value: 'invoice', group: 'other', icon: 'credit-card', medical: false },
   { value: 'appointment', group: 'other', icon: 'calendar', medical: false },
   { value: 'personal', group: 'other', icon: 'archive', medical: false },

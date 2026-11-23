@@ -12,11 +12,13 @@
  *  7. Un article adapté à l'âge.
  * Toutes les données viennent du profil affiché (clé = identifiant de l'enfant) : rien n'est mélangé.
  */
+import { useSwipeExclude } from '@/components/ProfileSwitcher';
+import { AMBIENT_LOOPS } from '@/motion/ambient';
 import { linkFrame } from '@/components/linkFrame';
 import { NightsHelpCard } from '@/features/sleepHelpCard';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, PanResponder, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -44,32 +46,35 @@ import { CHILD_SOURCES, SAFE_SLEEP } from '@/content/childSafety';
 import { LOG_TABLE, type Article, type Bottle, type Breastfeed, type Child, type Diaper, type Meal, type Observation, type Sleep } from '@/lib/types';
 import { useUiStore } from '@/lib/store';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { DOCK_HEIGHT } from '@/components/Dock';
-import { fonts, NACRE, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDockAction } from '@/components/dockAction';
+import { fonts, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { toISODate } from '@/lib/domain/dates';
+import { CATEGORY_GLOW, CATEGORY_INK, HOMI, HOMI_FILL, HOMI_WASH } from '@/features/homiColors';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Journey = 'baby' | 'child' | null | undefined;
 const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
 
-// ─── Palette du cocon (teintes douces, jamais de blanc pur) ───────────────────────────────────────
+// ─── Palette du cocon (HOMI : perle, lilas, champagne, midnight violet ; jamais de blanc pur) ───────
 
 const WASH: Record<CocoonMoment, [string, string, string]> = {
-  morning: ['rgba(255,224,204,0.78)', 'rgba(255,212,224,0.58)', 'rgba(255,246,232,0.55)'],
-  day: ['rgba(212,230,255,0.62)', 'rgba(228,216,255,0.58)', 'rgba(255,238,210,0.50)'],
-  sunset: ['rgba(255,198,160,0.66)', 'rgba(236,164,184,0.56)', 'rgba(196,166,226,0.56)'],
-  night: ['rgba(46,38,104,0.78)', 'rgba(78,46,120,0.62)', 'rgba(24,22,66,0.70)'],
+  morning: ['rgba(246,236,218,0.78)', 'rgba(228,218,251,0.58)', 'rgba(251,249,254,0.55)'], // champagne de l'aube → lilas
+  day: ['rgba(214,226,255,0.6)', 'rgba(228,218,251,0.58)', 'rgba(246,236,218,0.5)'], // bleu clair → lilas → champagne
+  sunset: ['rgba(233,207,164,0.6)', 'rgba(205,190,250,0.56)', 'rgba(150,120,210,0.5)'], // champagne → lilas → prune
+  night: ['rgba(38,28,74,0.8)', 'rgba(91,42,134,0.55)', 'rgba(22,17,43,0.72)'],
 };
-const DARK_WASH: [string, string, string] = ['rgba(46,38,104,0.70)', 'rgba(78,46,120,0.55)', 'rgba(24,22,66,0.62)'];
+const DARK_WASH: [string, string, string] = HOMI_WASH.night;
 
+/** Couleurs sémantiques des événements (voir homiColors) : encre de jour, lueur de nuit. */
 const KIND_INK: Record<RibbonKind, string> = {
-  sleep: '#7B66E0', wake: '#C98A1E', bottle: '#D2693C', breastfeed: '#C2416E', meal: '#3C8C55', diaper: '#3A78B5',
-  medication: '#5E4CC2', appointment: '#C25145', symptom: '#B7791F', note: '#7A6A86',
+  sleep: CATEGORY_INK.sleep, wake: CATEGORY_INK.wake, bottle: CATEGORY_INK.bottle, breastfeed: CATEGORY_INK.breastfeed, meal: CATEGORY_INK.meal, diaper: CATEGORY_INK.diaper,
+  medication: CATEGORY_INK.medication, appointment: CATEGORY_INK.appointment, symptom: CATEGORY_INK.symptom, note: CATEGORY_INK.note,
 };
 const KIND_INK_DARK: Record<RibbonKind, string> = {
-  sleep: '#B9A8FF', wake: '#FFD27A', bottle: '#FFB08A', breastfeed: '#FF9CC0', meal: '#9EDDB2', diaper: '#A8CCFF',
-  medication: '#C5B8FF', appointment: '#FFB0A6', symptom: '#FFD08A', note: '#D9CCE6',
+  sleep: CATEGORY_GLOW.sleep, wake: CATEGORY_GLOW.wake, bottle: CATEGORY_GLOW.bottle, breastfeed: CATEGORY_GLOW.breastfeed, meal: CATEGORY_GLOW.meal, diaper: CATEGORY_GLOW.diaper,
+  medication: CATEGORY_GLOW.medication, appointment: CATEGORY_GLOW.appointment, symptom: CATEGORY_GLOW.symptom, note: CATEGORY_GLOW.note,
 };
 const TRACK_OF: Partial<Record<RibbonKind, TrackKey>> = {
   sleep: 'sleep', bottle: 'bottle', breastfeed: 'breastfeed', meal: 'meal', diaper: 'diaper', medication: 'medication', appointment: 'appointment', symptom: 'observation',
@@ -85,22 +90,22 @@ function KindGlyph({ kind, color, size = 18 }: { kind: RibbonKind; color: string
 function Glass({ children, wash, style, rounded = 30, testID, clear }: { children: React.ReactNode; wash?: [string, string, string]; style?: object; rounded?: number; testID?: string; clear?: boolean }) {
   const t = useTheme();
   const dark = t.isDark;
-  // Cadre transparent (fond vidéo visible), simple liseré champagne : grand cadre du profil de l'enfant
+  // Cadre transparent (ciel de l'application visible), simple liseré lilas : grand cadre du profil de l'enfant
   if (clear) {
     return (
-      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(240,217,207,0.28)' : 'rgba(184,134,90,0.35)' }, style]}>
+      <View testID={testID} style={[{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }, style]}>
         {children}
       </View>
     );
   }
   return (
-    <View testID={testID} style={[{ borderRadius: rounded, shadowColor: dark ? '#000' : '#B4507A', shadowOpacity: dark ? 0.3 : 0.13, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
-      <View style={{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: dark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.78)' }}>
+    <View testID={testID} style={[{ borderRadius: rounded, shadowColor: t.tokens.shadowColor, shadowOpacity: dark ? 0.3 : 0.07, shadowRadius: 24, shadowOffset: { width: 0, height: 12 }, elevation: 4 }, style]}>
+      <View style={{ borderRadius: rounded, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }}>
         {BLUR_OK ? <BlurView intensity={dark ? 28 : 40} tint={dark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} pointerEvents="none" /> : null}
-        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: dark ? 'rgba(30,24,58,0.58)' : 'rgba(255,250,246,0.56)' }]} />
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.surface }]} />
         {wash ? <LinearGradient pointerEvents="none" colors={wash} locations={[0, 0.55, 1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
-        <LinearGradient pointerEvents="none" colors={[dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.55)', 'rgba(255,255,255,0)']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
-        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: rounded * 0.7, right: rounded * 0.7, height: 1, backgroundColor: dark ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.98)' }} />
+        <LinearGradient pointerEvents="none" colors={['transparent', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 0.5, y: 0.6 }} style={StyleSheet.absoluteFill} />
+        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: rounded * 0.7, right: rounded * 0.7, height: 1, backgroundColor: 'transparent' }} />
         {children}
       </View>
     </View>
@@ -116,11 +121,11 @@ function MomentArt({ moment, dark }: { moment: CocoonMoment; dark: boolean }) {
     return (
       <Svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMin slice" pointerEvents="none">
         <Defs>
-          <RadialGradient id={`m${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor="#FFE9B8" stopOpacity="0.55" /><Stop offset="1" stopColor="#FFE9B8" stopOpacity="0" /></RadialGradient>
+          <RadialGradient id={`m${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor={HOMI.lilac} stopOpacity="0.5" /><Stop offset="1" stopColor={HOMI.lilac} stopOpacity="0" /></RadialGradient>
         </Defs>
         <Circle cx="246" cy="62" r="60" fill={`url(#m${id})`} />
-        <Path d="M252 38a24 24 0 1 0 12 42a19 19 0 1 1-12-42z" fill="#FFF1CF" opacity="0.92" />
-        {stars.map(([x, y, r], i) => <Circle key={i} cx={x} cy={y} r={r} fill="#FFF3D9" opacity={0.55 + (i % 3) * 0.15} />)}
+        <Path d="M252 38a24 24 0 1 0 12 42a19 19 0 1 1-12-42z" fill={HOMI.starlight} opacity="0.92" />
+        {stars.map(([x, y, r], i) => <Circle key={i} cx={x} cy={y} r={r} fill={HOMI.pearl} opacity={0.55 + (i % 3) * 0.15} />)}
       </Svg>
     );
   }
@@ -128,8 +133,8 @@ function MomentArt({ moment, dark }: { moment: CocoonMoment; dark: boolean }) {
     return (
       <Svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMin slice" pointerEvents="none">
         <Defs>
-          <RadialGradient id={`s${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor="#FFC08A" stopOpacity="0.9" /><Stop offset="0.5" stopColor="#FF9FB0" stopOpacity="0.35" /><Stop offset="1" stopColor="#FF9FB0" stopOpacity="0" /></RadialGradient>
-          <SvgLinear id={`b${id}`} x1="0" y1="0" x2="0" y2="1"><Stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><Stop offset="1" stopColor="#F3B7C6" stopOpacity="0.35" /></SvgLinear>
+          <RadialGradient id={`s${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor={HOMI.champagne} stopOpacity="0.9" /><Stop offset="0.5" stopColor={HOMI.lilac} stopOpacity="0.4" /><Stop offset="1" stopColor={HOMI.lilac} stopOpacity="0" /></RadialGradient>
+          <SvgLinear id={`b${id}`} x1="0" y1="0" x2="0" y2="1"><Stop offset="0" stopColor="#FFFFFF" stopOpacity="0" /><Stop offset="1" stopColor="#B9A6F2" stopOpacity="0.35" /></SvgLinear>
         </Defs>
         <Circle cx="40" cy="210" r="170" fill={`url(#s${id})`} />
         <Rect x="0" y="180" width="300" height="220" fill={`url(#b${id})`} />
@@ -143,8 +148,8 @@ function MomentArt({ moment, dark }: { moment: CocoonMoment; dark: boolean }) {
     <Svg width="100%" height="100%" viewBox="0 0 300 400" preserveAspectRatio="xMidYMin slice" pointerEvents="none">
       <Defs>
         <RadialGradient id={`d${id}`} cx="50%" cy="50%" r="50%">
-          <Stop offset="0" stopColor={morning ? '#FFD3B0' : '#FFE7A8'} stopOpacity={morning ? 0.95 : 0.8} />
-          <Stop offset="0.45" stopColor={morning ? '#FFC2CF' : '#FFF1CC'} stopOpacity="0.32" />
+          <Stop offset="0" stopColor={morning ? HOMI.champagne : HOMI.champagnePale} stopOpacity={morning ? 0.9 : 0.8} />
+          <Stop offset="0.45" stopColor={morning ? HOMI.lilacPale : HOMI.white} stopOpacity="0.32" />
           <Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
         </RadialGradient>
       </Defs>
@@ -161,7 +166,7 @@ function Motes({ dark, count = 7 }: { dark: boolean; count?: number }) {
   const v = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (reduce) return;
-    const loop = Animated.loop(Animated.timing(v, { isInteraction: false, toValue: 1, duration: 9000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }));
+    const loop = Animated.loop(Animated.timing(v, { isInteraction: false, toValue: 1, duration: 9000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
@@ -171,8 +176,8 @@ function Motes({ dark, count = 7 }: { dark: boolean; count?: number }) {
       {dots.map((d, i) => (
         <Animated.View key={i} style={{
           position: 'absolute', left: d.left as `${number}%`, top: d.top as `${number}%`, width: d.size, height: d.size, borderRadius: d.size,
-          backgroundColor: dark ? '#FFF1CF' : '#FFFFFF', opacity: dark ? 0.55 : 0.85,
-          shadowColor: dark ? '#FFE3A0' : '#FFFFFF', shadowOpacity: 0.9, shadowRadius: 4,
+          backgroundColor: dark ? HOMI.starlight : '#FFFFFF', opacity: dark ? 0.55 : 0.85,
+          shadowColor: dark ? HOMI.lilac : '#FFFFFF', shadowOpacity: 0.9, shadowRadius: 4,
           transform: [{ translateY: v.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, -d.amp * d.dir, 0] }) }],
         }} />
       ))}
@@ -189,12 +194,12 @@ function BreathingHalo({ size, dark, moment }: { size: number; dark: boolean; mo
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
   const id = React.useId().replace(/:/g, '');
-  const c = dark || moment === 'night' ? '#B9A2FF' : moment === 'sunset' ? '#FFB49A' : moment === 'morning' ? '#FFC7B0' : '#C9B6FF';
+  const c = dark || moment === 'night' ? '#B9A2FF' : moment === 'sunset' ? HOMI.champagne : moment === 'morning' ? HOMI.lilac : '#C9B6FF';
   return (
     <Animated.View pointerEvents="none" style={{ position: 'absolute', width: size, height: size, opacity: v.interpolate({ inputRange: [0, 1], outputRange: [0.75, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1.05] }) }] }}>
       <Svg width={size} height={size}>
@@ -319,8 +324,8 @@ export function Cocoon({ child, journey, now: preview, article }: { child: Child
         <Button label={tr('coc.allDay')} icon="list" variant="secondary" full onPress={() => router.push('/(tabs)/track')} testID="cocoon-all-day" />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.xs }}>
           <SmallLink icon="smile" label={tr('coc.link.profile', { name: child.first_name })} onPress={() => router.push(`/child/${id}`)} />
-          <SmallLink icon="trending-up" label={tr('tool.kid_growth')} onPress={() => router.push(`/child/${id}/growth`)} />
-          <SmallLink icon="compass" label={tr('tool.kid_needs')} onPress={() => router.push(`/child/${id}/needs` as never)} testID="home-needs" />
+          <SmallLink icon="trending-up" label={toolName('kid_growth')} onPress={() => router.push(`/child/${id}/growth`)} />
+          <SmallLink icon="compass" label={toolName('kid_needs')} onPress={() => router.push(`/child/${id}/needs` as never)} testID="home-needs" />
         </View>
       </View>
     </View>
@@ -363,9 +368,16 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
     if (!target || target.id === child.id) { Animated.spring(x, { toValue: 0, useNativeDriver: NATIVE_DRIVER }).start(); return; }
     haptic('selection');
     if (reduce) { x.setValue(0); setSubject({ type: 'child', id: target.id }); return; }
-    Animated.timing(x, { toValue: -dir * 340, duration: 160, useNativeDriver: NATIVE_DRIVER }).start(() => { x.setValue(dir * 120); setSubject({ type: 'child', id: target.id }); Animated.spring(x, { toValue: 0, tension: 160, friction: 20, useNativeDriver: NATIVE_DRIVER }).start(); });
+    // Garde : si un autre profil a été choisi pendant le glissement (avatar touché), ce rappel tardif ne l'écrase pas
+    const from = JSON.stringify(useUiStore.getState().subject);
+    Animated.timing(x, { toValue: -dir * 340, duration: 160, useNativeDriver: NATIVE_DRIVER }).start(() => { x.setValue(dir * 120); if (JSON.stringify(useUiStore.getState().subject) === from) setSubject({ type: 'child', id: target.id }); Animated.spring(x, { toValue: 0, tension: 160, friction: 20, useNativeDriver: NATIVE_DRIVER }).start(); });
   };
+  // La carte a son propre glissement (enfant suivant / précédent) : le glissement entre profils de l'accueil lui cède la place
+  const cardSwipe = useSwipeExclude();
+  const excludeRef = useRef(cardSwipe.onStartShouldSetResponderCapture);
+  excludeRef.current = cardSwipe.onStartShouldSetResponderCapture;
   const pan = useRef(PanResponder.create({
+    onStartShouldSetPanResponderCapture: () => excludeRef.current(),
     onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 14 && Math.abs(g.dx) > Math.abs(g.dy) * 1.6,
     onPanResponderMove: (_, g) => x.setValue(g.dx * 0.6),
     onPanResponderRelease: (_, g) => { if (g.dx < -70) switchRef.current(1); else if (g.dx > 70) switchRef.current(-1); else Animated.spring(x, { toValue: 0, useNativeDriver: NATIVE_DRIVER }).start(); },
@@ -381,18 +393,18 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
       onAccessibilityAction={(e) => switchTo(e.nativeEvent.actionName === 'increment' ? 1 : -1)}>
       <Glass clear rounded={36}>
         <View style={{ alignItems: 'center', paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.md, gap: 4 }}>
-          <Pressable accessibilityRole="button" accessibilityLabel={tr('coc.a11y.openProfile', { name: child.first_name })} onPress={() => router.push(`/child/${child.id}`)} style={{ width: 132, height: 132, alignItems: 'center', justifyContent: 'center' }} testID="cocoon-avatar">
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('coc.a11y.openProfile', { name: child.first_name })} onPress={() => router.push(`/child/${child.id}`)} style={{ width: 132, height: 132, alignItems: 'center', justifyContent: 'center' }} testID="cocoon-avatar">
             <BreathingHalo size={132} dark={dark} moment={moment} />
-            <View style={{ borderRadius: 50, borderWidth: 3, borderColor: dark ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.95)', shadowColor: dark ? '#000' : '#B4507A', shadowOpacity: 0.22, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } }}>
+            <View style={{ borderRadius: 50, borderWidth: 3, borderColor: dark ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.95)', shadowColor: dark ? '#000' : HOMI.prune, shadowOpacity: 0.22, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } }}>
               <ChildAvatar child={child} size={88} />
             </View>
-          </Pressable>
+          </Tappable>
           <Text accessibilityRole="header" style={{ fontFamily: fonts.display, fontSize: 32, lineHeight: 38, letterSpacing: -0.8, color: ink, textAlign: 'center' }} testID="cocoon-name">{child.first_name}</Text>
           <Text variant="small" muted center testID="cocoon-age">{age.label}</Text>
           {state ? (
             <View testID="sleep-now" style={{ marginTop: spacing.xs, alignItems: 'center', gap: 2 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.62)' }}>
-                <Icon name={openSleep ? 'moon' : 'sun'} size={15} color={dark ? '#FFE3A0' : '#B26A2E'} />
+                <Icon name={openSleep ? 'moon' : 'sun'} size={15} color={dark ? t.colors.accent : t.colors.gold} />
                 <Text weight="bold" center testID="sleep-now-state" accessibilityLiveRegion="polite">{state}</Text>
               </View>
               {sleepOn && next ? (premium
@@ -405,8 +417,8 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
               {actions.map((a, i) => (
                 <Tappable key={a.testID} testID={a.testID} accessibilityRole="button" accessibilityLabel={`${a.label}, ${child.first_name}`} disabled={busy} onPress={() => go(a)}
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, opacity: busy ? 0.6 : pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }],
-                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : dark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.30)',
-                    backgroundColor: i === 0 ? t.colors.primary : (dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,250,246,0.75)') })}>
+                    borderWidth: 1, borderColor: i === 0 ? 'transparent' : t.colors.border,
+                    backgroundColor: i === 0 ? t.colors.primary : t.colors.surfaceAlt })}>
                   <Icon name={a.icon} size={17} color={i === 0 ? t.colors.primaryText : t.colors.text} />
                   <Text weight="bold" color={i === 0 ? t.colors.primaryText : undefined}>{a.label}</Text>
                 </Tappable>
@@ -422,7 +434,7 @@ function CocoonCard({ child, plan, premium, moment, lastEvent }: { child: Child;
           ) : null}
           {list.length > 1 ? (
             <View style={{ flexDirection: 'row', gap: 6, marginTop: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-              {list.map((c) => <View key={c.id} style={{ width: c.id === child.id ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: c.id === child.id ? (dark ? '#FFFFFF' : t.colors.text) : (dark ? 'rgba(255,255,255,0.35)' : 'rgba(43,36,51,0.22)') }} />)}
+              {list.map((c) => <View key={c.id} style={{ width: c.id === child.id ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: c.id === child.id ? (dark ? '#FFFFFF' : t.colors.text) : (dark ? 'rgba(255,255,255,0.35)' : 'rgba(28,21,51,0.22)') }} />)}
             </View>
           ) : null}
         </View>
@@ -470,6 +482,8 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
   const ink = (k: RibbonKind) => (dark ? KIND_INK_DARK[k] : KIND_INK[k]);
   const H = 132;
   const SLEEP_Y = 84;
+  // Frise horizontale : son défilement passe avant le glissement entre profils de l'accueil
+  const noSwipe = useSwipeExclude();
   return (
     <Glass testID="cocoon-ribbon" rounded={28}>
       <View style={{ paddingTop: spacing.sm, paddingBottom: spacing.xs }}>
@@ -477,50 +491,50 @@ function DayRibbon({ child, events, now }: { child: Child; events: RibbonEvent[]
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1 }}>{tr('coc.ribbon.title').toUpperCase()}</Text>
           <Text variant="caption" muted>{tr('coc.ribbon.count', { count: events.length })}</Text>
         </View>
-        <ScrollView ref={scroller} horizontal showsHorizontalScrollIndicator={false} onLayout={(e) => setViewW(e.nativeEvent.layout.width)} contentContainerStyle={{ paddingHorizontal: spacing.md }} accessibilityLabel={tr('coc.ribbon.a11y', { name: child.first_name })}>
+        <ScrollView ref={scroller} horizontal {...noSwipe} showsHorizontalScrollIndicator={false} onLayout={(e) => setViewW(e.nativeEvent.layout.width)} contentContainerStyle={{ paddingHorizontal: spacing.md }} accessibilityLabel={tr('coc.ribbon.a11y', { name: child.first_name })}>
           <View style={{ width, height: H }}>
             {/* Graduations */}
             {Array.from({ length: hours + 1 }, (_, i) => {
               const h = new Date(range.from + i * 3600_000).getHours();
               return (
                 <View key={i} pointerEvents="none" style={{ position: 'absolute', left: i * HOUR_W, top: 8, bottom: 0, alignItems: 'center', width: 1 }}>
-                  <View style={{ flex: 1, width: 1, backgroundColor: dark ? 'rgba(255,255,255,0.07)' : 'rgba(43,36,51,0.06)' }} />
+                  <View style={{ flex: 1, width: 1, backgroundColor: t.material.lines.separator }} />
                   {i % 2 === 0 ? <Text variant="caption" muted style={{ position: 'absolute', bottom: 0, width: 40, left: -20, textAlign: 'center', fontSize: 11 }}>{tr('coc.ribbon.hour', { h: String(h) })}</Text> : null}
                 </View>
               );
             })}
             {/* Ligne du temps */}
             <View pointerEvents="none" style={{ position: 'absolute', left: 0, width, top: SLEEP_Y + 10, height: 6, borderRadius: 3, backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)' }} />
-            {/* Sommeils */}
-            {events.filter((e) => e.kind === 'sleep').map((e) => {
+            {/* Sommeils — une sieste ajoutée apparaît à sa place sur le ruban (liste vivante, calques en plein cadre) */}
+            <MotionList style={StyleSheet.absoluteFill} pointerEvents="box-none">{events.filter((e) => e.kind === 'sleep').map((e) => {
               const x0 = xOf(e.start);
               const w = Math.max(10, xOf(e.end ?? e.start) - x0);
               return (
-                <Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }} hitSlop={{ top: 12, bottom: 12 }}
+                <MotionItem key={e.id} style={StyleSheet.absoluteFill} pointerEvents="box-none"><Tappable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }} hitSlop={{ top: 12, bottom: 12 }}
                   style={{ position: 'absolute', left: x0, top: SLEEP_Y, width: w, height: 26, borderRadius: 13, overflow: 'hidden' }}>
                   <LinearGradient colors={dark ? ['rgba(185,162,255,0.65)', 'rgba(140,120,240,0.55)'] : ['#B9A8FF', '#8E79EA']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
                   {e.ongoing ? <View style={{ position: 'absolute', right: 3, top: 3, bottom: 3, width: 20, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.35)' }} /> : null}
                   {w > 28 ? <View style={{ position: 'absolute', left: 6, top: 4 }}><KindGlyph kind="sleep" color="#FFFFFF" size={17} /></View> : null}
-                </Pressable>
+                </Tappable></MotionItem>
               );
-            })}
+            })}</MotionList>
             {/* Autres événements */}
-            {points.map((e, i) => {
+            <MotionList style={StyleSheet.absoluteFill} pointerEvents="box-none">{points.map((e, i) => {
               const x = xOf(e.start) - BUBBLE / 2;
               const top = lanes[i] === 0 ? 40 : 6;
               return (
-                <Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }}
+                <MotionItem key={e.id} style={StyleSheet.absoluteFill} pointerEvents="box-none"><Pressable key={e.id} testID={`ribbon-${e.id}`} accessibilityRole="button" accessibilityLabel={`${e.title}, ${e.detail ?? ''}`} onPress={() => { haptic('selection'); setPicked(e); }}
                   style={({ pressed }) => ({ position: 'absolute', left: x, top, width: BUBBLE, height: BUBBLE, borderRadius: BUBBLE / 2, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pressed ? 1.12 : 1 }],
                     backgroundColor: dark ? 'rgba(20,16,44,0.82)' : 'rgba(255,255,255,0.92)', borderWidth: 1.5, borderColor: ink(e.kind),
                     shadowColor: ink(e.kind), shadowOpacity: 0.35, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
                   <KindGlyph kind={e.kind} color={ink(e.kind)} size={17} />
-                </Pressable>
+                </Pressable></MotionItem>
               );
-            })}
+            })}</MotionList>
             {/* Heure actuelle */}
             {nowX >= 0 && nowX <= width ? (
-              <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 0, bottom: 16, width: 2, borderRadius: 1, backgroundColor: dark ? '#FFD27A' : '#E0607E' }} testID="cocoon-now-line">
-                <View style={{ position: 'absolute', top: -2, left: -4, width: 10, height: 10, borderRadius: 5, backgroundColor: dark ? '#FFD27A' : '#E0607E', borderWidth: 2, borderColor: dark ? '#1E1838' : '#FFFFFF' }} />
+              <View pointerEvents="none" style={{ position: 'absolute', left: nowX - 1, top: 0, bottom: 16, width: 2, borderRadius: 1, backgroundColor: dark ? HOMI.champagne : HOMI.prune }} testID="cocoon-now-line">
+                <View style={{ position: 'absolute', top: -2, left: -4, width: 10, height: 10, borderRadius: 5, backgroundColor: dark ? HOMI.champagne : HOMI.prune, borderWidth: 2, borderColor: dark ? '#1E1838' : '#FFFFFF' }} />
               </View>
             ) : null}
           </View>
@@ -597,7 +611,7 @@ function InfoCard({ k, label, value, sub, child }: { k: InfoKey; label: string; 
     <Pressable accessibilityRole="button" accessibilityLabel={`${label} : ${value}${sub ? `, ${sub}` : ''}`} onPress={() => { haptic('selection'); open(); }} style={({ pressed }) => ({ flex: 1, transform: [{ scale: pressed ? 0.97 : 1 }] })} testID={`cocoon-info-${k}`}>
       <Glass rounded={24} style={{ flex: 1 }}>
         <View style={{ padding: spacing.sm, gap: 4, minHeight: 112 }}>
-          <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)' }}>
+          <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
             <KindGlyph kind={kind} color={ink} size={17} />
           </View>
           <Text variant="caption" muted numberOfLines={2}>{label}</Text>
@@ -628,9 +642,9 @@ function KeepCard({ item, child }: { item: KeepItem; child: Child }) {
   return (
     <View>
     <Pressable accessibilityRole="button" accessibilityLabel={`${tr('coc.keep.title')} : ${item.title}${item.detail ? `. ${item.detail}` : ''}${item.then ? `. ${item.then}` : ''}`} onPress={go} style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.99 : 1 }] })} testID="cocoon-keep">
-      <Glass rounded={28} wash={t.isDark ? undefined : ['rgba(255,236,214,0.55)', 'rgba(255,226,236,0.35)', 'rgba(232,222,255,0.45)']}>
+      <Glass rounded={28} wash={t.isDark ? undefined : ['rgba(246,236,218,0.55)', 'rgba(228,218,251,0.4)', 'rgba(232,222,255,0.45)']}>
         <View style={{ flexDirection: 'row', gap: spacing.sm, padding: spacing.md, alignItems: 'flex-start' }}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }}>
+          <LinearGradient colors={HOMI_FILL} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }}>
             <Icon name={KEEP_ICON[item.kind]} size={19} color="#FFFFFF" />
           </LinearGradient>
           <View style={{ flex: 1, gap: 2 }}>
@@ -662,30 +676,33 @@ function artTheme(a: Article): ArtTheme {
   return 'growth';
 }
 const ART: Record<ArtTheme, { c: [string, string, string]; glyph: TrackKey }> = {
-  sleep: { c: ['#C9B8FF', '#F5C7DA', '#FFE4C8'], glyph: 'sleep' },
-  food: { c: ['#FFD0B0', '#FFE9C2', '#CDEBD3'], glyph: 'meal' },
-  health: { c: ['#CFE3FF', '#E6DAFF', '#FFE0E8'], glyph: 'observation' },
-  growth: { c: ['#FFD6C4', '#DCD2FF', '#D3ECF0'], glyph: 'growth' },
+  sleep: { c: ['#C9B8FF', '#E4DAFB', '#F6ECDA'], glyph: 'sleep' }, // lilas → perle → champagne
+  food: { c: ['#F6ECDA', '#E9CFA4', '#CDEBD3'], glyph: 'meal' }, // champagne → sauge
+  health: { c: ['#CFE3FF', '#E6DAFF', '#F1ECFF'], glyph: 'observation' }, // bleu → lilas
+  growth: { c: ['#E9CFA4', '#DCD2FF', '#D3ECF0'], glyph: 'growth' }, // champagne → lilas → menthe
 };
 
-/** Illustration propre à Au fil de nous (formes douces + pictogramme), jamais une image générée. */
+/** Côté de la vignette de la carte « À lire » : dimensions fixes, la carte ne dépend jamais d'une hauteur en pourcentage. */
+export const ARTICLE_ART = 88;
+
+/** Illustration propre à HOMI (formes douces + pictogramme), jamais une image générée. */
 function ArticleArt({ theme }: { theme: ArtTheme }) {
   const id = React.useId().replace(/:/g, '');
   const a = ART[theme];
   return (
-    <View style={{ width: 92, alignSelf: 'stretch', minHeight: 104, borderRadius: 22, overflow: 'hidden' }} accessibilityElementsHidden importantForAccessibility="no">
-      <Svg width="100%" height="100%" viewBox="0 0 92 110" preserveAspectRatio="xMidYMid slice">
+    <View style={{ width: ARTICLE_ART, height: ARTICLE_ART, borderRadius: 20, overflow: 'hidden' }} testID="article-art" accessibilityElementsHidden importantForAccessibility="no">
+      <Svg width={ARTICLE_ART} height={ARTICLE_ART} viewBox="0 0 92 92">
         <Defs>
           <SvgLinear id={`g${id}`} x1="0" y1="0" x2="1" y2="1"><Stop offset="0" stopColor={a.c[0]} /><Stop offset="0.55" stopColor={a.c[1]} /><Stop offset="1" stopColor={a.c[2]} /></SvgLinear>
           <RadialGradient id={`r${id}`} cx="50%" cy="50%" r="50%"><Stop offset="0" stopColor="#FFFFFF" stopOpacity="0.85" /><Stop offset="1" stopColor="#FFFFFF" stopOpacity="0" /></RadialGradient>
         </Defs>
-        <Rect x="0" y="0" width="92" height="110" fill={`url(#g${id})`} />
-        <Circle cx="70" cy="22" r="34" fill={`url(#r${id})`} />
-        <Path d="M0 82 C 22 70, 44 92, 92 76 L 92 110 L 0 110 Z" fill="#FFFFFF" opacity="0.35" />
-        <Path d="M0 94 C 30 84, 56 104, 92 90 L 92 110 L 0 110 Z" fill="#FFFFFF" opacity="0.30" />
-        <Circle cx="46" cy="52" r="22" fill="#FFFFFF" opacity="0.7" />
+        <Rect x="0" y="0" width="92" height="92" fill={`url(#g${id})`} />
+        <Circle cx="70" cy="16" r="34" fill={`url(#r${id})`} />
+        <Path d="M0 70 C 22 58, 44 80, 92 64 L 92 92 L 0 92 Z" fill="#FFFFFF" opacity="0.35" />
+        <Path d="M0 82 C 30 72, 56 90, 92 78 L 92 92 L 0 92 Z" fill="#FFFFFF" opacity="0.30" />
+        <Circle cx="46" cy="44" r="22" fill="#FFFFFF" opacity="0.7" />
       </Svg>
-      <View style={{ position: 'absolute', left: 0, right: 0, top: 41, alignItems: 'center' }}><TrackIcon k={a.glyph} color="#6A52D6" size={22} /></View>
+      <View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: ARTICLE_ART - 4, alignItems: 'center', justifyContent: 'center' }}><TrackIcon k={a.glyph} color={HOMI.lilacInk} size={22} /></View>
     </View>
   );
 }
@@ -693,30 +710,32 @@ function ArticleArt({ theme }: { theme: ArtTheme }) {
 /** Temps de lecture estimé (environ 200 mots par minute), au moins 1 minute. */
 export const readingMinutes = (body: string) => Math.max(1, Math.round(body.replace(/[#*_>`-]/g, ' ').split(/\s+/).filter(Boolean).length / 200));
 
-/** Carte éditoriale : illustration, titre, temps de lecture, bouton « Lire » (accueil de chaque profil). */
+/**
+ * Carte éditoriale « À lire » (accueil de chaque profil) : vignette carrée fixe, titre (2 lignes), temps de lecture,
+ * aperçu (3 lignes) et lien « Lire l'article ». Hauteur dictée par le contenu seulement : aucune hauteur en
+ * pourcentage, aucun `marginTop: 'auto'`, aucun étirement vertical (sur iPhone la carte descendait jusqu'en bas de l'écran).
+ */
 export function ArticleCard({ article, premium }: { article: Article; premium: boolean }) {
   const t = useTheme();
   const open = () => router.push(`/article/${article.slug}`);
   return (
     <Glass rounded={28} testID="cocoon-article">
-      <Pressable accessibilityRole="button" accessibilityLabel={tr('home.articleA11y', { title: article.title })} onPress={open} style={{ flexDirection: 'row', gap: spacing.sm, padding: spacing.sm }}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('home.articleA11y', { title: article.title })} onPress={open} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, padding: spacing.sm }} testID="cocoon-article-row">
         <ArticleArt theme={artTheme(article)} />
-        <View style={{ flex: 1, gap: 4, paddingVertical: 2 }}>
+        <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1, flex: 1 }}>{tr('coc.article.title').toUpperCase()}</Text>
+            <Text variant="caption" weight="bold" muted numberOfLines={1} style={{ letterSpacing: 1.1, flexShrink: 1, flexGrow: 1 }}>{tr('coc.article.title').toUpperCase()}</Text>
             {isLocked(article, premium) ? <Icon name="lock" size={13} color={t.colors.gold} /> : null}
           </View>
-          <Text weight="bold" numberOfLines={3}>{article.title}</Text>
-          <Text variant="caption" muted testID="article-reading">{tr('home.readingTime', { n: readingMinutes(article.body_md ?? '') })}</Text>
-          <Text variant="small" muted numberOfLines={2} intentionalTruncation>{article.summary}</Text>
-          <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: t.isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)' }}>
-              <Text variant="small" weight="bold">{tr('coc.article.read')}</Text>
-              <Icon name="arrow-right" size={14} color={t.colors.text} />
-            </View>
+          <Text weight="bold" numberOfLines={2} testID="article-title">{article.title}</Text>
+          <Text variant="caption" muted numberOfLines={1} testID="article-reading">{tr('home.readingTime', { n: readingMinutes(article.body_md ?? '') })}</Text>
+          {article.summary ? <Text variant="small" muted numberOfLines={3} intentionalTruncation testID="article-summary">{article.summary}</Text> : null}
+          <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', maxWidth: '100%', gap: 6, minHeight: 36, marginTop: 2, paddingVertical: 6, paddingHorizontal: 14, borderRadius: radius.pill, backgroundColor: t.isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.85)' }} testID="article-link">
+            <Text variant="small" weight="bold" style={{ flexShrink: 1 }}>{tr('coc.article.readFull')}</Text>
+            <Icon name="arrow-right" size={14} color={t.colors.text} />
           </View>
         </View>
-      </Pressable>
+      </Tappable>
     </Glass>
   );
 }
@@ -725,15 +744,14 @@ export function ArticleCard({ article, premium }: { article: Article; premium: b
 
 const ADD_GLYPH: Record<AddAction, RibbonKind> = { bottle: 'bottle', breastfeed: 'breastfeed', meal: 'meal', diaper: 'diaper', sleep: 'sleep', medication: 'medication', symptom: 'symptom', note: 'note' };
 
-/** Bouton flottant et feuille d'ajout (favoris personnalisables). Rendu par l'accueil, au-dessus de la barre. */
+/** Feuille d'ajout (favoris personnalisables), ouverte par le bouton d'action de la barre d'onglets. Rendu par l'accueil. */
 export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }) {
   const t = useTheme();
-  const insets = useSafeAreaInsets();
   const toast = useToast();
-  // Petit écran : bouton rond (icône seule) pour ne pas masquer le contenu
-  const compact = useWindowDimensions().width < 380;
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  // « + Ajouter » : c'est le bouton d'action de la barre d'onglets (même ligne que la barre, jamais sur le contenu)
+  useDockAction('index', { icon: 'plus', label: tr('coc.add.a11y', { name: child.first_name }), testID: 'cocoon-add', onPress: () => { setEditing(false); setOpen(true); } });
   const chosen = useUiStore((s) => s.cocoonFavorites);
   const setChosen = useUiStore((s) => s.setCocoonFavorites);
   const age = childAge(child.birth_date);
@@ -785,15 +803,6 @@ export function CocoonAdd({ child, journey }: { child: Child; journey: Journey }
   };
   return (
     <>
-      <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: Math.max(insets.bottom, 10) + DOCK_HEIGHT + 6 }}>
-        <Pressable testID="cocoon-add" accessibilityRole="button" accessibilityLabel={tr('coc.add.a11y', { name: child.first_name })} onPress={() => { haptic('light'); setEditing(false); setOpen(true); }}
-          style={({ pressed }) => ({ borderRadius: radius.pill, transform: [{ scale: pressed ? 0.96 : 1 }], shadowColor: '#B4507A', shadowOpacity: 0.35, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 8 })}>
-          <LinearGradient colors={NACRE} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 56, minWidth: 56, paddingHorizontal: compact ? 0 : 22, borderRadius: radius.pill, borderWidth: 1, borderColor: 'rgba(255,255,255,0.55)' }}>
-            <Icon name="plus" size={compact ? 26 : 22} color="#FFFFFF" />
-            {compact ? null : <Text weight="bold" color="#FFFFFF">{tr('coc.add.button')}</Text>}
-          </LinearGradient>
-        </Pressable>
-      </View>
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('coc.add.title', { name: child.first_name })}>
         <View style={{ gap: spacing.sm }} testID="cocoon-add-sheet">
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.1 }}>{tr(editing ? 'coc.add.editHint' : 'coc.add.favorites').toUpperCase()}</Text>

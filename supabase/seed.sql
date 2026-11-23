@@ -10,8 +10,8 @@
 insert into public.emergency_resources (country, label, phone, description, kind, available, position) values
  ('FR','SAMU','15','Urgence médicale : malaise, difficulté à respirer, bébé qui ne réagit pas, réaction allergique grave.','emergency','24 h/24, 7 j/7',1),
  ('FR','Numéro d''urgence européen','112','Urgence, partout dans l''Union européenne, y compris depuis un téléphone sans forfait.','emergency','24 h/24, 7 j/7',2),
- ('FR','Prévention du suicide','3114','Si vous pensez au suicide, si vous avez peur de vous faire du mal, ou si vous vous inquiétez pour un proche. Gratuit et confidentiel.','suicide_prevention','24 h/24, 7 j/7',3),
- ('FR','Enfance en danger','119','Si un enfant est en danger ou en risque de l''être, ou si vous avez peur de faire du mal à votre enfant.','parenting_support','24 h/24, 7 j/7',4),
+ ('FR','Prévention du suicide','3114','Si tu penses au suicide, si tu as peur de te faire du mal, ou si tu t’inquiètes pour un proche. Gratuit et confidentiel.','suicide_prevention','24 h/24, 7 j/7',3),
+ ('FR','Enfance en danger','119','Si un enfant est en danger ou en risque de l''être, ou si tu as peur de faire du mal à ton enfant.','parenting_support','24 h/24, 7 j/7',4),
  ('FR','Violences Femmes Info','3919','Écoute et orientation pour les femmes victimes de violences et leur entourage.','violence','24 h/24, 7 j/7',5),
  ('FR','Urgence par SMS (personnes sourdes ou malentendantes)','114','Contacter les secours par SMS, fax ou application.','emergency','24 h/24, 7 j/7',6) on conflict do nothing;
 
@@ -62,7 +62,7 @@ with s as (select
   '[{"label":"Haute Autorité de santé","url":"https://www.has-sante.fr"},{"label":"Assurance Maladie — ameli.fr","url":"https://www.ameli.fr"}]'::jsonb as has_ameli
 )
 insert into public.articles (slug, category_id, title, summary, body_md, journeys, min_week, max_week, min_age_months, max_age_months, postpartum, tags, author_name, sources, status, is_premium, is_safety_critical)
-select v.slug, (select id from public.content_categories where slug = v.cat), v.title, v.summary, v.body, v.journeys, v.minw, v.maxw, v.mina, v.maxa, v.pp, v.tags, 'Équipe éditoriale Au fil de nous (brouillon)', v.src, 'published', v.premium, v.safety
+select v.slug, (select id from public.content_categories where slug = v.cat), v.title, v.summary, v.body, v.journeys, v.minw, v.maxw, v.mina, v.maxa, v.pp, v.tags, 'Équipe éditoriale HOMI (brouillon)', v.src, 'published', v.premium, v.safety
 from s cross join lateral (values
  ('baby-blues-ou-depression','sante-mentale','Baby blues ou dépression du post-partum ?',
   'Deux réalités différentes, et toutes deux méritent d''être prises au sérieux.',

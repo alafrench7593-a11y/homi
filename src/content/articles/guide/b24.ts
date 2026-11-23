@@ -4,15 +4,15 @@ import type { ArticleSource, LibArticle } from '../library';
 const C = '2026-10-27';
 // Sources réellement consultées (pages officielles françaises).
 const S = {
-  jouetsAge: { label: 'Santé.fr (DGCCRF) — Sécurité des jouets : optez pour un produit adapté à l’âge de l’enfant !', url: 'https://www.sante.fr/node/1268419', consulted_on: C, published: '2019-06-11' },
-  conseilsJouets: { label: 'economie.gouv.fr (Bercy infos) — Nos conseils pour choisir les jouets de vos enfants en toute sécurité', url: 'https://www.economie.gouv.fr/particuliers/choix-conseil-achat-jouets-securite-enfants', consulted_on: C },
+  jouetsAge: { label: 'Santé.fr (DGCCRF) — Sécurité des jouets : opte pour un produit adapté à l’âge de l’enfant !', url: 'https://www.sante.fr/node/1268419', consulted_on: C, published: '2019-06-11' },
+  conseilsJouets: { label: 'economie.gouv.fr (Bercy infos) — Nos conseils pour choisir les jouets de tes enfants en toute sécurité', url: 'https://www.economie.gouv.fr/particuliers/choix-conseil-achat-jouets-securite-enfants', consulted_on: C },
   dgccrfControle: { label: 'economie.gouv.fr (DGCCRF) — Comment la DGCCRF s’assure de la sécurité des jouets', url: 'https://www.economie.gouv.fr/dgccrf/comment-la-dgccrf-sassure-de-la-securite-des-jouets', consulted_on: C },
   dgccrfSurveillance: { label: 'economie.gouv.fr (DGCCRF) — La sécurité des jouets sous surveillance', url: 'https://www.economie.gouv.fr/dgccrf/la-securite-des-jouets-sous-surveillance', consulted_on: C },
   dgccrfVigilance: { label: 'economie.gouv.fr (DGCCRF) — Pour la protection des enfants : vigilance sur la sécurité des jouets', url: 'https://www.economie.gouv.fr/dgccrf/pour-la-protection-des-enfants-vigilance-sur-la-securite-des-jouets', consulted_on: C },
-  jeuxConstruction: { label: 'economie.gouv.fr (DGCCRF) — Jeux de construction et de société : misez sur la sécurité !', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/jeux-de-construction-et-de-societe-misez-sur-la-securite', consulted_on: C, published: '2025-10-27' },
+  jeuxConstruction: { label: 'economie.gouv.fr (DGCCRF) — Jeux de construction et de société : mise sur la sécurité !', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/jeux-de-construction-et-de-societe-misez-sur-la-securite', consulted_on: C, published: '2025-10-27' },
   peluches: { label: 'Santé.fr (DGCCRF) — Peluches : attention aux petits éléments !', url: 'https://www.sante.fr/node/1268429', consulted_on: C, published: '2020-12-21' },
-  porteurs: { label: 'Santé.fr (DGCCRF) — Jouets porteurs : optez pour un produit adapté à l’âge de l’enfant !', url: 'https://www.sante.fr/node/1268425', consulted_on: C, published: '2019-06-11' },
-  trottinettes: { label: 'economie.gouv.fr (DGCCRF) — Trottinettes : achetez un produit sûr !', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/trottinettes-achetez-un-produit-sur', consulted_on: C, published: '2022-12-14' },
+  porteurs: { label: 'Santé.fr (DGCCRF) — Jouets porteurs : opte pour un produit adapté à l’âge de l’enfant !', url: 'https://www.sante.fr/node/1268425', consulted_on: C, published: '2019-06-11' },
+  trottinettes: { label: 'economie.gouv.fr (DGCCRF) — Trottinettes : achète un produit sûr !', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/trottinettes-achetez-un-produit-sur', consulted_on: C, published: '2022-12-14' },
   bicyclettes: { label: 'economie.gouv.fr (DGCCRF) — Bicyclettes : au rayon de la sécurité', url: 'https://www.economie.gouv.fr/dgccrf/bicyclettes-au-rayon-securite', consulted_on: C },
   pilesBouton: { label: 'Santé.fr (Ministère chargé de la Santé) — Piles bouton : prévention des risques d’ingestion par les jeunes enfants', url: 'https://www.sante.fr/node/1184265', consulted_on: C, published: '2024-12-16' },
   pilesBoutonDgccrf: { label: 'Santé.fr (DGCCRF) — Piles bouton : prévenir l’ingestion et adopter les bons réflexes en cas d’accident', url: 'https://www.sante.fr/node/1268367', consulted_on: C, published: '2019-06-11' },
@@ -27,15 +27,15 @@ const S = {
   edpm: { label: 'Ministère de la Transition écologique — Trottinettes électriques et EDPM : la réglementation en vigueur', url: 'https://www.ecologie.gouv.fr/trottinettes-electriques-et-edpm-reglementation-en-vigueur', consulted_on: C, published: '2026-02-06' },
   cnil: { label: 'CNIL — Jouets connectés : quels conseils pour les sécuriser ?', url: 'https://www.cnil.fr/fr/jouets-connectes-quels-conseils-pour-les-securiser', consulted_on: C, published: '2017-02-28' },
   lunettes: { label: 'economie.gouv.fr (DGCCRF) — Lunettes de soleil : comment choisir la bonne protection ?', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/lunettes-de-soleil-comment-choisir-la-bonne-protection', consulted_on: C, published: '2026-01-16' },
-  arsSoleil: { label: 'ARS Grand Est — Risques solaires : profitez du soleil en toute sécurité (dépliant)', url: 'https://www.grand-est.ars.sante.fr/media/110709/download', consulted_on: C },
+  arsSoleil: { label: 'ARS Grand Est — Risques solaires : profite du soleil en toute sécurité (dépliant)', url: 'https://www.grand-est.ars.sante.fr/media/110709/download', consulted_on: C },
   zeroAccident: { label: 'Santé.fr — « Zéro accident, un jeu d’enfant » : le serious game pour prévenir les accidents domestiques', url: 'https://www.sante.fr/node/8031855', consulted_on: C, published: '2024-05-15' },
   livret1000: { label: 'Ministère des Solidarités et de la Santé — Le livret de nos 1000 premiers jours', url: 'https://solidarites.gouv.fr/sites/solidarite/files/2023-01/livret-1000-premiers-jours.pdf', consulted_on: C },
   coucher: { label: 'ameli.fr — Comment bien coucher un bébé ?', url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/coucher-bebe', consulted_on: C, published: '2019-11-14' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article vous informe ; il ne remplace pas l’avis du médecin, du pharmacien, de la puéricultrice de PMI ou des professionnels qui suivent votre enfant._';
-const URG = 'En cas d’urgence (étouffement, gêne respiratoire, ingestion d’une pile ou d’un aimant, malaise), appelez le **15** (SAMU) ou le **112** ; les personnes sourdes ou malentendantes peuvent joindre le **114**. Pour une question d’intoxication sans signe de gravité, un **centre antipoison** peut vous conseiller.';
-const DANGER = 'Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger), gratuit, jour et nuit.';
+const FIN = '_Cet article t’informe ; il ne remplace pas l’avis du médecin, du pharmacien, de la puéricultrice de PMI ou des professionnels qui suivent ton enfant._';
+const URG = 'En cas d’urgence (étouffement, gêne respiratoire, ingestion d’une pile ou d’un aimant, malaise), appelle le **15** (SAMU) ou le **112** ; les personnes sourdes ou malentendantes peuvent joindre le **114**. Pour une question d’intoxication sans signe de gravité, un **centre antipoison** peut te conseiller.';
+const DANGER = 'Si tu penses qu’un enfant est en danger, appelle le **119** (Allô Enfance en danger), gratuit, jour et nuit.';
 
 const a = (x: Omit<LibArticle, 'status' | 'journeys'> & { journeys?: LibArticle['journeys'] }): LibArticle => ({
   journeys: ['newborn', 'child'], status: 'to_review', ...x,
@@ -54,7 +54,7 @@ export const GUIDE_B24: LibArticle[] = [
 - Le **marquage CE** est obligatoire sur les jouets destinés aux enfants de moins de 14 ans : par ce logo, le fabricant atteste que le jouet respecte les exigences essentielles de sécurité.
 - Il doit être **visible, lisible et indélébile**, sur le jouet ou son emballage.
 - C’est une déclaration du fabricant, contrôlée par la DGCCRF : il ne remplace pas la lecture de **l’âge indiqué** et des **avertissements**.
-- Vérifiez aussi la présence d’une **notice en français** et de l’**identité du fabricant ou de l’importateur**.
+- Vérifie aussi la présence d’une **notice en français** et de l’**identité du fabricant ou de l’importateur**.
 
 ## Comprendre
 En France, la sécurité des jouets est encadrée par le décret n° 2010-166 du 22 février 2010, qui transpose une directive européenne. Il s’applique aux jouets destinés aux enfants de moins de 14 ans. Parce que les jeunes enfants ne perçoivent pas toujours le danger, les exigences sont renforcées : elles portent sur les propriétés mécaniques et physiques, l’inflammabilité, la composition chimique, les caractéristiques électriques et l’hygiène. Le jouet doit être sûr dans une utilisation normale **et prévisible** : un enfant qui le met à la bouche, le tire ou le démonte.
@@ -64,17 +64,17 @@ Avant la mise sur le marché, le fabricant établit une documentation technique,
 Parmi les manquements relevés : absence de marquage CE, avertissements obligatoires manquants, mention « 0-3 ans » sur des jouets en réalité destinés à des enfants plus âgés, notices sans consignes de sécurité en français. La DGCCRF note que les règles sont souvent moins bien connues des petits artisans, de certains discounters, des vendeurs de marchés et de marchés de Noël, et des lieux dont le jouet n’est pas le métier (musées, parcs d’attractions, presse).
 
 ## Au quotidien
-**En magasin ou en ligne, prenez une minute pour vérifier :**
+**En magasin ou en ligne, prends une minute pour vérifier :**
 - **Le logo CE**, bien lisible, sur le jouet ou l’emballage.
 - **L’âge conseillé et les avertissements** (« Ne convient pas aux enfants de moins de 36 mois », surveillance d’un adulte…).
 - **La notice en français**, avec les consignes d’utilisation et de sécurité.
 - **Le nom et l’adresse** du fabricant ou de l’importateur : ils permettent de retrouver le produit en cas de rappel.
 
-**Puis regardez le jouet lui-même :**
-- Pour un jeune enfant, préférez des **mécanismes simples** ; évitez les mécanismes pliants qui peuvent pincer ou couper.
-- Préférez les plastiques **colorés dans la masse** à la peinture, qui peut s’écailler.
-- Pour un jouet à piles, vérifiez que le **compartiment est solide** et que les piles ne sont pas facilement accessibles.
-- Si possible, **manipulez le jouet** avant l’achat.
+**Puis regarde le jouet lui-même :**
+- Pour un jeune enfant, préfère des **mécanismes simples** ; évite les mécanismes pliants qui peuvent pincer ou couper.
+- Préfère les plastiques **colorés dans la masse** à la peinture, qui peut s’écailler.
+- Pour un jouet à piles, vérifie que le **compartiment est solide** et que les piles ne sont pas facilement accessibles.
+- Si possible, **manipule le jouet** avant l’achat.
 
 **Situations à surveiller :** un jouet acheté sur un stand de marché, gagné à la fête foraine ou offert avec un magazine mérite le même examen qu’un jouet acheté en magasin spécialisé.
 
@@ -86,13 +86,13 @@ On ne peut pas le savoir : l’absence de logo signifie que l’obligation n’e
 Non. Un jouet conforme peut être dangereux pour un enfant plus jeune que l’âge prévu, par exemple à cause de petites pièces. L’âge et les avertissements comptent autant que le logo.
 
 **Une figurine de collection ou une décoration de fête est-elle un jouet ?**
-Pas forcément. La DGCCRF cite des objets qui attirent les enfants sans être conçus pour eux : poupées de collection, décorations de fêtes, modèles réduits pour adultes, puzzles de plus de 500 pièces, figurines de collection. Gardez-les hors de portée des plus jeunes.
+Pas forcément. La DGCCRF cite des objets qui attirent les enfants sans être conçus pour eux : poupées de collection, décorations de fêtes, modèles réduits pour adultes, puzzles de plus de 500 pièces, figurines de collection. Garde-les hors de portée des plus jeunes.
 
 **Qui contrôle les jouets ?**
 La DGCCRF. Les produits jugés dangereux sont retirés de la vente ou rappelés, et les rappels sont publiés sur le site RappelConso.
 
 ## Quand demander conseil
-Si un jouet se casse en laissant de petits morceaux, chauffe, ou a blessé votre enfant, cessez de l’utiliser et signalez-le sur SignalConso. Si votre enfant a pu avaler un élément, une pile ou un aimant, ou s’il s’étouffe, n’attendez pas. ${URG}
+Si un jouet se casse en laissant de petits morceaux, chauffe, ou a blessé ton enfant, cesse de l’utiliser et signale-le sur SignalConso. Si ton enfant a pu avaler un élément, une pile ou un aimant, ou s’il s’étouffe, n’attends pas. ${URG}
 
 ${FIN}`,
   }),
@@ -116,27 +116,27 @@ Pourquoi 3 ans ? Avant cet âge, les enfants explorent beaucoup avec la bouche e
 
 L’âge indiqué sert aussi à adapter la **complexité technique**. Pour les jeux de construction, la DGCCRF évoque par exemple des pièces motorisées à partir de 8 ans et des mécanismes complexes à partir de 10 ans. Les coffrets d’expériences magnétiques ou électriques peuvent porter la mention « Ne convient pas aux enfants de moins de 8 ans. Ce produit contient de petits aimants ».
 
-Autre point relevé lors des contrôles : la mention « 0-3 ans » apposée à tort sur des jouets destinés à des enfants plus âgés. Si l’objet vous paraît manifestement inadapté à un bébé (petites pièces, mécanisme fragile), fiez-vous à votre observation.
+Autre point relevé lors des contrôles : la mention « 0-3 ans » apposée à tort sur des jouets destinés à des enfants plus âgés. Si l’objet te paraît manifestement inadapté à un bébé (petites pièces, mécanisme fragile), fie-toi à ton observation.
 
 ## Au quotidien
 **Avant l’achat**
-- Repérez l’âge minimal et le pictogramme, puis lisez **en entier** les mentions de l’emballage et de la notice.
+- Repère l’âge minimal et le pictogramme, puis lis **en entier** les mentions de l’emballage et de la notice.
 - Pour un porteur destiné à un enfant qui commence à marcher (12 à 18 mois), la DGCCRF conseille un modèle qu’il peut facilement enjamber, qui lui permet de poser les pieds à plat au sol et qui roule facilement.
-- Pensez à l’enfant réel : ses capacités, ses habitudes (met-il encore tout à la bouche ?), et les autres enfants de la maison.
+- Pense à l’enfant réel : ses capacités, ses habitudes (met-il encore tout à la bouche ?), et les autres enfants de la maison.
 
 **Après l’achat**
-- Gardez la notice, au moins tant que le jouet est utilisé : elle contient les consignes et les coordonnées utiles en cas de rappel.
-- Expliquez à l’enfant le fonctionnement du jouet et les gestes à éviter.
-- Rangez à part les jouets marqués « 3 ans et plus » si un tout-petit vit à la maison ou vient en visite.
+- Garde la notice, au moins tant que le jouet est utilisé : elle contient les consignes et les coordonnées utiles en cas de rappel.
+- Explique à l’enfant le fonctionnement du jouet et les gestes à éviter.
+- Range à part les jouets marqués « 3 ans et plus » si un tout-petit vit à la maison ou vient en visite.
 
-**Exemple** : un coffret de perles à enfiler « dès 5 ans » ravit votre aînée de 6 ans. Elle peut l’utiliser à table pendant la sieste du petit, puis le ranger dans une boîte fermée, en hauteur.
+**Exemple** : un coffret de perles à enfiler « dès 5 ans » ravit ton aînée de 6 ans. Elle peut l’utiliser à table pendant la sieste du petit, puis le ranger dans une boîte fermée, en hauteur.
 
 ## Questions fréquentes
 **Mon enfant de 2 ans est très habile : puis-je lui donner un jouet « 3 ans et plus » ?**
 L’avertissement ne parle pas d’habileté mais d’un danger, le plus souvent l’étouffement par de petites pièces. Même un enfant très dégourdi peut porter un petit objet à la bouche : mieux vaut respecter l’âge indiqué.
 
 **Que faire si l’emballage n’indique aucun âge ?**
-Les avertissements sont obligatoires lorsque le jouet le justifie. En leur absence, examinez le jouet avec prudence, évitez de le donner à un tout-petit, et vous pouvez signaler le produit sur SignalConso.
+Les avertissements sont obligatoires lorsque le jouet le justifie. En leur absence, examine le jouet avec prudence, évite de le donner à un tout-petit, et tu peux signaler le produit sur SignalConso.
 
 **Le jeu de société de mon aîné contient des dés et des pions : est-ce un problème ?**
 Ces petites pièces peuvent présenter un risque d’étouffement pour les jeunes enfants. La DGCCRF conseille de proposer aux tout-petits des jeux conçus pour eux et de ranger les autres hors de portée.
@@ -145,7 +145,7 @@ Ces petites pièces peuvent présenter un risque d’étouffement pour les jeune
 Oui : la DGCCRF demande de vérifier aussi les mentions de poids maximal, d’aptitude et de surveillance par un adulte, qui conditionnent une utilisation sûre.
 
 ## Quand demander conseil
-En cas de doute sur l’adéquation d’un jouet à votre enfant, demandez conseil au vendeur, à la puéricultrice de PMI ou au professionnel de la petite enfance qui accueille votre enfant. Si votre enfant a mis en bouche et avalé une petite pièce, tousse, s’étouffe ou respire mal, agissez sans attendre. ${URG}
+En cas de doute sur l’adéquation d’un jouet à ton enfant, demande conseil au vendeur, à la puéricultrice de PMI ou au professionnel de la petite enfance qui accueille ton enfant. Si ton enfant a mis en bouche et avalé une petite pièce, tousse, s’étouffe ou respire mal, agis sans attendre. ${URG}
 
 ${FIN}`,
   }),
@@ -169,37 +169,37 @@ Les accidents de la vie courante sont la première cause de décès chez les 1 �
 
 ## Au quotidien
 **Organiser l’espace**
-- Créez une **zone des grands** : bureau, table haute ou chambre avec porte fermée, où les jeux à petites pièces se pratiquent.
-- Rangez ces jeux dans des **boîtes avec couvercle**, sur une étagère haute plutôt que dans un coffre au sol.
-- Gardez à hauteur du tout-petit uniquement ses jouets à lui, adaptés à son âge.
+- Crée une **zone des grands** : bureau, table haute ou chambre avec porte fermée, où les jeux à petites pièces se pratiquent.
+- Range ces jeux dans des **boîtes avec couvercle**, sur une étagère haute plutôt que dans un coffre au sol.
+- Garde à hauteur du tout-petit uniquement ses jouets à lui, adaptés à son âge.
 
 **Organiser le moment de jeu**
 - Les grands jeux de construction ou de perles peuvent se faire **pendant la sieste** du petit, ou à table, à distance.
 - Après la séance, un **tour de ramassage** ensemble : un jeu de « chasse aux pièces » sous la table rend la tâche plus amusante.
-- Pour jouer ensemble, choisissez des jeux adaptés au plus jeune : gros cubes, ballons, jeux d’imitation sans petits accessoires, livres cartonnés.
+- Pour jouer ensemble, choisis des jeux adaptés au plus jeune : gros cubes, ballons, jeux d’imitation sans petits accessoires, livres cartonnés.
 
 **Responsabiliser l’aîné, sans le charger**
-- Expliquez avec des mots simples : « Ton petit frère met tout dans sa bouche ; les petites pièces peuvent le faire étouffer. »
-- Valorisez son rôle (« tu m’aides à protéger ta sœur »), sans lui confier la surveillance : c’est le rôle d’un adulte.
+- Explique avec des mots simples : « Ton petit frère met tout dans sa bouche ; les petites pièces peuvent le faire étouffer. »
+- Valorise son rôle (« tu m’aides à protéger ta sœur »), sans lui confier la surveillance : c’est le rôle d’un adulte.
 
 **Penser aux visites**
-Lorsque des enfants plus âgés viennent jouer, ou lorsque vous rendez visite à une famille dont les enfants sont plus grands, faites un petit tour de la pièce de jeu à hauteur du tout-petit.
+Lorsque des enfants plus âgés viennent jouer, ou lorsque tu rends visite à une famille dont les enfants sont plus grands, fais un petit tour de la pièce de jeu à hauteur du tout-petit.
 
 ## Questions fréquentes
 **Mon aîné de 4 ans ne comprend pas pourquoi il doit ranger ses jouets en hauteur. Comment faire ?**
-Une règle simple et constante (« les petites pièces vivent dans la boîte bleue ») est plus efficace qu’une longue explication. Montrez l’exemple et rangez avec lui.
+Une règle simple et constante (« les petites pièces vivent dans la boîte bleue ») est plus efficace qu’une longue explication. Montre l’exemple et range avec lui.
 
 **Les jouets de l’aîné peuvent-ils être transmis au cadet ?**
 Oui, quand le cadet atteint l’âge prévu, après vérification de l’état du jouet (pièces qui se détachent, piles, coutures). Les jouets anciens peuvent ne plus répondre aux normes actuelles.
 
 **À partir de quel âge le petit peut-il jouer avec les jeux des grands ?**
-Quand il a l’âge indiqué sur l’emballage. Avant, privilégiez les jeux communs adaptés au plus jeune.
+Quand il a l’âge indiqué sur l’emballage. Avant, privilégie les jeux communs adaptés au plus jeune.
 
 **Les billes sont-elles dangereuses pour un tout-petit ?**
 Les billes font partie des petits objets que Santé.fr conseille d’éloigner des jeunes enfants, car ils peuvent être avalés ou inhalés.
 
 ## Quand demander conseil
-Si votre enfant tousse brutalement, s’étouffe, respire bruyamment après avoir joué avec de petits objets, ou si vous pensez qu’il en a avalé un ou mis un dans son nez ou son oreille, faites-le examiner rapidement. ${URG}
+Si ton enfant tousse brutalement, s’étouffe, respire bruyamment après avoir joué avec de petits objets, ou si tu penses qu’il en a avalé un ou mis un dans son nez ou son oreille, fais-le examiner rapidement. ${URG}
 
 ${FIN}`,
   }),
@@ -214,8 +214,8 @@ ${FIN}`,
     body_md: `## En bref
 - Avaler une pile bouton est une **urgence médicale** : des lésions graves peuvent survenir en moins de deux heures.
 - Une **pile usagée reste dangereuse**.
-- Gardez toutes les piles bouton, **neuves comme usagées**, hors de portée des enfants.
-- Préférez les objets dont le **compartiment à piles se ferme par une vis** ou un système de verrouillage.
+- Garde toutes les piles bouton, **neuves comme usagées**, hors de portée des enfants.
+- Préfère les objets dont le **compartiment à piles se ferme par une vis** ou un système de verrouillage.
 
 ## Comprendre
 Les piles bouton sont de petites piles plates et rondes. Elles sont de plus en plus présentes dans les objets du quotidien, et les cas d’ingestion par de jeunes enfants ont fortement augmenté, selon le ministère chargé de la Santé. Entre 1999 et 2018, il recense 6 décès (dont 5 jeunes enfants) et 51 complications graves, et environ 4 500 appels aux centres antipoison sur ce sujet.
@@ -228,36 +228,36 @@ Côté jouets, la DGCCRF relève régulièrement des piles bouton accessibles da
 
 ## Au quotidien
 **Faire l’inventaire**
-- Faites le tour de la maison à la recherche des objets à piles bouton : salon (télécommandes), salle de bain (balance), chambre (veilleuse, réveil), entrée (porte-clés), sac à main.
-- Vérifiez que chaque compartiment est **solide et difficile à ouvrir**. S’il s’ouvre facilement, ne laissez pas l’objet à portée d’un enfant, ou fixez le couvercle.
+- Fais le tour de la maison à la recherche des objets à piles bouton : salon (télécommandes), salle de bain (balance), chambre (veilleuse, réveil), entrée (porte-clés), sac à main.
+- Vérifie que chaque compartiment est **solide et difficile à ouvrir**. S’il s’ouvre facilement, ne laisse pas l’objet à portée d’un enfant, ou fixe le couvercle.
 
 **Ranger et jeter**
-- Rangez les piles de rechange **dans leur emballage d’origine**, dans un placard fermé ou en hauteur. Des rappels de produits ont concerné des emballages pas assez résistants pour empêcher l’accès des enfants.
-- Ne laissez pas traîner les **piles usagées** sur un meuble ou dans un vide-poche : déposez-les rapidement dans un bac de collecte.
-- Changez les piles hors de la vue des enfants.
+- Range les piles de rechange **dans leur emballage d’origine**, dans un placard fermé ou en hauteur. Des rappels de produits ont concerné des emballages pas assez résistants pour empêcher l’accès des enfants.
+- Ne laisse pas traîner les **piles usagées** sur un meuble ou dans un vide-poche : dépose-les rapidement dans un bac de collecte.
+- Change les piles hors de la vue des enfants.
 
 **Choisir**
-- Au moment d’acheter un jouet ou un objet à piles, préférez un compartiment **fermé par une vis** ou un verrouillage.
-- Pour tout petit objet lumineux ou électronique, appliquez la même vérification : si la pile est accessible, l’objet reste hors de portée.
+- Au moment d’acheter un jouet ou un objet à piles, préfère un compartiment **fermé par une vis** ou un verrouillage.
+- Pour tout petit objet lumineux ou électronique, applique la même vérification : si la pile est accessible, l’objet reste hors de portée.
 
 **Prévenir l’entourage**
-Grands-parents, assistante maternelle, amis : parlez-leur des piles bouton : il suffit d’une montre ou d’une télécommande posée sur une table basse pour qu’un accident survienne.
+Grands-parents, assistante maternelle, amis : parle-leur des piles bouton : il suffit d’une montre ou d’une télécommande posée sur une table basse pour qu’un accident survienne.
 
 ## Questions fréquentes
 **Une pile vide peut-elle encore être dangereuse ?**
 Oui. Le ministère chargé de la Santé précise qu’une pile usagée reste dangereuse et peut provoquer le même type de lésions.
 
 **Comment savoir si mon enfant a avalé une pile ?**
-Souvent, il n’y a **aucun signe visible**. Si une pile a disparu, si un compartiment est ouvert ou si votre enfant a été vu avec une pile, considérez que l’ingestion est possible et appelez.
+Souvent, il n’y a **aucun signe visible**. Si une pile a disparu, si un compartiment est ouvert ou si ton enfant a été vu avec une pile, considère que l’ingestion est possible et appelle.
 
 **Les jouets vendus en France peuvent-ils avoir des piles accessibles ?**
-Ils ne devraient pas, mais la DGCCRF en trouve lors de ses contrôles. Vérifiez vous-même la solidité du compartiment.
+Ils ne devraient pas, mais la DGCCRF en trouve lors de ses contrôles. Vérifie toi-même la solidité du compartiment.
 
 **Faut-il préférer un jouet sans piles ?**
 Pour un tout-petit, un jouet simple sans électronique limite ce risque. Si le jouet a des piles, le compartiment vissé est la meilleure garantie.
 
 ## Quand demander conseil
-Au moindre doute d’ingestion, même sans symptôme : appelez **immédiatement** un centre antipoison ou le **15**, ne faites ni manger, ni boire, ni vomir l’enfant, et gardez l’emballage ou l’objet pour identifier la pile. ${URG}
+Au moindre doute d’ingestion, même sans symptôme : appelle **immédiatement** un centre antipoison ou le **15**, ne fais ni manger, ni boire, ni vomir l’enfant, et garde l’emballage ou l’objet pour identifier la pile. ${URG}
 
 ${FIN}`,
   }),
@@ -269,10 +269,10 @@ ${FIN}`,
     min_age_months: 0, max_age_months: 120, safety_critical: true,
     sources: [S.pilesBouton, S.pilesBoutonDgccrf],
     body_md: `## En bref
-- **Le simple doute suffit** : appelez immédiatement un centre antipoison ou le **15**, même si votre enfant va bien.
-- Signalez clairement qu’il s’agit d’**une pile bouton**.
-- **Ne donnez rien à manger ni à boire** et **ne faites pas vomir**.
-- Apportez l’**emballage ou l’objet** d’où provient la pile.
+- **Le simple doute suffit** : appelle immédiatement un centre antipoison ou le **15**, même si ton enfant va bien.
+- Signale clairement qu’il s’agit d’**une pile bouton**.
+- **Ne donne rien à manger ni à boire** et **ne fais pas vomir**.
+- Apporte l’**emballage ou l’objet** d’où provient la pile.
 
 ## Comprendre
 Avaler une pile bouton est une urgence médicale. Selon le ministère chargé de la Santé, des complications graves, parfois mortelles, peuvent apparaître **en moins de deux heures** : brûlure et perforation de l’œsophage, saignements brutaux et imprévisibles, perforation des voies respiratoires. La brûlure locale devient beaucoup plus sévère **après la deuxième heure**. Le traitement peut être lourd et laisser des séquelles.
@@ -283,31 +283,31 @@ C’est pourquoi on n’attend pas que l’enfant « montre quelque chose » : o
 
 ## Au quotidien
 **Les situations qui doivent alerter**
-- Vous trouvez votre enfant avec un objet dont le compartiment est ouvert et la pile manquante.
+- Tu trouves ton enfant avec un objet dont le compartiment est ouvert et la pile manquante.
 - Une pile a disparu de la table ou de son emballage.
-- Votre enfant dit, ou un autre enfant raconte, qu’il a « mangé » une pile.
-- Vous voyez une pile dans sa bouche et ne savez pas s’il en a avalé une autre.
+- Ton enfant dit, ou un autre enfant raconte, qu’il a « mangé » une pile.
+- Tu vois une pile dans sa bouche et ne sais pas s’il en a avalé une autre.
 
-**Ce que vous faites, dans l’ordre**
-1. **Appelez tout de suite** un centre antipoison ou le 15 (le 112 ou le 18 sont aussi possibles ; le 114 pour les personnes sourdes ou malentendantes).
-2. Dites « **pile bouton** » dès le début de l’appel, l’âge de l’enfant, l’heure probable et, si vous le savez, la taille de la pile.
-3. **Ne lui donnez rien** à manger ou à boire, sauf consigne contraire du médecin régulateur.
-4. **Ne le faites pas vomir.**
-5. Récupérez l’**objet, l’emballage ou une pile identique** : cela aide les médecins à connaître le type et la taille.
-6. Suivez les consignes : le plus souvent, l’enfant est orienté vers un service d’urgences désigné, auquel le centre antipoison transmet la conduite à tenir.
+**Ce que tu fais, dans l’ordre**
+1. **Appelle tout de suite** un centre antipoison ou le 15 (le 112 ou le 18 sont aussi possibles ; le 114 pour les personnes sourdes ou malentendantes).
+2. Dis « **pile bouton** » dès le début de l’appel, l’âge de l’enfant, l’heure probable et, si tu le sais, la taille de la pile.
+3. **Ne lui donne rien** à manger ou à boire, sauf consigne contraire du médecin régulateur.
+4. **Ne le fais pas vomir.**
+5. Récupère l’**objet, l’emballage ou une pile identique** : cela aide les médecins à connaître le type et la taille.
+6. Suis les consignes : le plus souvent, l’enfant est orienté vers un service d’urgences désigné, auquel le centre antipoison transmet la conduite à tenir.
 
 **Pendant le trajet**
-Restez auprès de l’enfant et suivez les consignes reçues au téléphone. Si l’on vous a indiqué un service d’urgences, rendez-vous-y directement plutôt que chez un médecin de ville.
+Reste auprès de l’enfant et suis les consignes reçues au téléphone. Si l’on t’a indiqué un service d’urgences, rendez-vous-y directement plutôt que chez un médecin de ville.
 
 **Si l’enfant s’étouffe**
-S’il ne peut plus respirer, tousser ni parler, il s’agit d’un étouffement : appelez le 15 ou le 112 et suivez les consignes de l’opérateur.
+S’il ne peut plus respirer, tousser ni parler, il s’agit d’un étouffement : appelle le 15 ou le 112 et suis les consignes de l’opérateur.
 
 ## Questions fréquentes
 **Mon enfant joue normalement, je ne suis pas sûr qu’il ait avalé la pile. J’attends ?**
 Non. Les autorités sanitaires demandent d’appeler même sans certitude et même sans symptôme, car les lésions progressent sans bruit.
 
 **Et s’il a avalé une pile plate de montre, très petite ?**
-Appelez quand même. Seuls les professionnels peuvent évaluer la situation selon la taille, l’âge et le délai.
+Appelle quand même. Seuls les professionnels peuvent évaluer la situation selon la taille, l’âge et le délai.
 
 **Le centre antipoison est-il joignable la nuit ?**
 Les centres antipoison répondent en permanence ; leurs coordonnées figurent sur centres-antipoison.net. Le 15 reste joignable à tout moment.
@@ -316,17 +316,17 @@ Les centres antipoison répondent en permanence ; leurs coordonnées figurent su
 Non : une pile usagée peut provoquer le même type de lésions.
 
 **Comment éviter que cela se reproduise ?**
-Faites l’inventaire des objets à piles bouton, choisissez des compartiments vissés et rangez les piles, neuves ou usagées, hors de portée.
+Fais l’inventaire des objets à piles bouton, choisis des compartiments vissés et range les piles, neuves ou usagées, hors de portée.
 
 ## Quand demander conseil
-Toute suspicion d’ingestion de pile bouton justifie un appel **immédiat**, de jour comme de nuit, même si votre enfant ne présente aucun signe. Si vous avez un doute après coup sur un épisode passé inaperçu, appelez aussi : seul un professionnel peut évaluer la situation. ${URG}
+Toute suspicion d’ingestion de pile bouton justifie un appel **immédiat**, de jour comme de nuit, même si ton enfant ne présente aucun signe. Si tu as un doute après coup sur un épisode passé inaperçu, appelle aussi : seul un professionnel peut évaluer la situation. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'aimants-billes-aimantees-danger-enfants',
     title: 'Aimants et billes aimantées : un danger sous-estimé pour les enfants',
-    summary: 'Pourquoi deux aimants avalés peuvent perforer l’intestin, quels objets en contiennent, et que faire si vous soupçonnez une ingestion.',
+    summary: 'Pourquoi deux aimants avalés peuvent perforer l’intestin, quels objets en contiennent, et que faire si tu soupçonnes une ingestion.',
     category: 'securite', tags: ['aimants', 'billes aimantées', 'billes magnétiques', 'jeu de construction magnétique', 'objet anti-stress', 'ingestion', 'perforation', 'moins de 14 ans'],
     min_age_months: 0, max_age_months: 168, safety_critical: true,
     sources: [S.billesAimantees, S.jouetsAge, S.conseilsJouets],
@@ -334,7 +334,7 @@ ${FIN}`,
 - Des **billes aimantées avalées** peuvent s’attirer à travers la paroi de l’intestin, provoquer une occlusion et des **perforations** : les cas les plus graves nécessitent une chirurgie lourde.
 - Elles sont bien plus dangereuses qu’un objet inerte de même taille (perle de verre, pièce de monnaie).
 - Les objets « anti-stress » ou de bureau à billes magnétiques ne sont généralement **pas destinés aux moins de 14 ans**.
-- En cas de doute d’ingestion, **même non confirmée**, appelez un centre antipoison ; en cas de signe de gravité, le **15** ou le **112**.
+- En cas de doute d’ingestion, **même non confirmée**, appelle un centre antipoison ; en cas de signe de gravité, le **15** ou le **112**.
 
 ## Comprendre
 En 2021, Santé publique France, la Direction générale de la santé, la DGCCRF et l’Anses ont alerté sur deux cas graves chez des enfants de 3 ans ou moins, qui avaient avalé des billes aimantées de 3 à 5 mm provenant d’objets anti-stress pour adultes. Les autorités rappellent aussi que les billes de certains jeux de construction peuvent être avalées par de jeunes enfants.
@@ -346,28 +346,28 @@ Côté réglementation, les produits à billes magnétiques (blocs de constructi
 Les autorités soulignent que des objets pour adultes, des jeux de construction « 14 ans et plus » ou des jouets magnétiques pour les 3-14 ans peuvent devenir très dangereux lorsqu’un plus jeune enfant s’en empare. Les enfants peuvent aussi confondre les billes avec des **bonbons**.
 
 ## Au quotidien
-- **Repérez les aimants** de la maison : objets anti-stress, sculptures de bureau, aimants de réfrigérateur dont l’aimant se détache, jeux de construction magnétiques, tableaux et lettres aimantées, accessoires de décoration.
-- Gardez les objets à billes magnétiques **strictement hors de portée** des enfants, rangés dans une boîte fermée.
-- Pour un jeu de construction magnétique, vérifiez l’**âge indiqué** et inspectez régulièrement les pièces : un aimant qui se détache d’une pièce cassée doit être retiré immédiatement.
-- Comptez les billes après usage d’un jeu qui en contient, avec l’aîné : une bille manquante se cherche tout de suite.
-- **Expliquez** aux enfants plus grands (et aux adolescents) que ces billes ne se mettent jamais dans la bouche.
-- Avant d’offrir un gadget magnétique, vérifiez qu’il n’y a pas de jeune enfant dans le foyer.
+- **Repère les aimants** de la maison : objets anti-stress, sculptures de bureau, aimants de réfrigérateur dont l’aimant se détache, jeux de construction magnétiques, tableaux et lettres aimantées, accessoires de décoration.
+- Garde les objets à billes magnétiques **strictement hors de portée** des enfants, rangés dans une boîte fermée.
+- Pour un jeu de construction magnétique, vérifie l’**âge indiqué** et inspecte régulièrement les pièces : un aimant qui se détache d’une pièce cassée doit être retiré immédiatement.
+- Compte les billes après usage d’un jeu qui en contient, avec l’aîné : une bille manquante se cherche tout de suite.
+- **Explique** aux enfants plus grands (et aux adolescents) que ces billes ne se mettent jamais dans la bouche.
+- Avant d’offrir un gadget magnétique, vérifie qu’il n’y a pas de jeune enfant dans le foyer.
 
 ## Questions fréquentes
 **Un seul aimant avalé est-il moins grave ?**
-Le risque majeur vient de l’attraction entre plusieurs aimants ou avec un objet métallique, mais on ne sait pas toujours combien de billes ont été avalées. Dans tous les cas, demandez un avis sans tarder.
+Le risque majeur vient de l’attraction entre plusieurs aimants ou avec un objet métallique, mais on ne sait pas toujours combien de billes ont été avalées. Dans tous les cas, demande un avis sans tarder.
 
 **Mon enfant semble en pleine forme après avoir peut-être avalé une bille. J’attends ?**
 Non. Les autorités demandent d’appeler un centre antipoison dès la **suspicion**, même si l’ingestion n’est pas confirmée.
 
 **Les lettres aimantées pour réfrigérateur sont-elles concernées ?**
-Tout aimant accessible peut être avalé. Vérifiez que les aimants sont bien intégrés et ne se détachent pas, et gardez les plus petits hors de portée des tout-petits.
+Tout aimant accessible peut être avalé. Vérifie que les aimants sont bien intégrés et ne se détachent pas, et garde les plus petits hors de portée des tout-petits.
 
 **Que deviennent les produits dangereux ?**
 Les produits déclarés dangereux font l’objet de rappels par la DGCCRF, publiés sur RappelConso.
 
 ## Quand demander conseil
-En cas de suspicion d’ingestion d’aimants : contactez immédiatement un centre antipoison (centres-antipoison.net). Si votre enfant a mal au ventre, vomit, s’étouffe ou paraît mal, appelez le 15 ou le 112. ${URG}
+En cas de suspicion d’ingestion d’aimants : contacte immédiatement un centre antipoison (centres-antipoison.net). Si ton enfant a mal au ventre, vomit, s’étouffe ou paraît mal, appelle le 15 ou le 112. ${URG}
 
 ${FIN}`,
   }),
@@ -398,11 +398,11 @@ Sur les risques, en revanche, les signaux sont clairs. La Société française d
 - Tout lien autour du cou du bébé. Pour dormir, l’Assurance Maladie recommande un lit dégagé, sans oreiller, couette ni peluche volumineuse.
 
 **Ce qu’on peut proposer**
-- Un **anneau de dentition** en matière élastique, passé au réfrigérateur. Évitez le congélateur : le froid intense peut brûler la gencive.
+- Un **anneau de dentition** en matière élastique, passé au réfrigérateur. Évite le congélateur : le froid intense peut brûler la gencive.
 - Demander conseil au pharmacien ou au médecin pour les produits à appliquer sur la gencive.
 
-**Si vous utilisez une attache-sucette**
-Choisissez un modèle prévu pour cet usage, qui s’accroche au vêtement et jamais autour du cou, et vérifiez régulièrement son état. Pour le sommeil, gardez un lit dégagé, comme le recommande l’Assurance Maladie.
+**Si tu utilises une attache-sucette**
+Choisis un modèle prévu pour cet usage, qui s’accroche au vêtement et jamais autour du cou, et vérifie régulièrement son état. Pour le sommeil, garde un lit dégagé, comme le recommande l’Assurance Maladie.
 
 **Le cadeau de naissance**
 Une médaille de baptême ou une gourmette offerte par la famille peut être gardée précieusement… dans une boîte, pour plus tard.
@@ -415,13 +415,13 @@ Le risque d’étranglement ou d’étouffement par les perles existe aussi en j
 Le danger tient à la forme (un lien et des petites perles), quel que soit le matériau. L’enquête de 2015 de la DGCCRF a d’ailleurs aussi identifié un modèle en noisetier.
 
 **Mon bébé est très gêné par ses dents : que faire ?**
-Proposez l’anneau réfrigéré, des câlins, et parlez-en au médecin ou au pharmacien. Si votre bébé a de la fièvre, ne l’attribuez pas d’emblée aux dents.
+Propose l’anneau réfrigéré, des câlins, et parles-en au médecin ou au pharmacien. Si ton bébé a de la fièvre, ne l’attribue pas d’emblée aux dents.
 
 **On m’a offert un collier d’ambre en pharmacie : est-ce gage de sécurité ?**
 Non. Le lieu de vente ne change pas le risque. Les auteurs d’une étude citée par Santé.fr ont d’ailleurs proposé d’interdire leur vente en pharmacie.
 
 ## Quand demander conseil
-Si votre bébé a de la fièvre, refuse de boire, ou si quelque chose vous inquiète pendant une poussée dentaire, consultez votre médecin. Si un lien s’est enroulé autour de son cou ou s’il a avalé une perle et respire mal, appelez immédiatement. ${URG}
+Si ton bébé a de la fièvre, refuse de boire, ou si quelque chose t’inquiète pendant une poussée dentaire, consulte ton médecin. Si un lien s’est enroulé autour de son cou ou s’il a avalé une perle et respire mal, appelle immédiatement. ${URG}
 
 ${FIN}`,
   }),
@@ -434,8 +434,8 @@ ${FIN}`,
     sources: [S.peluches, S.dgccrfControle, S.coucher],
     body_md: `## En bref
 - Une peluche pour tout-petit ne doit pas avoir de **petits éléments** qui s’arrachent, des **coutures** trop fragiles ni de matériaux inflammables.
-- Avant l’achat : vérifiez **yeux et nez bien fixés**, coutures solides, **poils qui ne se détachent pas** quand on secoue.
-- Évitez les peluches « en situation » avec de **petits accessoires** attachés (skis, échelle, hotte…).
+- Avant l’achat : vérifie **yeux et nez bien fixés**, coutures solides, **poils qui ne se détachent pas** quand on secoue.
+- Évite les peluches « en situation » avec de **petits accessoires** attachés (skis, échelle, hotte…).
 - Dans le lit d’un bébé, pas de **peluche volumineuse** : elle pourrait recouvrir son visage.
 
 ## Comprendre
@@ -447,41 +447,41 @@ Pour le sommeil, l’Assurance Maladie déconseille dans le lit du bébé les or
 
 ## Au quotidien
 **En magasin, le test en cinq gestes**
-1. **Regardez** les accessoires : pompons, feutrine collée, rubans, boutons. Ce qui peut se détacher peut être avalé.
-2. **Tirez doucement** sur les yeux, le nez, les oreilles : ils doivent être solidement fixés.
-3. **Inspectez les coutures** et la qualité du tissu : le rembourrage ne doit pas être accessible.
-4. **Secouez** la peluche : les poils ne doivent pas se détacher.
-5. **Choisissez la taille** : une peluche trop grande sera difficile à manipuler pour un petit.
+1. **Regarde** les accessoires : pompons, feutrine collée, rubans, boutons. Ce qui peut se détacher peut être avalé.
+2. **Tire doucement** sur les yeux, le nez, les oreilles : ils doivent être solidement fixés.
+3. **Inspecte les coutures** et la qualité du tissu : le rembourrage ne doit pas être accessible.
+4. **Secoue** la peluche : les poils ne doivent pas se détacher.
+5. **Choisis la taille** : une peluche trop grande sera difficile à manipuler pour un petit.
 
 La DGCCRF conseille de préférer une peluche non emballée, que l’on peut toucher.
 
 **À la maison, au fil du temps**
-- Inspectez régulièrement les peluches les plus aimées : une couture qui lâche, un œil qui bouge, une étiquette qui se déchire.
-- Réparez solidement ou mettez de côté une peluche abîmée.
-- Suivez les consignes de lavage de l’étiquette.
-- Rangez à part les peluches de collection, les poupées décoratives et celles qui portent de petits accessoires.
+- Inspecte régulièrement les peluches les plus aimées : une couture qui lâche, un œil qui bouge, une étiquette qui se déchire.
+- Répare solidement ou mets de côté une peluche abîmée.
+- Suis les consignes de lavage de l’étiquette.
+- Range à part les peluches de collection, les poupées décoratives et celles qui portent de petits accessoires.
 
 **Pour dormir**
-Pour un bébé, le lit reste dégagé : sur le dos, dans une gigoteuse adaptée, sans peluche volumineuse. Si vous souhaitez lui laisser un doudou, demandez conseil à votre médecin ou à la PMI sur le moment et le type d’objet.
+Pour un bébé, le lit reste dégagé : sur le dos, dans une gigoteuse adaptée, sans peluche volumineuse. Si tu souhaites lui laisser un doudou, demande conseil à ton médecin ou à la PMI sur le moment et le type d’objet.
 
 **Les bouillottes peluches**
-La DGCCRF signale un risque de brûlure. Si vous en utilisez une, respectez strictement la notice (temps et puissance de chauffe) et vérifiez la température avant de la donner à l’enfant.
+La DGCCRF signale un risque de brûlure. Si tu en utilises une, respecte strictement la notice (temps et puissance de chauffe) et vérifie la température avant de la donner à l’enfant.
 
 ## Questions fréquentes
 **Une peluche avec un grelot est-elle adaptée à un bébé ?**
-Elle doit avoir des coutures assez solides pour que le grelot reste inaccessible. Vérifiez-les régulièrement.
+Elle doit avoir des coutures assez solides pour que le grelot reste inaccessible. Vérifie-les régulièrement.
 
 **Les poupées aux cheveux longs ou aux petits vêtements conviennent-elles aux tout-petits ?**
-Regardez l’âge indiqué : les petits accessoires (chaussures, barrettes) et certaines poupées de collection ne conviennent pas aux moins de 3 ans.
+Regarde l’âge indiqué : les petits accessoires (chaussures, barrettes) et certaines poupées de collection ne conviennent pas aux moins de 3 ans.
 
 **La peluche gagnée à la fête foraine est-elle sûre ?**
-Elle doit respecter les mêmes règles, mais la DGCCRF relève davantage de manquements chez certains vendeurs non spécialisés. Faites le test des cinq gestes.
+Elle doit respecter les mêmes règles, mais la DGCCRF relève davantage de manquements chez certains vendeurs non spécialisés. Fais le test des cinq gestes.
 
 **Faut-il laver une peluche neuve ?**
-Suivez simplement les consignes d’entretien de l’étiquette.
+Suis simplement les consignes d’entretien de l’étiquette.
 
 ## Quand demander conseil
-Si votre enfant a avalé un morceau de rembourrage, un œil ou un petit élément et tousse, s’étouffe ou respire mal, appelez immédiatement. Pour une brûlure liée à une bouillotte, refroidissez sous l’eau tempérée et demandez un avis médical. ${URG}
+Si ton enfant a avalé un morceau de rembourrage, un œil ou un petit élément et tousse, s’étouffe ou respire mal, appelle immédiatement. Pour une brûlure liée à une bouillotte, refroidis sous l’eau tempérée et demande un avis médical. ${URG}
 
 ${FIN}`,
   }),
@@ -495,50 +495,50 @@ ${FIN}`,
     body_md: `## En bref
 - La DGCCRF le rappelle : **les jouets anciens peuvent ne pas répondre aux normes de sécurité actuelles**.
 - Les vieux jouets à **piles anciennes, abîmées ou mal remplacées** peuvent présenter un danger.
-- Les articles **d’occasion ne sont pas soumis** à la déclaration de rappel sur RappelConso : c’est à vous de vérifier.
-- Sans notice ni emballage, l’âge et les avertissements sont souvent perdus : **examinez le jouet** avec un regard de tout-petit.
+- Les articles **d’occasion ne sont pas soumis** à la déclaration de rappel sur RappelConso : c’est à toi de vérifier.
+- Sans notice ni emballage, l’âge et les avertissements sont souvent perdus : **examine le jouet** avec un regard de tout-petit.
 
 ## Comprendre
 La seconde main est économique et écologique, et les jouets de famille ont souvent une grande valeur affective. Mais un jouet a pu être conçu à une époque où les règles étaient différentes, ou s’user avec le temps : plastique devenu cassant, peinture qui s’écaille, coutures fatiguées, compartiment à piles fragilisé.
 
 La DGCCRF conseille de préférer les plastiques colorés dans la masse à la peinture qui peut s’écailler, les mécanismes simples pour les jeunes enfants, et de vérifier que les piles ne sont pas facilement accessibles. Elle précise que les vieux jouets, notamment à piles anciennes, abîmées ou mal remplacées, peuvent ne plus respecter les normes et présenter un danger.
 
-Autre point méconnu : selon Service-public.fr, les articles d’occasion, reconditionnés ou les antiquités ne sont pas soumis à la déclaration sur RappelConso. Pour un jouet encore récent, vous pouvez néanmoins rechercher s’il a fait l’objet d’un rappel lorsqu’il était neuf.
+Autre point méconnu : selon Service-public.fr, les articles d’occasion, reconditionnés ou les antiquités ne sont pas soumis à la déclaration sur RappelConso. Pour un jouet encore récent, tu peux néanmoins rechercher s’il a fait l’objet d’un rappel lorsqu’il était neuf.
 
 ## Au quotidien
 **Au vide-grenier ou sur une plateforme de seconde main**
-- Demandez l’**âge prévu** et la notice si elle existe ; regardez si le **marquage CE** est encore visible.
-- Manipulez le jouet : pièces qui bougent, éléments qui se détachent, arêtes coupantes, fissures.
-- Pour un jouet à piles : ouvrez le compartiment. Traces de coulure, couvercle qui ne tient plus, vis manquante : prudence.
+- Demande l’**âge prévu** et la notice si elle existe ; regarde si le **marquage CE** est encore visible.
+- Manipule le jouet : pièces qui bougent, éléments qui se détachent, arêtes coupantes, fissures.
+- Pour un jouet à piles : ouvre le compartiment. Traces de coulure, couvercle qui ne tient plus, vis manquante : prudence.
 - Pour une peluche : coutures, yeux, rembourrage.
-- Évitez les jouets dont vous ne pouvez pas évaluer l’état (lots fermés, photos floues).
+- Évite les jouets dont tu ne peux pas évaluer l’état (lots fermés, photos floues).
 
 **Pour les jouets hérités de la famille**
-- Faites un tri : certains seront des **objets souvenirs**, à exposer en hauteur ou à ressortir quand l’enfant sera plus grand, sous surveillance.
-- Retirez les **piles anciennes** et ne remettez en service un jouet électrique que s’il est en bon état.
-- Méfiez-vous des jouets peints anciens dont la peinture s’effrite et des petites pièces (billes, figurines, accessoires de dînette miniatures) pour un enfant de moins de 3 ans.
+- Fais un tri : certains seront des **objets souvenirs**, à exposer en hauteur ou à ressortir quand l’enfant sera plus grand, sous surveillance.
+- Retire les **piles anciennes** et ne remets en service un jouet électrique que s’il est en bon état.
+- Méfie-toi des jouets peints anciens dont la peinture s’effrite et des petites pièces (billes, figurines, accessoires de dînette miniatures) pour un enfant de moins de 3 ans.
 
 **Nettoyer**
-Lavez ou nettoyez selon la matière. Un jouet propre en apparence n’est pas forcément en bon état : l’inspection reste indispensable.
+Lave ou nettoie selon la matière. Un jouet propre en apparence n’est pas forcément en bon état : l’inspection reste indispensable.
 
-**Donner ou revendre à votre tour**
-Joignez la notice si vous l’avez, signalez l’âge prévu et les éventuels défauts, et écartez les jouets cassés.
+**Donner ou revendre à ton tour**
+Joins la notice si tu l’as, signale l’âge prévu et les éventuels défauts, et écarte les jouets cassés.
 
 ## Questions fréquentes
 **Le train électrique de mon enfance peut-il servir à mon fils de 5 ans ?**
-Peut-être, sous surveillance et après vérification de l’état des câbles, du transformateur et des petites pièces. Il ne répond probablement pas aux normes actuelles : traitez-le comme un objet à utiliser avec un adulte.
+Peut-être, sous surveillance et après vérification de l’état des câbles, du transformateur et des petites pièces. Il ne répond probablement pas aux normes actuelles : traite-le comme un objet à utiliser avec un adulte.
 
 **Comment savoir si un jouet d’occasion a été rappelé ?**
-Si vous connaissez le fabricant et le modèle, recherchez-le sur RappelConso, rubrique jouets. L’absence de résultat ne garantit pas la sécurité d’un jouet ancien ou usé.
+Si tu connais le fabricant et le modèle, recherche-le sur RappelConso, rubrique jouets. L’absence de résultat ne garantit pas la sécurité d’un jouet ancien ou usé.
 
 **Les jouets en bois anciens sont-ils plus sûrs ?**
-Pas forcément : peinture qui s’écaille, échardes, petites pièces ou ficelles peuvent poser problème. Examinez-les comme les autres.
+Pas forcément : peinture qui s’écaille, échardes, petites pièces ou ficelles peuvent poser problème. Examine-les comme les autres.
 
 **Un jouet sans âge indiqué peut-il convenir à un bébé ?**
-Seulement s’il ne présente aucune petite pièce, aucun élément détachable, aucun cordon long et aucune pile accessible. Dans le doute, réservez-le aux plus grands.
+Seulement s’il ne présente aucune petite pièce, aucun élément détachable, aucun cordon long et aucune pile accessible. Dans le doute, réserve-le aux plus grands.
 
 ## Quand demander conseil
-Si un jouet ancien se casse et que votre enfant a pu avaler un morceau, une bille ou une pile, ou s’il s’est blessé, demandez un avis médical sans tarder. ${URG}
+Si un jouet ancien se casse et que ton enfant a pu avaler un morceau, une bille ou une pile, ou s’il s’est blessé, demande un avis médical sans tarder. ${URG}
 
 ${FIN}`,
   }),
@@ -552,8 +552,8 @@ ${FIN}`,
     body_md: `## En bref
 - La DGCCRF réalise chaque année des **achats « mystères »** sur les places de marché : en 2022, une part importante des jouets analysés étaient non conformes, et beaucoup dangereux.
 - Les problèmes viennent souvent de **vendeurs tiers**, fréquemment situés hors d’Europe, qui méconnaissent les normes.
-- Choisissez un **site de confiance**, identifiez **qui vend** réellement, et lisez l’âge et les avertissements sur la fiche produit.
-- À réception, vérifiez le jouet comme en magasin : **marquage CE, notice en français, avertissements**.
+- Choisis un **site de confiance**, identifie **qui vend** réellement, et lis l’âge et les avertissements sur la fiche produit.
+- À réception, vérifie le jouet comme en magasin : **marquage CE, notice en français, avertissements**.
 
 ## Comprendre
 Les jouets se vendent aussi en ligne, sur des sites spécialisés ou des places de marché. Les sites de vente à distance doivent afficher certaines informations obligatoires, rappelle la DGCCRF. Pourtant, ses contrôles montrent que l’achat en ligne demande une vigilance particulière.
@@ -564,16 +564,16 @@ Service-public.fr indique aussi qu’en septembre 2025, la DGCCRF et les autorit
 
 ## Au quotidien
 **Avant de commander**
-- Distinguez le **site** du **vendeur** : sur une place de marché, le jouet peut être vendu par une entreprise tierce. Regardez son nom, son pays, ses coordonnées.
-- Lisez la fiche : **âge minimal**, avertissements (« ne convient pas aux moins de 36 mois »…), mention du marquage CE, photos de l’emballage.
-- Comme le conseille la DGCCRF, choisissez un **site de confiance**.
+- Distingue le **site** du **vendeur** : sur une place de marché, le jouet peut être vendu par une entreprise tierce. Regarde son nom, son pays, ses coordonnées.
+- Lis la fiche : **âge minimal**, avertissements (« ne convient pas aux moins de 36 mois »…), mention du marquage CE, photos de l’emballage.
+- Comme le conseille la DGCCRF, choisis un **site de confiance**.
 - Une description approximative, sans âge ni avertissement, ou mal traduite, est un signal d’alerte.
-- Vérifiez sur **RappelConso** si le produit fait l’objet d’un rappel.
+- Vérifie sur **RappelConso** si le produit fait l’objet d’un rappel.
 
 **À la réception**
-- Examinez l’emballage : marquage CE, âge, avertissements, nom et adresse du fabricant ou de l’importateur, notice en français.
-- Inspectez le jouet : petites pièces détachables, compartiment à piles non vissé, aimants accessibles, cordons longs sur un déguisement.
-- Si quelque chose cloche, **ne le donnez pas à l’enfant** : contactez le vendeur pour un retour, et signalez le produit.
+- Examine l’emballage : marquage CE, âge, avertissements, nom et adresse du fabricant ou de l’importateur, notice en français.
+- Inspecte le jouet : petites pièces détachables, compartiment à piles non vissé, aimants accessibles, cordons longs sur un déguisement.
+- Si quelque chose cloche, **ne le donne pas à l’enfant** : contacte le vendeur pour un retour, et signale le produit.
 
 **Les catégories à surveiller particulièrement**
 Les contrôles de la DGCCRF citent souvent : déguisements (inflammabilité, cordons), peluches (rembourrage accessible), jouets lumineux (intensité des LED), jouets à piles bouton, pâtes à modeler et peintures au doigt (substances chimiques).
@@ -586,20 +586,20 @@ Non. La plateforme héberge souvent des vendeurs tiers ; les contrôles de la DG
 Sur SignalConso, rubrique dédiée aux achats sur internet. La DGCCRF peut ensuite intervenir.
 
 **Le jouet ne porte pas de marquage CE alors que la photo en montrait un : que faire ?**
-Ne l’utilisez pas, contactez le vendeur pour un retour et signalez-le sur SignalConso.
+Ne l’utilise pas, contacte le vendeur pour un retour et signale-le sur SignalConso.
 
 **Les jouets vendus hors Union européenne respectent-ils nos normes ?**
 Rien ne le garantit : Service-public.fr recommande une vigilance particulière pour ces achats.
 
 ## Quand demander conseil
-Si un jouet acheté en ligne a blessé votre enfant, provoqué une réaction cutanée, ou si votre enfant en a avalé un élément, demandez un avis médical et conservez le produit et la commande pour le signalement. ${URG}
+Si un jouet acheté en ligne a blessé ton enfant, provoqué une réaction cutanée, ou si ton enfant en a avalé un élément, demande un avis médical et conserve le produit et la commande pour le signalement. ${URG}
 
 ${FIN}`,
   }),
   // ------------------------------------------------------------ rappels et signalements
   a({
     slug: 'rappel-de-jouet-rappelconso-que-faire',
-    title: 'Un jouet de votre enfant est rappelé : s’informer et réagir avec RappelConso',
+    title: 'Un jouet de ton enfant est rappelé : s’informer et réagir avec RappelConso',
     summary: 'Comment savoir si un jouet est concerné par un rappel, vérifier le lot, et obtenir un remboursement ou un échange.',
     category: 'securite', tags: ['rappel jouet', 'RappelConso', 'rappel conso', 'jouet rappelé', 'numéro de lot', 'remboursement', 'retrait', 'alerte produit'],
     min_age_months: 0, max_age_months: 168, journeys: ['pregnant', 'newborn', 'child'],
@@ -607,8 +607,8 @@ ${FIN}`,
     body_md: `## En bref
 - **RappelConso** est le site public qui recense les rappels de produits dangereux, alimentaires et non alimentaires, dont les **jouets**.
 - Un **retrait** concerne un produit encore en magasin ; un **rappel**, un produit déjà vendu, que l’on rapporte ou détruit.
-- Si vous possédez un jouet rappelé : **mettez-le de côté**, vérifiez le **lot** et suivez les consignes de la fiche.
-- Gardez **emballages, tickets et notices** des jouets récents : ils facilitent l’identification et le remboursement.
+- Si tu possèdes un jouet rappelé : **mets-le de côté**, vérifie le **lot** et suis les consignes de la fiche.
+- Garde **emballages, tickets et notices** des jouets récents : ils facilitent l’identification et le remboursement.
 
 ## Comprendre
 Lorsqu’un fabricant, un importateur ou un distributeur décide de rappeler un produit pour une raison de sécurité, il doit le déclarer sur RappelConso, le site géré par la DGCCRF, et en informer les consommateurs. Ces mesures peuvent faire suite à un contrôle des autorités, à un signalement, à un accident ou à une alerte nationale ou européenne.
@@ -619,64 +619,64 @@ Un rappel vise en général des **lots précis**, vendus dans certaines enseigne
 
 ## Au quotidien
 **S’informer**
-- Sur **RappelConso** : recherche par catégorie (rubrique jouets), filtres par date ou type de risque, fiche détaillée pour chaque rappel. Vous pouvez aussi recevoir des **alertes** dès la publication d’un rappel.
+- Sur **RappelConso** : recherche par catégorie (rubrique jouets), filtres par date ou type de risque, fiche détaillée pour chaque rappel. Tu peux aussi recevoir des **alertes** dès la publication d’un rappel.
 - En magasin : affichettes en rayon, mention sur le ticket de caisse, SMS ou courriel aux détenteurs de carte de fidélité.
 - Par la presse, qui relaie parfois les alertes.
 - Avant d’acheter, la DGCCRF conseille de consulter RappelConso pour vérifier qu’un jouet n’est pas concerné.
 
-**Si un jouet que vous possédez est rappelé**
-1. **Retirez-le** des mains de l’enfant et mettez-le hors de portée.
-2. **Comparez** avec la fiche : photo, nom, numéro de lot ou référence, distributeur, période de vente.
-3. **Suivez les instructions** : retour en magasin pour remboursement ou échange, destruction selon les consignes, ou contact avec le service client.
-4. **Conservez les preuves d’achat** (ticket, photos) et l’emballage.
-5. **Prévenez votre entourage** : le même jouet a pu être offert aux cousins, à la crèche, chez l’assistante maternelle.
+**Si un jouet que tu possèdes est rappelé**
+1. **Retire-le** des mains de l’enfant et mets-le hors de portée.
+2. **Compare** avec la fiche : photo, nom, numéro de lot ou référence, distributeur, période de vente.
+3. **Suis les instructions** : retour en magasin pour remboursement ou échange, destruction selon les consignes, ou contact avec le service client.
+4. **Conserve les preuves d’achat** (ticket, photos) et l’emballage.
+5. **Préviens ton entourage** : le même jouet a pu être offert aux cousins, à la crèche, chez l’assistante maternelle.
 
 **Une astuce d’organisation**
-Gardez dans une pochette les tickets et notices des jouets de valeur ou électroniques, ou photographiez les étiquettes avec le numéro de lot.
+Garde dans une pochette les tickets et notices des jouets de valeur ou électroniques, ou photographie les étiquettes avec le numéro de lot.
 
 ## Questions fréquentes
 **Le jouet n’a jamais posé de problème chez nous. Faut-il quand même le rendre ?**
 Oui. Un rappel signifie qu’un risque a été identifié pour ce produit ; le fait qu’aucun incident ne soit survenu ne protège pas des suivants.
 
 **Je n’ai plus le ticket de caisse. Puis-je être remboursé ?**
-La fiche RappelConso précise les modalités propres à chaque rappel, dans sa rubrique d’informations pratiques. Renseignez-vous auprès du magasin indiqué.
+La fiche RappelConso précise les modalités propres à chaque rappel, dans sa rubrique d’informations pratiques. Renseigne-toi auprès du magasin indiqué.
 
 **Mon enfant a joué avec le jouet rappelé : que dois-je surveiller ?**
-Selon le risque décrit (petites pièces, substance chimique, pile accessible…), surveillez son état. En cas de symptôme inhabituel, demandez conseil à un professionnel de santé.
+Selon le risque décrit (petites pièces, substance chimique, pile accessible…), surveille son état. En cas de symptôme inhabituel, demande conseil à un professionnel de santé.
 
 **Existe-t-il des alertes au niveau européen ?**
 Oui, le système **Safety Gate** de la Commission européenne publie chaque semaine une liste de produits dangereux signalés dans l’Union.
 
 ## Quand demander conseil
-Si votre enfant a été exposé au défaut décrit dans le rappel et présente un symptôme inhabituel, consultez votre médecin. En cas d’ingestion d’une pile, d’un aimant ou d’une petite pièce, ou de gêne respiratoire, appelez sans attendre. ${URG}
+Si ton enfant a été exposé au défaut décrit dans le rappel et présente un symptôme inhabituel, consulte ton médecin. En cas d’ingestion d’une pile, d’un aimant ou d’une petite pièce, ou de gêne respiratoire, appelle sans attendre. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'signaler-jouet-dangereux-signalconso',
-    title: 'Un jouet vous semble dangereux ou a blessé votre enfant : comment le signaler',
-    summary: 'SignalConso, DDPP, portail des effets indésirables : à qui s’adresser, quelles informations garder, et ce que devient votre signalement.',
+    title: 'Un jouet te semble dangereux ou a blessé ton enfant : comment le signaler',
+    summary: 'SignalConso, DDPP, portail des effets indésirables : à qui s’adresser, quelles informations garder, et ce que devient ton signalement.',
     category: 'vie-pratique', tags: ['signaler un jouet', 'SignalConso', 'jouet dangereux', 'accident jouet', 'DDPP', 'réclamation', 'DGCCRF', 'litige'],
     min_age_months: 0, max_age_months: 168,
     sources: [S.retraitsRappels, S.incRappels, S.jouetsAge],
     body_md: `## En bref
 - **SignalConso** permet de signaler en quelques clics un défaut de sécurité, un produit défectueux ou un problème avec un vendeur, en magasin comme en ligne.
-- Pour un **produit non alimentaire** comme un jouet, vous pouvez aussi saisir la DGCCRF ou la **direction départementale de protection des populations** (DDPP ou DDETSPP).
-- **Conservez** le jouet, l’emballage, la notice, la preuve d’achat et des photos.
-- D’abord, **mettez l’enfant à l’abri** et, s’il est blessé, faites-le soigner.
+- Pour un **produit non alimentaire** comme un jouet, tu peux aussi saisir la DGCCRF ou la **direction départementale de protection des populations** (DDPP ou DDETSPP).
+- **Conserve** le jouet, l’emballage, la notice, la preuve d’achat et des photos.
+- D’abord, **mets l’enfant à l’abri** et, s’il est blessé, fais-le soigner.
 
 ## Comprendre
 Les signalements des consommateurs sont une source précieuse pour les autorités. Selon la DGCCRF, lorsqu’elle reçoit une plainte concernant la sécurité d’un jouet, elle identifie le responsable de la mise sur le marché et peut faire analyser le produit ; la commercialisation peut être suspendue dans l’attente des résultats. Si le jouet est jugé dangereux, un retrait ou un rappel peut être décidé et publié sur RappelConso.
 
-**SignalConso** est la plateforme publique de la DGCCRF. Elle sert à signaler un problème (défaut de sécurité, produit défectueux, pratique commerciale douteuse), alors que RappelConso informe sur les produits déjà identifiés comme dangereux. Vous choisissez « achat en magasin » ou « achat sur internet », puis vous êtes guidé.
+**SignalConso** est la plateforme publique de la DGCCRF. Elle sert à signaler un problème (défaut de sécurité, produit défectueux, pratique commerciale douteuse), alors que RappelConso informe sur les produits déjà identifiés comme dangereux. Tu choisis « achat en magasin » ou « achat sur internet », puis tu es guidé.
 
 Pour les **effets indésirables sur la santé** liés à certains produits (cosmétiques, produits d’entretien, aliments…), un portail du ministère chargé de la santé recueille les signalements des usagers comme des professionnels.
 
 ## Au quotidien
 **Juste après l’incident**
-- Mettez le jouet hors de portée et éloignez les autres enfants.
-- Soignez ou faites soigner votre enfant si besoin.
-- Ne jetez rien : le jouet, ses morceaux, l’emballage et la notice serviront à identifier le produit.
+- Mets le jouet hors de portée et éloigne les autres enfants.
+- Soigne ou fais soigner ton enfant si besoin.
+- Ne jette rien : le jouet, ses morceaux, l’emballage et la notice serviront à identifier le produit.
 
 **Rassembler les informations**
 - Nom du jouet, fabricant ou importateur, référence, numéro de lot si présent.
@@ -687,7 +687,7 @@ Pour les **effets indésirables sur la santé** liés à certains produits (cosm
 **Faire le signalement**
 - Sur **SignalConso**, en suivant le parcours proposé.
 - Ou auprès de la **DDPP/DDETSPP** du département où se trouve le commerce.
-- Vous pouvez aussi contacter le vendeur ou le fabricant pour demander un remboursement. En cas de litige, une association de consommateurs agréée peut vous aider à rédiger une réclamation.
+- Tu peux aussi contacter le vendeur ou le fabricant pour demander un remboursement. En cas de litige, une association de consommateurs agréée peut t’aider à rédiger une réclamation.
 
 **Exemples de situations à signaler**
 - Un hochet dont une partie se détache dès les premiers jours.
@@ -707,10 +707,10 @@ Non. Un défaut constaté (pièce qui se détache, piles accessibles, absence d�
 Oui, SignalConso prévoit un parcours dédié aux achats sur internet, en plus de celui des achats en magasin.
 
 **Le signalement remplace-t-il une plainte ?**
-Non. Si vous souhaitez porter plainte, le portail Ma Sécurité permet une démarche en ligne.
+Non. Si tu souhaites porter plainte, le portail Ma Sécurité permet une démarche en ligne.
 
 ## Quand demander conseil
-Si votre enfant est blessé, a avalé un élément, s’est brûlé ou a respiré un produit, l’urgence est d’abord médicale : demandez un avis à votre médecin ou appelez selon la gravité. ${URG}
+Si ton enfant est blessé, a avalé un élément, s’est brûlé ou a respiré un produit, l’urgence est d’abord médicale : demande un avis à ton médecin ou appelle selon la gravité. ${URG}
 
 ${FIN}`,
   }),
@@ -741,13 +741,13 @@ Santé publique France et ses partenaires ont alerté en 2021 sur des objets ant
 - Cuisine et salle à manger : imitations d’aliments décoratives, aimants de réfrigérateur.
 
 **Les périodes de fête**
-- Placez les décorations fragiles ou petites **en hauteur** sur le sapin, et préférez des décorations incassables en bas.
-- Surveillez les guirlandes, les petits sujets de crèche, les confettis et les petites décorations de table.
-- Après une fête, faites un ramassage au sol : capuchons, petites pièces, ballons dégonflés.
+- Place les décorations fragiles ou petites **en hauteur** sur le sapin, et préfère des décorations incassables en bas.
+- Surveille les guirlandes, les petits sujets de crèche, les confettis et les petites décorations de table.
+- Après une fête, fais un ramassage au sol : capuchons, petites pièces, ballons dégonflés.
 
 **Les collections des adultes et des aînés**
-- Rangez les modèles réduits, figurines et puzzles en cours dans une **pièce fermée** ou une vitrine.
-- Expliquez à l’aîné collectionneur pourquoi ses figurines restent dans sa chambre, porte fermée, quand le petit circule.
+- Range les modèles réduits, figurines et puzzles en cours dans une **pièce fermée** ou une vitrine.
+- Explique à l’aîné collectionneur pourquoi ses figurines restent dans sa chambre, porte fermée, quand le petit circule.
 
 **Les objets offerts en cadeau**
 Un gadget lumineux, un porte-clés figurine ou un objet anti-stress offert « pour amuser l’enfant » mérite d’être examiné : est-ce un jouet, avec marquage CE et âge indiqué, ou un objet d’adulte ?
@@ -757,7 +757,7 @@ Un gadget lumineux, un porte-clés figurine ou un objet anti-stress offert « po
 Un jouet porte un marquage CE et, le plus souvent, un âge et des avertissements. Le fabricant ou l’importateur doit déterminer si son produit relève de la réglementation sur les jouets et définir la classe d’âge.
 
 **Une figurine vendue en magasin de jouets est-elle forcément un jouet ?**
-Pas toujours : certaines figurines sont des objets de collection pour adultes. Lisez l’emballage.
+Pas toujours : certaines figurines sont des objets de collection pour adultes. Lis l’emballage.
 
 **Mon enfant de 6 ans peut-il manipuler ces objets ?**
 Selon l’objet, sous surveillance et en expliquant les précautions. Le risque principal concerne les plus jeunes, qui portent les objets à la bouche, et les objets à aimants ou à piles.
@@ -766,7 +766,7 @@ Selon l’objet, sous surveillance et en expliquant les précautions. Le risque 
 Elles attirent particulièrement les enfants, qui peuvent vouloir les goûter. La DGCCRF les cite parmi les objets d’adulte à garder hors de portée.
 
 ## Quand demander conseil
-Si votre enfant a mis en bouche ou avalé un élément d’un objet décoratif, une bille, un aimant ou une pile, ou s’il s’est coupé avec un éclat, demandez un avis rapidement. ${URG}
+Si ton enfant a mis en bouche ou avalé un élément d’un objet décoratif, une bille, un aimant ou une pile, ou s’il s’est coupé avec un éclat, demande un avis rapidement. ${URG}
 
 ${FIN}`,
   }),
@@ -780,8 +780,8 @@ ${FIN}`,
     body_md: `## En bref
 - Parmi les dangers relevés par la DGCCRF sur les jouets électriques : **piles bouton accessibles**, **intensité lumineuse excessive des LED** (risque de lésion de la rétine) et **volume sonore**.
 - Lors d’une action européenne de 2021, plus de la moitié des jouets électriques testés présentaient des manquements de marquage ou de notice.
-- Vérifiez la **solidité du boîtier** et l’**inaccessibilité des piles**.
-- Lisez la notice : précautions de charge, piles à utiliser, âge, surveillance.
+- Vérifie la **solidité du boîtier** et l’**inaccessibilité des piles**.
+- Lis la notice : précautions de charge, piles à utiliser, âge, surveillance.
 
 ## Comprendre
 Les jouets qui s’allument, chantent ou bougent tout seuls ont beaucoup de succès. Ils réunissent aussi plusieurs sources de risques. La DGCCRF cite parmi les dangers principaux : les piles bouton accessibles dans des jouets électriques pour les plus de 3 ans, l’intensité lumineuse excessive de certaines LED, susceptible de provoquer des lésions de la rétine, et elle invite les consommateurs à être attentifs au volume sonore.
@@ -792,36 +792,36 @@ La DGCCRF rappelle aussi que des piles anciennes, abîmées ou mélangées peuve
 
 ## Au quotidien
 **Avant l’achat**
-- Vérifiez le **marquage CE**, l’âge, les avertissements et la **notice en français**.
-- Regardez le **compartiment à piles** : il doit être solide ; pour les jeunes enfants, préférez une fermeture vissée.
-- Essayez si possible le jouet en magasin : une lumière qui **éblouit** quand on la regarde de près, un son **strident** collé à l’oreille sont des signaux d’alerte.
-- Pour un jouet rechargeable, regardez le chargeur fourni et les consignes de charge.
+- Vérifie le **marquage CE**, l’âge, les avertissements et la **notice en français**.
+- Regarde le **compartiment à piles** : il doit être solide ; pour les jeunes enfants, préfère une fermeture vissée.
+- Essaie si possible le jouet en magasin : une lumière qui **éblouit** quand on la regarde de près, un son **strident** collé à l’oreille sont des signaux d’alerte.
+- Pour un jouet rechargeable, regarde le chargeur fourni et les consignes de charge.
 
 **À la maison**
-- Changez les piles vous-même, hors de la vue des enfants, en respectant le type indiqué ; évitez de mélanger des piles anciennes, abîmées ou différentes.
-- Déposez les piles usagées dans un **bac de collecte**.
-- Surveillez l’état du jouet : boîtier fendu, couvercle qui ne tient plus, échauffement inhabituel.
-- Pour la recharge, suivez la notice et le chargeur prévu.
+- Change les piles toi-même, hors de la vue des enfants, en respectant le type indiqué ; évite de mélanger des piles anciennes, abîmées ou différentes.
+- Dépose les piles usagées dans un **bac de collecte**.
+- Surveille l’état du jouet : boîtier fendu, couvercle qui ne tient plus, échauffement inhabituel.
+- Pour la recharge, suis la notice et le chargeur prévu.
 
 **Le son et la lumière, au quotidien**
-- Un jouet sonore utilisé tout près de l’oreille ou dans une petite pièce peut être très bruyant : préférez les modèles à **volume réglable** et le niveau le plus bas.
-- Évitez que l’enfant fixe une lumière intense de près.
+- Un jouet sonore utilisé tout près de l’oreille ou dans une petite pièce peut être très bruyant : préfère les modèles à **volume réglable** et le niveau le plus bas.
+- Évite que l’enfant fixe une lumière intense de près.
 
 ## Questions fréquentes
 **Les jouets lumineux sont-ils déconseillés ?**
-Non, mais certains modèles non conformes émettent une lumière trop intense. Achetez des produits conformes, chez des vendeurs identifiables, et soyez attentif à l’éblouissement.
+Non, mais certains modèles non conformes émettent une lumière trop intense. Achète des produits conformes, chez des vendeurs identifiables, et sois attentif à l’éblouissement.
 
 **Mon enfant met son jouet musical contre son oreille : est-ce un problème ?**
-La DGCCRF invite à être attentif au volume sonore. Si le jouet vous semble fort, baissez le volume ou retirez-le.
+La DGCCRF invite à être attentif au volume sonore. Si le jouet te semble fort, baisse le volume ou retire-le.
 
 **Peut-on remplacer les piles d’origine par des piles rechargeables ?**
-Suivez les indications de la notice sur le type de piles à utiliser.
+Suis les indications de la notice sur le type de piles à utiliser.
 
 **Le jouet chauffe pendant la charge : que faire ?**
-Débranchez-le, ne l’utilisez plus et signalez le problème au vendeur ou sur SignalConso.
+Débranche-le, ne l’utilise plus et signale le problème au vendeur ou sur SignalConso.
 
 ## Quand demander conseil
-Si votre enfant se plaint des yeux après avoir regardé une lumière intense, s’il semble moins bien entendre, ou s’il a pu avaler une pile, demandez un avis médical ; pour une pile, appelez immédiatement. ${URG}
+Si ton enfant se plaint des yeux après avoir regardé une lumière intense, s’il semble moins bien entendre, ou s’il a pu avaler une pile, demande un avis médical ; pour une pile, appelle immédiatement. ${URG}
 
 ${FIN}`,
   }),
@@ -836,7 +836,7 @@ ${FIN}`,
 - La DGCCRF cite chaque année l’**inflammabilité** et la **longueur des cordons** parmi les principaux défauts des déguisements.
 - Un long cordon au cou ou à la taille expose à un risque d’**étranglement**.
 - Les déguisements figurent parmi les produits les plus souvent non conformes lors des achats en ligne contrôlés.
-- Tenez toujours l’enfant déguisé **à distance des bougies et des flammes**.
+- Tiens toujours l’enfant déguisé **à distance des bougies et des flammes**.
 
 ## Comprendre
 Les déguisements pour enfants sont des jouets : ils doivent porter le marquage CE et respecter des exigences de sécurité, notamment sur l’inflammabilité. Pourtant, les rapports de contrôle de la DGCCRF les citent régulièrement : déguisements inflammables, cordons trop longs, avertissements manquants. En 2021, la DGCCRF mentionne parmi les dangers clés les longs cordons de déguisements pouvant causer une strangulation ; en 2020, ses analyses relevaient des costumes inflammables.
@@ -847,36 +847,36 @@ Pourquoi l’inflammabilité compte-t-elle ? Les tissus synthétiques légers, v
 
 ## Au quotidien
 **Choisir le costume**
-- Vérifiez le **marquage CE**, l’âge et les avertissements.
-- Pour un tout-petit, préférez un costume **simple** : pas de petits accessoires cousus qui s’arrachent (boutons, perles, paillettes), pas de long cordon.
-- Évitez les **cordons et liens coulissants** au niveau du cou ; méfiez-vous des capes nouées autour du cou.
-- Choisissez une **taille adaptée** : un costume trop long fait trébucher.
+- Vérifie le **marquage CE**, l’âge et les avertissements.
+- Pour un tout-petit, préfère un costume **simple** : pas de petits accessoires cousus qui s’arrachent (boutons, perles, paillettes), pas de long cordon.
+- Évite les **cordons et liens coulissants** au niveau du cou ; méfie-toi des capes nouées autour du cou.
+- Choisis une **taille adaptée** : un costume trop long fait trébucher.
 - Les masques doivent laisser **bien voir et respirer**.
 
 **Le jour de la fête**
-- Expliquez à l’enfant de rester loin des **bougies**, citrouilles éclairées et barbecues ; préférez les bougies électriques dans la décoration.
-- Vérifiez que l’enfant **voit bien** autour de lui, en particulier pour une sortie dans la rue le soir.
-- Pour un défilé ou une sortie nocturne, ajoutez un élément **rétro-réfléchissant** visible.
-- Retirez le costume pour la sieste et la nuit.
+- Explique à l’enfant de rester loin des **bougies**, citrouilles éclairées et barbecues ; préfère les bougies électriques dans la décoration.
+- Vérifie que l’enfant **voit bien** autour de lui, en particulier pour une sortie dans la rue le soir.
+- Pour un défilé ou une sortie nocturne, ajoute un élément **rétro-réfléchissant** visible.
+- Retire le costume pour la sieste et la nuit.
 
 **Les accessoires**
-Épées, baguettes, chapeaux, couronnes, faux bijoux : vérifiez qu’ils sont prévus pour l’âge de l’enfant, sans pointe dure et sans petite pièce détachable pour un enfant de moins de 3 ans. Les faux colliers ne conviennent pas aux bébés.
+Épées, baguettes, chapeaux, couronnes, faux bijoux : vérifie qu’ils sont prévus pour l’âge de l’enfant, sans pointe dure et sans petite pièce détachable pour un enfant de moins de 3 ans. Les faux colliers ne conviennent pas aux bébés.
 
 ## Questions fréquentes
 **Les déguisements doivent-ils porter le marquage CE ?**
 Oui : les déguisements pour enfants sont contrôlés comme des jouets, et la DGCCRF relève parmi les manquements l’absence de marquage CE et d’avertissements.
 
 **Un costume d’adulte retouché convient-il à un enfant ?**
-Un costume pour adulte n’est pas un jouet et n’obéit pas aux mêmes exigences. Préférez un costume prévu pour les enfants.
+Un costume pour adulte n’est pas un jouet et n’obéit pas aux mêmes exigences. Préfère un costume prévu pour les enfants.
 
 **Comment savoir si le tissu est inflammable ?**
 On ne peut pas le vérifier à la maison. D’où l’intérêt d’un costume conforme, avec marquage CE, et d’une distance stricte avec les flammes.
 
 **Les déguisements achetés en ligne sont-ils plus risqués ?**
-La DGCCRF a relevé de nombreux produits non conformes chez certains vendeurs tiers des places de marché. Vérifiez marquage, notice et cordons à réception.
+La DGCCRF a relevé de nombreux produits non conformes chez certains vendeurs tiers des places de marché. Vérifie marquage, notice et cordons à réception.
 
 ## Quand demander conseil
-En cas de flamme sur un vêtement : faites rouler l’enfant au sol ou étouffez le feu avec une couverture, refroidissez la brûlure à l’eau tempérée et appelez le **15** ou le **112**. Si un cordon s’est serré autour du cou, appelez immédiatement. ${URG}
+En cas de flamme sur un vêtement : fais rouler l’enfant au sol ou étouffe le feu avec une couverture, refroidis la brûlure à l’eau tempérée et appelle le **15** ou le **112**. Si un cordon s’est serré autour du cou, appelle immédiatement. ${URG}
 
 ${FIN}`,
   }),
@@ -889,8 +889,8 @@ ${FIN}`,
     min_age_months: 72, max_age_months: 144, journeys: ['child'],
     sources: [S.jeuxConstruction, S.jouetsAge, S.billesAimantees],
     body_md: `## En bref
-- Adaptez le jeu et sa **complexité technique** à l’âge : la DGCCRF évoque les pièces **motorisées à partir de 8 ans** et les **mécanismes complexes à partir de 10 ans**.
-- Pions, dés et petites pièces présentent un risque d’**étouffement** pour les jeunes enfants : rangez-les hors de leur portée.
+- Adapte le jeu et sa **complexité technique** à l’âge : la DGCCRF évoque les pièces **motorisées à partir de 8 ans** et les **mécanismes complexes à partir de 10 ans**.
+- Pions, dés et petites pièces présentent un risque d’**étouffement** pour les jeunes enfants : range-les hors de leur portée.
 - Les coffrets d’expériences **magnétiques ou électriques** portent souvent la mention « ne convient pas aux moins de 8 ans ».
 - Cinq réflexes avant d’acheter : **CE**, avertissements, vendeur identifiable, prix cohérent, âge et niveau de l’enfant.
 
@@ -903,41 +903,41 @@ Les jeux magnétiques méritent une attention particulière : les autorités san
 
 ## Au quotidien
 **Les cinq réflexes de la DGCCRF avant d’acheter**
-1. Vérifiez le **marquage CE**.
-2. Lisez tous les **avertissements** de l’emballage.
-3. Achetez auprès de commerces ou de fabricants identifiables, et manipulez le produit si possible.
-4. Méfiez-vous des **prix anormalement bas**, qui peuvent signaler une contrefaçon.
-5. Choisissez un jeu adapté à l’**âge, aux capacités et au niveau** de l’enfant.
+1. Vérifie le **marquage CE**.
+2. Lis tous les **avertissements** de l’emballage.
+3. Achète auprès de commerces ou de fabricants identifiables, et manipule le produit si possible.
+4. Méfie-toi des **prix anormalement bas**, qui peuvent signaler une contrefaçon.
+5. Choisis un jeu adapté à l’**âge, aux capacités et au niveau** de l’enfant.
 
 **Choisir le bon niveau**
-- Un jeu trop difficile décourage ; un jeu trop simple lasse. L’âge indiqué donne un repère, mais votre connaissance de l’enfant compte.
-- Dans les magasins spécialisés, vous pouvez souvent demander conseil, voire tester un jeu sur place.
+- Un jeu trop difficile décourage ; un jeu trop simple lasse. L’âge indiqué donne un repère, mais ta connaissance de l’enfant compte.
+- Dans les magasins spécialisés, tu peux souvent demander conseil, voire tester un jeu sur place.
 - Les **puzzles de plus de 500 pièces** sont cités par la DGCCRF parmi les objets qui ne sont pas des jouets.
 
 **S’organiser à la maison**
-- Prévoyez un **plateau** ou une boîte à rebords pour monter les constructions : les pièces se perdent moins.
-- Rangez les jeux à petites pièces dans des boîtes fermées, en hauteur, si un tout-petit vit ou passe à la maison.
-- Faites jouer les grands à table ou dans leur chambre pendant que le petit dort ou est occupé ailleurs.
-- Après une partie, comptez rapidement les pions et les dés.
+- Prévois un **plateau** ou une boîte à rebords pour monter les constructions : les pièces se perdent moins.
+- Range les jeux à petites pièces dans des boîtes fermées, en hauteur, si un tout-petit vit ou passe à la maison.
+- Fais jouer les grands à table ou dans leur chambre pendant que le petit dort ou est occupé ailleurs.
+- Après une partie, compte rapidement les pions et les dés.
 
 **Pour les jeux de société en famille**
-Choisissez un jeu accessible à tous, et laissez au plus jeune un rôle adapté (lancer le dé sous surveillance, piocher les cartes) plutôt que les petites pièces.
+Choisis un jeu accessible à tous, et laisse au plus jeune un rôle adapté (lancer le dé sous surveillance, piocher les cartes) plutôt que les petites pièces.
 
 ## Questions fréquentes
 **Mon enfant de 7 ans veut un robot à moteur marqué « 8 ans et plus ». Est-ce raisonnable ?**
-L’âge reflète la complexité et les risques identifiés par le fabricant. Vous pouvez accompagner le montage, mais respectez l’indication si elle concerne la sécurité (petites pièces, aimants, électricité).
+L’âge reflète la complexité et les risques identifiés par le fabricant. Tu peux accompagner le montage, mais respecte l’indication si elle concerne la sécurité (petites pièces, aimants, électricité).
 
 **Les jeux de construction aimantés conviennent-ils aux petits ?**
-Seulement ceux conçus pour leur âge, avec des aimants intégrés et inaccessibles. Vérifiez régulièrement qu’aucune pièce n’est fendue.
+Seulement ceux conçus pour leur âge, avec des aimants intégrés et inaccessibles. Vérifie régulièrement qu’aucune pièce n’est fendue.
 
 **Faut-il garder la boîte d’origine ?**
 C’est pratique : elle contient l’âge, les avertissements et les références utiles en cas de rappel.
 
 **Que faire d’une pièce cassée qui laisse apparaître un aimant ?**
-Retirez-la immédiatement et rangez-la hors de portée, ou jetez-la.
+Retire-la immédiatement et range-la hors de portée, ou jette-la.
 
 ## Quand demander conseil
-Si un plus jeune enfant a pu avaler une petite pièce ou un aimant, ou s’il tousse et respire mal après avoir joué avec les jeux des grands, demandez un avis sans attendre ; pour un aimant, appelez un centre antipoison. ${URG}
+Si un plus jeune enfant a pu avaler une petite pièce ou un aimant, ou s’il tousse et respire mal après avoir joué avec les jeux des grands, demande un avis sans attendre ; pour un aimant, appelle un centre antipoison. ${URG}
 
 ${FIN}`,
   }),
@@ -963,20 +963,20 @@ Mais le principal danger, près de l’eau, reste la **noyade**. Santé.fr rappe
 
 ## Au quotidien
 **Choisir**
-- Vérifiez **marquage CE**, âge et avertissements, en particulier la mention de surveillance.
+- Vérifie **marquage CE**, âge et avertissements, en particulier la mention de surveillance.
 - Pour les moins de 3 ans : pas de petites pièces détachables, pas de jouet dont un élément peut se dévisser.
 - Pour un jouet lumineux : compartiment à piles **étanche et vissé**.
-- Préférez des jouets faciles à **nettoyer et à sécher**.
+- Préfère des jouets faciles à **nettoyer et à sécher**.
 
 **Entretenir**
-- Après le bain, videz l’eau des jouets et laissez-les sécher.
-- Écartez les jouets abîmés ou fissurés.
+- Après le bain, vide l’eau des jouets et laisse-les sécher.
+- Écarte les jouets abîmés ou fissurés.
 
 **Surveiller, toujours**
-- Préparez **avant le bain** serviette, vêtements et jouets : vous n’aurez pas à vous éloigner.
-- Restez **à portée de main** pendant toute la durée du bain, même avec un siège de bain ou un anneau.
-- Si on sonne ou si le téléphone vibre, sortez l’enfant de l’eau et emmenez-le.
-- Videz la baignoire, la pataugeoire ou la piscine gonflable dès la fin du jeu.
+- Prépare **avant le bain** serviette, vêtements et jouets : tu n’auras pas à t’éloigner.
+- Reste **à portée de main** pendant toute la durée du bain, même avec un siège de bain ou un anneau.
+- Si on sonne ou si le téléphone vibre, sors l’enfant de l’eau et emmène-le.
+- Vide la baignoire, la pataugeoire ou la piscine gonflable dès la fin du jeu.
 
 **Dehors : piscine, plage, pataugeoire**
 - Les bouées, matelas et jouets gonflables sont des jouets : ils ne protègent pas de la noyade.
@@ -984,10 +984,10 @@ Mais le principal danger, près de l’eau, reste la **noyade**. Santé.fr rappe
 
 ## Questions fréquentes
 **Les jouets avec un petit trou qui gicle sont-ils problématiques ?**
-L’eau stagne à l’intérieur. Videz-les et laissez-les sécher ; écartez ceux qui restent sales.
+L’eau stagne à l’intérieur. Vide-les et laisse-les sécher ; écarte ceux qui restent sales.
 
 **Comment savoir si un jouet de bain contient des substances interdites ?**
-On ne peut pas le vérifier soi-même. Achetez des jouets conformes chez des vendeurs identifiables et consultez RappelConso.
+On ne peut pas le vérifier soi-même. Achète des jouets conformes chez des vendeurs identifiables et consulte RappelConso.
 
 **Un siège de bain permet-il de s’éloigner un instant ?**
 Non : quel que soit l’équipement, la surveillance doit rester constante et à portée de main.
@@ -996,7 +996,7 @@ Non : quel que soit l’équipement, la surveillance doit rester constante et à
 Non. Un jouet gonflable peut se dégonfler, se retourner ou glisser ; l’enfant doit rester sous la surveillance directe d’un adulte.
 
 ## Quand demander conseil
-Si un enfant a été retrouvé dans l’eau, même brièvement, et tousse, respire mal ou semble somnolent, appelez immédiatement le 15 ou le 112. Si votre enfant a avalé une petite pièce de jouet de bain et tousse ou s’étouffe, appelez aussi. ${URG}
+Si un enfant a été retrouvé dans l’eau, même brièvement, et tousse, respire mal ou semble somnolent, appelle immédiatement le 15 ou le 112. Si ton enfant a avalé une petite pièce de jouet de bain et tousse ou s’étouffe, appelle aussi. ${URG}
 
 ${FIN}`,
   }),
@@ -1011,7 +1011,7 @@ ${FIN}`,
     body_md: `## En bref
 - Depuis le **22 mars 2017**, le casque est **obligatoire** à vélo pour les enfants de **moins de 12 ans**, conducteurs ou passagers.
 - Un casque conforme porte le **marquage CE** et la référence de la norme **EN 1078** (casques de cycliste).
-- La taille correspond au **tour de tête** : mesurez avec un mètre de couturier, puis **essayez**.
+- La taille correspond au **tour de tête** : mesure avec un mètre de couturier, puis **essaie**.
 - Un casque bien réglé est **centré**, ni trop en avant ni trop en arrière, jugulaire et réglage arrière ajustés.
 
 ## Comprendre
@@ -1023,16 +1023,16 @@ Attention aux confusions : la DGCCRF rappelle qu’une **imitation de casque** (
 
 ## Au quotidien
 **Choisir la taille**
-- Mesurez le **tour de tête** avec un mètre de couturier.
-- Les tailles s’expriment en centimètres (par exemple 47-53 cm) ou en lettres (S, M, L) : comparez avec le tableau du fabricant.
-- **Essayez** avec l’enfant : c’est la méthode la plus fiable. Ne prenez pas une taille au-dessus « pour qu’il dure plus longtemps ».
+- Mesure le **tour de tête** avec un mètre de couturier.
+- Les tailles s’expriment en centimètres (par exemple 47-53 cm) ou en lettres (S, M, L) : compare avec le tableau du fabricant.
+- **Essaie** avec l’enfant : c’est la méthode la plus fiable. Ne prends pas une taille au-dessus « pour qu’il dure plus longtemps ».
 
 **Régler, pas à pas**
-1. Posez le casque **bien centré**, ni trop en avant ni trop en arrière.
-2. Serrez le **réglage arrière** (souvent une molette ou un velcro) jusqu’à ce que le casque tienne sans serrer.
-3. Ajustez les **sangles** de chaque côté pour qu’elles soient bien à plat.
-4. Fermez la **jugulaire** : elle doit maintenir le casque sans gêner la déglutition.
-5. Vérifiez que le casque **ne gêne pas la vue** et ne bascule ni vers l’avant ni vers l’arrière quand l’enfant bouge la tête.
+1. Pose le casque **bien centré**, ni trop en avant ni trop en arrière.
+2. Serre le **réglage arrière** (souvent une molette ou un velcro) jusqu’à ce que le casque tienne sans serrer.
+3. Ajuste les **sangles** de chaque côté pour qu’elles soient bien à plat.
+4. Ferme la **jugulaire** : elle doit maintenir le casque sans gêner la déglutition.
+5. Vérifie que le casque **ne gêne pas la vue** et ne bascule ni vers l’avant ni vers l’arrière quand l’enfant bouge la tête.
 
 **Les petits plus**
 - Une mousse de confort sous la jugulaire évite de pincer la peau.
@@ -1040,7 +1040,7 @@ Attention aux confusions : la DGCCRF rappelle qu’une **imitation de casque** (
 - Les aérations rendent le casque plus agréable, donc mieux porté.
 
 **Faire accepter le casque**
-Montrez l’exemple : les enfants qui voient leurs parents casqués le portent plus volontiers. Laissez l’enfant choisir la couleur parmi des modèles conformes.
+Montre l’exemple : les enfants qui voient leurs parents casqués le portent plus volontiers. Laisse l’enfant choisir la couleur parmi des modèles conformes.
 
 ## Questions fréquentes
 **Le casque est-il obligatoire sur une draisienne ou une trottinette ?**
@@ -1050,13 +1050,13 @@ L’obligation légale concerne le vélo. Pour les trottinettes et bicyclettes v
 L’obligation s’arrête à 12 ans, mais le casque reste recommandé à tout âge.
 
 **Peut-on acheter un casque d’occasion ?**
-On ne connaît pas son histoire (chocs, vieillissement). Si vous le faites, vérifiez marquage, notice et état de la coque et des sangles.
+On ne connaît pas son histoire (chocs, vieillissement). Si tu le fais, vérifie marquage, notice et état de la coque et des sangles.
 
 **Le casque doit-il être changé après une chute ?**
-Si le casque a subi un choc important, suivez les recommandations de la notice du fabricant ; dans le doute, remplacez-le.
+Si le casque a subi un choc important, suis les recommandations de la notice du fabricant ; dans le doute, remplace-le.
 
 ## Quand demander conseil
-Après une chute avec choc à la tête, surveillez votre enfant. Appelez le 15 ou le 112 s’il perd connaissance, vomit, est inhabituellement somnolent, se plaint d’un mal de tête qui augmente, ou si son comportement vous inquiète. ${URG}
+Après une chute avec choc à la tête, surveille ton enfant. Appelle le 15 ou le 112 s’il perd connaissance, vomit, est inhabituellement somnolent, se plaint d’un mal de tête qui augmente, ou si son comportement t’inquiète. ${URG}
 
 ${FIN}`,
   }),
@@ -1069,8 +1069,8 @@ ${FIN}`,
     sources: [S.casquePrefecture, S.puericulture, S.bicyclettes],
     body_md: `## En bref
 - Un enfant de moins de 12 ans transporté à vélo doit porter un **casque**, comme s’il pédalait lui-même ; l’adulte est responsable.
-- Les **remorques à vélo** pour jeunes enfants relèvent de la réglementation des articles de puériculture : vérifiez l’âge, la taille et le poids prévus.
-- Respectez la **notice** (montage, conditions d’utilisation, précautions) et contrôlez régulièrement fixations, harnais et freins.
+- Les **remorques à vélo** pour jeunes enfants relèvent de la réglementation des articles de puériculture : vérifie l’âge, la taille et le poids prévus.
+- Respecte la **notice** (montage, conditions d’utilisation, précautions) et contrôle régulièrement fixations, harnais et freins.
 - Le vélo lui-même doit être en bon état : **deux freins** indépendants, éclairage, mentions obligatoires.
 
 ## Comprendre
@@ -1082,10 +1082,10 @@ Côté vélo, la DGCCRF rappelle que les bicyclettes doivent être vendues mont�
 
 ## Au quotidien
 **Avant d’acheter un siège ou une remorque**
-- Vérifiez l’**âge minimal**, la **taille** et le **poids maximal** indiqués, et la compatibilité avec votre vélo.
-- Regardez la qualité des **fixations**, du **harnais**, des boucles, et la protection des pieds contre les rayons.
-- Lisez la notice avant l’achat si possible : elle doit être en français.
-- Ne choisissez pas sur l’apparence : la DGCCRF conseille de vérifier que le produit correspond à l’usage prévu.
+- Vérifie l’**âge minimal**, la **taille** et le **poids maximal** indiqués, et la compatibilité avec ton vélo.
+- Regarde la qualité des **fixations**, du **harnais**, des boucles, et la protection des pieds contre les rayons.
+- Lis la notice avant l’achat si possible : elle doit être en français.
+- Ne choisis pas sur l’apparence : la DGCCRF conseille de vérifier que le produit correspond à l’usage prévu.
 
 **Avant chaque sortie**
 - Casque de l’enfant bien réglé (centré, jugulaire fermée).
@@ -1094,28 +1094,28 @@ Côté vélo, la DGCCRF rappelle que les bicyclettes doivent être vendues mont�
 - Freins, pneus et éclairage du vélo vérifiés.
 
 **Sur la route**
-- Commencez par de courts trajets, sur des voies calmes ou des pistes cyclables, le temps de vous habituer au poids et à l’équilibre.
-- Pensez à la visibilité : éclairage et éléments réfléchissants.
-- Habillez l’enfant selon la météo : passager immobile, il a plus vite froid que vous.
+- Commence par de courts trajets, sur des voies calmes ou des pistes cyclables, le temps de t’habituer au poids et à l’équilibre.
+- Pense à la visibilité : éclairage et éléments réfléchissants.
+- Habille l’enfant selon la météo : passager immobile, il a plus vite froid que toi.
 
 **Entretien**
-Ne réparez pas vous-même une pièce abîmée d’un siège ou d’une remorque et ne modifiez pas le produit : la DGCCRF conseille de contacter le service après-vente.
+Ne répare pas toi-même une pièce abîmée d’un siège ou d’une remorque et ne modifie pas le produit : la DGCCRF conseille de contacter le service après-vente.
 
 ## Questions fréquentes
 **À partir de quel âge peut-on transporter un bébé à vélo ?**
-Cela dépend du dispositif : l’âge et le poids minimaux sont indiqués par le fabricant. Pour un tout-petit, demandez aussi l’avis de votre médecin.
+Cela dépend du dispositif : l’âge et le poids minimaux sont indiqués par le fabricant. Pour un tout-petit, demande aussi l’avis de ton médecin.
 
 **Le casque est-il obligatoire dans une remorque ?**
-L’obligation vise les enfants de moins de 12 ans transportés à vélo comme passagers. Gardez le casque pour tous les trajets.
+L’obligation vise les enfants de moins de 12 ans transportés à vélo comme passagers. Garde le casque pour tous les trajets.
 
 **Siège ou remorque d’occasion : bonne idée ?**
-Possible, mais la DGCCRF prévient que les articles d’occasion peuvent ne plus respecter les règles, manquer de notice ou avoir des pièces de sécurité abîmées. Vérifiez le fonctionnement de chaque fixation.
+Possible, mais la DGCCRF prévient que les articles d’occasion peuvent ne plus respecter les règles, manquer de notice ou avoir des pièces de sécurité abîmées. Vérifie le fonctionnement de chaque fixation.
 
 **Peut-on ajouter un siège sur un vélo électrique ?**
-Suivez les indications du fabricant du vélo et du siège sur la compatibilité et la charge maximale.
+Suis les indications du fabricant du vélo et du siège sur la compatibilité et la charge maximale.
 
 ## Quand demander conseil
-Après une chute avec choc à la tête, consultez rapidement si votre enfant pleure de façon inhabituelle, vomit, est somnolent ou si son comportement change ; appelez le 15 ou le 112 en cas de perte de connaissance. ${URG}
+Après une chute avec choc à la tête, consulte rapidement si ton enfant pleure de façon inhabituelle, vomit, est somnolent ou si son comportement change ; appelle le 15 ou le 112 en cas de perte de connaissance. ${URG}
 
 ${FIN}`,
   }),
@@ -1143,12 +1143,12 @@ Les sanctions existent : amende de 135 € (4e classe) pour non-respect des règ
 
 ## Au quotidien
 **Avant d’acheter pour un adolescent**
-- Vérifiez qu’il a **14 ans** s’il doit circuler sur la voie publique.
-- Contrôlez les **équipements obligatoires** et que la vitesse maximale par construction ne dépasse pas 25 km/h.
-- Souscrivez l’**assurance** obligatoire pour l’utilisateur, et vérifiez ce qu’elle couvre.
+- Vérifie qu’il a **14 ans** s’il doit circuler sur la voie publique.
+- Contrôle les **équipements obligatoires** et que la vitesse maximale par construction ne dépasse pas 25 km/h.
+- Souscris l’**assurance** obligatoire pour l’utilisateur, et vérifie ce qu’elle couvre.
 
 **Équiper**
-- Même si la page ministérielle ne détaille pas d’obligation de casque pour les EDPM, un **casque conforme** et bien réglé reste une protection essentielle ; ajoutez gants et protections selon l’usage.
+- Même si la page ministérielle ne détaille pas d’obligation de casque pour les EDPM, un **casque conforme** et bien réglé reste une protection essentielle ; ajoute gants et protections selon l’usage.
 - Gilet ou brassard **rétro-réfléchissant** pour la nuit et le mauvais temps.
 
 **Poser les règles en famille**
@@ -1162,7 +1162,7 @@ Un enfant de moins de 14 ans ne peut pas conduire d’EDPM sur la voie publique.
 
 ## Questions fréquentes
 **Mon enfant de 11 ans peut-il utiliser un hoverboard dans une allée privée ?**
-L’âge de 14 ans concerne la circulation sur la voie publique. Sur un terrain privé, suivez l’âge indiqué par le fabricant, avec casque, protections et surveillance.
+L’âge de 14 ans concerne la circulation sur la voie publique. Sur un terrain privé, suis l’âge indiqué par le fabricant, avec casque, protections et surveillance.
 
 **Peut-on transporter son enfant sur sa trottinette électrique ?**
 Non : le transport de passager est interdit.
@@ -1174,7 +1174,7 @@ Les opérateurs en libre-service doivent assurer leurs usagers, selon le minist�
 La page du ministère ne le mentionne pas pour les EDPM ; il est en revanche obligatoire à vélo avant 12 ans. Il reste vivement conseillé.
 
 ## Quand demander conseil
-Après une chute, consultez si votre enfant a une douleur qui persiste, une déformation, une plaie importante, ou après un choc à la tête s’il vomit, devient somnolent ou se comporte inhabituellement. ${URG}
+Après une chute, consulte si ton enfant a une douleur qui persiste, une déformation, une plaie importante, ou après un choc à la tête s’il vomit, devient somnolent ou se comporte inhabituellement. ${URG}
 
 ${FIN}`,
   }),
@@ -1188,7 +1188,7 @@ ${FIN}`,
     body_md: `## En bref
 - Les vélos et trottinettes **vendus comme jouets** doivent porter l’avertissement « À utiliser avec des équipements de protection. Ne pas utiliser sur la voie publique » : ils sont réservés à un **usage familial**.
 - Une **bicyclette** doit être vendue **montée et réglée**, avec **deux freins indépendants**, un **repère de hauteur maximale** de selle et de potence et sans arêtes coupantes.
-- Vérifiez les **mentions obligatoires** et la **notice en français**.
+- Vérifie les **mentions obligatoires** et la **notice en français**.
 - Le **casque** est obligatoire à vélo avant 12 ans.
 
 ## Comprendre
@@ -1199,10 +1199,10 @@ Les **bicyclettes**, elles, sont soumises à des exigences de conception : livr�
 ## Au quotidien
 **Définir l’usage**
 - Pour rouler dans le jardin, une allée ou un parc fermé, un vélo-jouet adapté à la taille de l’enfant peut suffire.
-- Pour circuler sur la voie publique (piste cyclable, rue calme, trajet vers l’école), choisissez une **bicyclette**, pas un jouet.
+- Pour circuler sur la voie publique (piste cyclable, rue calme, trajet vers l’école), choisis une **bicyclette**, pas un jouet.
 
-**À l’achat, vérifiez**
-- La **taille** : l’enfant doit pouvoir poser les pieds au sol et atteindre le guidon sans s’étirer. Faites-le essayer.
+**À l’achat, vérifie**
+- La **taille** : l’enfant doit pouvoir poser les pieds au sol et atteindre le guidon sans s’étirer. Fais-le essayer.
 - Les **freins** : deux systèmes indépendants sur une bicyclette, faciles à actionner par une petite main.
 - Le **repère de hauteur maximale** sur la tige de selle et la potence.
 - L’absence d’**arêtes coupantes** et la solidité apparente du cadre, de la fourche, de la selle et du tube de direction.
@@ -1210,27 +1210,27 @@ Les **bicyclettes**, elles, sont soumises à des exigences de conception : livr�
 - La **notice en français** et les coordonnées du responsable de la mise sur le marché.
 
 **Au fil de la croissance**
-- Remontez la selle au besoin, sans dépasser le repère.
-- Vérifiez régulièrement freins, pneus, serrage du guidon et des roues.
+- Remonte la selle au besoin, sans dépasser le repère.
+- Vérifie régulièrement freins, pneus, serrage du guidon et des roues.
 
 **Le casque**
 Il doit être conforme (marquage CE, norme EN 1078), à la bonne taille et bien réglé. Une imitation de casque ne protège pas.
 
 ## Questions fréquentes
 **Les petites roues stabilisatrices sont-elles indispensables ?**
-Ce n’est pas une question de sécurité réglementaire. Beaucoup d’enfants apprennent l’équilibre sur une draisienne avant de passer au vélo ; choisissez avec l’enfant selon sa progression.
+Ce n’est pas une question de sécurité réglementaire. Beaucoup d’enfants apprennent l’équilibre sur une draisienne avant de passer au vélo ; choisis avec l’enfant selon sa progression.
 
 **Puis-je acheter un vélo en ligne ?**
-Oui, mais une bicyclette doit être livrée montée et réglée. À réception, vérifiez freins, serrage et réglages, ou faites-les contrôler.
+Oui, mais une bicyclette doit être livrée montée et réglée. À réception, vérifie freins, serrage et réglages, ou fais-les contrôler.
 
 **Un vélo d’occasion convient-il ?**
-Souvent, après vérification des freins, du cadre, des pneus et de la chaîne. En cas de doute, faites-le réviser.
+Souvent, après vérification des freins, du cadre, des pneus et de la chaîne. En cas de doute, fais-le réviser.
 
 **Mon enfant peut-il rouler sur le trottoir ?**
-Les règles de circulation des enfants à vélo dépendent de leur âge ; renseignez-vous sur le code de la route et accompagnez-le.
+Les règles de circulation des enfants à vélo dépendent de leur âge ; renseigne-toi sur le code de la route et accompagne-le.
 
 ## Quand demander conseil
-Après une chute, consultez si une douleur persiste, si un membre est déformé ou si une plaie est profonde. Après un choc à la tête, appelez le 15 ou le 112 en cas de perte de connaissance, de vomissements, de somnolence inhabituelle ou de changement de comportement. ${URG}
+Après une chute, consulte si une douleur persiste, si un membre est déformé ou si une plaie est profonde. Après un choc à la tête, appelle le 15 ou le 112 en cas de perte de connaissance, de vomissements, de somnolence inhabituelle ou de changement de comportement. ${URG}
 
 ${FIN}`,
   }),
@@ -1238,15 +1238,15 @@ ${FIN}`,
   a({
     slug: 'jouets-connectes-montre-enfant-vie-privee-securite',
     title: 'Jouets connectés et montres pour enfants : protéger sa vie privée et ses données',
-    summary: 'Poupées, robots, montres connectées : les conseils de la CNIL pour choisir, paramétrer et utiliser ces objets sans exposer votre enfant.',
+    summary: 'Poupées, robots, montres connectées : les conseils de la CNIL pour choisir, paramétrer et utiliser ces objets sans exposer ton enfant.',
     category: 'securite', tags: ['jouet connecté', 'montre connectée', 'robot', 'vie privée', 'données personnelles', 'CNIL', 'Bluetooth', 'Wi-Fi', 'mot de passe', 'géolocalisation'],
     min_age_months: 24, max_age_months: 156, journeys: ['child'],
     sources: [S.cnil, S.conseilsJouets],
     body_md: `## En bref
 - Un jouet connecté **collecte des informations** et les transmet par Bluetooth, Wi-Fi ou internet.
 - Ces données peuvent être utilisées pour de la **publicité ciblée** ou détournées par des personnes malveillantes.
-- Avant l’achat, vérifiez les **conditions d’utilisation**, l’**hébergement des données** et la possibilité de **désactiver** certaines fonctions.
-- Avant d’offrir : **changez les mots de passe par défaut**, installez les **mises à jour**, n’activez que l’utile.
+- Avant l’achat, vérifie les **conditions d’utilisation**, l’**hébergement des données** et la possibilité de **désactiver** certaines fonctions.
+- Avant d’offrir : **change les mots de passe par défaut**, installe les **mises à jour**, n’active que l’utile.
 
 ## Comprendre
 Poupées qui parlent, robots, montres connectées, consoles : ces objets ont l’air inoffensifs, mais ils collectent des informations (voix, photos, position, habitudes) et les envoient vers des applications ou des serveurs. La CNIL explique que ces données peuvent servir à cibler des publicités, ou être détournées pour des arnaques, des usurpations d’identité ou du harcèlement.
@@ -1257,46 +1257,46 @@ Les fabricants ont l’obligation légale de prendre toutes les précautions uti
 
 ## Au quotidien
 **Avant d’acheter**
-- Lisez les **conditions d’utilisation** : sont-elles en français et compréhensibles ?
-- Cherchez où sont **hébergées** les données et si elles sont partagées avec des partenaires.
-- Vérifiez qu’un **contact** permet d’exercer vos droits (accès, suppression).
-- Regardez si vous pouvez **désactiver** des fonctions comme la géolocalisation.
-- Vérifiez que l’objet et son application peuvent être protégés par un **mot de passe solide**.
-- En cas de doute, demandez conseil dans un magasin spécialisé ; les tests de consommateurs et avis d’utilisateurs peuvent aider.
+- Lis les **conditions d’utilisation** : sont-elles en français et compréhensibles ?
+- Cherche où sont **hébergées** les données et si elles sont partagées avec des partenaires.
+- Vérifie qu’un **contact** permet d’exercer tes droits (accès, suppression).
+- Regarde si tu peux **désactiver** des fonctions comme la géolocalisation.
+- Vérifie que l’objet et son application peuvent être protégés par un **mot de passe solide**.
+- En cas de doute, demande conseil dans un magasin spécialisé ; les tests de consommateurs et avis d’utilisateurs peuvent aider.
 
 **Avant de le donner à l’enfant**
-- Assurez-vous que personne ne peut se connecter au jouet **sans bouton physique ou sans mot de passe**.
-- **Changez** les mots de passe ou codes par défaut.
-- Protégez votre téléphone et votre box internet par des mots de passe.
-- Choisissez un mot de passe **unique** pour le compte du jouet.
-- Vérifiez qu’un **voyant** indique quand le jouet écoute ou transmet.
-- Installez régulièrement les **mises à jour de sécurité**.
+- Assure-toi que personne ne peut se connecter au jouet **sans bouton physique ou sans mot de passe**.
+- **Change** les mots de passe ou codes par défaut.
+- Protège ton téléphone et ton box internet par des mots de passe.
+- Choisis un mot de passe **unique** pour le compte du jouet.
+- Vérifie qu’un **voyant** indique quand le jouet écoute ou transmet.
+- Installe régulièrement les **mises à jour de sécurité**.
 
 **À l’inscription**
-- Ne donnez que le **strict minimum** : si seul l’âge est nécessaire, une date approximative peut suffire.
-- Utilisez une **adresse électronique dédiée** et des **pseudonymes**.
-- N’activez que les fonctions vraiment utiles.
+- Ne donne que le **strict minimum** : si seul l’âge est nécessaire, une date approximative peut suffire.
+- Utilise une **adresse électronique dédiée** et des **pseudonymes**.
+- N’active que les fonctions vraiment utiles.
 
 **Au quotidien et à la fin**
-- **Éteignez** le jouet quand il ne sert pas.
-- Désactivez le partage automatique vers les réseaux sociaux.
-- Quand l’enfant n’utilise plus le jouet, **effacez les données** du jouet et du service en ligne.
+- **Éteins** le jouet quand il ne sert pas.
+- Désactive le partage automatique vers les réseaux sociaux.
+- Quand l’enfant n’utilise plus le jouet, **efface les données** du jouet et du service en ligne.
 
 ## Questions fréquentes
 **Faut-il expliquer à l’enfant que son jouet enregistre ?**
 Oui, avec des mots adaptés : cela respecte son intimité et l’aide à comprendre ce qu’il partage.
 
 **Une montre connectée avec géolocalisation est-elle une bonne idée ?**
-La CNIL recommande de vérifier qu’on peut contrôler les données collectées et désactiver la géolocalisation. Pesez l’intérêt réel et parlez-en avec votre enfant.
+La CNIL recommande de vérifier qu’on peut contrôler les données collectées et désactiver la géolocalisation. Pèse l’intérêt réel et parles-en avec ton enfant.
 
 **Un jouet connecté doit-il porter le marquage CE ?**
 Oui, comme tout jouet. Il ne dit rien, en revanche, de la protection des données : ce sont deux sujets distincts.
 
 **Que faire avant de revendre ou donner le jouet ?**
-Effacez les données du jouet et supprimez le compte associé au service en ligne.
+Efface les données du jouet et supprime le compte associé au service en ligne.
 
 ## Quand demander conseil
-Si vous pensez que le jouet a été piraté ou que des informations sur votre enfant circulent, coupez la connexion, changez les mots de passe et signalez-le. Si votre enfant est contacté par un inconnu, harcelé ou semble en danger, n’hésitez pas à demander de l’aide. ${DANGER} ${URG}
+Si tu penses que le jouet a été piraté ou que des informations sur ton enfant circulent, coupe la connexion, change les mots de passe et signale-le. Si ton enfant est contacté par un inconnu, harcelé ou semble en danger, n’hésite pas à demander de l’aide. ${DANGER} ${URG}
 
 ${FIN}`,
   }),
@@ -1325,37 +1325,37 @@ La catégorie 4 ne convient pas à la conduite et porte un symbole spécifique. 
 
 ## Au quotidien
 **À l’achat**
-- Cherchez le **marquage CE** sur la monture ou l’étiquette.
-- Lisez la **notice** : catégorie du filtre, performances, entretien. Elle doit être rédigée en français.
-- Pour la plage, la neige ou la montagne, choisissez une **catégorie 3** (ou 4 pour des conditions exceptionnelles, hors conduite).
-- Préférez une monture **enveloppante**, à la bonne taille, qui tient bien sur le nez et derrière les oreilles.
-- Méfiez-vous des lunettes vendues comme accessoire de déguisement ou jouet : sans indication de catégorie, considérez qu’elles ne protègent pas.
+- Cherche le **marquage CE** sur la monture ou l’étiquette.
+- Lis la **notice** : catégorie du filtre, performances, entretien. Elle doit être rédigée en français.
+- Pour la plage, la neige ou la montagne, choisis une **catégorie 3** (ou 4 pour des conditions exceptionnelles, hors conduite).
+- Préfère une monture **enveloppante**, à la bonne taille, qui tient bien sur le nez et derrière les oreilles.
+- Méfie-toi des lunettes vendues comme accessoire de déguisement ou jouet : sans indication de catégorie, considère qu’elles ne protègent pas.
 - La résistance des verres (incassables ou non, résistance aux rayures) peut être indiquée : utile pour un enfant actif.
 
 **Au quotidien**
 - Les lunettes complètent, mais ne remplacent pas, les autres protections : **chapeau à larges bords** qui couvre aussi le cou, **ombre**, vêtements.
-- Entre 12 h et 16 h, les UV sont les plus intenses en métropole : recherchez l’ombre.
+- Entre 12 h et 16 h, les UV sont les plus intenses en métropole : recherche l’ombre.
 - Les **bébés** ne doivent jamais être exposés directement au soleil.
-- Rangez les lunettes dans un étui pour éviter les rayures.
+- Range les lunettes dans un étui pour éviter les rayures.
 
 **Faire accepter les lunettes**
-Laissez l’enfant choisir la couleur parmi des modèles conformes et mettez les vôtres en même temps : l’exemple aide beaucoup.
+Laisse l’enfant choisir la couleur parmi des modèles conformes et mets les tiens en même temps : l’exemple aide beaucoup.
 
 ## Questions fréquentes
 **Les lunettes de soleil sont-elles utiles pour un bébé ?**
-Pour un bébé, la priorité est de **ne pas l’exposer** au soleil : ombre, chapeau, vêtements. Demandez conseil au médecin ou au pharmacien si vous souhaitez des lunettes adaptées.
+Pour un bébé, la priorité est de **ne pas l’exposer** au soleil : ombre, chapeau, vêtements. Demande conseil au médecin ou au pharmacien si tu souhaites des lunettes adaptées.
 
 **Des lunettes très foncées protègent-elles mieux ?**
 Pas forcément. C’est la catégorie et la mention de protection UV qui comptent, pas la teinte.
 
 **Faut-il des lunettes par temps nuageux ?**
-À la mer ou à la montagne, la luminosité peut rester forte. Adaptez la catégorie à la luminosité.
+À la mer ou à la montagne, la luminosité peut rester forte. Adapte la catégorie à la luminosité.
 
 **Les lunettes « catégorie 4 » conviennent-elles à un enfant à la montagne ?**
-Elles sont prévues pour une luminosité exceptionnelle. Elles sont inadaptées à la conduite, ce qui ne concerne pas l’enfant, mais demandez conseil à un opticien selon l’activité.
+Elles sont prévues pour une luminosité exceptionnelle. Elles sont inadaptées à la conduite, ce qui ne concerne pas l’enfant, mais demande conseil à un opticien selon l’activité.
 
 ## Quand demander conseil
-Si votre enfant a les yeux rouges, douloureux, larmoyants ou se plaint d’être ébloui après une exposition, consultez un médecin. Une baisse de vision ou une douleur intense justifie un avis rapide. ${URG}
+Si ton enfant a les yeux rouges, douloureux, larmoyants ou se plaint d’être ébloui après une exposition, consulte un médecin. Une baisse de vision ou une douleur intense justifie un avis rapide. ${URG}
 
 ${FIN}`,
   }),
@@ -1368,8 +1368,8 @@ ${FIN}`,
     sources: [S.livret1000, S.jouetsAge, S.pilesBouton],
     body_md: `## En bref
 - Partager des moments de **lecture** aide l’enfant à découvrir les mots, les sons, les formes et les couleurs, rappelle le livret des 1000 premiers jours.
-- Pour les plus petits, qui mettent tout à la bouche, choisissez des livres **robustes** : tissu, carton épais, sans petits éléments détachables.
-- Les **livres sonores ou lumineux** fonctionnent souvent avec des piles : vérifiez que le compartiment est **solide et difficile à ouvrir**.
+- Pour les plus petits, qui mettent tout à la bouche, choisis des livres **robustes** : tissu, carton épais, sans petits éléments détachables.
+- Les **livres sonores ou lumineux** fonctionnent souvent avec des piles : vérifie que le compartiment est **solide et difficile à ouvrir**.
 - Les livres-jouets avec accessoires (figurines, ventouses, perles) relèvent des mêmes précautions que les jouets : **âge et avertissements**.
 
 ## Comprendre
@@ -1381,54 +1381,54 @@ Un livre de bébé n’est pas qu’un objet à regarder : il se mâchonne, se t
 **De 0 à 12 mois**
 - Livres en **tissu** ou **imagiers cartonnés** à grosses pages, faciles à tourner et à nettoyer.
 - Images simples et contrastées, comptines, livres à toucher dont les matières sont **bien collées ou cousues**.
-- Vérifiez les éventuels anneaux, rubans ou accroches : solides, sans cordon long.
+- Vérifie les éventuels anneaux, rubans ou accroches : solides, sans cordon long.
 
 **De 1 à 3 ans**
-- Livres à **rabats** et à **tirettes** robustes : ils plaisent beaucoup, mais vérifiez régulièrement que rien ne se détache.
+- Livres à **rabats** et à **tirettes** robustes : ils plaisent beaucoup, mais vérifie régulièrement que rien ne se détache.
 - Imagiers, histoires courtes, livres-comptines.
 - Pour un livre sonore : compartiment **vissé**, son pas trop fort, et rangement après usage.
 
 **De 3 à 6 ans**
 - Albums plus longs, livres documentaires simples, premières histoires à épisodes.
-- Les livres-jeux avec accessoires (autocollants, pièces de puzzle, figurines) : respectez l’**âge indiqué**, surtout s’il y a un plus petit à la maison.
+- Les livres-jeux avec accessoires (autocollants, pièces de puzzle, figurines) : respecte l’**âge indiqué**, surtout s’il y a un plus petit à la maison.
 
 **Entretenir sa bibliothèque**
-- Un livre cartonné mâchonné qui se délite ou une page en tissu décousue : réparez solidement ou mettez de côté.
-- Rangez les livres des grands, plus fragiles, hors de portée des tout-petits.
-- Proposez un panier de livres « pour les petits » accessible au sol.
+- Un livre cartonné mâchonné qui se délite ou une page en tissu décousue : répare solidement ou mets de côté.
+- Range les livres des grands, plus fragiles, hors de portée des tout-petits.
+- Propose un panier de livres « pour les petits » accessible au sol.
 
 **Le moment de lecture**
-Installez-vous confortablement, laissez l’enfant tourner les pages, mâchonner, revenir dix fois sur la même image : tout cela fait partie de la découverte.
+Installe-toi confortablement, laisse l’enfant tourner les pages, mâchonner, revenir dix fois sur la même image : tout cela fait partie de la découverte.
 
 ## Questions fréquentes
 **Faut-il acheter beaucoup de livres ?**
 Non. Quelques livres, relus souvent, suffisent ; les bibliothèques permettent de varier sans dépenser.
 
 **Mon bébé mâchonne ses livres : faut-il l’en empêcher ?**
-C’est une façon d’explorer. Choisissez des livres adaptés (tissu, carton épais) et surveillez qu’aucun morceau ne se détache.
+C’est une façon d’explorer. Choisis des livres adaptés (tissu, carton épais) et surveille qu’aucun morceau ne se détache.
 
 **Les livres sonores sont-ils déconseillés ?**
-Non, mais ils contiennent souvent des piles : vérifiez le compartiment et rangez-les hors de portée quand ils ne servent pas.
+Non, mais ils contiennent souvent des piles : vérifie le compartiment et range-les hors de portée quand ils ne servent pas.
 
 **Les livres anciens de la famille peuvent-ils servir ?**
-Oui pour la lecture partagée, sous surveillance. Évitez de laisser un tout-petit seul avec un livre fragile qui pourrait se déchirer en petits morceaux.
+Oui pour la lecture partagée, sous surveillance. Évite de laisser un tout-petit seul avec un livre fragile qui pourrait se déchirer en petits morceaux.
 
 ## Quand demander conseil
-Si vous vous interrogez sur le langage de votre enfant, parlez-en au médecin ou à la PMI. S’il a avalé un morceau de livre, un petit élément ou une pile, ou s’il s’étouffe, agissez sans attendre. ${URG}
+Si tu t’interroges sur le langage de ton enfant, parles-en au médecin ou à la PMI. S’il a avalé un morceau de livre, un petit élément ou une pile, ou s’il s’étouffe, agis sans attendre. ${URG}
 
 ${FIN}`,
   }),
   a({
     slug: 'offrir-un-jouet-check-list-grands-parents-anniversaire',
     title: 'Offrir un jouet (grands-parents, anniversaires, fêtes) : la check-list sécurité',
-    summary: 'Avant d’offrir un jouet à un enfant qui n’est pas le vôtre, ou de recevoir des cadeaux en nombre : les vérifications simples qui évitent les mauvaises surprises.',
+    summary: 'Avant d’offrir un jouet à un enfant qui n’est pas le tien, ou de recevoir des cadeaux en nombre : les vérifications simples qui évitent les mauvaises surprises.',
     category: 'securite', tags: ['cadeau enfant', 'offrir un jouet', 'Noël', 'anniversaire', 'grands-parents', 'liste de cadeaux', 'âge du jouet', 'sécurité'],
     min_age_months: 0, max_age_months: 144, journeys: ['pregnant', 'newborn', 'child'],
     sources: [S.conseilsJouets, S.jeuxConstruction, S.jouetsAge],
     body_md: `## En bref
-- Choisissez un jouet **adapté à l’âge, aux capacités et au niveau** de l’enfant, en tenant compte des **autres enfants** du foyer.
-- Vérifiez **marquage CE**, **avertissements**, **notice en français**, et consultez **RappelConso**.
-- Privilégiez un vendeur identifiable et méfiez-vous des **prix anormalement bas**.
+- Choisis un jouet **adapté à l’âge, aux capacités et au niveau** de l’enfant, en tenant compte des **autres enfants** du foyer.
+- Vérifie **marquage CE**, **avertissements**, **notice en français**, et consulte **RappelConso**.
+- Privilégie un vendeur identifiable et méfie-toi des **prix anormalement bas**.
 - Après l’ouverture des cadeaux : **lire les notices**, **expliquer** le fonctionnement, **ramasser** les petits éléments et les emballages.
 
 ## Comprendre
@@ -1440,36 +1440,36 @@ Les jours de fête, les risques s’additionnent : petites pièces des nouveaux 
 
 ## Au quotidien
 **Pour celui qui offre**
-- Demandez aux parents l’**âge exact**, les envies, et s’il y a un **tout-petit** dans la maison.
-- Proposez une **liste** partagée : les parents peuvent y indiquer les jouets qui conviennent.
-- Regardez l’**âge indiqué** sur l’emballage, et pas seulement l’illustration.
-- Gardez le **ticket** : il facilite un échange si le jouet ne convient pas, et un remboursement en cas de rappel.
-- Évitez les objets qui **ne sont pas des jouets** : figurines de collection, gadgets d’adulte, objets à billes aimantées.
+- Demande aux parents l’**âge exact**, les envies, et s’il y a un **tout-petit** dans la maison.
+- Propose une **liste** partagée : les parents peuvent y indiquer les jouets qui conviennent.
+- Regarde l’**âge indiqué** sur l’emballage, et pas seulement l’illustration.
+- Garde le **ticket** : il facilite un échange si le jouet ne convient pas, et un remboursement en cas de rappel.
+- Évite les objets qui **ne sont pas des jouets** : figurines de collection, gadgets d’adulte, objets à billes aimantées.
 
 **Pour les parents qui reçoivent**
-- Ouvrez les cadeaux **à table** ou sur un tapis, et ramassez au fur et à mesure films plastiques, attaches, petits sachets.
-- Mettez de côté les jouets « 3 ans et plus » si un plus petit est présent.
-- Lisez la **notice** avant de lancer un jouet électrique ou motorisé ; installez les piles vous-même.
-- Si un jouet vous paraît **inadapté ou douteux** (pas de marquage CE, piles accessibles, cordon long), remerciez chaleureusement et rangez-le hors de portée, le temps de vérifier.
+- Ouvre les cadeaux **à table** ou sur un tapis, et ramasse au fur et à mesure films plastiques, attaches, petits sachets.
+- Mets de côté les jouets « 3 ans et plus » si un plus petit est présent.
+- Lis la **notice** avant de lancer un jouet électrique ou motorisé ; installe les piles toi-même.
+- Si un jouet te paraît **inadapté ou douteux** (pas de marquage CE, piles accessibles, cordon long), remercie chaleureusement et range-le hors de portée, le temps de vérifier.
 
 **Formuler les choses avec tact**
 « Merci, il est superbe ! On va le garder pour quand Léa aura 3 ans, elle met encore tout à la bouche. » Une phrase simple ménage la relation sans renoncer à la sécurité.
 
 ## Questions fréquentes
 **Les grands-parents offrent des jouets anciens de la famille : que faire ?**
-Accueillez-les comme des souvenirs précieux, examinez-les et réservez ceux qui ne conviennent pas pour plus tard. Les jouets anciens peuvent ne pas répondre aux normes actuelles.
+Accueille-les comme des souvenirs précieux, examine-les et réserve ceux qui ne conviennent pas pour plus tard. Les jouets anciens peuvent ne pas répondre aux normes actuelles.
 
 **Comment savoir si un jouet est adapté à un enfant que je connais peu ?**
-Fiez-vous à l’âge indiqué et demandez aux parents. Les magasins spécialisés peuvent aussi conseiller.
+Fie-toi à l’âge indiqué et demande aux parents. Les magasins spécialisés peuvent aussi conseiller.
 
 **Un jouet acheté à l’étranger pendant les vacances convient-il ?**
-Vérifiez marquage CE, âge et avertissements en français. En leur absence, prudence.
+Vérifie marquage CE, âge et avertissements en français. En leur absence, prudence.
 
 **Faut-il offrir des jouets à piles à un tout-petit ?**
-Ce n’est pas interdit, mais vérifiez que le compartiment est vissé et que le jouet est prévu pour son âge.
+Ce n’est pas interdit, mais vérifie que le compartiment est vissé et que le jouet est prévu pour son âge.
 
 ## Quand demander conseil
-Pendant les fêtes, gardez à l’esprit les numéros d’urgence : si un enfant s’étouffe, a avalé une pile ou un aimant, ou s’est blessé avec un jouet, appelez immédiatement. ${URG}
+Pendant les fêtes, garde à l’esprit les numéros d’urgence : si un enfant s’étouffe, a avalé une pile ou un aimant, ou s’est blessé avec un jouet, appelle immédiatement. ${URG}
 
 ${FIN}`,
   }),

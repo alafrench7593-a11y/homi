@@ -3,6 +3,7 @@
  * et où se posent les moments du jour (repas, siestes, changes, rendez-vous, rappels).
  */
 import { hourTick } from '@/i18n/formats';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React, { useMemo } from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
@@ -16,6 +17,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, radius, spacing, type SkyPhase } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatUnit, getLocale } from '@/i18n';
+import { categoryColor, type HomiCategory } from './homiColors';
 
 export interface SkyMoment {
   id: string;
@@ -28,9 +30,11 @@ export interface SkyMoment {
   upcoming?: boolean;
 }
 
-const KIND_COLOR: Record<SkyMoment['kind'], string> = {
-  feed: '#FF5C8A', meal: '#FF7A6B', sleep: '#8E6CF0', diaper: '#F2A93B', appointment: '#F0477D', reminder: '#7A5CE0',
+/** HOMI : couleurs sémantiques partagées (homiColors) — encre sur le ciel clair, lueur sur le ciel sombre. */
+const KIND_CAT: Record<SkyMoment['kind'], HomiCategory> = {
+  feed: 'breastfeed', meal: 'meal', sleep: 'sleep', diaper: 'diaper', appointment: 'appointment', reminder: 'reminder',
 };
+const kindColor = (k: SkyMoment['kind'], dark: boolean) => categoryColor(KIND_CAT[k], dark);
 
 /** Rassemble les moments d'aujourd'hui (passés et à venir) pour l'enfant affiché et le foyer. */
 export function useSkyMoments(childId?: string): SkyMoment[] {
@@ -87,7 +91,8 @@ export function SkyArc({ phase, moments, greeting, subtitle, now = new Date() }:
   };
   const nowPos = pos(hourOf(now));
   const ink = t.colors.text;
-  const body = phase === 'night' ? '#F1E6CC' : phase === 'dusk' ? '#E69A7C' : phase === 'dawn' ? '#F2B49B' : '#E8B25A';
+  // astre : lune perle la nuit, champagne au crépuscule et à l'aube, champagne doré le jour
+  const body = phase === 'night' ? '#F6EFE4' : phase === 'dusk' ? '#E9CFA4' : phase === 'dawn' ? '#F6ECDA' : '#E9CFA4';
   const arcPath = (from: number, to: number) => {
     const steps = 40;
     let d = '';
@@ -119,7 +124,7 @@ export function SkyArc({ phase, moments, greeting, subtitle, now = new Date() }:
           const q = pos(hourOf(m.at));
           return (
             <G key={m.id}>
-              <Circle cx={q.x} cy={q.y} r={m.upcoming ? 6 : 5} fill={m.upcoming ? 'none' : KIND_COLOR[m.kind]} stroke={KIND_COLOR[m.kind]} strokeWidth={m.upcoming ? 1.6 : 2} strokeOpacity={0.9} />
+              <Circle cx={q.x} cy={q.y} r={m.upcoming ? 6 : 5} fill={m.upcoming ? 'none' : kindColor(m.kind, t.isDark)} stroke={kindColor(m.kind, t.isDark)} strokeWidth={m.upcoming ? 1.6 : 2} strokeOpacity={0.9} />
             </G>
           );
         })}
@@ -165,7 +170,7 @@ export function DayThread({ moments, empty }: { moments: SkyMoment[]; empty: str
             style={{ minWidth: 112, paddingVertical: 10, paddingHorizontal: 12, borderRadius: radius.lg, backgroundColor: m.upcoming ? 'transparent' : t.colors.surface, borderWidth: 1, borderStyle: m.upcoming ? 'dashed' : 'solid', borderColor: m.upcoming ? t.colors.textMuted : t.colors.border, gap: 2 }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: KIND_COLOR[m.kind] }} />
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: kindColor(m.kind, t.isDark) }} />
               <Text variant="caption" muted>{formatTime(m.at)}</Text>
             </View>
             <Text variant="small" weight="medium">{m.label}</Text>
@@ -205,7 +210,7 @@ export function UniverseGrid() {
         <Tappable key={u.label} accessibilityRole="button" accessibilityLabel={tr(u.label as never)} onPress={() => router.push(u.href as never)} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
           {({ pressed }) => (
             <>
-              <View style={{ width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, borderWidth: 1, borderColor: t.colors.border }}>
+              <View style={{ width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface, ...glassEdge(t) }}>
                 <Icon name={u.icon} size={21} color={u.href === '/emergency' ? t.colors.heart : t.colors.text} />
               </View>
               <Text variant="caption" center>{tr(u.label as never)}</Text>

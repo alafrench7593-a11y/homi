@@ -37,7 +37,7 @@ const S = {
   incontinenceCauses: { label: 'ameli.fr — Incontinence urinaire : mécanisme, fréquence et causes', url: 'https://www.ameli.fr/assure/sante/themes/incontinence-urinaire/mecanismes-frequence-causes', consulted_on: C, published: '2026-04-10' },
   incontinenceTraitement: { label: 'ameli.fr — Traitement de l’incontinence urinaire', url: 'https://www.ameli.fr/assure/sante/themes/incontinence-urinaire/traitement', consulted_on: C },
   seinExamens: { label: 'Santé.fr (contenu Institut national du cancer) — Cancer du sein : quels examens et à quel âge ?', url: 'https://www.sante.fr/cancer-du-sein-quels-examens-et-quel-age', consulted_on: C, published: '2018-08-10' },
-  seinDepistageFaq: { label: 'Santé.fr (contenu Institut national du cancer) — Le dépistage du cancer du sein : les réponses à vos questions', url: 'https://www.sante.fr/le-depistage-du-cancer-du-sein-les-reponses-vos-questions', consulted_on: C, published: '2021-10-12' },
+  seinDepistageFaq: { label: 'Santé.fr (contenu Institut national du cancer) — Le dépistage du cancer du sein : les réponses à tes questions', url: 'https://www.sante.fr/le-depistage-du-cancer-du-sein-les-reponses-vos-questions', consulted_on: C, published: '2021-10-12' },
   seinSante: { label: 'Santé.fr — Cancer du sein', url: 'https://www.sante.fr/cancer-du-sein', consulted_on: C, published: '2026-08-13' },
   violencesSexuelles: { label: 'arretonslesviolences.gouv.fr (Gouvernement) — Violences sexuelles : besoin d’aide', url: 'https://arretonslesviolences.gouv.fr/besoin-d-aide/violences-sexuelles', consulted_on: C },
   preventionIst: { label: 'ameli.fr — Prévenir les IST', url: 'https://www.ameli.fr/assure/sante/themes/mst-ist/prevention', consulted_on: C, published: '2026-03-05' },
@@ -450,7 +450,7 @@ Le vaccin est le plus efficace **avant le début de la vie sexuelle** : la prote
 **Je suis vaccinée : puis-je arrêter les frottis ?** Non, le dépistage reste nécessaire de 25 à 65 ans, car le vaccin ne couvre pas tous les HPV à risque.
 
 ## Quand demander conseil
-Parle de la vaccination avec ton ou ta médecin, ta sage-femme ou ton pharmacien, surtout si ton enfant ou toi avez une maladie ou un traitement qui diminue les défenses immunitaires. Après une injection, appelle le **15** ou le **112** en cas de gonflement du visage, de difficulté à respirer ou à avaler, ou de malaise important.
+Parle de la vaccination avec ton ou ta médecin, ta sage-femme ou ton pharmacien, surtout si ton enfant ou toi aie une maladie ou un traitement qui diminue les défenses immunitaires. Après une injection, appelle le **15** ou le **112** en cas de gonflement du visage, de difficulté à respirer ou à avaler, ou de malaise important.
 
 ${FIN}`,
   }),
@@ -1129,7 +1129,7 @@ Il n’existe **pas de vaccin** contre le gonocoque.
 
 **Si le test est positif :**
 - prends le traitement antibiotique prescrit **jusqu’au bout** ;
-- **préviens tes partenaires** récents : ils doivent être dépistés et traités en même temps pour éviter de vous recontaminer ;
+- **préviens tes partenaires** récents : ils doivent être dépistés et traités en même temps pour éviter de te recontaminer ;
 - évite les rapports jusqu’à la fin du traitement et l’avis de ton ou ta professionnelle ;
 - un dépistage des autres IST (chlamydia, syphilis, VIH, hépatite B) est souvent proposé en même temps, car elles peuvent être associées.
 
@@ -1228,7 +1228,7 @@ Ces deux infections fragilisent les muqueuses et **augmentent nettement le risqu
 
 **Pendant le traitement :**
 - prends le traitement prescrit en entier (QuestionSexualité indique qu’il peut associer des antibiotiques et un traitement local) ;
-- **ton ou tes partenaires doivent être traités en même temps**, même sans symptômes, pour éviter de vous recontaminer ;
+- **ton ou tes partenaires doivent être traités en même temps**, même sans symptômes, pour éviter de te recontaminer ;
 - évite les rapports ou utilise un préservatif jusqu’à la guérison ;
 - continue une toilette externe douce, sans douche vaginale.
 

@@ -15,6 +15,7 @@ import { useCycleEstimates } from '@/lib/data/hooks-fertility';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { addDays, daysBetween, todayISO } from '@/lib/domain/dates';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 
 export const KIT_LINK = '/cycle/kit';
 const ITEMS = ['pads', 'spare', 'bag', 'wipes', 'pain', 'underwear'] as const;
@@ -52,7 +53,7 @@ export default function CycleKit() {
   }
 
   return (
-    <Screen back title={tr('tool.cycle_kit')} subtitle={tr('tool.cycle_kit.sub')}>
+    <Screen back title={toolName('cycle_kit')} subtitle={toolBlurb('cycle_kit')}>
       <Text muted>{tr('kit.intro')}</Text>
       <Card>
         {next ? (

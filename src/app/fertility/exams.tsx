@@ -1,6 +1,8 @@
 /**
  * « Examens et consultations possibles en cas de difficulté à concevoir » — INFORMATIF uniquement.
  * Ne prescrit rien, ne pose aucun diagnostic : oriente vers un professionnel.
+ * 30/11/2026 (outil 27) : en tête, le calendrier des examens DATÉS saisis par la personne (rendez-vous « pour moi »,
+ * rappel, agenda) ; le guide ci-dessous reste la lecture, aucun calendrier médical n'est proposé.
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
@@ -11,6 +13,7 @@ import { consultationGuidance } from '@/lib/domain/cycle';
 import { EXAMS_FOOTER, EXAMS_INTRO, POSSIBLE_EXAMS, WHEN_TO_TALK, WHO_TO_SEE } from '@/content/fertility';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ExamCalendar } from '@/features/fertilityExams/ExamCalendar';
 
 const AGES = [{ k: 'u3.fertExams.age1', value: 30 }, { k: 'u3.fertExams.age2', value: 37 }, { k: 'u3.fertExams.age3', value: 41 }] as const;
 const MONTHS = [{ k: 'u3.fertExams.mo1', value: 3 }, { k: 'u3.fertExams.mo2', value: 8 }, { k: 'u3.fertExams.mo3', value: 12 }] as const;
@@ -24,10 +27,13 @@ export default function ExamsScreen() {
   const [months, setMonths] = useState<number | null>(null);
   const [irregular, setIrregular] = useState(false);
   const [known, setKnown] = useState(false);
+  const [openSignal, setOpenSignal] = useState(0);
   const g = useMemo(() => consultationGuidance({ age, monthsTrying: months ?? 0, irregularCycles: irregular, knownCondition: known }), [age, months, irregular, known]);
 
   return (
-    <Screen back title={tr('u3.fertExams.title')} subtitle={tr('u3.fertExams.subtitle')}>
+    <Screen back title={tr('u3.fertExams.title')} subtitle={tr('u3.fertExams.subtitle')}
+      action={{ label: tr('p2.ex.add'), icon: 'plus', onPress: () => setOpenSignal((n) => n + 1), testID: 'ex-main-add' }}>
+      <ExamCalendar openSignal={openSignal} />
       <Banner tone="info" title={tr('u3.fertExams.infoT')}>{EXAMS_INTRO}</Banner>
 
       <SectionTitle title={tr('u3.fertExams.when')} />

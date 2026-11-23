@@ -30,8 +30,17 @@ export interface AutoPrefs {
   /** heures calmes, en heures entières (début inclus, fin exclue), ex. 22 → 7 */
   quietFrom: number;
   quietTo: number;
+  /** notifications envoyées par le serveur : détail visible sur l'écran verrouillé (sinon texte générique) */
+  lockscreenDetails: boolean;
 }
-export const DEFAULT_AUTO_PREFS: AutoPrefs = { appointments: true, tasks: true, prep: true, papers: true, doseFollowUp: true, widgetDetails: false, weeklyMood: false, quiet: true, quietFrom: 22, quietTo: 7 };
+export const DEFAULT_AUTO_PREFS: AutoPrefs = { appointments: true, tasks: true, prep: true, papers: true, doseFollowUp: true, widgetDetails: false, weeklyMood: false, quiet: true, quietFrom: 22, quietTo: 7, lockscreenDetails: false };
+
+/** Ligne notification_settings (serveur, 20261113000600) : heures calmes et écran verrouillé appliqués aussi aux push du serveur. */
+export interface ServerNotificationSettings { quiet_enabled: boolean; quiet_start: string; quiet_end: string; time_zone: string; lockscreen_details: boolean }
+export function serverNotificationSettings(p: Pick<AutoPrefs, 'quiet' | 'quietFrom' | 'quietTo' | 'lockscreenDetails'>, timeZone: string | undefined): ServerNotificationSettings {
+  const hh = (h: number) => `${String(Math.max(0, Math.min(23, Math.round(h)))).padStart(2, '0')}:00`;
+  return { quiet_enabled: p.quiet, quiet_start: hh(p.quietFrom), quiet_end: hh(p.quietTo), time_zone: timeZone || 'Europe/Paris', lockscreen_details: !!p.lockscreenDetails };
+}
 
 export interface AutoPlan {
   /** identifiant stable : la même chose n'est programmée qu'une fois */

@@ -37,6 +37,7 @@ insert into public.pregnancies (id, household_id, carrier_user_id, due_date, lmp
   values (:'PREG', :'FAM', :'ZOE', current_date + 230, current_date - 50, 'lmp', current_date - 20, 'twins');
 update public.user_journeys set status = 'archived', ended_on = current_date, end_reason = 'pregnancy' where type = 'ttc' and status = 'active';
 insert into public.user_journeys (household_id, type, pregnancy_id) values (:'FAM', 'pregnancy', :'PREG');
+select public.set_pregnancy_sharing(:'PREG', true, false);  -- 19/11/2026 : partage choisi par Zoé (personne enceinte)
 select tests.ok((select journeys = array['pregnant'] from public.profiles where id = :'ZOE'), 'parcours : passage projet bébé → grossesse');
 select tests.ok((select bool_and(not enabled) from public.reminders where journey_type = 'ttc') and (select enabled from public.reminders where title = 'Rappel général'),
   'parcours : rappels de l''ancien parcours désactivés, les autres conservés');

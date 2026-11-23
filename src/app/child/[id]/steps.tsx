@@ -18,6 +18,9 @@ import { isPremiumError } from '@/lib/data/hooks-family';
 import type { Checklist } from '@/lib/types';
 import { ChecklistDetail } from '@/app/lists';
 import { t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
+import { useTapShield } from '@/features/tapShield';
+import { StepsTrack } from '@/features/careTrack/StepsTrack';
 
 const STEP_KEYS = ['doctor', 'school', 'observe', 'assessment', 'pco', 'adjust', 'mdph', 'association', 'relay', 'documents'] as const;
 export const stepsTitle = (firstName: string) => `${tr('ks.listTitle')} · ${firstName}`.slice(0, 80);
@@ -32,17 +35,21 @@ export default function ChildSteps() {
   const listsQ = useChecklists();
   const [busy, setBusy] = useState(false);
   const [limit, setLimit] = useState(false);
-  if (!child) return <Screen back title={tr('tool.kid_steps')}>{childLoading ? <Skeleton rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
+  // La liste créée n'apparaît qu'une fois relue : un double appui sur « Créer » n'en crée pas une seconde
+  const { arm, guard } = useTapShield();
+  if (!child) return <Screen back title={toolName('kid_steps')}>{childLoading ? <Skeleton rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
   const title = stepsTitle(child.first_name);
   const list = (listsQ.data ?? []).find((l) => l.kind === 'custom' && l.title === title) ?? null;
 
   async function create() {
+    if (list) return;
     setBusy(true);
     try {
       const h = hid ?? (await ensureHousehold());
       const [created] = await backend.insert<Checklist>('checklists', { household_id: h, pregnancy_id: null, kind: 'custom', title });
       await backend.insert('checklist_items', STEP_KEYS.map((k, i) => ({ checklist_id: created.id, household_id: h, label: tr(`ks.step.${k}` as TKey).slice(0, 160), position: i })));
       inv('checklists', 'checklist_items', 'memberships');
+      arm();
       toast(tr('ks.created'));
     } catch (e) {
       if (isPremiumError(e)) setLimit(true); else toast(friendlyError(e), 'error');
@@ -50,17 +57,20 @@ export default function ChildSteps() {
   }
 
   return (
-    <Screen back title={tr('tool.kid_steps')} subtitle={child.first_name}>
+    <Screen back title={toolName('kid_steps')} subtitle={child.first_name}>
       <Text muted>{tr('ks.intro')}</Text>
       <Banner tone="info">{tr('ks.disclaimer')}</Banner>
       {listsQ.isLoading && !listsQ.data ? <Skeleton rows={4} /> : list ? (
-        <ChecklistDetail list={list} onClose={() => router.back()} />
+        <>
+          <StepsTrack listId={list.id} />
+          <ChecklistDetail list={list} onClose={() => router.back()} />
+        </>
       ) : (
         <Card>
           <Text weight="bold">{tr('ks.startTitle')}</Text>
           <Text variant="small" muted>{STEP_KEYS.map((k, i) => `${i + 1}. ${tr(`ks.step.${k}` as TKey)}`).join('\n')}</Text>
           {limit ? <Banner tone="warning">{tr('ks.limit')}</Banner> : null}
-          <Button label={tr('ks.start')} icon="check-square" loading={busy} onPress={() => void create()} testID="kid-steps-create" />
+          <Button label={tr('ks.start')} icon="check-square" loading={busy} onPress={guard(create)} testID="kid-steps-create" />
         </Card>
       )}
       <Button label={tr('ks.guide')} icon="book-open" variant="secondary" onPress={() => router.push(`/child/${child.id}/needs`)} />

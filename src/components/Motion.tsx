@@ -197,6 +197,37 @@ export function useFocusEntrance(focused: boolean) {
   };
 }
 
+/** Durée du fondu d'arrivée sur un écran d'onglet (changement d'onglet : bref, sans déplacement). */
+export const TAB_ENTRANCE_MS = 160;
+
+/**
+ * Entrée d'écran SANS opacité posée sur un ancêtre (HOMI_DESIGN_SYSTEM.md § 10 : l'opacité d'un ancêtre fige le
+ * verre) : la racine de l'écran ne reçoit qu'un `transform`, et un VOILE FRÈRE à la couleur du fond (uni, § 3) passe
+ * de 1 à 0 par-dessus le contenu — à l'œil, le même fondu, sans jamais toucher au verre.
+ *  - `brief` (écran d'onglet) : fondu court (160 ms), aucun déplacement ; la sortie est immédiate (l'onglet quitté
+ *    est figé et masqué par le navigateur) ;
+ *  - sinon : entrée 520 ms + montée de 10 px (continuité de navigation), sortie courte ;
+ *  - « Réduire les animations » : aucun voile, aucun déplacement, dès le premier rendu (pas de flash).
+ */
+export function useFocusCover(focused: boolean, brief: boolean) {
+  const reduce = useReduceMotion();
+  const v = useRef(new Animated.Value(reduce || !focused ? 1 : 0)).current;
+  useEffect(() => {
+    if (reduce) { v.setValue(1); return; }
+    if (focused) {
+      v.setValue(0);
+      timeTo(v, 1, brief ? TAB_ENTRANCE_MS : duration.entrance, false).start();
+    } else if (!brief) {
+      timeTo(v, 0, duration.fast, false, easing.accelerate).start();
+    }
+  }, [focused, reduce, brief, v]);
+  return {
+    style: brief || reduce ? null : { transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }, { scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.992, 1] }) }] },
+    cover: v.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+    reduce,
+  };
+}
+
 export { spring as motionSpring };
 
 // ------------------------------------------------------------------ rebond à l'activation (j'aime, favori)

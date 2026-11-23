@@ -21,6 +21,10 @@ import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { CustodyTrack } from '@/features/homeTrack/CustodyTrack';
+import { useUrlDay } from '@/features/homeTrack/kit';
 
 const PATTERN_KEYS: CustodyPattern[] = ['week', '2255', '223', 'custom'];
 const hhmm = (v: string | null) => (v ? v.slice(0, 5) : '');
@@ -29,7 +33,7 @@ const normTime = (v: string) => { const m = v.trim().match(/^(\d{1,2})[:h](\d{2}
 function useSideColors() {
   const t = useTheme();
   // deux teintes nettement différentes (chaud / froid) en plus de la lettre A ou B : jamais la couleur seule
-  return { A: t.isDark ? 'rgba(243,200,140,0.45)' : 'rgba(238,182,128,0.75)', B: t.isDark ? 'rgba(120,185,255,0.38)' : 'rgba(160,200,255,0.85)' } as Record<Side, string>;
+  return { A: t.isDark ? 'rgba(233,207,164,0.45)' : 'rgba(233,207,164,0.85)', B: t.isDark ? 'rgba(120,185,255,0.38)' : 'rgba(160,200,255,0.85)' } as Record<Side, string>;
 }
 
 function PlanEditor({ plan, visible, onClose }: { plan?: CustodyPlan; visible: boolean; onClose: (id?: string) => void }) {
@@ -160,6 +164,8 @@ export default function Custody() {
   const [selected, setSelected] = useState<string | null>(null);
   const plan = plans.find((p) => p.id === selected) ?? plans[0] ?? null;
   const today = todayISO();
+  // Jour sélectionné dans le calendrier, gardé dans l'adresse (« ?day= »)
+  const [day, setDay] = useUrlDay();
   const start = mondayOf(today);
   const exQ = useCustodyExceptions(plan?.id, addDays(start, -1));
   const ex = useMemo(() => exQ.data ?? [], [exQ.data]);
@@ -175,14 +181,14 @@ export default function Custody() {
     try { await backend.remove('custody_exceptions', [eq('id', id)]); inv('custody_exceptions'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
-  if (plansQ.isLoading) return <Screen back title={tr('tool.custody')}><Loading /></Screen>;
+  if (plansQ.isLoading) return <Screen back title={toolName('custody')}><Loading /></Screen>;
   const nowSide = plan ? sideOn(plan, today, ex) : null;
   const next = plan ? nextHandover(plan, addDays(today, 1), ex) : null;
   const todayHandover = plan ? days.find((d) => d.date === today)?.handover : false;
   const share = plan ? shareOver(plan, start, 28, ex) : null;
 
   return (
-    <Screen back title={tr('tool.custody')} subtitle={tr('tool.custody.sub')}
+    <Screen back title={toolName('custody')} subtitle={toolBlurb('custody')}
       action={plan ? { label: tr('cu.edit'), icon: 'edit-2', onPress: () => { setEditing(plan); setEditOpen(true); }, testID: 'cu-edit' } : undefined}>
       {!plan ? (
         <>
@@ -192,14 +198,8 @@ export default function Custody() {
       ) : (
         <>
           {plans.length > 1 ? <Row wrap>{plans.map((p) => <Chip key={p.id} label={childName(p) ?? `${p.label_a} / ${p.label_b}`} selected={p.id === plan.id} onPress={() => setSelected(p.id)} />)}</Row> : null}
-          <Card tone="soft" testID="cu-today">
-            <Text variant="small" muted>{tr('cu.today', { name: childName(plan) ?? tr('cu.theChildren') })}</Text>
-            <Text variant="title">{label(nowSide!)}</Text>
-            {todayHandover ? <Text weight="bold">{tr('cu.handoverToday', { time: hhmm(plan.handover_time) || tr('cu.noTime') })}</Text> : null}
-            {next ? <Text>{tr('cu.next', { date: formatDate(next.date, { weekday: 'long', day: 'numeric', month: 'long' }), side: label(next.side), time: plan.handover_time ? ` · ${hhmm(plan.handover_time)}` : '' })}</Text> : null}
-            {plan.handover_place ? <Text variant="small" muted>{tr('cu.placeIs', { place: plan.handover_place })}</Text> : null}
-          </Card>
-
+          <CustodyTrack plan={plan} day={day} exceptions={ex} handover={!!days.find((d) => d.date === day)?.handover} childName={childName(plan) ?? tr('cu.theChildren')} />
+          {day === today && next ? <Text variant="small" muted testID="cu-today">{tr('cu.next', { date: formatDate(next.date, { weekday: 'long', day: 'numeric', month: 'long' }), side: label(next.side), time: plan.handover_time ? ` · ${hhmm(plan.handover_time)}` : '' })}{todayHandover ? ` · ${tr('cu.handoverToday', { time: hhmm(plan.handover_time) || tr('cu.noTime') })}` : ''}</Text> : null}
           <SectionTitle title={tr('cu.calendar')} />
           <Card>
             <View style={{ flexDirection: 'row', gap: 4 }}>
@@ -208,12 +208,13 @@ export default function Custody() {
             {[0, 1, 2, 3].map((w) => (
               <View key={w} style={{ flexDirection: 'row', gap: 4, marginTop: 4 }}>
                 {days.slice(w * 7, w * 7 + 7).map((d) => (
-                  <View key={d.date} testID={`cu-day-${d.date}`} accessibilityLabel={`${formatDate(d.date, { weekday: 'long', day: 'numeric', month: 'long' })} : ${label(d.side)}${d.handover ? `, ${tr('cu.handover')}` : ''}`}
+                  <Tappable key={d.date} testID={`cu-day-${d.date}`} accessibilityRole="button" accessibilityState={{ selected: d.date === day }} onPress={() => setDay(d.date)}
+                    accessibilityLabel={`${formatDate(d.date, { weekday: 'long', day: 'numeric', month: 'long' })} : ${label(d.side)}${d.handover ? `, ${tr('cu.handover')}` : ''}`}
                     style={{ flex: 1, height: 46, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: colors[d.side],
-                      borderWidth: d.date === today ? 2 : d.exception ? 1 : 0, borderColor: d.date === today ? t.colors.primary : t.colors.border, borderStyle: d.exception && d.date !== today ? 'dashed' : 'solid' }}>
-                    <Text weight={d.date === today ? 'bold' : undefined}>{Number(d.date.slice(8, 10))}</Text>
+                      borderWidth: d.date === day ? 2.5 : d.date === today ? 1.5 : d.exception ? 1 : 0, borderColor: d.date === day ? t.colors.text : d.date === today ? t.colors.primary : t.colors.border, borderStyle: d.exception && d.date !== day && d.date !== today ? 'dashed' : 'solid' }}>
+                    <Text weight={d.date === day || d.date === today ? 'bold' : undefined} style={{ fontVariant: ['tabular-nums'] }}>{Number(d.date.slice(8, 10))}</Text>
                     <Text variant="caption" muted>{d.handover ? '⇄' : d.side}</Text>
-                  </View>
+                  </Tappable>
                 ))}
               </View>
             ))}
@@ -231,11 +232,11 @@ export default function Custody() {
           <SectionTitle title={tr('cu.exceptions')} action={tr('cu.addException')} onAction={() => setExOpen(true)} />
           {!ex.length ? <Card tone="soft"><Text muted>{tr('cu.noExceptions')}</Text></Card> : (
             <Card padded={false}>
-              {ex.map((e) => (
-                <ListRow key={e.id} icon="shuffle" title={`${label(e.side)}${e.note ? ` · ${e.note}` : ''}`}
+              <MotionList>{ex.map((e) => (
+                <MotionItem key={e.id}><ListRow key={e.id} icon="shuffle" title={`${label(e.side)}${e.note ? ` · ${e.note}` : ''}`}
                   subtitle={e.from_on === e.to_on ? formatDate(e.from_on, { weekday: 'short', day: 'numeric', month: 'short' }) : tr('cu.range', { from: formatDate(e.from_on, { day: 'numeric', month: 'short' }), to: formatDate(e.to_on, { day: 'numeric', month: 'short' }) })}
-                  onPress={() => void removeException(e.id)} />
-              ))}
+                  onPress={() => void removeException(e.id)} /></MotionItem>
+              ))}</MotionList>
             </Card>
           )}
           <Banner tone="info" icon="users">{tr('cu.help')}</Banner>

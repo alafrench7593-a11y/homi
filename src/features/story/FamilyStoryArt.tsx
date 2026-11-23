@@ -1,11 +1,12 @@
 /**
- * « Au fil de nous » : la femme et son enfant, dessinés à partir de la même pose numérique que les tests
+ * « HOMI » : la femme et son enfant, dessinés à partir de la même pose numérique que les tests
  * (src/lib/domain/familyStory.ts). Les changements d'étape (autre profil, enfant qui grandit) passent par des poses
  * intermédiaires, en douceur. Mouvement au repos très léger (respiration, halo, particules la nuit), jamais au
  * premier plan. « Réduire les animations » ou économie d'énergie : la même image, immobile.
  * Décoratif : une seule description pour les lecteurs d'écran.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AMBIENT_LOOPS } from '@/motion/ambient';
 import { Animated, Easing, Image, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 import { useLowPower } from '@/lib/lowPower';
@@ -15,6 +16,8 @@ import { STORY_ANIMS, STORY_IMAGES } from './storyImages';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { ambientDelay } from '@/theme/motion';
+import { HOMI } from '@/features/homiColors';
+import { useScreenFocused } from '@/components/screenChrome';
 
 const TRANSITION_MS = 1400;
 
@@ -46,7 +49,13 @@ export function useTweenedPose(target: Pose, still: boolean): Pose {
  * (jamais atteint quand still=false) — Croquis au fil doré animé : à l'arrivée, le trait se dessine de haut en bas ; ensuite, une lumière d'or parcourt
  * le fil en continu (bande claire qui glisse le long du dessin). Immobile si les animations sont réduites.
  */
-const GOLD_LIGHT = '#FFE7B0';
+const GOLD_LIGHT = HOMI.pearl;
+/**
+ * HOMI (13/11/2026) : les croquis d'« Au fil de nous » étaient tracés au fil doré. Ils sont désormais teintés en
+ * silhouette lilas (comme la famille du logo HOMI) : plus aucun fil doré visible. À remplacer par des
+ * illustrations HOMI dédiées.
+ */
+export const STORY_TINT = { day: '#A996E6', night: HOMI.lilac };
 function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity: number; still: boolean; night: boolean }) {
   const [h, setH] = useState(0);
   const draw = useRef(new Animated.Value(still ? 1 : 0)).current;
@@ -66,7 +75,7 @@ function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity:
     const loop = Animated.loop(Animated.sequence([
       ambientDelay(900),
       Animated.timing(sweep, { isInteraction: false, toValue: 1, duration: 3400, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     loop.start();
     return () => loop.stop();
   }, [still, h, sweep]);
@@ -86,7 +95,7 @@ function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity:
     // mini-vidéo au fil d'or (WebP animé transparent) : le personnage bouge pour de vrai
     return (
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, { opacity }]} testID={`story-img-${idx + 1}`}>
-        <MotionImage source={STORY_ANIMS[idx]} contentFit="contain" autoplay style={{ width: '100%', height: '100%' }} testID={`story-anim-${idx + 1}`} />
+        <MotionImage source={STORY_ANIMS[idx]} contentFit="contain" autoplay tintColor={night ? STORY_TINT.night : STORY_TINT.day} style={{ width: '100%', height: '100%' }} testID={`story-anim-${idx + 1}`} />
       </View>
     );
   }
@@ -95,7 +104,7 @@ function GoldThreadImage({ idx, opacity, still, night }: { idx: number; opacity:
       {/* tracé : le dessin apparaît de haut en bas */}
       <Animated.View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: (h || '100%') as number | `${number}%`, overflow: 'hidden',
         transform: [{ translateY: draw.interpolate({ inputRange: [0, 1], outputRange: [-(h || 0), 0] }) }] }}>
-        <Animated.Image source={src} resizeMode="contain" accessibilityIgnoresInvertColors
+        <Animated.Image source={src} resizeMode="contain" accessibilityIgnoresInvertColors tintColor={night ? STORY_TINT.night : STORY_TINT.day}
           style={[full, { transform: [{ translateY: draw.interpolate({ inputRange: [0, 1], outputRange: [h || 0, 0] }) }] }]} />
       </Animated.View>
       {/* pointe du fil qui se dessine : une lueur dorée au bord du tracé */}
@@ -121,7 +130,7 @@ function useLoop(ms: number, still: boolean) {
     const anim = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: ms, easing: ease, useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: AMBIENT_LOOPS });
     anim.start();
     return () => anim.stop();
   }, [ms, still, v]);
@@ -165,7 +174,9 @@ export function FamilyStoryArt({ scene, pose: forced, progress, blend, height = 
   const t = useTheme();
   const reduce = useReduceMotion();
   const lowPower = useLowPower();
-  const still = reduce || lowPower;
+  // écran non affiché (onglet en arrière-plan) : image immobile, comme en économie d'énergie
+  const focused = useScreenFocused();
+  const still = reduce || lowPower || !focused;
   const night = t.isDark;
   const target = useMemo(() => forced ?? poseFor(scene ?? { belly: 0, multiple: false, kids: [] }), [forced, scene]);
   const tweened = useTweenedPose(target, still || !!forced);
@@ -173,7 +184,7 @@ export function FamilyStoryArt({ scene, pose: forced, progress, blend, height = 
   const breathe = useLoop(4200, still);
   const glow = useLoop(7000, still);
   const id = React.useId().replace(/:/g, '');
-  const halo = night ? ['#8E6FB0', '#3B3A6E'] : ['#FFF8F1', '#F7E1D9'];
+  const halo = night ? [HOMI.pruneSoft, HOMI.midnightSoft] : [HOMI.white, HOMI.lilacPale];
   // Personnages générés : étape de la scène (accueil) ou fondu entre deux étapes selon le défilement (présentation).
   // Plusieurs enfants ou grossesse multiple : le dessin animé, qui sait les montrer, reste utilisé.
   const images: [number, number][] | null = useMemo(() => {

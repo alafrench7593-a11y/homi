@@ -22,6 +22,7 @@ import { isPremiumRequired } from '@/lib/premium/features';
 import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 /** Libellés traduits au rendu (la langue peut changer). */
 const KIND = { theme: 'cm3.group.kind.theme', cohort: 'cm3.group.kind.cohort', private: 'cm3.group.kind.private' } as const;
@@ -111,7 +112,7 @@ export default function GroupScreen() {
       {feed.isLoading && !feed.data ? <Skeleton kind="card" rows={2} /> : !g.is_member && g.kind === 'private' ? (
         <EmptyState icon="lock" title={tr('cm3.group.membersOnlyTitle')} body={tr('cm3.group.membersOnlyBody')} />
       ) : posts.length ? (
-        <View style={{ gap: spacing.sm }}>{posts.map((p) => <PostCard key={p.id} post={p} forum={forumOf(p.forum_id)} canPin={g.is_owner && g.kind === 'private'} />)}</View>
+        <MotionList style={{ gap: spacing.sm }}>{posts.map((p) => <MotionItem key={p.id}><PostCard key={p.id} post={p} forum={forumOf(p.forum_id)} canPin={g.is_owner && g.kind === 'private'} /></MotionItem>)}</MotionList>
       ) : <EmptyState icon="message-square" title={tr('cm3.group.noPostsTitle')} body={g.is_member ? tr('cm3.group.noPostsMember') : tr('cm3.group.noPostsGuest')} />}
 
       {g.is_owner && g.kind === 'private' ? (

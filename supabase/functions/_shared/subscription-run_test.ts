@@ -9,7 +9,7 @@ function assertEquals(a: unknown, b: unknown, msg = '') {
   if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${msg} attendu ${JSON.stringify(b)}, obtenu ${JSON.stringify(a)}`);
 }
 
-const ENT = 'AU_FIL_DE_NOUS_PREMIUM';
+const ENT = 'HOMI_PREMIUM';
 const SECRET = 'secret-de-test';
 const U1 = '11111111-1111-4111-8111-111111111111';
 const U2 = '22222222-2222-4222-8222-222222222222';
@@ -57,7 +57,7 @@ const subscriber = (product: string, expires: number, extra: Record<string, unkn
 const req = (event: Record<string, unknown>, auth = `Bearer ${SECRET}`) =>
   new Request('http://local/revenuecat-webhook', { method: 'POST', headers: { Authorization: auth, 'Content-Type': 'application/json' }, body: JSON.stringify({ api_version: '1.0', event }) });
 const ev = (type: string, extra: Record<string, unknown> = {}) => ({
-  type, id: crypto.randomUUID(), app_user_id: U1, original_app_user_id: U1, product_id: 'aufildenous_premium_monthly', entitlement_ids: [ENT],
+  type, id: crypto.randomUUID(), app_user_id: U1, original_app_user_id: U1, product_id: 'homi_premium_monthly', entitlement_ids: [ENT],
   store: 'APP_STORE', environment: 'SANDBOX', period_type: 'NORMAL', event_timestamp_ms: NOW, expiration_at_ms: NOW + 30 * DAY, ...extra,
 });
 const hook = (db: SubscriptionDb, api: RevenueCatApi | null = null) => (r: Request) => handleWebhook(r, { secret: SECRET, entitlement: ENT, api, db, now: () => NOW });
@@ -105,8 +105,8 @@ Deno.test('webhook : remboursement (CANCELLATION / CUSTOMER_SUPPORT) → droits 
 
 Deno.test('webhook : remboursement avec API qui montre encore le droit actif → remboursé quand même ; notification EN', async () => {
   const { db, rows, notices } = memoryDb('en');
-  const api = fakeApi({ [U1]: subscriber('aufildenous_premium_annual', NOW + 300 * DAY) });
-  await hook(db, api)(req(ev('CANCELLATION', { cancel_reason: 'CUSTOMER_SUPPORT', product_id: 'aufildenous_premium_annual' })));
+  const api = fakeApi({ [U1]: subscriber('homi_premium_annual', NOW + 300 * DAY) });
+  await hook(db, api)(req(ev('CANCELLATION', { cancel_reason: 'CUSTOMER_SUPPORT', product_id: 'homi_premium_annual' })));
   assertEquals(rows.get(U1)!.status, 'refunded');
   assertEquals(notices.at(-1)?.title, 'Subscription refunded');
   // Une synchronisation ultérieure avec une fiche antérieure au remboursement ne rend pas le Premium
@@ -144,19 +144,19 @@ Deno.test('webhook : SUBSCRIPTION_PAUSED ne retire pas l’accès avant l’éch
 Deno.test('webhook : changement de formule mensuel → annuel (API) puis annuel → mensuel différé (sans API)', async () => {
   const { db, rows } = memoryDb();
   await hook(db)(req(ev('INITIAL_PURCHASE')));
-  const api = fakeApi({ [U1]: subscriber('aufildenous_premium_annual', NOW + 365 * DAY) });
-  await hook(db, api)(req(ev('PRODUCT_CHANGE', { new_product_id: 'aufildenous_premium_annual', event_timestamp_ms: NOW + 1000 })));
-  assertEquals([rows.size, rows.get(U1)!.product_id, rows.get(U1)!.period_type, rows.get(U1)!.status], [1, 'aufildenous_premium_annual', 'annual', 'active']);
+  const api = fakeApi({ [U1]: subscriber('homi_premium_annual', NOW + 365 * DAY) });
+  await hook(db, api)(req(ev('PRODUCT_CHANGE', { new_product_id: 'homi_premium_annual', event_timestamp_ms: NOW + 1000 })));
+  assertEquals([rows.size, rows.get(U1)!.product_id, rows.get(U1)!.period_type, rows.get(U1)!.status], [1, 'homi_premium_annual', 'annual', 'active']);
   // Sans API : un changement vers une formule moins chère prend effet à l'échéance ; l'annuel reste affiché
-  await hook(db)(req(ev('PRODUCT_CHANGE', { product_id: 'aufildenous_premium_annual', new_product_id: 'aufildenous_premium_monthly', expiration_at_ms: NOW + 365 * DAY, event_timestamp_ms: NOW + 2000 })));
-  assertEquals([rows.size, rows.get(U1)!.product_id, rows.get(U1)!.status], [1, 'aufildenous_premium_annual', 'active']);
-  await hook(db)(req(ev('RENEWAL', { product_id: 'aufildenous_premium_monthly', expiration_at_ms: NOW + 395 * DAY, event_timestamp_ms: NOW + 365 * DAY })));
-  assertEquals([rows.get(U1)!.product_id, rows.get(U1)!.period_type], ['aufildenous_premium_monthly', 'monthly']);
+  await hook(db)(req(ev('PRODUCT_CHANGE', { product_id: 'homi_premium_annual', new_product_id: 'homi_premium_monthly', expiration_at_ms: NOW + 365 * DAY, event_timestamp_ms: NOW + 2000 })));
+  assertEquals([rows.size, rows.get(U1)!.product_id, rows.get(U1)!.status], [1, 'homi_premium_annual', 'active']);
+  await hook(db)(req(ev('RENEWAL', { product_id: 'homi_premium_monthly', expiration_at_ms: NOW + 395 * DAY, event_timestamp_ms: NOW + 365 * DAY })));
+  assertEquals([rows.get(U1)!.product_id, rows.get(U1)!.period_type], ['homi_premium_monthly', 'monthly']);
 });
 
 Deno.test('webhook : Google Play, 1 abonnement avec 3 offres de base (« abonnement:offre ») reconnu', async () => {
   const { db, rows } = memoryDb();
-  await hook(db)(req(ev('INITIAL_PURCHASE', { store: 'PLAY_STORE', product_id: 'aufildenous_premium:six-months', expiration_at_ms: NOW + 182 * DAY })));
+  await hook(db)(req(ev('INITIAL_PURCHASE', { store: 'PLAY_STORE', product_id: 'homi_premium:six-months', expiration_at_ms: NOW + 182 * DAY })));
   assertEquals([rows.get(U1)!.period_type, rows.get(U1)!.store], ['six_months', 'play_store']);
 });
 
@@ -176,7 +176,7 @@ Deno.test('webhook : TRANSFER (même compte Apple sur un autre compte) — sans 
   assertEquals((await hook(db)(req(t))).status, 200);
   assertEquals([rows.get(U2)!.status, rows.get(U2)!.expires_at, rows.get(U2)!.last_event], ['active', new Date(NOW + 30 * DAY).toISOString(), 'TRANSFER']);
   assertEquals([rows.get(U1)!.status, rows.get(U1)!.will_renew], ['expired', false]);
-  const api = fakeApi({ [U1]: { subscriber: { entitlements: {}, subscriptions: {} } }, [U2]: subscriber('aufildenous_premium_monthly', NOW + 30 * DAY) });
+  const api = fakeApi({ [U1]: { subscriber: { entitlements: {}, subscriptions: {} } }, [U2]: subscriber('homi_premium_monthly', NOW + 30 * DAY) });
   const { db: db2, rows: rows2 } = memoryDb();
   await hook(db2)(req(ev('INITIAL_PURCHASE')));
   await hook(db2, api)(req(t));
@@ -201,7 +201,7 @@ Deno.test('subscription-sync : sans connexion → 401 ; limite de débit → 429
 
 Deno.test('subscription-sync : relit RevenueCat et met à jour la ligne (restauration, changement de téléphone)', async () => {
   const { db, rows } = memoryDb();
-  const api = fakeApi({ [U1]: subscriber('aufildenous_premium_6months', NOW + 180 * DAY) });
+  const api = fakeApi({ [U1]: subscriber('homi_premium_6months', NOW + 180 * DAY) });
   const res = await handleSync(syncReq(), { userId: () => Promise.resolve(U1), rateLimit: () => Promise.resolve(true), api, entitlement: ENT, db, now: () => NOW });
   assertEquals(await res.json(), { synced: true, status: 'active', premium: true });
   const r = rows.get(U1)!;
@@ -219,12 +219,12 @@ Deno.test('subscription-sync : jamais abonnée → aucune ligne créée ; clé a
 
 Deno.test('subscription-sync : statuts lus dans la fiche (essai, annulé, grâce, remboursé, en pause, expiré)', async () => {
   const cases: [RcSubscriberBody, string][] = [
-    [subscriber('aufildenous_premium_monthly', NOW + 3 * DAY, { period_type: 'trial' }), 'trial'],
-    [subscriber('aufildenous_premium_monthly', NOW + 3 * DAY, { unsubscribe_detected_at: '2026-11-04T00:00:00Z' }), 'cancelled'],
-    [subscriber('aufildenous_premium_monthly', NOW - DAY, { billing_issues_detected_at: '2026-11-04T00:00:00Z' }, { grace_period_expires_date: new Date(NOW + 5 * DAY).toISOString() }), 'grace'],
-    [subscriber('aufildenous_premium_monthly', NOW + 3 * DAY, { refunded_at: '2026-11-04T00:00:00Z' }), 'refunded'],
-    [subscriber('aufildenous_premium_monthly', NOW - DAY, { auto_resume_date: '2026-12-20T00:00:00Z', store: 'play_store' }), 'paused'],
-    [subscriber('aufildenous_premium_monthly', NOW - DAY), 'expired'],
+    [subscriber('homi_premium_monthly', NOW + 3 * DAY, { period_type: 'trial' }), 'trial'],
+    [subscriber('homi_premium_monthly', NOW + 3 * DAY, { unsubscribe_detected_at: '2026-11-04T00:00:00Z' }), 'cancelled'],
+    [subscriber('homi_premium_monthly', NOW - DAY, { billing_issues_detected_at: '2026-11-04T00:00:00Z' }, { grace_period_expires_date: new Date(NOW + 5 * DAY).toISOString() }), 'grace'],
+    [subscriber('homi_premium_monthly', NOW + 3 * DAY, { refunded_at: '2026-11-04T00:00:00Z' }), 'refunded'],
+    [subscriber('homi_premium_monthly', NOW - DAY, { auto_resume_date: '2026-12-20T00:00:00Z', store: 'play_store' }), 'paused'],
+    [subscriber('homi_premium_monthly', NOW - DAY), 'expired'],
   ];
   for (const [body, want] of cases) {
     const { db } = memoryDb();
@@ -265,7 +265,7 @@ Deno.test('droits hors Premium : Assistant IA (abonnement) et outil à vie, remb
   const body: RcSubscriberBody = {
     subscriber: {
       entitlements: {
-        [ENT]: { expires_date: new Date(NOW + DAY).toISOString(), product_identifier: 'aufildenous_premium_monthly' },
+        [ENT]: { expires_date: new Date(NOW + DAY).toISOString(), product_identifier: 'homi_premium_monthly' },
         ASSISTANT_IA: { expires_date: new Date(NOW + 20 * DAY).toISOString(), product_identifier: 'aufildenous_ai_monthly' },
         TOOL_CUSTODY: { expires_date: null, product_identifier: 'aufildenous_tool_custody' },
         TOOL_PMA_TRACKER: { expires_date: null, product_identifier: 'aufildenous_tool_pma_tracker' },

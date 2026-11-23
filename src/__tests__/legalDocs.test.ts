@@ -17,6 +17,8 @@ describe('documents juridiques', () => {
     setLocale('fr');
   });
   it('contact public dédié à l’app', () => {
-    expect(BRAND.supportEmail).toBe('aufildenous@outlook.fr');
+    // HOMI : jamais le contact d'Au fil de nous ; adresse définitive à fournir avant publication (RELEASE_READINESS.md)
+    expect(BRAND.supportEmail).not.toBe('aufildenous@outlook.fr');
+    expect(BRAND.supportEmail).toMatch(/^[^@\s]+@[^@\s]+\.[a-z]+$/);
   });
 });

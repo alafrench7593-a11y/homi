@@ -44,6 +44,10 @@ export interface Tasting {
   preparation: string | null;
   note: string | null;
   created_at?: string;
+  /** 120 : mode de proposition, prise en main, issue (facultatifs) */
+  method?: Method | null;
+  grasp?: Grasp | null;
+  outcome?: Outcome | null;
 }
 
 /** Âge en mois révolus (date de naissance ISO, aujourd'hui ISO). */
@@ -186,4 +190,42 @@ function addDaysISO(iso: string, days: number): string {
   const d = new Date(`${iso}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
+}
+
+// ---------------------------------------------------------------- 120 DME · 123 refus (sans jugement)
+/** Mode de proposition : à la cuillère, ou diversification menée par l'enfant (morceaux qu'il prend lui-même). */
+export type Method = 'spoon' | 'blw';
+/** Prise en main observée (description, jamais une étape « attendue »). */
+export type Grasp = 'palm' | 'fingers' | 'pincer' | 'helped' | 'not_taken';
+/** Ce qui s'est passé : mangé, goûté, refusé. */
+export type Outcome = 'ate' | 'tasted' | 'refused';
+export const METHODS: Method[] = ['spoon', 'blw'];
+export const GRASPS: Grasp[] = ['palm', 'fingers', 'pincer', 'helped', 'not_taken'];
+export const OUTCOMES: Outcome[] = ['ate', 'tasted', 'refused'];
+
+/** Statut de la fiche à partir de l'issue : un refus reste un refus ; sinon le statut choisi (goûté / apprécié). */
+export function statusFromOutcome(outcome: Outcome | null, chosen: FoodStatus): FoodStatus {
+  if (outcome === 'refused') return 'refused';
+  if (outcome && chosen === 'refused') return 'tasted';
+  return chosen;
+}
+
+export interface RefusalLine { key: string; food_key: string | null; food_name: string; offered: number; refused: number; lastOffered: string; lastRefused: string; lastStatus: FoodStatus }
+/**
+ * Refus notés, par aliment : nombre de propositions notées, nombre de refus, dernières dates. Seulement des faits ;
+ * le dernier état est donné tel quel (un aliment refusé puis goûté n'est plus « refusé »).
+ */
+export function refusals(tastings: Pick<Tasting, 'food_key' | 'food_name' | 'tasted_on' | 'status'>[]): RefusalLine[] {
+  const map = new Map<string, RefusalLine>();
+  const sorted = [...tastings].sort((a, b) => a.tasted_on.localeCompare(b.tasted_on));
+  for (const t of sorted) {
+    const key = t.food_key ?? `name:${t.food_name.trim().toLowerCase()}`;
+    const cur = map.get(key) ?? { key, food_key: t.food_key, food_name: t.food_name, offered: 0, refused: 0, lastOffered: t.tasted_on, lastRefused: '', lastStatus: t.status as FoodStatus };
+    cur.offered++;
+    cur.lastOffered = t.tasted_on;
+    cur.lastStatus = t.status as FoodStatus;
+    if (t.status === 'refused') { cur.refused++; cur.lastRefused = t.tasted_on; }
+    map.set(key, cur);
+  }
+  return [...map.values()].filter((x) => x.refused > 0).sort((a, b) => b.lastRefused.localeCompare(a.lastRefused) || a.food_name.localeCompare(b.food_name));
 }

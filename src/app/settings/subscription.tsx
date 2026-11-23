@@ -1,141 +1,144 @@
 /**
- * Page « AU FIL DE NOUS PREMIUM » (URL inchangée : /settings/subscription, paramètres ?feature= et ?plan=).
- * Avantages en cartes, 3 formules (12 mois « MEILLEURE OFFRE », 6 mois « ÉCONOMISEZ », mensuel « SANS ENGAGEMENT
- * LONGUE DURÉE ») aux prix de la boutique, conditions d'essai / de renouvellement / de résiliation, bouton
- * d'abonnement, « Mon abonnement », comparaison Gratuit / Premium, ce qui reste toujours gratuit, CGU et confidentialité.
- * Sur le web : pas d'achat (l'abonnement se prend dans l'application iPhone / Android).
- * Les droits sont confirmés par le serveur (has_premium), jamais par l'application seule.
+ * Page d'abonnement « HOMI Premium » (URL inchangée : /settings/subscription, paramètres ?feature= et ?plan=).
+ *
+ * Non abonné·e, de haut en bas :
+ *  1. la promesse en une phrase ;
+ *  2. le comparatif en trois cartes — « Sans abonnement » (liste réelle), « HOMI Premium » (par besoin), « En famille »
+ *     (le second adulte inclus sans surcoût, ce que peut faire une nounou) : src/features/premium/offerModel.ts ;
+ *  3. les trois formules aux prix de la boutique, équivalent mensuel et économie CALCULÉS, formule conseillée signalée
+ *     avec sa raison (PlanPicker, partagé avec l'écran Premium) ;
+ *  4. l'essai, seulement si la boutique le confirme pour cette personne : durée, date exacte de fin, date et montant
+ *     du premier prélèvement, comment annuler avant (TrialTimeline) ;
+ *  5. le bouton d'achat avec, juste dessous et visibles en même temps que lui, ce qui est prélevé et le renouvellement
+ *     automatique en clair (PurchaseCta), puis comment annuler et l'origine du prix ;
+ *  6. « Restaurer mes achats », « Gérer mon abonnement » (page Abonnements de la boutique), CGU et confidentialité,
+ *     et « Continuer sans m'abonner », toujours visible.
+ * Abonné·e : formule en cours, prochaine échéance ou fin d'accès si résilié, origine (achat personnel ou partagé par
+ * l'autre adulte du foyer), changer de formule, gérer / annuler, restaurer.
+ * 26/11/2026 : formule « HOMI Famille » (niveau supérieur du même groupe, prix de la boutique, renouvellement écrit à
+ * côté du bouton) et crédits HOMI Aura (ce que chaque formule inclut, règles, lien « Mes crédits ») — sans promesse tant
+ * que l'IA n'est pas ouverte. Les anciennes offres (Assistant IA, outils à vie) ne sont plus affichées.
+ *
+ * Aucun prix en dur, aucun compte à rebours, aucune urgence, aucune case à cocher. Mêmes textes de conditions et
+ * mêmes calculs que l'écran Premium (src/features/premium/paywallModel.ts). Sur le web : pas d'achat. Les droits sont
+ * confirmés par le serveur (has_premium), jamais par l'application seule.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, usePathname } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Appear } from '@/components/Appear';
-import { Banner, Button, Card, Divider, Icon, Loading, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Icon, Loading, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
-import { LegalLink } from '@/features/auth';
-import { AiOfferCard, ToolOffersCard } from '@/features/offers/ToolOffer';
+import { CreditsInfoCard, FamilyOffer } from '@/features/credits/FamilyOffer';
+import { CompareBlocks } from '@/features/premium/CompareBlocks';
+import { PlanPicker } from '@/features/premium/PlanPicker';
+import { PurchaseCta, PurchaseFinePrint } from '@/features/premium/PurchaseCta';
+import { TrialTimeline } from '@/features/premium/TrialTimeline';
+import { defaultPeriod, errorFeedback, outcomeFeedback, ownActive, periodOfSub, planName } from '@/features/premium/paywallModel';
+import { MySubscriptionCard, PremiumActivated, usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subscription';
 import { useInvalidate } from '@/lib/data/hooks';
 import { useEntitlement } from '@/lib/data/hooks-premium';
-import { friendlyError, usePlanLimits } from '@/lib/data/hooks-settings';
-import { ALWAYS_FREE, FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
-import { periodOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
-import { purchase } from '@/lib/purchases';
-import { BenefitCards, MySubscriptionCard, PremiumActivated, PlanCards, PlanTerms, planTitle, PremiumHero, usePlans, WebPurchaseNotice, webWithoutPurchase } from '@/features/subscription';
-import { useTheme } from '@/theme/ThemeProvider';
+import { friendlyError } from '@/lib/data/hooks-settings';
+import { goUp } from '@/lib/links';
+import { FEATURES, featureTitle, type PremiumFeature } from '@/lib/premium/features';
+import { tierOfProduct, type Plan, type PlanPeriod } from '@/lib/premium/plans';
+import { PurchaseError } from '@/lib/premium/purchaseErrors';
+import { purchasesSdk } from '@/lib/purchaseMode';
+import { Cascade, motionHaptic } from '@/motion';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
-
-interface Row3 { label: string; free: string | boolean; plus: string | boolean }
-
-function Cell({ v }: { v: string | boolean }) {
-  const t = useTheme();
-  if (v === true) return <View style={{ flex: 1, alignItems: 'center' }}><Icon name="check" size={18} color={t.colors.success} /></View>;
-  if (v === false) return <View style={{ flex: 1, alignItems: 'center' }}><Text variant="small" muted accessibilityLabel={tr('u1.sub.notIncluded')}>—</Text></View>;
-  return <Text variant="small" center style={{ flex: 1 }}>{v}</Text>;
-}
 
 const PERIODS: PlanPeriod[] = ['monthly', 'six_months', 'annual'];
 
 export default function SubscriptionScreen() {
-  const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
+  const pathname = usePathname() ?? '/settings/subscription';
   const params = useLocalSearchParams<{ feature?: string; plan?: string }>();
   const ent = useEntitlement();
   const premium = ent.premium;
   const sub = ent.sub;
-  const { data: limits } = usePlanLimits();
   const plans = usePlans();
   const mode = plans.mode;
   const [busy, setBusy] = useState(false);
   const tried = params.feature && params.feature in FEATURES ? (params.feature as PremiumFeature) : null;
   const wanted = PERIODS.includes(params.plan as PlanPeriod) ? (params.plan as PlanPeriod) : null;
 
-  // Abonnement personnel en cours (pour proposer un changement de formule plutôt qu'un second abonnement)
-  const ownActive = !!sub && ent.premium && ['trial', 'active', 'grace', 'cancelled'].includes(sub.status);
-  const currentPeriod = ownActive ? ((sub.period_type && ['monthly', 'six_months', 'annual'].includes(sub.period_type) ? sub.period_type : periodOfProduct(sub.product_id)) as PlanPeriod | null) : null;
-  const sharedOnly = premium && !ownActive;
+  // Abonnement personnel en cours : on propose un changement de formule, jamais un second abonnement
+  const own = ownActive(sub, premium);
+  // Formule Famille personnelle : le Premium (3 durées) n'est pas proposé (redescendre se fait dans la boutique)
+  const ownFamily = own && tierOfProduct(sub?.product_id) === 'family';
+  const currentPeriod = own && !ownFamily ? periodOfSub(sub) : null;
+  const sharedOnly = premium && !own;
+  // Un·e abonné·e n'est plus éligible à l'offre d'essai (une fois par groupe d'abonnements) : jamais affichée ici
+  const list = useMemo<Plan[]>(() => (plans.data ?? []).map((p) => (own ? { ...p, trialDays: 0 } : p)), [plans.data, own]);
   const [selected, setSelected] = useState<PlanPeriod | null>(wanted);
-  const list = useMemo(() => plans.data ?? [], [plans.data]);
   useEffect(() => {
     if (selected || !list.length) return;
-    setSelected(list.find((p) => p.period !== currentPeriod)?.period ?? list[0].period);
+    setSelected(currentPeriod ? list.find((p) => p.period !== currentPeriod)?.period ?? list[0].period : defaultPeriod(list));
   }, [list, selected, currentPeriod]);
-  const chosen: Plan | undefined = list.find((p) => p.period === selected);
-
-  const lim = (key: string, unit: string) => {
-    const l = limits?.find((x) => x.key === key);
-    return l ? { free: `${l.free_value}${unit}`, plus: `${l.premium_value}${unit}` } : { free: tr('u1.sub.limited'), plus: tr('u1.sub.extended') };
-  };
-  const q = lim('assistant_questions_per_month', tr('u1.sub.perMonth'));
-  const scans = lim('product_scans_per_month', tr('u1.sub.perMonth'));
-  const voice = lim('voice_entries_per_month', tr('u1.sub.perMonth'));
-  const exportsL = lim('summary_exports_per_month', tr('u1.sub.perMonth'));
-  const kids = lim('children_count', '');
-  const docs = lim('documents_count', '');
-  const lists = lim('checklists_count', '');
-  const rem = lim('custom_reminders_count', '');
-
-  const rows: Row3[] = [
-    { label: tr('u1.sub.r01'), free: true, plus: true },
-    { label: tr('u1.sub.r02'), free: true, plus: true },
-    { label: tr('u1.sub.r03'), free: true, plus: true },
-    { label: tr('u1.sub.r04'), free: true, plus: true },
-    { label: tr('u1.sub.r05'), free: false, plus: true },
-    { label: tr('u1.sub.r06'), free: false, plus: true },
-    { label: tr('u1.sub.r07'), free: true, plus: true },
-    { label: tr('u1.sub.r08'), free: false, plus: true },
-    { label: tr('u1.sub.r09'), free: exportsL.free, plus: exportsL.plus },
-    { label: tr('u1.sub.r10'), free: voice.free, plus: voice.plus },
-    { label: tr('u1.sub.r11'), free: q.free, plus: q.plus },
-    { label: tr('u1.sub.r12'), free: false, plus: true },
-    { label: tr('u1.sub.r13'), free: scans.free, plus: scans.plus },
-    { label: tr('u1.sub.r14'), free: false, plus: true },
-    { label: tr('u1.sub.r15'), free: true, plus: true },
-    { label: tr('u1.sub.r16'), free: false, plus: true },
-    { label: tr('u1.sub.r17'), free: false, plus: true },
-    { label: tr('u1.sub.r18'), free: false, plus: true },
-    { label: tr('u1.sub.r19'), free: rem.free, plus: rem.plus },
-    { label: tr('u1.sub.r20'), free: kids.free, plus: kids.plus },
-    { label: tr('u1.sub.r21'), free: docs.free, plus: docs.plus },
-    { label: tr('u1.sub.r22'), free: lists.free, plus: lists.plus },
-    { label: tr('u1.sub.r23'), free: false, plus: true },
-    { label: tr('u1.sub.r24'), free: true, plus: true },
-    { label: tr('u1.sub.r25'), free: true, plus: true },
-    { label: tr('u1.sub.r26'), free: true, plus: true },
-    { label: tr('u1.sub.r27'), free: false, plus: true },
-    { label: tr('u1.sub.r28'), free: false, plus: true },
-    { label: tr('u1.sub.r29'), free: false, plus: true },
-    { label: tr('u1.sub.r30'), free: false, plus: true },
-    { label: tr('u1.sub.r31'), free: false, plus: true },
-    { label: tr('u1.sub.r32'), free: false, plus: true },
-  ];
+  // La formule choisie vient d'être achetée (elle devient la formule actuelle) : proposer un changement, pas elle-même
+  useEffect(() => {
+    if (!currentPeriod) return;
+    setSelected((s) => (s === currentPeriod ? list.find((p) => p.period !== currentPeriod)?.period ?? s : s));
+    // seulement quand la formule actuelle change : un choix fait ensuite par la personne est respecté
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPeriod]);
+  const chosen = list.find((p) => p.period === selected);
 
   async function buy() {
-    if (!chosen) return;
+    if (!chosen || busy) return;
     setBusy(true);
     try {
-      const out = await purchase(chosen, { currentProductId: ownActive ? sub?.product_id ?? null : null });
-      inv('subscriptions');
-      if (out === 'confirmed') toast(currentPeriod ? tr('sub2.page.changed') : tr('u1.sub.welcome', { name: tr('sub2.my.premium') }), 'success');
-      else if (out === 'pending') toast(tr('sub2.page.pending'), 'info');
+      const out = await purchasesSdk().purchase(chosen, { currentProductId: own ? sub?.product_id ?? null : null });
+      inv('subscriptions', 'access', 'plans');
+      if (out === 'confirmed') {
+        motionHaptic('success');
+        toast(currentPeriod ? tr('sub2.page.changed') : outcomeFeedback(out).text, 'success');
+      } else toast(outcomeFeedback(out).text, 'info');
     } catch (e) {
-      const msg = friendlyError(e);
-      if (!/cancel|annul/i.test(msg)) toast(msg, 'error');
+      if (e instanceof PurchaseError) toast(errorFeedback(e.kind).text, e.kind === 'unknown' ? 'error' : 'info');
+      else toast(friendlyError(e, tr('pay2.err.unknown')), 'error');
     } finally {
       setBusy(false);
     }
   }
 
-  const ctaLabel = !chosen ? '' : chosen.period === currentPeriod ? tr('sub2.cta.isCurrent')
-    : currentPeriod ? tr('sub2.cta.change', { plan: planTitle(chosen.period) })
-    : chosen.trialDays ? tr('sub2.cta.trial', { count: chosen.trialDays })
-    : tr('sub2.cta.subscribe', { price: chosen.price });
+  const isCurrent = !!chosen && chosen.period === currentPeriod;
+  const changeLabel = !chosen || !currentPeriod ? undefined : isCurrent ? tr('sub2.cta.isCurrent') : tr('sub2.cta.change', { plan: planName(chosen.period) });
+
+  const offer = webWithoutPurchase(mode) ? <WebPurchaseNotice /> : mode === 'unavailable' ? (
+    <Banner tone="info" title={tr('u1.sub.soonTitle')}>{tr('u1.sub.soonBody')}</Banner>
+  ) : plans.isLoading ? <Loading label={tr('u1.sub.loadingOffers')} /> : plans.isError || !list.length ? (
+    <>
+      <Banner tone="warning" title={tr('u1.sub.offersDown')}>{plans.isError ? friendlyError(plans.error, tr('u1.sub.storeUnreachable')) : tr('u1.sub.storeUnreachable')}</Banner>
+      <Button label={tr('u1.sub.retry')} icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
+    </>
+  ) : (
+    <View style={{ gap: spacing.md }} testID="sub3-offer">
+      <PlanPicker plans={list} selected={selected} onSelect={setSelected} currentPeriod={currentPeriod} />
+      {chosen && chosen.trialDays > 0 ? (
+        <Card tone="soft"><TrialTimeline plan={chosen} /></Card>
+      ) : null}
+      {chosen ? (
+        <>
+          {/* Bouton + ce qui est prélevé + renouvellement automatique : même bloc que l'écran Premium */}
+          <PurchaseCta plan={chosen} label={changeLabel} chargeLine={currentPeriod ? tr('sub2.page.changeNote') : undefined}
+            loading={busy} disabled={busy || isCurrent} onPress={() => void buy()} testID="plan-buy" />
+          <PurchaseFinePrint plan={chosen} omitCancel={chosen.trialDays > 0} />
+        </>
+      ) : null}
+      {mode === 'test' ? <Banner tone="demo" title={tr('u1.sub.demoTitle')}>{tr('u1.sub.demoBody')}</Banner> : null}
+    </View>
+  );
 
   return (
     <Screen back title={tr('sub2.page.screen')}>
-      <Appear kind="soft" delay={0.04}><PremiumHero /></Appear>
+      {!premium ? (
+        <Cascade index={0}>
+          <Text variant="heading" accessibilityRole="header" testID="sub3-promise">{tr('sub3.promise')}</Text>
+        </Cascade>
+      ) : null}
 
       {tried && !premium ? (
         <Card tone="gold">
@@ -149,93 +152,43 @@ export default function SubscriptionScreen() {
       {/* Activation confirmée par le serveur pendant que la page est ouverte (achat, restauration, essai) */}
       <PremiumActivated premium={premium} />
 
-      {/* État actuel : formule, statut, dates, prix, gestion, restauration */}
-      <View testID="sub-status"><MySubscriptionCard showDiscover={false} /></View>
+      {/* Abonné·e : formule, échéance ou fin d'accès, origine, gestion, restauration */}
+      {premium ? <View testID="sub-status"><MySubscriptionCard showDiscover={false} /></View> : null}
 
       {!premium ? (
         <>
-          <SectionTitle title={tr('sub2.ben.title')} />
-          <Appear kind="soft" delay={0.1}><BenefitCards /></Appear>
+          <SectionTitle title={tr('sub3.cmp.title')} />
+          <CompareBlocks />
         </>
       ) : null}
 
-      {!sharedOnly ? (
+      {!sharedOnly && !ownFamily ? (
         <>
           <SectionTitle title={currentPeriod ? tr('sub2.page.change') : tr('sub2.page.choose')} />
-          {webWithoutPurchase(mode) ? <WebPurchaseNotice /> : mode === 'unavailable' ? (
-            <Banner tone="info" title={tr('u1.sub.soonTitle')}>{tr('u1.sub.soonBody')}</Banner>
-          ) : plans.isLoading ? <Loading label={tr('u1.sub.loadingOffers')} /> : plans.isError ? (
-            <>
-              <Banner tone="warning" title={tr('u1.sub.offersDown')}>{friendlyError(plans.error, tr('u1.sub.storeUnreachable'))}</Banner>
-              <Button label={tr('u1.sub.retry')} icon="refresh-cw" variant="secondary" onPress={() => void plans.refetch()} testID="plans-retry" />
-            </>
-          ) : list.length ? (
-            <>
-              <PlanCards plans={list} selected={selected} onSelect={setSelected} currentPeriod={currentPeriod} />
-              {currentPeriod ? <Text variant="caption" muted>{tr('sub2.page.changeNote')}</Text> : null}
-              {chosen ? (
-                <Card tone="soft"><PlanTerms plan={chosen} /></Card>
-              ) : null}
-              {chosen ? (
-                <Appear kind="btn" delay={0.12}>
-                  <Button label={ctaLabel} icon="star" loading={busy} disabled={busy || chosen.period === currentPeriod} onPress={buy} testID="plan-buy" full />
-                </Appear>
-              ) : null}
-              {/* Liens exigés par l'App Store (règle 3.1.2) à côté du bouton d'achat */}
-              <Row wrap testID="plan-legal-links">
-                <LegalLink doc="terms">{tr('sub2.my.terms')}</LegalLink>
-                <LegalLink doc="privacy">{tr('sub2.my.privacy')}</LegalLink>
-              </Row>
-              {mode === 'test' ? <Banner tone="demo" title={tr('u1.sub.demoTitle')}>{tr('u1.sub.demoBody')}</Banner> : null}
-            </>
-          ) : (
-            <Banner tone="warning" title={tr('u1.sub.offersDown')}>{tr('u1.sub.storeUnreachable')}</Banner>
-          )}
+          {offer}
         </>
       ) : null}
 
-      {/* L'assistant IA seul (7,99 €/mois) ; les outils achetés à vie avant le 08/11/2026 restent listés */}
-      <SectionTitle title={tr('offer.aiSection')} />
-      <AiOfferCard />
-      <ToolOffersCard />
+      {/* Famille : niveau supérieur (tous les adultes du foyer, crédits en commun) ; jamais pour un accès partagé */}
+      {!sharedOnly && !webWithoutPurchase(mode) ? (
+        <FamilyOffer current={!!ownFamily} premiumProductId={own && !ownFamily ? sub?.product_id ?? null : null} />
+      ) : null}
+      <CreditsInfoCard />
 
-      <SectionTitle title={tr('u1.sub.compare')} />
-      <Card>
-        <View style={{ flexDirection: 'row', paddingVertical: 6 }}>
-          <Text variant="label" style={{ flex: 2.2 }}> </Text>
-          <Text variant="label" center style={{ flex: 1 }}>{tr('u1.sub.colFree')}</Text>
-          <Text variant="label" center style={{ flex: 1 }}>{tr('u1.sub.colPremium')}</Text>
-        </View>
-        <Divider />
-        {rows.map((r, i) => (
-          <View key={r.label} accessible accessibilityLabel={tr('u1.sub.rowA11y', { label: r.label, free: r.free === true ? tr('u1.sub.included') : r.free === false ? tr('u1.sub.notIncludedLc') : r.free, plus: r.plus === true ? tr('u1.sub.included') : r.plus === false ? tr('u1.sub.notIncludedLc') : r.plus })}
-            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
-            <Text variant="small" style={{ flex: 2.2, paddingRight: 6 }}>{r.label}</Text>
-            <Cell v={r.free} />
-            <Cell v={r.plus} />
-          </View>
-        ))}
-      </Card>
+      {/* Sans abonnement : état, « Gérer mon abonnement » (page de la boutique), restauration, CGU et confidentialité */}
+      {!premium ? (
+        <>
+          <View testID="sub-status"><MySubscriptionCard showDiscover={false} /></View>
+          <Button label={tr('sub3.continueFree')} variant="ghost" onPress={() => goUp(pathname)} testID="sub3-continue-free" full />
+        </>
+      ) : null}
 
-      <SectionTitle title={tr('u1.sub.alwaysFree')} />
-      <View testID="always-free">
-        <Card tone="soft">
-          {ALWAYS_FREE.map((label, i) => (
-            <Row key={label} style={{ paddingVertical: 6, borderTopWidth: i ? 0.5 : 0, borderColor: t.colors.border }}>
-              <Icon name="shield" size={16} color={t.colors.success} />
-              <Text variant="small" style={{ flex: 1 }}>{label}</Text>
-            </Row>
-          ))}
-          <Button label={tr('u1.sub.emergency')} size="sm" variant="ghost" icon="life-buoy" style={{ alignSelf: 'flex-start', marginTop: 4 }} onPress={() => router.push('/emergency')} />
-        </Card>
-        <Text variant="caption" muted style={{ marginTop: spacing.xs }} testID="no-targeted-ads">
-          {tr('u1.sub.noAds')}
-        </Text>
-      </View>
-
-      <Text variant="caption" muted testID="sub-terms">
-        {tr('u1.sub.terms')}
-      </Text>
+      {premium ? (
+        <>
+          <SectionTitle title={tr('sub3.sub.included')} />
+          <CompareBlocks free={false} startIndex={0} />
+        </>
+      ) : null}
     </Screen>
   );
 }

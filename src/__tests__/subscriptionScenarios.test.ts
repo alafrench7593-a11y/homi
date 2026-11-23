@@ -19,13 +19,13 @@ jest.mock('@/lib/backend', () => ({ get backend() { return mockBackend; } }));
 
 import { entitlement, grants, type SubRow } from '@/lib/premium/entitlement';
 import { deviceState, needsServerSync } from '@/lib/premium/customerSync';
-import { billingDates, buildPlans, demoPlans, packagePeriod, productChangeFor, savingsPct, type Plan } from '@/lib/premium/plans';
+import { billingDates, buildPlans, demoPlans, packagePeriod, perMonthAmount, productChangeFor, savingsPct, type Plan } from '@/lib/premium/plans';
 import { mapStatus, periodOf, subscriptionFromEvent, subscriptionFromSubscriber } from '../../supabase/functions/_shared/revenuecat';
 
 const NOW = new Date('2026-11-05T10:00:00Z');
 const DAY = 86_400_000;
 const at = (d: number) => new Date(NOW.getTime() + d * DAY).toISOString();
-const ENT = 'AU_FIL_DE_NOUS_PREMIUM';
+const ENT = 'HOMI_PREMIUM';
 const USER = '11111111-1111-4111-8111-111111111111';
 
 type Pkg = Parameters<typeof buildPlans>[0][number];
@@ -34,11 +34,11 @@ const pkg = (packageType: string, identifier: string, price: number, priceString
   product: { identifier, price, priceString, currencyCode: 'EUR', subscriptionPeriod: null, introPrice: null, defaultOption: null, ...extra },
 } as unknown as Pkg);
 const storePkgs = () => [
-  pkg('MONTHLY', 'aufildenous_premium_monthly', 10.99, '10,99 €', { subscriptionPeriod: 'P1M', introPrice: { price: 0, periodUnit: 'DAY', periodNumberOfUnits: 3 } }),
-  pkg('SIX_MONTH', 'aufildenous_premium_6months', 54.99, '54,99 €', { subscriptionPeriod: 'P6M' }),
-  pkg('ANNUAL', 'aufildenous_premium_annual', 99.99, '99,99 €', { subscriptionPeriod: 'P1Y' }),
+  pkg('MONTHLY', 'homi_premium_monthly', 10.99, '10,99 €', { subscriptionPeriod: 'P1M', introPrice: { price: 0, periodUnit: 'DAY', periodNumberOfUnits: 3 } }),
+  pkg('SIX_MONTH', 'homi_premium_6months', 54.99, '54,99 €', { subscriptionPeriod: 'P6M' }),
+  pkg('ANNUAL', 'homi_premium_annual', 99.99, '99,99 €', { subscriptionPeriod: 'P1Y' }),
 ];
-const entInfo = (isActive: boolean, productIdentifier = 'aufildenous_premium_monthly', expirationDate = at(30), willRenew = true) =>
+const entInfo = (isActive: boolean, productIdentifier = 'homi_premium_monthly', expirationDate = at(30), willRenew = true) =>
   ({ entitlements: { all: { [ENT]: { isActive, productIdentifier, expirationDate, willRenew } }, active: {} }, managementURL: null });
 
 /** Module d'achat en mode boutique (clé publique présente, vrai serveur), rechargé à neuf (= réinstallation). */
@@ -100,31 +100,31 @@ describe('15 scénarios', () => {
   });
 
   it('2. éligible à l’essai : 3 jours affichés sur le mensuel seulement (Apple confirme)', async () => {
-    mockSdk.checkTrialOrIntroductoryPriceEligibility.mockResolvedValue({ aufildenous_premium_monthly: { status: 2 } } as never);
+    mockSdk.checkTrialOrIntroductoryPriceEligibility.mockResolvedValue({ homi_premium_monthly: { status: 2 } } as never);
     const p = freshStore();
     const plans = await p.getPlans();
     expect(plans.map((x) => [x.period, x.trialDays])).toEqual([['annual', 0], ['six_months', 0], ['monthly', 3]]);
     // Non éligible (essai déjà utilisé dans le groupe) : aucun essai promis
-    mockSdk.checkTrialOrIntroductoryPriceEligibility.mockResolvedValue({ aufildenous_premium_monthly: { status: 1 } } as never);
+    mockSdk.checkTrialOrIntroductoryPriceEligibility.mockResolvedValue({ homi_premium_monthly: { status: 1 } } as never);
     expect((await p.getPlans()).find((x) => x.period === 'monthly')!.trialDays).toBe(0);
   });
 
   it('3. pendant l’essai : Premium, fin d’essai connue, renouvellement prévu', () => {
-    const r = subscriptionFromEvent({ type: 'INITIAL_PURCHASE', app_user_id: USER, period_type: 'TRIAL', store: 'APP_STORE', event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 3 * DAY, 'aufildenous_premium_monthly', ENT, NOW.getTime());
+    const r = subscriptionFromEvent({ type: 'INITIAL_PURCHASE', app_user_id: USER, period_type: 'TRIAL', store: 'APP_STORE', event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 3 * DAY, 'homi_premium_monthly', ENT, NOW.getTime());
     expect(r).toMatchObject({ status: 'trial', period_type: 'monthly', trial_ends_at: at(3), will_renew: true });
     expect(entitlement(r as SubRow, NOW)).toMatchObject({ premium: true, state: 'trial', renews: true });
   });
 
   it('4. après l’essai : sans paiement → gratuit ; avec conversion → actif', () => {
     expect(entitlement({ status: 'trial', expires_at: at(-1), will_renew: true }, NOW).premium).toBe(false);
-    const conv = subscriptionFromEvent({ type: 'RENEWAL', app_user_id: USER, period_type: 'NORMAL', is_trial_conversion: true, price_in_purchased_currency: 10.99, currency: 'EUR', event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 30 * DAY, 'aufildenous_premium_monthly', ENT, NOW.getTime());
+    const conv = subscriptionFromEvent({ type: 'RENEWAL', app_user_id: USER, period_type: 'NORMAL', is_trial_conversion: true, price_in_purchased_currency: 10.99, currency: 'EUR', event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 30 * DAY, 'homi_premium_monthly', ENT, NOW.getTime());
     expect(conv).toMatchObject({ status: 'active', price: 10.99, currency: 'EUR' });
   });
 
   it.each([
-    ['5. mensuel actif', 'aufildenous_premium_monthly', 'monthly', 30],
-    ['6. semestriel actif', 'aufildenous_premium_6months', 'six_months', 182],
-    ['7. annuel actif', 'aufildenous_premium_annual', 'annual', 365],
+    ['5. mensuel actif', 'homi_premium_monthly', 'monthly', 30],
+    ['6. semestriel actif', 'homi_premium_6months', 'six_months', 182],
+    ['7. annuel actif', 'homi_premium_annual', 'annual', 365],
   ] as const)('%s : même Premium, formule reconnue', (_n, product, period, days) => {
     const body = { subscriber: { entitlements: { [ENT]: { expires_date: at(days), product_identifier: product, purchase_date: at(0) } }, subscriptions: { [product]: { expires_date: at(days), period_type: 'normal', store: 'app_store', original_purchase_date: at(0) } } } };
     const r = subscriptionFromSubscriber(body, ENT, NOW.getTime())!.row;
@@ -173,8 +173,8 @@ describe('15 scénarios', () => {
   });
 
   it('13. réinstallation : nouvelle configuration avec le même appUserID ; état serveur déjà à jour → aucune synchronisation', async () => {
-    mockSdk.getCustomerInfo.mockResolvedValue(entInfo(true, 'aufildenous_premium_annual', at(200)));
-    mockBackend.select.mockResolvedValue([{ status: 'active', product_id: 'aufildenous_premium_annual', expires_at: at(200), will_renew: true, store: 'app_store', period_type: 'annual' }]);
+    mockSdk.getCustomerInfo.mockResolvedValue(entInfo(true, 'homi_premium_annual', at(200)));
+    mockBackend.select.mockResolvedValue([{ status: 'active', product_id: 'homi_premium_annual', expires_at: at(200), will_renew: true, store: 'app_store', period_type: 'annual' }]);
     const p = freshStore();
     await p.configurePurchases(USER);
     expect(mockSdk.configure).toHaveBeenCalledWith({ apiKey: 'appl_public_test', appUserID: USER });
@@ -182,7 +182,7 @@ describe('15 scénarios', () => {
   });
 
   it('14. remboursement : droits retirés immédiatement, statut « Remboursé »', () => {
-    const r = subscriptionFromEvent({ type: 'CANCELLATION', cancel_reason: 'CUSTOMER_SUPPORT', app_user_id: USER, event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 20 * DAY, 'aufildenous_premium_annual', ENT, NOW.getTime());
+    const r = subscriptionFromEvent({ type: 'CANCELLATION', cancel_reason: 'CUSTOMER_SUPPORT', app_user_id: USER, event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 20 * DAY, 'homi_premium_annual', ENT, NOW.getTime());
     expect(r).toMatchObject({ status: 'refunded', will_renew: false, refunded_at: NOW.toISOString() });
     expect(entitlement(r as SubRow, NOW)).toMatchObject({ premium: false, state: 'refunded' });
   });
@@ -204,33 +204,73 @@ describe('15 scénarios', () => {
 });
 
 // ================================================================ changement de formule
+// ================================================================ issues d'achat (écran Premium v2)
+describe('issues d’achat en mode boutique : jamais de faux succès', () => {
+  it('Ask to Buy (PAYMENT_PENDING) → « deferred », aucune relecture ni droit accordé', async () => {
+    const p = freshStore();
+    await p.configurePurchases(USER);
+    const [annual] = await p.getPlans();
+    mockSdk.purchasePackage.mockRejectedValueOnce(Object.assign(new Error('pending'), { code: '20', userCancelled: false }) as never);
+    await expect(p.purchase(annual)).resolves.toBe('deferred');
+    expect(mockBackend.invoke).not.toHaveBeenCalledWith('subscription-sync', expect.anything());
+  });
+  it('feuille Apple fermée → « cancelled » ; réseau coupé → PurchaseError « network »', async () => {
+    const p = freshStore();
+    await p.configurePurchases(USER);
+    const [annual] = await p.getPlans();
+    mockSdk.purchasePackage.mockRejectedValueOnce(Object.assign(new Error('cancel'), { code: '1', userCancelled: true }) as never);
+    await expect(p.purchase(annual)).resolves.toBe('cancelled');
+    mockSdk.purchasePackage.mockRejectedValueOnce(Object.assign(new Error('offline'), { code: '35' }) as never);
+    await expect(p.purchase(annual)).rejects.toMatchObject({ name: 'PurchaseError', kind: 'network' });
+    mockSdk.purchasePackage.mockRejectedValueOnce(Object.assign(new Error('not allowed'), { code: '3' }) as never);
+    await expect(p.purchase(annual)).rejects.toMatchObject({ kind: 'not_allowed' });
+  });
+  it('3 formules avec offre d’essai côté App Store : l’essai n’est affiché que si Apple confirme l’éligibilité', async () => {
+    const intro = { introPrice: { price: 0, periodUnit: 'DAY', periodNumberOfUnits: 3 } };
+    mockSdk.getOfferings.mockResolvedValue({ current: { availablePackages: [
+      pkg('MONTHLY', 'homi_premium_monthly', 14.99, '14,99 €', { subscriptionPeriod: 'P1M', ...intro }),
+      pkg('SIX_MONTH', 'homi_premium_6months', 69.99, '69,99 €', { subscriptionPeriod: 'P6M', ...intro }),
+      pkg('ANNUAL', 'homi_premium_annual', 119.99, '119,99 €', { subscriptionPeriod: 'P1Y', ...intro }),
+    ] } });
+    const p = freshStore();
+    mockSdk.checkTrialOrIntroductoryPriceEligibility.mockResolvedValue({ homi_premium_monthly: { status: 2 }, homi_premium_6months: { status: 2 }, homi_premium_annual: { status: 2 } } as never);
+    const plans = await p.getPlans();
+    expect(plans.map((x) => [x.period, x.price, x.savingsPct, x.trialDays, x.demo])).toEqual([
+      ['annual', '119,99 €', 33, 3, false], ['six_months', '69,99 €', 22, 3, false], ['monthly', '14,99 €', null, 3, false],
+    ]);
+    // Essai déjà utilisé dans le groupe « HOMI Premium » : plus aucun essai, sur aucune formule
+    mockSdk.checkTrialOrIntroductoryPriceEligibility.mockResolvedValue({ homi_premium_monthly: { status: 1 }, homi_premium_6months: { status: 1 }, homi_premium_annual: { status: 1 } } as never);
+    expect((await p.getPlans()).map((x) => x.trialDays)).toEqual([0, 0, 0]);
+  });
+});
+
 describe('changement de formule (sans double abonnement)', () => {
   it('Android mensuel → annuel : remplacement immédiat au prorata ; annuel → mensuel : à l’échéance', () => {
-    expect(productChangeFor('android', 'aufildenous_premium_monthly', 'monthly', { id: 'aufildenous_premium_annual', period: 'annual' }))
-      .toEqual({ oldProductIdentifier: 'aufildenous_premium_monthly', replacementMode: 'WITH_TIME_PRORATION' });
-    expect(productChangeFor('android', 'aufildenous_premium_annual', 'annual', { id: 'aufildenous_premium_monthly', period: 'monthly' }))
-      .toEqual({ oldProductIdentifier: 'aufildenous_premium_annual', replacementMode: 'DEFERRED' });
+    expect(productChangeFor('android', 'homi_premium_monthly', 'monthly', { id: 'homi_premium_annual', period: 'annual' }))
+      .toEqual({ oldProductIdentifier: 'homi_premium_monthly', replacementMode: 'WITH_TIME_PRORATION' });
+    expect(productChangeFor('android', 'homi_premium_annual', 'annual', { id: 'homi_premium_monthly', period: 'monthly' }))
+      .toEqual({ oldProductIdentifier: 'homi_premium_annual', replacementMode: 'DEFERRED' });
     // 1 abonnement Google à 3 offres de base : l'identifiant attendu est celui de l'abonnement
-    expect(productChangeFor('android', 'aufildenous_premium:monthly', 'monthly', { id: 'aufildenous_premium:annual', period: 'annual' })?.oldProductIdentifier).toBe('aufildenous_premium');
+    expect(productChangeFor('android', 'homi_premium:monthly', 'monthly', { id: 'homi_premium:annual', period: 'annual' })?.oldProductIdentifier).toBe('homi_premium');
   });
   it('iOS (même groupe d’abonnements) et premier achat : rien à transmettre, Apple gère', () => {
-    expect(productChangeFor('ios', 'aufildenous_premium_monthly', 'monthly', { id: 'aufildenous_premium_annual', period: 'annual' })).toBeNull();
-    expect(productChangeFor('android', null, null, { id: 'aufildenous_premium_annual', period: 'annual' })).toBeNull();
+    expect(productChangeFor('ios', 'homi_premium_monthly', 'monthly', { id: 'homi_premium_annual', period: 'annual' })).toBeNull();
+    expect(productChangeFor('android', null, null, { id: 'homi_premium_annual', period: 'annual' })).toBeNull();
   });
   it('Android : l’achat d’une autre formule transmet l’abonnement en cours à Google Play', async () => {
-    mockSdk.getCustomerInfo.mockResolvedValue(entInfo(true, 'aufildenous_premium_monthly'));
+    mockSdk.getCustomerInfo.mockResolvedValue(entInfo(true, 'homi_premium_monthly'));
     mockBackend.rpc.mockResolvedValue(true);
     const p = freshStore('android');
     await p.configurePurchases(USER);
     const plans = await p.getPlans();
     await expect(p.purchase(plans.find((x) => x.period === 'annual')!)).resolves.toBe('confirmed');
-    expect(mockSdk.purchasePackage).toHaveBeenCalledWith(expect.anything(), null, { oldProductIdentifier: 'aufildenous_premium_monthly', replacementMode: 'WITH_TIME_PRORATION' });
+    expect(mockSdk.purchasePackage).toHaveBeenCalledWith(expect.anything(), null, { oldProductIdentifier: 'homi_premium_monthly', replacementMode: 'WITH_TIME_PRORATION' });
   });
   it('serveur : mensuel → annuel (PRODUCT_CHANGE puis RENEWAL) → formule annuelle', () => {
-    expect(periodOf('aufildenous_premium_annual')).toBe('annual');
-    expect(periodOf('aufildenous_premium_6months')).toBe('six_months');
-    expect(periodOf('aufildenous_premium:six-months')).toBe('six_months');
-    const r = subscriptionFromEvent({ type: 'RENEWAL', app_user_id: USER, event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 365 * DAY, 'aufildenous_premium_annual', ENT, NOW.getTime());
+    expect(periodOf('homi_premium_annual')).toBe('annual');
+    expect(periodOf('homi_premium_6months')).toBe('six_months');
+    expect(periodOf('homi_premium:six-months')).toBe('six_months');
+    const r = subscriptionFromEvent({ type: 'RENEWAL', app_user_id: USER, event_timestamp_ms: NOW.getTime() }, NOW.getTime() + 365 * DAY, 'homi_premium_annual', ENT, NOW.getTime());
     expect(r.period_type).toBe('annual');
   });
 });
@@ -240,7 +280,7 @@ describe('3 packages, économies, prix', () => {
   it('choix des 3 packages : un par durée, dans l’ordre 12 mois / 6 mois / mensuel ; les autres ignorés', () => {
     const extra = [pkg('WEEKLY', 'x_week', 2.99, '2,99 €'), pkg('MONTHLY', 'doublon_mensuel', 1, '1,00 €'), pkg('CUSTOM', 'custom_six', 50, '50,00 €', { subscriptionPeriod: 'P6M' })];
     const plans = buildPlans([...storePkgs(), ...extra], 'ios', 'fr-FR');
-    expect(plans.map((p) => [p.period, p.id])).toEqual([['annual', 'aufildenous_premium_annual'], ['six_months', 'aufildenous_premium_6months'], ['monthly', 'aufildenous_premium_monthly']]);
+    expect(plans.map((p) => [p.period, p.id])).toEqual([['annual', 'homi_premium_annual'], ['six_months', 'homi_premium_6months'], ['monthly', 'homi_premium_monthly']]);
     expect(packagePeriod(pkg('CUSTOM', 'y', 1, '1', { subscriptionPeriod: 'P1Y' }) as never)).toBe('annual');
     expect(packagePeriod(pkg('LIFETIME', 'z', 1, '1') as never)).toBeNull();
   });
@@ -256,18 +296,24 @@ describe('3 packages, économies, prix', () => {
   });
   it('autres prix de la boutique (autre pays, promotion) : affichés et calculés tels quels', () => {
     const plans = buildPlans([
-      pkg('MONTHLY', 'aufildenous_premium_monthly', 11.49, 'CHF 11.49'), pkg('SIX_MONTH', 'aufildenous_premium_6months', 59, 'CHF 59.00'), pkg('ANNUAL', 'aufildenous_premium_annual', 104, 'CHF 104.00'),
+      pkg('MONTHLY', 'homi_premium_monthly', 11.49, 'CHF 11.49'), pkg('SIX_MONTH', 'homi_premium_6months', 59, 'CHF 59.00'), pkg('ANNUAL', 'homi_premium_annual', 104, 'CHF 104.00'),
     ].map((p) => ({ ...p, product: { ...p.product, currencyCode: 'CHF' } })) as never, 'ios', 'fr-CH');
     expect(plans.map((p) => p.price)).toEqual(['CHF 104.00', 'CHF 59.00', 'CHF 11.49']);
     expect(plans.map((p) => p.savingsPct)).toEqual([savingsPct(104, 12, 11.49), savingsPct(59, 6, 11.49), null]);
     expect(plans.every((p) => !p.demo)).toBe(true);
   });
-  it('démonstration : grille 10,99 / 49,99 / 79,99 (08/11/2026), signalée, essai de 3 jours sur le mensuel seulement', () => {
+  it('démonstration : grille 14,99 / 69,99 / 119,99 (15/11/2026), signalée, essai de 3 jours sur les 3 formules', () => {
     const plans = demoPlans('fr-FR');
     expect(plans.map((p) => [p.period, p.price.replace(/\s/g, ' '), p.trialDays, p.demo])).toEqual([
-      ['annual', '79,99 €', 0, true], ['six_months', '49,99 €', 0, true], ['monthly', '10,99 €', 3, true],
+      ['annual', '119,99 €', 3, true], ['six_months', '69,99 €', 3, true], ['monthly', '14,99 €', 3, true],
     ]);
-    expect(plans.map((p) => p.savingsPct)).toEqual([39, 24, null]);
+    // Économie arrondie vers le bas, calculée depuis les montants (jamais écrite en dur) : 22,18 % → 22 ; 33,29 % → 33
+    expect(plans.map((p) => p.savingsPct)).toEqual([33, 22, null]);
+    expect(savingsPct(69.99, 6, 14.99)).toBe(22);
+    expect(savingsPct(119.99, 12, 14.99)).toBe(33);
+    // Prix par mois au centime le plus proche : 69,99 / 6 = 11,665 → 11,67 € ; 119,99 / 12 = 9,999 → 10,00 €
+    expect(plans.map((p) => p.perMonth?.replace(/\s/g, ' ') ?? null)).toEqual(['10,00 €', '11,67 €', null]);
+    expect(perMonthAmount(69.99, 6)).toBe(11.67);
   });
   it('dates : premier prélèvement après l’essai, renouvellement selon la durée', () => {
     const p: Pick<Plan, 'period' | 'trialDays'> = { period: 'monthly', trialDays: 3 };

@@ -121,8 +121,8 @@ describe('« Bien manger enceinte »', () => {
   it('jamais de complément recommandé ; B9 : suivre le professionnel', () => {
     expect(SUPPLEMENT_NOTICE).toMatch(/ne recommande aucun complément/);
     const b9 = NUTRIENTS.find((n) => n.key === 'b9')!;
-    expect(b9.professional).toMatch(/médecin ou votre sage-femme/);
-    for (const n of NUTRIENTS) expect(`${n.why} ${n.where} ${n.professional}`).not.toMatch(/prenez (un|du|de la) (complément|supplément)|\d+\s*(mg|µg)/i);
+    expect(b9.professional).toMatch(/médecin ou ta sage-femme/);
+    for (const n of NUTRIENTS) expect(`${n.why} ${n.where} ${n.professional}`).not.toMatch(/(?:prenez|prends) (un|du|de la) (complément|supplément)|\d+\s*(mg|µg)/i);
   });
   it('aliments à éviter, hygiène, repères : sources officielles françaises datées', () => {
     for (const s of [EAT_INTERESTING, EAT_AVOID, EAT_HYGIENE]) {
@@ -175,7 +175,7 @@ describe('calendrier vaccinal versionné', () => {
     expect(scheduleFor(next, '2026-06-01', '2026-06-02').find((d) => d.key === 'ror_2')!.date).toBe('2027-09-01');
   });
   it('notification : formulation demandée, aucune affirmation qu’un vaccin a été fait', () => {
-    expect(vaccineNotice(FR_2026, 'Lina')).toBe('Selon le calendrier vaccinal français 2026, une vaccination est à vérifier prochainement pour Lina. Consultez son carnet de santé ou demandez conseil à un professionnel.');
+    expect(vaccineNotice(FR_2026, 'Lina')).toBe('Selon le calendrier vaccinal français 2026, une vaccination est à vérifier prochainement pour Lina. Consulte son carnet de santé ou demande conseil à un professionnel.');
   });
 });
 

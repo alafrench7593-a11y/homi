@@ -4,6 +4,8 @@
  * et la présente : réponse, points clés, quand demander conseil, article et sources. Aucune question ne quitte le téléphone.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
+import { useKeyboardVisible } from '@/components/keyboard';
 import { aiAssistantOnline } from '@/config/features';
 import { FlatList, Keyboard, Linking, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -22,7 +24,8 @@ import { answer, buildIndex, type KbIndex, type LocalAnswer } from '@/lib/localA
 
 let CACHE: { n: number; index: KbIndex } | null = null;
 import { ui8 as frUi8 } from '@/i18n/fr/ui8';
-import { type TKey, t as tr } from '@/i18n';
+import { getLocale, type TKey, t as tr } from '@/i18n';
+import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, spacing } from '@/theme/tokens';
 
@@ -93,7 +96,7 @@ function AnswerCard({ m }: { m: Msg }) {
         ) : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           <Tappable accessibilityRole="button" onPress={() => router.push(`/article/${a.main!.slug}`)} testID="local-read"
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.primary }}>
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
             <Icon name="book-open" size={14} color={t.colors.primaryText} />
             <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('u8.local.read')}</Text>
           </Tappable>
@@ -146,7 +149,11 @@ export default function LocalAssistant() {
   }, [articlesQ.data]);
   const [text, setText] = useState(typeof params.q === 'string' ? params.q : '');
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  const region = useEmergencyRegion();
   const list = useRef<FlatList<Msg>>(null);
+  const keyboardVisible = useKeyboardVisible();
+  // Clavier ouvert : le dernier message reste visible au-dessus de la barre de saisie
+  useEffect(() => { if (!keyboardVisible) return; const id = setTimeout(() => list.current?.scrollToEnd({ animated: true }), 80); return () => clearTimeout(id); }, [keyboardVisible]);
 
   const journey = typeof params.journey === 'string' && SUGGEST[params.journey] ? params.journey : pregnancy ? 'pregnant' : (children ?? []).some((c) => childAge(c.birth_date).months < 24) ? 'newborn' : (children ?? []).length ? 'child' : (profile?.journeys ?? []).includes('ttc') ? 'ttc' : (profile?.journeys ?? []).includes('avoid') ? 'avoid' : 'pregnant';
   const suggestions = [...SUGGEST[journey], ...(journey !== 'child' ? SUGGEST.child.slice(0, 2) : [])];
@@ -165,7 +172,7 @@ export default function LocalAssistant() {
     if (!question || !index) return;
     Keyboard.dismiss();
     haptic('light');
-    setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, query ?? question) }]);
+    setMsgs((m) => [...m, { id: `${Date.now()}`, q: question, a: answer(index, query ?? question, { asked: question, lang: getLocale(), region }) }]);
     setText('');
     setTimeout(() => list.current?.scrollToEnd({ animated: true }), 80);
   }
@@ -177,7 +184,7 @@ export default function LocalAssistant() {
           <TextInput value={text} onChangeText={setText} placeholder={tr('u8.local.ph')} placeholderTextColor={t.colors.textMuted} multiline maxLength={300}
             onSubmitEditing={() => ask(text)} submitBehavior="blurAndSubmit" blurOnSubmit textAlignVertical="top" returnKeyType="send" testID="local-input" accessibilityLabel={tr('u8.local.yourQ')}
             style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, color: t.colors.text, fontFamily: fonts.body, fontSize: 16,
-              backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,250,246,0.9)', borderWidth: 1, borderColor: t.isDark ? 'rgba(240,217,207,0.22)' : 'rgba(184,134,90,0.3)' }} />
+              backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.88)', borderWidth: 1, borderColor: t.isDark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.16)' }} />
           <IconButton icon="send" label={tr('u8.local.send')} tone="primary" onPress={() => ask(text)} disabled={!text.trim() || !index} />
         </View>
       )}>
@@ -186,6 +193,7 @@ export default function LocalAssistant() {
         data={msgs}
         keyExtractor={(m) => m.id}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xl, gap: spacing.md }}
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>
@@ -203,7 +211,7 @@ export default function LocalAssistant() {
         )}
         renderItem={({ item: m }) => (
           <View style={{ gap: spacing.sm }}>
-            <View style={{ alignSelf: 'flex-end', maxWidth: '85%', backgroundColor: t.colors.primary, borderRadius: 20, borderBottomRightRadius: 6, paddingHorizontal: 14, paddingVertical: 10 }}>
+            <View style={{ alignSelf: 'flex-end', maxWidth: '85%', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), borderRadius: 20, borderBottomRightRadius: 6, paddingHorizontal: 14, paddingVertical: 10 }}>
               <Text color={t.colors.primaryText}>{m.q}</Text>
             </View>
             <AnswerCard m={m} />

@@ -16,7 +16,7 @@ export const videos = {
   'vid.tutosChip': { one: 'Tutos · {count}', other: 'Tutos · {count}' },
   'vid.tutoTag': 'tuto',
   'vid.minutes': { one: '{count} min', other: '{count} min' },
-  'vid.firstAidNote': 'Une vidéo ne remplace pas une formation : les gestes de premiers secours s’apprennent en quelques heures (Croix-Rouge, Protection civile, pompiers). En cas d’urgence, appelez d’abord le 15 ou le 112.',
+  'vid.firstAidNote': 'Une vidéo ne remplace pas une formation : les gestes de premiers secours s’apprennent en quelques heures (Croix-Rouge, Protection civile, pompiers). En cas d’urgence, appelle d’abord le 15 ou le 112.',
   'vid.topic.cycle': 'Cycle et règles',
   'vid.topic.contraception': 'Contraception et IVG',
   'vid.topic.fertility': 'Envie de bébé',
@@ -40,5 +40,5 @@ export const videos = {
   'vid.homeDetail': 'Vidéos officielles et articles par thème',
   'vid.seeAll': { one: 'Voir la vidéo et ses articles', other: 'Voir les {count} vidéos et leurs articles' },
   'vid.checked': 'Vidéos vérifiées le {date} : publiées par les chaînes officielles indiquées, qui autorisent leur lecture dans d’autres applications. Lecteur YouTube sans cookie.',
-  'vid.notAdvice': 'Ces vidéos informent, elles ne remplacent pas l’avis de votre médecin, de votre sage-femme ou de la PMI. En cas d’urgence : 15 ou 112.',
+  'vid.notAdvice': 'Ces vidéos informent, elles ne remplacent pas l’avis de ton médecin, de ta sage-femme ou de la PMI. En cas d’urgence : 15 ou 112.',
 };

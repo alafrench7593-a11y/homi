@@ -15,7 +15,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':390,'height':844}, locale='fr-FR')
     pg.route('**/functions/v1/assistant-demo', handler)
     pg.goto(B+'/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3500)
     # depuis l'accueil, le lien « Réponse plus détaillée avec l'IA en ligne » ouvre l'assistant en ligne
     pg.locator('[data-testid="home-ai-input"]').filter(visible=True).first.fill('Comment préparer un biberon ?')

@@ -6,7 +6,7 @@
  * Lisibilité : le texte posé sur le verre utilise toujours l'encre de la palette (anthracite / blanc cassé),
  * avec un voile assez opaque pour garder le contraste quel que soit le fond animé derrière.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -23,22 +23,29 @@ export interface CyclePalette {
   onAccent: string;
 }
 
-/** Contrastes calculés (WCAG AA ≥ 4,5:1) sur le fond « paper » : encre 13,2:1 (clair) / 14,4:1 (sombre), encre douce 6,4 / 9,7, couleurs d'état ≥ 5:1, texte sur « period » 5,3 / 8,0. */
-const LIGHT: CyclePalette = {
-  ink: '#2E2A33', inkSoft: '#5F5866', paper: '#FAF7F4', glass: 'rgba(255,253,251,0.86)', glassBorder: 'rgba(255,255,255,0.95)', line: '#E4DDE3',
-  powder: '#F3D9DC', rose: '#E7B7BE', lavender: '#D9CFF0', mauve: '#735C9B', beige: '#EFE3D3', pearl: '#E6E3E8', anthracite: '#2E2A33',
-  period: '#A84F5C', periodSoft: '#F3D9DC', estimate: '#B9A6D8', fertile: '#DCD3F2', info: '#3D6293', warn: '#8A5A12', danger: '#B3261E', success: '#2F6E4F',
-  onAccent: '#FFFFFF',
-};
-const DARK: CyclePalette = {
-  ink: '#F6F1F3', inkSoft: '#CFC6D0', paper: '#1E1A22', glass: 'rgba(36,31,41,0.88)', glassBorder: 'rgba(255,255,255,0.16)', line: '#3D3542',
-  powder: '#5A3E45', rose: '#C98E97', lavender: '#4A4060', mauve: '#C2AEE6', beige: '#4A4036', pearl: '#3A3640', anthracite: '#1A171D',
-  period: '#E39AA5', periodSoft: '#5A3E45', estimate: '#8C7AB0', fertile: '#43395A', info: '#9DBAE6', warn: '#E8B66A', danger: '#FF8A80', success: '#8BD3AE',
-  onAccent: '#1A171D',
-};
+/**
+ * v6 (17/11/2026) : la palette du cycle n'est plus un jeu de couleurs à part (perle et violet) — elle est DÉRIVÉE du
+ * thème affiché (`useTheme()`), donc de la palette choisie dans Réglages → Apparence, en clair comme en sombre.
+ * Les noms des clés restent (compatibilité des écrans). Seules restent fixes les couleurs CODIFIÉES d'une donnée de
+ * cycle (règles, règles estimées, fenêtre fertile) : elles ne changent pas de sens d'une palette à l'autre.
+ */
+const CYCLE_CODE = {
+  light: { period: '#A8346A', periodSoft: '#FBE8F1', estimate: '#B9A6D8', fertile: '#DCD3F2' },
+  dark: { period: '#FF9CC3', periodSoft: '#3A2036', estimate: '#8C7AB0', fertile: '#33295A' },
+} as const;
 export function useCyclePalette(): CyclePalette {
   const t = useTheme();
-  return t.isDark ? DARK : LIGHT;
+  return useMemo(() => {
+    const k = t.tokens;
+    const [w0, , w2] = k.decor.wash;
+    return {
+      ink: t.colors.text, inkSoft: t.colors.textMuted, paper: t.colors.background, glass: t.colors.surface, glassBorder: t.colors.border, line: t.material.lines.hairline,
+      powder: w0, rose: k.decor.b, lavender: w2, mauve: t.colors.lavender, beige: t.material.cardTint.gold, pearl: t.colors.surfaceAlt, anthracite: k.inverse.fill,
+      ...(t.isDark ? CYCLE_CODE.dark : CYCLE_CODE.light),
+      info: k.status.info, warn: k.status.warning, danger: k.status.danger, success: k.status.success,
+      onAccent: k.text.onAccent,
+    };
+  }, [t]);
 }
 
 /** Carte de verre dépoli. Sans flou (Android, web lent, mouvement réduit) : surface opaque équivalente. */
@@ -50,7 +57,7 @@ export function Glass({ children, style, padded = true, onPress, accessibilityLa
   const blur = Platform.OS === 'ios' && !reduce;
   const body = (
     <Animated.View style={[{ borderRadius: radius.lg, borderWidth: 1, borderColor: c.glassBorder, overflow: 'hidden', backgroundColor: blur ? 'transparent' : c.glass,
-      shadowColor: '#2E2A33', shadowOpacity: t.isDark ? 0.35 : 0.08, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 2,
+      shadowColor: t.tokens.shadowColor, shadowOpacity: t.isDark ? 0.35 : 0.08, shadowRadius: 18, shadowOffset: { width: 0, height: 8 }, elevation: 2,
       transform: [{ scale: press.interpolate({ inputRange: [0, 1], outputRange: [1, 0.985] }) }] }, style]}>
       {blur ? <><BlurView intensity={40} tint={t.isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} /><View style={[StyleSheet.absoluteFill, { backgroundColor: c.glass }]} /></> : null}
       <View style={{ padding: padded ? spacing.md : 0, gap: spacing.xs }}>{children}</View>

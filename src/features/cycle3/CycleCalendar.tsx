@@ -21,6 +21,8 @@ import { formatDate, t as tr } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { useCalPalette, type CalPalette } from './ui';
+import { Tappable } from '@/components/Tappable';
+import { CheckMark } from '@/motion/CheckMark';
 
 const BLUR_OK = Platform.OS === 'ios' || Platform.OS === 'web';
 const RADIUS = 32;
@@ -142,14 +144,14 @@ function Halo({ color, size, style }: { color: string; size: number; style: obje
 
 function NavBtn({ P, icon, label, onPress, testID }: { P: CalPalette; icon: 'chevron-left' | 'chevron-right'; label: string; onPress: () => void; testID: string }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} testID={testID} hitSlop={4}
+    <Tappable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} testID={testID} hitSlop={4}
       style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
       {({ pressed }) => (
         <View style={{ width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: P.chip, borderWidth: 1, borderColor: P.border, transform: [{ scale: pressed ? 0.94 : 1 }] }}>
           <Icon name={icon} size={19} color={P.text} />
         </View>
       )}
-    </Pressable>
+    </Tappable>
   );
 }
 
@@ -176,7 +178,7 @@ function Day({ P, cell: c, selecting, selected, reminder, onPress }: { P: CalPal
   const solid = selected || logged;
   const fg = solid ? P.periodText : predicted ? P.predictedText : c.fertile ? P.fertileText : P.text;
   return (
-    <Pressable onPress={onPress} accessibilityRole={selecting ? 'checkbox' : 'button'} accessibilityState={selecting ? { checked: selected } : undefined}
+    <Tappable onPress={onPress} accessibilityRole={selecting ? 'checkbox' : 'button'} accessibilityState={selecting ? { checked: selected } : undefined}
       aria-checked={selecting ? selected : undefined} accessibilityLabel={dayLabel(c, reminder)} testID={`c3-day-${c.iso}`} style={{ flex: 1, height: 52, alignItems: 'center', justifyContent: 'center' }}>
       {({ pressed }) => (
         <View style={{ alignItems: 'center', transform: [{ scale: pressed ? 0.9 : 1 }] }}>
@@ -193,19 +195,19 @@ function Day({ P, cell: c, selecting, selected, reminder, onPress }: { P: CalPal
             borderWidth: predicted && !c.today ? 1.3 : 0, borderColor: P.predictedBorder, borderStyle: 'dashed' }}>
             {solid ? <LinearGradient pointerEvents="none" colors={P.period} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
             <Text weight={c.today || logged ? 'bold' : 'medium'} color={fg}>{c.day}</Text>
-            {selected ? <View style={{ position: 'absolute', bottom: -1, right: -1, width: 15, height: 15, borderRadius: 8, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}><Icon name="check" size={10} color={P.period[1]} /></View> : null}
+            {selected ? <View style={{ position: 'absolute', bottom: -1, right: -1, width: 15, height: 15, borderRadius: 8, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}><CheckMark checked size={12} color={P.period[1]} /></View> : null}
           </View>
           {c.ovulation ? <View style={{ position: 'absolute', top: -4, right: -5 }}><Icon name="star" size={10} color={P.ovulation} /></View> : null}
           {/* Petites icônes discrètes */}
           <View style={{ flexDirection: 'row', gap: 2, height: 9, marginTop: 3, alignItems: 'center' }}>
             {Array.from({ length: c.symptoms }, (_, k) => <View key={k} style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: P.symptom }} />)}
             {c.intimacy ? <Icon name="heart" size={8} color={P.intimacy} /> : null}
-            {c.contraception ? <Icon name="check" size={8} color={P.contraception} /> : null}
+            <CheckMark checked={!!c.contraception} size={10} color={P.contraception} />
             {reminder ? <Icon name="bell" size={8} color={P.reminder} /> : null}
           </View>
         </View>
       )}
-    </Pressable>
+    </Tappable>
   );
 }
 

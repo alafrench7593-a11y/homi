@@ -8,16 +8,17 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Chip, Field, haptic, Row, Segmented, Text } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { Stepper, TimePicker, KIND_META } from '@/features/tracking';
-import { backend, eq } from '@/lib/backend';
+import { eq } from '@/lib/backend';
 import { BackendError } from '@/lib/backend/types';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { goBack } from '@/lib/links';
-import { useOfflineStore } from '@/lib/offline';
+import { guardedLogUpdate, OfflineEditError } from '@/lib/data/hooks-quickTrack';
 import { useActiveSubject, useAddLog, useChild, useTrackedChildren, useDeleteRow, useInvalidate, useLogs, useRows } from '@/lib/data/hooks';
 import { SafeSleepCard, SafetyNoticeCard } from '@/features/childCare';
 import { STOOL_COLORS, STOOL_CONSISTENCY, digestionNotices, stoolNotice, type StoolColor } from '@/lib/domain/childCare';
 import { childAge } from '@/lib/domain/child';
 import { useBottleChildren, useBottleTimer, useStartBottleTimer, useUpdateBottleTimer } from '@/lib/data/hooks-bottle';
+import { useBottleRelays, useSaveRelays } from '@/lib/data/hooks-partiels';
 import { noRecommendationNote, parseMl, ReminderChoicePicker } from '@/features/bottle';
 import { atClock, bottleDraftDefaults, computeDueAt, markBottleGiven, nextReminderSentence, resolveReminderChoice, type ReminderChoice } from '@/lib/domain/bottleTimer';
 import { getPermission, notificationsSupported } from '@/lib/notifications';
@@ -29,7 +30,10 @@ import { formatDuration, formatTime, toISODate, todayISO } from '@/lib/domain/da
 import { recordMealFoods } from '@/lib/data/hooks-discoveries';
 import { useTheme } from '@/theme/ThemeProvider';
 import { DayStrip } from '@/features/dayStrip/DayStrip';
+import { FeedIssuesToday, MilkStockLink } from '@/features/feeding/TrackLinks';
 import { LastSideCard, QuickDiaperCard } from '@/features/dayStrip/QuickLog';
+import { FeedRoute } from '@/features/breastTrack/FeedRoute';
+import { DiaperLog } from '@/features/quickTrack/DiaperLog';
 import { lastSide, nowMinute, toDayEvents } from '@/lib/domain/dayTimeline';
 import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
@@ -78,7 +82,10 @@ function TrackToday({ kind, childId }: { kind: LogKind; childId: string }) {
 }
 
 export default function TrackEntryRoute() {
-  const params = useLocalSearchParams<{ kind: string }>();
+  const params = useLocalSearchParams<{ kind: string; id?: string; manual?: string }>();
+  // Allaitement et tire-lait : la mini-app (séance en direct, journée, fiches) ; le formulaire complet reste
+  // accessible pour une saisie passée (?manual=1) ou une modification (?id=)
+  if ((params.kind === 'breastfeed' || params.kind === 'pumping') && !params.id && params.manual !== '1') return <FeedRoute kind={params.kind} />;
   if (params.kind && !(params.kind in LOG_TABLE)) {
     return (
       <Screen back title={tr('u7.track.notFoundTitle')}>
@@ -94,7 +101,7 @@ function TrackEntry() {
   const toast = useToast();
   const inv = useInvalidate();
   // timer / planned : ouverture depuis le minuteur (« Marquer le biberon comme donné »)
-  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string }>();
+  const params = useLocalSearchParams<{ kind: LogKind; child?: string; id?: string; timer?: string; planned?: string; ml?: string; at?: string; obs?: string; from?: string; relay?: string; diaper?: string }>();
   const kind = (params.kind ?? 'bottle') as LogKind;
   const { data: tracked } = useTrackedChildren();
   const { data: bottleChildren } = useBottleChildren();
@@ -114,6 +121,8 @@ function TrackEntry() {
   const { data: lastBottle } = useRows<Bottle>(['bottles', childId, 'last'], kind === 'bottle' && childId ? { table: 'bottles', filters: [eq('child_id', childId)], order: [{ col: 'at', asc: false }], limit: 1 } : null);
 
   const bottleTimer = useBottleTimer(kind === 'bottle' ? childId : null);
+  const relays = useBottleRelays(kind === 'bottle' && params.relay ? child?.household_id ?? null : null, childId || null);
+  const saveRelays = useSaveRelays();
   const startTimer = useStartBottleTimer();
   const updateTimer = useUpdateBottleTimer();
   // Valeurs initiales : rien n'est suggéré (seule la quantité prévue saisie sur le minuteur pré-remplit « préparée »)
@@ -154,6 +163,8 @@ function TrackEntry() {
   const [foods, setFoods] = useState('');
   const [texture, setTexture] = useState<Meal['texture']>(null);
   const [reaction, setReaction] = useState('');
+  // 123 : aliments refusés pendant ce repas (parmi ceux notés), sans jugement
+  const [refused, setRefused] = useState<string[]>([]);
   // Ouverture depuis « + Ajouter » (symptôme, note) : le type est présélectionné
   const [obsKind, setObsKind] = useState<Observation['kind']>(() => (OBS_VALUES.some((v) => v === params.obs) ? params.obs as Observation['kind'] : 'temperature'));
   const [temp, setTemp] = useState('');
@@ -187,7 +198,7 @@ function TrackEntry() {
       case 'pumping': { const p = r as unknown as Pumping; setTime(new Date(p.at)); setAmount(p.amount_ml); setSide(p.side ?? 'both'); break; }
       case 'diaper': { const d = r as unknown as Diaper; setTime(new Date(d.at)); setWet(d.wet); setStool(d.stool); setStoolColor(d.stool_color ?? null); setConsistency(d.stool_consistency ?? null); setBlood(!!d.blood_seen); break; }
       case 'sleep': { const s = r as unknown as Sleep; setTime(new Date(s.started_at)); setEnd(s.ended_at ? new Date(s.ended_at) : new Date()); setWakeups(s.wakeups); setSleepKind(s.kind ?? 'unknown'); break; }
-      case 'meal': { const m = r as unknown as Meal; setTime(new Date(m.at)); setDescription(m.description ?? ''); setFoods(m.foods.join(', ')); setTexture(m.texture); setReaction(m.reaction_note ?? ''); break; }
+      case 'meal': { const m = r as unknown as Meal; setTime(new Date(m.at)); setDescription(m.description ?? ''); setFoods(m.foods.join(', ')); setTexture(m.texture); setReaction(m.reaction_note ?? ''); setRefused(m.refused_foods ?? []); break; }
       case 'observation': { const o = r as unknown as Observation; setTime(new Date(o.at)); setObsKind(o.kind); setTemp(o.value_num != null ? String(o.value_num).replace('.', ',') : ''); setLabel(o.label ?? ''); setTempMethod(o.temp_method ?? null); setIntensity(o.intensity ?? null); break; }
     }
   }, [existing, editing, kind, lastBottle]);
@@ -228,7 +239,8 @@ function TrackEntry() {
           return { ...base, at: time.toISOString(), prepared_ml: prepared, consumed_ml: consumed, planned_next_ml: next.value, milk_type: milkType.trim() || null };
         }
       case 'breastfeed': {
-        const mins = timerStart ? elapsed / 60 : Number(duration.replace(',', '.'));
+        // Durée relue sur l'horloge au moment d'arrêter (jamais le dernier affichage, figé si l'app était en arrière-plan)
+        const mins = timerStart ? Math.max(0, Date.now() - timerStart.getTime()) / 60000 : Number(duration.replace(',', '.'));
         if (!timerStart && duration && (!Number.isFinite(mins) || mins <= 0 || mins > 180)) return setError(tr('u7.track.err.duration')), null;
         const start = timerStart ?? time;
         return { ...base, side, started_at: start.toISOString(), ended_at: mins ? new Date(start.getTime() + mins * 60000).toISOString() : null };
@@ -242,8 +254,10 @@ function TrackEntry() {
       case 'sleep':
         if (end < time) return setError(tr('u7.track.err.sleepEnd')), null;
         return { ...base, started_at: time.toISOString(), ended_at: end.toISOString(), wakeups, kind: sleepKind === 'unknown' ? null : sleepKind };
-      case 'meal':
-        return { ...base, at: time.toISOString(), description: description.trim() || null, foods: foods.split(',').map((f) => f.trim()).filter(Boolean), texture, reaction_note: reaction.trim() || null };
+      case 'meal': {
+        const list = foods.split(',').map((f) => f.trim()).filter(Boolean);
+        return { ...base, at: time.toISOString(), description: description.trim() || null, foods: list, refused_foods: refused.filter((f) => list.includes(f)), texture, reaction_note: reaction.trim() || null };
+      }
       case 'observation': {
         if (obsKind === 'temperature') {
           const v = Number(temp.replace(',', '.'));
@@ -264,16 +278,10 @@ function TrackEntry() {
     try {
       if (editing) {
         if (!formReady) return; // entrée pas encore chargée : rien n'est écrasé
-        if (backend.mode !== 'demo' && !useOfflineStore.getState().online) return setError(offlineEdit());
-        // L'enfant et le foyer de l'entrée ne changent jamais lors d'une modification
-        const { household_id: _h, child_id: _c, ...patch } = row; // eslint-disable-line @typescript-eslint/no-unused-vars
-        // F-05 : la mise à jour ne passe que si l'entrée n'a pas changé depuis son ouverture
-        const orig = originalRef.current ?? {};
-        const guards = Object.keys(patch)
-          .filter((k) => k in orig && (orig[k] === null || ['string', 'number', 'boolean'].includes(typeof orig[k])))
-          .map((k) => (orig[k] === null ? { col: k, op: 'is' as const, value: null } : eq(k, orig[k] as string | number | boolean)));
-        const updated = await backend.update(LOG_TABLE[kind], patch, [eq('id', params.id), ...guards]);
-        if (Array.isArray(updated) && updated.length === 0) {
+        // Même écriture que les fiches de correction rapide : réseau exigé, F-05 (entrée inchangée depuis son
+        // ouverture), enfant et foyer jamais modifiés (src/lib/data/hooks-quickTrack.ts)
+        const updated = await guardedLogUpdate(kind, params.id!, row, originalRef.current ?? {});
+        if (updated === 'changed') {
           inv(LOG_TABLE[kind]);
           return setError(tr('u7.track.changedMeanwhile'));
         }
@@ -282,6 +290,9 @@ function TrackEntry() {
       } else if (kind === 'bottle') {
         const id = uuid();
         const res = await add.mutateAsync({ ...row, id });
+        // 80 : biberon prévu dans le relais avec le coparent → relié au biberon réellement noté
+        const relay = params.relay ? relays.data?.find((r) => r.id === params.relay && r.status === 'planned') : undefined;
+        if (relay) await saveRelays.mutateAsync([{ ...relay, status: 'given', given_at: row.at as string, bottle_id: id }]).catch(() => undefined);
         const timerNote = await afterBottleSaved(res === 'sent' ? id : null, (row.planned_next_ml as number | null) ?? null);
         toast(
           (res === 'queued' ? tr('u7.track.bottleQueued') : tr('u7.track.bottleSaved')) + (timerNote ? ` ${timerNote}` : ''),
@@ -293,7 +304,7 @@ function TrackEntry() {
           const list = (row.foods as string[]) ?? [];
           if (list.length) {
             // F-02 : aliment relié au catalogue « Ses découvertes » ; F-03 : date LOCALE du repas
-            if (childId && child?.household_id) await recordMealFoods({ id: childId, household_id: child.household_id }, list, toISODate(time), reaction.trim() || null).catch(() => undefined);
+            if (childId && child?.household_id) await recordMealFoods({ id: childId, household_id: child.household_id }, list, toISODate(time), reaction.trim() || null, (row.refused_foods as string[]) ?? []).catch(() => undefined);
             inv('food_introductions');
           }
         }
@@ -306,7 +317,7 @@ function TrackEntry() {
         goBack('/(tabs)/track');
       }
     } catch (e) {
-      setError(editing && e instanceof BackendError && e.isNetwork ? offlineEdit() : friendlyError(e, tr('u7.track.saveFail')));
+      setError(editing && (e instanceof OfflineEditError || (e instanceof BackendError && e.isNetwork)) ? offlineEdit() : friendlyError(e, tr('u7.track.saveFail')));
     } finally {
       setSaving(false);
     }
@@ -404,6 +415,7 @@ function TrackEntry() {
     <Screen
       back
       title={tr(editing ? 'u7.track.titleEdit' : 'u7.track.titleAdd', { kind: KIND_META[kind].label.toLowerCase() })}
+      toolRunning={!!timerStart}
       subtitle={child ? tr('u7.track.forName', { name: child.first_name }) : undefined}
       footer={
         <View style={{ gap: spacing.xs }}>
@@ -424,6 +436,8 @@ function TrackEntry() {
         </View>
       ) : null}
       {!editing ? <TrackToday kind={kind} childId={childId} /> : null}
+      {!editing && kind === 'breastfeed' && childId ? <FeedIssuesToday childId={childId} /> : null}
+      {!editing && kind === 'pumping' && childId ? <MilkStockLink childId={childId} /> : null}
       {!editing && kind === 'diaper' && child ? (
         <QuickDiaperCard childId={childId} householdId={child.household_id} name={child.first_name}
           lastAt={[...dayRows].map((r) => r.at).filter((x): x is string => !!x).sort().pop() ?? null} />
@@ -442,6 +456,9 @@ function TrackEntry() {
           empty={kind === 'diaper' ? tr('u7.track.emptyDiaper') : tr('u7.track.emptyToday')}
         />
       ) : null}
+      {/* Couches : dernier change en évidence + historique horodaté ; une ligne ouvre sa fiche pour corriger l'heure ou
+          le type (`?diaper=` l'ouvre directement, lien depuis la catégorie Soins) */}
+      {!editing && kind === 'diaper' && child ? <DiaperLog key={childId} child={child} focusId={params.diaper ?? null} onFocusDone={() => router.setParams({ diaper: undefined } as never)} /> : null}
       {!editing && (kind === 'diaper' || kind === 'breastfeed') ? <Text variant="label" muted style={{ marginTop: spacing.xs }}>{tr('u7.track.orDetail')}</Text> : null}
       {error ? <Banner tone="danger">{error}</Banner> : null}
 
@@ -544,6 +561,17 @@ function TrackEntry() {
               ))}
             </Row>
           </View>
+          {foods.split(',').map((f) => f.trim()).filter(Boolean).length ? (
+            <View style={{ gap: spacing.xs }} testID="track-meal-refused">
+              <Text variant="label">{tr('ref.track.label')}</Text>
+              <Row wrap>
+                {[...new Set(foods.split(',').map((f) => f.trim()).filter(Boolean))].map((f) => (
+                  <Chip key={f} label={f} icon={refused.includes(f) ? 'x' : undefined} selected={refused.includes(f)} onPress={() => setRefused((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]))} testID={`track-refused-${f}`} />
+                ))}
+              </Row>
+              <Text variant="caption" muted>{tr('ref.track.hint')}</Text>
+            </View>
+          ) : null}
           <Field label={tr('u7.track.reaction')} optional value={reaction} onChangeText={setReaction} multiline />
           <Banner tone="danger" title={tr('u7.track.reactionTitle')}>{tr('u7.track.reactionBody')}</Banner>
         </>

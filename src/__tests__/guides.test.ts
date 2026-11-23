@@ -29,7 +29,9 @@ describe('guides thématiques', () => {
         for (const s of g.sections) if (!dict[`gd.${g.id}.${s.key}`]) problems.push(`gd.${g.id}.${s.key}`);
         for (const s of g.sections) if (s.tool && !dict[s.tool.label]) problems.push(s.tool.label);
       }
-      if (!TOOLS.some((t) => t.href({ scope: 'child', childId: 'x' }) === `/guide/${g.id}` || t.href({ scope: 'none' }) === `/guide/${g.id}` || t.href({ scope: 'pregnancy' }) === `/guide/${g.id}` || t.href({ scope: 'ttc' }) === `/guide/${g.id}`)) problems.push(`outil manquant pour ${g.id}`);
+      // chaque guide est un sous-accès de l'outil « Guides pratiques » (avant le 17/11/2026 : un outil par guide)
+      const sub = TOOLS.find((t) => t.id === 'guides')?.subs?.find((x) => x.id === g.id);
+      if (!sub || !(sub.scopes ?? []).some((scope) => (sub.href({ scope, childId: 'x' }) ?? '').split('?')[0] === `/guide/${g.id}`)) problems.push(`outil manquant pour ${g.id}`);
     }
     expect([...new Set(problems)]).toEqual([]);
   });

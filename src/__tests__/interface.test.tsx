@@ -67,16 +67,42 @@ describe('interactions', () => {
     expect(transform.some((t) => 'scale' in t)).toBe(true);
   });
 
-  it('boutons (refonte du 26/10/2026) : forme pilule, zones tactiles confortables, états désactivé et chargement annoncés', async () => {
-    for (const k of ['sm', 'md', 'lg'] as const) expect(BUTTON.radius[k]).toBe(BUTTON.height[k] / 2);
-    expect(BUTTON.height.md).toBeGreaterThanOrEqual(44);
-    expect(BUTTON.height.sm + 2 * 5).toBeGreaterThanOrEqual(44); // petite taille : zone de toucher élargie
+  it('boutons (v5) : rectangle aux angles souples (jamais une capsule), zones tactiles ≥ 44, états désactivé et chargement annoncés', async () => {
+    for (const k of ['sm', 'md', 'lg'] as const) {
+      expect(BUTTON.radius[k]).toBeGreaterThanOrEqual(12);
+      expect(BUTTON.radius[k]).toBeLessThanOrEqual(16);
+      expect(BUTTON.radius[k]).toBeLessThan(BUTTON.height[k] / 2);
+    }
+    expect(BUTTON.height.md).toBeGreaterThanOrEqual(50);
+    expect(BUTTON.height.md).toBeLessThanOrEqual(54);
+    expect(BUTTON.height.sm).toBeGreaterThanOrEqual(44);
     expect(BUTTON.hoverMs).toBeGreaterThanOrEqual(150); expect(BUTTON.hoverMs).toBeLessThanOrEqual(220);
     const r = await render(<><Button label="Désactivé" disabled /><Button label="Charge" loading /><IconButton icon="x" label="Fermer" onPress={() => undefined} /></>);
     const a11y = (label: string) => r.root.findAll((n) => n.props.accessibilityLabel === label && n.props.accessibilityState)[0].props.accessibilityState;
     expect(a11y('Désactivé')).toMatchObject({ disabled: true });
     expect(a11y('Charge')).toMatchObject({ disabled: true, busy: true });
     expect(a11y('Fermer')).toMatchObject({ disabled: false });
+  });
+
+  it('bouton : les onPressIn / onPressOut de l’appelant sont composés avec l’animation interne (plus écrasés)', async () => {
+    const pin = jest.fn(); const pout = jest.fn(); const onPress = jest.fn();
+    const r = await render(<Button label="Composer" onPress={onPress} onPressIn={pin} onPressOut={pout} />);
+    const p = pressable(r, 'Composer');
+    act(() => { p.props.onPressIn({}); p.props.onPressOut({}); p.props.onPress({}); });
+    expect(pin).toHaveBeenCalledTimes(1);
+    expect(pout).toHaveBeenCalledTimes(1);
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('bouton : focus visible (anneau) et chargement qui garde le libellé pour l’accessibilité', async () => {
+    const r = await render(<><Button label="Focus" onPress={() => undefined} /><Button label="Envoi" loading /></>);
+    const p = pressable(r, 'Focus');
+    act(() => { p.props.onFocus?.({}); });
+    expect(r.root.findAll((n) => n.props.testID === 'button-focus-ring').length).toBeGreaterThan(0);
+    act(() => { pressable(r, 'Focus').props.onBlur?.({}); });
+    expect(r.root.findAll((n) => n.props.testID === 'button-focus-ring').length).toBe(0);
+    const busy = r.root.findAll((n) => n.props.accessibilityLabel === 'Envoi' && n.props.accessibilityState)[0];
+    expect(busy.props.accessibilityState).toMatchObject({ busy: true });
   });
 
   it('web : focus clavier visible, mots longs à la ligne, mouvement réduit', () => {

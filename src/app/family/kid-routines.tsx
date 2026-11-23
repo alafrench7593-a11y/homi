@@ -20,6 +20,9 @@ import { todayISO } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { KidRoutineTrack } from '@/features/homeTrack/KidRoutineTrack';
 
 /** Pictogrammes proposés (Material Community Icons, vérifiés dans la police embarquée). */
 export const PICTOS = [
@@ -135,16 +138,16 @@ export default function KidRoutines() {
   const [editing, setEditing] = useState<KidRoutine | undefined>();
   const list = q.data ?? [];
   return (
-    <Screen back title={tr('tool.kid_routines')} subtitle={tr('tool.kid_routines.sub')}
+    <Screen back title={toolName('kid_routines')} subtitle={toolBlurb('kid_routines')}
       action={{ label: tr('kr.new'), icon: 'plus', onPress: () => { setEditing(undefined); setOpen(true); }, testID: 'kr-new' }}>
-      <Text muted>{tr('kr.intro')}</Text>
+      {list.length ? <KidRoutineTrack routines={list} /> : <Text muted>{tr('kr.intro')}</Text>}
       {q.isLoading ? <Loading /> : !list.length ? (
         <EmptyState icon="sun" title={tr('kr.none')} body={tr('kr.noneD')} action={{ label: tr('kr.new'), onPress: () => { setEditing(undefined); setOpen(true); } }} />
-      ) : list.map((r) => {
+      ) : <MotionList style={{ gap: spacing.md }}>{list.map((r) => {
         const done = checks.filter((c) => c.routine_id === r.id).length;
         const who = children.find((c) => c.id === r.child_id)?.first_name;
         return (
-          <Card key={r.id} testID={`kr-routine-${r.id}`}>
+          <MotionItem key={r.id}><Card key={r.id} testID={`kr-routine-${r.id}`}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
               <View style={{ flex: 1 }}>
                 <Text weight="bold">{r.title}</Text>
@@ -155,10 +158,14 @@ export default function KidRoutines() {
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginVertical: spacing.xs }}>
               {r.steps.map((s, i) => <Picto key={i} name={s.icon} size={26} />)}
             </View>
-            <Button label={tr('kr.kidMode')} icon="smile" onPress={() => router.push(`/family/kid-routine/${r.id}` as never)} testID={`kr-open-${r.id}`} />
-          </Card>
+            <View style={{ flexDirection: 'row', gap: spacing.xs }}>
+              <Button label={tr('kr.kidMode')} icon="smile" onPress={() => router.push(`/family/kid-routine/${r.id}` as never)} testID={`kr-open-${r.id}`} style={{ flex: 1 }} />
+              {/* Sans écran pour l'enfant : la routine imprimée, à afficher dans la chambre ou la salle de bain */}
+              <Button label={tr('pst.print')} icon="printer" variant="secondary" onPress={() => router.push(`/print?kind=routine&routine=${r.id}` as never)} testID={`kr-print-${r.id}`} style={{ flex: 1 }} />
+            </View>
+          </Card></MotionItem>
         );
-      })}
+      })}</MotionList>}
       <SectionTitle title={tr('kr.tips')} />
       <Banner tone="info" icon="heart">{tr('kr.tipsD')}</Banner>
       <RoutineEditor routine={editing} visible={open} onClose={() => setOpen(false)} />

@@ -19,6 +19,8 @@ import { addDays, todayISO } from '@/lib/domain/dates';
 import { prepDue, upcomingPrep, type PrepItem } from '@/lib/domain/mentalLoad';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { PrepTrack } from '@/features/homeTrack/PrepTrack';
 
 export default function Prep() {
   const toast = useToast();
@@ -55,7 +57,8 @@ export default function Prep() {
   }
 
   return (
-    <Screen back title={tr('tool.family_prep')} subtitle={tr('tool.family_prep.sub')}>
+    <Screen back title={toolName('family_prep')} subtitle={toolBlurb('family_prep')}>
+      <PrepTrack items={items} done={done} today={today} title={title} hid={hid} />
       <Text muted>{tr('cm.prep.intro')}</Text>
       {!items.length ? <EmptyState icon="calendar" title={tr('cm.prep.none')} body={tr('cm.prep.noneD')} /> : items.map((it) => {
         const st = state(it);
@@ -75,7 +78,7 @@ export default function Prep() {
         );
       })}
       <Banner tone="info" icon="info">{tr('cm.prep.check')}</Banner>
-      <Button label={tr('tool.family_papers')} icon="folder" variant="secondary" onPress={() => router.push('/family/papers')} />
+      <Button label={toolName('family_papers')} icon="folder" variant="secondary" onPress={() => router.push('/family/papers')} />
     </Screen>
   );
 }

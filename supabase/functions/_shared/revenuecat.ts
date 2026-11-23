@@ -18,13 +18,13 @@
  *  - les événements arrivés en retard ne remplacent jamais un état plus récent.
  */
 
-export const DEFAULT_ENTITLEMENT = 'AU_FIL_DE_NOUS_PREMIUM';
+export const DEFAULT_ENTITLEMENT = 'HOMI_PREMIUM';
 
 /** Identifiants des produits (App Store ; Google Play : mêmes identifiants, ou « abonnement:offre-de-base »). */
 export const PRODUCT_IDS = {
-  monthly: 'aufildenous_premium_monthly',
-  six_months: 'aufildenous_premium_6months',
-  annual: 'aufildenous_premium_annual',
+  monthly: 'homi_premium_monthly',
+  six_months: 'homi_premium_6months',
+  annual: 'homi_premium_annual',
 } as const;
 
 export type SubStatus = 'none' | 'trial' | 'active' | 'grace' | 'cancelled' | 'expired' | 'billing_issue' | 'refunded' | 'paused';
@@ -39,6 +39,9 @@ export type RcEvent = {
   aliases?: string[];
   product_id?: string;
   new_product_id?: string;
+  /** Achats non renouvelables (packs de crédits) : identifiant de transaction de la boutique */
+  transaction_id?: string | null;
+  original_transaction_id?: string | null;
   entitlement_ids?: string[] | null;
   entitlement_id?: string | null;
   period_type?: string;
@@ -276,36 +279,36 @@ export const isDuplicate = (event: RcEvent, last: { last_event?: string | null; 
 /** Notification in-app, en français ou en anglais selon la langue du profil (français par défaut). */
 const NOTICES = {
   fr: {
-    billing: ['Problème de paiement', 'Votre abonnement n’a pas pu être renouvelé. Vérifiez votre moyen de paiement dans l’App Store ou Google Play.'],
-    expired: ['Abonnement terminé', 'Votre abonnement Au fil de nous Premium a pris fin. Vos données et les fonctions essentielles restent disponibles.'],
-    cancelled: ['Renouvellement désactivé', 'Votre abonnement reste actif jusqu’à sa date d’échéance, puis ne sera pas renouvelé.'],
-    refunded: ['Abonnement remboursé', 'Votre abonnement a été remboursé : l’accès Premium a pris fin. Vos données restent disponibles.'],
-    paused: ['Abonnement en pause', 'Votre abonnement sera mis en pause à la fin de la période en cours. Premium reste disponible jusque-là.'],
+    billing: ['Problème de paiement', 'Ton abonnement n’a pas pu être renouvelé. Vérifie ton moyen de paiement dans l’App Store ou Google Play.'],
+    expired: ['Abonnement terminé', 'Ton abonnement HOMI Premium a pris fin. Tes données et les fonctions essentielles restent disponibles.'],
+    cancelled: ['Renouvellement désactivé', 'Ton abonnement reste actif jusqu’à sa date d’échéance, puis ne sera pas renouvelé.'],
+    refunded: ['Abonnement remboursé', 'Ton abonnement a été remboursé : l’accès Premium a pris fin. Tes données restent disponibles.'],
+    paused: ['Abonnement en pause', 'Ton abonnement sera mis en pause à la fin de la période en cours. Premium reste disponible jusque-là.'],
   },
   en: {
     billing: ['Payment issue', 'Your subscription could not be renewed. Please check your payment method in the App Store or Google Play.'],
-    expired: ['Subscription ended', 'Your Au fil de nous Premium subscription has ended. Your data and essential features remain available.'],
+    expired: ['Subscription ended', 'Your HOMI Premium subscription has ended. Your data and essential features remain available.'],
     cancelled: ['Auto-renewal turned off', 'Your subscription stays active until its end date and will not renew.'],
     refunded: ['Subscription refunded', 'Your subscription was refunded: Premium access has ended. Your data remains available.'],
     paused: ['Subscription paused', 'Your subscription will be paused at the end of the current period. Premium remains available until then.'],
   },
   es: {
     billing: ['Problema con el pago', 'No se ha podido renovar tu suscripción. Comprueba tu método de pago en el App Store o Google Play.'],
-    expired: ['Suscripción finalizada', 'Tu suscripción a Au fil de nous Premium ha finalizado. Tus datos y las funciones esenciales siguen disponibles.'],
+    expired: ['Suscripción finalizada', 'Tu suscripción a HOMI Premium ha finalizado. Tus datos y las funciones esenciales siguen disponibles.'],
     cancelled: ['Renovación desactivada', 'Tu suscripción sigue activa hasta su fecha de vencimiento y después no se renovará.'],
     refunded: ['Suscripción reembolsada', 'Tu suscripción ha sido reembolsada: el acceso Premium ha finalizado. Tus datos siguen disponibles.'],
     paused: ['Suscripción en pausa', 'Tu suscripción se pausará al final del periodo actual. Premium sigue disponible hasta entonces.'],
   },
   de: {
     billing: ['Zahlungsproblem', 'Dein Abo konnte nicht verlängert werden. Prüfe deine Zahlungsmethode im App Store oder bei Google Play.'],
-    expired: ['Abo beendet', 'Dein Abo für Au fil de nous Premium ist beendet. Deine Daten und die wichtigsten Funktionen bleiben verfügbar.'],
+    expired: ['Abo beendet', 'Dein Abo für HOMI Premium ist beendet. Deine Daten und die wichtigsten Funktionen bleiben verfügbar.'],
     cancelled: ['Verlängerung deaktiviert', 'Dein Abo bleibt bis zum Ablaufdatum aktiv und wird danach nicht verlängert.'],
     refunded: ['Abo erstattet', 'Dein Abo wurde erstattet: Der Premium-Zugang ist beendet. Deine Daten bleiben verfügbar.'],
     paused: ['Abo pausiert', 'Dein Abo wird am Ende des aktuellen Zeitraums pausiert. Premium bleibt bis dahin verfügbar.'],
   },
   it: {
     billing: ['Problema di pagamento', 'Non è stato possibile rinnovare il tuo abbonamento. Controlla il metodo di pagamento nell’App Store o su Google Play.'],
-    expired: ['Abbonamento terminato', 'Il tuo abbonamento Au fil de nous Premium è terminato. I tuoi dati e le funzioni essenziali restano disponibili.'],
+    expired: ['Abbonamento terminato', 'Il tuo abbonamento HOMI Premium è terminato. I tuoi dati e le funzioni essenziali restano disponibili.'],
     cancelled: ['Rinnovo disattivato', 'Il tuo abbonamento resta attivo fino alla data di scadenza, poi non verrà rinnovato.'],
     refunded: ['Abbonamento rimborsato', 'Il tuo abbonamento è stato rimborsato: l’accesso Premium è terminato. I tuoi dati restano disponibili.'],
     paused: ['Abbonamento in pausa', 'Il tuo abbonamento verrà messo in pausa alla fine del periodo in corso. Premium resta disponibile fino ad allora.'],

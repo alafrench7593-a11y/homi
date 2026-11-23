@@ -28,14 +28,14 @@ const S = {
   chaineFroid: { label: 'DGCCRF — La chaîne du froid (dépliant, juin 2015)', url: 'https://bourgogne-franche-comte.dreets.gouv.fr/sites/bourgogne-franche-comte.dreets.gouv.fr/IMG/pdf/depliant-chaine-du-froid-juin2015.pdf', consulted_on: C },
   ars: { label: 'ARS Auvergne-Rhône-Alpes — Intoxication alimentaire : comment se protéger et réagir en cas de symptômes ?', url: 'https://www.auvergne-rhone-alpes.ars.sante.fr/intoxication-alimentaire-comment-se-proteger-et-reagir-en-cas-de-symptomes', consulted_on: C, published: '2025-08-28' },
   ameliGastro: { label: 'ameli.fr — Gastro-entérite de l’enfant : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/gastro-enterite-enfant/que-faire-quand-consulter', consulted_on: C, published: '2021-03-23' },
-  materiaux: { label: 'DGCCRF (economie.gouv.fr) — Prenez garde aux matériaux mis au contact des aliments', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/prenez-garde-aux-materiaux-mis-au-contact-des-aliments', consulted_on: C },
+  materiaux: { label: 'DGCCRF (economie.gouv.fr) — Prends garde aux matériaux mis au contact des aliments', url: 'https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/prenez-garde-aux-materiaux-mis-au-contact-des-aliments', consulted_on: C },
   rappels: { label: 'economie.gouv.fr — Retraits et rappels de produits : comment signaler et s’informer sur les produits à risque ?', url: 'https://www.economie.gouv.fr/particuliers/mes-droits-conso/bien-consommer/retraits-et-rappels-de-produits-comment-signaler-et-sinformer-sur-les-produits-risque', consulted_on: C, published: '2026-03-30' },
   champignons: { label: 'Santé.fr (RecoSanté, recommandations Anses) — Cueillette de champignons : comment prévenir les intoxications ?', url: 'https://sante.fr/cueillette-de-champignons-comment-prevenir-les-intoxications', consulted_on: C, published: '2025-07-23' },
   eauBib: { label: 'Santé.fr (mpedia, AFPA) — Quelle eau choisir pour le biberon ?', url: 'https://sante.fr/quelle-eau-choisir-pour-le-biberon', consulted_on: C, published: '2022-01-31' },
   eau: { label: 'Santé.fr (Santé publique France — 1000 premiers jours) — L’eau, à consommer à volonté', url: 'https://www.sante.fr/leau-consommer-volonte', consulted_on: C, published: '2025-10-13' },
 } satisfies Record<string, ArticleSource>;
 
-const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme, de la PMI ou du professionnel de santé qui vous suit.';
+const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme, de la PMI ou du professionnel de santé qui te suit.';
 const FAMILY: Pick<LibArticle, 'journeys' | 'status'> = { journeys: ['pregnant', 'newborn', 'child'], status: 'to_review' };
 
 export const GUIDE_B07: LibArticle[] = [
@@ -72,11 +72,11 @@ Pour la viande bovine, les lieux de naissance, d'élevage et d'abattage doivent 
 Les produits vendus sans emballage (pain, pâtisserie, vrac) ne portent pas d'étiquette complète, mais une affichette à proximité doit indiquer leur nom, la présence d'allergènes le cas échéant et leur état (décongelé, cuit…).
 
 ## Au quotidien
-- **Commencez par le nom exact du produit.** « Préparation à base de… » ou « saveur… » ne désigne pas la même chose que le produit lui-même.
-- **Regardez les trois premiers ingrédients** : ce sont ceux qui pèsent le plus dans la recette.
-- **Vérifiez le pourcentage de l'ingrédient mis en avant** : une soupe « aux légumes » ou un yaourt « aux fruits » doit afficher la part de légumes ou de fruits.
-- **Repérez la date et la conservation** avant de mettre le produit dans le chariot, surtout pour les produits frais destinés à un enfant ou à une femme enceinte.
-- **Gardez l'emballage** des produits entamés ou congelés : il porte le numéro de lot, utile en cas de rappel.
+- **Commence par le nom exact du produit.** « Préparation à base de… » ou « saveur… » ne désigne pas la même chose que le produit lui-même.
+- **Regarde les trois premiers ingrédients** : ce sont ceux qui pèsent le plus dans la recette.
+- **Vérifie le pourcentage de l'ingrédient mis en avant** : une soupe « aux légumes » ou un yaourt « aux fruits » doit afficher la part de légumes ou de fruits.
+- **Repère la date et la conservation** avant de mettre le produit dans le chariot, surtout pour les produits frais destinés à un enfant ou à une femme enceinte.
+- **Garde l'emballage** des produits entamés ou congelés : il porte le numéro de lot, utile en cas de rappel.
 
 ## Questions fréquentes
 **L'étiquette est-elle forcément en français ?** Oui : pour les produits préemballés vendus en France, les mentions obligatoires sont en français.
@@ -88,7 +88,7 @@ Les produits vendus sans emballage (pain, pâtisserie, vrac) ne portent pas d'é
 **Les fruits secs vendus en vrac ont-ils une origine affichée ?** Depuis 2025, l'origine est obligatoire pour certains produits non préemballés, notamment les noix, noisettes, amandes et pistaches sans coque et les fruits séchés.
 
 ## Quand demander conseil
-Si votre enfant suit un régime particulier (allergie, maladie cœliaque, diabète…), demandez au médecin ou à la diététicienne qui le suit de vous montrer les points de l'étiquette à surveiller pour lui. Si un aliment vous semble mal étiqueté ou trompeur, vous pouvez le signaler sur la plateforme SignalConso. En cas de malaise, de gêne respiratoire ou de gonflement du visage après un repas, appelez le 15 ou le 112.
+Si ton enfant suit un régime particulier (allergie, maladie cœliaque, diabète…), demande au médecin ou à la diététicienne qui le suit de te montrer les points de l'étiquette à surveiller pour lui. Si un aliment te semble mal étiqueté ou trompeur, tu peux le signaler sur la plateforme SignalConso. En cas de malaise, de gêne respiratoire ou de gonflement du visage après un repas, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -119,24 +119,24 @@ Santé.fr explique que la liste des ingrédients est le meilleur repère pour id
 Les sucres peuvent apparaître sous différents noms. L'Anses cite notamment le glucose, le fructose, le saccharose (sucre de table), le maltose, mais aussi le sucre inverti, les sirops de glucose et de fructose, les jus concentrés, les sirops de fruits et le miel.
 
 ## Au quotidien
-- **Lisez d'abord les trois premiers ingrédients.** Si le sucre ou un sirop y figure pour un produit qui n'est pas censé être sucré (sauce, céréales salées, plat préparé), c'est un signal.
-- **Comparez les pourcentages** : deux compotes, deux soupes ou deux jambons-purée du rayon peuvent contenir des proportions très différentes de l'ingrédient principal.
-- **Repérez les « arômes »** : quand la mention « arôme » n'est pas suivie de « naturel de… », il s'agit d'un arôme qui ne provient pas forcément de l'aliment évoqué.
-- **Préférez les listes courtes et compréhensibles**, surtout pour les produits du quotidien des enfants (yaourts, pain, céréales, compotes).
-- **Comptez les sources de sucre** : si plusieurs noms de sucres apparaissent séparément, leur total peut être important même si chacun semble loin dans la liste.
-- **Faites-en un jeu avec les enfants** à partir de 6–7 ans : chercher le premier ingrédient ou le pourcentage de fruits sur l'emballage les rend acteurs de leurs choix.
+- **Lis d'abord les trois premiers ingrédients.** Si le sucre ou un sirop y figure pour un produit qui n'est pas censé être sucré (sauce, céréales salées, plat préparé), c'est un signal.
+- **Compare les pourcentages** : deux compotes, deux soupes ou deux jambons-purée du rayon peuvent contenir des proportions très différentes de l'ingrédient principal.
+- **Repère les « arômes »** : quand la mention « arôme » n'est pas suivie de « naturel de… », il s'agit d'un arôme qui ne provient pas forcément de l'aliment évoqué.
+- **Préfère les listes courtes et compréhensibles**, surtout pour les produits du quotidien des enfants (yaourts, pain, céréales, compotes).
+- **Compte les sources de sucre** : si plusieurs noms de sucres apparaissent séparément, leur total peut être important même si chacun semble loin dans la liste.
+- **Fais-en un jeu avec les enfants** à partir de 6–7 ans : chercher le premier ingrédient ou le pourcentage de fruits sur l'emballage les rend acteurs de leurs choix.
 
 ## Questions fréquentes
 **Un produit avec beaucoup d'ingrédients est-il forcément moins bon ?** Pas forcément : un plat mijoté peut contenir de nombreux légumes et épices. Ce qui alerte, ce sont surtout les ingrédients industriels (sirops, amidons modifiés, isolats, arômes) et les additifs à visée cosmétique (texture, couleur, goût).
 
-**« Sans sucres ajoutés » veut-il dire sans sucre ?** Non. Le produit peut contenir des sucres naturellement présents (fruits, lait). La liste des ingrédients et la ligne « dont sucres » du tableau nutritionnel vous renseignent.
+**« Sans sucres ajoutés » veut-il dire sans sucre ?** Non. Le produit peut contenir des sucres naturellement présents (fruits, lait). La liste des ingrédients et la ligne « dont sucres » du tableau nutritionnel te renseignent.
 
 **Le bio dispense-t-il de lire la liste ?** Non. Un produit bio peut lui aussi être ultratransformé ou riche en sucre, en sel ou en graisses.
 
 **Où se trouvent les allergènes ?** Ils doivent être mis en relief dans la liste des ingrédients (gras, couleur, soulignement). Pour les questions d'allergie, un article dédié de l'application détaille les mentions de traces.
 
 ## Quand demander conseil
-Si votre enfant a une alimentation très restreinte, si vous avez des doutes sur la place des produits transformés dans ses repas ou si vous suivez un régime particulier pendant la grossesse, parlez-en au médecin, à la sage-femme, à la PMI ou à une diététicienne. En cas de réaction brutale après un repas (gêne respiratoire, gonflement, malaise), appelez le 15 ou le 112.
+Si ton enfant a une alimentation très restreinte, si tu as des doutes sur la place des produits transformés dans ses repas ou si tu suis un régime particulier pendant la grossesse, parles-en au médecin, à la sage-femme, à la PMI ou à une diététicienne. En cas de réaction brutale après un repas (gêne respiratoire, gonflement, malaise), appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -172,15 +172,15 @@ Les valeurs sont exprimées au minimum pour 100 g ou 100 ml. Le fabricant peut a
 Le sel mérite une attention particulière : il est présent dans de très nombreux produits transformés (pain, charcuterie, fromages, soupes et plats préparés). Les sucres aussi : l'Anses rappelle que leur excès favorise notamment le surpoids, le diabète de type 2 et les caries.
 
 ## Au quotidien
-- **Comparez toujours sur la colonne « pour 100 g »** : c'est la seule qui soit identique d'un produit à l'autre.
-- **Regardez les lignes « dont sucres » et « sel »** pour les produits que vos enfants consomment souvent : céréales du petit-déjeuner, biscuits, desserts lactés, boissons, sauces, plats préparés.
-- **Méfiez-vous des portions affichées** : une « portion » de céréales ou de biscuits sur l'emballage est parfois plus petite que ce qui est réellement servi, ou au contraire calculée pour un adulte.
-- **Comparez des produits qui se ressemblent** : deux mueslis, deux pains de mie, deux soupes. Comparer un yaourt nature à un biscuit n'a pas de sens.
-- **Associez le tableau à la liste des ingrédients** : le tableau dit combien, la liste dit d'où cela vient (sucre ajouté ou sucre du fruit, par exemple).
-- **Utilisez le Nutri-Score quand il est présent** : il résume en une lettre une partie de ces informations.
+- **Compare toujours sur la colonne « pour 100 g »** : c'est la seule qui soit identique d'un produit à l'autre.
+- **Regarde les lignes « dont sucres » et « sel »** pour les produits que tes enfants consomment souvent : céréales du petit-déjeuner, biscuits, desserts lactés, boissons, sauces, plats préparés.
+- **Méfie-toi des portions affichées** : une « portion » de céréales ou de biscuits sur l'emballage est parfois plus petite que ce qui est réellement servi, ou au contraire calculée pour un adulte.
+- **Compare des produits qui se ressemblent** : deux mueslis, deux pains de mie, deux soupes. Comparer un yaourt nature à un biscuit n'a pas de sens.
+- **Associe le tableau à la liste des ingrédients** : le tableau dit combien, la liste dit d'où cela vient (sucre ajouté ou sucre du fruit, par exemple).
+- **Utilise le Nutri-Score quand il est présent** : il résume en une lettre une partie de ces informations.
 
 ## Questions fréquentes
-**Faut-il calculer les apports de mon enfant avec ces chiffres ?** Ce n'est pas nécessaire. Le tableau sert surtout à comparer des produits entre eux. Pour savoir si l'alimentation de votre enfant couvre ses besoins, c'est sa croissance et son appétit, suivis par le médecin, qui comptent.
+**Faut-il calculer les apports de mon enfant avec ces chiffres ?** Ce n'est pas nécessaire. Le tableau sert surtout à comparer des produits entre eux. Pour savoir si l'alimentation de ton enfant couvre ses besoins, c'est sa croissance et son appétit, suivis par le médecin, qui comptent.
 
 **Pourquoi les sucres sont-ils notés « dont sucres » ?** Parce qu'ils font partie des glucides. Le chiffre inclut les sucres naturellement présents (lactose du lait, sucres des fruits) et les sucres ajoutés, sans les distinguer.
 
@@ -189,7 +189,7 @@ Le sel mérite une attention particulière : il est présent dans de très nombr
 **D'où viennent les chiffres ?** D'une analyse du produit par le fabricant ou de calculs à partir des valeurs moyennes des ingrédients ou d'une table de composition des aliments.
 
 ## Quand demander conseil
-Si vous vous inquiétez du poids, de l'appétit ou de la croissance de votre enfant, ou si vous avez un diabète gestationnel et devez surveiller les glucides, demandez un accompagnement au médecin, à la sage-femme ou à une diététicienne plutôt que de vous fier aux seules étiquettes. En cas d'urgence, appelez le 15 ou le 112.
+Si tu t’inquiètes du poids, de l'appétit ou de la croissance de ton enfant, ou si tu as un diabète gestationnel et dois surveiller les glucides, demande un accompagnement au médecin, à la sage-femme ou à une diététicienne plutôt que de toi fier aux seules étiquettes. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -226,10 +226,10 @@ Santé.fr propose trois façons d'utiliser le Nutri-Score :
 - **pour des produits consommés au même moment** : au dessert, une mousse au chocolat peut se comparer à un yaourt aux fruits ou à une crème caramel.
 
 Quelques réflexes utiles :
-- **Partez des repères alimentaires**, puis utilisez le Nutri-Score pour départager : plus de légumes secs, des féculents complets, moins de produits gras, sucrés, salés et ultratransformés.
-- **Tenez compte de la catégorie** : certaines familles d'aliments, comme les huiles ou les fromages, ne peuvent pas obtenir A. Un fromage noté C peut être un bon choix dans sa catégorie.
-- **Ne cherchez pas le Nutri-Score sur les produits frais** : fruits, légumes et poisson frais n'en portent pas, et ce sont des aliments à privilégier.
-- **Pour le goûter des enfants**, Santé publique France conseille, si vous achetez des biscuits, d'éviter surtout ceux notés E.
+- **Pars des repères alimentaires**, puis utilise le Nutri-Score pour départager : plus de légumes secs, des féculents complets, moins de produits gras, sucrés, salés et ultratransformés.
+- **Tiens compte de la catégorie** : certaines familles d'aliments, comme les huiles ou les fromages, ne peuvent pas obtenir A. Un fromage noté C peut être un bon choix dans sa catégorie.
+- **Ne cherche pas le Nutri-Score sur les produits frais** : fruits, légumes et poisson frais n'en portent pas, et ce sont des aliments à privilégier.
+- **Pour le goûter des enfants**, Santé publique France conseille, si tu achètes des biscuits, d'éviter surtout ceux notés E.
 
 ## Questions fréquentes
 **Un produit noté A peut-il être mangé à volonté ?** Le Nutri-Score compare des produits ; il ne dit pas en quelle quantité les consommer. L'équilibre se construit sur l'ensemble des repas.
@@ -241,7 +241,7 @@ Quelques réflexes utiles :
 **Le Nutri-Score suffit-il pour choisir les aliments de bébé ?** Non : pour un bébé, ce sont les repères de diversification (textures, absence de sel et de sucre ajoutés, variété) donnés par le médecin ou la PMI qui guident les choix.
 
 ## Quand demander conseil
-Le Nutri-Score ne remplace pas un avis personnalisé. Si votre enfant a une alimentation très sélective, une prise ou une perte de poids qui vous inquiète, ou si vous avez un diabète gestationnel, parlez-en au médecin, à la sage-femme ou à une diététicienne. En cas d'urgence, appelez le 15 ou le 112.
+Le Nutri-Score ne remplace pas un avis personnalisé. Si ton enfant a une alimentation très sélective, une prise ou une perte de poids qui t’inquiète, ou si tu as un diabète gestationnel, parles-en au médecin, à la sage-femme ou à une diététicienne. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -272,24 +272,24 @@ Pour lutter contre le gaspillage, un décret de 2022 permet aux fabricants d'ajo
 Enfin, une **date de congélation** (« produit congelé le… ») est obligatoire pour les viandes congelées, les préparations de viande congelées et les produits de la pêche congelés non transformés.
 
 ## Au quotidien
-- **Rangez devant** les produits dont la DLC est la plus proche, au réfrigérateur comme dans le placard.
-- **Respectez strictement la DLC** des produits frais, en particulier pour les jeunes enfants, les femmes enceintes et les personnes fragiles, plus sensibles aux intoxications.
-- **Pour un produit en DDM dépassée**, vérifiez l'emballage (boîte bombée ou abîmée, sachet percé), l'aspect et l'odeur avant de le consommer.
-- **Lisez la conservation après ouverture** : beaucoup de produits en DDM (lait UHT, compotes, sauces) doivent être gardés au frais et consommés rapidement une fois ouverts.
-- **Faites vos courses en conséquence** : achetez les produits très périssables en quantité adaptée à ce que vous pourrez consommer avant la date.
-- **Pour les petits pots et laits infantiles entamés**, suivez la durée indiquée sur l'étiquette.
+- **Range devant** les produits dont la DLC est la plus proche, au réfrigérateur comme dans le placard.
+- **Respecte strictement la DLC** des produits frais, en particulier pour les jeunes enfants, les femmes enceintes et les personnes fragiles, plus sensibles aux intoxications.
+- **Pour un produit en DDM dépassée**, vérifie l'emballage (boîte bombée ou abîmée, sachet percé), l'aspect et l'odeur avant de le consommer.
+- **Lis la conservation après ouverture** : beaucoup de produits en DDM (lait UHT, compotes, sauces) doivent être gardés au frais et consommés rapidement une fois ouverts.
+- **Fais tes courses en conséquence** : achète les produits très périssables en quantité adaptée à ce que tu pourras consommer avant la date.
+- **Pour les petits pots et laits infantiles entamés**, suis la durée indiquée sur l'étiquette.
 
 ## Questions fréquentes
-**Un yaourt un jour après la DLC, est-ce grave ?** La DLC est une limite impérative fixée pour des raisons sanitaires : les autorités demandent de la respecter. Par prudence, ne le donnez pas à un enfant ni à une femme enceinte.
+**Un yaourt un jour après la DLC, est-ce grave ?** La DLC est une limite impérative fixée pour des raisons sanitaires : les autorités demandent de la respecter. Par prudence, ne le donne pas à un enfant ni à une femme enceinte.
 
-**Puis-je congeler un produit frais juste avant sa DLC ?** Pour congeler un produit frais, il faut qu'il soit encore en bon état et conservé au froid depuis l'achat. Notez la date sur l'emballage et ne le recongelez jamais après décongélation.
+**Puis-je congeler un produit frais juste avant sa DLC ?** Pour congeler un produit frais, il faut qu'il soit encore en bon état et conservé au froid depuis l'achat. Note la date sur l'emballage et ne le recongèle jamais après décongélation.
 
 **Pourquoi le lait UHT a-t-il une DDM et le lait frais une DLC ?** Le lait UHT est stérilisé et se conserve longtemps fermé ; le lait frais pasteurisé reste périssable et doit être gardé au froid.
 
 **Les produits vendus en ligne affichent-ils la date ?** Pour la vente à distance, la date peut n'être communiquée qu'à la livraison.
 
 ## Quand demander conseil
-En cas de symptômes digestifs après avoir mangé un produit douteux (vomissements, diarrhée, fièvre), consultez un médecin, surtout pour un nourrisson, un jeune enfant, une femme enceinte ou une personne fragile. Si l'état se dégrade rapidement (signes de déshydratation, somnolence inhabituelle, sang dans les selles), appelez le 15 ou le 112.
+En cas de symptômes digestifs après avoir mangé un produit douteux (vomissements, diarrhée, fièvre), consulte un médecin, surtout pour un nourrisson, un jeune enfant, une femme enceinte ou une personne fragile. Si l'état se dégrade rapidement (signes de déshydratation, somnolence inhabituelle, sang dans les selles), appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -318,13 +318,13 @@ Un excès de sucres favorise le surpoids, le diabète de type 2, les maladies ca
 Sur l'étiquette, le sucre peut s'appeler : saccharose, glucose, fructose, dextrose, maltose, sucre inverti, sirop de glucose, sirop de fructose, sirop de glucose-fructose, jus de fruits concentré, sirop de fruits, moût, miel… Les édulcorants intenses, eux, n'apportent pas de bénéfice démontré sur le poids ou la glycémie selon l'Anses.
 
 ## Au quotidien
-- **Cherchez les sucres dans les trois premiers ingrédients** des céréales, biscuits, desserts lactés et boissons.
-- **Additionnez les noms différents** : un produit qui contient du sucre, du sirop de glucose et du dextrose peut être très sucré, même si chaque ingrédient est loin dans la liste.
-- **Comparez la ligne « dont sucres » pour 100 g** entre deux produits du même rayon.
-- **Préférez les versions nature** (yaourt, fromage blanc, céréales) et sucrez vous-même légèrement, ou avec un fruit écrasé pour les plus jeunes.
-- **Mettez une carafe d'eau sur la table** et réservez les jus et sodas aux occasions. Les jus de fruits, même sans sucre ajouté, ne sont pas recommandés chez les jeunes enfants.
-- **Réduisez progressivement** : le goût s'habitue. Diminuer peu à peu le sucre dans le chocolat du matin ou les gâteaux maison passe souvent inaperçu.
-- **Méfiez-vous des produits « allégés en sucres »** : la mention compare le produit à une version de référence, pas à un aliment peu sucré.
+- **Cherche les sucres dans les trois premiers ingrédients** des céréales, biscuits, desserts lactés et boissons.
+- **Additionne les noms différents** : un produit qui contient du sucre, du sirop de glucose et du dextrose peut être très sucré, même si chaque ingrédient est loin dans la liste.
+- **Compare la ligne « dont sucres » pour 100 g** entre deux produits du même rayon.
+- **Préfère les versions nature** (yaourt, fromage blanc, céréales) et sucre toi-même légèrement, ou avec un fruit écrasé pour les plus jeunes.
+- **Mets une carafe d'eau sur la table** et réserve les jus et sodas aux occasions. Les jus de fruits, même sans sucre ajouté, ne sont pas recommandés chez les jeunes enfants.
+- **Réduis progressivement** : le goût s'habitue. Diminuer peu à peu le sucre dans le chocolat du matin ou les gâteaux maison passe souvent inaperçu.
+- **Méfie-toi des produits « allégés en sucres »** : la mention compare le produit à une version de référence, pas à un aliment peu sucré.
 
 ## Questions fréquentes
 **Les sucres des fruits et du lait comptent-ils ?** La ligne « dont sucres » les inclut. Les repères de l'Anses excluent le lactose et le galactose (sucres du lait). Les fruits entiers, riches en fibres, restent recommandés ; ce sont surtout les sucres des boissons et produits sucrés qu'il est utile de limiter.
@@ -333,10 +333,10 @@ Sur l'étiquette, le sucre peut s'appeler : saccharose, glucose, fructose, dextr
 
 **Remplacer le sucre par des édulcorants est-il une bonne idée pour les enfants ?** L'Anses ne retrouve pas de bénéfice démontré des édulcorants intenses, et l'objectif reste de réduire le goût sucré dans son ensemble. L'eau reste la boisson à privilégier.
 
-**Que faire si mon enfant réclame des produits très sucrés ?** Évitez de les interdire totalement ou de les utiliser comme récompense ; proposez-les ponctuellement, en petite quantité, et gardez des goûters simples (pain, fruit, produit laitier) au quotidien.
+**Que faire si mon enfant réclame des produits très sucrés ?** Évite de les interdire totalement ou de les utiliser comme récompense ; propose-les ponctuellement, en petite quantité, et garde des goûters simples (pain, fruit, produit laitier) au quotidien.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant boit beaucoup de boissons sucrées et a du mal à s'en passer, s'il a des caries, ou si sa courbe de poids vous inquiète. Une soif intense inhabituelle, des envies d'uriner très fréquentes et une perte de poids chez un enfant doivent faire consulter rapidement ; en cas de somnolence, de vomissements ou de respiration rapide, appelez le 15 ou le 112.
+Parles-en au médecin ou à la PMI si ton enfant boit beaucoup de boissons sucrées et a du mal à s'en passer, s'il a des caries, ou si sa courbe de poids t’inquiète. Une soif intense inhabituelle, des envies d'uriner très fréquentes et une perte de poids chez un enfant doivent faire consulter rapidement ; en cas de somnolence, de vomissements ou de respiration rapide, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -369,15 +369,15 @@ Plusieurs pratiques sont interdites : affirmer qu'un aliment prévient ou guéri
 Santé.fr souligne aussi que les produits « allégés en sucres » ou « allégés en matières grasses » contiennent souvent des additifs pour retrouver le goût et la texture d'origine : c'est un indice possible de produit ultratransformé.
 
 ## Au quotidien
-- **Lisez l'allégation comme un argument publicitaire encadré**, pas comme une garantie de produit sain : des céréales « source de fibres » peuvent être très sucrées.
-- **« Sans sucres ajoutés »** signifie qu'aucun sucre ni édulcorant n'a été ajouté ; le produit peut contenir des sucres naturellement présents (compote, jus). Regardez la ligne « dont sucres ».
+- **Lis l'allégation comme un argument publicitaire encadré**, pas comme une garantie de produit sain : des céréales « source de fibres » peuvent être très sucrées.
+- **« Sans sucres ajoutés »** signifie qu'aucun sucre ni édulcorant n'a été ajouté ; le produit peut contenir des sucres naturellement présents (compote, jus). Regarde la ligne « dont sucres ».
 - **« Allégé » ou « réduit en »** compare le produit à une version de référence de la même gamme ; un biscuit allégé reste un biscuit.
 - **« Enrichi en vitamines »** ne compense pas un excès de sucre, de sel ou de graisses.
 - **Les allégations destinées aux enfants** (croissance, os, concentration) visent souvent les parents. Pour un enfant en bonne santé qui mange varié, des aliments simples apportent ces nutriments.
-- **Comparez avec le Nutri-Score** et le tableau nutritionnel pour 100 g plutôt qu'avec le slogan.
+- **Compare avec le Nutri-Score** et le tableau nutritionnel pour 100 g plutôt qu'avec le slogan.
 
 ## Questions fréquentes
-**Une allégation de santé est-elle une preuve d'efficacité ?** Elle signifie que le lien entre un nutriment et une fonction du corps a été reconnu ; elle ne prouve pas que ce produit, consommé dans votre famille, apporte un bénéfice particulier.
+**Une allégation de santé est-elle une preuve d'efficacité ?** Elle signifie que le lien entre un nutriment et une fonction du corps a été reconnu ; elle ne prouve pas que ce produit, consommé dans ta famille, apporte un bénéfice particulier.
 
 **« Naturel » est-il une allégation ?** C'est une mention marketing qui ne doit pas être trompeuse, mais elle n'est pas une allégation nutritionnelle et ne renseigne pas sur la composition.
 
@@ -386,7 +386,7 @@ Santé.fr souligne aussi que les produits « allégés en sucres » ou « allég
 **Où signaler une allégation douteuse ?** Sur la plateforme SignalConso, administrée par la DGCCRF.
 
 ## Quand demander conseil
-Si un produit présenté comme « adapté » à une maladie (diabète, allergie, troubles digestifs) vous intéresse pour vous ou votre enfant, demandez l'avis du médecin, de la sage-femme ou d'une diététicienne avant de l'intégrer à l'alimentation. En cas de réaction après un repas (gêne respiratoire, gonflement, malaise), appelez le 15 ou le 112.
+Si un produit présenté comme « adapté » à une maladie (diabète, allergie, troubles digestifs) t’intéresse pour toi ou ton enfant, demande l'avis du médecin, de la sage-femme ou d'une diététicienne avant de l'intégrer à l'alimentation. En cas de réaction après un repas (gêne respiratoire, gonflement, malaise), appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -411,29 +411,29 @@ ${END}`,
 ## Comprendre
 Hors laits infantiles et aliments pour bébés, encadrés par une réglementation spécifique, les repères de santé publique s'appuient sur des aliments courants. La brochure des 1000 premiers jours précise que les produits laitiers « spécial bébé » coûtent plus cher sans être nécessaires, et que les biscuits, gâteaux et produits chocolatés pour moins de 3 ans sont souvent trop gras et trop sucrés.
 
-Pour les enfants de 4 à 11 ans, Santé publique France recommande de limiter viennoiseries et aliments sucrés et gras au goûter et de proposer par exemple du pain avec un peu de chocolat, de beurre ou de confiture, un fruit, une compote ou un produit laitier. Si vous achetez des biscuits, mieux vaut éviter surtout ceux classés E au Nutri-Score.
+Pour les enfants de 4 à 11 ans, Santé publique France recommande de limiter viennoiseries et aliments sucrés et gras au goûter et de proposer par exemple du pain avec un peu de chocolat, de beurre ou de confiture, un fruit, une compote ou un produit laitier. Si tu achètes des biscuits, mieux vaut éviter surtout ceux classés E au Nutri-Score.
 
 Les emballages destinés aux enfants mettent souvent en avant des allégations (« riche en calcium », « source de vitamines »). Ces mentions sont encadrées, mais elles ne disent rien du sucre ou du sel que contient le produit.
 
 ## Au quotidien
-- **Comparez le produit « enfant » à sa version classique** : un yaourt nature ordinaire, un fromage blanc ou un petit-suisse nature conviennent très bien. Vous pouvez les sucrer avec un fruit écrasé.
-- **Pour les céréales**, regardez la ligne « dont sucres » et le Nutri-Score. Du pain, éventuellement complet, avec un peu de beurre est une alternative simple.
-- **Préférez les portions familiales** : servir dans un bol ce que l'enfant va manger revient souvent moins cher que les formats individuels.
-- **Évitez les boissons pour enfants aromatisées** : l'eau reste la seule boisson indispensable ; les jus, même sans sucre ajouté, ne sont pas recommandés chez les plus petits.
-- **Parlez publicité avec les plus grands** : à partir de 5–6 ans, expliquer pourquoi un personnage est dessiné sur la boîte aide l'enfant à prendre du recul.
-- **Gardez une place au plaisir** : un biscuit de temps en temps n'est pas un problème ; c'est la régularité qui compte.
+- **Compare le produit « enfant » à sa version classique** : un yaourt nature ordinaire, un fromage blanc ou un petit-suisse nature conviennent très bien. Tu peux les sucrer avec un fruit écrasé.
+- **Pour les céréales**, regarde la ligne « dont sucres » et le Nutri-Score. Du pain, éventuellement complet, avec un peu de beurre est une alternative simple.
+- **Préfère les portions familiales** : servir dans un bol ce que l'enfant va manger revient souvent moins cher que les formats individuels.
+- **Évite les boissons pour enfants aromatisées** : l'eau reste la seule boisson indispensable ; les jus, même sans sucre ajouté, ne sont pas recommandés chez les plus petits.
+- **Parle publicité avec les plus grands** : à partir de 5–6 ans, expliquer pourquoi un personnage est dessiné sur la boîte aide l'enfant à prendre du recul.
+- **Garde une place au plaisir** : un biscuit de temps en temps n'est pas un problème ; c'est la régularité qui compte.
 
 ## Questions fréquentes
 **Les laitages « croissance » apportent-ils plus de calcium ?** Ils peuvent être enrichis, mais les produits laitiers ordinaires apportent déjà du calcium. Santé publique France recommande trois produits laitiers par jour pendant l'enfance, sans exiger de produits spécifiques.
 
 **Et les petits pots pour bébé ?** Ils obéissent à une réglementation particulière qui limite notamment pesticides et additifs ; ils peuvent dépanner pendant la diversification. Un article dédié de l'application explique comment les choisir.
 
-**Mon enfant ne veut que les produits avec un personnage : que faire ?** Proposez sans en faire un enjeu : servez le produit ordinaire dans un joli bol, laissez-le choisir entre deux options que vous avez sélectionnées, faites-le participer à la préparation.
+**Mon enfant ne veut que les produits avec un personnage : que faire ?** Propose sans en faire un enjeu : sers le produit ordinaire dans un joli bol, laisse-le choisir entre deux options que tu as sélectionnées, fais-le participer à la préparation.
 
 **Les biscuits « bébé » aident-ils à la mastication ?** La brochure des 1000 premiers jours signale que les biscuits pour moins de 3 ans sont souvent trop gras et trop sucrés ; les morceaux d'aliments du repas, adaptés à son âge, permettent aussi de s'entraîner à mâcher.
 
 ## Quand demander conseil
-Si votre enfant mange très peu de variétés d'aliments, refuse durablement certains groupes d'aliments ou si sa courbe de croissance vous préoccupe, parlez-en au médecin, à la PMI ou à une diététicienne. En cas d'étouffement ou de réaction brutale après un repas, appelez le 15 ou le 112.
+Si ton enfant mange très peu de variétés d'aliments, refuse durablement certains groupes d'aliments ou si sa courbe de croissance te préoccupe, parles-en au médecin, à la PMI ou à une diététicienne. En cas d'étouffement ou de réaction brutale après un repas, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -453,44 +453,44 @@ ${END}`,
 ## En bref
 - Les petits pots et plats destinés aux moins de 3 ans obéissent à une réglementation qui limite la présence de pesticides et d'additifs.
 - Ils sont pratiques mais moins variés en goûts et en textures que le fait maison : alterner les deux est une bonne solution.
-- Ne salez pas les petits pots et ne les réchauffez pas dans leur barquette en plastique.
+- Ne sale pas les petits pots et ne les réchauffe pas dans leur barquette en plastique.
 - Une fois ouvert, un petit pot se conserve selon la durée indiquée sur l'étiquette, au réfrigérateur.
-- Les quantités à proposer dépendent de l'âge et de l'appétit de votre bébé : le professionnel qui le suit vous guide.
+- Les quantités à proposer dépendent de l'âge et de l'appétit de ton bébé : le professionnel qui le suit te guide.
 
 ## Comprendre
 La brochure des 1000 premiers jours présente les petits pots comme une solution pratique quand on manque de temps ou en déplacement, avec une limite : ils offrent moins de variété de goûts et de textures que les préparations maison. Les produits destinés aux moins de 3 ans limitent la présence de pesticides et d'additifs.
 
-Sur l'étiquette, vous retrouvez les informations obligatoires : dénomination, liste des ingrédients, allergènes mis en évidence, quantité nette, date (le plus souvent une DDM pour les pots stérilisés, une DLC pour les plats frais), conditions de conservation avant et après ouverture, mode d'emploi. L'âge indiqué sur l'emballage renseigne sur la texture prévue.
+Sur l'étiquette, tu retrouves les informations obligatoires : dénomination, liste des ingrédients, allergènes mis en évidence, quantité nette, date (le plus souvent une DDM pour les pots stérilisés, une DLC pour les plats frais), conditions de conservation avant et après ouverture, mode d'emploi. L'âge indiqué sur l'emballage renseigne sur la texture prévue.
 
 Côté sécurité, l'Anses rappelle que les repas des nourrissons ne doivent pas être conservés plus de 48 heures à 4 °C, et que le réfrigérateur doit être à 4 °C maximum dans sa zone la plus froide.
 
 ## Au quotidien
 **Au rayon**
-- **Lisez la liste des ingrédients** : la part de légumes, de viande ou de poisson doit être précisée lorsqu'ils sont mis en avant.
-- **Vérifiez l'absence de sel et de sucre ajoutés** dans la liste ; pour les desserts, préférez les fruits sans sucre ajouté.
-- **Variez les recettes et les fabricants** : la consistance et la taille des morceaux changent d'un produit à l'autre, ce qui aide bébé à découvrir de nouvelles textures.
-- **Choisissez la texture adaptée** au stade de votre enfant plutôt que de vous fier uniquement à l'âge indiqué.
-- **Contrôlez l'emballage** : un couvercle bombé ou un opercule abîmé doivent faire renoncer au produit.
+- **Lis la liste des ingrédients** : la part de légumes, de viande ou de poisson doit être précisée lorsqu'ils sont mis en avant.
+- **Vérifie l'absence de sel et de sucre ajoutés** dans la liste ; pour les desserts, préfère les fruits sans sucre ajouté.
+- **Varie les recettes et les fabricants** : la consistance et la taille des morceaux changent d'un produit à l'autre, ce qui aide bébé à découvrir de nouvelles textures.
+- **Choisis la texture adaptée** au stade de ton enfant plutôt que de toi fier uniquement à l'âge indiqué.
+- **Contrôle l'emballage** : un couvercle bombé ou un opercule abîmé doivent faire renoncer au produit.
 
 **À la maison**
-- **Servez dans une assiette** la quantité que bébé va manger, plutôt que de faire manger directement dans le pot : la cuillère passée dans sa bouche contamine le reste.
-- **Refermez et mettez au réfrigérateur** le reste aussitôt, en respectant la durée indiquée sur l'étiquette.
-- **Ne réchauffez pas dans la barquette plastique** : transvasez dans une casserole ou une assiette.
-- **Mélangez bien et vérifiez la température** avant de servir, surtout après un passage au micro-ondes qui chauffe de façon inégale.
-- **Ajoutez une petite cuillère de matière grasse crue** (huile de colza, de noix ou d'olive, ou un peu de beurre) comme le recommandent les repères de diversification.
-- **En sortie**, emportez les pots fermés ; un pot ouvert se transporte dans un sac isotherme.
+- **Sers dans une assiette** la quantité que bébé va manger, plutôt que de faire manger directement dans le pot : la cuillère passée dans sa bouche contamine le reste.
+- **Referme et mets au réfrigérateur** le reste aussitôt, en respectant la durée indiquée sur l'étiquette.
+- **Ne réchauffe pas dans la barquette plastique** : transvase dans une casserole ou une assiette.
+- **Mélange bien et vérifie la température** avant de servir, surtout après un passage au micro-ondes qui chauffe de façon inégale.
+- **Ajoute une petite cuillère de matière grasse crue** (huile de colza, de noix ou d'olive, ou un peu de beurre) comme le recommandent les repères de diversification.
+- **En sortie**, emporte les pots fermés ; un pot ouvert se transporte dans un sac isotherme.
 
 ## Questions fréquentes
 **Les petits pots sont-ils moins bons que le fait maison ?** Ils respectent une réglementation stricte, mais apportent moins de variété. Alterner avec des purées maison permet de profiter des deux.
 
 **Puis-je saler un petit pot qui me semble fade ?** Non : jusqu'à 3 ans, il est recommandé de ne pas saler, ni le fait maison ni les petits pots. Les herbes et aromates donnent du goût.
 
-**Un petit pot réchauffé non terminé peut-il être resservi ?** Par prudence, jetez ce qui a été réchauffé et entamé à la cuillère.
+**Un petit pot réchauffé non terminé peut-il être resservi ?** Par prudence, jette ce qui a été réchauffé et entamé à la cuillère.
 
 **Les gourdes de compote sont-elles une bonne idée ?** Elles dépannent, mais faire manger à la cuillère ou en morceaux aide l'enfant à découvrir les textures et à mastiquer.
 
 ## Quand demander conseil
-Pour savoir quelles quantités proposer et à quel rythme faire évoluer les textures, appuyez-vous sur le médecin, la PMI ou la sage-femme qui suit votre bébé. En cas de vomissements répétés, de diarrhée chez un nourrisson ou de signes de déshydratation, consultez rapidement ; s'il est très somnolent, gémit ou respire vite, appelez le 15 ou le 112.
+Pour savoir quelles quantités proposer et à quel rythme faire évoluer les textures, appuie-toi sur le médecin, la PMI ou la sage-femme qui suit ton bébé. En cas de vomissements répétés, de diarrhée chez un nourrisson ou de signes de déshydratation, consulte rapidement ; s'il est très somnolent, gémit ou respire vite, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation-bebe',
@@ -505,14 +505,14 @@ ${END}`,
     slug: 'lait-de-croissance-boissons-lactees-lire-l-etiquette',
     title: 'Lait de croissance, laits aromatisés, boissons végétales : s’y retrouver au rayon',
     summary: 'Après 1 an, comment distinguer lait de croissance, lait de vache, laits aromatisés et boissons végétales en lisant l’étiquette, sans quantités imposées.',
-    body_md: `Au rayon des laits, les briques et les boîtes se ressemblent : lait de croissance, lait entier, lait chocolaté, « lait » d'avoine ou d'amande… Voici comment lire les emballages pour faire un choix adapté à votre enfant.
+    body_md: `Au rayon des laits, les briques et les boîtes se ressemblent : lait de croissance, lait entier, lait chocolaté, « lait » d'avoine ou d'amande… Voici comment lire les emballages pour faire un choix adapté à ton enfant.
 
 ## En bref
 - Après 1 an, les repères des 1000 premiers jours recommandent, si possible, un lait de croissance enrichi en fer, nature, sans sucre ni arôme ajouté.
 - On peut alterner lait de croissance et lait de vache entier.
 - Les boissons végétales vendues comme « lait » n'en sont pas et ne répondent pas aux besoins des jeunes enfants.
 - Les boissons et produits à base de soja sont déconseillés avant 3 ans.
-- La quantité de lait adaptée à votre enfant se discute avec le médecin ou la PMI.
+- La quantité de lait adaptée à ton enfant se discute avec le médecin ou la PMI.
 
 ## Comprendre
 Avant 1 an, les laits infantiles (1er âge puis 2e âge) suivent une réglementation européenne stricte. Le lait de vache n'est pas adapté au nourrisson : trop riche en protéines, en sodium et en sels minéraux, et pas assez riche en fer, en zinc, en vitamines et en acides gras essentiels.
@@ -524,23 +524,23 @@ Les boissons végétales (amande, avoine, riz, coco…) vendues sous l'appellati
 Avec le nouveau calcul du Nutri-Score, le lait, les laits aromatisés et sucrés, les yaourts à boire et les boissons végétales sont désormais notés comme des boissons, ce qui aide à repérer les versions sucrées.
 
 ## Au quotidien
-- **Lisez la dénomination** : « lait de croissance », « lait entier », « boisson à base de… ». Une « boisson » végétale n'est pas un lait.
-- **Choisissez une version nature** : évitez les laits de croissance ou laits de vache aromatisés (vanille, chocolat, céréales), qui contiennent des sucres ajoutés.
-- **Vérifiez la liste des ingrédients** à la recherche de sucres (sirop de glucose, saccharose, dextrose…) et d'arômes.
-- **Comparez les formats** : la poudre est souvent plus économique que les briques liquides. Pour la préparation, suivez strictement le mode d'emploi.
-- **Respectez la conservation après ouverture** : une brique entamée se garde au réfrigérateur et se consomme rapidement, selon l'étiquette.
+- **Lis la dénomination** : « lait de croissance », « lait entier », « boisson à base de… ». Une « boisson » végétale n'est pas un lait.
+- **Choisis une version nature** : évite les laits de croissance ou laits de vache aromatisés (vanille, chocolat, céréales), qui contiennent des sucres ajoutés.
+- **Vérifie la liste des ingrédients** à la recherche de sucres (sirop de glucose, saccharose, dextrose…) et d'arômes.
+- **Compare les formats** : la poudre est souvent plus économique que les briques liquides. Pour la préparation, suis strictement le mode d'emploi.
+- **Respecte la conservation après ouverture** : une brique entamée se garde au réfrigérateur et se consomme rapidement, selon l'étiquette.
 
 ## Questions fréquentes
 **Le lait de croissance est-il obligatoire ?** Non. Il est recommandé lorsque c'est possible pour son apport en fer, mais l'alternance avec le lait de vache entier est possible, en veillant aux aliments riches en fer.
 
-**Lait demi-écrémé ou entier ?** Les repères des 1000 premiers jours évoquent le lait de vache entier pour les jeunes enfants. Demandez au médecin ce qui convient à votre enfant.
+**Lait demi-écrémé ou entier ?** Les repères des 1000 premiers jours évoquent le lait de vache entier pour les jeunes enfants. Demande au médecin ce qui convient à ton enfant.
 
-**Mon enfant refuse le lait : que faire ?** Les autres produits laitiers (yaourt, fromage blanc, fromage) apportent aussi du calcium. Parlez-en au médecin si le refus dure.
+**Mon enfant refuse le lait : que faire ?** Les autres produits laitiers (yaourt, fromage blanc, fromage) apportent aussi du calcium. Parles-en au médecin si le refus dure.
 
 **Mon enfant est allergique ou a une alimentation végétalienne : quel lait ?** C'est une situation à voir avec le médecin : les boissons végétales ne remplacent pas un lait adapté, et certains laits spécifiques ne sont vendus qu'en pharmacie.
 
 ## Quand demander conseil
-La quantité de lait, le choix d'un lait spécifique en cas d'allergie, de troubles digestifs ou de régime particulier se décident avec le médecin, la PMI ou la sage-femme. Une pâleur, une grande fatigue ou un enfant qui ne boit presque que du lait et mange peu justifient une consultation. En cas de réaction allergique brutale (gêne respiratoire, gonflement du visage), appelez le 15 ou le 112.
+La quantité de lait, le choix d'un lait spécifique en cas d'allergie, de troubles digestifs ou de régime particulier se décident avec le médecin, la PMI ou la sage-femme. Une pâleur, une grande fatigue ou un enfant qui ne boit presque que du lait et mange peu justifient une consultation. En cas de réaction allergique brutale (gêne respiratoire, gonflement du visage), appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation-bebe',
@@ -575,12 +575,12 @@ Pour les **produits transformés** (fromages, yaourts, pain, plats cuisinés, bi
 Santé publique France explique que les aliments bio contiennent beaucoup moins de résidus de pesticides, soupçonnés de nuire au développement du bébé et à la fertilité. C'est pourquoi le bio est particulièrement conseillé aux personnes qui ont un projet de grossesse, aux femmes enceintes et allaitantes, et pour l'alimentation des jeunes enfants.
 
 ## Au quotidien
-- **Priorisez selon votre budget** : fruits et légumes, légumes secs (lentilles, pois chiches, haricots) et féculents complets ou semi-complets sont les aliments pour lesquels le bio est le plus conseillé.
-- **Pensez aux formes économiques** : légumes bio surgelés ou en conserve, légumes secs bio en vrac, fruits et légumes de saison.
-- **Ne renoncez pas aux fruits et légumes faute de bio** : en manger reste plus important que leur mode de production. Lavez-les et épluchez-les soigneusement.
-- **Lisez quand même l'étiquette** : une pizza, des biscuits ou une boisson bio peuvent être aussi gras, sucrés ou salés que leur équivalent conventionnel. Le Nutri-Score permet de comparer.
-- **Repérez l'origine** si elle compte pour vous : seule la mention « Agriculture France » sous l'Eurofeuille garantit une origine française.
-- **Ne confondez pas** avec des mentions comme « naturel » ou des logos privés : seuls les logos officiels garantissent la certification bio.
+- **Priorise selon ton budget** : fruits et légumes, légumes secs (lentilles, pois chiches, haricots) et féculents complets ou semi-complets sont les aliments pour lesquels le bio est le plus conseillé.
+- **Pense aux formes économiques** : légumes bio surgelés ou en conserve, légumes secs bio en vrac, fruits et légumes de saison.
+- **Ne renonce pas aux fruits et légumes faute de bio** : en manger reste plus important que leur mode de production. Lave-les et épluche-les soigneusement.
+- **Lis quand même l'étiquette** : une pizza, des biscuits ou une boisson bio peuvent être aussi gras, sucrés ou salés que leur équivalent conventionnel. Le Nutri-Score permet de comparer.
+- **Repère l'origine** si elle compte pour toi : seule la mention « Agriculture France » sous l'Eurofeuille garantit une origine française.
+- **Ne confonds pas** avec des mentions comme « naturel » ou des logos privés : seuls les logos officiels garantissent la certification bio.
 
 ## Questions fréquentes
 **Les petits pots bio sont-ils indispensables ?** Les aliments pour bébés de moins de 3 ans sont déjà soumis à des limites strictes en pesticides et en additifs. Le bio est un plus possible, pas une obligation.
@@ -592,7 +592,7 @@ Santé publique France explique que les aliments bio contiennent beaucoup moins 
 **Le bio concerne-t-il aussi les cosmétiques pour bébé ?** L'Eurofeuille ne s'applique qu'aux produits alimentaires, pas aux cosmétiques ni aux textiles.
 
 ## Quand demander conseil
-Si vous avez un projet de grossesse, êtes enceinte ou allaitez et souhaitez réduire votre exposition aux pesticides et autres perturbateurs endocriniens au quotidien, parlez-en au médecin, à la sage-femme ou à la PMI, qui peuvent vous orienter. En cas d'urgence, appelez le 15 ou le 112.
+Si tu as un projet de grossesse, es enceinte ou allaites et souhaites réduire ton exposition aux pesticides et autres perturbateurs endocriniens au quotidien, parles-en au médecin, à la sage-femme ou à la PMI, qui peuvent t’orienter. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -625,11 +625,11 @@ Bercy Infos décrit les principaux signes officiels :
 Santé.fr rappelle un point important : AOP, IGP, Label Rouge et bio ne donnent aucune information sur le niveau de transformation d'un produit, ni sur sa teneur en sel, en sucre ou en graisses.
 
 ## Au quotidien
-- **Choisissez un label pour ce qu'il garantit** : l'origine et le savoir-faire (AOP, IGP), une recette (STG), une qualité supérieure aux produits similaires (Label Rouge), un mode de production (bio).
-- **Vérifiez les logos officiels**, reconnaissables et réglementés, plutôt que des visuels évoquant la campagne ou le terroir.
-- **Pour la nutrition, lisez le reste de l'étiquette** : un fromage AOP reste un fromage, qui contribue aux apports en sel ; une charcuterie IGP reste une charcuterie à limiter.
-- **Pour les enfants et pendant la grossesse**, vérifiez si un fromage AOP est au lait cru : la plupart des fromages au lait cru sont déconseillés aux jeunes enfants et aux femmes enceintes, à l'exception des fromages à pâte pressée cuite comme le comté ou le gruyère.
-- **Faites découvrir les produits de terroir** aux enfants : goûter un fromage, une lentille ou un fruit d'une région précise est une belle façon d'éduquer au goût.
+- **Choisis un label pour ce qu'il garantit** : l'origine et le savoir-faire (AOP, IGP), une recette (STG), une qualité supérieure aux produits similaires (Label Rouge), un mode de production (bio).
+- **Vérifie les logos officiels**, reconnaissables et réglementés, plutôt que des visuels évoquant la campagne ou le terroir.
+- **Pour la nutrition, lis le reste de l'étiquette** : un fromage AOP reste un fromage, qui contribue aux apports en sel ; une charcuterie IGP reste une charcuterie à limiter.
+- **Pour les enfants et pendant la grossesse**, vérifie si un fromage AOP est au lait cru : la plupart des fromages au lait cru sont déconseillés aux jeunes enfants et aux femmes enceintes, à l'exception des fromages à pâte pressée cuite comme le comté ou le gruyère.
+- **Fais découvrir les produits de terroir** aux enfants : goûter un fromage, une lentille ou un fruit d'une région précise est une belle façon d'éduquer au goût.
 
 ## Questions fréquentes
 **Un produit peut-il cumuler plusieurs labels ?** Un produit IGP ou STG peut aussi être Label Rouge. En revanche, Label Rouge et AOC-AOP ne peuvent pas être affichés simultanément.
@@ -641,7 +641,7 @@ Santé.fr rappelle un point important : AOP, IGP, Label Rouge et bio ne donnent 
 **Où trouver la liste des produits sous signe de qualité ?** Bercy Infos renvoie vers les listes officielles des AOP, IGP et STG, en France et en Europe.
 
 ## Quand demander conseil
-Pendant la grossesse ou pour un jeune enfant, si vous avez un doute sur un fromage, une charcuterie ou un produit de terroir (lait cru, cuisson), demandez à la sage-femme, au médecin ou au commerçant. En cas de fièvre, de troubles digestifs importants ou de malaise après un repas, consultez ; en cas d'urgence, appelez le 15 ou le 112.
+Pendant la grossesse ou pour un jeune enfant, si tu as un doute sur un fromage, une charcuterie ou un produit de terroir (lait cru, cuisson), demande à la sage-femme, au médecin ou au commerçant. En cas de fièvre, de troubles digestifs importants ou de malaise après un repas, consulte ; en cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -680,11 +680,11 @@ Les études, notamment la cohorte française NutriNet-Santé, associent une fort
 - des émulsifiants, épaississants, exhausteurs de goût ou édulcorants.
 
 **Réduire sans tout bouleverser**
-- **Remplacez un produit à la fois** : le pain de mie par du pain de boulangerie, les céréales fourrées par du pain beurré ou des flocons d'avoine, le dessert industriel par un yaourt nature et un fruit.
-- **Gardez des bases simples** : pâtes, riz, semoule, légumes surgelés nature, œufs, légumes secs en conserve, permettent un repas rapide.
-- **Cuisinez en double** le week-end et congelez des portions pour les soirs chargés.
-- **Faites participer les enfants** : une pâte à crêpes ou une compote maison leur montre ce qu'il y a dans les aliments.
-- **Acceptez le dépannage** : un plat préparé de temps en temps n'est pas un échec. L'objectif est la tendance générale.
+- **Remplace un produit à la fois** : le pain de mie par du pain de boulangerie, les céréales fourrées par du pain beurré ou des flocons d'avoine, le dessert industriel par un yaourt nature et un fruit.
+- **Garde des bases simples** : pâtes, riz, semoule, légumes surgelés nature, œufs, légumes secs en conserve, permettent un repas rapide.
+- **Cuisine en double** le week-end et congèle des portions pour les soirs chargés.
+- **Fais participer les enfants** : une pâte à crêpes ou une compote maison leur montre ce qu'il y a dans les aliments.
+- **Accepte le dépannage** : un plat préparé de temps en temps n'est pas un échec. L'objectif est la tendance générale.
 
 ## Questions fréquentes
 **Les plats pour bébé sont-ils ultratransformés ?** Les aliments pour bébés suivent une réglementation stricte qui limite les additifs. Les repères de diversification recommandent néanmoins d'éviter les produits ultratransformés souvent gras, sucrés ou salés chez les moins de 3 ans.
@@ -693,10 +693,10 @@ Les études, notamment la cohorte française NutriNet-Santé, associent une fort
 
 **Existe-t-il un outil pour savoir si un produit est ultratransformé ?** Il n'y a pas d'étiquetage officiel. Des bases de données collaboratives permettent de scanner les codes-barres, mais la lecture de la liste des ingrédients reste la méthode la plus simple.
 
-**Mon enfant n'aime que les nuggets : que faire ?** Proposez des versions maison (poulet ou poisson pané au four), servez-les avec un légume qu'il accepte et laissez du temps : les goûts évoluent avec les expositions répétées.
+**Mon enfant n'aime que les nuggets : que faire ?** Propose des versions maison (poulet ou poisson pané au four), sers-les avec un légume qu'il accepte et laisse du temps : les goûts évoluent avec les expositions répétées.
 
 ## Quand demander conseil
-Si l'alimentation de votre enfant repose presque entièrement sur quelques produits industriels, s'il refuse la plupart des aliments ou si son poids vous inquiète, parlez-en au médecin, à la PMI ou à une diététicienne, sans culpabilité : ils sont là pour vous aider. En cas d'urgence, appelez le 15 ou le 112.
+Si l'alimentation de ton enfant repose presque entièrement sur quelques produits industriels, s'il refuse la plupart des aliments ou si son poids t’inquiète, parles-en au médecin, à la PMI ou à une diététicienne, sans culpabilité : ils sont là pour t’aider. En cas d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -732,11 +732,11 @@ Sur l'étiquette, l'additif apparaît soit par son nom (« bicarbonate de sodium
 Santé.fr cite parmi les additifs typiques des produits ultratransformés les émulsifiants et épaississants (comme la lécithine, la carraghénane ou la gomme de guar), les exhausteurs de goût (comme le glutamate), les édulcorants (comme l'aspartame, le sorbitol ou le xylitol). Les émulsifiants sont étudiés pour leurs effets possibles sur le microbiote intestinal.
 
 ## Au quotidien
-- **Comptez les additifs** dans les produits que vos enfants consomment tous les jours : yaourts, pain, céréales, jambon, compotes. Choisir des versions avec peu ou pas d'additifs est souvent possible dans le même rayon.
-- **Ne paniquez pas devant chaque code E** : tous les additifs autorisés ont été évalués. Ce qui compte, c'est la tendance d'ensemble de l'alimentation.
-- **Méfiez-vous des produits « allégés »** ou « light », qui contiennent souvent édulcorants et agents de texture.
+- **Compte les additifs** dans les produits que tes enfants consomment tous les jours : yaourts, pain, céréales, jambon, compotes. Choisir des versions avec peu ou pas d'additifs est souvent possible dans le même rayon.
+- **Ne panique pas devant chaque code E** : tous les additifs autorisés ont été évalués. Ce qui compte, c'est la tendance d'ensemble de l'alimentation.
+- **Méfie-toi des produits « allégés »** ou « light », qui contiennent souvent édulcorants et agents de texture.
 - **Pour les moins de 3 ans**, les aliments spécifiques pour bébés limitent les additifs ; pour le reste, les produits bruts et le fait maison restent la meilleure option.
-- **Cuisinez des bases maison** (vinaigrette, purée, compote, gâteau simple) : c'est la façon la plus directe de réduire les additifs.
+- **Cuisine des bases maison** (vinaigrette, purée, compote, gâteau simple) : c'est la façon la plus directe de réduire les additifs.
 
 ## Questions fréquentes
 **Un additif autorisé est-il forcément inoffensif ?** Il a été évalué et autorisé dans des conditions précises (doses, aliments). Les connaissances évoluent et des autorisations peuvent être restreintes. Limiter les produits très transformés reste un conseil de santé publique.
@@ -748,7 +748,7 @@ Santé.fr cite parmi les additifs typiques des produits ultratransformés les é
 **Les édulcorants conviennent-ils aux enfants ?** L'Anses ne retrouve pas de bénéfice démontré des édulcorants intenses ; l'objectif reste de diminuer le goût sucré, et l'eau est la boisson à privilégier.
 
 ## Quand demander conseil
-Si vous pensez qu'un aliment ou un additif provoque chez votre enfant des symptômes (troubles digestifs, éruption, comportement inhabituel), notez ce qu'il a mangé et parlez-en au médecin plutôt que de supprimer seul de nombreux aliments. En cas de gêne respiratoire, de gonflement du visage ou de malaise, appelez le 15 ou le 112.
+Si tu penses qu'un aliment ou un additif provoque chez ton enfant des symptômes (troubles digestifs, éruption, comportement inhabituel), note ce qu'il a mangé et parles-en au médecin plutôt que de supprimer seul de nombreux aliments. En cas de gêne respiratoire, de gonflement du visage ou de malaise, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -765,45 +765,45 @@ ${END}`,
 ## En bref
 - Le fait maison à partir de produits bruts reste à privilégier, mais un plat préparé de temps en temps peut dépanner.
 - Le Nutri-Score permet de comparer des plats équivalents : des lasagnes peuvent être notées de A à D selon la recette.
-- Les plats préparés sont souvent riches en sel : comparez la ligne « sel » pour 100 g.
-- Complétez le plat avec des légumes, un produit laitier ou un fruit.
-- Les produits traiteur et plats cuisinés sont très périssables : respectez la DLC et la chaîne du froid.
+- Les plats préparés sont souvent riches en sel : compare la ligne « sel » pour 100 g.
+- Complète le plat avec des légumes, un produit laitier ou un fruit.
+- Les produits traiteur et plats cuisinés sont très périssables : respecte la DLC et la chaîne du froid.
 
 ## Comprendre
 Santé.fr recommande d'abord de cuisiner à partir de produits bruts, idéalement de saison. Quand le temps ou l'énergie manquent, le Nutri-Score aide à repérer les options de meilleure qualité nutritionnelle, par exemple entre plusieurs lasagnes à la bolognaise, qui peuvent obtenir A, B, C ou D selon les fabricants.
 
 Le sel est un point de vigilance : la Fédération française de cardiologie cite les plats préparés, les plats surgelés cuisinés, les soupes préparées, les sauces commerciales et la restauration rapide parmi les sources importantes de sel. Beaucoup de plats prêts à réchauffer sont aussi des produits ultratransformés.
 
-Côté sécurité, l'Anses rappelle que les produits traiteur, plats cuisinés et pâtisseries à la crème non préemballés, sans date limite, sont à consommer rapidement : une conservation inférieure à 3 jours est souvent recommandée, et le commerçant peut vous conseiller. Le réfrigérateur doit être à 4 °C maximum dans sa zone la plus froide.
+Côté sécurité, l'Anses rappelle que les produits traiteur, plats cuisinés et pâtisseries à la crème non préemballés, sans date limite, sont à consommer rapidement : une conservation inférieure à 3 jours est souvent recommandée, et le commerçant peut te conseiller. Le réfrigérateur doit être à 4 °C maximum dans sa zone la plus froide.
 
 ## Au quotidien
 **Choisir**
-- **Comparez le Nutri-Score** de plats similaires, puis la ligne « sel » et « acides gras saturés ».
-- **Préférez les listes d'ingrédients courtes** où légumes, légumineuses, viande ou poisson figurent en tête.
-- **Évitez les formats « portion enfant » systématiques** : un plat familial partagé, complété de légumes, est souvent plus économique.
-- **Pensez aux surgelés nature** (légumes, filets de poisson) et aux conserves de légumes ou de légumes secs, qui permettent de composer un repas maison rapidement.
+- **Compare le Nutri-Score** de plats similaires, puis la ligne « sel » et « acides gras saturés ».
+- **Préfère les listes d'ingrédients courtes** où légumes, légumineuses, viande ou poisson figurent en tête.
+- **Évite les formats « portion enfant » systématiques** : un plat familial partagé, complété de légumes, est souvent plus économique.
+- **Pense aux surgelés nature** (légumes, filets de poisson) et aux conserves de légumes ou de légumes secs, qui permettent de composer un repas maison rapidement.
 
 **Compléter**
-- Ajoutez une crudité ou une poêlée de légumes surgelés, un morceau de pain, un yaourt nature et un fruit.
-- Pour un jeune enfant, prélevez sa part avant d'ajouter sel ou sauce, et vérifiez qu'il n'y a pas d'aliments à risque d'étouffement.
+- Ajoute une crudité ou une poêlée de légumes surgelés, un morceau de pain, un yaourt nature et un fruit.
+- Pour un jeune enfant, prélève sa part avant d'ajouter sel ou sauce, et vérifie qu'il n'y a pas d'aliments à risque d'étouffement.
 
 **Conserver et réchauffer**
-- Transportez les plats frais dans un sac isotherme et rangez-les vite au réfrigérateur.
-- Respectez le mode d'emploi, chauffez bien à cœur et mélangez à mi-cuisson au micro-ondes.
-- Ne réchauffez pas un plat dans un emballage qui n'est pas prévu pour cela : transvasez-le dans un plat adapté.
-- Pendant la grossesse, évitez les plats traiteur à base de produits crus ou peu cuits et réchauffez bien les plats cuisinés.
+- Transporte les plats frais dans un sac isotherme et range-les vite au réfrigérateur.
+- Respecte le mode d'emploi, chauffe bien à cœur et mélange à mi-cuisson au micro-ondes.
+- Ne réchauffe pas un plat dans un emballage qui n'est pas prévu pour cela : transvase-le dans un plat adapté.
+- Pendant la grossesse, évite les plats traiteur à base de produits crus ou peu cuits et réchauffe bien les plats cuisinés.
 
 ## Questions fréquentes
 **Les plats préparés pour adultes conviennent-ils à un enfant de 2 ans ?** Ils sont souvent trop salés pour lui : jusqu'à 3 ans, les repères recommandent de ne pas saler. Mieux vaut des préparations simples ou des plats spécifiques à son âge.
 
-**Un plat noté A est-il un repas complet ?** Pas forcément : la note juge le plat lui-même. Ajoutez légumes, féculents ou produit laitier selon ce qu'il contient.
+**Un plat noté A est-il un repas complet ?** Pas forcément : la note juge le plat lui-même. Ajoute légumes, féculents ou produit laitier selon ce qu'il contient.
 
-**Peut-on congeler un plat traiteur frais ?** Seulement s'il est encore bien avant sa DLC et a été conservé au froid ; notez la date, et ne le recongelez jamais après décongélation.
+**Peut-on congeler un plat traiteur frais ?** Seulement s'il est encore bien avant sa DLC et a été conservé au froid ; note la date, et ne le recongèle jamais après décongélation.
 
 **Tous les plats préparés se valent-ils ?** Non : d'un fabricant à l'autre, la note Nutri-Score, la teneur en sel et la liste des ingrédients peuvent être très différentes pour un même plat. Comparer deux ou trois références suffit souvent à trouver une meilleure option.
 
 ## Quand demander conseil
-Si votre famille dépend beaucoup des plats préparés par manque de temps ou de moyens, la PMI, une assistante sociale ou une diététicienne peuvent vous proposer des idées adaptées à votre budget. En cas de vomissements, diarrhée importante ou fièvre après un repas, surtout chez un enfant ou une femme enceinte, consultez ; en cas de signes graves, appelez le 15 ou le 112.
+Si ta famille dépend beaucoup des plats préparés par manque de temps ou de moyens, la PMI, une assistante sociale ou une diététicienne peuvent te proposer des idées adaptées à ton budget. En cas de vomissements, diarrhée importante ou fièvre après un repas, surtout chez un enfant ou une femme enceinte, consulte ; en cas de signes graves, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -821,7 +821,7 @@ ${END}`,
 ## En bref
 - Santé publique France encourage à proposer des fruits et légumes sous toutes leurs formes : frais, surgelés, en conserve, crus, cuits.
 - Les surgelés nature (légumes, purées de légumes, fruits en morceaux, filets de poisson) sont pratiques, y compris pour les repas de bébé.
-- Préférez les versions nature, non cuisinées, sans sauce ni sel ou sucre ajoutés.
+- Préfère les versions nature, non cuisinées, sans sauce ni sel ou sucre ajoutés.
 - Les surgelés se conservent à −18 °C et ne doivent jamais être recongelés après décongélation.
 - Les conserves ont une date de durabilité minimale ; une boîte bombée ou abîmée ne doit pas être consommée.
 
@@ -836,29 +836,29 @@ Côté sel, les conserves cuisinées et les plats surgelés préparés peuvent �
 
 ## Au quotidien
 **Au rayon**
-- **Lisez la liste des ingrédients** : un sachet de haricots verts surgelés devrait contenir… des haricots verts. Évitez les poêlées « cuisinées » avec sauce, crème ou sel ajoutés si vous cuisinez pour un jeune enfant.
-- **Préférez les fruits au sirop léger ou au jus**, ou mieux, les compotes sans sucre ajouté.
-- **Comparez le sel** des légumes secs et légumes en conserve : certaines versions sont « sans sel ajouté ».
-- **Placez les surgelés en dernier dans le chariot** et transportez-les dans un sac isotherme.
+- **Lis la liste des ingrédients** : un sachet de haricots verts surgelés devrait contenir… des haricots verts. Évite les poêlées « cuisinées » avec sauce, crème ou sel ajoutés si tu cuisines pour un jeune enfant.
+- **Préfère les fruits au sirop léger ou au jus**, ou mieux, les compotes sans sucre ajouté.
+- **Compare le sel** des légumes secs et légumes en conserve : certaines versions sont « sans sel ajouté ».
+- **Place les surgelés en dernier dans le chariot** et transporte-les dans un sac isotherme.
 
 **À la maison**
-- **Cuisez les légumes surgelés directement**, sans les décongeler, à la vapeur ou à l'eau.
-- **Gardez une réserve** : petits pois, épinards, brocolis, haricots verts, poisson nature, fruits rouges permettent un repas équilibré même quand le réfrigérateur est vide.
-- **Pour bébé**, mixez des légumes surgelés nature cuits, ajoutez une matière grasse crue (huile de colza, de noix, d'olive ou un peu de beurre), sans sel.
+- **Cuis les légumes surgelés directement**, sans les décongeler, à la vapeur ou à l'eau.
+- **Garde une réserve** : petits pois, épinards, brocolis, haricots verts, poisson nature, fruits rouges permettent un repas équilibré même quand le réfrigérateur est vide.
+- **Pour bébé**, mixe des légumes surgelés nature cuits, ajoute une matière grasse crue (huile de colza, de noix, d'olive ou un peu de beurre), sans sel.
 - **Une conserve ouverte** se transvase dans un récipient fermé, se garde au réfrigérateur et se consomme rapidement.
-- **Ne consommez pas** une boîte bombée, rouillée, fuyante ou dont le contenu a une odeur ou un aspect anormal.
+- **Ne consomme pas** une boîte bombée, rouillée, fuyante ou dont le contenu a une odeur ou un aspect anormal.
 
 ## Questions fréquentes
 **Les légumes surgelés sont-ils aussi intéressants que les frais ?** Les repères de santé publique les placent sur le même plan pour atteindre les recommandations de fruits et légumes. Ils ont l'avantage d'être déjà préparés et de limiter le gaspillage.
 
 **Peut-on utiliser des conserves pour les repas de bébé ?** Les légumes en conserve nature peuvent dépanner, en vérifiant l'absence de sel ajouté. Pour les plus jeunes, la brochure des 1000 premiers jours met en avant les surgelés nature et les préparations maison.
 
-**Que faire si le congélateur est tombé en panne ?** Un aliment décongelé ne doit pas être recongelé. S'il est encore froid et en bon état, il peut être cuisiné rapidement ; en cas de doute, jetez-le.
+**Que faire si le congélateur est tombé en panne ?** Un aliment décongelé ne doit pas être recongelé. S'il est encore froid et en bon état, il peut être cuisiné rapidement ; en cas de doute, jette-le.
 
-**Les fruits au sirop comptent-ils comme des fruits ?** Oui, mais le sirop apporte du sucre : préférez les versions au jus ou sans sucre ajouté.
+**Les fruits au sirop comptent-ils comme des fruits ?** Oui, mais le sirop apporte du sucre : préfère les versions au jus ou sans sucre ajouté.
 
 ## Quand demander conseil
-Si votre enfant mange très peu de fruits et légumes malgré vos efforts, la PMI, le médecin ou une diététicienne peuvent vous aider à trouver des idées adaptées. Après la consommation d'une conserve suspecte (boîte bombée), des troubles de la vue, une difficulté à avaler ou à respirer doivent faire appeler immédiatement le 15 ou le 112.
+Si ton enfant mange très peu de fruits et légumes malgré tes efforts, la PMI, le médecin ou une diététicienne peuvent t’aider à trouver des idées adaptées. Après la consommation d'une conserve suspecte (boîte bombée), des troubles de la vue, une difficulté à avaler ou à respirer doivent faire appeler immédiatement le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',
@@ -873,11 +873,11 @@ ${END}`,
     body_md: `Le froid ralentit, voire arrête, la multiplication des micro-organismes responsables d'intoxications alimentaires. Les professionnels respectent des températures réglementaires jusqu'au magasin ; ensuite, c'est à la maison que tout se joue.
 
 ## En bref
-- Utilisez un sac isotherme et limitez le temps entre l'achat et le rangement.
-- La zone la plus froide du réfrigérateur doit être entre 0 et +4 °C : vérifiez-la avec l'indicateur ou un thermomètre.
+- Utilise un sac isotherme et limite le temps entre l'achat et le rangement.
+- La zone la plus froide du réfrigérateur doit être entre 0 et +4 °C : vérifie-la avec l'indicateur ou un thermomètre.
 - Viandes et poissons crus et préparations maison à base de produits animaux vont dans la zone la plus froide.
-- Ne laissez pas les aliments plus de 2 heures à température ambiante, et 1 heure par forte chaleur.
-- Nettoyez régulièrement le réfrigérateur et désinfectez les éponges.
+- Ne laisse pas les aliments plus de 2 heures à température ambiante, et 1 heure par forte chaleur.
+- Nettoie régulièrement le réfrigérateur et désinfecte les éponges.
 
 ## Comprendre
 La DGCCRF rappelle que le consommateur doit rester vigilant « jusqu'à l'assiette » et respecter la température indiquée sur l'étiquette. Ses repères de conservation :
@@ -892,33 +892,33 @@ Ces précautions comptent particulièrement pour les nourrissons, les jeunes enf
 
 ## Au quotidien
 **Pendant les courses**
-- Prenez les produits frais et surgelés en dernier, rangez-les ensemble dans un sac isotherme et rentrez directement.
-- Pour un pique-nique ou une sortie, emportez une glacière avec des pains de glace.
+- Prends les produits frais et surgelés en dernier, range-les ensemble dans un sac isotherme et rentre directement.
+- Pour un pique-nique ou une sortie, emporte une glacière avec des pains de glace.
 
 **Au réfrigérateur**
-- **Vérifiez la température** : la plupart des appareils récents ont un indicateur dans la zone la plus froide ; sinon, placez un thermomètre.
-- **Rangez selon la notice** de l'appareil : viandes et poissons crus, plats maison à base d'œufs crus (mayonnaise, mousse au chocolat) dans la zone la plus froide.
-- **Retirez les suremballages en carton**, sauf si la date, la température et le mode d'emploi ne figurent que dessus.
-- **Emballez séparément** les aliments crus et cuits, dans des boîtes fermées ou sous film.
-- **Placez devant** les produits dont la date est la plus proche.
-- **Évitez d'ouvrir la porte longtemps** et vérifiez qu'elle ferme bien : une condensation persistante est un signe de mauvaise fermeture.
+- **Vérifie la température** : la plupart des appareils récents ont un indicateur dans la zone la plus froide ; sinon, place un thermomètre.
+- **Range selon la notice** de l'appareil : viandes et poissons crus, plats maison à base d'œufs crus (mayonnaise, mousse au chocolat) dans la zone la plus froide.
+- **Retire les suremballages en carton**, sauf si la date, la température et le mode d'emploi ne figurent que dessus.
+- **Emballe séparément** les aliments crus et cuits, dans des boîtes fermées ou sous film.
+- **Place devant** les produits dont la date est la plus proche.
+- **Évite d'ouvrir la porte longtemps** et vérifie qu'elle ferme bien : une condensation persistante est un signe de mauvaise fermeture.
 
 **Nettoyage**
-- Nettoyez dès qu'il y a une fuite ou une salissure, et régulièrement : eau savonneuse, puis rinçage à l'eau légèrement javellisée, sans appliquer de javel pure sur les parois.
-- Dégivrez quand la glace s'accumule.
-- Désinfectez les éponges (eau javellisée ou chaleur), qui peuvent héberger beaucoup de bactéries.
+- Nettoie dès qu'il y a une fuite ou une salissure, et régulièrement : eau savonneuse, puis rinçage à l'eau légèrement javellisée, sans appliquer de javel pure sur les parois.
+- Dégivre quand la glace s'accumule.
+- Désinfecte les éponges (eau javellisée ou chaleur), qui peuvent héberger beaucoup de bactéries.
 
 ## Questions fréquentes
 **À quelle fréquence nettoyer le réfrigérateur ?** Les repères varient selon les documents : la DGCCRF conseille de le dégivrer et de le nettoyer une à deux fois par mois, l'Anses au moins une fois par an et dès qu'il est sali. Le plus important est de nettoyer rapidement toute fuite.
 
-**La porte du réfrigérateur convient-elle au lait infantile entamé ?** C'est souvent la zone la moins froide. Pour les préparations destinées au bébé, utilisez la zone la plus froide et respectez les durées indiquées.
+**La porte du réfrigérateur convient-elle au lait infantile entamé ?** C'est souvent la zone la moins froide. Pour les préparations destinées au bébé, utilise la zone la plus froide et respecte les durées indiquées.
 
 **Un produit oublié dans la voiture est-il encore bon ?** Si un produit réfrigéré est resté plus de 2 heures hors du froid (1 heure par forte chaleur), mieux vaut ne pas le consommer.
 
-**Faut-il ranger les œufs au réfrigérateur ?** Pour les œufs du commerce, suivez les indications de l'emballage ; les recommandations sanitaires conseillent de conserver les œufs de poulailler familial au réfrigérateur.
+**Faut-il ranger les œufs au réfrigérateur ?** Pour les œufs du commerce, suis les indications de l'emballage ; les recommandations sanitaires conseillent de conserver les œufs de poulailler familial au réfrigérateur.
 
 ## Quand demander conseil
-En cas de vomissements, de diarrhée ou de fièvre après un repas, surtout chez un nourrisson, un enfant, une femme enceinte ou une personne fragile, consultez un médecin. Si plusieurs personnes ont les mêmes symptômes après un repas commun, signalez-le au médecin. Devant des signes de déshydratation, une somnolence inhabituelle ou du sang dans les selles, appelez le 15 ou le 112.
+En cas de vomissements, de diarrhée ou de fièvre après un repas, surtout chez un nourrisson, un enfant, une femme enceinte ou une personne fragile, consulte un médecin. Si plusieurs personnes ont les mêmes symptômes après un repas commun, signale-le au médecin. Devant des signes de déshydratation, une somnolence inhabituelle ou du sang dans les selles, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'securite',
@@ -933,11 +933,11 @@ ${END}`,
     body_md: `Selon l'Anses, un tiers des toxi-infections alimentaires déclarées en France surviennent à domicile. Quelques gestes simples, répétés au quotidien, réduisent nettement ce risque, en particulier pour les nourrissons, les jeunes enfants et les femmes enceintes.
 
 ## En bref
-- Lavez-vous les mains à l'eau et au savon avant et pendant la préparation des repas.
-- Utilisez des planches et ustensiles différents pour les aliments crus et pour les aliments cuits ou prêts à manger.
-- Cuisez bien à cœur la viande hachée et la volaille pour les jeunes enfants et les femmes enceintes.
-- Évitez de cuisiner pour les autres quand vous avez une gastro-entérite.
-- Ne gardez pas les repas et biberons de nourrisson plus de 48 heures à 4 °C.
+- Lave-toi les mains à l'eau et au savon avant et pendant la préparation des repas.
+- Utilise des planches et ustensiles différents pour les aliments crus et pour les aliments cuits ou prêts à manger.
+- Cuis bien à cœur la viande hachée et la volaille pour les jeunes enfants et les femmes enceintes.
+- Évite de cuisiner pour les autres quand tu as une gastro-entérite.
+- Ne garde pas les repas et biberons de nourrisson plus de 48 heures à 4 °C.
 
 ## Comprendre
 L'Anses recommande dix gestes simples :
@@ -955,25 +955,25 @@ L'Anses recommande dix gestes simples :
 L'ARS Auvergne-Rhône-Alpes ajoute quelques repères de cuisson pour les personnes à risque : viande hachée cuite à au moins 70 °C, volaille cuite jusqu'à ce que le jus soit clair, œufs cuits durs.
 
 ## Au quotidien
-- **Installez un point de lavage des mains** facile d'accès, et lavez-vous aussi les mains après avoir manipulé de la viande crue, des œufs, des déchets, après être allé aux toilettes ou avoir changé une couche.
-- **Utilisez deux planches de couleurs différentes** pour ne pas les confondre : une pour le cru, une pour le cuit et les légumes lavés.
-- **Lavez soigneusement fruits et légumes** et épluchez-les pour les jeunes enfants.
-- **Cuisez le steak haché des enfants** jusqu'à ce que l'intérieur ne soit plus rosé.
-- **Pendant une gastro dans la famille**, confiez si possible la cuisine à une personne non malade et nettoyez souvent poignées, plans de travail et sanitaires.
-- **Faites cuisiner les enfants en sécurité** : lavage des mains avant de commencer, et pas de goûter une pâte crue contenant des œufs crus.
-- **Changez souvent torchons et éponges** et désinfectez les éponges.
+- **Installe un point de lavage des mains** facile d'accès, et lave-toi aussi les mains après avoir manipulé de la viande crue, des œufs, des déchets, après être allé aux toilettes ou avoir changé une couche.
+- **Utilise deux planches de couleurs différentes** pour ne pas les confondre : une pour le cru, une pour le cuit et les légumes lavés.
+- **Lave soigneusement fruits et légumes** et épluche-les pour les jeunes enfants.
+- **Cuis le steak haché des enfants** jusqu'à ce que l'intérieur ne soit plus rosé.
+- **Pendant une gastro dans la famille**, confie si possible la cuisine à une personne non malade et nettoie souvent poignées, plans de travail et sanitaires.
+- **Fais cuisiner les enfants en sécurité** : lavage des mains avant de commencer, et pas de goûter une pâte crue contenant des œufs crus.
+- **Change souvent torchons et éponges** et désinfecte les éponges.
 
 ## Questions fréquentes
-**Le lavage à l'eau suffit-il pour les planches ?** Lavez-les à l'eau chaude savonneuse après chaque usage avec un aliment cru, et séchez-les. Séparer les planches reste la mesure clé.
+**Le lavage à l'eau suffit-il pour les planches ?** Lave-les à l'eau chaude savonneuse après chaque usage avec un aliment cru, et sèche-les. Séparer les planches reste la mesure clé.
 
 **Pourquoi la viande hachée est-elle plus à risque ?** Le hachage répartit dans toute la viande les bactéries présentes en surface : seule une cuisson à cœur les détruit, ce qui compte particulièrement pour les jeunes enfants.
 
-**Peut-on cuisiner avec un rhume ?** Ce sont surtout les symptômes digestifs qui imposent d'éviter de cuisiner pour les autres. Dans tous les cas, lavez-vous souvent les mains.
+**Peut-on cuisiner avec un rhume ?** Ce sont surtout les symptômes digestifs qui imposent d'éviter de cuisiner pour les autres. Dans tous les cas, lave-toi souvent les mains.
 
 **Peut-on donner un tartare ou un carpaccio à un enfant ?** L'Anses déconseille fortement la viande ou le poisson crus aux jeunes enfants, aux femmes enceintes et aux personnes immunodéprimées.
 
 ## Quand demander conseil
-Consultez rapidement un médecin si un nourrisson, un enfant, une femme enceinte ou une personne fragile présente des vomissements, une diarrhée ou de la fièvre après un repas. Appelez le 15 ou le 112 en cas de signes de déshydratation, de somnolence inhabituelle, de sang dans les selles ou de malaise.
+Consulte rapidement un médecin si un nourrisson, un enfant, une femme enceinte ou une personne fragile présente des vomissements, une diarrhée ou de la fièvre après un repas. Appelle le 15 ou le 112 en cas de signes de déshydratation, de somnolence inhabituelle, de sang dans les selles ou de malaise.
 
 ${END}`,
     category: 'securite',
@@ -989,11 +989,11 @@ ${END}`,
     body_md: `Cuisiner en grande quantité et resservir les restes fait gagner du temps et limite le gaspillage. À condition de respecter quelques règles, car certains aliments cuits peuvent devenir à risque s'ils restent trop longtemps à température ambiante.
 
 ## En bref
-- Ne laissez pas un plat plus de 2 heures à température ambiante, et 1 heure par forte chaleur.
-- Laissez refroidir brièvement, puis mettez au réfrigérateur dans une boîte fermée.
-- Consommez les restes rapidement et ne les réchauffez qu'une seule fois.
+- Ne laisse pas un plat plus de 2 heures à température ambiante, et 1 heure par forte chaleur.
+- Laisse refroidir brièvement, puis mets au réfrigérateur dans une boîte fermée.
+- Consomme les restes rapidement et ne les réchauffe qu'une seule fois.
 - Pour les repas de nourrisson, la limite est de 48 heures à 4 °C.
-- En cas de doute sur l'odeur ou l'aspect, ne consommez pas.
+- En cas de doute sur l'odeur ou l'aspect, ne consomme pas.
 
 ## Comprendre
 L'Anses explique que certains aliments cuits peuvent contenir des spores bactériennes qui, à température ambiante, se multiplient et produisent des toxines. C'est pourquoi un plat cuit doit être réfrigéré dans les 2 heures. Il vaut mieux le laisser tiédir un peu avant de le placer au réfrigérateur, car la vapeur d'un plat brûlant fait monter la température de l'appareil ; répartir le plat dans des récipients plus petits l'aide à refroidir plus vite.
@@ -1003,26 +1003,26 @@ La DGCCRF recommande de placer les restes dans des emballages fermés et de les 
 Pour les plus petits, l'Anses fixe une limite précise : les repas et biberons des nourrissons ne doivent pas être conservés plus de 48 heures à 4 °C. Et la brochure des 1000 premiers jours conseille de ne pas garder une purée maison plus de 24 heures au réfrigérateur, dans une boîte hermétique.
 
 ## Au quotidien
-- **Rangez les restes dès la fin du repas**, sans attendre la fin de la soirée.
-- **Utilisez des boîtes fermées**, de préférence en verre, et notez la date de préparation avec un feutre ou une étiquette.
-- **Placez-les dans la zone la plus froide** du réfrigérateur, à 4 °C maximum.
-- **Réchauffez une seule fois**, uniquement la quantité qui sera mangée, jusqu'à ce que le plat soit bien chaud au centre. Au micro-ondes, mélangez à mi-chauffe.
-- **Vérifiez la température** avant de servir un enfant : le plat doit être chaud partout mais pas brûlant.
-- **Jetez ce qui a été servi et entamé** dans l'assiette d'un enfant ou à la cuillère.
-- **Congelez rapidement** ce qui ne sera pas mangé dans les prochains jours plutôt que d'attendre qu'il vieillisse au réfrigérateur.
-- **Pendant la grossesse**, réchauffez bien les restes et les plats cuisinés, et consommez-les rapidement.
+- **Range les restes dès la fin du repas**, sans attendre la fin de la soirée.
+- **Utilise des boîtes fermées**, de préférence en verre, et note la date de préparation avec un feutre ou une étiquette.
+- **Place-les dans la zone la plus froide** du réfrigérateur, à 4 °C maximum.
+- **Réchauffe une seule fois**, uniquement la quantité qui sera mangée, jusqu'à ce que le plat soit bien chaud au centre. Au micro-ondes, mélange à mi-chauffe.
+- **Vérifie la température** avant de servir un enfant : le plat doit être chaud partout mais pas brûlant.
+- **Jette ce qui a été servi et entamé** dans l'assiette d'un enfant ou à la cuillère.
+- **Congèle rapidement** ce qui ne sera pas mangé dans les prochains jours plutôt que d'attendre qu'il vieillisse au réfrigérateur.
+- **Pendant la grossesse**, réchauffe bien les restes et les plats cuisinés, et consomme-les rapidement.
 
 ## Questions fréquentes
 **Combien de jours garder des restes au réfrigérateur ?** Les documents officiels consultés ne donnent pas de durée unique pour tous les plats ; ils recommandent de consommer les restes rapidement. Pour les plats cuisinés non préemballés achetés chez un commerçant, l'Anses indique qu'une conservation de moins de 3 jours est souvent recommandée. Pour les repas de nourrisson, la limite est de 48 heures.
 
-**Le riz et les pâtes cuits sont-ils concernés ?** Oui : ce sont des aliments cuits qui ne doivent pas rester à température ambiante. Mettez-les au frais rapidement.
+**Le riz et les pâtes cuits sont-ils concernés ?** Oui : ce sont des aliments cuits qui ne doivent pas rester à température ambiante. Mets-les au frais rapidement.
 
-**Peut-on réchauffer plusieurs fois un plat ?** Mieux vaut éviter : chaque passage à température tiède favorise la multiplication des bactéries. Ne réchauffez que la portion à consommer.
+**Peut-on réchauffer plusieurs fois un plat ?** Mieux vaut éviter : chaque passage à température tiède favorise la multiplication des bactéries. Ne réchauffe que la portion à consommer.
 
-**Les restes d'un biberon peuvent-ils être redonnés ?** Non. Un biberon entamé ne se garde pas : suivez les consignes de préparation et de conservation des biberons données par le professionnel qui suit votre bébé.
+**Les restes d'un biberon peuvent-ils être redonnés ?** Non. Un biberon entamé ne se garde pas : suis les consignes de préparation et de conservation des biberons données par le professionnel qui suit ton bébé.
 
 ## Quand demander conseil
-Après un repas, des vomissements, une diarrhée ou de la fièvre chez un nourrisson, un enfant, une femme enceinte ou une personne âgée justifient de consulter rapidement. Appelez le 15 ou le 112 si l'enfant est très somnolent, ne boit plus, a la bouche sèche ou si vous voyez du sang dans les selles.
+Après un repas, des vomissements, une diarrhée ou de la fièvre chez un nourrisson, un enfant, une femme enceinte ou une personne âgée justifient de consulter rapidement. Appelle le 15 ou le 112 si l'enfant est très somnolent, ne boit plus, a la bouche sèche ou si tu vois du sang dans les selles.
 
 ${END}`,
     category: 'securite',
@@ -1037,10 +1037,10 @@ ${END}`,
     body_md: `Le congélateur est un précieux allié des jeunes parents : purées de bébé préparées à l'avance, plats cuisinés en double, pain, poisson. Bien utilisé, il permet de manger maison même les jours chargés.
 
 ## En bref
-- Congelez des aliments frais et en bon état, rapidement après leur préparation, dans des emballages adaptés et datés.
+- Congèle des aliments frais et en bon état, rapidement après leur préparation, dans des emballages adaptés et datés.
 - Les surgelés du commerce se conservent à −18 °C.
-- Décongelez au réfrigérateur ou au micro-ondes, jamais à température ambiante.
-- Ne recongelez jamais un aliment décongelé.
+- Décongèle au réfrigérateur ou au micro-ondes, jamais à température ambiante.
+- Ne recongèle jamais un aliment décongelé.
 - Pour les purées de bébé, la brochure des 1000 premiers jours conseille de ne pas dépasser 2 mois de congélation.
 
 ## Comprendre
@@ -1052,29 +1052,29 @@ Sur les emballages du commerce, une date de congélation est obligatoire pour le
 
 ## Au quotidien
 **Congeler**
-- **Laissez tiédir puis refroidir** le plat au réfrigérateur avant de le congeler, en restant dans la limite des 2 heures à température ambiante.
-- **Portionnez** : petites boîtes pour un repas d'enfant, cubes de purée pour bébé, parts individuelles de plat.
-- **Étiquetez** chaque contenant avec le nom du plat et la date.
-- **Utilisez des contenants prévus pour la congélation**, selon leur notice.
-- **Ne surchargez pas le congélateur** et dégivrez-le quand la glace s'accumule.
+- **Laisse tiédir puis refroidir** le plat au réfrigérateur avant de le congeler, en restant dans la limite des 2 heures à température ambiante.
+- **Portionne** : petites boîtes pour un repas d'enfant, cubes de purée pour bébé, parts individuelles de plat.
+- **Étiquette** chaque contenant avec le nom du plat et la date.
+- **Utilise des contenants prévus pour la congélation**, selon leur notice.
+- **Ne surcharge pas le congélateur** et dégivre-le quand la glace s'accumule.
 
 **Décongeler**
 - **Au réfrigérateur**, la veille pour le lendemain, dans un récipient qui retient le jus (viande, poisson).
-- **Au micro-ondes**, en programme décongélation, si vous cuisinez aussitôt.
+- **Au micro-ondes**, en programme décongélation, si tu cuisines aussitôt.
 - **Les légumes surgelés** se cuisent directement, sans décongélation préalable.
 - **Une fois décongelé**, l'aliment se conserve au réfrigérateur comme un produit frais (+4 °C) et se consomme rapidement.
 
 ## Questions fréquentes
-**Puis-je congeler du lait maternel ?** Oui, le lait maternel se congèle selon des règles spécifiques : un article dédié de l'application les détaille, et la sage-femme ou la consultante en lactation peuvent vous conseiller.
+**Puis-je congeler du lait maternel ?** Oui, le lait maternel se congèle selon des règles spécifiques : un article dédié de l'application les détaille, et la sage-femme ou la consultante en lactation peuvent te conseiller.
 
-**Combien de temps garder un plat maison au congélateur ?** Pour les purées de bébé, la brochure des 1000 premiers jours indique 2 mois maximum. Pour les autres plats, suivez les indications de la notice de votre congélateur et consommez de préférence dans les mois qui suivent.
+**Combien de temps garder un plat maison au congélateur ?** Pour les purées de bébé, la brochure des 1000 premiers jours indique 2 mois maximum. Pour les autres plats, suis les indications de la notice de ton congélateur et consomme de préférence dans les mois qui suivent.
 
 **Quelle différence entre congelé et surgelé ?** Selon la DGCCRF, les aliments congelés se conservent à −12 °C et les surgelés à −18 °C. Dans les deux cas, un aliment décongelé ne se recongèle pas.
 
-**Le congélateur a été débranché quelques heures : que faire ?** Les aliments décongelés ne doivent pas être recongelés. S'ils sont encore froids, cuisinez-les rapidement ; sinon, jetez-les.
+**Le congélateur a été débranché quelques heures : que faire ?** Les aliments décongelés ne doivent pas être recongelés. S'ils sont encore froids, cuisine-les rapidement ; sinon, jette-les.
 
 ## Quand demander conseil
-Pour la conservation du lait maternel ou des biberons, suivez les conseils de la sage-femme, de la PMI ou du médecin. En cas de troubles digestifs, de fièvre ou de malaise après un repas, surtout chez un nourrisson, un jeune enfant ou une femme enceinte, consultez ; en cas de signes de gravité, appelez le 15 ou le 112.
+Pour la conservation du lait maternel ou des biberons, suis les conseils de la sage-femme, de la PMI ou du médecin. En cas de troubles digestifs, de fièvre ou de malaise après un repas, surtout chez un nourrisson, un jeune enfant ou une femme enceinte, consulte ; en cas de signes de gravité, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'securite',
@@ -1090,10 +1090,10 @@ ${END}`,
 
 ## En bref
 - Les matériaux au contact des aliments sont encadrés par la réglementation et contrôlés par la DGCCRF.
-- Leurs instructions d'emploi indiquent la température maximale, les aliments à éviter et l'usage possible au micro-ondes : lisez-les et conservez-les.
-- Ne chauffez pas un plat dans son emballage plastique, sauf indication contraire.
-- Ne réutilisez pas les emballages à usage unique pour conserver ou cuire des aliments.
-- Pour bébé, transvasez les petits pots en barquette plastique dans une assiette ou une casserole avant de les réchauffer.
+- Leurs instructions d'emploi indiquent la température maximale, les aliments à éviter et l'usage possible au micro-ondes : lis-les et conserve-les.
+- Ne chauffe pas un plat dans son emballage plastique, sauf indication contraire.
+- Ne réutilise pas les emballages à usage unique pour conserver ou cuire des aliments.
+- Pour bébé, transvase les petits pots en barquette plastique dans une assiette ou une casserole avant de les réchauffer.
 
 ## Comprendre
 La DGCCRF rappelle que vaisselle, ustensiles, équipements et emballages destinés au contact des aliments obéissent à une réglementation européenne et française (dont un règlement spécifique aux matières plastiques et la loi encadrant le bisphénol A). Les fabricants doivent fournir un étiquetage complet, en français, avec les instructions d'emploi : température maximale, restrictions pour certains aliments, utilisation au four à micro-ondes.
@@ -1108,24 +1108,24 @@ Mais la bonne utilisation dépend aussi du consommateur. La DGCCRF déconseille 
 La brochure des 1000 premiers jours donne la même consigne pour les plats de bébé : ne pas les réchauffer dans leur barquette plastique, mais les transvaser dans une casserole ou une assiette.
 
 ## Au quotidien
-- **Lisez l'emballage à l'achat** d'une boîte, d'un biberon ou d'un ustensile : conservez la notice et respectez l'usage indiqué (micro-ondes, lave-vaisselle, congélation, aliments gras).
-- **Réchauffez dans un récipient dont la notice autorise le micro-ondes**, plutôt que dans une barquette ou un emballage jetable.
-- **Lisez la notice des films étirables** avant de les utiliser au micro-ondes ou au contact d'aliments gras ; à défaut d'indication, couvrez avec un couvercle adapté.
-- **Ne détournez pas les emballages** : une boîte de glace vide ou une barquette jetable n'est pas faite pour conserver ou réchauffer la soupe.
-- **Évitez les papillotes en aluminium** avec des aliments acides comme le citron.
-- **Mélangez et vérifiez la température** de tout ce qui sort du micro-ondes avant de le donner à un enfant.
+- **Lis l'emballage à l'achat** d'une boîte, d'un biberon ou d'un ustensile : conserve la notice et respecte l'usage indiqué (micro-ondes, lave-vaisselle, congélation, aliments gras).
+- **Réchauffe dans un récipient dont la notice autorise le micro-ondes**, plutôt que dans une barquette ou un emballage jetable.
+- **Lis la notice des films étirables** avant de les utiliser au micro-ondes ou au contact d'aliments gras ; à défaut d'indication, couvre avec un couvercle adapté.
+- **Ne détourne pas les emballages** : une boîte de glace vide ou une barquette jetable n'est pas faite pour conserver ou réchauffer la soupe.
+- **Évite les papillotes en aluminium** avec des aliments acides comme le citron.
+- **Mélange et vérifie la température** de tout ce qui sort du micro-ondes avant de le donner à un enfant.
 
 ## Questions fréquentes
-**Le bisphénol A est-il encore présent dans les contenants alimentaires ?** Il fait l'objet d'une loi spécifique en France et d'une attention particulière lors des contrôles. En pratique, suivez les instructions des fabricants et évitez de chauffer dans des contenants qui ne sont pas prévus pour cela.
+**Le bisphénol A est-il encore présent dans les contenants alimentaires ?** Il fait l'objet d'une loi spécifique en France et d'une attention particulière lors des contrôles. En pratique, suis les instructions des fabricants et évite de chauffer dans des contenants qui ne sont pas prévus pour cela.
 
-**Comment réchauffer un biberon ?** Suivez les consignes du professionnel qui suit votre bébé et la notice du biberon, et vérifiez toujours la température du lait avant de le donner. Un article dédié de l'application détaille la préparation des biberons.
+**Comment réchauffer un biberon ?** Suis les consignes du professionnel qui suit ton bébé et la notice du biberon, et vérifie toujours la température du lait avant de le donner. Un article dédié de l'application détaille la préparation des biberons.
 
 **Les boîtes en plastique vont-elles au congélateur ?** Seulement si elles sont prévues pour cet usage : la notice le précise.
 
-**Les ustensiles en bambou ou les gourdes réutilisables sont-ils concernés ?** Oui, tous les matériaux au contact des aliments sont encadrés. Lisez les instructions et méfiez-vous des produits sans notice ni adresse du fabricant.
+**Les ustensiles en bambou ou les gourdes réutilisables sont-ils concernés ?** Oui, tous les matériaux au contact des aliments sont encadrés. Lis les instructions et méfie-toi des produits sans notice ni adresse du fabricant.
 
 ## Quand demander conseil
-Si un produit au contact des aliments vous paraît non conforme (absence de notice, odeur, déformation à la chaleur), vous pouvez le signaler sur SignalConso et vérifier s'il fait l'objet d'un rappel sur Rappel Conso. En cas de brûlure de la bouche chez un enfant après un aliment trop chaud, refroidissez à l'eau fraîche et demandez conseil à un médecin ; en cas de difficulté à respirer ou d'urgence, appelez le 15 ou le 112.
+Si un produit au contact des aliments te paraît non conforme (absence de notice, odeur, déformation à la chaleur), tu peux le signaler sur SignalConso et vérifier s'il fait l'objet d'un rappel sur Rappel Conso. En cas de brûlure de la bouche chez un enfant après un aliment trop chaud, refroidis à l'eau fraîche et demande conseil à un médecin ; en cas de difficulté à respirer ou d'urgence, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'securite',
@@ -1136,15 +1136,15 @@ ${END}`,
     ...FAMILY,
     slug: 'rappels-produits-alimentaires-que-faire',
     title: 'Rappel de produit alimentaire : comment être informé et que faire à la maison ?',
-    summary: 'Différence entre retrait et rappel, où trouver les avis officiels et les bons gestes si vous avez acheté un produit rappelé pour vous ou votre enfant.',
+    summary: 'Différence entre retrait et rappel, où trouver les avis officiels et les bons gestes si tu as acheté un produit rappelé pour toi ou ton enfant.',
     body_md: `Lait infantile, fromage, steak haché, jouet ou siège auto : des produits sont régulièrement rappelés. Savoir où s'informer et comment réagir permet de protéger sa famille sans paniquer.
 
 ## En bref
 - Un retrait concerne des produits encore en magasin ; un rappel concerne des produits déjà vendus.
 - Le site public Rappel Conso rassemble les avis de rappel de produits alimentaires et non alimentaires.
-- Si vous possédez un produit rappelé : mettez-le de côté, ne le consommez pas et suivez les consignes de l'avis.
-- Gardez l'emballage (numéro de lot, date) et la preuve d'achat.
-- En cas de symptômes après consommation, demandez conseil à un professionnel de santé en mentionnant le rappel.
+- Si tu possèdes un produit rappelé : mets-le de côté, ne le consomme pas et suis les consignes de l'avis.
+- Garde l'emballage (numéro de lot, date) et la preuve d'achat.
+- En cas de symptômes après consommation, demande conseil à un professionnel de santé en mentionnant le rappel.
 
 ## Comprendre
 Le **retrait** consiste à enlever des rayons ou des entrepôts un produit qui n'a pas encore été vendu. Le **rappel** vise un produit déjà acheté : les consommateurs sont invités à le rapporter au magasin ou à le détruire, et l'information est relayée par des campagnes (presse, radio…). Il n'y a pas de rappel sans retrait, mais un retrait peut exister sans rappel.
@@ -1154,30 +1154,30 @@ Le **retrait** consiste à enlever des rayons ou des entrepôts un produit qui n
 C'est grâce au **numéro de lot**, obligatoire sur les produits préemballés, et aux dates que l'on peut savoir si son produit est concerné.
 
 ## Au quotidien
-**Si un produit que vous avez acheté est rappelé**
-1. Mettez-le de côté pour que personne ne l'utilise, y compris les enfants.
-2. Comparez le nom, le lot et la date de l'emballage avec ceux de l'avis de rappel.
-3. Conservez l'emballage, l'étiquette et le ticket de caisse (ou une photo).
-4. Suivez la marche à suivre de l'avis : retour en magasin pour remboursement, destruction selon les instructions ou contact avec le service client.
-5. En cas de symptômes ou d'effet inhabituel après consommation, demandez conseil à un professionnel de santé.
+**Si un produit que tu as acheté est rappelé**
+1. Mets-le de côté pour que personne ne l'utilise, y compris les enfants.
+2. Compare le nom, le lot et la date de l'emballage avec ceux de l'avis de rappel.
+3. Conserve l'emballage, l'étiquette et le ticket de caisse (ou une photo).
+4. Suis la marche à suivre de l'avis : retour en magasin pour remboursement, destruction selon les instructions ou contact avec le service client.
+5. En cas de symptômes ou d'effet inhabituel après consommation, demande conseil à un professionnel de santé.
 
 **Prendre de bonnes habitudes**
-- **Consultez Rappel Conso** quand un produit du quotidien de votre bébé (lait infantile, petits pots, céréales) fait parler de lui.
-- **Gardez quelques jours les emballages** des produits sensibles entamés, ou prenez une photo du lot.
-- **Notez la date d'achat** sur les produits que vous congelez.
-- **Restez attentif aux messages** de votre magasin si vous avez une carte de fidélité.
+- **Consulte Rappel Conso** quand un produit du quotidien de ton bébé (lait infantile, petits pots, céréales) fait parler de lui.
+- **Garde quelques jours les emballages** des produits sensibles entamés, ou prends une photo du lot.
+- **Note la date d'achat** sur les produits que tu congèles.
+- **Reste attentif aux messages** de ton magasin si tu as une carte de fidélité.
 
 ## Questions fréquentes
-**Mon enfant a déjà mangé le produit rappelé : que faire ?** Lisez l'avis de rappel, qui précise le risque (bactérie, corps étranger, allergène non déclaré…) et les symptômes à surveiller. Appelez votre médecin pour savoir quoi surveiller et pendant combien de temps. En cas de signes graves, appelez le 15.
+**Mon enfant a déjà mangé le produit rappelé : que faire ?** Lis l'avis de rappel, qui précise le risque (bactérie, corps étranger, allergène non déclaré…) et les symptômes à surveiller. Appelle ton médecin pour savoir quoi surveiller et pendant combien de temps. En cas de signes graves, appelle le 15.
 
-**Le magasin doit-il me rembourser ?** L'avis de rappel indique les modalités, qui prévoient souvent un retour en magasin pour remboursement. En cas de litige, une association de consommateurs agréée peut vous aider.
+**Le magasin doit-il me rembourser ?** L'avis de rappel indique les modalités, qui prévoient souvent un retour en magasin pour remboursement. En cas de litige, une association de consommateurs agréée peut t’aider.
 
 **Comment signaler un produit que je trouve dangereux ?** Sur la plateforme SignalConso, administrée par la DGCCRF, ou auprès de la direction départementale de protection des populations. Les effets indésirables sur la santé peuvent aussi être déclarés sur le portail national de signalement.
 
 **Les rappels concernent-ils aussi les jouets et le matériel de puériculture ?** Oui, toutes les catégories de produits de consommation courante figurent sur Rappel Conso.
 
 ## Quand demander conseil
-Après consommation d'un produit rappelé, contactez votre médecin ou un pharmacien pour savoir quoi surveiller, en particulier pour un nourrisson, un enfant, une femme enceinte ou une personne fragile. En cas de fièvre élevée, de vomissements répétés, de diarrhée sanglante, de gêne respiratoire ou de malaise, appelez le 15 ou le 112.
+Après consommation d'un produit rappelé, contacte ton médecin ou un pharmacien pour savoir quoi surveiller, en particulier pour un nourrisson, un enfant, une femme enceinte ou une personne fragile. En cas de fièvre élevée, de vomissements répétés, de diarrhée sanglante, de gêne respiratoire ou de malaise, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'securite',
@@ -1210,28 +1210,28 @@ Quand au moins deux personnes ont des symptômes similaires après avoir partag�
 
 ## Au quotidien
 **Prendre soin de la personne malade**
-- **Faites boire régulièrement**, par petites quantités : eau, bouillons, et solutions de réhydratation orale (SRO) pour les enfants.
-- **Chez le nourrisson**, poursuivez l'allaitement ou le lait habituel et proposez des SRO dès le début ; consultez dès plusieurs selles liquides en quelques heures.
-- **Proposez une alimentation légère** (riz, carottes cuites, banane, compote) sans forcer, et réintroduisez progressivement les aliments habituels.
-- **Évitez les sodas et boissons très sucrées** pour réhydrater un enfant.
-- **Ne donnez pas de médicament contre la diarrhée ou les vomissements** à un enfant sans avis médical.
+- **Fais boire régulièrement**, par petites quantités : eau, bouillons, et solutions de réhydratation orale (SRO) pour les enfants.
+- **Chez le nourrisson**, poursuis l'allaitement ou le lait habituel et propose des SRO dès le début ; consulte dès plusieurs selles liquides en quelques heures.
+- **Propose une alimentation légère** (riz, carottes cuites, banane, compote) sans forcer, et réintroduis progressivement les aliments habituels.
+- **Évite les sodas et boissons très sucrées** pour réhydrater un enfant.
+- **Ne donne pas de médicament contre la diarrhée ou les vomissements** à un enfant sans avis médical.
 
 **Protéger le reste de la famille**
 - La personne malade évite de cuisiner pour les autres tant qu'elle a des symptômes.
-- Renforcez le lavage des mains, le nettoyage des surfaces et des toilettes.
-- Gardez si possible les restes de l'aliment suspect et son emballage (numéro de lot) au réfrigérateur, isolés, pour le médecin ou les autorités.
+- Renforce le lavage des mains, le nettoyage des surfaces et des toilettes.
+- Garde si possible les restes de l'aliment suspect et son emballage (numéro de lot) au réfrigérateur, isolés, pour le médecin ou les autorités.
 
 ## Questions fréquentes
 **Comment distinguer intoxication alimentaire et gastro-entérite virale ?** Les symptômes se ressemblent. Le fait que plusieurs personnes soient malades après le même repas oriente vers une origine alimentaire ; seul le médecin peut faire la part des choses, parfois avec une analyse de selles.
 
-**Je suis enceinte et j'ai de la fièvre après avoir mangé un aliment à risque : que faire ?** Consultez rapidement votre médecin ou votre sage-femme et signalez l'aliment consommé, même si les symptômes sont légers. Une fièvre pendant la grossesse doit toujours faire consulter.
+**Je suis enceinte et j'ai de la fièvre après avoir mangé un aliment à risque : que faire ?** Consulte rapidement ton médecin ou ta sage-femme et signale l'aliment consommé, même si les symptômes sont légers. Une fièvre pendant la grossesse doit toujours faire consulter.
 
-**Les champignons cueillis peuvent-ils provoquer une intoxication ?** Oui, et elle peut être grave : appelez un centre antipoison et signalez cette consommation.
+**Les champignons cueillis peuvent-ils provoquer une intoxication ?** Oui, et elle peut être grave : appelle un centre antipoison et signale cette consommation.
 
 **Quand une personne malade peut-elle de nouveau cuisiner pour la famille ?** L'ARS recommande d'éviter de préparer des repas pour les autres tant que les symptômes persistent, car certains germes sont contagieux. Ensuite, un lavage des mains soigneux reste essentiel.
 
 ## Quand demander conseil
-Consultez rapidement un médecin pour un nourrisson de moins de 2 ans qui a plusieurs selles liquides, pour une femme enceinte, ou si la diarrhée dure plus de deux jours, s'aggrave, s'accompagne de fièvre élevée, de glaires ou de sang. Appelez le 15 ou le 112 si l'enfant refuse de boire et vomit tout, s'il est anormalement somnolent ou agité, difficile à réveiller, pâle avec les yeux cernés, respire vite, ou en cas de troubles de la vue, de difficultés à avaler ou à respirer. Pour les champignons ou un produit toxique avalé, contactez aussi un centre antipoison.
+Consulte rapidement un médecin pour un nourrisson de moins de 2 ans qui a plusieurs selles liquides, pour une femme enceinte, ou si la diarrhée dure plus de deux jours, s'aggrave, s'accompagne de fièvre élevée, de glaires ou de sang. Appelle le 15 ou le 112 si l'enfant refuse de boire et vomit tout, s'il est anormalement somnolent ou agité, difficile à réveiller, pâle avec les yeux cernés, respire vite, ou en cas de troubles de la vue, de difficultés à avaler ou à respirer. Pour les champignons ou un produit toxique avalé, contacte aussi un centre antipoison.
 
 ${END}`,
     category: 'securite',
@@ -1249,10 +1249,10 @@ ${END}`,
 
 ## En bref
 - Selon l'Anses, plus de 1 000 intoxications liées à des champignons cueillis ont été recensées en 2021.
-- Ne ramassez que les champignons que vous connaissez parfaitement, et faites vérifier la récolte en cas de doute par un pharmacien ou une association de mycologie.
-- Ne donnez jamais de champignons cueillis aux jeunes enfants ; les femmes enceintes doivent aussi les éviter.
-- Ne vous fiez pas aux applications de reconnaissance sur smartphone.
-- En cas de symptômes après un repas de champignons, appelez immédiatement un centre antipoison en signalant cette consommation.
+- Ne ramasse que les champignons que tu connais parfaitement, et fais vérifier la récolte en cas de doute par un pharmacien ou une association de mycologie.
+- Ne donne jamais de champignons cueillis aux jeunes enfants ; les femmes enceintes doivent aussi les éviter.
+- Ne te fie pas aux applications de reconnaissance sur smartphone.
+- En cas de symptômes après un repas de champignons, appelle immédiatement un centre antipoison en signalant cette consommation.
 
 ## Comprendre
 Les intoxications peuvent venir de la confusion avec une espèce toxique, mais aussi de champignons comestibles abîmés, mal conservés ou mal cuits. Les symptômes sont surtout digestifs (douleurs abdominales, nausées, vomissements, diarrhée), parfois accompagnés de tremblements, de vertiges ou de troubles de la vue. Ils peuvent apparaître quelques heures après le repas, ou plus de 12 heures plus tard. Les complications peuvent être graves : atteinte des reins, atteinte du foie pouvant nécessiter une greffe ; certaines intoxications sont mortelles.
@@ -1261,32 +1261,32 @@ Les recommandations de l'Anses, relayées par Santé.fr, précisent de ne jamais
 
 ## Au quotidien
 **Avant la cueillette**
-- Prenez un panier en osier, une caisse ou un carton, pas un sac plastique qui accélère la décomposition, et assez grand pour séparer les espèces.
-- Évitez les lieux pollués : bords de route, zones industrielles, décharges, pâturages.
+- Prends un panier en osier, une caisse ou un carton, pas un sac plastique qui accélère la décomposition, et assez grand pour séparer les espèces.
+- Évite les lieux pollués : bords de route, zones industrielles, décharges, pâturages.
 
 **Pendant la cueillette avec les enfants**
-- Expliquez-leur qu'on ne goûte jamais un champignon cru ni une baie trouvée en forêt, et qu'on se lave les mains après avoir touché la récolte.
-- Ne cueillez que des spécimens entiers (pied et chapeau) et en bon état ; évitez les très jeunes et les trop vieux.
-- Souvenez-vous que des champignons toxiques peuvent pousser à l'endroit où vous aviez cueilli des comestibles une autre année.
+- Explique-leur qu'on ne goûte jamais un champignon cru ni une baie trouvée en forêt, et qu'on se lave les mains après avoir touché la récolte.
+- Ne cueille que des spécimens entiers (pied et chapeau) et en bon état ; évite les très jeunes et les trop vieux.
+- Souviens-toi que des champignons toxiques peuvent pousser à l'endroit où tu avais cueilli des comestibles une autre année.
 
 **Après la cueillette**
-- Faites vérifier la récolte au moindre doute, avant toute consommation.
-- Photographiez votre cueillette avant la cuisson : en cas d'intoxication, la photo aide les médecins.
-- Conservez les champignons au réfrigérateur, à l'écart des autres aliments, et consommez-les dans les deux jours.
-- Ne les mangez jamais crus. Cuisez chaque espèce séparément et suffisamment : 20 à 30 minutes à la poêle, ou 15 minutes dans l'eau bouillante en jetant l'eau de cuisson.
-- N'achetez pas de champignons vendus par des personnes qui ne sont pas des professionnels.
+- Fais vérifier la récolte au moindre doute, avant toute consommation.
+- Photographie ta cueillette avant la cuisson : en cas d'intoxication, la photo aide les médecins.
+- Conserve les champignons au réfrigérateur, à l'écart des autres aliments, et consomme-les dans les deux jours.
+- Ne les mange jamais crus. Cuis chaque espèce séparément et suffisamment : 20 à 30 minutes à la poêle, ou 15 minutes dans l'eau bouillante en jetant l'eau de cuisson.
+- N'achète pas de champignons vendus par des personnes qui ne sont pas des professionnels.
 
 ## Questions fréquentes
-**À partir de quel âge un enfant peut-il manger des champignons cueillis ?** Les recommandations demandent de ne jamais en donner aux jeunes enfants, sans fixer d'âge précis. Demandez conseil au médecin pour un enfant plus grand.
+**À partir de quel âge un enfant peut-il manger des champignons cueillis ?** Les recommandations demandent de ne jamais en donner aux jeunes enfants, sans fixer d'âge précis. Demande conseil au médecin pour un enfant plus grand.
 
 **Une application peut-elle identifier un champignon ?** Non : le risque d'erreur est élevé. Seul un pharmacien ou une association de mycologie peut confirmer une identification.
 
-**Mon enfant a mis un champignon cru dans la bouche : que faire ?** Retirez ce qui reste dans sa bouche, gardez le champignon ou une photo, et appelez un centre antipoison pour savoir quoi faire. En cas de malaise, de vomissements ou de somnolence, appelez le 15.
+**Mon enfant a mis un champignon cru dans la bouche : que faire ?** Retire ce qui reste dans sa bouche, garde le champignon ou une photo, et appelle un centre antipoison pour savoir quoi faire. En cas de malaise, de vomissements ou de somnolence, appelle le 15.
 
 **Des symptômes le lendemain peuvent-ils venir des champignons ?** Oui : ils peuvent apparaître plus de 12 heures après le repas. Un délai long ne doit pas rassurer ; tout symptôme après un repas de champignons cueillis justifie un appel au centre antipoison.
 
 ## Quand demander conseil
-Au moindre symptôme après un repas de champignons cueillis, appelez immédiatement un centre antipoison en précisant ce qui a été mangé et quand. En cas de vomissements importants, de malaise, de troubles de la conscience, de difficulté à respirer ou de symptômes chez un enfant ou une femme enceinte, appelez le 15 ou le 112.
+Au moindre symptôme après un repas de champignons cueillis, appelle immédiatement un centre antipoison en précisant ce qui a été mangé et quand. En cas de vomissements importants, de malaise, de troubles de la conscience, de difficulté à respirer ou de symptômes chez un enfant ou une femme enceinte, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'securite',
@@ -1305,7 +1305,7 @@ ${END}`,
 ## En bref
 - En France, l'eau du robinet est très contrôlée par les Agences régionales de santé et convient à toute la famille, sauf exception signalée localement.
 - Après avoir vérifié sa potabilité, elle peut servir à préparer les biberons, en respectant quelques précautions.
-- N'utilisez pas d'eau filtrée en carafe ni d'eau adoucie pour les biberons.
+- N'utilise pas d'eau filtrée en carafe ni d'eau adoucie pour les biberons.
 - Une eau en bouteille pour biberon doit porter la mention indiquant qu'elle convient à la préparation des aliments des nourrissons.
 - Une bouteille ouverte se garde au réfrigérateur, fermée, et s'utilise dans les 24 heures.
 
@@ -1314,28 +1314,28 @@ Santé publique France rappelle que l'eau du robinet est l'aliment le plus contr
 
 Pour les biberons, quelques conditions s'ajoutent. Il faut utiliser uniquement l'eau froide, car l'eau chaude des canalisations peut contenir plus de métaux et favoriser les bactéries ; laisser couler l'eau quelques secondes, et jusqu'à 2 minutes après plusieurs jours d'absence ; entretenir et détartrer régulièrement le robinet. Dans les logements construits avant 1948, les canalisations peuvent contenir du plomb : il faut alors laisser couler l'eau au moins 3 minutes, et en cas de doute préférer une eau embouteillée adaptée. Les carafes filtrantes et adoucisseurs sont déconseillés pour les biberons, car ils peuvent favoriser la prolifération de bactéries.
 
-Si vous choisissez l'eau en bouteille pour le biberon, elle doit porter la mention indiquant qu'elle convient à la préparation des aliments pour nourrissons et être faiblement minéralisée. L'eau gazeuse ne convient pas.
+Si tu choisis l'eau en bouteille pour le biberon, elle doit porter la mention indiquant qu'elle convient à la préparation des aliments pour nourrissons et être faiblement minéralisée. L'eau gazeuse ne convient pas.
 
 ## Au quotidien
-- **Vérifiez la qualité de votre eau** : résultats du contrôle sanitaire affichés en mairie ou disponibles sur le site de l'ARS, carte interactive du ministère de la Santé, note annuelle jointe à la facture d'eau, ou auprès du syndic en copropriété.
-- **Mettez une carafe d'eau sur la table** à chaque repas, y compris les jours de fête : c'est la boisson de référence pour toute la famille.
-- **En cas de goût de chlore**, laissez l'eau quelques heures dans une carafe ouverte au réfrigérateur.
-- **Pour le biberon**, ne laissez pas le goulot toucher le robinet et suivez les règles de préparation données par le professionnel qui suit votre bébé.
-- **Au rayon**, lisez l'étiquette de l'eau embouteillée : mention « nourrissons », eau plate, minéralisation faible.
-- **Pour une bouteille entamée**, rebouchez-la, rangez-la au réfrigérateur et utilisez-la dans les 24 heures.
-- **Évitez les eaux aromatisées** en bouteille, souvent sucrées.
+- **Vérifie la qualité de ton eau** : résultats du contrôle sanitaire affichés en mairie ou disponibles sur le site de l'ARS, carte interactive du ministère de la Santé, note annuelle jointe à la facture d'eau, ou auprès du syndic en copropriété.
+- **Mets une carafe d'eau sur la table** à chaque repas, y compris les jours de fête : c'est la boisson de référence pour toute la famille.
+- **En cas de goût de chlore**, laisse l'eau quelques heures dans une carafe ouverte au réfrigérateur.
+- **Pour le biberon**, ne laisse pas le goulot toucher le robinet et suis les règles de préparation données par le professionnel qui suit ton bébé.
+- **Au rayon**, lis l'étiquette de l'eau embouteillée : mention « nourrissons », eau plate, minéralisation faible.
+- **Pour une bouteille entamée**, rebouche-la, range-la au réfrigérateur et utilise-la dans les 24 heures.
+- **Évite les eaux aromatisées** en bouteille, souvent sucrées.
 
 ## Questions fréquentes
-**L'eau de source est-elle toujours adaptée aux biberons ?** Pas forcément : sa composition peut varier, et certaines eaux de source issues de plusieurs captages ne conviennent pas. Fiez-vous à la mention « nourrissons » sur l'étiquette.
+**L'eau de source est-elle toujours adaptée aux biberons ?** Pas forcément : sa composition peut varier, et certaines eaux de source issues de plusieurs captages ne conviennent pas. Fie-toi à la mention « nourrissons » sur l'étiquette.
 
 **Faut-il faire bouillir l'eau du robinet ?** Les sources consultées ne le demandent pas lorsque l'eau est potable. En voyage, en l'absence d'eau potable ou d'eau embouteillée adaptée, l'eau peut être bouillie puis refroidie.
 
-**Et l'eau de puits ou de pluie ?** L'eau de puits n'est pas surveillée et l'eau de pluie n'est pas potable : ne les utilisez pas pour boire ni pour les biberons.
+**Et l'eau de puits ou de pluie ?** L'eau de puits n'est pas surveillée et l'eau de pluie n'est pas potable : ne les utilise pas pour boire ni pour les biberons.
 
-**Pendant la grossesse, faut-il boire de l'eau en bouteille ?** L'eau du robinet potable convient. Buvez dès que vous avez soif, davantage par forte chaleur.
+**Pendant la grossesse, faut-il boire de l'eau en bouteille ?** L'eau du robinet potable convient. Bois dès que tu as soif, davantage par forte chaleur.
 
 ## Quand demander conseil
-Si votre mairie signale une eau non conforme, si vous habitez un logement ancien et doutez de vos canalisations, ou si vous ne savez pas quelle eau utiliser pour le biberon, demandez conseil au pharmacien, à la PMI ou au médecin. En cas de diarrhée ou de vomissements chez un nourrisson, consultez rapidement ; s'il est somnolent, refuse de boire ou respire vite, appelez le 15 ou le 112.
+Si ta mairie signale une eau non conforme, si tu habites un logement ancien et doutes de tes canalisations, ou si tu ne sais pas quelle eau utiliser pour le biberon, demande conseil au pharmacien, à la PMI ou au médecin. En cas de diarrhée ou de vomissements chez un nourrisson, consulte rapidement ; s'il est somnolent, refuse de boire ou respire vite, appelle le 15 ou le 112.
 
 ${END}`,
     category: 'alimentation',

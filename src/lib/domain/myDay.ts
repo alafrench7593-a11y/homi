@@ -10,7 +10,7 @@ export interface DayReminder { id: string; title: string; schedule: ReminderSche
 
 export interface MyDayItem {
   key: string;
-  kind: 'reminder' | 'appointment' | 'event' | 'task' | 'night' | 'me_time';
+  kind: 'reminder' | 'appointment' | 'event' | 'task' | 'night' | 'me_time' | 'activity';
   title: string;
   /** « HH:MM » ; null = toute la journée */
   time: string | null;
@@ -51,15 +51,18 @@ export function remindersOn(reminders: DayReminder[], day: string): MyDayItem[] 
 
 /** Agenda du foyer pour ce jour (éléments déjà filtrés sur la journée par le calendrier). */
 export function agendaItems(items: CalendarItem[], day: string): MyDayItem[] {
-  return items.map((i) => ({
+  // Moments à deux : privés, jamais dans la journée partagée
+  return items.filter((i): i is CalendarItem & { source: Exclude<CalendarItem['source'], 'moment'> } => i.source !== 'moment').map((i) => ({
     key: `cal-${i.key}`, kind: i.source, title: i.title, refId: i.refId, done: i.done,
     time: i.allDay || localDay(i.starts) < day ? null : localTime(i.starts),
+    // séance d'activité extrascolaire (136) : s'ouvre sur l'activité de l'enfant
+    ...(i.source === 'activity' ? { link: `/child/${i.childId}/activities?a=${i.refId}` } : {}),
   }));
 }
 
 /** Tri : toute la journée d'abord, puis par heure ; à heure égale, rendez-vous avant rappels. */
 export function sortDay(items: MyDayItem[]): MyDayItem[] {
-  const rank: Record<MyDayItem['kind'], number> = { appointment: 0, event: 1, me_time: 2, night: 3, task: 4, reminder: 5 };
+  const rank: Record<MyDayItem['kind'], number> = { appointment: 0, event: 1, activity: 1, me_time: 2, night: 3, task: 4, reminder: 5 };
   return [...items].sort((a, b) => (a.time ?? '') .localeCompare(b.time ?? '') || rank[a.kind] - rank[b.kind] || a.title.localeCompare(b.title));
 }
 

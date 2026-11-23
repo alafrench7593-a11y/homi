@@ -15,7 +15,7 @@ import * as IT from './fertility.it';
 
 // ---------------------------------------------------------------- messages transverses
 const TTC_DISCLAIMER_FR =
-  'Les dates d’ovulation et de fenêtre fertile sont des estimations calculées à partir de vos saisies. Elles peuvent aider à se repérer mais ne garantissent jamais une grossesse.';
+  'Les dates d’ovulation et de fenêtre fertile sont des estimations calculées à partir de tes saisies. Elles peuvent aider à se repérer mais ne garantissent jamais une grossesse.';
 
 const AVOID_DISCLAIMER_FR =
   'Une grossesse reste possible à tout moment du cycle, y compris en dehors de la fenêtre fertile estimée et pendant les règles. Ce calendrier n’est pas une méthode de contraception : pour éviter une grossesse, une contraception adaptée est nécessaire.';
@@ -39,23 +39,23 @@ const TIMING_INFO_FR: { title: string; text: string }[] = [
   },
   {
     title: 'Prendre soin du couple',
-    text: 'Le calendrier peut devenir pesant. Il est tout à fait possible de ne rien noter certains mois : c’est votre rythme qui compte.',
+    text: 'Le calendrier peut devenir pesant. Il est tout à fait possible de ne rien noter certains mois : c’est ton rythme qui compte.',
   },
 ];
 
 // ---------------------------------------------------------------- examens et consultations (informatif)
 const EXAMS_INTRO_FR =
-  'Ces informations aident à préparer un échange avec un professionnel. Elles ne permettent pas de poser un diagnostic et ne remplacent pas une consultation : seul un professionnel peut évaluer votre situation et décider des examens utiles.';
+  'Ces informations aident à préparer un échange avec un professionnel. Elles ne permettent pas de poser un diagnostic et ne remplacent pas une consultation : seul un professionnel peut évaluer ta situation et décider des examens utiles.';
 
 const WHEN_TO_TALK_FR: string[] = [
   'Après 12 mois de rapports réguliers sans contraception et sans grossesse, avant 35 ans.',
   'Après 6 mois à partir de 35 ans.',
   'Plus tôt en cas de cycles très irréguliers ou absents, de règles très douloureuses, d’antécédent connu (endométriose, SOPK, infection génitale, chirurgie pelvienne, traitement contre un cancer…) ou de difficulté connue chez le ou la partenaire.',
-  'À tout moment si vous avez une question ou une inquiétude : il n’est jamais trop tôt pour en parler.',
+  'À tout moment si tu as une question ou une inquiétude : il n’est jamais trop tôt pour en parler.',
 ];
 
 const WHO_TO_SEE_FR: string[] = [
-  'Votre médecin généraliste, un ou une gynécologue, ou une sage-femme : ils peuvent faire un premier point et orienter si besoin.',
+  'Ton médecin généraliste, un ou une gynécologue, ou une sage-femme : ils peuvent faire un premier point et orienter si besoin.',
   'Un centre d’assistance médicale à la procréation (AMP), sur orientation d’un professionnel.',
   'Un centre de santé sexuelle (anciennement planning familial) pour toute question sur la vie sexuelle et affective.',
 ];
@@ -71,7 +71,7 @@ const POSSIBLE_EXAMS_FR: { title: string; text: string }[] = [
 ];
 
 const EXAMS_FOOTER_FR =
-  'Certains examens et traitements sont pris en charge par l’Assurance maladie, sous conditions. Votre professionnel pourra vous indiquer ce qui est adapté à votre situation.';
+  'Certains examens et traitements sont pris en charge par l’Assurance maladie, sous conditions. Ton professionnel pourra t’indiquer ce qui est adapté à ta situation.';
 
 // ---------------------------------------------------------------- contraception
 export interface MethodInfo {
@@ -89,14 +89,14 @@ export interface MethodInfo {
 }
 
 const CONTRACEPTION_INTRO_FR =
-  'Des repères neutres pour comparer les méthodes. Le choix se fait avec un médecin, une sage-femme ou en centre de santé sexuelle, selon votre santé, vos préférences et votre vie. Les chiffres d’efficacité indiquent le nombre approximatif de grossesses pour 100 personnes pendant un an d’utilisation courante (avec les oublis et erreurs de la vie réelle).';
+  'Des repères neutres pour comparer les méthodes. Le choix se fait avec un médecin, une sage-femme ou en centre de santé sexuelle, selon ta santé, tes préférences et ta vie. Les chiffres d’efficacité indiquent le nombre approximatif de grossesses pour 100 personnes pendant un an d’utilisation courante (avec les oublis et erreurs de la vie réelle).';
 
 const CONTRACEPTION_METHODS_FR: MethodInfo[] = [
   {
     kind: 'pill', title: 'Pilule', summary: 'Comprimé à prendre chaque jour, œstroprogestatif ou progestatif seul.',
     typicalUse: 'Environ 7 grossesses pour 100 personnes par an en utilisation courante (moins de 1 en utilisation parfaite).',
     howItWorks: 'Agit principalement en bloquant l’ovulation (ou en modifiant la glaire cervicale pour certaines pilules progestatives).',
-    goodToKnow: ['Sur prescription d’un médecin ou d’une sage-femme.', 'En cas d’oubli, de vomissements ou de diarrhée : suivez la notice et demandez conseil à un pharmacien.', 'Certains médicaments peuvent diminuer son efficacité : signalez toujours votre contraception.'],
+    goodToKnow: ['Sur prescription d’un médecin ou d’une sage-femme.', 'En cas d’oubli, de vomissements ou de diarrhée : suis la notice et demande conseil à un pharmacien.', 'Certains médicaments peuvent diminuer son efficacité : signale toujours ta contraception.'],
     reminder: 'daily',
   },
   {
@@ -124,7 +124,7 @@ const CONTRACEPTION_METHODS_FR: MethodInfo[] = [
     kind: 'patch', title: 'Patch', summary: 'Timbre collé sur la peau, qui libère des hormones.',
     typicalUse: 'Environ 7 grossesses pour 100 personnes par an en utilisation courante.',
     howItWorks: 'Bloque l’ovulation, comme la pilule œstroprogestative.',
-    goodToKnow: ['Sur prescription.', 'Un patch par semaine pendant 3 semaines, puis une semaine sans patch (selon la notice).', 'En cas de décollement ou de retard, suivez la notice et demandez conseil à un pharmacien.'],
+    goodToKnow: ['Sur prescription.', 'Un patch par semaine pendant 3 semaines, puis une semaine sans patch (selon la notice).', 'En cas de décollement ou de retard, suis la notice et demande conseil à un pharmacien.'],
     reminder: 'weekly',
   },
   {
@@ -138,14 +138,14 @@ const CONTRACEPTION_METHODS_FR: MethodInfo[] = [
     kind: 'injection', title: 'Injection', summary: 'Injection d’un progestatif, renouvelée régulièrement.',
     typicalUse: 'Environ 4 grossesses pour 100 personnes par an en utilisation courante.',
     howItWorks: 'Bloque l’ovulation.',
-    goodToKnow: ['Sur prescription, faite par un professionnel.', 'À renouveler tous les 3 mois environ, à la date indiquée par votre professionnel.', 'Le retour de la fertilité peut prendre plusieurs mois après l’arrêt.'],
+    goodToKnow: ['Sur prescription, faite par un professionnel.', 'À renouveler tous les 3 mois environ, à la date indiquée par ton professionnel.', 'Le retour de la fertilité peut prendre plusieurs mois après l’arrêt.'],
     reminder: 'once',
   },
   {
     kind: 'condom', title: 'Préservatif externe', summary: 'Gaine placée sur le pénis en érection, à usage unique.',
     typicalUse: 'Environ 13 grossesses pour 100 personnes par an en utilisation courante.',
     howItWorks: 'Empêche le sperme d’entrer dans le vagin.',
-    goodToKnow: ['Avec le préservatif interne, c’est la seule méthode qui protège aussi des infections sexuellement transmissibles (IST).', 'Certains préservatifs sont gratuits en pharmacie pour les moins de 26 ans, sans ordonnance.', 'En cas de rupture ou de glissement, pensez à la contraception d’urgence.'],
+    goodToKnow: ['Avec le préservatif interne, c’est la seule méthode qui protège aussi des infections sexuellement transmissibles (IST).', 'Certains préservatifs sont gratuits en pharmacie pour les moins de 26 ans, sans ordonnance.', 'En cas de rupture ou de glissement, pense à la contraception d’urgence.'],
   },
   {
     kind: 'internal_condom', title: 'Préservatif interne', summary: 'Gaine placée dans le vagin, à usage unique.',
@@ -203,9 +203,9 @@ const EMERGENCY_OPTIONS_FR: { title: string; delay: string; text: string }[] = [
 const EMERGENCY_FACTS_FR: string[] = [
   'En France, la pilule d’urgence est délivrée en pharmacie sans ordonnance et gratuitement pour toutes les personnes, majeures ou mineures, depuis le 1er janvier 2023.',
   'Les mineures peuvent l’obtenir de façon confidentielle, en pharmacie, auprès de l’infirmière scolaire ou dans un centre de santé sexuelle.',
-  'Le ou la pharmacienne peut vous conseiller sur la pilule adaptée, les interactions avec vos traitements et la reprise de votre contraception habituelle.',
+  'Le ou la pharmacienne peut te conseiller sur la pilule adaptée, les interactions avec tes traitements et la reprise de ta contraception habituelle.',
   'La contraception d’urgence ne protège pas pour les rapports suivants et ne remplace pas une contraception régulière.',
-  'Si vos règles ont du retard ou sont inhabituelles, un test de grossesse est conseillé (environ 3 semaines après le rapport).',
+  'Si tes règles ont du retard ou sont inhabituelles, un test de grossesse est conseillé (environ 3 semaines après le rapport).',
 ];
 
 const EMERGENCY_CONTACTS_FR: { label: string; phone: string; description: string }[] = [
@@ -218,7 +218,7 @@ const QUESTION_SUGGESTIONS_FR: Record<FertilityJourney, string[]> = {
   // Suivi post-partum : questions que la mère peut préparer pour sa sage-femme ou son médecin
   postpartum: [
     'Est-ce que ce que je ressens depuis la naissance mérite un suivi ?',
-    'Je dors mal même quand je pourrais me reposer : qu’en pensez-vous ?',
+    'Je dors mal même quand je pourrais me reposer : qu’en penses-tu ?',
     'Quand et comment commencer la rééducation du périnée ?',
     'Ces douleurs sont-elles attendues, ou faut-il les examiner ?',
     'Vers qui puis-je me tourner pour parler de mon moral ?',
@@ -279,7 +279,7 @@ export interface ReminderPreset {
 const TTC_REMINDER_PRESETS_FR: ReminderPreset[] = [
   { key: 'bbt', title: 'Prendre ma température', discreetTitle: 'Petit rappel du matin', kind: 'daily', category: 'tracking', hint: 'Chaque matin au réveil, avant de se lever.' },
   { key: 'ovulation_test', title: 'Test d’ovulation', discreetTitle: 'Petit rappel', kind: 'daily', category: 'tracking', hint: 'À la même heure chaque jour, selon la notice du test.' },
-  { key: 'supplement', title: 'Mon complément', discreetTitle: 'Petit rappel', kind: 'daily', category: 'medication', hint: 'Si un complément vous a été conseillé par un professionnel.' },
+  { key: 'supplement', title: 'Mon complément', discreetTitle: 'Petit rappel', kind: 'daily', category: 'medication', hint: 'Si un complément t’a été conseillé par un professionnel.' },
   { key: 'period', title: 'Noter mes règles', discreetTitle: 'Penser à noter', kind: 'once', category: 'tracking', hint: 'Vers la date estimée des prochaines règles.' },
   { key: 'pregnancy_test', title: 'Test de grossesse', discreetTitle: 'Petit rappel', kind: 'once', category: 'tracking', hint: 'Un test est plus fiable à partir du jour des règles attendues (estimation).' },
 ];
@@ -288,11 +288,11 @@ const AVOID_REMINDER_PRESETS_FR: ReminderPreset[] = [
   { key: 'pill', title: 'Ma pilule', discreetTitle: 'Rappel quotidien', kind: 'daily', category: 'medication', hint: 'À heure fixe chaque jour.' },
   { key: 'patch', title: 'Changer mon patch', discreetTitle: 'Rappel hebdomadaire', kind: 'weekly', category: 'medication', hint: 'Le même jour chaque semaine, en suivant la notice (semaine sans patch).' },
   { key: 'ring', title: 'Mon anneau', discreetTitle: 'Petit rappel', kind: 'once', category: 'medication', hint: 'Date de retrait ou de mise en place indiquée par la notice.' },
-  { key: 'injection', title: 'Mon injection', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'medication', hint: 'Date indiquée par votre professionnel (environ tous les 3 mois).' },
+  { key: 'injection', title: 'Mon injection', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'medication', hint: 'Date indiquée par ton professionnel (environ tous les 3 mois).' },
   { key: 'renewal', title: 'Renouveler mon implant ou DIU', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Quelques semaines avant la date de fin d’efficacité, pour prendre rendez-vous.' },
-  { key: 'treatment', title: 'Mon traitement prescrit', discreetTitle: 'Rappel quotidien', kind: 'daily', category: 'medication', hint: 'Un traitement déjà prescrit, à l’heure indiquée par votre professionnel. L’application ne calcule ni ne modifie aucune dose.' },
-  { key: 'appointment', title: 'Mon rendez-vous', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Consultation, pose ou retrait d’un dispositif, renouvellement : à la date de votre rendez-vous.' },
-  { key: 'prescription', title: 'Renouveler mon ordonnance', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Avant la fin de votre dernière boîte ou plaquette.' },
+  { key: 'treatment', title: 'Mon traitement prescrit', discreetTitle: 'Rappel quotidien', kind: 'daily', category: 'medication', hint: 'Un traitement déjà prescrit, à l’heure indiquée par ton professionnel. L’application ne calcule ni ne modifie aucune dose.' },
+  { key: 'appointment', title: 'Mon rendez-vous', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Consultation, pose ou retrait d’un dispositif, renouvellement : à la date de ton rendez-vous.' },
+  { key: 'prescription', title: 'Renouveler mon ordonnance', discreetTitle: 'Rendez-vous à prévoir', kind: 'once', category: 'custom', hint: 'Avant la fin de ta dernière boîte ou plaquette.' },
 ];
 
 // ---------------------------------------------------------------- English version (same shape as the French one)

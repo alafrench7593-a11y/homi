@@ -1,31 +1,59 @@
 /**
- * Introduction d'ouverture (lancement à froid, ≈ 1,9 s) : dans la continuité de l'écran de lancement natif, le fond
- * aux couleurs de l'application est là, le fil doré du logo officiel se révèle de la tige vers les feuilles (comme une
- * pousse), avance très légèrement (profondeur), puis le calque s'efface sur le premier écran.
+ * Introduction d'ouverture HOMI (lancement à froid, ≈ 2 s, Reanimated + react-native-svg) — logo v5 « encre » :
+ * dans la continuité de l'écran de lancement natif (même fond, même symbole), le corps « M » monte, les deux têtes se
+ * posent, « HOMI » se révèle et le point du i se pose (1,32 s), pose sur le logo complet — identique à BrandStack —,
+ * puis le calque s'efface sur l'accueil avec une très légère avancée (profondeur). Logo : `HomiLogoAnimated` (même
+ * horloge).
  *
  * Ne ralentit jamais le lancement :
  *  - le premier écran et ses données se chargent EN DESSOUS pendant l'animation (rien n'attend celle-ci) ;
  *  - le calque ne capte aucun toucher (pointerEvents « none ») : l'écran est utilisable dès qu'il est rendu ;
  *  - jouée une seule fois par lancement à froid (pas au retour d'arrière-plan, pas à chaque changement d'écran) ;
- *  - absente à la toute première ouverture (l'introduction cinématique joue déjà ce rôle) ;
- *  - « Réduire les animations » : aucune introduction (état final immédiat).
- * Uniquement transform et opacity, sur le fil natif ; aucune couleur ajoutée (fond = fond du thème, logo officiel
- * détouré sans retouche : assets/brand/logo-transparent.png).
+ *  - absente à la toute première ouverture (l'introduction HOMI de /cinematic, même logo animé, joue déjà ce rôle) ;
+ *  - « Réduire les animations » ou économie d'énergie (useMotion → 'off') : aucune introduction, état final immédiat ;
+ *  - thème nuit ('minimal') ou lancement déjà lent : version abrégée (logo complet, courte pose, fondu).
+ * Une seule horloge (valeur partagée, fil UI) pilote toute la chorégraphie ; transform et opacité uniquement.
  */
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { easing, intro } from '@/theme/motion';
-import { NATIVE_DRIVER } from '@/theme/tokens';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withTiming, ReduceMotion, type SharedValue } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
+import { useTheme } from '@/theme/ThemeProvider';
+import { intro } from '@/theme/motion';
 import { useUiStore } from '@/lib/store';
+import { curves } from '@/motion/curves';
+import { useMotion } from '@/motion/useMotion';
+import { logoTimeline, stageProgress, type LogoTimeline, type Stage } from '@/brand/logoMotion';
+import { HomiLogoAnimated } from './HomiLogoAnimated';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-export const LOGO_TRANSPARENT: number = require('../../assets/brand/logo-transparent.png');
+export { stageProgress };
 
 /** Une seule fois par exécution de l'application (lancement à froid). */
 let played = false;
+
+/**
+ * Passage de relais vers l'écran suivant (onboarding) : le logo HOMI n'est joué QU'UNE fois par lancement.
+ * 'none' : aucune introduction n'a montré le logo ; 'playing' : le calque montre le logo ; 'done' : il l'a montré
+ * puis s'est effacé. Un écran qui ouvre avec le même logo (`OpeningStep`) le pose alors directement et n'anime que ce
+ * qui suit (titre), au moment où le calque s'efface.
+ */
+export type LaunchLogoState = 'none' | 'playing' | 'done';
+let logoState: LaunchLogoState = 'none';
+const logoListeners = new Set<(s: LaunchLogoState) => void>();
+function setLogoState(s: LaunchLogoState) {
+  if (logoState === s) return;
+  logoState = s;
+  logoListeners.forEach((f) => f(s));
+}
+export function launchLogoState(): LaunchLogoState { return logoState; }
+/** Abonnement à la fin de l'introduction (renvoie la fonction de désabonnement). */
+export function onLaunchLogoState(f: (s: LaunchLogoState) => void): () => void {
+  logoListeners.add(f);
+  return () => { logoListeners.delete(f); };
+}
+
 /** Tests : rejouer l'introduction comme après un nouveau lancement. */
-export function resetLaunchIntroForTests() { played = false; }
+export function resetLaunchIntroForTests() { played = false; logoState = 'none'; logoListeners.clear(); }
 
 type Phase = 'wait' | 'play' | 'done';
 
@@ -34,66 +62,94 @@ export function isLateStart(now: number = typeof performance !== 'undefined' ? p
   return now > intro.lateStartMs;
 }
 
-/** Décision pure (testée) : faut-il jouer l'introduction ? */
-export function shouldPlayLaunchIntro(o: { alreadyPlayed: boolean; reduceMotion: boolean; cinematicSeen: boolean }) {
-  return !o.alreadyPlayed && !o.reduceMotion && o.cinematicSeen;
+/** Décision pure (testée) : faut-il jouer l'introduction ? `lowPower` : économie d'énergie (comme Réduire les animations). */
+export function shouldPlayLaunchIntro(o: { alreadyPlayed: boolean; reduceMotion: boolean; cinematicSeen: boolean; lowPower?: boolean }) {
+  return !o.alreadyPlayed && !o.reduceMotion && !o.lowPower && o.cinematicSeen;
+}
+
+export type IntroTimeline = { logo: LogoTimeline; exit: Stage; total: number };
+
+/** Logo complet d'emblée (version abrégée) : toutes les étapes terminées à l'instant 0. */
+const LOGO_DONE: LogoTimeline = { ...logoTimeline('minimal'), fadeIn: [0, 0], end: 0 };
+
+/**
+ * Chorégraphie (pure, testée). 'full' : corps → têtes → nom → point du i → pose → fondu du calque.
+ * 'short' (nuit, lancement lent) : logo complet d'emblée, courte pose, fondu.
+ */
+export function introTimeline(mode: 'full' | 'short'): IntroTimeline {
+  if (mode === 'short') {
+    const exit: Stage = [intro.shortHoldMs, intro.shortExitMs];
+    return { logo: LOGO_DONE, exit, total: exit[0] + exit[1] };
+  }
+  const logo = logoTimeline('full');
+  const exit: Stage = [logo.end + intro.holdMs, intro.exitMs];
+  return { logo, exit, total: exit[0] + exit[1] };
 }
 
 export function LaunchIntro() {
   const t = useTheme();
-  const reduce = useReduceMotion();
+  const m = useMotion();
   const { width, height } = useWindowDimensions();
   const [phase, setPhase] = useState<Phase>(() => (played ? 'done' : 'wait'));
   const [hydrated, setHydrated] = useState(() => useUiStore.persist?.hasHydrated?.() ?? true);
   useEffect(() => (hydrated ? undefined : useUiStore.persist?.onFinishHydration?.(() => setHydrated(true))), [hydrated]);
   const cinematicSeen = useUiStore((s) => s.cinematicSeen);
+  const [timeline, setTimeline] = useState<IntroTimeline>(() => introTimeline('full'));
 
-  const veil = useRef(new Animated.Value(1)).current;   // opacité du calque (fond)
-  const reveal = useRef(new Animated.Value(0)).current; // 0 → 1 : révélation du fil doré
-  const depth = useRef(new Animated.Value(0)).current;  // 0 → 1 : avancée finale (profondeur)
+  const clock = useSharedValue(0); // ms écoulées dans la chorégraphie
+  const veil = useSharedValue(1);  // opacité du calque hors chorégraphie (attente, pas d'intro)
 
   // Décision, une fois les préférences relues (quelques millisecondes)
   useEffect(() => {
     if (phase !== 'wait' || !hydrated) return;
     played = true;
-    if (!shouldPlayLaunchIntro({ alreadyPlayed: false, reduceMotion: reduce, cinematicSeen })) {
-      // Pas d'introduction : le fond (identique à l'écran de lancement) s'efface aussitôt
-      Animated.timing(veil, { toValue: 0, duration: reduce ? 0 : intro.splashFadeMs, useNativeDriver: NATIVE_DRIVER, isInteraction: false }).start(() => setPhase('done'));
+    if (!shouldPlayLaunchIntro({ alreadyPlayed: false, reduceMotion: m.off, cinematicSeen })) {
+      // Pas d'introduction : le fond (identique à l'écran de lancement) s'efface aussitôt (durée 0 si mouvement coupé)
+      const done = () => setPhase('done');
+      if (m.off) {
+        veil.value = 0;
+        done();
+        return;
+      }
+      veil.value = withTiming(0, { duration: intro.splashFadeMs, easing: Easing.linear, reduceMotion: ReduceMotion.Never }, (f) => {
+        'worklet';
+        if (f) scheduleOnRN(done);
+      });
       return;
     }
+    const tl = introTimeline(m.minimal || isLateStart() ? 'short' : 'full');
+    setTimeline(tl);
+    setLogoState('playing');
     setPhase('play');
-  }, [phase, hydrated, reduce, cinematicSeen, veil]);
+  }, [phase, hydrated, m.off, m.minimal, cinematicSeen, veil]);
+
+  // Le logo a été montré : l'écran d'en dessous ne le rejoue pas (fin normale, arrêt net ou démontage)
+  useEffect(() => { if (phase === 'done' && logoState === 'playing') setLogoState('done'); }, [phase]);
+  useEffect(() => () => { if (logoState === 'playing') setLogoState('done'); }, []);
 
   useEffect(() => {
     if (phase !== 'play') return;
-    // Lancement déjà lent (premier rendu tardif) : logo affiché d'emblée, courte pose, fondu — on n'ajoute pas d'attente
-    if (isLateStart()) {
-      reveal.setValue(1);
-      const short = Animated.parallel([
-        Animated.timing(veil, { toValue: 0, duration: intro.shortExitMs, delay: intro.shortHoldMs, easing: easing.standard, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
-        Animated.timing(depth, { toValue: 1, duration: intro.shortExitMs + intro.shortHoldMs, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
-      ]);
-      short.start(() => setPhase('done'));
-      return () => short.stop();
-    }
-    // isInteraction: false : l'introduction ne retarde jamais les tâches « après interaction » (listes, requêtes)
-    const a = Animated.sequence([
-      Animated.timing(reveal, { toValue: 1, duration: intro.revealMs, delay: intro.revealDelayMs, easing: easing.reveal, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
-      Animated.parallel([
-        Animated.timing(veil, { toValue: 0, duration: intro.exitMs, delay: intro.holdMs, easing: easing.standard, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
-        Animated.timing(depth, { toValue: 1, duration: intro.exitMs + intro.holdMs, easing: easing.decelerate, useNativeDriver: NATIVE_DRIVER, isInteraction: false }),
-      ]),
-    ]);
-    a.start(() => setPhase('done'));
-    return () => a.stop();
-  }, [phase, reveal, veil, depth]);
+    const done = () => setPhase('done');
+    clock.value = 0;
+    // horloge linéaire : chaque calque applique sa propre courbe à son étape
+    clock.value = withTiming(timeline.total, { duration: timeline.total, easing: Easing.linear, reduceMotion: ReduceMotion.Never }, (f) => {
+      'worklet';
+      if (f) scheduleOnRN(done);
+    });
+    return () => cancelAnimation(clock);
+  }, [phase, timeline, clock]);
 
-  // « Réduire les animations » activé pendant l'introduction : on s'arrête net
-  useEffect(() => { if (reduce && phase === 'play') setPhase('done'); }, [reduce, phase]);
+  // Mouvement coupé pendant l'introduction (réglage, économie d'énergie) : on s'arrête net
+  useEffect(() => { if (m.off && phase === 'play') { cancelAnimation(clock); setPhase('done'); } }, [m.off, phase, clock]);
+
+  const layer = useAnimatedStyle(() => {
+    if (phase !== 'play') return { opacity: veil.value };
+    const e = curves.standard(stageProgress(clock.value, timeline.exit));
+    return { opacity: 1 - e };
+  });
 
   if (phase === 'done') return null;
-  const size = Math.round(Math.min(width * 0.56, height * 0.32, 240));
-  const logo = phase === 'play';
+  const logoWidth = Math.round(Math.min(width * 0.66, height * 0.36, 300));
   return (
     <Animated.View
       testID="launch-intro"
@@ -101,25 +157,22 @@ export function LaunchIntro() {
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       aria-hidden
-      style={[StyleSheet.absoluteFill, styles.center, { backgroundColor: t.colors.background, opacity: veil, zIndex: 2000, elevation: 20 }]}
+      style={[StyleSheet.absoluteFill, styles.center, { backgroundColor: t.colors.background, zIndex: 2000, elevation: 20 }, layer]}
     >
-      {logo ? (
-        <Animated.View style={{
-          width: size, height: size,
-          opacity: reveal.interpolate({ inputRange: [0, 0.35, 1], outputRange: [0, 1, 1] }),
-          transform: [
-            { scale: Animated.add(reveal.interpolate({ inputRange: [0, 1], outputRange: [intro.logoFromScale, 1] }), depth.interpolate({ inputRange: [0, 1], outputRange: [0, intro.logoExitScale - 1] })) },
-            { translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) },
-          ],
-        }}>
-          {/* Révélation de bas en haut : la fenêtre monte pendant que l'image reste immobile (masque glissant natif) */}
-          <Animated.View style={{ width: size, height: size, overflow: 'hidden', transform: [{ translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [size, 0] }) }] }}>
-            <Animated.View style={{ width: size, height: size, transform: [{ translateY: reveal.interpolate({ inputRange: [0, 1], outputRange: [-size, 0] }) }] }}>
-              <Image source={LOGO_TRANSPARENT} style={{ width: size, height: size }} resizeMode="contain" accessible={false} />
-            </Animated.View>
-          </Animated.View>
-        </Animated.View>
-      ) : <View />}
+      {phase === 'play' ? <IntroLogo width={logoWidth} clock={clock} tl={timeline} /> : <View />}
+    </Animated.View>
+  );
+}
+
+/** Le logo animé sur l'horloge de l'introduction, avec une légère avancée (1 → 1,06) pendant le fondu du calque. */
+function IntroLogo({ width, clock, tl }: { width: number; clock: SharedValue<number>; tl: IntroTimeline }) {
+  const depth = useAnimatedStyle(() => {
+    const d = curves.decelerate(stageProgress(clock.value, [tl.exit[0] - 120, tl.exit[1] + 120]));
+    return { transform: [{ scale: 1 + (intro.logoExitScale - 1) * d }] };
+  });
+  return (
+    <Animated.View style={depth}>
+      <HomiLogoAnimated width={width} clock={clock} timeline={tl.logo} testID="launch-logo" />
     </Animated.View>
   );
 }

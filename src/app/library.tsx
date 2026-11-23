@@ -1,17 +1,26 @@
-/** Découvrir : bibliothèque d'articles sourcés, vidéos validées, outils. */
+/**
+ * Découvrir : bibliothèque d'articles sourcés, vidéos validées, outils.
+ * 30/11/2026 (outil 199) : « Recommandé pour toi » — articles choisis à partir des outils que le moteur déterministe
+ * de personnalisation recommande (appelé en lecture seule), chacun avec sa raison ; jamais un article déjà enregistré.
+ */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { Card, Chip, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
+import { Card, Chip, Field, Icon, ListGroup, ListRow, SectionTitle, Text } from '@/components/ui';
 import { VideoCard } from '@/components/video/VideoCard';
 import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
 import { EmptyStateCard } from '@/components/ui-extra';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { useActivePregnancy, useArticles, useCategories, useChildren, useFullArticles, usePremium, useProfile, useRows } from '@/lib/data/hooks';
-import { isLocked, suggestArticles } from '@/lib/domain/content';
+import { isLocked, type ContentContext } from '@/lib/domain/content';
+import { recommendArticles } from '@/lib/domain/contentRecommendations';
+import { recommend, reasonText } from '@/lib/personalization';
+import { useProfileFacts } from '@/features/homeToday/useRecommendations';
+import { useUiStore } from '@/lib/store';
+import { useUserId } from '@/lib/auth';
 import { hasSubject, topSubjects } from '@/lib/domain/librarySubjects';
 import { CATEGORY_GROUPS } from '@/content/articles/groups';
 import { Tappable } from '@/components/Tappable';
@@ -21,8 +30,11 @@ import type { IconName } from '@/components/ui';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
 import { t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ResumeCard } from '@/features/readTrack/ReadingMemory';
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
@@ -47,13 +59,29 @@ export default function Library() {
   // 3e niveau : le sujet (mot-clé des articles) à l'intérieur d'une catégorie
   const [subject, setSubject] = useState<string | null>(typeof params.subject === 'string' ? params.subject : null);
 
-  const forYou = useMemo(() => suggestArticles(articles ?? [], {
-    journeys: profile?.journeys ?? [],
-    weekSA: pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
-    childAgesMonths: (children ?? []).map((c) => childAge(c.birth_date).months),
-    postpartum: (profile?.journeys ?? []).includes('newborn'),
-    multiple: !!pregnancy && pregnancy.multiplicity !== 'single',
-  }, 3), [articles, profile, pregnancy, children]);
+  // Recommandations personnalisées (199) : outils recommandés par le moteur → leurs articles, avec la raison
+  const facts = useProfileFacts();
+  const pinned = useUiStore((s) => s.toolPinned);
+  const hiddenTools = useUiStore((s) => s.toolHidden);
+  const me = useUserId();
+  const { data: saved } = useRows<{ item_id: string }>(['favorites', 'articles', me ?? ''], me ? { table: 'favorites', filters: [{ col: 'user_id', op: 'eq', value: me }, { col: 'item_type', op: 'eq', value: 'article' }] } : null);
+  const [moreForYou, setMoreForYou] = useState(false);
+  const [moreSaved, setMoreSaved] = useState(false);
+  const savedArticles = useMemo(() => {
+    const ids = new Set((saved ?? []).map((f) => f.item_id));
+    return (articles ?? []).filter((a) => ids.has(a.id));
+  }, [saved, articles]);
+  const forYou = useMemo(() => {
+    const ctx: ContentContext = {
+      journeys: profile?.journeys ?? [],
+      weekSA: pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
+      childAgesMonths: (children ?? []).map((c) => childAge(c.birth_date).months),
+      postpartum: (profile?.journeys ?? []).includes('newborn'),
+      multiple: !!pregnancy && pregnancy.multiplicity !== 'single',
+    };
+    const recs = recommend(facts, { pinned, hidden: hiddenTools }, { max: 12 });
+    return recommendArticles({ recommendations: recs, articles: articles ?? [], categories: categories ?? [], ctx, exclude: (saved ?? []).map((f) => f.item_id), n: 8 });
+  }, [articles, categories, profile, pregnancy, children, facts, pinned, hiddenTools, saved]);
 
   // Recherche dans tout le texte des articles (pour trouver la réponse à une question), titres d'abord.
   // La liste ne contient pas le texte : il n'est téléchargé que lorsqu'une recherche est saisie.
@@ -103,34 +131,36 @@ export default function Library() {
       ) : null}
       <Field label={tr('u1.lib.search')} placeholder={tr('u1.lib.searchPh')} value={q} onChangeText={setQ} returnKeyType="search" />
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
-        {([
-          ['heart', tr('u1.lib.meToo'), tr('u1.lib.meTooD'), '/me', t.colors.heart],
-          ['maximize', tr('u1.lib.scanner'), tr('u1.lib.scannerD'), '/scanner', t.colors.lavender],
-          ['star', tr('u1.lib.names'), tr('u1.lib.namesD'), '/names', t.colors.gold],
-          ['life-buoy', tr('u1.lib.emergency'), tr('u1.lib.emergencyD'), '/emergency', t.colors.danger],
-        ] as const).map(([icon, title, sub, href, color]) => (
-          <View key={title} style={{ width: '48.5%' }}>
-            <Card onPress={() => router.push(href)} accessibilityLabel={tr('u1.lib.tileA11y', { title, sub })} style={{ minHeight: 118 }}>
-              <Icon name={icon} color={color} />
-              <Text variant="heading" style={{ marginTop: 6 }}>{title}</Text>
-              <Text variant="caption" muted>{sub}</Text>
-            </Card>
-          </View>
-        ))}
-      </View>
+      {/* Lecture : reprendre le dernier contenu long ouvert dans ce profil (position gardée), puis les articles
+          enregistrés (même donnée que le marque-page de l'article : table `favorites`, aucune copie) */}
+      {!q && !activeCat ? <ResumeCard testID="library-resume" /> : null}
+      {!q && !activeCat && savedArticles.length ? (
+        <ListGroup title={tr('rt.lib.saved', { count: savedArticles.length })} testID="library-saved">
+          {savedArticles.slice(0, moreSaved ? undefined : 3).map((a) => (
+            <ListRow key={a.id} icon="bookmark" title={a.title} subtitle={a.summary} onPress={() => router.push(`/article/${a.slug}`)} testID={`library-saved-${a.slug}`} />
+          ))}
+          {savedArticles.length > 3 ? <ListRow icon={moreSaved ? 'chevron-up' : 'chevron-down'} title={moreSaved ? tr('u1.appt.reduce') : tr('u1.appt.showAll')} onPress={() => setMoreSaved((v) => !v)} testID="library-saved-more" /> : null}
+        </ListGroup>
+      ) : null}
 
       {!q && !activeCat && !journey && forYou.length > 0 && (
-        <>
-          <SectionTitle title={tr('u1.lib.forYouNow')} />
-          {forYou.map((a) => (
-            <Card key={a.id} tone="soft" onPress={() => router.push(`/article/${a.slug}`)}>
+        <View style={{ gap: spacing.sm }} testID="library-for-you">
+          <SectionTitle title={tr('p2.lib.forYou')} subtitle={tr('p2.lib.forYouSub')} action={forYou.length > 3 ? (moreForYou ? tr('u1.appt.reduce') : tr('u1.appt.showAll')) : undefined} onAction={() => setMoreForYou((v) => !v)} />
+          {(moreForYou ? forYou : forYou.slice(0, 3)).map(({ article: a, reason }) => (
+            <Card key={a.id} tone="soft" onPress={() => router.push(`/article/${a.slug}`)} testID={`library-rec-${a.slug}`}>
               <Text weight="bold">{a.title}</Text>
-              <Text variant="small" muted>{a.summary}</Text>
+              <Text variant="small" muted numberOfLines={3}>{a.summary}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                <Icon name="compass" size={14} color={t.colors.primary} />
+                <Text variant="caption" color={t.colors.primary} style={{ flex: 1 }}>{reason ? reasonText(reason) : tr('p2.lib.byProfile')}</Text>
+              </View>
             </Card>
           ))}
-        </>
+        </View>
       )}
+
+      <ToolLinks ids={['mood', 'scan_food', 'scan_product', 'preg_names', 'emergency']} allOf="health" testID="library-tools" />
+
 
       {showGuide ? (
         <View style={{ gap: spacing.sm }} testID="library-guide">
@@ -195,13 +225,14 @@ export default function Library() {
       <SectionTitle title={tr('art.videos')} />
       {/* Vidéos officielles lues dans l'appli (07/11/2026) ; les vidéos maison publiées, s'il y en a, restent listées */}
       <Card testID="library-videos">
-        <ListRow icon="play-circle" title={tr('vid.title')} subtitle={tr('vid.librarySub', { count: ALL_VIDEOS.length })} onPress={() => router.push('/videos')} testID="library-videos-open" />
-        <ListRow icon="tool" title={tr('vid.tutos')} subtitle={tr('vid.tutosSub', { count: TUTOS.length })} onPress={() => router.push('/tutos')} testID="library-tutos-open" />
-        <View style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
-          {ALL_VIDEOS.slice(0, 2).map((v) => <VideoCard key={v.id} video={v} compact />)}
+        <View style={{ paddingHorizontal: spacing.md }}>
+          <ToolLinks ids={['videos', 'videos.tutos']} status={{ videos: tr('vid.librarySub', { count: ALL_VIDEOS.length }), 'videos.tutos': tr('vid.tutosSub', { count: TUTOS.length }) }} testID="library-videos-open" />
         </View>
+        <MotionList style={{ paddingHorizontal: spacing.md, paddingBottom: spacing.md, gap: spacing.md }}>
+          {ALL_VIDEOS.slice(0, 2).map((v) => <MotionItem key={v.id}><VideoCard key={v.id} video={v} compact /></MotionItem>)}
+        </MotionList>
       </Card>
-      {videos?.length ? <Card>{videos.map((v) => <ListRow key={v.id} icon="play-circle" title={v.title} />)}</Card> : null}
+      {videos?.length ? <Card><MotionList>{videos.map((v) => <MotionItem key={v.id}><ListRow key={v.id} icon="play-circle" title={v.title} /></MotionItem>)}</MotionList></Card> : null}
     </View>
   );
 

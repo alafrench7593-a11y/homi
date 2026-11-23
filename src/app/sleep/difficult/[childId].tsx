@@ -9,15 +9,16 @@
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDemoInset } from '@/components/demoInset';
 import { StatusBar } from 'expo-status-bar';
 import { Icon, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
-import { callNumber, goBack } from '@/lib/links';
+import { callNumber, goUp } from '@/lib/links';
 import { useNightFeeds, useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
 import { lastEvents, nightPistes, NIGHT_OBSERVATIONS, WORRYING_SIGNS, type NightObservation } from '@/lib/domain/nightsHelp';
@@ -25,21 +26,26 @@ import { ownSleeps } from '@/lib/domain/sleepPlanner';
 import { NIGHT_SOURCES, SOOTHING_ROUTINES } from '@/content/nightHelp';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 // Bleu nuit, lumière réduite (mêmes couleurs que « Aide pour cette nuit »)
-const BG = '#070B1C';
-const CARD = '#0F1530';
-const LINE = '#1B2550';
-const TEXT = '#B9C3E6';
-const MUTED = '#7C87B2';
-const ACCENT = '#8FA2E8';
+// Thème « Nuit » HOMI : midnight violet tamisé, texte perle lilas, accent lilas (contrastes ≥ 4,5:1)
+const BG = '#0F0B1E';
+const CARD = '#1A1430';
+const LINE = '#2E2650';
+const TEXT = '#DDD0EC';
+const MUTED = '#A598C0';
+const ACCENT = '#B9A6EA';
 
 const stepLabels = () => [tr('u4.dn.s1'), tr('u4.dn.s2'), tr('u4.dn.s3'), tr('u4.dn.s4'), tr('u4.dn.s5')];
 
 export default function DifficultNight() {
   const insets = useSafeAreaInsets();
+  // Haut : zone sûre + place de la pastille « Démonstration » (0 hors démo)
+  const topInset = insets.top + useDemoInset();
   const STEPS = stepLabels();
   const { childId } = useLocalSearchParams<{ childId: string }>();
+  const pathname = usePathname();
   const toast = useToast();
   const child = useChild(childId);
   const childrenQ = useChildren();
@@ -58,9 +64,9 @@ export default function DifficultNight() {
     return (
       <View style={{ flex: 1, backgroundColor: BG }} testID="difficult-night">
         <StatusBar style="light" />
-        <View style={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, gap: spacing.md }}>
+        <View style={{ padding: spacing.lg, paddingTop: topInset + spacing.md, gap: spacing.md }}>
           <Row style={{ alignItems: 'center' }}>
-            <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }} testID="dn-close"><Icon name="x" color={MUTED} /></Tappable>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goUp(pathname)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }} testID="dn-close"><Icon name="x" color={MUTED} /></Tappable>
           </Row>
           {isLoading ? <Skeleton kind="detail" rows={4} /> : loadError ? (
             <ErrorView error={loadError.error} onRetry={() => { void membershipsQ.refetch(); void childrenQ.refetch(); }} title={tr('u4.child.loadError')} />
@@ -85,9 +91,9 @@ export default function DifficultNight() {
   return (
     <View style={{ flex: 1, backgroundColor: BG }} testID="difficult-night">
       <StatusBar style="light" />
-      <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + 140, gap: spacing.md }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.lg, paddingTop: topInset + spacing.md, paddingBottom: insets.bottom + 140, gap: spacing.md }}>
         <Row style={{ alignItems: 'center' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goBack()} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
+          <Tappable accessibilityRole="button" accessibilityLabel={tr('u4.dn.close')} onPress={() => goUp(pathname)} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}><Icon name="x" color={MUTED} /></Tappable>
           <Text variant="caption" color={MUTED} style={{ flex: 1 }}>{tr('u4.dn.stepOf', { n: step + 1, total: STEPS.length, name })}</Text>
         </Row>
         <Text variant="title" color={TEXT}>{STEPS[step]}</Text>
@@ -153,7 +159,7 @@ export default function DifficultNight() {
         <Row>
           {step > 0 ? <View style={{ flex: 1 }}><Big label={tr('u4.dn.back')} soft onPress={() => setStep(step - 1)} testID="dn-back" /></View> : null}
           <View style={{ flex: 1 }}>
-            {step < STEPS.length - 1 ? <Big label={tr('u4.dn.next')} onPress={() => setStep(step + 1)} testID="dn-next" /> : <Big label={tr('u4.dn.finish')} onPress={() => goBack()} testID="dn-finish" />}
+            {step < STEPS.length - 1 ? <Big label={tr('u4.dn.next')} onPress={() => setStep(step + 1)} testID="dn-next" /> : <Big label={tr('u4.dn.finish')} onPress={() => goUp(pathname)} testID="dn-finish" />}
           </View>
         </Row>
       </View>
@@ -163,8 +169,8 @@ export default function DifficultNight() {
 
 function Box({ title, children, tone, testID }: { title: string; children: React.ReactNode; tone?: 'danger'; testID?: string }) {
   return (
-    <View testID={testID} style={{ backgroundColor: CARD, borderRadius: radius.lg, padding: spacing.md, gap: spacing.xs, borderWidth: 1, borderColor: tone === 'danger' ? '#B5566B' : LINE }}>
-      <Text weight="bold" color={tone === 'danger' ? '#F2A7B5' : TEXT}>{title}</Text>
+    <View testID={testID} style={{ backgroundColor: CARD, borderRadius: radius.lg, padding: spacing.md, gap: spacing.xs, borderWidth: 1, borderColor: tone === 'danger' ? 'rgba(240,160,170,0.55)' : LINE }}>
+      <Text weight="bold" color={tone === 'danger' ? '#F0A0AA' : TEXT}>{title}</Text>
       {children}
     </View>
   );
@@ -174,7 +180,7 @@ function Pick({ label, on, onPress, testID }: { label: string; on: boolean; onPr
     <Tappable accessibilityRole="checkbox" accessibilityState={{ checked: on }} onPress={onPress} testID={testID}
       style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48, paddingVertical: 4 }}>
       <View style={{ width: 24, height: 24, borderRadius: 7, borderWidth: 2, borderColor: on ? ACCENT : MUTED, backgroundColor: on ? ACCENT : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-        {on ? <Icon name="check" size={14} color={BG} /> : null}
+        <CheckMark checked={!!on} size={16} color={BG} />
       </View>
       <Text color={TEXT} style={{ flex: 1 }}>{label}</Text>
     </Tappable>
@@ -183,7 +189,7 @@ function Pick({ label, on, onPress, testID }: { label: string; on: boolean; onPr
 function Big({ label, onPress, soft, testID }: { label: string; onPress: () => void; soft?: boolean; testID?: string }) {
   return (
     <Tappable accessibilityRole="button" onPress={onPress} testID={testID}
-      style={{ minHeight: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: soft ? CARD : '#2C3A7A', borderWidth: 1, borderColor: LINE, paddingHorizontal: spacing.md }}>
+      style={{ minHeight: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: soft ? CARD : '#3E2F7A', borderWidth: 1, borderColor: LINE, paddingHorizontal: spacing.md }}>
       <Text weight="bold" color={TEXT}>{label}</Text>
     </Tappable>
   );

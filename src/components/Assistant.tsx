@@ -12,7 +12,8 @@ import {
   type ArticleSourceRef, type StructuredAnswer, type UrgentContact,
 } from '@/features/assistant';
 import { isAllowedSourceUrl } from '../../supabase/functions/_shared/assistant-format';
-import { formatDate as fmtDate, t as tr } from '@/i18n';
+import { formatDate as fmtDate, getLocale, t as tr } from '@/i18n';
+import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { Tappable } from '@/components/Tappable';
 import { inLang } from '@/i18n/localized';
 import { ASSISTANT_INTRO_ES, ASSISTANT_INTRO_DE, ASSISTANT_INTRO_IT } from './Assistant.i18n';
@@ -98,11 +99,12 @@ export function StructuredAnswerView({ answer, articles, streaming }: { answer: 
   );
 }
 
-/** Carte d'orientation urgente : appel direct du 15, 112, 3114 et SMS au 114. */
+/** Carte d'orientation urgente : en France, appel direct du 15, 112, 3114 et SMS au 114 ; ailleurs, numéros d'urgence du pays. */
 export function UrgentCard({ level, contacts, message }: { level: 'medical_urgent' | 'crisis'; contacts?: UrgentContact[]; message?: string }) {
   const t = useTheme();
   const toast = useToast();
-  const list = contacts?.length ? contacts : urgentContacts(level);
+  const region = useEmergencyRegion();
+  const list = contacts?.length ? contacts : urgentContacts(level, { lang: getLocale(), region });
   return (
     <View accessibilityRole="alert" style={[styles.urgent, { backgroundColor: t.colors.dangerSoft, borderColor: t.colors.danger }]}>
       <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>

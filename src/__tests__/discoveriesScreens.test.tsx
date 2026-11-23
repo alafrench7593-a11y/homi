@@ -178,7 +178,7 @@ describe(`découvertes, je grandis, près de chez moi (${Platform.OS})`, () => {
     const rows = await backend.select<{ step_key: string; status: string; note: string; observed_on: string }>({ table: 'child_steps', filters: [eq('child_id', lina.id)] });
     expect(rows).toEqual([expect.objectContaining({ step_key: 'sits_alone', status: 'observed', note: 'Tout seul sur le tapis', observed_on: todayISO() })]);
     expect(await backend.select({ table: 'child_steps', filters: [eq('child_id', noe.id)] })).toHaveLength(0);
-    expect(allText(r)).toContain('Ce que vous avez observé récemment');
+    expect(allText(r)).toContain('Ce que tu as observé récemment');
     // étape non principale : aperçu du suivi complet
     await press(r, 'gr-step-sits_supported');
     expect(usePremiumSheet.getState().open?.feature).toBe('development_full');

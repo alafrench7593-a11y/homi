@@ -3,8 +3,8 @@ import type { Messages } from '../types';
 
 /** Interface texts extracted for the full FR/EN translation (batch 4, 01/11/2026). */
 export const ui4: Messages<typeof fr> = {
-  'u4.story.strip.a11y': 'Au fil de nous. {caption}. {scene} Open the presentation.',
-  'u4.story.strip.title': 'Au fil de nous',
+  'u4.story.strip.a11y': 'HOMI. {caption}. {scene} Open the presentation.',
+  'u4.story.strip.title': 'HOMI',
   'u4.story.strip.cta': 'Our story',
   'u4.clock.a11y': '{label}. Over the last 24 hours: {feeds} feeds, {sleeps} sleeps, {diapers} changes.',
   'u4.clock.sleep': 'Sleep',

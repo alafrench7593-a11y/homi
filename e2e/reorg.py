@@ -85,7 +85,7 @@ def run(p):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3000)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     preg = demo(pg, "s => (s.tables.pregnancies.find(p => p.status === 'active') || {}).id")

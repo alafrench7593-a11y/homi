@@ -7,8 +7,7 @@ import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
-import { BarChart, StatPill } from '@/components/Charts';
+import { MySleepTrack } from '@/features/careTrack/MySleepTrack';
 import { Appear } from '@/components/Appear';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
@@ -18,14 +17,16 @@ import { useDeleteParentSleep, useParentSleepLogs, useSaveParentSleep, useSleepC
 import { addDays, formatDuration, frToISO, todayISO } from '@/lib/domain/dates';
 import {
   durationInput, estimateSleepMinutes, formatHHMM, nightLabel, nightMinutes, parseDuration, parseHHMM, resolveNight,
-  sleepTips, summarizeWeek, supportSignal, timeOfIso, totalNapMinutes, validateSleepForm,
+  sleepTips, supportSignal, timeOfIso, totalNapMinutes, validateSleepForm,
 } from '@/lib/domain/parentSleep';
-import { formatNumber, t as tr } from '@/i18n';
+import { t as tr } from '@/i18n';
 import { toFrDate } from '@/lib/validation';
 import type { Nap, ParentSleepInput, ParentSleepLog, Scale5 } from '@/lib/types-sleep';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const qualityLabels = () => [tr('u8.sleep.q1'), tr('u8.sleep.q2'), tr('u8.sleep.q3'), tr('u8.sleep.q4'), tr('u8.sleep.q5')];
 const fatigueLabels = () => [tr('u8.sleep.f1'), tr('u8.sleep.f2'), tr('u8.sleep.f3'), tr('u8.sleep.f4'), tr('u8.sleep.f5')];
@@ -72,6 +73,7 @@ function TimeField({ label, value, onChange, error, placeholder }: { label: stri
 
 function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolean }) {
   const toast = useToast();
+  const help = useHelpNumbers();
   const what = fatigue && lowMood
     ? tr('u8.sleep.sup.both')
     : fatigue ? tr('u8.sleep.sup.fatigue') : tr('u8.sleep.sup.mood');
@@ -82,7 +84,7 @@ function SupportBanner({ fatigue, lowMood }: { fatigue: boolean; lowMood: boolea
       title={tr('u8.sleep.sup.title')}
       action={
         <Row wrap style={{ marginTop: spacing.xs }}>
-          <Button label={tr('u8.sleep.sup.call')} size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL('tel:3114').catch(() => toast(tr('u8.sleep.sup.callFail'), 'error'))} />
+          {help.crisis ? <Button label={tr('u8.sleep.sup.call')} size="sm" variant="secondary" icon="phone" onPress={() => Linking.openURL(`tel:${help.crisis}`).catch(() => toast(tr('u8.sleep.sup.callFail'), 'error'))} /> : null}
           <Button label={tr('u8.sleep.sup.help')} size="sm" variant="secondary" icon="life-buoy" onPress={() => router.push('/emergency')} />
         </Row>
       }
@@ -318,7 +320,6 @@ export default function MySleepScreen() {
   const [form, setForm] = useState<FormState | null>(null);
 
   const today = todayISO();
-  const week = useMemo(() => summarizeWeek(logs ?? [], today), [logs, today]);
   const signal = useMemo(() => supportSignal(logs ?? [], today), [logs, today]);
   const tips = useMemo(() => sleepTips(ctx), [ctx]);
   const todayLog = logs?.find((l) => l.log_date === today);
@@ -355,45 +356,17 @@ export default function MySleepScreen() {
 
             {signal.show && <SupportBanner fatigue={signal.fatigue} lowMood={signal.lowMood} />}
 
-            <Appear kind="soft">
-              <TodaySummary title={tr('u8.sleep.f.tonight')} items={[
-                { icon: 'moon', value: todayLog && nightMinutes(todayLog) != null ? formatDuration(nightMinutes(todayLog)!) : '—', label: tr('u8.sleep.sleep') },
-                { icon: 'star', value: todayLog?.quality ? `${todayLog.quality}/5` : '—', label: tr('u8.sleep.qualityS') },
-                { icon: 'battery', value: todayLog?.fatigue ? `${todayLog.fatigue}/5` : '—', label: tr('u8.sleep.fatigueS') },
-              ]} />
-            </Appear>
-
-            <SectionTitle title={tr('u8.sleep.last7')} />
             {loading ? <Skeleton kind="card" rows={1} /> : failed ? (
               <ErrorView error={logsQ.error} onRetry={() => void logsQ.refetch()} title={tr('u8.sleep.listErr')} />
             ) : (
-            <Card>
-              {week.nightsLogged > 0 ? (
-                <BarChart
-                  data={week.days.map((d) => ({ label: d.label, value: d.minutes != null ? Math.round((d.minutes / 60) * 10) / 10 : 0 }))}
-                  unit="h"
-                  accessibilityLabel={tr('u8.sleep.chartA11y')}
-                />
-              ) : (
-                <Text muted>{tr('u8.sleep.noneWeek')}</Text>
-              )}
-              <Row wrap style={{ marginTop: spacing.sm }}>
-                <StatPill value={week.avgSleepMinutes != null ? formatDuration(week.avgSleepMinutes) : '—'} label={tr('u8.sleep.avg', { count: week.nightsLogged })} />
-                <StatPill value={String(week.napsCount)} label={week.napsCount ? tr('u8.sleep.napsDur', { count: week.napsCount, duration: formatDuration(week.napMinutes) }) : tr('u8.sleep.napsLabel')} />
-                <StatPill value={String(week.totalWakings)} label={tr('u8.sleep.wakingsStat')} />
-              </Row>
-              <Row wrap style={{ marginTop: spacing.xs }}>
-                <StatPill value={week.avgQuality != null ? `${formatNumber(week.avgQuality)}/5` : '—'} label={tr('u8.sleep.avgQ')} />
-                <StatPill value={week.avgFatigue != null ? `${formatNumber(week.avgFatigue)}/5` : '—'} label={tr('u8.sleep.avgF')} />
-              </Row>
-              <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('u8.sleep.numbers')}</Text>
-            </Card>
+              <Appear kind="soft">
+                <MySleepTrack logs={logs ?? []} onFullForm={(l, day) => setForm(l ? formFromLog(l) : { ...usualForm(logs ?? []), date: toFrDate(day) })} />
+              </Appear>
             )}
-
             <SectionTitle title={tipsTitle} />
             <Text variant="small" muted>{tr('u8.sleep.tipsIntro')}</Text>
-            {tips.map((tip) => (
-              <Card key={tip.key} tone="lavender">
+            <MotionList style={{ gap: spacing.md }}>{tips.map((tip) => (
+              <MotionItem key={tip.key}><Card key={tip.key} tone="lavender">
                 <Row style={{ alignItems: 'flex-start' }}>
                   <Icon name={tip.icon as IconName} color={t.colors.lavender} />
                   <View style={{ flex: 1, gap: 4 }}>
@@ -401,8 +374,8 @@ export default function MySleepScreen() {
                     <Text variant="small">{tip.text}</Text>
                   </View>
                 </Row>
-              </Card>
-            ))}
+              </Card></MotionItem>
+            ))}</MotionList>
             <Banner tone="info" title={tr('u8.sleep.whenTitle')}>
               {tr('u8.sleep.whenBody')}
             </Banner>

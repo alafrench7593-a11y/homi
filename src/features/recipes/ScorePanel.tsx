@@ -11,6 +11,7 @@ import { formatDate, localeTag, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const fmt = (v: number, d = 1) => (Math.round(v * 10 ** d) / 10 ** d).toLocaleString(localeTag());
 
@@ -44,12 +45,12 @@ export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: Ag
         </Tappable>
         {open ? (
           <View style={{ gap: 2 }}>
-            {s.parts.map((x) => (
-              <Row key={x.key} style={{ justifyContent: 'space-between' }}>
+            <MotionList style={{ gap: 2 }}>{s.parts.map((x) => (
+              <MotionItem key={x.key}><Row key={x.key} style={{ justifyContent: 'space-between' }}>
                 <Text variant="small" style={{ flex: 1 }}>{tr(`rc.score.part.${x.key}` as TKey, { v: x.value, u: x.unit })}</Text>
                 <Text variant="small" weight="bold">{x.points > 0 && x.key !== 'base' ? '+' : ''}{x.points}</Text>
-              </Row>
-            ))}
+              </Row></MotionItem>
+            ))}</MotionList>
             <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('rc.score.method')}</Text>
             {s.approximations.map((a) => <Text key={a} variant="caption" muted>• {a}</Text>)}
             {SCORE_SOURCES.map((x) => (

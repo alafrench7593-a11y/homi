@@ -259,8 +259,6 @@ export const tools6: Messages<typeof fr> = {
   "ai.home.inputA11y": "Tu pregunta para el asistente IA",
   "ai.home.send": "Enviar la pregunta",
   "ai.home.disclaimer": "Información, no un diagnóstico. Urgencia: 15 o 112.",
-  "ai.profile.sub": "Escribe una pregunta, en cualquier momento",
-  "ai.profile.history": "Mis conversaciones con el asistente",
   "ai.demo.left": {"one": "Demostración: te queda {count} pregunta hoy (de {limit}).", "other": "Demostración: te quedan {count} preguntas hoy (de {limit})."},
   "ai.demo.noneLeft": "Has agotado las preguntas de demostración de hoy: crea una cuenta gratuita para continuar.",
   "ai.demo.placeholderDone": "Vuelve mañana, o crea una cuenta",

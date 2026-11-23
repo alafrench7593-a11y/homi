@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { confirm, useToast } from '@/components/Overlays';
 import { backend, eq } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
@@ -20,7 +20,6 @@ import { dayActions, type DayAction } from '@/lib/domain/cycleCalendar';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { Button, haptic, IconButton, Row } from '@/components/ui';
-import { Sheet } from '@/components/Overlays';
 import { useAppointments, usePeriods, useTests } from '@/lib/data/hooks';
 import { useAllSymptomLogs, useBleedingLogs, useCycleJournal, useDischargeLogs } from '@/lib/data/hooks-cycle2';
 import { todayISO } from '@/lib/domain/dates';
@@ -33,13 +32,24 @@ import { useReduceMotion } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { ErrorView, Skeleton } from '@/components/States';
+import { APP_META, appName, useCycleSources, type CycleApp } from '@/features/cycleTrack/CycleOverview';
+import { categoryDays, parseDayParam } from '@/lib/domain/cycleTrack';
+import { Glass as GlassPanel } from '@/components/glass';
+import { Icon, Text } from '@/components/ui';
+import { useTheme } from '@/theme/ThemeProvider';
+import { MIN_TOUCH, radius } from '@/theme/tokens';
 
 export default function CycleCalendar() {
   const c = useCyclePalette();
   const reduce = useReduceMotion();
   const today = todayISO();
-  const [ym, setYm] = useState(() => ({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 }));
-  const [day, setDay] = useState<DayCell | null>(null);
+  const th = useTheme();
+  // Jour choisi conservé dans l'adresse (« ?day=AAAA-MM-JJ ») : il survit au retour d'une app ouverte depuis ce jour
+  const params = useLocalSearchParams<{ day?: string }>();
+  const selIso = parseDayParam(params.day, '9999-12-31', today);
+  const [ym, setYm] = useState(() => ({ y: +selIso.slice(0, 4), m: +selIso.slice(5, 7) - 1 }));
+  const setDay = (d: DayCell | null) => router.setParams({ day: d ? d.iso : undefined } as never);
+  const sources = useCycleSources({ intimate: true });
   const periodsQ = usePeriods();
   const periods = periodsQ.data;
   // Tant que les règles ne sont pas chargées, aucune action : sinon un jour semble vide et propose « Début des règles » (doublon)
@@ -62,7 +72,6 @@ export default function CycleCalendar() {
   const history = useMemo(() => cycleHistory(periods ?? [], today), [periods, today]);
   const delay = useMemo(() => periodDelay(periods ?? [], today), [periods, today]);
   const objective = useObjective();
-  const acts = day && periodsReady ? dayActions(day.iso, rows, today) : { covering: null, actions: [] as DayAction[] };
 
   /** Toucher un jour : début, fin, début plus tôt, suppression (avec confirmation). */
   async function apply(a: DayAction) {
@@ -77,7 +86,6 @@ export default function CycleCalendar() {
       inv('period_entries');
       haptic('success');
       toast(tr(`cyc.done.${a.kind}` as 'cyc.done.start'));
-      setDay(null);
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
   const cells = useMemo(() => monthCells(ym.y, ym.m, {
@@ -108,19 +116,19 @@ export default function CycleCalendar() {
     d.tests ? tr('cy.cal.tests') : null, d.journal ? tr('cy.cal.journal') : null, d.appointment ? tr('cy.cal.appointment') : null,
   ].filter(Boolean).join(', ');
 
-  // « Ajouter aujourd'hui » : ouvre directement la fiche du jour (revient au mois en cours si besoin)
-  const [wantToday, setWantToday] = useState(false);
-  useEffect(() => {
-    if (!wantToday) return;
-    const cell = cells.find((x) => x.iso === today);
-    if (cell) { setDay(cell); setWantToday(false); }
-  }, [wantToday, cells, today]);
+  // Jour choisi : la case du mois affiché (le jour reste choisi quand on change de mois)
+  const day = cells.find((x) => x.iso === selIso) ?? null;
+  // Le mois suit un jour choisi depuis l'adresse (retour d'une app, lien de la catégorie)
+  useEffect(() => { setYm({ y: +selIso.slice(0, 4), m: +selIso.slice(5, 7) - 1 }); }, [selIso]);
+  // « Ajouter aujourd'hui » : choisit aujourd'hui (revient au mois en cours si besoin) ; le détail du jour est juste dessous
   function openToday() {
     if (!periodsReady) return;
     haptic('selection');
     setYm({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 });
-    setWantToday(true);
+    router.setParams({ day: today } as never);
   }
+  const noted = day ? categoryDays(sources, [day.iso])[0].apps : [];
+  const acts = day && periodsReady ? dayActions(day.iso, rows, today) : { covering: null, actions: [] as DayAction[] };
   const short = (iso: string) => fmtDay(iso, { day: 'numeric', month: 'short' });
 
   const daySymptoms = day ? (symptoms ?? []).filter((s) => s.logged_on === day.iso).flatMap((s) => symptomKeysOf(s)) : [];
@@ -150,11 +158,11 @@ export default function CycleCalendar() {
           {Array.from({ length: cells.length / 7 }, (_, w) => (
             <View key={w} style={{ flexDirection: 'row', gap: 4 }}>
               {cells.slice(w * 7, w * 7 + 7).map((d) => (
-                <Tappable key={d.iso} accessibilityRole="button" accessibilityLabel={describe(d)} onPress={() => { haptic('selection'); setDay(d); }}
-                  style={({ pressed }) => ({ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center', opacity: d.inMonth ? 1 : 0.38,
+                <Tappable key={d.iso} accessibilityRole="button" accessibilityState={{ selected: d.iso === selIso }} testID={`cal-day-${d.iso}`} accessibilityLabel={describe(d)} onPress={() => { haptic('selection'); setDay(d); }}
+                  style={({ pressed }) => ({ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', opacity: d.inMonth ? 1 : 0.38,
                     backgroundColor: d.period ? c.period : d.estimatedFertile ? c.fertile : pressed ? c.pearl : 'transparent',
-                    borderWidth: d.estimatedPeriod ? 1.5 : d.today ? 1.5 : 0, borderStyle: d.estimatedPeriod ? 'dashed' : 'solid', borderColor: d.estimatedPeriod ? c.period : c.mauve })}>
-                  <Ink variant="small" weight={d.today ? 'bold' : undefined} style={{ color: d.period ? c.onAccent : c.ink }}>{String(+d.iso.slice(8, 10))}</Ink>
+                    borderWidth: d.iso === selIso ? 3 : d.estimatedPeriod ? 1.5 : d.today ? 1.5 : 0, borderStyle: d.iso !== selIso && d.estimatedPeriod ? 'dashed' : 'solid', borderColor: d.iso === selIso ? th.colors.text : d.estimatedPeriod ? c.period : c.mauve })}>
+                  <Ink variant="small" weight={d.today || d.iso === selIso ? 'bold' : undefined} style={{ color: d.period ? c.onAccent : c.ink }}>{String(+d.iso.slice(8, 10))}</Ink>
                   <View style={{ flexDirection: 'row', gap: 2, position: 'absolute', bottom: 3 }}>
                     {d.symptoms ? <LegendDot kind="symptom" /> : null}
                     {d.discharge ? <LegendDot kind="discharge" /> : null}
@@ -176,6 +184,56 @@ export default function CycleCalendar() {
       </Glass>
       <Button label={tr('cy.cal.today')} variant="ghost" icon="target" onPress={() => setYm({ y: +today.slice(0, 4), m: +today.slice(5, 7) - 1 })} />
       <Ink variant="caption" soft>{tr('cyc.tapHint')}</Ink>
+      {/* Jour choisi (adresse « ?day= ») : ce qui est noté, actions des règles et saisies de ce jour */}
+      {day ? (
+        <GlassPanel variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md, gap: spacing.xs }} testID="cal-day-panel">
+          <Text variant="label" accessibilityRole="header" testID="cal-day-title">{fmtDay(day.iso, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(/^./, (x) => x.toUpperCase())}</Text>
+        {day ? (
+          <View style={{ gap: spacing.sm }}>
+            {day.period ? <Ink>{tr('cy.cal.period')}</Ink> : null}
+            {day.estimatedPeriod ? <Ink>{tr('cy.cal.periodEstimate')}</Ink> : null}
+            {day.estimatedFertile ? <Ink>{tr('cy.cal.fertileEstimate')}</Ink> : null}
+            {daySymptoms.length ? <Ink>{tr('cy.cal.symptomsList', { list: daySymptoms.map((k) => tr(`cy.sym.${k}` as 'cy.sym.cramps')).join(', ') })}</Ink> : null}
+            {/* Ce qui est noté ce jour-là, app par app (même source que chaque app) → l'app s'ouvre sur ce jour */}
+            {noted.filter((x) => x.app !== 'period').map(({ app, count }) => (
+              <Tappable key={app} accessibilityRole="button" testID={`cal-noted-${app}`} onPress={() => router.push(APP_META[app as CycleApp].href(day.iso) as never)}
+                accessibilityLabel={`${appName(app as CycleApp)}. ${tr('cy.tk.notes', { count })}. ${tr('cy.tk.openApp')}`}
+                style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.6 : 1 })}>
+                <Text weight="bold" variant="small" muted style={{ width: 64 }}>{tr('cy.tk.allDay')}</Text>
+                <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: th.colors.border }}>
+                  <Icon name={APP_META[app as CycleApp].icon} size={15} color={th.colors.text} />
+                </View>
+                <Text weight="medium" style={{ flex: 1 }}>{appName(app as CycleApp)}</Text>
+                <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }}>{tr('cy.tk.notes', { count })}</Text>
+                <Icon name="chevron-right" size={16} color={th.colors.textMuted} />
+              </Tappable>
+            ))}
+            {!day.period && !day.estimatedPeriod && !noted.length ? (
+              <View testID="cal-day-nothing" style={{ minHeight: 48, borderRadius: radius.lg, borderWidth: 1.5, borderStyle: 'dashed', borderColor: th.colors.border, alignItems: 'center', justifyContent: 'center', padding: spacing.sm }}>
+                <Ink soft>{tr('cy.cal.nothing')}</Ink>
+              </View>
+            ) : null}
+            {acts.covering ? <View testID="cal-covering"><Ink>{tr('cyc.covering', { from: fmtDay(acts.covering.start_date, { day: 'numeric', month: 'long' }), to: acts.covering.end_date ? fmtDay(acts.covering.end_date, { day: 'numeric', month: 'long' }) : tr('cyc.ongoing') })}</Ink></View> : null}
+            {acts.actions.length ? (
+              <View style={{ gap: spacing.xs }}>
+                {acts.actions.map((a) => (
+                  <Button key={a.kind + ('id' in a ? a.id : '')} label={tr(`cyc.act.${a.kind}` as 'cyc.act.start')} variant={a.kind === 'delete' ? 'ghost' : 'primary'} icon={a.kind === 'delete' ? 'trash-2' : 'droplet'} loading={busy} full testID={`cal-act-${a.kind}`} onPress={() => apply(a)} />
+                ))}
+              </View>
+            ) : null}
+            {day.iso <= today ? (
+              <View style={{ gap: spacing.xs }}>
+                <Button label={tr('cy.cal.addSymptoms')} variant="secondary" onPress={() => { router.push(`/cycle/symptoms?date=${day.iso}` as never); }} full />
+                <Button label={tr('cy.cal.addPain')} variant="secondary" onPress={() => { router.push(`/cycle/pain?date=${day.iso}` as never); }} full />
+                <Button label={tr('cy.cal.addDischarge')} variant="secondary" onPress={() => { router.push(`/cycle/discharge/new?date=${day.iso}` as never); }} full />
+                <Button label={tr('cy.cal.addJournal')} variant="secondary" onPress={() => { router.push(`/cycle/journal?date=${day.iso}` as never); }} full />
+                <Button label={tr('cyc.editAll')} variant="ghost" onPress={() => { router.push('/cycle?all=1' as never); }} full />
+              </View>
+            ) : <Ink variant="caption" soft>{tr('cy.cal.future')}</Ink>}
+          </View>
+        ) : null}
+        </GlassPanel>
+      ) : null}
 
       {/* Estimations (approximatives) */}
       <Glass>
@@ -248,38 +306,6 @@ export default function CycleCalendar() {
         </View>
       </Glass>
 
-      <Sheet visible={!!day} onClose={() => setDay(null)} title={day ? fmtDay(day.iso, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ''}>
-        {day ? (
-          <View style={{ gap: spacing.sm }}>
-            {day.period ? <Ink>{tr('cy.cal.period')}</Ink> : null}
-            {day.estimatedPeriod ? <Ink>{tr('cy.cal.periodEstimate')}</Ink> : null}
-            {day.estimatedFertile ? <Ink>{tr('cy.cal.fertileEstimate')}</Ink> : null}
-            {daySymptoms.length ? <Ink>{tr('cy.cal.symptomsList', { list: daySymptoms.map((k) => tr(`cy.sym.${k}` as 'cy.sym.cramps')).join(', ') })}</Ink> : null}
-            {day.discharge ? <Ink>{tr('cy.cal.discharge')}</Ink> : null}
-            {day.bleeding ? <Ink>{tr('cy.cal.bleeding')}</Ink> : null}
-            {day.tests ? <Ink>{tr('cy.cal.tests')}</Ink> : null}
-            {day.journal ? <Ink>{tr('cy.cal.journal')}</Ink> : null}
-            {!day.period && !day.estimatedPeriod && !daySymptoms.length && !day.discharge && !day.bleeding && !day.tests && !day.journal ? <Ink soft>{tr('cy.cal.nothing')}</Ink> : null}
-            {acts.covering ? <View testID="cal-covering"><Ink>{tr('cyc.covering', { from: fmtDay(acts.covering.start_date, { day: 'numeric', month: 'long' }), to: acts.covering.end_date ? fmtDay(acts.covering.end_date, { day: 'numeric', month: 'long' }) : tr('cyc.ongoing') })}</Ink></View> : null}
-            {acts.actions.length ? (
-              <View style={{ gap: spacing.xs }}>
-                {acts.actions.map((a) => (
-                  <Button key={a.kind + ('id' in a ? a.id : '')} label={tr(`cyc.act.${a.kind}` as 'cyc.act.start')} variant={a.kind === 'delete' ? 'ghost' : 'primary'} icon={a.kind === 'delete' ? 'trash-2' : 'droplet'} loading={busy} full testID={`cal-act-${a.kind}`} onPress={() => apply(a)} />
-                ))}
-              </View>
-            ) : null}
-            {day.iso <= today ? (
-              <View style={{ gap: spacing.xs }}>
-                <Button label={tr('cy.cal.addSymptoms')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/symptoms?date=${day.iso}` as never); }} full />
-                <Button label={tr('cy.cal.addPain')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/pain?date=${day.iso}` as never); }} full />
-                <Button label={tr('cy.cal.addDischarge')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/discharge/new?date=${day.iso}` as never); }} full />
-                <Button label={tr('cy.cal.addJournal')} variant="secondary" onPress={() => { setDay(null); router.push(`/cycle/journal?date=${day.iso}` as never); }} full />
-                <Button label={tr('cyc.editAll')} variant="ghost" onPress={() => { setDay(null); router.push('/cycle?all=1' as never); }} full />
-              </View>
-            ) : <Ink variant="caption" soft>{tr('cy.cal.future')}</Ink>}
-          </View>
-        ) : null}
-      </Sheet>
     </Screen>
   );
 }

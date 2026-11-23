@@ -24,6 +24,9 @@ import { todayISO } from '@/lib/domain/dates';
 import { useUiStore } from '@/lib/store';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { splitRemaining } from '@/lib/domain/journalTrack';
 
 type Filter = 'today' | 'upcoming' | 'unassigned' | 'done';
 
@@ -40,6 +43,8 @@ export default function FamilyHome() {
   const toast = useToast();
   const saveTask = useSaveTask();
   const [quick, setQuick] = useState('');
+  // tâche CONFIRMÉE par le serveur : la coche du logo de l'en-tête se dessine (jamais avant la réponse)
+  const [confirmed, setConfirmed] = useState(0);
   const tipsOff = useUiStore((s) => s.overloadTipsOff);
   const setTipsOff = useUiStore((s) => s.setOverloadTipsOff);
   const [filter, setFilter] = useState<Filter>('today');
@@ -59,6 +64,9 @@ export default function FamilyHome() {
     if (filter === 'unassigned') return todo.filter((t) => !t.assignee_id);
     return tasks.filter((t) => t.status === 'done').sort((a, b) => ((a.done_at ?? '') < (b.done_at ?? '') ? 1 : -1)).slice(0, 30);
   }, [tasks, filter, day]);
+
+  // Ce qui RESTE d'abord ; ce qui a été fait aujourd'hui ensuite (qui et quand), rouvrable selon les droits
+  const doneToday = useMemo(() => splitRemaining(tasks.filter((x) => x.status === 'done' && x.done_at && sameLocalDay(x.done_at, day)), () => true, (x) => x.done_at).done, [tasks, day]);
 
   const signals = useMemo(() => (tipsOff || !me ? [] : overloadSignals({ tasks, requests, shifts: shifts ?? [], me, day, myDeclaredFatigue: mySleep?.[0]?.log_date === day ? mySleep[0].fatigue : null })), [tasks, requests, shifts, me, day, tipsOff, mySleep]);
 
@@ -88,14 +96,15 @@ export default function FamilyHome() {
   }, [tasks, day, me, labelOf, partner]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function quickSave(id: string, input: Parameters<typeof saveTask.mutateAsync>[0]['input'], message: string) {
-    try { await saveTask.mutateAsync({ id, input }); haptic('success'); toast(message); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await saveTask.mutateAsync({ id, input }); haptic('success'); toast(message); if (input.status === 'done') setConfirmed((n) => n + 1); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function quickAdd() {
     const title = quick.trim();
     if (!title) return;
     try {
-      await saveTask.mutateAsync({ input: { title: title.slice(0, 120), category: 'other', due_at: null, assignee_id: null, priority: 'normal', essential: false, recurrence: null, notes: null } });
-      haptic('success'); setQuick(''); toast(tr('u2.fam.added_today'));
+      const out = await saveTask.mutateAsync({ input: { title: title.slice(0, 120), category: 'other', due_at: null, assignee_id: null, priority: 'normal', essential: false, recurrence: null, notes: null } });
+      // Audit 08 : gardée en file (hors ligne, serveur indisponible) → on le dit, jamais un faux « ajoutée »
+      haptic('success'); setQuick(''); toast(out === 'queued' ? tr('rel.queued') : tr('u2.fam.added_today'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
@@ -107,7 +116,7 @@ export default function FamilyHome() {
   }
 
   return (
-    <Screen back title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')} right={<IconButton icon="plus" label={tr('u2.fam.new_task')} onPress={() => setCreating(true)} />}
+    <Screen back toolPlay={confirmed} title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')} right={<IconButton icon="plus" label={tr('u2.fam.new_task')} onPress={() => setCreating(true)} />}
       action={{ label: tr('u2.fam.add_task'), icon: 'plus', onPress: () => setCreating(true), testID: 'family-main-action' }}>
       {(() => {
         const todo = tasks.filter((x) => x.status === 'todo');
@@ -126,14 +135,12 @@ export default function FamilyHome() {
         empty={<Text variant="small" muted>{tr('u2.fam.nothing_planned')}</Text>} />
       <Row style={{ alignItems: 'flex-end' }}>
         <View style={{ flex: 1 }}>
-          <Field label={tr('u2.fam.quick_add')} placeholder={tr('u2.fam.quick_ph')} value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" testID="family-quick" />
+          <Field label={tr('u2.fam.quick_add')} placeholder={tr('u2.fam.quick_ph')} value={quick} onChangeText={setQuick} onSubmitEditing={() => void quickAdd()} returnKeyType="done" submitBehavior="submit" testID="family-quick" />
         </View>
-        <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => void quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
+        <Button label={tr('u2.fam.add')} icon="plus" size="sm" onPress={() => quickAdd()} disabled={!quick.trim()} testID="family-quick-add" />
       </Row>
 
-      <Card tone="soft" onPress={() => router.push('/family/difficult')} accessibilityLabel={tr('u2.fam.hard_a11y')}>
-        <ListRow icon="wind" title={tr('u2.fam.hard_title')} subtitle={tr('u2.fam.hard_sub')} />
-      </Card>
+      <ToolLinks ids={['family_difficult']} testID="family-hard" />
 
       <SectionTitle title={tr('u2.fam.quick_actions')} />
       <QuickActionsGrid onPick={pick} />
@@ -158,7 +165,7 @@ export default function FamilyHome() {
       ) : tipsOff ? <Button label={tr('u2.fam.show_tips')} size="sm" variant="ghost" onPress={() => setTipsOff(false)} /> : null}
 
       {open.length || recent.length ? <SectionTitle title={tr('u2.fam.requests')} /> : null}
-      {[...open, ...recent].map((r, i) => <StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem>)}
+      <MotionList style={{ gap: spacing.md }}>{[...open, ...recent].map((r, i) => <MotionItem key={r.id}><StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem></MotionItem>)}</MotionList>
 
       <SectionTitle title={tr('u2.fam.tasks')} />
       {(() => {
@@ -173,24 +180,23 @@ export default function FamilyHome() {
       {tasksQ.data && list.length === 0 ? (
         <EmptyState icon="check-square" title={filter === 'done' ? tr('u2.fam.empty_done') : tr('u2.fam.empty_todo')} body={filter === 'today' ? tr('u2.fam.empty_body') : undefined} action={filter !== 'done' ? { label: tr('u2.fam.add_task'), onPress: () => setCreating(true) } : undefined} />
       ) : null}
-      {list.map((task, i) => (
-        <StaggerItem key={task.id} index={i}>
+      {tasksQ.data && filter !== 'done' && list.length ? <Text variant="label" testID="family-remaining" style={{ fontVariant: ['tabular-nums'] }}>{tr('jt.task.remaining', { count: list.length })}</Text> : null}
+      {/* ready : les tâches présentes à l'arrivée des données sont posées sans animation d'entrée (sur le web, une entrée
+          figée laissait les lignes en position absolue : la liste ne prenait plus de hauteur) */}
+      <MotionList ready={!!tasksQ.data} style={{ gap: spacing.md }}>{list.map((task, i) => (
+        <MotionItem key={task.id}><StaggerItem key={task.id} index={i}>
           <TaskRow task={task} onEdit={setEditing} onPropose={(x) => { setProposeHint(false); setRequest({ kind: 'take_task', taskId: x.id }); }} />
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
+      {filter === 'today' && doneToday.length ? (
+        <View style={{ gap: spacing.sm }} testID="family-done-today">
+          <SectionTitle title={tr('jt.task.doneToday', { count: doneToday.length })} subtitle={tr('jt.task.doneTodaySub')} />
+          <View style={{ gap: spacing.md }}>{doneToday.map((task) => <TaskRow key={task.id} task={task} onEdit={setEditing} />)}</View>
+        </View>
+      ) : null}
 
       <SectionTitle title={tr('u2.fam.organise')} />
-      <Card>
-        {[
-          { icon: 'moon' as const, title: tr('u2.fam.nights'), subtitle: tr('u2.fam.nights_sub'), to: '/family/nights' },
-          { icon: 'sun' as const, title: tr('u2.fam.me_time'), subtitle: tr('u2.fam.me_time_sub'), to: '/family/me-time' },
-          { icon: 'list' as const, title: tr('u2.fam.routines'), subtitle: tr('u2.fam.routines_sub'), to: '/family/routines' },
-          { icon: 'calendar' as const, title: tr('u2.fam.calendar'), subtitle: tr('u2.fam.calendar_sub'), to: '/calendar' },
-          { icon: 'pie-chart' as const, title: tr('u2.fam.review'), subtitle: tr('u2.fam.review_sub'), to: '/family/review' },
-          { icon: 'clock' as const, title: tr('u2.fam.history'), subtitle: tr('u2.fam.history_sub'), to: '/family/history' },
-          { icon: 'zap' as const, title: tr('u2.fam.urgent'), subtitle: tr('u2.fam.urgent_sub'), to: '/family/urgent' },
-        ].map((l) => <ListRow key={l.to} icon={l.icon} title={l.title} subtitle={l.subtitle} onPress={() => router.push(l.to as never)} />)}
-      </Card>
+      <ToolLinks ids={['family_nights', 'family_metime', 'family_routines', 'family_calendar', 'family_review', 'family_history', 'family_urgent']} allOf={['family', 'couple']} testID="family-tools" />
 
       <View style={{ height: spacing.md }} />
       <TaskSheet task={editing} open={!!editing || creating} onClose={() => { setEditing(null); setCreating(false); }} />

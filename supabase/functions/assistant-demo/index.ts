@@ -9,8 +9,10 @@
 // Limites : 3 questions / jour / appareil, 6 / jour / adresse IP, 100 / jour pour toute la démo,
 // 10 / minute pour toute la démo. Les urgences sont orientées sans IA et sans rien décompter.
 import { adminClient, corsHeaders, json, rateLimit, withCors } from '../_shared/http.ts';
-import { geminiConfig, geminiGenerate, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
-import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
+import { readJsonBody } from '../_shared/body.ts';
+import { geminiGenerate, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
+import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, type ArticleRef } from '../_shared/assistant-prompt.ts';
 import {
   INJECTION_REFUSAL,
@@ -23,39 +25,39 @@ import {
   type StructuredAnswer,
 } from '../_shared/assistant-format.ts';
 
-const APP_NAME = Deno.env.get('APP_NAME') ?? 'Au fil de nous';
+const APP_NAME = Deno.env.get('APP_NAME') ?? 'HOMI';
 export const DEMO_LIMITS = { perDevice: 3, perIp: 6, perDay: 100, perMinute: 10 } as const;
 const MAX_DEMO_QUESTION = 500;
 const MAX_TOKENS = 1000;
 
 const CAUTIOUS_ANSWER: StructuredAnswer = {
   short:
-    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de votre situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
-  actions: ['Notez vos questions et ce que vous observez (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
+    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de ta situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
+  actions: ['Note tes questions et ce que tu observes (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
   watch: [],
-  consult: ['Demandez l’avis de votre médecin, de votre sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
+  consult: ['Demande l’avis de ton médecin, de ta sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
   questions: [],
   sources: [],
   updated_on: null,
 };
 
-const LIMIT_MESSAGE = 'Vous avez utilisé les 3 questions de la démonstration pour aujourd’hui. Créez un compte gratuit pour continuer à poser vos questions.';
+const LIMIT_MESSAGE = 'Tu as utilisé les 3 questions de la démonstration pour aujourd’hui. Crée un compte gratuit pour continuer à poser tes questions.';
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   // Assistant IA « Bientôt disponible » (09/11/2026, src/config/features.ts) : aucun appel à l'IA tant que le secret
-  // ASSISTANT_ENABLED ne vaut pas « true » (activation : supabase secrets set ASSISTANT_ENABLED=true)
-  if (Deno.env.get('ASSISTANT_ENABLED') !== 'true') {
+  // ASSISTANT_ENABLED ne vaut pas « true » (activation : supabase secrets set ASSISTANT_ENABLED=true).
+  // La démonstration sans compte appelle Gemini GRATUITEMENT : elle a son propre verrou, ASSISTANT_DEMO_ENABLED,
+  // éteint par défaut (20/11/2026) pour qu'allumer HOMI Aura n'ouvre pas une IA gratuite à tout le monde.
+  if (Deno.env.get('ASSISTANT_ENABLED') !== 'true' || Deno.env.get('ASSISTANT_DEMO_ENABLED') !== 'true') {
     return new Response(JSON.stringify({ error: 'coming_soon', message: 'L’assistant IA sera bientôt disponible.' }), { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
-  let body: { message?: unknown; device_id?: unknown; recent_turns?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: 'bad_request' }, 400);
-  }
+  let body: { message?: unknown; device_id?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown };
+  const raw = await readJsonBody(req, 128 * 1024);
+  if (!raw) return json({ error: 'too_large' }, 413);
+  body = raw;
   const message = (typeof body.message === 'string' ? body.message : '').trim();
   const device = typeof body.device_id === 'string' && /^[0-9a-f-]{36}$/i.test(body.device_id) ? body.device_id.toLowerCase() : null;
   if (!device) return json({ error: 'bad_request', message: 'Appareil non reconnu.' }, 400);
@@ -66,8 +68,9 @@ Deno.serve(withCors(async (req) => {
   // 1) Urgence : orientation humaine immédiate, sans IA et sans rien décompter
   const safety = assessSafety(message);
   if (safety.level !== 'none') {
+    const where = { lang: toSafetyLang(body.lang) ?? safety.lang, region: typeof body.region === 'string' ? body.region.slice(0, 8) : null };
     return json({
-      answer: crisisMessage(safety.level), safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level),
+      answer: crisisMessage(safety.level, where), safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level, where),
       sources: [], structured: null, show_emergency_resources: true, stored: false, demo: true,
     });
   }
@@ -77,10 +80,10 @@ Deno.serve(withCors(async (req) => {
     return json({ answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true, demo: true });
   }
 
-  const gemini = geminiConfig();
+  const gemini = await enabledGeminiConfig(adminClient());
   if (!gemini) {
     console.error('assistant_demo_not_configured');
-    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessayez plus tard.' }, 503);
+    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessaie plus tard.' }, 503);
   }
 
   // 3) Limites (refus par défaut si le compteur est indisponible : jamais d'appels payants illimités)
@@ -91,13 +94,13 @@ Deno.serve(withCors(async (req) => {
     .map((b) => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
   const day = 86400;
   if (!(await rateLimit(admin, 'assistant-demo-min', DEMO_LIMITS.perMinute, 60))) {
-    return json({ error: 'rate_limited', message: 'Beaucoup de questions en ce moment. Réessayez dans une minute.' }, 429);
+    return json({ error: 'rate_limited', message: 'Beaucoup de questions en ce moment. Réessaie dans une minute.' }, 429);
   }
   if (!(await rateLimit(admin, `assistant-demo-dev:${device}`, DEMO_LIMITS.perDevice, day)) || !(await rateLimit(admin, `assistant-demo-ip:${ipHash}`, DEMO_LIMITS.perIp, day))) {
     return json({ error: 'quota_reached', message: LIMIT_MESSAGE, limit: DEMO_LIMITS.perDevice }, 402);
   }
   if (!(await rateLimit(admin, 'assistant-demo-day', DEMO_LIMITS.perDay, day))) {
-    return json({ error: 'quota_reached', message: 'La démonstration a reçu beaucoup de questions aujourd’hui. Créez un compte gratuit pour continuer, ou revenez demain.', limit: DEMO_LIMITS.perDevice }, 402);
+    return json({ error: 'quota_reached', message: 'La démonstration a reçu beaucoup de questions aujourd’hui. Crée un compte gratuit pour continuer, ou reviens demain.', limit: DEMO_LIMITS.perDevice }, 402);
   }
 
   // 4) Fiches publiques de la bibliothèque liées à la question
@@ -122,7 +125,7 @@ Deno.serve(withCors(async (req) => {
   } catch (e) {
     console.error('assistant_demo_llm_error', e instanceof GeminiError ? e.status : 'unknown'); // jamais le contenu
     if (!(e instanceof GeminiError && e.blocked)) {
-      return json({ error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessayez dans un instant.' }, 503);
+      return json({ error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessaie dans un instant.' }, 503);
     }
   }
 

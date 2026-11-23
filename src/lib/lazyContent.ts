@@ -21,3 +21,8 @@ export function loadPdfLib(): Promise<PdfLib> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   return Promise.resolve(require('pdf-lib') as PdfLib);
 }
+
+/** Préchargement de la visite (ticket 1) : sur l'appareil, tout est déjà embarqué — rien à faire. */
+export function prefetchDemoContent(): void {
+  /* embarqué dans l'application */
+}

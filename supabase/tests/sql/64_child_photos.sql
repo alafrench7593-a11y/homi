@@ -27,6 +27,8 @@ insert into public.household_members (household_id, user_id, role, can_view, can
   (:'H', :'PS', 'caregiver', array['daily','profile'], array['daily','profile'], array[:'K2']::uuid[]);
 insert into public.children (id, household_id, first_name, birth_date) values
   (:'K1', :'H', 'Lou', current_date - 400), (:'K2', :'H', 'Sacha', current_date - 1200), (:'KX', :'H2', 'Nil', current_date - 200);
+-- Depuis le 13/11/2026 : une nounou sans choix d'enfants n'en voit aucun ; PV garde les deux enfants
+update public.household_members set child_scope = array[:'K1', :'K2']::uuid[] where household_id = :'H' and user_id = :'PV';
 insert into storage.objects (bucket_id, name, owner) values
   ('child-photos', :'H' || '/' || :'K1' || '/' || :'F1' || '.jpg', :'PO');
 

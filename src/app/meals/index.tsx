@@ -1,6 +1,7 @@
 /**
  * « Repas et recettes » : bibliothèque adaptée au profil affiché (grossesse, bébé selon son étape et sa texture,
  * enfant selon son âge, famille), recherche, filtres, favoris, accès au menu, aux courses et à « Que puis-je cuisiner ? ».
+ * 22/11/2026 : pour un bébé ou un enfant, le journal de ses repas notés en tête (MealLog : même table que le suivi).
  */
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -21,6 +22,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { ResultsFade } from '@/components/MotionKit';
+import { MealLog } from '@/features/restTrack/MealLog';
 
 /** Classement par profil, âge et texture (une recette peut appartenir à plusieurs groupes). */
 const overlaps = (r: Recipe, from: number, to: number) => r.minMonths != null && r.minMonths < to && (r.maxMonths ?? 999) > from;
@@ -93,6 +95,8 @@ export default function Meals() {
     <Screen back title={tr('rc.title')} subtitle={tr('rc.subtitle')}
       action={{ label: aud === 'pregnancy' ? tr('rc.menu.pregnancy') : tr('rc.menu.open'), icon: 'calendar', onPress: () => router.push('/meals/menu'), testID: 'meals-main-action' }}>
       <ProfileSwitcher />
+      {/* 22/11/2026 : repas notés de l'enfant affiché (journal, jour dans l'adresse, fiche de correction) */}
+      {(aud === 'baby' || aud === 'child') && scope.child ? <MealLog childId={scope.child.id} childName={scope.child.first_name} /> : null}
       <TodaySummary title={tr('mb.rc.title')} items={[
         { icon: 'star', value: String(fav.ids.length), label: tr('mb.rc.favorites') },
         { icon: 'calendar', value: String(plan.items.length), label: tr('mb.rc.planned') },

@@ -65,7 +65,7 @@ def run(p):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     hid = demo(pg, f"s => s.tables.children.find(c => c.id === '{lina}').household_id")
     birth = (TODAY - timedelta(days=190)).date().isoformat()  # ≈ 6 mois
@@ -93,7 +93,7 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/sommeil_gratuit.png', full_page=True)
 
     # ================================================================ Premium : estimations, textes exacts
-    mutate(pg, """s => { const me = s.session.userId; s.tables.subscriptions = [{ user_id: me, status: 'active', product_id: 'aufildenous_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true }]; }""")
+    mutate(pg, """s => { const me = s.session.userId; s.tables.subscriptions = [{ user_id: me, status: 'active', product_id: 'homi_premium_annual', store: 'test', period_type: 'annual', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true }]; }""")
     go(pg, f'/sleep/{lina}', 3200)
     nap0, routine0, bed0 = text(pg, 'sleep-line-nap'), text(pg, 'sleep-line-routine'), text(pg, 'sleep-line-bedtime')
     R['texte_prochaine_sieste'] = bool(re.fullmatch(r'Prochaine sieste estimée autour de \d{1,2} h( \d\d)?', nap0))

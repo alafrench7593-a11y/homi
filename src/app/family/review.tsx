@@ -2,12 +2,13 @@
  * Bilan hebdomadaire familial : neutre et constructif. Par catégorie, jamais par personne :
  * pas de classement, pas de comparaison. Les informations post-partum n'y figurent que si la mère
  * a choisi de les partager (ligne de partage, déjà filtrée par le serveur).
+ * 23/11/2026 : semaine dans l'adresse, tâches faites en grand et en liste datée, fiche de correction (ReviewWeek).
  */
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { ReviewWeek } from '@/features/finishFamily/ReviewWeek';
 import { Skeleton } from '@/components/States';
 import { ProgressBar, StaggerItem } from '@/components/Motion';
 import { Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -20,6 +21,7 @@ import { weeklyReview } from '@/lib/domain/familyLoad';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function WeeklyReview() {
   const t = useTheme();
@@ -28,19 +30,17 @@ export default function WeeklyReview() {
   const { data: shifts } = useCareShifts();
   const { data: appointments } = useAppointments({ upcomingOnly: true });
   const shared = useSharedWithMe();
-  const { labelOf } = usePeople();
+  const { people, labelOf } = usePeople();
   const r = useMemo(() => weeklyReview({ tasks: tasksQ.data ?? [], requests: requests ?? [], shifts: shifts ?? [] }), [tasksQ.data, requests, shifts]);
   const week = (appointments ?? []).filter((a) => Date.parse(a.starts_at) < Date.now() + 7 * 86400000);
   const max = Math.max(1, ...r.byCategory.map((c) => c.count));
 
   return (
     <Screen back title={tr('u2.review.title')} subtitle={tr('u2.review.subtitle')}>
-      <TodaySummary title={tr('u2.review.this_week')} items={[
-        { icon: 'check-square', value: String(r.doneCount), label: tr('u2.review.tasks_done') },
-        { icon: 'repeat', value: String(r.requests.total), label: tr('u2.review.requests') },
-        { icon: 'moon', value: String(r.nightsCount), label: tr('u2.review.nights') },
-        { icon: 'sun', value: String(r.restCount), label: tr('u2.review.me_time') },
-      ]} />
+      {/* La semaine choisie (gardée dans l'adresse) : tâches faites en grand, demandes / nuits / temps pour soi chacun
+          dans sa case ; liste datée des tâches faites, chacune corrigeable dans sa fiche (23/11/2026) */}
+      <ReviewWeek tasks={tasksQ.data ?? []} requests={requests ?? []} shifts={shifts ?? []} people={people} labelOf={labelOf} />
+      <SectionTitle title={tr('ff.review.last7')} />
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton kind="card" rows={2} /> : null}
       <Card>
         <Text weight="bold">{r.doneCount ? tr('u2.review.done_week', { count: r.doneCount }) : tr('u2.review.done_none')}</Text>
@@ -76,8 +76,8 @@ export default function WeeklyReview() {
 
       <SectionTitle title={tr('u2.review.next_week')} />
       <Card>
-        {week.map((a) => <ListRow key={a.id} icon="calendar" title={a.title} subtitle={fmtWhen(a.starts_at)} />)}
-        {r.upcoming.map((x) => <ListRow key={x.id} icon="check-square" title={x.title} subtitle={`${fmtWhen(x.due_at!)} · ${labelOf(x.assignee_id)}`} />)}
+        <MotionList>{week.map((a) => <MotionItem key={a.id}><ListRow key={a.id} icon="calendar" title={a.title} subtitle={fmtWhen(a.starts_at)} /></MotionItem>)}</MotionList>
+        <MotionList>{r.upcoming.map((x) => <MotionItem key={x.id}><ListRow key={x.id} icon="check-square" title={x.title} subtitle={`${fmtWhen(x.due_at!)} · ${labelOf(x.assignee_id)}`} /></MotionItem>)}</MotionList>
         {!week.length && !r.upcoming.length ? <Text variant="small" muted>{tr('u2.review.nothing_next')}</Text> : null}
       </Card>
 

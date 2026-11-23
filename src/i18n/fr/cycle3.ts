@@ -483,8 +483,8 @@ export const cycle3 = {
   'c3.share.stopped': "Partage arrêté",
   'c3.share.paused': "En pause : l’abonnement Premium a pris fin. Rien n’a été supprimé.",
   'c3.partner.title': "Cycle partagé avec moi",
-  'c3.partner.none': "Personne ne partage son cycle avec vous pour l’instant. C’est un choix personnel, qui se respecte.",
-  'c3.partner.sharedBy': "{name} partage avec vous",
+  'c3.partner.none': "Personne ne partage son cycle avec toi pour l’instant. C’est un choix personnel, qui se respecte.",
+  'c3.partner.sharedBy': "{name} partage avec toi",
   'c3.partner.paused': "Partage en pause pour le moment.",
   'c3.partner.estimate': "Ce sont des estimations, pas des certitudes.",
   'c3.partner.moods': "Humeur notée récemment",
@@ -494,7 +494,7 @@ export const cycle3 = {
   'c3.partner.leave': "Ne plus recevoir ce partage",
   'c3.partner.leaveConfirm': "Ne plus recevoir ce partage ? La personne pourra le relancer si elle le souhaite.",
   'c3.partner.open': "Cycle partagé avec moi",
-  'c3.partner.openSub': "Ce que votre partenaire a choisi de partager",
+  'c3.partner.openSub': "Ce que ton partenaire a choisi de partager",
 
   // Premium
   'c3.widget.open': "Ouvrir l’application",

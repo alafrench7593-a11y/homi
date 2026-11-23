@@ -21,6 +21,7 @@ import { uuid } from '@/lib/uuid';
 import { Choices, CycleIcon, Glass, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
 import { useEmergencyNumbers } from '@/features/cycle/emergency';
 import { fmtDayYear } from '@/features/cycle/format';
+import { BleedingJournal } from '@/features/cycleTrack/ObservationJournals';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
@@ -78,6 +79,9 @@ export default function BleedingScreen() {
       <Banner tone="danger" title={tr('cy.bl.redFlagsTitle')} action={<Button label={tr('cy.orient.call')} variant="danger" size="sm" onPress={() => router.push('/emergency')} />}>
         {tr('cy.bl.redFlags', { numbers: emergency })}
       </Banner>
+
+      {/* Journal du jour : jour choisi (adresse), bande de 7 jours, saignements notés → fiche de correction */}
+      <BleedingJournal />
 
       <Glass>
         <Ink variant="heading">{editing ? tr('cy.bl.editTitle') : tr('cy.bl.newTitle')}</Ink>

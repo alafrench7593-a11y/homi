@@ -4,17 +4,24 @@
  * sujets consultés, publications aimées — calculé sur le téléphone), « Abonnements », « Récent », « Enregistrés ».
  * Recherche de sujets et de membres, catégories principales + « Toutes les catégories », groupes, filtres avancés (Premium),
  * discussions qui attendent une réponse, bouton « Publier ». Aucun classement de membres.
+ * 22/11/2026 : « Reprendre » (favoris enregistrés, dernière catégorie lue) quand la donnée existe ; fil choisi dans l.adresse.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
+import { useDockAction } from '@/components/dockAction';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
-import { Banner, Button, Card, Chip, Fab, Field, Icon, IconButton, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, Icon, IconButton, Row, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { CategorySheet, PostCard, spaceIcon } from '@/features/community';
+import { MessagesHeaderButton } from '@/features/communityMessages';
+import { FadingScrollRow } from '@/components/FadingScrollRow';
 import { FeedTabs, FiltersButton, FiltersSheet, FollowButton, MemberRow } from '@/features/communitySocial';
+import { CommunityResume } from '@/features/restTrack/CommunityResume';
+import { lastReadCategory } from '@/lib/domain/restTrack';
 import { useActivePregnancy, useCommunityProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useCommunityFeed, useCommunitySearch, useSavedPosts, useSpaces } from '@/lib/data/hooks-community';
 import { type AdvancedFilters, useAdvancedSearch, useForumSubscriptions, useGroups, useSavedFolders, useSearchMembers, useToggleForumSubscription, useTopicViews } from '@/lib/data/hooks-social';
@@ -27,6 +34,7 @@ import type { FeedPost } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Mode = 'foryou' | 'following' | 'recent' | 'saved';
 const MODES: { value: Mode; readonly label: string }[] = [
@@ -85,6 +93,9 @@ export default function Community() {
   }), [spaces.mine, subs.ids, children, pregnancy, views.map, groups.data, feed.data]);
 
   const current = spaces.all.find((f) => f.id === forumId) ?? null;
+  const lastView = lastReadCategory(views.data ?? []);
+  const lastForum = lastView ? spaces.all.find((f) => f.id === lastView.forum_id) ?? null : null;
+  const lastRead = lastForum && lastView?.last_at ? { forum: lastForum, at: lastView.last_at } : null;
   const forumOf = (p: FeedPost) => spaces.all.find((f) => f.id === p.forum_id) ?? null;
   const active = filters ? advanced : searching ? search : mode === 'saved' ? saved : feed;
   const listLoading = active.isLoading && !active.data && !(searching && memberOnly);
@@ -103,6 +114,8 @@ export default function Community() {
   const waiting = useMemo(() => (mode === 'foryou' && !forumId && !searching && !filters ? recommendedDiscussions(feed.data ?? [], signals) : []), [mode, forumId, searching, filters, feed.data, signals]);
 
   const newPost = () => router.push(me ? { pathname: '/community/new', params: { forum: forumId ?? '' } } : { pathname: '/community/profile', params: { next: 'new' } });
+  // « Publier » prend la place du « + » dans la barre d'onglets : un seul bouton d'action, jamais sur le fil
+  useDockAction('community', { icon: 'edit-3', label: tr('cm1.feed.publish'), testID: 'community-publish', onPress: newPost });
   const primaryIds = new Set(spaces.primary.map((f) => f.id));
   const subscribed = !!current && subs.ids.includes(current.id);
 
@@ -133,6 +146,11 @@ export default function Community() {
           </Card>
         </Tappable>
       ) : null}
+      {/* 22/11/2026 : reprendre (favoris enregistrés, dernière catégorie lue) — seulement si la donnée existe */}
+      {!searching && mode === 'foryou' && !forumId && !filters ? (
+        <CommunityResume savedCount={saved.data?.length ?? 0} last={lastRead ? { title: lastRead.forum.title, at: lastRead.at } : null}
+          onSaved={() => { setMode('saved'); router.setParams({ mode: 'saved' } as never); }} onLast={() => lastRead && setForumId(lastRead.forum.id)} />
+      ) : null}
       <Field label={tr('cm1.feed.search')} placeholder={tr('cm1.feed.searchPlaceholder')} value={q} onChangeText={setQ} returnKeyType="search" autoCorrect={false} autoCapitalize="none" testID="community-search" />
       {searching ? (
         members.data?.length ? (
@@ -144,7 +162,7 @@ export default function Community() {
           </Card>
         ) : memberOnly && !members.isLoading ? <Text variant="small" muted>{tr('cm1.feed.noMember')}</Text> : null
       ) : (
-        <FeedTabs value={mode} onChange={(m) => { setMode(m); setFilters(null); }} options={MODES} />
+        <FeedTabs value={mode} onChange={(m) => { setMode(m); setFilters(null); router.setParams({ mode: m === 'foryou' ? undefined : m } as never); }} options={MODES} />
       )}
       {!searching ? (
         <Row gap={6}>
@@ -153,12 +171,13 @@ export default function Community() {
           {filters ? <IconButton icon="x" label={tr('cm1.feed.clearFilters')} onPress={() => setFilters(null)} /> : null}
         </Row>
       ) : null}
-      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingVertical: 2 }} testID="community-categories">
+      {/* Catégories : la rangée va jusqu'au bord de l'écran et s'estompe à droite tant qu'elle peut défiler */}
+      <FadingScrollRow testID="community-categories">
         <Chip label={tr('cm1.feed.all')} icon="layers" selected={!forumId} onPress={() => setForumId(null)} />
         {spaces.primary.map((f) => <Chip key={f.id} label={f.title} icon={spaceIcon(f)} selected={forumId === f.id} onPress={() => setForumId(forumId === f.id ? null : f.id)} />)}
         {current && !primaryIds.has(current.id) ? <Chip label={current.title} icon={spaceIcon(current)} selected onPress={() => setForumId(null)} /> : null}
         <Chip label={tr('cm1.feed.allCategories')} icon="grid" onPress={() => setAllOpen(true)} accessibilityLabel={tr('cm1.feed.allCategoriesA11y')} />
-      </ScrollView>
+      </FadingScrollRow>
       {mode === 'saved' && !searching && (folders.data?.length ?? 0) > 0 ? (
         <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }} testID="saved-folders">
           <Chip label={tr('cm1.feed.allSaved')} icon="bookmark" selected={!folderId} onPress={() => setFolderId(null)} />
@@ -177,13 +196,13 @@ export default function Community() {
         <Card testID="community-waiting">
           <Row><Icon name="help-circle" size={16} color={t.colors.lavender} /><Text weight="bold" style={{ flex: 1 }}>{tr('cm1.feed.waitingTitle')}</Text></Row>
           <Text variant="caption" muted>{tr('cm1.feed.waitingSub')}</Text>
-          {waiting.map((p) => (
-            <Tappable key={p.id} accessibilityRole="button" accessibilityLabel={tr('cm1.feed.openA11y', { title: p.title ?? p.body })} onPress={() => router.push(`/community/post/${p.id}`)}
+          <MotionList>{waiting.map((p) => (
+            <MotionItem key={p.id}><Tappable key={p.id} accessibilityRole="button" accessibilityLabel={tr('cm1.feed.openA11y', { title: p.title ?? p.body })} onPress={() => router.push(`/community/post/${p.id}`)}
               style={{ minHeight: MIN_TOUCH, justifyContent: 'center', borderTopWidth: 1, borderTopColor: t.colors.border, paddingVertical: 6 }}>
               <Text weight="medium" numberOfLines={2} intentionalTruncation>{p.title ?? p.body}</Text>
               <Text variant="caption" muted>{`${forumOf(p)?.title ?? ''} · ${p.comment_count ? tr('cm1.replies', { count: p.comment_count }) : tr('cm1.noReplyYet')}`}</Text>
-            </Tappable>
-          ))}
+            </Tappable></MotionItem>
+          ))}</MotionList>
         </Card>
       ) : null}
       {mode === 'following' && !searching && !filters && !subs.ids.length && !(groups.data ?? []).some((g) => g.is_member) ? (
@@ -216,6 +235,7 @@ export default function Community() {
 
   return (
     <Screen
+      back
       account
       scroll={false}
       padded={false}
@@ -223,7 +243,10 @@ export default function Community() {
       subtitle={tr('screen.community.sub')}
       right={(
         <Row gap={0}>
-          <IconButton icon="map-pin" label={tr('out.title')} onPress={() => router.push('/outings' as never)} />
+          {/* Messagerie privée (avec sa pastille de non-lus) : dans l'en-tête de l'écran, plus dans la rangée Groupes / Filtres */}
+          <MessagesHeaderButton />
+          {/* « Sorties » n'est plus une icône d'en-tête : la carte « Sorties près de chez moi » est en tête de page, et
+              l'en-tête doit tenir sur une ligne à 320 pt (Messages, notifications, profil communautaire, avatar) */}
           <IconButton icon="bell" label={tr('cm1.feed.notifications')} onPress={() => router.push('/notifications')} />
           {/* Mon profil communautaire (publications, réponses, groupes, albums, enregistrés) */}
           <IconButton icon="at-sign" label={me ? tr('cm1.feed.communityProfile') : tr('cm1.feed.createCommunityProfile')} onPress={() => router.push(me ? '/moi' as never : '/community/profile')} />
@@ -237,12 +260,9 @@ export default function Community() {
         ListHeaderComponent={header}
         ListFooterComponent={footer}
         ListEmptyComponent={empty}
-        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + 140, gap: spacing.sm }}
+        contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl + TAB_SCREEN_INSET, gap: spacing.sm }}
         showsVerticalScrollIndicator={false}
       />
-      <View pointerEvents="box-none" style={{ position: 'absolute', right: spacing.lg, bottom: insets.bottom + 104 }}>
-        <Fab icon="edit-3" label={tr('cm1.feed.publish')} onPress={newPost} />
-      </View>
       <CategorySheet visible={allOpen} onClose={() => setAllOpen(false)} forums={spaces.all} selected={forumId} onSelect={setForumId} />
       {filtersOpen ? <FiltersSheet visible={filtersOpen} onClose={() => setFiltersOpen(false)} forums={spaces.all} value={filters} onApply={setFilters} /> : null}
     </Screen>

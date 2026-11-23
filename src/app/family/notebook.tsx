@@ -14,7 +14,12 @@ import { useChildren, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { useHouseNotes, type HouseNote, type NoteSection } from '@/lib/data/hooks-mental';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { router, useLocalSearchParams } from 'expo-router';
+import { NoteFixTray, NoteHero } from '@/features/homeTrack/NoteTrack';
 
 const SECTIONS: NoteSection[] = ['contacts', 'kids', 'habits', 'school', 'health', 'home', 'codes', 'other'];
 const ICON: Record<NoteSection, 'phone' | 'smile' | 'clock' | 'book' | 'heart' | 'home' | 'key' | 'file-text'> = {
@@ -31,6 +36,8 @@ function NoteEditor({ note, visible, onClose }: { note?: HouseNote; visible: boo
   const [body, setBody] = useState('');
   const [childId, setChildId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // La feuille reste affichée pendant sa fermeture : un double appui sur « Enregistrer » n'ajoute pas la fiche deux fois
+  const { arm, guard } = useTapShield();
   React.useEffect(() => {
     if (!visible) return;
     setSection(note?.section ?? 'contacts'); setTitle(note?.title ?? ''); setBody(note?.body ?? ''); setChildId(note?.child_id ?? null);
@@ -43,7 +50,7 @@ function NoteEditor({ note, visible, onClose }: { note?: HouseNote; visible: boo
       const row = { section, title: title.trim().slice(0, 80), body: body.trim() || null, child_id: childId };
       if (note) await backend.update('house_notes', row, [eq('id', note.id)]);
       else await backend.insert('house_notes', { ...row, household_id: hid });
-      inv('house_notes'); onClose();
+      inv('house_notes'); arm(); onClose();
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
   async function remove() {
@@ -62,7 +69,7 @@ function NoteEditor({ note, visible, onClose }: { note?: HouseNote; visible: boo
           {children.map((c) => <Chip key={c.id} label={c.first_name} selected={childId === c.id} onPress={() => setChildId(c.id)} />)}
         </View>
       ) : null}
-      <Button label={tr('common.save')} loading={busy} onPress={() => void save()} testID="nb-save" />
+      <Button label={tr('common.save')} loading={busy} onPress={guard(save)} testID="nb-save" />
       {note ? <Button label={tr('common.delete')} variant="ghost" onPress={() => void remove()} /> : null}
     </Sheet>
   );
@@ -73,11 +80,16 @@ export default function Notebook() {
   const children = useChildren().data ?? [];
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<HouseNote | undefined>();
-  const [filter, setFilter] = useState<NoteSection | null>(null);
+  // Rubrique et fiche ouvertes gardées dans l'adresse (« ?section=codes&note=… ») : revenir retrouve la même lecture
+  const qp = useLocalSearchParams<{ section?: string; note?: string }>();
+  const filter = SECTIONS.includes(qp.section as NoteSection) ? (qp.section as NoteSection) : null;
+  const setFilter = (s: NoteSection | null) => router.setParams({ section: s ?? undefined } as never);
   const notes = (q.data ?? []).filter((n) => !filter || n.section === filter);
+  const opened = qp.note ? (q.data ?? []).find((n) => n.id === qp.note) ?? null : null;
   return (
-    <Screen back title={tr('tool.house_notebook')} subtitle={tr('tool.house_notebook.sub')}
+    <Screen back title={toolName('house_notebook')} subtitle={toolBlurb('house_notebook')}
       action={{ label: tr('cm.nb.new'), icon: 'plus', onPress: () => { setEditing(undefined); setOpen(true); }, testID: 'nb-new' }}>
+      <NoteHero notes={q.data ?? []} />
       <Text muted>{tr('cm.nb.intro')}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         <Chip label={tr('cm.nb.all')} selected={!filter} onPress={() => setFilter(null)} />
@@ -87,15 +99,17 @@ export default function Notebook() {
         <View key={s} style={{ gap: spacing.xs }}>
           <SectionTitle title={tr(`cm.nb.s.${s}` as TKey)} />
           <Card padded={false}>
-            {notes.filter((n) => n.section === s).map((n) => (
-              <ListRow key={n.id} icon={ICON[s]} title={n.title} testID={`nb-note-${n.id}`}
+            <MotionList>{notes.filter((n) => n.section === s).map((n) => (
+              <MotionItem key={n.id}><ListRow key={n.id} icon={ICON[s]} title={n.title} testID={`nb-note-${n.id}`}
                 subtitle={[children.find((c) => c.id === n.child_id)?.first_name, n.body].filter(Boolean).join(' · ') || undefined}
-                onPress={() => { setEditing(n); setOpen(true); }} />
-            ))}
+                onPress={() => router.setParams({ note: n.id } as never)} /></MotionItem>
+            ))}</MotionList>
           </Card>
         </View>
       ))}
       <Banner tone="info" icon="users">{tr('cm.nb.shared')}</Banner>
+      <NoteFixTray note={opened} childName={opened?.child_id ? children.find((c) => c.id === opened.child_id)?.first_name ?? null : null}
+        onClose={() => router.setParams({ note: undefined } as never)} onFullForm={() => { if (opened) { setEditing(opened); setOpen(true); } }} />
       <NoteEditor note={editing} visible={open} onClose={() => setOpen(false)} />
     </Screen>
   );

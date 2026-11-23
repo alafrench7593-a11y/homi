@@ -5,7 +5,8 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { MeTimeTrack } from '@/features/homeTrack/MeTimeTrack';
+import { mondayOfDay } from '@/lib/domain/homeTrack';
 import { EmptyState } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
@@ -20,6 +21,7 @@ import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate, formatTime } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const hm = (iso: string) => formatTime(iso);
 const fmt = (s: { starts_at: string; ends_at: string }) => `${formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'long' })} · ${hm(s.starts_at)} – ${hm(s.ends_at)}`;
@@ -88,15 +90,11 @@ export default function MeTime() {
     <Screen back title={tr('u2.metime.title')} subtitle={tr('u2.metime.subtitle')}
       action={slots[0] ? { label: tr('u2.metime.book_range', { range: `${hm(slots[0].starts_at)} – ${hm(new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString())}` }), icon: 'sun', disabled: save.isPending, testID: 'metime-next-slot',
         onPress: () => reserve({ starts_at: slots[0].starts_at, ends_at: new Date(Math.min(Date.parse(slots[0].ends_at), Date.parse(slots[0].starts_at) + 3600000)).toISOString() }, false) } : undefined}>
-      <TodaySummary title={tr('u2.metime.my_time')} items={[
-        { icon: 'sun', value: String(mine.length), label: mine.length > 1 ? tr('u2.metime.booked_pl') : tr('u2.metime.booked_one') },
-        { icon: 'clock', value: mine[0] ? hm([...mine].sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0].starts_at) : '—', label: tr('u2.metime.next') },
-        { icon: 'calendar', value: String(slots.length), label: which === 'today' ? tr('u2.metime.free_today') : tr('u2.metime.free_tomorrow') },
-      ]} />
+      <MeTimeTrack shifts={shifts} me={me ?? null} thisWeek={mondayOfDay(todayISO())} />
       <SectionTitle title={tr('u2.metime.my_booked')} />
       {mine.length === 0 ? <EmptyState icon="sun" title={tr('u2.metime.none_title')} body={tr('u2.metime.none_body')} /> : null}
-      {mine.map((s, i) => (
-        <StaggerItem key={s.id} index={i}>
+      <MotionList style={{ gap: spacing.md }}>{mine.map((s, i) => (
+        <MotionItem key={s.id}><StaggerItem key={s.id} index={i}>
           <Card>
             <ListRow icon="sun" title={fmt(s)} subtitle={s.note ?? undefined} />
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -105,8 +103,8 @@ export default function MeTime() {
               <Button label={tr('u2.metime.cancel')} size="sm" variant="ghost" onPress={() => cancel(s)} />
             </Row>
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.metime.free_in_calendar')} />
       <Segmented label={tr('u2.metime.day')} value={which} onChange={setWhich} options={[{ value: 'today', label: tr('u2.metime.today') }, { value: 'tomorrow', label: tr('u2.metime.tomorrow') }]} />
@@ -147,7 +145,7 @@ export default function MeTime() {
       {others.length ? (
         <>
           <SectionTitle title={tr('u2.metime.others')} />
-          <Card>{others.map((s) => <ListRow key={s.id} icon="sun" title={labelOf(s.user_id)} subtitle={fmt(s)} />)}</Card>
+          <Card><MotionList>{others.map((s) => <MotionItem key={s.id}><ListRow key={s.id} icon="sun" title={labelOf(s.user_id)} subtitle={fmt(s)} /></MotionItem>)}</MotionList></Card>
           <Text variant="caption" muted>{tr('u2.metime.protect')}</Text>
         </>
       ) : null}

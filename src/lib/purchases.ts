@@ -14,15 +14,17 @@
  * réinstallation → mêmes achats.
  */
 import { Platform } from 'react-native';
-import Purchases, { type CustomerInfo } from 'react-native-purchases';
+import Purchases, { type CustomerInfo, type PurchasesPackage, type PurchasesStoreProduct } from 'react-native-purchases';
 import { backend } from './backend';
 import { eq } from './backend/types';
 import { localeTag, t as tr } from '@/i18n';
 import { deviceState, needsServerSync } from './premium/customerSync';
 import { notifySubscriptionChanged } from './premium/syncEvents';
-import { getPurchaseMode, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
+import { PurchaseError, purchaseErrorKind } from './premium/purchaseErrors';
+import { demoPlansForAccount, demoPurchaseSimulation, getPurchaseMode, MANAGE_URLS, purchaseModeFor, revenueCatPublicKey, type PurchaseMode } from './purchaseMode';
 import type { SubRow } from './premium/entitlement';
-import { buildPlans, demoPlans, periodOfProduct, PREMIUM_ENTITLEMENT, productChangeFor, type Plan } from './premium/plans';
+import { buildPlans, demoFamilyPlans, periodOfProduct, PREMIUM_ENTITLEMENT, productChangeFor, type Plan } from './premium/plans';
+import { CREDIT_PACK_IDS, CREDITS_OFFERING, PACK_CREDITS, type CreditPackId } from './credits/model';
 
 export { billingDates, type Plan } from './premium/plans';
 
@@ -63,6 +65,21 @@ export async function resetPurchasesUser() {
     // utilisateur déjà anonyme : rien à faire
   }
 }
+
+/**
+ * Catalogue AVANT tout compte (parcours « première réussite », 03/12/2026) : le SDK est configuré en ANONYME pour lire
+ * les prix et l'éligibilité à l'essai (StoreKit). Aucun achat n'est possible dans cet état (`purchase` exige un
+ * compte : le webhook ignore les identifiants anonymes) ; la connexion passera ensuite par `Purchases.logIn`.
+ */
+export async function ensureCatalogConfigured(): Promise<void> {
+  if (getPurchaseMode() !== 'store' || !apiKey || configured) return ready ?? undefined;
+  Purchases.configure({ apiKey });
+  configured = true;
+  Purchases.addCustomerInfoUpdateListener((info) => { void checkCustomerInfo(info); });
+}
+
+/** Un achat ne part qu'avec un compte connecté (RevenueCat logIn(id Supabase) fait). */
+export const hasPurchaseAccount = () => getPurchaseMode() !== 'store' || currentUser !== null;
 
 /** Pour les tests : état du module. */
 export const __purchasesState = () => ({ configured, currentUser });
@@ -106,8 +123,9 @@ export async function checkCustomerInfo(info: CustomerInfo | null): Promise<bool
 // ---------------------------------------------------------------- formules
 export async function getPlans(): Promise<Plan[]> {
   const mode = getPurchaseMode();
-  if (mode === 'test') return demoPlans(localeTag());
+  if (mode === 'test') return demoPlansForAccount();
   if (mode !== 'store') return []; // jamais de prix inventé hors démonstration
+  await ensureCatalogConfigured();
   if (ready) await ready.catch(() => undefined);
   const offerings = await Purchases.getOfferings();
   const plans = buildPlans(offerings.current?.availablePackages ?? [], Platform.OS, localeTag());
@@ -134,7 +152,15 @@ export async function applyTrialEligibility(plans: Plan[], os: string = Platform
 }
 
 // ---------------------------------------------------------------- achat, restauration, gestion
-export type PurchaseOutcome = 'confirmed' | 'pending' | 'cancelled';
+/**
+ * Résultat d'un achat :
+ *  - confirmed : le SERVEUR voit le droit (has_premium) ;
+ *  - pending   : la boutique a accepté mais le serveur ne voit pas encore le droit (webhook en retard) ;
+ *  - deferred  : paiement en attente d'approbation (Demander l'achat / Ask to Buy) : rien n'est ouvert ;
+ *  - cancelled : la personne a fermé la feuille de paiement.
+ * Les autres erreurs sont levées en PurchaseError (catégorie : réseau, achats interdits, boutique…).
+ */
+export type PurchaseOutcome = 'confirmed' | 'pending' | 'deferred' | 'cancelled';
 
 /** Abonnement personnel actif vu par l'appareil (pour un changement de formule sans double abonnement). */
 async function activeStoreProduct(): Promise<string | null> {
@@ -150,19 +176,28 @@ async function activeStoreProduct(): Promise<string | null> {
 export async function purchase(plan: Plan, opts: { currentProductId?: string | null } = {}): Promise<PurchaseOutcome> {
   const purchaseMode = getPurchaseMode();
   if (purchaseMode === 'test') {
+    // Démonstration : issue simulée demandée par les tests de parcours (annulé, en attente, échec réseau)
+    const sim = await demoPurchaseSimulation();
+    if (sim === 'cancelled' || sim === 'deferred') return sim;
+    if (sim === 'network') throw new PurchaseError('network');
+    if (sim === 'pending') return 'pending';
     // Démonstration : données locales fictives, aucun paiement ; essai seulement si la grille en prévoit un
     await backend.rpc('set_demo_subscription', { active: true, period: plan.period, product_id: plan.id, trial: plan.trialDays > 0, trial_days: plan.trialDays });
     return 'confirmed';
   }
   if (purchaseMode !== 'store' || !plan.pkg) throw new Error(tr('l1.pur.notConfigured'));
   if (ready) await ready.catch(() => undefined);
+  // Jamais d'achat anonyme : le webhook l'ignorerait et Premium ne serait jamais confirmé (compte d'abord)
+  if (!currentUser) throw new PurchaseError('account_required');
   const current = opts.currentProductId ?? (Platform.OS === 'android' ? await activeStoreProduct() : null);
   const change = productChangeFor(Platform.OS, current, periodOfProduct(current), plan);
   try {
     await Purchases.purchasePackage(plan.pkg, null, change as never);
   } catch (e) {
-    if ((e as { userCancelled?: boolean | null })?.userCancelled) return 'cancelled';
-    throw e;
+    const kind = purchaseErrorKind(e);
+    if (kind === 'cancelled') return 'cancelled';
+    if (kind === 'deferred') return 'deferred';
+    throw new PurchaseError(kind, e);
   }
   await syncSubscription(true);
   return (await waitForServerEntitlement()) ? 'confirmed' : 'pending';
@@ -179,8 +214,7 @@ export async function restore(): Promise<boolean> {
   return waitForServerEntitlement(8000);
 }
 
-/** Pages officielles de gestion des abonnements (résiliation, moyen de paiement, changement de formule). */
-export const MANAGE_URLS = { ios: 'https://apps.apple.com/account/subscriptions', android: 'https://play.google.com/store/account/subscriptions' } as const;
+export { MANAGE_URLS };
 
 /** Gestion officielle : feuille Apple (iOS), page Google Play (Android). Renvoie l'URL à ouvrir si l'appli doit l'ouvrir. */
 export async function manageSubscription(): Promise<string | null> {
@@ -215,46 +249,96 @@ async function waitForServerEntitlement(timeoutMs = 20000): Promise<boolean> {
   return false;
 }
 
-// ---------------------------------------------------------------- offres du 07/11/2026 : Assistant IA, outils à vie
-/** Prix réels de la boutique pour ces produits (jamais de prix inventé ; démonstration : grille DEMO_OFFER_PRICES). */
-export async function getOfferPrices(productIds: string[]): Promise<Record<string, string>> {
-  if (getPurchaseMode() !== 'store' || !productIds.length) return {};
+// ---------------------------------------------------------------- formule Famille (26/11/2026)
+/** Formule Famille aux prix de la boutique (même offering que Premium ; identifiée par l'identifiant de produit). */
+export async function getFamilyPlans(): Promise<Plan[]> {
+  const mode = getPurchaseMode();
+  if (mode === 'test') return demoFamilyPlans(localeTag());
+  if (mode !== 'store') return [];
+  await ensureCatalogConfigured();
   if (ready) await ready.catch(() => undefined);
-  const out: Record<string, string> = {};
-  for (const cat of [Purchases.PRODUCT_CATEGORY.SUBSCRIPTION, Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION]) {
+  const offerings = await Purchases.getOfferings();
+  return applyTrialEligibility(buildPlans(offerings.current?.availablePackages ?? [], Platform.OS, localeTag(), 'family'));
+}
+
+// ---------------------------------------------------------------- packs de crédits HOMI Aura (consommables)
+export interface PackOffer { id: CreditPackId; credits: number; price: string; demo: boolean; pkg?: PurchasesPackage; product?: PurchasesStoreProduct }
+
+/**
+ * Packs aux prix de la BOUTIQUE (offering RevenueCat « credits », sinon lecture directe des produits non renouvelables).
+ * Un pack absent de la boutique n'est pas affiché (jamais de prix inventé).
+ */
+export async function getCreditPacks(): Promise<PackOffer[]> {
+  if (getPurchaseMode() !== 'store') return [];
+  if (ready) await ready.catch(() => undefined);
+  const found = new Map<CreditPackId, PackOffer>();
+  try {
+    const offerings = await Purchases.getOfferings();
+    for (const pkg of offerings.all?.[CREDITS_OFFERING]?.availablePackages ?? []) {
+      const id = pkg.product.identifier.split(':')[0] as CreditPackId;
+      if (CREDIT_PACK_IDS.includes(id) && !found.has(id)) found.set(id, { id, credits: PACK_CREDITS[id], price: pkg.product.priceString, demo: false, pkg });
+    }
+  } catch { /* offering absente : lecture directe des produits */ }
+  const missing = CREDIT_PACK_IDS.filter((id) => !found.has(id));
+  if (missing.length) {
     try {
-      for (const p of await Purchases.getProducts(productIds, cat)) out[p.identifier] = p.priceString;
-    } catch { /* produit absent de la boutique : pas de prix affiché */ }
+      for (const p of await Purchases.getProducts([...missing], Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION)) {
+        const id = p.identifier as CreditPackId;
+        if (CREDIT_PACK_IDS.includes(id)) found.set(id, { id, credits: PACK_CREDITS[id], price: p.priceString, demo: false, product: p });
+      }
+    } catch { /* produits absents de la boutique : pas de prix affiché */ }
   }
-  return out;
+  return CREDIT_PACK_IDS.filter((id) => found.has(id)).map((id) => found.get(id)!);
+}
+
+async function purchasedBalance(): Promise<number | null> {
+  try {
+    return (await backend.rpc<{ purchased_remaining?: number } | null>('credits_status'))?.purchased_remaining ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /**
- * Achat d'un abonnement Assistant IA ou d'un outil à vie. « confirmed » seulement quand le SERVEUR voit le droit
- * (my_access), après relecture de RevenueCat par subscription-sync.
+ * Achat d'un pack. Les crédits sont versés par le SERVEUR (webhook RevenueCat → grand livre, idempotent sur la
+ * transaction) : « confirmed » quand le solde acheté a augmenté, « pending » si le webhook tarde.
+ * Un consommable ne se « restaure » pas : le solde est gardé par le serveur, sur tous les appareils.
  */
-export async function purchaseOffer(productId: string, entitlement: string, kind: 'subscription' | 'lifetime'): Promise<PurchaseOutcome> {
+export async function purchaseCreditPack(choice: { id: CreditPackId; pkg?: unknown; product?: unknown }): Promise<PurchaseOutcome> {
+  const offer = choice as Pick<PackOffer, 'id' | 'pkg' | 'product'>;
   const mode = getPurchaseMode();
   if (mode === 'test') {
-    await backend.rpc('set_demo_grant', { entitlement, product_id: productId });
+    // Démonstration : faux magasin, aucun paiement ; même règle que le serveur (grand livre local)
+    await backend.rpc('demo_credit_purchase', { product_id: offer.id });
     return 'confirmed';
   }
-  if (mode !== 'store') throw new Error(tr('l1.pur.notConfigured'));
+  if (mode !== 'store' || (!offer.pkg && !offer.product)) throw new Error(tr('l1.pur.notConfigured'));
   if (ready) await ready.catch(() => undefined);
-  const products = await Purchases.getProducts([productId], kind === 'subscription' ? Purchases.PRODUCT_CATEGORY.SUBSCRIPTION : Purchases.PRODUCT_CATEGORY.NON_SUBSCRIPTION);
-  if (!products[0]) throw new Error(tr('offer.notInStore'));
+  const before = await purchasedBalance();
   try {
-    await Purchases.purchaseStoreProduct(products[0]);
+    if (offer.pkg) await Purchases.purchasePackage(offer.pkg);
+    else await Purchases.purchaseStoreProduct(offer.product!);
   } catch (e) {
-    if ((e as { userCancelled?: boolean | null })?.userCancelled) return 'cancelled';
-    throw e;
+    const kind = purchaseErrorKind(e);
+    if (kind === 'cancelled') return 'cancelled';
+    if (kind === 'deferred') return 'deferred';
+    throw new PurchaseError(kind, e);
   }
-  await syncSubscription(true);
   const start = Date.now();
   while (Date.now() - start < 20000) {
-    const a = await backend.rpc<{ ai?: boolean; tools?: { key: string; owned: boolean; product_id: string }[] } | null>('my_access').catch(() => null);
-    if (kind === 'subscription' ? a?.ai : a?.tools?.some((t) => t.product_id === productId && t.owned)) return 'confirmed';
+    const now = await purchasedBalance();
+    if (now != null && (before == null || now > before)) return 'confirmed';
     await new Promise((r) => setTimeout(r, 2000));
   }
   return 'pending';
+}
+
+// ---------------------------------------------------------------- offres héritées (07/11/2026) : plus aucune vente
+/**
+ * Anciennes offres « Assistant IA » (aufildenous_ai_monthly) et outils à vie (aufildenous_tool_*) : retirées de toute
+ * interface le 26/11/2026 et plus jamais vendues par l'application. Les droits déjà achetés restent honorés par le
+ * serveur (entitlement_grants, paid_tools : aucune donnée supprimée). Voir docs/CREDITS_IA.md § Offres héritées.
+ */
+export async function purchaseOffer(_productId: string, _entitlement: string, _kind: 'subscription' | 'lifetime'): Promise<PurchaseOutcome> {
+  throw new Error(tr('cr.legacy.noSale'));
 }

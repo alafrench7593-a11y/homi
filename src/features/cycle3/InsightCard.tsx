@@ -15,6 +15,7 @@ import { EC_PHONES, EC_SOURCES, ecWindows, INSIGHT_BADGE, pregnancyTestFrom, typ
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const wantsSleep = (i: Insight) => i.action === 'addSleep';
 
@@ -95,12 +96,12 @@ export function EmergencyInfo({ date, hoursSince, compact }: { date?: string | n
       {hoursSince != null && hoursSince >= 1 ? <Text variant="small" weight="bold" testID="c3-ec-hours">{tr('c3.ec.hoursSince', { count: hoursSince })}</Text> : null}
       <View style={{ gap: 4 }}>
         <Text weight="bold">{tr('c3.ec.delays')}</Text>
-        {(windows ?? ecWindows(0).map((w) => ({ ...w, open: true }))).map((w) => (
-          <Row key={w.id} gap={6} style={{ alignItems: 'flex-start' }}>
+        <MotionList style={{ gap: 4 }}>{(windows ?? ecWindows(0).map((w) => ({ ...w, open: true }))).map((w) => (
+          <MotionItem key={w.id}><Row key={w.id} gap={6} style={{ alignItems: 'flex-start' }}>
             <Icon name={windows ? (w.open ? 'clock' : 'alert-circle') : 'clock'} size={14} color={windows && !w.open ? t.colors.danger : t.colors.textMuted} />
             <Text variant="small" style={{ flex: 1 }}>{windows ? `${tr(w.key as TKey).replace(/\.$/, '')} — ${w.open ? tr('c3.ec.inDelay') : tr('c3.ec.outDelay')}.` : tr(w.key as TKey)}</Text>
-          </Row>
-        ))}
+          </Row></MotionItem>
+        ))}</MotionList>
         <Text variant="small" muted>{tr('c3.ec.sooner')}</Text>
       </View>
       <View style={{ gap: 4 }}>

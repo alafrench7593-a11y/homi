@@ -111,7 +111,7 @@ ${FIN}`,
 - En France, les premières règles arrivent **en moyenne vers 12 ans**, environ 18 à 24 mois après le début du développement des seins (souvent vers 9-10 ans).
 - Une gynécologue interrogée par la Caf conseille d’**engager la discussion vers 9 ans**, avec des mots adaptés à son âge, car certaines filles sont réglées tôt.
 - L’objectif : qu’elle **ne soit pas surprise** au premier saignement, et qu’elle sache que c’est une étape que vivent toutes les femmes, sans tabou.
-- Préparez ensemble **une trousse** avec une ou deux protections à garder dans son sac.
+- Prépare ensemble **une trousse** avec une ou deux protections à garder dans son sac.
 
 ## Comprendre
 Les règles ne sont pas le premier signe de la puberté : chez la fille, tout commence le plus souvent par la poussée des seins, puis la pilosité. Les premières règles viennent ensuite, mais la date reste imprévisible. Une enfant qui n’a jamais entendu parler des règles peut avoir très peur en voyant du sang. Une enfant informée, au contraire, sait quoi faire et à qui le dire.
@@ -137,7 +137,7 @@ Parler des règles, c’est aussi transmettre qu’elles témoignent d’un corp
 **Faut-il parler aussi de contraception ?** Les premières règles signifient qu’une grossesse est possible. Sans tout aborder d’un coup, tu peux lui dire qu’elle pourra toujours te poser la question, ou à un médecin, une sage-femme ou au Planning familial.
 
 ## Quand demander conseil
-Consultez un médecin généraliste, un pédiatre, une sage-femme ou un·e gynécologue si les règles sont très douloureuses ou entraînent des absences scolaires, très abondantes ou très longues, si elles disparaissent plus de 3 mois, ou si elles ne sont pas apparues à 15 ans ou quatre ans après le début du développement des seins. Si des signes de puberté apparaissent avant 8 ans, parlez-en aussi au médecin. Fil santé jeunes (**0 800 235 236**) répond gratuitement aux 12-25 ans. ${URG}
+Consulte un médecin généraliste, un pédiatre, une sage-femme ou un·e gynécologue si les règles sont très douloureuses ou entraînent des absences scolaires, très abondantes ou très longues, si elles disparaissent plus de 3 mois, ou si elles ne sont pas apparues à 15 ans ou quatre ans après le début du développement des seins. Si des signes de puberté apparaissent avant 8 ans, parles-en aussi au médecin. Fil santé jeunes (**0 800 235 236**) répond gratuitement aux 12-25 ans. ${URG}
 
 ${FIN}`,
   }),

@@ -1,0 +1,166 @@
+outil_id,outil_cle,libelle_fr,chapitre,demo,demo_detail,phrase_usage,ecran_demo,lien_destination,route_valide,lien_sans_profil,acces
+feeding:/meals?for=avoid,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=avoid,oui,/meals?for=avoid,Premium
+sleep:/me/sleep,sleep,Mon sommeil,health,type,measure,phrase dédiée,/discover/tool/sleep,/me/sleep,oui,/me/sleep,Premium
+health:/appointments,appointments,Rendez-vous et examens,health,type,plan,phrase dédiée,/discover/tool/appointments,/appointments,oui,/appointments,Premium
+health:/documents,documents,Documents,health,type,journal,sous-titre,/discover/tool/documents,/documents,oui,/documents,Premium + nounou sans abonnement
+health:/emergency,emergency,Urgences,health,type,help,sous-titre,/discover/tool/emergency,/emergency,oui,/emergency,sans abonnement
+health:/consult/questions,consult_questions,Mes questions pour le rendez-vous,health,type,tasks,sous-titre,/discover/tool/consult_questions,/consult/questions,oui,/consult/questions,Premium
+mood:/me/mood,mood,Mon humeur,health,sur mesure,mood,phrase dédiée,/discover/tool/mood,/me/mood,oui,/me/mood,Premium
+mood:/guide/loss,guide_loss,Après une perte,pregnancy,type,read,sous-titre,/discover/tool/guide_loss,/guide/loss,oui,/guide/loss,Premium
+mood:/family/exhausted,exhaustion_check,Je suis à bout,health,type,journal,sous-titre,/discover/tool/exhaustion_check,/family/exhausted,oui,/family/exhausted,Premium + nounou sans abonnement
+pregnancy:/pregnancy/start,ttc_start_pregnancy,J’ai un test positif,pregnancy,sur mesure,pregnancy,sous-titre,/discover/tool/ttc_start_pregnancy,/pregnancy/start,oui,/pregnancy/start,Premium
+cycle:/cycle,avoid_cycle,Cycle et règles,cycle,sur mesure,cycle,sous-titre,/discover/tool/avoid_cycle,/cycle,oui,/cycle,Premium
+cycle:/contraception,avoid_contraception,Contraception,cycle,type,remind,sous-titre,/discover/tool/avoid_contraception,/contraception,oui,/contraception,Premium
+cycle:/contraception/methods,avoid_methods,Comparer les moyens,cycle,type,read,phrase dédiée,/discover/tool/avoid_methods,/contraception/methods,oui,/contraception/methods,Premium
+cycle:/contraception/emergency,avoid_emergency,Contraception d’urgence,cycle,type,help,phrase dédiée,/discover/tool/avoid_emergency,/contraception/emergency,oui,/contraception/emergency,sans abonnement
+cycle:/cycle/calendar,avoid_fertile,Calendrier du cycle,cycle,type,plan,sous-titre,/discover/tool/avoid_fertile,/cycle/calendar,oui,/cycle/calendar,Premium
+cycle:/cycle/symptoms,cycle_symptoms,Symptômes,cycle,type,journal,phrase dédiée,/discover/tool/cycle_symptoms,/cycle/symptoms,oui,/cycle/symptoms,Premium
+cycle:/contraception/consultation,avoid_consult,Préparer une consultation,cycle,type,tasks,phrase dédiée,/discover/tool/avoid_consult,/contraception/consultation,oui,/contraception/consultation,Premium
+cycle:/cycle/stats,cycle_stats,Statistiques du cycle,cycle,type,measure,phrase dédiée,/discover/tool/cycle_stats,/cycle/stats,oui,/cycle/stats,Premium + achat à vie conservé
+cycle:/contraception/journal,contraception_journal,Journal de ma contraception,cycle,type,journal,sous-titre,/discover/tool/contraception_journal,/contraception/journal,oui,/contraception/journal,Premium + achat à vie conservé
+scanner:/scanner/product,scan_product,Scanner un produit,more,sur mesure,scanner,sous-titre,/discover/tool/scan_product,/scanner/product,oui,/scanner/product,Premium
+scanner:/scanner/food,scan_food,Scanner un aliment,more,type,scan,sous-titre,/discover/tool/scan_food,/scanner/food,oui,/scanner/food,Premium
+scanner:/scanner/history,scan_history,Historique et favoris,more,type,journal,phrase dédiée,/discover/tool/scan_history,/scanner/history,oui,/scanner/history,Premium
+scanner:/scanner/compare,scan_compare,Comparer deux produits,more,type,scan,phrase dédiée,/discover/tool/scan_compare,/scanner/compare,oui,/scanner/compare,Premium
+scanner:/scanner/avoid,scan_avoid,Produits à éviter,more,type,journal,sous-titre,/discover/tool/scan_avoid,/scanner/avoid,oui,/scanner/avoid,Premium
+scanner:/scanner/recalls,recall_alerts,Alertes produits rappelés,more,type,remind,sous-titre,/discover/tool/recall_alerts,/scanner/recalls,oui,/scanner/recalls,sans abonnement
+calendar:/calendar,family_calendar,Agenda familial,family,type,plan,phrase dédiée,/discover/tool/family_calendar,/calendar,oui,/calendar,Premium + nounou sans abonnement
+calendar:/family/prep,family_prep,Échéances préparées,family,type,plan,sous-titre,/discover/tool/family_prep,/family/prep,oui,/family/prep,Premium + nounou sans abonnement + achat à vie conservé
+tasks:/family,family_tasks,Organisation familiale,family,type,tasks,sous-titre,/discover/tool/family_tasks,/family,oui,/family,Premium + nounou sans abonnement
+tasks:/family/routines,family_routines,Routines,family,type,tasks,phrase dédiée,/discover/tool/family_routines,/family/routines,oui,/family/routines,Premium + nounou sans abonnement
+tasks:/family/brain-dump,brain_dump,Vider ma tête,family,type,journal,sous-titre,/discover/tool/brain_dump,/family/brain-dump,oui,/family/brain-dump,Premium + nounou sans abonnement
+tasks:/family/domains,family_domains,Confier un domaine,family,type,tasks,sous-titre,/discover/tool/family_domains,/family/domains,oui,/family/domains,Premium + nounou sans abonnement + achat à vie conservé
+tasks:/family/missions,family_missions,Missions familiales,family,sur mesure,missions,sous-titre,/discover/tool/family_missions,/family/missions,oui,/family/missions,Premium + nounou sans abonnement
+tasks:/family/missions/responsibilities,family_responsibilities,Responsabilités,family,type,tasks,sous-titre,/discover/tool/family_responsibilities,/family/missions/responsibilities,oui,/family/missions/responsibilities,Premium + nounou sans abonnement
+tasks:/meals/shopping,family_shopping,Liste de courses,family,sur mesure,shopping,sous-titre,/discover/tool/family_shopping,/meals/shopping,oui,/meals/shopping,Premium + nounou sans abonnement
+tasks:/family/stocks,family_stocks,Stocks du foyer,family,sur mesure,stocks,sous-titre,/discover/tool/family_stocks,/family/stocks,oui,/family/stocks,Premium + nounou sans abonnement
+tasks:/family/notebook,house_notebook,Carnet de la maison,family,type,journal,sous-titre,/discover/tool/house_notebook,/family/notebook,oui,/family/notebook,Premium + nounou sans abonnement
+relay:/guide/couple,guide_couple,À deux,family,type,read,sous-titre,/discover/tool/guide_couple,/guide/couple,oui,/guide/couple,Premium
+relay:/family/load,mental_load,Qui y pense ?,family,type,measure,sous-titre,/discover/tool/mental_load,/family/load,oui,/family/load,Premium + nounou sans abonnement
+relay:/family/couple,couple_week,Point de couple,family,type,journal,sous-titre,/discover/tool/couple_week,/family/couple,oui,/family/couple,Premium + nounou sans abonnement
+metime:/family/me-time,family_metime,Temps pour soi,family,type,plan,phrase dédiée,/discover/tool/family_metime,/family/me-time,oui,/family/me-time,Premium + nounou sans abonnement
+metime:/family/offduty,offduty,Je décroche,family,type,setting,sous-titre,/discover/tool/offduty,/family/offduty,oui,/family/offduty,Premium + nounou sans abonnement
+prevention:/family/difficult,family_difficult,Journée difficile,family,type,tasks,sous-titre,/discover/tool/family_difficult,/family/difficult,oui,/family/difficult,Premium + nounou sans abonnement
+reminders:/settings/reminders,reminders,Rappels,more,type,remind,phrase dédiée,/discover/tool/reminders,/settings/reminders,oui,/settings/reminders,Premium
+reminders:/notifications,notifications,Notifications,more,type,remind,phrase dédiée,/discover/tool/notifications,/notifications,oui,/notifications,Premium + nounou sans abonnement
+reminders:/settings/home,home_settings,Personnaliser l’accueil,more,type,setting,phrase dédiée,/discover/tool/home_settings,/settings/home,oui,/settings/home,Premium
+reminders:/settings,settings,Réglages,more,type,setting,phrase dédiée,/discover/tool/settings,/settings,oui,/settings,sans abonnement
+reminders:/journeys,journeys,Modifier mon parcours,more,type,setting,sous-titre,/discover/tool/journeys,/journeys,oui,/journeys,sans abonnement
+reminders:/contraception/reminders,avoid_reminders,Rappels de contraception,cycle,type,remind,phrase dédiée,/discover/tool/avoid_reminders,/contraception/reminders,oui,/contraception/reminders,Premium
+reminders:/cycle/kit,cycle_kit,Trousse règles,cycle,type,tasks,sous-titre,/discover/tool/cycle_kit,/cycle/kit,oui,/cycle/kit,Premium + achat à vie conservé
+resources:/(tabs)/ask,ask,Assistant,more,type,ask,sous-titre,/discover/tool/ask,/(tabs)/ask,oui,/(tabs)/ask,Premium + offre IA
+resources:/assistant/local,local_ai,Assistant des articles,more,type,ask,sous-titre,/discover/tool/local_ai,/assistant/local,oui,/assistant/local,Premium + offre IA
+resources:/outings,nearby,Sorties près de chez moi,community,type,read,sous-titre,/discover/tool/nearby,/outings,oui,/outings,Premium
+resources:/(tabs)/community?space=eviter-grossesse,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=eviter-grossesse,oui,/(tabs)/community?space=eviter-grossesse,Premium
+resources:/library,library,Bibliothèque,more,type,read,sous-titre,/discover/tool/library,/library,oui,/library,Premium
+resources:/sources,sources,Sources et lectures,more,type,read,sous-titre,/discover/tool/sources,/sources,oui,/sources,sans abonnement
+resources:/cycle/guides,cycle_guides,Guides,cycle,type,read,phrase dédiée,/discover/tool/cycle_guides,/cycle/guides,oui,/cycle/guides,Premium
+resources:/tutos,video_tutos,Tutos vidéo,more,type,read,sous-titre,/discover/tool/video_tutos,/tutos,oui,/tutos,Premium
+resources:/videos,official_videos,Vidéos & articles,more,type,read,sous-titre,/discover/tool/official_videos,/videos,oui,/videos,Premium
+resources:/family/solo,solo_parent,Maman solo,community,type,read,sous-titre,/discover/tool/solo_parent,/family/solo,oui,/family/solo,Premium + nounou sans abonnement
+resources:/family/papers,family_papers,Papiers de la famille,family,type,tasks,sous-titre,/discover/tool/family_papers,/family/papers,oui,/family/papers,Premium + nounou sans abonnement
+feeding:/meals?for=ttc,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=ttc,oui,/meals?for=avoid,Premium
+health:/fertility/exams,ttc_exams,Examens,cycle,type,tasks,phrase dédiée,/discover/tool/ttc_exams,/fertility/exams,oui,/fertility/exams,Premium
+health:/fertility/consultation,ttc_consult,Préparer une consultation,cycle,type,tasks,phrase dédiée,/discover/tool/ttc_consult,/fertility/consultation,oui,/fertility/consultation,Premium
+pregnancy:/names,preg_names,Idées de prénoms,pregnancy,type,journal,phrase dédiée,/discover/tool/preg_names,/names,oui,/names,Premium
+cycle:/fertility,ttc_cycle,Cycle et période fertile,cycle,sur mesure,cycle,sous-titre,/discover/tool/ttc_cycle,/fertility,oui,/fertility,Premium
+cycle:/fertility/log,ttc_tests,Tests d’ovulation et de grossesse,cycle,type,journal,phrase dédiée,/discover/tool/ttc_tests,/fertility/log,oui,/fertility/log,Premium
+cycle:/fertility/mucus,ttc_mucus,Glaire cervicale,cycle,type,journal,phrase dédiée,/discover/tool/ttc_mucus,/fertility/mucus,oui,/fertility/mucus,Premium
+cycle:/fertility/body,ttc_temperature,Température (facultatif),cycle,type,measure,phrase dédiée,/discover/tool/ttc_temperature,/fertility/body,oui,/fertility/body,Premium
+cycle:/fertility/intimacy,ttc_intimacy,"Rapports (facultatif, privé)",cycle,type,journal,phrase dédiée,/discover/tool/ttc_intimacy,/fertility/intimacy,oui,/fertility/intimacy,Premium
+cycle:/fertility/understand,ttc_understand,Comprendre mon cycle,cycle,type,read,phrase dédiée,/discover/tool/ttc_understand,/fertility/understand,oui,/fertility/understand,Premium
+cycle:/guide/pma,guide_pma,Parcours PMA,cycle,type,read,sous-titre,/discover/tool/guide_pma,/guide/pma,oui,/guide/pma,Premium
+cycle:/fertility/pma,pma_tracker,Suivi PMA,cycle,type,plan,sous-titre,/discover/tool/pma_tracker,/fertility/pma,oui,/fertility/pma,Premium + achat à vie conservé
+reminders:/fertility/reminders,ttc_reminders,Rappels,cycle,type,remind,phrase dédiée,/discover/tool/ttc_reminders,/fertility/reminders,oui,/fertility/reminders,Premium
+resources:/(tabs)/community?space=projet-bebe,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=projet-bebe,oui,/(tabs)/community?space=eviter-grossesse,Premium
+resources:/library?q=conception,ttc_articles,Articles sur la conception,cycle,type,read,phrase dédiée,/discover/tool/ttc_articles,/library?q=conception,oui,/library?q=conception,Premium
+resources:/guide/work,guide_work,Mes droits au travail,community,type,read,sous-titre,/discover/tool/guide_work,/guide/work,oui,/guide/work,Premium
+feeding:/meals?for=cycle,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=cycle,oui,/meals?for=avoid,Premium
+cycle:/cycle/journal,cycle_journal,Journal du cycle,cycle,type,journal,phrase dédiée,/discover/tool/cycle_journal,/cycle/journal,oui,/cycle/journal,Premium
+resources:/(tabs)/community?space=fertilite,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=fertilite,oui,/(tabs)/community?space=eviter-grossesse,Premium
+feeding:/meals?for=none,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=none,oui,/meals?for=avoid,Premium
+health:/guide/firstaid,guide_firstaid,Urgences et premiers secours,health,type,read,sous-titre,/discover/tool/guide_firstaid,/guide/firstaid,oui,/guide/firstaid,Premium
+prevention:/products,kid_products,Produits enfants,child,type,scan,sous-titre,/discover/tool/kid_products,/products,oui,/products,Premium
+resources:/(tabs)/community,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community,oui,/(tabs)/community?space=eviter-grossesse,Premium
+feeding:/pregnancy/eat,preg_eat,Bien manger enceinte,pregnancy,type,scan,phrase dédiée,/discover/tool/preg_eat,/pregnancy/eat,oui,/pregnancy/eat,Premium
+health:/appointments?for=pregnancy,appointments,Rendez-vous et examens,health,type,plan,phrase dédiée,/discover/tool/appointments,/appointments?for=pregnancy,oui,/appointments,Premium
+health:/documents?for=pregnancy,documents,Documents,health,type,journal,sous-titre,/discover/tool/documents,/documents?for=pregnancy,oui,/documents,Premium + nounou sans abonnement
+health:/consult/questions?for=pregnancy,consult_questions,Mes questions pour le rendez-vous,health,type,tasks,sous-titre,/discover/tool/consult_questions,/consult/questions?for=pregnancy,oui,/consult/questions,Premium
+pregnancy:/pregnancy,preg_evolution,Évolution du bébé,pregnancy,sur mesure,pregnancy,sous-titre,/discover/tool/preg_evolution,/pregnancy,oui,/pregnancy,Premium
+pregnancy:/pregnancy/weight,preg_weight,Suivi du poids,pregnancy,type,measure,phrase dédiée,/discover/tool/preg_weight,/pregnancy/weight,oui,/pregnancy/weight,Premium
+pregnancy:/pregnancy/feel,preg_feel,Comment je me sens aujourd’hui ?,pregnancy,type,journal,phrase dédiée,/discover/tool/preg_feel,/pregnancy/feel,oui,/pregnancy/feel,Premium
+pregnancy:/library?q=accouchement,preg_birth_prep,Préparation à l’accouchement,pregnancy,type,read,phrase dédiée,/discover/tool/preg_birth_prep,/library?q=accouchement,oui,/library?q=accouchement,Premium
+pregnancy:/lists,preg_lists,Listes,pregnancy,type,tasks,sous-titre,/discover/tool/preg_lists,/lists,oui,/lists,Premium + nounou sans abonnement
+pregnancy:/pregnancy/edit,preg_edit,Modifier la grossesse,pregnancy,type,setting,sous-titre,/discover/tool/preg_edit,/pregnancy/edit,oui,/pregnancy/edit,Premium
+pregnancy:/pregnancy/end,preg_end,Terminer la grossesse,pregnancy,type,setting,phrase dédiée,/discover/tool/preg_end,/pregnancy/end,oui,/pregnancy/end,Premium
+pregnancy:/pregnancy/moves,preg_moves,Mouvements de bébé,pregnancy,type,entry,sous-titre,/discover/tool/preg_moves,/pregnancy/moves,oui,/pregnancy/moves,Premium
+calendar:/pregnancy/calendar,preg_calendar,Mon calendrier de grossesse,pregnancy,type,plan,phrase dédiée,/discover/tool/preg_calendar,/pregnancy/calendar,oui,/pregnancy/calendar,Premium
+relay:/family/nights,family_nights,Relais de nuit,baby,type,plan,phrase dédiée,/discover/tool/family_nights,/family/nights,oui,/family/nights,Premium + nounou sans abonnement
+resources:/summary,summary,Résumés,child,type,read,sous-titre,/discover/tool/summary,/summary,oui,/summary,Premium
+resources:/(tabs)/community?space=grossesse,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=grossesse,oui,/(tabs)/community?space=eviter-grossesse,Premium
+resources:/library?journey=pregnant,preg_articles,Articles et vidéos,pregnancy,type,read,sous-titre,/discover/tool/preg_articles,/library?journey=pregnant,oui,/library?journey=pregnant,Premium
+resources:/library?cat=sexualite,preg_intimacy,Sexualité pendant la grossesse,pregnancy,type,read,sous-titre,/discover/tool/preg_intimacy,/library?cat=sexualite,oui,/library?cat=sexualite,Premium
+feeding:/meals?for=postpartum,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=postpartum,oui,/meals?for=avoid,Premium
+feeding:/track/breastfeed?child=:id,pp_feeding,Allaitement,baby,type,timer,phrase dédiée,/discover/tool/pp_feeding,/track/breastfeed?child=c1,oui,/baby,Premium + nounou sans abonnement
+feeding:/bottle/:id,pp_bottle,Biberon,baby,sur mesure,bottle,phrase dédiée,/discover/tool/pp_bottle,/bottle/c1,oui,/baby,Premium + nounou sans abonnement
+feeding:/bottle/scoops,bottle_scoops,Compteur de mesurettes,baby,type,entry,sous-titre,/discover/tool/bottle_scoops,/bottle/scoops,oui,/bottle/scoops,Premium + nounou sans abonnement + achat à vie conservé
+health:/guide/neonat?child=:id,guide_neonat,Mon bébé en néonat,baby,type,read,sous-titre,/discover/tool/guide_neonat,/guide/neonat?child=c1,oui,/guide/neonat,Premium
+mood:/postpartum,pp_recovery,Récupération,pregnancy,type,tasks,sous-titre,/discover/tool/pp_recovery,/postpartum,oui,/postpartum,Premium
+mood:/postpartum/checkin,pp_checkin,Point du jour,pregnancy,type,journal,sous-titre,/discover/tool/pp_checkin,/postpartum/checkin,oui,/postpartum/checkin,Premium
+mood:/postpartum/recovery,pp_body,Cicatrisation et rééducation,pregnancy,type,journal,sous-titre,/discover/tool/pp_body,/postpartum/recovery,oui,/postpartum/recovery,Premium
+mood:/postpartum/understand,pp_mental,Baby blues et dépression du post-partum,pregnancy,type,read,sous-titre,/discover/tool/pp_mental,/postpartum/understand,oui,/postpartum/understand,Premium
+mood:/postpartum/support,pp_support,Santé mentale : trouver de l’aide,pregnancy,type,help,phrase dédiée,/discover/tool/pp_support,/postpartum/support,oui,/postpartum/support,sans abonnement
+mood:/postpartum/partner,pp_partner,Espace du conjoint,pregnancy,type,tasks,phrase dédiée,/discover/tool/pp_partner,/postpartum/partner,oui,/postpartum/partner,Premium
+prevention:/family/urgent,family_urgent,Mode urgence organisation,family,type,help,phrase dédiée,/discover/tool/family_urgent,/family/urgent,oui,/family/urgent,sans abonnement
+prevention:/family/sos,family_sos,Je craque,family,type,help,sous-titre,/discover/tool/family_sos,/family/sos,oui,/family/sos,sans abonnement
+resources:/(tabs)/community?space=post-partum,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=post-partum,oui,/(tabs)/community?space=eviter-grossesse,Premium
+feeding:/meals?for=baby&child=:id,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=baby&child=c1,oui,/meals?for=avoid,Premium
+feeding:/meals/rankings,meal_rankings,Classements des recettes,child,type,journal,sous-titre,/discover/tool/meal_rankings,/meals/rankings,oui,/meals/rankings,Premium + achat à vie conservé
+feeding:/track/bottle?child=:id,baby_bottle,Biberons,baby,sur mesure,bottle,phrase dédiée,/discover/tool/baby_bottle,/track/bottle?child=c1,oui,/track/bottle,Premium + nounou sans abonnement
+feeding:/bottle/history?child=:id,baby_bottle_history,Historique des biberons,baby,type,measure,phrase dédiée,/discover/tool/baby_bottle_history,/bottle/history?child=c1,oui,/bottle/history,Premium + nounou sans abonnement
+feeding:/child/:id/discoveries,baby_foods,Ses découvertes,baby,type,journal,sous-titre,/discover/tool/baby_foods,/child/c1/discoveries,oui,/baby,Premium + nounou sans abonnement
+feeding:/guide/kidfood,guide_kidfood,Alimentation 1–10 ans,child,type,read,sous-titre,/discover/tool/guide_kidfood,/guide/kidfood,oui,/guide/kidfood,Premium
+sleep:/night?child=:id,kid_sleep,Sommeil,baby,sur mesure,sleep,sous-titre,/discover/tool/kid_sleep,/night?child=c1,oui,/night,Premium + nounou sans abonnement
+sleep:/sleep/c1,kid_sleep_rhythm,Planning de sommeil,baby,type,plan,sous-titre,/discover/tool/kid_sleep_rhythm,/sleep/c1,oui,/baby,Premium + nounou sans abonnement
+sleep:/night/help?child=:id,baby_night_help,Aide pour la nuit,baby,type,ask,sous-titre,/discover/tool/baby_night_help,/night/help?child=c1,oui,/night/help,Premium + nounou sans abonnement
+sleep:/guide/kidsleep,guide_kidsleep,Sommeil de l’enfant,child,type,read,sous-titre,/discover/tool/guide_kidsleep,/guide/kidsleep,oui,/guide/kidsleep,Premium
+diapers:/track/diaper?child=:id,baby_diaper,Couches,baby,type,entry,phrase dédiée,/discover/tool/baby_diaper,/track/diaper?child=c1,oui,/track/diaper,Premium + nounou sans abonnement
+diapers:/(tabs)/track,baby_daily,Suivi de la journée,baby,type,journal,phrase dédiée,/discover/tool/baby_daily,/(tabs)/track,oui,/(tabs)/track,Premium + nounou sans abonnement
+teeth:/teeth?child=:id,kid_teeth,Dents,child,type,entry,phrase dédiée,/discover/tool/kid_teeth,/teeth?child=c1,oui,/teeth,Premium + nounou sans abonnement
+growth:/child/:id,kid_profile,Sa fiche,child,type,read,phrase dédiée,/discover/tool/kid_profile,/child/c1,oui,/baby,Premium + nounou sans abonnement
+growth:/child/:id/growth,kid_growth,Croissance,child,type,measure,sous-titre,/discover/tool/kid_growth,/child/c1/growth,oui,/baby,Premium + nounou sans abonnement
+growth:/child/:id/grow,kid_grow,Je grandis,child,type,journal,sous-titre,/discover/tool/kid_grow,/child/c1/grow,oui,/baby,Premium + nounou sans abonnement
+growth:/child/:id?tab=etapes,kid_milestones,Journal,child,type,journal,sous-titre,/discover/tool/kid_milestones,/child/c1?tab=etapes,oui,/baby,Premium + nounou sans abonnement
+growth:/guide/hygiene,guide_hygiene,Hygiène et soins,child,type,read,sous-titre,/discover/tool/guide_hygiene,/guide/hygiene,oui,/guide/hygiene,Premium
+growth:/guide/activities,guide_activities,Activités par âge,child,type,read,sous-titre,/discover/tool/guide_activities,/guide/activities,oui,/guide/activities,Premium
+growth:/guide/toddler,guide_toddler,Grandir de 1 à 3 ans,child,type,read,sous-titre,/discover/tool/guide_toddler,/guide/toddler,oui,/guide/toddler,Premium
+health:/appointments?child=:id,appointments,Rendez-vous et examens,health,type,plan,phrase dédiée,/discover/tool/appointments,/appointments?child=c1,oui,/appointments,Premium
+health:/documents?child=:id,documents,Documents,health,type,journal,sous-titre,/discover/tool/documents,/documents?child=c1,oui,/documents,Premium + nounou sans abonnement
+health:/child/:id/vaccines,kid_vaccines,Vaccins,health,type,plan,sous-titre,/discover/tool/kid_vaccines,/child/c1/vaccines,oui,/health,Premium + nounou sans abonnement
+health:/child/:id/health-tracking,kid_health,Suivi santé,health,type,measure,sous-titre,/discover/tool/kid_health,/child/c1/health-tracking,oui,/health,Premium + nounou sans abonnement
+health:/child/:id/needs?tab=treatments,kid_treatments,Traitements prescrits,health,type,remind,sous-titre,/discover/tool/kid_treatments,/child/c1/needs?tab=treatments,oui,/health,Premium + nounou sans abonnement
+health:/guide/illnesses,guide_illnesses,Maladies de l’enfance,health,type,read,sous-titre,/discover/tool/guide_illnesses,/guide/illnesses,oui,/guide/illnesses,Premium
+health:/consult/questions?child=:id,consult_questions,Mes questions pour le rendez-vous,health,type,tasks,sous-titre,/discover/tool/consult_questions,/consult/questions?child=c1,oui,/consult/questions,Premium
+health:/child/:id/card,kid_card,Fiche de mon enfant,health,type,read,sous-titre,/discover/tool/kid_card,/child/c1/card,oui,/health,Premium + nounou sans abonnement
+mood:/child/:id/wellbeing,kid_mood,Humeur et émotions,child,sur mesure,mood,sous-titre,/discover/tool/kid_mood,/child/c1/wellbeing,oui,/health,Premium + nounou sans abonnement
+calendar:/family/custody,custody,Garde alternée,family,type,plan,sous-titre,/discover/tool/custody,/family/custody,oui,/family/custody,Premium + nounou sans abonnement + achat à vie conservé
+tasks:/guide/school,guide_school,"Crèche, nounou, école",child,type,read,sous-titre,/discover/tool/guide_school,/guide/school,oui,/guide/school,Premium
+resources:/(tabs)/community?space=parents-bebes,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=parents-bebes,oui,/(tabs)/community?space=eviter-grossesse,Premium
+feeding:/meals?for=child&child=:id,meals,Repas et recettes,child,type,plan,sous-titre,/discover/tool/meals,/meals?for=child&child=c2,oui,/meals?for=avoid,Premium
+sleep:/sleep/c2,kid_sleep_rhythm,Planning de sommeil,baby,type,plan,sous-titre,/discover/tool/kid_sleep_rhythm,/sleep/c2,oui,/baby,Premium + nounou sans abonnement
+growth:/guide/sport,guide_sport,Sport et activité,child,type,read,sous-titre,/discover/tool/guide_sport,/guide/sport,oui,/guide/sport,Premium
+health:/child/:id/needs,kid_needs,Mon enfant a un besoin particulier,health,type,tasks,sous-titre,/discover/tool/kid_needs,/child/c2/needs,oui,/health,Premium + nounou sans abonnement
+health:/child/:id/steps,kid_steps,Mes démarches,health,type,tasks,sous-titre,/discover/tool/kid_steps,/child/c2/steps,oui,/health,Premium + nounou sans abonnement + achat à vie conservé
+mood:/guide/behaviour,guide_behaviour,Émotions et comportement,child,type,read,sous-titre,/discover/tool/guide_behaviour,/guide/behaviour,oui,/guide/behaviour,Premium
+tasks:/family/kid-routines,kid_routines,Routines en images,child,type,tasks,sous-titre,/discover/tool/kid_routines,/family/kid-routines,oui,/family/kid-routines,Premium + nounou sans abonnement + achat à vie conservé
+resources:/(tabs)/community?space=parents-enfants,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=parents-enfants,oui,/(tabs)/community?space=eviter-grossesse,Premium
+tasks:/summary?family=1,family_summary,Résumé familial du jour,family,type,read,sous-titre,/discover/tool/family_summary,/summary?family=1,oui,/summary?family=1,Premium
+tasks:/family/history,family_history,Historique des tâches,family,type,tasks,phrase dédiée,/discover/tool/family_history,/family/history,oui,/family/history,Premium + nounou sans abonnement
+prevention:/family/review,family_review,Bilan de la semaine,family,type,measure,phrase dédiée,/discover/tool/family_review,/family/review,oui,/family/review,Premium + nounou sans abonnement + achat à vie conservé
+resources:/(tabs)/community?space=familles-nombreuses,community,Communauté,community,type,ask,sous-titre,/discover/tool/community,/(tabs)/community?space=familles-nombreuses,oui,/(tabs)/community?space=eviter-grossesse,Premium
+registre:ttc_calendar,ttc_calendar,Calendrier du cycle,cycle,type,plan,sous-titre,/discover/tool/ttc_calendar,/cycle/calendar,oui,/cycle/calendar,Premium
+registre:ttc_periods,ttc_periods,Règles,cycle,sur mesure,cycle,phrase dédiée,/discover/tool/ttc_periods,/cycle,oui,/cycle,Premium
+registre:cycle_home,cycle_home,Mon cycle,cycle,sur mesure,cycle,sous-titre,/discover/tool/cycle_home,/cycle,oui,/cycle,Premium
+registre:cycle_calendar,cycle_calendar,Calendrier du cycle,cycle,type,plan,phrase dédiée,/discover/tool/cycle_calendar,/cycle/calendar,oui,/cycle/calendar,Premium
+registre:baby_breastfeed,baby_breastfeed,Allaitement,baby,type,timer,phrase dédiée,/discover/tool/baby_breastfeed,/track/breastfeed,oui,/track/breastfeed,Premium
+registre:baby_bottle_timer,baby_bottle_timer,Ma journée biberons,baby,sur mesure,bottle,sous-titre,/discover/tool/baby_bottle_timer,/baby,oui,/baby,Premium

@@ -1,10 +1,11 @@
 /** Cartes de l'accueil personnalisé. */
 import { ProgressBar } from '@/components/Motion';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
+import { glassEdge } from '@/components/glass/GlassRim';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { FetusArt } from '@/components/FetusArt';
-import { StarField } from '@/components/StarField';
 import { ClockLegend, DayClock, WeeksRing, type ClockEvent } from '@/components/DayClock';
 import { Card, haptic, Icon, type IconName, Row, Text } from '@/components/ui';
 import { ToolGlyph } from '@/components/ToolGlyph';
@@ -22,7 +23,7 @@ import { summarizeDay, suggestedNextSide } from '@/lib/domain/daily';
 import { nextOccurrence } from '@/lib/domain/reminders';
 import type { Appointment, Bottle, Breastfeed, Child, Diaper, Pregnancy, Sleep } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, NACRE, palette, radius, spacing } from '@/theme/tokens';
+import { alpha, fonts, radius, spacing } from '@/theme/tokens';
 import { LinearGradient } from 'expo-linear-gradient';
 import { formatDate, localeTag, t as tr } from '@/i18n';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
@@ -40,7 +41,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
   const n = Math.max(1, babies?.length ?? 1);
   const orbSize = n === 1 ? 168 : n === 2 ? 120 : 92;
   const pct = Math.max(2, Math.min(100, Math.round((p.weeksSA / 41) * 100)));
-  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, gap: 2 } as const;
+  const tile = { flex: 1, borderRadius: radius.lg, padding: spacing.md, backgroundColor: t.colors.surface, ...glassEdge(t), gap: 2 } as const;
   return (
     <View style={{ gap: spacing.xs }}>
       <Tappable
@@ -49,8 +50,8 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
         onPress={() => { haptic('selection'); router.push('/pregnancy'); }}
         pressScale={0.99}
       >
-        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, minHeight: 236 }}>
-          <LinearGradient colors={t.isDark ? ['rgba(255,255,255,0.02)', 'rgba(255,134,168,0.16)'] : ['rgba(255,255,255,0.55)', 'rgba(255,200,215,0.35)']} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+        <View style={{ borderRadius: radius.xl, overflow: 'hidden', backgroundColor: t.colors.surface, ...glassEdge(t), padding: spacing.md, minHeight: 236 }}>
+          <LinearGradient colors={[alpha(t.tokens.decor.c, 0), alpha(t.tokens.decor.c, t.isDark ? 0.16 : 0.24)]} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? tr('u5.home.preg_many', { n }) : tr('u5.home.preg')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
             <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
@@ -64,7 +65,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           </View>
           <View style={{ marginTop: 'auto', paddingTop: spacing.md }}>
             <Text variant="caption" muted style={{ alignSelf: 'flex-end', marginBottom: 4 }}>{pct} %</Text>
-            <ProgressBar value={pct / 100} color={NACRE[1]} gradient={NACRE} track={t.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(233,88,124,0.12)'} accessibilityLabel={tr('u5.home.progress_a11y', { pct })} />
+            <ProgressBar value={pct / 100} color={t.tokens.decor.b} gradient={t.tokens.decor.ring} track={t.material.lines.separator} accessibilityLabel={tr('u5.home.progress_a11y', { pct })} />
           </View>
         </View>
       </Tappable>
@@ -112,12 +113,12 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
   ];
 
   return (
-    <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, borderWidth: 1, borderColor: t.colors.border, padding: spacing.md, gap: spacing.sm }}>
+    <View style={{ backgroundColor: t.colors.surface, borderRadius: radius.xl, ...glassEdge(t), padding: spacing.md, gap: spacing.sm }}>
       <View style={{ alignItems: 'center' }}>
         <DayClock events={events} size={compact ? 220 : 290} label={tr('u5.home.day_of', { name: child.first_name })}>
           {openSleep ? (
             <>
-              <Icon name="moon" color={palette.lavenderInk} />
+              <Icon name="moon" color={t.colors.lavender} />
               <Text variant="heading" center>{tr('u5.home.asleep')}</Text>
               <Text variant="caption" muted center>{tr('u5.home.since', { time: timeAgo(openSleep.started_at).replace('il y a ', '') })}</Text>
             </>
@@ -140,8 +141,8 @@ export function ChildToday({ child, compact }: { child: Child; compact?: boolean
         ))}
       </View>
       {openSleep && (
-        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center' }}>
-          <Text weight="medium" color={palette.milk}>{tr('u5.home.open_night')}</Text>
+        <Tappable onPress={() => router.push('/night')} accessibilityRole="button" style={{ minHeight: 48, borderRadius: 12, backgroundColor: t.tokens.inverse.fill, ...whoopEdge(t, t.tokens.inverse.fill), alignItems: 'center', justifyContent: 'center' }}>
+          <Text weight="medium" color={t.tokens.inverse.text}>{tr('u5.home.open_night')}</Text>
         </Tappable>
       )}
     </View>
@@ -227,7 +228,7 @@ function QuickButton({ k, childId }: { k: string; childId?: string }) {
       onHoverOut={() => setHovered(false)}
       style={{ alignItems: 'center', gap: 6, flexGrow: 1, flexBasis: 0, minWidth: 66, maxWidth: 120 }}
     >
-      <ToolGlyph theme={QUICK_THEME[k] ?? 'resources'} icon={QUICK[k].icon} size={58} play={play} pressed={pressed} hovered={hovered} />
+      <ToolGlyph id={`quick.${k}`} theme={QUICK_THEME[k] ?? 'resources'} icon={QUICK[k].icon} size={58} play={play} pressed={pressed} hovered={hovered} />
       <Text variant="caption" weight="medium" center style={{ alignSelf: 'stretch' }}>{QUICK[k].label}</Text>
     </Pressable>
   );
@@ -239,8 +240,10 @@ export function UpcomingCard({ single = false }: { single?: boolean } = {}) {
   const { data: appts } = useAppointments({ upcomingOnly: true });
   const { data: reminders } = useReminders();
   const ctx = useRelevanceCtx();
-  // Uniquement ce qui concerne le profil affiché (jamais un rendez-vous de grossesse sur le profil d'un bébé)
-  const next: Appointment | undefined = (appts ?? []).find((a) => appointmentRelevant(a, ctx));
+  // Uniquement ce qui concerne le profil affiché (jamais un rendez-vous de grossesse sur le profil d'un bébé) ;
+  // ceux d'aujourd'hui sont déjà dans « Aujourd'hui dans le foyer » en tête de l'accueil (pas de doublon)
+  const endOfToday = new Date(); endOfToday.setHours(24, 0, 0, 0);
+  const next: Appointment | undefined = (appts ?? []).find((a) => appointmentRelevant(a, ctx) && Date.parse(a.starts_at) >= endOfToday.getTime());
   const nextReminder = (reminders ?? [])
     .filter((r) => r.enabled && reminderRelevant(r, ctx))
     .map((r) => ({ r, at: nextOccurrence(r.schedule) }))
@@ -272,47 +275,4 @@ export function CycleCard({ mode }: { mode: 'ttc' | 'avoid' | 'cycle' }) {
   return <HomeCycleCard mode={mode} />;
 }
 
-// ------------------------------------------------------------------ accueil personnalisable
-/**
- * Accueil volontairement court : carte principale, les 4 actions du quotidien, le prochain rappel, UNE publication
- * de la communauté, UNE recommandation et « Voir la communauté ». Les autres cartes restent disponibles
- * (Réglages › Mon accueil) mais sont masquées par défaut.
- */
-export const HOME_CARDS: { key: string; label: string; detail: string; defaultHidden?: boolean }[] = [
-  { key: 'story', get label() { return 'Au fil de nous'; }, get detail() { return tr('u5.home.hc_story_d'); } },
-  { key: 'main', get label() { return tr('u5.home.hc_main'); }, get detail() { return tr('u5.home.hc_main_d'); } },
-  { key: 'quick', get label() { return tr('u5.home.hc_quick'); }, get detail() { return tr('u5.home.hc_quick_d'); } },
-  // Visible par défaut (07/11/2026) : « Mon assistant IA », juste après les raccourcis
-  { key: 'assistant', get label() { return tr('u5.home.hc_assistant'); }, get detail() { return tr('u5.home.hc_assistant_d'); } },
-  // Maman solo (07/11/2026) : ne s'affiche que si la situation familiale est « seule avec mes enfants »
-  { key: 'solo', get label() { return tr('tool.solo_parent'); }, get detail() { return tr('sol.home.detail'); } },
-  { key: 'videos', get label() { return tr('vid.title'); }, get detail() { return tr('vid.homeDetail'); } },
-  { key: 'library', get label() { return tr('lib.home.title'); }, get detail() { return tr('lib.home.byTheme'); } },
-  { key: 'upcoming', get label() { return tr('u5.home.hc_upcoming'); }, get detail() { return ''; } },
-  { key: 'outings', get label() { return tr('u5.home.hc_outings'); }, get detail() { return tr('u5.home.hc_outings_d'); } },
-  { key: 'community', get label() { return tr('u5.home.hc_community'); }, get detail() { return tr('u5.home.hc_community_d'); } },
-  { key: 'recommendation', get label() { return tr('u5.home.hc_recommendation'); }, get detail() { return tr('u5.home.hc_recommendation_d'); } },
-  { key: 'article', get label() { return tr('u5.home.hc_article'); }, get detail() { return ''; }, defaultHidden: true },
-  { key: 'recipe', get label() { return tr('u5.home.hc_recipe'); }, get detail() { return tr('u5.home.hc_recipe_d'); }, defaultHidden: true },
-];
-
-/** Cartes masquées : choix de la personne + cartes masquées par défaut qu'elle n'a jamais placées dans son ordre. */
-export function effectiveHidden(order: string[], hidden: string[]): string[] {
-  const defaults = HOME_CARDS.filter((c) => c.defaultHidden && !order.includes(c.key)).map((c) => c.key);
-  return [...new Set([...hidden, ...defaults])];
-}
-
-/** Toutes les cartes : ordre choisi, puis les cartes nouvelles à leur place par défaut. */
-export function homeCardOrder(order: string[]): string[] {
-  const all = HOME_CARDS.map((c) => c.key);
-  const known = order.filter((k) => all.includes(k));
-  for (const k of all) if (!known.includes(k)) known.splice(Math.min(all.indexOf(k), known.length), 0, k);
-  return known;
-}
-
-/** Ordre choisi, puis les cartes nouvelles à leur place par défaut ; sans les cartes masquées. */
-export function orderedHomeCards(order: string[], hidden: string[]): string[] {
-  const known = homeCardOrder(order);
-  const off = effectiveHidden(order, hidden);
-  return known.filter((k) => !off.includes(k));
-}
+// Accueil personnalisable : modules et configurations par situation dans src/features/homeToday/homeLayout.ts (17/11/2026).

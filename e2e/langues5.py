@@ -31,7 +31,7 @@ with sync_playwright() as p:
         pg.on('console', lambda m, missing=missing: '[i18n]' in m.text and missing.append(m.text[:120]))
         pg.on('pageerror', lambda e: errs.append(f'{lang}: {str(e)[:160]}'))
         pg.goto(B + '/welcome'); pg.wait_for_timeout(2500)
-        pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+        pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
         pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(2500)
         pg.goto(B + '/settings/language'); pg.wait_for_timeout(2000)
         pg.get_by_role('radio', name=NAMES[lang]).first.click(); pg.wait_for_timeout(2500)

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { resetAccountState } from './accountReset';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQueryClient } from '@tanstack/react-query';
+import { useIsRestoring, useQueryClient } from '@tanstack/react-query';
 import { backend, initBackendMode, onBackendSwitch, type Session } from './backend';
 import { cancelAllLocal } from './notifications';
 import { setQueueOwner } from './offline';
@@ -12,6 +13,9 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState>({ session: null, ready: false });
+
+/** Cache des écrans enregistré sur l'appareil (PersistQueryClientProvider, src/app/_layout.tsx). */
+export const PERSISTED_CACHE_KEY = 'toietmoi.cache.v1';
 
 /** Dernier compte connecté sur ce téléphone : le cache hors ligne n'est vidé que si le compte CHANGE. */
 const LAST_USER_KEY = 'toietmoi.lastUser';
@@ -34,12 +38,27 @@ async function bootstrapAccount(): Promise<void> {
   }
 }
 
+/**
+ * Relecture de la session (ticket 1, visite) : après « Découvrir sans compte », la session de démonstration peut être
+ * ouverte AVANT que le fournisseur ne soit abonné au backend qui vient d'être activé (démonstration préchargée :
+ * tout est prêt en quelques millisecondes) ; l'application restait alors « sans session » jusqu'au rechargement.
+ * `resyncAuth()` relance la lecture (même chemin qu'au démarrage), sans vider le cache ni changer de compte.
+ */
+const resyncListeners = new Set<() => void>();
+export function resyncAuth(): void {
+  resyncListeners.forEach((l) => l());
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({ session: null, ready: false });
   const [generation, setGeneration] = useState(0); // change quand on passe en démonstration ou qu'on la quitte
   const qc = useQueryClient();
   const currentUser = useRef<string | null | undefined>(undefined);
   const lastUser = useRef<string | null | undefined>(undefined);
+  // Audit 2 : le cache enregistré est relu EN MÊME TEMPS que la session. Effacé avant la fin de cette relecture
+  // (session expirée, autre compte), il revenait aussitôt : les données du compte précédent restaient sur l'appareil.
+  // La session n'est donc appliquée qu'une fois le cache relu.
+  const isRestoring = useIsRestoring();
 
   useEffect(() => onBackendSwitch((reason) => {
     qc.clear();
@@ -55,6 +74,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }), [qc]);
 
   useEffect(() => {
+    const l = () => setGeneration((g) => g + 1);
+    resyncListeners.add(l);
+    return () => { resyncListeners.delete(l); };
+  }, []);
+
+  useEffect(() => {
+    if (isRestoring) return undefined;
     let mounted = true;
     const apply = (s: Session | null) => {
       const uid = s?.userId ?? null;
@@ -66,11 +92,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Au démarrage, même compte qu'à la dernière ouverture : on GARDE le cache restauré (consultation
         // hors connexion). Sinon, aucune donnée d'un compte ne doit rester visible pour un autre.
         const sameAsLastTime = first && uid && lastUser.current === uid;
-        if (!sameAsLastTime) qc.clear();
+        if (!sameAsLastTime) {
+          qc.clear();
+          // Copie sur l'appareil effacée tout de suite (sans attendre la prochaine écriture du cache, ~2 s)
+          AsyncStorage.removeItem(PERSISTED_CACHE_KEY).catch(() => undefined);
+        }
         // A-13 : session expirée ou autre compte → les rappels, le résumé et le planning de sommeil du compte
         // précédent ne doivent plus sonner (la déconnexion volontaire le faisait déjà, pas l'expiration).
         const previous = first ? lastUser.current : currentUserBefore;
         if (!sameAsLastTime && previous) void cancelAllLocal().catch(() => undefined);
+        // Audit 23/11/2026 : rien du compte précédent ne reste sur ce téléphone (favoris, récents, brouillons,
+        // questions notées, file nounou et photos, statistiques en attente, cache d'images)
+        if (!sameAsLastTime && previous && previous !== uid) void resetAccountState();
         writeLastUser(uid);
         void setQueueOwner(uid); // saisies hors ligne d'un autre compte effacées de ce téléphone
         if (!s) useUiStore.getState().reset();
@@ -79,17 +112,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setState({ session: s, ready: true });
     };
+    // L'écoute de la session ne commence qu'APRÈS le rétablissement du mode (démo ou serveur) : abonnée avant,
+    // elle visait le vrai serveur (session vide) et renvoyait la démo vers /welcome à chaque rechargement.
+    let off: () => void = () => undefined;
     initBackendMode()
       .then(async () => { lastUser.current = await readLastUser(); })
-      .then(() => backend.auth.getSession())
+      .then(() => {
+        if (mounted) off = backend.auth.onChange((s) => mounted && apply(s));
+        return backend.auth.getSession();
+      })
       .then((s) => mounted && apply(s))
       .catch(() => mounted && setState({ session: null, ready: true }));
-    const off = backend.auth.onChange((s) => mounted && apply(s));
     return () => {
       mounted = false;
       off();
     };
-  }, [qc, generation]);
+  }, [qc, generation, isRestoring]);
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }

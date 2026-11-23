@@ -2,6 +2,7 @@
  * Règles globales de la version web (aucun effet sur iOS/Android) :
  *  - focus clavier visible (anneau de la couleur principale du thème) sur tout élément interactif ;
  *  - les mots très longs (adresses, liens, codes) passent à la ligne au lieu de sortir de leur conteneur ;
+ *  - champs : rétrécissables (min-width 0) et un seul anneau de focus (celui de `Field`, sinon celui du thème) ;
  *  - « réduire les animations » du système : transitions CSS coupées (les animations JS le sont déjà).
  */
 import { useEffect } from 'react';
@@ -18,6 +19,13 @@ export function webInteractionCss(primary: string) {
     `${interactive.map((s) => `${s}:focus-visible`).join(',')}{outline:2px solid ${primary};outline-offset:2px}`,
     `${interactive.map((s) => `${s}:focus:not(:focus-visible)`).join(',')}{outline:none}`,
     'div[dir="auto"],span[dir="auto"]{overflow-wrap:break-word;word-break:normal;hyphens:auto}',
+    // Champs : un <input> garde sinon sa largeur intrinsèque (~20 caractères) et pousse le bouton voisin hors de
+    // l'écran (« Envoyer » de l'assistant de l'Accueil à 320 px) ; `flex: 1` doit pouvoir le rétrécir
+    'input,textarea{min-width:0}',
+    // Focus des champs : `Field` dessine son propre halo (liseré de la couleur principale) ; l'anneau du navigateur,
+    // décalé à l'intérieur du cadre arrondi, faisait un second rectangle. Les autres champs gardent un anneau du thème.
+    'input[data-field="1"]:focus,textarea[data-field="1"]:focus{outline:none}',
+    `input:not([data-field="1"]):focus-visible,textarea:not([data-field="1"]):focus-visible{outline:2px solid ${primary};outline-offset:1px}`,
     '@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition-duration:0.01ms!important;animation-duration:0.01ms!important;scroll-behavior:auto!important}}',
   ].join('\n');
 }

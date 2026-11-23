@@ -101,7 +101,7 @@ export const lib8: Messages<typeof fr> = {
   "l8.np.askBody": "{reason}\n\nDein Handy wird dich um die Erlaubnis bitten, Benachrichtigungen zu senden. Du kannst sie jederzeit widerrufen.",
   "l8.np.askTitle": "Diese Erinnerung erhalten?",
   "l8.np.continue": "Weiter",
-  "l8.np.deniedBody": "{reason}\n\nBenachrichtigungen sind für Au fil de nous abgelehnt. Du kannst sie in den Einstellungen deines Handys wieder aktivieren.",
+  "l8.np.deniedBody": "{reason}\n\nBenachrichtigungen sind für HOMI abgelehnt. Du kannst sie in den Einstellungen deines Handys wieder aktivieren.",
   "l8.np.deniedTitle": "Benachrichtigungen deaktiviert",
   "l8.np.openSettings": "Einstellungen öffnen",
   "l8.pv.badFile": "Ungültige verschlüsselte Datei",

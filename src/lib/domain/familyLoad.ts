@@ -8,7 +8,7 @@ import type { IconName } from '@/components/ui';
 import { t as tr } from '@/i18n';
 import { localized } from '@/i18n/localized';
 
-export type TaskCategory = 'feeding' | 'diapers' | 'sleep' | 'shopping' | 'packing' | 'appointments' | 'housework' | 'admin' | 'organization' | 'parent_rest' | 'other';
+export type TaskCategory = 'feeding' | 'diapers' | 'sleep' | 'shopping' | 'packing' | 'appointments' | 'housework' | 'admin' | 'organization' | 'parent_rest' | 'other' | 'pets' | 'childcare' | 'health';
 export type Recurrence = { type: 'daily' | 'weekly' | 'monthly'; every?: number } | null;
 
 export interface FamilyTask {
@@ -16,6 +16,8 @@ export interface FamilyTask {
   priority: 'low' | 'normal' | 'high'; essential: boolean; recurrence: Recurrence; status: 'todo' | 'done' | 'cancelled';
   done_at: string | null; done_by: string | null; notes: string | null; routine_id: string | null; created_by: string | null;
   updated_by?: string | null; created_at: string; updated_at?: string;
+  /** Posée par le serveur (+1 à chaque modification) ; absente d'un cache d'avant le 13/11/2026. */
+  version?: number; client_id?: string | null;
 }
 
 export type RequestKind = 'relay' | 'taking_over' | 'rest' | 'take_task' | 'available' | 'swap_slot' | 'help_today';
@@ -47,6 +49,9 @@ const CATEGORIES_FR: CategoryDef[] = [
   { value: 'admin', label: 'Administration', icon: 'file-text' },
   { value: 'organization', label: 'Organisation familiale', icon: 'grid' },
   { value: 'parent_rest', label: 'Repos parental', icon: 'sun' },
+  { value: 'childcare', label: 'Crèche et garde', icon: 'users' },
+  { value: 'pets', label: 'Animaux', icon: 'feather' },
+  { value: 'health', label: 'Santé familiale', icon: 'activity' },
   { value: 'other', label: 'Autre', icon: 'circle' },
 ];
 const CATEGORIES_EN: CategoryDef[] = [
@@ -60,6 +65,9 @@ const CATEGORIES_EN: CategoryDef[] = [
   { value: 'admin', label: 'Paperwork', icon: 'file-text' },
   { value: 'organization', label: 'Family organisation', icon: 'grid' },
   { value: 'parent_rest', label: 'Parental rest', icon: 'sun' },
+  { value: 'childcare', label: 'Nursery and childcare', icon: 'users' },
+  { value: 'pets', label: 'Pets', icon: 'feather' },
+  { value: 'health', label: 'Family health', icon: 'activity' },
   { value: 'other', label: 'Other', icon: 'circle' },
 ];
 const CATEGORIES_ES: CategoryDef[] = [
@@ -73,6 +81,9 @@ const CATEGORIES_ES: CategoryDef[] = [
   { value: 'admin', label: 'Trámites', icon: 'file-text' },
   { value: 'organization', label: 'Organización familiar', icon: 'grid' },
   { value: 'parent_rest', label: 'Descanso parental', icon: 'sun' },
+  { value: 'childcare', label: 'Guardería y cuidado', icon: 'users' },
+  { value: 'pets', label: 'Mascotas', icon: 'feather' },
+  { value: 'health', label: 'Salud familiar', icon: 'activity' },
   { value: 'other', label: 'Otro', icon: 'circle' },
 ];
 const CATEGORIES_DE: CategoryDef[] = [
@@ -86,6 +97,9 @@ const CATEGORIES_DE: CategoryDef[] = [
   { value: 'admin', label: 'Behördenkram', icon: 'file-text' },
   { value: 'organization', label: 'Familienorganisation', icon: 'grid' },
   { value: 'parent_rest', label: 'Erholung für Eltern', icon: 'sun' },
+  { value: 'childcare', label: 'Kita und Betreuung', icon: 'users' },
+  { value: 'pets', label: 'Haustiere', icon: 'feather' },
+  { value: 'health', label: 'Familiengesundheit', icon: 'activity' },
   { value: 'other', label: 'Anderes', icon: 'circle' },
 ];
 const CATEGORIES_IT: CategoryDef[] = [
@@ -99,6 +113,9 @@ const CATEGORIES_IT: CategoryDef[] = [
   { value: 'admin', label: 'Pratiche', icon: 'file-text' },
   { value: 'organization', label: 'Organizzazione familiare', icon: 'grid' },
   { value: 'parent_rest', label: 'Riposo dei genitori', icon: 'sun' },
+  { value: 'childcare', label: 'Nido e custodia', icon: 'users' },
+  { value: 'pets', label: 'Animali', icon: 'feather' },
+  { value: 'health', label: 'Salute della famiglia', icon: 'activity' },
   { value: 'other', label: 'Altro', icon: 'circle' },
 ];
 export const CATEGORIES: CategoryDef[] = localized(CATEGORIES_FR, CATEGORIES_EN, { es: CATEGORIES_ES, de: CATEGORIES_DE, it: CATEGORIES_IT });
@@ -107,10 +124,10 @@ export const categoryOf = (c: TaskCategory) => CATEGORIES.find((x) => x.value ==
 /** Actions rapides (§ 20). `needsTask` / `needsShift` : il faut choisir l'élément concerné. */
 type QuickAction = { kind: RequestKind; label: string; icon: IconName; detail: string; needsTask?: boolean; needsShift?: boolean };
 const QUICK_ACTIONS_FR: QuickAction[] = [
-  { kind: 'taking_over', label: 'Je prends le relais', icon: 'repeat', detail: 'Prévient le foyer que vous prenez la suite.' },
+  { kind: 'taking_over', label: 'Je prends le relais', icon: 'repeat', detail: 'Prévient le foyer que tu prends la suite.' },
   { kind: 'rest', label: 'J’ai besoin de repos', icon: 'moon', detail: 'Demande à être relayé·e pour souffler.' },
   { kind: 'take_task', label: 'Peux-tu prendre cette tâche ?', icon: 'share', detail: 'Proposer une tâche à quelqu’un d’autre.', needsTask: true },
-  { kind: 'available', label: 'Je suis disponible', icon: 'check-circle', detail: 'Signaler que vous pouvez aider.' },
+  { kind: 'available', label: 'Je suis disponible', icon: 'check-circle', detail: 'Signaler que tu peux aider.' },
   { kind: 'swap_slot', label: 'Échanger mon créneau', icon: 'shuffle', detail: 'Proposer d’échanger un relais de nuit.', needsShift: true },
   { kind: 'help_today', label: 'J’ai besoin d’aide aujourd’hui', icon: 'life-buoy', detail: 'Demande d’aide générale pour la journée.' },
   { kind: 'relay', label: 'Demander un relais', icon: 'users', detail: 'Pour qu’on prenne le bébé un moment.' },
@@ -158,7 +175,7 @@ export const REQUEST_LABEL: Record<RequestKind, string> = localized(labelsOf(QUI
 // ------------------------------------------------------------------ dates (heure locale)
 const dayKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 export const sameLocalDay = (iso: string, day: string) => dayKey(new Date(iso)) === day;
-const atLocal = (day: string, hour: number, minute = 0) => {
+export const atLocal = (day: string, hour: number, minute = 0) => {
   const [y, m, d] = day.split('-').map(Number);
   return new Date(y, m - 1, d, hour, minute, 0, 0);
 };

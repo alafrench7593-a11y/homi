@@ -2,7 +2,7 @@ import type { paywall as fr } from '../fr/paywall';
 import type { Messages } from '../types';
 
 export const paywall: Messages<typeof fr> = {
-  'pw.title': 'Au fil de nous Premium',
+  'pw.title': 'HOMI Premium',
   'pw.tagline': 'Dein ganzer Weg, vom Kinderwunsch bis zu den ersten Schritten, an einem Faden.',
   'pw.stage.ttc': 'Kinderwunsch',
   'pw.stage.pregnancy': 'Schwangerschaft',
@@ -10,7 +10,7 @@ export const paywall: Messages<typeof fr> = {
   'pw.stage.baby': 'Baby',
   'pw.stage.child': 'Kind',
   'pw.locked': 'Dieser Bereich gehört zu Premium',
-  'pw.lockedBody': 'Dein kostenloses Konto behält dein Profil, deine Einstellungen, das Ansehen, Exportieren und Löschen deiner Daten sowie die Notrufnummern. Die vollständige Begleitung öffnet sich mit Premium.',
+  'pw.lockedBody': 'Dein kostenloses Konto behält dein Profil, deine Einstellungen, das Exportieren und Löschen deiner Daten sowie die Notrufnummern. Die vollständige Begleitung öffnet sich mit Premium.',
   'pw.checking': 'Dein Abo wird geprüft …',
   'pw.featTitle': 'Was Premium öffnet',
   'pw.feat.track.title': 'Die tägliche Begleitung',
@@ -29,7 +29,7 @@ export const paywall: Messages<typeof fr> = {
   'pw.restore': 'Käufe wiederherstellen',
   'pw.details': 'Details der Abos und Vergleich',
   'pw.account': 'Mein Konto und meine Einstellungen',
-  'pw.myData': 'Meine Daten ansehen, exportieren oder löschen',
+  'pw.myData': 'Meine Daten exportieren oder löschen',
   'pw.emergency': 'Notrufnummern',
   'pw.dataSafe': 'Deine Daten werden am Ende eines Abos nie gelöscht: Sie bleiben einsehbar und exportierbar.',
   'pw.noPlans': 'Die Abos können gerade nicht angezeigt werden.',

@@ -5,7 +5,7 @@
  * pré-rempli (biberon, rendez-vous, médicament) ou une confirmation explicite est demandée (sommeil).
  */
 import React, { useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Keyboard, Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { Banner, Button, Card, Field, Row, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
@@ -63,7 +63,8 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
   const addSleep = useAddLog('sleep');
   const Rec = speech();
   if (!children?.length) return null;
-  const analyse = (v = text) => setRes(v.trim() ? parseQuickEntry(v, children, new Date(), activeChildId) : null);
+  // Le résultat et « Vérifier et enregistrer » s'affichent sous le champ : le clavier se ferme pour les montrer
+  const analyse = (v = text) => { if (v.trim()) Keyboard.dismiss(); setRes(v.trim() ? parseQuickEntry(v, children, new Date(), activeChildId) : null); };
 
   function dictate() {
     if (!Rec) return;
@@ -71,7 +72,8 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
     r.lang = 'fr-FR';
     r.interimResults = false;
     r.onresult = (e) => { const said = e.results[0]?.[0]?.transcript ?? ''; setText(said); analyse(said); };
-    r.onerror = () => setListening(false);
+    // Sans micro ou refus : on le dit (audit navigation N-09), au lieu de revenir en silence
+    r.onerror = () => { setListening(false); toast(tr('u6.quick.dictateUnavailable'), 'info'); };
     r.onend = () => setListening(false);
     setListening(true);
     r.start();
@@ -135,7 +137,7 @@ export function QuickEntry({ activeChildId }: { activeChildId?: string | null })
         </Row>
         <Field label={tr('u6.quick.say')} value={text} onChangeText={(v) => { setText(v); setRes(null); }} placeholder={tr('u6.quick.placeholder')} returnKeyType="done" onSubmitEditing={() => analyse()} testID="quick-text" />
         <Row wrap>
-          <Button label={tr('u6.quick.parse')} size="sm" variant="secondary" icon="check" onPress={() => analyse()} testID="quick-parse" />
+          <Button label={tr('u6.quick.parse')} size="sm" variant="secondary" icon="check" onPress={() => analyse()} disabled={!text.trim()} testID="quick-parse" />
           {Rec ? <Button label={listening ? tr('u6.quick.listening') : tr('u6.quick.dictate')} size="sm" variant="ghost" icon="mic" onPress={dictate} disabled={listening} /> : null}
         </Row>
         {res && !res.ok ? <Banner tone="warning">{errText(res.error)}</Banner> : null}

@@ -67,7 +67,7 @@ async function press(r: ReactTestRenderer, id: string, wait = 200) {
   await flush(wait);
 }
 async function ask(r: ReactTestRenderer, q: string) {
-  const input = r.root.findAll((n) => n.props.accessibilityLabel === 'Votre question' && typeof n.props.onChangeText === 'function')[0];
+  const input = r.root.findAll((n) => n.props.accessibilityLabel === 'Ta question' && typeof n.props.onChangeText === 'function')[0];
   await act(async () => { input.props.onChangeText(q); });
   // sans attendre la fin de la réponse (pour pouvoir l'arrêter)
   const send = r.root.findAll((n) => n.props.testID === 'chat-send' && typeof n.props.onPress === 'function')[0];
@@ -91,7 +91,7 @@ describe(`assistant IA (${Platform.OS})`, () => {
     await ask(r, 'Comment préparer la valise de maternité ?');
     await until(() => has(r, 'chat-retry'));
     const t = allText(r);
-    expect(t).toContain('L’assistant n’est pas disponible pour le moment. Réessayez plus tard.');
+    expect(t).toContain('L’assistant n’est pas disponible pour le moment. Réessaie plus tard.');
     expect(t).not.toMatch(/GEMINI|Gemini|Supabase|démonstration|clé/);
     r.unmount();
   });
@@ -148,10 +148,10 @@ describe(`assistant IA (${Platform.OS})`, () => {
   it('historique : désactivé tant que la personne ne l’a pas activé ; l’activer enregistre son accord', async () => {
     const uid = (await backend.auth.getSession())!.userId;
     const r = await render(<Chat />);
-    expect(allText(r)).toContain('Désactivé : vos questions et les réponses ne sont pas enregistrées après l’échange.');
+    expect(allText(r)).toContain('Désactivé : tes questions et les réponses ne sont pas enregistrées après l’échange.');
     const toggle = r.root.findAll((n) => n.props.accessibilityLabel === 'Garder mes conversations' && typeof n.props.onPress === 'function')[0];
     await act(async () => { await toggle.props.onPress(); });
-    await until(() => allText(r).includes('visibles par vous seule ou vous seul'));
+    await until(() => allText(r).includes('visibles par toi seule ou toi seul'));
     const [p] = await backend.select<{ ai_history_enabled: boolean; ai_history_consented_at: string | null }>({ table: 'privacy_settings' });
     expect(p).toMatchObject({ ai_history_enabled: true });
     expect(p.ai_history_consented_at).toBeTruthy();

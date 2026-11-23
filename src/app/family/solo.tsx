@@ -31,6 +31,10 @@ import type { FamilySituation } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const platform = (): 'ios' | 'android' | 'web' => (Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'web');
 const PHONE = /^[0-9 +().-]{3,25}$/;
@@ -113,6 +117,7 @@ function GestureCard({ g }: { g: Gesture }) {
 
 export default function Solo() {
   const toast = useToast();
+  const help = useHelpNumbers();
   const today = todayISO();
   const profile = useProfile().data;
   const update = useUpdateProfile();
@@ -136,7 +141,7 @@ export default function Solo() {
   }
 
   return (
-    <Screen back title={tr('tool.solo_parent')} subtitle={tr('tool.solo_parent.sub')}>
+    <Screen back title={toolName('solo_parent')} subtitle={toolBlurb('solo_parent')}>
       <Text muted>{tr('sol.intro')}</Text>
 
       <Card testID="sol-situation">
@@ -153,12 +158,12 @@ export default function Solo() {
       <SectionTitle title={tr('sol.circle.title')} />
       <Text variant="small" muted>{tr('sol.circle.intro')}</Text>
       <Card padded={false} testID="sol-circle">
-        {circle.map((c) => (
-          <ListRow key={c.id} icon="user" title={c.name} testID={`sol-c-${c.name}`}
+        <MotionList>{circle.map((c) => (
+          <MotionItem key={c.id}><ListRow key={c.id} icon="user" title={c.name} testID={`sol-c-${c.name}`}
             subtitle={[c.relation, c.helps.map((h) => tr(`sol.help.${h}` as TKey)).join(', ')].filter(Boolean).join(' · ') || undefined}
             onPress={() => setSheet({ contact: c })}
-            right={c.phone ? <Button label={tr('sol.circle.call')} icon="phone" size="sm" variant="ghost" onPress={() => callNumber(c.phone!, toast)} /> : undefined} />
-        ))}
+            right={c.phone ? <Button label={tr('sol.circle.call')} icon="phone" size="sm" variant="ghost" onPress={() => callNumber(c.phone!, toast)} /> : undefined} /></MotionItem>
+        ))}</MotionList>
         <ListRow icon="user-plus" title={tr('sol.circle.add')} onPress={() => setSheet({})} testID="sol-circle-add" />
       </Card>
       {circle.length ? (
@@ -167,12 +172,12 @@ export default function Solo() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: spacing.xs }}>
             {HELP_KINDS.filter((k) => k !== 'emergency').map((k) => <Chip key={k} label={tr(`sol.help.${k}` as TKey)} selected={ask === k} onPress={() => setAsk(ask === k ? null : k)} testID={`sol-ask-${k}`} />)}
           </View>
-          {ask ? (helpers.length ? helpers.map((c) => (
-            <Row key={c.id} style={{ justifyContent: 'space-between', marginTop: spacing.xs }}>
+          {ask ? (helpers.length ? <MotionList>{helpers.map((c) => (
+            <MotionItem key={c.id}><Row key={c.id} style={{ justifyContent: 'space-between', marginTop: spacing.xs }}>
               <Text style={{ flex: 1 }}>{c.name}</Text>
               {c.phone ? <Button label={tr('sol.ask.sms')} icon="message-circle" size="sm" variant="secondary" onPress={() => sms(c, ask)} testID={`sol-sms-${c.name}`} /> : <Text variant="small" muted>{tr('sol.ask.noPhone')}</Text>}
-            </Row>
-          )) : <Text variant="small" muted style={{ marginTop: spacing.xs }} testID="sol-ask-none">{tr('sol.ask.nobody')}</Text>) : null}
+            </Row></MotionItem>
+          ))}</MotionList> : <Text variant="small" muted style={{ marginTop: spacing.xs }} testID="sol-ask-none">{tr('sol.ask.nobody')}</Text>) : null}
           <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('sol.ask.youSend')}</Text>
         </Card>
       ) : null}
@@ -180,22 +185,22 @@ export default function Solo() {
       {/* Aides */}
       <SectionTitle title={tr('sol.aids.title')} />
       <Text variant="small" muted>{tr('sol.aids.intro')}</Text>
-      {aids.map((a) => (
-        <Card key={a.key} testID={`sol-aid-${a.key}`}>
+      <MotionList style={{ gap: spacing.md }}>{aids.map((a) => (
+        <MotionItem key={a.key}><Card key={a.key} testID={`sol-aid-${a.key}`}>
           <Text weight="bold">{tr(`sol.aid.${a.key}` as TKey)}</Text>
           <Text variant="small">{tr(`sol.aid.${a.key}.d` as TKey)}</Text>
           <Row wrap style={{ gap: spacing.xs, marginTop: spacing.xs }}>
             <Button label={tr('sol.aids.official')} icon="external-link" size="sm" variant="secondary" onPress={() => openLink(a.url, toast)} />
             {a.procedure ? <Button label={tr('sol.aids.prepare')} icon="folder" size="sm" variant="ghost" onPress={() => router.push({ pathname: '/family/papers', params: { proc: a.procedure } })} testID={`sol-aid-prep-${a.key}`} /> : null}
           </Row>
-        </Card>
-      ))}
+        </Card></MotionItem>
+      ))}</MotionList>
       <Text variant="caption" muted>{tr('sol.aids.checked', { date: formatDate(AIDS_CHECKED_ON, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
 
       {/* Gestes */}
       <SectionTitle title={tr('sol.g.title')} />
       <Text variant="small" muted>{tr('sol.g.intro')}</Text>
-      {gestures.map((g) => <GestureCard key={g.key} g={g} />)}
+      <MotionList style={{ gap: spacing.md }}>{gestures.map((g) => <MotionItem key={g.key}><GestureCard key={g.key} g={g} /></MotionItem>)}</MotionList>
 
       {/* Vidéos officielles, lues dans l'appli */}
       <SectionTitle title={tr('sol.v.title')} />
@@ -204,30 +209,24 @@ export default function Solo() {
         {SOLO_TOPICS.map((k) => <Chip key={k} label={tr(`vid.topic.${k}` as TKey)} selected={topic === k} onPress={() => setTopic(k)} testID={`sol-v-topic-${k}`} />)}
       </View>
       <Card testID="sol-videos">
-        <View style={{ gap: spacing.md }}>
-          {ALL_VIDEOS.filter((v) => v.topic === topic).map((v) => <VideoCard key={v.id} video={v} />)}
-        </View>
+        <MotionList style={{ gap: spacing.md }}>
+          {ALL_VIDEOS.filter((v) => v.topic === topic).map((v) => <MotionItem key={v.id}><VideoCard key={v.id} video={v} /></MotionItem>)}
+        </MotionList>
       </Card>
       <Button label={tr('vid.seeAll', { count: ALL_VIDEOS.length })} icon="play-circle" variant="secondary" onPress={() => router.push({ pathname: '/videos', params: { topic } })} testID="sol-videos-all" />
       <Text variant="caption" muted>{tr('sol.v.checked', { date: formatDate(VIDEOS_CHECKED_ON, { day: 'numeric', month: 'long', year: 'numeric' }) })}</Text>
 
       {/* Charge mentale */}
       <SectionTitle title={tr('sol.load.title')} />
-      <Card padded={false}>
-        <ListRow icon="edit-3" title={tr('tool.brain_dump')} subtitle={tr('sol.load.dump')} onPress={() => router.push('/family/brain-dump')} testID="sol-load-dump" />
-        <ListRow icon="calendar" title={tr('tool.family_prep')} subtitle={tr('sol.load.prep')} onPress={() => router.push('/family/prep')} />
-        <ListRow icon="folder" title={tr('tool.family_papers')} subtitle={tr('sol.load.papers')} onPress={() => router.push('/family/papers')} />
-        <ListRow icon="book" title={tr('tool.house_notebook')} subtitle={tr('sol.load.notebook')} onPress={() => router.push('/family/notebook')} />
-        <ListRow icon="moon" title={tr('tool.offduty')} subtitle={tr('sol.load.offduty')} onPress={() => router.push('/family/offduty')} testID="sol-load-offduty" />
-        <ListRow icon="battery" title={tr('tool.exhaustion_check')} subtitle={tr('sol.load.exhausted')} onPress={() => router.push('/family/exhausted')} />
-      </Card>
+      <ToolLinks ids={['brain_dump', 'family_prep', 'family_papers', 'house_notebook', 'offduty', 'exhaustion_check']} allOf="couple" testID="sol-load" />
       <Banner tone="info" icon="heart">{tr('sol.load.permission')}</Banner>
 
       {/* Si ça ne va pas */}
       <Banner tone="danger" icon="alert-octagon">{tr('sol.urgent')}</Banner>
+      {/* Numéros du PAYS choisi (Réglages, sinon région du téléphone) : ligne d'écoute s'il en existe une, urgence médicale */}
       <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-        <View style={{ flex: 1 }}><Button label="3114" icon="phone" variant="secondary" onPress={() => callNumber('3114', toast)} /></View>
-        <View style={{ flex: 1 }}><Button label="15" icon="phone" variant="secondary" onPress={() => callNumber('15', toast)} /></View>
+        {help.crisis ? <View style={{ flex: 1 }}><Button label={help.crisis} icon="phone" variant="secondary" onPress={() => callNumber(help.crisis!, toast)} /></View> : null}
+        <View style={{ flex: 1 }}><Button label={help.urgent} icon="phone" variant="secondary" onPress={() => callNumber(help.urgent, toast)} /></View>
       </View>
       <Button label={tr('cm.ex.allo')} icon="phone" variant="ghost" onPress={() => callNumber('0800003456', toast)} />
 

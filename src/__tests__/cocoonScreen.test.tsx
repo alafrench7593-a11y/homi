@@ -31,6 +31,7 @@ import { AuthProvider } from '@/lib/auth';
 import { ThemeProvider } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/components/Overlays';
 import { Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
+import { DockActionButton } from '@/components/Dock';
 import { useUiStore } from '@/lib/store';
 import type { Child } from '@/lib/types';
 
@@ -97,7 +98,8 @@ describe(`le cocon du jour (${Platform.OS})`, () => {
   });
 
   it('« + Ajouter » : 4 favoris de l’âge, jamais un suivi désactivé ; favoris personnalisés', async () => {
-    const r = await render(<CocoonAdd child={child} journey="baby" />);
+    // « + Ajouter » est le bouton d'action de la barre d'onglets (route « index ») : il ouvre la feuille du cocon
+    const r = await render(<><CocoonAdd child={child} journey="baby" /><DockActionButton route="index" /></>);
     await press(r, 'cocoon-add');
     const actions = ids(r, 'cocoon-add-').filter((x) => !['cocoon-add-sheet', 'cocoon-add-customize'].includes(x));
     expect(actions.slice(0, 4)).toEqual(['cocoon-add-bottle', 'cocoon-add-breastfeed', 'cocoon-add-diaper', 'cocoon-add-sleep']);

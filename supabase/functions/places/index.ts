@@ -5,6 +5,7 @@
 // Sans GOOGLE_PLACES_API_KEY : { google: 'not_configured' } — jamais de faux résultat. Connexion obligatoire, position
 // arrondie (~1 km), limite d'appels par personne, aucun résultat stocké.
 import { adminClient, corsHeaders, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
+import { readJsonBody } from '../_shared/body.ts';
 import { buildSearch, GOOGLE_FIELD_MASK, googleErrorState, parseGooglePlaces, parsePhotoMedia, photoMediaUrl, validPhotoName, validQuery } from '../_shared/google-places.ts';
 
 async function search(key: string, body: { url: string; body: Record<string, unknown> }) {
@@ -28,7 +29,8 @@ Deno.serve(withCors(async (req) => {
   const key = (Deno.env.get('GOOGLE_PLACES_API_KEY') ?? '').trim();
   if (!key) return json({ google: 'not_configured' });
 
-  const body = await req.json().catch(() => ({}));
+  const body = await readJsonBody(req, 4 * 1024);
+  if (!body) return json({ error: 'too_large' }, 413);
   const admin = adminClient();
 
   try {

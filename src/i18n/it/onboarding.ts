@@ -66,7 +66,7 @@ export const onboarding: Messages<typeof fr> = {
   "onb.ready.children": {"one": "{count} profilo bambino creato", "other": "{count} profili bambino creati"},
   "onb.ready.reminders": {"zero": "Nessun promemoria programmato", "one": "{count} promemoria programmato", "other": "{count} promemoria programmati"},
   "onb.ready.cycle": "Il tuo ciclo: annota le prossime mestruazioni per ottenere delle stime",
-  "onb.ready.community": "La community ti aspetta in Strumenti",
+  'onb.ready.community': 'La community ti aspetta in Le mie app',
   "onb.ready.privacy": "I tuoi dati restano privati per impostazione predefinita",
   "onb.ready.cta": "Scopri il mio spazio",
   "journeys.title": "I miei percorsi",

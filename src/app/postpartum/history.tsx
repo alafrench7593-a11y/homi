@@ -1,13 +1,15 @@
 /**
  * Mon évolution : tendances simples sur 14 jours et historique des points du jour.
  * Descriptif uniquement : pas de moyenne « notée », pas de récompense, pas de pénalité.
+ * 22/11/2026 : bilans datés en tête (quatorze jours, « rien de noté », fiche de correction : CheckinDays).
  */
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { HistoryHeader } from '@/components/MiniApp';
-import { EmptyState, ErrorView, Skeleton } from '@/components/States';
+import { ErrorView, Skeleton } from '@/components/States';
+import { CheckinDays } from '@/features/pregTrack/CheckinDays';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
 import { Button, Card, ListRow, SectionTitle, Text } from '@/components/ui';
@@ -15,9 +17,12 @@ import { MiniTrend } from '@/features/postpartum';
 import { useDeleteCheckin, usePostpartumActions, usePostpartumCheckins } from '@/lib/data/hooks-postpartum';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { ACTION_KINDS, NEEDS, describeTrend, trendSeries, type CheckinInput } from '@/lib/domain/postpartum';
+import { bodyHistory } from '@/features/postpartumCare/domain';
+import { type TKey } from '@/i18n';
 import { todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const trends = (): { key: keyof CheckinInput; label: string; positive: boolean }[] => [
   { key: 'feeling', label: tr('u5.pp_history.t_feeling'), positive: true },
@@ -46,36 +51,48 @@ export default function PostpartumHistory() {
       action={{ label: list.some((c) => c.checkin_date === today) ? tr('u5.pp_history.reread') : tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push('/postpartum/checkin'), testID: 'pp-history-action' }}>
       {q.isLoading && !q.data ? <Skeleton kind="card" rows={3} /> : null}
       {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
-      {q.data && list.length === 0 ? (
-        <EmptyState icon="trending-up" title={tr('u5.pp_history.empty_t')} body={tr('u5.pp_history.empty_b')} action={{ label: tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push('/postpartum/checkin') }} />
-      ) : null}
+      {q.data ? <CheckinDays list={list} /> : null}
+      {q.data && list.length === 0 ? <Text variant="small" muted>{tr('u5.pp_history.empty_b')}</Text> : null}
 
       {list.length > 0 ? (
         <>
           <Card>
-            <View style={{ gap: spacing.lg }}>
+            <MotionList style={{ gap: spacing.lg }}>
               {trends().map((tt) => {
                 const pts = trendSeries(list, tt.key, today, 14);
-                return <MiniTrend key={tt.key} label={tt.label} points={pts} positive={tt.positive} description={describeTrend(pts, tt.positive)} />;
+                return <MotionItem key={tt.key}><MiniTrend key={tt.key} label={tt.label} points={pts} positive={tt.positive} description={describeTrend(pts, tt.positive)} /></MotionItem>;
               })}
-            </View>
+            </MotionList>
           </Card>
           <Text variant="caption" muted>{tr('u5.pp_history.disclaimer')}</Text>
 
-          {actionsQ.data?.length ? (
+          {bodyHistory(list).length ? (
             <>
-              <SectionTitle title={tr('u5.pp_history.actions')} />
-              <Card>
-                {actionsQ.data.slice(0, 10).map((a) => (
-                  <ListRow key={a.id} icon="check" title={ACTION_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind} subtitle={[formatDate(new Date(`${a.done_on}T12:00:00`), { day: 'numeric', month: 'long' }), a.note].filter(Boolean).join(' — ')} />
+              <SectionTitle title={tr('ppb.history')} />
+              <Card testID="ppb-history">
+                {bodyHistory(list).slice(0, 14).map((b) => (
+                  <ListRow key={b.day} icon="activity" title={formatDate(new Date(`${b.day}T12:00:00`), { weekday: 'long', day: 'numeric', month: 'long' })}
+                    subtitle={[b.scar ? tr('ppb.line.scar', { v: tr(`ppb.f.${b.scar}` as TKey) }) : null, b.perineum ? tr('ppb.line.perineum', { v: tr(`ppb.f.${b.perineum}` as TKey) }) : null,
+                      b.bleeding ? tr('ppb.line.bleeding', { v: tr(`ppb.b.${b.bleeding}` as TKey) }) : null].filter(Boolean).join(' · ')} />
                 ))}
               </Card>
             </>
           ) : null}
 
+          {actionsQ.data?.length ? (
+            <>
+              <SectionTitle title={tr('u5.pp_history.actions')} />
+              <Card>
+                <MotionList>{actionsQ.data.slice(0, 10).map((a) => (
+                  <MotionItem key={a.id}><ListRow key={a.id} icon="check" title={ACTION_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind} subtitle={[formatDate(new Date(`${a.done_on}T12:00:00`), { day: 'numeric', month: 'long' }), a.note].filter(Boolean).join(' — ')} /></MotionItem>
+                ))}</MotionList>
+              </Card>
+            </>
+          ) : null}
+
           <HistoryHeader title={tr('u5.pp_history.list')} count={list.length} />
-          {list.map((c, i) => (
-            <StaggerItem key={c.id} index={i}>
+          <MotionList style={{ gap: spacing.md }}>{list.map((c, i) => (
+            <MotionItem key={c.id}><StaggerItem key={c.id} index={i}>
               <Card>
                 <ListRow
                   icon="calendar"
@@ -87,8 +104,8 @@ export default function PostpartumHistory() {
                   right={<Button label={tr('u5.pp_history.del_ok')} size="sm" variant="ghost" onPress={() => remove(c.id, c.checkin_date)} accessibilityLabel={tr('u5.pp_history.del_a11y', { date: c.checkin_date })} />}
                 />
               </Card>
-            </StaggerItem>
-          ))}
+            </StaggerItem></MotionItem>
+          ))}</MotionList>
         </>
       ) : null}
     </Screen>

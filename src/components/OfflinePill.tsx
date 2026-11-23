@@ -7,10 +7,12 @@ import { Icon, Text } from '@/components/ui';
 import { useOfflineStore } from '@/lib/offline';
 import { t as tr } from '@/i18n';
 import { Tappable } from '@/components/Tappable';
+import { useTheme } from '@/theme/ThemeProvider';
 
 export function OfflinePill() {
   const { online, pending, conflicts } = useOfflineStore();
   const insets = useSafeAreaInsets();
+  const t = useTheme();
   if (online && !pending.length && !conflicts.length) return null;
   const label = !online
     ? (pending.length ? tr('sync.offlinePending', { count: pending.length }) : tr('sync.offline'))
@@ -23,10 +25,10 @@ export function OfflinePill() {
         accessibilityLiveRegion="polite"
         onPress={() => router.push('/settings/sync')}
         hitSlop={8}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, minHeight: 32, borderRadius: 999, backgroundColor: conflicts.length ? 'rgba(194,65,110,0.92)' : 'rgba(42,27,46,0.85)' }}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, minHeight: 32, borderRadius: 999, backgroundColor: conflicts.length ? t.colors.danger : t.tokens.inverse.fill }}
       >
-        <Icon name={online ? 'refresh-cw' : 'wifi-off'} size={14} color="#FFFFFF" />
-        <Text variant="caption" weight="bold" color="#FFFFFF">{label}</Text>
+        <Icon name={online ? 'refresh-cw' : 'wifi-off'} size={14} color={conflicts.length ? t.tokens.text.onAccent : t.tokens.inverse.text} />
+        <Text variant="caption" weight="bold" color={conflicts.length ? t.tokens.text.onAccent : t.tokens.inverse.text}>{label}</Text>
       </Tappable>
     </View>
   );

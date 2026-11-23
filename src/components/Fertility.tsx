@@ -24,11 +24,12 @@ import { describeSchedule, validateSchedule, type ReminderSchedule, type Weekday
 import { toFrDate } from '@/lib/validation';
 import { QUESTION_SUGGESTIONS, type ReminderPreset } from '@/content/fertility';
 import type { PeriodEntry } from '@/lib/types';
-import type { FertilityJourney } from '@/lib/types-fertility';
+import type { FertilityJourney, QuestionTheme } from '@/lib/types-fertility';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { formatDate, formatNumber, t as tr, type TKey } from '@/i18n';
+import { CheckMark } from '@/motion/CheckMark';
 
 export const RELIABILITY_LABEL = {
   get insufficient() { return tr('u5.fert.rel_insufficient'); },
@@ -104,7 +105,7 @@ export function MonthCalendar<K extends string | null>({ kindOf, styleOf, legend
             const isToday = d === today;
             const dots = dotsOf?.(d) ?? [];
             const isSel = selected === d;
-            const style = { flex: 1, aspectRatio: 1, maxHeight: 44, borderRadius: radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: s?.bg ?? 'transparent', borderWidth: isSel ? 2 : isToday ? 1.5 : 0, borderColor: isSel ? t.colors.text : t.colors.primary, opacity: inMonth ? 1 : 0.35 };
+            const style = { flex: 1, aspectRatio: 1, minHeight: 44, maxHeight: 48, borderRadius: radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: s?.bg ?? 'transparent', borderWidth: isSel ? 2 : isToday ? 1.5 : 0, borderColor: isSel ? t.colors.text : t.colors.primary, opacity: inMonth ? 1 : 0.35 };
             const label = `${fdate(d)}${isToday ? `, ${tr('u5.fert.today')}` : ''}${s ? `, ${s.label}` : ''}${dots.length ? `, ${tr('u5.fert.dots', { count: dots.length })}` : ''}`;
             const inner = (
               <>
@@ -478,14 +479,35 @@ export function JourneyArticles({ journey }: { journey: FertilityJourney }) {
 }
 
 // ---------------------------------------------------------------- questions pour la consultation
-export function ConsultationChecklist({ journey, childId }: { journey: FertilityJourney; childId?: string | null }) {
+/** Questions à ajouter : nettoyées, sans doublon entre elles ni avec la liste existante (pur, testé). */
+export function questionKey(q: string): string {
+  return q.trim().replace(/\s+/g, ' ').replace(/[\s?!.…]+$/u, '').toLocaleLowerCase('fr');
+}
+export function newQuestions(qs: string[], existing: string[]): string[] {
+  const seen = new Set(existing.map(questionKey));
+  const out: string[] = [];
+  for (const q of qs) {
+    const t = q.trim().replace(/\s+/g, ' ');
+    const k = questionKey(t);
+    if (!k || seen.has(k)) continue;
+    seen.add(k);
+    out.push(t);
+  }
+  return out;
+}
+
+export function ConsultationChecklist({ journey, childId, theme, withUnthemed, suggestions: themeSuggestions, testID }: {
+  journey: FertilityJourney; childId?: string | null;
+  /** 57 / 81 : liste d'un thème (postnatal, lactation) ; `withUnthemed` y garde les questions sans thème du parcours */
+  theme?: QuestionTheme | null; withUnthemed?: boolean; suggestions?: string[]; testID?: string;
+}) {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
   const householdId = useHouseholdId();
-  const questionsQ = useConsultationQuestions(journey, childId);
+  const questionsQ = useConsultationQuestions(journey, childId, theme, withUnthemed);
   const { data } = questionsQ;
-  const add = useAddQuestions(journey, childId);
+  const add = useAddQuestions(journey, childId, theme);
   const [savingAnswer, setSavingAnswer] = useState(false);
   const share = useShareQuestion();
   const [text, setText] = useState('');
@@ -493,12 +515,16 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
   const [answer, setAnswer] = useState('');
   const list = data ?? [];
   const existing = new Set(list.map((q) => q.question));
-  const suggestions = QUESTION_SUGGESTIONS[journey].filter((s) => !existing.has(s));
+  const suggestions = (themeSuggestions ?? QUESTION_SUGGESTIONS[journey]).filter((s) => !existing.has(s));
   const nextPos = list.length ? Math.max(...list.map((q) => q.position)) + 1 : 0;
 
   async function addQuestions(qs: string[]) {
-    const clean = qs.map((q) => q.trim()).filter(Boolean);
-    if (!clean.length) return;
+    // jamais deux fois la même question (casse, espaces et ponctuation finale ignorés) — audit 05 / 09
+    const clean = newQuestions(qs, list.map((q) => q.question));
+    if (!clean.length) {
+      if (qs.some((q) => q.trim())) { toast(tr('u5.fert.q_dup'), 'info'); setText(''); }
+      return;
+    }
     try {
       await add.mutateAsync({ questions: clean, startPosition: nextPos });
       setText('');
@@ -540,9 +566,9 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
 
   return (
     <>
-      <Card>
-        <Field label={tr('u5.fert.q_add')} value={text} onChangeText={setText} maxLength={300} placeholder={tr('u5.fert.q_ph')} onSubmitEditing={() => addQuestions([text])} />
-        <Button label={tr('u5.fert.add')} icon="plus" variant="secondary" style={{ marginTop: spacing.sm }} loading={add.isPending} onPress={() => addQuestions([text])} />
+      <Card testID={testID}>
+        <Field label={tr('u5.fert.q_add')} value={text} onChangeText={setText} maxLength={300} placeholder={tr('u5.fert.q_ph')} onSubmitEditing={() => addQuestions([text])} submitBehavior="submit" testID={testID ? `${testID}-field` : undefined} />
+        <Button label={tr('u5.fert.add')} icon="plus" variant="secondary" style={{ marginTop: spacing.sm }} loading={add.isPending} onPress={() => addQuestions([text])} testID={testID ? `${testID}-add` : undefined} />
       </Card>
       {questionsQ.isLoading && !data ? <Skeleton rows={3} /> : null}
       {questionsQ.isError && !data ? <ErrorView error={questionsQ.error} onRetry={() => void questionsQ.refetch()} title={tr('u5.fert.err_q')} /> : null}
@@ -559,7 +585,7 @@ export function ConsultationChecklist({ journey, childId }: { journey: Fertility
                   hitSlop={11}
                   style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: q.done ? t.colors.success : t.colors.border, backgroundColor: q.done ? t.colors.success : 'transparent', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}
                 >
-                  {q.done ? <Icon name="check" size={16} color="#fff" /> : null}
+                  <CheckMark checked={!!q.done} size={18} color="#fff" />
                 </Tappable>
                 <Tappable style={{ flex: 1, minHeight: MIN_TOUCH, justifyContent: 'center' }} accessibilityRole="button" accessibilityLabel={tr('u5.fert.q_answer_a11y', { question: q.question })} onPress={() => { setOpen(q.id); setAnswer(q.answer ?? ''); }}>
                   <Text style={{ textDecorationLine: q.done ? 'line-through' : 'none' }} muted={q.done}>{q.question}</Text>

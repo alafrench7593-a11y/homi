@@ -9,6 +9,8 @@ import { Banner, Button, Card, Chip, ListRow, Row, Text } from '@/components/ui'
 import { useChildNeeds, useNeedEntries, useTreatments, type NeedKind, type Treatment, type TreatmentLog } from '@/lib/data/hooks-needs';
 import type { Child } from '@/lib/types';
 import { t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
 import { useUiStore } from '@/lib/store';
 
@@ -61,9 +63,9 @@ export function NeedsSummary({ child }: { child: Child }) {
         <ListRow icon="clipboard" title={tr('nd.tab.treatments')} subtitle={active.length ? tr('nd.treatments.count', { count: active.length }) : tr('nd.treatments.none')} onPress={() => router.push(`/child/${child.id}/needs?tab=treatments`)} />
         <ListRow icon="list" title={tr('nd.tab.follow')} subtitle={tr('nd.entries.count', { count: entries?.length ?? 0 })} onPress={() => router.push(`/child/${child.id}/needs?tab=follow`)} />
         {/* Mode simple : ni école, ni documents à importer (aucun bilan demandé aux parents) */}
-        {simple ? null : <ListRow icon="book" title={tr('tool.child_school')} onPress={() => router.push(`/child/${child.id}/school`)} />}
-        {simple ? null : <ListRow icon="folder" title={tr('tool.documents')} onPress={() => router.push(`/documents?child=${child.id}`)} />}
       </Card>
+      {/* Mode simple : ni école, ni documents à importer (aucun bilan demandé aux parents) */}
+      {simple ? null : <ToolLinks ids={['kid_school', 'documents']} subject={{ type: 'child', id: child.id }} testID="needs-links" />}
       <Button label={tr('nd.open')} icon="compass" onPress={() => router.push(`/child/${child.id}/needs`)} full testID="open-needs" />
     </View>
   );

@@ -12,7 +12,7 @@ const S = {
   lireCulture: { label: 'Ministère de la Culture — Lire avec un tout petit et son parent', url: 'https://www.culture.gouv.fr/fr/thematiques/education-artistique-et-culturelle/actualites/Lire-avec-un-tout-petit-et-son-parent', consulted_on: C, published: '2019-08-20' },
   ecrans: { label: 'Ministère chargé de la Santé — Écrans : des risques pour la santé physique et mentale des enfants, un accompagnement nécessaire', url: 'https://solidarites.gouv.fr/enfants-et-ecrans-des-risques-sanitaires-reels-un-accompagnement-necessaire', consulted_on: C, published: '2025-07-02' },
   arreteEcrans: { label: 'Ministère chargé de la Santé — Arrêté interdisant l’exposition des enfants de moins de 3 ans aux écrans dans les lieux d’accueil du jeune enfant', url: 'https://solidarites.gouv.fr/protection-de-la-petite-enfance-publication-de-larrete-interdisant-lexposition-des-enfants-de-moins-de-3-ans-aux-ecrans-dans-les-lieux-daccueil-du-jeune-enfant', consulted_on: C, published: '2025-07-02' },
-  jouets: { label: 'economie.gouv.fr — Nos conseils pour choisir les jouets de vos enfants en toute sécurité', url: 'https://www.economie.gouv.fr/particuliers/choix-conseil-achat-jouets-securite-enfants', consulted_on: C },
+  jouets: { label: 'economie.gouv.fr — Nos conseils pour choisir les jouets de tes enfants en toute sécurité', url: 'https://www.economie.gouv.fr/particuliers/choix-conseil-achat-jouets-securite-enfants', consulted_on: C },
   piles: { label: 'Santé.fr (Ministère chargé de la Santé) — Piles bouton : prévention des risques d’ingestion par les jeunes enfants', url: 'https://www.sante.fr/node/1184265', consulted_on: C, published: '2024-12-16' },
   accidents: { label: 'Santé.fr (Santé publique France – 1000 premiers jours) — Éviter les accidents domestiques des enfants', url: 'https://www.sante.fr/eviter-les-accidents-domestiques-des-enfants', consulted_on: C, published: '2025-07-11' },
   airesJeux: { label: 'DGCCRF (economie.gouv.fr) — Aires collectives de jeux', url: 'https://www.economie.gouv.fr/dgccrf/Publications/Vie-pratique/Fiches-pratiques/Aires-collectives-jeux', consulted_on: C },
@@ -26,9 +26,9 @@ const S = {
   carnet: { label: 'Santé.fr (Ministère chargé de la Santé) — Le carnet de santé de l’enfant', url: 'https://www.sante.fr/le-carnet-de-sante-de-lenfant-1', consulted_on: C, published: '2024-12-27' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article vous informe ; il ne remplace pas l’avis du médecin, de la puéricultrice de PMI ou des professionnels qui suivent votre enfant._';
-const URG = 'En cas d’urgence, appelez le **15** (SAMU) ou le **112**.';
-const SOUTIEN = 'Si vous vous sentez à bout, épuisé·e ou très seul·e, parlez-en à votre médecin ou à la PMI ; en cas de détresse ou d’idées noires, le **3114** répond jour et nuit. Si un enfant est en danger, appelez le **119**.';
+const FIN = '_Cet article t’informe ; il ne remplace pas l’avis du médecin, de la puéricultrice de PMI ou des professionnels qui suivent ton enfant._';
+const URG = 'En cas d’urgence, appelle le **15** (SAMU) ou le **112**.';
+const SOUTIEN = 'Si tu te sens à bout, épuisé·e ou très seul·e, parles-en à ton médecin ou à la PMI ; en cas de détresse ou d’idées noires, le **3114** répond jour et nuit. Si un enfant est en danger, appelle le **119**.';
 
 const a = (x: Omit<LibArticle, 'status' | 'journeys'> & { journeys?: LibArticle['journeys'] }): LibArticle => ({
   journeys: ['newborn', 'child'], min_age_months: 12, max_age_months: 36, status: 'to_review', ...x,
@@ -62,27 +62,27 @@ Quelques idées pour répartir le mouvement sur la journée :
 - **Le matin** : une petite marche jusqu’à la boulangerie, la crèche ou le marché, en laissant l’enfant marcher une partie du trajet.
 - **À la maison** : un coin dégagé avec des coussins à escalader, un carton-tunnel, une danse sur sa musique préférée.
 - **Après la sieste** : un passage au square, au jardin, dans un parc ; quelques lancers de balle ou une course « attrape-moi ».
-- **Pendant les tâches** : le laisser vous suivre, porter un petit sac, ranger les chaussettes dans le panier.
+- **Pendant les tâches** : le laisser te suivre, porter un petit sac, ranger les chaussettes dans le panier.
 - **Le soir** : des jeux plus calmes pour préparer le coucher, car les activités trop excitantes en soirée peuvent retarder l’endormissement.
 - **Les jours de pluie** : vêtements adaptés et sortie quand même, ou parcours avec des coussins dans le salon.
 
-N’essayez pas de chronométrer : observez plutôt si votre enfant a eu, sur la journée, plusieurs moments pour courir, grimper, se dépenser et jouer librement.
+N’essaie pas de chronométrer : observe plutôt si ton enfant a eu, sur la journée, plusieurs moments pour courir, grimper, se dépenser et jouer librement.
 
 ## Questions fréquentes
 **Faut-il l’inscrire à une activité sportive ?**
 Ce n’est pas nécessaire à cet âge. Le jeu libre, les sorties et les jeux en famille suffisent largement à proposer du mouvement. Une activité de type « bébés nageurs » ou un éveil corporel peut être un plaisir partagé, sans obligation.
 
 **Mon enfant est gardé toute la journée : comment savoir s’il bouge assez ?**
-Demandez simplement aux professionnels comment se passent les journées : temps dehors, jeux moteurs, sieste. Le soir et le week-end, privilégiez une sortie ou un moment de jeu actif.
+Demande simplement aux professionnels comment se passent les journées : temps dehors, jeux moteurs, sieste. Le soir et le week-end, privilégie une sortie ou un moment de jeu actif.
 
 **Il préfère les activités calmes. Est-ce un problème ?**
-Chaque enfant a son tempérament. Les temps calmes ont aussi leur place. Proposez des jeux de mouvement sous forme de plaisir partagé (danse, cache-cache, balade), sans forcer.
+Chaque enfant a son tempérament. Les temps calmes ont aussi leur place. Propose des jeux de mouvement sous forme de plaisir partagé (danse, cache-cache, balade), sans forcer.
 
 **La poussette est-elle à bannir ?**
 Non : elle reste utile pour les longs trajets ou quand il est fatigué. L’idée est de ne pas l’y laisser assis pendant les temps de jeu et de lui laisser marcher une partie des trajets.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant ne marche pas encore et que vous vous posez des questions, s’il tombe très souvent, semble peu intéressé par le mouvement, ou si vous avez un doute sur son développement. Le médecin pourra aussi en parler avec vous lors des examens de suivi. ${URG}
+Parles-en au médecin ou à la PMI si ton enfant ne marche pas encore et que tu te poses des questions, s’il tombe très souvent, semble peu intéressé par le mouvement, ou si tu as un doute sur son développement. Le médecin pourra aussi en parler avec toi lors des examens de suivi. ${URG}
 
 ${FIN}`,
   }),
@@ -93,7 +93,7 @@ ${FIN}`,
     category: 'activites-eveil', tags: ['parcours de motricité', 'motricité', 'jeux d’intérieur', 'jour de pluie', 'coussins', 'grimper', 'tout-petit', 'sans écran'],
     sources: [S.recos5ans, S.accidents, S.activitesBebe],
     body_md: `## En bref
-- Un parcours de motricité se fabrique avec ce que vous avez : **coussins, cartons, plaids, chaises solides, scotch au sol**.
+- Un parcours de motricité se fabrique avec ce que tu as : **coussins, cartons, plaids, chaises solides, scotch au sol**.
 - Il permet de **grimper, ramper, enjamber, sauter, se faufiler** même quand il pleut.
 - La sécurité passe par un **espace dégagé**, des meubles **fixés au mur** et un adulte présent.
 - Le plus important n’est pas le matériel mais **le plaisir partagé** et le rythme de l’enfant.
@@ -107,9 +107,9 @@ Côté sécurité, le jeune enfant n’a pas conscience du danger. Les conseils 
 
 ## Au quotidien
 **Installer le parcours**
-- Choisissez une pièce dégagée, loin des fenêtres, des angles de table et des escaliers.
-- Posez un tapis ou des couvertures épaisses au sol.
-- Vérifiez que les meubles alentour sont stables ou fixés au mur.
+- Choisis une pièce dégagée, loin des fenêtres, des angles de table et des escaliers.
+- Pose un tapis ou des couvertures épaisses au sol.
+- Vérifie que les meubles alentour sont stables ou fixés au mur.
 
 **Idées d’étapes** (à adapter à son âge)
 - **Une montagne de coussins** à escalader puis à descendre sur les fesses.
@@ -120,27 +120,27 @@ Côté sécurité, le jeune enfant n’a pas conscience du danger. Les conseils 
 - **Un bac de balles** ou de pelotes de laine à transvaser à la fin du parcours.
 
 **Le faire vivre**
-- Montrez une fois, puis laissez-le explorer à sa façon : il inventera souvent son propre ordre.
-- Accompagnez par les mots : « dessus », « dessous », « dedans », « à côté » enrichissent son vocabulaire.
-- Changez une ou deux étapes d’un jour à l’autre pour renouveler l’intérêt.
-- Arrêtez quand il montre des signes de fatigue ou d’agacement, sans forcer.
-- Évitez les parcours très excitants juste avant le coucher.
+- Montre une fois, puis laisse-le explorer à sa façon : il inventera souvent son propre ordre.
+- Accompagne par les mots : « dessus », « dessous », « dedans », « à côté » enrichissent son vocabulaire.
+- Change une ou deux étapes d’un jour à l’autre pour renouveler l’intérêt.
+- Arrête quand il montre des signes de fatigue ou d’agacement, sans forcer.
+- Évite les parcours très excitants juste avant le coucher.
 
 ## Questions fréquentes
 **À partir de quel âge peut-on proposer un parcours ?**
 Dès qu’il se déplace, en adaptant les étapes : à 12–18 mois, ramper et escalader des coussins bas ; vers 2–3 ans, sauter à pieds joints, marcher sur une ligne, se faufiler.
 
 **Faut-il acheter des modules en mousse ?**
-Ce n’est pas nécessaire. Si vous en achetez, vérifiez le **marquage CE** et l’âge indiqué, comme pour tout jouet.
+Ce n’est pas nécessaire. Si tu en achètes, vérifie le **marquage CE** et l’âge indiqué, comme pour tout jouet.
 
 **Il tombe souvent pendant le parcours. Dois-je l’arrêter ?**
-Les petites chutes sur un sol amorti font partie de l’apprentissage. Restez près de lui et sécurisez les hauteurs. En revanche, un choc sur la tête suivi de vomissements, de somnolence ou d’un comportement inhabituel justifie un avis médical rapide.
+Les petites chutes sur un sol amorti font partie de l’apprentissage. Reste près de lui et sécurise les hauteurs. En revanche, un choc sur la tête suivi de vomissements, de somnolence ou d’un comportement inhabituel justifie un avis médical rapide.
 
 **Il veut grimper partout, même sur les meubles.**
-Proposez-lui des endroits où il a le droit de grimper (le parcours, les coussins) et sécurisez le reste : meubles fixés, rien qui permette d’atteindre une fenêtre ou un balcon.
+Propose-lui des endroits où il a le droit de grimper (le parcours, les coussins) et sécurise le reste : meubles fixés, rien qui permette d’atteindre une fenêtre ou un balcon.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant semble avoir des difficultés persistantes d’équilibre, s’il perd des acquisitions ou si vous avez un doute sur sa motricité. Après une chute, consultez rapidement en cas de perte de connaissance, de vomissements répétés, de somnolence inhabituelle ou de douleur qui l’empêche de bouger un membre. ${URG}
+Parles-en au médecin ou à la PMI si ton enfant semble avoir des difficultés persistantes d’équilibre, s’il perd des acquisitions ou si tu as un doute sur sa motricité. Après une chute, consulte rapidement en cas de perte de connaissance, de vomissements répétés, de somnolence inhabituelle ou de douleur qui l’empêche de bouger un membre. ${URG}
 
 ${FIN}`,
   }),
@@ -153,7 +153,7 @@ ${FIN}`,
     body_md: `## En bref
 - Le ballon fait partie des activités recommandées pour les tout-petits : **lancer une balle** dès 1 an, **jouer au ballon en famille** dès 2 ans.
 - Vers 2 ans, un jeu simple : **assis en rond, se faire rouler le ballon**.
-- Choisissez une balle **adaptée à l’âge** (taille, poids, marquage CE).
+- Choisis une balle **adaptée à l’âge** (taille, poids, marquage CE).
 - Ces jeux développent la coordination, l’attention… et le tour de rôle.
 
 ## Comprendre
@@ -165,9 +165,9 @@ Au-delà de la motricité, le ballon est un jeu **relationnel** : il circule de 
 
 ## Au quotidien
 **Vers 12–18 mois**
-- Asseyez-vous face à lui, jambes écartées, et faites rouler doucement une grosse balle souple vers lui.
-- Laissez-le la pousser, la suivre à quatre pattes ou en marchant.
-- Jouez à « la balle dans le panier » : un grand panier à linge posé au sol suffit.
+- Assieds-toi face à lui, jambes écartées, et fais rouler doucement une grosse balle souple vers lui.
+- Laisse-le la pousser, la suivre à quatre pattes ou en marchant.
+- Joue à « la balle dans le panier » : un grand panier à linge posé au sol suffit.
 
 **Vers 18 mois–2 ans**
 - Lancers vers un grand carton ou dans un bac.
@@ -182,24 +182,24 @@ Au-delà de la motricité, le ballon est un jeu **relationnel** : il circule de 
 
 **Le bon matériel**
 - Une balle **souple et légère** pour l’intérieur.
-- Vérifiez le **marquage CE** et l’âge indiqué ; évitez les petites balles qui ne conviennent pas aux moins de 36 mois.
-- À l’intérieur, éloignez les objets fragiles et jouez dans une pièce dégagée.
+- Vérifie le **marquage CE** et l’âge indiqué ; évite les petites balles qui ne conviennent pas aux moins de 36 mois.
+- À l’intérieur, éloigne les objets fragiles et joue dans une pièce dégagée.
 
 ## Questions fréquentes
 **Il ne sait pas encore attraper : est-ce inquiétant ?**
-Attraper demande beaucoup de coordination et vient plus tard que lancer ou pousser. Faites rouler la balle au sol plutôt que de la lancer en l’air, c’est plus facile pour lui.
+Attraper demande beaucoup de coordination et vient plus tard que lancer ou pousser. Fais rouler la balle au sol plutôt que de la lancer en l’air, c’est plus facile pour lui.
 
 **Il jette tout, pas seulement les balles. Comment réagir ?**
-Lancer est une découverte importante à cet âge. Proposez-lui des objets qu’il a le droit de lancer (balles souples, sacs de tissu) et dites simplement ce qu’on ne lance pas.
+Lancer est une découverte importante à cet âge. Propose-lui des objets qu’il a le droit de lancer (balles souples, sacs de tissu) et dis simplement ce qu’on ne lance pas.
 
 **Peut-on jouer au ballon dans un appartement ?**
 Oui, avec une balle souple, dans une pièce dégagée, loin des fenêtres et des objets fragiles.
 
 **À partir de quand peut-il taper dans un ballon ?**
-Cela dépend de son équilibre : beaucoup d’enfants s’y essaient vers 2 ans. Laissez-le essayer à son rythme.
+Cela dépend de son équilibre : beaucoup d’enfants s’y essaient vers 2 ans. Laisse-le essayer à son rythme.
 
 ## Quand demander conseil
-Si votre enfant semble avoir des difficultés de coordination qui persistent, ne s’intéresse pas aux échanges ou si vous avez un doute sur son développement, parlez-en au médecin ou à la PMI. Une chute avec choc à la tête suivie de vomissements ou de somnolence nécessite un avis médical rapide. ${URG}
+Si ton enfant semble avoir des difficultés de coordination qui persistent, ne s’intéresse pas aux échanges ou si tu as un doute sur son développement, parles-en au médecin ou à la PMI. Une chute avec choc à la tête suivie de vomissements ou de somnolence nécessite un avis médical rapide. ${URG}
 
 ${FIN}`,
   }),
@@ -211,8 +211,8 @@ ${FIN}`,
     sources: [S.recos5ans, S.airesJeux, S.accidents],
     body_md: `## En bref
 - À partir de 2 ans, les recommandations conseillent d’emmener régulièrement l’enfant **au parc ou au square**, pour jouer et rencontrer d’autres enfants.
-- Chaque équipement d’une aire de jeux doit afficher **la tranche d’âge prévue** : c’est votre premier repère.
-- Évitez **écharpes, cordons et colliers** qui peuvent s’accrocher dans les jeux.
+- Chaque équipement d’une aire de jeux doit afficher **la tranche d’âge prévue** : c’est ton premier repère.
+- Évite **écharpes, cordons et colliers** qui peuvent s’accrocher dans les jeux.
 - Un adulte **reste à proximité** : le tout-petit n’a pas conscience du danger.
 
 ## Comprendre
@@ -224,16 +224,16 @@ Les conseils de prévention des accidents domestiques rappellent aussi le risque
 
 ## Au quotidien
 **Avant de jouer**
-- Repérez le panneau d’entrée et les **pictogrammes d’âge** sur chaque jeu.
-- Faites un petit tour : sol amortissant en bon état, absence de débris, de verre ou de déjections dans le sable.
-- Retirez écharpe, cordons de capuche, colliers ; préférez un tour de cou ou un col fermé.
-- En été, privilégiez les heures fraîches et les zones ombragées, chapeau sur la tête.
+- Repère le panneau d’entrée et les **pictogrammes d’âge** sur chaque jeu.
+- Fais un petit tour : sol amortissant en bon état, absence de débris, de verre ou de déjections dans le sable.
+- Retire écharpe, cordons de capuche, colliers ; préfère un tour de cou ou un col fermé.
+- En été, privilégie les heures fraîches et les zones ombragées, chapeau sur la tête.
 
 **Pendant le jeu**
-- Restez à portée de main sur les équipements en hauteur, surtout avant 2 ans.
-- Montrez-lui comment descendre du toboggan **assis, les pieds devant**, et attendre son tour en bas de l’échelle.
-- Éloignez-le de la zone de passage des balançoires et des tourniquets.
-- Laissez-le explorer à son rythme : certains enfants observent longtemps avant d’oser.
+- Reste à portée de main sur les équipements en hauteur, surtout avant 2 ans.
+- Montre-lui comment descendre du toboggan **assis, les pieds devant**, et attendre son tour en bas de l’échelle.
+- Éloigne-le de la zone de passage des balançoires et des tourniquets.
+- Laisse-le explorer à son rythme : certains enfants observent longtemps avant d’oser.
 
 **Après**
 - Lavage des mains au retour, surtout après le bac à sable.
@@ -247,16 +247,16 @@ Avant que l’enfant ne soit à l’aise sur les grands équipements, il peut s�
 L’âge indiqué tient compte de la taille des marches, des hauteurs et des espaces. Mieux vaut respecter ce repère et choisir les jeux conçus pour son âge.
 
 **Il porte une écharpe en hiver : comment faire ?**
-Les écharpes et cordons peuvent s’accrocher dans les jeux et serrer le cou. Préférez un tour de cou, un col montant ou un vêtement fermé, et retirez les cordons de capuche.
+Les écharpes et cordons peuvent s’accrocher dans les jeux et serrer le cou. Préfère un tour de cou, un col montant ou un vêtement fermé, et retire les cordons de capuche.
 
 **J’ai remarqué un équipement abîmé. Que faire ?**
-Signalez-le au gestionnaire dont les coordonnées doivent être affichées à l’entrée de l’aire, et n’utilisez pas ce jeu en attendant.
+Signale-le au gestionnaire dont les coordonnées doivent être affichées à l’entrée de l’aire, et n’utilise pas ce jeu en attendant.
 
 **Mon enfant n’ose pas aller vers les autres. Dois-je l’y pousser ?**
-À cet âge, beaucoup d’enfants jouent à côté des autres plutôt qu’avec eux. Restez disponible, proposez sans forcer : les échanges viendront progressivement.
+À cet âge, beaucoup d’enfants jouent à côté des autres plutôt qu’avec eux. Reste disponible, propose sans forcer : les échanges viendront progressivement.
 
 ## Quand demander conseil
-Consultez rapidement après une chute avec choc à la tête suivie de vomissements, de somnolence, de pleurs inhabituels, ou si l’enfant ne peut plus utiliser un bras ou une jambe. En cas de perte de connaissance ou de difficulté à respirer, appelez immédiatement les secours. ${URG}
+Consulte rapidement après une chute avec choc à la tête suivie de vomissements, de somnolence, de pleurs inhabituels, ou si l’enfant ne peut plus utiliser un bras ou une jambe. En cas de perte de connaissance ou de difficulté à respirer, appelle immédiatement les secours. ${URG}
 
 ${FIN}`,
   }),
@@ -270,7 +270,7 @@ ${FIN}`,
 - À partir de 2 ans, Santé publique France suggère de faire découvrir **le tricycle et la trottinette** pour développer l’équilibre et le repérage dans l’espace.
 - Avant, le **porteur** (sur lequel l’enfant avance en poussant avec les pieds) est souvent le premier engin.
 - Le **casque** est **obligatoire à vélo pour les moins de 12 ans**, conducteurs ou passagers ; il est aussi vivement conseillé sur les autres engins.
-- Vérifiez **l’âge indiqué et le marquage CE**, et jouez loin de la circulation.
+- Vérifie **l’âge indiqué et le marquage CE**, et joue loin de la circulation.
 
 ## Comprendre
 Rouler, pousser, se propulser : les engins à roues passionnent les tout-petits. Ils permettent de travailler l’équilibre, la coordination et la perception de l’espace.
@@ -281,23 +281,23 @@ Côté réglementation, depuis le 22 mars 2017, le **port du casque est obligato
 
 ## Au quotidien
 **Choisir l’engin**
-- Lisez l’**âge indiqué** et cherchez le **marquage CE**.
-- Choisissez un modèle **à la taille de votre enfant**, en suivant les indications du fabricant.
-- Préférez des mécanismes simples, sans pièces qui pincent ou se replient facilement.
-- Pour un engin d’occasion, vérifiez qu’il n’a pas fait l’objet d’un rappel sur RappelConso et qu’il est en bon état.
+- Lis l’**âge indiqué** et cherche le **marquage CE**.
+- Choisis un modèle **à la taille de ton enfant**, en suivant les indications du fabricant.
+- Préfère des mécanismes simples, sans pièces qui pincent ou se replient facilement.
+- Pour un engin d’occasion, vérifie qu’il n’a pas fait l’objet d’un rappel sur RappelConso et qu’il est en bon état.
 
 **Le casque**
-- Choisissez un casque **adapté à la taille de sa tête**, conforme à la réglementation des équipements de protection, et **toujours attaché**.
-- Faites-en une habitude dès les premiers essais, même sur la trottinette ou la draisienne : l’exemple des adultes aide beaucoup.
+- Choisis un casque **adapté à la taille de sa tête**, conforme à la réglementation des équipements de protection, et **toujours attaché**.
+- Fais-en une habitude dès les premiers essais, même sur la trottinette ou la draisienne : l’exemple des adultes aide beaucoup.
 
 **Où rouler**
 - Dans un jardin, une cour fermée, une allée de parc ou une aire réservée, **loin des voitures, des escaliers, des pentes et des points d’eau**.
 - Pas d’engin à roulettes sur un trottoir passant ni près d’une rue à cet âge : l’enfant ne sait pas freiner ni anticiper.
-- Restez à côté de lui, prêt à le rattraper.
+- Reste à côté de lui, prêt à le rattraper.
 
 **Les premières fois**
-- Laissez-le d’abord marcher avec l’engin entre les jambes.
-- Ne le poussez pas trop vite : il apprend surtout à se sentir en équilibre.
+- Laisse-le d’abord marcher avec l’engin entre les jambes.
+- Ne le pousse pas trop vite : il apprend surtout à se sentir en équilibre.
 - Les chutes à petite vitesse sur un sol plat sont fréquentes ; le casque protège sa tête.
 
 ## Questions fréquentes
@@ -305,7 +305,7 @@ Côté réglementation, depuis le 22 mars 2017, le **port du casque est obligato
 L’obligation légale vise le vélo. Pour la trottinette ou la draisienne, le casque reste fortement recommandé pour protéger la tête en cas de chute.
 
 **Tricycle ou draisienne : lequel choisir ?**
-Les deux développent la motricité de façon différente. Le tricycle fait travailler le pédalage ; la draisienne l’équilibre. Fiez-vous à l’âge indiqué, à la taille de votre enfant et à ses envies.
+Les deux développent la motricité de façon différente. Le tricycle fait travailler le pédalage ; la draisienne l’équilibre. Fie-toi à l’âge indiqué, à la taille de ton enfant et à ses envies.
 
 **Peut-il utiliser l’engin de son grand frère ?**
 Mieux vaut éviter si l’âge indiqué ne correspond pas : les jouets des plus grands ne sont pas conçus pour les plus petits.
@@ -314,7 +314,7 @@ Mieux vaut éviter si l’âge indiqué ne correspond pas : les jouets des plus 
 Elles ne sont pas obligatoires. Le plus important est le casque, des chaussures fermées et un terrain adapté.
 
 ## Quand demander conseil
-Après une chute, consultez rapidement en cas de choc à la tête suivi de vomissements, de somnolence, de maux de tête ou de comportement inhabituel, ou si l’enfant ne peut plus s’appuyer sur une jambe ou bouger un bras. ${URG}
+Après une chute, consulte rapidement en cas de choc à la tête suivi de vomissements, de somnolence, de maux de tête ou de comportement inhabituel, ou si l’enfant ne peut plus s’appuyer sur une jambe ou bouger un bras. ${URG}
 
 ${FIN}`,
   }),
@@ -327,8 +327,8 @@ ${FIN}`,
     body_md: `## En bref
 - Dès qu’il sait marcher, les recommandations conseillent de **limiter les déplacements en poussette** et d’encourager l’enfant à marcher.
 - Il ne s’agit pas de supprimer la poussette, mais de **lui laisser des morceaux de trajet** à pied.
-- Évitez de le laisser assis dans la poussette **pendant les temps de jeu**, au parc comme à la maison.
-- Prévoyez du temps : à cet âge, une promenade est aussi une **exploration**.
+- Évite de le laisser assis dans la poussette **pendant les temps de jeu**, au parc comme à la maison.
+- Prévois du temps : à cet âge, une promenade est aussi une **exploration**.
 
 ## Comprendre
 La marche est l’activité physique la plus simple et la plus accessible. Les recommandations de Santé publique France pour les moins de 5 ans la citent en premier parmi les activités qui permettent à l’enfant de **bouger au moins trois heures par jour** à partir de 1 an.
@@ -339,39 +339,39 @@ Le tout-petit marche lentement, s’arrête souvent, observe une fourmi, ramasse
 
 ## Au quotidien
 **Organiser les trajets**
-- Sur un trajet connu, laissez-le marcher **une partie du chemin** (par exemple le début, quand il est encore en forme, ou après une pause).
-- Gardez la poussette à portée pour les longues distances, la fatigue ou les zones dangereuses.
-- Partez un peu plus tôt : vous serez moins pressé·e et plus disponible pour ses découvertes.
+- Sur un trajet connu, laisse-le marcher **une partie du chemin** (par exemple le début, quand il est encore en forme, ou après une pause).
+- Garde la poussette à portée pour les longues distances, la fatigue ou les zones dangereuses.
+- Pars un peu plus tôt : tu seras moins pressé·e et plus disponible pour ses découvertes.
 
 **Rendre la marche sûre**
-- Près de la route, **tenez-lui la main** ; faites-le marcher côté maisons et placez-vous côté rue.
-- Apprenez-lui dès maintenant à **s’arrêter au bord du trottoir** et à attendre votre main.
+- Près de la route, **tiens-lui la main** ; fais-le marcher côté maisons et place-toi côté rue.
+- Apprends-lui dès maintenant à **s’arrêter au bord du trottoir** et à attendre ta main.
 - Chaussures fermées, à sa taille, avec une semelle souple.
 
 **Rendre la marche amusante**
-- Jouez à « trouver » : un chat, une voiture rouge, une fleur jaune.
-- Comptez les marches, sautez par-dessus les lignes, marchez comme un éléphant puis comme une souris.
-- Nommez ce que vous voyez : il enrichit son vocabulaire en marchant.
-- Prévoyez une gourde d’eau et une petite pause sur un banc.
+- Joue à « trouver » : un chat, une voiture rouge, une fleur jaune.
+- Compte les marches, saute par-dessus les lignes, marche comme un éléphant puis comme une souris.
+- Nomme ce que tu vois : il enrichit son vocabulaire en marchant.
+- Prévois une gourde d’eau et une petite pause sur un banc.
 
 **Au parc**
-Sortez-le de la poussette dès que possible pour qu’il marche dans l’herbe, grimpe sur une petite bosse, joue avec d’autres enfants.
+Sors-le de la poussette dès que possible pour qu’il marche dans l’herbe, grimpe sur une petite bosse, joue avec d’autres enfants.
 
 ## Questions fréquentes
 **Il réclame les bras au bout de cinq minutes. Que faire ?**
-Proposez un jeu (« on va jusqu’au prochain arbre ? »), une pause, ou reprenez la poussette sans en faire un conflit. L’endurance vient progressivement.
+Propose un jeu (« on va jusqu’au prochain arbre ? »), une pause, ou reprends la poussette sans en faire un conflit. L’endurance vient progressivement.
 
 **Il ne veut pas donner la main près de la route.**
-Restez ferme et calme : c’est une règle de sécurité non négociable. Proposez-lui de tenir la poussette ou votre sac, cela lui donne un rôle.
+Reste ferme et calme : c’est une règle de sécurité non négociable. Propose-lui de tenir la poussette ou ton sac, cela lui donne un rôle.
 
 **Le porte-bébé est-il une alternative ?**
-Il peut être pratique pour certains trajets, mais l’enfant n’y marche pas davantage. Alternez selon la situation et l’état de fatigue de chacun.
+Il peut être pratique pour certains trajets, mais l’enfant n’y marche pas davantage. Alterne selon la situation et l’état de fatigue de chacun.
 
 **Combien de temps de marche est conseillé ?**
 Aucun temps précis n’est donné pour la marche seule. Le repère global est d’au moins trois heures d’activité par jour, toutes activités confondues, réparties dans la journée.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant ne marche pas encore et que vous vous interrogez, s’il boite, se plaint souvent de douleurs aux jambes, tombe très fréquemment ou semble se fatiguer beaucoup plus vite que les autres enfants. ${URG}
+Parles-en au médecin ou à la PMI si ton enfant ne marche pas encore et que tu t’interroges, s’il boite, se plaint souvent de douleurs aux jambes, tombe très fréquemment ou semble se fatiguer beaucoup plus vite que les autres enfants. ${URG}
 
 ${FIN}`,
   }),
@@ -385,19 +385,19 @@ ${FIN}`,
     body_md: `## En bref
 - Entre 1 et 3 ans, l’enfant **comprend bien plus de mots qu’il n’en dit**, puis associe deux mots et forme des phrases.
 - Les jeux du quotidien soutiennent ces progrès : **chanter des comptines, jouer à la dînette ou au memory, lire et feuilleter des livres**.
-- Évitez de corriger sa prononciation : **répétez le mot correctement**, naturellement.
+- Évite de corriger sa prononciation : **répète le mot correctement**, naturellement.
 - Le plus efficace reste **l’échange** : se regarder, se sourire, s’écouter.
 
 ## Comprendre
 Selon mpedia (Association française de pédiatrie ambulatoire), entre **12 et 18 mois** l’enfant comprend des ordres simples et utilise souvent un seul mot pour dire une phrase entière. Entre **18 mois et 2 ans**, son vocabulaire progresse vite ; il se nomme par son prénom et commence à associer deux mots, en s’aidant de gestes. Entre **2 et 3 ans**, ses phrases deviennent plus complètes, il découvre les tailles, couleurs et formes, pose beaucoup de questions et emploie « je ».
 
-Pour l’aider, la même source conseille de créer des **moments d’échange agréables**, de le laisser exprimer ses envies, d’encourager ses progrès, de **reformuler** ses phrases trop simplifiées et de ne pas reprendre sa prononciation. Elle cite expressément les **comptines**, la **dînette**, le **memory** et la **lecture**. Le livret des 1000 premiers jours ajoute : parlez-lui **normalement et à tout moment**, et chantez.
+Pour l’aider, la même source conseille de créer des **moments d’échange agréables**, de le laisser exprimer ses envies, d’encourager ses progrès, de **reformuler** ses phrases trop simplifiées et de ne pas reprendre sa prononciation. Elle cite expressément les **comptines**, la **dînette**, le **memory** et la **lecture**. Le livret des 1000 premiers jours ajoute : parle-lui **normalement et à tout moment**, et chante.
 
 ## Au quotidien
 **Jeux de mots et d’images**
-- **L’imagier** : montrez, nommez, puis laissez-le montrer à son tour (« Où est le chien ? »).
-- **Le memory simplifié** : 3 ou 4 paires d’images d’objets familiers, retournées une à une ; nommez chaque image.
-- **Le sac à surprises** : glissez des objets du quotidien dans un sac, il en sort un et vous le nommez ensemble.
+- **L’imagier** : montre, nomme, puis laisse-le montrer à son tour (« Où est le chien ? »).
+- **Le memory simplifié** : 3 ou 4 paires d’images d’objets familiers, retournées une à une ; nomme chaque image.
+- **Le sac à surprises** : glisse des objets du quotidien dans un sac, il en sort un et tu le nommes ensemble.
 
 **Jeux de faire-semblant**
 - **La dînette** : « Tu me donnes une pomme ? Elle est chaude, la soupe ? » Chaque geste est une occasion de mots.
@@ -406,27 +406,27 @@ Pour l’aider, la même source conseille de créer des **moments d’échange a
 
 **Pendant les gestes quotidiens**
 - Au bain : « l’eau coule », « l’éponge est mouillée ».
-- Aux courses : il vous « aide » à trouver les bananes, les pommes, le pain.
-- En cuisine : décrivez ce que vous faites, laissez-le toucher, sentir.
+- Aux courses : il toi « aide » à trouver les bananes, les pommes, le pain.
+- En cuisine : décris ce que tu fais, laisse-le toucher, sentir.
 
 **Les bons réflexes**
-- Quand il dit « tato », répondez simplement « Oui, un gâteau ! »
-- Quand il dit « encore », enrichissez : « Encore de l’eau ? Tu as soif ? »
-- Laissez-lui du temps pour répondre, sans finir sa phrase à sa place.
-- Éteignez la télévision en fond : elle réduit les échanges.
+- Quand il dit « tato », réponds simplement « Oui, un gâteau ! »
+- Quand il dit « encore », enrichis : « Encore de l’eau ? Tu as soif ? »
+- Laisse-lui du temps pour répondre, sans finir sa phrase à sa place.
+- Éteins la télévision en fond : elle réduit les échanges.
 
 ## Questions fréquentes
 **Il prononce mal beaucoup de mots. Faut-il le reprendre ?**
-Non : reprendre sa prononciation peut le décourager. Répétez le mot correctement dans votre réponse ; l’articulation se met en place sur plusieurs années.
+Non : reprendre sa prononciation peut le décourager. Répète le mot correctement dans ta réponse ; l’articulation se met en place sur plusieurs années.
 
 **Il comprend tout mais parle peu. Est-ce inquiétant ?**
-À cet âge, la compréhension est souvent en avance sur l’expression. Si vous avez un doute, notamment vers 2–3 ans, parlez-en au médecin.
+À cet âge, la compréhension est souvent en avance sur l’expression. Si tu as un doute, notamment vers 2–3 ans, parles-en au médecin.
 
 **Les applications « pour apprendre à parler » sont-elles utiles ?**
 Les écrans sont déconseillés avant 3 ans. L’enfant apprend à parler en échangeant avec des personnes, pas devant un écran.
 
 **Nous parlons plusieurs langues à la maison.**
-Parlez-lui naturellement, dans la langue où vous êtes à l’aise : l’essentiel est la richesse et le plaisir des échanges. Le médecin peut répondre à vos questions sur le bilinguisme.
+Parle-lui naturellement, dans la langue où tu es à l’aise : l’essentiel est la richesse et le plaisir des échanges. Le médecin peut répondre à tes questions sur le bilinguisme.
 
 ## Quand demander conseil
 Selon mpedia, plusieurs situations justifient d’en parler au médecin : un enfant qui reste **très difficile à comprendre** pour son entourage, un **bégaiement** ou une élocution saccadée, **l’absence de phrases correctes vers 2 à 3 ans**, une difficulté à rester dans l’échange, des antécédents familiaux de troubles du langage ou des remarques répétées de l’entourage. Des tests permettent un dépistage précoce, et le carnet de santé, mis à jour en 2025, contient des repères pour dépister les troubles du neurodéveloppement. ${URG}
@@ -443,7 +443,7 @@ ${FIN}`,
 - **Chanter favorise l’apprentissage du langage** : c’est un message du livret des 1000 premiers jours.
 - Les **comptines** font partie des jeux conseillés par mpedia pour aider l’enfant de 1 à 3 ans à parler.
 - Les **jeux de doigts** associent mots, gestes et rythme : l’enfant anticipe, imite, rit.
-- Pas besoin de bien chanter : votre voix est celle qu’il préfère.
+- Pas besoin de bien chanter : ta voix est celle qu’il préfère.
 
 ## Comprendre
 Les comptines ont des phrases courtes, des rimes, des répétitions et un rythme marqué. Ces caractéristiques aident le tout-petit à repérer les sons de la langue, à mémoriser des mots et à anticiper la suite. Au fil des répétitions, il complète la fin des phrases, puis chante des morceaux entiers.
@@ -461,34 +461,34 @@ La page « Les activités avec bébé » souligne que le tout-petit est attiré 
 - **Pendant une attente** (salle d’attente, file) : un jeu de doigts discret occupe mieux qu’un écran.
 
 **Faire vivre les jeux de doigts**
-- Allez lentement, exagérez les gestes et les mimiques.
-- Marquez une petite pause avant le moment attendu (la chatouille, le « plouf ») : il apprend à anticiper.
-- Laissez-le faire les gestes sur vos mains, puis tout seul.
+- Va lentement, exagère les gestes et les mimiques.
+- Marque une petite pause avant le moment attendu (la chatouille, le « plouf ») : il apprend à anticiper.
+- Laisse-le faire les gestes sur tes mains, puis tout seul.
 
 **Varier les plaisirs**
 - **Les rondes** (vers 2–3 ans) : se tenir la main, tourner, s’accroupir.
 - **Les chansons d’action** : taper des mains, des pieds, se cacher les yeux.
-- **Les chants de votre enfance** ou dans votre langue : ils ont une valeur affective précieuse.
-- **Inventez** : remplacez un mot par le prénom de votre enfant ou de son doudou.
+- **Les chants de ton enfance** ou dans ta langue : ils ont une valeur affective précieuse.
+- **Invente** : remplace un mot par le prénom de ton enfant ou de son doudou.
 
 **Où trouver des comptines ?**
-Les bibliothèques ont souvent des recueils et des albums sonores pour les tout-petits, et certaines proposent des séances d’éveil. Demandez aussi à la crèche ou à l’assistante maternelle celles qu’il chante dans la journée.
+Les bibliothèques ont souvent des recueils et des albums sonores pour les tout-petits, et certaines proposent des séances d’éveil. Demande aussi à la crèche ou à l’assistante maternelle celles qu’il chante dans la journée.
 
 ## Questions fréquentes
 **Je chante faux, est-ce gênant ?**
-Non. Ce qui compte pour votre enfant, c’est votre voix, votre regard et le plaisir partagé.
+Non. Ce qui compte pour ton enfant, c’est ta voix, ton regard et le plaisir partagé.
 
 **Il réclame toujours la même comptine.**
-La répétition le rassure et l’aide à mémoriser. Vous pouvez la varier légèrement (plus vite, plus doucement, en chuchotant).
+La répétition le rassure et l’aide à mémoriser. Tu peux la varier légèrement (plus vite, plus doucement, en chuchotant).
 
 **Les comptines en vidéo sont-elles une bonne idée ?**
-Les écrans sont déconseillés avant 3 ans. Si vous utilisez un enregistrement, préférez un format audio et chantez avec lui.
+Les écrans sont déconseillés avant 3 ans. Si tu utilises un enregistrement, préfère un format audio et chante avec lui.
 
 **À quel âge chantera-t-il vraiment ?**
 Chaque enfant a son rythme. Beaucoup commencent par compléter un mot de la fin, puis des bouts de phrases.
 
 ## Quand demander conseil
-Si votre enfant ne semble pas réagir aux sons ou à la voix, ne se retourne pas quand on l’appelle, ou si son langage vous inquiète, parlez-en au médecin : un contrôle de l’audition peut être proposé. ${URG}
+Si ton enfant ne semble pas réagir aux sons ou à la voix, ne se retourne pas quand on l’appelle, ou si son langage t’inquiète, parles-en au médecin : un contrôle de l’audition peut être proposé. ${URG}
 
 ${FIN}`,
   }),
@@ -518,26 +518,26 @@ Côté langage, mpedia cite **lire et feuilleter des livres** parmi les jeux qui
 - **Vers 2–3 ans** : albums avec une petite intrigue, des personnages auxquels s’identifier, des livres pour parler des émotions ou des grands changements.
 
 **Comment lire ?**
-- Installez-vous **confortablement**, l’enfant sur vos genoux ou blotti contre vous.
-- **Suivez son rythme** : s’il veut tourner les pages, laissez-le ; s’il s’arrête sur une image, commentez-la.
-- **Pointez et nommez** : « Regarde, le chat dort ! » ; posez des questions simples (« Où est le ballon ? »).
-- **Jouez avec la voix** : grosse voix du loup, chuchotement, bruitages.
-- **Relisez** sans vous lasser : la répétition le rassure et l’aide à anticiper.
-- **Laissez des livres à sa portée**, dans un panier bas, pour qu’il les prenne seul.
+- Installe-toi **confortablement**, l’enfant sur tes genoux ou blotti contre toi.
+- **Suis son rythme** : s’il veut tourner les pages, laisse-le ; s’il s’arrête sur une image, commente-la.
+- **Pointe et nomme** : « Regarde, le chat dort ! » ; pose des questions simples (« Où est le ballon ? »).
+- **Joue avec la voix** : grosse voix du loup, chuchotement, bruitages.
+- **Relis** sans te lasser : la répétition le rassure et l’aide à anticiper.
+- **Laisse des livres à sa portée**, dans un panier bas, pour qu’il les prenne seul.
 
 **Quand lire ?**
 - Le soir, comme rituel de coucher, avec une histoire calme.
 - Mais aussi à tout moment : dans la salle d’attente, au parc, après la sieste.
 
 **Les livres sans dépenser**
-Les bibliothèques et médiathèques prêtent des livres, souvent gratuitement pour les enfants, et beaucoup ont un espace petite enfance. Renseignez-vous à la mairie : certaines proposent des lectures pour les tout-petits.
+Les bibliothèques et médiathèques prêtent des livres, souvent gratuitement pour les enfants, et beaucoup ont un espace petite enfance. Renseigne-toi à la mairie : certaines proposent des lectures pour les tout-petits.
 
 ## Questions fréquentes
 **Il ne reste pas assis pendant l’histoire.**
-À cet âge, c’est très fréquent. Lisez même s’il bouge autour de vous : il écoute souvent plus qu’il n’y paraît. Proposez des moments courts.
+À cet âge, c’est très fréquent. Lis même s’il bouge autour de toi : il écoute souvent plus qu’il n’y paraît. Propose des moments courts.
 
 **Il abîme les livres.**
-Proposez des livres cartonnés pour l’usage libre, et gardez les livres fragiles pour les moments partagés.
+Propose des livres cartonnés pour l’usage libre, et garde les livres fragiles pour les moments partagés.
 
 **Faut-il lire le texte ou raconter avec ses mots ?**
 Les deux se valent. Adapter le texte à son âge, ajouter des commentaires ou raconter à partir des images enrichit l’échange.
@@ -546,7 +546,7 @@ Les deux se valent. Adapter le texte à son âge, ajouter des commentaires ou ra
 Les écrans sont déconseillés avant 3 ans. Le livre papier partagé avec un adulte favorise les échanges et le lien.
 
 ## Quand demander conseil
-Si votre enfant ne s’intéresse jamais aux images, ne pointe pas du doigt, ne réagit pas quand on l’appelle ou si son langage vous inquiète, parlez-en au médecin ou à la PMI. ${URG}
+Si ton enfant ne s’intéresse jamais aux images, ne pointe pas du doigt, ne réagit pas quand on l’appelle ou si son langage t’inquiète, parles-en au médecin ou à la PMI. ${URG}
 
 ${FIN}`,
   }),
@@ -557,9 +557,9 @@ ${FIN}`,
     category: 'activites-eveil', tags: ['ludothèque', 'bibliothèque', 'LAEP', 'lieu d’accueil enfants-parents', 'PMI', 'sortie', 'gratuit', 'rencontrer d’autres parents'],
     sources: [S.activitesBebe, S.livret1000, S.santeCulturelle],
     body_md: `## En bref
-- La mairie peut vous renseigner sur les **ludothèques, bibliothèques, lieux d’accueil enfants-parents (LAEP)** et **centres de PMI** près de chez vous.
+- La mairie peut te renseigner sur les **ludothèques, bibliothèques, lieux d’accueil enfants-parents (LAEP)** et **centres de PMI** près de chez toi.
 - Certains de ces lieux proposent **lectures, petits spectacles ou éveil musical** pour les tout-petits.
-- Les **LAEP** permettent de rencontrer des professionnels et d’autres parents, avec votre enfant.
+- Les **LAEP** permettent de rencontrer des professionnels et d’autres parents, avec ton enfant.
 - Ces sorties sont bonnes pour l’enfant **et pour les parents**, qui y trouvent aussi du lien.
 
 ## Comprendre
@@ -571,19 +571,19 @@ Le livret des 1000 premiers jours cite aussi les **bibliothèques, centres socia
 
 ## Au quotidien
 **Trouver les lieux**
-- Interrogez la **mairie**, le **centre de PMI**, le **relais petite enfance** ou la crèche.
-- Consultez l’agenda de la médiathèque : les séances pour les tout-petits sont souvent le matin.
-- Demandez aux autres parents du square : le bouche-à-oreille fonctionne bien.
+- Interroge la **mairie**, le **centre de PMI**, le **relais petite enfance** ou la crèche.
+- Consulte l’agenda de la médiathèque : les séances pour les tout-petits sont souvent le matin.
+- Demande aux autres parents du square : le bouche-à-oreille fonctionne bien.
 
 **Préparer la sortie**
-- Choisissez un moment où votre enfant est reposé et a mangé, par exemple en dehors de l’heure de la sieste.
-- Prévoyez un change, une gourde, une collation, et éventuellement son doudou.
-- Pour une première fois, restez peu de temps : il découvre un lieu nouveau, plein de bruits et d’enfants.
+- Choisis un moment où ton enfant est reposé et a mangé, par exemple en dehors de l’heure de la sieste.
+- Prévois un change, une gourde, une collation, et éventuellement son doudou.
+- Pour une première fois, reste peu de temps : il découvre un lieu nouveau, plein de bruits et d’enfants.
 
 **Sur place**
-- Laissez-le observer avant de jouer ; certains enfants ont besoin de temps.
-- Restez disponible sans tout diriger : c’est aussi l’occasion pour lui de jouer à côté d’autres enfants.
-- Profitez-en pour échanger avec les professionnels ou les autres parents sur ce qui vous questionne.
+- Laisse-le observer avant de jouer ; certains enfants ont besoin de temps.
+- Reste disponible sans tout diriger : c’est aussi l’occasion pour lui de jouer à côté d’autres enfants.
+- Profites-en pour échanger avec les professionnels ou les autres parents sur ce qui te questionne.
 
 **Les petits plus**
 - La ludothèque permet de **tester des jeux** avant d’en acheter, et d’en changer souvent.
@@ -592,19 +592,19 @@ Le livret des 1000 premiers jours cite aussi les **bibliothèques, centres socia
 
 ## Questions fréquentes
 **Ces lieux sont-ils payants ?**
-Les conditions varient selon les communes et les structures : beaucoup sont gratuits ou peu coûteux. Renseignez-vous auprès de la mairie ou du lieu lui-même.
+Les conditions varient selon les communes et les structures : beaucoup sont gratuits ou peu coûteux. Renseigne-toi auprès de la mairie ou du lieu lui-même.
 
 **Mon enfant est gardé en crèche. Ces sorties ont-elles encore un intérêt ?**
-Oui : ce sont des moments partagés avec vous, dans un autre cadre, et l’occasion pour vous de rencontrer d’autres parents.
+Oui : ce sont des moments partagés avec toi, dans un autre cadre, et l’occasion pour toi de rencontrer d’autres parents.
 
 **Il pleure dès qu’il y a du monde.**
-Allez-y aux heures calmes, restez près de lui, et écourtez si besoin. L’habitude vient souvent avec des visites courtes et répétées.
+Vas-y aux heures calmes, reste près de lui, et écourte si besoin. L’habitude vient souvent avec des visites courtes et répétées.
 
 **Puis-je aller dans un LAEP si je me sens seul·e ou dépassé·e ?**
-Les LAEP sont justement pensés pour accueillir les parents avec leur enfant, sans jugement, et permettre d’échanger. La PMI peut aussi vous accompagner.
+Les LAEP sont justement pensés pour accueillir les parents avec leur enfant, sans jugement, et permettre d’échanger. La PMI peut aussi t’accompagner.
 
 ## Quand demander conseil
-Si la fatigue, l’isolement ou le découragement prennent trop de place, n’attendez pas pour en parler. ${SOUTIEN} ${URG}
+Si la fatigue, l’isolement ou le découragement prennent trop de place, n’attends pas pour en parler. ${SOUTIEN} ${URG}
 
 ${FIN}`,
   }),
@@ -636,10 +636,10 @@ Ces jeux se pratiquent seul, avec un adulte ou, un peu plus tard, avec d’autre
 - Un torchon, une petite éponge, un balai à sa taille.
 
 **Faire vivre le jeu**
-- **Entrez dans son jeu** quand il vous invite : « Merci pour la soupe ! Elle est bonne ? »
-- **Ajoutez une idée** sans prendre la direction : « Ta poupée a peut-être froid ? »
-- **Mettez des mots** sur ce qu’il fait et sur ce que ressentent les personnages.
-- **Laissez-le inventer** : une banane peut être un téléphone, c’est tout l’intérêt.
+- **Entre dans son jeu** quand il t’invite : « Merci pour la soupe ! Elle est bonne ? »
+- **Ajoute une idée** sans prendre la direction : « Ta poupée a peut-être froid ? »
+- **Mets des mots** sur ce qu’il fait et sur ce que ressentent les personnages.
+- **Laisse-le inventer** : une banane peut être un téléphone, c’est tout l’intérêt.
 
 **Varier les scénarios**
 - Le marchand : quelques fruits, un panier, des « sous » en carton.
@@ -648,25 +648,25 @@ Ces jeux se pratiquent seul, avec un adulte ou, un peu plus tard, avec d’autre
 - Les déguisements vers 2–3 ans : chapeaux, foulards courts, sacs, vieilles chaussures.
 
 **La sécurité**
-- Pas de petites pièces avant 3 ans : vérifiez l’âge indiqué sur les jouets et le pictogramme « ne convient pas aux moins de 36 mois ».
+- Pas de petites pièces avant 3 ans : vérifie l’âge indiqué sur les jouets et le pictogramme « ne convient pas aux moins de 36 mois ».
 - Les déguisements ne doivent pas comporter de **cordons ou de liens** autour du cou.
-- Ne détournez pas de vrais produits ménagers ou cosmétiques, même vides : rincez soigneusement les contenants alimentaires que vous réutilisez.
+- Ne détourne pas de vrais produits ménagers ou cosmétiques, même vides : rince soigneusement les contenants alimentaires que tu réutilises.
 
 ## Questions fréquentes
 **Mon fils joue à la poupée, ma fille aux voitures : faut-il s’en préoccuper ?**
-Tous les jeux d’imitation sont bénéfiques. Laissez votre enfant choisir librement ses jeux et ses rôles.
+Tous les jeux d’imitation sont bénéfiques. Laisse ton enfant choisir librement ses jeux et ses rôles.
 
 **Il rejoue toujours la même scène, parfois une colère ou un vaccin.**
-Rejouer une situation marquante l’aide à la digérer. Accompagnez-le avec des mots simples, sans le forcer.
+Rejouer une situation marquante l’aide à la digérer. Accompagne-le avec des mots simples, sans le forcer.
 
 **Faut-il acheter une cuisine en jouet ?**
-Ce n’est pas indispensable. Si vous en achetez une, vérifiez le marquage CE et l’âge indiqué.
+Ce n’est pas indispensable. Si tu en achètes une, vérifie le marquage CE et l’âge indiqué.
 
 **Il ne joue pas encore à faire semblant à 2 ans.**
-Chaque enfant avance à son rythme. Proposez-lui des jeux en lui montrant l’exemple, et parlez-en au médecin si vous avez d’autres inquiétudes.
+Chaque enfant avance à son rythme. Propose-lui des jeux en lui montrant l’exemple, et parles-en au médecin si tu as d’autres inquiétudes.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre enfant, vers 2–3 ans, ne montre aucun intérêt pour le faire-semblant ni pour les échanges, joue toujours de façon très répétitive, ou si son langage vous inquiète. Le médecin pourra faire le point avec vous et, si besoin, vous orienter. ${URG}
+Parles-en au médecin ou à la PMI si ton enfant, vers 2–3 ans, ne montre aucun intérêt pour le faire-semblant ni pour les échanges, joue toujours de façon très répétitive, ou si son langage t’inquiète. Le médecin pourra faire le point avec toi et, si besoin, t’orienter. ${URG}
 
 ${FIN}`,
   }),
@@ -679,8 +679,8 @@ ${FIN}`,
     body_md: `## En bref
 - Le tout-petit adore **imiter les adultes** : ranger, balayer, mettre le linge dans la machine.
 - Ces moments sont de vraies **occasions d’éveil** : gestes, vocabulaire, autonomie, fierté.
-- Adaptez la tâche à son âge et **restez à côté** de lui.
-- Gardez **produits ménagers, médicaments et objets coupants** hors de sa portée.
+- Adapte la tâche à son âge et **reste à côté** de lui.
+- Garde **produits ménagers, médicaments et objets coupants** hors de sa portée.
 
 ## Comprendre
 Le livret des 1000 premiers jours rappelle que les **gestes du quotidien** (repas, bain, change, promenade, coucher) sont autant d’occasions d’interagir avec l’enfant, et que tout peut servir de prétexte au jeu : « vous n’avez pas besoin de grand-chose si ce n’est d’être là pour lui ».
@@ -692,11 +692,11 @@ La sécurité reste centrale : le jeune enfant n’a pas conscience du danger. L
 ## Au quotidien
 **Vers 12–18 mois**
 - Mettre les jouets dans un panier (« dedans ! »).
-- Vous tendre les chaussettes une par une.
-- Déposer son bavoir ou sa cuillère dans l’évier sous votre regard.
+- Te tendre les chaussettes une par une.
+- Déposer son bavoir ou sa cuillère dans l’évier sous ton regard.
 
 **Vers 18 mois–2 ans**
-- Mettre le linge sale dans la machine, puis vous le passer pour l’étendre.
+- Mettre le linge sale dans la machine, puis te le passer pour l’étendre.
 - Essuyer la table avec une éponge humide.
 - Arroser une plante avec un petit arrosoir (en vérifiant que la plante n’est pas toxique).
 - Ranger les courses non fragiles dans un placard bas.
@@ -708,19 +708,19 @@ La sécurité reste centrale : le jeune enfant n’a pas conscience du danger. L
 - Assortir les paires de chaussettes : un vrai jeu de logique.
 
 **Les bons réflexes**
-- Donnez **une consigne à la fois**, avec des mots simples, et montrez.
-- Acceptez que ce ne soit **pas parfait** : l’important est de participer.
-- **Félicitez l’effort** plutôt que le résultat.
-- Prévoyez du temps : une tâche faite avec lui prend plus longtemps, et c’est tout le principe.
+- Donne **une consigne à la fois**, avec des mots simples, et montre.
+- Accepte que ce ne soit **pas parfait** : l’important est de participer.
+- **Félicite l’effort** plutôt que le résultat.
+- Prévois du temps : une tâche faite avec lui prend plus longtemps, et c’est tout le principe.
 
 **La sécurité**
-- En cuisine, installez-le loin des plaques, des fours et des poignées de casseroles (tournées vers l’intérieur).
-- Ne le laissez jamais seul avec un seau d’eau ou une bassine : un jeune enfant peut se noyer dans très peu d’eau.
-- Rangez immédiatement produits et outils après usage.
+- En cuisine, installe-le loin des plaques, des fours et des poignées de casseroles (tournées vers l’intérieur).
+- Ne le laisse jamais seul avec un seau d’eau ou une bassine : un jeune enfant peut se noyer dans très peu d’eau.
+- Range immédiatement produits et outils après usage.
 
 ## Questions fréquentes
 **Il veut toujours aider quand je suis pressé·e.**
-Proposez-lui une version courte de la tâche (« tu ranges les trois cuillères ») ou une alternative proche de vous, et gardez les vraies participations pour les moments plus calmes.
+Propose-lui une version courte de la tâche (« tu ranges les trois cuillères ») ou une alternative proche de toi, et garde les vraies participations pour les moments plus calmes.
 
 **Faut-il acheter des ustensiles en jouet ?**
 Ce n’est pas indispensable : de vrais objets légers et sans danger conviennent souvent mieux. Les jouets doivent porter le marquage CE et être adaptés à son âge.
@@ -729,10 +729,10 @@ Ce n’est pas indispensable : de vrais objets légers et sans danger conviennen
 On peut commencer tôt, sous forme de jeu (une chanson pour ranger, un bac par type de jouet), en rangeant avec lui.
 
 **Il s’énerve quand il n’y arrive pas.**
-Proposez une tâche plus simple, aidez-le juste un peu, et nommez son émotion : « C’est difficile, tu es fâché. »
+Propose une tâche plus simple, aide-le juste un peu, et nomme son émotion : « C’est difficile, tu es fâché. »
 
 ## Quand demander conseil
-En cas d’ingestion d’un produit ménager ou d’un médicament, contactez **immédiatement** un centre antipoison ou le 15, sans faire vomir l’enfant et en gardant l’emballage. En cas de brûlure étendue ou sur le visage, appelez le 15. ${URG}
+En cas d’ingestion d’un produit ménager ou d’un médicament, contacte **immédiatement** un centre antipoison ou le 15, sans faire vomir l’enfant et en gardant l’emballage. En cas de brûlure étendue ou sur le visage, appelle le 15. ${URG}
 
 ${FIN}`,
   }),
@@ -746,8 +746,8 @@ ${FIN}`,
     body_md: `## En bref
 - La **peinture** figure parmi les jeux cités par la PMI entre **18 mois et 2 ans**.
 - À cet âge, l’intérêt est dans **l’expérience** (toucher, étaler, mélanger), pas dans le résultat.
-- Choisissez une peinture **destinée aux jeunes enfants**, avec l’âge indiqué et le marquage CE.
-- Protégez l’espace, habillez l’enfant d’un vieux t-shirt, et **restez à côté** de lui.
+- Choisis une peinture **destinée aux jeunes enfants**, avec l’âge indiqué et le marquage CE.
+- Protège l’espace, habille l’enfant d’un vieux t-shirt, et **reste à côté** de lui.
 
 ## Comprendre
 Peindre permet à l’enfant de découvrir les couleurs, les textures, le lien entre son geste et la trace qu’il laisse. Il développe la motricité de la main et du bras, la coordination œil-main, et il s’exprime à sa manière. Le ministère chargé des solidarités rappelle que l’éveil artistique et culturel **favorise la curiosité, la construction et l’épanouissement** de l’enfant et nourrit l’imaginaire.
@@ -769,31 +769,31 @@ Pour le matériel, les conseils officiels de choix des jouets s’appliquent : *
 - **Vers 2–3 ans** : peindre sur un carton, un galet, un grand rouleau de papier au sol ; mélanger deux couleurs pour en voir apparaître une troisième.
 
 **Accompagner sans diriger**
-- Décrivez ce qu’il fait : « Tu fais des ronds bleus », « Tu as mélangé le jaune et le rouge ».
-- Évitez de demander « Qu’est-ce que c’est ? » : il n’a souvent pas cherché à représenter quelque chose.
-- Acceptez qu’il peigne aussi ses mains, ou qu’il préfère toucher plutôt que peindre.
-- Affichez une de ses œuvres : il en sera fier.
+- Décris ce qu’il fait : « Tu fais des ronds bleus », « Tu as mélangé le jaune et le rouge ».
+- Évite de demander « Qu’est-ce que c’est ? » : il n’a souvent pas cherché à représenter quelque chose.
+- Accepte qu’il peigne aussi ses mains, ou qu’il préfère toucher plutôt que peindre.
+- Affiche une de ses œuvres : il en sera fier.
 
 **Après l’activité**
-- Rangez la peinture hors de sa portée.
-- Lavez-lui les mains et le visage.
-- Proposez-lui d’aider à nettoyer les pinceaux dans une bassine, sous votre surveillance.
+- Range la peinture hors de sa portée.
+- Lave-lui les mains et le visage.
+- Propose-lui d’aider à nettoyer les pinceaux dans une bassine, sous ta surveillance.
 
 ## Questions fréquentes
 **Quelle peinture choisir ?**
-Une peinture vendue pour les jeunes enfants, dont l’emballage indique l’âge minimal et porte le marquage CE. Évitez les peintures pour adultes ou pour le bricolage.
+Une peinture vendue pour les jeunes enfants, dont l’emballage indique l’âge minimal et porte le marquage CE. Évite les peintures pour adultes ou pour le bricolage.
 
 **Il met la peinture à la bouche.**
-Rappelez calmement que la peinture ne se mange pas, essuyez-lui la bouche, et faites une pause dans l’activité si cela se répète. Lisez les avertissements de l’emballage et, en cas de doute ou de quantité importante avalée, contactez un centre antipoison.
+Rappelle calmement que la peinture ne se mange pas, essuie-lui la bouche, et fais une pause dans l’activité si cela se répète. Lis les avertissements de l’emballage et, en cas de doute ou de quantité importante avalée, contacte un centre antipoison.
 
 **Il en met partout. Comment rester serein·e ?**
-Protégez largement, choisissez un moment où vous avez le temps, et gardez l’activité courte. Dehors, l’été, c’est encore plus simple.
+Protège largement, choisis un moment où tu as le temps, et garde l’activité courte. Dehors, l’été, c’est encore plus simple.
 
 **À quel âge peut-il peindre seul ?**
 À cet âge, un adulte reste toujours à côté. L’autonomie viendra progressivement en grandissant.
 
 ## Quand demander conseil
-En cas d’ingestion d’un produit qui n’est pas destiné aux enfants (peinture pour murs, solvant, colle forte…), contactez immédiatement un centre antipoison ou le 15, sans faire vomir et en gardant l’emballage. Pour une projection dans l’œil, rincez abondamment à l’eau et demandez un avis médical. ${URG}
+En cas d’ingestion d’un produit qui n’est pas destiné aux enfants (peinture pour murs, solvant, colle forte…), contacte immédiatement un centre antipoison ou le 15, sans faire vomir et en gardant l’emballage. Pour une projection dans l’œil, rince abondamment à l’eau et demande un avis médical. ${URG}
 
 ${FIN}`,
   }),
@@ -806,8 +806,8 @@ ${FIN}`,
     body_md: `## En bref
 - La **pâte à modeler** fait partie des jeux cités par la PMI **entre 18 mois et 2 ans**.
 - Elle muscle les doigts, développe la **motricité fine** et l’imagination, et apaise souvent.
-- Choisissez un produit dont **l’âge indiqué** correspond à votre enfant et qui porte le **marquage CE**.
-- Restez près de lui : à cet âge, tout peut finir à la bouche, et les petits morceaux peuvent faire **fausse route**.
+- Choisis un produit dont **l’âge indiqué** correspond à ton enfant et qui porte le **marquage CE**.
+- Reste près de lui : à cet âge, tout peut finir à la bouche, et les petits morceaux peuvent faire **fausse route**.
 
 ## Comprendre
 Écraser, pincer, rouler un boudin, faire des boules, enfoncer un doigt ou un bouchon : la pâte à modeler offre une expérience à la fois sensorielle et motrice. L’enfant découvre la résistance de la matière, la transformation des formes, la satisfaction de « faire ». Elle se prête aussi aux jeux de faire-semblant : un gâteau d’anniversaire, des serpents, des crêpes…
@@ -828,29 +828,29 @@ Côté sécurité, les conseils officiels sur les jouets rappellent de vérifier
 - **Vers 2–3 ans** : fabriquer un « gâteau » avec des bougies en bâtonnets, faire des empreintes d’objets, raconter une petite histoire avec des personnages en pâte.
 
 **Accompagner**
-- Mettez des mots : « long », « rond », « aplati », « gros », « petit ».
-- Faites à côté de lui plutôt qu’à sa place : il imitera vos gestes s’il en a envie.
-- Proposez l’activité quand il est calme et disponible, pas quand il a faim.
+- Mets des mots : « long », « rond », « aplati », « gros », « petit ».
+- Fais à côté de lui plutôt qu’à sa place : il imitera tes gestes s’il en a envie.
+- Propose l’activité quand il est calme et disponible, pas quand il a faim.
 
 **Ranger**
-- Refermez bien les pots après usage pour éviter qu’ils sèchent, et rangez-les hors de sa portée.
-- Ramassez les miettes de pâte tombées au sol, qu’un plus petit pourrait avaler.
+- Referme bien les pots après usage pour éviter qu’ils sèchent, et range-les hors de sa portée.
+- Ramasse les miettes de pâte tombées au sol, qu’un plus petit pourrait avaler.
 
 ## Questions fréquentes
 **Peut-on proposer de la pâte à modeler avant 18 mois ?**
-Fiez-vous à l’âge indiqué sur l’emballage. Avant cet âge, l’enfant porte encore très souvent les objets à la bouche ; d’autres jeux sensoriels sous surveillance peuvent mieux convenir.
+Fie-toi à l’âge indiqué sur l’emballage. Avant cet âge, l’enfant porte encore très souvent les objets à la bouche ; d’autres jeux sensoriels sous surveillance peuvent mieux convenir.
 
 **Il en a mangé un morceau.**
-Gardez l’emballage, lisez les informations qui y figurent et, en cas de doute, appelez un centre antipoison. S’il tousse, s’étouffe ou a du mal à respirer, appelez immédiatement le 15 ou le 112.
+Garde l’emballage, lis les informations qui y figurent et, en cas de doute, appelle un centre antipoison. S’il tousse, s’étouffe ou a du mal à respirer, appelle immédiatement le 15 ou le 112.
 
 **Et la pâte à modeler « maison » ?**
-Si vous en préparez une, rappelez-vous qu’elle peut être très attirante à goûter : surveillez l’enfant de près et conservez-la hors de sa portée. En cas d’ingestion importante, demandez conseil à un centre antipoison.
+Si tu en prépares une, rappelle-toi qu’elle peut être très attirante à goûter : surveille l’enfant de près et conserve-la hors de sa portée. En cas d’ingestion importante, demande conseil à un centre antipoison.
 
 **Il mélange toutes les couleurs.**
-C’est souvent ce qui l’amuse le plus. Si cela vous gêne, proposez une seule couleur à la fois ou un pot « de mélange » dédié.
+C’est souvent ce qui l’amuse le plus. Si cela te gêne, propose une seule couleur à la fois ou un pot « de mélange » dédié.
 
 ## Quand demander conseil
-Si votre enfant **s’étouffe** (il ne peut plus tousser, parler ou respirer), appelez le **15** ou le **112** et suivez les consignes. Pour toute ingestion d’un produit inconnu ou en grande quantité, contactez un centre antipoison. Si sa motricité fine vous semble en retard ou s’il évite systématiquement de toucher certaines matières, parlez-en au médecin. ${URG}
+Si ton enfant **s’étouffe** (il ne peut plus tousser, parler ou respirer), appelle le **15** ou le **112** et suis les consignes. Pour toute ingestion d’un produit inconnu ou en grande quantité, contacte un centre antipoison. Si sa motricité fine te semble en retard ou s’il évite systématiquement de toucher certaines matières, parles-en au médecin. ${URG}
 
 ${FIN}`,
   }),
@@ -864,7 +864,7 @@ ${FIN}`,
 - Entre **2 et 3 ans**, la PMI cite **crayons, papiers et gommettes** parmi les jeux appréciés.
 - Avant, l’enfant peut déjà laisser des traces avec de **gros crayons** ou des craies, sous surveillance.
 - Le gribouillage est une étape : il précède les traits, les ronds, puis les premiers « bonshommes ».
-- Choisissez du matériel **adapté à l’âge** (indication sur l’emballage, marquage CE).
+- Choisis du matériel **adapté à l’âge** (indication sur l’emballage, marquage CE).
 
 ## Comprendre
 Le premier gribouillage est souvent une découverte : l’enfant remarque que son geste laisse une trace. Peu à peu, il contrôle mieux son bras, puis son poignet et ses doigts. Les traits deviennent des allers-retours, des tourbillons, des ronds. Il n’y a pas de « bon » dessin à cet âge : ce qui compte, c’est le plaisir du geste et de la trace.
@@ -889,30 +889,30 @@ Pour le matériel, les conseils officiels sur les jouets s’appliquent : lire *
 - Faire des traces dans une fine couche de sable ou de farine sur un plateau, avec le doigt.
 
 **Accompagner**
-- Commentez ce qu’il fait : « Tu fais de grands traits », « Tu as choisi le vert ».
-- Évitez de lui demander ce qu’il a dessiné ; laissez-le en parler s’il le souhaite.
-- Proposez un espace autorisé (la feuille, l’ardoise) quand il dessine sur les murs, sans gronder trop fort : il découvre les limites.
-- Exposez certains dessins, rangez-en d’autres dans une boîte à souvenirs.
+- Commente ce qu’il fait : « Tu fais de grands traits », « Tu as choisi le vert ».
+- Évite de lui demander ce qu’il a dessiné ; laisse-le en parler s’il le souhaite.
+- Propose un espace autorisé (la feuille, l’ardoise) quand il dessine sur les murs, sans gronder trop fort : il découvre les limites.
+- Expose certains dessins, ranges-en d’autres dans une boîte à souvenirs.
 
 **La sécurité**
-- Restez à côté de lui : capuchons et petites gommettes peuvent être portés à la bouche.
-- Rangez feutres, stylos et ciseaux hors de sa portée après l’activité.
+- Reste à côté de lui : capuchons et petites gommettes peuvent être portés à la bouche.
+- Range feutres, stylos et ciseaux hors de sa portée après l’activité.
 
 ## Questions fréquentes
 **Il tient son crayon à pleine main.**
 C’est la prise habituelle des tout-petits. La tenue du crayon entre les doigts s’affine progressivement en grandissant.
 
 **Est-il gaucher ou droitier ?**
-Laissez-le utiliser la main qu’il préfère, sans le corriger : sa préférence s’affirmera avec le temps.
+Laisse-le utiliser la main qu’il préfère, sans le corriger : sa préférence s’affirmera avec le temps.
 
 **Il gribouille sur les murs.**
-Proposez-lui une grande surface autorisée (papier fixé au mur, ardoise). Les craies et crayons lavables facilitent le nettoyage.
+Propose-lui une grande surface autorisée (papier fixé au mur, ardoise). Les craies et crayons lavables facilitent le nettoyage.
 
 **Il ne s’intéresse pas au dessin.**
-Chaque enfant a ses préférences. Proposez de temps en temps, sous différentes formes (craies dehors, doigt dans le sable), sans insister.
+Chaque enfant a ses préférences. Propose de temps en temps, sous différentes formes (craies dehors, doigt dans le sable), sans insister.
 
 ## Quand demander conseil
-Si votre enfant semble avoir des difficultés importantes pour saisir et manipuler les objets, ou si vous avez un doute sur sa motricité ou son développement, parlez-en au médecin ou à la PMI. En cas d’ingestion d’un petit objet ou de gêne respiratoire, appelez le 15. ${URG}
+Si ton enfant semble avoir des difficultés importantes pour saisir et manipuler les objets, ou si tu as un doute sur sa motricité ou son développement, parles-en au médecin ou à la PMI. En cas d’ingestion d’un petit objet ou de gêne respiratoire, appelle le 15. ${URG}
 
 ${FIN}`,
   }),
@@ -940,7 +940,7 @@ Un document de PMI cite les **disques et comptines** entre 12 et 18 mois et les 
 - **Maracas** : une petite bouteille en plastique remplie de riz ou de pâtes, **bouchon collé et scotché** pour qu’il ne puisse pas l’ouvrir.
 - **Tambour** : une casserole retournée et une cuillère en bois, ou une boîte en carton.
 - **Clochettes** : deux couvercles en métal frappés doucement l’un contre l’autre (attention aux doigts).
-- Contrôlez régulièrement l’état des instruments maison : rien ne doit pouvoir se détacher et être avalé.
+- Contrôle régulièrement l’état des instruments maison : rien ne doit pouvoir se détacher et être avalé.
 
 **Jouer avec la musique**
 - **La danse-statue** : on danse, la musique s’arrête, on s’immobilise.
@@ -949,28 +949,28 @@ Un document de PMI cite les **disques et comptines** entre 12 et 18 mois et les 
 - **Les animaux en musique** : sauter comme une grenouille, ramper comme un serpent.
 
 **Écouter**
-- Faites-lui découvrir des musiques variées : chansons pour enfants, musiques du monde, musique classique, musiques de votre culture familiale.
-- Gardez un **volume modéré** : les oreilles des tout-petits sont fragiles.
-- Préférez l’écoute **audio** à la vidéo : les écrans sont déconseillés avant 3 ans.
+- Fais-lui découvrir des musiques variées : chansons pour enfants, musiques du monde, musique classique, musiques de ta culture familiale.
+- Garde un **volume modéré** : les oreilles des tout-petits sont fragiles.
+- Préfère l’écoute **audio** à la vidéo : les écrans sont déconseillés avant 3 ans.
 
 **Sortir**
-- Renseignez-vous à la mairie ou à la médiathèque sur les séances d’éveil musical ou les petits concerts pour tout-petits.
+- Renseigne-toi à la mairie ou à la médiathèque sur les séances d’éveil musical ou les petits concerts pour tout-petits.
 
 ## Questions fréquentes
 **Faut-il un instrument de musique « jouet » ?**
-Ce n’est pas indispensable. Si vous en achetez un, vérifiez le marquage CE, l’âge indiqué et que les piles éventuelles sont inaccessibles.
+Ce n’est pas indispensable. Si tu en achètes un, vérifie le marquage CE, l’âge indiqué et que les piles éventuelles sont inaccessibles.
 
 **Il tape très fort sur tout.**
-Explorer le bruit l’amuse. Proposez-lui un objet sur lequel il a le droit de taper, et jouez à alterner fort et doucement.
+Explorer le bruit l’amuse. Propose-lui un objet sur lequel il a le droit de taper, et joue à alterner fort et doucement.
 
 **Les cours d’éveil musical sont-ils utiles avant 3 ans ?**
 Ils peuvent être un plaisir partagé, mais ne sont pas nécessaires : chanter et danser ensemble à la maison apporte beaucoup.
 
 **Il n’aime pas les bruits forts.**
-Certains enfants sont sensibles au bruit. Respectez sa réaction, baissez le volume et proposez des sons doux.
+Certains enfants sont sensibles au bruit. Respecte sa réaction, baisse le volume et propose des sons doux.
 
 ## Quand demander conseil
-Parlez-en au médecin si votre enfant ne réagit pas aux sons, ne se retourne pas quand on l’appelle, ou au contraire semble très fortement gêné par des bruits du quotidien : un contrôle de l’audition ou un avis peut être utile. ${URG}
+Parles-en au médecin si ton enfant ne réagit pas aux sons, ne se retourne pas quand on l’appelle, ou au contraire semble très fortement gêné par des bruits du quotidien : un contrôle de l’audition ou un avis peut être utile. ${URG}
 
 ${FIN}`,
   }),
@@ -985,7 +985,7 @@ ${FIN}`,
 - **Barboter dans l’eau** fait partie des activités citées pour faire bouger l’enfant dès 1 an.
 - Une noyade peut être **silencieuse** et survenir dans **20 cm d’eau en moins de 3 minutes** ; un bébé peut se noyer dans moins de 5 cm d’eau.
 - **Jamais seul près de l’eau**, même une bassine : un adulte reste **à portée de bras** et ne le quitte pas des yeux.
-- **Videz** bassines, seaux et pataugeoires après le jeu.
+- **Vide** bassines, seaux et pataugeoires après le jeu.
 
 ## Comprendre
 Transvaser, verser, remplir, vider, faire flotter, éclabousser : l’eau fascine les tout-petits. Ces jeux développent la motricité fine, la coordination et la curiosité. Les recommandations de Santé publique France citent **barboter dans l’eau** parmi les activités ludiques à proposer à partir de 1 an.
@@ -1002,32 +1002,32 @@ Mais l’eau représente aussi un danger majeur. Le ministère des Sports rappel
 - **Le bain** : gobelets, éponges, bateaux, à condition de rester à côté.
 
 **Les règles de sécurité**
-- Restez **à portée de bras**, sans téléphone ni distraction ; si vous devez vous éloigner, même quelques secondes, **sortez l’enfant de l’eau** et emmenez-le avec vous.
-- En présence de plusieurs adultes, désignez **un adulte responsable** de la surveillance de chaque enfant.
-- **Videz** systématiquement bassines, seaux, pataugeoires et baignoires après usage.
-- Retournez les récipients qui peuvent se remplir de pluie dans le jardin.
-- Si vous avez une piscine, **sécurisez l’accès** après la baignade et vérifiez que le dispositif de sécurité est bien utilisé.
-- Vérifiez la température de l’eau du bain : elle ne doit pas dépasser 37 °C.
+- Reste **à portée de bras**, sans téléphone ni distraction ; si tu dois t’éloigner, même quelques secondes, **sors l’enfant de l’eau** et emmène-le avec toi.
+- En présence de plusieurs adultes, désigne **un adulte responsable** de la surveillance de chaque enfant.
+- **Vide** systématiquement bassines, seaux, pataugeoires et baignoires après usage.
+- Retourne les récipients qui peuvent se remplir de pluie dans le jardin.
+- Si tu as une piscine, **sécurise l’accès** après la baignade et vérifie que le dispositif de sécurité est bien utilisé.
+- Vérifie la température de l’eau du bain : elle ne doit pas dépasser 37 °C.
 
 **L’été**
-- Jouez à l’ombre, protégez la peau et la tête, proposez à boire régulièrement.
-- Évitez les heures les plus chaudes de la journée.
+- Joue à l’ombre, protège la peau et la tête, propose à boire régulièrement.
+- Évite les heures les plus chaudes de la journée.
 
 ## Questions fréquentes
 **Une pataugeoire peu profonde est-elle sûre ?**
-Non, pas sans surveillance : quelques centimètres d’eau suffisent pour une noyade chez un tout-petit. Restez à portée de bras et videz-la après le jeu.
+Non, pas sans surveillance : quelques centimètres d’eau suffisent pour une noyade chez un tout-petit. Reste à portée de bras et vide-la après le jeu.
 
 **Les brassards suffisent-ils ?**
 Les brassards sont préférables aux bouées ou jouets gonflables, mais ils ne remplacent en aucun cas la surveillance constante d’un adulte.
 
 **Mon enfant a avalé de l’eau puis va bien.**
-Sortez-le de l’eau et observez-le. S’il tousse, vomit, a du mal à respirer ou s’endort et ne revient pas à son état habituel dans les 5 minutes, appelez les secours.
+Sors-le de l’eau et observe-le. S’il tousse, vomit, a du mal à respirer ou s’endort et ne revient pas à son état habituel dans les 5 minutes, appelle les secours.
 
 **Puis-je le laisser jouer dans le bain pendant que je prends une serviette ?**
-Non : préparez tout avant le bain. Si vous devez vous éloigner, sortez-le de l’eau et emmenez-le.
+Non : prépare tout avant le bain. Si tu dois t’éloigner, sors-le de l’eau et emmène-le.
 
 ## Quand demander conseil
-Après un incident dans l’eau, appelez le **15**, le **18** ou le **112** en cas de toux, de vomissements, de difficultés à respirer, ou si l’enfant s’endort et ne retrouve pas son état normal dans les 5 minutes. Appelez immédiatement si l’enfant ne respire pas ou ne réagit pas. ${URG}
+Après un incident dans l’eau, appelle le **15**, le **18** ou le **112** en cas de toux, de vomissements, de difficultés à respirer, ou si l’enfant s’endort et ne retrouve pas son état normal dans les 5 minutes. Appelle immédiatement si l’enfant ne respire pas ou ne réagit pas. ${URG}
 
 ${FIN}`,
   }),
@@ -1040,19 +1040,19 @@ ${FIN}`,
     body_md: `## En bref
 - Creuser, remplir, tasser, démouler : le sable développe la **motricité fine**, l’imagination et le jeu à plusieurs.
 - Les bacs à sable des aires collectives de jeux doivent faire l’objet d’un **contrôle d’hygiène**.
-- **Lavez les mains** de l’enfant après le jeu, et évitez qu’il mette le sable à la bouche.
-- À la plage, **protégez-le du soleil** et ne le quittez jamais des yeux près de l’eau.
+- **Lave les mains** de l’enfant après le jeu, et évite qu’il mette le sable à la bouche.
+- À la plage, **protège-le du soleil** et ne le quitte jamais des yeux près de l’eau.
 
 ## Comprendre
 Le sable est une matière à la fois sensorielle et transformable : sec, il coule ; mouillé, il se moule. L’enfant découvre le plein et le vide, le lourd et le léger, et s’initie aux premiers jeux de construction. Le bac à sable est aussi un lieu de rencontre où l’on apprend à partager une pelle… ou à attendre son tour.
 
-La fiche de la DGCCRF sur les aires collectives de jeux précise que **les bacs à sable doivent être contrôlés sur le plan de l’hygiène**, et que l’aire doit être séparée des dangers comme la route ou les points d’eau. Si le bac vous semble sale ou mal entretenu, mieux vaut jouer ailleurs et le signaler au gestionnaire.
+La fiche de la DGCCRF sur les aires collectives de jeux précise que **les bacs à sable doivent être contrôlés sur le plan de l’hygiène**, et que l’aire doit être séparée des dangers comme la route ou les points d’eau. Si le bac te semble sale ou mal entretenu, mieux vaut jouer ailleurs et le signaler au gestionnaire.
 
 À la plage, deux risques s’ajoutent : **le soleil** et **l’eau**. mpedia rappelle d’éviter l’exposition directe entre 10 h et 16 h environ, de couvrir l’enfant (vêtements, chapeau à larges bords, lunettes de soleil) et d’appliquer une crème solaire adaptée aux enfants sur les zones découvertes.
 
 ## Au quotidien
 **Le matériel**
-- Seau, pelle, râteau, moules, passoire, petit arrosoir : vérifiez l’âge indiqué et le marquage CE.
+- Seau, pelle, râteau, moules, passoire, petit arrosoir : vérifie l’âge indiqué et le marquage CE.
 - Des objets du quotidien conviennent aussi : gobelets, cuillères, boîtes, entonnoir.
 
 **Des idées de jeux**
@@ -1063,32 +1063,32 @@ La fiche de la DGCCRF sur les aires collectives de jeux précise que **les bacs 
 - **Le chemin d’eau** (à la plage ou avec un arrosoir) : creuser un petit canal et y verser de l’eau, sous surveillance.
 
 **Les bons gestes**
-- Jetez un coup d’œil au sable avant le jeu : pas de déchets, de verre, de mégots ni de déjections.
-- Rappelez que le sable ne se mange pas et ne se lance pas vers les yeux.
-- En cas de sable dans les yeux, ne frottez pas : rincez à l’eau claire.
-- Au retour, lavez les mains, secouez les vêtements et les chaussures dehors.
+- Jette un coup d’œil au sable avant le jeu : pas de déchets, de verre, de mégots ni de déjections.
+- Rappelle que le sable ne se mange pas et ne se lance pas vers les yeux.
+- En cas de sable dans les yeux, ne frotte pas : rince à l’eau claire.
+- Au retour, lave les mains, secoue les vêtements et les chaussures dehors.
 
 **À la plage**
-- Installez-vous à l’ombre, évitez le milieu de journée, couvrez la tête et les épaules.
-- Renouvelez la crème solaire au moins toutes les 2 heures et après la baignade.
-- Proposez de l’eau régulièrement.
-- Près de l’eau, restez **à portée de bras** et sans distraction.
+- Installe-toi à l’ombre, évite le milieu de journée, couvre la tête et les épaules.
+- Renouvelle la crème solaire au moins toutes les 2 heures et après la baignade.
+- Propose de l’eau régulièrement.
+- Près de l’eau, reste **à portée de bras** et sans distraction.
 
 ## Questions fréquentes
 **Il met du sable à la bouche. Est-ce grave ?**
-Le sable peut être souillé : retirez-le de sa bouche, rincez-la à l’eau claire et rappelez la règle calmement. Si l’enfant tousse, s’étouffe ou semble malade ensuite, demandez un avis médical.
+Le sable peut être souillé : retire-le de sa bouche, rince-la à l’eau claire et rappelle la règle calmement. Si l’enfant tousse, s’étouffe ou semble malade ensuite, demande un avis médical.
 
 **Le bac à sable public est-il propre ?**
-Il doit être contrôlé par le gestionnaire. Observez-le avant de jouer, et signalez tout problème grâce aux coordonnées affichées à l’entrée de l’aire.
+Il doit être contrôlé par le gestionnaire. Observe-le avant de jouer, et signale tout problème grâce aux coordonnées affichées à l’entrée de l’aire.
 
 **Peut-on faire un bac à sable à la maison ?**
-Oui, avec un sable adapté au jeu des enfants. Couvrez-le quand il n’est pas utilisé pour éviter que les animaux s’en servent de litière.
+Oui, avec un sable adapté au jeu des enfants. Couvre-le quand il n’est pas utilisé pour éviter que les animaux s’en servent de litière.
 
 **Il ne veut pas prêter sa pelle.**
-Partager s’apprend progressivement. Prévoyez si possible deux outils, nommez les émotions et proposez des échanges.
+Partager s’apprend progressivement. Prévois si possible deux outils, nomme les émotions et propose des échanges.
 
 ## Quand demander conseil
-Consultez si un œil reste rouge ou douloureux malgré le rinçage, si une plaie s’infecte, ou si votre enfant présente des signes de coup de chaleur (fièvre, somnolence, vomissements) après une exposition au soleil. En cas de malaise, appelez le 15. ${URG}
+Consulte si un œil reste rouge ou douloureux malgré le rinçage, si une plaie s’infecte, ou si ton enfant présente des signes de coup de chaleur (fièvre, somnolence, vomissements) après une exposition au soleil. En cas de malaise, appelle le 15. ${URG}
 
 ${FIN}`,
   }),
@@ -1102,7 +1102,7 @@ ${FIN}`,
 - À partir de 2 ans, Santé publique France suggère d’**aller à la piscine** pour se familiariser avec l’eau, **à son rythme**.
 - Les autorités conseillent de **familiariser l’enfant avec l’eau dès le plus jeune âge** : activité de type **bébé nageur jusqu’à 3 ans**, puis **aisance aquatique** de 4 à 6 ans, et apprentissage de la nage ensuite.
 - Être familiarisé avec l’eau **ne protège pas de la noyade** : la surveillance reste totale.
-- Dans l’eau, **baignez-vous avec lui** et restez à portée de bras.
+- Dans l’eau, **baigne-toi avec lui** et reste à portée de bras.
 
 ## Comprendre
 Découvrir l’eau tôt, dans un cadre rassurant, aide l’enfant à s’y sentir à l’aise. La page de Santé.fr sur la prévention des noyades conseille de familiariser les enfants avec le milieu aquatique **dès le plus jeune âge** et de choisir un dispositif adapté à l’âge : **bébé nageur jusqu’à 3 ans**, **aisance aquatique de 4 à 6 ans**, puis **apprentissage de la nage à partir de 6 ans**. Le ministère des Sports indique qu’on peut apprendre à nager vers 3 ou 4 ans, après une familiarisation précoce.
@@ -1113,25 +1113,25 @@ Il est essentiel de distinguer **familiarisation** et **sécurité** : être à 
 
 ## Au quotidien
 **Avant la séance**
-- Renseignez-vous auprès de la piscine municipale : créneaux bébés nageurs ou « jardin aquatique », âge minimal, conditions.
-- Préparez une couche spéciale piscine si l’établissement l’exige, une serviette, un vêtement chaud pour la sortie, un goûter.
-- Choisissez un moment où l’enfant est reposé.
+- Renseigne-toi auprès de la piscine municipale : créneaux bébés nageurs ou « jardin aquatique », âge minimal, conditions.
+- Prépare une couche spéciale piscine si l’établissement l’exige, une serviette, un vêtement chaud pour la sortie, un goûter.
+- Choisis un moment où l’enfant est reposé.
 
 **Dans l’eau**
-- **Restez dans l’eau avec lui**, à portée de bras, toujours.
-- Commencez doucement : s’asseoir au bord, mouiller les pieds, puis entrer dans vos bras.
-- Jouez : verser de l’eau avec un gobelet, faire des bulles, faire avancer un jouet flottant.
-- Ne le forcez jamais : s’il pleure ou se raidit, faites une pause ou sortez.
-- Une séance courte vaut mieux qu’une séance trop longue : surveillez s’il a froid (lèvres bleues, tremblements).
+- **Reste dans l’eau avec lui**, à portée de bras, toujours.
+- Commence doucement : s’asseoir au bord, mouiller les pieds, puis entrer dans tes bras.
+- Joue : verser de l’eau avec un gobelet, faire des bulles, faire avancer un jouet flottant.
+- Ne le force jamais : s’il pleure ou se raidit, fais une pause ou sors.
+- Une séance courte vaut mieux qu’une séance trop longue : surveille s’il a froid (lèvres bleues, tremblements).
 
 **Après**
-- Séchez-le bien, en particulier les plis et les oreilles, et habillez-le chaudement.
-- Proposez à boire et une petite collation.
+- Sèche-le bien, en particulier les plis et les oreilles, et habille-le chaudement.
+- Propose à boire et une petite collation.
 
 **Au quotidien, hors piscine**
-- Ne le laissez jamais seul près d’un point d’eau : piscine, bassin, baignoire, seau.
-- Sécurisez l’accès à toute piscine privée **après la baignade**.
-- Quand plusieurs adultes sont présents, **désignez un adulte responsable** de chaque enfant.
+- Ne le laisse jamais seul près d’un point d’eau : piscine, bassin, baignoire, seau.
+- Sécurise l’accès à toute piscine privée **après la baignade**.
+- Quand plusieurs adultes sont présents, **désigne un adulte responsable** de chaque enfant.
 
 ## Questions fréquentes
 **Mon enfant fait les séances bébés nageurs : est-il en sécurité dans l’eau ?**
@@ -1141,13 +1141,13 @@ Non. Ces séances le familiarisent avec l’eau, mais ne le rendent pas capable 
 Non. Aucun équipement ne remplace la vigilance d’un adulte, même s’il porte des brassards.
 
 **Il a peur de l’eau.**
-Respectez son rythme. Les jeux dans le bain, les arrosoirs ou une bassine au jardin, sous surveillance, peuvent l’aider à s’apprivoiser.
+Respecte son rythme. Les jeux dans le bain, les arrosoirs ou une bassine au jardin, sous surveillance, peuvent l’aider à s’apprivoiser.
 
 **Dois-je attendre ses 3 ans pour aller à la piscine ?**
-Non : les dispositifs de type bébé nageur existent avant 3 ans. Renseignez-vous sur les conditions d’accueil de la piscine.
+Non : les dispositifs de type bébé nageur existent avant 3 ans. Renseigne-toi sur les conditions d’accueil de la piscine.
 
 ## Quand demander conseil
-Si votre enfant a avalé de l’eau, sortez-le de l’eau. Appelez le **15**, le **18** ou le **112** en cas de toux, de vomissements, de difficultés à respirer, ou s’il s’endort et ne revient pas à son état normal dans les 5 minutes. Si votre enfant a un problème de santé particulier, demandez l’avis de son médecin avant de commencer la piscine. ${URG}
+Si ton enfant a avalé de l’eau, sors-le de l’eau. Appelle le **15**, le **18** ou le **112** en cas de toux, de vomissements, de difficultés à respirer, ou s’il s’endort et ne revient pas à son état normal dans les 5 minutes. Si ton enfant a un problème de santé particulier, demande l’avis de son médecin avant de commencer la piscine. ${URG}
 
 ${FIN}`,
   }),
@@ -1162,7 +1162,7 @@ ${FIN}`,
 - **Jouer dehors**, surtout dans la nature, favorise les apprentissages, l’attention, l’imagination et le vocabulaire, et aide à réduire le stress.
 - Une balade réussie avec un tout-petit est **courte, lente et pleine d’arrêts**.
 - Avant de partir : **vêtements longs et clairs**, chapeau, chaussures fermées, eau.
-- Au retour : **inspectez tout son corps** à la recherche de tiques, y compris le cuir chevelu.
+- Au retour : **inspecte tout son corps** à la recherche de tiques, y compris le cuir chevelu.
 
 ## Comprendre
 Le livret des 1000 premiers jours indique que jouer dehors – en forêt, dans un jardin ou un square – favorise **les apprentissages, l’attention, l’imagination et le vocabulaire** et aide à **réduire le stress**. Les pages « Les activités avec bébé » soulignent que les jeux dehors sont très bénéfiques, **surtout dans la nature**, et que ces sorties sont aussi bonnes pour les parents.
@@ -1173,39 +1173,39 @@ Les zones boisées, les herbes hautes et les broussailles abritent des **tiques*
 
 ## Au quotidien
 **Préparer la sortie**
-- Habillez votre enfant de **vêtements longs et clairs**, d’un **chapeau** couvrant la tête et la nuque, de chaussures fermées ; rentrez le bas du pantalon dans les chaussettes.
-- Emportez de l’eau, une collation, un change, un **tire-tique** acheté en pharmacie.
-- Prévoyez le porte-bébé ou la poussette tout-terrain pour la fatigue.
+- Habille ton enfant de **vêtements longs et clairs**, d’un **chapeau** couvrant la tête et la nuque, de chaussures fermées ; rentre le bas du pantalon dans les chaussettes.
+- Emporte de l’eau, une collation, un change, un **tire-tique** acheté en pharmacie.
+- Prévois le porte-bébé ou la poussette tout-terrain pour la fatigue.
 
 **Pendant la balade**
-- Restez sur les **chemins dégagés** et évitez les herbes hautes et les fougères.
-- Pour le pique-nique, installez-vous sur une **nappe claire** plutôt que directement au sol.
-- Laissez-le marcher, s’arrêter, ramasser des feuilles, des pommes de pin, des bâtons.
-- Nommez ce que vous voyez et entendez : « Écoute, un oiseau ! », « La mousse est douce. »
-- Jouez à cache-cache derrière un arbre, sautez dans les feuilles mortes, comptez les cailloux.
-- Rappelez qu’on ne met **ni baies, ni champignons, ni plantes** à la bouche.
+- Reste sur les **chemins dégagés** et évite les herbes hautes et les fougères.
+- Pour le pique-nique, installe-toi sur une **nappe claire** plutôt que directement au sol.
+- Laisse-le marcher, s’arrêter, ramasser des feuilles, des pommes de pin, des bâtons.
+- Nomme ce que tu vois et entends : « Écoute, un oiseau ! », « La mousse est douce. »
+- Joue à cache-cache derrière un arbre, saute dans les feuilles mortes, compte les cailloux.
+- Rappelle qu’on ne met **ni baies, ni champignons, ni plantes** à la bouche.
 
 **Au retour**
-- **Inspectez tout le corps** : aisselles, arrière des genoux, aine, nombril, oreilles, cou, sans oublier le **cuir chevelu**.
+- **Inspecte tout le corps** : aisselles, arrière des genoux, aine, nombril, oreilles, cou, sans oublier le **cuir chevelu**.
 - Refaites une vérification le lendemain.
-- Si vous trouvez une tique, retirez-la **sans attendre** avec un tire-tique, en tournant doucement, puis désinfectez. N’appliquez **aucun produit** sur la tique avant de la retirer.
-- Lavez-lui les mains et rapportez éventuellement un « trésor » de la balade pour un bricolage.
+- Si tu trouves une tique, retire-la **sans attendre** avec un tire-tique, en tournant doucement, puis désinfecte. N’applique **aucun produit** sur la tique avant de la retirer.
+- Lave-lui les mains et rapporte éventuellement un « trésor » de la balade pour un bricolage.
 
 ## Questions fréquentes
 **Que faire si la tête de la tique reste dans la peau ?**
-Demandez conseil à votre pharmacien ou à votre médecin.
+Demande conseil à ton pharmacien ou à ton médecin.
 
 **Peut-on utiliser un répulsif sur un tout-petit ?**
-Certains répulsifs ont des restrictions d’âge. Demandez conseil à votre pharmacien ou à votre médecin avant d’en utiliser un sur un enfant de moins de 3 ans.
+Certains répulsifs ont des restrictions d’âge. Demande conseil à ton pharmacien ou à ton médecin avant d’en utiliser un sur un enfant de moins de 3 ans.
 
 **Il veut tout ramasser et tout rapporter.**
-Fixez une règle simple : un trésor par balade, dans un petit sac. Évitez les plantes inconnues et les champignons.
+Fixe une règle simple : un trésor par balade, dans un petit sac. Évite les plantes inconnues et les champignons.
 
 **Et s’il pleut ?**
-Avec des bottes et un vêtement de pluie, la sortie peut devenir un jeu (flaques, bruit de la pluie). Rentrez dès qu’il a froid.
+Avec des bottes et un vêtement de pluie, la sortie peut devenir un jeu (flaques, bruit de la pluie). Rentre dès qu’il a froid.
 
 ## Quand demander conseil
-Après une piqûre de tique, consultez votre médecin si une **plaque rouge qui s’étend** apparaît autour de la piqûre, en cas de fièvre, de fatigue inhabituelle ou de douleurs. En cas d’ingestion d’une plante, d’une baie ou d’un champignon, contactez immédiatement un centre antipoison ou le 15, en gardant si possible un échantillon. ${URG}
+Après une piqûre de tique, consulte ton médecin si une **plaque rouge qui s’étend** apparaît autour de la piqûre, en cas de fièvre, de fatigue inhabituelle ou de douleurs. En cas d’ingestion d’une plante, d’une baie ou d’un champignon, contacte immédiatement un centre antipoison ou le 15, en gardant si possible un échantillon. ${URG}
 
 ${FIN}`,
   }),
@@ -1216,10 +1216,10 @@ ${FIN}`,
     category: 'activites-eveil', tags: ['soleil', 'chaleur', 'canicule', 'crème solaire', 'chapeau', 'été', 'coup de chaleur', 'jouer dehors'], safety_critical: true,
     sources: [S.soleil, S.canicule, S.activitesBebe],
     body_md: `## En bref
-- Évitez le soleil direct **entre 10 h et 16 h environ** : sortez tôt le matin ou en fin d’après-midi, cherchez l’ombre.
-- Protégez d’abord par les **vêtements** : manches longues amples, **chapeau à larges bords**, lunettes de soleil (catégorie 3 ou 4, marquage CE).
+- Évite le soleil direct **entre 10 h et 16 h environ** : sors tôt le matin ou en fin d’après-midi, cherche l’ombre.
+- Protège d’abord par les **vêtements** : manches longues amples, **chapeau à larges bords**, lunettes de soleil (catégorie 3 ou 4, marquage CE).
 - Sur les zones découvertes, une **crème solaire pédiatrique très haute protection**, renouvelée au moins toutes les 2 heures et après la baignade.
-- **Proposez à boire régulièrement** et ne laissez jamais l’enfant dans une voiture, même très peu de temps.
+- **Propose à boire régulièrement** et ne laisse jamais l’enfant dans une voiture, même très peu de temps.
 
 ## Comprendre
 Les tout-petits sont particulièrement sensibles au soleil et à la chaleur. Selon mpedia, il faut éviter l’exposition directe aux heures les plus ensoleillées (environ 10 h–16 h) et protéger l’enfant **même pour une courte sortie**. La crème solaire **ne permet pas de rester plus longtemps au soleil** et ne protège pas totalement : elle complète les vêtements et l’ombre.
@@ -1230,8 +1230,8 @@ La page « Les activités avec bébé » de Santé publique France rappelle de p
 
 ## Au quotidien
 **Organiser la journée**
-- Sortez **le matin** ou **en fin d’après-midi** ; gardez les heures chaudes pour la sieste et les jeux calmes à l’intérieur, volets fermés.
-- Au parc, choisissez les zones ombragées et faites des pauses à l’abri.
+- Sors **le matin** ou **en fin d’après-midi** ; garde les heures chaudes pour la sieste et les jeux calmes à l’intérieur, volets fermés.
+- Au parc, choisis les zones ombragées et fais des pauses à l’abri.
 
 **Habiller et protéger**
 - Vêtements **amples**, couvrants, légers ; maillot anti-UV pour l’eau.
@@ -1240,16 +1240,16 @@ La page « Les activités avec bébé » de Santé publique France rappelle de p
 - **Crème solaire** pédiatrique, très haute protection, résistante à l’eau, à appliquer 15 à 30 minutes avant de sortir ; sans oublier les oreilles, la racine des cheveux et le dessus des pieds.
 
 **Hydrater et rafraîchir**
-- Proposez de l’eau **souvent**, sans attendre qu’il la réclame.
-- Rafraîchissez-le avec un linge humide ou un brumisateur.
+- Propose de l’eau **souvent**, sans attendre qu’il la réclame.
+- Rafraîchis-le avec un linge humide ou un brumisateur.
 - Jeux d’eau à l’ombre, sous surveillance constante.
 
 **Les signes à surveiller**
-Crampes, fatigue inhabituelle, nausées, vomissements, maux de tête : arrêtez l’activité, mettez-le au frais, faites-le boire et rafraîchissez-le.
+Crampes, fatigue inhabituelle, nausées, vomissements, maux de tête : arrête l’activité, mets-le au frais, fais-le boire et rafraîchis-le.
 
 ## Questions fréquentes
 **S’il a déjà la peau bronzée, faut-il continuer à le protéger ?**
-Oui. Une peau qui a bruni n’est pas protégée pour autant : continuez la protection.
+Oui. Une peau qui a bruni n’est pas protégée pour autant : continue la protection.
 
 **Faut-il de la crème solaire s’il porte un tee-shirt ?**
 Les vêtements protègent les zones couvertes. La crème est à appliquer sur les zones découvertes (visage, mains, jambes, pieds).
@@ -1258,10 +1258,10 @@ Les vêtements protègent les zones couvertes. La crème est à appliquer sur le
 Non, jamais, même quelques minutes : la température dans un véhicule peut monter très vite.
 
 **Combien doit-il boire ?**
-Aucune quantité n’est donnée ici : proposez de l’eau régulièrement et demandez conseil à votre médecin si vous avez un doute, notamment s’il est malade.
+Aucune quantité n’est donnée ici : propose de l’eau régulièrement et demande conseil à ton médecin si tu as un doute, notamment s’il est malade.
 
 ## Quand demander conseil
-Consultez un médecin si les signes liés à la chaleur persistent plus d’une heure ou s’aggravent. Appelez le **15** en cas de malaise, de propos incohérents, de somnolence inhabituelle ou de fièvre après une exposition à la chaleur ou au soleil. Consultez aussi en cas de coup de soleil étendu, avec cloques ou fièvre. ${URG}
+Consulte un médecin si les signes liés à la chaleur persistent plus d’une heure ou s’aggravent. Appelle le **15** en cas de malaise, de propos incohérents, de somnolence inhabituelle ou de fièvre après une exposition à la chaleur ou au soleil. Consulte aussi en cas de coup de soleil étendu, avec cloques ou fièvre. ${URG}
 
 ${FIN}`,
   }),
@@ -1276,7 +1276,7 @@ ${FIN}`,
 - **Avant 3 ans**, aucune exposition aux écrans n’est recommandée, y compris la télévision allumée en fond.
 - Le tout-petit apprend en **explorant, touchant et échangeant** avec les adultes.
 - Il n’a pas besoin de jouets coûteux : **boîtes, coussins, casseroles, livres** suffisent.
-- Alternez **jeux actifs et jeux calmes**, et acceptez aussi des moments où il joue seul.
+- Alterne **jeux actifs et jeux calmes**, et accepte aussi des moments où il joue seul.
 
 ## Comprendre
 Les repères officiels, intégrés au carnet de santé depuis janvier 2025, sont clairs : **pas d’écran avant 3 ans**, y compris la télévision en fond. Les recommandations de Santé publique France expliquent que l’enfant risque de s’habituer à rester devant un écran **sans bouger ni jouer**, alors que ces activités favorisent mieux son développement. La page ministérielle sur les écrans ajoute qu’ils peuvent nuire au sommeil, réduire l’activité physique et diminuer les interactions avec les adultes, essentielles au développement.
@@ -1287,7 +1287,7 @@ Dans la réalité, les journées à la maison peuvent être longues, surtout qua
 **Le matin : se dépenser**
 - Un **parcours de coussins** dans le salon.
 - **Danser** sur sa musique préférée, jouer à la danse-statue.
-- **Cache-cache** très simple (vous vous cachez derrière une porte, il vous trouve).
+- **Cache-cache** très simple (tu te caches derrière une porte, il te trouve).
 - **Les animaux** : marcher comme un ours, sauter comme une grenouille.
 
 **Avant le repas : participer**
@@ -1296,7 +1296,7 @@ Dans la réalité, les journées à la maison peuvent être longues, surtout qua
 
 **Après la sieste : explorer**
 - **Le panier aux trésors** : objets du quotidien sans danger (cuillère en bois, brosse, gant de toilette, boîte).
-- **Le transvasement** : de gros bouchons ou des balles trop grandes pour être avalées, à faire passer d’un récipient à l’autre ; évitez avant 3 ans tout ce qui est assez petit pour être porté à la bouche et avalé.
+- **Le transvasement** : de gros bouchons ou des balles trop grandes pour être avalées, à faire passer d’un récipient à l’autre ; évite avant 3 ans tout ce qui est assez petit pour être porté à la bouche et avalé.
 - **Les cartons** : une maison, un tunnel, une voiture.
 - **La pâte à modeler** ou la **peinture**, selon son âge.
 
@@ -1307,25 +1307,25 @@ Dans la réalité, les journées à la maison peuvent être longues, surtout qua
 - Un bain tranquille, puis le rituel du coucher.
 
 **Les bons réflexes**
-- Préparez une **boîte à idées** : quelques jeux rangés hors de vue, ressortis les jours difficiles.
-- Faites **tourner les jouets** : moins de jouets à la fois, plus d’intérêt.
-- Sortez quand même un peu, même par temps gris : quelques minutes dehors changent souvent l’ambiance.
+- Prépare une **boîte à idées** : quelques jeux rangés hors de vue, ressortis les jours difficiles.
+- Fais **tourner les jouets** : moins de jouets à la fois, plus d’intérêt.
+- Sors quand même un peu, même par temps gris : quelques minutes dehors changent souvent l’ambiance.
 
 ## Questions fréquentes
 **Et quand j’ai besoin de 10 minutes pour cuisiner ou me doucher ?**
-Installez-le en sécurité près de vous avec un jeu qu’il aime (casseroles, bac de jouets, livres), ou dans son lit le temps de la douche. Mieux vaut un moment de jeu seul en sécurité qu’un écran.
+Installe-le en sécurité près de toi avec un jeu qu’il aime (casseroles, bac de jouets, livres), ou dans son lit le temps de la douche. Mieux vaut un moment de jeu seul en sécurité qu’un écran.
 
 **La télévision allumée en fond, est-ce un écran ?**
 Oui : les recommandations demandent d’éviter aussi la télévision en fond avant 3 ans.
 
 **Il réclame le téléphone qu’il voit chez les autres.**
-Proposez-lui un vieux téléphone éteint pour jouer à « faire semblant », et limitez votre propre usage devant lui.
+Propose-lui un vieux téléphone éteint pour jouer à « faire semblant », et limite ton propre usage devant lui.
 
 **Je n’ai pas d’idées, je suis épuisé·e.**
-Les jours difficiles, le simple fait d’être là, de le laisser jouer près de vous et de sortir prendre l’air suffit. Demander du relais à un proche ou en parler à la PMI peut aider.
+Les jours difficiles, le simple fait d’être là, de le laisser jouer près de toi et de sortir prendre l’air suffit. Demander du relais à un proche ou en parler à la PMI peut aider.
 
 ## Quand demander conseil
-Si votre enfant semble ne pas s’intéresser aux jeux ni aux échanges, ou si vous vous sentez dépassé·e, parlez-en au médecin ou à la PMI. ${SOUTIEN} ${URG}
+Si ton enfant semble ne pas s’intéresser aux jeux ni aux échanges, ou si tu te sens dépassé·e, parles-en au médecin ou à la PMI. ${SOUTIEN} ${URG}
 
 ${FIN}`,
   }),
@@ -1348,34 +1348,34 @@ La page ministérielle sur les écrans indique que, chez les jeunes enfants, les
 
 L’arrêté publié en juillet 2025 interdit l’exposition des enfants de 0 à 3 ans aux écrans (smartphones, tablettes, ordinateurs, télévisions) dans les **lieux d’accueil du jeune enfant**, en s’appuyant sur des travaux reliant l’exposition précoce à des troubles du sommeil, de la vision et du développement.
 
-Le livret des 1000 premiers jours le résume ainsi : votre enfant **n’a pas besoin d’écrans** ; il apprend en explorant, en touchant et en échangeant avec les adultes.
+Le livret des 1000 premiers jours le résume ainsi : ton enfant **n’a pas besoin d’écrans** ; il apprend en explorant, en touchant et en échangeant avec les adultes.
 
 ## Au quotidien
 **À la maison**
-- **Éteignez la télévision** quand personne ne la regarde vraiment ; préférez la radio ou la musique à volume modéré si vous aimez un fond sonore.
-- Placez la télévision **hors de la pièce de jeu** si c’est possible.
-- Gardez **les repas** et **l’heure avant le coucher** sans écran, pour tous.
+- **Éteins la télévision** quand personne ne la regarde vraiment ; préfère la radio ou la musique à volume modéré si tu aimes un fond sonore.
+- Place la télévision **hors de la pièce de jeu** si c’est possible.
+- Garde **les repas** et **l’heure avant le coucher** sans écran, pour tous.
 - Pas d’écran dans la chambre de l’enfant.
 
-**Votre téléphone**
-- Rangez-le dans un endroit fixe (un panier, une étagère) pendant les moments partagés : repas, bain, jeux, lecture.
-- Coupez les notifications non urgentes quand vous jouez avec lui.
-- Si vous devez l’utiliser, dites-le : « Je réponds à papi et je reviens jouer. »
-- Le soir, une fois l’enfant couché, c’est souvent le moment le plus simple pour vos messages.
+**Ton téléphone**
+- Range-le dans un endroit fixe (un panier, une étagère) pendant les moments partagés : repas, bain, jeux, lecture.
+- Coupe les notifications non urgentes quand tu joues avec lui.
+- Si tu dois l’utiliser, dis-le : « Je réponds à papi et je reviens jouer. »
+- Le soir, une fois l’enfant couché, c’est souvent le moment le plus simple pour tes messages.
 
 **En famille**
-- Parlez-en avec l’autre parent et les proches qui gardent l’enfant : des règles communes sont plus faciles à tenir.
-- Expliquez aux grands-parents ou à la baby-sitter les repères avant 3 ans.
+- Parles-en avec l’autre parent et les proches qui gardent l’enfant : des règles communes sont plus faciles à tenir.
+- Explique aux grands-parents ou à la baby-sitter les repères avant 3 ans.
 
 **Avec les aînés**
-Si un grand frère ou une grande sœur regarde un programme, installez-le dans une autre pièce, ou profitez-en pour un moment à deux avec le plus petit.
+Si un grand frère ou une grande sœur regarde un programme, installe-le dans une autre pièce, ou profites-en pour un moment à deux avec le plus petit.
 
 ## Questions fréquentes
 **Un dessin animé en fond, il ne le regarde même pas.**
 Les repères visent justement aussi la télévision en fond : elle capte l’attention par intermittence et réduit les échanges dans la pièce.
 
 **Les appels vidéo avec la famille éloignée sont-ils concernés ?**
-Les repères ne détaillent pas ce cas. Un appel court, accompagné par un adulte qui commente et échange, est une situation différente d’un écran utilisé seul ; parlez-en avec votre médecin si vous vous interrogez.
+Les repères ne détaillent pas ce cas. Un appel court, accompagné par un adulte qui commente et échange, est une situation différente d’un écran utilisé seul ; parles-en avec ton médecin si tu t’interroges.
 
 **Je me sens coupable de regarder mon téléphone.**
 Il ne s’agit pas d’être parfait, mais de protéger des moments d’échange. Quelques habitudes simples peuvent déjà faire une différence.
@@ -1384,7 +1384,7 @@ Il ne s’agit pas d’être parfait, mais de protéger des moments d’échange
 La plateforme jeprotegemonenfant.gouv.fr propose des guides pratiques par âge.
 
 ## Quand demander conseil
-Si votre enfant semble peu réagir aux échanges, si son langage vous inquiète, ou si vous avez du mal à réduire l’usage des écrans à la maison, parlez-en au médecin ou à la PMI. Depuis janvier 2025, ces repères figurent dans le carnet de santé de votre enfant. ${URG}
+Si ton enfant semble peu réagir aux échanges, si son langage t’inquiète, ou si tu as du mal à réduire l’usage des écrans à la maison, parles-en au médecin ou à la PMI. Depuis janvier 2025, ces repères figurent dans le carnet de santé de ton enfant. ${URG}
 
 ${FIN}`,
   }),
@@ -1398,12 +1398,12 @@ ${FIN}`,
 - Le **jeu libre seul** est bénéfique quand l’enfant joue **dans un espace sécurisé** et **pas trop longtemps** : il développe son **autonomie** et sa **créativité**.
 - Les **temps calmes** et les moments où il joue seul sont aussi importants que les jeux partagés.
 - L’adulte reste **à proximité**, attentif, sans tout diriger.
-- Évitez d’**interrompre une découverte en cours** quand ce n’est pas nécessaire.
+- Évite d’**interrompre une découverte en cours** quand ce n’est pas nécessaire.
 
 ## Comprendre
 La page « Les activités avec bébé » de Santé publique France souligne que les **temps de jeu seul** et les **temps calmes** ont leur importance, à côté des activités partagées. Le jeu libre seul est jugé bénéfique **s’il se déroule à l’abri des accidents et pas trop longtemps** ; il développe l’autonomie et la créativité. La même page invite à **respecter le rythme** de l’enfant : ne pas le forcer à continuer s’il n’en a plus envie, et **ne pas interrompre une découverte en cours**.
 
-Le livret des 1000 premiers jours rappelle que l’enfant n’a besoin de presque rien pour jouer : « vous n’avez pas besoin de grand-chose si ce n’est d’être là pour lui ». Être là ne veut pas dire jouer en permanence à sa place : c’est aussi le regarder, l’encourager d’un mot, être disponible s’il vient vous chercher.
+Le livret des 1000 premiers jours rappelle que l’enfant n’a besoin de presque rien pour jouer : « vous n’avez pas besoin de grand-chose si ce n’est d’être là pour lui ». Être là ne veut pas dire jouer en permanence à sa place : c’est aussi le regarder, l’encourager d’un mot, être disponible s’il vient te chercher.
 
 Pour que ce jeu soit possible, l’environnement doit être sûr. Les conseils de prévention des accidents domestiques rappellent que le jeune enfant **ne doit pas être laissé seul** sans surveillance : petits objets, piles bouton, produits ménagers et médicaments hors de portée, meubles fixés, fenêtres sécurisées.
 
@@ -1411,36 +1411,36 @@ Pour que ce jeu soit possible, l’environnement doit être sûr. Les conseils d
 **Préparer un espace « oui »**
 - Un coin de la pièce où **tout est autorisé** : tapis, quelques jouets adaptés à son âge, livres cartonnés, coussins.
 - Rien qui puisse être avalé, renversé ou escaladé jusqu’à une fenêtre.
-- Vous restez dans la même pièce, à portée de regard.
+- Tu restes dans la même pièce, à portée de regard.
 
 **Proposer sans imposer**
 - Peu de jouets à la fois, renouvelés régulièrement.
 - Des objets « ouverts » qui se prêtent à mille usages : cubes, boîtes, gobelets, foulards, cartons.
-- Laissez-le chercher comment faire ; attendez un peu avant d’aider.
+- Laisse-le chercher comment faire ; attends un peu avant d’aider.
 
 **Observer**
-- Regardez ce qui l’intéresse : vous aurez de nouvelles idées de jeux.
-- Commentez de temps en temps, sans couper son élan : « Tu as mis le gobelet dans la boîte. »
+- Regarde ce qui l’intéresse : tu auras de nouvelles idées de jeux.
+- Commente de temps en temps, sans couper son élan : « Tu as mis le gobelet dans la boîte. »
 
 **Les limites**
-- Les moments de jeu seul restent **courts** chez le tout-petit et sous votre surveillance.
+- Les moments de jeu seul restent **courts** chez le tout-petit et sous ta surveillance.
 - Ils ne remplacent pas les échanges, la lecture, les sorties : ce sont des moments complémentaires.
 
 ## Questions fréquentes
 **Il ne joue jamais seul, il me réclame tout le temps.**
-Beaucoup de tout-petits ont besoin de la présence proche de l’adulte. Commencez par jouer à côté de lui, puis reculez un peu, en restant disponible. Les petits moments s’allongent progressivement.
+Beaucoup de tout-petits ont besoin de la présence proche de l’adulte. Commence par jouer à côté de lui, puis recule un peu, en restant disponible. Les petits moments s’allongent progressivement.
 
 **Il s’ennuie. Dois-je lui proposer une activité ?**
-Un léger moment de flottement peut l’amener à inventer. Proposez éventuellement un objet nouveau, sans organiser toute l’activité.
+Un léger moment de flottement peut l’amener à inventer. Propose éventuellement un objet nouveau, sans organiser toute l’activité.
 
 **Est-ce grave s’il joue toujours avec le même jouet ?**
-Le tout-petit aime répéter : c’est ainsi qu’il apprend. Proposez d’autres objets à côté, sans retirer celui qu’il préfère.
+Le tout-petit aime répéter : c’est ainsi qu’il apprend. Propose d’autres objets à côté, sans retirer celui qu’il préfère.
 
 **Puis-je faire autre chose pendant qu’il joue ?**
-Oui, si l’espace est sécurisé et que vous restez à proximité, attentif·ve. Ne le laissez jamais seul près de l’eau, d’une fenêtre ouverte ou d’un escalier.
+Oui, si l’espace est sécurisé et que tu restes à proximité, attentif·ve. Ne le laisse jamais seul près de l’eau, d’une fenêtre ouverte ou d’un escalier.
 
 ## Quand demander conseil
-Si votre enfant ne semble jamais intéressé par les jouets, joue de façon très répétitive en s’isolant, ou si vous avez un doute sur son développement, parlez-en au médecin ou à la PMI. ${SOUTIEN} ${URG}
+Si ton enfant ne semble jamais intéressé par les jouets, joue de façon très répétitive en s’isolant, ou si tu as un doute sur son développement, parles-en au médecin ou à la PMI. ${SOUTIEN} ${URG}
 
 ${FIN}`,
   }),
@@ -1452,10 +1452,10 @@ ${FIN}`,
     category: 'securite', tags: ['jouets', 'sécurité des jouets', 'marquage CE', 'moins de 36 mois', 'piles bouton', 'aimants', 'petites pièces', 'RappelConso'], safety_critical: true,
     sources: [S.jouets, S.piles, S.accidents],
     body_md: `## En bref
-- Vérifiez le **marquage CE** et **l’âge indiqué** ; ne donnez jamais un jouet portant la mention ou le pictogramme **« ne convient pas aux moins de 36 mois »**.
+- Vérifie le **marquage CE** et **l’âge indiqué** ; ne donne jamais un jouet portant la mention ou le pictogramme **« ne convient pas aux moins de 36 mois »**.
 - Les **piles bouton** et les **aimants** accessibles sont particulièrement dangereux en cas d’ingestion.
 - Les **jouets des plus grands** et les objets de collection ne sont pas pour les tout-petits.
-- Avant d’acheter, notamment d’occasion, consultez **RappelConso**.
+- Avant d’acheter, notamment d’occasion, consulte **RappelConso**.
 
 ## Comprendre
 Entre 1 et 3 ans, l’enfant explore avec les mains… et la bouche. Les petits objets peuvent provoquer un **étouffement**. Les conseils de la DGCCRF et de Santé publique France reposent sur quelques repères simples.
@@ -1470,40 +1470,40 @@ Les **vieux jouets** peuvent ne plus respecter les normes actuelles.
 
 ## Au quotidien
 **Avant l’achat**
-- Cherchez le **marquage CE** et lisez **tous les avertissements**.
-- Respectez l’**âge indiqué** sur l’emballage.
-- Préférez des **mécanismes simples**, sans pièces pliantes qui pincent.
-- Vérifiez que le **compartiment à piles** est fermé par une vis ou un système sécurisé.
-- Préférez les plastiques **colorés dans la masse** aux jouets peints dont la peinture pourrait s’écailler.
-- **Manipulez** le jouet si possible : rien ne doit se détacher facilement.
-- En ligne, achetez sur des **sites de confiance**.
+- Cherche le **marquage CE** et lis **tous les avertissements**.
+- Respecte l’**âge indiqué** sur l’emballage.
+- Préfère des **mécanismes simples**, sans pièces pliantes qui pincent.
+- Vérifie que le **compartiment à piles** est fermé par une vis ou un système sécurisé.
+- Préfère les plastiques **colorés dans la masse** aux jouets peints dont la peinture pourrait s’écailler.
+- **Manipule** le jouet si possible : rien ne doit se détacher facilement.
+- En ligne, achète sur des **sites de confiance**.
 
 **À la maison**
-- Lisez les notices avant la première utilisation.
-- **Séparez les jouets des aînés** de ceux du tout-petit, et rangez les petits éléments hors de sa portée.
-- Gardez les **piles neuves et usagées** hors de portée, dans un contenant fermé.
-- Ne laissez pas à sa portée les **objets qui ne sont pas des jouets** : décorations, figurines de collection, modèles réduits.
-- Vérifiez régulièrement l’état des jouets : coutures de peluches, pièces fendues, piles accessibles.
-- Évitez **colliers, cordons et liens** sur les jouets et vêtements de l’enfant.
+- Lis les notices avant la première utilisation.
+- **Sépare les jouets des aînés** de ceux du tout-petit, et range les petits éléments hors de sa portée.
+- Garde les **piles neuves et usagées** hors de portée, dans un contenant fermé.
+- Ne laisse pas à sa portée les **objets qui ne sont pas des jouets** : décorations, figurines de collection, modèles réduits.
+- Vérifie régulièrement l’état des jouets : coutures de peluches, pièces fendues, piles accessibles.
+- Évite **colliers, cordons et liens** sur les jouets et vêtements de l’enfant.
 
 **Les jouets d’occasion**
-- Vérifiez l’absence de rappel sur **RappelConso**, la présence du marquage CE et le bon état général.
+- Vérifie l’absence de rappel sur **RappelConso**, la présence du marquage CE et le bon état général.
 
 ## Questions fréquentes
 **Un jouet sans marquage CE est-il forcément dangereux ?**
 Un jouet vendu dans l’Union européenne doit porter ce marquage. En son absence, mieux vaut s’abstenir.
 
 **Mon enfant est très éveillé : peut-il avoir un jouet indiqué « 3 ans et + » ?**
-L’âge indiqué ne mesure pas l’intelligence de l’enfant mais tient compte des risques, notamment les petites pièces. Respectez-le.
+L’âge indiqué ne mesure pas l’intelligence de l’enfant mais tient compte des risques, notamment les petites pièces. Respecte-le.
 
 **Les jouets en bois sont-ils plus sûrs ?**
-La matière ne suffit pas : vérifiez le marquage CE, l’âge indiqué, l’absence d’échardes et de petites pièces.
+La matière ne suffit pas : vérifie le marquage CE, l’âge indiqué, l’absence d’échardes et de petites pièces.
 
 **Où signaler un jouet dangereux ?**
 Sur **SignalConso**, le service public de signalement des problèmes de consommation.
 
 ## Quand demander conseil
-En cas d’**ingestion suspectée d’une pile bouton**, même sans symptôme : appelez **immédiatement** un centre antipoison ou le **15**, le **18** ou le **112**, en signalant la pile bouton ; ne donnez rien à boire ni à manger, ne faites pas vomir et gardez l’emballage ou l’objet. Chaque minute compte. Faites de même pour un aimant avalé. Si l’enfant s’étouffe et ne peut plus respirer, appelez immédiatement les secours. ${URG}
+En cas d’**ingestion suspectée d’une pile bouton**, même sans symptôme : appelle **immédiatement** un centre antipoison ou le **15**, le **18** ou le **112**, en signalant la pile bouton ; ne donne rien à boire ni à manger, ne fais pas vomir et garde l’emballage ou l’objet. Chaque minute compte. Fais de même pour un aimant avalé. Si l’enfant s’étouffe et ne peut plus respirer, appelle immédiatement les secours. ${URG}
 
 ${FIN}`,
   }),

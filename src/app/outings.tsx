@@ -8,7 +8,6 @@
 import React, { useMemo, useState } from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/States';
 import { GlassSurface } from '@/components/Glass';
@@ -51,16 +50,15 @@ export default function Outings() {
   return (
     <Screen back title={tr('out.title')} subtitle={tr('out.subtitle')}>
       <View testID="outings" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(255,214,190,0.05)', 'rgba(201,184,255,0.06)'] : ['#FFF7EE', '#F3EEFB', '#FDEBE0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: -spacing.md, right: -spacing.md, height: 3000, borderRadius: 32 }} />
       <Text variant="small" muted testID="out-privacy">{tr('out.privacy')}</Text>
 
-      <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.55)' : 'rgba(255,255,255,0.62)'} depth={2} radius={24} padded={spacing.md}>
+      <GlassSurface fill={t.colors.surface} depth={2} radius={24} padded={spacing.md}>
         <TownPicker onHere={setHere} />
         {center ? <Text variant="small" style={{ marginTop: spacing.xs }} testID="out-center">{here ? tr('nb.aroundHere') : tr('nb.around', { town: town!.label })}</Text> : null}
       </GlassSurface>
 
       <Text variant="label">{tr('out.types')}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} testID="out-categories" style={{ marginHorizontal: -spacing.md }} contentContainerStyle={{ gap: spacing.xs, paddingHorizontal: spacing.md }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} testID="out-categories" style={{ marginHorizontal: -spacing.md }} contentContainerStyle={{ gap: spacing.xs, paddingHorizontal: spacing.md }}>
         <Chip label={tr('out.cat.all')} icon="grid" selected={cat === 'all'} onPress={() => setCat('all')} testID="out-cat-all" />
         {MAIN_CATEGORIES.map((c) => <Chip key={c} label={catLabel(c)} icon={CATEGORY_ICON[c] as never} selected={cat === c} onPress={() => setCat(c)} testID={`out-cat-${c}`} />)}
       </ScrollView>
@@ -119,7 +117,7 @@ export default function Outings() {
           <View style={{ gap: spacing.xs }} testID="out-favorites">
             {favs.data.map((f) => (
               <Tappable key={f.id} accessibilityRole="link" disabled={f.lat == null} onPress={() => f.lat != null && f.lon != null && openLink(directionsUrl({ lat: f.lat, lon: f.lon, name: f.name }, Platform.OS), toast)} testID={`out-fav-${f.place_id}`} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
-                <Icon name="heart" size={16} color="#E5525F" />
+                <Icon name="heart" size={16} color={t.colors.heart} />
                 <View style={{ flex: 1 }}><Text weight="bold">{f.name}</Text>{f.address ? <Text variant="caption" muted>{f.address}</Text> : null}</View>
                 <Icon name="navigation" size={16} color={t.colors.textMuted} />
               </Tappable>
@@ -138,7 +136,7 @@ function DirectoryCard({ d, town }: { d: Directory; town: string | null }) {
   const toast = useToast();
   const url = directoryUrl(d, town);
   return (
-    <GlassSurface fill={t.isDark ? 'rgba(40,32,70,0.5)' : 'rgba(255,255,255,0.6)'} depth={1} radius={20} padded={spacing.md}>
+    <GlassSurface fill={t.colors.surface} depth={1} radius={20} padded={spacing.md}>
       <View style={{ gap: 4 }} testID={`out-dir-${d.kind}`}>
         <Text weight="bold">{d.title}</Text>
         <Text variant="small">{d.body}</Text>

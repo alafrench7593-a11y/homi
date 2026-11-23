@@ -28,6 +28,7 @@ import { pseudonymError, useSaveCommunityProfile, useSetAvatarPhoto } from '@/li
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { AVATAR_PRESETS, handleBase, handleError, JOURNEY_LABELS, normalizeHandle } from '@/lib/domain/communityRules';
 import { pickPhotos } from '@/lib/documents/io';
+import { photoErrorKey } from '@/lib/community/photos';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { localeTag, t as tr } from '@/i18n';
@@ -86,13 +87,14 @@ export default function CommunityProfileScreen() {
   }
 
   async function pickPhoto() {
-    const res = await pickPhotos(false);
+    let res: Awaited<ReturnType<typeof pickPhotos>>;
+    try { res = await pickPhotos(false); } catch { toast(tr('cm2.photo.pickerFailed'), 'error'); return; }
     if (res === 'denied') { toast(tr('cm2.photosDenied'), 'error'); return; }
     if (!res.length) return;
     try {
-      await avatarM.mutateAsync({ uri: res[0].uri, previous: me?.avatar_path ?? null });
+      await avatarM.mutateAsync({ uri: res[0].uri, previous: me?.avatar_path ?? null, width: res[0].width, height: res[0].height });
       toast(tr('cm2.profile.photoUpdated'));
-    } catch (e) { toast(friendlyError(e, tr('cm2.profile.photoFailed')), 'error'); }
+    } catch (e) { const pk = photoErrorKey(e); toast(pk ? tr(pk) : friendlyError(e, tr('cm2.profile.photoFailed')), 'error'); }
   }
   async function removePhoto() {
     if (!(await confirm(tr('cm2.profile.removePhotoTitle'), tr('cm2.profile.removePhotoBody'), tr('cm2.profile.remove')))) return;

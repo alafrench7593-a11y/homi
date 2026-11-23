@@ -18,6 +18,7 @@ import { Tappable } from '@/components/Tappable';
 import { useTheme } from '@/theme/ThemeProvider';
 import { dosesFor, needLabel } from '@/features/needs';
 import { TreatmentsPanel } from '@/features/treatments/TreatmentsPanel';
+import { ChildDoseTrack } from '@/features/careTrack/ChildDoseTrack';
 import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
 import { useNow } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -31,7 +32,13 @@ import { formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
 import { snoozeLocally } from '@/lib/notifications';
 import { toFrDate } from '@/lib/validation';
 import { t as tr, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
+import { SensoryProfileCard, SituationJournal } from '@/features/neuro/NeuroPanels';
+import { parseSensory, parseSituation } from '@/lib/neuro/structured';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Tab = 'forYou' | 'profile' | 'follow' | 'treatments';
 const FOR_YOU: Tab = 'forYou';
@@ -91,14 +98,16 @@ export default function ChildNeeds() {
         { icon: 'check', value: todayDoses.length ? `${todayDoses.filter((x) => x.log?.status === 'taken').length}/${todayDoses.length}` : '—', label: tr('mb.nd.doses') },
       ]} />
       <Banner tone="info">{tr('nd.disclaimer')}</Banner>
-      <Segmented label={tr('nd.title')} value={current} onChange={setTab} options={[
+      <Segmented label={tr('nd.title')} value={current} onChange={(v) => { setTab(v); router.setParams({ tab: v, day: undefined } as never); }} options={[
         { value: 'forYou', label: tr('nd.tab.forYou') }, { value: 'profile', label: tr('nd.tab.profile') },
         ...(!simple || current === 'follow' ? [{ value: 'follow' as Tab, label: tr('nd.tab.follow') }] : []),
         { value: 'treatments', label: tr('nd.tab.treatments') },
       ]} />
       {current === FOR_YOU && <ForYou childId={child.id} childName={child.first_name} kinds={needs?.kinds ?? []} onPickCategories={() => setTab('profile')} onTreatments={() => setTab('treatments')} />}
       {current === 'profile' && <NeedsProfile childId={child.id} />}
+      {current === 'profile' && <SensoryProfileCard childId={child.id} />}
       {current === 'follow' && <FollowUp childId={child.id} />}
+      {current === 'treatments' && <ChildDoseTrack child={child} />}
       {current === 'treatments' && <TreatmentsPanel scope={{ kind: 'child', childId: child.id, childName: child.first_name }} noteDose={params.dose} askTime={params.time} />}
     </Screen>
   );
@@ -140,6 +149,8 @@ function NeedsProfile({ childId }: { childId: string }) {
   const [other, setOther] = useState('');
   const [notes, setNotes] = useState('');
   const [advanced, setAdvanced] = useState(false);
+  // Premier enregistrement : tant que la fiche n'est pas relue, un second appui en créerait une seconde
+  const { arm, guard } = useTapShield();
   useEffect(() => { if (needs) { setKinds(needs.kinds); setOther(needs.other_label ?? ''); setNotes(needs.notes ?? ''); } }, [needs]);
   if (isLoading) return <Skeleton rows={3} />;
   const toggle = (k: NeedKind) => setKinds((xs) => (xs.includes(k) ? xs.filter((x) => x !== k) : [...xs, k]));
@@ -153,13 +164,22 @@ function NeedsProfile({ childId }: { childId: string }) {
       {!advanced && !kinds.some((k) => (ADVANCED_NEED_KINDS as readonly string[]).includes(k)) ? <Button label={tr('nd.advanced')} variant="ghost" size="sm" onPress={() => setAdvanced(true)} /> : null}
       {kinds.includes('other') ? <Field label={tr('nd.profile.other')} value={other} onChangeText={setOther} maxLength={80} /> : null}
       <Field label={tr('nd.profile.notes')} optional value={notes} onChangeText={setNotes} multiline maxLength={4000} hint={tr('nd.profile.notesHint')} />
-      <Button label={tr('common.save')} loading={save.isPending} testID="needs-save" onPress={async () => {
-        try { await save.mutateAsync({ id: needs?.id, child_id: childId, kinds, other_label: kinds.includes('other') ? other.trim() || null : null, notes: notes.trim() || null }); toast(tr('nd.saved'), 'success'); }
+      <Button label={tr('common.save')} loading={save.isPending} testID="needs-save" onPress={guard(async () => {
+        try { await save.mutateAsync({ id: needs?.id, child_id: childId, kinds, other_label: kinds.includes('other') ? other.trim() || null : null, notes: notes.trim() || null }); arm(); toast(tr('nd.saved'), 'success'); }
         catch (e) { toast(friendlyError(e), 'error'); }
-      }} />
+      })} />
       <Text variant="caption" muted>{tr('nd.profile.private')}</Text>
     </View>
   );
+}
+
+/** Entrées structurées (profil sensoriel, situation) : résumé lisible au lieu du corps encodé. */
+function entryDetail(body: string | null): string {
+  if (!body) return '';
+  const sit = parseSituation(body);
+  if (sit) return [sit.before && `${tr('nds.sit.before')} : ${sit.before}`, sit.helped && `${tr('nds.sit.helped')} : ${sit.helped}`, sit.intensity ? `${sit.intensity}/5` : ''].filter(Boolean).map((x) => ` · ${x}`).join('');
+  if (parseSensory(body)) return '';
+  return ` · ${body}`;
 }
 
 // ---------------------------------------------------------------- suivi
@@ -195,18 +215,18 @@ function FollowUp({ childId }: { childId: string }) {
         {ENTRY_KINDS.map((k) => <Chip key={k} label={tr(`nd.entry.${k}` as TKey)} selected={filter === k} onPress={() => setFilter(filter === k ? null : k)} />)}
       </Row>
       <Button label={tr('nd.entry.add')} icon="plus" onPress={() => { setKind(filter ?? 'observation'); setOpen(true); }} testID="entry-add" />
-      <Card>
-        <ListRow icon="calendar" title={tr('tool.appointments')} onPress={() => router.push(`/appointments?child=${childId}`)} />
-        <ListRow icon="folder" title={tr('tool.documents')} subtitle={tr('nd.docsHint')} onPress={() => router.push(`/documents?child=${childId}`)} />
-      </Card>
+      <SituationJournal childId={childId} />
+      <ToolLinks ids={['appointments', 'documents']} subject={childId ? { type: 'child', id: childId } : null} testID="needs-tools" />
+      {/* Kit imprimable : routines, Maintenant / Ensuite, cartes de communication, histoires sociales (sans écran pour l'enfant) */}
+      <Button label={tr('pst.title')} icon="printer" variant="secondary" onPress={() => router.push('/print?kind=cards' as never)} testID="needs-print" />
       {isLoading && !entries ? <Skeleton rows={3} /> : entriesQ.isError && !entries ? (
         <ErrorView error={entriesQ.error} onRetry={() => void entriesQ.refetch()} />
       ) : !entries?.length ? <EmptyState icon="list" title={tr('nd.entry.none')} /> : (
         <Card>
-          {entries.map((e) => (
-            <ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${e.body ? ` · ${e.body}` : ''}`}
-              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} />
-          ))}
+          <MotionList>{entries.map((e) => (
+            <MotionItem key={e.id}><ListRow key={e.id} icon="file-text" title={e.title} subtitle={`${tr(`nd.entry.${e.kind}` as TKey)} · ${formatDateFr(e.occurred_on)}${entryDetail(e.body)}`}
+              onPress={async () => { if (await confirm(tr('nd.entry.deleteTitle'), e.title, tr('common.delete'))) await del.mutateAsync(e.id).catch((err) => toast(friendlyError(err), 'error')); }} /></MotionItem>
+          ))}</MotionList>
         </Card>
       )}
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('nd.entry.add')}>

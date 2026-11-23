@@ -1,6 +1,6 @@
 /** Rendez-vous du foyer : à venir et passés, ajout / modification / suppression, rappel facultatif. */
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
@@ -22,7 +22,11 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { countdown } from '@/lib/domain/dayThread';
 import { spacing } from '@/theme/tokens';
-import { t as tr, formatDate } from '@/i18n';
+import { t as tr, formatDate, type TKey } from '@/i18n';
+import { AddToDeviceCalendar } from '@/features/deviceCalendar/DeviceCalendarParts';
+import { CheckMark } from '@/motion/CheckMark';
+import { ApptWeek } from '@/features/journalTrack/ApptWeek';
+import { apptStatus, initialDay, isoDay } from '@/lib/domain/journalTrack';
 
 const kinds = (): { value: AppointmentKind; label: string; icon: IconName }[] => [
   { value: 'consultation', label: tr('u1.appt.kind.consultation'), icon: 'user' },
@@ -51,7 +55,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
 function emptyDraft(concern: Concern): Draft {
-  return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60, private: false };
+  return { id: null, kind: 'consultation', title: '', date: '', time: '', location: '', notes: '', questions: '', concern, lead: 60, private: true }; // 19/11/2026 : un rendez-vous « pour moi » est privé tant qu'on ne le partage pas
 }
 
 export default function AppointmentsScreen() {
@@ -75,16 +79,22 @@ export default function AppointmentsScreen() {
   const [newQ, setNewQ] = useState('');
 
   // Profil affiché : par défaut, seulement ses rendez-vous ; ceux d'une ancienne grossesse restent dans « Mes parcours précédents »
-  const qp = useLocalSearchParams<{ child?: string; for?: string; all?: string }>();
+  const qp = useLocalSearchParams<{ child?: string; for?: string; all?: string; day?: string }>();
+  // Semaine : jour sélectionné gardé dans l'adresse (« ?day= ») ; ouvrir un rendez-vous puis revenir retrouve ce jour
+  const now = new Date();
+  const selDay = initialDay(qp.day, now);
+  const selectDay = (d: string) => router.setParams({ day: d } as never);
+  const [marking, setMarking] = useState(false);
+  const markInflight = useRef(false);
   const { subject } = useActiveSubject();
   const [everyone, setEveryone] = useState(qp.all === '1');
   const focus: Concern | null = qp.child ? `child:${qp.child}` : qp.for === 'pregnancy' ? 'pregnancy' : subject.type === 'child' ? `child:${subject.id}` : subject.type === 'pregnancy' ? 'pregnancy' : null;
-  const { upcoming, past } = useMemo(() => {
+  const { upcoming, past, shown } = useMemo(() => {
     const cutoff = Date.now() - 3600_000;
     const all = (appointments ?? [])
       .filter((a) => !a.pregnancy_id || a.pregnancy_id === pregnancy?.id)
       .filter((a) => everyone || !focus || (focus === 'pregnancy' ? !!a.pregnancy_id : a.child_id === focus.slice(6)));
-    return { upcoming: all.filter((a) => Date.parse(a.starts_at) >= cutoff), past: all.filter((a) => Date.parse(a.starts_at) < cutoff).reverse() };
+    return { upcoming: all.filter((a) => Date.parse(a.starts_at) >= cutoff), past: all.filter((a) => Date.parse(a.starts_at) < cutoff).reverse(), shown: all };
   }, [appointments, pregnancy?.id, everyone, focus]);
   const reminderFor = (id: string) => reminders?.find((r) => r.appointment_id === id);
 
@@ -97,7 +107,7 @@ export default function AppointmentsScreen() {
     a.child_id ? children?.find((c) => c.id === a.child_id)?.first_name ?? tr('u1.appt.child') : a.pregnancy_id ? tr('u1.appt.pregnancy') : a.for_parent ? tr('u1.appt.me') : null;
 
   // Ouverture directe depuis l'espace post-partum : nouveau rendez-vous postnatal, privé par défaut
-  const params = useLocalSearchParams<{ new?: string; title?: string; at?: string; child?: string }>();
+  const params = useLocalSearchParams<{ new?: string; title?: string; at?: string; child?: string; concern?: string }>();
   useEffect(() => {
     if (params.new === 'postnatal') setDraft({ ...emptyDraft('me'), kind: 'postnatal', private: true });
     // Saisie vocale (« Ajouter le rendez-vous du pédiatre mardi à 15 h ») : formulaire pré-rempli, à vérifier avant d'enregistrer
@@ -106,13 +116,32 @@ export default function AppointmentsScreen() {
       const title = String(params.title ?? '').slice(0, 80);
       setDraft({ ...emptyDraft(params.child ? `child:${params.child}` : 'me'), kind: /p[eé]diatre/i.test(title) ? 'pediatric' : 'consultation', title,
         date: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` });
+    } else if (params.new === 'quick') {
+      // Action rapide de la barre (« Ajouter un rendez-vous ») : formulaire vide, déjà rattaché au profil affiché
+      setDraft(emptyDraft(params.child ? `child:${params.child}` : params.concern === 'pregnancy' ? 'pregnancy' : 'me'));
     }
-  }, [params.new, params.at]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [params.new, params.at, params.child, params.concern]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusLabel = focus ? (focus === 'pregnancy' ? tr('u1.appt.pregnancy') : children?.find((c) => c.id === focus.slice(6))?.first_name ?? null) : null;
 
-  function openNew() {
+  function openNew(day?: string) {
     setErrors({});
-    setDraft(emptyDraft(focus && (focus !== 'pregnancy' || pregnancy) ? focus : 'me'));
+    const d = emptyDraft(focus && (focus !== 'pregnancy' || pregnancy) ? focus : 'me');
+    setDraft(day ? { ...d, date: toFrDate(day) } : d);
+  }
+
+  /** Réalisé / pas encore : même table, même écriture que le formulaire ; une seule écriture même en double appui. */
+  async function markDone(a: Appointment, done: boolean) {
+    if (markInflight.current) return;
+    markInflight.current = true; setMarking(true);
+    try {
+      await backend.update('appointments', { completed_at: done ? new Date().toISOString() : null }, [eq('id', a.id)]);
+      inv('appointments');
+      haptic('success');
+      toast(done ? tr('jt.appt.markedDone') : tr('jt.appt.reopened'));
+      setDraft(null);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
+    } finally { markInflight.current = false; setMarking(false); }
   }
 
   function openEdit(a: Appointment) {
@@ -121,7 +150,7 @@ export default function AppointmentsScreen() {
     setDraft({
       id: a.id, kind: a.kind, title: a.title, date: toFrDate(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`), time: `${pad(d.getHours())}h${pad(d.getMinutes())}`,
       location: a.location_label ?? '', notes: a.notes ?? '', questions: a.questions.join('\n'),
-      concern: a.child_id ? `child:${a.child_id}` : a.pregnancy_id ? 'pregnancy' : 'me', lead: leadOf(reminderFor(a.id), a.starts_at), private: !!a.private_to_creator,
+      concern: a.child_id ? `child:${a.child_id}` : a.pregnancy_id ? 'pregnancy' : 'me', lead: leadOf(reminderFor(a.id), a.starts_at), private: !!a.private_to_creator || (!!a.for_parent && !a.shared_with_household),
     });
   }
 
@@ -153,6 +182,8 @@ export default function AppointmentsScreen() {
       for_parent: draft.concern === 'me', pregnancy_id: draft.concern === 'pregnancy' ? pregnancy?.id ?? null : null, child_id: childId,
       // Un rendez-vous personnel peut rester privé (non visible du foyer) ; ceux d'un enfant restent partagés
       private_to_creator: draft.concern === 'me' && draft.private,
+      // partage explicite avec le foyer (politique appointments_for_parent_owner) : seulement si « privé » est décoché
+      shared_with_household: draft.concern === 'me' && !draft.private ? true : null,
     };
     setSaving(true);
     try {
@@ -172,6 +203,7 @@ export default function AppointmentsScreen() {
       haptic('success');
       toast(draft.id ? tr('u1.appt.modified') : tr('u1.appt.added'));
       setDraft(null);
+      selectDay(isoDay(new Date(startsAt)));
     } catch (err) {
       toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
     } finally {
@@ -181,8 +213,14 @@ export default function AppointmentsScreen() {
 
   async function remove(a: Appointment) {
     if (!(await confirm(tr('u1.appt.deleteTitle'), tr('u1.appt.deleteBody', { title: a.title }), tr('u1.appt.delete')))) return;
+    // Échec (réseau, droits) : message d'erreur, la feuille reste ouverte (jamais d'échec muet ni de faux « supprimé »)
+    try {
+      await backend.remove('appointments', [eq('id', a.id)]);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : tr('u1.appt.saveFailed'), 'error');
+      return;
+    }
     await backend.remove('reminders', [eq('appointment_id', a.id)]).catch(() => undefined);
-    await backend.remove('appointments', [eq('id', a.id)]);
     inv('appointments', 'reminders');
     setDraft(null);
     toast(tr('u1.appt.deleted'));
@@ -233,7 +271,7 @@ export default function AppointmentsScreen() {
                 <Tappable key={k} bare onPress={() => { haptic('selection'); setAsked((m) => ({ ...m, [k]: !m[k] })); }} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={q} testID={`appt-q-${i}`}
                   style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: 6 }}>
                   <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', borderWidth: on ? 0 : 2, borderColor: t.colors.gold, backgroundColor: on ? t.colors.gold : 'transparent' }}>
-                    {on ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
+                    <CheckMark checked={!!on} size={15} color="#FFFFFF" />
                   </View>
                   <Text style={{ flex: 1, textDecorationLine: on ? 'line-through' : 'none', opacity: on ? 0.6 : 1 }}>{q}</Text>
                 </Tappable>
@@ -241,7 +279,7 @@ export default function AppointmentsScreen() {
             })}
             <Row style={{ alignItems: 'flex-end' }}>
               <View style={{ flex: 1 }}>
-                <Field label={tr('u1.appt.newQuestion')} optional value={newQ} onChangeText={setNewQ} placeholder={tr('u1.appt.newQuestionPh')} onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" testID="appt-q-new" />
+                <Field label={tr('u1.appt.newQuestion')} optional value={newQ} onChangeText={setNewQ} placeholder={tr('u1.appt.newQuestionPh')} onSubmitEditing={() => void addQuestion(a)} returnKeyType="done" submitBehavior="submit" testID="appt-q-new" />
               </View>
               <Button label={tr('u1.appt.add')} icon="plus" size="sm" variant="secondary" disabled={!newQ.trim()} onPress={() => void addQuestion(a)} testID="appt-q-add" />
             </Row>
@@ -273,7 +311,7 @@ export default function AppointmentsScreen() {
 
   return (
     <Screen back title={tr('u1.appt.title')} subtitle={tr('u1.appt.subtitle')}
-      action={{ label: tr('u1.appt.addAppt'), icon: 'plus', onPress: openNew, testID: 'appointments-add' }}>
+      action={{ label: tr('u1.appt.addAppt'), icon: 'plus', onPress: () => openNew(selDay), testID: 'appointments-add' }}>
       {loadFailed ? <ErrorView error={appointmentsQ.error} onRetry={() => void appointmentsQ.refetch()} title={tr('u1.appt.loadError')} /> : null}
       {!isLoading && !loadFailed ? (() => {
         const next = upcoming[0];
@@ -291,6 +329,10 @@ export default function AppointmentsScreen() {
           <Chip label={tr('u1.appt.forName', { name: focusLabel })} selected={!everyone} onPress={() => setEveryone(false)} />
           <Chip label={tr('u1.appt.wholeFamily')} selected={everyone} onPress={() => setEveryone(true)} />
         </Row>
+      ) : null}
+      {!loadFailed ? (
+        <ApptWeek list={shown} day={selDay} now={now} onSelectDay={selectDay} onOpen={openEdit} onAdd={openNew}
+          kindLabel={(a) => kindMeta(a.kind).label} detail={(a) => [concernLabel(a), a.location_label].filter(Boolean).join(' · ') || null} />
       ) : null}
       {upcoming[0] ? NextCard({ a: upcoming[0] }) : null}
       {upcoming.length > 1 ? <SectionTitle title={tr('u1.appt.then')} /> : null}
@@ -340,7 +382,29 @@ export default function AppointmentsScreen() {
             <Segmented label={tr('u1.appt.reminder')} value={String(draft.lead)} onChange={(v) => set('lead', Number(v) as ReminderLead)} options={leads()} />
             {draft.lead !== 0 && !notificationsSupported && <Banner tone="info">{tr('u1.appt.webNote')}</Banner>}
             <Button label={draft.id ? tr('u1.appt.saveChanges') : tr('u1.appt.add')} onPress={save} loading={saving} full />
-            {!!draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); if (a) remove(a); }} />}
+            {(() => {
+              // Ajout au calendrier de l'iPhone : le rendez-vous ENREGISTRÉ, sur appui seulement. La personne concernée
+              // (profil déjà associé au rendez-vous) est rappelée dans les notes ; les notes et questions restent dans HOMI.
+              const saved = draft.id ? appointments?.find((x) => x.id === draft.id) : undefined;
+              if (!saved) return null;
+              const who = concernLabel(saved);
+              return <AddToDeviceCalendar source={{ kind: 'appointment', appointment: { id: saved.id, title: saved.title, starts_at: saved.starts_at, location_label: saved.location_label }, leadMinutes: leadOf(reminderFor(saved.id), saved.starts_at) }}
+                title={saved.title} notes={who ? tr('ical.note.for', { name: who }) : null} testID="appt-ical" />;
+            })()}
+            {(() => {
+              // Réalisé : seulement si le rendez-vous a commencé (ou est passé) ; « reporté » n'existe pas dans la donnée
+              const a = draft.id ? appointments?.find((x) => x.id === draft.id) : undefined;
+              if (!a || Date.parse(a.starts_at) > Date.now()) return null;
+              const st = apptStatus(a, new Date());
+              return (
+                <View style={{ gap: 4 }} testID="appt-status">
+                  <Text variant="small" muted>{st === 'done' && a.completed_at ? tr('jt.appt.doneOn', { when: fmtWhen(a.completed_at) }) : tr(`jt.status.${st}` as TKey)}</Text>
+                  <Button label={st === 'done' ? tr('jt.appt.reopen') : tr('jt.appt.markDone')} icon={st === 'done' ? 'rotate-ccw' : 'check-circle'} variant="secondary"
+                    loading={marking} onPress={() => void markDone(a, st !== 'done')} testID="appt-mark-done" />
+                </View>
+              );
+            })()}
+            {!!draft.id && <Button label={tr('u1.appt.deleteBtn')} variant="ghost" onPress={() => { const a = appointments?.find((x) => x.id === draft.id); return a ? remove(a) : undefined; }} />}
           </>
         )}
       </Sheet>

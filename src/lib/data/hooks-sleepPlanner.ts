@@ -138,14 +138,14 @@ export function useSleepActions(child: Child | null | undefined) {
       done();
     },
     /** Modifier les horaires d'un sommeil (le planning est recalculé aussitôt). */
-    async edit(sleep: Sleep, patch: { started_at: Date; ended_at: Date | null; kind: 'nap' | 'night' }, all: Sleep[]) {
+    async edit(sleep: Sleep, patch: { started_at: Date; ended_at: Date | null; kind: 'nap' | 'night'; note?: string | null }, all: Sleep[]) {
       checkPast(patch.started_at);
       if (patch.ended_at) { checkPast(patch.ended_at); if (patch.ended_at <= patch.started_at) throw new SleepError(tr('l3.sleepplan.end_after_start')); }
       if (patch.ended_at && patch.ended_at.getTime() - patch.started_at.getTime() > 16 * 60 * MIN) throw new SleepError(tr('l3.sleepplan.too_long'));
       const a = patch.started_at.getTime(); const b = patch.ended_at?.getTime() ?? Date.now();
       const overlap = all.find((s) => s.id !== sleep.id && Date.parse(s.started_at) < b && (s.ended_at ? Date.parse(s.ended_at) : Date.now()) > a);
       if (overlap) throw new SleepError(tr('l3.sleepplan.overlap'));
-      await backend.update('sleeps', { started_at: patch.started_at.toISOString(), ended_at: patch.ended_at?.toISOString() ?? null, kind: patch.kind }, [eq('id', sleep.id)]);
+      await backend.update('sleeps', { started_at: patch.started_at.toISOString(), ended_at: patch.ended_at?.toISOString() ?? null, kind: patch.kind, ...(patch.note !== undefined ? { note: patch.note ? patch.note.slice(0, 1000) : null } : {}) }, [eq('id', sleep.id)]);
       done();
     },
     async remove(sleep: Sleep) {

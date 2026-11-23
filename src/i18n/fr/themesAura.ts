@@ -1,0 +1,43 @@
+/** Refonte du 21/11/2026 : sélecteur de thème de l'accueil, présentation et présence d'Aura, voix du téléphone. */
+export const themesAura = {
+  // Sélecteur « Personnaliser l'accueil »
+  'tp.button': "Personnaliser l’accueil",
+  'tp.buttonHint': "Choisis le thème de couleurs de HOMI",
+  'tp.title': "Personnaliser l’accueil",
+  'tp.group': "Thèmes",
+  'tp.apply': "Appliquer le thème",
+  'tp.applied': "Thème {name} appliqué.",
+  'tp.choiceHint': "Aperçu immédiat. « Appliquer le thème » l’enregistre ; fermer le panneau garde ton thème actuel.",
+  'tp.adaptive': "Tu es en mode Adaptatif (le thème suit le profil). Choisir un thème ici le remplace.",
+  'tp.more': "Plus de réglages d’apparence",
+  'tp.alwaysDark': "Toujours sombre",
+  // Aura : présentation unique, relançable
+  'ta.intro.a11y': "Présentation d’Aura",
+  'ta.intro.hello': "Salut, moi c’est Aura, l’assistante de HOMI. Je t’aide à trouver le bon outil, à comprendre un écran et, seulement si tu choisis de les partager, à analyser certaines de tes données. On commence par quoi ?",
+  'ta.intro.talk': "Parler à Aura",
+  'ta.intro.write': "Écrire",
+  'ta.intro.later': "Plus tard",
+  'ta.intro.note': "Aura n’est pas une professionnelle de santé. Rien n’est lu à voix haute sans ton accord.",
+  'ta.intro.replay': "Revoir la présentation d’Aura",
+  // Aura depuis l'accueil et depuis un outil
+  'ta.home.ask': "Demander à Aura",
+  'ta.home.askSub': "Retrouver un outil, comprendre un écran",
+  'ta.home.a11y': "Ouvrir Aura, l’assistante de HOMI",
+  'ta.ctx.a11y': "Demander à Aura à propos de {tool}",
+  'ta.ctx.title': "À propos de {tool}",
+  'ta.ctx.how': "Comment utiliser {tool} ?",
+  'ta.ctx.what': "À quoi sert {tool} ?",
+  'ta.ctx.open': "Revenir à {tool}",
+  'ta.ctx.note': "Aura ne lit pas ce que tu as noté dans {tool} : elle t’explique l’outil et ce qu’il permet.",
+  // Voix (synthèse et dictée du téléphone : aucun service vocal payant)
+  'ta.voice.read': "Écouter la réponse",
+  'ta.voice.stop': "Arrêter la lecture",
+  'ta.voice.talk': "Dicter ma question",
+  'ta.voice.listening': "Je t’écoute… Touche « Arrêter » quand tu as fini.",
+  'ta.voice.end': "Arrêter",
+  'ta.voice.cancel': "Annuler",
+  'ta.voice.denied': "Micro refusé. Tu peux l’autoriser dans les réglages du téléphone, ou écrire ta question.",
+  'ta.voice.noSpeech': "Je n’ai rien entendu. Réessaie, ou écris ta question.",
+  'ta.voice.keyboard': "Pour parler, touche le micro du clavier : la dictée du téléphone remplit le champ, tu peux corriger avant d’envoyer.",
+  'ta.voice.ttsOff': "La lecture à voix haute arrive avec la prochaine version de l’app sur ce téléphone.",
+};

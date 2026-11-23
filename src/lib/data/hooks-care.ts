@@ -8,7 +8,9 @@
 import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { backend, eq } from '../backend';
+import { KICK } from '../domain/pregTrack';
 import { useUserId } from '../auth';
+import { withIdempotentId } from '../idempotency';
 import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { resync } from './hooks-settings';
 import { useUiStore } from '../store';
@@ -25,9 +27,10 @@ export interface PregnancySymptomLog {
   frequency: Frequency | null; note: string | null; week_sa: number | null; logged_at: string;
 }
 
+/** Symptômes et ressentis notés (hors séances de comptage des mouvements `kick_count`, lues par `useKickRows`). */
 export function usePregnancySymptoms(limit = 60) {
   const uid = useUserId();
-  return useRows<PregnancySymptomLog>(['pregnancy_symptom_logs', uid], uid ? { table: 'pregnancy_symptom_logs', filters: [eq('user_id', uid)], order: [{ col: 'logged_at', asc: false }], limit } : null);
+  return useRows<PregnancySymptomLog>(['pregnancy_symptom_logs', uid, String(limit)], uid ? { table: 'pregnancy_symptom_logs', filters: [eq('user_id', uid), { col: 'symptom', op: 'neq', value: KICK }], order: [{ col: 'logged_at', asc: false }], limit } : null);
 }
 
 export function useSaveSymptoms() {
@@ -91,8 +94,13 @@ export function useSaveAppointment() {
         calendar_keys: a.calendarKeys ?? [], document_ids: a.documentIds ?? [],
       };
       if (a.id) { await backend.update('appointments', row, [eq('id', a.id)]); return a.id; }
-      const [saved] = await backend.insert<{ id: string }>('appointments', { ...row, household_id: a.householdId, pregnancy_id: a.pregnancyId ?? null, child_id: a.childId ?? null, questions: [] });
-      return saved?.id ?? null;
+      // Audit 08 : id posé sur l'appareil, stable tant que l'envoi n'a pas abouti → « Réessayer » après une réponse
+      // perdue (ou une double pression) ne crée jamais un second rendez-vous
+      const insert = { ...row, household_id: a.householdId, pregnancy_id: a.pregnancyId ?? null, child_id: a.childId ?? null, questions: [] };
+      return withIdempotentId('appointments', insert, async (id) => {
+        await backend.insert<{ id: string }>('appointments', { id, ...insert }, { onConflict: 'id', ignoreDuplicates: true });
+        return id;
+      });
     },
     onSuccess: () => inv('appointments'),
   });

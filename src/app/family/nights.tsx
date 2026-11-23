@@ -2,9 +2,12 @@
  * Relais de nuit : qui se lève quelle nuit. Alterné, fixe ou personnalisé — y compris pour une
  * famille monoparentale ou un réseau d'aidants. Aucun score nocturne, aucun compteur par personne.
  */
+import { Glass, GlassButton } from '@/components/glass';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
+import { BottleRelaysSection } from '@/features/feeding/BottleRelays';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
@@ -17,12 +20,13 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { planNights, shiftConflicts, type CareShift, type NightPattern } from '@/lib/domain/familyLoad';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { GlassSurface } from '@/components/Glass';
 import { Icon } from '@/components/ui';
 import { tint } from '@/components/ToolGlyph';
 import { useTheme } from '@/theme/ThemeProvider';
 import { t as tr, formatDate, formatRelative, formatTime } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const fmtNight = (s: { starts_at: string; ends_at: string }) => tr('u2.nights.night_of', { date: formatDate(s.starts_at, { weekday: 'long', day: 'numeric', month: 'long' }), from: formatTime(s.starts_at), to: formatTime(s.ends_at) });
 
@@ -50,6 +54,8 @@ export default function NightRelay() {
   const [endHour, setEndHour] = useState('6');
   const [custom, setCustom] = useState<Record<number, string>>({});
   const [swap, setSwap] = useState<string | null>(null);
+  // 80 : relais des biberons (en tête quand on arrive depuis les biberons)
+  const bottlesFirst = useLocalSearchParams<{ focus?: string }>().focus === 'bottles';
 
   const chosen = order.length ? order : people.map((p) => p.id);
   const startIso = frToISO(start);
@@ -83,11 +89,19 @@ export default function NightRelay() {
     <Screen back title={tr('u2.nights.title')} subtitle={tr('u2.nights.subtitle')}
       action={myPending ? { label: tr('u2.nights.confirm_next'), icon: 'check', onPress: () => setStatus(myPending, 'confirmed', tr('u2.nights.confirmed_toast')), testID: 'nights-confirm-next' }
         : plan.length ? { label: tr('u2.nights.save_plan', { count: plan.length }), icon: 'calendar', onPress: submit, disabled: save.isPending, testID: 'nights-save-plan' } : undefined}>
+      {/* Une seule app « Relais » : les tours de nuit ET la transmission de la journée (22/11/2026) */}
+      <Glass variant="card" radius={radius.xl} testID="nights-day-relay" contentStyle={{ padding: spacing.md, gap: spacing.xs }}>
+        <Text weight="bold">{tr('nn.relay.dayCard')}</Text>
+        <Text variant="small" muted>{tr('nn.relay.dayBody')}</Text>
+        <GlassButton variant="secondary" icon="send" label={tr('nn.relay.dayOpen')} testID="nights-open-day-relay" style={{ alignSelf: 'flex-start' }}
+          onPress={() => router.push('/family/relay' as never)} />
+      </Glass>
       <TodaySummary items={[
         { icon: 'moon', value: tonight ? labelOf(tonight.user_id) : '—', label: tr('u2.nights.tonight') },
         { icon: 'calendar', value: String(upcoming.filter((x) => x.user_id === me).length), label: tr('u2.nights.my_upcoming') },
         { icon: 'check-circle', value: String(upcoming.filter((x) => x.user_id === me && x.status === 'planned').length), label: tr('u2.nights.to_confirm') },
       ]} />
+      {bottlesFirst ? <BottleRelaysSection /> : null}
       {tonight ? (
         // Ce soir, en grand : qui se lève, à quelle heure ; confirmer ou proposer un échange en un geste
         <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
@@ -126,8 +140,8 @@ export default function NightRelay() {
       {shiftsQ.isLoading && !shiftsQ.data ? <Skeleton rows={2} /> : null}
       {shiftsQ.isError && !shiftsQ.data ? <ErrorView error={shiftsQ.error} onRetry={() => void shiftsQ.refetch()} title={tr('u2.nights.load_error')} /> : null}
       {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title={tr('u2.nights.none_title')} body={tr('u2.nights.none_body')} /> : null}
-      {upcoming.map((s, i) => (
-        <StaggerItem key={s.id} index={i}>
+      <MotionList style={{ gap: spacing.md }}>{upcoming.map((s, i) => (
+        <MotionItem key={s.id}><StaggerItem key={s.id} index={i}>
           <Card>
             <ListRow icon={s.status === 'confirmed' ? 'check-circle' : s.status === 'swapped' ? 'shuffle' : 'moon'} title={labelOf(s.user_id)} subtitle={`${fmtNight(s)}${s.status === 'confirmed' ? ` · ${tr('u2.nights.confirmed')}` : s.status === 'swapped' ? ` · ${tr('u2.nights.swapped')}` : ''}`} />
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -136,8 +150,8 @@ export default function NightRelay() {
               <Button label={tr('u2.nights.remove')} size="sm" variant="ghost" onPress={() => remove(s)} />
             </Row>
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.nights.prepare')} />
       <Card>
@@ -174,6 +188,8 @@ export default function NightRelay() {
           <Button label={tr('u2.nights.save_plan_short')} icon="calendar" full onPress={submit} loading={save.isPending} />
         </>
       ) : null}
+
+      {bottlesFirst ? null : <BottleRelaysSection />}
 
       <RequestSheet kind={swap ? 'swap_slot' : null} shiftId={swap} onClose={() => setSwap(null)} />
     </Screen>

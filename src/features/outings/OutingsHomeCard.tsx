@@ -19,6 +19,7 @@ import { spacing } from '@/theme/tokens';
 import { FamilyMap } from './FamilyMap';
 import { MiniRow, PlaceSheet } from './PlaceVisuals';
 import { TownPicker } from './TownPicker';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const RADIUS = 2000;
 
@@ -34,7 +35,7 @@ export function OutingsHomeCard() {
   const area = here ? tr('nb.aroundHere') : town ? town.label.replace(/\s*\d{5}.*$/, '') : null;
   return (
     <View style={{ borderRadius: 26, overflow: 'hidden', borderWidth: 1, borderColor: t.colors.border }} testID="home-outings">
-      <LinearGradient colors={t.isDark ? ['#2A2440', '#231E36'] : ['#FFF7EE', '#F3EEFB']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: spacing.md, gap: spacing.sm }}>
+      <LinearGradient colors={[t.material.cardTint.lavender, t.material.cardTint.soft]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: spacing.md, gap: spacing.sm }}>
         <Row style={{ alignItems: 'center' }}>
           <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: `${t.colors.lavender}33`, alignItems: 'center', justifyContent: 'center' }}><Icon name="map-pin" size={18} color={t.colors.lavender} /></View>
           <View style={{ flex: 1 }}>
@@ -53,7 +54,7 @@ export function OutingsHomeCard() {
           <>
             <FamilyMap center={center} places={places} radius={RADIUS} height={230} onSelect={setOpen} />
             {places.length ? (
-              <View testID="home-outings-list">{places.slice(0, 3).map((p) => <MiniRow key={p.id} p={p} onPress={() => setOpen(p)} />)}</View>
+              <MotionList testID="home-outings-list">{places.slice(0, 3).map((p) => <MotionItem key={p.id}><MiniRow key={p.id} p={p} onPress={() => setOpen(p)} /></MotionItem>)}</MotionList>
             ) : <Text variant="small" muted>{tr('out.none', { km: RADIUS / 1000 })}</Text>}
           </>
         )}

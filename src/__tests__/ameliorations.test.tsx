@@ -69,8 +69,8 @@ describe(`rappel « vérifier s'il est réveillé » (${Platform.OS})`, () => {
   const mine = async (c: Child) => (await backend.select<Reminder>({ table: 'reminders' })).filter((r) => r.deep_link === wakeCheckLink(c.id));
 
   it('texte : rappel programmé par le parent, jamais un ordre de réveiller', () => {
-    expect(wakeCheckBody(lina)).toBe('Rappel que vous avez programmé : vérifier si Lina est réveillée.');
-    expect(wakeCheckBody(noe)).toBe('Rappel que vous avez programmé : vérifier si Noé est réveillé.');
+    expect(wakeCheckBody(lina)).toBe('Rappel que tu as programmé : vérifier si Lina est réveillée.');
+    expect(wakeCheckBody(noe)).toBe('Rappel que tu as programmé : vérifier si Noé est réveillé.');
     expect(wakeCheckBody(lina)).not.toMatch(/réveillez|il faut le réveiller/i);
   });
   it('aucun rappel par défaut ; programmé à la demande, un seul par enfant, reportable et annulable', async () => {

@@ -5,6 +5,7 @@
  * dans le cycle (textes exacts) avec, si besoin, les informations de contraception d'urgence (gratuites).
  */
 import React, { useEffect, useMemo, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -266,7 +267,7 @@ function ScaleRow({ label, max, min = 1, value, onChange, valueLabel, testID }: 
           const on = value === n;
           return (
             <Tappable key={n} accessibilityRole="radio" accessibilityState={{ selected: on }} accessibilityLabel={`${label} ${n}`} onPress={() => { haptic('selection'); onChange(on ? null : n); }}
-              style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt }}>
+              style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? t.colors.primary : t.colors.surfaceAlt , ...(on ? whoopEdge(t, t.colors.primary) : null)}}>
               <Text weight="bold" color={on ? t.colors.primaryText : t.colors.text}>{String(n)}</Text>
             </Tappable>
           );
@@ -342,7 +343,7 @@ function NotesPanel({ state, set, iso }: { state: DayState; set: (p: Partial<Day
       <Text variant="small" weight="bold">{tr('c3.f.tags')}</Text>
       {state.tags.length ? <Row wrap>{state.tags.map((x) => <Chip key={x} label={`#${x}`} selected onPress={() => set({ tags: state.tags.filter((y) => y !== x) })} />)}</Row> : null}
       <Row gap={spacing.xs} style={{ alignItems: 'flex-end' }}>
-        <View style={{ flex: 1 }}><Field label={tr('c3.f.addTag')} value={tag} onChangeText={setTag} placeholder={tr('c3.f.tagPlaceholder')} maxLength={30} onSubmitEditing={addTag} testID="c3-tag" /></View>
+        <View style={{ flex: 1 }}><Field label={tr('c3.f.addTag')} value={tag} onChangeText={setTag} placeholder={tr('c3.f.tagPlaceholder')} maxLength={30} onSubmitEditing={addTag} submitBehavior="submit" testID="c3-tag" /></View>
         <Button label="+" onPress={addTag} variant="secondary" accessibilityLabel={tr('c3.f.addTag')} />
       </Row>
       {!customAccess.premium ? <Text variant="caption" muted>{tr('c3.f.tagLimit')}</Text> : null}

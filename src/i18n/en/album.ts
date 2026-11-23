@@ -3,7 +3,6 @@ import type { Messages } from '../types';
 
 export const album: Messages<typeof fr> = {
   'alb.title': "Photo album",
-  'alb.rowSubtitle': "Private photos, visible only to your household",
   'alb.privacy': "Photos stay private: only people in your household who are allowed to see {name} can view them, and they are never published. GPS location is not kept.",
   'alb.add': "Add a photo",
   'alb.take': "Take a photo",

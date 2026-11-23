@@ -3,6 +3,7 @@
  * Bloquer, débloquer ou signaler le membre. Un membre qui m'a bloquée apparaît « indisponible ».
  */
 import { FollowButton } from '@/features/communitySocial';
+import { WriteButton } from '@/features/communityMessages';
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { View } from 'react-native';
@@ -51,6 +52,7 @@ export default function MemberProfile() {
     : (
       <>
         {!m.blocked ? <FollowButton handle={m.handle} following={!!m.is_following} onNeedProfile={() => router.push('/community/profile')} /> : null}
+        {!m.blocked ? <WriteButton handle={m.handle} onNeedProfile={() => router.push('/community/profile')} /> : null}
         {m.blocked
           ? <Button label={tr('cm2.member.unblock')} size="sm" variant="secondary" icon="unlock" onPress={doUnblock} testID="member-unblock" />
           : <Button label={tr('cm2.member.block')} size="sm" variant="ghost" icon="slash" onPress={doBlock} testID="member-block" />}

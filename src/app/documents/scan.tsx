@@ -8,7 +8,8 @@
  * Tout le traitement d'image a lieu sur l'appareil. Les copies temporaires sont effacées.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Image, PanResponder, Platform, View, useWindowDimensions } from 'react-native';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
+import { Image, Linking, PanResponder, Platform, View, useWindowDimensions } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -16,7 +17,7 @@ import { Appear } from '@/components/Appear';
 import { Banner, Button, Card, Field, haptic, Icon, IconButton, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
-import { backend, BackendError, eq } from '@/lib/backend';
+import { backend, BackendError, eq, inList } from '@/lib/backend';
 import { ensureHousehold, useActivePregnancy, useChildren, useHouseholdId, useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { frToISO } from '@/lib/domain/dates';
@@ -24,6 +25,7 @@ import { BLUR_THRESHOLD, detectQuad, enhance, fullQuad, rotate90, sharpness, toG
 import { ACCEPTED, capturePhoto, dataUri, decodeForScan, deviceReadingAvailable, encodeJpeg, readBytes, readPageOnDevice, type PickedFile } from '@/lib/documents/io';
 import { pdfFromJpegs, pdfPageCount } from '@/lib/documents/pdf';
 import { takePendingImport } from '@/lib/documents/pending';
+import { captureOutcome, createTapGuard, type CaptureOutcome } from '@/lib/documents/scanFlow';
 import { suggestCategory, type DocCategory } from '@/lib/documents/taxonomy';
 import { CategoryPicker, formatSize, SubjectPicker, subjectColumns, subjectLabel, type Subject } from '@/features/documents';
 import type { RGBAImage } from '@/lib/cycleAnalysis/image';
@@ -72,7 +74,8 @@ export default function ScanScreen() {
   const hid = useHouseholdId();
   const { data: kids } = useChildren();
   const pregnancy = useActivePregnancy();
-  const { from, paper, title: titleParam, cat: catParam, child: childParam } = useLocalSearchParams<{ from?: string; paper?: string; title?: string; cat?: string; child?: string }>();
+  const { from, paper, title: titleParam, cat: catParam, child: childParam, origin } = useLocalSearchParams<{ from?: string; paper?: string; title?: string; cat?: string; child?: string; origin?: string }>();
+  const fromPapers = origin === 'papers' || typeof paper === 'string';
   const [step, setStep] = useState<'pages' | 'details' | 'saving' | 'done'>('pages');
   const [pages, setPages] = useState<Page[]>([]);
   const [files, setFiles] = useState<PickedFile[]>([]);
@@ -82,7 +85,7 @@ export default function ScanScreen() {
   // Informations
   // Ouvert depuis « Papiers de la famille » : titre, catégorie et enfant déjà remplis
   const [title, setTitle] = useState(typeof titleParam === 'string' ? titleParam.slice(0, 120) : '');
-  const [category, setCategory] = useState<DocCategory>(catParam === 'admin' ? 'admin' : 'other');
+  const [category, setCategory] = useState<DocCategory>(catParam === 'admin' || catParam === 'childcare' ? catParam : 'other');
   const [custom, setCustom] = useState('');
   const [suggested, setSuggested] = useState<DocCategory | null>(null);
   const [subject, setSubject] = useState<Subject>(typeof childParam === 'string' && childParam ? { kind: 'child', id: childParam } : { kind: 'me' });
@@ -93,6 +96,11 @@ export default function ScanScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [savedId, setSavedId] = useState<string | null>(null);
   const started = useRef(false);
+  // Ticket 4 : verrous SYNCHRONES (double appui sur « Prendre une photo » ou « Enregistrer ») et états visibles
+  const cameraGuard = useRef(createTapGuard()).current;
+  const saveGuard = useRef(createTapGuard()).current;
+  const [camState, setCamState] = useState<CaptureOutcome | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   // Fichiers choisis sur l'écran précédent, ou appareil photo ouvert directement (mobile)
   useEffect(() => {
@@ -135,14 +143,15 @@ export default function ScanScreen() {
     }
   }
 
-  async function takePhoto(replaceId?: string) {
-    try {
-      const r = await capturePhoto();
-      if (r === 'denied') return toast(tr('docs.err.cameraDenied'), 'info');
-      if (r) await addImages([{ uri: r, temp: Platform.OS !== 'web' }], replaceId);
-    } catch {
-      toast(tr('docs.err.camera'), 'error');
-    }
+  function takePhoto(replaceId?: string) {
+    return cameraGuard.run(async () => {
+      let r: string | null | 'denied' | Error;
+      try { r = await capturePhoto(); } catch (e) { r = e instanceof Error ? e : new Error('camera'); }
+      const outcome = captureOutcome(r);
+      setCamState(outcome === 'taken' ? null : outcome);
+      if (outcome === 'failed') toast(tr('docs.err.camera'), 'error');
+      if (typeof r === 'string' && r !== 'denied') await addImages([{ uri: r, temp: Platform.OS !== 'web' }], replaceId);
+    });
   }
 
   async function addFromPhotos() {
@@ -187,7 +196,10 @@ export default function ScanScreen() {
     }
   }
 
-  async function save() {
+  function save() { return saveGuard.run(saveOnce); }
+
+  async function saveOnce() {
+    setSaveFailed(false);
     const e: Record<string, string> = {};
     if (!files.length && !title.trim()) e.title = tr('docs.err.title');
     const iso = date.trim() ? frToISO(date) : null;
@@ -197,6 +209,8 @@ export default function ScanScreen() {
     if (Object.keys(e).length) return;
     setStep('saving');
     const uploaded: string[] = [];
+    // Audit 08 : fiches créées (id posé ici, AVANT l'envoi : une fiche écrite dont la réponse s'est perdue est connue aussi)
+    const created: string[] = [];
     try {
       const household_id = hid ?? (await ensureHousehold());
       const common = {
@@ -209,11 +223,13 @@ export default function ScanScreen() {
         const path = `${household_id}/${uuid()}.pdf`;
         await backend.storage.upload(BUCKET, path, { uri: '', bytes: pdf, mimeType: 'application/pdf', size: pdf.length, name: `${title.trim()}.pdf` });
         uploaded.push(path);
+        const id = uuid();
+        created.push(id);
         const [row] = await backend.insert<{ id: string }>('documents', {
-          ...common, title: title.trim().slice(0, 120), storage_path: path, mime_type: 'application/pdf', size_bytes: pdf.length, page_count: pages.length,
+          id, ...common, title: title.trim().slice(0, 120), storage_path: path, mime_type: 'application/pdf', size_bytes: pdf.length, page_count: pages.length,
           ocr_text: text, ocr_source: text != null ? 'device' : null, review_status: text != null ? 'to_verify' : 'none',
         });
-        lastId = row?.id ?? null;
+        lastId = row?.id ?? id;
       } else {
         for (const f of files) {
           const path = `${household_id}/${uuid()}.${ACCEPTED[f.mimeType]}`;
@@ -222,8 +238,10 @@ export default function ScanScreen() {
           await backend.storage.upload(BUCKET, path, { uri: f.uri, mimeType: f.mimeType, size: f.size, name: f.name });
           uploaded.push(path);
           const name = files.length === 1 && title.trim() ? title.trim() : f.name.replace(/\.[^.]+$/, '');
-          const [row] = await backend.insert<{ id: string }>('documents', { ...common, title: name.slice(0, 120), storage_path: path, mime_type: f.mimeType, size_bytes: f.size, page_count: pageCount });
-          lastId = row?.id ?? null;
+          const id = uuid();
+          created.push(id);
+          const [row] = await backend.insert<{ id: string }>('documents', { id, ...common, title: name.slice(0, 120), storage_path: path, mime_type: f.mimeType, size_bytes: f.size, page_count: pageCount });
+          lastId = row?.id ?? id;
         }
       }
       inv('documents');
@@ -237,9 +255,12 @@ export default function ScanScreen() {
       setStep('done');
       setPages([]); // libère la mémoire des pages
     } catch (err) {
-      // Rien ne reste à moitié enregistré : les fichiers déjà envoyés sont retirés
+      // Rien ne reste à moitié enregistré : les fiches déjà créées PUIS les fichiers déjà envoyés sont retirés
+      // (avant l'audit 08, seuls les fichiers l'étaient : avec plusieurs fichiers, une fiche pointait vers un fichier effacé)
+      if (created.length) await backend.remove('documents', [inList('id', created)]).catch(() => undefined);
       await backend.storage.remove(BUCKET, uploaded).catch(() => undefined);
       setStep('details');
+      setSaveFailed(true);
       toast(err instanceof BackendError && err.isPremiumRequired ? err.message : friendlyError(err, tr('docs.err.save')), 'error');
     }
   }
@@ -251,7 +272,7 @@ export default function ScanScreen() {
       <Screen title={tr('docs.saved.title')}>
         <Appear kind="pop" delay={0.05}>
           <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
-            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
               <Icon name="check" size={44} color={t.colors.primaryText} />
             </View>
             <Text center>{share ? tr('docs.saved.shared') : tr('docs.saved.private')}</Text>
@@ -259,7 +280,8 @@ export default function ScanScreen() {
           </View>
         </Appear>
         {savedId ? <Button label={tr('docs.saved.open')} icon="file-text" onPress={() => router.replace(`/documents/${savedId}`)} full /> : null}
-        <Button label={tr('docs.saved.back')} variant="secondary" onPress={() => router.replace('/documents')} full />
+        {fromPapers ? <Button label={tr('sa.scan.backPapers')} icon="folder" variant="secondary" onPress={() => router.replace('/family/papers')} full testID="scan-back-papers" /> : null}
+        <Button label={tr('docs.saved.back')} variant={fromPapers ? 'ghost' : 'secondary'} onPress={() => router.replace('/documents')} full />
       </Screen>
     );
   }
@@ -267,8 +289,16 @@ export default function ScanScreen() {
   if (step === 'details' || step === 'saving') {
     return (
       <Screen back title={tr('docs.details.title')} subtitle={pages.length ? tr('docs.details.pages', { count: pages.length }) : tr('docs.details.files', { count: files.length })}
-        footer={<Button label={pages.length ? tr('docs.details.savePdf') : tr('docs.details.save')} icon="save" loading={step === 'saving'} onPress={save} full />}>
+        footer={<Button label={pages.length ? tr('docs.details.savePdf') : tr('docs.details.save')} icon="save" loading={step === 'saving'} onPress={() => void save()} full testID="scan-save" />}>
         {busy ? <Banner tone="info" icon="loader">{busy}</Banner> : null}
+        {saveFailed && step !== 'saving' ? (
+          <View testID="scan-save-failed">
+            <Banner tone="danger" icon="alert-triangle" title={tr('sa.scan.saveFailed')}
+              action={<Button label={tr('sa.scan.retry')} icon="refresh-cw" size="sm" variant="secondary" onPress={() => void save()} testID="scan-save-retry" />}>
+              {tr('sa.scan.saveFailedBody')}
+            </Banner>
+          </View>
+        ) : null}
         {files.length ? (
           <Card tone="soft">
             {files.map((f) => (
@@ -308,6 +338,19 @@ export default function ScanScreen() {
         </Row>
       ) : undefined}>
       {busy ? <Banner tone="info" icon="loader">{busy}</Banner> : null}
+      {camState === 'denied' ? (
+        <View testID="scan-camera-denied">
+          <Banner tone="warning" icon="camera-off" title={tr('sa.scan.deniedTitle')}>
+            {Platform.OS === 'web' ? tr('sa.scan.deniedWeb') : tr('docs.err.cameraDenied')}
+          </Banner>
+        </View>
+      ) : camState === 'canceled' && !pages.length ? (
+        <Text variant="small" muted testID="scan-camera-canceled">{tr('sa.scan.canceled')}</Text>
+      ) : null}
+      {camState === 'denied' && Platform.OS !== 'web' ? (
+        <Button label={tr('sa.scan.openSettings')} icon="settings" variant="secondary" full testID="scan-open-settings"
+          onPress={() => void Linking.openSettings().catch(() => toast(tr('docs.err.cameraDenied'), 'info'))} />
+      ) : null}
       {editingPage ? (
         <CropEditor page={editingPage} onCancel={() => setEditing(null)} onApply={(quad, detected) => { setEditing(null); void update(editingPage.id, { quad, detected }); }} />
       ) : previewing ? (

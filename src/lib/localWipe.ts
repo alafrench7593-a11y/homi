@@ -7,9 +7,12 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { cancelAllLocal } from './notifications';
 import { purgeExportFiles } from './exportData';
+import { resetAccountState } from './accountReset';
 
 export async function wipeLocalData(): Promise<void> {
   await cancelAllLocal().catch(() => undefined);
+  // audit 23/11/2026 (M1) : aussi les clés « homi.* » du compte (brouillons, file nounou et photos, récents…)
+  await resetAccountState().catch(() => undefined);
   try {
     const keys = await AsyncStorage.getAllKeys();
     const mine = keys.filter((k) => k.startsWith('toietmoi.') && k !== 'toietmoi.demo-without-account.v1');

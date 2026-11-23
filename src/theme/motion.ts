@@ -1,5 +1,7 @@
 /**
- * Système de mouvement unique de l'application (« full motion design »).
+ * Système de mouvement unique de l'application (« full motion design ») — jetons partagés.
+ * Les durées et l'intro ci-dessous servent aux deux moteurs : l'API Animated historique (helpers de ce fichier)
+ * et les primitives Reanimated de src/motion/** (nouveau code). Voir MOTION_SYSTEM.md.
  *
  * Règles :
  *  - on n'anime que transform et opacity (pas de décalage de mise en page) ;
@@ -17,7 +19,18 @@ export const duration = {
   slow: 380,     // panneaux, feuilles
   entrance: 520, // apparition d'écran / de contenu
   screen: 280,   // transition de navigation (pile d'écrans)
+  // v3 — trois familles (MOTION_SYSTEM.md) : micro 120–180, panneaux 220–320, scènes 320–450
+  micro: 150,    // pression, coche, pastille, reflet de bouton
+  panel: 280,    // panneau du bas, sélecteur, indicateur, menu
+  scene: 400,    // carte → détail, changement de palette, fondu de mode
 };
+
+/** Bornes des trois familles de durées (testées). */
+export const durationFamilies = {
+  micro: [120, 180],
+  panel: [220, 320],
+  scene: [320, 450],
+} as const;
 
 export const easing = {
   /** cubic-bezier(0.16, 1, 0.3, 1) : décélération longue, signature de l'app */
@@ -64,24 +77,32 @@ export const feedback = {
 };
 
 /**
- * Introduction d'ouverture (lancement à froid) : fond aux couleurs de l'app, révélation du logo, profondeur
- * légère, puis fondu vers le premier écran. Total ≈ 1,9 s ; le premier écran se charge en dessous pendant ce temps
- * (rien n'attend l'animation) et reste utilisable au toucher dès le début.
+ * Introduction d'ouverture HOMI (lancement à froid, Reanimated : src/components/LaunchIntro.tsx) :
+ * le logo v5 « encre » a sa propre chorégraphie (src/brand/logoMotion.ts) ; ici, le délai d'apparition, la pose, le
+ * fondu, l'avancée finale et la version abrégée (les autres valeurs restent pour l'API Animated historique).
+ * Total ≈ 2 s ; le premier écran se charge en dessous pendant ce temps (rien n'attend l'animation).
  */
 export const intro = {
   revealDelayMs: 120,  // le fond seul, dans la continuité de l'écran de lancement natif
-  revealMs: 820,       // le fil doré se révèle de la tige vers les feuilles
-  holdMs: 300,         // pose
-  exitMs: 520,         // fondu du calque + légère avancée du logo (profondeur)
+  traceMs: 700,        // le contour de la maison se trace
+  lightAtMs: 600,      // la maison s'illumine (remplissage + halo), pendant la fin du tracé
+  lightMs: 400,
+  figuresAtMs: 900,    // première silhouette (parent), puis une toutes les figureStepMs
+  figureStepMs: 100,
+  figureMs: 360,
+  holdMs: 240,         // pose sur le logo complet
+  exitMs: 480,         // fondu du calque + légère avancée du logo (profondeur)
   logoFromScale: 0.94,
   logoExitScale: 1.06,
   splashFadeMs: 220,   // fondu de l'écran de lancement natif vers l'introduction
-  /** Lancement déjà lent (appareil chargé) : au-delà de ce délai depuis le démarrage, version abrégée. */
+  /** Lancement déjà lent (appareil chargé) ou thème nuit : au-delà de ce délai, version abrégée (logo complet, fondu). */
   lateStartMs: 2000,
   shortHoldMs: 260,
   shortExitMs: 320,
 };
-export const introTotalMs = intro.revealDelayMs + intro.revealMs + intro.holdMs + intro.exitMs;
+/** Fin de l'apparition de la dernière des quatre silhouettes. */
+export const introDrawnMs = intro.figuresAtMs + 3 * intro.figureStepMs + intro.figureMs;
+export const introTotalMs = introDrawnMs + intro.holdMs + intro.exitMs;
 
 /** Retour haptique : jamais sur le web (le navigateur n'en a pas, ou vibre de façon inattendue). */
 export const hapticsSupported = Platform.OS !== 'web';

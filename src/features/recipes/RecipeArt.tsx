@@ -1,5 +1,5 @@
 /**
- * Illustration GÉNÉRÉE d'une recette (pas une photographie) : bol ou assiette selon la texture, couleurs des
+ * Image d'une recette : photo d'illustration générée par IA quand elle existe, sinon illustration GÉNÉRÉE par programme (pas une photographie) : bol ou assiette selon la texture, couleurs des
  * ingrédients principaux, morceaux visibles seulement pour les textures « morceaux » ou « comme la famille ».
  * Création propre de l'application : aucune image de tiers. Une photo sous licence (recipe_photos.kind = 'licensed'
  * ou 'owned', avec storage_path) peut la remplacer depuis l'administration.
@@ -11,7 +11,7 @@ import { Text } from '@/components/ui';
 import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { STAPLES } from '@/lib/recipes/engine';
 import type { Recipe } from '@/lib/recipes/types';
-import { RECIPE_PHOTO_FILES } from './recipePhotos';
+import { recipePhotoSource } from './recipePhotos';
 import { t as tr } from '@/i18n';
 
 const hash = (s: string) => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -24,7 +24,12 @@ export function recipeColors(r: Pick<Recipe, 'ingredients'>) {
 
 const rotate = (p: { rot: number; x: number; y: number }) => `rotate(${p.rot} ${p.x} ${p.y})`;
 
-export function RecipeArt({ recipe, height = 150, label = true, rounded = 18 }: { recipe: Pick<Recipe, 'slug' | 'ingredients' | 'textures' | 'temperature' | 'title' | 'photo'>; height?: number; label?: boolean; rounded?: number }) {
+/**
+ * `notice` : mention discrète « Photo d'illustration » posée sur la photo (fiche recette). Les recettes de la
+ * bibliothèque qui ont une photo générée par IA l'affichent (miniature pour les petites vignettes) ; les autres,
+ * dont les recettes personnelles, gardent l'illustration dessinée ci-dessous.
+ */
+export function RecipeArt({ recipe, height = 150, label = true, rounded = 18, notice = false }: { recipe: Pick<Recipe, 'slug' | 'ingredients' | 'textures' | 'temperature' | 'title' | 'photo'> & { personal?: boolean }; height?: number; label?: boolean; rounded?: number; notice?: boolean }) {
   const colors = recipeColors(recipe);
   const r = rand(hash(recipe.slug));
   const smooth = recipe.textures.every((t) => t === 'smooth' || t === 'mashed');
@@ -32,12 +37,17 @@ export function RecipeArt({ recipe, height = 150, label = true, rounded = 18 }: 
   const base = colors[0];
   const bg = ['#FBEFE7', '#F1F4EA', '#F6EEF7', '#EEF3F6'][hash(recipe.slug) % 4];
   const pieces = Array.from({ length: smooth ? 0 : 14 }, (_, i) => ({ x: 52 + r() * 96, y: 50 + r() * 34, rx: 4 + r() * 7, ry: 3 + r() * 5, c: colors[(i % (colors.length - 1 || 1)) + (colors.length > 1 ? 1 : 0)] ?? base, rot: r() * 180 }));
-  const file = RECIPE_PHOTO_FILES[recipe.slug];
+  const file = recipePhotoSource(recipe, height);
   if (file) {
-    // Photo propre à cette recette (source et licence indiquées sur la fiche)
+    // Photo d'illustration propre à cette recette (source et licence indiquées sur la fiche)
     return (
       <View style={{ height, borderRadius: rounded, overflow: 'hidden', backgroundColor: bg }} accessibilityRole="image" accessibilityLabel={recipe.photo.alt} testID={`rphoto-${recipe.slug}`}>
         <Image source={file} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
+        {notice ? (
+          <View style={{ position: 'absolute', right: 8, bottom: 6, backgroundColor: 'rgba(255,255,255,0.82)', borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }} testID="photo-illustration-notice">
+            <Text variant="caption" color="#4A3B42">{tr('rc.photoNotice')}</Text>
+          </View>
+        ) : null}
       </View>
     );
   }

@@ -2,21 +2,27 @@
  * Onglets du profil enfant : aperçu, croissance, étapes, santé, alimentation.
  * Tout est descriptif : aucune zone « normale/anormale », aucune notion de retard.
  */
+import { FormulaFrise } from '@/features/feeding/TrackLinks';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { DEV_DOMAINS } from '@/lib/domain/childCare';
 import { exportTextFile } from '@/lib/exportData';
 import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import { TodaySummary } from '@/components/MiniApp';
-import React, { useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
-import { LineChart, StatPill } from '@/components/Charts';
-import { GrowthChart } from '@/components/GrowthChart';
-import { ageInMonths, describePosition, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator } from '@/lib/domain/growthStandards';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, ScrollView, TextInput, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { MomentTray } from '@/features/careTrack/MomentTray';
+import { StatPill } from '@/components/Charts';
+import { MeasureCurve, MeasureTray, type CurveReference } from '@/components/measureCurve';
+import { ageInMonths, describePosition, referenceCurves, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator, type Sex } from '@/lib/domain/growthStandards';
+import { dayMs, DAY_MS, toCurvePoints } from '@/lib/domain/measureCurve';
+import { useCorrectMeasure } from '@/lib/data/hooks-measures';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, type IconName, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { t as tr, formatDate, formatNumber, type TKey } from '@/i18n';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 
 /** Date lisible dans la langue courante, à partir d'une date ISO (jour civil, sans décalage de fuseau). */
 const fd = (iso: string, withYear = true) => formatDate(`${iso.slice(0, 10)}T00:00:00Z`, { day: 'numeric', month: 'long', ...(withYear ? { year: 'numeric' as const } : {}), timeZone: 'UTC' });
@@ -47,6 +53,8 @@ import { CHILD_TABS, type ChildTab } from '@/lib/domain/childTabs';
 import { Tappable } from '@/components/Tappable';
 import { isBottleChild } from '@/lib/domain/bottleTimer';
 import { useUiStore } from '@/lib/store';
+import { toastSaved } from '@/features/saveOutcome';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: ChildTab) => void }) {
   const t = useTheme();
@@ -61,7 +69,7 @@ export function ChildTabs({ value, onChange }: { value: ChildTab; onChange: (v: 
             accessibilityState={{ selected: sel }}
             accessibilityLabel={tab.label}
             onPress={() => { haptic('selection'); onChange(tab.value); }}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1.2, borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.primary : t.colors.surface }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1.2, borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.primary : t.colors.surface , ...(sel ? whoopEdge(t, t.colors.primary) : null)}}
           >
             <Icon name={tab.icon} size={15} color={sel ? t.colors.primaryText : t.colors.textMuted} />
             <Text variant="small" weight="medium" color={sel ? t.colors.primaryText : t.colors.text}>{tab.label}</Text>
@@ -167,9 +175,8 @@ export function OverviewTab({ child, onTab }: { child: Child; onTab: (t: ChildTa
       <Card>
         <ListRow icon="trending-up" title={tr('u7.child.growth')} subtitle={last ? [last.weight_kg != null ? `${fmt(last.weight_kg, 3)} kg` : null, last.height_cm != null ? `${fmt(last.height_cm)} cm` : null].filter(Boolean).join(' · ') : tr('u7.child.noMeasureYet')} onPress={() => onTab('croissance')} />
         <ListRow icon="heart" title={tr('u7.child.health')} subtitle={child.allergies_declared.length ? tr('u7.child.allergiesDeclared', { list: child.allergies_declared.join(', ') }) : tr('u7.child.healthSub')} onPress={() => onTab('sante')} />
-        <ListRow icon="calendar" title={tr('u7.child.appointments')} subtitle={tr('u7.child.appointmentsSub')} onPress={() => router.push('/appointments')} />
-        <ListRow icon="image" title={tr('alb.title')} subtitle={tr('alb.rowSubtitle')} onPress={() => router.push(`/child/${child.id}/album`)} testID="child-album" />
       </Card>
+      <ToolLinks ids={['appointments', 'kid_album']} subject={{ type: 'child', id: child.id }} testID="child-links" />
     </>
   );
 }
@@ -179,8 +186,8 @@ function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; on
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={tr('u7.child.logKind', { kind: label })} onPress={onPress}
       style={{ flexGrow: 1, flexBasis: '30%', minWidth: 92, alignItems: 'center', gap: 6, paddingVertical: spacing.md, borderRadius: 20, borderWidth: 1,
-        borderColor: t.isDark ? 'rgba(240,217,207,0.2)' : 'rgba(184,134,90,0.28)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,250,246,0.7)' }}>
-      <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
+        borderColor: t.isDark ? 'rgba(205,190,250,0.2)' : 'rgba(91,42,134,0.14)', backgroundColor: t.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.7)' }}>
+      <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
         <Icon name={icon} size={18} color={t.colors.primaryText} />
       </View>
       <Text variant="caption" weight="bold" center>{label}</Text>
@@ -191,14 +198,28 @@ function QuickTile({ icon, label, onPress }: { icon: IconName; label: string; on
 // ---------------------------------------------------------------- Croissance
 type Metric = 'weight_kg' | 'height_cm' | 'head_cm';
 const WHO_IND: Record<Metric, GrowthIndicator> = { weight_kg: 'weight', height_cm: 'length', head_cm: 'head' };
-const METRICS: { key: Metric; unit: string; min: number; max: number; digits: number }[] = [
-  { key: 'weight_kg', unit: 'kg', min: 0.3, max: 80, digits: 3 },
-  { key: 'height_cm', unit: 'cm', min: 20, max: 180, digits: 1 },
-  { key: 'head_cm', unit: 'cm', min: 20, max: 65, digits: 1 },
+const METRICS: { key: Metric; unit: string; min: number; max: number; digits: number; step: number; minSpan: number }[] = [
+  { key: 'weight_kg', unit: 'kg', min: 0.3, max: 80, digits: 3, step: 0.05, minSpan: 1 },
+  { key: 'height_cm', unit: 'cm', min: 20, max: 180, digits: 1, step: 0.5, minSpan: 4 },
+  { key: 'head_cm', unit: 'cm', min: 20, max: 65, digits: 1, step: 0.5, minSpan: 2 },
 ];
+
+/**
+ * Repère OMS discret pour la courbe datée : bande 15e–85e et médiane, de l'âge de la première à celui de la dernière
+ * mesure (bornes 0–60 mois), converties en dates depuis la naissance. Aucune interprétation n'y est attachée.
+ */
+function whoReference(ind: GrowthIndicator, sex: Sex, birthISO: string, fromISO: string, toISO: string): CurveReference | null {
+  const a = Math.max(0, ageInMonths(birthISO, fromISO) - 0.5);
+  const b = Math.min(WHO_MAX_MONTHS, ageInMonths(birthISO, toISO) + 0.5);
+  if (!(b > a)) return null;
+  const birth = dayMs(birthISO);
+  const at = (m: number) => birth + m * (365.25 / 12) * DAY_MS;
+  const curves = referenceCurves(ind, sex, a, b, Math.max(0.1, (b - a) / 40));
+  return { band: curves.map((c) => ({ x: at(c.m), lo: c.v[15], hi: c.v[85] })), median: curves.map((c) => ({ x: at(c.m), y: c.v[50] })) };
+}
 const metricLabel = (k: Metric) => tr(`u7.child.metric.${k}` as TKey);
 
-export function GrowthTab({ child }: { child: Child }) {
+export function GrowthTab({ child, focus }: { child: Child; /** Carte d'Aura « Ajouter un poids » : curseur posé dans ce champ */ focus?: 'weight_kg' | 'height_cm' | 'head_cm' | null }) {
   const toast = useToast();
   const inv = useInvalidate();
   const write = useSafeWrite();
@@ -217,10 +238,24 @@ export function GrowthTab({ child }: { child: Child }) {
   const [metric, setMetric] = useState<Metric>('weight_kg');
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [values, setValues] = useState<Record<Metric, string>>({ weight_kg: '', height_cm: '', head_cm: '' });
+  // Carte d'Aura « Ajouter un poids » : le curseur est posé APRÈS la transition d'écran (`autoFocus` au montage se
+  // perdait pendant l'animation de navigation, constaté sur le web le 23/11/2026)
+  const weightRef = useRef<TextInput>(null);
+  const heightRef = useRef<TextInput>(null);
+  const headRef = useRef<TextInput>(null);
+  const fieldRefs = { weight_kg: weightRef, height_cm: heightRef, head_cm: headRef };
+  useEffect(() => {
+    const focusRef = focus === 'weight_kg' ? weightRef : focus === 'height_cm' ? heightRef : focus === 'head_cm' ? headRef : null;
+    if (!focusRef) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const task = InteractionManager.runAfterInteractions(() => { timer = setTimeout(() => focusRef.current?.focus(), 350); });
+    return () => { task.cancel(); if (timer) clearTimeout(timer); };
+  }, [focus]);
   const [source, setSource] = useState<'home' | 'professional'>('professional');
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   const m = METRICS.find((x) => x.key === metric)!;
   const [whoOn, setWhoOn] = useState(true);
@@ -232,9 +267,15 @@ export function GrowthTab({ child }: { child: Child }) {
   const tooOld = (measurements ?? []).some((x) => x[metric] != null && ageInMonths(child.birth_date, x.measured_on) > WHO_MAX_MONTHS);
   const lastAge = agePoints.slice().sort((a, b) => a.m - b.m).at(-1);
   const position = whoSex && lastAge ? describePosition(WHO_IND[metric], whoSex, lastAge.m, lastAge.y) : null;
-  const points = (measurements ?? [])
-    .filter((x) => x[metric] != null)
-    .map((x) => ({ x: new Date(x.measured_on).getTime(), y: Number(x[metric]), label: fd(x.measured_on, false) }));
+  // Courbe : une mesure enregistrée = un point (aucune interpolation) ; repère OMS discret si affiché
+  const curvePoints = useMemo(() => toCurvePoints(measurements ?? [], (x) => ({ id: x.id, date: x.measured_on, value: x[metric], note: x.note })), [measurements, metric]);
+  const reference = useMemo(() => (whoOn && whoSex && curvePoints.length
+    ? whoReference(WHO_IND[metric], whoSex, child.birth_date, curvePoints[0].date, curvePoints[curvePoints.length - 1].date) : null), [whoOn, whoSex, curvePoints, metric, child.birth_date]);
+  const correct = useCorrectMeasure('child_measurements');
+  const [trayId, setTrayId] = useState<string | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const trayRow = trayId ? (measurements ?? []).find((x) => x.id === trayId) ?? null : null;
+  const openMeasure = (id: string) => { setTrayId(id); setTrayOpen(true); };
 
   // Dernière valeur connue de chaque mesure (saisies de la famille) : affichée en tuiles et reprise d'un geste dans le formulaire
   const sortedM = [...(measurements ?? [])].sort((a, b) => b.measured_on.localeCompare(a.measured_on));
@@ -265,17 +306,21 @@ export function GrowthTab({ child }: { child: Child }) {
     if (!e.weight_kg && !e.height_cm && !e.head_cm && METRICS.every((x) => row[x.key] == null)) e.form = tr('u7.child.err.atLeastOne');
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
-      await insertOrQueue('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
+      const res = await insertOrQueue('child_measurements', { child_id: child.id, household_id: child.household_id, measured_on: iso, ...row, source, note: note.trim() || null });
       inv('child_measurements');
       setValues({ weight_kg: '', height_cm: '', head_cm: '' });
       setNote('');
       haptic('success');
-      toast(tr('u7.child.measureSaved'));
+      toastSaved(toast, res, tr('u7.child.measureSaved'));
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -296,20 +341,19 @@ export function GrowthTab({ child }: { child: Child }) {
         { icon: 'circle', value: lastOf('head_cm') ? `${fmt(lastOf('head_cm')!.head_cm!)} cm` : '—', label: tr('u7.child.headShort') },
       ]} />
       <Segmented label={tr('u7.child.displayedMeasure')} value={metric} onChange={setMetric} options={METRICS.map((x) => ({ value: x.key, label: x.key === 'head_cm' ? tr('u7.child.headShort') : metricLabel(x.key) }))} />
-      {whoOn && whoSex && agePoints.length >= 1 ? (
-        <Card>
-          <Text weight="bold">{tr('u7.child.whoRef', { label: metricLabel(metric), unit: m.unit })}</Text>
-          <GrowthChart indicator={WHO_IND[metric]} sex={whoSex} points={agePoints} unit={m.unit} accessibilityLabel={tr('u7.child.whoA11y', { label: metricLabel(metric), name: child.first_name })} />
-          {position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('u7.child.lastMeasureText', { text: `${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}` })}</Text> : null}
-        </Card>
-      ) : points.length >= 2 ? (
-        <Card>
-          <Text weight="bold">{metricLabel(metric)} ({m.unit})</Text>
-          <LineChart points={points} unit={m.unit} accessibilityLabel={tr('u7.child.chartA11y', { label: metricLabel(metric).toLowerCase(), name: child.first_name })} formatX={(x) => formatDate(x, { month: 'short', year: '2-digit' })} />
-        </Card>
-      ) : (
-        <Card tone="soft"><Text muted>{points.length === 1 ? tr('u7.child.addSecond') : tr('u7.child.addTwo')}</Text></Card>
-      )}
+      <Card testID="growth-curve-card">
+        <Text weight="bold">{whoOn && whoSex && reference ? tr('u7.child.whoRef', { label: metricLabel(metric), unit: m.unit }) : `${metricLabel(metric)} (${m.unit})`}</Text>
+        <View style={{ marginTop: spacing.sm }}>
+          <MeasureCurve key={metric} points={curvePoints} unit={m.unit} digits={m.digits} minYSpan={m.minSpan} periods={['3m', '1y']} onOpen={openMeasure}
+            title={tr('ct.growth.title', { label: metricLabel(metric), name: child.first_name })}
+            reference={reference} referenceLabel={tr('ct.growth.ref')} testID="growth-curve" />
+        </View>
+        {whoOn && position ? <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('u7.child.lastMeasureText', { text: `${position.text.charAt(0).toLowerCase()}${position.text.slice(1)}` })}</Text> : null}
+      </Card>
+      <MeasureTray testID="growth-tray" open={trayOpen} onOpenChange={setTrayOpen} title={metricLabel(metric)} unit={m.unit} digits={m.digits} step={m.step} min={m.min} max={m.max}
+        item={trayRow && trayRow[metric] != null ? { id: trayRow.id, value: Number(trayRow[metric]), date: trayRow.measured_on, note: trayRow.note, details: [trayRow.source === 'professional' ? tr('u7.child.professional') : tr('u7.child.home')] } : null}
+        onSave={async (it, v) => { await correct.mutateAsync({ id: it.id, patch: { [metric]: v } }); }}
+        onSaved={() => toast(tr('ct.edit.saved'), 'success')} />
       <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Text variant="small" weight="medium" style={{ flex: 1 }}>{tr('u7.child.showWho')}</Text>
         <Toggle value={whoOn} onChange={setWhoOn} label={tr('u7.child.showWhoA11y')} />
@@ -327,10 +371,10 @@ export function GrowthTab({ child }: { child: Child }) {
           <Field label={tr('u7.child.date')} value={date} onChangeText={setDate} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.date} />
           {sortedM.length ? <Chip icon="copy" label={tr('u7.child.prefill')} onPress={prefillLast} testID="growth-prefill" /> : null}
           <Row style={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
-            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} ref={fieldRefs.weight_kg} testID="growth-field-weight_kg" optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} ref={fieldRefs.height_cm} testID="growth-field-height_cm" optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
           </Row>
-          <Field label={tr('u7.child.metric.head_cm')} optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
+          <Field label={tr('u7.child.metric.head_cm')} ref={fieldRefs.head_cm} testID="growth-field-head_cm" optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
           <Segmented label={tr('u7.child.measureTaken')} value={source} onChange={setSource} options={[{ value: 'professional', label: tr('u7.child.byPro') }, { value: 'home', label: tr('u7.child.atHome') }]} />
           <Field label={tr('u7.child.note')} optional value={note} onChangeText={setNote} maxLength={1000} />
           <Button label={tr('u7.child.saveMeasure')} loading={saving} onPress={add} />
@@ -341,14 +385,15 @@ export function GrowthTab({ child }: { child: Child }) {
       {measurementsQ.isLoading && !measurements ? <Skeleton kind="list" rows={2} /> : measurementsQ.isError && !measurements ? (
         <ErrorView error={measurementsQ.error} onRetry={() => void measurementsQ.refetch()} title={tr('u7.child.measuresError')} />
       ) : <Card>
-        {(measurements ?? []).slice().reverse().map((x) => (
-          <ListRow
+        <MotionList>{(measurements ?? []).slice().reverse().map((x) => (
+          <MotionItem key={x.id}><ListRow
             key={x.id}
+            onPress={x[metric] != null ? () => openMeasure(x.id) : undefined}
             title={[x.weight_kg != null ? `${fmt(x.weight_kg, 3)} kg` : null, x.height_cm != null ? `${fmt(x.height_cm)} cm` : null, x.head_cm != null ? tr('u7.child.hc', { v: fmt(x.head_cm) }) : null].filter(Boolean).join(' · ')}
             subtitle={[fd(x.measured_on), x.source === 'professional' ? tr('u7.child.pro') : tr('u7.child.homeLower'), x.note].filter(Boolean).join(' · ')}
             right={<IconButton icon="trash-2" label={tr('u7.child.delMeasureOn', { date: fd(x.measured_on) })} size={18} onPress={() => remove(x)} />}
-          />
-        ))}
+          /></MotionItem>
+        ))}</MotionList>
         {!measurements?.length && <Text muted>{tr('u7.child.noMeasures')}</Text>}
       </Card>}
     </>
@@ -382,6 +427,7 @@ export function MilestonesTab({ child }: { child: Child }) {
   const write = useSafeWrite();
   const milestonesQ = useMilestones(child.id);
   const { data: milestones } = milestonesQ;
+  const { moment: momentParam } = useLocalSearchParams<{ moment?: string }>();
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<MilestoneKind>('milestone');
   const [domain, setDomain] = useState<string | null>(null);
@@ -392,6 +438,7 @@ export function MilestonesTab({ child }: { child: Child }) {
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   function start(idea?: (typeof MILESTONE_IDEAS)[number]) {
     setTitle(idea ? tr(`u7.child.idea.${idea}` as TKey) : '');
@@ -414,16 +461,20 @@ export function MilestonesTab({ child }: { child: Child }) {
     }
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui créait deux lignes
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
-      await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
+      const res = await insertOrQueue('child_milestones', { child_id: child.id, household_id: child.household_id, kind, title: title.trim(), happened_on: iso, note: note.trim() || null, domain });
       inv('child_milestones');
       haptic('success');
-      toast(tr('u7.child.momentAdded'));
+      toastSaved(toast, res, tr('u7.child.momentAdded'));
       setOpen(false);
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -465,21 +516,31 @@ export function MilestonesTab({ child }: { child: Child }) {
             <View key={year} style={{ gap: spacing.xs }}>
               <Text weight="bold">{year === NO_DATE ? tr('u7.child.noDate') : year}</Text>
               <Card>
-                {list.map((x) => (
-                  <ListRow
-                    key={x.id}
-                    icon={meta(x.kind).icon}
-                    title={x.title}
-                    subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? fd(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
-                    right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.title })} size={18} onPress={() => remove(x)} />}
-                  />
-                ))}
+                <MotionList>{list.map((x) => (
+                  <MotionItem key={x.id}><View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {/* « Supprimer » à côté de la ligne et non dedans : un bouton dans un bouton est invalide sur le web */}
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <ListRow
+                        icon={meta(x.kind).icon}
+                        title={x.title}
+                        subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? fd(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
+                        onPress={() => router.setParams({ moment: x.id } as never)}
+                        testID={`ct-moment-row-${x.id}`}
+                      />
+                    </View>
+                    <IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.title })} size={18} onPress={() => remove(x)} />
+                  </View></MotionItem>
+                ))}</MotionList>
               </Card>
             </View>
           ))}
           <Text variant="caption" muted>{tr('u7.child.milestonesNote')}</Text>
         </>
       )}
+      {/* Fiche d'un moment (date, libellé, note) : moment gardé dans l'adresse (`?moment=`) */}
+      <MomentTray moment={(milestones ?? []).find((m) => m.id === momentParam) ?? null} birthDate={child.birth_date} onClose={() => router.setParams({ moment: undefined } as never)} />
+      {/* Laits infantiles dans la frise (79) */}
+      <FormulaFrise childId={child.id} />
 
       <Sheet visible={open} onClose={() => setOpen(false)} title={tr('u7.child.logMoment')}>
         {errors.form ? <Banner tone="danger">{errors.form}</Banner> : null}
@@ -522,6 +583,7 @@ export function HealthTab({ child }: { child: Child }) {
   const [due, setDue] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   function start(kind: HealthItemKind) {
     setAdding(kind);
@@ -542,15 +604,19 @@ export function HealthTab({ child }: { child: Child }) {
     }
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
-      await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
+      const res = await insertOrQueue('child_health_items', { child_id: child.id, household_id: child.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: dueIso, done_on: null });
       inv('child_health_items');
-      toast(tr('u7.child.added'));
+      toastSaved(toast, res, tr('u7.child.added'));
       setAdding(null);
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -575,12 +641,7 @@ export function HealthTab({ child }: { child: Child }) {
   return (
     <>
       <Banner tone="info">{tr('u7.child.healthBanner')}</Banner>
-      <Card>
-        <ListRow icon="shield" title={tr('u7.child.vaccDone')} subtitle={tr('u7.child.vaccDoneSub')} onPress={() => router.push(`/child/${child.id}/vaccines` as never)} />
-        <ListRow icon="activity" title={tr('u7.child.healthTracking')} subtitle={tr('u7.child.healthTrackingSub')} onPress={() => router.push(`/child/${child.id}/health-tracking` as never)} />
-        <ListRow icon="smile" title={tr('u7.child.mood')} subtitle={tr('u7.child.moodSub')} onPress={() => router.push(`/child/${child.id}/wellbeing` as never)} />
-        {simple ? null : <ListRow icon="book-open" title={tr('u7.child.journal')} subtitle={tr('u7.child.journalSub')} onPress={() => router.push('/journal')} />}
-      </Card>
+      <ToolLinks ids={['kid_vaccines', 'kid_health', 'kid_mood', 'journal']} subject={{ type: 'child', id: child.id }} filter={(x) => x.id !== 'journal' || !simple} allOf="health" testID="child-health-links" />
       {child.allergies_declared.length > 0 && (
         <Card tone="gold">
           <Row><Icon name="alert-circle" size={18} /><Text weight="bold" style={{ flex: 1 }}>{tr('u7.child.allergiesProfile')}</Text></Row>
@@ -595,8 +656,8 @@ export function HealthTab({ child }: { child: Child }) {
           <View key={k.value} style={{ gap: spacing.xs }}>
             <SectionTitle title={k.label} action={tr('u7.child.add')} onAction={() => start(k.value)} />
             <Card>
-              {list.map((x) => (
-                <View key={x.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+              <MotionList>{list.map((x) => (
+                <MotionItem key={x.id}><View key={x.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
                   {k.value === 'vaccine_to_check' && (
                     <Tappable
                       accessibilityRole="checkbox"
@@ -617,8 +678,8 @@ export function HealthTab({ child }: { child: Child }) {
                       right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.label })} size={18} onPress={() => remove(x)} />}
                     />
                   </View>
-                </View>
-              ))}
+                </View></MotionItem>
+              ))}</MotionList>
               {!list.length && <Text variant="small" muted>{k.hint}</Text>}
             </Card>
           </View>
@@ -666,6 +727,7 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
   const [reaction, setReaction] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const [editing, setEditing] = useState<FoodIntroduction | null>(null);
   const [editNote, setEditNote] = useState('');
 
@@ -685,17 +747,21 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
     else if (iso > todayISO()) e.date = tr('u7.child.err.future');
     setErrors(e);
     if (Object.keys(e).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
-      await insertOrQueue('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
+      const res = await insertOrQueue('food_introductions', { child_id: child.id, household_id: child.household_id, food_name: food, first_tried_on: iso, reaction_note: reaction.trim() || null });
       inv('food_introductions');
       setName('');
       setReaction('');
       haptic('success');
-      toast(tr('u7.child.foodAdded', { food }));
+      toastSaved(toast, res, tr('u7.child.foodAdded', { food }));
     } catch (err) {
       setErrors({ form: errorMessage(err) });
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -751,15 +817,15 @@ export function FoodsTracker({ child, readOnly }: { child: Child; readOnly?: boo
       {introsQ.isLoading && !intros ? <Skeleton kind="list" rows={2} /> : introsQ.isError && !intros ? (
         <ErrorView error={introsQ.error} onRetry={() => void introsQ.refetch()} title={tr('u7.child.foodsError')} />
       ) : <Card>
-        {(intros ?? []).map((i) => (
-          <ListRow
+        <MotionList>{(intros ?? []).map((i) => (
+          <MotionItem key={i.id}><ListRow
             key={i.id}
             icon={isAllergen(i.food_name) ? 'alert-circle' : 'feather'}
             title={i.food_name}
             subtitle={[tr('u7.child.firstTimeDate', { date: fd(i.first_tried_on) }), isAllergen(i.food_name) ? tr('u7.child.majorAllergenLower') : null, i.reaction_note].filter(Boolean).join(' · ')}
             onPress={() => { setEditing(i); setEditNote(i.reaction_note ?? ''); }}
-          />
-        ))}
+          /></MotionItem>
+        ))}</MotionList>
         {!intros?.length && <Text muted>{tr('u7.child.foodsAlsoHere')}</Text>}
       </Card>}
 
@@ -782,11 +848,15 @@ export function EditChildSheet({ child, visible, onClose }: { child: Child; visi
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
 
   async function save() {
     const v = validateChild(draft);
     setErrors(v.errors);
     if (!v.birth || Object.keys(v.errors).length) return;
+    // Garde synchrone : `saving` (état) n'est à jour qu'au rendu suivant, un double appui enregistrait deux fois
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     setError(null);
     try {
@@ -801,6 +871,7 @@ export function EditChildSheet({ child, visible, onClose }: { child: Child; visi
     } catch (e) {
       setError(errorMessage(e));
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }

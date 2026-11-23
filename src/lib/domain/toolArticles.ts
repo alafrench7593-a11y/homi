@@ -4,6 +4,7 @@
  */
 import type { ArticleSummary, Category } from '@/lib/types';
 import { localized } from '@/i18n/localized';
+import { resolveTool } from '@/lib/journeys/tools';
 import { ASK_ES } from './toolArticles.es';
 import { ASK_DE } from './toolArticles.de';
 import { ASK_IT } from './toolArticles.it';
@@ -132,6 +133,9 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   guide_kidfood: { words: ['repas', 'gouter', 'lait', 'legume', 'refus', 'neophob', 'cantine', 'petit-dejeuner', 'morceau', 'allerg'], cats: ['alimentation', 'alimentation-bebe'], journeys: KID, ask: 'Mon enfant refuse de manger' },
   guide_behaviour: { words: ['colere', 'emotion', 'confiance', 'frere', 'soeur', 'jalousie', 'harcelement', 'autonomie', 'argent de poche', 'separation', 'mord'], cats: ['education', 'ecole-garde'], journeys: KID, ask: 'Comment réagir aux colères de mon enfant ?' },
   guide_school: { words: ['ecole', 'maternelle', 'creche', 'assistante maternelle', 'cantine', 'rentree', 'periscolaire', 'devoirs', 'garde'], cats: ['ecole-garde'], journeys: KID, ask: 'Comment préparer l’entrée à l’école maternelle ?' },
+  // fonctions de l'enfant (30/11/2026) : langage et devoirs ont leurs propres lectures
+  child_language: { words: ['langage', 'parole', 'premiers mots', 'bilingu', 'vocabulaire', 'begai', 'orthophon', 'parler', 'lecture'], cats: ['developpement'], journeys: KID, ask: 'Comment encourager le langage de mon enfant ?' },
+  child_homework: { words: ['devoirs', 'ecole', 'lecture', 'concentration', 'ecran', 'rentree', 'cahier', 'harcelement'], cats: ['ecole-garde', 'education'], journeys: KID, ask: 'Comment accompagner les devoirs sans conflit ?' },
   guide_toddler: { words: ['langage', 'premiers pas', 'developpement', 'proprete', 'tetine', 'doudou', 'croissance', 'motricite'], cats: ['developpement'], journeys: KID, ask: 'Mon enfant de 2 ans parle peu' },
   guide_work: { words: ['travail', 'conge', 'droits', 'salariee', 'employeur', 'reprise', 'maternite', 'paternite', 'parental'], cats: ['droits-demarches'], ask: 'Quels sont mes droits au travail enceinte ?' },
   guide_loss: { words: ['fausse couche', 'deuil', 'perte', 'perinatal', 'interruption', 'chagrin'], cats: ['sante-mentale', 'grossesse'], ask: 'Comment traverser une fausse couche ?' },
@@ -150,13 +154,21 @@ const TOOL_TOPICS_FR: Record<string, ToolTopic> = {
   recall_alerts: { words: ['rappel', 'rappelconso', 'produit', 'retrait', 'lot', 'alerte', 'securite'], cats: ['materiel', 'alimentation'], ask: 'Que faire si un produit que j’ai acheté est rappelé ?' },
   kid_routines: { words: ['routine', 'rituel', 'matin', 'coucher', 'autonomie', 'pictogramme', 'organisation', 'ecran'], cats: ['education', 'vie-pratique'], journeys: KID, ask: 'Comment aider mon enfant à être autonome le matin ?' },
   custody: { words: ['garde alternee', 'separation', 'divorce', 'deux maisons', 'coparent', 'mediation', 'residence'], cats: ['vie-pratique', 'droits-demarches', 'education'], journeys: KID, ask: 'Comment organiser la garde alternée pour un jeune enfant ?' },
+  focus_day: { words: ['charge mentale', 'organisation', 'epuisement', 'tdah', 'priorites'], cats: ['vie-pratique', 'sante-mentale'], ask: 'Par où commencer quand tout déborde ?' },
   brain_dump: { words: ['charge mentale', 'organisation', 'partage', 'taches', 'couple', 'epuisement'], cats: ['vie-pratique', 'sante-mentale'], ask: 'Comment alléger ma charge mentale ?' },
   family_domains: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches'], cats: ['vie-pratique'], ask: 'Comment mieux partager les tâches à deux ?' },
+  family_missions: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches'], cats: ['vie-pratique'], ask: 'Comment se répartir les tâches sans tout rappeler à l’autre ?' },
+  family_responsibilities: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches'], cats: ['vie-pratique'], ask: 'Comment répartir les domaines du foyer à deux ?' },
+  family_shopping: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches', 'courses'], cats: ['vie-pratique'], ask: 'Comment s’organiser pour les courses de la famille ?' },
+  family_stocks: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches', 'couches'], cats: ['vie-pratique'], ask: 'Comment ne plus être seul·e à penser aux couches et au lait ?' },
   mental_load: { words: ['charge mentale', 'partage', 'couple', 'equilibre'], cats: ['vie-pratique', 'sante-mentale'], ask: 'Comment parler de la charge mentale dans le couple ?' },
   family_prep: { words: ['rentree', 'vacances', 'anniversaire', 'organisation', 'demarches'], cats: ['vie-pratique', 'droits-demarches'], ask: 'Comment préparer la rentrée sans stress ?' },
   offduty: { words: ['repos', 'relais', 'epuisement', 'burn', 'temps pour soi'], cats: ['sante-mentale'], ask: 'Comment prendre du temps pour moi ?' },
   house_notebook: { words: ['organisation', 'nounou', 'garde', 'grands-parents', 'urgence'], cats: ['vie-pratique', 'ecole-garde'], ask: 'Que noter pour la nounou ou les grands-parents ?' },
   couple_week: { words: ['couple', 'dialogue', 'charge mentale', 'organisation'], cats: ['sante-mentale', 'vie-pratique'], ask: 'Comment organiser un point hebdomadaire à deux ?' },
+  couple_understand: { words: ['couple', 'dialogue', 'epuisement', 'fatigue', 'desir', 'charge mentale', 'post-partum'], cats: ['sante-mentale', 'vie-pratique'], ask: 'Comment dire à l’autre parent que je suis épuisée ?' },
+  family_my_place: { words: ['charge mentale', 'partage', 'couple', 'organisation', 'taches', 'coparent'], cats: ['vie-pratique'], ask: 'Comment trouver ma place dans l’organisation de la famille ?' },
+  childcare: { words: ['nounou', 'assistante maternelle', 'garde', 'creche', 'adaptation', 'separation'], cats: ['ecole-garde', 'vie-pratique'], journeys: KID, ask: 'Comment bien préparer l’arrivée chez la nounou ?' },
   exhaustion_check: { words: ['epuisement', 'burn', 'fatigue', 'depression', 'craquer', 'aide'], cats: ['sante-mentale'], ask: 'Je suis épuisée, que faire ?' },
   video_tutos: { words: ['premiers secours', 'diversification', 'demarches', 'etouffement', 'brulure'], cats: ['premiers-secours', 'droits-demarches'], ask: 'Quels gestes de premiers secours pour un bébé ?' },
   official_videos: { words: ['video', 'gestes', 'bebe', 'sommeil', 'allaitement'], cats: ['bebe', 'sommeil'], ask: 'Quels gestes du quotidien avec bébé ?' },
@@ -259,6 +271,8 @@ const ASK_EN: Record<string, string> = {
   'guide_kidfood': 'My child refuses to eat',
   'guide_behaviour': 'How should I react to my child’s tantrums?',
   'guide_school': 'How do I prepare for starting nursery school?',
+  'child_language': 'How can I encourage my child’s language?',
+  'child_homework': 'How can I help with homework without conflict?',
   'guide_toddler': 'My 2-year-old speaks little',
   'guide_work': 'What are my rights at work while pregnant?',
   'guide_loss': 'How do I get through a miscarriage?',
@@ -278,12 +292,20 @@ const ASK_EN: Record<string, string> = {
   'kid_routines': 'How can I help my child get ready on their own in the morning?',
   'custody': 'How do we organise shared custody for a young child?',
   'brain_dump': 'How can I lighten my mental load?',
+  'focus_day': 'Where do I start when everything is too much?',
   'family_domains': 'How can we share tasks better as a couple?',
+  'family_missions': 'How can we share chores without reminding each other of everything?',
+  'family_responsibilities': 'How do we split the areas of family life as a couple?',
+  'family_shopping': 'How can we organise the family shopping together?',
+  'family_stocks': 'How can we stop being the only one who remembers nappies and milk?',
   'mental_load': 'How do we talk about the mental load as a couple?',
   'family_prep': 'How do I prepare for back-to-school without stress?',
   'offduty': 'How can I take time for myself?',
   'house_notebook': 'What should I write down for the nanny or grandparents?',
   'couple_week': 'How do we hold a weekly check-in as a couple?',
+  'couple_understand': 'How can I tell the other parent that I am exhausted?',
+  'family_my_place': 'How do I find my place in the family organisation?',
+  'childcare': 'How can we prepare for starting with the nanny?',
   'exhaustion_check': 'I am exhausted, what can I do?',
   'family_papers': 'Which papers do I need to enrol my child at school?',
   'video_tutos': 'Which first-aid gestures for a baby?',
@@ -321,9 +343,32 @@ export function toolArticleScore(topic: ToolTopic, a: { title: string; tags?: st
   return s;
 }
 
+/** Outils ajoutés au registre le 17/11/2026 : ils reprennent les articles de l'outil le plus proche. */
+const TOPIC_ALIAS: Record<string, string> = {
+  meal_menu: 'meals', meal_pantry: 'meals', sleep_help: 'kid_sleep', kid_album: 'kid_milestones', journal: 'baby_daily', health_book: 'documents',
+  medications: 'kid_treatments', me_diary: 'mood', cycle_pain: 'cycle_symptoms', cycle_discharge: 'cycle_symptoms', cycle_bleeding: 'cycle_symptoms',
+  kid_school: 'guide_school', videos: 'official_videos',
+  // fonctions de l'enfant (liste des 200) : leurs lectures, pas celles de la fiche de l'enfant
+  h200_129: 'child_language', h200_132: 'guide_activities', h200_136: 'guide_sport', h200_137: 'child_homework',
+  // écrans entrés au registre le 18/11/2026 : mêmes lectures que l'outil voisin
+  cycle_advice: 'cycle_symptoms', cycle_month: 'cycle_stats', cycle_export: 'cycle_stats', pp_history: 'pp_checkin',
+};
+
+/**
+ * Thème d'articles d'un outil, par identifiant actuel OU ancien : un sous-accès (`guides.kidsleep`, `kid_profile.growth`)
+ * garde le thème de l'ancien outil dont il vient ; un outil fusionné garde le sien.
+ */
+export function toolTopic(toolId: string): ToolTopic | undefined {
+  const direct = TOOL_TOPICS[toolId] ?? TOOL_TOPICS[TOPIC_ALIAS[toolId]];
+  if (direct) return direct;
+  const r = resolveTool(toolId);
+  if (!r) return undefined;
+  return (r.sub ? TOOL_TOPICS[r.sub.legacy] : undefined) ?? TOOL_TOPICS[r.def.id] ?? TOOL_TOPICS[TOPIC_ALIAS[r.def.id]];
+}
+
 /** Les meilleurs articles pour un outil. */
 export function articlesForTool<T extends ArticleSummary>(toolId: string, articles: T[], categories: Category[] | undefined, n = 3): T[] {
-  const topic = TOOL_TOPICS[toolId];
+  const topic = toolTopic(toolId);
   if (!topic) return [];
   const slugOf = new Map((categories ?? []).map((c) => [c.id, c.slug]));
   return articles

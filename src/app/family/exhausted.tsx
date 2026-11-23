@@ -12,25 +12,33 @@ import { Banner, Button, Card, Chip, Text } from '@/components/ui';
 import { backend } from '@/lib/backend';
 import { useUserId } from '@/lib/auth';
 import { useInvalidate } from '@/lib/data/hooks';
+import { useTapShield } from '@/features/tapShield';
 import { useExhaustionCheckins } from '@/lib/data/hooks-mental';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { EXHAUSTION_QUESTIONS, exhaustionLevel, type ExhaustionLevel } from '@/lib/domain/mentalLoad';
 import { callNumber } from '@/lib/links';
-import { formatDate, t as tr, type TKey } from '@/i18n';
+import { t as tr, type TKey } from '@/i18n';
+import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { spacing } from '@/theme/tokens';
+import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { ExhaustionTrack } from '@/features/careTrack/ExhaustionTrack';
 
 export default function Exhausted() {
   const toast = useToast();
+  const help = useHelpNumbers();
   const inv = useInvalidate();
   const uid = useUserId();
   const past = useExhaustionCheckins().data ?? [];
   const [answers, setAnswers] = useState<(number | null)[]>(EXHAUSTION_QUESTIONS.map(() => null));
   const [result, setResult] = useState<ExhaustionLevel | null>(null);
   const complete = answers.every((a) => a != null);
+  // Le résultat prend la place des questions : un double appui sur « Voir où j'en suis » n'ouvre pas une piste
+  const { arm, guard } = useTapShield();
 
   async function finish() {
     const vals = answers.map((a) => a ?? 0);
     const { level } = exhaustionLevel(vals);
+    arm();
     setResult(level);
     try {
       await backend.insert('exhaustion_checkins', { user_id: uid, answers: vals });
@@ -39,7 +47,9 @@ export default function Exhausted() {
   }
 
   return (
-    <Screen back title={tr('tool.exhaustion_check')} subtitle={tr('tool.exhaustion_check.sub')}>
+    <Screen back title={toolName('exhaustion_check')} subtitle={toolBlurb('exhaustion_check')}>
+      {/* Suivi : dernier bilan en grand, bilans passés, fiche de correction (bilan gardé dans l'adresse) */}
+      <ExhaustionTrack checks={past} />
       <Text muted>{tr('cm.ex.intro')}</Text>
       {!result ? (
         <>
@@ -59,25 +69,20 @@ export default function Exhausted() {
             <Text variant="title">{tr(`cm.ex.r.${result}` as TKey)}</Text>
             <Text>{tr(`cm.ex.r.${result}.d` as TKey)}</Text>
           </Card>
-          <Button label={tr('tool.offduty')} icon="moon" onPress={() => router.push('/family/offduty')} />
-          <Button label={tr('cm.ex.relay')} icon="users" variant="secondary" onPress={() => router.push('/family/nights')} />
-          <Button label={tr('cm.ex.metime')} icon="sun" variant="secondary" onPress={() => router.push('/family/me-time')} />
+          <Button label={toolName('offduty')} icon="moon" onPress={guard(() => router.push('/family/offduty'))} />
+          <Button label={tr('cm.ex.relay')} icon="users" variant="secondary" onPress={guard(() => router.push('/family/nights'))} />
+          <Button label={tr('cm.ex.metime')} icon="sun" variant="secondary" onPress={guard(() => router.push('/family/me-time'))} />
           {result !== 'low' ? <Banner tone="info" icon="user-check">{tr('cm.ex.pro')}</Banner> : null}
-          <Button label={tr('cm.ex.allo')} icon="phone" variant="ghost" onPress={() => callNumber('0800003456', toast)} />
-          <Button label={tr('cm.ex.retake')} variant="ghost" onPress={() => { setResult(null); setAnswers(EXHAUSTION_QUESTIONS.map(() => null)); }} />
+          <Button label={tr('cm.ex.allo')} icon="phone" variant="ghost" onPress={guard(() => callNumber('0800003456', toast))} />
+          <Button label={tr('cm.ex.retake')} variant="ghost" onPress={guard(() => { setResult(null); setAnswers(EXHAUSTION_QUESTIONS.map(() => null)); })} />
         </>
       )}
       <Banner tone="danger" icon="alert-octagon">{tr('cm.ex.urgent')}</Banner>
+      {/* Numéros du PAYS choisi (Réglages, sinon région du téléphone) : ligne d'écoute s'il en existe une, urgence médicale */}
       <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-        <View style={{ flex: 1 }}><Button label="3114" icon="phone" variant="secondary" onPress={() => callNumber('3114', toast)} /></View>
-        <View style={{ flex: 1 }}><Button label="15" icon="phone" variant="secondary" onPress={() => callNumber('15', toast)} /></View>
+        {help.crisis ? <View style={{ flex: 1 }}><Button label={help.crisis} icon="phone" variant="secondary" onPress={() => callNumber(help.crisis!, toast)} /></View> : null}
+        <View style={{ flex: 1 }}><Button label={help.urgent} icon="phone" variant="secondary" onPress={() => callNumber(help.urgent, toast)} /></View>
       </View>
-      {past.length ? (
-        <Card tone="soft">
-          <Text variant="label">{tr('cm.ex.history')}</Text>
-          {past.slice(0, 6).map((p) => <Text key={p.id} variant="small">{formatDate(p.created_at, { day: 'numeric', month: 'short' })} · {tr(`cm.ex.r.${exhaustionLevel(p.answers).level}` as TKey)}</Text>)}
-        </Card>
-      ) : null}
       <Text variant="caption" muted>{tr('cm.ex.private')}</Text>
     </Screen>
   );

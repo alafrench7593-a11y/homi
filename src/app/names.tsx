@@ -2,8 +2,10 @@
  * Idées de prénoms : près de 13 000 prénoms donnés en France (INSEE, Licence Ouverte), recherche, A à Z,
  * féminin / masculin / mixte, longueur, fréquence, origine et signification (liste éditoriale), favoris,
  * vote avec le coparent, suggestions pour une fratrie et pour des jumeaux ou triplés.
+ * 22/11/2026 : liste partagée gardés / écartés (qui a proposé, votes pour / contre), fiche de correction (Tray),
+ * vue, liste et fiche ouverte dans l'adresse (NamesTrack).
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
@@ -22,6 +24,12 @@ import { NameSwipeDeck } from '@/features/namesSwipe';
 import type { NameFavorite, NameVote } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { useTapShield } from '@/features/tapShield';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Tappable } from '@/components/Tappable';
+import { usePeople } from '@/lib/data/hooks-family-load';
+import { isSetAside, NAME_KEPT, namesBoard } from '@/lib/domain/restTrack';
+import { NameFixTray, NamesHero, type NameList } from '@/features/restTrack/NamesTrack';
 
 type Mode = 'explore' | 'swipe' | 'favorites' | 'ideas';
 const norm = fold;
@@ -45,7 +53,12 @@ export default function NamesScreen() {
   const { data: favorites } = favoritesQ;
   const { data: votes } = useNameVotes();
   const { data: members } = useHouseholdMembers();
-  const [view, setView] = useState<Mode>('explore');
+  // 22/11/2026 : vue, liste (gardés / écartés) et fiche ouverte gardées dans l'adresse
+  const qp = useLocalSearchParams<{ view?: string; list?: string; name?: string }>();
+  const view: Mode = qp.view === 'swipe' || qp.view === 'favorites' || qp.view === 'ideas' ? qp.view : 'explore';
+  const setView = (v: Mode) => router.setParams({ view: v === 'explore' ? undefined : v } as never);
+  const nameList: NameList = qp.list === 'aside' ? 'aside' : 'kept';
+  const { labelOf } = usePeople();
   const [query, setQuery] = useState('');
   const [gender, setGender] = useState<Gender | null>(null);
   const [letter, setLetter] = useState<string | null>(null);
@@ -79,19 +92,23 @@ export default function NamesScreen() {
   const hasPartner = (members?.length ?? 0) > 1;
   const votesFor = (f: NameFavorite) => (votes ?? []).filter((v) => v.favorite_id === f.id);
   const score = (f: NameFavorite) => votesFor(f).reduce((s, v) => s + v.vote, 0);
-  const sortedFavorites = [...(favorites ?? [])].sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, getLocale()));
+  const board = useMemo(() => namesBoard(favorites ?? [], votes ?? []), [favorites, votes]);
+  const keptFavorites = (favorites ?? []).filter((f) => !isSetAside(f));
+  const sortedFavorites = [...(nameList === 'aside' ? board.setAside.map((r) => r.fav) : keptFavorites)].sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name, getLocale()));
 
-  async function addFavorite(name: string) {
+  async function addFavorite(name: string): Promise<boolean> {
     const clean = name.trim();
-    if (!clean) return;
+    if (!clean) return false;
     setBusy(clean);
     try {
       const h = hid ?? (await ensureHousehold());
       await backend.insert('name_favorites', { household_id: h, name: clean, list_label: 'Favoris', added_by: userId });
       inv('name_favorites', 'memberships');
       toast(tr('u7.names.added', { name: clean }));
+      return true;
     } catch (e) {
       toast(friendlyError(e, tr('u7.names.addFail')), 'error');
+      return false;
     } finally {
       setBusy(null);
     }
@@ -111,10 +128,24 @@ export default function NamesScreen() {
     }
   }
 
+  // Un prénom en cours d'ajout ou de retrait ignore les appuis suivants (jamais deux favoris identiques)
+  // … et, juste après, tant que la liste des favoris n'est pas relue (double appui sur le cœur)
+  const togglingRef = useRef(new Set<string>());
+  const { arm, shielded } = useTapShield();
   async function toggleFavorite(n: NameEntry) {
-    const f = favByName.get(norm(n.name));
-    if (f) await removeFavorite(f, true);
-    else await addFavorite(n.name);
+    const k = norm(n.name);
+    if (togglingRef.current.has(k) || shielded()) return;
+    togglingRef.current.add(k);
+    try {
+      const f = favByName.get(k);
+      // un prénom écarté qu'on remet en favori change de liste (jamais un second exemplaire)
+      if (f && isSetAside(f)) await backend.update('name_favorites', { list_label: NAME_KEPT }, [eq('id', f.id)]).then(() => inv('name_favorites')).catch((e) => toast(friendlyError(e), 'error'));
+      else if (f) await removeFavorite(f, true);
+      else await addFavorite(n.name);
+      arm();
+    } finally {
+      togglingRef.current.delete(k);
+    }
   }
 
   async function vote(f: NameFavorite, value: -1 | 1) {
@@ -138,8 +169,8 @@ export default function NamesScreen() {
     if (clean.length > 40) return setCustomError(tr('u7.names.max40'));
     if (favByName.has(norm(clean))) return setCustomError(tr('u7.names.already'));
     setCustomError(null);
-    await addFavorite(clean);
-    setCustom('');
+    // En cas d'échec (réseau…), le prénom saisi reste dans le champ pour réessayer
+    if (await addFavorite(clean)) setCustom('');
   }
 
   const explore = view === 'explore';
@@ -148,7 +179,7 @@ export default function NamesScreen() {
   const failed = activeQ.isError && !activeQ.data;
 
   const renderName = (n: NameEntry) => {
-    const fav = favByName.has(norm(n.name));
+    const fav = favByName.has(norm(n.name)) && !isSetAside(favByName.get(norm(n.name))!);
     const meta = [genderLabel(n.gender), n.recent ? tr('nm.births', { count: formatNumber(n.recent) }) : popLabel('old'), n.origin, n.meaning].filter(Boolean).join(' · ');
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, height: ROW_H - 8 }}>
@@ -180,10 +211,12 @@ export default function NamesScreen() {
     const voting = busy === `vote-${f.id}`;
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 56, paddingVertical: spacing.xs }}>
-        <View style={{ flex: 1, gap: 2 }}>
+        <Tappable accessibilityRole="button" accessibilityLabel={tr('rs.names.openA11y', { name: f.name })} testID={`rs-name-${f.id}`}
+          onPress={() => router.setParams({ name: f.id } as never)} style={{ flex: 1, gap: 2, minHeight: 44, justifyContent: 'center' }}>
           <Text weight="medium">{f.name}</Text>
+          <Text variant="caption" muted>{tr('rs.names.by', { who: labelOf(f.added_by) })}</Text>
           <Text variant="small" muted>{[othersLabel ? tr('u7.names.coparent', { label: othersLabel }) : null, tr('u7.names.score', { score: `${score(f) > 0 ? '+' : ''}${score(f)}` })].filter(Boolean).join(' · ')}</Text>
-        </View>
+        </Tappable>
         <IconButton icon="thumbs-up" label={tr(mine === 1 ? 'u7.names.likeSel' : 'u7.names.like', { name: f.name })} color={mine === 1 ? t.colors.primary : t.colors.textMuted} style={mine === 1 ? { backgroundColor: t.colors.surfaceAlt } : undefined} onPress={() => { if (!voting) void vote(f, 1); }} />
         <IconButton icon="thumbs-down" label={tr(mine === -1 ? 'u7.names.dislikeSel' : 'u7.names.dislike', { name: f.name })} color={mine === -1 ? t.colors.primary : t.colors.textMuted} style={mine === -1 ? { backgroundColor: t.colors.surfaceAlt } : undefined} onPress={() => { if (!voting) void vote(f, -1); }} />
         <IconButton icon="x" label={tr('u7.names.removeFav', { name: f.name })} color={t.colors.textMuted} onPress={() => { if (busy !== f.name) void removeFavorite(f, true); }} />
@@ -191,21 +224,22 @@ export default function NamesScreen() {
     );
   };
 
-  const top = sortedFavorites[0];
+  const top = nameList === 'aside' ? [...keptFavorites].sort((a, b) => score(b) - score(a))[0] : sortedFavorites[0];
   const myVotes = (votes ?? []).filter((v) => v.user_id === userId && v.vote !== 0).length;
   const extraActive = (len ? 1 : 0) + (pop ? 1 : 0) + (origin ? 1 : 0);
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
-      <TodaySummary title={tr('u7.names.ourNames')} items={[
-        { icon: 'heart', value: String(favorites?.length ?? 0), label: tr('u7.names.favourites') },
+      {/* la vue « Nos favoris » a sa propre donnée principale (NamesHero) : pas de résumé en double */}
+      {view === 'favorites' ? null : <TodaySummary title={tr('u7.names.ourNames')} items={[
+        { icon: 'heart', value: String(keptFavorites.length), label: tr('u7.names.favourites') },
         { icon: 'award', value: top ? top.name : '—', label: tr('u7.names.top') },
         { icon: 'thumbs-up', value: String(myVotes), label: tr('u7.names.myVotes') },
-      ]} />
+      ]} />}
       <Segmented
         label={tr('u7.names.display')}
         value={view}
         onChange={setView}
-        options={[{ value: 'explore', label: tr('nm.tab.explore') }, { value: 'swipe', label: tr('u7.names.swipe'), testID: 'names-tab-swipe' }, { value: 'ideas', label: tr('nm.tab.ideas') }, { value: 'favorites', label: `${tr('nm.tab.favorites')}${favorites?.length ? ` (${favorites.length})` : ''}` }]}
+        options={[{ value: 'explore', label: tr('nm.tab.explore') }, { value: 'swipe', label: tr('u7.names.swipe'), testID: 'names-tab-swipe' }, { value: 'ideas', label: tr('nm.tab.ideas') }, { value: 'favorites', label: `${tr('nm.tab.favorites')}${keptFavorites.length ? ` (${keptFavorites.length})` : ''}` }]}
       />
       {explore ? (
         <>
@@ -271,9 +305,13 @@ export default function NamesScreen() {
           </Card>
           <Text variant="caption" muted>{tr('nm.ideas.note')}</Text>
         </View>
-      ) : !hasPartner ? (
-        <Banner tone="info" title={tr('u7.names.voteTogether')}>{tr('u7.names.voteTogetherBody')}</Banner>
-      ) : null}
+      ) : (
+        <>
+          <NamesHero kept={board.kept.length} aside={board.setAside.length} mine={keptFavorites.filter((f) => f.added_by === userId).length}
+            list={nameList} onList={(l) => router.setParams({ list: l === 'aside' ? 'aside' : undefined } as never)} />
+          {!hasPartner ? <Banner tone="info" title={tr('u7.names.voteTogether')}>{tr('u7.names.voteTogetherBody')}</Banner> : null}
+        </>
+      )}
       {loading ? <Skeleton rows={5} /> : null}
       {failed ? <ErrorView error={activeQ.error} onRetry={() => void activeQ.refetch()} title={explore ? tr('u7.names.errNames') : tr('u7.names.errFavs')} /> : null}
     </View>
@@ -285,7 +323,7 @@ export default function NamesScreen() {
       <SectionTitle title={tr('u7.names.ownIdea')} />
       <Card>
         <View style={{ gap: spacing.sm }}>
-          <Field label={tr('u7.names.firstName')} value={custom} onChangeText={(v) => { setCustom(v); setCustomError(null); }} maxLength={40} autoCapitalize="words" error={customError} onSubmitEditing={addCustom} returnKeyType="done" />
+          <Field label={tr('u7.names.firstName')} value={custom} onChangeText={(v) => { setCustom(v); setCustomError(null); }} maxLength={40} autoCapitalize="words" error={customError} onSubmitEditing={addCustom} returnKeyType="done" submitBehavior="submit" />
           <Button label={tr('u7.names.addToFavs')} icon="plus" variant="secondary" loading={busy === custom.trim() && !!custom.trim()} onPress={addCustom} />
         </View>
       </Card>
@@ -302,6 +340,13 @@ export default function NamesScreen() {
     <EmptyState icon="heart" title={tr('u7.names.noFav')} body={tr('u7.names.noFavBody')} action={{ label: tr('u7.names.explore'), icon: 'search', onPress: () => setView('explore') }} />
   );
 
+  const openFav = (favorites ?? []).find((f) => f.id === qp.name) ?? null;
+  const openRow = openFav ? [...board.kept, ...board.setAside].find((r) => r.fav.id === openFav.id) : null;
+  const tray = openFav ? (
+    <NameFixTray fav={openFav} favorites={favorites ?? []} pro={openRow?.pro ?? 0} con={openRow?.con ?? 0} proposedBy={labelOf(openFav.added_by)}
+      onClose={() => router.setParams({ name: undefined } as never)} />
+  ) : null;
+
   const contentStyle = { paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.xxl, gap: spacing.xs };
 
   return (
@@ -310,7 +355,7 @@ export default function NamesScreen() {
         const q = query.trim().slice(0, 40);
         if (explore && q && !favByName.has(norm(q))) return { label: tr('u7.names.addQuotedFav', { q }), icon: 'heart' as const, onPress: () => void addFavorite(q), testID: 'names-main-action' };
         if (view === 'favorites') return { label: tr('u7.names.explore'), icon: 'search' as const, onPress: () => setView('explore'), testID: 'names-main-action' };
-        return { label: `${tr('u7.names.myFavs')}${favorites?.length ? ` (${favorites.length})` : ''}`, icon: 'heart' as const, onPress: () => setView('favorites'), testID: 'names-main-action' };
+        return { label: `${tr('u7.names.myFavs')}${keptFavorites.length ? ` (${keptFavorites.length})` : ''}`, icon: 'heart' as const, onPress: () => setView('favorites'), testID: 'names-main-action' };
       })()}>
       {explore ? (
         <VirtualList
@@ -343,6 +388,7 @@ export default function NamesScreen() {
           ListFooterComponent={footer}
         />
       )}
+      {tray}
     </Screen>
   );
 }

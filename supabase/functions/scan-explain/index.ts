@@ -5,7 +5,8 @@
 // contenant une promesse d'innocuité ou un autre verdict est rejetée. Sans GEMINI_API_KEY :
 // { ai: 'not_configured' } — l'application affiche alors l'explication des règles, jamais un faux texte IA.
 import { adminClient, corsHeaders, hasConsent, json, rateLimit, requirePremium, requireUser, withCors } from '../_shared/http.ts';
-import { geminiConfig } from '../_shared/gemini.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
+import { isUuid, readJsonBody } from '../_shared/body.ts';
 import { sanitizePayload } from '../_shared/scan-explain.ts';
 import { runExplain } from '../_shared/scan-explain-run.ts';
 
@@ -16,18 +17,19 @@ Deno.serve(withCors(async (req) => {
   const locked = await requirePremium(auth.client); // Premium strict
   if (locked) return locked;
 
-  const body = await req.json().catch(() => ({}));
+  const body = await readJsonBody(req);
+  if (!body) return json({ error: 'too_large' }, 413);
   const payload = sanitizePayload(body);
   if (!payload) return json({ error: 'bad_request', message: 'Résultat d’analyse invalide.' }, 400);
 
-  const cfg = geminiConfig();
+  const cfg = await enabledGeminiConfig(adminClient());
   if (!cfg) return json({ ai: 'not_configured', message: 'Explication IA non configurée.' });
 
   const admin = adminClient();
   // Le profil (« enceinte », âge du bébé, allergies) est une donnée de santé : pas d'envoi à l'IA
   // sans l'accord « assistant IA ». L'application garde alors l'explication des règles.
   if (!(await hasConsent(admin, auth.user.id, 'ai_assistant'))) {
-    return json({ ai: 'consent_required', message: 'L’explication par l’IA demande votre accord (Réglages › Confidentialité › Assistant IA). L’explication des règles reste affichée.' });
+    return json({ ai: 'consent_required', message: 'L’explication par l’IA demande ton accord (Réglages › Confidentialité › Assistant IA). L’explication des règles reste affichée.' });
   }
   if (!(await rateLimit(admin, `scan_explain:${auth.user.id}`, 20, 3600))) {
     return json({ ai: 'unavailable', message: 'Trop d’explications demandées en une heure. L’explication des règles reste affichée.' });
@@ -40,7 +42,7 @@ Deno.serve(withCors(async (req) => {
     return json(publicResult);
   }
   // Mémorisation sur le résultat (RLS : uniquement si le scan appartient à la personne)
-  if (typeof body.scan_id === 'string') {
+  if (isUuid(body.scan_id)) {
     await auth.client.from('scan_results').update({ explanation: result }).eq('scan_id', body.scan_id);
   }
   return json(result);

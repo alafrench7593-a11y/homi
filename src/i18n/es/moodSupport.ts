@@ -18,7 +18,7 @@ export const moodSupport: Messages<typeof fr> = {
   "wb.title": "Widget «Bebé» (iPhone)",
   "wb.pref": "Mostrar las horas en el widget",
   "wb.prefD": "Próximo biberón y próxima toma de tratamiento. Nunca el nombre de un medicamento. Desactivado: el widget solo muestra «Abrir la aplicación».",
-  "wb.howto": "Para añadirlo: mantén pulsada la pantalla de inicio del iPhone, luego «+» y «Au fil de nous».",
+  "wb.howto": "Para añadirlo: mantén pulsada la pantalla de inicio del iPhone, luego «+» y «HOMI».",
   "wb.bottle": "Biberón de {name}: {time}",
   "wb.dose": "Tratamiento ({who}): {time}",
   "wb.nothing": "Nada previsto por ahora",

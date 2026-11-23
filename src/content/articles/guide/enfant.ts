@@ -7,7 +7,7 @@ const S = {
   suiviMedical: { label: 'ameli.fr — Suivi médical de l’enfant et de l’adolescent', url: 'https://www.ameli.fr/assure/sante/themes/suivi-medical-de-l-enfant-et-de-l-adolescent', consulted_on: C },
   sante611: { label: 'Santé.fr — Enfant de 6 ans à 11 ans : les essentiels santé', url: 'https://www.sante.fr/enfant-de-6-ans-11-ans-les-essentiels-sante', consulted_on: C, published: '2020-07-16' },
   vaccins: { label: 'Vaccination Info Service (Santé publique France) — Nourrissons et enfants (de la naissance à 10 ans)', url: 'https://www.vaccination-info-service.fr/La-vaccination-au-cours-de-la-vie/nourrissons-et-enfants-de-la-naissance-a-10-ans', consulted_on: C, published: '2026-05-03' },
-  fievre: { label: 'ameli.fr — Votre enfant a de la fièvre : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter', consulted_on: C, published: '2024-09-03' },
+  fievre: { label: 'ameli.fr — Ton enfant a de la fièvre : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter', consulted_on: C, published: '2024-09-03' },
   varicelle: { label: 'ameli.fr — Varicelle : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/varicelle/que-faire-cas-faut-consulter', consulted_on: C, published: '2026-03-25' },
   pmb: { label: 'ameli.fr — Syndrome pieds-mains-bouche : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/syndrome-pieds-mains-bouche/que-faire-quand-consulter', consulted_on: C, published: '2020-01-31' },
   scarlatine: { label: 'ameli.fr — Scarlatine : définition, transmission et symptômes', url: 'https://www.ameli.fr/assure/sante/themes/scarlatine/definition-symptomes-modes-transmission', consulted_on: C, published: '2025-03-24' },
@@ -26,12 +26,12 @@ const S = {
   oxyuresTraitement: { label: 'ameli.fr — Oxyures : que faire et quel traitement ?', url: 'https://www.ameli.fr/assure/sante/themes/parasitose-oxyurose/que-faire-traitement', consulted_on: C, published: '2025-10-09' },
   yeux: { label: 'ameli.fr — La santé des yeux de l’enfant', url: 'https://www.ameli.fr/assure/sante/themes/astigmatisme/sante-yeux-enfant', consulted_on: C, published: '2026-03-18' },
   surdite: { label: 'ameli.fr — Mon enfant entend mal : dépistage, symptômes et diagnostic de la surdité', url: 'https://www.ameli.fr/assure/sante/themes/surdite-enfant/mon-enfant-entend-mal-depistage-symptomes-et-diagnostic-de-la-surdite', consulted_on: C, published: '2026-07-16' },
-  audition: { label: 'Santé.fr — Préserver votre enfant de troubles de l’audition', url: 'https://www.sante.fr/preserver-votre-enfant-de-troubles-de-laudition', consulted_on: C, published: '2020-10-19' },
+  audition: { label: 'Santé.fr — Préserver ton enfant de troubles de l’audition', url: 'https://www.sante.fr/preserver-votre-enfant-de-troubles-de-laudition', consulted_on: C, published: '2020-10-19' },
   malVentre: { label: 'ameli.fr — Mal de ventre : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/mal-ventre/que-faire-cas-faut-consulter', consulted_on: C, published: '2026-08-31' },
   conjonctivite: { label: 'ameli.fr — Conjonctivite : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/conjonctivite/que-faire-quand-consulter', consulted_on: C, published: '2025-05-06' },
   puberte: { label: 'ameli.fr — Puberté précoce et puberté tardive', url: 'https://www.ameli.fr/assure/sante/themes/puberte/puberte-precoce-tardive', consulted_on: C },
   puberteMpedia: { label: 'mpedia.fr (Association française de pédiatrie ambulatoire) — Repérer les premiers signes de la puberté', url: 'https://www.mpedia.fr/art-demarrage-puberte/', consulted_on: C, published: '2020-10-21' },
-  enuresie: { label: 'ameli.fr — Que faire si votre enfant fait pipi au lit et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/pipi-lit-enuresie/que-faire-quand-consulter', consulted_on: C },
+  enuresie: { label: 'ameli.fr — Que faire si ton enfant fait pipi au lit et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/pipi-lit-enuresie/que-faire-quand-consulter', consulted_on: C },
   sommeilTroubles: { label: 'Santé.fr — Troubles du sommeil chez l’enfant', url: 'https://www.sante.fr/troubles-du-sommeil-chez-lenfant', consulted_on: C, published: '2026-08-13' },
   parasomnies: { label: 'mpedia.fr — Parasomnies et difficultés d’endormissement de l’enfant de 6 à 11 ans', url: 'https://www.mpedia.fr/art-parasomnies-endormissement/', consulted_on: C, published: '2020-08-24' },
   sommeilEtapes: { label: 'ameli.fr — Sommeil de l’enfant : ses étapes, sa durée et ses troubles', url: 'https://www.ameli.fr/assure/sante/themes/troubles-sommeil-enfant/sommeil-enfant-importance-troubles-etapes', consulted_on: C },
@@ -62,7 +62,7 @@ const S = {
   noyadeSpf: { label: 'Santé publique France — Résultats de l’enquête NOYADES 2021 : la prévention reste primordiale', url: 'https://www.santepubliquefrance.fr/presse/2022/resultats-de-l-enquete-noyades-2021-la-prevention-reste-primordiale', consulted_on: C, published: '2022-06-21' },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = 'Cet article vous informe et vous aide à vous repérer ; il ne remplace pas l’avis du médecin, du pédiatre ou des professionnels qui suivent votre enfant.';
+const FIN = 'Cet article t’informe et t’aide à te repérer ; il ne remplace pas l’avis du médecin, du pédiatre ou des professionnels qui suivent ton enfant.';
 const CHILD = { journeys: ['child'] as LibArticle['journeys'], status: 'to_review' as const, min_age_months: 24, max_age_months: 131 };
 
 export const GUIDE_ENFANT: LibArticle[] = [
@@ -76,7 +76,7 @@ export const GUIDE_ENFANT: LibArticle[] = [
 - L’Assurance Maladie prévoit **20 examens de suivi médical**, de la naissance à 16 ans.
 - Entre 4 et 10 ans, **4 examens** sont prévus ; puis 1 entre 11 et 13 ans et 1 entre 15 et 16 ans.
 - Ces consultations sont **prises en charge intégralement, sans avance de frais**.
-- Pensez à apporter le **carnet de santé** : la courbe de croissance y est mise à jour.
+- Pense à apporter le **carnet de santé** : la courbe de croissance y est mise à jour.
 
 ## Comprendre
 Après les nombreux rendez-vous des deux premières années, le rythme des consultations se desserre : c’est souvent là qu’on les oublie. Pourtant, ces examens de prévention ne servent pas seulement quand l’enfant est malade. Ils permettent de suivre sa croissance dans le temps, de vérifier que son développement se poursuit bien, et de repérer tôt des difficultés qui passent facilement inaperçues au quotidien.
@@ -86,16 +86,16 @@ Selon l’Assurance Maladie, le calendrier comprend : un examen dans les 8 jours
 Santé.fr précise qu’à chaque consultation de l’enfant d’âge scolaire, le médecin met à jour la **courbe de croissance** et dépiste notamment des troubles de la **vision**, de l’**audition** et de la **scoliose** (déviation de la colonne vertébrale). Des examens ont lieu au cours de la sixième année, puis entre 8 et 9 ans et entre 11 et 13 ans.
 
 
-**Ce qui est regardé, concrètement.** Lors de ces consultations, le médecin pèse et mesure votre enfant, reporte les mesures sur la courbe du carnet de santé et regarde surtout leur **évolution dans le temps** : une courbe régulière compte davantage qu’un chiffre isolé. Il examine aussi la vue, l’audition, le dos, la peau, les dents, et parle avec vous du sommeil, de l’alimentation, de l’activité physique, des écrans et de la vie à l’école. C’est un moment privilégié pour aborder des sujets qu’on n’ose pas toujours évoquer lors d’une consultation pour un rhume : comportement, émotions, apprentissages, relations avec les autres enfants.
+**Ce qui est regardé, concrètement.** Lors de ces consultations, le médecin pèse et mesure ton enfant, reporte les mesures sur la courbe du carnet de santé et regarde surtout leur **évolution dans le temps** : une courbe régulière compte davantage qu’un chiffre isolé. Il examine aussi la vue, l’audition, le dos, la peau, les dents, et parle avec toi du sommeil, de l’alimentation, de l’activité physique, des écrans et de la vie à l’école. C’est un moment privilégié pour aborder des sujets qu’on n’ose pas toujours évoquer lors d’une consultation pour un rhume : comportement, émotions, apprentissages, relations avec les autres enfants.
 
-**Le carnet de santé, un outil précieux.** Il rassemble les vaccinations, les mesures, les résultats de dépistage et les comptes rendus importants. Emportez-le à chaque consultation, en vacances et lors des inscriptions en collectivité.
+**Le carnet de santé, un outil précieux.** Il rassemble les vaccinations, les mesures, les résultats de dépistage et les comptes rendus importants. Emporte-le à chaque consultation, en vacances et lors des inscriptions en collectivité.
 
 ## Au quotidien
-- **Notez les dates** des prochains examens dans votre agenda (ou dans l’application) dès la consultation précédente.
-- **Préparez vos questions** à l’avance : sommeil, appétit, comportement, école, écrans… Tout ce qui vous interroge a sa place.
-- **Apportez le carnet de santé** : il garde la mémoire des vaccins, des mesures et des remarques précédentes.
-- **Faites participer votre enfant** : à partir de 6-7 ans, il peut raconter lui-même ce qu’il ressent, ce qui l’aide à prendre soin de sa santé.
-- Profitez-en pour faire le point sur les **vaccins** à jour et sur les **rappels** à venir.
+- **Note les dates** des prochains examens dans ton agenda (ou dans l’application) dès la consultation précédente.
+- **Prépare tes questions** à l’avance : sommeil, appétit, comportement, école, écrans… Tout ce qui t’interroge a sa place.
+- **Apporte le carnet de santé** : il garde la mémoire des vaccins, des mesures et des remarques précédentes.
+- **Fais participer ton enfant** : à partir de 6-7 ans, il peut raconter lui-même ce qu’il ressent, ce qui l’aide à prendre soin de sa santé.
+- Profites-en pour faire le point sur les **vaccins** à jour et sur les **rappels** à venir.
 
 ## Questions fréquentes
 **Mon enfant n’est jamais malade : ces examens sont-ils vraiment utiles ?**
@@ -108,17 +108,17 @@ Selon l’Assurance Maladie, ces examens de suivi sont pris en charge intégrale
 Le médecin traitant, le pédiatre ou, selon les âges et les départements, la PMI et la médecine scolaire participent aux dépistages.
 
 **Et si nous avons manqué un examen ?**
-Prenez simplement rendez-vous dès que possible : le médecin fera le point et reprendra le suivi là où il en est.
+Prends simplement rendez-vous dès que possible : le médecin fera le point et reprendra le suivi là où il en est.
 
 ## Quand demander conseil
-N’attendez pas l’examen suivant si votre enfant présente un changement qui vous inquiète : fatigue inhabituelle, perte de poids, plaintes répétées (maux de tête, douleurs), difficultés nouvelles à l’école ou changement de comportement. En cas d’urgence (difficultés à respirer, malaise, enfant très difficile à réveiller), appelez le **15** ou le **112**.
+N’attends pas l’examen suivant si ton enfant présente un changement qui t’inquiète : fatigue inhabituelle, perte de poids, plaintes répétées (maux de tête, douleurs), difficultés nouvelles à l’école ou changement de comportement. En cas d’urgence (difficultés à respirer, malaise, enfant très difficile à réveiller), appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'vaccins-enfant-rappels-et-calendrier', category: 'sante-enfant', tags: ['vaccins', 'rappels', 'collectivité'],
     title: 'Vaccins de l’enfant : obligatoires, recommandés et rappels',
-    summary: 'Ce qui est obligatoire pour l’entrée en collectivité, le rappel de 6 ans et les vaccins proposés selon la situation de votre enfant.',
+    summary: 'Ce qui est obligatoire pour l’entrée en collectivité, le rappel de 6 ans et les vaccins proposés selon la situation de ton enfant.',
     sources: [S.vaccins, S.sante611, S.inscription],
     body_md: `## En bref
 - Pour les enfants nés depuis 2018, **11 vaccinations sont obligatoires** et exigées pour l’entrée en collectivité (crèche, école).
@@ -127,39 +127,39 @@ ${FIN}`,
 - D’autres vaccins sont **recommandés** (grippe à partir de 2 ans, par exemple) ou réservés à des situations particulières.
 
 ## Comprendre
-La vaccination protège votre enfant, mais aussi les personnes de son entourage qui ne peuvent pas être vaccinées ou qui sont plus fragiles. Selon Vaccination Info Service (Santé publique France), les vaccins obligatoires des tout-petits couvrent notamment la diphtérie, le tétanos, la coqueluche, la poliomyélite, les infections à Haemophilus influenzae b, l’hépatite B, le pneumocoque, la rougeole, les oreillons, la rubéole et les méningocoques. Ils sont exigés pour l’accueil en collectivité : lors de l’inscription à l’école maternelle, la mairie demande d’ailleurs un document attestant ces vaccinations.
+La vaccination protège ton enfant, mais aussi les personnes de son entourage qui ne peuvent pas être vaccinées ou qui sont plus fragiles. Selon Vaccination Info Service (Santé publique France), les vaccins obligatoires des tout-petits couvrent notamment la diphtérie, le tétanos, la coqueluche, la poliomyélite, les infections à Haemophilus influenzae b, l’hépatite B, le pneumocoque, la rougeole, les oreillons, la rubéole et les méningocoques. Ils sont exigés pour l’accueil en collectivité : lors de l’inscription à l’école maternelle, la mairie demande d’ailleurs un document attestant ces vaccinations.
 
 À 6 ans, un **rappel DTCaP** (diphtérie, tétanos, coqueluche, poliomyélite) est prévu. Santé.fr indique qu’un nouveau rappel a lieu entre 11 et 13 ans et rappelle que les contre-indications sont très rares.
 
 Certains vaccins sont **recommandés** : la grippe saisonnière peut être proposée de 2 à 17 ans. D’autres concernent des **situations particulières** : BCG pour les enfants très exposés à la tuberculose, hépatite A dans certains cas, varicelle pour certains enfants à risque ou à partir de 12 ans pour ceux qui ne l’ont jamais eue, fièvre jaune en Guyane.
 
 
-**Pourquoi des rappels ?** Après les premières injections, la protection apportée par certains vaccins diminue avec le temps. Les rappels permettent de la « relancer » à des âges précis : c’est le cas du rappel de 6 ans contre la diphtérie, le tétanos, la coqueluche et la poliomyélite. Le calendrier vaccinal est mis à jour régulièrement par les autorités de santé : votre médecin connaît la version en vigueur et adapte les recommandations à l’histoire de votre enfant (prématurité, maladie chronique, voyages).
+**Pourquoi des rappels ?** Après les premières injections, la protection apportée par certains vaccins diminue avec le temps. Les rappels permettent de la « relancer » à des âges précis : c’est le cas du rappel de 6 ans contre la diphtérie, le tétanos, la coqueluche et la poliomyélite. Le calendrier vaccinal est mis à jour régulièrement par les autorités de santé : ton médecin connaît la version en vigueur et adapte les recommandations à l’histoire de ton enfant (prématurité, maladie chronique, voyages).
 
-**Bien vivre la piqûre.** Prévenez votre enfant le jour même, avec des mots simples et vrais. Restez à côté de lui, tenez-le dans vos bras pour les plus petits, proposez-lui de regarder ailleurs, de souffler ou de serrer un doudou. Félicitez son courage après, quelle qu’ait été sa réaction.
+**Bien vivre la piqûre.** Préviens ton enfant le jour même, avec des mots simples et vrais. Reste à côté de lui, tiens-le dans tes bras pour les plus petits, propose-lui de regarder ailleurs, de souffler ou de serrer un doudou. Félicite son courage après, quelle qu’ait été sa réaction.
 
 ## Au quotidien
-- **Gardez le carnet de santé à jour** : c’est la preuve des vaccinations demandée par l’école, les centres de loisirs ou pour un voyage.
-- **Profitez des examens de suivi** pour vérifier les rappels à venir.
-- **Préparez votre enfant** : expliquez simplement ce qui va se passer, sans promettre « ça ne fait pas mal », et prévoyez un câlin ou une activité agréable après.
-- Après une vaccination, une **petite fièvre** ou une **rougeur** au point d’injection peuvent apparaître : demandez au médecin la conduite à tenir.
-- En cas de **retard**, un rattrapage est possible : parlez-en à votre médecin.
+- **Garde le carnet de santé à jour** : c’est la preuve des vaccinations demandée par l’école, les centres de loisirs ou pour un voyage.
+- **Profite des examens de suivi** pour vérifier les rappels à venir.
+- **Prépare ton enfant** : explique simplement ce qui va se passer, sans promettre « ça ne fait pas mal », et prévois un câlin ou une activité agréable après.
+- Après une vaccination, une **petite fièvre** ou une **rougeur** au point d’injection peuvent apparaître : demande au médecin la conduite à tenir.
+- En cas de **retard**, un rattrapage est possible : parles-en à ton médecin.
 
 ## Questions fréquentes
 **Mon enfant a raté un rappel, faut-il tout recommencer ?**
-En général, le médecin organise un rattrapage à partir de ce qui a déjà été fait. Apportez le carnet de santé pour qu’il fasse le point.
+En général, le médecin organise un rattrapage à partir de ce qui a déjà été fait. Apporte le carnet de santé pour qu’il fasse le point.
 
 **Le vaccin contre la grippe est-il obligatoire ?**
 Non. Il est recommandé chaque année pour les enfants à risque de forme grave, et possible de 2 à 17 ans pour les autres.
 
 **L’école peut-elle refuser mon enfant s’il n’est pas vacciné ?**
-Les vaccinations obligatoires sont exigées pour l’entrée en collectivité. Rapprochez-vous de votre médecin pour régulariser la situation au plus vite.
+Les vaccinations obligatoires sont exigées pour l’entrée en collectivité. Rapproche-toi de ton médecin pour régulariser la situation au plus vite.
 
 **Où se faire vacciner ?**
 Chez le médecin traitant ou le pédiatre, et, selon les âges et les territoires, en PMI ou en centre de vaccination.
 
 ## Quand demander conseil
-Consultez si, après une vaccination, votre enfant a une fièvre élevée, pleure de façon inhabituelle, est très abattu ou présente une réaction qui vous inquiète. En cas de gêne respiratoire, de gonflement du visage ou de malaise, appelez immédiatement le **15** ou le **112**.
+Consulte si, après une vaccination, ton enfant a une fièvre élevée, pleure de façon inhabituelle, est très abattu ou présente une réaction qui t’inquiète. En cas de gêne respiratoire, de gonflement du visage ou de malaise, appelle immédiatement le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -170,70 +170,70 @@ ${FIN}`,
     sources: [S.fievre],
     body_md: `## En bref
 - Une forte fièvre ne signifie pas forcément une maladie grave : **le comportement de l’enfant compte davantage que le chiffre**.
-- Installez-le dans une pièce **fraîche et aérée (18 à 20 °C)**, découvrez-le un peu sans le déshabiller entièrement, et **proposez souvent à boire**.
+- Installe-le dans une pièce **fraîche et aérée (18 à 20 °C)**, découvre-le un peu sans le déshabiller entièrement, et **propose souvent à boire**.
 - Un médicament contre la fièvre n’est pas toujours nécessaire : il sert surtout au **confort** de l’enfant.
 - Certains signes imposent de **consulter en urgence** : ils sont détaillés plus bas.
 
 ## Comprendre
-La fièvre est une réaction de défense de l’organisme, très fréquente chez l’enfant, souvent liée à une infection virale banale. Selon l’Assurance Maladie, une fièvre élevée ne veut pas dire à elle seule que la maladie est grave. Le plus important est d’observer votre enfant : joue-t-il, boit-il, réagit-il comme d’habitude entre deux pics ? Un enfant qui reste vif et qui boit bien est rassurant, même avec une température élevée.
+La fièvre est une réaction de défense de l’organisme, très fréquente chez l’enfant, souvent liée à une infection virale banale. Selon l’Assurance Maladie, une fièvre élevée ne veut pas dire à elle seule que la maladie est grave. Le plus important est d’observer ton enfant : joue-t-il, boit-il, réagit-il comme d’habitude entre deux pics ? Un enfant qui reste vif et qui boit bien est rassurant, même avec une température élevée.
 
-Le repère de **38,5 °C** sert surtout à décider d’un médicament lorsque l’enfant est inconfortable. Le traitement peut être utile si la fièvre dure plus de deux jours, dépasse 38,5 °C, si l’enfant a moins de trois mois, s’il supporte mal la fièvre (grognon, moins d’appétit, maux de tête, moins actif) ou s’il a un problème de santé particulier. Demandez toujours au médecin ou au pharmacien quel médicament donner et à quelle dose selon le poids de votre enfant.
+Le repère de **38,5 °C** sert surtout à décider d’un médicament lorsque l’enfant est inconfortable. Le traitement peut être utile si la fièvre dure plus de deux jours, dépasse 38,5 °C, si l’enfant a moins de trois mois, s’il supporte mal la fièvre (grognon, moins d’appétit, maux de tête, moins actif) ou s’il a un problème de santé particulier. Demande toujours au médecin ou au pharmacien quel médicament donner et à quelle dose selon le poids de ton enfant.
 
 
-**Bien prendre la température.** Utilisez un thermomètre électronique et la même méthode à chaque fois pour pouvoir comparer. Notez l’heure et la valeur. Inutile de reprendre la température toutes les heures si votre enfant va bien : l’Assurance Maladie insiste sur la surveillance du **comportement** et de l’**hydratation**, plus parlante que le thermomètre.
+**Bien prendre la température.** Utilise un thermomètre électronique et la même méthode à chaque fois pour pouvoir comparer. Note l’heure et la valeur. Inutile de reprendre la température toutes les heures si ton enfant va bien : l’Assurance Maladie insiste sur la surveillance du **comportement** et de l’**hydratation**, plus parlante que le thermomètre.
 
-**Les médicaments : prudence.** Ne donnez jamais deux médicaments contre la fièvre en même temps sans avis médical, vérifiez qu’ils ne contiennent pas la même substance (attention aux médicaments « contre le rhume »), et respectez les intervalles entre deux prises indiqués par le médecin ou le pharmacien. Rangez les flacons hors de portée : un enfant fiévreux reste un enfant curieux.
+**Les médicaments : prudence.** Ne donne jamais deux médicaments contre la fièvre en même temps sans avis médical, vérifie qu’ils ne contiennent pas la même substance (attention aux médicaments « contre le rhume »), et respecte les intervalles entre deux prises indiqués par le médecin ou le pharmacien. Range les flacons hors de portée : un enfant fiévreux reste un enfant curieux.
 
 ## Au quotidien
 - **Température de la pièce** : 18 à 20 °C, sans surchauffer.
-- **Vêtements** : retirez une épaisseur pour que la chaleur s’évacue, sans le laisser grelotter.
+- **Vêtements** : retire une épaisseur pour que la chaleur s’évacue, sans le laisser grelotter.
 - **Boire** : eau fraîche ou boisson qu’il aime, souvent, même s’il ne demande pas. C’est essentiel pour éviter la déshydratation.
 - **Pas de bain froid** : une eau beaucoup plus froide que son corps peut le faire frissonner et le mettre mal à l’aise.
-- **Notez** les températures, ce qu’il boit et son comportement : ces informations aident beaucoup le médecin.
-- **Laissez-le se reposer** à la maison s’il se sent mal ; il reprendra ses activités quand il ira mieux.
+- **Note** les températures, ce qu’il boit et son comportement : ces informations aident beaucoup le médecin.
+- **Laisse-le se reposer** à la maison s’il se sent mal ; il reprendra ses activités quand il ira mieux.
 
 ## Questions fréquentes
 **Faut-il réveiller mon enfant pour lui donner son médicament ?**
-Le traitement vise le confort : un enfant qui dort paisiblement n’a en général pas besoin d’être réveillé. En cas de doute, demandez au médecin ou au pharmacien.
+Le traitement vise le confort : un enfant qui dort paisiblement n’a en général pas besoin d’être réveillé. En cas de doute, demande au médecin ou au pharmacien.
 
 **Il a fait une convulsion avec la fièvre, est-ce grave ?**
-Une convulsion fébrile est très impressionnante. L’Assurance Maladie indique qu’elle est généralement sans conséquence sur le cerveau et ne se reproduit en général pas, mais elle justifie de consulter. Si la crise dure, se répète ou si l’enfant ne reprend pas vite conscience, appelez le 15.
+Une convulsion fébrile est très impressionnante. L’Assurance Maladie indique qu’elle est généralement sans conséquence sur le cerveau et ne se reproduit en général pas, mais elle justifie de consulter. Si la crise dure, se répète ou si l’enfant ne reprend pas vite conscience, appelle le 15.
 
 **Combien de temps une fièvre peut-elle durer ?**
-Consultez dans la journée si elle persiste plus de deux jours chez un enfant de moins de deux ans, plus de trois jours après deux ans, ou si elle revient après avoir disparu plus de 24 heures.
+Consulte dans la journée si elle persiste plus de deux jours chez un enfant de moins de deux ans, plus de trois jours après deux ans, ou si elle revient après avoir disparu plus de 24 heures.
 
 ## Quand demander conseil
 **Urgence (15 ou 112)** : nourrisson de moins de 3 mois qui a de la fièvre, ou, à tout âge, température supérieure à 40 °C ; état général qui se dégrade (refus de boire ou de manger, somnolence, réagit peu, cris faibles, peau marbrée) ; maux de tête importants, raideur de la nuque ou vomissements ; signes de déshydratation (bouche sèche, urines rares) ; douleurs abdominales avec diarrhée abondante ; difficultés à respirer (respiration rapide, pauses, creusement entre les côtes).
 
-**Dans la journée** : enfant suivi pour une maladie chronique, fièvres fréquentes, fièvre qui dure ou qui revient, convulsion fébrile, ou tout autre symptôme qui vous inquiète.
+**Dans la journée** : enfant suivi pour une maladie chronique, fièvres fréquentes, fièvre qui dure ou qui revient, convulsion fébrile, ou tout autre symptôme qui t’inquiète.
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'varicelle-chez-l-enfant', category: 'sante-enfant', tags: ['varicelle', 'éruption', 'contagion'],
-    title: 'Varicelle : soulager votre enfant et éviter les complications',
+    title: 'Varicelle : soulager ton enfant et éviter les complications',
     summary: 'Boutons qui grattent, fièvre, éviction : les soins de peau recommandés, les médicaments à éviter et les signes de complication.',
     sources: [S.varicelle],
     body_md: `## En bref
 - La varicelle donne des **boutons (vésicules)** qui démangent, souvent avec de la **fièvre**.
 - Soins de peau : **douche deux fois par jour** avec un produit lavant doux, séchage en tamponnant, **ongles courts**.
-- **Pas d’ibuprofène, pas d’aspirine** : demandez au pharmacien ou au médecin quel médicament convient.
+- **Pas d’ibuprofène, pas d’aspirine** : demande au pharmacien ou au médecin quel médicament convient.
 - L’enfant reste à la maison **jusqu’au stade de croûtes**.
 
 ## Comprendre
 La varicelle est une maladie virale très contagieuse, surtout fréquente dans l’enfance. Elle se manifeste par des boutons remplis de liquide qui apparaissent par poussées, accompagnés d’une fièvre parfois élevée et de démangeaisons. Le grattage est le principal ennemi : il peut abîmer la peau, laisser des cicatrices et favoriser une surinfection par des bactéries.
 
-L’Assurance Maladie rappelle que certains médicaments doivent être évités : l’**ibuprofène** et le **kétoprofène** (anti-inflammatoires) augmentent le risque de complications bactériennes, et l’**aspirine** expose à un syndrome rare mais grave (syndrome de Reye). Pour la fièvre mal supportée, le paracétamol peut être utilisé ; la dose dépend du poids : demandez-la à votre pharmacien ou à votre médecin.
+L’Assurance Maladie rappelle que certains médicaments doivent être évités : l’**ibuprofène** et le **kétoprofène** (anti-inflammatoires) augmentent le risque de complications bactériennes, et l’**aspirine** expose à un syndrome rare mais grave (syndrome de Reye). Pour la fièvre mal supportée, le paracétamol peut être utilisé ; la dose dépend du poids : demande-la à ton pharmacien ou à ton médecin.
 
-Prévenez la crèche, l’école ou la personne qui garde votre enfant : la varicelle peut être dangereuse pour les **femmes enceintes non immunisées** et les personnes immunodéprimées.
+Préviens la crèche, l’école ou la personne qui garde ton enfant : la varicelle peut être dangereuse pour les **femmes enceintes non immunisées** et les personnes immunodéprimées.
 
 
 **Comment évolue-t-elle ?** Les boutons apparaissent par poussées successives : on peut donc voir en même temps des boutons récents remplis de liquide et d’autres déjà en croûte. Les démangeaisons sont souvent le plus difficile à vivre, surtout le soir. Des vêtements légers, une chambre fraîche, des activités calmes qui occupent les mains (dessin, pâte à modeler, histoires) aident à penser à autre chose qu’au grattage.
 
-**Protéger l’entourage.** La varicelle est très contagieuse. En prévenant la crèche, l’école ou l’assistante maternelle, vous permettez aux autres familles de surveiller leurs enfants et de protéger les personnes fragiles : femmes enceintes non immunisées, nourrissons, personnes immunodéprimées. Un adulte non immunisé en contact avec un enfant malade doit demander conseil à son médecin.
+**Protéger l’entourage.** La varicelle est très contagieuse. En prévenant la crèche, l’école ou l’assistante maternelle, tu permets aux autres familles de surveiller leurs enfants et de protéger les personnes fragiles : femmes enceintes non immunisées, nourrissons, personnes immunodéprimées. Un adulte non immunisé en contact avec un enfant malade doit demander conseil à son médecin.
 
 ## Au quotidien
-- **Douche plutôt que bain**, deux fois par jour, avec un produit doux ; séchez en tamponnant, sans frotter.
+- **Douche plutôt que bain**, deux fois par jour, avec un produit doux ; sèche en tamponnant, sans frotter.
 - **Eau et savon** plutôt que des antiseptiques (des réactions allergiques graves à la chlorhexidine ont été signalées).
 - **Pas de talc, de poudre ni de crème** contenant un antibiotique, un antiviral ou un anesthésique.
 - **Ongles courts et propres**, mains lavées souvent ; chez le tout-petit, des gants la nuit peuvent limiter le grattage.
@@ -245,10 +245,10 @@ Prévenez la crèche, l’école ou la personne qui garde votre enfant : la vari
 L’Assurance Maladie conseille de garder l’enfant à la maison jusqu’à ce que les boutons soient au stade de croûtes.
 
 **Je suis enceinte et mon enfant a la varicelle : que faire ?**
-Si vous n’êtes pas sûre d’être immunisée, consultez rapidement : une varicelle pendant la grossesse nécessite un avis médical urgent.
+Si tu n’es pas sûre d’être immunisée, consulte rapidement : une varicelle pendant la grossesse nécessite un avis médical urgent.
 
 **Existe-t-il un vaccin ?**
-Oui, il est recommandé pour certains enfants à risque dès 12 mois et à partir de 12 ans pour ceux qui ne l’ont jamais eue. Parlez-en à votre médecin.
+Oui, il est recommandé pour certains enfants à risque dès 12 mois et à partir de 12 ans pour ceux qui ne l’ont jamais eue. Parles-en à ton médecin.
 
 **Les cicatrices sont-elles inévitables ?**
 Limiter le grattage et garder la peau propre réduit le risque de marques durables.
@@ -269,7 +269,7 @@ ${FIN}`,
 - La maladie se traduit par de **petites vésicules sur les mains, les pieds et dans la bouche**, parfois avec de la **fièvre**.
 - L’enjeu principal est de **faire boire** l’enfant malgré la gêne dans la bouche.
 - **Aliments froids ou tièdes et mous** : laitages frais, glaces, purées, soupes tièdes.
-- **Prévenez la crèche ou l’école** ; l’éviction n’est pas obligatoire.
+- **Préviens la crèche ou l’école** ; l’éviction n’est pas obligatoire.
 
 ## Comprendre
 Le syndrome pieds-mains-bouche est une infection virale fréquente chez les jeunes enfants, surtout en collectivité. Les lésions de la bouche peuvent rendre l’alimentation et la boisson douloureuses : c’est ce qui fait le plus souvent la gêne, et le risque principal est la déshydratation.
@@ -279,29 +279,29 @@ L’Assurance Maladie conseille, si les lésions sont nombreuses, de garder l’
 
 **À quoi ressemblent les lésions ?** Il s’agit de petites bulles ou de petites taches, souvent sur la paume des mains, la plante des pieds, autour de la bouche et à l’intérieur (gencives, langue, joues), parfois aussi sur les fesses. Elles peuvent être douloureuses, surtout dans la bouche, ce qui explique que l’enfant refuse de manger ou de boire.
 
-**Hygiène pour limiter la transmission.** Le lavage des mains à l’eau et au savon est le geste le plus utile, pour l’enfant comme pour les adultes, en particulier après le change, le mouchage et avant les repas. Lavez régulièrement les jouets et objets portés à la bouche, et évitez de partager couverts, verres et serviettes pendant la maladie.
+**Hygiène pour limiter la transmission.** Le lavage des mains à l’eau et au savon est le geste le plus utile, pour l’enfant comme pour les adultes, en particulier après le change, le mouchage et avant les repas. Lave régulièrement les jouets et objets portés à la bouche, et évite de partager couverts, verres et serviettes pendant la maladie.
 
 ## Au quotidien
-- **Boire souvent**, par petites quantités. En cas de refus de manger, de vomissements ou de diarrhée, utilisez une **solution de réhydratation orale** (SRO), disponible en pharmacie.
-- **Repas** : privilégiez le froid (yaourts, fromages blancs, glaces) et le tiède (purées, soupes) ; évitez le chaud, le dur et l’acide.
-- **Peau** : savon doux, séchage par tamponnement, ongles coupés et brossés, mains lavées souvent ; pas de talc, de poudre ni de crème. Demandez au pharmacien quel antiseptique local utiliser.
-- **Fièvre** : ne pas trop couvrir, faire boire, chambre à 19 °C. Demandez au pharmacien ou au médecin quel médicament donner et à quelle dose ; n’utilisez pas d’aspirine sans avis médical, et l’ibuprofène est déconseillé en cas de déshydratation.
+- **Boire souvent**, par petites quantités. En cas de refus de manger, de vomissements ou de diarrhée, utilise une **solution de réhydratation orale** (SRO), disponible en pharmacie.
+- **Repas** : privilégie le froid (yaourts, fromages blancs, glaces) et le tiède (purées, soupes) ; évite le chaud, le dur et l’acide.
+- **Peau** : savon doux, séchage par tamponnement, ongles coupés et brossés, mains lavées souvent ; pas de talc, de poudre ni de crème. Demande au pharmacien quel antiseptique local utiliser.
+- **Fièvre** : ne pas trop couvrir, faire boire, chambre à 19 °C. Demande au pharmacien ou au médecin quel médicament donner et à quelle dose ; n’utilise pas d’aspirine sans avis médical, et l’ibuprofène est déconseillé en cas de déshydratation.
 - **Hygiène** : lavage des mains de toute la famille, surtout après le change ou les toilettes.
 
 ## Questions fréquentes
 **Mon enfant peut-il aller à l’école ?**
-L’éviction n’est pas obligatoire : un enfant avec peu de lésions et qui se sent bien peut y aller. Prévenez l’établissement.
+L’éviction n’est pas obligatoire : un enfant avec peu de lésions et qui se sent bien peut y aller. Préviens l’établissement.
 
 **Combien de temps cela dure-t-il ?**
-Consultez si les symptômes ne s’améliorent pas, ou s’aggravent, au bout d’une semaine.
+Consulte si les symptômes ne s’améliorent pas, ou s’aggravent, au bout d’une semaine.
 
 **Peut-on l’attraper plusieurs fois ?**
-Plusieurs virus peuvent être en cause ; demandez à votre médecin si votre enfant a déjà eu des épisodes.
+Plusieurs virus peuvent être en cause ; demande à ton médecin si ton enfant a déjà eu des épisodes.
 
 ## Quand demander conseil
-**Consultez** si les lésions sont nombreuses ou ne s’améliorent pas après une semaine ; **dans la journée** si l’enfant a moins de 6 mois, une maladie de peau (eczéma, impétigo) avec de nombreuses vésicules, un traitement au long cours, ou si une femme enceinte de l’entourage est malade.
+**Consulte** si les lésions sont nombreuses ou ne s’améliorent pas après une semaine ; **dans la journée** si l’enfant a moins de 6 mois, une maladie de peau (eczéma, impétigo) avec de nombreuses vésicules, un traitement au long cours, ou si une femme enceinte de l’entourage est malade.
 
-**Signes d’alerte** : signes de déshydratation (bouche sèche, urines rares, enfant abattu), vésicules qui se remplissent de pus ou se creusent, toux avec difficultés à respirer, changement de comportement, fièvre avec maux de tête importants et vomissements. En cas de signe grave, appelez le **15** ou le **112**.
+**Signes d’alerte** : signes de déshydratation (bouche sèche, urines rares, enfant abattu), vésicules qui se remplissent de pus ou se creusent, toux avec difficultés à respirer, changement de comportement, fièvre avec maux de tête importants et vomissements. En cas de signe grave, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -326,18 +326,18 @@ Le médecin pose le diagnostic à l’examen et peut réaliser un **test rapide 
 
 **Une maladie qui touche surtout les écoliers.** Selon l’Assurance Maladie, la scarlatine est rare avant 2 ans, car les anticorps de la mère protègent le bébé, et vers 10 ans environ 80 % des enfants ont développé des anticorps qui les protègent ensuite. Elle circule surtout en hiver, par petites épidémies dans les écoles.
 
-**Prévenir la transmission à la maison.** Pendant les premiers jours, évitez de partager verres, couverts et serviettes, lavez-vous souvent les mains et aérez les pièces. Si un autre enfant de la fratrie présente à son tour de la fièvre et un mal de gorge, consultez : il pourra aussi bénéficier d’un test rapide.
+**Prévenir la transmission à la maison.** Pendant les premiers jours, évite de partager verres, couverts et serviettes, lave-toi souvent les mains et aère les pièces. Si un autre enfant de la fratrie présente à son tour de la fièvre et un mal de gorge, consulte : il pourra aussi bénéficier d’un test rapide.
 
 ## Au quotidien
-- **Donnez l’antibiotique jusqu’au bout**, à l’heure et pendant toute la durée prescrite, même si votre enfant va mieux.
-- Pour la fièvre et la douleur, demandez au médecin le médicament et la dose adaptés ; les comprimés et gélules sont contre-indiqués avant 6 ans (risque de fausse route) : préférez les formes pédiatriques.
+- **Donne l’antibiotique jusqu’au bout**, à l’heure et pendant toute la durée prescrite, même si ton enfant va mieux.
+- Pour la fièvre et la douleur, demande au médecin le médicament et la dose adaptés ; les comprimés et gélules sont contre-indiqués avant 6 ans (risque de fausse route) : préfère les formes pédiatriques.
 - **Repas froids ou tièdes**, boissons fréquentes : la gorge est douloureuse.
 - **Lavage des mains** de toute la famille, mouchoirs jetables, pas de partage de verres.
-- Vers le 7e au 15e jour, la peau des paumes et des plantes peut **peler** : signalez-le au médecin.
+- Vers le 7e au 15e jour, la peau des paumes et des plantes peut **peler** : signale-le au médecin.
 
 ## Questions fréquentes
 **Quand peut-il retourner à l’école ?**
-Demandez à votre médecin : sous traitement adapté, la contagion ne dure plus que 24 à 48 heures.
+Demande à ton médecin : sous traitement adapté, la contagion ne dure plus que 24 à 48 heures.
 
 **Les adultes peuvent-ils l’attraper ?**
 C’est rare. Si une femme enceinte de l’entourage a été en contact, elle doit en informer son médecin.
@@ -346,19 +346,19 @@ C’est rare. Si une femme enceinte de l’entourage a été en contact, elle do
 Parce que la scarlatine est bactérienne : le traitement réduit la contagion et sert surtout à prévenir des complications, rares mais possibles.
 
 ## Quand demander conseil
-Reconsultez si l’éruption dure plus longtemps que prévu, si la fièvre et les douleurs persistent une semaine après le début du traitement, ou si apparaissent des douleurs d’oreille, de front ou des articulations. En cas de difficulté à respirer, d’enfant très abattu ou difficile à réveiller, appelez le **15** ou le **112**.
+Reconsulte si l’éruption dure plus longtemps que prévu, si la fièvre et les douleurs persistent une semaine après le début du traitement, ou si apparaissent des douleurs d’oreille, de front ou des articulations. En cas de difficulté à respirer, d’enfant très abattu ou difficile à réveiller, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'otite-chez-l-enfant', category: 'sante-enfant', tags: ['otite', 'oreille', 'ORL', 'fièvre'],
     title: 'Otite de l’enfant : soulager et savoir quand reconsulter',
-    summary: 'Fièvre, douleur d’oreille, nez qui coule : ce que vous pouvez faire à la maison et les signes qui justifient un avis rapide.',
+    summary: 'Fièvre, douleur d’oreille, nez qui coule : ce que tu peux faire à la maison et les signes qui justifient un avis rapide.',
     sources: [S.otite],
     body_md: `## En bref
 - L’otite moyenne aiguë associe souvent **fièvre** et **douleur d’oreille**, avec un **nez qui coule ou bouché**.
 - Chez le jeune enfant, elle peut se manifester seulement par de l’**irritabilité**, moins d’appétit ou moins d’activité.
-- **Consultez** dès l’apparition des signes : le médecin examine le tympan.
+- **Consulte** dès l’apparition des signes : le médecin examine le tympan.
 - **Lavages de nez** au sérum physiologique et confort contre la douleur sont la base.
 
 ## Comprendre
@@ -369,28 +369,28 @@ Pour la douleur et la fièvre, le paracétamol est le médicament de référence
 
 **Pourquoi les enfants font-ils autant d’otites ?** Chez le jeune enfant, la petite trompe qui relie le nez à l’oreille est courte et fonctionne moins bien : lors d’un rhume, les sécrétions et les microbes remontent facilement vers l’oreille moyenne. C’est pourquoi l’otite suit si souvent une rhinopharyngite, et pourquoi le **lavage de nez** est un geste utile.
 
-**Soulager la douleur la nuit.** Un médicament contre la douleur, donné selon les conseils du médecin ou du pharmacien, et votre présence rassurante aident à passer la nuit. Ne mettez jamais d’oreiller sous la tête d’un bébé.
+**Soulager la douleur la nuit.** Un médicament contre la douleur, donné selon les conseils du médecin ou du pharmacien, et ta présence rassurante aident à passer la nuit. Ne mets jamais d’oreiller sous la tête d’un bébé.
 
 ## Au quotidien
-- **Nez** : mouchoirs jetables, sérum physiologique ou eau de mer, pulvérisateurs adaptés à l’âge ; limitez le mouche-bébé.
+- **Nez** : mouchoirs jetables, sérum physiologique ou eau de mer, pulvérisateurs adaptés à l’âge ; limite le mouche-bébé.
 - **Fièvre** : pièce fraîche et aérée, ne pas trop couvrir, faire boire souvent ; pas de bain froid.
-- **Air** : évitez la fumée de cigarette, qui aggrave les infections ORL, et le climatiseur, qui assèche les muqueuses.
-- **Tympan percé** : ne mouillez pas l’oreille pendant la toilette tant que dure la perforation.
-- **Avion** : évitez-le pendant la phase aiguë.
-- L’éviction n’est pas obligatoire : gardez l’enfant à la maison s’il se sent mal, pour son confort.
+- **Air** : évite la fumée de cigarette, qui aggrave les infections ORL, et le climatiseur, qui assèche les muqueuses.
+- **Tympan percé** : ne mouille pas l’oreille pendant la toilette tant que dure la perforation.
+- **Avion** : évite-le pendant la phase aiguë.
+- L’éviction n’est pas obligatoire : garde l’enfant à la maison s’il se sent mal, pour son confort.
 
 ## Questions fréquentes
 **Faut-il toujours un antibiotique ?**
 Non : c’est le médecin qui décide selon l’âge, les symptômes et l’aspect du tympan.
 
 **Mon enfant fait des otites à répétition, que faire ?**
-Parlez-en à votre médecin : il pourra orienter vers un ORL, notamment si les symptômes reviennent juste après un traitement.
+Parles-en à ton médecin : il pourra orienter vers un ORL, notamment si les symptômes reviennent juste après un traitement.
 
 **Peut-il aller à la piscine ?**
-Pas tant que le tympan est perforé. Demandez au médecin quand la baignade est de nouveau possible.
+Pas tant que le tympan est perforé. Demande au médecin quand la baignade est de nouveau possible.
 
 ## Quand demander conseil
-**Reconsultez** si les symptômes persistent au-delà de deux à trois jours (avec ou sans antibiotique), s’ils reviennent dans les quatre jours suivant la fin des antibiotiques, ou si une toux dure plus de dix jours.
+**Reconsulte** si les symptômes persistent au-delà de deux à trois jours (avec ou sans antibiotique), s’ils reviennent dans les quatre jours suivant la fin des antibiotiques, ou si une toux dure plus de dix jours.
 
 **Urgence (15 ou 112)** : enfant de moins de 3 mois avec de la fièvre, fièvre de 40 °C ou plus, difficultés à respirer, somnolence ou réaction faible, pâleur marquée ou taches violacées, maux de tête violents, vomissements ou pleurs inexpliqués, diarrhée ou vomissements importants pouvant entraîner une déshydratation.
 
@@ -417,27 +417,27 @@ L’évolution est naturellement favorable : une angine virale guérit en trois 
 
 **Pourquoi le test est-il si utile ?** Chez l’adulte, certains signes orientent vers une angine bactérienne, mais chez l’enfant l’aspect de la gorge ne permet pas de faire la différence. Le TROD évite donc de donner des antibiotiques inutiles, qui n’ont aucun effet sur les virus et favorisent les résistances. Quand il est positif, il permet au contraire de traiter rapidement l’angine à streptocoque.
 
-**Bien vivre les jours de mal de gorge.** Proposez des boissons fraîches à volonté, des aliments froids et mous (yaourts, compotes, purées tièdes), des temps calmes et du repos. Un enfant qui mange peu pendant deux ou trois jours n’est pas inquiétant s’il boit bien et garde son entrain entre deux pics de fièvre.
+**Bien vivre les jours de mal de gorge.** Propose des boissons fraîches à volonté, des aliments froids et mous (yaourts, compotes, purées tièdes), des temps calmes et du repos. Un enfant qui mange peu pendant deux ou trois jours n’est pas inquiétant s’il boit bien et garde son entrain entre deux pics de fièvre.
 
 ## Au quotidien
-- **Douleur et fièvre** : demandez au médecin ou au pharmacien le médicament et la dose adaptés au poids ; l’aspirine ne doit pas être donnée à l’enfant, et les anti-inflammatoires sont à éviter sauf avis médical.
+- **Douleur et fièvre** : demande au médecin ou au pharmacien le médicament et la dose adaptés au poids ; l’aspirine ne doit pas être donnée à l’enfant, et les anti-inflammatoires sont à éviter sauf avis médical.
 - **Alimentation** : froid, mou, peu acide et peu épicé ; glaces et compotes passent souvent mieux.
 - **Boire beaucoup**, se reposer, maison autour de 19 °C, pas de fumée de tabac.
 - **Pas de gargarismes** chez l’enfant (risque de fausse route).
-- **Si un antibiotique est prescrit**, suivez l’ordonnance jusqu’au bout, même si votre enfant va mieux.
+- **Si un antibiotique est prescrit**, suis l’ordonnance jusqu’au bout, même si ton enfant va mieux.
 
 ## Questions fréquentes
 **Pourquoi le médecin ne prescrit-il pas d’antibiotique ?**
 Parce que l’angine est probablement virale (test négatif ou enfant de moins de 3 ans) : un antibiotique n’apporterait rien et exposerait à des effets indésirables.
 
 **Mon enfant fait beaucoup d’angines, faut-il enlever les amygdales ?**
-Des angines à répétition peuvent conduire à un avis ORL : parlez-en à votre médecin.
+Des angines à répétition peuvent conduire à un avis ORL : parles-en à ton médecin.
 
 **Combien de temps est-il contagieux ?**
-Demandez au médecin ; sous antibiotique (angine bactérienne), la contagion diminue rapidement.
+Demande au médecin ; sous antibiotique (angine bactérienne), la contagion diminue rapidement.
 
 ## Quand demander conseil
-Consultez si la douleur est très forte, si l’enfant n’arrive plus à avaler sa salive ou à boire, si la fièvre persiste plusieurs jours, si un côté de la gorge ou du cou gonfle, ou si des douleurs articulaires apparaissent ensuite. **Appelez le 15 ou le 112** en cas de difficulté à respirer, de bave abondante avec impossibilité d’avaler, ou d’enfant très abattu.
+Consulte si la douleur est très forte, si l’enfant n’arrive plus à avaler sa salive ou à boire, si la fièvre persiste plusieurs jours, si un côté de la gorge ou du cou gonfle, ou si des douleurs articulaires apparaissent ensuite. **Appelle le 15 ou le 112** en cas de difficulté à respirer, de bave abondante avec impossibilité d’avaler, ou d’enfant très abattu.
 
 ${FIN}`,
   },
@@ -458,15 +458,15 @@ La gastro-entérite provoque une diarrhée, parfois des vomissements et de la fi
 Chez l’enfant plus grand, il faut **bien boire** (bouillons de légumes, SRO) et garder une alimentation variée pour éviter la dénutrition. Riz, banane, pommes cuites, pain grillé sont conseillés ; les aliments laxatifs ou difficiles à digérer sont à éviter. L’alimentation habituelle se reprend progressivement sur trois à quatre jours.
 
 
-**Comment donner la solution de réhydratation ?** Préparez-la exactement comme indiqué sur la notice, avec la quantité d’eau prévue. Proposez-en très souvent, en petites quantités : une cuillère ou une gorgée toutes les quelques minutes est mieux tolérée qu’un grand verre d’un coup. Conservez-la au réfrigérateur et jetez ce qui reste après le délai indiqué. Pour un nourrisson nourri au lait infantile, la solution peut remplacer le lait pendant une courte période, selon les conseils du médecin.
+**Comment donner la solution de réhydratation ?** Prépare-la exactement comme indiqué sur la notice, avec la quantité d’eau prévue. Proposes-en très souvent, en petites quantités : une cuillère ou une gorgée toutes les quelques minutes est mieux tolérée qu’un grand verre d’un coup. Conserve-la au réfrigérateur et jette ce qui reste après le délai indiqué. Pour un nourrisson nourri au lait infantile, la solution peut remplacer le lait pendant une courte période, selon les conseils du médecin.
 
-**Prévenir la contagion.** Les virus de la gastro-entérite se transmettent très facilement par les mains et les surfaces. Lavez-vous les mains après chaque change ou passage aux toilettes, nettoyez les toilettes et les surfaces souvent touchées, et évitez de partager le linge de toilette.
+**Prévenir la contagion.** Les virus de la gastro-entérite se transmettent très facilement par les mains et les surfaces. Lave-toi les mains après chaque change ou passage aux toilettes, nettoie les toilettes et les surfaces souvent touchées, et évite de partager le linge de toilette.
 
 ## Au quotidien
 - **SRO fraîche, par petites gorgées** ou à la cuillère, très souvent, surtout s’il vomit.
-- **Respectez la dilution** indiquée : ne la modifiez jamais.
-- **Ne donnez pas** : eau seule, sodas ou boissons très sucrées, médicaments contre les vomissements ou anti-diarrhéiques sans avis médical, argiles chez le moins de 2 ans. En cas de fièvre, évitez les anti-inflammatoires (contre-indiqués en cas de déshydratation) : demandez conseil au pharmacien.
-- **Surveillez** : ce qu’il boit, les vomissements, les selles, les urines, la température et son comportement.
+- **Respecte la dilution** indiquée : ne la modifie jamais.
+- **Ne donne pas** : eau seule, sodas ou boissons très sucrées, médicaments contre les vomissements ou anti-diarrhéiques sans avis médical, argiles chez le moins de 2 ans. En cas de fièvre, évite les anti-inflammatoires (contre-indiqués en cas de déshydratation) : demande conseil au pharmacien.
+- **Surveille** : ce qu’il boit, les vomissements, les selles, les urines, la température et son comportement.
 - **Hygiène** : lavage des mains très régulier de toute la famille, surtout après les toilettes et avant les repas.
 
 ## Questions fréquentes
@@ -474,15 +474,15 @@ Chez l’enfant plus grand, il faut **bien boire** (bouillons de légumes, SRO) 
 Non : il faut au contraire continuer à le nourrir, en adaptant les aliments, pour éviter la dénutrition.
 
 **Il vomit tout ce qu’il boit, que faire ?**
-Proposez la SRO très froide, par toutes petites quantités rapprochées. Si les vomissements persistent malgré la SRO, consultez sans délai.
+Propose la SRO très froide, par toutes petites quantités rapprochées. Si les vomissements persistent malgré la SRO, consulte sans délai.
 
 **Peut-il aller à l’école ?**
-Gardez-le à la maison tant qu’il est malade et fatigué. Une consultation est nécessaire si plusieurs enfants sont touchés dans une collectivité (toxi-infection).
+Garde-le à la maison tant qu’il est malade et fatigué. Une consultation est nécessaire si plusieurs enfants sont touchés dans une collectivité (toxi-infection).
 
 ## Quand demander conseil
-**Consultez sans délai ou allez aux urgences** si : l’enfant vomit de façon répétée et ne boit plus, ou ne mange ni ne boit ; la diarrhée dure plus de deux jours ou s’aggrave ; la fièvre dépasse 38,5 °C ; les selles contiennent des glaires ou du sang ; il présente des **signes de déshydratation** : agitation inhabituelle ou au contraire apathie et somnolence, difficulté à le réveiller, gémissements, pâleur, yeux creux et cernés, langue sèche, respiration rapide, perte de poids.
+**Consulte sans délai ou va aux urgences** si : l’enfant vomit de façon répétée et ne boit plus, ou ne mange ni ne boit ; la diarrhée dure plus de deux jours ou s’aggrave ; la fièvre dépasse 38,5 °C ; les selles contiennent des glaires ou du sang ; il présente des **signes de déshydratation** : agitation inhabituelle ou au contraire apathie et somnolence, difficulté à le réveiller, gémissements, pâleur, yeux creux et cernés, langue sèche, respiration rapide, perte de poids.
 
-Les moins de 6 mois et les enfants atteints de maladies chroniques sont particulièrement exposés. En cas d’enfant très abattu ou difficile à réveiller, appelez le **15** ou le **112**.
+Les moins de 6 mois et les enfants atteints de maladies chroniques sont particulièrement exposés. En cas d’enfant très abattu ou difficile à réveiller, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -503,31 +503,31 @@ Selon l’Assurance Maladie, chez l’enfant de plus de 3 ans les symptômes var
 Le diagnostic repose sur l’examen médical et sur des **épreuves fonctionnelles respiratoires** réalisées hors crise : la spirométrie est possible dès 6 ans, d’autres examens sont plus adaptés entre 3 et 6 ans. Des tests cutanés peuvent rechercher une allergie. L’arrêt d’un traitement de fond, une exposition massive à un allergène ou le tabagisme passif peuvent favoriser une exacerbation.
 
 
-**Bien utiliser les traitements inhalés.** Les médicaments de l’asthme se prennent le plus souvent par inhalation. L’Assurance Maladie conseille de vous assurer que votre enfant maîtrise bien les techniques d’inhalation : demandez au médecin de vous les montrer et posez-lui toutes vos questions. Le traitement prescrit pour tous les jours se prend même quand l’enfant va bien ; le traitement **de secours** (inhalateur) est à garder à portée de main. En cas de crise, suivez la prescription ou le **plan d’action écrit**.
+**Bien utiliser les traitements inhalés.** Les médicaments de l’asthme se prennent le plus souvent par inhalation. L’Assurance Maladie conseille de t’assurer que ton enfant maîtrise bien les techniques d’inhalation : demande au médecin de te les montrer et pose-lui toutes tes questions. Le traitement prescrit pour tous les jours se prend même quand l’enfant va bien ; le traitement **de secours** (inhalateur) est à garder à portée de main. En cas de crise, suis la prescription ou le **plan d’action écrit**.
 
 **Un suivi régulier.** L’asthme évolue avec l’âge, les saisons et l’environnement. Des consultations régulières permettent d’ajuster le traitement, de faire le point sur les crises et les réveils nocturnes, et de mettre à jour le plan d’action et le PAI.
 
 ## Au quotidien
-- **Suivez le plan d’action** remis par le médecin et gardez les médicaments nécessaires à la maison.
-- **Ne stoppez pas le traitement de fond** pendant les vacances sans avis médical : les crises augmentent chaque année en septembre, dès la rentrée. Si le traitement a été arrêté, reprenez-le 7 à 10 jours avant la rentrée ou dès que possible, après avis médical.
-- **À l’école** : demandez un **projet d’accueil individualisé (PAI)**. Établi à la demande de la famille avec le directeur et le médecin scolaire, il peut préciser les aménagements, les dispenses avec activités de remplacement, les médicaments et les gestes d’urgence.
+- **Suis le plan d’action** remis par le médecin et garde les médicaments nécessaires à la maison.
+- **Ne stoppe pas le traitement de fond** pendant les vacances sans avis médical : les crises augmentent chaque année en septembre, dès la rentrée. Si le traitement a été arrêté, reprends-le 7 à 10 jours avant la rentrée ou dès que possible, après avis médical.
+- **À l’école** : demande un **projet d’accueil individualisé (PAI)**. Établi à la demande de la famille avec le directeur et le médecin scolaire, il peut préciser les aménagements, les dispenses avec activités de remplacement, les médicaments et les gestes d’urgence.
 - **Logement sans tabac**, aération régulière, attention aux allergènes connus.
-- **Activité physique** : parlez-en avec le médecin, qui adaptera le plan d’action pour que votre enfant puisse bouger.
+- **Activité physique** : parles-en avec le médecin, qui adaptera le plan d’action pour que ton enfant puisse bouger.
 
 ## Questions fréquentes
 **Mon enfant tousse surtout la nuit, est-ce de l’asthme ?**
 C’est possible, mais d’autres causes existent : seul le médecin peut le dire, après examen et éventuellement des tests respiratoires.
 
 **Peut-il faire du sport ?**
-Oui, le plus souvent, avec un traitement adapté : demandez au médecin comment prévenir l’asthme d’effort.
+Oui, le plus souvent, avec un traitement adapté : demande au médecin comment prévenir l’asthme d’effort.
 
 **Le PAI suffit-il ?**
-Le PAI organise l’accueil, mais ne dégage pas les parents de leurs responsabilités : informez aussi les autres adultes qui encadrent l’enfant (centre de loisirs, sport).
+Le PAI organise l’accueil, mais ne dégage pas les parents de leurs responsabilités : informe aussi les autres adultes qui encadrent l’enfant (centre de loisirs, sport).
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de grande difficulté à respirer avec creusement des côtes ou de la poitrine à chaque inspiration, lèvres ou ongles bleutés, narines qui se dilatent, difficulté à parler ou à marcher, confusion ou perte de connaissance.
+**Appelle le 15 ou le 112** en cas de grande difficulté à respirer avec creusement des côtes ou de la poitrine à chaque inspiration, lèvres ou ongles bleutés, narines qui se dilatent, difficulté à parler ou à marcher, confusion ou perte de connaissance.
 
-**Consultez** si les symptômes reviennent souvent, réveillent votre enfant la nuit, le gênent dans ses activités, ou si le traitement de crise est utilisé plus souvent que prévu.
+**Consulte** si les symptômes reviennent souvent, réveillent ton enfant la nuit, le gênent dans ses activités, ou si le traitement de crise est utilisé plus souvent que prévu.
 
 ${FIN}`,
   },
@@ -550,20 +550,20 @@ L’allergie est différente de l’**intolérance** (par exemple au lactose), q
 Le bilan comprend un interrogatoire, un suivi de l’alimentation, puis des tests cutanés, une prise de sang ou un test d’éviction-réintroduction ; un test de provocation à l’hôpital n’est fait qu’en cas de doute persistant.
 
 
-**Au quotidien avec un enfant allergique.** Préparez des en-cas sûrs pour les sorties, les goûters d’anniversaire et les voyages. Apprenez progressivement à votre enfant à reconnaître ses allergènes, à refuser poliment un aliment qu’il ne connaît pas et à dire qu’il est allergique. Prévenez les adultes qui l’encadrent (centre de loisirs, sport, grands-parents) et montrez-leur où se trouve la trousse d’urgence.
+**Au quotidien avec un enfant allergique.** Prépare des en-cas sûrs pour les sorties, les goûters d’anniversaire et les voyages. Apprends progressivement à ton enfant à reconnaître ses allergènes, à refuser poliment un aliment qu’il ne connaît pas et à dire qu’il est allergique. Préviens les adultes qui l’encadrent (centre de loisirs, sport, grands-parents) et montre-leur où se trouve la trousse d’urgence.
 
 **Ne pas confondre.** Une rougeur autour de la bouche après des fraises ou des tomates, un inconfort digestif après un repas copieux ne sont pas forcément une allergie. À l’inverse, une réaction qui survient rapidement après un aliment, surtout si elle touche plusieurs zones du corps, doit être prise au sérieux et faire l’objet d’un avis médical.
 
 ## Au quotidien
-- **Lisez toutes les étiquettes** : les 14 allergènes (gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits à coque, céleri, moutarde, sésame, sulfites, lupin, mollusques) doivent être mis en évidence. « Peut contenir des traces » signale un risque de contamination.
-- **Signalez l’allergie** au restaurant, à la boulangerie, aux grands-parents, aux parents des copains.
-- **À l’école ou à la crèche** : demandez un **projet d’accueil individualisé (PAI)**. Il précise le régime, les aliments exclus, les médicaments et les gestes d’urgence ; une trousse d’urgence peut être confiée avec son protocole.
-- **Trousse d’urgence** : si le médecin a prescrit un **auto-injecteur d’adrénaline**, gardez-le toujours à portée, entraînez-vous avec le stylo d’entraînement et apprenez aux proches à l’utiliser.
-- **Notez** les aliments qui ont provoqué des symptômes, pour les montrer au médecin.
+- **Lis toutes les étiquettes** : les 14 allergènes (gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits à coque, céleri, moutarde, sésame, sulfites, lupin, mollusques) doivent être mis en évidence. « Peut contenir des traces » signale un risque de contamination.
+- **Signale l’allergie** au restaurant, à la boulangerie, aux grands-parents, aux parents des copains.
+- **À l’école ou à la crèche** : demande un **projet d’accueil individualisé (PAI)**. Il précise le régime, les aliments exclus, les médicaments et les gestes d’urgence ; une trousse d’urgence peut être confiée avec son protocole.
+- **Trousse d’urgence** : si le médecin a prescrit un **auto-injecteur d’adrénaline**, garde-le toujours à portée, entraîne-toi avec le stylo d’entraînement et apprends aux proches à l’utiliser.
+- **Note** les aliments qui ont provoqué des symptômes, pour les montrer au médecin.
 
 ## Questions fréquentes
 **Faut-il retirer un aliment « par précaution » ?**
-Non : ne supprimez pas d’aliment sans avis médical. Un régime inutile peut déséquilibrer l’alimentation de votre enfant.
+Non : ne supprime pas d’aliment sans avis médical. Un régime inutile peut déséquilibrer l’alimentation de ton enfant.
 
 **Son allergie peut-elle disparaître ?**
 Certaines allergies évoluent avec l’âge. Seul l’allergologue peut décider d’une réintroduction, parfois sous surveillance.
@@ -572,9 +572,9 @@ Certaines allergies évoluent avec l’âge. Seul l’allergologue peut décider
 Oui : une surveillance médicale et une prise en charge hospitalière sont nécessaires après toute injection.
 
 ## Quand demander conseil
-**Appelez immédiatement le 15 ou le 112** (appels gratuits, même sans crédit) en cas de gonflement du visage ou de la gorge, difficultés à respirer, voix changée, malaise, pâleur, vomissements répétés après un aliment, ou si plusieurs signes apparaissent ensemble. Utilisez l’auto-injecteur s’il a été prescrit, sans attendre les secours.
+**Appelle immédiatement le 15 ou le 112** (appels gratuits, même sans crédit) en cas de gonflement du visage ou de la gorge, difficultés à respirer, voix changée, malaise, pâleur, vomissements répétés après un aliment, ou si plusieurs signes apparaissent ensemble. Utilise l’auto-injecteur s’il a été prescrit, sans attendre les secours.
 
-**Consultez** votre médecin pour toute réaction, même légère, après un aliment.
+**Consulte** ton médecin pour toute réaction, même légère, après un aliment.
 
 ${FIN}`,
   },
@@ -585,9 +585,9 @@ ${FIN}`,
     sources: [S.pouxReconnaitre, S.poux],
     body_md: `## En bref
 - Les poux touchent surtout les **enfants de 3 à 10 ans** en collectivité ; ils ne sont **pas un signe de mauvaise hygiène** et ne transmettent pas de maladie.
-- Cherchez-les **mèche par mèche**, derrière les oreilles et sur la nuque, avec un **peigne fin** sur cheveux mouillés.
-- Traitez **seulement les personnes infestées**, et **renouvelez l’application 7 à 10 jours plus tard**.
-- **Pas d’éviction scolaire** si l’enfant est traité, mais prévenez l’école.
+- Cherche-les **mèche par mèche**, derrière les oreilles et sur la nuque, avec un **peigne fin** sur cheveux mouillés.
+- Traite **seulement les personnes infestées**, et **renouvelle l’application 7 à 10 jours plus tard**.
+- **Pas d’éviction scolaire** si l’enfant est traité, mais préviens l’école.
 
 ## Comprendre
 Selon l’Assurance Maladie, jusqu’à 20 % des écoliers peuvent avoir des poux chaque année. Ils se transmettent par contact direct, cheveux à cheveux, et parfois par les objets qui touchent la tête (brosses, bonnets, écharpes, peluches). Ils ne sautent ni ne volent. Dans environ 40 % des cas, ils ne grattent pas, ce qui explique qu’ils passent inaperçus ; sinon, les démangeaisons apparaissent 2 à 6 semaines après la contamination, surtout sur la nuque et les tempes.
@@ -595,29 +595,29 @@ Selon l’Assurance Maladie, jusqu’à 20 % des écoliers peuvent avoir des pou
 Les poux adultes mesurent 2 à 4 mm, gris à bruns. Les **lentes** vivantes sont brillantes, collées près de la racine ; les lentes vides, blanchâtres, adhèrent fortement au cheveu, contrairement aux pellicules.
 
 
-**Une vérification hebdomadaire.** En période scolaire, prendre l’habitude d’inspecter la chevelure de votre enfant une fois par semaine, au peigne fin sur cheveux mouillés et démêlés, permet de repérer les poux tôt, avant qu’ils ne se multiplient et ne passent à toute la famille. Commencez derrière les oreilles et sur la nuque, mèche par mèche, sous une bonne lumière.
+**Une vérification hebdomadaire.** En période scolaire, prendre l’habitude d’inspecter la chevelure de ton enfant une fois par semaine, au peigne fin sur cheveux mouillés et démêlés, permet de repérer les poux tôt, avant qu’ils ne se multiplient et ne passent à toute la famille. Commence derrière les oreilles et sur la nuque, mèche par mèche, sous une bonne lumière.
 
-**Dédramatiser pour l’enfant.** Avoir des poux n’a rien de honteux : ils ne choisissent pas les cheveux sales. Expliquez-le à votre enfant, qui peut être moqué, et rappelez-lui de ne pas échanger bonnets, écharpes, casques ou brosses avec ses camarades.
+**Dédramatiser pour l’enfant.** Avoir des poux n’a rien de honteux : ils ne choisissent pas les cheveux sales. Explique-le à ton enfant, qui peut être moqué, et rappelle-lui de ne pas échanger bonnets, écharpes, casques ou brosses avec ses camarades.
 
 ## Au quotidien
-- **Produits** : des produits à base de pyréthrine sont vendus sans ordonnance ; ceux à base de diméticone agissent par asphyxie. Lisez la notice et respectez la durée de pose. En cas d’asthme, préférez les lotions aux sprays.
-- **Mode d’emploi** : appliquer sur cheveux secs, laisser poser, shampoing doux, **peigne fin**, puis sécher. **Recommencez 7 à 10 jours plus tard** pour éliminer les poux sortis des lentes. Contrôlez deux jours après.
-- **Avant 2 ans** : évitez les insecticides ; peignez au peigne fin chaque jour pendant deux semaines, sur cheveux mouillés enduits de démêlant.
-- **Linge** : lavez taies, bonnets, écharpes à plus de 50 °C ; enfermez les tissus fragiles 3 jours dans un sac fermé ; trempez peignes et brosses puis attendez 3 jours avant de les réutiliser.
+- **Produits** : des produits à base de pyréthrine sont vendus sans ordonnance ; ceux à base de diméticone agissent par asphyxie. Lis la notice et respecte la durée de pose. En cas d’asthme, préfère les lotions aux sprays.
+- **Mode d’emploi** : appliquer sur cheveux secs, laisser poser, shampoing doux, **peigne fin**, puis sécher. **Recommence 7 à 10 jours plus tard** pour éliminer les poux sortis des lentes. Contrôle deux jours après.
+- **Avant 2 ans** : évite les insecticides ; peins au peigne fin chaque jour pendant deux semaines, sur cheveux mouillés enduits de démêlant.
+- **Linge** : lave taies, bonnets, écharpes à plus de 50 °C ; enferme les tissus fragiles 3 jours dans un sac fermé ; trempe peignes et brosses puis attends 3 jours avant de les réutiliser.
 - **Prévention** : à l’école, ranger bonnet ou foulard dans la manche du manteau ; ne pas échanger peignes, brosses, casques.
 
 ## Questions fréquentes
 **Faut-il traiter toute la famille ?**
-Vérifiez la tête de chacun et traitez seulement les personnes qui ont des poux. Les traitements préventifs sont inutiles et favorisent la résistance des poux.
+Vérifie la tête de chacun et traite seulement les personnes qui ont des poux. Les traitements préventifs sont inutiles et favorisent la résistance des poux.
 
 **Le vinaigre ou les huiles essentielles marchent-ils ?**
 L’eau vinaigrée n’a jamais prouvé son efficacité ; les huiles essentielles non plus, et elles peuvent provoquer des allergies. L’essence et le kérosène sont très dangereux.
 
 **Il se gratte encore après le traitement, est-ce un échec ?**
-Les démangeaisons peuvent durer quelques jours sans signifier un échec. Contrôlez au peigne fin.
+Les démangeaisons peuvent durer quelques jours sans signifier un échec. Contrôle au peigne fin.
 
 ## Quand demander conseil
-Consultez en cas de doute sur la présence de poux, si les poux persistent après **deux traitements bien conduits**, ou si des lésions de grattage s’infectent (croûtes jaunâtres, **impétigo** : l’éviction est alors obligatoire). Le pharmacien peut aussi vous conseiller.
+Consulte en cas de doute sur la présence de poux, si les poux persistent après **deux traitements bien conduits**, ou si des lésions de grattage s’infectent (croûtes jaunâtres, **impétigo** : l’éviction est alors obligatoire). Le pharmacien peut aussi te conseiller.
 
 ${FIN}`,
   },
@@ -640,18 +640,18 @@ Les symptômes sont souvent discrets : démangeaisons anales, diarrhées épisod
 
 **Pourquoi traiter tout le monde ?** Les œufs, invisibles à l’œil nu, se retrouvent sur les mains, les draps, les vêtements, les jouets. Même sans symptôme, les autres membres de la famille peuvent être porteurs. Traiter tout le foyer en même temps, puis renouveler la prise, évite que les oxyures « passent » d’une personne à l’autre et reviennent sans cesse.
 
-**Expliquer à l’enfant.** Les démangeaisons sont gênantes, surtout la nuit. Expliquez-lui que se gratter fait revenir les vers, proposez des sous-vêtements propres et un pyjama ajusté, et rassurez-le : c’est une infection fréquente, sans lien avec un manque de propreté, qui se traite facilement.
+**Expliquer à l’enfant.** Les démangeaisons sont gênantes, surtout la nuit. Explique-lui que se gratter fait revenir les vers, propose des sous-vêtements propres et un pyjama ajusté, et rassure-le : c’est une infection fréquente, sans lien avec un manque de propreté, qui se traite facilement.
 
 ## Au quotidien
-- **Demandez conseil au pharmacien** : un antiparasitaire sans ordonnance, en une prise, existe. Il vous orientera vers le médecin en cas de doute.
+- **Demande conseil au pharmacien** : un antiparasitaire sans ordonnance, en une prise, existe. Il t’orientera vers le médecin en cas de doute.
 - **Deuxième prise** deux à trois semaines plus tard, selon la notice, pour limiter la recontamination.
-- **Traitez tous les membres du foyer en même temps**.
-- **Le jour du traitement** : changez vêtements et linge de lit, lavez à haute température le linge possiblement contaminé, passez l’aspirateur et nettoyez les surfaces.
+- **Traite tous les membres du foyer en même temps**.
+- **Le jour du traitement** : change vêtements et linge de lit, lave à haute température le linge possiblement contaminé, passe l’aspirateur et nettoie les surfaces.
 - **Ensuite** : ongles courts et brossés chaque jour, sous-vêtements et pyjamas changés régulièrement, lavage des mains pour tous après les toilettes et avant les repas.
 
 ## Questions fréquentes
 **Les démangeaisons continuent après le traitement, est-ce grave ?**
-Elles peuvent persister environ une semaine. Si elles durent davantage, consultez.
+Elles peuvent persister environ une semaine. Si elles durent davantage, consulte.
 
 **Mon chien peut-il transmettre les oxyures ?**
 Non : l’oxyure ne touche que l’être humain.
@@ -660,7 +660,7 @@ Non : l’oxyure ne touche que l’être humain.
 Par l’examen, et si besoin un « scotch test » : un ruban adhésif appliqué sur les plis de l’anus le matin avant la toilette, analysé en laboratoire.
 
 ## Quand demander conseil
-Consultez votre médecin en cas de doute sur le diagnostic, si les symptômes persistent malgré le traitement et l’hygiène, si votre enfant a de fortes douleurs de ventre, de la fièvre, des brûlures en urinant ou une perte de poids. En cas de douleur de ventre brutale et intense, appelez le **15** ou le **112**.
+Consulte ton médecin en cas de doute sur le diagnostic, si les symptômes persistent malgré le traitement et l’hygiène, si ton enfant a de fortes douleurs de ventre, de la fièvre, des brûlures en urinant ou une perte de poids. En cas de douleur de ventre brutale et intense, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -683,27 +683,27 @@ L’**amblyopie** survient quand les deux yeux voient très différemment (myopi
 
 **Les troubles les plus fréquents.** La **myopie**, l’**hypermétropie** et l’**astigmatisme** sont des défauts de la vision que seul un examen permet de mesurer ; si besoin, l’ophtalmologiste prescrit des lunettes adaptées. Le **strabisme** (yeux qui ne regardent pas dans la même direction) nécessite toujours un avis spécialisé, à tout âge.
 
-**Après le dépistage scolaire.** Si un courrier vous signale une anomalie, ne l’ignorez pas, même si votre enfant ne se plaint de rien : prenez rendez-vous avec votre médecin ou un ophtalmologiste et apportez le compte rendu du dépistage.
+**Après le dépistage scolaire.** Si un courrier te signale une anomalie, ne l’ignore pas, même si ton enfant ne se plaint de rien : prends rendez-vous avec ton médecin ou un ophtalmologiste et apporte le compte rendu du dépistage.
 
 ## Au quotidien
-- **Ne manquez pas les bilans** prévus et lisez les comptes rendus de dépistage scolaire.
-- **Observez** : votre enfant plisse-t-il les yeux, s’approche-t-il beaucoup des écrans ou des livres, penche-t-il la tête, se frotte-t-il souvent les yeux ?
-- **Écrans** : fixez des plages horaires et variez les activités, comme le recommande Santé.fr.
-- **Lunettes** : si elles sont prescrites, le port régulier est essentiel ; choisissez une monture adaptée et solide.
-- **Soleil** : protégez les yeux en été (chapeau, lunettes de soleil adaptées).
+- **Ne manque pas les bilans** prévus et lis les comptes rendus de dépistage scolaire.
+- **Observe** : ton enfant plisse-t-il les yeux, s’approche-t-il beaucoup des écrans ou des livres, penche-t-il la tête, se frotte-t-il souvent les yeux ?
+- **Écrans** : fixe des plages horaires et varie les activités, comme le recommande Santé.fr.
+- **Lunettes** : si elles sont prescrites, le port régulier est essentiel ; choisis une monture adaptée et solide.
+- **Soleil** : protège les yeux en été (chapeau, lunettes de soleil adaptées).
 
 ## Questions fréquentes
 **Mon enfant lit bien, peut-il quand même mal voir ?**
 Oui : un œil peut compenser l’autre. Seul un examen permet de le vérifier.
 
 **À quel âge peut-on consulter un ophtalmologiste ?**
-À tout âge, dès qu’un signe vous alerte ou que le médecin le conseille.
+À tout âge, dès qu’un signe t’alerte ou que le médecin le conseille.
 
 **Les écrans abîment-ils les yeux ?**
-Santé.fr recommande de fixer des plages horaires et de varier les activités. Parlez-en au médecin si votre enfant se plaint de fatigue visuelle ou de maux de tête.
+Santé.fr recommande de fixer des plages horaires et de varier les activités. Parles-en au médecin si ton enfant se plaint de fatigue visuelle ou de maux de tête.
 
 ## Quand demander conseil
-Consultez un médecin ou un ophtalmologiste si vous remarquez un **strabisme**, des **mouvements anormaux des yeux**, une **tête penchée** pour regarder, des **maux de tête**, une **vision double**, ou si un dépistage est anormal. **En urgence** (urgences ophtalmologiques, ou 15 si nécessaire) : choc ou produit dans l’œil, œil rouge et très douloureux, baisse brutale de la vue.
+Consulte un médecin ou un ophtalmologiste si tu remarques un **strabisme**, des **mouvements anormaux des yeux**, une **tête penchée** pour regarder, des **maux de tête**, une **vision double**, ou si un dépistage est anormal. **En urgence** (urgences ophtalmologiques, ou 15 si nécessaire) : choc ou produit dans l’œil, œil rouge et très douloureux, baisse brutale de la vue.
 
 ${FIN}`,
   },
@@ -721,23 +721,23 @@ ${FIN}`,
 ## Comprendre
 Selon l’Assurance Maladie, des visites médicales scolaires incluent un dépistage auditif à 6 et 12 ans, et un dépistage des troubles de la parole est proposé en petite section de maternelle. Toute anomalie conduit vers un ORL. Santé.fr souligne que les parents sont « en première ligne » pour repérer une gêne, car une baisse d’audition peut être partielle, d’un seul côté, ou fluctuer (par exemple avec une otite séreuse).
 
-Signes à connaître : l’enfant réagit peu aux sons ou à votre voix quand il ne vous voit pas, demande souvent de répéter, augmente le volume des écrans, a du mal à suivre en classe ou dans le bruit, parle peu ou de façon peu compréhensible pour son âge. Un comportement agressif ou, au contraire, très réservé peut aussi être un signal. Ces signes n’indiquent pas forcément une surdité, mais justifient un examen.
+Signes à connaître : l’enfant réagit peu aux sons ou à ta voix quand il ne te voit pas, demande souvent de répéter, augmente le volume des écrans, a du mal à suivre en classe ou dans le bruit, parle peu ou de façon peu compréhensible pour son âge. Un comportement agressif ou, au contraire, très réservé peut aussi être un signal. Ces signes n’indiquent pas forcément une surdité, mais justifient un examen.
 
 
 **Le lien avec le langage et l’école.** Bien entendre est indispensable pour apprendre à parler, à lire et à suivre en classe. Une baisse d’audition, même légère ou d’un seul côté, peut se traduire par des difficultés de prononciation, de concentration ou de compréhension des consignes, parfois prises à tort pour de l’inattention ou de l’agitation. C’est pourquoi un trouble du langage ou des difficultés scolaires doivent toujours faire vérifier l’audition.
 
-**Écrans et écouteurs.** Avec l’usage des tablettes et des consoles, les enfants portent de plus en plus tôt des écouteurs. Réglez un volume maximal sur les appareils, privilégiez les casques adaptés aux enfants et imposez des pauses.
+**Écrans et écouteurs.** Avec l’usage des tablettes et des consoles, les enfants portent de plus en plus tôt des écouteurs. Règle un volume maximal sur les appareils, privilégie les casques adaptés aux enfants et impose des pauses.
 
 ## Au quotidien
-- **Baissez le son** des écouteurs, casques, enceintes et de la musique en voiture.
-- **Concerts, fêtes, feux d’artifice** : restez loin des enceintes et prévoyez des protections adaptées.
-- **Bruits soudains et violents** (pétards, outils, chantiers) : éloignez votre enfant.
-- **Tabac** : évitez l’exposition à la fumée, qui favorise les otites.
-- **Pendant un rhume ou une otite**, parlez face à lui, plus près, dans le calme.
+- **Baisse le son** des écouteurs, casques, enceintes et de la musique en voiture.
+- **Concerts, fêtes, feux d’artifice** : reste loin des enceintes et prévois des protections adaptées.
+- **Bruits soudains et violents** (pétards, outils, chantiers) : éloigne ton enfant.
+- **Tabac** : évite l’exposition à la fumée, qui favorise les otites.
+- **Pendant un rhume ou une otite**, parle face à lui, plus près, dans le calme.
 
 ## Questions fréquentes
 **Mon enfant n’écoute pas : est-ce un problème d’audition ou d’attention ?**
-Seul un examen permet de faire la part des choses. Commencez par le médecin traitant ou le pédiatre.
+Seul un examen permet de faire la part des choses. Commence par le médecin traitant ou le pédiatre.
 
 **Les otites peuvent-elles rendre sourd ?**
 Des otites répétées ou une otite séreuse persistante peuvent diminuer l’audition, souvent de façon temporaire : un suivi médical est important.
@@ -746,7 +746,7 @@ Des otites répétées ou une otite séreuse persistante peuvent diminuer l’au
 La plateforme Surdités info service est joignable au 0 805 800 808 (numéro gratuit).
 
 ## Quand demander conseil
-Consultez sans attendre en cas de doute : votre médecin vous orientera vers un **ORL** pour un bilan auditif. Consultez rapidement en cas de douleur d’oreille intense, d’écoulement, de baisse d’audition brutale ou après un traumatisme sonore. En cas de fièvre élevée avec maux de tête et vomissements, appelez le **15** ou le **112**.
+Consulte sans attendre en cas de doute : ton médecin t’orientera vers un **ORL** pour un bilan auditif. Consulte rapidement en cas de douleur d’oreille intense, d’écoulement, de baisse d’audition brutale ou après un traumatisme sonore. En cas de fièvre élevée avec maux de tête et vomissements, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -757,7 +757,7 @@ ${FIN}`,
     sources: [S.malVentre, S.gastro],
     body_md: `## En bref
 - Le mal de ventre est fréquent chez l’enfant et souvent passager : repos, calme et petites quantités d’eau aident.
-- **Pas d’anti-inflammatoire ni d’aspirine** tant qu’on ne connaît pas la cause ; demandez conseil au pharmacien ou au médecin.
+- **Pas d’anti-inflammatoire ni d’aspirine** tant qu’on ne connaît pas la cause ; demande conseil au pharmacien ou au médecin.
 - Une douleur **brutale et intense**, un **ventre dur**, des **vomissements de sang** ou une douleur après une chute imposent d’appeler le **15**.
 - Une douleur qui **dure, revient ou s’accompagne de fièvre** doit faire consulter.
 
@@ -767,16 +767,16 @@ Chez l’enfant, le mal de ventre peut avoir de nombreuses causes : constipation
 L’Assurance Maladie indique que l’aspirine et les anti-inflammatoires ne sont pas conseillés quand on ne connaît pas la cause de la douleur ; le paracétamol peut être utilisé en respectant la dose adaptée au poids, à demander au médecin ou au pharmacien.
 
 
-**Ce que le médecin va chercher.** Selon la situation, il vous demandera où se situe la douleur, depuis quand elle dure, si elle va et vient, si elle réveille l’enfant la nuit, et ce qui l’accompagne : fièvre, vomissements, diarrhée ou constipation, brûlures en urinant, mal de gorge. Notez ces éléments avant la consultation. Chez l’enfant, une angine ou une infection respiratoire peuvent aussi s’accompagner de douleurs de ventre.
+**Ce que le médecin va chercher.** Selon la situation, il te demandera où se situe la douleur, depuis quand elle dure, si elle va et vient, si elle réveille l’enfant la nuit, et ce qui l’accompagne : fièvre, vomissements, diarrhée ou constipation, brûlures en urinant, mal de gorge. Note ces éléments avant la consultation. Chez l’enfant, une angine ou une infection respiratoire peuvent aussi s’accompagner de douleurs de ventre.
 
 **Les douleurs qui reviennent.** Des maux de ventre répétés, sans autre signe, sont fréquents chez l’enfant d’âge scolaire. Ils méritent un bilan médical, puis une attention à ce que vit l’enfant (rythme, stress, école), sans le soupçonner de « faire semblant » : la douleur est réelle, même quand l’émotion y participe.
 
 ## Au quotidien
-- **Installez-le confortablement**, au calme, et aidez-le à respirer tranquillement.
+- **Installe-le confortablement**, au calme, et aide-le à respirer tranquillement.
 - **Petits repas légers**, de l’eau par petites gorgées.
-- **Observez** : où est la douleur, depuis quand, avec quoi (fièvre, vomissements, diarrhée, brûlures en urinant, constipation) ?
-- **Douleurs répétées le matin d’école** : prenez le temps d’en parler avec lui, sans négliger une cause physique — faites le point avec le médecin.
-- **Constipation** : boissons, fruits et légumes, temps aux toilettes sans se presser ; consultez si elle dure.
+- **Observe** : où est la douleur, depuis quand, avec quoi (fièvre, vomissements, diarrhée, brûlures en urinant, constipation) ?
+- **Douleurs répétées le matin d’école** : prends le temps d’en parler avec lui, sans négliger une cause physique — fais le point avec le médecin.
+- **Constipation** : boissons, fruits et légumes, temps aux toilettes sans se presser ; consulte si elle dure.
 
 ## Questions fréquentes
 **Comment savoir si c’est une appendicite ?**
@@ -786,9 +786,9 @@ Seul un médecin peut le dire. Une douleur qui s’installe et s’aggrave, surt
 Oui, les émotions peuvent se traduire par des douleurs de ventre. Mais il faut toujours en parler au médecin pour ne pas passer à côté d’une autre cause.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si la douleur est brutale et très intense, après un choc ou une chute, si l’enfant vomit du sang ou un liquide brunâtre, fait un malaise avec fièvre, est essoufflé sans raison, ou si son ventre est très dur et douloureux.
+**Appelle le 15 ou le 112** si la douleur est brutale et très intense, après un choc ou une chute, si l’enfant vomit du sang ou un liquide brunâtre, fait un malaise avec fièvre, est essoufflé sans raison, ou si son ventre est très dur et douloureux.
 
-**Consultez dans la journée** en cas de nausées ou vomissements, fièvre, difficultés à uriner, absence de selles et de gaz, peau ou blanc des yeux jaunes, sang dans les selles ou selles noires, ou douleur nouvelle et persistante qui l’empêche de jouer. **Dans les jours qui viennent** si la douleur ne diminue pas après 2 jours, revient régulièrement, ou s’accompagne d’une perte de poids.
+**Consulte dans la journée** en cas de nausées ou vomissements, fièvre, difficultés à uriner, absence de selles et de gaz, peau ou blanc des yeux jaunes, sang dans les selles ou selles noires, ou douleur nouvelle et persistante qui l’empêche de jouer. **Dans les jours qui viennent** si la douleur ne diminue pas après 2 jours, revient régulièrement, ou s’accompagne d’une perte de poids.
 
 ${FIN}`,
   },
@@ -817,30 +817,30 @@ Une conjonctivite ne relève pas d’un appel d’urgence en elle-même, mais ce
 - **Lavage** : sérum physiologique, plusieurs fois par jour, en essuyant avec une compresse stérile ou un mouchoir jetable (une compresse par œil). Pour une forme allergique, le sérum froid soulage davantage.
 - **Yeux collés le matin** : une compresse tiède aide à décoller les cils.
 - **Hygiène** : mains lavées avant et après, linge de toilette personnel, mouchoirs jetés aussitôt.
-- **Irritants** : évitez la fumée, la poussière et les allergènes connus.
-- **Collyres** : demandez conseil au pharmacien ; ne réutilisez pas un ancien flacon ouvert.
+- **Irritants** : évite la fumée, la poussière et les allergènes connus.
+- **Collyres** : demande conseil au pharmacien ; ne réutilise pas un ancien flacon ouvert.
 
 ## Questions fréquentes
 **Peut-il aller à l’école ?**
-La page de l’Assurance Maladie ne fixe pas de règle : demandez l’avis du médecin ou du pharmacien, et prévenez l’établissement si la conjonctivite est infectieuse.
+La page de l’Assurance Maladie ne fixe pas de règle : demande l’avis du médecin ou du pharmacien, et préviens l’établissement si la conjonctivite est infectieuse.
 
 **Faut-il des antibiotiques ?**
 Pas systématiquement : c’est au médecin d’en juger selon la cause.
 
 **Mon enfant porte des lunettes, quelles précautions ?**
-Nettoyez-les régulièrement et évitez de les prêter pendant l’épisode.
+Nettoie-les régulièrement et évite de les prêter pendant l’épisode.
 
 ## Quand demander conseil
 **Dans la journée (ophtalmologiste)** : enfant de **moins de 2 ans**, corps étranger ou produit chimique dans l’œil, **œil gonflé avec fièvre** au-dessus de 38 °C, vision brouillée qui ne se corrige pas en clignant, **œil rouge et douloureux** avec vision floue, forte gêne à la lumière.
 
-**Dans les jours qui viennent** : écoulement qui ne cède pas aux lavages, conjonctivite allergique qui ne s’améliore pas. En cas de produit chimique projeté dans l’œil, rincez abondamment à l’eau et demandez un avis urgent (15 ou 112 si besoin).
+**Dans les jours qui viennent** : écoulement qui ne cède pas aux lavages, conjonctivite allergique qui ne s’améliore pas. En cas de produit chimique projeté dans l’œil, rince abondamment à l’eau et demande un avis urgent (15 ou 112 si besoin).
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'puberte-premiers-signes', category: 'sante-enfant', min_age_months: 84, tags: ['puberté', 'corps', 'croissance', 'dialogue'],
     title: 'Puberté : premiers signes, âges repères et comment en parler',
-    summary: 'Ce qui change chez les filles et les garçons, à partir de quel âge on parle de puberté précoce et comment accompagner votre enfant.',
+    summary: 'Ce qui change chez les filles et les garçons, à partir de quel âge on parle de puberté précoce et comment accompagner ton enfant.',
     sources: [S.puberte, S.puberteMpedia],
     body_md: `## En bref
 - Chez la fille, la puberté commence souvent par le **développement des seins**, en général vers 10 ans (entre 9 et 13 ans).
@@ -856,27 +856,27 @@ Selon l’Assurance Maladie, on parle de **puberté précoce** quand les signes 
 
 **Le corps, mais aussi l’humeur.** Les changements ne sont pas que physiques : l’enfant cherche davantage d’indépendance, peut devenir plus susceptible, plus pudique, parfois lunatique, coléreux ou triste. Selon mpedia, garder le dialogue ouvert, écouter, banaliser ce qu’il vit, fixer des limites tout en acceptant des compromis, aide à traverser cette période. Les écarts d’âge entre camarades sont importants : certains enfants commencent plus tôt, d’autres plus tard, et cette différence peut être source de gêne.
 
-**Parler des règles et de l’intimité.** Expliquer les règles aux filles comme aux garçons, avant qu’elles n’arrivent, évite la peur et la honte. C’est aussi le moment de parler de consentement, de respect de son corps et de celui des autres, et de rappeler qu’il peut se confier à vous ou à un adulte de confiance.
+**Parler des règles et de l’intimité.** Expliquer les règles aux filles comme aux garçons, avant qu’elles n’arrivent, évite la peur et la honte. C’est aussi le moment de parler de consentement, de respect de son corps et de celui des autres, et de rappeler qu’il peut se confier à toi ou à un adulte de confiance.
 
 ## Au quotidien
-- **Anticipez** : parlez des changements avant qu’ils n’arrivent, avec des mots simples et justes.
-- **Répondez aux questions**, ou cherchez les réponses ensemble ; des livres adaptés à l’âge peuvent aider.
-- **Respectez sa pudeur** : frapper avant d’entrer, lui laisser un espace à lui.
-- **Hygiène** : douche quotidienne, déodorant si besoin, soins de peau doux ; pour une fille, préparez ensemble une trousse pour les premières règles.
-- **Prenez au sérieux** son malaise face à son corps (poids, boutons), sans dramatiser.
+- **Anticipe** : parle des changements avant qu’ils n’arrivent, avec des mots simples et justes.
+- **Réponds aux questions**, ou cherche les réponses ensemble ; des livres adaptés à l’âge peuvent aider.
+- **Respecte sa pudeur** : frapper avant d’entrer, lui laisser un espace à lui.
+- **Hygiène** : douche quotidienne, déodorant si besoin, soins de peau doux ; pour une fille, prépare ensemble une trousse pour les premières règles.
+- **Prends au sérieux** son malaise face à son corps (poids, boutons), sans dramatiser.
 
 ## Questions fréquentes
 **Ma fille de 7 ans a un début de poitrine, faut-il s’inquiéter ?**
 Il faut consulter : avant 8 ans, des signes de puberté justifient un avis médical.
 
 **Mon fils a un sein un peu gonflé, est-ce grave ?**
-Une légère augmentation du volume des seins peut survenir chez le garçon pendant la puberté. Parlez-en au médecin si cela vous inquiète ou si c’est douloureux.
+Une légère augmentation du volume des seins peut survenir chez le garçon pendant la puberté. Parles-en au médecin si cela t’inquiète ou si c’est douloureux.
 
 **Il devient lunatique, est-ce la puberté ?**
 Les hormones influencent l’émotivité : écoute, dialogue et limites claires restent essentiels.
 
 ## Quand demander conseil
-Consultez si des signes pubertaires apparaissent **avant 8 ans chez une fille** ou **avant 9 ans chez un garçon**, si la croissance s’accélère brutalement, en cas de saignements chez une jeune fille avant les âges attendus, de maux de tête inhabituels, ou si votre enfant semble très mal dans son corps (tristesse, repli). Pour toute détresse morale, le **3114** répond aussi aux proches.
+Consulte si des signes pubertaires apparaissent **avant 8 ans chez une fille** ou **avant 9 ans chez un garçon**, si la croissance s’accélère brutalement, en cas de saignements chez une jeune fille avant les âges attendus, de maux de tête inhabituels, ou si ton enfant semble très mal dans son corps (tristesse, repli). Pour toute détresse morale, le **3114** répond aussi aux proches.
 
 ${FIN}`,
   },
@@ -899,14 +899,14 @@ Le plus important est de dédramatiser : un enfant honteux ou puni vit plus mal 
 
 **Pourquoi est-ce si fréquent ?** L’acquisition des nuits sèches dépend de plusieurs facteurs : la capacité de la vessie, la production d’urine la nuit, et la capacité à se réveiller quand la vessie est pleine. Ces mécanismes mûrissent à des rythmes différents selon les enfants, et il existe souvent des antécédents familiaux. Ce n’est donc ni de la paresse, ni un manque de volonté.
 
-**Préserver l’estime de soi.** L’énurésie peut peser sur la vie de l’enfant (nuits chez des amis, colonies) et sur son moral. Évitez d’en parler devant d’autres personnes sans son accord, valorisez ses efforts, et dites-lui qu’il n’est pas seul : beaucoup d’enfants de son âge vivent la même chose. Si votre enfant en souffre, le médecin peut proposer des solutions adaptées.
+**Préserver l’estime de soi.** L’énurésie peut peser sur la vie de l’enfant (nuits chez des amis, colonies) et sur son moral. Évite d’en parler devant d’autres personnes sans son accord, valorise ses efforts, et dis-lui qu’il n’est pas seul : beaucoup d’enfants de son âge vivent la même chose. Si ton enfant en souffre, le médecin peut proposer des solutions adaptées.
 
 ## Au quotidien
-- **Expliquez avec des mots simples** que son corps apprend encore à se réveiller ou à se retenir la nuit.
-- **Impliquez-le** sans le punir : il peut aider à changer les draps.
+- **Explique avec des mots simples** que son corps apprend encore à se réveiller ou à se retenir la nuit.
+- **Implique-le** sans le punir : il peut aider à changer les draps.
 - **Boissons** : bien boire le matin et le midi, limiter après 18 h ; supprimer le soir les boissons sucrées, gazeuses, très salées ou caféinées.
 - **Toilettes** : environ 5 à 6 fois par jour, dont au réveil et **juste avant le coucher**, détendu, sans pousser.
-- **La nuit** : ne le réveillez pas, mais facilitez l’accès aux toilettes (veilleuse, chemin dégagé).
+- **La nuit** : ne le réveille pas, mais facilite l’accès aux toilettes (veilleuse, chemin dégagé).
 - **Calendrier** des nuits sèches et mouillées : il motive l’enfant et aide le médecin.
 - **Literie** : alèse protectrice, pyjama et serviette de rechange à portée ; suppression progressive des couches.
 
@@ -918,12 +918,12 @@ L’Assurance Maladie conseille de ne pas le réveiller, mais de faciliter l’a
 Une reprise après plus de 6 mois de nuits sèches justifie une consultation : le médecin cherchera une cause (physique ou liée à un changement de vie).
 
 **Les camps et les nuits chez les copains sont-ils possibles ?**
-Oui, avec un peu d’organisation : parlez-en discrètement avec l’adulte responsable et prévoyez une protection et des affaires de rechange.
+Oui, avec un peu d’organisation : parles-en discrètement avec l’adulte responsable et prévois une protection et des affaires de rechange.
 
 ## Quand demander conseil
 **Dans la journée** si l’énurésie s’accompagne de troubles urinaires le jour (fuites, envies très fréquentes, brûlures), de fièvre, ou d’une **soif importante avec des urines très fréquentes**.
 
-**Sans urgence** si l’enfant a plus de 6 ans, si les mesures n’aident pas après plusieurs semaines, si les nuits mouillées reprennent après 6 mois, en cas de constipation, de ronflements ou de pauses respiratoires la nuit, d’attention très difficile, ou si votre enfant semble triste, replié ou en souffrance.
+**Sans urgence** si l’enfant a plus de 6 ans, si les mesures n’aident pas après plusieurs semaines, si les nuits mouillées reprennent après 6 mois, en cas de constipation, de ronflements ou de pauses respiratoires la nuit, d’attention très difficile, ou si ton enfant semble triste, replié ou en souffrance.
 
 ${FIN}`,
   },
@@ -934,7 +934,7 @@ ${FIN}`,
     summary: 'Reconnaître ce qui se passe la nuit, savoir quand rassurer et quand ne surtout pas réveiller, et sécuriser la maison.',
     sources: [S.sommeilTroubles, S.parasomnies, S.dortMal],
     body_md: `## En bref
-- Le **cauchemar** survient plutôt **en fin de nuit** : l’enfant se réveille, vous reconnaît et se souvient de son rêve. **On le rassure.**
+- Le **cauchemar** survient plutôt **en fin de nuit** : l’enfant se réveille, te reconnaît et se souvient de son rêve. **On le rassure.**
 - La **terreur nocturne** survient **en début de nuit** : il crie, s’agite, transpire, mais **dort** et ne se souviendra de rien. **On ne le réveille pas.**
 - Le **somnambule** marche les yeux ouverts, l’air absent : on le **raccompagne doucement** et on **sécurise la maison**.
 - **Jamais de médicament pour dormir** sans avis médical.
@@ -947,12 +947,12 @@ Selon mpedia, les cauchemars suivent souvent un changement de vie : déménageme
 
 **Ce qui peut favoriser ces épisodes.** La fatigue et le manque de sommeil, des horaires irréguliers, une fièvre, un événement marquant (rentrée, déménagement, arrivée d’un bébé, séparation, conflit à l’école) ou des images impressionnantes vues avant de dormir. Selon mpedia, chercher l’origine d’un trouble du sommeil permet souvent d’y mettre fin, car il est la plupart du temps lié à un problème ponctuel et passager.
 
-**Parler des peurs dans la journée.** Après un cauchemar, en parler à tête reposée, le dessiner, imaginer une fin différente ou choisir ensemble un objet rassurant aide l’enfant à reprendre la main sur ses peurs. Évitez les films, jeux ou informations effrayants en soirée.
+**Parler des peurs dans la journée.** Après un cauchemar, en parler à tête reposée, le dessiner, imaginer une fin différente ou choisir ensemble un objet rassurant aide l’enfant à reprendre la main sur ses peurs. Évite les films, jeux ou informations effrayants en soirée.
 
 ## Au quotidien
-- **Cauchemar** : allez le rassurer par un câlin, quelques mots doux, puis laissez-le se rendormir dans son lit ; parlez-en le lendemain avec des mots simples.
-- **Terreur nocturne** : ne cherchez pas à le réveiller, restez près de lui, éloignez ce qui pourrait le blesser, et n’en parlez pas le lendemain.
-- **Somnambulisme** : fermez fenêtres et portes donnant sur l’extérieur, bloquez l’accès aux escaliers, rangez les objets dangereux, puis ramenez-le doucement vers son lit.
+- **Cauchemar** : va le rassurer par un câlin, quelques mots doux, puis laisse-le se rendormir dans son lit ; parles-en le lendemain avec des mots simples.
+- **Terreur nocturne** : ne cherche pas à le réveiller, reste près de lui, éloigne ce qui pourrait le blesser, et n’en parle pas le lendemain.
+- **Somnambulisme** : ferme fenêtres et portes donnant sur l’extérieur, bloque l’accès aux escaliers, range les objets dangereux, puis ramène-le doucement vers son lit.
 - **Rituel du soir apaisant** : horaires réguliers, activités calmes, pas d’écran le soir, chambre sombre et calme, objet rassurant.
 - **Journées moins chargées** si les épisodes se multiplient : la fatigue les favorise.
 
@@ -961,13 +961,13 @@ Selon mpedia, les cauchemars suivent souvent un changement de vie : déménageme
 Mieux vaut le rassurer dans son propre lit, sans lui donner à boire ni jouer, pour préserver ses repères.
 
 **Les terreurs nocturnes sont-elles le signe d’un traumatisme ?**
-Santé.fr précise qu’elles n’expriment pas une angoisse. En revanche, des cauchemars intenses et répétés peuvent traduire une anxiété : parlez-en au pédiatre.
+Santé.fr précise qu’elles n’expriment pas une angoisse. En revanche, des cauchemars intenses et répétés peuvent traduire une anxiété : parles-en au pédiatre.
 
 **Peut-on donner de la mélatonine ou des plantes ?**
 Santé.fr déconseille formellement les médicaments pour dormir chez l’enfant, y compris à base de plantes, sauf prescription médicale dans des cas précis.
 
 ## Quand demander conseil
-Consultez si les épisodes sont réguliers ou durent plus d’une semaine, si votre enfant se blesse ou risque de se blesser, s’il est fatigué ou somnolent le jour, agité, agressif ou replié, ou s’il **ronfle, fait des pauses respiratoires** ou a des infections ORL fréquentes. Avant le rendez-vous, notez pendant une dizaine de jours les heures de coucher, de réveil et les épisodes. Le dispositif « Mon soutien psy » est accessible dès 3 ans, sur orientation médicale.
+Consulte si les épisodes sont réguliers ou durent plus d’une semaine, si ton enfant se blesse ou risque de se blesser, s’il est fatigué ou somnolent le jour, agité, agressif ou replié, ou s’il **ronfle, fait des pauses respiratoires** ou a des infections ORL fréquentes. Avant le rendez-vous, note pendant une dizaine de jours les heures de coucher, de réveil et les épisodes. Le dispositif « Mon soutien psy » est accessible dès 3 ans, sur orientation médicale.
 
 ${FIN}`,
   },
@@ -988,7 +988,7 @@ Selon l’Assurance Maladie, le sommeil soutient le développement du cerveau, l
 Le manque de sommeil ne se traduit pas toujours par de la fatigue visible : chez l’enfant, il donne souvent de l’irritabilité, de l’agitation, des troubles du caractère, une somnolence en journée et des difficultés d’attention en classe. À long terme, il augmente le risque de surpoids.
 
 
-**Sommeil et école.** Un enfant qui dort suffisamment se concentre mieux, retient mieux ce qu’il apprend et gère mieux ses émotions. Selon l’Assurance Maladie, le sommeil aide à mémoriser les apprentissages de la journée. La rentrée, les activités du soir, les devoirs tardifs ou les écrans dans la chambre peuvent grignoter les nuits sans qu’on s’en rende compte : faites régulièrement le point sur l’heure réelle d’endormissement.
+**Sommeil et école.** Un enfant qui dort suffisamment se concentre mieux, retient mieux ce qu’il apprend et gère mieux ses émotions. Selon l’Assurance Maladie, le sommeil aide à mémoriser les apprentissages de la journée. La rentrée, les activités du soir, les devoirs tardifs ou les écrans dans la chambre peuvent grignoter les nuits sans qu’on s’en rende compte : fais régulièrement le point sur l’heure réelle d’endormissement.
 
 **Les écrans dans la chambre.** Télévision, console, tablette ou téléphone dans la chambre retardent l’endormissement et favorisent les réveils. Un « parking » des écrans hors de la chambre le soir, pour toute la famille, est une habitude simple et efficace.
 
@@ -1003,16 +1003,16 @@ Le manque de sommeil ne se traduit pas toujours par de la fatigue visible : chez
 
 ## Questions fréquentes
 **Il n’arrive pas à s’endormir avant 22 h, que faire ?**
-Vérifiez l’heure du lever, les écrans et l’activité de la journée. Si l’endormissement dure plus de 30 minutes malgré ces mesures, parlez-en au médecin.
+Vérifie l’heure du lever, les écrans et l’activité de la journée. Si l’endormissement dure plus de 30 minutes malgré ces mesures, parles-en au médecin.
 
 **Peut-il rattraper son sommeil le week-end ?**
-Mieux vaut éviter les grasses matinées trop longues, qui décalent le rythme ; préférez des couchers un peu plus tôt.
+Mieux vaut éviter les grasses matinées trop longues, qui décalent le rythme ; préfère des couchers un peu plus tôt.
 
 **Faut-il le réveiller s’il fait encore la sieste à 6 ans ?**
-L’Assurance Maladie conseille de ne pas prolonger la sieste. Si elle reste indispensable après 7 ans, interrogez-vous sur la durée des nuits.
+L’Assurance Maladie conseille de ne pas prolonger la sieste. Si elle reste indispensable après 7 ans, interroge-toi sur la durée des nuits.
 
 ## Quand demander conseil
-Consultez si les difficultés d’endormissement ou les réveils persistent plus d’une semaine malgré les mesures simples, si votre enfant est somnolent ou très fatigué le jour, s’il **ronfle, fait des pauses respiratoires**, respire bouche ouverte, ou si son comportement change (agitation, repli, tristesse). Ne donnez aucun médicament ni complément pour dormir sans avis médical.
+Consulte si les difficultés d’endormissement ou les réveils persistent plus d’une semaine malgré les mesures simples, si ton enfant est somnolent ou très fatigué le jour, s’il **ronfle, fait des pauses respiratoires**, respire bouche ouverte, ou si son comportement change (agitation, repli, tristesse). Ne donne aucun médicament ni complément pour dormir sans avis médical.
 
 ${FIN}`,
   },
@@ -1039,31 +1039,31 @@ Le **goûter** comprend un ou deux aliments parmi fruits, fruits à coque (adapt
 **Les portions changent avec l’âge.** Un enfant de 4 ans n’a pas besoin de la même quantité qu’un enfant de 10 ans, et l’appétit varie d’un jour à l’autre. Servir de petites portions et laisser se resservir permet de respecter ses sensations de faim, plutôt que de le pousser à finir une assiette trop pleine.
 
 ## Au quotidien
-- **Cuisinez avec lui** : laver, éplucher, mélanger donnent envie de goûter.
+- **Cuisine avec lui** : laver, éplucher, mélanger donnent envie de goûter.
 - **Repas au calme, sans écran**, avec le temps de manger sans se presser.
-- **Écoutez la faim** : pas d’obligation de finir l’assiette, pas de dessert « récompense ».
-- **Refus d’un aliment** : reproposez-le plus tard, préparé autrement, sans forcer ni punir. La méfiance face aux nouveaux aliments est fréquente chez l’enfant.
-- **Lisez les étiquettes** avec lui, Nutri-Score compris, pour comparer les produits.
-- **Publicité** : elle pousse au grignotage ; limitez l’exposition et expliquez-en le principe.
+- **Écoute la faim** : pas d’obligation de finir l’assiette, pas de dessert « récompense ».
+- **Refus d’un aliment** : repropose-le plus tard, préparé autrement, sans forcer ni punir. La méfiance face aux nouveaux aliments est fréquente chez l’enfant.
+- **Lis les étiquettes** avec lui, Nutri-Score compris, pour comparer les produits.
+- **Publicité** : elle pousse au grignotage ; limite l’exposition et expliques-en le principe.
 
 ## Questions fréquentes
 **Mon enfant ne mange pas le matin, est-ce un problème ?**
-Proposez quelque chose de simple (un laitage, un fruit, du pain) ou emportez-le pour plus tard ; parlez-en au médecin si cela s’accompagne de fatigue.
+Propose quelque chose de simple (un laitage, un fruit, du pain) ou emporte-le pour plus tard ; parles-en au médecin si cela s’accompagne de fatigue.
 
 **Peut-il boire du lait demi-écrémé ?**
 Oui, l’Assurance Maladie indique qu’il convient dès 3 ans.
 
 **Il réclame sans cesse des sucreries…**
-Gardez-les pour des moments précis (fête, goûter du week-end), proposez de l’eau entre les repas et ne les utilisez pas comme récompense.
+Garde-les pour des moments précis (fête, goûter du week-end), propose de l’eau entre les repas et ne les utilise pas comme récompense.
 
 ## Quand demander conseil
-Consultez si votre enfant mange très peu de variétés au point de vous inquiéter, s’il perd du poids, si sa courbe de croissance change d’allure, s’il a souvent mal au ventre ou des troubles digestifs après certains aliments (pensez à l’allergie), ou si les repas sont devenus une source de conflit et d’angoisse. En cas de gonflement du visage, de gêne respiratoire ou de malaise après un aliment, appelez le **15** ou le **112**.
+Consulte si ton enfant mange très peu de variétés au point de t’inquiéter, s’il perd du poids, si sa courbe de croissance change d’allure, s’il a souvent mal au ventre ou des troubles digestifs après certains aliments (pense à l’allergie), ou si les repas sont devenus une source de conflit et d’angoisse. En cas de gonflement du visage, de gêne respiratoire ou de malaise après un aliment, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'cantine-scolaire-et-pai', category: 'ecole-garde', min_age_months: 36, tags: ['cantine', 'école', 'allergie', 'PAI'],
-    title: 'La cantine : comment ça marche et que faire si votre enfant a un besoin de santé ?',
+    title: 'La cantine : comment ça marche et que faire si ton enfant a un besoin de santé ?',
     summary: 'Qui organise la restauration scolaire, ce que contiennent les repas, les aides possibles et le PAI pour un enfant allergique ou malade.',
     sources: [S.cantine, S.pai, S.allergieQueFaire],
     body_md: `## En bref
@@ -1080,27 +1080,27 @@ Le **PAI** est un document écrit qui permet à un élève dont l’état de san
 
 **Des produits de qualité.** Selon le ministère de l’Éducation nationale, la loi a fixé des objectifs pour la restauration collective, dont une part de produits durables et de qualité et au moins 20 % de produits issus de l’agriculture biologique. Les menus sont généralement établis plusieurs semaines à l’avance, souvent avec l’appui d’un diététicien.
 
-**Faire du repas un moment agréable.** Le temps de cantine est aussi un temps de détente et de vie collective. Si votre enfant trouve le réfectoire trop bruyant ou le temps de repas trop court, échangez avec l’école ou le service périscolaire : des aménagements sont parfois possibles. À la maison, demander « qu’as-tu goûté de nouveau ? » encourage la curiosité.
+**Faire du repas un moment agréable.** Le temps de cantine est aussi un temps de détente et de vie collective. Si ton enfant trouve le réfectoire trop bruyant ou le temps de repas trop court, échange avec l’école ou le service périscolaire : des aménagements sont parfois possibles. À la maison, demander « qu’as-tu goûté de nouveau ? » encourage la curiosité.
 
 ## Au quotidien
-- **Inscrivez votre enfant** auprès de la mairie (ou du service périscolaire) ; renseignez-vous sur les tarifs et les aides.
-- **Lisez les menus** affichés ou publiés en ligne et parlez-en avec votre enfant : qu’a-t-il goûté, aimé ?
-- **Adaptez le dîner** au repas de midi pour équilibrer la journée.
-- **Allergie, asthme, diabète** : demandez un PAI avant la rentrée ; signalez aussi le besoin aux animateurs du temps périscolaire.
-- **Trousse d’urgence** : si elle est prescrite, vérifiez les dates de péremption et qu’elle accompagne l’enfant lors des sorties.
+- **Inscris ton enfant** auprès de la mairie (ou du service périscolaire) ; renseigne-toi sur les tarifs et les aides.
+- **Lis les menus** affichés ou publiés en ligne et parles-en avec ton enfant : qu’a-t-il goûté, aimé ?
+- **Adapte le dîner** au repas de midi pour équilibrer la journée.
+- **Allergie, asthme, diabète** : demande un PAI avant la rentrée ; signale aussi le besoin aux animateurs du temps périscolaire.
+- **Trousse d’urgence** : si elle est prescrite, vérifie les dates de péremption et qu’elle accompagne l’enfant lors des sorties.
 
 ## Questions fréquentes
 **Les familles en difficulté peuvent-elles être aidées ?**
-Oui : dans le primaire, la commune fixe une participation selon le quotient familial ; vous pouvez aussi contacter l’assistante sociale.
+Oui : dans le primaire, la commune fixe une participation selon le quotient familial ; tu peux aussi contacter l’assistante sociale.
 
 **Mon enfant mange très peu à la cantine, que faire ?**
-Parlez-en avec lui et avec l’équipe (bruit, temps de repas, goûts). Un goûter et un dîner équilibrés compensent sur la journée.
+Parles-en avec lui et avec l’équipe (bruit, temps de repas, goûts). Un goûter et un dîner équilibrés compensent sur la journée.
 
 **Le PAI dégage-t-il les parents de leurs responsabilités ?**
 Non, il organise l’accueil mais ne dégage pas les parents de leurs responsabilités, notamment pour le panier repas.
 
 ## Quand demander conseil
-Parlez au médecin traitant et au médecin scolaire de tout besoin de santé lié aux repas. En cas de réaction allergique grave (gonflement, gêne respiratoire, malaise), l’adulte présent appelle le **15** ou le **112** et applique la conduite à tenir du PAI.
+Parle au médecin traitant et au médecin scolaire de tout besoin de santé lié aux repas. En cas de réaction allergique grave (gonflement, gêne respiratoire, malaise), l’adulte présent appelle le **15** ou le **112** et applique la conduite à tenir du PAI.
 
 ${FIN}`,
   },
@@ -1112,7 +1112,7 @@ ${FIN}`,
     body_md: `## En bref
 - De 6 à 17 ans : **au moins 60 minutes par jour** d’activité physique d’intensité modérée à élevée.
 - **Limiter le temps assis**, et ne pas rester plus de **2 heures d’affilée** sans bouger.
-- Le **plaisir** est la clé de la persévérance : laissez votre enfant essayer plusieurs activités.
+- Le **plaisir** est la clé de la persévérance : laisse ton enfant essayer plusieurs activités.
 - Entre 6 et 8 ans, privilégier **équilibre, attention, coordination** ; à partir de 8 ans, l’**endurance**.
 
 ## Comprendre
@@ -1130,21 +1130,21 @@ Le sport peut aussi renforcer la confiance et l’estime de soi. Selon Santé.fr
 - **Jeux dehors** chaque jour, même courts : parc, ballon, corde à sauter, cache-cache.
 - **Pauses** dans les temps d’écran ou de devoirs : se lever, s’étirer, bouger.
 - **En famille** : balade, piscine, vélo le week-end ; l’exemple des parents compte.
-- **Équipement adapté** et **bouteille d’eau** ; limitez l’effort lors des pics de pollution de l’air.
-- **Écoutez-le** : un enfant qui n’aime pas son sport peut en changer sans que ce soit un échec.
+- **Équipement adapté** et **bouteille d’eau** ; limite l’effort lors des pics de pollution de l’air.
+- **Écoute-le** : un enfant qui n’aime pas son sport peut en changer sans que ce soit un échec.
 
 ## Questions fréquentes
 **Mon enfant n’aime pas le sport, que faire ?**
-Cherchez l’activité qui lui plaît : roller, piscine, danse, randonnée… Bouger ne veut pas forcément dire compétition.
+Cherche l’activité qui lui plaît : roller, piscine, danse, randonnée… Bouger ne veut pas forcément dire compétition.
 
 **Faut-il un certificat médical ?**
-Les règles dépendent des fédérations et des âges : renseignez-vous auprès du club et parlez-en lors d’un examen de suivi.
+Les règles dépendent des fédérations et des âges : renseigne-toi auprès du club et parles-en lors d’un examen de suivi.
 
 **Mon enfant a de l’asthme, peut-il faire du sport ?**
-Le plus souvent oui, avec un traitement et un plan d’action adaptés : voyez-le avec son médecin.
+Le plus souvent oui, avec un traitement et un plan d’action adaptés : vois-le avec son médecin.
 
 ## Quand demander conseil
-Consultez si votre enfant se plaint de douleurs pendant ou après l’effort, s’essouffle anormalement, fait un malaise, a des palpitations, ou si une douleur persiste après une chute. Pendant une activité, en cas de malaise, de perte de connaissance ou de difficulté à respirer, appelez le **15** ou le **112**.
+Consulte si ton enfant se plaint de douleurs pendant ou après l’effort, s’essouffle anormalement, fait un malaise, a des palpitations, ou si une douleur persiste après une chute. Pendant une activité, en cas de malaise, de perte de connaissance ou de difficulté à respirer, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -1158,7 +1158,7 @@ ${FIN}`,
 - Les **limites protègent et rassurent** : un enfant a besoin de repères clairs, répétés et cohérents.
 - Fessée, claque, insultes, moqueries, menaces : ces **violences éducatives ordinaires sont interdites par la loi depuis 2019** (« l’autorité parentale s’exerce sans violences »).
 - Un jeune enfant ne cherche pas à manipuler : il **ne sait pas encore se calmer seul**, une capacité qui arrive vers 5 ou 6 ans.
-- Quand vous êtes à bout : **s’isoler quelques instants, respirer, revenir** quand la tension est retombée.
+- Quand tu es à bout : **s’isoler quelques instants, respirer, revenir** quand la tension est retombée.
 
 ## Comprendre
 Selon 1000 premiers jours (Santé publique France), les jeunes enfants ne perçoivent pas les dangers : le cadre assure leur sécurité, et des règles appliquées avec constance leur donnent des repères. Réfléchir ensemble aux valeurs à transmettre, mettre en place des routines et répéter les règles, avec patience, sont la base.
@@ -1171,27 +1171,27 @@ Les **violences éducatives ordinaires** sont des violences physiques ou psychol
 **Prendre soin de soi pour tenir le cadre.** La fatigue, le stress et la solitude rendent la patience difficile. S’accorder des pauses, se relayer entre adultes, demander de l’aide à des proches ou à des professionnels ne sont pas des faiblesses : ce sont des moyens concrets de rester le parent que l’on souhaite être.
 
 ## Au quotidien
-- **Annoncez à l’avance** la fin d’une activité et présentez la suivante.
-- **Expliquez clairement et fermement** votre désaccord, sans juger, puis proposez une autre activité.
-- **Mettez hors de portée** ce qui est dangereux ou interdit : moins d’interdits, moins de conflits.
-- **Laissez-le choisir** dans les domaines non essentiels (le pull bleu ou le rouge) et **choisissez vos combats**.
-- **Après une bêtise** : proposez de réparer plutôt que de punir sous le coup de la colère.
-- **Transformez les contraintes en jeux** : chanson pour ranger, course pour s’habiller.
-- **Matins et devoirs** : préparez les affaires la veille, prévoyez une pause sans écran après l’école, un cadre calme pour les devoirs.
-- **Encouragez les progrès** plutôt que le résultat ; évitez les comparaisons.
+- **Annonce à l’avance** la fin d’une activité et présente la suivante.
+- **Explique clairement et fermement** ton désaccord, sans juger, puis propose une autre activité.
+- **Mets hors de portée** ce qui est dangereux ou interdit : moins d’interdits, moins de conflits.
+- **Laisse-le choisir** dans les domaines non essentiels (le pull bleu ou le rouge) et **choisis tes combats**.
+- **Après une bêtise** : propose de réparer plutôt que de punir sous le coup de la colère.
+- **Transforme les contraintes en jeux** : chanson pour ranger, course pour s’habiller.
+- **Matins et devoirs** : prépare les affaires la veille, prévois une pause sans écran après l’école, un cadre calme pour les devoirs.
+- **Encourage les progrès** plutôt que le résultat ; évite les comparaisons.
 
 ## Questions fréquentes
 **Réconforter mon enfant pendant une crise, est-ce céder ?**
 Non : accueillir l’émotion (« tu es très en colère ») et proposer un câlin ne signifie pas accepter la demande.
 
 **J’ai crié ou donné une tape, que faire ?**
-Cela arrive quand on est épuisé. Excusez-vous auprès de votre enfant, expliquez ce qui s’est passé, et cherchez de l’aide pour souffler : vous n’êtes pas seul.
+Cela arrive quand on est épuisé. Excuse-toi auprès de ton enfant, explique ce qui s’est passé, et cherche de l’aide pour souffler : tu n’es pas seul.
 
 **Faut-il être d’accord à deux parents ?**
 C’est préférable : réfléchir ensemble aux règles rend le cadre plus cohérent pour l’enfant.
 
 ## Quand demander conseil
-Parlez-en à votre médecin, à la PMI ou à un professionnel de la parentalité si les colères sont très fréquentes, si vous avez peur de perdre le contrôle, ou si l’épuisement s’installe. Si vous pensez qu’un enfant est en danger, appelez le **119** (Allô Enfance en danger). En cas de danger immédiat : **17**, **15** ou **112**.
+Parles-en à ton médecin, à la PMI ou à un professionnel de la parentalité si les colères sont très fréquentes, si tu as peur de perdre le contrôle, ou si l’épuisement s’installe. Si tu penses qu’un enfant est en danger, appelle le **119** (Allô Enfance en danger). En cas de danger immédiat : **17**, **15** ou **112**.
 
 ${FIN}`,
   },
@@ -1212,30 +1212,30 @@ Selon mpedia, le mot « caprice » est souvent mal compris : avant 3-4 ans, l’
 1000 premiers jours rappelle qu’un enfant ne cherche pas à embêter ou manipuler ses parents : il ne sait pas encore réguler ses émotions ni supporter la frustration. Le réconfort ne signifie pas céder à la demande.
 
 
-**Montrer l’exemple.** Les enfants apprennent beaucoup en observant les adultes. Dire à voix haute ce que vous ressentez (« je suis agacé, je vais respirer un peu »), vous excuser quand vous vous êtes emporté, montrer comment on se calme : tout cela leur apprend que les émotions existent pour tout le monde et qu’on peut les exprimer sans faire de mal.
+**Montrer l’exemple.** Les enfants apprennent beaucoup en observant les adultes. Dire à voix haute ce que tu ressens (« je suis agacé, je vais respirer un peu »), t’excuser quand tu t’es emporté, montrer comment on se calme : tout cela leur apprend que les émotions existent pour tout le monde et qu’on peut les exprimer sans faire de mal.
 
 **Le rôle des routines.** Des journées prévisibles, avec des repères stables (repas, coucher, temps calme), réduisent les sources de frustration et d’angoisse. Annoncer les changements à l’avance et préparer les transitions (fin d’un jeu, départ de la maison) limitent bien des crises.
 
 ## Au quotidien
-- **Pendant la crise** : prenez quelques secondes pour vous calmer vous-même, restez proche, mettez des mots (« tu es déçu parce que… »), proposez un câlin s’il l’accepte.
-- **Après** : reparlez calmement de ce qui s’est passé et de ce qu’on peut faire la prochaine fois.
+- **Pendant la crise** : prends quelques secondes pour te calmer toi-même, reste proche, mets des mots (« tu es déçu parce que… »), propose un câlin s’il l’accepte.
+- **Après** : reparle calmement de ce qui s’est passé et de ce qu’on peut faire la prochaine fois.
 - **Un coin pour se calmer** : coussin, doudou, livre, dessin… sans que ce soit une punition.
 - **Des mots pour les émotions** : livres, jeux, dessins aident à les reconnaître.
-- **Prévenez** : faim, fatigue, journées trop chargées favorisent les crises.
-- **Félicitez** les moments où il a su exprimer sa colère autrement.
+- **Préviens** : faim, fatigue, journées trop chargées favorisent les crises.
+- **Félicite** les moments où il a su exprimer sa colère autrement.
 
 ## Questions fréquentes
 **Faut-il ignorer les colères pour ne pas les « récompenser » ?**
-Ne pas céder ne veut pas dire ignorer : restez présent, calme, et tenez la limite.
+Ne pas céder ne veut pas dire ignorer : reste présent, calme, et tiens la limite.
 
 **Mon enfant de 8 ans pleure pour un rien, est-ce inquiétant ?**
-Certains enfants sont plus sensibles. Si la tristesse dure, s’accompagne de troubles du sommeil ou de l’appétit, ou d’un repli, parlez-en au médecin.
+Certains enfants sont plus sensibles. Si la tristesse dure, s’accompagne de troubles du sommeil ou de l’appétit, ou d’un repli, parles-en au médecin.
 
 **Il a peur du noir, des monstres…**
-Les peurs sont fréquentes dans l’enfance : écoutez-les sans vous moquer, rassurez, et laissez une veilleuse si cela l’aide.
+Les peurs sont fréquentes dans l’enfance : écoute-les sans te moquer, rassure, et laisse une veilleuse si cela l’aide.
 
 ## Quand demander conseil
-Consultez si les crises sont très fréquentes ou violentes (il se fait mal, fait mal aux autres), si votre enfant semble triste ou anxieux sur la durée, s’il ne joue plus, dort ou mange mal, ou si l’école vous alerte. Le dispositif « Mon soutien psy » est accessible dès 3 ans sur orientation médicale. En cas d’idées noires exprimées par l’enfant ou de détresse d’un proche, le **3114** répond 24 h/24 ; en cas de danger immédiat, **15** ou **112**.
+Consulte si les crises sont très fréquentes ou violentes (il se fait mal, fait mal aux autres), si ton enfant semble triste ou anxieux sur la durée, s’il ne joue plus, dort ou mange mal, ou si l’école t’alerte. Le dispositif « Mon soutien psy » est accessible dès 3 ans sur orientation médicale. En cas d’idées noires exprimées par l’enfant ou de détresse d’un proche, le **3114** répond 24 h/24 ; en cas de danger immédiat, **15** ou **112**.
 
 ${FIN}`,
   },
@@ -1256,31 +1256,31 @@ Selon mpedia, le besoin d’autonomie se manifeste tôt, parfois par de l’oppo
 Encourager les progrès plutôt que la performance, éviter jugements et comparaisons (mpedia, à propos des violences éducatives) protège l’estime de soi. Le sport peut aussi y contribuer, selon Santé.fr, surtout quand il est choisi pour le plaisir.
 
 
-**L’autonomie au fil des âges.** Vers 3-4 ans, s’habiller avec un peu d’aide, ranger ses jouets, se laver les mains seul ; vers 5-6 ans, préparer son sac, mettre la table ; entre 7 et 10 ans, gérer une partie de ses affaires, faire de petits achats, préparer un goûter simple. Chaque enfant avance à son rythme : proposez sans imposer, et laissez du temps, même si c’est plus long que de faire à sa place.
+**L’autonomie au fil des âges.** Vers 3-4 ans, s’habiller avec un peu d’aide, ranger ses jouets, se laver les mains seul ; vers 5-6 ans, préparer son sac, mettre la table ; entre 7 et 10 ans, gérer une partie de ses affaires, faire de petits achats, préparer un goûter simple. Chaque enfant avance à son rythme : propose sans imposer, et laisse du temps, même si c’est plus long que de faire à sa place.
 
 **Le droit à l’erreur.** Un enfant qui a peur de se tromper n’ose plus essayer. Accueillir les erreurs comme des étapes (« qu’est-ce qu’on peut essayer d’autre ? ») et éviter les moqueries, y compris sur le ton de la plaisanterie, protègent sa confiance.
 
 ## Au quotidien
-- **Confiez-lui des responsabilités** adaptées à son âge : mettre la table, préparer son cartable, s’occuper d’une plante.
-- **Laissez-le chercher** avant d’aider : « Qu’est-ce que tu pourrais essayer ? »
-- **Nommez précisément ce qui est réussi** : « Tu as recommencé trois fois, et tu y es arrivé. »
-- **Dédramatisez l’erreur** : racontez les vôtres et ce que vous en avez appris.
-- **Écoutez son avis**, proposez des choix, négociez quand c’est possible.
-- **Passez du temps seul à seul** avec lui, sans écran.
-- **Évitez les étiquettes** (« le timide », « le maladroit ») qui enferment.
+- **Confie-lui des responsabilités** adaptées à son âge : mettre la table, préparer son cartable, s’occuper d’une plante.
+- **Laisse-le chercher** avant d’aider : « Qu’est-ce que tu pourrais essayer ? »
+- **Nomme précisément ce qui est réussi** : « Tu as recommencé trois fois, et tu y es arrivé. »
+- **Dédramatise l’erreur** : raconte les tiennes et ce que tu en as appris.
+- **Écoute son avis**, propose des choix, négocie quand c’est possible.
+- **Passe du temps seul à seul** avec lui, sans écran.
+- **Évite les étiquettes** (« le timide », « le maladroit ») qui enferment.
 
 ## Questions fréquentes
 **Faut-il beaucoup féliciter ?**
 Les encouragements sincères et précis, centrés sur l’effort, sont plus utiles que des compliments généraux répétés.
 
 **Mon enfant n’ose pas parler en classe, que faire ?**
-Respectez son rythme, entraînez-vous en jouant à la maison, et échangez avec l’enseignant pour trouver des petites occasions de réussite.
+Respecte son rythme, entraîne-toi en jouant à la maison, et échange avec l’enseignant pour trouver des petites occasions de réussite.
 
 **Il se dévalorise souvent (« je suis nul »)…**
-Écoutez sans contredire brutalement, aidez-le à repérer ce qu’il réussit. Si cela persiste ou s’accompagne de tristesse, parlez-en au médecin.
+Écoute sans contredire brutalement, aide-le à repérer ce qu’il réussit. Si cela persiste ou s’accompagne de tristesse, parles-en au médecin.
 
 ## Quand demander conseil
-Consultez si votre enfant se dévalorise constamment, évite toute nouvelle situation, semble triste ou anxieux sur la durée, refuse d’aller à l’école, ou si vous soupçonnez qu’il est mis à l’écart ou harcelé. Le médecin peut orienter vers un psychologue (« Mon soutien psy » dès 3 ans). Détresse d’un enfant ou d’un proche : **3114** ; danger immédiat : **15** ou **112**.
+Consulte si ton enfant se dévalorise constamment, évite toute nouvelle situation, semble triste ou anxieux sur la durée, refuse d’aller à l’école, ou si tu soupçonnes qu’il est mis à l’écart ou harcelé. Le médecin peut orienter vers un psychologue (« Mon soutien psy » dès 3 ans). Détresse d’un enfant ou d’un proche : **3114** ; danger immédiat : **15** ou **112**.
 
 ${FIN}`,
   },
@@ -1306,38 +1306,38 @@ Laisser les enfants régler eux-mêmes leurs petits conflits, en rappelant le re
 **Les écarts d’âge.** Entre un enfant de 3 ans et un de 9 ans, les besoins, les jeux et les règles ne sont pas les mêmes. Expliquer pourquoi les règles diffèrent (heure du coucher, écrans) évite le sentiment d’injustice, à condition que chacun sache que ses propres privilèges viendront avec l’âge.
 
 ## Au quotidien
-- **Gardez votre calme** : votre exemple apaise souvent la situation.
-- **Aidez-les à s’expliquer** : chacun dit ce qu’il ressent, l’autre écoute, on cherche une solution ensemble.
-- **Respectez l’espace de chacun** : un coin à soi si la chambre est partagée, des objets qu’on n’est pas obligé de prêter.
-- **Anticipez** les moments à risque : retour de l’école, faim, fatigue, ennui ; un temps calme ou une discussion après l’école aide.
-- **Réparer** : si l’un a cassé quelque chose ou fait mal, demandez-lui comment il peut réparer.
-- **Valorisez** les moments où ils jouent bien ensemble.
+- **Garde ton calme** : ton exemple apaise souvent la situation.
+- **Aide-les à s’expliquer** : chacun dit ce qu’il ressent, l’autre écoute, on cherche une solution ensemble.
+- **Respecte l’espace de chacun** : un coin à soi si la chambre est partagée, des objets qu’on n’est pas obligé de prêter.
+- **Anticipe** les moments à risque : retour de l’école, faim, fatigue, ennui ; un temps calme ou une discussion après l’école aide.
+- **Réparer** : si l’un a cassé quelque chose ou fait mal, demande-lui comment il peut réparer.
+- **Valorise** les moments où ils jouent bien ensemble.
 
 ## Questions fréquentes
 **Faut-il punir les deux ?**
 Mieux vaut séparer, calmer, puis écouter chacun et chercher une réparation, plutôt qu’une punition collective systématique.
 
 **L’aîné régresse depuis la naissance du bébé…**
-C’est une réaction fréquente : accordez-lui des moments rien qu’à lui et valorisez ce qu’il sait faire de « grand », sans l’obliger à aimer le bébé.
+C’est une réaction fréquente : accorde-lui des moments rien qu’à lui et valorise ce qu’il sait faire de « grand », sans l’obliger à aimer le bébé.
 
 **Je n’arrive pas à aimer pareil mes enfants, est-ce grave ?**
 On aime chaque enfant différemment, selon qui il est. L’important est que chacun se sente aimé et reconnu.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à un psychologue si la violence entre enfants est fréquente ou grave, si un enfant est constamment pris pour cible, s’il semble triste, anxieux ou se met en danger, ou si la situation épuise la famille. En cas de blessure grave, appelez le **15** ou le **112**.
+Parles-en au médecin ou à un psychologue si la violence entre enfants est fréquente ou grave, si un enfant est constamment pris pour cible, s’il semble triste, anxieux ou se met en danger, ou si la situation épuise la famille. En cas de blessure grave, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'separation-des-parents-accompagner-l-enfant', category: 'education', tags: ['séparation', 'divorce', 'résidence', 'émotions'],
-    title: 'Séparation des parents : comment accompagner votre enfant ?',
+    title: 'Séparation des parents : comment accompagner ton enfant ?',
     summary: 'Annoncer la séparation, organiser la vie entre deux maisons, éviter de mettre l’enfant au milieu et repérer les signes de souffrance.',
     sources: [S.separation],
     body_md: `## En bref
-- **Préparez à deux** l’organisation pratique avant de l’annoncer : résidence, jours, école, trajets, fêtes.
-- **Annoncez ensemble**, au calme : l’enfant **n’est pour rien** dans la séparation, ses deux parents **continuent de l’aimer et de s’occuper de lui**.
+- **Prépare à deux** l’organisation pratique avant de l’annoncer : résidence, jours, école, trajets, fêtes.
+- **Annonce ensemble**, au calme : l’enfant **n’est pour rien** dans la séparation, ses deux parents **continuent de l’aimer et de s’occuper de lui**.
 - **Pas de conflits ni de critiques de l’autre parent devant lui**, et **jamais l’enfant comme messager**.
-- **Tenez vos engagements** : un rendez-vous manqué peut être vécu comme un abandon.
+- **Tiens tes engagements** : un rendez-vous manqué peut être vécu comme un abandon.
 
 ## Comprendre
 Selon mpedia, la séparation, même fréquente, reste une épreuve pour l’enfant. Il a besoin de temps pour s’adapter, et son comportement peut changer, surtout pendant la période de conflits qui précède. Ce n’est pas tant la séparation elle-même que la **persistance des conflits** entre parents qui est associée à des difficultés psychologiques chez l’enfant.
@@ -1350,25 +1350,25 @@ L’autorité parentale reste conjointe : les deux parents doivent être inform�
 **Se faire aider entre adultes.** Lorsque la communication est très difficile, un professionnel peut aider les parents à organiser la vie de l’enfant et à apaiser les échanges. Le médecin de l’enfant, informé de la séparation, peut aussi être un appui.
 
 ## Au quotidien
-- **Limitez les changements** dans sa vie au moment de la séparation (école, activités, amis).
+- **Limite les changements** dans sa vie au moment de la séparation (école, activités, amis).
 - **Un espace à lui dans chaque maison** en cas de résidence alternée ; en résidence principale, une présence régulière de l’autre parent.
-- **Facilitez les passages** : affaires essentielles qui suivent, doudou, cahiers ; un échange bref et cordial entre adultes.
+- **Facilite les passages** : affaires essentielles qui suivent, doudou, cahiers ; un échange bref et cordial entre adultes.
 - **Communication entre parents** : par écrit (mail, messagerie) si l’oral est difficile, mais pas par l’enfant.
-- **Laissez-le exprimer** sa tristesse ou sa colère sans les juger ; il a le droit d’aimer ses deux parents.
-- **Informez le médecin** de l’enfant de la séparation.
+- **Laisse-le exprimer** sa tristesse ou sa colère sans les juger ; il a le droit d’aimer ses deux parents.
+- **Informe le médecin** de l’enfant de la séparation.
 
 ## Questions fréquentes
 **À quel moment le dire aux enfants ?**
 Idéalement quand la décision est prise et que l’organisation pratique est prévue, pour pouvoir expliquer concrètement ce qui va changer.
 
 **Mon enfant ne veut plus aller chez son autre parent…**
-Écoutez ce qu’il ressent, sans prendre parti, et parlez-en entre adultes ; un professionnel peut aider à comprendre ce qui se joue.
+Écoute ce qu’il ressent, sans prendre parti, et parles-en entre adultes ; un professionnel peut aider à comprendre ce qui se joue.
 
 **Faut-il présenter rapidement un nouveau compagnon ?**
-Laissez du temps à l’enfant pour s’adapter à la séparation avant d’ajouter d’autres changements.
+Laisse du temps à l’enfant pour s’adapter à la séparation avant d’ajouter d’autres changements.
 
 ## Quand demander conseil
-Consultez le médecin de l’enfant ou un psychologue si vous observez une tristesse durable, des troubles du sommeil (cauchemars, terreurs), une angoisse de séparation, un comportement agressif ou un repli, une baisse scolaire. Si l’enfant est exposé à des violences entre adultes ou en est victime, appelez le **119** ; en cas de danger immédiat, **17** ou **112**.
+Consulte le médecin de l’enfant ou un psychologue si tu observes une tristesse durable, des troubles du sommeil (cauchemars, terreurs), une angoisse de séparation, un comportement agressif ou un repli, une baisse scolaire. Si l’enfant est exposé à des violences entre adultes ou en est victime, appelle le **119** ; en cas de danger immédiat, **17** ou **112**.
 
 ${FIN}`,
   },
@@ -1389,17 +1389,17 @@ Selon « Mes questions d’argent », le site d’éducation financière de la B
 L’argent de poche n’est pas un salaire pour les tâches du quotidien : c’est un outil pour apprendre à faire des choix, attendre, économiser, et parfois se tromper sans gravité.
 
 
-**Fixer des règles claires.** Décidez à l’avance de ce que l’argent de poche doit couvrir (bonbons, petits jouets, cartes à collectionner, sorties avec les copains) et de ce qui reste à la charge des parents (fournitures, vêtements). Notez le montant, le jour de versement et ce qui se passe en cas d’avance demandée. Des règles stables évitent les négociations permanentes.
+**Fixer des règles claires.** Décide à l’avance de ce que l’argent de poche doit couvrir (bonbons, petits jouets, cartes à collectionner, sorties avec les copains) et de ce qui reste à la charge des parents (fournitures, vêtements). Note le montant, le jour de versement et ce qui se passe en cas d’avance demandée. Des règles stables évitent les négociations permanentes.
 
 **Montrer l’exemple.** Selon « Mes questions d’argent », expliquer à voix haute son raisonnement pendant les courses, distinguer les dépenses indispensables des plaisirs et comparer les prix avant un achat sont des moyens concrets d’apprendre. Les enfants observent aussi la façon dont les adultes parlent d’argent : une attitude calme et ouverte les aide à aborder le sujet sans tabou.
 
 ## Au quotidien
-- **Expliquez à voix haute** vos choix pendant les courses : comparer les prix, distinguer besoins et envies.
-- **Faites-lui payer de petits achats** en espèces : il voit concrètement la valeur des choses.
-- **Fixez un rythme** (début de semaine ou de mois) et un montant que vous pouvez tenir.
-- **Laissez-le décider** de ses dépenses, dans des limites que vous fixez (pas de produits dangereux, par exemple).
-- **Tirelire** : comptez ensemble régulièrement, fixez un objectif d’épargne (un jouet, une sortie).
-- **Apprenez à dire non** de temps en temps : savoir renoncer fait partie de l’apprentissage.
+- **Explique à voix haute** tes choix pendant les courses : comparer les prix, distinguer besoins et envies.
+- **Fais-lui payer de petits achats** en espèces : il voit concrètement la valeur des choses.
+- **Fixe un rythme** (début de semaine ou de mois) et un montant que tu peux tenir.
+- **Laisse-le décider** de ses dépenses, dans des limites que tu fixes (pas de produits dangereux, par exemple).
+- **Tirelire** : compte ensemble régulièrement, fixe un objectif d’épargne (un jouet, une sortie).
+- **Apprends à dire non** de temps en temps : savoir renoncer fait partie de l’apprentissage.
 - Plus tard, un **livret** ou un **compte** peut responsabiliser ; des outils de suivi de budget existent.
 
 ## Questions fréquentes
@@ -1410,10 +1410,10 @@ Ce n’est pas obligatoire. Beaucoup de parents préfèrent séparer l’argent 
 Mieux vaut le laisser constater les conséquences et l’aider à prévoir la prochaine fois.
 
 **Et l’argent en ligne (jeux, applications) ?**
-Expliquez que les achats en ligne sont de vrais achats, verrouillez les moyens de paiement et accompagnez-le.
+Explique que les achats en ligne sont de vrais achats, verrouille les moyens de paiement et accompagne-le.
 
 ## Quand demander conseil
-Parlez-en avec votre enfant et, si besoin, avec un professionnel si l’argent devient source de conflits répétés, s’il se fait racketter ou subit une pression d’autres enfants (signalez-le à l’école ; le **3018** traite le harcèlement et le cyberharcèlement), ou si vous constatez des dépenses en ligne importantes et cachées.
+Parles-en avec ton enfant et, si besoin, avec un professionnel si l’argent devient source de conflits répétés, s’il se fait racketter ou subit une pression d’autres enfants (signale-le à l’école ; le **3018** traite le harcèlement et le cyberharcèlement), ou si tu constates des dépenses en ligne importantes et cachées.
 
 ${FIN}`,
   },
@@ -1421,7 +1421,7 @@ ${FIN}`,
   {
     ...CHILD, slug: 'entree-a-l-ecole-maternelle', category: 'ecole-garde', min_age_months: 24, max_age_months: 72, tags: ['maternelle', 'rentrée', 'inscription', 'séparation'],
     title: 'L’entrée à l’école maternelle : inscription et préparation',
-    summary: 'Instruction obligatoire dès 3 ans, démarches en mairie, ce qu’on apprend en maternelle et comment préparer votre enfant à la rentrée.',
+    summary: 'Instruction obligatoire dès 3 ans, démarches en mairie, ce qu’on apprend en maternelle et comment préparer ton enfant à la rentrée.',
     sources: [S.inscription, S.maternelle],
     body_md: `## En bref
 - L’**instruction est obligatoire dès 3 ans** ; certains enfants de 2 ans peuvent être accueillis, selon les places.
@@ -1435,30 +1435,30 @@ Selon le ministère de l’Éducation nationale, l’école maternelle comprend 
 Les parents sont membres à part entière de la communauté éducative : l’enseignant dialogue avec eux, et des représentants élus siègent au conseil d’école.
 
 
-**Préparer la séparation.** Pour un enfant qui n’a pas fréquenté la crèche, l’école est souvent la première séparation longue. Des temps de garde chez un proche, des jeux de « faire semblant » (jouer à l’école, à la maîtresse), un objet de la maison dans la poche et un rituel d’au revoir toujours identique aident à apprivoiser ce changement. Restez confiant : votre sérénité le rassure.
+**Préparer la séparation.** Pour un enfant qui n’a pas fréquenté la crèche, l’école est souvent la première séparation longue. Des temps de garde chez un proche, des jeux de « faire semblant » (jouer à l’école, à la maîtresse), un objet de la maison dans la poche et un rituel d’au revoir toujours identique aident à apprivoiser ce changement. Reste confiant : ta sérénité le rassure.
 
-**Les premières semaines.** Fatigue, pleurs le soir, retour de difficultés passées (sommeil, propreté) sont fréquents en début d’année. Préservez les nuits, allégez les activités, et prenez le temps d’échanger avec l’enseignant si quelque chose vous inquiète.
+**Les premières semaines.** Fatigue, pleurs le soir, retour de difficultés passées (sommeil, propreté) sont fréquents en début d’année. Préserve les nuits, allège les activités, et prends le temps d’échanger avec l’enseignant si quelque chose t’inquiète.
 
 ## Au quotidien
-- **Inscription** : renseignez-vous tôt auprès de votre mairie (certaines ouvrent les inscriptions avant le printemps). Elle vous délivre un certificat d’inscription, à présenter ensuite au directeur ou à la directrice de l’école.
-- **Avant la rentrée** : passez devant l’école, parlez de ce qu’on y fait, lisez des livres sur la maternelle.
+- **Inscription** : renseigne-toi tôt auprès de ta mairie (certaines ouvrent les inscriptions avant le printemps). Elle te délivre un certificat d’inscription, à présenter ensuite au directeur ou à la directrice de l’école.
+- **Avant la rentrée** : passe devant l’école, parle de ce qu’on y fait, lis des livres sur la maternelle.
 - **Autonomie** : vêtements faciles à enfiler, chaussures à scratch, aller aux toilettes seul autant que possible.
-- **Le jour J** : au revoir clair et chaleureux, sans vous éclipser en douce ; dites quand vous reviendrez.
+- **Le jour J** : au revoir clair et chaleureux, sans t’éclipser en douce ; dis quand tu reviendras.
 - **Après l’école** : un temps calme, un goûter, et de l’écoute plutôt qu’un interrogatoire.
-- **Fatigue** : les premières semaines sont intenses ; préservez le sommeil.
+- **Fatigue** : les premières semaines sont intenses ; préserve le sommeil.
 
 ## Questions fréquentes
 **Mon enfant n’est pas tout à fait propre, peut-il entrer à l’école ?**
-Parlez-en avec l’équipe : l’apprentissage de la propreté se poursuit souvent pendant la petite section.
+Parles-en avec l’équipe : l’apprentissage de la propreté se poursuit souvent pendant la petite section.
 
 **Peut-on choisir son école ?**
-Chaque habitant est affecté à l’école de son secteur ; une dérogation peut être accordée à titre exceptionnel par le maire. En cas de difficulté, la direction académique de votre département peut vous renseigner.
+Chaque habitant est affecté à l’école de son secteur ; une dérogation peut être accordée à titre exceptionnel par le maire. En cas de difficulté, la direction académique de ton département peut te renseigner.
 
 **Il pleure tous les matins, que faire ?**
-C’est une réaction fréquente au début. Gardez un rituel court et rassurant, parlez avec l’enseignant, et consultez si la détresse persiste plusieurs semaines.
+C’est une réaction fréquente au début. Garde un rituel court et rassurant, parle avec l’enseignant, et consulte si la détresse persiste plusieurs semaines.
 
 ## Quand demander conseil
-Parlez avec l’enseignant et le médecin si votre enfant reste très en détresse à la séparation après plusieurs semaines, s’il parle peu ou de façon difficile à comprendre, s’il a du mal à jouer avec les autres, ou si son sommeil et son appétit se dégradent. Un dépistage de la vue et du langage est proposé en maternelle : suivez ses résultats.
+Parle avec l’enseignant et le médecin si ton enfant reste très en détresse à la séparation après plusieurs semaines, s’il parle peu ou de façon difficile à comprendre, s’il a du mal à jouer avec les autres, ou si son sommeil et son appétit se dégradent. Un dépistage de la vue et du langage est proposé en maternelle : suis ses résultats.
 
 ${FIN}`,
   },
@@ -1471,7 +1471,7 @@ ${FIN}`,
 - Lire, c’est **associer des lettres à des sons** pour en tirer du sens ; cela mobilise vue, ouïe, langage, attention et mémoire.
 - Après **deux ou trois mois de CP**, un enfant qui progresse lit en général **quelques mots simples**.
 - À la maison : **lire des histoires ensemble**, revoir les sons étudiés en classe, **encourager sans forcer**.
-- Si le principe lettres-sons **n’est pas compris à Noël du CP**, parlez-en à l’enseignant et au médecin.
+- Si le principe lettres-sons **n’est pas compris à Noël du CP**, parles-en à l’enseignant et au médecin.
 
 ## Comprendre
 Selon mpedia, la lecture conditionne largement la réussite dans les autres matières : une difficulté qui s’installe peut entraîner découragement et perte de motivation. Les causes possibles de difficultés sont variées : manque de contact avec les livres, langage oral encore fragile, trouble de la vue ou de l’audition, ou trouble des apprentissages. Certains enfants ont simplement besoin de plus de répétitions.
@@ -1481,41 +1481,41 @@ L’enseignant repère les enfants qui avancent moins vite et peut reprendre les
 
 **Le rôle de l’oral.** Un enfant qui a beaucoup de vocabulaire, qui entend des histoires et qui a l’habitude de raconter comprend plus facilement ce qu’il déchiffre. Parler avec lui, lui poser des questions sur ce qu’il vit, raconter des souvenirs ou décrire des images sont des façons simples de soutenir la lecture, dès la maternelle.
 
-**Les devoirs de lecture.** Des moments courts et réguliers valent mieux qu’une longue séance le dimanche. Installez-vous au calme, sans écran, après un goûter et une pause. Si la lecture du soir devient une épreuve, signalez-le à l’enseignant plutôt que d’insister : il pourra adapter les exercices.
+**Les devoirs de lecture.** Des moments courts et réguliers valent mieux qu’une longue séance le dimanche. Installe-toi au calme, sans écran, après un goûter et une pause. Si la lecture du soir devient une épreuve, signale-le à l’enseignant plutôt que d’insister : il pourra adapter les exercices.
 
 ## Au quotidien
-- **Lisez-lui des histoires** tous les jours, même quand il commence à lire seul : le plaisir avant tout.
+- **Lis-lui des histoires** tous les jours, même quand il commence à lire seul : le plaisir avant tout.
 - **Jeux de sons** : trouver des mots qui riment, qui commencent par le même son, découper les mots en syllabes.
-- **Revoyez les sons** travaillés en classe, en accord avec l’enseignant, sur des temps courts.
+- **Revois les sons** travaillés en classe, en accord avec l’enseignant, sur des temps courts.
 - **Lecture du quotidien** : panneaux, recettes, listes de courses, jeux de société.
-- **Valorisez l’effort** plutôt que la vitesse ; évitez les comparaisons avec les frères et sœurs ou les copains.
-- **Vérifiez vue et audition** lors des examens de suivi.
+- **Valorise l’effort** plutôt que la vitesse ; évite les comparaisons avec les frères et sœurs ou les copains.
+- **Vérifie vue et audition** lors des examens de suivi.
 
 ## Questions fréquentes
 **Faut-il lui apprendre à lire avant le CP ?**
 Inutile de forcer : en grande section, les jeux de sons, le vocabulaire et le plaisir des livres préparent très bien l’apprentissage.
 
 **Il devine les mots au lieu de les déchiffrer…**
-Signalez-le à l’enseignant, qui vous indiquera comment l’accompagner sur le déchiffrage.
+Signale-le à l’enseignant, qui t’indiquera comment l’accompagner sur le déchiffrage.
 
 **Les écrans éducatifs peuvent-ils aider ?**
 Ils ne remplacent pas la lecture partagée ; Santé.fr conseille de fixer des plages horaires et de varier les activités.
 
 ## Quand demander conseil
-Consultez le médecin traitant ou le pédiatre si les difficultés persistent, si votre enfant a eu des troubles du langage oral, si des troubles des apprentissages existent dans la famille, ou s’il se décourage, refuse d’aller à l’école ou a mal au ventre avant la classe. Le médecin fera le point et pourra prescrire un bilan, par exemple orthophonique ; le médecin scolaire est aussi un interlocuteur.
+Consulte le médecin traitant ou le pédiatre si les difficultés persistent, si ton enfant a eu des troubles du langage oral, si des troubles des apprentissages existent dans la famille, ou s’il se décourage, refuse d’aller à l’école ou a mal au ventre avant la classe. Le médecin fera le point et pourra prescrire un bilan, par exemple orthophonique ; le médecin scolaire est aussi un interlocuteur.
 
 ${FIN}`,
   },
   {
     ...CHILD, slug: 'harcelement-scolaire-que-faire', category: 'ecole-garde', safety_critical: true, min_age_months: 36, tags: ['harcèlement', 'cyberharcèlement', 'école', '3018'],
     title: 'Harcèlement scolaire : repérer les signes et agir',
-    summary: 'Les signaux qui doivent alerter, comment en parler avec votre enfant, qui contacter à l’école et le rôle du 3018.',
+    summary: 'Les signaux qui doivent alerter, comment en parler avec ton enfant, qui contacter à l’école et le rôle du 3018.',
     sources: [S.harcelement],
     body_md: `## En bref
 - Le harcèlement, ce sont des **violences répétées** (verbales, morales, physiques, vols) ; en ligne, on parle de **cyberharcèlement**.
 - Signes possibles : **repli**, nervosité, anxiété, fatigue, **troubles du sommeil ou de l’alimentation**, baisse des résultats, réactions inhabituelles au téléphone.
-- **Écoutez, rassurez, notez les faits** et conservez les preuves.
-- Contactez **la direction de l’école** ; en l’absence de réponse rapide, le **3018**.
+- **Écoute, rassure, note les faits** et conserve les preuves.
+- Contacte **la direction de l’école** ; en l’absence de réponse rapide, le **3018**.
 
 ## Comprendre
 Selon le ministère de l’Éducation nationale, le harcèlement peut prendre des formes très variées : moqueries, mises à l’écart, rumeurs, coups, vols, messages blessants sur les réseaux ou par SMS. L’enfant victime en parle rarement spontanément, par honte ou par peur d’aggraver les choses. C’est souvent un changement de comportement qui alerte les parents.
@@ -1525,29 +1525,29 @@ Le **3018** est le numéro national pour les situations de harcèlement et de cy
 
 **Les formes du harcèlement.** Il peut s’agir de surnoms, de moqueries sur l’apparence ou les résultats, de rumeurs, d’exclusion des jeux, de bousculades, de vols d’affaires, de menaces ou de messages et photos diffusés en ligne. Ce qui le caractérise, c’est la **répétition** et le déséquilibre entre la victime et le ou les auteurs. Le cyberharcèlement peut poursuivre l’enfant jusque chez lui, le soir et le week-end.
 
-**Après le signalement.** Restez en lien avec l’école pour savoir ce qui a été mis en place et vérifier que la situation s’améliore. Continuez à écouter votre enfant, à valoriser ses activités et ses amitiés en dehors de l’école, et demandez un soutien psychologique s’il en a besoin.
+**Après le signalement.** Reste en lien avec l’école pour savoir ce qui a été mis en place et vérifier que la situation s’améliore. Continue à écouter ton enfant, à valoriser ses activités et ses amitiés en dehors de l’école, et demande un soutien psychologique s’il en a besoin.
 
 ## Au quotidien
-- **Dialoguez** : posez des questions ouvertes sur ses journées, ses copains, la récréation, sans juger.
-- **Rassurez-le** : ce n’est pas sa faute, il a eu raison d’en parler, et vous allez l’aider.
-- **Demandez-lui ce qu’il souhaite** et associez-le aux démarches.
-- **Notez** les faits, dates et noms ; faites des **captures d’écran** en cas de cyberharcèlement.
-- **Rencontrez la direction** : décrivez précisément la situation et demandez quelles mesures seront prises pour le protéger.
-- **Ne contactez pas vous-même l’auteur** ou sa famille : cela peut aggraver la situation.
-- **En ligne** : signalez les contenus sur la plateforme concernée ; vous pouvez demander leur retrait via le 3018.
+- **Dialogue** : pose des questions ouvertes sur ses journées, ses copains, la récréation, sans juger.
+- **Rassure-le** : ce n’est pas sa faute, il a eu raison d’en parler, et tu vas l’aider.
+- **Demande-lui ce qu’il souhaite** et associe-le aux démarches.
+- **Note** les faits, dates et noms ; fais des **captures d’écran** en cas de cyberharcèlement.
+- **Rencontre la direction** : décris précisément la situation et demande quelles mesures seront prises pour le protéger.
+- **Ne contacte pas toi-même l’auteur** ou sa famille : cela peut aggraver la situation.
+- **En ligne** : signale les contenus sur la plateforme concernée ; tu peux demander leur retrait via le 3018.
 
 ## Questions fréquentes
 **Mon enfant minimise, dois-je quand même agir ?**
-Si vous observez des signes répétés, parlez-en à l’équipe éducative : elle peut observer ce qui se passe à l’école.
+Si tu observes des signes répétés, parles-en à l’équipe éducative : elle peut observer ce qui se passe à l’école.
 
 **Peut-on porter plainte ?**
-Oui, vous avez le droit de déposer plainte, en particulier en cas de cyberharcèlement ou de violences.
+Oui, tu as le droit de déposer plainte, en particulier en cas de cyberharcèlement ou de violences.
 
 **Et si mon enfant est témoin ?**
-Encouragez-le à en parler à un adulte de confiance : les témoins jouent un rôle important pour faire cesser le harcèlement.
+Encourage-le à en parler à un adulte de confiance : les témoins jouent un rôle important pour faire cesser le harcèlement.
 
 ## Quand demander conseil
-Contactez rapidement l’école et le **3018** dès que vous suspectez un harcèlement. Consultez le médecin si votre enfant est très anxieux, triste, dort ou mange mal, refuse d’aller à l’école ou a des plaintes physiques répétées. **S’il exprime des idées suicidaires ou s’il est en danger**, appelez le **3114** (24 h/24) ou le **15** / **112** ; en cas de violence grave, le **17**.
+Contacte rapidement l’école et le **3018** dès que tu suspectes un harcèlement. Consulte le médecin si ton enfant est très anxieux, triste, dort ou mange mal, refuse d’aller à l’école ou a des plaintes physiques répétées. **S’il exprime des idées suicidaires ou s’il est en danger**, appelle le **3114** (24 h/24) ou le **15** / **112** ; en cas de violence grave, le **17**.
 
 ${FIN}`,
   },
@@ -1570,32 +1570,32 @@ Selon Santé.fr (Santé publique France), les accidents de la vie courante sont 
 Vérifier que les équipements (lits, jouets, sièges) portent le marquage CE ou NF fait aussi partie des précautions.
 
 
-**Faire le tour de la maison à hauteur d’enfant.** Se mettre à genoux dans chaque pièce permet de voir ce qui attire un enfant : prises, tiroirs, produits sous l’évier, câbles, objets brillants. Refaites ce tour à chaque étape (il marche, il grimpe, il ouvre les portes) et lors des vacances dans un lieu inconnu, chez des grands-parents ou en location.
+**Faire le tour de la maison à hauteur d’enfant.** Se mettre à genoux dans chaque pièce permet de voir ce qui attire un enfant : prises, tiroirs, produits sous l’évier, câbles, objets brillants. Refais ce tour à chaque étape (il marche, il grimpe, il ouvre les portes) et lors des vacances dans un lieu inconnu, chez des grands-parents ou en location.
 
 **Apprendre les dangers aux plus grands.** À partir de 3-4 ans, expliquer simplement pourquoi on ne touche pas le four, les médicaments ou les prises, et pourquoi on ne grimpe pas près des fenêtres, complète les aménagements. Les enfants plus âgés peuvent apprendre les numéros d’urgence et ce qu’il faut dire au téléphone.
 
 ## Au quotidien
-- **Chutes et défenestrations** : écartez chaises, lits, coffres des fenêtres ; installez des bloque-fenêtres ; ne laissez pas un jeune enfant seul sur un balcon ; barrières en haut et en bas des escaliers.
-- **Meubles** : fixez bibliothèques, commodes et télévision au mur ; sécurisez les tiroirs.
+- **Chutes et défenestrations** : écarte chaises, lits, coffres des fenêtres ; installe des bloque-fenêtres ; ne laisse pas un jeune enfant seul sur un balcon ; barrières en haut et en bas des escaliers.
+- **Meubles** : fixe bibliothèques, commodes et télévision au mur ; sécurise les tiroirs.
 - **Brûlures** : eau du bain à moins de 37 °C ; queues de casseroles vers l’intérieur ; plats chauds, bougies, allumettes et appareils chauffants hors de portée ; pas de bouillotte dans le lit.
-- **Intoxications** : produits ménagers, médicaments et cosmétiques rangés en hauteur ou fermés à clé ; ne jamais transvaser dans une bouteille alimentaire ; renseignez-vous sur la toxicité des plantes.
-- **Étouffement** : rangez petits objets, piles boutons, sacs plastiques ; surveillez les repas, attention aux cacahuètes et aliments durs chez les petits.
+- **Intoxications** : produits ménagers, médicaments et cosmétiques rangés en hauteur ou fermés à clé ; ne jamais transvaser dans une bouteille alimentaire ; renseigne-toi sur la toxicité des plantes.
+- **Étouffement** : range petits objets, piles boutons, sacs plastiques ; surveille les repas, attention aux cacahuètes et aliments durs chez les petits.
 - **Étranglement** : pas de cordons, colliers ou écharpes pendant le jeu et le sommeil ; cordons de stores hors de portée.
 - **Électricité** : cache-prises, rallonges débranchées, pas d’appareil électrique près de l’eau.
-- **Animaux** : ne laissez jamais un jeune enfant seul avec un animal.
+- **Animaux** : ne laisse jamais un jeune enfant seul avec un animal.
 
 ## Questions fréquentes
 **Il a avalé un produit ménager ou un médicament, que faire ?**
-Ne le faites pas vomir et ne lui donnez rien à boire sans avis. Appelez le **15** ou un centre antipoison, en gardant l’emballage à portée.
+Ne le fais pas vomir et ne lui donne rien à boire sans avis. Appelle le **15** ou un centre antipoison, en gardant l’emballage à portée.
 
 **Il a avalé une pile bouton ?**
-C’est une urgence, même en cas de simple doute : appelez immédiatement le **15** ou un centre antipoison en précisant qu’il s’agit d’une pile bouton. Selon l’Assurance Maladie, laissez l’enfant à jeun (ni boisson ni aliment), ne le faites pas vomir et gardez l’emballage de la pile pour les urgences.
+C’est une urgence, même en cas de simple doute : appelle immédiatement le **15** ou un centre antipoison en précisant qu’il s’agit d’une pile bouton. Selon l’Assurance Maladie, laisse l’enfant à jeun (ni boisson ni aliment), ne le fais pas vomir et garde l’emballage de la pile pour les urgences.
 
 **À quel âge peut-on relâcher la vigilance ?**
-Les risques changent avec l’âge mais ne disparaissent pas : défenestrations, brûlures et intoxications concernent aussi les plus grands. Expliquez les dangers et adaptez les aménagements.
+Les risques changent avec l’âge mais ne disparaissent pas : défenestrations, brûlures et intoxications concernent aussi les plus grands. Explique les dangers et adapte les aménagements.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de chute de hauteur, de choc à la tête suivi de vomissements, somnolence ou comportement inhabituel, de brûlure étendue ou sur le visage, les mains ou les parties intimes, d’ingestion d’un produit ou d’une pile, de difficulté à respirer ou d’étouffement. Consultez rapidement après tout accident qui vous inquiète.
+**Appelle le 15 ou le 112** en cas de chute de hauteur, de choc à la tête suivi de vomissements, somnolence ou comportement inhabituel, de brûlure étendue ou sur le visage, les mains ou les parties intimes, d’ingestion d’un produit ou d’une pile, de difficulté à respirer ou d’étouffement. Consulte rapidement après tout accident qui t’inquiète.
 
 ${FIN}`,
   },
@@ -1616,18 +1616,18 @@ Selon l’Assurance Maladie, s’appuyant sur Santé publique France, 1 418 noya
 Santé.fr rappelle qu’un bébé peut se noyer dans **moins de 5 cm d’eau** : bain, bassine, seau, pataugeoire.
 
 
-**Préparer les vacances.** Avant de partir, renseignez-vous sur la présence d’une piscine sur le lieu de séjour et sur ses dispositifs de sécurité. Rappelez les règles dès l’arrivée : on ne va pas au bord de l’eau sans adulte, on attend l’autorisation pour se baigner. Lors des réunions de famille ou entre amis, c’est souvent quand tout le monde pense que « quelqu’un regarde » que personne ne surveille vraiment : désignez une personne.
+**Préparer les vacances.** Avant de partir, renseigne-toi sur la présence d’une piscine sur le lieu de séjour et sur ses dispositifs de sécurité. Rappelle les règles dès l’arrivée : on ne va pas au bord de l’eau sans adulte, on attend l’autorisation pour se baigner. Lors des réunions de famille ou entre amis, c’est souvent quand tout le monde pense que « quelqu’un regarde » que personne ne surveille vraiment : désigne une personne.
 
 **Apprendre à nager, une protection pour la vie.** Santé publique France encourage l’apprentissage de la nage le plus tôt possible et la familiarisation avec l’eau dès le plus jeune âge. Cela ne remplace jamais la surveillance, mais donne à l’enfant des réflexes et de l’aisance en cas de chute dans l’eau.
 
 ## Au quotidien
-- **Désignez à voix haute** l’adulte qui surveille ; changez de surveillant en le disant clairement.
+- **Désigne à voix haute** l’adulte qui surveille ; change de surveillant en le disant clairement.
 - **Pas de téléphone, de lecture ou de sieste** pendant la surveillance.
-- **Bain** : restez à côté du bébé ou du jeune enfant, même quelques secondes ; videz baignoires, bassines et pataugeoires après usage.
-- **Piscine privée** : activez les dispositifs de sécurité (barrière, alarme, couverture, abri) et refermez-les après chaque baignade.
+- **Bain** : reste à côté du bébé ou du jeune enfant, même quelques secondes ; vide baignoires, bassines et pataugeoires après usage.
+- **Piscine privée** : active les dispositifs de sécurité (barrière, alarme, couverture, abri) et referme-les après chaque baignade.
 - **Équipements** : Santé.fr conseille d’éviter les bouées gonflables et de préférer les brassards, sans qu’ils remplacent la surveillance.
-- **Mer, lac, rivière** : zones surveillées, respect des drapeaux et des consignes ; entrez progressivement dans l’eau.
-- **Cours de natation** et activités d’aisance aquatique : renseignez-vous auprès de votre commune ou de la piscine.
+- **Mer, lac, rivière** : zones surveillées, respect des drapeaux et des consignes ; entre progressivement dans l’eau.
+- **Cours de natation** et activités d’aisance aquatique : renseigne-toi auprès de ta commune ou de la piscine.
 
 ## Questions fréquentes
 **Mon enfant sait nager, puis-je le laisser seul ?**
@@ -1640,7 +1640,7 @@ Le plus tôt possible : l’aisance aquatique se travaille dès le plus jeune â
 Non : ils aident, mais aucun équipement ne remplace la surveillance d’un adulte.
 
 ## Quand demander conseil
-**En cas de noyade, appelez immédiatement le 15, le 18 ou le 112** (appels gratuits, même sans crédit), sortez l’enfant de l’eau si vous pouvez le faire en sécurité et suivez les consignes des secours. Après un épisode où l’enfant a bu la tasse de façon importante, toussé longtemps, ou s’il est essoufflé, somnolent ou vomit dans les heures qui suivent, consultez en urgence. Une formation aux gestes de premiers secours est précieuse pour tous les parents.
+**En cas de noyade, appelle immédiatement le 15, le 18 ou le 112** (appels gratuits, même sans crédit), sors l’enfant de l’eau si tu peux le faire en sécurité et suis les consignes des secours. Après un épisode où l’enfant a bu la tasse de façon importante, toussé longtemps, ou s’il est essoufflé, somnolent ou vomit dans les heures qui suivent, consulte en urgence. Une formation aux gestes de premiers secours est précieuse pour tous les parents.
 
 ${FIN}`,
   },
@@ -1648,7 +1648,7 @@ ${FIN}`,
   {
     ...CHILD, slug: 'enfance-en-danger-appeler-le-119', category: 'sante-mentale', safety_critical: true, tags: ['119', 'maltraitance', 'protection de l’enfance', 'violences'],
     title: 'Enfant en danger : le 119 et les bons réflexes',
-    summary: 'Que faire si vous pensez qu’un enfant est maltraité ou en danger : le 119, le formulaire en ligne et les numéros d’urgence.',
+    summary: 'Que faire si tu penses qu’un enfant est maltraité ou en danger : le 119, le formulaire en ligne et les numéros d’urgence.',
     sources: [S.allo119, S.veo, S.signesDanger],
     body_md: `## En bref
 - Le **119 – Allô Enfance en danger** est le numéro national dédié à la **prévention et à la protection des enfants en danger** ou en risque de l’être.
@@ -1667,25 +1667,25 @@ Le 119 concerne les enfants en danger, mais aussi ceux qui risquent de l’être
 **Le rôle de chacun.** Parents, proches, voisins, enseignants, animateurs, professionnels de santé : tout adulte qui s’inquiète pour un enfant peut s’adresser au 119. Protéger un enfant, c’est aussi soutenir les parents en difficulté, en les orientant vers les aides existantes.
 
 ## Au quotidien
-- **Écoutez** un enfant qui se confie, calmement, sans l’interroger longuement ni mettre en doute sa parole ; dites-lui qu’il a bien fait de parler.
-- **Ne promettez pas le secret** : expliquez que vous allez demander de l’aide pour le protéger.
-- **Notez** ce que vous avez vu ou entendu (dates, faits, mots de l’enfant).
-- **Ne confrontez pas** vous-même la personne soupçonnée.
-- **Appelez le 119** ou utilisez le formulaire en ligne pour une situation préoccupante sans danger immédiat.
-- **Parlez-en** aussi au médecin, à l’école ou à la PMI, qui ont l’habitude de ces situations.
+- **Écoute** un enfant qui se confie, calmement, sans l’interroger longuement ni mettre en doute sa parole ; dis-lui qu’il a bien fait de parler.
+- **Ne promets pas le secret** : explique que tu vas demander de l’aide pour le protéger.
+- **Note** ce que tu as vu ou entendu (dates, faits, mots de l’enfant).
+- **Ne confronte pas** toi-même la personne soupçonnée.
+- **Appelle le 119** ou utilise le formulaire en ligne pour une situation préoccupante sans danger immédiat.
+- **Parles-en** aussi au médecin, à l’école ou à la PMI, qui ont l’habitude de ces situations.
 
 ## Questions fréquentes
 **J’ai peur de me tromper, puis-je quand même appeler ?**
 Oui : signaler une inquiétude de bonne foi aide les professionnels à évaluer la situation. Seul un usage abusif dans l’intention de nuire est puni par la loi.
 
 **Je suis moi-même à bout et j’ai peur de mal faire avec mon enfant…**
-Demander de l’aide est un geste protecteur : parlez-en à votre médecin ou à la PMI, qui peuvent vous orienter vers un soutien adapté.
+Demander de l’aide est un geste protecteur : parles-en à ton médecin ou à la PMI, qui peuvent t’orienter vers un soutien adapté.
 
 **Le formulaire en ligne remplace-t-il l’appel ?**
 Il permet un signalement écrit, sans échange immédiat ni rappel ; en cas de danger urgent, il faut appeler les secours.
 
 ## Quand demander conseil
-**Appelez immédiatement le 17, le 15 ou le 112** si un enfant est en danger grave et immédiat. Pour toute inquiétude, appelez le **119**. Si un enfant ou un adolescent exprime des idées suicidaires, appelez le **3114**. Après des violences, l’enfant doit être vu par un médecin.
+**Appelle immédiatement le 17, le 15 ou le 112** si un enfant est en danger grave et immédiat. Pour toute inquiétude, appelle le **119**. Si un enfant ou un adolescent exprime des idées suicidaires, appelle le **3114**. Après des violences, l’enfant doit être vu par un médecin.
 
 ${FIN}`,
   },

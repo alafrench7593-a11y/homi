@@ -50,7 +50,7 @@ select tests.throws($$update public.care_requests set status = 'open' where kind
 insert into public.family_tasks (household_id, title, assignee_id) values (:'FOYER', 'Rendez-vous chez le psychiatre', :'NILS');
 insert into public.family_tasks (household_id, title, assignee_id) values (:'FOYER', 'Tâche pour Oli', :'OLI');
 set request.jwt.claim.sub = :'NILS';
-select tests.ok((select count(*) = 1 and bool_and(body = 'Ouvrez l’application pour la voir.') from public.notifications where title = 'Une tâche vous est confiée'), 'tâches : notification sans le titre de la tâche');
+select tests.ok((select count(*) = 1 and bool_and(body = 'Ouvre l’application pour la voir.') from public.notifications where title = 'Une tâche t’est confiée'), 'tâches : notification sans le titre de la tâche');
 update public.family_tasks set status = 'done', done_by = :'MIA' where title = 'Rendez-vous chez le psychiatre';
 select tests.ok((select done_by = :'NILS' from public.family_tasks where title = 'Rendez-vous chez le psychiatre'), 'tâches : « fait par » est toujours la personne connectée');
 set request.jwt.claim.sub = :'OLI';

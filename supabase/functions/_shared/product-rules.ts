@@ -89,7 +89,7 @@ export function assessProduct(p: ProductData, ctx: ScanContext): Assessment {
       findings.push({
         level: 'attention',
         title: `Indiqué à partir de ${minAge} mois`,
-        criterion: `L’emballage indique un âge minimal de ${minAge} mois ; votre enfant a ${ctx.childAgeMonths} mois.`,
+        criterion: `L’emballage indique un âge minimal de ${minAge} mois ; ton enfant a ${ctx.childAgeMonths} mois.`,
         source: 'Emballage du produit',
       });
     }
@@ -106,7 +106,7 @@ export function assessProduct(p: ProductData, ctx: ScanContext): Assessment {
   for (const m of chk.identified) {
     findings.push({
       level: 'avoid_advised',
-      title: `Contient « ${m.allergy} », allergie que vous avez déclarée`,
+      title: `Contient « ${m.allergy} », allergie que tu as déclarée`,
       criterion: m.via === 'declared' ? 'Allergène déclaré par le fabricant, correspondant à une allergie saisie dans le profil.' : 'Correspondance entre la liste des ingrédients et une allergie saisie dans le profil.',
       source: 'Étiquetage du produit + profil de l’enfant',
     });
@@ -133,7 +133,7 @@ export function assessProduct(p: ProductData, ctx: ScanContext): Assessment {
   const disclaimers = [
     'Cette analyse porte sur ce produit précis, d’après les données indiquées et leur date de récupération.',
     'L’absence d’alerte ne signifie pas qu’un produit est sans danger.',
-    'Vérifiez toujours l’emballage, et demandez conseil à un professionnel de santé en cas de doute.',
+    'Vérifie toujours l’emballage, et demande conseil à un professionnel de santé en cas de doute.',
   ];
   if (p.is_demo) disclaimers.unshift('DONNÉES FICTIVES : ce produit provient de la base de démonstration.');
 

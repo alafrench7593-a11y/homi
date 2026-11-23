@@ -5,19 +5,21 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { parseFrDateTime } from '@/features/familyLoad';
-import { useBatchTasks, useDeleteRoutine, usePeople, useRoutines, useSaveRoutine } from '@/lib/data/hooks-family-load';
+import { useBatchTasks, useDeleteRoutine, useFamilyTasks, usePeople, useRoutines, useSaveRoutine } from '@/lib/data/hooks-family-load';
+import { router } from 'expo-router';
+import { RoutineTrack } from '@/features/homeTrack/RoutineTrack';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { ROUTINE_TEMPLATES, routinePreview, type Routine } from '@/lib/domain/familyLoad';
 import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type Draft = { id?: string; title: string; kind: Routine['kind']; items: string; assignee: string | null };
 
@@ -28,6 +30,7 @@ export default function Routines() {
   const del = useDeleteRoutine();
   const batch = useBatchTasks();
   const { people, labelOf } = usePeople();
+  const tasks = useFamilyTasks().data ?? [];
   const [draft, setDraft] = useState<Draft | null>(null);
   const [launch, setLaunch] = useState<Routine | null>(null);
   const [date, setDate] = useState(toFrDate(todayISO()));
@@ -65,17 +68,11 @@ export default function Routines() {
   return (
     <Screen back title={tr('u2.routines.title')} subtitle={tr('u2.routines.subtitle')}
       action={{ label: tr('u2.routines.new'), icon: 'plus', onPress: () => setDraft({ title: '', kind: 'custom', items: '', assignee: null }), testID: 'routines-new' }}>
-      {q.data ? (
-        <TodaySummary title={tr('u2.routines.mine')} items={[
-          { icon: 'list', value: String(list.length), label: list.length > 1 ? tr('u2.routines.title') : tr('u2.routines.one') },
-          { icon: 'check-square', value: String(list.reduce((n, r) => n + r.items.length, 0)), label: tr('u2.routines.steps_ready') },
-          { icon: 'user-check', value: String(list.filter((r) => r.default_assignee).length), label: tr('u2.routines.assigned') },
-        ]} />
-      ) : null}
+      {q.data ? <RoutineTrack tasks={tasks} routines={list} onEdit={() => router.push('/family' as never)} /> : null}
       {q.isLoading && !q.data ? <Skeleton rows={2} /> : null}
       {q.data && !list.length ? <EmptyState icon="list" title={tr('u2.routines.none_title')} body={tr('u2.routines.none_body')} /> : null}
-      {list.map((r, i) => (
-        <StaggerItem key={r.id} index={i}>
+      <MotionList style={{ gap: spacing.md }}>{list.map((r, i) => (
+        <MotionItem key={r.id}><StaggerItem key={r.id} index={i}>
           <Card>
             <ListRow icon="list" title={r.title} subtitle={`${tr('u2.routines.steps', { count: r.items.length })}${r.default_assignee ? ` · ${labelOf(r.default_assignee)}` : ''}`} onPress={() => setDraft({ id: r.id, title: r.title, kind: r.kind, items: r.items.join('\n'), assignee: r.default_assignee })} />
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -83,8 +80,8 @@ export default function Routines() {
               <Button label={tr('u2.routines.delete')} size="sm" variant="ghost" onPress={() => remove(r)} />
             </Row>
           </Card>
-        </StaggerItem>
-      ))}
+        </StaggerItem></MotionItem>
+      ))}</MotionList>
 
       <SectionTitle title={tr('u2.routines.templates')} />
       <Row wrap>

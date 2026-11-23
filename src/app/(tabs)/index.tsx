@@ -1,26 +1,46 @@
 /**
- * Accueil volontairement court (profil « Suivre mon cycle » : calendrier, 5 raccourcis, une carte intelligente et le prochain
- * rappel seulement) : carte principale du profil affiché, les 4 actions du quotidien, le prochain rappel,
- * une publication de la communauté choisie pour vous (+ « Voir la communauté »), une recommandation (article ou repas).
- * La communauté complète reste dans son onglet ; les autres cartes se réactivent dans Réglages › Mon accueil.
+ * « Aujourd'hui » — tableau de bord (refonte du 17/11/2026) : que dois-je faire maintenant ?
+ *
+ * En-tête FIXE : (1) bonjour + date + profil actif (sélecteur universel, indicateur de pages) et l'entrée « Outils ».
+ * Puis les modules, dans l'ordre de la configuration de la situation affichée (`HOME_PRESETS`, déclaratif : grossesse,
+ * nouveau-né, enfant, couple, famille, cycle, moi) ou dans celui choisi par la personne :
+ * (2) prochaine action importante ; (3) actions rapides ; (4) résumé du profil ; (5) agenda du jour du profil ;
+ * (6) recommandation ; (7) articles compacts ; puis les modules facultatifs.
+ *
+ * Glisser à gauche / à droite sur le tableau de bord passe au profil suivant / précédent (`ProfileSwipe`) : tout
+ * l'accueil se met à jour ENSEMBLE (`ProfileStage` : sortie, rendu à neuf sous la clé du profil, entrée en cascade) ;
+ * les carrousels internes gardent leur défilement. « Personnaliser », en bas, ouvre le mode
+ * édition SUR PLACE (le même éditeur que Réglages › Mon accueil).
+ * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
+import { NextStepCard } from '@/features/nextStep/NextStepCard';
+import { NapHomeCard } from '@/features/napLive/NapHomeCard';
+import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
+import { BottleHomeCard } from '@/features/quickTrack/BottleLog';
+import { CycleHomeLast } from '@/features/cycleTrack/CycleOverview';
+import { PregnancyHomeCard } from '@/features/pregTrack/PregnancyHomeCard';
+import { HealthHomeCard } from '@/features/healthTrack/HealthCategorySummary';
 import { BadgeDot } from '@/components/Motion';
-import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { useWindowDimensions, View } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
-import { Appear } from '@/components/Appear';
-import { DemoBanner, ProfileSwitcher } from '@/components/Family';
-import { ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Icon, IconButton, Row, Text } from '@/components/ui';
+import { useScreenScroll } from '@/components/screenChrome';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
+import { Cascade } from '@/motion';
+import { DemoBanner } from '@/components/Family';
+import { ProfileSwipe, ProfileSwitcher, SwipeExclude, useActiveProfileKey } from '@/components/ProfileSwitcher';
+import { ProfileStage } from '@/components/profileTransition';
+import { ErrorView } from '@/components/States';
+import { Banner, Button, Icon, Row, Text } from '@/components/ui';
+import { GlassIconButton } from '@/components/glass';
 import { PostpartumHomeCard } from '@/features/postpartum';
-import { effectiveHidden, orderedHomeCards, PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
+import { PregnancyHero, setCycleRoute, UpcomingCard } from '@/features/home';
 import { StoryHomeStrip } from '@/features/story/StoryHomeStrip';
 import { OutingsHomeCard } from '@/features/outings/OutingsHomeCard';
 import { DailyActions } from '@/features/dailyActions/DailyActions';
 import { FamilyOverview, NoJourneyCard } from '@/features/journeys';
-import { useActivePregnancy, useArticle, useArticles, useJourneyState, usePremium, useProfile, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useArticle, useArticles, useHouseholdMembers, useJourneyState, usePremium, useProfile, useTrackedChildren, useMyMembership } from '@/lib/data/hooks';
 import { useRelevantNotifications, useScope } from '@/lib/data/hooks-scope';
 import { HomeRecipeCard } from '@/features/recipes/HomeRecipeCard';
 import { HomeAssistantCard } from '@/features/aiHome/HomeAssistantCard';
@@ -29,29 +49,61 @@ import { SoloHomeCard } from '@/features/solo/SoloHomeCard';
 import { HomeVideosCard } from '@/features/videos/HomeVideosCard';
 import { HomeCommunityCard } from '@/features/communitySocial';
 import { CycleHome } from '@/features/cycle3/CycleHome';
-import { ArticleCard, Cocoon, CocoonAdd } from '@/features/cocoon/Cocoon';
-import { quickAllowed, quickFor, type Scope } from '@/lib/journeys/tools';
+import { ArticleCard, Cocoon } from '@/features/cocoon/Cocoon';
+import type { Scope } from '@/lib/journeys/tools';
 import type { Journey } from '@/lib/types';
 import { greeting } from '@/lib/domain/dates';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { childAge } from '@/lib/domain/child';
-import { isLocked, suggestArticles } from '@/lib/domain/content';
+import { suggestArticles } from '@/lib/domain/content';
 import { articleOfDay } from '@/lib/domain/journeys';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useOfflineStore } from '@/lib/offline';
 import { useUiStore } from '@/lib/store';
+import { useUserId } from '@/lib/auth';
 import { useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, NACRE, previewTime, spacing } from '@/theme/tokens';
-import { AccountActions } from '@/components/AccountActions';
+import { MIN_TOUCH, previewTime, spacing } from '@/theme/tokens';
+import { AccountActions, HEADER_GAP, HEADER_ICON } from '@/components/AccountActions';
+import { BrandName } from '@/components/BrandLogo';
+import { BRAND } from '@/config/brand';
+import { ThemePickerButton } from '@/features/themePicker/ThemePicker';
+import { AuraHomeEntry } from '@/features/aura/AuraEntry';
 import { Tappable } from '@/components/Tappable';
+import { TodayAgenda, TodayNext, useTodayScene, type TodayProfile } from '@/features/homeToday';
+import { coparentSituation } from '@/features/homeToday/coparentHome';
+import { homeSituation, resolveHomeLayout, shownModules, type HomeModuleKey } from '@/features/homeToday/homeLayout';
+import { TourResumeCard } from '@/features/tour/TourEntry';
+import { ContinueModule, ExploreModule, ForYouModule, YourChildModule } from '@/features/homeToday/ToolSections';
+import { useTourAnchor } from '@/features/tour/anchors';
+import { tourEvent } from '@/features/tour/store';
+import { ArticlesCompact, ChildInfoModule, FamilyTasksModule, HomeCardSkeleton, HomeEditor, PinnedTools, ToolsEntry } from '@/features/homeToday/HomeModules';
+
+/** Visite guidée : l'éditeur de l'accueil vient de s'ouvrir (étape « Personnaliser l'accueil »). */
+const EDITOR_OPENED = { type: 'editorOpened' } as const;
 
 /** Parcours historiques équivalents à la portée affichée (suggestion d'articles). */
 const LEGACY_FOR: Record<Scope, Journey[]> = {
   avoid: ['avoid'], ttc: ['ttc'], cycle: ['cycle'], none: [], pregnancy: ['pregnant'], postpartum: ['newborn'], baby: ['newborn'], child: ['child'], family: ['family', 'child'],
 };
 
+/** « Personnaliser » : remonte en haut de l'écran, où s'ouvre le mode édition. */
+function CustomizeButton({ onPress }: { onPress: () => void }) {
+  const scroll = useScreenScroll();
+  const anchor = useTourAnchor('home-customize');
+  return <View {...anchor}><Button label={tr('hm.customize')} icon="sliders" variant="secondary" full testID="home-customize" onPress={() => { scroll.scrollToTop(false); onPress(); }} /></View>;
+}
+
+/** Carte de l'accueil, ancre de la visite pour « prochaine action » et « actions rapides ». */
+function HomeCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const anchor = useTourAnchor(`home-${id}`);
+  return <View testID={`home-card-${id}`} {...anchor}>{children}</View>;
+}
+
 export default function Home() {
   const t = useTheme();
+  const { width: winW } = useWindowDimensions();
+  const narrow = winW < 360;
+  const me = useUserId();
   const profileQ = useProfile();
   const profile = profileQ.data;
   // Portée affichée = profil du sélecteur + parcours actif : seule source de l'accueil (jamais un ancien parcours)
@@ -60,6 +112,7 @@ export default function Home() {
   const childrenQ = useTrackedChildren();
   const children = childrenQ.data;
   const js = useJourneyState();
+  const { data: members } = useHouseholdMembers();
   const journeysFailed = !scope.loaded && js.query.isError;
   const mainLoading = (profileQ.isLoading && !profile) || (childrenQ.isLoading && !children) || (!scope.loaded && !journeysFailed);
   const mainError = profileQ.isError && !profile ? profileQ : childrenQ.isError && !children ? childrenQ : journeysFailed ? js.query : null;
@@ -68,48 +121,64 @@ export default function Home() {
   const premium = usePremium();
   const offline = useOfflineStore();
   const skyOverride = useUiStore((st) => st.skyOverride);
-  const homeOrder = useUiStore((st) => st.homeOrder);
-  const homeHidden = useUiStore((st) => st.homeHidden);
-  const quickShortcuts = useUiStore((st) => st.quickShortcuts);
   const simple = useUiStore((st) => st.simpleMode);
+  const [editing, setEditing] = useState(false);
+  const profileKey = useActiveProfileKey();
   const now = skyOverride ? previewTime(skyOverride) : new Date();
 
   const unread = inbox?.filter((n) => !n.read_at).length ?? 0;
   const child = scope.child;
-  // Profil enfant : « Le cocon du jour » (bulles, cocon, frise, trois informations, « + Ajouter », un conseil)
   const childScope = (scope.scope === 'baby' || scope.scope === 'child') && child ? scope.scope : null;
   const cycleMode = scope.scope === 'avoid' || scope.scope === 'ttc' || scope.scope === 'cycle' ? scope.scope : null;
   setCycleRoute(cycleMode === 'avoid' ? '/contraception' : cycleMode === 'cycle' ? '/cycle' : '/fertility');
 
+  // Situation affichée → configuration du tableau de bord (déclarative), puis choix de la personne pour cette situation
+  const membership = useMyMembership();
+  const adults = (members ?? []).filter((m) => m.role === 'owner' || m.role === 'coparent').length;
+  // Co-parent (adulte qui n'a pas créé le foyer) : accueil « coparent » sur « Moi » / « couple » (jamais les données
+  // privées de l'autre adulte)
+  const situation = coparentSituation(homeSituation({ scope: scope.scope, adults, children: children?.length ?? 0, pregnancy: !!pregnancy }), membership?.role);
+  const saved = useUiStore((st) => st.homeLayouts[situation]);
+  const modules = useMemo(() => shownModules(resolveHomeLayout(situation, saved)), [situation, saved]);
+
+  // Journée du profil affiché : agenda, relais et garde suivent le profil (tâches : celles du foyer, les miennes pour « Moi »)
+  const todayProfile = useMemo<TodayProfile>(() => (
+    childScope && child ? { kind: 'child', childId: child.id }
+      : scope.scope === 'pregnancy' && pregnancy ? { kind: 'pregnancy', pregnancyId: pregnancy.id }
+        : scope.scope === 'family' ? { kind: 'all' } : { kind: 'me', userId: me }
+  ), [childScope, child, scope.scope, pregnancy, me]);
+  const scene = useTodayScene({ profile: todayProfile });
+  const agendaFor = todayProfile.kind === 'child' && child ? tr('ht.for.child', { name: child.first_name })
+    : todayProfile.kind === 'pregnancy' ? tr('ht.for.pregnancy') : todayProfile.kind === 'me' ? tr('ht.for.me') : tr('ht.for.all');
+
   // La semaine d'aménorrhée n'apparaît QUE pour une grossesse active affichée
-  const subtitle = (scope.scope === 'baby' || scope.scope === 'child') && child
-    ? `${child.first_name}, ${childAge(child.birth_date).label}`
-    : scope.scope === 'pregnancy' && pregnancy
-      ? `${pregnancyProgress(pregnancy.due_date).label}`
+  const subtitle = childScope && child ? `${child.first_name}, ${childAge(child.birth_date).label}`
+    : scope.scope === 'pregnancy' && pregnancy ? `${pregnancyProgress(pregnancy.due_date).label}`
       : scope.scope === 'postpartum' ? tr('pj.home.sub.postpartum')
         : scope.scope === 'family' ? tr('pj.home.sub.family')
           : cycleMode === 'ttc' ? tr('home.sub.ttc') : cycleMode ? tr('home.sub.cycle') : undefined;
 
-  const picked = useMemo(() => {
-    const list = suggestArticles(articles ?? [], {
-      journeys: LEGACY_FOR[scope.scope],
-      weekSA: scope.scope === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
-      childAgesMonths: child ? [childAge(child.birth_date).months] : scope.scope === 'family' ? (children ?? []).map((c) => childAge(c.birth_date).months) : [],
-      postpartum: scope.scope === 'postpartum',
-      multiple: scope.scope === 'pregnancy' && !!pregnancy && pregnancy.multiplicity !== 'single',
-    }, 6);
-    return articleOfDay(list);
-  }, [articles, scope.scope, pregnancy, child, children]);
+  const suggested = useMemo(() => suggestArticles(articles ?? [], {
+    journeys: LEGACY_FOR[scope.scope],
+    weekSA: scope.scope === 'pregnancy' && pregnancy ? pregnancyProgress(pregnancy.due_date).weeksSA : null,
+    childAgesMonths: child ? [childAge(child.birth_date).months] : scope.scope === 'family' ? (children ?? []).map((c) => childAge(c.birth_date).months) : [],
+    postpartum: scope.scope === 'postpartum',
+    multiple: scope.scope === 'pregnancy' && !!pregnancy && pregnancy.multiplicity !== 'single',
+  }, 6), [articles, scope.scope, pregnancy, child, children]);
+  const picked = articleOfDay(suggested);
   // La liste ne contient pas le texte : la carte (temps de lecture) reçoit l'article choisi, lu en entier (une requête)
   const article = useArticle(picked?.slug).data ?? null;
+  const articleCard = article ? <ArticleCard article={article} premium={premium} /> : null;
 
-  // Raccourcis : ceux choisis par la personne, mais seulement s'ils sont autorisés pour le profil affiché
-  const allowed = quickFor(scope);
-  const custom = (quickShortcuts ?? []).filter((k) => quickAllowed(k, scope));
-  const quickKeys = custom.length >= 3 ? custom : allowed;
   const journeyName = js.body ? tr(`pj.type.${js.body.type}` as TKey) : null;
-  const cards: Record<string, React.ReactNode> = {
-    main: mainLoading ? <Skeleton kind="card" rows={1} />
+  const art = scope.scope === 'pregnancy' ? 'grossesse' : scope.scope === 'baby' || scope.scope === 'postpartum' ? 'bebe' : scope.scope === 'child' ? 'enfants' : cycleMode ? 'cycle' : 'foyer';
+  const cards: Record<HomeModuleKey, React.ReactNode> = {
+    // (2) Prochaine action importante : prochain événement, puis ce qui attend une réponse
+    next: <View style={{ gap: spacing.sm }}>{childScope && child && !mainLoading ? <NextStepCard child={child} /> : null}<TodayNext scene={scene} art={art} compactEmpty /></View>,
+    // (3) Actions rapides du profil (personnalisables) ; carrousel : son défilement passe avant le glissement de profil
+    quick: mainLoading ? null : <DailyActions />,
+    // (4) Résumé du profil sélectionné
+    main: mainLoading ? <HomeCardSkeleton />
       : mainError ? <ErrorView error={mainError.error} onRetry={() => { void profileQ.refetch(); void childrenQ.refetch(); void js.query.refetch(); }} />
       : scope.scope === 'pregnancy' && pregnancy ? <PregnancyHero pregnancy={pregnancy} />
       : childScope && child ? <Cocoon key={child.id} child={child} journey={childScope} now={now} article={article} />
@@ -117,82 +186,99 @@ export default function Home() {
       : scope.scope === 'family' ? <FamilyOverview />
       : cycleMode ? <CycleHome goal={cycleMode} />
       : <NoJourneyCard />,
-    // Les 4 actions du quotidien : cartes de suivi pour un enfant ou une grossesse, sinon les raccourcis du profil
-    // « Mes actions du jour » : une carte horizontale, 4 raccourcis du profil affiché au maximum (personnalisables)
-    quick: <DailyActions />,
-    outings: <OutingsHomeCard />,
-    community: <HomeCommunityCard />,
+    // (5) Agenda du jour, pour le profil affiché
+    agenda: <TodayAgenda scene={scene} caption={agendaFor} />,
+    // (6) Recommandation : l'article adapté, sinon une idée de repas — sans doublon avec les modules « article » / « recette »
+    recommendation: (!modules.includes('article') && !childScope ? articleCard : null) ?? (!modules.includes('recipe') ? <HomeRecipeCard /> : null),
+    // (7) Articles en format compact
+    articles: <ArticlesCompact articles={suggested.filter((a) => a.slug !== picked?.slug || !!childScope)} premium={premium} />,
+    familyTasks: <FamilyTasksModule />,
+    childInfo: <ChildInfoModule activeChildId={scope.childId ?? null} />,
+    tools: <PinnedTools />,
+    // Sections d'outils (20/11/2026) : moteur de recommandation déterministe, raison affichée en petit
+    forYou: mainLoading ? null : <ForYouModule />,
+    continue: <ContinueModule />,
+    yourChild: mainLoading ? null : <YourChildModule />,
+    explore: <ExploreModule />,
     upcoming: <View style={{ gap: spacing.xs }}>{simple ? null : <PostpartumHomeCard />}<UpcomingCard single={simple} /></View>,
-    article: article ? <ArticleCard article={article} premium={premium} /> : null,
-    recipe: <HomeRecipeCard />,
-    recommendation: null as React.ReactNode,
     assistant: <HomeAssistantCard />,
+    community: <SwipeExclude><HomeCommunityCard /></SwipeExclude>,
+    outings: <OutingsHomeCard />,
+    videos: <HomeVideosCard />,
     library: <HomeLibraryCard />,
     solo: <SoloHomeCard />,
-    videos: <HomeVideosCard />,
+    story: mainLoading ? null : <StoryHomeStrip />,
+    recipe: <HomeRecipeCard />,
+    article: articleCard,
   };
-  // « Suivre mon cycle » : l'accueil ne montre que le calendrier, les 5 raccourcis, une carte intelligente et le prochain rappel
-  // Profil enfant : le cocon remplace les cartes par défaut ; les cartes facultatives que le parent a lui-même
-  // activées dans Réglages › Mon accueil (recette, question) restent affichées en dessous
-  // « Mon assistant IA » reste visible dans tous les modes (sauf si la personne l'a masqué dans Mon accueil)
-  const aiShown = !effectiveHidden(homeOrder, homeHidden).includes('assistant');
-  const libShown = !effectiveHidden(homeOrder, homeHidden).includes('library');
-  const homeCards = cycleMode && !mainLoading && !mainError ? ['main', ...(aiShown ? ['assistant'] : []), ...(libShown ? ['library'] : [])]
-    : childScope && !mainLoading && !mainError ? ['main', ...orderedHomeCards(homeOrder, homeHidden).filter((k) => k === 'recipe' || k === 'assistant' || k === 'solo' || k === 'videos' || k === 'library' || k === 'outings')]
-      : orderedHomeCards(homeOrder, homeHidden);
-  // Recommandation du jour : l'article adapté s'il existe, sinon une idée de repas — sans doublon si ces cartes sont déjà affichées
-  cards.recommendation = (!homeCards.includes('article') ? cards.article : null) ?? (!homeCards.includes('recipe') ? cards.recipe : null);
 
   return (
-    <View style={{ flex: 1 }}>
-      <Screen bottomInset={childScope ? 156 : 96}>
-        {/* En-tête */}
-        {/* Ligne du haut : date à gauche ; aide, notifications, Réglages et Profil à droite. Salutation pleine largeur dessous. */}
-        <View style={{ gap: 2, marginTop: spacing.xs }}>
-          <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text variant="small" muted weight="bold" style={{ flexShrink: 1 }}>{formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase())}</Text>
-            <Row gap={0}>
-              <IconButton icon="life-buoy" label={tr('home.helpA11y')} color={t.colors.heart} onPress={() => router.push('/emergency')} />
-              <View>
-                <IconButton icon="bell" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} onPress={() => router.push('/notifications')} />
-                <BadgeDot count={unread} style={{ position: 'absolute', top: 11, right: 11, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
-              </View>
-              <AccountActions />
-            </Row>
+    <Screen bottomInset={TAB_SCREEN_INSET} reorder contentStyle={{ paddingHorizontal: narrow ? spacing.md : 20 }}>
+      {/* (1) Bonjour + date + profil actif. Coin supérieur droit (21/11/2026) : urgences, notifications, Communauté
+          (nommée), avatar ; les Réglages sont derrière l'avatar (feuille « Mon compte », qui rappelle aussi les Urgences). */}
+      <View style={{ gap: 2, marginTop: spacing.xs }}>
+        {/* Référence 01 (21/11/2026) : mot-symbole HOMI, cloche et palette à gauche ; urgences, Communauté et avatar à droite.
+            Tout tient à 320 pt (cibles de 44 pt, marges de 16 pt sous 360 pt, Communauté en pictogramme sur l'accueil). */}
+        <Row style={{ alignItems: 'center', justifyContent: 'space-between' }} gap={HEADER_GAP}>
+          <Row style={{ alignItems: 'center', flexShrink: 1 }} gap={narrow ? 2 : HEADER_GAP}>
+            <View accessible accessibilityRole="header" accessibilityLabel={BRAND.name} style={{ paddingRight: narrow ? 2 : spacing.xs }} testID="home-wordmark">
+              <BrandName size={narrow ? 17 : 20} line={HEADER_ICON} tone="mono" color={t.colors.text} />
+            </View>
+            <View>
+              <GlassIconButton icon="bell" glyph="notifications" label={unread ? tr('home.notificationsUnread', { count: unread }) : tr('home.notifications')} size={HEADER_ICON} testID="home-bell" onPress={() => router.push('/notifications')} />
+              <BadgeDot count={unread} style={{ position: 'absolute', top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: t.colors.heart }} />
+            </View>
+            <ThemePickerButton size={HEADER_ICON} />
           </Row>
-          <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
-          {subtitle && !childScope ? <Text variant="small" muted>{subtitle}</Text> : null}
-        </View>
+          <Row style={{ alignItems: 'center' }} gap={narrow ? 2 : HEADER_GAP}>
+            <GlassIconButton icon="life-buoy" glyph="emergency" label={tr('home.helpA11y')} size={HEADER_ICON} color={t.colors.heart} testID="home-help" onPress={() => router.push('/emergency')} />
+            <AccountActions communityIcon />
+          </Row>
+        </Row>
+        <Text variant="title" accessibilityRole="header">{greeting(profile?.display_name, now)}</Text>
+        <Text variant="small" muted testID="home-date">{[formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase()), subtitle].filter(Boolean).join(' · ')}</Text>
+      </View>
+      <ProfileSwitcher pager />
+      {/* « Outils » : entrée fixe et évidente (aussi dans l'action centrale de la barre) */}
+      <ToolsEntry />
+      {/* Aura en une interaction depuis l'accueil */}
+      <AuraHomeEntry />
+      {/* Visite guidée interrompue : reprise discrète, masquable */}
+      <TourResumeCard />
+      {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
 
-        {/* 1. Parcours et profil actifs */}
-        <Appear kind="soft" delay={0.1} style={{ gap: 4 }}>
-          {simple ? null : <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}>
-            <Icon name="compass" size={14} color={t.colors.textMuted} />
-            <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
-            <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
-          </Tappable>}
-          <ProfileSwitcher variant={childScope && !mainLoading ? 'bubbles' : 'card'} />
-        </Appear>
-        {/* « Au fil de nous » : l'étape du profil affiché, discrète, au-dessus des cartes utiles */}
-        {!mainLoading && !effectiveHidden(homeOrder, homeHidden).includes('story') ? <Appear kind="soft" delay={0.15}><StoryHomeStrip /></Appear> : null}
-        {!offline.online && <Banner tone="warning" title={tr('home.offline')}>{offline.pending.length ? tr('home.offlinePending', { count: offline.pending.length }) : tr('home.offlineBody')}</Banner>}
-
-        {/* Cartes de l'accueil, dans l'ordre choisi (Réglages › Mon accueil) */}
-        {homeCards.map((key, i) => {
-          const node = cards[key];
-          if (!node) return null;
-          return <Appear key={key} kind={key === 'main' ? 'pop' : key === 'assistant' ? 'btn' : 'soft'} delay={0.2 + Math.min(i, 6) * 0.08}><View testID={`home-card-${key}`}>{node}</View></Appear>;
-        })}
-
-        {childScope ? null : (
-          <Appear kind="side" delay={0.7}>
-            <Button label={tr('pj.allTools')} icon="grid" variant="secondary" onPress={() => router.push('/tools')} full testID="all-tools" />
-          </Appear>
-        )}
-
-        <DemoBanner />
-      </Screen>
-      {childScope && child && !mainLoading ? <CocoonAdd key={child.id} child={child} journey={childScope} /> : null}
-    </View>
+      {editing ? <HomeEditor situation={situation} onDone={() => setEditing(false)} /> : (
+        <ProfileSwipe>
+          {/* Rendu PAR PROFIL : au changement de profil, l'ancien tableau de bord s'efface, le nouveau est monté à neuf
+              (vraies données du nouveau profil) et ses cartes entrent en cascade (`profileTransition`) */}
+          <ProfileStage profileKey={profileKey} style={{ gap: spacing.md }} testID="home-stage">
+          {/* Maintenant : la sieste de l'enfant affiché passe avant tout le reste (en cours ou dernière du jour) */}
+          {childScope && child ? <NapHomeCard child={child} /> : null}
+          {childScope && child ? <BreastHomeCard child={child} /> : null}
+          {childScope && child ? <BottleHomeCard child={child} /> : null}
+          {/* Profil cycle : dernière saisie du cycle (jamais l'intime ; rien si « masquer sur l'accueil ») → son app sur ce jour */}
+          {cycleMode ? <CycleHomeLast /> : null}
+          {childScope && child ? <HealthHomeCard child={child} /> : null}
+          {/* Profil grossesse : séance de mouvements en cours, prochain rendez-vous, dernier ressenti (rien sinon) */}
+          {scope.scope === 'pregnancy' && pregnancy ? <PregnancyHomeCard /> : null}
+          {modules.map((key, i) => {
+            const node = cards[key];
+            if (!node) return null;
+            return <Cascade key={key} index={i}><HomeCard id={key}>{node}</HomeCard></Cascade>;
+          })}
+          {simple ? null : (
+            <Tappable accessibilityRole="button" testID="home-journey" accessibilityLabel={tr('pj.home.journeyA11y', { name: journeyName ?? tr('pj.none') })} onPress={() => router.push('/journeys')} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
+              <Icon name="compass" size={14} color={t.colors.textMuted} />
+              <Text variant="caption" muted style={{ flex: 1 }}>{tr('pj.home.journey', { name: journeyName ?? tr('pj.none') })}</Text>
+              <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('pj.edit')}</Text>
+            </Tappable>
+          )}
+          {/* Personnalisation sur place : réordonner, masquer, actions rapides, outils épinglés, rétablir */}
+          <CustomizeButton onPress={() => { setEditing(true); tourEvent(EDITOR_OPENED); }} />
+          </ProfileStage>
+        </ProfileSwipe>
+      )}
+      <DemoBanner />
+    </Screen>
   );
 }

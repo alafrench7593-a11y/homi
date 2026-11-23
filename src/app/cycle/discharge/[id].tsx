@@ -10,6 +10,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Field, haptic, Row } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
+import { EmptyState, Skeleton } from '@/components/States';
 import { useUserId } from '@/lib/auth';
 import { useInvalidate } from '@/lib/data/hooks';
 import { removeOwn, saveOwn, useDischargeLogs } from '@/lib/data/hooks-cycle2';
@@ -40,8 +41,11 @@ export default function DischargeForm() {
   const userId = useUserId();
   const { id, date } = useLocalSearchParams<{ id: string; date?: string }>();
   const isNew = id === 'new';
-  const { data: logs } = useDischargeLogs();
+  const logsQ = useDischargeLogs();
+  const logs = logsQ.data;
   const existing = isNew ? null : logs?.find((l) => l.id === id) ?? null;
+  // Suppression en cours : l'observation disparaît de la liste avant le retour, sans afficher « introuvable »
+  const [leaving, setLeaving] = useState(false);
   const { data: periods } = usePeriods();
 
   const [step, setStep] = useState(0);
@@ -104,11 +108,26 @@ export default function DischargeForm() {
   }
   async function remove() {
     if (!existing || !(await confirm(tr('cy.delete.title', { what: tr('cy.what.discharge') }), tr('cy.delete.body'), tr('common.delete')))) return;
-    try { await removeOwn('discharge_logs', existing.id); inv('discharge_logs'); toast(tr('cy.deleted')); router.back(); } catch (e) { toast(friendlyError(e), 'error'); }
+    setLeaving(true);
+    try { await removeOwn('discharge_logs', existing.id); inv('discharge_logs'); toast(tr('cy.deleted')); router.back(); } catch (e) { setLeaving(false); toast(friendlyError(e), 'error'); }
   }
 
   const ynLabel = (v: YesNo) => tr(`cy.${v}` as 'cy.yes');
   const steps = [tr('cy.dis.step1'), tr('cy.dis.step2'), tr('cy.dis.step3')];
+
+  // Identifiant inconnu (lien périmé, observation supprimée sur un autre appareil) : pas de formulaire vide qui
+  // créerait une nouvelle observation à la place ; un état « introuvable » avec retour.
+  if (!isNew && !existing && !leaving) {
+    if (logs === undefined && !logsQ.isError) return <Screen back title={tr('cy.dis.edit')}><Skeleton kind="detail" /></Screen>;
+    if (logs !== undefined) {
+      return (
+        <Screen back title={tr('cy.dis.edit')}>
+          <EmptyState icon="search" title={tr('cy.dis.notFound')} body={tr('cy.dis.notFoundBody')}
+            action={{ label: tr('common.back'), icon: 'arrow-left', onPress: () => (router.canGoBack() ? router.back() : router.replace('/cycle' as never)) }} />
+        </Screen>
+      );
+    }
+  }
 
   return (
     <Screen back title={isNew ? tr('cy.dis.new') : tr('cy.dis.edit')} subtitle={tr('cy.dis.formSubtitle')}

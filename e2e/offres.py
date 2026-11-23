@@ -9,7 +9,7 @@ with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':390,'height':844}, locale='fr-FR')
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(B+'/welcome'); pg.wait_for_timeout(2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3000)
     # pendant le mois gratuit
     pg.goto(B+'/family/custody'); pg.wait_for_timeout(3000)

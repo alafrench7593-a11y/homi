@@ -60,7 +60,7 @@ def run(p):
     pg = ctx.new_page()
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
     hid = demo(pg, f"s => s.tables.children.find(c => c.id === '{lina}').household_id")

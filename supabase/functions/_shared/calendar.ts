@@ -20,13 +20,15 @@ export const EVENT_KINDS: { value: EventKind; label: string }[] = [
   { value: 'shopping', label: 'Courses' }, { value: 'important', label: 'Date importante' }, { value: 'custom', label: 'Autre' },
 ];
 
-export type Source = 'event' | 'appointment' | 'task' | 'night' | 'me_time';
+export type Source = 'event' | 'appointment' | 'task' | 'night' | 'me_time' | 'moment' | 'activity';
 export interface CalendarItem {
   key: string; source: Source; refId: string; title: string; starts: string; ends: string; allDay: boolean;
   location?: string | null; health?: boolean; private?: boolean; recurring?: boolean; done?: boolean; who?: string | null;
+  /** Séance d'une activité extrascolaire : l'enfant concerné (l'activité s'ouvre sur sa fiche). */
+  childId?: string | null;
 }
 
-export const SOURCE_LABEL: Record<Source, string> = { event: 'Événement', appointment: 'Rendez-vous', task: 'Tâche', night: 'Relais de nuit', me_time: 'Temps pour soi' };
+export const SOURCE_LABEL: Record<Source, string> = { event: 'Événement', appointment: 'Rendez-vous', task: 'Tâche', night: 'Relais de nuit', me_time: 'Temps pour soi', moment: 'Moment à deux', activity: 'Activité' };
 
 // ------------------------------------------------------------------ dates locales
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -77,8 +79,12 @@ export function occurrences(e: Pick<FamilyEvent, 'starts_at' | 'ends_at' | 'recu
 export interface Sources {
   events?: FamilyEvent[];
   appointments?: { id: string; title: string; starts_at: string; location_label: string | null; private_to_creator?: boolean; kind: string }[];
-  tasks?: { id: string; title: string; due_at: string | null; status: string; assignee_id: string | null }[];
+  tasks?: { id: string; title: string; due_at: string | null; status: string; assignee_id: string | null; mission_state?: string | null }[];
   shifts?: { id: string; kind: 'night' | 'me_time'; user_id: string; starts_at: string; ends_at: string; status: string }[];
+  /** Moments à deux planifiés (application seulement : jamais dans le flux d'abonnement du serveur). */
+  moments?: { id: string; title: string; planned_at: string; duration_minutes: number | null }[];
+  /** Séances des activités extrascolaires, déjà dépliées par l'application (30/11/2026, outil 136). */
+  activities?: { id: string; activityId: string; childId: string; title: string; starts: string; ends: string; location: string | null }[];
 }
 
 export function itemsBetween(s: Sources, from: Date, to: Date): CalendarItem[] {
@@ -94,13 +100,21 @@ export function itemsBetween(s: Sources, from: Date, to: Date): CalendarItem[] {
     if (inRange(a.starts_at, ends)) out.push({ key: `appointment:${a.id}`, source: 'appointment', refId: a.id, title: a.title, starts: a.starts_at, ends, allDay: false, location: a.location_label, health: true, private: !!a.private_to_creator });
   }
   for (const t of s.tasks ?? []) {
-    if (!t.due_at || t.status === 'cancelled') continue;
+    // Mission refusée (14/11/2026) : plus dans l'agenda tant que la personne qui l'a demandée n'a pas décidé de la suite
+    if (!t.due_at || t.status === 'cancelled' || t.mission_state === 'declined') continue;
     const ends = new Date(Date.parse(t.due_at) + 1800000).toISOString();
     if (inRange(t.due_at, ends)) out.push({ key: `task:${t.id}`, source: 'task', refId: t.id, title: t.title, starts: t.due_at, ends, allDay: false, done: t.status === 'done', who: t.assignee_id });
   }
   for (const sh of s.shifts ?? []) {
     if (sh.status === 'cancelled' || !inRange(sh.starts_at, sh.ends_at)) continue;
     out.push({ key: `${sh.kind}:${sh.id}`, source: sh.kind, refId: sh.id, title: sh.kind === 'night' ? 'Relais de nuit' : 'Temps pour soi', starts: sh.starts_at, ends: sh.ends_at, allDay: false, who: sh.user_id });
+  }
+  for (const m of s.moments ?? []) {
+    const ends = new Date(Date.parse(m.planned_at) + (m.duration_minutes ?? 30) * 60_000).toISOString();
+    if (inRange(m.planned_at, ends)) out.push({ key: `moment:${m.id}`, source: 'moment', refId: m.id, title: m.title, starts: m.planned_at, ends, allDay: false, private: true });
+  }
+  for (const s2 of s.activities ?? []) {
+    if (inRange(s2.starts, s2.ends)) out.push({ key: `activity:${s2.id}`, source: 'activity', refId: s2.activityId, childId: s2.childId, title: s2.title, starts: s2.starts, ends: s2.ends, allDay: false, location: s2.location, recurring: true });
   }
   return out.sort((a, b) => (a.allDay === b.allDay ? (a.starts < b.starts ? -1 : a.starts > b.starts ? 1 : a.title.localeCompare(b.title)) : a.allDay ? -1 : 1));
 }
@@ -114,7 +128,7 @@ export function itemsOnDay(items: CalendarItem[], day: string) {
 
 /** Chevauchements entre éléments horaires (hors tâches et relais), pour les signaler. */
 export function overlaps(items: CalendarItem[]) {
-  const timed = items.filter((i) => !i.allDay && (i.source === 'event' || i.source === 'appointment'));
+  const timed = items.filter((i) => !i.allDay && (i.source === 'event' || i.source === 'appointment' || i.source === 'activity'));
   const keys = new Set<string>();
   for (let i = 0; i < timed.length; i++) for (let j = i + 1; j < timed.length; j++) {
     if (timed[i].starts < timed[j].ends && timed[j].starts < timed[i].ends) { keys.add(timed[i].key); keys.add(timed[j].key); }
@@ -184,7 +198,7 @@ export function toIcs(items: CalendarItem[], o: IcsOptions = {}): string {
   const stamp = utc((o.now ?? new Date()).toISOString());
   const tz = o.timeZone ?? 'Europe/Paris';
   const dateOnly = (iso: string) => localStamp(iso, tz).slice(0, 8);
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Au fil de nous//Agenda familial//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${esc(o.calendarName ?? 'Agenda familial')}`];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//HOMI//Agenda familial//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${esc(o.calendarName ?? 'Agenda familial')}`];
   if (o.refreshMinutes) {
     const h = Math.floor(o.refreshMinutes / 60); const m = o.refreshMinutes % 60;
     lines.push(`REFRESH-INTERVAL;VALUE=DURATION:PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}`, `X-PUBLISHED-TTL:PT${h ? `${h}H` : ''}${m ? `${m}M` : ''}`);

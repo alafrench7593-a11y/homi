@@ -7,10 +7,12 @@
  *  · repères (fer, calcium, protéines, fibres, vitamine B9), aliments à éviter ou à préparer avec précaution,
  *    hygiène et cuisson, liste de courses, favoris.
  * Jamais de complément alimentaire recommandé ; sources officielles françaises datées ; pas un avis médical.
+ * 22/11/2026 : app de LECTURE (aucune donnée personnelle de repas pour la grossesse) — trimestre et repas dans
+ * l'adresse ; les favoris restent ceux de la bibliothèque (`recipe_favorites`).
  */
 import React, { useMemo, useState } from 'react';
 import { Linking, ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton } from '@/components/States';
@@ -40,8 +42,12 @@ export default function EatWellPregnant() {
   const current = pregnancy ? pregnancyProgress(pregnancy.due_date).trimester : 1;
   const { data: all, loading } = useRecipes();
   const fav = useRecipeFavorites();
-  const [trimester, setTrimester] = useState<1 | 2 | 3>(current);
-  const [meal, setMeal] = useState<Meal | 'fav'>('breakfast');
+  // 22/11/2026 : trimestre et repas explorés gardés dans l'adresse (« ?tri=2&meal=lunch ») : revenir d'une recette les retrouve
+  const qp = useLocalSearchParams<{ tri?: string; meal?: string }>();
+  const trimester: 1 | 2 | 3 = qp.tri === '1' || qp.tri === '2' || qp.tri === '3' ? (Number(qp.tri) as 1 | 2 | 3) : current;
+  const setTrimester = (n: 1 | 2 | 3) => router.setParams({ tri: n === current ? undefined : String(n) } as never);
+  const meal: Meal | 'fav' = qp.meal === 'fav' || (MEALS as string[]).includes(qp.meal ?? '') ? (qp.meal as Meal | 'fav') : 'breakfast';
+  const setMeal = (m: Meal | 'fav') => router.setParams({ meal: m === 'breakfast' ? undefined : m } as never);
   const [need, setNeed] = useState<Need | null>(null);
   const [vegetarian, setVegetarian] = useState(false);
   const [noPork, setNoPork] = useState(false);

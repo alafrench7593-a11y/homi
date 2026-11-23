@@ -127,7 +127,7 @@ class FakeSupabase:
             if mem: return 200, {'profile_created': False, 'household_created': False, 'household_id': mem['household_id']}
             return 200, {'profile_created': False, 'household_created': True, 'household_id': self.new_household(uid, 'Ma famille', True)}
         if fn == 'record_signup_consents':
-            if body.get('p_is_adult') is not True: return 400, {'code': '22023', 'message': 'Vous devez avoir 18 ans ou plus'}
+            if body.get('p_is_adult') is not True: return 400, {'code': '22023', 'message': 'Tu dois avoir 18 ans ou plus'}
             for p in ('terms', 'privacy_policy', 'adult_confirmation'):
                 self.t('consents').append({'id': str(uuid.uuid4()), 'user_id': uid, 'purpose': p, 'granted': True, 'version': body.get('p_terms_version'), 'created_at': now()})
             return 200, now()
@@ -143,8 +143,12 @@ class FakeSupabase:
                 'can_view': body.get('p_can_view', []), 'can_edit': body.get('p_can_edit', []), 'created_at': now(), 'expires_at': '2099-01-01T00:00:00Z', 'accepted_at': None, 'revoked_at': None})
             return 200, tok
         if fn == 'accept_household_invitation':
-            inv = next((i for i in self.t('household_invitations') if i['token'] == body.get('p_token') and not i['accepted_at']), None)
+            inv = next((i for i in self.t('household_invitations') if i['token'] == body.get('p_token') and not i['accepted_at']
+                        and not i.get('revoked_at') and i['expires_at'] > now()), None)
             if not inv: return 400, {'code': 'P0001', 'message': 'Invitation invalide ou expirée'}
+            # Même règle que la base (20261118000700) : une personne déjà membre ne change pas ses droits par un lien
+            if any(m['household_id'] == inv['household_id'] and m['user_id'] == uid for m in self.t('household_members')):
+                return 409, {'code': '23505', 'message': 'Tu fais déjà partie de ce foyer.'}
             inv['accepted_at'] = now()
             self.t('household_members').append({'household_id': inv['household_id'], 'user_id': uid, 'role': inv['role'], 'can_view': inv['can_view'], 'can_edit': inv['can_edit'], 'joined_at': now()})
             for h in list(self.t('households')):
@@ -155,7 +159,7 @@ class FakeSupabase:
             return 200, inv['household_id']
         if fn == 'create_calendar_feed':
             if not any(m['household_id'] == body.get('p_household') and m['user_id'] == uid for m in self.t('household_members')):
-                return 403, {'code': '42501', 'message': 'Vous n’avez pas l’autorisation de faire cette action.'}
+                return 403, {'code': '42501', 'message': 'Tu n’as pas l’autorisation de faire cette action.'}
             tok = base64.urlsafe_b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes).decode().rstrip('=')
             row = {'id': str(uuid.uuid4()), 'user_id': uid, 'household_id': body['p_household'], 'label': 'Agenda familial',
                    'include_health_titles': bool(body.get('p_include_health_titles')), 'created_at': now(), 'last_accessed_at': None, 'revoked_at': None, '_token': tok}

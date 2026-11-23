@@ -247,12 +247,6 @@ export const solo: Messages<typeof fr> = {
   'sol.v.veggies': 'Getting your child to eat more fruit and vegetables',
 
   'sol.load.title': 'Lightening my mental load',
-  'sol.load.dump': 'Everything on my mind, sorted in 1 minute',
-  'sol.load.prep': 'Back to school, birthdays, papers: prepared ahead',
-  'sol.load.papers': 'Papers photographed, CAF and school files ready',
-  'sol.load.notebook': 'What the person looking after them needs to know',
-  'sol.load.offduty': 'A few hours to breathe, someone from my circle takes over',
-  'sol.load.exhausted': 'Take stock of my tiredness',
   'sol.load.permission': 'Asking for help isn’t a failure: it’s a way of caring for your children, by caring for yourself.',
   'sol.urgent': 'Dark thoughts, wanting to give up, fear of hurting your child or yourself: call 3114 (24/7, free, France) or 15.',
 

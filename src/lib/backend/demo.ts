@@ -15,11 +15,11 @@ import { lib2 as frDict } from '@/i18n/fr/lib2';
 import { lib2 as enDict } from '@/i18n/en/lib2';
 import { uuid } from '../uuid';
 import { grants } from '../premium/entitlement';
-import { DEMO_CURRENCY, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, type PlanPeriod } from '../premium/plans';
+import { DEMO_CURRENCY, DEMO_FAMILY_GRID, DEMO_GRID, PLAN_MONTHS, PREMIUM_ENTITLEMENT, PRODUCT_IDS, tierOfProduct, type PlanPeriod } from '../premium/plans';
 import { AI_ENTITLEMENT, PAID_TOOLS, toolEntitlement, toolProductId, type AccessInfo } from '../premium/offers';
 import { BackendError, type Backend, type Filter, type Query, type Session } from './types';
 import { STEP_BY_KEY } from '@/content/discoveries/steps';
-import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../../../supabase/functions/_shared/safety';
+import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../../../supabase/functions/_shared/safety';
 import { assessProduct, type ProductData } from '../../../supabase/functions/_shared/product-rules';
 import { ASSISTANT_FOOTER } from '../../../supabase/functions/_shared/assistant-prompt';
 import {
@@ -28,7 +28,15 @@ import {
 } from '../../../supabase/functions/_shared/assistant-format';
 import { buildSampleFamily } from './demoSample';
 import { createSocial } from './demoSocial';
+import { createMessages, DM_TABLES } from './demoMessages';
 import { createOutings } from './demoOutings';
+import { createMissions } from './demoMissions';
+import { createCouple } from './demoCouple';
+import { createAbsents, PERSONAL_TABLES } from './demoAbsents';
+import { createChildcare } from './demoChildcare';
+import { createStocks } from './demoStocks';
+import { createCredits } from './demoCredits';
+import { createAuraDemo } from './demoAura';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
 import { fromProductRow } from '../../../supabase/functions/_shared/open-facts';
@@ -64,7 +72,9 @@ const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_r
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const demoRecallMessage = () => tr('l2.dm.recallCheck');
-const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps'];
+const CHILD_TABLES = ['child_needs', 'child_need_entries', 'child_treatments', 'child_measurements', 'child_milestones', 'child_health_items', 'breastfeeds', 'pumpings', 'bottles', 'meals', 'food_introductions', 'diapers', 'sleeps', 'child_observations', 'bottle_timers', 'child_wellbeing', 'child_health_trackers', 'child_health_entries', 'child_vaccinations', 'sleep_profiles', 'sleep_feedback', 'child_vaccine_postponements', 'food_tastings', 'child_steps',
+  // 30/11/2026 : langage, jeux, activités, devoirs (parents de l'enfant)
+  'child_language_entries', 'child_game_marks', 'child_activities', 'child_homework'];
 
 /** Mêmes contrôles que la table bottle_timers (bornes, statut, un seul minuteur actif par enfant). */
 function checkBottleTimer(all: Row[], r: Row) {
@@ -90,6 +100,8 @@ const OWNER_TABLES: Record<string, string> = {
   parent_sleep_logs: 'user_id',
   // Grossesse : « Comment je me sens aujourd'hui ? » (jamais visible du foyer)
   pregnancy_symptom_logs: 'user_id',
+  // Se comprendre : ressentis strictement personnels
+  couple_feelings: 'user_id',
   // Près de chez moi : favoris et signalements strictement personnels (aucune position enregistrée)
   place_favorites: 'user_id', place_reports: 'user_id',
   // Parcours fertilité : données intimes, strictement personnelles
@@ -107,6 +119,8 @@ const OWNER_TABLES: Record<string, string> = {
   recipe_favorites: 'user_id', recipe_dislikes: 'user_id',
   // Post-partum : strictement personnel ; seule la ligne de partage est lisible par le foyer (côté serveur)
   postpartum_settings: 'user_id', postpartum_checkins: 'user_id', trusted_contacts: 'user_id', postpartum_actions: 'user_id', postpartum_shared_status: 'user_id',
+  // Mode embrouille, contractions, projet de naissance, post-partum, difficultés d'allaitement (27/11/2026)
+  ...PERSONAL_TABLES,
 };
 
 /** Même filtre que le déclencheur serveur postpartum_filter_shared. */
@@ -192,7 +206,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       res = await fetch(`${r.url}/functions/v1/assistant-demo`, {
         method: 'POST',
         headers: { apikey: r.anonKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: b.message, device_id: dev[0].id, recent_turns: b.recent_turns }),
+        body: JSON.stringify({ message: b.message, device_id: dev[0].id, recent_turns: b.recent_turns, lang: b.lang, region: b.region }),
         signal,
       });
     } catch {
@@ -299,21 +313,71 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     // plus de mois gratuit des outils depuis le 08/11/2026 (20261108000300_premium_strict.sql)
     return {
       premium, ai: grantActive(AI_ENTITLEMENT), trial_until: null, strict: !!opts.strictPremium,
+      caregiver: T('household_members').some((m) => m.user_id === state.session?.userId && m.role === 'caregiver'),
       tools: PAID_TOOLS.map((k) => { const owned = grantActive(toolEntitlement(k)); return { key: k, product_id: toolProductId(k), owned, allowed: premium || owned }; }),
     };
   }
-  /** Premium strict : mêmes tables et mêmes exceptions que _require_premium_write (20261108000300_premium_strict.sql). */
-  const strictGuard = (table: string) => {
+  /**
+   * Premium strict : mêmes tables et mêmes exceptions que _require_premium_write (20261108000300_premium_strict.sql),
+   * y compris celle du 13/11/2026 (20261113000100_caregiver_premium.sql) : une nounou n'est jamais bloquée pour ses
+   * saisies dans le foyer qui l'emploie (la famille paie).
+   */
+  const strictGuard = (table: string, householdIds: unknown[] = []) => {
     if (!opts.strictPremium || !state.session || isPremium()) return;
     if (AI_TABLES.includes(table) && grantActive(AI_ENTITLEMENT)) return;
+    if (STRICT_TABLES.includes(table) && householdIds.length && householdIds.every((h) => isCaregiverIn(h))) return;
     if (STRICT_TABLES.includes(table) || AI_TABLES.includes(table)) {
       throw new BackendError('Fonction Premium : abonnement requis pour enregistrer de nouvelles données', 'P0001', 'premium_required');
     }
   };
+  const isCaregiverIn = (household: unknown) => household != null
+    && T('household_members').some((m) => m.household_id === household && m.user_id === state.session?.userId && m.role === 'caregiver');
+  /** Enfants autorisés (miroir de _member_child_allowed) : nounou sans choix = aucun enfant. */
+  const childAllowed = (childId: unknown) => {
+    const child = T('children').find((c) => c.id === childId);
+    const m = child && T('household_members').find((x) => x.household_id === child.household_id && x.user_id === state.session?.userId);
+    if (!m) return false;
+    if (m.role === 'owner') return true;
+    if (m.child_scope == null) return m.role !== 'caregiver';
+    return (m.child_scope as unknown[]).includes(childId);
+  };
+  /** Tables versionnées (20261113000500_hors_ligne_versions.sql) : version posée par le serveur. */
+  const VERSIONED = ['family_tasks', 'care_requests', 'shopping_items', 'household_stocks'];
   const isPremium = () => {
     const s = T('subscriptions').find((r) => r.user_id === state.session?.userId);
     // Même règle que le serveur (_subscription_grants) : remboursé → rien ; échéance nulle → seulement promotionnel / à vie
-    return grants(s as never);
+    if (grants(s as never)) return true;
+    // Partage : l'abonné·e + UN seul autre adulte du foyer (miroir de _premium_of ; jamais pour une nounou)
+    return premiumGiver() != null;
+  };
+  const subActive = (user: unknown) => grants(T('subscriptions').find((r) => r.user_id === user) as never);
+  /** Miroir de public._premium_partner_of : le seul autre adulte qui profite de l'abonnement de `subscriber`. */
+  const premiumPartnerOf = (subscriber: unknown): string | null => {
+    const hm = T('household_members');
+    const c: { partner: string; prio: number; since: string }[] = [];
+    // a) co-parents des foyers dont l'abonné·e est propriétaire : le premier arrivé
+    for (const o of hm.filter((m) => m.user_id === subscriber && m.role === 'owner')) {
+      for (const m of hm.filter((x) => x.household_id === o.household_id && x.role === 'coparent' && x.user_id !== subscriber)) c.push({ partner: m.user_id, prio: 1, since: String(m.joined_at ?? '') });
+    }
+    // b) à défaut, le propriétaire du foyer où l'abonné·e est co-parent
+    for (const me of hm.filter((m) => m.user_id === subscriber && m.role === 'coparent')) {
+      for (const o of hm.filter((x) => x.household_id === me.household_id && x.role === 'owner' && x.user_id !== subscriber)) c.push({ partner: o.user_id, prio: 2, since: String(me.joined_at ?? '') });
+    }
+    c.sort((a, b) => a.prio - b.prio || a.since.localeCompare(b.since) || String(a.partner).localeCompare(String(b.partner)));
+    return c[0]?.partner ?? null;
+  };
+  /** Adulte abonné du foyer dont la personne connectée est LE bénéficiaire (null : aucun). */
+  const premiumGiver = (): string | null => {
+    const me = state.session?.userId;
+    if (!me) return null;
+    const hm = T('household_members');
+    const adult = (r: unknown) => r === 'owner' || r === 'coparent';
+    const others = hm.filter((m) => m.user_id === me && adult(m.role))
+      .flatMap((m) => hm.filter((o) => o.household_id === m.household_id && o.user_id !== me && adult(o.role)).map((o) => String(o.user_id)));
+    // Famille (26/11/2026) : tous les adultes du foyer de l'abonné·e ; Premium : le seul partenaire désigné
+    const list = [...new Set(others)].sort();
+    const family = (u: string) => tierOfProduct(T('subscriptions').find((r) => r.user_id === u)?.product_id) === 'family';
+    return list.find((u) => subActive(u) && family(u)) ?? list.find((u) => subActive(u) && premiumPartnerOf(u) === me) ?? null;
   };
   const limit = (key: string) => {
     const l = T('plan_limits').find((p) => p.key === key);
@@ -423,7 +487,28 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   /** Reconstruit la bibliothèque (hors stockage), garde les recettes personnelles et applique les corrections enregistrées. */
   // Mini-réseau social (mêmes règles que 20261023000100_community_social.sql)
   const social = createSocial({ T, me: () => state.session?.userId, uid, uuid, nowIso, limit, isModerator, blockedBetween, notify, actorLabel });
+  // Messagerie privée (mêmes règles que 20261119000300_messagerie_privee.sql)
+  const messages = createMessages({ T, uid, uuid, nowIso, blockedBetween, notify });
   // Sorties & rencontres (mêmes règles que 20261028000100_outings_meetups.sql)
+  // Courses et stocks (mêmes règles que 20261115000200_courses_stocks.sql) ; reliés aux missions dans les deux sens
+  let stocks: ReturnType<typeof createStocks> | null = null;
+  const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t),
+    matchStock: (h, label) => stocks?.matchStock(h, label) ?? null, itemChecked: (item) => stocks?.itemChecked(item) });
+  const couple = createCouple({ T, me: () => state.session?.userId, nowIso, uuid });
+  // Mode embrouille, moments à deux, naissance, post-partum, allaitement (27/11/2026, demoAbsents.ts)
+  const absents = createAbsents({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
+  stocks = createStocks({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
+  const stockHooks = stocks;
+  // Espace nounou (mêmes règles que 20261121000100_espace_nounou.sql, côté parent)
+  const childcare = createChildcare({ T, me: () => state.session?.userId, nowIso, uuid });
+  // Crédits HOMI Aura (mêmes règles que 20261126000100_credits_ia.sql) : solde, faux magasin, historique
+  const credits = createCredits({
+    T, me: () => state.session?.userId, nowIso, uuid,
+    activeSub: (u) => { const s = T('subscriptions').find((r) => r.user_id === u); return grants(s as never) ? (s as Row) : null; },
+    giver: () => premiumGiver(),
+  });
+  // HOMI Aura : même déroulé que le serveur (runAura), crédits de démonstration, modèle simulé (aucune IA)
+  const aura = createAuraDemo({ T, me: () => state.session?.userId, credits });
   const outings = createOutings({ T, me: () => state.session?.userId, nowIso, isModerator, blockedBetween,
     needsReview: (text) => PERSONAL_DATA.test(text) || textNeedsReview(text) || DEMO_TERMS.some((x) => x.pattern.test(text)) });
 
@@ -568,6 +653,20 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   function taskEvent(t: Row, kind: string, detail: Row = {}) {
     T('family_task_events').push({ id: uuid(), task_id: t.id, household_id: t.household_id, actor_id: state.session?.userId ?? null, kind, detail, created_at: nowIso() });
   }
+  /** Modification d'une tâche (update direct ou update_if_version) : mêmes règles et mêmes effets que le serveur. */
+  function applyTaskPatch(r: Row, patch: Row) {
+    if (r.mission_state && (['status', 'mission_state', 'assignee_id'].some((k) => k in patch && patch[k] !== r[k])
+        || (r.created_by !== state.session?.userId && Object.keys(patch).some((k) => patch[k] !== r[k])))) {
+      throw new BackendError(tr('l2.dm.forbidden'), '42501');
+    }
+    const before = { ...r };
+    Object.assign(r, patch, { updated_at: nowIso(), updated_by: state.session?.userId ?? null });
+    if (r.status === 'done' && before.status !== 'done') { r.done_at = nowIso(); r.done_by = state.session?.userId ?? null; }
+    if (r.status !== 'done') { r.done_at = null; r.done_by = null; }
+    if (r.assignee_id !== before.assignee_id) taskEvent(r, r.assignee_id ? 'assigned' : 'unassigned', { from: before.assignee_id, to: r.assignee_id });
+    if (r.status !== before.status) { taskEvent(r, r.status === 'done' ? 'done' : r.status === 'cancelled' ? 'cancelled' : 'reopened'); nextOccurrence(r); }
+    else if (before.due_at && r.due_at && r.due_at > before.due_at) taskEvent(r, 'postponed', { from: before.due_at, to: r.due_at });
+  }
   function nextOccurrence(t: Row) {
     if (t.status !== 'done' || !t.recurrence || !t.due_at) return;
     const every = Number(t.recurrence.every ?? 1);
@@ -578,12 +677,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     const due = d.toISOString();
     if (T('family_tasks').some((x) => x.household_id === t.household_id && x.title === t.title && x.due_at === due && x.status === 'todo')) return;
     const next = { ...t, id: uuid(), due_at: due, status: 'todo', done_at: null, done_by: null, created_at: nowIso(), updated_at: nowIso() };
+    // Mission récurrente : l'occurrence suivante est « À accepter », sans notification ni article de courses (comme le serveur)
+    if (t.mission_state) Object.assign(next, { mission_state: 'pending', shopping_item_id: null, responded_at: null, last_reminded_at: null, client_id: null, version: 1 });
     T('family_tasks').push(next);
     taskEvent(next, 'created');
   }
 
   // ---------------------------------------------------------------- règles d'insertion
   function beforeInsert(table: string, r: Row): Row {
+    // Messagerie privée : aucune écriture directe (fonctions dm_* uniquement, comme sur le serveur)
+    if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
     social.beforeInsert(table, r);
     outings.beforeInsert(table, r);
     const me = state.session?.userId;
@@ -591,6 +694,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (ownerCol && r[ownerCol] == null && me) r[ownerCol] = me;
     r.id ??= uuid();
     r.created_at ??= nowIso();
+    // Même défaut que le serveur (offduty_periods.starts_at default now()) : la pause commence à l'enregistrement
+    if (table === 'offduty_periods') r.starts_at ??= r.created_at;
+    absents.beforeInsert(table, r);
+    if (table === 'household_stocks' || table === 'shopping_items') {
+      if (table === 'household_stocks' && r.ingredient_key && T(table).some((x) => x.household_id === r.household_id && x.ingredient_key === r.ingredient_key)) throw new BackendError(tr('l2.dm.forbidden'), '23505');
+      stockHooks.beforeWrite(table, r);
+    }
     // Catalogue de produits : mêmes règles que la base (code-barres unique, prix datés et sourcés, jamais dans le futur)
     if (table === 'kid_products') {
       if (!/^[0-9]{8,14}$/.test(String(r.barcode ?? ''))) throw new BackendError(tr('l2.dm.barcodeInvalid'));
@@ -667,7 +777,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     }
     if (table === 'product_scans') checkScan(r);
     // Fonctions Premium : mêmes règles que les déclencheurs serveur (20261021000500_premium.sql)
-    strictGuard(table);
+    strictGuard(table, [r.household_id]);
+    if (VERSIONED.includes(table)) { r.version = 1; r.updated_at ??= nowIso(); }
     const PREMIUM_INSERT: Record<string, string> = { meal_plans: 'weekly_menu', bedtime_routines: 'bedtime_routine', sleep_feedback: 'sleep_insights' };
     if (PREMIUM_INSERT[table] && !isPremium()) throw new BackendError(`Fonction Premium (${PREMIUM_INSERT[table]})`, 'P0001', 'premium_required');
     // « Ses découvertes » : quelques aliments gratuits par enfant (20261027000100_discoveries_grow_nearby.sql)
@@ -687,6 +798,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       const active = T('reminders').filter((x) => x.user_id === (r.user_id ?? me) && x.category === 'custom' && !x.treatment_id && x.enabled !== false).length;
       if (active >= limit('custom_reminders_count')) throw new BackendError('Limite de la version gratuite atteinte (custom_reminders_count)', 'P0001', 'premium_required');
     }
+    if (table === 'family_tasks' && r.mission_state) throw new BackendError(tr('l2.dm.forbidden'), '42501');
     if (table === 'family_tasks') {
       r.status ??= 'todo'; r.priority ??= 'normal'; r.category ??= 'other'; r.essential ??= false; r.created_by ??= me; r.updated_at = nowIso();
       if (r.status === 'done') { r.done_at ??= nowIso(); r.done_by ??= me; }
@@ -882,6 +994,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     if (prof) prof.journeys = legacyJourneys(T('user_journeys') as JourneyRow[], userId);
   }
   function afterInsert(table: string, r: Row) {
+    if (table === 'household_stocks' || table === 'shopping_items') stockHooks.afterWrite(table, undefined, r);
     social.afterInsert(table, r);
     outings.afterInsert(table, r);
     if (table === 'user_journeys') afterJourney(null, r);
@@ -950,6 +1063,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   // ---------------------------------------------------------------- vues
   function view(table: string): Row[] {
     const me = state.session?.userId;
+    // Messagerie privée : aucune lecture directe (les fonctions dm_* appliquent les droits)
+    if (DM_TABLES.includes(table)) return [];
     const sv = social.view(table) ?? outings.view(table);
     if (sv) return sv;
     // Blocage dans les deux sens, comme is_blocked_between côté Supabase
@@ -1006,6 +1121,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       return T('community_profiles').map((p) => ({ user_id: p.user_id, pseudonym: p.pseudonym, handle: p.handle, avatar_path: p.avatar_path ?? null, avatar_preset: p.avatar_preset ?? null, created_at: p.created_at }));
     }
     const rows = T(table);
+    // Se comprendre, profil familial, grossesse partagée, rendez-vous « pour moi » (19/11/2026, demoCouple.ts)
+    const coupleRows = couple.filter(table, rows);
+    if (coupleRows) return coupleRows;
+    const absentRows = absents.filter(table, rows);
+    if (absentRows) return absentRows;
+    // Baromètre du couple (20261130100400) : mes jauges + celles que l'autre parent a partagées
+    if (table === 'couple_barometer') return rows.filter((x) => x.user_id === me || x.shared === true);
     const ownerCol = OWNER_TABLES[table];
     // Données personnelles : uniquement celles du compte connecté
     if (ownerCol && !['posts', 'comments', 'post_photos'].includes(table)) {
@@ -1074,12 +1196,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     // 1) Urgence : orientation immédiate, sans IA ni quota
     const safety = assessSafety(message);
     if (safety.level !== 'none') {
-      const answer = crisisMessage(safety.level);
+      const where = { lang: toSafetyLang(b.lang) ?? safety.lang, region: typeof b.region === 'string' ? b.region : null };
+      const answer = crisisMessage(safety.level, where);
       const mid = store(answer, { safety: safety.level, flags: safety.reasons });
       return {
         raw: null,
         result: {
-          conversation_id: convId, message_id: mid, answer, safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level),
+          conversation_id: convId, message_id: mid, answer, safety: safety.level, reasons: safety.reasons, urgent_contacts: urgentContacts(safety.level, where),
           sources: [], structured: null, show_emergency_resources: true, stored: !!mid,
         },
       };
@@ -1099,7 +1222,22 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
 
   // ---------------------------------------------------------------- fonctions backend simulées
   const rpcs: Record<string, (a: Row) => unknown> = {
+    ...credits.rpcs,
     ...social.rpcs,
+    ...messages.rpcs,
+    ...missions.rpcs,
+    ...couple.rpcs,
+    ...absents.rpcs,
+    ...stockHooks.rpcs,
+    ...childcare.rpcs,
+    // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
+    demo_switch_person: (a) => {
+      const me = state.session?.userId;
+      const mine = new Set(T('household_members').filter((m) => m.user_id === me).map((m) => m.household_id));
+      if (!T('household_members').some((m) => m.user_id === a.p_user && mine.has(m.household_id))) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      setSession({ userId: String(a.p_user), email: null });
+      return { user_id: a.p_user };
+    },
     // Effacer toutes ses données du cycle (le compte reste)
     delete_my_cycle_data: () => {
       const me = uid();
@@ -1214,7 +1352,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     create_household_invitation: (a) => {
       if (!isPremium()) throw new BackendError('Fonction Premium (coparent_invite)', 'P0001', 'premium_required');
       const token = uuid().replace(/-/g, '');
-      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(token), role: a.p_role ?? 'coparent', can_view: a.p_can_view, can_edit: a.p_can_edit, child_scope: a.p_child_scope ?? null, pregnancy_access: a.p_pregnancy_access ?? true, created_at: nowIso(), expires_at: new Date(Date.now() + 7 * 86400_000).toISOString() });
+      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(token), role: a.p_role ?? 'coparent', can_view: a.p_can_view, can_edit: a.p_can_edit, child_scope: a.p_child_scope ?? null, pregnancy_access: a.p_pregnancy_access ?? ((a.p_role ?? 'coparent') !== 'caregiver'), created_at: nowIso(), expires_at: new Date(Date.now() + 7 * 86400_000).toISOString() });
       return token;
     },
     accept_household_invitation: () => {
@@ -1230,6 +1368,21 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       const ids = new Set(T('household_members').filter((m) => mine.has(m.household_id)).map((m) => m.user_id));
       if (me) ids.add(me);
       return T('profiles').filter((p) => ids.has(p.id) && p.avatar_path).map((p) => ({ user_id: p.id, avatar_path: p.avatar_path }));
+    },
+    // Prénoms des membres (miroir de household_member_names, 20261116000100) : prénom affiché + photo, rien d'autre ;
+    // membres actifs de mes foyers ; une nounou ne voit que les parents (et elle-même)
+    household_member_names: (a) => {
+      const me = state.session?.userId;
+      if (!me) return [];
+      return T('household_members')
+        .filter((mine) => mine.user_id === me && (a.p_household == null || mine.household_id === a.p_household))
+        .flatMap((mine) => T('household_members')
+          .filter((o) => o.household_id === mine.household_id && (mine.role !== 'caregiver' || o.role !== 'caregiver' || o.user_id === me))
+          .map((o) => {
+            const p = T('profiles').find((x) => x.id === o.user_id);
+            const name = String(p?.display_name ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
+            return { household_id: o.household_id, user_id: o.user_id, role: o.role, display_name: name || null, avatar_path: p?.avatar_path ?? null };
+          }));
     },
     has_tool: (a) => (demoAccess().tools.find((t) => t.key === a.p_tool)?.allowed ?? true),
     set_demo_grant: (a) => {
@@ -1284,9 +1437,52 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       row.used += 1;
       return [{ allowed: true, used: row.used, quota }];
     },
+    // Fiche de sécurité d'un enfant (miroir de child_safety_card) : allergies et consignes critiques
+    child_safety_card: (a) => {
+      if (!childAllowed(a.p_child)) throw new BackendError(tr('l2.dm.forbidden'), '42501');
+      const c = T('children').find((x) => x.id === a.p_child)!;
+      return {
+        child_id: c.id, first_name: c.first_name, birth_date: c.birth_date, allergies_declared: c.allergies_declared ?? [], habits: c.habits ?? null,
+        items: T('child_health_items').filter((i) => i.child_id === c.id && ['allergy', 'treatment', 'contact', 'soothe'].includes(String(i.kind))).map((i) => ({ kind: i.kind, label: i.label, details: i.details ?? null })),
+        treatments: T('child_treatments').filter((t) => t.child_id === c.id && t.active !== false).map((t) => ({ name: t.name })),
+      };
+    },
+    // Mise à jour conditionnelle (miroir de update_if_version) : conflit si la ligne a changé depuis la lecture
+    update_if_version: (a) => {
+      const allowed: Record<string, string[]> = {
+        family_tasks: ['title', 'category', 'due_at', 'assignee_id', 'priority', 'essential', 'recurrence', 'status', 'notes'],
+        care_requests: ['status', 'message', 'starts_at', 'ends_at'],
+        shopping_items: ['label', 'qty', 'unit', 'aisle', 'at_home', 'checked', 'position', 'brand', 'size', 'category', 'assignee_id', 'document_id'],
+        household_stocks: ['label', 'category', 'brand', 'size', 'qty_estimate', 'unit', 'threshold', 'frequency_days', 'responsible_id', 'reminder', 'child_id', 'notes'],
+      };
+      const cols = allowed[String(a.p_table)];
+      const patch = (a.p_patch ?? {}) as Row;
+      if (!cols || !Object.keys(patch).length || Object.keys(patch).some((k) => !cols.includes(k))) throw new BackendError(tr('l2.dm.forbidden'), '22023');
+      const row = T(String(a.p_table)).find((x) => x.id === a.p_id);
+      if (!row) return { status: 'not_found' };
+      if (Number(row.version ?? 1) !== Number(a.p_expected_version)) return { status: 'conflict', row: { ...row } };
+      if (a.p_table === 'family_tasks') {
+        // Audit 08 : même chemin que l'update direct (historique, occurrence suivante, règles des missions)
+        applyTaskPatch(row, patch);
+        row.version = Number(row.version ?? 1) + 1;
+        persist();
+        return { status: 'ok', row: { ...row } };
+      }
+      const wasDone = row.status === 'done';
+      const before = { ...row };
+      Object.assign(row, patch, { version: Number(row.version ?? 1) + 1, updated_at: nowIso() });
+      if (a.p_table === 'household_stocks' || a.p_table === 'shopping_items') {
+        try { stockHooks.beforeWrite(String(a.p_table), row, before); } catch (e) { Object.assign(row, before); throw e; }
+        stockHooks.afterWrite(String(a.p_table), before, row);
+      }
+      if (a.p_table === 'family_tasks' && row.status === 'done' && !wasDone) { row.done_at = nowIso(); row.done_by = state.session?.userId ?? null; }
+      if (a.p_table === 'family_tasks' && row.status !== 'done') { row.done_at = null; row.done_by = null; }
+      persist();
+      return { status: 'ok', row: { ...row } };
+    },
     set_member_scope: (a) => {
       const m = T('household_members').find((x) => x.household_id === a.p_household && x.user_id === a.p_user && x.role !== 'owner');
-      if (m) { m.child_scope = a.p_child_scope ?? null; m.pregnancy_access = a.p_pregnancy_access ?? true; }
+      if (m) { m.child_scope = a.p_child_scope ?? null; m.pregnancy_access = a.p_pregnancy_access ?? m.pregnancy_access ?? (m.role !== 'caregiver'); }
       return null;
     },
     premium_article_teasers: () => T('articles').filter((x) => x.status === 'published' && x.is_premium && !x.is_safety_critical).map((x) => ({ id: x.id, slug: x.slug, title: x.title, summary: x.summary, category_id: x.category_id, journeys: x.journeys, is_premium: true })),
@@ -1453,17 +1649,19 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     load_sample_family: () => {
       buildSampleFamily(uid(), T, rpcs.create_household as (a: Row) => string);
+      messages.markDemo(uid());
       return null;
     },
     set_demo_subscription: (a) => {
       // Démonstration uniquement (données locales fictives, aucun paiement) : grille 1 mois / 6 mois / 12 mois,
-      // essai de 3 jours sur le mensuel ; un changement de formule remplace la ligne (jamais deux abonnements).
+      // essai de 3 jours sur chaque formule (grille DEMO_GRID) ; un changement de formule remplace la ligne (jamais deux abonnements).
       const subs = T('subscriptions');
       const idx = subs.findIndex((s) => s.user_id === uid());
       const period: PlanPeriod = a.period === 'annual' || a.period === 'six_months' ? a.period : 'monthly';
       const plus = (months: number) => { const d = new Date(); d.setMonth(d.getMonth() + months); return d.toISOString(); };
-      const base = { user_id: uid(), entitlement: PREMIUM_ENTITLEMENT, product_id: a.product_id ?? PRODUCT_IDS[period], store: 'test', period_type: period,
-        price: DEMO_GRID[period].amount, currency: DEMO_CURRENCY, environment: null, refunded_at: null, billing_issue_at: null, resumes_at: null, cancel_reason: null };
+      const productId = a.product_id ?? PRODUCT_IDS[period];
+      const base = { user_id: uid(), entitlement: PREMIUM_ENTITLEMENT, product_id: productId, store: 'test', period_type: period,
+        price: tierOfProduct(productId) === 'family' ? DEMO_FAMILY_GRID.monthly.amount : DEMO_GRID[period].amount, currency: DEMO_CURRENCY, environment: null, refunded_at: null, billing_issue_at: null, resumes_at: null, cancel_reason: null };
       // Simulation des états (démonstration et tests) : essai, actif, annulé, grâce, problème de paiement, remboursé, en pause, expiré
       if (typeof a.state === 'string') {
         const days = Number(a.expires_in_days ?? 30);
@@ -1474,6 +1672,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           refunded_at: st === 'refunded' ? nowIso() : null, billing_issue_at: st === 'grace' || st === 'billing_issue' ? nowIso() : null,
           resumes_at: st === 'paused' ? new Date(Date.now() + (days + 30) * 86400_000).toISOString() : null };
         if (idx >= 0) subs[idx] = row; else subs.push(row);
+        if (st === 'active' || st === 'trial') credits.grant(uid(), tierOfProduct(row.product_id), row.expires_at, st === 'trial');
         return row;
       }
       const trialDays = a.trial ? Number(a.trial_days ?? DEMO_GRID[period].trialDays) : 0;
@@ -1484,13 +1683,23 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
         : { ...(idx >= 0 ? subs[idx] : base), user_id: uid(), status: 'expired', expires_at: nowIso(), will_renew: false };
       if (idx >= 0) subs[idx] = row;
       else subs.push(row);
+      // Miroir du webhook : octroi mensuel à l'achat (1 000 Premium, 1 500 Famille, 50 pendant l'essai)
+      if (a.active) credits.grant(uid(), tierOfProduct((row as Row).product_id), row.expires_at, row.status === 'trial');
       return row;
     },
-    my_premium_share: () => ({ shared_with: null, shared_by: null }),
+    // Miroir de public.my_premium_share() : avec qui mon Premium est partagé / qui me le partage (pour soi seulement)
+    my_premium_share: () => {
+      const me = uid();
+      const person = (id: string | null) => (id ? { user_id: id, display_name: (T('profiles').find((p) => p.id === id)?.display_name as string | undefined) ?? null } : null);
+      return { shared_with: person(subActive(me) ? premiumPartnerOf(me) : null), shared_by: person(premiumGiver()) };
+    },
+    // Démonstration : l'essai gratuit n'est proposé qu'une fois (comme Apple, une fois par groupe d'abonnements) —
+    // dès qu'un abonnement de démonstration a existé pour ce compte, les formules s'affichent sans essai.
+    demo_trial_used: () => T('subscriptions').some((s) => s.user_id === uid() && s.status !== 'none'),
   };
 
   const functions: Record<string, (b: Row) => unknown> = {
-    assistant: (b) => assistantCore(b).result,
+    assistant: (b) => (b.mode === 'aura' ? aura(b) : assistantCore(b).result),
     // Communauté (Premium) : en démonstration, pas d'IA — des extraits des réponses, présentés comme tels
     'community-ai': (b) => {
       if (!isPremium()) throw new BackendError('Fonction Premium (community_ai)', 'P0001', 'premium_required');
@@ -1585,7 +1794,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     let profileCreated = false;
     if (!T('profiles').some((p) => p.id === userId)) {
       profileCreated = true;
-      T('profiles').push({ id: userId, display_name: null, journeys: [], interests: [], locale: 'fr', timezone: 'Europe/Paris', onboarding_completed: false, home_shortcuts: ['bottle', 'diaper', 'sleep', 'question'], hide_weight_module: false, theme: 'system' });
+      T('profiles').push({ id: userId, display_name: null, journeys: [], interests: [], locale: 'fr', timezone: 'Europe/Paris', onboarding_completed: false, onboarding_answers: null, onboarding_version: null, home_shortcuts: ['bottle', 'diaper', 'sleep', 'question'], hide_weight_module: false, theme: 'system' });
       T('privacy_settings').push({ user_id: userId, analytics_enabled: false, crash_reports_enabled: false, ai_history_enabled: false, ai_history_consented_at: null, community_visible: true, retention_months: 36 });
     }
     const member = T('household_members').find((m) => m.user_id === userId);
@@ -1725,8 +1934,15 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       return JSON.parse(JSON.stringify(out)) as R[];
     },
     async update<R>(table: string, patch: Row, filters: Filter[]) {
+      // Recette (démonstration uniquement) : fait échouer la prochaine écriture pour tester la conservation du brouillon
+      const g = globalThis as { __HOMI_DEMO_FAIL_NEXT_WRITE?: boolean };
+      if (g.__HOMI_DEMO_FAIL_NEXT_WRITE) { g.__HOMI_DEMO_FAIL_NEXT_WRITE = false; throw new BackendError(tr('home.offline'), 'demo_test_failure', undefined, 503); }
       await load();
+      if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let rows = T(table).filter((r) => filters.every((f) => matches(r, f)));
+      // Listes privées, moments, demandes : mêmes règles que la base (demoAbsents.ts)
+      if (['checklists', 'checklist_items', 'couple_moments', 'calm_requests', 'milk_stock', 'bottle_relays'].includes(table)) rows = absents.filter(table, rows) ?? rows;
+      for (const r of rows) absents.beforeUpdate(table, r, patch);
       // Comme 20261029000200 : activer l'historique de l'assistant = accord daté ; le désactiver l'efface
       if (table === 'privacy_settings' && 'ai_history_enabled' in patch) patch = { ...patch, ai_history_consented_at: patch.ai_history_enabled === true ? nowIso() : null };
       // « Je grandis » / « Ses découvertes » : mêmes contrôles qu'à la création
@@ -1759,6 +1975,13 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           persist();
           return JSON.parse(JSON.stringify(rows)) as R[];
         }
+        // Onboarding v2 (20261119000100_onboarding_answers.sql) : objet JSON borné, version 1 à 100
+        if (table === 'profiles' && ('onboarding_answers' in patch || 'onboarding_version' in patch)) {
+          const ans = patch.onboarding_answers;
+          if (ans != null && (typeof ans !== 'object' || Array.isArray(ans) || JSON.stringify(ans).length >= 8000)) throw new BackendError('profiles_onboarding_answers_shape', '23514');
+          const ver = patch.onboarding_version;
+          if (ver != null && (typeof ver !== 'number' || ver < 1 || ver > 100)) throw new BackendError('profiles_onboarding_version_range', '23514');
+        }
         if (table === 'community_profiles') {
           for (const r of rows) {
             const next: Row = { ...patch };
@@ -1772,7 +1995,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           return JSON.parse(JSON.stringify(rows)) as R[];
         }
       }
-      if (rows.length) strictGuard(table);
+      if (rows.length) strictGuard(table, rows.map((r) => r.household_id));
+      if (VERSIONED.includes(table)) {
+        patch = { ...patch };
+        delete patch.version; delete patch.client_id;
+        for (const r of rows) { r.version = Number(r.version ?? 1) + 1; r.updated_at = nowIso(); }
+      }
       rows = rows.filter((r) => social.beforeUpdate(table, r, patch) && outings.beforeUpdate(table, r, patch));
       markLib(table, rows);
       if (table === 'assistant_messages' && Object.keys(patch).some((k) => k !== 'saved')) throw new BackendError(tr('l2.dm.forbidden'), '42501');
@@ -1803,13 +2031,14 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
           continue;
         }
         if (table === 'family_tasks') {
+          applyTaskPatch(r, patch);
+          continue;
+        }
+        if (table === 'household_stocks' || table === 'shopping_items') {
           const before = { ...r };
-          Object.assign(r, patch, { updated_at: nowIso(), updated_by: state.session?.userId ?? null });
-          if (r.status === 'done' && before.status !== 'done') { r.done_at = nowIso(); r.done_by = state.session?.userId ?? null; }
-          if (r.status !== 'done') { r.done_at = null; r.done_by = null; }
-          if (r.assignee_id !== before.assignee_id) taskEvent(r, r.assignee_id ? 'assigned' : 'unassigned', { from: before.assignee_id, to: r.assignee_id });
-          if (r.status !== before.status) { taskEvent(r, r.status === 'done' ? 'done' : r.status === 'cancelled' ? 'cancelled' : 'reopened'); nextOccurrence(r); }
-          else if (before.due_at && r.due_at && r.due_at > before.due_at) taskEvent(r, 'postponed', { from: before.due_at, to: r.due_at });
+          Object.assign(r, patch);
+          try { stockHooks.beforeWrite(table, r, before); } catch (e) { Object.assign(r, before); throw e; }
+          stockHooks.afterWrite(table, before, r);
           continue;
         }
         if (table === 'care_requests') {
@@ -1857,9 +2086,10 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     },
     async remove(table, filters) {
       await load();
+      if (DM_TABLES.includes(table)) throw new BackendError(tr('l2.sb.forbidden'), '42501');
       let removed = T(table).filter((r) => filters.every((f) => matches(r, f)));
       if (['posts', 'comments', 'post_photos'].includes(table) && !isModerator()) removed = removed.filter((r) => r.author_id === state.session?.userId);
-      removed = outings.filterRemove(table, social.filterRemove(table, removed));
+      removed = absents.filterRemove(table, outings.filterRemove(table, social.filterRemove(table, removed)));
       markLib(table, removed);
       state.tables[table] = T(table).filter((r) => !removed.includes(r));
       social.afterRemove(table, removed, state.tables);

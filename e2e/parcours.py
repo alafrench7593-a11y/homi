@@ -68,7 +68,7 @@ def run(p):
     pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     pg.evaluate(SIMPLE_OFF); pg.reload(); pg.wait_for_timeout(3000)
     me = demo(pg, "s => s.tables.profiles[0].id")
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
@@ -137,7 +137,7 @@ def run(p):
     tid(pg, 'outcome-born').click(); pg.wait_for_timeout(800)
     # Offre gratuite (3 enfants) : 2 enfants + jumeaux → annoncé AVANT l'enregistrement, la grossesse n'est pas touchée
     R['5_limite_offre_annoncee'] = tid(pg, 'birth-limit').is_visible()
-    mutate(pg, f"s => {{ s.tables.subscriptions = [{{ id: 'sub-e2e', user_id: '{me}', status: 'active', plan: 'premium', store: 'app_store', product_id: 'aufildenous_premium_monthly', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), created_at: new Date().toISOString() }}]; }}")
+    mutate(pg, f"s => {{ s.tables.subscriptions = [{{ id: 'sub-e2e', user_id: '{me}', status: 'active', plan: 'premium', store: 'app_store', product_id: 'homi_premium_monthly', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), created_at: new Date().toISOString() }}]; }}")
     go(pg, '/pregnancy/end')
     tid(pg, 'outcome-born').click(); pg.wait_for_timeout(600)
     tid(pg, 'birth-name-0').fill('Jade'); tid(pg, 'birth-weight-0').fill('2650'); tid(pg, 'birth-time-0').fill('08:42'); tid(pg, 'birth-term-0').fill('37')

@@ -10,7 +10,7 @@ const C = '2026-10-27';
 // Sources réellement consultées le 2026-10-27 (pages officielles françaises). `published` = date affichée par la page.
 const S = {
   sante4a6: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Entre 4 et 6 mois : l’introduction des aliments en douceur', url: 'https://www.sante.fr/entre-4-et-6-mois-lintroduction-des-aliments-en-douceur', consulted_on: C, published: '2025-10-24' },
-  santeToutSavoir: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Tout savoir sur la diversification alimentaire de votre enfant', url: 'https://www.sante.fr/node/19853251', consulted_on: C, published: '2025-10-24' },
+  santeToutSavoir: { label: 'Santé.fr (Santé publique France – Manger Bouger) — Tout savoir sur la diversification alimentaire de ton enfant', url: 'https://www.sante.fr/node/19853251', consulted_on: C, published: '2025-10-24' },
   santeDiversif: { label: 'Santé.fr (information mpedia) — Diversification alimentaire du bébé : le guide complet', url: 'https://www.sante.fr/commencer-la-diversification', consulted_on: C, published: '2026-09-21' },
   sante6a12: { label: 'Santé.fr (information mpedia) — 6 à 12 mois, poursuite de la diversification alimentaire', url: 'https://www.sante.fr/6-12-mois-poursuite-de-la-diversification-alimentaire', consulted_on: C, published: '2025-06-12' },
   sante6a12Rythme: { label: 'Santé.fr (information mpedia) — Entre 6 et 12 mois, alimentation variée, rythme régulier', url: 'https://www.sante.fr/node/1068579', consulted_on: C, published: '2020-12-28' },
@@ -25,7 +25,7 @@ const S = {
   ansesHygiene: { label: 'ANSES — Conseils d’hygiène dans la cuisine : dix gestes simples pour prévenir les risques microbiologiques', url: 'https://www.anses.fr/fr/content/conseils-dhygiene-dans-la-cuisine-dix-gestes-simples-pour-prevenir-les-risques', consulted_on: C, published: '2020-12-24' },
 } satisfies Record<string, ArticleSource>;
 
-const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme ou de la PMI qui connaissent votre enfant et votre situation.';
+const END = 'Cet article informe et accompagne ; il ne remplace pas l’avis du médecin, de la sage-femme ou de la PMI qui connaissent ton enfant et ta situation.';
 
 const BABY = { journeys: ['newborn'] as LibArticle['journeys'], category: 'alimentation-bebe' as const, status: 'to_review' as const };
 
@@ -52,12 +52,12 @@ Le choix peut suivre les saisons : les repères indiquent qu'aucun légume n'est
 Vers 9 mois, les repères indiquent que la plupart des légumes sont acceptés, y compris ceux au goût plus marqué ou plus riches en fibres. Les purées deviennent alors moins lisses, et de petits morceaux fondants peuvent être proposés à part.
 
 ## Au quotidien
-- **Préparez simplement** : lavez, épluchez si besoin, coupez en morceaux, faites cuire à l'eau ou à la vapeur jusqu'à ce que le légume s'écrase facilement, puis mixez finement.
-- **Ajustez la texture** avec un peu d'eau de cuisson ou de lait de bébé si la purée est trop épaisse, ou avec un peu de pomme de terre si elle est trop liquide.
-- **Ajoutez la matière grasse au moment de servir**, crue, dans la purée tiède.
+- **Prépare simplement** : lave, épluche si besoin, coupe en morceaux, fais cuire à l'eau ou à la vapeur jusqu'à ce que le légume s'écrase facilement, puis mixe finement.
+- **Ajuste la texture** avec un peu d'eau de cuisson ou de lait de bébé si la purée est trop épaisse, ou avec un peu de pomme de terre si elle est trop liquide.
+- **Ajoute la matière grasse au moment de servir**, crue, dans la purée tiède.
 - **Un légume par découverte** : par exemple carotte plusieurs jours, puis courgette, puis un mélange carotte-courgette.
-- **Gardez un petit carnet** des légumes goûtés : il aide à varier et à repérer ce qui plaît moins pour le reproposer plus tard.
-- **Proposez, sans viser une quantité** : quelques cuillerées suffisent au début ; c'est l'appétit de votre bébé qui guide.
+- **Garde un petit carnet** des légumes goûtés : il aide à varier et à repérer ce qui plaît moins pour le reproposer plus tard.
+- **Propose, sans viser une quantité** : quelques cuillerées suffisent au début ; c'est l'appétit de ton bébé qui guide.
 - **Surgelés nature** : des légumes surgelés sans sauce ni sel ajouté peuvent dépanner, en lisant bien la liste des ingrédients.
 
 ## Questions fréquentes
@@ -65,16 +65,16 @@ Vers 9 mois, les repères indiquent que la plupart des légumes sont acceptés, 
 Une grimace ne veut pas dire un refus. Les repères conseillent de reproposer un aliment refusé quelques jours plus tard : il faut parfois le présenter jusqu'à une dizaine de fois avant qu'il soit accepté. Sans forcer, en restant détendu.
 
 **Puis-je mélanger légumes et féculents dès le début ?**
-Au tout début, mieux vaut présenter chaque nouveau légume seul, pour que bébé découvre son goût. Une fois le légume accepté, vous pouvez le mélanger à d'autres ou à un peu de pomme de terre.
+Au tout début, mieux vaut présenter chaque nouveau légume seul, pour que bébé découvre son goût. Une fois le légume accepté, tu peux le mélanger à d'autres ou à un peu de pomme de terre.
 
 **Faut-il éplucher et épépiner la tomate ?**
 Pour les premières purées très lisses, retirer peau et pépins aide à obtenir une texture homogène. La tomate peut aussi être associée à un peu de pomme de terre pour épaissir.
 
 **Les légumes surgelés ou en conserve sont-ils adaptés ?**
-Les légumes surgelés nature peuvent être pratiques. Pour les conserves, vérifiez l'étiquette : elles contiennent souvent du sel ajouté, que les repères conseillent d'éviter chez le bébé.
+Les légumes surgelés nature peuvent être pratiques. Pour les conserves, vérifie l'étiquette : elles contiennent souvent du sel ajouté, que les repères conseillent d'éviter chez le bébé.
 
 ## Quand demander conseil
-Parlez-en au médecin, à la sage-femme ou à la PMI si votre bébé refuse durablement tous les légumes, vomit régulièrement après les repas, a des selles très modifiées qui persistent ou s'il prend peu de poids. Après un repas, une gêne respiratoire, un gonflement des lèvres ou du visage, ou un bébé qui devient mou ou pâle : appelez le 15 ou le 112.
+Parles-en au médecin, à la sage-femme ou à la PMI si ton bébé refuse durablement tous les légumes, vomit régulièrement après les repas, a des selles très modifiées qui persistent ou s'il prend peu de poids. Après un repas, une gêne respiratoire, un gonflement des lèvres ou du visage, ou un bébé qui devient mou ou pâle : appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['diversification', 'légumes', 'purée', 'premiers légumes', 'carotte', 'courgette', 'haricots verts', '4-6 mois'],
@@ -108,8 +108,8 @@ Au fil des mois, la texture évolue : compote très lisse au début, puis fruit 
 - **Banane mûre** : elle s'écrase à la fourchette, crue, sans cuisson.
 - **Un fruit nouveau à la fois**, puis des mélanges (pomme-poire, pomme-banane) une fois chacun accepté.
 - **Petits morceaux tendres** quand bébé commence à manger avec les doigts : poire très mûre, banane, pêche bien mûre, coupés en morceaux adaptés à sa main.
-- **Raisins, cerises, tomates cerises** : coupez-les en petits morceaux et retirez noyaux et pépins durs ; ne les donnez jamais entiers.
-- **Compotes du commerce** : choisissez-les « sans sucres ajoutés » en lisant la liste des ingrédients.
+- **Raisins, cerises, tomates cerises** : coupe-les en petits morceaux et retire noyaux et pépins durs ; ne les donne jamais entiers.
+- **Compotes du commerce** : choisis-les « sans sucres ajoutés » en lisant la liste des ingrédients.
 - **Fruit au goûter** : une compote ou un fruit écrasé avec un yaourt nature ou un morceau de pain forme un goûter simple.
 
 ## Questions fréquentes
@@ -120,13 +120,13 @@ Aucun ordre n'est imposé par les repères. Beaucoup de familles proposent les l
 Au début, les fruits se proposent cuits et mixés. La banane très mûre, écrasée, fait exception car elle est tendre. Les autres fruits crus viennent ensuite, bien mûrs, écrasés ou en petits morceaux tendres.
 
 **Les fruits rouges ou les agrumes sont-ils interdits ?**
-Les repères ne les interdisent pas. Proposez-les comme les autres, un par un, sous une forme adaptée à l'âge. Si une réaction vous inquiète, notez ce que bébé a mangé et parlez-en au médecin.
+Les repères ne les interdisent pas. Propose-les comme les autres, un par un, sous une forme adaptée à l'âge. Si une réaction t’inquiète, note ce que bébé a mangé et parles-en au médecin.
 
 **Un jus de fruits pressé maison, c'est mieux ?**
 Même maison, un jus reste une boisson sucrée. Les repères conseillent d'éviter les jus de fruits avant 3 ans et de privilégier le fruit entier.
 
 ## Quand demander conseil
-Consultez si des plaques, des démangeaisons, des vomissements ou une diarrhée apparaissent après un fruit, ou si votre bébé refuse durablement de manger. Si votre enfant s'étouffe et ne peut plus respirer, tousser ou crier, ou s'il présente une gêne respiratoire ou un gonflement du visage après un repas, appelez immédiatement le 15 ou le 112.
+Consulte si des plaques, des démangeaisons, des vomissements ou une diarrhée apparaissent après un fruit, ou si ton bébé refuse durablement de manger. Si ton enfant s'étouffe et ne peut plus respirer, tousser ou crier, ou s'il présente une gêne respiratoire ou un gonflement du visage après un repas, appelle immédiatement le 15 ou le 112.
 
 ${END}`,
     tags: ['diversification', 'fruits', 'compote', 'banane', 'pomme', 'poire', 'jus de fruits', 'sucre'],
@@ -156,29 +156,29 @@ Le pain fait partie des produits céréaliers recommandés. Les repères de Sant
 Les féculents contenant du gluten (pain, pâtes, semoule de blé) n'ont pas à être retardés : les repères actuels recommandent au contraire de ne pas différer le gluten pendant la diversification.
 
 ## Au quotidien
-- **Débutez avec la pomme de terre** mixée avec un légume déjà connu, par exemple carotte et pomme de terre.
-- **Faites bien cuire pâtes et riz**, un peu plus longtemps que pour les adultes, puis mixez-les avec la purée de légumes.
-- **Faites évoluer la texture** : mixé au début, écrasé à la fourchette ensuite, puis petites pâtes ou riz bien tendre vers la fin de la première année.
-- **Pas de sel dans l'eau de cuisson** pour la part de bébé : prélevez-la avant d'assaisonner le plat familial.
+- **Débute avec la pomme de terre** mixée avec un légume déjà connu, par exemple carotte et pomme de terre.
+- **Fais bien cuire pâtes et riz**, un peu plus longtemps que pour les adultes, puis mixe-les avec la purée de légumes.
+- **Fais évoluer la texture** : mixé au début, écrasé à la fourchette ensuite, puis petites pâtes ou riz bien tendre vers la fin de la première année.
+- **Pas de sel dans l'eau de cuisson** pour la part de bébé : prélève-la avant d'assaisonner le plat familial.
 - **Un filet d'huile crue** (colza, noix ou olive) dans la purée au moment de servir.
-- **Pain** : proposez-le en petits morceaux ou en croûte, en restant à côté de bébé, assis bien droit.
-- **Lisez les étiquettes** des céréales et biscuits « bébé » : évitez ceux qui contiennent des sucres ajoutés.
+- **Pain** : propose-le en petits morceaux ou en croûte, en restant à côté de bébé, assis bien droit.
+- **Lis les étiquettes** des céréales et biscuits « bébé » : évite ceux qui contiennent des sucres ajoutés.
 
 ## Questions fréquentes
 **À partir de quand peut-il manger des pâtes ?**
 Les céréales font partie des aliments qui peuvent être introduits dès 4 à 6 mois. Les pâtes se proposent bien cuites et mixées au début, puis écrasées, puis en petites formes tendres quand bébé gère les textures plus épaisses.
 
 **Le riz et les pâtes complets conviennent-ils ?**
-Les repères de Santé publique France citent le pain complet parmi les aliments possibles. Les produits complets sont plus riches en fibres : introduisez-les progressivement et observez la digestion de votre bébé.
+Les repères de Santé publique France citent le pain complet parmi les aliments possibles. Les produits complets sont plus riches en fibres : introduis-les progressivement et observe la digestion de ton bébé.
 
 **Faut-il éviter le gluten la première année ?**
-Non. Les repères actuels recommandent de ne pas retarder le gluten et de l'introduire pendant la diversification, en petites quantités. En cas de maladie digestive connue ou d'antécédents familiaux, demandez l'avis du médecin.
+Non. Les repères actuels recommandent de ne pas retarder le gluten et de l'introduire pendant la diversification, en petites quantités. En cas de maladie digestive connue ou d'antécédents familiaux, demande l'avis du médecin.
 
 **Il mange seulement la purée de pommes de terre et laisse les légumes : que faire ?**
-Continuez à proposer les légumes, seuls ou mélangés, sans forcer. Reproposer régulièrement un aliment moins apprécié aide souvent à le faire accepter avec le temps.
+Continue à proposer les légumes, seuls ou mélangés, sans forcer. Reproposer régulièrement un aliment moins apprécié aide souvent à le faire accepter avec le temps.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé a une diarrhée qui persiste, un ventre très gonflé, s'il prend peu de poids ou semble moins tonique depuis l'introduction de nouveaux aliments. Si votre enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelez immédiatement le 15 ou le 112.
+Parles-en au médecin ou à la PMI si ton bébé a une diarrhée qui persiste, un ventre très gonflé, s'il prend peu de poids ou semble moins tonique depuis l'introduction de nouveaux aliments. Si ton enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelle immédiatement le 15 ou le 112.
 
 ${END}`,
     tags: ['diversification', 'féculents', 'pomme de terre', 'pâtes', 'riz', 'pain', 'semoule', 'gluten'],
@@ -191,45 +191,45 @@ ${END}`,
     slug: 'cereales-infantiles-et-gluten-bebe',
     title: 'Céréales infantiles et gluten : quand et comment les introduire ?',
     summary: 'Le gluten ne doit pas être retardé pendant la diversification ; les céréales infantiles sont facultatives, à choisir sans sucres ajoutés et selon les conseils du professionnel.',
-    body_md: `« Faut-il mettre des céréales dans le biberon ? », « À quel âge le gluten ? » : ces questions reviennent souvent. Les repères ont évolué ces dernières années. Voici ce qu'ils disent aujourd'hui, sans fixer de quantité, qui relève du professionnel qui suit votre enfant.
+    body_md: `« Faut-il mettre des céréales dans le biberon ? », « À quel âge le gluten ? » : ces questions reviennent souvent. Les repères ont évolué ces dernières années. Voici ce qu'ils disent aujourd'hui, sans fixer de quantité, qui relève du professionnel qui suit ton enfant.
 
 ## En bref
 - Le gluten fait partie des aliments qui ne doivent pas être retardés : il peut être découvert pendant la diversification, entre 4 et 6 mois, en petites quantités.
 - Les céréales infantiles ne sont pas indispensables ; les repères indiquent qu'elles peuvent être ajoutées plus tard, sur conseil d'un professionnel.
 - Les céréales infantiles sucrées sont déconseillées.
 - Le pain et les produits céréaliers doivent être introduits au plus tard à 12 mois.
-- En cas de maladie digestive connue ou d'antécédents familiaux, demandez l'avis du médecin.
+- En cas de maladie digestive connue ou d'antécédents familiaux, demande l'avis du médecin.
 
 ## Comprendre
 Le gluten est une protéine présente dans le blé, l'orge et le seigle (et souvent l'épeautre). Longtemps, on a conseillé de le retarder. Les repères actuels du Haut Conseil de la santé publique et de Santé publique France recommandent au contraire de ne pas retarder les aliments dits « allergènes », dont le gluten : plus ils sont goûtés tôt, plus la tolérance peut se développer.
 
-Les céréales infantiles sont des farines adaptées aux bébés. Elles ne sont pas obligatoires : un bébé peut découvrir les céréales par le pain, les pâtes, la semoule ou le riz bien cuits. Si vous souhaitez en utiliser, le professionnel qui suit votre enfant vous dira comment et à quel moment, notamment s'il faut ou non en mettre dans un biberon.
+Les céréales infantiles sont des farines adaptées aux bébés. Elles ne sont pas obligatoires : un bébé peut découvrir les céréales par le pain, les pâtes, la semoule ou le riz bien cuits. Si tu souhaites en utiliser, le professionnel qui suit ton enfant te dira comment et à quel moment, notamment s'il faut ou non en mettre dans un biberon.
 
 Les céréales « parfumées » ou sucrées habituent au goût sucré. Les repères les déconseillent et recommandent de proposer les produits sucrés le plus tard possible.
 
 ## Au quotidien
 - **Découverte du gluten** : un peu de pain, de semoule de blé ou de petites pâtes bien cuites mélangés à une purée déjà connue.
-- **Une nouveauté à la fois**, de préférence en début de journée, quand vous pouvez observer votre bébé dans les heures qui suivent.
-- **Lisez la liste des ingrédients** des céréales infantiles : évitez celles avec sucres ajoutés, miel (interdit avant 1 an) ou arômes chocolat.
-- **Ne changez pas la préparation du biberon** (ajout de céréales, épaississement) sans en avoir parlé avec le médecin, la sage-femme ou la PMI.
-- **Variez les céréales** au fil des semaines : blé, riz, avoine, maïs, sous des formes adaptées.
-- **Une fois toléré**, continuez à proposer régulièrement des aliments contenant du gluten.
+- **Une nouveauté à la fois**, de préférence en début de journée, quand tu peux observer ton bébé dans les heures qui suivent.
+- **Lis la liste des ingrédients** des céréales infantiles : évite celles avec sucres ajoutés, miel (interdit avant 1 an) ou arômes chocolat.
+- **Ne change pas la préparation du biberon** (ajout de céréales, épaississement) sans en avoir parlé avec le médecin, la sage-femme ou la PMI.
+- **Varie les céréales** au fil des semaines : blé, riz, avoine, maïs, sous des formes adaptées.
+- **Une fois toléré**, continue à proposer régulièrement des aliments contenant du gluten.
 
 ## Questions fréquentes
 **Mettre des céréales dans le biberon du soir l'aide-t-il à dormir ?**
-Les repères officiels consultés ne présentent pas les céréales comme un moyen d'améliorer le sommeil. Toute modification du biberon se discute avec le professionnel qui suit votre bébé, qui tiendra compte de son âge, de sa croissance et de ses besoins.
+Les repères officiels consultés ne présentent pas les céréales comme un moyen d'améliorer le sommeil. Toute modification du biberon se discute avec le professionnel qui suit ton bébé, qui tiendra compte de son âge, de sa croissance et de ses besoins.
 
 **Mon bébé a déjà 10 mois et n'a jamais eu de gluten : est-ce trop tard ?**
-Le pain et les produits céréaliers sont à introduire au plus tard à 12 mois. Il est donc encore temps : proposez-en en petite quantité, comme pour tout nouvel aliment.
+Le pain et les produits céréaliers sont à introduire au plus tard à 12 mois. Il est donc encore temps : proposes-en en petite quantité, comme pour tout nouvel aliment.
 
 **Faut-il des céréales « sans gluten » au début ?**
-Ce n'est pas nécessaire pour un bébé en bonne santé. Les repères recommandent de ne pas retarder le gluten. En cas de maladie cœliaque dans la famille ou de symptômes digestifs, demandez conseil au médecin.
+Ce n'est pas nécessaire pour un bébé en bonne santé. Les repères recommandent de ne pas retarder le gluten. En cas de maladie cœliaque dans la famille ou de symptômes digestifs, demande conseil au médecin.
 
 **Comment reconnaître une mauvaise tolérance ?**
-Notez tout changement après une nouveauté : vomissements, diarrhée qui persiste, ventre très gonflé, cassure de la courbe de poids, plaques sur la peau. Ces signes justifient de consulter, sans conclure seul.
+Note tout changement après une nouveauté : vomissements, diarrhée qui persiste, ventre très gonflé, cassure de la courbe de poids, plaques sur la peau. Ces signes justifient de consulter, sans conclure seul.
 
 ## Quand demander conseil
-Consultez le médecin ou la PMI si votre bébé a une diarrhée qui dure, un ventre gonflé, qu'il semble triste ou fatigué, ou que sa courbe de poids ralentit. Appelez le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou si votre bébé devient mou ou pâle après un repas.
+Consulte le médecin ou la PMI si ton bébé a une diarrhée qui dure, un ventre gonflé, qu'il semble triste ou fatigué, ou que sa courbe de poids ralentit. Appelle le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou si ton bébé devient mou ou pâle après un repas.
 
 ${END}`,
     tags: ['gluten', 'céréales infantiles', 'farine', 'biberon', 'diversification', 'maladie cœliaque', 'allergènes'],
@@ -260,28 +260,28 @@ Elles apportent aussi du fer d'origine végétale. Les repères sur l'alimentati
 
 ## Au quotidien
 - **Lentilles corail** : elles cuisent vite, se défont toutes seules et se mixent facilement avec une carotte ou une courge.
-- **Pois chiches et haricots secs** : faites-les tremper plusieurs heures, jetez l'eau de trempage, puis cuisez-les longtemps jusqu'à ce qu'ils s'écrasent sans effort. Retirez si possible les peaux pour les premières purées.
-- **Conserves** : rincez-les bien et vérifiez l'étiquette, car elles contiennent souvent du sel.
-- **Mélangez à un légume connu** : par exemple purée de carotte avec un peu de lentilles corail.
-- **Faites évoluer la texture** : lisse au début, écrasée ensuite, puis lentilles entières très tendres vers la fin de la première année.
-- **Associez un fruit au repas ou au dessert**, comme les repères le suggèrent pour le fer végétal.
-- **Ne donnez jamais de pois chiches ou de haricots entiers fermes** à un tout-petit : ronds et durs, ils peuvent provoquer une fausse route.
+- **Pois chiches et haricots secs** : fais-les tremper plusieurs heures, jette l'eau de trempage, puis cuis-les longtemps jusqu'à ce qu'ils s'écrasent sans effort. Retire si possible les peaux pour les premières purées.
+- **Conserves** : rince-les bien et vérifie l'étiquette, car elles contiennent souvent du sel.
+- **Mélange à un légume connu** : par exemple purée de carotte avec un peu de lentilles corail.
+- **Fais évoluer la texture** : lisse au début, écrasée ensuite, puis lentilles entières très tendres vers la fin de la première année.
+- **Associe un fruit au repas ou au dessert**, comme les repères le suggèrent pour le fer végétal.
+- **Ne donne jamais de pois chiches ou de haricots entiers fermes** à un tout-petit : ronds et durs, ils peuvent provoquer une fausse route.
 
 ## Questions fréquentes
 **Mon bébé a des gaz après les lentilles : dois-je arrêter ?**
-Les légumineuses sont riches en fibres. Vous pouvez faire une pause, puis reproposer une plus petite quantité, bien cuite et mixée, mélangée à un légume connu. Si les troubles digestifs sont importants ou persistent, parlez-en au médecin.
+Les légumineuses sont riches en fibres. Tu peux faire une pause, puis reproposer une plus petite quantité, bien cuite et mixée, mélangée à un légume connu. Si les troubles digestifs sont importants ou persistent, parles-en au médecin.
 
 **Les légumineuses peuvent-elles remplacer la viande ?**
-Elles apportent des protéines et du fer, mais pas exactement les mêmes nutriments que la viande, le poisson ou l'œuf. Si vous envisagez une alimentation végétarienne pour votre bébé, parlez-en au professionnel qui le suit (voir l'article dédié).
+Elles apportent des protéines et du fer, mais pas exactement les mêmes nutriments que la viande, le poisson ou l'œuf. Si tu envisages une alimentation végétarienne pour ton bébé, parles-en au professionnel qui le suit (voir l'article dédié).
 
 **Et le houmous ?**
-Le pois chiche en purée peut convenir, mais les houmous du commerce contiennent souvent du sel, de l'ail cru, du citron et de la crème de sésame. Une purée de pois chiches maison, sans sel, est plus adaptée. Le sésame fait partie des allergènes signalés sur les étiquettes : s'il est présent, proposez-le comme toute nouveauté, en petite quantité, en observant votre bébé.
+Le pois chiche en purée peut convenir, mais les houmous du commerce contiennent souvent du sel, de l'ail cru, du citron et de la crème de sésame. Une purée de pois chiches maison, sans sel, est plus adaptée. Le sésame fait partie des allergènes signalés sur les étiquettes : s'il est présent, propose-le comme toute nouveauté, en petite quantité, en observant ton bébé.
 
 **Les pois cassés et les fèves aussi ?**
-Ce sont des légumineuses. Proposez-les de la même façon, bien cuites et mixées, en petite quantité au début. Si votre enfant a une maladie connue ou suit un régime particulier, demandez au médecin quels aliments lui conviennent.
+Ce sont des légumineuses. Propose-les de la même façon, bien cuites et mixées, en petite quantité au début. Si ton enfant a une maladie connue ou suit un régime particulier, demande au médecin quels aliments lui conviennent.
 
 ## Quand demander conseil
-Consultez si votre bébé a des douleurs abdominales importantes, des vomissements, une diarrhée qui dure, du sang dans les selles, ou s'il prend peu de poids. En cas de gêne respiratoire, de gonflement du visage ou si votre enfant s'étouffe et ne peut plus respirer, tousser ou crier : appelez immédiatement le 15 ou le 112.
+Consulte si ton bébé a des douleurs abdominales importantes, des vomissements, une diarrhée qui dure, du sang dans les selles, ou s'il prend peu de poids. En cas de gêne respiratoire, de gonflement du visage ou si ton enfant s'étouffe et ne peut plus respirer, tousser ou crier : appelle immédiatement le 15 ou le 112.
 
 ${END}`,
     tags: ['légumineuses', 'légumes secs', 'lentilles', 'pois chiches', 'haricots', 'fer', 'diversification'],
@@ -299,7 +299,7 @@ ${END}`,
 ## En bref
 - Viande et volaille peuvent être introduites dès 4 à 6 mois, sans ordre imposé avec les autres groupes d'aliments.
 - Les repères recommandent d'alterner volaille, viande, poisson et œuf.
-- Les quantités sont très petites la première année : le médecin, la sage-femme ou la PMI vous indiquera ce qui convient à votre enfant.
+- Les quantités sont très petites la première année : le médecin, la sage-femme ou la PMI t’indiquera ce qui convient à ton enfant.
 - Avant 3 ans, viandes et poissons se proposent très cuits ; la viande hachée doit être bien cuite à cœur.
 - Au début, la viande est mixée avec les légumes, puis hachée finement.
 
@@ -311,30 +311,30 @@ La cuisson est essentielle. Les jeunes enfants sont plus sensibles aux infection
 La viande se mélange d'abord à la purée de légumes, finement mixée. Puis, au fil des mois, elle est hachée, puis coupée en tout petits morceaux tendres.
 
 ## Au quotidien
-- **Choisissez des morceaux maigres et tendres** : blanc de poulet ou de dinde, bœuf, veau, agneau, porc maigre, sans peau ni gras visible.
-- **Faites cuire complètement** : à l'eau, à la vapeur ou à la poêle sans brûler, jusqu'à ce qu'il ne reste aucune partie rosée, puis mixez avec les légumes.
+- **Choisis des morceaux maigres et tendres** : blanc de poulet ou de dinde, bœuf, veau, agneau, porc maigre, sans peau ni gras visible.
+- **Fais cuire complètement** : à l'eau, à la vapeur ou à la poêle sans brûler, jusqu'à ce qu'il ne reste aucune partie rosée, puis mixe avec les légumes.
 - **Viande hachée** : cuite à cœur, sans partie rosée au centre.
 - **Pas de sel ni de bouillon cube** dans la part de bébé.
-- **Alternez** : volaille un jour, poisson un autre, œuf un autre, viande rouge un autre.
-- **Prélevez avant d'assaisonner** quand vous cuisinez pour toute la famille.
-- **Respectez l'hygiène** : une planche pour la viande crue, une autre pour les aliments cuits ; lavez-vous les mains après avoir manipulé de la viande crue.
-- **Conservez la viande cuite au réfrigérateur** rapidement : l'ANSES conseille de ne pas laisser les aliments plus de 2 heures à température ambiante.
+- **Alterne** : volaille un jour, poisson un autre, œuf un autre, viande rouge un autre.
+- **Prélève avant d'assaisonner** quand tu cuisines pour toute la famille.
+- **Respecte l'hygiène** : une planche pour la viande crue, une autre pour les aliments cuits ; lave-toi les mains après avoir manipulé de la viande crue.
+- **Conserve la viande cuite au réfrigérateur** rapidement : l'ANSES conseille de ne pas laisser les aliments plus de 2 heures à température ambiante.
 
 ## Questions fréquentes
 **Quelle quantité de viande donner à mon bébé ?**
-Les besoins sont petits et varient selon l'âge et l'enfant. L'application ne fixe pas de quantité : demandez au médecin, à la sage-femme ou à la PMI, qui suivent la croissance de votre bébé.
+Les besoins sont petits et varient selon l'âge et l'enfant. L'application ne fixe pas de quantité : demande au médecin, à la sage-femme ou à la PMI, qui suivent la croissance de ton bébé.
 
 **Faut-il donner de la viande midi et soir ?**
-Les repères ne le demandent pas : ils expriment, pour l'ensemble de la journée, des quantités de viande, poisson ou œuf très petites. Il n'est donc pas utile d'en proposer à chaque repas. Le professionnel qui suit votre enfant pourra adapter ce repère.
+Les repères ne le demandent pas : ils expriment, pour l'ensemble de la journée, des quantités de viande, poisson ou œuf très petites. Il n'est donc pas utile d'en proposer à chaque repas. Le professionnel qui suit ton enfant pourra adapter ce repère.
 
 **Il recrache les morceaux de viande : que faire ?**
-La viande est une texture plus difficile à mâcher. Revenez à une viande finement mixée ou hachée dans la purée, puis réessayez des petits morceaux très tendres plus tard, sans forcer.
+La viande est une texture plus difficile à mâcher. Reviens à une viande finement mixée ou hachée dans la purée, puis réessaie des petits morceaux très tendres plus tard, sans forcer.
 
 **Le jambon compte-t-il comme de la viande ?**
 Les repères considèrent la charcuterie comme non justifiée sur le plan nutritionnel chez le tout-petit. Seul le jambon blanc est accepté, de façon très exceptionnelle (voir l'article sur la charcuterie et les abats).
 
 ## Quand demander conseil
-Consultez si votre bébé a de la fièvre, une diarrhée, des vomissements ou du sang dans les selles après un repas, surtout s'il boit moins ou mouille moins ses couches. En cas de diarrhée sanglante, de bébé très fatigué, pâle ou qui urine très peu, appelez le 15 ou le 112.
+Consulte si ton bébé a de la fièvre, une diarrhée, des vomissements ou du sang dans les selles après un repas, surtout s'il boit moins ou mouille moins ses couches. En cas de diarrhée sanglante, de bébé très fatigué, pâle ou qui urine très peu, appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['viande', 'volaille', 'poulet', 'protéines', 'fer', 'cuisson', 'diversification', 'viande hachée'],
@@ -364,13 +364,13 @@ Les pédiatres (mpedia) précisent qu'au début de la diversification, les abats
 Côté hygiène, l'ANSES rappelle que les produits traiteurs et les aliments très périssables vendus à la coupe se conservent peu de temps : moins de 3 jours est souvent recommandé, en demandant conseil au commerçant.
 
 ## Au quotidien
-- **Préférez une viande fraîche bien cuite** à la charcuterie pour la part de bébé.
-- **Si vous proposez exceptionnellement du jambon blanc**, choisissez-le maigre, sans couenne, et mixez-le ou coupez-le très finement.
-- **Lisez l'étiquette** : comparez la teneur en sel entre les produits.
+- **Préfère une viande fraîche bien cuite** à la charcuterie pour la part de bébé.
+- **Si tu proposes exceptionnellement du jambon blanc**, choisis-le maigre, sans couenne, et mixe-le ou coupe-le très finement.
+- **Lis l'étiquette** : compare la teneur en sel entre les produits.
 - **Pas de charcuterie sèche** (saucisson, chorizo, jambon cru) : elle est salée, dure à mâcher et crue.
 - **Attention à l'apéritif** : les petits morceaux de saucisson, les chips et les cacahuètes ne sont pas adaptés aux tout-petits, aussi pour le risque d'étouffement.
-- **Abats** : attendez les repères du professionnel ; vers 1 an, ils peuvent être proposés, bien cuits et mixés.
-- **Conservez le jambon entamé au réfrigérateur**, bien emballé, et consommez-le rapidement.
+- **Abats** : attends les repères du professionnel ; vers 1 an, ils peuvent être proposés, bien cuits et mixés.
+- **Conserve le jambon entamé au réfrigérateur**, bien emballé, et consomme-le rapidement.
 
 ## Questions fréquentes
 **Le jambon blanc, c'est bien pour commencer la viande ?**
@@ -380,13 +380,13 @@ Ce n'est pas l'option recommandée. Les repères privilégient la viande ou la v
 Il s'agit aussi d'un produit de charcuterie, souvent salé et contenant des additifs. Les repères ne citent que le jambon blanc comme exception : une volaille fraîche cuite est préférable.
 
 **Mon enfant de 11 mois a goûté du saucisson chez ses grands-parents : est-ce grave ?**
-Un écart ponctuel n'est pas une raison de vous alarmer. Expliquez simplement les repères aux proches qui le gardent. Si votre enfant présente des symptômes (vomissements, diarrhée, fièvre), parlez-en au médecin.
+Un écart ponctuel n'est pas une raison de t’alarmer. Explique simplement les repères aux proches qui le gardent. Si ton enfant présente des symptômes (vomissements, diarrhée, fièvre), parles-en au médecin.
 
 **Le foie est-il bon pour le fer ?**
-Les abats sont riches en certains nutriments, mais ils sont évités au début de la diversification. Demandez au professionnel qui suit votre enfant à partir de quand et à quelle fréquence les proposer.
+Les abats sont riches en certains nutriments, mais ils sont évités au début de la diversification. Demande au professionnel qui suit ton enfant à partir de quand et à quelle fréquence les proposer.
 
 ## Quand demander conseil
-Consultez si votre bébé a de la fièvre, des vomissements ou une diarrhée après un repas, et rapidement s'il boit moins, mouille moins ses couches ou semble très fatigué. En cas de diarrhée sanglante, d'enfant très pâle, mou ou qui urine très peu, ou si votre enfant s'étouffe et ne peut plus respirer, appelez le 15 ou le 112.
+Consulte si ton bébé a de la fièvre, des vomissements ou une diarrhée après un repas, et rapidement s'il boit moins, mouille moins ses couches ou semble très fatigué. En cas de diarrhée sanglante, d'enfant très pâle, mou ou qui urine très peu, ou si ton enfant s'étouffe et ne peut plus respirer, appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['jambon', 'charcuterie', 'abats', 'foie', 'sel', 'diversification', 'apéritif'],
@@ -399,7 +399,7 @@ ${END}`,
     slug: 'diversification-poisson-bebe',
     title: 'Le poisson pour bébé : quand, lequel, comment le préparer',
     summary: 'Le poisson se propose dès la diversification, bien cuit et sans arêtes, en alternant poisson maigre et poisson gras, environ deux fois par semaine.',
-    body_md: `Cabillaud, saumon, sardine, colin : le poisson est un aliment précieux pour les tout-petits, notamment pour les oméga-3. Il fait aussi partie des allergènes à ne pas retarder. Voici comment le choisir et le préparer pour votre bébé.
+    body_md: `Cabillaud, saumon, sardine, colin : le poisson est un aliment précieux pour les tout-petits, notamment pour les oméga-3. Il fait aussi partie des allergènes à ne pas retarder. Voici comment le choisir et le préparer pour ton bébé.
 
 ## En bref
 - Le poisson peut être introduit dès 4 à 6 mois, en petite quantité, sans ordre imposé avec la viande ou l'œuf.
@@ -417,11 +417,11 @@ La cuisson compte : avant 3 ans, les repères demandent que poissons et viandes 
 
 ## Au quotidien
 - **Cuisson simple** : à la vapeur, au court-bouillon sans sel, ou au four en papillote, jusqu'à ce que la chair se détache en flocons opaques.
-- **Retirez soigneusement les arêtes** : écrasez la chair entre vos doigts pour les sentir avant de mixer.
-- **Mixez avec un légume connu** au début (poisson-courgette, poisson-carotte), puis écrasez à la fourchette, puis proposez de petits morceaux tendres.
-- **Surgelés nature** : filets sans panure ni sauce, à bien cuire ; ils sont pratiques et souvent déjà sans arêtes, mais vérifiez quand même.
-- **Conserves** (sardines, maquereau) : retirez la peau et l'arête centrale, et préférez les conserves au naturel ; vérifiez la teneur en sel.
-- **Une nouveauté à la fois**, en début de journée de préférence, pour observer votre bébé ensuite.
+- **Retire soigneusement les arêtes** : écrase la chair entre tes doigts pour les sentir avant de mixer.
+- **Mixe avec un légume connu** au début (poisson-courgette, poisson-carotte), puis écrase à la fourchette, puis propose de petits morceaux tendres.
+- **Surgelés nature** : filets sans panure ni sauce, à bien cuire ; ils sont pratiques et souvent déjà sans arêtes, mais vérifie quand même.
+- **Conserves** (sardines, maquereau) : retire la peau et l'arête centrale, et préfère les conserves au naturel ; vérifie la teneur en sel.
+- **Une nouveauté à la fois**, en début de journée de préférence, pour observer ton bébé ensuite.
 - **Hygiène** : une planche pour le poisson cru, une autre pour les aliments cuits ; poisson cuit au réfrigérateur rapidement.
 
 ## Questions fréquentes
@@ -432,13 +432,13 @@ Un poisson maigre à chair blanche, bien cuit et sans arêtes, est souvent chois
 Les repères citent indifféremment le poisson frais ou surgelé, à condition qu'il soit nature, non pané, et bien cuit.
 
 **Peut-il manger du thon ?**
-Le thon fait partie des poissons prédateurs sauvages que l'ANSES conseille de limiter jusqu'à 3 ans. Il peut être proposé de temps en temps, sans en faire le poisson habituel. Variez avec d'autres espèces.
+Le thon fait partie des poissons prédateurs sauvages que l'ANSES conseille de limiter jusqu'à 3 ans. Il peut être proposé de temps en temps, sans en faire le poisson habituel. Varie avec d'autres espèces.
 
 **Mon bébé a des rougeurs après le poisson : allergie ?**
-Notez ce qu'il a mangé, l'heure et les symptômes. Des rougeurs isolées peuvent avoir d'autres causes, mais parlez-en au médecin avant de reproposer ce poisson, surtout si la réaction se répète.
+Note ce qu'il a mangé, l'heure et les symptômes. Des rougeurs isolées peuvent avoir d'autres causes, mais parles-en au médecin avant de reproposer ce poisson, surtout si la réaction se répète.
 
 ## Quand demander conseil
-Appelez immédiatement le 15 ou le 112 si votre enfant, après un repas, a du mal à respirer, un gonflement des lèvres, de la langue ou du visage, des vomissements répétés avec malaise, ou s'il devient mou ou pâle. Consultez le médecin en cas de plaques, de démangeaisons, de vomissements ou de diarrhée après le poisson, ou si une arête semble coincée.
+Appelle immédiatement le 15 ou le 112 si ton enfant, après un repas, a du mal à respirer, un gonflement des lèvres, de la langue ou du visage, des vomissements répétés avec malaise, ou s'il devient mou ou pâle. Consulte le médecin en cas de plaques, de démangeaisons, de vomissements ou de diarrhée après le poisson, ou si une arête semble coincée.
 
 ${END}`,
     tags: ['poisson', 'saumon', 'cabillaud', 'sardine', 'oméga-3', 'allergènes', 'diversification', 'arêtes'],
@@ -468,29 +468,29 @@ Ces conseils ne visent pas à faire peur du poisson : ils aident à bien le choi
 Côté hygiène, la fiche de l'ANSES conseille aussi d'éviter le poisson cru ou insuffisamment cuit, les coquillages crus ou peu cuits, et de cuire soi-même les crustacés plutôt que d'acheter des crustacés décortiqués vendus cuits, pour les publics sensibles. Les pédiatres rappellent d'éviter le poisson cru (tartare, sushis) chez le jeune enfant.
 
 ## Au quotidien
-- **Pour la routine**, misez sur les poissons cités comme habituels : cabillaud, colin, merlu, merlan, sole, saumon, sardine, maquereau, hareng.
+- **Pour la routine**, mise sur les poissons cités comme habituels : cabillaud, colin, merlu, merlan, sole, saumon, sardine, maquereau, hareng.
 - **Thon, dorade, bar, lotte** : de temps en temps seulement, pas comme poisson habituel.
-- **Espadon, requin, marlin, siki, lamproie** : ne les proposez pas à votre enfant avant 3 ans.
-- **Pêche de loisir en rivière** : respectez les avis de non-consommation locaux, et limitez fortement anguille, carpe, brème, barbeau et silure.
-- **Au restaurant ou à la cantine** : demandez l'espèce si le plat indique seulement « poisson ».
+- **Espadon, requin, marlin, siki, lamproie** : ne les propose pas à ton enfant avant 3 ans.
+- **Pêche de loisir en rivière** : respecte les avis de non-consommation locaux, et limite fortement anguille, carpe, brème, barbeau et silure.
+- **Au restaurant ou à la cantine** : demande l'espèce si le plat indique seulement « poisson ».
 - **Sushis et poisson cru** : à garder pour plus tard.
 - **Fruits de mer** : les pédiatres indiquent qu'ils peuvent être introduits vers 1 an ; toujours bien cuits.
 
 ## Questions fréquentes
 **Mon bébé a mangé de l'espadon une fois : que faire ?**
-Le risque est lié à une consommation répétée. Une fois ne justifie pas de vous alarmer : retirez simplement cette espèce des menus jusqu'à ses 3 ans. Si vous avez un doute, parlez-en au médecin.
+Le risque est lié à une consommation répétée. Une fois ne justifie pas de t’alarmer : retire simplement cette espèce des menus jusqu'à ses 3 ans. Si tu as un doute, parles-en au médecin.
 
 **Le saumon d'élevage convient-il ?**
-Le saumon fait partie des poissons gras cités par l'ANSES comme intéressants pour les oméga-3. Variez les espèces et les origines plutôt que de toujours servir le même poisson.
+Le saumon fait partie des poissons gras cités par l'ANSES comme intéressants pour les oméga-3. Varie les espèces et les origines plutôt que de toujours servir le même poisson.
 
 **Les bâtonnets de poisson panés, c'est du poisson ?**
 Ils contiennent du poisson, mais aussi de la panure et souvent de l'huile de friture. Les repères recommandent un poisson non pané pour les tout-petits ; les panés restent occasionnels.
 
 **Les crevettes et les moules sont-elles autorisées ?**
-Les fruits de mer, toujours bien cuits, peuvent être proposés vers la fin de la première année selon les pédiatres. Les crustacés sont des allergènes : une nouveauté à la fois, en observant votre enfant.
+Les fruits de mer, toujours bien cuits, peuvent être proposés vers la fin de la première année selon les pédiatres. Les crustacés sont des allergènes : une nouveauté à la fois, en observant ton enfant.
 
 ## Quand demander conseil
-Consultez si votre enfant présente des vomissements, une diarrhée, de la fièvre ou des plaques après un plat de poisson ou de fruits de mer. Appelez immédiatement le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou d'enfant qui devient mou ou pâle.
+Consulte si ton enfant présente des vomissements, une diarrhée, de la fièvre ou des plaques après un plat de poisson ou de fruits de mer. Appelle immédiatement le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou d'enfant qui devient mou ou pâle.
 
 ${END}`,
     tags: ['poisson', 'mercure', 'méthylmercure', 'PCB', 'espadon', 'thon', 'fruits de mer', 'sushis'],
@@ -511,22 +511,22 @@ ${END}`,
 - Il fait partie des allergènes à ne pas retarder ; on le propose en petite quantité, une nouveauté à la fois.
 - Il se donne toujours bien cuit : jaune et blanc pris.
 - Les préparations à base d'œufs crus ou peu cuits (mayonnaise maison, mousse au chocolat) sont à éviter.
-- En cas d'eczéma sévère, d'allergie connue ou d'allergies importantes dans la famille, demandez d'abord l'avis du médecin.
+- En cas d'eczéma sévère, d'allergie connue ou d'allergies importantes dans la famille, demande d'abord l'avis du médecin.
 
 ## Comprendre
 Les repères du Haut Conseil de la santé publique et de Santé publique France recommandent d'introduire les allergènes majeurs, dont l'œuf, pendant la diversification, sans attendre. Le goûter tôt peut favoriser la tolérance. S'il existe un risque d'allergie identifié, l'avis d'un médecin permet de décider comment procéder.
 
-L'œuf compte dans le groupe « viande, poisson, œuf », que les repères proposent d'alterner. Les quantités sont petites la première année : le professionnel qui suit votre enfant vous indiquera ce qui convient.
+L'œuf compte dans le groupe « viande, poisson, œuf », que les repères proposent d'alterner. Les quantités sont petites la première année : le professionnel qui suit ton enfant t’indiquera ce qui convient.
 
 La cuisson est indispensable : les jeunes enfants sont sensibles aux infections alimentaires, et les œufs crus ou peu cuits peuvent transmettre des bactéries. Les repères demandent donc un œuf toujours bien cuit, et d'éviter mousses, mayonnaises maison et autres préparations à base d'œuf cru.
 
 ## Au quotidien
-- **Œuf dur** : faites-le cuire jusqu'à ce que jaune et blanc soient bien pris, puis écrasez-le finement et mélangez-le à une purée de légumes déjà connue.
+- **Œuf dur** : fais-le cuire jusqu'à ce que jaune et blanc soient bien pris, puis écrase-le finement et mélange-le à une purée de légumes déjà connue.
 - **Omelette bien cuite** : coupée en lanières ou en petits morceaux tendres quand bébé commence à manger avec les doigts.
-- **Commencez par une petite quantité**, en début de journée, pour pouvoir observer votre bébé.
-- **Une fois toléré**, continuez à proposer l'œuf régulièrement, sous différentes formes.
-- **Desserts maison** : préférez les préparations cuites (gâteau, flan cuit) aux mousses ou crèmes à base d'œufs crus.
-- **Hygiène** : lavez-vous les mains après avoir manipulé des œufs crus et conservez-les au frais.
+- **Commence par une petite quantité**, en début de journée, pour pouvoir observer ton bébé.
+- **Une fois toléré**, continue à proposer l'œuf régulièrement, sous différentes formes.
+- **Desserts maison** : préfère les préparations cuites (gâteau, flan cuit) aux mousses ou crèmes à base d'œufs crus.
+- **Hygiène** : lave-toi les mains après avoir manipulé des œufs crus et conserve-les au frais.
 - **Œuf à la coque, mollet, au plat coulant** : à garder pour plus tard.
 
 ## Questions fréquentes
@@ -534,16 +534,16 @@ La cuisson est indispensable : les jeunes enfants sont sensibles aux infections 
 Les repères consultés ne distinguent pas le jaune et le blanc : ils recommandent un œuf bien cuit, en petite quantité. Le blanc et le jaune peuvent donc être proposés ensemble, écrasés dans une purée.
 
 **Mon bébé a 9 mois et n'a jamais mangé d'œuf : est-ce trop tard ?**
-Non, introduisez-le comme les autres aliments, en petite quantité et bien cuit. En cas d'eczéma important ou d'allergie connue, demandez conseil d'abord.
+Non, introduis-le comme les autres aliments, en petite quantité et bien cuit. En cas d'eczéma important ou d'allergie connue, demande conseil d'abord.
 
 **Les gâteaux contenant de l'œuf suffisent-ils à l'introduire ?**
 Un gâteau cuit contient de l'œuf cuit, mais aussi souvent du sucre, que les repères conseillent de proposer le plus tard possible. Un œuf dur écrasé dans une purée reste une option simple.
 
 **Des rougeurs sont apparues autour de la bouche : allergie ?**
-Certaines rougeurs viennent d'un simple frottement. Notez ce qu'il a mangé et parlez-en au médecin avant de reproposer l'œuf, surtout si d'autres signes apparaissent ou si la réaction se répète.
+Certaines rougeurs viennent d'un simple frottement. Note ce qu'il a mangé et parles-en au médecin avant de reproposer l'œuf, surtout si d'autres signes apparaissent ou si la réaction se répète.
 
 ## Quand demander conseil
-Appelez immédiatement le 15 ou le 112 si, après un repas, votre enfant a du mal à respirer, une voix ou un cri modifié, un gonflement des lèvres, de la langue ou du visage, des vomissements répétés avec malaise, ou s'il devient mou ou pâle. Consultez le médecin en cas de plaques, de démangeaisons, de vomissements ou de diarrhée après l'œuf.
+Appelle immédiatement le 15 ou le 112 si, après un repas, ton enfant a du mal à respirer, une voix ou un cri modifié, un gonflement des lèvres, de la langue ou du visage, des vomissements répétés avec malaise, ou s'il devient mou ou pâle. Consulte le médecin en cas de plaques, de démangeaisons, de vomissements ou de diarrhée après l'œuf.
 
 ${END}`,
     tags: ['œuf', 'oeuf', 'allergènes', 'allergie', 'cuisson', 'diversification', 'protéines'],
@@ -564,39 +564,39 @@ ${END}`,
 - Santé publique France indique qu'il n'est pas nécessaire d'acheter des produits laitiers « spécial bébé ».
 - Les produits demi-écrémés, écrémés ou 0 % ne conviennent pas aux nourrissons.
 - Le lait cru et les produits au lait cru sont à éviter.
-- Les produits laitiers ne remplacent pas le lait maternel ou infantile : le professionnel vous dira comment les intégrer.
+- Les produits laitiers ne remplacent pas le lait maternel ou infantile : le professionnel te dira comment les intégrer.
 
 ## Comprendre
 Les produits laitiers font partie des allergènes majeurs que les repères recommandent de ne pas retarder. Ils apportent notamment du calcium et des protéines. Ils peuvent aussi être une solution lorsque bébé boude son biberon : les repères suggèrent alors de continuer à proposer le biberon et, s'il le refuse, de proposer des produits laitiers.
 
-Les avis ont un peu varié sur les produits « bébé ». Les repères les plus récents de Santé publique France (Manger Bouger) indiquent qu'ils ne sont pas nécessaires : un yaourt ou un fromage blanc nature, non sucrés, conviennent. Ce qui compte : choisir des produits nature, non sucrés, non allégés, et jamais au lait cru. Si vous avez un doute, le professionnel qui suit votre enfant pourra vous conseiller.
+Les avis ont un peu varié sur les produits « bébé ». Les repères les plus récents de Santé publique France (Manger Bouger) indiquent qu'ils ne sont pas nécessaires : un yaourt ou un fromage blanc nature, non sucrés, conviennent. Ce qui compte : choisir des produits nature, non sucrés, non allégés, et jamais au lait cru. Si tu as un doute, le professionnel qui suit ton enfant pourra te conseiller.
 
 Les produits allégés (0 %, demi-écrémés, écrémés) ne conviennent pas aux nourrissons, selon les repères : à cet âge, les matières grasses font partie des besoins de bébé.
 
 ## Au quotidien
-- **Choisissez nature** : yaourt nature non allégé, fromage blanc nature, petit-suisse nature.
-- **Évitez les desserts lactés sucrés** (crèmes desserts, yaourts aux fruits sucrés, liégeois) : le sucre est à proposer le plus tard possible.
-- **Pour donner du goût sans sucre**, mélangez le laitage avec une compote maison ou un fruit écrasé.
+- **Choisis nature** : yaourt nature non allégé, fromage blanc nature, petit-suisse nature.
+- **Évite les desserts lactés sucrés** (crèmes desserts, yaourts aux fruits sucrés, liégeois) : le sucre est à proposer le plus tard possible.
+- **Pour donner du goût sans sucre**, mélange le laitage avec une compote maison ou un fruit écrasé.
 - **Au goûter**, un laitage nature avec un fruit ou un morceau de pain forme un ensemble simple.
-- **Lisez l'étiquette** : « nature », non allégé, pas de sucres ajoutés, pas d'édulcorants (proscrits avant 3 ans).
-- **Respectez la chaîne du froid** : laitages au réfrigérateur, entamés consommés rapidement.
-- **Pas de quantité imposée** : le nombre de produits laitiers par jour dépend aussi du lait que bébé boit encore ; parlez-en au professionnel.
+- **Lis l'étiquette** : « nature », non allégé, pas de sucres ajoutés, pas d'édulcorants (proscrits avant 3 ans).
+- **Respecte la chaîne du froid** : laitages au réfrigérateur, entamés consommés rapidement.
+- **Pas de quantité imposée** : le nombre de produits laitiers par jour dépend aussi du lait que bébé boit encore ; parles-en au professionnel.
 
 ## Questions fréquentes
 **Les yaourts « bébé » sont-ils meilleurs ?**
-Santé publique France indique qu'ils ne sont pas nécessaires. Un yaourt nature non sucré, non allégé, convient. Certains professionnels conseillent toutefois des laitages adaptés à cet âge : suivez l'avis de celui qui suit votre enfant.
+Santé publique France indique qu'ils ne sont pas nécessaires. Un yaourt nature non sucré, non allégé, convient. Certains professionnels conseillent toutefois des laitages adaptés à cet âge : suis l'avis de celui qui suit ton enfant.
 
 **Mon bébé refuse le biberon depuis la diversification : les yaourts peuvent-ils le remplacer ?**
-Les repères suggèrent de continuer à proposer le biberon matin et soir, et en cas de refus de proposer des produits laitiers. Parlez-en au médecin ou à la PMI pour vérifier que les apports restent suffisants.
+Les repères suggèrent de continuer à proposer le biberon matin et soir, et en cas de refus de proposer des produits laitiers. Parles-en au médecin ou à la PMI pour vérifier que les apports restent suffisants.
 
 **Le yaourt au lait de chèvre ou de brebis, c'est possible ?**
-Les repères consultés ne détaillent pas ces produits. S'ils sont nature, au lait pasteurisé et non sucrés, demandez l'avis du professionnel avant de les proposer régulièrement.
+Les repères consultés ne détaillent pas ces produits. S'ils sont nature, au lait pasteurisé et non sucrés, demande l'avis du professionnel avant de les proposer régulièrement.
 
 **Et les yaourts au soja ou les desserts végétaux ?**
 Ce ne sont pas des produits laitiers. Les boissons végétales courantes ne conviennent pas aux enfants de moins d'un an. Pour toute alimentation sans produits laitiers, un avis médical est nécessaire.
 
 ## Quand demander conseil
-Consultez si des plaques, des démangeaisons, des vomissements, une diarrhée persistante ou du sang dans les selles apparaissent après un produit laitier, ou si votre bébé refuse durablement le lait. Appelez le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou si votre bébé devient mou ou pâle.
+Consulte si des plaques, des démangeaisons, des vomissements, une diarrhée persistante ou du sang dans les selles apparaissent après un produit laitier, ou si ton bébé refuse durablement le lait. Appelle le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou si ton bébé devient mou ou pâle.
 
 ${END}`,
     tags: ['yaourt', 'fromage blanc', 'petit-suisse', 'produits laitiers', 'calcium', 'laitage', 'diversification'],
@@ -619,36 +619,36 @@ ${END}`,
 - Enlever la croûte ne suffit pas : les bactéries peuvent se trouver dans tout le fromage.
 
 ## Comprendre
-Les fromages au lait cru peuvent contenir des bactéries comme les salmonelles, certaines E. coli (dites entérohémorragiques), la listeria ou le staphylocoque doré. Chez un jeune enfant, une infection par une E. coli entérohémorragique peut entraîner une atteinte grave des reins. C'est pourquoi l'ANSES recommande aux jeunes enfants, comme aux femmes enceintes, aux personnes âgées et immunodéprimées, d'éviter les fromages au lait cru. Les repères de Santé publique France et du Haut Conseil de la santé publique vont dans le même sens.
+Les fromages au lait cru peuvent contenir des bactéries comme les salmonelles, certaines E. coli (dis entérohémorragiques), la listeria ou le staphylocoque doré. Chez un jeune enfant, une infection par une E. coli entérohémorragique peut entraîner une atteinte grave des reins. C'est pourquoi l'ANSES recommande aux jeunes enfants, comme aux femmes enceintes, aux personnes âgées et immunodéprimées, d'éviter les fromages au lait cru. Les repères de Santé publique France et du Haut Conseil de la santé publique vont dans le même sens.
 
 Les fromages les plus concernés, selon l'ANSES : les pâtes molles à croûte fleurie (type camembert, brie), les pâtes pressées non cuites à affinage court (type reblochon, morbier, saint-nectaire), puis les pâtes molles à croûte lavée (type munster, maroilles). Les fromages à pâte pressée cuite (gruyère, comté) font exception.
 
 Les pédiatres précisent par ailleurs que les fromages au goût fort ne sont pas interdits : ce qui compte avant tout, c'est d'éviter ceux au lait cru.
 
 ## Au quotidien
-- **Regardez l'étiquette** : la mention « au lait cru » doit y figurer ; choisissez « lait pasteurisé » ou une pâte pressée cuite.
+- **Regarde l'étiquette** : la mention « au lait cru » doit y figurer ; choisis « lait pasteurisé » ou une pâte pressée cuite.
 - **Fromage râpé fondu** : une pincée de gruyère ou de comté dans une purée chaude, bien mélangée.
 - **Petits morceaux** : vers la fin de la première année, de fines lamelles de fromage à pâte pressée cuite peuvent être proposées à attraper, en restant à côté de bébé.
-- **Plateau de fromages familial** : servez la part de bébé à part, avant de sortir les fromages au lait cru.
+- **Plateau de fromages familial** : sers la part de bébé à part, avant de sortir les fromages au lait cru.
 - **Gratins et plats cuits** : un fromage au lait cru cuit au four jusqu'à être bien chaud dans toute son épaisseur n'est plus un risque selon l'ANSES.
-- **Conservation** : respectez les températures et les dates limites indiquées.
-- **Rappels de produits** : consultez le site officiel Rappel Conso en cas d'alerte sur un fromage.
+- **Conservation** : respecte les températures et les dates limites indiquées.
+- **Rappels de produits** : consulte le site officiel Rappel Conso en cas d'alerte sur un fromage.
 
 ## Questions fréquentes
 **Jusqu'à quel âge éviter les fromages au lait cru ?**
-L'ANSES parle de « jeunes enfants » sans fixer d'âge précis dans sa page sur le sujet. Demandez au professionnel qui suit votre enfant à partir de quand il pourra en goûter.
+L'ANSES parle de « jeunes enfants » sans fixer d'âge précis dans sa page sur le sujet. Demande au professionnel qui suit ton enfant à partir de quand il pourra en goûter.
 
 **Et la raclette ou la tartiflette ?**
 Selon l'ANSES, un fromage au lait cru bien cuit, chaud dans toute son épaisseur, ne présente plus ce risque. Un fromage seulement tiède ou fondu en surface n'offre pas cette garantie. Ces plats sont aussi très salés : pour bébé, une petite purée avec un peu de comté râpé fondu convient mieux.
 
 **Mon bébé a mangé un peu de camembert au lait cru : que faire ?**
-Surveillez-le dans les jours qui suivent. En cas de fièvre, de diarrhée (surtout avec du sang), de vomissements, de fatigue inhabituelle ou s'il urine moins, consultez rapidement.
+Surveille-le dans les jours qui suivent. En cas de fièvre, de diarrhée (surtout avec du sang), de vomissements, de fatigue inhabituelle ou s'il urine moins, consulte rapidement.
 
 **Le fromage fondu à tartiner, c'est possible ?**
-Les fromages fondus sont fabriqués à partir de fromages chauffés. Ils sont souvent salés : lisez l'étiquette et proposez-les de façon occasionnelle.
+Les fromages fondus sont fabriqués à partir de fromages chauffés. Ils sont souvent salés : lis l'étiquette et propose-les de façon occasionnelle.
 
 ## Quand demander conseil
-Consultez rapidement si votre enfant a de la fièvre, des vomissements, une diarrhée ou de fortes douleurs abdominales après avoir mangé un fromage. Appelez le 15 ou le 112 en cas de diarrhée avec du sang, d'enfant très pâle, mou, très fatigué ou qui urine très peu.
+Consulte rapidement si ton enfant a de la fièvre, des vomissements, une diarrhée ou de fortes douleurs abdominales après avoir mangé un fromage. Appelle le 15 ou le 112 en cas de diarrhée avec du sang, d'enfant très pâle, mou, très fatigué ou qui urine très peu.
 
 ${END}`,
     tags: ['fromage', 'lait cru', 'comté', 'gruyère', 'E. coli', 'listeria', 'diversification', 'sécurité alimentaire'],
@@ -676,31 +676,31 @@ Pendant la première année, la croissance est très rapide. Le lait maternel et
 
 Après 1 an, l'ANSES conseille de préférence le lait de croissance, et précise que le lait de vache ne couvre les besoins de l'enfant qu'à partir de 3 ans. Le Haut Conseil de la santé publique n'envisage le lait de vache entier qu'après 1 an ; le choix se fait avec le professionnel.
 
-Si vous vous demandez si un peu de lait de vache peut être utilisé en cuisine (purée, flan) avant 1 an, posez la question au professionnel qui suit votre enfant.
+Si tu te demandes si un peu de lait de vache peut être utilisé en cuisine (purée, flan) avant 1 an, pose la question au professionnel qui suit ton enfant.
 
 ## Au quotidien
-- **Continuez le lait maternel ou le lait infantile** pendant toute la diversification : il reste l'aliment principal.
-- **Ne remplacez pas le lait de bébé** par une boisson végétale ou un lait de vache, même pour quelques jours, sans avis médical.
-- **Ne vous fiez pas à l'emballage** : une boisson végétale en brique ressemble à du lait, mais ce n'est ni un lait infantile ni un substitut adapté au nourrisson.
-- **Pour les purées**, vous pouvez utiliser un peu de lait infantile ou d'eau de cuisson pour ajuster la texture.
-- **En cas de doute sur une allergie** au lait de vache, parlez-en au médecin : il peut prescrire une préparation adaptée.
-- **Pour une alimentation familiale végétale**, demandez un accompagnement : les repères déconseillent l'alimentation végétalienne chez le jeune enfant.
+- **Continue le lait maternel ou le lait infantile** pendant toute la diversification : il reste l'aliment principal.
+- **Ne remplace pas le lait de bébé** par une boisson végétale ou un lait de vache, même pour quelques jours, sans avis médical.
+- **Ne te fie pas à l'emballage** : une boisson végétale en brique ressemble à du lait, mais ce n'est ni un lait infantile ni un substitut adapté au nourrisson.
+- **Pour les purées**, tu peux utiliser un peu de lait infantile ou d'eau de cuisson pour ajuster la texture.
+- **En cas de doute sur une allergie** au lait de vache, parles-en au médecin : il peut prescrire une préparation adaptée.
+- **Pour une alimentation familiale végétale**, demande un accompagnement : les repères déconseillent l'alimentation végétalienne chez le jeune enfant.
 
 ## Questions fréquentes
 **Je ne peux plus allaiter et je voudrais éviter le lait animal : quelle option ?**
-Le médecin peut vous orienter vers une préparation infantile adaptée. Les pédiatres évoquent, pour les nourrissons, des préparations infantiles à base d'hydrolysat de protéines de riz. Ce sont des préparations infantiles, pas des boissons de riz.
+Le médecin peut t’orienter vers une préparation infantile adaptée. Les pédiatres évoquent, pour les nourrissons, des préparations infantiles à base d'hydrolysat de protéines de riz. Ce sont des préparations infantiles, pas des boissons de riz.
 
 **Mon bébé de 10 mois peut-il boire un peu de lait de vache au petit-déjeuner ?**
-Les repères réservent le lait de vache à l'après 1 an. Avant, proposez son lait habituel. Pour un usage ponctuel en cuisine, demandez conseil.
+Les repères réservent le lait de vache à l'après 1 an. Avant, propose son lait habituel. Pour un usage ponctuel en cuisine, demande conseil.
 
 **Et les préparations infantiles à base de protéines végétales ?**
-Elles sont très différentes des boissons végétales du commerce. Selon l'ANSES, un médecin peut en prescrire, par exemple en cas d'intolérance aux protéines de lait de vache. Ne les choisissez pas seul : parlez-en au médecin.
+Elles sont très différentes des boissons végétales du commerce. Selon l'ANSES, un médecin peut en prescrire, par exemple en cas d'intolérance aux protéines de lait de vache. Ne les choisis pas seul : parles-en au médecin.
 
 **Et après 1 an, faut-il passer au lait de vache ?**
-Le lait de croissance est conseillé de préférence par l'ANSES. Le lait de vache entier n'est envisagé qu'après 1 an : discutez-en avec le médecin, qui tiendra compte de l'ensemble de l'alimentation de votre enfant.
+Le lait de croissance est conseillé de préférence par l'ANSES. Le lait de vache entier n'est envisagé qu'après 1 an : discutes-en avec le médecin, qui tiendra compte de l'ensemble de l'alimentation de ton enfant.
 
 ## Quand demander conseil
-Consultez si votre bébé refuse le lait, prend peu de poids, vomit régulièrement, a une diarrhée persistante, du sang dans les selles ou de l'eczéma qui s'aggrave. Appelez le 15 ou le 112 en cas de gêne respiratoire, de gonflement du visage, ou si votre bébé devient mou, pâle ou difficile à réveiller.
+Consulte si ton bébé refuse le lait, prend peu de poids, vomit régulièrement, a une diarrhée persistante, du sang dans les selles ou de l'eczéma qui s'aggrave. Appelle le 15 ou le 112 en cas de gêne respiratoire, de gonflement du visage, ou si ton bébé devient mou, pâle ou difficile à réveiller.
 
 ${END}`,
     tags: ['lait de vache', 'boisson végétale', 'lait d’amande', 'lait de soja', 'lait de croissance', 'lait infantile', 'avant 1 an'],
@@ -721,26 +721,26 @@ ${END}`,
 - Les huiles de colza, de noix ou d'olive sont à privilégier.
 - De temps en temps, une noisette de beurre cru ou un peu de crème fraîche non cuite peut remplacer l'huile.
 - On les ajoute crues, dans la purée tiède, au moment de servir.
-- Pour les petits pots du commerce, vérifiez l'étiquette et ajoutez-en si besoin.
+- Pour les petits pots du commerce, vérifie l'étiquette et ajoutes-en si besoin.
 
 ## Comprendre
 Le lait maternel et les laits infantiles sont riches en graisses. Quand les purées prennent une place dans les repas, elles doivent continuer à apporter ces graisses, et notamment des acides gras essentiels, que le corps ne sait pas fabriquer. Les légumes et les fruits seuls en contiennent très peu.
 
 Les repères de Santé publique France recommandent d'ajouter de la matière grasse à chaque repas de légumes, de préférence de l'huile de colza, de noix ou d'olive, ou parfois une noisette de beurre. Le tableau du Programme national nutrition santé, repris par les pédiatres, cite aussi l'huile de soja, et indique que les huiles de tournesol, de maïs, de pépins de raisin et d'arachide ne font pas partie des huiles conseillées. Varier les huiles permet de varier les apports.
 
-La quantité augmente progressivement avec l'âge et à mesure que la part de lait diminue. Le professionnel qui suit votre enfant vous indiquera ce qui convient.
+La quantité augmente progressivement avec l'âge et à mesure que la part de lait diminue. Le professionnel qui suit ton enfant t’indiquera ce qui convient.
 
 ## Au quotidien
-- **Ajoutez l'huile crue** au moment de servir, dans la purée tiède : la cuisson à forte température n'est pas nécessaire.
-- **Alternez** : huile de colza un jour, de noix un autre, d'olive un autre, et parfois une noisette de beurre.
-- **Conservez les huiles** à l'abri de la lumière et de la chaleur, bouchon bien fermé.
-- **Petits pots** : regardez si de la matière grasse est déjà présente dans la liste des ingrédients ; sinon, ajoutez-en un peu.
-- **Pas de friture** pour bébé : préférez des matières grasses crues ajoutées au moment de servir.
+- **Ajoute l'huile crue** au moment de servir, dans la purée tiède : la cuisson à forte température n'est pas nécessaire.
+- **Alterne** : huile de colza un jour, de noix un autre, d'olive un autre, et parfois une noisette de beurre.
+- **Conserve les huiles** à l'abri de la lumière et de la chaleur, bouchon bien fermé.
+- **Petits pots** : regarde si de la matière grasse est déjà présente dans la liste des ingrédients ; sinon, ajoutes-en un peu.
+- **Pas de friture** pour bébé : préfère des matières grasses crues ajoutées au moment de servir.
 - **Crème fraîche** : de temps en temps, non cuite, ajoutée dans la purée.
 
 ## Questions fréquentes
 **Pourquoi ajouter du gras alors que bébé est déjà potelé ?**
-Les matières grasses sont nécessaires pour couvrir ses besoins en énergie et en acides gras essentiels. La courbe de croissance, suivie par le médecin, permet de vérifier que tout va bien. En cas de question sur le poids, parlez-en au professionnel plutôt que de supprimer les graisses.
+Les matières grasses sont nécessaires pour couvrir ses besoins en énergie et en acides gras essentiels. La courbe de croissance, suivie par le médecin, permet de vérifier que tout va bien. En cas de question sur le poids, parles-en au professionnel plutôt que de supprimer les graisses.
 
 **L'huile d'olive suffit-elle ?**
 Elle fait partie des huiles recommandées. Mais varier avec le colza ou la noix est intéressant, car ces huiles apportent des acides gras différents.
@@ -749,10 +749,10 @@ Elle fait partie des huiles recommandées. Mais varier avec le colza ou la noix 
 Non, il peut remplacer l'huile de temps en temps. Les repères conseillent simplement de privilégier les huiles végétales la plupart du temps.
 
 **Peut-on utiliser de la margarine ?**
-Les repères consultés ne la citent pas. Préférez les huiles recommandées et, parfois, le beurre.
+Les repères consultés ne la citent pas. Préfère les huiles recommandées et, parfois, le beurre.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé prend peu de poids, a des selles très grasses ou une diarrhée qui persiste, ou si vous avez des questions sur sa croissance. Appelez le 15 ou le 112 en cas de gêne respiratoire ou de gonflement du visage après un repas.
+Parles-en au médecin ou à la PMI si ton bébé prend peu de poids, a des selles très grasses ou une diarrhée qui persiste, ou si tu as des questions sur sa croissance. Appelle le 15 ou le 112 en cas de gêne respiratoire ou de gonflement du visage après un repas.
 
 ${END}`,
     tags: ['matières grasses', 'huile de colza', 'huile de noix', 'huile d’olive', 'beurre', 'purée', 'oméga-3'],
@@ -782,21 +782,21 @@ ${END}`,
 **Les édulcorants.** Ils sont proscrits avant 3 ans selon le Haut Conseil de la santé publique. On en trouve dans certains produits « allégés » ou « sans sucres ajoutés » : la liste des ingrédients permet de les repérer.
 
 ## Au quotidien
-- **Prélevez la part de bébé avant de saler** le plat familial.
+- **Prélève la part de bébé avant de saler** le plat familial.
 - **Pas de bouillon cube** dans les purées : il est très salé.
-- **Lisez les étiquettes** : comparez la teneur en sel et en sucres des produits, et repérez les édulcorants (aspartame, sucralose, acésulfame, stévia, polyols…).
+- **Lis les étiquettes** : compare la teneur en sel et en sucres des produits, et repère les édulcorants (aspartame, sucralose, acésulfame, stévia, polyols…).
 - **Desserts sans sucre** : fruit cuit mixé, banane écrasée, compote « sans sucres ajoutés ».
 - **Goûter simple** : laitage nature, fruit, pain.
-- **Pas de biscuit ou bonbon pour calmer** : proposez un câlin, un jeu ou de l'eau.
+- **Pas de biscuit ou bonbon pour calmer** : propose un câlin, un jeu ou de l'eau.
 - **Vers la fin de la première année**, les herbes (basilic, persil, ciboulette, thym…) et certaines épices douces apportent du goût sans sel.
-- **Prévenez les proches** qui gardent bébé : grands-parents, nounou.
+- **Préviens les proches** qui gardent bébé : grands-parents, nounou.
 
 ## Questions fréquentes
 **Ma purée maison n'a aucun goût : puis-je saler un tout petit peu ?**
-Les repères recommandent d'éviter le sel ajouté. Votre bébé n'a pas vos habitudes de goût : il découvre la saveur propre de chaque légume. Les herbes aromatiques peuvent apporter du goût plus tard.
+Les repères recommandent d'éviter le sel ajouté. Ton bébé n'a pas tes habitudes de goût : il découvre la saveur propre de chaque légume. Les herbes aromatiques peuvent apporter du goût plus tard.
 
 **Une compote « sans sucres ajoutés » contient-elle du sucre ?**
-Oui, le sucre naturel du fruit. Cette mention signifie seulement qu'aucun sucre n'a été ajouté. Vérifiez qu'il n'y a pas d'édulcorant.
+Oui, le sucre naturel du fruit. Cette mention signifie seulement qu'aucun sucre n'a été ajouté. Vérifie qu'il n'y a pas d'édulcorant.
 
 **Les biscuits « spécial bébé » sont-ils une exception ?**
 Ils contiennent généralement du sucre. Les repères recommandent de proposer les produits sucrés le plus tard possible ; un morceau de pain est une alternative.
@@ -805,7 +805,7 @@ Ils contiennent généralement du sucre. Les repères recommandent de proposer l
 Une occasion festive n'est pas une habitude. Les repères conseillent de limiter les produits chocolatés avant 3 ans, sans en faire un interdit culpabilisant.
 
 ## Quand demander conseil
-Parlez-en au médecin ou au dentiste si vous remarquez des taches sur les dents de votre enfant, ou au professionnel qui le suit si vous avez des doutes sur son alimentation. Consultez rapidement si votre bébé boit beaucoup moins, vomit, a une diarrhée ou semble très fatigué ; en cas de malaise ou d'enfant difficile à réveiller, appelez le 15 ou le 112.
+Parles-en au médecin ou au dentiste si tu remarques des taches sur les dents de ton enfant, ou au professionnel qui le suit si tu as des doutes sur son alimentation. Consulte rapidement si ton bébé boit beaucoup moins, vomit, a une diarrhée ou semble très fatigué ; en cas de malaise ou d'enfant difficile à réveiller, appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['sel', 'sucre', 'édulcorants', 'goût', 'biscuits', 'jus de fruits', 'caries', 'diversification'],
@@ -824,7 +824,7 @@ ${END}`,
 - L'ANSES déconseille de donner du miel, quelle que soit son origine, aux enfants de moins d'un an.
 - Le miel peut contenir des spores de la bactérie Clostridium botulinum, responsable du botulisme infantile.
 - C'est la seule source alimentaire identifiée de cette maladie chez le nourrisson.
-- Ne mettez jamais de miel sur une tétine ou sur un doigt pour calmer un bébé, ni dans ses aliments ou son biberon.
+- Ne mets jamais de miel sur une tétine ou sur un doigt pour calmer un bébé, ni dans ses aliments ou son biberon.
 - La constipation est souvent le premier signe ; une faiblesse générale peut suivre.
 
 ## Comprendre
@@ -836,27 +836,27 @@ C'est une maladie rare. Mais comme le miel est la seule source alimentaire ident
 
 ## Au quotidien
 - **Pas de miel avant le premier anniversaire**, ni cru, ni « bio », ni local, ni dans une tisane.
-- **Lisez la liste des ingrédients** des biscuits, céréales, yaourts ou compotes : le miel y figure parfois.
+- **Lis la liste des ingrédients** des biscuits, céréales, yaourts ou compotes : le miel y figure parfois.
 - **Pas de miel sur la tétine** ni sur le doigt pour apaiser un bébé, même en cas de coliques ou de pleurs.
-- **Informez les proches** (grands-parents, assistante maternelle) : le « remède de grand-mère » au miel n'est pas adapté avant 1 an.
+- **Informe les proches** (grands-parents, assistante maternelle) : le « remède de grand-mère » au miel n'est pas adapté avant 1 an.
 - **Pour sucrer ? Inutile** : les repères recommandent de toute façon de proposer le sucre le plus tard possible.
 - **Après 1 an**, les pédiatres indiquent que le miel peut être introduit, comme les autres produits sucrés, avec modération.
 
 ## Questions fréquentes
 **Le miel cuit dans un gâteau pose-t-il problème ?**
-La page de l'ANSES déconseille le miel dans l'alimentation de l'enfant de moins d'un an sans faire d'exception pour les préparations cuites. Par prudence, évitez aussi les produits contenant du miel avant 1 an, et demandez conseil au professionnel en cas de doute.
+La page de l'ANSES déconseille le miel dans l'alimentation de l'enfant de moins d'un an sans faire d'exception pour les préparations cuites. Par prudence, évite aussi les produits contenant du miel avant 1 an, et demande conseil au professionnel en cas de doute.
 
 **Mon bébé de 8 mois a goûté du miel : que faire ?**
-Pas de panique : la maladie est rare. Surveillez-le dans les jours et semaines qui suivent. S'il devient constipé de façon inhabituelle, tète ou boit plus faiblement, semble mou ou tient moins bien sa tête, consultez rapidement en signalant qu'il a mangé du miel.
+Pas de panique : la maladie est rare. Surveille-le dans les jours et semaines qui suivent. S'il devient constipé de façon inhabituelle, tète ou boit plus faiblement, semble mou ou tient moins bien sa tête, consulte rapidement en signalant qu'il a mangé du miel.
 
 **Et le sirop d'érable ou d'agave ?**
 L'ANSES identifie le miel comme seule source alimentaire du botulisme infantile. Ces sirops restent cependant des produits sucrés, que les repères conseillent d'éviter chez le tout-petit.
 
 **Le miel pour la toux de bébé ?**
-Avant 1 an, non. Pour une toux ou un rhume, demandez conseil au médecin ou au pharmacien.
+Avant 1 an, non. Pour une toux ou un rhume, demande conseil au médecin ou au pharmacien.
 
 ## Quand demander conseil
-Consultez rapidement si votre bébé de moins d'un an devient constipé de façon inhabituelle et semble en même temps plus faible, tète moins bien, a le visage moins expressif ou tient moins bien sa tête. Appelez immédiatement le 15 ou le 112 s'il a du mal à respirer, s'il est très mou, difficile à réveiller ou s'il a un malaise.
+Consulte rapidement si ton bébé de moins d'un an devient constipé de façon inhabituelle et semble en même temps plus faible, tète moins bien, a le visage moins expressif ou tient moins bien sa tête. Appelle immédiatement le 15 ou le 112 s'il a du mal à respirer, s'il est très mou, difficile à réveiller ou s'il a un malaise.
 
 ${END}`,
     tags: ['miel', 'botulisme', 'botulisme infantile', 'tétine', 'constipation', 'avant 1 an', 'sécurité alimentaire'],
@@ -882,35 +882,35 @@ ${END}`,
 ## Comprendre
 La période de la diversification est une fenêtre favorable à la découverte des goûts. Le Haut Conseil de la santé publique souligne que l'exposition précoce et répétée aux aliments aide l'enfant à les accepter. Les herbes et épices douces élargissent encore cette palette et rapprochent les repas de bébé de ceux de la famille.
 
-Les pédiatres (mpedia) indiquent qu'autour de 1 an, toutes les familles d'aliments sont introduites, et encouragent l'usage des herbes et de certaines épices pour remplacer le sel, sans poivre ni piment. Si vous souhaitez en proposer plus tôt, demandez conseil au professionnel qui suit votre bébé ; comme pour tout aliment, une nouveauté à la fois.
+Les pédiatres (mpedia) indiquent qu'autour de 1 an, toutes les familles d'aliments sont introduites, et encouragent l'usage des herbes et de certaines épices pour remplacer le sel, sans poivre ni piment. Si tu souhaites en proposer plus tôt, demande conseil au professionnel qui suit ton bébé ; comme pour tout aliment, une nouveauté à la fois.
 
 Les repères consultés ne détaillent pas l'ail, l'oignon ou l'échalote. Ce sont des légumes de la cuisine familiale qui, bien cuits et en petite quantité, peuvent parfumer un plat vers la fin de la première année ; crus, leur goût est très fort.
 
 ## Au quotidien
-- **Herbes fraîches** : lavez-les, ciselez-les très finement, puis ajoutez une petite pincée dans la purée en fin de cuisson.
-- **Laurier et thym** : faites-les cuire avec les légumes, puis retirez-les avant de mixer.
+- **Herbes fraîches** : lave-les, cisèle-les très finement, puis ajoute une petite pincée dans la purée en fin de cuisson.
+- **Laurier et thym** : fais-les cuire avec les légumes, puis retire-les avant de mixer.
 - **Épices douces** : une pointe de cumin dans une purée de carotte, de muscade dans une purée de pomme de terre, de cannelle dans une compote de pomme.
 - **Vanille** : une gousse dans une compote ou un laitage maison, sans sucre ajouté.
 - **Ail, oignon** : bien cuits, fondants, en petite quantité.
-- **Évitez les mélanges tout prêts** (bouillons, assaisonnements en sachet) : ils contiennent souvent du sel.
+- **Évite les mélanges tout prêts** (bouillons, assaisonnements en sachet) : ils contiennent souvent du sel.
 - **Pas de poivre ni de piment**, ni de sauces relevées.
-- **Prélevez la part de bébé** avant d'ajouter les épices fortes au plat familial.
+- **Prélève la part de bébé** avant d'ajouter les épices fortes au plat familial.
 
 ## Questions fréquentes
 **À partir de quand puis-je ajouter des herbes ?**
-Les pédiatres en parlent surtout autour de 1 an, quand toutes les familles d'aliments sont introduites. Pour en proposer plus tôt, demandez l'avis du professionnel qui suit votre bébé.
+Les pédiatres en parlent surtout autour de 1 an, quand toutes les familles d'aliments sont introduites. Pour en proposer plus tôt, demande l'avis du professionnel qui suit ton bébé.
 
 **Le curry ou le paprika, c'est possible ?**
-Les repères consultés citent la muscade, le cumin et la coriandre, et déconseillent le poivre et le piment. Certains mélanges ou paprikas peuvent être piquants : si vous en utilisez, choisissez des versions douces, en très petite quantité, et observez la réaction de votre bébé.
+Les repères consultés citent la muscade, le cumin et la coriandre, et déconseillent le poivre et le piment. Certains mélanges ou paprikas peuvent être piquants : si tu en utilises, choisis des versions douces, en très petite quantité, et observe la réaction de ton bébé.
 
 **Mon bébé grimace avec le persil : j'arrête ?**
-Une grimace exprime souvent la surprise. Reproposez-le plus tard, en plus petite quantité, mélangé à un aliment qu'il aime. L'exposition répétée aide à l'acceptation.
+Une grimace exprime souvent la surprise. Repropose-le plus tard, en plus petite quantité, mélangé à un aliment qu'il aime. L'exposition répétée aide à l'acceptation.
 
 **Les herbes séchées conviennent-elles ?**
-Oui, elles peuvent être utilisées comme les herbes fraîches, en petite quantité. Vérifiez qu'il ne s'agit pas d'un mélange salé.
+Oui, elles peuvent être utilisées comme les herbes fraîches, en petite quantité. Vérifie qu'il ne s'agit pas d'un mélange salé.
 
 ## Quand demander conseil
-Parlez-en au médecin si des rougeurs, des démangeaisons, des vomissements ou une diarrhée apparaissent après une nouvelle épice ou une nouvelle herbe. Appelez le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou si votre bébé devient mou ou pâle.
+Parles-en au médecin si des rougeurs, des démangeaisons, des vomissements ou une diarrhée apparaissent après une nouvelle épice ou une nouvelle herbe. Appelle le 15 ou le 112 en cas de gêne respiratoire, de gonflement des lèvres ou du visage, ou si ton bébé devient mou ou pâle.
 
 ${END}`,
     tags: ['herbes', 'épices', 'aromates', 'goût', 'sans sel', 'cumin', 'cannelle', 'ail'],
@@ -941,17 +941,17 @@ Il est fréquent qu'un bébé ait un petit haut-le-cœur ou recrache en découvr
 
 ## Au quotidien
 - **Étape 1 : lisse** — purées et compotes mixées finement.
-- **Étape 2 : plus épais** — mixez moins longtemps, ajoutez moins de liquide.
-- **Étape 3 : écrasé** — écrasez à la fourchette des légumes et fruits bien cuits.
+- **Étape 2 : plus épais** — mixe moins longtemps, ajoute moins de liquide.
+- **Étape 3 : écrasé** — écrase à la fourchette des légumes et fruits bien cuits.
 - **Étape 4 : petits morceaux fondants** — à côté de la purée : carotte très cuite, courgette, pomme de terre, banane, poire très mûre, pâtes bien cuites.
-- **Le test de l'écrasement** : un bon morceau s'écrase facilement entre votre pouce et votre index, ou contre le palais avec la langue.
+- **Le test de l'écrasement** : un bon morceau s'écrase facilement entre ton pouce et ton index, ou contre le palais avec la langue.
 - **Toujours assis bien droit**, jamais allongé, jamais en marchant, et toujours avec un adulte à côté.
-- **Laissez-le explorer avec les doigts** : toucher les aliments fait partie de l'apprentissage.
-- **Mangez avec lui** : il apprend aussi en vous regardant mâcher.
+- **Laisse-le explorer avec les doigts** : toucher les aliments fait partie de l'apprentissage.
+- **Mange avec lui** : il apprend aussi en te regardant mâcher.
 
 ## Questions fréquentes
 **Mon bébé de 10 mois refuse tout ce qui n'est pas lisse : que faire ?**
-Avancez par toutes petites étapes : une purée un peu moins mixée, puis un aliment fondant à attraper à côté. Ne forcez pas. Si le refus est total, s'il a des haut-le-cœur à chaque repas ou s'il approche de 12 mois sans aucune texture, parlez-en au médecin ou à la PMI.
+Avance par toutes petites étapes : une purée un peu moins mixée, puis un aliment fondant à attraper à côté. Ne force pas. Si le refus est total, s'il a des haut-le-cœur à chaque repas ou s'il approche de 12 mois sans aucune texture, parles-en au médecin ou à la PMI.
 
 **Faut-il attendre les dents pour donner des morceaux ?**
 Les morceaux fondants s'écrasent avec les gencives. Les repères ne conditionnent pas l'introduction des textures à la poussée dentaire.
@@ -963,7 +963,7 @@ Un haut-le-cœur, une toux ou un aliment recraché montrent que bébé gère le 
 Ils peuvent aider, mais les repères soulignent que le fait maison offre plus de variété de textures. Les morceaux à attraper avec les doigts restent complémentaires.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé a des haut-le-cœur ou des vomissements à chaque repas, s'il refuse toute texture à l'approche de 12 mois, s'il tousse souvent en mangeant ou s'il prend peu de poids. Si votre enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelez immédiatement le 15 ou le 112. Se former aux gestes de premiers secours est une bonne idée pour tous les parents.
+Parles-en au médecin ou à la PMI si ton bébé a des haut-le-cœur ou des vomissements à chaque repas, s'il refuse toute texture à l'approche de 12 mois, s'il tousse souvent en mangeant ou s'il prend peu de poids. Si ton enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelle immédiatement le 15 ou le 112. Se former aux gestes de premiers secours est une bonne idée pour tous les parents.
 
 ${END}`,
     tags: ['textures', 'morceaux', 'purée', 'mastication', 'haut-le-cœur', 'diversification', '8-10 mois'],
@@ -983,40 +983,40 @@ ${END}`,
 - Les pédiatres proposent des aliments à manger avec les mains, souvent entre 6 et 9 mois, séparés de la purée donnée à la cuillère.
 - Les morceaux sont bien cuits, tendres, de taille adaptée à sa main.
 - Bébé est toujours assis bien droit et surveillé par un adulte.
-- Certaines familles pratiquent la diversification menée par l'enfant (DME) : parlez-en au professionnel qui suit votre bébé.
+- Certaines familles pratiquent la diversification menée par l'enfant (DME) : parles-en au professionnel qui suit ton bébé.
 
 ## Comprendre
 Manger, ce n'est pas seulement avaler. C'est aussi toucher, sentir, observer, jouer avec la texture. Quand bébé attrape un morceau de carotte cuite, il découvre sa forme, sa couleur, sa consistance, et entraîne sa coordination entre la main et la bouche.
 
 Santé publique France invite à laisser les doigts libres pendant les repas. Les pédiatres (mpedia) proposent, entre 6 et 9 mois, des aliments à manger avec les mains, en séparant bien les aliments mixés, donnés à la cuillère, des petits morceaux que l'enfant porte seul à la bouche.
 
-La diversification menée par l'enfant (DME) est une approche où le bébé se nourrit surtout seul, avec des morceaux adaptés, dès le début. Les sources officielles consultées ne la détaillent pas. Si elle vous intéresse, parlez-en au médecin ou à la PMI, qui pourront vous conseiller selon le développement de votre bébé et vous rappeler les règles de sécurité.
+La diversification menée par l'enfant (DME) est une approche où le bébé se nourrit surtout seul, avec des morceaux adaptés, dès le début. Les sources officielles consultées ne la détaillent pas. Si elle t’intéresse, parles-en au médecin ou à la PMI, qui pourront te conseiller selon le développement de ton bébé et te rappeler les règles de sécurité.
 
 ## Au quotidien
 - **Bâtonnets fondants** : carotte, courgette, patate douce ou brocoli bien cuits, coupés en bâtonnets que bébé peut tenir dans son poing.
 - **Fruits très mûrs** : banane, poire, pêche, avocat, en morceaux tendres.
 - **Féculents** : grosses pâtes bien cuites, pomme de terre cuite, morceau de pain.
-- **Le test de l'écrasement** : le morceau doit s'écraser facilement entre vos doigts.
+- **Le test de l'écrasement** : le morceau doit s'écraser facilement entre tes doigts.
 - **Assis bien droit** dans une chaise haute adaptée, jamais allongé ni en mouvement.
-- **Restez à côté** pendant tout le repas, sans écran.
-- **Protégez plutôt que de limiter** : un bavoir couvrant, un tapis sous la chaise, et acceptez que ce soit salissant.
-- **Laissez-le décider** de ce qu'il porte à sa bouche et de la quantité ; il peut aussi recevoir une purée à la cuillère en parallèle.
+- **Reste à côté** pendant tout le repas, sans écran.
+- **Protège plutôt que de limiter** : un bavoir couvrant, un tapis sous la chaise, et accepte que ce soit salissant.
+- **Laisse-le décider** de ce qu'il porte à sa bouche et de la quantité ; il peut aussi recevoir une purée à la cuillère en parallèle.
 
 ## Questions fréquentes
 **Il joue avec la nourriture plus qu'il ne mange : est-ce un problème ?**
-Explorer fait partie de l'apprentissage. Le lait reste son aliment principal la première année. Si vous avez un doute sur ses apports ou sa croissance, parlez-en au professionnel qui le suit.
+Explorer fait partie de l'apprentissage. Le lait reste son aliment principal la première année. Si tu as un doute sur ses apports ou sa croissance, parles-en au professionnel qui le suit.
 
 **Quels aliments éviter en morceaux ?**
-Les aliments durs ou ronds : fruits à coque et cacahuètes entiers, raisins entiers, tomates cerises entières, carotte crue dure, pomme crue dure, bonbons, gros morceaux fermes. Coupez, écrasez ou faites cuire.
+Les aliments durs ou ronds : fruits à coque et cacahuètes entiers, raisins entiers, tomates cerises entières, carotte crue dure, pomme crue dure, bonbons, gros morceaux fermes. Coupe, écrase ou fais cuire.
 
 **Il a des haut-le-cœur avec les morceaux : faut-il arrêter ?**
-Un haut-le-cœur ou un aliment recraché montre que bébé gère le morceau. Revenez à des morceaux plus tendres ou plus petits. En revanche, s'il ne peut plus respirer, tousser ou crier, appelez le 15 ou le 112.
+Un haut-le-cœur ou un aliment recraché montre que bébé gère le morceau. Reviens à des morceaux plus tendres ou plus petits. En revanche, s'il ne peut plus respirer, tousser ou crier, appelle le 15 ou le 112.
 
 **Puis-je lui donner une cuillère ?**
-Oui, laissez-le manipuler une petite cuillère adaptée pendant que vous l'aidez avec une autre. C'est un premier pas vers l'autonomie.
+Oui, laisse-le manipuler une petite cuillère adaptée pendant que tu l'aides avec une autre. C'est un premier pas vers l'autonomie.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé ne s'intéresse pas du tout aux aliments à l'approche de 12 mois, s'il a des haut-le-cœur ou vomit à chaque repas, ou s'il prend peu de poids. Si votre enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelez immédiatement le 15 ou le 112.
+Parles-en au médecin ou à la PMI si ton bébé ne s'intéresse pas du tout aux aliments à l'approche de 12 mois, s'il a des haut-le-cœur ou vomit à chaque repas, ou s'il prend peu de poids. Si ton enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelle immédiatement le 15 ou le 112.
 
 ${END}`,
     tags: ['manger avec les doigts', 'autonomie', 'DME', 'morceaux', 'finger food', 'chaise haute', 'diversification'],
@@ -1036,7 +1036,7 @@ ${END}`,
 - Une cacahuète ou un fruit à coque ne se donne jamais entier à un tout-petit : on utilise une pâte lisse ou une poudre fine.
 - Les aliments sont bien cuits, tendres, coupés en morceaux adaptés à l'âge.
 - Bébé mange toujours assis bien droit et surveillé, jamais allongé ni en marchant.
-- Si l'enfant ne peut plus respirer, tousser ou crier : appelez immédiatement le 15 ou le 112.
+- Si l'enfant ne peut plus respirer, tousser ou crier : appelle immédiatement le 15 ou le 112.
 
 ## Comprendre
 Les voies respiratoires d'un jeune enfant sont étroites, et la mastication s'apprend progressivement. Un aliment rond et ferme, de la taille d'un raisin ou d'une cacahuète, peut glisser dans la gorge et bloquer le passage de l'air. C'est pourquoi les repères du Haut Conseil de la santé publique et des pédiatres listent ces aliments à éviter sous leur forme entière.
@@ -1046,30 +1046,30 @@ Les fruits à coque et l'arachide sont aussi des allergènes que les repères re
 Les conditions du repas comptent autant que l'aliment : un enfant assis, calme, surveillé, qui ne court pas et ne rit pas la bouche pleine, est mieux protégé.
 
 ## Au quotidien
-- **Raisins, tomates cerises et autres petits fruits ronds** : coupez-les en quatre dans la longueur.
-- **Fruits à noyau** (cerises, prunes) : retirez le noyau et coupez en petits morceaux.
+- **Raisins, tomates cerises et autres petits fruits ronds** : coupe-les en quatre dans la longueur.
+- **Fruits à noyau** (cerises, prunes) : retire le noyau et coupe en petits morceaux.
 - **Carotte, pomme** : cuites et fondantes, ou râpées finement, jamais en gros morceaux crus durs.
 - **Cacahuètes, noix, noisettes, amandes** : uniquement en pâte lisse ou en poudre fine.
 - **Pas de bonbons, de pop-corn, de chips**, ni de petits apéritifs durs.
 - **Assis, attaché dans sa chaise**, avec un adulte à côté, sans écran et sans jeux pendant le repas.
 - **Attention aux aînés** : ils peuvent donner un aliment dangereux au petit sans le savoir.
-- **Formez-vous** aux gestes de premiers secours chez le nourrisson et l'enfant.
+- **Forme-toi** aux gestes de premiers secours chez le nourrisson et l'enfant.
 
 ## Questions fréquentes
 **À partir de quel âge peut-il manger des raisins entiers ?**
-Les repères consultés ne fixent pas d'âge précis. Pour les jeunes enfants, coupez-les. Demandez conseil au professionnel qui suit votre enfant.
+Les repères consultés ne fixent pas d'âge précis. Pour les jeunes enfants, coupe-les. Demande conseil au professionnel qui suit ton enfant.
 
 **Quelle différence entre haut-le-cœur et étouffement ?**
 Lors d'un haut-le-cœur, bébé tousse, grimace, recrache : il gère l'aliment. Lors d'un étouffement, il ne peut plus respirer, tousser, pleurer ni crier, il peut devenir bleu ou s'agiter sans bruit : c'est une urgence vitale.
 
 **Les gâteaux apéritifs « pour bébé » sont-ils adaptés ?**
-Certains biscuits fondent dans la bouche, d'autres sont durs. Restez à côté de lui et privilégiez des aliments simples et fondants. Vérifiez aussi la teneur en sel et en sucre.
+Certains biscuits fondent dans la bouche, d'autres sont durs. Reste à côté de lui et privilégie des aliments simples et fondants. Vérifie aussi la teneur en sel et en sucre.
 
 **Faut-il éviter complètement les fruits à coque ?**
-Non, ce sont des allergènes à ne pas retarder. Proposez-les en pâte lisse ou en poudre fine, en petite quantité, mélangés à une purée.
+Non, ce sont des allergènes à ne pas retarder. Propose-les en pâte lisse ou en poudre fine, en petite quantité, mélangés à une purée.
 
 ## Quand demander conseil
-Si votre enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelez immédiatement le 15 ou le 112 et suivez les consignes du régulateur. Même si l'aliment a été expulsé, consultez rapidement si votre enfant continue de tousser, a une respiration sifflante ou bruyante, ou semble gêné pour respirer dans les heures ou jours qui suivent.
+Si ton enfant s'étouffe et ne peut plus respirer, tousser ou crier, appelle immédiatement le 15 ou le 112 et suis les consignes du régulateur. Même si l'aliment a été expulsé, consulte rapidement si ton enfant continue de tousser, a une respiration sifflante ou bruyante, ou semble gêné pour respirer dans les heures ou jours qui suivent.
 
 ${END}`,
     tags: ['étouffement', 'fausse route', 'raisins', 'cacahuète', 'fruits à coque', 'sécurité', 'morceaux'],
@@ -1083,14 +1083,14 @@ ${END}`,
     slug: 'journee-repas-bebe-6-12-mois-rythme',
     title: 'Une journée de repas entre 6 et 12 mois : rythme et repères',
     summary: 'Dès 6-8 mois, la journée s’organise souvent en quatre repas, sans grignotage, avec le lait toujours présent ; les quantités suivent l’appétit de bébé et l’avis du professionnel.',
-    body_md: `Entre 6 et 12 mois, les repas de bébé ressemblent de plus en plus à ceux de la famille. Comment organiser la journée ? Combien de repas ? Quelle place pour le lait ? Voici des repères généraux, à adapter avec le professionnel qui suit votre enfant, sans quantités imposées.
+    body_md: `Entre 6 et 12 mois, les repas de bébé ressemblent de plus en plus à ceux de la famille. Comment organiser la journée ? Combien de repas ? Quelle place pour le lait ? Voici des repères généraux, à adapter avec le professionnel qui suit ton enfant, sans quantités imposées.
 
 ## En bref
 - Dès 6-8 mois, les repères décrivent quatre repas par jour : petit-déjeuner, déjeuner, goûter, dîner.
 - Pas de grignotage entre les repas.
 - Le lait maternel ou infantile reste présent tout au long de la première année ; l'allaitement peut continuer à la demande.
 - Les quantités ne sont pas fixes : l'appétit varie d'un enfant à l'autre et d'un jour à l'autre.
-- Le professionnel qui suit votre enfant vous aide à ajuster, en s'appuyant sur sa courbe de croissance.
+- Le professionnel qui suit ton enfant t’aide à ajuster, en s'appuyant sur sa courbe de croissance.
 
 ## Comprendre
 Au début de la diversification, un seul repas comporte des aliments autres que le lait, souvent le midi ou le soir, avec un fruit au goûter. Puis, au fil des semaines, les repas se structurent. Les pédiatres décrivent qu'autour de 6 mois une tétée ou un biberon, souvent celui du midi, laisse progressivement la place à un repas diversifié. Le lait peut rester en dessert si bébé en a encore besoin.
@@ -1111,19 +1111,19 @@ Voici une organisation possible, à titre d'exemple, sans quantités :
 
 ## Questions fréquentes
 **Combien doit-il manger à chaque repas ?**
-Il n'existe pas de quantité idéale unique. L'application ne fixe pas de quantité : votre bébé régule lui-même, et le professionnel qui suit sa croissance vous indiquera si un ajustement est utile.
+Il n'existe pas de quantité idéale unique. L'application ne fixe pas de quantité : ton bébé régule lui-même, et le professionnel qui suit sa croissance t’indiquera si un ajustement est utile.
 
 **Peut-il dîner avec nous plus tard le soir ?**
-Les repères insistent sur des horaires réguliers et sur le plaisir des repas en famille. Trouvez l'organisation qui respecte à la fois le sommeil de bébé et votre vie de famille.
+Les repères insistent sur des horaires réguliers et sur le plaisir des repas en famille. Trouve l'organisation qui respecte à la fois le sommeil de bébé et ta vie de famille.
 
 **Il réclame entre les repas : que faire ?**
 Les repères conseillent d'éviter le grignotage. S'il a faim, il est possible d'ajuster l'heure ou le contenu des repas. Un bébé allaité peut continuer à téter à la demande.
 
 **Faut-il supprimer le biberon du midi à 6 mois ?**
-Ce passage se fait progressivement, selon l'appétit et le rythme de bébé. Le lait peut être conservé en dessert s'il en a besoin. Demandez conseil au professionnel.
+Ce passage se fait progressivement, selon l'appétit et le rythme de bébé. Le lait peut être conservé en dessert s'il en a besoin. Demande conseil au professionnel.
 
 ## Quand demander conseil
-Consultez entre deux rendez-vous si votre bébé refuse plusieurs repas d'affilée, boit moins, mouille moins ses couches, vomit souvent, ou si vous avez un doute sur sa croissance. En cas de malaise, de bébé très mou ou difficile à réveiller, appelez le 15 ou le 112.
+Consulte entre deux rendez-vous si ton bébé refuse plusieurs repas d'affilée, boit moins, mouille moins ses couches, vomit souvent, ou si tu as un doute sur sa croissance. En cas de malaise, de bébé très mou ou difficile à réveiller, appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['rythme des repas', 'menu bébé', '6 mois', '9 mois', 'quatre repas', 'goûter', 'organisation'],
@@ -1153,30 +1153,30 @@ Un refus peut avoir plusieurs causes : un goût nouveau, une texture surprenante
 Les repères déconseillent de forcer l'enfant ou de l'obliger à finir son assiette. Faire confiance à son appétit, qui varie d'un jour à l'autre, est l'un des fondements des recommandations actuelles.
 
 ## Au quotidien
-- **Reproposez sans insister** : une ou deux cuillerées, quelques jours plus tard.
-- **Changez la présentation** : purée, puis écrasé, puis morceaux fondants ; mélangé à un aliment aimé, puis seul.
-- **Mangez le même aliment** devant lui, avec plaisir : il apprend en imitant.
-- **Laissez-le toucher** l'aliment avec ses doigts, le sentir, jouer un peu.
+- **Repropose sans insister** : une ou deux cuillerées, quelques jours plus tard.
+- **Change la présentation** : purée, puis écrasé, puis morceaux fondants ; mélangé à un aliment aimé, puis seul.
+- **Mange le même aliment** devant lui, avec plaisir : il apprend en imitant.
+- **Laisse-le toucher** l'aliment avec ses doigts, le sentir, jouer un peu.
 - **Petites quantités** dans l'assiette : une grande portion peut décourager.
 - **Repas calmes**, sans écran ni jouet, à heures régulières.
 - **Pas de récompense ni de punition** autour de la nourriture.
-- **Arrêtez le repas** quand il montre qu'il n'a plus faim : il détourne la tête, ferme la bouche, repousse la cuillère.
+- **Arrête le repas** quand il montre qu'il n'a plus faim : il détourne la tête, ferme la bouche, repousse la cuillère.
 
 ## Questions fréquentes
 **Il refuse tous les légumes verts : va-t-il manquer de quelque chose ?**
-Continuez à les proposer régulièrement sous différentes formes, et misez sur la variété des autres aliments. Si vous avez un doute sur ses apports ou sa croissance, parlez-en au médecin ou à la PMI.
+Continue à les proposer régulièrement sous différentes formes, et mise sur la variété des autres aliments. Si tu as un doute sur ses apports ou sa croissance, parles-en au médecin ou à la PMI.
 
 **Puis-je cacher les légumes dans une purée qu'il aime ?**
-Mélanger peut aider, mais les repères insistent sur la découverte du goût de chaque aliment. Alternez : parfois mélangé, parfois seul, pour qu'il apprenne à le reconnaître.
+Mélanger peut aider, mais les repères insistent sur la découverte du goût de chaque aliment. Alterne : parfois mélangé, parfois seul, pour qu'il apprenne à le reconnaître.
 
 **Il mangeait de tout et refuse maintenant : pourquoi ?**
-L'appétit varie selon la fatigue, les dents, les petites maladies, ou les étapes du développement. Si sa croissance et son énergie restent bonnes, continuez à proposer sans pression ; en cas de doute, consultez.
+L'appétit varie selon la fatigue, les dents, les petites maladies, ou les étapes du développement. Si sa croissance et son énergie restent bonnes, continue à proposer sans pression ; en cas de doute, consulte.
 
 **Comment distinguer méfiance et dégoût ?**
 La méfiance se manifeste par des hésitations, une grimace, un aliment recraché, qui s'atténuent au fil des présentations. Un dégoût marqué et persistant, avec des haut-le-cœur ou des vomissements répétés, mérite d'en parler au professionnel.
 
 ## Quand demander conseil
-Consultez si votre bébé refuse presque tout, vomit ou a des haut-le-cœur à chaque repas, perd du poids ou ne grossit plus, boit moins, ou si les repas deviennent une source de grande inquiétude pour vous. Si vous vous sentez épuisé ou très anxieux, parlez-en aussi : en cas de détresse, le 3114 est joignable à tout moment. En cas de bébé mou, très pâle ou difficile à réveiller, appelez le 15 ou le 112.
+Consulte si ton bébé refuse presque tout, vomit ou a des haut-le-cœur à chaque repas, perd du poids ou ne grossit plus, boit moins, ou si les repas deviennent une source de grande inquiétude pour toi. Si tu te sens épuisé ou très anxieux, parles-en aussi : en cas de détresse, le 3114 est joignable à tout moment. En cas de bébé mou, très pâle ou difficile à réveiller, appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['refus alimentaire', 'néophobie', 'goûts', 'il ne mange pas', 'légumes', 'diversification', 'patience'],
@@ -1189,14 +1189,14 @@ ${END}`,
     slug: 'purees-maison-hygiene-conservation-bebe',
     title: 'Purées maison : préparer, conserver et réchauffer en sécurité',
     summary: 'Mains lavées, aliments bien cuits, pas plus de 2 heures à température ambiante, repas de bébé conservés au maximum 48 heures à 4 °C : les bons gestes d’hygiène.',
-    body_md: `Préparer soi-même les purées de bébé permet de varier les goûts et les textures. Comme son système immunitaire est encore immature, quelques règles d'hygiène simples protègent votre enfant des infections alimentaires. Voici les gestes recommandés par l'ANSES.
+    body_md: `Préparer soi-même les purées de bébé permet de varier les goûts et les textures. Comme son système immunitaire est encore immature, quelques règles d'hygiène simples protègent ton enfant des infections alimentaires. Voici les gestes recommandés par l'ANSES.
 
 ## En bref
-- Lavez-vous les mains à l'eau et au savon avant et pendant la préparation des repas.
-- Ne laissez pas les aliments plus de 2 heures à température ambiante avant de les mettre au réfrigérateur.
-- Réglez la zone la plus froide du réfrigérateur à 4 °C.
+- Lave-toi les mains à l'eau et au savon avant et pendant la préparation des repas.
+- Ne laisse pas les aliments plus de 2 heures à température ambiante avant de les mettre au réfrigérateur.
+- Règle la zone la plus froide du réfrigérateur à 4 °C.
 - L'ANSES recommande de ne pas conserver les repas des nourrissons plus de 48 heures à 4 °C.
-- Ne réchauffez pas un plat dans sa barquette en plastique : transvasez-le dans une assiette ou une casserole.
+- Ne réchauffe pas un plat dans sa barquette en plastique : transvase-le dans une assiette ou une casserole.
 
 ## Comprendre
 Les enfants de moins d'un an sont plus sensibles aux infections, car leur système immunitaire n'est pas encore mature. Une purée préparée avec soin, puis mal conservée, peut voir des bactéries se multiplier. Les recommandations de l'ANSES visent à limiter ce risque à chaque étape : préparation, cuisson, refroidissement, conservation, réchauffage.
@@ -1206,31 +1206,31 @@ La cuisson compte aussi : la viande hachée doit être bien cuite à cœur pour 
 Préparer à l'avance est pratique, à condition de respecter les durées et les températures.
 
 ## Au quotidien
-- **Mains** : lavez-les avant de cuisiner, après avoir touché de la viande, du poisson, des œufs crus ou des légumes terreux, et après avoir changé une couche.
+- **Mains** : lave-les avant de cuisiner, après avoir touché de la viande, du poisson, des œufs crus ou des légumes terreux, et après avoir changé une couche.
 - **Planches séparées** : une pour les viandes et poissons crus, une autre pour les aliments cuits et les légumes propres.
-- **Légumes et fruits** : lavez-les soigneusement, épluchez si besoin.
-- **Refroidissez vite** : répartissez la purée dans de petits récipients propres et fermés, et mettez-les au réfrigérateur sans attendre plus de 2 heures.
-- **Étiquetez** les récipients avec la date de préparation.
-- **Ne resservez pas un reste entamé** : la cuillère passée dans la bouche de bébé apporte des microbes ; servez une petite portion dans un bol à part et gardez le reste au frais.
-- **Réchauffez** dans une casserole ou une assiette adaptée, mélangez bien, et vérifiez la température avant de servir.
-- **En cas de gastro-entérite**, évitez de cuisiner si quelqu'un d'autre peut le faire ; sinon, renforcez le lavage des mains.
-- **Nettoyez le réfrigérateur** régulièrement, et au moins une fois par an à fond.
+- **Légumes et fruits** : lave-les soigneusement, épluche si besoin.
+- **Refroidis vite** : répartis la purée dans de petits récipients propres et fermés, et mets-les au réfrigérateur sans attendre plus de 2 heures.
+- **Étiquette** les récipients avec la date de préparation.
+- **Ne ressers pas un reste entamé** : la cuillère passée dans la bouche de bébé apporte des microbes ; sers une petite portion dans un bol à part et garde le reste au frais.
+- **Réchauffe** dans une casserole ou une assiette adaptée, mélange bien, et vérifie la température avant de servir.
+- **En cas de gastro-entérite**, évite de cuisiner si quelqu'un d'autre peut le faire ; sinon, renforce le lavage des mains.
+- **Nettoie le réfrigérateur** régulièrement, et au moins une fois par an à fond.
 
 ## Questions fréquentes
 **Combien de temps garder une purée maison au réfrigérateur ?**
 L'ANSES recommande de ne pas conserver les repas des nourrissons plus de 48 heures à 4 °C. Au-delà, mieux vaut les jeter.
 
 **Puis-je congeler les purées ?**
-La congélation est une façon courante de préparer à l'avance. Les pages consultées ne détaillent pas ses règles : suivez les consignes de votre appareil, congelez rapidement après refroidissement, et demandez conseil à la PMI si besoin.
+La congélation est une façon courante de préparer à l'avance. Les pages consultées ne détaillent pas ses règles : suis les consignes de ton appareil, congèle rapidement après refroidissement, et demande conseil à la PMI si besoin.
 
 **Peut-on réchauffer deux fois ?**
-Réchauffez seulement la portion que bébé va manger. Un plat réchauffé puis laissé à température ambiante ne devrait pas être conservé.
+Réchauffe seulement la portion que bébé va manger. Un plat réchauffé puis laissé à température ambiante ne devrait pas être conservé.
 
 **Le micro-ondes est-il adapté ?**
-Il chauffe de façon irrégulière et peut créer des points très chauds. Si vous l'utilisez, mélangez bien et vérifiez la température de toute la purée avant de servir.
+Il chauffe de façon irrégulière et peut créer des points très chauds. Si tu l'utilises, mélange bien et vérifie la température de toute la purée avant de servir.
 
 ## Quand demander conseil
-Consultez rapidement si votre bébé a de la fièvre, des vomissements ou une diarrhée, surtout s'il boit moins, mouille moins ses couches ou semble très fatigué. Appelez le 15 ou le 112 en cas de diarrhée avec du sang, de bébé mou, très pâle ou difficile à réveiller.
+Consulte rapidement si ton bébé a de la fièvre, des vomissements ou une diarrhée, surtout s'il boit moins, mouille moins ses couches ou semble très fatigué. Appelle le 15 ou le 112 en cas de diarrhée avec du sang, de bébé mou, très pâle ou difficile à réveiller.
 
 ${END}`,
     tags: ['purée maison', 'hygiène', 'conservation', 'réfrigérateur', 'réchauffer', 'restes', 'sécurité alimentaire'],
@@ -1243,14 +1243,14 @@ ${END}`,
     slug: 'petits-pots-ou-fait-maison-diversification',
     title: 'Petits pots ou fait maison : comment combiner pendant la diversification ?',
     summary: 'Les petits pots sont pratiques et encadrés par une réglementation spécifique ; le fait maison offre plus de variété de goûts et de textures : les deux peuvent se combiner.',
-    body_md: `Faut-il tout cuisiner soi-même ? Les petits pots sont-ils moins bons ? Il n'y a pas de bonne ou de mauvaise réponse : les repères officiels reconnaissent les avantages de chacun. Voici comment choisir selon votre quotidien.
+    body_md: `Faut-il tout cuisiner soi-même ? Les petits pots sont-ils moins bons ? Il n'y a pas de bonne ou de mauvaise réponse : les repères officiels reconnaissent les avantages de chacun. Voici comment choisir selon ton quotidien.
 
 ## En bref
 - Les petits pots et plats préparés pour bébé sont pratiques.
 - Les produits spécifiques aux moins de 3 ans sont soumis à des règles qui limitent les pesticides et les additifs.
 - Le fait maison offre plus de variété de goûts et de textures, ce que les repères encouragent.
-- Pour les petits pots, vérifiez l'étiquette et ajoutez une petite quantité de matière grasse si elle n'est pas présente.
-- Ne réchauffez pas un plat dans sa barquette en plastique.
+- Pour les petits pots, vérifie l'étiquette et ajoute une petite quantité de matière grasse si elle n'est pas présente.
+- Ne réchauffe pas un plat dans sa barquette en plastique.
 
 ## Comprendre
 Santé publique France reconnaît que les petits pots et plats préparés pour bébé sont pratiques, mais souligne qu'ils sont moins variés que le fait maison, en goûts comme en textures. Or la diversité des saveurs et le passage progressif aux morceaux sont des objectifs importants de la première année. Le Haut Conseil de la santé publique encourage à privilégier les préparations maison.
@@ -1260,30 +1260,30 @@ Les aliments spécifiquement destinés aux enfants de moins de 3 ans sont encadr
 Beaucoup de familles combinent : fait maison quand le temps le permet, petits pots pour dépanner, en voyage ou à la crèche.
 
 ## Au quotidien
-- **Lisez la liste des ingrédients** : un plat simple, avec peu d'ingrédients, sans sucres ajoutés ni sel ajouté.
-- **Vérifiez l'âge indiqué** sur l'emballage, adapté à la texture du moment.
-- **Matière grasse** : si l'étiquette n'en mentionne pas, ajoutez un peu d'huile de colza, de noix ou d'olive au moment de servir.
-- **Réchauffage** : transvasez dans une assiette ou une casserole, mélangez, vérifiez la température.
-- **Une fois ouvert**, servez une portion à part et conservez le reste au réfrigérateur selon les indications de l'emballage.
-- **Gourdes** : vous pouvez verser le contenu dans une cuillère plutôt que de le faire téter directement, pour que bébé continue d'apprendre à manger à la cuillère.
-- **Alternez** avec des légumes simples cuits à la maison, même en petites quantités, pour varier les textures.
-- **Rappels de produits** : en cas d'alerte, consultez le site officiel Rappel Conso.
+- **Lis la liste des ingrédients** : un plat simple, avec peu d'ingrédients, sans sucres ajoutés ni sel ajouté.
+- **Vérifie l'âge indiqué** sur l'emballage, adapté à la texture du moment.
+- **Matière grasse** : si l'étiquette n'en mentionne pas, ajoute un peu d'huile de colza, de noix ou d'olive au moment de servir.
+- **Réchauffage** : transvase dans une assiette ou une casserole, mélange, vérifie la température.
+- **Une fois ouvert**, sers une portion à part et conserve le reste au réfrigérateur selon les indications de l'emballage.
+- **Gourdes** : tu peux verser le contenu dans une cuillère plutôt que de le faire téter directement, pour que bébé continue d'apprendre à manger à la cuillère.
+- **Alterne** avec des légumes simples cuits à la maison, même en petites quantités, pour varier les textures.
+- **Rappels de produits** : en cas d'alerte, consulte le site officiel Rappel Conso.
 
 ## Questions fréquentes
 **Les petits pots sont-ils moins sains ?**
 Ils sont encadrés par une réglementation spécifique et peuvent tout à fait faire partie de l'alimentation de bébé. Leur limite principale, selon les repères, est la moindre variété de goûts et de textures.
 
 **Le fait maison prend trop de temps : comment simplifier ?**
-Préparez une purée de légumes de saison en plus grande quantité et conservez-la en respectant les règles d'hygiène, ou prélevez la part de bébé du plat familial avant de saler.
+Prépare une purée de légumes de saison en plus grande quantité et conserve-la en respectant les règles d'hygiène, ou prélève la part de bébé du plat familial avant de saler.
 
 **Les produits bio sont-ils indispensables ?**
 Les repères n'en font pas une obligation. Les pédiatres évoquent une préférence pour le bio et les circuits courts quand c'est possible ; les produits spécifiques pour bébé limitent déjà les pesticides.
 
 **Mon bébé n'aime que les petits pots : que faire ?**
-Proposez des légumes faits maison proches des goûts qu'il connaît, mélangez parfois un petit pot avec une purée maison, et reproposez régulièrement. Sans pression.
+Propose des légumes faits maison proches des goûts qu'il connaît, mélange parfois un petit pot avec une purée maison, et repropose régulièrement. Sans pression.
 
 ## Quand demander conseil
-Parlez-en au médecin ou à la PMI si votre bébé refuse durablement les textures plus épaisses, vomit souvent, ou si vous avez un doute sur son alimentation. Consultez rapidement en cas de fièvre, vomissements ou diarrhée importante ; appelez le 15 ou le 112 si votre bébé est mou, très pâle ou a du mal à respirer.
+Parles-en au médecin ou à la PMI si ton bébé refuse durablement les textures plus épaisses, vomit souvent, ou si tu as un doute sur son alimentation. Consulte rapidement en cas de fièvre, vomissements ou diarrhée importante ; appelle le 15 ou le 112 si ton bébé est mou, très pâle ou a du mal à respirer.
 
 ${END}`,
     tags: ['petits pots', 'fait maison', 'plats préparés', 'gourdes', 'étiquette', 'bio', 'diversification'],
@@ -1313,31 +1313,31 @@ Le régime végétalien, qui exclut aussi œufs et produits laitiers, expose à 
 Un bébé allaité par une mère végétalienne n'est pas lui-même végétalien : le lait maternel couvre ses besoins. La mère végétalienne doit, elle, anticiper une supplémentation, notamment en vitamine B12, comme le rappelle aussi l'ANSES.
 
 ## Au quotidien
-- **Parlez de votre choix** au médecin ou à la PMI dès le début de la diversification.
+- **Parle de ton choix** au médecin ou à la PMI dès le début de la diversification.
 - **Œufs bien cuits** et **produits laitiers nature** (yaourt, fromage blanc, fromage à pâte pressée cuite) trouvent leur place.
 - **Légumineuses** : lentilles, pois chiches, haricots, trempés puis bien cuits, mixés au début.
-- **Associez légumineuses et céréales** (lentilles et riz, pois chiches et semoule) pour varier les sources de protéines.
-- **Ajoutez un fruit ou un légume riche en vitamine C** au repas.
-- **Tofu** : le calcium peut aussi venir d'un tofu au sel de calcium ; proposez-le bien cuit, écrasé ou en petits morceaux tendres.
+- **Associe légumineuses et céréales** (lentilles et riz, pois chiches et semoule) pour varier les sources de protéines.
+- **Ajoute un fruit ou un légume riche en vitamine C** au repas.
+- **Tofu** : le calcium peut aussi venir d'un tofu au sel de calcium ; propose-le bien cuit, écrasé ou en petits morceaux tendres.
 - **Matières grasses** : huiles de colza ou de noix, intéressantes pour les oméga-3.
 - **Pas de complément sans avis médical** : vitamine B12, vitamine D ou fer se discutent avec le médecin.
-- **Limitez les produits ultra-transformés** « végétariens » souvent riches en sel.
+- **Limite les produits ultra-transformés** « végétariens » souvent riches en sel.
 
 ## Questions fréquentes
 **Mon bébé aura-t-il assez de fer sans viande ?**
-C'est le principal point de vigilance. Variez les sources végétales de fer et associez-les à de la vitamine C. Le médecin peut proposer un complément si nécessaire : ne le donnez pas de vous-même.
+C'est le principal point de vigilance. Varie les sources végétales de fer et associe-les à de la vitamine C. Le médecin peut proposer un complément si nécessaire : ne le donne pas de toi-même.
 
 **Puis-je remplacer le lait infantile par une boisson végétale ?**
 Non. Avant 1 an, seuls le lait maternel et les préparations infantiles conviennent. Les pédiatres évoquent, pour les nourrissons non allaités dont les parents souhaitent éviter les protéines animales, des préparations infantiles à base d'hydrolysat de protéines de riz, sur avis médical.
 
 **Et à la crèche ?**
-Discutez avec l'équipe. Les pédiatres rappellent qu'un choix alimentaire familial ne justifie pas à lui seul un projet d'accueil individualisé (PAI) ; le dialogue avec l'établissement reste essentiel.
+Discute avec l'équipe. Les pédiatres rappellent qu'un choix alimentaire familial ne justifie pas à lui seul un projet d'accueil individualisé (PAI) ; le dialogue avec l'établissement reste essentiel.
 
 **Le poisson est-il indispensable ?**
-Il apporte des oméga-3 et des protéines. Si votre famille n'en mange pas, parlez-en au médecin pour trouver comment couvrir ces besoins.
+Il apporte des oméga-3 et des protéines. Si ta famille n'en mange pas, parles-en au médecin pour trouver comment couvrir ces besoins.
 
 ## Quand demander conseil
-Consultez si votre bébé prend peu de poids, semble pâle, fatigué, moins tonique, ou si vous envisagez une alimentation végétalienne. Un suivi régulier de la croissance est recommandé. En cas de bébé très mou, difficile à réveiller ou qui a du mal à respirer, appelez le 15 ou le 112.
+Consulte si ton bébé prend peu de poids, semble pâle, fatigué, moins tonique, ou si tu envisages une alimentation végétalienne. Un suivi régulier de la croissance est recommandé. En cas de bébé très mou, difficile à réveiller ou qui a du mal à respirer, appelle le 15 ou le 112.
 
 ${END}`,
     tags: ['végétarien', 'végétalien', 'vegan', 'fer', 'vitamine B12', 'légumineuses', 'diversification'],

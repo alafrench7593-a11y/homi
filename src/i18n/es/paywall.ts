@@ -2,7 +2,7 @@ import type { paywall as fr } from '../fr/paywall';
 import type { Messages } from '../types';
 
 export const paywall: Messages<typeof fr> = {
-  'pw.title': 'Au fil de nous Premium',
+  'pw.title': 'HOMI Premium',
   'pw.tagline': 'Todo tu recorrido, del deseo de ser madre a los primeros pasos, unido por un mismo hilo.',
   'pw.stage.ttc': 'Buscar un bebé',
   'pw.stage.pregnancy': 'Embarazo',
@@ -10,7 +10,7 @@ export const paywall: Messages<typeof fr> = {
   'pw.stage.baby': 'Bebé',
   'pw.stage.child': 'Niño',
   'pw.locked': 'Este espacio forma parte de Premium',
-  'pw.lockedBody': 'Tu cuenta gratuita conserva tu perfil, tus ajustes, la consulta, la exportación y la eliminación de tus datos, y los números de emergencia. El seguimiento completo se abre con Premium.',
+  'pw.lockedBody': 'Tu cuenta gratuita conserva tu perfil, tus ajustes, la exportación y la eliminación de tus datos, y los números de emergencia. El seguimiento completo se abre con Premium.',
   'pw.checking': 'Comprobando tu suscripción…',
   'pw.featTitle': 'Lo que abre Premium',
   'pw.feat.track.title': 'El seguimiento diario',
@@ -29,7 +29,7 @@ export const paywall: Messages<typeof fr> = {
   'pw.restore': 'Restaurar mis compras',
   'pw.details': 'Detalle de los planes y comparación',
   'pw.account': 'Mi cuenta y mis ajustes',
-  'pw.myData': 'Consultar, exportar o eliminar mis datos',
+  'pw.myData': 'Exportar o eliminar mis datos',
   'pw.emergency': 'Números de emergencia',
   'pw.dataSafe': 'Tus datos nunca se borran al terminar una suscripción: siguen consultables y exportables.',
   'pw.noPlans': 'Los planes no se pueden mostrar en este momento.',

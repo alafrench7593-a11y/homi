@@ -18,6 +18,7 @@ import { isPremiumRequired } from '@/lib/premium/features';
 import { localeTag, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function Events() {
   const t = useTheme();
@@ -44,9 +45,9 @@ export default function Events() {
       {events.isLoading && !events.data ? <Skeleton kind="card" rows={2} /> : events.isError && !events.data ? (
         <ErrorView error={events.error} onRetry={() => void events.refetch()} />
       ) : upcoming.length ? (
-        <View style={{ gap: spacing.sm }}>
+        <MotionList style={{ gap: spacing.sm }}>
           {upcoming.map((e) => (
-            <Card key={e.id} testID={`event-${e.id}`}>
+            <MotionItem key={e.id}><Card key={e.id} testID={`event-${e.id}`}>
               <Row><Icon name={e.kind === 'atelier' ? 'video' : 'users'} size={18} color={t.colors.primary} /><Text weight="bold" style={{ flex: 1 }}>{e.title}</Text>{e.premium_only ? <PremiumBadge /> : null}</Row>
               <Text variant="small" muted style={{ marginTop: 4 }}>{new Date(e.starts_at).toLocaleString(localeTag(), { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}</Text>
               {e.description ? <Text variant="small" style={{ marginTop: 4 }}>{e.description}</Text> : null}
@@ -59,9 +60,9 @@ export default function Events() {
                   </>
                 ) : Date.parse(e.starts_at) <= Date.now() ? null : <Button label={tr('cm3.events.register')} size="sm" icon="check" onPress={() => void toggle(e.id, true, e.premium_only)} testID={`event-register-${e.id}`} />}
               </Row>
-            </Card>
+            </Card></MotionItem>
           ))}
-        </View>
+        </MotionList>
       ) : (
         <EmptyState icon="calendar" title={tr('cm3.events.emptyTitle')} body={tr('cm3.events.emptyBody')} />
       )}

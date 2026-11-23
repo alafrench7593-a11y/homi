@@ -7,9 +7,14 @@
  * Les réponses à partir des articles (/assistant/local, sans IA en ligne) restent disponibles.
  */
 export const FEATURES = {
-  aiAssistantOnline: false,
+  aiAssistantOnline: true, // ouverte le 21/11/2026 (accord de la propriétaire)
   /** Backend de démonstration en Premium strict (miroir de premium_policy.strict côté serveur). Tests historiques : faux. */
   demoStrictPremium: true,
+  /**
+   * Démo publique du site web (/demo) : tous les outils ouverts, aucun paywall ni tarif (décision de la propriétaire du
+   * 23/11/2026 : l'app n'est pas en vente, aucun prix sur le site public). Sans effet sur iOS / Android.
+   */
+  webDemoOpen: true,
 };
 
 export const aiAssistantOnline = (): boolean => FEATURES.aiAssistantOnline;

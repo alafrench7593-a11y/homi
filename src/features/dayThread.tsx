@@ -13,8 +13,11 @@ import { THREAD_LABEL, type ThreadState } from '@/lib/domain/dayThread';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const NODE = 22;
+/** Largeur en dessous de laquelle le texte d'une ligne ne descend pas : les boutons d'action passent alors dessous. */
+const TEXT_MIN = 150;
 
 export interface ThreadRow {
   key: string;
@@ -40,7 +43,7 @@ function Pulse({ color, icon }: { color: string; icon: IconName }) {
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(v, { isInteraction: false, toValue: 1, duration: 1200, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(v, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 3 }); // AMBIENT_LOOPS (src/motion/ambient.ts) : pulsations à l'arrivée puis repos
     loop.start();
     return () => loop.stop();
   }, [reduce, v]);
@@ -67,7 +70,7 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
   const t = useTheme();
   const gold = t.colors.gold;
   const accent = t.colors.primary;
-  const line = tint(t.isDark ? '#E7C08F' : '#B8865A', 0.55);
+  const line = tint(t.isDark ? '#E9CFA4' : '#76561D', 0.55);
   const done = rows.filter((r) => r.state === 'done').length;
   return (
     <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
@@ -78,14 +81,14 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
         </View>
         {caption ? <Text variant="caption" muted>{caption}</Text> : null}
         {!rows.length ? empty ?? null : (
-          <View style={{ marginTop: spacing.xs }}>
+          <MotionList style={{ marginTop: spacing.xs }}>
             {rows.map((r, i) => {
               const last = i === rows.length - 1;
               const hot = r.state === 'next' || r.state === 'now';
               const color = r.state === 'done' ? gold : hot ? accent : r.state === 'late' ? t.colors.heart : line;
               const faded = r.state === 'past' || r.state === 'todo' || r.state === 'anytime';
               return (
-                <View key={r.key} style={{ flexDirection: 'row', gap: spacing.md }}>
+                <MotionItem key={r.key}><View key={r.key} style={{ flexDirection: 'row', gap: spacing.md }}>
                   <View style={{ width: NODE, alignItems: 'center' }}>
                     {hot ? <Pulse color={accent} icon={r.icon ?? 'circle'} /> : (
                       <View style={{ width: NODE, height: NODE, borderRadius: NODE, alignItems: 'center', justifyContent: 'center',
@@ -100,17 +103,19 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
                     testID={r.testID}
                     style={{ flex: 1, marginBottom: last ? 0 : spacing.sm, paddingVertical: hot ? spacing.sm : 2, paddingHorizontal: hot ? spacing.md : 0, borderRadius: 18,
                       backgroundColor: hot ? tint(accent, t.isDark ? 0.18 : 0.1) : 'transparent', borderWidth: hot ? 1 : 0, borderColor: tint(accent, 0.35) }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-                      <View style={{ flex: 1, opacity: faded ? 0.78 : 1 }}>
+                    {/* Texte d'abord, ENTIER : les boutons d'action passent sous le texte quand la place manque (320 px,
+                        texte agrandi : la colonne du titre tombait à ~30 px, « Do-n… », audit 09) */}
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: spacing.sm, rowGap: 6 }}>
+                      <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: TEXT_MIN, minWidth: 0, opacity: faded ? 0.78 : 1 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                           {r.time ? <Text weight="bold" style={{ fontSize: hot ? 20 : 16 }}>{r.time}</Text> : null}
                           <Text variant="caption" weight="bold" color={faded ? t.colors.textMuted : color}>{(r.tag ?? THREAD_LABEL[r.state]).toUpperCase()}</Text>
                         </View>
-                        <Text weight={hot ? 'bold' : 'medium'} style={{ textDecorationLine: r.state === 'done' ? 'line-through' : 'none' }} numberOfLines={2}>{r.title}</Text>
-                        {r.sub ? <Text variant="caption" muted numberOfLines={2}>{r.sub}</Text> : null}
+                        <Text weight={hot ? 'bold' : 'medium'} style={{ textDecorationLine: r.state === 'done' ? 'line-through' : 'none' }}>{r.title}</Text>
+                        {r.sub ? <Text variant="caption" muted>{r.sub}</Text> : null}
                       </View>
                       {r.action || r.action2 ? (
-                        <View style={{ alignItems: 'flex-end', gap: 6 }}>
+                        <View style={{ alignItems: 'flex-end', gap: 6, marginLeft: 'auto' }}>
                           {r.action ? (
                             <Tappable bare onPress={r.action.onPress} accessibilityRole="button" accessibilityLabel={`${r.action.label} : ${r.title}`} testID={r.action.testID} hitSlop={8}
                               style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: r.action.strong || hot ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
@@ -127,10 +132,10 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
                       ) : null}
                     </View>
                   </Tappable>
-                </View>
+                </View></MotionItem>
               );
             })}
-          </View>
+          </MotionList>
         )}
       </View>
     </GlassSurface>

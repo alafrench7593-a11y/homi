@@ -1,54 +1,79 @@
-/** Première ouverture : court, doux, et ne demande que l'utile. */
+/**
+ * Première ouverture — onboarding v3 en 6 ÉTAPES (20/11/2026, demande de la propriétaire ; tutoiement dans ce parcours) :
+ *  1 « Pour commencer, parle-nous un peu de toi » (plusieurs réponses) · 2 « Qui fait partie de ton quotidien ? » ·
+ *  3 enfants et grossesse (tout facultatif ; jumeaux : même date proposée) · 4 alimentation du nourrisson (seulement
+ *  s'il y en a un) · 5 « Qu'aimerais-tu simplifier avec HOMI ? » · 6 ton tableau de bord personnalisé : aperçu calculé
+ *  par le moteur réel (src/lib/personalization), accords, puis la RÉVÉLATION (opérations réelles + outils choisis et
+ *  leurs raisons), l'écran Premium (sauté si déjà abonné·e) et la proposition de visite guidée.
+ * Conservé de la v2 : ouverture (logo), prénom, création du foyer, de la grossesse et des enfants (createPregnancy /
+ * createChild, sans doublon en cas de nouvel essai), parcours (planChange / runOps), accords (données de santé
+ * obligatoires), brouillon local ET profil avec reprise (anciens brouillons v1/v2 repris à l'étape équivalente),
+ * `onboarding_completed`. Les réponses sont enregistrées dans `profiles.onboarding_answers` (version 3) et RELUES par
+ * le moteur ; elles se modifient ensuite dans « Modifier mon parcours » (src/app/journeys/answers.tsx).
+ * Les comptes qui ont terminé ne passent plus ici (src/app/index.tsx).
+ */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
-import { Banner, Button, Card, Chip, Field, haptic, Icon, type IconName, Row, Text, Toggle } from '@/components/ui';
-import { FetusOrb } from '@/components/FetusOrb';
-import { WeeksRing } from '@/components/DayClock';
-import { useToast } from '@/components/Overlays';
+import { Banner, Button, IconButton, Row, Text, haptic } from '@/components/ui';
+import { MattePanel, useCompactEntry } from '@/features/entry/EntryKit';
+import { useDemoInset } from '@/components/demoInset';
 import { useUserId } from '@/lib/auth';
-import { backend, isDemo } from '@/lib/backend';
-import { ensureHousehold } from '@/lib/data/hooks';
-import { requestPermission } from '@/lib/notifications';
+import { backend, eq, isDemo } from '@/lib/backend';
+import { ensureHousehold, usePremium } from '@/lib/data/hooks';
 import { runOps } from '@/lib/journeys/manager';
 import { bodyJourney, childJourneyType, closeOps, planChange, type JourneyRow } from '@/lib/journeys/model';
 import { addDays, todayISO } from '@/lib/domain/dates';
-import type { ConsentPurpose, Journey } from '@/lib/types';
+import type { ConsentPurpose } from '@/lib/types';
 import { ChildForm, createChild, createPregnancy, emptyChild, emptyPregnancy, PregnancyForm, validateChild, validatePregnancy, type ChildDraft } from '@/features/profiles';
-import { useTheme } from '@/theme/ThemeProvider';
-import { palette, radius, spacing } from '@/theme/tokens';
-import { INTERESTS, interestHint, interestLabel, journeyOptions, reminderSuggestions, type Interest } from '@/lib/domain/journeys';
-import { formatList, getLocale, t as tr } from '@/i18n';
-import { BRAND } from '@/config/brand';
-import { eq } from '@/lib/backend';
 import { LEGAL_VERSIONS } from '@/lib/authFlow';
-import { CheckRow, LegalLink } from '@/features/auth';
-import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft } from '@/lib/onboardingDraft';
-import { Tappable } from '@/components/Tappable';
-import { StaggerItem, StepProgress, StepSwap } from '@/components/Motion';
-import { Appear } from '@/components/Appear';
+import { introJourneyAnswers, loadIntroProfile } from '@/features/intro/model';
+import { loadProgress, saveProgress } from '@/features/firstWin/model';
+import { clearDraftLocally, loadDraftLocally, restoreDraft, saveDraftLocally, type BottleFeeding, type OnboardingDraft, type OnboardingStep } from '@/lib/onboardingDraft';
+import { interestsFor, journeysFor, personalize, situationsFromJourneys, type Situation } from '@/lib/onboarding/personalize';
+import { asksChildren, asksFamily, asksFeeding, asksPregnancy, legacyAnswers, previewFacts } from '@/lib/onboarding/v3';
+import { emptyJourneyAnswers, journeyAnswersPayload, readJourneyAnswers, recommend, type JourneyAnswers } from '@/lib/personalization';
+import { pregnancyProgress } from '@/lib/domain/pregnancy';
+import { artForAnswers, OnbProgress, StepFade, StepTitle } from '@/features/onboarding/kit';
+import { HeroArt, heroSize } from '@/features/entry/HeroArt';
+import { OpeningStep } from '@/features/onboarding/OpeningStep';
+import { DashboardPreview, FamilyStep, FeedingStep, HouseholdChoiceStep, PrioritiesStep, ProfileStep } from '@/features/onboarding/JourneySteps';
+import { ConsentsStep } from '@/features/onboarding/ConsentsStep';
+import { RevealStep, type RevealLine } from '@/features/onboarding/RevealStep';
+import { PremiumStep } from '@/features/onboarding/PremiumStep';
+import { InviteOtherParent } from '@/features/couple/CoupleKit';
+import { deferTourOffer, TourOfferStep, useScreenOpen, useTourAllowed } from '@/features/tour/TourEntry';
+import { tourDispatch } from '@/features/tour/store';
+import { spacing } from '@/theme/tokens';
+import { formatList, getLocale, t as tr, type TKey } from '@/i18n';
 
-type Step = 'intro' | 'journeys' | 'pregnancy' | 'children' | 'reminders' | 'consents';
+type Step = 'intro' | 'profile' | 'household' | 'family' | 'feeding' | 'priorities' | 'consents';
+type Phase = 'flow' | 'reveal' | 'premium' | 'tour';
 
-/** Accords proposés à l'inscription : clé enregistrée, clé de texte, obligatoire. */
-const CONSENT_ROWS: [ConsentPurpose, 'healthData' | 'aiAssistant' | 'documentReading' | 'crashReports' | 'analytics', boolean][] = [
-  ['health_data', 'healthData', true], ['ai_assistant', 'aiAssistant', false], ['document_reading', 'documentReading', false],
-  ['crash_reports', 'crashReports', false], ['analytics', 'analytics', false],
-];
-
-/** Résumé affiché une fois l'espace créé (écran « prêt »). */
-interface ReadySummary { journeys: string[]; pregnancy: boolean; children: number; reminders: number; cycle: boolean; community: boolean }
+/** Étape (1 à 6) de chaque écran ; l'ouverture n'est pas comptée. */
+const TEMPS: Record<Step, number> = { intro: 0, profile: 1, household: 2, family: 3, feeding: 4, priorities: 5, consents: 6 };
+const TOTAL_TEMPS = 6;
+/** Étape d'un ancien brouillon (v1, v2) → étape équivalente du parcours en 6 étapes (jamais tout refaire). */
+const FROM_OLD: Record<OnboardingStep, Step> = {
+  intro: 'intro', journeys: 'profile', profile: 'profile', needs: 'household', household: 'household', pregnancy: 'family', children: 'family', family: 'family',
+  feeding: 'feeding', split: 'priorities', demo: 'priorities', reminders: 'priorities', priorities: 'priorities', consents: 'consents',
+};
+/** Espace ouvert par chaque situation (ligne de la révélation). */
+const SITUATION_SPACE: Record<Situation, 'health' | 'baby' | 'family'> = { ttc: 'health', pregnant: 'health', cycle: 'health', baby: 'baby', kids: 'baby', home: 'family' };
 
 export default function Onboarding() {
-  const t = useTheme();
-  const toast = useToast();
   const qc = useQueryClient();
+  const insets = useSafeAreaInsets();
   const userId = useUserId();
+  const premium = usePremium();
   const [step, setStep] = useState<Step>('intro');
+  const [phase, setPhase] = useState<Phase>('flow');
   const [name, setName] = useState('');
-  const [journeys, setJourneys] = useState<Journey[]>([]);
+  const [ja, setJa] = useState<JourneyAnswers>(emptyJourneyAnswers);
+  const answers = useMemo(() => legacyAnswers(ja), [ja]);
   const [pregnancy, setPregnancy] = useState(emptyPregnancy());
   const [pErrors, setPErrors] = useState<Record<string, string>>({});
   const [children, setChildren] = useState<ChildDraft[]>([emptyChild()]);
@@ -63,15 +88,44 @@ export default function Onboarding() {
   const [adult, setAdult] = useState(false);
   const [terms, setTerms] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [interests, setInterests] = useState<Interest[]>([]);
-  const [ready, setReady] = useState<ReadySummary | null>(null);
-  const JOURNEYS = journeyOptions();
+  const [lines, setLines] = useState<RevealLine[]>([]);
+  const [revealDone, setRevealDone] = useState(false);
   const finishing = useRef(false);
+  const compact = useCompactEntry();
+  const win = useWindowDimensions();
+  // Démonstration : la pastille « Démo » flotte en haut ; l'écran (sans en-tête) lui laisse sa place
+  const demoInset = useDemoInset();
+  const demoTop = demoInset ? { paddingTop: insets.top + spacing.md + demoInset } : undefined;
 
-  // Reprise : brouillon le plus récent entre l'appareil et le profil
+  // Web : aucun défilement horizontal parasite (focus d'un élément qui dépasse pendant une animation) ; le contenu
+  // reste aligné sur 0..largeur. Sans effet sur iOS / Android (zones de défilement verticales uniquement).
+  useEffect(() => {
+    if (Platform.OS !== 'web') return undefined;
+    const doc = (globalThis as unknown as { document?: Document }).document;
+    const win = globalThis as unknown as Window;
+    if (!doc) return undefined;
+    const onScroll = (e: Event) => {
+      const el = e.target as HTMLElement | Document | null;
+      if (el && 'scrollLeft' in el && el instanceof HTMLElement && el.scrollLeft && !/(auto|scroll)/.test(win.getComputedStyle(el).overflowX)) el.scrollLeft = 0;
+      if (win.scrollX) win.scrollTo(0, win.scrollY);
+    };
+    doc.addEventListener('scroll', onScroll, true);
+    return () => doc.removeEventListener('scroll', onScroll, true);
+  }, []);
+
+  const journeys = useMemo(() => journeysFor(answers), [answers]);
+  const interests = useMemo(() => interestsFor(answers), [answers]);
+  const plan = useMemo(() => personalize(answers), [answers]);
+  // Aperçu du tableau de bord : le moteur réel, sur les réponses et les enfants / la grossesse saisis
+  const pregWeeks = useMemo(() => { const v = validatePregnancy(pregnancy); return v.due ? pregnancyProgress(v.due).weeksSA : null; }, [pregnancy]);
+  const facts = useMemo(() => previewFacts(ja, children, pregWeeks), [ja, children, pregWeeks]);
+
+  // Reprise : brouillon le plus récent entre l'appareil et le profil (anciens brouillons v1 compris)
   useEffect(() => {
     if (!userId) return;
     let alive = true;
+    // Jamais bloqué sur un écran vide : au pire, on commence au début
+    const fallback = setTimeout(() => { if (alive) setHydrated(true); }, 2500);
     (async () => {
       const local = await loadDraftLocally(userId);
       let remote: OnboardingDraft | null = null;
@@ -80,73 +134,105 @@ export default function Onboarding() {
         remote = restoreDraft((p?.onboarding_state as object) ?? null);
       } catch { /* hors ligne : brouillon local */ }
       try {
-        const terms = await backend.select({ table: 'consents', filters: [eq('user_id', userId), eq('purpose', 'terms'), eq('granted', true)], limit: 1 });
-        if (alive) setNeedSignupConsents(!terms.length);
+        const signed = await backend.select({ table: 'consents', filters: [eq('user_id', userId), eq('purpose', 'terms'), eq('granted', true)], limit: 1 });
+        if (alive) setNeedSignupConsents(!signed.length);
       } catch { /* on redemandera à l'envoi si besoin */ }
       const d = [local, remote].filter(Boolean).sort((a, b) => String(b!.savedAt ?? '').localeCompare(String(a!.savedAt ?? '')))[0];
       if (alive && d) {
-        setName(d.name); setJourneys(d.journeys); setPregnancy(d.pregnancy); setChildren(d.children.length ? d.children : [emptyChild()]);
+        setName(d.name); setPregnancy(d.pregnancy); setChildren(d.children.length ? d.children : [emptyChild()]);
         setCErrors(d.children.map(() => ({}))); setReminders(d.reminders); setConsents(d.consents); setBottleFeeding(d.bottleFeeding ?? null);
-        setInterests((d.interests ?? []).filter((x): x is Interest => x === 'health' || x === 'community'));
-        setStep(d.step === 'feeding' ? 'reminders' : (d.step as Step));
+        setJa(d.answers3 ?? readJourneyAnswers(d.answers ?? situationsFromJourneys(d.journeys)) ?? emptyJourneyAnswers());
+        setStep(FROM_OLD[d.step] ?? 'profile');
+      } else if (alive) {
+        // aucun brouillon : le profil choisi dans l'intro préremplit l'étape 1
+        const pre = await loadIntroProfile();
+        if (pre && alive) {
+          const seed = introJourneyAnswers(pre);
+          setJa((x) => (x.profile.length ? x : { ...x, profile: seed.profile, household: x.household ?? seed.household }));
+        }
       }
-      if (alive) setHydrated(true);
+      if (alive) { clearTimeout(fallback); setHydrated(true); }
     })();
-    return () => { alive = false; };
+    return () => { alive = false; clearTimeout(fallback); };
   }, [userId]);
 
-  // Sauvegarde à chaque étape et à chaque modification (après une courte pause)
+  // Sauvegarde à chaque étape et à chaque modification (après une courte pause), sur l'appareil ET dans le profil
   useEffect(() => {
-    if (!hydrated || !userId || finishing.current) return;
+    if (!hydrated || !userId || finishing.current || phase !== 'flow') return;
     const id = setTimeout(() => {
-      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, savedAt: new Date().toISOString() };
+      const d: OnboardingDraft = { v: 1, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, answers, answers3: ja, savedAt: new Date().toISOString() };
       void saveDraftLocally(userId, d);
       backend.update('profiles', { onboarding_state: d }, [eq('id', userId)]).catch(() => undefined);
-    }, 500);
+    }, 400);
     return () => clearTimeout(id);
-  }, [hydrated, userId, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests]);
+  }, [hydrated, userId, phase, step, name, journeys, pregnancy, children, reminders, consents, bottleFeeding, interests, answers, ja]);
 
-  const needsPregnancy = journeys.includes('pregnant');
-  const needsChildren = journeys.some((j) => j === 'newborn' || j === 'child' || j === 'family');
-  const steps = useMemo<Step[]>(() => ['intro', 'journeys', ...(needsPregnancy ? ['pregnancy' as Step] : []), ...(needsChildren ? ['children' as Step] : []), 'reminders', 'consents'], [needsPregnancy, needsChildren]);
-  const idx = steps.indexOf(step);
-  // Sens du dernier changement d'étape (glissement depuis la droite en avançant, depuis la gauche en revenant)
+  // Tout est facultatif à l'étape 3 : on ne crée que ce qui est confirmé (date valide ; prénom et date de l'enfant)
+  const needsPregnancy = asksPregnancy(ja) && !!pregnancy.date.trim();
+  const filledChildren = children.filter((c) => c.first_name.trim() || c.birth_date.trim());
+  const needsChildren = asksChildren(ja) && filledChildren.length > 0;
+  const steps = useMemo<Step[]>(() => [
+    'intro', 'profile', 'household', ...(asksFamily(ja) ? ['family' as Step] : []), ...(asksFeeding(ja, children) ? ['feeding' as Step] : []), 'priorities', 'consents',
+  ], [ja, children]);
+  const idx = Math.max(0, steps.indexOf(step));
+  // Sens du dernier changement d'étape (entrée depuis la droite en avançant, depuis la gauche en revenant)
   const lastIdx = useRef(idx);
   const dir = idx >= lastIdx.current ? 1 : -1;
   useEffect(() => { lastIdx.current = idx; }, [idx]);
   const next = () => setStep(steps[Math.min(idx + 1, steps.length - 1)]);
-  const prev = () => setStep(steps[Math.max(idx - 1, 0)]);
+  const prev = () => { setError(null); setStep(steps[Math.max(idx - 1, 0)]); };
+  const temps = phase === 'reveal' ? 6 : phase === 'premium' || phase === 'tour' ? 0 : TEMPS[step];
+  // Visite guidée proposée après la révélation et Premium (jamais à une nounou, jamais pendant une urgence)
+  // L'accueil doit être ouvert (Premium ou essai) : sinon la visite est gardée pour plus tard (carte de l'accueil)
+  const tourAllowed = useTourAllowed();
+  const homeOpen = useScreenOpen('/');
+  const afterPremium = () => {
+    if (tourAllowed && homeOpen) return setPhase('tour');
+    if (tourAllowed) deferTourOffer();
+    exit();
+  };
 
   function goNext() {
-    if (step === 'journeys' && !journeys.length) return setError(tr('onb.journeys.required'));
-    if (step === 'pregnancy') {
-      const v = validatePregnancy(pregnancy);
+    if (step === 'profile' && !ja.profile.length) return setError(tr('o3.profile.required'));
+    if (step === 'family') {
+      // grossesse : vérifiée seulement si une date est saisie ; enfant : seulement s'il est commencé (prénom ou date)
+      const v = needsPregnancy ? validatePregnancy(pregnancy) : { errors: {}, due: 'ok' };
       setPErrors(v.errors);
-      if (!v.due) return;
-    }
-    if (step === 'children') {
-      const all = children.map(validateChild);
+      const all = children.map((c) => (c.first_name.trim() || c.birth_date.trim() ? validateChild(c) : { errors: {}, birth: 'skip' }));
       setCErrors(all.map((a) => a.errors));
-      if (all.some((a) => !a.birth)) return;
+      if (!v.due || all.some((a) => !a.birth)) return;
     }
     setError(null);
     next();
   }
 
-  async function finish() {
-    if (finishing.current) return;
+  function startFinish() {
     if (needSignupConsents && (!adult || !terms)) return setError(tr('onb.consents.signupRequired'));
     if (!consents.health_data) return setError(tr('onb.consents.healthRequired'));
+    setError(null);
+    setPhase('reveal');
+    void finish();
+  }
+
+  /** Total de lignes attendues (fenêtres de la maison) : seulement les opérations qui auront lieu. */
+  const expectedLines = 3 + (needsPregnancy ? 1 : 0) + (needsChildren ? 1 : 0) + (journeys.length ? 1 : 0);
+
+  async function finish() {
+    if (finishing.current) return;
     finishing.current = true;
     setSaving(true);
     setError(null);
+    setLines([]);
+    const done = (key: string, text: string) => setLines((l) => (l.some((x) => x.key === key) ? l : [...l, { key, text }]));
     try {
       if (needSignupConsents) {
         await backend.rpc('record_signup_consents', { p_terms_version: LEGAL_VERSIONS.terms, p_privacy_version: LEGAL_VERSIONS.privacy, p_is_adult: true });
         setNeedSignupConsents(false);
       }
       await backend.insert('consents', (Object.entries(consents) as [ConsentPurpose, boolean][]).filter(([purpose]) => purpose !== 'terms').map(([purpose, granted]) => ({ user_id: userId, purpose, granted })));
-      const hid = await ensureHousehold(name ? tr('onb.householdName', { name }) : undefined);
+      done('consents', tr('o2.reveal.consents'));
+      const hid = await ensureHousehold(name.trim() ? tr('onb.householdName', { name: name.trim() }) : undefined);
+      done('household', tr('o2.reveal.household'));
       // Nouvel essai après une erreur : on ne recrée pas ce qui existe déjà
       // Parcours : une vraie ligne par parcours (user_journeys) ; profiles.journeys en est déduit côté serveur
       const today = todayISO();
@@ -158,44 +244,46 @@ export default function Onboarding() {
         if (!rows.some((r) => r.status === 'active' && r.type === 'pregnancy')) {
           await runOps([...(bodyJourney(rows, userId) ? closeOps(bodyJourney(rows, userId)!, 'archive', 'pregnancy', today) : []), { kind: 'insert', table: 'user_journeys', row: { user_id: userId, household_id: hid, type: 'pregnancy', pregnancy_id: pid, started_on: today } }]);
         }
+        done('pregnancy', tr('o2.reveal.pregnancy'));
       } else {
         const body = (['ttc', 'avoid', 'cycle'] as const).find((j) => journeys.includes(j));
         if (body) await runOps(planChange(await jrows(), userId, { type: body }, 'archive', today));
       }
-      let createdChildren = 0;
       if (needsChildren) {
         const existing = await backend.select<{ first_name: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
-        for (const c of children) {
+        let created = 0;
+        for (const c of filledChildren) {
           if (!c.first_name.trim()) continue;
           const v = validateChild(c);
           if (existing.some((e) => e.first_name.trim().toLowerCase() === c.first_name.trim().toLowerCase() && e.birth_date === v.birth)) continue;
           await createChild(hid, c);
-          createdChildren++;
+          created++;
         }
         // Chaque enfant du foyer suivi dans son propre parcours (bébé < 2 ans, enfant ensuite)
         const kids = await backend.select<{ id: string; birth_date: string }>({ table: 'children', filters: [eq('household_id', hid)] });
         for (const k of kids) await runOps(planChange(await jrows(), userId, { type: childJourneyType(k.birth_date, today), childId: k.id, householdId: hid }, 'archive', today)).catch(() => undefined);
-        if (journeys.includes('newborn') && kids.some((k) => k.birth_date > addDays(today, -365))) await runOps(planChange(await jrows(), userId, { type: 'postpartum' }, 'archive', today)).catch(() => undefined);
+        if (journeys.includes('newborn') && !ja.profile.includes('dad') && kids.some((k) => k.birth_date > addDays(today, -365))) await runOps(planChange(await jrows(), userId, { type: 'postpartum' }, 'archive', today)).catch(() => undefined);
+        done('children', tr('o2.reveal.children', { count: Math.max(created, filledChildren.length) }));
+      }
+      if (journeys.length) {
+        const spaces = [...new Set(answers.situations.map((s) => SITUATION_SPACE[s]))].map((x) => tr(`o2.space.${x}` as TKey));
+        done('journeys', tr('o2.reveal.spaces', { list: formatList(spaces) }));
       }
       await backend.update('privacy_settings', { analytics_enabled: consents.analytics, crash_reports_enabled: consents.crash_reports }, [{ col: 'user_id', op: 'eq', value: userId }]);
-      await backend.update('profiles', { display_name: name.trim() || null, interests, locale: getLocale(), onboarding_completed: true, onboarding_state: null }, [{ col: 'id', op: 'eq', value: userId }]);
+      await backend.update('profiles', {
+        display_name: name.trim() || null, interests, locale: getLocale(), onboarding_completed: true, onboarding_state: null,
+        ...(answers.sharing ? { family_situation: answers.sharing } : {}),
+      }, [{ col: 'id', op: 'eq', value: userId }]);
       await clearDraftLocally(userId);
-      const chosen = reminderSuggestions(journeys).filter((r) => reminders.includes(r.key));
-      if (chosen.length) {
-        await backend.insert('reminders', chosen.map((r) => ({ user_id: userId, household_id: hid, category: r.category, title: r.title, body: r.body, schedule: r.schedule, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Paris', enabled: true, deep_link: r.deep_link, journey_type: r.journey_type })));
-        await requestPermission().catch(() => undefined);
-      }
+      // Réponses du parcours (colonne 20261119000100, version 3) : RELUES par le moteur de recommandation ; jamais
+      // bloquant si le serveur n'a pas encore la colonne. Les recommandations calculées sont gardées pour mémoire.
+      const tools = recommend(facts, {}, { max: 10 }).map((r) => r.id);
+      const payload = journeyAnswersPayload(ja, { situations: answers.situations, needs: answers.needs, sharing: answers.sharing, recommendations: { tools, first_action: plan.first.key, premium: plan.premium } });
+      const saved = await backend.update('profiles', { onboarding_answers: payload, onboarding_version: 3 }, [{ col: 'id', op: 'eq', value: userId }]).then(() => true, () => false);
+      if (saved) done('answers', tr('o2.reveal.answers'));
       await qc.invalidateQueries();
       haptic('success');
-      const labels = JOURNEYS.filter((o) => journeys.includes(o.key)).map((o) => o.label);
-      setReady({
-        journeys: labels,
-        pregnancy: needsPregnancy,
-        children: needsChildren ? Math.max(createdChildren, children.filter((c) => c.first_name.trim()).length) : 0,
-        reminders: chosen.length,
-        cycle: journeys.some((j) => j === 'cycle' || j === 'ttc' || j === 'avoid'),
-        community: interests.includes('community'),
-      });
+      setRevealDone(true);
     } catch (e) {
       finishing.current = false;
       setError(e instanceof Error && e.message ? e.message : tr('onb.saveFailed'));
@@ -216,210 +304,110 @@ export default function Onboarding() {
     }
   }
 
-  const progress = (
-    <StepProgress count={steps.length} index={idx} color={t.colors.primary} track={t.colors.border} accessibilityLabel={tr('onb.progress', { step: idx + 1, total: steps.length })} />
-  );
+  function exit(route?: string) {
+    router.replace('/(tabs)');
+    if (route) router.push(route as never);
+    // Parcours « première réussite » : l'outil essayé avant l'achat s'ouvre dès que le foyer est créé
+    else void loadProgress().then((fw) => { if (fw?.openAfter) { void saveProgress({ openAfter: null }); router.push(fw.openAfter as never); } });
+  }
 
-  const footer = ready ? (
-    <Button label={tr('onb.ready.cta')} size="lg" full onPress={() => router.replace('/(tabs)')} />
+  const back = <IconButton icon="arrow-left" tone="filled" label={tr('common.back')} onPress={prev} testID="onb-back" />;
+  const footer = phase === 'tour' ? (
+    <View style={{ gap: spacing.xs }}>
+      <Button label={tr('tour.offer.start')} size="lg" full icon="compass" testID="onb-tour-start"
+        onPress={() => { router.replace('/(tabs)'); tourDispatch({ type: 'start' }); }} />
+      <Button label={tr('tour.later')} variant="secondary" size="lg" full testID="onb-tour-later" onPress={() => { deferTourOffer(); exit(); }} />
+    </View>
+  ) : phase === 'premium' ? (
+    <View style={{ gap: spacing.xs }}>
+      <Button label={tr('o2.prem.see')} size="lg" full icon="star" testID="onb-premium-see"
+        onPress={() => { if (tourAllowed) deferTourOffer(); router.replace('/(tabs)'); router.push({ pathname: '/premium', params: { from: 'onboarding' } } as never); }} />
+      <Button label={tr('o2.prem.skip')} variant="secondary" size="lg" full testID="onb-premium-skip" onPress={afterPremium} />
+    </View>
+  ) : phase === 'reveal' ? (
+    revealDone ? (
+      <View style={{ gap: spacing.xs }}>
+        <Button label={tr('common.continue')} size="lg" full testID="onb-reveal-next" onPress={() => (premium ? afterPremium() : setPhase('premium'))} />
+        <Button label={tr('o2.reveal.startWith', { action: tr(`o2.first.${plan.first.key}` as TKey) })} variant="ghost" full testID="onb-first-action" onPress={() => exit(plan.first.route)} />
+      </View>
+    ) : error ? (
+      <Row style={{ alignItems: 'center' }}>
+        <IconButton icon="arrow-left" tone="filled" label={tr('common.back')} onPress={() => { setPhase('flow'); setError(null); }} />
+        <Button label={tr('o2.reveal.retry')} size="lg" loading={saving} onPress={() => void finish()} style={{ flex: 1 }} testID="onb-retry" />
+      </Row>
+    ) : <Button label={tr('o2.reveal.working')} size="lg" full loading disabled onPress={() => undefined} />
   ) : step === 'intro' ? (
-    <Button label={tr('onb.start')} size="lg" full onPress={goNext} />
+    <View style={{ gap: spacing.xs }}>
+      <Button label={tr('o2.open.cta')} size="lg" full onPress={goNext} testID="onb-start" />
+      {isDemo ? <Button label={tr('onb.sample')} variant="ghost" icon="eye" full loading={saving} onPress={loadSample} /> : null}
+    </View>
   ) : (
-    <Row>
-      <Button label={tr('common.back')} variant="secondary" onPress={prev} style={{ flex: 1 }} />
+    <Row style={{ alignItems: 'center' }}>
+      {back}
       {step === 'consents' ? (
-        <Button label={tr('onb.go')} loading={saving} onPress={finish} style={{ flex: 2 }} />
+        <Button label={tr('o2.consents.cta')} size="lg" loading={saving} disabled={saving} onPress={startFinish} style={{ flex: 1 }} testID="onb-finish" />
       ) : (
-        <Button label={tr('common.continue')} onPress={goNext} style={{ flex: 2 }} />
+        <Button label={tr('common.continue')} size="lg" onPress={goNext} style={{ flex: 1 }} testID="onb-next" />
       )}
     </Row>
   );
 
-  if (ready) {
-    const lines: { icon: IconName; text: string }[] = [
-      ...(ready.journeys.length ? [{ icon: 'compass' as IconName, text: tr('onb.ready.journeys', { list: formatList(ready.journeys) }) }] : []),
-      ...(ready.pregnancy ? [{ icon: 'moon' as IconName, text: tr('onb.ready.pregnancy') }] : []),
-      ...(ready.children ? [{ icon: 'smile' as IconName, text: tr('onb.ready.children', { count: ready.children }) }] : []),
-      ...(ready.cycle ? [{ icon: 'calendar' as IconName, text: tr('onb.ready.cycle') }] : []),
-      { icon: 'bell' as IconName, text: tr('onb.ready.reminders', { count: ready.reminders }) },
-      ...(ready.community ? [{ icon: 'users' as IconName, text: tr('onb.ready.community') }] : []),
-      { icon: 'lock' as IconName, text: tr('onb.ready.privacy') },
-    ];
-    return (
-      <Screen stars footer={footer}>
-        <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
-          {/* Compte prêt : la pastille de confirmation apparaît en « pop », puis le résumé en cascade */}
-          <Appear kind="pop" delay={0.05} duration={0.7}>
-            <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary }}>
-              <Icon name="check" size={44} color={t.colors.primaryText} />
-            </View>
-          </Appear>
-          <Text variant="title" center accessibilityRole="header">{name.trim() ? tr('onb.ready.titleNamed', { name: name.trim() }) : tr('onb.ready.title')}</Text>
-          <Text center muted style={{ maxWidth: 340 }}>{tr('onb.ready.body')}</Text>
-        </View>
-        <Card>
-          <View style={{ gap: spacing.sm }} accessibilityRole="list">
-            {lines.map((l, i) => (
-              <StaggerItem key={l.text} index={i + 3}>
-                <Row style={{ alignItems: 'flex-start' }}>
-                  <Icon name={l.icon} color={t.colors.primary} />
-                  <Text style={{ flex: 1 }}>{l.text}</Text>
-                </Row>
-              </StaggerItem>
-            ))}
-          </View>
-        </Card>
-      </Screen>
-    );
-  }
+  if (!hydrated) return <Screen footer={null} contentStyle={demoTop}><View style={{ flex: 1 }} /></Screen>;
 
+  const childName = children.find((c) => c.first_name.trim())?.first_name.trim() ?? null;
+  const key = phase === 'flow' ? step : phase;
   return (
-    <Screen stars={step === 'intro'} footer={footer}>
-      {step !== 'intro' && progress}
-      {error ? <Banner tone="warning">{error}</Banner> : null}
-
-      <StepSwap key={step} dir={dir}>
-      {step === 'intro' && (
-        <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.xl }}>
-          <View style={{ width: 250, height: 250, borderRadius: 125, backgroundColor: palette.night, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <WeeksRing week={18} size={240}><FetusOrb growth={0.5} size={180} interactive={false} /></WeeksRing>
-          </View>
-          <Text variant="hero" center accessibilityRole="header">{tr('onb.welcome')}</Text>
-          <Text center muted style={{ maxWidth: 340 }}>
-            {tr('onb.welcomeBody', { app: BRAND.name })}
-          </Text>
-          <View style={{ alignSelf: 'stretch' }}>
-            <Field label={tr('onb.nameLabel')} optional value={name} onChangeText={setName} maxLength={40} autoCapitalize="words" />
-          </View>
-          {isDemo && <Button label={tr('onb.sample')} variant="ghost" icon="eye" loading={saving} onPress={loadSample} />}
-        </View>
-      )}
-
-      {step === 'journeys' && (
-        <View style={{ gap: spacing.sm }}>
-          <Text variant="title" accessibilityRole="header">{tr('onb.journeys.title')}</Text>
-          <Text muted>{tr('onb.journeys.body')}</Text>
-          {JOURNEYS.filter((j) => j.key !== 'avoid' && j.key !== 'ttc').map((j) => {
-            // « Suivre mon cycle » : une seule carte ; l'objectif se choisit juste en dessous
-            const BODY = ['cycle', 'avoid', 'ttc'] as Journey[];
-            const isCycle = j.key === 'cycle';
-            const sel = isCycle ? journeys.some((x) => BODY.includes(x)) : journeys.includes(j.key);
-            return (
-              <View key={j.key} style={{ gap: spacing.xs }}>
-              <Tappable
-                key={j.key}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: sel }}
-                accessibilityLabel={`${j.label}. ${j.hint}`}
-                onPress={() => { haptic('selection'); setJourneys(isCycle ? (sel ? journeys.filter((x) => !BODY.includes(x)) : [...journeys, 'cycle']) : sel ? journeys.filter((x) => x !== j.key) : [...journeys, j.key]); }}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, borderWidth: 1.4, borderColor: sel ? t.colors.primary : t.colors.border, backgroundColor: sel ? t.colors.surface : 'transparent' }}
-              >
-                <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: sel ? t.colors.primary : t.colors.surfaceAlt }}>
-                  <Icon name={j.icon} color={sel ? t.colors.primaryText : t.colors.text} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text weight="medium">{j.label}</Text>
-                  <Text variant="small" muted>{j.hint}</Text>
-                </View>
-                {sel && <Icon name="check-circle" color={t.colors.primary} />}
-              </Tappable>
-              {isCycle && sel ? (
-                <View testID="onb-objective" style={{ gap: 4, paddingLeft: spacing.md }}>
-                  <Text variant="small" weight="bold">{tr('pj.objective.title')}</Text>
-                  <Row wrap>
-                    {(['cycle', 'avoid', 'ttc'] as const).map((o) => (
-                      <Chip key={o} label={tr(`pj.choice.${o}`)} selected={journeys.includes(o)} onPress={() => setJourneys([...journeys.filter((x) => !BODY.includes(x)), o])} />
-                    ))}
-                  </Row>
-                </View>
-              ) : null}
+    <Screen footer={footer} contentStyle={demoTop}>
+      {temps > 0 ? <OnbProgress count={TOTAL_TEMPS} index={temps - 1} label={tr('o3.progress', { step: temps, total: TOTAL_TEMPS })} /> : null}
+      {/* Temps 2 à 6 : l'illustration de la situation choisie, sur le halo, reste en place d'une question à l'autre (fondu
+          enchaîné quand la situation principale change) ; seules les questions entrent et sortent. */}
+      {phase === 'flow' && step !== 'intro' ? (
+        <HeroArt name={artForAnswers(answers)} size={heroSize(win, { max: 150, min: 88, reserve: 690 })} reveal={false} testID="onb-art" style={{ marginTop: compact ? 0 : spacing.xs }} />
+      ) : null}
+      {error && phase === 'flow' ? <Banner tone="warning">{error}</Banner> : null}
+      <StepFade key={key} dir={phase === 'flow' ? dir : 1}>
+        {phase === 'reveal' ? (
+          <View style={{ gap: spacing.md }}>
+            <RevealStep lines={lines} total={expectedLines} done={revealDone} error={error}
+              title={name.trim() ? tr('o2.reveal.titleNamed', { name: name.trim() }) : tr('o2.reveal.title')} />
+            {/* 19/11/2026 : foyer à deux → « Ajouter l'autre parent à votre famille ? » (Inviter maintenant / Plus tard) */}
+            {/* 6 — ton tableau de bord : les outils choisis par le moteur, avec leurs raisons */}
+            {revealDone ? (
+              <View style={{ gap: spacing.xs }}>
+                <Text variant="label" accessibilityRole="header">{tr('o3.dash.title')}</Text>
+                <DashboardPreview facts={facts} max={6} testID="onb-reveal-tools" />
               </View>
-            );
-          })}
-          <Text weight="bold" style={{ marginTop: spacing.sm }}>{tr('onb.interests.title')}</Text>
-          <Row wrap>
-            {INTERESTS.map((it) => {
-              const on = interests.includes(it.key);
-              return (
-                <Chip key={it.key} icon={it.icon} label={interestLabel(it.key)} accessibilityLabel={`${interestLabel(it.key)}. ${interestHint(it.key)}`} selected={on} onPress={() => { haptic('selection'); setInterests(on ? interests.filter((x) => x !== it.key) : [...interests, it.key]); }} />
-              );
-            })}
-          </Row>
-        </View>
-      )}
-
-      {step === 'pregnancy' && (
-        <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">{tr('onb.pregnancy.title')}</Text>
-          <Text muted>{tr('onb.pregnancy.body')}</Text>
-          <PregnancyForm value={pregnancy} onChange={setPregnancy} errors={pErrors} />
-        </View>
-      )}
-
-      {step === 'children' && (
-        <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">{tr('onb.children.title', { count: children.length })}</Text>
-          <Text muted>{tr('onb.children.body')}</Text>
-          {children.map((c, i) => (
-            <Card key={i}>
-              <Row style={{ justifyContent: 'space-between', marginBottom: spacing.sm }}>
-                <Text weight="bold">{tr('onb.children.item', { n: i + 1 })}</Text>
-                {children.length > 1 && (
-                  <Chip label={tr('onb.children.remove')} icon="x" onPress={() => { setChildren(children.filter((_, j) => j !== i)); setCErrors(cErrors.filter((_, j) => j !== i)); }} />
-                )}
-              </Row>
-              <ChildForm value={c} onChange={(v) => setChildren(children.map((x, j) => (j === i ? v : x)))} errors={cErrors[i] ?? {}} />
-            </Card>
-          ))}
-          <Button label={tr('onb.children.add')} variant="secondary" icon="plus" onPress={() => { setChildren([...children, emptyChild()]); setCErrors([...cErrors, {}]); }} />
-        </View>
-      )}
-
-      {step === 'reminders' && (
-        <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">{tr('onb.reminders.title')}</Text>
-          <Text muted>{tr('onb.reminders.body')}</Text>
-          {!reminderSuggestions(journeys).length ? <Text variant="small" muted>{tr('onb.reminders.none')}</Text> : null}
-          <Row wrap>
-            {reminderSuggestions(journeys).map((r) => (
-              <Chip key={r.key} label={r.label} selected={reminders.includes(r.key)} onPress={() => setReminders(reminders.includes(r.key) ? reminders.filter((x) => x !== r.key) : [...reminders, r.key])} />
-            ))}
-          </Row>
-          <Banner tone="info">{tr('onb.reminders.where')}</Banner>
-        </View>
-      )}
-
-      {step === 'consents' && (
-        <View style={{ gap: spacing.md }}>
-          <Text variant="title" accessibilityRole="header">{tr('onb.consents.title')}</Text>
-          {needSignupConsents ? (
-            <Card>
-              <CheckRow label={tr('auth.signUp.adultA11y')} checked={adult} onChange={setAdult}><Text variant="small">{tr('auth.signUp.adult')} *</Text></CheckRow>
-              <CheckRow label={tr('auth.signUp.termsA11y')} checked={terms} onChange={setTerms}>
-                <Text variant="small">{tr('auth.signUp.terms')} *</Text>
-              </CheckRow>
-              <Row wrap style={{ paddingLeft: 34 }}>
-                <LegalLink doc="terms">{tr('auth.signUp.readTerms')}</LegalLink>
-                <LegalLink doc="privacy">{tr('auth.signUp.readPrivacy')}</LegalLink>
-              </Row>
-            </Card>
-          ) : null}
-          <Text muted>{tr('onb.consents.private')}</Text>
-          {(CONSENT_ROWS).map(([k, msg, required]) => [k, tr(`onb.consent.${msg}` as const), tr(`onb.consent.${msg}.desc` as const), required] as const).map(([k, title, desc, required]) => (
-            <Card key={k}>
-              <Row>
-                <View style={{ flex: 1, gap: 2 }}>
-                  <Text weight="bold">{title}{required ? ' *' : ''}</Text>
-                  <Text variant="small" muted>{desc}</Text>
-                </View>
-                <Toggle label={title} value={consents[k]} onChange={(v) => setConsents({ ...consents, [k]: v })} />
-              </Row>
-            </Card>
-          ))}
-          <Text variant="caption" muted>{tr('onb.consents.footnote')}</Text>
-        </View>
-      )}
-      </StepSwap>
+            ) : null}
+            {/* « Inviter un autre parent » : le lien d'invitation existant ; aucun droit n'est déduit des réponses */}
+            {revealDone && (ja.invite || ja.household === 'partner' || ja.household === 'separated') ? <InviteOtherParent testID="onb-invite" /> : null}
+          </View>
+        ) : phase === 'tour' ? (
+          <TourOfferStep />
+        ) : phase === 'premium' ? (
+          <PremiumStep features={plan.premium} childName={childName} />
+        ) : step === 'intro' ? (
+          <OpeningStep compact={compact} />
+        ) : step === 'profile' ? (
+          <ProfileStep value={ja.profile} name={name} onName={setName} onChange={(profile) => { setError(null); setJa((a) => ({ ...a, profile })); }} />
+        ) : step === 'household' ? (
+          <HouseholdChoiceStep value={ja.household} invite={ja.invite} onChange={(household) => setJa((a) => ({ ...a, household }))} onInvite={(invite) => setJa((a) => ({ ...a, invite }))} />
+        ) : step === 'family' ? (
+          <FamilyStep answers={ja} pregnancy={pregnancy} onPregnancy={setPregnancy} pErrors={pErrors} kids={children} cErrors={cErrors}
+            onChildren={(list) => { setChildren(list.length ? list : [emptyChild()]); setCErrors(list.map(() => ({}))); }} />
+        ) : step === 'feeding' ? (
+          <FeedingStep value={ja.feeding} onChange={(feeding) => setJa((a) => ({ ...a, feeding }))} />
+        ) : step === 'priorities' ? (
+          <PrioritiesStep value={ja.priorities} onChange={(priorities) => setJa((a) => ({ ...a, priorities }))} />
+        ) : (
+          <View style={{ gap: spacing.lg }}>
+            <View style={{ gap: spacing.sm }}>
+              <StepTitle title={tr('o3.dash.title')} lead={tr('o3.dash.lead')} />
+              <DashboardPreview facts={facts} max={6} />
+            </View>
+            <ConsentsStep consents={consents} onConsents={setConsents} needSignup={needSignupConsents} adult={adult} terms={terms} onAdult={setAdult} onTerms={setTerms} />
+          </View>
+        )}
+      </StepFade>
     </Screen>
   );
 }

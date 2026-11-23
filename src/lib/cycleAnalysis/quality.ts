@@ -36,10 +36,10 @@ export const QUALITY_THRESHOLDS = {
 };
 
 const QUALITY_MESSAGES_FR: Record<QualityIssue, string> = {
-  too_dark: 'Photo trop sombre : placez-vous près d’une fenêtre ou sous une lumière blanche, sans flash.',
-  too_bright: 'Photo surexposée : évitez le flash et les reflets directs sur la fenêtre de résultat.',
-  blurry: 'Photo floue : tenez le téléphone immobile, à 10–15 cm, et touchez l’écran pour faire la mise au point.',
-  too_small: 'Image trop petite : rapprochez-vous pour que la fenêtre de résultat occupe une bonne partie de la photo.',
+  too_dark: 'Photo trop sombre : place-toi près d’une fenêtre ou sous une lumière blanche, sans flash.',
+  too_bright: 'Photo surexposée : évite le flash et les reflets directs sur la fenêtre de résultat.',
+  blurry: 'Photo floue : tiens le téléphone immobile, à 10–15 cm, et touche l’écran pour faire la mise au point.',
+  too_small: 'Image trop petite : rapproche-toi pour que la fenêtre de résultat occupe une bonne partie de la photo.',
 };
 
 const QUALITY_MESSAGES_EN: Record<QualityIssue, string> = {

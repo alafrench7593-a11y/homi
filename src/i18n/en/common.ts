@@ -4,6 +4,7 @@ import type { Messages } from '../types';
 export const common: Messages<typeof fr> = {
   'common.loadingA11y': 'Loading…',
   'common.ok': 'OK',
+  'common.next': 'Next',
   'common.add': 'Add',
   'common.showPassword': 'Show password',
   'common.optional': 'optional',

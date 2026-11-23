@@ -15,6 +15,13 @@ import { backend, type ChangeSpec } from '@/lib/backend';
 export const HOUSEHOLD_TABLES = [
   'bottles', 'breastfeeds', 'pumpings', 'diapers', 'sleeps', 'meals', 'child_observations', 'child_measurements',
   'bottle_timers', 'appointments', 'family_tasks', 'care_shifts', 'care_requests', 'family_events', 'checklist_items',
+  // Courses et stocks (15/11/2026) : publiés par 20261115000200_courses_stocks.sql
+  'shopping_lists', 'shopping_items', 'household_stocks',
+  // Espace nounou (21/11/2026) : carnet, photos et messages de la garde (20261121000100_espace_nounou.sql)
+  'childcare_events', 'childcare_photos', 'childcare_messages',
+  // « Se comprendre » (22/11/2026, 20261122000200_se_comprendre_temps_reel.sql) : la RLS n'envoie un message qu'à son
+  // auteur et à son destinataire ; le filtre par foyer ne fait que réduire le flux
+  'couple_messages',
 ] as const;
 export const PERSONAL_TABLES = ['notifications'] as const;
 
@@ -39,6 +46,29 @@ export function batcher(flush: (tables: string[]) => void, delayMs = 400) {
   };
 }
 
+/**
+ * Retour du temps réel après une coupure (réseau instable, serveur redémarré, téléphone en veille) : les changements
+ * faits pendant la coupure ne seront jamais annoncés. Au premier « en direct » qui suit une perte, on relit donc tout
+ * ce que l'abonnement couvre. Le tout premier abonnement ne relit rien (les écrans viennent de charger).
+ */
+export function reconnectWatcher(onResume: () => void) {
+  let wasLive = false;
+  let lost = false;
+  return (status: 'live' | 'offline') => {
+    if (status === 'live') {
+      if (wasLive && lost) onResume();
+      wasLive = true;
+      lost = false;
+    } else if (wasLive) {
+      lost = true;
+    }
+  };
+}
+
+/** Le temps réel est-il « en direct » ? Les écrans qui se relisaient régulièrement (« Se comprendre ») s'en passent alors. */
+let realtimeLive = false;
+export const isRealtimeLive = () => realtimeLive;
+
 let wired = false;
 /** Premier plan et réseau : sur téléphone, React Query ne le sait pas tout seul. */
 export function wireFocusAndOnline() {
@@ -58,12 +88,14 @@ export function useRealtimeSync(householdId: string | null | undefined, userId: 
   const qc = useQueryClient();
   const [live, setLive] = useState(false);
   useEffect(() => {
-    if (!householdId || !userId || !backend.subscribeChanges) { setLive(false); return; }
+    if (!householdId || !userId || !backend.subscribeChanges) { setLive(false); realtimeLive = false; return; }
     const b = batcher((tables) => {
       void qc.invalidateQueries({ predicate: (q) => tables.some((t) => q.queryKey.includes(t)) });
     });
-    const stop = backend.subscribeChanges(changeSpecs(householdId, userId), (t) => b.push(t), (s) => setLive(s === 'live'));
-    return () => { b.cancel(); stop(); setLive(false); };
+    const specs = changeSpecs(householdId, userId);
+    const watch = reconnectWatcher(() => specs.forEach((sp) => b.push(sp.table)));
+    const stop = backend.subscribeChanges(specs, (t) => b.push(t), (s) => { setLive(s === 'live'); realtimeLive = s === 'live'; watch(s); });
+    return () => { b.cancel(); stop(); setLive(false); realtimeLive = false; };
   }, [householdId, userId, qc]);
   return live;
 }

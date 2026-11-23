@@ -144,7 +144,7 @@ export const tools6: Messages<typeof fr> = {
   'rc.official': 'See all recalls on RappelConso',
   'rc.history': 'My scanner history',
 
-  'kr.intro': 'One picture per step, which your child taps once it’s done. They can see where they are without being told again: calmer mornings and evenings.',
+  'kr.intro': 'One picture per step, printed and put up where it happens (bathroom, hallway). Your child sees where they are without being told again, and without a screen: calmer mornings and evenings.',
   'kr.none': 'No routine yet',
   'kr.noneD': 'Start with the morning or evening one: the steps are already suggested, just adapt them.',
   'kr.new': 'New routine',
@@ -258,8 +258,6 @@ export const tools6: Messages<typeof fr> = {
   'ai.home.inputA11y': 'Your question for the AI assistant',
   'ai.home.send': 'Send the question',
   'ai.home.disclaimer': 'Information, not a diagnosis. Emergency: call 15 or 112.',
-  'ai.profile.sub': 'Ask a question, any time',
-  'ai.profile.history': 'My conversations with the assistant',
   'ai.demo.left': { one: 'Demo: {count} question left today (out of {limit}).', other: 'Demo: {count} questions left today (out of {limit}).' },
   'ai.demo.noneLeft': 'Demo questions used up for today: create a free account to continue.',
   'ai.demo.placeholderDone': 'Come back tomorrow, or create an account',

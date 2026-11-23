@@ -1,11 +1,11 @@
 /**
  * Mon cycle : vue d'ensemble, enregistrement des règles (5 niveaux de flux, dates passées, modification),
- * historique, tests, et accès à tout le suivi (calendrier, symptômes, pertes, fiches, saignements, journal,
- * statistiques, rappels, export, confidentialité).
+ * historique, tests, et raccourcis vers les outils du suivi (rendus depuis le registre central par `ToolLinks`),
+ * avec un accès nommé à toute la catégorie « Cycle et fertilité ».
  * Les dates calculées sont TOUJOURS des estimations : elles ne garantissent rien et ne remplacent pas une contraception.
  * Parcours « concevoir » ou « éviter » : leur écran dédié s'ouvre d'abord (sauf ?all=1, depuis ces écrans).
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -25,45 +25,38 @@ import { estimateCycle } from '@/lib/domain/cycle';
 import { cycleDayOn, FLOWS, symptomKeysOf } from '@/lib/domain/cycleV2';
 import { toFrDate } from '@/lib/validation';
 import type { PeriodEntry } from '@/lib/types';
-import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette, type CycleIconName } from '@/features/cycle/kit';
+import { Choices, CycleIcon, Glass, IconBadge, Ink, Rise, useCyclePalette } from '@/features/cycle/kit';
+import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { fmtDay } from '@/features/cycle/format';
 import { CycleRing, ringData } from '@/features/cycle/CycleRing';
 import { GoldCycleRing } from '@/features/cycle/GoldCycleRing';
 import { QuickToday } from '@/features/cycle/QuickToday';
 import { AdviceCard } from '@/features/cycle/AdviceCard';
 import { HomeCycleCard } from '@/features/cycle/HomeCycleCard';
+import { CycleWeek } from '@/features/cycleTrack/CycleOverview';
 import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { rank } from '@/lib/advice/types';
 import { uuid } from '@/lib/uuid';
 import { formatNumber, formatUnit, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 type TestKind = 'ovulation_tests' | 'pregnancy_tests';
 const TEST_RESULTS: Record<TestKind, string[]> = { ovulation_tests: ['negative', 'positive', 'peak', 'invalid'], pregnancy_tests: ['negative', 'positive', 'faint', 'invalid'] };
 
-const SECTIONS: { key: string; icon: CycleIconName; href: string }[] = [
-  { key: 'advice', icon: 'guide', href: '/cycle/advice' },
-  { key: 'calendar', icon: 'calendar', href: '/cycle/calendar' },
-  { key: 'symptoms', icon: 'symptoms', href: '/cycle/symptoms' },
-  { key: 'pain', icon: 'pain', href: '/cycle/pain' },
-  { key: 'intimacy', icon: 'privacy', href: '/cycle/intimacy' },
-  { key: 'discharge', icon: 'discharge', href: '/cycle/discharge' },
-  { key: 'guides', icon: 'guide', href: '/cycle/guides' },
-  { key: 'bleeding', icon: 'bleeding', href: '/cycle/bleeding' },
-  { key: 'journal', icon: 'journal', href: '/cycle/journal' },
-  { key: 'stats', icon: 'stats', href: '/cycle/stats' },
-  { key: 'fertility', icon: 'ovulation', href: '/fertility/body' },
-  { key: 'reminders', icon: 'reminders', href: '/settings/reminders' },
-  { key: 'export', icon: 'export', href: '/cycle/export' },
-  { key: 'privacy', icon: 'privacy', href: '/cycle/privacy' },
-  { key: 'emergency', icon: 'guide', href: '/cycle/emergency' },
-  { key: 'share', icon: 'privacy', href: '/cycle/share' },
-  { key: 'month', icon: 'stats', href: '/cycle/month' },
+/**
+ * Raccourcis de « Mon cycle » : le menu ne garde que le CHOIX et l'ORDRE (identifiants du registre central) ; nom,
+ * description, pictogramme, destination, accès et favori viennent du catalogue (`ToolLinks`). Tout le reste du suivi
+ * est dans la catégorie complète, à un appui (« Tous les outils du cycle et de la fertilité »).
+ */
+const CYCLE_SHORTCUTS = ['cycle_calendar', 'cycle_symptoms', 'cycle_pain', 'cycle_month', 'cycle_advice', 'reminders'] as const;
+/** Actions propres à cet écran (réglages du suivi, information d'urgence) : ce ne sont pas des outils du catalogue. */
+const CYCLE_ACTIONS: { key: string; label: TKey; icon: 'share-2' | 'lock' | 'alert-circle'; href: string }[] = [
+  { key: 'share', label: 'cy.nav.share', icon: 'share-2', href: '/cycle/share' },
+  { key: 'privacy', label: 'cy.nav.privacy', icon: 'lock', href: '/cycle/privacy' },
+  { key: 'emergency', label: 'cy.nav.emergency', icon: 'alert-circle', href: '/cycle/emergency' },
 ];
-
-/** Rubriques visibles d'emblée ; les autres s'ouvrent d'un geste (écran allégé). */
-const ESSENTIAL = ['calendar', 'month', 'advice', 'reminders', 'share', 'privacy'];
 
 const history0 = (list: PeriodEntry[]) => [...list].sort((a, b) => b.start_date.localeCompare(a.start_date));
 
@@ -114,6 +107,15 @@ function CycleHub() {
     setEditing(p); setStart(toFrDate(p.start_date)); setEnd(p.end_date ? toFrDate(p.end_date) : ''); setFlow(p.flow); setNote(p.note ?? ''); setErrors({});
     haptic('selection');
   }
+  // Lien direct vers la saisie des règles d'un cycle (barres de Statistiques / Résumé du mois : `?period=<id>`) :
+  // le formulaire de correction existant s'ouvre une fois sur elle, puis l'adresse est nettoyée.
+  const { period: focusPeriod } = useLocalSearchParams<{ period?: string }>();
+  useEffect(() => {
+    const p = focusPeriod ? entries.find((x) => x.id === focusPeriod) : undefined;
+    if (!p) return;
+    edit(p);
+    router.setParams({ period: undefined } as never);
+  }, [focusPeriod, entries]); // eslint-disable-line react-hooks/exhaustive-deps
   function resetForm() { setEditing(null); setStart(toFrDate(today)); setEnd(''); setFlow(null); setNote(''); setErrors({}); }
 
   async function savePeriod() {
@@ -183,7 +185,6 @@ function CycleHub() {
   const urgentAdvice = advice.filter((a) => rank(a.priority) >= rank('prompt') && daysBetween(a.event.date, today) <= 3);
   const freshCount = advice.filter(isNew).length;
 
-  const [allSections, setAllSections] = useState(false);
   const [ringDetail, setRingDetail] = useState(false);
   const recentSymptoms = (symptoms ?? []).slice(0, 3).flatMap((s) => symptomKeysOf(s)).slice(0, 4);
   const history = history0(entries);
@@ -230,6 +231,9 @@ function CycleHub() {
 
       {/* Aujourd'hui en un geste : flux, symptômes fréquents, humeur — chaque touche enregistre */}
       <QuickToday openPeriod={open ?? null} />
+
+      {/* Ma semaine : jour choisi (adresse « ?day= »), suivis notés ce jour-là → chacun ouvre son app sur ce jour */}
+      <CycleWeek />
 
       {/* Détail de la roue (ovulation estimée, jours mesurés, fiabilité) : à la demande */}
       {ring ? (
@@ -291,20 +295,12 @@ function CycleHub() {
         </Glass>
       </Rise>
 
-      {/* Toutes les rubriques (grille qui passe à la ligne : jamais de libellé coupé) */}
+      {/* Outils du suivi : rendus depuis le registre central ; accès nommé à la catégorie complète */}
       <Rise delay={60}>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
-          {SECTIONS.filter((s) => allSections || ESSENTIAL.includes(s.key)).map((s) => (
-            <View key={s.key} style={{ flexGrow: 1, flexBasis: 140, maxWidth: '100%' }}>
-              <Glass onPress={() => router.push(s.href as never)} accessibilityLabel={tr(`cy.nav.${s.key}` as 'cy.nav.calendar')} accessibilityHint={tr(`cy.nav.${s.key}.hint` as 'cy.nav.calendar.hint')}>
-                <CycleIcon name={s.icon} color={c.mauve} />
-                <Ink weight="bold">{tr(`cy.nav.${s.key}` as 'cy.nav.calendar')}</Ink>
-                <Ink variant="caption" soft>{tr(`cy.nav.${s.key}.hint` as 'cy.nav.calendar.hint')}</Ink>
-              </Glass>
-            </View>
-          ))}
+        <ToolLinks ids={CYCLE_SHORTCUTS} allOf="cycle" title={tr('cy.overview.tools')} testID="cycle-tools" />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.sm }}>
+          {CYCLE_ACTIONS.map((x) => <Chip key={x.key} icon={x.icon} label={tr(x.label)} onPress={() => router.push(x.href as never)} testID={`cycle-action-${x.key}`} />)}
         </View>
-        <Button label={allSections ? tr('cy.nav.less') : tr('cy.nav.more', { count: SECTIONS.length - ESSENTIAL.length })} icon={allSections ? 'chevron-up' : 'grid'} variant="ghost" onPress={() => setAllSections((v) => !v)} testID="cycle-sections-toggle" />
       </Rise>
 
       {/* Règles */}
@@ -324,8 +320,8 @@ function CycleHub() {
       <HistoryHeader title={tr('cy.history')} count={history.length || undefined} />
       {periodsQ.isLoading && !periodsQ.data ? <Skeleton rows={2} /> : periodsQ.isError && !periodsQ.data ? <ErrorView error={periodsQ.error} onRetry={() => void periodsQ.refetch()} /> : null}
       {!history.length && !periodsQ.isLoading ? <Ink soft>{tr('cy.history.empty')}</Ink> : null}
-      {history.slice(0, 24).map((p) => (
-        <Glass key={p.id}>
+      <MotionList style={{ gap: spacing.md }}>{history.slice(0, 24).map((p) => (
+        <MotionItem key={p.id}><Glass key={p.id}>
           <Row style={{ alignItems: 'flex-start' }}>
             <CycleIcon name="period" color={c.period} />
             <View style={{ flex: 1, gap: 2 }}>
@@ -338,8 +334,8 @@ function CycleHub() {
             <Button label={tr('common.edit')} size="sm" variant="ghost" onPress={() => edit(p)} />
             <Button label={tr('common.delete')} size="sm" variant="ghost" loading={busy === `del-${p.id}`} onPress={() => remove('period_entries', p.id, tr('cy.what.period'))} />
           </View>
-        </Glass>
-      ))}
+        </Glass></MotionItem>
+      ))}</MotionList>
 
       {/* Tests (saisie manuelle ; la lecture par photo est dans Fertilité) */}
       <Glass>
@@ -349,12 +345,12 @@ function CycleHub() {
         <Ink variant="caption" soft>{testKind === 'pregnancy_tests' ? tr('cy.test.pregnancyNote') : tr('cy.test.ovulationNote')}</Ink>
         <Button label={tr('cy.test.save')} variant="secondary" loading={busy === 'test'} onPress={saveTest} full />
         <Button label={tr('cy.test.photo')} icon="camera" variant="ghost" onPress={() => router.push(`/fertility/test/${testKind === 'ovulation_tests' ? 'ovulation' : 'pregnancy'}` as never)} full />
-        {(tests ?? []).slice(0, 8).map((x) => (
-          <Row key={x.id} style={{ justifyContent: 'space-between' }}>
+        <MotionList>{(tests ?? []).slice(0, 8).map((x) => (
+          <MotionItem key={x.id}><Row key={x.id} style={{ justifyContent: 'space-between' }}>
             <Ink variant="small" style={{ flex: 1 }}>{`${tr(`cy.test.r.${x.result}` as 'cy.test.r.negative')} · ${fmtDay(x.tested_at.slice(0, 10))}`}</Ink>
             <Button label={tr('common.delete')} size="sm" variant="ghost" loading={busy === `del-${x.id}`} onPress={() => remove(testKind, x.id, tr('cy.what.test'))} />
-          </Row>
-        ))}
+          </Row></MotionItem>
+        ))}</MotionList>
       </Glass>
     </Screen>
   );

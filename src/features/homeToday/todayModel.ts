@@ -1,0 +1,235 @@
+/**
+ * « Aujourd'hui dans le foyer » (Accueil) : logique pure, testée (src/__tests__/homeToday.test.ts).
+ * Aucune donnée inventée : tout vient des tables existantes (family_tasks — tâches simples ET missions —,
+ * family_events, appointments, care_shifts, custody_plans / custody_exceptions).
+ * Les droits affichés ici ne décident de rien : le serveur tranche (mission_respond, politiques du foyer).
+ * Ils servent seulement à ne pas proposer « Terminer » à quelqu'un qui ne le peut pas (la mission d'un autre).
+ */
+import type { CareShift, FamilyTask } from '@/lib/domain/familyLoad';
+import { isMission, isTerminal, nextState, viewerOf, type Mission, type MissionState } from '@/lib/domain/missions';
+import { addDays, atLocal, dayKey, itemsBetween, type CalendarItem, type FamilyEvent } from '@/lib/domain/calendar';
+import { custodyDays, type CustodyException, type Side } from '@/lib/domain/custody';
+
+/** Statut affiché d'une ligne : état fin d'une mission, ou statut d'une tâche simple. */
+export type TodayStatus = MissionState | 'todo' | 'open';
+
+export type TaskLike = FamilyTask & Partial<Pick<Mission, 'mission_state' | 'all_day' | 'version'>>;
+
+export interface TodayTask {
+  id: string;
+  title: string;
+  kind: 'mission' | 'task';
+  /** Personne qui s'en charge (null : à prendre). */
+  ownerId: string | null;
+  /** Personne qui l'a créée / demandée (mission : la demandeuse). */
+  creatorId: string | null;
+  /** Échéance ISO (null : dans la journée, sans heure). */
+  dueAt: string | null;
+  /** Heure significative (échéance aujourd'hui, pas « toute la journée »). */
+  timed: boolean;
+  /** Échéance d'un jour précédent, pas encore faite. */
+  late: boolean;
+  status: TodayStatus;
+  done: boolean;
+  /** Mission qui attend MA réponse (à accepter / reportée, dont je suis destinataire ou à prendre). */
+  awaitsMe: boolean;
+  /** Je peux la terminer d'ici (destinataire d'une mission, ou tâche simple à moi / à prendre avec le droit d'écrire). */
+  canComplete: boolean;
+  /** Je peux l'accepter d'ici (mission à accepter qui m'attend). */
+  canAccept: boolean;
+  version?: number;
+  rank: number;
+  raw: TaskLike;
+}
+
+const startOfDay = (now: Date) => atLocal(dayKey(now)).getTime();
+const endOfDay = (now: Date) => atLocal(addDays(dayKey(now), 1)).getTime();
+
+/** Une tâche fait-elle partie de la journée ? (même règle que « Aujourd'hui » de l'organisation familiale) */
+export function isToday(t: TaskLike, now: Date): boolean {
+  if (t.status === 'cancelled' || t.mission_state === 'cancelled') return false;
+  // Mission refusée : hors de la journée tant que la personne qui l'a demandée n'a pas décidé de la suite (comme l'agenda)
+  if (t.mission_state === 'declined') return false;
+  if (t.status === 'done') return !!t.done_at && Date.parse(t.done_at) >= startOfDay(now) && Date.parse(t.done_at) < endOfDay(now);
+  if (!t.due_at) return true;
+  return Date.parse(t.due_at) < endOfDay(now);
+}
+
+/**
+ * Peut-on terminer d'ici ? Mission : seulement son destinataire (ou n'importe qui sauf l'autrice si elle est « à prendre »),
+ * jamais la mission de quelqu'un d'autre. Tâche simple : la mienne ou une tâche à prendre, si j'ai le droit d'écrire.
+ */
+export function canCompleteTask(t: TaskLike, me: string | null | undefined, canEdit: boolean): boolean {
+  if (!me) return false;
+  if (isMission(t)) {
+    if (isTerminal(t.mission_state) || !nextState(t.mission_state, 'complete')) return false;
+    const v = viewerOf(t, me);
+    return v === 'recipient' || v === 'open';
+  }
+  if (t.status !== 'todo' || !canEdit) return false;
+  return !t.assignee_id || t.assignee_id === me;
+}
+
+export function awaitsMyAnswer(t: TaskLike, me: string | null | undefined): boolean {
+  if (!me || !isMission(t)) return false;
+  if (t.mission_state !== 'pending' && t.mission_state !== 'postponed') return false;
+  const v = viewerOf(t, me);
+  return v === 'recipient' || v === 'open';
+}
+
+export function statusOf(t: TaskLike): TodayStatus {
+  if (isMission(t)) return t.mission_state;
+  if (t.status === 'done') return 'done';
+  return t.assignee_id ? 'todo' : 'open';
+}
+
+/**
+ * Tâches et missions du jour, triées : d'abord ce qui attend ma réponse, puis ce qui est à moi, puis le reste du foyer,
+ * puis ce qui est déjà fait aujourd'hui. Dans chaque groupe : en retard, puis à l'heure, puis « dans la journée ».
+ */
+export function todayTasks(tasks: TaskLike[], me: string | null | undefined, now: Date, opts: { canEdit: boolean }): TodayTask[] {
+  const sod = startOfDay(now);
+  const out = tasks.filter((t) => isToday(t, now)).map((t): TodayTask => {
+    const status = statusOf(t);
+    const done = status === 'done';
+    const awaitsMe = !done && awaitsMyAnswer(t, me);
+    const canComplete = !done && canCompleteTask(t, me, opts.canEdit);
+    const mine = !!me && t.assignee_id === me;
+    const late = !done && !!t.due_at && Date.parse(t.due_at) < sod;
+    const timed = !!t.due_at && !t.all_day && Date.parse(t.due_at) >= sod;
+    const rank = done ? 3 : awaitsMe ? 0 : mine || canComplete ? 1 : 2;
+    return {
+      id: t.id, title: t.title, kind: isMission(t) ? 'mission' : 'task', ownerId: t.assignee_id, creatorId: t.created_by ?? null, dueAt: t.due_at, timed, late, status, done, awaitsMe,
+      canComplete, canAccept: awaitsMe && isMission(t) && !!nextState(t.mission_state, 'accept'), version: t.version, rank, raw: t,
+    };
+  });
+  return out.sort((a, b) => a.rank - b.rank
+    || (a.done && b.done ? (b.raw.done_at ?? '').localeCompare(a.raw.done_at ?? '') : 0)
+    || Number(b.late) - Number(a.late)
+    || Number(!a.dueAt || !a.timed) - Number(!b.dueAt || !b.timed)
+    || (a.dueAt ?? '').localeCompare(b.dueAt ?? '')
+    || a.raw.created_at.localeCompare(b.raw.created_at));
+}
+
+/** La ligne « à faire maintenant », candidate à l'état mis en avant : ce qui m'attend, sinon ma prochaine tâche. */
+export function emphasisId(list: TodayTask[]): string | null {
+  const first = list[0];
+  return first && first.rank <= 1 && !first.done ? first.id : null;
+}
+
+/** Rendez-vous et événements du jour encore à venir (ou en cours), journées entières comprises. */
+export function todayAgenda(s: { events?: FamilyEvent[]; appointments?: Parameters<typeof itemsBetween>[0]['appointments']; activities?: Parameters<typeof itemsBetween>[0]['activities'] }, now: Date): CalendarItem[] {
+  const from = atLocal(dayKey(now));
+  const to = atLocal(addDays(dayKey(now), 1));
+  return itemsBetween({ events: s.events ?? [], appointments: s.appointments ?? [], tasks: [], shifts: [], activities: s.activities ?? [] }, from, to)
+    .filter((i) => i.allDay || Date.parse(i.ends) > now.getTime());
+}
+
+/** Relais du jour : relais de nuit qui commence aujourd'hui, temps pour soi qui touche la journée (hors annulés). */
+export function todayShifts(shifts: CareShift[], now: Date): CareShift[] {
+  const a = startOfDay(now);
+  const b = endOfDay(now);
+  return shifts
+    .filter((s) => s.status !== 'cancelled')
+    .filter((s) => (s.kind === 'night' ? Date.parse(s.starts_at) >= a && Date.parse(s.starts_at) < b : Date.parse(s.starts_at) < b && Date.parse(s.ends_at) > a))
+    .sort((x, y) => x.starts_at.localeCompare(y.starts_at));
+}
+
+export interface CustodyPlanToday { id: string; child_id: string | null; label_a: string; label_b: string; cycle: string; anchor_on: string; handover_time: string | null; handover_place: string | null; active: boolean }
+export interface CustodyToday { planId: string; childId: string | null; side: Side; where: string; handover: boolean; from: string | null; time: string | null; place: string | null }
+
+/** Garde alternée : chez qui aujourd'hui, et si l'enfant change de maison ce jour-là (rythme + exceptions). */
+export function custodyToday(plans: CustodyPlanToday[], exceptions: (CustodyException & { plan_id?: string })[], now: Date): CustodyToday[] {
+  const day = dayKey(now);
+  return plans.filter((p) => p.active).map((p) => {
+    const ex = exceptions.filter((e) => !e.plan_id || e.plan_id === p.id);
+    const d = custodyDays(p, day, 1, ex)[0];
+    const label = (s: Side) => (s === 'A' ? p.label_a : p.label_b);
+    return {
+      planId: p.id, childId: p.child_id, side: d.side, where: label(d.side), handover: d.handover, from: d.handover ? label(d.side === 'A' ? 'B' : 'A') : null,
+      time: d.handover && p.handover_time ? p.handover_time.slice(0, 5) : null, place: d.handover ? p.handover_place : null,
+    };
+  });
+}
+
+// ------------------------------------------------------------------ journée du profil affiché (17/11/2026)
+/**
+ * Profil pour lequel la journée est affichée. Les tâches n'ont pas d'enfant rattaché (family_tasks : un adulte
+ * responsable) : elles restent celles du foyer, sauf pour « Moi » où l'on ne garde que ce qui me concerne.
+ */
+export type TodayProfile =
+  | { kind: 'all' }
+  | { kind: 'child'; childId: string }
+  | { kind: 'pregnancy'; pregnancyId: string }
+  | { kind: 'me'; userId: string | null | undefined };
+
+/** Événement familial : celui de l'enfant affiché, ou un événement de toute la famille (sans enfant rattaché). */
+/** Séance d'activité extrascolaire (136) : tout le foyer, ou l'enfant affiché. */
+export const activityForProfile = (a: { childId: string }, p: TodayProfile): boolean => p.kind === 'all' || (p.kind === 'child' && a.childId === p.childId);
+
+export const eventForProfile = (e: Pick<FamilyEvent, 'child_id'>, p: TodayProfile): boolean =>
+  p.kind === 'all' ? true : p.kind === 'child' ? !e.child_id || e.child_id === p.childId : !e.child_id;
+
+/** Rendez-vous : celui de l'enfant affiché ; grossesse : les miens et ceux de la grossesse ; moi : les miens seulement. */
+export function appointmentForProfile(a: { child_id?: string | null; pregnancy_id?: string | null }, p: TodayProfile): boolean {
+  if (p.kind === 'all') return true;
+  if (p.kind === 'child') return a.child_id === p.childId;
+  if (a.child_id) return false;
+  return p.kind === 'pregnancy' ? !a.pregnancy_id || a.pregnancy_id === p.pregnancyId : !a.pregnancy_id;
+}
+
+/** Relais : nuit auprès de l'enfant pour un profil enfant ; pour « Moi » et la grossesse, seulement les miens. */
+export const shiftForProfile = (s: Pick<CareShift, 'kind' | 'user_id'>, p: TodayProfile, me: string | null | undefined): boolean =>
+  p.kind === 'all' ? true : p.kind === 'child' ? s.kind === 'night' : s.user_id === me;
+
+/** Garde alternée : seulement pour l'enfant concerné (ou un rythme commun à tous) ; jamais pour « Moi » ni la grossesse. */
+export const custodyForProfile = (c: Pick<CustodyToday, 'childId'>, p: TodayProfile): boolean =>
+  p.kind === 'all' ? true : p.kind === 'child' ? !c.childId || c.childId === p.childId : false;
+
+/** Tâches et missions : « Moi » ne garde que les miennes, celles à prendre et celles que j'ai demandées. */
+export const taskForProfile = (x: Pick<TodayTask, 'ownerId' | 'creatorId' | 'awaitsMe'>, p: TodayProfile): boolean =>
+  p.kind !== 'me' ? true : !x.ownerId || x.ownerId === p.userId || x.awaitsMe || x.creatorId === p.userId;
+
+export interface TodayModel { tasks: TodayTask[]; agenda: CalendarItem[]; shifts: CareShift[]; custody: CustodyToday[] }
+export const isEmptyToday = (m: TodayModel) => !m.tasks.length && !m.agenda.length && !m.shifts.length && !m.custody.length;
+
+/** Résumé chiffré pour l'en-tête et les lecteurs d'écran : à faire (non faites) et faites aujourd'hui. */
+export function todayCounts(list: TodayTask[]) {
+  return { todo: list.filter((x) => !x.done).length, done: list.filter((x) => x.done).length, awaiting: list.filter((x) => x.awaitsMe).length };
+}
+
+/**
+ * Agenda lisible de l'accueil (16/11/2026) : UNE ligne par élément, dans l'ordre de la journée.
+ * Tâches et missions (sauf le point focal, déjà montré au-dessus), rendez-vous et événements, relais, garde.
+ * Ordre : en retard ; toute la journée (garde, journées entières) ; à l'heure, chronologiquement ; « dans la
+ * journée » (sans heure) ; puis ce qui est déjà fait aujourd'hui (le plus récent d'abord).
+ */
+export type TimelineEntry =
+  | { kind: 'task'; key: string; sort: number; task: TodayTask }
+  | { kind: 'event'; key: string; sort: number; item: CalendarItem }
+  | { kind: 'shift'; key: string; sort: number; shift: CareShift }
+  | { kind: 'custody'; key: string; sort: number; custody: CustodyToday };
+
+const LATE = -3e15;
+const ALL_DAY = -2e15;
+const UNTIMED = 9e15;
+const DONE = 9.5e15;
+
+export function todayTimeline(m: TodayModel, opts: { exclude?: string | null; now: Date }): TimelineEntry[] {
+  const out: TimelineEntry[] = [];
+  const sod = startOfDay(opts.now);
+  for (const x of m.tasks) {
+    if (x.id === opts.exclude) continue;
+    const sort = x.done ? DONE - Date.parse(x.raw.done_at ?? x.raw.created_at) / 1e3
+      : x.late ? LATE + Date.parse(x.dueAt ?? '') / 1e3
+        : x.timed && x.dueAt ? Date.parse(x.dueAt) : UNTIMED + x.rank;
+    out.push({ kind: 'task', key: `task:${x.id}`, sort, task: x });
+  }
+  for (const c of m.custody) {
+    const [h, mi] = (c.time ?? '').split(':').map(Number);
+    out.push({ kind: 'custody', key: `custody:${c.planId}`, sort: c.time ? sod + (h * 60 + mi) * 60_000 : ALL_DAY, custody: c });
+  }
+  for (const i of m.agenda) out.push({ kind: 'event', key: i.key, sort: i.allDay ? ALL_DAY + 1 : Date.parse(i.starts), item: i });
+  for (const s of m.shifts) out.push({ kind: 'shift', key: `${s.kind}:${s.id}`, sort: Date.parse(s.starts_at), shift: s });
+  return out.sort((a, b) => a.sort - b.sort || a.key.localeCompare(b.key));
+}

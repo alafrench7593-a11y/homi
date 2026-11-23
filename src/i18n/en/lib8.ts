@@ -101,7 +101,7 @@ export const lib8: Messages<typeof fr> = {
   "l8.np.askBody": "{reason}\n\nYour phone will ask for permission to send notifications. You can withdraw it at any time.",
   "l8.np.askTitle": "Receive this reminder?",
   "l8.np.continue": "Continue",
-  "l8.np.deniedBody": "{reason}\n\nNotifications are turned off for Au fil de nous. You can turn them back on in your phone’s settings.",
+  "l8.np.deniedBody": "{reason}\n\nNotifications are turned off for HOMI. You can turn them back on in your phone’s settings.",
   "l8.np.deniedTitle": "Notifications turned off",
   "l8.np.openSettings": "Open settings",
   "l8.pv.badFile": "Invalid encrypted file",

@@ -212,5 +212,5 @@ export const cm3: Messages<typeof fr> = {
   "cm3.moi.writeUsAt": "Scrivici a {email}",
   "cm3.moi.rules": "Regole della community",
   "cm3.moi.emergency": "Emergenze",
-  "cm3.moi.disclaimer": "Au fil de nous non sostituisce il parere di un professionista sanitario.",
+  "cm3.moi.disclaimer": "HOMI non sostituisce il parere di un professionista sanitario.",
 };

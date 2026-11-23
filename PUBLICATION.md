@@ -38,7 +38,7 @@
 | Nom affiché | `Au fil de nous` (14 caractères, sous la limite de 30) | [fait] |
 | Version | `0.1.0` (`app.config.ts`). Une première version publique en `1.0.0` est plus lisible pour les utilisatrices ; décision de David. | [David] |
 | Numéro de build | géré à distance par EAS (`appVersionSource: remote`, `autoIncrement: true` en production) — iOS et Android | [fait] |
-| Équipe / appli App Store Connect | Team `L5HM8RN2QD`, ASC App ID `6827529809` (`eas.json`) | [fait] |
+| Équipe / appli App Store Connect | HOMI : Team `L5HM8RN2QD` (compte partagé avec Au fil de nous), fiche propre ASC App ID `6834794892`, bundle `app.homi.family`, SKU `homi-ios`, nom « HOMI – Vie de famille » | [fait] |
 | Appareils | iPhone uniquement (`supportsTablet: false`), portrait. Apple teste parfois sur iPad en mode compatibilité. | [à vérifier] |
 | Chiffrement | `ITSAppUsesNonExemptEncryption: false` — pas de question export à chaque build | [fait] |
 | Manifeste de confidentialité Apple | `NSPrivacyTracking: false`, 4 API justifiées (UserDefaults, horodatage de fichiers, temps de démarrage, espace disque) | [fait] |
@@ -94,7 +94,7 @@ Pas de localisation en arrière-plan, pas de micro, pas de contacts.
 
 | Exigence | Où / comment | État |
 |---|---|---|
-| **Suppression du compte dans l'appli** (Apple 5.1.1 v) | Onglet **Profil › Mon compte privé › Supprimer mon compte** (aussi Réglages › Mon compte). Double confirmation (mot à taper), fonction serveur `delete-account` : données, fichiers privés, photos de l'album, client RevenueCat. Le texte rappelle que supprimer ≠ résilier. | [fait] — révocation Apple : B5 |
+| **Suppression du compte dans l'appli** (Apple 5.1.1 v) | **Réglages › Mon compte › Supprimer mon compte** : rubrique « Mon compte » EN TÊTE de Réglages, ligne dédiée « Supprimer mon compte » (2 appuis depuis Réglages) ; aussi Profil › Moi › Supprimer mon compte, et la recherche « supprimer compte ». Écran : ce qui est effacé, rappel « supprimer ≠ résilier » avec bouton « Gérer mon abonnement », mot SUPPRIMER à taper, état en cours / échec / « Réessayer ». « Se déconnecter » : ligne en bas de Profil, Moi et Réglages (« Quitter la démo » en visite). Double confirmation (mot à taper), fonction serveur `delete-account` : données, fichiers privés, photos de l'album, client RevenueCat. Le texte rappelle que supprimer ≠ résilier. | [fait] — révocation Apple : B5 |
 | **Restauration des achats** | Bouton « Restaurer mes achats » sur l'écran Premium (`Paywall`, `pw-restore`) et dans Profil › Abonnement | [fait] |
 | **Prix, durée, renouvellement affichés avant achat** (Apple 3.1.2) — Premium | `PlanTerms` : montant de la boutique, période, essai seulement si la boutique le propose, date du 1er prélèvement, renouvellement automatique, résiliation 24 h avant, liens CGU + confidentialité sous le bouton | [fait] |
 | idem — **Assistant IA** | `AiOfferCard` : prix de la boutique dans le bouton, mais « 1 mois offert » affiché **sans vérifier l'éligibilité**, et le texte sous le bouton ne dit pas que l'abonnement **se renouvelle automatiquement** | **[code] B7** |
@@ -116,12 +116,12 @@ artificielle », « Gemini »), charte de la communauté (« Signaler, bloquer �
 
 ## 3. Abonnements (configuration réelle du code)
 
-### 3.1 Premium (un seul droit RevenueCat `AU_FIL_DE_NOUS_PREMIUM`, un seul groupe Apple)
+### 3.1 HOMI Premium (un seul droit RevenueCat `HOMI_PREMIUM`, groupe Apple « HOMI Premium », projet RevenueCat HOMI séparé)
 | Produit | Prix de référence France | Essai |
 |---|---|---|
-| `aufildenous_premium_monthly` | 10,99 € / mois | 3 jours (nouveaux abonnés, si la boutique l'accorde) |
-| `aufildenous_premium_6months` | 49,99 € / 6 mois | aucun |
-| `aufildenous_premium_annual` | 79,99 € / an | aucun |
+| `homi_premium_monthly` | 14,99 € / mois | 3 jours (offre d'introduction, si Apple confirme l'éligibilité) |
+| `homi_premium_6months` | 69,99 € / 6 mois | 3 jours (idem) |
+| `homi_premium_annual` | 119,99 € / an | 3 jours (idem) |
 
 L'appli affiche **toujours le prix de la boutique** ; la grille ci-dessus n'apparaît qu'en démonstration, signalée comme
 telle. Procédure console complète : `ABONNEMENT.md`.
@@ -263,13 +263,15 @@ réponse « sexualité ». Public cible : 18+. [à vérifier]
 > does not calculate doses and always refers to a doctor or midwife. Emergency numbers are reachable without an account.
 >
 > **Demo account** (Premium active, sample family): e-mail `[à fournir]` / password `[à fournir]`. You can also tap
-> "Découvrir sans compte" on the first screen to explore sample data stored only on the device (purchases are simulated
-> there and clearly labelled "démonstration"; real purchases use StoreKit with the demo account).
+> "Découvrir sans compte" on the first screen: a short guided demo with sample data (no account, nothing sent), then
+> the subscription screen, which can be closed. From the demo result, "Famille d'exemple" opens a sample family stored
+> only on the device (purchases are simulated there and clearly labelled "démonstration"; real purchases use StoreKit
+> with the demo account).
 >
-> **Account deletion**: Profil tab › "Mon compte privé" › "Supprimer mon compte" (also Réglages › Mon compte).
+> **Account deletion**: Réglages (Settings) › "Mon compte" (first section) › "Supprimer mon compte" — two taps from Settings. Also reachable from Profil › Moi and by searching "supprimer compte". Sign out: "Se déconnecter" row at the bottom of Profil and Réglages.
 >
-> **Subscriptions**: "Au fil de nous Premium" — three auto-renewable plans in one group with identical content
-> (monthly with a 3-day free trial for new subscribers, 6 months, 12 months), plus a separate monthly "Assistant IA"
+> **Subscriptions**: "HOMI Premium" — three auto-renewable plans in one group with identical content
+> (monthly, 6 months, 12 months, each with a 3-day free trial for eligible new subscribers), plus a separate monthly "Assistant IA"
 > subscription that unlocks only the AI assistant. Prices are read from the App Store. "Restaurer mes achats" is on the
 > Premium screen and in Profil › Abonnement.
 >
@@ -329,9 +331,9 @@ VOTRE VIE PRIVÉE D'ABORD
 Aucune publicité, aucune revente de données. Verrouillage par Face ID, notifications discrètes, export et suppression
 de vos données à tout moment.
 
-AU FIL DE NOUS PREMIUM
-Les fonctions de suivi et d'accompagnement font partie de Premium : trois formules au même contenu (mensuelle avec
-3 jours d'essai pour les nouveaux abonnés, 6 mois, 12 mois). Un abonnement « Assistant IA » seul est aussi proposé.
+HOMI PREMIUM
+Les fonctions de suivi et d'accompagnement font partie de Premium : trois formules au même contenu (mensuelle, 6 mois,
+12 mois), chacune avec 3 jours d'essai pour les nouveaux abonnés éligibles. Un abonnement « Assistant IA » seul est aussi proposé.
 Les prix sont affichés dans l'application avant tout achat. Les abonnements se renouvellent automatiquement sauf
 résiliation au moins 24 heures avant la fin de la période, dans les réglages de votre compte App Store ou Google Play.
 Sans abonnement, vous gardez l'accès à votre compte, à vos données (consultation, export, suppression), aux numéros

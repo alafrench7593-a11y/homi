@@ -1,204 +1,253 @@
 /**
- * « Tous mes outils » : chaque outil réel, rangé par catégorie (alimentation, sommeil, changes…),
- * avec recherche, filtres, favoris et raccourcis. Les cartes affichent un état utile tiré des vraies
- * données (dernier biberon, relais de cette nuit…), jamais une valeur inventée.
- * Les urgences restent visibles en haut, sans animation.
+ * « Mes outils » — le centre d'outils (refonte du 17/11/2026, verre branché le 18/11/2026).
+ *
+ * De haut en bas : la recherche par besoin (`GlassSearchBar` : anneau de focus, effacer ; champ vide et actif :
+ * catégories suggérées) ; « Mes favoris » (et les outils ouverts récemment) en TUILES de verre compactes qui s'ouvrent
+ * directement ; « Pour <profil affiché> » (les 6 plus utiles) en tuiles, rendues PAR PROFIL (`ProfileStage`) ; puis les
+ * 9 catégories en liste opaque, chacune ouvrant la liste de ses outils ; enfin la Communauté, un espace À PART.
+ * Tout outil est à deux appuis au plus (catégorie → outil), ou à un appui depuis la recherche.
+ *
+ * Verre ou pas : les tuiles (pictogramme + nom) sont de petites surfaces → verre `card` ; les RÉSULTATS de recherche
+ * et les listes (nom + description de 4 lignes) restent des cartes OPAQUES (`ToolRow`) : on ne lit pas à travers
+ * une vitre (HOMI_DESIGN_SYSTEM.md § 10).
+ *
+ * Une rangée ou une tuile ouvre la fiche de l'outil (ce que ça fait, problème résolu, aperçu, « Commencer ») la
+ * première fois, puis l'outil directement une fois qu'il est connu ; l'appui long fait l'inverse. Les urgences restent
+ * en tête. Recherche : index local de besoins (src/lib/domain/toolSearch.ts, inchangé) ; quand rien ne correspond,
+ * l'écran le dit et propose les catégories — jamais de résultat au hasard. Résultats : apparition en décalé léger.
  */
 import React, { useMemo, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { Appear } from '@/components/Appear';
-import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { useToast } from '@/components/Overlays';
-import { ToolCard, ToolShortcut } from '@/components/ToolCard';
-import { QuickAddGrid } from '@/components/Dock';
+import { ErrorView } from '@/components/States';
+import { TAB_SCREEN_INSET } from '@/components/Dock';
+import { ProfileSwitcher, useActiveProfileKey } from '@/components/ProfileSwitcher';
+import { ProfileStage } from '@/components/profileTransition';
+import { GlassSearchBar } from '@/components/glass';
 import { glyphColor, tint, ToolGlyph } from '@/components/ToolGlyph';
-import { Button, Chip, Field, haptic, Icon, Text } from '@/components/ui';
+import { Tappable } from '@/components/Tappable';
+import { Button, Icon, Text } from '@/components/ui';
+import { SkeletonBone, SkeletonPulse, StaggerList } from '@/motion';
+import { CategoryChips, CategoryLegend, CategoryList } from '@/features/toolHub/CategoryList';
+import { PreviewBanner, ToolsIntro, useToolLock, useToolsIntro } from '@/features/toolHub/ToolsIntro';
+import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
+import { FavoriteStar, ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
+import { TOOL_TILE, ToolTile } from '@/features/toolHub/ToolTile';
+import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
 import { useProfile } from '@/lib/data/hooks';
-import { useScope } from '@/lib/data/hooks-scope';
-import { useOtherProfileTools } from '@/lib/data/hooks-alltools';
-import { useActiveSubject } from '@/lib/data/hooks';
-import { ProfileSwitcher } from '@/components/Family';
-import { useToolStatuses } from '@/lib/data/hooks-tools';
-import { favoriteTools, groupByTheme, searchTools, statusKeyFor, THEMES, toggleFavorite, toolCatalog, type CatalogTool, type ToolTheme } from '@/lib/domain/toolCatalog';
-import { useUiStore } from '@/lib/store';
+import { communityEntry, featuredTools, type CatalogTool } from '@/lib/domain/toolCatalog';
+import { searchCatalog } from '@/lib/domain/toolSearch';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
-import { Tappable } from '@/components/Tappable';
+import { useTourAnchor } from '@/features/tour/anchors';
+import { CatalogFilterBar, FilteredCatalog } from '@/features/toolHub/CatalogFilterBar';
+import { filtersActive, NO_FILTERS, type CatalogFilters } from '@/lib/domain/catalogFilters';
 
-const GAP = spacing.sm;
-/** Largeur utile maximale (tablette, ordinateur) : la grille reste lisible et centrée. */
-const MAX_W = 1080;
+/** Largeur utile maximale (tablette, ordinateur) : les listes restent lisibles et centrées, jamais étirées. */
+const MAX_W = 720;
 
 export default function Tools() {
-  const t = useTheme();
-  const toast = useToast();
-  const { width: winW } = useWindowDimensions();
   const profileQ = useProfile();
-  const { data: profile } = profileQ;
-  // Registre central : seuls les outils autorisés pour le profil affiché (sélecteur) et son parcours
-  const scope = useScope();
-  const childId = scope.childId ?? (scope.scope === 'postpartum' ? scope.babyId : null);
-  const catalog = useMemo(() => toolCatalog(scope), [scope]);
-  const { statuses } = useToolStatuses(childId);
-  const favIds = useUiStore((s) => s.toolFavorites);
-  const setFavIds = useUiStore((s) => s.setToolFavorites);
-  const filter = useUiStore((s) => s.toolFilter);
-  const setFilter = useUiStore((s) => s.setToolFilter);
-  const [q, setQ] = useState('');
-  // Mode simple : quelques outils par catégorie, « Voir plus » pour le reste
-  const simple = useUiStore((s) => s.simpleMode);
-  const [open, setOpen] = useState<Record<string, boolean>>({});
-  const PREVIEW = 4;
-  const limited = (key: string, n: number) => simple && !q && !open[key] && n > PREVIEW;
+  const hub = useToolHub();
+  const { width: winW } = useWindowDimensions();
+  const profileKey = useActiveProfileKey();
+  const { scope, catalog, all, allTools, account } = hub;
+  const params = useLocalSearchParams<{ q?: string }>();
+  const [q, setQ] = useState(typeof params.q === 'string' ? params.q : '');
+  // Catalogue complet filtré (20/11/2026) : catégorie, âge, étape de vie, favoris, récents — combinables
+  const [filters, setFilters] = useState<CatalogFilters>(NO_FILTERS);
+  const [showFilters, setShowFilters] = useState(false);
+  const filtering = filtersActive(filters);
+  const [searching, setSearching] = useState(false);
+  const query = q.trim();
 
-  const favs = useMemo(() => favoriteTools(catalog, favIds), [catalog, favIds]);
-  const present = useMemo(() => new Set(catalog.map((x) => x.theme)), [catalog]);
-  const activeFilter = filter === 'fav' || filter === 'all' || present.has(filter as ToolTheme) ? filter : 'all';
-  const visible = useMemo(() => {
-    let list = searchTools(catalog, q);
-    if (activeFilter === 'fav') list = favoriteTools(list, favIds);
-    else if (activeFilter !== 'all') list = list.filter((x) => x.theme === activeFilter);
-    return list;
-  }, [catalog, q, activeFilter, favIds]);
-  // Favoris : pas d'en-tête « Raccourcis » vide quand seuls des outils d'autres profils sont en favori
-  const groups = useMemo(() => (activeFilter === 'fav' ? (visible.length ? [{ key: 'fav' as const, title: tr('u3.tools.shortcuts'), short: '', items: visible }] : []) : groupByTheme(visible)), [visible, activeFilter]);
+  // Recherche dans tous les outils atteignables (profil affiché et autres profils) et dans les réglages
+  // (20/11/2026) les 200 entrées : outils et fonctions nommées, chacune avec son profil
+  const searchable = useMemo(() => [...hub.flat.map((e) => e.tool), ...account], [hub.flat, account]);
+  const entryOf = useMemo(() => new Map<string, ToolEntry>([...hub.flat.map((e) => [e.tool.id, e] as const), ...account.map((tool) => [tool.id, { tool }] as const)]), [hub.flat, account]);
+  const outcome = useMemo(() => (query ? searchCatalog(searchable, query) : null), [searchable, query]);
+  const featured = useMemo(() => featuredTools(catalog, scope.scope), [catalog, scope.scope]);
   const urgent = catalog.find((x) => x.urgent);
-  // Tous les outils restent visibles : ceux des autres profils (chaque enfant, grossesse, moi) sont listés ensuite
-  const { setSubject } = useActiveSubject();
-  const others = useOtherProfileTools(catalog);
-  const otherGroups = useMemo(() => others.map((o) => {
-    let list = searchTools(o.tools, q);
-    if (activeFilter === 'fav') list = favoriteTools(list, favIds);
-    else if (activeFilter !== 'all') list = list.filter((x) => x.theme === activeFilter);
-    return { ...o, tools: list };
-  }).filter((o) => o.tools.length), [others, q, activeFilter, favIds]);
-  // Compteur de la puce « Favoris » : aussi les favoris pris dans les outils des autres profils (affichés par ce filtre)
-  // Favoris pris dans les outils des autres profils : aussi dans « Mes raccourcis » (ouverture sur le bon profil)
-  const otherFavs = useMemo(() => {
-    const seen = new Set(favs.map((x) => x.id));
-    return others.flatMap((o) => favoriteTools(o.tools, favIds).filter((x) => !seen.has(x.id) && (seen.add(x.id), true)).map((tool) => ({ tool, o })));
-  }, [others, favIds, favs]);
-  const favCount = useMemo(() => favs.length + others.reduce((n, o) => n + favoriteTools(o.tools, favIds).length, 0), [favs, others, favIds]);
+  const community = useMemo(() => { const tool = communityEntry(allTools); return tool ? entryOf.get(tool.id) ?? { tool } : null; }, [allTools, entryOf]);
+  // Grille de tuiles : 3 colonnes (2 sous 360 pt), largeur calculée (aucune mesure, aucun saut)
+  const inner = Math.min(winW, MAX_W) - spacing.lg * 2;
+  const cols = winW < 360 ? 2 : 3;
+  const tileW = Math.floor((inner - spacing.xs * (cols - 1)) / cols);
 
-  // grille : 2 colonnes sur téléphone, 3 sur tablette, 4 sur grand écran ; largeur MESURÉE du contenu
-  // (l'application peut être affichée dans un cadre plus étroit que la fenêtre)
-  const [measured, setMeasured] = useState(0);
-  const inner = measured || Math.min(winW, MAX_W) - spacing.lg * 2;
-  const cols = inner >= 860 ? 4 : inner >= 560 ? 3 : 2;
-  const cardW = Math.floor((inner - GAP * (cols - 1)) / cols);
-
-  function toggleFav(tool: CatalogTool) {
-    const on = !favIds.includes(tool.id);
-    setFavIds(toggleFavorite(favIds, tool.id));
-    toast(on ? tr('u3.tools.favAdd', { label: tool.label }) : tr('u3.tools.favDel', { label: tool.label }));
-  }
-  const statusOf = (tool: CatalogTool) => { const k = statusKeyFor(tool); return k ? statuses[k] : undefined; };
+  const forTitle = scope.child ? tr('th.ui.for', { name: scope.child.first_name })
+    : scope.scope === 'pregnancy' ? tr('th.ui.forPregnancy') : scope.scope === 'family' ? tr('th.ui.forFamily') : tr('th.ui.forMe');
+  const loading = profileQ.isLoading && !profileQ.data;
+  // Visite guidée (« Trouver un outil ») : la recherche, puis ses premiers résultats
+  const searchAnchor = useTourAnchor('tools-search');
+  // Ticket 3 : droits réels (cadenas sans Premium, jamais chez un abonné), introduction par compte, revoyable
+  const { premium, locked } = useToolLock();
+  const intro = useToolsIntro();
+  // Logo « Mes apps » : les 4 tuiles s'allument en cascade à l'arrivée sur l'écran (statique si Réduire les animations)
+  const [logoPulse, setLogoPulse] = useState(0);
+  React.useEffect(() => { const id = setTimeout(() => setLogoPulse(1), 250); return () => clearTimeout(id); }, []);
+  const resultsAnchor = useTourAnchor('tools-results');
 
   return (
-    <Screen account title={tr('screen.tools.title')} subtitle={tr('screen.tools.sub')} bottomInset={96} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
-      <View onLayout={(e) => setMeasured(Math.floor(e.nativeEvent.layout.width))} style={{ height: 0, alignSelf: 'stretch', marginBottom: -spacing.md }} />
-      {urgent ? <UrgentStrip tool={urgent} /> : null}
-      {/* Les outils affichés dépendent du profil choisi ici (grossesse, post-partum, chaque enfant, famille, moi) */}
-      <View testID="tools-scope" accessibilityLabel={tr('pj.tools.scopeA11y')} style={{ gap: 4 }}>
-        <Text variant="caption" muted>{tr('pj.tools.for')}</Text>
-        <ProfileSwitcher />
+    <Screen account title={tr('th.ui.title')} titleLogo={<AppsLogo size={40} pulse={logoPulse} testID="tools-logo" />} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+      {/* 0. « Bienvenue dans Mes outils » (première visite de ce compte ; revoyable) */}
+      {intro.open && !loading ? <ToolsIntro premium={premium} onDone={intro.hide} /> : null}
+      {/* 1. Recherche par besoin (verre : petite surface de navigation posée sur le fond) */}
+      <View style={{ gap: spacing.sm }}>
+        <View {...searchAnchor}>
+        <GlassSearchBar value={q} onChangeText={setQ} label={tr('th.ui.search')} placeholder={tr('th.ui.searchPh')} testID="tools-search"
+          onFocus={() => setSearching(true)} onBlur={() => setSearching(false)} />
+        </View>
+        {/* Champ actif et vide : catégories suggérées */}
+        {searching && !query && !loading ? <CategoryChips tools={allTools} /> : null}
+        {!query ? (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+            <Button label={showFilters || filtering ? tr('pz.cat.hideFilters') : tr('pz.cat.showFilters')} icon="sliders" variant="secondary" size="sm"
+              onPress={() => setShowFilters(!(showFilters || filtering))} testID="tools-filter-toggle" />
+            {intro.open ? null : <Button label={tr('mt.intro.replay')} icon="help-circle" variant="ghost" size="sm" onPress={intro.show} testID="tools-intro-replay" />}
+          </View>
+        ) : null}
+        {!query && (showFilters || filtering) ? <CatalogFilterBar value={filters} onChange={setFilters} /> : null}
       </View>
-      {/* Ajout rapide (anciennement derrière le bouton « + ») : toujours à portée */}
-      {!q && activeFilter === 'all' && !simple ? (
-        <View style={{ gap: spacing.xs }}>
-          <Text variant="heading" accessibilityRole="header">{tr('u3.tools.addNow')}</Text>
-          <QuickAddGrid compact />
-        </View>
-      ) : null}
 
-      <Field label={tr('u3.tools.search')} value={q} onChangeText={setQ} placeholder={tr('u3.tools.searchPh')} returnKeyType="search" autoCorrect={false} accessibilityLabel={tr('u3.tools.search')} />
-
-      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }} style={{ marginHorizontal: -2, flexGrow: 0 }} accessibilityRole="tablist" accessibilityLabel={tr('u3.tools.filterTools')}>
-        <Chip label={tr('u3.tools.all')} selected={activeFilter === 'all'} onPress={() => { haptic('selection'); setFilter('all'); }} />
-        <Chip label={`${tr('u3.tools.favs')}${favCount ? ` (${favCount})` : ''}`} icon="star" selected={activeFilter === 'fav'} onPress={() => { haptic('selection'); setFilter('fav'); }} />
-        {THEMES.filter((th) => present.has(th.key)).map((th) => (
-          <Chip key={th.key} label={th.short} selected={activeFilter === th.key} onPress={() => { haptic('selection'); setFilter(activeFilter === th.key ? 'all' : th.key); }} accessibilityLabel={tr('u3.tools.filter', { title: th.title })} />
-        ))}
-      </ScrollView>
-
-      {activeFilter === 'all' && !q && (favs.length || otherFavs.length) ? (
-        <Appear kind="soft" delay={0.05} style={{ gap: spacing.xs }}>
-          <Text variant="heading" accessibilityRole="header">{tr('u3.tools.shortcuts')}</Text>
-          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs, paddingRight: spacing.lg }}>
-            {favs.map((tool) => <ToolShortcut key={tool.id} tool={tool} status={statusOf(tool)} />)}
-            {otherFavs.map(({ tool, o }) => <ToolShortcut key={`${o.key}-${tool.id}`} tool={tool} beforeOpen={() => setSubject(o.subject)} />)}
-          </ScrollView>
-        </Appear>
-      ) : null}
-
-      {profileQ.isLoading && !profile ? <Skeleton kind="card" rows={4} /> : profileQ.isError && !profile ? (
+      {loading ? <ToolsSkeleton tileW={tileW} cols={cols} /> : profileQ.isError && !profileQ.data ? (
         <ErrorView error={profileQ.error} onRetry={() => void profileQ.refetch()} title={tr('u3.tools.errTools')} />
-      ) : !visible.length && !otherGroups.length ? (
-        activeFilter === 'fav' && !q
-          ? <EmptyState icon="star" title={tr('u3.tools.noShortcut')} body={tr('u3.tools.noShortcutB')} />
-          : <EmptyState icon="search" title={tr('u3.tools.noTool')} body={tr('u3.tools.noToolB')} action={{ label: tr('u3.tools.showAll'), onPress: () => { setQ(''); setFilter('all'); } }} />
-      ) : groups.map((g, gi) => (
-        <Appear key={g.key} kind="soft" delay={0.05 + Math.min(gi, 6) * 0.06} style={{ gap: spacing.sm }}>
-          <SectionHead theme={g.key === 'fav' ? null : g.key} title={g.title} count={g.items.length} index={gi} />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP }}>
-            {(limited(g.key, g.items.length) ? g.items.slice(0, PREVIEW) : g.items).map((tool) => (
-              <ToolCard key={tool.id} tool={tool} width={cardW} status={statusOf(tool)} favorite={favIds.includes(tool.id)} onToggleFavorite={toggleFav} />
-            ))}
+      ) : !query && filtering ? (
+        <FilteredCatalog hub={hub} filters={filters} onClear={() => setFilters(NO_FILTERS)} />
+      ) : outcome ? (
+        outcome.understood ? (
+          <View testID="tools-results" accessibilityLiveRegion="polite" {...resultsAnchor}>
+            <Text variant="caption" muted style={{ marginBottom: spacing.xs }}>{tr('th.ui.results', { count: outcome.results.length })}</Text>
+            {/* Résultats : cartes opaques (texte), entrée en décalé léger (une fois par résultat nouveau) */}
+            <StaggerList>
+              {outcome.results.map((r, i) => {
+                const e = entryOf.get(r.tool.id) ?? { tool: r.tool };
+                return (
+                  <ToolRow key={`tools-result-${e.tool.id}`} tool={e.tool} otherProfile={e.profile} first={i === 0} testID={`tools-result-${e.tool.id}`} locked={locked?.(e.tool)}
+                    favorite={hub.favSet.has(e.tool.id)} onToggleFavorite={hub.toggleFav}
+                    opensDirectly={hub.opensDirectly(e.tool)} onPress={() => hub.press(e)} onLongPress={() => hub.longPress(e)} />
+                );
+              })}
+            </StaggerList>
           </View>
-          {simple && !q && g.items.length > PREVIEW ? (
-            <Button label={open[g.key] ? tr('pj.tools.less') : tr('pj.tools.more', { count: g.items.length - PREVIEW })} variant="ghost" size="sm" icon={open[g.key] ? 'chevron-up' : 'chevron-down'} style={{ alignSelf: 'flex-start' }} testID={`tools-more-${g.key}`}
-              onPress={() => setOpen({ ...open, [g.key]: !open[g.key] })} />
-          ) : null}
-        </Appear>
-      ))}
-      {otherGroups.length && simple && !q && !open.__others ? (
-        <Button label={tr('pj.tools.otherShow')} icon="users" variant="secondary" onPress={() => setOpen({ ...open, __others: true })} testID="tools-other-show" full />
-      ) : null}
-      {otherGroups.length && (!simple || q || open.__others) ? (
-        <View testID="tools-other-profiles" style={{ gap: spacing.md, marginTop: spacing.md }}>
-          <View style={{ gap: 2 }}>
-            <Text variant="title" accessibilityRole="header">{tr('u3.tools.others')}</Text>
-            <Text variant="small" muted>{tr('u3.tools.othersB')}</Text>
-          </View>
-          {otherGroups.map((o) => (
-            <View key={o.key} style={{ gap: spacing.sm }} testID={`tools-for-${o.key}`}>
-              <Text variant="heading" accessibilityRole="header">{o.title}</Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GAP }}>
-                {o.tools.map((tool) => (
-                  <ToolCard key={`${o.key}-${tool.id}`} tool={tool} width={cardW} favorite={favIds.includes(tool.id)} onToggleFavorite={toggleFav} beforeOpen={() => setSubject(o.subject)} />
-                ))}
-              </View>
+        ) : (
+          <View style={{ gap: spacing.md }} testID="tools-no-match">
+            <View style={{ gap: 4 }} accessibilityLiveRegion="polite">
+              <Text variant="heading" accessibilityRole="header">{tr('th.ui.noMatch')}</Text>
+              <Text muted>{tr('th.ui.noMatchB')}</Text>
             </View>
-          ))}
-        </View>
-      ) : null}
-      <Button label={tr('pj.editJourney')} variant="secondary" icon="refresh-cw" onPress={() => router.push('/journeys')} full />
+            <CategoryList tools={allTools} showAccount={false} />
+          </View>
+        )
+      ) : (
+        <>
+          {urgent ? <UrgentStrip tool={urgent} /> : null}
+          {/* Sans Premium : aperçu du catalogue, outils réservés marqués, offre accessible (paywall existant) */}
+          {premium === false ? <PreviewBanner /> : null}
+
+          {/* 2. Mes favoris (et récents) : tuiles de verre, ouverture directe */}
+          <Section title={tr('th.ui.favs')} icon="star" testID="tools-favorites">
+            {hub.favorites.length ? <Tiles entries={hub.favorites} onOpen={hub.openNow} locked={locked} /> : <Text variant="small" muted>{tr('th.ui.favsEmpty')}</Text>}
+          </Section>
+          {hub.recents.length ? (
+            <Section title={tr('th.ui.recents')} icon="clock" testID="tools-recents">
+              <Tiles entries={hub.recents} onOpen={hub.openNow} locked={locked} />
+            </Section>
+          ) : null}
+
+          {/* 3. Pour le profil affiché : les plus utiles (6 au plus), rendues par profil */}
+          <Section title={forTitle} testID="tools-featured">
+            <View testID="tools-scope" accessibilityLabel={tr('pj.tools.scopeA11y')} style={{ marginBottom: spacing.xs }}>
+              <ProfileSwitcher />
+            </View>
+            <ProfileStage profileKey={profileKey} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+              {featured.map((tool, i) => (
+                <ToolTile key={tool.id} tool={tool} index={i} width={tileW} testID={`tools-featured-${tool.id}`} locked={locked?.(tool)} onPress={() => hub.press({ tool })} />
+              ))}
+            </ProfileStage>
+          </Section>
+
+          {/* 4. Les 9 catégories, puis le compte */}
+          <Section title={tr('th.ui.categories')}>
+            <CategoryList tools={allTools} locked={locked} />
+          </Section>
+
+          {/* 5. La communauté : un espace à part, hors des 9 catégories (son accès principal est en haut à droite) */}
+          {community ? (
+            <CommunityBlock tool={community.tool} favorite={hub.favSet.has(community.tool.id)} onToggleFavorite={() => hub.toggleFav(community.tool)} onOpen={() => hub.openNow(community)} />
+          ) : null}
+
+          {/* 6. Légende compacte des couleurs (les intitulés restent sur les cartes) */}
+          <CategoryLegend />
+        </>
+      )}
+      {hub.sheetNode}
     </Screen>
   );
 }
 
-/** En-tête de catégorie : petit glyphe du thème (joue son animation une fois), titre, nombre d'outils. */
-function SectionHead({ theme, title, count, index }: { theme: ToolTheme | null; title: string; count: number; index: number }) {
+function Section({ title, icon, children, testID }: { title: string; icon?: 'star' | 'clock'; children: React.ReactNode; testID?: string }) {
   const t = useTheme();
-  const [play, setPlay] = useState(0);
-  React.useEffect(() => { const id = setTimeout(() => setPlay(1), 220 + Math.min(index, 6) * 90); return () => clearTimeout(id); }, [index]);
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: 36 }}>
-      {theme ? <ToolGlyph theme={theme} icon={THEME_ICON[theme]} size={32} play={play} /> : <Icon name="star" size={20} color={t.colors.primary} />}
-      <Text variant="heading" accessibilityRole="header" style={{ flex: 1 }}>{title}</Text>
-      <Text variant="caption" muted accessibilityLabel={tr('u3.tools.count', { count })}>{count}</Text>
+    <View style={{ gap: spacing.xs }} testID={testID}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        {icon ? <Icon name={icon} size={16} color={t.colors.primary} /> : null}
+        <Text variant="heading" accessibilityRole="header" style={{ flex: 1 }}>{title}</Text>
+      </View>
+      {children}
     </View>
   );
 }
 
-const THEME_ICON: Record<ToolTheme, React.ComponentProps<typeof Icon>['name']> = {
-  feeding: 'coffee', sleep: 'moon', diapers: 'wind', teeth: 'circle', growth: 'trending-up', health: 'activity', mood: 'smile', pregnancy: 'heart',
-  cycle: 'refresh-cw', scanner: 'maximize', calendar: 'calendar', tasks: 'check-square', relay: 'moon', metime: 'sun', prevention: 'feather',
-  memories: 'book', reminders: 'bell', resources: 'book-open',
-};
+/** Squelette assorti : tuiles de favoris, puis la grille « Pour <profil> », puis des cartes d'outils (aucun saut). */
+function ToolsSkeleton({ tileW, cols }: { tileW: number; cols: number }) {
+  const t = useTheme();
+  return (
+    <View style={{ gap: spacing.md }} testID="tools-skeleton">
+      <SkeletonPulse label={tr('common.loadingA11y')} style={{ gap: spacing.xs }}>
+        <SkeletonBone width="40%" height={20} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+          {Array.from({ length: cols * 2 }, (_, i) => (
+            <View key={i} style={{ width: tileW, minHeight: TOOL_TILE.minHeight, borderRadius: radius.lg, backgroundColor: t.colors.surface, ...glassEdge(t), alignItems: 'center', paddingTop: spacing.sm, gap: 8 }}>
+              <SkeletonBone width={TOOL_TILE.glyph} height={TOOL_TILE.glyph} radius={TOOL_TILE.glyph / 2} />
+              <SkeletonBone width="70%" height={12} />
+            </View>
+          ))}
+        </View>
+      </SkeletonPulse>
+      <ToolRowsSkeleton rows={3} />
+    </View>
+  );
+}
+
+/** Bloc « Communauté » : présenté à part des catégories d'outils (nom, phrase et pictogramme du registre). */
+function CommunityBlock({ tool, favorite, onToggleFavorite, onOpen }: { tool: CatalogTool; favorite: boolean; onToggleFavorite: () => void; onOpen: () => void }) {
+  const t = useTheme();
+  return (
+    <View testID="tools-community" style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface }}>
+      <Text variant="caption" weight="medium" muted>{tr('th.ui.communityHead')}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <ToolGlyph id={tool.id} theme={tool.theme} icon={tool.icon} size={44} />
+        <Text variant="heading" accessibilityRole="header" style={{ flex: 1, minWidth: 0 }}>{tool.label}</Text>
+        <FavoriteStar on={favorite} label={tool.label} onPress={onToggleFavorite} id={tool.id} />
+      </View>
+      {tool.sub ? <Text variant="small" muted>{tool.sub}</Text> : null}
+      <Button label={tr('th.ui.communityOpen')} icon="message-circle" variant="secondary" onPress={onOpen} full testID="tools-community-open" />
+    </View>
+  );
+}
+
+/** Favoris et récents : tuiles de verre compactes ; un appui ouvre l'outil (sur le bon profil). Nouvelle tuile : entrée animée. */
+function Tiles({ entries, onOpen, locked }: { entries: ToolEntry[]; onOpen: (e: ToolEntry) => void; locked?: (tool: CatalogTool) => boolean }) {
+  return (
+    <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{ gap: spacing.xs, paddingLeft: spacing.xxs, paddingRight: spacing.lg, paddingVertical: spacing.xxs }} style={{ marginHorizontal: -spacing.xxs }}>
+      {entries.map((e, i) => <ToolTile key={e.tool.id} tool={e.tool} profile={e.profile} index={i} locked={locked?.(e.tool)} onPress={() => onOpen(e)} />)}
+    </ScrollView>
+  );
+}
 
 /** Urgences : toujours visibles, immédiates, sans animation. */
 function UrgentStrip({ tool }: { tool: CatalogTool }) {
@@ -217,4 +266,3 @@ function UrgentStrip({ tool }: { tool: CatalogTool }) {
     </Tappable>
   );
 }
-

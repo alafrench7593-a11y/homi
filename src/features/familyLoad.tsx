@@ -3,6 +3,7 @@
  * carte de demande. Couleurs : uniquement celles du thème existant.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { Animated, Pressable, View } from 'react-native';
 import { usePressMotion } from '@/components/Motion';
 import { DrawCheck } from '@/components/MotionKit';
@@ -11,28 +12,47 @@ import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { useChildren } from '@/lib/data/hooks';
 import { useHealthItems } from '@/lib/data/hooks-family';
+import { useNeedEntries } from '@/lib/data/hooks-needs';
+import { latestSensory, sensoryLines, type Sense, type SenseLevel } from '@/lib/neuro/structured';
 import { childAge } from '@/lib/domain/child';
 import type { Child } from '@/lib/types';
-import { useCareRequests, useCareShifts, useCreateRequest, useDeleteTask, useFamilyTasks, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
+import { useCareRequests, useCareShifts, useCreateRequest, useDeleteTask, usePeople, useRespondRequest, useSaveTask, type TaskInput } from '@/lib/data/hooks-family-load';
 import { router } from 'expo-router';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { CATEGORIES, QUICK_ACTIONS, REQUEST_LABEL, categoryOf, sameLocalDay, type CareRequest, type FamilyTask, type RequestKind } from '@/lib/domain/familyLoad';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
-import { formatDate, formatTime, t as tr } from '@/i18n';
+import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { taskToggle } from '@/lib/domain/journalTrack';
+import { clock } from '@/lib/domain/sleepPlanner';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 export const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 /** « 18/10/2026 » + « 14h30 » → ISO (heure locale). `null` si vide, `undefined` si invalide. */
+/**
+ * Date d'agenda ou de tâche, saisie à la main. Tolérant (signalement du 23/11/2026 : « impossible d'enregistrer » dans
+ * l'agenda) : « 25/11 » = année en cours, « 25/11/26 » = 2026 ; heure « 14h30 », « 14H30 », « 14 h 30 », « 14:30 »,
+ * « 14.30 », « 14 heures ».
+ */
+export function lenientFrDate(input: string, today = new Date()): string | null {
+  const t = input.trim();
+  const full = frToISO(t);
+  if (full) return full;
+  const m = t.match(/^(\d{1,2})[/.\-\s](\d{1,2})(?:[/.\-\s](\d{2}))?$/);
+  if (!m) return null;
+  const year = m[3] ? 2000 + Number(m[3]) : today.getFullYear();
+  return frToISO(`${m[1]}/${m[2]}/${year}`);
+}
 export function parseFrDateTime(date: string, time: string): string | null | undefined {
   if (!date.trim() && !time.trim()) return null;
-  const iso = frToISO(date.trim());
+  const iso = lenientFrDate(date);
   if (!iso) return undefined;
-  const m = (time.trim() || '9h').match(/^(\d{1,2})\s*[h:.]?\s*(\d{2})?$/);
+  const m = (time.trim().toLowerCase().replace(/heures?/, 'h') || '9h').match(/^(\d{1,2})\s*[h:.]?\s*(\d{2})?$/);
   if (!m || Number(m[1]) > 23 || Number(m[2] ?? 0) > 59) return undefined;
   const [y, mo, d] = iso.split('-').map(Number);
   return new Date(y, mo - 1, d, Number(m[1]), Number(m[2] ?? 0)).toISOString();
@@ -44,13 +64,18 @@ export function splitLocal(iso: string | null) {
 }
 
 // ------------------------------------------------------------------ ligne de tâche
+/** « aujourd'hui à 14 h 05 » / « jeu. 22 janv. à 14 h 05 » */
+const doneWhen = (iso: string) => (sameLocalDay(iso, todayISO()) ? tr('jt.task.today', { time: clock(new Date(iso)) }) : tr('jt.task.onDay', { day: formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short' }), time: clock(new Date(iso)) }));
 export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit: (t: FamilyTask) => void; onPropose?: (t: FamilyTask) => void }) {
   const t = useTheme();
   const toast = useToast();
   const save = useSaveTask();
   const reduce = useReduceMotion();
-  const { labelOf } = usePeople();
+  const { labelOf, me } = usePeople();
   const [optimistic, setOptimistic] = useState<boolean | null>(null);
+  // Droits (22/11/2026) : une mission confiée ne se termine que par son destinataire et ne se rouvre pas ; double appui ignoré
+  const right = taskToggle(task as FamilyTask & { mission_state?: string | null }, me ?? null);
+  const inflight = useRef(false);
   const done = optimistic ?? task.status === 'done';
   const press = usePressMotion({ pressed: 0.9 });
   const strike = useRef(new Animated.Value(done ? 1 : 0)).current;   // trait qui raye le titre
@@ -62,6 +87,8 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
   useEffect(() => { setOptimistic(null); strike.setValue(task.status === 'done' ? 1 : 0); fill.setValue(task.status === 'done' ? 1 : 0); leave.setValue(1); }, [task.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function toggle() {
+    if (!right.allowed || inflight.current) return;
+    inflight.current = true;
     const next = !done;
     haptic(next ? 'success' : 'light');
     setOptimistic(next);
@@ -75,20 +102,26 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
       ]).start(() => resolve());
     });
     try {
-      await save.mutateAsync({ id: task.id, input: { status: next ? 'done' : 'todo' } });
+      await save.mutateAsync({ id: task.id, input: { status: next ? 'done' : 'todo' }, base: task });
       if (next) toast(task.recurrence ? tr('u6.fl.done_next') : tr('u6.fl.done'));
     } catch (e) {
       setOptimistic(null); fill.setValue(done ? 1 : 0); strike.setValue(done ? 1 : 0); leave.setValue(1);
       toast(friendlyError(e), 'error');
-    }
+    } finally { inflight.current = false; }
   }
+  // Qui a validé et quand : seulement si la donnée existe (done_by / done_at), jamais deviné
+  const doneLine = task.status === 'done' && (task.done_by || task.done_at)
+    ? (task.done_by && task.done_at ? tr('jt.task.doneByAt', { who: labelOf(task.done_by), when: doneWhen(task.done_at) })
+      : task.done_by ? tr('jt.task.doneBy', { who: labelOf(task.done_by) }) : tr('jt.task.doneAt', { when: doneWhen(task.done_at!) }))
+    : null;
 
   return (
     <Animated.View style={{ opacity: leave, transform: [{ translateX: leave.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) }, { scale: leave.interpolate({ inputRange: [0, 1], outputRange: [0.97, 1] }) }] }}>
       <Card style={{ paddingVertical: spacing.xs }}>
         <Row style={{ alignItems: 'center' }}>
-          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${task.title} : ${done ? tr('u6.fl.state_done') : tr('u6.fl.state_todo')}`} onPress={toggle} {...press.handlers} hitSlop={8}>
-            <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderColor: done ? t.colors.success : t.colors.border }, press.style]}>
+          <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: done, disabled: !right.allowed }} accessibilityLabel={`${task.title} : ${done ? tr('u6.fl.state_done') : tr('u6.fl.state_todo')}`} accessibilityHint={right.block ? tr(`jt.task.block.${right.block}` as TKey) : undefined}
+            disabled={!right.allowed} onPress={toggle} {...press.handlers} hitSlop={8} testID={`task-check-${task.id}`}>
+            <Animated.View style={[{ width: 30, height: 30, borderRadius: 15, borderWidth: 2, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderColor: done ? t.colors.success : t.colors.border, opacity: right.allowed ? 1 : 0.45, borderStyle: right.allowed ? 'solid' : 'dashed' }, press.style]}>
               <Animated.View style={{ position: 'absolute', width: 30, height: 30, borderRadius: 15, backgroundColor: t.colors.success, transform: [{ scale: fill }] }} />
               {done ? <DrawCheck size={22} color={t.colors.surface} play={optimistic === true} /> : null}
             </Animated.View>
@@ -105,6 +138,8 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
               {[cat.label, task.due_at ? fmtWhen(task.due_at) : null, labelOf(task.assignee_id), task.recurrence ? tr('u6.fl.recurring') : null, task.essential ? tr('u6.fl.essential_tag') : null].filter(Boolean).join(' · ')}
             </Text>
             {late ? <Text variant="caption" color={t.colors.gold}>{tr('u6.fl.late')}</Text> : null}
+            {doneLine ? <Text variant="caption" color={t.colors.success} style={{ fontVariant: ['tabular-nums'] }} testID={`task-done-by-${task.id}`}>{doneLine}</Text> : null}
+            {right.block && right.block !== 'cancelled' ? <Text variant="caption" muted testID={`task-block-${task.id}`}>{tr(`jt.task.block.${right.block}` as TKey, { who: labelOf(task.assignee_id) })}</Text> : null}
           </Tappable>
           {onPropose && !done ? <Button label={tr('u6.fl.propose')} size="sm" variant="ghost" onPress={() => onPropose(task)} accessibilityLabel={tr('u6.fl.propose_a11y', { title: task.title })} /> : null}
         </Row>
@@ -123,10 +158,13 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
   const { people } = usePeople();
   const [d, setD] = useState<Draft | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Tâche telle qu'elle était à l'ouverture (avec sa version) : une modification faite entre-temps par l'autre n'est jamais écrasée
+  const base = useRef<FamilyTask | null>(null);
 
   useEffect(() => {
     if (!open) return;
     setErrors({});
+    base.current = task;
     if (task) {
       const w = splitLocal(task.due_at);
       setD({ id: task.id, title: task.title, category: task.category, date: w.date, time: w.time, assignee: task.assignee_id, priority: task.priority, essential: task.essential, recurrence: task.recurrence?.type ?? 'none', notes: task.notes ?? '' });
@@ -147,9 +185,9 @@ export function TaskSheet({ task, open, onClose, defaults }: { task: FamilyTask 
       recurrence: d.recurrence === 'none' ? null : { type: d.recurrence }, notes: d.notes.trim() || null,
     };
     try {
-      await save.mutateAsync({ id: d.id, input });
+      const out = await save.mutateAsync({ id: d.id, input, base: d.id ? base.current : null });
       haptic('success');
-      toast(d.id ? tr('u6.fl.task_edited') : tr('u6.fl.task_added'));
+      toast(out === 'queued' ? tr('rel.queued') : d.id ? tr('u6.fl.task_edited') : tr('u6.fl.task_added'));
       onClose();
     } catch (err) { toast(friendlyError(err), 'error'); }
   }
@@ -210,7 +248,7 @@ function QuickTile({ label, icon, onPress, color }: { label: string; icon: React
   const press = usePressMotion();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers} style={{ width: '48.5%' }}>
-      <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, backgroundColor: t.colors.surface, gap: 4 }, press.style]}>
+      <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface, gap: 4 }, press.style]}>
         <Icon name={icon} size={18} color={color} />
         <Text variant="small" weight="bold">{label}</Text>
       </Animated.View>
@@ -308,7 +346,7 @@ export function RequestCard({ r, tasks }: { r: CareRequest; tasks: FamilyTask[] 
 export function ChildEssentials({ large }: { large?: boolean }) {
   const { data: children } = useChildren();
   if (!children?.length) return null;
-  return <View style={{ gap: spacing.xs }}>{children.map((c) => <ChildEssentialCard key={c.id} child={c} large={large} />)}</View>;
+  return <MotionList style={{ gap: spacing.xs }}>{children.map((c) => <MotionItem key={c.id}><ChildEssentialCard key={c.id} child={c} large={large} /></MotionItem>)}</MotionList>;
 }
 
 function ChildEssentialCard({ child, large }: { child: Child; large?: boolean }) {
@@ -317,6 +355,8 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
   const allergies = [...new Set([...(child.allergies_declared ?? []), ...(items ?? []).filter((i) => i.kind === 'allergy').map((i) => i.label)])];
   const treatments = (items ?? []).filter((i) => i.kind === 'treatment' && !i.done_on);
   const contacts = (items ?? []).filter((i) => i.kind === 'contact');
+  const { data: needEntries } = useNeedEntries(child.id, 'observation');
+  const sensory = latestSensory(needEntries);
   const v = large ? 'body' : 'small';
   return (
     <Card>
@@ -325,31 +365,42 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
       {treatments.length ? <Text variant={v}>{tr('u6.fl.treatments', { list: treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ') })}</Text> : null}
       {contacts.length ? <Text variant={v}>{tr('u6.fl.contacts', { list: contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ') })}</Text> : null}
       <Text variant="caption" muted>{tr('u6.fl.essentials_note')}</Text>
+      {/* Garde de secours : fiche papier pour la personne qui garde (allergies, traitements, contacts, profil sensoriel) */}
+      <Button label={tr('nds.care.print')} icon="printer" variant="secondary" size="sm" testID={`care-print-${child.id}`} onPress={() => {
+        const lines = [
+          tr('u6.fl.allergies', { list: allergies.length ? allergies.join(', ') : tr('u6.fl.none_noted') }),
+          ...(treatments.length ? [tr('u6.fl.treatments', { list: treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ') })] : []),
+          ...(contacts.length ? [tr('u6.fl.contacts', { list: contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ') })] : []),
+          ...(sensory ? sensoryLines(sensory.profile, (x: Sense) => tr(`nds.sense.${x}` as TKey), (l: SenseLevel) => tr(`nds.level.${l}` as TKey), tr('nds.calms'), tr('nds.avoid')) : []),
+        ];
+        router.push(`/print?kind=checklist&title=${encodeURIComponent(tr('nds.care.printTitle', { name: child.first_name }))}&lines=${encodeURIComponent(lines.join('\n'))}` as never);
+      }} />
     </Card>
   );
 }
 
 // ------------------------------------------------------------------ carte d'accueil
-/** Accueil : demandes qui m'attendent, mes tâches du jour, et l'accès immédiat à « Journée difficile ». */
+/**
+ * Accueil : demandes qui m'attendent, le prochain relais de nuit et l'accès immédiat à « Journée difficile ».
+ * Les tâches du jour et le relais de ce soir sont dans « Aujourd'hui dans le foyer » (en tête de l'accueil) : pas de doublon ici.
+ */
 export function FamilyHomeCard() {
   const t = useTheme();
   const { me, labelOf } = usePeople();
   const { data: requests } = useCareRequests();
-  const { data: tasks } = useFamilyTasks();
   const day = todayISO();
   const waiting = (requests ?? []).filter((r) => r.status === 'open' && r.from_user !== me && (!r.to_user || r.to_user === me));
-  const mineToday = (tasks ?? []).filter((x) => x.status === 'todo' && x.assignee_id === me && x.due_at && sameLocalDay(x.due_at, day));
   const { data: shifts } = useCareShifts('night');
-  const nextNight = (shifts ?? []).filter((s) => s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now()).sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0];
+  const nextNight = (shifts ?? []).filter((s) => s.status !== 'cancelled' && Date.parse(s.ends_at) > Date.now() && !sameLocalDay(s.starts_at, day)).sort((a, b) => (a.starts_at < b.starts_at ? -1 : 1))[0];
   return (
     <View style={{ gap: spacing.xs }}>
-      {waiting.length || mineToday.length ? (
+      {waiting.length ? (
         <Card onPress={() => router.push('/family')} accessibilityLabel={tr('u6.fl.open_family')}>
           <Row>
-            <Icon name={waiting.length ? 'bell' : 'check-square'} color={t.colors.primary} />
+            <Icon name="bell" color={t.colors.primary} />
             <View style={{ flex: 1 }}>
-              <Text weight="bold">{waiting.length ? tr('u6.fl.waiting', { count: waiting.length }) : tr('u6.fl.today_tasks', { count: mineToday.length })}</Text>
-              <Text variant="small" muted>{waiting.length ? REQUEST_LABEL[waiting[0].kind] : mineToday.map((x) => x.title).join(' · ')}</Text>
+              <Text weight="bold">{tr('u6.fl.waiting', { count: waiting.length })}</Text>
+              <Text variant="small" muted>{REQUEST_LABEL[waiting[0].kind]}</Text>
             </View>
             <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
           </Row>
@@ -364,7 +415,7 @@ export function FamilyHomeCard() {
           </Row>
         </Card>
       ) : null}
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, borderWidth: 1, borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
         <Icon name="wind" size={16} color={t.colors.primary} />
         <Text variant="small" weight="bold">{tr('u6.fl.hard_day')}</Text>
       </Tappable>

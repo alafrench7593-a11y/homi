@@ -1,5 +1,7 @@
 /** Conversation avec l'assistant (réponses structurées, diffusion progressive, orientation urgente). */
 import React, { useEffect, useRef, useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
+import { glassEdge } from '@/components/glass/GlassRim';
 import { aiAssistantOnline } from '@/config/features';
 import { AiComingSoonScreen } from '@/features/AiComingSoon';
 import { ActivityIndicator, FlatList, Keyboard, TextInput, View } from 'react-native';
@@ -27,7 +29,12 @@ import type { AssistantMessage } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
-import { t as tr } from '@/i18n';
+import { getLocale, t as tr } from '@/i18n';
+import { uuid } from '@/lib/uuid';
+import { OutOfCreditsSheet } from '@/features/credits/OutOfCreditsSheet';
+import { useCreditConfig, useCreditStatus } from '@/lib/data/hooks-credits';
+import { costOf, isInsufficientCredits, totalRemaining } from '@/lib/credits/model';
+import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 
 interface LocalMsg {
   id: string;
@@ -80,6 +87,7 @@ function Chat() {
   const { data: conversations } = conversationsQ;
   const [busyAction, setBusyAction] = useState(false);
   const [msgs, setMsgs] = useState<LocalMsg[]>([]);
+  const region = useEmergencyRegion();
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -100,12 +108,20 @@ function Chat() {
   const { latest } = useConsents();
   const setConsent = useSetConsent();
   const scroll = useRef<FlatList<LocalMsg>>(null);
+  // Clavier ouvert : le dernier message reste visible au-dessus de la barre de saisie
+  useEffect(() => { if (!keyboardVisible) return; const id = setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 80); return () => clearTimeout(id); }, [keyboardVisible]);
   const askedInitial = useRef(false);
   const consented = latest.get('ai_assistant') === true;
 
-  const limit = quota?.limit ?? quotaStatus?.quota ?? null;
-  const used = quota?.used ?? quotaStatus?.used ?? null;
+  // Démonstration reliée à la vraie IA : limite par jour et par appareil (assistant-demo). Avec un compte : crédits HOMI Aura
+  // (le serveur réserve, débite à la réponse livrée, restitue en cas d'échec ou de coupure : docs/CREDITS_IA.md).
+  const demoLimited = isDemo && hasRealBackend;
+  const limit = demoLimited ? quota?.limit ?? quotaStatus?.quota ?? null : null;
+  const used = demoLimited ? quota?.used ?? quotaStatus?.used ?? null : null;
   const remaining = limit != null && used != null ? Math.max(0, limit - used) : null;
+  const credits = useCreditStatus();
+  const creditConfig = useCreditConfig();
+  const [outOfCredits, setOutOfCredits] = useState(false);
 
   const historyLoaded = useRef(false);
   useEffect(() => {
@@ -166,6 +182,10 @@ function Chat() {
         'assistant',
         {
           conversation_id: conversationId, message, use_context: useContext, context: useContext ? context : undefined,
+          // Langue et pays : en cas de détresse, ressources d'urgence dans la bonne langue et du bon pays
+          lang: getLocale(), region,
+          // Clé d'idempotence de la question : un renvoi après coupure n'est jamais débité deux fois
+          request_id: uuid(),
           // Historique non conservé : les derniers échanges accompagnent la question (gardés seulement pour cette réponse)
           recent_turns: conversationId ? undefined : msgs.filter((x) => !x.streaming && !x.error && !x.stopped && (x.role === 'user' || (x.safety ?? 'none') === 'none')).slice(-12).map((x) => ({ role: x.role, content: x.content })),
         },
@@ -187,9 +207,14 @@ function Chat() {
       });
       if (res.safety !== 'none') haptic('warning');
       if (res.replaced) toast(tr('u8.chat.replaced'), 'info');
-      inv('assistant_conversations', 'assistant_usage');
+      inv('assistant_conversations', 'assistant_usage', 'credits');
     } catch (e) {
-      if (e instanceof BackendError && e.isPremiumRequired) {
+      if (isInsufficientCredits(e)) {
+        // Solde épuisé : la question n'est pas comptée ; feuille d'achat de packs (solde, renouvellement, prix boutique)
+        setMsgs((m) => m.filter((x) => x.id !== answerId));
+        setOutOfCredits(true);
+        inv('credits');
+      } else if (e instanceof BackendError && e.isPremiumRequired) {
         setPremiumNeeded(e.message);
         setMsgs((m) => m.filter((x) => x.id !== answerId));
         inv('assistant_usage');
@@ -358,6 +383,7 @@ function Chat() {
         maxToRenderPerBatch={12}
         windowSize={7}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
         keyExtractor={(m) => m.id}
         removeClippedSubviews={false}
         contentContainerStyle={{ gap: spacing.md, paddingBottom: spacing.lg }}
@@ -402,7 +428,7 @@ function Chat() {
         )}
         renderItem={({ item: m }) => (
           m.role === 'user' ? (
-            <View key={m.id} style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.colors.primary, padding: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
+            <View key={m.id} style={{ alignSelf: 'flex-end', maxWidth: '86%', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), padding: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radius.lg, borderBottomRightRadius: 6 }}>
               <Text color={t.colors.primaryText}>{m.content}</Text>
             </View>
           ) : m.safety && m.safety !== 'none' ? (
@@ -411,7 +437,7 @@ function Chat() {
             <View key={m.id} style={{ gap: spacing.xs }}>
               <View
                 accessibilityLiveRegion={m.streaming ? 'polite' : 'none'}
-                style={{ backgroundColor: m.error ? t.colors.dangerSoft : t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, borderWidth: 1, borderColor: t.colors.border, gap: spacing.sm }}
+                style={{ backgroundColor: m.error ? t.colors.dangerSoft : t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, ...glassEdge(t), gap: spacing.sm }}
               >
                 {!!m.devMode && <Text variant="caption" color={t.colors.lavender}>{m.devMode}</Text>}
                 {m.streaming ? (
@@ -452,7 +478,11 @@ function Chat() {
         ) : null}
       />
 
+      <OutOfCreditsSheet visible={outOfCredits} onClose={() => setOutOfCredits(false)} cost={costOf('assistant_question', creditConfig.data)} />
       <View style={{ paddingBottom: keyboardVisible ? spacing.sm : insets.bottom + spacing.sm, gap: 4 }}>
+        {!demoLimited && credits.data?.subscribed ? (
+          <Text variant="caption" muted center testID="chat-credits">{tr('cr.balance.total', { count: totalRemaining(credits.data) })}</Text>
+        ) : null}
         {remaining != null && (
           <Text variant="caption" muted center>
             {demoAi
@@ -461,7 +491,7 @@ function Chat() {
           </Text>
         )}
         {tooLong && <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.chars', { n: input.length, max: MAX_QUESTION_LENGTH })}</Text>}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: t.colors.border, padding: 6 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: 6 }}>
           <TextInput
             value={input}
             onChangeText={setInput}
@@ -476,7 +506,7 @@ function Chat() {
           />
           {sending ? (
             <Tappable accessibilityRole="button" accessibilityLabel={tr('u8.chat.stop')} onPress={() => abortRef.current?.abort()} testID="chat-stop"
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="square" color={t.colors.primaryText} size={18} />
             </Tappable>
           ) : (
@@ -486,7 +516,7 @@ function Chat() {
               disabled={blocked || input.trim().length < 2}
               onPress={() => send()}
               testID="chat-send"
-              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, alignItems: 'center', justifyContent: 'center', opacity: blocked || input.trim().length < 2 ? 0.4 : 1 }}
+              style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), alignItems: 'center', justifyContent: 'center', opacity: blocked || input.trim().length < 2 ? 0.4 : 1 }}
             >
               <Icon name="arrow-up" color={t.colors.primaryText} />
             </Tappable>

@@ -1,0 +1,31 @@
+import type { day5 as fr } from '../fr/day5';
+import type { Messages } from '../types';
+
+export const day5: Messages<typeof fr> = {
+  'd5.state.late': "Verspätet",
+  'd5.state.now': "Läuft",
+  'd5.state.next': "Als Nächstes",
+  'd5.state.later': "Später",
+  'd5.state.done': "Erledigt",
+  'd5.state.past': "Vorbei",
+  'd5.state.anytime': "Im Laufe des Tages",
+  'd5.anytime': "Ganztags",
+  'd5.done': "Erledigt",
+  'd5.doneA11y': "„{title}“ als erledigt markieren",
+  'd5.brief': "Kurz gesagt",
+  'd5.next.appointment': "Nächster Termin",
+  'd5.next.event': "Nächstes Ereignis",
+  'd5.next.noneTitle': "Heute keine Termine",
+  'd5.next.noneBody': "Termine und Ereignisse der Familie erscheinen hier.",
+  'd5.next.hint': "Öffnet die Details",
+  'd5.kind.custody': "Betreuung",
+  'd5.urgent.title': "Zu erledigen",
+  'd5.rest.title': "Der restliche Tag",
+  'd5.clear.pill': "Aktuell",
+  'd5.clear.body': "Keine Anfrage wartet auf dich.",
+  'd5.cal.clash': "Überschneidung",
+  'd5.cal.free': "Nichts geplant",
+  'd5.bottle.next': "Nächste Erinnerung",
+  'd5.bottle.late': "Erinnerung vorbei",
+  'd5.bottle.historySub': "Alle notierten Fläschchen, Tag für Tag",
+};

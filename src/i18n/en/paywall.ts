@@ -2,7 +2,7 @@ import type { paywall as fr } from '../fr/paywall';
 import type { Messages } from '../types';
 
 export const paywall: Messages<typeof fr> = {
-  'pw.title': 'Au fil de nous Premium',
+  'pw.title': 'HOMI Premium',
   'pw.tagline': 'Your whole journey, from planning a baby to first steps, held by one thread.',
   'pw.stage.ttc': 'Trying to conceive',
   'pw.stage.pregnancy': 'Pregnancy',
@@ -10,7 +10,7 @@ export const paywall: Messages<typeof fr> = {
   'pw.stage.baby': 'Baby',
   'pw.stage.child': 'Child',
   'pw.locked': 'This space is part of Premium',
-  'pw.lockedBody': 'Your free account keeps your profile, your settings, viewing, exporting and deleting your data, and the emergency numbers. Full tracking opens with Premium.',
+  'pw.lockedBody': 'Your free account keeps your profile, your settings, exporting and deleting your data, and the emergency numbers. Full tracking opens with Premium.',
   'pw.checking': 'Checking your subscription…',
   'pw.featTitle': 'What Premium opens',
   'pw.feat.track.title': 'Everyday tracking',
@@ -29,7 +29,7 @@ export const paywall: Messages<typeof fr> = {
   'pw.restore': 'Restore purchases',
   'pw.details': 'Plan details and comparison',
   'pw.account': 'My account and settings',
-  'pw.myData': 'View, export or delete my data',
+  'pw.myData': 'Export or delete my data',
   'pw.emergency': 'Emergency numbers',
   'pw.dataSafe': 'Your data is never erased when a subscription ends: it stays viewable and exportable.',
   'pw.noPlans': 'The plans cannot be shown right now.',

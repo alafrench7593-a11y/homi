@@ -6,6 +6,7 @@
 import { Linking } from 'react-native';
 import { router, type Href } from 'expo-router';
 import { t as tr } from '@/i18n';
+import { parentRoute } from './parentRoute';
 
 type Toast = (msg: string, tone?: 'success' | 'info' | 'error') => void;
 
@@ -24,4 +25,14 @@ export function openLink(url: string, toast: Toast): void {
 export function goBack(fallback: Href = '/(tabs)'): void {
   if (router.canGoBack()) router.back();
   else router.replace(fallback);
+}
+
+/**
+ * Fermer / Retour d'un écran PLEIN ÉCRAN (sans `Screen`) : retour dans l'historique, sinon (lien direct, notification)
+ * l'écran PARENT de l'adresse (`parentRoute`, comme le Retour de `Screen`). Audit 01 N-07 : « Fermer » de
+ * /sleep/tonight et /sleep/difficult/[id] ouverts par une notification menait à l'Accueil au lieu de l'onglet Bébé.
+ */
+export function goUp(pathname: string): void {
+  if (router.canGoBack()) router.back();
+  else router.replace(parentRoute(pathname) as Href);
 }

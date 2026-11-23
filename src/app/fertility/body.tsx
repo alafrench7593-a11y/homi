@@ -6,7 +6,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { LineChart } from '@/components/Charts';
+import { MeasureCurve, MeasureTray } from '@/components/measureCurve';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Card, Chip, Field, haptic, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { PrivateBanner } from '@/components/Fertility';
@@ -15,12 +15,14 @@ import { backend, eq } from '@/lib/backend';
 import { useInvalidate } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useFertilityObservations, useSaveObservation } from '@/lib/data/hooks-fertility';
-import { bbtSeries, parseTemperature } from '@/lib/domain/cycle';
+import { parseTemperature } from '@/lib/domain/cycle';
+import { toCurvePoints } from '@/lib/domain/measureCurve';
 import { addDays, formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { CERVICAL_MUCUS, type CervicalMucus } from '@/lib/types-fertility';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const mucusLabel = (v: CervicalMucus | null) => CERVICAL_MUCUS.find((m) => m.value === v)?.label ?? null;
 
@@ -36,7 +38,12 @@ export default function BodyScreen() {
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const list = data ?? [];
-  const points = useMemo(() => bbtSeries(list, 45), [list]);
+  // Courbe : une température notée = un point (jour civil), rien d'interpolé ; les jours sans relevé restent vides
+  const points = useMemo(() => toCurvePoints(list, (o) => ({ id: o.id, date: o.observed_on, value: o.bbt_celsius, note: o.note })), [list]);
+  const [trayId, setTrayId] = useState<string | null>(null);
+  const [trayOpen, setTrayOpen] = useState(false);
+  const trayObs = trayId ? list.find((o) => o.id === trayId) ?? null : null;
+  const openObs = (id: string) => { setTrayId(id); setTrayOpen(true); };
   const since = addDays(todayISO(), -45);
   const sorted = useMemo(() => [...list].sort((a, b) => b.observed_on.localeCompare(a.observed_on)), [list]);
   const lastTemp = sorted.find((o) => o.bbt_celsius != null) ?? null;
@@ -103,16 +110,14 @@ export default function BodyScreen() {
         <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u3.fertBody.oneADay')}</Text>
       </Card>
 
-      <SectionTitle title={tr('u3.fertBody.chartTitle')} />
+      <SectionTitle title={tr('ct.temp.tray')} />
       {obsQ.isLoading && !data ? <Skeleton kind="card" rows={1} /> : obsQ.isError && !data ? (
         <ErrorView error={obsQ.error} onRetry={() => void obsQ.refetch()} title={tr('u3.fertBody.errShow')} />
-      ) : points.length >= 2 ? (
-        <Card>
-          <LineChart points={points} unit="°C" accessibilityLabel={tr('u3.fertBody.wakeTemp')} formatX={(x) => formatDateFr(addDays(since, x), false)} />
-          <Text variant="caption" muted>{tr('u3.fertBody.chartNote')}</Text>
-        </Card>
       ) : (
-        <Card tone="soft"><Text muted>{tr('u3.fertBody.needTwo')}</Text></Card>
+        <Card testID="temp-curve-card">
+          <MeasureCurve points={points} unit="°C" digits={2} minYSpan={0.6} periods={['1m', '3m']} onOpen={openObs} title={tr('u3.fertBody.wakeTemp')} testID="temp-curve" />
+          <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u3.fertBody.chartNote')}</Text>
+        </Card>
       )}
       <Banner tone="info">{tr('u3.fertBody.vary')}</Banner>
 
@@ -120,18 +125,28 @@ export default function BodyScreen() {
         <>
           <SectionTitle title={tr('u3.fertBody.mine')} />
           <Card>
-            {list.slice(0, 20).map((o) => (
-              <ListRow
+            <MotionList>{list.slice(0, 20).map((o) => (
+              <MotionItem key={o.id}><ListRow
                 key={o.id}
+                onPress={o.bbt_celsius != null ? () => openObs(o.id) : undefined}
                 icon="thermometer"
                 title={formatDateFr(o.observed_on)}
                 subtitle={[o.bbt_celsius != null ? `${String(o.bbt_celsius).replace('.', ',')} °C` : null, mucusLabel(o.cervical_mucus), o.note].filter(Boolean).join(' · ')}
                 right={<IconButton icon="trash-2" label={tr('u3.fertBody.delA11y', { date: formatDateFr(o.observed_on) })} onPress={() => remove(o.id, o.observed_on)} />}
-              />
-            ))}
+              /></MotionItem>
+            ))}</MotionList>
           </Card>
         </>
       ) : null}
+      <MeasureTray testID="temp-tray" open={trayOpen} onOpenChange={setTrayOpen} title={tr('ct.temp.tray')} unit="°C" digits={2} step={0.05} min={34} max={40}
+        item={trayObs && trayObs.bbt_celsius != null ? { id: trayObs.id, value: Number(trayObs.bbt_celsius), date: trayObs.observed_on, note: trayObs.note, details: trayObs.cervical_mucus ? [tr('ct.temp.mucus', { value: mucusLabel(trayObs.cervical_mucus) ?? '' })] : [] } : null}
+        onSave={async (it, v) => {
+          // Même chemin que le formulaire : une observation par jour (fusion), glaire et note conservées
+          const o = list.find((x) => x.id === it.id);
+          if (!o) throw new Error(tr('u3.fertBody.errShow'));
+          await save.mutateAsync({ observed_on: o.observed_on, bbt_celsius: v, cervical_mucus: o.cervical_mucus, note: o.note });
+        }}
+        onSaved={() => toast(tr('ct.edit.saved'))} />
     </Screen>
   );
 }

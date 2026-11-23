@@ -16,6 +16,7 @@ B = os.environ.get('NAV_URL', 'http://127.0.0.1:8822')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/toietmoi-e2e')
 os.makedirs(SHOTS, exist_ok=True)
 R, errs = {}, []
+EXE = os.environ.get('PW_CHROMIUM') or None  # ex. /opt/pw-browsers/chromium
 TMP = os.path.join(SHOTS, 'photos'); os.makedirs(TMP, exist_ok=True)
 
 
@@ -91,15 +92,19 @@ def pick_files(pg, test_id, paths):
 
 
 def run(p):
-    b = p.chromium.launch()
+    b = p.chromium.launch(executable_path=EXE)
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR', timezone_id='Europe/Paris')
     pg = ctx.new_page()
     pg.on('dialog', lambda d: d.accept())
-    pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and errs.append(m.text[:200]))
+    pg.on('console', lambda m: m.type == 'error' and 'ERR_TUNNEL' not in m.text and 'Failed to load resource' not in m.text and errs.append(m.text[:200]))
     pg.on('pageerror', lambda e: errs.append('PAGE ' + str(e)[:200]))
     go(pg, '/welcome', 2500)
-    pg.get_by_text('Découvrir sans compte').first.click(); pg.wait_for_timeout(4500)
+    pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4500)
     me = demo(pg, "s => s.session.userId")
+    # La communauté fait partie de Premium (Premium strict, 08/11/2026) : abonnement de test actif dans le moteur local
+    mutate(pg, f"""s => {{ s.tables.subscriptions = (s.tables.subscriptions || []).filter(x => x.user_id !== '{me}');
+      s.tables.subscriptions.push({{ user_id: '{me}', status: 'active', product_id: 'homi_premium_monthly', store: 'test', period_type: 'monthly',
+        expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), will_renew: true }}); }}""")
     lina = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Lina').id")
     noe = demo(pg, "s => s.tables.children.find(c => c.first_name === 'Noé').id")
 

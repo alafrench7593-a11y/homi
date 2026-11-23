@@ -9,7 +9,7 @@ import { Tappable } from '@/components/Tappable';
 import { GlassSurface } from '@/components/Glass';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { DocTrack } from '@/features/careTrack/DocTrack';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
@@ -39,9 +39,11 @@ export default function DocumentsHome() {
   const { data: limit } = usePlanLimit('documents_count');
   const [query, setQuery] = useState('');
   // Ouvert depuis un profil (enfant, grossesse) : ses documents d'abord ; « Tout le monde » reste à un geste
-  const qp = useLocalSearchParams<{ child?: string; for?: string }>();
+  const qp = useLocalSearchParams<{ child?: string; for?: string; cat?: string }>();
   const [subject, setSubject] = useState<Subject | null>(() => (qp.child ? { kind: 'child', id: qp.child } : qp.for === 'pregnancy' && pregnancy ? { kind: 'pregnancy', id: pregnancy.id } : null));
   const [group, setGroup] = useState<DocGroup | null>(null);
+  // Ouvert depuis « Contrats de garde » (Avant la garde) : la catégorie « Garde » seule, filtre retirable
+  const [cat, setCat] = useState<string | null>(qp.cat === 'childcare' ? 'childcare' : null);
   const [flag, setFlag] = useState<Flag | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [selecting, setSelecting] = useState(false);
@@ -59,11 +61,12 @@ export default function DocumentsHome() {
     if (flag === 'to_verify') l = l.filter((d) => d.review_status === 'to_verify');
     if (subject) l = l.filter((d) => sameSubject(subjectOf(d), subject));
     if (group) l = l.filter((d) => categoryDef(d.category).group === group);
+    if (cat) l = l.filter((d) => d.category === cat);
     if (!query.trim()) return { list: l, interpretation: null };
     const r = searchDocuments(l, query, { children: kids ?? [] });
     return { list: r.results, interpretation: r.interpretation };
-  }, [docs, flag, subject, group, query, kids]);
-  const filtering = !!(query.trim() || subject || group || flag);
+  }, [docs, flag, subject, group, query, kids, cat]);
+  const filtering = !!(query.trim() || subject || group || flag || cat);
   const toVerify = (docs ?? []).filter((d) => !d.archived && d.review_status === 'to_verify');
   const favorites = (docs ?? []).filter((d) => !d.archived && d.favorite);
 
@@ -85,7 +88,7 @@ export default function DocumentsHome() {
       // Les photos passent par l'éditeur de pages (recadrage, rotation, lisibilité) ; PDF et fichiers sont enregistrés tels quels
       const photosOnly = ok.every((f) => f.mimeType === 'image/jpeg' || f.mimeType === 'image/png' || f.mimeType === 'image/webp');
       setPendingImport({ kind: kind === 'photos' && photosOnly ? 'photos' : 'files', files: ok });
-      router.push(`/documents/scan?from=${kind === 'photos' && photosOnly ? 'photos' : 'files'}`);
+      router.push(`/documents/scan?from=${kind === 'photos' && photosOnly ? 'photos' : 'files'}${cat ? `&cat=${cat}` : ''}`);
     } catch {
       toast(tr('docs.err.picker'), 'error');
     }
@@ -98,13 +101,8 @@ export default function DocumentsHome() {
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
       {/* Actions principales */}
-      {!loading && !failed ? (
-        <TodaySummary title={tr('docs.title')} items={[
-          { icon: 'folder', value: String((docs ?? []).filter((d) => !d.archived).length), label: tr('docs.section.library') },
-          { icon: 'alert-circle', value: String(toVerify.length), label: tr('docs.section.toVerify') },
-          { icon: 'star', value: String(favorites.length), label: tr('docs.section.favorites') },
-        ]} />
-      ) : null}
+      {/* Suivi par mois (mois et document ouvert gardés dans l'adresse), fiche de correction */}
+      {!loading && !failed && !selecting ? <DocTrack docs={subject ? (docs ?? []).filter((d) => sameSubject(subjectOf(d), subject)) : docs ?? []} /> : null}
       {/* Recherche en tête : retrouver un document en tapant quelques mots */}
       <Field label={tr('docs.search.label')} value={query} onChangeText={setQuery} placeholder={tr('docs.search.placeholder')} returnKeyType="search" autoCorrect={false} testID="docs-search" />
       {/* Favoris à portée de pouce : tuiles qui défilent, ouvertes en un geste */}
@@ -143,6 +141,17 @@ export default function DocumentsHome() {
           <Text variant="caption" muted>{tr('docs.export.short')}</Text>
         </Card></View>
       </Row>
+      {/* 42 : valeurs d'analyses saisies (courbe par analyse), reliées aux comptes rendus */}
+      <Card onPress={() => router.push('/documents/labs')} accessibilityLabel={tr('lab.title')} testID="docs-labs">
+        <Row style={{ alignItems: 'center' }}>
+          <Icon name="activity" color={t.colors.lavender} />
+          <View style={{ flex: 1 }}>
+            <Text weight="bold">{tr('lab.title')}</Text>
+            <Text variant="caption" muted>{tr('lab.short')}</Text>
+          </View>
+          <Icon name="chevron-right" size={18} color={t.colors.textMuted} />
+        </Row>
+      </Card>
 
       <Banner tone="info" icon="lock">{tr('docs.privacyBanner')}</Banner>
       {atLimit ? (
@@ -169,6 +178,7 @@ export default function DocumentsHome() {
         {subjects.map((s) => <Chip key={s.kind + ((s as { id?: string }).id ?? '')} label={subjectLabel(s, kids)} selected={!!subject && sameSubject(s, subject)} onPress={() => setSubject(subject && sameSubject(s, subject) ? null : s)} />)}
       </Row>
       <Row wrap gap={6}>
+        {cat ? <Chip label={categoryLabel(cat)} icon="x" selected onPress={() => setCat(null)} testID="docs-cat-filter" /> : null}
         {GROUPS.map((g) => <Chip key={g} label={groupLabel(g)} tone="lavender" selected={group === g} onPress={() => setGroup(group === g ? null : g)} />)}
         <Chip label={tr('docs.filter.favorites')} icon="star" selected={flag === 'favorite'} onPress={() => setFlag(flag === 'favorite' ? null : 'favorite')} />
         <Chip label={tr('docs.filter.toVerify', { count: toVerify.length })} icon="alert-circle" selected={flag === 'to_verify'} onPress={() => setFlag(flag === 'to_verify' ? null : 'to_verify')} />
@@ -203,7 +213,7 @@ export default function DocumentsHome() {
       subtitle={tr('docs.subtitle')}
       scroll={false}
       padded={false}
-      action={selecting ? undefined : { label: tr('docs.scan'), icon: 'camera', onPress: () => { haptic('light'); router.push('/documents/scan?from=camera'); }, disabled: atLimit, testID: 'docs-scan' }}
+      action={selecting ? undefined : { label: tr('docs.scan'), icon: 'camera', onPress: () => { haptic('light'); router.push(`/documents/scan?from=camera${cat ? `&cat=${cat}` : ''}`); }, disabled: atLimit, testID: 'docs-scan' }}
       footer={selecting ? (
         <Row>
           <Button label={tr('common.cancel')} variant="secondary" onPress={() => { setSelecting(false); setSelected([]); }} style={{ flex: 1 }} />
@@ -219,9 +229,9 @@ export default function DocumentsHome() {
         ListHeaderComponent={header}
         renderItem={({ item: d }) => <DocCard doc={d} children={kids} onPress={() => open(d)} selecting={selecting} selected={selected.includes(d.id)} />}
         ListEmptyComponent={loading || failed ? null : filtering ? (
-          <EmptyState icon="search" title={tr('docs.empty.noMatch')} body={tr('docs.empty.noMatchBody')} action={{ label: tr('docs.empty.clear'), icon: 'x', onPress: () => { setQuery(''); setSubject(null); setGroup(null); setFlag(null); } }} />
+          <EmptyState icon="search" title={tr('docs.empty.noMatch')} body={tr('docs.empty.noMatchBody')} action={{ label: tr('docs.empty.clear'), icon: 'x', onPress: () => { setQuery(''); setSubject(null); setGroup(null); setFlag(null); setCat(null); } }} />
         ) : (
-          <EmptyState icon="folder" title={tr('docs.empty.title')} body={tr('docs.empty.body')} action={{ label: tr('docs.scan'), icon: 'camera', onPress: () => router.push('/documents/scan?from=camera') }} />
+          <EmptyState icon="folder" title={tr('docs.empty.title')} body={tr('docs.empty.body')} action={{ label: tr('docs.scan'), icon: 'camera', onPress: () => router.push(`/documents/scan?from=camera${cat ? `&cat=${cat}` : ''}`) }} />
         )}
         ListFooterComponent={typeof limit === 'number' && count > 0 && limit < 1000 ? <Text variant="caption" muted center style={{ marginTop: spacing.sm }}>{tr('docs.quota', { count, limit })}</Text> : null}
       />

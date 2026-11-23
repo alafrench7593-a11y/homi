@@ -6,9 +6,26 @@
 //  - JSON (application/json) : erreurs, orientation urgente, refus, ou réponse complète si stream=false ;
 //  - SSE (text/event-stream) si stream=true : événements « meta », « delta » ({ text }), puis « done »
 //    (même contenu que la réponse JSON complète) ou « error ».
+//
+// Crédits IA (26/11/2026, docs/CREDITS_IA.md) — à la place de l'ancien compteur assistant_usage :
+//  - SÉCURITÉ AVANT TOUT : la détection de détresse et les réponses de sécurité ne consomment JAMAIS de crédit et ne
+//    sont JAMAIS bloquées par un solde nul (elles passent avant toute vérification de crédit) ;
+//  - réserve (credits_reserve, coût lu dans credit_settings) AVANT l'appel à Gemini ; refus clair
+//    402 « insufficient_credits » (solde, date de renouvellement) qui permet à l'application de proposer un pack ;
+//  - débit (credits_commit) seulement quand la réponse a été LIVRÉE ; restitution (credits_release) si Gemini échoue,
+//    si la réponse est bloquée, ou si la diffusion est coupée ; une réserve orpheline expire d'elle-même ;
+//  - clé d'idempotence : request_id envoyé par l'application (même question renvoyée → aucun second débit) ;
+//  - interrupteur serveur « ai.enabled » (credit_settings) : l'IA se coupe sans nouvelle version de l'application ;
+//  - modèle : secret GEMINI_MODEL (clé GEMINI_API_KEY d'un projet Google AI en facturation payante).
+// Journaux : jamais le texte d'une question ni d'une réponse (codes d'état seulement).
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
-import { geminiConfig, geminiGenerate, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
-import { assessSafety, auditAnswer, crisisMessage, urgentContacts } from '../_shared/safety.ts';
+import { readJsonBody } from '../_shared/body.ts';
+import { geminiGenerate, geminiGenerateTurn, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
+import { runAura } from '../_shared/aura-run.ts';
+import { pseudonymizer } from '../_shared/aura-privacy.ts';
+import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
+import { billedSseStream, ClientGone, requestKey, reserveRefusal, settle, type CreditsGate, type ReserveResult } from '../_shared/credits.ts';
+import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
 import {
   INJECTION_REFUSAL,
@@ -23,21 +40,39 @@ import {
   type StructuredAnswer,
 } from '../_shared/assistant-format.ts';
 
-const APP_NAME = Deno.env.get('APP_NAME') ?? 'Au fil de nous';
+const APP_NAME = Deno.env.get('APP_NAME') ?? 'HOMI';
 
 const MAX_HISTORY = 12;
 const MAX_TOKENS = 1400;
 
 const CAUTIOUS_ANSWER: StructuredAnswer = {
   short:
-    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de votre situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
-  actions: ['Notez vos questions et ce que vous observez (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
+    'Je préfère ne pas répondre précisément à cette question : la réponse dépend de ta situation et doit venir d’un professionnel de santé (médecin, sage-femme, pédiatre ou pharmacien).',
+  actions: ['Note tes questions et ce que tu observes (depuis quand, à quelle fréquence) pour les transmettre au professionnel.'],
   watch: [],
-  consult: ['Demandez l’avis de votre médecin, de votre sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
+  consult: ['Demande l’avis de ton médecin, de ta sage-femme, du pédiatre ou d’un pharmacien.', 'En cas d’urgence : 15 ou 112 (114 par SMS).'],
   questions: [],
   sources: [],
   updated_on: null,
 };
+
+/** Grand livre des crédits (RPC service_role) : réserve → débit si livré, restitution sinon. */
+function creditsGate(admin: ReturnType<typeof adminClient>, userId: string): CreditsGate {
+  return {
+    reserve: async (action, key) => {
+      const { data, error } = await admin.rpc('credits_reserve', { p_user: userId, p_action: action, p_idempotency_key: key });
+      return (error || !data ? { ok: false, error: 'server_error' } : data) as ReserveResult;
+    },
+    commit: async (id) => {
+      const { data, error } = await admin.rpc('credits_commit', { p_user: userId, p_reservation: id });
+      return !error && (data as { ok?: boolean } | null)?.ok === true;
+    },
+    release: async (id, reason) => {
+      const { data, error } = await admin.rpc('credits_release', { p_user: userId, p_reservation: id, p_reason: reason });
+      return !error && (data as { ok?: boolean } | null)?.ok === true;
+    },
+  };
+}
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -49,21 +84,52 @@ Deno.serve(withCors(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   // 0) Authentification : le JWT est vérifié auprès de Supabase Auth ; `db` agit AVEC les droits
-  //    de la personne (RLS). Le client « service » ne sert qu'au quota et à l'écriture des messages.
+  //    de la personne (RLS). Le client « service » ne sert qu'aux crédits et à l'écriture des messages.
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
   const { user, client: db } = auth;
   const admin = adminClient();
 
   if (!(await rateLimit(admin, `assistant:${user.id}`, 8, 60)) || !(await rateLimit(admin, `assistant-day:${user.id}`, 120, 86400))) {
-    return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessayez dans une minute.' }, 429);
+    return json({ error: 'rate_limited', message: 'Beaucoup de questions en peu de temps. Réessaie dans une minute.' }, 429);
   }
 
-  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: 'bad_request' }, 400);
+  let body: { conversation_id?: unknown; message?: unknown; context?: unknown; use_context?: unknown; stream?: unknown; recent_turns?: unknown; lang?: unknown; region?: unknown; request_id?: unknown };
+  const raw = await readJsonBody(req, 256 * 1024);
+  if (!raw) return json({ error: 'too_large' }, 413);
+  body = raw;
+
+  // HOMI Aura (docs/HOMI_AURA.md) : déroulé complet dans _shared/aura-run.ts, testé avec un Gemini simulé.
+  // Ordre : sécurité → consentement → crédits → Gemini (fonctions de la liste blanche, propositions jamais exécutées ici).
+  // Prénoms masqués avant Gemini (droits de la personne : RLS) — enfants et membres visibles du foyer
+  const householdNames = async (): Promise<string[]> => {
+    const [kids, people] = await Promise.all([
+      db.from('children').select('first_name').limit(50),
+      db.from('profiles').select('display_name').limit(50),
+    ]);
+    const out: string[] = [];
+    for (const k of kids.data ?? []) out.push(String((k as { first_name?: string }).first_name ?? ''));
+    for (const p of people.data ?? []) {
+      const n = String((p as { display_name?: string }).display_name ?? '').trim();
+      if (n) out.push(n, n.split(/\s+/)[0]);
+    }
+    return out;
+  };
+  const mode = (raw as { mode?: unknown }).mode;
+  if (mode === 'aura') {
+    const out = await runAura({
+      userId: user.id,
+      consented: async () => {
+        const { data } = await db.from('consents').select('granted').eq('user_id', user.id).eq('purpose', 'ai_assistant').order('created_at', { ascending: false }).limit(1).maybeSingle();
+        return data?.granted === true;
+      },
+      geminiConfig: () => enabledGeminiConfig(admin),
+      gate: creditsGate(admin, user.id),
+      turn: (cfg, o) => geminiGenerateTurn(cfg, o),
+      log: (code) => console.error(code), // codes seulement, jamais un texte
+      names: householdNames,
+    }, raw);
+    return json(out.body, out.status);
   }
   const message = (typeof body.message === 'string' ? body.message : '').trim();
   if (message.length < 2 || message.length > MAX_QUESTION_LENGTH) {
@@ -129,7 +195,9 @@ Deno.serve(withCors(async (req) => {
   // 1) Sécurité AVANT tout : orientation humaine immédiate, gratuite, sans IA
   const safety = assessSafety(message);
   if (safety.level !== 'none') {
-    const answer = crisisMessage(safety.level);
+    // Langue de l'application (sinon celle du message) et pays choisi : ressources d'urgence adaptées
+    const where = { lang: toSafetyLang(body.lang) ?? safety.lang, region: typeof body.region === 'string' ? body.region.slice(0, 8) : null };
+    const answer = crisisMessage(safety.level, where);
     const saved = await store(answer, { safety: safety.level, flags: safety.reasons });
     return json({
       conversation_id: saved.conversationId,
@@ -137,7 +205,7 @@ Deno.serve(withCors(async (req) => {
       answer,
       safety: safety.level,
       reasons: safety.reasons,
-      urgent_contacts: urgentContacts(safety.level),
+      urgent_contacts: urgentContacts(safety.level, where),
       sources: [],
       structured: null,
       show_emergency_resources: true,
@@ -146,39 +214,46 @@ Deno.serve(withCors(async (req) => {
   }
 
   if (!consented) {
-    return json({ error: 'consent_required', message: 'Pour utiliser l’assistant, acceptez d’abord ses conditions d’utilisation.' }, 403);
+    return json({ error: 'consent_required', message: 'Pour utiliser l’assistant, accepte d’abord ses conditions d’utilisation.' }, 403);
   }
 
-  // 2) Tentative de détournement des consignes : refus poli, sans IA ni quota
+  // 2) Tentative de détournement des consignes : refus poli, sans IA ni crédit
   if (looksLikePromptInjection(message)) {
     const structured = { ...INJECTION_REFUSAL, updated_on: todayIso() };
     return json({ conversation_id: requestedConversation, message_id: null, answer: structured.short, structured, safety: 'none', sources: [], stored: false, refused: true });
   }
 
-  // 3) Quota (gratuit / premium), vérifié et réservé côté serveur
-  // L'IA n'est pas configurée : on le dit clairement, sans consommer de question ni simuler de réponse.
-  const geminiOrNull = geminiConfig();
+  // 3) IA configurée ET ouverte (clé Gemini + interrupteur serveur « ai.enabled ») : sinon on le dit clairement,
+  //    sans réserver de crédit ni simuler de réponse.
+  const geminiOrNull = await enabledGeminiConfig(admin);
   if (!geminiOrNull) {
     // Message discret pour l'utilisatrice ; l'état détaillé est dans Réglages › État des services (mode développeur)
     console.error('assistant_not_configured');
-    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessayez plus tard.' }, 503);
+    return json({ error: 'ai_not_configured', message: 'L’assistant n’est pas disponible pour le moment. Réessaie plus tard.' }, 503);
   }
   const gemini = geminiOrNull;
 
-  const { data: quotaRows, error: quotaErr } = await admin.rpc('consume_assistant_quota', { p_user: user.id });
-  if (quotaErr) return json({ error: 'server_error' }, 500);
-  const quota = quotaRows?.[0];
-  if (!quota?.allowed) {
-    // Premium strict (20261108000300 + 20261109000100) : sans Premium ni offre « Assistant IA », le quota vaut 0
-    if (!quota?.quota) return json({ error: 'premium_required', message: 'L’assistant fait partie de Premium (ou de l’offre Assistant IA).' }, 402);
-    return json({ error: 'quota_reached', message: `Vous avez utilisé vos ${quota?.quota ?? ''} questions de ce mois.`, used: quota?.used, quota: quota?.quota }, 402);
-  }
-  const quotaOut = { used: quota.used as number, limit: quota.quota as number, remaining: Math.max(0, (quota.quota as number) - (quota.used as number)) };
+  // 4) Crédits : réserve atomique côté serveur (Premium strict : sans abonnement, aucun crédit)
+  const gate: CreditsGate = creditsGate(admin, user.id);
+  const reservation = await gate.reserve('assistant_question', requestKey('assistant', user.id, body.request_id));
+  const refusal = reserveRefusal(reservation);
+  if (refusal) return json(refusal.body, refusal.status);
+  if (!reservation.ok) return json({ error: 'server_error' }, 500);
+  const reservationId = reservation.reservation_id;
+  const creditsOut = {
+    cost: reservation.cost,
+    monthly_remaining: reservation.monthly_remaining ?? null,
+    purchased_remaining: reservation.purchased_remaining ?? null,
+    next_renewal: reservation.next_renewal ?? null,
+  };
+  const charge = (delivered: boolean, reason: string) => settle(gate, reservationId, delivered, reason).then((r) => {
+    if (r === 'failed') console.error('credits_settle_failed', delivered ? 'commit' : 'release'); // rattrapé par l'expiration des réserves
+  });
 
-  // 4) Contexte : UNIQUEMENT si la personne l'a autorisé pour cette conversation, nettoyé ici
+  // 5) Contexte : UNIQUEMENT si la personne l'a autorisé pour cette conversation, nettoyé ici
   const context: AssistantContext | null = useContext ? sanitizeContext(body.context) : null;
 
-  // 5) Articles publiés de la bibliothèque liés à la question (lecture sous RLS)
+  // 6) Articles publiés de la bibliothèque liés à la question (lecture sous RLS)
   const words = message
     .toLowerCase()
     .normalize('NFD')
@@ -194,7 +269,7 @@ Deno.serve(withCors(async (req) => {
   }
   const articleRefs = articles.map((a, i) => ({ ref: i + 1, title: a.title, slug: a.slug, sources: a.sources }));
 
-  // 6) Historique de la conversation (sous RLS : uniquement celle de la personne)
+  // 7) Historique de la conversation (sous RLS : uniquement celle de la personne)
   const history: { role: 'user' | 'assistant'; content: string }[] = [];
   if (requestedConversation) {
     const { data: msgs } = await db
@@ -216,10 +291,12 @@ Deno.serve(withCors(async (req) => {
   }
 
   const devMode = false;
+  const legacyPz = pseudonymizer(await householdNames().catch(() => []));
   const today = todayIso();
 
   /** Contrôle, structuration, filtrage des sources, enregistrement : réponse finale. */
-  async function finalize(raw: string) {
+  async function finalize(rawMasked: string) {
+    const raw = legacyPz.unmask(rawMasked);
     let structured = parseStructuredAnswer(raw, today);
     const flags = auditAnswer(raw);
     if (flags.length) structured = { ...CAUTIOUS_ANSWER, updated_on: today };
@@ -236,71 +313,65 @@ Deno.serve(withCors(async (req) => {
       safety: 'none' as const,
       demo: devMode,
       model: gemini.model,
-      quota: quotaOut,
+      credits: creditsOut,
       stored: !!saved.messageId,
     };
   }
 
   const geminiRequest = {
     system: buildSystemPrompt(APP_NAME, context, articles, today),
-    turns: [...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', text: h.content }) as GeminiTurn), { role: 'user', text: message } as GeminiTurn],
+    turns: [...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', text: legacyPz.mask(h.content) }) as GeminiTurn), { role: 'user', text: legacyPz.mask(message) } as GeminiTurn],
     maxOutputTokens: MAX_TOKENS,
   };
 
-  const unavailable = async () => {
-    await admin.rpc('refund_assistant_quota', { p_user: user.id });
-    return { error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessayez dans un instant.' };
-  };
+  const unavailable = { error: 'assistant_unavailable', message: 'L’assistant est momentanément indisponible. Réessaie dans un instant. Aucun crédit n’a été utilisé.' };
 
-  // 7a) Réponse complète (sans diffusion)
+  // 8a) Réponse complète (sans diffusion) : débit seulement si une réponse de l'IA est rendue
   if (!wantsStream) {
     let raw: string;
     try {
       raw = (await geminiGenerate(gemini, geminiRequest)).trim();
     } catch (e) {
       console.error('llm_error', e instanceof GeminiError ? e.status : 'unknown'); // jamais le contenu
-      if (e instanceof GeminiError && e.blocked) return json(await finalize(''));
-      return json(await unavailable(), 503);
+      const blocked = e instanceof GeminiError && e.blocked;
+      await charge(false, blocked ? 'blocked' : 'llm_error');
+      // Réponse bloquée : réponse prudente, jamais facturée
+      if (blocked) return json({ ...(await finalize('')), credits: { ...creditsOut, charged: false } });
+      return json(unavailable, 503);
     }
-    return json(await finalize(raw));
+    const out = await finalize(raw);
+    await charge(!!raw, raw ? 'delivered' : 'empty');
+    return json({ ...out, credits: { ...creditsOut, charged: !!raw } });
   }
 
-  // 7b) Diffusion en continu (Server-Sent Events)
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const send = (event: string, data: unknown) => {
-        try {
-          controller.enqueue(encoder.encode(encodeSse(event, data)));
-        } catch {
-          // l'application a fermé la connexion : on termine quand même (enregistrement de la réponse)
-        }
-      };
-      const close = () => {
-        try {
-          controller.close();
-        } catch {
-          // déjà fermé
-        }
-      };
-      send('meta', { conversation_id: requestedConversation, quota: quotaOut, demo: devMode });
+  // 8b) Diffusion en continu (Server-Sent Events) : débit seulement si « done » est remis à une connexion ouverte
+  const stream = billedSseStream({
+    encode: encodeSse,
+    meta: { conversation_id: requestedConversation, credits: creditsOut, demo: devMode },
+    settle: (delivered, reason) => charge(delivered, reason),
+    produce: async (emit) => {
       let raw = '';
       try {
-        try {
-          await geminiStream(gemini, geminiRequest, (t) => {
-            raw += t;
-            send('delta', { text: t });
-          });
-        } catch (e) {
-          if (!(e instanceof GeminiError && e.blocked)) throw e;
-          raw = ''; // réponse bloquée : remplacée par la réponse prudente
-        }
-        send('done', await finalize(raw.trim()));
+        await geminiStream(gemini, geminiRequest, (t) => {
+          raw += t;
+          // L'application est partie : on arrête de lire Gemini (aucun coût inutile) et la réserve est restituée
+          if (!emit('delta', { text: legacyPz.unmask(t) })) throw new ClientGone();
+        });
       } catch (e) {
-        console.error('assistant_stream_error', e instanceof Error ? e.message : 'unknown');
-        send('error', raw ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessayez dans un instant.' } : await unavailable());
+        if (e instanceof ClientGone) throw e;
+        if (!(e instanceof GeminiError && e.blocked)) {
+          console.error('assistant_stream_error', e instanceof GeminiError ? e.status : e instanceof Error ? e.name : 'unknown'); // jamais le texte
+          return {
+            error: raw
+              ? { error: 'assistant_unavailable', message: 'La réponse a été interrompue. Réessaie dans un instant. Aucun crédit n’a été utilisé.' }
+              : unavailable,
+          };
+        }
+        raw = ''; // réponse bloquée : remplacée par la réponse prudente, sans débit
       }
-      close();
+      const charged = raw.trim().length > 0;
+      const out = await finalize(raw.trim());
+      return { done: { ...out, credits: { ...creditsOut, charged } }, charge: charged };
     },
   });
   return new Response(stream, {

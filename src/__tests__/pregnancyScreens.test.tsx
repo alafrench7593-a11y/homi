@@ -27,6 +27,7 @@ import React from 'react';
 import { Alert, Platform } from 'react-native';
 import { act, create, type ReactTestInstance, type ReactTestRenderer } from 'react-test-renderer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { backend } from '@/lib/backend';
 import { eq } from '@/lib/backend/types';
 import { AuthProvider } from '@/lib/auth';
@@ -48,7 +49,7 @@ const flush = async (ms = 40) => { await act(async () => { await new Promise((re
 async function render(el: React.ReactElement) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity }, mutations: { gcTime: Infinity } } });
   let r!: ReactTestRenderer;
-  await act(async () => { r = create(<QueryClientProvider client={qc}><AuthProvider><ThemeProvider><ToastProvider>{el}</ToastProvider></ThemeProvider></AuthProvider></QueryClientProvider>); });
+  await act(async () => { r = create(<GestureHandlerRootView><QueryClientProvider client={qc}><AuthProvider><ThemeProvider><ToastProvider>{el}</ToastProvider></ThemeProvider></AuthProvider></QueryClientProvider></GestureHandlerRootView>); });
   await flush(250);
   return r;
 }
@@ -106,7 +107,9 @@ describe(`grossesse (${Platform.OS})`, () => {
     expect(logs).toHaveLength(1);
     expect(logs[0]).toMatchObject({ symptom: 'nausea', intensity: 1, note: 'Le matin surtout', week_sa: 9 });
     expect(t).toContain('Le matin surtout');
-    // saignement important : informations de sécurité et contacts
+    // saignement important : informations de sécurité et contacts (« Noter autre chose » ignore le double appui
+    // sur « Enregistrer » pendant 700 ms : audit 05)
+    await flush(800);
     await press(r, 'feel-another');
     await press(r, 'feel-sym-bleeding');
     await press(r, 'feel-intensity-3');
@@ -114,15 +117,20 @@ describe(`grossesse (${Platform.OS})`, () => {
     t = allText(r);
     expect(ids(r, 'feel-safety-')).toEqual(['feel-safety-emergency']);
     expect(t).toMatch(/15|112/);
-    // modifier puis supprimer
+    // modifier puis supprimer, depuis le journal daté : la ligne ouvre sa fiche (Tray), « Formulaire complet »
+    // reprend la note dans le formulaire ; « Corriger » mène à la suppression
     const id = logs[0].id;
-    await press(r, `feel-edit-${id}`);
+    expect(ids(r, 'feel-row-')).toContain(`feel-row-${id}`);
+    await press(r, `feel-row-${id}`);
+    await press(r, 'feel-tray-form');
     await press(r, 'feel-intensity-2');
     await press(r, 'feel-save', 400);
     const [edited] = await backend.select<{ intensity: number }>({ table: 'pregnancy_symptom_logs', filters: [eq('id', id)] });
     expect(edited.intensity).toBe(2);
     // suppression : confirmation demandée (boîte native), puis acceptée
     const alert = jest.spyOn(Alert, 'alert').mockImplementation((_t, _m, buttons) => { buttons?.[buttons.length - 1]?.onPress?.(); });
+    await press(r, `feel-row-${id}`);
+    await press(r, 'feel-tray-fix');
     await press(r, `feel-delete-${id}`, 400);
     expect(alert).toHaveBeenCalledTimes(1);
     alert.mockRestore();
@@ -135,7 +143,7 @@ describe(`grossesse (${Platform.OS})`, () => {
     const t = allText(r);
     expect(ids(r, 'echo-echo_')).toEqual(expect.arrayContaining(['echo-echo_1', 'echo-echo_2', 'echo-echo_3']));
     expect(t).toContain('Période indicative');
-    expect(t).toContain('À confirmer avec votre sage-femme ou votre médecin');
+    expect(t).toContain('À confirmer avec ta sage-femme ou ton médecin');
     expect(t).toContain('Ajouter mon véritable rendez-vous');
     expect(t).toMatch(/9 SA/);
     const [w1] = ultrasoundWindows(due);

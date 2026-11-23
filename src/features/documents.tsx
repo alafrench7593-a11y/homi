@@ -1,5 +1,6 @@
 /** Éléments partagés des écrans Documents : carte, choix du profil, choix de la catégorie, badges d'origine. */
 import React, { useState } from 'react';
+import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View } from 'react-native';
 import { Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
 import { formatDate, t as tr } from '@/i18n';
@@ -37,7 +38,7 @@ export function DocCard({ doc, children, onPress, selected, selecting }: { doc: 
   return (
     <Card onPress={() => { haptic('selection'); onPress(); }} accessibilityLabel={a11y} accessibilityHint={selecting ? tr('docs.card.selectHint') : tr('docs.card.openHint')}>
       <Row style={{ alignItems: 'flex-start' }}>
-        <View style={{ width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: selected ? t.colors.primary : t.colors.surfaceAlt }}>
+        <View style={{ width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: selected ? t.colors.primary : t.colors.surfaceAlt , ...(selected ? whoopEdge(t, t.colors.primary) : null)}}>
           <Icon name={selected ? 'check' : doc.mime_type === 'application/pdf' && def.value === 'other' ? 'file-text' : def.icon} color={selected ? t.colors.primaryText : t.colors.lavender} />
         </View>
         <View style={{ flex: 1, gap: 2 }}>

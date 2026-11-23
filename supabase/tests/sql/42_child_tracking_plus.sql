@@ -16,6 +16,8 @@ insert into public.households (id, name, created_by) values (:'FOYER', 'Foyer de
 -- Ida : aide à domicile, quotidien seulement (pas la santé)
 insert into public.household_members (household_id, user_id, role, can_view, can_edit) values (:'FOYER', :'IDA', 'caregiver', array['daily'], array['daily']);
 insert into public.children (id, household_id, first_name, birth_date) values (:'BEBE', :'FOYER', 'Noé', current_date - 120), (:'BEBE2', :'AUTRE', 'Zia', current_date - 90);
+-- Depuis le 13/11/2026 : une nounou voit seulement les enfants qui lui sont confiés explicitement
+update public.household_members set child_scope = array[:'BEBE']::uuid[] where household_id = :'FOYER' and user_id = :'IDA';
 
 set role authenticated; set request.jwt.claim.sub = :'HUGO';
 -- Biberon chronométré

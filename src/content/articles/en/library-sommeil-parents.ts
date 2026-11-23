@@ -94,7 +94,7 @@ Everyone's needs are not necessarily the same: the mother is sometimes recoverin
 
 **If you are on your own**: ask someone close to come for a few days, or to mind baby for a nap. The PMI can also point you to help, for example home help.
 
-In Au fil de nous, night-time relays let you note who gets up when, so that everyone knows where they stand.
+In HOMI, night-time relays let you note who gets up when, so that everyone knows where they stand.
 
 ## Frequently asked questions
 **How do I get back to sleep after my turn?**
@@ -198,7 +198,7 @@ This article gives you general benchmarks; it does not replace the advice of a h
 - Cut back what can be cut: non-urgent tasks, demands, visits.
 - Prepare for the consultation: since when, what has changed, what worries you most.
 
-In Au fil de nous, tracking your mood and sleep can help you spot a change and talk about it.
+In HOMI, tracking your mood and sleep can help you spot a change and talk about it.
 
 ## Frequently asked questions
 **How do I know if it is “just” tiredness?**

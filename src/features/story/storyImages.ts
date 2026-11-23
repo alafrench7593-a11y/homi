@@ -1,6 +1,7 @@
 /**
  * Personnages de « Notre histoire » : croquis au fil doré (comme le logo), tirés des images ElevenLabs du 26/10/2026 : la même femme que dans la vidéo
  * de fond, à chaque étape de STORY_CHAPTERS, détourée (fond transparent) pour se poser sur le ciel de l'application.
+ * HOMI (13/11/2026) : affichées teintées en silhouette lilas (FamilyStoryArt, STORY_TINT) ; illustrations HOMI dédiées à produire.
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
 export const STORY_IMAGES: number[] = [

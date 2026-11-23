@@ -17,7 +17,7 @@ import { addDays, todayISO } from '@/lib/domain/dates';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { runOps } from '@/lib/journeys/manager';
 import { activeOf, computeDue, deleteOps, isEstimatedDue, planChange, planEndPregnancy, planStartPregnancy, visiblePregnancy, type JourneyRow } from '@/lib/journeys/model';
-import { quickAllowed, quickFor, screenAllowed, toolsFor, type ScopeCtx } from '@/lib/journeys/tools';
+import { allowedToolIds, quickAllowed, quickFor, screenAllowed, toolsFor, type ScopeCtx } from '@/lib/journeys/tools';
 import type { Child, Pregnancy, Reminder } from '@/lib/types';
 import { uuid } from '@/lib/uuid';
 
@@ -26,7 +26,7 @@ let userId = '';
 let hid = '';
 const rows = () => backend.select<JourneyRow>({ table: 'user_journeys' });
 const pregnancies = () => backend.select<Pregnancy>({ table: 'pregnancies' });
-const ids = (c: ScopeCtx) => toolsFor(c).map((x) => x.id);
+const ids = (c: ScopeCtx) => allowedToolIds(c);
 const FEEDING_DIAPERS = ['baby_breastfeed', 'baby_bottle_timer', 'baby_bottle', 'baby_bottle_history', 'baby_diaper', 'baby_foods', 'pp_feeding', 'pp_bottle'];
 
 beforeAll(async () => {
@@ -147,8 +147,9 @@ describe('les 14 scénarios de parcours', () => {
     const [noe] = await backend.select<Child>({ table: 'children', filters: [eq('first_name', 'Noé')] });
     const a = toolsFor({ scope: 'baby', childId: lina.id });
     const b = toolsFor({ scope: 'child', childId: noe.id });
-    expect(a.find((x) => x.id === 'kid_growth')?.href).toBe(`/child/${lina.id}/growth`);
-    expect(b.find((x) => x.id === 'kid_growth')?.href).toBe(`/child/${noe.id}/growth`);
+    // la croissance est un onglet de la fiche de l'enfant (sous-accès de « kid_profile »)
+    expect(a.find((x) => x.id === 'kid_profile')?.subs.find((x) => x.legacy === 'kid_growth')?.href).toBe(`/child/${lina.id}?tab=croissance`);
+    expect(b.find((x) => x.id === 'kid_profile')?.subs.find((x) => x.legacy === 'kid_growth')?.href).toBe(`/child/${noe.id}?tab=croissance`);
     expect(b.some((x) => x.id === 'baby_bottle')).toBe(false);
     expect(quickFor({ scope: 'child', childId: noe.id })).toEqual(['meal', 'sleep', 'growth', 'treatment']);
   });
@@ -156,7 +157,7 @@ describe('les 14 scénarios de parcours', () => {
   it('11. La catégorie neurodéveloppement est dans la fiche enfant et dans « Tous mes outils »', async () => {
     expect(CHILD_TABS.some((x) => x.value === 'besoins')).toBe(true);
     const [noe] = await backend.select<Child>({ table: 'children', filters: [eq('first_name', 'Noé')] });
-    expect(toolsFor({ scope: 'child', childId: noe.id }).find((x) => x.id === 'kid_needs')?.href).toBe(`/child/${noe.id}/needs`);
+    expect(toolsFor({ scope: 'child', childId: noe.id }).find((x) => x.id === 'kid_treatments')?.subs.find((x) => x.legacy === 'kid_needs')?.href).toBe(`/child/${noe.id}/needs`);
     // Traitement recopié de l'ordonnance : jamais de dose calculée
     const [t] = await backend.insert<{ id: string; dose_text: string }>('child_treatments', { child_id: noe.id, name: 'Traitement prescrit', dose_text: '1 comprimé (ordonnance)', times: ['08:00'], start_date: today });
     expect(t.dose_text).toBe('1 comprimé (ordonnance)');

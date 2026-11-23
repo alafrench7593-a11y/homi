@@ -5,7 +5,7 @@
  * personne de l'équipe éditoriale ne l'a pas relue (statut « Relu » ou « Validé pour publication »).
  */
 import { generatedPhoto } from './build';
-import { AI_PHOTOS } from './photoCredits';
+import { aiPhoto } from './photoCredits';
 import { INGREDIENTS } from './ingredients';
 import { RECIPE_SOURCES } from './sources';
 import { ALLERGENS, MEALS, STAGES, TAGS, TEXTURES, type Recipe, type RecipeIngredient, type Unit } from './types';
@@ -64,7 +64,7 @@ export function draftToRecipe(d: RecipeDraft, o: DraftOrigin): Recipe {
   const ingredients: RecipeIngredient[] = d.ingredients.map(([key, qty, unit, note, optional]) => ({ key, qty, unit, ...(note ? { note } : {}), ...(optional ? { optional: true } : {}) }));
   const status = o.status ?? 'ai_draft';
   return {
-    ...d, ingredients, id: `rcp-${d.slug}`, photo: AI_PHOTOS[d.slug] ?? generatedPhoto(d.title), verifiedOn: o.on, status,
+    ...d, ingredients, id: `rcp-${d.slug}`, photo: aiPhoto(d.slug, d.title) ?? generatedPhoto(d.title), verifiedOn: o.on, status,
     statusHistory: [
       { status: 'ai_draft', by: o.by, on: o.on, ...(o.note ? { note: o.note } : {}) },
       ...(status !== 'ai_draft' ? [{ status, by: 'Contrôles automatiques de l’application', on: o.on }] : []),

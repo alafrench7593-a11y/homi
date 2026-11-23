@@ -5,6 +5,7 @@
  * Les données sont celles déjà saisies dans « Suivi santé » (allergies, traitements, contacts) ; ici on ajoute
  * « ce qui l'apaise » et « à savoir », et on exporte le tout.
  */
+import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -20,8 +21,11 @@ import { childAge } from '@/lib/domain/child';
 import { exportTextFile } from '@/lib/exportData';
 import { insertOrQueue } from '@/lib/offline';
 import { formatDate, t as tr, type TKey } from '@/i18n';
+import { toolName } from '@/lib/domain/toolCatalog';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { toastSaved } from '@/features/saveOutcome';
+import { HmFixTray, HmHero } from '@/features/homeTrack/kit';
 
 const SECTIONS: { kind: HealthItemKind; icon: 'alert-circle' | 'package' | 'phone' | 'heart' | 'info'; danger?: boolean }[] = [
   { kind: 'allergy', icon: 'alert-circle', danger: true },
@@ -43,8 +47,10 @@ export default function ChildCard() {
   const [label, setLabel] = useState('');
   const [details, setDetails] = useState('');
   const [saving, setSaving] = useState(false);
+  // Fiche (Tray) d'une ligne « apaiser » ou « infos » : lire, corriger, supprimer
+  const [fixing, setFixing] = useState<HealthItem | null>(null);
   // Pendant le chargement (premier écran après connexion) : squelette, jamais « enfant introuvable » à tort
-  if (!child) return <Screen back title={tr('tool.kid_card')}>{childLoading ? <Skeleton kind="detail" rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
+  if (!child) return <Screen back title={toolName('kid_card')}>{childLoading ? <Skeleton kind="detail" rows={4} /> : <EmptyState icon="user" title={tr('kc.noChild')} />}</Screen>;
 
   const allergies = [...new Set([...(child.allergies_declared ?? []), ...(items ?? []).filter((i) => i.kind === 'allergy').map((i) => i.label)])];
   const of = (k: HealthItemKind) => (items ?? []).filter((i) => i.kind === k && (k !== 'treatment' || !i.done_on));
@@ -54,10 +60,10 @@ export default function ChildCard() {
     if (!adding || !label.trim()) return toast(tr('kc.errLabel'), 'error');
     setSaving(true);
     try {
-      await insertOrQueue('child_health_items', { child_id: child!.id, household_id: child!.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: null, done_on: null });
+      const res = await insertOrQueue('child_health_items', { child_id: child!.id, household_id: child!.household_id, kind: adding, label: label.trim(), details: details.trim() || null, due_on: null, done_on: null });
       inv('child_health_items');
       setAdding(null); setLabel(''); setDetails('');
-      toast(tr('kc.added'));
+      toastSaved(toast, res, tr('kc.added'));
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setSaving(false); }
   }
   async function remove(i: HealthItem) {
@@ -77,8 +83,15 @@ export default function ChildCard() {
   }
 
   return (
-    <Screen back title={tr('tool.kid_card')} subtitle={`${child.first_name} · ${childAge(child.birth_date).label}`}
+    <Screen back title={toolName('kid_card')} subtitle={`${child.first_name} · ${childAge(child.birth_date).label}`}
       action={{ label: tr('kc.share'), icon: 'share', onPress: () => void share(), testID: 'kid-card-share' }}>
+      {/* Donnée principale : les allergies notées (aucune : « aucune allergie notée », jamais un zéro inventé) */}
+      <HmHero testID="hm-kc-hero" value={allergies.length ? String(allergies.length) : null} emptyLabel={tr('kc.noneNoted')}
+        unit={allergies.length ? tr('hm.kc.unit', { count: allergies.length, list: allergies.join(', ') }) : null}
+        split={of('treatment').length || of('contact').length ? [
+          { label: tr('kc.sec.treatment'), value: String(of('treatment').length), testID: 'hm-kc-treat' },
+          { label: tr('kc.sec.contact'), value: String(of('contact').length), testID: 'hm-kc-contact' },
+        ] : undefined} />
       <Text muted>{tr('kc.intro')}</Text>
       <Card tone="soft" testID="kid-card-allergies">
         <Text weight="bold" color={allergies.length ? t.colors.danger : undefined}>{tr('kc.sec.allergy')}</Text>
@@ -104,13 +117,25 @@ export default function ChildCard() {
             )}
             {rows.length ? (
               <Card padded={false}>
-                {rows.map((i) => <ListRow key={i.id} icon={s.icon} title={i.label} subtitle={i.details ?? undefined} danger={s.danger} onPress={editable ? () => void remove(i) : undefined} />)}
+                <MotionList>{rows.map((i) => <MotionItem key={i.id}><ListRow key={i.id} icon={s.icon} title={i.label} subtitle={i.details ?? undefined} danger={s.danger} onPress={editable ? () => setFixing(i) : undefined} testID={`kid-card-item-${i.id}`} /></MotionItem>)}</MotionList>
               </Card>
             ) : <Text variant="small" muted>{tr(`kc.empty.${s.kind}` as TKey)}</Text>}
           </View>
         );
       })}
       <Banner tone="info">{tr('kc.pai')}</Banner>
+      {fixing ? (
+        <HmFixTray open onOpenChange={(v) => { if (!v) setFixing(null); }} testID="hm-kc-tray"
+          title={tr(`kc.sec.${fixing.kind}` as TKey)} hero={fixing.label} lines={[fixing.details]}
+          fields={[{ key: 'label', label: tr(`kc.label.${fixing.kind === 'soothe' ? 'soothe' : 'info'}` as TKey), kind: 'text', maxLength: 160 }, { key: 'details', label: tr('kc.details'), kind: 'multiline', maxLength: 2000 }]}
+          initial={{ label: fixing.label, details: fixing.details ?? '' }}
+          validate={(d) => (d.label.trim() ? null : tr('kc.errLabel'))}
+          onSave={async (d) => {
+            if (!d.label.trim()) return tr('kc.errLabel');
+            try { await backend.update('child_health_items', { label: d.label.trim(), details: d.details.trim() || null }, [eq('id', fixing.id)]); inv('child_health_items'); return 'ok'; } catch (e) { return friendlyError(e); }
+          }}
+          onDelete={() => void remove(fixing)} deleteLabel={tr('common.delete')} />
+      ) : null}
     </Screen>
   );
 }

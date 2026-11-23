@@ -20,7 +20,7 @@ export const NIGHT_SOURCES: Record<string, ArticleSource> = {
   ameliEcrans: { label: 'ameli.fr — Comment adapter l’usage des écrans à l’âge de l’enfant ?', url: 'https://www.ameli.fr/assure/sante/themes/ecrans-enfance-adolescence/usage-ecran-age', consulted_on: C, published: '2025-07-17' },
   ameliCoucher: { label: 'ameli.fr — Comment bien coucher un bébé ?', url: 'https://www.ameli.fr/assure/sante/bons-gestes/bebe/coucher-bebe', consulted_on: C, published: '2024-10-10' },
   mpediaCoucher: { label: 'mpedia.fr (AFPA) — Coucher mon bébé', url: 'https://www.mpedia.fr/art-coucher-mon-bebe/', consulted_on: C, published: '2023-07-17' },
-  ameliFievre: { label: 'ameli.fr — Votre enfant a de la fièvre : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter', consulted_on: C, published: '2024-09-03' },
+  ameliFievre: { label: 'ameli.fr — Ton enfant a de la fièvre : que faire et quand consulter ?', url: 'https://www.ameli.fr/assure/sante/themes/fievre-enfant/bons-reflexes-cas-faut-consulter', consulted_on: C, published: '2024-09-03' },
   mpediaFievre: { label: 'mpedia.fr (AFPA) — Fièvre bébé et enfant : que faire et quand consulter ?', url: 'https://www.mpedia.fr/art-fievre-enfant/', consulted_on: C, published: '2023-09-19' },
   santeBronchiolite: { label: 'Santé.fr — Bronchiolite du bébé : symptômes et traitement', url: 'https://www.sante.fr/bronchiolite-du-bebe-symptomes-et-traitement', consulted_on: C, published: '2025-12-30' },
   ameliSecoue: { label: 'ameli.fr — Syndrome du bébé secoué', url: 'https://www.ameli.fr/assure/sante/urgence/bebe-enfant/syndrome-bebe-secoue', consulted_on: C, published: '2026-06-17' },
@@ -36,7 +36,7 @@ const NIGHT_BANDS_FR: NightAgeBand[] = [
     title: 'De 0 à 3 mois',
     points: [
       'Un nouveau-né dort en moyenne 16 à 17 heures par 24 heures, par périodes de 3 à 4 heures, sans faire encore la différence entre le jour et la nuit.',
-      'Se réveiller toutes les 2 à 4 heures est habituel à cet âge : ce rythme dépend de la maturation de son cerveau, pas de ce que vous faites.',
+      'Se réveiller toutes les 2 à 4 heures est habituel à cet âge : ce rythme dépend de la maturation de son cerveau, pas de ce que tu fais.',
       'Au démarrage de l’allaitement, 8 à 12 tétées par 24 heures, nuit comprise, sont fréquentes ; les tétées de nuit aident souvent à entretenir la lactation.',
       'À cet âge, suivre son rythme et le prendre dans les bras quand il pleure est conseillé.',
       'Les pleurs du soir sont souvent plus intenses vers 6 à 8 semaines, puis s’atténuent vers la fin du troisième mois.',
@@ -95,7 +95,7 @@ const NIGHT_BANDS_FR: NightAgeBand[] = [
       'Vers 3 ans, le sommeil représente en moyenne 12 à 13 heures par 24 heures, avec une sieste d’environ 2 heures en début d’après-midi.',
       'Des réveils en milieu de nuit restent fréquents ; souvent, l’enfant se rendort seul.',
       'Cauchemar (plutôt en fin de nuit) : l’enfant se réveille effrayé, le rassurer l’aide à se rendormir.',
-      'Terreur nocturne (plutôt en début de nuit) : il crie ou s’agite sans être vraiment réveillé ; restez près de lui sans le réveiller.',
+      'Terreur nocturne (plutôt en début de nuit) : il crie ou s’agite sans être vraiment réveillé ; reste près de lui sans le réveiller.',
       'Il n’existe pas de médicament du sommeil adapté aux jeunes enfants ; si les difficultés durent, le médecin ou le pédiatre peut aider à réorganiser les rythmes.',
     ],
     sources: ['santeSommeilNormal', 'mpediaTroublesSommeil', 'ameliSommeilEnfant'],
@@ -124,7 +124,7 @@ const SOOTHING_ROUTINES_FR: { title: string; steps: string[] }[] = [
   {
     title: 'Un bain tiède et calme',
     steps: [
-      'Un bain tiède, sans jeux trop excitants, si votre enfant l’apprécie.',
+      'Un bain tiède, sans jeux trop excitants, si ton enfant l’apprécie.',
       'Vérifier la température de l’eau avec le coude avant de l’installer.',
       'Ne jamais laisser un enfant seul dans le bain, même un instant.',
       'Enchaîner sur le pyjama dans une pièce chaude et tamisée.',
@@ -134,7 +134,7 @@ const SOOTHING_ROUTINES_FR: { title: string; steps: string[] }[] = [
     title: 'Berceuse ou musique douce',
     steps: [
       'Chanter toujours la même berceuse, ou passer une musique douce à faible volume.',
-      'Bercer doucement dans les bras si votre bébé aime cela.',
+      'Bercer doucement dans les bras si ton bébé aime cela.',
       'Coucher ensuite bébé sur le dos dans son lit.',
     ],
   },
@@ -147,9 +147,9 @@ const SOOTHING_ROUTINES_FR: { title: string; steps: string[] }[] = [
     ],
   },
   {
-    title: 'Pour vous aussi',
+    title: 'Pour toi aussi',
     steps: [
-      'Si vous sentez la tension monter, posez bébé en sécurité dans son lit et prenez quelques minutes pour respirer.',
+      'Si tu sens la tension monter, pose bébé en sécurité dans son lit et prends quelques minutes pour respirer.',
       'Se relayer avec un autre adulte quand c’est possible.',
       'Il n’existe pas de soirée parfaite : certains soirs seront plus difficiles, et c’est normal.',
     ],
@@ -158,18 +158,18 @@ const SOOTHING_ROUTINES_FR: { title: string; steps: string[] }[] = [
 
 /** Rappels de couchage sûr (ameli.fr, mpedia.fr). */
 const SAFE_SLEEP_FR: string[] = [
-  'Couchez bébé sur le dos, à plat, pour la nuit et pour chaque sieste ; ni sur le ventre, ni sur le côté.',
-  'Faites-le dormir dans son propre lit, dans la chambre des parents, idéalement jusqu’à environ 6 mois ; le partage du lit parental est déconseillé.',
-  'Un matelas ferme, aux dimensions du lit, sans espace sur les côtés ; ne rajoutez pas de matelas dans un lit parapluie.',
-  'Pas de couette, couverture, oreiller, tour de lit ni grosse peluche : préférez une turbulette (gigoteuse) adaptée à sa taille.',
+  'Couche bébé sur le dos, à plat, pour la nuit et pour chaque sieste ; ni sur le ventre, ni sur le côté.',
+  'Fais-le dormir dans son propre lit, dans la chambre des parents, idéalement jusqu’à environ 6 mois ; le partage du lit parental est déconseillé.',
+  'Un matelas ferme, aux dimensions du lit, sans espace sur les côtés ; ne rajoute pas de matelas dans un lit parapluie.',
+  'Pas de couette, couverture, oreiller, tour de lit ni grosse peluche : préfère une turbulette (gigoteuse) adaptée à sa taille.',
   'Rien qui puisse couvrir son visage ou entourer son cou (pas de collier, ni de cordon de tétine).',
   'Pas de cale-bébé, coussin ou serviette roulée pour le maintenir dans une position.',
-  'Une chambre entre 18 et 20 °C, aérée chaque jour ; évitez de trop le couvrir : sa nuque ne doit pas être moite.',
+  'Une chambre entre 18 et 20 °C, aérée chaque jour ; évite de trop le couvrir : sa nuque ne doit pas être moite.',
   'Aucune fumée de tabac autour de bébé, ni dans la chambre, ni dans la voiture.',
-  'Ne vous endormez jamais avec bébé sur un canapé ou dans un fauteuil.',
-  'Si vous êtes très fatigué(e) ou sous un médicament qui rend somnolent, recouchez bébé dans son lit avant de vous endormir.',
+  'Ne t’endors jamais avec bébé sur un canapé ou dans un fauteuil.',
+  'Si tu es très fatigué(e) ou sous un médicament qui rend somnolent, recouche bébé dans son lit avant de t’endormir.',
   'Le siège-coque est fait pour la voiture : il ne remplace pas le lit.',
-  'Ne donnez jamais de médicament pour faire dormir un bébé, et ne le secouez jamais.',
+  'Ne donne jamais de médicament pour faire dormir un bébé, et ne le secoue jamais.',
 ];
 
 /** Questions neutres à préparer pour un rendez-vous (médecin, pédiatre, PMI, sage-femme). */
@@ -177,7 +177,7 @@ const QUESTIONS_FOR_PRO_FR: string[] = [
   'Combien de réveils par nuit sont habituels à son âge ?',
   'Combien d’heures de sommeil par 24 heures sont habituelles à son âge, siestes comprises ?',
   'Les tétées ou biberons de nuit sont-ils encore utiles pour lui ou pour elle ?',
-  'Comment savoir s’il ou elle mange assez ? Pouvez-vous vérifier sa courbe de poids ?',
+  'Comment savoir s’il ou elle mange assez ? Peux-tu vérifier sa courbe de poids ?',
   'Comment l’aider à distinguer le jour et la nuit ?',
   'Que faire quand il ou elle pleure au moment de s’endormir ?',
   'Ses ronflements, sa respiration ou ses mouvements pendant le sommeil sont-ils habituels ?',
@@ -189,17 +189,17 @@ const QUESTIONS_FOR_PRO_FR: string[] = [
 
 /** Situations où il ne faut pas attendre le matin. Sources : ameli.fr, mpedia.fr, Santé.fr. */
 const SEEK_HELP_NOW_FR: string[] = [
-  'Bébé de moins de 3 mois avec de la fièvre (38 °C ou plus) : consultez en urgence, sans attendre, même s’il semble aller bien.',
-  'Difficultés à respirer : respiration rapide ou irrégulière, pauses respiratoires, battements des ailes du nez, creux entre les côtes, lèvres bleues : appelez le 15.',
-  'Bébé inhabituellement somnolent, mou, qui réagit peu, ou qui fait un malaise : appelez le 15.',
-  'Refus total de boire (sein ou biberon), ou signes de déshydratation : appelez le 15 ou consultez en urgence.',
-  'Petites taches rouges sur la peau qui ne s’effacent pas quand on appuie dessus, ou pâleur marquée : appelez le 15.',
-  'Convulsions ou mouvements anormaux : protégez l’enfant, placez-le sur le côté, et appelez le 15.',
-  'Fièvre au-dessus de 40 °C, ou fièvre avec raideur de la nuque, vomissements répétés ou maux de tête importants : consultez en urgence.',
-  'Pleurs inhabituels, geignements, ou tout comportement qui vous paraît anormal ou inquiétant : en cas de doute, appelez le 15.',
-  'Bébé qui ne respire plus : appelez immédiatement le 15 ou le 112, et ne le secouez pas.',
-  'Si vous sentez que vous pourriez secouer ou faire du mal à votre bébé : posez-le sur le dos dans son lit, quittez la pièce, et appelez le 119 (24 h/24) ou un proche.',
-  'Si vous avez des pensées de vous faire du mal ou de ne plus être là : appelez le 3114 (gratuit, 24 h/24).',
+  'Bébé de moins de 3 mois avec de la fièvre (38 °C ou plus) : consulte en urgence, sans attendre, même s’il semble aller bien.',
+  'Difficultés à respirer : respiration rapide ou irrégulière, pauses respiratoires, battements des ailes du nez, creux entre les côtes, lèvres bleues : appelle le 15.',
+  'Bébé inhabituellement somnolent, mou, qui réagit peu, ou qui fait un malaise : appelle le 15.',
+  'Refus total de boire (sein ou biberon), ou signes de déshydratation : appelle le 15 ou consulte en urgence.',
+  'Petites taches rouges sur la peau qui ne s’effacent pas quand on appuie dessus, ou pâleur marquée : appelle le 15.',
+  'Convulsions ou mouvements anormaux : protège l’enfant, place-le sur le côté, et appelle le 15.',
+  'Fièvre au-dessus de 40 °C, ou fièvre avec raideur de la nuque, vomissements répétés ou maux de tête importants : consulte en urgence.',
+  'Pleurs inhabituels, geignements, ou tout comportement qui te paraît anormal ou inquiétant : en cas de doute, appelle le 15.',
+  'Bébé qui ne respire plus : appelle immédiatement le 15 ou le 112, et ne le secoue pas.',
+  'Si tu sens que tu pourrais secouer ou faire du mal à ton bébé : pose-le sur le dos dans son lit, quitte la pièce, et appelle le 119 (24 h/24) ou un proche.',
+  'Si tu as des pensées de te faire du mal ou de ne plus être là : appelle le 3114 (gratuit, 24 h/24).',
 ];
 
 

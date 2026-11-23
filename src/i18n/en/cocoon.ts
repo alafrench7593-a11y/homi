@@ -113,6 +113,7 @@ export const cocoon: Messages<typeof fr> = {
   'coc.keep.digest': 'Today’s summary',
   'coc.article.title': 'To read',
   'coc.article.read': 'Read',
+  'coc.article.readFull': 'Read the article',
   'coc.add.button': 'Add',
   'coc.add.a11y': 'Add an event for {name}',
   'coc.add.title': 'Add for {name}',

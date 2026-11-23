@@ -1,4 +1,4 @@
-/** Onglet « Agenda » de la barre du bas (07/11/2026) : le même agenda du foyer que /calendar, sans bouton retour. */
+/** Ancienne route d'onglet « Agenda » (/agenda, hors de la barre depuis HOMI) : le même agenda du foyer que /calendar, avec bouton retour (vers Famille) comme /track et /ask. */
 import React from 'react';
 import { FamilyCalendarScreen } from '../calendar';
 

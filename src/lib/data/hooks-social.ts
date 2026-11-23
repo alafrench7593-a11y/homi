@@ -7,7 +7,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { backend, eq } from '../backend';
 import { useAuth, useUserId } from '../auth';
-import { prepareCommunityPhoto } from '../community/photos';
+import { COMMUNITY_MIME, communityPhotoPath, prepareCommunityPhoto } from '../community/photos';
 import { syncDigestNotifications } from '../notifications';
 import { uuid } from '../uuid';
 import type { ActivityItem, CommunityAlbum, CommunityEvent, CommunityGroup, DigestPrefs, FeedPost, MemberCard, SavedFolder } from '../types';
@@ -151,7 +151,7 @@ export function useAlbumAction() {
     mutationFn: async (a:
       | { kind: 'create'; title: string; description?: string | null }
       | { kind: 'delete'; id: string; paths: string[] }
-      | { kind: 'addPhoto'; albumId: string; uri: string }
+      | { kind: 'addPhoto'; albumId: string; uri: string; width?: number | null; height?: number | null }
       | { kind: 'removePhoto'; id: string; path: string }
       | { kind: 'share'; albumId: string; handle: string }
       | { kind: 'unshare'; albumId: string; handle: string }) => {
@@ -163,9 +163,9 @@ export function useAlbumAction() {
           return null;
         case 'addPhoto': {
           // Photo nettoyée (sans métadonnées ni position GPS), déposée dans mon dossier
-          const prepared = await prepareCommunityPhoto(a.uri);
-          const path = `${userId}/album-${uuid()}.jpg`;
-          await backend.storage.upload(COMMUNITY_BUCKET, path, { uri: a.uri, mimeType: 'image/jpeg', size: prepared.bytes.length, bytes: prepared.bytes, name: path.split('/')[1] });
+          const prepared = await prepareCommunityPhoto(a.uri, { width: a.width, height: a.height });
+          const path = communityPhotoPath(String(userId), uuid(), 'album');
+          await backend.storage.upload(COMMUNITY_BUCKET, path, { uri: a.uri, mimeType: COMMUNITY_MIME, size: prepared.bytes.length, bytes: prepared.bytes, name: path.split('/')[1] });
           try {
             await backend.insert('album_photos', { album_id: a.albumId, owner_id: userId, path, width: prepared.width || null, height: prepared.height || null }, { returning: 'id' });
           } catch (e) {

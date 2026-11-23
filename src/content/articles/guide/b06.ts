@@ -38,7 +38,7 @@ const S = {
   rappelConso: { label: 'RappelConso (site officiel des rappels de produits) — rappels liés aux allergènes', url: 'https://rappel.conso.gouv.fr/categorie/0/9/allerg%C3%A8ne', consulted_on: C },
 } satisfies Record<string, ArticleSource>;
 
-const FIN = '_Cet article vous informe et vous aide à préparer vos échanges avec les professionnels ; il ne remplace pas l’avis du médecin, de l’allergologue, de la sage-femme ou du pédiatre qui vous suit._';
+const FIN = '_Cet article t’informe et t’aide à préparer tes échanges avec les professionnels ; il ne remplace pas l’avis du médecin, de l’allergologue, de la sage-femme ou du pédiatre qui te suit._';
 const BASE = { status: 'to_review' as const };
 
 export const GUIDE_B06: LibArticle[] = [
@@ -54,8 +54,8 @@ export const GUIDE_B06: LibArticle[] = [
 - L’**allergie aux protéines du lait de vache (APLV)** touche surtout les nourrissons et les enfants de moins de 3 ans ; elle disparaît le plus souvent avec l’âge.
 - Les signes peuvent être **cutanés, digestifs, respiratoires ou généraux**, et apparaître quelques minutes… ou plusieurs heures, voire jours, après la prise de lait.
 - L’APLV n’est **pas une intolérance au lactose** : c’est une réaction du système immunitaire.
-- Ne changez pas de lait de vous-même : le diagnostic et le choix d’un lait adapté se font **avec le médecin**.
-- Gonflement du visage, gêne pour respirer, malaise : appelez le **15** ou le **112**.
+- Ne change pas de lait de toi-même : le diagnostic et le choix d’un lait adapté se font **avec le médecin**.
+- Gonflement du visage, gêne pour respirer, malaise : appelle le **15** ou le **112**.
 
 ## Comprendre
 Selon Santé.fr, l’APLV concerne environ **un bébé sur quarante** en France, et environ un bébé sur cinq lorsque les deux parents ont un terrain allergique. Elle est souvent associée à d’autres allergies alimentaires (œuf, protéines de blé, arachide). Les premiers signes apparaissent en général entre trois semaines et huit à dix mois.
@@ -71,16 +71,16 @@ Non prise en charge, l’APLV peut abîmer l’intestin, gêner l’absorption d
 **Comment le diagnostic est posé.** Pour la forme immédiate, le médecin peut demander un test cutané (prick-test) et une prise de sang. Un test positif seul montre une sensibilisation, pas forcément une allergie. Pour la forme retardée, il n’existe pas de test fiable : le diagnostic repose sur une **éviction encadrée** des protéines de lait de vache pendant plusieurs semaines, avec un lait spécifique prescrit, puis une réintroduction décidée par le médecin.
 
 ## Au quotidien
-- **Tenez un petit carnet** : heure des biberons ou tétées, type de lait, signes observés, délai d’apparition. Des photos de la peau ou des selles aident beaucoup en consultation.
-- **Apportez le carnet de santé** : la courbe de poids et de taille compte autant que les symptômes.
-- **Ne passez pas** à un lait de chèvre, de brebis, de jument ou à une préparation au soja sans avis médical : Santé.fr rappelle qu’ils peuvent être tout aussi allergisants.
+- **Tiens un petit carnet** : heure des biberons ou tétées, type de lait, signes observés, délai d’apparition. Des photos de la peau ou des selles aident beaucoup en consultation.
+- **Apporte le carnet de santé** : la courbe de poids et de taille compte autant que les symptômes.
+- **Ne passe pas** à un lait de chèvre, de brebis, de jument ou à une préparation au soja sans avis médical : Santé.fr rappelle qu’ils peuvent être tout aussi allergisants.
 - **Les boissons végétales** (amande, riz, avoine…) ne sont pas adaptées aux nourrissons.
-- **Vérifiez les produits de toilette** : shampooings et crèmes ne doivent pas contenir de protéines de lait.
-- **Gardez en tête** que pleurs, régurgitations ou petits boutons ont de nombreuses causes chez le bébé : c’est l’ensemble du tableau qui oriente le médecin.
+- **Vérifie les produits de toilette** : shampooings et crèmes ne doivent pas contenir de protéines de lait.
+- **Garde en tête** que pleurs, régurgitations ou petits boutons ont de nombreuses causes chez le bébé : c’est l’ensemble du tableau qui oriente le médecin.
 
 ## Questions fréquentes
 **Mon bébé régurgite beaucoup : est-ce forcément une APLV ?**
-Non. Les régurgitations sont fréquentes chez les nourrissons pour bien d’autres raisons. Si elles s’accompagnent d’autres signes (eczéma, diarrhée, sang dans les selles, poids qui stagne), parlez-en à votre médecin.
+Non. Les régurgitations sont fréquentes chez les nourrissons pour bien d’autres raisons. Si elles s’accompagnent d’autres signes (eczéma, diarrhée, sang dans les selles, poids qui stagne), parles-en à ton médecin.
 
 **Les tests sont-ils toujours positifs en cas d’APLV ?**
 Non. Dans la forme retardée, prick-test et prise de sang sont souvent négatifs : c’est l’essai d’éviction encadré qui permet de conclure.
@@ -89,12 +89,12 @@ Non. Dans la forme retardée, prick-test et prise de sang sont souvent négatifs
 Le plus souvent, oui : selon Santé.fr, huit enfants sur dix guérissent avant 2 ans et neuf sur dix avant 6 ans. Certaines formes persistent plus longtemps et demandent un suivi spécialisé.
 
 **Faut-il arrêter d’allaiter ?**
-Non. L’allaitement reste à privilégier. Si votre bébé allaité a des symptômes, le médecin vous dira si un régime est utile pour vous.
+Non. L’allaitement reste à privilégier. Si ton bébé allaité a des symptômes, le médecin te dira si un régime est utile pour toi.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre bébé a un gonflement du visage ou des lèvres, du mal à respirer, une pâleur ou un malaise, ou des vomissements répétés après un biberon.
+**Appelle le 15 ou le 112** si ton bébé a un gonflement du visage ou des lèvres, du mal à respirer, une pâleur ou un malaise, ou des vomissements répétés après un biberon.
 
-**Consultez rapidement** en cas de plaques rouges qui démangent, de régurgitations ou vomissements plus fréquents, de diarrhée ou coliques qui reviennent après les repas, de sang dans les selles, d’alternance diarrhée-constipation, d’irritabilité constante ou de prise de poids insuffisante.
+**Consulte rapidement** en cas de plaques rouges qui démangent, de régurgitations ou vomissements plus fréquents, de diarrhée ou coliques qui reviennent après les repas, de sang dans les selles, d’alternance diarrhée-constipation, d’irritabilité constante ou de prise de poids insuffisante.
 
 ${FIN}`,
   },
@@ -110,7 +110,7 @@ ${FIN}`,
 - Les laits **HA** (hypoallergéniques) servent à la prévention, pas au traitement d’une allergie déclarée.
 - Les laits de **chèvre, brebis, jument** et les **boissons végétales** ne sont pas des solutions de remplacement.
 - Toutes les protéines de lait doivent être évitées, y compris celles **cachées** dans les produits transformés et cosmétiques.
-- Une diététicienne peut vous aider à garder une alimentation équilibrée.
+- Une diététicienne peut t’aider à garder une alimentation équilibrée.
 
 ## Comprendre
 Quand l’APLV est confirmée ou fortement suspectée, le traitement consiste à **supprimer les protéines du lait de vache** de l’alimentation du bébé. Pour un bébé nourri au biberon, Santé.fr et mpedia décrivent les options utilisées :
@@ -118,26 +118,26 @@ Quand l’APLV est confirmée ou fortement suspectée, le traitement consiste à
 - les **hydrolysats de protéines de riz**, autre possibilité citée par mpedia ;
 - les **formules à base d’acides aminés**, réservées aux formes sévères ou quand les symptômes persistent malgré un hydrolysat. Elles sont très coûteuses.
 
-Le choix du lait, sa quantité et le rythme des biberons relèvent du médecin qui suit votre enfant. L’Assurance Maladie indique que certains de ces substituts sont **remboursés**.
+Le choix du lait, sa quantité et le rythme des biberons relèvent du médecin qui suit ton enfant. L’Assurance Maladie indique que certains de ces substituts sont **remboursés**.
 
 **Les laits HA ne conviennent pas** à un bébé qui a déjà des symptômes : ils sont destinés à prévenir l’allergie chez certains bébés à risque, sur conseil du pédiatre.
 
 **Pourquoi éviter les autres laits ?** Santé.fr explique que l’allergie concerne très souvent aussi les protéines des laits de chèvre, de brebis ou de jument. Mpedia recommande d’exclure les laits de tous les mammifères, en raison de cette allergie croisée, et appelle aussi à la prudence avec les préparations à base de soja. Quant aux boissons végétales vendues en magasin, elles ne couvrent pas les besoins d’un nourrisson.
 
 ## Au quotidien
-- **Préparez les biberons** exactement selon les consignes de l’ordonnance et de l’emballage.
-- **Prévenez tous ceux qui gardent votre bébé** (crèche, assistante maternelle, grands-parents) : un biberon de lait « classique » donné par erreur peut suffire à déclencher des symptômes.
-- **Lisez les étiquettes** : le lait figure parmi les allergènes mis en évidence (en gras, souligné ou en italique). Repérez les mots qui le signalent : lait, beurre, crème, lactosérum, caséine, protéines de lait.
-- **Pensez aux produits de toilette** : crèmes ou shampooings peuvent contenir des protéines de lait.
-- **Gardez un stock** du lait prescrit pour éviter de vous retrouver sans solution un week-end.
-- **Faites-vous accompagner** par une diététicienne, surtout au moment de la diversification.
+- **Prépare les biberons** exactement selon les consignes de l’ordonnance et de l’emballage.
+- **Préviens tous ceux qui gardent ton bébé** (crèche, assistante maternelle, grands-parents) : un biberon de lait « classique » donné par erreur peut suffire à déclencher des symptômes.
+- **Lis les étiquettes** : le lait figure parmi les allergènes mis en évidence (en gras, souligné ou en italique). Repère les mots qui le signalent : lait, beurre, crème, lactosérum, caséine, protéines de lait.
+- **Pense aux produits de toilette** : crèmes ou shampooings peuvent contenir des protéines de lait.
+- **Garde un stock** du lait prescrit pour éviter de te retrouver sans solution un week-end.
+- **Fais-toi accompagner** par une diététicienne, surtout au moment de la diversification.
 
 ## Questions fréquentes
 **Le lait sans lactose convient-il ?**
 Non. Un lait « sans lactose » contient toujours les protéines du lait de vache, responsables de l’allergie. Le lactose est un sucre, pas une protéine.
 
 **Mon bébé n’aime pas le goût de son nouveau lait. Que faire ?**
-Parlez-en au médecin plutôt que de changer de vous-même : il existe plusieurs types de laits adaptés, et une transition se discute.
+Parles-en au médecin plutôt que de changer de toi-même : il existe plusieurs types de laits adaptés, et une transition se discute.
 
 **Peut-on alterner avec un lait classique « de temps en temps » ?**
 Non, sauf indication médicale : la réintroduction du lait de vache se fait selon un protocole décidé par le médecin ou l’allergologue, parfois en milieu hospitalier.
@@ -146,9 +146,9 @@ Non, sauf indication médicale : la réintroduction du lait de vache se fait sel
 Non, le plus souvent. Une réintroduction est généralement envisagée vers la fin de la première année ou un peu après, selon l’avis médical (voir l’article sur la réintroduction du lait).
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de gonflement du visage, de difficulté à respirer, de vomissements répétés ou de malaise après un biberon ou un aliment.
+**Appelle le 15 ou le 112** en cas de gonflement du visage, de difficulté à respirer, de vomissements répétés ou de malaise après un biberon ou un aliment.
 
-**Consultez** si les symptômes persistent malgré le lait prescrit, si votre bébé refuse ses biberons, ne prend pas assez de poids ou si vous avez un doute sur un produit. Si la fatigue ou l’inquiétude deviennent lourdes, parlez-en aussi ; en cas de détresse, le **3114** répond jour et nuit.
+**Consulte** si les symptômes persistent malgré le lait prescrit, si ton bébé refuse ses biberons, ne prend pas assez de poids ou si tu as un doute sur un produit. Si la fatigue ou l’inquiétude deviennent lourdes, parles-en aussi ; en cas de détresse, le **3114** répond jour et nuit.
 
 ${FIN}`,
   },
@@ -177,30 +177,30 @@ Il arrive pourtant, rarement, qu’un bébé allaité réagisse aux protéines d
 Santé.fr confirme : si le bébé réagit à des substances qui passent dans le lait maternel, la mère doit éviter les produits laitiers et prendre des compléments de calcium.
 
 ## Au quotidien
-- **N’entamez pas de régime seule** : un régime inutile vous fatigue, complique vos repas et n’apporte rien si l’allergie n’est pas en cause.
-- **Notez vos repas** et les réactions de votre bébé pendant quelques jours avant la consultation.
-- **Si un régime est prescrit**, apprenez à repérer le lait caché : beurre, crème, lactosérum, caséine, poudre de lait dans le pain, les biscuits, les plats préparés, les sauces.
-- **Compensez le calcium** comme indiqué par le médecin : les compléments prescrits remplacent l’apport des produits laitiers que vous ne consommez plus.
-- **Organisez-vous à deux** : courses, préparation de repas simples, plats à congeler. Le régime est plus facile quand toute la famille cuisine « sans lait » à certains repas.
-- **Demandez une diététicienne** ou une consultante en lactation si vous vous sentez dépassée.
+- **N’entame pas de régime seule** : un régime inutile te fatigue, complique tes repas et n’apporte rien si l’allergie n’est pas en cause.
+- **Note tes repas** et les réactions de ton bébé pendant quelques jours avant la consultation.
+- **Si un régime est prescrit**, apprends à repérer le lait caché : beurre, crème, lactosérum, caséine, poudre de lait dans le pain, les biscuits, les plats préparés, les sauces.
+- **Compense le calcium** comme indiqué par le médecin : les compléments prescrits remplacent l’apport des produits laitiers que tu ne consommes plus.
+- **Organise-toi à deux** : courses, préparation de repas simples, plats à congeler. Le régime est plus facile quand toute la famille cuisine « sans lait » à certains repas.
+- **Demande une diététicienne** ou une consultante en lactation si tu te sens dépassée.
 
 ## Questions fréquentes
 **Mon bébé a des coliques : dois-je arrêter les laitages ?**
 Pas sans avis médical. Les coliques ont de nombreuses causes. Le médecin évaluera l’ensemble des signes avant de proposer, éventuellement, un essai d’éviction.
 
 **Combien de temps dure le régime ?**
-C’est le médecin qui en décide, selon la réponse de votre bébé. Un essai d’éviction dure en général quelques semaines, puis une réintroduction permet de vérifier le lien.
+C’est le médecin qui en décide, selon la réponse de ton bébé. Un essai d’éviction dure en général quelques semaines, puis une réintroduction permet de vérifier le lien.
 
 **Est-ce que je dois arrêter d’allaiter si mon bébé est allergique ?**
 Non. L’allaitement reste conseillé ; le régime de la mère, quand il est nécessaire, permet justement de le poursuivre.
 
 **Puis-je manger des produits « sans lactose » ?**
-Ils contiennent toujours les protéines du lait de vache. S’ils vous ont été déconseillés, ils le sont aussi.
+Ils contiennent toujours les protéines du lait de vache. S’ils t’ont été déconseillés, ils le sont aussi.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre bébé présente un gonflement du visage, une gêne respiratoire, une pâleur ou un malaise.
+**Appelle le 15 ou le 112** si ton bébé présente un gonflement du visage, une gêne respiratoire, une pâleur ou un malaise.
 
-**Consultez** si votre bébé a du sang dans les selles, ne prend pas de poids, a un eczéma qui s’aggrave ou des troubles digestifs persistants. Parlez aussi de votre propre fatigue : un régime pendant l’allaitement demande de l’énergie. En cas de détresse psychologique, le **3114** répond 24 h/24.
+**Consulte** si ton bébé a du sang dans les selles, ne prend pas de poids, a un eczéma qui s’aggrave ou des troubles digestifs persistants. Parle aussi de ta propre fatigue : un régime pendant l’allaitement demande de l’énergie. En cas de détresse psychologique, le **3114** répond 24 h/24.
 
 ${FIN}`,
   },
@@ -221,7 +221,7 @@ ${FIN}`,
 ## Comprendre
 L’Assurance Maladie décrit une diversification « prudente » entre 4 et 6 mois chez le bébé allergique au lait de vache : on introduit les légumes, fruits, féculents, viandes, poissons et œufs, mais on écarte les **produits laitiers** et les **aliments contenant du lait**. Le lait prescrit (hydrolysat ou autre formule) reste l’aliment lacté principal.
 
-**La réintroduction.** Santé.fr indique qu’elle est tentée progressivement vers 12 à 14 mois ; l’Assurance Maladie évoque 9 à 12 mois, sous surveillance médicale. La date exacte dépend de votre enfant, de la forme d’allergie et des résultats des tests. Mpedia distingue :
+**La réintroduction.** Santé.fr indique qu’elle est tentée progressivement vers 12 à 14 mois ; l’Assurance Maladie évoque 9 à 12 mois, sous surveillance médicale. La date exacte dépend de ton enfant, de la forme d’allergie et des résultats des tests. Mpedia distingue :
 - la **forme immédiate** (IgE-médiée) : la réintroduction se fait sous suivi allergologique, **en milieu hospitalier**, car une réaction sévère reste possible ;
 - la **forme retardée** : après contrôle des tests, elle peut parfois être réalisée à domicile, selon les consignes précises du médecin, pour rechercher la quantité tolérée.
 
@@ -230,19 +230,19 @@ Mpedia note que la tolérance s’acquiert souvent d’abord pour les produits l
 **Les chances de guérison** sont bonnes : huit enfants sur dix guérissent avant 2 ans et neuf sur dix avant 6 ans, selon Santé.fr. Certaines formes persistent et demandent un suivi au long cours.
 
 ## Au quotidien
-- **Cuisinez « sans lait »** facilement : purées à l’huile ou avec le lait prescrit, compotes, féculents, viandes, poissons, œufs bien cuits.
-- **Lisez chaque étiquette** de petits pots, biscuits, céréales infantiles : le lait y est souvent présent.
-- **Introduisez les autres aliments** un à la fois, en petite quantité, pour repérer facilement une réaction.
-- **Ne commencez jamais la réintroduction seul**, même si votre enfant « a l’air d’aller mieux » : suivez le calendrier et les étapes fixés par le médecin.
-- **Gardez la trousse d’urgence** à portée si elle a été prescrite.
-- **Pensez au calcium** : la diététicienne peut proposer des aliments et menus adaptés.
+- **Cuisine « sans lait »** facilement : purées à l’huile ou avec le lait prescrit, compotes, féculents, viandes, poissons, œufs bien cuits.
+- **Lis chaque étiquette** de petits pots, biscuits, céréales infantiles : le lait y est souvent présent.
+- **Introduis les autres aliments** un à la fois, en petite quantité, pour repérer facilement une réaction.
+- **Ne commence jamais la réintroduction seul**, même si ton enfant « a l’air d’aller mieux » : suis le calendrier et les étapes fixés par le médecin.
+- **Garde la trousse d’urgence** à portée si elle a été prescrite.
+- **Pense au calcium** : la diététicienne peut proposer des aliments et menus adaptés.
 
 ## Questions fréquentes
 **Faut-il aussi retarder l’œuf ou l’arachide ?**
-Pas systématiquement. Les repères actuels déconseillent de retarder les aliments allergisants. Comme l’APLV est souvent associée à d’autres allergies, demandez au médecin s’il souhaite faire des tests avant certaines introductions.
+Pas systématiquement. Les repères actuels déconseillent de retarder les aliments allergisants. Comme l’APLV est souvent associée à d’autres allergies, demande au médecin s’il souhaite faire des tests avant certaines introductions.
 
 **Mon enfant a mangé un biscuit au beurre par erreur et n’a rien eu. Est-il guéri ?**
-Pas forcément. Une absence de réaction ponctuelle ne permet pas de conclure. Signalez-le au médecin, qui décidera de la suite.
+Pas forcément. Une absence de réaction ponctuelle ne permet pas de conclure. Signale-le au médecin, qui décidera de la suite.
 
 **À partir de quand peut-il boire du lait de vache comme les autres enfants ?**
 Quand le médecin a validé la réintroduction complète. Avant cela, le lait prescrit reste la référence.
@@ -251,9 +251,9 @@ Quand le médecin a validé la réintroduction complète. Avant cela, le lait pr
 Non : l’allergie concerne très souvent aussi les laits de chèvre et de brebis, et mpedia recommande d’exclure les laits de tous les mammifères.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas d’urticaire étendue, de gonflement du visage ou de la gorge, de gêne respiratoire, de vomissements répétés ou de malaise pendant ou après une réintroduction. Utilisez l’auto-injecteur d’adrénaline s’il a été prescrit.
+**Appelle le 15 ou le 112** en cas d’urticaire étendue, de gonflement du visage ou de la gorge, de gêne respiratoire, de vomissements répétés ou de malaise pendant ou après une réintroduction. Utilise l’auto-injecteur d’adrénaline s’il a été prescrit.
 
-**Contactez le médecin** pour toute réaction, même légère, pendant le protocole, ou si vous avez un doute sur une étape.
+**Contacte le médecin** pour toute réaction, même légère, pendant le protocole, ou si tu as un doute sur une étape.
 
 ${FIN}`,
   },
@@ -269,7 +269,7 @@ ${FIN}`,
 - Chez le jeune enfant, elle est souvent **passagère**, par exemple après une gastro-entérite.
 - On **adapte** la consommation à la tolérance de l’enfant ; on supprime rarement tous les produits laitiers.
 - Yaourts, fromages affinés et produits délactosés sont souvent mieux tolérés.
-- Chez un enfant, ne restez pas sur une suspicion : **consultez**.
+- Chez un enfant, ne reste pas sur une suspicion : **consulte**.
 
 ## Comprendre
 Le **lactose** est le sucre du lait. Il est découpé dans l’intestin par une enzyme, la **lactase**. Quand elle manque, le lactose non digéré arrive dans le côlon, où des bactéries le font fermenter : cela produit des gaz et attire de l’eau, d’où ballonnements et diarrhée. Les symptômes apparaissent le plus souvent **30 minutes à 2 heures** après le repas, et sont plus marqués quand on boit beaucoup de lait d’un coup.
@@ -282,31 +282,31 @@ L’Assurance Maladie distingue plusieurs situations :
 **Allergie ou intolérance ?** L’allergie aux protéines du lait de vache est une réaction **immunitaire**, surtout chez le nourrisson, qui peut toucher la peau, la respiration et le système digestif, et devenir grave. L’intolérance au lactose reste un **inconfort digestif** sans complication. « Il n’existe pas d’allergie au lactose », résume l’Assurance Maladie.
 
 ## Au quotidien
-- **N’éliminez pas le lait au hasard** : le médecin peut proposer une éviction de deux semaines, puis une réintroduction progressive pour trouver le **seuil de tolérance** de votre enfant.
-- **Tenez un journal** de ce qu’il mange et des symptômes pendant cette période.
-- **Privilégiez les produits mieux tolérés** : yaourts (leurs ferments dégradent une partie du lactose), fromages à pâte dure ou bien affinés, qui n’en contiennent quasiment plus, beurre, produits délactosés.
-- **Servez le lait dans un plat** (purée, gratin, clafoutis) plutôt qu’en grand verre bu à jeun.
-- **Répartissez** les produits laitiers sur la journée et proposez-les au cours d’un repas.
-- **Repérez le lactose caché** : pain au lait, crêpes, gaufres, plats en sauce, fromages fondus avec poudre de lait.
-- **Pensez au calcium** : s’il consomme peu de produits laitiers, demandez conseil au médecin ou à une diététicienne.
+- **N’élimine pas le lait au hasard** : le médecin peut proposer une éviction de deux semaines, puis une réintroduction progressive pour trouver le **seuil de tolérance** de ton enfant.
+- **Tiens un journal** de ce qu’il mange et des symptômes pendant cette période.
+- **Privilégie les produits mieux tolérés** : yaourts (leurs ferments dégradent une partie du lactose), fromages à pâte dure ou bien affinés, qui n’en contiennent quasiment plus, beurre, produits délactosés.
+- **Sers le lait dans un plat** (purée, gratin, clafoutis) plutôt qu’en grand verre bu à jeun.
+- **Répartis** les produits laitiers sur la journée et propose-les au cours d’un repas.
+- **Repère le lactose caché** : pain au lait, crêpes, gaufres, plats en sauce, fromages fondus avec poudre de lait.
+- **Pense au calcium** : s’il consomme peu de produits laitiers, demande conseil au médecin ou à une diététicienne.
 
 ## Questions fréquentes
 **Mon enfant a eu une gastro et digère mal le lait depuis. Est-ce durable ?**
 C’est souvent passager. Le médecin peut conseiller de limiter le lactose quelques jours, le temps que l’intestin guérisse, puis de reprendre une alimentation normale.
 
 **Peut-on remplacer le lait par une boisson végétale ?**
-Chez le nourrisson, non : les boissons végétales ne remplacent pas les laits infantiles et peuvent entraîner des carences graves. Chez l’enfant plus grand, demandez conseil au médecin, car elles ne couvrent pas les mêmes besoins.
+Chez le nourrisson, non : les boissons végétales ne remplacent pas les laits infantiles et peuvent entraîner des carences graves. Chez l’enfant plus grand, demande conseil au médecin, car elles ne couvrent pas les mêmes besoins.
 
 **Comment confirmer le diagnostic ?**
 Le médecin s’appuie sur les symptômes et leur lien avec l’alimentation. Un test respiratoire à l’hydrogène peut être prescrit.
 
 **Un écart est-il grave ?**
-L’intolérance au lactose n’entraîne pas de complication grave : un écart peut donner un inconfort passager. Évitez donc un régime trop strict qui priverait votre enfant de calcium.
+L’intolérance au lactose n’entraîne pas de complication grave : un écart peut donner un inconfort passager. Évite donc un régime trop strict qui priverait ton enfant de calcium.
 
 ## Quand demander conseil
-**Consultez sans attendre** si vous suspectez une intolérance chez votre enfant, comme le recommande l’Assurance Maladie, et surtout s’il perd du poids, a du sang dans les selles, une diarrhée qui dure, des vomissements ou des signes de déshydratation.
+**Consulte sans attendre** si tu suspectes une intolérance chez ton enfant, comme le recommande l’Assurance Maladie, et surtout s’il perd du poids, a du sang dans les selles, une diarrhée qui dure, des vomissements ou des signes de déshydratation.
 
-**Appelez le 15 ou le 112** si des signes surviennent juste après un produit laitier et touchent la peau ou la respiration (urticaire, gonflement, gêne respiratoire) : ce n’est plus une intolérance, mais une possible réaction allergique.
+**Appelle le 15 ou le 112** si des signes surviennent juste après un produit laitier et touchent la peau ou la respiration (urticaire, gonflement, gêne respiratoire) : ce n’est plus une intolérance, mais une possible réaction allergique.
 
 ${FIN}`,
   },
@@ -322,7 +322,7 @@ ${FIN}`,
 - L’œuf fait partie des **allergènes les plus fréquents** chez l’enfant, avec le lait, l’arachide, les fruits à coque et le poisson.
 - Il se cache dans de **nombreux produits** : pâtisseries, pâtes fraîches, sauces, panures, plats préparés.
 - Sur les produits emballés, l’œuf fait partie des **14 allergènes** à mettre en évidence dans la liste des ingrédients.
-- Signalez l’allergie **avant toute vaccination** : le médecin vérifiera la composition des vaccins.
+- Signale l’allergie **avant toute vaccination** : le médecin vérifiera la composition des vaccins.
 - Gonflement, gêne respiratoire, malaise : **15 ou 112**.
 
 ## Comprendre
@@ -335,31 +335,31 @@ Le diagnostic est posé par le médecin ou l’allergologue (interrogatoire, tes
 **Vaccins.** Santé.fr signale que les enfants allergiques aux protéines de l’œuf peuvent réagir à certains vaccins qui en contiennent. Des tests préalables permettent, si besoin, d’établir un protocole de vaccination sous surveillance médicale. Ce n’est pas une raison de renoncer aux vaccins : c’est une information à donner au médecin.
 
 ## Au quotidien
-- **Lisez toutes les étiquettes**, à chaque achat : les recettes changent. L’œuf apparaît en gras, souligné ou en italique dans la liste des ingrédients ; s’il n’y a pas de liste, la mention « contient » est obligatoire.
-- **Repérez les produits à risque** : gâteaux, biscuits, brioches, crêpes, gaufres, crèmes desserts, mayonnaise et sauces émulsionnées, pâtes fraîches, quiches, gratins, panures, nuggets, farces, certaines glaces et meringues.
-- **En boulangerie, au restaurant, à la cantine**, demandez l’information écrite sur les allergènes, obligatoire pour les produits non emballés.
-- **Cuisinez sans œuf** : compote, banane écrasée, fécule ou graines de lin moulues mélangées à de l’eau peuvent lier une pâte à gâteau. Testez d’abord à la maison.
-- **Prévenez tous les adultes** qui s’occupent de votre enfant et laissez-leur la conduite à tenir écrite.
-- **À l’école ou à la crèche**, demandez un **PAI** (projet d’accueil individualisé).
-- **Gardez la trousse d’urgence** avec vous si elle a été prescrite.
+- **Lis toutes les étiquettes**, à chaque achat : les recettes changent. L’œuf apparaît en gras, souligné ou en italique dans la liste des ingrédients ; s’il n’y a pas de liste, la mention « contient » est obligatoire.
+- **Repère les produits à risque** : gâteaux, biscuits, brioches, crêpes, gaufres, crèmes desserts, mayonnaise et sauces émulsionnées, pâtes fraîches, quiches, gratins, panures, nuggets, farces, certaines glaces et meringues.
+- **En boulangerie, au restaurant, à la cantine**, demande l’information écrite sur les allergènes, obligatoire pour les produits non emballés.
+- **Cuisine sans œuf** : compote, banane écrasée, fécule ou graines de lin moulues mélangées à de l’eau peuvent lier une pâte à gâteau. Teste d’abord à la maison.
+- **Préviens tous les adultes** qui s’occupent de ton enfant et laisse-leur la conduite à tenir écrite.
+- **À l’école ou à la crèche**, demande un **PAI** (projet d’accueil individualisé).
+- **Garde la trousse d’urgence** avec toi si elle a été prescrite.
 
 ## Questions fréquentes
 **Mon enfant peut-il manger un gâteau où l’œuf est bien cuit ?**
-Ne le faites pas sans l’accord de l’allergologue. Seul le bilan permet de savoir quelles formes d’œuf sont tolérées ou non.
+Ne le fais pas sans l’accord de l’allergologue. Seul le bilan permet de savoir quelles formes d’œuf sont tolérées ou non.
 
 **L’allergie à l’œuf peut-elle disparaître ?**
-Certaines allergies alimentaires de l’enfant évoluent avec l’âge. L’allergologue suit votre enfant et décide si une réintroduction peut être tentée, parfois à l’hôpital.
+Certaines allergies alimentaires de l’enfant évoluent avec l’âge. L’allergologue suit ton enfant et décide si une réintroduction peut être tentée, parfois à l’hôpital.
 
 **Faut-il éviter aussi le poulet ?**
-L’allergie à l’œuf ne signifie pas automatiquement allergie à la viande de volaille. Posez la question à l’allergologue plutôt que de supprimer des aliments par précaution.
+L’allergie à l’œuf ne signifie pas automatiquement allergie à la viande de volaille. Pose la question à l’allergologue plutôt que de supprimer des aliments par précaution.
 
 **Mon bébé a des antécédents d’allergie dans la famille : faut-il retarder l’œuf ?**
-Non, pas sans avis médical : les repères actuels recommandent d’introduire l’œuf bien cuit pendant la diversification, comme les autres aliments. Demandez conseil au médecin ou à la PMI en cas d’antécédents.
+Non, pas sans avis médical : les repères actuels recommandent d’introduire l’œuf bien cuit pendant la diversification, comme les autres aliments. Demande conseil au médecin ou à la PMI en cas d’antécédents.
 
 ## Quand demander conseil
-**Appelez immédiatement le 15 ou le 112** (gratuits, même sans crédit) en cas de gonflement du visage, des lèvres ou de la gorge, de voix changée, de difficulté à respirer, de malaise, de pâleur, de vomissements répétés, ou si plusieurs signes apparaissent ensemble après un repas. Utilisez l’auto-injecteur d’adrénaline s’il a été prescrit, sans attendre.
+**Appelle immédiatement le 15 ou le 112** (gratuits, même sans crédit) en cas de gonflement du visage, des lèvres ou de la gorge, de voix changée, de difficulté à respirer, de malaise, de pâleur, de vomissements répétés, ou si plusieurs signes apparaissent ensemble après un repas. Utilise l’auto-injecteur d’adrénaline s’il a été prescrit, sans attendre.
 
-**Consultez votre médecin** après toute réaction, même légère, pour faire le point et adapter la conduite à tenir.
+**Consulte ton médecin** après toute réaction, même légère, pour faire le point et adapter la conduite à tenir.
 
 ${FIN}`,
   },
@@ -373,8 +373,8 @@ ${FIN}`,
     body_md: `## En bref
 - L’**arachide** (cacahuète) fait partie des allergènes les plus fréquents chez l’enfant et peut provoquer des **réactions graves**.
 - Elle figure parmi les **14 allergènes** obligatoirement signalés et mis en évidence sur les étiquettes.
-- La mention « **peut contenir des traces** » signale un risque de contamination : demandez à l’allergologue comment la prendre en compte.
-- En voyage, renseignez-vous sur la cuisine locale : certains pays utilisent beaucoup l’arachide.
+- La mention « **peut contenir des traces** » signale un risque de contamination : demande à l’allergologue comment la prendre en compte.
+- En voyage, renseigne-toi sur la cuisine locale : certains pays utilisent beaucoup l’arachide.
 - Si un auto-injecteur d’adrénaline a été prescrit, il doit **toujours** accompagner l’enfant.
 
 ## Comprendre
@@ -387,31 +387,31 @@ Après le bilan, l’allergologue remet en général une **carte d’allergie** 
 **L’étiquetage de précaution.** Les règles d’étiquetage portent sur les ingrédients ajoutés volontairement. La mention « peut contenir des traces de… » indique un risque de contamination accidentelle (fabrication, stockage, transport) que le fabricant n’a pas pu maîtriser. Elle n’est pas obligatoire : son absence ne garantit pas l’absence de traces.
 
 ## Au quotidien
-- **Lisez chaque étiquette** : biscuits, barres de céréales, chocolats, glaces, sauces asiatiques ou africaines, apéritifs, pâtes à tartiner, céréales du petit déjeuner.
-- **Méfiez-vous du vrac et du fait maison** des autres : pâtisseries, sandwichs, plats à emporter. Demandez l’information écrite sur les allergènes, obligatoire pour les produits non emballés.
-- **Au restaurant**, signalez l’allergie dès la commande et demandez la liste des allergènes de chaque plat.
-- **Anniversaires et goûters** : apportez une part de gâteau sûre, prévenez les parents qui invitent.
-- **Apprenez à votre enfant**, selon son âge, à dire qu’il est allergique et à refuser un aliment inconnu.
-- **En voyage**, emportez la trousse d’urgence en permanence, prévoyez des en-cas, apprenez quelques mots dans la langue du pays et renseignez-vous sur les habitudes alimentaires. Hors Union européenne, les règles d’étiquetage peuvent être différentes.
-- **Sport** : l’allergie n’empêche pas de faire du sport. Préparez vous-même les collations d’après l’effort.
+- **Lis chaque étiquette** : biscuits, barres de céréales, chocolats, glaces, sauces asiatiques ou africaines, apéritifs, pâtes à tartiner, céréales du petit déjeuner.
+- **Méfie-toi du vrac et du fait maison** des autres : pâtisseries, sandwichs, plats à emporter. Demande l’information écrite sur les allergènes, obligatoire pour les produits non emballés.
+- **Au restaurant**, signale l’allergie dès la commande et demande la liste des allergènes de chaque plat.
+- **Anniversaires et goûters** : apporte une part de gâteau sûre, préviens les parents qui invitent.
+- **Apprends à ton enfant**, selon son âge, à dire qu’il est allergique et à refuser un aliment inconnu.
+- **En voyage**, emporte la trousse d’urgence en permanence, prévois des en-cas, apprends quelques mots dans la langue du pays et renseigne-toi sur les habitudes alimentaires. Hors Union européenne, les règles d’étiquetage peuvent être différentes.
+- **Sport** : l’allergie n’empêche pas de faire du sport. Prépare toi-même les collations d’après l’effort.
 
 ## Questions fréquentes
 **Faut-il éviter les produits « peut contenir des traces » ?**
-Cela dépend de la sensibilité de votre enfant. Suivez la consigne écrite donnée par l’allergologue, et posez-lui la question si elle n’est pas précisée.
+Cela dépend de la sensibilité de ton enfant. Suis la consigne écrite donnée par l’allergologue, et pose-lui la question si elle n’est pas précisée.
 
 **Mon enfant peut-il aller à la cantine ?**
-Oui, dans le cadre d’un **projet d’accueil individualisé (PAI)** établi avec l’école, le médecin scolaire et votre médecin. Il précise le régime, les aliments exclus, la trousse d’urgence et les gestes à faire.
+Oui, dans le cadre d’un **projet d’accueil individualisé (PAI)** établi avec l’école, le médecin scolaire et ton médecin. Il précise le régime, les aliments exclus, la trousse d’urgence et les gestes à faire.
 
 **Peut-on désensibiliser un enfant à l’arachide ?**
-C’est une question à poser à l’allergologue : lui seul peut dire si un traitement de fond est envisageable pour votre enfant, et dans quel cadre. N’essayez jamais de « l’habituer » à la maison en lui donnant de petites quantités.
+C’est une question à poser à l’allergologue : lui seul peut dire si un traitement de fond est envisageable pour ton enfant, et dans quel cadre. N’essaie jamais de « l’habituer » à la maison en lui donnant de petites quantités.
 
 **L’huile d’arachide est-elle concernée ?**
-Posez la question à l’allergologue et lisez les étiquettes : la conduite à tenir dépend du produit et de votre enfant.
+Pose la question à l’allergologue et lis les étiquettes : la conduite à tenir dépend du produit et de ton enfant.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** dès un gonflement des lèvres, de la langue ou de la gorge, une voix changée, une gêne respiratoire, un malaise, des vomissements répétés ou plusieurs signes ensemble. Injectez l’adrénaline si elle a été prescrite, sans attendre les secours : toute injection nécessite ensuite une surveillance à l’hôpital.
+**Appelle le 15 ou le 112** dès un gonflement des lèvres, de la langue ou de la gorge, une voix changée, une gêne respiratoire, un malaise, des vomissements répétés ou plusieurs signes ensemble. Injecte l’adrénaline si elle a été prescrite, sans attendre les secours : toute injection nécessite ensuite une surveillance à l’hôpital.
 
-**Consultez** après toute réaction, même légère, et avant un voyage pour mettre à jour la trousse et le protocole.
+**Consulte** après toute réaction, même légère, et avant un voyage pour mettre à jour la trousse et le protocole.
 
 ${FIN}`,
   },
@@ -441,28 +441,28 @@ Les repères actuels recommandent de ne **pas retarder** l’introduction des fr
 ## Au quotidien
 - **Pour le bébé** : une pincée de poudre d’amande ou de noisette dans une compote ou une purée connue, un aliment nouveau à la fois, de préférence en début de journée pour pouvoir observer.
 - **Pour les plus grands** : fruits à coque entiers seulement à partir de 5 ans, assis, au calme, jamais en courant ou en riant.
-- **Rangez** les apéritifs hors de portée des petits, surtout lors des fêtes.
-- **Si votre enfant est allergique** : lisez toutes les étiquettes (pâtisseries, pralinés, nougats, pâtes à tartiner, laits et crèmes végétales, pestos, céréales, barres), méfiez-vous des produits en vrac, demandez l’information allergènes en boulangerie et au restaurant.
-- **Huiles et cosmétiques** : certains contiennent des huiles de fruits à coque ; demandez conseil à l’allergologue.
+- **Range** les apéritifs hors de portée des petits, surtout lors des fêtes.
+- **Si ton enfant est allergique** : lis toutes les étiquettes (pâtisseries, pralinés, nougats, pâtes à tartiner, laits et crèmes végétales, pestos, céréales, barres), méfie-toi des produits en vrac, demande l’information allergènes en boulangerie et au restaurant.
+- **Huiles et cosmétiques** : certains contiennent des huiles de fruits à coque ; demande conseil à l’allergologue.
 - **PAI et trousse d’urgence** : à mettre en place avec l’école, la crèche et le médecin.
 
 ## Questions fréquentes
 **Un enfant allergique à la noisette doit-il éviter tous les fruits à coque ?**
-Pas forcément. L’allergologue précise, selon les tests, lesquels éviter. Ne supprimez pas tout « par précaution » sans avis.
+Pas forcément. L’allergologue précise, selon les tests, lesquels éviter. Ne supprime pas tout « par précaution » sans avis.
 
 **Mon enfant a avalé une cacahuète entière et tousse fort. Que faire ?**
-S’il tousse efficacement, encouragez-le à tousser et ne lui donnez rien à boire. S’il ne peut plus respirer, parler ou tousser, appelez le 15 ou le 112 et pratiquez les gestes de désobstruction. Une toux qui persiste après un épisode d’étouffement doit faire consulter.
+S’il tousse efficacement, encourage-le à tousser et ne lui donne rien à boire. S’il ne peut plus respirer, parler ou tousser, appelle le 15 ou le 112 et pratique les gestes de désobstruction. Une toux qui persiste après un épisode d’étouffement doit faire consulter.
 
 **Les « laits » d’amande conviennent-ils à un bébé ?**
 Non : les boissons végétales ne couvrent pas les besoins des enfants de moins d’un an, même enrichies en calcium.
 
 **La mention « peut contenir des traces de fruits à coque » est-elle importante ?**
-Elle signale un risque de contamination. L’allergologue vous dira si votre enfant doit éviter ces produits.
+Elle signale un risque de contamination. L’allergologue te dira si ton enfant doit éviter ces produits.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de gonflement du visage, de voix faible ou changée, de difficulté à respirer, de malaise, de vomissements répétés après un aliment, ou si votre enfant s’étouffe et ne peut plus respirer.
+**Appelle le 15 ou le 112** en cas de gonflement du visage, de voix faible ou changée, de difficulté à respirer, de malaise, de vomissements répétés après un aliment, ou si ton enfant s’étouffe et ne peut plus respirer.
 
-**Consultez** après toute réaction, même discrète (démangeaisons de la bouche, plaques), pour faire un bilan.
+**Consulte** après toute réaction, même discrète (démangeaisons de la bouche, plaques), pour faire un bilan.
 
 ${FIN}`,
   },
@@ -477,7 +477,7 @@ ${FIN}`,
 - **Poissons**, **crustacés** (crevettes, crabes, homards…) et **mollusques** (moules, huîtres, calamars…) sont **trois allergènes distincts** sur les étiquettes.
 - Le poisson fait partie des allergies alimentaires fréquentes de l’enfant ; les fruits de mer sont souvent en cause dans l’œdème de Quincke.
 - Une réaction après un poisson **pas assez frais** peut ressembler à une allergie : c’est un mécanisme différent, lié à l’histamine.
-- Seul le **bilan allergologique** précise ce que votre enfant doit éviter.
+- Seul le **bilan allergologique** précise ce que ton enfant doit éviter.
 - Gonflement du visage ou gêne respiratoire : **15 ou 112**.
 
 ## Comprendre
@@ -485,34 +485,34 @@ L’Assurance Maladie cite le poisson parmi les aliments le plus souvent respons
 
 Sur les produits emballés, la réglementation européenne impose de signaler séparément : les **poissons**, les **crustacés** et les **mollusques**. Être allergique à l’un ne signifie pas forcément l’être aux autres : c’est l’allergologue qui fait le tri, à partir des tests.
 
-**La fausse alerte de l’histamine.** Certains aliments, dont le poisson, peuvent contenir de l’histamine, surtout s’ils ont été mal conservés. Chez certaines personnes, elle provoque des signes proches d’une allergie (rougeurs, démangeaisons, parfois gêne respiratoire). L’Assurance Maladie précise qu’il ne s’agit **pas d’une allergie**. Seul un médecin peut faire la différence : ne concluez pas seul, dans un sens comme dans l’autre.
+**La fausse alerte de l’histamine.** Certains aliments, dont le poisson, peuvent contenir de l’histamine, surtout s’ils ont été mal conservés. Chez certaines personnes, elle provoque des signes proches d’une allergie (rougeurs, démangeaisons, parfois gêne respiratoire). L’Assurance Maladie précise qu’il ne s’agit **pas d’une allergie**. Seul un médecin peut faire la différence : ne conclus pas seul, dans un sens comme dans l’autre.
 
-**Introduire le poisson chez le bébé.** Le poisson fait partie des aliments à proposer pendant la diversification, comme les autres allergènes : bien cuit, sans arêtes, en variant les espèces. Si un aîné ou un parent est allergique au poisson, parlez-en d’abord au médecin.
+**Introduire le poisson chez le bébé.** Le poisson fait partie des aliments à proposer pendant la diversification, comme les autres allergènes : bien cuit, sans arêtes, en variant les espèces. Si un aîné ou un parent est allergique au poisson, parles-en d’abord au médecin.
 
 ## Au quotidien
-- **Lisez les étiquettes** : surimi, soupes, sauces (certaines sauces asiatiques contiennent du poisson), bouillons, pizzas, taboulés, salades composées, plats préparés, chips aromatisées.
-- **Méfiez-vous des vapeurs et projections** : demandez à l’allergologue si votre enfant doit éviter d’être à proximité d’une cuisson de poisson ou de fruits de mer.
-- **Au restaurant**, signalez l’allergie et demandez si les mêmes friteuses, plans de travail ou ustensiles servent pour le poisson.
+- **Lis les étiquettes** : surimi, soupes, sauces (certaines sauces asiatiques contiennent du poisson), bouillons, pizzas, taboulés, salades composées, plats préparés, chips aromatisées.
+- **Méfie-toi des vapeurs et projections** : demande à l’allergologue si ton enfant doit éviter d’être à proximité d’une cuisson de poisson ou de fruits de mer.
+- **Au restaurant**, signale l’allergie et demande si les mêmes friteuses, plans de travail ou ustensiles servent pour le poisson.
 - **À la cantine**, un **PAI** organise les menus et la conduite à tenir.
-- **Conservez bien vos poissons** : chaîne du froid respectée, cuisson rapide après l’achat, restes au réfrigérateur.
+- **Conserve bien tes poissons** : chaîne du froid respectée, cuisson rapide après l’achat, restes au réfrigérateur.
 
 ## Questions fréquentes
 **Mon enfant est allergique au poisson : peut-il manger des crevettes ?**
 Pas sans avis. Poissons et crustacés sont deux allergènes différents : seul le bilan dit ce qui est toléré.
 
 **Mon enfant a eu des plaques après du thon en conserve. Est-ce une allergie ?**
-Peut-être, peut-être pas : une réaction à l’histamine est possible. Notez ce qu’il a mangé, gardez l’emballage et consultez pour faire le point.
+Peut-être, peut-être pas : une réaction à l’histamine est possible. Note ce qu’il a mangé, garde l’emballage et consulte pour faire le point.
 
 **La gélatine de poisson pose-t-elle problème ?**
-La réglementation prévoit quelques exceptions d’étiquetage, par exemple la gélatine de poisson utilisée comme support de vitamines. Pour un enfant très sensible, demandez conseil à l’allergologue.
+La réglementation prévoit quelques exceptions d’étiquetage, par exemple la gélatine de poisson utilisée comme support de vitamines. Pour un enfant très sensible, demande conseil à l’allergologue.
 
 **L’allergie au poisson disparaît-elle ?**
 Cela varie selon les enfants. L’allergologue réévalue régulièrement la situation.
 
 ## Quand demander conseil
-**Appelez immédiatement le 15 ou le 112** en cas de gonflement soudain du visage, des lèvres ou de la langue, de voix faible, de difficulté à respirer, de malaise, de vomissements ou douleurs de ventre intenses après un repas. Utilisez l’auto-injecteur d’adrénaline s’il a été prescrit.
+**Appelle immédiatement le 15 ou le 112** en cas de gonflement soudain du visage, des lèvres ou de la langue, de voix faible, de difficulté à respirer, de malaise, de vomissements ou douleurs de ventre intenses après un repas. Utilise l’auto-injecteur d’adrénaline s’il a été prescrit.
 
-**Consultez votre médecin** après toute réaction, même légère, pour envisager un bilan allergologique.
+**Consulte ton médecin** après toute réaction, même légère, pour envisager un bilan allergologique.
 
 ${FIN}`,
   },
@@ -529,7 +529,7 @@ ${FIN}`,
 - L’**allergie au blé** est une réaction allergique, souvent rapide après le repas ; elle peut disparaître pendant l’enfance.
 - L’**hypersensibilité au gluten** est un trouble digestif fonctionnel, sans maladie cœliaque.
 - Les trois se ressemblent parfois, mais le diagnostic, le suivi et le régime **ne sont pas les mêmes**.
-- Ne supprimez **pas** le gluten avant les examens : cela peut fausser le diagnostic.
+- Ne supprime **pas** le gluten avant les examens : cela peut fausser le diagnostic.
 
 ## Comprendre
 **La maladie cœliaque.** L’Assurance Maladie la décrit comme une maladie chronique auto-immune de l’intestin grêle, déclenchée par le gluten chez des personnes génétiquement prédisposées. Le système immunitaire réagit à la gliadine, une protéine du gluten : l’inflammation abîme les **villosités intestinales**, ce qui gêne l’absorption du fer, du calcium, de la vitamine D ou des folates. Elle touche environ 1 % de la population, plus souvent les femmes. Le gluten se trouve dans le blé (dont blé dur, épeautre, kamut), l’orge, le seigle et leurs hybrides. Mpedia souligne que ce n’est **ni une allergie, ni un déficit enzymatique**.
@@ -541,11 +541,11 @@ ${FIN}`,
 **Pourquoi c’est important.** La maladie cœliaque exige un régime strict et un suivi médical, car elle expose à des carences et à des complications si elle n’est pas traitée. L’allergie au blé demande d’éviter le blé, avec parfois une trousse d’urgence. L’hypersensibilité se gère au cas par cas. Mélanger les trois, c’est risquer un régime inutilement contraignant… ou insuffisant.
 
 ## Au quotidien
-- **Notez les symptômes** : délai après le repas (minutes, heures, jours), type de signes, aliments consommés.
-- **Gardez le gluten dans l’alimentation** jusqu’aux examens, sauf avis médical contraire.
-- **Apportez le carnet de santé** : la courbe de croissance aide à repérer une maladie cœliaque chez l’enfant.
-- **Signalez les antécédents familiaux** : diabète de type 1, maladie de la thyroïde, maladie cœliaque chez un proche.
-- **Ne vous fiez pas** à un test vendu en ligne ou à une « amélioration » sous régime : seul le bilan médical tranche.
+- **Note les symptômes** : délai après le repas (minutes, heures, jours), type de signes, aliments consommés.
+- **Garde le gluten dans l’alimentation** jusqu’aux examens, sauf avis médical contraire.
+- **Apporte le carnet de santé** : la courbe de croissance aide à repérer une maladie cœliaque chez l’enfant.
+- **Signale les antécédents familiaux** : diabète de type 1, maladie de la thyroïde, maladie cœliaque chez un proche.
+- **Ne te fie pas** à un test vendu en ligne ou à une « amélioration » sous régime : seul le bilan médical tranche.
 
 ## Questions fréquentes
 **Le « sans gluten » est-il meilleur pour la santé d’un enfant qui n’a pas de maladie cœliaque ?**
@@ -561,9 +561,9 @@ Non : l’Assurance Maladie indique qu’elle est définitive. Le régime sans g
 L’avoine pure est tolérée par la grande majorité des personnes cœliaques, mais elle est souvent contaminée par le blé. Seuls les produits à l’avoine destinés aux personnes cœliaques sont conseillés.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si un enfant présente, juste après un repas, un gonflement du visage, une gêne respiratoire, un malaise ou des vomissements répétés.
+**Appelle le 15 ou le 112** si un enfant présente, juste après un repas, un gonflement du visage, une gêne respiratoire, un malaise ou des vomissements répétés.
 
-**Consultez** en cas de diarrhée qui dure, de ventre gonflé, de perte d’appétit, de poids ou de taille qui stagnent, de fatigue ou de tristesse inhabituelle, ou si des troubles digestifs reviennent régulièrement après les repas.
+**Consulte** en cas de diarrhée qui dure, de ventre gonflé, de perte d’appétit, de poids ou de taille qui stagnent, de fatigue ou de tristesse inhabituelle, ou si des troubles digestifs reviennent régulièrement après les repas.
 
 ${FIN}`,
   },
@@ -578,7 +578,7 @@ ${FIN}`,
 - La maladie cœliaque peut apparaître chez le **jeune enfant après l’introduction du gluten**, mais aussi plus tard, voire à l’âge adulte.
 - Signes typiques : **diarrhée chronique, ventre gonflé, perte d’appétit, ralentissement de la croissance**, enfant triste ou anormalement calme.
 - Les formes peuvent être **discrètes** : fatigue, douleurs de ventre, carence en fer.
-- Le diagnostic repose sur une **prise de sang** (anticorps) puis, le plus souvent, une **endoscopie** : ne supprimez pas le gluten avant.
+- Le diagnostic repose sur une **prise de sang** (anticorps) puis, le plus souvent, une **endoscopie** : ne supprime pas le gluten avant.
 - Les **proches** d’un enfant cœliaque ont un risque plus élevé.
 
 ## Comprendre
@@ -596,11 +596,11 @@ Santé.fr cite aussi les ballonnements, l’amaigrissement, la fatigue, et, dans
 **Le diagnostic.** Le médecin prescrit d’abord une **prise de sang** à la recherche d’anticorps spécifiques (anti-transglutaminase). Mpedia indique que le diagnostic est ensuite confirmé par une **endoscopie digestive** avec biopsies. L’enfant doit **continuer à manger du gluten** jusqu’aux examens : un régime commencé trop tôt peut rendre les résultats faussement rassurants.
 
 ## Au quotidien
-- **Regardez les courbes** de poids et de taille avec votre médecin à chaque visite.
-- **Notez** la fréquence et l’aspect des selles, l’appétit, l’humeur, la fatigue.
-- **Ne commencez pas** de régime sans gluten « pour voir » : mpedia le déconseille formellement sans diagnostic.
-- **Si un proche est cœliaque**, parlez-en au médecin, qui jugera de l’intérêt d’un dépistage.
-- **Posez vos questions** à l’équipe avant l’endoscopie : déroulement, préparation, temps d’hospitalisation. Expliquer simplement l’examen à votre enfant l’aide à mieux le vivre.
+- **Regarde les courbes** de poids et de taille avec ton médecin à chaque visite.
+- **Note** la fréquence et l’aspect des selles, l’appétit, l’humeur, la fatigue.
+- **Ne commence pas** de régime sans gluten « pour voir » : mpedia le déconseille formellement sans diagnostic.
+- **Si un proche est cœliaque**, parles-en au médecin, qui jugera de l’intérêt d’un dépistage.
+- **Pose tes questions** à l’équipe avant l’endoscopie : déroulement, préparation, temps d’hospitalisation. Expliquer simplement l’examen à ton enfant l’aide à mieux le vivre.
 
 ## Questions fréquentes
 **Introduire le gluten plus tard protège-t-il de la maladie ?**
@@ -610,15 +610,15 @@ Non. Selon mpedia, ni le retard d’introduction ni l’allaitement ne modifient
 Non. Les formes discrètes existent : fatigue, carence en fer, petite taille, douleurs abdominales. Le médecin peut prescrire une prise de sang en cas de doute.
 
 **Une prise de sang suffit-elle ?**
-Elle oriente fortement. La confirmation passe le plus souvent par l’endoscopie ; le médecin vous expliquera la démarche adaptée à votre enfant.
+Elle oriente fortement. La confirmation passe le plus souvent par l’endoscopie ; le médecin t’expliquera la démarche adaptée à ton enfant.
 
 **Que se passe-t-il après le diagnostic ?**
 Un régime strictement sans gluten, à vie, accompagné par une diététicienne. Les symptômes régressent en quelques semaines et la croissance reprend.
 
 ## Quand demander conseil
-**Consultez rapidement** si votre enfant a une diarrhée qui dure, perd du poids ou ne grandit plus, a le ventre gonflé et douloureux, mange beaucoup moins, ou semble triste et sans énergie.
+**Consulte rapidement** si ton enfant a une diarrhée qui dure, perd du poids ou ne grandit plus, a le ventre gonflé et douloureux, mange beaucoup moins, ou semble triste et sans énergie.
 
-**Appelez le 15 ou le 112** en cas de signes de déshydratation importante (bébé très somnolent, ne boit plus, yeux creusés, plus de couches mouillées) ou d’altération de l’état général.
+**Appelle le 15 ou le 112** en cas de signes de déshydratation importante (bébé très somnolent, ne boit plus, yeux creusés, plus de couches mouillées) ou d’altération de l’état général.
 
 ${FIN}`,
   },
@@ -643,22 +643,22 @@ L’Assurance Maladie explique que le régime sans gluten, suivi strictement, fa
 
 **Le gluten caché.** L’Assurance Maladie cite la charcuterie, le sucre glace, les poivres moulus, les mélanges d’épices et assaisonnements, ainsi que certains médicaments. Santé.fr ajoute certaines moutardes, sauces et chocolats, et des mentions comme « amidon » ou « extrait de malt ».
 
-**L’avoine.** L’avoine pure est consommée sans problème par plus de 95 % des personnes cœliaques, mais elle est souvent contaminée par d’autres céréales. Par précaution, choisissez uniquement les produits à l’avoine **destinés aux personnes cœliaques**.
+**L’avoine.** L’avoine pure est consommée sans problème par plus de 95 % des personnes cœliaques, mais elle est souvent contaminée par d’autres céréales. Par précaution, choisis uniquement les produits à l’avoine **destinés aux personnes cœliaques**.
 
 **Les mentions sur l’emballage.** La mention « **sans gluten** » correspond à un seuil réglementaire très bas, fixé au niveau européen. La mention « **très faible teneur en gluten** » est **déconseillée** en cas de maladie cœliaque.
 
 ## Au quotidien
-- **Lisez les étiquettes à chaque achat** : les céréales contenant du gluten sont signalées en gras, souligné ou italique dans la liste des ingrédients.
-- **Bâtissez les repas** autour d’aliments naturellement sans gluten : légumes, fruits, viandes, poissons, œufs, produits laitiers nature, riz, pommes de terre, maïs, légumineuses.
-- **Évitez les contaminations** à la maison : grille-pain, planche à pain et passoire réservés, beurre et confiture non partagés avec des couteaux pleins de miettes, plats sans gluten préparés en premier.
-- **Fabriquez des basiques** : crêpes au sarrasin, gâteaux à la farine de riz ou de châtaigne, sauces liées à la fécule de maïs ou de pomme de terre.
-- **Compensez les fibres** avec riz complet, maïs, pommes de terre et légumes, comme le conseille l’Assurance Maladie.
-- **Signalez la maladie** au pharmacien : certains médicaments contiennent du gluten parmi leurs excipients.
-- **Impliquez votre enfant** : lui apprendre à lire une étiquette le rend plus autonome chez les copains et à la cantine.
+- **Lis les étiquettes à chaque achat** : les céréales contenant du gluten sont signalées en gras, souligné ou italique dans la liste des ingrédients.
+- **Bâtis les repas** autour d’aliments naturellement sans gluten : légumes, fruits, viandes, poissons, œufs, produits laitiers nature, riz, pommes de terre, maïs, légumineuses.
+- **Évite les contaminations** à la maison : grille-pain, planche à pain et passoire réservés, beurre et confiture non partagés avec des couteaux pleins de miettes, plats sans gluten préparés en premier.
+- **Fabrique des basiques** : crêpes au sarrasin, gâteaux à la farine de riz ou de châtaigne, sauces liées à la fécule de maïs ou de pomme de terre.
+- **Compense les fibres** avec riz complet, maïs, pommes de terre et légumes, comme le conseille l’Assurance Maladie.
+- **Signale la maladie** au pharmacien : certains médicaments contiennent du gluten parmi leurs excipients.
+- **Implique ton enfant** : lui apprendre à lire une étiquette le rend plus autonome chez les copains et à la cantine.
 
 ## Questions fréquentes
 **Un petit écart de temps en temps, est-ce grave ?**
-L’Assurance Maladie présente le régime **strictement** sans gluten comme le seul traitement efficace pour garantir le bien-être et éviter les complications. Si les écarts sont fréquents, parlez-en au médecin ou à la diététicienne : ils peuvent vous aider à trouver des solutions concrètes.
+L’Assurance Maladie présente le régime **strictement** sans gluten comme le seul traitement efficace pour garantir le bien-être et éviter les complications. Si les écarts sont fréquents, parles-en au médecin ou à la diététicienne : ils peuvent t’aider à trouver des solutions concrètes.
 
 **Les produits sans gluten du commerce sont-ils indispensables ?**
 Non, mais ils facilitent la vie. Une partie peut être remboursée sous conditions (voir l’article sur le suivi et les remboursements).
@@ -670,9 +670,9 @@ Ce n’est pas nécessaire, mais partager des repas sans gluten simplifie l’or
 Souvent, oui, reconnaît l’Assurance Maladie. Un accompagnement par une diététicienne, un soutien psychologique ou une association de patients peut aider.
 
 ## Quand demander conseil
-**Consultez** si les symptômes persistent après quelques semaines de régime, s’ils réapparaissent, ou si votre enfant ne reprend pas de poids. Demandez une diététicienne pour construire des menus équilibrés.
+**Consulte** si les symptômes persistent après quelques semaines de régime, s’ils réapparaissent, ou si ton enfant ne reprend pas de poids. Demande une diététicienne pour construire des menus équilibrés.
 
-**Si le régime pèse sur le moral** de votre enfant ou le vôtre, parlez-en au médecin ; en cas de détresse, le **3114** répond jour et nuit. En cas d’urgence (malaise, déshydratation importante), appelez le **15** ou le **112**.
+**Si le régime pèse sur le moral** de ton enfant ou le tien, parles-en au médecin ; en cas de détresse, le **3114** répond jour et nuit. En cas d’urgence (malaise, déshydratation importante), appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -700,17 +700,17 @@ ${FIN}`,
 **Le remboursement.** L’Assurance Maladie prend en charge **60 %** du prix des aliments diététiques sans gluten, dans la limite d’un plafond mensuel (plus bas pour un enfant de moins de 10 ans que pour un adulte). Conditions : une maladie cœliaque **confirmée par biopsie** et un **accord de prise en charge** au titre d’une affection de longue durée.
 
 ## Au quotidien
-- **Gardez un calendrier** des prises de sang et consultations de suivi.
-- **Demandez le PAI** dès l’inscription à la crèche, à l’école ou au centre de loisirs, et faites-le actualiser à chaque changement d’établissement.
-- **Si vous fournissez un panier-repas** : boîte isotherme, pain de glace, contenants étiquetés au nom de l’enfant.
-- **Préparez une réserve** de goûters sans gluten pour l’école et les anniversaires.
-- **Pour le remboursement dans l’application ameli** (sur smartphone ou tablette, pas sur ordinateur) : activez « Mes prises en charge de la maladie cœliaque » dans les paramètres, puis, dans « Mes démarches », scannez les codes-barres des produits et indiquez le prix payé.
-- **Conservez** tickets de caisse, factures et codes-barres pendant **24 mois** : ils peuvent être demandés en cas de contrôle.
+- **Garde un calendrier** des prises de sang et consultations de suivi.
+- **Demande le PAI** dès l’inscription à la crèche, à l’école ou au centre de loisirs, et fais-le actualiser à chaque changement d’établissement.
+- **Si tu fournis un panier-repas** : boîte isotherme, pain de glace, contenants étiquetés au nom de l’enfant.
+- **Prépare une réserve** de goûters sans gluten pour l’école et les anniversaires.
+- **Pour le remboursement dans l’application ameli** (sur smartphone ou tablette, pas sur ordinateur) : active « Mes prises en charge de la maladie cœliaque » dans les paramètres, puis, dans « Mes démarches », scanne les codes-barres des produits et indique le prix payé.
+- **Conserve** tickets de caisse, factures et codes-barres pendant **24 mois** : ils peuvent être demandés en cas de contrôle.
 - **Sans application**, un formulaire papier est envoyé par l’Assurance Maladie : on y colle les étiquettes, avec la copie de l’ordonnance et les tickets de caisse.
 
 ## Questions fréquentes
 **Combien de temps avant que mon enfant aille mieux ?**
-Le plus souvent, quelques semaines. Si les symptômes persistent ou si de nouveaux apparaissent, consultez : un gluten caché ou une autre cause peut être en jeu.
+Le plus souvent, quelques semaines. Si les symptômes persistent ou si de nouveaux apparaissent, consulte : un gluten caché ou une autre cause peut être en jeu.
 
 **La cantine est-elle obligée de proposer un repas sans gluten ?**
 Le PAI organise la solution retenue avec l’établissement et la collectivité. Selon les cas, il s’agit d’un repas adapté ou d’un panier-repas fourni par la famille.
@@ -722,9 +722,9 @@ Non : seuls les aliments diététiques sans gluten entrant dans le dispositif, d
 L’Assurance Maladie cite l’Association française des intolérants au gluten (AFDIAG). Le médecin peut aussi proposer un soutien psychologique.
 
 ## Quand demander conseil
-**Consultez** si les symptômes ne disparaissent pas après quelques semaines de régime strict, s’ils reviennent, si la croissance ne reprend pas, ou si votre enfant vit mal son régime.
+**Consulte** si les symptômes ne disparaissent pas après quelques semaines de régime strict, s’ils reviennent, si la croissance ne reprend pas, ou si ton enfant vit mal son régime.
 
-En cas de détresse de votre enfant ou de vous-même, le **3114** (prévention du suicide) répond 24 h/24. En cas d’urgence, appelez le **15** ou le **112**.
+En cas de détresse de ton enfant ou de toi-même, le **3114** (prévention du suicide) répond 24 h/24. En cas d’urgence, appelle le **15** ou le **112**.
 
 ${FIN}`,
   },
@@ -739,8 +739,8 @@ ${FIN}`,
 - Le **gluten** peut être introduit pendant la diversification, **entre 4 et 12 mois** selon la société européenne de pédiatrie citée par mpedia.
 - Le retarder **ne protège pas** de la maladie cœliaque ; l’allaitement non plus, selon les données récentes.
 - On commence par de **petites quantités**, puis on augmente progressivement.
-- En cas d’**antécédents familiaux** (maladie cœliaque, allergies), demandez l’avis du médecin ou de la PMI.
-- Surveillez ensuite la croissance, les selles et l’appétit.
+- En cas d’**antécédents familiaux** (maladie cœliaque, allergies), demande l’avis du médecin ou de la PMI.
+- Surveille ensuite la croissance, les selles et l’appétit.
 
 ## Comprendre
 Pendant longtemps, on a pensé que le moment d’introduction du gluten pouvait changer le risque de maladie cœliaque. Mpedia explique que ces notions sont aujourd’hui **discutées** : ni le retard d’introduction ni l’allaitement ne semblent modifier ce risque. Une introduction plus tardive est seulement associée à un début de maladie plus tardif.
@@ -756,19 +756,19 @@ Mpedia précise qu’en pratique, des farines contenant du gluten sont souvent p
 **Si un parent, un frère ou une sœur est cœliaque**, le risque de l’enfant est plus élevé, car la maladie survient chez des personnes génétiquement prédisposées. Cela ne veut pas dire qu’il faut retarder ou supprimer le gluten, mais qu’il est utile d’en parler au médecin et d’être attentif aux signes.
 
 ## Au quotidien
-- **Commencez petit** : un peu de semoule fine ou de pâtes très cuites écrasées dans une purée connue, un morceau de pain à tremper selon l’âge et la texture adaptée.
-- **Un aliment nouveau à la fois**, de préférence en début de journée, pour pouvoir observer votre bébé.
-- **Une fois le gluten toléré**, continuez à le proposer régulièrement.
-- **Évitez les morceaux durs ou trop gros** : croûtons, biscuits qui se cassent en éclats, à cause du risque d’étouffement.
-- **Notez** dans le carnet de santé la date d’introduction : utile si des symptômes apparaissent plus tard.
-- **Ne passez pas au « sans gluten »** sans diagnostic : cela retarde un éventuel dépistage et complique l’alimentation.
+- **Commence petit** : un peu de semoule fine ou de pâtes très cuites écrasées dans une purée connue, un morceau de pain à tremper selon l’âge et la texture adaptée.
+- **Un aliment nouveau à la fois**, de préférence en début de journée, pour pouvoir observer ton bébé.
+- **Une fois le gluten toléré**, continue à le proposer régulièrement.
+- **Évite les morceaux durs ou trop gros** : croûtons, biscuits qui se cassent en éclats, à cause du risque d’étouffement.
+- **Note** dans le carnet de santé la date d’introduction : utile si des symptômes apparaissent plus tard.
+- **Ne passe pas au « sans gluten »** sans diagnostic : cela retarde un éventuel dépistage et complique l’alimentation.
 
 ## Questions fréquentes
 **Mon bébé a 5 mois : puis-je lui proposer du pain ?**
 Le gluten peut être introduit dès le début de la diversification, sous une forme adaptée à son âge et à sa capacité à mâcher et avaler. Un petit morceau de mie trempée dans une purée ou de la semoule fine sont plus sûrs qu’un croûton.
 
 **Un parent est cœliaque : faut-il attendre 1 an ?**
-Pas nécessairement : les données actuelles ne montrent pas de bénéfice à retarder. Demandez au médecin comment procéder et quels signes surveiller.
+Pas nécessairement : les données actuelles ne montrent pas de bénéfice à retarder. Demande au médecin comment procéder et quels signes surveiller.
 
 **Quels signes doivent faire penser à une maladie cœliaque après l’introduction ?**
 Diarrhée qui dure, ventre gonflé, perte d’appétit, poids ou taille qui stagnent, bébé triste ou inhabituellement calme. Le médecin peut alors prescrire une prise de sang.
@@ -777,9 +777,9 @@ Diarrhée qui dure, ventre gonflé, perte d’appétit, poids ou taille qui stag
 Non. Pain, pâtes, semoule adaptés à l’âge apportent aussi du gluten. L’essentiel est la régularité et la progressivité.
 
 ## Quand demander conseil
-**Consultez** si votre bébé a une diarrhée persistante, des vomissements, le ventre gonflé et douloureux, s’il refuse de manger ou si sa courbe de poids ralentit.
+**Consulte** si ton bébé a une diarrhée persistante, des vomissements, le ventre gonflé et douloureux, s’il refuse de manger ou si sa courbe de poids ralentit.
 
-**Appelez le 15 ou le 112** en cas de gonflement du visage, de gêne respiratoire ou de malaise après un aliment, ou si votre bébé est très somnolent et ne boit plus.
+**Appelle le 15 ou le 112** en cas de gonflement du visage, de gêne respiratoire ou de malaise après un aliment, ou si ton bébé est très somnolent et ne boit plus.
 
 ${FIN}`,
   },
@@ -793,44 +793,44 @@ ${FIN}`,
     sources: [S.santeAllergie, S.santePrevenir, S.mpediaPrevention],
     body_md: `## En bref
 - **Éviter les allergènes** pendant la grossesse **ne prévient pas** les allergies chez les bébés à risque, selon Santé.fr.
-- La tolérance aux aliments **commence à se construire in utero** : une petite partie des protéines que vous mangez passe jusqu’au fœtus.
+- La tolérance aux aliments **commence à se construire in utero** : une petite partie des protéines que tu manges passe jusqu’au fœtus.
 - Sauf raison médicale, une femme enceinte **n’a pas à faire de régime d’exclusion** : alimentation variée, sans excès.
-- Le risque d’allergie est plus élevé quand un parent ou un aîné est allergique : parlez-en à la sage-femme ou au médecin.
-- Si vous êtes vous-même allergique, **continuez votre propre régime** d’éviction.
+- Le risque d’allergie est plus élevé quand un parent ou un aîné est allergique : parles-en à la sage-femme ou au médecin.
+- Si tu es toi-même allergique, **continue ton propre régime** d’éviction.
 
 ## Comprendre
-Il y a quelques années, on conseillait parfois aux futures mères de familles allergiques de supprimer certains aliments (arachide, œuf, lait…) pendant la grossesse et l’allaitement. Ces pratiques ont été abandonnées : Santé.fr indique qu’éviter les allergènes pendant la grossesse ou l’allaitement **ne prévient pas** les allergies chez les nourrissons à risque. Un régime inutile peut en revanche **déséquilibrer** votre alimentation au moment où vos besoins augmentent.
+Il y a quelques années, on conseillait parfois aux futures mères de familles allergiques de supprimer certains aliments (arachide, œuf, lait…) pendant la grossesse et l’allaitement. Ces pratiques ont été abandonnées : Santé.fr indique qu’éviter les allergènes pendant la grossesse ou l’allaitement **ne prévient pas** les allergies chez les nourrissons à risque. Un régime inutile peut en revanche **déséquilibrer** ton alimentation au moment où tes besoins augmentent.
 
 Mpedia explique pourquoi : la **tolérance alimentaire** se met en place très tôt. Une petite partie des protéines consommées par la mère passe dans le sang du fœtus, puis, après la naissance, dans le lait maternel. Ce contact précoce et progressif aide l’organisme du bébé à reconnaître ces aliments comme inoffensifs. La femme enceinte ou allaitante « ne doit pas faire de régime » et doit consommer tous types d’aliments, sans excès, sauf rares cas médicaux.
 
 **Qui est « à risque » ?** Selon mpedia, le risque d’allergie de l’enfant est d’environ 20 % quand un parent du premier degré (père, mère, frère, sœur) a une allergie prouvée, et d’environ 43 % quand les deux parents sont allergiques. Ce sont des repères, pas des prédictions : beaucoup d’enfants de parents allergiques ne le deviennent pas.
 
-**Ce qui aide vraiment, d’après les repères actuels :** allaiter si vous le pouvez et le souhaitez, débuter la diversification entre 4 et 6 mois, puis proposer **tous les aliments**, y compris les allergènes, sans les retarder.
+**Ce qui aide vraiment, d’après les repères actuels :** allaiter si tu le peux et le souhaites, débuter la diversification entre 4 et 6 mois, puis proposer **tous les aliments**, y compris les allergènes, sans les retarder.
 
 ## Au quotidien
-- **Mangez varié** : fruits, légumes, féculents, produits laitiers pasteurisés, protéines, en suivant les précautions habituelles de la grossesse (pas d’alcool, pas de lait cru, viandes et œufs bien cuits).
-- **Ne supprimez pas** l’arachide, les œufs, le poisson ou le lait « au cas où ».
-- **Signalez les antécédents familiaux** d’allergie à votre sage-femme ou médecin, et notez-les pour le pédiatre.
-- **Si vous êtes allergique**, gardez votre régime d’éviction, votre trousse d’urgence si elle a été prescrite, et faites le point avec votre médecin.
-- **Préparez l’après** : renseignez-vous sur la diversification et sur les laits adaptés si vous n’allaitez pas, à discuter avec le pédiatre.
+- **Mange varié** : fruits, légumes, féculents, produits laitiers pasteurisés, protéines, en suivant les précautions habituelles de la grossesse (pas d’alcool, pas de lait cru, viandes et œufs bien cuits).
+- **Ne supprime pas** l’arachide, les œufs, le poisson ou le lait « au cas où ».
+- **Signale les antécédents familiaux** d’allergie à ta sage-femme ou médecin, et note-les pour le pédiatre.
+- **Si tu es allergique**, garde ton régime d’éviction, ta trousse d’urgence si elle a été prescrite, et fais le point avec ton médecin.
+- **Prépare l’après** : renseigne-toi sur la diversification et sur les laits adaptés si tu n’allaites pas, à discuter avec le pédiatre.
 
 ## Questions fréquentes
 **Le papa est allergique à l’arachide : dois-je arrêter d’en manger ?**
-Non, sauf si vous êtes vous-même allergique. L’éviction pendant la grossesse ne protège pas votre bébé.
+Non, sauf si tu es toi-même allergique. L’éviction pendant la grossesse ne protège pas ton bébé.
 
 **Les probiotiques ou compléments « anti-allergie » sont-ils utiles ?**
-Ne prenez aucun complément sans avis médical pendant la grossesse, même s’il est vendu librement : certains peuvent être contre-indiqués. Rien ne justifie de les prendre « pour prévenir l’allergie » sans conseil d’un professionnel.
+Ne prends aucun complément sans avis médical pendant la grossesse, même s’il est vendu librement : certains peuvent être contre-indiqués. Rien ne justifie de les prendre « pour prévenir l’allergie » sans conseil d’un professionnel.
 
 **L’allaitement protège-t-il complètement des allergies ?**
 Il est présenté comme la meilleure prévention, mais il n’est pas efficace à 100 %.
 
 **Faut-il un lait spécial si je n’allaite pas ?**
-Pour un bébé à risque, le pédiatre peut conseiller un lait hypoallergénique (HA). Parlez-en avant la naissance.
+Pour un bébé à risque, le pédiatre peut conseiller un lait hypoallergénique (HA). Parles-en avant la naissance.
 
 ## Quand demander conseil
-**Parlez-en** à votre sage-femme, votre médecin ou à la consultation de suivi si votre famille compte plusieurs allergiques, si vous suivez un régime particulier ou si vous avez du mal à manger équilibré.
+**Parles-en** à ta sage-femme, ton médecin ou à la consultation de suivi si ta famille compte plusieurs allergiques, si tu suis un régime particulier ou si tu as du mal à manger équilibré.
 
-**Appelez le 15 ou le 112** si vous présentez vous-même une réaction allergique importante (gonflement du visage, gêne respiratoire, malaise). Si l’anxiété autour de la santé de votre futur bébé devient envahissante, parlez-en ; en cas de détresse, le **3114** répond 24 h/24.
+**Appelle le 15 ou le 112** si tu présentes toi-même une réaction allergique importante (gonflement du visage, gêne respiratoire, malaise). Si l’anxiété autour de la santé de ton futur bébé devient envahissante, parles-en ; en cas de détresse, le **3114** répond 24 h/24.
 
 ${FIN}`,
   },
@@ -842,11 +842,11 @@ ${FIN}`,
     tags: ['grossesse', 'allergie alimentaire', 'maladie cœliaque', 'sans gluten enceinte', 'carences', 'vitamine B9', 'trousse d’urgence'],
     sources: [S.ameliGrossesseAlim, S.ameliAllergieConsult, S.ameliCoeliaqueRegime],
     body_md: `## En bref
-- Une allergie alimentaire ou une maladie cœliaque **ne s’arrête pas** pendant la grossesse : votre régime reste nécessaire.
+- Une allergie alimentaire ou une maladie cœliaque **ne s’arrête pas** pendant la grossesse : ton régime reste nécessaire.
 - Les besoins augmentent, notamment en **fer, calcium, vitamine D et folates (vitamine B9)** : un régime restrictif demande plus d’attention.
-- Parlez de votre régime **dès le début** à votre sage-femme ou à votre médecin, comme le conseille l’Assurance Maladie.
-- Ne prenez **aucun complément** sans avis médical.
-- Si une trousse d’urgence vous a été prescrite, gardez-la sur vous et signalez votre grossesse au médecin qui vous suit pour l’allergie.
+- Parle de ton régime **dès le début** à ta sage-femme ou à ton médecin, comme le conseille l’Assurance Maladie.
+- Ne prends **aucun complément** sans avis médical.
+- Si une trousse d’urgence t’a été prescrite, garde-la sur toi et signale ta grossesse au médecin qui te suit pour l’allergie.
 
 ## Comprendre
 Pendant la grossesse, l’Assurance Maladie recommande une alimentation équilibrée et diversifiée : fruits et légumes, féculents à chaque repas, produits laitiers, protéines chaque jour, eau à volonté. Certains besoins augmentent :
@@ -855,36 +855,36 @@ Pendant la grossesse, l’Assurance Maladie recommande une alimentation équilib
 - la **vitamine D**, qui aide à absorber le calcium ;
 - le **fer**, surtout en fin de grossesse.
 
-**Si vous êtes allergique au lait**, l’apport en calcium devient un vrai sujet ; **si vous êtes cœliaque**, l’Assurance Maladie rappelle que des carences en fer ou en vitamine D sont fréquentes au moment du diagnostic, et que le régime réduit l’apport en fibres. D’où l’intérêt d’un accompagnement par une diététicienne.
+**Si tu es allergique au lait**, l’apport en calcium devient un vrai sujet ; **si tu es cœliaque**, l’Assurance Maladie rappelle que des carences en fer ou en vitamine D sont fréquentes au moment du diagnostic, et que le régime réduit l’apport en fibres. D’où l’intérêt d’un accompagnement par une diététicienne.
 
 **Le régime d’éviction reste la règle.** L’Assurance Maladie insiste : suivre le régime prescrit, lire attentivement les étiquettes, être prudente avec les produits non emballés et signaler son allergie au restaurant. Le **régime sans gluten strict** reste le seul traitement efficace de la maladie cœliaque.
 
 ## Au quotidien
-- **Faites un point** avec votre sage-femme ou médecin dès la déclaration de grossesse : régime suivi, aliments exclus, compléments déjà pris.
-- **Demandez une diététicienne** pour vérifier que vos menus couvrent les besoins de la grossesse.
-- **Si vous évitez le lait** : demandez comment couvrir vos besoins en calcium (eaux minérales riches en calcium, autres aliments, complément si le médecin le juge utile).
-- **Si vous êtes cœliaque** : choisissez des féculents complets sans gluten (riz complet, sarrasin, quinoa, maïs), des légumineuses, des légumes, pour les fibres et le fer.
-- **Nausées du début de grossesse** : préparez des en-cas sûrs (galettes de riz, fruits, compotes) pour ne pas « craquer » sur un produit non vérifié.
-- **À la maternité** : signalez votre allergie ou votre régime sans gluten lors de l’inscription, pour les repas pendant le séjour.
-- **Trousse d’urgence** : vérifiez les dates de péremption et gardez-la à portée.
+- **Fais un point** avec ta sage-femme ou médecin dès la déclaration de grossesse : régime suivi, aliments exclus, compléments déjà pris.
+- **Demande une diététicienne** pour vérifier que tes menus couvrent les besoins de la grossesse.
+- **Si tu évites le lait** : demande comment couvrir tes besoins en calcium (eaux minérales riches en calcium, autres aliments, complément si le médecin le juge utile).
+- **Si tu es cœliaque** : choisis des féculents complets sans gluten (riz complet, sarrasin, quinoa, maïs), des légumineuses, des légumes, pour les fibres et le fer.
+- **Nausées du début de grossesse** : prépare des en-cas sûrs (galettes de riz, fruits, compotes) pour ne pas « craquer » sur un produit non vérifié.
+- **À la maternité** : signale ton allergie ou ton régime sans gluten lors de l’inscription, pour les repas pendant le séjour.
+- **Trousse d’urgence** : vérifie les dates de péremption et garde-la à portée.
 
 ## Questions fréquentes
 **Mon allergie risque-t-elle d’être transmise à mon bébé ?**
-Le terrain allergique augmente le risque, sans le rendre certain. Ce n’est pas une raison pour éviter d’autres aliments que ceux qui vous sont interdits.
+Le terrain allergique augmente le risque, sans le rendre certain. Ce n’est pas une raison pour éviter d’autres aliments que ceux qui te sont interdits.
 
 **Je suis cœliaque : faut-il un suivi particulier pendant la grossesse ?**
-Parlez-en à votre médecin et à la sage-femme : ils pourront adapter le suivi, par exemple pour rechercher une carence en fer, et vérifier avec vous que votre régime reste équilibré.
+Parles-en à ton médecin et à la sage-femme : ils pourront adapter le suivi, par exemple pour rechercher une carence en fer, et vérifier avec toi que ton régime reste équilibré.
 
 **Puis-je prendre un complément « spécial grossesse » vendu librement ?**
-Pas sans avis médical : l’Assurance Maladie rappelle que certains contiennent des vitamines ou oligo-éléments dont un apport élevé est contre-indiqué pendant la grossesse. Vérifiez aussi la présence d’allergènes ou de gluten dans la composition.
+Pas sans avis médical : l’Assurance Maladie rappelle que certains contiennent des vitamines ou oligo-éléments dont un apport élevé est contre-indiqué pendant la grossesse. Vérifie aussi la présence d’allergènes ou de gluten dans la composition.
 
 **Mes réactions allergiques peuvent-elles changer pendant la grossesse ?**
-Chaque situation est différente. Signalez toute réaction nouvelle ou plus forte à votre médecin.
+Chaque situation est différente. Signale toute réaction nouvelle ou plus forte à ton médecin.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de gonflement du visage, des lèvres ou de la gorge, de gêne respiratoire, de malaise ou de vomissements après un repas. Utilisez votre auto-injecteur s’il a été prescrit, sans attendre.
+**Appelle le 15 ou le 112** en cas de gonflement du visage, des lèvres ou de la gorge, de gêne respiratoire, de malaise ou de vomissements après un repas. Utilise ton auto-injecteur s’il a été prescrit, sans attendre.
 
-**Consultez** si vous avez du mal à vous nourrir, si vous perdez du poids, si vous êtes très fatiguée ou si vous doutez de votre régime. Si l’inquiétude prend trop de place, parlez-en ; le **3114** répond en cas de détresse.
+**Consulte** si tu as du mal à te nourrir, si tu perds du poids, si tu es très fatiguée ou si tu doutes de ton régime. Si l’inquiétude prend trop de place, parles-en ; le **3114** répond en cas de détresse.
 
 ${FIN}`,
   },
@@ -906,8 +906,8 @@ ${FIN}`,
 Mpedia chiffre le risque : environ **20 %** quand un parent du premier degré a une allergie prouvée, environ **43 %** quand les deux parents sont allergiques, et environ **33 %** d’allergie aux protéines du lait de vache quand un aîné en a eu une.
 
 **Ce qui est recommandé aujourd’hui :**
-- **Allaiter** si vous le pouvez et le souhaitez : une petite partie des protéines de votre alimentation passe dans le lait et aide votre bébé à construire sa tolérance. Vous n’avez pas de régime d’exclusion à suivre.
-- **Si vous n’allaitez pas ou si vous complétez**, un lait **HA 1er âge** ayant fait preuve de son efficacité est recommandé pour les bébés à risque, à valider avec le pédiatre.
+- **Allaiter** si tu le peux et le souhaites : une petite partie des protéines de ton alimentation passe dans le lait et aide ton bébé à construire sa tolérance. Tu n’as pas de régime d’exclusion à suivre.
+- **Si tu n’allaites pas ou si tu complètes**, un lait **HA 1er âge** ayant fait preuve de son efficacité est recommandé pour les bébés à risque, à valider avec le pédiatre.
 - **Diversifier entre 4 et 6 mois**, ni avant, ni après, en introduisant chaque aliment progressivement.
 - **Ne pas retarder** les aliments réputés allergènes (œuf, poisson, arachide sous forme adaptée, fruits à coque en poudre, gluten, kiwi, céleri…) : le guide de la diversification de Santé publique France rappelle que plus les enfants les goûtent tôt, plus leur tolérance se développe.
 
@@ -916,30 +916,30 @@ En cas d’antécédents familiaux d’allergie, ce même guide conseille de **d
 **Et la peau ?** Mpedia rappelle que l’eczéma du nourrisson n’est pas forcément une allergie, mais qu’une peau mal protégée peut s’enflammer plus facilement. Les émollients appliqués tous les jours restaurent la barrière cutanée. Chez les bébés à risque, l’allaitement exclusif des premiers mois pourrait réduire le risque d’eczéma.
 
 ## Au quotidien
-- **Préparez la question avant la naissance** : notez les allergies de chaque parent et des aînés, et parlez-en à la maternité ou au pédiatre.
-- **Biberons de complément à la maternité** : si vous souhaitez un lait HA, signalez-le à l’équipe.
+- **Prépare la question avant la naissance** : note les allergies de chaque parent et des aînés, et parles-en à la maternité ou au pédiatre.
+- **Biberons de complément à la maternité** : si tu souhaites un lait HA, signale-le à l’équipe.
 - **Diversification** : un nouvel aliment à la fois, en petite quantité, mélangé à une purée connue, de préférence le matin ou à midi. Œuf toujours bien cuit, arachide en pâte diluée, fruits à coque en poudre, jamais entiers.
-- **Une fois un aliment toléré**, proposez-le régulièrement.
+- **Une fois un aliment toléré**, propose-le régulièrement.
 - **Soins de peau** : bain court et tiède, produits lavants sans savon ni parfum, séchage en tamponnant, émollient quotidien.
-- **Notez toute réaction** (heure, aliment, signes) et montrez-la au médecin.
+- **Note toute réaction** (heure, aliment, signes) et montre-la au médecin.
 
 ## Questions fréquentes
 **Le lait HA convient-il à un bébé déjà allergique au lait de vache ?**
 Non. Les laits HA servent à la prévention ; un bébé qui a déjà des symptômes a besoin d’un lait spécifique prescrit par le médecin.
 
 **Faut-il éviter les animaux, les fleurs, le tabac ?**
-Le tabac est à éviter dans l’entourage de tous les bébés. Pour le reste, demandez conseil au pédiatre selon votre situation.
+Le tabac est à éviter dans l’entourage de tous les bébés. Pour le reste, demande conseil au pédiatre selon ta situation.
 
 **Doit-on faire des tests d’allergie avant la diversification ?**
-Ce n’est pas systématique. Le médecin peut le proposer, par exemple si votre bébé a un eczéma important ou a déjà réagi à un aliment.
+Ce n’est pas systématique. Le médecin peut le proposer, par exemple si ton bébé a un eczéma important ou a déjà réagi à un aliment.
 
 **Diversifier plus tard protège-t-il ?**
 Non : il n’est plus recommandé de retarder la diversification chez les enfants à risque.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre bébé présente un gonflement du visage, une gêne respiratoire, une pâleur, une somnolence inhabituelle ou des vomissements répétés après un aliment.
+**Appelle le 15 ou le 112** si ton bébé présente un gonflement du visage, une gêne respiratoire, une pâleur, une somnolence inhabituelle ou des vomissements répétés après un aliment.
 
-**Consultez** en cas de plaques qui démangent, d’eczéma qui s’étend ou ne s’améliore pas, de troubles digestifs persistants ou de toute réaction après un nouvel aliment.
+**Consulte** en cas de plaques qui démangent, d’eczéma qui s’étend ou ne s’améliore pas, de troubles digestifs persistants ou de toute réaction après un nouvel aliment.
 
 ${FIN}`,
   },
@@ -954,7 +954,7 @@ ${FIN}`,
 - L’**eczéma atopique** du nourrisson est fréquent, non contagieux, et **n’est pas forcément une allergie**.
 - Chez environ **un tiers** des nourrissons concernés, certains aliments peuvent le déclencher ou l’aggraver (lait de vache, œuf, oléagineux, céréales).
 - La base du traitement, ce sont les **soins de peau quotidiens** (émollients) et les traitements prescrits lors des poussées.
-- **Ne supprimez pas d’aliments** sans avis médical : un régime inutile peut déséquilibrer l’alimentation.
+- **Ne supprime pas d’aliments** sans avis médical : un régime inutile peut déséquilibrer l’alimentation.
 - Un **bilan allergologique** se discute avec le médecin selon la situation.
 
 ## Comprendre
@@ -971,9 +971,9 @@ Les déclencheurs sont multiples : saison, pollution, stress, irritants (lessive
 - **Bain court**, eau tiède, sans savon, un jour sur un ou deux ; séchage en tamponnant, puis émollient.
 - **Produits lavants doux**, sans parfum ; lessive liquide peu ou non parfumée, peu d’assouplissant.
 - **Vêtements en coton**, ongles courts pour limiter les lésions de grattage.
-- **Pendant les poussées**, utilisez le traitement prescrit comme indiqué par le médecin, sans l’arrêter trop tôt par crainte.
-- **Tenez un journal** si vous suspectez un aliment : date, aliment, délai, aspect de la peau, photos.
-- **Diversification** : continuez à introduire les aliments selon les repères, en demandant conseil au médecin si l’eczéma est important.
+- **Pendant les poussées**, utilise le traitement prescrit comme indiqué par le médecin, sans l’arrêter trop tôt par crainte.
+- **Tiens un journal** si tu suspectes un aliment : date, aliment, délai, aspect de la peau, photos.
+- **Diversification** : continue à introduire les aliments selon les repères, en demandant conseil au médecin si l’eczéma est important.
 
 ## Questions fréquentes
 **Faut-il arrêter le lait ou l’œuf pour soigner l’eczéma ?**
@@ -983,15 +983,15 @@ Pas sans avis médical. Un régime n’a d’intérêt que si une allergie est d
 Le plus souvent, il régresse avec l’âge. Certains enfants gardent une peau sensible ou développent d’autres manifestations allergiques : le suivi permet de les repérer.
 
 **Les crèmes prescrites pour les poussées sont-elles dangereuses ?**
-Utilisées comme le médecin l’a indiqué, elles sont le traitement de référence des poussées. Posez toutes vos questions lors de la consultation.
+Utilisées comme le médecin l’a indiqué, elles sont le traitement de référence des poussées. Pose toutes tes questions lors de la consultation.
 
 **Mon bébé allaité a de l’eczéma : dois-je changer mon alimentation ?**
 Non, sauf avis médical. Le régime de la mère n’est discuté que dans des situations précises, rares.
 
 ## Quand demander conseil
-**Consultez** si l’eczéma s’étend, saigne, suinte, forme des croûtes jaunes ou des petites cloques, s’il empêche votre bébé de dormir, ou s’il ne s’améliore pas malgré les soins. Consultez aussi si des plaques, un gonflement ou des troubles digestifs apparaissent peu après un aliment.
+**Consulte** si l’eczéma s’étend, saigne, suinte, forme des croûtes jaunes ou des petites cloques, s’il empêche ton bébé de dormir, ou s’il ne s’améliore pas malgré les soins. Consulte aussi si des plaques, un gonflement ou des troubles digestifs apparaissent peu après un aliment.
 
-**Appelez le 15 ou le 112** en cas de gonflement du visage, de gêne respiratoire ou de malaise, ou si votre bébé a de la fièvre et une éruption qui s’aggrave très vite.
+**Appelle le 15 ou le 112** en cas de gonflement du visage, de gêne respiratoire ou de malaise, ou si ton bébé a de la fièvre et une éruption qui s’aggrave très vite.
 
 ${FIN}`,
   },
@@ -1007,7 +1007,7 @@ ${FIN}`,
 - Le **choc anaphylactique** est la réaction allergique la plus grave : il touche **plusieurs organes** à la fois et met la vie en danger.
 - L’**œdème de Quincke** est un gonflement brutal du visage, des lèvres, de la langue ou de la gorge : il est grave quand il gêne la respiration.
 - Le geste qui sauve : **l’adrénaline** en injection dans la cuisse, si un auto-injecteur a été prescrit, **sans attendre** les secours.
-- **Appelez le 15 ou le 112** immédiatement, même si l’injection a été faite.
+- **Appelle le 15 ou le 112** immédiatement, même si l’injection a été faite.
 - Toute injection d’adrénaline impose une **surveillance à l’hôpital**.
 
 ## Comprendre
@@ -1024,17 +1024,17 @@ L’**œdème de Quincke** (angiœdème) touche surtout la tête et le cou. Il d
 
 ## Au quotidien
 **Les gestes en cas de réaction grave :**
-1. **Injectez l’adrénaline** si un auto-injecteur a été prescrit : sur la face externe de la cuisse, en maintenant la pression le temps indiqué (l’Assurance Maladie mentionne 10 secondes). Cela peut se faire à travers les vêtements si la notice le prévoit.
-2. **Appelez le 15 ou le 112** (gratuits, même depuis un téléphone verrouillé ou sans crédit). Donnez votre nom, votre numéro, l’adresse exacte (étage, code), l’âge de l’enfant, ce qu’il a mangé, les signes observés, et l’injection faite. Ne raccrochez pas avant qu’on vous le dise.
-3. **Installez l’enfant dans la position où il respire le mieux** : assis à demi s’il a du mal à respirer, allongé sur le dos s’il est très faible ou pâle. Desserrez ses vêtements, rassurez-le, ne lui donnez rien à manger ni à boire.
-4. **Surveillez** sa respiration et sa conscience jusqu’à l’arrivée des secours. Notez l’heure de l’injection.
-5. **Suivez le protocole écrit** (PAI, ordonnance) remis par le médecin, qui peut prévoir d’autres étapes.
+1. **Injecte l’adrénaline** si un auto-injecteur a été prescrit : sur la face externe de la cuisse, en maintenant la pression le temps indiqué (l’Assurance Maladie mentionne 10 secondes). Cela peut se faire à travers les vêtements si la notice le prévoit.
+2. **Appelle le 15 ou le 112** (gratuits, même depuis un téléphone verrouillé ou sans crédit). Donne ton nom, ton numéro, l’adresse exacte (étage, code), l’âge de l’enfant, ce qu’il a mangé, les signes observés, et l’injection faite. Ne raccroche pas avant qu’on te le dise.
+3. **Installe l’enfant dans la position où il respire le mieux** : assis à demi s’il a du mal à respirer, allongé sur le dos s’il est très faible ou pâle. Desserre ses vêtements, rassure-le, ne lui donne rien à manger ni à boire.
+4. **Surveille** sa respiration et sa conscience jusqu’à l’arrivée des secours. Note l’heure de l’injection.
+5. **Suis le protocole écrit** (PAI, ordonnance) remis par le médecin, qui peut prévoir d’autres étapes.
 
-**Après la crise**, consultez le médecin pour confirmer la cause et faire un bilan allergologique : il pourra prescrire une trousse d’urgence et un protocole si ce n’est pas déjà fait.
+**Après la crise**, consulte le médecin pour confirmer la cause et faire un bilan allergologique : il pourra prescrire une trousse d’urgence et un protocole si ce n’est pas déjà fait.
 
 ## Questions fréquentes
 **J’ai peur de faire l’injection « pour rien ». Que faire en cas de doute ?**
-Suivez le protocole établi par le médecin. En cas de doute sur une réaction grave, appelez le 15 : le médecin régulateur vous guidera. L’Assurance Maladie recommande d’utiliser le stylo dès les premiers signes, sans attendre les secours.
+Suis le protocole établi par le médecin. En cas de doute sur une réaction grave, appelle le 15 : le médecin régulateur te guidera. L’Assurance Maladie recommande d’utiliser le stylo dès les premiers signes, sans attendre les secours.
 
 **Les signes ont disparu après l’injection : faut-il quand même aller à l’hôpital ?**
 Oui. Toute injection d’adrénaline nécessite une surveillance médicale et une prise en charge hospitalière.
@@ -1046,9 +1046,9 @@ Non. Les personnes qui font un choc ont souvent eu auparavant une réaction moin
 Oui, surtout chez l’adulte : l’Assurance Maladie décrit des chocs déclenchés par un effort après un repas contenant de la farine de blé ou des épices.
 
 ## Quand demander conseil
-**Appelez immédiatement le 15 ou le 112** dès qu’un gonflement du visage, de la langue ou de la gorge, une gêne respiratoire, une voix changée, un malaise ou plusieurs signes associés apparaissent après un aliment, une piqûre ou un médicament.
+**Appelle immédiatement le 15 ou le 112** dès qu’un gonflement du visage, de la langue ou de la gorge, une gêne respiratoire, une voix changée, un malaise ou plusieurs signes associés apparaissent après un aliment, une piqûre ou un médicament.
 
-**Consultez ensuite** votre médecin pour un bilan, même si tout est rentré dans l’ordre.
+**Consulte ensuite** ton médecin pour un bilan, même si tout est rentré dans l’ordre.
 
 ${FIN}`,
   },
@@ -1062,8 +1062,8 @@ ${FIN}`,
     body_md: `## En bref
 - En cas d’allergie marquée, le médecin peut prescrire une **trousse d’urgence** avec un **auto-injecteur d’adrénaline**, à utiliser **sans attendre** les secours.
 - Elle doit **toujours accompagner l’enfant** : maison, école, sorties, vacances.
-- Entraînez-vous avec le **stylo d’entraînement** et apprenez le geste à l’entourage.
-- Vérifiez régulièrement les **dates de péremption** et renouvelez l’ordonnance chaque année.
+- Entraîne-toi avec le **stylo d’entraînement** et apprends le geste à l’entourage.
+- Vérifie régulièrement les **dates de péremption** et renouvelle l’ordonnance chaque année.
 - Après toute injection : **15 ou 112** et passage à l’hôpital.
 
 ## Comprendre
@@ -1080,31 +1080,31 @@ L’adrénaline est le traitement d’urgence du choc anaphylactique : elle acc�
 **À l’école**, la circulaire de 2021 sur le PAI prévoit que la trousse d’urgence et les médicaments soient rangés dans un **lieu repérable par tous les adultes** concernés et inaccessible aux élèves, et qu’ils soient **emportés à chaque sortie** avec le PAI. À chaque rentrée, la famille fournit une ordonnance à jour et des médicaments dont la date de péremption a été vérifiée.
 
 ## Au quotidien
-- **Préparez une trousse complète** : stylo(s) prescrit(s), copie de l’ordonnance et du protocole, carte d’allergie, numéros à appeler.
-- **Rangez-la** à l’abri de la chaleur et du froid extrêmes, comme indiqué sur la notice, et jamais dans une voiture en plein soleil.
-- **Notez les dates de péremption** dans votre agenda ou votre téléphone, avec un rappel un mois avant.
-- **Entraînez-vous régulièrement** avec le stylo d’entraînement, et faites essayer les grands-parents, la nounou, les parents des copains.
-- **Apprenez à votre enfant**, selon son âge, à reconnaître les signes, à dire « je suis allergique », à montrer où est sa trousse et, quand il est assez grand et si le médecin l’y autorise, à se faire l’injection.
+- **Prépare une trousse complète** : stylo(s) prescrit(s), copie de l’ordonnance et du protocole, carte d’allergie, numéros à appeler.
+- **Range-la** à l’abri de la chaleur et du froid extrêmes, comme indiqué sur la notice, et jamais dans une voiture en plein soleil.
+- **Note les dates de péremption** dans ton agenda ou ton téléphone, avec un rappel un mois avant.
+- **Entraîne-toi régulièrement** avec le stylo d’entraînement, et fais essayer les grands-parents, la nounou, les parents des copains.
+- **Apprends à ton enfant**, selon son âge, à reconnaître les signes, à dire « je suis allergique », à montrer où est sa trousse et, quand il est assez grand et si le médecin l’y autorise, à se faire l’injection.
 - **À l’école et à la crèche** : PAI signé, trousse remise, adultes formés par le médecin scolaire ou de la structure.
-- **En voyage** : trousse en bagage à main, ordonnance avec vous, numéros d’urgence du pays notés.
+- **En voyage** : trousse en bagage à main, ordonnance avec toi, numéros d’urgence du pays notés.
 
 ## Questions fréquentes
 **Combien de stylos faut-il ?**
-C’est le médecin qui le décide, selon la situation. Prévoyez assez de trousses pour les différents lieux de vie de votre enfant, comme il vous l’indiquera.
+C’est le médecin qui le décide, selon la situation. Prévois assez de trousses pour les différents lieux de vie de ton enfant, comme il te l’indiquera.
 
 **Peut-on faire l’injection à travers un pantalon ?**
-Suivez la notice de votre dispositif et les consignes du médecin : elles précisent si l’injection est possible à travers les vêtements.
+Suis la notice de ton dispositif et les consignes du médecin : elles précisent si l’injection est possible à travers les vêtements.
 
 **Mon enfant a peur de la piqûre. Comment l’aider ?**
-Jouez avec le stylo d’entraînement, sans aiguille, pour dédramatiser. Expliquez-lui que ce geste le protège et qu’il est rapide.
+Joue avec le stylo d’entraînement, sans aiguille, pour dédramatiser. Explique-lui que ce geste le protège et qu’il est rapide.
 
 **Le stylo est périmé et une réaction survient : que faire ?**
-Appelez immédiatement le 15 ou le 112 et suivez les consignes du médecin régulateur. Ensuite, faites renouveler la trousse sans tarder.
+Appelle immédiatement le 15 ou le 112 et suis les consignes du médecin régulateur. Ensuite, fais renouveler la trousse sans tarder.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** dès qu’une réaction allergique grave se présente, que l’injection ait été faite ou non : une surveillance à l’hôpital est toujours nécessaire après l’adrénaline.
+**Appelle le 15 ou le 112** dès qu’une réaction allergique grave se présente, que l’injection ait été faite ou non : une surveillance à l’hôpital est toujours nécessaire après l’adrénaline.
 
-**Consultez** votre médecin ou l’allergologue pour faire réévaluer la trousse chaque année, après toute réaction, quand votre enfant a beaucoup grandi, ou si vous vous sentez mal à l’aise avec le geste.
+**Consulte** ton médecin ou l’allergologue pour faire réévaluer la trousse chaque année, après toute réaction, quand ton enfant a beaucoup grandi, ou si tu te sens mal à l’aise avec le geste.
 
 ${FIN}`,
   },
@@ -1137,16 +1137,16 @@ La circulaire du 10 février 2021 encadre le PAI pour raison de santé. Elle s�
 **La cantine.** L’enfant doit pouvoir déjeuner avec les autres. Tout enfant dont le régime est défini dans le PAI doit pouvoir accéder à la restauration collective ; le **panier-repas** n’est pas la première solution et se fait sous conditions strictes. Le PAI concerne les allergies ou intolérances **médicalement avérées**, pas les choix familiaux.
 
 ## Au quotidien
-- **Anticipez** : demandez le PAI dès l’inscription, sans attendre la rentrée.
-- **Préparez le dossier** avec votre médecin : ordonnance récente, fiche de conduite à tenir, médicaments en quantité suffisante.
-- **À chaque rentrée**, demandez la poursuite du PAI et fournissez une nouvelle ordonnance, des médicaments **non périmés** et la fiche d’urgence actualisée si besoin. En attendant, le PAI de l’année précédente reste valide pour éviter une rupture.
-- **Sorties et voyages scolaires** : le PAI précise si votre enfant peut y participer, avec ou sans nuitée, et comment. La trousse et le PAI doivent être emportés à chaque sortie.
+- **Anticipe** : demande le PAI dès l’inscription, sans attendre la rentrée.
+- **Prépare le dossier** avec ton médecin : ordonnance récente, fiche de conduite à tenir, médicaments en quantité suffisante.
+- **À chaque rentrée**, demande la poursuite du PAI et fournis une nouvelle ordonnance, des médicaments **non périmés** et la fiche d’urgence actualisée si besoin. En attendant, le PAI de l’année précédente reste valide pour éviter une rupture.
+- **Sorties et voyages scolaires** : le PAI précise si ton enfant peut y participer, avec ou sans nuitée, et comment. La trousse et le PAI doivent être emportés à chaque sortie.
 - **Changement d’école ou de collège** : un nouveau PAI est élaboré dans le nouvel établissement.
-- **Centre de loisirs, sport, garderie** : vérifiez que l’organisateur a bien signé le volet périscolaire.
+- **Centre de loisirs, sport, garderie** : vérifie que l’organisateur a bien signé le volet périscolaire.
 
 ## Questions fréquentes
 **Le PAI est-il obligatoire ?**
-Il est établi à la demande de la famille. Il protège votre enfant en organisant clairement qui fait quoi en cas de problème.
+Il est établi à la demande de la famille. Il protège ton enfant en organisant clairement qui fait quoi en cas de problème.
 
 **Le personnel peut-il refuser de faire l’injection ?**
 Le PAI désigne les conduites à tenir et le médecin forme les équipes. Les enseignants et personnels en contact avec l’élève prennent connaissance des gestes et les appliquent, y compris lors des sorties. En cas d’urgence, le 15 est toujours appelé.
@@ -1155,10 +1155,10 @@ Le PAI désigne les conduites à tenir et le médecin forme les équipes. Les en
 Sans ordonnance valide ni trousse à jour, les soins prévus ne peuvent être mis en œuvre qu’une fois les éléments fournis. En cas d’urgence, le personnel appelle le 15. D’où l’importance de tout renouveler à temps.
 
 **Le nom de mon enfant sera-t-il affiché ?**
-Non : l’affichage public des noms et des pathologies est strictement interdit. Les informations sont partagées avec votre accord et limitées au nécessaire.
+Non : l’affichage public des noms et des pathologies est strictement interdit. Les informations sont partagées avec ton accord et limitées au nécessaire.
 
 ## Quand demander conseil
-**Contactez** le directeur, le médecin ou l’infirmier scolaire si le PAI n’est pas en place à la rentrée, si une sortie se prépare ou si la situation de votre enfant change. Faites relire la fiche d’urgence par votre médecin après toute réaction.
+**Contacte** le directeur, le médecin ou l’infirmier scolaire si le PAI n’est pas en place à la rentrée, si une sortie se prépare ou si la situation de ton enfant change. Fais relire la fiche d’urgence par ton médecin après toute réaction.
 
 **En cas de réaction grave**, le personnel suit la fiche d’urgence et appelle le **15** ou le **112**.
 
@@ -1204,31 +1204,31 @@ ${FIN}`,
 **Les limites.** L’Assurance Maladie prévient que l’étiquetage peut ne pas être exhaustif (traces possibles, formulations imprécises). La liste réglementaire est révisée régulièrement et n’est pas forcément complète : un enfant peut être allergique à un aliment qui n’y figure pas. Hors Union européenne, les règles diffèrent.
 
 ## Au quotidien
-- **Relisez à chaque achat**, même pour un produit habituel : les recettes changent.
-- **Cherchez les mots en gras** dans la liste des ingrédients, puis la mention éventuelle de traces.
-- **Apprenez les noms cachés** de l’allergène de votre enfant (pour le lait : beurre, crème, lactosérum, caséine ; pour l’œuf : blanc ou jaune d’œuf, ovalbumine…).
-- **Gardez l’emballage** des produits consommés lors d’une réaction : il aidera le médecin et permet un signalement.
-- **En boulangerie, au marché, chez le traiteur** : demandez à voir l’information écrite sur les allergènes.
-- **Au restaurant** : signalez l’allergie dès l’arrivée, demandez la liste des allergènes des plats et les précautions en cuisine.
-- **À l’étranger** : préparez une carte expliquant l’allergie dans la langue du pays.
+- **Relis à chaque achat**, même pour un produit habituel : les recettes changent.
+- **Cherche les mots en gras** dans la liste des ingrédients, puis la mention éventuelle de traces.
+- **Apprends les noms cachés** de l’allergène de ton enfant (pour le lait : beurre, crème, lactosérum, caséine ; pour l’œuf : blanc ou jaune d’œuf, ovalbumine…).
+- **Garde l’emballage** des produits consommés lors d’une réaction : il aidera le médecin et permet un signalement.
+- **En boulangerie, au marché, chez le traiteur** : demande à voir l’information écrite sur les allergènes.
+- **Au restaurant** : signale l’allergie dès l’arrivée, demande la liste des allergènes des plats et les précautions en cuisine.
+- **À l’étranger** : prépare une carte expliquant l’allergie dans la langue du pays.
 
 ## Questions fréquentes
 **Un produit sans mention de traces est-il forcément sûr ?**
-Non. L’absence de mention ne garantit pas l’absence de contamination. Suivez les consignes de l’allergologue.
+Non. L’absence de mention ne garantit pas l’absence de contamination. Suis les consignes de l’allergologue.
 
 **L’huile de soja raffinée doit-elle être évitée en cas d’allergie au soja ?**
-La réglementation exclut certains dérivés très transformés de l’obligation d’étiquetage (comme l’huile de soja entièrement raffinée). Demandez à l’allergologue s’ils conviennent à votre enfant.
+La réglementation exclut certains dérivés très transformés de l’obligation d’étiquetage (comme l’huile de soja entièrement raffinée). Demande à l’allergologue s’ils conviennent à ton enfant.
 
 **La cantine doit-elle afficher les allergènes ?**
 En restauration collective, la DGCCRF indique qu’un dispositif permettant d’écarter un allergène n’est pas obligatoire ; c’est pourquoi le PAI organise les repas de l’enfant allergique.
 
 **Une application peut-elle remplacer la lecture de l’étiquette ?**
-Elle peut aider, mais l’étiquette du produit que vous avez en main reste la référence.
+Elle peut aider, mais l’étiquette du produit que tu as en main reste la référence.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** en cas de réaction grave (gonflement du visage, gêne respiratoire, malaise) et utilisez l’auto-injecteur s’il a été prescrit.
+**Appelle le 15 ou le 112** en cas de réaction grave (gonflement du visage, gêne respiratoire, malaise) et utilise l’auto-injecteur s’il a été prescrit.
 
-**Signalez** un étiquetage erroné ou incomplet à la direction départementale de la protection des populations (DDPP) de votre département ou via SignalConso. Consultez votre médecin après toute réaction, même légère, en apportant l’emballage.
+**Signale** un étiquetage erroné ou incomplet à la direction départementale de la protection des populations (DDPP) de ton département ou via SignalConso. Consulte ton médecin après toute réaction, même légère, en apportant l’emballage.
 
 ${FIN}`,
   },
@@ -1236,15 +1236,15 @@ ${FIN}`,
     ...BASE, journeys: ['child', 'newborn', 'pregnant'], category: 'alimentation',
     slug: 'rappel-de-produit-allergene-non-declare',
     title: 'Rappel de produit pour un allergène non déclaré : s’informer et réagir',
-    summary: 'Comment suivre les rappels sur RappelConso, que faire si vous avez acheté un produit rappelé et comment signaler un problème d’étiquetage.',
+    summary: 'Comment suivre les rappels sur RappelConso, que faire si tu as acheté un produit rappelé et comment signaler un problème d’étiquetage.',
     tags: ['rappel conso', 'RappelConso', 'allergène non déclaré', 'rappel produit', 'SignalConso', 'étiquetage erreur', 'sécurité alimentaire'],
     sources: [S.rappelConso, S.ecoRappels, S.santeAllergenes],
     body_md: `## En bref
 - **RappelConso** est le site officiel qui publie les rappels de produits en France, dont de nombreux rappels pour **allergène non mentionné** sur l’étiquette.
 - Un **rappel** concerne un produit déjà vendu : il faut le mettre de côté, puis le rapporter ou le détruire selon les consignes.
-- Gardez l’**emballage**, le **numéro de lot** et la **preuve d’achat**.
+- Garde l’**emballage**, le **numéro de lot** et la **preuve d’achat**.
 - Un problème d’étiquetage peut être **signalé** via SignalConso ou à la direction départementale de protection des populations.
-- Après une réaction à un produit rappelé, demandez **conseil à un professionnel de santé**.
+- Après une réaction à un produit rappelé, demande **conseil à un professionnel de santé**.
 
 ## Comprendre
 **Retrait ou rappel ?** Le ministère de l’Économie distingue :
@@ -1256,33 +1256,33 @@ ${FIN}`,
 **Pourquoi c’est important quand on est allergique.** Les règles d’étiquetage imposent de mentionner et de mettre en évidence les 14 allergènes réglementaires. Une erreur d’étiquette, un changement de recette ou une contamination peuvent pourtant arriver : de nombreux rappels publiés sur RappelConso concernent justement un allergène présent mais non déclaré.
 
 ## Au quotidien
-- **Abonnez-vous** aux alertes de RappelConso (flux par mot-clé, par exemple le nom de l’allergène de votre enfant) ou consultez le site régulièrement.
-- **Si vous avez acheté un produit rappelé** :
-  1. mettez-le de côté pour qu’il ne soit pas consommé par erreur ;
-  2. gardez l’emballage, l’étiquette et le numéro de lot ;
-  3. suivez l’avis de rappel : retour en magasin pour remboursement, destruction selon les consignes ou contact avec le service client ;
-  4. conservez la preuve d’achat.
-- **Vérifiez le lot** : un rappel ne concerne souvent que certains lots ou certaines dates.
-- **Prévenez les proches** qui achètent pour votre enfant (grands-parents, nounou).
-- **Après une réaction** à un aliment, gardez l’emballage : il aide le médecin et peut servir à un signalement.
+- **Abonne-toi** aux alertes de RappelConso (flux par mot-clé, par exemple le nom de l’allergène de ton enfant) ou consulte le site régulièrement.
+- **Si tu as acheté un produit rappelé** :
+  1. mets-le de côté pour qu’il ne soit pas consommé par erreur ;
+  2. garde l’emballage, l’étiquette et le numéro de lot ;
+  3. suis l’avis de rappel : retour en magasin pour remboursement, destruction selon les consignes ou contact avec le service client ;
+  4. conserve la preuve d’achat.
+- **Vérifie le lot** : un rappel ne concerne souvent que certains lots ou certaines dates.
+- **Préviens les proches** qui achètent pour ton enfant (grands-parents, nounou).
+- **Après une réaction** à un aliment, garde l’emballage : il aide le médecin et peut servir à un signalement.
 
 ## Questions fréquentes
 **Mon enfant a déjà mangé le produit rappelé et n’a rien eu. Que faire ?**
-Arrêtez d’utiliser le produit et surveillez votre enfant. En cas de doute ou de signe inhabituel, demandez conseil à un professionnel de santé. En cas de signes graves, appelez le 15.
+Arrête d’utiliser le produit et surveille ton enfant. En cas de doute ou de signe inhabituel, demande conseil à un professionnel de santé. En cas de signes graves, appelle le 15.
 
 **Comment signaler un produit dont l’étiquette me semble fausse ?**
-Pour une denrée alimentaire, vous pouvez contacter la direction départementale de la protection des populations (DDPP ou DDETSPP) du lieu de l’établissement, ou utiliser SignalConso, qui oriente les démarches.
+Pour une denrée alimentaire, tu peux contacter la direction départementale de la protection des populations (DDPP ou DDETSPP) du lieu de l’établissement, ou utiliser SignalConso, qui oriente les démarches.
 
 **Et si je subis un effet indésirable lié à un produit ?**
 Il peut être signalé au ministère chargé de la santé via son portail de signalement en ligne.
 
 **Le magasin peut-il refuser le remboursement ?**
-L’avis de rappel précise les modalités. En cas de litige, une association de consommateurs agréée peut vous aider.
+L’avis de rappel précise les modalités. En cas de litige, une association de consommateurs agréée peut t’aider.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre enfant présente, après avoir consommé un produit, un gonflement du visage, une gêne respiratoire, un malaise ou des vomissements répétés. Utilisez l’auto-injecteur s’il a été prescrit.
+**Appelle le 15 ou le 112** si ton enfant présente, après avoir consommé un produit, un gonflement du visage, une gêne respiratoire, un malaise ou des vomissements répétés. Utilise l’auto-injecteur s’il a été prescrit.
 
-**Consultez votre médecin** après toute réaction, même légère, et apportez l’emballage du produit.
+**Consulte ton médecin** après toute réaction, même légère, et apporte l’emballage du produit.
 
 ${FIN}`,
   },
@@ -1290,11 +1290,11 @@ ${FIN}`,
     ...BASE, journeys: ['child', 'newborn'], category: 'sante-enfant', max_age_months: 131,
     slug: 'bilan-allergologique-tests-expliques',
     title: 'Bilan allergologique de l’enfant : prick-test, prise de sang, test de provocation expliqués',
-    summary: 'Comment se déroule la consultation, à quoi sert chaque test, pourquoi un test positif ne suffit pas et ce que vous rapportez à la maison.',
+    summary: 'Comment se déroule la consultation, à quoi sert chaque test, pourquoi un test positif ne suffit pas et ce que tu rapportes à la maison.',
     tags: ['bilan allergologique', 'prick-test', 'test cutané', 'IgE', 'test de provocation orale', 'allergologue', 'carte d’allergie'],
     sources: [S.ameliAllergieConsult, S.ameliAllergieSympt, S.mpediaAplv],
     body_md: `## En bref
-- En cas de suspicion d’allergie, consultez votre **médecin traitant**, qui peut orienter vers un **allergologue**.
+- En cas de suspicion d’allergie, consulte ton **médecin traitant**, qui peut orienter vers un **allergologue**.
 - Le bilan commence par un **interrogatoire** détaillé : un journal alimentaire est précieux.
 - Les **prick-tests** (tests cutanés) se font dès le plus jeune âge ; la **prise de sang** (IgE spécifiques) les complète si besoin.
 - Un test positif montre une **sensibilisation**, pas forcément une allergie : c’est l’ensemble qui compte.
@@ -1314,11 +1314,11 @@ ${FIN}`,
 **À la fin du bilan**, l’allergologue remet une **carte d’allergie** et, si nécessaire, la composition d’une trousse d’urgence et son protocole.
 
 ## Au quotidien
-- **Avant la consultation** : notez les réactions (date, aliment, quantité approximative, délai, signes), prenez des photos, gardez les emballages.
-- **Demandez** si un médicament doit être arrêté avant les tests cutanés, et combien de temps avant.
-- **Expliquez le test** à votre enfant avec des mots simples : quelques petites gouttes, une sensation de piqûre légère, parfois des démangeaisons qui passent.
-- **Apportez** le carnet de santé et la liste des aliments déjà consommés sans problème.
-- **Repartez avec des consignes écrites** : aliments à éviter, aliments autorisés, conduite en cas de réaction, date du prochain contrôle.
+- **Avant la consultation** : note les réactions (date, aliment, quantité approximative, délai, signes), prends des photos, garde les emballages.
+- **Demande** si un médicament doit être arrêté avant les tests cutanés, et combien de temps avant.
+- **Explique le test** à ton enfant avec des mots simples : quelques petites gouttes, une sensation de piqûre légère, parfois des démangeaisons qui passent.
+- **Apporte** le carnet de santé et la liste des aliments déjà consommés sans problème.
+- **Repars avec des consignes écrites** : aliments à éviter, aliments autorisés, conduite en cas de réaction, date du prochain contrôle.
 
 ## Questions fréquentes
 **Mon enfant a un test positif mais mange cet aliment sans problème. Faut-il l’arrêter ?**
@@ -1334,9 +1334,9 @@ Les tests cutanés sont réalisables chez le jeune enfant, y compris chez le nou
 Ces tests ne remplacent pas le bilan médical, qui associe l’histoire de l’enfant, l’examen et des tests interprétés par un médecin.
 
 ## Quand demander conseil
-**Consultez** si les réactions deviennent plus fréquentes, si de nouveaux signes apparaissent ou si un malaise survient après un repas, comme le recommande l’Assurance Maladie.
+**Consulte** si les réactions deviennent plus fréquentes, si de nouveaux signes apparaissent ou si un malaise survient après un repas, comme le recommande l’Assurance Maladie.
 
-**Appelez le 15 ou le 112** en cas de gonflement du visage, de gêne respiratoire, de malaise ou de plusieurs signes associés après un aliment.
+**Appelle le 15 ou le 112** en cas de gonflement du visage, de gêne respiratoire, de malaise ou de plusieurs signes associés après un aliment.
 
 ${FIN}`,
   },
@@ -1349,10 +1349,10 @@ ${FIN}`,
     sources: [S.santeAllergie, S.ameliAllergieConsult, S.boPai],
     body_md: `## En bref
 - Une allergie alimentaire **n’empêche pas** de vivre comme les autres : elle demande surtout de **l’anticipation**.
-- Prévenez **tous les adultes** qui encadrent votre enfant et laissez-leur la **conduite à tenir écrite**.
-- Prévoyez des **en-cas sûrs** pour les goûters, anniversaires, sorties et voyages.
+- Préviens **tous les adultes** qui encadrent ton enfant et laisse-leur la **conduite à tenir écrite**.
+- Prévois des **en-cas sûrs** pour les goûters, anniversaires, sorties et voyages.
 - La **trousse d’urgence** (si elle a été prescrite) part **toujours** avec l’enfant.
-- Apprenez à votre enfant, selon son âge, à **reconnaître** ses allergènes et à **dire non** à un aliment inconnu.
+- Apprends à ton enfant, selon son âge, à **reconnaître** ses allergènes et à **dire non** à un aliment inconnu.
 
 ## Comprendre
 Santé.fr rappelle qu’une allergie alimentaire n’empêche pas la pratique sportive, et conseille de préparer soi-même les collations d’après l’effort. Pour les voyages, il recommande d’emporter en permanence une trousse d’urgence, de se renseigner sur les habitudes alimentaires de la destination et, pour un enfant allergique à l’arachide, d’être particulièrement prudent dans les pays où elle est très présente. L’allergologue peut aussi proposer des tests pour certains aliments exotiques.
@@ -1363,43 +1363,43 @@ L’Assurance Maladie invite à la prudence avec les produits non emballés (pâ
 
 ## Au quotidien
 **Anniversaires et goûters**
-- Prévenez les parents qui invitent, simplement et sans dramatiser.
-- Proposez d’apporter une part de gâteau ou un goûter sûr pour votre enfant.
-- Gardez une boîte d’en-cas sûrs à l’école ou au centre de loisirs pour les occasions imprévues.
+- Préviens les parents qui invitent, simplement et sans dramatiser.
+- Propose d’apporter une part de gâteau ou un goûter sûr pour ton enfant.
+- Garde une boîte d’en-cas sûrs à l’école ou au centre de loisirs pour les occasions imprévues.
 
 **Grands-parents, nounou, amis**
-- Écrivez sur une fiche : allergènes, aliments interdits, signes d’alerte, gestes à faire, numéros à appeler, emplacement de la trousse.
-- Montrez-leur le stylo d’entraînement.
-- Relisez ensemble les étiquettes des produits qu’ils achètent.
+- Écris sur une fiche : allergènes, aliments interdits, signes d’alerte, gestes à faire, numéros à appeler, emplacement de la trousse.
+- Montre-leur le stylo d’entraînement.
+- Relis ensemble les étiquettes des produits qu’ils achètent.
 
 **Sport et activités**
-- Informez l’entraîneur ou l’animateur et confiez-lui la conduite à tenir.
-- Préparez vous-même collations et boissons.
+- Informe l’entraîneur ou l’animateur et confie-lui la conduite à tenir.
+- Prépare toi-même collations et boissons.
 
 **Voyages**
 - Trousse d’urgence en bagage à main, ordonnance, carte d’allergie, numéros d’urgence du pays.
 - Carte expliquant l’allergie dans la langue locale.
-- Renseignez-vous sur la cuisine du pays et sur l’accès aux soins sur place.
-- Prévoyez des en-cas pour le trajet.
+- Renseigne-toi sur la cuisine du pays et sur l’accès aux soins sur place.
+- Prévois des en-cas pour le trajet.
 
 **Autonomie de l’enfant**
-- Dès qu’il le peut, apprenez-lui le nom de ses allergènes, à demander « est-ce qu’il y a… ? », à refuser poliment, à dire qu’il ne se sent pas bien.
-- Valorisez ses progrès, sans faire peser sur lui toute la responsabilité.
+- Dès qu’il le peut, apprends-lui le nom de ses allergènes, à demander « est-ce qu’il y a… ? », à refuser poliment, à dire qu’il ne se sent pas bien.
+- Valorise ses progrès, sans faire peser sur lui toute la responsabilité.
 
 ## Questions fréquentes
 **Mon enfant peut-il partir en classe verte ou en colonie ?**
 Oui, le plus souvent, avec un PAI ou un protocole adapté au séjour. La circulaire prévoit que le PAI précise les conditions de participation aux sorties avec ou sans nuitée.
 
 **Comment éviter que mon enfant se sente « différent » ?**
-Impliquez-le dans la préparation de ses goûters, proposez des recettes que tout le monde peut partager et parlez de l’allergie comme d’une simple information.
+Implique-le dans la préparation de ses goûters, propose des recettes que tout le monde peut partager et parle de l’allergie comme d’une simple information.
 
 **L’inquiétude me gâche les sorties. Est-ce fréquent ?**
-Vous n’êtes pas seul(e) à ressentir cette inquiétude. En parler avec l’allergologue, une association de patients ou un psychologue peut aider, tout comme un protocole écrit clair et bien connu de tous.
+Tu n’es pas seul(e) à ressentir cette inquiétude. En parler avec l’allergologue, une association de patients ou un psychologue peut aider, tout comme un protocole écrit clair et bien connu de tous.
 
 ## Quand demander conseil
-**Appelez le 15 ou le 112** si votre enfant présente un gonflement du visage, une gêne respiratoire, un malaise ou plusieurs signes ensemble après un aliment, et utilisez l’auto-injecteur s’il a été prescrit.
+**Appelle le 15 ou le 112** si ton enfant présente un gonflement du visage, une gêne respiratoire, un malaise ou plusieurs signes ensemble après un aliment, et utilise l’auto-injecteur s’il a été prescrit.
 
-**Consultez** avant un voyage pour mettre à jour la trousse et le protocole. Si l’anxiété liée à l’allergie devient envahissante pour vous ou votre enfant, parlez-en ; en cas de détresse, le **3114** répond 24 h/24.
+**Consulte** avant un voyage pour mettre à jour la trousse et le protocole. Si l’anxiété liée à l’allergie devient envahissante pour toi ou ton enfant, parles-en ; en cas de détresse, le **3114** répond 24 h/24.
 
 ${FIN}`,
   },

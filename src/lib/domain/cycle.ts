@@ -25,7 +25,7 @@ export interface CycleEstimate {
 }
 
 const CYCLE_CAVEATS_FR = [
-  'Ces dates sont des estimations calculées à partir de vos saisies.',
+  'Ces dates sont des estimations calculées à partir de tes saisies.',
   'Elles ne garantissent pas une grossesse et ne permettent pas de l’éviter.',
   'Un cycle peut varier avec le stress, la fatigue, l’allaitement, une maladie ou l’arrêt d’une contraception.',
 ];
