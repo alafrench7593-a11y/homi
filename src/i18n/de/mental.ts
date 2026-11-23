@@ -5,6 +5,8 @@ import type { Messages } from '../types';
 export const mental: Messages<typeof fr> = {
   "tool.brain_dump": "Kopf leeren",
   "tool.brain_dump.sub": "Alles durcheinander notieren, die App sortiert",
+  'tool.focus_day': "3 Dinge heute",
+  'tool.focus_day.sub': "3 Prioritäten, der Rest wartet",
   "tool.family_domains": "Bereich abgeben",
   "tool.family_domains.sub": "„Die Impfungen übernimmst du“: wer trägt was",
   "tool.mental_load": "Wer denkt dran?",

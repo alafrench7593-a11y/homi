@@ -76,6 +76,9 @@ interface UiState {
   /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
   simpleMode: boolean;
   setSimpleMode: (on: boolean) => void;
+  /** « 3 choses aujourd'hui » : choix gardés sur l'appareil (aucun effet sur la tâche partagée). */
+  focusPicks: { day: string; ids: string[] };
+  setFocusPicks: (v: { day: string; ids: string[] }) => void;
   /** Suggestions « pour alléger » masquées par la personne (organisation familiale). */
   overloadTipsOff: boolean;
   /** Accueil personnalisé : ordre et cartes masquées. */
@@ -227,6 +230,8 @@ export const useUiStore = create<UiState>()(
       cycleWidgetDetailed: false,
       simpleMode: true,
       setSimpleMode: (simpleMode) => set({ simpleMode }),
+      focusPicks: { day: '', ids: [] },
+      setFocusPicks: (focusPicks) => set({ focusPicks }),
       overloadTipsOff: false,
       homeOrder: [],
       homeHidden: [],

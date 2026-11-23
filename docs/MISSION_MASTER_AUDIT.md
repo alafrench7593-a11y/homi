@@ -27,7 +27,7 @@ Méthode : registre des outils (`src/lib/journeys/tools.ts`) et routes réelles,
 | Histoires sociales | — | **Print Studio** (le parent écrit et relit) |
 | Routine en micro-étapes | routines en images | Aura « met 45 min à se préparer » → routine + impression |
 | Profil sensoriel structuré, journal de situations structuré | fait (23/11) : `src/lib/neuro/structured.ts`, `features/neuro/NeuroPanels.tsx` ; stocké dans `child_need_entries`, sans migration | fiche imprimable « Ce qui aide mon enfant » |
-| Mode parent TDAH (3 priorités) | — | à faire |
+| Mode parent TDAH (3 priorités) | fait (23/11) : outil `focus_day` → `/family/focus` ; choix gardés sur l’appareil (missions reçues incluses, aucune modification partagée), « Juste 10 minutes », report du reste | 128 outils au catalogue |
 
 ## Print Studio (`/print`)
 Routine, Maintenant/Ensuite, cartes, histoire sociale, checklist ; A4 ou A5 ; texte échappé ; pictogrammes imprimables ;
@@ -38,5 +38,5 @@ de l’appli au lieu du document (aussi pour l’export « Mes données »). Pre
 **0 témoignage vérifié** : reddit.com refusé par la politique réseau de la session (HTTP 403 du proxy). Aucune source inventée.
 
 ## Non fait
-Profil sensoriel et journal de situations structurés (migration), mode parent TDAH, Garde Secours dédiée, refonte design
+Restant : refonte design system et animations, tests natifs (sans build), recherche Reddit (réseau bloqué).
 system / motion, tests natifs iOS/Android, recherche Reddit.

@@ -123,6 +123,7 @@ export const APP_ROUTES: readonly string[] = [
   '/family/domains',
   '/family/exhausted',
   '/family/expenses',
+  '/family/focus',
   '/family/history',
   '/family/kid-routine/[id]',
   '/family/kid-routines',

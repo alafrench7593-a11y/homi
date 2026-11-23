@@ -3,6 +3,8 @@ export const mental = {
   // ---------------------------------------------------------------- catalogue
   'tool.brain_dump': 'Vider ma tête',
   'tool.brain_dump.sub': 'Tout noter en vrac, l’appli range',
+  'tool.focus_day': "3 choses aujourd’hui",
+  'tool.focus_day.sub': "3 priorités, le reste attend",
   'tool.family_domains': 'Confier un domaine',
   'tool.family_domains.sub': '« Les vaccins, c’est toi » : qui porte quoi',
   'tool.mental_load': 'Qui y pense ?',

@@ -55,6 +55,7 @@ export const LEGACY_PATHS: Record<string, string> = {
   '/family': 'family_tasks',
   '/family/routines': 'family_routines',
   '/family/brain-dump': 'brain_dump',
+  '/family/focus': 'focus_day',
   '/family/domains': 'family_domains',
   '/family/missions': 'family_missions',
   '/family/missions/responsibilities': 'family_responsibilities',

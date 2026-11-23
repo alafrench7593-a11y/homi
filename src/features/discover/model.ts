@@ -182,6 +182,7 @@ export const TOOL_DEMOS: Record<string, { chapter: ChapterKey; demo: DemoSpec }>
   family_review: { chapter: 'family', demo: { kind: 'measure', series: [38, 44, 47, 49], next: 50, unit: 'pct' } },
   family_sos: { chapter: 'family', demo: { kind: 'help' } },
   brain_dump: { chapter: 'family', demo: { kind: 'journal', set: 'dump' } },
+  focus_day: { chapter: 'family', demo: { kind: 'tasks', set: 'domains' } },
   family_domains: { chapter: 'family', demo: { kind: 'tasks', set: 'domains' } },
   mental_load: { chapter: 'family', demo: { kind: 'measure', series: [64, 60, 57, 54], next: 51, unit: 'pct' } },
   family_prep: { chapter: 'family', demo: { kind: 'plan', set: 'prep', time: '17:00', inDays: 6 } },

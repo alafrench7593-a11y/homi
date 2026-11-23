@@ -167,7 +167,8 @@ export const TOOL_GLYPHS: Record<string, string> = {
   family_my_place: 'home-account',          // ma place dans la famille : une personne dans la maison
   family_routines: 'repeat-variant',        // routines du foyer : répétition
   family_history: 'clipboard-text-clock',   // historique des tâches
-  brain_dump: 'head-lightbulb',             // vider ma tête
+  brain_dump: 'head-lightbulb',
+  focus_day: 'numeric-3-circle-outline',  // 3 choses aujourd'hui (mode parent TDAH)             // vider ma tête
   family_prep: 'calendar-check',            // échéances à préparer
   family_shopping: 'cart',                  // liste de courses
   family_stocks: 'package-variant-closed',  // stocks du foyer

@@ -145,7 +145,7 @@ describe('B. classement selon les besoins des parents', () => {
 
   it('9 catégories ; chaque outil a UNE catégorie principale ; la communauté et le compte sont à part', () => {
     expect(TOOL_CATEGORIES).toEqual(['feeding', 'sleep', 'care', 'health', 'cycle', 'pregnancy', 'school', 'couple', 'family']);
-    expect(CATEGORY_TOOLS).toHaveLength(126);
+    expect(CATEGORY_TOOLS).toHaveLength(127);
     expect(REAL_TOOLS.filter((d) => d.category === 'community').map((d) => d.id)).toEqual(['community']);
     for (const d of CATEGORY_TOOLS) expect((TOOL_CATEGORIES as string[]).includes(d.category)).toBe(true);
     expect(isToolCategory('community')).toBe(false);

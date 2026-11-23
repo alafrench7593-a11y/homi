@@ -320,6 +320,7 @@ export const TOOLS: ToolDef[] = [
   { id: 'family_routines', category: 'family', theme: 'tasks', icon: 'list', scopes: TOGETHER, href: () => '/family/routines' },
   { id: 'family_history', category: 'family', theme: 'tasks', icon: 'rewind', scopes: ['family'], href: () => '/family/history' },
   { id: 'brain_dump', category: 'family', theme: 'tasks', icon: 'download', scopes: TOGETHER, href: () => '/family/brain-dump' },
+  { id: 'focus_day', category: 'family', theme: 'tasks', icon: 'target', scopes: TOGETHER, href: () => '/family/focus' },
   { id: 'family_prep', category: 'family', theme: 'calendar', icon: 'fast-forward', scopes: TOGETHER, href: () => '/family/prep' },
   { id: 'family_shopping', category: 'family', theme: 'tasks', icon: 'shopping-cart', scopes: TOGETHER, also: ['feeding'], href: () => '/meals/shopping' },
   { id: 'family_stocks', category: 'family', theme: 'tasks', icon: 'package', scopes: TOGETHER, also: ['care'], href: () => '/family/stocks' },

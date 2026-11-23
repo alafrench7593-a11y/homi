@@ -50,7 +50,7 @@ export const TOOL_ICON: Record<string, HomiIconName> = {
   family_metime: 'headphones', offduty: 'power', family_difficult: 'wind', family_urgent: 'siren', family_sos: 'heartPause', solo_parent: 'anchor',
   // 9. Organisation familiale
   family_calendar: 'calendarGrid', family_tasks: 'checklist', family_missions: 'plane', family_my_place: 'housePerson', family_routines: 'loop',
-  family_history: 'listClock', brain_dump: 'trayDown', family_prep: 'calendarCheck', family_shopping: 'cart', family_stocks: 'box',
+  family_history: 'listClock', brain_dump: 'trayDown', focus_day: 'next', family_prep: 'calendarCheck', family_shopping: 'cart', family_stocks: 'box',
   house_notebook: 'key', family_papers: 'paperClip', reminders: 'bellRing', nearby: 'pin',
   // Communauté (espace à part)
   community: 'group',
