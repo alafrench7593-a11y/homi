@@ -19,6 +19,8 @@ import { t as tr } from '@/i18n';
 import { useTourAllowed } from '@/features/tour/TourEntry';
 import { startTour } from '@/features/tour/store';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
+import { confirmAndSignOut } from '@/features/account/SignOutRow';
+import { useBackendMode } from '@/lib/demoMode';
 
 const SIZE = 32;
 /** Disques de verre de l’en-tête : 44 pt (cible tactile réelle, y compris sur le web où hitSlop n’existe pas) et leur écart. */
@@ -79,10 +81,15 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
   const { session } = useAuth();
   const { data: profile } = useProfile();
   const pathname = usePathname();
+  const { isDemo } = useBackendMode();
+  // iOS : naviguer PENDANT la fermeture de la feuille (Modal) pouvait laisser la feuille invisible devant le nouvel
+  // écran — page « bloquée », plus aucun toucher (Profil, Réglages). On attend la fin de la fermeture.
+  const AFTER_CLOSE_MS = 320;
   const go = (href: string) => {
     onClose();
-    if (pathname !== href.replace('/(tabs)', '')) router.push(href as never);
+    if (pathname !== href.replace('/(tabs)', '')) setTimeout(() => router.push(href as never), AFTER_CLOSE_MS);
   };
+  const signOut = () => { onClose(); setTimeout(() => { void confirmAndSignOut(isDemo); }, AFTER_CLOSE_MS); };
   const name = profile?.display_name?.trim();
   const tourAllowed = useTourAllowed();
   return (
@@ -99,8 +106,11 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
         <ListGroup>
           <ListRow icon="user" title={tr('header.profile')} onPress={() => go('/(tabs)/profile')} testID="account-sheet-profile" />
           <ListRow icon="settings" title={tr('header.settings')} onPress={() => go('/settings')} testID="account-sheet-settings" />
-          {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} onPress={() => { onClose(); setTimeout(startTour, 200); }} testID="account-sheet-tour" /> : null}
+          {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} onPress={() => { onClose(); setTimeout(startTour, AFTER_CLOSE_MS); }} testID="account-sheet-tour" /> : null}
           <ListRow icon="life-buoy" title={tr('profile.emergency')} subtitle={help.summary} danger iconColor={t.colors.danger} onPress={() => go('/emergency')} testID="account-sheet-emergency" />
+        </ListGroup>
+        <ListGroup>
+          <ListRow icon="log-out" title={isDemo ? tr('acct.signOut.demo') : tr('settings.signOut')} onPress={signOut} testID="account-sheet-sign-out" />
         </ListGroup>
       </View>
     </GlassSheet>

@@ -35,7 +35,8 @@ const ME: Scope[] = ['avoid', 'ttc', 'cycle', 'none'];
 const ADULT: Scope[] = [...ME, 'pregnancy', 'postpartum'];
 const KID: Scope[] = ['baby', 'child'];
 const ALL = SCOPES;
-const CYCLE: Scope[] = ['avoid', 'ttc', 'cycle'];
+// Cycle menstruel toujours proposé dans « Moi » (aussi sans parcours cycle, ex. pendant une grossesse) : le rayon ne disparaît plus
+const CYCLE: Scope[] = ['avoid', 'ttc', 'cycle', 'none'];
 /** « À deux » (04/11/2026) : la charge mentale ne commence pas avec un enfant — tâches, agenda et relais sont ouverts à tous. */
 const TOGETHER: Scope[] = [...ADULT, 'baby', 'child', 'family'];
 
@@ -534,7 +535,7 @@ const SCREEN_RULES: { prefix: string; scopes: Scope[]; subOnly?: boolean }[] = [
   { prefix: '/postpartum/partner', scopes: SCOPES },
   // Personnes de confiance : ouvertes depuis « Journée difficile » et « Je craque » (outils de toutes les portées)
   { prefix: '/postpartum/support', scopes: SCOPES },
-  { prefix: '/cycle', scopes: ['avoid', 'ttc', 'cycle'] },
+  { prefix: '/cycle', scopes: ['avoid', 'ttc', 'cycle', 'none'] },
   { prefix: '/pregnancy', scopes: ['pregnancy'] },
   { prefix: '/bottle', scopes: ['baby', 'postpartum'] },
   // « /track » seul est l'onglet Suivi (pour tous) ; « /track/biberon… » est une saisie pour un enfant né
