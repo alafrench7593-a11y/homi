@@ -3,10 +3,12 @@
  * halo corail localisé (image fixe : écran de suivi lu), la PROGRESSION (trimestres, jalons), les CHIFFRES de la
  * semaine (taille, poids, comparaison) et ce qui est À VENIR (rendez-vous, terme), puis les rubriques de « Ma
  * grossesse » en liste. Une action principale en bas : « Comment je me sens ».
+ * 22/11/2026 : semaine explorée dans l'adresse (« ?week= ») ; terme corrigé dans une fiche (DueDateFix) ; repères sur
+ * une Card (verre commun) au lieu d'un cadre fait main.
  */
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { router } from 'expo-router';
+import { View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/theme/ThemeProvider';
 import { Banner, Button, Card, Chip, Field, ListGroup, ListRow, Row, Text } from '@/components/ui';
@@ -20,10 +22,12 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { FETAL_SIZE_SOURCE, weekInfo } from '@/lib/domain/fetalWeeks';
 import type { ExpectedBaby } from '@/lib/types';
-import { radius, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate, getLocale } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { DueDateFix } from '@/features/restTrack/DueDateFix';
+import { weekParam } from '@/lib/domain/restTrack';
 
 // HOMI : lilas d'abord (un seul bébé), puis champagne et mauve pour les jumeaux et triplés
 const HUES = ['lavande', 'or', 'rose'] as const;
@@ -84,7 +88,10 @@ export default function PregnancyUniverse() {
   const { data: babies } = useExpectedBabies(pregnancy?.id);
   const { data: profile } = useProfile();
   const p = pregnancy ? pregnancyProgress(pregnancy.due_date) : null;
-  const [week, setWeek] = useState<number | null>(null);
+  // 22/11/2026 : semaine explorée gardée dans l'adresse (« ?week=24 ») : ouvrir une rubrique puis revenir la retrouve
+  const qp = useLocalSearchParams<{ week?: string }>();
+  const pickedWeek = weekParam(qp.week);
+  const setWeek = (w: number | null) => router.setParams({ week: w == null ? undefined : String(w) } as never);
   const [selected, setSelected] = useState(0);
   const simple = useUiStore((st) => st.simpleMode);
   const { setSubject } = useActiveSubject();
@@ -104,6 +111,7 @@ export default function PregnancyUniverse() {
       </Screen>
     );
   }
+  const week = pickedWeek != null && pickedWeek !== p.weeksSA ? pickedWeek : null;
   const w = week ?? p.weeksSA;
   const info = weekInfo(w);
   const n = Math.max(1, babies?.length ?? 1);
@@ -151,6 +159,7 @@ export default function PregnancyUniverse() {
         <ListRow icon="flag" title={tr('u2.preg.due_term')} subtitle={pregnancy.due_date_source === 'lmp' ? tr('u2.preg.est_lmp') : tr('u2.preg.date_by_you')}
           value={dueDate} onPress={() => router.push('/pregnancy/calendar')} testID="preg-due" />
       </ListGroup>
+      <DueDateFix pregnancy={pregnancy} />
 
       <WeekNotes title={tr('u2.preg.baby_this_week')} items={info.baby} />
       <WeekNotes title={tr('u2.preg.you_maybe')} items={info.mother} />
@@ -185,14 +194,14 @@ function WeekNotes({ title, items }: { title: string; items: string[] }) {
   return (
     <View style={{ gap: spacing.xs }}>
       <Text variant="heading" accessibilityRole="header" style={{ paddingHorizontal: spacing.xxs }}>{title}</Text>
-      <View style={{ backgroundColor: th.colors.surface, borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: th.colors.border, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: spacing.xs }}>
+      <Card style={{ gap: spacing.xs }}>
         {items.map((b) => (
           <View key={b} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, marginTop: 9, backgroundColor: th.colors.primary }} />
             <Text style={{ flex: 1 }}>{b}</Text>
           </View>
         ))}
-      </View>
+      </Card>
     </View>
   );
 }

@@ -17,6 +17,7 @@ import { Banner, Field, haptic, Icon, Text } from '@/components/ui';
 import { DataTile, SecondaryButton } from '@/components/controls';
 import { MatteSurface } from '@/components/surfaces';
 import { scoopsFor } from '@/lib/domain/scoops';
+import { scoopProgress } from '@/lib/domain/restTrack';
 import { usePressScale } from '@/motion/PressableScale';
 import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -49,8 +50,10 @@ export default function ScoopCounter() {
   };
   const plan = scoopsFor(num(water), num(ratio));
   const target = plan?.exact ? plan.scoops : null;
-  const reached = target != null && count >= target;
-  const over = target != null && count > target;
+  // 22/11/2026 : état du compte calculé par une fonction pure testée (restTrack.scoopProgress)
+  const prog = scoopProgress(count, target);
+  const reached = prog.state === 'done' || prog.state === 'over';
+  const over = prog.state === 'over';
   const ringColor = over ? t.tokens.status.warning : reached ? t.tokens.status.success : t.colors.primary;
 
   // progression vers le compte (réelle : nombre de mesurettes touchées / compte calculé)
@@ -72,7 +75,7 @@ export default function ScoopCounter() {
     if (!m.off) { tap.value = 1.1; tap.value = m.spring(1, 'vif'); }
   }
 
-  const status = reached ? (over ? tr('sc.over') : tr('sc.done')) : tr('sc.tap');
+  const status = reached ? (over ? tr('sc.over') : tr('sc.done')) : prog.state === 'counting' && count > 0 ? tr('rs.sc.remaining', { count: prog.remaining ?? 0 }) : tr('sc.tap');
   return (
     <Screen back title={toolName('bottle_scoops')} subtitle={toolBlurb('bottle_scoops')}>
       <Text muted>{tr('sc.intro')}</Text>

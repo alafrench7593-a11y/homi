@@ -1,27 +1,28 @@
 /**
  * « Après la naissance » : l'espace post-partum de la mère.
  * Privé par défaut. Le suivi ne s'arrête jamais tout seul : il continue tant qu'elle le souhaite.
+ * 22/11/2026 : donnée principale « J+N » et date de naissance corrigée dans une fiche (PostpartumHero).
  */
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
 import { Skeleton, ErrorView } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Field, Icon, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Banner, Button, Card, Icon, ListRow, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { DangerPanel, SupportPlanCard } from '@/features/postpartum';
 import { usePostpartumCheckins, usePostpartumSettings, useSaveSettings } from '@/lib/data/hooks-postpartum';
 import { useReminders } from '@/lib/data/hooks';
 import { friendlyError, useSaveReminder, useToggleReminder } from '@/lib/data/hooks-settings';
 import { NEEDS, persistentLowDays, supportPlan } from '@/lib/domain/postpartum';
-import { frToISO, todayISO } from '@/lib/domain/dates';
+import { todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
+import { PostpartumHero } from '@/features/restTrack/PostpartumHero';
 
 const CHECKIN_LINK = '/postpartum/checkin';
 /** Raccourcis de « Mon post-partum » : choix et ordre seulement (identifiants du registre central). */
@@ -38,7 +39,6 @@ export default function PostpartumHome() {
   const saveReminder = useSaveReminder();
   const toggleExisting = useToggleReminder();
   const [showDanger, setShowDanger] = useState(false);
-  const [dateText, setDateText] = useState('');
 
   const settings = settingsQ.data;
   const checkins = checkinsQ.data ?? [];
@@ -64,27 +64,14 @@ export default function PostpartumHome() {
     }
   }
 
-  async function saveDelivery() {
-    const iso = frToISO(dateText);
-    if (!iso || iso > today) return toast(tr('u5.pp_home.date_bad'), 'error');
-    try {
-      await saveSettings.mutateAsync({ existing: !!settings, patch: { delivery_date: iso } });
-      setDateText('');
-      toast(tr('u5.pp_home.date_saved'));
-    } catch (e) { toast(friendlyError(e), 'error'); }
-  }
-
   const loading = settingsQ.isLoading || checkinsQ.isLoading;
   const failed = (settingsQ.isError && !settingsQ.data) || (checkinsQ.isError && !checkinsQ.data);
 
   return (
     <Screen back title={tr('u5.pp_home.title')} subtitle={tr('u5.pp_home.subtitle')}
       action={{ label: todayCheckin ? tr('u5.pp_history.reread') : tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push(CHECKIN_LINK), testID: 'pp-main-action' }}>
-      <TodaySummary items={[
-        { icon: 'check-circle', value: todayCheckin ? tr('u5.pp_home.noted') : '—', label: tr('u5.pp_home.today_lbl') },
-        { icon: 'sun', value: daysSince != null && daysSince >= 0 ? `J+${daysSince}` : '—', label: tr('u5.pp_home.since_birth') },
-        { icon: 'bell', value: reminder?.enabled ? tr('u5.pp_home.on') : '—', label: tr('u5.pp_home.evening_rem') },
-      ]} />
+      {/* 22/11/2026 : J+N en grand, points notés sur sept jours, date de naissance corrigée dans une fiche */}
+      {!loading && !failed ? <PostpartumHero delivery={settings?.delivery_date} hasSettings={!!settings} checkins={checkins} today={today} /> : null}
       <Banner tone="info" icon="lock">
         {tr('u5.pp_home.privacy')}
       </Banner>
@@ -160,10 +147,6 @@ export default function PostpartumHome() {
               ) : (
                 <Text variant="small" muted>{tr('u5.pp_home.opt')}</Text>
               )}
-              <Row>
-                <View style={{ flex: 1 }}><Field label={tr('u5.pp_home.date_lbl')} optional value={dateText} onChangeText={setDateText} keyboardType="numbers-and-punctuation" placeholder="12/09/2026" /></View>
-                <Button label={tr('u5.pp_checkin.save')} size="sm" variant="secondary" onPress={saveDelivery} disabled={!dateText} loading={saveSettings.isPending} style={{ alignSelf: 'flex-end' }} />
-              </Row>
             </View>
           </Card>
           <Text variant="caption" muted>{tr('u5.pp_home.foot')}</Text>
