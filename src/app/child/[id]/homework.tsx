@@ -15,7 +15,7 @@ import { Tappable } from '@/components/Tappable';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { formatDate, t as tr } from '@/i18n';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { useDeleteHomework, useHomework, useHomeworkReminder, useSaveHomework } from '@/lib/data/hooks-partiels2';
+import { useDeleteHomework, useHomework, useHomeworkReminder, useSaveHomework, useUpdateHomework } from '@/lib/data/hooks-partiels2';
 import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { knownSubjects, mondayOf, overdue, weekView, type Homework } from '@/features/homework/domain';
@@ -40,8 +40,7 @@ function HomeworkBody({ child }: { child: Child }) {
   const toast = useToast();
   const params = useLocalSearchParams<{ h?: string }>();
   const q = useHomework(child.id);
-  const save = useSaveHomework();
-  const reminder = useHomeworkReminder();
+  const update = useUpdateHomework();
   const today = todayISO();
   const [week, setWeek] = useState(mondayOf(today));
   const [open, setOpen] = useState<{ h: Homework | null } | null>(null);
@@ -58,9 +57,7 @@ function HomeworkBody({ child }: { child: Child }) {
   async function toggle(h: Homework) {
     const done_at = h.done_at ? null : new Date().toISOString();
     try {
-      const { done_by: _d, _pending: _p, ...rest } = h; // eslint-disable-line @typescript-eslint/no-unused-vars
-      const r = await save.mutateAsync({ ...rest, done_at });
-      await reminder.mutateAsync({ hw: { ...h, done_at }, childName: child.first_name }).catch(() => undefined);
+      const r = await update(h, { done_at }, child.first_name);
       haptic(done_at ? 'success' : 'selection');
       if (r.queued) toast(tr('p2.savedOffline'));
     } catch (e) { toast(friendlyError(e), 'error'); }

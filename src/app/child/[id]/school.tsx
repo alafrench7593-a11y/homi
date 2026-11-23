@@ -44,7 +44,7 @@ export default function ChildSchool() {
   return (
     <Screen back title={toolName('kid_school')} subtitle={child?.first_name}
       action={{ label: tr('common.save'), icon: 'check', onPress: () => save(), testID: 'school-save', disabled: add.isPending }}>
-      <SchoolTrack homework={homework} thisWeek={wk} />
+      <SchoolTrack homework={homework} thisWeek={wk} childName={child?.first_name ?? ''} />
       <Text muted>{tr('sc.schoolIntro')}</Text>
       <ListGroup testID="school-tools">
         <ListRow icon="check-square" title={tr('p2.hw.title')} subtitle={hwLeft ? tr('p2.hw.left', { count: hwLeft }) : tr('p2.hw.entrySub')}

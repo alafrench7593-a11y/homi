@@ -88,6 +88,22 @@ export function useHomework(childId: string | null) {
 export const useSaveHomework = () => useSave<Omit<Homework, 'id' | 'done_by'>>('child_homework', ['reminders']);
 export const useDeleteHomework = () => useRemove('child_homework', ['reminders']);
 export const homeworkLink = (h: Pick<Homework, 'id' | 'child_id'>) => `/child/${h.child_id}/homework?h=${h.id}`;
+/**
+ * Correction d'un devoir existant (cocher, matière, consigne, échéance) — LE chemin de l'app Devoirs : même écriture
+ * (`useSaveHomework`, file hors ligne comprise) puis même mise à jour du rappel de la veille. Utilisé par la case de
+ * l'app Devoirs et par la fiche de l'écran École (23/11/2026).
+ */
+export function useUpdateHomework() {
+  const save = useSaveHomework();
+  const reminder = useHomeworkReminder();
+  return async (h: Homework, patch: Partial<Pick<Homework, 'subject' | 'instructions' | 'due_on' | 'done_at' | 'remind_eve'>>, childName: string) => {
+    const { done_by: _d, _pending: _p, ...rest } = h; // eslint-disable-line @typescript-eslint/no-unused-vars
+    const next = { ...rest, ...patch };
+    const r = await save.mutateAsync(next);
+    await reminder.mutateAsync({ hw: next, childName }).catch(() => undefined);
+    return r;
+  };
+}
 /** Rappel la veille à 18 h (si le devoir n'est pas fait, que le rappel est voulu et qu'il n'est pas déjà passé). */
 export function useHomeworkReminder() {
   const { session } = useAuth();

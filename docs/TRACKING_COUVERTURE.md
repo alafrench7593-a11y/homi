@@ -1,14 +1,14 @@
 # Couverture du tracking — catalogue « Mes apps » (généré le 22/11/2026, registre src/lib/journeys/tools.ts)
 
-Légende statut : FAIT = observé dans l’aperçu web Chromium (vraie app, démo locale) ; Deno = fonction `assistant` avec modèle simulé. Rien n’est encore vérifié sur simulateur iOS ni sur iPhone.
+Légende statut : FAIT = observé dans l’aperçu web Chromium (vraie app, démo locale) ; Deno = fonction `assistant` avec modèle simulé. « FAIT · Jest » = livré et couvert par les tests Jest (backend de démonstration), pas encore ouvert dans Chromium. Rien n’est encore vérifié sur simulateur iOS ni sur iPhone.
 
-Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 83, PARTIEL 15, SANS SUIVI 38, À FAIRE 0 — total 136. « FAIT (vague 3) » = livré et ouvert sans erreur dans Chromium, pas encore rejoué de bout en bout.
+Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 88, PARTIEL 10, SANS SUIVI 38, À FAIRE 0 — total 136. « FAIT (vague 3) » = livré et ouvert sans erreur dans Chromium, pas encore rejoué de bout en bout.
 
 | Mini-app (id) | Profils | Catégorie | Famille de geste | Donnée suivie | Remontée accueil / catégorie | Aura · prix | Test / statut |
 |---|---|---|---|---|---|---|---|
 | baby_breastfeed | baby, postpartum | feeding | Temps et sessions | tétées (breastfeeds, côté) | accueil : tétée en cours / dernière | — | FAIT · Chromium (migration `segments` non déployée) |
 | baby_bottle | baby | feeding | Mesures et quantités | biberons (ml) | accueil : dernier biberon ; catégorie Alimentation : ml/jour | analyse biberons existante · 3 crédits | FAIT · Chromium |
-| baby_bottle_timer | baby, postpartum | feeding | Temps et sessions | minuteur biberon | accueil : dernier biberon | — | PARTIEL : minuteur existant conservé, saisie à une main ajoutée à côté |
+| baby_bottle_timer | baby, postpartum | feeding | Temps et sessions | minuteur biberon | accueil : dernier biberon | — | FAIT · Jest : minuteur conservé ; une fois arrêté, « Corriger ce biberon » ouvre la MÊME fiche Tray que la saisie à une main (table bottles, useEditLog / guardedLogUpdate) ; heure, quantité ET durée bue corrigeables (début/fin recalculés, pauses gardées) ; historique animé (finishTrack.test.ts, finishTrackScreens.test.tsx) |
 | baby_bottle_history | baby | feeding | Mesures et quantités | historique biberons | catégorie Alimentation | analyse existante · 3 crédits | FAIT · Chromium |
 | bottle_scoops | baby, postpartum | feeding | Journaux | repas / menus | catégorie Alimentation | — | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
 | baby_foods | bébé, enfant | feeding | Journaux | dégustations par aliment | catégorie Alimentation : aliments découverts | — | FAIT · Chromium |
@@ -18,7 +18,7 @@ Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 83
 | meal_rankings | ...KID, family | feeding | Journaux | repas / menus | catégorie Alimentation | — | PARTIEL : donnée principale seulement |
 | preg_eat | pregnancy | feeding | Journaux | repas / menus | catégorie Alimentation | — | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
 | scan_food | tous | feeding | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
-| kid_sleep | bébé, enfant | sleep | Temps et sessions | sessions de sommeil (mode nuit /night) | idem Sommeil (même table) | — | PARTIEL : même donnée ; écran nuit : bouton « Lina s’endort » (prénom) le 23/11, mise en page non refaite |
+| kid_sleep | bébé, enfant | sleep | Temps et sessions | sessions de sommeil (mode nuit /night) | idem Sommeil (même table) | — | FAIT · Jest : mode nuit refait dans le patron sommeil (thème nuit, aucun son, luminosité inchangée) : état et durée depuis le dernier changement en grand, bouton « Lina s’endort », saisies des 12 dernières heures en liste datée (heure en colonne fixe, animée), une ligne ouvre sa fiche Tray existante (sommeil, tétée, biberon, couche) (finishTrackScreens.test.tsx) |
 | kid_sleep_rhythm | bébé, enfant | sleep | Temps et sessions | sessions de sommeil (table sleeps) | accueil : sieste en cours / dernière ; catégorie Sommeil : jour + 7 jours | fenêtre indicative + analyse d’une session · 3 crédits | FAIT · Chromium + Deno |
 | sleep_help | bébé, enfant | sleep | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
 | baby_night_help | baby | sleep | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
@@ -65,9 +65,9 @@ Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 83
 | cycle_discharge | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | FAIT · Chromium (vague 2) |
 | cycle_bleeding | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | FAIT · Chromium (vague 2) |
 | cycle_journal | cycle | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | FAIT · Chromium (vague 2) |
-| cycle_stats | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | PARTIEL : écran inchangé (pas de bulle sur les barres) |
+| cycle_stats | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | FAIT · Jest : longueurs de cycle en barres tactiles (bulle valeur + date, doigt / clavier / lecteur d’écran), période `?n=` et cycle `?cycle=` dans l’adresse, « Ouvrir la fiche » → correction des règles existante (`/cycle?all=1&period=`) (finishTrack.test.ts, finishTrackScreens.test.tsx) |
 | cycle_advice | CYCLE | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
-| cycle_month | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | PARTIEL : écran inchangé (pas de bulle sur les barres) |
+| cycle_month | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | FAIT · Jest : mois `?m=` et jour `?day=` dans l’adresse, jours du mois en barres tactiles (bulle valeur + date) ; « Ouvrir la fiche » → correction des règles existante, sinon journal des symptômes du jour (finishTrack.test.ts) |
 | cycle_export | CYCLE | cycle | Journaux (cycle) | saisies du cycle | accueil cycle | analyse cycle existante · 3 crédits | SANS SUIVI (export) |
 | cycle_guides | CYCLE | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | FAIT · Chromium (vague 2) · favoris + reprise |
 | cycle_kit | CYCLE | cycle | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | SANS SUIVI (réglages) |
@@ -102,7 +102,7 @@ Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 83
 | pp_mental | postpartum, baby, none | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
 | pp_support | postpartum, baby, none | pregnancy | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
 | pp_partner | postpartum, baby | pregnancy | Journaux et rendez-vous | suivi grossesse / post-partum | accueil grossesse | — | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
-| kid_school | bébé, enfant | school | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : exploré (semaine), correction dans l’app Devoirs |
+| kid_school | bébé, enfant | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest : un devoir s’ouvre dans sa fiche Tray sur l’écran École (`?hw=`) : cocher, matière, consigne, échéance ; écriture par la mutation de l’app Devoirs (`useUpdateHomework`, partagée avec la case à cocher), formulaire complet dans Devoirs (finishTrackScreens.test.tsx) |
 | kid_card | bébé, enfant | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
 | kid_routines | child, family | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
 | custody | ...KID, family | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |

@@ -179,8 +179,10 @@ export default function BottleReminderScreen() {
             options={[...(children ?? [])].map((c) => ({ value: c.id, label: c.first_name }))} />
         )}
 
-        {/* 1. biberon en direct : point focal */}
-        <BottleSessionCard key={childId} child={child} onRecordPast={() => (upcoming ? openSlot(childId, upcoming, active?.id) : openBottleEntry(childId, active?.id))} />
+        {/* 1. biberon en direct : point focal ; une fois arrêté, « Corriger ce biberon » ouvre la fiche ci-dessous
+            (`?bottle=`, même table bottles et même correction que la saisie à une main : heure, quantité, durée) */}
+        <BottleSessionCard key={childId} child={child} onRecordPast={() => (upcoming ? openSlot(childId, upcoming, active?.id) : openBottleEntry(childId, active?.id))}
+          onFix={(id) => router.setParams({ bottle: id } as never)} />
 
         {/* 1 bis. saisie à une main (quantité reprise de la dernière prise) ; dernier biberon et historique, chaque ligne
             ouvre sa fiche pour corriger l'heure ou la quantité (`?bottle=` l'ouvre directement) */}
