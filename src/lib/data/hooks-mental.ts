@@ -8,6 +8,7 @@ import { useHouseholdId, useInvalidate, useRows } from './hooks';
 import { resync } from './hooks-settings';
 import type { DomainKey, PaperKind } from '../domain/mentalLoad';
 import type { Reminder } from '../types';
+import { snoozedBy } from '../domain/finishFamily';
 
 export interface FamilyDomain { household_id: string; key: DomainKey; owner_id: string | null; note: string | null; updated_at: string }
 export interface FamilyPrep { id: string; household_id: string; key: string; occurs_on: string; status: 'prepared' | 'skipped' }
@@ -84,6 +85,31 @@ export function useStopOffDuty() {
         for (const r of mine.filter((x) => x.snoozed_until && Date.parse(x.snoozed_until) > Date.now() && x.category !== 'medication')) {
           await backend.update('reminders', { snoozed_until: null }, [eq('id', r.id)]);
         }
+        await resync(uid);
+      }
+    },
+    onSuccess: () => inv('offduty_periods', 'reminders'),
+  });
+}
+
+/** Pauses des 5 dernières semaines (historique « Je décroche », 23/11/2026). */
+export function useOffDutyHistory() {
+  const hid = useHouseholdId();
+  return useRows<OffDuty>(['offduty_periods', hid ?? '', 'history'], hid ? { table: 'offduty_periods', filters: [eq('household_id', hid), gte('ends_at', new Date(Date.now() - 35 * 86400_000).toISOString())], order: [{ col: 'starts_at', asc: false }] } : null, { staleTime: 15_000 });
+}
+/**
+ * Corriger la fin de MA pause en cours (23/11/2026) : la période est mise à jour, et les rappels qu'elle avait mis en
+ * pause reprennent à la nouvelle fin (jamais un médicament, jamais un rappel partagé : ils n'avaient pas été coupés).
+ */
+export function useUpdateOffDutyEnd() {
+  const inv = useInvalidate();
+  const uid = useUserId();
+  return useMutation({
+    mutationFn: async (a: { id: string; oldEnds: string; ends_at: string }) => {
+      await backend.update('offduty_periods', { ends_at: a.ends_at }, [eq('id', a.id)]);
+      if (uid) {
+        const mine = await backend.select<Reminder>({ table: 'reminders', filters: [eq('user_id', uid)] });
+        for (const r of snoozedBy(mine, a.oldEnds)) await backend.update('reminders', { snoozed_until: a.ends_at }, [eq('id', r.id)]);
         await resync(uid);
       }
     },

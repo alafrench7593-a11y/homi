@@ -121,3 +121,4 @@ export { readTrack } from './readTrack';
 export { careTrack } from './careTrack';
 export { finishTrack } from './finishTrack';
 export { finishMeals } from './finishMeals';
+export { finishFamily } from './finishFamily';

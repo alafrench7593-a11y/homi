@@ -4,7 +4,8 @@
  *    faite = « rien de noté ») ;
  *  · tâches faites dans la semaine en grand, une case par adulte (qui a fait, sinon à qui c'était confié : jamais
  *    deviné), tâches ouvertes sans personne ;
- *  · la liste du jour : heure en colonne fixe, tâche, qui l'a faite. Rouvrir ou corriger se fait dans « Tâches ».
+ *  · la liste du jour : heure en colonne fixe, tâche, qui l'a faite. `onOpen` : la tâche s'ouvre dans sa fiche (charge
+ *    mentale, 23/11/2026) ; sinon « Tâches ».
  *  Aucun score : des nombres de tâches, de même nature, à lire à deux.
  */
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -20,7 +21,7 @@ import { clock } from '@/lib/domain/sleepPlanner';
 import { spacing } from '@/theme/tokens';
 import { HmEmpty, HmHero, HmRow, HmWeek, useUrlDay } from './kit';
 
-export function LoadTrack({ tasks, people, labelOf }: { tasks: readonly FamilyTask[]; people: readonly string[]; labelOf: (id: string | null | undefined) => string }) {
+export function LoadTrack({ tasks, people, labelOf, onOpen }: { tasks: readonly FamilyTask[]; people: readonly string[]; labelOf: (id: string | null | undefined) => string; onOpen?: (id: string) => void }) {
   const [day, setDay] = useUrlDay();
   const days = weekDays(day);
   const monday = mondayOfDay(day);
@@ -40,7 +41,7 @@ export function LoadTrack({ tasks, people, labelOf }: { tasks: readonly FamilyTa
         <MotionList testID="hm-load-list">
           {ofDay.map((t) => <MotionItem key={t.id}><HmRow key={t.id} time={clock(new Date(t.done_at!))} icon="check-circle" title={t.title} testID={`hm-load-row-${t.id}`}
             detail={t.done_by ? tr('jt.task.doneBy', { who: labelOf(t.done_by) }) : t.assignee_id ? tr('hm.load.assigned', { who: labelOf(t.assignee_id) }) : null}
-            onPress={() => router.push('/family' as never)} /></MotionItem>)}
+            onPress={() => (onOpen ? onOpen(t.id) : router.push('/family' as never))} /></MotionItem>)}
         </MotionList>
       ) : <HmEmpty testID="hm-load-empty" />}
     </View>

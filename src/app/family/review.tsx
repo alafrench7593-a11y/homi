@@ -2,12 +2,13 @@
  * Bilan hebdomadaire familial : neutre et constructif. Par catégorie, jamais par personne :
  * pas de classement, pas de comparaison. Les informations post-partum n'y figurent que si la mère
  * a choisi de les partager (ligne de partage, déjà filtrée par le serveur).
+ * 23/11/2026 : semaine dans l'adresse, tâches faites en grand et en liste datée, fiche de correction (ReviewWeek).
  */
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { HmHero } from '@/features/homeTrack/kit';
+import { ReviewWeek } from '@/features/finishFamily/ReviewWeek';
 import { Skeleton } from '@/components/States';
 import { ProgressBar, StaggerItem } from '@/components/Motion';
 import { Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
@@ -29,21 +30,17 @@ export default function WeeklyReview() {
   const { data: shifts } = useCareShifts();
   const { data: appointments } = useAppointments({ upcomingOnly: true });
   const shared = useSharedWithMe();
-  const { labelOf } = usePeople();
+  const { people, labelOf } = usePeople();
   const r = useMemo(() => weeklyReview({ tasks: tasksQ.data ?? [], requests: requests ?? [], shifts: shifts ?? [] }), [tasksQ.data, requests, shifts]);
   const week = (appointments ?? []).filter((a) => Date.parse(a.starts_at) < Date.now() + 7 * 86400000);
   const max = Math.max(1, ...r.byCategory.map((c) => c.count));
 
   return (
     <Screen back title={tr('u2.review.title')} subtitle={tr('u2.review.subtitle')}>
-      {/* La semaine en un regard : tâches faites en grand (rien de fait = « rien de noté », jamais 0), puis des
-          compteurs de natures différentes, chacun dans sa case (rien n'est additionné entre eux) */}
-      <HmHero testID="hm-review-hero" value={tasksQ.data && r.doneCount ? String(r.doneCount) : null} unit={tr('hm.review.unit', { count: r.doneCount })} emptyLabel={tr('hm.review.none')}
-        split={[
-          { label: tr('u2.review.requests'), value: String(r.requests.total), testID: 'hm-review-req' },
-          { label: tr('u2.review.nights'), value: String(r.nightsCount), testID: 'hm-review-nights' },
-          { label: tr('u2.review.me_time'), value: String(r.restCount), testID: 'hm-review-rest' },
-        ]} />
+      {/* La semaine choisie (gardée dans l'adresse) : tâches faites en grand, demandes / nuits / temps pour soi chacun
+          dans sa case ; liste datée des tâches faites, chacune corrigeable dans sa fiche (23/11/2026) */}
+      <ReviewWeek tasks={tasksQ.data ?? []} requests={requests ?? []} shifts={shifts ?? []} people={people} labelOf={labelOf} />
+      <SectionTitle title={tr('ff.review.last7')} />
       {tasksQ.isLoading && !tasksQ.data ? <Skeleton kind="card" rows={2} /> : null}
       <Card>
         <Text weight="bold">{r.doneCount ? tr('u2.review.done_week', { count: r.doneCount }) : tr('u2.review.done_none')}</Text>

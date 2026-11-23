@@ -204,7 +204,7 @@ export type HmDraft = Record<string, string>;
 /** Liste d'indices « 0,2,3 » ↔ ensemble. */
 export const togglesOf = (s: string) => (s ? s.split(',').map(Number).filter((n) => Number.isInteger(n)) : []);
 
-export function HmFixTray({ open, onOpenChange, testID, title, hero, heroLabel, lines, fields, initial, validate, onSave, editLabel, editTitle, onFullForm, onDelete, deleteLabel }: {
+export function HmFixTray({ open, onOpenChange, testID, title, hero, heroLabel, lines, fields, initial, validate, onSave, editLabel, editTitle, onFullForm, onDelete, deleteLabel, readOnly }: {
   open: boolean; onOpenChange: (v: boolean) => void; testID: string;
   title: string; hero: string; heroLabel?: string; lines: (string | null | undefined)[];
   fields: HmField[]; initial: HmDraft;
@@ -217,13 +217,15 @@ export function HmFixTray({ open, onOpenChange, testID, title, hero, heroLabel, 
   /** Suppression (confirmée par l'appelant) proposée sous la correction */
   onDelete?: () => void;
   deleteLabel?: string;
+  /** Lecture seule (membre sans droit d'édition) : la fiche se lit, aucun bouton de correction */
+  readOnly?: boolean;
 }) {
   // L'éditeur repart des valeurs enregistrées à chaque ouverture
   const [gen, setGen] = useState(0);
   React.useEffect(() => { if (open) setGen((g) => g + 1); }, [open]);
   return (
     <EntryTray open={open} onOpenChange={onOpenChange} testID={testID} title={title} hero={hero} heroLabel={heroLabel} lines={lines}
-      editLabel={editLabel ?? tr('hm.fix.edit')} onFullForm={onFullForm}
+      editLabel={editLabel ?? tr('hm.fix.edit')} onFullForm={onFullForm} readOnly={readOnly}
       editor={<HmEditor key={gen} testID={`${testID}-edit`} title={editTitle ?? tr('hm.fix.title', { what: title })} fields={fields} initial={initial} validate={validate}
         onSave={onSave} onDone={() => onOpenChange(false)} onDelete={onDelete ? () => { onOpenChange(false); onDelete(); } : undefined} deleteLabel={deleteLabel} />} />
   );

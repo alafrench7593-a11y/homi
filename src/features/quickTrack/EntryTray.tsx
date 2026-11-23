@@ -20,13 +20,15 @@ import { fonts, spacing } from '@/theme/tokens';
 export const TABULAR = { fontVariant: ['tabular-nums' as const] };
 export const HERO = { fontSize: 56, lineHeight: 62, letterSpacing: -1.5, fontFamily: fonts.display };
 
-export function EntryTray({ open, onOpenChange, testID, title, hero, heroLabel, lines, editor, onFullForm, editLabel }: {
+export function EntryTray({ open, onOpenChange, testID, title, hero, heroLabel, lines, editor, onFullForm, editLabel, readOnly }: {
   open: boolean; onOpenChange: (v: boolean) => void; testID: string;
   title: string; hero: string; heroLabel?: string; lines: (string | null | undefined)[];
   /** Vue de correction (montée avec une clé : elle repart des valeurs enregistrées à chaque ouverture) */
   editor: React.ReactNode;
   editLabel: string;
   onFullForm?: () => void;
+  /** Lecture seule (membre sans droit d'édition) : ni « Corriger » ni « Formulaire complet » */
+  readOnly?: boolean;
 }) {
   const t = useTheme();
   const palette = { surface: 'transparent', border: t.colors.border, handle: t.colors.textMuted, text: t.colors.text, mutedText: t.colors.textMuted, backdrop: t.colors.overlay };
@@ -44,10 +46,12 @@ export function EntryTray({ open, onOpenChange, testID, title, hero, heroLabel, 
             {lines.filter(Boolean).map((l, i) => (
               <Text key={i} weight={i === 0 ? 'bold' : undefined} variant={i === 0 ? undefined : 'small'} muted={i > 0} style={TABULAR} testID={`${testID}-line-${i}`}>{l}</Text>
             ))}
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
-              <PushView view="edit" icon="clock" label={editLabel} testID={`${testID}-fix`} />
-              {onFullForm ? <GlassButton variant="tertiary" icon="edit-2" label={tr('qt.tray.fullForm')} testID={`${testID}-form`} onPress={() => { onOpenChange(false); onFullForm(); }} /> : null}
-            </View>
+            {readOnly ? null : (
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
+                <PushView view="edit" icon="clock" label={editLabel} testID={`${testID}-fix`} />
+                {onFullForm ? <GlassButton variant="tertiary" icon="edit-2" label={tr('qt.tray.fullForm')} testID={`${testID}-form`} onPress={() => { onOpenChange(false); onFullForm(); }} /> : null}
+              </View>
+            )}
           </View>
         </Tray.View>
         <Tray.View id="edit">{editor}</Tray.View>
