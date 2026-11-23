@@ -12,6 +12,7 @@ export const firstwin: Messages<typeof fr> = {
 
   'fw.stage.aura': 'I’m Aura, your guide.',
   'fw.stage.title': 'Where is your family at?',
+  'fw.stage.multi': "You can pick several: the more you tick, the more tools HOMI sets up.",
   'fw.stage.pregnancy': 'I’m expecting a baby',
   'fw.stage.pregnancy.d': 'Pregnancy',
   'fw.stage.baby': 'I have a baby',

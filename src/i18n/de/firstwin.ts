@@ -12,6 +12,7 @@ export const firstwin: Messages<typeof fr> = {
 
   'fw.stage.aura': 'Ich bin Aura, ich begleite dich.',
   'fw.stage.title': 'Wo steht deine Familie gerade?',
+  'fw.stage.multi': "Mehrere Antworten möglich: Je mehr du ankreuzt, desto mehr Tools richtet HOMI ein.",
   'fw.stage.pregnancy': 'Ich erwarte ein Baby',
   'fw.stage.pregnancy.d': 'Schwangerschaft',
   'fw.stage.baby': 'Ich habe ein Baby',

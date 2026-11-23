@@ -9,7 +9,7 @@ import { localeTag, t as tr, tMaybe, type TKey } from '@/i18n';
 import { localized } from '@/i18n/localized';
 import { isFreeRoute } from '@/lib/premium/access';
 import {
-  canonicalCategory, canonicalToolId, FEATURED, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProfiles, toolsFor, toolSubKey,
+  canonicalCategory, canonicalToolId, FEATURED, SCOPES, TOOL_BY_ID, TOOL_CATEGORIES, toolDescKey, toolLabelKey, toolProfiles, toolsFor, toolSubKey,
   type ResolvedTool, type Scope, type ScopeCtx, type ToolCategory, type ToolProfile, type ToolShelf,
 } from '@/lib/journeys/tools';
 import { searchCatalog } from './toolSearch';
@@ -382,4 +382,21 @@ export function toolStatuses(i: StatusInput): Partial<Record<StatusKey, ToolStat
   if (i.unreadNotifications) out.notifications = { text: tr('l2.tc.unread', { count: i.unreadNotifications }), tone: 'accent' };
   if (i.activeReminders != null) out.reminders = { text: i.activeReminders ? tr('l2.tc.active', { count: i.activeReminders }) : tr('l2.tc.noReminders') };
   return out;
+}
+
+/**
+ * Outils hors du profil (23/11/2026, demande de la propriétaire) : tout le catalogue reste VISIBLE, grisé, et
+ * déblocable en ajoutant le parcours qui le porte (« Modifier mon parcours »). Rend les outils d'aucun profil du foyer,
+ * hors compte et communauté, sans doublon, dans l'ordre des catégories, avec les parcours qui les débloquent.
+ */
+export function lockedTools(reachable: ReadonlySet<string>): { tool: CatalogTool; scopes: Scope[] }[] {
+  const seen = new Map<string, { tool: CatalogTool; scopes: Scope[] }>();
+  for (const scope of SCOPES) {
+    for (const tool of toolCatalog({ scope, childId: 'x', pregnancyId: 'x', babyId: 'x', postpartum: scope === 'postpartum' })) {
+      if (reachable.has(tool.id) || tool.category === 'community' || tool.category === 'account') continue;
+      const cur = seen.get(tool.id);
+      if (cur) { if (!cur.scopes.includes(scope)) cur.scopes.push(scope); } else seen.set(tool.id, { tool, scopes: [scope] });
+    }
+  }
+  return byCategory([...seen.values()].map((x) => x.tool)).map((tool) => seen.get(tool.id)!);
 }

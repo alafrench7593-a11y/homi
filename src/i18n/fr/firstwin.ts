@@ -16,6 +16,7 @@ export const firstwin = {
   // ---------------------------------------------------------------- 1. étape de vie
   'fw.stage.aura': 'Je suis Aura, je te guide.',
   'fw.stage.title': 'Où en est ta famille ?',
+  'fw.stage.multi': "Plusieurs réponses possibles : plus tu en coches, plus HOMI prépare d’outils.",
   'fw.stage.pregnancy': 'J’attends un bébé',
   'fw.stage.pregnancy.d': 'Grossesse',
   'fw.stage.baby': 'J’ai un bébé',

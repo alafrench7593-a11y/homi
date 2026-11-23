@@ -36,6 +36,7 @@ import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
 import { FavoriteStar, ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
 import { TOOL_TILE, ToolTile } from '@/features/toolHub/ToolTile';
 import { useToolHub, type ToolEntry } from '@/features/toolHub/useToolHub';
+import { LockedTools } from '@/features/toolHub/LockedTools';
 import { useProfile } from '@/lib/data/hooks';
 import { communityEntry, featuredTools, type CatalogTool } from '@/lib/domain/toolCatalog';
 import { searchCatalog } from '@/lib/domain/toolSearch';
@@ -69,6 +70,7 @@ export default function Tools() {
   const searchable = useMemo(() => [...hub.flat.map((e) => e.tool), ...account], [hub.flat, account]);
   const entryOf = useMemo(() => new Map<string, ToolEntry>([...hub.flat.map((e) => [e.tool.id, e] as const), ...account.map((tool) => [tool.id, { tool }] as const)]), [hub.flat, account]);
   const outcome = useMemo(() => (query ? searchCatalog(searchable, query) : null), [searchable, query]);
+  const reachableIds = useMemo(() => new Set(hub.flat.map((e) => e.tool.id)), [hub.flat]);
   const featured = useMemo(() => featuredTools(catalog, scope.scope), [catalog, scope.scope]);
   const urgent = catalog.find((x) => x.urgent);
   const community = useMemo(() => { const tool = communityEntry(allTools); return tool ? entryOf.get(tool.id) ?? { tool } : null; }, [allTools, entryOf]);
@@ -173,6 +175,9 @@ export default function Tools() {
           <Section title={tr('th.ui.categories')}>
             <CategoryList tools={allTools} locked={locked} />
           </Section>
+
+          {/* 4 bis. Outils des autres parcours : grisés, déblocables en ajoutant le parcours */}
+          <LockedTools reachable={reachableIds} />
 
           {/* 5. La communauté : un espace à part, hors des 9 catégories (son accès principal est en haut à droite) */}
           {community ? (

@@ -48,4 +48,13 @@ export const neuroKit = {
   'fcs.rest': "The rest ({count})",
   'fcs.hideRest': "Hide the rest",
   "fcs.markDone": "Done",
+  "lk.title": "Other tools",
+  "lk.sub": "They belong to other journeys. Tap one to unlock it.",
+  "lk.show": "Show ({count})",
+  "lk.hide": "Hide",
+  "lk.for": "Unlocked with: {list}",
+  "lk.a11y": "{tool}, locked. Tap to unlock",
+  "lk.sheet.title": "Unlock {tool}",
+  "lk.sheet.body": "This tool is for: {list}. Add this journey to your household to use it; your current data won't change.",
+  "lk.sheet.cta": "Add a journey",
 } as const;

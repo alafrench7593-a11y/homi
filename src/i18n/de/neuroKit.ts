@@ -48,4 +48,13 @@ export const neuroKit = {
   'fcs.rest': "Der Rest ({count})",
   'fcs.hideRest': "Rest ausblenden",
   "fcs.markDone": "Erledigt",
+  "lk.title": "Weitere Tools",
+  "lk.sub": "Sie gehören zu anderen Lebensphasen. Tippe auf eines, um es freizuschalten.",
+  "lk.show": "Anzeigen ({count})",
+  "lk.hide": "Ausblenden",
+  "lk.for": "Freigeschaltet mit: {list}",
+  "lk.a11y": "{tool}, gesperrt. Tippen zum Freischalten",
+  "lk.sheet.title": "{tool} freischalten",
+  "lk.sheet.body": "Dieses Tool ist für: {list}. Füge diese Lebensphase deinem Haushalt hinzu; deine aktuellen Daten bleiben unverändert.",
+  "lk.sheet.cta": "Lebensphase hinzufügen",
 } as const;

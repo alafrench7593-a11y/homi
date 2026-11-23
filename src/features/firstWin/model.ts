@@ -43,6 +43,10 @@ export const TOOL_ROUTE: Record<DemoKind, string> = {
 export const STAGE_PROFILE: Record<LifeStage, IntroProfile> = { pregnancy: 'pregnant', baby: 'newborn', child: 'child' };
 
 export const needsFor = (stage: LifeStage | null): NeedId[] => (stage ? NEEDS[stage].slice(0, MAX_NEEDS_PER_STAGE) : []);
+/** Plusieurs étapes de vie (23/11/2026) : besoins de chacune, dans l'ordre des choix, sans doublon (au plus 6). */
+export const needsForMany = (stages: LifeStage[]): NeedId[] => [...new Set(stages.flatMap((s) => needsFor(s)))].slice(0, 6);
+/** Coche / décoche une étape de vie ; l'étape principale (démo, mesure) est la première cochée. */
+export const toggleStage = (stages: LifeStage[], s: LifeStage): LifeStage[] => (stages.includes(s) ? stages.filter((x) => x !== s) : [...stages, s]);
 export const isStage = (v: unknown): v is LifeStage => typeof v === 'string' && (STAGES as string[]).includes(v);
 export const isNeed = (v: unknown): v is NeedId => typeof v === 'string' && v in DEMO_OF;
 
@@ -90,6 +94,8 @@ export interface DemoResult {
 export interface FirstWinProgress {
   v: 1;
   stage: LifeStage | null;
+  /** Toutes les étapes de vie cochées (plusieurs réponses) ; `stage` = la première */
+  stages: LifeStage[];
   need: NeedId | null;
   demoDone: boolean;
   result: DemoResult | null;
@@ -107,7 +113,7 @@ export const PROGRESS_KEY = 'homi.pending-firstwin.v1';
 export const PROGRESS_TTL_MS = 7 * 86_400_000;
 
 export const emptyProgress = (now = Date.now()): FirstWinProgress => ({
-  v: 1, stage: null, need: null, demoDone: false, result: null, plan: null, awaitingAccount: false, openAfter: null, savedAt: now,
+  v: 1, stage: null, stages: [], need: null, demoDone: false, result: null, plan: null, awaitingAccount: false, openAfter: null, savedAt: now,
 });
 
 /** Relecture tolérante : toute donnée illisible, d'une autre version ou expirée est ignorée. */
@@ -119,6 +125,7 @@ export function parseProgress(raw: string | null, now = Date.now()): FirstWinPro
     return {
       ...emptyProgress(v.savedAt),
       stage: isStage(v.stage) ? v.stage : null,
+      stages: Array.isArray(v.stages) ? [...new Set(v.stages.filter(isStage))] : isStage(v.stage) ? [v.stage] : [],
       need: isNeed(v.need) ? v.need : null,
       demoDone: v.demoDone === true,
       result: v.result && typeof v.result.itemKey === 'string' && typeof v.result.at === 'string' && (Object.values(DEMO_OF) as string[]).includes(v.result.kind) ? v.result : null,

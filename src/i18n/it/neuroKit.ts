@@ -48,4 +48,13 @@ export const neuroKit = {
   'fcs.rest': "Il resto ({count})",
   'fcs.hideRest': "Nascondi il resto",
   "fcs.markDone": "Fatto",
+  "lk.title": "Altri strumenti",
+  "lk.sub": "Servono ad altri percorsi. Toccane uno per sbloccarlo.",
+  "lk.show": "Mostra ({count})",
+  "lk.hide": "Nascondi",
+  "lk.for": "Si sblocca con: {list}",
+  "lk.a11y": "{tool}, bloccato. Tocca per sbloccare",
+  "lk.sheet.title": "Sblocca {tool}",
+  "lk.sheet.body": "Questo strumento serve per: {list}. Aggiungi questo percorso alla tua famiglia per usarlo; i tuoi dati attuali non cambiano.",
+  "lk.sheet.cta": "Aggiungi un percorso",
 } as const;

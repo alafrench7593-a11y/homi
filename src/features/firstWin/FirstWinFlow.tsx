@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTopInset } from '@/components/demoInset';
 import { Button, IconButton, Text, type IconName } from '@/components/ui';
 import { HeroArt } from '@/features/entry/HeroArt';
-import { saveIntroProfile } from '@/features/intro/model';
+import { saveIntroProfiles } from '@/features/intro/model';
 import { ChoiceList, ChoiceRow, OnbProgress, StepTitle } from '@/features/onboarding/kit';
 import { track } from '@/lib/analytics/events';
 import { useAuth } from '@/lib/auth';
@@ -29,7 +29,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { DEMOS } from './demos';
 import { AuraBubble } from './kit';
 import {
-  DEMO_OF, FLOW_STEPS, loadProgress, needsFor, saveProgress, STAGE_PROFILE, STAGES, stepFor, USE_CTA,
+  DEMO_OF, FLOW_STEPS, loadProgress, needsForMany, saveProgress, STAGE_PROFILE, STAGES, stepFor, toggleStage, USE_CTA,
   type DemoResult, type FirstWinProgress, type FlowStep, type LifeStage, type NeedId,
 } from './model';
 
@@ -77,6 +77,7 @@ export function FirstWinFlow({ initialStep, source = 'first_open' }: { initialSt
   };
 
   const stage = p?.stage ?? null;
+  const stages = p?.stages ?? (stage ? [stage] : []);
   const need = p?.need ?? null;
   const demo = need ? DEMO_OF[need] : null;
   const result = p?.result ?? null;
@@ -90,14 +91,16 @@ export function FirstWinFlow({ initialStep, source = 'first_open' }: { initialSt
   if (p === undefined) return <View style={{ flex: 1, backgroundColor: th.colors.background }} />;
   const Demo = demo ? DEMOS[demo] : null;
 
+  // Plusieurs réponses possibles (23/11/2026) : plus d'étapes cochées = plus d'outils préparés après l'inscription
   function chooseStage(s: LifeStage) {
-    if (s === stage) return;
-    void saveIntroProfile(STAGE_PROFILE[s]); // préremplit l'onboarding du foyer après l'inscription
+    const next = toggleStage(stages, s);
+    void saveIntroProfiles(next.map((x) => STAGE_PROFILE[x])); // préremplit l'onboarding du foyer après l'inscription
     void track('onboarding_answer', { step: 'stage', stage: s });
-    // Une autre étape de vie : le besoin et la démo repartent de zéro (les besoins proposés changent)
-    void update({ stage: s, need: null, demoDone: false, result: null });
+    // Le besoin choisi reste s'il est encore proposé ; sinon le besoin et la démo repartent de zéro
+    const keep = need && needsForMany(next).includes(need);
+    void update({ stages: next, stage: next[0] ?? null, ...(keep ? {} : { need: null, demoDone: false, result: null }) });
     // Les besoins viennent juste dessous : la page glisse pour les montrer (petit iPhone, texte agrandi)
-    setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 260);
+    if (next.length) setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 260);
   }
   function chooseNeed(n: NeedId) {
     if (n === need) return;
@@ -121,9 +124,10 @@ export function FirstWinFlow({ initialStep, source = 'first_open' }: { initialSt
         </View>
       </Cascade>
       <Cascade index={2}>
-        <ChoiceList label={tr('fw.stage.title')} radio testID="fw-stages">
+        <Text variant="small" muted center testID="fw-stage-multi">{tr('fw.stage.multi')}</Text>
+        <ChoiceList label={tr('fw.stage.title')} testID="fw-stages">
           {STAGES.map((s) => (
-            <ChoiceRow key={s} radio icon={STAGE_ICON[s]} label={tr(`fw.stage.${s}` as TKey)} hint={s === 'pregnancy' ? undefined : tr(`fw.stage.${s}.d` as TKey)} selected={stage === s}
+            <ChoiceRow key={s} icon={STAGE_ICON[s]} label={tr(`fw.stage.${s}` as TKey)} hint={s === 'pregnancy' ? undefined : tr(`fw.stage.${s}.d` as TKey)} selected={stages.includes(s)}
               onPress={() => chooseStage(s)} testID={`fw-stage-${s}`} />
           ))}
         </ChoiceList>
@@ -133,7 +137,7 @@ export function FirstWinFlow({ initialStep, source = 'first_open' }: { initialSt
         <View style={{ gap: spacing.sm }}>
           <Text variant="heading" accessibilityRole="header" testID="fw-need-title">{tr('fw.need.title')}</Text>
           <ChoiceList label={tr('fw.need.title')} radio>
-            {needsFor(stage).map((n) => (
+            {needsForMany(stages).map((n) => (
               <ChoiceRow key={n} radio icon={NEED_ICON[n]} label={tr(`fw.need.${n}` as TKey)} hint={tr(`fw.need.${n}.d` as TKey)} selected={need === n}
                 onPress={() => chooseNeed(n)} testID={`fw-need-${n}`} />
             ))}

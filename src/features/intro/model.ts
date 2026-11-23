@@ -83,6 +83,24 @@ export const isIntroProfile = (v: unknown): v is IntroProfile => typeof v === 's
 export async function saveIntroProfile(p: IntroProfile): Promise<void> {
   try { await AsyncStorage.setItem(INTRO_PROFILE_KEY, JSON.stringify({ profile: p, savedAt: new Date().toISOString() })); } catch { /* meilleur effort */ }
 }
+/** Plusieurs profils (inscription à choix multiples, 23/11/2026) : le premier reste le profil principal. */
+export async function saveIntroProfiles(ps: IntroProfile[]): Promise<void> {
+  if (!ps.length) return;
+  try { await AsyncStorage.setItem(INTRO_PROFILE_KEY, JSON.stringify({ profile: ps[0], profiles: ps, savedAt: new Date().toISOString() })); } catch { /* meilleur effort */ }
+}
+export async function loadIntroProfiles(): Promise<IntroProfile[]> {
+  try {
+    const raw = await AsyncStorage.getItem(INTRO_PROFILE_KEY);
+    const v = raw ? (JSON.parse(raw) as { profile?: unknown; profiles?: unknown }) : null;
+    if (v && Array.isArray(v.profiles)) return v.profiles.filter(isIntroProfile);
+    return v && isIntroProfile(v.profile) ? [v.profile] : [];
+  } catch { return []; }
+}
+/** Réponses de l'étape 1 préremplies pour plusieurs profils (étiquettes réunies, sans doublon). */
+export function introJourneyAnswersMany(ps: IntroProfile[]): Pick<JourneyAnswers, 'profile' | 'household'> {
+  const all = ps.map((p) => introJourneyAnswers(p));
+  return { profile: [...new Set(all.flatMap((a) => a.profile))], household: all.find((a) => a.household)?.household ?? null };
+}
 export async function loadIntroProfile(): Promise<IntroProfile | null> {
   try {
     const raw = await AsyncStorage.getItem(INTRO_PROFILE_KEY);
