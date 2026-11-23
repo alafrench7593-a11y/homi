@@ -2,6 +2,8 @@
  * Agenda familial : événements du foyer, rendez-vous, tâches datées, relais de nuit et temps pour soi.
  * Vues jour, semaine, mois et agenda. Créer, modifier, déplacer, supprimer. Export iCalendar (.ics)
  * importable dans Google Agenda, Apple Calendrier ou Outlook — sans données de santé par défaut.
+ * 23/11/2026 : période affichée en grand (CalendarHero) ; un événement s'ouvre dans sa fiche (« ?event= », EventTray) :
+ * titre, heures et lieu corrigés en valeurs provisoires, lecture seule sans droit d'édition.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Linking, Share, View } from 'react-native';
@@ -46,6 +48,8 @@ import { useDeviceAgenda } from '@/lib/deviceCalendar/hooks';
 import { AddToDeviceCalendar, DeviceCalendarEntry, DeviceEventSheet } from '@/features/deviceCalendar/DeviceCalendarParts';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { parseIsoDay } from '@/lib/domain/journalTrack';
+import { CalendarHero, EventTray } from '@/features/finishFamily/CalendarTrack';
+import { useOpenParam } from '@/features/finishFamily/shared';
 
 type View_ = 'day' | 'week' | 'month' | 'agenda';
 const hm = (iso: string) => formatTime(iso);
@@ -110,6 +114,8 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
    */
   const taskOf = (id: string) => (tasks ?? []).find((x) => x.id === id) as TaskLike | undefined;
   const canFinish = (id: string) => { const x = taskOf(id); return !!x && canCompleteTask(x, me, canEdit); };
+  const [eventParam, setEventParam] = useOpenParam('event');
+  const openedEvent = eventParam ? eventsQ.data?.find((x) => x.id === eventParam) ?? null : null;
   async function finish(id: string) {
     const x = taskOf(id);
     if (!x) return;
@@ -179,8 +185,10 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
     if (i.source === 'me_time') return router.push('/family/me-time');
     if (i.source === 'moment') return router.push('/family/moments');
     if (i.source === 'activity') return router.push(`/child/${i.childId}/activities?a=${i.refId}` as never);
-    const e = eventsQ.data?.find((x) => x.id === i.refId);
-    if (!e) return;
+    // Événement du foyer : sa fiche (Tray), gardée dans l'adresse (« ?event= ») ; le formulaire complet en part
+    setEventParam(i.refId);
+  }
+  function editEvent(e: FamilyEvent) {
     const a = splitLocal(e.starts_at);
     const b = splitLocal(e.ends_at);
     setDraft({ id: e.id, title: e.title, kind: e.kind, date: a.date, from: a.time, to: b.time, allDay: e.all_day, location: e.location_label ?? '', notes: e.notes ?? '', recurrence: e.recurrence?.type ?? 'none', until: e.recurrence?.until ? toFrDate(e.recurrence.until) : '', childId: e.child_id });
@@ -303,6 +311,8 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
         {view !== 'agenda' ? <IconButton icon="chevron-right" label={tr('u3.cal.nextP')} onPress={() => move(1)} /> : <View />}
       </Row>
 
+      {/* La période affichée en un regard : moments prévus en grand, rendez-vous / tâches / événements (23/11/2026) */}
+      <CalendarHero items={items} period={title} />
       {eventsQ.isLoading && !eventsQ.data ? <Skeleton rows={3} /> : null}
       {failedQs.length ? <ErrorView error={failedQs[0].error} onRetry={() => failedQs.forEach((q) => void q.refetch())} title={tr('u3.cal.errAll')} /> : null}
 
@@ -341,6 +351,8 @@ export function FamilyCalendarScreen({ inTab = false }: { inTab?: boolean }) {
 
       <DeviceCalendarEntry />
       <DeviceEventSheet item={deviceItem} onClose={() => setDeviceItem(null)} />
+      <EventTray event={openedEvent} onClose={() => setEventParam(null)} canEdit={canEdit} onFullForm={(e) => { setEventParam(null); editEvent(e); }}
+        childName={openedEvent?.child_id ? children?.find((c) => c.id === openedEvent.child_id)?.first_name : null} />
 
       <Sheet visible={exportOpen} onClose={() => setExportOpen(false)} title={tr('u3.cal.exportTitle')}>
         <View style={{ gap: spacing.sm }}>

@@ -4,6 +4,7 @@
  * partagées, calendrier familial, relais parentaux, rendez-vous partagés, rappels concernant les enfants, moments en famille, espace
  * Couple, mes informations. Construit avec l'existant (mêmes requêtes et écrans) ; aucune carte n'ouvre sur les
  * données personnelles de l'autre adulte (cycle, grossesse non partagée, santé, journal, ressentis).
+ * 23/11/2026 : « ce qui m'attend » en grand et en liste datée, tâche ouverte dans l'adresse, fiche de correction.
  */
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import React from 'react';
@@ -16,18 +17,20 @@ import { UserAvatar } from '@/components/UserAvatar';
 import { StaggerList } from '@/motion';
 import { InviteOtherParent } from '@/features/couple/CoupleKit';
 import { useChildren } from '@/lib/data/hooks';
-import { usePeople } from '@/lib/data/hooks-family-load';
+import { useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
 import { useMissions } from '@/lib/data/hooks-missions';
 import { useFamilyProfiles } from '@/lib/data/hooks-couple';
 import { childAge } from '@/lib/domain/child';
 import { isTerminal } from '@/lib/domain/missions';
 import { spacing } from '@/theme/tokens';
 import { HouseholdHomeCard } from '@/features/homeTrack/HouseholdHomeCard';
+import { PlaceTrack } from '@/features/finishFamily/PlaceTrack';
 import { t as tr, type TKey } from '@/i18n';
 
 export default function MyPlace() {
   const { data: children } = useChildren();
-  const { people, me } = usePeople();
+  const { people, me, labelOf: personLabel } = usePeople();
+  const tasks = useFamilyTasks().data ?? [];
   const missions = useMissions();
   const profiles = useFamilyProfiles().data ?? [];
   const active = missions.received.filter((m) => !isTerminal(m.mission_state) && m.mission_state !== 'declined').length;
@@ -50,7 +53,9 @@ export default function MyPlace() {
 
   return (
     <Screen back title={tr('cp2.place.title')} subtitle={tr('cp2.place.sub')}>
-      {/* Le foyer en un regard (relais à consulter, tâches ouvertes, prochain événement selon les droits) */}
+      {/* Ce qui m'attend (23/11/2026) : mes tâches en grand, liste datée, tâche ouverte dans l'adresse et corrigée dans
+          une fiche ; puis le foyer en un regard (relais à consulter, tâches ouvertes, prochain événement selon les droits) */}
+      <PlaceTrack tasks={tasks} me={me} people={people} labelOf={personLabel} missions={active} />
       <HouseholdHomeCard />
       <InviteOtherParent testID="place-invite" />
       <SectionTitle title={tr('cp2.place.children')} />

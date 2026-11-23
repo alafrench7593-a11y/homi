@@ -2,7 +2,7 @@
 
 Légende statut : FAIT = observé dans l’aperçu web Chromium (vraie app, démo locale) ; Deno = fonction `assistant` avec modèle simulé. « FAIT · Jest » = livré et couvert par les tests Jest (backend de démonstration), pas encore ouvert dans Chromium. Rien n’est encore vérifié sur simulateur iOS ni sur iPhone.
 
-Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 88, PARTIEL 10, SANS SUIVI 38, À FAIRE 0 — total 136. « FAIT (vague 3) » = livré et ouvert sans erreur dans Chromium, pas encore rejoué de bout en bout.
+Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 94, PARTIEL 4, SANS SUIVI 38, À FAIRE 0 — total 136. « FAIT (vague 3) » = livré et ouvert sans erreur dans Chromium, pas encore rejoué de bout en bout. Famille / couple (23/11) : mental_load, family_review, offduty, family_calendar, family_my_place, brain_dump passés en « FAIT · Jest » (pas encore ouverts dans Chromium).
 
 | Mini-app (id) | Profils | Catégorie | Famille de geste | Donnée suivie | Remontée accueil / catégorie | Aura · prix | Test / statut |
 |---|---|---|---|---|---|---|---|
@@ -107,24 +107,24 @@ Synthèse (mise à jour le 23/11/2026, après la vague 3 et l’audit) : FAIT 88
 | kid_routines | child, family | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
 | custody | ...KID, family | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
 | childcare | ...KID, family | school | Foyer et relais | données du foyer | accueil foyer | — | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
-| mental_load | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : lecture seule, correction dans Tâches |
+| mental_load | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest : « Qui porte quoi » — domaine ou tâche ouvert dans l’adresse (?domain=, ?task=), porteur changé dans une fiche Tray (useSetDomain / useSaveTask réutilisés, fiche partagée avec Domaines) ; lecture seule sans droit d’édition ; non rejoué dans Chromium |
 | family_domains | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
 | couple_week | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
 | couple_understand | foyer, couple | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
-| family_review | family | couple | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : donnée principale seulement |
+| family_review | family | couple | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest (fonctions pures) : semaine dans l’adresse (?week=), tâches faites en grand + demandes / nuits / temps pour soi chacun dans sa case, liste datée (jour en colonne), fiche Tray d’une tâche (?task=), lecture seule sans droit ; non rejoué dans Chromium |
 | family_metime | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
-| offduty | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : donnée principale seulement |
+| offduty | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest : semaine dans l’adresse, mes heures de pause en grand, pauses datées (5 semaines), fiche d’une pause (?pause=) ; fin de MA pause en cours corrigée (≤ début + 24 h), rappels en pause recalés ; non rejoué dans Chromium |
 | family_difficult | foyer, couple | couple | Foyer et relais | données du foyer | accueil foyer | — | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
 | family_urgent | baby, child, family, postpartum | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | SANS SUIVI (urgence, écran volontairement inchangé) |
 | family_sos | baby, child, family, postpartum | couple | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | SANS SUIVI (urgence, écran volontairement inchangé) |
 | solo_parent | tous | couple | Foyer et relais | données du foyer | accueil foyer | — | SANS SUIVI (lecture courte : ni favoris ni reprise, brief) |
-| family_calendar | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : vue et jour gardés dans l’adresse |
+| family_calendar | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest (fonctions pures) : vue et jour dans l’adresse, moments de la période en grand (rdv / tâches / événements), événement ouvert dans l’adresse (?event=) et fiche Tray (titre, heures, lieu ; formulaire complet), lecture seule sans droit ; non rejoué dans Chromium |
 | family_tasks | foyer, couple | family | Foyer et relais | tâches | accueil foyer : tâches ouvertes | — | FAIT · Chromium |
 | family_missions | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT (vague 3) · ouvert sans erreur dans Chromium le 23/11 ; créer → corriger → persister non rejoué |
-| family_my_place | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : carte Foyer posée |
+| family_my_place | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest (fonctions pures) : mes tâches à faire en grand (en retard / semaine / missions), liste datée (échéance en colonne), tâche ouverte dans l’adresse et fiche Tray (porteur, intitulé, échéance), carte Foyer conservée ; non rejoué dans Chromium |
 | family_routines | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |
 | family_history | family | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) · lecture seule |
-| brain_dump | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | PARTIEL : donnée principale seulement |
+| brain_dump | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Jest (fonctions pures) : « Noté par toi » — jour dans l’adresse, semaine touchable, tâches notées du jour en grand, heure en colonne, fiche Tray (?task=) ; tri provisoire animé ; non rejoué dans Chromium |
 | family_prep | foyer, couple | family | Lecture et conseils | favoris / reprise de lecture | — | Aura : explication à la demande · 1 crédit (question) | FAIT · Chromium (vague 2) |
 | family_shopping | foyer, couple | family | Foyer et relais | courses | — | — | FAIT · Chromium |
 | family_stocks | foyer, couple | family | Foyer et relais | données du foyer | accueil foyer | — | FAIT · Chromium (vague 2) |

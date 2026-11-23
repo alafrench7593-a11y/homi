@@ -2,6 +2,7 @@
  * « Je décroche » : pendant quelques heures (24 h au plus), l'autre parent prend le relais. Il est prévenu (demande
  * « besoin de repos »), et mes rappels personnels non médicaux sont mis en pause jusqu'à la fin, puis reprennent seuls.
  * Les rappels de médicament et les rappels partagés ne sont jamais coupés.
+ * 23/11/2026 : semaine dans l'adresse, pauses datées, fiche d'une pause ; la fin de MA pause en cours se corrige.
  */
 import React, { useState } from 'react';
 import { Platform, View } from 'react-native';
@@ -23,6 +24,7 @@ import { HmHero } from '@/features/homeTrack/kit';
 import { useNow } from '@/lib/data/hooks-bottle';
 import { minutesLeft } from '@/lib/domain/homeTrack';
 import { span } from '@/lib/domain/sleepPlanner';
+import { OffDutyWeek } from '@/features/finishFamily/OffDutyWeek';
 
 const HOURS = [1, 2, 3, 4, 8, 12];
 
@@ -97,6 +99,8 @@ export default function OffDuty() {
           <Text variant="small" muted>{tr('cm.off.what')}</Text>
         </>
       )}
+      {/* Les pauses de la semaine (gardée dans l'adresse), datées ; ma pause en cours se corrige dans sa fiche (23/11/2026) */}
+      <OffDutyWeek me={me} labelOf={labelOf} now={now} relayName={(p) => (p.relay_contact_id ? (circleName(circle, p.relay_contact_id) ?? '') : labelOf(p.relay_to))} />
     </Screen>
   );
 }

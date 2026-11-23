@@ -120,3 +120,4 @@ export { restTrack } from './restTrack';
 export { readTrack } from './readTrack';
 export { careTrack } from './careTrack';
 export { finishTrack } from './finishTrack';
+export { finishFamily } from './finishFamily';
