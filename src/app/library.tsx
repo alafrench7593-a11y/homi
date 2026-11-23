@@ -9,7 +9,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
-import { Card, Chip, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
+import { Card, Chip, Field, Icon, ListGroup, ListRow, SectionTitle, Text } from '@/components/ui';
 import { VideoCard } from '@/components/video/VideoCard';
 import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
 import { EmptyStateCard } from '@/components/ui-extra';
@@ -34,6 +34,7 @@ import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { ResumeCard } from '@/features/readTrack/ReadingMemory';
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
@@ -65,6 +66,11 @@ export default function Library() {
   const me = useUserId();
   const { data: saved } = useRows<{ item_id: string }>(['favorites', 'articles', me ?? ''], me ? { table: 'favorites', filters: [{ col: 'user_id', op: 'eq', value: me }, { col: 'item_type', op: 'eq', value: 'article' }] } : null);
   const [moreForYou, setMoreForYou] = useState(false);
+  const [moreSaved, setMoreSaved] = useState(false);
+  const savedArticles = useMemo(() => {
+    const ids = new Set((saved ?? []).map((f) => f.item_id));
+    return (articles ?? []).filter((a) => ids.has(a.id));
+  }, [saved, articles]);
   const forYou = useMemo(() => {
     const ctx: ContentContext = {
       journeys: profile?.journeys ?? [],
@@ -124,6 +130,18 @@ export default function Library() {
         ]} />
       ) : null}
       <Field label={tr('u1.lib.search')} placeholder={tr('u1.lib.searchPh')} value={q} onChangeText={setQ} returnKeyType="search" />
+
+      {/* Lecture : reprendre le dernier contenu long ouvert dans ce profil (position gardée), puis les articles
+          enregistrés (même donnée que le marque-page de l'article : table `favorites`, aucune copie) */}
+      {!q && !activeCat ? <ResumeCard testID="library-resume" /> : null}
+      {!q && !activeCat && savedArticles.length ? (
+        <ListGroup title={tr('rt.lib.saved', { count: savedArticles.length })} testID="library-saved">
+          {savedArticles.slice(0, moreSaved ? undefined : 3).map((a) => (
+            <ListRow key={a.id} icon="bookmark" title={a.title} subtitle={a.summary} onPress={() => router.push(`/article/${a.slug}`)} testID={`library-saved-${a.slug}`} />
+          ))}
+          {savedArticles.length > 3 ? <ListRow icon={moreSaved ? 'chevron-up' : 'chevron-down'} title={moreSaved ? tr('u1.appt.reduce') : tr('u1.appt.showAll')} onPress={() => setMoreSaved((v) => !v)} testID="library-saved-more" /> : null}
+        </ListGroup>
+      ) : null}
 
       {!q && !activeCat && !journey && forYou.length > 0 && (
         <View style={{ gap: spacing.sm }} testID="library-for-you">

@@ -13,7 +13,8 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { useToast } from '@/components/Overlays';
-import { Banner, ListRow, SectionTitle, Text, Toggle } from '@/components/ui';
+import { Banner, ListGroup, SectionTitle, Text, Toggle } from '@/components/ui';
+import { HmRow } from '@/features/homeTrack/kit';
 import { ErrorView, Skeleton } from '@/components/States';
 import { PrimaryButton, SecondaryButton } from '@/components/controls';
 import { MatteSurface } from '@/components/surfaces';
@@ -27,7 +28,6 @@ import type { AppNotification } from '@/lib/types';
 import { formatDate, t as tr } from '@/i18n';
 import { toolBlurb, toolName } from '@/lib/domain/toolCatalog';
 import { radius, spacing } from '@/theme/tokens';
-import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 export default function RecallAlerts() {
   const toast = useToast();
@@ -79,12 +79,16 @@ export default function RecallAlerts() {
       {alerts.isLoading && !alerts.data ? <Skeleton kind="list" rows={2} /> : alerts.isError && !alerts.data ? (
         <ErrorView error={alerts.error} onRetry={() => void alerts.refetch()} />
       ) : !list.length ? <MatteSurface radius={radius.lg} padded={spacing.md} testID="rc-none"><Text muted>{tr('rc.none')}</Text></MatteSurface> : (
-        <MatteSurface radius={radius.lg} testID="rc-list">
-          <MotionList>{list.map((n) => (
-            <MotionItem key={n.id}><ListRow key={n.id} icon="alert-triangle" title={n.title} subtitle={`${formatDate(n.created_at, { day: 'numeric', month: 'short', year: 'numeric' })}${n.body ? ` · ${n.body}` : ''}`}
-              onPress={n.deep_link && n.deep_link !== '/scanner/recalls' ? () => router.push(n.deep_link as never) : undefined} /></MotionItem>
-          ))}</MotionList>
-        </MatteSurface>
+        // Journal des alertes : date en colonne fixe, pictogramme, texte tel que reçu, chevron vers le produit
+        <ListGroup testID="rc-list">
+          {list.map((n) => (
+            <View key={n.id} style={{ paddingHorizontal: spacing.md }}>
+              <HmRow time={formatDate(n.created_at, { day: 'numeric', month: 'short' })} icon="alert-triangle" title={n.title}
+                detail={[formatDate(n.created_at, { year: 'numeric' }), n.body].filter(Boolean).join(' · ')} testID={`rc-row-${n.id}`}
+                onPress={n.deep_link && n.deep_link !== '/scanner/recalls' ? () => router.push(n.deep_link as never) : undefined} />
+            </View>
+          ))}
+        </ListGroup>
       )}
       <Banner tone="info" icon="info">{tr('rc.whatToDo')}</Banner>
       <SecondaryButton label={tr('rc.official')} icon="external-link" onPress={() => openLink('https://rappel.conso.gouv.fr', toast)} />

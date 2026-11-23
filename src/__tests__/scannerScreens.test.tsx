@@ -125,7 +125,9 @@ describe('écrans du scanner (mode démonstration)', () => {
   it('historique, favoris et comparaison', async () => {
     routerState.params = {};
     const h = await render(<ScanHistoryScreen />);
-    expect(allText(h)).toContain('Lingettes parfumées démo ★');
+    // 22/11/2026 : journal horodaté — le favori est une étoile à part (pastille pleine, libellé explicite)
+    expect(allText(h)).toContain('Lingettes parfumées démo');
+    expect(h.root.findAll((n) => n.props.accessibilityLabel === 'Retirer « Lingettes parfumées démo » des favoris' && n.props.accessibilityState?.selected === true).length).toBeGreaterThan(0);
     expect(allText(h)).toContain('Brie au lait cru démo');
     h.unmount();
     const c = await render(<CompareScreen />);
