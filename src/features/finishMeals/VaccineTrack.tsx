@@ -35,7 +35,9 @@ export function VaccineHero({ vaccinations, schedule, next }: { vaccinations: re
       split={schedule ? [
         { label: tr('fm.vx.done'), value: String(f.done), testID: 'fm-vx-done' },
         { label: tr('fm.vx.planned'), value: String(f.planned), testID: 'fm-vx-planned' },
-        { label: tr('fm.vx.postponed'), value: String(f.postponed), testID: 'fm-vx-postponed' },
+        // Doses passées non notées : à vérifier dans le carnet (plus utile qu'un « 0 reportée » quand rien n'est noté)
+        f.check && !f.postponed ? { label: tr('fm.vx.check'), value: String(f.check), testID: 'fm-vx-check' }
+          : { label: tr('fm.vx.postponed'), value: String(f.postponed), testID: 'fm-vx-postponed' },
       ] : undefined}
       caption={[f.last ? tr('fm.vx.lastOn', { date: longDate(f.last) }) : null, next ? tr('fm.vx.next', { when: next }) : null].filter(Boolean).join(' · ') || null} />
   );

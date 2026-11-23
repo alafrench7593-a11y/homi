@@ -109,9 +109,9 @@ describe('vaccins (logique)', () => {
   const v: VaccinationLike = { id: 'v', vaccine: 'Hexavalent', given_on: '2026-06-10', dose_label: '1re dose', lot: null, given_by: null, source: 'carnet', note: null };
   it('registre du plus récent ; faits notés, doses faites / prévues / reportées', () => {
     expect(vaccinationsByDate([v, { ...v, id: 'w', given_on: '2026-08-10' }]).map((x) => x.id)).toEqual(['w', 'v']);
-    expect(vaccineFacts([v, { ...v, given_on: '2026-08-10' }], [{ state: 'done' }, { state: 'planned' }, { state: 'postponed' }, { state: 'later' }]))
-      .toEqual({ count: 2, last: '2026-08-10', done: 1, planned: 1, postponed: 1 });
-    expect(vaccineFacts([], null)).toEqual({ count: 0, last: null, done: 0, planned: 0, postponed: 0 });
+    expect(vaccineFacts([v, { ...v, given_on: '2026-08-10' }], [{ state: 'done' }, { state: 'planned' }, { state: 'due' }, { state: 'upcoming' }, { state: 'postponed' }, { state: 'later' }]))
+      .toEqual({ count: 2, last: '2026-08-10', done: 1, planned: 3, postponed: 1, check: 0 }); // « à venir » = rendez-vous posé + dose due + dose proche
+    expect(vaccineFacts([], null)).toEqual({ count: 0, last: null, done: 0, planned: 0, postponed: 0, check: 0 });
   });
   it('correction : date obligatoire, jamais future ni avant la naissance ; seules les colonnes changées', () => {
     const d = { date: '12/06/2026', dose: '1re dose', lot: ' A12 ', by: '', source: '1', note: '' };

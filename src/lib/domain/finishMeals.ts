@@ -107,10 +107,10 @@ export interface VaccinationLike { id: string; vaccine: string; given_on: string
 export const vaccinationsByDate = <T extends VaccinationLike>(list: readonly T[]): T[] => list.slice().sort((a, b) => b.given_on.localeCompare(a.given_on) || a.vaccine.localeCompare(b.vaccine));
 
 /** Donnée principale : vaccins notés, dernier noté, doses du calendrier faites / prévues / reportées. */
-export function vaccineFacts(list: readonly Pick<VaccinationLike, 'given_on'>[], schedule: readonly { state: string }[] | null): { count: number; last: string | null; done: number; planned: number; postponed: number } {
+export function vaccineFacts(list: readonly Pick<VaccinationLike, 'given_on'>[], schedule: readonly { state: string }[] | null): { count: number; last: string | null; done: number; planned: number; postponed: number; check: number } {
   const dates = list.map((v) => v.given_on).sort();
   const s = schedule ?? [];
-  return { count: list.length, last: dates[dates.length - 1] ?? null, done: s.filter((x) => x.state === 'done').length, planned: s.filter((x) => x.state === 'planned').length, postponed: s.filter((x) => x.state === 'postponed').length };
+  return { count: list.length, last: dates[dates.length - 1] ?? null, done: s.filter((x) => x.state === 'done').length, planned: s.filter((x) => x.state === 'planned' || x.state === 'due' || x.state === 'upcoming').length, postponed: s.filter((x) => x.state === 'postponed').length, check: s.filter((x) => x.state === 'check').length };
 }
 
 export type VaccineDraft = { date: string; dose: string; lot: string; by: string; source: string; note: string };
