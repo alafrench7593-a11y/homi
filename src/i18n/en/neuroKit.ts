@@ -64,4 +64,6 @@ export const neuroKit = {
   "cal.pickYear": "{title} — choose the year",
   "cal.open": "Open calendar: {label}",
   "cal.close": "Close calendar: {label}",
+  "acct.deleteRow": "Delete my account",
+  "acct.deleteUnderstood": "I understand my account and data will be permanently deleted",
 } as const;

@@ -6,8 +6,8 @@ import React, { useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { confirm, Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Field, Icon, ListRow, SectionTitle, Text } from '@/components/ui';
+import { Sheet, useToast } from '@/components/Overlays';
+import { Banner, Button, Card, Field, Icon, ListRow, SectionTitle, Text, Toggle } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { PasswordRules } from '@/features/auth';
 import { backend, isDemo } from '@/lib/backend';
@@ -31,9 +31,8 @@ export default function AccountScreen() {
   const [pwBusy, setPwBusy] = useState(false);
   const [busy, setBusy] = useState<'json' | 'pdf' | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [typed, setTyped] = useState('');
+  const [understood, setUnderstood] = useState(false);
   const inFlight = useRef(false);
-  const confirmWord = tr('u1.acc.confirmWord');
   const th = useTheme();
   // Réglages › « Supprimer mon compte » (/settings/account?delete=1) : la suppression s'affiche EN TÊTE de l'écran
   const { delete: deleteParam } = useLocalSearchParams<{ delete?: string }>();
@@ -79,14 +78,8 @@ export default function AccountScreen() {
     }
   }
 
-  async function startDelete() {
-    const ok = await confirm(
-      tr('u1.acc.deleteTitle'),
-      tr('u1.acc.deleteBody'),
-      tr('u1.acc.continue'),
-    );
-    if (ok) { setTyped(''); setDeleteError(null); setDeleteOpen(true); }
-  }
+  // Suppression simplifiée (23/11/2026) : une feuille, une case « je comprends », un bouton — plus de mot à taper
+  function startDelete() { setUnderstood(false); setDeleteError(null); setDeleteOpen(true); }
 
   async function finalDelete() {
     if (deleting.current) return; // double appui : une seule demande au serveur
@@ -163,11 +156,14 @@ export default function AccountScreen() {
       <Button label={tr('u1.acc.privacy')} variant="ghost" icon="shield" onPress={() => router.push('/settings/privacy')} />
 
       <Sheet visible={deleteOpen} onClose={() => setDeleteOpen(false)} title={tr('u1.acc.confirmDelete')}>
-        <Banner tone="danger" title={tr('u1.acc.irreversible')}>{tr('u1.acc.typeToConfirm', { word: confirmWord })}</Banner>
-        <Field label={tr('u1.acc.confirmation')} value={typed} onChangeText={setTyped} autoCapitalize="characters" autoCorrect={false} placeholder={confirmWord} testID="account-delete-word" />
+        <Banner tone="danger" title={tr('u1.acc.irreversible')}>{tr('u1.acc.deleteBody')}</Banner>
+        <View testID="account-delete-understood" style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          <Text variant="small" style={{ flex: 1 }}>{tr('acct.deleteUnderstood')}</Text>
+          <Toggle value={understood} onChange={setUnderstood} label={tr('acct.deleteUnderstood')} />
+        </View>
         {deleteAccount.isPending ? <Text variant="small" muted accessibilityLiveRegion="polite" testID="account-deleting">{tr('acct.deleting')}</Text> : null}
         {deleteError && !deleteAccount.isPending ? <Banner tone="danger" title={tr('acct.deleteFailedTitle')}>{deleteError}</Banner> : null}
-        <Button label={deleteError ? tr('acct.retry') : tr('u1.acc.deleteForever')} variant="danger" disabled={typed.trim() !== confirmWord || deleteAccount.isPending} loading={deleteAccount.isPending} onPress={finalDelete} testID="account-delete-final" />
+        <Button label={deleteError ? tr('acct.retry') : tr('u1.acc.deleteForever')} variant="danger" disabled={!understood || deleteAccount.isPending} loading={deleteAccount.isPending} onPress={finalDelete} testID="account-delete-final" />
       </Sheet>
     </Screen>
   );

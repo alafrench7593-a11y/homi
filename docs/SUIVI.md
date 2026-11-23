@@ -29,3 +29,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Design (23/11, suite) : fond perle supprimé (fond uni blanc / noir premium) ; verre liquide sur les cartes (matériau, reflet, liseré, arête) et le bord partagé glassEdge ; icônes de la barre d'onglets en niveaux de gris.
 - Web (23/11) : /start/offers affiche le vrai paywall en vitrine (grille indicative, « Disponible sur l'app iPhone », aucun achat ni requête boutique).
 - Audit final avant build (23/11) : HOMI_FINAL_PREBUILD_AUDIT.md — BUILD BLOQUÉ (4 points non vérifiables sans iPhone : achats sandbox, compte/Apple, natif, performance).
+- Compte (23/11) : « Supprimer mon compte » dans le menu Compte ; suppression = une feuille, une case « je comprends », un bouton (plus de mot à taper). Vérifié démo web.
