@@ -20,7 +20,26 @@ let demo: Backend | null = null;
 // La démonstration pose ses questions d'assistant à la fonction « assistant-demo » (sans compte, limitée)
 const getDemo = () => (demo ??= createDemoBackend({ strictPremium: FEATURES.demoStrictPremium && !(Platform.OS === 'web' && FEATURES.webDemoOpen), remoteAssistant: url && anon ? { url: url.replace(/\/$/, ''), anonKey: anon } : undefined }));
 
-let active: Backend = real ?? getDemo();
+/**
+ * Web, adresse /demo (site public) sans session réelle dans ce navigateur : l'app DÉMARRE sur le moteur local de
+ * démonstration, avant toute requête. Sans cela, les premiers écrans lisaient le vrai backend (contenus publics)
+ * le temps de basculer. Une session réelle enregistrée garde le vrai backend : /demo propose alors un choix explicite.
+ */
+const DEMO_FLAG_KEY = 'toietmoi.demo-without-account.v1';
+function startsOnPublicDemo(): boolean {
+  if (Platform.OS !== 'web' || typeof window === 'undefined') return false;
+  try {
+    // Démo déjà choisie dans ce navigateur (actualisation d'un écran de la démo) : même moteur dès la première image
+    if (window.localStorage.getItem(DEMO_FLAG_KEY) === '1') return true;
+    if (!/^\/demo\/?$/.test(window.location.pathname)) return false;
+    for (let i = 0; i < window.localStorage.length; i++) {
+      if (/^sb-.*-auth-token$/.test(window.localStorage.key(i) ?? '')) return false;
+    }
+    return true;
+  } catch { return false; }
+}
+
+let active: Backend = real && !startsOnPublicDemo() ? real : getDemo();
 
 /** Vrai si la démonstration est active (sans clés, ou choisie « sans compte »). Liaison vivante. */
 export let isDemo = active.mode === 'demo';
@@ -29,7 +48,7 @@ export const hasRealBackend = !!real;
 /** Adresse publique du projet (sans secret) : sert à construire le lien d'abonnement d'agenda. */
 export const backendUrl: string | null = url ? url.replace(/\/$/, '') : null;
 
-const DEMO_FLAG = 'toietmoi.demo-without-account.v1';
+const DEMO_FLAG = DEMO_FLAG_KEY;
 const switchListeners = new Set<(reason: BackendSwitchReason) => void>();
 
 /**

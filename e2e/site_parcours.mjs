@@ -25,6 +25,10 @@ const ctx = await browser.newContext({
 const page = await ctx.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
+// Isolement de la démo : aucune requête vers le backend (Supabase) une fois dans /demo
+let inDemo = false;
+const backendCalls = [];
+page.on('request', (r) => { if (inDemo && /supabase\.co|sb\.fake\.test/.test(r.url())) backendCalls.push(r.method() + ' ' + r.url().replace(/\?.*/, '')); });
 const shot = (n) => page.screenshot({ path: path.join(out, `${n}.png`) });
 
 // 1) premier écran
@@ -81,6 +85,7 @@ await page.waitForTimeout(600);
 await shot('07-explorer');
 
 // 5) un appui → démo, outil Allaitement
+inDemo = true;
 await card.click();
 await page.waitForURL(/\/track\/breastfeed/, { timeout: 60000 }).catch(() => undefined);
 await page.waitForTimeout(2500);
@@ -102,6 +107,7 @@ await page.waitForTimeout(2500);
 check('retour navigateur : quitte l’outil', !/\/track\/breastfeed/.test(page.url()), page.url().replace(base, ''));
 await shot('10-retour');
 
+check('démo isolée : aucune requête vers le backend', backendCalls.length === 0, backendCalls.slice(0, 3).join(' | '));
 check('aucune erreur JavaScript', errors.length === 0, errors.slice(0, 3).join(' | '));
 await ctx.close();
 await browser.close();
