@@ -57,34 +57,36 @@ async function press(r: ReactTestRenderer, id: string) {
 }
 
 beforeEach(() => {
-  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'glacier', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null, auraIntroSeen: {}, auraIntroRequested: false }); });
+  act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'nacre', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null, auraIntroSeen: {}, auraIntroRequested: false }); });
 });
 
 describe('sélecteur « Personnaliser l’accueil »', () => {
-  it('huit thèmes dans l’ordre du tableau ; libellé de chaque vignette ≥ 4,5:1 sur ses deux arrêts', () => {
-    expect(PICKER_THEMES).toEqual(['nacre', 'graphite', 'sable', 'lavande', 'glacier', 'rose', 'amethyste']);
+  it('deux thèmes (noir et gris) dans l’ordre : Blanc nacré puis Noir graphite ; libellé de chaque vignette ≥ 4,5:1 sur ses deux arrêts', () => {
+    expect(PICKER_THEMES).toEqual(['nacre', 'graphite']);
     const weak = PICKER_THEMES.map((p) => [p, swatchInkContrast(p)] as const).filter(([, r]) => r < 4.5);
     expect(weak).toEqual([]);
-    expect(pickerSelected(null, 'glacier', 'me')).toBe('glacier');
-    expect(pickerSelected('sable', 'glacier', 'me')).toBe('sable');
-    expect(pickerSelected(null, 'adaptive', 'pregnancy')).toBe('lavande');
+    expect(pickerSelected(null, 'graphite', 'me')).toBe('graphite');
+    expect(pickerSelected('nacre', 'graphite', 'me')).toBe('nacre');
+    // ancien choix coloré ou Adaptatif : Blanc nacré coché
+    expect(pickerSelected(null, 'glacier', 'me')).toBe('nacre');
+    expect(pickerSelected(null, 'adaptive', 'pregnancy')).toBe('nacre');
   });
 
   it('panneau réel : aperçu immédiat, fermeture = thème confirmé rétabli, rien d’enregistré', async () => {
     const onClose = jest.fn();
     const r = await render(<ThemePickerSheet visible onClose={onClose} />);
-    for (const p of PALETTE_NAMES) expect(byId(r, `theme-${p}`).length).toBeGreaterThan(0);
-    await press(r, 'theme-amethyste');
-    expect(seen!.colors.background).toBe(THEME_STARTS.amethyste.bg);
-    expect(useUiStore.getState().palettePreference).toBe('glacier');
+    for (const p of PALETTE_NAMES) expect(byId(r, `theme-${p}`).length).toBe(PICKER_THEMES.includes(p) ? 1 : 0);
+    await press(r, 'theme-graphite');
+    expect(seen!.colors.background).toBe(THEME_STARTS.graphite.bg);
+    expect(useUiStore.getState().palettePreference).toBe('nacre');
     // coche perceptible sans la couleur : état « coché » annoncé
-    expect(byId(r, 'theme-amethyste')[0].props.accessibilityState).toMatchObject({ checked: true });
-    expect(byId(r, 'theme-glacier')[0].props.accessibilityState).toMatchObject({ checked: false });
+    expect(byId(r, 'theme-graphite')[0].props.accessibilityState).toMatchObject({ checked: true });
+    expect(byId(r, 'theme-nacre')[0].props.accessibilityState).toMatchObject({ checked: false });
     // fermeture sans validation (voile, geste, retour)
     await act(async () => { useUiStore.getState().cancelThemePreview(); });
     await flush(80);
-    expect(seen!.colors.background).toBe(THEME_STARTS.glacier.bg);
-    expect(useUiStore.getState().palettePreference).toBe('glacier');
+    expect(seen!.colors.background).toBe(THEME_STARTS.nacre.bg);
+    expect(useUiStore.getState().palettePreference).toBe('nacre');
     r.unmount();
   });
 
@@ -92,13 +94,13 @@ describe('sélecteur « Personnaliser l’accueil »', () => {
     const onClose = jest.fn();
     act(() => { useUiStore.getState().switchAppearanceOwner('camille'); });
     const r = await render(<ThemePickerSheet visible onClose={onClose} />);
-    await press(r, 'theme-glacier');
+    await press(r, 'theme-graphite');
     await press(r, 'theme-apply');
     expect(onClose).toHaveBeenCalled();
-    expect(useUiStore.getState().palettePreference).toBe('glacier');
+    expect(useUiStore.getState().palettePreference).toBe('graphite');
     expect(useUiStore.getState().themePreview).toBeNull();
-    expect(useUiStore.getState().appearanceByUser.camille.palette).toBe('glacier');
-    expect(seen!.colors.background).toBe(THEME_STARTS.glacier.bg);
+    expect(useUiStore.getState().appearanceByUser.camille.palette).toBe('graphite');
+    expect(seen!.colors.background).toBe(THEME_STARTS.graphite.bg);
     r.unmount();
   });
 });

@@ -33,18 +33,20 @@ export const LOGO_PUBLICS: LogoPublic[] = ['woman', 'baby', 'child', 'couple', '
 
 /** Lumière colorée de chaque public (centre du halo, derrière le symbole). */
 export const PUBLIC_LIGHT: Record<LogoPublic, string> = {
-  woman: '#EE4D8C', // rose : outils de la femme
-  baby: '#3B82EE', // bleu : bébé
-  child: '#18A985', // vert menthe : enfant
-  couple: '#F4704F', // pêche-corail : couple
-  family: '#D27D12', // ambre doux : foyer, toute la famille
-  neutral: '#8A78E0', // lavande neutre : communauté, compte, réglages
+  // 23/11/2026 (décision de la propriétaire) : noir et gris uniquement ; chaque public garde une nuance DISTINCTE,
+  // seule l'urgence reste rouge (alerte reconnaissable d'un coup d'œil)
+  woman: '#5C5C62', // gris ardoise : outils de la femme
+  baby: '#3F3F45', // graphite : bébé
+  child: '#7A7A80', // gris moyen : enfant
+  couple: '#4D4D53', // anthracite : couple
+  family: '#6B6B71', // gris fumé : foyer, toute la famille
+  neutral: '#8C8C92', // gris clair : communauté, compte, réglages
   urgent: '#E0303C', // rouge : urgence
-  aura: '#2E4466', // bleu nuit d'Aura
+  aura: '#2A2A2E', // noir doux d'Aura
 };
 
 /** Barre d'onglets : lumière jaune douce derrière les icônes (opacité au centre : onglet actif / inactif). */
-export const TAB_LIGHT = { color: '#FFC83D', active: 0.95, idle: 0.22 } as const;
+export const TAB_LIGHT = { color: '#A8A8AE', active: 0.95, idle: 0.22 } as const;
 
 /** Symbole nacré (valeurs du fichier fourni) : dégradé, ombre portée, filet de lumière. */
 /**
@@ -133,7 +135,7 @@ export const APP_ICON = {
  */
 export const APPS_LOGO = {
   lights: [PUBLIC_LIGHT.woman, PUBLIC_LIGHT.baby, PUBLIC_LIGHT.child, PUBLIC_LIGHT.family] as const,
-  plateTop: '#C9C2D6',
+  plateTop: '#CACACF',
   plateBottom: GLASS_CENTER,
   edge: '#FFFFFF',
   pearl: PEARL.top,

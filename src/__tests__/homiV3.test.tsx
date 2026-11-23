@@ -76,9 +76,9 @@ describe('identité unique (v5) : apparence résolue sans palette', () => {
   });
   it('changer d’apparence pose directement le thème (aucune étape intermédiaire)', async () => {
     await render(<Probe />);
-    expect(seen!.colors.primary).toBe(PALETTES.rose.glow[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.nacre.glow[0]); // ancienne préférence colorée → Blanc nacré
     await act(async () => { useUiStore.getState().setTheme('light'); });
-    expect(seen!.colors.primary).toBe(PALETTES.rose.ink[0]);
+    expect(seen!.colors.primary).toBe(PALETTES.nacre.ink[0]);
   });
 });
 

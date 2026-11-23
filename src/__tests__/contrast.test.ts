@@ -14,7 +14,7 @@ jest.mock('@react-native-async-storage/async-storage', () => require('@react-nat
 jest.mock('@expo/vector-icons', () => ({ Feather: () => null, MaterialCommunityIcons: () => null }));
 
 import {
-  ADAPTIVE_PALETTE, bannerColors, buildTheme, DEFAULT_PALETTE, IDENTITY, innerLight, LEGACY_PALETTE, migratePalette, NEUTRALS, PALETTE_NAMES,
+  bannerColors, buildTheme, DEFAULT_PALETTE, IDENTITY, innerLight, LEGACY_PALETTE, migratePalette, NEUTRALS, OFFERED_PALETTES, PALETTE_NAMES,
   PALETTE_SPECS, PROFILE_KINDS, resolvePalette, SIGNATURE_PALETTE, THEME_STARTS, effectiveMode, themeFor, themes, type PaletteName, type Theme, type ThemeName,
 } from '@/theme/tokens';
 import { contrastRatio, over, parseColor, stack, type RGB } from '@/theme/contrast';
@@ -251,15 +251,14 @@ it('neutres paramétrés par thème : fonds, texte et accents différents d’un
   }
 });
 
-it('mode Adaptatif : correspondance fixe profil → thème, un thème par profil', () => {
-  expect(ADAPTIVE_PALETTE).toEqual({ me: 'rose', pregnancy: 'lavande', child: 'nacre', postpartum: 'sable', family: 'glacier' });
-  expect(new Set(PROFILE_KINDS.map((k) => ADAPTIVE_PALETTE[k])).size).toBe(PROFILE_KINDS.length);
-  for (const k of PROFILE_KINDS) expect(resolvePalette('adaptive', k)).toBe(ADAPTIVE_PALETTE[k]);
+it('mode Adaptatif retiré (noir et gris seulement) : « adaptive » se résout en Blanc nacré quel que soit le profil', () => {
+  for (const k of PROFILE_KINDS) expect(resolvePalette('adaptive', k)).toBe('nacre');
   expect(resolvePalette('adaptive', null)).toBe('nacre');
-  // un thème fixe ne suit pas le profil ; une ancienne préférence devient le thème le plus proche
-  expect(resolvePalette('glacier', 'pregnancy')).toBe('glacier');
+  // un thème proposé ne suit pas le profil ; un ancien thème coloré devient Blanc nacré
+  for (const k of PROFILE_KINDS) expect(resolvePalette('graphite', k)).toBe('graphite');
+  expect(resolvePalette('glacier', 'pregnancy')).toBe('nacre');
   expect(resolvePalette('sauge', 'pregnancy')).toBe('nacre');
-  expect(resolvePalette('lilas', 'pregnancy')).toBe('rose');
+  expect(resolvePalette('lilas', 'pregnancy')).toBe('nacre');
   expect(resolvePalette(undefined, 'family')).toBe('nacre');
 });
 
@@ -283,17 +282,18 @@ it('Rose poudré (héritier de l’identité v5) : sombre prune-anthracite (jama
   expect(Math.min(R, G, B)).toBeGreaterThan(235); // très clair
 });
 
-it('migration : chaque ancienne palette devient le thème le plus proche ; un choix v7 est conservé ; rien → défaut', () => {
-  // v6 → thème le plus proche (sans perdre le choix de la personne)
-  expect([migratePalette('homi'), migratePalette('lavande'), migratePalette('nuit'), migratePalette('sauge'), migratePalette('champagne')])
-    .toEqual(['rose', 'lavande', 'glacier', 'nacre', 'sable']);
-  expect(migratePalette('nacre')).toBe('nacre'); // Olive HOMI retirée : le choix enregistré passe au défaut
-  // v3 / v4 / Auto : lues comme « Rose poudré et pêche » en v6 → Rose poudré
-  for (const old of ['auto', 'peche', 'lilas', 'lagune', 'ambre', 'turquoise', 'menthe', 'aurore', 'iris', 'crepuscule']) expect(migratePalette(old)).toBe('rose');
-  // nouvelle installation, valeur inconnue : Olive HOMI
+it('migration : seuls Blanc nacré et Noir graphite sont conservés ; tout autre choix (couleur, Adaptatif, ancien, inconnu) → Blanc nacré', () => {
+  expect(OFFERED_PALETTES).toEqual(['nacre', 'graphite']);
+  expect(migratePalette('nacre')).toBe('nacre');
+  expect(migratePalette('graphite')).toBe('graphite');
+  // thèmes colorés v7 encore définis mais plus proposés
+  for (const p of PALETTE_NAMES.filter((n) => !OFFERED_PALETTES.includes(n))) expect(migratePalette(p)).toBe('nacre');
+  // v6 / v3 / v4 / Auto / Adaptatif
+  for (const old of ['homi', 'lavande', 'nuit', 'sauge', 'champagne', 'auto', 'peche', 'lilas', 'lagune', 'ambre', 'turquoise', 'menthe', 'aurore', 'iris', 'crepuscule', 'adaptive'])
+    expect(migratePalette(old)).toBe('nacre');
+  // nouvelle installation, valeur inconnue
   for (const v of ['inconnue', null, undefined, '']) expect(migratePalette(v)).toBe('nacre');
-  for (const p of PALETTE_NAMES) { expect(migratePalette(p)).toBe(p); expect(Object.keys(LEGACY_PALETTE)).not.toContain(p); }
-  expect(migratePalette('adaptive')).toBe('adaptive');
+  for (const p of PALETTE_NAMES) expect(Object.keys(LEGACY_PALETTE)).not.toContain(p);
 });
 
 it('chaque statut a une icône en plus de la couleur (bandeaux)', () => {

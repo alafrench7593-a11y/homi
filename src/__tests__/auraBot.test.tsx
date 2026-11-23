@@ -189,8 +189,8 @@ describe('accessibilité', () => {
 
 describe('palette', () => {
   it('trois apparences, la coque reste nacrée de jour, la nuit ne brille pas', () => {
-    expect(AURA_BOT.light.shellTop).toBe('#FFF8F2');
-    expect(AURA_BOT.light.visor).toBe('#1E2A4A');
+    expect(AURA_BOT.light.shellTop).toBe('#FFFFFF'); // noir, blanc et gris (23/11/2026)
+    expect(AURA_BOT.light.visor).toBe('#151517');
     expect(AURA_BOT.night.glowOpacity).toBeLessThan(AURA_BOT.light.glowOpacity);
     expect(AURA_BOT.night.sheenOpacity).toBeLessThan(AURA_BOT.light.sheenOpacity);
   });

@@ -3,10 +3,10 @@
  * Seul ce dossier (avec src/theme, le magasin et Réglages) manipule des noms de thème (hardcodedColors.test.ts).
  */
 import { contrastRatio } from '@/theme/contrast';
-import { PALETTE_NAMES, PALETTE_SPECS, resolvePalette, themeFor, type PaletteChoice, type PaletteName, type ProfileKind } from '@/theme/tokens';
+import { OFFERED_PALETTES, PALETTE_SPECS, resolvePalette, themeFor, type PaletteChoice, type PaletteName, type ProfileKind } from '@/theme/tokens';
 
 /** Ordre d'affichage (deux colonnes, ligne par ligne) : celui du tableau de la propriétaire. */
-export const PICKER_THEMES: readonly PaletteName[] = PALETTE_NAMES;
+export const PICKER_THEMES: readonly PaletteName[] = OFFERED_PALETTES;
 
 /** Thème coché : l'aperçu en cours, sinon le thème confirmé (Adaptatif : celui du profil affiché). */
 export function pickerSelected(preview: PaletteName | null, choice: PaletteChoice, profile: ProfileKind): PaletteName {

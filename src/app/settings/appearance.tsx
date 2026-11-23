@@ -276,7 +276,6 @@ export default function AppearanceScreen() {
       {/* Ticket 6 : LE MÊME sélecteur que le bouton palette de l'accueil (aperçu, Appliquer / Annuler), même source */}
       <ThemePickerInline />
       <View accessibilityRole="radiogroup" accessibilityLabel={tr('v6.palette.title')} style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }} testID="palette-choices">
-        <AdaptiveOption selected={choice === 'adaptive'} onPress={() => setPalette('adaptive')} />
       </View>
       <Text variant="caption" muted testID="palette-current">{`${tr('v6.palette.current')} : ${paletteLabel(shown)}. ${tr('v6.palette.animNote')}`}</Text>
       <Button label={tr('v6.palette.reset')} variant="secondary" icon="rotate-ccw" size="sm" disabled={isDefault} style={{ alignSelf: 'flex-start' }} testID="appearance-reset"

@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { DEFAULT_PALETTE, migratePalette, PALETTE_NAMES, type PaletteChoice, type PaletteName, type ProfileKind } from '@/theme/tokens';
+import { DEFAULT_PALETTE, migratePalette, OFFERED_PALETTES, PALETTE_NAMES, type PaletteChoice, type PaletteName, type ProfileKind } from '@/theme/tokens';
 import { migrateToolIds } from '@/lib/domain/toolFavorites';
 
 export type ActiveSubject =
@@ -190,7 +190,7 @@ export const useUiStore = create<UiState>()(
       palettePreference: DEFAULT_PALETTE, // Blanc nacré pour une nouvelle installation (Olive retirée le 22/11/2026) (les choix existants sont migrés)
       setPalette: (p) => set((st) => { const palettePreference = migratePalette(p); return { palettePreference, themePreview: null, appearanceByUser: withOwner(st, { palette: palettePreference }) }; }),
       themePreview: null,
-      previewTheme: (p) => set((st) => ((PALETTE_NAMES as string[]).includes(p) && st.themePreview !== p ? { themePreview: p } : {})),
+      previewTheme: (p) => set((st) => ((OFFERED_PALETTES as string[]).includes(p) && st.themePreview !== p ? { themePreview: p } : {})),
       applyThemePreview: () => set((st) => {
         if (!st.themePreview) return {};
         const palettePreference: PalettePreference = st.themePreview;

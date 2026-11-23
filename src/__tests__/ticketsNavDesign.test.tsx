@@ -24,7 +24,7 @@ import { AuthProvider } from '@/lib/auth';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { ToastProvider } from '@/components/Overlays';
 import { useUiStore } from '@/lib/store';
-import { PALETTE_NAMES, THEME_STARTS, themeFor, type Theme } from '@/theme/tokens';
+import { OFFERED_PALETTES, PALETTE_NAMES, THEME_STARTS, themeFor, type Theme } from '@/theme/tokens';
 import { ThemePickerInline } from '@/features/themePicker/ThemePicker';
 import { gateFor, isLockedFor, PREVIEW_ROUTES, VISIT_ROUTES } from '@/lib/premium/access';
 import type { AccessInfo } from '@/lib/premium/offers';
@@ -178,34 +178,35 @@ async function press(r: ReactTestRenderer, id: string) {
 
 describe('ticket 6 — Réglages › Apparence : le même sélecteur que le bouton palette', () => {
   beforeEach(() => {
-    act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'glacier', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null }); });
+    act(() => { useUiStore.setState({ nightMode: false, themePreference: 'light', palettePreference: 'graphite', themePreview: null, adaptiveProfile: 'me', appearanceByUser: {}, appearanceOwner: null }); });
   });
   it('aperçu → Annuler : thème confirmé rétabli, rien d’enregistré', async () => {
     const r = await render(<ThemePickerInline />);
-    for (const p of PALETTE_NAMES) expect(byId(r, `theme-${p}`).length).toBeGreaterThan(0);
+    // seuls les thèmes proposés (noir et gris) sont affichés
+    for (const p of PALETTE_NAMES) expect(byId(r, `theme-${p}`).length).toBe(OFFERED_PALETTES.includes(p) ? 1 : 0);
     await press(r, 'theme-nacre');
     expect(seen!.colors.background).toBe(THEME_STARTS.nacre.bg);
     await press(r, 'theme-inline-cancel');
-    expect(seen!.colors.background).toBe(THEME_STARTS.glacier.bg);
-    expect(useUiStore.getState().palettePreference).toBe('glacier');
+    expect(seen!.colors.background).toBe(THEME_STARTS.graphite.bg);
+    expect(useUiStore.getState().palettePreference).toBe('graphite');
     r.unmount();
   });
-  it('passage rapide entre les 8 thèmes puis Appliquer : le dernier est enregistré', async () => {
+  it('passage rapide entre les 2 thèmes puis Appliquer : le dernier est enregistré', async () => {
     const r = await render(<ThemePickerInline />);
-    for (const p of PALETTE_NAMES) await press(r, `theme-${p}`);
-    await press(r, 'theme-graphite');
+    for (let i = 0; i < 3; i += 1) for (const p of OFFERED_PALETTES) await press(r, `theme-${p}`);
+    await press(r, 'theme-nacre');
     await press(r, 'theme-inline-apply');
-    expect(useUiStore.getState().palettePreference).toBe('graphite');
+    expect(useUiStore.getState().palettePreference).toBe('nacre');
     expect(useUiStore.getState().themePreview).toBeNull();
     r.unmount();
   });
   it('quitter l’écran (retour, geste) sans valider : aperçu abandonné', async () => {
     const r = await render(<ThemePickerInline />);
-    await press(r, 'theme-sable');
-    expect(useUiStore.getState().themePreview).toBe('sable');
+    await press(r, 'theme-nacre');
+    expect(useUiStore.getState().themePreview).toBe('nacre');
     await act(async () => { r.unmount(); });
     expect(useUiStore.getState().themePreview).toBeNull();
-    expect(useUiStore.getState().palettePreference).toBe('glacier');
+    expect(useUiStore.getState().palettePreference).toBe('graphite');
     expect(contrastRatio('#000000', '#FFFFFF')).toBeGreaterThan(20);
   });
 });

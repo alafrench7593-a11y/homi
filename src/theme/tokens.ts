@@ -394,10 +394,14 @@ export const LEGACY_PALETTE: Record<string, PaletteName> = {
  * une ancienne valeur devient le thème le plus proche (`LEGACY_PALETTE`) ; une valeur absente ou inconnue, le thème
  * par défaut (nouvelle installation).
  */
+/**
+ * Thèmes PROPOSÉS (23/11/2026, décision de la propriétaire : « noir et gris seulement ») : Blanc nacré et Noir graphite.
+ * Les autres restent définis (tests de contraste, outils de développement) mais ne sont plus proposés ; un ancien choix
+ * en couleur (ou « Adaptatif ») revient au Blanc nacré.
+ */
+export const OFFERED_PALETTES: PaletteName[] = ['nacre', 'graphite'];
 export function migratePalette(p?: string | null): PaletteChoice {
-  if (p === 'adaptive') return 'adaptive';
-  if (p && (PALETTE_NAMES as string[]).includes(p)) return p as PaletteName;
-  if (p && LEGACY_PALETTE[p]) return LEGACY_PALETTE[p];
+  if (p && (OFFERED_PALETTES as string[]).includes(p)) return p as PaletteName;
   return DEFAULT_PALETTE;
 }
 

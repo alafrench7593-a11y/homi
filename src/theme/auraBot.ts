@@ -6,6 +6,7 @@
  * l'apparence : clair, sombre (contour plus discret, ombre plus profonde) et nuit (désaturé, assombri : rien ne brille
  * pendant les soins nocturnes).
  *
+ *  - 23/11/2026 : noir, blanc et gris uniquement (décision de la propriétaire) ; ancien nuancier ci-dessous.
  *  - coque : blanc nacré (dégradé #FFF8F2 → #F3E7E4) et accents rose poudré (oreilles, mains, base) ;
  *  - visière : bleu de nuit d'Aura (#1E2A4A) tramée de points fins ;
  *  - yeux et bouche : points lumineux arrondis corail (#F08A6C) et ambre (#F2B65A) ;
@@ -42,25 +43,25 @@ export interface AuraBotPalette {
 }
 
 const BASE: AuraBotPalette = {
-  shellTop: '#FFF8F2',
-  shellBottom: '#F3E7E4',
-  outline: '#B98C93',
+  shellTop: '#FFFFFF',
+  shellBottom: '#E6E6E9',
+  outline: '#8E8E94',
   outlineOpacity: 0.55,
   rim: '#FFFFFF',
   rimOpacity: 0.9,
   sheenOpacity: 0.85,
-  blush: '#F2B8C2',
-  blushDeep: '#E89AAB',
-  visorTop: '#2C3B63',
-  visor: '#1E2A4A',
-  grid: '#8FA3D9',
+  blush: '#C9C9CE',
+  blushDeep: '#AEAEB4',
+  visorTop: '#2E2E32',
+  visor: '#151517',
+  grid: '#8A8A90',
   gridOpacity: 0.16,
-  coral: '#F08A6C',
-  amber: '#F2B65A',
-  heart: '#4FB3BF',
-  glow: '#F08A6C',
+  coral: '#F4F4F6',
+  amber: '#D8D8DC',
+  heart: '#BDBDC2',
+  glow: '#9A9AA0',
   glowOpacity: 0.45,
-  shadow: '#1E2A4A',
+  shadow: '#151517',
   shadowOpacity: 0.2,
 };
 
@@ -69,9 +70,9 @@ export const AURA_BOT: Record<'light' | 'dark' | 'night', AuraBotPalette> = {
   dark: { ...BASE, outline: '#000000', outlineOpacity: 0.35, glowOpacity: 0.55, shadow: '#000000', shadowOpacity: 0.45 },
   night: {
     ...BASE,
-    shellTop: '#D9D0CC', shellBottom: '#BFB3B1', outline: '#000000', outlineOpacity: 0.4, rimOpacity: 0.35, sheenOpacity: 0.3,
-    blush: '#B8929A', blushDeep: '#A47E88', visorTop: '#1B2440', visor: '#121A30', gridOpacity: 0.1,
-    coral: '#C9806C', amber: '#C9A266', heart: '#4A8D95', glowOpacity: 0.2, shadow: '#000000', shadowOpacity: 0.4,
+    shellTop: '#CFCFD2', shellBottom: '#B4B4B8', outline: '#000000', outlineOpacity: 0.4, rimOpacity: 0.35, sheenOpacity: 0.3,
+    blush: '#9C9CA2', blushDeep: '#86868C', visorTop: '#1C1C1F', visor: '#111113', gridOpacity: 0.1,
+    coral: '#C8C8CC', amber: '#B0B0B4', heart: '#8E8E94', glowOpacity: 0.2, shadow: '#000000', shadowOpacity: 0.4,
   },
 };
 
