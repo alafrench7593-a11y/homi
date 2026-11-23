@@ -160,6 +160,8 @@ interface UiState {
   setSubject: (s: ActiveSubject | null) => void;
   setHaptics: (on: boolean) => void;
   reset: () => void;
+  /** Changement de compte : tout ce qui appartient au compte précédent (src/lib/accountReset.ts) */
+  resetAccount: () => void;
 }
 
 const DEFAULT_APPEARANCE: AppearancePrefs = { theme: 'system', palette: DEFAULT_PALETTE };
@@ -299,6 +301,13 @@ export const useUiStore = create<UiState>()(
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
       reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false }),
+      resetAccount: () => set({
+        householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null,
+        quickActionFavorites: {}, quickShortcuts: null, cocoonFavorites: null, dailyActionFavorites: null,
+        growQuestions: null, nightQuestions: {}, nearbyTown: null, cycleCardItems: null, cycleCardShortcuts: null,
+        adviceSeen: [], toolFavorites: [], toolPinned: [], toolHidden: [], pantry: [], pantryMigrated: [], toolFilter: '',
+        homeLayouts: {},
+      }),
     }),
     {
       name: 'toietmoi.ui',

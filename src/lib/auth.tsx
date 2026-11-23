@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { resetAccountState } from './accountReset';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsRestoring, useQueryClient } from '@tanstack/react-query';
 import { backend, initBackendMode, onBackendSwitch, type Session } from './backend';
@@ -100,6 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // précédent ne doivent plus sonner (la déconnexion volontaire le faisait déjà, pas l'expiration).
         const previous = first ? lastUser.current : currentUserBefore;
         if (!sameAsLastTime && previous) void cancelAllLocal().catch(() => undefined);
+        // Audit 23/11/2026 : rien du compte précédent ne reste sur ce téléphone (favoris, récents, brouillons,
+        // questions notées, file nounou et photos, statistiques en attente, cache d'images)
+        if (!sameAsLastTime && previous && previous !== uid) void resetAccountState();
         writeLastUser(uid);
         void setQueueOwner(uid); // saisies hors ligne d'un autre compte effacées de ce téléphone
         if (!s) useUiStore.getState().reset();
