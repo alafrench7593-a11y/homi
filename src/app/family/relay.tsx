@@ -3,6 +3,10 @@
  * transmission (ou minuit), lus dans les mêmes tables que les mini-apps : une sieste corrigée y apparaît corrigée.
  * Le parent retire ce qu'il ne veut pas transmettre, relit le message composé par le code, puis confirme : le partage
  * du système s'ouvre ; la transmission est datée et son statut reste visible.
+ *
+ * Audit du 23/11/2026 : le parent peut ajouter un mot (gardé sur l'appareil, effacé après l'envoi). La relecture FIGE le
+ * message : ce qui est relu est exactement ce qui part. Si une saisie arrive ou change entre-temps, un bandeau le dit et
+ * « Actualiser le brouillon » recompose le message en gardant le mot du parent.
  */
 import React, { useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
@@ -12,7 +16,7 @@ import { Glass, GlassButton } from '@/components/glass';
 import { useToast } from '@/components/Overlays';
 import { EmptyState, Skeleton } from '@/components/States';
 import { Tappable } from '@/components/Tappable';
-import { haptic, Icon, Text } from '@/components/ui';
+import { Field, haptic, Icon, Text } from '@/components/ui';
 import { formatDate, t as tr } from '@/i18n';
 import { eq } from '@/lib/backend';
 import { useActiveSubject, useChildren, useRows } from '@/lib/data/hooks';
@@ -71,14 +75,22 @@ function Draft({ child }: { child: Child }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [child.id, since.getTime(), Math.floor(now.getTime() / 60_000), sleeps, bottlesQ.data, diapersQ.data, feedsQ.data]);
   const [removed, setRemoved] = useState<Set<string>>(new Set());
-  const [review, setReview] = useState(false);
+  // Relecture figée : éléments relus + signature du brouillon à ce moment-là
+  const [snap, setSnap] = useState<{ items: RelayItem[]; sig: string } | null>(null);
+  const review = snap != null;
   const [busy, setBusy] = useState(false);
+  const note = useRelayStore((s) => s.notes?.[child.id] ?? '');
+  const setNote = useRelayStore((s) => s.setNote);
   const kept = items.filter((i) => !removed.has(i.id));
+  const sig = kept.map(line).join('\n');
+  const stale = !!snap && snap.sig !== sig;
   const fromMidnight = since.getHours() === 0 && since.getMinutes() === 0;
   const sinceText = fromMidnight ? tr('nn.relay.midnight') : clock(since);
-  const message = [tr('nn.relay.msgHead', { name: child.first_name, time: sinceText }), ...kept.map((i) => `• ${line(i)}`)].join('\n');
+  const shown = snap ? snap.items : kept;
+  const message = [tr('nn.relay.msgHead', { name: child.first_name, time: sinceText }), ...shown.map((i) => `• ${line(i)}`), ...(note.trim() ? ['', tr('nn.relay.noteLine', { note: note.trim() })] : [])].join('\n');
+  const setReview = (on: boolean) => setSnap(on ? { items: kept, sig } : null);
   async function confirm() {
-    if (busy || !kept.length) return;
+    if (busy || !shown.length) return;
     setBusy(true);
     try {
       if (Platform.OS === 'web' && !(globalThis as { navigator?: { share?: unknown } }).navigator?.share) {
@@ -88,9 +100,9 @@ function Draft({ child }: { child: Child }) {
         const r = await Share.share({ message });
         if (r.action === Share.dismissedAction) { setBusy(false); return; }
       }
-      markSent(child.id, kept.length);
+      markSent(child.id, shown.length);
       haptic('success');
-      toast(tr('nn.relay.sent', { count: kept.length }), 'success');
+      toast(tr('nn.relay.sent', { count: shown.length }), 'success');
       setReview(false); setRemoved(new Set());
     } finally { setBusy(false); }
   }
@@ -124,10 +136,18 @@ function Draft({ child }: { child: Child }) {
               );
             })}
           </View>
+          <Field label={tr('nn.relay.note')} optional value={note} onChangeText={(v) => setNote(child.id, v)} placeholder={tr('nn.relay.notePh')}
+            multiline maxLength={300} testID="relay-note" />
           <GlassButton variant="primary" full icon="eye" label={tr('nn.relay.review', { count: kept.length })} disabled={!kept.length} testID="relay-review" onPress={() => setReview(true)} />
         </>
       ) : (
         <>
+          {stale ? (
+            <Glass variant="card" radius={radius.lg} contentStyle={{ padding: spacing.sm, gap: spacing.xs }} testID="relay-stale">
+              <Text variant="small">{tr('nn.relay.changed')}</Text>
+              <GlassButton variant="secondary" icon="refresh-cw" label={tr('nn.relay.refresh')} testID="relay-refresh" onPress={() => setReview(true)} />
+            </Glass>
+          ) : null}
           <Text variant="label">{tr('nn.relay.preview')}</Text>
           <Glass variant="card" radius={radius.lg} contentStyle={{ padding: spacing.md }} testID="relay-preview">
             <Text style={[{ fontFamily: fonts.body }, TABULAR]}>{message}</Text>
