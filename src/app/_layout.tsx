@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useScopePurge } from '@/lib/data/useScopePurge';
 import { WEB_FRAME, webFrameOn } from '@/components/appFrame';
 import { ActivityIndicator, Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, Stack, usePathname } from 'expo-router';
@@ -90,6 +91,8 @@ function Bootstrap() {
   useEffect(() => wireFocusAndOnline(), []);
   const householdId = useHouseholdId();
   useRealtimeSync(session ? householdId : null, session?.userId ?? null);
+  // Accès à un enfant (ou à la grossesse) retiré : ses données quittent le cache de l'appareil
+  useScopePurge();
 
   useEffect(() => startOfflineSync((n) => toast(tr('sync.done', { count: n }))), [toast]);
   // Saisie refusée par le serveur (ex. Premium requis) : prévenir une fois, le détail est dans Réglages › Synchronisation
