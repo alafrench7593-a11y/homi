@@ -19,10 +19,16 @@ export type AuraIntent =
   | { kind: 'prepare_relay'; childId?: string | null }
   | { kind: 'add_measure'; metric: Metric; childId?: string | null }
   | { kind: 'switch_child' }
-  | { kind: 'profile_tools'; profile: 'pregnancy' };
+  | { kind: 'profile_tools'; profile: 'pregnancy' }
+  /** Aura 2.0 — enregistrer une sieste ou une nuit « de 14 h 20 à 15 h 45 » (confirmée par le parent, puis écrite) */
+  | { kind: 'log_sleep'; start: string; end: string; childId?: string | null }
+  /** Aura 2.0 — enregistrer un biberon bu « il vient de boire 150 ml » (heure : maintenant) */
+  | { kind: 'log_bottle'; ml: number; childId?: string | null }
+  /** Aura 2.0 — lecture sans IA : sommeil total d'aujourd'hui */
+  | { kind: 'sleep_today'; childId?: string | null };
 
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -61,6 +67,17 @@ export function matchIntent(question: string): AuraIntent | null {
   const times = timesIn(question);
   const sleepy = has(q, /\b(sieste\w*|dodo|dormi\w*|dort|endormi\w*|reveil\w*|nap|naps|slept|asleep|woke|wake|waking|sleep\w*)\b/);
   const fixCue = has(q, /\b(mis|mise|note|notee|saisi\w*|corrig\w*|tromp\w*|erreur|en fait|mais|plutot|wrong|actually|but|instead|fix|typed|entered|logged)\b/);
+  // 0) Lecture : « combien il a dormi aujourd'hui ? » (sans IA, données du foyer)
+  if (has(q, /\b(combien|how (much|long))\b/) && has(q, /\b(dormi|dort|sommeil|slept|sleep)\b/)) return { kind: 'sleep_today' };
+  // 0 bis) Enregistrer : deux heures + endormissement/réveil, SANS indice de correction (« s'est endormi à 14 h 20 et
+  //        réveillé à 15 h 45 », « a dormi de 14 h à 15 h 30, ajoute ») ; la correction garde la priorité
+  if (times.length >= 2 && sleepy && !fixCue) return { kind: 'log_sleep', start: times[0], end: times[1] };
+  // 0 ter) Biberon bu : « il vient de boire 150 ml », « bib de 120 ml »
+  const ml = /\b(\d{2,3})\s*(ml|millilitres?|milliliters?)\b/.exec(q);
+  if (ml && has(q, /\b(bib|bibs|bibi|biberon\w*|bottle\w*|bu|boire|bois|but|drank|drunk|drink|fini\w*|finished)\b/)) {
+    const n = Number(ml[1]);
+    if (n >= 5 && n <= 400) return { kind: 'log_bottle', ml: n };
+  }
   // 1) Corriger la fin d'une sieste : une heure + le sommeil + un indice de correction
   if (times.length && sleepy && (fixCue || times.length >= 2)) {
     return { kind: 'fix_sleep_end', wrong: times.length >= 2 ? times[0] : null, right: times[times.length - 1] };
@@ -118,6 +135,8 @@ export interface IntentContext {
   /** Outils grossesse disponibles pour ce compte (catalogue du profil grossesse), vide sans grossesse */
   pregnancyCatalog?: ToolLike[];
   sleeps: SleepLike[];
+  /** Saisies du jour, pour les lectures et les doublons (Aura 2.0) ; facultatif */
+  bottles?: { at: string; consumed_ml: number | null }[];
   now: Date;
   /** Libellés (i18n injectée : la logique reste pure) */
   t: (key: string, vars?: Record<string, string | number>) => string;
@@ -130,7 +149,11 @@ export type Resolution =
   | { status: 'select_child'; label: string; options: { label: string; childId: string }[] }
   | { status: 'ask'; question: string; options: IntentOption[] }
   | { status: 'list'; label: string; items: { label: string; href: string }[] }
-  | { status: 'unavailable'; reason: string; alternative?: { label: string; href: string } };
+  | { status: 'unavailable'; reason: string; alternative?: { label: string; href: string } }
+  /** Écriture préparée : rien n'est enregistré avant l'appui du parent sur « Enregistrer » */
+  | { status: 'confirm'; summary: string; write: { kind: 'sleep' | 'bottle'; row: Record<string, unknown> }; childName: string; viewHref: string; editHref: string; doneLabel: string }
+  /** Réponse calculée sur les données réelles (jamais inventée) */
+  | { status: 'answer'; text: string; href: string; label: string };
 
 const CHILD_TOOL_ROUTE: Record<string, (id: string) => string> = {
   baby_breastfeed: (id) => `/track/breastfeed?child=${id}`,
@@ -200,6 +223,41 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
     return { status: 'ready', label: named(`aura.it.measure.${intent.metric}`, child.first_name), href: `/child/${child.id}?tab=croissance&focus=${intent.metric}`, childName: child.first_name };
   }
 
+  // ---- Aura 2.0 : lecture et écritures préparées (droits relus ici ET au moment d'écrire ; RLS côté serveur)
+  if (intent.kind === 'sleep_today') {
+    if (!memberCan(ctx.member, 'view', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noAccess', { name: child.first_name }) };
+    const min = sleepMinutesToday(ctx.sleeps.filter((x) => x.child_id === child.id), ctx.now);
+    const text = min > 0 ? ctx.t('aura.it2.sleptToday', { name: child.first_name, d: span(min) }) : ctx.t('aura.it2.noSleepToday', { name: child.first_name });
+    return { status: 'answer', text, href: `/sleep/${child.id}`, label: ctx.t('aura.it.openSleep') };
+  }
+  if (intent.kind === 'log_sleep') {
+    if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+    const w = sleepWindow(intent.start, intent.end, ctx.now);
+    if (!w) return { status: 'unavailable', reason: ctx.t('aura.it2.badTimes'), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+    const clash = ctx.sleeps.find((x) => x.child_id === child.id && Date.parse(x.started_at) < w.end.getTime() && (x.ended_at ? Date.parse(x.ended_at) : ctx.now.getTime()) > w.start.getTime());
+    if (clash) return { status: 'unavailable', reason: ctx.t('aura.it2.overlap', { range: `${ctx.clock(new Date(clash.started_at))} – ${clash.ended_at ? ctx.clock(new Date(clash.ended_at)) : '…'}` }), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+    const min = Math.round((w.end.getTime() - w.start.getTime()) / 60000);
+    const night = w.start.getHours() >= 19 || w.start.getHours() < 6;
+    return {
+      status: 'confirm', childName: child.first_name,
+      summary: ctx.t(night ? 'aura.it2.nightSummary' : 'aura.it2.napSummary', { name: child.first_name, from: ctx.clock(w.start), to: ctx.clock(w.end), d: span(min) }),
+      write: { kind: 'sleep', row: { child_id: child.id, started_at: w.start.toISOString(), ended_at: w.end.toISOString(), kind: night ? 'night' : 'nap' } },
+      viewHref: `/sleep/${child.id}`, editHref: `/sleep/${child.id}`, doneLabel: ctx.t(night ? 'aura.it2.nightDone' : 'aura.it2.napDone', { d: span(min) }),
+    };
+  }
+  if (intent.kind === 'log_bottle') {
+    if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }), alternative: { label: ctx.t('aura.it.open', { name: ctx.t('aura.it.tool.baby_bottle') }), href: `/bottle/${child.id}` } };
+    // Doublon probable : même quantité notée il y a moins de 10 minutes
+    const dup = (ctx.bottles ?? []).find((b) => b.consumed_ml === intent.ml && Math.abs(ctx.now.getTime() - Date.parse(b.at)) < 10 * 60000);
+    if (dup) return { status: 'unavailable', reason: ctx.t('aura.it2.bottleDup', { ml: intent.ml, at: ctx.clock(new Date(dup.at)) }), alternative: { label: ctx.t('aura.it.open', { name: ctx.t('aura.it.tool.baby_bottle') }), href: `/bottle/${child.id}` } };
+    return {
+      status: 'confirm', childName: child.first_name,
+      summary: ctx.t('aura.it2.bottleSummary', { name: child.first_name, ml: intent.ml, at: ctx.clock(ctx.now) }),
+      write: { kind: 'bottle', row: { child_id: child.id, at: ctx.now.toISOString(), prepared_ml: null, consumed_ml: intent.ml, planned_next_ml: null, note: null } },
+      viewHref: `/bottle/${child.id}`, editHref: `/bottle/history?child=${child.id}`, doneLabel: ctx.t('aura.it2.bottleDone', { ml: intent.ml }),
+    };
+  }
+
   // fix_sleep_end
   const sleepRoute = `/sleep/${child.id}`;
   if (!memberCan(ctx.member, 'edit', 'daily', child.id)) {
@@ -225,4 +283,34 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
     href: intent.right ? `${sleepRoute}?nap=${s.id}&fix=${intent.right}` : `${sleepRoute}?nap=${s.id}&edit=1`,
     hint: intent.right ? ctx.t('aura.it.fixHint', { range: range(s), to: intent.right.replace(':', ' h ') }) : ctx.t('aura.it.fixHintOpen', { range: range(s) }),
   };
+}
+
+// ---------------------------------------------------------------- Aura 2.0 : calculs déterministes (sans IA)
+
+/** « 1 h 25 », « 45 min ». */
+export function span(min: number): string {
+  const h = Math.floor(min / 60); const m = min % 60;
+  return h ? (m ? `${h} h ${String(m).padStart(2, '0')}` : `${h} h`) : `${m} min`;
+}
+
+/** Fenêtre réelle d'un sommeil cité en heures : fin avant début = passage de minuit ; jamais dans le futur ; 16 h max. */
+export function sleepWindow(start: string, end: string, now: Date): { start: Date; end: Date } | null {
+  const at = (hhmm: string, base: Date) => { const [h, m] = hhmm.split(':').map(Number); return new Date(base.getFullYear(), base.getMonth(), base.getDate(), h, m); };
+  let s = at(start, now); let e = at(end, now);
+  if (e.getTime() <= s.getTime()) s = new Date(s.getTime() - 86400000);
+  if (e.getTime() > now.getTime() + 60000) { s = new Date(s.getTime() - 86400000); e = new Date(e.getTime() - 86400000); }
+  const min = (e.getTime() - s.getTime()) / 60000;
+  if (min < 5 || min > 16 * 60) return null;
+  return { start: s, end: e };
+}
+
+/** Minutes de sommeil depuis minuit (une session en cours compte jusqu'à maintenant ; la nuit d'avant est coupée à minuit). */
+export function sleepMinutesToday(sleeps: SleepLike[], now: Date): number {
+  const day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  let total = 0;
+  for (const x of sleeps) {
+    const a = Math.max(Date.parse(x.started_at), day0); const b = Math.min(x.ended_at ? Date.parse(x.ended_at) : now.getTime(), now.getTime());
+    if (b > a) total += (b - a) / 60000;
+  }
+  return Math.round(total);
 }

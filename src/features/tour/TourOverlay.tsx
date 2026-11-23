@@ -230,7 +230,10 @@ function Spotlight({ step, index, path }: { step: TourStep; index: number; path:
     const loop = () => {
       void run().then(() => {
         if (!alive) return;
-        timer = setTimeout(loop, Date.now() - settleFrom.current < SETTLE_MS ? MEASURE_FAST_MS : MEASURE_IDLE_MS);
+        const base = Date.now() - settleFrom.current < SETTLE_MS ? MEASURE_FAST_MS : MEASURE_IDLE_MS;
+        // une mesure tombe juste après le délai « introuvable » (la bulle « Passer l'étape » n'attend pas la cadence lente)
+        const untilLost = started + NOT_FOUND_MS + 20 - Date.now();
+        timer = setTimeout(loop, untilLost > 0 ? Math.min(base, Math.max(MEASURE_FAST_MS, untilLost)) : base);
       });
     };
     const measure = async () => {

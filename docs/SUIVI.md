@@ -3,6 +3,7 @@
 Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `docs/TUTOS_CONFIGURATION.md`, iPhone : `docs/SCENARIO_IPHONE.md`.
 
 ## Fait (23/11/2026)
+- Aura 2.0 (tranche 1) : enregistrer sieste/nuit et biberon depuis le chat (confirmation, anti-doublon, droits), lire le sommeil du jour ; 175 tests Aura OK ; Chromium bout en bout OK.
 - Réconciliation : 136 lignes = 127 outils + 9 entrées de compte ; 127/127 ouverts depuis leur entrée (passes base, éviter, projet bébé, cycle, post-partum ; démo Premium).
 - Préprod : migrations 20261206 + 20261207 validées depuis l'interface ; déployées en prod (148 migrations).
 - Contrôles confidentialité documentés (audit § 7.2) ; conservation `20261208000100` écrite, **non déployée en prod** (tuto § 7).
@@ -13,6 +14,8 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Build 13 sur TestFlight (commit 7f0d7ff) ; ne contient pas les corrections suivantes.
 
 ## Ouvert
+- Aura 2.0 : voir `docs/AURA_IMPLEMENTATION.md` (sieste, biberon, sommeil du jour faits ; RDV, missions, côté de tétée à faire).
+
 - iPhone réel (scénario) ; liens Vercel publics (accès connecteur : lecture seule, projet invisible).
 - Risques : prénoms dans les textes envoyés à Aura ; analytics grossesse ↔ compte ; journal du foyer sans purge.
 - Google OAuth (identifiants à fournir). Build 14 : seulement sur ordre.
