@@ -169,17 +169,15 @@ export function resolveGlassTier(o: { reduceTransparency: boolean; night: boolea
   return o.blur ? 'blur' : 'opaque';
 }
 
+/** Pastille d'initiales des enfants : gris neutre (noir et gris uniquement, 23/11/2026). */
+export const AVATAR_GREY = '#CFCFD4';
+
 /**
- * Fond perle « Blanc nacré » (maquette validée le 23/11/2026) : couleurs du fond, des reflets, des sphères chromées et
- * du verre translucide des cartes. Seul le thème Blanc nacré en clair l'utilise (`usesPearl`).
+ * Verre des cartes (23/11/2026, « liquid glass partout », fond uni blanc ou noir premium) : sur un fond uni, rien à
+ * réfracter ; le verre se lit par son MATÉRIAU : dégradé de la surface, reflet clair en haut à gauche, liseré lumineux,
+ * arête plus sombre en bas. Uniquement des blancs, gris et noirs.
  */
-export const PEARL = {
-  base: ['#F6F6F7', '#DEDEE2', '#EDEDF0', '#D9D9DD'] as const,
-  sheen: ['rgba(255,255,255,0)', 'rgba(255,255,255,0.9)', 'rgba(255,255,255,0)'] as const,
-  orb: ['#FFFFFF', '#E2E2E5', '#B4B4B9', '#7E7E84', '#5E5E64'] as const,
-  /** remplissage des cartes : 74 % de blanc (texte secondaire ≥ 4,5:1 même au-dessus d'une sphère) */
-  cardFill: 'rgba(255,255,255,0.74)',
-  /** pastille d'initiales des enfants (sans couleur par enfant : noir et gris uniquement) */
-  avatar: '#CFCFD4',
-};
-export const usesPearl = (t: Pick<Theme, 'palette' | 'isDark'>) => t.palette === 'nacre' && !t.isDark;
+export const CARD_GLASS = {
+  light: { top: '#FFFFFF', bottom: '#EDEDF1', sheen: ['rgba(255,255,255,0.95)', 'rgba(255,255,255,0)'], rim: 'rgba(255,255,255,1)', edge: 'rgba(0,0,0,0.07)', outline: 'rgba(0,0,0,0.06)' },
+  dark: { top: '#2C2C30', bottom: '#19191B', sheen: ['rgba(255,255,255,0.16)', 'rgba(255,255,255,0)'], rim: 'rgba(255,255,255,0.22)', edge: 'rgba(0,0,0,0.5)', outline: 'rgba(255,255,255,0.08)' },
+} as const;

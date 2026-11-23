@@ -13,9 +13,10 @@ import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'reac
 import { useTheme } from '@/theme/ThemeProvider';
 import { glassOf, physicalShadow, radius as R, surfaceShadow, type ElevationLevel, type ShadowLayer } from '@/theme/tokens';
 import { parseColor } from '@/theme/contrast';
-import { PEARL, usesPearl } from '@/theme/glass';
 import { Surface } from './surfaces/Surface';
 import { CardLens } from './glass/liquid/CardLens';
+import { LinearGradient } from 'expo-linear-gradient';
+import { CARD_GLASS } from '@/theme/glass';
 import { LIQUID_GLASS_NATIVE, useReduceTransparency } from './surfaces/nativeGlass';
 
 export { LIQUID_GLASS_NATIVE, useReduceTransparency };
@@ -48,18 +49,27 @@ export function GlassSurface({
   // v5 : surface OPAQUE, sans flou ni reflet ; un ancien remplissage violet ou translucide devient la surface du thème
   let translucent = false;
   try { translucent = parseColor(fill).a < 1; } catch { translucent = false; }
-  const base = LEGACY_VIOLET.test(fill) || translucent ? t.colors.surface : fill;
-  // Blanc nacré en clair : verre translucide (74 % de blanc, texte secondaire ≥ 4,5:1 même sur une sphère chromée)
-  const pearl = useReduceTransparency() === false && usesPearl(t) && base === t.colors.surface;
-  const color = pearl ? PEARL.cardFill : base;
+  const color = LEGACY_VIOLET.test(fill) || translucent ? t.colors.surface : fill;
+  // Carte « surface » : matériau de verre (dégradé, reflet, liseré, arête) ; les cartes teintées gardent leur teinte
+  const glassy = color === t.colors.surface && !night;
+  const cg = t.isDark ? CARD_GLASS.dark : CARD_GLASS.light;
   return (
     <View
       style={[
-        { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth, borderColor: borderColor ?? g.raised.edge, overflow: 'hidden', padding: padded, backgroundColor: color },
+        { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth, borderColor: borderColor ?? (glassy ? cg.outline : g.raised.edge), overflow: 'hidden', padding: padded, backgroundColor: color },
         shadow && !night && depth > 1 ? { boxShadow: physicalShadow(SHADOW_FOR_DEPTH[depth], t.isDark) } : null,
         style,
       ]}
     >
+      {glassy ? (
+        <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius }]}>
+          <LinearGradient colors={[cg.top, cg.bottom]} start={{ x: 0, y: 0 }} end={{ x: 0.35, y: 1 }} style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={[...cg.sheen]} start={{ x: 0, y: 0 }} end={{ x: 0.55, y: 0.45 }} style={[StyleSheet.absoluteFill, { borderRadius: radius }]} />
+          {/* liseré lumineux en haut, arête plus sombre en bas : l'épaisseur du verre */}
+          <View style={[StyleSheet.absoluteFill, { borderRadius: radius, borderTopWidth: 1.5, borderLeftWidth: 1, borderColor: cg.rim, borderBottomWidth: 0, borderRightWidth: 0 }]} />
+          <View style={[StyleSheet.absoluteFill, { borderRadius: radius, borderBottomWidth: 1.5, borderRightWidth: 1, borderColor: cg.edge, borderTopWidth: 0, borderLeftWidth: 0 }]} />
+        </View>
+      ) : null}
       {/* Verre liquide partout (22/11/2026) : lèvre, reflet orienté et ombre du laboratoire, sous le contenu */}
       <CardLens radius={radius} />
       {children}

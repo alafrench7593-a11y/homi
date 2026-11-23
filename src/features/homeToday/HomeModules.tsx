@@ -80,8 +80,8 @@ export function ToolsEntry() {
   return (
     <View {...anchor}>
     <Tappable accessibilityRole="button" accessibilityLabel={`${tr('hm.toolsEntry')}. ${tr('hm.toolsEntrySub')}`} testID="home-tools-entry" onPressIn={() => setPulse((n) => n + 1)} onPress={() => { haptic('selection'); router.push('/tools'); }}
-      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.lg, borderWidth: 1,
-        borderColor: t.colors.border, backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 56, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radius.lg, ...glassEdge(t),
+        backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
       {/* logo de « Mes apps » : 4 tuiles de verre allumées (rose, bleu, menthe, ambre), cascade à l'appui */}
       <AppsLogo size={40} pulse={pulse} testID="home-tools-logo" />
       <View style={{ flex: 1 }}>
@@ -317,7 +317,7 @@ function Grip({ lifted }: { lifted: boolean }) {
 
 function rowStyle(t: ReturnType<typeof useTheme>, lifted: boolean) {
   return { flexDirection: 'row' as const, alignItems: 'center' as const, gap: spacing.xs, minHeight: 60, paddingVertical: 6, paddingLeft: spacing.xs, paddingRight: spacing.xxs,
-    borderRadius: radius.lg, borderWidth: lifted ? 1.5 : StyleSheet.hairlineWidth, borderColor: lifted ? t.tokens.border.active : t.colors.border, backgroundColor: t.colors.surface };
+    ...glassEdge(t), borderRadius: radius.lg, borderWidth: lifted ? 1.5 : StyleSheet.hairlineWidth, borderColor: lifted ? t.tokens.border.active : t.colors.border, backgroundColor: t.colors.surface };
 }
 
 /** Module de l'accueil : poignée, nom, détail, interrupteur « afficher » ; actions monter / descendre pour VoiceOver. */

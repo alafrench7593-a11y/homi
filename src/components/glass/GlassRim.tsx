@@ -35,7 +35,12 @@ export function GlassRim({ radius, strength = 1 }: { radius: number; strength?: 
  */
 export function glassEdge(t: ReturnType<typeof useTheme>): ViewStyle {
   const light = t.tokens.inverse.text;
+  // Verre liquide partout (23/11/2026) : reflet clair en haut à gauche et léger ombrage en bas, PAR-DESSUS la couleur de
+  // la carte (transparent au centre : une carte teintée ou pressée garde sa teinte)
+  const glass = `linear-gradient(165deg, ${alpha(light, t.isDark ? 0.14 : 0.95)} 0%, ${alpha(light, 0)} 38%, ${alpha(t.tokens.shadowColor, 0)} 68%, ${alpha(t.tokens.shadowColor, t.isDark ? 0.28 : 0.09)} 100%)`;
   return {
+    experimental_backgroundImage: glass,
+    ...({ backgroundImage: glass } as object),
     borderWidth: 1,
     borderColor: t.isDark ? alpha(light, 0.14) : alpha(light, 0.8),
     boxShadow: `inset 0 1px 0 ${alpha(light, t.isDark ? 0.2 : 0.95)}, inset 0 -1px 0 ${alpha(t.tokens.shadowColor, t.isDark ? 0.3 : 0.07)}, 0 1px 2px ${alpha(t.tokens.shadowColor, t.isDark ? 0.4 : 0.06)}, 0 6px 18px ${alpha(t.tokens.shadowColor, t.isDark ? 0.3 : 0.07)}`,

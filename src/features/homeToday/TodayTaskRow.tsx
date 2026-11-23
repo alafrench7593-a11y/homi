@@ -11,6 +11,7 @@
  *
  * Uniquement des jetons du thème (`useTheme()`), les composants partagés et `src/motion` / `src/features/scene`.
  */
+import { glassEdge } from '@/components/glass/GlassRim';
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -132,7 +133,7 @@ export function TodayFocus({ x, owner, creator, celebrate = false, busy, onCompl
   const late = x.late && !done;
   const kickerColor = late ? t.tokens.status.warning : t.colors.primary;
   return (
-    <View testID="today-emphasis" style={{ gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1,
+    <View testID="today-emphasis" style={{ ...glassEdge(t), gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, backgroundColor: t.colors.surface, borderWidth: 1,
       borderColor: celebrate ? t.tokens.status.success : t.colors.border }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
         <DoneComponent done={done} celebrate={celebrate} icon={x.awaitsMe ? 'inbox' : 'arrow-right-circle'} color={done ? t.colors.success : kickerColor} size={18} />

@@ -4,6 +4,7 @@
  * l'onboarding), l'heure en chiffres tabulaires, le titre, le lieu ou la personne. Toucher ouvre le détail.
  * Halo FIXE (`still`) : écran de suivi, aucune animation ambiante pendant la lecture.
  */
+import { glassEdge } from '@/components/glass/GlassRim';
 import React from 'react';
 import { Image, View, type ImageSourcePropType } from 'react-native';
 import { CoralHalo } from '@/components/CoralHalo';
@@ -46,7 +47,7 @@ export function NextUp({ info, art = 'foyer', testID = 'home-next-up', emptyTitl
     </View>
   );
   const shell = { flexDirection: 'row' as const, alignItems: 'center' as const, gap: spacing.md, padding: spacing.md, paddingLeft: spacing.sm, borderRadius: radius.lg,
-    backgroundColor: t.colors.surface, borderWidth: 1, borderColor: t.colors.border, overflow: 'hidden' as const };
+    ...glassEdge(t), backgroundColor: t.colors.surface, overflow: 'hidden' as const };
   if (!info && compactEmpty) {
     return (
       <View style={[shell, { minHeight: 56, paddingVertical: spacing.sm, paddingLeft: spacing.md }]} testID={testID} accessible accessibilityLabel={[emptyTitle ?? tr('d5.next.noneTitle'), emptyBody ?? tr('d5.next.noneBody')].join('. ')}>

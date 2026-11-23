@@ -24,3 +24,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Fusion : PR #1 (main = homi/fondations, ancien main dans archive/main-2026-11-13) ; maquette design à valider.
 - Design (23/11) : Blanc nacré en noir et gris, fond perle (reflets + sphères chromées), cartes en verre translucide, initiales d'enfants en gris ; opaque si « Réduire la transparence ». Reste : points de « Mes apps », robot Aura, pictogrammes de la barre d'onglets.
 - Inscription (23/11) : « Où en est ta famille ? » à choix multiples (besoins réunis, profils préremplis) ; « Mes apps » : section « Autres outils » grisés, déblocables via « Modifier mon parcours ».
+- Design (23/11, suite) : fond perle supprimé (fond uni blanc / noir premium) ; verre liquide sur les cartes (matériau, reflet, liseré, arête) et le bord partagé glassEdge ; icônes de la barre d'onglets en niveaux de gris.
