@@ -6,7 +6,7 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Aura 2.0 (tranche 1) : enregistrer sieste/nuit et biberon depuis le chat (confirmation, anti-doublon, droits), lire le sommeil du jour ; 175 tests Aura OK ; Chromium bout en bout OK.
 - Réconciliation : 136 lignes = 127 outils + 9 entrées de compte ; 127/127 ouverts depuis leur entrée (passes base, éviter, projet bébé, cycle, post-partum ; démo Premium).
 - Préprod : migrations 20261206 + 20261207 validées depuis l'interface ; déployées en prod (148 migrations).
-- Contrôles confidentialité documentés (audit § 7.2) ; conservation `20261208000100` écrite, **non déployée en prod** (tuto § 7).
+- Contrôles confidentialité documentés (audit § 7.2) ; conservation `20261208000100` **appliquée en prod le 23/11** (fonction + tâche quotidienne vérifiées).
 - Corrections : saisie agenda (14H30, date sans année), textes superposés web (Relais de nuit), lisibilité barre d'onglets,
   « Sommeil du jour » (320 px), cycle toujours visible dans « Moi », menu Compte (navigation après fermeture + « Se déconnecter »),
   visite guidée (cadence de mesure bornée), aperçu paywall web en dev (`/start/offers?apercu=1`).
@@ -21,3 +21,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - iPhone réel (scénario) ; liens Vercel publics (accès connecteur : lecture seule, projet invisible).
 - Risques : prénoms masqués avant Gemini (déployé, v10) ; analytics grossesse ↔ compte ; journal du foyer sans purge.
 - Google OAuth (identifiants à fournir). Build 14 : seulement sur ordre.
+- Fusion : PR #1 (main = homi/fondations, ancien main dans archive/main-2026-11-13) ; maquette design à valider.
