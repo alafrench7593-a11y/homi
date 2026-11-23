@@ -7,8 +7,11 @@
  *  4. les formulations du quotidien (FR / EN) mènent au bon outil.
  * Les chiffres sont imprimés pour le rapport d'audit.
  */
-import fs from 'fs';
-import path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require('fs') as { readdirSync(p: string, o: { withFileTypes: true }): { name: string; isDirectory(): boolean }[] };
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path') as { join(...p: string[]): string; relative(a: string, b: string): string; sep: string };
+declare const __dirname: string;
 import { setLocale } from '@/i18n';
 import { toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
 import { searchCatalog } from '@/lib/domain/toolSearch';
