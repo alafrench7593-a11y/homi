@@ -10,8 +10,8 @@ import { csvCell, safeFileName } from '@/lib/csv';
 import { insertOrQueue } from '@/lib/offline';
 import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import { TodaySummary } from '@/components/MiniApp';
-import React, { useMemo, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, ScrollView, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { MomentTray } from '@/features/careTrack/MomentTray';
 import { StatPill } from '@/components/Charts';
@@ -238,6 +238,19 @@ export function GrowthTab({ child, focus }: { child: Child; /** Carte d'Aura « 
   const [metric, setMetric] = useState<Metric>('weight_kg');
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [values, setValues] = useState<Record<Metric, string>>({ weight_kg: '', height_cm: '', head_cm: '' });
+  // Carte d'Aura « Ajouter un poids » : le curseur est posé APRÈS la transition d'écran (`autoFocus` au montage se
+  // perdait pendant l'animation de navigation, constaté sur le web le 23/11/2026)
+  const weightRef = useRef<TextInput>(null);
+  const heightRef = useRef<TextInput>(null);
+  const headRef = useRef<TextInput>(null);
+  const fieldRefs = { weight_kg: weightRef, height_cm: heightRef, head_cm: headRef };
+  useEffect(() => {
+    const focusRef = focus === 'weight_kg' ? weightRef : focus === 'height_cm' ? heightRef : focus === 'head_cm' ? headRef : null;
+    if (!focusRef) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const task = InteractionManager.runAfterInteractions(() => { timer = setTimeout(() => focusRef.current?.focus(), 350); });
+    return () => { task.cancel(); if (timer) clearTimeout(timer); };
+  }, [focus]);
   const [source, setSource] = useState<'home' | 'professional'>('professional');
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -358,10 +371,10 @@ export function GrowthTab({ child, focus }: { child: Child; /** Carte d'Aura « 
           <Field label={tr('u7.child.date')} value={date} onChangeText={setDate} placeholder={tr('u7.contra.rem.datePh')} keyboardType="numbers-and-punctuation" error={errors.date} />
           {sortedM.length ? <Chip icon="copy" label={tr('u7.child.prefill')} onPress={prefillLast} testID="growth-prefill" /> : null}
           <Row style={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} autoFocus={focus === 'weight_kg'} testID="growth-field-weight_kg" optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
-            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} autoFocus={focus === 'height_cm'} testID="growth-field-height_cm" optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.weight_kg')} ref={fieldRefs.weight_kg} testID="growth-field-weight_kg" optional value={values.weight_kg} onChangeText={(v) => setValues({ ...values, weight_kg: v })} keyboardType="decimal-pad" suffix="kg" error={errors.weight_kg} /></View>
+            <View style={{ flex: 1 }}><Field label={tr('u7.child.metric.height_cm')} ref={fieldRefs.height_cm} testID="growth-field-height_cm" optional value={values.height_cm} onChangeText={(v) => setValues({ ...values, height_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.height_cm} /></View>
           </Row>
-          <Field label={tr('u7.child.metric.head_cm')} autoFocus={focus === 'head_cm'} testID="growth-field-head_cm" optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
+          <Field label={tr('u7.child.metric.head_cm')} ref={fieldRefs.head_cm} testID="growth-field-head_cm" optional value={values.head_cm} onChangeText={(v) => setValues({ ...values, head_cm: v })} keyboardType="decimal-pad" suffix="cm" error={errors.head_cm} />
           <Segmented label={tr('u7.child.measureTaken')} value={source} onChange={setSource} options={[{ value: 'professional', label: tr('u7.child.byPro') }, { value: 'home', label: tr('u7.child.atHome') }]} />
           <Field label={tr('u7.child.note')} optional value={note} onChangeText={setNote} maxLength={1000} />
           <Button label={tr('u7.child.saveMeasure')} loading={saving} onPress={add} />

@@ -16,7 +16,7 @@ import Animated from 'react-native-reanimated';
 import { router, useIsFocused, useNavigation } from 'expo-router';
 import { CameraView } from 'expo-camera';
 import { Screen } from '@/components/Screen';
-import { KeyboardScopeContext, useKeyboardScopeFor } from '@/components/keyboard';
+import { KeyboardScopeContext, useKeyboardScopeFor, DISMISS_ON_DRAG } from '@/components/keyboard';
 import { ToolArticles } from '@/features/ToolArticles';
 import { ScreenToolContext } from '@/lib/screenTool';
 import { Banner, Chip, Divider, Field, Icon, Row, SectionTitle, Text } from '@/components/ui';
@@ -93,7 +93,7 @@ function StepScroll({ step, children }: { step: string; children: React.ReactNod
   return (
     <KeyboardScopeContext.Provider value={scope}>
       <ScrollView ref={ref} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64}
-        keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" showsVerticalScrollIndicator={false} testID="scan-scroll"
+        keyboardShouldPersistTaps="handled" keyboardDismissMode={DISMISS_ON_DRAG} showsVerticalScrollIndicator={false} testID="scan-scroll"
         contentContainerStyle={{ paddingTop: spacing.md, paddingBottom: spacing.xxl, gap: spacing.md }}>
         {children}
         {toolId ? <ToolArticles toolId={toolId} /> : null}

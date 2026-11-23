@@ -1,7 +1,7 @@
 /** Feuille modale, notifications éphémères (toasts) et confirmation. */
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Easing, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
-import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible } from './keyboard';
+import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible, DISMISS_ON_DRAG } from './keyboard';
 import { NATIVE_DRIVER } from '@/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDemoInset } from '@/components/demoInset';
@@ -203,7 +203,7 @@ export function Sheet({ visible, onClose, title, children, panel: Panel, headerA
                 </View>
               </GestureDetector>
               {/* flexShrink : le contenu long défile au lieu de dépasser de l'écran */}
-              <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" testID="sheet-scroll">
+              <ScrollView ref={scrollRef} onScroll={onScroll} onScrollEndDrag={onScroll} onMomentumScrollEnd={onScroll} scrollEventThrottle={64} style={{ flexShrink: 1 }} contentContainerStyle={{ padding: spacing.lg, paddingTop: spacing.xs, gap: spacing.md }} keyboardShouldPersistTaps="handled" keyboardDismissMode={DISMISS_ON_DRAG} testID="sheet-scroll">
                 <KeyboardScopeContext.Provider value={keyboardScope}>{children}</KeyboardScopeContext.Provider>
               </ScrollView>
                 </>

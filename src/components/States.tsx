@@ -22,7 +22,7 @@ import { t as tr } from '@/i18n';
 import { ScreenToolContext } from '@/lib/screenTool';
 import { ToolArticles } from '@/features/ToolArticles';
 import { toolTopic } from '@/lib/domain/toolArticles';
-import { KeyboardScopeContext, useKeyboardScopeFor } from '@/components/keyboard';
+import { KeyboardScopeContext, useKeyboardScopeFor, DISMISS_ON_DRAG } from '@/components/keyboard';
 
 // ------------------------------------------------------------------ squelettes
 export function SkeletonBlock({ height = 16, width = '100%', style }: { height?: number; width?: number | `${number}%`; style?: object }) {
@@ -201,7 +201,7 @@ function VirtualListInner<T>({ renderItem, ListFooterComponent, onScroll, ...pro
       windowSize={7}
       removeClippedSubviews
       keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
+      keyboardDismissMode={DISMISS_ON_DRAG}
       ListFooterComponent={footer}
       {...props}
     />

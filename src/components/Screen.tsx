@@ -2,7 +2,7 @@ import React from 'react';
 import { PracticeBanner } from '@/features/tour/TourEntry';
 import { parentRoute } from '@/lib/parentRoute';
 import { Animated, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible } from './keyboard';
+import { KEYBOARD_BEHAVIOR, KeyboardScopeContext, useKeyboardScopeFor, useKeyboardVisible, DISMISS_ON_DRAG } from './keyboard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useIsFocused, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -280,7 +280,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
       testID="screen-scroll"
       contentContainerStyle={[styles.wide, { paddingHorizontal: padded ? spacing.lg : 0, paddingTop: header ? spacing.xs : top + spacing.md, paddingBottom: insets.bottom + spacing.xxl + bottomInset, gap: spacing.md }, contentStyle]}
       keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
+      keyboardDismissMode={DISMISS_ON_DRAG}
       showsVerticalScrollIndicator={false}
     >
       {titleBlock}

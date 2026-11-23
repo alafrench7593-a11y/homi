@@ -306,3 +306,10 @@ export function useKeyboardVisible() {
 
 /** `behavior` commun des KeyboardAvoidingView de l'appli (le web n'a pas de clavier logiciel à éviter). */
 export const KEYBOARD_BEHAVIOR = Platform.OS === 'web' ? undefined : ('padding' as const);
+
+/**
+ * Fermeture du clavier au glissement. Sur le web, react-native-web ferme le clavier à CHAQUE défilement, y compris le
+ * défilement programmatique qui amène le champ en vue au focus : le curseur disparaissait aussitôt posé (audit du
+ * 23/11/2026, champ « Poids » ouvert depuis Aura). Le web n'a pas de clavier à fermer au glissement : on s'abstient.
+ */
+export const DISMISS_ON_DRAG = Platform.OS === 'web' ? ('none' as const) : ('on-drag' as const);

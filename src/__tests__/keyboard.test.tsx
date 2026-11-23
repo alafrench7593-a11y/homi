@@ -218,3 +218,21 @@ describe('défilement différé « garder le champ visible »', () => {
     expect(stillFocused(null)).toBe(false);
   });
 });
+
+describe('DISMISS_ON_DRAG (audit 23/11/2026 : curseur perdu sur le web)', () => {
+  it('ne ferme pas le clavier au défilement sur le web, garde « on-drag » ailleurs', () => {
+    const load = (os: string) => {
+      let v: unknown;
+      jest.isolateModules(() => {
+        const RN = require('react-native');
+        const prev = RN.Platform.OS;
+        RN.Platform.OS = os;
+        v = require('@/components/keyboard').DISMISS_ON_DRAG;
+        RN.Platform.OS = prev;
+      });
+      return v;
+    };
+    expect(load('web')).toBe('none');
+    expect(load('ios')).toBe('on-drag');
+  });
+});

@@ -14,6 +14,7 @@
  *    à l'écran ; l'indicateur « Aura prépare une réponse » est immobile), saisie au-dessus du clavier (pied d'écran
  *    `Screen`, portée clavier existante).
  */
+import { DISMISS_ON_DRAG } from '@/components/keyboard';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
@@ -534,7 +535,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           keyExtractor={(m) => m.id}
           extraData={`${botState}:${lastAura?.id ?? ''}`}
           keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
+          keyboardDismissMode={DISMISS_ON_DRAG}
           ListHeaderComponent={header}
           contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md, paddingBottom: insets.bottom + spacing.lg, gap: spacing.md }}
           renderItem={({ item: m }) => (m.role === 'user' ? (
