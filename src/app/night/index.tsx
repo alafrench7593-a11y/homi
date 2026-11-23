@@ -198,7 +198,7 @@ export default function NightMode() {
                 style={({ pressed }) => ({ marginTop: spacing.md, width: 168, height: 168, borderRadius: 84, borderWidth: 2, borderColor: GOLD, alignItems: 'center', justifyContent: 'center', backgroundColor: pressed ? CARD_PRESSED : 'rgba(205,180,138,0.08)' })}
               >
                 <Icon name={openSleep ? 'sun' : 'moon'} color={GOLD} size={34} />
-                <Text weight="medium" color={TEXT} style={{ marginTop: 6 }}>{openSleep ? tr('u6.night.wake') : tr('u6.night.sleeps')}</Text>
+                <Text weight="medium" color={TEXT} style={{ marginTop: 6 }}>{openSleep ? tr('u6.night.wake') : child ? tr('u6.night.fallsAsleep', { name: child.first_name }) : tr('u6.night.sleeps')}</Text>
               </Tappable>
               {openSleep && (
                 <Tappable onPress={addWakeup} accessibilityRole="button" accessibilityLabel={tr('u6.night.note_wake_a11y')} style={{ minHeight: 48, justifyContent: 'center' }}>

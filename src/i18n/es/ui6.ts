@@ -85,6 +85,7 @@ export const ui6: Messages<typeof fr> = {
   "u6.night.start_sleep": "Iniciar el sueño",
   "u6.night.wake": "Despertar",
   "u6.night.sleeps": "Está durmiendo",
+  "u6.night.fallsAsleep": "{name} se duerme",
   "u6.night.note_wake_a11y": "Anotar un despertar nocturno",
   "u6.night.note_wake": "+ Anotar un despertar",
   "u6.night.counts_a11y": "Últimas 24 horas: {feeds} tomas, {diapers} pañales",

@@ -82,6 +82,7 @@ export const ui6 = {
   'u6.night.start_sleep': 'Démarrer le sommeil',
   'u6.night.wake': 'Réveil',
   'u6.night.sleeps': 'Il/elle dort',
+  'u6.night.fallsAsleep': '{name} s’endort',
   'u6.night.note_wake_a11y': 'Noter un réveil nocturne',
   'u6.night.note_wake': '+ Noter un réveil',
   'u6.night.counts_a11y': 'Dernières 24 heures : {feeds} tétées, {diapers} couches',
