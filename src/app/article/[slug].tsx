@@ -19,6 +19,7 @@ import { getLocale, t as tr, type TKey } from '@/i18n';
 import { AI_AUTHOR_EN, AI_AUTHOR_FR } from '@/content/articles/authors';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { ReadingMemory } from '@/features/readTrack/ReadingMemory';
 
 export default function ArticleScreen() {
   const t = useTheme();
@@ -68,6 +69,8 @@ export default function ArticleScreen() {
   const status = (raw === 'reviewed' || raw === 'validated') && !(a.reviewer_name && a.reviewer_qualification) ? 'to_review' : raw;
   return (
     <Screen back right={<FavoriteButton icon="bookmark" active={!!saved} labelOn={tr('u3.art.favOff')} labelOff={tr('u3.art.favOn')} onPress={toggleFav} />}>
+      {/* Contenu long : « Reprendre la lecture » (dernier article ouvert du profil, position de défilement restaurée) */}
+      <ReadingMemory item={isLocked(a, premium) ? null : { kind: 'article', id: a.slug, title: a.title, href: `/article/${a.slug}` }} />
       <Row style={{ alignItems: 'center' }}>
         <Icon name="clock" size={14} color={t.colors.textMuted} />
         <Text variant="caption" muted testID="article-reading-time">{tr('u3.art.reading', { n: readingMinutes(a.body_md) })}</Text>

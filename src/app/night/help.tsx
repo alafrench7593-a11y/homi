@@ -28,6 +28,7 @@ import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { ReadingMemory } from '@/features/readTrack/ReadingMemory';
 
 export default function NightHelp() {
   const t = useTheme();
@@ -70,6 +71,8 @@ export default function NightHelp() {
   return (
     <Screen back title={tr('nh.title')} subtitle={tr('nh.subtitle', { name: child.first_name })}
       action={{ label: tr('nh.openNightMode'), icon: 'moon', onPress: () => router.push(`/night?child=${child.id}`), testID: 'night-open-mode' }}>
+      {/* Contenu long (repères, routines, couchage) : « Reprendre la lecture » et position de défilement restaurée */}
+      <ReadingMemory item={sleeps.isLoading && !sleeps.data ? null : { kind: 'night', id: child.id, title: tr('rt.night.title', { name: child.first_name }), href: `/night/help?child=${child.id}` }} />
       <Banner tone="info">{tr('nh.intro')}</Banner>
 
       {/* Résumé simple */}

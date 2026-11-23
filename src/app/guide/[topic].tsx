@@ -14,6 +14,7 @@ import { useArticles, useChild } from '@/lib/data/hooks';
 import { spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/ThemeProvider';
 import { t as tr, type TKey } from '@/i18n';
+import { ReadingMemory, ReadStar } from '@/features/readTrack/ReadingMemory';
 
 /** Âge corrigé (semaines) d'un bébé né avant terme : âge réel moins les semaines manquantes jusqu'à 40 SA. */
 export function correctedAgeWeeks(birthDate: string, termWeeks: number | null | undefined, now = new Date()): { real: number; corrected: number } | null {
@@ -33,12 +34,16 @@ export default function GuideScreen() {
   const bySlug = useMemo(() => new Map((articles ?? []).map((a) => [a.slug, a])), [articles]);
   const total = guide ? guideSlugs(guide).filter((s) => bySlug.has(s)).length : 0;
   const corrected = guide?.id === 'neonat' && child ? correctedAgeWeeks(child.birth_date, child.birth_term_weeks) : null;
+  const readRef = guide ? { kind: 'guide' as const, id: guide.id, title: tr(`gd.${guide.id}.title` as TKey), href: `/guide/${guide.id}${typeof childId === 'string' ? `?child=${childId}` : ''}` } : null;
 
   if (!guide) return <Screen back title={tr('gd.readAll')}><EmptyState icon="book-open" title={tr('gd.empty')} /></Screen>;
   const k = (s: string) => `gd.${guide.id}.${s}` as TKey;
 
   return (
-    <Screen back title={tr(k('title'))} subtitle={total ? tr('gd.articles', { count: total }) : undefined}>
+    <Screen back title={tr(k('title'))} subtitle={total ? tr('gd.articles', { count: total }) : undefined}
+      right={readRef ? <ReadStar refItem={readRef} testID="guide-star" /> : undefined}>
+      {/* Guide = contenu long : dernier contenu ouvert du profil, position de défilement restaurée */}
+      <ReadingMemory item={readRef && !(isLoading && !articles) ? readRef : null} />
       <Text muted>{tr(k('intro'))}</Text>
       {guide.banner === 'emergency' && <Banner tone="danger">{tr('gd.banner.emergency')}</Banner>}
       {guide.banner === 'health' && <Banner tone="info">{tr('gd.banner.health')}</Banner>}
