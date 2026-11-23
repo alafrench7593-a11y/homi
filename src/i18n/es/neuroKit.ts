@@ -57,4 +57,11 @@ export const neuroKit = {
   "lk.sheet.title": "Desbloquear {tool}",
   "lk.sheet.body": "Esta herramienta sirve para: {list}. Añade esta etapa a tu hogar para usarla; tus datos actuales no cambian.",
   "lk.sheet.cta": "Añadir una etapa",
+  "cal.today": "Hoy",
+  "cal.yesterday": "Ayer",
+  "cal.prev": "Mes anterior",
+  "cal.next": "Mes siguiente",
+  "cal.pickYear": "{title}: elegir el año",
+  "cal.open": "Abrir calendario: {label}",
+  "cal.close": "Cerrar calendario: {label}",
 } as const;

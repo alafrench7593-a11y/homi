@@ -88,3 +88,16 @@ describe('siestes et nuits sans type', () => {
     expect(sleepByDay([night, nap], 'lina', NOW, 1)[0].minutes).toBe(90);
   });
 });
+
+describe('audit final : 14 h 20 → 15 h 30 = 1 h 10 partout ; début corrigé 14 h 35 → 14 h 20', () => {
+  const wrong = [lina('s', 23, 14, 35, 15, 30)];
+  const fixed = wrong.map((s) => ({ ...s, started_at: iso(23, 14, 20) }));
+  const now = new Date(2026, 10, 23, 16, 0);
+  it('durée, jour, dernière sieste et relais lisent la même valeur corrigée', () => {
+    expect(sessionMinutes(wrong[0], now)).toBe(55);
+    expect(sessionMinutes(fixed[0], now)).toBe(70);
+    expect(sleepByDay(fixed, 'lina', now, 1)[0].minutes).toBe(70);
+    expect(sessionMinutes(lastNap(fixed, 'lina')!, now)).toBe(70);
+    expect(relayItems({ childId: 'lina', since: relaySince(null, now), now, sleeps: fixed, bottles: [] })[0]).toMatchObject({ id: 's', minutes: 70 });
+  });
+});

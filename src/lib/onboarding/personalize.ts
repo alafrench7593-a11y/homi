@@ -23,8 +23,8 @@ export type CycleGoal = 'cycle' | 'avoid';
 
 export type Need = 'mental_load' | 'sleep' | 'health' | 'appointments' | 'meals' | 'community';
 export const NEEDS: Need[] = ['mental_load', 'sleep', 'health', 'appointments', 'meals', 'community'];
-/** On garde les besoins vraiment prioritaires : 2 au plus. */
-export const MAX_NEEDS = 2;
+/** Plus de limite arbitraire (audit final du 23/11/2026) : tous les besoins peuvent être cochés. */
+export const MAX_NEEDS = NEEDS.length;
 
 export type Helper = 'nanny' | 'daycare';
 export const HELPERS: Helper[] = ['nanny', 'daycare'];
@@ -55,7 +55,7 @@ export function toggleSituation(list: Situation[], s: Situation): Situation[] {
   return [...base, s];
 }
 
-/** Besoins (2 au plus, dans l'ordre de choix ; le plus ancien cède sa place). */
+/** Besoins : coche / décoche, sans limite (tous les besoins au plus). */
 export function toggleNeed(list: Need[], n: Need): Need[] {
   if (list.includes(n)) return list.filter((x) => x !== n);
   const next = [...list, n];
