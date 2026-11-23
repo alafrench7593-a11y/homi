@@ -18,6 +18,7 @@ import { Tappable } from '@/components/Tappable';
 import { useTheme } from '@/theme/ThemeProvider';
 import { dosesFor, needLabel } from '@/features/needs';
 import { TreatmentsPanel } from '@/features/treatments/TreatmentsPanel';
+import { ChildDoseTrack } from '@/features/careTrack/ChildDoseTrack';
 import { useChild, useChildren, useMemberships } from '@/lib/data/hooks';
 import { useNow } from '@/lib/data/hooks-bottle';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -95,7 +96,7 @@ export default function ChildNeeds() {
         { icon: 'check', value: todayDoses.length ? `${todayDoses.filter((x) => x.log?.status === 'taken').length}/${todayDoses.length}` : '—', label: tr('mb.nd.doses') },
       ]} />
       <Banner tone="info">{tr('nd.disclaimer')}</Banner>
-      <Segmented label={tr('nd.title')} value={current} onChange={setTab} options={[
+      <Segmented label={tr('nd.title')} value={current} onChange={(v) => { setTab(v); router.setParams({ tab: v, day: undefined } as never); }} options={[
         { value: 'forYou', label: tr('nd.tab.forYou') }, { value: 'profile', label: tr('nd.tab.profile') },
         ...(!simple || current === 'follow' ? [{ value: 'follow' as Tab, label: tr('nd.tab.follow') }] : []),
         { value: 'treatments', label: tr('nd.tab.treatments') },
@@ -103,6 +104,7 @@ export default function ChildNeeds() {
       {current === FOR_YOU && <ForYou childId={child.id} childName={child.first_name} kinds={needs?.kinds ?? []} onPickCategories={() => setTab('profile')} onTreatments={() => setTab('treatments')} />}
       {current === 'profile' && <NeedsProfile childId={child.id} />}
       {current === 'follow' && <FollowUp childId={child.id} />}
+      {current === 'treatments' && <ChildDoseTrack child={child} />}
       {current === 'treatments' && <TreatmentsPanel scope={{ kind: 'child', childId: child.id, childName: child.first_name }} noteDose={params.dose} askTime={params.time} />}
     </Screen>
   );

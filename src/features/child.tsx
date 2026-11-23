@@ -12,7 +12,8 @@ import { ChildShortcuts } from '@/features/discoveries/ChildShortcuts';
 import { TodaySummary } from '@/components/MiniApp';
 import React, { useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { MomentTray } from '@/features/careTrack/MomentTray';
 import { StatPill } from '@/components/Charts';
 import { MeasureCurve, MeasureTray, type CurveReference } from '@/components/measureCurve';
 import { ageInMonths, describePosition, referenceCurves, sexForStandards, WHO_MAX_MONTHS, type GrowthIndicator, type Sex } from '@/lib/domain/growthStandards';
@@ -413,6 +414,7 @@ export function MilestonesTab({ child }: { child: Child }) {
   const write = useSafeWrite();
   const milestonesQ = useMilestones(child.id);
   const { data: milestones } = milestonesQ;
+  const { moment: momentParam } = useLocalSearchParams<{ moment?: string }>();
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<MilestoneKind>('milestone');
   const [domain, setDomain] = useState<string | null>(null);
@@ -502,13 +504,19 @@ export function MilestonesTab({ child }: { child: Child }) {
               <Text weight="bold">{year === NO_DATE ? tr('u7.child.noDate') : year}</Text>
               <Card>
                 <MotionList>{list.map((x) => (
-                  <MotionItem key={x.id}><ListRow
-                    key={x.id}
-                    icon={meta(x.kind).icon}
-                    title={x.title}
-                    subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? fd(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
-                    right={<IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.title })} size={18} onPress={() => remove(x)} />}
-                  /></MotionItem>
+                  <MotionItem key={x.id}><View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {/* « Supprimer » à côté de la ligne et non dedans : un bouton dans un bouton est invalide sur le web */}
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <ListRow
+                        icon={meta(x.kind).icon}
+                        title={x.title}
+                        subtitle={[meta(x.kind).label, x.domain ? DEV_DOMAINS.find((d) => d.value === x.domain)?.label : null, x.happened_on ? fd(x.happened_on) : null, x.note].filter(Boolean).join(' · ')}
+                        onPress={() => router.setParams({ moment: x.id } as never)}
+                        testID={`ct-moment-row-${x.id}`}
+                      />
+                    </View>
+                    <IconButton icon="trash-2" label={tr('u7.child.deleteX', { name: x.title })} size={18} onPress={() => remove(x)} />
+                  </View></MotionItem>
                 ))}</MotionList>
               </Card>
             </View>
@@ -516,6 +524,8 @@ export function MilestonesTab({ child }: { child: Child }) {
           <Text variant="caption" muted>{tr('u7.child.milestonesNote')}</Text>
         </>
       )}
+      {/* Fiche d'un moment (date, libellé, note) : moment gardé dans l'adresse (`?moment=`) */}
+      <MomentTray moment={(milestones ?? []).find((m) => m.id === momentParam) ?? null} birthDate={child.birth_date} onClose={() => router.setParams({ moment: undefined } as never)} />
       {/* Laits infantiles dans la frise (79) */}
       <FormulaFrise childId={child.id} />
 

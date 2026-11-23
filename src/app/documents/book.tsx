@@ -15,6 +15,7 @@ import { useHouseholdExtractions } from '@/lib/data/hooks-documents';
 import { useUserId } from '@/lib/auth';
 import { eq } from '@/lib/backend';
 import { BOOK_SECTIONS } from '@/lib/documents/taxonomy';
+import { DocTrack } from '@/features/careTrack/DocTrack';
 import { DocCard, Badge, sameSubject, subjectLabel, subjectOf, type Subject } from '@/features/documents';
 import type { DocumentRow, Reminder } from '@/lib/types';
 import { formatDate, formatTime, t as tr } from '@/i18n';
@@ -62,10 +63,8 @@ export default function HealthBook() {
       {loading ? <Skeleton rows={4} /> : docsQ.isError ? <ErrorView error={docsQ.error} onRetry={() => void docsQ.refetch()} /> : (
         <Appear kind="soft" delay={0.04}>
           <View style={{ gap: spacing.lg }}>
-            <Card tone="soft">
-              <Text weight="bold">{tr('docs.book.countFor', { who: subjectLabel(subject, kids), count: active.length })}</Text>
-              <Text variant="small" muted>{tr('docs.book.toVerifyCount', { count: active.filter((d) => d.review_status === 'to_verify').length })}</Text>
-            </Card>
+            <Text weight="bold" testID="book-count">{tr('docs.book.countFor', { who: subjectLabel(subject, kids), count: active.length })}</Text>
+            <DocTrack docs={mine} testID="ct-book" />
             {section('recent', active.slice(0, 4))}
             {section('favorites', active.filter((d) => d.favorite))}
             {BOOK_SECTIONS.map((s) => section(s.key, active.filter((d) => s.cats.includes(d.category)), (d) => {

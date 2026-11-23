@@ -4,7 +4,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { BriefStrip, DayList, DayRow, DaySection, DaySeparator, type DayRowSpec } from '@/features/day5/DayParts';
 import { byClock, splitTimed } from '@/features/day5/summaryLines';
@@ -100,7 +100,9 @@ export default function SummaryScreen() {
   const { subject } = useActiveSubject();
   const { data: children } = useTrackedChildren();
   const pregnancy = useActivePregnancy();
-  const [period, setPeriod] = useState<SummaryPeriod>(params.period === 'week' || params.period === 'appointment' ? params.period : 'day');
+  // Période gardée dans l'adresse (`?period=`) : ouvrir une mini-app puis revenir retrouve la même période
+  const period: SummaryPeriod = params.period === 'week' || params.period === 'appointment' ? params.period : 'day';
+  const setPeriod = (p: SummaryPeriod) => router.setParams({ period: p === 'day' ? undefined : p } as never);
   const family = params.family === '1' || subject.type === 'family';
   const child = subject.type === 'child' ? (children ?? []).find((c) => c.id === subject.id) ?? null : null;
   const name = child?.first_name ?? (subject.type === 'pregnancy' ? tr('u7.summary.yourPregnancy') : null);
@@ -170,7 +172,7 @@ export default function SummaryScreen() {
       {subject.type !== 'child' && subject.type !== 'pregnancy' ? <Banner tone="info">{tr('u7.summary.pickProfile')}</Banner> : (
         <>
           <View testID="summary-periods"><Row wrap>
-            {(['day', 'week', 'appointment'] as SummaryPeriod[]).map((p) => <Chip key={p} label={periodLabel(p)} selected={period === p} onPress={() => setPeriod(p)} />)}
+            {(['day', 'week', 'appointment'] as SummaryPeriod[]).map((p) => <Chip key={p} label={periodLabel(p)} selected={period === p} onPress={() => setPeriod(p)} testID={`summary-period-${p}`} />)}
           </Row></View>
           {period === 'appointment' && next ? <Text variant="small" muted>{tr('u7.summary.nextAppt', { title: next.title, date: formatDate(next.starts_at, LONG_DT) })}</Text> : null}
           <Text variant="caption" muted testID="summary-range">{subtitle}</Text>

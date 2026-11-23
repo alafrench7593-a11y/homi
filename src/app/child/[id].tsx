@@ -37,8 +37,9 @@ export default function ChildProfile() {
   const theme = useTheme();
   const [deleting, setDeleting] = useState(false);
   const { subject, setSubject } = useActiveSubject();
-  const initial = CHILD_TABS.some((x) => x.value === params.tab) ? (params.tab as ChildTab) : 'apercu';
-  const [tab, setTab] = useState<ChildTab>(initial);
+  // Onglet gardé dans l'adresse (`?tab=`) : ouvrir une fiche puis revenir retrouve le même onglet
+  const tab: ChildTab = CHILD_TABS.some((x) => x.value === params.tab) ? (params.tab as ChildTab) : 'apercu';
+  const setTab = (v: ChildTab) => router.setParams({ tab: v, moment: undefined } as never);
   const [editing, setEditing] = useState(false);
 
   if (!child) {

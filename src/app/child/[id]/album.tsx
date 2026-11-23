@@ -5,9 +5,9 @@
  */
 import React, { useMemo, useState } from 'react';
 import { Image, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { HmFixTray, HmHero } from '@/features/homeTrack/kit';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Field, Row, SectionTitle, Segmented, Text } from '@/components/ui';
@@ -30,7 +30,7 @@ import { MotionItem, MotionList } from '@/motion/ListMotion';
 type Draft = { mode: 'add'; uri: string } | { mode: 'edit'; photo: ChildPhoto };
 
 export default function ChildAlbum() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, photo: photoParam, fix: fixParam } = useLocalSearchParams<{ id: string; photo?: string; fix?: string }>();
   const child = useChild(id);
   const childLoading = useChildrenLoading();
   const toast = useToast();
@@ -40,9 +40,12 @@ export default function ChildAlbum() {
   const update = useUpdateChildPhoto();
   const del = useDeleteChildPhoto();
   const [draft, setDraft] = useState<Draft | null>(null);
-  const [viewing, setViewing] = useState<ChildPhoto | null>(null);
   const [picking, setPicking] = useState<'camera' | 'library' | null>(null);
   const groups = useMemo(() => groupByMonth(photosQ.data ?? []), [photosQ.data]);
+  // Photo regardée et photo en correction gardées dans l'adresse (`?photo=`, `?fix=`)
+  const viewing = photoParam ? (photosQ.data ?? []).find((p) => p.id === photoParam) ?? null : null;
+  const fixing = fixParam ? (photosQ.data ?? []).find((p) => p.id === fixParam) ?? null : null;
+  const setViewing = (p: ChildPhoto | null) => router.setParams({ photo: p?.id } as never);
 
   if (!child) {
     return (
@@ -83,10 +86,9 @@ export default function ChildAlbum() {
 
   return (
     <Screen back title={tr('alb.title')} subtitle={name}>
-      <TodaySummary title={tr('alb.title')} items={[
-        { icon: 'image', value: String(total), label: tr('alb.count', { count: total }).replace(/^\d+\s*/, '') },
-        { icon: 'calendar', value: last ? formatDateFr(last.taken_on, false) : '—', label: tr('alb.date') },
-      ]} />
+      <HmHero testID="ct-album-hero" value={total ? String(total) : null} emptyLabel={tr('ct.album.none')}
+        unit={total ? tr('ct.album.unit', { count: total }) : null}
+        caption={last ? tr('ct.album.lastOn', { date: formatDateFr(last.taken_on) }) : null} />
       <Text variant="small" muted>{tr('alb.privacy', { name })}</Text>
 
       {canAdd ? (
@@ -148,12 +150,34 @@ export default function ChildAlbum() {
             {viewing.caption ? <Text>{viewing.caption}</Text> : null}
             {viewing.visibility === 'private' ? <Text variant="caption" muted>{tr('alb.privateBadge')}</Text> : null}
             <Row wrap>
-              <Button label={tr('alb.edit')} icon="edit-2" variant="secondary" onPress={() => setDraft({ mode: 'edit', photo: viewing })} />
+              <Button label={tr('ct.fix')} icon="edit-2" variant="secondary" testID="ct-album-fix" onPress={() => router.setParams({ photo: undefined, fix: viewing.id } as never)} />
               <Button label={tr('alb.delete')} icon="trash-2" variant="ghost" loading={del.isPending} onPress={() => void remove(viewing)} />
             </Row>
           </View>
         ) : null}
       </Sheet>
+      {fixing ? (
+        <HmFixTray open onOpenChange={(v) => { if (!v) router.setParams({ fix: undefined } as never); }} testID="ct-album-tray"
+          title={tr('alb.title')} hero={formatDateFr(fixing.taken_on)}
+          lines={[fixing.taken_on >= child.birth_date ? tr('alb.ageAt', { age: childAge(child.birth_date, fixing.taken_on).label }) : null, fixing.caption, fixing.visibility === 'private' ? tr('alb.privateBadge') : null]}
+          editLabel={tr('ct.fix')} editTitle={tr('ct.album.fixTitle')}
+          onFullForm={() => setDraft({ mode: 'edit', photo: fixing })}
+          fields={[
+            { key: 'date', label: tr('alb.date'), kind: 'date' },
+            { key: 'caption', label: tr('alb.caption'), kind: 'multiline', maxLength: CAPTION_MAX },
+          ]}
+          initial={{ date: toFrDate(fixing.taken_on), caption: fixing.caption ?? '' }}
+          validate={(d) => { const iso = frToISO(d.date); return !iso || !validTakenOn(iso, child.birth_date, todayISO()) ? tr('alb.errDate') : !cleanCaption(d.caption).ok ? tr('alb.errCaption') : null; }}
+          onSave={async (d) => {
+            const iso = frToISO(d.date);
+            if (!iso || !validTakenOn(iso, child.birth_date, todayISO())) return tr('alb.errDate');
+            const c = cleanCaption(d.caption);
+            if (!c.ok) return tr('alb.errCaption');
+            // Même écriture que le formulaire de la photo (visibilité inchangée)
+            await update.mutateAsync({ id: fixing.id, takenOn: iso, caption: c.value, visibility: fixing.visibility });
+            return 'ok';
+          }} />
+      ) : null}
     </Screen>
   );
 }

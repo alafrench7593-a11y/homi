@@ -9,7 +9,7 @@ import { Tappable } from '@/components/Tappable';
 import { GlassSurface } from '@/components/Glass';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { TodaySummary } from '@/components/MiniApp';
+import { DocTrack } from '@/features/careTrack/DocTrack';
 import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
@@ -101,13 +101,8 @@ export default function DocumentsHome() {
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.xs }}>
       {/* Actions principales */}
-      {!loading && !failed ? (
-        <TodaySummary title={tr('docs.title')} items={[
-          { icon: 'folder', value: String((docs ?? []).filter((d) => !d.archived).length), label: tr('docs.section.library') },
-          { icon: 'alert-circle', value: String(toVerify.length), label: tr('docs.section.toVerify') },
-          { icon: 'star', value: String(favorites.length), label: tr('docs.section.favorites') },
-        ]} />
-      ) : null}
+      {/* Suivi par mois (mois et document ouvert gardés dans l'adresse), fiche de correction */}
+      {!loading && !failed && !selecting ? <DocTrack docs={subject ? (docs ?? []).filter((d) => sameSubject(subjectOf(d), subject)) : docs ?? []} /> : null}
       {/* Recherche en tête : retrouver un document en tapant quelques mots */}
       <Field label={tr('docs.search.label')} value={query} onChangeText={setQuery} placeholder={tr('docs.search.placeholder')} returnKeyType="search" autoCorrect={false} testID="docs-search" />
       {/* Favoris à portée de pouce : tuiles qui défilent, ouvertes en un geste */}
