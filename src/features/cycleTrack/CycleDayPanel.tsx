@@ -11,6 +11,7 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Glass } from '@/components/glass';
 import { Tappable } from '@/components/Tappable';
+import { MotionItem } from '@/motion/ListMotion';
 import { Icon, Text, type IconName } from '@/components/ui';
 import { formatDate, t as tr } from '@/i18n';
 import { addDays, todayISO } from '@/lib/domain/dates';
@@ -85,7 +86,7 @@ export function CycleDayPanel({ testID, label, day, loading, hero, unit, heroA11
       <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md, gap: 2 }} testID={`${testID}-list`}>
         <Text variant="label">{tr('cy.tk.dayEntries', { date: formatDate(`${day}T12:00:00`, { weekday: 'short', day: 'numeric', month: 'short' }) })}</Text>
         {loading ? null : rows.length ? rows.map((r) => (
-          <Tappable key={r.id} accessibilityRole="button" testID={`${testID}-row-${r.id}`} onPress={r.onPress}
+          <MotionItem key={r.id}><Tappable accessibilityRole="button" testID={`${testID}-row-${r.id}`} onPress={r.onPress}
             accessibilityLabel={r.a11y ?? [r.time ?? tr('cy.tk.allDay'), r.title, r.detail, tr('cy.tk.openToFix')].filter(Boolean).join('. ')}
             style={({ pressed }) => ({ minHeight: MIN_TOUCH, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, opacity: pressed ? 0.6 : 1, paddingVertical: 4 })}>
             <Text weight="bold" variant={r.time ? undefined : 'small'} muted={!r.time} style={[{ width: 64 }, TABULAR]}>{r.time ?? tr('cy.tk.allDay')}</Text>
@@ -97,7 +98,7 @@ export function CycleDayPanel({ testID, label, day, loading, hero, unit, heroA11
               {r.detail ? <Text variant="small" muted numberOfLines={2} style={TABULAR}>{r.detail}</Text> : null}
             </View>
             <Icon name="chevron-right" size={16} color={t.colors.textMuted} />
-          </Tappable>
+          </Tappable></MotionItem>
         )) : (
           <View testID={`${testID}-empty`} style={{ minHeight: 56, borderRadius: radius.lg, borderWidth: 1.5, borderStyle: 'dashed', borderColor: t.colors.border, alignItems: 'center', justifyContent: 'center', padding: spacing.sm, marginTop: 4 }}>
             <Text variant="small" muted center>{tr('cy.tk.nothingDay')}</Text>

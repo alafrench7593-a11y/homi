@@ -223,9 +223,14 @@ export function searchCatalog(tools: readonly CatalogTool[], query: string, max 
   const exact = entries.filter((e) => ` ${foldText(e.tool.label)} ` === folded);
   if (exact.length) {
     const top = Math.max(1, ...hits.map((h) => h.score));
+    // … sauf devant les cibles d'une intention explicite (« assistant » → HOMI Aura, Découvrir HOMI) : il passe juste derrière
+    //   (intention qui couvre TOUTE la requête : motif ancré ^…$)
+    const whole = SEARCH_INTENTS.filter((i) => i.re.source.startsWith('^') && i.re.source.endsWith('$') && i.re.test(folded)).flatMap((i) => i.ids);
+    const floor = whole.length ? Math.min(...hits.filter((h) => whole.includes(h.tool.id)).map((h) => h.score)) : Infinity;
     for (const e of exact) {
+      const score = whole.length && !whole.includes(e.tool.id) ? Math.max(1, floor - 0.5) : top * 3;
       const prev = hits.find((h) => h.tool.id === e.tool.id);
-      if (prev) prev.score = top * 3; else hits.push({ tool: e.tool, score: top * 3 });
+      if (prev) prev.score = Math.max(prev.score, score); else hits.push({ tool: e.tool, score });
     }
   }
   if (!hits.length) return { results: [], understood: false, tokens };
