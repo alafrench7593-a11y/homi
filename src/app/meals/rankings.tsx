@@ -9,7 +9,7 @@ import { Screen } from '@/components/Screen';
 import { HmHero } from '@/features/homeTrack/kit';
 import { router, useLocalSearchParams } from 'expo-router';
 import { EmptyState, Skeleton } from '@/components/States';
-import { Button, Chip, Row, Text } from '@/components/ui';
+import { Button, Chip, IconButton, Row, Text } from '@/components/ui';
 import { RecipeCard } from '@/features/recipes/RecipeCard';
 import { useFoodProfile, useRecipeFavorites, useRecipes } from '@/lib/data/hooks-recipes';
 import { filterRecipes } from '@/lib/recipes/engine';
@@ -17,6 +17,8 @@ import { AGE_BANDS, BAND_MONTHS, bandFor, scoreRecipe, type AgeBand } from '@/li
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { ResultsFade } from '@/components/MotionKit';
+import { MotionItem, MotionList } from '@/motion/ListMotion';
+import { RankTray } from '@/features/finishMeals/RankTray';
 
 type Kind = 'recommended' | 'cheap' | 'quick' | 'balanced';
 const KINDS: Kind[] = ['recommended', 'cheap', 'quick', 'balanced'];
@@ -27,7 +29,7 @@ export default function Rankings() {
   const fav = useRecipeFavorites();
   const kidProfile = profile.audience === 'baby' || profile.audience === 'child';
   // Classement et tranche d'âge gardés dans l'adresse (« ?kind=quick&band=… ») : ouvrir une recette puis revenir les retrouve
-  const qp = useLocalSearchParams<{ kind?: string; band?: string }>();
+  const qp = useLocalSearchParams<{ kind?: string; band?: string; recipe?: string }>();
   const band: AgeBand = AGE_BANDS.includes(qp.band as AgeBand) ? (qp.band as AgeBand) : kidProfile && profile.ageMonths != null ? bandFor(profile.ageMonths) : 'y4_6';
   const kind: Kind = KINDS.includes(qp.kind as Kind) ? (qp.kind as Kind) : 'recommended';
   const setBand = (b: AgeBand) => router.setParams({ band: b } as never);
@@ -65,15 +67,24 @@ export default function Rankings() {
       <Text variant="caption" muted>{tr('rc.score.disclaimer')}</Text>
       {loading && !all ? <Skeleton rows={4} /> : !ranked.length ? <EmptyState icon="award" title={tr('rc.noMatch')} body={tr('rc.noneBody')} /> : (
         <ResultsFade k={`${kind}-${band}`} style={{ gap: spacing.xs }} testID="rankings-list">
-          {ranked.slice(0, shown).map((x, i) => (
-            <View key={x.r.id} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-              <Text weight="bold" style={{ width: 28, textAlign: 'right' }}>{i + 1}</Text>
+          {/* Rang en colonne fixe ; le bouton à droite ouvre la fiche du score (gardée dans l'adresse « ?recipe= ») */}
+          <MotionList style={{ gap: spacing.xs }}>{ranked.slice(0, shown).map((x, i) => (
+            <MotionItem key={x.r.id}><View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+              <Text weight="bold" style={{ width: 28, textAlign: 'right', fontVariant: ['tabular-nums'] }}>{i + 1}</Text>
               <View style={{ flex: 1 }}><RecipeCard r={x.r} favorite={fav.ids.includes(x.r.id)} score={x.s.score} /></View>
-            </View>
-          ))}
+              <IconButton icon="sliders" label={tr('fm.rank.open', { title: x.r.title })} testID={`fm-rank-open-${x.r.slug}`} onPress={() => router.setParams({ recipe: x.r.slug } as never)} />
+            </View></MotionItem>
+          ))}</MotionList>
           {ranked.length > shown ? <Button label={tr('rc.more', { count: ranked.length - shown })} variant="secondary" onPress={() => setShown(shown + 20)} /> : null}
         </ResultsFade>
       )}
+      {(() => {
+        const i = qp.recipe ? ranked.findIndex((x) => x.r.slug === qp.recipe) : -1;
+        if (i < 0) return null;
+        const x = ranked[i];
+        return <RankTray key={x.r.id} recipe={x.r} score={x.s.score} rank={i + 1} context={`${tr(`rc.rank.${kind}` as TKey)} · ${tr(`rc.band.${band}` as TKey)}`}
+          onClose={() => router.setParams({ recipe: undefined } as never)} />;
+      })()}
     </Screen>
   );
 }

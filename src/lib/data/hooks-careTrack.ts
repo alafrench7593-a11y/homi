@@ -12,10 +12,12 @@ import { editGuards } from '../domain/quickTrack';
 import { useInvalidate } from './hooks';
 import { OfflineEditError } from './hooks-quickTrack';
 
-export type CareEditTable = 'child_milestones' | 'child_photos' | 'documents' | 'checklist_items' | 'mood_checkins' | 'exhaustion_checkins' | 'parent_sleep_logs';
+export type CareEditTable = 'child_milestones' | 'child_photos' | 'documents' | 'checklist_items' | 'mood_checkins' | 'exhaustion_checkins' | 'parent_sleep_logs'
+  /** Vaccins (registre) et repas d'un menu enregistré : même garde (23/11/2026) */
+  | 'child_vaccinations' | 'meal_plan_items';
 
 /** Colonnes d'appartenance : jamais modifiées par une correction. */
-const OWNERSHIP = ['id', 'household_id', 'child_id', 'user_id', 'checklist_id', 'uploaded_by', 'created_at'];
+const OWNERSHIP = ['id', 'household_id', 'child_id', 'user_id', 'checklist_id', 'uploaded_by', 'created_at', 'plan_id', 'recipe_slug', 'calendar_key'];
 
 export async function guardedCareUpdate(table: CareEditTable, id: string, patch: Record<string, unknown>, original: Record<string, unknown>): Promise<'ok' | 'changed'> {
   if (backend.mode !== 'demo' && !useOfflineStore.getState().online) throw new OfflineEditError();

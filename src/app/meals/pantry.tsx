@@ -14,7 +14,8 @@ import { useFoodProfile, useRecipes } from '@/lib/data/hooks-recipes';
 import { AISLE_ORDER, cookWithWhatIHave, STAPLES } from '@/lib/recipes/engine';
 import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { fold } from '@/lib/recipes/validate';
-import { usePantry } from '@/lib/data/hooks-stocks';
+import { usePantry, useStocks } from '@/lib/data/hooks-stocks';
+import { PantryList } from '@/features/finishMeals/PantryTrack';
 import { router } from 'expo-router';
 import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
@@ -28,11 +29,15 @@ export default function Pantry() {
   const keys = Object.keys(INGREDIENTS).filter((k) => !STAPLES.includes(k));
   const shown = keys.filter((k) => !q || fold(INGREDIENTS[k].name).includes(fold(q)));
   const results = useMemo(() => (all ? cookWithWhatIHave(all, profile, have) : []), [all, profile, have]);
+  const { all: stocks } = useStocks();
+  const usedIn = (k: string) => results.filter((x) => x.r.ingredients.some((i) => i.key === k)).length;
   const toggle = (k: string) => setHave(have.includes(k) ? have.filter((x) => x !== k) : [...have, k]);
   return (
     <Screen back title={tr('rc.pantry.open')} subtitle={profile.name ? tr('rc.for', { name: profile.name }) : tr('rc.pantry.sub')}>
       <HmHero testID="hm-pantry-hero" value={have.length ? String(have.length) : null} emptyLabel={tr('hm.pantry.none')} unit={tr('hm.pantry.unit')}
         split={have.length ? [{ label: tr('mb.rc.possible'), value: String(results.length), testID: 'hm-pantry-possible' }, { label: tr('mb.rc.complete'), value: String(results.filter((x) => !x.missing.length).length), testID: 'hm-pantry-complete' }] : undefined} />
+      {/* Ingrédients à la maison, datés ; toucher l'un d'eux ouvre sa fiche (gardée dans l'adresse « ?item= ») */}
+      <PantryList stocks={stocks} usedIn={usedIn} onRemove={(k) => setHave(have.filter((x) => x !== k))} />
       <Field label={tr('rc.pantry.search')} value={q} onChangeText={setQ} autoCorrect={false} testID="pantry-search" />
       {have.length ? <Row wrap>{have.map((k) => <Chip key={k} label={INGREDIENTS[k]?.name ?? k} selected onPress={() => toggle(k)} />)}<Button label={tr('rc.pantry.clear')} size="sm" variant="ghost" onPress={() => setHave([])} /></Row> : null}
       {AISLE_ORDER.map((a) => {
