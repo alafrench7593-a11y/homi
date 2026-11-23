@@ -26,7 +26,14 @@ def make_user(email, name):
         if p['id'] == uid: p.update({'display_name': name, 'onboarding_completed': True, 'journeys': ['family']})
     return uid
 
-make_user('alice@example.test', 'Alice')
+ALICE = make_user('alice@example.test', 'Alice')
+import datetime, uuid as _uuid
+_hid = next(m['household_id'] for m in fake.t('household_members') if m['user_id'] == ALICE)
+LEA = str(_uuid.uuid4())
+fake.t('children').append({'id': LEA, 'household_id': _hid, 'first_name': 'Léa', 'birth_date': (datetime.date.today() - datetime.timedelta(days=210)).isoformat(),
+                           'sex': 'female', 'photo_path': None, 'archived': False, 'enabled_tracking': ['bottle', 'sleep', 'growth'], 'allergies_declared': [], 'created_at': '2026-05-01T00:00:00Z'})
+# parcours « bébé » actif pour Léa (sans lui, l'app bloque à raison les outils bébé : /journeys/blocked)
+fake.t('user_journeys').append({'id': str(_uuid.uuid4()), 'user_id': ALICE, 'household_id': _hid, 'type': 'baby', 'status': 'active', 'started_on': '2026-05-01', 'ended_on': None, 'end_reason': None, 'pregnancy_id': None, 'child_id': LEA, 'created_at': '2026-05-01T00:00:00Z'})
 make_user('bruno@example.test', 'Bruno')
 
 with sync_playwright() as p:
@@ -55,6 +62,12 @@ with sync_playwright() as p:
     sign_in('alice@example.test')
     check('après connexion : retour à l’écran demandé', path().startswith('/settings/appearance'), path())
     pg.screenshot(path=os.path.join(SHOTS, 'a-retour-apres-connexion.png'))
+
+    # A bis. carte d'outil du site (/outil/<id>) : déjà connectée → l'outil de l'enfant
+    pg.goto(B + '/outil/baby_breastfeed'); wait(6)
+    check('carte du site → Allaitement de l’enfant dans la vraie app', path().startswith(f'/track/breastfeed?child={LEA}'), path())
+    pg.screenshot(path=os.path.join(SHOTS, 'a2-outil-connecte.png'))
+    pg.goto(B + '/settings/appearance'); wait(4)
 
     # B. actualisation, /app, retour navigateur
     pg.reload(); wait(5)
@@ -87,6 +100,19 @@ with sync_playwright() as p:
     ls = pg.evaluate("() => Object.entries(localStorage).map(([k,v]) => k + '=' + v).join('\\n')")
     check('autre compte : rien d’Alice dans le stockage du navigateur', 'Alice' not in ls and 'alice@' not in ls)
     pg.screenshot(path=os.path.join(SHOTS, 'c-changement-compte.png'))
+
+    # C bis. carte d'outil sans session (nouveau navigateur) → connexion → l'outil
+    ctx2 = b.new_context(viewport={'width': 390, 'height': 844}, locale='fr-FR')
+    pg2 = ctx2.new_page(); pg2.route('http://sb.fake.test/**', fake.route)
+    pg2.route_web_socket(re.compile(r'wss?://sb\.fake\.test/realtime/.*'), FakeRealtime().attach)
+    pg, prev = pg2, pg
+    pg.goto(B + '/outil/baby_breastfeed'); wait(5)
+    check('carte du site sans session → connexion demandée (pas la démo)', ('/welcome' in path() or '/start' in path()) and 'demo' not in path(), path())
+    pg.goto(B + '/auth/sign-in'); wait(3)
+    sign_in('alice@example.test'); wait(3)
+    check('après connexion : l’outil demandé s’ouvre', path().startswith(f'/track/breastfeed?child={LEA}'), path())
+    pg.screenshot(path=os.path.join(SHOTS, 'c2-outil-apres-connexion.png'))
+    pg = prev
 
     # D. HTML servi pour une page privée
     html = urllib.request.urlopen(B + '/settings/appearance').read().decode()

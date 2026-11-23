@@ -44,7 +44,7 @@ const shell = (title, description, robots, canonical) => rawShell
   .replace('You need to enable JavaScript to run this app.', 'HOMI a besoin de JavaScript pour fonctionner.');
 // Pages privées : titre générique, jamais indexées, aperçu de lien sans contenu familial
 writeFileSync(shellPath, shell('HOMI', 'Ton espace HOMI.', 'noindex, nofollow', null));
-writeFileSync(path.join(dist, 'demo.html'), shell('Démo HOMI — une famille fictive, sans compte', 'Essaie HOMI avec une famille fictive : journal, sommeil, biberons, allaitement, relais. Sans compte, rien n’est enregistré sur nos serveurs.', robotsPublic, `${siteUrl}/demo`));
+writeFileSync(path.join(dist, 'demo.html'), shell('Démo HOMI — une famille fictive, sans compte', 'Essaie HOMI avec une famille fictive : journal, sommeil, biberons, allaitement, relais. Sans compte, rien n’est enregistré sur nos serveurs.', 'noindex, nofollow', null));
 
 // 3) page publique
 const logo = readFileSync(path.join(root, 'assets/brand/homi-logo-mono.svg'), 'utf8').replace('<svg ', '<svg aria-hidden="true" focusable="false" ').replace(/ role="img" aria-label="HOMI"/, '');
@@ -65,7 +65,7 @@ const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', '/demo', ...legal.map((d) => `/${d}/`)];
+const pub = ['/', ...legal.map((d) => `/${d}/`)];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');

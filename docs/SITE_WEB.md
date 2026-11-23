@@ -1,4 +1,6 @@
-# Site web HOMI — `/`, `/demo`, `/app` (23/11/2026, branche `homi/site-web`)
+# Site web HOMI — `/` et la web app `/app` (23/11/2026, branche `homi/site-web`)
+
+**Décision de la propriétaire (23/11, après-midi) : le site mène à la vraie web app, plus à la démo.** Boutons « Ouvrir HOMI » (/app) et « Créer mon compte » ; cartes d'outils → `/outil/<id>` (connexion si besoin, puis l'outil pour l'enfant affiché). `/demo` reste en place mais n'est plus reliée (noindex, hors sitemap).
 
 ## Architecture
 - `/` : page publique **statique** (`web/site/`) — keynote en 5 chapitres, aucune donnée familiale, indexable en production.

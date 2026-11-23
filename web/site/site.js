@@ -94,10 +94,11 @@
   render(false);
 
   // ------------------------------------------------------------ recherche d'outils (moteur de l'application)
-  var demoHref = function (id) { return '/demo?outil=' + encodeURIComponent(id); };
+  // Cartes d'outils : la vraie web app (connexion si besoin, puis l'outil pour l'enfant affiché)
+  var toolHref = function (id) { return '/outil/' + encodeURIComponent(id); };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   function card(r) {
-    return '<a class="result" href="' + demoHref(r.entry) + '" data-tool="' + esc(r.entry) + '">' +
+    return '<a class="result" href="' + toolHref(r.entry) + '" data-tool="' + esc(r.entry) + '">' +
       '<span class="result-ico" aria-hidden="true">' + esc(r.label.charAt(0)) + '</span>' +
       '<span class="result-txt"><b>Ouvrir ' + esc(r.label) + '</b><span>' + esc(r.sub) + '</span></span>' +
       '<span class="result-go" aria-hidden="true">→</span></a>';
@@ -136,7 +137,7 @@
   function groups(list, open) {
     return list.map(function (g, i) {
       return '<details class="group"' + (open && i === 0 ? ' open' : '') + '><summary><span>' + esc(g.title) + '</span><span class="count">' + (g.count || g.items.length) + ' outils</span></summary><ul>' +
-        g.items.map(function (t) { return '<li><a href="' + demoHref(t.entry) + '"><b>' + esc(t.label) + '</b><span>' + esc(t.sub) + '</span></a></li>'; }).join('') + '</ul></details>';
+        g.items.map(function (t) { return '<li><a href="' + toolHref(t.entry) + '"><b>' + esc(t.label) + '</b><span>' + esc(t.sub) + '</span></a></li>'; }).join('') + '</ul></details>';
     }).join('');
   }
   withTools(function (api) {

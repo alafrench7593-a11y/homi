@@ -1,8 +1,8 @@
 /**
  * Parcours final du site HOMI (navigateur Chromium, 390 × 844, captures + vidéo) :
  *   « / » premier écran (boutons visibles) → corriger la sieste de Léa (1 h 25 → 1 h 10, total −15 min)
- *   → valeur reprise dans le relais → « Mon bébé prend le sein » → carte « Ouvrir Allaitement » → démo, outil ouvert
- *   → actualisation (même écran) → retour navigateur.
+ *   → valeur reprise dans le relais → « Mon bébé prend le sein » → carte « Ouvrir Allaitement » → vraie web app
+ *   (connexion demandée, outil mémorisé). Ouverture de l'outil une fois connecté : e2e/site_app_retour.py.
  * Usage : node e2e/site_parcours.mjs <url de base> <dossier de sortie>
  */
 import { createRequire } from 'node:module';
@@ -33,11 +33,11 @@ const shot = (n) => page.screenshot({ path: path.join(out, `${n}.png`) });
 
 // 1) premier écran
 await page.goto(base + '/', { waitUntil: 'networkidle' });
-const demoBtn = page.locator('[data-cta="hero-demo"]');
 const appBtn = page.locator('[data-cta="hero-app"]');
 const inView = async (loc) => { const b = await loc.boundingBox(); return !!b && b.y >= 0 && b.y + b.height <= 844; };
-check('premier écran : « Essayer la démo » visible sans défiler', await inView(demoBtn));
-check('premier écran : « Ouvrir HOMI » visible sans défiler', await inView(appBtn) || await inView(page.locator('[data-cta="nav-app"]')));
+check('premier écran : « Ouvrir HOMI » visible sans défiler', await inView(appBtn));
+check('premier écran : « Créer mon compte » visible sans défiler', await inView(page.locator('[data-cta="hero-signup"]')));
+check('aucun lien vers la démo sur le site', (await page.locator('a[href*="demo"]').count()) === 0);
 check('titre « Sa journée, en un coup d’œil. »', (await page.locator('h1').innerText()).includes('Sa journée, en un coup d’œil.'));
 await shot('01-ouverture');
 await page.locator('.journal').scrollIntoViewIfNeeded();
@@ -84,30 +84,14 @@ await page.locator('[data-explore]').scrollIntoViewIfNeeded();
 await page.waitForTimeout(600);
 await shot('07-explorer');
 
-// 5) un appui → démo, outil Allaitement
-inDemo = true;
+// 5) un appui → vraie web app : sans session, accueil / connexion, l'adresse de l'outil est mémorisée
 await card.click();
-await page.waitForURL(/\/track\/breastfeed/, { timeout: 60000 }).catch(() => undefined);
-await page.waitForTimeout(2500);
-const url1 = page.url();
-check('un appui → Allaitement dans la démo', /\/track\/breastfeed\?child=/.test(url1), url1.replace(base, ''));
-await shot('08-demo-allaitement');
-const body1 = await page.locator('body').innerText();
-check('démo : pastille « Démo » visible', /Démo/.test(body1));
-
-// 6) actualisation : même écran, démo conservée
-await page.reload({ waitUntil: 'networkidle' });
-await page.waitForTimeout(3000);
-check('actualisation : même écran', page.url() === url1, page.url().replace(base, ''));
-await shot('09-apres-actualisation');
-
-// 7) retour navigateur → accueil de la démo
-await page.goBack();
-await page.waitForTimeout(2500);
-check('retour navigateur : quitte l’outil', !/\/track\/breastfeed/.test(page.url()), page.url().replace(base, ''));
-await shot('10-retour');
-
-check('démo isolée : aucune requête vers le backend', backendCalls.length === 0, backendCalls.slice(0, 3).join(' | '));
+await page.waitForURL(/\/(welcome|start|auth)/, { timeout: 60000 }).catch(() => undefined);
+await page.waitForTimeout(2000);
+check('un appui sans session → connexion à la web app (pas la démo)', /\/(welcome|start|auth)/.test(page.url()) && !/demo/.test(page.url()), page.url().replace(base, ''));
+const remembered = await page.evaluate(() => sessionStorage.getItem('homi.returnTo.v1'));
+check('outil demandé mémorisé pour après la connexion', !!remembered && remembered.includes('/outil/baby_breastfeed'), remembered || '');
+await shot('08-connexion-web-app');
 check('aucune erreur JavaScript', errors.length === 0, errors.slice(0, 3).join(' | '));
 await ctx.close();
 await browser.close();

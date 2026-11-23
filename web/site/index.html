@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HOMI — Le carnet partagé de la famille : sommeil, repas, relais</title>
-<meta name="description" content="HOMI réunit la journée de bébé en un coup d’œil : sommeil, biberons, allaitement, croissance. Corrige une entrée, tout se met à jour ; passe le relais en un message. Essaie la démo sans compte.">
+<meta name="description" content="HOMI réunit la journée de bébé en un coup d’œil : sommeil, biberons, allaitement, croissance. Corrige une entrée, tout se met à jour ; passe le relais en un message. Ouvre HOMI dans ton navigateur.">
 <meta name="robots" content="{{ROBOTS}}">
 <link rel="canonical" href="{{SITE_URL}}/">
 <meta name="theme-color" content="#FBF4F2" media="(prefers-color-scheme: light)">
@@ -13,7 +13,7 @@
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="HOMI">
 <meta property="og:title" content="HOMI — Sa journée, en un coup d’œil.">
-<meta property="og:description" content="Sommeil, repas, relais entre parents et 75 outils trouvés avec tes mots. Démo sans compte.">
+<meta property="og:description" content="Sommeil, repas, relais entre parents et 75 outils trouvés avec tes mots, sur le web et bientôt sur iPhone.">
 <meta property="og:url" content="{{SITE_URL}}/">
 <meta property="og:image" content="{{SITE_URL}}/og.png">
 <meta property="og:image:width" content="1200">
@@ -36,8 +36,8 @@
       <li><a href="#outils">Outils</a></li>
     </ul>
     <div class="nav-cta">
-      <a class="btn btn-ghost btn-sm" href="/app" data-cta="nav-app">Ouvrir HOMI</a>
-      <a class="btn btn-primary btn-sm" href="/demo" data-cta="nav-demo">Essayer la démo</a>
+      <a class="btn btn-ghost btn-sm" href="/auth/sign-in" data-cta="nav-signin">Se connecter</a>
+      <a class="btn btn-primary btn-sm" href="/app" data-cta="nav-app">Ouvrir HOMI</a>
     </div>
   </nav>
 </header>
@@ -51,10 +51,10 @@
         <h1 id="t-ouverture" class="display">Sa journée, en un coup d’œil.</h1>
         <p class="lead">Sommeil, biberons, tétées, couches : tout ce que vit bébé, noté en un geste et lisible par les deux parents.</p>
         <div class="cta-row">
-          <a class="btn btn-primary btn-lg" href="/demo" data-cta="hero-demo">Essayer la démo</a>
-          <a class="btn btn-secondary btn-lg" href="/app" data-cta="hero-app">Ouvrir HOMI</a>
+          <a class="btn btn-primary btn-lg" href="/app" data-cta="hero-app">Ouvrir HOMI</a>
+          <a class="btn btn-secondary btn-lg" href="/auth/sign-up" data-cta="hero-signup">Créer mon compte</a>
         </div>
-        <p class="fine">Démo sans compte, avec une famille fictive. Rien n’est enregistré sur nos serveurs.</p>
+        <p class="fine">HOMI s’ouvre dans ton navigateur : tes données restent dans ton espace, partagé seulement avec les membres de ton foyer.</p>
       </div>
 
       <figure class="journal card" aria-labelledby="journal-title">
@@ -138,7 +138,7 @@
       <h2 id="t-outils" class="display">Trouve le bon outil avec tes mots.</h2>
       <p class="lead">Écris ce qui se passe, comme tu le dirais. HOMI ouvre le bon outil, parmi <span data-bind="toolCount">75</span> pour un bébé.</p>
 
-      <form class="ask card" role="search" data-ask action="/demo" method="get">
+      <form class="ask card" role="search" data-ask action="/app" method="get">
         <label for="ask-input" class="label">Ce dont tu as besoin</label>
         <div class="ask-field">
           <input id="ask-input" name="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Mon bébé prend le sein" aria-describedby="ask-help" aria-controls="ask-results">
@@ -168,10 +168,10 @@
   <section id="commencer" class="chapter finale" aria-labelledby="t-fin">
     <div class="wrap narrow center">
       <h2 id="t-fin" class="display">Commencer avec HOMI.</h2>
-      <p class="lead">Découvre la démo avec une famille fictive, ou ouvre ton espace pour retrouver ta famille.</p>
+      <p class="lead">Ouvre ton espace pour retrouver ta famille, ou crée ton compte en une minute.</p>
       <div class="cta-row center">
-        <a class="btn btn-primary btn-lg" href="/demo" data-cta="end-demo">Essayer la démo</a>
-        <a class="btn btn-secondary btn-lg" href="/app" data-cta="end-app">Ouvrir HOMI</a>
+        <a class="btn btn-primary btn-lg" href="/app" data-cta="end-app">Ouvrir HOMI</a>
+        <a class="btn btn-secondary btn-lg" href="/auth/sign-up" data-cta="end-signup">Créer mon compte</a>
       </div>
       <p class="fine">L’application iPhone arrive bientôt.</p>
     </div>

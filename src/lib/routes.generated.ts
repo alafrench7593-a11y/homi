@@ -230,6 +230,7 @@ export const APP_ROUTES: readonly string[] = [
   '/night/help',
   '/notifications',
   '/onboarding',
+  '/outil/[id]',
   '/outings',
   '/partner/cycle',
   '/postpartum',
