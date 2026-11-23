@@ -71,4 +71,13 @@ export const auraIntents = {
   "aura.it3.bf.right": "Start on the right",
   "aura.it3.bf.right.named": "Start on the right · {name}",
   "aura.it3.bfHint": "The session starts when you tap; the timer then runs on your phone, no AI.",
+  "aura.it4.noTreatment": "No treatment is recorded for {name}.",
+  "aura.it4.morning": "this morning",
+  "aura.it4.today": "today",
+  "aura.it4.noDose": "I can’t see any dose logged {when} for {name}. If it was given but not logged, you can add it in Treatments.",
+  "aura.it4.doses": "Dose logged {when}: {list}.",
+  "aura.it4.openTreatments": "Open Treatments",
+  "aura.it4.bottles": "{name}: {count} bottle(s) since midnight, {ml} ml in total (from what was logged).",
+  "aura.it4.noBottle": "No bottle logged for {name} since midnight.",
+  "aura.it4.openBottles": "See bottle history",
 };

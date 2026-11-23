@@ -71,4 +71,13 @@ export const auraIntents = {
   "aura.it3.bf.right": "Empezar a la derecha",
   "aura.it3.bf.right.named": "Empezar a la derecha · {name}",
   "aura.it3.bfHint": "La toma empieza al pulsar; el cronómetro sigue en tu teléfono, sin IA.",
+  "aura.it4.noTreatment": "No hay ningún tratamiento registrado para {name}.",
+  "aura.it4.morning": "esta mañana",
+  "aura.it4.today": "hoy",
+  "aura.it4.noDose": "No veo ninguna toma registrada {when} para {name}. Si se dio sin anotarla, puedes añadirla en Tratamientos.",
+  "aura.it4.doses": "Toma registrada {when}: {list}.",
+  "aura.it4.openTreatments": "Abrir Tratamientos",
+  "aura.it4.bottles": "{name}: {count} biberón(es) desde medianoche, {ml} ml en total (según lo registrado).",
+  "aura.it4.noBottle": "No hay biberones de {name} desde medianoche.",
+  "aura.it4.openBottles": "Ver el historial de biberones",
 };

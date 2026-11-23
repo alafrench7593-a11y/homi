@@ -71,4 +71,13 @@ export const auraIntents = {
   "aura.it3.bf.right": "Rechts starten",
   "aura.it3.bf.right.named": "Rechts starten · {name}",
   "aura.it3.bfHint": "Die Sitzung startet beim Tippen; der Timer läuft dann auf dem Handy, ohne KI.",
+  "aura.it4.noTreatment": "Für {name} ist keine Behandlung eingetragen.",
+  "aura.it4.morning": "heute Morgen",
+  "aura.it4.today": "heute",
+  "aura.it4.noDose": "Ich sehe {when} keine eingetragene Gabe für {name}. Wurde sie gegeben, aber nicht eingetragen, kannst du sie unter Behandlungen ergänzen.",
+  "aura.it4.doses": "Gabe {when} eingetragen: {list}.",
+  "aura.it4.openTreatments": "Behandlungen öffnen",
+  "aura.it4.bottles": "{name}: {count} Fläschchen seit Mitternacht, insgesamt {ml} ml (laut Einträgen).",
+  "aura.it4.noBottle": "Seit Mitternacht ist kein Fläschchen von {name} eingetragen.",
+  "aura.it4.openBottles": "Fläschchenverlauf ansehen",
 };

@@ -15,6 +15,7 @@ import { useToast } from '@/components/Overlays';
 import { resolveIntent, type AuraIntent, type IntentContext, type Resolution } from '@/lib/aura/intents';
 import { useActivePregnancy, useActiveSubject, useAddLog, useLogs, useMyMembership, useTrackedChildren } from '@/lib/data/hooks';
 import { uuid } from '@/lib/uuid';
+import { useTreatmentLogs, useTreatments } from '@/lib/data/hooks-needs';
 import { useScope } from '@/lib/data/hooks-scope';
 import { clock } from '@/lib/domain/sleepPlanner';
 import { toolCatalog, type CatalogTool } from '@/lib/domain/toolCatalog';
@@ -30,7 +31,10 @@ function useIntentContext(intent: AuraIntent, catalog: CatalogTool[], allTools: 
   const childId = ('childId' in intent && intent.childId) || scope.childId || (children?.length === 1 ? children[0].id : null);
   const needsSleeps = intent.kind === 'fix_sleep_end' || intent.kind === 'log_sleep' || intent.kind === 'sleep_today';
   const sleeps = useLogs<Sleep>('sleep', needsSleeps ? childId : null, 2, { includePending: intent.kind !== 'fix_sleep_end' });
-  const bottles = useLogs<{ at: string; consumed_ml: number | null }>('bottle', intent.kind === 'log_bottle' ? childId : null, 1, { includePending: true });
+  const bottles = useLogs<{ at: string; consumed_ml: number | null; child_id: string }>('bottle', intent.kind === 'log_bottle' || intent.kind === 'bottles_today' ? childId : null, 1, { includePending: true });
+  const treatments = useTreatments(intent.kind === 'med_check' ? childId : null);
+  const day0 = new Date(); day0.setHours(0, 0, 0, 0);
+  const doses = useTreatmentLogs(intent.kind === 'med_check' ? (treatments.data ?? []).map((x) => x.id) : [], day0.toISOString());
   const pregnancy = useActivePregnancy();
   // Outils grossesse RÉELLEMENT disponibles : seulement si une grossesse est déclarée (catalogue du profil grossesse)
   const pregnancyCatalog = pregnancy ? toolCatalog({ scope: 'pregnancy', pregnancyId: pregnancy.id }).filter((x) => x.category === 'pregnancy') : [];
@@ -43,6 +47,8 @@ function useIntentContext(intent: AuraIntent, catalog: CatalogTool[], allTools: 
     pregnancyCatalog: pregnancyCatalog.map((x) => ({ id: x.id, label: x.label, href: x.href })),
     sleeps: (sleeps.data ?? []) as Sleep[],
     bottles: bottles.data ?? [],
+    treatments: treatments.data ?? [],
+    doses: doses.data ?? [],
     now: new Date(),
     t: (k, v) => tr(k as TKey, v as never),
     clock: (d) => clock(d),

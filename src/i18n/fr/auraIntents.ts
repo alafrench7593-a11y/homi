@@ -71,4 +71,13 @@ export const auraIntents = {
   "aura.it3.bf.right": "Démarrer à droite",
   "aura.it3.bf.right.named": "Démarrer à droite · {name}",
   "aura.it3.bfHint": "La séance démarre à l’appui ; le chronomètre tourne ensuite sur ton téléphone, sans IA.",
+  "aura.it4.noTreatment": "Aucun traitement n’est enregistré pour {name}.",
+  "aura.it4.morning": "ce matin",
+  "aura.it4.today": "aujourd’hui",
+  "aura.it4.noDose": "Je ne vois aucune prise enregistrée {when} pour {name}. Si elle a été donnée sans être notée, tu peux l’ajouter dans Traitements.",
+  "aura.it4.doses": "Prise notée {when} : {list}.",
+  "aura.it4.openTreatments": "Ouvrir Traitements",
+  "aura.it4.bottles": "{name} : {count} biberon(s) depuis minuit, {ml} ml au total (d’après les saisies).",
+  "aura.it4.noBottle": "Aucun biberon de {name} n’est noté depuis minuit.",
+  "aura.it4.openBottles": "Voir l’historique des biberons",
 } as const;

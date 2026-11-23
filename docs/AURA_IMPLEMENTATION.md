@@ -27,6 +27,7 @@ Fichiers : `src/lib/aura/intents.ts` (logique pure), `src/features/aura/IntentCa
 | **Rendez-vous** « pédiatre mardi à 10 h » : date (jour de semaine, demain, JJ/MM — jamais passée), heure, enfant (demandé si plusieurs), droits santé → formulaire Rendez-vous pré-rempli, rappel et confidentialité choisis par le parent | 0 + formulaire | `auraActions` + Chromium (1 ligne, mardi 24/11 10 h, Lina) |
 | **Tâche confiée** « rappelle à mon conjoint de préparer le sac demain » → formulaire Missions pré-rempli (titre, échéance) ; le parent choisit la personne et envoie | 0 + formulaire | `auraActions` + Chromium (pré-remplissage ; envoi non rejoué) |
 | **Tétée par côté** « je commence à allaiter à gauche » → [Démarrer à gauche] : la séance démarre une fois, le chronomètre tourne sans IA | 0 + appui | `auraActions` + Chromium (côté gauche, 1 ligne, rien de relancé au rechargement) |
+| **Lectures** « ai-je donné son médicament ce matin ? » (prises notées, jamais « non donné » faute de saisie) et « combien de biberons aujourd’hui ? » (nombre, total) | 0 | `auraActions` + Chromium |
 | Explications (« comment utiliser… ») → réponse, pas de bouton | 0 / 2 | `auraIntents` |
 | Droits relus à l’affichage ET à l’appui ; lecture seule = aucune écriture proposée | — | `auraActions`, `auraIntents` |
 
@@ -35,7 +36,7 @@ Chromium (démo, 23/11) : double appui = 1 ligne ; saisie visible dans Sommeil e
 
 ## À développer (par priorité)
 1. Mission : choisir directement le membre (aujourd’hui choisi dans le formulaire) ; doublons de rendez-vous le même jour.
-4. Lectures sans IA : médicament donné ce matin (`useLogDose`), biberons du jour, dernière couche.
+4. Lectures sans IA restantes : dernière couche, tétées du jour.
 5. ~~Masquer les prénoms~~ fait (`_shared/aura-privacy.ts`, test `auraPrivacy`), **à déployer** ; mesurer en prod la part traitée sans IA (événement `aura_local_hit`).
 6. Guidage dans l’interface : réutiliser la visite guidée (`features/tour`, ancres) pour « montre-moi où… ».
 

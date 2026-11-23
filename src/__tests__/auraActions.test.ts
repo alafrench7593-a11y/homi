@@ -149,3 +149,35 @@ describe('rendez-vous, tâche, tétée : destinations (formulaire pré-rempli, r
     expect(resolveIntent({ kind: 'start_breastfeed', side: 'left' }, ctx({ member: viewer })).status).toBe('unavailable');
   });
 });
+
+describe('lectures sans IA : médicament, biberons', () => {
+  it.each([
+    ['Est-ce que j’ai donné son médicament ce matin ?', { kind: 'med_check', period: 'morning' }],
+    ['did I give her medicine today', { kind: 'med_check', period: 'today' }],
+    ['il a pris son doliprane ?', { kind: 'med_check', period: 'today' }],
+    ['combien de biberons aujourd’hui', { kind: 'bottles_today' }],
+    ['how much milk did he drink today', { kind: 'bottles_today' }],
+  ])('« %s »', (q, expected) => { expect(matchIntent(q)).toEqual(expected); });
+  const med = { treatments: [{ id: 't1', child_id: 'lina', name: 'Vitamine D', active: true }] };
+  it('aucune prise notée → jamais « non donné », renvoi vers Traitements', () => {
+    const r = resolveIntent({ kind: 'med_check', period: 'morning' }, ctx({ ...med, doses: [] }));
+    expect(r).toMatchObject({ status: 'answer', href: '/child/lina/needs?tab=treatments', text: expect.stringContaining('noDose') });
+  });
+  it('prise notée ce matin → nom et heure ; une prise de l’après-midi ne compte pas pour « ce matin »', () => {
+    const doses = [{ treatment_id: 't1', scheduled_for: iso(23, 8, 30), status: 'taken', logged_at: iso(23, 8, 40) }, { treatment_id: 't1', scheduled_for: iso(23, 14, 0), status: 'taken' }];
+    const r = resolveIntent({ kind: 'med_check', period: 'morning' }, ctx({ ...med, doses }));
+    expect(r.status === 'answer' && r.text).toContain('Vitamine D (8:40)');
+    expect(r.status === 'answer' && r.text).not.toContain('14:00');
+  });
+  it('pas de traitement : dit qu’aucun n’est enregistré ; droits santé requis', () => {
+    expect(resolveIntent({ kind: 'med_check', period: 'today' }, ctx()).status === 'answer').toBe(true);
+    const daily: MemberLike = { role: 'coparent', can_view: ['daily'], can_edit: [], child_scope: ['lina'] };
+    expect(resolveIntent({ kind: 'med_check', period: 'today' }, ctx({ ...med, member: daily })).status).toBe('unavailable');
+  });
+  it('biberons du jour : nombre et total, hier exclu', () => {
+    const bottles = [{ at: iso(23, 9, 0), consumed_ml: 150 }, { at: iso(23, 12, 30), consumed_ml: 120 }, { at: iso(22, 22, 0), consumed_ml: 180 }];
+    const r = resolveIntent({ kind: 'bottles_today' }, ctx({ bottles }));
+    expect(r.status === 'answer' && r.text).toContain('"count":2');
+    expect(r.status === 'answer' && r.text).toContain('"ml":270');
+  });
+});

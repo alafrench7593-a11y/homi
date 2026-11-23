@@ -71,4 +71,13 @@ export const auraIntents = {
   "aura.it3.bf.right": "Inizia a destra",
   "aura.it3.bf.right.named": "Inizia a destra · {name}",
   "aura.it3.bfHint": "La poppata parte al tocco; il cronometro continua sul telefono, senza IA.",
+  "aura.it4.noTreatment": "Nessuna terapia registrata per {name}.",
+  "aura.it4.morning": "stamattina",
+  "aura.it4.today": "oggi",
+  "aura.it4.noDose": "Non vedo nessuna dose registrata {when} per {name}. Se è stata data senza annotarla, puoi aggiungerla in Terapie.",
+  "aura.it4.doses": "Dose registrata {when}: {list}.",
+  "aura.it4.openTreatments": "Apri Terapie",
+  "aura.it4.bottles": "{name}: {count} biberon da mezzanotte, {ml} ml in totale (secondo le registrazioni).",
+  "aura.it4.noBottle": "Nessun biberon di {name} registrato da mezzanotte.",
+  "aura.it4.openBottles": "Vedi lo storico dei biberon",
 };

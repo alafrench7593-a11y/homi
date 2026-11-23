@@ -31,13 +31,17 @@ export type AuraIntent =
   /** Aura 2.0 — tâche confiée « rappelle à mon conjoint de préparer le sac demain » : mission pré-remplie */
   | { kind: 'assign_task'; title: string; when: When | null; time: string | null }
   /** Aura 2.0 — « je commence à allaiter à gauche » : séance ouverte, le côté démarre à l'appui */
-  | { kind: 'start_breastfeed'; side: 'left' | 'right'; childId?: string | null };
+  | { kind: 'start_breastfeed'; side: 'left' | 'right'; childId?: string | null }
+  /** Aura 2.0 — lecture sans IA : « ai-je donné son médicament ce matin ? » (jamais « non » faute de saisie) */
+  | { kind: 'med_check'; period: 'morning' | 'today'; childId?: string | null }
+  /** Aura 2.0 — lecture sans IA : biberons du jour (nombre, total) */
+  | { kind: 'bottles_today'; childId?: string | null };
 
 /** Jour cité, gardé RELATIF (résolu avec l'horloge du moment) : +n jours, prochain jour de semaine (0 = dimanche), JJ/MM. */
 export type When = { rel: number } | { weekday: number } | { day: number; month: number; year?: number };
 
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -91,6 +95,11 @@ export function matchIntent(question: string): AuraIntent | null {
   if (side && has(q, /\b(sein|tete|tetee|allait\w*|breast\w*|nurs\w*|feed\w*)\b/) && has(q, /\b(commence\w*|demarre\w*|lance\w*|start\w*|begin\w*|mets|met|je donne|donne)\b/)) {
     return { kind: 'start_breastfeed', side };
   }
+  // 03) Lectures : médicament donné ? biberons du jour ?
+  if (has(q, /\b(medicament\w*|medoc\w*|traitement\w*|sirop|doliprane|vitamine\w*|dose|medicine\w*|medication\w*|meds|syrup)\b/) && has(q, /\b(donne\w*|pris|prise|est ce que|j ai|deja|given|gave|took|taken|did i|have i|has he|has she)\b/)) {
+    return { kind: 'med_check', period: has(q, /\b(matin|morning)\b/) ? 'morning' : 'today' };
+  }
+  if (has(q, /\b(combien|how many|how much|total)\b/) && has(q, /\b(bib|bibs|biberon\w*|bottle\w*|ml|lait|milk)\b/) && !has(q, /\b(dormi|sleep\w*|slept)\b/)) return { kind: 'bottles_today' };
   // 0) Lecture : « combien il a dormi aujourd'hui ? » (sans IA, données du foyer)
   if (has(q, /\b(combien|how (much|long))\b/) && has(q, /\b(dormi|dort|sommeil|slept|sleep)\b/)) return { kind: 'sleep_today' };
   // 0 bis) Enregistrer : deux heures + endormissement/réveil, SANS indice de correction (« s'est endormi à 14 h 20 et
@@ -160,7 +169,10 @@ export interface IntentContext {
   pregnancyCatalog?: ToolLike[];
   sleeps: SleepLike[];
   /** Saisies du jour, pour les lectures et les doublons (Aura 2.0) ; facultatif */
-  bottles?: { at: string; consumed_ml: number | null }[];
+  bottles?: { at: string; consumed_ml: number | null; child_id?: string }[];
+  /** Traitements de l'enfant et prises notées depuis minuit (lecture « médicament ») ; facultatif */
+  treatments?: { id: string; child_id: string; name: string; active: boolean }[];
+  doses?: { treatment_id: string; scheduled_for: string; status: string; logged_at?: string }[];
   now: Date;
   /** Libellés (i18n injectée : la logique reste pure) */
   t: (key: string, vars?: Record<string, string | number>) => string;
@@ -276,6 +288,29 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
   if (intent.kind === 'start_breastfeed') {
     if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }), alternative: { label: ctx.t('aura.it.open', { name: ctx.t('aura.it.tool.baby_breastfeed') }), href: `/track/breastfeed?child=${child.id}` } };
     return { status: 'ready', label: named(`aura.it3.bf.${intent.side}`, child.first_name), href: `/track/breastfeed?child=${child.id}&start=${intent.side}`, childName: child.first_name, hint: ctx.t('aura.it3.bfHint') };
+  }
+  if (intent.kind === 'med_check') {
+    const href = `/child/${child.id}/needs?tab=treatments`;
+    if (!memberCan(ctx.member, 'view', 'health', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noAccess', { name: child.first_name }) };
+    const mine = (ctx.treatments ?? []).filter((x) => x.child_id === child.id);
+    if (!mine.length) return { status: 'answer', text: ctx.t('aura.it4.noTreatment', { name: child.first_name }), href, label: ctx.t('aura.it4.openTreatments') };
+    const day0 = new Date(ctx.now.getFullYear(), ctx.now.getMonth(), ctx.now.getDate()).getTime();
+    const noon = day0 + 12 * 3600000;
+    const taken = (ctx.doses ?? []).filter((d) => d.status === 'taken' && mine.some((x) => x.id === d.treatment_id))
+      .map((d) => ({ d, at: Date.parse(d.logged_at ?? d.scheduled_for) }))
+      .filter(({ at }) => at >= day0 && at <= ctx.now.getTime() && (intent.period === 'today' || at < noon));
+    const when = ctx.t(intent.period === 'morning' ? 'aura.it4.morning' : 'aura.it4.today');
+    if (!taken.length) return { status: 'answer', text: ctx.t('aura.it4.noDose', { when, name: child.first_name }), href, label: ctx.t('aura.it4.openTreatments') };
+    const list = taken.map(({ d, at }) => `${mine.find((x) => x.id === d.treatment_id)?.name ?? '—'} (${ctx.clock(new Date(at))})`).join(', ');
+    return { status: 'answer', text: ctx.t('aura.it4.doses', { when, list }), href, label: ctx.t('aura.it4.openTreatments') };
+  }
+  if (intent.kind === 'bottles_today') {
+    if (!memberCan(ctx.member, 'view', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noAccess', { name: child.first_name }) };
+    const day0 = new Date(ctx.now.getFullYear(), ctx.now.getMonth(), ctx.now.getDate()).getTime();
+    const today = (ctx.bottles ?? []).filter((b) => (!b.child_id || b.child_id === child.id) && Date.parse(b.at) >= day0 && Date.parse(b.at) <= ctx.now.getTime());
+    const ml = today.reduce((a, b) => a + (b.consumed_ml ?? 0), 0);
+    const text = today.length ? ctx.t('aura.it4.bottles', { name: child.first_name, count: today.length, ml }) : ctx.t('aura.it4.noBottle', { name: child.first_name });
+    return { status: 'answer', text, href: `/bottle/history?child=${child.id}`, label: ctx.t('aura.it4.openBottles') };
   }
   if (intent.kind === 'sleep_today') {
     if (!memberCan(ctx.member, 'view', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noAccess', { name: child.first_name }) };
