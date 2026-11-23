@@ -32,11 +32,25 @@ const pad = (n: number) => String(n).padStart(2, '0');
 export const fmtWhen = (iso: string) => formatDate(iso, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 /** « 18/10/2026 » + « 14h30 » → ISO (heure locale). `null` si vide, `undefined` si invalide. */
+/**
+ * Date d'agenda ou de tâche, saisie à la main. Tolérant (signalement du 23/11/2026 : « impossible d'enregistrer » dans
+ * l'agenda) : « 25/11 » = année en cours, « 25/11/26 » = 2026 ; heure « 14h30 », « 14H30 », « 14 h 30 », « 14:30 »,
+ * « 14.30 », « 14 heures ».
+ */
+export function lenientFrDate(input: string, today = new Date()): string | null {
+  const t = input.trim();
+  const full = frToISO(t);
+  if (full) return full;
+  const m = t.match(/^(\d{1,2})[/.\-\s](\d{1,2})(?:[/.\-\s](\d{2}))?$/);
+  if (!m) return null;
+  const year = m[3] ? 2000 + Number(m[3]) : today.getFullYear();
+  return frToISO(`${m[1]}/${m[2]}/${year}`);
+}
 export function parseFrDateTime(date: string, time: string): string | null | undefined {
   if (!date.trim() && !time.trim()) return null;
-  const iso = frToISO(date.trim());
+  const iso = lenientFrDate(date);
   if (!iso) return undefined;
-  const m = (time.trim() || '9h').match(/^(\d{1,2})\s*[h:.]?\s*(\d{2})?$/);
+  const m = (time.trim().toLowerCase().replace(/heures?/, 'h') || '9h').match(/^(\d{1,2})\s*[h:.]?\s*(\d{2})?$/);
   if (!m || Number(m[1]) > 23 || Number(m[2] ?? 0) > 59) return undefined;
   const [y, mo, d] = iso.split('-').map(Number);
   return new Date(y, mo - 1, d, Number(m[1]), Number(m[2] ?? 0)).toISOString();
