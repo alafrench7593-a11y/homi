@@ -26,7 +26,7 @@ export const finishTrack = {
   "ft.nt.sinceAsleep": "Eingeschlafen um {time}",
   "ft.nt.sinceAwake": "Aufgewacht um {time}",
   "ft.nt.noSleep": "Kein Schlaf in den letzten 24 Std. notiert",
-  "ft.nt.listTitle": "Diese Nacht",
+  "ft.nt.listTitle": "Letzte 12 Stunden",
   "ft.nt.none": "In den letzten 12 Stunden nichts notiert",
   "ft.nt.kind.sleep": "Schlaf",
   "ft.nt.kind.feed": "Stillen",
