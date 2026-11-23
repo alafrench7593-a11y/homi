@@ -214,7 +214,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
           {/* Mini-app (planche 4 du brief client) : nom sobre de taille moyenne, sous-titre court — jamais un titre énorme
               qui repousse la donnée et l'action ; les autres écrans gardent leur grand titre */}
           <Text variant="title" accessibilityRole="header" style={[tool ? APP_TITLE : titleStyle, NO_HYPHENS]} maxFontSizeMultiplier={tool ? 1.4 : undefined} testID="screen-title">{title}</Text>
-          {subtitle ? <Text variant={tool ? 'small' : undefined} muted numberOfLines={tool ? 2 : undefined}>{subtitle}</Text> : null}
+          {subtitle ? <Text variant={tool ? 'small' : undefined} muted numberOfLines={tool ? 3 : undefined}>{subtitle}</Text> : null}
         </View>
       </View>
     </View>
