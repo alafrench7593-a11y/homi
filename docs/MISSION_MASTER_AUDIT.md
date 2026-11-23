@@ -26,7 +26,7 @@ Méthode : registre des outils (`src/lib/journeys/tools.ts`) et routes réelles,
 | Cartes de communication | — | **Print Studio** (12 essentielles + personnalisées) |
 | Histoires sociales | — | **Print Studio** (le parent écrit et relit) |
 | Routine en micro-étapes | routines en images | Aura « met 45 min à se préparer » → routine + impression |
-| Profil sensoriel structuré, journal de situations structuré | partiel (catégorie « sensoriel », observations libres) | à faire (nécessite une migration) |
+| Profil sensoriel structuré, journal de situations structuré | fait (23/11) : `src/lib/neuro/structured.ts`, `features/neuro/NeuroPanels.tsx` ; stocké dans `child_need_entries`, sans migration | fiche imprimable « Ce qui aide mon enfant » |
 | Mode parent TDAH (3 priorités) | — | à faire |
 
 ## Print Studio (`/print`)

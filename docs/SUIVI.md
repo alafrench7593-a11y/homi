@@ -14,7 +14,7 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Build 13 sur TestFlight (commit 7f0d7ff) ; ne contient pas les corrections suivantes.
 
 ## Ouvert
-- Mission Master : `docs/MISSION_MASTER_AUDIT.md` (Print Studio fait ; profil sensoriel, mode parent TDAH, Garde Secours, Reddit à faire).
+- Mission Master : `docs/MISSION_MASTER_AUDIT.md` (Print Studio, profil sensoriel et journal de situations faits ; mode parent TDAH, Garde Secours, Reddit à faire).
 
 - Aura 2.0 : voir `docs/AURA_IMPLEMENTATION.md` (sieste, biberon, sommeil du jour, RDV, mission (envoi vérifié), tétée par côté, lectures (médicament, biberons, couche, tétées), guidage sans IA faits ; 4 661 tests OK ; fonction `assistant` déployée en prod : version 10, 23/11).
 
