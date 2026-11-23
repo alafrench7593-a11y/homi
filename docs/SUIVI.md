@@ -17,5 +17,5 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Aura 2.0 : voir `docs/AURA_IMPLEMENTATION.md` (sieste, biberon, sommeil du jour faits ; RDV, missions, côté de tétée à faire).
 
 - iPhone réel (scénario) ; liens Vercel publics (accès connecteur : lecture seule, projet invisible).
-- Risques : prénoms dans les textes envoyés à Aura ; analytics grossesse ↔ compte ; journal du foyer sans purge.
+- Risques : prénoms envoyés à Gemini (correctif écrit, fonction `assistant` À DÉPLOYER) ; analytics grossesse ↔ compte ; journal du foyer sans purge.
 - Google OAuth (identifiants à fournir). Build 14 : seulement sur ordre.

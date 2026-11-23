@@ -22,6 +22,7 @@ import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from
 import { readJsonBody } from '../_shared/body.ts';
 import { geminiGenerate, geminiGenerateTurn, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
 import { runAura } from '../_shared/aura-run.ts';
+import { pseudonymizer } from '../_shared/aura-privacy.ts';
 import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
 import { billedSseStream, ClientGone, requestKey, reserveRefusal, settle, type CreditsGate, type ReserveResult } from '../_shared/credits.ts';
 import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
@@ -100,6 +101,20 @@ Deno.serve(withCors(async (req) => {
 
   // HOMI Aura (docs/HOMI_AURA.md) : déroulé complet dans _shared/aura-run.ts, testé avec un Gemini simulé.
   // Ordre : sécurité → consentement → crédits → Gemini (fonctions de la liste blanche, propositions jamais exécutées ici).
+  // Prénoms masqués avant Gemini (droits de la personne : RLS) — enfants et membres visibles du foyer
+  const householdNames = async (): Promise<string[]> => {
+    const [kids, people] = await Promise.all([
+      db.from('children').select('first_name').limit(50),
+      db.from('profiles').select('display_name').limit(50),
+    ]);
+    const out: string[] = [];
+    for (const k of kids.data ?? []) out.push(String((k as { first_name?: string }).first_name ?? ''));
+    for (const p of people.data ?? []) {
+      const n = String((p as { display_name?: string }).display_name ?? '').trim();
+      if (n) out.push(n, n.split(/\s+/)[0]);
+    }
+    return out;
+  };
   const mode = (raw as { mode?: unknown }).mode;
   if (mode === 'aura') {
     const out = await runAura({
@@ -112,6 +127,7 @@ Deno.serve(withCors(async (req) => {
       gate: creditsGate(admin, user.id),
       turn: (cfg, o) => geminiGenerateTurn(cfg, o),
       log: (code) => console.error(code), // codes seulement, jamais un texte
+      names: householdNames,
     }, raw);
     return json(out.body, out.status);
   }
@@ -275,10 +291,12 @@ Deno.serve(withCors(async (req) => {
   }
 
   const devMode = false;
+  const legacyPz = pseudonymizer(await householdNames().catch(() => []));
   const today = todayIso();
 
   /** Contrôle, structuration, filtrage des sources, enregistrement : réponse finale. */
-  async function finalize(raw: string) {
+  async function finalize(rawMasked: string) {
+    const raw = legacyPz.unmask(rawMasked);
     let structured = parseStructuredAnswer(raw, today);
     const flags = auditAnswer(raw);
     if (flags.length) structured = { ...CAUTIOUS_ANSWER, updated_on: today };
@@ -302,7 +320,7 @@ Deno.serve(withCors(async (req) => {
 
   const geminiRequest = {
     system: buildSystemPrompt(APP_NAME, context, articles, today),
-    turns: [...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', text: h.content }) as GeminiTurn), { role: 'user', text: message } as GeminiTurn],
+    turns: [...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', text: legacyPz.mask(h.content) }) as GeminiTurn), { role: 'user', text: legacyPz.mask(message) } as GeminiTurn],
     maxOutputTokens: MAX_TOKENS,
   };
 
@@ -337,7 +355,7 @@ Deno.serve(withCors(async (req) => {
         await geminiStream(gemini, geminiRequest, (t) => {
           raw += t;
           // L'application est partie : on arrête de lire Gemini (aucun coût inutile) et la réserve est restituée
-          if (!emit('delta', { text: t })) throw new ClientGone();
+          if (!emit('delta', { text: legacyPz.unmask(t) })) throw new ClientGone();
         });
       } catch (e) {
         if (e instanceof ClientGone) throw e;

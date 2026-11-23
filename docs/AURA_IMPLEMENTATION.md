@@ -9,7 +9,7 @@ message → matchIntent (local, sans IA, FR/EN, fautes, familier)
         │                         └─ « Enregistrer » → useAddLog (même chemin que les écrans) → RLS → cache invalidé
         ├─ mode local (assistant/local) : recherche d’outils et réponses rédigées, sans IA
         └─ sinon → fonction `assistant` (Gemini flash-lite, 12 messages d’historique max, 1 400 jetons de sortie max,
-                   crédits, consentement) — **éteinte en production : aucune clé Gemini configurée**
+                   crédits, consentement) — **active en production** (clé Gemini et interrupteur présents, vérifié le 23/11)
 ```
 Fichiers : `src/lib/aura/intents.ts` (logique pure), `src/features/aura/IntentCard.tsx` (cartes),
 `src/features/aura/AuraScreen.tsx` (écran), `src/lib/aura/nextStep.ts` (prochaine étape), `supabase/functions/assistant`.
@@ -35,7 +35,7 @@ Chromium (démo, 23/11) : double appui = 1 ligne ; saisie visible dans Sommeil e
 2. Tâche ou mission pour un membre (« rappelle à mon conjoint… ») : `useCreateMission` + choix du membre autorisé.
 3. Allaitement « à gauche » : démarrer la séance avec le côté (paramètre `side` sur `/track/breastfeed`).
 4. Lectures sans IA : médicament donné ce matin (`useLogDose`), biberons du jour, dernière couche.
-5. Masquer les prénoms avant envoi au modèle ; mesurer en prod la part traitée sans IA (événement `aura_local_hit`).
+5. ~~Masquer les prénoms~~ fait (`_shared/aura-privacy.ts`, test `auraPrivacy`), **à déployer** ; mesurer en prod la part traitée sans IA (événement `aura_local_hit`).
 6. Guidage dans l’interface : réutiliser la visite guidée (`features/tour`, ancres) pour « montre-moi où… ».
 
 ## Coût IA en production (estimation, hypothèses explicites)

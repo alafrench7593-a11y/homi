@@ -15,6 +15,7 @@
  *   8. débit si une réponse est livrée, restitution sinon.
  * Journaux : codes seulement (jamais un texte).
  */
+import { pseudonymizer } from './aura-privacy.ts';
 import { crisisMessage, assessSafety, toSafetyLang, urgentContacts, type SafetyLevel } from './safety.ts';
 import { looksLikePromptInjection, sanitizeRecentTurns, MAX_QUESTION_LENGTH, todayIso } from './assistant-format.ts';
 import { requestKey, reserveRefusal, settle, type CreditsGate } from './credits.ts';
@@ -42,6 +43,8 @@ export interface AuraDeps {
   turn(cfg: GeminiConfig, o: GeminiRequestOptions): Promise<GeminiTurnResult>;
   today?: string;
   log?(code: string): void;
+  /** Prénoms du foyer (enfants, membres) : masqués avant l'envoi au modèle, restaurés dans la réponse */
+  names?(): Promise<string[]>;
 }
 
 export interface AuraResult { status: number; body: Record<string, unknown> }
@@ -120,16 +123,17 @@ export async function runAura(deps: AuraDeps, raw: unknown): Promise<AuraResult>
   // 6) GEMINI
   const catalog = kind === 'chat' ? sanitizeCatalog(b.tools) : [];
   const dataText = journal ? JSON.stringify(journal) : analysis ? JSON.stringify({ kind: analysisKind, ...analysis }) : null;
-  const system = buildAuraSystemPrompt({ lang, kind, theme, today, data: dataText, catalogSize: catalog.length, analysisKind });
+  const pz = pseudonymizer(deps.names ? await deps.names().catch(() => []) : []);
+  const system = buildAuraSystemPrompt({ lang, kind, theme, today, data: dataText ? pz.mask(dataText) : dataText, catalogSize: catalog.length, analysisKind });
   try {
     if (kind === 'reformulate') {
       const out = await deps.turn(cfg, {
-        system, turns: [{ role: 'user', text: draft }], maxOutputTokens: 700,
+        system, turns: [{ role: 'user', text: pz.mask(draft) }], maxOutputTokens: 700,
         responseSchema: { type: 'OBJECT', properties: { options: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['options'] },
       });
       let options: string[] = [];
       try { options = (JSON.parse(out.text) as { options?: unknown }).options as string[]; } catch { options = []; }
-      const clean = (Array.isArray(options) ? options : []).filter((x): x is string => typeof x === 'string').map((x) => x.trim().slice(0, 400))
+      const clean = (Array.isArray(options) ? options : []).filter((x): x is string => typeof x === 'string').map((x) => pz.unmask(x).trim().slice(0, 400))
         .filter((x) => x.length >= 2 && guardAuraOutput(x).ok).slice(0, 3);
       if (!clean.length) return cautious('empty');
       await commit();
@@ -138,21 +142,22 @@ export async function runAura(deps: AuraDeps, raw: unknown): Promise<AuraResult>
 
     const history = kind === 'chat' ? sanitizeRecentTurns(b.recent_turns) : [];
     const contents: GeminiContent[] = [
-      ...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: h.content }] }) as GeminiContent),
-      { role: 'user', parts: [{ text: kind === 'analysis' ? `${analysisKind}` : message }] },
+      ...history.map((h) => ({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: pz.mask(h.content) }] }) as GeminiContent),
+      { role: 'user', parts: [{ text: kind === 'analysis' ? `${analysisKind}` : pz.mask(message) }] },
     ];
     const actions: AuraAction[] = [];
     let text = '';
     for (let i = 0; i < AURA_MAX_TURNS; i++) {
       const out = await deps.turn(cfg, { system, turns: [], contents, maxOutputTokens: AURA_MAX_TOKENS, functions: kind === 'chat' ? AURA_FUNCTIONS : undefined });
-      text = out.text.trim();
+      text = pz.unmask(out.text.trim());
       if (!out.calls.length || kind !== 'chat') break;
       // Les parties du modèle sont recopiées TELLES QUELLES (signatures de pensée), puis une réponse par appel
       contents.push({ role: 'model', parts: out.parts });
       const responses = out.calls.map((c) => {
-        if (c.name === 'search_tools') return { functionResponse: { name: c.name, response: { tools: searchAuraCatalog(catalog, String(c.args.query ?? '')) } } };
+        if (c.name === 'search_tools') return { functionResponse: { name: c.name, response: { tools: searchAuraCatalog(catalog, pz.unmask(String(c.args.query ?? ''))) } } };
         if (!AURA_FUNCTIONS.some((f) => f.name === c.name)) return { functionResponse: { name: c.name, response: { error: 'unknown_function' } } };
-        const a = actions.length < AURA_MAX_ACTIONS ? toAction(c.name, c.args, catalog, today) : null;
+        const args = JSON.parse(pz.unmask(JSON.stringify(c.args ?? {}))) as Record<string, unknown>;
+        const a = actions.length < AURA_MAX_ACTIONS ? toAction(c.name, args, catalog, today) : null;
         if (a) actions.push(a);
         return { functionResponse: { name: c.name, response: a ? { status: 'shown_to_person_for_confirmation' } : { status: 'ignored', reason: actions.length >= AURA_MAX_ACTIONS ? 'too_many' : 'invalid' } } };
       });
