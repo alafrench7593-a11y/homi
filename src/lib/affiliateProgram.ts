@@ -10,7 +10,8 @@ export const PROGRAM = { percent: 30, months: 6, holdDays: 45, attributionDays: 
  * en supposant que chaque abonné reste abonné tout ce temps. `byMonth` : gain de chaque mois (pour un graphique).
  */
 export function simulate(netPerMonthMinor: number, newPayingPerMonth: number, monthsHorizon = 12): { perSubscriberMinor: number; monthlyAtCruiseMinor: number; totalMinor: number; byMonth: number[] } {
-  const per = Math.floor((Math.max(0, netPerMonthMinor || 0) * PROGRAM.percent) / 100);
+  // arrondi half-up par transaction : même règle que la base (affiliate_record_commission)
+  const per = Math.floor((Math.max(0, netPerMonthMinor || 0) * PROGRAM.percent + 50) / 100);
   const n = Math.max(0, Math.floor(newPayingPerMonth || 0));
   const byMonth: number[] = [];
   for (let m = 0; m < monthsHorizon; m++) byMonth.push(n * Math.min(m + 1, PROGRAM.months) * per);

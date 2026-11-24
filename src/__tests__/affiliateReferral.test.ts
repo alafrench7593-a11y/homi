@@ -36,3 +36,12 @@ it('clic : échec silencieux, étiquettes nettoyées', async () => {
   await expect(recordAffiliateClick(rpc, 'sarah', 'Insta', '../x')).resolves.toBeUndefined();
   expect(rpc).toHaveBeenCalledWith('affiliate_record_click', { p_code: 'sarah', p_campaign: 'insta', p_feature: '' });
 });
+
+it('simulateur partagé (site + app) : même arrondi que la base — 10,62 € net → 3,19 €, 6 mois → 19,14 €', () => {
+  const { simulate, PROGRAM } = require('@/lib/affiliateProgram') as typeof import('@/lib/affiliateProgram');
+  const r = simulate(1062, 1, 6);
+  expect(r.perSubscriberMinor).toBe(319);
+  expect(r.byMonth).toEqual([319, 319, 319, 319, 319, 319].map((v, i) => v * Math.min(i + 1, PROGRAM.months)));
+  // un abonné recruté au mois 1, suivi seul : 6 mois × 3,19 €
+  expect(Array.from({ length: 12 }, (_, m) => (m < PROGRAM.months ? r.perSubscriberMinor : 0)).reduce((a, b) => a + b, 0)).toBe(1914);
+});

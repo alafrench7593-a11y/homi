@@ -20,9 +20,9 @@ const { handleWebhook } = require('../../supabase/functions/_shared/subscription
 const base = { type: 'INITIAL_PURCHASE', price_in_purchased_currency: 14.99, currency: 'EUR', tax_percentage: 0.1667, commission_percentage: 0.125, transaction_id: 'tx-1', product_id: 'homi_premium_monthly', purchased_at_ms: Date.UTC(2026, 11, 1) };
 
 describe('encaissé net', () => {
-  it('formule RevenueCat : brut × (1 − taxe − commission), deux parts du brut — 14,99 € → 10,61 €', () => {
+  it('formule RevenueCat : brut × (1 − taxe − commission), deux parts du brut — 14,99 € → 10,62 € (half-up)', () => {
     // TVA 20 % = 16,67 % du TTC ; Apple 15 % du HT (12,49 €) = 1,87 € = 12,5 % du TTC
-    expect(netMinorOf(base)).toEqual({ netMinor: 1061, currency: 'EUR' });
+    expect(netMinorOf(base)).toMatchObject({ netMinor: 1062, currency: 'EUR', grossMinor: 1499, taxBp: 1667, storeFeeBp: 1250 });
     // l'ancienne formule enchaînée (1 − taxe) × (1 − commission) aurait donné 10,93 € : surestimation interdite
     expect(netMinorOf(base)?.netMinor).toBeLessThan(1093);
   });
@@ -36,6 +36,11 @@ describe('encaissé net', () => {
     expect(netMinorOf({ ...base, price_in_purchased_currency: 0 })).toBeNull();
     expect(netMinorOf({ ...base, currency: 'euro' })).toBeNull();
   });
+  it('achat de test (sandbox) : ni commission ni annulation', () => {
+    expect(affiliateActionFor({ ...base, environment: 'SANDBOX' })).toBeNull();
+    expect(affiliateActionFor({ ...base, type: 'CANCELLATION', cancel_reason: 'CUSTOMER_SUPPORT', environment: 'SANDBOX' })).toBeNull();
+    expect(affiliateActionFor({ ...base, environment: 'PRODUCTION', store: 'APP_STORE', id: 'ev-1' })).toMatchObject({ environment: 'production', store: 'APP_STORE', eventId: 'ev-1' });
+  });
   it('devises sans décimales', () => {
     expect(minorFactor('JPY')).toBe(1);
     expect(netMinorOf({ ...base, price_in_purchased_currency: 2000, currency: 'JPY', tax_percentage: 0.0909, commission_percentage: 0.15 })?.netMinor).toBe(1518);
@@ -45,7 +50,7 @@ describe('encaissé net', () => {
 describe('événements', () => {
   it('essai gratuit : rien ; conversion (RENEWAL) et achat payé : commission', () => {
     expect(affiliateActionFor({ ...base, type: 'INITIAL_PURCHASE', period_type: 'TRIAL' })).toBeNull();
-    expect(affiliateActionFor({ ...base, type: 'INITIAL_PURCHASE', period_type: 'NORMAL' })).toMatchObject({ kind: 'commission', netMinor: 1061, transactionId: 'tx-1' });
+    expect(affiliateActionFor({ ...base, type: 'INITIAL_PURCHASE', period_type: 'NORMAL' })).toMatchObject({ kind: 'commission', netMinor: 1062, transactionId: 'tx-1' });
     expect(affiliateActionFor({ ...base, type: 'RENEWAL' })?.kind).toBe('commission');
   });
   it('remboursement : annulation ; annulation simple (fin de renouvellement) : rien', () => {
@@ -82,7 +87,7 @@ describe('webhook RevenueCat', () => {
   it('achat payé : une commission transmise au grand livre', async () => {
     const { deps, calls } = setup();
     expect((await send(deps, ev)).status).toBe(200);
-    expect(calls).toEqual([expect.objectContaining({ kind: 'commission', netMinor: 1061, currency: 'EUR' })]);
+    expect(calls).toEqual([expect.objectContaining({ kind: 'commission', netMinor: 1062, currency: 'EUR' })]);
   });
   it('échec du grand livre : 500 (RevenueCat réessaie), le réessai écrit la commission', async () => {
     const { deps, calls, heal } = setup(true);

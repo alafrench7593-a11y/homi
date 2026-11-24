@@ -30,6 +30,12 @@ done
 echo "→ Données de développement"
 "${DB[@]}" -f "$ROOT/supabase/seed.sql" >/dev/null
 
+if [ -n "${AMB_LOAD:-}" ]; then
+  echo "→ Test de charge Ambassadors (100 000 abonnés fictifs)"
+  "${DB[@]}" -f "$ROOT/supabase/tests/load/ambassadors_load.sql"
+  exit $?
+fi
+
 if [ -n "${EXPORT_DEMO_JSON:-}" ]; then
   echo "→ Export du contenu de démonstration vers $EXPORT_DEMO_JSON"
   "${DB[@]}" -At -c "select jsonb_pretty(jsonb_build_object(

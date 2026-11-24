@@ -28,6 +28,8 @@ export interface AffiliateEvent {
   event_timestamp_ms?: number;
   cancel_reason?: string | null;
   expiration_reason?: string | null;
+  environment?: string | null;
+  store?: string | null;
 }
 
 /** Devises sans décimales (unités mineures = unités). */
@@ -35,16 +37,23 @@ const ZERO_DECIMAL = new Set(['JPY', 'KRW', 'VND', 'CLP', 'ISK', 'UGX', 'XAF', '
 export const minorFactor = (currency: string) => (ZERO_DECIMAL.has(currency.toUpperCase()) ? 1 : 100);
 const pct = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) && v >= 0 && v < 1 ? v : null);
 
-/** Encaissé net en unités mineures (arrondi à l'inférieur), ou null si l'événement ne permet pas de le calculer. */
-export function netMinorOf(e: AffiliateEvent): { netMinor: number; currency: string } | null {
+/** Fraction → points de base entiers (0,1667 → 1667). */
+const bp = (v: number) => Math.round(v * 10000);
+
+/**
+ * Encaissé net en unités mineures, arrondi à la demi-unité supérieure (half-up, même règle que la base), ou null si
+ * l'événement ne permet pas de le calculer. Renvoie aussi le brut et les taux (traçabilité du grand livre).
+ */
+export function netMinorOf(e: AffiliateEvent): { netMinor: number; currency: string; grossMinor: number; taxBp: number; storeFeeBp: number } | null {
   const gross = e.price_in_purchased_currency;
   const currency = (e.currency ?? '').toUpperCase();
   if (typeof gross !== 'number' || !Number.isFinite(gross) || gross <= 0 || !/^[A-Z]{3}$/.test(currency)) return null;
   const tax = pct(e.tax_percentage);
   const commission = pct(e.commission_percentage);
   if (tax == null || commission == null || tax + commission >= 1) return null;
+  const f = minorFactor(currency);
   const net = gross * (1 - tax - commission);
-  return { netMinor: Math.floor(net * minorFactor(currency) + 1e-9), currency };
+  return { netMinor: Math.floor(net * f + 0.5 + 1e-9), currency, grossMinor: Math.round(gross * f), taxBp: bp(tax), storeFeeBp: bp(commission) };
 }
 
 /** Paiement réel (pas un essai gratuit) : premier achat payé, ou renouvellement (dont la conversion d'un essai). */
@@ -56,7 +65,8 @@ export const isRefundEvent = (e: AffiliateEvent) =>
   (e.type === 'CANCELLATION' && e.cancel_reason === 'CUSTOMER_SUPPORT') || (e.type === 'EXPIRATION' && e.expiration_reason === 'CUSTOMER_SUPPORT');
 
 export type AffiliateAction =
-  | { kind: 'commission'; transactionId: string; productId: string; netMinor: number; currency: string; paidAt: string }
+  | { kind: 'commission'; transactionId: string; productId: string; netMinor: number; currency: string; paidAt: string;
+      grossMinor: number; taxBp: number; storeFeeBp: number; eventId: string | null; environment: string; store: string | null }
   | { kind: 'reversal'; transactionId: string }
   | null;
 
@@ -64,12 +74,16 @@ export type AffiliateAction =
 export function affiliateActionFor(e: AffiliateEvent, now: number = Date.now()): AffiliateAction {
   const tx = e.transaction_id ?? null;
   if (!tx) return null;
+  // Achat de test (bac à sable des boutiques) : jamais de commission ni d'annulation sur le grand livre réel
+  if ((e.environment ?? '').toUpperCase() === 'SANDBOX') return null;
   if (isRefundEvent(e)) return { kind: 'reversal', transactionId: tx };
   if (!isPaidEvent(e)) return null;
   const net = netMinorOf(e);
   if (!net) return null;
   return { kind: 'commission', transactionId: tx, productId: e.product_id ?? '', netMinor: net.netMinor, currency: net.currency,
-    paidAt: new Date(e.purchased_at_ms ?? e.event_timestamp_ms ?? now).toISOString() };
+    paidAt: new Date(e.purchased_at_ms ?? e.event_timestamp_ms ?? now).toISOString(),
+    grossMinor: net.grossMinor, taxBp: net.taxBp, storeFeeBp: net.storeFeeBp, eventId: e.id ?? null,
+    environment: 'production', store: e.store ?? null };
 }
 
 export interface AffiliateLedger {
@@ -90,6 +104,7 @@ export function supabaseAffiliate(admin: { rpc(fn: string, args: Record<string, 
     async commission(userId, a) {
       const { error } = await admin.rpc('affiliate_record_commission', {
         p_customer: userId, p_transaction_id: a.transactionId, p_product_id: a.productId, p_net_minor: a.netMinor, p_currency: a.currency, p_paid_at: a.paidAt,
+        p_gross_minor: a.grossMinor, p_tax_bp: a.taxBp, p_store_fee_bp: a.storeFeeBp, p_event_id: a.eventId, p_environment: a.environment, p_store: a.store,
       });
       if (error) console.error('affiliate_commission_failed');
       return !error;
