@@ -70,6 +70,15 @@ const config: ExpoConfig = {
   // Compte Expo de HOMI (alafre, projet @alafre/homi) ; EXPO_OWNER le remplace si besoin
   owner: process.env.EXPO_OWNER ?? 'alafre',
   version: '0.1.0',
+  // Mises à jour à distance (OTA, EAS Update, 24/11/2026) : seul le JavaScript et les images changent ; une mise à jour
+  // n'atteint QUE les builds dont le code natif est identique (empreinte « fingerprint »), sinon il faut un nouveau build.
+  runtimeVersion: { policy: 'fingerprint' },
+  updates: {
+    url: `https://u.expo.dev/${process.env.EXPO_PUBLIC_EAS_PROJECT_ID ?? '7ae940a8-0ecd-45e4-a1c9-0b5bfa6255dc'}`,
+    // au démarrage : on ne fait jamais attendre l'app ; une mise à jour téléchargée s'applique au lancement suivant
+    fallbackToCacheTimeout: 0,
+    checkAutomatically: 'ON_LOAD',
+  },
   scheme: BRAND.scheme,
   orientation: 'portrait',
   icon: './assets/icon.png',

@@ -217,3 +217,9 @@ Monetization → Subscriptions → abonnement mensuel → Offer Codes → Create
 
 ### F. Confidentialité dans App Store Connect
 App Privacy → ajouter : Contact Info › Name ; User Content › Emails or Text Messages ; Usage Data › Product Interaction (Analytics, Linked) ; Diagnostics › Crash Data (App Functionality, Not linked). Aucun « Tracking ». Privacy Policy URL : https://homifamille.com/confidentialite/ (une fois A fait) ; User Privacy Choices URL : https://homifamille.com/suppression-compte/.
+
+## Mises à jour à distance (OTA, EAS Update) — 24/11/2026
+- Configuré : expo-updates, `runtimeVersion: { policy: 'fingerprint' }`, `updates.url` du projet EAS, canaux `preview` et `production` dans eas.json. Actif à partir du build 14 (les builds plus anciens ne le reçoivent pas).
+- Ce qu'une OTA peut changer : textes, écrans, logique JavaScript, images. Ce qu'elle ne peut pas : tout ce qui touche au natif (nouveau module, permission, icône, version iOS) → nouveau build.
+- Publier (uniquement avec l'accord de la propriétaire) : `npx eas-cli@latest update --channel production --message "…"`. Les iPhone la téléchargent au lancement suivant et l'appliquent au lancement d'après.
+- Règle Apple 3.3.2 / 4.7 : une OTA ne doit pas changer la nature de l'app ni ajouter une fonction majeure non examinée.
