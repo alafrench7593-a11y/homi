@@ -7,6 +7,8 @@
  * Les réponses à partir des articles (/assistant/local, sans IA en ligne) restent disponibles.
  */
 export const FEATURES = {
+  /** Nuit calme (24/11/2026) : aucune vibration entre 21 h et 7 h sans accord. Tests historiques (heure réelle) : faux. */
+  nightQuietHours: true,
   aiAssistantOnline: true, // ouverte le 21/11/2026 (accord de la propriétaire)
   /** Backend de démonstration en Premium strict (miroir de premium_policy.strict côté serveur). Tests historiques : faux. */
   demoStrictPremium: true,

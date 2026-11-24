@@ -7,6 +7,7 @@
 import * as Haptics from 'expo-haptics';
 import { useUiStore } from '@/lib/store';
 import { hapticsSupported } from '@/theme/motion';
+import { FEATURES } from '@/config/features';
 
 /**
  * Nuit calme (24/11/2026, avis concurrents : une vibration à la saisie réveillait le bébé) : entre 21 h et 7 h, aucune
@@ -15,7 +16,8 @@ import { hapticsSupported } from '@/theme/motion';
 export function hapticsMuted(s: { hapticsEnabled: boolean; nightMode: boolean; nightVibrations: boolean }, now: Date = new Date()): boolean {
   if (!s.hapticsEnabled) return true;
   const h = now.getHours();
-  return (s.nightMode || h >= 21 || h < 7) && !s.nightVibrations;
+  const quietHour = FEATURES.nightQuietHours && (h >= 21 || h < 7);
+  return (s.nightMode || quietHour) && !s.nightVibrations;
 }
 
 export type MotionHaptic = 'light' | 'selection' | 'success' | 'warning' | 'error' | 'none';

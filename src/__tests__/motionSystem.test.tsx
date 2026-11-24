@@ -152,7 +152,7 @@ describe('retour haptique', () => {
     act(() => { useUiStore.setState({ hapticsEnabled: false }); });
     haptic('light');
     expect(Haptics.impactAsync).not.toHaveBeenCalled();
-    act(() => { useUiStore.setState({ hapticsEnabled: true, nightMode: false, nightVibrations: true }) });
+    act(() => { useUiStore.setState({ hapticsEnabled: true, nightMode: false }); });
     haptic('light');
     expect(Haptics.impactAsync).toHaveBeenCalledTimes(Platform.OS === 'web' ? 0 : 1);
   });
@@ -160,6 +160,9 @@ describe('retour haptique', () => {
 
 describe('nuit calme : aucune vibration entre 21 h et 7 h sans accord (24/11/2026)', () => {
   const { hapticsMuted } = require('@/motion/haptics');
+  const { FEATURES } = require('@/config/features');
+  beforeAll(() => { FEATURES.nightQuietHours = true; });
+  afterAll(() => { FEATURES.nightQuietHours = false; });
   const at = (h: number) => new Date(2026, 10, 24, h, 15);
   const base = { hapticsEnabled: true, nightMode: false, nightVibrations: false };
   it('jour : vibrations ; nuit : silence, même sans mode nuit ; accord explicite : vibrations', () => {

@@ -665,7 +665,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {optional ? <Text variant="small" muted>{`  (${tr('common.optional')})`}</Text> : null}
       </Text>
       {/* Champ = surface « inset » : un creux de verre au liseré fin, qui s'éclaire au focus (halo prune) */}
-      <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }]}>
+      <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }, isDate ? styles.inputDate : null]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: radius.control + 1.5, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: radius.control + 5, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
@@ -965,6 +965,8 @@ const styles = StyleSheet.create({
   // marge intérieure réduite (8 → 4) : à 320 px, 4 options allemandes (« Woche ») ne se coupent plus au milieu du mot
   segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },
   input: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: radius.control, paddingHorizontal: spacing.md + 2, gap: spacing.xs },
+  // Champ date en demi-largeur (24/11/2026 : « 24/11/202 » coupé) : le bouton calendrier (44 px de cible) sert de marge droite
+  inputDate: { paddingRight: 0, paddingLeft: spacing.sm + 2, gap: 0 },
   banner: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, borderRadius: radius.lg, alignItems: 'flex-start', borderWidth: 1 },
   bannerIcon: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginTop: -2 },
   // flexWrap : une action longue (allemand, italien, petit écran) passe sous le titre au lieu de sortir de l'écran
