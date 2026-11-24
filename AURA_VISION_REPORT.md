@@ -33,7 +33,25 @@ ce matin » ne déclenchent pas la lecture (tests).
 comptes ; médiane, 95e centile et maximum de crédits par compte ; coût en euros = **estimation saisie** par la
 propriétaire (`admin_set_ai_cost`), « coût inconnu » sinon (jamais 0 € par défaut). Aucun identifiant ni contenu.
 
-**Coûts réels : non mesurés.** Aucun appel facturé n'a été observé dans cet environnement ; les chiffres du message
+**Coûts estimés au tarif officiel (24/11/2026)** — `gemini-3.5-flash-lite`, offre payante : 0,30 $ / million de jetons
+en entrée (texte, image, PDF), 2,50 $ / million en sortie (réflexion comprise). Une photo compte 1 120 jetons, une
+page de PDF 560 (réglage par défaut des modèles Gemini 3).
+
+| Action | Entrée | Sortie | Coût estimé |
+|---|---|---|---|
+| Lecture d'un document (photo) | ~1 350 jetons | ~700 | ≈ 0,002 € (pire cas, 8 000 jetons de sortie : ≈ 0,019 €) |
+| Question à Aura | ~2 500 | ~400 | ≈ 0,0016 € |
+
+Abonné Premium qui épuise ses 1 000 crédits/mois : 200 lectures ≈ 0,40 € (pire cas ≈ 3,80 €) ou 1 000 questions
+≈ 1,60 €, pour ≈ 10,60 € encaissés nets (14,99 € − TVA 20 % − commission Apple 15 %). Taux de change 1 $ ≈ 0,93 €
+supposé. Ces estimations ne sont **pas encore saisies** dans `ai_cost_estimates` (écriture en production refusée par
+le contrôle automatique ; à faire avec l'accord explicite de la propriétaire).
+
+**Coûts réels : non mesurés.** Production au 24/11 : 16 questions facturées (22–23/11), 0 lecture ; journaux de
+fonctions conservés trop peu de temps pour relire les jetons ; aucune facture Gemini / Google Cloud dans la
+messagerie (seulement Google Ads et Workspace) → clé probablement sur l'offre **gratuite**, où Google peut utiliser
+les contenus pour améliorer ses produits : **incompatible avec des documents de santé**. Activer la facturation
+(offre payante, contenus non utilisés) avant d'ouvrir la lecture de documents. Aucun appel facturé n'a été observé dans cet environnement ; les chiffres du message
 initial restent des hypothèses tant que la facture Google n'est pas rapprochée des comptages du tableau de bord.
 
 ## 4. Sécurité médicale
