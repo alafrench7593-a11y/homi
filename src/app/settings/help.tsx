@@ -36,6 +36,8 @@ export default function SettingsHelpScreen() {
       <Card>
         <ListRow icon="mail" title={tr('settings.help.write')} subtitle={BRAND.supportEmail} onPress={() => Linking.openURL(`mailto:${BRAND.supportEmail}`).catch(() => toast(tr('settings.help.writeTo', { email: BRAND.supportEmail }), 'info'))} />
         <Divider />
+        <ListRow icon="instagram" title={tr('settings.help.instagram')} subtitle={BRAND.instagramHandle} onPress={() => void Linking.openURL(BRAND.instagram).catch(() => undefined)} testID="settings-instagram" />
+        <Divider />
         <ListRow icon="help-circle" title={SUPPORT.title} onPress={() => router.push('/legal/support')} testID="settings-support" />
         <Divider />
         {tourAllowed ? <ListRow icon="compass" title={tr('tour.settingsRow')} subtitle={tr('tour.settingsRowSub')} onPress={startTour} testID="settings-tour" /> : null}

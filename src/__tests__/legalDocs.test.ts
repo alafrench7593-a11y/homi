@@ -12,7 +12,7 @@ describe('documents juridiques', () => {
       expect(all).not.toMatch(/à compléter|to be completed|por completar|noch zu ergänzen|da completare|à préciser par l’éditeur|à confirmer|to be confirmed|por confirmar|zu bestätigen|da confermare/);
       expect(LEGAL_NOTICE.sections.length).toBe(6);
       expect(ACCOUNT_DELETION.sections.length).toBe(4);
-      expect(SUPPORT.sections.length).toBe(4);
+      expect(SUPPORT.sections.length).toBe(5); // + « Nous suivre » (Instagram, 24/11/2026)
     }
     setLocale('fr');
   });

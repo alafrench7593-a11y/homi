@@ -172,4 +172,5 @@ export const settings: Messages<typeof fr> = {
   "settings.ds.disabled": "Unavailable",
   "settings.ds.fail": "Failing attempt",
   "settings.ds.failMsg": "Could not save right now. Please try again.",
+  'settings.help.instagram': "Follow HOMI on Instagram",
 };

@@ -171,4 +171,5 @@ export const settings = {
   "settings.ds.disabled": "Indisponible",
   "settings.ds.fail": "Essai qui échoue",
   "settings.ds.failMsg": "Enregistrement impossible pour l’instant. Réessaie.",
+  'settings.help.instagram': "Suivre HOMI sur Instagram",
 };

@@ -173,4 +173,5 @@ export const settings: Messages<typeof fr> = {
   "settings.ds.disabled": "No disponible",
   "settings.ds.fail": "Intento que falla",
   "settings.ds.failMsg": "No se puede guardar ahora. Inténtalo de nuevo.",
+  'settings.help.instagram': "Seguir a HOMI en Instagram",
 };
