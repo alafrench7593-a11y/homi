@@ -17,7 +17,7 @@ const { handleWebhook } = require('../../supabase/functions/_shared/subscription
   handleWebhook(r: Request, d: Record<string, unknown>): Promise<Response>;
 };
 
-const base = { price_in_purchased_currency: 14.99, currency: 'EUR', tax_percentage: 0.1667, commission_percentage: 0.15, transaction_id: 'tx-1', product_id: 'homi_premium_monthly', purchased_at_ms: Date.UTC(2026, 11, 1) };
+const base = { type: 'INITIAL_PURCHASE', price_in_purchased_currency: 14.99, currency: 'EUR', tax_percentage: 0.1667, commission_percentage: 0.15, transaction_id: 'tx-1', product_id: 'homi_premium_monthly', purchased_at_ms: Date.UTC(2026, 11, 1) };
 
 describe('encaissé net', () => {
   it('14,99 € TTC, TVA 20 % (16,67 % du TTC), Apple 15 % → 10,61 €', () => {
