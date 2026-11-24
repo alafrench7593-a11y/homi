@@ -11,7 +11,7 @@
  */
 import { PaywallFaq, PaywallShowcase } from './PaywallExtras';
 import React, { useState } from 'react';
-import { Platform, Pressable, ScrollView, View, type LayoutChangeEvent } from 'react-native';
+import { Platform, Pressable, ScrollView, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -54,6 +54,7 @@ function WhiteBody(props: PaywallViewProps) {
   const [help, setHelp] = useState(false);
   const [story, setStory] = useState(false);
   const Demo = result ? DEMOS[result.kind] : null;
+  const winH = useWindowDimensions().height;
   // Au revoir d'Aura à la fermeture (variante « histoire ») : un coucou court, puis la fermeture ; immédiat sans animations
   const motion = useMotion();
   const [bye, setBye] = useState(false);
@@ -64,9 +65,11 @@ function WhiteBody(props: PaywallViewProps) {
   };
 
   const blocks: React.ReactNode[] = [
-    <Text key="title" variant="title" center accessibilityRole="header" style={NO_HYPHENS} testID="fw-pw-title">{tr(props.storyMode ? 'pw4.offers.title' : paywallTitleKey(need, variant))}</Text>,
-    props.storyMode ? <Text key="sub" center muted style={NO_HYPHENS} testID="fw-pw-sub">{tr('pw4.offers.sub')}</Text> : null,
-    <AuraLine key="aura" need={need} onAsk={() => { setHelp(true); props.onHelp?.(); }} />,
+    // Variante « histoire » : titre plus compact, sous-titre seulement sur les grands écrans → les prix d'abord (iPhone SE compris)
+    <Text key="title" variant={props.storyMode ? 'heading' : 'title'} center accessibilityRole="header" style={NO_HYPHENS} testID="fw-pw-title">{tr(props.storyMode ? 'pw4.offers.title' : paywallTitleKey(need, variant))}</Text>,
+    props.storyMode && winH >= 700 ? <Text key="sub" center muted style={NO_HYPHENS} testID="fw-pw-sub">{tr('pw4.offers.sub')}</Text> : null,
+    // Variante « histoire » : pas de message d'Aura ici (déjà vu en slide 1) → annuel et mensuel visibles dès l'arrivée
+    props.storyMode ? null : <AuraLine key="aura" need={need} onAsk={() => { setHelp(true); props.onHelp?.(); }} />,
     // Prix tout de suite sous le titre (24/11/2026 : visibles dès l'arrivée sur un écran de téléphone), puis l'aperçu
     catalog === 'ready' ? <PlanList key="plans" cards={cards} selectedKey={selectedKey} onSelect={onSelect} annualFirst={!!props.storyMode} /> : <CatalogNotice key="plans" state={catalog} onRetry={props.onRetry} />,
     // aperçu du résultat : le même composant que dans la démo (la sieste à côté du dernier repas)
@@ -115,7 +118,8 @@ function WhiteBody(props: PaywallViewProps) {
         {props.webShowcase ? (
           <View style={{ gap: spacing.xs }} testID="fw-pw-web">
             {webInfo ? <View accessibilityLiveRegion="polite"><Banner tone="info">{tr('fw.pw.webInfo')}</Banner></View> : null}
-            <Button label={tr('fw.pw.webCta')} icon="smartphone" size="lg" full onPress={() => setWebInfo(true)} testID="fw-pw-cta" />
+            {/* Même libellé que sur iPhone (24/11/2026, demande de la propriétaire) ; sur le web, l'appui explique que l'achat se fait dans l'app */}
+            <Button label={card && catalog === 'ready' ? ctaFor(card.plan) : tr('fw.pw.webCta')} size="lg" full onPress={() => setWebInfo(true)} testID="fw-pw-cta" />
           </View>
         ) : (
         <Button label={card && catalog === 'ready' ? ctaFor(card.plan, { needsAccount: props.needsAccount }) : tr('fw.pw.buyUnavailable')} size="lg" full
