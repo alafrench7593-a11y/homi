@@ -49,9 +49,9 @@ le contrôle automatique ; à faire avec l'accord explicite de la propriétaire)
 
 **Coûts réels : non mesurés.** Production au 24/11 : 16 questions facturées (22–23/11), 0 lecture ; journaux de
 fonctions conservés trop peu de temps pour relire les jetons ; aucune facture Gemini / Google Cloud dans la
-messagerie (seulement Google Ads et Workspace) → clé probablement sur l'offre **gratuite**, où Google peut utiliser
-les contenus pour améliorer ses produits : **incompatible avec des documents de santé**. Activer la facturation
-(offre payante, contenus non utilisés) avant d'ouvrir la lecture de documents. Aucun appel facturé n'a été observé dans cet environnement ; les chiffres du message
+messagerie (seulement Google Ads et Workspace). La propriétaire confirme (24/11) que la facturation Gemini est
+**active** (offre payante : contenus non utilisés par Google) ; les factures arrivent donc sur un autre compte ou
+dans la console Google Cloud. Aucun appel facturé n'a été observé dans cet environnement ; les chiffres du message
 initial restent des hypothèses tant que la facture Google n'est pas rapprochée des comptages du tableau de bord.
 
 ## 4. Sécurité médicale
