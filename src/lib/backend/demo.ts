@@ -1235,6 +1235,12 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     ...absents.rpcs,
     ...stockHooks.rpcs,
     ...childcare.rpcs,
+    // HOMI Ambassadors : la démo n'a ni candidature, ni commission, ni argent (programme réel seulement avec un compte)
+    affiliate_my_summary: () => null,
+    affiliate_attach: () => 'unknown_code',
+    affiliate_record_click: () => false,
+    affiliate_apply: () => { throw new BackendError(tr('amb.demoOnly')); },
+    affiliate_create_link: () => { throw new BackendError(tr('amb.demoOnly')); },
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
     demo_switch_person: (a) => {
       const me = state.session?.userId;

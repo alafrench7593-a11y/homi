@@ -83,4 +83,5 @@ export const ambassadors = {
   'amb.signup.invalid': "Code invalide : 3 à 24 caractères, lettres, chiffres ou tirets.",
   'amb.rowD': 'Recommande HOMI et touche une commission',
   'amb.termsLink': 'Lire les conditions du programme',
+  'amb.demoOnly': 'Le programme Ambassadors fonctionne avec un vrai compte HOMI, pas dans la démo.',
 };
