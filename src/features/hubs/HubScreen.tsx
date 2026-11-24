@@ -29,7 +29,7 @@ import { useCareLinks } from '@/lib/data/hooks-nounou';
 import { Button, ListGroup, ListRow, Text } from '@/components/ui';
 import { ToolLinks } from '@/features/toolHub/ToolLinks';
 import { useToolHub } from '@/features/toolHub/useToolHub';
-import { useProfile } from '@/lib/data/hooks';
+import { useProfile, useTrackedChildren } from '@/lib/data/hooks';
 import { useToolStatuses } from '@/lib/data/hooks-tools';
 import { categoryTitle, statusKeyFor, type CatalogTool } from '@/lib/domain/toolCatalog';
 import type { ToolShelf } from '@/lib/journeys/tools';
@@ -37,6 +37,7 @@ import { spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
 import { hubSelection, hubTools, type HubKey } from './hubMap';
 import { UrgentRow } from './HubList';
+import { ChildDashboard } from '@/features/childDash/ChildDashboard';
 import { ProfileSwipe, ProfileSwitcher, useActiveProfileKey } from '@/components/ProfileSwitcher';
 import { ProfileStage } from '@/components/profileTransition';
 import { ToolSearchButton } from './ToolSearch';
@@ -70,6 +71,7 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
   const th = useToolHub();
   const { scope, catalog, byProfile, favSet, recentIds } = th;
   const childId = scope.childId ?? (scope.scope === 'postpartum' ? scope.babyId : null);
+  const dashChild = (useTrackedChildren().data ?? []).find((c) => c.id === scope.childId) ?? null;
   const { statuses } = useToolStatuses(childId);
   const keep = useMemo(() => {
     const only = categories ? new Set<string>(categories) : null;
@@ -99,6 +101,8 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
       <ProfileSwipe>
       <ProfileStage profileKey={profileKey}>
       <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>
+        {/* Onglet Enfant, profil d'un enfant : tableau de bord (qui, accès directs, aujourd'hui, synthèse du jour) */}
+        {hub === 'baby' && dashChild ? <ChildDashboard child={dashChild} catalog={catalog} /> : null}
         <View style={{ gap: spacing.sm }}>
           <MotionList style={{ gap: spacing.sm }}>{urgent.map((u) => <MotionItem key={u.id}><UrgentRow key={u.id} tool={u} /></MotionItem>)}</MotionList>
           <ToolSearchButton testID={`hub-${id}-search`} />

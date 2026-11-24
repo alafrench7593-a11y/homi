@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import Animated, { useAnimatedProps, useSharedValue } from 'react-native-reanimated';
 import Svg, { ClipPath, Defs, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { useMotion } from '@/motion/useMotion';
+import { tint } from '@/components/ToolGlyph';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts } from '@/theme/tokens';
 import { bottleScale } from '@/lib/domain/bottleScale';
@@ -44,8 +45,8 @@ export function AnimatedBottle({ ml, testID = 'animated-bottle' }: { ml: number 
         <Rect x={BODY.x + 6} y={24} width={BODY.w - 12} height={18} rx={5} fill={t.colors.primary} />
         {/* lait */}
         <G clipPath="url(#bottle-body)">
-          <Rect x={BODY.x} y={BODY.y} width={BODY.w} height={BODY.h} fill={t.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'} />
-          <AnimatedRect x={BODY.x} width={BODY.w} animatedProps={liquid} fill={t.isDark ? '#E9DFC9' : '#F1E3C4'} />
+          <Rect x={BODY.x} y={BODY.y} width={BODY.w} height={BODY.h} fill={tint(t.colors.text, 0.04)} />
+          <AnimatedRect x={BODY.x} width={BODY.w} animatedProps={liquid} fill={tint(t.colors.gold, t.isDark ? 0.55 : 0.35)} />
         </G>
         {/* corps */}
         <Rect x={BODY.x} y={BODY.y} width={BODY.w} height={BODY.h} rx={BODY.r} fill="none" stroke={t.colors.text} strokeOpacity={0.35} strokeWidth={1.5} />

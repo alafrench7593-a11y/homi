@@ -8,6 +8,7 @@
  *  3. CORRECTION : dans la fiche (fin, un côté), valeur provisoire, Annuler, Enregistrer protégé du double appui.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { tint } from '@/components/ToolGlyph';
 import { AnimatedProgressRing } from '@/components/motion/AnimatedProgressRing';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -109,7 +110,7 @@ function SidePicker({ running, current, last, seconds, onPick, busy }: {
             {/* Part de CE sein dans la séance en cours (proportion, pas un objectif), chronomètre au centre */}
             {running && secs != null ? (
               <AnimatedProgressRing progress={total ? secs / total : 0} size={66} color={on ? t.colors.background : t.colors.text}
-                track={on ? 'rgba(127,127,127,0.35)' : t.colors.border} testID={`bt-side-${s}-ring`}>
+                track={on ? tint(t.colors.background, 0.3) : t.colors.border} testID={`bt-side-${s}-ring`}>
                 <Text maxFontSizeMultiplier={1.15} style={[{ fontSize: 15, color: on ? t.colors.background : t.colors.textMuted }, TABULAR]}>{stopwatch(secs)}</Text>
               </AnimatedProgressRing>
             ) : null}

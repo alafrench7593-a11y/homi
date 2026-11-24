@@ -53,3 +53,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 24/11/2026 : facturation Gemini confirmée active par la propriétaire (offre payante) ; rapport corrigé.
 - 24/11/2026 : PRODUCTION — coûts estimés saisis (document_read 0,0020 €, assistant_question 0,0016 €).
 - 24/11/2026 : motion lot 2 — anneau du sommeil 24 h, biberon gradué animé, anneau par sein (allaitement) ; démo : nuit/sieste d'aujourd'hui sans chevauchement ; aucune dépendance ajoutée.
+- 24/11/2026 : onglet Enfant organisé comme la maquette (en-tête prénom/âge/taille/poids, 8 accès, « Aujourd'hui », synthèse du jour factuelle, sommeil coupé à minuit) ; couleurs du thème ; HOMI_MOTION_SYSTEM.md (poids JS iOS +0,038 %).
