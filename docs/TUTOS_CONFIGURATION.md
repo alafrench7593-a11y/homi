@@ -179,3 +179,14 @@ ne sont pas touchés. Retour arrière en une ligne (en bas).
 
 Retour arrière : `select cron.unschedule('homi-conservation'); drop function public.purge_by_retention();`
 Doc pg_cron : https://supabase.com/docs/guides/cron
+
+## E-mails d'inscription via Resend (24/11/2026)
+
+Sans cette configuration, Supabase utilise son service de test (2 e-mails par heure, objet en anglais) : les parents ne reçoivent pas leur confirmation.
+
+1. resend.com → Sign up (gratuit). Domains → Add Domain → `homifamille.com`, région Europe (Ireland).
+2. Copier les enregistrements DNS affichés (MX `send`, TXT `send` SPF, TXT `resend._domainkey` DKIM, TXT `_dmarc` recommandé) chez le gestionnaire DNS du domaine (Vercel → Domains → homifamille.com → DNS Records, ou le registraire). Resend → Verify DNS Records → « Verified ».
+3. Resend → API Keys → Create API Key (nom `homi-supabase`, permission Sending access, domaine homifamille.com) → copier la clé `re_…` (affichée une seule fois).
+4. Supabase (projet homi) → Edge Functions → Secrets : `RESEND_API_KEY` = la clé ; `RESEND_FROM_EMAIL` = `HOMI <bonjour@homifamille.com>`.
+5. Supabase → Authentication → Hooks → Send Email hook → Enable → HTTPS → `https://ploatloxxigplpdsqyri.supabase.co/functions/v1/auth-email` → Generate secret → copier → Edge Functions → Secrets : `SEND_EMAIL_HOOK_SECRET` = ce secret (avec son préfixe `v1,whsec_`).
+6. Ne jamais coller ces clés dans un chat. Prévenir Claude : il vérifie la présence des noms, puis un test d'inscription sur l'adresse de la propriétaire.
