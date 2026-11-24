@@ -93,7 +93,8 @@ def test(b):
     me = s['session']['userId']
     # Accueil : prochain événement, demandes en tête, une seule action principale
     R['accueil_prochain_evenement'] = tid(pg, 'home-next-up').count() > 0
-    R['accueil_illustration'] = pg.locator('[data-testid="home-next-up-art"]').count() > 0
+    # L'illustration du « prochain » a été retirée (accueil v5 sobre) : la carte « prochain » reste en tête
+    R['accueil_carte_prochain'] = pg.locator('[data-testid="home-card-next"]').count() > 0
     R['accueil_section_a_traiter'] = tid(pg, 'home-urgent').count() > 0
     R['accueil_reste_journee'] = tid(pg, 'home-today-tasks').count() > 0
     R['accueil_sans_compteurs'] = pg.locator('[data-testid="home-today-summary"]').count() == 0
@@ -134,7 +135,8 @@ def test(b):
     R['evenement_visible'] = ev is not None
     if ev is not None:
         ev.scroll_into_view_if_needed(); ev.click(); pg.wait_for_timeout(1200)
-        R['fiche_ouverte'] = pg.get_by_text('Modifier l’événement').count() + pg.get_by_text("Modifier l'événement").count() > 0
+        # Fiche d'événement (23/11/2026) : tiroir « ff-cal-tray » (« Modifier » ouvre ensuite le formulaire complet)
+        R['fiche_ouverte'] = pg.locator('[data-testid="ff-cal-tray"]').filter(visible=True).count() > 0
         pg.screenshot(path=f'{SHOTS}/e2e-03-fiche.png')
         pg.keyboard.press('Escape'); pg.wait_for_timeout(600)
     # Ajouter un événement : action principale en bas

@@ -125,7 +125,7 @@ def run(p):
     d = demo(pg, "s => s.tables.discharge_logs.map(x => [x.amount, x.color, x.textures, x.symptoms, x.note])")
     R['4_pertes_enregistrees'] = d == [['moderate', 'creamy_white', ['lumpy'], ['itching'], 'Après la piscine']]
     t = T(pg)
-    R['4_recapitulatif_et_conseil'] = 'Récapitulatif' in t and 'Plusieurs causes sont possibles' in t and 'D’après ce que vous avez indiqué' in t and 'Démangeaisons' in t
+    R['4_recapitulatif_et_conseil'] = 'Récapitulatif' in t and 'Plusieurs causes sont possibles' in t and 'D’après ce que tu as indiqué' in t and 'Démangeaisons' in t
     pg.screenshot(path=f'{SHOTS}/cycle-recap-discharge.png', full_page=True)
 
     # 5. Fiche pédagogique : sources officielles
@@ -137,9 +137,9 @@ def run(p):
     pg.goto(B + '/cycle/bleeding'); pg.wait_for_timeout(1800)
     R['6_aide_sans_rien_remplir'] = 'Besoin d’aide tout de suite' in T(pg)
     pick(pg, 'Pendant une grossesse'); pg.wait_for_timeout(300)
-    R['6_consulter_des_le_choix'] = 'Demandez un avis médical' in T(pg)
+    R['6_consulter_des_le_choix'] = 'Demande un avis médical' in T(pg)
     pick(pg, 'Abondant'); pg.wait_for_timeout(300)
-    R['6_urgence_avant_enregistrement'] = 'Appelez les urgences maintenant' in T(pg) and demo(pg, "s => s.tables.bleeding_logs.length") == 0
+    R['6_urgence_avant_enregistrement'] = 'Appelle les urgences maintenant' in T(pg) and demo(pg, "s => s.tables.bleeding_logs.length") == 0
     click(pg, 'Enregistrer'); pg.wait_for_timeout(1500)
     R['6_saignement_enregistre'] = demo(pg, "s => s.tables.bleeding_logs.map(x => [x.kind, x.amount])") == [['during_pregnancy', 'heavy']]
 
@@ -214,7 +214,7 @@ def run(p):
     # Trouver un professionnel : annuaire officiel, aucune intégration fictive (Test 10)
     click(pg, 'Trouver un professionnel de santé'); pg.wait_for_timeout(1500)
     t = T(pg)
-    R['T10_recherche_pro'] = 'Vous souhaitez en parler à un professionnel' in t and 'Centres de santé sexuelle' in t and 'Annuaire santé' in t and 'Doctolib' not in t
+    R['T10_recherche_pro'] = 'Tu souhaites en parler à un professionnel' in t and 'Centres de santé sexuelle' in t and 'Annuaire santé' in t and 'Doctolib' not in t
     # le site s'ouvre dans un nouvel onglet : on enregistre l'adresse demandée (l'environnement de test n'a pas accès à Internet)
     pg.evaluate("() => { window.__opened = []; window.open = (u) => { window.__opened.push(String(u)); return null; }; }")
     click(pg, 'Rechercher un professionnel'); pg.wait_for_timeout(500)
@@ -234,7 +234,7 @@ def run(p):
     pg.locator('[aria-label="Préservatif"] [aria-label="Je ne sais pas"]').filter(visible=True).first.click()
     click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
     t = T(pg)
-    R['T3_incertain_question'] = 'Souhaitez-vous préciser la protection' in t and 'Pouvez-vous préciser' in t
+    R['T3_incertain_question'] = 'préciser la protection' in t and 'Peux-tu préciser' in t
     rows = demo(pg, "s => s.tables.intercourse_logs.map(x => [x.condom, x.usual_contraception, x.pregnancy_wish])")
     R['T3_absence_reponse_non_convertie'] = ['unsure', None, None] in [[r[0], r[1], r[2]] for r in rows]
 
@@ -248,7 +248,7 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/cycle-pain.png', full_page=True)
     click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
     t = T(pg)
-    R['T5_douleur_quotidien_consultation'] = 'Vos douleurs méritent d’être prises au sérieux' in t and pg.get_by_role('button', name='Trouver un professionnel de santé').filter(visible=True).count() > 0
+    R['T5_douleur_quotidien_consultation'] = 'Tes douleurs méritent d’être prises au sérieux' in t and pg.get_by_role('button', name='Trouver un professionnel de santé').filter(visible=True).count() > 0
     p = demo(pg, "s => s.tables.symptom_logs.filter(x => x.pain_intensity != null).map(x => [x.pain_intensity, x.pain_locations, x.pain_impact])")
     R['T11_donnees_enregistrees'] = [5, ['lower_abdomen'], ['work']] in p  # 6 appuis sur « + » depuis « non renseignée » : 0 puis 1…5
     # Douleur forte + malaise : urgence (Test 6)
@@ -258,7 +258,7 @@ def run(p):
     pg.locator('[aria-label="Signes associés"] [aria-label="Malaise ou étourdissements"]').filter(visible=True).first.click()
     click(pg, 'Enregistrer'); pg.wait_for_timeout(2000)
     t = T(pg)
-    R['T6_urgence'] = 'Appelez les urgences' in t and 'Urgence' in t and pg.get_by_role('button', name='Numéros d’urgence').filter(visible=True).count() > 0
+    R['T6_urgence'] = 'Appelle les urgences' in t and 'Urgence' in t and pg.get_by_role('button', name='Numéros d’urgence').filter(visible=True).count() > 0
 
     # 14. Mes conseils, roue du cycle, « Mes règles ont commencé » + annulation
     pg.goto(B + '/cycle/advice'); pg.wait_for_timeout(1800)

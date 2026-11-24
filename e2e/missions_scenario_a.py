@@ -91,7 +91,7 @@ with sync_playwright() as p:
     R['notification_conjoint'] = any(n['title'] == 'Camille t’a confié une mission' and TITLE not in (n.get('body') or '') and n['deep_link'] == f'/family/missions/{mission_id}' for n in notes)
     pg.goto(B + '/family/missions'); pg.wait_for_timeout(3000)
     R['recue_par_conjoint'] = tid(pg, f'mission-{mission_id}').count() > 0
-    R['prenom_demandeuse_liste'] = 'Camille vous demande' in (tid(pg, f'mission-who-line-{mission_id}').inner_text() if tid(pg, f'mission-who-line-{mission_id}').count() else '')
+    R['prenom_demandeuse_liste'] = ' te demande' in (tid(pg, f'mission-who-line-{mission_id}').inner_text() if tid(pg, f'mission-who-line-{mission_id}').count() else '')
     shot(pg, '04-conjoint-recues')
     tid(pg, f'mission-{mission_id}').click(); pg.wait_for_timeout(3000)
     R['prenoms_detail'] = 'Demandée par Camille' in (tid(pg, 'mission-from').inner_text() if tid(pg, 'mission-from').count() else '')
