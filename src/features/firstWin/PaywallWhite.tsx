@@ -10,6 +10,7 @@
  * Le prix et le bouton sont utilisables dès l'arrivée (l'animation d'Aura ne bloque rien). Aucun appel IA ni son.
  */
 import { PaywallFaq, PaywallShowcase } from './PaywallExtras';
+import { AmbassadorCode } from './AmbassadorCode';
 import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -82,6 +83,8 @@ function WhiteBody(props: PaywallViewProps) {
       ) : null}
     </View>,
     card && catalog === 'ready' ? <TimelineBlock key="tl" card={card} now={now} reminder={!!props.reminder} /> : null,
+    // Code ambassadeur (discret, sous les formules) : vérifié par le serveur, réduction appliquée par Apple
+    catalog === 'ready' ? <AmbassadorCode key="code" signedIn={!props.needsAccount} webShowcase={props.webShowcase} onRedeemOpened={props.onRedeemOpened} /> : null,
     // Vitrine : vraies captures de l'app (24/11/2026), puis preuves
     <PaywallShowcase key="showcase" />,
     // Variante « histoire » : note et histoire déjà vues sur les slides précédentes

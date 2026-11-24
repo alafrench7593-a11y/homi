@@ -8,7 +8,7 @@
  *  - Web : pas d'achat intégré ; la version web de démonstration utilise le faux magasin (grille signalée).
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { AppState, Platform, View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { aiAssistantOnline } from '@/config/features';
 import { useAuth } from '@/lib/auth';
@@ -146,6 +146,10 @@ export function FirstWinOffers({ webShowcase = false }: { webShowcase?: boolean 
     <PaywallWhite storyMode={story === 'story'} direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
       onSelect={select} catalog={catalog} phase={phase} aiOnline={aiAssistantOnline()} now={now} reminder={Platform.OS === 'ios' || Platform.OS === 'android'} resume={resume === '1' && !!session}
       needsAccount={!session} webShowcase={webShowcase} onSignUp={() => router.push('/auth/sign-up')} onDemo={() => router.replace('/demo' as never)} onBuy={() => void buy()} onRetry={refetch} onRestore={() => void restore()} onClose={close}
+      onRedeemOpened={() => {
+        // Retour depuis l'écran d'Apple : droits relus (RevenueCat → serveur) ; l'abonné·e est alors redirigé·e
+        const sub = AppState.addEventListener('change', (st) => { if (st === 'active') { inv('subscriptions'); inv('access'); inv('premium'); sub.remove(); } });
+      }}
       onLegal={(doc) => router.push(`/legal/${doc}`)}
       onHelp={() => void track('aura_help_opened', props)} onStory={() => void track('story_opened', props)} />
   );
