@@ -82,6 +82,21 @@ de prélèvement. **Limites** : RevenueCat ne signale que le remboursement de la
 - Parcours navigateur : 28 / 28 (site → `?ref` → inscription → candidature → validation → versement → tableau de bord).
 - Charge : voir §7 bis.
 
+### 7 bis. Test de charge (local, 100 000 abonnés fictifs, `AMB_LOAD=1 bash supabase/tests/run-local.sh`)
+
+| Étape | Résultat | Durée |
+|---|---|---:|
+| 1er paiement × 100 000 (10 lots) | 100 000 commissions `ok` | ≈ 1,5 s par lot de 10 000 |
+| Webhook rejoué × 100 000 | 100 000 `duplicate`, aucune 2ᵉ commission | 10,2 s |
+| Mois 2 à 7 pour 10 000 abonnés (7ᵉ daté 1 s avant la fin) | 50 000 `ok`, 10 000 `period_over` | 6,6 s |
+| Contrôles | 150 000 commissions, somme exacte 150 000 × 3,19 € = 478 500 €, 6 au maximum par client | 0,09 s |
+| Tableau de bord ambassadeur (100 000 abonnés) | agrégats corrects | 0,11 s |
+| Libération quotidienne | 150 000 passées en « disponible » | 4,6 s |
+
+Constat : un seul appel géant (100 000 commissions dans une transaction, sur un registre sans statistiques) devient très
+lent, car le plan d'exécution reste celui d'une table vide. En production, chaque webhook est une transaction et l'autovacuum
+met les statistiques à jour : ce cas ne se produit pas. Pour un éventuel import massif, procéder par lots avec `analyze`.
+
 ## 8. Simulations (formules entières du moteur, TVA 20 %, estimations : jamais des revenus réels)
 
 

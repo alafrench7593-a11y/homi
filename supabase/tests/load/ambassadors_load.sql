@@ -10,10 +10,49 @@ insert into auth.users (id, email) select gen_random_uuid(), 'load-' || i || '@e
 insert into public.affiliate_attributions (user_id, affiliate_id, source, campaign, feature, attributed_at)
   select u.id, (select id from public.affiliates where code = 'load-amb'), 'link', '', '', now() - interval '1 day'
   from auth.users u where u.email like 'load-%@exemple.test' and u.email <> 'load-amb@exemple.test';
-\echo '1er paiement × 100 000'
-select count(*) filter (where r = 'ok') as ok from (
+\echo '1er paiement × 100 000 (10 lots de 10 000, statistiques mises à jour entre les lots comme le ferait l''autovacuum)'
+analyze;
+create temp table load_users as select user_id, row_number() over (order by user_id) rn from public.affiliate_attributions;
+select count(*) filter (where r = 'ok') as ok_lot_0 from (
   select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
-  from public.affiliate_attributions) x;
+  from load_users where rn > 0 and rn <= 10000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_1 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 10000 and rn <= 20000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_2 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 20000 and rn <= 30000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_3 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 30000 and rn <= 40000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_4 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 40000 and rn <= 50000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_5 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 50000 and rn <= 60000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_6 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 60000 and rn <= 70000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_7 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 70000 and rn <= 80000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_8 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 80000 and rn <= 90000) x;
+analyze public.affiliate_ledger;
+select count(*) filter (where r = 'ok') as ok_lot_9 from (
+  select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now(), 1499, 1667, 1250, null, 'production', 'APP_STORE') r
+  from load_users where rn > 90000 and rn <= 100000) x;
+analyze public.affiliate_ledger;
 \echo 'webhook rejoué × 100 000'
 select count(*) filter (where r = 'duplicate') as duplicates from (
   select public.affiliate_record_commission(user_id, 'L1-' || user_id, 'homi_premium_monthly', 1062, 'EUR', now()) r from public.affiliate_attributions) x;
