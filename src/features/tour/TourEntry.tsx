@@ -26,13 +26,13 @@ import { isPracticeActive, onPracticeChange } from '@/lib/practice';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr, type TKey } from '@/i18n';
-import { emergencyRecent, isEmergencyPath, showResumeCard, TOUR_LENGTH } from './model';
+import { emergencyRecent, isEmergencyPath, showResumeCard, TOUR_LENGTH, tourPath } from './model';
 import { lastEmergencyCall, startTour, tourDispatch, useTourProgress, useTourStore } from './store';
 
 /** La visite peut-elle être proposée ici et maintenant ? */
 export function useTourAllowed(): boolean {
   const caregiverOnly = isCaregiverOnly(useMemberships().data);
-  const pathname = usePathname();
+  const pathname = tourPath(usePathname());
   return !caregiverOnly && !isEmergencyPath(pathname) && !emergencyRecent(lastEmergencyCall(), Date.now());
 }
 

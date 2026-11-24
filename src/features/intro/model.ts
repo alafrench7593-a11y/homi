@@ -44,7 +44,7 @@ export function clampPage(n: number, last?: number): number {
  * Présentation « Keynote » de première ouverture (audit du 24/11/2026) : HOMI en 7 tableaux, puis « Commencer ».
  * Chaque tableau = un grand titre, une phrase, une vraie scène de l'application (données d'exemple).
  */
-export const KEYNOTE_SLIDES = ['brand', 'parenting', 'child', 'organize', 'community', 'aura', 'yours'] as const;
+export const KEYNOTE_SLIDES = ['brand', 'parenting', 'child', 'organize', 'relay', 'community', 'aura', 'yours'] as const;
 export type KeynoteSlide = (typeof KEYNOTE_SLIDES)[number];
 export const KEYNOTE_PAGES = KEYNOTE_SLIDES.length + 1;
 export const KEYNOTE_LAST = KEYNOTE_PAGES - 1;

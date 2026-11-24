@@ -230,3 +230,13 @@ describe('visite : plus d’apparition « au hasard » (22/11/2026)', () => {
     expect(r(hidden, { type: 'later' }).resumeHidden).toBe(false);
   });
 });
+
+describe('tourPath (web : accueil servi à /app)', () => {
+  it("/app vaut l'accueil « / » ; les autres adresses sont inchangées", () => {
+    const { tourPath, leftStep } = require('@/features/tour/model');
+    expect(tourPath('/app')).toBe('/');
+    expect(tourPath('/tools')).toBe('/tools');
+    // Arrivée sur l'accueil puis affichage à /app : la visite ne se met plus en pause
+    expect(leftStep({ stepIndex: 0, arrivedAt: 0, path: tourPath('/app'), formOpen: false })).toBe(false);
+  });
+});

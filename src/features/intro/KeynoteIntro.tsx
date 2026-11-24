@@ -170,6 +170,7 @@ function SlidePage({ slide, n, active, short }: { slide: KeynoteSlide; n: number
       {slide === 'brand' ? null : <Layer depth={0.7}><ExampleBadge label={tr('o2.example')} /></Layer>}
       <View pointerEvents="none">
         {scene ? <SceneView scene={scene} active={active} />
+          : slide === 'relay' ? <RelayScene />
           : slide === 'community' ? <CommunityScene />
             : slide === 'aura' ? <AuraScene />
               : <BrandScene />}
@@ -197,6 +198,34 @@ function BrandScene() {
           <Text variant="small" muted>{tr(`kn2.brand.c.${k}.d` as TKey)}</Text>
         </GlassCard>
       ))}
+    </View>
+  );
+}
+
+/** Relais entre parents : résumé envoyé à l'autre parent (dernier biberon, sieste, suite). */
+function RelayScene() {
+  const t = useTheme();
+  const row = (k: 1 | 2 | 3) => (
+    <View key={k} style={{ flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm }}>
+      <Text variant="small" muted>{tr(`kn2.relay.l${k}` as TKey)}</Text>
+      <Text variant="small" weight="bold" style={{ flexShrink: 1, textAlign: 'right' }}>{tr(`kn2.relay.v${k}` as TKey)}</Text>
+    </View>
+  );
+  return (
+    <View style={{ gap: spacing.sm }}>
+      <GlassCard depth={1}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icon name="repeat" size={16} color={t.colors.text} />
+          <Text weight="bold" style={{ flex: 1 }}>{tr('kn2.relay.head')}</Text>
+        </View>
+        {row(1)}{row(2)}{row(3)}
+      </GlassCard>
+      <Layer depth={1.6}>
+        <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: t.colors.text, borderRadius: 999, paddingVertical: 6, paddingHorizontal: spacing.md }}>
+          <Icon name="check" size={14} color={t.colors.background} />
+          <Text variant="caption" weight="bold" color={t.colors.background}>{tr('kn2.relay.sent')}</Text>
+        </View>
+      </Layer>
     </View>
   );
 }

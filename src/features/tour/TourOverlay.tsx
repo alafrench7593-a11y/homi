@@ -38,8 +38,7 @@ import { t as tr, type TKey } from '@/i18n';
 import { anchorEntries, measureNode, onAnchorsChange, type AnchorEntry } from './anchors';
 import {
   bubblePlacement, emergencyRecent, holeFor, isEmergencyPath, isTabPath, leftStep, overlayActive, rectVisible, stepAnchors, stepOnScreen, TOUR_LENGTH, TOUR_STEPS, unionRect,
-  type GestureHint, type Rect, type TourStep,
-} from './model';
+  type GestureHint, type Rect, type TourStep, tourPath } from './model';
 import { lastEmergencyCall, setTourShownPath, tourDispatch, tourEvent, tourProfileCount, useStoresHydrated, useTourProgress, useTourStore } from './store';
 import { ToolHintBubble } from './ToolHint';
 import { TourHand } from './TourHand';
@@ -112,7 +111,7 @@ export function TourHost() {
   useEffect(() => { setOwner(userId || null); }, [userId, setOwner]);
   const progress = useTourProgress();
   const caregiverOnly = isCaregiverOnly(useMemberships().data);
-  const pathname = usePathname();
+  const pathname = tourPath(usePathname());
   const emergency = isEmergencyPath(pathname) || emergencyRecent(lastEmergencyCall(), Date.now());
   const active = overlayActive(progress, { caregiverOnly, emergency });
   const finished = useTourStore((s) => s.finished);
@@ -435,7 +434,10 @@ function Bubble({ step, index, copy, hole, lost, top, bottom, width }: {
           </Text>
           <Text variant="small" weight="bold" numberOfLines={2} style={{ flex: 1, minWidth: 0 }} testID="tour-title" accessibilityLabel={`${copy.title}. ${copy.body}`}>{copy.title}</Text>
           <GlassIconButton icon="pause" label={tr('tour.later')} plain size={44} onPress={() => go({ type: 'later' })} testID="tour-later" />
-          <GlassIconButton icon="skip-forward" label={tr('tour.skip')} plain size={44} onPress={() => go(SKIP_STEP)} testID="tour-skip" />
+          {/* Étape à « Suivant » (accueil) : le bandeau garde ce bouton, sinon la visite restait bloquée sur petit écran */}
+          {manual
+            ? <GlassIconButton icon="arrow-right" label={tr('tour.next')} plain size={44} onPress={() => go({ type: 'next' })} testID="tour-next" />
+            : <GlassIconButton icon="skip-forward" label={tr('tour.skip')} plain size={44} onPress={() => go(SKIP_STEP)} testID="tour-skip" />}
           <GlassIconButton icon="x" label={tr('tour.quit')} plain size={44} onPress={() => go({ type: 'quit' })} testID="tour-quit" />
         </Glass>
       </Animated.View>

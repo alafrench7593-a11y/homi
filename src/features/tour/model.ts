@@ -44,6 +44,8 @@ export interface TourStep {
 /** Routes des onglets (pages où vivent la barre et le bouton central). */
 export const TAB_PATHS = ['/', '/health', '/baby', '/household', '/tools', '/community', '/agenda', '/track', '/ask', '/moi', '/profile'];
 export const isTabPath = (p: string) => TAB_PATHS.includes(p);
+/** Sur le web, l'accueil de l'application s'affiche à « /app » (« / » est la page publique) : c'est le même écran que « / ». */
+export const tourPath = (p: string) => (p === '/app' ? '/' : p);
 
 export const TOUR_STEPS: TourStep[] = [
   {

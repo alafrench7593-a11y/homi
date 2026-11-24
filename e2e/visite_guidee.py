@@ -175,9 +175,9 @@ def full_tour(b, w, h, scheme, main=False):
     ctx, pg = new_ctx(b, w, h, scheme)
     enter_demo(pg)
     # ------------------------------------------------------------- relance depuis Réglages
-    pg.goto(B + '/settings'); pg.wait_for_timeout(2500)
+    pg.goto(B + '/settings/help'); pg.wait_for_timeout(2500)
     tid(pg, 'settings-tour').scroll_into_view_if_needed(); tid(pg, 'settings-tour').click()
-    R[f'{tag}_relance_reglages'] = wait_step(pg, 1) and pg.url.rstrip('/') == B
+    R[f'{tag}_relance_reglages'] = wait_step(pg, 1) and pg.url.rstrip('/') in (B, B + '/app')
     # ------------------------------------------------------------- 1. accueil
     hole_on(pg, None if not visible(pg, 'home-card-next') else union_target(pg, ['home-card-next', 'home-card-quick']), tag, '1', above_dock=True)
     if main:
@@ -350,23 +350,24 @@ def skip_later_resume(b):
     R['passer_jusqu_au_bout'] = visible(pg, 'tour-done')
     tid(pg, 'tour-finish').click(); pg.wait_for_timeout(400)
     # carte masquable : nouvelle visite, plus tard, masquer
-    pg.goto(B + '/settings'); pg.wait_for_timeout(2000)
+    pg.goto(B + '/settings/help'); pg.wait_for_timeout(2000)
     tid(pg, 'settings-tour').scroll_into_view_if_needed(); tid(pg, 'settings-tour').click(); wait_step(pg, 1)
     tid(pg, 'tour-later').click(); pg.wait_for_timeout(600)
     tid(pg, 'tour-resume-hide').click(); pg.wait_for_timeout(500)
     R['carte_reprise_masquable'] = not visible(pg, 'tour-resume')
     # Quitter la visite : rien ne reste
-    pg.goto(B + '/settings'); pg.wait_for_timeout(2000)
+    pg.goto(B + '/settings/help'); pg.wait_for_timeout(2000)
     tid(pg, 'settings-tour').scroll_into_view_if_needed(); tid(pg, 'settings-tour').click(); wait_step(pg, 1)
     tid(pg, 'tour-quit').click(); pg.wait_for_timeout(600)
     R['quitter'] = not visible(pg, 'tour-overlay') and not visible(pg, 'tour-resume')
     # Élément hors de l'écran (pastille) : l'écran reste utilisable, rien n'arrête les touchers
-    pg.goto(B + '/settings'); pg.wait_for_timeout(2000)
+    pg.goto(B + '/settings/help'); pg.wait_for_timeout(2000)
     tid(pg, 'settings-tour').scroll_into_view_if_needed(); tid(pg, 'settings-tour').click(); wait_step(pg, 1)
     # navigation DANS l'application (un rechargement de page vaut une fermeture : la visite passe « plus tard »)
     pg.go_back(); pg.wait_for_timeout(2000)  # retour système vers Réglages : jamais bloqué par la visite
-    R['autre_ecran_pastille_sans_voile'] = visible(pg, 'tour-pill') and not visible(pg, 'tour-veil')
-    tid(pg, 'tour-pill-later').click(); pg.wait_for_timeout(400)
+    # Règle du 22/11 : quitter l'écran de l'étape met la visite en pause (pastille si elle n'y était pas encore)
+    R['autre_ecran_pastille_sans_voile'] = not visible(pg, 'tour-veil') and (visible(pg, 'tour-pill') or not visible(pg, 'tour-overlay'))
+    if visible(pg, 'tour-pill-later'): tid(pg, 'tour-pill-later').click(); pg.wait_for_timeout(400)
     # Aide contextuelle à la première ouverture d'un outil : une bulle, une seule fois
     pg.goto(B + '/tools'); pg.wait_for_timeout(2500)
     # la tuile peut être sous la ligne de flottaison (favoris, récents, « Pour ma grossesse » au-dessus)
@@ -389,7 +390,7 @@ def skip_later_resume(b):
 def reduced(b):
     ctx, pg = new_ctx(b, 390, 844, 'light', reduced=True)
     enter_demo(pg)
-    pg.goto(B + '/settings'); pg.wait_for_timeout(2000)
+    pg.goto(B + '/settings/help'); pg.wait_for_timeout(2000)
     tid(pg, 'settings-tour').scroll_into_view_if_needed(); tid(pg, 'settings-tour').click(); wait_step(pg, 1)
     tid(pg, 'tour-next').click(); wait_step(pg, 2)
     # reprise en animations réduites : découpe posée en moins de 100 ms
