@@ -10,6 +10,7 @@
  * Usage : node scripts/web/build-site.mjs [dist]
  */
 import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -77,12 +78,52 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
   writeFileSync(path.join(dist, 'ambassadeurs', 'index.html'), amb);
 }
 
+// 3 ter) /fonctionnalites/ : TOUS les outils réels (catalogue de l'app, toutes étapes de vie), écrits dans le HTML
+// (indexables sans JavaScript) + galerie des captures réelles (web/site/screens, scripts : e2e/captures_site.py)
+{
+  const req = createRequire(import.meta.url);
+  globalThis.window = globalThis; globalThis.document = globalThis.document ?? {};
+  req(path.join(site, '.build/search.js'));
+  const { stages, tools } = globalThis.homiTools.all();
+  const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  // écran réel associé à un outil (seulement les captures validées)
+  const SHOT = { kid_sleep: ['sommeil', 'Sommeil de nuit'], baby_bottle: ['biberon', 'Noter un biberon'], baby_bottle_timer: ['journee-biberons', 'Journée des biberons'],
+    baby_breastfeed: ['allaitement', 'Allaitement'], kid_grow: ['developpement', 'Développement'], baby_foods: ['diversification', 'Diversification'],
+    journal: ['journal', 'Journal complet'], baby_diaper: ['couches', 'Couches'], family_calendar: ['agenda', 'Agenda familial'],
+    family_nights: ['relais-nuit', 'Relais de nuit'], mental_load: ['charge-mentale', 'Charge mentale'], family_tasks: ['taches', 'Organisation familiale'],
+    community: ['communaute', 'Communauté'], summary: ['resume', 'Résumés'] };
+  const EXTRA = [['accueil', 'Tableau de bord', '/app'], ['croissance', 'Courbes de croissance', null], ['contractions', 'Chronomètre des contractions', null]];
+  const byId = new Map(tools.map((t) => [t.id, t]));
+  const gallery = [
+    ...EXTRA.slice(0, 1).map(([f, label, href]) => ({ f, label, sub: 'Toute la famille sur un seul écran.', href })),
+    ...Object.entries(SHOT).filter(([id]) => byId.has(id)).map(([id, [f, label]]) => ({ f, label, sub: byId.get(id).sub, href: `/outil/${id}` })),
+    ...EXTRA.slice(1).map(([f, label]) => ({ f, label, sub: f === 'croissance' ? 'Poids, taille et repères OMS en courbes.' : 'Un appui au début, un appui à la fin : durée et intervalle calculés.', href: null })),
+  ];
+  const galleryHtml = gallery.map((g, i) => `<li><figure><span class="shot"><img src="/site/screens/${g.f}.webp" alt="Écran « ${esc(g.label)} » de l’application HOMI" width="390" height="810" ${i > 2 ? 'loading="lazy" ' : ''}decoding="async"></span><figcaption>${g.href ? `<a href="${g.href}">${esc(g.label)}</a>` : esc(g.label)}<span>${esc(g.sub)}</span></figcaption></figure></li>`).join('');
+  const stagesHtml = `<button type="button" data-stage="all" aria-pressed="true">Tout</button>` + stages.map((s) => `<button type="button" data-stage="${s.key}" aria-pressed="false">${esc(s.title)}</button>`).join('');
+  const groups = new Map();
+  for (const t of tools) { if (!groups.has(t.categoryTitle)) groups.set(t.categoryTitle, []); groups.get(t.categoryTitle).push(t); }
+  const catsHtml = [...groups.entries()].map(([title, list], i) => `<section class="feat-cat" aria-labelledby="fc-${i}"><h3 id="fc-${i}">${esc(title)} <span class="muted">· ${list.length}</span></h3><ul class="feat-list" role="list">${
+    list.map((t) => `<li class="feat-item" data-id="${esc(t.id)}" data-stages="${t.stages.join(' ')}"><a href="/outil/${esc(t.id)}"><b>${esc(t.label)}</b><span>${esc(t.sub)}</span>${SHOT[t.id] ? '<em class="feat-cam">Écran réel ci-dessus</em>' : ''}</a></li>`).join('')}</ul></section>`).join('\n');
+  const jsonld = JSON.stringify({ '@context': 'https://schema.org', '@graph': [
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Fonctionnalités', item: `${siteUrl}/fonctionnalites/` }] },
+    { '@type': 'ItemList', name: 'Fonctionnalités de HOMI', numberOfItems: tools.length, itemListElement: tools.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.label, description: t.sub })) },
+  ] }).replace(/</g, '\\u003c');
+  const feat = readFileSync(path.join(site, 'fonctionnalites.html'), 'utf8')
+    .replaceAll('{{LOGO}}', logo).replaceAll('{{SITE_URL}}', siteUrl).replaceAll('{{ROBOTS}}', robotsPublic).replaceAll('{{VERSION}}', version)
+    .replaceAll('{{COUNT}}', String(tools.length)).replace('{{GALLERY}}', galleryHtml).replace('{{STAGES}}', stagesHtml)
+    .replace('{{CATEGORIES}}', catsHtml).replace('{{JSONLD}}', jsonld);
+  mkdirSync(path.join(dist, 'fonctionnalites'), { recursive: true });
+  writeFileSync(path.join(dist, 'fonctionnalites', 'index.html'), feat);
+  for (const f of ['fonctionnalites.css', 'fonctionnalites.js']) cpSync(path.join(site, f), path.join(dist, 'site', f));
+}
+
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', '/ambassadeurs/', ...legal.map((d) => `/${d}/`)];
+const pub = ['/', '/fonctionnalites/', '/ambassadeurs/', ...legal.map((d) => `/${d}/`)];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');

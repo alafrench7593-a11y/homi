@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Toutes les fonctionnalités de HOMI — {{COUNT}} outils pour la vie de famille</title>
+<meta name="description" content="Les {{COUNT}} outils réels de HOMI, de la contraception aux 10 ans de votre enfant : sommeil, biberons, allaitement, grossesse, croissance, vaccins, relais parental, charge mentale, organisation du foyer.">
+<meta name="robots" content="{{ROBOTS}}">
+<link rel="canonical" href="{{SITE_URL}}/fonctionnalites/">
+<meta property="og:title" content="Toutes les fonctionnalités de HOMI">
+<meta property="og:description" content="{{COUNT}} outils réels pour toute la vie de famille, avec les vrais écrans de l’application.">
+<meta property="og:image" content="{{SITE_URL}}/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/site/site.css?v={{VERSION}}">
+<link rel="stylesheet" href="/site/fonctionnalites.css?v={{VERSION}}">
+<script type="application/ld+json">{{JSONLD}}</script>
+</head>
+<body>
+<div class="pearl" aria-hidden="true"><span class="orb orb-a" data-depth="0.18"></span><span class="orb orb-b" data-depth="-0.12"></span></div>
+<a class="skip" href="#catalogue">Aller au catalogue</a>
+<header class="nav" role="banner">
+  <nav class="nav-bar glass" aria-label="Navigation principale">
+    <a class="nav-logo" href="/" aria-label="HOMI, accueil">{{LOGO}}</a>
+    <ul class="nav-links">
+      <li><a href="#ecrans">Écrans</a></li>
+      <li><a href="#catalogue">Catalogue</a></li>
+      <li><a href="/ambassadeurs/">Ambassadeurs</a></li>
+    </ul>
+    <div class="nav-cta"><a class="btn btn-primary btn-sm" href="/app" data-cta="feat-nav-app">Ouvrir HOMI</a></div>
+  </nav>
+</header>
+
+<main>
+  <section class="chapter feat-hero" aria-labelledby="t-feat">
+    <div class="wrap narrow">
+      <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <span>Fonctionnalités</span></nav>
+      <p class="eyebrow">Fonctionnalités</p>
+      <h1 id="t-feat" class="display lines"><span class="line"><span>{{COUNT}} outils.</span></span> <span class="line line-soft"><span>Une seule famille.</span></span></h1>
+      <p class="lead">Chaque outil ci-dessous existe dans l’application. Cherchez avec vos mots, ou filtrez par étape de vie.</p>
+    </div>
+  </section>
+
+  <section id="ecrans" class="chapter" aria-labelledby="t-ecrans">
+    <div class="wrap">
+      <h2 id="t-ecrans" class="display"><span>Les vrais écrans.</span></h2>
+      <p class="muted">Captures de l’application (version web), avec une famille fictive. Aucune image générée.</p>
+      <ul class="feat-gallery" role="list">{{GALLERY}}</ul>
+    </div>
+  </section>
+
+  <section id="catalogue" class="chapter" aria-labelledby="t-cat">
+    <div class="wrap">
+      <h2 id="t-cat" class="display"><span>Le catalogue complet.</span></h2>
+      <div class="feat-tools card">
+        <label class="feat-search"><span class="sr-only">Rechercher un outil</span>
+          <input id="feat-q" type="search" placeholder="Ex. : mon bébé ne dort pas beaucoup" autocomplete="off" enterkeyhint="search"></label>
+        <div class="feat-chips" role="group" aria-label="Étape de vie">{{STAGES}}</div>
+        <p id="feat-count" class="fine muted" aria-live="polite"></p>
+      </div>
+      {{CATEGORIES}}
+      <p id="feat-none" class="muted" hidden>Aucun outil ne correspond. Essayez un autre mot.</p>
+    </div>
+  </section>
+
+  <section class="chapter" aria-labelledby="t-end">
+    <div class="wrap narrow center">
+      <h2 id="t-end" class="display"><span>Prêt à essayer ?</span></h2>
+      <div class="cta-row"><a class="btn btn-primary btn-lg" href="/app" data-cta="feat-end-app">Ouvrir HOMI</a><a class="btn btn-secondary btn-lg" href="/auth/sign-up" data-cta="feat-end-signup">Créer mon compte</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <p>{{LOGO}}</p>
+    <ul>
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/ambassadeurs/">Ambassadeurs</a></li>
+      <li><a href="/mentions-legales/">Mentions légales</a></li>
+      <li><a href="/confidentialite/">Confidentialité</a></li>
+      <li><a href="/cgu/">Conditions d’utilisation</a></li>
+    </ul>
+  </div>
+</footer>
+<script src="/site/site.js?v={{VERSION}}" defer></script>
+<script src="/site/search.js?v={{VERSION}}" defer></script>
+<script src="/site/fonctionnalites.js?v={{VERSION}}" defer></script>
+</body>
+</html>

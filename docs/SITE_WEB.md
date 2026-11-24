@@ -30,3 +30,13 @@ Hors production (Preview), toutes les pages sont `noindex` et `robots.txt` inter
   `homi-web` créé dans le tableau de bord** (dépôt `homi`, branche `homi/site-web`, réglages lus dans `vercel.json`)
   avec `EXPO_PUBLIC_SUPABASE_URL` et `EXPO_PUBLIC_SUPABASE_ANON_KEY` en Preview.
 - Après le premier déploiement : ajouter l'URL de retour Auth Supabase (accord de la propriétaire requis).
+
+## Refonte premium — étape 1 (24/11/2026)
+- Accueil : titre « Toute votre vie de famille. Enfin réunie. », récit en 7 écrans réels (tableau de bord, sommeil, biberons,
+  grossesse/contractions, Aura, relais, organisation), JSON-LD SoftwareApplication + Organization (OS : Web — pas d'iOS tant que l'app n'est pas publiée).
+- `/fonctionnalites/` : les 121 outils réels (catalogue de l'app, 6 étapes de vie) écrits dans le HTML, recherche avec le moteur de
+  l'app (sans IA), filtres par étape, galerie de 17 captures réelles, BreadcrumbList + ItemList. Ajoutée au sitemap.
+- Captures : `e2e/captures_site.py` (version web de l'app, mode démo, famille fictive, iPhone 390×844 @3x → WebP 780 px, bandeau
+  « Démo » recadré, rejet automatique des écrans d'erreur/vides). Écartées : dents, vaccins, médicaments, courses (démo sans données),
+  Aura (écran d'abonnement), grossesse/cycle/post-partum/co-parent (hors profil de la démo).
+- Tests : `e2e/site_fonctionnalites.py` 22/22 (mobile 390 et desktop 1440).

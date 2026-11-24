@@ -35,6 +35,7 @@ const api = globalThis.homiTools;
 for (const q of ['Mon bébé prend le sein', 'Où j\'ajoute son poids ?', 'sieste', 'relais', 'biberon', 'fièvre']) api.search(q);
 api.categories();
 api.stages();
+api.all();
 const used = {};
 for (const k of [...globalThis.__homiUsedKeys].sort()) used[k] = globalThis.__homiDict[k];
 writeFileSync(path.join(out, 'fr-used.json'), JSON.stringify(used));

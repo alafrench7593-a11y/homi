@@ -31,6 +31,19 @@ const api = {
   categories() {
     return groupByCategory(tools).filter((g) => g.items.length).map((g) => ({ key: g.key, title: categoryTitle(g.key), items: g.items.map(pick) }));
   },
+  /** Tous les outils réels, toutes étapes de vie confondues (page /fonctionnalites/, générée au build). */
+  all() {
+    const map = new Map<string, ReturnType<typeof pick> & { stages: string[]; categoryTitle: string; free: boolean }>();
+    for (const s of STAGES) {
+      for (const t of toolCatalog(ctx(s.scope))) {
+        const id = t.parent ?? t.id;
+        const cur = map.get(id) ?? { ...pick(t), stages: [], categoryTitle: categoryTitle(t.category), free: t.free };
+        if (!cur.stages.includes(s.scope)) cur.stages.push(s.scope);
+        map.set(id, cur);
+      }
+    }
+    return { stages: STAGES.map((s) => ({ key: s.scope, title: s.title })), tools: [...map.values()] };
+  },
   stages() {
     return STAGES.map((s) => { const list = toolCatalog(ctx(s.scope)); return { key: s.scope, title: s.title, count: list.length, items: list.slice(0, 8).map(pick) }; });
   },
