@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Chip, Field, Row, Text } from '@/components/ui';
-import { CheckRow } from '@/features/auth';
+import { CheckRow, LegalLink } from '@/features/auth';
 import { useToast } from '@/components/Overlays';
 import { AFFILIATE_CODE } from '@/lib/affiliateReferral';
 import { PROFILE_TYPES, useApplyAffiliate, type ProfileType } from '@/lib/data/hooks-ambassadors';
@@ -53,6 +53,7 @@ export default function AmbassadorApply() {
       </Row>
       <Field label={tr('amb.apply.audience')} value={f.audience} onChangeText={set('audience')} keyboardType="number-pad" optional />
       <Field label={tr('amb.apply.channel')} value={f.channel} onChangeText={set('channel')} maxLength={500} multiline optional />
+      <LegalLink doc="ambassadors">{tr('amb.termsLink')}</LegalLink>
       <CheckRow label={tr('amb.apply.accept')} checked={accept} onChange={setAccept}><Text variant="small">{tr('amb.apply.accept')}</Text></CheckRow>
       <CheckRow label={tr('amb.apply.honest')} checked={honest} onChange={setHonest}><Text variant="small">{tr('amb.apply.honest')}</Text></CheckRow>
       {error ? <Banner tone="danger">{error}</Banner> : null}

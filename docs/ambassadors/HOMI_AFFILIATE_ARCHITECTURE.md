@@ -3,7 +3,7 @@
 Statut : **conception, aucun code ni aucune donnée de production modifiés.** Branche `homi/ambassadors`.
 
 ## 0. Points faibles à trancher d'abord
-1. **Entité qui paie** : les mentions légales nomment *David PRINCIVIL, entrepreneur individuel (EI), France (SIREN 131194466)*, pas une société aux Émirats. Le prompt suppose une société EAU. Les versements, la TVA, les factures d'affiliés et le choix du prestataire de paiement en dépendent.
+1. **Entité qui paie** (RÉSOLU 24/11 : David PRINCIVIL EI, France ; plus de société aux Émirats) : les mentions légales nomment *David PRINCIVIL, entrepreneur individuel (EI), France (SIREN 131194466)*, pas une société aux Émirats. Le prompt suppose une société EAU. Les versements, la TVA, les factures d'affiliés et le choix du prestataire de paiement en dépendent.
 2. **L'app n'est pas en vente** (aucun produit publié, 0 abonné payant). Un programme d'affiliation avant la première vente n'a rien à attribuer ni à mesurer : le MVP peut être construit, mais le recrutement doit suivre la mise en vente.
 3. **Pas de domaine officiel** : sans domaine, ni Universal Links iOS ni App Links Android (le fichier `apple-app-site-association` doit être servi par le domaine des liens). Les liens `/r/<code>` fonctionnent sur le site web, l'attribution après installation repose alors sur le **code saisi** ou la **connexion web préalable**.
 4. **« 14 €/mois → 140 000 € pour 10 000 abonnés »** est un chiffre d'affaires brut TTC, pas encaissé (voir §5).

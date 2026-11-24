@@ -1,9 +1,9 @@
-# Conditions du programme HOMI Ambassadors — BROUILLON v1-2026-11
+# Conditions du programme HOMI Ambassadors — v1-2026-11 (VALIDÉES)
 
-> **Brouillon à faire valider par un juriste avant toute publication.** Entité contractante à confirmer
-> (société aux Émirats arabes unis, choix de la propriétaire du 24/11/2026) ; les mentions légales du site
-> affichent encore « David PRINCIVIL EI » et doivent être mises à jour en même temps. Version technique :
-> `AFFILIATE_TERMS_VERSION = 'v1-2026-11'` (src/lib/data/hooks-ambassadors.ts), enregistrée à la candidature.
+> Validées par la propriétaire le 24/11/2026. Entité : **David PRINCIVIL, entrepreneur individuel (EI), France,
+> SIREN 131194466** — pas de société aux Émirats. Texte faisant foi : `src/content/legalAmbassadors.ts`
+> (écran /legal/ambassadors) et page publique `legal-site/ambassadeurs/` (générée par `scripts/web/gen-ambassador-terms.py`).
+> Ce fichier n'est qu'un résumé ; en cas d'écart, le texte de `legalAmbassadors.ts` prime.
 
 1. **Objet.** L'ambassadeur recommande l'application HOMI. Il n'est ni salarié, ni mandataire, ni représentant de HOMI.
 2. **Candidature.** Compte HOMI requis. HOMI peut accepter, refuser ou suspendre une candidature, sans obligation de motiver un refus.

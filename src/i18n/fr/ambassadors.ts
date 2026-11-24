@@ -82,4 +82,5 @@ export const ambassadors = {
   'amb.signup.code': "Code ambassadeur (facultatif)",
   'amb.signup.invalid': "Code invalide : 3 à 24 caractères, lettres, chiffres ou tirets.",
   'amb.rowD': 'Recommande HOMI et touche une commission',
+  'amb.termsLink': 'Lire les conditions du programme',
 };

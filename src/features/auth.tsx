@@ -53,7 +53,7 @@ export function CheckRow({ checked, onChange, error, children, label }: { checke
   );
 }
 
-export function LegalLink({ doc, children }: { doc: 'terms' | 'privacy' | 'notice' | 'delete-account' | 'support'; children: string }) {
+export function LegalLink({ doc, children }: { doc: 'terms' | 'privacy' | 'notice' | 'delete-account' | 'support' | 'ambassadors'; children: string }) {
   const t = useTheme();
   return <Text variant="small" color={t.colors.primary} weight="bold" accessibilityRole="link" onPress={() => router.push(`/legal/${doc}`)}>{children}</Text>;
 }

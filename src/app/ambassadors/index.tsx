@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Banner, Button, Card, Field, SectionTitle, Text } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
+import { LegalLink } from '@/features/auth';
 import { formatMinor, PROGRAM, simulate, useAffiliateSummary } from '@/lib/data/hooks-ambassadors';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
@@ -36,6 +37,7 @@ export default function Ambassadors() {
       <SectionTitle title={tr('amb.rules.title')} />
       <Card><Text>{tr('amb.rules.body', { days: PROGRAM.attributionDays })}</Text></Card>
       <Banner tone="info" icon="lock">{tr('amb.privacy')}</Banner>
+      <LegalLink doc="ambassadors">{tr('amb.termsLink')}</LegalLink>
 
       <SectionTitle title={tr('amb.sim.title')} />
       <Card testID="amb-sim">

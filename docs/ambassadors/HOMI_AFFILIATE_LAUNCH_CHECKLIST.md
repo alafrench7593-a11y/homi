@@ -11,8 +11,8 @@
 
 ## Avant mise en service (propriétaire)
 1. **Accord explicite** pour déployer la migration en production (projet `ploatloxxigplpdsqyri`).
-2. Entité émiratie : mentions légales, CGU, conditions du programme (brouillon : `HOMI_AFFILIATE_PROGRAM_TERMS.md`) relus par un juriste.
-3. Moyen de versement depuis les Émirats (virement SEPA/SWIFT, ou prestataire) + collecte des infos fiscales des ambassadeurs.
+2. ~~Conditions du programme~~ : validées le 24/11 ; entité = David PRINCIVIL EI (France), mentions légales inchangées.
+3. Versements par virement SEPA depuis le compte de l'EI ; collecter IBAN et statut fiscal de chaque ambassadeur (en France : SIRET si auto-entrepreneur, sinon déclaration en BNC). Vérifier avec le comptable le traitement des commissions dans la comptabilité de l'EI.
 4. Revérifier dans la doc RevenueCat les champs `price_in_purchased_currency`, `tax_percentage`, `commission_percentage`,
    `takehome_percentage` (sinon : aucune commission calculée, par sécurité).
 5. Domaine officiel du site → `EXPO_PUBLIC_SITE_URL` pour les liens de partage dans l'app mobile (sur le web : adresse courante).

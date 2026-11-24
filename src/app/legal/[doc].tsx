@@ -4,16 +4,18 @@ import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Card, Text } from '@/components/ui';
 import { ACCOUNT_DELETION, LEGAL_NOTICE, PRIVACY, SUPPORT, TERMS, type LegalDoc } from '@/content/legal';
+import { AMBASSADOR_TERMS } from '@/content/legalAmbassadors';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
-/** Adresses : /legal/terms, /legal/privacy, /legal/notice, /legal/delete-account, /legal/support (inconnue → CGU). */
+/** Adresses : /legal/terms, /legal/privacy, /legal/notice, /legal/delete-account, /legal/support, /legal/ambassadors (inconnue → CGU). */
 export function legalDoc(doc: string | undefined): LegalDoc {
   switch (doc) {
     case 'privacy': return PRIVACY;
     case 'notice': return LEGAL_NOTICE;
     case 'delete-account': return ACCOUNT_DELETION;
     case 'support': return SUPPORT;
+    case 'ambassadors': return AMBASSADOR_TERMS;
     default: return TERMS;
   }
 }

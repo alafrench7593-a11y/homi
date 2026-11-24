@@ -82,4 +82,5 @@ export const ambassadors = {
   'amb.signup.code': "Código de embajador (opcional)",
   'amb.signup.invalid': "Código no válido: 3 a 24 caracteres, letras, cifras o guiones.",
   'amb.rowD': 'Recomienda HOMI y gana una comisión',
+  'amb.termsLink': 'Leer las condiciones del programa',
 };
