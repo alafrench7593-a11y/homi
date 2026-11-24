@@ -1,7 +1,7 @@
 # Aura Vision — rapport de mise en œuvre (24/11/2026)
 
 Branche `homi/fondations`. Regroupe les livrables demandés (architecture, registre d'outils, sécurité, sécurité
-médicale, coûts, tests, suivi) en un seul document. **Rien n'est déployé en production** : voir §6.
+médicale, coûts, tests, suivi) en un seul document. Production (24/11, accord de la propriétaire) : migrations appliquées, BDPM importée, `document-read` déployée (v9). Reste : coûts estimés (§6.4).
 
 ## 1. Architecture (un seul assistant : Aura)
 
@@ -51,7 +51,7 @@ initial restent des hypothèses tant que la facture Google n'est pas rapprochée
 - `medicine_lookup` / `medicine_search` : compte connecté requis ; recherche limitée (3 lettres, 10 résultats,
   `%` et `_` neutralisés) pour éviter l'aspiration de la table.
 
-## 6. À faire par la propriétaire (production)
+## 6. Production — fait le 24/11 (1 à 3), reste 4
 
 1. Appliquer les migrations `20261213000100_admin_ai_usage.sql` et `20261213000200_medicine_bdpm.sql`.
 2. Importer la BDPM : `node scripts/bdpm-import.mjs CIS_bdpm.txt CIS_CIP_bdpm.txt > bdpm.sql` puis exécuter
