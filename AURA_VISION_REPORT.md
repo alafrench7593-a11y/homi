@@ -1,7 +1,7 @@
 # Aura Vision — rapport de mise en œuvre (24/11/2026)
 
 Branche `homi/fondations`. Regroupe les livrables demandés (architecture, registre d'outils, sécurité, sécurité
-médicale, coûts, tests, suivi) en un seul document. Production (24/11, accord de la propriétaire) : migrations appliquées, BDPM importée, `document-read` déployée (v9). Reste : coûts estimés (§6.4).
+médicale, coûts, tests, suivi) en un seul document. Production (24/11, accord de la propriétaire) : migrations appliquées, BDPM importée, `document-read` déployée (v9). Coûts estimés saisis (§3).
 
 ## 1. Architecture (un seul assistant : Aura)
 
@@ -44,8 +44,7 @@ page de PDF 560 (réglage par défaut des modèles Gemini 3).
 
 Abonné Premium qui épuise ses 1 000 crédits/mois : 200 lectures ≈ 0,40 € (pire cas ≈ 3,80 €) ou 1 000 questions
 ≈ 1,60 €, pour ≈ 10,60 € encaissés nets (14,99 € − TVA 20 % − commission Apple 15 %). Taux de change 1 $ ≈ 0,93 €
-supposé. Ces estimations ne sont **pas encore saisies** dans `ai_cost_estimates` (écriture en production refusée par
-le contrôle automatique ; à faire avec l'accord explicite de la propriétaire).
+supposé. Estimations saisies en production dans `ai_cost_estimates` le 24/11 (accord de la propriétaire).
 
 **Coûts réels : non mesurés.** Production au 24/11 : 16 questions facturées (22–23/11), 0 lecture ; journaux de
 fonctions conservés trop peu de temps pour relire les jetons ; aucune facture Gemini / Google Cloud dans la

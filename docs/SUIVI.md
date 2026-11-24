@@ -50,3 +50,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 24/11/2026 : PRODUCTION Aura Vision — migrations admin_ai_usage + medicine_bdpm appliquées et enregistrées, BDPM importée (20 894 / 17 184 commercialisées), document-read v9 déployée (401 sans compte, coût 5 crédits). Coûts estimés non saisis.
 - 24/11/2026 : coûts IA chiffrés au tarif officiel Gemini (lecture ≈ 0,002 €, question ≈ 0,0016 €) ; aucune facture Gemini trouvée → clé probablement gratuite (contenus utilisés par Google) ; estimations non saisies en production (refus du contrôle automatique).
 - 24/11/2026 : facturation Gemini confirmée active par la propriétaire (offre payante) ; rapport corrigé.
+- 24/11/2026 : PRODUCTION — coûts estimés saisis (document_read 0,0020 €, assistant_question 0,0016 €).
