@@ -27,6 +27,8 @@ function fullCatalog(): CatalogTool[] {
 
 const FR: [string, string[]][] = [
   ['Mon bébé prend le sein', ['baby_breastfeed']],
+  // 24/11/2026 : faute de frappe « dor » → sommeil du BÉBÉ (pas celui du parent)
+  ['mon bebe ne dor pas', ['kid_sleep']],
   ['mon bebe prend le sein', ['baby_breastfeed']],
   ['il tète', ['baby_breastfeed']],
   ['il tete toutes les heures', ['baby_breastfeed']],
