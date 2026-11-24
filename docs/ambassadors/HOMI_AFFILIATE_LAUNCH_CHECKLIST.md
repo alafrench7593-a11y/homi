@@ -13,14 +13,4 @@
 1. **Accord explicite** pour déployer la migration en production (projet `ploatloxxigplpdsqyri`).
 2. ~~Conditions du programme~~ : validées le 24/11 ; entité = David PRINCIVIL EI (France), mentions légales inchangées.
 3. Versements par virement SEPA depuis le compte de l'EI ; collecter IBAN et statut fiscal de chaque ambassadeur (en France : SIRET si auto-entrepreneur, sinon déclaration en BNC). Vérifier avec le comptable le traitement des commissions dans la comptabilité de l'EI.
-4. Revérifier dans la doc RevenueCat les champs `price_in_purchased_currency`, `tax_percentage`, `commission_percentage`,
-   `takehome_percentage` (sinon : aucune commission calculée, par sécurité).
-5. Domaine officiel du site → `EXPO_PUBLIC_SITE_URL` pour les liens de partage dans l'app mobile (sur le web : adresse courante).
-6. Donner les rôles `support` / `finance` aux bonnes personnes (table `user_roles`).
-7. Tâche planifiée appelant `affiliate_release_due()` chaque jour (passage « en attente » → « disponible » après 45 j).
-8. Test en sandbox RevenueCat (achat, renouvellement, remboursement) avant le premier ambassadeur réel.
-
-## Limites connues
-- Mobile : pas de « lien différé » (un clic qui mène à l'App Store perd le code) → le code saisi à l'inscription est la voie principale.
-- QR code non fait (évite une dépendance ; l'app peut partager le lien).
-- Paliers (`tier`) stockés mais sans règle différenciée pour l'instant.
+4. ~~Champs RevenueCat~~ : vérifiés le 24/11 dans la doc. Formule corrigée : net = brut × (1 − tax_percentage − commission_percentage), les deux étant des parts du brut ; takehome_percentage (déprécié) ignoré. Limite : un remboursement d'une période ANTÉRIEURE n'est pas signalé par webhook (seule la dernière période l'est) → contrôle mensuel des remboursements par la finance.

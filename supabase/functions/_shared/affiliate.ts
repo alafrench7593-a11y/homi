@@ -1,11 +1,14 @@
 /**
  * HOMI Ambassadors — commissions depuis le webhook RevenueCat (serveur uniquement).
  *
- * Assiette : l'ENCAISSÉ NET (après taxe et commission de la boutique), lu dans l'événement RevenueCat
- * (price_in_purchased_currency, tax_percentage, commission_percentage, ou takehome_percentage). Si ces champs manquent,
- * AUCUNE commission n'est calculée : jamais d'estimation à partir du prix affiché dans l'application.
- * Noms de champs à revérifier dans https://www.revenuecat.com/docs/integrations/webhooks/event-types-and-fields
- * avant la mise en service (non revérifiés au 24/11/2026 : accès réseau indisponible).
+ * Assiette : l'ENCAISSÉ NET (après taxe et commission de la boutique), lu dans l'événement RevenueCat.
+ * Vérifié le 24/11/2026 dans la doc RevenueCat (webhooks › event-types-and-fields ; dashboard-and-metrics ›
+ * taxes-and-commissions) : tax_percentage et commission_percentage sont deux FRACTIONS DU PRIX BRUT
+ * (price_in_purchased_currency), donc net = brut × (1 − taxe − commission) — elles ne s'enchaînent pas.
+ * price_in_purchased_currency vaut 0 pour un essai gratuit et est négatif pour un remboursement.
+ * takehome_percentage est déprécié : ignoré. Champ manquant → AUCUNE commission (jamais d'estimation).
+ * Limite connue (doc RevenueCat) : CANCELLATION/CUSTOMER_SUPPORT ne signale que le remboursement de la DERNIÈRE
+ * période ; un remboursement d'une période antérieure n'arrive pas par webhook (rattrapage manuel par la finance).
  *
  * Idempotence : la base refuse une deuxième commission (ou un deuxième remboursement) pour la même transaction.
  * Montants en unités mineures entières ; la règle (pourcentage, durée, délai) est appliquée par la base.
@@ -39,11 +42,8 @@ export function netMinorOf(e: AffiliateEvent): { netMinor: number; currency: str
   if (typeof gross !== 'number' || !Number.isFinite(gross) || gross <= 0 || !/^[A-Z]{3}$/.test(currency)) return null;
   const tax = pct(e.tax_percentage);
   const commission = pct(e.commission_percentage);
-  const takehome = typeof e.takehome_percentage === 'number' && e.takehome_percentage > 0 && e.takehome_percentage <= 1 ? e.takehome_percentage : null;
-  let net: number;
-  if (tax != null && commission != null) net = gross * (1 - tax) * (1 - commission);
-  else if (tax != null && takehome != null) net = gross * (1 - tax) * takehome;
-  else return null;
+  if (tax == null || commission == null || tax + commission >= 1) return null;
+  const net = gross * (1 - tax - commission);
   return { netMinor: Math.floor(net * minorFactor(currency) + 1e-9), currency };
 }
 

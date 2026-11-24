@@ -17,14 +17,19 @@ const { handleWebhook } = require('../../supabase/functions/_shared/subscription
   handleWebhook(r: Request, d: Record<string, unknown>): Promise<Response>;
 };
 
-const base = { type: 'INITIAL_PURCHASE', price_in_purchased_currency: 14.99, currency: 'EUR', tax_percentage: 0.1667, commission_percentage: 0.15, transaction_id: 'tx-1', product_id: 'homi_premium_monthly', purchased_at_ms: Date.UTC(2026, 11, 1) };
+const base = { type: 'INITIAL_PURCHASE', price_in_purchased_currency: 14.99, currency: 'EUR', tax_percentage: 0.1667, commission_percentage: 0.125, transaction_id: 'tx-1', product_id: 'homi_premium_monthly', purchased_at_ms: Date.UTC(2026, 11, 1) };
 
 describe('encaissé net', () => {
-  it('14,99 € TTC, TVA 20 % (16,67 % du TTC), Apple 15 % → 10,61 €', () => {
+  it('formule RevenueCat : brut × (1 − taxe − commission), deux parts du brut — 14,99 € → 10,61 €', () => {
+    // TVA 20 % = 16,67 % du TTC ; Apple 15 % du HT (12,49 €) = 1,87 € = 12,5 % du TTC
     expect(netMinorOf(base)).toEqual({ netMinor: 1061, currency: 'EUR' });
+    // l'ancienne formule enchaînée (1 − taxe) × (1 − commission) aurait donné 10,93 € : surestimation interdite
+    expect(netMinorOf(base)?.netMinor).toBeLessThan(1093);
   });
-  it('repli : taxe + part reversée (takehome)', () => {
-    expect(netMinorOf({ ...base, commission_percentage: null, takehome_percentage: 0.85 })?.netMinor).toBe(1061);
+  it('takehome_percentage (déprécié) ignoré ; essai à 0 et remboursement négatif → rien', () => {
+    expect(netMinorOf({ ...base, commission_percentage: null, takehome_percentage: 0.85 })).toBeNull();
+    expect(netMinorOf({ ...base, price_in_purchased_currency: -14.99 })).toBeNull();
+    expect(netMinorOf({ ...base, tax_percentage: 0.6, commission_percentage: 0.5 })).toBeNull();
   });
   it('champs manquants : aucune estimation depuis le prix', () => {
     expect(netMinorOf({ ...base, tax_percentage: null })).toBeNull();
@@ -33,7 +38,7 @@ describe('encaissé net', () => {
   });
   it('devises sans décimales', () => {
     expect(minorFactor('JPY')).toBe(1);
-    expect(netMinorOf({ ...base, price_in_purchased_currency: 2000, currency: 'JPY', tax_percentage: 0.0909, commission_percentage: 0.15 })?.netMinor).toBe(1545);
+    expect(netMinorOf({ ...base, price_in_purchased_currency: 2000, currency: 'JPY', tax_percentage: 0.0909, commission_percentage: 0.15 })?.netMinor).toBe(1518);
   });
 });
 
