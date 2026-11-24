@@ -16,6 +16,7 @@
  *  - Issues d'achat : annulé, en attente d'approbation (Ask to Buy), réseau, achats bloqués, boutique indisponible ;
  *    « confirmé » seulement quand le serveur voit le droit (jamais de faux succès).
  */
+import { PaywallFaq, PaywallShowcase } from '@/features/firstWin/PaywallExtras';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
@@ -266,6 +267,9 @@ export function Paywall({ locked = false, embedded = false, onContinue, onPurcha
     <View style={{ gap: spacing.md, paddingBottom: spacing.xl }} testID={locked ? 'paywall-locked' : 'paywall'}>
       {hero}
       {subscriber ? <SubscriberPanel justActivated={activated} onContinue={onContinue} /> : offer}
+      {/* Vitrine et questions fréquentes, communes aux deux paywalls (24/11/2026) ; pas sur le verrou compact d'un outil */}
+      {!subscriber && !locked ? <PaywallShowcase /> : null}
+      {!subscriber && !locked ? <PaywallFaq /> : null}
       {onLater && !subscriber ? <Button label={tr('pay2.later')} variant="ghost" onPress={onLater} testID="pw2-later" /> : null}
       <LegalLinks />
       {locked ? (

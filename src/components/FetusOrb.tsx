@@ -42,15 +42,15 @@ export function FetusOrb({ growth, size = 280, hue = 'lavande', interactive = tr
     const h = Animated.loop(Animated.sequence([
       Animated.timing(heart, { isInteraction: false, toValue: 1, duration: 700, easing: Easing.out(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(heart, { isInteraction: false, toValue: 0, duration: 1100, easing: Easing.inOut(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 3 }); // courte séquence puis repos : aucune boucle permanente (24/11/2026)
     const f = Animated.loop(Animated.sequence([
       Animated.timing(float, { isInteraction: false, toValue: 1, duration: 4200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(float, { isInteraction: false, toValue: 0, duration: 4200, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 1 });
     const sway = Animated.loop(Animated.sequence([
       Animated.timing(rotation, { isInteraction: false, toValue: 0.35, duration: 7000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(rotation, { isInteraction: false, toValue: -0.35, duration: 7000, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 1 });
     h.start();
     f.start();
     sway.start();

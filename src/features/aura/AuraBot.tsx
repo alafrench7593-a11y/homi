@@ -167,16 +167,20 @@ export function AuraBot({ size = 120, state = 'idle', still = false, decorative 
       return;
     }
     const ease = curves.reveal;
+    // Au repos, courte séquence puis immobile (24/11/2026 : les boucles sans fin occupaient le fil principal à chaque
+    // image) ; en réflexion et en écoute, la boucle DIT l'état et continue tant qu'il dure.
+    const busy = state === 'thinking' || state === 'listening';
+    const times = (n: number) => (busy ? -1 : n);
     tilt.value = withSpring(tiltTo, springs.doux);
     armL.value = withSpring(pose.l, springs.doux);
     // flottement (sauf inquiétude : sobre, posé)
     if (state === 'concern') float.value = withTiming(0, { duration: 400, easing: ease });
-    else float.value = withRepeat(withTiming(1, { duration: M.floatMs, easing: ease }), -1, true);
+    else float.value = withRepeat(withTiming(1, { duration: M.floatMs, easing: ease }), times(2), true);
     // clignement (pas sur les yeux plissés ni pendant la réflexion)
     if (face.eyes !== 'happy' && face.eyes !== 'none') {
-      blink.value = withRepeat(withSequence(withDelay(M.blinkEveryMs, withTiming(0.08, { duration: M.blinkMs })), withTiming(1, { duration: M.blinkMs * 1.5 })), -1, false);
+      blink.value = withRepeat(withSequence(withDelay(M.blinkEveryMs, withTiming(0.08, { duration: M.blinkMs })), withTiming(1, { duration: M.blinkMs * 1.5 })), times(3), false);
     } else blink.value = 1;
-    heart.value = withRepeat(withTiming(1, { duration: state === 'thinking' ? M.heartMs / 2 : M.heartMs, easing: ease }), -1, true);
+    heart.value = withRepeat(withTiming(1, { duration: state === 'thinking' ? M.heartMs / 2 : M.heartMs, easing: ease }), times(4), true);
     if (state === 'thinking') {
       orbit.value = 0;
       orbit.value = withRepeat(withTiming(360, { duration: M.orbitMs, easing: curves.linear }), -1, false);

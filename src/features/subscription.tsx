@@ -365,6 +365,7 @@ export function MySubscriptionSection() {
 
 /** Bandeau du web : pas d'achat intégré sur le web. */
 export function WebPurchaseNotice() {
-  return <Banner tone="info" icon="smartphone" title={tr('sub2.web.title')}>{tr('sub2.web.body')}</Banner>;
+  // Texte en entier (pas de « Lire la suite ») : c'est LA réponse à « pourquoi je ne peux pas payer ici ? » (24/11/2026)
+  return <Banner tone="info" icon="smartphone" title={tr('sub2.web.title')}><Text variant="small">{tr('sub2.web.body')}</Text></Banner>;
 }
 
