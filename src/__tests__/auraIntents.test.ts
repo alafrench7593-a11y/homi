@@ -174,7 +174,7 @@ describe('Aura Vision : photo ou document montré à Aura', () => {
   it('médicament : code-barres d’abord (gratuit), jamais de posologie', () => {
     const r = resolveIntent({ kind: 'vision', doc: 'medicine' }, base());
     if (r.status !== 'list') throw new Error('list attendu');
-    expect(r.items[0].href).toBe('/scanner/product');
+    expect(r.items[0].href).toBe('/scanner/medicine');
     expect(r.hint).toBe('aura.vis.hintBarcode');
   });
 });

@@ -36,6 +36,13 @@ if [ -n "${AMB_LOAD:-}" ]; then
   exit $?
 fi
 
+if [ -n "${BDPM_SQL:-}" ]; then
+  echo "→ Import complet BDPM ($BDPM_SQL)"
+  "${DB[@]}" -f "$BDPM_SQL" >/dev/null || exit 1
+  "${DB[@]}" -At -c "select count(*) || ' présentations, ' || count(*) filter (where marketed) || ' commercialisées' from public.medicine_presentations"
+  exit $?
+fi
+
 if [ -n "${EXPORT_DEMO_JSON:-}" ]; then
   echo "→ Export du contenu de démonstration vers $EXPORT_DEMO_JSON"
   "${DB[@]}" -At -c "select jsonb_pretty(jsonb_build_object(

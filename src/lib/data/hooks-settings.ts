@@ -272,6 +272,26 @@ export function useAdminStats(enabled: boolean) {
   return useQuery({ queryKey: [session?.userId, 'admin_stats'], queryFn: () => backend.rpc<AdminStats>('admin_stats'), enabled: enabled && !!session, staleTime: 30_000, retry: false });
 }
 
+/** Coûts IA (admin) : comptages par action, sans identifiant ; euros = estimations saisies, null si inconnues. */
+export interface AdminAiUsage {
+  days: number; ai_enabled: boolean; paying: number;
+  actions: { action: string; requests: number; billed: number; refunded: number; credits: number; users: number; eur_per_call: number | null; eur_estimate: number | null; source: string | null }[];
+  per_user: { p50: number; p95: number; max: number };
+}
+
+export function useAdminAiUsage(enabled: boolean, days = 30) {
+  const { session } = useAuth();
+  return useQuery({ queryKey: [session?.userId, 'admin_ai_usage', days], queryFn: () => backend.rpc<AdminAiUsage>('admin_ai_usage', { p_days: days }), enabled: enabled && !!session, staleTime: 60_000, retry: false });
+}
+
+/** Fiche officielle BDPM (aucune posologie) : nom, forme, présentation, titulaire, commercialisation, lien de notice. */
+export interface MedicineInfo {
+  cip13: string; cis: string; name: string; form: string | null; routes: string | null; presentation: string | null;
+  holder: string | null; marketed: boolean; reinforced_monitoring: boolean; notice_url: string; source: 'BDPM'; imported_at: string;
+}
+export const lookupMedicine = (code: string) => backend.rpc<MedicineInfo | null>('medicine_lookup', { p_code: code });
+export const searchMedicine = (query: string) => backend.rpc<MedicineInfo[]>('medicine_search', { p_query: query });
+
 export interface ModItem {
   kind: 'post' | 'comment';
   id: string;

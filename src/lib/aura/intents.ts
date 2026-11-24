@@ -333,7 +333,7 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
     const d = intent.doc;
     const photo = { label: ctx.t('aura.vis.photo'), href: '/documents/scan?from=camera' };
     const file = { label: ctx.t('aura.vis.file'), href: '/documents' };
-    const items = d === 'medicine' ? [{ label: ctx.t('aura.vis.barcode'), href: '/scanner/product' }, photo, { label: ctx.t('aura.vis.treatments'), href: '/medications' }]
+    const items = d === 'medicine' ? [{ label: ctx.t('aura.vis.barcode'), href: '/scanner/medicine' }, photo, { label: ctx.t('aura.vis.treatments'), href: '/medications' }]
       : d === 'food' ? [{ label: ctx.t('aura.vis.barcode'), href: '/scanner/food' }, photo]
         : d === 'list' ? [photo, { label: ctx.t('aura.vis.lists'), href: '/lists' }]
           : d === 'health_book' ? [photo, file, { label: ctx.t('aura.vis.healthBook'), href: '/documents/book' }]
