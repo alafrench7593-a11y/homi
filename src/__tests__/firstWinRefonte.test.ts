@@ -69,7 +69,7 @@ describe('preuve sociale et histoire : sources tracées', () => {
   it('note du programme de test : moyenne et dénominateur validés, présentée comme un retour de test', () => {
     expect(TESTER_PROOF).toMatchObject({ rating: 4.8, ratingCount: 100, validatedOn: '2026-11-21' });
     expect(nb(tr('fw.pw.proof.score', { rating: '4,8', count: TESTER_PROOF.ratingCount }))).toBe('4,8/5 · 100 parents testeurs');
-    expect(tr('fw.pw.proof.source')).toBe('Retours du programme de test HOMI');
+    expect(tr('fw.pw.proof.source')).toBe('Retours du programme de test HOMI. Ce n’est pas une note de l’App Store.'); // audit App Store 24/11/2026
   });
   it('histoire de l’équipe validée : titre, première phrase et signature', () => {
     expect(FOUNDER_STORY.validatedOn).toBe('2026-11-21');

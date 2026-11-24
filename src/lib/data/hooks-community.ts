@@ -325,8 +325,13 @@ export function useReport() {
   return useMutation({
     mutationFn: (r: { postId?: string | null; commentId?: string | null; reason: ReportReason; details?: string | null }) =>
       backend.insert('reports', { post_id: r.postId ?? null, comment_id: r.commentId ?? null, reason: r.reason, details: r.details ?? null }, { returning: 'id' }),
-    onSuccess: () => inv(...FEED_KEYS, 'moderation_queue'),
+    onSuccess: () => { inv(...FEED_KEYS, 'moderation_queue'); alertModerator(); },
   });
+}
+
+/** Prévient la modératrice par e-mail (fonction serveur moderation-alert) ; jamais bloquant pour la personne qui signale. */
+function alertModerator() {
+  void Promise.resolve().then(() => backend.invoke('moderation-alert', {})).catch(() => undefined);
 }
 
 export function useBlockAuthor() {
@@ -341,7 +346,7 @@ export function useReportMember() {
   const inv = useInvalidate();
   return useMutation({
     mutationFn: (r: { handle: string; reason: ReportReason; details?: string | null }) => backend.rpc('report_member', { p_handle: r.handle, p_reason: r.reason, p_details: r.details ?? null }),
-    onSuccess: () => inv('moderation_queue'),
+    onSuccess: () => { inv('moderation_queue'); alertModerator(); },
   });
 }
 

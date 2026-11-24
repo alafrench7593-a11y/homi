@@ -11,6 +11,7 @@
  */
 import { PaywallFaq, PaywallShowcase } from './PaywallExtras';
 import { AmbassadorCode } from './AmbassadorCode';
+import { ambassadorOfferCodes } from '@/config/features';
 import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -84,7 +85,7 @@ function WhiteBody(props: PaywallViewProps) {
     </View>,
     card && catalog === 'ready' ? <TimelineBlock key="tl" card={card} now={now} reminder={!!props.reminder} /> : null,
     // Code ambassadeur (discret, sous les formules) : vérifié par le serveur, réduction appliquée par Apple
-    catalog === 'ready' ? <AmbassadorCode key="code" signedIn={!props.needsAccount} webShowcase={props.webShowcase} onRedeemOpened={props.onRedeemOpened} /> : null,
+    catalog === 'ready' && ambassadorOfferCodes() ? <AmbassadorCode key="code" signedIn={!props.needsAccount} webShowcase={props.webShowcase} onRedeemOpened={props.onRedeemOpened} /> : null,
     // Vitrine : vraies captures de l'app (24/11/2026), puis preuves
     <PaywallShowcase key="showcase" />,
     // Variante « histoire » : note et histoire déjà vues sur les slides précédentes

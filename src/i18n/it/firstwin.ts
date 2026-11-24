@@ -235,7 +235,7 @@ export const firstwin: Messages<typeof fr> = {
   "fw.pw.proof.score": "{rating}/5 · {count} genitori tester",
   "fw.pw.proof.a11y": "Valutazione media di {rating} su 5, da {count} genitori tester.",
   "fw.pw.proof.body": "Nei loro riscontri, i genitori dicono che HOMI ha semplificato la loro quotidianità, li ha aiutati a comunicare meglio in coppia e a capire meglio il loro bambino e organizzarne i bisogni.",
-  "fw.pw.proof.source": "Riscontri del programma di test HOMI",
+  "fw.pw.proof.source": "Riscontri del programma di test HOMI. Non è una valutazione dell’App Store.",
   "fw.pw.origin": "Tutto è nato da una mamma e dalla sua idea",
   "fw.pw.story.link": "Leggi la nostra storia",
   "fw.pw.story.title": "Due parole dal team",

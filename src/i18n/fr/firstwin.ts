@@ -250,7 +250,7 @@ export const firstwin = {
   'fw.pw.proof.score': '{rating}/5 · {count} parents testeurs',
   'fw.pw.proof.a11y': 'Note moyenne de {rating} sur 5, donnée par {count} parents testeurs.',
   'fw.pw.proof.body': 'Dans leurs retours, des parents disent que HOMI leur a facilité le quotidien, les a aidés à mieux communiquer à deux et à mieux comprendre leur enfant et organiser ses besoins.',
-  'fw.pw.proof.source': 'Retours du programme de test HOMI',
+  'fw.pw.proof.source': 'Retours du programme de test HOMI. Ce n’est pas une note de l’App Store.',
   'fw.pw.origin': 'Tout est parti d’une maman et de son idée',
   'fw.pw.story.link': 'Lire notre histoire',
   'fw.pw.story.title': 'Un mot de l’équipe',

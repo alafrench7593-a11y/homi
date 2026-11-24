@@ -2,7 +2,7 @@
 // Documentation Apple : Sign in with Apple REST API — « Generate and validate tokens » (POST /auth/token) et
 // « Token revocation » (POST /auth/revoke).
 // Secrets serveur (jamais dans l'app) : APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY (contenu du fichier .p8),
-// APPLE_CLIENT_ID (identifiant de l'app, par défaut fr.aufildenous.app). Sans ces secrets : « not_configured ».
+// APPLE_CLIENT_ID (identifiant de l'app, par défaut app.homi.family). Sans ces secrets : « not_configured ».
 // Ne journalise jamais de code, de jeton ni de clé.
 
 const APPLE = 'https://appleid.apple.com';
@@ -31,7 +31,7 @@ function config() {
   const teamId = Deno.env.get('APPLE_TEAM_ID');
   const keyId = Deno.env.get('APPLE_KEY_ID');
   const privateKey = Deno.env.get('APPLE_PRIVATE_KEY');
-  const clientId = Deno.env.get('APPLE_CLIENT_ID') ?? 'fr.aufildenous.app';
+  const clientId = Deno.env.get('APPLE_CLIENT_ID') ?? 'app.homi.family'; // identifiant de l'app HOMI (24/11/2026 : remplace l'ancien fr.aufildenous.app)
   return teamId && keyId && privateKey ? { teamId, keyId, privateKey, clientId } : null;
 }
 

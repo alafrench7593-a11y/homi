@@ -17,6 +17,12 @@ export const FEATURES = {
    * 23/11/2026 : l'app n'est pas en vente, aucun prix sur le site public). Sans effet sur iOS / Android.
    */
   webDemoOpen: true,
+  /**
+   * « J'ai un code ambassadeur » dans le paywall : masqué pour la 1re soumission (24/11/2026, audit App Store) tant que
+   * les codes d'offre ne sont pas créés dans App Store Connect (sinon l'écran d'Apple affiche une erreur).
+   */
+  ambassadorOfferCodes: false,
 };
 
 export const aiAssistantOnline = (): boolean => FEATURES.aiAssistantOnline;
+export const ambassadorOfferCodes = (): boolean => FEATURES.ambassadorOfferCodes;
