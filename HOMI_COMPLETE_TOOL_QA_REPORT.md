@@ -20,7 +20,7 @@ iOS** : aucun Mac ou téléphone n'est relié à cet environnement. Rien ci-dess
 | Écrans de consultation (lecture, calcul, articles) | ouverture seule vérifiée |
 | Jest | **4 713 / 4 713** |
 | Visite guidée (scénario e2e) | 154 / 156 contrôles (2 écarts mineurs voulus, voir §4) |
-| Batterie e2e historique (89 scénarios) | 33 réussis au premier passage ; échecs en cours de tri (§5) |
+| Batterie e2e historique (89 scénarios) | 38 réussis après relance un par un ; les 51 autres triés (§5) |
 
 ## 2. Bugs trouvés et corrigés pendant ce contrôle
 
@@ -68,7 +68,13 @@ sont pas des échecs de charge. Tri automatique (élément recherché présent o
 - **port fixe** (8822 / 8831) : relancés sur ces ports ;
 - **à vérifier** : modules de l'accueil (« Au fil de nous », cocon) absents de la configuration par défaut [probable :
   scénario périmé], achat famille de crédits.
-Aucun de ces échecs n'a révélé, à ce stade, un bug confirmé non corrigé ; le tri n'est pas terminé.
+Vérifications faites à la main sur les échecs les plus suspects :
+- communauté « publication anonyme » : **fonctionne** (publication enregistrée anonyme) ; l'échec vient du scénario ;
+- grossesse « formulations » : texte passé au tutoiement (« ta sage-femme ») → scénario périmé ;
+- site « noindex » : posé par l'en-tête HTTP de Vercel (`vercel.json`), pas dans le HTML → scénario à adapter ;
+- Aura (scénario sans abonnement) : écran couvert par l'offre depuis le Premium strict → scénario périmé.
+Aucun échec de la batterie n'a révélé de bug confirmé non corrigé. Les scénarios périmés n'ont pas été réécrits
+(environ 45) : ils ne prouvent donc plus rien, ni dans un sens ni dans l'autre.
 
 ## 6. Ce qui reste impossible ici
 
