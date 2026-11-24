@@ -36,6 +36,7 @@ import { createAbsents, PERSONAL_TABLES } from './demoAbsents';
 import { createChildcare } from './demoChildcare';
 import { createStocks } from './demoStocks';
 import { createCredits } from './demoCredits';
+import { createAmbassador } from './demoAmbassador';
 import { createAuraDemo } from './demoAura';
 import { extractiveSummary, MIN_COMMENTS_FOR_SUMMARY } from '../../../supabase/functions/_shared/community-ai';
 import { handleBase, handleError, normalizeHandle, textNeedsReview } from '../domain/communityRules';
@@ -495,6 +496,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
   const missions = createMissions({ T, me: () => state.session?.userId, nowIso, uuid, taskEvent: (t, k, d) => taskEvent(t, k, d), nextOccurrence: (t) => nextOccurrence(t),
     matchStock: (h, label) => stocks?.matchStock(h, label) ?? null, itemChecked: (item) => stocks?.itemChecked(item) });
   const couple = createCouple({ T, me: () => state.session?.userId, nowIso, uuid });
+  // Programme Ambassadeurs (20261210000100_ambassadeurs.sql)
+  const ambassador = createAmbassador({ T, me: () => state.session?.userId, nowIso, uuid });
   // Mode embrouille, moments à deux, naissance, post-partum, allaitement (27/11/2026, demoAbsents.ts)
   const absents = createAbsents({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
   stocks = createStocks({ T, me: () => state.session?.userId, nowIso, uuid, missionRpc: (name, a) => missions.rpcs[name](a) });
@@ -1124,6 +1127,8 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     // Se comprendre, profil familial, grossesse partagée, rendez-vous « pour moi » (19/11/2026, demoCouple.ts)
     const coupleRows = couple.filter(table, rows);
     if (coupleRows) return coupleRows;
+    const ambRows = ambassador.filter(table, rows);
+    if (ambRows) return ambRows;
     const absentRows = absents.filter(table, rows);
     if (absentRows) return absentRows;
     // Baromètre du couple (20261130100400) : mes jauges + celles que l'autre parent a partagées
@@ -1230,6 +1235,7 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     ...absents.rpcs,
     ...stockHooks.rpcs,
     ...childcare.rpcs,
+    ...ambassador.rpcs,
     // Démonstration uniquement : passer d'une personne du foyer à l'autre (missions : les deux côtés sur un appareil)
     demo_switch_person: (a) => {
       const me = state.session?.userId;

@@ -9,6 +9,7 @@ export const APP_ROUTES: readonly string[] = [
   '/admin/recipes',
   '/admin/resources',
   '/agenda',
+  '/ambassador',
   '/app',
   '/appointments',
   '/article/[slug]',

@@ -3,6 +3,14 @@
   'use strict';
   var doc = document.documentElement;
   doc.classList.add('js');
+
+  // ------------------------------------------------------------ lien d'ambassadeur : ?ref=CODE gardé 60 jours sur l'appareil
+  // (la web app le PROPOSE après l'inscription ; rien n'est appliqué sans la personne)
+  try {
+    var ref = new URLSearchParams(location.search).get('ref');
+    var code = ref ? ref.replace(/[^A-Za-z0-9]/g, '').toUpperCase() : '';
+    if (/^[A-Z0-9]{4,16}$/.test(code)) localStorage.setItem('homi.ref', JSON.stringify({ code: code, at: Date.now() }));
+  } catch (e) { /* stockage indisponible : le code se saisit à la main */ }
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ------------------------------------------------------------ mouvement (jamais bloquant : contenu présent sans JS)

@@ -16,6 +16,7 @@ import {
 } from './revenuecat.ts';
 import { grantFor, packActionFor, type CreditPackId, type GrantAction } from './credits.ts';
 import { firstBillingOf, type FirstBilling } from './conversion.ts';
+import { ambassadorActionFor, type AmbassadorAction } from './ambassador.ts';
 
 const RC_API = 'https://api.revenuecat.com/v1/subscribers/';
 const PREMIUM_STATUSES = new Set(['trial', 'active', 'grace', 'cancelled', 'paused']);
@@ -36,6 +37,8 @@ export interface SubscriptionDb {
   writeGrants?(userId: string, grants: GrantRow[]): Promise<boolean>;
   /** Événement serveur first_billing_confirmed (conversion_events, idempotent sur la transaction). */
   recordConversion?(userId: string, e: FirstBilling): Promise<void>;
+  /** Programme Ambassadeurs : commission d'un paiement réel, annulation d'un remboursement (jamais bloquant) */
+  ambassador?(userId: string, a: NonNullable<AmbassadorAction>): Promise<void>;
 }
 
 /** Grand livre des crédits IA (RPC service_role : 20261126000100_credits_ia.sql). Toutes les écritures sont idempotentes. */
@@ -118,6 +121,19 @@ export function supabaseDb(admin: SupabaseClient): SubscriptionDb {
     async premium(userId) {
       const { data } = await admin.rpc('_premium_of', { p_user: userId });
       return data === true;
+    },
+    async ambassador(userId, a) {
+      // Règles et calcul dans la base (public._ambassador_accrue / _ambassador_reverse, migration 20261210000100)
+      let t: { reference?: { vat_rate?: number; store_fee_rate?: number } } | null = null;
+      if (a.kind === 'accrue' && (a.vatRate == null || a.storeFeeRate == null)) {
+        const r = await admin.from('ambassador_terms_public').select('reference').maybeSingle();
+        t = (r.data as typeof t) ?? null;
+      }
+      const { error } = a.kind === 'reverse'
+        ? await admin.rpc('_ambassador_reverse', { p_transaction: a.transaction, p_reason: 'refund' })
+        : await admin.rpc('_ambassador_accrue', { p_user: userId, p_transaction: a.transaction, p_product: a.product, p_price_cents: a.priceCents,
+            p_currency: a.currency, p_vat_rate: a.vatRate ?? t?.reference?.vat_rate ?? 0, p_store_fee_rate: a.storeFeeRate ?? t?.reference?.store_fee_rate ?? 0, p_at: a.at });
+      if (error) console.error('ambassador_error', error.code);
     },
     async recordConversion(userId, e) {
       // Contrainte unique (kind, transaction_id) : un webhook rejoué n'écrit jamais deux fois (migration 20261203000100)
@@ -270,6 +286,9 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   // Mesure du paywall : première facturation confirmée (après l'essai, ou achat payé tout de suite) — jamais bloquant
   const billing = firstBillingOf(event, current?.status);
   if (billing && deps.db.recordConversion) await deps.db.recordConversion(userId, billing).catch(() => undefined);
+  // Programme Ambassadeurs : commission d'un paiement réel / annulation d'un remboursement — jamais bloquant
+  const amb = ambassadorActionFor(event as RcEvent, now);
+  if (amb && deps.db.ambassador) await deps.db.ambassador(userId, amb).catch(() => undefined);
   // Crédits mensuels : INITIAL_PURCHASE, RENEWAL, PRODUCT_CHANGE vers Famille (jamais déclenchés par l'application)
   if (!(await grantCredits(event, row, userId, deps))) return json({ error: 'server_error' }, 500);
 

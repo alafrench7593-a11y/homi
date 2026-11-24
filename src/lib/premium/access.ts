@@ -27,6 +27,8 @@ const FREE: RegExp[] = [
   // Espace nounou (21/11/2026) : rejoindre une garde (lien d'invitation) et l'accueil « Mes gardes » d'une personne
   // invitée qui n'est pas encore nounou dans le foyer. Le contenu d'une garde reste derrière l'accès confirmé.
   /^\/garde\/?$/, /^\/garde\/rejoindre\/?$/,
+  // Programme Ambassadeurs (24/11/2026) : candidature, code d'un parent recommandé — sans abonnement
+  /^\/ambassador\/?$/,
 ];
 
 /**

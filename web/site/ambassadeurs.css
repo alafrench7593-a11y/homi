@@ -1,0 +1,34 @@
+/* Page Ambassadeurs : mêmes jetons que site.css (noir, gris, verre). Rien de lisible n'est masqué par une animation. */
+.amb-hero h1 { font-size: clamp(2.4rem, 7vw, 4.6rem); line-height: 1.02; letter-spacing: -.03em; margin: .2em 0 .3em; }
+.amb-hero .lead { font-size: clamp(1.1rem, 2.4vw, 1.35rem); }
+.eyebrow { text-transform: uppercase; letter-spacing: .14em; font-weight: 700; font-size: .8125rem; color: var(--muted); }
+.fine { font-size: .875rem; }
+.sim { padding: 22px; display: grid; gap: 16px; margin-top: 18px; }
+.sim-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 700; }
+.sim-row input, .sim-row select { min-height: 44px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; padding: 0 12px; max-width: 62%; }
+.sim-row select { min-width: 0; }
+.sim-row input { width: 9ch; text-align: right; }
+input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 44px; }
+.sim-out { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sim-out > div { padding: 16px; border-radius: 20px; background: var(--glass); border: 1px solid var(--glass-line); display: grid; gap: 2px; }
+.sim-out strong { font-size: clamp(1.5rem, 6vw, 2.3rem); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.sim-bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; }
+.sim-bars span { flex: 1; height: var(--h); border-radius: 10px 10px 4px 4px; background: linear-gradient(180deg, var(--ink), var(--decor-2)); transform-origin: bottom; animation: grow .6s cubic-bezier(.2, .8, .2, 1) both; }
+.sim-bars span:nth-child(2) { animation-delay: .04s } .sim-bars span:nth-child(3) { animation-delay: .08s } .sim-bars span:nth-child(4) { animation-delay: .12s }
+.sim-bars span:nth-child(5) { animation-delay: .16s } .sim-bars span:nth-child(6) { animation-delay: .2s }
+@keyframes grow { from { transform: scaleY(.1); opacity: .3 } to { transform: none; opacity: 1 } }
+.sim-detail { padding: 16px 20px; margin-top: 14px; }
+.sim-detail summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+.sim-detail table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.sim-detail td { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.sim-detail td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.tiers { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tier { padding: 18px; display: grid; gap: 4px; }
+.tier-rate { font-size: 2rem; font-weight: 800; letter-spacing: -.02em; }
+.tier-soon { opacity: .62; }
+.cond { padding: 18px 22px 18px 38px; display: grid; gap: 10px; }
+.amb-error { display: none; padding: 16px; }
+.terms-error .amb-error { display: block; }
+.terms-error #simulateur .sim, .terms-error #niveaux { display: none; }
+@media (max-width: 520px) { .sim-out { grid-template-columns: 1fr; } .nav-links { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sim-bars span { animation: none; } }

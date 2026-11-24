@@ -34,3 +34,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Intro (24/11) : présentation Keynote en 7 tableaux au premier lancement (/intro → « Commencer » → /start), Passer, Précédent, progression qui suit le doigt ; vérifiée web 390 et 320 px.
 - 24/11/2026 : aucun accès sans paiement (Moi et aperçu Mes outils fermés aux comptes non abonnés ; restent ouverts : compte, abonnement, données, légal, urgences, démo) ; intro + tableau Relais ; visite guidée réparée sur le web (154/156).
 - 24/11/2026 : QA complète (128/128 ouverture, 48 créations prouvées, parcours ciblés) ; corrigés : Aura prénom cité, interrupteurs sans libellé, dates coupées, vibrations la nuit ; rapports HOMI_TOOL_QA_INVENTORY.md + HOMI_COMPLETE_TOOL_QA_REPORT.md (BUILD BLOQUÉ).
+- 24/11/2026 : programme Ambassadeurs (base versionnée + RLS 2829/0, calculs partagés, webhook, page /ambassadeurs/ du site avec simulateur, écran /ambassador) ; migration NON appliquée en production.
