@@ -10,6 +10,9 @@ Three.js, Babylon, Godot, Blender, Konva, Two.js, Anime.js, Motion, TweenJS, Shi
 gain face à Reanimated + Skia) ; Remotion, Motion Canvas, Manim, gifenc = vidéos marketing, hors application ;
 Lottie seulement si une vraie animation est fournie.
 
+Kit partagé créé (src/components/motion) : AnimatedBottle, AnimatedProgressRing ; SleepRing24 (src/features/napLive) ;
+logique pure testée : src/lib/domain/sleepRing.ts, bottleScale.ts.
+
 Lots : 2 = sommeil / biberon / allaitement · 3 = courbes et barres interactives (kit unifié) · 4 = grossesse et cycle ·
 5 = listes, agenda, étapes, budget · 6 = sans graphique (soin des transitions seulement).
 Répartition : lot 2 : 11 · lot 3 : 10 · lot 4 : 28 · lot 5 : 18 · lot 6 : 61
@@ -106,8 +109,8 @@ Répartition : lot 2 : 11 · lot 3 : 10 · lot 4 : 28 · lot 5 : 18 · lot 6 : 6
 | Mouvements de bébé | `/pregnancy/moves` | DayBars | — | frise des contractions + barres d’espacement (aucun seuil médical) | 4 | à faire |
 | Calendrier de grossesse | `/pregnancy/calendar` | — | — | frise des semaines et trimestres, compte à rebours | 4 | à faire |
 | Listes de préparation | `/lists` | — | — | liste à cocher animée + progression | 5 | à faire |
-| Allaitement | `/track/breastfeed?child=:id` | DayStrip, ProgressRing | oui | minuteur par sein + anneau de séance + frise des tétées | 2 | à faire |
-| Journée des biberons | `/bottle/:id` | BottleClock, BottleDayTimeline, DayTimeline, StageHero | oui | biberon gradué animé (préparé / bu / reste) + barres du jour | 2 | à faire |
+| Allaitement | `/track/breastfeed?child=:id` | DayStrip, ProgressRing | oui | minuteur par sein + anneau de séance + frise des tétées | 2 | **fait** : anneau par sein (AnimatedProgressRing), chronomètre au centre · Chromium ✅ (bascule G→D vérifiée) · iPhone — |
+| Journée des biberons | `/bottle/:id` | BottleClock, BottleDayTimeline, DayTimeline, StageHero | oui | biberon gradué animé (préparé / bu / reste) + barres du jour | 2 | **fait** : biberon gradué animé (AnimatedBottle) dans « Noter un biberon » · Chromium ✅ · iPhone — |
 | Compteur de mesurettes | `/bottle/scoops` | — | — | biberon gradué animé (préparé / bu / reste) + barres du jour | 2 | à faire |
 | Ma récupération après la naissance | `/postpartum` | HmHero, PostpartumHero | — | aucun graphique utile (contenu, scanner, réglage) : transitions et états vides soignés | 6 | à faire |
 | Mon point du jour | `/postpartum/checkin` | — | — | aucun graphique utile (contenu, scanner, réglage) : transitions et états vides soignés | 6 | à faire |
@@ -123,7 +126,7 @@ Répartition : lot 2 : 11 · lot 3 : 10 · lot 4 : 28 · lot 5 : 18 · lot 6 : 6
 | Diversification alimentaire | `/child/:id/discoveries` | MeasureCurve | — | frise d’étapes / carte (existant), animation de validation | 5 | à faire |
 | Classement des recettes | `/meals/rankings` | HmHero | — | aucun graphique utile (contenu, scanner, réglage) : transitions et états vides soignés | 6 | à faire |
 | Sommeil de l’enfant | `/night?child=:id` | BreastHero, SessionBand, StageHero, WeekBars | oui | anneau 24 h + frise jour/nuit modifiable au doigt + semaine | 2 | à faire |
-| Planning de sommeil | `/sleep/:id` | BarChart, NapDayBand, NapHero, StageHero | oui | anneau 24 h + frise jour/nuit modifiable au doigt + semaine | 2 | à faire |
+| Planning de sommeil | `/sleep/:id` | BarChart, NapDayBand, NapHero, StageHero | oui | anneau 24 h + frise jour/nuit modifiable au doigt + semaine | 2 | **fait** : anneau 24 h (SleepRing24), relié à la frise · Chromium ✅ · iPhone — |
 | Aide au sommeil | `/sleep/help/:id` | — | — | anneau 24 h + frise jour/nuit modifiable au doigt + semaine | 2 | à faire |
 | Bilan de la nuit | `/night/help?child=:id` | MiniBars | oui | anneau 24 h + frise jour/nuit modifiable au doigt + semaine | 2 | à faire |
 | Suivi de la journée | `/(tabs)/track` | ActionsStrip, BarChart | — | aucun graphique utile (contenu, scanner, réglage) : transitions et états vides soignés | 6 | à faire |

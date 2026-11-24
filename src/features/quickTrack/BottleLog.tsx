@@ -12,6 +12,7 @@
  * sa durée bue s'y corrige aussi (début, fin et pauses recalculés ensemble : src/lib/domain/finishTrack.ts).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatedBottle } from '@/components/motion/AnimatedBottle';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useTray } from '@/components/reacticx/tray';
@@ -123,7 +124,11 @@ export function BottleQuickLog({ child, bottles }: { child: Child; bottles: read
         {back ? <View style={{ flex: 1 }}><GlassButton variant="tertiary" size="sm" full label={tr('qt.b.now')} testID="qt-bottle-quick-now" onPress={() => setBack(0)} /></View> : null}
       </View>
       {/* Quantité bue en grand, puis grands boutons −10 / +10 sous le pouce */}
-      <Text testID="qt-bottle-quick-ml" maxFontSizeMultiplier={1.3} accessibilityLiveRegion="polite" style={[HERO, { textAlign: 'center', color: ml == null ? t.colors.textMuted : t.colors.text }, TABULAR]}>{ml == null ? tr('qt.b.mlUnknown') : tr('qt.b.ml', { n: ml })}</Text>
+      {/* Biberon gradué : le lait suit la quantité choisie (refonte « motion », 24/11/2026) */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.md }}>
+        <AnimatedBottle ml={ml} testID="qt-bottle-quick-visual" />
+        <Text testID="qt-bottle-quick-ml" maxFontSizeMultiplier={1.3} accessibilityLiveRegion="polite" style={[HERO, { textAlign: 'left', flexShrink: 1, color: ml == null ? t.colors.textMuted : t.colors.text }, TABULAR]}>{ml == null ? tr('qt.b.mlUnknown') : tr('qt.b.ml', { n: ml })}</Text>
+      </View>
       <View style={{ flexDirection: 'row', gap: spacing.xs }}>
         <View style={{ flex: 1 }}><GlassButton variant="secondary" size="lg" full label={tr('qt.b.minus10')} testID="qt-bottle-quick-minus" disabled={ml == null || ml <= 0} onPress={() => setQty(clampMl((ml ?? 0) - 10))} /></View>
         <View style={{ flex: 1 }}><GlassButton variant="secondary" size="lg" full label={tr('qt.b.plus10')} testID="qt-bottle-quick-plus" disabled={ml != null && ml >= 500} onPress={() => setQty(clampMl((ml ?? 0) + 10))} /></View>

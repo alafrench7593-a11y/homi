@@ -8,6 +8,7 @@
  *  3. CORRECTION : dans la fiche (fin, un côté), valeur provisoire, Annuler, Enregistrer protégé du double appui.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatedProgressRing } from '@/components/motion/AnimatedProgressRing';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { StageHero } from '@/components/stage/StageHero';
@@ -90,6 +91,7 @@ function SidePicker({ running, current, last, seconds, onPick, busy }: {
   onPick: (s: BreastSide) => void; busy: boolean;
 }) {
   const t = useTheme();
+  const total = (seconds.left ?? 0) + (seconds.right ?? 0);
   return (
     <View style={{ flexDirection: 'row', gap: spacing.sm }} accessibilityRole="radiogroup">
       {(['left', 'right'] as const).map((s) => {
@@ -104,7 +106,13 @@ function SidePicker({ running, current, last, seconds, onPick, busy }: {
             style={{ flex: 1, minHeight: 104, borderRadius: radius.xl, padding: spacing.sm, alignItems: 'center', justifyContent: 'center', gap: 2,
               backgroundColor: on ? t.colors.text : 'transparent', borderWidth: on ? 0 : 1.5, borderColor: t.colors.border, opacity: busy ? 0.6 : 1 }}>
             <Text variant="heading" color={on ? t.colors.background : t.colors.text}>{label}</Text>
-            {running && secs != null ? <Text style={[{ fontSize: 18, color: on ? t.colors.background : t.colors.textMuted }, TABULAR]}>{stopwatch(secs)}</Text> : null}
+            {/* Part de CE sein dans la séance en cours (proportion, pas un objectif), chronomètre au centre */}
+            {running && secs != null ? (
+              <AnimatedProgressRing progress={total ? secs / total : 0} size={66} color={on ? t.colors.background : t.colors.text}
+                track={on ? 'rgba(127,127,127,0.35)' : t.colors.border} testID={`bt-side-${s}-ring`}>
+                <Text maxFontSizeMultiplier={1.15} style={[{ fontSize: 15, color: on ? t.colors.background : t.colors.textMuted }, TABULAR]}>{stopwatch(secs)}</Text>
+              </AnimatedProgressRing>
+            ) : null}
             <Text variant="caption" weight={on ? 'bold' : undefined} color={on ? t.colors.background : t.colors.textMuted}>{sub}</Text>
           </Tappable>
         );
