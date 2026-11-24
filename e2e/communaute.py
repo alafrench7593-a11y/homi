@@ -111,7 +111,8 @@ def run(p):
     # ================================================================ Barre de navigation
     go(pg, '/', 3000)
     dock = [pg.locator('[role="tab"]').nth(i).get_attribute('aria-label') for i in range(pg.locator('[role="tab"]').count())]
-    R['barre_onglets'] = all(x in dock for x in ['Accueil', 'Suivi', 'Communauté', 'Questions']) and 'Moi' not in dock and any((x or '').startswith('Mon profil') for x in dock)
+    # Barre du bas actuelle (nov. 2026) : Aujourd'hui · Moi · Enfant · Famille (la communauté s'ouvre depuis l'accueil)
+    R['barre_onglets'] = dock == ['Aujourd’hui', 'Moi', 'Enfant', 'Famille']
 
     # ================================================================ Profil communautaire : identifiant, présentation, illustration
     go(pg, '/community/profile', 2800)
@@ -170,7 +171,7 @@ def run(p):
     pg.get_by_text('Anonyme', exact=True).filter(visible=True).first.click(); pg.wait_for_timeout(300)
     R['anonymat_explique'] = has(pg, 'composer-anon-help')
     tid(pg, 'composer-publish').click(); pg.wait_for_timeout(2500)
-    R['publication_anonyme'] = demo(pg, "s => (s.tables.posts.find(p => p.body.startsWith('Je me sens parfois')) || {}).anonymous") is True and 'Anonyme (vous)' in T(pg) and '@camille_test' not in text(pg, 'post-full')
+    R['publication_anonyme'] = demo(pg, "s => (s.tables.posts.find(p => p.body.startsWith('Je me sens parfois')) || {}).anonymous") is True and 'Anonyme (toi)' in T(pg) and '@camille_test' not in text(pg, 'post-full')
 
     # ================================================================ Commenter, répondre, modifier, supprimer
     target = demo(pg, "s => s.tables.posts.find(p => p.title === 'Réveils à 5 h du matin').id")
@@ -299,7 +300,9 @@ def run(p):
     pg.reload(); pg.wait_for_timeout(3500)
     go(pg, '/track', 3200)
     bg = pg.evaluate("() => { const el = document.querySelector('[data-testid=\"track-card-mood\"] [role=\"button\"]'); return el ? getComputedStyle(el).backgroundColor : null; }")
-    R['cartes_mode_nuit_verre_sombre'] = bg == 'rgba(255, 255, 255, 0.06)'
+    # Mode nuit v5 : cartes sombres et opaques (l'ancien verre translucide a été retiré)
+    _n = [float(x) for x in __import__('re').findall(r'[\d.]+', bg or '')[:3]] or [255, 255, 255]
+    R['cartes_mode_nuit_sombres'] = sum(_n) / 3 < 60
     pg.screenshot(path=f'{SHOTS}/cartes_suivi_nuit.png', full_page=True)
     b.close()
 

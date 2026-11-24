@@ -234,7 +234,8 @@ export interface GlassProfile {
   testID?: string;
 }
 
-export const GLASS_PROFILE = { size: 48, ring: 5, item: 68 } as const;
+// item 82 (24/11/2026) : « Grossesse » tenait à peine à 100 % et était coupé à 120 % (68 px)
+export const GLASS_PROFILE = { size: 48, ring: 5, item: 82 } as const;
 
 export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, addLabel, addCaption, addTestID, ringTestID, scrollProps, size = GLASS_PROFILE.size, glass = true, label, style, testID = 'glass-profile-switcher' }: {
   profiles: GlassProfile[];
@@ -284,7 +285,7 @@ export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, add
             accessibilityLabel={p.accessibilityLabel ?? p.label} testID={p.testID ?? `${testID}-${p.key}`} onLayout={onItemLayout(p.key)}
             onPress={() => { if (!active) { motionHaptic('selection'); onChange(p.key); } }} style={({ pressed }) => ({ width: itemW, alignItems: 'center', gap: 2, transform: [{ scale: pressed ? 0.95 : 1 }] })}>
             <View style={{ width: ring, height: ring, alignItems: 'center', justifyContent: 'center' }}>{p.avatar}</View>
-            <Text variant="caption" weight={active ? 'bold' : 'medium'} color={active ? text : muted} numberOfLines={1} center style={{ maxWidth: itemW - 4 }}>{p.label}</Text>
+            <Text variant="caption" weight={active ? 'bold' : 'medium'} color={active ? text : muted} numberOfLines={1} maxFontSizeMultiplier={1.2} center style={{ maxWidth: itemW - 4 }}>{p.label}</Text>
           </Pressable>
         );
       })}
@@ -295,7 +296,7 @@ export function GlassProfileSwitcher({ profiles, activeKey, onChange, onAdd, add
               <Icon name="plus" size={20} color={text} />
             </View>
           </View>
-          <Text variant="caption" weight="medium" color={muted} numberOfLines={1} center style={{ maxWidth: itemW - 4 }}>{addCaption ?? addLabel}</Text>
+          <Text variant="caption" weight="medium" color={muted} numberOfLines={1} maxFontSizeMultiplier={1.2} center style={{ maxWidth: itemW - 4 }}>{addCaption ?? addLabel}</Text>
         </Pressable>
       ) : null}
     </ScrollView>
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
   center: { marginHorizontal: spacing.xs, alignItems: 'center', justifyContent: 'center' },
   indicator: { position: 'absolute', left: 0, top: 0, bottom: 0, borderWidth: StyleSheet.hairlineWidth },
   lensSheen: { position: 'absolute', left: 0, right: 0, top: 0, height: '52%' },
-  segRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 40 },
-  segment: { flex: 1, minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm },
+  segRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 44 },
+  segment: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm },
   ringTrack: { position: 'absolute', left: 0, alignItems: 'center', justifyContent: 'center' },
 });

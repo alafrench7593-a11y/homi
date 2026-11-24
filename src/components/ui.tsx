@@ -960,7 +960,7 @@ const styles = StyleSheet.create({
   card: { borderRadius: radius.lg, borderWidth: 1 },
   fab: { borderRadius: radius.md },
   button: { borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, paddingVertical: 8, overflow: 'hidden' },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: controlSize.chip, maxWidth: '100%', borderRadius: 999, borderWidth: 1, overflow: 'hidden' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 6, minHeight: controlSize.chip, minWidth: 44, justifyContent: 'center', maxWidth: '100%', borderRadius: 999, borderWidth: 1, overflow: 'hidden' },
   segmented: { flexDirection: 'row', borderRadius: 999, padding: 4, gap: 4 },
   // marge intérieure réduite (8 → 4) : à 320 px, 4 options allemandes (« Woche ») ne se coupent plus au milieu du mot
   segment: { flex: 1, minHeight: 44, borderRadius: 999, justifyContent: 'center', paddingHorizontal: 4 },

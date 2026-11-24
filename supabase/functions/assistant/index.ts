@@ -18,13 +18,14 @@
 //  - interrupteur serveur « ai.enabled » (credit_settings) : l'IA se coupe sans nouvelle version de l'application ;
 //  - modèle : secret GEMINI_MODEL (clé GEMINI_API_KEY d'un projet Google AI en facturation payante).
 // Journaux : jamais le texte d'une question ni d'une réponse (codes d'état seulement).
+import { creditsGate } from '../_shared/credits-gate.ts';
 import { adminClient, corsHeaders, json, rateLimit, requireUser, withCors } from '../_shared/http.ts';
 import { readJsonBody } from '../_shared/body.ts';
 import { geminiGenerate, geminiGenerateTurn, geminiStream, GeminiError, type GeminiTurn } from '../_shared/gemini.ts';
 import { runAura } from '../_shared/aura-run.ts';
 import { pseudonymizer } from '../_shared/aura-privacy.ts';
 import { enabledGeminiConfig } from '../_shared/ai-switch.ts';
-import { billedSseStream, ClientGone, requestKey, reserveRefusal, settle, type CreditsGate, type ReserveResult } from '../_shared/credits.ts';
+import { billedSseStream, ClientGone, requestKey, reserveRefusal, settle, type CreditsGate } from '../_shared/credits.ts';
 import { assessSafety, auditAnswer, crisisMessage, toSafetyLang, urgentContacts } from '../_shared/safety.ts';
 import { ASSISTANT_FOOTER, buildSystemPrompt, sanitizeContext, type ArticleRef, type AssistantContext } from '../_shared/assistant-prompt.ts';
 import {
@@ -55,24 +56,6 @@ const CAUTIOUS_ANSWER: StructuredAnswer = {
   sources: [],
   updated_on: null,
 };
-
-/** Grand livre des crédits (RPC service_role) : réserve → débit si livré, restitution sinon. */
-function creditsGate(admin: ReturnType<typeof adminClient>, userId: string): CreditsGate {
-  return {
-    reserve: async (action, key) => {
-      const { data, error } = await admin.rpc('credits_reserve', { p_user: userId, p_action: action, p_idempotency_key: key });
-      return (error || !data ? { ok: false, error: 'server_error' } : data) as ReserveResult;
-    },
-    commit: async (id) => {
-      const { data, error } = await admin.rpc('credits_commit', { p_user: userId, p_reservation: id });
-      return !error && (data as { ok?: boolean } | null)?.ok === true;
-    },
-    release: async (id, reason) => {
-      const { data, error } = await admin.rpc('credits_release', { p_user: userId, p_reservation: id, p_reason: reason });
-      return !error && (data as { ok?: boolean } | null)?.ok === true;
-    },
-  };
-}
 
 Deno.serve(withCors(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });

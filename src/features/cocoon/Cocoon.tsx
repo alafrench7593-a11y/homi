@@ -658,7 +658,7 @@ function KeepCard({ item, child }: { item: KeepItem; child: Child }) {
         </View>
       </Glass>
     </Pressable>
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('coc.keep.digest')} onPress={() => router.push('/today' as never)} testID="home-today" style={{ alignSelf: 'flex-end', minHeight: 40, justifyContent: 'center', paddingHorizontal: spacing.sm }}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('coc.keep.digest')} onPress={() => router.push('/today' as never)} testID="cocoon-today-digest" style={{ alignSelf: 'flex-end', minHeight: 40, justifyContent: 'center', paddingHorizontal: spacing.sm }}>
         <Text variant="caption" weight="bold" color={t.colors.primary}>{tr('coc.keep.digest')}</Text>
       </Tappable>
     </View>

@@ -115,16 +115,16 @@ export function DayThread({ title, caption, rows, empty, right, testID }: {
                         {r.sub ? <Text variant="caption" muted>{r.sub}</Text> : null}
                       </View>
                       {r.action || r.action2 ? (
-                        <View style={{ alignItems: 'flex-end', gap: 6, marginLeft: 'auto' }}>
+                        <View style={{ alignItems: 'flex-end', gap: 4, marginLeft: 'auto' }}>
                           {r.action ? (
                             <Tappable bare onPress={r.action.onPress} accessibilityRole="button" accessibilityLabel={`${r.action.label} : ${r.title}`} testID={r.action.testID} hitSlop={8}
-                              style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: r.action.strong || hot ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
+                              style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 999, backgroundColor: r.action.strong || hot ? accent : tint(accent, t.isDark ? 0.2 : 0.12) }}>
                               <Text variant="caption" weight="bold" color={r.action.strong || hot ? t.colors.primaryText : accent}>{r.action.label}</Text>
                             </Tappable>
                           ) : null}
                           {r.action2 ? (
                             <Tappable bare onPress={r.action2.onPress} accessibilityRole="button" accessibilityLabel={`${r.action2.label} : ${r.title}`} testID={r.action2.testID} hitSlop={8}
-                              style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, borderWidth: 1, borderColor: tint(accent, 0.4) }}>
+                              style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: tint(accent, 0.4) }}>
                               <Text variant="caption" weight="bold" color={accent}>{r.action2.label}</Text>
                             </Tappable>
                           ) : null}

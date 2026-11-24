@@ -19,6 +19,6 @@ Le script affiche un rapport JSON : chaque clé doit valoir `true` et `erreurs` 
 Autres parcours (même version web, même serveur) :
 
 ```bash
-python3 e2e/agenda_abonnement.py   # lien d'abonnement d'agenda : création, affichage unique, liste sans jeton, révocation
+python3 e2e/archive/agenda_abonnement.py   # ARCHIVÉ (voir e2e/archive/README.md) —   # lien d'abonnement d'agenda : création, affichage unique, liste sans jeton, révocation
 python3 e2e/temps_reel.py          # temps réel : une tâche ajoutée par le coparent apparaît sans action (faux Realtime, WebSocket)
 ```

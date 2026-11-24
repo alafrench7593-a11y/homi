@@ -40,6 +40,7 @@ export default function Teeth() {
   const teeth = useMemo(() => (milestones ?? []).filter((m) => m.kind === 'tooth'), [milestones]);
 
   const [picked, setPicked] = useState<string | null>(null);
+  const [asList, setAsList] = useState(false);
   const [date, setDate] = useState(toFrDate(todayISO()));
   const [note, setNote] = useState('');
   const pickedRow = picked ? teeth.find((m) => m.title === picked) : undefined;
@@ -106,7 +107,16 @@ export default function Teeth() {
           <Card style={{ gap: spacing.sm }}>
             <TeethMap present={new Set(teeth.map((m) => m.title))} onPick={open} hintFirst={!teeth.length} />
             <Text variant="caption" muted center>{tr('u5.teeth.tap')}</Text>
+            {/* Dents du schéma trop serrées pour des zones de 44 px : même choix en liste (grandes lignes, VoiceOver) */}
+            <Button label={asList ? tr('u5.teeth.hideList') : tr('u5.teeth.showList')} icon="list" variant="ghost" size="sm" onPress={() => setAsList((v) => !v)} testID="teeth-list-toggle" />
           </Card>
+          {asList ? (
+            <ListGroup testID="teeth-list">
+              {PRIMARY_TEETH.map((d) => (
+                <ListRow key={d.id} icon={teeth.some((m) => m.title === d.label) ? 'check-circle' : 'circle'} title={d.label} onPress={() => open(d.label)} testID={`teeth-list-${d.id}`} />
+              ))}
+            </ListGroup>
+          ) : null}
 
           {!teeth.length ? (
             <ListGroup title={tr('h5.teeth.now')} testID="teeth-next">

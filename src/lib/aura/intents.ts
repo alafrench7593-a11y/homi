@@ -42,13 +42,16 @@ export type AuraIntent =
   /** Print Studio : support imprimable (routine, Maintenant/Ensuite, cartes, histoire sociale, checklist) */
   | { kind: 'print_support'; support: 'routine' | 'nownext' | 'cards' | 'story' | 'checklist' }
   /** Routine difficile (« met 45 minutes à se préparer ») : routine en micro-étapes, imprimable, validée par le parent */
-  | { kind: 'routine_help' };
+  | { kind: 'routine_help' }
+  /** Aura Vision (24/11/2026) : photo ou document à lire, ranger ou expliquer → écrans existants, sans IA */
+  | { kind: 'vision'; doc: VisionDoc };
+export type VisionDoc = 'prescription' | 'medicine' | 'health_book' | 'ultrasound' | 'report' | 'food' | 'list' | 'document';
 
 /** Jour cité, gardé RELATIF (résolu avec l'horloge du moment) : +n jours, prochain jour de semaine (0 = dimanche), JJ/MM. */
 export type When = { rel: number } | { weekday: number } | { day: number; month: number; year?: number };
 
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help', 'vision'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -79,8 +82,40 @@ export function timesIn(text: string): string[] {
 
 const EXPLAIN = /^\s*(comment (utiliser|fonctionne|marche|ca marche|ca fonctionne|on utilise|s'utilise|s’utilise)|a quoi sert|a quoi servent|c'est quoi|c’est quoi|qu'est-ce que|qu’est-ce que|how (do i|do you|to) use|how does|what is .* for|what's .* for|what does .* do)\b/;
 
+/**
+ * Aura Vision : type de document cité AVEC un geste (photo, scanner, ranger, lire, expliquer) ou un démonstratif
+ * (« cette ordonnance », « ce médicament ») → la personne a un papier en main. Sans cela (« qu'est-ce qu'une
+ * ordonnance ? »), Aura répond comme d'habitude.
+ */
+const VISION_DOCS: [VisionDoc, RegExp][] = [
+  ['prescription', /\b(ordonnance\w*|prescription\w*)\b/],
+  ['medicine', /\b(medicament\w*|boite de \w+|notice|sirop|comprime\w*|medicine|medication|pill box|leaflet)\b/],
+  ['health_book', /\b(carnet de (sante|vaccination)|carnet rose|carnet bleu|vaccin\w*|health record|vaccination record)\b/],
+  ['ultrasound', /\b(echographie\w*|echo|ultrasound|scan de grossesse)\b/],
+  ['report', /\b(compte rendu|comptes rendus|resultat\w* d analyse\w*|analyse\w* de sang|bilan sanguin|prise de sang|lab results?|medical report)\b/],
+  ['food', /\b(etiquette\w*|code barre\w*|code a barre\w*|ingredient\w*|allergene\w*|label|barcode)\b/],
+  ['list', /\b(liste de (maternite|naissance|courses|fournitures)|valise de maternite|liste manuscrite|cette liste|this list|packing list|shopping list)\b/],
+  ['document', /\b(document\w*|papier\w*|pdf|courrier\w*|convocation\w*|facture\w*|certificat\w*|attestation\w*|scan\w*|photo\w*|photographi\w*|image)\b/],
+];
+const VISION_CUE = /\b(photo\w*|photographi\w*|scann?\w*|range\w*|classe\w*|enregistre\w*|lis|lire|lit|explique\w*|comprends? rien|comprend pas|dechiffr\w*|c est quoi|quoi ce|save|file|read|explain)\b/;
+/** Démonstratif collé au document (« cette ordonnance ») ; « son médicament ce matin » ne compte pas. */
+const DEMONSTRATIVE = /^(cette|cet|ce|ces|this|these|that) /;
+const DEMONSTRATIVE_END = /\b(cette|cet|ce|ces|this|these|that) $/;
+export function visionDoc(q: string): VisionDoc | null {
+  const cue = VISION_CUE.test(q);
+  for (const [doc, re] of VISION_DOCS) {
+    const m = re.exec(q);
+    if (!m) continue;
+    if (cue || DEMONSTRATIVE.test(m[0]) || DEMONSTRATIVE_END.test(q.slice(0, m.index))) return doc;
+  }
+  return null;
+}
+
 export function matchIntent(question: string): AuraIntent | null {
   const q = foldText(question);
+  // Aura Vision AVANT les questions d'explication : « explique-moi cette ordonnance » vise le papier en main
+  const vdoc = visionDoc(q);
+  if (vdoc && !(vdoc === 'document' && has(q, /\b(rendez vous|rdv|appointment)\b/))) return { kind: 'vision', doc: vdoc };
   // Questions d'EXPLICATION (« Comment utiliser Biberon ? », « À quoi sert le relais ? », bouton « Comment ça marche ? »
   // des outils) : Aura explique, elle ne répond pas par une carte « Ouvrir » (audit du 23/11/2026)
   if (EXPLAIN.test(q)) return null;
@@ -204,7 +239,7 @@ export type Resolution =
   | { status: 'ready'; label: string; href: string; childName?: string; hint?: string }
   | { status: 'select_child'; label: string; options: { label: string; childId: string }[] }
   | { status: 'ask'; question: string; options: IntentOption[] }
-  | { status: 'list'; label: string; items: { label: string; href: string }[] }
+  | { status: 'list'; label: string; items: { label: string; href: string }[]; hint?: string }
   | { status: 'unavailable'; reason: string; alternative?: { label: string; href: string } }
   /** Écriture préparée : rien n'est enregistré avant l'appui du parent sur « Enregistrer » */
   | { status: 'confirm'; summary: string; write: { kind: 'sleep' | 'bottle'; row: Record<string, unknown> }; childName: string; viewHref: string; editHref: string; doneLabel: string }
@@ -294,6 +329,17 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
   }
 
   if (intent.kind === 'print_support') return { status: 'ready', label: ctx.t(`aura.it6.print.${intent.support}`), href: `/print?kind=${intent.support}`, hint: ctx.t('aura.it6.printHint') };
+  if (intent.kind === 'vision') {
+    const d = intent.doc;
+    const photo = { label: ctx.t('aura.vis.photo'), href: '/documents/scan?from=camera' };
+    const file = { label: ctx.t('aura.vis.file'), href: '/documents' };
+    const items = d === 'medicine' ? [{ label: ctx.t('aura.vis.barcode'), href: '/scanner/medicine' }, photo, { label: ctx.t('aura.vis.treatments'), href: '/medications' }]
+      : d === 'food' ? [{ label: ctx.t('aura.vis.barcode'), href: '/scanner/food' }, photo]
+        : d === 'list' ? [photo, { label: ctx.t('aura.vis.lists'), href: '/lists' }]
+          : d === 'health_book' ? [photo, file, { label: ctx.t('aura.vis.healthBook'), href: '/documents/book' }]
+            : [photo, file];
+    return { status: 'list', label: ctx.t(`aura.vis.${d}`), items, hint: ctx.t(d === 'medicine' || d === 'food' ? 'aura.vis.hintBarcode' : 'aura.vis.hint') } as Resolution;
+  }
   if (intent.kind === 'routine_help') {
     return { status: 'list', label: ctx.t('aura.it6.routine'), items: [
       { label: ctx.t('aura.it6.routineOpen'), href: '/family/kid-routines' },

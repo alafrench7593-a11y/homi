@@ -69,7 +69,7 @@ export function TastingJournal({ tastings, onOpen }: { tastings: readonly Tastin
                       <Icon name="check" size={12} color={t.colors.surface} />
                     </View>
                   </View>
-                  <Text variant="caption" center numberOfLines={1}>{g.food_name}</Text>
+                  <Text variant="caption" center numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} maxFontSizeMultiplier={1.2}>{g.food_name}</Text>
                 </Tappable>
               );
             })}

@@ -276,6 +276,7 @@ export const APP_ROUTES: readonly string[] = [
   '/scanner/compare',
   '/scanner/food',
   '/scanner/history',
+  '/scanner/medicine',
   '/scanner/product',
   '/scanner/recalls',
   '/scanner/result/[id]',

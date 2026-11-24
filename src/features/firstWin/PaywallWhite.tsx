@@ -140,7 +140,7 @@ function AuraLine({ need, onAsk }: { need: NeedId | null; onAsk: () => void }) {
       <AuraOrb size={44} gather testID="fw-pw-orb" />
       <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
         <Text variant="small" accessibilityLabel={`${tr('fw.auraA11y')}. ${text}`} style={NO_HYPHENS} testID="fw-pw-aura-text">{text}</Text>
-        <Pressable accessibilityRole="button" onPress={onAsk} hitSlop={8} testID="fw-pw-ask" style={{ alignSelf: 'flex-start', minHeight: 32, justifyContent: 'center' }}>
+        <Pressable accessibilityRole="button" onPress={onAsk} testID="fw-pw-ask" style={{ alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' }}>
           <Text variant="small" weight="bold" color={th.colors.primary}>{tr('fw.pw.ask')}</Text>
         </Pressable>
       </View>

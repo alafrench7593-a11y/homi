@@ -97,7 +97,7 @@ export function DiscoverKeynote({ onExit, onCatalog, onOpenTool, logo, initialSt
   const m = useMotion();
   const insets = useSafeAreaInsets();
   const top = useTopInset();
-  const { width } = useWindowDimensions();
+  const { width, fontScale } = useWindowDimensions();
   const rtl = isRTL();
   const [step, setStep] = useState(() => clampStep(initialStep));
   const [openings, setOpenings] = useState(0);
@@ -148,7 +148,8 @@ export function DiscoverKeynote({ onExit, onCatalog, onOpenTool, logo, initialSt
 
   const first = step === 0;
   const last = step === LAST_STEP;
-  const narrow = width < NARROW;
+  // Petit écran OU grande taille de texte (≥ 125 %) : « Précédent » en flèche seule, nom accessible complet
+  const narrow = width < NARROW || fontScale >= 1.25;
   return (
     <View style={{ flex: 1, paddingTop: top + spacing.xs }} testID="discover-keynote" accessibilityLabel={tr('kn.a11y.stage')}>
       {/* haut : catalogue et « Passer » toujours disponibles */}

@@ -69,6 +69,11 @@ const LIB_TABLES = ['recipes', 'recipe_ingredients', 'recipe_steps', 'recipe_pho
 const isLibRow = (table: string, r: Row) => (table === 'recipes' ? !r.owner_id && String(r.id).startsWith('lib-') : String(r.recipe_id ?? '').startsWith('lib-'));
 
 const CATALOG_TABLES = ['content_categories', 'articles', 'forums', 'emergency_resources', 'foods', 'baby_names', 'products', 'product_recalls', 'plan_limits', 'scan_sources', 'cosing_ingredients', 'ciqual_foods'] as const;
+const BDPM_URL = 'https://base-donnees-publique.medicaments.gouv.fr/medicament/';
+const DEMO_MEDICINES = [
+  { cip13: '3400934615467', cis: '66477582', name: 'DOLIPRANE 2,4 POUR CENT, suspension buvable', form: 'suspension buvable', routes: 'orale', presentation: '1 flacon(s) en verre brun de 100 ml avec seringue(s) pour administration orale', holder: 'OPELLA HEALTHCARE FRANCE' },
+  { cip13: '3400932320189', cis: '63368332', name: 'DOLIPRANE 500 mg, comprimé', form: 'comprimé', routes: 'orale', presentation: 'plaquette(s) thermoformée(s) PVC-Aluminium de 16 comprimé(s)', holder: 'OPELLA HEALTHCARE FRANCE' },
+].map((m) => ({ ...m, marketed: true, reinforced_monitoring: false, notice_url: `${BDPM_URL}${m.cis}/extrait`, source: 'BDPM' as const, imported_at: '2026-11-24T00:00:00Z' }));
 const SCAN_METHODS = ['barcode', 'photo', 'photo_barcode', 'import', 'ingredients_photo', 'manual', 'search'];
 /** Message honnête : en démonstration, la base officielle RappelConso n'est jamais interrogée. */
 const demoRecallMessage = () => tr('l2.dm.recallCheck');
@@ -1599,6 +1604,16 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
       T('moderation_actions').push({ id: uuid(), moderator_id: uid(), post_id: a.p_post ?? null, comment_id: a.p_comment ?? null, action: a.p_action, reason: a.p_reason ?? null, created_at: nowIso() });
       return null;
     },
+    // Boîte de médicaments : deux fiches réelles de la BDPM (démonstration, aucune posologie)
+    medicine_lookup: (a: { p_code?: string }) => {
+      const c = String(a.p_code ?? '').replace(/\D/g, '').replace(/^0(\d{13})$/, '$1');
+      return DEMO_MEDICINES.find((m) => m.cip13 === c || m.cip13.slice(5, 12) === c) ?? null;
+    },
+    medicine_search: (a: { p_query?: string }) => {
+      const q = String(a.p_query ?? '').trim().toLowerCase();
+      return q.length < 3 ? [] : DEMO_MEDICINES.filter((m) => m.name.toLowerCase().startsWith(q));
+    },
+    admin_ai_usage: () => ({ days: 30, ai_enabled: true, paying: T('subscriptions').filter((s) => s.status === 'active').length, actions: [], per_user: { p50: 0, p95: 0, max: 0 } }),
     admin_stats: () => ({
       accounts: state.users.length, onboarded: T('profiles').filter((p) => p.onboarding_completed).length,
       active_pregnancies: T('pregnancies').filter((p) => p.status === 'active').length,

@@ -16,6 +16,7 @@ import {
 } from '@/lib/data/hooks-settings';
 import { timeAgo } from '@/lib/domain/dates';
 import { useTheme } from '@/theme/ThemeProvider';
+import { AiUsageCard } from '@/features/admin/AiUsageCard';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -178,6 +179,7 @@ export default function AdminScreen() {
               <Text variant="caption" muted style={{ marginTop: spacing.sm }}>{tr('u5.admin.agg')}</Text>
             </Card>
           )}
+          <AiUsageCard enabled={admin} />
         </>
       ) : null}
 

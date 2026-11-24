@@ -24,6 +24,7 @@ import { AuraAnalysis, AuraSleepAnalysis } from '@/features/aura/AuraAnalysis';
 import { napPayload } from '@/features/aura/analysis';
 import { NapDayBand, NapFacts, NapHero, napState } from '@/features/napLive/NapNow';
 import { NapSessionTray } from '@/features/napLive/NapSessionTray';
+import { SleepRing24 } from '@/features/napLive/SleepRing24';
 import { GlassButton, GlassSegmentedControl } from '@/components/glass';
 import { Banner, Button, Card, Chip, Field, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
@@ -185,7 +186,10 @@ function TodayTab({ child, data, focusNap, fixTo, goSafety, goProfile }: { child
           {plan.state === 'stale' ? <Text variant="small" muted>{tr('u4.sp.stale')}</Text> : null}
         </View>
       )} />
-      {/* 2 · Exploration : la journée, touchable */}
+      {/* 2 · Vue d'ensemble : 24 h glissantes, sommeil noté à son heure, total au centre (même sélection que la frise) */}
+      <SleepRing24 childId={child.id} sleeps={sleeps as Sleep[]} now={now} selectedId={selNap}
+        onSelect={(id) => { setSelNap(id); router.setParams({ nap: id }); }} />
+      {/* 3 · Exploration : la journée, touchable */}
       <NapDayBand child={child} state={nap} now={now} onEdit={setEditing} selectedId={selNap}
         onSelect={(id) => { setSelNap(id); if (id && id !== 'window') router.setParams({ nap: id }); }} onOpenSession={openSession}
         focusId={zoomNap} onClearFocus={() => setZoomNap(null)} />

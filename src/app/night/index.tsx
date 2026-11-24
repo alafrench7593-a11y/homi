@@ -325,7 +325,7 @@ function NightRow({ entry, detail, onPress, now }: { entry: NightEntry; detail: 
     <Tappable accessibilityRole="button" testID={`night-row-${entry.kind}-${entry.id}`} onPress={onPress}
       accessibilityLabel={`${formatTime(entry.at)}, ${title}, ${detail}, ${timeAgo(entry.at, new Date(now))}. ${tr('ft.nt.openToFix')}`}
       style={({ pressed }) => ({ minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs, borderRadius: radius.md, backgroundColor: pressed ? CARD_PRESSED : 'transparent' })}>
-      <Text weight="bold" color={TEXT} style={[{ width: 60 }, TABULAR]} numberOfLines={1}>{formatTime(entry.at)}</Text>
+      <Text weight="bold" color={TEXT} style={[{ minWidth: 60 }, TABULAR]} numberOfLines={1}>{formatTime(entry.at)}</Text>
       <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: CARD_PRESSED }}>
         <Icon name={KIND_ICON[entry.kind]} size={16} color={GOLD} />
       </View>

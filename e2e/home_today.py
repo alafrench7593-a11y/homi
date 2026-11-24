@@ -64,9 +64,13 @@ with sync_playwright() as p:
     me = demo_state(pg)['session']['userId']
 
     # 1. La section est en tête, visible sans défiler, avec ce qui m'attend mis en avant
-    sec = tid(pg, 'home-today')
+    sec = pg.locator('[data-testid="home-today"]').first
     box = sec.bounding_box() if sec.count() else None
-    R['section_visible_sans_defiler'] = bool(box) and box['y'] < 568 * 0.75
+    # Accueil refondu : en-tête, profils, « Mes apps », Aura et prochain rendez-vous, PUIS les modules ; la section
+    # « Aujourd'hui » doit être le PREMIER module (home-card-next) et commencer dans le premier écran
+    cards = pg.locator('[data-testid^="home-card-"]')
+    first = cards.first.get_attribute('data-testid') if cards.count() else None
+    R['section_premier_module'] = first == 'home-card-next' and bool(box) and box['y'] < 568
     # v5 (16/11/2026) : plus de titre « Aujourd’hui » ni de compteurs : prochain événement, « À traiter », « Le reste de la journée »
     R['titre'] = tid(pg, 'home-next-up').count() > 0 and pg.get_by_text('À traiter', exact=True).count() > 0
     R['resume'] = pg.locator('[data-testid="home-today-summary"]').count() == 0

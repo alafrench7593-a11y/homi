@@ -55,8 +55,14 @@ export function buildSampleFamily(userId: string, T: (t: string) => Row[], creat
   }
   log('diapers', { child_id: lina, at: iso(2), wet: true, stool: false });
   log('diapers', { child_id: lina, at: iso(6), wet: true, stool: true });
-  log('sleeps', { child_id: lina, started_at: iso(14), ended_at: iso(4), wakeups: 1 });
-  log('sleeps', { child_id: lina, started_at: iso(8), ended_at: iso(6.5), wakeups: 0 });
+  // Nuit d'hier soir et sieste du matin, calées sur l'heure (24/11/2026) : avant, deux sommeils « relatifs » (−14 h → −4 h
+  // et −8 h → −6 h 30) se chevauchaient toujours, et l'anneau des 24 h montrait une sieste cachée dans la nuit
+  {
+    const at = (daysAgo: number, h: number, mi: number) => { const d = new Date(now); d.setDate(d.getDate() - daysAgo); d.setHours(h, mi, 0, 0); return d; };
+    const nightEnd = at(0, 6, 55);
+    log('sleeps', { child_id: lina, kind: 'night', started_at: at(1, 20, 10).toISOString(), ended_at: nightEnd.getTime() <= now ? nightEnd.toISOString() : null, wakeups: 1 });
+    if (at(0, 10, 50).getTime() <= now) log('sleeps', { child_id: lina, kind: 'nap', started_at: at(0, 9, 40).toISOString(), ended_at: at(0, 10, 50).toISOString(), wakeups: 0 });
+  }
   // Quelques journées complètes plus anciennes : de quoi illustrer l'apprentissage du rythme propre à Lina
   const dayAt = (daysAgo: number, h: number, mi: number) => { const d = new Date(now); d.setDate(d.getDate() - daysAgo); d.setHours(h, mi, 0, 0); return d.toISOString(); };
   for (let d = 2; d <= 7; d++) {

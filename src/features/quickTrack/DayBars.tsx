@@ -26,11 +26,11 @@ export function DayBars({ days, selected, onSelect, testID, describe, minMax = 1
   const t = useTheme();
   const max = Math.max(minMax, ...days.map((d) => d.value ?? 0));
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6 }} testID={testID}>
+    <View style={{ flexDirection: 'row', alignItems: 'flex-end' }} testID={testID}>
       {days.map((d) => {
         const on = d.day === selected;
         return (
-          <Tappable key={d.day} style={({ pressed }) => ({ flex: 1, alignItems: 'center', gap: 4, minHeight: MIN_TOUCH, opacity: pressed ? 0.7 : 1 })} testID={`${testID}-${d.day}`}
+          <Tappable key={d.day} style={({ pressed }) => ({ flex: 1, paddingHorizontal: 3, alignItems: 'center', gap: 4, minHeight: MIN_TOUCH, opacity: pressed ? 0.7 : 1 })} testID={`${testID}-${d.day}`}
             accessibilityRole="button" accessibilityState={{ selected: on }}
             accessibilityLabel={`${formatDate(`${d.day}T12:00:00`, { weekday: 'long', day: 'numeric' })} : ${describe(d)}`}
             onPress={() => { haptic('selection'); onSelect(d.day); }}>
