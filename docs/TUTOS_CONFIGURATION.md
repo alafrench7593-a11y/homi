@@ -190,3 +190,30 @@ Sans cette configuration, Supabase utilise son service de test (2 e-mails par he
 4. Supabase (projet homi) → Edge Functions → Secrets : `RESEND_API_KEY` = la clé ; `RESEND_FROM_EMAIL` = `HOMI <bonjour@homifamille.com>`.
 5. Supabase → Authentication → Hooks → Send Email hook → Enable → HTTPS → `https://ploatloxxigplpdsqyri.supabase.co/functions/v1/auth-email` → Generate secret → copier → Edge Functions → Secrets : `SEND_EMAIL_HOOK_SECRET` = ce secret (avec son préfixe `v1,whsec_`).
 6. Ne jamais coller ces clés dans un chat. Prévenir Claude : il vérifie la présence des noms, puis un test d'inscription sur l'adresse de la propriétaire.
+
+## Avant la soumission App Store (24/11/2026, suite à l'audit docs/APP_STORE_AUDIT_2026-11-24.md)
+
+### A. Remettre le site en ligne (Vercel)
+vercel.com → projet homi → Deployments → filtre Branch = homi/fondations → dernier déploiement « Ready » → ⋯ → Promote to Production. Vérifier https://homifamille.com/confidentialite/, /aide/, /cgu/, /suppression-compte/.
+
+### B. Clé « Sign in with Apple » (révocation à la suppression du compte, exigée par Apple)
+1. developer.apple.com → Account → Certificates, Identifiers & Profiles → Keys → « + ».
+2. Nom « HOMI Sign in with Apple », cocher Sign in with Apple → Configure → Primary App ID : app.homi.family → Save → Continue → Register.
+3. Download (fichier .p8, téléchargeable UNE seule fois). Noter le Key ID affiché, et le Team ID (en haut à droite ou Membership details).
+4. Supabase → projet homi → Edge Functions → Secrets : APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY (tout le contenu du .p8, lignes BEGIN/END comprises), APPLE_CLIENT_ID = app.homi.family.
+5. Ne jamais coller ces valeurs dans un chat.
+
+### C. Compte de démonstration pour l'examinateur Apple
+1. Dans l'app, créer homiyxz+apple@gmail.com (et homiyxz+coparent@gmail.com pour le co-parent) ; les e-mails arrivent dans la boîte homiyxz (alias Gmail « + »). Mot de passe fort, noté hors du dépôt.
+2. Remplir quelques données fictives (un enfant, biberons, siestes) et inviter le compte co-parent.
+3. RevenueCat → projet HOMI → Customers → chercher le compte (identifiant de l'utilisateur) → Grant promotional entitlement → HOMI_PREMIUM → durée 3 mois.
+4. App Store Connect → app → version → App Review Information : Sign-in required = oui, identifiants du compte, notes pour l'examinateur (texte proposé dans l'audit).
+
+### D. Abonnements et packs de crédits avec la version
+App Store Connect → app → Monetization → Subscriptions puis In-App Purchases : chaque produit doit être « Ready to Submit » (nom affiché, description, prix, capture du paywall pour l'examen). Puis page de la version → section « In-App Purchases and Subscriptions » → « + » → cocher tous les produits → les soumettre avec la version.
+
+### E. Codes d'offre ambassadeurs (facultatif pour la 1re soumission)
+Monetization → Subscriptions → abonnement mensuel → Offer Codes → Create Offer : nom « Ambassadeur −20 % », éligibilité nouveaux abonnés, paiement au fur et à mesure 11,99 € pendant 1 mois → Custom Codes : un code par ambassadeur, lettres et chiffres seulement (LEA20), limite d'utilisations et date de fin.
+
+### F. Confidentialité dans App Store Connect
+App Privacy → ajouter : Contact Info › Name ; User Content › Emails or Text Messages ; Usage Data › Product Interaction (Analytics, Linked) ; Diagnostics › Crash Data (App Functionality, Not linked). Aucun « Tracking ». Privacy Policy URL : https://homifamille.com/confidentialite/ (une fois A fait) ; User Privacy Choices URL : https://homifamille.com/suppression-compte/.
