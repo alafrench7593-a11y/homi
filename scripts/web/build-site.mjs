@@ -60,6 +60,8 @@ for (const w of ['600SemiBold', '800ExtraBold']) {
 }
 cpSync(path.join(site, 'og.png'), path.join(dist, 'og.png'));
 cpSync(path.join(site, 'screens'), path.join(dist, 'site/screens'), { recursive: true });
+mkdirSync(path.join(dist, 'site/illus'), { recursive: true });
+for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foyer-maison']) cpSync(path.join(root, `assets/illustrations/${n}.webp`), path.join(dist, `site/illus/${n}.webp`));
 
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());

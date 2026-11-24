@@ -232,3 +232,42 @@ main, .footer { position: relative; z-index: 1; }
   *, *::before, *::after { transition-duration: 0s !important; animation: none !important; }
   .screen { transition: none; }
 }
+
+/* ---------- codes IRLY : deux téléphones, bulles en verre, ligne grise, progression, grille numérotée */
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
+.progress span { display: block; height: 100%; width: 100%; background: var(--ink); transform-origin: 0 50%; transform: scaleX(0); }
+.lines .line-soft { color: color-mix(in srgb, var(--ink) 42%, transparent); }
+.hero-visual { position: relative; min-height: 640px; }
+.hero-visual .phone { position: absolute; width: 300px; }
+.phone-back { right: 4%; top: 0; aspect-ratio: 390 / 844; padding: 10px; transform: rotate(5deg); opacity: .96; }
+.phone-front { left: 2%; top: 70px; transform: rotate(-3deg); z-index: 2; }
+.phone-front .journal { padding-top: 54px; }
+.chip-float { position: absolute; z-index: 4; display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 18px; font-size: .9rem; line-height: 1.25;
+  background: var(--glass); border: 1px solid var(--glass-line); box-shadow: 0 16px 40px rgba(20, 20, 30, .16); -webkit-backdrop-filter: blur(20px) saturate(1.7); backdrop-filter: blur(20px) saturate(1.7); }
+.chip-av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 800; flex: none; }
+.chip-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 5px color-mix(in srgb, var(--ok) 22%, transparent); flex: none; }
+.chip-a { right: -2%; top: 40px; }
+.chip-b { right: -6%; top: 330px; }
+.chip-c { right: 4%; bottom: 70px; }
+.hero-note { position: absolute; left: 6%; bottom: -104px; margin: 0; font-size: .8rem; color: var(--muted); }
+.js.motion .chip-float { animation: bob 6s ease-in-out infinite; }
+.js.motion .chip-b { animation-delay: -2s; } .js.motion .chip-c { animation-delay: -4s; }
+@keyframes bob { 50% { translate: 0 -8px; } }
+.js.motion .hero .phone { animation: none; }
+@media (max-width: 900px) {
+  .hero-visual { min-height: 0; padding: 20px 0 30px; }
+  .hero-visual .phone { position: relative; width: min(330px, 92%); }
+  .phone-back { display: none; }
+  .phone-front { left: auto; top: 0; transform: none; margin-inline: auto; }
+  .chip-a { right: 0; top: -8px; } .chip-b { left: 0; top: auto; bottom: 120px; } .chip-c { display: none; }
+  .hero-note { position: static; text-align: center; margin-top: 14px; }
+}
+.moments { list-style: none; margin: 40px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.moments a { position: relative; display: flex; flex-direction: column; justify-content: flex-end; aspect-ratio: 4 / 5; padding: 18px; border-radius: 24px; overflow: hidden; text-decoration: none; background: var(--surface); box-shadow: var(--shadow); transition: transform .4s cubic-bezier(.2, .8, .2, 1); }
+.moments a:hover { transform: translateY(-4px); }
+.moments img { position: absolute; inset: 0 0 30% 0; width: 100%; height: 70%; object-fit: contain; padding: 18px; transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.moments a:hover img { transform: scale(1.05); }
+.moments .n { position: absolute; top: 14px; left: 18px; font-size: .78rem; font-weight: 800; letter-spacing: .1em; color: var(--muted); }
+.moments b { position: relative; font-size: 1.3rem; letter-spacing: -.02em; }
+.moments a > span:last-child { position: relative; color: var(--muted); font-size: .95rem; }
+@media (max-width: 760px) { .moments { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .moments a { padding: 14px; border-radius: 20px; } .moments b { font-size: 1.05rem; } }

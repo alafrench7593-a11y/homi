@@ -27,6 +27,7 @@
 <body>
 <div class="pearl" aria-hidden="true"><span class="orb orb-a" data-depth="0.18"></span><span class="orb orb-b" data-depth="-0.12"></span><span class="orb orb-c" data-depth="0.28"></span></div>
 <a class="skip" href="#ouverture">Aller au contenu</a>
+<div class="progress" aria-hidden="true"><span data-progress></span></div>
 
 <header class="nav" role="banner">
   <nav class="nav-bar glass" aria-label="Navigation principale">
@@ -50,7 +51,7 @@
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">Le carnet partagé de la famille</p>
-        <h1 id="t-ouverture" class="display lines"><span class="line"><span>Sa journée,</span></span> <span class="line"><span>en un coup d’œil.</span></span></h1>
+        <h1 id="t-ouverture" class="display lines"><span class="line"><span>Sa journée,</span></span> <span class="line line-soft"><span>en un coup d’œil.</span></span></h1>
         <p class="lead">Sommeil, biberons, tétées, couches : tout ce que vit bébé, noté en un geste et lisible par les deux parents.</p>
         <div class="cta-row">
           <a class="btn btn-primary btn-lg" href="/app" data-cta="hero-app">Ouvrir HOMI</a>
@@ -59,7 +60,9 @@
         <p class="fine">HOMI s’ouvre dans ton navigateur : tes données restent dans ton espace, partagé seulement avec les membres de ton foyer.</p>
       </div>
 
-      <div class="phone tilt" data-tilt><div class="phone-notch" aria-hidden="true"></div><figure class="journal" aria-labelledby="journal-title">
+      <div class="hero-visual tilt" data-tilt>
+        <div class="phone phone-back" aria-hidden="true"><div class="phone-notch"></div><img class="screen is-on" src="/site/screens/accueil.webp" alt="" width="390" height="844" decoding="async"></div>
+        <div class="phone phone-front"><div class="phone-notch" aria-hidden="true"></div><figure class="journal" aria-labelledby="journal-title">
         <figcaption class="journal-head">
           <span class="avatar" aria-hidden="true">L</span>
           <span><strong id="journal-title">Journal de Léa</strong><span class="muted"> · 7 mois · aujourd’hui</span></span>
@@ -75,6 +78,11 @@
         </ol>
         <p class="journal-foot"><span>Siestes du jour</span><b data-bind="total">2 h 10</b></p>
       </figure></div>
+        <div class="chip-float chip-a" aria-hidden="true"><span class="chip-av">K</span><span><b>Karim</b><br>a pris le relais · 17:00</span></div>
+        <div class="chip-float chip-b" aria-hidden="true"><span class="chip-dot"></span><span><b>Sieste corrigée</b><br>1 h 10 · total à jour</span></div>
+        <div class="chip-float chip-c" aria-hidden="true"><span class="chip-av">L</span><span><b>Léa</b> · biberon 180 ml</span></div>
+        <p class="hero-note">Écrans réels de l’app, famille fictive.</p>
+      </div>
     </div>
   </section>
 
@@ -104,6 +112,23 @@
       </div>
     </div>
     <div class="marquee" aria-hidden="true"><div class="marquee-track" data-marquee></div></div>
+  </section>
+
+
+  <!-- MOMENTS DE VIE : grille numérotée -->
+  <section id="moments" class="chapter" aria-labelledby="t-moments">
+    <div class="wrap">
+      <p class="eyebrow">Du projet bébé à ses 10 ans</p>
+      <h2 id="t-moments" class="display lines"><span class="line"><span>Chaque moment</span></span> <span class="line line-soft"><span>a ses outils.</span></span></h2>
+      <ul class="moments">
+        <li><a href="/app"><img src="/site/illus/projet-bebe.webp" alt="" loading="lazy" width="400" height="400"><span class="n">01</span><b>Projet bébé</b><span>Cycle, tests, rendez-vous</span></a></li>
+        <li><a href="/app"><img src="/site/illus/grossesse.webp" alt="" loading="lazy" width="400" height="400"><span class="n">02</span><b>Grossesse</b><span>Semaine après semaine</span></a></li>
+        <li><a href="/app"><img src="/site/illus/bebe.webp" alt="" loading="lazy" width="400" height="400"><span class="n">03</span><b>Bébé</b><span>Sommeil, tétées, biberons</span></a></li>
+        <li><a href="/app"><img src="/site/illus/enfants.webp" alt="" loading="lazy" width="400" height="400"><span class="n">04</span><b>Enfance</b><span>Santé, école, routines</span></a></li>
+        <li><a href="/app"><img src="/site/illus/famille.webp" alt="" loading="lazy" width="400" height="400"><span class="n">05</span><b>Couple et relais</b><span>Qui fait quoi, sans le redire</span></a></li>
+        <li><a href="/app"><img src="/site/illus/foyer-maison.webp" alt="" loading="lazy" width="400" height="400"><span class="n">06</span><b>Foyer</b><span>Agenda, courses, papiers</span></a></li>
+      </ul>
+    </div>
   </section>
 
   <!-- SOMMEIL -->

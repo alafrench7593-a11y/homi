@@ -30,6 +30,8 @@
       var y = window.scrollY;
       if (!reduce) orbs.forEach(function (o) { o.style.transform = 'translate3d(0,' + (y * parseFloat(o.dataset.depth || 0)).toFixed(1) + 'px,0)'; });
       if (nav) nav.style.boxShadow = y > 12 ? '0 14px 40px rgba(20,20,30,.16)' : '';
+      var bar = document.querySelector('[data-progress]');
+      if (bar) { var max = document.documentElement.scrollHeight - window.innerHeight; bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0).toFixed(4) + ')'; }
       ticking = false;
     });
   }
