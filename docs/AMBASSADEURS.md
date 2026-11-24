@@ -7,7 +7,5 @@
 - **Conditions** : `src/content/legalAmbassadors.ts` → écran `/legal/ambassadors` et page `/conditions-ambassadeurs/`.
 - **Serveur** : tables `affiliate_*` (migrations 20261209000100 et 20261210000100, en production), webhook RevenueCat
   (`_shared/affiliate.ts`, déployé v9), tâche quotidienne `homi-affiliate-release`.
-- Détail : `docs/ambassadors/`. L'ancienne implémentation parallèle (`ambassador_*`, `referral_attributions`) est retirée du
-  code ; ses tables existent encore en production, vides et inutilisées. ATTENTION : en production, l'export RGPD les lit
-  (_export_my_data_raw → _export_my_data_raw_ambassadeurs → _export_my_data_raw_ambassadors). Pour les supprimer : d'abord
-  rebrancher _export_my_data_raw sur _export_my_data_raw_ambassadors, puis drop des tables — dans une seule transaction.
+- Détail : `docs/ambassadors/`. L'ancienne implémentation parallèle (`ambassador_*`, `referral_attributions`) est retirée du code ET de la production
+  (nettoyage du 24/11 par l'autre session, vérifié : 0 table/fonction restante, export RGPD → `_export_my_data_raw_ambassadors`, anon sans droit).
