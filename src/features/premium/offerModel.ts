@@ -25,7 +25,7 @@ export interface FreeItem {
 export const FREE_ITEMS: FreeItem[] = [
   { key: 'sub3.free.urgent', icon: 'life-buoy', routes: ['/emergency', '/contraception/emergency', '/family/sos', '/family/urgent'], tools: ['emergency', 'avoid_emergency', 'family_sos', 'family_urgent'] },
   { key: 'sub3.free.safety', icon: 'shield', routes: ['/postpartum/support', '/scanner/recalls', '/sources'], tools: ['pp_support', 'recall_alerts', 'sources'] },
-  { key: 'sub3.free.account', icon: 'user', routes: ['/settings/account', '/profile', '/journeys', '/profiles/new', '/discover'] },
+  { key: 'sub3.free.account', icon: 'user', routes: ['/settings/account', '/journeys', '/profiles/new', '/discover'] },
   { key: 'sub3.free.settings', icon: 'settings', routes: ['/settings', '/settings/privacy', '/settings/language', '/settings/notifications', '/settings/family', '/settings/sync', '/settings/subscription'] },
   { key: 'sub3.free.data', icon: 'download', routes: ['/settings/privacy'] },
   { key: 'sub3.free.legal', icon: 'file-text', routes: ['/legal/terms', '/legal/privacy', '/feedback'] },

@@ -11,7 +11,7 @@ export const sub3 = {
   'sub3.free.title': 'Sans abonnement',
   'sub3.free.urgent': 'Urgences : numéros d’urgence, contraception d’urgence, « Je craque » et mode urgence du foyer.',
   'sub3.free.safety': 'Aide après la naissance, alertes officielles de rappel de produits, sources et références.',
-  'sub3.free.account': 'Ton compte, ton profil, tes parcours et la présentation de HOMI.',
+  'sub3.free.account': 'Ton compte, tes parcours et la présentation de HOMI.',
   'sub3.free.settings': 'Réglages : confidentialité, langue, notifications, foyer, synchronisation, abonnement.',
   'sub3.free.data': 'Export de toutes tes données et suppression du compte. Rien n’est effacé à la fin d’un abonnement.',
   'sub3.free.legal': 'Mentions légales et « Donner mon avis ».',

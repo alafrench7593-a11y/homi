@@ -8,7 +8,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.free.title': 'Ohne Abo',
   'sub3.free.urgent': 'Notfälle: Notrufnummern, Notfallverhütung, „Ich kann nicht mehr“ und Notfallmodus des Haushalts.',
   'sub3.free.safety': 'Hilfe nach der Geburt, offizielle Produktrückrufe, Quellen und Referenzen.',
-  'sub3.free.account': 'Dein Konto, dein Profil, deine Lebensphasen und die Vorstellung von HOMI.',
+  'sub3.free.account': 'Dein Konto, deine Lebensphasen und die Vorstellung von HOMI.',
   'sub3.free.settings': 'Einstellungen: Datenschutz, Sprache, Mitteilungen, Haushalt, Synchronisierung, Abo.',
   'sub3.free.data': 'Export all deiner Daten und Löschen des Kontos. Am Ende eines Abos wird nichts gelöscht.',
   'sub3.free.legal': 'Rechtliche Hinweise und „Feedback geben“.',

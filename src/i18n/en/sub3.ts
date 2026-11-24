@@ -8,7 +8,7 @@ export const sub3: Messages<typeof fr> = {
   'sub3.free.title': 'Without a subscription',
   'sub3.free.urgent': 'Emergencies: emergency numbers, emergency contraception, “I’m at breaking point” and household emergency mode.',
   'sub3.free.safety': 'Help after the birth, official product recall alerts, sources and references.',
-  'sub3.free.account': 'Your account, your profile, your journeys and the introduction to HOMI.',
+  'sub3.free.account': 'Your account, your journeys and the introduction to HOMI.',
   'sub3.free.settings': 'Settings: privacy, language, notifications, household, syncing, subscription.',
   'sub3.free.data': 'Export of all your data and account deletion. Nothing is erased when a subscription ends.',
   'sub3.free.legal': 'Legal notices and “Give feedback”.',

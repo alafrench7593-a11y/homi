@@ -32,3 +32,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Compte (23/11) : « Supprimer mon compte » dans le menu Compte ; suppression = une feuille, une case « je comprends », un bouton (plus de mot à taper). Vérifié démo web.
 - Avant build (23/11) : « mode enfant » retiré (aucun écran pour l'enfant ; ancienne adresse → version imprimable) ; relais juste après minuit (soirée conservée : début = min(minuit, maintenant − 12 h)).
 - Intro (24/11) : présentation Keynote en 7 tableaux au premier lancement (/intro → « Commencer » → /start), Passer, Précédent, progression qui suit le doigt ; vérifiée web 390 et 320 px.
+- 24/11/2026 : aucun accès sans paiement (Moi et aperçu Mes outils fermés aux comptes non abonnés ; restent ouverts : compte, abonnement, données, légal, urgences, démo) ; intro + tableau Relais ; visite guidée réparée sur le web (154/156).
