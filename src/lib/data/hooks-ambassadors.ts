@@ -37,9 +37,9 @@ export function formatMinor(minor: number | null | undefined, currency: string):
   return formatNumber(v / 10 ** digits, { style: 'currency', currency, minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
-/** Adresse publique de partage : site actuel sur le web, sinon EXPO_PUBLIC_SITE_URL (rien tant qu'aucun domaine). */
+/** Adresse publique de partage : site actuel sur le web, sinon EXPO_PUBLIC_SITE_URL, sinon le domaine officiel homifamille.com. */
 export function affiliateLink(code: string, campaign?: string): string | null {
-  const base = Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : process.env.EXPO_PUBLIC_SITE_URL;
+  const base = Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : (process.env.EXPO_PUBLIC_SITE_URL || 'https://homifamille.com');
   if (!base) return null;
   return `${base.replace(/\/$/, '')}/r/${code}${campaign ? `?c=${encodeURIComponent(campaign)}` : ''}`;
 }

@@ -1,0 +1,13 @@
+.crumbs { font-size: .9rem; color: var(--muted); margin-bottom: 12px; } .crumbs a { color: inherit; }
+.contact-form { display: grid; gap: 16px; padding: 22px; margin-top: 28px; }
+.contact-form label { display: grid; gap: 6px; font-weight: 700; font-size: .95rem; }
+.contact-form input, .contact-form select, .contact-form textarea { font: inherit; font-weight: 400; font-size: 1rem; padding: 13px 14px; border-radius: 14px; border: 1px solid rgba(127,127,140,.3); background: var(--surface, #fff); color: var(--ink); width: 100%; box-sizing: border-box; }
+.contact-form textarea { resize: vertical; min-height: 140px; }
+.contact-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.contact-form .consent { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+.contact-form .consent input { width: 20px; height: 20px; margin-top: 2px; flex: none; }
+.contact-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.contact-error { color: #b3261e; font-weight: 600; margin: 0; }
+.contact-done { margin-top: 28px; padding: 22px; }
+@media (max-width: 600px) { .contact-form .row2 { grid-template-columns: 1fr; } }
+.contact-form [hidden], .contact-done[hidden], .contact-error[hidden] { display: none !important; }

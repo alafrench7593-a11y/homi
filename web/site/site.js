@@ -222,3 +222,20 @@
     });
   });
 })();
+
+/* Menu commun : un seul panneau ouvert, fermeture au clic extérieur / Échap, menu mobile */
+(function () {
+  var bar = document.querySelector('.nav-bar');
+  var toggle = document.querySelector('[data-mm-toggle]');
+  var all = Array.prototype.slice.call(document.querySelectorAll('details.mm'));
+  if (!bar || !all.length) return;
+  all.forEach(function (d) { d.addEventListener('toggle', function () { if (d.open) all.forEach(function (o) { if (o !== d) o.open = false; }); }); });
+  document.addEventListener('click', function (e) { if (!bar.contains(e.target)) all.forEach(function (d) { d.open = false; }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { all.forEach(function (d) { d.open = false; }); if (bar.classList.contains('is-open')) { bar.classList.remove('is-open'); toggle && toggle.setAttribute('aria-expanded', 'false'); toggle && toggle.focus(); } } });
+  toggle && toggle.addEventListener('click', function () {
+    var open = !bar.classList.contains('is-open');
+    bar.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  Array.prototype.forEach.call(bar.querySelectorAll('.mm-panel a'), function (a) { a.addEventListener('click', function () { all.forEach(function (d) { d.open = false; }); bar.classList.remove('is-open'); toggle && toggle.setAttribute('aria-expanded', 'false'); }); });
+})();

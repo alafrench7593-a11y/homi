@@ -42,5 +42,15 @@
       apply();
     }, 120);
   });
+  // liens du menu : /fonctionnalites/#etape=pregnancy ou #q=sommeil
+  function fromHash() {
+    var h = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+    var e = h.get('etape'), qq = h.get('q');
+    if (e) { var btn = document.querySelector('.feat-chips button[data-stage="' + e + '"]'); if (btn) btn.click(); }
+    if (qq && q) { q.value = qq; q.dispatchEvent(new Event('input')); }
+    if (e || qq) { var cat = document.getElementById('catalogue'); cat && cat.scrollIntoView({ block: 'start' }); }
+  }
+  window.addEventListener('hashchange', fromHash);
   apply();
+  if (window.homiTools) fromHash(); else window.addEventListener('load', fromHash);
 })();

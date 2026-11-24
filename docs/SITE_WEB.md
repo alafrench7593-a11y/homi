@@ -40,3 +40,16 @@ Hors production (Preview), toutes les pages sont `noindex` et `robots.txt` inter
   « Démo » recadré, rejet automatique des écrans d'erreur/vides). Écartées : dents, vaccins, médicaments, courses (démo sans données),
   Aura (écran d'abonnement), grossesse/cycle/post-partum/co-parent (hors profil de la démo).
 - Tests : `e2e/site_fonctionnalites.py` 22/22 (mobile 390 et desktop 1440).
+
+## Étape 2 (24/11/2026) — domaine, menu, contact, GEO
+- Domaine officiel : **homifamille.com** (canonique, sitemap, robots, llms.txt en production ; liens ambassadeurs de l'app mobile).
+  `SITE_URL` reste prioritaire. À faire côté Vercel : ajouter homifamille.com (+ www) au projet et suivre les DNS indiqués.
+- Menu commun (`web/site/partials/menu.html`) : 6 groupes en `<details>` natifs (clavier, Échap, un seul ouvert), menu mobile
+  dépliable ; seulement des liens réels (catalogue filtré par `#etape=` et `#q=`). Pied de page commun (`partials/footer.html`).
+- `/contact/` : 12 sujets, messagerie pré-remplie vers homixyz@gmail.com ; envoi direct seulement si `CONTACT_ENDPOINT` est
+  défini au build. Fonction `supabase/functions/contact` (Resend, validation, pot de miel, limite 5/10 min, pas d'injection
+  d'en-tête) **non déployée** : il faut RESEND_API_KEY + RESEND_FROM_EMAIL sur un domaine vérifié (ex. contact@homifamille.com).
+- GEO/SEO : `llms.txt` (description factuelle + 121 outils), JSON-LD Organization + ContactPoint + WebSite + SoftwareApplication,
+  ContactPage + BreadcrumbList, robots (privé exclu : /app, /auth, /admin, /ambassadors/dashboard, /r/, /demo).
+- Tests : `e2e/site_menu_contact.py` 19/19, `site_fonctionnalites.py` 22/22, `ambassadors.py` 28/28 ; 0 débordement sur
+  12 largeurs × 5 pages ; Jest `contactForm` 5/5.
