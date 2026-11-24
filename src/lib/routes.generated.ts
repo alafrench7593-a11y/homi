@@ -262,6 +262,7 @@ export const APP_ROUTES: readonly string[] = [
   '/products/compare',
   '/profile',
   '/profiles/new',
+  '/r/[code]',
   '/reading',
   '/reading/stories',
   '/reading/story/[id]',

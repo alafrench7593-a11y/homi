@@ -4,6 +4,7 @@ import { WEB_FRAME, webFrameOn } from '@/components/appFrame';
 import { ActivityIndicator, Animated, Easing, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { router, Stack, useGlobalSearchParams, usePathname } from 'expo-router';
 import { rememberReturnTo } from '@/lib/returnTo';
+import { attachPendingAffiliate } from '@/lib/affiliateReferral';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Notifications from 'expo-notifications';
 import { useFonts } from 'expo-font';
@@ -119,6 +120,8 @@ function Bootstrap() {
         .catch(() => setCrashReportingAllowed(false));
       configurePurchases(session.userId).catch(() => undefined);
       registerPushToken().catch(() => undefined);
+      // Code ambassadeur en attente (lien /r/<code> ou saisie) : rattaché une fois connecté, le serveur décide
+      void attachPendingAffiliate((fn, args) => backend.rpc(fn, args));
       // Mesure du parcours d'abonnement : envoyée seulement avec l'accord « mesure d'audience » (privacy_settings)
       const uid = session.userId;
       configureAnalytics({
