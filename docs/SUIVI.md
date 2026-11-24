@@ -55,3 +55,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 24/11/2026 : motion lot 2 — anneau du sommeil 24 h, biberon gradué animé, anneau par sein (allaitement) ; démo : nuit/sieste d'aujourd'hui sans chevauchement ; aucune dépendance ajoutée.
 - 24/11/2026 : onglet Enfant organisé comme la maquette (en-tête prénom/âge/taille/poids, 8 accès, « Aujourd'hui », synthèse du jour factuelle, sommeil coupé à minuit) ; couleurs du thème ; HOMI_MOTION_SYSTEM.md (poids JS iOS +0,038 %).
 - Démo (24/11) : fonctions Ambassadors simulées sans argent (tableau de bord « pas encore candidaté », candidature refusée en démo) — corrige l'échec /ambassadors/dashboard signalé par audit_navigation.
+- 24/11/2026 : couleurs des apps rétablies — une couleur par famille d'outil (logos + cartes du catalogue + logo « Mes apps »), allaitement rose, croissance bleue ; contraste vérifié (Jest 4788/4788).

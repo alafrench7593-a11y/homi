@@ -41,6 +41,15 @@ Poids de l'application installée et démarrage à froid : **non mesurables ici*
 
 Logique pure testée : `sleepRing.ts`, `bottleScale.ts`, `childDash.ts`.
 
+## Couleurs des apps (24/11/2026)
+
+Retour de la couleur demandé par la propriétaire (elle annule le « noir et gris » du 23/11/2026 pour les logos et les
+catégories). Une couleur PAR FAMILLE d'outil : `CATEGORY_LIGHT` (lumière des logos, `src/theme/toolLogo.ts`) et
+`CATEGORY_HUE` (cartes et pastilles du catalogue, `src/theme/categoryPalette.ts`, mêmes teintes, un peu plus foncées
+pour le contraste 3:1). Exceptions : allaitement rose, croissance bleue (`TOOL_LIGHT`). Garde-fous : lisibilité du symbole
+nacré ≥ plaque nue (clair, sombre, nuit), contraste des pastilles ≥ 3:1 dans les 8 thèmes. Le reste de l'interface
+(textes, boutons, fonds) garde l'identité noir et blanc.
+
 ## Règles
 
 1. La donnée est la vérité ; l'animation la rejoint (ressort `doux`), jamais l'inverse. « Réduire les animations » →

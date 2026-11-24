@@ -17,18 +17,19 @@ import type { Theme } from './tokens';
 export type CategoryKey = 'feeding' | 'sleep' | 'care' | 'health' | 'cycle' | 'pregnancy' | 'school' | 'couple' | 'family';
 
 /** Teinte de référence (fond clair) de chaque catégorie. */
-// 23/11/2026 (décision de la propriétaire) : noir et gris uniquement ; chaque catégorie garde une nuance DISTINCTE
-// (le nom et le pictogramme restent sur chaque carte : la couleur n'est jamais le seul repère)
+// 24/11/2026 (demande de la propriétaire : « remettre un système de couleur ») : mêmes teintes que la lumière des logos
+// par famille (src/theme/toolLogo.ts, CATEGORY_LIGHT), un peu plus soutenues si besoin pour le contraste 3:1.
+// Le nom et le pictogramme restent sur chaque carte : la couleur n'est jamais le seul repère.
 export const CATEGORY_HUE: Record<CategoryKey, string> = {
-  feeding: '#3A3A3E', // anthracite : repas de bébé
-  sleep: '#46464C', // ardoise : nuits et sommeil
-  care: '#52525A', // gris fumé : soins et croissance
-  health: '#5E5E64', // gris moyen : santé
-  cycle: '#2E2E32', // graphite : cycle
-  pregnancy: '#6A6A70', // gris perle foncé : grossesse
-  school: '#404046', // gris acier : école et activités
-  couple: '#585860', // gris tourterelle : couple
-  family: '#4C4C52', // gris plomb : foyer
+  feeding: '#AE5420', // pêche-orangé : repas de bébé
+  sleep: '#6C5CE0', // violet : nuits et sommeil
+  care: '#1A74A4', // bleu ciel : soins et croissance
+  health: '#C83650', // rouge rosé : santé
+  cycle: '#C24685', // rose : cycle
+  pregnancy: '#9450B8', // orchidée : grossesse
+  school: '#23855B', // menthe : école et activités
+  couple: '#C9533F', // corail : couple
+  family: '#A06E12', // ambre : foyer
 };
 
 export interface CategoryColors { accent: string; soft: string; edge: string }

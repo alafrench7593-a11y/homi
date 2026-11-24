@@ -33,7 +33,7 @@ import { AuraOrb } from '@/features/aura/AuraMark';
 import { H200_VIEWS, HOMI_200 } from '@/lib/journeys/homi200';
 import { resolveTool, subRef, TOOL_CATEGORIES, TOOLS } from '@/lib/journeys/tools';
 import { contrastRatio } from '@/theme/contrast';
-import { bareContrast, LOGO_LIGHT, LOGO_PUBLICS, lightContrast, logoShadow, PUBLIC_LIGHT, TAB_LIGHT } from '@/theme/toolLogo';
+import { bareContrast, CATEGORY_LIGHT, colorLightContrast, LOGO_CATEGORIES, LOGO_LIGHT, LOGO_PUBLICS, lightContrast, logoLight, logoShadow, PUBLIC_LIGHT, TAB_LIGHT, TOOL_LIGHT } from '@/theme/toolLogo';
 import { logoPublicOf, logoSymbolOf, QUICK_TOOL } from '@/brand/toolLogo/families';
 import { TOOL_SYMBOLS, TOOL_GLASS_CATEGORY } from '@/brand/toolGlass/symbols';
 import { TOOL_ICON } from '@/brand/icons/manifest';
@@ -289,5 +289,17 @@ describe('lumière : impulsion à l’appui et à l’ouverture, fixe sous « R�
     await update(r, <ToolLogo id="baby_bottle" size={60} pressed play={1} testID="q" />);
     await tick(120);
     expect(lightOpacity(r, 'q-light-baby')).toBe(rest);
+  });
+});
+
+describe('couleurs par famille d’outil (24/11/2026)', () => {
+  it('chaque famille a sa couleur, toutes distinctes ; exceptions allaitement et croissance', () => {
+    expect(new Set(LOGO_CATEGORIES.map((c) => CATEGORY_LIGHT[c])).size).toBe(LOGO_CATEGORIES.length);
+    expect(logoLight('baby_breastfeed', 'feeding')).toBe(TOOL_LIGHT.baby_breastfeed);
+    expect(logoLight('baby_bottle', 'feeding')).toBe(CATEGORY_LIGHT.feeding);
+    expect(logoLight(undefined, 'sleep')).toBe(CATEGORY_LIGHT.sleep);
+  });
+  it.each([...LOGO_CATEGORIES.map((c) => [c, CATEGORY_LIGHT[c]]), ...Object.entries(TOOL_LIGHT)])('%s : symbole au moins aussi lisible que sur la plaque nue (clair, sombre, nuit)', (_name, color) => {
+    for (const mode of ['light', 'dark', 'night'] as const) expect(colorLightContrast(color, mode)).toBeGreaterThanOrEqual(bareContrast());
   });
 });
