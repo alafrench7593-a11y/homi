@@ -121,7 +121,7 @@
   function announce() {
     var live = document.querySelector('[data-live]');
     if (live) live.textContent = state.end === FIXED_END
-      ? 'Sieste corrigée : 1 h 10, de 13 h 10 à 14 h 20. Total des siestes : 1 h 55, soit 15 minutes de moins. Le résumé pour Karim est à jour.'
+      ? 'Sieste corrigée : 1 h 10, de 13 h 10 à 14 h 20. Total des siestes : 1 h 55, soit 15 minutes de moins. Le résumé pour Julien est à jour.'
       : 'Sieste revenue à 1 h 25, de 13 h 10 à 14 h 35. Total des siestes : 2 h 10.';
   }
   var correct = document.querySelector('[data-correct]');
