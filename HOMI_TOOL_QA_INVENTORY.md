@@ -7,7 +7,7 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 - Ouverture : chaque outil ouvert depuis son adresse du catalogue ; échec si écran Premium, page introuvable, erreur
   JavaScript ou clé de traduction brute.
 - Création / persistance : nombre de lignes des tables avant / après, puis rechargement de la page.
-- Parcours ciblés : 15 outils (détail dans la colonne Preuve).
+- Parcours ciblés : 34 outils (détail dans la colonne Preuve).
 
 ## Totaux
 
@@ -15,12 +15,12 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 |---|---|
 | Outils inventoriés | 128 |
 | Ouverture sans erreur | 128 / 128 |
-| Création prouvée | 32 |
-| Modification prouvée | 6 |
+| Création prouvée | 48 |
+| Modification prouvée | 7 |
 | Suppression prouvée | 6 |
-| Persistance prouvée | 31 |
-| Saisie non vérifiée (formulaire spécifique) | 35 |
-| Écrans de consultation (pas de saisie) | 61 |
+| Persistance prouvée | 45 |
+| Saisie non vérifiée (formulaire spécifique) | 23 |
+| Écrans de consultation (pas de saisie) | 56 |
 
 ## Détail
 
@@ -30,17 +30,17 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 | Menu de la semaine | `/meals/menu` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Cuisiner avec ce que j’ai | `/meals/pantry` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Scanner un aliment | `/scanner/food` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
-| Mon sommeil | `/me/sleep` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Mon sommeil | `/me/sleep` | ✅ | — | ✅ | — | ✅ | nuit existante modifiée (coucher 22:40) et retrouvée après rechargement |
 | Scanner un produit | `/scanner/product` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Produits scannés | `/scanner/history` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Comparer deux produits | `/scanner/compare` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
-| Rendez-vous et examens | `/appointments?child=:id` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Rendez-vous et examens | `/appointments?child=:id` | ✅ | ✅ | — | — | ✅ | rendez-vous (intitulé, heure) + rappel créés, après rechargement |
 | Mes questions pour le rendez-vous | `/consult/questions?child=:id` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton «  » → consultation_questions:1 ; saisie visible après rechargement |
 | Documents de santé | `/documents?child=:id` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Carnet de santé | `/documents/book` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Médicaments | `/medications` | ✅ | ✅ | ✅ | ✅ | ✅ | traitement + rappel créés, renommé, supprimé (rappel retiré), après rechargement ; heure obligatoire signalée |
-| Mon humeur | `/me/mood` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
-| Mon journal intime | `/me/diary` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
+| Mon humeur | `/me/mood` | ✅ | ✅ | — | — | ✅ | bilan « Plutôt bien » enregistré, après rechargement |
+| Mon journal intime | `/me/diary` | ✅ | ✅ | — | — | ✅ | humeur puis page écrite, retrouvée après rechargement |
 | Point sur ma fatigue | `/family/exhausted` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Produits à éviter | `/scanner/avoid` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Alertes de rappel de produits | `/scanner/recalls` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
@@ -54,9 +54,9 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 | Mon cycle | `/cycle?all=1` | ✅ | ✅ | — | — | — | « Noter mes règles » crée l’entrée |
 | Calendrier du cycle | `/cycle/calendar` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton « Mes règles commencent ce jour » → period_entries:1 ; saisie non affichée avec le texte de test (valeurs numériques ou liste ailleurs) |
 | Symptômes du cycle | `/cycle/symptoms` | ✅ | ✅ | ❌ | ❌ | ✅ | banc automatique : saisie en ligne → symptom_logs:1 ; saisie visible après rechargement |
-| Douleurs | `/cycle/pain` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
-| Pertes vaginales | `/cycle/discharge` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
-| Saignements inhabituels | `/cycle/bleeding` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Douleurs | `/cycle/pain` | ✅ | ✅ | — | — | ✅ | intensité réglée (bouton Augmenter) puis enregistrée ; sans intensité : message |
+| Pertes vaginales | `/cycle/discharge` | ✅ | ✅ | — | — | ✅ | observation en 3 étapes enregistrée |
+| Saignements inhabituels | `/cycle/bleeding` | ✅ | ✅ | — | — | ✅ | saignement « entre les règles » enregistré ; type obligatoire |
 | Statistiques du cycle | `/cycle/stats` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Mes conseils du cycle | `/cycle/advice` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Résumé du mois | `/cycle/month` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
@@ -74,17 +74,17 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 | Répartition de la charge mentale | `/family/load` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Confier un domaine | `/family/domains` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Point de couple | `/family/couple` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton « Enregistrer » → couple_checkins:1 ; saisie non affichée avec le texte de test (valeurs numériques ou liste ailleurs) |
-| Se comprendre | `/family/understand` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
-| Temps pour soi | `/family/me-time` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
-| Je décroche | `/family/offduty` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Se comprendre | `/family/understand` | ✅ | ✅ | — | — | ✅ | message à Sam envoyé après confirmation « Oui, envoyer » |
+| Temps pour soi | `/family/me-time` | ✅ | ✅ | — | — | — | prochain créneau réservé (garde planifiée) |
+| Je décroche | `/family/offduty` | ✅ | ✅ | — | — | — | « Je décroche » crée la période et la demande de relais |
 | Journée difficile | `/family/difficult` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
-| Parent solo | `/family/solo` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Parent solo | `/family/solo` | ✅ | ✅ | — | — | ✅ | personne du cercle d’entraide ajoutée (nom, téléphone, aide « nuits ») |
 | Agenda familial | `/calendar` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton «  » → family_events:1 ; saisie visible après rechargement |
 | Tâches du foyer | `/family` | ✅ | ✅ | — | — | ✅ | tâche rapide ajoutée, après rechargement |
-| Missions familiales | `/family/missions` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Missions familiales | `/family/missions` | ✅ | ✅ | — | — | ✅ | mission en 3 étapes envoyée (notification à l’autre parent) |
 | Ma place dans la famille | `/family/my-place` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Routines du foyer | `/family/routines` | ✅ | ✅ | ✅ | ✅ | ✅ | banc automatique : bouton «  » → routines:1 ; saisie visible après rechargement |
-| Vider ma tête | `/family/brain-dump` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Vider ma tête | `/family/brain-dump` | ✅ | ✅ | — | — | ✅ | 2 idées triées puis 2 tâches créées après vérification |
 | 3 choses aujourd’hui | `/family/focus` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Échéances à préparer | `/family/prep` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Liste de courses | `/meals/shopping` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
@@ -110,9 +110,9 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 | Relais de nuit | `/family/nights` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton « Noter le biberon » → bottles:1 bottle_timers:1 ; saisie non affichée avec le texte de test (valeurs numériques ou liste ailleurs) |
 | Résumés | `/summary` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Ma grossesse semaine par semaine | `/pregnancy` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
-| Mon poids pendant la grossesse | `/pregnancy/weight` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton «  » → maternal_weights:1 ; saisie non affichée avec le texte de test (valeurs numériques ou liste ailleurs) |
-| Mes symptômes de grossesse | `/pregnancy/feel` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
-| Mouvements de bébé | `/pregnancy/moves` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton «  » → pregnancy_symptom_logs:1 ; saisie non affichée avec le texte de test (valeurs numériques ou liste ailleurs) |
+| Mon poids pendant la grossesse | `/pregnancy/weight` | ✅ | ✅ | — | — | ✅ | pesée ajoutée en un appui |
+| Mes symptômes de grossesse | `/pregnancy/feel` | ✅ | ✅ | — | — | ✅ | symptôme « Fatigue » enregistré ; enregistrement vide refusé avec message |
+| Mouvements de bébé | `/pregnancy/moves` | ✅ | ✅ | — | — | ✅ | mouvements « habituels » enregistrés |
 | Calendrier de grossesse | `/pregnancy/calendar` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Listes de préparation | `/lists` | ✅ | ✅ | — | — | ✅ | banc automatique : bouton «  » → checklists:1 ; saisie visible après rechargement |
 | Allaitement | `/track/breastfeed?child=:id` | ✅ | ✅ | — | — | ✅ | départ / arrêt ; jumeaux : deux tétées simultanées indépendantes, arrêt de l’une sans toucher l’autre, après rechargement |
@@ -137,15 +137,15 @@ d'erreur pour l'ouverture) ; — = non vérifié ; ❌ = échec constaté.
 | Bilan de la nuit | `/night/help?child=:id` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Suivi de la journée | `/(tabs)/track` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Couches | `/track/diaper?child=:id` | ✅ | ✅ | — | — | ✅ | couche « pipi » en un appui, après rechargement |
-| Dents | `/teeth?child=:id` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
+| Dents | `/teeth?child=:id` | ✅ | ✅ | — | — | ✅ | dent notée depuis le schéma |
 | Journal complet | `/journal` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Fiche de l’enfant | `/child/:id` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Étapes du développement | `/child/:id/grow` | ✅ | ✅ | — | — | ✅ | étape « marche » notée, après rechargement |
-| Humeur et émotions de l’enfant | `/child/:id/wellbeing` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
+| Humeur et émotions de l’enfant | `/child/:id/wellbeing` | ✅ | ✅ | — | — | — | humeur de l’enfant en un appui |
 | Album photo | `/child/:id/album` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
 | Vaccins | `/child/:id/vaccines` | ✅ | ✅ | — | — | ✅ | vaccin ajouté (nom, date du jour), après rechargement |
 | Suivi de santé de l’enfant | `/child/:id/health-tracking` | ✅ | ✅ | — | — | ✅ | température 38,6 (virgule) enregistrée ; 48 °C refusé avec message |
-| Traitements de l’enfant | `/child/:id/needs?tab=treatments` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
+| Traitements de l’enfant | `/child/:id/needs?tab=treatments` | ✅ | ✅ | — | — | ✅ | traitement + rappel de l’enfant créés (même composant que Médicaments, modifié / supprimé là-bas) |
 | École ou mode de garde | `/child/:id/school` | ✅ | ✅ | — | ✅ | ✅ | banc automatique : saisie en ligne → child_need_entries:1 ; saisie visible après rechargement |
 | Fiche à transmettre | `/child/:id/card` | ✅ | — | — | — | — | saisie NON vérifiée par le banc (formulaire spécifique) : à tester |
 | Garde alternée | `/family/custody` | ✅ | — | — | — | — | écran de consultation / contenu : ouverture seule vérifiée |
