@@ -128,3 +128,4 @@ export { neuroKit } from './neuroKit';
 export { keynote2 } from './keynote2';
 export { ambassadors } from './ambassadors';
 export { periodCompare } from './periodCompare';
+export { auraVision } from './auraVision';

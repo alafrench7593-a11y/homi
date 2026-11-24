@@ -15,6 +15,8 @@ import { Banner, Button, Card, Divider, Field, haptic, Icon, IconButton, Row, Se
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { useUserId } from '@/lib/auth';
 import { backend, BackendError, eq } from '@/lib/backend';
+import { uuid } from '@/lib/uuid';
+import { useCreditConfig } from '@/lib/data/hooks-credits';
 import { useActivePregnancy, useChildren, useInvalidate, useMyMembership, useRows } from '@/lib/data/hooks';
 import { saveFields, updateDocument, useDocument, useExtractions } from '@/lib/data/hooks-documents';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -57,6 +59,7 @@ export default function DocumentDetail() {
   const t = useTheme();
   const toast = useToast();
   const inv = useInvalidate();
+  const creditCfg = useCreditConfig();
   const userId = useUserId();
   const isOwner = useMyMembership()?.role === 'owner';
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -119,11 +122,14 @@ export default function DocumentDetail() {
 
   // ------------------------------------------------------------ lecture du texte
   async function readOnServer() {
-    const ok = await confirm(tr('docs.read.serverTitle'), tr('docs.read.serverBody'), tr('docs.read.serverGo'), false);
+    // Coût affiché AVANT la lecture (crédits, 24/11/2026) ; un texte déjà lu par le serveur est rendu sans débit
+    const cost = creditCfg.data?.costs?.document_read;
+    const already = doc!.ocr_source === 'server' && !!doc!.ocr_text?.trim();
+    const ok = await confirm(tr('docs.read.serverTitle'), already ? tr('docs.read.cachedBody') : `${tr('docs.read.serverBody')}${cost ? `\n\n${tr('docs.read.cost', { cost })}` : ''}`, tr('docs.read.serverGo'), false);
     if (!ok) return;
     setBusy(tr('docs.read.reading')); setReadError(null);
     try {
-      const r = await backend.invoke<{ status: string; text?: string }>('document-read', { document_id: doc!.id });
+      const r = await backend.invoke<{ status: string; text?: string }>('document-read', { document_id: doc!.id, request_id: uuid() });
       if (r.status === 'to_verify' && r.text) {
         await updateDocument(doc!.id, { ocr_text: r.text, ocr_source: 'server', review_status: 'to_verify' });
         if (doc!.category === 'other') { const s = suggestCategory(r.text, doc!.title); if (s) await updateDocument(doc!.id, { category: s }); }
@@ -131,7 +137,8 @@ export default function DocumentDetail() {
       } else setReadError(tr(r.status === 'not_configured' ? 'docs.read.notConfigured' : r.status === 'unreadable' ? 'docs.read.unreadable' : 'docs.read.demo'));
     } catch (e) {
       const code = e instanceof BackendError ? e.code : null;
-      setReadError(code === 'consent_required' ? tr('docs.read.consent') : code === 'owner_consent_required' ? tr('docs.read.ownerConsent') : code === 'too_large' ? tr('docs.read.tooLarge') : code === 'unsupported' ? tr('docs.read.unsupported') : code === 'rate_limited' ? tr('docs.read.rateLimited') : tr('docs.read.failed'));
+      setReadError(code === 'consent_required' ? tr('docs.read.consent') : code === 'owner_consent_required' ? tr('docs.read.ownerConsent') : code === 'too_large' ? tr('docs.read.tooLarge') : code === 'unsupported' ? tr('docs.read.unsupported') : code === 'rate_limited' ? tr('docs.read.rateLimited') : code === 'insufficient_credits' ? tr('docs.read.noCredits') : code === 'ai_disabled' ? tr('docs.read.aiOff') : tr('docs.read.failed'));
+      if (code === 'insufficient_credits') void inv('credits');
     } finally { setBusy(null); }
   }
   async function saveText() {

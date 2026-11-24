@@ -150,3 +150,31 @@ describe('prénom cité dans la demande (24/11/2026)', () => {
     expect(withNamedChild({ kind: 'log_bottle', ml: 90, childId: 'n' }, 'Lina', kids)).toMatchObject({ childId: 'n' });
   });
 });
+
+describe('Aura Vision : photo ou document montré à Aura', () => {
+  it.each([
+    ['Explique-moi cette ordonnance', 'prescription'],
+    ['C’est quoi ce médicament ?', 'medicine'],
+    ['Range cette échographie dans le dossier grossesse', 'ultrasound'],
+    ['Ajoute les éléments de cette liste dans ma valise', 'list'],
+    ['what is this prescription?', 'prescription'],
+  ])('« %s » → %s', (q, doc) => { expect(matchIntent(q)).toEqual({ kind: 'vision', doc }); });
+
+  it.each(['qu’est-ce qu’une ordonnance', 'Ajoute un rendez-vous chez le pédiatre'])('« %s » n’ouvre pas la lecture', (q) => {
+    expect(matchIntent(q)?.kind).not.toBe('vision');
+  });
+
+  it('propose photo puis fichier, avec l’avertissement crédits et santé ; rien n’est lu sans demande', () => {
+    const r = resolveIntent({ kind: 'vision', doc: 'prescription' }, base());
+    expect(r).toMatchObject({ status: 'list', hint: 'aura.vis.hint' });
+    if (r.status !== 'list') throw new Error('list attendu');
+    expect(r.items.map((x) => x.href)).toEqual(['/documents/scan?from=camera', '/documents']);
+  });
+
+  it('médicament : code-barres d’abord (gratuit), jamais de posologie', () => {
+    const r = resolveIntent({ kind: 'vision', doc: 'medicine' }, base());
+    if (r.status !== 'list') throw new Error('list attendu');
+    expect(r.items[0].href).toBe('/scanner/product');
+    expect(r.hint).toBe('aura.vis.hintBarcode');
+  });
+});

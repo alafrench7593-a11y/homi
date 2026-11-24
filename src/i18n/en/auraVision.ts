@@ -1,0 +1,23 @@
+/** Aura Vision : lecture de documents, crédits (24/11/2026). */
+export const auraVision = {
+  "docs.read.cost": "Cost: {cost} credits, charged only if the text is read. Nothing is charged if reading fails.",
+  "docs.read.cachedBody": "This document has already been read: its text is reused as is, at no extra credit.",
+  "docs.read.noCredits": "You don’t have enough credits to read this document. You can type the text yourself, or top up in “My credits”.",
+  "docs.read.aiOff": "Automatic reading is temporarily unavailable. You can type the text yourself.",
+  "aura.vis.photo": "Take a photo",
+  "aura.vis.file": "Choose a file",
+  "aura.vis.barcode": "Scan the barcode",
+  "aura.vis.treatments": "My treatments",
+  "aura.vis.lists": "My lists",
+  "aura.vis.healthBook": "Health record",
+  "aura.vis.hint": "I only read the document if you ask, after saving it (5 credits). I explain it simply, with no diagnosis or dosage: for a treatment, ask your doctor or pharmacist.",
+  "aura.vis.hintBarcode": "Barcodes are read for free. For dosage, follow the prescription or ask your pharmacist.",
+  "aura.vis.prescription": "A prescription: save it to your documents, then I can read it.",
+  "aura.vis.medicine": "A medicine: scan the box or take a photo.",
+  "aura.vis.health_book": "The health record: add the page to their documents.",
+  "aura.vis.ultrasound": "An ultrasound: I'll file it with the pregnancy documents.",
+  "aura.vis.report": "A medical report: save it, then I can read it.",
+  "aura.vis.food": "A food item: scan it or take a photo.",
+  "aura.vis.list": "A list: take a photo, then add the items to your list.",
+  "aura.vis.document": "A document: save it, then I can read and file it.",
+} as const;

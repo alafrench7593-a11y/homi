@@ -153,6 +153,7 @@ export function IntentCard({ intent: initial, catalog, allTools }: { intent: Aur
         <>
           <Text variant="small">{r.label}</Text>
           {r.items.map((x, i) => <Button key={x.href} label={x.label} icon="arrow-right" variant={i === 0 ? 'primary' : 'secondary'} full onPress={() => router.push(x.href as never)} testID={`aura-intent-item-${i}`} />)}
+          {r.hint ? <Text variant="caption" muted testID="aura-intent-hint">{r.hint}</Text> : null}
         </>
       ) : (
         <>

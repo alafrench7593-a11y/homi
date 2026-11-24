@@ -1,0 +1,23 @@
+/** Aura Vision : lecture de documents, crédits (24/11/2026). */
+export const auraVision = {
+  "docs.read.cost": "Kosten: {cost} Credits, nur abgebucht, wenn der Text gelesen wird. Schlägt das Lesen fehl, wird nichts abgebucht.",
+  "docs.read.cachedBody": "Dieses Dokument wurde bereits gelesen: Der Text wird ohne weitere Credits übernommen.",
+  "docs.read.noCredits": "Du hast nicht genug Credits, um dieses Dokument zu lesen. Du kannst den Text selbst abtippen oder unter „Meine Credits“ aufladen.",
+  "docs.read.aiOff": "Das automatische Lesen ist gerade nicht verfügbar. Du kannst den Text selbst abtippen.",
+  "aura.vis.photo": "Foto aufnehmen",
+  "aura.vis.file": "Datei auswählen",
+  "aura.vis.barcode": "Barcode scannen",
+  "aura.vis.treatments": "Meine Behandlungen",
+  "aura.vis.lists": "Meine Listen",
+  "aura.vis.healthBook": "Gesundheitsheft",
+  "aura.vis.hint": "Ich lese das Dokument nur auf deinen Wunsch, nachdem du es gespeichert hast (5 Credits). Ich erkläre es einfach, ohne Diagnose oder Dosierung: Frag bei Behandlungen deine Ärztin, deinen Arzt oder die Apotheke.",
+  "aura.vis.hintBarcode": "Barcodes werden ohne Credits gelesen. Zur Dosierung: Rezept befolgen oder Apotheke fragen.",
+  "aura.vis.prescription": "Ein Rezept: Speichere es in deinen Dokumenten, dann kann ich es lesen.",
+  "aura.vis.medicine": "Ein Medikament: Scanne die Packung oder fotografiere sie.",
+  "aura.vis.health_book": "Das Gesundheitsheft: Füge die Seite zu den Dokumenten hinzu.",
+  "aura.vis.ultrasound": "Ein Ultraschallbild: Ich lege es bei den Schwangerschaftsdokumenten ab.",
+  "aura.vis.report": "Ein Befund: Speichere ihn, dann kann ich ihn lesen.",
+  "aura.vis.food": "Ein Lebensmittel: Scanne es oder fotografiere es.",
+  "aura.vis.list": "Eine Liste: Fotografiere sie und füge die Einträge deiner Liste hinzu.",
+  "aura.vis.document": "Ein Dokument: Speichere es, dann kann ich es lesen und ablegen.",
+} as const;

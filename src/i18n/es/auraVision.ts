@@ -1,0 +1,23 @@
+/** Aura Vision : lecture de documents, crédits (24/11/2026). */
+export const auraVision = {
+  "docs.read.cost": "Coste: {cost} créditos, solo si se lee el texto. No se descuenta nada si la lectura falla.",
+  "docs.read.cachedBody": "Este documento ya se leyó: su texto se reutiliza tal cual, sin nuevos créditos.",
+  "docs.read.noCredits": "No tienes créditos suficientes para leer este documento. Puedes copiar el texto tú o recargar en «Mis créditos».",
+  "docs.read.aiOff": "La lectura automática no está disponible ahora. Puedes copiar el texto tú.",
+  "aura.vis.photo": "Hacer una foto",
+  "aura.vis.file": "Elegir un archivo",
+  "aura.vis.barcode": "Escanear el código de barras",
+  "aura.vis.treatments": "Mis tratamientos",
+  "aura.vis.lists": "Mis listas",
+  "aura.vis.healthBook": "Cartilla de salud",
+  "aura.vis.hint": "Solo leo el documento si me lo pides, después de guardarlo (5 créditos). Lo explico con sencillez, sin diagnóstico ni dosis: para un tratamiento, pregunta a tu médico o farmacéutico.",
+  "aura.vis.hintBarcode": "El código de barras se lee sin créditos. Para la dosis, sigue la receta o pregunta a tu farmacéutico.",
+  "aura.vis.prescription": "Una receta: guárdala en tus documentos y luego puedo leerla.",
+  "aura.vis.medicine": "Un medicamento: escanea la caja o hazle una foto.",
+  "aura.vis.health_book": "La cartilla de salud: añade la página a sus documentos.",
+  "aura.vis.ultrasound": "Una ecografía: la guardo con los documentos del embarazo.",
+  "aura.vis.report": "Un informe: guárdalo y luego puedo leerlo.",
+  "aura.vis.food": "Un alimento: escanéalo o hazle una foto.",
+  "aura.vis.list": "Una lista: hazle una foto y añade los elementos a tu lista.",
+  "aura.vis.document": "Un documento: guárdalo y luego puedo leerlo y ordenarlo.",
+} as const;

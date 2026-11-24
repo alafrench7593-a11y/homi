@@ -1,0 +1,23 @@
+/** Aura Vision : lecture de documents, crédits (24/11/2026). */
+export const auraVision = {
+  "docs.read.cost": "Coût : {cost} crédits, débités seulement si le texte est lu. Rien n’est débité si la lecture échoue.",
+  "docs.read.cachedBody": "Ce document a déjà été lu : son texte est repris tel quel, sans nouveau crédit.",
+  "docs.read.noCredits": "Tu n’as plus assez de crédits pour lire ce document. Tu peux recopier le texte toi-même, ou recharger tes crédits dans « Mes crédits ».",
+  "docs.read.aiOff": "La lecture automatique est momentanément indisponible. Tu peux recopier le texte toi-même.",
+  "aura.vis.photo": "Prendre en photo",
+  "aura.vis.file": "Choisir un fichier",
+  "aura.vis.barcode": "Scanner le code-barres",
+  "aura.vis.treatments": "Mes traitements",
+  "aura.vis.lists": "Mes listes",
+  "aura.vis.healthBook": "Carnet de santé",
+  "aura.vis.hint": "Je lis le document seulement si tu le demandes, après l’avoir enregistré (5 crédits). Je l’explique simplement, sans diagnostic ni posologie : pour un traitement, demande à ton médecin ou ton pharmacien.",
+  "aura.vis.hintBarcode": "Le code-barres se lit sans crédit. Pour la posologie, suis l’ordonnance ou demande à ton pharmacien.",
+  "aura.vis.prescription": "Une ordonnance : enregistre-la dans tes documents, puis je peux la lire.",
+  "aura.vis.medicine": "Un médicament : scanne la boîte ou prends-la en photo.",
+  "aura.vis.health_book": "Le carnet de santé : ajoute la page à ses documents.",
+  "aura.vis.ultrasound": "Une échographie : je la range dans les documents de la grossesse.",
+  "aura.vis.report": "Un compte rendu : enregistre-le, puis je peux le lire.",
+  "aura.vis.food": "Un aliment : scanne-le ou prends-le en photo.",
+  "aura.vis.list": "Une liste : prends-la en photo, puis ajoute les éléments à ta liste.",
+  "aura.vis.document": "Un document : enregistre-le, puis je peux le lire et le ranger.",
+} as const;
