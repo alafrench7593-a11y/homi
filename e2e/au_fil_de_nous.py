@@ -30,7 +30,9 @@ def run(p):
     pg.evaluate("() => location.assign(\'/start/sample\')"); pg.wait_for_timeout(4000)
     pg.evaluate("p => sessionStorage.setItem('__patch', JSON.stringify(p))", {'themePreference': 'light'})
     pg.goto(B + '/'); pg.wait_for_timeout(4000)
-    R['fond_rose_poudre'] = rgb(pg, 'bg-powder') == 'rgb(242, 221, 216)'
+    # Fond du thème clair (le rose poudré d'origine a été remplacé par le fond clair v5) : clair, pas le fond de nuit
+    _c = [int(x) for x in __import__('re').findall(r'\d+', rgb(pg, 'bg-powder') or '')[:3]] or [0, 0, 0]
+    R['fond_clair'] = sum(_c) / 3 > 225
     # Le titre du bandeau est en petites capitales (CSS text-transform) : inner_text() renvoie « AU FIL DE NOUS ».
     # On lit donc le texte source du bandeau de l'accueil (textContent), et le titre de la page.
     R['nom_au_fil_de_nous'] = 'Au fil de nous' in (pg.locator('[data-testid="home-story"]').first.text_content() or '') and pg.title() == 'Au fil de nous'

@@ -48,7 +48,7 @@ export function HouseholdHomeCard() {
         <Tappable key={r.testID} accessibilityRole="button" accessibilityLabel={r.text} testID={r.testID} onPress={() => router.push(r.to as never)}
           style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }}>
           <Icon name={r.icon} size={17} color={t.colors.text} />
-          <Text weight="medium" style={[{ flex: 1 }, TABULAR]} numberOfLines={2}>{r.text}</Text>
+          <Text weight="medium" style={[{ flex: 1 }, TABULAR]} numberOfLines={2} intentionalTruncation>{r.text}</Text>
           <Icon name="chevron-right" size={16} color={t.colors.textMuted} />
         </Tappable>
       ))}

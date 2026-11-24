@@ -243,14 +243,14 @@ export function ActionsStrip({ ctx, models, title }: { ctx: ActionContext; model
               <Text variant="caption" muted>{tr(PROFILE_SUB[ctx.profile])}</Text>
             </View>
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.seeAllA11y')} onPress={() => setAll(true)} testID="track-see-all"
-              style={{ minHeight: 40, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', ...glassEdge(t), backgroundColor: t.colors.surfaceAlt }}>
+              style={{ minHeight: 44, paddingHorizontal: 14, borderRadius: radius.pill, justifyContent: 'center', ...glassEdge(t), backgroundColor: t.colors.surfaceAlt }}>
               <Text variant="small" weight="bold" color={t.colors.primary}>{tr('da.seeAll')}</Text>
             </Tappable>
           </View>
           <ScrollView horizontal keyboardShouldPersistTaps="handled" {...noSwipe} showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.md, gap: spacing.xs }} testID="track-cards">
             {list.map((m) => <Capsule key={m.key} m={m} />)}
             <Tappable accessibilityRole="button" accessibilityLabel={tr('da.customize')} testID="actions-customize" onPress={() => { setDraft(shown); setEdit(true); }}
-              style={{ width: 92, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: t.material.lines.track, minHeight: 132 }}>
+              style={{ minWidth: 92, paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: 22, borderWidth: 1, borderStyle: 'dashed', borderColor: t.material.lines.track, minHeight: 132 }}>
               <Icon name="sliders" size={18} color={t.colors.textMuted} />
               <Text variant="caption" muted center>{tr('da.customizeShort')}</Text>
             </Tappable>
@@ -305,10 +305,13 @@ function Capsule({ m }: { m: ActionModel }) {
         <Text variant="small" weight="bold">{actionLabel(m.key)}</Text>
         <Text variant="caption" muted testID={`track-info-${m.key}`}>{m.info}</Text>
       </Tappable>
-      <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} hitSlop={10} testID={`track-add-${m.key}`}
+      <Tappable accessibilityRole="button" accessibilityLabel={m.addLabel ?? tr('trk.cards.add', { label: actionLabel(m.key) })} testID={`track-add-${m.key}`}
         onPress={() => { haptic('light'); m.onAdd(); }} pressScale={0.9} hoverLift={0}
-        style={({ pressed }) => ({ position: 'absolute', top: 8, right: 8, width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, opacity: pressed ? 0.85 : 1, shadowColor: t.tokens.shadowColor, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } })}>
-        <Icon name={m.active ? 'sun' : 'plus'} size={16} color={t.colors.primaryText} />
+        // Zone de toucher 44 × 44 (règle Apple) ; le rond visible reste de 30 px, au même endroit
+        style={({ pressed }) => ({ position: 'absolute', top: 1, right: 1, width: 44, height: 44, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.85 : 1 })}>
+        <View style={{ width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, shadowColor: t.tokens.shadowColor, shadowOpacity: 0.2, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } }}>
+          <Icon name={m.active ? 'sun' : 'plus'} size={16} color={t.colors.primaryText} />
+        </View>
       </Tappable>
     </View>
   );

@@ -173,7 +173,7 @@ export function HmRow({ time, icon, title, detail, onPress, testID, a11y, faded,
   const t = useTheme();
   const body = (
     <>
-      {time !== undefined ? <Text weight="bold" style={[{ width: 62 }, TABULAR]} numberOfLines={1}>{time ?? '—'}</Text> : null}
+      {time !== undefined ? <Text weight="bold" style={[{ minWidth: 62 }, TABULAR]} numberOfLines={1}>{time ?? '—'}</Text> : null}
       <View style={{ width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: t.colors.border }}>
         <Icon name={icon} size={17} color={t.colors.text} />
       </View>

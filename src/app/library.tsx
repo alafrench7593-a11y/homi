@@ -149,7 +149,7 @@ export default function Library() {
           {(moreForYou ? forYou : forYou.slice(0, 3)).map(({ article: a, reason }) => (
             <Card key={a.id} tone="soft" onPress={() => router.push(`/article/${a.slug}`)} testID={`library-rec-${a.slug}`}>
               <Text weight="bold">{a.title}</Text>
-              <Text variant="small" muted numberOfLines={3}>{a.summary}</Text>
+              <Text variant="small" muted numberOfLines={3} intentionalTruncation>{a.summary}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
                 <Icon name="compass" size={14} color={t.colors.primary} />
                 <Text variant="caption" color={t.colors.primary} style={{ flex: 1 }}>{reason ? reasonText(reason) : tr('p2.lib.byProfile')}</Text>

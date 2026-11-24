@@ -114,7 +114,7 @@ def run(p):
     pg.screenshot(path=f'{SHOTS}/grossesse_calendrier.png', full_page=True)
     R['cal_resume_SA_SG_trimestre'] = '10 SA' in t and '8 SG' in t and '1er trimestre' in t.replace('1ᵉʳ', '1er')
     R['cal_trois_periodes'] = all(has(pg, f'echo-echo_{i}') for i in (1, 2, 3))
-    R['cal_formulations'] = all(x in t for x in ['Période indicative', 'À confirmer avec votre sage-femme ou votre médecin', 'Ajouter mon véritable rendez-vous'])
+    R['cal_formulations'] = all(x in t for x in ['Période indicative', 'À confirmer avec ta sage-femme ou ton médecin', 'Ajouter mon véritable rendez-vous'])
     e1_from = lmp + timedelta(days=77); e1_to = lmp + timedelta(days=97)
     w1 = tid(pg, 'echo-window-echo_1').inner_text()
     R['cal_dates_premiere_echo'] = str(e1_from.day) in w1 and str(e1_to.day) in w1

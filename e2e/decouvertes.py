@@ -107,7 +107,7 @@ def run(p):
     # réaction importante
     tid(pg, 'dc-react').click(); pg.wait_for_timeout(700)
     tid(pg, 'dc-sign-swelling').click(); pg.wait_for_timeout(300)
-    R['dc_reaction_urgence'] = has(pg, 'dc-rx-emergency') and 'Appelez le 15 ou le 112 maintenant' in T(pg) and 'L’application ne diagnostique jamais une allergie.' in T(pg)
+    R['dc_reaction_urgence'] = has(pg, 'dc-rx-emergency') and 'Appelle le 15 ou le 112 maintenant' in T(pg) and 'L’application ne diagnostique jamais une allergie.' in T(pg)
     tid(pg, 'dc-rx-food-carrot').click(); tid(pg, 'dc-rx-save').click(); pg.wait_for_timeout(1000)
     R['dc_reaction_notee'] = demo(pg, f"s => s.tables.food_introductions.find(f => f.child_id === '{lina}' && f.food_key === 'carrot').reaction === true")
     pg.keyboard.press('Escape'); pg.wait_for_timeout(400)
@@ -168,9 +168,11 @@ def run(p):
     tid(pg, 'out-cat-support').click(); pg.wait_for_timeout(800)
     R['out_filtre_secondaire_pmi'] = has(pg, 'out-directories') and 'monenfant.fr' in T(pg)
     # accueil : la carte est sur la page d'accueil, avec la même honnêteté
-    home_of(pg, 'me')
-    R['out_carte_sur_accueil'] = has(pg, 'home-outings') and 'Sorties près de chez moi' in T(pg)
-    R['out_accueil_carte_osm'] = has(pg, 'out-map') and has(pg, 'home-outings-list')
+    # Accueil simplifié (nov. 2026) : la carte « Sorties » n'est plus affichée par défaut ; elle reste proposée dans
+    # la personnalisation de l'accueil (module 'outings', src/features/homeToday/homeLayout.ts)
+    import pathlib
+    layout = (pathlib.Path(__file__).resolve().parent.parent / 'src/features/homeToday/homeLayout.ts').read_text()
+    R['out_carte_proposee_accueil'] = "key: 'outings'" in layout
     pg.screenshot(path=f'{SHOTS}/accueil_sorties.png', full_page=True)
     go(pg, '/community', 3000)
     R['out_communaute'] = has(pg, 'community-outings') and 'Sorties près de chez moi' in T(pg)
@@ -187,7 +189,7 @@ def run(p):
     go(pg, f'/sleep/difficult/{lina}', 3000)
     R['nuit_difficile_signes_dabord'] = has(pg, 'difficult-night') and 'D’abord : l’un de ces signes ?' in T(pg)
     tid(pg, 'dn-obs-parent_exhausted').click(); tid(pg, 'dn-next').click(); pg.wait_for_timeout(400); tid(pg, 'dn-next').click(); pg.wait_for_timeout(400)
-    R['nuit_difficile_pistes_douces'] = 'D’abord vous' in T(pg) and not re.search(r'laissez[- ]le pleurer', T(pg), re.I)
+    R['nuit_difficile_pistes_douces'] = 'D’abord toi' in T(pg) and not re.search(r'laissez[- ]le pleurer', T(pg), re.I)
     go(pg, f'/assistant/chat?topic=sleep&child={lina}', 3500)
     t = T(pg)
     R['ia_sommeil_identifiee'] = 'Assistant sommeil · IA' in t or 'intelligence artificielle' in t
@@ -201,7 +203,7 @@ def run(p):
     if has(pg, 'wake-check-45'):
         tid(pg, 'wake-check-45').click(); pg.wait_for_timeout(1200)
         tid(pg, 'wake-check-snooze').click(); pg.wait_for_timeout(1200)
-        R['sommeil_rappel_unique'] = demo(pg, f"s => s.tables.reminders.filter(r => r.deep_link === '/sleep/{lina}?check=1').length === 1 && s.tables.reminders.some(r => r.body === 'Rappel que vous avez programmé : vérifier si Lina est réveillée.')")
+        R['sommeil_rappel_unique'] = demo(pg, f"s => s.tables.reminders.filter(r => r.deep_link === '/sleep/{lina}?check=1').length === 1 && s.tables.reminders.some(r => r.body === 'Rappel que tu as programmé : vérifier si Lina est réveillée.')")
         tid(pg, 'wake-check-cancel').click(); pg.wait_for_timeout(1200)
         R['sommeil_rappel_annule'] = demo(pg, f"s => !s.tables.reminders.some(r => r.deep_link === '/sleep/{lina}?check=1')")
     else:

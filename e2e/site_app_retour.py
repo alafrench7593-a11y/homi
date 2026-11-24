@@ -116,7 +116,20 @@ with sync_playwright() as p:
 
     # D. HTML servi pour une page privée
     html = urllib.request.urlopen(B + '/settings/appearance').read().decode()
-    check('HTML privé : titre générique et noindex', '<title>HOMI</title>' in html and 'noindex' in html)
+    check('HTML privé : titre générique', '<title>HOMI</title>' in html)
+    # noindex : posé par scripts/web/build-site.mjs (coquille app.html servie par Vercel pour toute page privée),
+    # pas par l'export brut servi ici → on vérifie la coquille réellement publiée, construite sur une copie
+    import shutil, subprocess, tempfile
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    src = os.environ.get('E2E_DIST')
+    if src and os.path.isdir(src):
+        tmp = tempfile.mkdtemp(prefix='homi-site-'); shutil.copy(os.path.join(src, 'index.html'), tmp)
+        r = subprocess.run(['node', os.path.join(root, 'scripts/web/build-site.mjs'), tmp], capture_output=True, text=True)
+        shell = open(os.path.join(tmp, 'app.html')).read() if os.path.exists(os.path.join(tmp, 'app.html')) else ''
+        check('coquille publiée (app.html) : titre générique et noindex', '<title>HOMI</title>' in shell and 'noindex' in shell, r.stderr[-200:])
+        shutil.rmtree(tmp, ignore_errors=True)
+    else:
+        print('  (E2E_DIST absent : contrôle noindex de la coquille publiée non exécuté)')
     check('HTML privé : aucun prénom', 'Alice' not in html and 'Bruno' not in html)
     check('aucune erreur JavaScript', not errs, ' | '.join(errs[:3]))
     b.close()
