@@ -45,7 +45,7 @@ export const SEARCH_INTENTS: SearchIntent[] = [
   { id: 'liaison', re: w('carnet de liaison|cahier de liaison|journee chez la nounou|journee de garde|daily log|care diary'), ids: ['h200_153', 'childcare'] },
   // couple : « je suis épuisée et mon mari ne comprend pas »
   { id: 'understand', re: w('ne comprend pas|comprend pas|ne me comprend|comprend rien|m ecoute pas|n ecoute pas|se comprendre|on se dispute|dispute|disputes|conflit|engueulade|doesn t understand|doesnt understand|does not understand|we argue|we fight|argument|arguing|communication|communiquer'), ids: ['couple_understand', 'couple_week'] },
-  { id: 'exhausted', re: w('epuise|epuisee|epuises|crevee|creve|a bout|n en peux plus|j en peux plus|burn out|burnout|exhausted|worn out|drained|overwhelmed'), ids: ['exhaustion_check', 'family_nights', 'couple_understand', 'family_sos'] },
+  { id: 'exhausted', re: w('epuise|epuisee|epuises|crevee|creve|a bout|n en peux plus|j en peux plus|burn out|burnout|exhausted|worn out|drained|overwhelmed'), ids: ['exhaustion_check', 'couple_understand', 'family_sos', 'family_nights'] },
   { id: 'intimacy', re: w('intimite|libido|desir|sexualite|intimacy|sex life|libido'), ids: ['couple_understand'] },
   { id: 'load', re: w('qui fait quoi|repartition|partage des taches|charge mentale|mental load|who does what|chores split'), ids: ['mental_load', 'family_domains', 'family_tasks'] },
   { id: 'tasks', re: w('taches|tache|menage|chores|housework|to do|todo'), ids: ['family_tasks'] },
