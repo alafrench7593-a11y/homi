@@ -26,7 +26,7 @@ export function friendlyError(e: unknown, fallback = tr('l3.settings.generic_err
 }
 
 // ---------------------------------------------------------------- rôles
-export type AppRole = 'admin' | 'moderator' | 'editor';
+export type AppRole = 'admin' | 'moderator' | 'editor' | 'finance' | 'support' | 'marketing';
 
 /** Rôles applicatifs de la personne connectée (table user_roles, lecture limitée à soi par la RLS). */
 export function useMyRoles() {
@@ -39,6 +39,8 @@ export function useMyRoles() {
     isAdmin: roles.has('admin'),
     isModerator: roles.has('admin') || roles.has('moderator'),
     isEditor: roles.has('admin') || roles.has('editor'),
+    isSupport: roles.has('admin') || roles.has('support'),
+    isFinance: roles.has('admin') || roles.has('finance'),
   };
 }
 

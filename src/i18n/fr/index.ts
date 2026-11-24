@@ -126,3 +126,4 @@ export { finishFamily } from './finishFamily';
 export { printStudio } from './printStudio';
 export { neuroKit } from './neuroKit';
 export { keynote2 } from './keynote2';
+export { ambassadors } from './ambassadors';

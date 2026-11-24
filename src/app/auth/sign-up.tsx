@@ -15,6 +15,7 @@ import { LEGAL_VERSIONS, peekPendingInvite, savePendingConsents } from '@/lib/au
 import { emailSchema, fieldErrors, issueText, signUpSchema } from '@/lib/validation';
 import { spacing } from '@/theme/tokens';
 import { getLocale, t as tr } from '@/i18n';
+import { normalizeCode, pendingAffiliateCode, rememberAffiliateCode, type Pending } from '@/lib/affiliateReferral';
 
 export default function SignUp() {
   const [form, setForm] = useState({ email: '', password: '', confirm: '', adult: false, terms: false });
@@ -25,6 +26,9 @@ export default function SignUp() {
   const inFlight = useRef(false);
   const [sent, setSent] = useState(false);
   const [invited, setInvited] = useState(false);
+  // Code ambassadeur (facultatif) : prérempli par un lien /r/<code> ; rattaché au compte après la première connexion
+  const [ambassador, setAmbassador] = useState('');
+  const [pending, setPending] = useState<Pending | null>(null);
   // A-11 : l'erreur du dernier envoi disparaît dès que le champ concerné est modifié
   const set = (k: keyof typeof form) => (v: string | boolean) => {
     setForm((f) => ({ ...f, [k]: v }));
@@ -38,6 +42,8 @@ export default function SignUp() {
   const touch = (k: string) => () => setTouched((t) => ({ ...t, [k]: true }));
 
   useEffect(() => { peekPendingInvite().then((c) => setInvited(!!c)); }, []);
+  useEffect(() => { pendingAffiliateCode().then((p) => { setPending(p); if (p) setAmbassador(p.code); }); }, []);
+  const ambassadorError = ambassador.trim() && !normalizeCode(ambassador) ? tr('amb.signup.invalid') : undefined;
 
   // Validation en direct (affichée dès qu'un champ a été quitté une fois)
   const live: Record<string, string | undefined> = {
@@ -49,6 +55,7 @@ export default function SignUp() {
   async function submit() {
     if (inFlight.current) return; // pas de double inscription (bouton ou touche Entrée)
     const parsed = signUpSchema.safeParse(form);
+    if (ambassadorError) return;
     if (!parsed.success) {
       setTouched({ email: true, password: true, confirm: true });
       return setErrors(fieldErrors(parsed.error));
@@ -58,6 +65,8 @@ export default function SignUp() {
     inFlight.current = true;
     setLoading(true);
     try {
+      const code = normalizeCode(ambassador);
+      if (code && code !== pending?.code) await rememberAffiliateCode(code, 'code');
       const acceptedAt = new Date().toISOString();
       const { needsConfirmation } = await backend.auth.signUp(parsed.data.email, parsed.data.password, {
         adult_confirmed: true, locale: getLocale(), terms_version: LEGAL_VERSIONS.terms, privacy_version: LEGAL_VERSIONS.privacy, consents_accepted_at: acceptedAt,
@@ -112,6 +121,7 @@ export default function SignUp() {
       <Field label={tr('auth.password')} value={form.password} onChangeText={set('password')} onBlur={touch('password')} secureTextEntry revealable autoComplete="new-password" textContentType="newPassword" error={errors.password} />
       <PasswordRules value={form.password} />
       <Field label={tr('auth.signUp.confirmPassword')} value={form.confirm} onChangeText={set('confirm')} onBlur={touch('confirm')} secureTextEntry revealable autoComplete="new-password" error={err('confirm')} onSubmitEditing={submit} returnKeyType="done" />
+      <Field label={tr('amb.signup.code')} value={ambassador} onChangeText={setAmbassador} autoCapitalize="none" autoCorrect={false} maxLength={24} error={ambassadorError} testID="signup-ambassador" />
       </MattePanel>
 
       <View style={{ gap: spacing.xs }}>

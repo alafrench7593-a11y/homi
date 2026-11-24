@@ -154,6 +154,7 @@ export default function SettingsScreen() {
         <ListRow icon="life-buoy" title={tr('settings.help.now')} subtitle={tr('settings.help.nowSub', { numbers: regionInfo.emergency })} danger onPress={() => router.push('/emergency')} />
         <Divider />
         <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/settings' } } as never)} testID="settings-feedback" />
+        <ListRow icon="users" title={tr('amb.title')} subtitle={tr('amb.rowD')} onPress={() => router.push('/ambassadors')} testID="settings-ambassadors" />
         <Divider />
         {/* Aide, visites, textes légaux, version : une page à part (Réglages tient sur un écran) */}
         <ListRow icon="help-circle" title={tr('settings.helpInfo')} subtitle={tr('settings.helpInfo.sub')} onPress={() => router.push('/settings/help' as never)} testID="settings-help-info" />

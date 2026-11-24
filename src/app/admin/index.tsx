@@ -72,7 +72,8 @@ function ModerationCard({ item }: { item: ModItem }) {
 export default function AdminScreen() {
   const toast = useToast();
   const insets = useSafeAreaInsets();
-  const { isAdmin, isModerator, isEditor, isLoading } = useMyRoles();
+  const { isAdmin, isModerator, isEditor, isSupport, isFinance, isLoading } = useMyRoles();
+  const ambassadorStaff = isSupport || isFinance;
   const [preview, setPreview] = useState(false);
   const admin = isAdmin || preview;
   const moderator = isModerator || preview;
@@ -129,6 +130,7 @@ export default function AdminScreen() {
         <Card tone="soft">
           <Text weight="bold">{tr('u5.admin.team_only')}</Text>
           <Text variant="small" muted style={{ marginTop: 4 }}>{tr('u5.admin.team_only_b')}</Text>
+          {ambassadorStaff ? <Button label={tr('amb.admin.title')} icon="users" size="sm" variant="secondary" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => router.push('/admin/ambassadors')} testID="admin-open-ambassadors" /> : null}
           <Button label={tr('u5.admin.back')} size="sm" variant="secondary" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }} onPress={() => (router.canGoBack() ? router.back() : router.replace('/settings'))} />
         </Card>
         {isDemo ? (
@@ -193,6 +195,7 @@ export default function AdminScreen() {
   const footer = (
     <View style={{ gap: spacing.md, marginTop: spacing.xxs }}>
 
+      {ambassadorStaff ? <Button label={tr('amb.admin.title')} icon="users" variant="secondary" onPress={() => router.push('/admin/ambassadors')} testID="admin-open-ambassadors" /> : null}
       {moderator ? <Button label={tr('fb.admin.open_btn')} icon="message-circle" variant="secondary" onPress={() => router.push('/admin/feedback')} testID="admin-open-feedback" /> : null}
       {admin ? <Button label={tr('la.open')} icon="globe" variant="secondary" onPress={() => router.push('/admin/languages' as never)} testID="admin-open-languages" /> : null}
       {editor ? <Button label={tr('u5.admin.b_recipes')} icon="book-open" variant="secondary" onPress={() => router.push('/admin/recipes')} testID="admin-open-recipes" /> : null}
