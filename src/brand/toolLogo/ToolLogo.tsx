@@ -30,7 +30,7 @@ import { glassPlate } from '@/brand/toolGlass/glass';
 import { TOOL_SYMBOLS } from '@/brand/toolGlass/symbols';
 import { logoMotion, useMotion } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { LOGO_LIGHT, logoMode, logoShadow, mixHex, PEARL, PUBLIC_LIGHT, SYMBOL_GLOW, type LogoCategory, type LogoPublic } from '@/theme/toolLogo';
+import { LOGO_LIGHT, logoLight, logoMode, logoShadow, mixHex, PEARL, SYMBOL_GLOW, type LogoCategory, type LogoPublic } from '@/theme/toolLogo';
 import { logoPublicOf, motionOfIcon, toolLogoDef, type LogoMotion } from './families';
 import { LOGO_GRID, SYMBOL_BOX, SYMBOL_STROKE, SYMBOL_TRANSFORM, squircleRadius, type LogoVariant } from './geometry';
 import { LIGHT_STOPS } from './svg';
@@ -98,7 +98,7 @@ function ToolLogoGlass({ id, icon: forcedIcon, category: forcedCat, audience, si
   const symbolKey = forcedIcon ? null : def?.symbol ?? null;
   const uid = `tl${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const still = m.level === 'off' || cat === 'urgent';
-  const lightColor = PUBLIC_LIGHT[pub];
+  const lightColor = logoLight(id, cat);
   const base = LOGO_LIGHT.opacity[mode];
 
   // ------------------------------------------------------------ animation de famille (0 → 1), relancée par `play`

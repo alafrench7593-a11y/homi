@@ -45,6 +45,39 @@ export const PUBLIC_LIGHT: Record<LogoPublic, string> = {
   aura: '#2A2A2E', // noir doux d'Aura
 };
 
+/**
+ * Lumière PAR FAMILLE D'OUTIL (24/11/2026, demande de la propriétaire : « remettre un système de couleur dans mes apps »,
+ * organisation de la maquette « Léa ») : chaque famille a SA couleur, reconnaissable d'un coup d'œil (sommeil violet,
+ * alimentation pêche, croissance bleu…). Remplace, pour la lumière des logos, les gris par public du 23/11/2026.
+ * Teintes moyennes : la nacre blanche du symbole reste au moins aussi lisible que sur la plaque nue (test).
+ */
+export const CATEGORY_LIGHT: Record<LogoCategory, string> = {
+  feeding: '#E07A3F', // pêche-orangé : biberon, repas, diversification
+  sleep: '#6C5CE0', // violet : sommeil
+  care: '#2E9FD6', // bleu ciel : couches, dents, soins du quotidien
+  health: '#D8435B', // rouge rosé : santé, vaccins, température
+  cycle: '#D45594', // rose : cycle, contraception, fertilité
+  pregnancy: '#A55CC9', // orchidée : grossesse
+  school: '#2F9E6E', // menthe : école, éveil, développement
+  couple: '#E0685A', // corail : couple
+  family: '#C98A1E', // ambre : foyer, tâches, budget
+  community: '#4F6FD8', // bleu : communauté
+  account: '#7A7A82', // gris : compte, réglages
+  aura: '#2E4466', // bleu nuit d'Aura
+  urgent: '#E0303C', // rouge : urgence
+};
+/** Exceptions dans une famille (maquette) : l'allaitement rose, la croissance bleue. */
+export const TOOL_LIGHT: Record<string, string> = {
+  baby_breastfeed: '#D9568A',
+  kid_profile: '#3D7BE0',
+  growth: '#3D7BE0',
+};
+export function logoLight(id: string | null | undefined, cat: LogoCategory): string {
+  return (id && TOOL_LIGHT[id]) || CATEGORY_LIGHT[cat] || CATEGORY_LIGHT.account;
+}
+/** Contraste du symbole nacré sur le centre de la plaque éclairé par une couleur donnée. */
+export const colorLightContrast = (color: string, mode: LogoMode) => contrastRatio(PEARL.bottom, mixHex(GLASS_CENTER, color, LOGO_LIGHT.opacity[mode]));
+
 /** Barre d'onglets : lumière jaune douce derrière les icônes (opacité au centre : onglet actif / inactif). */
 export const TAB_LIGHT = { color: '#A8A8AE', active: 0.95, idle: 0.22 } as const;
 
@@ -73,7 +106,7 @@ export const GLASS_CENTER = '#9F96AD';
 
 /** Intensité de la lumière : opacité au centre du dégradé radial (repos), surcroît à l'appui / l'ouverture, rayon. */
 export const LOGO_LIGHT = {
-  opacity: { light: 0.32, dark: 0.36, night: 0.22 },
+  opacity: { light: 0.58, dark: 0.58, night: 0.3 },
   /** surcroît d'opacité au sommet de l'impulsion (appui, ouverture) */
   pulse: 0.15,
   /** rayon du halo intérieur (fraction de la plaque) : détaillé / compact */
@@ -134,7 +167,7 @@ export const APP_ICON = {
  * (famille). Plaque et symbole nacré : mêmes teintes que les logos d'outils (GLASS_CENTER, PEARL).
  */
 export const APPS_LOGO = {
-  lights: [PUBLIC_LIGHT.woman, PUBLIC_LIGHT.baby, PUBLIC_LIGHT.child, PUBLIC_LIGHT.family] as const,
+  lights: [CATEGORY_LIGHT.cycle, CATEGORY_LIGHT.sleep, CATEGORY_LIGHT.school, CATEGORY_LIGHT.family] as const, // couleurs des familles (24/11/2026)
   plateTop: '#CACACF',
   plateBottom: GLASS_CENTER,
   edge: '#FFFFFF',

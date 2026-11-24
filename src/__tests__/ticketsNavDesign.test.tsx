@@ -28,7 +28,7 @@ import { OFFERED_PALETTES, PALETTE_NAMES, THEME_STARTS, themeFor, type Theme } f
 import { ThemePickerInline } from '@/features/themePicker/ThemePicker';
 import { gateFor, isLockedFor, PREVIEW_ROUTES, VISIT_ROUTES } from '@/lib/premium/access';
 import type { AccessInfo } from '@/lib/premium/offers';
-import { APPS_LOGO, PUBLIC_LIGHT, TAB_LIGHT } from '@/theme/toolLogo';
+import { APPS_LOGO, CATEGORY_LIGHT, TAB_LIGHT } from '@/theme/toolLogo';
 import { tMaybe } from '@/i18n';
 import { DICTIONARIES } from '@/i18n/dictionaries';
 import { CATEGORY_HUE, categoryColors, categoryContrast, type CategoryKey } from '@/theme/categoryPalette';
@@ -120,8 +120,8 @@ describe('ticket 3 — « Mes apps » (nouveau nom, nouveau logo)', () => {
     expect(DICTIONARIES.fr['th.sheet.start']).toBe('Ouvrir l’app');
     expect(tMaybe('th.ui.title')).toBeTruthy();
   });
-  it('logo : 4 tuiles, 4 lumières de public distinctes (rose, bleu, menthe, ambre), repos < allumé', () => {
-    expect(APPS_LOGO.lights).toEqual([PUBLIC_LIGHT.woman, PUBLIC_LIGHT.baby, PUBLIC_LIGHT.child, PUBLIC_LIGHT.family]);
+  it('logo : 4 tuiles, 4 couleurs de familles distinctes (cycle, sommeil, enfant, foyer), repos < allumé', () => {
+    expect(APPS_LOGO.lights).toEqual([CATEGORY_LIGHT.cycle, CATEGORY_LIGHT.sleep, CATEGORY_LIGHT.school, CATEGORY_LIGHT.family]);
     expect(new Set(APPS_LOGO.lights).size).toBe(4);
     expect(APPS_LOGO.rest).toBeLessThan(APPS_LOGO.lit);
   });
