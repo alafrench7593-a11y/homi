@@ -40,4 +40,7 @@ export const motion = {
   "cd.tile.diapers": "Couches",
   "cd.tile.health": "Santé",
   "cd.tile.foods": "Repas",
+  "nn.ses.noChild": "Aucune sieste sélectionnée",
+  "nn.ses.noChildBody": "Ouvre le sommeil d’un enfant pour suivre sa sieste avec Aura.",
+  "nn.ses.backHome": "Retour à l’accueil",
 } as const;

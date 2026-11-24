@@ -15,7 +15,7 @@ import { AuraAvatar } from '@/features/aura/AuraMark';
 import { napPayload } from '@/features/aura/analysis';
 import { sessionFacts } from '@/features/napLive/NapSessionTray';
 import { NapCompare } from '@/features/napLive/SkiaHost';
-import { useChild } from '@/lib/data/hooks';
+import { useChild, useChildrenLoading } from '@/lib/data/hooks';
 import { useSleepPlan } from '@/lib/data/hooks-sleepPlanner';
 import { childAge } from '@/lib/domain/child';
 import { clock, span } from '@/lib/domain/sleepPlanner';
@@ -26,6 +26,14 @@ import { radius, spacing } from '@/theme/tokens';
 export default function AuraNapSession() {
   const p = useLocalSearchParams<{ child?: string; sleep?: string }>();
   const child = useChild(typeof p.child === 'string' ? p.child : undefined);
+  const loading = useChildrenLoading();
+  // Lien sans enfant (ou enfant introuvable) : jamais un chargement sans fin (audit de navigation, 24/11/2026)
+  if (!child && !loading) return (
+    <Screen back title={tr('nn.ses.title')}>
+      <EmptyState icon="moon" title={tr('nn.ses.noChild')} body={tr('nn.ses.noChildBody')}
+        action={{ label: tr('nn.ses.backHome'), icon: 'home', onPress: () => router.replace('/' as never) }} />
+    </Screen>
+  );
   if (!child) return <Screen back title={tr('nn.ses.title')}><Skeleton rows={3} /></Screen>;
   return <Body child={child} sleepId={typeof p.sleep === 'string' ? p.sleep : ''} />;
 }

@@ -40,4 +40,7 @@ export const motion = {
   "cd.tile.diapers": "Diapers",
   "cd.tile.health": "Health",
   "cd.tile.foods": "Meals",
+  "nn.ses.noChild": "No nap selected",
+  "nn.ses.noChildBody": "Open a child’s sleep to follow their nap with Aura.",
+  "nn.ses.backHome": "Back to home",
 } as const;
