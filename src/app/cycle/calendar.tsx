@@ -156,17 +156,20 @@ export default function CycleCalendar() {
         <Animated.View {...swipe.panHandlers} style={{ transform: [{ translateX: slide }], gap: 4 }}>
           <View style={{ flexDirection: 'row' }}>{weekdays.map((w, i) => <View key={i} style={{ flex: 1 }}><Ink variant="caption" soft center>{w.toUpperCase()}</Ink></View>)}</View>
           {Array.from({ length: cells.length / 7 }, (_, w) => (
-            <View key={w} style={{ flexDirection: 'row', gap: 4 }}>
+            <View key={w} style={{ flexDirection: 'row' }}>
+              {/* Case touchable = toute la colonne (≥ 44 px, sans zone morte) ; l'écart visuel de 4 px est dessiné dedans */}
               {cells.slice(w * 7, w * 7 + 7).map((d) => (
                 <Tappable key={d.iso} accessibilityRole="button" accessibilityState={{ selected: d.iso === selIso }} testID={`cal-day-${d.iso}`} accessibilityLabel={describe(d)} onPress={() => { haptic('selection'); setDay(d); }}
-                  style={({ pressed }) => ({ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', opacity: d.inMonth ? 1 : 0.38,
-                    backgroundColor: d.period ? c.period : d.estimatedFertile ? c.fertile : pressed ? c.pearl : 'transparent',
-                    borderWidth: d.iso === selIso ? 3 : d.estimatedPeriod ? 1.5 : d.today ? 1.5 : 0, borderStyle: d.iso !== selIso && d.estimatedPeriod ? 'dashed' : 'solid', borderColor: d.iso === selIso ? th.colors.text : d.estimatedPeriod ? c.period : c.mauve })}>
+                  style={{ flex: 1, aspectRatio: 1, maxHeight: 52, minHeight: 44, padding: 2, opacity: d.inMonth ? 1 : 0.38 }}>
+                  <View style={{ flex: 1, borderRadius: 12, alignItems: 'center', justifyContent: 'center',
+                    backgroundColor: d.period ? c.period : d.estimatedFertile ? c.fertile : 'transparent',
+                    borderWidth: d.iso === selIso ? 3 : d.estimatedPeriod ? 1.5 : d.today ? 1.5 : 0, borderStyle: d.iso !== selIso && d.estimatedPeriod ? 'dashed' : 'solid', borderColor: d.iso === selIso ? th.colors.text : d.estimatedPeriod ? c.period : c.mauve }}>
                   <Ink variant="small" weight={d.today || d.iso === selIso ? 'bold' : undefined} style={{ color: d.period ? c.onAccent : c.ink }}>{String(+d.iso.slice(8, 10))}</Ink>
                   <View style={{ flexDirection: 'row', gap: 2, position: 'absolute', bottom: 3 }}>
                     {d.symptoms ? <LegendDot kind="symptom" /> : null}
                     {d.discharge ? <LegendDot kind="discharge" /> : null}
                     {d.journal || d.tests || d.bleeding || d.appointment ? <LegendDot kind="note" /> : null}
+                  </View>
                   </View>
                 </Tappable>
               ))}

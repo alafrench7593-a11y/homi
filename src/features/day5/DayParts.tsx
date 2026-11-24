@@ -216,7 +216,7 @@ export function BriefStrip({ items, title, testID }: { items: BriefItem[]; title
         {items.map((it, i) => (
           <View key={i} testID={it.testID} style={{ flex: 1, minWidth: 0, paddingHorizontal: spacing.sm, gap: 2, borderLeftWidth: i ? StyleSheet.hairlineWidth : 0, borderColor: t.material.lines.separator }}>
             <Text weight="bold" style={{ fontSize: it.value.length > 6 ? 17 : 22, lineHeight: 28, fontVariant: ['tabular-nums'] }} numberOfLines={1} adjustsFontSizeToFit>{it.value}</Text>
-            <Text variant="caption" muted numberOfLines={3}>{it.label}</Text>
+            <Text variant="caption" muted numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.85} maxFontSizeMultiplier={1.15}>{it.label}</Text>
           </View>
         ))}
       </View>

@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   center: { marginHorizontal: spacing.xs, alignItems: 'center', justifyContent: 'center' },
   indicator: { position: 'absolute', left: 0, top: 0, bottom: 0, borderWidth: StyleSheet.hairlineWidth },
   lensSheen: { position: 'absolute', left: 0, right: 0, top: 0, height: '52%' },
-  segRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 40 },
-  segment: { flex: 1, minHeight: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm },
+  segRow: { flexDirection: 'row', alignItems: 'stretch', minHeight: 44 },
+  segment: { flex: 1, minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: spacing.sm },
   ringTrack: { position: 'absolute', left: 0, alignItems: 'center', justifyContent: 'center' },
 });

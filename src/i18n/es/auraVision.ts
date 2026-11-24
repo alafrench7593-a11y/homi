@@ -47,4 +47,6 @@ export const auraVision = {
   "med.box.notice": "Leer el prospecto oficial",
   "med.box.addTreatment": "Añadir a mis tratamientos",
   "med.box.source": "Fuente: base de datos pública de medicamentos de Francia (ANSM, HAS, Assurance maladie).",
+  "u5.teeth.showList": "Elegir en una lista",
+  "u5.teeth.hideList": "Ocultar la lista",
 } as const;

@@ -47,4 +47,6 @@ export const auraVision = {
   "med.box.notice": "Read the official leaflet",
   "med.box.addTreatment": "Add to my treatments",
   "med.box.source": "Source: French public medicines database (ANSM, HAS, Assurance maladie).",
+  "u5.teeth.showList": "Choose from a list",
+  "u5.teeth.hideList": "Hide the list",
 } as const;

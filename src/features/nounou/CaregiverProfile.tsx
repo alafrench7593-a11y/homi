@@ -40,7 +40,7 @@ export function CaregiverProfile() {
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text variant="title" accessibilityRole="header">{profile?.display_name || tr('profile.title')}</Text>
             <Text variant="small" muted>{session?.email ?? ''}</Text>
-            <Tappable accessibilityRole="button" onPress={() => setPhotoOpen(true)} style={{ minHeight: 32, justifyContent: 'center' }} testID="profile-photo-link">
+            <Tappable accessibilityRole="button" onPress={() => setPhotoOpen(true)} style={{ minHeight: 44, justifyContent: 'center' }} testID="profile-photo-link">
               <Text variant="small" weight="bold" color={t.colors.primary}>{profile?.avatar_path ? tr('pphoto.change') : tr('pphoto.add')}</Text>
             </Tappable>
           </View>
