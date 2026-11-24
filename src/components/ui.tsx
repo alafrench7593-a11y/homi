@@ -4,6 +4,7 @@
  * famille de commandes (src/components/controls), voiles d'état.
  * API stable : ~218 écrans en dépendent ; toute évolution ajoute des options, n'en retire aucune.
  */
+import { hapticsMuted } from '@/motion/haptics';
 import { CardLens } from './glass/liquid/CardLens';
 import { InlineCalendar } from './InlineCalendar';
 import { isDarkFill, WhoopSheen } from './stage/WhoopSheen';
@@ -41,9 +42,9 @@ import { cappedScale, useFontScale } from '@/theme/fontScale';
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 
 export function haptic(kind: 'light' | 'success' | 'warning' | 'selection' = 'light') {
-  // Jamais sur le web ; sur téléphone, seulement si le réglage « Vibrations » est actif (et pas la nuit sans accord)
+  // Jamais sur le web ; sur téléphone, seulement si « Vibrations » est actif ; entre 21 h et 7 h (ou en mode nuit), jamais sans accord
   if (!hapticsSupported) return;
-  if (!useUiStore.getState().hapticsEnabled || useUiStore.getState().nightMode && !useUiStore.getState().nightVibrations) return;
+  if (hapticsMuted(useUiStore.getState())) return;
   try {
     if (kind === 'success') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     else if (kind === 'warning') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
