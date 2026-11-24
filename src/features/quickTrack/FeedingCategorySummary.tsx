@@ -25,6 +25,7 @@ import { clock, span } from '@/lib/domain/sleepPlanner';
 import type { Breastfeed, Child } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { comparePeriods } from '@/lib/domain/periodCompare';
 import { DayBars } from './DayBars';
 import { TABULAR } from './EntryTray';
 
@@ -49,7 +50,8 @@ function Summary({ child }: { child: Child }) {
   const p = useLocalSearchParams<{ period?: string; day?: string }>();
   const period: Period = p.period === 'day' ? 'day' : 'week';
   const now = useNow(60_000);
-  const bq = useBottleHistory(child.id, 8);
+  // 15 jours : la semaine affichée et celle d'avant (comparaison)
+  const bq = useBottleHistory(child.id, 15);
   const fq = useLogs<Breastfeed>('breastfeed', child.id, 8);
   const foodQ = useFoodEntries(child.id);
   const bottles = (bq.data ?? []) as unknown as BottleLike[];
@@ -57,6 +59,11 @@ function Summary({ child }: { child: Child }) {
   const foods = (foodQ.data ?? []) as unknown as FoodLike[];
   const n = period === 'day' ? 1 : 7;
   const bDays = useMemo(() => bottlesByDay(bottles, child.id, now, n), [bottles, child.id, now, n]);
+  const bCompare = useMemo(() => {
+    if (n !== 7) return null;
+    const prev = bottlesByDay(bottles, child.id, new Date(now.getTime() - 7 * 864e5), 7);
+    return comparePeriods(bDays.map((d) => d.ml), prev.map((d) => d.ml));
+  }, [bottles, child.id, now, n, bDays]);
   const fDays = useMemo(() => feedsByDay(feeds, child.id, now, n), [feeds, child.id, now, n]);
   const aDays = useMemo(() => foodsByDay(foods, child.id, now, n), [foods, child.id, now, n]);
   const anyData = bottles.length > 0 || feeds.length > 0 || aDays.some((d) => d.count != null);
@@ -123,6 +130,11 @@ function Summary({ child }: { child: Child }) {
             <DayBars testID="feed-cat-bars" days={bDays.map((d) => ({ day: d.day, value: d.ml }))} selected={selectedDay} minMax={60}
               onSelect={(day) => router.setParams({ day } as never)}
               describe={(d) => { const b = bDays.find((x) => x.day === d.day)!; return d.value != null ? tr('qt.b.ml', { n: d.value }) : b.count ? tr('qt.f.noQtyDay', { count: b.count }) : tr('qt.none'); }} />
+            {bCompare ? (
+              <Text variant="caption" muted testID="feed-cat-compare">
+                {tr('pc.avg', { value: tr('qt.b.ml', { n: bCompare.avg }) })} · {bCompare.trend === 'same' ? tr('pc.same') : tr(bCompare.trend === 'up' ? 'pc.up' : 'pc.down', { pct: Math.abs(bCompare.deltaPct) })}
+              </Text>
+            ) : null}
           </View>
         ) : null}
         <View style={{ gap: 2 }} testID="feed-cat-day-list">

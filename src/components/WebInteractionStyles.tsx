@@ -19,6 +19,9 @@ export function webInteractionCss(primary: string) {
     `${interactive.map((s) => `${s}:focus-visible`).join(',')}{outline:2px solid ${primary};outline-offset:2px}`,
     `${interactive.map((s) => `${s}:focus:not(:focus-visible)`).join(',')}{outline:none}`,
     'div[dir="auto"],span[dir="auto"]{overflow-wrap:break-word;word-break:normal;hyphens:auto}',
+    // Libellés d'action : jamais de césure (« Enregis-trer », 24/11/2026) — la règle ci-dessus l'emportait sur le style
+    // du bouton (sélecteur d'attribut plus fort qu'une classe) ; un bouton trop étroit passe à la ligne entre les mots
+    `${interactive.map((s) => `${s} div[dir="auto"],${s}[dir="auto"]`).join(',')}{hyphens:manual}`,
     // Champs : un <input> garde sinon sa largeur intrinsèque (~20 caractères) et pousse le bouton voisin hors de
     // l'écran (« Envoyer » de l'assistant de l'Accueil à 320 px) ; `flex: 1` doit pouvoir le rétrécir
     'input,textarea{min-width:0}',

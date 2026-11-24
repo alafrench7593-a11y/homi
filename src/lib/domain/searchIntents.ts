@@ -18,7 +18,7 @@ export const SEARCH_INTENTS: SearchIntent[] = [
   { id: 'bottle', re: w('biberon|biberons|bib|bibs|bottle|bottles|formula|lait infantile|lait en poudre'), ids: ['baby_bottle', 'baby_bottle_timer'] },
   { id: 'scoops', re: w('mesurette\\w*|scoop\\w*|combien de mesures'), ids: ['bottle_scoops'] },
   // sommeil de l'enfant : « il ne dort pas », « suivre ses nuits », « baby wont sleep »
-  { id: 'kidSleep', re: w('ne dort pas|dort pas|dort mal|ne dort jamais|dort plus|ses nuits|sa nuit|nuits de bebe|fait pas ses nuits|fait ses nuits|sommeil de bebe|sommeil de mon bebe|sommeil de l enfant|endormir|endort|dodo|sieste|siestes|won t sleep|wont sleep|will not sleep|doesn t sleep|doesnt sleep|not sleeping|baby sleep|sleep schedule|nap|naps|night wakings|wakes up at night|wakes at night|se reveille|reveils'), ids: ['kid_sleep', 'kid_sleep_rhythm'] },
+  { id: 'kidSleep', re: w('ne dort pas|dort pas|ne dor pas|dor pas|ne dors pas|bebe dors|ne domr pas|dort mal|ne dort jamais|dort plus|ses nuits|sa nuit|nuits de bebe|fait pas ses nuits|fait ses nuits|sommeil de bebe|sommeil de mon bebe|sommeil de l enfant|endormir|endort|dodo|sieste|siestes|won t sleep|wont sleep|will not sleep|doesn t sleep|doesnt sleep|not sleeping|baby sleep|sleep schedule|nap|naps|night wakings|wakes up at night|wakes at night|se reveille|reveils'), ids: ['kid_sleep', 'kid_sleep_rhythm'] },
   { id: 'mySleep', re: w('je dors mal|je dors pas|mon sommeil|insomnie|i can t sleep|i cant sleep|my sleep'), ids: ['sleep'] },
   // fièvre et santé : « 39 de fièvre », « il a chaud »
   { id: 'fever', re: w('fievre|fivre|fiever|fever|feverish|temperature|temp|thermometre|thermometer|3[7-9]|40|3[7-9] [0-9]|38 5|39 5|de la temperature|il est chaud|elle est chaude|high temp'), ids: ['h200_102', 'kid_health', 'medications'] },
@@ -45,7 +45,7 @@ export const SEARCH_INTENTS: SearchIntent[] = [
   { id: 'liaison', re: w('carnet de liaison|cahier de liaison|journee chez la nounou|journee de garde|daily log|care diary'), ids: ['h200_153', 'childcare'] },
   // couple : « je suis épuisée et mon mari ne comprend pas »
   { id: 'understand', re: w('ne comprend pas|comprend pas|ne me comprend|comprend rien|m ecoute pas|n ecoute pas|se comprendre|on se dispute|dispute|disputes|conflit|engueulade|doesn t understand|doesnt understand|does not understand|we argue|we fight|argument|arguing|communication|communiquer'), ids: ['couple_understand', 'couple_week'] },
-  { id: 'exhausted', re: w('epuise|epuisee|epuises|crevee|creve|a bout|n en peux plus|j en peux plus|burn out|burnout|exhausted|worn out|drained|overwhelmed'), ids: ['exhaustion_check', 'couple_understand', 'family_sos'] },
+  { id: 'exhausted', re: w('epuise|epuisee|epuises|crevee|creve|a bout|n en peux plus|j en peux plus|burn out|burnout|exhausted|worn out|drained|overwhelmed'), ids: ['exhaustion_check', 'couple_understand', 'family_sos', 'family_nights'] },
   { id: 'intimacy', re: w('intimite|libido|desir|sexualite|intimacy|sex life|libido'), ids: ['couple_understand'] },
   { id: 'load', re: w('qui fait quoi|repartition|partage des taches|charge mentale|mental load|who does what|chores split'), ids: ['mental_load', 'family_domains', 'family_tasks'] },
   { id: 'tasks', re: w('taches|tache|menage|chores|housework|to do|todo'), ids: ['family_tasks'] },

@@ -116,9 +116,10 @@ export function IntentCard({ intent: initial, catalog, allTools }: { intent: Aur
         <>
           <Text weight="bold" testID="aura-intent-summary">{r.summary}</Text>
           {phase === 'error' ? <Text variant="small" color={t.colors.danger} testID="aura-intent-error">{tr('aura.it2.failed')}</Text> : null}
-          <View style={{ flexDirection: 'row', gap: spacing.xs }}>
-            <Button label={phase === 'saving' ? tr('aura.it2.saving') : tr('aura.it2.save')} icon="check" loading={phase === 'saving'} onPress={() => void save()} testID="aura-intent-save" style={{ flex: 1 }} />
-            <Button label={tr('aura.it2.edit')} variant="secondary" onPress={() => router.push(r.editHref as never)} testID="aura-intent-open" style={{ flex: 1 }} />
+          {/* Deux boutons pleine largeur l'un sous l'autre : côte à côte dans la bulle, « Enregistrer » était coupé */}
+          <View style={{ gap: spacing.xs }}>
+            <Button label={phase === 'saving' ? tr('aura.it2.saving') : tr('aura.it2.save')} icon="check" loading={phase === 'saving'} onPress={() => void save()} testID="aura-intent-save" full />
+            <Button label={tr('aura.it2.edit')} variant="secondary" onPress={() => router.push(r.editHref as never)} testID="aura-intent-open" full />
           </View>
         </>
       ) : r.status === 'answer' ? (
