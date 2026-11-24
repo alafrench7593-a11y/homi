@@ -220,14 +220,22 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
         </Row>
         <Field label={tr('nd.t.instructions')} optional value={draft.instructions} onChangeText={(v) => set('instructions', v)} multiline maxLength={2000} />
         <Field label={tr('nd.t.prescriber')} optional value={draft.prescriber} onChangeText={(v) => set('prescriber', v)} maxLength={120} />
-        <Toggle label={tr('nd.t.reminders')} value={draft.reminders} onChange={(v) => set('reminders', v)} />
+        {/* Libellé visible (24/11/2026 : l'interrupteur seul n'était lisible que par le lecteur d'écran) */}
+        <Row style={{ alignItems: 'center' }}>
+          <Text weight="medium" style={{ flex: 1 }}>{tr('nd.t.reminders')}</Text>
+          <Toggle label={tr('nd.t.reminders')} value={draft.reminders} onChange={(v) => set('reminders', v)} />
+        </Row>
         {draft.reminders && notificationsSupported && perm !== 'granted' ? (
           <Banner tone="warning" icon="bell-off" title={tr('nt.permOff')}
             action={<Button label={tr('nt.permAsk')} size="sm" onPress={() => void requestPermission().then((p) => { setPerm(p); if (p !== 'granted') toast(tr('nt.permDenied'), 'info'); })} />}>
             {tr('nt.permOffD')}
           </Banner>
         ) : null}
-        <Toggle label={tr('nd.t.active')} value={draft.active} onChange={(v) => set('active', v)} />
+        {/* Libellé visible (24/11/2026 : l'interrupteur seul n'était lisible que par le lecteur d'écran) */}
+        <Row style={{ alignItems: 'center' }}>
+          <Text weight="medium" style={{ flex: 1 }}>{tr('nd.t.active')}</Text>
+          <Toggle label={tr('nd.t.active')} value={draft.active} onChange={(v) => set('active', v)} />
+        </Row>
         <Button label={tr('common.save')} loading={save.isPending} onPress={guard(() => submit())} testID="t-save" />
         {editing && editing !== 'new' ? <Button label={tr('common.delete')} variant="ghost" icon="trash-2" onPress={async () => {
           if (!(await confirm(tr('nd.t.deleteTitle'), editing.name, tr('common.delete')))) return;

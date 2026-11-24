@@ -16,8 +16,8 @@ export type ProfileType = (typeof PROFILE_TYPES)[number];
 export const AFFILIATE_STATUSES = ['pending', 'active', 'suspended', 'rejected'] as const;
 export type AffiliateStatus = (typeof AFFILIATE_STATUSES)[number];
 
-/** Règle publique du programme (doit rester identique à affiliate_commission_rules par défaut). */
-export const PROGRAM = { percent: 30, months: 6, holdDays: 45, attributionDays: 30, thresholdMinor: 3000 } as const;
+import { PROGRAM, simulate } from '../affiliateProgram';
+export { PROGRAM, simulate };
 
 export interface CurrencyTotals { currency: string; pending_minor: number | null; available_minor: number | null; paid_minor: number | null; month_minor: number | null }
 export interface AffiliateSummary {
@@ -35,22 +35,6 @@ export function formatMinor(minor: number | null | undefined, currency: string):
   const v = minor ?? 0;
   const digits = ['JPY', 'KRW'].includes(currency) ? 0 : 2;
   return formatNumber(v / 10 ** digits, { style: 'currency', currency, minimumFractionDigits: digits, maximumFractionDigits: digits });
-}
-
-/**
- * Simulateur : ESTIMATION pédagogique, pas une promesse. Commission = 30 % de l'encaissé net, chaque mois,
- * pendant au plus 6 mois par abonné, en supposant que chaque abonné reste abonné tout ce temps.
- */
-export function simulate(netPerMonthMinor: number, newPayingPerMonth: number, monthsHorizon = 12): { monthlyAtCruiseMinor: number; totalMinor: number } {
-  const per = Math.floor((Math.max(0, netPerMonthMinor) * PROGRAM.percent) / 100);
-  const n = Math.max(0, Math.floor(newPayingPerMonth));
-  let total = 0; let cruise = 0;
-  for (let m = 0; m < monthsHorizon; m++) {
-    const active = n * Math.min(m + 1, PROGRAM.months);
-    total += active * per;
-    if (m === monthsHorizon - 1) cruise = active * per;
-  }
-  return { monthlyAtCruiseMinor: cruise, totalMinor: total };
 }
 
 /** Adresse publique de partage : site actuel sur le web, sinon EXPO_PUBLIC_SITE_URL (rien tant qu'aucun domaine). */

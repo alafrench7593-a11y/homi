@@ -15,7 +15,7 @@ const access = (over: Partial<AccessInfo> = {}): AccessInfo => ({ premium: false
 
 describe('écrans libres et réservés', () => {
   it('compte, réglages, données, urgences et onboarding restent libres', () => {
-    for (const p of ['/welcome', '/auth/sign-in', '/onboarding', '/profile', '/moi', '/settings', '/settings/privacy', '/settings/account',
+    for (const p of ['/welcome', '/auth/sign-in', '/onboarding', '/settings', '/settings/privacy', '/settings/account',
       '/settings/language', '/settings/subscription', '/settings/family', '/emergency', '/cycle/emergency', '/contraception/emergency',
       '/postpartum/support', '/scanner/recalls', '/legal/terms', '/feedback', '/journeys', '/settings?x=1']) {
       expect([p, gateFor(p, false, access())]).toEqual([p, 'open']);
@@ -93,4 +93,10 @@ describe('formules', () => {
     expect(plans.map((p) => [p.period, p.price.replace(/\s/g, ' '), p.trialDays])).toEqual([['annual', '119,99 €', 3], ['six_months', '69,99 €', 3], ['monthly', '14,99 €', 3]]);
     expect(plans.map((p) => p.savingsPct)).toEqual([33, 22, null]);
   });
+});
+
+it('24/11/2026 : aucun accès sans paiement — « Moi » et le catalogue sont fermés à un compte non abonné', () => {
+  const { gateFor } = require('@/lib/premium/access');
+  for (const p of ['/', '/moi', '/profile', '/tools', '/tools/sleep', '/sleep', '/bottle']) expect([p, gateFor(p, false, null)]).toEqual([p, 'locked']);
+  for (const p of ['/settings/account', '/settings/subscription', '/premium', '/emergency']) expect([p, gateFor(p, false, null)]).toEqual([p, 'open']);
 });

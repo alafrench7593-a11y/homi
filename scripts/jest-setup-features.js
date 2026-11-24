@@ -7,3 +7,5 @@ const { FEATURES } = require('../src/config/features');
 FEATURES.aiAssistantOnline = true;
 // Tests d'écran historiques écrits avant le Premium strict ; le strict est couvert par premiumStrict/premiumGate.
 FEATURES.demoStrictPremium = false;
+// Nuit calme : les tests d'haptique historiques ne dépendent pas de l'heure du lancement (règle testée dans motionSystem).
+FEATURES.nightQuietHours = false;

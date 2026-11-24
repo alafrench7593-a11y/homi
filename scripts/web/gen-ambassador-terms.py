@@ -31,16 +31,16 @@ def ts(var, title, upd, secs):
     return f"const {var}: LegalDoc = {{\n  title: {json.dumps(title, ensure_ascii=False)},\n  updated: {json.dumps(upd)},\n  sections: [\n{s},\n  ],\n}};\n"
 open('src/content/legalAmbassadors.ts','w').write(
  "/**\n * Conditions du programme HOMI Ambassadors, version v1-2026-11 (validées par la propriétaire le 24/11/2026).\n"
- " * Source unique : écran /legal/ambassadors et page publique /ambassadeurs/ (legal-site, générée par\n"
+ " * Source unique : écran /legal/ambassadors et page publique /conditions-ambassadeurs/ (legal-site, générée par\n"
  " * scripts/web/gen-ambassador-terms.py). Le français fait foi ; es/de/it affichent l'anglais.\n */\n"
  "import type { LegalDoc } from './legal';\nimport { localized } from '@/i18n/localized';\n\n"
  + ts('AMB_FR','Conditions du programme HOMI Ambassadors',UPDATED_FR,FR) + '\n' + ts('AMB_EN','HOMI Ambassadors program terms',UPDATED_EN,EN)
  + "\nexport const AMBASSADOR_TERMS: LegalDoc = localized(AMB_FR, AMB_EN);\n")
 import os
-os.makedirs('legal-site/ambassadeurs', exist_ok=True)
+os.makedirs('legal-site/conditions-ambassadeurs', exist_ok=True)
 src=open('legal-site/cgu/index.html').read()
 head=src.split('<body>')[0].replace("Conditions générales d’utilisation · HOMI","Conditions du programme HOMI Ambassadors · HOMI")
 nav=src.split('<nav>')[1].split('</nav>')[0].replace('../','../')
 body=''.join(f"<section><h2>{html.escape(t)}</h2><p>{html.escape(b)}</p></section>\n" for t,b in FR)
-open('legal-site/ambassadeurs/index.html','w').write(head+'<body><main><p class="m">HOMI · Version v1-2026-11</p><h1>Conditions du programme HOMI Ambassadors</h1><p class="m">'+UPDATED_FR+'</p>\n<nav>'+nav+'</nav>\n'+body+'</main></body></html>\n')
+open('legal-site/conditions-ambassadeurs/index.html','w').write(head+'<body><main><p class="m">HOMI · Version v1-2026-11</p><h1>Conditions du programme HOMI Ambassadors</h1><p class="m">'+UPDATED_FR+'</p>\n<nav>'+nav+'</nav>\n'+body+'</main></body></html>\n')
 print('ok')

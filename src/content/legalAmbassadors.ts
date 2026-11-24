@@ -1,6 +1,6 @@
 /**
  * Conditions du programme HOMI Ambassadors, version v1-2026-11 (validées par la propriétaire le 24/11/2026).
- * Source unique : écran /legal/ambassadors et page publique /ambassadeurs/ (legal-site, générée par
+ * Source unique : écran /legal/ambassadors et page publique /conditions-ambassadeurs/ (legal-site, générée par
  * scripts/web/gen-ambassador-terms.py). Le français fait foi ; es/de/it affichent l'anglais.
  */
 import type { LegalDoc } from './legal';

@@ -63,12 +63,26 @@ cpSync(path.join(site, 'screens'), path.join(dist, 'site/screens'), { recursive:
 mkdirSync(path.join(dist, 'site/illus'), { recursive: true });
 for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foyer-maison']) cpSync(path.join(root, `assets/illustrations/${n}.webp`), path.join(dist, `site/illus/${n}.webp`));
 
+// 3 bis) programme Ambassadeurs : page statique + simulateur (même module de calcul que l'app), conditions lues en
+// direct dans Supabase (vue publique ambassador_terms_public ; clé « anon » publique, aucune donnée personnelle)
+{
+  const { build: esb } = await import('esbuild');
+  await esb({ entryPoints: [path.join(site, 'ambassadeurs-entry.ts')], bundle: true, minify: true, format: 'iife', target: 'es2019',
+    alias: { '@': path.join(root, 'src') }, outfile: path.join(dist, 'site/ambassadeurs.js'), logLevel: 'warning' });
+  cpSync(path.join(site, 'ambassadeurs.css'), path.join(dist, 'site/ambassadeurs.css'));
+  const amb = readFileSync(path.join(site, 'ambassadeurs.html'), 'utf8')
+    .replaceAll('{{LOGO}}', logo).replaceAll('{{SITE_URL}}', siteUrl).replaceAll('{{ROBOTS}}', robotsPublic).replaceAll('{{VERSION}}', version)
+    .replaceAll('{{SB_URL}}', (env.EXPO_PUBLIC_SUPABASE_URL || '').replace(/\/$/, '')).replaceAll('{{SB_KEY}}', env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '');
+  mkdirSync(path.join(dist, 'ambassadeurs'), { recursive: true });
+  writeFileSync(path.join(dist, 'ambassadeurs', 'index.html'), amb);
+}
+
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', ...legal.map((d) => `/${d}/`)];
+const pub = ['/', '/ambassadeurs/', ...legal.map((d) => `/${d}/`)];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');

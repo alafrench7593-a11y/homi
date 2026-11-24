@@ -15,7 +15,7 @@ import type { AccessInfo, PaidTool } from './offers';
 const FREE: RegExp[] = [
   /^\/welcome\/?$/, /^\/intro\/?$/, /^\/cinematic\/?$/, /^\/discover(\/.*)?$/, /^\/auth\//, /^\/legal\//, /^\/onboarding\/?$/,
   /^\/journeys(\/.*)?$/, /^\/profiles\/new\/?$/,
-  /^\/(profile|moi)\/?$/,
+  // 24/11/2026 (propriétaire) : aucun accès à l'application sans paiement : « Moi » n'est plus ouvert sans abonnement
   /^\/settings\/?$/, /^\/settings\/(account|privacy|language|notifications|subscription|credits|family|sync|help)\/?$/,
   /^\/premium\/?$/, /^\/start(\/.*)?$/, /^\/feedback\/?$/, /^\/ambassadors(\/.*)?$/, /^\/r\/[^/]+\/?$/, /^\/sources\/?$/, /^\/admin(\/.*)?$/,
   // Galerie de QA (mode développeur / démonstration) : aucun contenu d'abonnement
@@ -27,6 +27,8 @@ const FREE: RegExp[] = [
   // Espace nounou (21/11/2026) : rejoindre une garde (lien d'invitation) et l'accueil « Mes gardes » d'une personne
   // invitée qui n'est pas encore nounou dans le foyer. Le contenu d'une garde reste derrière l'accès confirmé.
   /^\/garde\/?$/, /^\/garde\/rejoindre\/?$/,
+  // Programme Ambassadeurs (24/11/2026) : candidature, code d'un parent recommandé — sans abonnement
+  /^\/ambassador\/?$/,
 ];
 
 /**
@@ -111,7 +113,8 @@ export type GateDecision = 'open' | 'checking' | 'locked';
 export function gateFor(path: string, premium: boolean | undefined, access?: AccessInfo | null, opts?: { visit?: boolean }): GateDecision {
   const p = clean(path);
   if (isFreeRoute(p)) return 'open';
-  if (PREVIEW_ROUTES.some((r) => r.test(p))) return 'open';
+  // Aperçu du catalogue : seulement dans la démonstration (24/11/2026 : aucun accès sans paiement pour un compte)
+  if (opts?.visit && PREVIEW_ROUTES.some((r) => r.test(p))) return 'open';
   if (opts?.visit && VISIT_ROUTES.some((r) => r.test(p))) return 'open';
   if (premium === true) return 'open';
   if (access?.strict === false) return 'open';

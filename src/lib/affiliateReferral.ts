@@ -5,18 +5,13 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KEY = 'homi.affiliate.pending.v1';
+import { AFFILIATE_CODE, normalizeCode, PENDING_KEY as KEY } from './affiliateProgram';
+export { AFFILIATE_CODE, normalizeCode };
 const TTL_MS = 30 * 24 * 3600 * 1000;
-export const AFFILIATE_CODE = /^[a-z0-9][a-z0-9-]{2,23}$/;
 
 export type Pending = { code: string; source: 'link' | 'code'; campaign: string; feature: string; at: number };
 type Rpc = (fn: string, args?: Record<string, unknown>) => Promise<unknown>;
 
-export function normalizeCode(raw: unknown): string | null {
-  if (typeof raw !== 'string') return null;
-  const c = raw.trim().toLowerCase();
-  return AFFILIATE_CODE.test(c) ? c : null;
-}
 /** Étiquette de campagne ou de fonctionnalité (même règle que le serveur) ; sinon vide. */
 export const cleanTag = (v: unknown) => (typeof v === 'string' && /^[a-z0-9-]{1,32}$/i.test(v) ? v.toLowerCase() : '');
 

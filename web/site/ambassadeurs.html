@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr" data-sb-url="{{SB_URL}}" data-sb-key="{{SB_KEY}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Programme Ambassadeurs HOMI — recommande HOMI, sois rémunéré·e</title>
+<meta name="description" content="Inscription gratuite. Une commission sur les premiers mois payants de chaque parent que tu apportes à HOMI. Simulateur de gains, conditions claires, versements mensuels.">
+<meta name="robots" content="{{ROBOTS}}">
+<link rel="canonical" href="{{SITE_URL}}/ambassadeurs/">
+<meta property="og:title" content="Programme Ambassadeurs HOMI">
+<meta property="og:description" content="Recommande HOMI aux parents autour de toi et reçois une commission sur leurs premiers mois d’abonnement.">
+<meta property="og:image" content="{{SITE_URL}}/og.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/site/site.css?v={{VERSION}}">
+<link rel="stylesheet" href="/site/ambassadeurs.css?v={{VERSION}}">
+</head>
+<body>
+<div class="pearl" aria-hidden="true"><span class="orb orb-a" data-depth="0.18"></span><span class="orb orb-b" data-depth="-0.12"></span><span class="orb orb-c" data-depth="0.28"></span></div>
+<a class="skip" href="#programme">Aller au contenu</a>
+<header class="nav" role="banner">
+  <nav class="nav-bar glass" aria-label="Navigation principale">
+    <a class="nav-logo" href="/" aria-label="HOMI, accueil">{{LOGO}}</a>
+    <ul class="nav-links">
+      <li><a href="#simulateur">Simulateur</a></li>
+      <li><a href="#conditions">Conditions</a></li>
+    </ul>
+    <div class="nav-cta"><a class="btn btn-primary btn-sm" href="/ambassadors" data-amb-cta>Devenir ambassadeur</a></div>
+  </nav>
+</header>
+
+<main id="programme">
+  <section class="chapter amb-hero">
+    <div class="wrap narrow">
+      <p class="eyebrow">Programme Ambassadeurs</p>
+      <h1>Recommande HOMI. <span class="muted">Sois rémunéré·e.</span></h1>
+      <p class="lead">Inscription gratuite, sans minimum d’abonnés. Tu reçois <b data-t="rate">…</b> des revenus nets de chaque
+        parent que tu apportes, pendant ses <b data-t="months">…</b> premiers mois payants.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg" href="/ambassadors" data-amb-cta>Devenir ambassadeur</a>
+        <a class="btn btn-secondary btn-lg" href="#simulateur">Estimer mes gains</a>
+      </div>
+      <p class="fine muted">Candidature avec un compte HOMI gratuit, validée par l’équipe. Revenus non garantis. Tu as déjà candidaté ? <a href="/ambassadors/dashboard">Mon tableau de bord</a></p>
+    </div>
+  </section>
+
+  <section class="chapter" id="simulateur" aria-labelledby="sim-title">
+    <div class="wrap narrow">
+      <h2 id="sim-title">Simulateur de gains</h2>
+      <p class="muted">Même calcul que dans l’app : <b data-t="rate">…</b> de l’encaissé net, chaque mois, pendant <b data-t="months">…</b> mois par abonné.</p>
+      <div class="card sim">
+        <label class="sim-row" for="sim-net"><span>Encaissé net par abonné et par mois (exemple, €)</span>
+          <input id="sim-net" type="number" inputmode="decimal" min="0" max="1000" step="0.5" value="10"></label>
+        <label class="sim-row" for="sim-n-num"><span>Nouveaux abonnés payants par mois</span>
+          <input id="sim-n-num" type="number" inputmode="numeric" min="0" max="100000" value="5"></label>
+        <input id="sim-n" type="range" min="0" max="500" step="1" value="5" aria-label="Nouveaux abonnés payants par mois (curseur)">
+        <div class="sim-out">
+          <div><span class="muted small">Par mois, au bout d’un an</span><strong id="sim-monthly" aria-live="polite">…</strong></div>
+          <div><span class="muted small">Total sur 12 mois</span><strong id="sim-total" aria-live="polite">…</strong></div>
+        </div>
+        <div id="sim-bars" class="sim-bars" aria-hidden="true"></div>
+        <p class="fine muted">Soit <span id="sim-per">…</span> par abonné et par mois. Estimation théorique : chaque abonné reste abonné <span data-t="months">…</span> mois.
+          L’encaissé net est ce qui reste après taxes et commission de la boutique d’applications. <b>Ce ne sont pas des revenus garantis.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="conditions" aria-labelledby="cond-title">
+    <div class="wrap narrow">
+      <h2 id="cond-title">Conditions</h2>
+      <ul class="cond card">
+        <li>Inscription <b>gratuite</b>, aucun minimum d’abonnés sur les réseaux.</li>
+        <li><b data-t="rate">…</b> de l’encaissé net de chaque paiement d’abonnement, pendant les <b data-t="months">…</b> mois qui suivent le premier paiement.</li>
+        <li>Une recommandation compte si ton code ou ton lien est le dernier utilisé dans les <span data-t="attribution">…</span> jours avant le premier paiement.</li>
+        <li>Rien sur les téléchargements, les essais gratuits ni les paiements remboursés ; aucune commission sur le recrutement d’autres ambassadeurs.</li>
+        <li>Commission disponible après <span data-t="hold">…</span> jours (délai de remboursement), versée par virement dès <b data-t="threshold">…</b>.</li>
+        <li>Chaque publication porte la mention « Publicité » ou « Collaboration commerciale » (loi du 9 juin 2023).</li>
+        <li>Tu vois des chiffres globaux, jamais qui s’est inscrit ni la moindre donnée de famille.</li>
+      </ul>
+      <p class="fine muted"><a href="/conditions-ambassadeurs/">Lire les conditions complètes du programme</a> (version v1-2026-11).</p>
+      <div class="cta-row"><a class="btn btn-primary btn-lg" href="/ambassadors" data-amb-cta>Devenir ambassadeur</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <p>{{LOGO}}</p>
+    <ul>
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/mentions-legales/">Mentions légales</a></li>
+      <li><a href="/confidentialite/">Confidentialité</a></li>
+      <li><a href="/cgu/">Conditions d’utilisation</a></li>
+      <li><a href="/conditions-ambassadeurs/">Conditions Ambassadeurs</a></li>
+    </ul>
+  </div>
+</footer>
+<script src="/site/site.js?v={{VERSION}}" defer></script>
+<script src="/site/ambassadeurs.js?v={{VERSION}}" defer></script>
+</body>
+</html>

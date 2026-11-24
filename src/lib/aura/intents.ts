@@ -221,6 +221,25 @@ const CHILD_TOOL_ROUTE: Record<string, (id: string) => string> = {
 /** Domaine de données d'un outil du quotidien (droits). */
 const TOOL_DOMAIN: Record<string, Domain> = { baby_breastfeed: 'daily', baby_bottle: 'daily', baby_diaper: 'daily', kid_sleep_rhythm: 'daily' };
 
+/**
+ * Prénom cité dans la demande (24/11/2026 : « Lina vient de boire 120 ml » demandait encore « pour quel enfant ? »).
+ * Mot entier, sans tenir compte des accents ni de la casse ; un seul enfant cité, sinon rien (la question reste posée).
+ */
+export function childNamed<T extends { id: string; first_name: string }>(text: string, children: readonly T[]): T | null {
+  const norm = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const words = new Set(norm(text).split(/[^a-z0-9]+/).filter(Boolean));
+  const hits = children.filter((c) => { const n = norm(c.first_name.trim()); return n.length > 1 && (n.includes(' ') || n.includes('-') ? norm(text).includes(n) : words.has(n)); });
+  return hits.length === 1 ? hits[0] : null;
+}
+
+/** L'intention concerne-t-elle un enfant (champ `childId`) sans enfant précisé ? On y place l'enfant nommé. */
+export function withNamedChild(intent: AuraIntent, text: string, children: readonly { id: string; first_name: string }[]): AuraIntent {
+  if (!('childId' in intent || CHILD_KINDS.has(intent.kind)) || (intent as { childId?: string | null }).childId) return intent;
+  const kid = childNamed(text, children);
+  return kid ? ({ ...intent, childId: kid.id } as AuraIntent) : intent;
+}
+const CHILD_KINDS = new Set<AuraIntent['kind']>(['open_tool', 'prepare_relay', 'fix_sleep_end', 'add_measure', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today']);
+
 function pickChild(intent: { childId?: string | null }, ctx: IntentContext): { id: string; first_name: string } | 'ask' | null {
   if (intent.childId) return ctx.children.find((c) => c.id === intent.childId) ?? null;
   if (ctx.activeChildId) return ctx.children.find((c) => c.id === ctx.activeChildId) ?? null;

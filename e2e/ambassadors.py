@@ -3,13 +3,13 @@ A. lien /r/<code>?c=… sans compte → clic compté, inscription avec code pré
 B. connexion → code rattaché automatiquement (source « link », campagne gardée)
 C. présentation + simulateur (estimation exacte), candidature → « en attente »
 D. support : validation ; finance : versement manuel avec référence ; l'ambassadeur voit son lien et ses agrégats
-Usage : E2E_URL=http://127.0.0.1:8812 python3 e2e/ambassadors.py   (version web : voir e2e/README.md)"""
+Usage : E2E_URL=http://127.0.0.1:8813 python3 e2e/ambassadors.py  (export web + scripts/web/build-site.mjs, servi par e2e/site_server.py)"""
 import os, re, sys, uuid
 from playwright.sync_api import sync_playwright
 sys.path.insert(0, os.path.dirname(__file__))
 from fake_supabase import FakeSupabase, FakeRealtime
 
-B = os.environ.get('E2E_URL', 'http://127.0.0.1:8812')
+B = os.environ.get('E2E_URL', 'http://127.0.0.1:8813')
 SHOTS = os.environ.get('E2E_SHOTS', '/tmp/homi-amb'); os.makedirs(SHOTS, exist_ok=True)
 fake = FakeSupabase()
 RES = []
@@ -85,6 +85,25 @@ with sync_playwright() as p:
         tid('signin-submit').click(); wait(5)
     def sign_out():
         pg.evaluate("() => { Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k)); }")
+
+    # S. page publique du site → même programme que l'app
+    pg.goto(B + '/ambassadeurs/?ref=Sarah&c=insta'); wait(3)
+    txt = re.sub(r'[\u00a0\u202f]', ' ', pg.inner_text('body'))
+    check('site : règles du programme (30 %, 6 mois, 45 j, 30 €)', '30 %' in txt and '6 mois' in txt and '45 jours' in txt and '30,00 €' in txt)
+    check('site : simulateur identique à l’app (90,00 € / 855,00 €)', '90,00' in pg.inner_text('#sim-monthly') and '855,00' in pg.inner_text('#sim-total'), pg.inner_text('#sim-monthly') + ' | ' + pg.inner_text('#sim-total'))
+    check('site : aucun prix d’abonnement ni niveau', not re.search(r'14,99|Niveaux|Prix payé', txt))
+    pend = pg.evaluate("() => localStorage.getItem('homi.affiliate.pending.v1')")
+    check('site : ?ref gardé sous la clé de l’app', bool(pend) and '"code":"sarah"' in pend and '"campaign":"insta"' in pend, str(pend))
+    check('site : clic compté', any(c[0] == 'affiliate_record_click' and c[1].get('p_code') == 'sarah' and c[1].get('p_campaign') == 'insta' for c in CALLS))
+    for y in range(0, 4000, 300): pg.evaluate(f'window.scrollTo(0, {y})'); wait(0.15)
+    pg.evaluate('window.scrollTo(0, 0)'); wait(0.5)
+    pg.screenshot(path=os.path.join(SHOTS, 's-site.png'), full_page=True)
+    pg.locator('a[data-amb-cta]').first.click(); wait(5)
+    check('site → app : bouton vers /ambassadors', path().startswith('/ambassadors'), path())
+    pg.goto(B + '/conditions-ambassadeurs/'); wait(1)
+    check('conditions publiques : David PRINCIVIL EI, droit français', 'David PRINCIVIL' in pg.inner_text('body') and 'Droit français' in pg.inner_text('body'))
+    pg.goto(B + '/ambassador'); wait(5)
+    check('ancienne adresse /ambassador → /ambassadors', path().startswith('/ambassadors'), path())
 
     # A. lien ambassadeur sans compte
     pg.goto(B + '/r/sarah?c=tiktok&f=sommeil'); wait(5)

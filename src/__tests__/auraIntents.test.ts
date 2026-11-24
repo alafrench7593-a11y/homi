@@ -132,3 +132,21 @@ describe('« Je me suis trompé sur sa dernière sieste » (site web, 23/11/2026
     expect(noe).toMatchObject({ status: 'ready', href: '/sleep/noe?nap=noe&edit=1', childName: 'Noé' });
   });
 });
+
+describe('prénom cité dans la demande (24/11/2026)', () => {
+  const { childNamed, withNamedChild, matchIntent } = require('@/lib/aura/intents');
+  const kids = [{ id: 'l', first_name: 'Lina' }, { id: 'n', first_name: 'Noé' }];
+  it('« Lina vient de boire 120 ml » : biberon de 120 ml pour Lina, sans question', () => {
+    const it = withNamedChild(matchIntent('Lina vient de boire 120 ml'), 'Lina vient de boire 120 ml', kids);
+    expect(it).toMatchObject({ kind: 'log_bottle', ml: 120, childId: 'l' });
+  });
+  it('accents et casse ignorés ; mot entier seulement ; deux prénoms cités → on demande', () => {
+    expect(childNamed('noe a dormi', kids)?.id).toBe('n');
+    expect(childNamed('Linaé', kids)).toBeNull();
+    expect(childNamed('Lina et Noé ont mangé', kids)).toBeNull();
+    expect(childNamed('il a bu 90 ml', kids)).toBeNull();
+  });
+  it('un enfant déjà choisi n’est jamais remplacé', () => {
+    expect(withNamedChild({ kind: 'log_bottle', ml: 90, childId: 'n' }, 'Lina', kids)).toMatchObject({ childId: 'n' });
+  });
+});

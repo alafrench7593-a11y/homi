@@ -66,8 +66,9 @@ describe('ticket 1 — visite sans compte', () => {
 });
 
 describe('ticket 3 — accès à Mes outils', () => {
-  it('aperçu du catalogue (Mes outils, catégories) ouvert à tout compte ; l’outil reste gardé', () => {
-    for (const p of ['/tools', '/tools/sleep', '/tools/account']) expect([p, gateFor(p, false, access())]).toEqual([p, 'open']);
+  it('aperçu du catalogue : démonstration seulement ; fermé à un compte sans abonnement (24/11/2026) ; l’outil reste gardé', () => {
+    for (const p of ['/tools', '/tools/sleep', '/tools/account']) expect([p, gateFor(p, false, access())]).toEqual([p, 'locked']);
+    for (const p of ['/tools', '/tools/sleep']) expect([p, gateFor(p, false, null, { visit: true })]).toEqual([p, 'open']);
     expect(gateFor('/sleep', false, access())).toBe('locked');
     expect(PREVIEW_ROUTES.some((r) => r.test('/tools/sleep/extra'))).toBe(false);
   });

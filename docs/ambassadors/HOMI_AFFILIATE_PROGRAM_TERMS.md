@@ -2,7 +2,7 @@
 
 > Validées par la propriétaire le 24/11/2026. Entité : **David PRINCIVIL, entrepreneur individuel (EI), France,
 > SIREN 131194466** — pas de société aux Émirats. Texte faisant foi : `src/content/legalAmbassadors.ts`
-> (écran /legal/ambassadors) et page publique `legal-site/ambassadeurs/` (générée par `scripts/web/gen-ambassador-terms.py`).
+> (écran /legal/ambassadors) et page publique `legal-site/conditions-ambassadeurs/` (générée par `scripts/web/gen-ambassador-terms.py`).
 > Ce fichier n'est qu'un résumé ; en cas d'écart, le texte de `legalAmbassadors.ts` prime.
 
 1. **Objet.** L'ambassadeur recommande l'application HOMI. Il n'est ni salarié, ni mandataire, ni représentant de HOMI.

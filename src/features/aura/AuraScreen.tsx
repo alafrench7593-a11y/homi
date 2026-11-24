@@ -59,7 +59,7 @@ import { MAX_QUESTION_LENGTH, todayIso } from '../../../supabase/functions/_shar
 import { sanitizeActions } from '../../../supabase/functions/_shared/aura-tools';
 import { ActionCards } from './ActionCards';
 import { IntentCard } from './IntentCard';
-import { isGuideQuestion, matchIntent, type AuraIntent } from '@/lib/aura/intents';
+import { isGuideQuestion, matchIntent, withNamedChild, type AuraIntent } from '@/lib/aura/intents';
 import { AuraBot } from './AuraBot';
 import { useAuraBot, type AuraBotState } from './useAuraBot';
 import { EmotionTranslator } from './EmotionTranslator';
@@ -277,7 +277,8 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     }
     // 2) Demandes évidentes (ouvrir l'outil du quotidien, corriger une sieste, préparer le relais, ajouter un poids,
     //    changer d'enfant, outils grossesse) : règle LOCALE, carte d'action en un appui, aucun appel au modèle
-    const matched = matchIntent(question);
+    const raw = matchIntent(question);
+    const matched = raw ? withNamedChild(raw, question, children ?? []) : raw;
     // « je veux suivre les nuits de ma fille » : l'outil du quotidien s'ouvre AVEC son explication (guidage)
     const intent = matched && matched.kind === 'open_tool' && isGuideQuestion(question) ? { ...matched, explain: true } : matched;
     if (intent) {
