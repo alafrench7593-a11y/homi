@@ -67,10 +67,16 @@ export function ChecklistDemo({ onDone, result, now, compact }: DemoProps) {
 }
 
 // ------------------------------------------------------------------ journal repas et siestes
-/** Journée d'exemple : nuit terminée il y a 4 h, biberon il y a 50 min ; la sieste ajoutée finit maintenant (45 min). */
+/**
+ * Journée d'exemple : nuit calée sur l'horloge (veille 20 h 15 → 7 h 05 ; tôt le matin, terminée il y a 2 h), jamais une
+ * « nuit » qui finit l'après-midi ; biberon il y a 50 min ; la sieste ajoutée finit maintenant (45 min).
+ */
 export function sleepDemoRecords(now: Date, withNap: boolean): SleepRecord[] {
   const N = now.getTime();
-  const base: SleepRecord[] = [{ id: 'demo-night', child_id: 'demo', kind: 'night', started_at: new Date(N - 15 * 60 * MIN).toISOString(), ended_at: new Date(N - 4 * 60 * MIN).toISOString() }];
+  let end = new Date(now); end.setHours(7, 5, 0, 0);
+  if (end.getTime() > N - 2 * 60 * MIN) end = new Date(N - 2 * 60 * MIN);
+  const start = new Date(end.getTime() - (10 * 60 + 50) * MIN);
+  const base: SleepRecord[] = [{ id: 'demo-night', child_id: 'demo', kind: 'night', started_at: start.toISOString(), ended_at: end.toISOString() }];
   return withNap ? [...base, { id: 'demo-nap', child_id: 'demo', kind: 'nap', started_at: new Date(N - 45 * MIN).toISOString(), ended_at: now.toISOString() }] : base;
 }
 export const DEMO_BOTTLE = { ml: 150, minutesAgo: 50 };

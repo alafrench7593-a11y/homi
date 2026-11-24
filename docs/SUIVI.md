@@ -62,3 +62,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 24/11/2026 — Paywalls (/start/offers et /premium) : vitrine de 6 vraies captures, FAQ (essai, annulation, co-parent, données, crédits), contact homixyz@gmail.com ; bandeau « achat sur iPhone » affiché en entier. Jest 4793/4793, Chromium 390/320 sans erreur.
 - Supabase Auth (24/11, accord explicite) : adresses de redirection + https://homifamille.com/**, https://www.homifamille.com/**, https://homi-web-rho.vercel.app/** (existantes conservées).
 - Site (24/11) : Instagram officiel @homi_famille (pied de page, JSON-LD sameAs, llms.txt).
+- 24/11/2026 — Onboarding : nuit d'exemple de la démo calée sur l'horloge (20 h 15 → 7 h 05), plus de « nuit » finissant l'après-midi ; parcours Bienvenue → besoin → démo → paywall revérifié dans Chromium.
