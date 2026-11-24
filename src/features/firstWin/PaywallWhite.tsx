@@ -9,6 +9,7 @@
  * Confidentialité. Fond #FFFFFF sur toute la surface (thème clair Blanc nacré imposé), prix et dates sur fond plein.
  * Le prix et le bouton sont utilisables dès l'arrivée (l'animation d'Aura ne bloque rien). Aucun appel IA ni son.
  */
+import { PaywallFaq, PaywallShowcase } from './PaywallExtras';
 import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, View, type LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
@@ -68,6 +69,8 @@ function WhiteBody(props: PaywallViewProps) {
     </View>,
     catalog === 'ready' ? <PlanList key="plans" cards={cards} selectedKey={selectedKey} onSelect={onSelect} /> : <CatalogNotice key="plans" state={catalog} onRetry={props.onRetry} />,
     card && catalog === 'ready' ? <TimelineBlock key="tl" card={card} now={now} reminder={!!props.reminder} /> : null,
+    // Vitrine : vraies captures de l'app (24/11/2026), puis preuves
+    <PaywallShowcase key="showcase" />,
     TESTER_PROOF.enabled ? <TesterProof key="proof" /> : null,
     FOUNDER_STORY.enabled ? (
       <Pressable key="origin" accessibilityRole="button" onPress={() => { setStory(true); props.onStory?.(); }} testID="fw-pw-story"
@@ -77,6 +80,8 @@ function WhiteBody(props: PaywallViewProps) {
       </Pressable>
     ) : null,
     card?.demo ? <Text key="demo" variant="caption" muted center testID="fw-pw-demo-grid">{tr('fw.pw.demoGrid')}</Text> : null,
+    // Questions qui freinent l'achat + contact (24/11/2026)
+    <PaywallFaq key="faq" />,
   ];
 
   return (
