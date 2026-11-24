@@ -9,6 +9,7 @@
 // Logique et tests : ../_shared/subscription-run.ts, ../_shared/subscription-run_test.ts
 import { adminClient } from '../_shared/http.ts';
 import { entitlementId, handleWebhook, revenueCatApi, supabaseCredits, supabaseDb } from '../_shared/subscription-run.ts';
+import { supabaseAffiliate } from '../_shared/affiliate.ts';
 
 Deno.serve((req) => {
   const key = Deno.env.get('REVENUECAT_SECRET_API_KEY');
@@ -19,5 +20,7 @@ Deno.serve((req) => {
     db: supabaseDb(adminClient()),
     // Crédits IA : packs consommables (NON_RENEWING_PURCHASE, remboursement) et octrois mensuels (docs/CREDITS_IA.md)
     credits: supabaseCredits(adminClient()),
+    // HOMI Ambassadors : commissions sur l'encaissé net (docs/ambassadors/HOMI_AFFILIATE_ARCHITECTURE.md)
+    affiliate: supabaseAffiliate(adminClient()),
   });
 });

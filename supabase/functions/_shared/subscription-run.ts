@@ -16,6 +16,7 @@ import {
 } from './revenuecat.ts';
 import { grantFor, packActionFor, type CreditPackId, type GrantAction } from './credits.ts';
 import { firstBillingOf, type FirstBilling } from './conversion.ts';
+import { applyAffiliate, type AffiliateLedger } from './affiliate.ts';
 
 const RC_API = 'https://api.revenuecat.com/v1/subscribers/';
 const PREMIUM_STATUSES = new Set(['trial', 'active', 'grace', 'cancelled', 'paused']);
@@ -176,6 +177,8 @@ export interface WebhookDeps {
   db: SubscriptionDb;
   /** Crédits IA : packs consommables et octrois mensuels (absent : événements de packs refusés, octrois ignorés). */
   credits?: CreditsLedger | null;
+  /** HOMI Ambassadors : commissions sur l'encaissé net (absent : rien n'est écrit). */
+  affiliate?: AffiliateLedger | null;
   now?: () => number;
 }
 
@@ -241,6 +244,8 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   if (isDuplicate(event, current)) {
     // Réessai après un échec de l'octroi : l'abonnement est déjà écrit, l'octroi (idempotent) est retenté
     if (current && !(await grantCredits(event, current, userId, deps))) return json({ error: 'server_error' }, 500);
+    // idem pour la commission d'ambassadeur (idempotente sur la transaction)
+    if (!(await applyAffiliate(event, userId, deps.affiliate, now))) return json({ error: 'server_error' }, 500);
     return json({ ok: true, ignored: 'duplicate_event' });
   }
 
@@ -272,6 +277,8 @@ export async function handleWebhook(req: Request, deps: WebhookDeps): Promise<Re
   if (billing && deps.db.recordConversion) await deps.db.recordConversion(userId, billing).catch(() => undefined);
   // Crédits mensuels : INITIAL_PURCHASE, RENEWAL, PRODUCT_CHANGE vers Famille (jamais déclenchés par l'application)
   if (!(await grantCredits(event, row, userId, deps))) return json({ error: 'server_error' }, 500);
+  // HOMI Ambassadors : commission (paiement réel) ou annulation (remboursement) ; idempotent, RevenueCat réessaie en cas d'échec
+  if (!(await applyAffiliate(event, userId, deps.affiliate, now))) return json({ error: 'server_error' }, 500);
 
   const notice = noticeFor(event, row.status, await deps.db.locale(userId).catch(() => null));
   if (notice) await deps.db.notify(userId, notice).catch(() => undefined);
