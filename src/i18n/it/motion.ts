@@ -97,4 +97,12 @@ export const motion = {
   "pw4.offers.title": "La tua nuova organizzazione familiare inizia qui.",
   "pw4.offers.sub": "Uno spazio pensato per accompagnarti ogni giorno.",
   "pw4.bye": "A presto nella tua avventura familiare!",
+  "pw4.shot.prev": "Schermata precedente",
+  "pw4.shot.next": "Schermata successiva",
+  "pw4.shot.accueil": "La tua giornata a colpo d’occhio: i bambini, i promemoria e cosa resta da fare.",
+  "pw4.shot.biberon": "Annoti un biberon in due tocchi. Anche l’altro genitore lo vede, senza chiedere.",
+  "pw4.shot.allaitement": "Tengo il lato e la durata di ogni poppata, così non devi ricordarli.",
+  "pw4.shot.croissance": "Peso e altezza si aggiungono alle curve, mese dopo mese.",
+  "pw4.shot.relais": "Il cambio della notte: chi si alza e cosa è successo, senza rispiegare tutto.",
+  "pw4.shot.aura": "Una domanda? Chiedimelo: ti indico lo strumento giusto e ti spiego come funziona.",
 } as const;

@@ -97,4 +97,12 @@ export const motion = {
   "pw4.offers.title": "Your new family organisation starts here.",
   "pw4.offers.sub": "A space designed to support you every day.",
   "pw4.bye": "See you soon on your family adventure!",
+  "pw4.shot.prev": "Previous screen",
+  "pw4.shot.next": "Next screen",
+  "pw4.shot.accueil": "Your day at a glance: the kids, reminders and what’s left to do.",
+  "pw4.shot.biberon": "Log a bottle in two taps. Your co-parent sees it too, without asking.",
+  "pw4.shot.allaitement": "I keep the side and length of every feed, so you don’t have to remember.",
+  "pw4.shot.croissance": "Weight and height are added to the charts, month after month.",
+  "pw4.shot.relais": "The night hand-off: who gets up and what happened, without re-explaining everything.",
+  "pw4.shot.aura": "A question? Ask me: I’ll point you to the right tool and explain how it works.",
 } as const;

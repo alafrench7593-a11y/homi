@@ -97,4 +97,12 @@ export const motion = {
   "pw4.offers.title": "Ta nouvelle organisation familiale commence ici.",
   "pw4.offers.sub": "Un espace pensé pour t’accompagner au quotidien.",
   "pw4.bye": "À bientôt dans ton aventure familiale !",
+  "pw4.shot.prev": "Écran précédent",
+  "pw4.shot.next": "Écran suivant",
+  "pw4.shot.accueil": "Ici, ta journée en un coup d’œil : les enfants, les rappels et ce qu’il reste à faire.",
+  "pw4.shot.biberon": "Tu notes un biberon en deux touches. Ton co-parent le voit aussi, sans avoir à demander.",
+  "pw4.shot.allaitement": "Je garde le côté et la durée de chaque tétée, pour que tu n’aies pas à les retenir.",
+  "pw4.shot.croissance": "Le poids et la taille s’ajoutent aux courbes, mois après mois.",
+  "pw4.shot.relais": "Le relais de nuit : qui se lève, et ce qui s’est passé, sans tout réexpliquer.",
+  "pw4.shot.aura": "Une question ? Demande-moi : je t’oriente vers le bon outil et je t’explique comment il marche.",
 } as const;

@@ -97,4 +97,12 @@ export const motion = {
   "pw4.offers.title": "Deine neue Familienorganisation beginnt hier.",
   "pw4.offers.sub": "Ein Ort, der dich im Alltag begleitet.",
   "pw4.bye": "Bis bald auf eurem Familienabenteuer!",
+  "pw4.shot.prev": "Vorheriger Bildschirm",
+  "pw4.shot.next": "Nächster Bildschirm",
+  "pw4.shot.accueil": "Dein Tag auf einen Blick: die Kinder, Erinnerungen und was noch zu tun ist.",
+  "pw4.shot.biberon": "Ein Fläschchen notierst du mit zwei Tipps. Dein Co-Elternteil sieht es auch, ohne nachzufragen.",
+  "pw4.shot.allaitement": "Ich merke mir Seite und Dauer jeder Stillmahlzeit, damit du es nicht musst.",
+  "pw4.shot.croissance": "Gewicht und Größe landen Monat für Monat in den Kurven.",
+  "pw4.shot.relais": "Die Nachtübergabe: wer aufsteht und was passiert ist, ohne alles neu zu erklären.",
+  "pw4.shot.aura": "Eine Frage? Frag mich: Ich zeige dir das passende Werkzeug und erkläre, wie es funktioniert.",
 } as const;

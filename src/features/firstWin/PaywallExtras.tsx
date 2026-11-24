@@ -16,7 +16,7 @@ import { t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
-const SHOTS = [
+export const SHOTS = [
   { key: 'accueil', src: require('../../../assets/paywall/accueil.webp') },
   { key: 'biberon', src: require('../../../assets/paywall/biberon.webp') },
   { key: 'allaitement', src: require('../../../assets/paywall/allaitement.webp') },

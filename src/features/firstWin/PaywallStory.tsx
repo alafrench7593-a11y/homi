@@ -7,7 +7,7 @@
  * Slide masquée si sa source est désactivée (`enabled: false`). « Réduire les animations » : états finaux immédiats.
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, ScrollView, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import { Image, Pressable, ScrollView, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,7 +15,9 @@ import { useTopInset } from '@/components/demoInset';
 import { Button, Icon, Text } from '@/components/ui';
 import { GlassIconButton } from '@/components/glass';
 import { FOUNDER_STORY, TESTER_PROOF } from '@/config/socialProof';
+import { AuraOrb } from '@/features/aura/AuraMark';
 import { HeroArt } from '@/features/entry/HeroArt';
+import { SHOTS } from './PaywallExtras';
 import { Cascade, useMotion } from '@/motion';
 import { ThemeScope, useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, NEUTRALS, radius, spacing } from '@/theme/tokens';
@@ -86,50 +88,61 @@ function StoryBody({ need, onDone, onClose, onSlide }: { need: NeedId | null; on
 }
 
 // ------------------------------------------------------------------ 1. transformation
-const BEFORE = ['scattered', 'tired', 'forgotten', 'complicated', 'talk'] as const;
-const AFTER = ['central', 'shared', 'routines', 'history', 'aura'] as const;
+/** Ordre des captures selon le besoin choisi : la plus parlante d'abord. */
+const SHOT_ORDER: Record<NeedId | 'generic', string[]> = {
+  feed_sleep: ['biberon', 'allaitement', 'accueil', 'relais', 'croissance', 'aura'],
+  relay: ['relais', 'accueil', 'biberon', 'aura', 'allaitement', 'croissance'],
+  prepare_birth: ['accueil', 'aura', 'relais', 'biberon', 'allaitement', 'croissance'],
+  mornings: ['accueil', 'relais', 'aura', 'biberon', 'croissance', 'allaitement'],
+  generic: ['accueil', 'biberon', 'relais', 'allaitement', 'croissance', 'aura'],
+};
 
+/**
+ * Ce qu'on peut faire avec HOMI : VRAIES captures de l'app, et le robot d'Aura qui explique chacune en une phrase
+ * (24/11/2026, demande de la propriétaire : des captures et le robot plutôt que des listes de texte). Changement
+ * d'écran aux flèches ou en touchant la capture (pas de glissement : il ferait changer de slide), aucune lecture auto.
+ */
 function TransformSlide({ need, active }: { need: NeedId | null; active: boolean }) {
   const th = useTheme();
-  const { width } = useWindowDimensions();
-  const shot = Math.min(170, Math.round(width * 0.42));
+  const { width, height } = useWindowDimensions();
+  const order = SHOT_ORDER[need ?? 'generic'];
+  const shots = order.map((k) => SHOTS.find((s) => s.key === k)!).filter(Boolean);
+  const [i, setI] = useState(0);
+  const shot = shots[i];
+  // Capture dimensionnée pour que titre, bulle, capture et bouton tiennent sans défiler (iPhone SE compris)
+  const w = Math.max(110, Math.min(230, Math.round(width * 0.56), Math.round((height - 390) / 2.08)));
+  const h = Math.round(w * 2.08);
+  const go = (d: number) => setI((x) => (x + d + shots.length) % shots.length);
   return (
-    <View style={{ gap: spacing.md }}>
-      <Text variant="title" center accessibilityRole="header" style={NO_HYPHENS} testID="fw-story-t-title">{tr(transformTitleKey(need))}</Text>
+    <View style={{ gap: spacing.sm }}>
+      <Text variant="heading" center accessibilityRole="header" style={NO_HYPHENS} testID="fw-story-t-title">{tr(transformTitleKey(need))}</Text>
       {active ? (
         <>
-          <Cascade index={0}>
-            <View style={{ borderRadius: radius.lg, padding: spacing.md, gap: spacing.xs, backgroundColor: th.colors.surfaceAlt }} testID="fw-story-before">
-              <Text variant="small" weight="bold" muted>{tr('pw4.t.before')}</Text>
-              {BEFORE.map((k) => (
-                <View key={k} style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'center' }}>
-                  <Icon name="minus-circle" size={16} color={th.colors.textMuted} />
-                  <Text variant="small" muted style={[{ flex: 1 }, NO_HYPHENS]}>{tr(`pw4.t.b.${k}` as TKey)}</Text>
+          {/* Le robot d'Aura explique l'écran affiché (bulle) AU-DESSUS de la capture : lisible sans défiler */}
+          <View style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start' }} testID="fw-story-robot">
+            <AuraOrb key={shot.key} size={44} gather />
+            <View style={{ flex: 1, minWidth: 0, borderRadius: radius.lg, borderTopLeftRadius: 4, padding: spacing.sm, backgroundColor: th.colors.surfaceAlt }}>
+              <Text variant="caption" weight="bold" muted>{tr('fw.aura')}</Text>
+              <Cascade key={shot.key} index={1}>
+                <Text variant="small" style={NO_HYPHENS} accessibilityLiveRegion="polite" testID="fw-story-robot-text">{tr(`pw4.shot.${shot.key}` as TKey)}</Text>
+              </Cascade>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs }}>
+            <GlassIconButton icon="chevron-left" label={tr('pw4.shot.prev')} onPress={() => go(-1)} testID="fw-story-shot-prev" />
+            <Pressable onPress={() => go(1)} accessibilityRole="image" accessibilityLabel={tr(`pw3.show.${shot.key}` as TKey)} testID={`fw-story-shot-${shot.key}`}>
+              <Cascade key={shot.key} index={0}>
+                <View style={{ width: w, height: h, borderRadius: radius.xl, overflow: 'hidden', borderWidth: 1, borderColor: th.colors.border, backgroundColor: th.colors.surface }}>
+                  <Image source={shot.src} style={{ width: w, height: h }} resizeMode="cover" accessibilityIgnoresInvertColors />
                 </View>
-              ))}
-            </View>
-          </Cascade>
-          <Cascade index={1}>
-            <View style={{ borderRadius: radius.lg, padding: spacing.md, gap: spacing.xs, borderWidth: 2, borderColor: th.colors.primary }} testID="fw-story-after">
-              <Text variant="small" weight="bold" color={th.colors.primary}>{tr('pw4.t.after')}</Text>
-              {AFTER.map((k) => (
-                <View key={k} style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'center' }}>
-                  <Icon name="check-circle" size={16} color={th.colors.primary} />
-                  <Text variant="small" style={[{ flex: 1 }, NO_HYPHENS]}>{tr(`pw4.t.a.${k}` as TKey)}</Text>
-                </View>
-              ))}
-            </View>
-          </Cascade>
-          {/* Vraie capture de l'app (relais de nuit), sous la liste : jamais à l'étroit à côté du texte */}
-          <Cascade index={2}>
-            <View style={{ alignSelf: 'center', width: shot, height: Math.round(shot * 2.08), borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: th.colors.border }}
-              accessible accessibilityRole="image" accessibilityLabel={tr('pw3.show.relais')} testID="fw-story-shot">
-              <Image source={require('../../../assets/paywall/relais-nuit.webp')} style={{ width: shot, height: Math.round(shot * 2.08) }} resizeMode="cover" />
-            </View>
-          </Cascade>
-          <Cascade index={3}>
-            <Text variant="caption" muted center style={NO_HYPHENS}>{tr('pw4.t.honest')}</Text>
-          </Cascade>
+              </Cascade>
+            </Pressable>
+            <GlassIconButton icon="chevron-right" label={tr('pw4.shot.next')} onPress={() => go(1)} testID="fw-story-shot-next" />
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            {shots.map((s, k) => <View key={s.key} style={{ width: k === i ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: k === i ? th.colors.text : th.colors.border }} />)}
+          </View>
+          <Text variant="caption" muted center style={NO_HYPHENS}>{tr('pw4.t.honest')}</Text>
         </>
       ) : null}
     </View>
