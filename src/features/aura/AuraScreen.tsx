@@ -14,6 +14,7 @@
  *    à l'écran ; l'indicateur « Aura prépare une réponse » est immobile), saisie au-dessus du clavier (pied d'écran
  *    `Screen`, portée clavier existante).
  */
+import { NO_HYPHENS } from '@/features/firstWin/kit';
 import { DISMISS_ON_DRAG } from '@/components/keyboard';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { whoopEdge } from '@/components/stage/WhoopSheen';
@@ -500,7 +501,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
           {!online && remote ? <Text variant="caption" color={t.colors.warning} center testID="aura-offline">{tr('aura.err.network')}</Text> : null}
           {blockedByConsent ? (
             <View testID="aura-blocked" accessibilityLiveRegion="polite" style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: spacing.xs }}>
-              <Text variant="caption" center style={{ flexBasis: '100%' }}>{tr(needsSub ? 'sa.aura.blockedSub' : 'sa.aura.blockedConsent')}</Text>
+              <Text variant="caption" center style={[{ width: '100%', minWidth: 0 }, NO_HYPHENS]}>{tr(needsSub ? 'sa.aura.blockedSub' : 'sa.aura.blockedConsent')}</Text>
               {needsSub
                 ? <Button label={tr('sa.aura.seeOffer')} icon="star" size="sm" onPress={() => router.push('/settings/subscription')} testID="aura-blocked-offer" />
                 : <Button label={tr('sa.aura.giveConsent')} icon="check" size="sm" onPress={() => setConsentSheet({})} testID="aura-blocked-consent" />}

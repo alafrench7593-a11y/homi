@@ -46,13 +46,13 @@ describe('situation et parcours', () => {
     expect(situationsFromJourneys(['avoid', 'newborn'])).toEqual({ situations: ['cycle', 'baby'], cycleGoal: 'avoid' });
     expect(journeysFor(situationsFromJourneys(['ttc', 'family']))).toEqual(['ttc', 'family']);
   });
-  it('besoins : deux au plus, le plus ancien cède sa place', () => {
+  it('besoins : plusieurs choix sans limite arbitraire (audit final), décocher retire', () => {
     let n = toggleNeed([], 'sleep');
     n = toggleNeed(n, 'meals');
     n = toggleNeed(n, 'mental_load');
-    expect(n).toEqual(['meals', 'mental_load']);
-    expect(n.length).toBe(MAX_NEEDS);
-    expect(toggleNeed(n, 'meals')).toEqual(['mental_load']);
+    expect(n).toEqual(['sleep', 'meals', 'mental_load']);
+    expect(MAX_NEEDS).toBe(6);
+    expect(toggleNeed(n, 'meals')).toEqual(['sleep', 'mental_load']);
   });
   it('centres d’intérêt du profil déduits des besoins', () => {
     expect(interestsFor(A({ needs: ['community', 'sleep'] }))).toEqual(['community']);
@@ -140,9 +140,9 @@ describe('répartition des tâches', () => {
 });
 
 describe('enregistrement', () => {
-  it('réponses nettoyées (valeurs inconnues retirées, deux besoins au plus)', () => {
+  it('réponses nettoyées (valeurs inconnues retirées, tous les besoins gardés)', () => {
     const s = sanitizeAnswers({ situations: ['baby', 'x', 'baby'], needs: ['sleep', 'meals', 'health'], sharing: 'bof', helpers: ['nanny', 'robot'], split: { appt: 'me', hack: 'me', night: 'nope' }, cycleGoal: 'avoid' });
-    expect(s).toEqual({ situations: ['baby'], cycleGoal: 'avoid', needs: ['sleep', 'meals'], sharing: null, helpers: ['nanny'], split: { appt: 'me' } });
+    expect(s).toEqual({ situations: ['baby'], cycleGoal: 'avoid', needs: ['sleep', 'meals', 'health'], sharing: null, helpers: ['nanny'], split: { appt: 'me' } });
     expect(sanitizeAnswers(null)).toEqual(emptyAnswers());
   });
   it('charge utile bornée, sans prénom ni date de naissance', () => {

@@ -5,6 +5,7 @@
  * API stable : ~218 écrans en dépendent ; toute évolution ajoute des options, n'en retire aucune.
  */
 import { CardLens } from './glass/liquid/CardLens';
+import { InlineCalendar } from './InlineCalendar';
 import { isDarkFill, WhoopSheen } from './stage/WhoopSheen';
 import React from 'react';
 import {
@@ -611,13 +612,18 @@ interface FieldProps extends TextInputProps {
   suffix?: string;
   /** Mot de passe : bouton afficher / masquer. */
   revealable?: boolean;
+  /** Champ date JJ/MM/AAAA : bouton calendrier (déduit du placeholder « JJ/MM/AAAA » si absent) */
+  date?: boolean;
 }
 
 const noSubscribe = () => () => undefined;
 const noVersion = () => 0;
 
-export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, revealable, secureTextEntry, onFocus, onBlur, ...rest }, ref) {
+export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, revealable, secureTextEntry, onFocus, onBlur, date, ...rest }, ref) {
   const t = useTheme();
+  // Audit final (23/11/2026) : tout champ JJ/MM/AAAA reçoit un calendrier déplié sous le champ (saisie clavier conservée)
+  const isDate = (date ?? rest.placeholder === 'JJ/MM/AAAA') && rest.editable !== false;
+  const [calendar, setCalendar] = React.useState(false);
   // Clavier (voir components/keyboard.tsx) : champ gardé visible au focus, « Suivant » passe au champ suivant
   const input = React.useRef<TextInput>(null);
   React.useImperativeHandle(ref, () => input.current as TextInput);
@@ -679,6 +685,13 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           onBlur={(e) => { setFocused(false); onBlur?.(e); }}
         />
         {suffix ? <Text muted>{suffix}</Text> : null}
+        {isDate ? (
+          <Tappable accessibilityRole="button" accessibilityLabel={tr(calendar ? 'cal.close' : 'cal.open', { label })} accessibilityState={{ expanded: calendar }}
+            onPress={() => { Keyboard.dismiss(); setCalendar((v) => !v); }} hitSlop={8} pressScale={0.9} hoverLift={0} testID={rest.testID ? `${rest.testID}-calendar` : 'field-calendar'}
+            style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="calendar" size={20} color={calendar ? t.colors.text : t.colors.textMuted} />
+          </Tappable>
+        ) : null}
         {revealable ? (
           <Tappable
             accessibilityRole="button"
@@ -693,6 +706,10 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           </Tappable>
         ) : null}
       </View>
+      {isDate && calendar ? (
+        <InlineCalendar value={String(rest.value ?? '')} testID={rest.testID ? `${rest.testID}-cal` : undefined}
+          onPick={(fr) => { rest.onChangeText?.(fr); setCalendar(false); }} />
+      ) : null}
       {error ? (
         // Le message d'erreur glisse en place (en plus du tremblement du champ) ; nouvelle clé = nouvelle apparition
         <Appear key={error} kind="soft" delay={0} duration={duration.base / 1000}>

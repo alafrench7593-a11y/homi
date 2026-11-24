@@ -14,7 +14,7 @@ import { Text } from '@/components/ui';
 import { radius, spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 import { lastEmergencyCall, tourShownPath, useTourStore } from './store';
-import { emergencyRecent, isEmergencyPath, shouldHint } from './model';
+import { emergencyRecent, isEmergencyPath, shouldHint, tourPath } from './model';
 
 /** Ouverture réelle d'un outil (src/components/ToolCard.tsx `openTool`) : décide s'il faut montrer son aide. */
 export function maybeToolHint(o: { id: string; urgent?: boolean; title: string; body: string | null; path?: string }) {
@@ -32,7 +32,7 @@ export function ToolHintBubble() {
   const setOff = useTourStore((s) => s.setHintsOff);
   const insets = useSafeAreaInsets();
   const demoInset = useDemoInset();
-  const pathname = usePathname();
+  const pathname = tourPath(usePathname());
   // L'aide accompagne l'écran de l'outil : on note l'écran d'ORIGINE (où l'outil a été touché), puis l'écran de l'outil ;
   // elle se ferme dès qu'on quitte ce dernier. Si l'outil ne s'ouvre pas (écran verrouillé, même adresse), elle se
   // ferme au bout de 4 s au lieu de suivre la personne sur les écrans suivants.

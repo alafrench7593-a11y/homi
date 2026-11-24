@@ -31,6 +31,7 @@ import { Tappable } from '@/components/Tappable';
 import { Button, Icon, Text } from '@/components/ui';
 import { SkeletonBone, SkeletonPulse, StaggerList } from '@/motion';
 import { CategoryChips, CategoryLegend, CategoryList } from '@/features/toolHub/CategoryList';
+import { useTourProgress } from '@/features/tour/store';
 import { PreviewBanner, ToolsIntro, useToolLock, useToolsIntro } from '@/features/toolHub/ToolsIntro';
 import { AppsLogo } from '@/brand/toolGlass/AppsLogo';
 import { FavoriteStar, ToolRow, ToolRowsSkeleton } from '@/features/toolHub/ToolRow';
@@ -87,6 +88,7 @@ export default function Tools() {
   // Ticket 3 : droits réels (cadenas sans Premium, jamais chez un abonné), introduction par compte, revoyable
   const { premium, locked } = useToolLock();
   const intro = useToolsIntro();
+  const touring = useTourProgress().status === 'running';
   // Logo « Mes apps » : les 4 tuiles s'allument en cascade à l'arrivée sur l'écran (statique si Réduire les animations)
   const [logoPulse, setLogoPulse] = useState(0);
   React.useEffect(() => { const id = setTimeout(() => setLogoPulse(1), 250); return () => clearTimeout(id); }, []);
@@ -95,7 +97,8 @@ export default function Tools() {
   return (
     <Screen account title={tr('th.ui.title')} titleLogo={<AppsLogo size={40} pulse={logoPulse} testID="tools-logo" />} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       {/* 0. « Bienvenue dans Mes outils » (première visite de ce compte ; revoyable) */}
-      {intro.open && !loading ? <ToolsIntro premium={premium} onDone={intro.hide} /> : null}
+      {/* Pendant la visite guidée, l'explication de l'écran attend : elle masquait la recherche sur petit écran */}
+      {intro.open && !loading && !touring ? <ToolsIntro premium={premium} onDone={intro.hide} /> : null}
       {/* 1. Recherche par besoin (verre : petite surface de navigation posée sur le fond) */}
       <View style={{ gap: spacing.sm }}>
         <View {...searchAnchor}>

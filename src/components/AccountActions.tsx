@@ -111,6 +111,8 @@ export function AccountSheet({ visible, onClose }: { visible: boolean; onClose: 
         </ListGroup>
         <ListGroup>
           <ListRow icon="log-out" title={isDemo ? tr('acct.signOut.demo') : tr('settings.signOut')} onPress={signOut} testID="account-sheet-sign-out" />
+          {/* Suppression du compte à deux appuis du menu (exigence Apple : facile à trouver) */}
+          {isDemo ? null : <ListRow icon="trash-2" title={tr('acct.deleteRow')} danger iconColor={t.colors.danger} onPress={() => go('/settings/account?delete=1')} testID="account-sheet-delete" />}
         </ListGroup>
       </View>
     </GlassSheet>

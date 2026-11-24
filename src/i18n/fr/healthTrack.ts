@@ -8,6 +8,7 @@ export const healthTrack = {
   "ht.edit.invalid": "Valeur ou heure invalide : rien n’a été enregistré.",
   "ht.edit.changedMeanwhile": "Cette saisie a été modifiée entre-temps : la liste a été relue, vérifie avant de corriger.",
   "ht.obs.add": "Noter une température ou un symptôme",
+  "ht.obs.addShort": "Noter un symptôme",
   "ht.obs.trackersTitle": "Suivis configurés",
   "ht.obs.tempValue": "{value} °C",
   "ht.obs.lastTemp": "Dernière température de {name}",

@@ -271,7 +271,7 @@ function PlanRow({ card, selected, onSelect, othersHaveTrial }: { card: OfferCar
           {d.per || d.saving || d.note ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.xs }}>
               {d.per ? <Text variant="caption" muted testID={`fw-per-${slug(card.key)}`}>{d.per}</Text> : null}
-              {d.saving ? <Text variant="caption" weight="bold" color={th.colors.success} testID={`fw-saving-${slug(card.key)}`}>{d.saving}</Text> : null}
+              {d.saving ? <Text variant="caption" weight="bold" color={th.colors.text} testID={`fw-saving-${slug(card.key)}`}>{d.saving}</Text> : null}
               {d.note ? <Text variant="caption" muted style={NO_HYPHENS} testID={`fw-note-${slug(card.key)}`}>{d.note}</Text> : null}
             </View>
           ) : null}

@@ -18,8 +18,8 @@ import { startDemoWithoutAccount } from '@/lib/demoMode';
 import { useAuth } from '@/lib/auth';
 import { prefetchDemoContent } from '@/lib/lazyContent';
 import { useUiStore } from '@/lib/store';
-import { IntroFlow } from '@/features/intro/IntroFlow';
-import { LAST_PAGE, loadIntroProfile, saveIntroProfile, type IntroProfile } from '@/features/intro/model';
+import { KeynoteIntro } from '@/features/intro/KeynoteIntro';
+import { KEYNOTE_LAST } from '@/features/intro/model';
 import { useTheme } from '@/theme/ThemeProvider';
 
 class IntroBoundary extends React.Component<{ onError: () => void; children: React.ReactNode }, { failed: boolean }> {
@@ -42,13 +42,11 @@ export default function Intro() {
   useEffect(() => { if (entered && session) router.replace('/(tabs)'); }, [entered, session]);
   // Visite (ticket 1) : la démonstration se télécharge pendant la lecture, au repos
   useEffect(() => { prefetchDemoContent(); }, []);
-  // Profil déjà choisi (retour après un changement de langue) : les tableaux restent ceux de ce profil
-  const [initial, setInitial] = useState<IntroProfile | null | undefined>(undefined);
-  useEffect(() => { let alive = true; void loadIntroProfile().then((p) => { if (alive) setInitial(p); }); return () => { alive = false; }; }, []);
   // La keynote « Découvrir HOMI » n'est plus jouée à la première ouverture : l'introduction la remplace
   useEffect(() => { setCinematicSeen(true); }, [setCinematicSeen]);
 
-  function leave(to: 'sign-up' | 'sign-in' | 'demo') {
+  // « Commencer » (24/11/2026) : la présentation mène au parcours guidé par Aura (étape de vie → besoin → démo → compte)
+  function leave(to: 'start' | 'sign-in' | 'demo') {
     setIntroSeen(true);
     if (to === 'demo') {
       if (busy) return;
@@ -63,7 +61,7 @@ export default function Intro() {
         .finally(() => { clearTimeout(slow); setBusy(false); });
       return;
     }
-    router.replace(to === 'sign-up' ? '/auth/sign-up' : '/auth/sign-in');
+    router.replace((to === 'start' ? '/start' : '/auth/sign-in') as never);
   }
   function chooseLanguage(code: string) {
     if (code === getLocale()) return;
@@ -75,12 +73,9 @@ export default function Intro() {
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.background }}>
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
-      {initial === undefined ? null : (
-        <IntroBoundary onError={() => { setIntroSeen(true); router.replace('/welcome'); }}>
-          <IntroFlow initialPage={scene === 'start' ? LAST_PAGE : 0} initialProfile={initial} onProfile={(p) => { void saveIntroProfile(p); }}
-            onLeave={leave} onLanguage={chooseLanguage} demoBusy={busy} />
-        </IntroBoundary>
-      )}
+      <IntroBoundary onError={() => { setIntroSeen(true); router.replace('/start' as never); }}>
+        <KeynoteIntro initialPage={scene === 'start' ? KEYNOTE_LAST : 0} onLeave={leave} onLanguage={chooseLanguage} demoBusy={busy} />
+      </IntroBoundary>
     </View>
   );
 }

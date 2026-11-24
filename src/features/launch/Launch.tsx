@@ -45,7 +45,8 @@ export default function Launch() {
 
   // Première ouverture sans compte (03/12/2026) : parcours court « première réussite » (étape de vie → besoin →
   // démo guidée par Aura → résultat → offres), sans compte ; l'introduction « Je suis… » reste rejouable (/intro).
-  if (ready && !session && hydrated && !introSeen) return <Redirect href={'/start' as never} />;
+  // 24/11/2026 : d'abord la présentation façon Keynote (7 tableaux, « Passer » possible), puis le parcours guidé
+  if (ready && !session && hydrated && !introSeen) return <Redirect href={'/intro' as never} />;
   if (ready && !session && hydrated) return <Redirect href="/welcome" />;
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
   if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;

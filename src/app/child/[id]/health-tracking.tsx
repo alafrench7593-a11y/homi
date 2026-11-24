@@ -122,7 +122,7 @@ export default function HealthTracking() {
   }
   return (
     <Screen back title={tr('u4.ht.title')} subtitle={child ? tr('u4.ht.subtitle', { name: child.first_name }) : undefined}
-      action={{ label: tr('ht.obs.add'), icon: 'plus', onPress: () => child && router.push({ pathname: '/track/[kind]', params: { kind: 'observation', child: child.id } } as never), testID: 'health-main-action' }}>
+      action={{ label: tr('ht.obs.add'), shortLabel: tr('ht.obs.addShort'), icon: 'plus', onPress: () => child && router.push({ pathname: '/track/[kind]', params: { kind: 'observation', child: child.id } } as never), testID: 'health-main-action' }}>
       {/* Observations du quotidien (température, symptômes) : donnée principale, courbe, journal de la semaine, correction */}
       {child ? <ObservationLog child={child} /> : null}
       <SectionTitle title={tr('ht.obs.trackersTitle')} />

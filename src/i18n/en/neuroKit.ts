@@ -57,4 +57,13 @@ export const neuroKit = {
   "lk.sheet.title": "Unlock {tool}",
   "lk.sheet.body": "This tool is for: {list}. Add this journey to your household to use it; your current data won't change.",
   "lk.sheet.cta": "Add a journey",
+  "cal.today": "Today",
+  "cal.yesterday": "Yesterday",
+  "cal.prev": "Previous month",
+  "cal.next": "Next month",
+  "cal.pickYear": "{title} — choose the year",
+  "cal.open": "Open calendar: {label}",
+  "cal.close": "Close calendar: {label}",
+  "acct.deleteRow": "Delete my account",
+  "acct.deleteUnderstood": "I understand my account and data will be permanently deleted",
 } as const;

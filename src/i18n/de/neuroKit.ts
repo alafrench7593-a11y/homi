@@ -57,4 +57,13 @@ export const neuroKit = {
   "lk.sheet.title": "{tool} freischalten",
   "lk.sheet.body": "Dieses Tool ist für: {list}. Füge diese Lebensphase deinem Haushalt hinzu; deine aktuellen Daten bleiben unverändert.",
   "lk.sheet.cta": "Lebensphase hinzufügen",
+  "cal.today": "Heute",
+  "cal.yesterday": "Gestern",
+  "cal.prev": "Vorheriger Monat",
+  "cal.next": "Nächster Monat",
+  "cal.pickYear": "{title} – Jahr wählen",
+  "cal.open": "Kalender öffnen: {label}",
+  "cal.close": "Kalender schließen: {label}",
+  "acct.deleteRow": "Mein Konto löschen",
+  "acct.deleteUnderstood": "Ich verstehe, dass mein Konto und meine Daten endgültig gelöscht werden",
 } as const;
