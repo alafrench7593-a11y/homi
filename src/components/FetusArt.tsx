@@ -43,7 +43,8 @@ export function FetusArt({ week, growth, size = 260, hue, interactive = true, ac
 
 function FetusImage({ source, size, interactive, accessibilityLabel, forceStill }: { source: NonNullable<ReturnType<typeof foetusImageFor>>; size: number; interactive: boolean; accessibilityLabel?: string; forceStill?: boolean }) {
   const reduce = useReduceMotion();
-  // boucles décoratives (flottement, battement, liseré) : arrêtées aussi quand l'écran n'est pas affiché
+  // animations décoratives (flottement, battement, liseré) : courte séquence à l'apparition puis repos (24/11/2026 :
+  // les boucles sans fin saturaient le fil principal de l'Accueil) ; jamais quand l'écran n'est pas affiché
   const focused = useScreenFocused();
   const still = reduce || !focused || !!forceStill;
   const tilt = useRef(new Animated.Value(0)).current;
@@ -61,7 +62,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel, forceStill 
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(float, { isInteraction: false, toValue: 1, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(float, { isInteraction: false, toValue: 0, duration: 3600, easing: Easing.inOut(Easing.sin), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 1 });
     loop.start();
     return () => loop.stop();
   }, [still, float]);
@@ -74,7 +75,7 @@ function FetusImage({ source, size, interactive, accessibilityLabel, forceStill 
       Animated.timing(beat, { isInteraction: false, toValue: 0.35, duration: 160, useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(beat, { isInteraction: false, toValue: 0.85, duration: 160, useNativeDriver: NATIVE_DRIVER }),
       Animated.timing(beat, { isInteraction: false, toValue: 0, duration: 500, easing: Easing.in(Easing.quad), useNativeDriver: NATIVE_DRIVER }),
-    ]));
+    ]), { iterations: 4 });
     loop.start();
     return () => loop.stop();
   }, [still, beat]);
@@ -120,8 +121,9 @@ function GoldRim({ size, still }: { size: number; still: boolean }) {
   const spin2 = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (still) return;
-    const a = Animated.loop(Animated.timing(spin, { isInteraction: false, toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
-    const b = Animated.loop(Animated.timing(spin2, { isInteraction: false, toValue: 1, duration: 9500, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }));
+    // Un tour à l'apparition puis repos (24/11/2026) : plus aucune boucle permanente (fil principal saturé à l'Accueil)
+    const a = Animated.loop(Animated.timing(spin, { isInteraction: false, toValue: 1, duration: 3200, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }), { iterations: 1 });
+    const b = Animated.loop(Animated.timing(spin2, { isInteraction: false, toValue: 1, duration: 4200, easing: Easing.linear, useNativeDriver: NATIVE_DRIVER }), { iterations: 1 });
     a.start(); b.start();
     return () => { a.stop(); b.stop(); };
   }, [still, spin, spin2]);

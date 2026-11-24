@@ -57,3 +57,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Démo (24/11) : fonctions Ambassadors simulées sans argent (tableau de bord « pas encore candidaté », candidature refusée en démo) — corrige l'échec /ambassadors/dashboard signalé par audit_navigation.
 - Site (24/11) : homifamille.com officiel, menu commun 6 groupes (desktop + mobile), pied de page complet, /contact/ (messagerie pré-remplie ; envoi serveur prêt, non déployé), llms.txt, JSON-LD complet ; e2e 19/19 + 22/22 + 28/28.
 - 24/11/2026 : couleurs des apps rétablies — une couleur par famille d'outil (logos + cartes du catalogue + logo « Mes apps »), allaitement rose, croissance bleue ; contraste vérifié (Jest 4788/4788).
+- 24/11/2026 : performance — animations décoratives sans fin supprimées (fœtus de l'accueil, Aura au repos) : accueil au repos 0 changement, défilement accueil 40 → 60 images/s ; démarrage web alourdi par les 5 langues chargées d'avance (à traiter).
