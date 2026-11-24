@@ -90,7 +90,7 @@ Doc officielle : https://supabase.com/docs/guides/auth/social-login/auth-google
    sécurisé, ne le colle jamais dans le chat.)*
 5. Variable Expo `EXPO_PUBLIC_AUTH_GOOGLE` = `1` (même méthode qu'au § 1.3), puis nouveau build.
 6. Tant que l'écran de consentement est en mode « Testing », seuls les comptes Gmail ajoutés dans **Audience → Test
-   users** peuvent se connecter : y ajouter `homixyz@gmail.com`. Pour tout le monde : **Publish app**.
+   users** peuvent se connecter : y ajouter `homiyxz@gmail.com`. Pour tout le monde : **Publish app**.
 
 **Vérifier** : écran de connexion → « Continuer avec Google » → choisir le compte Gmail → retour dans l'app connecté.
 
@@ -148,7 +148,7 @@ Coût : compris dans le crédit de build de la formule Starter (≈ 2 $ par buil
 
 ## 6. Compte Premium de test
 
-Compte existant : `homixyz@gmail.com` (Premium offert via RevenueCat, 994 crédits Aura sur 1 000).
+Compte existant : `homiyxz@gmail.com` (Premium offert via RevenueCat, 994 crédits Aura sur 1 000).
 - Mot de passe oublié : écran de connexion → **Mot de passe oublié** → lien reçu sur la boîte Gmail.
 - Offrir Premium à un autre compte dans RevenueCat : https://app.revenuecat.com → projet HOMI → **Customers** →
   chercher l'identifiant (`user_id` Supabase) → **Grant entitlement** → `HOMI_PREMIUM` → durée.
