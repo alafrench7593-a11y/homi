@@ -64,4 +64,8 @@ export const motion = {
   "pw3.faq.credits.a": "Sie werden für Anfragen an Auras KI verwendet (Fragen, Dokumente lesen). Premium enthält ab dem Ende der Testphase 1.000 pro Monat. Werkzeuge, Diagramme und Timer verbrauchen nie welche.",
   "pw3.contact.cta": "Noch eine Frage? Schreib uns",
   "pw3.contact.subject": "Frage zum HOMI-Abonnement",
+  "pw3.slogan.monthly": "Ohne Bindung: jederzeit kündbar.",
+  "pw3.slogan.six_months": "6 Monate, um die erste Zeit leichter zu meistern.",
+  "pw3.slogan.annual": "Bester Preis: ein ganzes ruhigeres Jahr.",
+  "pw3.slogan.family": "Der ganze Haushalt auf einem Stand.",
 } as const;

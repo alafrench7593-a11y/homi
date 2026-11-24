@@ -64,4 +64,8 @@ export const motion = {
   "pw3.faq.credits.a": "They are used for requests to Aura’s AI (questions, reading documents). Premium includes 1,000 per month once the trial ends. Tools, charts and timers never use any.",
   "pw3.contact.cta": "Another question? Write to us",
   "pw3.contact.subject": "Question about the HOMI subscription",
+  "pw3.slogan.monthly": "No commitment: stop whenever you like.",
+  "pw3.slogan.six_months": "6 months to get through the early days more lightly.",
+  "pw3.slogan.annual": "Best price: a whole calmer year.",
+  "pw3.slogan.family": "The whole household on the same page.",
 } as const;

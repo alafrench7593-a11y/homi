@@ -63,3 +63,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Supabase Auth (24/11, accord explicite) : adresses de redirection + https://homifamille.com/**, https://www.homifamille.com/**, https://homi-web-rho.vercel.app/** (existantes conservées).
 - Site (24/11) : Instagram officiel @homi_famille (pied de page, JSON-LD sameAs, llms.txt).
 - 24/11/2026 — Onboarding : nuit d'exemple de la démo calée sur l'horloge (20 h 15 → 7 h 05), plus de « nuit » finissant l'après-midi ; parcours Bienvenue → besoin → démo → paywall revérifié dans Chromium.
+- 24/11/2026 — Paywall : les 4 formules visibles d'emblée (mensuel, annuel, 6 mois, Famille) juste sous le titre, slogan sous chaque prix (5 langues), bas fixe web compacté (liens sur une ligne) ; vidéo iPhone 15 simulé.

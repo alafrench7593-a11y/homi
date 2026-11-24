@@ -57,9 +57,11 @@ function WhiteBody(props: PaywallViewProps) {
 
   const blocks: React.ReactNode[] = [
     <Text key="title" variant="title" center accessibilityRole="header" style={NO_HYPHENS} testID="fw-pw-title">{tr(paywallTitleKey(need, variant))}</Text>,
-    // (3) aperçu du résultat + Aura : le même composant que dans la démo (la sieste à côté du dernier repas)
+    <AuraLine key="aura" need={need} onAsk={() => { setHelp(true); props.onHelp?.(); }} />,
+    // Prix tout de suite sous le titre (24/11/2026 : visibles dès l'arrivée sur un écran de téléphone), puis l'aperçu
+    catalog === 'ready' ? <PlanList key="plans" cards={cards} selectedKey={selectedKey} onSelect={onSelect} /> : <CatalogNotice key="plans" state={catalog} onRetry={props.onRetry} />,
+    // aperçu du résultat : le même composant que dans la démo (la sieste à côté du dernier repas)
     <View key="preview" style={{ gap: spacing.sm }} testID="fw-pw-preview">
-      <AuraLine need={need} onAsk={() => { setHelp(true); props.onHelp?.(); }} />
       {Demo && result ? (
         <View accessible accessibilityLabel={tr('fw.pw.previewLabel')} style={{ gap: spacing.xs }}>
           <Demo onDone={() => undefined} result={result} compact />
@@ -67,7 +69,6 @@ function WhiteBody(props: PaywallViewProps) {
         </View>
       ) : null}
     </View>,
-    catalog === 'ready' ? <PlanList key="plans" cards={cards} selectedKey={selectedKey} onSelect={onSelect} /> : <CatalogNotice key="plans" state={catalog} onRetry={props.onRetry} />,
     card && catalog === 'ready' ? <TimelineBlock key="tl" card={card} now={now} reminder={!!props.reminder} /> : null,
     // Vitrine : vraies captures de l'app (24/11/2026), puis preuves
     <PaywallShowcase key="showcase" />,
@@ -105,16 +106,17 @@ function WhiteBody(props: PaywallViewProps) {
           <View style={{ gap: spacing.xs }} testID="fw-pw-web">
             {webInfo ? <View accessibilityLiveRegion="polite"><Banner tone="info">{tr('fw.pw.webInfo')}</Banner></View> : null}
             <Button label={tr('fw.pw.webCta')} icon="smartphone" size="lg" full onPress={() => setWebInfo(true)} testID="fw-pw-cta" />
-            <Button label={tr('auth.signUp')} variant="secondary" full onPress={props.onSignUp} testID="fw-pw-web-signup" />
-            <Button label={tr('webDemo.openDemo')} variant="ghost" size="sm" onPress={props.onDemo} testID="fw-pw-web-demo" />
           </View>
         ) : (
         <Button label={card && catalog === 'ready' ? ctaFor(card.plan, { needsAccount: props.needsAccount }) : tr('fw.pw.buyUnavailable')} size="lg" full
           loading={phase === 'buying' || phase === 'restoring'} disabled={!buyable}
           onPress={props.onBuy} accessibilityHint={card ? termsFor(card.plan) : undefined} testID="fw-pw-cta" />
         )}
-        {card && catalog === 'ready' ? <Text variant="small" center style={NO_HYPHENS} testID="fw-pw-terms-line">{props.webShowcase ? `${tr('fw.pw.webPrices')} ${termsFor(card.plan)}` : termsFor(card.plan)}</Text> : null}
+        {card && catalog === 'ready' ? <Text variant="caption" center style={NO_HYPHENS} testID="fw-pw-terms-line">{props.webShowcase ? `${tr('fw.pw.webPrices')} ${termsFor(card.plan)}` : termsFor(card.plan)}</Text> : null}
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: spacing.xs }}>
+          {/* Web : « Créer un compte » et « Voir la démo » en liens, sur la même ligne que les conditions (bas fixe compact) */}
+          {props.webShowcase ? <LinkButton label={tr('auth.signUp')} onPress={() => props.onSignUp?.()} testID="fw-pw-web-signup" /> : null}
+          {props.webShowcase ? <LinkButton label={tr('webDemo.openDemo')} onPress={() => props.onDemo?.()} testID="fw-pw-web-demo" /> : null}
           {props.webShowcase ? null : <LinkButton label={tr('fw.pw.restore')} onPress={props.onRestore} disabled={phase === 'buying' || phase === 'restoring' || catalog === 'unavailable'} testID="fw-pw-restore" />}
           <LinkButton label={tr('fw.pw.terms')} onPress={() => props.onLegal('terms')} testID="fw-pw-terms" />
           <LinkButton label={tr('fw.pw.privacy')} onPress={() => props.onLegal('privacy')} testID="fw-pw-privacy" />
@@ -215,8 +217,8 @@ function PlanList({ cards, selectedKey, onSelect }: { cards: OfferCard[]; select
   const th = useTheme();
   const m = useMotion();
   const { lead, more } = splitOffers(cards);
-  const [open, setOpen] = useState(false);
-  const shown = open || more.some((c) => c.key === selectedKey) ? [...lead, ...more] : lead;
+  // Tous les prix visibles d'emblée (demande de la propriétaire, 24/11/2026) : mensuel et annuel en tête, puis les autres
+  const shown = [...lead, ...more];
   const othersHaveTrial = cards.some((c) => c.trialDays > 0);
   const [rows, setRows] = useState<Record<string, { y: number; h: number }>>({});
   const y = useSharedValue(0);
@@ -246,15 +248,13 @@ function PlanList({ cards, selectedKey, onSelect }: { cards: OfferCard[]; select
           </View>
         ))}
       </View>
-      {shown.length < cards.length ? (
-        <Pressable accessibilityRole="button" onPress={() => setOpen(true)} hitSlop={6} testID="fw-pw-more" style={{ minHeight: MIN_TOUCH, justifyContent: 'center', alignItems: 'center' }}>
-          <Text variant="small" weight="bold" color={th.colors.primary}>{tr('fw.pw.more')}</Text>
-        </Pressable>
-      ) : null}
       {cards.some((c) => c.tier === 'premium') ? <Text variant="caption" muted center style={NO_HYPHENS} testID="fw-pw-coparent">{tr('fw.pw.coparent')}</Text> : null}
     </View>
   );
 }
+
+/** Slogan court sous le prix : la raison de choisir CETTE formule (vrai pour chacune : résiliable à tout moment). */
+const sloganKey = (c: OfferCard): TKey => (c.tier === 'premium' ? `pw3.slogan.${c.period}` : 'pw3.slogan.family') as TKey;
 
 function PlanRow({ card, selected, onSelect, othersHaveTrial }: { card: OfferCard; selected: boolean; onSelect: (k: string) => void; othersHaveTrial: boolean }) {
   const th = useTheme();
@@ -273,6 +273,7 @@ function PlanRow({ card, selected, onSelect, othersHaveTrial }: { card: OfferCar
             <Text weight="bold">{card.tier === 'premium' ? tr(`fw.card.${card.period}` as TKey) : card.name}</Text>
             <Text weight="bold" testID={`fw-billed-${slug(card.key)}`}>{card.billed}</Text>
           </View>
+          <Text variant="caption" weight="medium" color={th.colors.primary} style={NO_HYPHENS} testID={`fw-slogan-${slug(card.key)}`}>{tr(sloganKey(card))}</Text>
           {d.per || d.saving || d.note ? (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.xs }}>
               {d.per ? <Text variant="caption" muted testID={`fw-per-${slug(card.key)}`}>{d.per}</Text> : null}
