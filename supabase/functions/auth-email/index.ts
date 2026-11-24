@@ -2,8 +2,15 @@
 // Secrets : RESEND_API_KEY, RESEND_FROM_EMAIL, SEND_EMAIL_HOOK_SECRET (affiché par Supabase en activant le hook).
 // Déploiement : supabase functions deploy auth-email --no-verify-jwt  (la signature du hook remplace le JWT)
 import { buildEmail, sendWithResend, verifyHook, type HookPayload } from './email.ts';
+import { LOGO_PNG_B64 } from './logo.ts';
+
+const LOGO = Uint8Array.from(atob(LOGO_PNG_B64), (c) => c.charCodeAt(0));
 
 Deno.serve(async (req) => {
+  // Logo des e-mails (public, sans donnée) : GET …/auth-email/logo.png
+  if (req.method === 'GET' && new URL(req.url).pathname.endsWith('/logo.png')) {
+    return new Response(LOGO, { status: 200, headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=604800, immutable' } });
+  }
   if (req.method !== 'POST') return new Response('Méthode non autorisée', { status: 405 });
   const body = await req.text();
   const secret = Deno.env.get('SEND_EMAIL_HOOK_SECRET') ?? '';

@@ -39,7 +39,7 @@ export function verifyLink(supabaseUrl: string, d: HookPayload['email_data'], ha
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 type Mail = { subject: string; intro: string; cta: string };
-interface MailLang { types: Record<string, Mail>; fallback: Mail; code: string; ignore: string; team: string }
+interface MailLang { types: Record<string, Mail>; fallback: Mail; code: string; ignore: string; team: string; tagline: string; copy: string; help: string }
 const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
   fr: {
     types: {
@@ -51,7 +51,7 @@ const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
       reauthentication: { subject: 'Ton code de vérification — {app}', intro: 'Utilise ce code pour confirmer ton identité.', cta: '' },
     },
     fallback: { subject: '{app}', intro: 'Action à confirmer sur ton compte.', cta: 'Continuer' },
-    code: 'Code', ignore: 'Si tu n’es pas à l’origine de cette demande, ignore ce message.', team: '— L’équipe {app}',
+    code: 'Code', ignore: 'Si tu n’es pas à l’origine de cette demande, ignore ce message.', team: '— L’équipe {app}', tagline: 'Parce que devenir parents ne devrait pas signifier s’oublier.', copy: 'Le bouton ne fonctionne pas ? Copie ce lien dans ton navigateur :', help: 'Une question ? Écris-nous',
   },
   en: {
     types: {
@@ -63,7 +63,7 @@ const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
       reauthentication: { subject: 'Your verification code — {app}', intro: 'Use this code to confirm your identity.', cta: '' },
     },
     fallback: { subject: '{app}', intro: 'An action needs confirming on your account.', cta: 'Continue' },
-    code: 'Code', ignore: 'If you didn’t make this request, please ignore this message.', team: '— The {app} team',
+    code: 'Code', ignore: 'If you didn’t make this request, please ignore this message.', team: '— The {app} team', tagline: 'Because becoming parents shouldn’t mean forgetting yourselves.', copy: 'Button not working? Copy this link into your browser:', help: 'A question? Write to us',
   },
   es: {
     types: {
@@ -75,7 +75,7 @@ const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
       reauthentication: { subject: 'Tu código de verificación — {app}', intro: 'Usa este código para confirmar tu identidad.', cta: '' },
     },
     fallback: { subject: '{app}', intro: 'Hay una acción pendiente de confirmar en tu cuenta.', cta: 'Continuar' },
-    code: 'Código', ignore: 'Si no has hecho esta solicitud, ignora este mensaje.', team: '— El equipo de {app}',
+    code: 'Código', ignore: 'Si no has hecho esta solicitud, ignora este mensaje.', team: '— El equipo de {app}', tagline: 'Porque ser padres no debería significar olvidarse de uno mismo.', copy: '¿El botón no funciona? Copia este enlace en tu navegador:', help: '¿Una pregunta? Escríbenos',
   },
   de: {
     types: {
@@ -87,7 +87,7 @@ const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
       reauthentication: { subject: 'Dein Bestätigungscode — {app}', intro: 'Verwende diesen Code, um deine Identität zu bestätigen.', cta: '' },
     },
     fallback: { subject: '{app}', intro: 'In deinem Konto muss eine Aktion bestätigt werden.', cta: 'Weiter' },
-    code: 'Code', ignore: 'Falls du diese Anfrage nicht gestellt hast, ignoriere diese Nachricht.', team: '— Dein {app}-Team',
+    code: 'Code', ignore: 'Falls du diese Anfrage nicht gestellt hast, ignoriere diese Nachricht.', team: '— Dein {app}-Team', tagline: 'Weil Eltern werden nicht heißen sollte, sich selbst zu vergessen.', copy: 'Der Button funktioniert nicht? Kopiere diesen Link in deinen Browser:', help: 'Eine Frage? Schreib uns',
   },
   it: {
     types: {
@@ -99,7 +99,7 @@ const MAIL: Record<'fr' | 'en' | 'es' | 'de' | 'it', MailLang> = {
       reauthentication: { subject: 'Il tuo codice di verifica — {app}', intro: 'Usa questo codice per confermare la tua identità.', cta: '' },
     },
     fallback: { subject: '{app}', intro: 'C’è un’azione da confermare sul tuo account.', cta: 'Continua' },
-    code: 'Codice', ignore: 'Se non hai fatto tu questa richiesta, ignora questo messaggio.', team: '— Il team di {app}',
+    code: 'Codice', ignore: 'Se non hai fatto tu questa richiesta, ignora questo messaggio.', team: '— Il team di {app}', tagline: 'Perché diventare genitori non dovrebbe voler dire dimenticarsi di sé.', copy: 'Il pulsante non funziona? Copia questo link nel browser:', help: 'Una domanda? Scrivici',
   },
 };
 
@@ -117,14 +117,35 @@ export function buildEmail(appName: string, supabaseUrl: string, p: HookPayload)
   const subject = t.subject.replace('{app}', appName);
   const code = d.token ? `${L.code} : ${d.token}` : '';
   const text = [t.intro, t.cta ? `${t.cta} : ${link}` : '', code, '', L.ignore, L.team.replace('{app}', appName)].filter((x) => x !== '').join('\n');
-  const html = `<!doctype html><html lang="${lang}"><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#FFF6EF;margin:0;padding:24px;color:#2A1A26">
-<div style="max-width:480px;margin:auto;background:#fff;border-radius:20px;padding:28px">
-<h1 style="font-size:22px;margin:0 0 12px">${esc(appName)}</h1>
-<p style="font-size:16px;line-height:1.5">${esc(t.intro)}</p>
-${t.cta ? `<p style="margin:24px 0"><a href="${esc(link)}" style="background:#E9587C;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:600;display:inline-block">${esc(t.cta)}</a></p>` : ''}
-${d.token ? `<p style="font-size:15px">${esc(L.code)} : <strong style="letter-spacing:2px">${esc(d.token)}</strong></p>` : ''}
-<p style="font-size:13px;color:#7E6873">${esc(L.ignore)}</p>
-</div></body></html>`;
+  const heading = subject.split(' — ')[0];
+  const logo = `${supabaseUrl.replace(/\/$/, '')}/functions/v1/auth-email/logo.png`;
+  const support = 'homiyxz@gmail.com';
+  const site = 'https://homifamille.com';
+  // Gabarit en tableaux (Gmail, Apple Mail, Outlook), styles en ligne, blanc nacré et noir HOMI, aucun script ni image distante autre que le logo
+  const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><title>${esc(subject)}</title></head>
+<body style="margin:0;padding:0;background:#F4F1EE;-webkit-text-size-adjust:100%">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(t.intro)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F4F1EE"><tr><td align="center" style="padding:32px 16px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px">
+<tr><td align="center" style="padding:0 0 20px">
+<img src="${logo}" width="64" height="64" alt="${esc(appName)}" style="display:block;width:64px;height:64px;border:0;border-radius:16px">
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:800;letter-spacing:4px;color:#111111;padding-top:10px">${esc(appName)}</div>
+</td></tr>
+<tr><td style="background:#FFFFFF;border-radius:24px;padding:36px 32px;border:1px solid #ECE7E3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111111">
+<h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;font-weight:800;color:#111111">${esc(heading)}</h1>
+<p style="margin:0;font-size:16px;line-height:1.55;color:#3D3A38">${esc(t.intro)}</p>
+${t.cta ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 8px"><tr><td align="center" style="border-radius:999px;background:#111111"><a href="${esc(link)}" style="display:inline-block;padding:15px 30px;font-size:16px;font-weight:700;color:#FFFFFF;text-decoration:none;border-radius:999px">${esc(t.cta)}</a></td></tr></table>` : ''}
+${d.token ? `<div style="margin:24px 0 4px;padding:16px;border-radius:16px;background:#F4F1EE;text-align:center"><div style="font-size:13px;color:#6E6965;padding-bottom:6px">${esc(L.code)}</div><div style="font-size:28px;font-weight:800;letter-spacing:6px;color:#111111">${esc(d.token)}</div></div>` : ''}
+${t.cta ? `<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#6E6965">${esc(L.copy)}<br><a href="${esc(link)}" style="color:#6E6965;word-break:break-all">${esc(link)}</a></p>` : ''}
+<hr style="border:0;border-top:1px solid #ECE7E3;margin:28px 0 20px">
+<p style="margin:0;font-size:13px;line-height:1.5;color:#6E6965">${esc(L.ignore)}</p>
+<p style="margin:12px 0 0;font-size:14px;font-weight:600;color:#111111">${esc(L.team.replace('{app}', appName))}</p>
+</td></tr>
+<tr><td align="center" style="padding:24px 12px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<p style="margin:0 0 10px;font-size:13px;font-style:italic;color:#6E6965">${esc(L.tagline)}</p>
+<p style="margin:0;font-size:12px;line-height:1.6;color:#8C8681">${esc(L.help)} : <a href="mailto:${support}" style="color:#8C8681">${support}</a><br><a href="${site}" style="color:#8C8681">homifamille.com</a> · <a href="https://www.instagram.com/homi_famille/" style="color:#8C8681">Instagram @homi_famille</a></p>
+</td></tr>
+</table></td></tr></table></body></html>`;
   return { subject, html, text };
 }
 
