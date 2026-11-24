@@ -64,3 +64,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Site (24/11) : Instagram officiel @homi_famille (pied de page, JSON-LD sameAs, llms.txt).
 - 24/11/2026 — Onboarding : nuit d'exemple de la démo calée sur l'horloge (20 h 15 → 7 h 05), plus de « nuit » finissant l'après-midi ; parcours Bienvenue → besoin → démo → paywall revérifié dans Chromium.
 - 24/11/2026 — Paywall : les 4 formules visibles d'emblée (mensuel, annuel, 6 mois, Famille) juste sous le titre, slogan sous chaque prix (5 langues), bas fixe web compacté (liens sur une ligne) ; vidéo iPhone 15 simulé.
+- 24/11/2026 — Paywall « histoire » (test A/B paywall_story_v1, contrôle = paywall actuel) : transformation → confiance 4,8/5 animée → fondateurs (texte validé) → offres (annuel présélectionné en tête), au revoir d'Aura à la fermeture, « Commencer mes 3 jours gratuits » ; 5 langues ; vérifié iPhone 15 et SE simulés (navigateur).

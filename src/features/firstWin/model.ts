@@ -82,6 +82,12 @@ export function assignVariant(installId: string, experiment = 'paywall_title_v1'
   return fnv1a(`${experiment}:${installId}`) % 2 === 0 ? 'generic' : 'need';
 }
 
+/** Test du paywall « histoire » (24/11/2026) : 3 slides sans prix avant les offres (B) contre le paywall actuel (A, contrôle). */
+export type StoryVariant = 'control' | 'story';
+export function assignStoryVariant(installId: string): StoryVariant {
+  return fnv1a(`paywall_story_v1:${installId}`) % 2 === 0 ? 'control' : 'story';
+}
+
 // ------------------------------------------------------------------ progression gardée sur l'appareil
 export interface DemoResult {
   kind: DemoKind;

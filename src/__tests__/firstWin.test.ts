@@ -186,8 +186,8 @@ describe('bénéfices : au plus 3, réellement disponibles dans la formule chois
 
 describe('frise, bouton et conditions', () => {
   const [annual, , monthly] = prem();
-  it('essai confirmé : bouton « Démarrer mes 3 jours gratuits » (compte connecté), « Continuer vers l’essai » sans compte ; ligne légale du gabarit, frise jusqu’au 6 décembre', () => {
-    expect(ctaFor(monthly)).toBe('Démarrer mes 3 jours gratuits');
+  it('essai confirmé : bouton « Commencer mes 3 jours gratuits » (compte connecté), « Continuer vers l’essai » sans compte ; ligne légale du gabarit, frise jusqu’au 6 décembre', () => {
+    expect(ctaFor(monthly)).toBe('Commencer mes 3 jours gratuits');
     expect(ctaFor(monthly, { needsAccount: true })).toBe('Continuer vers l’essai');
     expect(ctaFor({ ...monthly, trialDays: 0 }, { needsAccount: true })).toBe('Continuer');
     expect(nb(termsFor(monthly))).toBe('3 jours gratuits, puis 14,99 €/mois. Renouvellement automatique, sauf résiliation au moins 24 h avant l’échéance.');

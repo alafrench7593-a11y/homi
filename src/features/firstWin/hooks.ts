@@ -14,7 +14,7 @@ import { useOfflineStore } from '@/lib/offline';
 import { getPurchaseMode, loadFamilyPlans, loadPlans } from '@/lib/purchaseMode';
 import { useBackendMode } from '@/lib/demoMode';
 import { localeTag } from '@/i18n';
-import { assignVariant, type TitleVariant } from './model';
+import { assignStoryVariant, assignVariant, type StoryVariant, type TitleVariant } from './model';
 import { catalogState, offerCards, type CatalogState, type OfferCard } from './offer';
 
 /** has_premium du serveur, à trois états : undefined tant que la réponse n'est pas connue (jamais d'accès supposé). */
@@ -41,6 +41,13 @@ export function useOfferCatalog(showcase = false): { cards: OfferCard[]; catalog
   const showcaseCards = useMemo(() => (showcase ? offerCards(demoPlans(localeTag()), demoFamilyPlans(localeTag()), localeTag()) : []), [showcase]);
   if (showcase) return { cards: showcaseCards, catalog: 'ready', mode, refetch: () => undefined };
   return { cards, catalog, mode, refetch: () => { void prem.refetch(); void fam.refetch(); } };
+}
+
+/** Variante du test « paywall histoire », stable par installation. */
+export function useStoryVariant(): StoryVariant | null {
+  const [v, setV] = useState<StoryVariant | null>(null);
+  useEffect(() => { let alive = true; void getInstallId().then((id) => { if (alive) setV(assignStoryVariant(id)); }); return () => { alive = false; }; }, []);
+  return v;
 }
 
 /** Variante du test A/B, stable par installation. */

@@ -35,6 +35,8 @@ export type Direction = 'A' | 'B' | 'C' | 'W';
 export const DIRECTIONS: Direction[] = ['W', 'A', 'B', 'C'];
 
 export interface PaywallViewProps {
+  /** Variante « histoire » : les 3 slides sont passées, cette page est la 4e (titre des offres, histoire déjà lue) */
+  storyMode?: boolean;
   direction: Direction;
   variant: TitleVariant;
   need: NeedId | null;

@@ -54,12 +54,21 @@ function WhiteBody(props: PaywallViewProps) {
   const [help, setHelp] = useState(false);
   const [story, setStory] = useState(false);
   const Demo = result ? DEMOS[result.kind] : null;
+  // Au revoir d'Aura à la fermeture (variante « histoire ») : un coucou court, puis la fermeture ; immédiat sans animations
+  const motion = useMotion();
+  const [bye, setBye] = useState(false);
+  const close = () => {
+    if (!props.storyMode || motion.off || bye) { props.onClose(); return; }
+    setBye(true);
+    setTimeout(props.onClose, 1300);
+  };
 
   const blocks: React.ReactNode[] = [
-    <Text key="title" variant="title" center accessibilityRole="header" style={NO_HYPHENS} testID="fw-pw-title">{tr(paywallTitleKey(need, variant))}</Text>,
+    <Text key="title" variant="title" center accessibilityRole="header" style={NO_HYPHENS} testID="fw-pw-title">{tr(props.storyMode ? 'pw4.offers.title' : paywallTitleKey(need, variant))}</Text>,
+    props.storyMode ? <Text key="sub" center muted style={NO_HYPHENS} testID="fw-pw-sub">{tr('pw4.offers.sub')}</Text> : null,
     <AuraLine key="aura" need={need} onAsk={() => { setHelp(true); props.onHelp?.(); }} />,
     // Prix tout de suite sous le titre (24/11/2026 : visibles dès l'arrivée sur un écran de téléphone), puis l'aperçu
-    catalog === 'ready' ? <PlanList key="plans" cards={cards} selectedKey={selectedKey} onSelect={onSelect} /> : <CatalogNotice key="plans" state={catalog} onRetry={props.onRetry} />,
+    catalog === 'ready' ? <PlanList key="plans" cards={cards} selectedKey={selectedKey} onSelect={onSelect} annualFirst={!!props.storyMode} /> : <CatalogNotice key="plans" state={catalog} onRetry={props.onRetry} />,
     // aperçu du résultat : le même composant que dans la démo (la sieste à côté du dernier repas)
     <View key="preview" style={{ gap: spacing.sm }} testID="fw-pw-preview">
       {Demo && result ? (
@@ -72,8 +81,9 @@ function WhiteBody(props: PaywallViewProps) {
     card && catalog === 'ready' ? <TimelineBlock key="tl" card={card} now={now} reminder={!!props.reminder} /> : null,
     // Vitrine : vraies captures de l'app (24/11/2026), puis preuves
     <PaywallShowcase key="showcase" />,
-    TESTER_PROOF.enabled ? <TesterProof key="proof" /> : null,
-    FOUNDER_STORY.enabled ? (
+    // Variante « histoire » : note et histoire déjà vues sur les slides précédentes
+    TESTER_PROOF.enabled && !props.storyMode ? <TesterProof key="proof" /> : null,
+    FOUNDER_STORY.enabled && !props.storyMode ? (
       <Pressable key="origin" accessibilityRole="button" onPress={() => { setStory(true); props.onStory?.(); }} testID="fw-pw-story"
         style={{ minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center', gap: 2, paddingVertical: spacing.xs }}>
         <Text variant="small" center muted style={NO_HYPHENS}>{tr('fw.pw.origin')}</Text>
@@ -88,7 +98,7 @@ function WhiteBody(props: PaywallViewProps) {
   return (
     <View style={{ flex: 1, backgroundColor: PAYWALL_WHITE, paddingTop: top }} testID="fw-paywall-W">
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: spacing.sm, minHeight: MIN_TOUCH }}>
-        <GlassIconButton icon="x" label={tr('fw.pw.close')} onPress={props.onClose} testID="fw-pw-close" />
+        <GlassIconButton icon="x" label={tr('fw.pw.close')} onPress={close} testID="fw-pw-close" />
       </View>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={Platform.OS === 'web'}
         contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.md, maxWidth: 560, width: '100%', alignSelf: 'center' }}>
@@ -123,6 +133,13 @@ function WhiteBody(props: PaywallViewProps) {
         </View>
       </View>
 
+      {bye ? (
+        <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', backgroundColor: PAYWALL_WHITE, gap: spacing.md }}
+          accessibilityLiveRegion="polite" testID="fw-pw-bye">
+          <AuraOrb size={96} gather />
+          <Text variant="heading" center style={NO_HYPHENS}>{tr('pw4.bye')}</Text>
+        </View>
+      ) : null}
       {/* Feuilles : l'état du paywall (formule choisie, défilement) reste en place pendant et après la lecture */}
       <GlassSheet visible={help} onClose={() => setHelp(false)} title={tr('fw.pw.ask')}>
         <HelpAnswers card={card} now={now} />
@@ -213,12 +230,14 @@ function TesterProof() {
 const slug = (key: string) => key.replace(':', '-');
 
 /** Formules en liste ; un indicateur de verre glisse vers la formule choisie (pose immédiate avec Réduire les animations). */
-function PlanList({ cards, selectedKey, onSelect }: { cards: OfferCard[]; selectedKey: string | null; onSelect: (k: string) => void }) {
+function PlanList({ cards, selectedKey, onSelect, annualFirst }: { cards: OfferCard[]; selectedKey: string | null; onSelect: (k: string) => void; annualFirst?: boolean }) {
   const th = useTheme();
   const m = useMotion();
   const { lead, more } = splitOffers(cards);
   // Tous les prix visibles d'emblée (demande de la propriétaire, 24/11/2026) : mensuel et annuel en tête, puis les autres
-  const shown = [...lead, ...more];
+  const all = [...lead, ...more];
+  // Variante « histoire » : l'annuel (présélectionné) en tête, le mensuel juste dessous
+  const shown = annualFirst ? [...all.filter((c) => c.key === 'premium:annual'), ...all.filter((c) => c.key !== 'premium:annual')] : all;
   const othersHaveTrial = cards.some((c) => c.trialDays > 0);
   const [rows, setRows] = useState<Record<string, { y: number; h: number }>>({});
   const y = useSharedValue(0);

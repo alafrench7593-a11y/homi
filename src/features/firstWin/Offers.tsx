@@ -20,7 +20,8 @@ import type { Plan } from '@/lib/premium/plans';
 import { purchasesSdk } from '@/lib/purchaseMode';
 import { motionHaptic } from '@/motion';
 import { useTheme } from '@/theme/ThemeProvider';
-import { useOfferCatalog, usePremiumState, useTitleVariant } from './hooks';
+import { useOfferCatalog, usePremiumState, useStoryVariant, useTitleVariant } from './hooks';
+import { PaywallStory } from './PaywallStory';
 import { DEMO_OF, loadProgress, saveProgress, TOOL_ROUTE, type FirstWinProgress } from './model';
 import { defaultOfferKey, type PurchasePhase } from './offer';
 import { type Direction } from './PaywallView';
@@ -36,6 +37,11 @@ export function FirstWinOffers({ webShowcase = false }: { webShowcase?: boolean 
   const premium = usePremiumState();
   const inv = useInvalidate();
   const variant = useTitleVariant();
+  const assigned = useStoryVariant();
+  // `?parcours=histoire|actuel` : forcer une variante (revue, captures) ; sinon tirage stable par installation
+  const { parcours } = useLocalSearchParams<{ parcours?: string }>();
+  const story = parcours === 'histoire' ? 'story' : parcours === 'actuel' ? 'control' : assigned;
+  const [storyDone, setStoryDone] = useState(false);
   const [demoReady, setDemoReady] = useState(Platform.OS !== 'web' || isDemo || webShowcase);
   // Version web : pas d'achat intégré ; la démonstration (faux magasin, grille signalée) remplace la boutique
   useEffect(() => { if (!demoReady) void enterDemoMode().then(() => setDemoReady(true)); }, [demoReady]);
@@ -51,18 +57,19 @@ export function FirstWinOffers({ webShowcase = false }: { webShowcase?: boolean 
   // Présélection une fois le catalogue Premium chargé (jamais sur un catalogue partiel : Famille arrive parfois avant)
   useEffect(() => {
     if (catalog !== 'ready' || p === undefined) return;
-    if (!selected || !cards.some((c) => c.key === selected)) setSelected(defaultOfferKey(cards, wanted));
-  }, [catalog, cards, wanted, selected, p]);
+    // Variante « histoire » : l'annuel présélectionné (bon choix par défaut), le mensuel juste à côté
+    if (!selected || !cards.some((c) => c.key === selected)) setSelected(defaultOfferKey(cards, wanted ?? (story === 'story' ? 'premium:annual' : null)));
+  }, [catalog, cards, wanted, selected, p, story]);
   const card = cards.find((c) => c.key === selected) ?? null;
-  const props = { stage: p?.stage ?? null, need: p?.need ?? null, variant, direction: INTEGRATED_DIRECTION.toLowerCase() };
+  const props = { stage: p?.stage ?? null, need: p?.need ?? null, variant, direction: INTEGRATED_DIRECTION.toLowerCase(), source: story ?? 'control' };
 
   useEffect(() => {
-    if (viewed.current || catalog !== 'ready' || !variant || p === undefined) return;
+    if (viewed.current || catalog !== 'ready' || !variant || p === undefined || (story === 'story' && !storyDone)) return;
     viewed.current = true;
     void track('paywall_viewed', props);
-  }, [catalog, variant, p]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [catalog, variant, p, storyDone]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!ready || p === undefined || !variant || !demoReady) return <View style={{ flex: 1, backgroundColor: th.colors.background }} />;
+  if (!ready || p === undefined || !variant || !story || !demoReady) return <View style={{ flex: 1, backgroundColor: th.colors.background }} />;
   // Abonné·e : jamais le parcours de vente (sauf l'achat qui vient d'être confirmé, géré par /start/done)
   if (session && premium === true && phase !== 'confirmed') return <Redirect href="/(tabs)" />;
 
@@ -129,8 +136,14 @@ export function FirstWinOffers({ webShowcase = false }: { webShowcase?: boolean 
     else router.replace(session ? '/(tabs)' : '/welcome');
   }
 
+  // Variante « histoire » : transformation → confiance → fondateurs, puis les offres (aucun prix avant)
+  if (story === 'story' && !storyDone && !(resume === '1' && session)) {
+    return <PaywallStory need={p?.need ?? null} onClose={close} onDone={() => setStoryDone(true)}
+      onSlide={(i, id) => void track('onboarding_step_viewed', { ...props, step: `pw_story_${i + 1}_${id}` })} />;
+  }
+
   return (
-    <PaywallWhite direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
+    <PaywallWhite storyMode={story === 'story'} direction={INTEGRATED_DIRECTION} variant={variant} need={p?.need ?? null} result={p?.result ?? null} cards={cards} selectedKey={selected}
       onSelect={select} catalog={catalog} phase={phase} aiOnline={aiAssistantOnline()} now={now} reminder={Platform.OS === 'ios' || Platform.OS === 'android'} resume={resume === '1' && !!session}
       needsAccount={!session} webShowcase={webShowcase} onSignUp={() => router.push('/auth/sign-up')} onDemo={() => router.replace('/demo' as never)} onBuy={() => void buy()} onRetry={refetch} onRestore={() => void restore()} onClose={close}
       onLegal={(doc) => router.push(`/legal/${doc}`)}

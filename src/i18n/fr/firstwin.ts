@@ -258,5 +258,5 @@ export const firstwin = {
   'fw.pw.story.sign': '— L’équipe HOMI',
   'fw.cta.toTrial': 'Continuer vers l’essai',
   'fw.cta.toAccount': 'Continuer',
-  'fw.cta.startTrial': { one: 'Démarrer mon jour gratuit', other: 'Démarrer mes {count} jours gratuits' },
+  'fw.cta.startTrial': { one: 'Commencer mon jour gratuit', other: 'Commencer mes {count} jours gratuits' },
 };
