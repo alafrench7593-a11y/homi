@@ -2,7 +2,7 @@ import type { credits as fr } from '../fr/credits';
 import type { Messages } from '../types';
 
 export const credits: Messages<typeof fr> = {
-  'cr.screen': 'My credits',
+  'cr.screen': 'Aura usage',
   'cr.balance.title': 'Aura credits',
   'cr.balance.total': { one: '{count} credit available', other: '{count} credits available' },
   'cr.balance.monthly': 'Monthly remaining',
@@ -29,7 +29,7 @@ export const credits: Messages<typeof fr> = {
   'cr.noSub.body': 'Without a subscription there are no Aura credits. Premium includes {premium} credits a month; Family, {family} credits a month shared by the adults of the household.',
   'cr.noSub.cta': 'See subscriptions',
 
-  'cr.packs.title': 'Buy credits',
+  'cr.packs.title': 'Add credits',
   'cr.packs.subtitle': 'Store prices. Credits are added to your account as soon as the purchase is confirmed.',
   'cr.packs.item': { one: '{count} credit', other: '{count} credits' },
   'cr.packs.buyA11y': 'Buy {count} credits for {price}',
@@ -112,4 +112,20 @@ export const credits: Messages<typeof fr> = {
   'fam.unavailable': 'The Family plan is not offered by the store yet.',
   'fam.thanks': 'Welcome to HOMI Family.',
   'fam.shared': 'Family shared by {name}',
+  'cr.usage.a11y': 'Aura: {used}% used, {left}% left',
+  'cr.usage.used': '{pct}% used',
+  'cr.usage.left': '{pct}% left',
+  'cr.usage.add': 'Add credits',
+  'cr.usage.n75': 'You\'ve used {pct}% of your Aura capacity this month.',
+  'cr.usage.n90': 'Your Aura capacity is almost reached. You can add credits if needed.',
+  'cr.usage.n100': 'Monthly Aura capacity reached. All your tools, logs and stats stay available; only AI answers wait for renewal or added credits.',
+  'cr.usage.breakdown': 'This month',
+  'cr.group.assist': 'Smart assistance',
+  'cr.group.analysis': 'Personal analyses',
+  'cr.group.summary': 'Summaries',
+  'cr.group.documents': 'Documents and photos',
+  'cr.group.other': 'Other AI features',
+  'cr.usage.free': 'Opening a tool, logging, calculating: always free.',
+  'cr.usage.line': 'Aura · {pct}% of your capacity used',
+  'cr.usage.ask': 'Ask Aura for a detailed answer',
 };

@@ -15,7 +15,8 @@ import { useCreditConfig, useCreditHistory, useCreditStatus } from '@/lib/data/h
 import { historyLabel, signedAmount, type CreditHistoryRow } from '@/lib/credits/model';
 import { getPurchaseMode } from '@/lib/purchaseMode';
 import { AnalyzeWithAI } from '@/features/credits/AnalyzeWithAI';
-import { CreditBalanceCard, CreditRules, NoSubscriptionCredits, PackList } from '@/features/credits/CreditsParts';
+import { CreditBalanceCard, CreditRules, NoSubscriptionCredits, PackList, UsageBreakdown, UsageNotice } from '@/features/credits/CreditsParts';
+import { usageBreakdown } from '@/lib/credits/model';
 import { useTheme } from '@/theme/ThemeProvider';
 
 function HistoryRow({ row }: { row: CreditHistoryRow }) {
@@ -47,12 +48,17 @@ export default function CreditsScreen() {
   const s = status.data;
   const rows = (history.data?.pages ?? []).flat();
   const demo = getPurchaseMode() === 'test';
+  const breakdown = React.useMemo(() => usageBreakdown(rows, s?.period_start), [rows, s?.period_start]);
 
   return (
     <Screen back title={tr('cr.screen')}>
       {status.isLoading ? <Loading /> : status.isError ? <ErrorState error={status.error} onRetry={() => void status.refetch()} /> : s ? (
         <>
+          {s.subscribed ? <UsageNotice status={s} /> : null}
           {s.subscribed ? <CreditBalanceCard status={s} /> : <NoSubscriptionCredits config={config.data} />}
+          <Text variant="small" muted testID="credits-free-line">{tr('cr.usage.free')}</Text>
+          {s.subscribed && breakdown.length ? <SectionTitle title={tr('cr.usage.breakdown')} /> : null}
+          {s.subscribed ? <UsageBreakdown items={breakdown} /> : null}
           {!s.subscribed && s.purchased_remaining > 0 ? <CreditBalanceCard status={s} /> : null}
 
           <SectionTitle title={tr('cr.packs.title')} subtitle={s.subscribed ? tr('cr.packs.subtitle') : undefined} />

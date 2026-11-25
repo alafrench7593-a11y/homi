@@ -2,7 +2,7 @@ import type { credits as fr } from '../fr/credits';
 import type { Messages } from '../types';
 
 export const credits: Messages<typeof fr> = {
-  'cr.screen': 'Meine Credits',
+  'cr.screen': 'Aura-Nutzung',
   'cr.balance.title': 'HOMI-KI-Credits',
   'cr.balance.total': { one: '{count} Credit verfügbar', other: '{count} Credits verfügbar' },
   'cr.balance.monthly': 'Monatliche übrig',
@@ -29,7 +29,7 @@ export const credits: Messages<typeof fr> = {
   'cr.noSub.body': 'Ohne Abo gibt es keine HOMI-KI-Credits. Premium enthält {premium} Credits pro Monat; Familie {family} Credits pro Monat, geteilt von den Erwachsenen im Haushalt.',
   'cr.noSub.cta': 'Abos ansehen',
 
-  'cr.packs.title': 'Credits kaufen',
+  'cr.packs.title': 'Credits hinzufügen',
   'cr.packs.subtitle': 'Preise des Stores. Die Credits werden deinem Konto gutgeschrieben, sobald der Kauf bestätigt ist.',
   'cr.packs.item': { one: '{count} Credit', other: '{count} Credits' },
   'cr.packs.buyA11y': '{count} Credits für {price} kaufen',
@@ -112,4 +112,20 @@ export const credits: Messages<typeof fr> = {
   'fam.unavailable': 'Das Familien-Abo wird vom Store noch nicht angeboten.',
   'fam.thanks': 'Willkommen bei HOMI Familie.',
   'fam.shared': 'Familie geteilt von {name}',
+  'cr.usage.a11y': 'Aura: {used} % genutzt, {left} % übrig',
+  'cr.usage.used': '{pct} % genutzt',
+  'cr.usage.left': '{pct} % übrig',
+  'cr.usage.add': 'Credits hinzufügen',
+  'cr.usage.n75': 'Du hast diesen Monat {pct} % deiner Aura-Kapazität genutzt.',
+  'cr.usage.n90': 'Deine Aura-Kapazität ist fast erreicht. Du kannst bei Bedarf Credits hinzufügen.',
+  'cr.usage.n100': 'Monatliche Aura-Kapazität erreicht. Alle Tools, Einträge und Statistiken bleiben verfügbar; nur KI-Antworten warten auf die Erneuerung oder zusätzliche Credits.',
+  'cr.usage.breakdown': 'Diesen Monat',
+  'cr.group.assist': 'Intelligente Hilfe',
+  'cr.group.analysis': 'Persönliche Analysen',
+  'cr.group.summary': 'Zusammenfassungen',
+  'cr.group.documents': 'Dokumente und Fotos',
+  'cr.group.other': 'Weitere KI-Funktionen',
+  'cr.usage.free': 'Tool öffnen, eintragen, berechnen: immer kostenlos.',
+  'cr.usage.line': 'Aura · {pct} % deiner Kapazität genutzt',
+  'cr.usage.ask': 'Aura um eine ausführliche Antwort bitten',
 };

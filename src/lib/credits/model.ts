@@ -109,3 +109,46 @@ export function signedAmount(n: number, format: (v: number) => string): string {
   if (n === 0) return format(0);
   return `${n > 0 ? '+' : '−'}${format(Math.abs(n))}`;
 }
+
+/**
+ * Utilisation Aura (25/11/2026) : la capacité mensuelle est présentée en pourcentage utilisé, jamais « 1 message = 1 crédit ».
+ * Calcul sur le solde SERVEUR (allocation mensuelle / restant mensuel). Les crédits achetés s'ajoutent à part.
+ */
+export function usagePercent(s: Pick<CreditStatus, 'monthly_allowance' | 'monthly_remaining'> | null | undefined): number | null {
+  if (!s || !(s.monthly_allowance > 0)) return null;
+  const used = s.monthly_allowance - Math.max(0, Math.min(s.monthly_allowance, s.monthly_remaining));
+  return Math.round((used / s.monthly_allowance) * 100);
+}
+
+/** Seuil d'information : 75 % (discret), 90 % (bientôt atteinte), 100 % (capacité mensuelle épuisée). */
+export type UsageLevel = 'ok' | 'high' | 'almost' | 'full';
+export function usageLevel(s: Pick<CreditStatus, 'monthly_allowance' | 'monthly_remaining' | 'purchased_remaining'> | null | undefined): UsageLevel {
+  const p = usagePercent(s);
+  if (p == null) return 'ok';
+  if (p >= 100) return (s!.purchased_remaining > 0 ? 'almost' : 'full');
+  if (p >= 90) return 'almost';
+  if (p >= 75) return 'high';
+  return 'ok';
+}
+
+/** Catégories compréhensibles (sans tokens ni modèles). */
+export type UsageGroup = 'assist' | 'analysis' | 'summary' | 'documents' | 'other';
+const GROUP: Record<string, UsageGroup> = {
+  assistant_question: 'assist', action_plan: 'assist',
+  tool_analysis: 'analysis', cycle_photo: 'analysis',
+  journal_summary: 'summary', community_summary: 'summary',
+  document_read: 'documents', scan_explain: 'documents',
+};
+export const usageGroupOf = (action: string | null | undefined): UsageGroup => (action && GROUP[action]) || 'other';
+
+/** Répartition des débits de la période en cours (lignes d'historique déjà chargées), en crédits par catégorie. */
+export function usageBreakdown(rows: Pick<CreditHistoryRow, 'kind' | 'action' | 'amount' | 'created_at'>[], periodStart: string | null | undefined): { group: UsageGroup; used: number }[] {
+  const from = periodStart ? Date.parse(periodStart) : -Infinity;
+  const acc: Record<UsageGroup, number> = { assist: 0, analysis: 0, summary: 0, documents: 0, other: 0 };
+  for (const r of rows) {
+    if (r.kind !== 'debit' && r.kind !== 'refund') continue;
+    if (Date.parse(r.created_at) < from) continue;
+    acc[usageGroupOf(r.action)] += r.kind === 'debit' ? Math.abs(r.amount) : -Math.abs(r.amount);
+  }
+  return (Object.keys(acc) as UsageGroup[]).map((group) => ({ group, used: Math.max(0, acc[group]) })).filter((x) => x.used > 0).sort((a, b) => b.used - a.used);
+}

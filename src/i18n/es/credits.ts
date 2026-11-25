@@ -2,7 +2,7 @@ import type { credits as fr } from '../fr/credits';
 import type { Messages } from '../types';
 
 export const credits: Messages<typeof fr> = {
-  'cr.screen': 'Mis créditos',
+  'cr.screen': 'Uso de Aura',
   'cr.balance.title': 'Créditos Aura',
   'cr.balance.total': { one: '{count} crédito disponible', other: '{count} créditos disponibles' },
   'cr.balance.monthly': 'Mensuales restantes',
@@ -29,7 +29,7 @@ export const credits: Messages<typeof fr> = {
   'cr.noSub.body': 'Sin suscripción no hay créditos Aura. Premium incluye {premium} créditos al mes; Familia, {family} créditos al mes compartidos por los adultos del hogar.',
   'cr.noSub.cta': 'Ver las suscripciones',
 
-  'cr.packs.title': 'Comprar créditos',
+  'cr.packs.title': 'Añadir créditos',
   'cr.packs.subtitle': 'Precios de la tienda. Los créditos se añaden a tu cuenta en cuanto se confirma la compra.',
   'cr.packs.item': { one: '{count} crédito', other: '{count} créditos' },
   'cr.packs.buyA11y': 'Comprar {count} créditos por {price}',
@@ -112,4 +112,20 @@ export const credits: Messages<typeof fr> = {
   'fam.unavailable': 'La tienda todavía no ofrece el plan Familia.',
   'fam.thanks': 'Bienvenida a HOMI Familia.',
   'fam.shared': 'Familia compartida por {name}',
+  'cr.usage.a11y': 'Aura: {used} % usado, {left} % restante',
+  'cr.usage.used': '{pct} % usado',
+  'cr.usage.left': '{pct} % restante',
+  'cr.usage.add': 'Añadir créditos',
+  'cr.usage.n75': 'Has usado el {pct} % de tu capacidad Aura este mes.',
+  'cr.usage.n90': 'Tu capacidad Aura está casi agotada. Puedes añadir créditos si lo necesitas.',
+  'cr.usage.n100': 'Capacidad Aura del mes alcanzada. Todas tus herramientas, registros y estadísticas siguen disponibles; solo las respuestas IA esperan la renovación o créditos añadidos.',
+  'cr.usage.breakdown': 'Este mes',
+  'cr.group.assist': 'Asistencia inteligente',
+  'cr.group.analysis': 'Análisis personalizados',
+  'cr.group.summary': 'Resúmenes',
+  'cr.group.documents': 'Documentos y fotos',
+  'cr.group.other': 'Otras funciones IA',
+  'cr.usage.free': 'Abrir una herramienta, registrar, calcular: siempre gratis.',
+  'cr.usage.line': 'Aura · {pct} % de tu capacidad usado',
+  'cr.usage.ask': 'Pedir a Aura una respuesta detallada',
 };

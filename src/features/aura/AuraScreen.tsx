@@ -42,7 +42,8 @@ import { useActiveSubject, useChildren, useConsents, useFullArticles, useSetCons
 import { useCreditConfig, useCreditStatus, useRefreshCredits } from '@/lib/data/hooks-credits';
 import { useEntitlement } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
-import { costOf, totalRemaining } from '@/lib/credits/model';
+import { costOf, totalRemaining, usagePercent } from '@/lib/credits/model';
+import { UsageBar, UsageNotice } from '@/features/credits/CreditsParts';
 import { childAge } from '@/lib/domain/child';
 import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { searchCatalog } from '@/lib/domain/toolSearch';
@@ -386,8 +387,10 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     onError: (e) => toast(friendlyError(e), 'error'),
   });
   const modeLabel = tr(mode === 'online' ? 'aura.mode.online' : mode === 'demo' ? 'aura.mode.demo' : 'aura.mode.local');
-  const costLine = !remote ? tr('aura.free')
-    : `${tr('aura.cost', { count: askCost })}${credits.data?.subscribed ? ` · ${tr('cr.balance.total', { count: totalRemaining(credits.data) })}` : ''}`;
+  // 25/11/2026 : plus de « 1 crédit par question » : la capacité Aura est montrée en pourcentage (serveur), et les
+  // actions locales (outil, enregistrement, calcul) restent gratuites
+  const usedPct = credits.data?.subscribed ? usagePercent(credits.data) : null;
+  const costLine = !remote ? tr('aura.free') : usedPct != null ? tr('cr.usage.line', { pct: usedPct }) : tr('cr.usage.free');
   const empty = msgs.length === 0;
   // Robot d'Aura : coucou à l'ouverture, écoute pendant la saisie, réflexion, sursaut à la réponse, inquiétude douce
   // sur une erreur ou une réponse de sécurité (aucune logique d'IA ni de crédits ici : il ne fait que refléter l'écran)
@@ -405,7 +408,11 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     <View style={{ gap: spacing.md, marginBottom: spacing.sm }}>
       {/* 25/11/2026 : coût et urgences en haut de la conversation ; en bas, seulement la barre d'écriture (plus d'écran caché) */}
       <View style={{ gap: 2 }}>
-        <Text variant="caption" muted center testID="aura-cost">{costLine}</Text>
+        <Tappable accessibilityRole="link" accessibilityLabel={tr('cr.screen')} onPress={() => router.push('/settings/credits' as never)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center', gap: 4 }} testID="aura-usage">
+          <Text variant="caption" muted center testID="aura-cost">{costLine}</Text>
+          {remote && credits.data?.subscribed ? <View style={{ alignSelf: 'center', width: 160 }}><UsageBar status={credits.data} compact /></View> : null}
+        </Tappable>
+        {remote && credits.data?.subscribed ? <UsageNotice status={credits.data} onAdd={() => router.push('/settings/credits' as never)} /> : null}
         <Tappable accessibilityRole="link" accessibilityLabel={tr('u8.chat.emergA11y')} onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
             <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.emerg')}</Text>
           </Tappable>
@@ -548,7 +555,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               multiline maxLength={MAX_QUESTION_LENGTH} textAlignVertical="top" editable={!blockedByConsent} testID="aura-input"
               style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
             />
-            <Tappable accessibilityRole="button" accessibilityLabel={remote ? tr('aura.sendCost', { count: askCost }) : tr('aura.send')} accessibilityState={{ disabled: sending || input.trim().length < 2 || blockedByConsent, busy: sending }}
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('aura.send')} accessibilityState={{ disabled: sending || input.trim().length < 2 || blockedByConsent, busy: sending }}
               disabled={sending || input.trim().length < 2 || blockedByConsent} onPress={() => void send()} testID="aura-send"
               style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: t.tokens.action.fill, ...whoopEdge(t, t.tokens.action.fill), alignItems: 'center', justifyContent: 'center', opacity: sending || input.trim().length < 2 || blockedByConsent ? 0.4 : 1 }}>
               <Icon name="arrow-up" color={t.tokens.action.text} />
@@ -691,7 +698,7 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
         <View style={[bubble, { flex: 1 }]} accessibilityLiveRegion="polite">
           <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} />
           {reply.ask && onAskAi ? (
-            <Button label={tr('aura.askAnyway', { count: askCost ?? 1 })} icon="message-circle" size="sm" variant="ghost" onPress={() => onAskAi(reply.ask!)} testID="aura-ask-anyway" />
+            <Button label={tr('cr.usage.ask')} icon="message-circle" size="sm" variant="ghost" onPress={() => onAskAi(reply.ask!)} testID="aura-ask-anyway" />
           ) : null}
         </View>
       </View>

@@ -3,8 +3,8 @@
  * crédits » et la page d'abonnement : carte du solde, liste des packs aux prix de la boutique, règles.
  * Aucun prix écrit en dur (boutique, ou grille de démonstration signalée) ; jamais le contenu d'une question.
  */
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, View } from 'react-native';
 import { router } from 'expo-router';
 import { Banner, Button, Card, Icon, Loading, Text, type IconName } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
@@ -14,7 +14,8 @@ import { formatDate, formatNumber, t as tr } from '@/i18n';
 import { aiAssistantOnline } from '@/config/features';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useCreditPacks, useRefreshCredits } from '@/lib/data/hooks-credits';
-import { DEFAULT_GRANTS, totalRemaining, type CreditConfig, type CreditStatus } from '@/lib/credits/model';
+import { DEFAULT_GRANTS, totalRemaining, usageLevel, usagePercent, type CreditConfig, type CreditStatus, type UsageGroup } from '@/lib/credits/model';
+import { useReduceMotion } from '@/theme/ThemeProvider';
 import { getPurchaseMode, purchasesSdk, type PackChoice } from '@/lib/purchaseMode';
 import { PurchaseError } from '@/lib/premium/purchaseErrors';
 import { errorFeedback } from '@/features/premium/paywallModel';
@@ -47,7 +48,8 @@ export function CreditBalanceCard({ status }: { status: CreditStatus }) {
         style={{ gap: spacing.sm }}
       >
         <Text variant="caption" weight="bold" muted>{tr('cr.balance.title')}</Text>
-        <Text variant="heading" testID="credits-total">{tr('cr.balance.total', { count: total })}</Text>
+        <UsageBar status={status} />
+        <Text variant="small" weight="medium" testID="credits-total">{tr('cr.balance.total', { count: total })}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
           <Stat label={tr('cr.balance.monthly')} value={formatNumber(status.monthly_remaining)} testID="credits-monthly" />
           <Stat label={tr('cr.balance.purchased')} value={formatNumber(status.purchased_remaining)} testID="credits-purchased" />
@@ -166,5 +168,79 @@ export function PackList({ subscribed, onBought }: { subscribed: boolean; onBoug
       <Text variant="caption" muted>{tr('cr.packs.oneTime')}</Text>
       {list.some((p) => p.demo) ? <Text variant="caption" muted testID="credits-packs-demo">{tr('cr.packs.demo')}</Text> : null}
     </View>
+  );
+}
+
+/**
+ * Barre d'utilisation Aura (25/11/2026) : pourcentage de la capacité mensuelle utilisé, valeur du SERVEUR.
+ * Animée une fois à l'ouverture (rien avec Réduire les animations).
+ */
+export function UsageBar({ status, compact }: { status: CreditStatus; compact?: boolean }) {
+  const th = useTheme();
+  const reduce = useReduceMotion();
+  const pct = usagePercent(status);
+  const level = usageLevel(status);
+  const w = useRef(new Animated.Value(reduce ? (pct ?? 0) : 0)).current;
+  useEffect(() => {
+    if (pct == null) return;
+    if (reduce) { w.setValue(pct); return; }
+    Animated.timing(w, { toValue: pct, duration: 650, useNativeDriver: false }).start();
+  }, [pct, reduce, w]);
+  if (pct == null) return null;
+  const fill = level === 'full' || level === 'almost' ? th.colors.danger : level === 'high' ? th.colors.warning : th.colors.primary;
+  const h = compact ? 6 : 12;
+  return (
+    <View style={{ gap: 6 }} accessible accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 100, now: pct }}
+      accessibilityLabel={tr('cr.usage.a11y', { used: pct, left: 100 - pct })} testID="credits-usage">
+      {!compact ? (
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <Text variant="heading" testID="credits-usage-pct">{tr('cr.usage.used', { pct })}</Text>
+          <Text variant="small" muted>{tr('cr.usage.left', { pct: 100 - pct })}</Text>
+        </View>
+      ) : null}
+      <View style={{ height: h, borderRadius: h / 2, backgroundColor: th.colors.border, overflow: 'hidden' }}>
+        <Animated.View style={{ height: h, borderRadius: h / 2, backgroundColor: fill, width: w.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] }) }} />
+      </View>
+    </View>
+  );
+}
+
+/** Information discrète aux seuils 75 / 90 / 100 % ; HOMI reste utilisable sans IA. */
+export function UsageNotice({ status, onAdd }: { status: CreditStatus; onAdd?: () => void }) {
+  const level = usageLevel(status);
+  if (level === 'ok') return null;
+  return (
+    <View testID={`credits-notice-${level}`}>
+    <Banner tone={level === 'high' ? 'info' : 'warning'}
+      action={onAdd && level !== 'high' ? <Button label={tr('cr.usage.add')} size="sm" variant="secondary" onPress={onAdd} testID="credits-notice-add" /> : undefined}>
+      {tr(level === 'high' ? 'cr.usage.n75' : level === 'almost' ? 'cr.usage.n90' : 'cr.usage.n100', { pct: usagePercent(status) ?? 0 })}
+    </Banner>
+    </View>
+  );
+}
+
+const GROUP_ICON: Record<UsageGroup, IconName> = { assist: 'message-circle', analysis: 'bar-chart-2', summary: 'file-text', documents: 'camera', other: 'star' };
+/** Répartition de l'utilisation (catégories lisibles, sans détails techniques). */
+export function UsageBreakdown({ items }: { items: { group: UsageGroup; used: number }[] }) {
+  const th = useTheme();
+  if (!items.length) return null;
+  const total = items.reduce((a, b) => a + b.used, 0) || 1;
+  return (
+    <Card testID="credits-breakdown">
+      <View style={{ gap: spacing.sm }}>
+        {items.map((x) => (
+          <View key={x.group} style={{ gap: 4 }} accessible accessibilityLabel={`${tr(`cr.group.${x.group}` as never)} ${Math.round((x.used / total) * 100)} %`}>
+            <View style={{ flexDirection: 'row', gap: spacing.xs, alignItems: 'center' }}>
+              <Icon name={GROUP_ICON[x.group]} size={15} color={th.colors.textMuted} />
+              <Text variant="small" style={{ flex: 1 }}>{tr(`cr.group.${x.group}` as never)}</Text>
+              <Text variant="small" weight="bold">{Math.round((x.used / total) * 100)} %</Text>
+            </View>
+            <View style={{ height: 4, borderRadius: 2, backgroundColor: th.colors.border, overflow: 'hidden' }}>
+              <View style={{ height: 4, width: `${(x.used / total) * 100}%`, backgroundColor: th.colors.primary }} />
+            </View>
+          </View>
+        ))}
+      </View>
+    </Card>
   );
 }

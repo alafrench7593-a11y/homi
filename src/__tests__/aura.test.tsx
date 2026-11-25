@@ -205,8 +205,9 @@ describe('Écran HOMI Aura (démonstration : réponses simulées, crédits de d�
 
   it('conversation : coût affiché AVANT, propositions affichées, RIEN d’écrit avant confirmation, débit d’1 crédit', async () => {
     const r = await render(<AuraScreen />);
-    expect(allText(r)).toContain('1 crédit par question');
-    expect(allText(r)).toMatch(/1\s000 crédits disponibles/);
+    // 25/11/2026 : capacité en pourcentage, plus de « crédit par question »
+    expect(allText(r)).not.toContain('par question');
+    expect(allText(r)).toMatch(/Aura · 0\s?% de ta capacité utilisés/);
     const before = await status();
     await say(r, 'Aide-moi à organiser la semaine et le rendez-vous chez la pédiatre');
     await until(() => has(r, 'aura-reply'));
