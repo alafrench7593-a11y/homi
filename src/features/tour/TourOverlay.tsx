@@ -424,7 +424,9 @@ function Bubble({ step, index, copy, hole, lost, top, bottom, width }: {
   // bandeau compact sur une ligne, posé là où il ne recouvre pas l'élément (en bas, sur la barre d'onglets, sinon en
   // haut). Le texte complet reste annoncé aux lecteurs d'écran ; « Plus tard », « Passer » et « Quitter » y restent.
   if (hole && place.maxH < MIN_BUBBLE) {
-    const stripTop = hole.y + hole.height + 4 > bottom - STRIP_H ? top : bottom - STRIP_H;
+    // 26/11/2026 : marge de sécurité — l'élément peut dépasser la découpe (découpe limitée à 55 % de l'écran) ; sur
+    // petit iPhone le bandeau du bas chevauchait le bas de l'élément → il passe en haut dès qu'il s'en approche
+    const stripTop = hole.y + hole.height + 16 > bottom - STRIP_H ? top : bottom - STRIP_H;
     return (
       <Animated.View testID="tour-bubble" pointerEvents="box-none" style={[{ position: 'absolute', left, width: maxW, top: stripTop, height: STRIP_H }, enter]}>
         <Glass variant="sheet" radius={radius.lg} accessibilityLiveRegion="polite"
