@@ -121,4 +121,8 @@ export const motion = {
   "pw5.code.web": "Code saved. The discount is used in the HOMI app on iPhone.",
   "pw5.code.android": "Code discounts are available in the HOMI app on iPhone.",
   "aura.askAnyway": {"one": "Ask Aura anyway ({count} credit)", "other": "Ask Aura anyway ({count} credits)"},
+  "aura.it3.bottlesSummary": {"one": "{name}'s bottle at {list}", "other": "{count} bottles for {name}: {list}"},
+  "aura.it3.bottlesSummaryMl": {"one": "{name}'s bottle: {ml} ml at {list}", "other": "{count} bottles of {ml} ml for {name}: {list}"},
+  "aura.it3.bottlesDone": {"one": "Bottle saved", "other": "{count} bottles saved"},
+  "aura.it3.bottlesNone": "Nothing new to log for {name}: these times are already logged, still to come, or the amount is missing.",
 } as const;

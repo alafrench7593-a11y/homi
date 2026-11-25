@@ -121,4 +121,8 @@ export const motion = {
   "pw5.code.web": "Code gespeichert. Der Rabatt wird in der HOMI-App auf dem iPhone genutzt.",
   "pw5.code.android": "Rabatte per Code gibt es in der HOMI-App auf dem iPhone.",
   "aura.askAnyway": {"one": "Trotzdem Aura fragen ({count} Credit)", "other": "Trotzdem Aura fragen ({count} Credits)"},
+  "aura.it3.bottlesSummary": {"one": "Fläschchen von {name} um {list}", "other": "{count} Fläschchen für {name}: {list}"},
+  "aura.it3.bottlesSummaryMl": {"one": "Fläschchen von {name}: {ml} ml um {list}", "other": "{count} Fläschchen à {ml} ml für {name}: {list}"},
+  "aura.it3.bottlesDone": {"one": "Fläschchen gespeichert", "other": "{count} Fläschchen gespeichert"},
+  "aura.it3.bottlesNone": "Nichts Neues für {name} zu notieren: Diese Zeiten sind schon notiert, liegen in der Zukunft oder die Menge fehlt.",
 } as const;

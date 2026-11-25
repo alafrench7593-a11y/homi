@@ -403,6 +403,13 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
 
   const header = (
     <View style={{ gap: spacing.md, marginBottom: spacing.sm }}>
+      {/* 25/11/2026 : coût et urgences en haut de la conversation ; en bas, seulement la barre d'écriture (plus d'écran caché) */}
+      <View style={{ gap: 2 }}>
+        <Text variant="caption" muted center testID="aura-cost">{costLine}</Text>
+        <Tappable accessibilityRole="link" accessibilityLabel={tr('u8.chat.emergA11y')} onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
+            <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.emerg')}</Text>
+          </Tappable>
+      </View>
       {/* Accès d’abord (abonnement actif, accord) : visible sans défiler, même à 320 × 568 */}
       {needsSub ? (
         <View testID="aura-needs-sub" style={{ gap: spacing.sm, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: spacing.md }}>
@@ -509,8 +516,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       bottomInset={inTab ? TAB_SCREEN_INSET : 0}
       right={<IconButton icon="sliders" label={tr('aura.settings.a11y')} onPress={() => setSettings(true)} testID="aura-settings" />}
       footer={(
-        <View style={{ gap: 4 }} testID="aura-composer">
-          <Text variant="caption" muted center testID="aura-cost">{costLine}</Text>
+        <View style={{ gap: 2 }} testID="aura-composer">
           {!online && remote ? <Text variant="caption" color={t.colors.warning} center testID="aura-offline">{tr('aura.err.network')}</Text> : null}
           {blockedByConsent ? (
             <View testID="aura-blocked" accessibilityLiveRegion="polite" style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: spacing.xs }}>
@@ -548,9 +554,6 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               <Icon name="arrow-up" color={t.tokens.action.text} />
             </Tappable>
           </View>
-          <Tappable accessibilityRole="link" accessibilityLabel={tr('u8.chat.emergA11y')} onPress={() => router.push('/emergency')} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
-            <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.emerg')}</Text>
-          </Tappable>
         </View>
       )}
     >

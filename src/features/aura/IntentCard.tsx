@@ -77,6 +77,7 @@ export function IntentCard({ intent: initial, catalog, allTools }: { intent: Aur
   const addSleep = useAddLog('sleep');
   const addBottle = useAddLog('bottle');
   const writeId = useRef(uuid());
+  const extraIds = useRef<string[]>([]);
   const [phase, setPhase] = useState<'idle' | 'saving' | 'done' | 'queued' | 'error'>('idle');
   const [done, setDone] = useState<{ label: string; href: string } | null>(null);
   const save = async () => {
@@ -87,8 +88,13 @@ export function IntentCard({ intent: initial, catalog, allTools }: { intent: Aur
     if (!household_id) { toast(tr('aura.it.changed'), 'info'); return; }
     setPhase('saving');
     try {
-      const row = { ...now.write.row, id: writeId.current, client_id: writeId.current, household_id };
-      const res = await (now.write.kind === 'sleep' ? addSleep : addBottle).mutateAsync(row);
+      // Série (plusieurs biberons) : un identifiant stable par ligne → un 2e appui ne crée jamais de doublon
+      const rows = now.write.rows?.length ? now.write.rows : [now.write.row];
+      let res: unknown = null;
+      for (let i = 0; i < rows.length; i++) {
+        const id = i === 0 ? writeId.current : (extraIds.current[i] ??= uuid());
+        res = await (now.write.kind === 'sleep' ? addSleep : addBottle).mutateAsync({ ...rows[i], id, client_id: id, household_id });
+      }
       setDone({ label: now.doneLabel, href: now.viewHref });
       setPhase(res === 'queued' ? 'queued' : 'done');
     } catch {

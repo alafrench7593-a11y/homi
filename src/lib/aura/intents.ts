@@ -23,7 +23,7 @@ export type AuraIntent =
   /** Aura 2.0 — enregistrer une sieste ou une nuit « de 14 h 20 à 15 h 45 » (confirmée par le parent, puis écrite) */
   | { kind: 'log_sleep'; start: string; end: string; childId?: string | null }
   /** Aura 2.0 — enregistrer un biberon bu « il vient de boire 150 ml » (heure : maintenant) */
-  | { kind: 'log_bottle'; ml: number; childId?: string | null }
+  | { kind: 'log_bottle'; ml: number | null; childId?: string | null; /** série ou heures dites (« 6 fois depuis midi toutes les 2 h », « à 14 h ») : HH:MM du jour */ times?: string[] }
   /** Aura 2.0 — lecture sans IA : sommeil total d'aujourd'hui */
   | { kind: 'sleep_today'; childId?: string | null }
   /** Aura 2.0 — rendez-vous « chez le pédiatre mardi à 10 h » : formulaire pré-rempli, confirmé par le parent */
@@ -111,6 +111,37 @@ export function visionDoc(q: string): VisionDoc | null {
   return null;
 }
 
+
+const NUM_WORDS: Record<string, number> = { un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10, onze: 11, douze: 12,
+  one: 1, two: 2, three: 3, four: 4, five: 5, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+const numOf = (w: string) => (/^\d+$/.test(w) ? Number(w) : NUM_WORDS[w] ?? NaN);
+
+/**
+ * Série de biberons dite en phrase : compte (« 6 fois », « 6 biberons »), départ (« depuis midi », « à partir de 8 h »),
+ * intervalle (« toutes les 2 h ») et quantité (« 150 ml ») ; ou simplement une ou plusieurs heures (« à 14 h »).
+ * Rien n'est inventé : sans heure dite, pas de série (la règle « il vient de boire 150 ml » s'applique ensuite).
+ */
+export function bottleSeries(q: string, raw: string): AuraIntent | null {
+  if (!has(q, /\b(bib|bibs|bibi|biberon\w*|bottle\w*|tetine)\b/)) return null;
+  const times = timesIn(raw.replace(/\bmidi\b/gi, '12h').replace(/\bminuit\b/gi, '0h').replace(/\bnoon\b/gi, '12h'));
+  const mlm = /\b(\d{2,3})\s*(ml|millilitres?|milliliters?)\b/.exec(q);
+  const ml = mlm && Number(mlm[1]) >= 5 && Number(mlm[1]) <= 400 ? Number(mlm[1]) : null;
+  const every = /\b(?:toutes? les|tous les|every)\s*(\d+(?:[.,]5)?)\s*(?:h|heures?|hours?)\b/.exec(q);
+  const countM = /\b(\d{1,2}|un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|two|three|four|five|seven|eight|nine|ten|eleven|twelve)\s*(?:fois|biberons?|bibs?|bottles?|times)\b/.exec(q);
+  if (every && times.length >= 1) {
+    const step = Math.round(Number(every[1].replace(',', '.')) * 60);
+    const n = countM ? numOf(countM[1]) : NaN;
+    if (!(step >= 30 && step <= 720)) return null;
+    const [h0, m0] = times[0].split(':').map(Number);
+    const count = Number.isFinite(n) && n >= 1 ? Math.min(12, n) : Math.min(12, Math.floor((24 * 60 - (h0 * 60 + m0)) / step) + 1);
+    const out: string[] = [];
+    for (let k = 0; k < count; k++) { const t = h0 * 60 + m0 + k * step; if (t >= 24 * 60) break; out.push(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`); }
+    return out.length ? { kind: 'log_bottle', ml, times: out } : null;
+  }
+  if (times.length >= 1) return { kind: 'log_bottle', ml, times: times.slice(0, 12) };
+  return null;
+}
+
 export function matchIntent(question: string): AuraIntent | null {
   const q = foldText(question);
   // Aura Vision AVANT les questions d'explication : « explique-moi cette ordonnance » vise le papier en main
@@ -158,6 +189,10 @@ export function matchIntent(question: string): AuraIntent | null {
   // 0 bis) Enregistrer : deux heures + endormissement/réveil, SANS indice de correction (« s'est endormi à 14 h 20 et
   //        réveillé à 15 h 45 », « a dormi de 14 h à 15 h 30, ajoute ») ; la correction garde la priorité
   if (times.length >= 2 && sleepy && !fixCue) return { kind: 'log_sleep', start: times[0], end: times[1] };
+  // 0 bis-b) Biberons dits en phrase (25/11/2026) : « Lina a pris 6 fois son biberon depuis midi toutes les 2 h »,
+  //          « biberon à 14 h », « elle a bu 150 ml à midi » → les heures exactes, confirmées avant d'enregistrer
+  const series = bottleSeries(q, question);
+  if (series) return series;
   // 0 ter) Biberon bu : « il vient de boire 150 ml », « bib de 120 ml »
   const ml = /\b(\d{2,3})\s*(ml|millilitres?|milliliters?)\b/.exec(q);
   if (ml && has(q, /\b(bib|bibs|bibi|biberon\w*|bottle\w*|bu|boire|bois|but|drank|drunk|drink|fini\w*|finished)\b/)) {
@@ -242,7 +277,7 @@ export type Resolution =
   | { status: 'list'; label: string; items: { label: string; href: string }[]; hint?: string }
   | { status: 'unavailable'; reason: string; alternative?: { label: string; href: string } }
   /** Écriture préparée : rien n'est enregistré avant l'appui du parent sur « Enregistrer » */
-  | { status: 'confirm'; summary: string; write: { kind: 'sleep' | 'bottle'; row: Record<string, unknown> }; childName: string; viewHref: string; editHref: string; doneLabel: string }
+  | { status: 'confirm'; summary: string; write: { kind: 'sleep' | 'bottle'; row: Record<string, unknown>; /** plusieurs lignes (série de biberons) */ rows?: Record<string, unknown>[] }; childName: string; viewHref: string; editHref: string; doneLabel: string }
   /** Réponse calculée sur les données réelles (jamais inventée) */
   | { status: 'answer'; text: string; href: string; label: string };
 
@@ -444,7 +479,24 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
       viewHref: `/sleep/${child.id}`, editHref: `/sleep/${child.id}`, doneLabel: ctx.t(night ? 'aura.it2.nightDone' : 'aura.it2.napDone', { d: span(min) }),
     };
   }
+  if (intent.kind === 'log_bottle' && intent.times?.length) {
+    if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }) };
+    const day = (hm: string) => { const [h, m] = hm.split(':').map(Number); return new Date(ctx.now.getFullYear(), ctx.now.getMonth(), ctx.now.getDate(), h, m); };
+    // jamais dans le futur ; les heures déjà notées (même heure à 10 min près) ne sont pas recopiées
+    const known = (ctx.bottles ?? []).map((b) => Date.parse(b.at));
+    const at = intent.times.map(day).filter((d) => d.getTime() <= ctx.now.getTime() + 60000 && !known.some((k) => Math.abs(k - d.getTime()) < 10 * 60000));
+    if (!at.length) return { status: 'unavailable', reason: ctx.t('aura.it3.bottlesNone', { name: child.first_name }) };
+    const rows = at.map((d) => ({ child_id: child.id, at: d.toISOString(), prepared_ml: null, consumed_ml: intent.ml ?? null, planned_next_ml: null, note: null }));
+    const list = at.map((d) => ctx.clock(d)).join(', ');
+    return {
+      status: 'confirm', childName: child.first_name,
+      summary: ctx.t(intent.ml ? 'aura.it3.bottlesSummaryMl' : 'aura.it3.bottlesSummary', { name: child.first_name, count: rows.length, list, ml: intent.ml ?? 0 }),
+      write: { kind: 'bottle', row: rows[0], rows },
+      viewHref: `/bottle/${child.id}`, editHref: `/bottle/history?child=${child.id}`, doneLabel: ctx.t('aura.it3.bottlesDone', { count: rows.length }),
+    };
+  }
   if (intent.kind === 'log_bottle') {
+    if (intent.ml == null) return { status: 'unavailable', reason: ctx.t('aura.it3.bottlesNone', { name: child.first_name }) };
     if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }), alternative: { label: ctx.t('aura.it.open', { name: ctx.t('aura.it.tool.baby_bottle') }), href: `/bottle/${child.id}` } };
     // Doublon probable : même quantité notée il y a moins de 10 minutes
     const dup = (ctx.bottles ?? []).find((b) => b.consumed_ml === intent.ml && Math.abs(ctx.now.getTime() - Date.parse(b.at)) < 10 * 60000);

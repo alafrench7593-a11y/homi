@@ -121,4 +121,8 @@ export const motion = {
   "pw5.code.web": "Codice salvato. Lo sconto si usa nell’app HOMI su iPhone.",
   "pw5.code.android": "Lo sconto con codice è disponibile nell’app HOMI su iPhone.",
   "aura.askAnyway": {"one": "Chiedi comunque ad Aura ({count} credito)", "other": "Chiedi comunque ad Aura ({count} crediti)"},
+  "aura.it3.bottlesSummary": {"one": "Biberon di {name} alle {list}", "other": "{count} biberon per {name}: {list}"},
+  "aura.it3.bottlesSummaryMl": {"one": "Biberon di {name}: {ml} ml alle {list}", "other": "{count} biberon da {ml} ml per {name}: {list}"},
+  "aura.it3.bottlesDone": {"one": "Biberon salvato", "other": "{count} biberon salvati"},
+  "aura.it3.bottlesNone": "Niente di nuovo da annotare per {name}: questi orari sono già annotati, devono ancora arrivare o manca la quantità.",
 } as const;
