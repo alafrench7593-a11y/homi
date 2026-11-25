@@ -198,7 +198,7 @@ export function WeekPicker({ current, shown, onPick }: { current: number; shown:
   return (
     <View style={{ gap: spacing.xs }}>
       <Text variant="label" muted style={{ paddingHorizontal: spacing.xxs }}>{tr('h5.preg.explore')}</Text>
-      <ScrollView ref={ref} horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingVertical: 2 }} accessibilityLabel={tr('u2.preg.choose_week')} testID="preg-week-picker">
+      <ScrollView ref={ref} horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -spacing.md }} contentContainerStyle={{ gap: 6, paddingVertical: 2, paddingHorizontal: spacing.md }} accessibilityLabel={tr('u2.preg.choose_week')} testID="preg-week-picker">
         {Array.from({ length: 39 }, (_, i) => i + first).map((s) => {
           const on = s === shown;
           const today = s === current;
@@ -218,7 +218,8 @@ export function WeekPicker({ current, shown, onPick }: { current: number; shown:
 }
 
 const styles = StyleSheet.create({
-  bigNumber: { fontFamily: fonts.display, fontSize: 96, lineHeight: 100, letterSpacing: -4, fontVariant: ['tabular-nums'] },
+  // 26/11/2026 (retour iPhone « chiffres coupés ») : interligne > corps du chiffre, sinon iOS rogne le haut des chiffres
+  bigNumber: { fontFamily: fonts.display, fontSize: 96, lineHeight: 116, letterSpacing: -4, fontVariant: ['tabular-nums'], paddingTop: 4, includeFontPadding: false },
   unit: { fontFamily: fonts.display, fontSize: 30, lineHeight: 34, letterSpacing: -0.6 },
   surface: { borderRadius: radius.lg, borderWidth: StyleSheet.hairlineWidth, padding: spacing.md },
 });

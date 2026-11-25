@@ -54,7 +54,7 @@ export function PregnancyHero({ pregnancy }: { pregnancy: Pregnancy }) {
           <LinearGradient colors={[alpha(t.tokens.decor.c, 0), alpha(t.tokens.decor.c, t.isDark ? 0.16 : 0.24)]} start={{ x: 0.2, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
           <Text variant="caption" weight="bold" muted style={{ letterSpacing: 1.2 }}>{n > 1 ? tr('u5.home.preg_many', { n }) : tr('u5.home.preg')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginTop: spacing.md }}>
-            <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 90, letterSpacing: -5 }}>{p.weeksSA}</Text>
+            <Text style={{ fontFamily: fonts.display, fontSize: 92, lineHeight: 110, letterSpacing: -5, includeFontPadding: false }}>{p.weeksSA}</Text>
             <Text variant="heading" color={t.colors.primary} style={{ marginBottom: 12, marginLeft: 4 }}>{tr('u5.home.wa')}{p.extraDays ? tr('u5.home.wa_extra', { n: p.extraDays }) : ''}</Text>
           </View>
           <Text variant="small" muted style={{ maxWidth: '52%' }}>{tr('u5.home.trimester', { trimester: p.trimester, weeks: p.weeksSG })}</Text>

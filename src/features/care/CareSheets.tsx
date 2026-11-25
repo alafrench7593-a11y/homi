@@ -28,11 +28,13 @@ const hhmm = (iso: string) => { const d = new Date(iso); return `${String(d.getH
 const localISO = (iso: string) => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
 /** « mardi 14 novembre à 15 h 30 » ou « mardi 14 novembre (heure non précisée) ». */
+const nbsp = (x: string) => x.replace(/ /g, '\u00a0');
 export function appointmentWhen(a: Pick<CareAppointment, 'starts_at' | 'time_set'>): string {
   const day = formatDate(a.starts_at, { weekday: 'long', day: 'numeric', month: 'long' });
   if (a.time_set === false) return tr('care.appt.noTime', { day });
   const d = new Date(a.starts_at);
-  return tr('care.appt.at', { day, time: d.getMinutes() ? tr('dom.time.hm', { h: String(d.getHours()), m: String(d.getMinutes()).padStart(2, '0') }) : tr('dom.time.h', { h: String(d.getHours()) }) });
+  // 26/11/2026 : heure insécable (« 10 h 30 » ne se coupe plus sur deux lignes dans le fil de grossesse)
+  return tr('care.appt.at', { day, time: nbsp(d.getMinutes() ? tr('dom.time.hm', { h: String(d.getHours()), m: String(d.getMinutes()).padStart(2, '0') }) : tr('dom.time.h', { h: String(d.getHours()) })) });
 }
 
 export function AppointmentSheet({ visible, onClose, base, existing, suggestedDay, window: win, onSaved }: {
