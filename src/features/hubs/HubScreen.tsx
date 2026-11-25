@@ -82,7 +82,8 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
   const effCats = pregScope ? ['pregnancy'] : categories;
   // Présentation d'Aura à la première ouverture (bébé < 3 ans, enfant, famille, grossesse)
   const ageMonths = dashChild?.birth_date ? (Date.now() - Date.parse(dashChild.birth_date)) / (30.44 * 86400000) : null;
-  const introSection: IntroSection | null = pregScope ? 'pregnancy' : hub === 'family' ? 'family' : hub === 'baby' ? (ageMonths != null && ageMonths >= 36 ? 'child' : dashChild ? 'baby' : null)
+  // Profil Grossesse affiché depuis l'onglet Moi aussi (26/11/2026) : Aura y est présente comme sur l'enfant
+  const introSection: IntroSection | null = pregScope || (hub === 'health' && scope.scope === 'pregnancy') ? 'pregnancy' : hub === 'family' ? 'family' : hub === 'baby' ? (ageMonths != null && ageMonths >= 36 ? 'child' : dashChild ? 'baby' : null)
     : categories?.includes('pregnancy') ? 'pregnancy' : null;
   const quickExamples = introSection === 'baby' ? ['aura.ex.bottle1', 'aura.ex.multi', 'aura.ex.sleep1']
     : introSection === 'child' ? ['aura.ex.sleep2', 'aura.ex.appt', 'aura.ex.relay']

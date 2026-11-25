@@ -29,7 +29,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 /** 0 : contenu visible ; 1 : sortie terminée (le voile atteint alors `VEIL_MAX`, jamais un aplat opaque). */
 const veil = makeMutable(0);
 /** Opacité maximale du voile : le fond et la composition restent perceptibles pendant la bascule. */
-export const VEIL_MAX = 0.55;
+export const VEIL_MAX = 0.18;
 /** Le voile s'efface quand le nouveau contenu est posé ; filet de sécurité si aucune mise en page n'arrive. */
 let lift: (() => void) | null = null;
 export function profileStageLaidOut() { const f = lift; lift = null; f?.(); }
@@ -51,7 +51,7 @@ export function usePendingProfile(): string | null {
 }
 
 /** Durées du changement de profil (sortie, entrée). */
-export const PROFILE_SWAP = { outMs: swap.outMs, inMs: swap.inMs, distance: 12 } as const;
+export const PROFILE_SWAP = { outMs: swap.outMs, inMs: swap.inMs, distance: 8 } as const;
 
 /**
  * Lance le changement de profil coordonné. `commit` change réellement le profil (magasin) ; il est appelé une fois la

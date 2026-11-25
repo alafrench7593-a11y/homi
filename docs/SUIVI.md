@@ -111,3 +111,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 2026-11-25 · SEO lot 2 : page /aura (ce qu'elle fait / ne fait pas, données, FAQ balisée FAQPage), liens menu + pied de page, sitemap, llms.txt ; dernières URL JSON-LD/llms sans « / » ; mobile/desktop sans débordement ni erreur.
 - 2026-11-25 · SEO lot 3 : /blog + 215 articles non médicaux (décision propriétaire), JSON-LD Article, maillage, sitemap 227 URL ; plan docs/seo/PLAN_SEO.md.
 - 2026-11-25 · Build Vercel : icônes pré-générées dans web/site/icons (Pillow absent sur Vercel, cause probable des builds en erreur depuis 17 h) ; plus de Python au build.
+- 2026-11-26 · Aura (présentation + barre) dans l'onglet Moi quand le profil Grossesse est affiché ; changement de profil plus fluide (voile 18 % au lieu de 55 %, sortie 70 ms, glissement 8 pt). Jest 4973/4973.
