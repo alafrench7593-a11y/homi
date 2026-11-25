@@ -38,6 +38,7 @@ import { ObjectiveRow, useObjective } from '@/features/cycle/Objective';
 import { useAdvice } from '@/features/cycle/useAdvice';
 import { rank } from '@/lib/advice/types';
 import { uuid } from '@/lib/uuid';
+import { useAfterTransition } from '@/lib/useAfterTransition';
 import { formatNumber, formatUnit, t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -71,6 +72,7 @@ export default function CycleRoute() {
 }
 
 function CycleHub() {
+  const later = useAfterTransition();
   const objective = useObjective();
   const c = useCyclePalette();
   const toast = useToast();
@@ -209,7 +211,7 @@ function CycleHub() {
 
       {/* Objectif (changeable sans perdre l'historique) et carte de synthèse personnalisable (Réglages de la carte) */}
       <ObjectiveRow />
-      <HomeCycleCard mode={objective ?? 'cycle'} />
+      {later ? <HomeCycleCard mode={objective ?? 'cycle'} /> : null}
 
       {/* Mes règles : un geste (gros bouton en bas), enregistrement immédiat, récapitulatif et annulation ici */}
       {quick ? (
@@ -230,10 +232,10 @@ function CycleHub() {
       ) : null}
 
       {/* Aujourd'hui en un geste : flux, symptômes fréquents, humeur — chaque touche enregistre */}
-      <QuickToday openPeriod={open ?? null} />
+      {later ? <QuickToday openPeriod={open ?? null} /> : null}
 
       {/* Ma semaine : jour choisi (adresse « ?day= »), suivis notés ce jour-là → chacun ouvre son app sur ce jour */}
-      <CycleWeek />
+      {later ? <CycleWeek /> : null}
 
       {/* Détail de la roue (ovulation estimée, jours mesurés, fiabilité) : à la demande */}
       {ring ? (

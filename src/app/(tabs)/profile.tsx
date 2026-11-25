@@ -10,6 +10,8 @@ import { ALL_VIDEOS, TUTOS } from '@/lib/domain/officialVideos';
 import { router } from 'expo-router';
 import { Tappable } from '@/components/Tappable';
 import { UserAvatar } from '@/components/UserAvatar';
+import { useCreditStatus } from '@/lib/data/hooks-credits';
+import { totalRemaining } from '@/lib/credits/model';
 import { avatarInitial } from '@/components/AccountActions';
 import { ProfilePhotoSheet } from '@/features/profilePhoto/ProfilePhotoSheet';
 import { ChildAvatar } from '@/features/childAvatar';
@@ -55,6 +57,7 @@ function FamilyProfile() {
   const t = useTheme();
   const help = useHelpNumbers();
   const [photoOpen, setPhotoOpen] = useState(false);
+  const credits = useCreditStatus();
   const articleCount = useArticles().data?.length ?? 0;
   const js = useJourneyState();
   const profileLabel = useJourneyProfileLabel();
@@ -135,6 +138,7 @@ function FamilyProfile() {
           <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="profile-notifs" />
           <ListRow icon="bell" title={tr('profile.reminders')} onPress={() => router.push('/settings/reminders')} />
           <ListRow icon="star" title={tr('profile.subscription')} subtitle={premium ? tr('profile.premiumActive') : tr('profile.free')} onPress={() => router.push('/settings/subscription')} />
+          <ListRow icon="zap" title={tr('cr.screen')} subtitle={credits.data ? tr('cr.balance.total', { count: totalRemaining(credits.data) }) : undefined} onPress={() => router.push('/settings/credits' as never)} testID="profile-credits" />
           <ListRow icon="lock" title={tr('profile.privacy')} onPress={() => router.push('/settings/privacy')} />
           <ListRow icon="settings" title={tr('profile.appearance')} onPress={() => router.push('/settings')} />
           <ListRow icon="message-circle" title={tr('fb.row')} subtitle={tr('fb.rowD')} onPress={() => router.push({ pathname: '/feedback', params: { from: '/profile' } } as never)} testID="profile-feedback" />

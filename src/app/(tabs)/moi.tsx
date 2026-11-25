@@ -25,6 +25,8 @@ import { pregnancyProgress } from '@/lib/domain/pregnancy';
 import { cancelAllLocal, unregisterPushToken } from '@/lib/notifications';
 import { BRAND } from '@/config/brand';
 import { MySubscriptionSection } from '@/features/subscription';
+import { useCreditStatus } from '@/lib/data/hooks-credits';
+import { totalRemaining } from '@/lib/credits/model';
 import { localeTag, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { useHelpNumbers } from '@/lib/domain/emergencyNumbers';
@@ -91,6 +93,7 @@ function PrivateAccount() {
   const { data: children } = useChildren();
   const premium = usePremium();
   const blocks = useMyBlocks();
+  const credits = useCreditStatus();
   const [help, setHelp] = useState(false);
   const helpNums = useHelpNumbers();
   return (
@@ -115,6 +118,7 @@ function PrivateAccount() {
       <SectionTitle title={tr('cm3.moi.settings')} />
       <Card>
         <ListRow icon="star" title={tr('cm3.moi.subscription')} subtitle={premium ? tr('cm3.moi.premiumActive') : tr('cm3.moi.freeVersion')} onPress={() => router.push('/settings/subscription')} />
+        <ListRow icon="zap" title={tr('cr.screen')} subtitle={credits.data ? tr('cr.balance.total', { count: totalRemaining(credits.data) }) : undefined} onPress={() => router.push('/settings/credits' as never)} testID="moi-credits" />
         <ListRow icon="bell" title={tr('cm3.moi.notifications')} subtitle={tr('cm3.moi.notificationsSub')} onPress={() => router.push('/community/notifications' as never)} testID="moi-notifications" />
         <ListRow icon="lock" title={tr('cm3.moi.privacy')} subtitle={tr('cm3.moi.privacySub')} onPress={() => router.push('/settings/privacy')} />
         <ListRow icon="slash" title={tr('cm3.moi.blocked')} subtitle={blocks.data?.length ? tr('cm3.moi.blockedCount', { count: blocks.data.length }) : tr('cm3.moi.blockedNone')} onPress={() => router.push('/community/blocked' as never)} testID="moi-blocked" />

@@ -21,7 +21,7 @@ describe('Aura enregistre les biberons dits en phrase (25/11/2026)', () => {
     const r = resolveIntent({ kind: 'log_bottle', ml: null, times: ['12:00', '14:00', '16:00', '18:00'], childId: 'c1' } as never,
       ctx(now, [{ at: new Date(2026, 10, 25, 14, 5).toISOString(), consumed_ml: 120, child_id: 'c1' }]));
     expect(r.status).toBe('confirm');
-    const rows = (r as { write: { rows: { at: string }[] } }).write.rows;
+    const rows = (r as unknown as { write: { rows: { at: string }[] } }).write.rows;
     expect(rows.map((x) => new Date(x.at).getHours())).toEqual([12, 16]);
   });
 });
