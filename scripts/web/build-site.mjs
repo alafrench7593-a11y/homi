@@ -122,7 +122,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
   const catsHtml = [...groups.entries()].map(([title, list], i) => `<section class="feat-cat" aria-labelledby="fc-${i}"><h3 id="fc-${i}">${esc(title)} <span class="muted">· ${list.length}</span></h3><ul class="feat-list" role="list">${
     list.map((t) => `<li class="feat-item" data-id="${esc(t.id)}" data-stages="${t.stages.join(' ')}"><a href="/outil/${esc(t.id)}"><b>${esc(t.label)}</b><span>${esc(t.sub)}</span>${SHOT[t.id] ? '<em class="feat-cam">Écran réel ci-dessus</em>' : ''}</a></li>`).join('')}</ul></section>`).join('\n');
   const jsonld = JSON.stringify({ '@context': 'https://schema.org', '@graph': [
-    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Fonctionnalités', item: `${siteUrl}/fonctionnalites/` }] },
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Fonctionnalités', item: `${siteUrl}/fonctionnalites` }] },
     { '@type': 'ItemList', name: 'Fonctionnalités de HOMI', numberOfItems: tools.length, itemListElement: tools.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.label, description: t.sub })) },
   ] }).replace(/</g, '\\u003c');
   const feat = withChrome(readFileSync(path.join(site, 'fonctionnalites.html'), 'utf8'))
@@ -139,8 +139,8 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 {
   const contactEndpoint = (env.CONTACT_ENDPOINT || '').trim();
   const jsonldContact = JSON.stringify({ '@context': 'https://schema.org', '@graph': [
-    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Contact', item: `${siteUrl}/contact/` }] },
-    { '@type': 'ContactPage', name: 'Contacter HOMI', url: `${siteUrl}/contact/` },
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Contact', item: `${siteUrl}/contact` }] },
+    { '@type': 'ContactPage', name: 'Contacter HOMI', url: `${siteUrl}/contact` },
   ] });
   const contact = withChrome(readFileSync(path.join(site, 'contact.html'), 'utf8'))
     .replaceAll('{{SITE_URL}}', siteUrl).replaceAll('{{ROBOTS}}', robotsPublic).replaceAll('{{VERSION}}', version)
@@ -148,6 +148,18 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
   mkdirSync(path.join(dist, 'contact'), { recursive: true });
   writeFileSync(path.join(dist, 'contact', 'index.html'), contact);
   for (const f of ['contact.css', 'contact.js']) cpSync(path.join(site, f), path.join(dist, 'site', f));
+  // /aura : page de l'assistante (contenu factuel, FAQ balisée)
+  const faq = [...readFileSync(path.join(site, 'aura.html'), 'utf8').matchAll(/<summary>([^<]+)<\/summary><p>([^<]+)<\/p>/g)]
+    .map(([, q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } }));
+  const jsonldAura = JSON.stringify({ '@context': 'https://schema.org', '@graph': [
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Aura', item: `${siteUrl}/aura` }] },
+    { '@type': 'FAQPage', mainEntity: faq },
+  ] }).replace(/</g, '\\u003c');
+  const aura = withChrome(readFileSync(path.join(site, 'aura.html'), 'utf8'))
+    .replaceAll('{{SITE_URL}}', siteUrl).replaceAll('{{ROBOTS}}', robotsPublic).replaceAll('{{VERSION}}', version).replace('{{JSONLD}}', jsonldAura);
+  mkdirSync(path.join(dist, 'aura'), { recursive: true });
+  writeFileSync(path.join(dist, 'aura', 'index.html'), aura);
+  cpSync(path.join(site, 'aura.css'), path.join(dist, 'site', 'aura.css'));
   const { stages: st, tools: all } = globalThis.homiTools.all();
   const byCat = new Map(); for (const t of all) { if (!byCat.has(t.categoryTitle)) byCat.set(t.categoryTitle, []); byCat.get(t.categoryTitle).push(t); }
   writeFileSync(path.join(dist, 'llms.txt'), `# HOMI
@@ -161,12 +173,13 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 
 ## Pages
 - [Présentation](${siteUrl}/): ce qu'est HOMI et à qui il s'adresse
-- [Toutes les fonctionnalités](${siteUrl}/fonctionnalites/): les ${all.length} outils réels, par étape de vie
-- [Programme Ambassadeurs](${siteUrl}/ambassadeurs/): recommandation rémunérée (30 % de l'encaissé net, 6 mois par abonné, versement dès 30 €)
-- [Conditions du programme Ambassadeurs](${siteUrl}/conditions-ambassadeurs/)
-- [Contact](${siteUrl}/contact/)
-- [Centre d'aide](${siteUrl}/aide/)
-- [Confidentialité](${siteUrl}/confidentialite/)
+- [Aura, l'assistante](${siteUrl}/aura): retrouve le bon outil, prépare rendez-vous et tâches à confirmer ; pas une professionnelle de santé, aucune dose
+- [Toutes les fonctionnalités](${siteUrl}/fonctionnalites): les ${all.length} outils réels, par étape de vie
+- [Programme Ambassadeurs](${siteUrl}/ambassadeurs): recommandation rémunérée (30 % de l'encaissé net, 6 mois par abonné, versement dès 30 €)
+- [Conditions du programme Ambassadeurs](${siteUrl}/conditions-ambassadeurs)
+- [Contact](${siteUrl}/contact)
+- [Centre d'aide](${siteUrl}/aide)
+- [Confidentialité](${siteUrl}/confidentialite)
 
 ## Étapes de vie
 ${st.map((x) => `- ${x.title}`).join('\n')}
@@ -181,7 +194,7 @@ const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`)];
+const pub = ['/', '/aura', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`)];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nDisallow: /admin\nDisallow: /ambassadors/dashboard\nDisallow: /r/\nDisallow: /demo\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');

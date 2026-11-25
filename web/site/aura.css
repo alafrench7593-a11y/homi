@@ -1,0 +1,11 @@
+.crumbs { font-size: .9rem; color: var(--muted); margin-bottom: 12px; } .crumbs a { color: inherit; }
+.chapter.tight { padding: clamp(40px, 8vh, 90px) 0; }
+.aura-hero { display: grid; gap: 40px; align-items: center; }
+@media (min-width: 900px) { .aura-hero { grid-template-columns: 1.2fr .8fr; } }
+.aura-shot { width: min(320px, 80%); height: auto; justify-self: center; border-radius: 36px; box-shadow: var(--shadow); }
+.h2 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 24px; }
+.aura-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.aura-item { padding: 24px; } .aura-item h3 { margin: 0 0 8px; font-size: 1.125rem; } .aura-item p { margin: 0; color: var(--muted); }
+.aura-list { padding-left: 1.2em; display: grid; gap: 10px; }
+.aura-faq { padding: 18px 22px; margin-bottom: 12px; } .aura-faq summary { cursor: pointer; font-weight: 600; min-height: 24px; } .aura-faq p { margin: 12px 0 0; color: var(--muted); }
+.cta-row.center { justify-content: center; }
