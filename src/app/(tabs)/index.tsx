@@ -13,6 +13,7 @@
  * édition SUR PLACE (le même éditeur que Réglages › Mon accueil).
  * La Communauté s'ouvre par le bouton en haut à droite (`AccountActions`) ; l'ajout par l'action centrale de la barre.
  */
+import { SectionIntro } from '@/features/aura/SectionIntro';
 import { NextStepCard } from '@/features/nextStep/NextStepCard';
 import { NapHomeCard } from '@/features/napLive/NapHomeCard';
 import { BreastHomeCard } from '@/features/breastTrack/BreastHomeCard';
@@ -239,6 +240,8 @@ export default function Home() {
         <Text variant="small" muted testID="home-date">{[formatDate(now, { weekday: 'long', day: 'numeric', month: 'long' }).replace(/^./, (c) => c.toUpperCase()), subtitle].filter(Boolean).join(' · ')}</Text>
       </View>
       <ProfileSwitcher pager />
+      {/* Coparent : Aura l'accueille une fois (raccourcis pour prendre le relais) */}
+      {membership?.role === 'coparent' ? <SectionIntro section="joined" /> : null}
       {/* « Outils » : entrée fixe et évidente (aussi dans l'action centrale de la barre) */}
       <ToolsEntry />
       {/* Aura en une interaction depuis l'accueil */}

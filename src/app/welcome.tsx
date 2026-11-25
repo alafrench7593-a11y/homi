@@ -77,6 +77,7 @@ export default function Welcome() {
         {/* Une action principale, une secondaire sobre, un lien */}
         <View style={{ gap: spacing.xs, marginTop: short ? spacing.md : spacing.xl, alignSelf: 'stretch' }}>
           <Button label={tr('welcome.start')} size="lg" full onPress={() => router.push('/start?from=welcome_start' as never)} testID="welcome-start" />
+          <Button label={tr('welcome.coparent')} icon="users" variant="secondary" size="lg" full onPress={() => router.push('/join' as never)} testID="welcome-coparent" />
           <Button label={tr('e5.welcome.haveAccount')} variant="secondary" size="lg" full onPress={() => router.push('/auth/sign-in')} testID="welcome-sign-in" />
           <Button label={tr('welcome.demo')} variant="ghost" full onPress={() => router.push('/start?from=welcome_demo' as never)} testID="welcome-demo" />
         </View>

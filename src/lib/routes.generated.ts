@@ -208,6 +208,7 @@ export const APP_ROUTES: readonly string[] = [
   '/health',
   '/household',
   '/intro',
+  '/join',
   '/journal',
   '/journeys',
   '/journeys/[id]',

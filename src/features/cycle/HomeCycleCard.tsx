@@ -75,7 +75,7 @@ export function HomeCycleCard({ mode }: { mode: Mode }) {
           <>
             {items.includes('day') ? (day ? (
               <View style={{ flexDirection: 'row', alignItems: 'flex-end', flexWrap: 'wrap', columnGap: 8 }}>
-                <Text color={c.ink} style={{ fontFamily: fonts.display, fontSize: 64, lineHeight: 68, letterSpacing: -3 }}>{tr('cycleCard.day', { day })}</Text>
+                <Text color={c.ink} style={{ fontFamily: fonts.display, fontSize: 64, lineHeight: 76, letterSpacing: -3 }}>{tr('cycleCard.day', { day })}</Text>
                 <Ink variant="small" soft style={{ marginBottom: 10 }}>{tr('cycleCard.ofCycle')}</Ink>
               </View>
             ) : <Ink variant="heading">{tr('cycleCard.start')}</Ink>) : null}
