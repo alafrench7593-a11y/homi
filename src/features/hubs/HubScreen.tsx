@@ -17,6 +17,7 @@
  * `categories` / `excludeCategories` : quand l'onglet Enfant devient « Grossesse » (grossesse sans enfant), il
  * affiche les outils de la grossesse et l'onglet Moi ne les répète pas (une seule destination par outil).
  */
+import { SectionIntro, type IntroSection } from '@/features/aura/SectionIntro';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -72,6 +73,10 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
   const { scope, catalog, byProfile, favSet, recentIds } = th;
   const childId = scope.childId ?? (scope.scope === 'postpartum' ? scope.babyId : null);
   const dashChild = (useTrackedChildren().data ?? []).find((c) => c.id === scope.childId) ?? null;
+  // Présentation d'Aura à la première ouverture (bébé < 3 ans, enfant, famille, grossesse)
+  const ageMonths = dashChild?.birth_date ? (Date.now() - Date.parse(dashChild.birth_date)) / (30.44 * 86400000) : null;
+  const introSection: IntroSection | null = hub === 'family' ? 'family' : hub === 'baby' ? (ageMonths != null && ageMonths >= 36 ? 'child' : dashChild ? 'baby' : null)
+    : categories?.includes('pregnancy') ? 'pregnancy' : null;
   const { statuses } = useToolStatuses(childId);
   const keep = useMemo(() => {
     const only = categories ? new Set<string>(categories) : null;
@@ -98,6 +103,7 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
     <Screen account title={tr(title ?? TITLE[hub].title)} subtitle={tr(subtitle ?? TITLE[hub].sub)} tool={false} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       {/* Profil affiché : la même rangée d'avatars que sur Aujourd'hui, avec l'indicateur de pages */}
       <ProfileSwitcher pager testID={`hub-${id}-profiles`} />
+      {introSection ? <SectionIntro section={introSection} childId={dashChild?.id ?? childId} name={dashChild?.first_name ?? null} /> : null}
       <ProfileSwipe>
       <ProfileStage profileKey={profileKey}>
       <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>

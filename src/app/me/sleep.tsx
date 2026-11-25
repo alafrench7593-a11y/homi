@@ -256,7 +256,7 @@ function SleepFormSheet({ initial, logs, onClose }: { initial: FormState; logs: 
       </View>
 
       <View style={{ gap: 6 }}>
-        <Field label={tr('u8.sleep.f.approx')} optional value={durationShown} placeholder="7h30" maxLength={8} error={errors.duration}
+        <Field label={tr('u8.sleep.f.approx')} time={false} optional value={durationShown} placeholder="7h30" maxLength={8} error={errors.duration}
           onChangeText={(v) => setF((cur) => ({ ...cur, duration: v, durationEdited: true }))}
           hint={f.durationEdited ? tr('u8.sleep.f.hintEdited') : tr('u8.sleep.f.hintAuto')} />
         {f.durationEdited && auto != null && (

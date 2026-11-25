@@ -5,6 +5,7 @@
  * Les dates calculées sont TOUJOURS des estimations : elles ne garantissent rien et ne remplacent pas une contraception.
  * Parcours « concevoir » ou « éviter » : leur écran dédié s'ouvre d'abord (sauf ?all=1, depuis ces écrans).
  */
+import { SectionIntro } from '@/features/aura/SectionIntro';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
@@ -200,6 +201,7 @@ function CycleHub() {
       {urgentAdvice.slice(0, 1).map((a) => <AdviceCard key={a.signature} advice={a} compact />)}
 
       {/* Anneau du cycle au fil d'or : jour actuel qui pulse, règles notées, fenêtre estimée */}
+      <SectionIntro section="cycle" />
       {ring ? <Rise><GoldCycleRing data={ring} /></Rise> : null}
 
       {/* L'essentiel d'un coup d'œil : jour du cycle, prochaines règles (estimation), durée habituelle */}

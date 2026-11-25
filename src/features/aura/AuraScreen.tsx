@@ -23,6 +23,7 @@ import { VirtualList } from '@/components/States';
 import { AppState, FlatList, Keyboard, Platform, TextInput, useWindowDimensions, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { loadConversations, saveConversation, type StoredMsg } from '@/lib/aura/history';
+import { resetSectionIntros } from './SectionIntro';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
@@ -654,6 +655,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
             <Text variant="caption" muted testID="aura-voice-dictation">{tr(`sa.voice.dict.${voice.dictation}` as never)}</Text>
           </View>
           <Button label={tr('ta.intro.replay')} icon="play-circle" variant="secondary" full onPress={() => { setSettings(false); useUiStore.getState().requestAuraIntro(); }} testID="aura-intro-replay" />
+          <Button label={tr('aura.intro.replay')} icon="refresh-cw" variant="ghost" full onPress={() => { setSettings(false); if (historyUser) void resetSectionIntros(historyUser).then(() => toast(tr('aura.intro.replayed'), 'success')); }} testID="aura-section-intros-replay" />
           <Button label={tr('aura.privacy')} icon="lock" variant="ghost" full onPress={() => { setSettings(false); router.push('/settings/privacy'); }} />
         </View>
       </Sheet>

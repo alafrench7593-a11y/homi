@@ -7,6 +7,7 @@
 import { hapticsMuted } from '@/motion/haptics';
 import { CardLens } from './glass/liquid/CardLens';
 import { InlineCalendar } from './InlineCalendar';
+import { InlineClock, isTimePlaceholder } from './InlineClock';
 import { isDarkFill, WhoopSheen } from './stage/WhoopSheen';
 import React from 'react';
 import {
@@ -615,16 +616,20 @@ interface FieldProps extends TextInputProps {
   revealable?: boolean;
   /** Champ date JJ/MM/AAAA : bouton calendrier (déduit du placeholder « JJ/MM/AAAA » si absent) */
   date?: boolean;
+  /** Champ heure : bouton horloge (déduit d'un exemple « 14:30 » / « HH:MM » si absent ; false pour une durée) */
+  time?: boolean;
 }
 
 const noSubscribe = () => () => undefined;
 const noVersion = () => 0;
 
-export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, revealable, secureTextEntry, onFocus, onBlur, date, ...rest }, ref) {
+export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ label, hint, error, optional, suffix, style, revealable, secureTextEntry, onFocus, onBlur, date, time, ...rest }, ref) {
   const t = useTheme();
   // Audit final (23/11/2026) : tout champ JJ/MM/AAAA reçoit un calendrier déplié sous le champ (saisie clavier conservée)
-  const isDate = (date ?? rest.placeholder === 'JJ/MM/AAAA') && rest.editable !== false;
+  const isDate = (date ?? (typeof rest.placeholder === 'string' && /^(JJ\/MM\/AAAA|DD\/MM\/YYYY|DD\.MM\.YYYY|TT\.MM\.JJJJ|GG\/MM\/AAAA)$/i.test(rest.placeholder))) && rest.editable !== false;
   const [calendar, setCalendar] = React.useState(false);
+  const isTime = !isDate && (time ?? isTimePlaceholder(rest.placeholder)) && rest.editable !== false;
+  const [clock, setClock] = React.useState(false);
   // Clavier (voir components/keyboard.tsx) : champ gardé visible au focus, « Suivant » passe au champ suivant
   const input = React.useRef<TextInput>(null);
   React.useImperativeHandle(ref, () => input.current as TextInput);
@@ -665,7 +670,7 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
         {optional ? <Text variant="small" muted>{`  (${tr('common.optional')})`}</Text> : null}
       </Text>
       {/* Champ = surface « inset » : un creux de verre au liseré fin, qui s'éclaire au focus (halo prune) */}
-      <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }, isDate ? styles.inputDate : null]}>
+      <View style={[styles.input, { borderColor: error ? t.colors.danger : glassOf(t).inset.edge, backgroundColor: focused ? glassOf(t).floating.fill : glassOf(t).inset.fill }, (isDate || isTime) ? styles.inputDate : null]}>
         {/* Halo de focus : liseré de la couleur principale qui apparaît en fondu */}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -1.5, left: -1.5, right: -1.5, bottom: -1.5, borderRadius: radius.control + 1.5, borderWidth: 1.5, borderColor: t.colors.primary, opacity: focus }} /> : null}
         {!error ? <Animated.View pointerEvents="none" style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, borderRadius: radius.control + 5, borderWidth: 3, borderColor: t.colors.primary, opacity: focus.interpolate({ inputRange: [0, 1], outputRange: [0, 0.16] }) }} /> : null}
@@ -693,6 +698,13 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
             <Icon name="calendar" size={20} color={calendar ? t.colors.text : t.colors.textMuted} />
           </Tappable>
         ) : null}
+        {isTime ? (
+          <Tappable accessibilityRole="button" accessibilityLabel={tr(clock ? 'clock.close' : 'clock.open', { label })} accessibilityState={{ expanded: clock }}
+            onPress={() => { Keyboard.dismiss(); setClock((v) => !v); }} hitSlop={8} pressScale={0.9} hoverLift={0} testID={rest.testID ? `${rest.testID}-clock` : 'field-clock'}
+            style={{ minWidth: MIN_TOUCH, minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="clock" size={20} color={clock ? t.colors.text : t.colors.textMuted} />
+          </Tappable>
+        ) : null}
         {revealable ? (
           <Tappable
             accessibilityRole="button"
@@ -707,6 +719,10 @@ export const Field = React.forwardRef<TextInput, FieldProps>(function Field({ la
           </Tappable>
         ) : null}
       </View>
+      {isTime && clock ? (
+        <InlineClock value={String(rest.value ?? '')} sep={typeof rest.placeholder === 'string' && /\dh\d/.test(rest.placeholder) ? 'h' : ':'} testID={rest.testID ? `${rest.testID}-clk` : undefined}
+          onPick={(v) => { rest.onChangeText?.(v); setClock(false); }} />
+      ) : null}
       {isDate && calendar ? (
         <InlineCalendar value={String(rest.value ?? '')} testID={rest.testID ? `${rest.testID}-cal` : undefined}
           onPick={(fr) => { rest.onChangeText?.(fr); setCalendar(false); }} />

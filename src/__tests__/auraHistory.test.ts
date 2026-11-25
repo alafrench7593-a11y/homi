@@ -1,4 +1,5 @@
 import { clearConversations, deleteConversation, loadConversations, MAX_CONVERSATIONS, renameConversation, saveConversation, searchConversations, storable } from '@/lib/aura/history';
+jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 
 const u = 'user-a';
 const msgs = (q: string) => [

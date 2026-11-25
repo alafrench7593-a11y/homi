@@ -2,6 +2,7 @@
  * Famille & partage : membres du foyer, droits par domaine, invitations, rejoindre un foyer, quitter.
  * L'interface masque les actions réservées au propriétaire ; la base (RLS) les refuse de toute façon.
  */
+import { SectionIntro } from '@/features/aura/SectionIntro';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -313,6 +314,7 @@ function FamilyScreenSignedIn() {
 
   return (
     <Screen back title={tr('u1.fam.title')} subtitle={tr('u1.fam.subtitle')}>
+      <SectionIntro section="coparent" />
       {params.code && !isDemo ? (
         <Card tone="lavender">
           <Text weight="bold">{tr('u1.fam.joinQuestion')}</Text>

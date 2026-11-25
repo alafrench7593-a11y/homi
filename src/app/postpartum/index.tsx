@@ -3,6 +3,7 @@
  * Privé par défaut. Le suivi ne s'arrête jamais tout seul : il continue tant qu'elle le souhaite.
  * 22/11/2026 : donnée principale « J+N » et date de naissance corrigée dans une fiche (PostpartumHero).
  */
+import { SectionIntro } from '@/features/aura/SectionIntro';
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -70,6 +71,7 @@ export default function PostpartumHome() {
   return (
     <Screen back title={tr('u5.pp_home.title')} subtitle={tr('u5.pp_home.subtitle')}
       action={{ label: todayCheckin ? tr('u5.pp_history.reread') : tr('u5.pp_checkin.title'), icon: 'feather', onPress: () => router.push(CHECKIN_LINK), testID: 'pp-main-action' }}>
+      <SectionIntro section="postpartum" />
       {/* 22/11/2026 : J+N en grand, points notés sur sept jours, date de naissance corrigée dans une fiche */}
       {!loading && !failed ? <PostpartumHero delivery={settings?.delivery_date} hasSettings={!!settings} checkins={checkins} today={today} /> : null}
       <Banner tone="info" icon="lock">

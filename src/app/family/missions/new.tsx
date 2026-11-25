@@ -102,6 +102,8 @@ export default function NewMission() {
   const barStyle = useAnimatedStyle(() => ({ width: `${progress.value * 100}%` }));
 
   // Retour (flèche de l'en-tête, retour Android) : étape précédente, saisie conservée
+  // iOS : le balayage retour ne peut pas être annulé (écran figé si on l'empêche) → désactivé hors 1re étape (25/11/2026)
+  useEffect(() => { navigation.setOptions?.({ gestureEnabled: step === 0 }); }, [navigation, step]);
   useEffect(() => navigation.addListener('beforeRemove', (e) => {
     if (leaving.current || step === 0) return;
     e.preventDefault();

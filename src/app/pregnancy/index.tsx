@@ -6,6 +6,7 @@
  * 22/11/2026 : semaine explorée dans l'adresse (« ?week= ») ; terme corrigé dans une fiche (DueDateFix) ; repères sur
  * une Card (verre commun) au lieu d'un cadre fait main.
  */
+import { SectionIntro } from '@/features/aura/SectionIntro';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -126,6 +127,7 @@ export default function PregnancyUniverse() {
   return (
     <Screen back
       action={{ label: tr('u2.preg.how_feel'), icon: 'feather', onPress: () => go('/pregnancy/feel'), testID: 'preg-main-action' }}>
+      <SectionIntro section="pregnancy" />
       <WeekHero week={w} extraDays={p.extraDays} chosen={week !== null} multiple={multiple ? multLabel(pregnancy.multiplicity) : undefined}
         art={{ growth: info.growth, hue: HUES[selected % 3], size: n > 1 ? 210 : 236, a11y: named ? tr('u2.preg.art_a11y_named', { name: named, week: w }) : tr('u2.preg.art_a11y', { week: w }) }} />
       {n > 1 && (

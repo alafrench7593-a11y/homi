@@ -54,6 +54,8 @@ export function ScanFlow({ kind, title, subtitle }: { kind: ScanKind; title: str
   const navigation = useNavigation();
   const back = w.back;
   // Flèche de l'en-tête / retour Android : étape précédente, saisie conservée (l'écran n'est quitté qu'à la 1re étape)
+  // iOS : le balayage retour ne peut pas être annulé (écran figé si on l'empêche) → désactivé hors 1re étape (25/11/2026)
+  useEffect(() => { navigation.setOptions?.({ gestureEnabled: w.step === 'identify' }); }, [navigation, w.step]);
   useEffect(() => navigation.addListener('beforeRemove', (e) => {
     if (w.leaving.current || w.step === 'identify') return;
     e.preventDefault();
