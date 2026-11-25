@@ -297,7 +297,9 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
 
   return (
     <ScreenFocusContext.Provider value={focused}>
-    <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance.style]} pointerEvents={focused ? 'auto' : 'none'}>
+    <Animated.View ref={rootRef} onLayout={measureOffset} style={[{ flex: 1, backgroundColor: 'transparent' }, entrance.style]}>
+      {/* 25/11/2026 : plus de blocage des appuis quand l'écran se croit « hors focus » (état parfois en retard sur
+          iPhone → écran qui ne répond plus) ; la navigation gère déjà les écrans masqués */}
       <StatusBar style={t.isDark ? 'light' : 'dark'} />
       {/* v5 : fond uni partout (plus de décor derrière les pages bébé / enfant, ni de particules) ; `stars` conservé pour compatibilité */}
       {/* « padding » sur iOS et Android : Android est toujours edge-to-edge (Expo 54+), adjustResize ne réduit plus l'écran */}

@@ -85,7 +85,11 @@ async function type(r: ReactTestRenderer, id: string, text: string) {
   const el = r.root.findAll((n) => n.props.testID === id && typeof n.props.onChangeText === 'function')[0];
   await act(async () => { el.props.onChangeText(text); });
 }
-async function say(r: ReactTestRenderer, text: string) { await type(r, 'aura-input', text); await press(r, 'aura-send', 400); }
+async function say(r: ReactTestRenderer, text: string) {
+  await type(r, 'aura-input', text); await press(r, 'aura-send', 400);
+  // 25/11/2026 : Aura propose d'abord l'outil (gratuit) ; ces tests veulent la réponse de l'IA → « Demander quand même »
+  if (r.root.findAll((n) => n.props.testID === 'aura-ask-anyway' && typeof n.props.onPress === 'function').length) await press(r, 'aura-ask-anyway', 400);
+}
 
 beforeAll(async () => {
   await backend.auth.signUp('tickets@exemple.test', 'MotDePasse!2026');

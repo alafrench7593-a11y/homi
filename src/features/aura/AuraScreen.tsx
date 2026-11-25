@@ -84,7 +84,7 @@ type Reply =
   | { kind: 'error'; error: AuraErrorKind; question: string; requestId: string; journal?: unknown }
   | { kind: 'pending' }
   /** Intention reconnue sur le téléphone (sans IA ni crédit) : carte d'action recalculée à l'affichage et à l'appui */
-  | { kind: 'intent'; intent: AuraIntent };
+  | { kind: 'intent'; intent: AuraIntent; /** question d'origine : bouton « Demander quand même à Aura » (payant) */ ask?: string };
 interface Msg { id: string; role: 'user' | 'aura'; text?: string; reply?: Reply }
 
 let INDEX: { n: number; index: KbIndex } | null = null;
@@ -254,7 +254,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
     return localReply(res, index ? localAnswer(index, question, { asked: question, lang: getLocale(), region }) : null);
   }
 
-  async function send(text?: string, opts: { requestId?: string; journal?: unknown; retryOf?: string } = {}) {
+  async function send(text?: string, opts: { requestId?: string; journal?: unknown; retryOf?: string; forceAi?: boolean } = {}) {
     const question = (text ?? input).trim().slice(0, MAX_QUESTION_LENGTH);
     if (question.length < 2 || sending) return;
     Keyboard.dismiss();
@@ -294,6 +294,18 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       const second = res.understood ? res.results[1] : null;
       if (top && catalog.some((x) => x.id === top.tool.id) && (!second || top.score >= second.score * 1.25)) {
         const reply: Reply = { kind: 'intent', intent: { kind: 'open_tool', toolId: top.tool.id, explain: true } };
+        if (opts.retryOf) replace(auraId, reply); else push(userMsg, { id: auraId, role: 'aura', reply });
+        return;
+      }
+    }
+    // 2 ter) Outil d'abord (25/11/2026, demande de la propriétaire) : avant TOUT appel payant, si un outil du profil
+    //        correspond à la question, Aura l'ouvre en un appui (gratuit, immédiat) ; « Demander quand même à Aura »
+    //        reste proposé pour une vraie réponse de l'IA (crédit débité seulement à ce moment-là)
+    if (remote && !opts.forceAi && !opts.journal && !opts.retryOf && !opts.requestId) { // un nouvel essai d'IA reste un essai d'IA
+      const res = searchForAura(catalog, allTools, question, searchCatalog);
+      const top = res.understood ? res.results[0] : null;
+      if (top && catalog.some((x) => x.id === top.tool.id)) {
+        const reply: Reply = { kind: 'intent', intent: { kind: 'open_tool', toolId: top.tool.id, explain: true }, ask: question };
         if (opts.retryOf) replace(auraId, reply); else push(userMsg, { id: auraId, role: 'aura', reply });
         return;
       }
@@ -563,6 +575,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               voice={ttsAvailable ? { speaking: speakingId === m.id, onToggle: (text) => toggleSpeak(m.id, text) } : null}
               bot={m.id === lastAura?.id ? { state: botState, still: false } : { state: restingBot(m.reply!), still: true }}
               onRetry={(r) => void send(r.question, { requestId: r.requestId, journal: r.journal, retryOf: m.id })}
+              onAskAi={(q) => void send(q, { forceAi: true })} askCost={askCost}
               onCredits={() => setOutOfCredits(true)}
               onConsent={(r) => setConsentSheet({ retry: () => void send(r.question, { journal: r.journal, retryOf: m.id }) })}
               onLocal={(q) => replace(m.id, local(q))} />
@@ -615,7 +628,7 @@ function ListenButton({ text, voice }: { text: string; voice: { speaking: boolea
   );
 }
 
-function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredits, onConsent, bot, voice }: {
+function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredits, onConsent, onAskAi, askCost, bot, voice }: {
   reply: Reply; catalog: ReturnType<typeof useAllToolEntries>['catalog'];
   voice: { speaking: boolean; onToggle: (text: string) => void } | null;
   /** robot à côté de la réponse : vivant pour la dernière, immobile pour les précédentes */
@@ -625,6 +638,8 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
   onLocal: (q: string) => void;
   onCredits: () => void;
   onConsent: (r: Extract<Reply, { kind: 'error' }>) => void;
+  onAskAi?: (question: string) => void;
+  askCost?: number;
 }) {
   const t = useTheme();
   const bubble = { backgroundColor: t.colors.surface, padding: spacing.md, borderRadius: radius.lg, borderBottomLeftRadius: 6, ...glassEdge(t), gap: spacing.sm } as const;
@@ -672,6 +687,9 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
         <AuraBot size={BOT_SIZE} state={bot.state} still={bot.still} testID="aura-reply-bot" />
         <View style={[bubble, { flex: 1 }]} accessibilityLiveRegion="polite">
           <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} />
+          {reply.ask && onAskAi ? (
+            <Button label={tr('aura.askAnyway', { count: askCost ?? 1 })} icon="message-circle" size="sm" variant="ghost" onPress={() => onAskAi(reply.ask!)} testID="aura-ask-anyway" />
+          ) : null}
         </View>
       </View>
     );

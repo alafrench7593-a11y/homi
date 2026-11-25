@@ -76,14 +76,7 @@ export function StageHero({ eyebrow, value, caption, detail, progress = null, ri
   const fg = t.colors.text; const muted = t.colors.textMuted; const ink = t.colors.primary;
   return (
     <View testID={testID} accessible accessibilityLabel={a11y} style={[{ borderRadius: radius.xl }, style]}>
-      {/* Fond ambiant SOUS le verre : deux halos tirés de l'accent du thème. Sans quelque chose derrière, un verre clair
-          est invisible ; c'est ce que le Liquid Glass d'iOS réfracte (fond d'écran, contenu). */}
-      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { borderRadius: radius.xl, overflow: 'hidden' }]}>
-        <LinearGradient colors={[alpha(ink, 0.55), alpha(ink, 0)]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-          style={{ position: 'absolute', width: '70%', aspectRatio: 1, borderRadius: 999, left: '-12%', top: '-45%' }} />
-        <LinearGradient colors={[alpha(inv.accent, 0), alpha(inv.accent, 0.5)]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-          style={{ position: 'absolute', width: '60%', aspectRatio: 1, borderRadius: 999, right: '-15%', bottom: '-55%' }} />
-      </View>
+      {/* 25/11/2026 (demande de la propriétaire) : plus aucun fond ni halo derrière le minuteur — verre seul (Liquid Glass) */}
       <ClearGlass radius={radius.xl}>
         <View style={{ padding: spacing.lg, gap: spacing.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>

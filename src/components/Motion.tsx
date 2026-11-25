@@ -199,6 +199,7 @@ export function useFocusEntrance(focused: boolean) {
 
 /** Durée du fondu d'arrivée sur un écran d'onglet (changement d'onglet : bref, sans déplacement). */
 export const TAB_ENTRANCE_MS = 160;
+export const SCREEN_ENTRANCE_MS = 220;
 
 /**
  * Entrée d'écran SANS opacité posée sur un ancêtre (HOMI_DESIGN_SYSTEM.md § 10 : l'opacité d'un ancêtre fige le
@@ -216,7 +217,8 @@ export function useFocusCover(focused: boolean, brief: boolean) {
     if (reduce) { v.setValue(1); return; }
     if (focused) {
       v.setValue(0);
-      timeTo(v, 1, brief ? TAB_ENTRANCE_MS : duration.entrance, false).start();
+      // 25/11/2026 : voile d'entrée court (0,22 s au lieu de 0,52 s) — l'écran est utilisable presque tout de suite
+      timeTo(v, 1, brief ? TAB_ENTRANCE_MS : SCREEN_ENTRANCE_MS, false).start();
     } else if (!brief) {
       timeTo(v, 0, duration.fast, false, easing.accelerate).start();
     }

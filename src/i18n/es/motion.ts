@@ -120,4 +120,5 @@ export const motion = {
   "pw5.code.saved": "Código guardado: se vinculará a tu cuenta justo después del registro.",
   "pw5.code.web": "Código guardado. El descuento se usa en la app HOMI en iPhone.",
   "pw5.code.android": "El descuento con código está disponible en la app HOMI en iPhone.",
+  "aura.askAnyway": {"one": "Preguntar igualmente a Aura ({count} crédito)", "other": "Preguntar igualmente a Aura ({count} créditos)"},
 } as const;
