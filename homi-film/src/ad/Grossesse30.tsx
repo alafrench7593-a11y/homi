@@ -40,7 +40,7 @@ const Art: React.FC<{ src: string; x: number; y: number; s: number; o?: number; 
 const Intro: React.FC<P> = ({ t, fps, l }) => {
   const { W, H, v } = l;
   if (t > 4.6) return null;
-  const mom = prog(t, 0, 0.8); const toBaby = prog(t, 1.7, 2.5); const out = prog(t, 3.9, 4.5);
+  const mom = prog(t, 0, 0.8); const toBaby = prog(t, 1.7, 2.5); const out = prog(t, 3.5, 3.95);
   const s = v ? 900 : 720;
   const mx = v ? W / 2 : 560; const my = v ? 1000 : 600;
   const bub = spr(t, 1.9, fps, 16);
@@ -62,7 +62,7 @@ const Intro: React.FC<P> = ({ t, fps, l }) => {
 const Weeks: React.FC<P> = ({ t, fps, l }) => {
   const { W, v } = l;
   if (t < 3.9 || t > 9.6) return null;
-  const inO = prog(t, 4.0, 4.5); const out = prog(t, 9.0, 9.5);
+  const inO = prog(t, 3.95, 4.4); const out = prog(t, 9.0, 9.5);
   const wk = Math.round(mix(prog(t, 4.4, 8.3, (x) => x * x * (3 - 2 * x)), 4, 40));
   const img = `foetus/sa-${String(Math.min(41, Math.max(4, wk))).padStart(2, '0')}.webp`;
   const tri = wk < 15 ? 0 : wk < 29 ? 1 : 2; const left = Math.max(0, 41 - wk);
@@ -248,7 +248,7 @@ const Share: React.FC<P> = ({ t, fps, l }) => {
         })() : null}
       </div>
       {pg > 0 ? (
-        <div style={{ position: 'absolute', left: (v ? W / 2 : W / 2) - pw2 / 2, top: (v ? 1060 : 530) - ph2 / 2, width: pw2, height: ph2, borderRadius: 20, overflow: 'hidden', opacity: pg, transform: `scale(${0.85 + pg * 0.15}) rotate(${(1 - pg) * -4}deg)`,
+        <div style={{ position: 'absolute', left: (v ? W / 2 : W / 2) - pw2 / 2, top: (v ? 1060 : 530) - ph2 / 2, width: pw2, height: ph2, borderRadius: 20, overflow: 'hidden', opacity: pg, transform: `scale(${(0.85 + pg * 0.15) * (1 + Math.max(0, t - 22.7) * 0.025)}) rotate(${(1 - pg) * -4 + Math.max(0, t - 23.2) * 0.6}deg)`,
           background: 'linear-gradient(160deg,#FFFDF9,#F6EEE6)', boxShadow: '0 50px 90px -40px rgba(80,50,40,.45)', padding: pw2 * 0.08, color: INK, fontFamily: 'Manrope' }}>
           <div style={{ fontSize: pw2 * 0.036, fontWeight: 700, color: '#B08A5B', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Mon histoire · Grossesse</div>
           <div style={{ fontSize: pw2 * 0.08, fontWeight: 800, letterSpacing: '-0.035em', marginTop: pw2 * 0.02 }}>Avant notre rencontre</div>
