@@ -117,3 +117,8 @@ describe('les exemples proposés dans les outils sont compris sans IA (FR)', () 
     ['aura.ex.diaper2', 'last_diaper'], ['aura.ex.feed1', 'log_feed_for'], ['aura.ex.feed2', 'feeds_today'], ['aura.ex.multi', 'multi'],
   ])('%s → %s', (key, k) => expect(kind(t(key))).toBe(k));
 });
+
+describe('exemples des espaces Famille et Enfant', () => {
+  const { t } = require('@/i18n') as { t: (k: string) => string };
+  it.each([['aura.ex.task', 'assign_task'], ['aura.ex.appt', 'add_appointment']])('%s → %s', (key, k) => expect(kind(t(key))).toBe(k));
+});

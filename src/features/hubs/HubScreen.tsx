@@ -18,6 +18,7 @@
  * affiche les outils de la grossesse et l'onglet Moi ne les répète pas (une seule destination par outil).
  */
 import { SectionIntro, type IntroSection } from '@/features/aura/SectionIntro';
+import { AuraQuickBar } from '@/features/aura/AuraEntry';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -77,6 +78,9 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
   const ageMonths = dashChild?.birth_date ? (Date.now() - Date.parse(dashChild.birth_date)) / (30.44 * 86400000) : null;
   const introSection: IntroSection | null = hub === 'family' ? 'family' : hub === 'baby' ? (ageMonths != null && ageMonths >= 36 ? 'child' : dashChild ? 'baby' : null)
     : categories?.includes('pregnancy') ? 'pregnancy' : null;
+  const quickExamples = introSection === 'baby' ? ['aura.ex.bottle1', 'aura.ex.multi', 'aura.ex.sleep1']
+    : introSection === 'child' ? ['aura.ex.sleep2', 'aura.ex.appt', 'aura.ex.relay']
+      : introSection === 'family' ? ['aura.ex.task', 'aura.ex.appt', 'aura.ex.relay'] : null;
   const { statuses } = useToolStatuses(childId);
   const keep = useMemo(() => {
     const only = categories ? new Set<string>(categories) : null;
@@ -104,6 +108,7 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
       {/* Profil affiché : la même rangée d'avatars que sur Aujourd'hui, avec l'indicateur de pages */}
       <ProfileSwitcher pager testID={`hub-${id}-profiles`} />
       {introSection ? <SectionIntro section={introSection} childId={dashChild?.id ?? childId} name={dashChild?.first_name ?? null} /> : null}
+      {quickExamples ? <AuraQuickBar examples={quickExamples} testID={`hub-${id}-aura`} /> : null}
       <ProfileSwipe>
       <ProfileStage profileKey={profileKey}>
       <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>

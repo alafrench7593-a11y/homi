@@ -222,4 +222,9 @@ export const motion = {
   "aura.ex.multi": "Drank 150 ml and slept 45 minutes",
   "aura.pro.sleepRunning": "{name}'s nap timer has been running since {since}. Awake now?",
   "aura.pro.sleepOpen": "End the nap",
+  "aura.auto.undo": "Undo",
+  "aura.auto.undone": "Undone: nothing is saved.",
+  "aura.quick.placeholder": "Tell Aura… (\"drank 150 ml\")",
+  "aura.ex.task": "Remind my partner to buy milk tomorrow",
+  "aura.ex.appt": "Add a pediatrician appointment Tuesday at 10am",
 } as const;

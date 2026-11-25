@@ -222,4 +222,9 @@ export const motion = {
   "aura.ex.multi": "Ha bevuto 150 ml e dormito 45 minuti",
   "aura.pro.sleepRunning": "Il timer del sonnellino di {name} è attivo dalle {since}. Si è svegliato?",
   "aura.pro.sleepOpen": "Termina il sonnellino",
+  "aura.auto.undo": "Annulla",
+  "aura.auto.undone": "Annullato: niente è stato salvato.",
+  "aura.quick.placeholder": "Dillo ad Aura… («ha bevuto 150 ml»)",
+  "aura.ex.task": "Ricorda al mio partner di comprare il latte domani",
+  "aura.ex.appt": "Aggiungi un appuntamento dalla pediatra martedì alle 10",
 } as const;

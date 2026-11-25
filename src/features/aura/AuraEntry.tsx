@@ -160,3 +160,29 @@ export function AuraIntroHost() {
   };
   return <AuraIntro visible={want && ready} onDone={done} />;
 }
+
+/**
+ * Aura toujours présente dans les espaces Famille et Enfant (26/11/2026, retour iPhone « Aura n'est pas dans ma
+ * famille, mon enfant ») : une barre « Dis-le à Aura… » + des phrases d'exemple qui s'enregistrent directement.
+ */
+export function AuraQuickBar({ examples, testID = 'aura-quick' }: { examples: string[]; testID?: string }) {
+  const th = useTheme();
+  return (
+    <View testID={testID} style={{ gap: spacing.xs, padding: spacing.sm, borderRadius: radius.lg, backgroundColor: th.colors.surface, ...glassEdge(th) }}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('aura.quick.placeholder')} onPress={() => { haptic('selection'); router.push({ pathname: '/assistant', params: { focus: '1' } } as never); }}
+        testID={`${testID}-open`} style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+        <AuraOrb size={28} />
+        <Text muted style={{ flex: 1 }}>{tr('aura.quick.placeholder')}</Text>
+        <Icon name="mic" size={18} color={th.colors.textMuted} />
+      </Tappable>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+        {examples.map((k) => (
+          <Tappable key={k} accessibilityRole="button" onPress={() => router.push({ pathname: '/assistant', params: { q: tr(k as never) } } as never)} testID={`${testID}-${k}`}
+            style={{ minHeight: 36, justifyContent: 'center', paddingHorizontal: spacing.sm, borderRadius: radius.pill, borderWidth: 1, borderColor: th.colors.border }}>
+            <Text variant="small">{tr(k as never)}</Text>
+          </Tappable>
+        ))}
+      </View>
+    </View>
+  );
+}

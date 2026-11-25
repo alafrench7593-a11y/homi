@@ -222,4 +222,9 @@ export const motion = {
   "aura.ex.multi": "Ha bebido 150 ml y ha dormido 45 minutos",
   "aura.pro.sleepRunning": "El temporizador de siesta de {name} corre desde las {since}. ¿Ya se ha despertado?",
   "aura.pro.sleepOpen": "Terminar la siesta",
+  "aura.auto.undo": "Deshacer",
+  "aura.auto.undone": "Deshecho: no se ha guardado nada.",
+  "aura.quick.placeholder": "Díselo a Aura… («ha bebido 150 ml»)",
+  "aura.ex.task": "Recuerda a mi pareja comprar leche mañana",
+  "aura.ex.appt": "Añade una cita con la pediatra el martes a las 10",
 } as const;

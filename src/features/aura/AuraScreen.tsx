@@ -641,7 +641,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               <Text color={t.tokens.action.text}>{m.text}</Text>
             </View>
           ) : (
-            <AuraReply reply={m.reply!} catalog={allTools} onChooseJournal={setJournal}
+            <AuraReply reply={m.reply!} msgId={m.id} catalog={allTools} onChooseJournal={setJournal}
               voice={ttsAvailable ? { speaking: speakingId === m.id, onToggle: (text) => toggleSpeak(m.id, text) } : null}
               bot={m.id === lastAura?.id ? { state: botState, still: false } : { state: restingBot(m.reply!), still: true }}
               onRetry={(r) => void send(r.question, { requestId: r.requestId, journal: r.journal, retryOf: m.id })}
@@ -699,7 +699,8 @@ function ListenButton({ text, voice }: { text: string; voice: { speaking: boolea
   );
 }
 
-function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredits, onConsent, onAskAi, askCost, bot, voice }: {
+function AuraReply({ reply, msgId, catalog, onChooseJournal, onRetry, onLocal, onCredits, onConsent, onAskAi, askCost, bot, voice }: {
+  msgId?: string;
   reply: Reply; catalog: ReturnType<typeof useAllToolEntries>['catalog'];
   voice: { speaking: boolean; onToggle: (text: string) => void } | null;
   /** robot à côté de la réponse : vivant pour la dernière, immobile pour les précédentes */
@@ -757,7 +758,7 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
         <AuraBot size={BOT_SIZE} state={bot.state} still={bot.still} testID="aura-reply-bot" />
         <View style={[bubble, { flex: 1 }]} accessibilityLiveRegion="polite">
-          {reply.restored ? <RestoredIntent intent={reply.intent} catalog={catalog} /> : <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} />}
+          {reply.restored ? <RestoredIntent intent={reply.intent} catalog={catalog} /> : <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} autoKey={msgId} />}
           {reply.ask && onAskAi ? (
             <Button label={tr('cr.usage.ask')} icon="message-circle" size="sm" variant="ghost" onPress={() => onAskAi(reply.ask!)} testID="aura-ask-anyway" />
           ) : null}

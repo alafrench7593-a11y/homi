@@ -1,4 +1,5 @@
 /** Profil d'un enfant : aperçu, croissance, étapes, santé, alimentation. */
+import { AuraQuickBar } from '@/features/aura/AuraEntry';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -108,6 +109,7 @@ export default function ChildProfile() {
           ) : null}
         </View>
       </Row>
+      <AuraQuickBar examples={age.months < 36 ? ['aura.ex.bottle1', 'aura.ex.multi', 'aura.ex.sleep1'] : ['aura.ex.sleep2', 'aura.ex.appt', 'aura.ex.relay']} testID="child-aura" />
 
       <ChildTabs value={tab} onChange={setTab} />
 
