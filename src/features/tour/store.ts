@@ -10,7 +10,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { router } from 'expo-router';
 import { beginPractice } from '@/lib/practice';
 import { useUiStore } from '@/lib/store';
-import { freshProgress, tourReducer, TOUR_STEPS, type TourAction, type TourEvent, type TourProgress } from './model';
+import { freshProgress, matchPath, tourPath, tourReducer, TOUR_STEPS, type TourAction, type TourEvent, type TourProgress } from './model';
 
 export interface ToolHintState { id: string; title: string; body: string; /** Écran d'où l'outil a été ouvert. */ from?: string }
 
@@ -143,6 +143,19 @@ export function startTour() {
   const step = TOUR_STEPS[p?.step ?? 0];
   const to = step?.goTo ?? '/';
   if (to !== shownPath) router.navigate(to as never);
+}
+
+/**
+ * Visite rapide (26/11/2026, retour iPhone « la visite est lente ») : « Suivant » sur CHAQUE étape (le vrai geste reste
+ * possible), et l'écran de l'étape suivante s'ouvre tout seul (plus de pastille « Reprendre » à toucher).
+ */
+export function tourNextFast(kind: 'next' | 'skipStep' = 'next') {
+  tourDispatch({ type: kind });
+  const st = useTourStore.getState();
+  const p = st.owner ? st.byUser[st.owner] : null;
+  if (!p || p.status !== 'running') return;
+  const step = TOUR_STEPS[p.step];
+  if (step && !step.screens.some((s) => matchPath(s, tourPath(shownPath)))) router.navigate(step.goTo as never);
 }
 
 /** Les deux magasins persistés (visite, interface) sont-ils relus ? Rien ne s'affiche ni ne s'enregistre avant. */
