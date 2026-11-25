@@ -269,4 +269,5 @@ export const motion = {
   "story.ch.y8_10.title": "My best memories",
   "story.ch.y10.age": "10 years and up",
   "story.ch.y10.title": "The rest of my story",
+  "story.hubTitle": "{name}'s story",
 } as const;

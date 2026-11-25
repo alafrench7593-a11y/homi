@@ -19,6 +19,7 @@
  */
 import { SectionIntro, type IntroSection } from '@/features/aura/SectionIntro';
 import { AuraQuickBar } from '@/features/aura/AuraEntry';
+import { StoryEntry } from '@/features/story/StoryEntry';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
@@ -109,6 +110,8 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
       <ProfileSwitcher pager testID={`hub-${id}-profiles`} />
       {introSection ? <SectionIntro section={introSection} childId={dashChild?.id ?? childId} name={dashChild?.first_name ?? null} /> : null}
       {quickExamples ? <AuraQuickBar examples={quickExamples} testID={`hub-${id}-aura`} /> : null}
+      {/* Mon histoire (26/11/2026, retour iPhone « je ne la vois pas ») : visible dès l'onglet Enfant */}
+      {hub === 'baby' && dashChild ? <StoryEntry childId={dashChild.id} name={dashChild.first_name} /> : null}
       <ProfileSwipe>
       <ProfileStage profileKey={profileKey}>
       <View testID={`hub-${id}`} style={{ gap: spacing.lg }}>

@@ -54,7 +54,6 @@ const PILL_BOTTOM = 84;
 const MIN_BUBBLE = 150;
 const STRIP_H = 56;
 const GAP = 12;
-const VEIL = 2400;
 /** Mesure de l'élément : à chaque image (≈ 30 ms) pendant `SETTLE_MS` après une étape ou un défilement, puis au repos. */
 // Cadence de mesure : chaque mesure force une mise en page (web) ; 32 ms relancés à chaque onLayout ralentissaient
 // toute l'appli pendant la visite (animations des listes = onLayout en continu)
@@ -346,17 +345,25 @@ function Cutout({ hole, lost, frame, level }: { hole: Rect | null; lost: boolean
     h.value = motionSpring(level, hole.height, 'panneau');
   }, [hole, lost, frame.width, frame.height, level, x, y, w, h, shown]);
   useEffect(() => () => { cancelAnimation(x); cancelAnimation(y); cancelAnimation(w); cancelAnimation(h); cancelAnimation(shown); }, [x, y, w, h, shown]);
-  const veil = useAnimatedStyle(() => {
-    const r = Math.max(0, Math.min(radius.lg, w.value / 2, h.value / 2));
-    return { opacity: shown.value, left: x.value - VEIL, top: y.value - VEIL, width: w.value + VEIL * 2, height: h.value + VEIL * 2, borderRadius: VEIL + r };
-  });
+  // 26/11/2026 (retour iPhone « la visite rame ») : le voile était UNE vue de ~5 000 × 5 000 points (bordure de 2 400)
+  // redimensionnée à chaque image → texture géante sur iPhone. Désormais quatre bandes à la taille de l'écran.
+  const vTop = useAnimatedStyle(() => ({ opacity: shown.value, left: 0, top: 0, width: frame.width, height: Math.max(0, y.value) }));
+  const vBottom = useAnimatedStyle(() => ({ opacity: shown.value, left: 0, top: y.value + h.value, width: frame.width, height: Math.max(0, frame.height - (y.value + h.value)) }));
+  const vLeft = useAnimatedStyle(() => ({ opacity: shown.value, left: 0, top: y.value, width: Math.max(0, x.value), height: Math.max(0, h.value) }));
+  const vRight = useAnimatedStyle(() => ({ opacity: shown.value, left: x.value + w.value, top: y.value, width: Math.max(0, frame.width - (x.value + w.value)), height: Math.max(0, h.value) }));
   const ring = useAnimatedStyle(() => {
     const r = Math.max(0, Math.min(radius.lg, w.value / 2, h.value / 2));
     return { left: x.value - 2, top: y.value - 2, width: w.value + 4, height: h.value + 4, borderRadius: r + 2, opacity: w.value > 4 ? shown.value : 0 };
   });
+  const band = { position: 'absolute' as const, backgroundColor: t.colors.overlay };
   return (
     <View pointerEvents="none" style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
-      <Animated.View testID="tour-veil" style={[{ position: 'absolute', borderWidth: VEIL, borderColor: t.colors.overlay }, veil]} />
+      <View testID="tour-veil" style={StyleSheet.absoluteFill}>
+        <Animated.View style={[band, vTop]} />
+        <Animated.View style={[band, vBottom]} />
+        <Animated.View style={[band, vLeft]} />
+        <Animated.View style={[band, vRight]} />
+      </View>
       <Animated.View testID="tour-hole" style={[{ position: 'absolute', borderWidth: 2, borderColor: t.colors.primary }, ring]} />
     </View>
   );
