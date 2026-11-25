@@ -14,8 +14,8 @@ import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { AuraOrb } from './AuraMark';
 
-export type IntroSection = 'pregnancy' | 'baby' | 'child' | 'family' | 'cycle' | 'postpartum' | 'coparent' | 'story';
-export const INTRO_SECTIONS: readonly IntroSection[] = ['pregnancy', 'baby', 'child', 'family', 'cycle', 'postpartum', 'coparent', 'story'];
+export type IntroSection = 'pregnancy' | 'baby' | 'child' | 'family' | 'cycle' | 'postpartum' | 'coparent' | 'story' | 'joined';
+export const INTRO_SECTIONS: readonly IntroSection[] = ['pregnancy', 'baby', 'child', 'family', 'cycle', 'postpartum', 'coparent', 'story', 'joined'];
 
 type Act = { key: string; icon: IconName; href: (childId?: string | null) => string };
 /** Actions proposées : uniquement des écrans qui existent (vérifié par src/__tests__/sectionIntro.test.ts). */
@@ -61,6 +61,14 @@ export const INTRO_ACTIONS: Record<IntroSection, Act[]> = {
   story: [
     { key: 'addPhoto', icon: 'camera', href: (c) => (c ? `/child/${c}/album` : '/tools') },
     { key: 'addFirst', icon: 'star', href: (c) => (c ? `/child/${c}?tab=etapes` : '/tools') },
+  ],
+  // Coparent qui vient de rejoindre (26/11/2026) : prendre le relais tout de suite
+  joined: [
+    { key: 'relay', icon: 'repeat', href: () => '/family/relay' },
+    { key: 'calendar', icon: 'calendar', href: () => '/calendar' },
+    { key: 'latest', icon: 'clock', href: () => '/journal' },
+    { key: 'missions', icon: 'check-square', href: () => '/family/missions' },
+    { key: 'tools', icon: 'grid', href: () => '/tools' },
   ],
   coparent: [
     { key: 'relay', icon: 'repeat', href: () => '/family/relay' },

@@ -10,6 +10,7 @@ import { Text } from '@/components/ui';
 import { BrandStack } from '@/components/BrandLogo';
 import { BRAND } from '@/config/brand';
 import { peekPendingInvite } from '@/lib/authFlow';
+import { isCodeToken } from '@/lib/inviteCode';
 import { useUiStore } from '@/lib/store';
 import { loadProgress, resumeRoute, type FirstWinProgress } from '@/features/firstWin/model';
 import { usePremiumState } from '@/features/firstWin/hooks';
@@ -49,6 +50,8 @@ export default function Launch() {
   if (ready && !session && hydrated && !introSeen) return <Redirect href={'/intro' as never} />;
   if (ready && !session && hydrated) return <Redirect href="/welcome" />;
   // Invitation reçue avant d'avoir un compte : on la propose dès la première connexion
+  // Code à 6 chiffres (26/11/2026) : association immédiate, sans onboarding
+  if (ready && session && invite && isCodeToken(invite)) return <Redirect href={{ pathname: '/join', params: { code: invite.slice(3), auto: '1' } } as never} />;
   if (ready && session && invite) return <Redirect href={{ pathname: '/settings/family', params: { code: invite } }} />;
   if (ready && session && invite === undefined) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;
   if (ready && session && firstWin === undefined) return <View style={{ flex: 1, backgroundColor: t.colors.background }} />;

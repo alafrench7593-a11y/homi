@@ -2,6 +2,7 @@
  * Famille & partage : membres du foyer, droits par domaine, invitations, rejoindre un foyer, quitter.
  * L'interface masque les actions réservées au propriétaire ; la base (RLS) les refuse de toute façon.
  */
+import { InviteCodeCard } from '@/features/family/InviteCodeCard';
 import { SectionIntro } from '@/features/aura/SectionIntro';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Share, View } from 'react-native';
@@ -355,6 +356,7 @@ function FamilyScreenSignedIn() {
 
           {amOwner ? (
             <>
+              <InviteCodeCard householdId={hid} />
               <SectionTitle title={tr('u1.fam.inviteSomeone')} />
               <Card>
                 <View style={{ gap: spacing.sm }}>

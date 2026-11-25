@@ -176,12 +176,12 @@ reset role;
 select tests.ok(not exists (select 1 from pg_proc p where p.pronamespace = 'public'::regnamespace and p.prosecdef and p.prorettype <> 'trigger'::regtype
     and has_function_privilege('anon', p.oid, 'execute')
     and p.proname not in ('has_role', 'has_premium', 'premium_strict', 'assistant_paid', 'premium_article_teasers', 'is_blocked_between',
-      'affiliate_record_click')),
+      'affiliate_record_click', 'preview_invite_code')),
   'S9 fonctions : seules les fonctions nécessaires aux politiques publiques restent exécutables sans compte',
   (select string_agg(p.oid::regprocedure::text, ', ') from pg_proc p where p.pronamespace = 'public'::regnamespace and p.prosecdef and p.prorettype <> 'trigger'::regtype
      and has_function_privilege('anon', p.oid, 'execute')
      and p.proname not in ('has_role', 'has_premium', 'premium_strict', 'assistant_paid', 'premium_article_teasers', 'is_blocked_between',
-      'affiliate_record_click')));
+      'affiliate_record_click', 'preview_invite_code')));
 set role anon; set request.jwt.claim.sub = '';
 select tests.ok(tests.count('select * from public.articles') > 0, 'S9 fonctions : les articles publics restent lisibles sans compte');
 reset role;

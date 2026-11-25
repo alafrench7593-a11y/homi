@@ -1369,6 +1369,24 @@ export function createDemoBackend(opts: { streamDelayMs?: number; remoteAssistan
     accept_household_invitation: () => {
       throw new BackendError(tr('l2.dm.coparentDemo'));
     },
+    // Code à 6 chiffres (20261216000100_invitation_code6.sql) : démonstration à un seul compte
+    create_household_invite_code: (a) => {
+      if (!isPremium()) throw new BackendError('Fonction Premium (coparent_invite)', 'P0001', 'premium_required');
+      for (const i of T('household_invitations')) if (i.household_id === a.p_household && i.short_code && !i.accepted_at && !i.revoked_at) i.revoked_at = nowIso();
+      const code = String(Math.floor(Math.random() * 1_000_000)).padStart(6, '0');
+      const expires_at = new Date(Date.now() + 48 * 3600_000).toISOString();
+      T('household_invitations').push({ id: uuid(), household_id: a.p_household, token_hash: fnv(`c6:${code}`), role: 'coparent', short_code: true,
+        can_view: ['daily', 'health', 'documents', 'pregnancy', 'lists', 'names', 'profile'], can_edit: ['daily', 'lists', 'names'], child_scope: null,
+        invited_by: uid(), created_at: nowIso(), expires_at, accepted_at: null, revoked_at: null });
+      return { code, expires_at };
+    },
+    preview_invite_code: (a) => {
+      const code = String(a.p_code ?? '');
+      const inv = T('household_invitations').find((i) => i.short_code && i.token_hash === fnv(`c6:${code}`) && !i.accepted_at && !i.revoked_at && String(i.expires_at) > nowIso());
+      if (!inv) return null;
+      const who = T('profiles').find((p) => p.id === inv.invited_by)?.display_name as string | undefined;
+      return { inviter: who ? who.trim().split(/\s+/)[0] : null, expires_at: inv.expires_at, role: inv.role };
+    },
     has_premium: () => isPremium(),
     // Offres du 07/11/2026 (miroir de my_access / has_tool) : essai, achats simulés de la démonstration
     my_access: () => demoAccess(),
