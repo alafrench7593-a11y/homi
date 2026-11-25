@@ -20,6 +20,7 @@ export const APP_ROUTES: readonly string[] = [
   '/ask',
   '/assistant',
   '/assistant/chat',
+  '/assistant/conversations',
   '/assistant/history',
   '/assistant/local',
   '/assistant/session',

@@ -44,14 +44,24 @@ export type AuraIntent =
   /** Routine difficile (« met 45 minutes à se préparer ») : routine en micro-étapes, imprimable, validée par le parent */
   | { kind: 'routine_help' }
   /** Aura Vision (24/11/2026) : photo ou document à lire, ranger ou expliquer → écrans existants, sans IA */
-  | { kind: 'vision'; doc: VisionDoc };
+  | { kind: 'vision'; doc: VisionDoc }
+  /** 25/11/2026 — change de couche dit en phrase (pipi / selles seulement si c'est dit ; heure : maintenant) */
+  | { kind: 'log_diaper'; wet: boolean; stool: boolean; childId?: string | null }
+  /** 25/11/2026 — « il a dormi 45 minutes » : durée dite, se terminant maintenant (affiché, modifiable avant d'enregistrer) */
+  | { kind: 'log_sleep_for'; min: number; childId?: string | null }
+  /** 25/11/2026 — « j'ai allaité 20 minutes à gauche » : le côté est obligatoire (jamais deviné) */
+  | { kind: 'log_feed_for'; min: number; side: 'left' | 'right' | 'both' | null; childId?: string | null }
+  /** 25/11/2026 — plusieurs actions dans une phrase (« 150 ml, dormi 45 min et couche changée ») : un seul « Enregistrer » */
+  | { kind: 'multi'; parts: AuraIntent[]; childId?: string | null };
 export type VisionDoc = 'prescription' | 'medicine' | 'health_book' | 'ultrasound' | 'report' | 'food' | 'list' | 'document';
 
 /** Jour cité, gardé RELATIF (résolu avec l'horloge du moment) : +n jours, prochain jour de semaine (0 = dimanche), JJ/MM. */
 export type When = { rel: number } | { weekday: number } | { day: number; month: number; year?: number };
 
+export type WriteKind = 'sleep' | 'bottle' | 'diaper' | 'breastfeed';
+
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help', 'vision'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help', 'vision', 'log_diaper', 'log_sleep_for', 'log_feed_for', 'multi'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -126,7 +136,9 @@ export function bottleSeries(q: string, raw: string): AuraIntent | null {
   const times = timesIn(raw.replace(/\bmidi\b/gi, '12h').replace(/\bminuit\b/gi, '0h').replace(/\bnoon\b/gi, '12h'));
   const mlm = /\b(\d{2,3})\s*(ml|millilitres?|milliliters?)\b/.exec(q);
   const ml = mlm && Number(mlm[1]) >= 5 && Number(mlm[1]) <= 400 ? Number(mlm[1]) : null;
-  const every = /\b(?:toutes? les|tous les|every)\s*(\d+(?:[.,]5)?)\s*(?:h|heures?|hours?)\b/.exec(q);
+  // « toutes les 2 h », « toutes les deux heures », « toutes les heures », « every two hours »
+  const everyM = /\b(?:toutes? les|tous les|every)\s*(\d+(?:[.,]5)?|une|deux|trois|quatre|cinq|six|two|three|four|five|six)?\s*(?:h|heures?|hours?)\b/.exec(q);
+  const every = everyM ? [everyM[0], everyM[1] == null ? '1' : /^\d/.test(everyM[1]) ? everyM[1] : String(numOf(everyM[1]))] : null;
   const countM = /\b(\d{1,2}|un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|two|three|four|five|seven|eight|nine|ten|eleven|twelve)\s*(?:fois|biberons?|bibs?|bottles?|times)\b/.exec(q);
   if (every && times.length >= 1) {
     const step = Math.round(Number(every[1].replace(',', '.')) * 60);
@@ -142,8 +154,54 @@ export function bottleSeries(q: string, raw: string): AuraIntent | null {
   return null;
 }
 
-export function matchIntent(question: string): AuraIntent | null {
+/** Durée citée (« 45 min », « 1 h 30 », « 1h », « 20 minutes », « une heure ») → minutes (1 à 720), sinon null. */
+export function durationIn(q: string): number | null {
+  const hm = /\b(\d{1,2})\s*h(?:eures?|ours?)?\s*(\d{1,2})?\b(?!\s*(?:h|:))/.exec(q);
+  const mn = /\b(\d{1,3})\s*(?:min|mins|minutes?|mn)\b/.exec(q);
+  let m: number | null = null;
+  if (/\b(une|1) heure\b|\ban hour\b/.test(q)) m = 60;
+  if (/\bune demi heure\b|\bhalf an hour\b/.test(q)) m = 30;
+  if (hm && /\b(pendant|durant|for|dormi|slept|allaite\w*|fait)\b/.test(q)) m = Number(hm[1]) * 60 + (hm[2] ? Number(hm[2]) : 0);
+  if (mn) m = (m && hm ? m : 0) + Number(mn[1]);
+  return m != null && m >= 1 && m <= 720 ? m : null;
+}
+
+const QUESTION = /\b(combien|quand|derniere|dernier|est ce|how|when|last)\b|\?/;
+
+/** Un enregistrement du quotidien dit en phrase (couche, sommeil ou tétée avec durée). */
+function dailyLog(q: string, timesCount: number): AuraIntent | null {
+  if (QUESTION.test(q)) return null;
+  // « j'ai changé sa couche », « couche pipi » → noté ; « je change sa couche » (en cours) → l'outil s'ouvre pour les détails
+  const doingNow = /\b(je (lui )?change|je vais|on change|changer|i m changing|changing)\b/.test(q);
+  if (!doingNow && /\b(couche\w*|diaper\w*|nappy)\b/.test(q) && /\b(change\w*|changed|fait|mis|mets|pipi|caca|mouill\w*|selles?|wet|poop\w*)\b/.test(q) && !/\b(dormir|pour la nuit|au lit)\b/.test(q)) {
+    return { kind: 'log_diaper', wet: /\b(pipi|mouill\w*|urine|wet|pee)\b/.test(q), stool: /\b(caca|selles?|poop\w*|stool)\b/.test(q) };
+  }
+  const min = durationIn(q);
+  if (min == null || timesCount >= 2) return null;
+  if (/\b(allait\w*|tete|tetee|tete\w*|au sein|breastfe\w*|nursed|nursing)\b/.test(q)) {
+    const side = /\b(les deux|deux seins|both)\b/.test(q) ? 'both' : /\b(gauche|left)\b/.test(q) ? 'left' : /\b(droite|droit|right)\b/.test(q) ? 'right' : null;
+    return { kind: 'log_feed_for', min, side };
+  }
+  if (/\b(dormi|a dormi|sieste|slept|napped|nap)\b/.test(q) && !/\b(corrig\w*|tromp\w*|fix)\b/.test(q)) return { kind: 'log_sleep_for', min };
+  return null;
+}
+
+const WRITABLE = new Set(['log_bottle', 'log_sleep', 'log_sleep_for', 'log_diaper', 'log_feed_for']);
+/** Phrase à plusieurs actions : chaque morceau est compris seul ; au moins deux enregistrements → une carte unique. */
+export function multiIntent(question: string): AuraIntent | null {
+  const pieces = question.split(/\s*(?:,|;|\bet\b|\bpuis\b|\bensuite\b|\bthen\b|\band\b)\s*/i).map((x) => x.trim()).filter((x) => x.length >= 3);
+  if (pieces.length < 2) return null;
+  const parts: AuraIntent[] = [];
+  for (const p of pieces) {
+    const it = matchIntent(p, true);
+    if (it && WRITABLE.has(it.kind) && !(it.kind === 'log_bottle' && it.ml == null && !it.times?.length)) parts.push(it);
+  }
+  return parts.length >= 2 ? { kind: 'multi', parts: parts.slice(0, 6) } : null;
+}
+
+export function matchIntent(question: string, single = false): AuraIntent | null {
   const q = foldText(question);
+  if (!single) { const m = multiIntent(question); if (m) return m; }
   // Aura Vision AVANT les questions d'explication : « explique-moi cette ordonnance » vise le papier en main
   const vdoc = visionDoc(q);
   if (vdoc && !(vdoc === 'document' && has(q, /\b(rendez vous|rdv|appointment)\b/))) return { kind: 'vision', doc: vdoc };
@@ -163,6 +221,9 @@ export function matchIntent(question: string): AuraIntent | null {
   if (has(q, /\b(rendez vous|rdv|appointment|appt|consultation)\b/) && (whenIn(q) || times.length || has(q, /\b(ajoute\w*|note\w*|prends?|pris|programme\w*|planifi\w*|cale\w*|add|book\w*|schedule\w*)\b/))) {
     return { kind: 'add_appointment', title: apptTitle(q), when: whenIn(q), time: times[0] ?? null };
   }
+  // 01 bis) Durées et couches dites en phrase (25/11/2026) — AVANT « démarrer une tétée »
+  const said = dailyLog(q, times.length);
+  if (said) return said;
   // 02) Démarrer une tétée d'un côté
   const side = has(q, /\b(gauche|left)\b/) ? 'left' : has(q, /\b(droite|droit|right)\b/) ? 'right' : null;
   if (side && has(q, /\b(sein|tete|tetee|allait\w*|breast\w*|nurs\w*|feed\w*)\b/) && has(q, /\b(commence\w*|demarre\w*|lance\w*|start\w*|begin\w*|mets|met|je donne|donne)\b/)) {
@@ -183,7 +244,7 @@ export function matchIntent(question: string): AuraIntent | null {
   }
   if (has(q, /\b(derniere|dernier|quand|last|when)\b/) && has(q, /\b(couche\w*|change|caca|pipi|selles?|diaper\w*|nappy|poop\w*)\b/) && !has(q, /\b(ajoute\w*|note\w*|add|log)\b/)) return { kind: 'last_diaper' };
   if (has(q, /\b(combien|how many|total)\b/) && has(q, /\b(tetee\w*|tete|seins?|allait\w*|breastfeed\w*|feeds?|nursing)\b/)) return { kind: 'feeds_today' };
-  if (has(q, /\b(combien|how many|how much|total)\b/) && has(q, /\b(bib|bibs|biberon\w*|bottle\w*|ml|lait|milk)\b/) && !has(q, /\b(dormi|sleep\w*|slept)\b/)) return { kind: 'bottles_today' };
+  if (has(q, /\b(combien|how many|how much|total)\b/) && has(q, /\b(bib|bibs|biberon\w*|bottle\w*|ml|lait|milk|bu|bois|boire|drank|drunk|drink)\b/) && !has(q, /\b(dormi|sleep\w*|slept)\b/)) return { kind: 'bottles_today' };
   // 0) Lecture : « combien il a dormi aujourd'hui ? » (sans IA, données du foyer)
   if (has(q, /\b(combien|how (much|long))\b/) && has(q, /\b(dormi|dort|sommeil|slept|sleep)\b/)) return { kind: 'sleep_today' };
   // 0 bis) Enregistrer : deux heures + endormissement/réveil, SANS indice de correction (« s'est endormi à 14 h 20 et
@@ -277,7 +338,7 @@ export type Resolution =
   | { status: 'list'; label: string; items: { label: string; href: string }[]; hint?: string }
   | { status: 'unavailable'; reason: string; alternative?: { label: string; href: string } }
   /** Écriture préparée : rien n'est enregistré avant l'appui du parent sur « Enregistrer » */
-  | { status: 'confirm'; summary: string; write: { kind: 'sleep' | 'bottle'; row: Record<string, unknown>; /** plusieurs lignes (série de biberons) */ rows?: Record<string, unknown>[] }; childName: string; viewHref: string; editHref: string; doneLabel: string }
+  | { status: 'confirm'; summary: string; write: { kind: WriteKind; row: Record<string, unknown>; /** plusieurs lignes (série de biberons) */ rows?: Record<string, unknown>[]; /** plusieurs outils (phrase à plusieurs actions) */ batch?: { kind: WriteKind; row: Record<string, unknown> }[] }; childName: string; viewHref: string; editHref: string; doneLabel: string }
   /** Réponse calculée sur les données réelles (jamais inventée) */
   | { status: 'answer'; text: string; href: string; label: string };
 
@@ -385,6 +446,27 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
 
   const child = pickChild(intent, ctx);
   if (child === 'ask') return askChild(intent, ctx);
+
+  if (intent.kind === 'multi') {
+    if (!child) return { status: 'unavailable', reason: ctx.t('aura.it.noChild'), alternative: { label: ctx.t('aura.it.addChild'), href: '/profiles/new?kind=child' } };
+    const res = intent.parts.map((p) => resolveIntent({ ...p, childId: child.id } as AuraIntent, ctx));
+    const ok = res.filter((r): r is Extract<Resolution, { status: 'confirm' }> => r.status === 'confirm');
+    const pending = res.find((r) => r.status === 'ask' || r.status === 'select_child');
+    if (pending && pending.status === 'ask') {
+      // une précision manque (côté de la tétée…) : on la demande, en gardant TOUTE la phrase
+      const idx = res.indexOf(pending);
+      return { ...pending, options: pending.options.map((o) => ({ ...o, intent: { ...intent, childId: child.id, parts: intent.parts.map((p, i) => (i === idx ? o.intent : p)) } })) };
+    }
+    if (!ok.length) return res[0];
+    const skipped = res.filter((r) => r.status === 'unavailable').map((r) => (r as { reason: string }).reason);
+    const batch = ok.flatMap((r) => (r.write.rows?.length ? r.write.rows : [r.write.row]).map((row) => ({ kind: r.write.kind, row })));
+    return {
+      status: 'confirm', childName: child.first_name,
+      summary: [ctx.t('aura.it4.multiTitle', { name: child.first_name, count: ok.length }), ...ok.map((r) => `• ${r.summary}`), ...skipped.map((x) => `⚠ ${x}`)].join('\n'),
+      write: { kind: batch[0].kind, row: batch[0].row, batch },
+      viewHref: '/(tabs)/track', editHref: '/(tabs)/track', doneLabel: ctx.t('aura.it4.multiDone', { count: batch.length }),
+    };
+  }
 
   if (intent.kind === 'open_tool') {
     const tool = ctx.catalog.find((x) => x.id === intent.toolId);
@@ -506,6 +588,41 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
       summary: ctx.t('aura.it2.bottleSummary', { name: child.first_name, ml: intent.ml, at: ctx.clock(ctx.now) }),
       write: { kind: 'bottle', row: { child_id: child.id, at: ctx.now.toISOString(), prepared_ml: null, consumed_ml: intent.ml, planned_next_ml: null, note: null } },
       viewHref: `/bottle/${child.id}`, editHref: `/bottle/history?child=${child.id}`, doneLabel: ctx.t('aura.it2.bottleDone', { ml: intent.ml }),
+    };
+  }
+
+  // ---- 25/11/2026 : couche, sommeil et tétée avec durée (confirmés avant d'enregistrer ; jamais dans le futur)
+  if (intent.kind === 'log_diaper' || intent.kind === 'log_sleep_for' || intent.kind === 'log_feed_for') {
+    if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }) };
+    if (intent.kind === 'log_diaper') {
+      const what = ctx.t(intent.wet && intent.stool ? 'aura.it4.dBoth' : intent.wet ? 'aura.it4.dWet' : intent.stool ? 'aura.it4.dStool' : 'aura.it4.dChange');
+      return {
+        status: 'confirm', childName: child.first_name,
+        summary: ctx.t('aura.it4.diaperSummary', { name: child.first_name, what, at: ctx.clock(ctx.now) }),
+        write: { kind: 'diaper', row: { child_id: child.id, at: ctx.now.toISOString(), wet: intent.wet, stool: intent.stool, note: null } },
+        viewHref: `/track/diaper?child=${child.id}`, editHref: `/track/diaper?child=${child.id}`, doneLabel: ctx.t('aura.it4.diaperDone'),
+      };
+    }
+    const start = new Date(ctx.now.getTime() - intent.min * 60000);
+    if (intent.kind === 'log_sleep_for') {
+      const clash = ctx.sleeps.find((x) => x.child_id === child.id && Date.parse(x.started_at) < ctx.now.getTime() && (x.ended_at ? Date.parse(x.ended_at) : ctx.now.getTime()) > start.getTime());
+      if (clash) return { status: 'unavailable', reason: ctx.t('aura.it2.overlap', { range: `${ctx.clock(new Date(clash.started_at))} – ${clash.ended_at ? ctx.clock(new Date(clash.ended_at)) : '…'}` }), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+      const night = start.getHours() >= 19 || start.getHours() < 6;
+      return {
+        status: 'confirm', childName: child.first_name,
+        summary: ctx.t('aura.it4.sleepForSummary', { name: child.first_name, d: span(intent.min), from: ctx.clock(start), to: ctx.clock(ctx.now) }),
+        write: { kind: 'sleep', row: { child_id: child.id, started_at: start.toISOString(), ended_at: ctx.now.toISOString(), kind: night ? 'night' : 'nap' } },
+        viewHref: `/sleep/${child.id}`, editHref: `/sleep/${child.id}`, doneLabel: ctx.t('aura.it4.sleepForDone', { d: span(intent.min) }),
+      };
+    }
+    if (!intent.side) {
+      return { status: 'ask', question: ctx.t('aura.it4.whichSide'), options: (['left', 'right', 'both'] as const).map((side) => ({ label: ctx.t(`aura.it4.side.${side}`), intent: { ...intent, side, childId: child.id } })) };
+    }
+    return {
+      status: 'confirm', childName: child.first_name,
+      summary: ctx.t('aura.it4.feedSummary', { name: child.first_name, d: span(intent.min), side: ctx.t(`aura.it4.side.${intent.side}`), from: ctx.clock(start), to: ctx.clock(ctx.now) }),
+      write: { kind: 'breastfeed', row: { child_id: child.id, side: intent.side, started_at: start.toISOString(), ended_at: ctx.now.toISOString(), note: null } },
+      viewHref: `/track/breastfeed?child=${child.id}`, editHref: `/track/breastfeed?child=${child.id}`, doneLabel: ctx.t('aura.it4.feedDone', { d: span(intent.min) }),
     };
   }
 

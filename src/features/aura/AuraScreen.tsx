@@ -20,8 +20,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { glassEdge } from '@/components/glass/GlassRim';
 import { VirtualList } from '@/components/States';
-import { AppState, FlatList, Keyboard, TextInput, useWindowDimensions, View } from 'react-native';
+import { AppState, FlatList, Keyboard, Platform, TextInput, useWindowDimensions, View } from 'react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { loadConversations, saveConversation, type StoredMsg } from '@/lib/aura/history';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
 import { TAB_SCREEN_INSET } from '@/components/Dock';
@@ -52,6 +53,7 @@ import { answer as localAnswer, buildIndex, type KbIndex } from '@/lib/localAI/e
 import { useOfflineStore } from '@/lib/offline';
 import { SITUATIONS, type Situation } from '@/lib/domain/understand';
 import { uuid } from '@/lib/uuid';
+import { useUserId } from '@/lib/auth';
 import { getLocale, tMaybe, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -85,7 +87,7 @@ type Reply =
   | { kind: 'error'; error: AuraErrorKind; question: string; requestId: string; journal?: unknown }
   | { kind: 'pending' }
   /** Intention reconnue sur le téléphone (sans IA ni crédit) : carte d'action recalculée à l'affichage et à l'appui */
-  | { kind: 'intent'; intent: AuraIntent; /** question d'origine : bouton « Demander quand même à Aura » (payant) */ ask?: string };
+  | { kind: 'intent'; intent: AuraIntent; /** question d'origine : bouton « Demander quand même à Aura » (payant) */ ask?: string; /** relue depuis l'historique : lecture seule */ restored?: boolean };
 interface Msg { id: string; role: 'user' | 'aura'; text?: string; reply?: Reply }
 
 let INDEX: { n: number; index: KbIndex } | null = null;
@@ -113,7 +115,7 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const motion = useMotion();
   const insets = useSafeAreaInsets();
   const { height: winH } = useWindowDimensions();
-  const params = useLocalSearchParams<{ theme?: string; q?: string; mode?: string; draft?: string; situation?: string; tool?: string; voice?: string; focus?: string; goal?: string }>();
+  const params = useLocalSearchParams<{ conv?: string; theme?: string; q?: string; mode?: string; draft?: string; situation?: string; tool?: string; voice?: string; focus?: string; goal?: string }>();
   // Entrée contextuelle depuis un outil : identifiant d'outil RÉEL du catalogue, sinon aucun contexte (jamais de lien inventé)
   const toolCtx = auraToolContext(typeof params.tool === 'string' ? params.tool : null);
   const toolName = toolCtx ? tr(toolCtx.labelKey) : '';
@@ -155,6 +157,23 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const needsSub = remote && (inTrial || noSub);
 
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  // Historique sur l'appareil (25/11/2026) : sauvegarde après chaque échange, reprise via ?conv=<id>
+  const historyUser = useUserId();
+  const [convId, setConvId] = useState<string>(() => (typeof params.conv === 'string' && params.conv) || uuid());
+  useEffect(() => {
+    const id = typeof params.conv === 'string' ? params.conv : null;
+    if (!id || !historyUser) return;
+    let live = true;
+    void loadConversations(historyUser).then((list) => { const c = list.find((x) => x.id === id); if (live && c) { setConvId(c.id); setMsgs(c.msgs as unknown as Msg[]); } });
+    return () => { live = false; };
+  }, [params.conv, historyUser]);
+  useEffect(() => {
+    if (!historyUser || !msgs.length || msgs.some((m) => m.reply?.kind === 'pending')) return;
+    const t = setTimeout(() => { void saveConversation(historyUser, convId, msgs as unknown as StoredMsg[]); }, 400);
+    return () => clearTimeout(t);
+  }, [msgs, convId, historyUser]);
+  const newConversation = () => { setMsgs([]); setConvId(uuid()); };
+  const [attachOpen, setAttachOpen] = useState(false);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [outOfCredits, setOutOfCredits] = useState(false);
@@ -521,7 +540,11 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
       scroll={false}
       padded={false}
       bottomInset={inTab ? TAB_SCREEN_INSET : 0}
-      right={<IconButton icon="sliders" label={tr('aura.settings.a11y')} onPress={() => setSettings(true)} testID="aura-settings" />}
+      right={<>
+        {msgs.length ? <IconButton icon="edit" label={tr('aura.hist.new')} onPress={newConversation} testID="aura-new-conv" /> : null}
+        <IconButton icon="clock" label={tr('aura.hist.title')} onPress={() => router.push('/assistant/conversations' as never)} testID="aura-history" />
+        <IconButton icon="sliders" label={tr('aura.settings.a11y')} onPress={() => setSettings(true)} testID="aura-settings" />
+      </>}
       footer={(
         <View style={{ gap: 2 }} testID="aura-composer">
           {!online && remote ? <Text variant="caption" color={t.colors.warning} center testID="aura-offline">{tr('aura.err.network')}</Text> : null}
@@ -541,7 +564,19 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               <Button label={tr('ta.voice.cancel')} variant="ghost" size="sm" onPress={cancelDictation} testID="aura-mic-cancel" />
             </View>
           ) : voiceNote ? <Text variant="caption" muted={phase !== 'error'} color={phase === 'error' ? t.colors.warning : undefined} center testID="aura-voice-note">{voiceNote}</Text> : null}
+          {/* 25/11/2026 : joindre directement depuis la conversation (photo, document, code-barres) → lecture confirmée avant tout enregistrement */}
+          {attachOpen ? (
+            <View testID="aura-attach-menu" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, justifyContent: 'center', paddingVertical: 4 }}>
+              {Platform.OS !== 'web' ? <Chip icon="camera" label={tr('aura.att.camera')} onPress={() => { setAttachOpen(false); router.push('/documents/scan?from=camera&origin=aura' as never); }} testID="aura-attach-camera" /> : null}
+              <Chip icon="file-text" label={tr('aura.att.import')} onPress={() => { setAttachOpen(false); router.push('/documents/scan?origin=aura' as never); }} testID="aura-attach-import" />
+              <Chip icon="maximize" label={tr('aura.att.barcode')} onPress={() => { setAttachOpen(false); router.push('/scanner' as never); }} testID="aura-attach-barcode" />
+            </View>
+          ) : null}
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: 6 }}>
+            <Tappable accessibilityRole="button" accessibilityLabel={tr('aura.att.a11y')} accessibilityState={{ expanded: attachOpen }} onPress={() => setAttachOpen((v) => !v)} testID="aura-attach"
+              style={{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={attachOpen ? 'x' : 'plus'} size={20} color={t.colors.textMuted} />
+            </Tappable>
             {dictation !== 'none' ? (
               <Tappable accessibilityRole="button" accessibilityLabel={listening ? tr('ta.voice.end') : tr('ta.voice.talk')} accessibilityState={{ disabled: blockedByConsent, busy: listening }}
                 disabled={blockedByConsent} onPress={onMic} testID="aura-mic"
@@ -696,7 +731,7 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs }}>
         <AuraBot size={BOT_SIZE} state={bot.state} still={bot.still} testID="aura-reply-bot" />
         <View style={[bubble, { flex: 1 }]} accessibilityLiveRegion="polite">
-          <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} />
+          {reply.restored ? <RestoredIntent intent={reply.intent} catalog={catalog} /> : <IntentCard intent={reply.intent} catalog={catalog} allTools={catalog} />}
           {reply.ask && onAskAi ? (
             <Button label={tr('cr.usage.ask')} icon="message-circle" size="sm" variant="ghost" onPress={() => onAskAi(reply.ask!)} testID="aura-ask-anyway" />
           ) : null}
@@ -747,6 +782,18 @@ function AuraReply({ reply, catalog, onChooseJournal, onRetry, onLocal, onCredit
       </View>
       <ActionCards actions={reply.actions} catalog={catalog} onChooseJournal={onChooseJournal} />
       <Text variant="caption" muted testID="aura-charged">{`${reply.footer} ${reply.charged ? tr('aura.charged', { count: reply.cost }) : tr('aura.notCharged')}`}</Text>
+    </View>
+  );
+}
+
+/** Action proposée dans une conversation précédente : rien n'est ré-enregistré sans un nouvel appui sur « Refaire ». */
+function RestoredIntent({ intent, catalog }: { intent: AuraIntent; catalog: ReturnType<typeof useAllToolEntries>['catalog'] }) {
+  const [again, setAgain] = useState(false);
+  if (again) return <IntentCard intent={intent} catalog={catalog} allTools={catalog} />;
+  return (
+    <View style={{ gap: spacing.xs }} testID="aura-intent-restored">
+      <Text variant="small" muted>{tr('aura.hist.pastAction')}</Text>
+      <Button label={tr('aura.hist.redo')} icon="rotate-ccw" size="sm" variant="secondary" onPress={() => setAgain(true)} testID="aura-intent-redo" />
     </View>
   );
 }

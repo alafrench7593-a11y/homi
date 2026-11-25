@@ -76,6 +76,9 @@ export function IntentCard({ intent: initial, catalog, allTools }: { intent: Aur
   const { data: kids } = useTrackedChildren();
   const addSleep = useAddLog('sleep');
   const addBottle = useAddLog('bottle');
+  const addDiaper = useAddLog('diaper');
+  const addFeed = useAddLog('breastfeed');
+  const adders = { sleep: addSleep, bottle: addBottle, diaper: addDiaper, breastfeed: addFeed } as const;
   const writeId = useRef(uuid());
   const extraIds = useRef<string[]>([]);
   const [phase, setPhase] = useState<'idle' | 'saving' | 'done' | 'queued' | 'error'>('idle');
@@ -89,11 +92,12 @@ export function IntentCard({ intent: initial, catalog, allTools }: { intent: Aur
     setPhase('saving');
     try {
       // Série (plusieurs biberons) : un identifiant stable par ligne → un 2e appui ne crée jamais de doublon
-      const rows = now.write.rows?.length ? now.write.rows : [now.write.row];
+      // Phrase à plusieurs actions (25/11/2026) : chaque ligne va dans SON outil, même protection contre les doublons
+      const items = now.write.batch?.length ? now.write.batch : (now.write.rows?.length ? now.write.rows : [now.write.row]).map((row) => ({ kind: now.write.kind, row }));
       let res: unknown = null;
-      for (let i = 0; i < rows.length; i++) {
+      for (let i = 0; i < items.length; i++) {
         const id = i === 0 ? writeId.current : (extraIds.current[i] ??= uuid());
-        res = await (now.write.kind === 'sleep' ? addSleep : addBottle).mutateAsync({ ...rows[i], id, client_id: id, household_id });
+        res = await adders[items[i].kind].mutateAsync({ ...items[i].row, id, client_id: id, household_id });
       }
       setDone({ label: now.doneLabel, href: now.viewHref });
       setPhase(res === 'queued' ? 'queued' : 'done');
