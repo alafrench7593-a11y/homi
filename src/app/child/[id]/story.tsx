@@ -12,6 +12,7 @@ import { Button, Card, Icon, Segmented, Text } from '@/components/ui';
 import { useChild } from '@/lib/data/hooks';
 import { useChildPhotos, usePhotoUrl } from '@/lib/data/hooks-photos';
 import { useMilestones } from '@/lib/data/hooks-family';
+import { useLanguageEntries } from '@/lib/data/hooks-partiels2';
 import { buildStory, storyCount, type StoryChapter, type StoryPage } from '@/lib/domain/childStory';
 import { childAge } from '@/lib/domain/child';
 import { todayISO } from '@/lib/domain/dates';
@@ -34,6 +35,7 @@ function PageBody({ page, name, photoH }: { page: StoryPage; name: string; photo
     <View style={{ gap: spacing.xs }} testID={`story-page-${page.id}`}>
       {page.photoPath ? <PagePhoto path={page.photoPath} height={photoH} /> : null}
       <Text variant="caption" muted>{formatDate(page.date, { day: 'numeric', month: 'long', year: 'numeric' })}{page.ageLabel ? ` · ${page.ageLabel}` : ''}</Text>
+      {page.source === 'word' ? <Text variant="caption" weight="bold">{tr(page.kind === 'sentence' ? 'story.sentence' : 'story.word')}</Text> : null}
       <Text variant="heading" weight="bold">{page.title ?? (page.source === 'photo' ? tr('story.photoTitle', { name }) : '')}</Text>
       {page.text ? <Text>{page.text}</Text> : <Text variant="small" muted>{tr(page.source === 'photo' ? 'story.noCaption' : 'story.noNote')}</Text>}
     </View>
@@ -61,6 +63,7 @@ export default function ChildStory() {
   const child = useChild(id);
   const photos = useChildPhotos(id);
   const milestones = useMilestones(id);
+  const words = useLanguageEntries(id ?? null);
   const th = useTheme();
   const { width } = useWindowDimensions();
   const [mode, setMode] = useState<Mode>('book');
@@ -68,9 +71,9 @@ export default function ChildStory() {
   const listRef = useRef<FlatList>(null);
   const name = child?.first_name ?? '';
   const chapters = useMemo(() => (child?.birth_date ? buildStory({
-    birth: child.birth_date, today: todayISO(), photos: photos.data ?? [], milestones: milestones.data ?? [],
+    birth: child.birth_date, today: todayISO(), photos: photos.data ?? [], milestones: milestones.data ?? [], words: words.data ?? [],
     ageLabel: (b, d) => childAge(b, d).label,
-  }) : []), [child?.birth_date, photos.data, milestones.data]);
+  }) : []), [child?.birth_date, photos.data, milestones.data, words.data]);
   // Livre : une couverture par chapitre, puis ses pages
   const book = useMemo(() => chapters.flatMap((c) => [{ kind: 'cover' as const, c, key: `c-${c.id}` }, ...c.pages.map((p) => ({ kind: 'page' as const, p, key: p.id }))]), [chapters]);
   const pageW = Math.min(width, 640) - spacing.md * 2;
@@ -111,7 +114,7 @@ export default function ChildStory() {
               {c.pages.map((p) => (
                 <View key={p.id} style={{ flexDirection: 'row', gap: spacing.sm }}>
                   <View style={{ alignItems: 'center', width: 18 }}>
-                    <Icon name={p.source === 'photo' ? 'camera' : 'star'} size={14} color={th.colors.primary} />
+                    <Icon name={p.source === 'photo' ? 'camera' : p.source === 'word' ? 'message-circle' : 'star'} size={14} color={th.colors.primary} />
                     <View style={{ flex: 1, width: 2, backgroundColor: th.colors.border, marginTop: 4 }} />
                   </View>
                   <Card style={{ flex: 1 }}><PageBody page={p} name={name} photoH={160} /></Card>

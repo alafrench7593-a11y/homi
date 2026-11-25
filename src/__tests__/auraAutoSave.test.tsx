@@ -92,4 +92,17 @@ describe('Aura enregistre directement une action simple', () => {
     await until(() => has(r, 'aura-intent-done'));
     expect(await bottles(hh)).toBe(1);
   });
+  it('« il dort depuis 14h20 » démarre la sieste ; « il vient de se réveiller » la termine ; Annuler la rouvre', async () => {
+    const open = async () => (await backend.select<{ ended_at: string | null }>({ table: 'sleeps', filters: [eq('household_id', hh)] })).filter((x) => !x.ended_at).length;
+    const r = await render(<AuraScreen />);
+    await type(r, 'aura-input', 'Lina dort depuis 14h20'); await press(r, 'aura-send', 400);
+    await until(() => has(r, 'aura-intent-done'));
+    expect(await open()).toBe(1);
+    const r2 = await render(<AuraScreen />);
+    await type(r2, 'aura-input', 'Lina vient de se réveiller'); await press(r2, 'aura-send', 400);
+    await until(() => has(r2, 'aura-intent-done'));
+    expect(await open()).toBe(0);
+    await press(r2, 'aura-intent-undo', 600);
+    expect(await open()).toBe(1);
+  });
 });

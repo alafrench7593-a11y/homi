@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import { Button, Icon, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { resolveIntent, type AuraIntent, type IntentContext, type Resolution, type WriteKind } from '@/lib/aura/intents';
-import { useActivePregnancy, useActiveSubject, useAddLog, useDeleteRow, useLogs, useMyMembership, useTrackedChildren } from '@/lib/data/hooks';
+import { useActivePregnancy, useActiveSubject, useAddLog, useDeleteRow, useUpdateRow, useLogs, useMyMembership, useTrackedChildren } from '@/lib/data/hooks';
 import { uuid } from '@/lib/uuid';
 import { useTreatmentLogs, useTreatments } from '@/lib/data/hooks-needs';
 import { useScope } from '@/lib/data/hooks-scope';
@@ -29,7 +29,7 @@ function useIntentContext(intent: AuraIntent, catalog: CatalogTool[], allTools: 
   const scope = useScope();
   const member = useMyMembership();
   const childId = ('childId' in intent && intent.childId) || scope.childId || (children?.length === 1 ? children[0].id : null);
-  const needsSleeps = intent.kind === 'fix_sleep_end' || intent.kind === 'log_sleep' || intent.kind === 'sleep_today';
+  const needsSleeps = intent.kind === 'fix_sleep_end' || intent.kind === 'log_sleep' || intent.kind === 'sleep_today' || intent.kind === 'start_sleep' || intent.kind === 'end_sleep' || intent.kind === 'log_sleep_for' || intent.kind === 'multi';
   const sleeps = useLogs<Sleep>('sleep', needsSleeps ? childId : null, 2, { includePending: intent.kind !== 'fix_sleep_end' });
   const bottles = useLogs<{ at: string; consumed_ml: number | null; child_id: string }>('bottle', intent.kind === 'log_bottle' || intent.kind === 'bottles_today' ? childId : null, 1, { includePending: true });
   const diapers = useLogs<{ at: string; wet: boolean; stool: boolean; child_id: string }>('diaper', intent.kind === 'last_diaper' ? childId : null, 3, { includePending: true });
@@ -65,12 +65,13 @@ function useIntentContext(intent: AuraIntent, catalog: CatalogTool[], allTools: 
  * Plusieurs actions ou une série restent à confirmer. Mémoire par message : jamais deux enregistrements si la bulle
  * est ré-affichée (défilement, retour sur l'écran).
  */
-type AutoState = { status: 'saving' | 'done' | 'queued' | 'error' | 'undone'; label: string; href: string; items: { kind: WriteKind; id: string }[] };
+type SavedItem = { kind: WriteKind; id: string; revert?: Record<string, unknown> };
+type AutoState = { status: 'saving' | 'done' | 'queued' | 'error' | 'undone'; label: string; href: string; items: SavedItem[] };
 const AUTO = new Map<string, AutoState>();
 export const __resetAutoSaves = () => AUTO.clear();
 export function autoSaves(intent: AuraIntent): boolean {
   if (intent.kind === 'log_bottle') return intent.ml != null && (intent.times?.length ?? 0) <= 1;
-  return intent.kind === 'log_diaper' || intent.kind === 'log_sleep_for' || intent.kind === 'log_sleep' || (intent.kind === 'log_feed_for' && !!intent.side);
+  return intent.kind === 'log_diaper' || intent.kind === 'log_sleep_for' || intent.kind === 'log_sleep' || intent.kind === 'start_sleep' || intent.kind === 'end_sleep' || (intent.kind === 'log_feed_for' && !!intent.side);
 }
 
 export function IntentCard({ intent: initial, catalog, allTools, autoKey }: { intent: AuraIntent; catalog: CatalogTool[]; allTools: CatalogTool[]; autoKey?: string }) {
@@ -104,13 +105,16 @@ export function IntentCard({ intent: initial, catalog, allTools, autoKey }: { in
     return a && (a.status === 'done' || a.status === 'queued' || a.status === 'undone') ? { label: a.label, href: a.href } : null;
   });
   const prior = autoKey ? AUTO.get(autoKey) : undefined;
-  const savedItems = useRef<{ kind: WriteKind; id: string }[]>(prior?.items ?? []);
+  const savedItems = useRef<SavedItem[]>(prior?.items ?? []);
+  const updSleep = useUpdateRow('sleeps');
   const delSleep = useDeleteRow('sleeps'); const delBottle = useDeleteRow('bottles'); const delDiaper = useDeleteRow('diapers'); const delFeed = useDeleteRow('breastfeeds');
   const deleters = { sleep: delSleep, bottle: delBottle, diaper: delDiaper, breastfeed: delFeed } as const;
   const [undone, setUndone] = useState(prior?.status === 'undone');
   const undo = async () => {
     try {
-      for (const it of [...savedItems.current].reverse()) await deleters[it.kind].mutateAsync(it.id);
+      for (const it of [...savedItems.current].reverse()) {
+        if (it.revert) await updSleep.mutateAsync({ id: it.id, patch: it.revert }); else await deleters[it.kind].mutateAsync(it.id);
+      }
       if (autoKey) { const a = AUTO.get(autoKey); if (a) AUTO.set(autoKey, { ...a, status: 'undone' }); }
       setUndone(true); toast(tr('aura.auto.undone'), 'info');
     } catch { toast(tr('aura.it2.failed'), 'error'); }
@@ -129,7 +133,16 @@ export function IntentCard({ intent: initial, catalog, allTools, autoKey }: { in
       // Phrase à plusieurs actions (25/11/2026) : chaque ligne va dans SON outil, même protection contre les doublons
       const items = now.write.batch?.length ? now.write.batch : (now.write.rows?.length ? now.write.rows : [now.write.row]).map((row) => ({ kind: now.write.kind, row }));
       let res: unknown = null;
-      const saved: { kind: WriteKind; id: string }[] = [];
+      const saved: SavedItem[] = [];
+      // Fin d'un sommeil en cours : on MODIFIE la ligne existante (« Annuler » la rouvre)
+      if (now.write.op === 'update') {
+        const { id: rowId, ended_at } = now.write.row as { id: string; ended_at: string };
+        await updSleep.mutateAsync({ id: rowId, patch: { ended_at } });
+        saved.push({ kind: 'sleep', id: rowId, revert: { ended_at: null } });
+        if (autoKey) AUTO.set(autoKey, { status: 'done', label: now.doneLabel, href: now.viewHref, items: saved });
+        savedItems.current = saved; setDone({ label: now.doneLabel, href: now.viewHref }); setPhase('done');
+        return;
+      }
       for (let i = 0; i < items.length; i++) {
         const id = i === 0 ? writeId.current : (extraIds.current[i] ??= uuid());
         res = await adders[items[i].kind].mutateAsync({ ...items[i].row, id, client_id: id, household_id });

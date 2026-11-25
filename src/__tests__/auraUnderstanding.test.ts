@@ -122,3 +122,22 @@ describe('exemples des espaces Famille et Enfant', () => {
   const { t } = require('@/i18n') as { t: (k: string) => string };
   it.each([['aura.ex.task', 'assign_task'], ['aura.ex.appt', 'add_appointment']])('%s → %s', (key, k) => expect(kind(t(key))).toBe(k));
 });
+
+describe('sieste en direct et Mon histoire (26/11/2026)', () => {
+  it.each<[string, string]>([
+    ['Il dort depuis 14h20', 'start_sleep'], ['il vient de s’endormir', 'start_sleep'], ['elle s’est endormie à 13h', 'start_sleep'],
+    ['il vient de se réveiller', 'end_sleep'], ['réveillé à 15h10', 'end_sleep'],
+    ['ajoute cette photo à son histoire', 'open_story'], ['ouvre son histoire', 'open_story'],
+    ['combien a-t-il dormi aujourd hui ?', 'sleep_today'], ['il a dormi de 13h à 14h30', 'log_sleep'],
+  ])('« %s » → %s', (q, k) => expect(kind(q)).toBe(k));
+  it('démarrage : heure dite, refus si déjà endormi ; réveil : ferme le sommeil en cours', () => {
+    const r1 = resolveIntent(matchIntent('Il dort depuis 14h20') as AuraIntent, ctx());
+    expect(r1.status).toBe('confirm');
+    expect(new Date((r1 as unknown as { write: { row: { started_at: string } } }).write.row.started_at).getHours()).toBe(14);
+    const open = [{ id: 's1', child_id: 'c1', started_at: new Date(2026, 10, 25, 14, 20).toISOString(), ended_at: null }];
+    expect(resolveIntent(matchIntent('il vient de s’endormir') as AuraIntent, ctx({ sleeps: open })).status).toBe('unavailable');
+    const r2 = resolveIntent(matchIntent('il vient de se réveiller') as AuraIntent, ctx({ sleeps: open }));
+    expect(r2).toMatchObject({ status: 'confirm', write: { op: 'update', row: { id: 's1' } } });
+    expect(resolveIntent(matchIntent('il vient de se réveiller') as AuraIntent, ctx()).status).toBe('unavailable');
+  });
+});

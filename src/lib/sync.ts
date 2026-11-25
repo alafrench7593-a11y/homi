@@ -22,6 +22,10 @@ export const HOUSEHOLD_TABLES = [
   // « Se comprendre » (22/11/2026, 20261122000200_se_comprendre_temps_reel.sql) : la RLS n'envoie un message qu'à son
   // auteur et à son destinataire ; le filtre par foyer ne fait que réduire le flux
   'couple_messages',
+  // Écosystème synchronisé (26/11/2026, 20261215000100_realtime_ecosysteme.sql) : album, souvenirs / Mon histoire,
+  // santé, vaccins, traitements, premiers mots, dépenses, relais biberon
+  'child_photos', 'child_milestones', 'child_health_items', 'child_vaccinations', 'child_treatments', 'treatment_logs',
+  'child_language_entries', 'household_expenses', 'bottle_relays',
 ] as const;
 export const PERSONAL_TABLES = ['notifications'] as const;
 

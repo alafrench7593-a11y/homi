@@ -35,3 +35,17 @@ describe('Mon histoire : pages construites sans rien inventer', () => {
     expect(storyCount(chapters)).toBe(3); // la note sans date n'est pas placée au hasard
   });
 });
+
+describe('Mon histoire : premiers mots (outil Langage)', () => {
+  it('mot et phrase datés deviennent des pages ; notes et langues ignorées', () => {
+    const ch = buildStory({ birth, today: '2026-11-26', ageLabel: age, photos: [], milestones: [], words: [
+      { id: 'w1', kind: 'word', text: 'maman', said_on: '2026-01-05', note: null },
+      { id: 'w2', kind: 'sentence', text: 'encore gâteau', said_on: '2026-06-01', note: 'au goûter' },
+      { id: 'w3', kind: 'language', text: 'arabe', said_on: '2026-01-01', note: null },
+      { id: 'w4', kind: 'word', text: 'papa', said_on: null, note: null },
+    ] });
+    const pages = ch.flatMap((c) => c.pages);
+    expect(pages.map((p) => p.title)).toEqual(['« maman »', '« encore gâteau »']);
+    expect(pages[1]).toMatchObject({ source: 'word', kind: 'sentence', text: 'au goûter', chapter: 'y1' });
+  });
+});

@@ -9,9 +9,10 @@ export type ChapterId = 'before' | 'birth' | 'y0' | 'y1' | 'y2' | 'y3' | 'y4_6' 
 export const CHAPTERS: ChapterId[] = ['before', 'birth', 'y0', 'y1', 'y2', 'y3', 'y4_6', 'y6_8', 'y8_10', 'y10'];
 
 export interface StoryPhoto { id: string; taken_on: string; caption: string | null; storage_path: string }
+export interface StoryWord { id: string; kind: string; text: string; said_on: string | null; note: string | null }
 export interface StoryMilestone { id: string; kind: string; title: string; happened_on: string | null; note: string | null }
 export interface StoryPage {
-  id: string; source: 'photo' | 'milestone'; date: string; chapter: ChapterId; ageLabel: string | null;
+  id: string; source: 'photo' | 'milestone' | 'word'; date: string; chapter: ChapterId; ageLabel: string | null;
   title: string | null; text: string | null; photoPath: string | null; kind: string | null;
 }
 export interface StoryChapter { id: ChapterId; pages: StoryPage[]; reached: boolean }
@@ -37,7 +38,7 @@ export function chapterReached(birth: string, id: ChapterId, today: string): boo
   return CHAPTERS.indexOf(id) <= CHAPTERS.indexOf(chapterOf(birth, today));
 }
 
-export function buildStory(o: { birth: string; today: string; photos: StoryPhoto[]; milestones: StoryMilestone[]; ageLabel: (birth: string, date: string) => string }): StoryChapter[] {
+export function buildStory(o: { birth: string; today: string; photos: StoryPhoto[]; milestones: StoryMilestone[]; words?: StoryWord[]; ageLabel: (birth: string, date: string) => string }): StoryChapter[] {
   const pages: StoryPage[] = [
     ...o.photos.map((p): StoryPage => ({
       id: `p-${p.id}`, source: 'photo', date: p.taken_on, chapter: chapterOf(o.birth, p.taken_on),
@@ -48,6 +49,12 @@ export function buildStory(o: { birth: string; today: string; photos: StoryPhoto
       id: `m-${m.id}`, source: 'milestone', date: m.happened_on!, chapter: chapterOf(o.birth, m.happened_on!),
       ageLabel: m.happened_on! >= o.birth ? o.ageLabel(o.birth, m.happened_on!) : null,
       title: m.title.trim(), text: m.note?.trim() || null, photoPath: null, kind: m.kind,
+    })),
+    // Premiers mots et phrases (outil Langage, 26/11/2026) : le mot dit, tel que noté
+    ...(o.words ?? []).filter((w) => !!w.said_on && (w.kind === 'word' || w.kind === 'sentence') && w.text.trim()).map((w): StoryPage => ({
+      id: `w-${w.id}`, source: 'word', date: w.said_on!, chapter: chapterOf(o.birth, w.said_on!),
+      ageLabel: w.said_on! >= o.birth ? o.ageLabel(o.birth, w.said_on!) : null,
+      title: `« ${w.text.trim()} »`, text: w.note?.trim() || null, photoPath: null, kind: w.kind,
     })),
   ].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   return CHAPTERS.map((id) => ({ id, pages: pages.filter((p) => p.chapter === id), reached: chapterReached(o.birth, id, o.today) }))

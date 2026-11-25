@@ -52,7 +52,13 @@ export type AuraIntent =
   /** 25/11/2026 — « j'ai allaité 20 minutes à gauche » : le côté est obligatoire (jamais deviné) */
   | { kind: 'log_feed_for'; min: number; side: 'left' | 'right' | 'both' | null; childId?: string | null }
   /** 25/11/2026 — plusieurs actions dans une phrase (« 150 ml, dormi 45 min et couche changée ») : un seul « Enregistrer » */
-  | { kind: 'multi'; parts: AuraIntent[]; childId?: string | null };
+  | { kind: 'multi'; parts: AuraIntent[]; childId?: string | null }
+  /** 26/11/2026 — « il dort depuis 14 h 20 », « il vient de s'endormir » : sieste démarrée (heure dite, sinon maintenant) */
+  | { kind: 'start_sleep'; at: string | null; childId?: string | null }
+  /** 26/11/2026 — « il vient de se réveiller », « réveillé à 15 h » : le sommeil en cours se termine */
+  | { kind: 'end_sleep'; at: string | null; childId?: string | null }
+  /** 26/11/2026 — « ajoute cette photo à son histoire », « ouvre son histoire » */
+  | { kind: 'open_story'; childId?: string | null };
 export type VisionDoc = 'prescription' | 'medicine' | 'health_book' | 'ultrasound' | 'report' | 'food' | 'list' | 'document';
 
 /** Jour cité, gardé RELATIF (résolu avec l'horloge du moment) : +n jours, prochain jour de semaine (0 = dimanche), JJ/MM. */
@@ -61,7 +67,7 @@ export type When = { rel: number } | { weekday: number } | { day: number; month:
 export type WriteKind = 'sleep' | 'bottle' | 'diaper' | 'breastfeed';
 
 /** Identifiants d'action reconnus par HOMI (le modèle ne peut proposer QUE ceux-ci). */
-export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help', 'vision', 'log_diaper', 'log_sleep_for', 'log_feed_for', 'multi'] as const;
+export const AURA_INTENT_KINDS = ['open_tool', 'fix_sleep_end', 'prepare_relay', 'add_measure', 'switch_child', 'profile_tools', 'log_sleep', 'log_bottle', 'sleep_today', 'add_appointment', 'assign_task', 'start_breastfeed', 'med_check', 'bottles_today', 'last_diaper', 'feeds_today', 'print_support', 'routine_help', 'vision', 'log_diaper', 'log_sleep_for', 'log_feed_for', 'multi', 'start_sleep', 'end_sleep', 'open_story'] as const;
 
 // ---------------------------------------------------------------- reconnaissance
 
@@ -203,6 +209,7 @@ export function matchIntent(question: string, single = false): AuraIntent | null
   const q = foldText(question);
   if (!single) { const m = multiIntent(question); if (m) return m; }
   // Aura Vision AVANT les questions d'explication : « explique-moi cette ordonnance » vise le papier en main
+  if (/\b(son histoire|mon histoire|sa histoire|livre de vie|her story|his story|my story)\b/.test(q)) return { kind: 'open_story' };
   const vdoc = visionDoc(q);
   if (vdoc && !(vdoc === 'document' && has(q, /\b(rendez vous|rdv|appointment)\b/))) return { kind: 'vision', doc: vdoc };
   // Questions d'EXPLICATION (« Comment utiliser Biberon ? », « À quoi sert le relais ? », bouton « Comment ça marche ? »
@@ -250,6 +257,11 @@ export function matchIntent(question: string, single = false): AuraIntent | null
   // 0 bis) Enregistrer : deux heures + endormissement/réveil, SANS indice de correction (« s'est endormi à 14 h 20 et
   //        réveillé à 15 h 45 », « a dormi de 14 h à 15 h 30, ajoute ») ; la correction garde la priorité
   if (times.length >= 2 && sleepy && !fixCue) return { kind: 'log_sleep', start: times[0], end: times[1] };
+  // 0 bis-a) Sieste en direct (26/11/2026) : endormissement / réveil, heure dite ou maintenant
+  if (!QUESTION.test(q) && !fixCue && times.length <= 1) {
+    if (/\b(dort depuis|endormi\w*|s endort|s est endormi\w*|vient de s endormir|fell asleep|is asleep|asleep since|sleeping since)\b/.test(q) && !/\b(reveil\w*|woke)\b/.test(q)) return { kind: 'start_sleep', at: times[0] ?? null };
+    if (/\b(reveille\w*|s est reveille\w*|vient de se reveiller|woke up|is awake|awake)\b/.test(q)) return { kind: 'end_sleep', at: times[0] ?? null };
+  }
   // 0 bis-b) Biberons dits en phrase (25/11/2026) : « Lina a pris 6 fois son biberon depuis midi toutes les 2 h »,
   //          « biberon à 14 h », « elle a bu 150 ml à midi » → les heures exactes, confirmées avant d'enregistrer
   const series = bottleSeries(q, question);
@@ -338,7 +350,7 @@ export type Resolution =
   | { status: 'list'; label: string; items: { label: string; href: string }[]; hint?: string }
   | { status: 'unavailable'; reason: string; alternative?: { label: string; href: string } }
   /** Écriture préparée : rien n'est enregistré avant l'appui du parent sur « Enregistrer » */
-  | { status: 'confirm'; summary: string; write: { kind: WriteKind; row: Record<string, unknown>; /** plusieurs lignes (série de biberons) */ rows?: Record<string, unknown>[]; /** plusieurs outils (phrase à plusieurs actions) */ batch?: { kind: WriteKind; row: Record<string, unknown> }[] }; childName: string; viewHref: string; editHref: string; doneLabel: string }
+  | { status: 'confirm'; summary: string; write: { /** 'update' : modifie la ligne `row.id` (fin d'un sommeil en cours) */ op?: 'update'; kind: WriteKind; row: Record<string, unknown>; /** plusieurs lignes (série de biberons) */ rows?: Record<string, unknown>[]; /** plusieurs outils (phrase à plusieurs actions) */ batch?: { kind: WriteKind; row: Record<string, unknown> }[] }; childName: string; viewHref: string; editHref: string; doneLabel: string }
   /** Réponse calculée sur les données réelles (jamais inventée) */
   | { status: 'answer'; text: string; href: string; label: string };
 
@@ -623,6 +635,33 @@ export function resolveIntent(intent: AuraIntent, ctx: IntentContext): Resolutio
       summary: ctx.t('aura.it4.feedSummary', { name: child.first_name, d: span(intent.min), side: ctx.t(`aura.it4.side.${intent.side}`), from: ctx.clock(start), to: ctx.clock(ctx.now) }),
       write: { kind: 'breastfeed', row: { child_id: child.id, side: intent.side, started_at: start.toISOString(), ended_at: ctx.now.toISOString(), note: null } },
       viewHref: `/track/breastfeed?child=${child.id}`, editHref: `/track/breastfeed?child=${child.id}`, doneLabel: ctx.t('aura.it4.feedDone', { d: span(intent.min) }),
+    };
+  }
+
+  // ---- 26/11/2026 : sieste en direct et Mon histoire
+  if (intent.kind === 'open_story') {
+    return { status: 'ready', label: ctx.t('aura.it7.story', { name: child.first_name }), href: `/child/${child.id}/story`, childName: child.first_name, hint: ctx.t('aura.it7.storyHint') };
+  }
+  if (intent.kind === 'start_sleep' || intent.kind === 'end_sleep') {
+    if (!memberCan(ctx.member, 'edit', 'daily', child.id)) return { status: 'unavailable', reason: ctx.t('aura.it.noEdit', { name: child.first_name }) };
+    const at = intent.at ? (() => { const [h, m] = intent.at!.split(':').map(Number); const d = new Date(ctx.now.getFullYear(), ctx.now.getMonth(), ctx.now.getDate(), h, m); return d.getTime() > ctx.now.getTime() + 60000 ? new Date(d.getTime() - 86400000) : d; })() : ctx.now;
+    const open = ctx.sleeps.filter((x) => x.child_id === child.id && !x.ended_at).sort((a, b) => b.started_at.localeCompare(a.started_at))[0] ?? null;
+    if (intent.kind === 'start_sleep') {
+      if (open) return { status: 'unavailable', reason: ctx.t('aura.it7.alreadyAsleep', { name: child.first_name, at: ctx.clock(new Date(open.started_at)) }), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+      const night = at.getHours() >= 19 || at.getHours() < 6;
+      return {
+        status: 'confirm', childName: child.first_name, summary: ctx.t('aura.it7.startSummary', { name: child.first_name, at: ctx.clock(at) }),
+        write: { kind: 'sleep', row: { child_id: child.id, started_at: at.toISOString(), ended_at: null, kind: night ? 'night' : 'nap' } },
+        viewHref: `/sleep/${child.id}`, editHref: `/sleep/${child.id}`, doneLabel: ctx.t('aura.it7.startDone', { at: ctx.clock(at) }),
+      };
+    }
+    if (!open) return { status: 'unavailable', reason: ctx.t('aura.it7.noOpen', { name: child.first_name }), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+    if (at.getTime() <= Date.parse(open.started_at)) return { status: 'unavailable', reason: ctx.t('aura.it2.badTimes'), alternative: { label: ctx.t('aura.it.openSleep'), href: `/sleep/${child.id}` } };
+    const min = Math.round((at.getTime() - Date.parse(open.started_at)) / 60000);
+    return {
+      status: 'confirm', childName: child.first_name, summary: ctx.t('aura.it7.endSummary', { name: child.first_name, from: ctx.clock(new Date(open.started_at)), to: ctx.clock(at), d: span(min) }),
+      write: { op: 'update', kind: 'sleep', row: { id: open.id, child_id: child.id, ended_at: at.toISOString() } },
+      viewHref: `/sleep/${child.id}`, editHref: `/sleep/${child.id}`, doneLabel: ctx.t('aura.it7.endDone', { d: span(min) }),
     };
   }
 
