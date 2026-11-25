@@ -75,22 +75,28 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
   const { scope, catalog, byProfile, favSet, recentIds } = th;
   const childId = scope.childId ?? (scope.scope === 'postpartum' ? scope.babyId : null);
   const dashChild = (useTrackedChildren().data ?? []).find((c) => c.id === scope.childId) ?? null;
+  // 26/11/2026 (retour iPhone) : onglet Enfant avec le profil Grossesse affiché → c'est l'espace grossesse (titre, apps
+  // de grossesse, Aura) ; plus de « Garde et nounou » ni des apps d'un autre enfant
+  const pregScope = hub === 'baby' && scope.scope === 'pregnancy';
+  const effHub: HubKey = pregScope ? 'health' : hub;
+  const effCats = pregScope ? ['pregnancy'] : categories;
   // Présentation d'Aura à la première ouverture (bébé < 3 ans, enfant, famille, grossesse)
   const ageMonths = dashChild?.birth_date ? (Date.now() - Date.parse(dashChild.birth_date)) / (30.44 * 86400000) : null;
-  const introSection: IntroSection | null = hub === 'family' ? 'family' : hub === 'baby' ? (ageMonths != null && ageMonths >= 36 ? 'child' : dashChild ? 'baby' : null)
+  const introSection: IntroSection | null = pregScope ? 'pregnancy' : hub === 'family' ? 'family' : hub === 'baby' ? (ageMonths != null && ageMonths >= 36 ? 'child' : dashChild ? 'baby' : null)
     : categories?.includes('pregnancy') ? 'pregnancy' : null;
   const quickExamples = introSection === 'baby' ? ['aura.ex.bottle1', 'aura.ex.multi', 'aura.ex.sleep1']
     : introSection === 'child' ? ['aura.ex.sleep2', 'aura.ex.appt', 'aura.ex.relay']
-      : introSection === 'family' ? ['aura.ex.task', 'aura.ex.appt', 'aura.ex.relay'] : null;
+      : introSection === 'family' ? ['aura.ex.task', 'aura.ex.appt', 'aura.ex.relay']
+        : introSection === 'pregnancy' ? ['aura.ex.pregAppt', 'aura.ex.pregTools'] : null;
   const { statuses } = useToolStatuses(childId);
   const keep = useMemo(() => {
-    const only = categories ? new Set<string>(categories) : null;
+    const only = effCats ? new Set<string>(effCats) : null;
     const not = new Set<string>(excludeCategories ?? []);
     return (x: CatalogTool) => (!only || only.has(x.category)) && !not.has(x.category);
-  }, [categories, excludeCategories]);
-  const tools = useMemo(() => hubTools(catalog, hub, scope.scope).filter(keep), [catalog, hub, scope.scope, keep]);
+  }, [effCats?.join(','), excludeCategories]); // eslint-disable-line react-hooks/exhaustive-deps
+  const tools = useMemo(() => hubTools(catalog, effHub, scope.scope).filter(keep), [catalog, effHub, scope.scope, keep]);
   const urgent = useMemo(() => tools.filter((x) => x.urgent), [tools]);
-  const groups = useMemo(() => hubSelection(tools, hub, scope.scope), [tools, hub, scope.scope]);
+  const groups = useMemo(() => hubSelection(tools, effHub, scope.scope), [tools, effHub, scope.scope]);
   const here = useMemo(() => new Set(tools.filter((x) => !x.urgent).map((x) => x.id)), [tools]);
   const favIds = useMemo(() => [...favSet].filter((x) => here.has(x)), [favSet, here]);
   const recents = useMemo(() => recentIds.filter((x) => here.has(x) && !favSet.has(x)).slice(0, RECENT_MAX), [recentIds, here, favSet]);
@@ -105,7 +111,7 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
   }, [tools, statuses]);
 
   return (
-    <Screen account title={tr(title ?? TITLE[hub].title)} subtitle={tr(subtitle ?? TITLE[hub].sub)} tool={false} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
+    <Screen account title={tr(title ?? (pregScope ? 'nav.hub.pregnancy.title' : TITLE[hub].title))} subtitle={tr(subtitle ?? (pregScope ? 'nav.hub.pregnancy.sub' : TITLE[hub].sub))} tool={false} bottomInset={TAB_SCREEN_INSET} contentStyle={{ alignSelf: 'center', width: '100%', maxWidth: MAX_W }}>
       {/* Profil affiché : la même rangée d'avatars que sur Aujourd'hui, avec l'indicateur de pages */}
       <ProfileSwitcher pager testID={`hub-${id}-profiles`} />
       {introSection ? <SectionIntro section={introSection} childId={dashChild?.id ?? childId} name={dashChild?.first_name ?? null} /> : null}
@@ -121,7 +127,7 @@ export function HubScreen({ hub, id = hub, categories, excludeCategories, title,
           <MotionList style={{ gap: spacing.sm }}>{urgent.map((u) => <MotionItem key={u.id}><UrgentRow key={u.id} tool={u} /></MotionItem>)}</MotionList>
           <ToolSearchButton testID={`hub-${id}-search`} />
           {/* Onglet Enfant : la garde de l'enfant affiché (son carnet s'il a une nounou confirmée, sinon « Mes gardes ») */}
-          {hub === 'baby' ? <CareEntry childId={scope.childId ?? null} /> : null}
+          {hub === 'baby' && !pregScope ? <CareEntry childId={scope.childId ?? null} /> : null}
         </View>
 
         {recents.length ? <Cascade index={1}><ToolLinks ids={recents} title={tr('th.ui.recents')} status={status} testID={`hub-${id}-recents`} /></Cascade> : null}

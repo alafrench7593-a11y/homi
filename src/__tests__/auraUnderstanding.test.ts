@@ -141,3 +141,8 @@ describe('sieste en direct et Mon histoire (26/11/2026)', () => {
     expect(resolveIntent(matchIntent('il vient de se réveiller') as AuraIntent, ctx()).status).toBe('unavailable');
   });
 });
+
+describe('exemples de l’espace Grossesse', () => {
+  const { t } = require('@/i18n') as { t: (k: string) => string };
+  it.each([['aura.ex.pregAppt', 'add_appointment'], ['aura.ex.pregTools', 'profile_tools']])('%s → %s', (key, k) => expect(kind(t(key))).toBe(k));
+});

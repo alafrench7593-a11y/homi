@@ -280,4 +280,6 @@ export const motion = {
   "aura.it7.noOpen": "Kein laufender Schlaf für {name}.",
   "aura.it7.endSummary": "{name} hat {d} geschlafen ({from} – {to})",
   "aura.it7.endDone": "Aufwachen gespeichert: {d} Schlaf",
+  "aura.ex.pregAppt": "Hebammentermin am Dienstag um 10 Uhr hinzufügen",
+  "aura.ex.pregTools": "Welche Tools für meine Schwangerschaft?",
 } as const;

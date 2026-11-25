@@ -280,4 +280,6 @@ export const motion = {
   "aura.it7.noOpen": "Nessun sonno in corso per {name}.",
   "aura.it7.endSummary": "{name} ha dormito {d} ({from} – {to})",
   "aura.it7.endDone": "Risveglio salvato: {d} di sonno",
+  "aura.ex.pregAppt": "Aggiungi un appuntamento con l'ostetrica martedì alle 10",
+  "aura.ex.pregTools": "Quali strumenti per la mia gravidanza?",
 } as const;
