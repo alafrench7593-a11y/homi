@@ -213,6 +213,25 @@ export interface KbIndex {
   avgLen: number;
 }
 
+/**
+ * Construction PAR LOTS (26/11/2026, mesure : 10,4 s d'un seul bloc à l'ouverture d'Aura en CPU ×4 → écran figé) :
+ * quelques articles à la fois, la main est rendue à l'interface entre deux lots. Même résultat que buildIndex.
+ */
+export async function buildIndexInChunks(articles: KbArticle[], opts: { chunk?: number; isCancelled?: () => boolean } = {}): Promise<KbIndex | null> {
+  const chunk = opts.chunk ?? 6;
+  const passages: Passage[] = [];
+  for (let i = 0; i < articles.length; i += chunk) {
+    if (opts.isCancelled?.()) return null;
+    for (const a of articles.slice(i, i + chunk)) passages.push(...passagesOf(a));
+    await new Promise<void>((r) => setTimeout(r, 0));
+  }
+  if (opts.isCancelled?.()) return null;
+  const df = new Map<string, number>();
+  for (const p of passages) for (const tk of new Set(p.tokens)) df.set(tk, (df.get(tk) ?? 0) + 1);
+  const avgLen = passages.reduce((n, p) => n + p.tokens.length, 0) / Math.max(1, passages.length);
+  return { passages, articles: new Map(articles.map((a) => [a.slug, a])), df, avgLen };
+}
+
 export function buildIndex(articles: KbArticle[]): KbIndex {
   const passages = articles.flatMap(passagesOf);
   const df = new Map<string, number>();

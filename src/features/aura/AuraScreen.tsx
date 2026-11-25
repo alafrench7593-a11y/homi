@@ -50,7 +50,7 @@ import { childAge } from '@/lib/domain/child';
 import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { searchCatalog } from '@/lib/domain/toolSearch';
 import { toolWordsKey } from '@/lib/journeys/tools';
-import { answer as localAnswer, buildIndex, type KbIndex } from '@/lib/localAI/engine';
+import { answer as localAnswer, buildIndexInChunks, type KbIndex } from '@/lib/localAI/engine';
 import { useOfflineStore } from '@/lib/offline';
 import { SITUATIONS, type Situation } from '@/lib/domain/understand';
 import { uuid } from '@/lib/uuid';
@@ -108,12 +108,16 @@ function useArticleIndex(enabled: boolean): KbIndex | null {
     const data = q.data;
     if (!data) return;
     if (INDEX?.n === data.length) { setIndex(INDEX.index); return; }
+    // 26/11/2026 : par lots, après l'ouverture (l'écran reste fluide ; avant : 10 s figé sur un téléphone lent)
+    let cancelled = false;
     const id = setTimeout(() => {
-      const built = buildIndex(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months, journeys: a.journeys })));
-      INDEX = { n: data.length, index: built };
-      setIndex(built);
-    }, 30);
-    return () => clearTimeout(id);
+      void buildIndexInChunks(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months, journeys: a.journeys })), { isCancelled: () => cancelled }).then((built) => {
+        if (!built || cancelled) return;
+        INDEX = { n: data.length, index: built };
+        setIndex(built);
+      });
+    }, 400);
+    return () => { cancelled = true; clearTimeout(id); };
   }, [q.data]);
   return index;
 }
