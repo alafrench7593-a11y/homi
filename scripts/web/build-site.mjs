@@ -69,9 +69,8 @@ writeFileSync(path.join(dist, 'index.html'), html);
 mkdirSync(path.join(dist, 'site/fonts'), { recursive: true });
 for (const f of ['site.css', 'site.js']) cpSync(path.join(site, f), path.join(dist, 'site', f));
 cpSync(path.join(site, '.build/search.js'), path.join(dist, 'site/search.js'));
-for (const w of ['600SemiBold', '800ExtraBold']) {
-  cpSync(path.join(root, `node_modules/@expo-google-fonts/manrope/${w}/Manrope_${w}.ttf`), path.join(dist, `site/fonts/Manrope_${w}.ttf`));
-}
+// polices : WOFF2 sous-ensemble latin pré-générés (pyftsubset, 84 Ko → 27 Ko), versionnés dans web/site/fonts
+cpSync(path.join(site, 'fonts'), path.join(dist, 'site/fonts'), { recursive: true });
 cpSync(path.join(site, 'og.png'), path.join(dist, 'og.png'));
 // icônes du site : nouvelle identité « noir sur blanc » (assets/brand/homi-logo-noir-sur-blanc-1024.png), générées par
 // scripts/web/site-icons.py (favicon.ico 16/32/48, icon-32.png, apple-touch-icon.png 180, icon-512.png)

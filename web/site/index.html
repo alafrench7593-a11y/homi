@@ -23,6 +23,7 @@
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/site/fonts/Manrope_800ExtraBold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/site/site.css?v={{VERSION}}">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "{{SITE_URL}}/#org", "name": "HOMI", "url": "{{SITE_URL}}/", "logo": "{{SITE_URL}}/og.png", "email": "homixyz@gmail.com", "sameAs":["https://www.instagram.com/homi_famille/"],"founder": {"@type": "Person", "name": "David PRINCIVIL"}, "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": "homixyz@gmail.com", "url": "{{SITE_URL}}/contact", "availableLanguage": ["fr", "en", "es", "de", "it"]}}, {"@type": "WebSite", "@id": "{{SITE_URL}}/#site", "name": "HOMI", "url": "{{SITE_URL}}/", "inLanguage": "fr", "publisher": {"@id": "{{SITE_URL}}/#org"}}, {"@type": "SoftwareApplication", "name": "HOMI", "applicationCategory": "LifestyleApplication", "operatingSystem": "Web", "inLanguage": "fr", "url": "{{SITE_URL}}/app", "description": "De la contraception aux 10 ans de votre enfant : sommeil, biberons, allaitement, grossesse, croissance, relais parental et organisation familiale.", "publisher": {"@id": "{{SITE_URL}}/#org"}}]}</script>
 </head>
@@ -40,7 +41,7 @@
       <div class="hero-copy">
         <p class="eyebrow">L’application de toute la famille</p>
         <h1 id="t-ouverture" class="display lines"><span class="line"><span>Toute votre vie de famille.</span></span> <span class="line line-soft"><span>Enfin réunie.</span></span></h1>
-        <p class="lead">De la contraception aux 10 ans de votre enfant, HOMI vous accompagne à chaque étape de votre vie familiale.</p>
+        <p class="lead">Un copilote intelligent. Des outils connectés. Une famille synchronisée. De la contraception aux 10 ans de votre enfant.</p>
         <div class="cta-row">
           <a class="btn btn-primary btn-lg" href="/app" data-cta="hero-app">Ouvrir HOMI</a>
           <a class="btn btn-secondary btn-lg" href="/auth/sign-up" data-cta="hero-signup">Créer mon compte</a>
@@ -108,6 +109,35 @@
 
 
   <!-- MOMENTS DE VIE : grille numérotée -->
+  <!-- SYNCHRONISATION : démonstration Aura préprogrammée (aucun appel d'IA) -->
+  <section id="synchro" class="chapter sync" aria-labelledby="t-sync">
+    <div class="wrap">
+      <p class="eyebrow">Aura et l’écosystème HOMI</p>
+      <h2 id="t-sync" class="display lines"><span class="line"><span>Une seule action.</span></span> <span class="line line-soft"><span>Tout se synchronise.</span></span></h2>
+      <p class="lead">Vous le dites une fois à Aura. Après votre validation, chaque outil concerné est à jour, et votre coparent le voit aussi.</p>
+      <div class="sync-grid" data-sync>
+        <div class="card sync-chat">
+          <p class="sync-label"><span class="pill">Démonstration</span> Scénarios préenregistrés, aucune IA appelée.</p>
+          <div class="sync-tabs" role="group" aria-label="Choisir un exemple">
+            <button type="button" aria-pressed="true" data-scn="0">« Il vient de boire 150 ml »</button>
+            <button type="button" aria-pressed="false" data-scn="1">« Il dort depuis 14 h 20 »</button>
+            <button type="button" aria-pressed="false" data-scn="2">« Ajoute cette photo à son histoire »</button>
+          </div>
+          <div class="sync-thread" aria-live="polite">
+            <p class="bubble me" data-say>Il vient de boire 150 ml</p>
+            <div class="bubble aura" data-reply><b data-reply-t>Biberon de 150 ml à 15 h 40.</b><span data-reply-s>À enregistrer pour Léa ?</span><span class="sync-ok" data-ok>Validé, enregistré ✓</span></div>
+          </div>
+        </div>
+        <ol class="sync-flow" aria-label="Outils mis à jour">
+          <li class="card sync-node" data-node="0"><b data-n-t>Biberons</b><span data-n-s>+ 150 ml à 15 h 40</span></li>
+          <li class="card sync-node" data-node="1"><b data-n-t>Statistiques</b><span data-n-s>Total du jour : 600 ml</span></li>
+          <li class="card sync-node" data-node="2"><b data-n-t>Relais</b><span data-n-s>Ajouté au résumé pour Julien</span></li>
+        </ol>
+      </div>
+      <p class="fine">Aura propose, vous validez : rien n’est enregistré sans votre accord. Seules les personnes de votre foyer que vous autorisez voient ces informations.</p>
+    </div>
+  </section>
+
   <section id="moments" class="chapter" aria-labelledby="t-moments">
     <div class="wrap">
       <p class="eyebrow">Du projet bébé à ses 10 ans</p>
@@ -128,7 +158,7 @@
     <div class="wrap narrow">
       <p class="eyebrow">Sommeil</p>
       <h2 id="t-sommeil" class="display lines"><span class="line"><span>Une correction,</span></span> <span class="line"><span>et tout est à jour.</span></span></h2>
-      <p class="lead">Léa s’est réveillée à 14 h 20, pas à 14 h 35. Tu corriges l’heure : la sieste, le total du jour et le résumé pour l’autre parent suivent.</p>
+      <p class="lead">Léa s’est réveillée à 14 h 20, pas à 14 h 35. Vous corrigez l’heure : la sieste, le total du jour et le résumé pour l’autre parent suivent.</p>
 
       <div class="sleep card" data-sleep>
         <div class="sleep-row">
@@ -160,8 +190,8 @@
   <section id="relais" class="chapter" aria-labelledby="t-relais">
     <div class="wrap narrow">
       <p class="eyebrow">Relais</p>
-      <h2 id="t-relais" class="display lines"><span class="line"><span>À toi de prendre</span></span> <span class="line"><span>le relais.</span></span></h2>
-      <p class="lead">En fin de journée, HOMI prépare le résumé pour Julien. Tu le relis, tu l’envoies. Rien ne part sans toi.</p>
+      <h2 id="t-relais" class="display lines"><span class="line"><span>Le relais,</span></span> <span class="line"><span>prêt en un geste.</span></span></h2>
+      <p class="lead">En fin de journée, HOMI prépare le résumé pour Julien. Vous le relisez, vous l’envoyez. Rien ne part sans vous.</p>
       <article class="relay card" aria-labelledby="relay-title">
         <header class="relay-head">
           <span class="pill">Brouillon à relire</span>
@@ -173,7 +203,7 @@
           <li>Couche changée à 16 h 20.</li>
           <li>Prochain biberon vers 18 h 30.</li>
         </ul>
-        <p class="relay-sync muted" data-bind="relaySync">Les chiffres viennent du journal : corrige-les là-haut, ils changent ici.</p>
+        <p class="relay-sync muted" data-bind="relaySync">Les chiffres viennent du journal : corrigez-les plus haut, ils changent ici.</p>
       </article>
     </div>
   </section>
@@ -182,11 +212,11 @@
   <section id="outils" class="chapter" aria-labelledby="t-outils">
     <div class="wrap narrow">
       <p class="eyebrow">Outils et assistant</p>
-      <h2 id="t-outils" class="display lines"><span class="line"><span>Trouve le bon outil</span></span> <span class="line"><span>avec tes mots.</span></span></h2>
-      <p class="lead">Écris ce qui se passe, comme tu le dirais. HOMI ouvre le bon outil, parmi <span data-bind="toolCount">75</span> pour un bébé.</p>
+      <h2 id="t-outils" class="display lines"><span class="line"><span>Le bon outil,</span></span> <span class="line"><span>avec vos mots.</span></span></h2>
+      <p class="lead">Écrivez ce qui se passe, comme vous le diriez. HOMI ouvre le bon outil, parmi <span data-bind="toolCount">75</span> pour un bébé.</p>
 
       <form class="ask card" role="search" data-ask action="/app" method="get">
-        <label for="ask-input" class="label">Ce dont tu as besoin</label>
+        <label for="ask-input" class="label">Ce dont vous avez besoin</label>
         <div class="ask-field">
           <input id="ask-input" name="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Mon bébé prend le sein" aria-describedby="ask-help" aria-controls="ask-results">
           <button class="btn btn-primary" type="submit">Chercher</button>
@@ -215,7 +245,7 @@
   <section id="commencer" class="chapter finale" aria-labelledby="t-fin">
     <div class="wrap narrow center">
       <h2 id="t-fin" class="display lines"><span class="line"><span>Commencer</span></span> <span class="line"><span>avec HOMI.</span></span></h2>
-      <p class="lead">Ouvre ton espace pour retrouver ta famille, ou crée ton compte en une minute.</p>
+      <p class="lead">Ouvrez votre espace pour retrouver votre famille, ou créez votre compte en une minute.</p>
       <div class="cta-row center">
         <a class="btn btn-primary btn-lg" href="/app" data-cta="end-app">Ouvrir HOMI</a>
         <a class="btn btn-secondary btn-lg" href="/auth/sign-up" data-cta="end-signup">Créer mon compte</a>

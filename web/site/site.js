@@ -37,13 +37,18 @@
     requestAnimationFrame(function () {
       var y = window.scrollY;
       if (!reduce) orbs.forEach(function (o) { o.style.transform = 'translate3d(0,' + (y * parseFloat(o.dataset.depth || 0)).toFixed(1) + 'px,0)'; });
-      if (nav) nav.style.boxShadow = y > 12 ? '0 14px 40px rgba(20,20,30,.16)' : '';
+      if (nav) nav.classList.toggle('scrolled', y > 12);
       var bar = document.querySelector('[data-progress]');
       if (bar) { var max = document.documentElement.scrollHeight - window.innerHeight; bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0).toFixed(4) + ')'; }
       ticking = false;
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
+  // animations infinies (puces flottantes, défilé) : en pause hors écran pour libérer le rendu
+  if ('IntersectionObserver' in window) {
+    var live = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('anim-off', !e.isIntersecting); }); });
+    Array.prototype.forEach.call(document.querySelectorAll('.hero, .marquee'), function (el) { live.observe(el); });
+  }
   onScroll();
 
   // téléphone du premier écran : léger relief au pointeur (souris uniquement)
@@ -95,7 +100,7 @@
     if (delta) { delta.textContent = fixed ? '−15 min' : ' '; delta.classList.toggle('on', fixed); }
     var sleep = document.querySelector('[data-sleep]');
     if (sleep) sleep.setAttribute('data-state', fixed ? 'fixed' : 'initial');
-    setAll('relaySync', fixed ? 'Mis à jour depuis le journal : la sieste corrigée (1 h 10) est déjà dans le résumé.' : 'Les chiffres viennent du journal : corrige-les là-haut, ils changent ici.', flash);
+    setAll('relaySync', fixed ? 'Mis à jour depuis le journal : la sieste corrigée (1 h 10) est déjà dans le résumé.' : 'Les chiffres viennent du journal : corrigez-les plus haut, ils changent ici.', flash);
   }
 
   // Chiffres qui défilent (1 h 25 → 1 h 10, 2 h 10 → 1 h 55) pendant que le segment se raccourcit
@@ -238,4 +243,34 @@
     toggle.setAttribute('aria-expanded', String(open));
   });
   Array.prototype.forEach.call(bar.querySelectorAll('.mm-panel a'), function (a) { a.addEventListener('click', function () { all.forEach(function (d) { d.open = false; }); bar.classList.remove('is-open'); toggle && toggle.setAttribute('aria-expanded', 'false'); }); });
+})();
+
+/* Synchronisation : démonstration Aura préprogrammée (aucun appel réseau, aucune IA) */
+(function () {
+  var root = document.querySelector('[data-sync]'); if (!root) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var S = [
+    { say: 'Il vient de boire 150 ml', t: 'Biberon de 150 ml à 15 h 40.', s: 'À enregistrer pour Léa ?', ok: 'Validé, enregistré ✓', n: [['Biberons', '+ 150 ml à 15 h 40'], ['Statistiques', 'Total du jour : 600 ml'], ['Relais', 'Ajouté au résumé pour Julien']] },
+    { say: 'Il dort depuis 14 h 20', t: 'Sieste commencée à 14 h 20.', s: 'Je lance le minuteur ?', ok: 'Validé, minuteur lancé ✓', n: [['Sommeil', 'Sieste en cours depuis 14 h 20'], ['Planning', 'Prochain biberon recalculé'], ['Coparent', 'Julien voit la sieste en cours']] },
+    { say: 'Ajoute cette photo à son histoire', t: 'Photo du 12 mai, chapitre « Premiers mois ».', s: 'Je propose un court texte, vous le relisez ?', ok: 'Relu et validé ✓', n: [['Album photo', 'Photo rangée au 12 mai'], ['Aura', 'Texte proposé, à relire'], ['Mon histoire', 'Nouvelle page après validation']] },
+  ];
+  var tabs = root.querySelectorAll('[data-scn]'), nodes = root.querySelectorAll('[data-node]'), timers = [];
+  function q(sel) { return root.querySelector(sel); }
+  function later(fn, ms) { timers.push(setTimeout(fn, reduce ? 0 : ms)); }
+  function play(i) {
+    timers.forEach(clearTimeout); timers = [];
+    var d = S[i];
+    Array.prototype.forEach.call(tabs, function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    q('[data-say]').textContent = d.say; q('[data-reply-t]').textContent = d.t; q('[data-reply-s]').textContent = d.s; q('[data-ok]').textContent = d.ok;
+    Array.prototype.forEach.call(nodes, function (el, k) { el.classList.remove('lit'); el.querySelector('[data-n-t]').textContent = d.n[k][0]; el.querySelector('[data-n-s]').textContent = d.n[k][1]; });
+    root.classList.remove('step1', 'step2'); root.classList.add('step0');
+    later(function () { root.classList.replace('step0', 'step1'); }, 250);
+    later(function () { root.classList.replace('step1', 'step2'); }, 1000);
+    later(function () { root.classList.remove('step2'); }, 1900);
+    Array.prototype.forEach.call(nodes, function (el, k) { later(function () { el.classList.add('lit'); }, 2200 + k * 280); });
+  }
+  Array.prototype.forEach.call(tabs, function (b, k) { b.addEventListener('click', function () { play(k); }); });
+  if (reduce || !('IntersectionObserver' in window)) { play(0); return; }
+  var seen = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { seen.disconnect(); play(0); } }, { threshold: 0.35 });
+  seen.observe(root);
 })();
