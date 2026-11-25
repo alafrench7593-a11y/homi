@@ -83,3 +83,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - Site (25/11) : icônes « noir sur blanc » (favicon.ico, icon-32, apple-touch-icon 180, icon-512) générées au build depuis assets/brand/homi-logo-noir-sur-blanc-1024.png (scripts/web/site-icons.py) ; en-tête SVG inchangé (même symbole).
 - 24/11/2026 — Build iOS 14 lancé sur ordre de la propriétaire (EAS production, canal production) : https://expo.dev/accounts/alafre/projects/homi/builds/682dc660-c429-4e44-8480-6a92ee1c6bc0
 - 24/11/2026 — Build iOS (ordre de la propriétaire) : 1er lancement annulé (version 0.1.0 ≠ fiche 1.0), version passée à 1.0 et relancé.
+  Build : https://expo.dev/accounts/alafre/projects/homi/builds/8944e1a2-aac7-4f40-ae2b-5a7f2dc00b72
