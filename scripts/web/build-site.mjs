@@ -181,7 +181,7 @@ const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', '/fonctionnalites/', '/ambassadeurs/', '/contact/', ...legal.map((d) => `/${d}/`)];
+const pub = ['/', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`)];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nDisallow: /admin\nDisallow: /ambassadors/dashboard\nDisallow: /r/\nDisallow: /demo\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');
