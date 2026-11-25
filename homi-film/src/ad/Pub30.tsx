@@ -100,8 +100,8 @@ const Tools: React.FC<P> = ({ t, fps, l }) => {
         const dirx = fx - px; const diry = fy - py;
         const x = mix(s, px, fx) + dirx * exit * 0.5; const y = mix(s, py, fy) + diry * exit * 0.5 + Math.sin(t * 1.3 + i) * 5;
         const p = prog(t, at + 0.2, at + 1.6);
-        return <Glass key={name} x={x} y={y} w={cw} h={ch} o={Math.min(1, s * 1.4) * (1 - exit)} s={0.5 + s * 0.5} blur={exit * 10} r={28}
-          style={{ padding: '18px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        return <Glass key={name} x={x} y={y} w={cw} h={ch} o={Math.min(1, s * s * 1.6) * (1 - exit)} s={0.5 + s * 0.5} blur={exit * 10 + Math.max(0, 0.7 - s) * 14} r={28}
+          style={{ padding: '18px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 20 - i }}>
           <div style={{ fontSize: name.length > 14 ? 22 : 26, fontWeight: 800, letterSpacing: '-0.02em' }}>{name}</div>
           <Mini kind={name} p={p} t={t} />
         </Glass>;
@@ -291,23 +291,23 @@ const Story: React.FC<P> = ({ t, fps, l }) => {
   const { W, H, v } = l;
   if (t < 20.9 || t > 25.8) return null;
   const inO = prog(t, 21.0, 21.5); const out = prog(t, 25.15, 25.6);
-  const pw = v ? 760 : 560; const ph = v ? 1000 : 740;
-  const bx = W / 2 + (v ? 0 : 280); const by = v ? 1060 : 560;
+  const pw = v ? 760 : 520; const ph = v ? 1000 : 690;
+  const bx = W / 2 + (v ? 0 : pw / 2); const by = v ? 1060 : 485;
   // 21,2 → 22,6 : la photo de l'album (tuile) grandit et devient la page « Naissance »
   const tile = spr(t, 21.2, fps, 16);
   const grow = prog(t, 22.05, 22.85);
   const tw = mix(grow, v ? 300 : 260, pw); const th = mix(grow, v ? 300 : 260, ph);
-  const tx = mix(grow, v ? 540 : 520, bx); const ty = mix(grow, v ? 900 : 560, by);
+  const tx = mix(grow, v ? 540 : bx, bx); const ty = mix(grow, v ? 900 : by, by);
   const flips = [23.0, 23.38, 23.76, 24.14, 24.52];
   const idx = flips.filter((f) => t >= f + 0.36).length; // pages entièrement tournées
   const auraChip = win(t, 21.7, 22.9, 0.25, 0.3);
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: inO * (1 - out), filter: out ? `blur(${out * 10}px)` : undefined }}>
-      <KText t={t} at={21.5} out={25.1} x={v ? W / 2 : 140} y={v ? 270 : 470} size={v ? 82 : 76} w={v ? 1000 : 640} align={v ? 'center' : 'left'}>
-        Il grandit.<br /><span style={{ color: MUTED }}>Son histoire aussi.</span>
+      <KText t={t} at={21.5} out={25.1} x={W / 2} y={v ? 270 : 985} size={v ? 82 : 64} w={v ? 1000 : 1700}>
+        Il grandit.{v ? <br /> : ' '}<span style={{ color: MUTED }}>Son histoire aussi.</span>
       </KText>
       {/* album : grille réelle de souvenirs (tuiles) */}
-      {grow < 1 ? [0, 1, 2, 3].map((k) => k === 0 ? null : (
+      {v && grow < 1 ? [0, 1, 2, 3].map((k) => k === 0 ? null : (
         <div key={k} style={{ position: 'absolute', left: (v ? 540 : 520) + ((k % 2) * 2 - 1) * (v ? 320 : 280) * (k === 3 ? 0 : 1) - (v ? 150 : 130), top: (v ? 900 : 560) + (k === 3 ? (v ? 330 : 290) : 0) - (v ? 150 : 130),
           width: v ? 300 : 260, height: v ? 300 : 260, borderRadius: 22, background: 'linear-gradient(140deg,#EFE9F7,#E6EEF6)', opacity: tile * 0.8 * (1 - grow), transform: `scale(${0.9 + tile * 0.1})` }} />
       )) : null}
@@ -315,7 +315,7 @@ const Story: React.FC<P> = ({ t, fps, l }) => {
         {grow < 0.98 ? <Img src={staticFile('art/bebe.webp')} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', background: '#F2EBE1', opacity: 1 - grow }} /> : null}
         <div style={{ position: 'absolute', inset: 0, opacity: grow }}><Page c={CHAPTERS[0]} w={pw} h={ph} photo={1} /></div>
       </div>
-      <Glass x={v ? W / 2 : 520} y={v ? 455 : 250} w={v ? 620 : 520} h={v ? 84 : 72} o={auraChip} r={40} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 22px', fontSize: v ? 28 : 24, fontWeight: 800 }}>
+      <Glass x={v ? W / 2 : 560} y={v ? 455 : 485} w={v ? 620 : 520} h={v ? 84 : 72} o={auraChip} r={40} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 22px', fontSize: v ? 28 : 24, fontWeight: 800 }}>
         <div style={{ width: v ? 40 : 34, height: v ? 40 : 34, borderRadius: 99, background: `conic-gradient(from ${t * 90}deg, ${T.aura.join(',')}, ${T.aura[0]})` }} />Je construis l’histoire de Lina
       </Glass>
       {/* livre : pile de pages, la page du dessus tourne autour de son bord gauche */}
