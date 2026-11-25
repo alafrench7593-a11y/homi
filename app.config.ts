@@ -69,7 +69,7 @@ const config: ExpoConfig = {
   slug: BRAND.slug,
   // Compte Expo de HOMI (alafre, projet @alafre/homi) ; EXPO_OWNER le remplace si besoin
   owner: process.env.EXPO_OWNER ?? 'alafre',
-  version: '0.1.0',
+  version: '1.0', // = version de la fiche App Store (1.0)
   // Mises à jour à distance (OTA, EAS Update, 24/11/2026) : seul le JavaScript et les images changent ; une mise à jour
   // n'atteint QUE les builds dont le code natif est identique (empreinte « fingerprint »), sinon il faut un nouveau build.
   runtimeVersion: { policy: 'fingerprint' },
