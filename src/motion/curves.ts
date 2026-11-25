@@ -109,7 +109,8 @@ export const morph = { ms: 520, points: 72 } as const;
 
 // ------------------------------------------------------------------ Primitives « Liquid Glass » (17/11/2026)
 /** Transition de contenu partagée (changement de profil / d'onglet) : sortie courte, entrée un peu plus longue. */
-export const swap = { outMs: 110, inMs: 220, distance: 10 } as const;
+// 26/11/2026 (retour iPhone « changement de profil plus fluide ») : sortie plus courte, voile léger
+export const swap = { outMs: 70, inMs: 200, distance: 8 } as const;
 
 /** Micro-animation de favori : l'étoile saute, une onde part du centre. */
 export const favorite = { pop: 1.28, ringMs: 420, ringScale: 1.7 } as const;
