@@ -1,0 +1,15 @@
+.crumbs { font-size: .9rem; color: var(--muted); margin-bottom: 12px; } .crumbs a { color: inherit; }
+.blog-head { padding: clamp(60px, 12vh, 120px) 0 24px; }
+.blog-cat { margin: 40px 0 0; } .blog-cat h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 0 0 16px; }
+.blog-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.blog-list a { display: block; padding: 18px 20px; height: 100%; text-decoration: none; color: inherit; }
+.blog-list strong { display: block; margin-bottom: 6px; } .blog-list span { color: var(--muted); font-size: .9375rem; }
+.post { padding: clamp(60px, 12vh, 120px) 0 60px; }
+.post h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; letter-spacing: -.02em; margin: 0 0 16px; }
+.post .summary { font-size: 1.1875rem; color: var(--muted); }
+.post-body h2 { font-size: 1.375rem; margin: 36px 0 10px; } .post-body h3 { font-size: 1.125rem; margin: 24px 0 8px; }
+.post-body p, .post-body li { line-height: 1.65; } .post-body ul, .post-body ol { padding-left: 1.2em; }
+.post-src { margin-top: 40px; padding: 20px 22px; } .post-src h2 { font-size: 1.0625rem; margin: 0 0 8px; }
+.post-src ul { padding-left: 1.2em; margin: 0; } .post-src li { font-size: .9375rem; margin: 4px 0; overflow-wrap: anywhere; }
+.post-note { font-size: .875rem; color: var(--muted); margin-top: 16px; }
+.post-more { margin-top: 40px; }

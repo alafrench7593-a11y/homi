@@ -173,6 +173,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 
 ## Pages
 - [Présentation](${siteUrl}/): ce qu'est HOMI et à qui il s'adresse
+- [Blog](${siteUrl}/blog): articles pratiques non médicaux (démarches, garde, matériel, éveil, éducation), sources officielles citées
 - [Aura, l'assistante](${siteUrl}/aura): retrouve le bon outil, prépare rendez-vous et tâches à confirmer ; pas une professionnelle de santé, aucune dose
 - [Toutes les fonctionnalités](${siteUrl}/fonctionnalites): les ${all.length} outils réels, par étape de vie
 - [Programme Ambassadeurs](${siteUrl}/ambassadeurs): recommandation rémunérée (30 % de l'encaissé net, 6 mois par abonné, versement dès 30 €)
@@ -189,12 +190,68 @@ ${[...byCat.entries()].map(([c, l]) => `### ${c}\n${l.map((t) => `- ${t.label} :
 `);
 }
 
+// 3 quinquies) /blog : articles NON médicaux de la bibliothèque (rédaction assistée par IA, sources citées)
+const blogPaths = [];
+{
+  const { build: esb } = await import('esbuild');
+  const out = path.join(site, '.build/blog.cjs');
+  await esb({ entryPoints: [path.join(site, 'blog-entry.ts')], bundle: true, platform: 'node', format: 'cjs', alias: { '@': path.join(root, 'src') }, outfile: out, logLevel: 'warning' });
+  createRequire(import.meta.url)(out);
+  const { categories, articles } = globalThis.homiBlog;
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  const md = (src) => {
+    const html = []; let list = null; let para = [];
+    const flush = () => { if (para.length) { html.push(`<p>${inline(para.join(' '))}</p>`); para = []; } if (list) { html.push(`</${list}>`); list = null; } };
+    for (const raw of src.split('\n')) {
+      const line = raw.trim(); let mm;
+      if (!line) { flush(); continue; }
+      if ((mm = line.match(/^(#{2,3}) (.*)/))) { flush(); html.push(`<h${mm[1].length}>${inline(mm[2])}</h${mm[1].length}>`); continue; }
+      if ((mm = line.match(/^(-|\d+\.) (.*)/))) { const t = mm[1] === '-' ? 'ul' : 'ol'; if (para.length) { html.push(`<p>${inline(para.join(' '))}</p>`); para = []; } if (list !== t) { if (list) html.push(`</${list}>`); html.push(`<${t}>`); list = t; } html.push(`<li>${inline(mm[2])}</li>`); continue; }
+      if (list) { html.push(`</${list}>`); list = null; }
+      para.push(line.replace(/^> /, ''));
+    }
+    flush(); return html.join('\n');
+  };
+  const tpl = withChrome(readFileSync(path.join(site, 'blog.html'), 'utf8')).replaceAll('{{ROBOTS}}', robotsPublic).replaceAll('{{VERSION}}', version).replaceAll('{{SITE_URL}}', siteUrl);
+  const page = (o) => tpl.replace('{{TITLE}}', () => esc(o.title)).replaceAll('{{DESC}}', () => esc(o.desc)).replaceAll('{{CANONICAL}}', `${siteUrl}${o.path}`)
+    .replace('{{JSONLD}}', () => JSON.stringify(o.jsonld).replace(/</g, '\\u003c')).replace('{{CONTENT}}', () => o.content);
+  const crumbs = (items) => ({ '@type': 'BreadcrumbList', itemListElement: items.map(([name, p], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${siteUrl}${p}` })) });
+  const nav = (items) => `<nav class="crumbs" aria-label="Fil d’Ariane">${items.map(([n, p], i) => i < items.length - 1 ? `<a href="${p}">${esc(n)}</a>` : `<span>${esc(n)}</span>`).join(' <span aria-hidden="true">›</span> ')}</nav>`;
+  mkdirSync(path.join(dist, 'blog'), { recursive: true }); cpSync(path.join(site, 'blog.css'), path.join(dist, 'site/blog.css'));
+  const byCat = Object.keys(categories).map((c) => [c, articles.filter((a) => a.category === c).sort((x, y) => x.title.localeCompare(y.title, 'fr'))]);
+  const card = (a) => `<li><a class="card" href="/blog/${a.slug}"><strong>${esc(a.title)}</strong><span>${esc(a.summary)}</span></a></li>`;
+  writeFileSync(path.join(dist, 'blog', 'index.html'), page({ path: '/blog', title: 'Blog HOMI — démarches, garde, matériel, éveil et vie de famille',
+    desc: `${articles.length} articles pratiques pour les parents : congés et démarches, modes de garde, matériel, activités d’éveil, éducation, organisation du foyer. Sources officielles citées.`,
+    jsonld: { '@context': 'https://schema.org', '@graph': [crumbs([['Accueil', '/'], ['Blog', '/blog']]), { '@type': 'CollectionPage', name: 'Blog HOMI', url: `${siteUrl}/blog` }] },
+    content: `<section class="wrap blog-head">${nav([['Accueil', '/'], ['Blog', '/blog']])}<p class="eyebrow">Blog</p><h1 class="display">Les réponses pratiques<br>de la vie de famille.</h1><p class="lead">Démarches, garde, matériel, éveil : ${articles.length} articles avec leurs sources officielles.</p>`
+      + `<nav class="blog-toc" aria-label="Rubriques">${byCat.map(([c]) => `<a class="btn btn-secondary btn-sm" href="#${c}">${esc(categories[c])}</a>`).join(' ')}</nav></section>`
+      + `<div class="wrap">${byCat.map(([c, l]) => `<section class="blog-cat" id="${c}"><h2>${esc(categories[c])}</h2><ul class="blog-list">${l.map(card).join('')}</ul></section>`).join('')}</div>` }));
+  blogPaths.push('/blog');
+  for (const [c, l] of byCat) l.forEach((a, i) => {
+    const consulted = a.sources.map((s) => s.consulted_on).sort().pop();
+    const more = [l[(i + 1) % l.length], l[(i + 2) % l.length], l[(i + 3) % l.length]].filter((x) => x.slug !== a.slug);
+    mkdirSync(path.join(dist, 'blog', a.slug), { recursive: true });
+    writeFileSync(path.join(dist, 'blog', a.slug, 'index.html'), page({ path: `/blog/${a.slug}`, title: `${a.title} | HOMI`, desc: a.summary,
+      jsonld: { '@context': 'https://schema.org', '@graph': [crumbs([['Accueil', '/'], ['Blog', '/blog'], [categories[c], `/blog#${c}`], [a.title, `/blog/${a.slug}`]]),
+        { '@type': 'Article', headline: a.title, description: a.summary, inLanguage: 'fr', dateModified: consulted, url: `${siteUrl}/blog/${a.slug}`,
+          author: { '@type': 'Organization', name: 'HOMI' }, publisher: { '@type': 'Organization', name: 'HOMI', url: `${siteUrl}/` }, citation: a.sources.map((s) => s.url) }] },
+      content: `<article class="wrap narrow post">${nav([['Accueil', '/'], ['Blog', '/blog'], [categories[c], `/blog#${c}`]])}<h1>${esc(a.title)}</h1><p class="summary">${esc(a.summary)}</p>`
+        + `<div class="post-body">${md(a.body_md)}</div>`
+        + `<aside class="card post-src"><h2>Sources</h2><ul>${a.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener" target="_blank">${esc(s.label)}</a> — consultée le ${esc(s.consulted_on.split('-').reverse().join('/'))}</li>`).join('')}</ul>`
+        + `<p class="post-note">Rédaction assistée par une IA (Claude, Anthropic) à partir des sources citées. Règles et montants évoluent : vérifiez toujours auprès de la source officielle.</p></aside>`
+        + `<nav class="post-more" aria-label="À lire aussi"><h2>À lire aussi</h2><ul class="blog-list">${more.map(card).join('')}</ul></nav></article>` }));
+    blogPaths.push(`/blog/${a.slug}`);
+  });
+  console.log(`blog : ${articles.length} articles non médicaux`);
+}
+
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', '/aura', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`)];
+const pub = ['/', '/aura', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`), ...blogPaths];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nDisallow: /admin\nDisallow: /ambassadors/dashboard\nDisallow: /r/\nDisallow: /demo\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');
