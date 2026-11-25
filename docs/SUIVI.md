@@ -84,3 +84,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 24/11/2026 — Build iOS 14 lancé sur ordre de la propriétaire (EAS production, canal production) : https://expo.dev/accounts/alafre/projects/homi/builds/682dc660-c429-4e44-8480-6a92ee1c6bc0
 - 24/11/2026 — Build iOS (ordre de la propriétaire) : 1er lancement annulé (version 0.1.0 ≠ fiche 1.0), version passée à 1.0 et relancé.
   Build : https://expo.dev/accounts/alafre/projects/homi/builds/8944e1a2-aac7-4f40-ae2b-5a7f2dc00b72
+- 25/11/2026 — Build iOS 15 (version 1.0) TERMINÉ sur EAS ; envoi TestFlight en attente de l'accord de la propriétaire.
