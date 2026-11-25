@@ -362,7 +362,7 @@ const Finale: React.FC<P> = ({ t, fps, l }) => {
       {/* balayage de lumière studio sur le téléphone */}
       <KText t={t} at={25.25} out={26.45} x={v ? W / 2 : 150} y={v ? 330 : 540} size={v ? 84 : 84} w={v ? 1000 : 820} align={v ? 'center' : 'left'}>Moins de charge mentale.</KText>
       <KText t={t} at={26.55} out={27.6} x={v ? W / 2 : 150} y={v ? 330 : 540} size={v ? 84 : 84} w={v ? 1000 : 820} align={v ? 'center' : 'left'} color={'#6E5CE6'}>Plus de moments ensemble.</KText>
-      <div style={{ position: 'absolute', left: W / 2, top: H / 2 - (v ? 60 : 50), transform: `translate(-50%,-50%) scale(${0.8 + logo * 0.2})`, opacity: logo, filter: `blur(${(1 - logo) * 14}px)` }}>
+      <div style={{ position: 'absolute', left: W / 2, top: H / 2 - (v ? 60 : 50), transform: `translate(-50%,-50%) scale(${(0.8 + logo * 0.2) * (1 + prog(t, 28.2, 30, (x) => x) * 0.04)})`, opacity: logo, filter: `blur(${(1 - logo) * 14}px)` }}>
         <Logo h={v ? 150 : 150} />
       </div>
       <div style={{ position: 'absolute', left: 0, width: W, top: H / 2 + (v ? 90 : 90), textAlign: 'center', fontSize: v ? 50 : 50, fontWeight: 700, letterSpacing: '-0.02em', color: MUTED, opacity: tag, transform: `translateY(${(1 - tag) * 16}px)`, filter: `blur(${(1 - tag) * 8}px)` }}>
