@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { homiInitialsColor as initialsColor } from '@/features/homiColors';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Button, Icon, IconButton, Row, Text } from '@/components/ui';
+import { Button, Icon, IconButton, Row, Text, ListRow } from '@/components/ui';
 import { confirm, useToast } from '@/components/Overlays';
 import { NeedsSummary } from '@/features/needs';
 import { ChildAvatar } from '@/features/childAvatar';
@@ -110,6 +110,7 @@ export default function ChildProfile() {
         </View>
       </Row>
       <AuraQuickBar examples={age.months < 36 ? ['aura.ex.bottle1', 'aura.ex.multi', 'aura.ex.sleep1'] : ['aura.ex.sleep2', 'aura.ex.appt', 'aura.ex.relay']} testID="child-aura" />
+      <ListRow icon="book-open" title={tr('story.entry')} subtitle={tr('story.entrySub')} onPress={() => router.push(`/child/${child.id}/story` as never)} testID="child-story" />
 
       <ChildTabs value={tab} onChange={setTab} />
 

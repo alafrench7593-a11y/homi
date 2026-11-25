@@ -14,8 +14,8 @@ import { t as tr, type TKey } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 import { AuraOrb } from './AuraMark';
 
-export type IntroSection = 'pregnancy' | 'baby' | 'child' | 'family' | 'cycle' | 'postpartum' | 'coparent';
-export const INTRO_SECTIONS: readonly IntroSection[] = ['pregnancy', 'baby', 'child', 'family', 'cycle', 'postpartum', 'coparent'];
+export type IntroSection = 'pregnancy' | 'baby' | 'child' | 'family' | 'cycle' | 'postpartum' | 'coparent' | 'story';
+export const INTRO_SECTIONS: readonly IntroSection[] = ['pregnancy', 'baby', 'child', 'family', 'cycle', 'postpartum', 'coparent', 'story'];
 
 type Act = { key: string; icon: IconName; href: (childId?: string | null) => string };
 /** Actions proposées : uniquement des écrans qui existent (vérifié par src/__tests__/sectionIntro.test.ts). */
@@ -57,6 +57,10 @@ export const INTRO_ACTIONS: Record<IntroSection, Act[]> = {
     { key: 'checkin', icon: 'smile', href: () => '/postpartum/checkin' },
     { key: 'recovery', icon: 'heart', href: () => '/postpartum/recovery' },
     { key: 'support', icon: 'life-buoy', href: () => '/postpartum/support' },
+  ],
+  story: [
+    { key: 'addPhoto', icon: 'camera', href: (c) => (c ? `/child/${c}/album` : '/tools') },
+    { key: 'addFirst', icon: 'star', href: (c) => (c ? `/child/${c}?tab=etapes` : '/tools') },
   ],
   coparent: [
     { key: 'relay', icon: 'repeat', href: () => '/family/relay' },

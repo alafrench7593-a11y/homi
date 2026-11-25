@@ -471,7 +471,7 @@ function Bubble({ step, index, copy, hole, lost, top, bottom, width }: {
               {practice ? <Text variant="small" weight="bold" color={t.colors.primary} testID="tour-practice-on">{tr('tour.practice.banner')}</Text> : (
                 <GlassButton label={tr('tour.step.quick.practice')} icon="shield" variant="primary" size="sm" full onPress={() => { haptic('selection'); setPractice(true); }} testID="tour-practice" />
               )}
-              <GlassButton label={tr('tour.step.quick.skip')} variant="secondary" size="sm" full onPress={() => { haptic('selection'); tourNextFast('skipStep'); }} testID="tour-skip-step" />
+              <GlassButton label={tr('tour.step.quick.skip')} variant="secondary" size="sm" full onPress={() => { haptic('selection'); tourNextFast(SKIP_STEP.type); }} testID="tour-skip-step" />
             </View>
           ) : (
             // « Suivant » sur chaque étape : la visite se fait en quelques secondes (le geste montré reste possible)
@@ -484,7 +484,7 @@ function Bubble({ step, index, copy, hole, lost, top, bottom, width }: {
               : <GlassButton label={tr('tour.prev')} icon="arrow-left" variant="tertiary" size="sm" onPress={() => go({ type: 'back' })} testID="tour-prev" />) : <View />}
             <View style={{ flexDirection: 'row', gap: spacing.xxs }}>
               <GlassButton label={tr('tour.later')} variant="tertiary" size="sm" onPress={() => go({ type: 'later' })} testID="tour-later" />
-              <GlassButton label={tr('tour.skip')} variant="tertiary" size="sm" onPress={() => { haptic('selection'); tourNextFast('skipStep'); }} testID="tour-skip" />
+              <GlassButton label={tr('tour.skip')} variant="tertiary" size="sm" onPress={() => { haptic('selection'); tourNextFast(SKIP_STEP.type); }} testID="tour-skip" />
             </View>
           </View>
         </ScrollView>

@@ -50,6 +50,7 @@ export const APP_ROUTES: readonly string[] = [
   '/child/[id]/needs',
   '/child/[id]/school',
   '/child/[id]/steps',
+  '/child/[id]/story',
   '/child/[id]/vaccines',
   '/child/[id]/wellbeing',
   '/cinematic',

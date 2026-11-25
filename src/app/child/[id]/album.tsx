@@ -10,7 +10,7 @@ import { Screen } from '@/components/Screen';
 import { HmFixTray, HmHero } from '@/features/homeTrack/kit';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { Banner, Button, Card, Field, Row, SectionTitle, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Card, Field, IconButton, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { pickPhoto } from '@/features/cycleTests';
 import { useChild, useChildrenLoading } from '@/lib/data/hooks';
@@ -85,7 +85,7 @@ export default function ChildAlbum() {
   const last = photosQ.data?.[0];
 
   return (
-    <Screen back title={tr('alb.title')} subtitle={name}>
+    <Screen back title={tr('alb.title')} subtitle={name} right={<IconButton icon="book-open" label={tr('story.entry')} onPress={() => router.push(`/child/${id}/story` as never)} testID="album-story" />}>
       <HmHero testID="ct-album-hero" value={total ? String(total) : null} emptyLabel={tr('ct.album.none')}
         unit={total ? tr('ct.album.unit', { count: total }) : null}
         caption={last ? tr('ct.album.lastOn', { date: formatDateFr(last.taken_on) }) : null} />
