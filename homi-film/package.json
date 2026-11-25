@@ -1,0 +1,16 @@
+{
+  "name": "homi-film",
+  "private": true,
+  "description": "Film de présentation HOMI (Remotion) — animatic puis rendu final",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:animatic": "remotion render src/index.ts Animatic renders/animatic.mp4 --browser-executable=/opt/pw-browsers/chromium"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.300",
+    "@remotion/fonts": "^4.0.300",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.300"
+  }
+}

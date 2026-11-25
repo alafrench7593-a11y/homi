@@ -1,0 +1,194 @@
+[
+ {
+  "name": "accueil",
+  "url": "/app",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "sommeil",
+  "url": "/night?child=91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "journee-biberons",
+  "url": "/bottle/91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "biberon",
+  "url": "/track/bottle?child=91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "allaitement",
+  "url": "/track/breastfeed?child=91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "croissance",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a?tab=croissance",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "couches",
+  "url": "/track/diaper?child=91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "diversification",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a/discoveries",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "dents",
+  "url": "/teeth?child=91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "vaccins",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a/vaccines",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "medicaments",
+  "url": "/medications",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "journal",
+  "url": "/journal",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "agenda",
+  "url": "/calendar",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "relais-nuit",
+  "url": "/family/nights",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "charge-mentale",
+  "url": "/family/load",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "taches",
+  "url": "/family",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "courses",
+  "url": "/meals/shopping",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "menu",
+  "url": "/meals/menu",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "communaute",
+  "url": "/community?space=parents-bebes",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "aura",
+  "url": "/ask",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "mon-histoire",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a/story",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "album",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a/album",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "documents",
+  "url": "/documents?child=91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "garde",
+  "url": "/garde",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "routines",
+  "url": "/tools",
+  "ok": false,
+  "why": "redirigé vers /tools"
+ },
+ {
+  "name": "developpement",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a/grow",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "enfant",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "outils",
+  "url": "/tools",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "resume",
+  "url": "/summary",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "contractions",
+  "url": "/pregnancy/contractions",
+  "ok": true,
+  "why": null
+ },
+ {
+  "name": "grossesse",
+  "url": "/tools",
+  "ok": false,
+  "why": "redirigé vers /tools"
+ },
+ {
+  "name": "sante",
+  "url": "/child/91808414-fd31-4d6e-9463-09786513012a/health-tracking",
+  "ok": true,
+  "why": null
+ }
+]
