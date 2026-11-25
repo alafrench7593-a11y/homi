@@ -108,3 +108,12 @@ describe('cas du retour iPhone', () => {
     expect(rows.length).toBe(3); // 12h, 14h, 16h : 18h, 20h, 22h sont à venir à 17h
   });
 });
+
+describe('les exemples proposés dans les outils sont compris sans IA (FR)', () => {
+  const { t } = require('@/i18n') as { t: (k: string) => string };
+  it.each([
+    ['aura.ex.bottle1', 'log_bottle'], ['aura.ex.bottle2', 'bottles_today'], ['aura.ex.relay', 'prepare_relay'],
+    ['aura.ex.sleep1', 'log_sleep_for'], ['aura.ex.sleep2', 'sleep_today'], ['aura.ex.diaper1', 'log_diaper'],
+    ['aura.ex.diaper2', 'last_diaper'], ['aura.ex.feed1', 'log_feed_for'], ['aura.ex.feed2', 'feeds_today'], ['aura.ex.multi', 'multi'],
+  ])('%s → %s', (key, k) => expect(kind(t(key))).toBe(k));
+});

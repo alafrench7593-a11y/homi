@@ -40,7 +40,7 @@ import { OutOfCreditsSheet } from '@/features/credits/OutOfCreditsSheet';
 import { useAllToolEntries } from '@/features/hubs/ToolSearch';
 import { startTour } from '@/features/tour/store';
 import { hasRealBackend, isDemo } from '@/lib/backend';
-import { useActiveSubject, useChildren, useConsents, useFullArticles, useSetConsent } from '@/lib/data/hooks';
+import { useActiveSubject, useChildren, useConsents, useFullArticles, useOpenSleep, useSetConsent } from '@/lib/data/hooks';
 import { useCreditConfig, useCreditStatus, useRefreshCredits } from '@/lib/data/hooks-credits';
 import { useEntitlement } from '@/lib/data/hooks-premium';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -89,6 +89,14 @@ type Reply =
   | { kind: 'pending' }
   /** Intention reconnue sur le téléphone (sans IA ni crédit) : carte d'action recalculée à l'affichage et à l'appui */
   | { kind: 'intent'; intent: AuraIntent; /** question d'origine : bouton « Demander quand même à Aura » (payant) */ ask?: string; /** relue depuis l'historique : lecture seule */ restored?: boolean };
+/** Phrases que la personne peut toucher depuis un outil (comprises sur le téléphone, sans IA ni crédit). */
+const TOOL_EXAMPLES: Record<string, string[]> = {
+  baby_bottle: ['aura.ex.bottle1', 'aura.ex.bottle2', 'aura.ex.relay'],
+  kid_sleep_rhythm: ['aura.ex.sleep1', 'aura.ex.sleep2'],
+  baby_diaper: ['aura.ex.diaper1', 'aura.ex.diaper2'],
+  baby_breastfeed: ['aura.ex.feed1', 'aura.ex.feed2'],
+  baby_daily: ['aura.ex.multi', 'aura.ex.bottle2'],
+};
 interface Msg { id: string; role: 'user' | 'aura'; text?: string; reply?: Reply }
 
 let INDEX: { n: number; index: KbIndex } | null = null;
@@ -125,6 +133,9 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
   const { data: children } = useChildren();
   const childMonths = subject?.type === 'child' ? (() => { const c = (children ?? []).find((x) => x.id === subject.id); return c ? childAge(c.birth_date).months : null; })() : null;
   const suggestTheme = theme ?? defaultThemeFor(subject, { childMonths });
+  // Proactif (25/11/2026) : un minuteur de sieste tourne encore → Aura le signale à l'ouverture (sans IA)
+  const activeKid = subject?.type === 'child' ? (children ?? []).find((x) => x.id === subject.id) ?? null : null;
+  const openSleep = useOpenSleep(activeKid?.id);
   const region = useEmergencyRegion();
   const online = useOfflineStore((s) => s.online);
 
@@ -488,11 +499,24 @@ export function AuraScreen({ inTab = false }: { inTab?: boolean }) {
               <Text variant="small" style={{ flex: 1 }}>{tr(k, { tool: toolName })}</Text>
             </Tappable>
           ))}
+          {TOOL_EXAMPLES[toolCtx.id] ? (
+            <View style={{ gap: 4 }} testID="aura-ctx-examples">
+              <Text variant="caption" muted>{tr('aura.ex.say')}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}>
+                {TOOL_EXAMPLES[toolCtx.id].map((k) => <Chip key={k} icon="zap" label={tr(k as never)} onPress={() => void send(tr(k as never))} testID={`aura-ex-${k}`} />)}
+              </View>
+            </View>
+          ) : null}
           {ctxTool ? <Button label={tr('ta.ctx.open', { tool: toolName })} icon="arrow-left" variant="secondary" size="sm" full
             onPress={() => (router.canGoBack() ? router.back() : openTool(ctxTool))} testID="aura-ctx-open" /> : null}
         </View>
       ) : null}
 
+      {openSleep && activeKid && empty ? (
+        <Banner tone="info" icon="moon" action={<Button label={tr('aura.pro.sleepOpen')} size="sm" variant="secondary" onPress={() => router.push(`/sleep/${activeKid.id}` as never)} testID="aura-pro-sleep" />}>
+          {tr('aura.pro.sleepRunning', { name: activeKid.first_name, since: new Date(openSleep.started_at).toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' }) })}
+        </Banner>
+      ) : null}
       {theme ? <Text variant="label" accessibilityRole="header" testID="aura-theme">{tr(themeName(theme))}</Text> : null}
 
       {theme === 'emotion_translator' ? (
