@@ -114,3 +114,19 @@ export const Orb: React.FC<{ t: number; x: number; y: number; r: number; energy?
 export const Logo: React.FC<{ h: number; color?: string }> = ({ h, color }) => (
   <Img src={staticFile('art/logo.svg')} style={{ height: h, filter: color === 'white' ? 'invert(1)' : undefined }} />
 );
+
+/** Aura = le robot compagnon RÉEL de l'app (captures transparentes de /dev/aura-bot, palette noir-blanc-gris), flottant, avec halo doux. */
+export type BotState = 'idle' | 'greet' | 'listening' | 'thinking' | 'answer';
+export const AuraRobot: React.FC<{ t: number; x: number; y: number; size: number; state: BotState; o?: number; since?: number; dark?: boolean }> = ({ t, x, y, size, state, o = 1, since = 0, dark }) => {
+  if (o <= 0.001) return null;
+  const v = state === 'thinking' ? Math.floor(t / 0.22) % 3 : 0;
+  const pop = since > 0 ? Math.exp(-Math.max(0, t - since) * 7) * Math.sin(Math.max(0, t - since) * 18) * 0.06 : 0;
+  const bob = Math.sin(t * 2.1) * size * 0.025; const tilt = Math.sin(t * 1.3) * 2.2 + (state === 'listening' ? -5 : 0);
+  return (
+    <div style={{ position: 'absolute', left: x - size / 2, top: y - size / 2, width: size, height: size, opacity: o }}>
+      <div style={{ position: 'absolute', left: -size * 0.35, top: -size * 0.35, width: size * 1.7, height: size * 1.7, borderRadius: '50%',
+        background: `radial-gradient(circle, ${dark ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.9)'}, transparent 62%)`, transform: `scale(${1 + Math.sin(t * 1.7) * 0.04 + (state === 'thinking' ? 0.08 : 0)})` }} />
+      <Img src={staticFile(`aura/aura-${state}-${v}.png`)} style={{ position: 'absolute', inset: 0, width: size, height: size, transform: `translateY(${bob}px) rotate(${tilt}deg) scale(${1 + pop})` }} />
+    </div>
+  );
+};

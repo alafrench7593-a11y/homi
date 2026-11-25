@@ -4,7 +4,7 @@ import React from 'react';
 import { AbsoluteFill, Audio, Img, staticFile, useVideoConfig } from 'remotion';
 import { loadFont } from '@remotion/fonts';
 import { T } from '../tokens';
-import { Backdrop, Glass, KText, L, Logo, Orb, Phone3D, mix, prog, spr, useTime, win } from './parts';
+import { AuraRobot, Backdrop, BotState, Glass, KText, L, Logo, Phone3D, mix, prog, spr, useTime, win } from './parts';
 
 for (const [w, n] of [['500Medium', 500], ['700Bold', 700], ['800ExtraBold', 800]] as const) {
   loadFont({ family: 'Manrope', url: staticFile(`fonts/Manrope_${w}.ttf`), weight: String(n) }).catch(() => undefined);
@@ -173,6 +173,13 @@ const AuraChat: React.FC<{ t: number; fps: number }> = ({ t, fps }) => {
     </div>
   );
 };
+/** États du robot calés sur la conversation : coucou, écoute (saisie), réflexion, réponse. */
+const botState = (t: number): [BotState, number] => {
+  const steps: [number, BotState][] = [[9.05, 'greet'], [9.9, 'listening'], [10.75, 'thinking'], [11.5, 'answer'], [12.55, 'listening'], [13.35, 'thinking'], [13.9, 'answer'], [15.0, 'greet']];
+  let cur: [BotState, number] = ['idle', 0];
+  for (const [at, st] of steps) if (t >= at) cur = [st, at];
+  return cur;
+};
 const AuraScene: React.FC<P> = ({ t, fps, l }) => {
   const { W, v } = l;
   if (t < 8.9 || t > 16.5) return null;
@@ -186,7 +193,7 @@ const AuraScene: React.FC<P> = ({ t, fps, l }) => {
   const chips = ['Biberon', 'Sommeil', 'Couches'];
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: 1 - out, filter: out ? `blur(${out * 12}px)` : undefined }}>
-      <Orb t={t} x={ox} y={oy} r={orr} energy={0.35 + think * 0.9} o={inO} />
+      <AuraRobot t={t} x={ox} y={oy - (v ? 10 : 20)} size={orr * (v ? 3.1 : 2.4)} state={botState(t)[0]} since={botState(t)[1]} o={inO} dark />
       <Phone3D x={pxx} y={pyy} w={pw} rotY={v ? 0 : -10 + Math.sin(t * 0.8) * 2} rotX={v ? 4 : 0} opacity={Math.min(1, ph * 2.5)} dark><AuraChat t={t} fps={fps} /></Phone3D>
       {chips.map((c, i) => {
         const p = prog(t, 13.45 + i * 0.08, 14.15 + i * 0.08);
@@ -316,7 +323,7 @@ const Story: React.FC<P> = ({ t, fps, l }) => {
         <div style={{ position: 'absolute', inset: 0, opacity: grow }}><Page c={CHAPTERS[0]} w={pw} h={ph} photo={1} /></div>
       </div>
       <Glass x={v ? W / 2 : 560} y={v ? 455 : 485} w={v ? 620 : 520} h={v ? 84 : 72} o={auraChip} r={40} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '0 22px', fontSize: v ? 28 : 24, fontWeight: 800 }}>
-        <div style={{ width: v ? 40 : 34, height: v ? 40 : 34, borderRadius: 99, background: `conic-gradient(from ${t * 90}deg, ${T.aura.join(',')}, ${T.aura[0]})` }} />Je construis l’histoire de Lina
+        <Img src={staticFile('aura/aura-thinking-' + (Math.floor(t / 0.22) % 3) + '.png')} style={{ width: v ? 64 : 54, height: v ? 64 : 54, marginLeft: -10 }} />Je construis l’histoire de Lina
       </Glass>
       {/* livre : pile de pages, la page du dessus tourne autour de son bord gauche */}
       {t >= 22.85 ? (
@@ -351,7 +358,6 @@ const Finale: React.FC<P> = ({ t, fps, l }) => {
   const logo = spr(t, 27.8, fps, 14); const tag = prog(t, 28.25, 28.85);
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: inO }}>
-      <Orb t={t} x={px} y={py} r={(v ? 150 : 130) * (0.6 + conv * 0.4)} energy={0.5} o={conv * (1 - leave) * 0.9} />
       {FINAL_CHIPS.map((c, i) => {
         const a = (i / FINAL_CHIPS.length) * Math.PI * 2 + 0.3; const R = (v ? 520 : 600) * (1 - conv) + 40;
         const x = px + Math.cos(a) * R * (v ? 0.95 : 1.15); const y = py + Math.sin(a) * R * (v ? 1.25 : 0.75);
@@ -359,7 +365,7 @@ const Finale: React.FC<P> = ({ t, fps, l }) => {
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: v ? 26 : 24, fontWeight: 800 }}>{c}</Glass>;
       })}
       <Phone3D x={mix(leave, px, px)} y={py + (1 - ph) * 500 + leave * 60} w={pw} rotY={rotY} opacity={ph * (1 - leave)} blur={leave * 10} scale={1 - leave * 0.08} src="accueil" />
-      {/* balayage de lumière studio sur le téléphone */}
+      <AuraRobot t={t} x={px + (v ? 245 : 235)} y={py + (v ? 360 : 270)} size={(v ? 240 : 210) * (0.7 + conv * 0.3)} state={t < 26.9 ? 'greet' : 'answer'} since={t < 26.9 ? 25.9 : 26.9} o={conv * (1 - leave)} />
       <KText t={t} at={25.25} out={26.45} x={v ? W / 2 : 150} y={v ? 330 : 540} size={v ? 84 : 84} w={v ? 1000 : 820} align={v ? 'center' : 'left'}>Moins de charge mentale.</KText>
       <KText t={t} at={26.55} out={27.6} x={v ? W / 2 : 150} y={v ? 330 : 540} size={v ? 84 : 84} w={v ? 1000 : 820} align={v ? 'center' : 'left'} color={'#6E5CE6'}>Plus de moments ensemble.</KText>
       <div style={{ position: 'absolute', left: W / 2, top: H / 2 - (v ? 60 : 50), transform: `translate(-50%,-50%) scale(${(0.8 + logo * 0.2) * (1 + prog(t, 28.2, 30, (x) => x) * 0.04)})`, opacity: logo, filter: `blur(${(1 - logo) * 14}px)` }}>
