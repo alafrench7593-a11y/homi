@@ -69,7 +69,7 @@ export const TOUR_STEPS: TourStep[] = [
     advance: (e) => e.type === 'quickFormClosed',
   },
   {
-    id: 'favorite', screens: ['/tools/*', '/tools'], goTo: '/tools/family', gesture: 'tap',
+    id: 'favorite', screens: ['/tools/*', '/tools'], goTo: '/tools', gesture: 'tap',
     anchors: { '/tools/*': ['tool-star'], '/tools': ['tool-star'] },
     advance: (e) => e.type === 'favoriteChanged',
   },

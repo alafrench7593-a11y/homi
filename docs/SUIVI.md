@@ -97,3 +97,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 2026-11-26 · Visite guidée : sur petit iPhone, le bandeau compact chevauchait le bas de l'élément (étape 1) → posé en haut avec marge. e2e/visite_guidee.py 156/156, 0 erreur (avant : 154/156).
 - 2026-11-26 · Visite rapide : « Suivant » sur chaque étape (geste facultatif), l'écran de l'étape suivante s'ouvre seul → 7 étapes en ~8 s (mesuré). e2e visite 156/156 ; audit navigation 306/307 (1 délai de test, vérifié OK à part) ; biberon_v3 34/34.
 - 2026-11-26 · « Mon histoire » (gratuit) : livre de vie par enfant (10 chapitres selon l'âge, livre page à page + frise) construit depuis l'album et les premières fois, rien d'inventé ; présentation d'Aura ; accès fiche enfant + album. Tests childStory (14) + écran. Jest 4946/4946.
+- 2026-11-26 · Visite : étape « favori » sur l'onglet Mes apps au lieu de la page Famille empilée (aller-retour coûteux : 4,5 s → 2,9 s à CPU ×4). e2e visite 156/156.
