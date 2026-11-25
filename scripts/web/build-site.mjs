@@ -75,7 +75,8 @@ for (const w of ['600SemiBold', '800ExtraBold']) {
 cpSync(path.join(site, 'og.png'), path.join(dist, 'og.png'));
 // icônes du site : nouvelle identité « noir sur blanc » (assets/brand/homi-logo-noir-sur-blanc-1024.png), générées par
 // scripts/web/site-icons.py (favicon.ico 16/32/48, icon-32.png, apple-touch-icon.png 180, icon-512.png)
-execFileSync('python3', [path.join(root, 'scripts/web/site-icons.py'), path.join(root, 'assets/brand/homi-logo-noir-sur-blanc-1024.png'), dist], { stdio: 'inherit' });
+// icônes pré-générées et versionnées (web/site/icons/) : le build Vercel n'a pas Pillow ; à régénérer à la main si le logo change
+for (const f of readdirSync(path.join(site, 'icons'))) cpSync(path.join(site, 'icons', f), path.join(dist, f));
 cpSync(path.join(site, 'screens'), path.join(dist, 'site/screens'), { recursive: true });
 mkdirSync(path.join(dist, 'site/illus'), { recursive: true });
 for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foyer-maison']) cpSync(path.join(root, `assets/illustrations/${n}.webp`), path.join(dist, `site/illus/${n}.webp`));

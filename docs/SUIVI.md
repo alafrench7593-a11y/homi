@@ -110,3 +110,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 2026-11-25 · SEO lot 1 : URL canoniques, liens internes et sitemap sans « / » final (cohérent avec trailingSlash:false de Vercel) ; e2e site 22/22 + 18/19 (seul échec : routes de l'app non réécrites par le serveur statique local).
 - 2026-11-25 · SEO lot 2 : page /aura (ce qu'elle fait / ne fait pas, données, FAQ balisée FAQPage), liens menu + pied de page, sitemap, llms.txt ; dernières URL JSON-LD/llms sans « / » ; mobile/desktop sans débordement ni erreur.
 - 2026-11-25 · SEO lot 3 : /blog + 215 articles non médicaux (décision propriétaire), JSON-LD Article, maillage, sitemap 227 URL ; plan docs/seo/PLAN_SEO.md.
+- 2026-11-25 · Build Vercel : icônes pré-générées dans web/site/icons (Pillow absent sur Vercel, cause probable des builds en erreur depuis 17 h) ; plus de Python au build.
