@@ -85,3 +85,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 24/11/2026 — Build iOS (ordre de la propriétaire) : 1er lancement annulé (version 0.1.0 ≠ fiche 1.0), version passée à 1.0 et relancé.
   Build : https://expo.dev/accounts/alafre/projects/homi/builds/8944e1a2-aac7-4f40-ae2b-5a7f2dc00b72
 - 25/11/2026 — Build iOS 15 (version 1.0) TERMINÉ sur EAS ; envoi TestFlight en attente de l'accord de la propriétaire.
+- 25/11/2026 — Co-parent vérifié en production avec 2 comptes (16/16) : lecture et écriture partagées, modification croisée, humeur/journal/Aura privés, pas d'ajout d'enfant sans droit (403), Premium partagé ; retrait → plus aucune lecture ni écriture, Premium perdu ; réinvitation OK, invitation à usage unique. P3 : invitation réutilisée renvoie HTTP 500 (code P0002) au lieu d'une erreur 4xx.
