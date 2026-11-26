@@ -163,6 +163,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
   cpSync(path.join(site, 'aura.css'), path.join(dist, 'site', 'aura.css'));
   const { stages: st, tools: all } = globalThis.homiTools.all();
   const { HUBS: hubsForLlms } = await import(path.join(site, 'hubs.mjs'));
+  const { UNIVERS: univForLlms } = await import(path.join(site, 'univers.mjs'));
   const auraFaq = [...readFileSync(path.join(site, 'aura.html'), 'utf8').matchAll(/<summary>([^<]+)<\/summary><p>([^<]+)<\/p>/g)].map(([, q, a]) => [q, a]);
   const byCat = new Map(); for (const t of all) { if (!byCat.has(t.categoryTitle)) byCat.set(t.categoryTitle, []); byCat.get(t.categoryTitle).push(t); }
   writeFileSync(path.join(dist, 'llms.txt'), `# HOMI
@@ -177,6 +178,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 ## Pages
 - [Présentation](${siteUrl}/): ce qu'est HOMI et à qui il s'adresse
 ${hubsForLlms.map((h) => `- [${h.name}](${siteUrl}/${h.slug}): ${h.desc}`).join('\n')}
+${univForLlms.map((x) => `- [${x.kw}](${siteUrl}/${x.slug}): ${x.answer}`).join('\n')}
 - [Blog](${siteUrl}/blog): articles pratiques non médicaux (démarches, garde, matériel, éveil, éducation), sources officielles citées
 - [Aura, l'assistante](${siteUrl}/aura): retrouve le bon outil, prépare rendez-vous et tâches à confirmer ; pas une professionnelle de santé, aucune dose
 - [Toutes les fonctionnalités](${siteUrl}/fonctionnalites): les ${all.length} outils réels, par étape de vie
@@ -187,7 +189,7 @@ ${hubsForLlms.map((h) => `- [${h.name}](${siteUrl}/${h.slug}): ${h.desc}`).join(
 - [Confidentialité](${siteUrl}/confidentialite)
 
 ## Questions fréquentes
-${[...hubsForLlms.flatMap((h) => h.faq), ...auraFaq].map(([q, a]) => `- **${q}** ${a}`).join('\n')}
+${[...hubsForLlms.flatMap((h) => h.faq), ...univForLlms.flatMap((x) => x.faq), ...auraFaq].map(([q, a]) => `- **${q}** ${a}`).join('\n')}
 
 ## Étapes de vie
 ${st.map((x) => `- ${x.title}`).join('\n')}
@@ -225,6 +227,34 @@ const hubPaths = [];
     mkdirSync(path.join(dist, h.slug), { recursive: true });
     writeFileSync(path.join(dist, h.slug, 'index.html'), html);
     hubPaths.push(`/${h.slug}`);
+  }
+  // pages « univers » : problème réel → réponse HOMI → outils réels du catalogue (aucun outil inventé)
+  const { UNIVERS } = await import(path.join(site, 'univers.mjs'));
+  const byId = new Map(globalThis.homiTools.all().tools.map((t) => [t.id, t]));
+  for (const u of UNIVERS) {
+    const tools = u.tools.map((id) => { const t = byId.get(id); if (!t) throw new Error(`univers ${u.slug} : outil inconnu ${id}`); return t; });
+    const url = `${siteUrl}/${u.slug}`;
+    const jsonld = { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Fonctionnalités', item: `${siteUrl}/fonctionnalites` }, { '@type': 'ListItem', position: 3, name: u.name, item: url }] },
+      { '@type': 'WebPage', name: u.kw, url, description: u.answer, isPartOf: { '@type': 'WebSite', name: 'HOMI', url: `${siteUrl}/` } },
+      { '@type': 'ItemList', name: `Outils HOMI : ${u.name}`, itemListElement: tools.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.label, description: t.sub })) },
+      { '@type': 'FAQPage', mainEntity: u.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+    ] };
+    const others = UNIVERS.filter((o) => o.slug !== u.slug);
+    const content = `<section class="chapter" aria-labelledby="t-u"><div class="wrap aura-hero"><div>`
+      + `<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <a href="/fonctionnalites">Fonctionnalités</a> <span aria-hidden="true">›</span> <span>${esc(u.name)}</span></nav>`
+      + `<h1 id="t-u" class="display">${esc(u.kw)}</h1><p class="lead u-problem">${esc(u.problem)}</p><p class="u-answer">${esc(u.answer)}</p>`
+      + `<div class="cta-row"><a class="btn btn-primary btn-lg" href="/telecharger">Télécharger HOMI</a><a class="btn btn-secondary btn-lg" href="/tarifs">Voir les tarifs</a></div></div>`
+      + `<img class="aura-shot" src="/site/screens/${u.shot}.webp" alt="Écran réel de l’application HOMI (famille fictive)" width="390" height="810" loading="eager" decoding="async"></div></section>`
+      + `<section class="chapter tight" aria-labelledby="t-tools"><div class="wrap narrow"><h2 id="t-tools" class="h2">Les outils HOMI pour ${esc(u.name.toLowerCase())}</h2><ul class="u-tools">${tools.map((t) => `<li><strong>${esc(t.label)}</strong><span>${esc(t.sub)}</span></li>`).join('')}</ul>`
+      + `<p class="fine">Les outils sont décrits tels qu’ils apparaissent dans l’application. HOMI ne remplace pas un professionnel de santé.</p></div></section>`
+      + `<section class="chapter tight" aria-labelledby="t-faq"><div class="wrap narrow"><h2 id="t-faq" class="h2">Questions fréquentes</h2>${u.faq.map(([q, a]) => `<details class="card aura-faq" open><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`
+      + `<nav class="chapter tight" aria-label="Autres univers"><div class="wrap"><h2 class="h2">Autres univers</h2><ul class="u-others">${others.map((o) => `<li><a href="/${o.slug}">${esc(o.name)}</a></li>`).join('')}</ul></div></nav>`;
+    const html = tpl.replace('{{TITLE}}', () => esc(`${u.kw} | HOMI`)).replaceAll('{{DESC}}', () => esc(`${u.problem} ${u.answer}`.slice(0, 300))).replaceAll('{{NAME}}', () => esc(u.name)).replaceAll('{{CANONICAL}}', url)
+      .replace('{{JSONLD}}', () => JSON.stringify(jsonld).replace(/</g, '\\u003c')).replace('{{CONTENT}}', () => content);
+    mkdirSync(path.join(dist, u.slug), { recursive: true });
+    writeFileSync(path.join(dist, u.slug, 'index.html'), html);
+    hubPaths.push(`/${u.slug}`);
   }
   console.log(`pages piliers : ${hubPaths.join(', ')}`);
 }
