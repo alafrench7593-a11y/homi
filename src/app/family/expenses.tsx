@@ -12,7 +12,7 @@ import { Screen } from '@/components/Screen';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Chip, Field, IconButton, ListGroup, ListRow, Row, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Chip, Field, haptic, IconButton, ListGroup, ListRow, Row, Segmented, Text } from '@/components/ui';
 import { formatDate, formatNumber, getLocale, t as tr, type TKey } from '@/i18n';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
@@ -35,7 +35,12 @@ const catLabel = (c: ExpenseCategory) => tr(`fx.cat.${c}` as TKey);
 const CAT_ICON: Record<ExpenseCategory, 'shopping-cart' | 'smile' | 'users' | 'plus-square' | 'home' | 'sun' | 'tag'> = {
   food: 'shopping-cart', children: 'smile', childcare: 'users', health: 'plus-square', housing: 'home', leisure: 'sun', other: 'tag',
 };
-const monthLabel = (m: string) => formatDate(`${m}-15`, { month: 'long', year: 'numeric' });
+// date locale à midi : new Date('AAAA-MM-JJ') est lu en UTC et recule d'un jour à l'ouest de Greenwich
+const day = (iso: string, opts: Intl.DateTimeFormatOptions) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return formatDate(new Date(y, m - 1, d, 12), opts);
+};
+const monthLabel = (m: string) => day(`${m}-15`, { month: 'long', year: 'numeric' });
 type Tab = 'list' | 'totals' | 'split';
 type Period = 'month' | 'prev' | 'three' | 'custom';
 
@@ -80,13 +85,14 @@ function ExpenseEditor({ visible, onClose, initial, hid }: { visible: boolean; o
         id: initial?.id, household_id: hid, amount: a, currency: 'EUR', spent_on: d, category: cat, paid_by: paidBy, payer_share: p,
         child_id: child, candidate_id: cat === 'childcare' ? candidate : null, note: note.trim() || null,
       });
+      haptic('success');
       toast(tr(r.queued ? 'fx.savedOffline' : 'fx.saved'), 'success');
       onClose();
-    } catch (e) { toast(friendlyError(e), 'error'); }
+    } catch (e) { haptic('warning'); toast(friendlyError(e), 'error'); }
   }
   async function remove() {
     if (!initial || !(await confirm(tr('common.delete'), tr('fx.deleteQ'), tr('common.delete')))) return;
-    try { await del.mutateAsync(initial.id); toast(tr('fx.deleted'), 'success'); onClose(); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await del.mutateAsync(initial.id); haptic('success'); toast(tr('fx.deleted'), 'success'); onClose(); } catch (e) { haptic('warning'); toast(friendlyError(e), 'error'); }
   }
   return (
     <GlassSheet visible={visible} onClose={onClose} title={initial ? tr('fx.edit') : tr('fx.add')}>
@@ -192,7 +198,7 @@ export default function Expenses() {
   const edit = (e: Expense | null) => { setEditing(e); setOpen(true); };
   const row = (e: Expense) => (
     <ListRow key={e.id} icon={CAT_ICON[e.category]} title={e.note || catLabel(e.category)} value={narrow ? undefined : money(e.amount)}
-      subtitle={[narrow ? money(e.amount) : null, formatDate(e.spent_on, { day: 'numeric', month: 'short' }), catLabel(e.category), e.paid_by ? tr('fx.paidByX', { name: nameOf(e.paid_by) }) : null,
+      subtitle={[narrow ? money(e.amount) : null, day(e.spent_on, { day: 'numeric', month: 'short' }), catLabel(e.category), e.paid_by ? tr('fx.paidByX', { name: nameOf(e.paid_by) }) : null,
         e.payer_share === 100 ? tr('fx.notShared') : null, childName(e.child_id) || null, e._pending ? tr('fx.pending') : null].filter(Boolean).join(' · ')}
       onPress={e._pending ? undefined : () => edit(e)} testID={`fx-row-${e.id}`} />
   );
@@ -212,10 +218,10 @@ export default function Expenses() {
 
       {tab === 'list' ? (
         <>
-          <Text variant="small" muted testID="fx-month-total">{tr('fx.monthTotal', { amount: money(monthTotals.total), count: monthTotals.count })}</Text>
+          <Text weight="bold" style={{ fontVariant: ['tabular-nums'] }} testID="fx-month-total">{tr('fx.monthTotal', { amount: money(monthTotals.total), count: monthTotals.count })}</Text>
           {inMonth.length ? <ListGroup testID="fx-list">{inMonth.map(row)}</ListGroup>
             : <EmptyState icon="credit-card" title={tr('fx.empty.title')} body={tr('fx.empty.body')} action={{ label: tr('fx.add'), icon: 'plus', onPress: () => edit(null) }} />}
-          {inMonth.length ? <Chip label={tr('fx.export.month')} icon="download" onPress={() => void exportCsv(inMonth, month)} testID="fx-export-month" /> : null}
+          {inMonth.length ? <Button label={tr('fx.export.month')} icon="download" variant="ghost" size="sm" onPress={() => void exportCsv(inMonth, month)} testID="fx-export-month" /> : null}
         </>
       ) : null}
 
@@ -256,7 +262,7 @@ export default function Expenses() {
           {!range ? <Banner tone="warning">{tr('fx.err.period')}</Banner> : null}
           {range && split ? (
             <>
-              <Text variant="small" muted>{tr('fx.split.range', { from: formatDate(range.from, { day: 'numeric', month: 'short' }), to: formatDate(range.to, { day: 'numeric', month: 'short', year: 'numeric' }) })}</Text>
+              <Text variant="small" muted>{tr('fx.split.range', { from: day(range.from, { day: 'numeric', month: 'short' }), to: day(range.to, { day: 'numeric', month: 'short', year: 'numeric' }) })}</Text>
               <ListGroup title={tr('fx.split.who')} footer={tr('fx.split.rule')} testID="fx-split">
                 {adults.map((a) => (
                   <ListRow key={a.id} icon="user" title={a.label} subtitle={tr('fx.split.line', { paid: money(split.paid[a.id] ?? 0), borne: money(split.borne[a.id] ?? 0) })}
@@ -269,7 +275,7 @@ export default function Expenses() {
                 )) : <Banner tone="success" icon="check-circle">{tr('fx.split.even')}</Banner>}
               </View>
               {split.ignored ? <Text variant="caption" muted>{tr('fx.split.ignored', { amount: money(split.ignored) })}</Text> : null}
-              <Chip label={tr('fx.export.period')} icon="download" onPress={() => void exportCsv(all.filter((e) => inRange(e, range.from, range.to)), `${range.from}_${range.to}`)} testID="fx-export-period" />
+              <Button label={tr('fx.export.period')} icon="download" variant="ghost" size="sm" onPress={() => void exportCsv(all.filter((e) => inRange(e, range.from, range.to)), `${range.from}_${range.to}`)} testID="fx-export-period" />
             </>
           ) : null}
         </>
