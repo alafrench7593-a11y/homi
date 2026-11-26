@@ -28,9 +28,9 @@
 .feat-item[hidden], .feat-cat[hidden] { display: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-color-scheme: dark) {
-  .feat-item a { background: rgba(30,30,34,.72); border-color: rgba(255,255,255,.08); }
-  .feat-search input { background: rgba(30,30,34,.9); border-color: rgba(255,255,255,.14); }
-  .feat-chips button { border-color: rgba(255,255,255,.2); }
-  .feat-chips button[aria-pressed="true"] { background: #f2f2f4; color: #0b0b0c; }
+  :root:not([data-theme="light"]) .feat-item a { background: rgba(30,30,34,.72); border-color: rgba(255,255,255,.08); }
+  :root:not([data-theme="light"]) .feat-search input { background: rgba(30,30,34,.9); border-color: rgba(255,255,255,.14); }
+  :root:not([data-theme="light"]) .feat-chips button { border-color: rgba(255,255,255,.2); }
+  :root:not([data-theme="light"]) .feat-chips button[aria-pressed="true"] { background: #f2f2f4; color: #0b0b0c; }
 }
 @media (prefers-reduced-motion: reduce) { .feat-item a { transition: none; } }

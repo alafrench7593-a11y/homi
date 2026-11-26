@@ -171,7 +171,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 > HOMI est une application web pour toute la famille, de la contraception aux 10 ans de l'enfant : cycle et projet bébé,
 > grossesse, après la naissance, suivi du bébé (sommeil, biberons, allaitement, couches, croissance, vaccins, dents),
 > enfance, et organisation familiale partagée entre parents (relais, tâches, agenda, charge mentale).
-> Éditeur : David PRINCIVIL, entrepreneur individuel (France). Contact : homixyz@gmail.com. Instagram : @homi_famille.
+> Application française. Contact : homixyz@gmail.com. Instagram : @homi_famille.
 > HOMI n'est pas un dispositif médical et ne remplace pas un professionnel de santé ; Aura, l'assistante intégrée, ne pose
 > pas de diagnostic et ne calcule aucune dose de médicament. Disponible dans le navigateur ; pas encore sur l'App Store.
 
