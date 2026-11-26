@@ -287,6 +287,10 @@ const blogPaths = [];
 // IndexNow (Bing, Copilot, ChatGPT Search via l'index Bing, Yandex…) : fichier de clé publique à la racine
 { const k = readFileSync(path.join(site, 'indexnow.txt'), 'utf8').trim(); writeFileSync(path.join(dist, `${k}.txt`), k); }
 
+// kit presse : logos officiels + captures réelles, téléchargeables
+mkdirSync(path.join(dist, 'site/presse'), { recursive: true });
+for (const f of ['homi-logo-noir-sur-blanc-1024.png', 'homi-icone-blanc-sur-noir-1024.png']) cpSync(path.join(root, 'assets/brand', f), path.join(dist, 'site/presse', f));
+
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });

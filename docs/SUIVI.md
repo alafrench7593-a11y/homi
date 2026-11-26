@@ -123,3 +123,4 @@ Règles : AGENTS.md. Détail : `docs/AUDIT_LANCEMENT_2026-11-23.md`, tutos : `do
 - 2026-11-26 · Search Console : TXT google-site-verification ajouté au DNS Vercel (propriété Domaine homifamille.com validée par la propriétaire), sitemap soumis, indexation demandée pour l'accueil + 7 pages piliers.
 - 2026-11-26 · GEO : page /a-propos (faits sur l'entité, FAQ balisée), llms.txt enrichi (pages piliers + 16 questions/réponses), IndexNow (clé à la racine + scripts/web/indexnow.mjs).
 - 2026-11-26 · IndexNow : 232 URL du sitemap soumises (Bing et moteurs partenaires) ; api.indexnow.org ajouté au réseau de l'environnement.
+- 2026-11-26 · Mentions externes : page /presse (kit presse, logos, textes), docs/acquisition/KIT_MENTIONS.md (médias cibles, e-mail type, 6 posts Instagram, texte ambassadeurs).

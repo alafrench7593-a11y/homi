@@ -62,4 +62,17 @@ export const HUBS = [
       ['Qui édite HOMI ?', 'HOMI est édité par David PRINCIVIL, entrepreneur individuel en France. Contact : homixyz@gmail.com.'],
       ['HOMI est-il un outil médical ?', 'Non. HOMI aide à noter et à s’organiser ; il ne pose pas de diagnostic et ne remplace pas un professionnel de santé.'],
       ['Sur quels appareils utiliser HOMI ?', 'Dans tout navigateur récent, sur téléphone ou ordinateur. L’application iPhone est en préparation et n’est pas encore sur l’App Store.']] },
+  { slug: 'presse', name: 'Espace presse', title: 'Espace presse HOMI — faits, textes, logos et captures',
+    desc: 'Kit presse de HOMI, l’application de toute la vie de famille : présentation en une phrase et en un paragraphe, faits clés, logos et captures d’écran réelles, contact presse.',
+    eyebrow: 'Presse', h1: ['Espace presse.', 'Tout pour parler de HOMI.'], shot: 'accueil',
+    lead: 'Textes prêts à reprendre, faits vérifiés, logos et captures d’écran réelles. Pour une interview ou une démonstration : homixyz@gmail.com.',
+    cta: [['Télécharger le logo', '/site/presse/homi-logo-noir-sur-blanc-1024.png'], ['Télécharger l’icône', '/site/presse/homi-icone-blanc-sur-noir-1024.png'], ['Écrire à HOMI', '/contact']],
+    sections: [
+      ['HOMI en une phrase', ['HOMI réunit dans une seule application partagée par le foyer le suivi de grossesse, du bébé et de l’enfant, l’organisation familiale et une assistante, Aura.']],
+      ['HOMI en un paragraphe', ['HOMI est une application familiale française qui accompagne les parents de la contraception aux 10 ans de l’enfant. Elle rassemble 121 outils réels (contractions, biberons, sommeil, croissance, agenda, tâches, relais entre parents, communauté) dans un espace partagé par le foyer. Son assistante, Aura, retrouve le bon outil à partir d’une phrase et prépare rendez-vous et tâches, que les parents valident. HOMI n’est pas un outil médical : Aura ne pose aucun diagnostic et ne calcule aucune dose de médicament.']],
+      ['Faits clés', ['Éditeur : David PRINCIVIL, entrepreneur individuel (France).', 'Disponible dans le navigateur ; application iPhone en préparation.', '5 langues : français, anglais, espagnol, allemand, italien.', 'Site : www.homifamille.com · Instagram : @homi_famille.']],
+      ['Ressources', ['Logo noir sur blanc et icône (PNG 1024 px) : boutons en haut de page.', 'Captures d’écran réelles de l’application (famille fictive) : accueil, Aura, contractions, charge mentale, communauté.']],
+    ],
+    faq: [['Comment contacter HOMI pour un article ?', 'Par e-mail à homixyz@gmail.com ou via la page contact ; une démonstration de l’application est possible sur demande.'],
+      ['Peut-on reprendre les captures et logos ?', 'Oui, pour parler de HOMI dans un article ou un reportage, sans modification du logo.']] },
 ];
