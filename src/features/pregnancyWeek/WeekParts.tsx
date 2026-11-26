@@ -203,12 +203,14 @@ export function WeekPicker({ current, shown, onPick }: { current: number; shown:
           const on = s === shown;
           const today = s === current;
           return (
-            <Tappable key={s} accessibilityRole="button" accessibilityState={{ selected: on }} accessibilityLabel={tr('u2.preg.week_n', { n: s })} onPress={() => { haptic('selection'); onPick(s); }}
+            <Tappable key={s} accessibilityRole="button" accessibilityState={{ selected: on }} accessibilityLabel={today ? tr('u2.preg.week_current', { n: s }) : tr('u2.preg.week_n', { n: s })} onPress={() => { haptic('selection'); onPick(s); }}
               testID={`preg-week-${s}`} pressScale={0.95}
-              style={{ width: CELL, height: CELL + 4, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center',
+              style={{ width: CELL, height: CELL + 4, borderRadius: radius.control, alignItems: 'center', justifyContent: 'center', gap: 2,
                 backgroundColor: on ? t.tokens.action.fill : today ? linesOf(t).iconWell : t.colors.surface,
                 borderWidth: on ? 0 : 1, borderColor: today ? t.colors.primary : t.colors.border }}>
               <Text variant="small" weight="bold" color={on ? t.tokens.action.text : today ? t.colors.primary : t.colors.text} style={{ fontVariant: ['tabular-nums'] }}>{s}</Text>
+              {/* semaine actuelle : un point en plus de la couleur (la couleur ne porte jamais seule le sens) */}
+              {today ? <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: on ? t.tokens.action.text : t.colors.primary }} /> : null}
             </Tappable>
           );
         })}

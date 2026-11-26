@@ -21,7 +21,7 @@ import { addDays, formatDateFr, frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { CERVICAL_MUCUS, type CervicalMucus } from '@/lib/types-fertility';
 import { spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { t as tr, formatNumber } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const mucusLabel = (v: CervicalMucus | null) => CERVICAL_MUCUS.find((m) => m.value === v)?.label ?? null;
@@ -85,7 +85,7 @@ export default function BodyScreen() {
     <Screen back title={tr('u3.fertBody.title')} subtitle={tr('u3.fertBody.subtitle')}
       action={{ label: tr('u3.fertBody.save'), icon: 'check', onPress: () => submit(), disabled: save.isPending, testID: 'body-save' }}>
       <TodaySummary title={tr('u3.fertBody.lastObs')} items={[
-        { icon: 'thermometer', value: lastTemp ? `${String(lastTemp.bbt_celsius).replace('.', ',')} °C` : '—', label: lastTemp ? formatDateFr(lastTemp.observed_on, false) : tr('u3.fertBody.temperature') },
+        { icon: 'thermometer', value: lastTemp ? `${formatNumber(Number(lastTemp.bbt_celsius))} °C` : '—', label: lastTemp ? formatDateFr(lastTemp.observed_on, false) : tr('u3.fertBody.temperature') },
         { icon: 'droplet', value: lastMucus ? mucusLabel(lastMucus.cervical_mucus) ?? '—' : '—', label: tr('u3.fertBody.mucusShort') },
         { icon: 'calendar', value: String(list.filter((o) => o.observed_on >= since).length), label: tr('u3.fertBody.daysNoted') },
       ]} />
@@ -98,7 +98,7 @@ export default function BodyScreen() {
           {/* reprise en un geste de la dernière valeur notée, à ajuster avant d'enregistrer */}
           {!temp && lastTemp?.bbt_celsius != null ? (
             <View style={{ marginTop: 6, alignSelf: 'flex-start' }}>
-              <Chip icon="corner-down-left" label={tr('u3.fertBody.startFrom', { value: String(lastTemp.bbt_celsius).replace('.', ',') })} onPress={() => setTemp(String(lastTemp.bbt_celsius).replace('.', ','))} testID="body-prefill-temp" />
+              <Chip icon="corner-down-left" label={tr('u3.fertBody.startFrom', { value: formatNumber(Number(lastTemp.bbt_celsius)) })} onPress={() => setTemp(String(lastTemp.bbt_celsius).replace('.', ','))} testID="body-prefill-temp" />
             </View>
           ) : null}
         </View>
@@ -131,7 +131,7 @@ export default function BodyScreen() {
                 onPress={o.bbt_celsius != null ? () => openObs(o.id) : undefined}
                 icon="thermometer"
                 title={formatDateFr(o.observed_on)}
-                subtitle={[o.bbt_celsius != null ? `${String(o.bbt_celsius).replace('.', ',')} °C` : null, mucusLabel(o.cervical_mucus), o.note].filter(Boolean).join(' · ')}
+                subtitle={[o.bbt_celsius != null ? `${formatNumber(Number(o.bbt_celsius))} °C` : null, mucusLabel(o.cervical_mucus), o.note].filter(Boolean).join(' · ')}
                 right={<IconButton icon="trash-2" label={tr('u3.fertBody.delA11y', { date: formatDateFr(o.observed_on) })} onPress={() => remove(o.id, o.observed_on)} />}
               /></MotionItem>
             ))}</MotionList>

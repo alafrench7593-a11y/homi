@@ -1,13 +1,13 @@
 /**
  * Anneau du cycle au fil d'or (en-tête de « Mon cycle ») : une perle par jour du cycle.
  * - règles NOTÉES : perles pleines couleur règles ;
- * - jours passés : perles d'or ; jour actuel : perle or néon qui pulse ;
+ * - jours passés : perles d'or ; jour actuel : perle or néon avec halo fixe ;
  * - fenêtre fertile ESTIMÉE : perles cerclées (jamais pleines), légende « estimée » ;
  * - au centre : le jour du cycle, la durée estimée.
- * Un fil d'or relie les perles ; une lueur le parcourt jusqu'à aujourd'hui. Immobile si les animations sont réduites.
+ * Un fil d'or relie les perles ; une lueur le parcourt une fois jusqu'à aujourd'hui. Immobile si les animations sont réduites.
  */
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { t as tr, type TKey } from '@/i18n';
 import { useReduceMotion } from '@/theme/ThemeProvider';
@@ -15,7 +15,7 @@ import { spacing } from '@/theme/tokens';
 import type { RingData } from './CycleRing';
 import { Ink, useCyclePalette } from './kit';
 import { fmtDay } from './format';
-import { ambientDelay } from '@/theme/motion';
+import { duration, easing } from '@/theme/motion';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const DAY = 86_400_000;
@@ -28,22 +28,16 @@ const pd = (k: string, p?: Record<string, string | number>) => tr(k as TKey, p);
 export function GoldCycleRing({ data, size = 260 }: { data: RingData; size?: number }) {
   const c = useCyclePalette();
   const reduce = useReduceMotion();
-  const wave = useRef(new Animated.Value(0)).current;
-  const pulse = useRef(new Animated.Value(0)).current;
+  const wave = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  // Une seule lueur parcourt le fil jusqu'à aujourd'hui (elle explique « où j'en suis »), puis tout reste immobile :
+  // pas d'animation en boucle (DESIGN_SYSTEM § 4), état final immédiat si les animations sont réduites.
   useEffect(() => {
-    if (reduce) return;
-    const a = Animated.loop(Animated.sequence([
-      Animated.timing(wave, { isInteraction: false, toValue: 1, duration: 2400, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
-      ambientDelay(900),
-      Animated.timing(wave, { isInteraction: false, toValue: 0, duration: 0, useNativeDriver: false }),
-    ]));
-    const b = Animated.loop(Animated.sequence([
-      Animated.timing(pulse, { isInteraction: false, toValue: 1, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
-      Animated.timing(pulse, { isInteraction: false, toValue: 0, duration: 900, easing: Easing.inOut(Easing.sin), useNativeDriver: false }),
-    ]));
-    a.start(); b.start();
-    return () => { a.stop(); b.stop(); };
-  }, [reduce, wave, pulse]);
+    if (reduce) { wave.setValue(1); return; }
+    wave.setValue(0);
+    const a = Animated.timing(wave, { isInteraction: false, toValue: 1, duration: duration.entrance, easing: easing.decelerate, useNativeDriver: false });
+    a.start();
+    return () => a.stop();
+  }, [reduce, wave, data.day]);
 
   const { length, periodDays } = data;
   const day = data.day ?? 0;
@@ -74,7 +68,7 @@ export function GoldCycleRing({ data, size = 260 }: { data: RingData; size?: num
             if (isToday) {
               return (
                 <React.Fragment key={i}>
-                  <AnimatedCircle cx={x} cy={y} r={reduce ? 12 : pulse.interpolate({ inputRange: [0, 1], outputRange: [10, 16] })} fill={NEON} fillOpacity={reduce ? 0.28 : pulse.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0.1] })} />
+                  <Circle cx={x} cy={y} r={12} fill={NEON} fillOpacity={0.28} />
                   <Circle cx={x} cy={y} r={7.5} fill={NEON} fillOpacity={0.4} />
                   <Circle cx={x} cy={y} r={5.5} fill={isPeriod ? c.period : NEON_HOT} stroke={NEON_HOT} strokeWidth={1.5} />
                 </React.Fragment>

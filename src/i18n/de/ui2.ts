@@ -353,6 +353,7 @@ export const ui2: Messages<typeof fr> = {
   "u2.preg.title": "Schwangerschaft",
   "u2.preg.warning": "Blutungen, ungewöhnliche Schmerzen, Fieber, starke Kopfschmerzen, Sehstörungen, Baby bewegt sich weniger: Kontaktiere sofort deine Geburtsklinik oder die 15.",
   "u2.preg.week_n": "Woche {n}",
+  "u2.preg.week_current": "Woche {n}, aktuelle Woche",
   "u2.preg.weeks_trimester": "{weeks} Schwangerschaftswochen, Trimester {trimester}",
   "u2.preg.you_maybe": "Und bei dir vielleicht",
   "u2.profiles.allergies": "Von einer Fachperson festgestellte Allergien",
