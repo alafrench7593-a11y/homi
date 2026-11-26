@@ -14,8 +14,8 @@ import { Screen } from '@/components/Screen';
 import { Markdown } from '@/components/Markdown';
 import { GlassSurface } from '@/components/Glass';
 import { UrgentCard } from '@/components/Assistant';
-import { Banner, Chip, haptic, Icon, IconButton, Text } from '@/components/ui';
-import { Skeleton } from '@/components/States';
+import { Banner, Button, Chip, haptic, hairline, Icon, IconButton, Text } from '@/components/ui';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { useActivePregnancy, useChildren, useFullArticles, useProfile } from '@/lib/data/hooks';
@@ -27,7 +27,7 @@ import { ui8 as frUi8 } from '@/i18n/fr/ui8';
 import { getLocale, type TKey, t as tr } from '@/i18n';
 import { useEmergencyRegion } from '@/lib/domain/emergencyNumbers';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, spacing } from '@/theme/tokens';
+import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 
 interface Msg { id: string; q: string; a: LocalAnswer }
 
@@ -39,7 +39,8 @@ const SUGGEST: Record<string, TKey[]> = {
   child: ['u8.local.sg.child1', 'u8.local.sg.child2', 'u8.local.sg.child3', 'u8.local.sg.child4', 'u8.local.sg.child5'],
 };
 
-function AnswerCard({ m }: { m: Msg }) {
+/** Mémorisée : une nouvelle question ne refait pas le rendu (Markdown) des réponses précédentes. */
+const AnswerCard = React.memo(function AnswerCard({ m }: { m: Msg }) {
   const t = useTheme();
   const a = m.a;
   const gold = t.colors.gold;
@@ -54,7 +55,7 @@ function AnswerCard({ m }: { m: Msg }) {
   }
   if (a.kind === 'none' || !a.main) {
     return (
-      <GlassSurface fill={t.colors.surface} depth={1} radius={22}>
+      <GlassSurface fill={t.colors.surface} depth={1} radius={radius.lg}>
         <View style={{ padding: spacing.md, gap: spacing.sm }} testID="local-none">
           <Text weight="bold">{tr('u8.local.none')}</Text>
           <Text variant="small" muted>{tr('u8.local.noneBody')}</Text>
@@ -66,7 +67,7 @@ function AnswerCard({ m }: { m: Msg }) {
     );
   }
   return (
-    <GlassSurface fill={t.colors.surface} depth={2} radius={24}>
+    <GlassSurface fill={t.colors.surface} depth={2} radius={radius.lg}>
       <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="local-answer">
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="book-open" size={14} color={gold} />
@@ -75,7 +76,7 @@ function AnswerCard({ m }: { m: Msg }) {
         {a.main.section && !/^introduction$/i.test(a.main.section) ? <Text weight="bold">{a.main.section}</Text> : null}
         <Markdown source={a.answer ?? ''} />
         {a.keyPoints?.length ? (
-          <View style={{ borderRadius: 18, padding: spacing.md, gap: 6, backgroundColor: tint(gold, t.isDark ? 0.16 : 0.09) }}>
+          <View style={{ borderRadius: radius.md, padding: spacing.md, gap: 6, backgroundColor: tint(gold, t.isDark ? 0.16 : 0.09) }}>
             <Text variant="caption" weight="bold" color={gold} style={{ letterSpacing: 1, textTransform: 'uppercase' }}>{tr('u8.local.keep')}</Text>
             {a.keyPoints.map((p, i) => (
               <View key={i} style={{ flexDirection: 'row', gap: 8, alignItems: 'flex-start' }}>
@@ -86,7 +87,7 @@ function AnswerCard({ m }: { m: Msg }) {
           </View>
         ) : null}
         {a.care ? (
-          <View style={{ borderRadius: 18, padding: spacing.md, gap: 6, backgroundColor: t.colors.dangerSoft }}>
+          <View style={{ borderRadius: radius.md, padding: spacing.md, gap: 6, backgroundColor: t.colors.dangerSoft }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Icon name="alert-circle" size={14} color={t.colors.danger} />
               <Text variant="caption" weight="bold" color={t.colors.danger}>{tr('u8.local.care')}</Text>
@@ -94,18 +95,15 @@ function AnswerCard({ m }: { m: Msg }) {
             <Markdown source={a.care} />
           </View>
         ) : null}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-          <Tappable accessibilityRole="button" onPress={() => router.push(`/article/${a.main!.slug}`)} testID="local-read"
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
-            <Icon name="book-open" size={14} color={t.colors.primaryText} />
-            <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('u8.local.read')}</Text>
-          </Tappable>
-        </View>
+        {/* Bouton du système (cible ≥ 44 pt) au lieu d'une capsule faite main d'environ 33 pt */}
+        <Button label={tr('u8.local.read')} icon="book-open" size="sm" style={{ alignSelf: 'flex-start' }} onPress={() => router.push(`/article/${a.main!.slug}`)} testID="local-read" />
         {a.main.sources.length ? (
           <View style={{ gap: 4 }}>
             <Text variant="caption" muted>{tr('u8.local.sources')}</Text>
             {a.main.sources.slice(0, 3).map((s) => (
-              <Text key={s.url} variant="caption" color={t.colors.primary} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ textDecorationLine: 'underline' }}>{s.label}</Text>
+              <Tappable key={s.url} accessibilityRole="link" accessibilityLabel={s.label} onPress={() => void Linking.openURL(s.url)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
+                <Text variant="caption" color={t.colors.primary} style={{ textDecorationLine: 'underline' }}>{s.label}</Text>
+              </Tappable>
             ))}
           </View>
         ) : null}
@@ -114,7 +112,7 @@ function AnswerCard({ m }: { m: Msg }) {
       </View>
     </GlassSurface>
   );
-}
+});
 
 function Related({ items }: { items: { slug: string; title: string }[] }) {
   if (!items.length) return null;
@@ -186,8 +184,9 @@ export default function LocalAssistant() {
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm }}>
           <TextInput value={text} onChangeText={setText} placeholder={tr('u8.local.ph')} placeholderTextColor={t.colors.textMuted} multiline maxLength={300}
             onSubmitEditing={() => ask(text)} submitBehavior="blurAndSubmit" blurOnSubmit textAlignVertical="top" returnKeyType="send" testID="local-input" accessibilityLabel={tr('u8.local.yourQ')}
-            style={{ flex: 1, minHeight: 48, maxHeight: 120, borderRadius: 24, paddingHorizontal: 18, paddingVertical: 12, color: t.colors.text, fontFamily: fonts.body, fontSize: 16,
-              backgroundColor: t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.88)', borderWidth: 1, borderColor: t.isDark ? 'rgba(205,190,250,0.22)' : 'rgba(91,42,134,0.16)' }} />
+            maxFontSizeMultiplier={1.6}
+            style={{ flex: 1, minHeight: MIN_TOUCH, maxHeight: 120, borderRadius: radius.lg, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, color: t.colors.text, fontFamily: fonts.body, fontSize: 16,
+              backgroundColor: t.colors.surface, borderWidth: 1, borderColor: hairline(t.isDark) }} />
           <IconButton icon="send" label={tr('u8.local.send')} tone="primary" onPress={() => ask(text)} disabled={!text.trim() || !index} />
         </View>
       )}>
@@ -201,7 +200,10 @@ export default function LocalAssistant() {
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>
             <Banner tone="info" icon="lock">{tr('u8.local.banner')}</Banner>
-            {!index ? <Skeleton rows={2} /> : msgs.length === 0 ? (
+            {/* Articles introuvables (réseau) : erreur avec reprise au lieu d'un squelette sans fin */}
+            {!index && articlesQ.isError ? (
+              <ErrorView error={articlesQ.error} onRetry={() => void articlesQ.refetch()} />
+            ) : !index ? <Skeleton rows={2} /> : msgs.length === 0 ? (
               <View style={{ gap: spacing.sm }}>
                 <Text variant="caption" muted style={{ letterSpacing: 1, textTransform: 'uppercase' }}>{tr('u8.local.examples')}</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
@@ -214,7 +216,7 @@ export default function LocalAssistant() {
         )}
         renderItem={({ item: m }) => (
           <View style={{ gap: spacing.sm }}>
-            <View style={{ alignSelf: 'flex-end', maxWidth: '85%', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), borderRadius: 20, borderBottomRightRadius: 6, paddingHorizontal: 14, paddingVertical: 10 }}>
+            <View style={{ alignSelf: 'flex-end', maxWidth: '85%', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary), borderRadius: radius.lg, borderBottomRightRadius: 6, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }}>
               <Text color={t.colors.primaryText}>{m.q}</Text>
             </View>
             <AnswerCard m={m} />

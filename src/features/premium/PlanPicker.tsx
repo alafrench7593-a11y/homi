@@ -60,7 +60,7 @@ function Option({ plan, selected, featured, current, onSelect }: { plan: Plan; s
             ) : null}
           </View>
           {plan.perMonth || plan.savingsPct ? (
-            <Text variant="small" muted testID={`pw2-permonth-${plan.period}`}>
+            <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }} testID={`pw2-permonth-${plan.period}`}>
               {[plan.perMonth ? tr('pay2.plan.perMonth', { price: plan.perMonth }) : null, plan.savingsPct ? tr('pay2.plan.save', { pct: plan.savingsPct }) : null].filter(Boolean).join(' · ').replace(/ (%|€)/g, '\u00a0$1')}
             </Text>
           ) : null}
@@ -68,7 +68,7 @@ function Option({ plan, selected, featured, current, onSelect }: { plan: Plan; s
           {current ? <Text variant="small" weight="bold" testID={`pw2-current-${plan.period}`}>{tr('sub2.plan.current')}</Text> : null}
         </View>
         <View style={{ alignItems: 'flex-end', maxWidth: '42%' }}>
-          <Text variant={featured ? 'heading' : 'body'} weight="bold" testID={`pw2-price-${plan.period}`}>{plan.price}</Text>
+          <Text variant={featured ? 'heading' : 'body'} weight="bold" style={{ fontVariant: ['tabular-nums'] }} testID={`pw2-price-${plan.period}`}>{plan.price}</Text>
           <Text variant="caption" muted style={{ textAlign: 'right' }}>{perLong(plan.period)}</Text>
         </View>
       </Animated.View>
