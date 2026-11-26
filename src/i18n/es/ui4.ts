@@ -242,6 +242,8 @@ export const ui4: Messages<typeof fr> = {
   "u4.ht.emptyBody": "Parte de una plantilla de abajo o crea el tuyo.",
   "u4.ht.plan": "Plan: {by}",
   "u4.ht.thr": " · referencias de {low} a {high}",
+  "u4.ht.latest": "Último valor: {value}, el {date}",
+  "u4.ht.latestDate": "Último valor, el {date}",
   "u4.ht.noPlan": "Ningún plan indicado: los valores no se interpretan.",
   "u4.ht.instr": "Instrucciones: {note}",
   "u4.ht.evolution": "Evolución de {label}",

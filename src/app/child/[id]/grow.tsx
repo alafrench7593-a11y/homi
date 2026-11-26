@@ -10,14 +10,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { Platform, ScrollView, Share, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { GlassSurface } from '@/components/Glass';
 import { PremiumSection } from '@/components/Premium';
 import { Sheet, useToast } from '@/components/Overlays';
-import { Banner, Button, Chip, Field, Icon, ListGroup, ListRow, Row, SectionTitle, Text, haptic } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, Icon, ListGroup, ListRow, Row, SectionTitle, Text, haptic } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useChild, useChildren, useMemberships, usePremium } from '@/lib/data/hooks';
 import { openLink } from '@/lib/links';
@@ -33,7 +31,7 @@ import { useUiStore } from '@/lib/store';
 import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { useTapShield } from '@/features/tapShield';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
@@ -99,13 +97,11 @@ export default function Grow() {
     <Screen back title={tr('gr.title')} subtitle={tr('gr.subtitle', { name, age: tr('dc.age', { count: age }) })}
       action={nextStep ? { label: tr('mb.gr.action'), icon: 'check-circle', onPress: () => openStep(nextStep), testID: 'gr-main-action' } : undefined}>
       <View testID="grow" />
-      <LinearGradient pointerEvents="none" colors={t.isDark ? ['rgba(201,184,255,0.06)', 'rgba(233,207,164,0.05)'] : ['rgba(247,244,251,0.18)', 'rgba(244,240,250,0.12)', 'rgba(246,236,218,0.08)']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2200, borderRadius: 32 }} />
-      <GlassSurface fill={t.colors.surface} depth={2} radius={26} padded={spacing.md}>
-        <View style={{ gap: 6 }} testID="gr-hero">
-          <Text variant="heading">{tr('gr.heroTitle', { name })}</Text>
-          <Text variant="small">{tr('gr.rhythm')}</Text>
-        </View>
-      </GlassSurface>
+      {/* Titre porté par la typographie : ni dégradé décoratif ni verre sur du contenu (ANTI_SLOP § 2) */}
+      <View style={{ gap: spacing.xxs }} testID="gr-hero">
+        <Text variant="heading" accessibilityRole="header">{tr('gr.heroTitle', { name })}</Text>
+        <Text variant="small" muted>{tr('gr.rhythm')}</Text>
+      </View>
       <TodaySummary title={tr('mb.gr.title')} items={[
         { icon: 'check-circle', value: String(observedCount), label: tr('mb.gr.observed') },
         { icon: 'loader', value: String(progressCount), label: tr('mb.gr.inProgress') },
@@ -120,9 +116,9 @@ export default function Grow() {
 
       <SectionTitle title={tr('gr.recent')} />
       {recent.length ? (
-        <View style={{ gap: 6 }} testID="gr-recent">
+        <View style={{ gap: spacing.xxs }} testID="gr-recent">
           {recent.map((r) => { const s = STEP_BY_KEY[r.step_key]; return s ? (
-            <Tappable key={r.id} accessibilityRole="button" onPress={() => openStep(s)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 44 }}>
+            <Tappable key={r.id} accessibilityRole="button" onPress={() => openStep(s)} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: MIN_TOUCH }}>
               <Icon name={r.status === 'observed' ? 'check-circle' : 'loader'} size={18} color={r.status === 'observed' ? t.colors.success : t.colors.primary} />
               <Text style={{ flex: 1 }}>{s.title}</Text>
               <Text variant="caption" muted>{r.observed_on ? formatDate(`${r.observed_on}T12:00:00`, { day: 'numeric', month: 'short' }) : tr(`gr.status.${r.status}` as TKey)}</Text>
@@ -132,10 +128,10 @@ export default function Grow() {
       ) : <Text muted variant="small">{tr('gr.recentNone', { name })}</Text>}
 
       <SectionTitle title={tr('gr.byAge')} />
-      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
         {AGE_BANDS.map((x) => <Chip key={x.key} label={tr(`gr.band.${x.key}` as TKey) + (x.key === current.key ? ` · ${tr('gr.now')}` : '')} selected={band === x.key} onPress={() => setBand(x.key)} testID={`gr-band-${x.key}`} />)}
       </ScrollView>
-      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xs }}>
         <Chip label={tr('gr.cat.all')} selected={!cat} onPress={() => setCat(null)} testID="gr-cat-all" />
         {STEP_CATEGORIES.map((c) => <Chip key={c} label={tr(`gr.cat.${c}` as TKey)} selected={cat === c} onPress={() => setCat(cat === c ? null : c)} testID={`gr-cat-${c}`} />)}
       </ScrollView>
@@ -146,15 +142,15 @@ export default function Grow() {
       </View>
       {!premium ? <Text variant="caption" muted testID="gr-free-note">{tr('gr.freeNote')}</Text> : null}
 
-      <GlassSurface fill={t.colors.surface} depth={1} radius={22} padded={spacing.md}>
-        <View style={{ gap: 6 }}>
+      <Card>
+        <View style={{ gap: spacing.xs }}>
           <Text weight="bold">{tr('gr.summary')}</Text>
           <Text variant="small">{tr('gr.summaryHint')}</Text>
           <Button label={tr('gr.summaryOpen')} icon="file-text" variant="secondary" onPress={() => setSummary(true)} testID="gr-summary" />
         </View>
-      </GlassSurface>
+      </Card>
       <Banner tone="info" icon="info">{tr('gr.concern')}</Banner>
-      <View style={{ gap: 2 }}>
+      <View>
         <Text variant="caption" muted>{tr('gr.sources')}</Text>
         {Object.values(STEP_SOURCES).slice(0, 8).map((s) => <SourceLink key={s.url} s={s} />)}
       </View>
@@ -191,9 +187,9 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
     <View>
     <Tappable accessibilityRole="button" onPress={onPress} testID={`gr-step-${s.key}`}
       accessibilityLabel={`${s.title}. ${tr('gr.around', { range: range(s.around[0], s.around[1]) })}${st ? `. ${tr(`gr.status.${st}` as TKey)}` : ''}${locked ? `. ${tr('gr.locked')}` : ''}`}>
-      <GlassSurface fill={t.colors.surface} depth={1} radius={20} padded={spacing.sm + 4}>
+      <Card>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          <View style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: tint }}>
+          <View style={{ width: 36, height: 36, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: tint }}>
             <Icon name={locked ? 'lock' : st === 'observed' ? 'check' : st === 'in_progress' ? 'loader' : st === 'not_tracked' ? 'eye-off' : 'circle'} size={16} color={tint} />
           </View>
           <View style={{ flex: 1, gap: 2 }}>
@@ -203,17 +199,17 @@ function StepCard({ s, row, locked, onPress, child }: { s: StepDef; row?: ChildS
           </View>
           {quick ? (
             // place réservée (invisible) pour le bouton posé au-dessus
-            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ paddingHorizontal: 12, paddingVertical: 7, opacity: 0 }}>
+            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ paddingHorizontal: spacing.sm, minHeight: 36, justifyContent: 'center', opacity: 0 }}>
               <Text variant="caption" weight="bold">{tr('mb.gr.quickObserved')}</Text>
             </View>
           ) : <Icon name="chevron-right" size={18} color={t.colors.textMuted} />}
         </View>
-      </GlassSurface>
+      </Card>
     </Tappable>
     {quick ? (
-      <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, bottom: 0, right: spacing.sm + 4, justifyContent: 'center' }}>
+      <View pointerEvents="box-none" style={{ position: 'absolute', top: 0, bottom: 0, right: spacing.md, justifyContent: 'center' }}>
         <Tappable bare accessibilityRole="button" accessibilityLabel={`${tr('mb.gr.quickObserved')} — ${s.title}`} onPress={() => void quickObserved()} hitSlop={8} testID={`gr-quick-${s.key}`}
-          style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
+          style={{ paddingHorizontal: spacing.sm, minHeight: 36, justifyContent: 'center', borderRadius: radius.pill, backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
           <Text variant="caption" weight="bold" color={t.colors.primaryText}>{tr('mb.gr.quickObserved')}</Text>
         </Tappable>
       </View>
@@ -226,7 +222,7 @@ function SourceLink({ s }: { s: { label: string; url: string; published?: string
   const t = useTheme();
   const toast = useToast();
   return (
-    <Tappable accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 32, justifyContent: 'center' }}>
+    <Tappable accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
       <Text variant="caption" color={t.colors.primary}>{s.label}{s.published ? ` (${formatDate(`${s.published}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' })})` : ''}</Text>
     </Tappable>
   );
@@ -283,7 +279,7 @@ function StepSheet({ step, row, child, premium, onClose }: { step: StepDef | nul
 
         <Text variant="label">{tr('gr.statusLabel')}</Text>
         <Row wrap>{STATUSES.map((x) => <Chip key={x} label={tr(`gr.status.${x}` as TKey)} selected={status === x} onPress={() => setStatus(x)} testID={`gr-st-${x}`} />)}</Row>
-        {status === 'observed' ? <Field label={tr('gr.date')} value={date} onChangeText={setDate} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" testID="gr-date" /> : null}
+        {status === 'observed' ? <Field label={tr('gr.date')} value={date} onChangeText={setDate} placeholder={tr('vx.f.datePh')} keyboardType="numbers-and-punctuation" testID="gr-date" /> : null}
         <Field label={tr('gr.note')} optional value={note} onChangeText={setNote} multiline maxLength={1000} testID="gr-note" />
         {err ? <Text variant="small" color={t.colors.danger}>{err}</Text> : null}
         <Button label={tr('common.save')} full loading={save.isPending} onPress={submit} testID="gr-save" />

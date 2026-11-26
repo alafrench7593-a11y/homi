@@ -21,7 +21,7 @@ import { toFrDate } from '@/lib/validation';
 import type { Reminder } from '@/lib/types';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
 const hhmm = (iso: string) => { const d = new Date(iso); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
@@ -89,7 +89,7 @@ export function AppointmentSheet({ visible, onClose, base, existing, suggestedDa
         <Text variant="small" muted>{tr('care.appt.honest')}</Text>
         {error ? <Banner tone="danger">{error}</Banner> : null}
         <Field label={tr('care.appt.title')} value={title} onChangeText={setTitle} maxLength={120} testID="care-appt-title" />
-        <Field label={tr('care.appt.day')} value={day} onChangeText={setDay} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" testID="care-appt-day" />
+        <Field label={tr('care.appt.day')} value={day} onChangeText={setDay} placeholder={tr('vx.f.datePh')} keyboardType="numbers-and-punctuation" testID="care-appt-day" />
         {outside ? <Text variant="caption" muted testID="care-appt-outside">{tr('care.appt.outside')}</Text> : null}
         <Field label={tr('care.appt.time')} optional value={time} onChangeText={setTime} placeholder="15:30" keyboardType="numbers-and-punctuation" hint={tr('care.appt.timeHint')} testID="care-appt-time" />
         <Field label={tr('care.appt.place')} optional value={place} onChangeText={setPlace} maxLength={160} testID="care-appt-place" />
@@ -156,7 +156,7 @@ export function RemindersSheet({ visible, onClose, choices, target, allDay, titl
         </Row>
         {picked.includes('custom') ? (
           <Row wrap>
-            <View style={{ flexGrow: 1, minWidth: 140 }}><Field label={tr('care.rem.customDay')} value={custom} onChangeText={setCustom} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" testID="care-rem-custom-day" /></View>
+            <View style={{ flexGrow: 1, minWidth: 140 }}><Field label={tr('care.rem.customDay')} value={custom} onChangeText={setCustom} placeholder={tr('vx.f.datePh')} keyboardType="numbers-and-punctuation" testID="care-rem-custom-day" /></View>
             <View style={{ width: 110 }}><Field label={tr('care.rem.customTime')} value={customTime} onChangeText={setCustomTime} placeholder="09:00" keyboardType="numbers-and-punctuation" /></View>
           </Row>
         ) : null}
@@ -230,7 +230,7 @@ export function AttachedDocs({ ids }: { ids?: string[] }) {
   return (
     <View style={{ gap: 2 }}>
       {list.map((d) => (
-        <Tappable key={d!.id} accessibilityRole="link" onPress={() => router.push(`/documents/${d!.id}` as never)} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36 }}>
+        <Tappable key={d!.id} accessibilityRole="link" onPress={() => router.push(`/documents/${d!.id}` as never)} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH }}>
           <Icon name="paperclip" size={14} color={t.colors.primary} />
           <Text variant="small" color={t.colors.primary} style={{ flexShrink: 1 }}>{d!.title}</Text>
         </Tappable>
