@@ -48,4 +48,18 @@ export const HUBS = [
     ],
     faq: [['La communauté est-elle publique ?', 'Les groupes peuvent être publics ou privés ; vous choisissez ce que vous publiez et qui vous suivez.'],
       ['Peut-on bloquer ou signaler quelqu’un ?', 'Oui, le blocage et le signalement sont disponibles, et la modération traite les signalements.']] },
+  { slug: 'a-propos', name: 'À propos de HOMI', title: 'À propos de HOMI — l’application de toute la vie de famille',
+    desc: 'HOMI est une application familiale française qui réunit le suivi de grossesse, du bébé et de l’enfant, l’organisation du foyer et Aura, une assistante qui n’est pas une professionnelle de santé.',
+    eyebrow: 'À propos', h1: ['HOMI, en bref.', 'Ce que c’est, qui l’édite.'], shot: 'accueil',
+    lead: 'HOMI est une application qui réunit, dans un seul espace partagé par le foyer, les outils de la vie de famille : de la contraception et du projet bébé jusqu’aux 10 ans de l’enfant.',
+    cta: [['Voir les fonctionnalités', '/fonctionnalites'], ['Nous contacter', '/contact']],
+    sections: [
+      ['Ce qu’est HOMI', ['Une application familiale : grossesse, bébé, enfant, organisation du foyer, couple et communauté.', '121 outils réels, utilisables dans le navigateur ; l’application iPhone est en préparation.', 'Disponible en français, anglais, espagnol, allemand et italien.']],
+      ['Qui l’édite', ['Éditeur : David PRINCIVIL, entrepreneur individuel (France).', 'Contact : homixyz@gmail.com · Instagram : @homi_famille.']],
+      ['Nos principes', ['HOMI n’est pas un dispositif médical et ne remplace pas un professionnel de santé.', 'Aura, l’assistante, ne pose aucun diagnostic et ne calcule jamais de dose de médicament.', 'Les données d’une famille ne sont partagées qu’avec les membres du foyer qu’elle invite.']],
+    ],
+    faq: [['Qu’est-ce que HOMI ?', 'HOMI est une application familiale qui réunit le suivi de grossesse, du bébé et de l’enfant, l’organisation du foyer (tâches, agenda, relais entre parents) et une assistante, Aura, dans un espace partagé par la famille.'],
+      ['Qui édite HOMI ?', 'HOMI est édité par David PRINCIVIL, entrepreneur individuel en France. Contact : homixyz@gmail.com.'],
+      ['HOMI est-il un outil médical ?', 'Non. HOMI aide à noter et à s’organiser ; il ne pose pas de diagnostic et ne remplace pas un professionnel de santé.'],
+      ['Sur quels appareils utiliser HOMI ?', 'Dans tout navigateur récent, sur téléphone ou ordinateur. L’application iPhone est en préparation et n’est pas encore sur l’App Store.']] },
 ];

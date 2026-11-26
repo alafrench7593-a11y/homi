@@ -162,6 +162,8 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
   writeFileSync(path.join(dist, 'aura', 'index.html'), aura);
   cpSync(path.join(site, 'aura.css'), path.join(dist, 'site', 'aura.css'));
   const { stages: st, tools: all } = globalThis.homiTools.all();
+  const { HUBS: hubsForLlms } = await import(path.join(site, 'hubs.mjs'));
+  const auraFaq = [...readFileSync(path.join(site, 'aura.html'), 'utf8').matchAll(/<summary>([^<]+)<\/summary><p>([^<]+)<\/p>/g)].map(([, q, a]) => [q, a]);
   const byCat = new Map(); for (const t of all) { if (!byCat.has(t.categoryTitle)) byCat.set(t.categoryTitle, []); byCat.get(t.categoryTitle).push(t); }
   writeFileSync(path.join(dist, 'llms.txt'), `# HOMI
 
@@ -174,6 +176,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 
 ## Pages
 - [Présentation](${siteUrl}/): ce qu'est HOMI et à qui il s'adresse
+${hubsForLlms.map((h) => `- [${h.name}](${siteUrl}/${h.slug}): ${h.desc}`).join('\n')}
 - [Blog](${siteUrl}/blog): articles pratiques non médicaux (démarches, garde, matériel, éveil, éducation), sources officielles citées
 - [Aura, l'assistante](${siteUrl}/aura): retrouve le bon outil, prépare rendez-vous et tâches à confirmer ; pas une professionnelle de santé, aucune dose
 - [Toutes les fonctionnalités](${siteUrl}/fonctionnalites): les ${all.length} outils réels, par étape de vie
@@ -182,6 +185,9 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 - [Contact](${siteUrl}/contact)
 - [Centre d'aide](${siteUrl}/aide)
 - [Confidentialité](${siteUrl}/confidentialite)
+
+## Questions fréquentes
+${[...hubsForLlms.flatMap((h) => h.faq), ...auraFaq].map(([q, a]) => `- **${q}** ${a}`).join('\n')}
 
 ## Étapes de vie
 ${st.map((x) => `- ${x.title}`).join('\n')}
@@ -277,6 +283,9 @@ const blogPaths = [];
   });
   console.log(`blog : ${articles.length} articles non médicaux`);
 }
+
+// IndexNow (Bing, Copilot, ChatGPT Search via l'index Bing, Yandex…) : fichier de clé publique à la racine
+{ const k = readFileSync(path.join(site, 'indexnow.txt'), 'utf8').trim(); writeFileSync(path.join(dist, `${k}.txt`), k); }
 
 // 4) pages légales statiques (déjà publiées dans legal-site/)
 const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(path.join(root, 'legal-site', d)).isDirectory());
