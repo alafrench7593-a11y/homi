@@ -25,7 +25,7 @@ export const onboarding: Messages<typeof fr> = {
   'onb.welcome': 'Welcome',
   'onb.welcomeBody': '{app} adapts to your story. A few questions — all optional except the essentials — and your space is ready.',
   'onb.nameLabel': 'What would you like us to call you?',
-  'onb.sample': 'Explore with a sample family',
+  'onb.sample': 'See a sample family',
   'onb.journeys.title': 'Where are you right now?',
   'onb.journeys.body': 'Pick as many as apply. You can change this at any time.',
   'onb.journeys.required': 'Choose at least one situation (you can change it later).',
