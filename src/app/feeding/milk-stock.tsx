@@ -9,10 +9,10 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, ListGroup, ListRow, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListGroup, ListRow, Row, Text } from '@/components/ui';
 import { BriefStrip } from '@/features/day5/DayParts';
 import { SwitchRow } from '@/features/couple/CoupleKit';
 import { WhenFields, whenOf, whenToIso, type WhenValue } from '@/components/CareInputs';
@@ -87,7 +87,7 @@ function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, 
     };
     try {
       const r = await save.mutateAsync({ row, reminder: { at: remind ? alertAt({ use_by: by!, location: loc }) : null, title: tr('milk.reminderTitle', { ml: ml! }), previousId: previous } });
-      toast(r.queued ? tr('milk.savedOffline') : tr('milk.saved'), 'success'); onClose();
+      haptic('success'); toast(r.queued ? tr('milk.savedOffline') : tr('milk.saved'), 'success'); onClose();
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
   /** Plusieurs contenants depuis la même séance : une ligne par contenant, même date et même lieu. */
@@ -105,7 +105,7 @@ function ItemSheet({ item, visible, onClose, householdId, childId, fromPumping, 
         const r = await save.mutateAsync({ row, reminder: { at: remind ? alertAt({ use_by: by!, location: loc }) : null, title: tr('milk.reminderTitle', { ml: ml! }), previousId: null } });
         if (r.queued) queued = true;
       }
-      toast(queued ? tr('milk.savedOffline') : tr('milk.lotSaved', { count: amounts.length }), 'success'); onClose();
+      haptic('success'); toast(queued ? tr('milk.savedOffline') : tr('milk.lotSaved', { count: amounts.length }), 'success'); onClose();
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
   return (
@@ -180,11 +180,11 @@ export default function MilkStock() {
   async function close(it: MilkItem, status: 'used' | 'discarded') {
     try {
       const r = await save.mutateAsync({ row: { ...it, status, closed_at: new Date().toISOString() } });
-      toast(r.queued ? tr('milk.savedOffline') : tr(`milk.closed.${status}` as TKey), 'success');
+      haptic('success'); toast(r.queued ? tr('milk.savedOffline') : tr(`milk.closed.${status}` as TKey), 'success');
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
   async function doThaw(it: MilkItem) {
-    try { await save.mutateAsync({ row: { ...it, ...thaw(it) } }); toast(tr('milk.thawed'), 'success'); } catch (x) { toast(friendlyError(x), 'error'); }
+    try { await save.mutateAsync({ row: { ...it, ...thaw(it) } }); haptic('success'); toast(tr('milk.thawed'), 'success'); } catch (x) { toast(friendlyError(x), 'error'); }
   }
   async function remove(it: MilkItem) {
     if (!(await confirm(tr('milk.delete'), tr('milk.deleteQ'), tr('milk.delete')))) return;
@@ -246,7 +246,8 @@ export default function MilkStock() {
               onPress={() => setSheet({ item: it, pumping: null })} testID={`milk-row-${i}`} />
           ))}
         </ListGroup>
-      ) : <EmptyState icon="droplet" title={tr('milk.emptyTitle')} body={tr('milk.emptyBody')} action={{ label: tr('milk.add'), onPress: () => setSheet({ item: null, pumping: null }) }} />}
+      ) : q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} />
+      : <EmptyState icon="droplet" title={tr('milk.emptyTitle')} body={tr('milk.emptyBody')} action={{ label: tr('milk.add'), onPress: () => setSheet({ item: null, pumping: null }) }} />}
       {closed.length ? (
         <ListGroup title={tr('milk.history')} testID="milk-history">
           {closed.slice(0, 20).map((it) => (

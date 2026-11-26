@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, IconButton, ListGroup, ListRow, Row, Text } from '@/components/ui';
@@ -21,6 +21,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useAbsences, useDeleteSchedule, usePunches, useSaveSchedule, useSchedules, type PrepChild } from '@/lib/data/hooks-childcarePrep';
 import {
   hoursLabel, mondayOfWeek, normTime, pairShifts, plannedOn, scheduleOn, validDay, type Schedule, type ScheduleDay,
+  localDay,
 } from '@/features/childcarePrep/domain';
 import { ChildPicker, usePrepChild } from '@/features/childcarePrep/ui';
 
@@ -121,7 +122,7 @@ export default function CarePlanning() {
     <Screen back title={tr('gp.tool.planning')} subtitle={tr('gp.pl.intro')} tool={false}
       action={parent ? { label: current ? tr('gp.pl.edit') : tr('gp.pl.new'), icon: current ? 'edit-2' : 'plus', onPress: () => setEditing(current), testID: 'gp-pl-edit' } : undefined}>
       <ChildPicker list={children} value={child.id} onChange={setChild} />
-      {!current ? (
+      {schedQ.isError && !schedQ.data ? <ErrorView error={schedQ.error} onRetry={() => void schedQ.refetch()} /> : !current ? (
         <EmptyState icon="calendar" title={tr('gp.pl.none')} body={tr('gp.pl.noneBody')} action={parent ? { label: tr('gp.pl.new'), onPress: () => setEditing(null) } : undefined} />
       ) : (
         <Card tone="soft" testID="gp-pl-current">
@@ -136,15 +137,15 @@ export default function CarePlanning() {
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
         <IconButton icon="chevron-left" label={tr('gp.pl.prevWeeks')} onPress={() => setOffset((o) => o - 1)} testID="gp-pl-prev" />
-        <Text weight="bold" center style={{ flex: 1 }} accessibilityRole="header">{tr('gp.pl.weeksFrom', { date: formatDate(start, { day: 'numeric', month: 'long' }) })}</Text>
+        <Text weight="bold" center style={{ flex: 1 }} accessibilityRole="header">{tr('gp.pl.weeksFrom', { date: formatDate(localDay(start), { day: 'numeric', month: 'long' }) })}</Text>
         <IconButton icon="chevron-right" label={tr('gp.pl.nextWeeks')} onPress={() => setOffset((o) => o + 1)} testID="gp-pl-next" />
       </View>
       <Card padded={false} style={{ padding: spacing.sm }}>
-        <View style={{ flexDirection: 'row', gap: 4 }}>
+        <View style={{ flexDirection: 'row', gap: spacing.xxs }}>
           {WD.map((wd) => <Text key={wd} variant="caption" muted center style={{ flex: 1 }}>{tr(`cu.wd.${wd - 1}` as TKey)}</Text>)}
         </View>
         {[0, 1, 2, 3].map((w) => (
-          <View key={w} style={{ flexDirection: 'row', gap: 4, marginTop: 4 }}>
+          <View key={w} style={{ flexDirection: 'row', gap: spacing.xxs, marginTop: spacing.xxs }}>
             {days.slice(w * 7, w * 7 + 7).map((d) => {
               const worked = shifts.filter((s) => s.date === d.date).reduce((n, s) => n + s.minutes, 0);
               const why = d.absences.map((a) => tr(`gp.ab.kind.${a.kind}` as TKey)).join(', ');
@@ -152,18 +153,18 @@ export default function CarePlanning() {
               const isToday = d.date === today;
               return (
                 <View key={d.date} testID={`gp-pl-cell-${d.date}`} accessible
-                  accessibilityLabel={`${formatDate(d.date, { weekday: 'long', day: 'numeric', month: 'long' })} : ${state}${worked ? `, ${tr('gp.pl.stateDone', { hours: H(worked) })}` : ''}`}
+                  accessibilityLabel={`${formatDate(localDay(d.date), { weekday: 'long', day: 'numeric', month: 'long' })} : ${state}${worked ? `, ${tr('gp.pl.stateDone', { hours: H(worked) })}` : ''}`}
                   style={{ flex: 1, minHeight: 52, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', paddingVertical: 2,
                     backgroundColor: d.plannedMin ? t.colors.accentSoft : t.colors.surface,
                     borderWidth: isToday ? 2 : 1, borderStyle: d.off && !isToday ? 'dashed' : 'solid', borderColor: isToday ? t.colors.primary : d.plannedMin ? t.colors.accent : t.colors.border }}>
-                  <Text variant="small" weight={isToday ? 'bold' : undefined} maxFontSizeMultiplier={1.3}>{Number(d.date.slice(8, 10))}</Text>
+                  <Text variant="small" weight={isToday ? 'bold' : undefined} maxFontSizeMultiplier={1.3} style={{ fontVariant: ['tabular-nums'] }}>{Number(d.date.slice(8, 10))}</Text>
                   <Text variant="caption" muted maxFontSizeMultiplier={1.2}>{d.off ? '×' : worked ? '✓' : d.plannedMin ? '•' : ' '}</Text>
                 </View>
               );
             })}
           </View>
         ))}
-        <View style={{ gap: 4, marginTop: spacing.sm }}>
+        <View style={{ gap: spacing.xxs, marginTop: spacing.sm }}>
           <Row><View style={{ width: 14, height: 14, borderRadius: 4, borderWidth: 1, borderColor: t.colors.accent, backgroundColor: t.colors.accentSoft }} /><Text variant="small">{`• ${tr('gp.pl.legendPlanned')}`}</Text></Row>
           <Row><View style={{ width: 14, height: 14, borderRadius: 4, borderWidth: 1, borderStyle: 'dashed', borderColor: t.colors.border }} /><Text variant="small">{`× ${tr('gp.pl.legendOff')}`}</Text></Row>
           <Row><View style={{ width: 14, height: 14 }} /><Text variant="small">{`✓ ${tr('gp.pl.legendDone')}`}</Text></Row>

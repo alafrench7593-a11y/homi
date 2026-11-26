@@ -8,10 +8,10 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, ListGroup, ListRow, Row, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListGroup, ListRow, Row, Segmented, Text } from '@/components/ui';
 import { PainScale, WhenFields, whenOf, whenToIso, type WhenValue } from '@/components/CareInputs';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -44,12 +44,12 @@ function IssueSheet({ issue, visible, onClose, childId, feeds }: { issue: Feedin
     if (Date.parse(at) > Date.now() + 60_000) return toast(tr('bfi.err.future'), 'error');
     try {
       const r = await save.mutateAsync({ ...(issue ?? {}), at, kind, side: side === 'none' ? null : side, pain, note: note.trim() || null, child_id: issue?.child_id ?? childId, breastfeed_id: feed?.id ?? null });
-      toast(r === 'queued' ? tr('bfi.savedOffline') : tr('bfi.saved'), 'success'); onClose();
+      haptic('success'); toast(r === 'queued' ? tr('bfi.savedOffline') : tr('bfi.saved'), 'success'); onClose();
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
   async function remove() {
     if (!issue || !(await confirm(tr('bfi.delete'), tr('bfi.deleteQ'), tr('bfi.delete')))) return;
-    try { await del.mutateAsync(issue.id); onClose(); } catch (x) { toast(friendlyError(x), 'error'); }
+    try { await del.mutateAsync(issue.id); haptic('success'); onClose(); } catch (x) { toast(friendlyError(x), 'error'); }
   }
   return (
     <GlassSheet visible onClose={onClose} title={issue ? tr('bfi.edit') : tr('bfi.add')}>
@@ -84,7 +84,7 @@ export default function FeedingDifficulties() {
     try {
       const start = (questions.data ?? []).reduce((m, x) => Math.max(m, x.position + 1), 0);
       await addQ.mutateAsync({ questions: suggestions, startPosition: start });
-      toast(tr('bfi.q.added', { count: suggestions.length }), 'success');
+      haptic('success'); toast(tr('bfi.q.added', { count: suggestions.length }), 'success');
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
 
@@ -94,7 +94,7 @@ export default function FeedingDifficulties() {
       action={{ label: tr('bfi.add'), icon: 'plus', onPress: () => setSheet({ issue: null }), testID: 'bfi-add' }}>
       <Text muted>{tr('bfi.intro')}</Text>
       <FeedingChildPicker list={children} value={child?.id ?? null} onChange={setChild} />
-      {days.length ? days.map((d) => (
+      {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : days.length ? days.map((d) => (
         <ListGroup key={d.day} title={formatDate(`${d.day}T12:00:00`, { weekday: 'long', day: 'numeric', month: 'long' })}
           footer={[tr('bfi.feedsThatDay', { count: d.feeds }), d.maxPain != null ? tr('bfi.maxPain', { pain: d.maxPain }) : null].filter(Boolean).join(' · ')} testID={`bfi-day-${d.day}`}>
           {d.issues.map((i) => (

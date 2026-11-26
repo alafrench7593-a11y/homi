@@ -11,9 +11,11 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Tray, useTray } from '@/components/reacticx/tray';
 import { Glass, GlassButton, GlassSegmentedControl } from '@/components/glass';
+import { MatteSurface } from '@/components/surfaces';
+import { Skeleton } from '@/components/States';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
-import { Field, haptic, Icon, Text } from '@/components/ui';
+import { Banner, Field, haptic, Icon, Text } from '@/components/ui';
 import { MilkStockLink } from '@/features/feeding/TrackLinks';
 import { formatDate, t as tr } from '@/i18n';
 import { useLogs } from '@/lib/data/hooks';
@@ -24,7 +26,7 @@ import { clock } from '@/lib/domain/sleepPlanner';
 import { lastPump, parsePumpMl, pumpsByDay, type PumpLike } from '@/lib/domain/pumpSession';
 import type { Child, Pumping } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
-import { fonts, radius, spacing } from '@/theme/tokens';
+import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { COOLDOWN_MS, dayDate, sideLabel } from './BreastNow';
 import { SessionBand, TABULAR, useTicker, WeekBars, type BandItem } from './SessionBand';
 
@@ -54,7 +56,7 @@ function QuickPump({ child, lastSide }: { child: Child; lastSide: PSide | null }
       ok = true;
       haptic('success');
       toast(r === 'queued' ? tr('bt.pump.queued') : tr('bt.pump.saved', { ml }), r === 'queued' ? 'info' : 'success');
-    } catch (e) { setError(friendlyError(e, tr('bt.err.failed'))); }
+    } catch (e) { setError(friendlyError(e, tr('bt.err.failed'))); haptic('warning'); }
     finally {
       setBusy(false);
       // Le second appui d'un double appui arrive souvent après l'écriture : ignoré un court instant
@@ -74,8 +76,8 @@ function QuickPump({ child, lastSide }: { child: Child; lastSide: PSide | null }
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, justifyContent: 'center' }}>
         {PRESETS.map((v) => (
-          <Tappable key={v} accessibilityRole="button" accessibilityState={{ selected: v === ml }} onPress={() => setMl(v)} testID={`bt-pump-preset-${v}`}
-            style={{ minHeight: 44, minWidth: 56, paddingHorizontal: spacing.sm, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
+          <Tappable key={v} accessibilityRole="button" accessibilityLabel={tr('bt.pump.amountA11y', { ml: v })} accessibilityState={{ selected: v === ml }} onPress={() => setMl(v)} testID={`bt-pump-preset-${v}`}
+            style={{ minHeight: MIN_TOUCH, minWidth: 56, paddingHorizontal: spacing.sm, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center',
               backgroundColor: v === ml ? t.colors.text : 'transparent', borderWidth: 1.5, borderColor: v === ml ? t.colors.text : t.colors.border }}>
             <Text weight="bold" color={v === ml ? t.colors.background : t.colors.text} style={TABULAR}>{String(v)}</Text>
           </Tappable>
@@ -105,16 +107,19 @@ export function PumpNow({ child, focus }: { child: Child; focus?: string | null 
     return { id: p.id, start: m, end: m, pieces: [{ lane: 'all', start: m, end: m + 4, kind: 'solid', height: Math.max(0.12, p.amount_ml / maxMl) }], note: p.note, text: pumpLine(p) };
   });
   const title = last ? tr('bt.pump.last', { time: clock(new Date(last.at)), ago: agoLabel(last.at, now) }) : tr('bt.pump.none');
+  // Chargement : squelette, pas « aucune séance » à tort avant l'arrivée des données
+  if (q.isLoading && !q.data) return <Skeleton kind="detail" rows={4} />;
   return (
     <View style={{ gap: spacing.sm }}>
-      <Glass variant="card" radius={radius.xl} testID="bt-pump-hero" contentStyle={{ padding: spacing.lg, gap: spacing.sm }}>
+      {q.isError && !q.data ? <Banner tone="danger">{tr('bt.err.load')}</Banner> : null}
+      <MatteSurface radius={radius.lg} testID="bt-pump-hero" contentStyle={{ padding: spacing.lg, gap: spacing.sm }}>
         <Text variant="heading" accessibilityRole="header" testID="bt-pump-title">{title}</Text>
         <View style={{ gap: 2 }} accessible accessibilityLabel={today.ml != null ? tr('bt.pump.todayA11y', { ml: today.ml, count: today.count }) : tr('bt.pump.todayNone')}>
           <Text testID="bt-pump-today" maxFontSizeMultiplier={1.3} style={[BIG, { fontFamily: fonts.display, color: t.colors.text }, TABULAR]}>{today.ml != null ? `${today.ml} ml` : '—'}</Text>
           <Text variant="small" muted>{today.ml != null ? tr('bt.pump.todayLabel', { count: today.count }) : tr('bt.pump.todayNone')}</Text>
         </View>
         <QuickPump child={child} lastSide={last?.side ?? null} />
-      </Glass>
+      </MatteSurface>
       <SessionBand testID="bt-pump-band" title={tr('bt.pump.bandTitle')} total={today.ml != null ? tr('bt.pump.total', { count: today.count, ml: today.ml }) : tr('bt.band.none')}
         items={items} lanes={[]} now={now} selectedId={sel} onSelect={setSel} onOpen={openPump} hint={tr('bt.pump.hint')}
         a11y={tr('bt.pump.a11y', { list: items.map((i) => i.text).join('. ') || tr('bt.band.none') })}
@@ -140,8 +145,8 @@ function PumpTray({ child, pump, open, onOpenChange, onEditAll }: { child: Child
   if (!pump) return null;
   const palette = { surface: 'transparent', border: t.colors.border, handle: t.colors.textMuted, text: t.colors.text, mutedText: t.colors.textMuted, backdrop: t.colors.overlay };
   return (
-    <Tray open={open} onOpenChange={onOpenChange} defaultView="pump" palette={palette} theme={t.isDark ? 'dark' : 'light'} radius={34} motion={{ viewAxis: 'x', viewSlide: 60, viewStartScale: 1 }}>
-      <Tray.Content surface={<Glass variant="sheet" radius={34} style={{ flex: 1 }} />}>
+    <Tray open={open} onOpenChange={onOpenChange} defaultView="pump" palette={palette} theme={t.isDark ? 'dark' : 'light'} radius={radius.sheet} motion={{ viewAxis: 'x', viewSlide: 60, viewStartScale: 1 }}>
+      <Tray.Content surface={<Glass variant="sheet" radius={radius.sheet} style={{ flex: 1 }} />}>
         <Tray.View id="pump">
           <View testID="bt-pump-tray" style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.sm }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
@@ -151,10 +156,10 @@ function PumpTray({ child, pump, open, onOpenChange, onEditAll }: { child: Child
             <Text testID="bt-pump-tray-ml" maxFontSizeMultiplier={1.3} style={[{ fontSize: 64, lineHeight: 70, letterSpacing: -2, fontFamily: fonts.display, color: t.colors.text }, TABULAR]}>{`${pump.amount_ml} ml`}</Text>
             <Text weight="bold" style={TABULAR}>{`${formatDate(pump.at, { weekday: 'long', day: 'numeric', month: 'long' })} · ${clock(new Date(pump.at))}${pump.side ? ` · ${sideLabel(pump.side)}` : ''}`}</Text>
             {pump.note ? (
-              <Glass variant="card" radius={radius.lg} contentStyle={{ padding: spacing.sm, flexDirection: 'row', gap: spacing.xs }}>
+              <MatteSurface radius={radius.md} contentStyle={{ padding: spacing.sm, flexDirection: 'row', gap: spacing.xs }}>
                 <Icon name="message-square" size={16} color={t.colors.primary} />
                 <Text style={{ flex: 1 }}>{pump.note}</Text>
-              </Glass>
+              </MatteSurface>
             ) : null}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
               <PushAmount />
@@ -190,7 +195,7 @@ function EditAmount({ child, pump }: { child: Child; pump: Pumping }) {
     if (inflight.current || ml == null) return;
     inflight.current = true; setBusy(true); setError(null);
     try { await act.edit(pump, { amount_ml: ml }); haptic('success'); goBack(); }
-    catch (e) { setError(friendlyError(e, tr('bt.err.failed'))); }
+    catch (e) { setError(friendlyError(e, tr('bt.err.failed'))); haptic('warning'); }
     finally { inflight.current = false; setBusy(false); }
   };
   return (

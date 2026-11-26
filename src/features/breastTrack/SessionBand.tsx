@@ -9,12 +9,14 @@
  *  · Liste équivalente juste dessous (lecteurs d'écran, gros doigts).
  */
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
-import { Glass, GlassButton } from '@/components/glass';
+import { Animated, StyleSheet, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { GlassButton } from '@/components/glass';
+import { MatteSurface } from '@/components/surfaces';
 import { Tappable } from '@/components/Tappable';
 import { haptic, Icon, Text } from '@/components/ui';
 import { t as tr } from '@/i18n';
 import { useMotion } from '@/motion';
+import { duration, easing } from '@/theme/motion';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -56,7 +58,7 @@ function Moving({ left, width, top, height, children }: { left: number; width: n
     setGhost(old);
     const clear = setTimeout(() => setGhost(null), m.off ? 4000 : 2200);
     if (m.off) w.setValue(width);
-    else Animated.timing(w, { toValue: width, duration: 600, easing: Easing.bezier(0.2, 0.9, 0.2, 1), useNativeDriver: false }).start();
+    else Animated.timing(w, { toValue: width, duration: duration.base, easing: easing.standard, useNativeDriver: false }).start();
     return () => clearTimeout(clear);
   }, [width, m.off, w]);
   return (
@@ -108,7 +110,7 @@ export function SessionBand({ title, total, items, lanes, now, selectedId, onSel
   const selItem = items.find((i) => i.id === sel) ?? null;
   const nowM = now.getHours() * 60 + now.getMinutes();
   return (
-    <Glass variant="card" radius={radius.xl} testID={testID} contentStyle={{ padding: spacing.md, gap: spacing.sm }}>
+    <MatteSurface radius={radius.lg} testID={testID} contentStyle={{ padding: spacing.md, gap: spacing.sm }}>
       <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: spacing.sm }}>
         <Text variant="label" accessibilityRole="header">{title}</Text>
         <Text variant="small" muted style={TABULAR} testID={`${testID}-total`}>{total}</Text>
@@ -201,7 +203,7 @@ export function SessionBand({ title, total, items, lanes, now, selectedId, onSel
           ))}
         </MotionList>
       ) : null}
-    </Glass>
+    </MatteSurface>
   );
 }
 
@@ -228,23 +230,27 @@ export function WeekBars({ title, days, testID }: { title: string; days: { key: 
   const t = useTheme();
   const max = Math.max(1, ...days.map((d) => d.value ?? 0));
   return (
-    <Glass variant="card" radius={radius.xl} testID={testID} contentStyle={{ padding: spacing.md, gap: spacing.sm }}>
+    <MatteSurface radius={radius.lg} testID={testID} contentStyle={{ padding: spacing.md, gap: spacing.sm }}>
       <Text variant="label" accessibilityRole="header">{title}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 96 }}>
-        {days.map((d) => (
+        {days.map((d, i) => {
+          // Valeur actuelle (aujourd'hui, dernier jour) mise en avant : chiffre en gras et barre d'accent
+          const today = i === days.length - 1;
+          return (
           <View key={d.key} style={{ flex: 1, alignItems: 'center', gap: 4 }} accessible accessibilityLabel={d.a11y}>
-            <Text variant="caption" muted numberOfLines={1} style={TABULAR}>{d.text}</Text>
+            <Text variant="caption" muted={!today} weight={today ? 'bold' : undefined} numberOfLines={1} style={TABULAR}>{d.text}</Text>
             {d.value == null
               ? <View testID={`${testID}-none`} style={{ width: '70%', height: 36, borderRadius: 6, borderWidth: 1.5, borderStyle: 'dotted', borderColor: t.colors.textMuted }} />
-              : <View style={{ width: '70%', height: Math.max(4, Math.round((d.value / max) * 60)), borderRadius: 6, backgroundColor: t.colors.text }} />}
+              : <View style={{ width: '70%', height: Math.max(4, Math.round((d.value / max) * 60)), borderRadius: 6, backgroundColor: today ? t.colors.primary : t.colors.text }} />}
           </View>
-        ))}
+          );
+        })}
       </View>
       <View style={{ flexDirection: 'row', gap: 6 }}>
-        {days.map((d) => <Text key={d.key} variant="caption" muted center style={{ flex: 1 }} numberOfLines={1}>{d.label}</Text>)}
+        {days.map((d, i) => <Text key={d.key} variant="caption" muted={i !== days.length - 1} weight={i === days.length - 1 ? 'bold' : undefined} center style={{ flex: 1 }} numberOfLines={1}>{d.label}</Text>)}
       </View>
       <Text variant="caption" muted>{tr('bt.week.legend')}</Text>
-    </Glass>
+    </MatteSurface>
   );
 }
 

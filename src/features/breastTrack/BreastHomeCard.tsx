@@ -8,7 +8,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import { Glass } from '@/components/glass';
+import { MatteSurface } from '@/components/surfaces';
 import { Tappable } from '@/components/Tappable';
 import { Icon, Text } from '@/components/ui';
 import { t as tr } from '@/i18n';
@@ -39,7 +39,7 @@ export function BreastHomeCard({ child }: { child: Child }) {
   return (
     <Tappable accessibilityRole="button" accessibilityLabel={`${title}. ${big}. ${detail}. ${tr('bt.home.open')}`} testID="home-breast"
       onPress={() => router.push({ pathname: '/track/[kind]', params: { kind: 'breastfeed', child: child.id, feed: f.id } } as never)}>
-      <Glass variant="card" radius={radius.xl} contentStyle={{ padding: spacing.md, gap: 6 }}>
+      <MatteSurface radius={radius.lg} contentStyle={{ padding: spacing.md, gap: spacing.xs }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
           <Icon name="droplet" size={16} color={last.ongoing ? t.colors.primary : t.colors.textMuted} />
           <Text variant="small" weight="medium" style={{ flex: 1 }} numberOfLines={2} testID="home-breast-title">{title}</Text>
@@ -55,7 +55,7 @@ export function BreastHomeCard({ child }: { child: Child }) {
             <Text variant="small" muted numberOfLines={1} style={{ flex: 1 }}>{f.note}</Text>
           </View>
         ) : null}
-      </Glass>
+      </MatteSurface>
     </Tappable>
   );
 }

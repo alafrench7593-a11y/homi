@@ -125,8 +125,9 @@ export function CareRow({ item, author, onEndSleep, ending }: { item: CareItem; 
   return (
     <View testID={`care-row-${item.kind}`} accessible accessibilityLabel={`${formatTime(item.at)}, ${label}${detail ? `, ${detail}` : ''}, ${tr('nn.by', { name: author })}${item.pending ? `, ${tr('nn.pending')}` : ''}`}
       style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.sm, borderLeftWidth: important ? 4 : 0, borderLeftColor: t.colors.danger, paddingLeft: important ? spacing.sm : 0 }}>
-      <View style={{ width: 52 }}>
-        <Text weight="bold">{formatTime(item.at)}</Text>
+      <View style={{ minWidth: 52 }}>
+        {/* heures alignées d'une ligne à l'autre ; plafond pour que « 14:30 » tienne sans coupure à 130 % */}
+        <Text weight="bold" maxFontSizeMultiplier={1.3} style={{ fontVariant: ['tabular-nums'] }}>{formatTime(item.at)}</Text>
       </View>
       <View style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: important ? t.colors.dangerSoft : t.colors.surfaceAlt }}>
         <Icon name={important ? 'alert-triangle' : KIND_ICON[item.kind]} size={16} color={important ? t.colors.danger : t.colors.text} />

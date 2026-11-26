@@ -17,6 +17,9 @@ export interface FormulaChange {
 export const kindLabel = (k: FormulaKind) => tr(`fml.kind.${k}` as TKey);
 export const reasonLabel = (r: FormulaReason) => tr(`fml.reason.${r}` as TKey);
 
+/** « 2026-11-26 » → date LOCALE à midi (new Date('AAAA-MM-JJ') = minuit UTC, la veille à l'ouest de Greenwich). */
+export const localDay = (iso: string) => new Date(`${iso}T12:00:00`);
+
 /** Plus récent d'abord. */
 export const sorted = (list: FormulaChange[]) => [...list].sort((a, b) => b.started_on.localeCompare(a.started_on) || b.created_at.localeCompare(a.created_at));
 
@@ -44,8 +47,8 @@ export function validateFormula(d: { brand: string; startedOn: string | null; en
 
 /** Ligne de la frise : « Lait A · 1er âge » + période. */
 export function timelineLine(f: FormulaChange): { title: string; subtitle: string } {
-  const from = formatDate(f.started_on, { day: 'numeric', month: 'short', year: 'numeric' });
-  const period = f.ended_on ? tr('fml.period', { from, to: formatDate(f.ended_on, { day: 'numeric', month: 'short', year: 'numeric' }) }) : tr('fml.since', { from });
+  const from = formatDate(localDay(f.started_on), { day: 'numeric', month: 'short', year: 'numeric' });
+  const period = f.ended_on ? tr('fml.period', { from, to: formatDate(localDay(f.ended_on), { day: 'numeric', month: 'short', year: 'numeric' }) }) : tr('fml.since', { from });
   return {
     title: tr('fml.frise.title', { brand: f.brand, kind: kindLabel(f.kind) }),
     subtitle: [period, f.reason ? reasonLabel(f.reason) : null, f.observations].filter(Boolean).join(' · '),

@@ -10,6 +10,7 @@ import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { Tray, useTray } from '@/components/reacticx/tray';
 import { Glass, GlassButton, GlassSegmentedControl } from '@/components/glass';
+import { MatteSurface } from '@/components/surfaces';
 import { Field, haptic, Icon, Text } from '@/components/ui';
 import { t as tr } from '@/i18n';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -62,9 +63,9 @@ export function BreastSessionTray({ child, feed, now, open, onOpenChange, onEdit
   const palette = { surface: 'transparent', border: t.colors.border, handle: t.colors.textMuted, text: t.colors.text, mutedText: t.colors.textMuted, backdrop: t.colors.overlay };
   const done = !!f.ended_at;
   return (
-    <Tray open={open} onOpenChange={onOpenChange} defaultView="feed" palette={palette} theme={t.isDark ? 'dark' : 'light'} radius={34}
+    <Tray open={open} onOpenChange={onOpenChange} defaultView="feed" palette={palette} theme={t.isDark ? 'dark' : 'light'} radius={radius.sheet}
       motion={{ viewAxis: 'x', viewSlide: 60, viewStartScale: 1 }}>
-      <Tray.Content surface={<Glass variant="sheet" radius={34} style={{ flex: 1 }} />}>
+      <Tray.Content surface={<Glass variant="sheet" radius={radius.sheet} style={{ flex: 1 }} />}>
         <Tray.View id="feed">
           <View testID="bt-tray" style={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.sm }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
@@ -76,10 +77,10 @@ export function BreastSessionTray({ child, feed, now, open, onOpenChange, onEdit
             {m.total == null ? <Text variant="small" muted>{tr('bt.row.noDuration')}</Text> : null}
             <SideBars m={m} scale={Math.max(m.left ?? 0, m.right ?? 0, 1)} testID="bt-tray-sides" />
             {f.note ? (
-              <Glass variant="card" radius={radius.lg} contentStyle={{ padding: spacing.sm, flexDirection: 'row', gap: spacing.xs }} testID="bt-tray-note">
+              <MatteSurface radius={radius.md} contentStyle={{ padding: spacing.sm, flexDirection: 'row', gap: spacing.xs }} testID="bt-tray-note">
                 <Icon name="message-square" size={16} color={t.colors.primary} />
                 <Text style={{ flex: 1 }}>{f.note}</Text>
-              </Glass>
+              </MatteSurface>
             ) : null}
             {ongoing ? <Text variant="small" muted>{tr('bt.tray.ongoingHint')}</Text> : null}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginTop: spacing.xs }}>
@@ -122,6 +123,7 @@ function useSave(child: Child, feed: Breastfeed, onSaved?: (f: Breastfeed) => vo
       goBack();
     } catch (e) {
       setError(friendlyError(e, tr('bt.err.failed')));
+      haptic('warning');
     } finally { inflight.current = false; setBusy(false); }
   };
   return { save, busy, error, setError, goBack };

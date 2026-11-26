@@ -6,7 +6,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Chip, Field, Icon, ListGroup, ListRow, Row, Text } from '@/components/ui';
@@ -19,12 +19,12 @@ import { useUserId } from '@/lib/auth';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { useCareLinks } from '@/lib/data/hooks-nounou';
 import { useAbsences, useAddAbsence, useDeleteAbsence, type PrepChild } from '@/lib/data/hooks-childcarePrep';
-import type { Absence, AbsenceKind } from '@/features/childcarePrep/domain';
+import { localDay, type Absence, type AbsenceKind } from '@/features/childcarePrep/domain';
 import { ChildPicker, usePrepChild } from '@/features/childcarePrep/ui';
 
 const KINDS: AbsenceKind[] = ['child', 'caregiver_leave', 'closure'];
 const ICON: Record<AbsenceKind, 'user-x' | 'sun' | 'lock'> = { child: 'user-x', caregiver_leave: 'sun', closure: 'lock' };
-const short = (d: string) => formatDate(d, { day: 'numeric', month: 'short' });
+const short = (d: string) => formatDate(localDay(d), { day: 'numeric', month: 'short' });
 
 function AbsenceEditor({ visible, onClose, child }: { visible: boolean; onClose: () => void; child: PrepChild }) {
   const toast = useToast();
@@ -100,7 +100,7 @@ export default function CareAbsences() {
   }
   const row = (a: Absence) => {
     const n = daysBetween(a.from_on, a.to_on) + 1;
-    const range = a.from_on === a.to_on ? formatDate(a.from_on, { weekday: 'long', day: 'numeric', month: 'long' }) : tr('gp.ab.range', { from: short(a.from_on), to: short(a.to_on) });
+    const range = a.from_on === a.to_on ? formatDate(localDay(a.from_on), { weekday: 'long', day: 'numeric', month: 'long' }) : tr('gp.ab.range', { from: short(a.from_on), to: short(a.to_on) });
     return (
       <ListRow key={a.id} icon={ICON[a.kind]} title={a.kind === 'caregiver_leave' && a.caregiver_id === me ? tr('gp.ab.yours') : tr(`gp.ab.kind.${a.kind}` as TKey)}
         subtitle={[range, a.note, a._pending ? tr('gp.hr.pending') : ''].filter(Boolean).join(' · ')} value={tr('gp.ab.days', { count: n })}
@@ -112,7 +112,7 @@ export default function CareAbsences() {
       action={{ label: parent ? tr('gp.ab.add') : tr('gp.ab.addLeave'), icon: 'plus', onPress: () => setOpen(true), testID: 'gp-ab-add' }}>
       <ChildPicker list={children} value={child.id} onChange={setChild} />
       {!parent ? <Banner tone="info" icon="sun">{tr('gp.ab.caregiverHint')}</Banner> : null}
-      {!upcoming.length && !past.length ? <EmptyState icon="sun" title={tr('gp.tool.absences')} body={tr('gp.ab.empty')} /> : null}
+      {absQ.isError && !absQ.data ? <ErrorView error={absQ.error} onRetry={() => void absQ.refetch()} /> : !upcoming.length && !past.length ? <EmptyState icon="sun" title={tr('gp.tool.absences')} body={tr('gp.ab.empty')} /> : null}
       {upcoming.length ? <ListGroup title={tr('gp.ab.upcoming')} testID="gp-ab-upcoming">{upcoming.map(row)}</ListGroup> : null}
       {past.length ? <ListGroup title={tr('gp.ab.past')}>{past.slice(0, 30).map(row)}</ListGroup> : null}
       <AbsenceEditor visible={open} onClose={() => setOpen(false)} child={child} />
