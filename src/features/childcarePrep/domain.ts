@@ -178,6 +178,14 @@ export function isoWeekday(date: ISODate): number {
   const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   return wd === 0 ? 7 : wd;
 }
+/**
+ * Date locale (midi) d'un jour ISO, pour l'affichage. `new Date('YYYY-MM-DD')` est minuit UTC : formaté dans un fuseau
+ * à l'ouest de Greenwich (Amériques), il tombe la veille.
+ */
+export function localDay(date: ISODate): Date {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(y, m - 1, d, 12);
+}
 export const mondayOfWeek = (date: ISODate): ISODate => addDays(date, 1 - isoWeekday(date));
 export const monthStart = (date: ISODate): ISODate => `${date.slice(0, 7)}-01`;
 export function monthEnd(date: ISODate): ISODate {

@@ -6,7 +6,7 @@ import { setLocale, t } from '@/i18n';
 import { DICTIONARIES } from '@/i18n/dictionaries';
 import { APP_ROUTES } from '@/lib/routes.generated';
 import {
-  INTERVIEW_TEMPLATE, OFFICIAL, VISIT_TEMPLATE, activeItems, hoursCsv, isoWeekday, monthEnd, mondayOfWeek, monthlyCost, normTime, pairShifts, parseAmount,
+  INTERVIEW_TEMPLATE, OFFICIAL, VISIT_TEMPLATE, activeItems, hoursCsv, isoWeekday, localDay, monthEnd, mondayOfWeek, monthlyCost, normTime, pairShifts, parseAmount,
   periodSummary, plannedOn, progressOf, sortCandidates, validDay, type Absence, type Candidate, type PrepItem, type PunchEvent, type Schedule,
 } from '@/features/childcarePrep/domain';
 
@@ -86,6 +86,9 @@ describe('planning, absences, heures', () => {
     { id: 'a2', household_id: 'h', child_id: 'k', kind: 'caregiver_leave', from_on: '2026-11-23', to_on: '2026-11-24', caregiver_id: 'n', note: null },
   ];
   it('jours de la semaine, lundi de la semaine, fin de mois', () => {
+    // jour d'affichage en date LOCALE (pas minuit UTC, qui tombe la veille à l'ouest de Greenwich)
+    const d = localDay('2026-11-01');
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 10, 1]);
     expect(isoWeekday('2026-11-16')).toBe(1);
     expect(isoWeekday('2026-11-22')).toBe(7);
     expect(mondayOfWeek('2026-11-22')).toBe('2026-11-16');
