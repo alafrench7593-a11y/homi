@@ -175,11 +175,14 @@ export const Reel: React.FC<{ n: number }> = ({ n }) => {
   return (
     <Frame bg={dark ? BG.nuit : BG.produit} dark={dark}>
       <Audio src={staticFile(`audio/reel-${String(n).padStart(2, '0')}.wav`)} />
-      <KText t={t} at={0.25} out={11.0} x={540} y={860 - prog(t, 2.2, 3.0) * 530} size={96 - prog(t, 2.2, 3.0) * 24} w={960} color={dark ? '#F4F2F8' : INK}>{p.accroche}</KText>
+      {[{ c: dark ? 'rgba(140,120,230,.25)' : 'rgba(185,166,255,.35)', x: 0.25, y: 0.3 }, { c: dark ? 'rgba(90,140,220,.18)' : 'rgba(255,199,225,.35)', x: 0.8, y: 0.7 }].map((b, k) => (
+        <div key={k} style={{ position: 'absolute', left: (b.x + Math.sin(t * 0.5 + k * 2) * 0.12) * 1080 - 700, top: (b.y + Math.cos(t * 0.4 + k) * 0.08) * 1920 - 700, width: 1400, height: 1400, borderRadius: '50%', background: `radial-gradient(circle, ${b.c}, transparent 65%)` }} />
+      ))}
+      <KText t={t} at={0.25} out={11.0} x={540} y={860 - prog(t, 2.2, 3.0) * 530 - Math.min(t, 2.2) * 12} size={(96 - prog(t, 2.2, 3.0) * 24) * (1 + Math.min(t, 2.2) * 0.02)} w={960} color={dark ? '#F4F2F8' : INK}>{p.accroche}</KText>
       <div style={{ opacity: 1 - end, filter: end ? `blur(${end * 12}px)` : undefined }}>
         {p.screen2 ? (<>
-          <Phone3D x={330} y={1150 + (1 - ph) * 1500} w={380} rotY={12} src={p.screen} dark={dark} />
-          <Phone3D x={750} y={1170 + (1 - spr(t, 2.8, fps, 18, 1)) * 1500} w={380} rotY={-12} src={p.screen2} dark={dark} />
+          <Phone3D x={330} y={1150 + (1 - ph) * 1500} w={380} rotY={12 + Math.sin(t * 0.9) * 5} src={p.screen} dark={dark} />
+          <Phone3D x={750} y={1170 + (1 - spr(t, 2.8, fps, 18, 1)) * 1500} w={380} rotY={-12 + Math.sin(t * 0.9 + 1) * 5} src={p.screen2} dark={dark} />
         </>) : <Phone3D x={540} y={1180 + (1 - ph) * 1500} w={500} rotY={-8 + Math.sin(t * 0.8) * 4} rotX={3} src={p.screen} dark={dark} />}
         {p.robot ? <AuraRobot t={t} x={210} y={1500} size={300} state={t < 6 ? 'listening' : t < 7 ? 'thinking' : 'answer'} since={t < 6 ? 0 : t < 7 ? 6 : 7} o={prog(t, 4.5, 5)} /> : null}
         {(p.chips ?? []).map((c, i) => {
@@ -188,7 +191,7 @@ export const Reel: React.FC<{ n: number }> = ({ n }) => {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 29, fontWeight: 800, color: dark ? '#F4F2F8' : INK }}>{c}</Glass>;
         })}
       </div>
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 820, display: 'flex', justifyContent: 'center', opacity: logo, transform: `scale(${0.85 + logo * 0.15})` }}><Logo h={130} color={dark ? 'white' : undefined} /></div>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 820, display: 'flex', justifyContent: 'center', opacity: logo, transform: `scale(${(0.85 + logo * 0.15) * (1 + Math.max(0, t - 12) * 0.03)})` }}><Logo h={130} color={dark ? 'white' : undefined} /></div>
       <div style={{ position: 'absolute', left: 80, right: 80, top: 1010, textAlign: 'center', fontSize: 44, fontWeight: 700, color: dark ? '#CFC9DE' : MUTED, opacity: prog(t, 12.3, 12.9) }}>La famille, autrement.</div>
       <div style={{ position: 'absolute', left: 0, right: 0, top: 1150, display: 'flex', justifyContent: 'center', opacity: prog(t, 12.8, 13.3) }}>
         <div style={{ padding: '18px 36px', borderRadius: 99, background: dark ? '#fff' : INK, color: dark ? INK : '#fff', fontSize: 32, fontWeight: 800 }}>Lien en bio</div>
