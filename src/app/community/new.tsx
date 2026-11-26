@@ -16,6 +16,8 @@ import { Tappable } from '@/components/Tappable';
 import { Avatar, CategorySheet, CommunityImage, spaceIcon } from '@/features/community';
 import { useCommunityProfile, usePost } from '@/lib/data/hooks';
 import { useCreatePost, useSpaces, useUpdatePost, type DraftPhoto } from '@/lib/data/hooks-community';
+import { saveDraft, useDraft } from '@/lib/community/drafts';
+import { useUserId } from '@/lib/auth';
 import { useGroup, useSearchMembers } from '@/lib/data/hooks-social';
 import { completeMention, localizeGroupName, mentionQuery, pollOptionsError } from '@/lib/domain/communitySocial';
 import { ToggleRow } from '@/features/recipes/ToggleRow';
@@ -63,6 +65,9 @@ export default function Composer() {
   const [allOpen, setAllOpen] = useState(false);
   const [warned, setWarned] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const draftUser = useUserId();
+  // Brouillon de la nouvelle publication (pas en modification) : jamais perdu sur une erreur réseau ou un retour arrière
+  useDraft(draftUser, editId ? null : `new:${groupId ?? 'all'}`, { title, body }, (d) => { setTitle((v) => v || d.title || ''); setBody((v) => v || d.body); });
 
   useEffect(() => {
     const p = existing.data;
@@ -134,6 +139,7 @@ export default function Composer() {
           poll: pollOn ? { options: pollOptions.map((o) => o.trim()).filter(Boolean), multiple: pollMultiple, closesInDays: pollDays } : null });
       const review = res?.status === 'pending_review';
       toast(review ? tr('cm2.new.sentForReview') : editId ? tr('cm2.new.updated') : tr('cm2.new.online'), review ? 'info' : 'success');
+      if (!editId) void saveDraft(draftUser, `new:${groupId ?? 'all'}`, null);
       router.replace(`/community/post/${res.id}`);
     } catch (err) {
       const pk = photoErrorKey(err);

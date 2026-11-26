@@ -264,9 +264,9 @@ export function PostCard({ post, forum, full, onCommentPress, canPin }: { post: 
 
   async function toggleSave() {
     if (save.isPending) return;
+    if (!reduce) haptic('light');
     try {
       const saved = await save.mutateAsync(post);
-      if (!reduce) haptic('light');
       toast(saved ? tr('cm1.post.saved') : tr('cm1.post.unsaved'));
     } catch (e) { toast(friendlyError(e), 'error'); }
   }

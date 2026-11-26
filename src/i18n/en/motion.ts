@@ -314,4 +314,5 @@ export const motion = {
   "aura.intro.joined.title": "Welcome to your family space!",
   "aura.intro.joined.body": "Everything is already set up. I can help you take over, see what's shared and discover your tools. Just tell me what happens (\"she drank 150 ml\"), I'll log it.",
   "aura.intro.act.latest": "Latest activity",
+  "cm2.post.sending": "Sending…",
 } as const;
