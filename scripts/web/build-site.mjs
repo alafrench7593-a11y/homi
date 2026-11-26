@@ -268,6 +268,8 @@ const blogPaths = [];
   createRequire(import.meta.url)(out);
   const { categories, articles } = globalThis.homiBlog;
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const slugify = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const TOOL_FOR = { 'droits-demarches': ['application-organisation-familiale', 'Papiers, rendez-vous et échéances de la famille'], 'ecole-garde': ['application-garde-nounou-creche', 'Carnet de liaison nounou, fiche à transmettre, école'], 'materiel': ['scanner-produits-bebe', 'Scanner de produits et alertes de rappel'], 'vie-pratique': ['application-organisation-familiale', 'Agenda, tâches et courses partagés'], 'activites-eveil': ['application-suivi-bebe', 'Étapes du développement et journée de bébé'], 'education': ['application-organisation-familiale', 'Routines du foyer et missions familiales'] };
   const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   const md = (src) => {
     const html = []; let list = null; let para = [];
@@ -275,7 +277,7 @@ const blogPaths = [];
     for (const raw of src.split('\n')) {
       const line = raw.trim(); let mm;
       if (!line) { flush(); continue; }
-      if ((mm = line.match(/^(#{2,3}) (.*)/))) { flush(); html.push(`<h${mm[1].length}>${inline(mm[2])}</h${mm[1].length}>`); continue; }
+      if ((mm = line.match(/^(#{2,3}) (.*)/))) { flush(); const id = mm[1].length === 2 ? ` id="${slugify(mm[2])}"` : ''; html.push(`<h${mm[1].length}${id}>${inline(mm[2])}</h${mm[1].length}>`); continue; }
       if ((mm = line.match(/^(-|\d+\.) (.*)/))) { const t = mm[1] === '-' ? 'ul' : 'ol'; if (para.length) { html.push(`<p>${inline(para.join(' '))}</p>`); para = []; } if (list !== t) { if (list) html.push(`</${list}>`); html.push(`<${t}>`); list = t; } html.push(`<li>${inline(mm[2])}</li>`); continue; }
       if (list) { html.push(`</${list}>`); list = null; }
       para.push(line.replace(/^> /, ''));
@@ -294,6 +296,7 @@ const blogPaths = [];
     desc: `${articles.length} articles pratiques pour les parents : congés et démarches, modes de garde, matériel, activités d’éveil, éducation, organisation du foyer. Sources officielles citées.`,
     jsonld: { '@context': 'https://schema.org', '@graph': [crumbs([['Accueil', '/'], ['Blog', '/blog']]), { '@type': 'CollectionPage', name: 'Blog HOMI', url: `${siteUrl}/blog` }] },
     content: `<section class="wrap blog-head">${nav([['Accueil', '/'], ['Blog', '/blog']])}<p class="eyebrow">Blog</p><h1 class="display">Les réponses pratiques<br>de la vie de famille.</h1><p class="lead">Démarches, garde, matériel, éveil : ${articles.length} articles avec leurs sources officielles.</p>`
+      + `<label class="blog-search"><span class="sr-only">Rechercher un article</span><input type="search" placeholder="Rechercher un article (ex. congé, crèche, poussette)" data-blog-search autocomplete="off"></label><p class="fine" data-blog-count hidden></p>`
       + `<nav class="blog-toc" aria-label="Rubriques">${byCat.map(([c]) => `<a class="btn btn-secondary btn-sm" href="#${c}">${esc(categories[c])}</a>`).join(' ')}</nav></section>`
       + `<div class="wrap">${byCat.map(([c, l]) => `<section class="blog-cat" id="${c}"><h2>${esc(categories[c])}</h2><ul class="blog-list">${l.map(card).join('')}</ul></section>`).join('')}</div>` }));
   blogPaths.push('/blog');
@@ -306,7 +309,9 @@ const blogPaths = [];
         { '@type': 'Article', headline: a.title, description: a.summary, inLanguage: 'fr', dateModified: consulted, url: `${siteUrl}/blog/${a.slug}`,
           author: { '@type': 'Organization', name: 'HOMI' }, publisher: { '@type': 'Organization', name: 'HOMI', url: `${siteUrl}/` }, citation: a.sources.map((s) => s.url) }] },
       content: `<article class="wrap narrow post">${nav([['Accueil', '/'], ['Blog', '/blog'], [categories[c], `/blog#${c}`]])}<h1>${esc(a.title)}</h1><p class="summary">${esc(a.summary)}</p>`
+        + (() => { const hs = [...a.body_md.matchAll(/^## (.+)$/gm)].map((m) => m[1]); return hs.length > 2 ? `<nav class="post-toc" aria-label="Sommaire"><p>Sommaire</p><ol>${hs.map((h) => `<li><a href="#${slugify(h)}">${esc(h.replace(/\*\*/g, ''))}</a></li>`).join('')}</ol></nav>` : ''; })()
         + `<div class="post-body">${md(a.body_md)}</div>`
+        + (TOOL_FOR[c] ? `<aside class="card post-tool"><p class="eyebrow">Dans HOMI</p><p><strong>${esc(TOOL_FOR[c][1])}</strong></p><a class="btn btn-primary btn-sm" href="/${TOOL_FOR[c][0]}">Découvrir l’outil</a></aside>` : '')
         + `<aside class="card post-src"><h2>Sources</h2><ul>${a.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener" target="_blank">${esc(s.label)}</a> — consultée le ${esc(s.consulted_on.split('-').reverse().join('/'))}</li>`).join('')}</ul>`
         + `<p class="post-note">Rédaction assistée par une IA (Claude, Anthropic) à partir des sources citées. Règles et montants évoluent : vérifiez toujours auprès de la source officielle.</p></aside>`
         + `<nav class="post-more" aria-label="À lire aussi"><h2>À lire aussi</h2><ul class="blog-list">${more.map(card).join('')}</ul></nav></article>` }));

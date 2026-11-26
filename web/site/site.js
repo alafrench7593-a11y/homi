@@ -275,3 +275,18 @@
   var seen = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { seen.disconnect(); play(0); } }, { threshold: 0.35 });
   seen.observe(root);
 })();
+
+/* Blog : recherche instantanée dans l'index (le contenu reste dans le HTML, sans JS tout est visible) */
+(function () {
+  var input = document.querySelector('[data-blog-search]'); if (!input) return;
+  var items = Array.prototype.slice.call(document.querySelectorAll('.blog-list li'));
+  var count = document.querySelector('[data-blog-count]');
+  var norm = function (t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+  var texts = items.map(function (li) { return norm(li.textContent); });
+  input.addEventListener('input', function () {
+    var q = norm(input.value.trim()), n = 0;
+    items.forEach(function (li, i) { var on = !q || q.split(/\s+/).every(function (w) { return texts[i].indexOf(w) >= 0; }); li.hidden = !on; if (on) n++; });
+    document.querySelectorAll('.blog-cat').forEach(function (s) { s.hidden = !s.querySelector('li:not([hidden])'); });
+    if (count) { count.hidden = !q; count.textContent = n ? n + ' article' + (n > 1 ? 's' : '') : 'Aucun article : essayez un autre mot.'; }
+  });
+})();
