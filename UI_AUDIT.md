@@ -28,3 +28,8 @@ Corrigé : liens « Autres univers » 43 px → 46 px (cible ≥ 44). Non vérif
 ## 26/11/2026 — site : démo Aura (7 scénarios)
 Scénarios limités aux actions reconnues par le code (`AURA_INTENT_KINDS` : log_bottle, start_sleep, multi, add_appointment, prepare_relay, assign_task, open_story) ; marqués « Démonstration, aucune IA appelée ».
 Corrigé pendant la porte de fin : 7 boutons empilés + « » » orphelin sur mobile → rangée défilante horizontale, guillemets insécables ; débordement horizontal de 1 500 px (grille sans min-width) → `min-width: 0`. 320/390/1366 : 0 débordement, 0 erreur JS.
+
+## 26/11/2026 — refonte anti-slop des outils (7 lots)
+Corrections : décors en dégradé ou en verre retirés des contenus (cartes mates), cibles ≥ 44, chiffres tabulaires et plafonds Dynamic Type, animations continues supprimées, dates sans décalage UTC, retours haptiques et erreurs visibles (vaccins, relais), valeur actuelle mise en avant dans le suivi santé.
+Porte de fin : tsc propre ; Jest 4987/4987 ; `e2e/audit_ux.py` = 33 écrans × 5 configurations, 0 bloquant. Seuls signalements restants : des troncatures volontaires (notes repliables) et le faux positif connu « N » à 1,09.
+Non vérifié : rendu natif iOS/Android sur appareil ; contraste de primaryText sur les fonds heart/lavender/gold (lots 4 et 7) non mesuré.
