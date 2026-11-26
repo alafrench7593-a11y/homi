@@ -45,7 +45,8 @@ export function TodaySummary({ title = tr('u7.today'), items, testID }: { title?
               {/* Libellé jamais coupé par un trait d'union (« Traite-ments ») : case étroite → il passe sous l'icône */}
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: 6, rowGap: 2 }}>
                 {it.icon ? <Icon name={it.icon} size={14} color={i === 0 ? accent : t.colors.textMuted} /> : null}
-                <Text variant="caption" muted style={{ flexShrink: 1 }}>{it.label}</Text>
+                {/* Libellé en couleur de texte (pas « muted ») : la tuile en verre a un reflet clair en haut à gauche qui faisait tomber le gris sous 4,5:1 en sombre */}
+                <Text variant="caption" style={{ flexShrink: 1 }} color={t.colors.text}>{it.label}</Text>
               </View>
               {/* Pas de limite de lignes : valeur et libellé restent entiers (jamais « … ») ; chiffres tabulaires */}
               <Text weight="bold" color={i === 0 ? accent : undefined} style={[valueStyle(it.value, items.length), { fontVariant: ['tabular-nums'] }]}>{it.value}</Text>

@@ -13,7 +13,7 @@
  */
 import React from 'react';
 import { glassEdge } from '@/components/glass/GlassRim';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, useWindowDimensions, View, type StyleProp, type ViewStyle } from 'react-native';
 import { haptic, Icon, Text, type IconName } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -130,6 +130,8 @@ export function DayRow({ r, first, last }: { r: DayRowSpec; first?: boolean; las
   const pill = r.pill === undefined ? defaultPill(r.state) : r.pill;
   const done = r.strike ?? r.state === 'done';
   const hot = r.state === 'now' || r.state === 'next';
+  // Petit iPhone (< 360 pt) : l'accessoire (« Fait »…) passe sous le titre au lieu de le réduire à quelques lettres
+  const stacked = useWindowDimensions().width < 360 && !!r.right;
   const a11y = r.accessibilityLabel ?? [r.time, r.title, pill?.label, r.sub].filter(Boolean).join('. ');
   const body = (
     <>
@@ -147,17 +149,17 @@ export function DayRow({ r, first, last }: { r: DayRowSpec; first?: boolean; las
   );
   const rowStyle: ViewStyle = { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm, paddingVertical: spacing.sm, minHeight: MIN_TOUCH + 8 };
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: spacing.md, paddingRight: r.right ? spacing.xs : spacing.sm }}>
+    <View style={stacked ? { paddingLeft: spacing.md, paddingRight: spacing.sm, paddingBottom: spacing.xs } : { flexDirection: 'row', alignItems: 'center', paddingLeft: spacing.md, paddingRight: r.right ? spacing.xs : spacing.sm }}>
       {r.onPress ? (
         <Tappable accessibilityRole="button" accessibilityLabel={a11y} accessibilityHint={r.accessibilityHint} onPress={() => { haptic('selection'); r.onPress!(); }} testID={r.testID} pressScale={0.99}
-          style={[rowStyle, { flex: 1 }]}>
+          style={[rowStyle, stacked ? null : { flex: 1 }]}>
           {body}
           {r.trailing ?? (!r.right ? <View style={{ paddingTop: 2 }}><Icon name="chevron-right" size={18} color={t.colors.textMuted} /></View> : null)}
         </Tappable>
       ) : (
-        <View style={[rowStyle, { flex: 1 }]} testID={r.testID} accessible accessibilityLabel={a11y}>{body}{r.trailing}</View>
+        <View style={[rowStyle, stacked ? null : { flex: 1 }]} testID={r.testID} accessible accessibilityLabel={a11y}>{body}{r.trailing}</View>
       )}
-      {r.right ? <View style={{ marginLeft: spacing.xs }}>{r.right}</View> : null}
+      {r.right ? <View style={stacked ? { alignSelf: 'flex-end', marginTop: -spacing.xs } : { marginLeft: spacing.xs }}>{r.right}</View> : null}
     </View>
   );
 }
@@ -215,7 +217,7 @@ export function BriefStrip({ items, title, testID }: { items: BriefItem[]; title
       <View style={{ flexDirection: 'row', backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), paddingVertical: spacing.sm }}>
         {items.map((it, i) => (
           <View key={i} testID={it.testID} style={{ flex: 1, minWidth: 0, paddingHorizontal: spacing.sm, gap: 2, borderLeftWidth: i ? StyleSheet.hairlineWidth : 0, borderColor: t.material.lines.separator }}>
-            <Text weight="bold" style={{ fontSize: it.value.length > 6 ? 17 : 22, lineHeight: 28, fontVariant: ['tabular-nums'] }} numberOfLines={1} adjustsFontSizeToFit>{it.value}</Text>
+            <Text weight="bold" style={{ fontSize: it.value.length > 4 ? 19 : 22, lineHeight: 28, fontVariant: ['tabular-nums'] }} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} maxFontSizeMultiplier={1.15}>{it.value}</Text>
             <Text variant="caption" muted numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.85} maxFontSizeMultiplier={1.15}>{it.label}</Text>
           </View>
         ))}

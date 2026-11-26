@@ -115,6 +115,9 @@ export function nextInnerScrolled(cur: boolean, e: { y: number; contentH: number
   return e.y > 2;
 }
 
+/** Demi-largeur du mot-symbole « HOMI » de l'en-tête (légende en gras, espacement 3) + marge. */
+const WORDMARK_HALF = 44;
+
 export function Screen({ children, title, subtitle, back, right, account, scroll = true, padded = true, stars: _stars, footer, contentStyle, bottomInset = 0, tool: forcedTool, action, reorder = false, toolRunning = false, toolPlay = 0, titleLogo }: ScreenProps) {
   const t = useTheme();
   const reduce = useReduceMotion();
@@ -164,6 +167,8 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
 
   // ------------------------------------------------------------ en-tête qui se replie
   const [titleH, setTitleH] = React.useState(0);
+  const [rowW, setRowW] = React.useState(0);
+  const [rightW, setRightW] = React.useState(0);
   const [scrolledPastTitle, setScrolledPastTitle] = React.useState(false);
   const [innerScrolled, setInnerScrolled] = React.useState(false);
   const titleHRef = React.useRef(0);
@@ -233,16 +238,18 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
     </Animated.View>
   ) : null;
 
+  // Mot-symbole centré : affiché seulement s'il ne passe pas sous les actions de droite (petits iPhone, 3 boutons).
+  const wordmarkFits = rowW === 0 || rowW / 2 - WORDMARK_HALF > rightW + 8;
   const header = (title || back || right || account) && (
     <View style={[styles.header, styles.wide, { paddingTop: top + spacing.xs }]} testID="screen-header">
-      <View style={styles.headerRow}>
+      <View style={styles.headerRow} onLayout={(e) => setRowW(e.nativeEvent.layout.width)}>
         {back ? (
           <IconButton icon="arrow-left" label={tr('common.back')} onPress={() => (router.canGoBack() ? router.back() : router.replace(parentRoute(pathname) as never))} testID="screen-back" />
         ) : (
           <View style={{ width: title ? spacing.md : 4 }} />
         )}
         {/* Mini-app : mot-symbole HOMI centré au-dessus du nom (planche 4), effacé quand le titre compact prend sa place */}
-        {tool && title ? (
+        {tool && title && wordmarkFits ? (
           <Animated.View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
             style={{ position: 'absolute', left: 0, right: 0, alignItems: 'center', opacity: Animated.subtract(1, compactV) }} testID="screen-app-wordmark">
             <Text variant="caption" weight="bold" style={{ letterSpacing: 3 }} color={t.colors.text}>{BRAND.name.toUpperCase()}</Text>
@@ -258,7 +265,7 @@ export function Screen({ children, title, subtitle, back, right, account, scroll
           ) : null}
         </Animated.View>
         {/* Actions groupées à droite : sur un écran étroit, elles passent à la ligne au lieu de sortir de l'écran */}
-        <View style={{ flexShrink: 1, maxWidth: '75%', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center', minWidth: 0 }}>
+        <View onLayout={(e) => setRightW(e.nativeEvent.layout.width)} style={{ flexShrink: 1, maxWidth: '75%', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center', minWidth: 0 }}>
           {/* Écran d'outil : entrée contextuelle sobre vers Aura (nom de l'outil, actions réellement disponibles) */}
           {tool && !pathname.startsWith('/assistant') ? <AuraToolButton toolId={tool.id} /> : null}
           {right}

@@ -23,7 +23,7 @@ export const onboarding = {
   'onb.welcome': 'Bienvenue',
   'onb.welcomeBody': '{app} s’adapte à ton histoire. Quelques questions, toutes facultatives sauf l’essentiel, et ton espace est prêt.',
   'onb.nameLabel': 'Comment souhaites-tu qu’on t’appelle ?',
-  'onb.sample': 'Explorer avec une famille exemple',
+  'onb.sample': 'Voir une famille exemple',
   'onb.journeys.title': 'Où en es-tu ?',
   'onb.journeys.body': 'Plusieurs réponses possibles. Tu pourras changer de parcours à tout moment.',
   'onb.journeys.required': 'Choisis au moins une situation (tu pourras la modifier plus tard).',

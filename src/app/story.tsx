@@ -39,7 +39,9 @@ export default function Story() {
         <ScrollView
           style={{ flex: 1 }}
           scrollEventThrottle={16}
-          onScroll={(e) => setProgress(Math.max(0, Math.min(last, e.nativeEvent.contentOffset.y / step)))}
+          // Progression arrondie au 1/20 de chapitre : React ne refait le rendu que quand la pose change visiblement
+          // (avant : un rendu complet de l'illustration à chaque image de défilement).
+          onScroll={(e) => { const v = Math.round(Math.max(0, Math.min(last, e.nativeEvent.contentOffset.y / step)) * 20) / 20; setProgress((p) => (p === v ? p : v)); }}
           contentContainerStyle={{ paddingBottom: reduce ? spacing.xl : H * 0.45 }}
           showsVerticalScrollIndicator={false}
           testID="story-scroll"

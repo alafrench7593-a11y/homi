@@ -345,7 +345,8 @@ def part_b(b):
     if row.count():
         row.click(); pg2.wait_for_timeout(150)
         pg2.go_back(); pg2.wait_for_timeout(1400)  # retour PENDANT la transition
-        ok_back = pg2.url.rstrip('/') == B.rstrip('/') or pg2.url.endswith('/')
+        # l'Accueil vit à « / » ou à « /app » (alias de l'onglet Aujourd'hui)
+        ok_back = pg2.url.rstrip('/') == B.rstrip('/') or pg2.url.endswith('/') or pg2.url.rstrip('/').endswith('/app')
     R_B['retour_pendant_transition'] = ok_back
     R_B['reduit_sans_fantome_accueil'] = not pg2.evaluate(GHOSTS)
     pg2.evaluate(NAV, '/scanner/history'); pg2.wait_for_timeout(2400)
