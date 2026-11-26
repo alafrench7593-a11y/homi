@@ -158,6 +158,8 @@ export const docs = {
   'docs.verified': 'Vérifié',
   'docs.archived': 'Archivé',
   'docs.pages': { one: '{count} page', other: '{count} pages' },
+  'docs.size.kb': '{n} Ko',
+  'docs.size.mb': '{n} Mo',
   'docs.page': 'Page {n}',
   'docs.card.added': 'ajouté le {date}',
   'docs.card.openHint': 'Ouvre la fiche du document',

@@ -8,7 +8,6 @@ import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Field, ListRow } from '@/components/ui';
 import { IconOrb, PrimaryButton } from '@/components/controls';
@@ -63,8 +62,8 @@ export default function AvoidList() {
       {q.data && !q.data.length ? <EmptyState icon="slash" title={tr('u8.avoid.empty')} body={tr('u8.avoid.emptyBody')} /> : null}
       {q.data?.length ? (
         <MatteSurface radius={radius.lg} testID="avoid-list">
-          <MotionList>{q.data.map((p, i) => (
-            <MotionItem key={p.id}><StaggerItem key={p.id} index={i}>
+          <MotionList>{q.data.map((p) => (
+            <MotionItem key={p.id}>
               <ListRow icon="slash" title={p.product_name} subtitle={[p.barcode ? `EAN ${p.barcode}` : null, p.reason].filter(Boolean).join(' · ') || undefined}
                 right={(
                   <View>
@@ -75,7 +74,7 @@ export default function AvoidList() {
                     }} />
                   </View>
                 )} />
-            </StaggerItem></MotionItem>
+            </MotionItem>
           ))}</MotionList>
         </MatteSurface>
       ) : null}

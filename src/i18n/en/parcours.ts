@@ -410,6 +410,7 @@ export const parcours: Messages<typeof fr> = {
   'nd.wd.7': 'Sun',
   'nd.t.times': 'Dose time(s)',
   'nd.t.start': 'Start',
+  'nd.t.datePh': 'DD/MM/YYYY',
   'nd.t.end': 'End',
   'nd.t.instructions': 'Prescriber’s instructions',
   'nd.t.prescriber': 'Prescriber',

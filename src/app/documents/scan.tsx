@@ -270,7 +270,7 @@ export default function ScanScreen() {
   if (step === 'done') {
     return (
       <Screen title={tr('docs.saved.title')}>
-        <Appear kind="pop" delay={0.05}>
+        <Appear kind="pop" delay={0} duration={0.32}>
           <View style={{ alignItems: 'center', gap: spacing.md, paddingTop: spacing.lg }}>
             <View style={{ width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.primary, ...whoopEdge(t, t.colors.primary) }}>
               <Icon name="check" size={44} color={t.colors.primaryText} />
@@ -357,7 +357,7 @@ export default function ScanScreen() {
         <View style={{ gap: spacing.md }}>
           <Text muted>{tr('docs.scan.previewHint')}</Text>
           {pages.map((p, i) => (
-            <View key={p.id} style={{ gap: 4 }}>
+            <View key={p.id} style={{ gap: spacing.xxs }}>
               <Text variant="caption" muted>{tr('docs.page', { n: i + 1 })}</Text>
               <Image source={{ uri: p.preview }} accessibilityLabel={tr('docs.page', { n: i + 1 })} style={{ width: '100%', aspectRatio: p.w / p.h, borderRadius: radius.sm, backgroundColor: '#fff' }} resizeMode="contain" />
             </View>
@@ -365,12 +365,11 @@ export default function ScanScreen() {
         </View>
       ) : (
         <>
-          <Appear kind="pop" delay={0.05}>
-            <View style={{ gap: spacing.xs }}>
-              <Button label={pages.length ? tr('docs.scan.addPage') : tr('docs.scan.takePhoto')} icon="camera" size="lg" onPress={() => takePhoto()} disabled={!!busy} full />
-              <Button label={tr('docs.scan.fromPhotos')} icon="image" variant="secondary" onPress={addFromPhotos} disabled={!!busy} full />
-            </View>
-          </Appear>
+          {/* Action principale prête au montage : pas d'entrée animée qui la retarde */}
+          <View style={{ gap: spacing.xs }}>
+            <Button label={pages.length ? tr('docs.scan.addPage') : tr('docs.scan.takePhoto')} icon="camera" size="lg" onPress={() => takePhoto()} disabled={!!busy} full />
+            <Button label={tr('docs.scan.fromPhotos')} icon="image" variant="secondary" onPress={addFromPhotos} disabled={!!busy} full />
+          </View>
           {!pages.length ? (
             <Card tone="soft">
               <Text weight="bold">{tr('docs.scan.tipsTitle')}</Text>
@@ -379,13 +378,13 @@ export default function ScanScreen() {
             </Card>
           ) : null}
           {pages.map((p, i) => (
-            <Appear key={p.id} kind="soft" delay={0.02}>
+            <Appear key={p.id} kind="soft" delay={0} duration={0.24}>
               <Card>
                 <Row style={{ alignItems: 'flex-start' }}>
                   <Tappable accessibilityRole="button" accessibilityLabel={tr('docs.scan.cropA11y', { n: i + 1 })} onPress={() => setEditing(p.id)}>
-                    <Image source={{ uri: p.preview }} style={{ width: 84, height: 84 * (p.h / p.w), maxHeight: 130, borderRadius: 8, backgroundColor: '#fff' }} resizeMode="contain" />
+                    <Image source={{ uri: p.preview }} style={{ width: 84, height: 84 * (p.h / p.w), maxHeight: 130, borderRadius: radius.sm, backgroundColor: '#fff' }} resizeMode="contain" />
                   </Tappable>
-                  <View style={{ flex: 1, gap: 6 }}>
+                  <View style={{ flex: 1, gap: spacing.xs }}>
                     <Row style={{ justifyContent: 'space-between' }}>
                       <Text weight="bold">{tr('docs.page', { n: i + 1 })}</Text>
                       <Row gap={0}>

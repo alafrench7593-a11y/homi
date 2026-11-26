@@ -408,6 +408,7 @@ export const parcours = {
   'nd.wd.7': 'Dim',
   'nd.t.times': 'Heure(s) de prise',
   'nd.t.start': 'Début',
+  'nd.t.datePh': 'JJ/MM/AAAA',
   'nd.t.end': 'Fin',
   'nd.t.instructions': 'Instructions du prescripteur',
   'nd.t.prescriber': 'Prescripteur',

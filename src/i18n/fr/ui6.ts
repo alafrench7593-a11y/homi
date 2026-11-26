@@ -421,6 +421,7 @@ export const ui6 = {
   'u6.sc.see_result': 'Voir le résultat pour {name}',
   'u6.sc.this_product': 'ce produit',
   'u6.sc.no_name': 'Sans nom',
+  'u6.sc.favorite': 'Favori',
   'u6.sc.demo_data': 'Données de démonstration',
   'u6.sf.search_failed': 'La recherche n’a pas abouti. Vérifie ta connexion.',
   'u6.sf.searching_product': 'Recherche du produit…',

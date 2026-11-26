@@ -10,6 +10,7 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Card, Chip, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
 import { DoseDay, type DoseAnswer, type DoseRow } from '@/features/healthTrack/DoseDay';
 import { dayStarts } from '@/lib/domain/healthTrack';
@@ -25,17 +26,26 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { spacing } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
 
+/** Référence stable : un `?? []` neuf à chaque rendu relançait le calcul des prises des 7 jours. */
+const NONE: never[] = [];
+
 export default function Medications() {
   const params = useLocalSearchParams<{ who?: string; dose?: string; time?: string; day?: string }>();
   const toast = useToast();
   const now = useNow(60_000);
-  const children = useChildren().data ?? [];
+  const children = useChildren().data ?? NONE;
   const js = useJourneyState();
   const [who, setWho] = useState<string>(params.who && params.who !== 'me' && children.some((c) => c.id === params.who) ? params.who : params.who ?? 'me');
   // 7 derniers jours (prises prévues et réponses notées) ; le jour choisi reste dans l'adresse (`?day=`)
   const starts = useMemo(() => dayStarts(now, 7), [now.toDateString()]); // eslint-disable-line react-hooks/exhaustive-deps
-  const mine = useMyTreatments().data ?? [];
-  const childT = useFamilyChildTreatments().data ?? [];
+  const mineQ = useMyTreatments();
+  const childTQ = useFamilyChildTreatments();
+  const mine = mineQ.data ?? NONE;
+  const childT = childTQ.data ?? NONE;
+  const dosesLoading = (mineQ.isLoading && !mineQ.data) || (childTQ.isLoading && !childTQ.data);
+  const dosesFailed = (mineQ.isError && !mineQ.data) || (childTQ.isError && !childTQ.data);
+  // Une prise à la fois : un double appui ne crée pas deux enregistrements
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
   const logs = useDoseLogsSince(starts[0].toISOString());
   const logMine = useLogMyDose();
   const logChild = useLogDose();
@@ -63,11 +73,14 @@ export default function Medications() {
     if (res === 'queued') toast(tr('u7.track.queued'), 'info');
   };
   async function toggle(r: DoseRow) {
-    haptic('success');
+    if (pendingKey) return;
+    setPendingKey(r.key);
+    // Retour à l'appui, accordé à l'événement : « validé » pour une prise cochée, simple cran pour une prise décochée
+    haptic(r.log?.status === 'taken' ? 'selection' : 'success');
     try {
       if (r.log?.status === 'taken') await unlog.mutateAsync({ table: r.childId ? 'treatment_logs' : 'my_treatment_logs', id: r.log.id });
       else await answer(r, undefined, 'taken');
-    } catch (e) { toast(friendlyError(e), 'error'); }
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { setPendingKey(null); }
   }
 
   const scope: TreatmentScope = who === 'me' ? { kind: 'me' } : { kind: 'child', childId: who, childName: children.find((c) => c.id === who)?.first_name ?? '' };
@@ -79,11 +92,14 @@ export default function Medications() {
       {showPregnant ? <Banner tone="info">{tr('med.pregnant')}</Banner> : null}
 
       <SectionTitle title={tr('med.today')} />
-      <DoseDay days={days} selected={selected.day} onSelectDay={(day) => router.setParams({ day } as never)} rows={selected.rows}
-        onToggle={(r) => void toggle(r)} onAnswer={answer} isToday={selected.day === today.day} />
+      {/* Chargement et erreur réels : jamais « aucune prise prévue » tant que les traitements ne sont pas connus */}
+      {dosesLoading ? <Skeleton kind="card" rows={2} /> : dosesFailed ? (
+        <ErrorView error={mineQ.error ?? childTQ.error} onRetry={() => { void mineQ.refetch(); void childTQ.refetch(); }} />
+      ) : <DoseDay days={days} selected={selected.day} onSelectDay={(day) => router.setParams({ day } as never)} rows={selected.rows}
+        onToggle={(r) => void toggle(r)} onAnswer={answer} isToday={selected.day === today.day} />}
 
       <SectionTitle title={tr('med.who')} />
-      <Row wrap style={{ gap: 6 }}>
+      <Row wrap gap={spacing.xs}>
         <Chip label={tr('med.me')} icon="user" selected={who === 'me'} onPress={() => setWho('me')} testID="med-who-me" />
         {children.map((c) => <Chip key={c.id} label={c.first_name} selected={who === c.id} onPress={() => setWho(c.id)} testID={`med-who-${c.first_name}`} />)}
       </Row>

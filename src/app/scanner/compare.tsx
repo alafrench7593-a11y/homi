@@ -91,7 +91,7 @@ function Slot({ letter, id, onClear, locked }: { letter: 'A' | 'B'; id: string |
     );
   }
   return (
-    <MatteSurface radius={radius.lg} padded={spacing.sm} style={{ flex: 1, minWidth: 0 }} contentStyle={{ gap: 6 }} testID={`compare-slot-${letter}`}>
+    <MatteSurface radius={radius.lg} padded={spacing.sm} style={{ flex: 1, minWidth: 0 }} contentStyle={{ gap: spacing.xs }} testID={`compare-slot-${letter}`}>
       {badge}
       {body}
       {id ? <SecondaryButton label={tr('u8.compare.change')} size="sm" onPress={onClear} testID={`compare-change-${letter}`} /> : null}
@@ -111,12 +111,12 @@ function Table({ a, b }: { a: string; b: string }) {
     <MatteSurface radius={radius.lg} padded={spacing.md} contentStyle={{ gap: spacing.sm }} testID="compare-table">
       <Text variant="label" accessibilityRole="header">{tr('scn.cmp.table')}</Text>
       {rows.map((r, i) => (
-        <View key={r.key} style={{ gap: 4 }} accessible accessibilityLabel={tr('scn.cmp.rowA11y', { label: r.label, a: r.a, b: r.b })} testID={`compare-row-${r.key}`}>
+        <View key={r.key} style={{ gap: spacing.xxs }} accessible accessibilityLabel={tr('scn.cmp.rowA11y', { label: r.label, a: r.a, b: r.b })} testID={`compare-row-${r.key}`}>
           {i > 0 ? <Divider /> : null}
           <Text variant="caption" muted weight="bold">{r.label}</Text>
           <Row gap={spacing.sm} style={{ alignItems: 'flex-start' }}>
-            <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', gap: 6 }}><Text variant="caption" weight="bold" muted>A</Text><Text variant="small" style={{ flex: 1 }}>{r.a}</Text></View>
-            <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', gap: 6 }}><Text variant="caption" weight="bold" muted>B</Text><Text variant="small" style={{ flex: 1 }}>{r.b}</Text></View>
+            <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', gap: spacing.xs }}><Text variant="caption" weight="bold" muted>A</Text><Text variant="small" style={{ flex: 1 }}>{r.a}</Text></View>
+            <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', gap: spacing.xs }}><Text variant="caption" weight="bold" muted>B</Text><Text variant="small" style={{ flex: 1 }}>{r.b}</Text></View>
           </Row>
         </View>
       ))}

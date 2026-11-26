@@ -161,6 +161,8 @@ export const docs: Messages<typeof fr> = {
   "docs.verified": "Verificado",
   "docs.archived": "Archivado",
   "docs.pages": {"one": "{count} página", "other": "{count} páginas"},
+  "docs.size.kb": "{n} KB",
+  "docs.size.mb": "{n} MB",
   "docs.page": "Página {n}",
   "docs.card.added": "añadido el {date}",
   "docs.card.openHint": "Abre la ficha del documento",
