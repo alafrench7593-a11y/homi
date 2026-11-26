@@ -22,7 +22,7 @@ import { useMilestones } from '@/lib/data/hooks-family';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { addDays, frToISO, todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
-import { t as tr } from '@/i18n';
+import { formatDate, t as tr } from '@/i18n';
 
 
 export default function Teeth() {
@@ -75,14 +75,15 @@ export default function Teeth() {
   }
 
   async function removeTooth() {
-    if (!pickedRow || !(await confirm(tr('u5.teeth.rm_t'), `${pickedRow.title} (${pickedRow.happened_on ?? tr('u5.teeth.no_date')})`, tr('u5.teeth.rm_ok')))) return;
+    if (!pickedRow || !(await confirm(tr('u5.teeth.rm_t'), `${pickedRow.title} (${pickedRow.happened_on ? formatDate(`${pickedRow.happened_on.slice(0, 10)}T12:00:00`) : tr('u5.teeth.no_date')})`, tr('u5.teeth.rm_ok')))) return;
     try { await backend.remove('child_milestones', [eq('id', pickedRow.id)]); inv('child_milestones'); toast(tr('u5.teeth.removed')); setPicked(null); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function hygieneReminder() {
     try {
       await saveReminder.mutateAsync({ draft: { title: tr('u5.teeth.rem_t'), body: tr('u5.teeth.rem_b'), category: 'custom', schedule: { type: 'daily', hour: 19, minute: 45 }, enabled: true, deep_link: '/teeth', child_id: child?.id ?? null } });
-      toast(tr('u5.teeth.rem_ok'));
+      haptic('success');
+      toast(tr('u5.teeth.rem_ok'), 'success');
     } catch (e) { toast(friendlyError(e), 'error'); }
   }
 

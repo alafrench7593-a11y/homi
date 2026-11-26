@@ -11,7 +11,7 @@ import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { confirm, useToast } from '@/components/Overlays';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Field, ListRow, SectionTitle, Text } from '@/components/ui';
 import { backend, eq } from '@/lib/backend';
 import { useChild, useChildrenLoading, useInvalidate } from '@/lib/data/hooks';
@@ -42,7 +42,8 @@ export default function ChildCard() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const child = useChild(id);
   const childLoading = useChildrenLoading();
-  const { data: items } = useHealthItems(id);
+  const itemsQ = useHealthItems(id);
+  const items = itemsQ.data;
   const [adding, setAdding] = useState<'soothe' | 'info' | null>(null);
   const [label, setLabel] = useState('');
   const [details, setDetails] = useState('');
@@ -72,7 +73,7 @@ export default function ChildCard() {
   }
   async function share() {
     const L: string[] = [tr('kc.exportTitle', { name: child!.first_name }), tr('kc.exportDate', { date: formatDate(new Date(), { day: 'numeric', month: 'long', year: 'numeric' }) }), ''];
-    L.push(`${child!.first_name} · ${childAge(child!.birth_date).label} · ${tr('kc.born', { date: formatDate(child!.birth_date, { day: 'numeric', month: 'long', year: 'numeric' }) })}`, '');
+    L.push(`${child!.first_name} · ${childAge(child!.birth_date).label} · ${tr('kc.born', { date: formatDate(`${child!.birth_date.slice(0, 10)}T12:00:00`, { day: 'numeric', month: 'long', year: 'numeric' }) })}`, '');
     L.push(tr('kc.sec.allergy').toUpperCase(), allergies.length ? allergies.map((a) => `- ${a}`).join('\n') : tr('kc.noneNoted'), '');
     for (const s of SECTIONS.filter((x) => x.kind !== 'allergy')) {
       const rows = of(s.kind);
@@ -85,20 +86,24 @@ export default function ChildCard() {
   return (
     <Screen back title={toolName('kid_card')} subtitle={`${child.first_name} · ${childAge(child.birth_date).label}`}
       action={{ label: tr('kc.share'), icon: 'share', onPress: () => void share(), testID: 'kid-card-share' }}>
+      {/* Données de santé en cours de chargement ou en erreur : jamais présentées comme « rien de noté » */}
+      {itemsQ.isLoading && !items ? <Skeleton kind="card" rows={3} /> : null}
+      {itemsQ.isError && !items ? <ErrorView error={itemsQ.error} onRetry={() => void itemsQ.refetch()} title={tr('common.cannotShow')} /> : null}
       {/* Donnée principale : les allergies notées (aucune : « aucune allergie notée », jamais un zéro inventé) */}
-      <HmHero testID="hm-kc-hero" value={allergies.length ? String(allergies.length) : null} emptyLabel={tr('kc.noneNoted')}
+      {items ? <HmHero testID="hm-kc-hero" value={allergies.length ? String(allergies.length) : null} emptyLabel={tr('kc.noneNoted')}
         unit={allergies.length ? tr('hm.kc.unit', { count: allergies.length, list: allergies.join(', ') }) : null}
         split={of('treatment').length || of('contact').length ? [
           { label: tr('kc.sec.treatment'), value: String(of('treatment').length), testID: 'hm-kc-treat' },
           { label: tr('kc.sec.contact'), value: String(of('contact').length), testID: 'hm-kc-contact' },
-        ] : undefined} />
+        ] : undefined} /> : null}
       <Text muted>{tr('kc.intro')}</Text>
-      <Card tone="soft" testID="kid-card-allergies">
+      {items ? <Card tone="soft" testID="kid-card-allergies">
         <Text weight="bold" color={allergies.length ? t.colors.danger : undefined}>{tr('kc.sec.allergy')}</Text>
         <Text>{allergies.length ? allergies.join(', ') : tr('kc.noneNoted')}</Text>
         <Button label={tr('kc.editHealth')} size="sm" variant="ghost" icon="edit-2" onPress={() => router.push(`/child/${child.id}/health-tracking`)} />
-      </Card>
+      </Card> : null}
       {SECTIONS.filter((s) => s.kind !== 'allergy').map((s) => {
+        if (!items) return null;
         const rows = of(s.kind);
         const editable = s.kind === 'soothe' || s.kind === 'info';
         return (

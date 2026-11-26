@@ -39,9 +39,9 @@ export default function ContraceptionScreen() {
 
   const styleOf = useCallback((k: AvoidDayKind): CalendarStyle | null => {
     switch (k) {
-      case 'period': return { bg: t.colors.heart, fg: '#fff', label: tr('u7.contra.index.cal.period') };
+      case 'period': return { bg: t.colors.heart, fg: t.colors.primaryText, label: tr('u7.contra.index.cal.period') };
       case 'next_period_estimate': return { bg: t.colors.heart + '44', label: tr('u7.contra.index.cal.nextPeriod') };
-      case 'ovulation_estimate': return { bg: t.colors.gold, fg: '#fff', label: tr('u7.contra.index.cal.ovulation') };
+      case 'ovulation_estimate': return { bg: t.colors.gold, fg: t.colors.primaryText, label: tr('u7.contra.index.cal.ovulation') };
       case 'higher_probability_estimate': return { bg: t.colors.gold + '55', label: tr('u7.contra.index.cal.higher') };
       case 'pregnancy_possible': return { bg: t.colors.surfaceAlt, label: tr('u7.contra.index.cal.other') };
     }

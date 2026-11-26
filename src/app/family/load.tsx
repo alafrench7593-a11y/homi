@@ -4,11 +4,11 @@
  * 23/11/2026 : correction directe — porteur d'un domaine ou d'une tâche changé dans une fiche (LoadFix), tâche ou
  * domaine ouvert gardé dans l'adresse ; lecture seule sans droit d'édition.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Text } from '@/components/ui';
 import { useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
 import { useDomains } from '@/lib/data/hooks-mental';
@@ -28,31 +28,46 @@ const MEASURES: (keyof Omit<LoadRow, 'person'>)[] = ['thought', 'done', 'assigne
 export default function MentalLoad() {
   const t = useTheme();
   const { people, labelOf } = usePeople();
-  const tasks = useFamilyTasks().data ?? [];
-  const domains = useDomains().data ?? [];
-  const rows = mentalLoad(tasks, domains, people.map((p) => p.id));
+  const tasksQ = useFamilyTasks();
+  const domainsQ = useDomains();
+  const tasks = useMemo(() => tasksQ.data ?? [], [tasksQ.data]);
+  const domains = useMemo(() => domainsQ.data ?? [], [domainsQ.data]);
+  // `people` est recréé à chaque rendu : la clé stable est la liste des identifiants
+  const ids = people.map((p) => p.id).join('|');
+  const rows = useMemo(() => mentalLoad(tasks, domains, ids ? ids.split('|') : []), [tasks, domains, ids]);
   const colors = [t.colors.primary, t.colors.lavender, t.colors.gold, t.colors.success];
   const any = rows.some((r) => r.thought + r.done + r.assigned + r.domains > 0);
   const me = useUserId();
+  // Pas de faux « pas encore de données » pendant le chargement ou après une erreur
+  const loading = (tasksQ.isLoading && !tasksQ.data) || (domainsQ.isLoading && !domainsQ.data);
+  const failed = !loading && ((tasksQ.isError && !tasksQ.data) || (domainsQ.isError && !domainsQ.data));
   return (
     <Screen back title={toolName('mental_load')} subtitle={toolBlurb('mental_load')}>
       <LoadTrack tasks={tasks} people={people.map((p) => p.id)} labelOf={labelOf} onOpen={(id) => router.setParams({ task: id } as never)} />
       <Text muted>{tr('cm.load.intro')}</Text>
-      {!any ? <EmptyState icon="pie-chart" title={tr('cm.load.none')} body={tr('cm.load.noneD')} action={{ label: toolName('brain_dump'), onPress: () => router.push('/family/brain-dump') }} /> : MEASURES.map((m) => {
+      {loading ? <Skeleton kind="card" rows={2} />
+        : failed ? <ErrorView error={tasksQ.error ?? domainsQ.error} onRetry={() => { void tasksQ.refetch(); void domainsQ.refetch(); }} />
+        : !any ? <EmptyState icon="pie-chart" title={tr('cm.load.none')} body={tr('cm.load.noneD')} action={{ label: toolName('brain_dump'), onPress: () => router.push('/family/brain-dump') }} /> : MEASURES.map((m) => {
         const s = shares(rows, m);
+        const title = tr(`cm.load.${m}` as TKey);
+        // Lecteur d'écran : la barre se lit en une phrase (personne, part, nombre), pas comme des blocs de couleur muets
+        const summary = s ? `${title} : ${rows.map((r) => `${labelOf(r.person)} ${s[r.person]} % (${r[m]})`).join(', ')}` : title;
         return (
           <Card key={m} testID={`load-${m}`}>
-            <Text weight="bold">{tr(`cm.load.${m}` as TKey)}</Text>
+            <Text weight="bold" accessibilityRole="header">{title}</Text>
             <Text variant="caption" muted>{tr(`cm.load.${m}.d` as TKey)}</Text>
             {s ? (
               <>
-                <View style={{ flexDirection: 'row', height: 14, borderRadius: radius.sm, overflow: 'hidden', marginTop: spacing.xs }}>
+                <View accessible accessibilityRole="image" accessibilityLabel={summary} style={{ flexDirection: 'row', height: 14, borderRadius: radius.sm, overflow: 'hidden', marginTop: spacing.xs }}>
                   {rows.map((r, i) => <View key={r.person} style={{ flex: Math.max(s[r.person], 0.0001), backgroundColor: colors[i % colors.length] }} />)}
                 </View>
                 {rows.map((r, i) => (
-                  <View key={r.person} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <View key={r.person} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.xxs }}>
                     <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors[i % colors.length] }} />
-                    <Text variant="small">{labelOf(r.person)} · {s[r.person]} % ({r[m]})</Text>
+                    {/* Chiffres tabulaires : les parts s'alignent d'une ligne à l'autre */}
+                    <Text variant="small" style={{ flex: 1 }}>{labelOf(r.person)}</Text>
+                    <Text variant="small" weight="bold" style={{ fontVariant: ['tabular-nums'] }}>{s[r.person]} %</Text>
+                    <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }}>({r[m]})</Text>
                   </View>
                 ))}
               </>

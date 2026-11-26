@@ -18,6 +18,7 @@ import { router } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Screen } from '@/components/Screen';
+import { friendlyError } from '@/lib/data/hooks-settings';
 import { Banner, Button, IconButton, Row, Text, haptic } from '@/components/ui';
 import { MattePanel, useCompactEntry } from '@/features/entry/EntryKit';
 import { useDemoInset } from '@/components/demoInset';
@@ -286,7 +287,8 @@ export default function Onboarding() {
       setRevealDone(true);
     } catch (e) {
       finishing.current = false;
-      setError(e instanceof Error && e.message ? e.message : tr('onb.saveFailed'));
+      // Message lisible (réseau, droits…) plutôt que le texte technique brut de l'erreur
+      setError(friendlyError(e, tr('onb.saveFailed')));
     } finally {
       setSaving(false);
     }
@@ -299,6 +301,9 @@ export default function Onboarding() {
       await backend.rpc('load_sample_family');
       await qc.invalidateQueries();
       router.replace('/(tabs)');
+    } catch (e) {
+      // Échec du chargement de l'exemple : on le dit (avant, la promesse rejetée restait silencieuse)
+      setError(friendlyError(e, tr('onb.saveFailed')));
     } finally {
       setSaving(false);
     }
@@ -364,7 +369,7 @@ export default function Onboarding() {
       {phase === 'flow' && step !== 'intro' ? (
         <HeroArt name={artForAnswers(answers)} size={heroSize(win, { max: 150, min: 88, reserve: 690 })} reveal={false} testID="onb-art" style={{ marginTop: compact ? 0 : spacing.xs }} />
       ) : null}
-      {error && phase === 'flow' ? <Banner tone="warning">{error}</Banner> : null}
+      {error && phase === 'flow' ? <Banner tone="danger">{error}</Banner> : null}
       <StepFade key={key} dir={phase === 'flow' ? dir : 1}>
         {phase === 'reveal' ? (
           <View style={{ gap: spacing.md }}>

@@ -9,8 +9,7 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { StaggerItem } from '@/components/Motion';
-import { Banner, Button, Card, Chip, Field, haptic, IconButton, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { DayThread, clockFr, type ThreadRow } from '@/features/dayThread';
 import { threadStates } from '@/lib/domain/dayThread';
@@ -116,7 +115,7 @@ export default function FamilyHome() {
   }
 
   return (
-    <Screen back toolPlay={confirmed} title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')} right={<IconButton icon="plus" label={tr('u2.fam.new_task')} onPress={() => setCreating(true)} />}
+    <Screen back toolPlay={confirmed} title={tr('u2.fam.title')} subtitle={tr('u2.fam.subtitle')}
       action={{ label: tr('u2.fam.add_task'), icon: 'plus', onPress: () => setCreating(true), testID: 'family-main-action' }}>
       {(() => {
         const todo = tasks.filter((x) => x.status === 'todo');
@@ -149,23 +148,21 @@ export default function FamilyHome() {
       {signals.length ? (
         <>
           <SectionTitle title={tr('u2.fam.lighten')} action={tr('u2.fam.hide_tips')} onAction={() => setTipsOff(true)} />
-          {signals.map((s, i) => (
-            <StaggerItem key={s.key} index={i}>
-              <Card>
-                <Text weight="bold">{s.title}</Text>
-                <Text variant="small" muted>{s.why}</Text>
-                <Row wrap style={{ marginTop: spacing.xs }}>
-                  {s.suggestions.map((g) => <Button key={g.label} label={g.label} size="sm" variant="secondary" onPress={() => (g.to ? router.push(g.to as never) : undefined)} />)}
-                </Row>
-              </Card>
-            </StaggerItem>
+          {signals.map((s) => (
+            <Card key={s.key}>
+              <Text weight="bold">{s.title}</Text>
+              <Text variant="small" muted>{s.why}</Text>
+              <Row wrap style={{ marginTop: spacing.xs }}>
+                {s.suggestions.map((g) => <Button key={g.label} label={g.label} size="sm" variant="secondary" onPress={() => (g.to ? router.push(g.to as never) : undefined)} />)}
+              </Row>
+            </Card>
           ))}
           <Text variant="caption" muted>{tr('u2.fam.tips_note')}</Text>
         </>
       ) : tipsOff ? <Button label={tr('u2.fam.show_tips')} size="sm" variant="ghost" onPress={() => setTipsOff(false)} /> : null}
 
       {open.length || recent.length ? <SectionTitle title={tr('u2.fam.requests')} /> : null}
-      <MotionList style={{ gap: spacing.md }}>{[...open, ...recent].map((r, i) => <MotionItem key={r.id}><StaggerItem key={r.id} index={i}><RequestCard r={r} tasks={tasks} /></StaggerItem></MotionItem>)}</MotionList>
+      <MotionList style={{ gap: spacing.md }}>{[...open, ...recent].map((r) => <MotionItem key={r.id}><RequestCard r={r} tasks={tasks} /></MotionItem>)}</MotionList>
 
       <SectionTitle title={tr('u2.fam.tasks')} />
       {(() => {
@@ -183,10 +180,10 @@ export default function FamilyHome() {
       {tasksQ.data && filter !== 'done' && list.length ? <Text variant="label" testID="family-remaining" style={{ fontVariant: ['tabular-nums'] }}>{tr('jt.task.remaining', { count: list.length })}</Text> : null}
       {/* ready : les tâches présentes à l'arrivée des données sont posées sans animation d'entrée (sur le web, une entrée
           figée laissait les lignes en position absolue : la liste ne prenait plus de hauteur) */}
-      <MotionList ready={!!tasksQ.data} style={{ gap: spacing.md }}>{list.map((task, i) => (
-        <MotionItem key={task.id}><StaggerItem key={task.id} index={i}>
+      <MotionList ready={!!tasksQ.data} style={{ gap: spacing.md }}>{list.map((task) => (
+        <MotionItem key={task.id}>
           <TaskRow task={task} onEdit={setEditing} onPropose={(x) => { setProposeHint(false); setRequest({ kind: 'take_task', taskId: x.id }); }} />
-        </StaggerItem></MotionItem>
+        </MotionItem>
       ))}</MotionList>
       {filter === 'today' && doneToday.length ? (
         <View style={{ gap: spacing.sm }} testID="family-done-today">

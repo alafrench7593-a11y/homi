@@ -3,7 +3,6 @@
  * rappels officiels, informations manquantes, niveau de certitude, explication IA (ou explication des règles).
  * Aucune note chiffrée : le moteur n'en calcule pas (score = null).
  */
-import { StaggerItem } from '@/components/Motion';
 import React from 'react';
 import { Image, Linking, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
@@ -114,8 +113,8 @@ export function RecallSection({ a }: { a: StoredAnalysis }) {
             ? <Text variant="small">{tr('u6.sc.no_recall', { source: check.source, date: frDate(check.checkedOn) })}</Text>
             : <Text variant="small">{check?.error ?? tr('u6.sc.recall_check_failed')}</Text>
         ) : null}
-        <Text variant="small" weight="medium" style={{ marginTop: a.recalls.length ? 0 : 4 }}>{RECALL_DISCLAIMER}</Text>
-        <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u6.sc.recall_free')}</Text>
+        <Text variant="small" weight="medium" style={{ marginTop: a.recalls.length ? 0 : spacing.xxs }}>{RECALL_DISCLAIMER}</Text>
+        <Text variant="caption" muted style={{ marginTop: spacing.xxs }}>{tr('u6.sc.recall_free')}</Text>
       </Card>
     </>
   );
@@ -266,11 +265,11 @@ export function ExplanationCard({ a, explanation, loading }: { a: StoredAnalysis
     return (
       <Card tone="lavender">
         <Text variant="label">{tr('u6.sc.ai_title')}</Text>
-        <Text style={{ marginTop: 4 }}>{e.summary}</Text>
+        <Text style={{ marginTop: spacing.xxs }}>{e.summary}</Text>
         {e.points.map((p, i) => <Text key={i} variant="small" style={{ marginTop: 2 }}>{`• ${p}`}</Text>)}
-        {e.missing.length ? <Text variant="small" muted style={{ marginTop: 4 }}>{tr('u6.sc.to_check', { list: e.missing.join(' ; ') })}</Text> : null}
-        {e.next_step ? <Text variant="small" weight="medium" style={{ marginTop: 4 }}>{e.next_step}</Text> : null}
-        <Text variant="caption" muted style={{ marginTop: 6 }}>
+        {e.missing.length ? <Text variant="small" muted style={{ marginTop: spacing.xxs }}>{tr('u6.sc.to_check', { list: e.missing.join(' ; ') })}</Text> : null}
+        {e.next_step ? <Text variant="small" weight="medium" style={{ marginTop: spacing.xxs }}>{e.next_step}</Text> : null}
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>
           {tr('u6.sc.ai_credit', { model: explanation.model, date: frDate(explanation.generated_on) })}
         </Text>
       </Card>
@@ -281,7 +280,7 @@ export function ExplanationCard({ a, explanation, loading }: { a: StoredAnalysis
     <Card tone="soft">
       <Text variant="label">{title}</Text>
       {explanation && explanation.ai !== 'not_configured' && explanation.message ? <Text variant="caption" muted>{explanation.message}</Text> : null}
-      <Text variant="small" weight="medium" style={{ marginTop: 4 }}>{tr('u6.sc.rules_explanation')}</Text>
+      <Text variant="small" weight="medium" style={{ marginTop: spacing.xxs }}>{tr('u6.sc.rules_explanation')}</Text>
       <Text variant="small">{rules.summary}</Text>
       {rules.points.map((p, i) => <Text key={i} variant="small" style={{ marginTop: 2 }}>{`• ${p}`}</Text>)}
     </Card>
@@ -294,8 +293,8 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
   return (
     <>
       {/* Point focal : le verdict, sur verre optique éclairé par la teinte du verdict */}
-      <StaggerItem index={0}><VerdictHero a={a} actions={actions} /></StaggerItem>
-      <StaggerItem index={1}><ResultTiles a={a} /></StaggerItem>
+      <VerdictHero a={a} actions={actions} />
+      <ResultTiles a={a} />
       {/* Démonstration : étiquette dans l'en-tête, explication ici (le verdict reste visible sans défiler) */}
       {a.demo ? <Banner tone="demo" title={DEMO_LABEL}>{tr('u6.sc.demo_banner')}</Banner> : null}
 
@@ -306,11 +305,11 @@ export function ResultView({ a, explanation, explaining, actions }: { a: StoredA
       <SectionTitle title={tr('u6.sc.findings')} />
       <Card>
         {a.findings.length ? <MotionList>{a.findings.map((f, i) => (
-          // Les constats apparaissent un à un ; aucun effet ne suggère qu'un produit est « sûr »
-          <MotionItem key={f.id}><StaggerItem key={f.id} index={i + 2}>
+          // Constats affichés d'emblée (plus de cascade qui retardait la lecture) ; aucun effet ne suggère qu'un produit est « sûr »
+          <MotionItem key={f.id}>
             {i > 0 ? <Divider /> : null}
             <FindingRow f={f} index={index} />
-          </StaggerItem></MotionItem>
+          </MotionItem>
         ))}</MotionList> : <Text variant="small">{tr('u6.sc.no_rules')}</Text>}
       </Card>
 
@@ -408,15 +407,21 @@ export function ResultTiles({ a }: { a: StoredAnalysis }) {
  */
 export function ScanListRow({ s, favorite, trailing, testID }: { s: ScanRow; favorite?: boolean; trailing?: React.ReactNode; testID?: string }) {
   const src = useMorphSource(`scan-${s.id}`, { radius: radius.lg });
+  const t = useTheme();
   const name = s.product_snapshot?.name ?? tr('u6.sc.no_name');
+  // Favori dit au lecteur d'écran (l'étoile est une icône muette) au lieu du glyphe « ★ » lu « étoile noire »
+  const a11y = [tr('u6.sc.see_result', { name }), favorite ? tr('u6.sc.favorite') : null].filter(Boolean).join(', ');
   return (
     <View ref={src.ref} collapsable={false} testID={testID ?? `scan-row-${s.id}`}>
       <MatteSurface radius={radius.lg} padded={spacing.sm}>
         <Row style={{ alignItems: 'center' }}>
-          <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.sc.see_result', { name })} onPress={() => src.open(() => router.push(`/scanner/result/${s.id}`))}
+          <Tappable accessibilityRole="button" accessibilityLabel={a11y} onPress={() => src.open(() => router.push(`/scanner/result/${s.id}`))}
             style={{ flex: 1, minWidth: 0, minHeight: 48, paddingHorizontal: spacing.xs, paddingVertical: 4, justifyContent: 'center' }} testID={`scan-open-${s.id}`}>
             <View style={{ gap: 2 }}>
-              <Text weight="bold" numberOfLines={2}>{`${name}${favorite ? ' ★' : ''}`}</Text>
+              <Row gap={spacing.xs} style={{ alignItems: 'center' }}>
+                <Text weight="bold" numberOfLines={2} style={{ flexShrink: 1 }}>{name}</Text>
+                {favorite ? <Icon name="star" size={14} color={t.colors.gold} /> : null}
+              </Row>
               <Text variant="caption" muted>
                 {[s.kind === 'food' ? tr('u6.sc.food') : tr('u6.sc.product'), s.product_snapshot?.brand, s.analysed_at ? frDate(s.analysed_at) : null, s.is_demo ? tr('u6.sc.demo_data') : null].filter(Boolean).join(' · ')}
               </Text>

@@ -5,7 +5,7 @@
  * - Jamais de dose, jamais de traitement, jamais de diagnostic ni de score clinique.
  * - Chaque entrée indique sa source : observation du parent, donnée importée, information confirmée par un professionnel.
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
@@ -14,7 +14,7 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { StaggerItem } from '@/components/Motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { LineChart } from '@/components/Charts';
-import { Banner, Button, Card, Chip, Field, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Segmented, Text, Toggle } from '@/components/ui';
 import { backend, eq } from '@/lib/backend';
 import { useChild, useInvalidate, useRows } from '@/lib/data/hooks';
 import { friendlyError } from '@/lib/data/hooks-settings';
@@ -24,7 +24,8 @@ import { exportTextFile } from '@/lib/exportData';
 import { insertOrQueue } from '@/lib/offline';
 import { csvCell, safeFileName } from '@/lib/csv';
 import { spacing } from '@/theme/tokens';
-import { formatNumber, localeTag, t as tr } from '@/i18n';
+import { formatDate, formatNumber, localeTag, t as tr } from '@/i18n';
+import { toFrDate } from '@/lib/validation';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { ObservationLog } from '@/features/healthTrack/ObservationLog';
 
@@ -89,6 +90,7 @@ export default function HealthTracking() {
       await insertOrQueue('child_health_entries', { tracker_id: entryFor.id, child_id: child.id, household_id: child.household_id, at: new Date().toISOString(), value: entryFor.kind === 'measure' ? v : null, context, note: note.trim() || null, source });
       inv('child_health_entries');
       const check = planCheck(entryFor, v);
+      haptic(check.status === 'above' || check.status === 'below' ? 'warning' : 'success');
       toast(entryFor.kind === 'measure' ? check.message : tr('u4.ht.obsNoted'), check.status === 'above' || check.status === 'below' ? 'info' : 'success');
       setEntryFor(null); setValue(''); setNote(''); setContext(null); setSource('parent');
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
@@ -111,6 +113,12 @@ export default function HealthTracking() {
   const trackers = trackersQ.data ?? [];
   const activeTrackers = trackers.filter((x) => x.active !== false);
   const allEntries = entriesQ.data ?? [];
+  // Regroupement unique des notes par suivi (au lieu d'un filtre complet par carte à chaque rendu)
+  const entriesByTracker = useMemo(() => {
+    const m = new Map<string, Entry[]>();
+    for (const e of entriesQ.data ?? []) { const l = m.get(e.tracker_id); if (l) l.push(e); else m.set(e.tracker_id, [e]); }
+    return m;
+  }, [entriesQ.data]);
   const todayKey = new Date().toDateString();
   const todayCount = allEntries.filter((e) => new Date(e.at).toDateString() === todayKey).length;
   const lastEntry = allEntries[0];
@@ -141,21 +149,32 @@ export default function HealthTracking() {
       {trackersQ.data && !trackers.length ? <EmptyState icon="activity" title={tr('u4.ht.emptyTitle')} body={tr('u4.ht.emptyBody')} /> : null}
 
       <MotionList style={{ gap: spacing.md }}>{trackers.map((trk, i) => {
-        const list = (entriesQ.data ?? []).filter((e) => e.tracker_id === trk.id);
+        const list = entriesByTracker.get(trk.id) ?? [];
+        const latest = list.find((e) => e.value != null);
+        const latestDay = latest ? new Date(latest.at).toLocaleDateString(localeTag(), { day: 'numeric', month: 'short' }) : '';
         const points = list.filter((e) => e.value != null).slice(0, 60).reverse().map((e) => ({ x: Date.parse(e.at), y: Number(e.value) }));
         return (
           <MotionItem key={trk.id}><StaggerItem key={trk.id} index={i}>
             <Card>
               <Text weight="bold">{trk.label}{trk.unit ? ` (${trk.unit})` : ''}</Text>
-              {trk.plan_by ? <Text variant="caption" muted>{tr('u4.ht.plan', { by: trk.plan_by })}{trk.plan_date ? `, ${new Date(trk.plan_date).toLocaleDateString(localeTag())}` : ''}{trk.thresholds_from_plan && (trk.low_threshold != null || trk.high_threshold != null) ? tr('u4.ht.thr', { low: trk.low_threshold ?? '—', high: trk.high_threshold ?? '—' }) : ''}</Text> : <Text variant="caption" muted>{tr('u4.ht.noPlan')}</Text>}
+              {trk.plan_by ? <Text variant="caption" muted>{tr('u4.ht.plan', { by: trk.plan_by })}{trk.plan_date ? `, ${formatDate(`${trk.plan_date.slice(0, 10)}T12:00:00`, { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}{trk.thresholds_from_plan && (trk.low_threshold != null || trk.high_threshold != null) ? tr('u4.ht.thr', { low: trk.low_threshold ?? '—', high: trk.high_threshold ?? '—' }) : ''}</Text> : <Text variant="caption" muted>{tr('u4.ht.noPlan')}</Text>}
               {trk.plan_note ? <Text variant="small" style={{ marginTop: 4 }}>{tr('u4.ht.instr', { note: trk.plan_note })}</Text> : null}
+              {/* Valeur actuelle en tête, avant la courbe (la donnée principale se lit d'abord) */}
+              {trk.kind === 'measure' && latest ? (
+                <View accessible accessibilityLabel={tr('u4.ht.latest', { value: `${formatNumber(Number(latest.value), { maximumFractionDigits: 6 })} ${trk.unit ?? ''}`.trim(), date: latestDay })} style={{ marginTop: spacing.xs }} testID={`health-latest-${trk.id}`}>
+                  <Text variant="title" style={{ fontVariant: ['tabular-nums'] }}>
+                    {formatNumber(Number(latest.value), { maximumFractionDigits: 6 })}{trk.unit ? <Text variant="small" muted> {trk.unit}</Text> : null}
+                  </Text>
+                  <Text variant="caption" muted>{tr('u4.ht.latestDate', { date: latestDay })}</Text>
+                </View>
+              ) : null}
               {points.length >= 2 ? <View style={{ marginTop: spacing.xs }}><LineChart points={points} unit={trk.unit ?? ''} accessibilityLabel={tr('u4.ht.evolution', { label: trk.label })} formatX={(x) => new Date(x).toLocaleDateString(localeTag(), { day: 'numeric', month: 'short' })} /></View> : null}
               <MotionList>{list.slice(0, 4).map((e) => (
                 <MotionItem key={e.id}><ListRow key={e.id} icon={e.source === 'professional' ? 'check-circle' : e.source === 'imported' ? 'download' : 'user'} title={`${new Date(e.at).toLocaleString(localeTag(), { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${e.value != null ? ` · ${formatNumber(Number(e.value), { maximumFractionDigits: 6 })} ${trk.unit ?? ''}` : ''}${e.context ? ` · ${e.context}` : ''}`} subtitle={[sourceLabel(e.source), e.note].filter(Boolean).join(' — ')} /></MotionItem>
               ))}</MotionList>
               <Row wrap style={{ marginTop: spacing.xs }}>
                 <Button label={trk.kind === 'measure' ? tr('u4.ht.noteMeasure') : tr('u4.ht.noteObs')} icon="plus" size="sm" onPress={() => setEntryFor(trk)} />
-                <Button label={tr('u4.ht.edit')} size="sm" variant="secondary" onPress={() => setEditing({ ...trk, low: trk.low_threshold != null ? String(trk.low_threshold) : '', high: trk.high_threshold != null ? String(trk.high_threshold) : '', plan_date: trk.plan_date ? new Date(trk.plan_date).toLocaleDateString('fr-FR') : undefined })} />
+                <Button label={tr('u4.ht.edit')} size="sm" variant="secondary" onPress={() => setEditing({ ...trk, low: trk.low_threshold != null ? String(trk.low_threshold) : '', high: trk.high_threshold != null ? String(trk.high_threshold) : '', plan_date: trk.plan_date ? toFrDate(trk.plan_date) : undefined })} />
                 {list.length ? <Button label={tr('u4.ht.export')} size="sm" variant="ghost" icon="download" onPress={() => exportTracker(trk)} /> : null}
                 <Button label={tr('u4.ht.delete')} size="sm" variant="ghost" onPress={() => removeTracker(trk)} />
               </Row>
@@ -185,7 +204,7 @@ export default function HealthTracking() {
             <Field label={tr('u4.ht.contexts')} optional hint={tr('u4.ht.commaSep')} value={(editing.contexts ?? []).join(', ')} onChangeText={(v) => setEditing({ ...editing, contexts: v.split(',').map((x) => x.trim()).filter(Boolean) })} />
             <Text variant="label">{tr('u4.ht.proPlan')}</Text>
             <Field label={tr('u4.ht.by')} optional value={editing.plan_by ?? ''} onChangeText={(v) => setEditing({ ...editing, plan_by: v })} maxLength={120} placeholder={tr('u4.ht.byPh')} />
-            <Field label={tr('u4.ht.planDate')} optional value={editing.plan_date ?? ''} onChangeText={(v) => setEditing({ ...editing, plan_date: v })} placeholder={tr('u4.ht.planDatePh')} />
+            <Field label={tr('u4.ht.planDate')} optional value={editing.plan_date ?? ''} onChangeText={(v) => setEditing({ ...editing, plan_date: v })} placeholder={tr('u4.ht.planDatePh')} keyboardType="numbers-and-punctuation" />
             <Field label={tr('u4.ht.planNote')} optional multiline value={editing.plan_note ?? ''} onChangeText={(v) => setEditing({ ...editing, plan_note: v })} maxLength={2000} hint={tr('u4.ht.planNoteHint')} />
             {editing.kind === 'measure' ? (
               <>

@@ -411,6 +411,7 @@ export const parcours: Messages<typeof fr> = {
   "nd.wd.7": "Dom",
   "nd.t.times": "Ora/e di assunzione",
   "nd.t.start": "Inizio",
+  "nd.t.datePh": "GG/MM/AAAA",
   "nd.t.end": "Fine",
   "nd.t.instructions": "Istruzioni di chi ha prescritto",
   "nd.t.prescriber": "Prescrittore",

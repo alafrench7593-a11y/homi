@@ -350,6 +350,7 @@ export const ui2 = {
   'u2.preg.title': 'Grossesse',
   'u2.preg.warning': 'Saignements, douleurs inhabituelles, fièvre, maux de tête intenses, troubles de la vue, bébé qui bouge moins : contacte sans attendre ta maternité ou le 15.',
   'u2.preg.week_n': 'Semaine {n}',
+  'u2.preg.week_current': 'Semaine {n}, semaine actuelle',
   'u2.preg.weeks_trimester': '{weeks} semaines de grossesse, trimestre {trimester}',
   'u2.preg.you_maybe': 'Et chez toi, peut-être',
   'u2.profiles.allergies': 'Allergies déclarées par un professionnel',

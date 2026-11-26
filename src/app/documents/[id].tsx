@@ -235,19 +235,17 @@ export default function DocumentDetail() {
       right={<IconButton icon="star" label={doc.favorite ? tr('docs.unfavorite') : tr('docs.favorite')} color={doc.favorite ? t.colors.gold : t.colors.textMuted} onPress={() => patch({ favorite: !doc.favorite })} />}>
       {busy ? <Banner tone="info" icon="loader">{busy}</Banner> : null}
 
-      {/* Original */}
-      <Appear kind="soft" delay={0.04}>
-        <Card>
-          {preview && IMAGE_MIME.includes(doc.mime_type) ? <Image source={{ uri: preview }} accessibilityLabel={tr('docs.preview')} style={{ width: '100%', height: 260, borderRadius: radius.sm, backgroundColor: '#fff' }} resizeMode="contain" /> : null}
-          {preview && doc.mime_type === 'application/pdf' && Platform.OS === 'web' ? React.createElement('iframe', { src: preview, title: tr('docs.preview'), style: { width: '100%', height: 320, border: 0, borderRadius: 10, background: '#fff' } }) : null}
-          <Row style={{ marginTop: preview ? spacing.sm : 0 }}>
-            <Icon name={def.icon} color={t.colors.lavender} />
-            <Text variant="small" muted style={{ flex: 1 }}>{[doc.mime_type === 'application/pdf' ? 'PDF' : doc.mime_type.replace('image/', '').toUpperCase(), tr('docs.pages', { count: doc.page_count }), formatSize(doc.size_bytes)].join(' · ')}</Text>
-          </Row>
-          <Button label={tr('docs.openOriginal')} icon="external-link" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }}
-            onPress={() => openOriginal(doc).catch(() => toast(tr('docs.err.open'), 'error'))} />
-        </Card>
-      </Appear>
+      {/* Original : affiché tout de suite, sans entrée animée qui retarderait un contenu déjà prêt */}
+      <Card>
+        {preview && IMAGE_MIME.includes(doc.mime_type) ? <Image source={{ uri: preview }} accessibilityLabel={tr('docs.preview')} style={{ width: '100%', height: 260, borderRadius: radius.sm, backgroundColor: '#fff' }} resizeMode="contain" /> : null}
+        {preview && doc.mime_type === 'application/pdf' && Platform.OS === 'web' ? React.createElement('iframe', { src: preview, title: tr('docs.preview'), style: { width: '100%', height: 320, border: 0, borderRadius: radius.sm, background: '#fff' } }) : null}
+        <Row style={{ marginTop: preview ? spacing.sm : 0 }}>
+          <Icon name={def.icon} color={t.colors.lavender} />
+          <Text variant="small" muted style={{ flex: 1 }}>{[doc.mime_type === 'application/pdf' ? 'PDF' : doc.mime_type.replace('image/', '').toUpperCase(), tr('docs.pages', { count: doc.page_count }), formatSize(doc.size_bytes)].join(' · ')}</Text>
+        </Row>
+        <Button label={tr('docs.openOriginal')} icon="external-link" variant="secondary" size="sm" style={{ marginTop: spacing.sm, alignSelf: 'flex-start' }}
+          onPress={() => openOriginal(doc).catch(() => toast(tr('docs.err.open'), 'error'))} />
+      </Card>
 
       {/* Informations */}
       <Card>
@@ -391,14 +389,15 @@ export default function DocumentDetail() {
       ) : !showSummary ? (
         <Button label={tr('docs.sum.go')} icon="align-left" onPress={() => { haptic('light'); setShowSummary(true); }} full />
       ) : summary ? (
-        <Appear kind="soft" delay={0.02}>
+        <Appear kind="soft" delay={0} duration={0.28}>
           <Card>
             <Segmented label={tr('docs.sum.level')} options={[{ value: 'quick', label: tr('docs.sum.quick') }, { value: 'detailed', label: tr('docs.sum.detailed') }, { value: 'simple', label: tr('docs.sum.simple') }]} value={level} onChange={setLevel} />
             <Banner tone="info" icon="info">{tr('docs.sum.notice')}</Banner>
             {summary.unreadable ? <Banner tone="warning" title={tr('docs.sum.unreadableTitle')}>{tr('docs.sum.unreadable')}</Banner> : null}
-            <MotionList>{summary.sections.map((s, si) => (
-              <MotionItem key={s.key + level}><Appear key={s.key + level} kind="soft" delay={0.03 * si}>
-                <View style={{ gap: 4, marginTop: spacing.sm }}>
+            <MotionList>{summary.sections.map((s) => (
+              // Sections posées d'un bloc : plus de cascade qui retardait la lecture du résumé
+              <MotionItem key={s.key + level}>
+                <View style={{ gap: spacing.xxs, marginTop: spacing.sm }}>
                   <Text variant="label">{tr(`docs.sec.${s.key}` as 'docs.sec.type')}</Text>
                   {s.items.map((it, i) => (
                     <View key={i} style={{ gap: 3 }}>
@@ -407,7 +406,7 @@ export default function DocumentDetail() {
                     </View>
                   ))}
                 </View>
-              </Appear></MotionItem>
+              </MotionItem>
             ))}</MotionList>
             <Button label={tr('docs.openOriginal')} icon="external-link" variant="secondary" size="sm" style={{ alignSelf: 'flex-start', marginTop: spacing.md }} onPress={() => openOriginal(doc).catch(() => toast(tr('docs.err.open'), 'error'))} />
           </Card>

@@ -9,7 +9,7 @@ import { Animated, Linking, Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Banner, Button, Card, Icon, Row, SectionTitle, Text, type IconName } from '@/components/ui';
+import { Banner, Button, Card, haptic, Icon, Row, SectionTitle, Text, type IconName } from '@/components/ui';
 import { Tappable } from '@/components/Tappable';
 import { confirm, useToast } from '@/components/Overlays';
 import { LegalLink } from '@/features/auth';
@@ -150,7 +150,7 @@ function PlanCard({ plan, selected, current, onSelect, compact }: { plan: Plan; 
   const title = planTitle(plan.period);
   return (
     <Animated.View style={{ transform: [{ scale }] }} testID={`plan-${plan.period}`}>
-      <Tappable onPress={onSelect} pressScale={0.99} accessibilityRole="radio" accessibilityState={{ selected, checked: selected }}
+      <Tappable onPress={() => { if (!selected) haptic('selection'); onSelect(); }} pressScale={0.99} accessibilityRole="radio" accessibilityState={{ selected, checked: selected }}
         accessibilityLabel={tr('sub2.plan.a11y', { title, price: plan.price, per: planPer(plan.period) })}
         style={{ borderRadius: radius.lg, borderWidth: selected ? 2 : 1, borderColor: selected ? t.colors.primary : t.colors.border, backgroundColor: selected ? t.colors.surface : t.colors.surfaceAlt, padding: compact ? spacing.sm : spacing.md }}>
         <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -159,7 +159,7 @@ function PlanCard({ plan, selected, current, onSelect, compact }: { plan: Plan; 
             <Text weight="bold" style={{ marginTop: 2 }}>{title}</Text>
           </View>
           <View style={{ alignItems: 'flex-end' }}>
-            <Text variant={compact ? 'body' : 'heading'} weight="bold" testID={`plan-price-${plan.period}`}>{plan.price}</Text>
+            <Text variant={compact ? 'body' : 'heading'} weight="bold" style={{ fontVariant: ['tabular-nums'] }} testID={`plan-price-${plan.period}`}>{plan.price}</Text>
             <Text variant="caption" muted>{planPer(plan.period)}</Text>
           </View>
           <View style={{ width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: selected ? t.colors.primary : t.colors.textMuted, backgroundColor: selected ? t.colors.primary : 'transparent', alignItems: 'center', justifyContent: 'center', marginLeft: spacing.xs }}>
@@ -168,7 +168,7 @@ function PlanCard({ plan, selected, current, onSelect, compact }: { plan: Plan; 
         </Row>
         {!compact || plan.savingsPct || plan.trialDays ? (
           <View style={{ marginTop: 6, gap: 2 }}>
-            {plan.perMonth ? <Text variant="small" muted testID={`plan-permonth-${plan.period}`}>{tr('sub2.plan.perMonth', { price: plan.perMonth })}</Text> : null}
+            {plan.perMonth ? <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }} testID={`plan-permonth-${plan.period}`}>{tr('sub2.plan.perMonth', { price: plan.perMonth })}</Text> : null}
             {plan.savingsPct ? <Text variant="small" weight="bold" color={t.colors.success} testID={`plan-savings-${plan.period}`}>{tr('sub2.plan.savings', { pct: plan.savingsPct })}</Text> : null}
             {plan.trialDays ? <Text variant="small" weight="bold" color={t.colors.primary} testID={`plan-trial-${plan.period}`}>{tr('sub2.plan.trial', { count: plan.trialDays })}</Text> : null}
             {current ? <Text variant="small" weight="bold" testID={`plan-current-${plan.period}`}>{tr('sub2.plan.current')}</Text> : null}

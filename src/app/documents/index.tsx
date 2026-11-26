@@ -14,7 +14,6 @@ import { PremiumGate } from '@/components/Family';
 import { EmptyState, ErrorView, Skeleton, VirtualList } from '@/components/States';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, Row, SectionTitle, Text } from '@/components/ui';
 import { Sheet, useToast } from '@/components/Overlays';
-import { Appear } from '@/components/Appear';
 import { useActivePregnancy, useChildren, useDocuments } from '@/lib/data/hooks';
 import { usePlanLimit } from '@/lib/data/hooks-me';
 import { categoryLabel, categoryDef, GROUPS, groupLabel, type DocGroup } from '@/lib/documents/taxonomy';
@@ -112,9 +111,9 @@ export default function DocumentsHome() {
           <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
             {favorites.slice(0, 12).map((d) => (
               <Tappable key={d.id} onPress={() => open(d)} accessibilityRole="button" accessibilityLabel={d.title} testID={`docs-fav-${d.id}`}>
-                <GlassSurface fill={t.colors.surface} depth={1} radius={20} style={{ width: 132 }}>
-                  <View style={{ padding: spacing.md, gap: 6 }}>
-                    <View style={{ width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
+                <GlassSurface fill={t.colors.surface} depth={1} radius={radius.lg} style={{ width: 132 }}>
+                  <View style={{ padding: spacing.md, gap: spacing.xs }}>
+                    <View style={{ width: 36, height: 36, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: t.colors.surfaceAlt }}>
                       <Icon name={categoryDef(d.category).icon} size={18} color={t.colors.gold} />
                     </View>
                     <Text weight="bold" numberOfLines={2}>{d.title}</Text>
@@ -126,18 +125,17 @@ export default function DocumentsHome() {
           </ScrollView>
         </View>
       ) : null}
-      <Appear kind="pop" delay={0.05}>
-        <Button label={tr('docs.import')} icon="upload" variant="secondary" onPress={() => setImportOpen(true)} disabled={atLimit} full />
-      </Appear>
+      {/* Bouton déjà prêt au montage : aucune entrée animée qui le retarderait (MOTION_GUIDELINES, interdits) */}
+      <Button label={tr('docs.import')} icon="upload" variant="secondary" onPress={() => setImportOpen(true)} disabled={atLimit} full />
       <Row>
         <View style={{ flex: 1 }}><Card onPress={() => router.push('/documents/book')} accessibilityLabel={tr('docs.book.title')}>
           <Icon name="book" color={t.colors.lavender} />
-          <Text weight="bold" style={{ marginTop: 6 }}>{tr('docs.book.title')}</Text>
+          <Text weight="bold" style={{ marginTop: spacing.xs }}>{tr('docs.book.title')}</Text>
           <Text variant="caption" muted>{tr('docs.book.short')}</Text>
         </Card></View>
         <View style={{ flex: 1 }}><Card onPress={() => { setSelecting(true); setSelected([]); }} accessibilityLabel={tr('docs.export.title')}>
           <Icon name="share" color={t.colors.lavender} />
-          <Text weight="bold" style={{ marginTop: 6 }}>{tr('docs.export.title')}</Text>
+          <Text weight="bold" style={{ marginTop: spacing.xs }}>{tr('docs.export.title')}</Text>
           <Text variant="caption" muted>{tr('docs.export.short')}</Text>
         </Card></View>
       </Row>
@@ -162,7 +160,7 @@ export default function DocumentsHome() {
       ) : null}
 
       {interpretation && (interpretation.categories.length || interpretation.year || interpretation.latest || interpretation.childId || interpretation.exact) ? (
-        <Row wrap gap={6}>
+        <Row wrap gap={spacing.xs}>
           <Text variant="caption" muted>{tr('docs.search.understood')}</Text>
           {interpretation.categories.slice(0, 3).map((c) => <Chip key={c} label={categoryLabel(c)} selected />)}
           {interpretation.year ? <Chip label={String(interpretation.year)} selected /> : null}
@@ -173,11 +171,11 @@ export default function DocumentsHome() {
       ) : null}
 
       {/* Filtres */}
-      <Row wrap gap={6}>
+      <Row wrap gap={spacing.xs}>
         <Chip label={tr('docs.filter.everyone')} selected={!subject} onPress={() => setSubject(null)} />
         {subjects.map((s) => <Chip key={s.kind + ((s as { id?: string }).id ?? '')} label={subjectLabel(s, kids)} selected={!!subject && sameSubject(s, subject)} onPress={() => setSubject(subject && sameSubject(s, subject) ? null : s)} />)}
       </Row>
-      <Row wrap gap={6}>
+      <Row wrap gap={spacing.xs}>
         {cat ? <Chip label={categoryLabel(cat)} icon="x" selected onPress={() => setCat(null)} testID="docs-cat-filter" /> : null}
         {GROUPS.map((g) => <Chip key={g} label={groupLabel(g)} tone="lavender" selected={group === g} onPress={() => setGroup(group === g ? null : g)} />)}
         <Chip label={tr('docs.filter.favorites')} icon="star" selected={flag === 'favorite'} onPress={() => setFlag(flag === 'favorite' ? null : 'favorite')} />

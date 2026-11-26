@@ -149,7 +149,7 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
               <>
                 <Text variant="small" muted>{tr('nd.t.askChoose')}</Text>
                 {(treatments ?? []).filter((x) => x.active).map((x) => (
-                  <Button key={x.id} label={`${x.name} · ${x.dose_text}`} size="sm" variant="secondary" style={{ marginTop: 6, alignSelf: 'flex-start' }}
+                  <Button key={x.id} label={`${x.name} · ${x.dose_text}`} size="sm" variant="secondary" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }}
                     onPress={() => { edit(x); setDraft((d) => ({ ...d, frequency: d.frequency === 'as_prescribed' ? 'daily' : d.frequency, times: [...new Set([...d.times.split(/[,;\s]+/).filter(Boolean), askTime])].sort().join(', ') })); }} />
                 ))}
               </>
@@ -165,20 +165,22 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
               {/* case à cocher : « donné » en un geste */}
               <Tappable bare accessibilityRole="checkbox" accessibilityState={{ checked: d.log?.status === 'taken' }} aria-checked={d.log?.status === 'taken'} accessibilityLabel={`${tr('nd.t.taken')} — ${d.time} · ${d.treatment.name}`}
                 onPress={() => {
-                  haptic('success');
-                  // un second appui décoche (prise notée par erreur)
-                  if (d.log?.status === 'taken') unlog.mutate({ table: isChild ? 'treatment_logs' : 'my_treatment_logs', id: d.log.id });
-                  else void answer(d, 'taken');
+                  // un second appui décoche (prise notée par erreur) : simple cran ; cocher vibre une seule fois, dans answer()
+                  if (d.log?.status === 'taken') {
+                    haptic('selection');
+                    unlog.mutate({ table: isChild ? 'treatment_logs' : 'my_treatment_logs', id: d.log.id }, { onError: (e) => toast(friendlyError(e), 'error') });
+                  } else void answer(d, 'taken');
                 }} testID={tid(`dose-taken-${d.time}`)} hitSlop={8}
                 style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 2,
-                  borderColor: d.log?.status === 'taken' ? th.colors.gold : th.colors.primary, backgroundColor: d.log?.status === 'taken' ? th.colors.gold : 'transparent' }}>
-                <CheckMark checked={d.log?.status === 'taken'} size={22} color="#FFFFFF" />
+                  borderColor: d.log?.status === 'taken' ? th.colors.text : th.colors.primary, backgroundColor: d.log?.status === 'taken' ? th.colors.text : 'transparent' }}>
+                {/* « pris » : même encre que l'écran Médicaments, coche lisible en clair comme en sombre */}
+                <CheckMark checked={d.log?.status === 'taken'} size={22} color={th.colors.surface} />
               </Tappable>
               <View style={{ flex: 1 }}>
-                <Text weight="bold" style={{ fontSize: 18 }}>{d.time} <Text weight="bold">· {d.treatment.name}</Text></Text>
+                <Text variant="heading" style={{ fontVariant: ['tabular-nums'] }}>{d.time} <Text weight="bold">· {d.treatment.name}</Text></Text>
                 <Text variant="small">{d.treatment.dose_text}</Text>
                 {d.treatment.instructions ? <Text variant="small" muted>{d.treatment.instructions}</Text> : null}
-                {d.log ? <Text variant="small" weight="bold" color={d.log.status === 'taken' ? th.colors.gold : undefined} style={{ marginTop: 2 }} testID={tid(`dose-status-${d.time}`)}>{tr(`nd.t.status.${d.log.status}` as TKey)}{d.log.note ? ` · ${d.log.note}` : ''}</Text> : null}
+                {d.log ? <Text variant="small" weight="bold" style={{ marginTop: 2 }} testID={tid(`dose-status-${d.time}`)}>{tr(`nd.t.status.${d.log.status}` as TKey)}{d.log.note ? ` · ${d.log.note}` : ''}</Text> : null}
               </View>
             </Row>
             <Row wrap style={{ marginTop: spacing.xs }}>
@@ -210,13 +212,13 @@ export function TreatmentsPanel({ scope, noteDose, askTime, compact }: { scope: 
         {draft.frequency === 'weekly' ? (
           <>
             <Row wrap>{WEEKDAYS.map((d) => <Chip key={d} label={tr(`nd.wd.${d}` as TKey)} selected={draft.weekdays.includes(d)} onPress={() => set('weekdays', draft.weekdays.includes(d) ? draft.weekdays.filter((x) => x !== d) : [...draft.weekdays, d].sort())} />)}</Row>
-            {errors.weekdays ? <Text variant="small" color="#C0392B">{errors.weekdays}</Text> : null}
+            {errors.weekdays ? <Text variant="small" color={th.colors.danger} accessibilityRole="alert">{errors.weekdays}</Text> : null}
           </>
         ) : null}
         {draft.frequency !== 'as_prescribed' ? <Field label={tr('nd.t.times')} value={draft.times} onChangeText={(v) => set('times', v)} error={errors.times} placeholder="08:00, 16:00" keyboardType="numbers-and-punctuation" testID="t-times" /> : null}
         <Row>
-          <View style={{ flex: 1 }}><Field label={tr('nd.t.start')} value={draft.start} onChangeText={(v) => set('start', v)} error={errors.start} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" /></View>
-          <View style={{ flex: 1 }}><Field label={tr('nd.t.end')} optional value={draft.end} onChangeText={(v) => set('end', v)} error={errors.end} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" /></View>
+          <View style={{ flex: 1 }}><Field label={tr('nd.t.start')} value={draft.start} onChangeText={(v) => set('start', v)} error={errors.start} placeholder={tr('nd.t.datePh')} keyboardType="numbers-and-punctuation" /></View>
+          <View style={{ flex: 1 }}><Field label={tr('nd.t.end')} optional value={draft.end} onChangeText={(v) => set('end', v)} error={errors.end} placeholder={tr('nd.t.datePh')} keyboardType="numbers-and-punctuation" /></View>
         </Row>
         <Field label={tr('nd.t.instructions')} optional value={draft.instructions} onChangeText={(v) => set('instructions', v)} multiline maxLength={2000} />
         <Field label={tr('nd.t.prescriber')} optional value={draft.prescriber} onChangeText={(v) => set('prescriber', v)} maxLength={120} />

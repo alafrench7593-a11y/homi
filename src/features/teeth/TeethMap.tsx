@@ -10,7 +10,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Tappable } from '@/components/Tappable';
-import { haptic, Icon, Text } from '@/components/ui';
+import { Icon, Text } from '@/components/ui';
 import { PRIMARY_TEETH } from '@/lib/domain/childCare';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -67,7 +67,7 @@ export function TeethMap({ present, onPick, hintFirst }: { present: Set<string>;
           const box = 36;
           return (
             <Tappable key={d.id} testID={`tooth-${d.id}`} accessibilityRole="checkbox" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={d.label}
-              onPress={() => { haptic('selection'); onPick(d.label); }} hitSlop={4} pressScale={0.9} hoverLift={0}
+              onPress={() => onPick(d.label)} hitSlop={4} pressScale={0.9} hoverLift={0}
               style={{ position: 'absolute', left: p.x - box / 2, top: p.y - box / 2, width: box, height: box, alignItems: 'center', justifyContent: 'center' }}>
               <View style={{ width: s.w, height: s.h, borderRadius: s.r, transform: [{ rotate: `${p.rot}deg` }], alignItems: 'center', justifyContent: 'center',
                 backgroundColor: on ? t.colors.primary : first ? t.colors.surface : t.colors.surfaceAlt,

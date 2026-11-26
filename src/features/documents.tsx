@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { whoopEdge } from '@/components/stage/WhoopSheen';
 import { View } from 'react-native';
 import { Card, Chip, Field, haptic, Icon, Row, Text } from '@/components/ui';
-import { formatDate, t as tr } from '@/i18n';
+import { formatDate, formatNumber, t as tr } from '@/i18n';
 import { CATEGORIES, categoryDef, categoryLabel, GROUPS, groupLabel, type DocCategory } from '@/lib/documents/taxonomy';
 import type { Origin } from '@/lib/documents/summary';
 import type { Child, DocumentRow, Pregnancy } from '@/lib/types';
@@ -24,7 +24,10 @@ export function subjectLabel(s: Subject, children: Child[] | undefined): string 
 export const subjectColumns = (s: Subject) => ({ child_id: s.kind === 'child' ? s.id : null, pregnancy_id: s.kind === 'pregnancy' ? s.id : null });
 export const sameSubject = (a: Subject, b: Subject) => a.kind === b.kind && (a.kind === 'me' || (a as { id: string }).id === (b as { id: string }).id);
 
-const fmtSize = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} Ko` : `${(b / 1024 / 1024).toFixed(1).replace('.', ',')} Mo`);
+/** Taille dans la langue choisie (« 12 Ko » en français, « 12 KB » en anglais ; séparateur décimal local). */
+const fmtSize = (b: number) => (b < 1024 * 1024
+  ? tr('docs.size.kb', { n: formatNumber(Math.max(1, Math.round(b / 1024))) })
+  : tr('docs.size.mb', { n: formatNumber(Math.round(b / 1024 / 1024 * 10) / 10, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) }));
 export const formatSize = fmtSize;
 
 /** Carte d'un document : icône de catégorie, nom, date, profil, confidentialité, statut de vérification. */
@@ -38,16 +41,16 @@ export function DocCard({ doc, children, onPress, selected, selecting }: { doc: 
   return (
     <Card onPress={() => { haptic('selection'); onPress(); }} accessibilityLabel={a11y} accessibilityHint={selecting ? tr('docs.card.selectHint') : tr('docs.card.openHint')}>
       <Row style={{ alignItems: 'flex-start' }}>
-        <View style={{ width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: selected ? t.colors.primary : t.colors.surfaceAlt , ...(selected ? whoopEdge(t, t.colors.primary) : null)}}>
+        <View style={{ width: 42, height: 42, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', backgroundColor: selected ? t.colors.primary : t.colors.surfaceAlt , ...(selected ? whoopEdge(t, t.colors.primary) : null)}}>
           <Icon name={selected ? 'check' : doc.mime_type === 'application/pdf' && def.value === 'other' ? 'file-text' : def.icon} color={selected ? t.colors.primaryText : t.colors.lavender} />
         </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <Row gap={6} style={{ alignItems: 'center' }}>
+          <Row gap={spacing.xs} style={{ alignItems: 'center' }}>
             <Text weight="bold" style={{ flexShrink: 1 }}>{doc.title}</Text>
             {doc.favorite ? <Icon name="star" size={14} color={t.colors.gold} /> : null}
           </Row>
           <Text variant="caption" muted>{[cat, date, who].join(' · ')}</Text>
-          <Row gap={6} wrap style={{ marginTop: 4 }}>
+          <Row gap={spacing.xs} wrap style={{ marginTop: spacing.xxs }}>
             <Badge icon={doc.private_to_uploader ? 'lock' : 'users'} label={doc.private_to_uploader ? tr('docs.private') : tr('docs.shared')} />
             {doc.page_count > 1 ? <Badge icon="layers" label={tr('docs.pages', { count: doc.page_count })} /> : null}
             {doc.review_status === 'to_verify' ? <Badge icon="alert-circle" label={tr('docs.toVerify')} tone="warning" /> : null}
@@ -65,7 +68,7 @@ export function Badge({ icon, label, tone }: { icon?: React.ComponentProps<typeo
   const t = useTheme();
   const color = tone === 'warning' ? t.colors.gold : tone === 'success' ? t.colors.success ?? t.colors.primary : t.colors.textMuted;
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xxs, paddingHorizontal: spacing.xs, paddingVertical: 3, borderRadius: radius.pill, borderWidth: 1, borderColor: t.colors.border }}>
       {icon ? <Icon name={icon} size={12} color={color} /> : null}
       <Text variant="caption" color={color}>{label}</Text>
     </View>
@@ -104,7 +107,7 @@ export function CategoryPicker({ value, custom, onChange, suggested }: { value: 
     <View style={{ gap: spacing.xs }}>
       <Text variant="label">{tr('docs.category')}</Text>
       {suggested && suggested !== value ? (
-        <Tappable accessibilityRole="button" onPress={() => { onChange(suggested, ''); setGroup(categoryDef(suggested).group); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        <Tappable accessibilityRole="button" onPress={() => { onChange(suggested, ''); setGroup(categoryDef(suggested).group); }} style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: 44 }}>
           <Icon name="cpu" size={14} />
           <Text variant="small">{tr('docs.suggested', { cat: categoryLabel(suggested) })}</Text>
         </Tappable>

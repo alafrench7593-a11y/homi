@@ -57,8 +57,9 @@ export default function RecallAlerts() {
       footer={<PrimaryButton label={tr('rc.checkNow')} icon="refresh-cw" size="lg" full onPress={checkNow} testID="rc-check" />}>
       <Text muted>{tr('rc.intro')}</Text>
       <TodaySummary title={tr('rc.summary')} items={[
-        { icon: 'package', value: String(followed), label: tr('rc.followed'), testID: 'rc-followed' },
-        { icon: 'alert-triangle', value: String(list.length), label: tr('rc.alerts') },
+        // « — » tant que le chiffre n'est pas connu : jamais un « 0 » faux pendant le chargement
+        { icon: 'package', value: scans.data ? String(followed) : '—', label: tr('rc.followed'), testID: 'rc-followed' },
+        { icon: 'alert-triangle', value: alerts.data ? String(list.length) : '—', label: tr('rc.alerts') },
       ]} />
       {isDemo ? <Banner tone="demo">{tr('rc.demo')}</Banner> : null}
       <Text variant="small" muted>{tr('rc.how')}</Text>

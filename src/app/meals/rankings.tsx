@@ -70,7 +70,7 @@ export default function Rankings() {
           {/* Rang en colonne fixe ; le bouton à droite ouvre la fiche du score (gardée dans l'adresse « ?recipe= ») */}
           <MotionList style={{ gap: spacing.xs }}>{ranked.slice(0, shown).map((x, i) => (
             <MotionItem key={x.r.id}><View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
-              <Text weight="bold" style={{ width: 28, textAlign: 'right', fontVariant: ['tabular-nums'] }}>{i + 1}</Text>
+              <Text weight="bold" style={{ minWidth: 28, textAlign: 'right', fontVariant: ['tabular-nums'] }}>{i + 1}</Text>
               <View style={{ flex: 1 }}><RecipeCard r={x.r} favorite={fav.ids.includes(x.r.id)} score={x.s.score} /></View>
               <IconButton icon="sliders" label={tr('fm.rank.open', { title: x.r.title })} testID={`fm-rank-open-${x.r.slug}`} onPress={() => router.setParams({ recipe: x.r.slug } as never)} />
             </View></MotionItem>

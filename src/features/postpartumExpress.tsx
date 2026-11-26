@@ -41,9 +41,11 @@ export function PostpartumExpress({ value, onAnswer, testID = 'pp-express' }: {
     <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
       <View style={{ padding: spacing.lg, gap: spacing.md }} testID={testID}>
         {/* progression : trois perles dorées */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        {/* cible tactile 44 × 44 autour d'une perle de 10 pt (le visuel ne grossit pas) */}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {EXPRESS_KEYS.map((k, i) => (
-            <Tappable key={k} bare accessibilityRole="button" accessibilityLabel={scale(k).label} onPress={() => setForced(i)} hitSlop={8}>
+            <Tappable key={k} bare accessibilityRole="button" accessibilityState={{ selected: i === step }} accessibilityLabel={scale(k).label} onPress={() => setForced(i)}
+              style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
               <View style={{ width: i === step ? 26 : 10, height: 10, borderRadius: 5, backgroundColor: value[k] != null ? t.colors.gold : i === step ? t.colors.primary : tint(t.colors.gold, 0.3) }} />
             </Tappable>
           ))}

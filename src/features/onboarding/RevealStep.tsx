@@ -38,7 +38,7 @@ export function RevealStep({ lines, total, done, title, error }: { lines: Reveal
           <Text weight="bold">{tr('o2.reveal.working')}</Text>
         </View>
       )}
-      {error ? <Banner tone="warning">{error}</Banner> : null}
+      {error ? <Banner tone="danger">{error}</Banner> : null}
       <View style={{ gap: spacing.xs, alignSelf: 'center', maxWidth: 360 }} accessibilityRole="list" testID="onb-reveal-lines">
         {lines.map((l) => (
           <Animated.View key={l.key} entering={anim ? FadeInDown.duration(260) : undefined} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs }} accessible accessibilityLabel={l.text}>

@@ -169,6 +169,8 @@ function Chat() {
     const message = (text ?? input).trim().slice(0, MAX_QUESTION_LENGTH);
     if (message.length < 2 || sending) return;
     Keyboard.dismiss();
+    // Envoi : un retour haptique, dans la même image que la bulle qui apparaît
+    if (!text) haptic('light');
     setInput('');
     setPremiumNeeded(null);
     const now = Date.now();
@@ -490,7 +492,7 @@ function Chat() {
               : remaining > 0 ? tr('u8.chat.left', { count: remaining, limit: limit ?? 0 }) : tr('u8.chat.noneLeft')}
           </Text>
         )}
-        {tooLong && <Text variant="caption" color={t.colors.danger} center>{tr('u8.chat.chars', { n: input.length, max: MAX_QUESTION_LENGTH })}</Text>}
+        {tooLong && <Text variant="caption" color={t.colors.danger} center style={{ fontVariant: ['tabular-nums'] }}>{tr('u8.chat.chars', { n: input.length, max: MAX_QUESTION_LENGTH })}</Text>}
         <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs, backgroundColor: t.colors.surface, borderRadius: radius.lg, ...glassEdge(t), padding: 6 }}>
           <TextInput
             value={input}
@@ -502,6 +504,7 @@ function Chat() {
             textAlignVertical="top"
             editable={!blocked}
             maxLength={MAX_QUESTION_LENGTH}
+            maxFontSizeMultiplier={1.6}
             style={{ flex: 1, minHeight: 44, maxHeight: 140, color: t.colors.text, fontFamily: fonts.body, fontSize: 16, paddingHorizontal: spacing.sm, paddingTop: 10 }}
           />
           {sending ? (

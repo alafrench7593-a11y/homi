@@ -177,11 +177,11 @@ export function BottleClock({ childId, slots, timerId, size = 300 }: { childId: 
         <View style={{ alignItems: 'center', paddingHorizontal: 8, paddingVertical: 6 }}>
           {next ? (
             <>
-              <Text variant="caption" weight="bold" color={ink2} numberOfLines={1} center style={{ letterSpacing: 1, textTransform: 'uppercase', fontSize: 10 }}>{tr('u6.clock.next')}</Text>
+              <Text variant="caption" weight="bold" color={ink2} numberOfLines={1} center style={{ letterSpacing: 1, textTransform: 'uppercase', fontSize: 11 }}>{tr('u6.clock.next')}</Text>
               <RNText maxFontSizeMultiplier={1.2} style={{ color: ink, fontFamily: fonts.displayItalic, fontSize: small ? 26 : 30, lineHeight: small ? 30 : 34, fontVariant: ['tabular-nums'] }} testID="bottle-clock-next">{slotClock(next.at)}</RNText>
               <Text variant="caption" color={muted} center>{untilLabel(next.at, now)}{next.suggestedMl != null ? tr('u6.clock.ml', { n: next.suggestedMl }) : ''}</Text>
               {lastDone && !small ? (
-                <Text variant="caption" color={muted} numberOfLines={1} style={{ fontSize: 10, marginTop: 4 }} testID="bottle-clock-last">
+                <Text variant="caption" color={muted} numberOfLines={1} style={{ fontSize: 11, marginTop: 4 }} testID="bottle-clock-last">
                   {tr('u6.clock.last', { time: slotClock(lastDone.at) })}{lastDrunk != null ? tr('u6.clock.ml', { n: lastDrunk }) : ''}
                 </Text>
               ) : null}

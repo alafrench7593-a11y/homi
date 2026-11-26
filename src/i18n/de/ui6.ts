@@ -424,6 +424,7 @@ export const ui6: Messages<typeof fr> = {
   "u6.sc.see_result": "Ergebnis für {name} ansehen",
   "u6.sc.this_product": "dieses Produkt",
   "u6.sc.no_name": "Ohne Namen",
+  "u6.sc.favorite": "Favorit",
   "u6.sc.demo_data": "Demodaten",
   "u6.sf.search_failed": "Die Suche hat nicht geklappt. Prüfe deine Verbindung.",
   "u6.sf.searching_product": "Produkt wird gesucht …",

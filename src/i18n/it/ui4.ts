@@ -242,6 +242,8 @@ export const ui4: Messages<typeof fr> = {
   "u4.ht.emptyBody": "Parti da un modello qui sotto o crea il tuo.",
   "u4.ht.plan": "Piano: {by}",
   "u4.ht.thr": " · riferimenti da {low} a {high}",
+  "u4.ht.latest": "Ultimo valore: {value}, il {date}",
+  "u4.ht.latestDate": "Ultimo valore, il {date}",
   "u4.ht.noPlan": "Nessun piano indicato: i valori non vengono interpretati.",
   "u4.ht.instr": "Indicazioni: {note}",
   "u4.ht.evolution": "Andamento di {label}",

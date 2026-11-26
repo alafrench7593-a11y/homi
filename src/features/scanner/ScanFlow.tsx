@@ -261,7 +261,7 @@ function IdentifyStep({ w }: { w: ScanWizard }) {
         )}
         {w.camera.denied ? (
           <Banner tone="warning" title={tr('u6.sf.camera_denied')}
-            action={w.camera.denied === 'settings' ? <SecondaryButton label={tr('u6.sf.open_settings')} size="sm" style={{ marginTop: 6, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
+            action={w.camera.denied === 'settings' ? <SecondaryButton label={tr('u6.sf.open_settings')} size="sm" style={{ marginTop: spacing.xs, alignSelf: 'flex-start' }} onPress={() => Linking.openSettings().catch(() => undefined)} /> : undefined}>
             {w.camera.denied === 'settings' ? tr('u6.sf.camera_denied_settings') : tr('u6.sf.camera_denied_ask')}
           </Banner>
         ) : null}

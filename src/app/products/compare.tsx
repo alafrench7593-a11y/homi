@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { EmptyState } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Card, Chip, Row, Text } from '@/components/ui';
 import { euro } from '@/features/products/ProductCard';
 import { bestPrice, useKidProducts, useProductPrices } from '@/lib/data/hooks-products';
@@ -32,7 +32,9 @@ export default function Compare() {
   ];
   return (
     <Screen back title={tr('pr.compareTitle')}>
-      {chosen.length < 2 ? <EmptyState icon="columns" title={tr('pr.comparePickMore')} /> : (
+      {products.isLoading && !products.data.length ? <Skeleton kind="detail" rows={4} /> : products.isError && !products.data.length ? (
+        <ErrorView error={products.error} onRetry={() => void products.refetch()} />
+      ) : chosen.length < 2 ? <EmptyState icon="columns" title={tr('pr.comparePickMore')} /> : (
         <ScrollView horizontal showsHorizontalScrollIndicator>
           <View testID="compare-table" style={{ gap: spacing.xs }}>
             <Row>
@@ -42,7 +44,7 @@ export default function Compare() {
             {rows.map((r) => (
               <Row key={r.key} style={{ alignItems: 'flex-start' }}>
                 <Text variant="small" weight="bold" style={{ width: 120 }}>{r.label}</Text>
-                {chosen.map((p) => <Text key={p.id} variant="small" style={{ width: 170 }}>{r.cell(p)}</Text>)}
+                {chosen.map((p) => <Text key={p.id} variant="small" style={{ width: 170, fontVariant: ['tabular-nums'] }}>{r.cell(p)}</Text>)}
               </Row>
             ))}
           </View>

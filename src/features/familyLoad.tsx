@@ -7,7 +7,7 @@ import { glassEdge } from '@/components/glass/GlassRim';
 import { Animated, Pressable, View } from 'react-native';
 import { usePressMotion } from '@/components/Motion';
 import { DrawCheck } from '@/components/MotionKit';
-import { easing } from '@/theme/motion';
+import { duration, easing } from '@/theme/motion';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Button, Card, Chip, Field, haptic, Icon, Row, Segmented, Text, Toggle } from '@/components/ui';
 import { useChildren } from '@/lib/data/hooks';
@@ -24,7 +24,7 @@ import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, NATIVE_DRIVER, radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { taskToggle } from '@/lib/domain/journalTrack';
@@ -96,9 +96,10 @@ export function TaskRow({ task, onEdit, onPropose }: { task: FamilyTask; onEdit:
     await new Promise<void>((resolve) => {
       if (reduce) { fill.setValue(next ? 1 : 0); strike.setValue(next ? 1 : 0); resolve(); return; }
       Animated.sequence([
-        Animated.spring(fill, { toValue: next ? 1 : 0, tension: 300, friction: 16, useNativeDriver: false }),
-        Animated.timing(strike, { toValue: next ? 1 : 0, duration: 260, easing: easing.decelerate, useNativeDriver: false }),
-        ...(next ? [Animated.delay(160), Animated.timing(leave, { toValue: 0, duration: 220, easing: easing.accelerate, useNativeDriver: false })] : []),
+        // Durées et courbes du système ; transform et opacité seulement → pilote natif, rien sur le fil JS
+        Animated.spring(fill, { toValue: next ? 1 : 0, tension: 300, friction: 16, useNativeDriver: NATIVE_DRIVER }),
+        Animated.timing(strike, { toValue: next ? 1 : 0, duration: duration.base, easing: easing.standard, useNativeDriver: NATIVE_DRIVER }),
+        ...(next ? [Animated.delay(duration.fast), Animated.timing(leave, { toValue: 0, duration: duration.base, easing: easing.accelerate, useNativeDriver: NATIVE_DRIVER })] : []),
       ]).start(() => resolve());
     });
     try {
@@ -248,7 +249,7 @@ function QuickTile({ label, icon, onPress, color }: { label: string; icon: React
   const press = usePressMotion();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={() => { haptic('selection'); onPress(); }} {...press.handlers} style={{ width: '48.5%' }}>
-      <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface, gap: 4 }, press.style]}>
+      <Animated.View style={[{ minHeight: 64, padding: spacing.sm, borderRadius: radius.lg, ...glassEdge(t), backgroundColor: t.colors.surface, gap: spacing.xxs }, press.style]}>
         <Icon name={icon} size={18} color={color} />
         <Text variant="small" weight="bold">{label}</Text>
       </Animated.View>
@@ -331,11 +332,11 @@ export function RequestCard({ r, tasks }: { r: CareRequest; tasks: FamilyTask[] 
         <Row style={{ marginTop: spacing.xs }} wrap>
           {forMe ? (
             <>
-              <Button label={r.kind === 'taking_over' || r.kind === 'available' ? tr('u6.fl.thanks') : tr('u6.fl.accept')} size="sm" icon="check" onPress={() => act('accepted', tr('u6.fl.answer_sent'))} loading={respond.isPending} />
-              {r.kind !== 'taking_over' && r.kind !== 'available' ? <Button label={tr('u6.fl.decline')} size="sm" variant="ghost" onPress={() => act('declined', tr('u6.fl.answer_sent'))} /> : null}
+              <Button label={r.kind === 'taking_over' || r.kind === 'available' ? tr('u6.fl.thanks') : tr('u6.fl.accept')} size="sm" icon="check" onPress={() => act('accepted', tr('u6.fl.answer_sent'))} loading={respond.isPending} disabled={respond.isPending} />
+              {r.kind !== 'taking_over' && r.kind !== 'available' ? <Button label={tr('u6.fl.decline')} size="sm" variant="ghost" onPress={() => act('declined', tr('u6.fl.answer_sent'))} disabled={respond.isPending} /> : null}
             </>
           ) : null}
-          {mine ? <Button label={tr('u6.fl.cancel_request')} size="sm" variant="ghost" onPress={() => act('cancelled', tr('u6.fl.request_cancelled'))} /> : null}
+          {mine ? <Button label={tr('u6.fl.cancel_request')} size="sm" variant="ghost" onPress={() => act('cancelled', tr('u6.fl.request_cancelled'))} disabled={respond.isPending} /> : null}
         </Row>
       ) : null}
     </Card>
@@ -360,7 +361,7 @@ function ChildEssentialCard({ child, large }: { child: Child; large?: boolean })
   const v = large ? 'body' : 'small';
   return (
     <Card>
-      <Text weight="bold" style={large ? { fontSize: 20 } : undefined}>{child.first_name} · {childAge(child.birth_date).label}</Text>
+      <Text variant={large ? 'heading' : 'body'} weight="bold">{child.first_name} · {childAge(child.birth_date).label}</Text>
       <Text variant={v} color={allergies.length ? t.colors.danger : undefined}>{tr('u6.fl.allergies', { list: allergies.length ? allergies.join(', ') : tr('u6.fl.none_noted') })}</Text>
       {treatments.length ? <Text variant={v}>{tr('u6.fl.treatments', { list: treatments.map((x) => `${x.label}${x.details ? ` (${x.details})` : ''}`).join(' ; ') })}</Text> : null}
       {contacts.length ? <Text variant={v}>{tr('u6.fl.contacts', { list: contacts.map((x) => `${x.label}${x.details ? ` ${x.details}` : ''}`).join(' ; ') })}</Text> : null}
@@ -415,7 +416,7 @@ export function FamilyHomeCard() {
           </Row>
         </Card>
       ) : null}
-      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: 12, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
+      <Tappable accessibilityRole="button" accessibilityLabel={tr('u6.fl.hard_day_a11y')} onPress={() => router.push('/family/difficult')} style={({ pressed }) => ({ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: spacing.xs, minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm, borderRadius: radius.sm, ...glassEdge(t), backgroundColor: pressed ? t.colors.surfaceAlt : t.colors.surface })}>
         <Icon name="wind" size={16} color={t.colors.primary} />
         <Text variant="small" weight="bold">{tr('u6.fl.hard_day')}</Text>
       </Tappable>
