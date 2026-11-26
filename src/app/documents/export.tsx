@@ -8,7 +8,7 @@ import { Platform, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { Appear } from '@/components/Appear';
-import { Skeleton } from '@/components/States';
+import { ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, haptic, Icon, Row, SectionTitle, Text, Toggle } from '@/components/ui';
 import { useToast } from '@/components/Overlays';
 import { backend } from '@/lib/backend';
@@ -18,7 +18,7 @@ import { buildSummary } from '@/lib/documents/summary';
 import { readBytes } from '@/lib/documents/io';
 import { deliverFile as deliver } from '@/lib/deliverFile';
 import { categoryLabel } from '@/lib/documents/taxonomy';
-import { DocCard, subjectLabel, subjectOf } from '@/features/documents';
+import { DocCard, formatSize, subjectLabel, subjectOf } from '@/features/documents';
 import type { DocumentRow } from '@/lib/types';
 import { formatDate, t as tr } from '@/i18n';
 import { spacing } from '@/theme/tokens';
@@ -84,13 +84,16 @@ export default function ExportScreen() {
       ) : (
         <Button label={tr('docs.export.build')} icon="file-plus" loading={building} disabled={!selected.length} onPress={build} full />
       )}>
-      {docsQ.isLoading && !docsQ.data ? <Skeleton rows={3} /> : (
+      {docsQ.isLoading && !docsQ.data ? <Skeleton rows={3} /> : docsQ.isError && !docsQ.data ? (
+        // Erreur réseau : jamais présentée comme « aucun document choisi »
+        <ErrorView error={docsQ.error} onRetry={() => void docsQ.refetch()} title={tr('docs.loadError')} />
+      ) : (
         <>
           <Banner tone="warning" icon="alert-triangle" title={tr('docs.export.risksTitle')}>{tr('docs.export.risks')}</Banner>
 
           <SectionTitle title={tr('docs.export.included', { count: selected.length })} />
           {selected.map((d) => (
-            <View key={d.id} style={{ gap: 4 }}>
+            <View key={d.id} style={{ gap: spacing.xxs }}>
               <DocCard doc={d} children={kids} selected selecting onPress={() => { setChosen((c) => c.filter((x) => x !== d.id)); setReady(null); }} />
             </View>
           ))}
@@ -125,11 +128,11 @@ export default function ExportScreen() {
             }} full />
           ) : null}
           {ready ? (
-            <Appear kind="pop" delay={0.02}>
-              <Banner tone="success" icon="check-circle" title={tr('docs.export.readyTitle')}>{tr('docs.export.ready', { size: `${Math.max(1, Math.round(ready.bytes.length / 1024))} Ko` })}</Banner>
+            <Appear kind="pop" delay={0} duration={0.24}>
+              <Banner tone="success" icon="check-circle" title={tr('docs.export.readyTitle')}>{tr('docs.export.ready', { size: formatSize(ready.bytes.length) })}</Banner>
             </Appear>
           ) : null}
-          <Row gap={6}><Icon name="lock" size={14} /><Text variant="caption" muted style={{ flex: 1 }}>{tr('docs.export.noLink')}</Text></Row>
+          <Row gap={spacing.xs}><Icon name="lock" size={14} /><Text variant="caption" muted style={{ flex: 1 }}>{tr('docs.export.noLink')}</Text></Row>
         </>
       )}
     </Screen>

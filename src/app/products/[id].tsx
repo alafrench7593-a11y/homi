@@ -43,7 +43,7 @@ export default function ProductDetail() {
     <Screen back title={p.name} subtitle={p.brand ?? undefined}>
       {p.is_demo ? <Banner tone="danger">{tr('pr.demoProduct')}</Banner> : null}
       {p.status !== 'published' ? <Banner tone="warning">{tr(`pr.status.${p.status}` as TKey)}</Banner> : null}
-      <View style={{ alignItems: 'center', gap: 4 }}>
+      <View style={{ alignItems: 'center', gap: spacing.xxs }}>
         {p.image_url ? <Image source={{ uri: p.image_url }} style={{ width: 220, height: 220 }} resizeMode="contain" accessibilityLabel={tr('pr.photoA11y', { name: p.name })} /> : <Icon name="package" size={64} color={t.colors.textMuted} />}
         <Text variant="caption" muted testID="product-photo-credit">{p.image_url ? (p.image_credit ?? tr('pr.photoCredit')) : tr('pr.noPhoto')}</Text>
       </View>
@@ -58,20 +58,26 @@ export default function ProductDetail() {
           <View testID="product-criteria">
             <Row style={{ justifyContent: 'space-between' }}>
               <Text weight="bold">{tr('pr.criteriaTitle')}</Text>
-              <Text weight="bold">{c.score}/100</Text>
+              <Text weight="bold" style={{ fontVariant: ['tabular-nums'] }}>{c.score}/100</Text>
             </Row>
-            {c.criteria.map((x) => (
-              <Row key={x.key} style={{ justifyContent: 'space-between', marginTop: 4 }}>
-                <Row gap={6} style={{ flex: 1 }}><Icon name={x.ok === null ? 'help-circle' : x.ok ? 'check' : 'x'} size={14} color={x.ok === null ? t.colors.textMuted : x.ok ? t.colors.success : t.colors.danger} /><Text variant="small" style={{ flex: 1 }}>{tr(`pr.crit.${x.key}` as TKey)}</Text></Row>
-                <Text variant="small" muted>{x.points}/{x.max}</Text>
-              </Row>
-            ))}
-            <Text variant="caption" muted style={{ marginTop: 4 }}>{tr(cosmetic ? 'pr.criteriaMethodCosmetic' : 'pr.criteriaMethodFood')}</Text>
+            {c.criteria.map((x) => {
+              // Statut lu au lecteur d'écran (l'icône seule était muette) : critère, respecté ou non, points
+              const crit = tr(`pr.crit.${x.key}` as TKey);
+              const status = x.ok === null ? tr('pr.cmp.unknown') : x.ok ? tr('pr.crit.met') : tr('pr.crit.notMet');
+              return (
+                <View key={x.key} accessible accessibilityLabel={tr('pr.crit.a11y', { crit, status, points: x.points, max: x.max })}
+                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: spacing.xs, marginTop: spacing.xxs }}>
+                  <Row gap={spacing.xs} style={{ flex: 1 }}><Icon name={x.ok === null ? 'help-circle' : x.ok ? 'check' : 'x'} size={14} color={x.ok === null ? t.colors.textMuted : x.ok ? t.colors.success : t.colors.danger} /><Text variant="small" style={{ flex: 1 }}>{crit}</Text></Row>
+                  <Text variant="small" muted style={{ fontVariant: ['tabular-nums'] }}>{x.points}/{x.max}</Text>
+                </View>
+              );
+            })}
+            <Text variant="caption" muted style={{ marginTop: spacing.xxs }}>{tr(cosmetic ? 'pr.criteriaMethodCosmetic' : 'pr.criteriaMethodFood')}</Text>
           </View>
         </Card>
       ) : <Text variant="small" muted>{p.category === 'accessory' ? tr('pr.noScoreAccessory') : tr('pr.noScoreUnknown')}</Text>}
 
-      {p.benefits.length ? <Card><Text weight="bold">{tr('pr.benefits')}</Text>{p.benefits.map((b) => <Text key={b} variant="small" style={{ marginTop: 2 }}>• {b}</Text>)}</Card> : null}
+      {p.benefits.length ? <Card><Text weight="bold">{tr('pr.benefits')}</Text>{p.benefits.map((b) => <Text key={b} variant="small" style={{ marginTop: spacing.xxs }}>• {b}</Text>)}</Card> : null}
       <View testID="product-precautions">
         <Banner tone="warning" title={tr('pr.precautions')}>
           {[...p.precautions, ...(c.flags.perfume ? [tr('pr.flag.perfume')] : []), ...(c.flags.essentialOils.length ? [tr('pr.flag.eo', { list: c.flags.essentialOils.join(', ') })] : []),
@@ -83,7 +89,7 @@ export default function ProductDetail() {
       <SectionTitle title={tr('pr.composition')} />
       <Text variant="small" testID="product-composition">{p.composition ?? tr('pr.compositionUnknown')}</Text>
       {p.source_url ? (
-        <Tappable accessibilityRole="link" onPress={() => open(p.source_url!)} style={{ minHeight: 36, justifyContent: 'center' }}>
+        <Tappable accessibilityRole="link" onPress={() => open(p.source_url!)} style={{ minHeight: 44, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.primary}>{tr(`pr.src.${p.data_source}` as TKey)}{p.data_retrieved_at ? ` · ${tr('pr.retrieved', { date: formatDate(p.data_retrieved_at) })}` : ''}</Text>
         </Tappable>
       ) : null}
@@ -97,7 +103,7 @@ export default function ProductDetail() {
           return (
             <Card key={x.id}>
               <Row style={{ justifyContent: 'space-between' }}>
-                <Text weight="bold">{euro(Number(x.price))}</Text>
+                <Text weight="bold" style={{ fontVariant: ['tabular-nums'] }}>{euro(Number(x.price))}</Text>
                 <Text variant="caption" muted>{tr('pr.observed', { date: formatDate(`${x.observed_on}T12:00:00`) })}</Text>
               </Row>
               <Text variant="small">{x.store_name}{x.store_city ? ` · ${x.store_city}` : ''} · {tr(`pr.store.${x.store_kind}` as TKey)}</Text>
@@ -114,7 +120,7 @@ export default function ProductDetail() {
       <Button label={tr('pr.compareWith')} icon="columns" variant="ghost" onPress={() => router.push({ pathname: '/products/compare', params: { ids: p.id } })} />
       <SectionTitle title={tr('pr.sources')} />
       {PRODUCT_CRITERIA_SOURCES.map((s) => (
-        <Tappable key={s.url} accessibilityRole="link" onPress={() => open(s.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+        <Tappable key={s.url} accessibilityRole="link" onPress={() => open(s.url)} style={{ minHeight: 44, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.primary}>{s.label}</Text>
         </Tappable>
       ))}

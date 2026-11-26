@@ -101,7 +101,7 @@ export default function ScannerHub() {
 
       <Card tone="soft">
         <Text weight="medium">{tr('u8.hub.how')}</Text>
-        <View style={{ gap: 6, marginTop: spacing.xs }} accessibilityLabel={tr('u8.hub.stepsA11y')}>
+        <View style={{ gap: spacing.xs, marginTop: spacing.xs }} accessibilityLabel={tr('u8.hub.stepsA11y')}>
           {([
             ['camera', tr('u8.hub.step1')],
             ['check', tr('u8.hub.step2')],

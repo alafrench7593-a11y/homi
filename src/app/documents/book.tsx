@@ -43,7 +43,7 @@ export default function HealthBook() {
     <View key={key} style={{ gap: spacing.xs }}>
       <SectionTitle title={tr(`docs.book.${key}` as 'docs.book.recent')} />
       {list.length ? list.map((d) => (
-        <View key={d.id} style={{ gap: 4 }}>
+        <View key={d.id} style={{ gap: spacing.xxs }}>
           <DocCard doc={d} children={kids} onPress={() => open(d)} />
           {extra?.(d)}
         </View>
@@ -55,13 +55,13 @@ export default function HealthBook() {
   return (
     <Screen back title={tr('docs.book.title')} subtitle={tr('docs.book.subtitle')}>
       <View accessibilityRole="radiogroup">
-        <Row wrap gap={6}>
+        <Row wrap gap={spacing.xs}>
           {subjects.map((s) => <Chip key={s.kind + ((s as { id?: string }).id ?? '')} label={subjectLabel(s, kids)} icon={s.kind === 'me' ? 'user' : s.kind === 'child' ? 'smile' : 'moon'} selected={sameSubject(s, subject)} onPress={() => setSubject(s)} />)}
         </Row>
       </View>
       <Banner tone="info" icon="info">{tr('docs.book.notice')}</Banner>
       {loading ? <Skeleton rows={4} /> : docsQ.isError ? <ErrorView error={docsQ.error} onRetry={() => void docsQ.refetch()} /> : (
-        <Appear kind="soft" delay={0.04}>
+        <Appear kind="soft" delay={0} duration={0.28}>
           <View style={{ gap: spacing.lg }}>
             <Text weight="bold" testID="book-count">{tr('docs.book.countFor', { who: subjectLabel(subject, kids), count: active.length })}</Text>
             <DocTrack docs={mine} testID="ct-book" />
@@ -71,10 +71,10 @@ export default function HealthBook() {
               const ex = statusOf(d);
               if (s.key === 'prescriptions') {
                 const current = !!(ex?.fields as { currentTreatment?: boolean } | undefined)?.currentTreatment;
-                return <Row gap={6}><Badge icon="clipboard" tone={current ? 'success' : undefined} label={current ? tr('docs.rx.current') : tr('docs.rx.archived')} /></Row>;
+                return <Row gap={spacing.xs}><Badge icon="clipboard" tone={current ? 'success' : undefined} label={current ? tr('docs.rx.current') : tr('docs.rx.archived')} /></Row>;
               }
               if (s.key === 'vaccinations' || s.key === 'results') {
-                return <Row gap={6}><Badge icon={ex && ex.status !== 'to_verify' ? 'check-circle' : 'cpu'} tone={ex && ex.status !== 'to_verify' ? 'success' : 'warning'} label={tr(`docs.status.${ex?.status ?? 'to_verify'}` as 'docs.status.to_verify')} /></Row>;
+                return <Row gap={spacing.xs}><Badge icon={ex && ex.status !== 'to_verify' ? 'check-circle' : 'cpu'} tone={ex && ex.status !== 'to_verify' ? 'success' : 'warning'} label={tr(`docs.status.${ex?.status ?? 'to_verify'}` as 'docs.status.to_verify')} /></Row>;
               }
               return null;
             }))}
