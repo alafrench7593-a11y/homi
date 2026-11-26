@@ -239,6 +239,8 @@ export const ui4 = {
   'u4.ht.emptyBody': 'Pars d’un modèle ci-dessous ou crée le tien.',
   'u4.ht.plan': 'Plan : {by}',
   'u4.ht.thr': ' · repères {low} à {high}',
+  'u4.ht.latest': 'Dernière valeur : {value}, le {date}',
+  'u4.ht.latestDate': 'Dernière valeur, le {date}',
   'u4.ht.noPlan': 'Aucun plan renseigné : les valeurs ne sont pas interprétées.',
   'u4.ht.instr': 'Consignes : {note}',
   'u4.ht.evolution': 'Évolution de {label}',

@@ -15,7 +15,6 @@ import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, haptic, Icon, IconButton, Row, SectionTitle, Text } from '@/components/ui';
 import { VaccineHero, VaccineRegistry } from '@/features/finishMeals/VaccineTrack';
-import { GlassSurface } from '@/components/Glass';
 import { GoldTimeline, type GoldState } from '@/features/goldTimeline';
 import { backend, eq } from '@/lib/backend';
 import { useChild, useChildren, useInvalidate, useMemberships } from '@/lib/data/hooks';
@@ -31,7 +30,7 @@ import { frToISO, todayISO } from '@/lib/domain/dates';
 import { toFrDate } from '@/lib/validation';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
@@ -114,7 +113,8 @@ export default function Vaccines() {
       if (d.id) await backend.update('child_vaccinations', row, [eq('id', d.id)]);
       else await backend.insert('child_vaccinations', { ...row, child_id: child.id, household_id: child.household_id });
       inv('child_vaccinations');
-      toast(tr('vx.saved'));
+      haptic('success');
+      toast(tr('vx.saved'), 'success');
       setD(null);
     } catch (e) { toast(friendlyError(e), 'error'); } finally { setBusy(false); }
   }
@@ -140,12 +140,12 @@ export default function Vaccines() {
   async function markVisitDone(v: NonNullable<typeof visit>) {
     const iso = frToISO(doneDate);
     if (!iso || iso > todayISO()) return toast(tr('vx.err.date'), 'error');
-    try { await act.markDone.mutateAsync({ doses: v.doses.filter((x) => x.state !== 'done'), givenOn: iso }); toast(tr('vx.markedDone'), 'success'); setVisit(null); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await act.markDone.mutateAsync({ doses: v.doses.filter((x) => x.state !== 'done'), givenOn: iso }); haptic('success'); toast(tr('vx.markedDone'), 'success'); setVisit(null); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function completeAppt(a: VaccineAppointment) {
     const doses = (schedule ?? []).filter((x) => (a.calendar_keys ?? []).includes(x.key) && x.state !== 'done');
     if (!(await confirm(tr('vx.completeTitle'), tr('vx.completeBody', { count: doses.length }), tr('vx.complete')))) return;
-    try { await act.complete.mutateAsync({ appt: a, doses }); toast(tr('vx.completed'), 'success'); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await act.complete.mutateAsync({ appt: a, doses }); haptic('success'); toast(tr('vx.completed'), 'success'); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   // Première visite qui n'est pas entièrement faite et dont une dose est « à faire » ou « bientôt »
   const firstNow = shownVisits.find((v) => v.doses.some((x) => x.state === 'due' || x.state === 'upcoming'));
@@ -170,7 +170,7 @@ export default function Vaccines() {
           <Text variant="caption" muted testID="vaccine-version">{tr('vx.version', { version: calendar.version, country: calendar.country })}</Text>
           {!supported ? <Text variant="small" weight="bold">{tr('vx.otherCountry')}</Text> : null}
           <MotionList>{Object.values(calendar.sources).map((s) => (
-            <MotionItem key={s.key}><Tappable key={s.key} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 36, justifyContent: 'center' }}>
+            <MotionItem key={s.key}><Tappable key={s.key} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
               <Text variant="caption" color={t.colors.primary}>{s.label} ({fmt(s.published)})</Text>
             </Tappable></MotionItem>
           ))}</MotionList>
@@ -223,16 +223,16 @@ export default function Vaccines() {
           <View testID={`vaccine-postponed-${x.key}`}>
             <Text weight="bold">{x.label}</Text>
             <Text variant="small" muted>{x.dose}{x.postponedTo ? ` · ${tr('vx.until', { date: fmt(x.postponedTo) })}` : ''}</Text>
-            {postponements.find((p) => p.calendar_key === x.key)?.note ? <Text variant="small" muted>{postponements.find((p) => p.calendar_key === x.key)!.note}</Text> : null}
-            <Button label={tr('vx.postponeCancel')} size="sm" variant="ghost" onPress={() => child && postpone.mutate({ child, keys: [x.key], to: null, note: null, cancel: true })} style={{ alignSelf: 'flex-start' }} />
+            {(() => { const n = postponements.find((p) => p.calendar_key === x.key)?.note; return n ? <Text variant="small" muted>{n}</Text> : null; })()}
+            <Button label={tr('vx.postponeCancel')} size="sm" variant="ghost" onPress={() => child && postpone.mutate({ child, keys: [x.key], to: null, note: null, cancel: true }, { onSuccess: () => toast(tr('vx.postponeCancelled'), 'success'), onError: (e) => toast(friendlyError(e), 'error') })} style={{ alignSelf: 'flex-start' }} />
           </View>
         </Card></MotionItem>
       ))}</MotionList>
 
       <SectionTitle title={tr('vx.calendar')} />
       {/* Fil des vaccins : chaque visite est une perle (faite, c'est le moment, prévue, plus tard) ; « Fait aujourd'hui » en un geste */}
-      <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
-        <View style={{ padding: spacing.lg }}>
+      <Card>
+        <View>
           <GoldTimeline testID="vaccine-timeline" items={shownVisits.map((v) => {
             const todo = v.doses.filter((x) => x.state !== 'done');
             const state: GoldState = !todo.length ? 'done' : v === firstNow ? 'now' : todo.some((x) => x.state === 'planned') ? 'planned' : 'later';
@@ -249,7 +249,7 @@ export default function Vaccines() {
             };
           })} />
         </View>
-      </GlassSurface>
+      </Card>
       {!showAll && shownVisits.length < visits.length ? <Button label={tr('vx.showAll')} variant="ghost" onPress={() => setShowAll(true)} /> : null}
       <Card>
         <Text weight="bold">{tr('vx.situational')}</Text>
@@ -276,7 +276,7 @@ export default function Vaccines() {
                 <Text variant="small">{x.dose} · {tr(x.status === 'mandatory' ? 'vx.mandatory' : 'vx.recommended')}</Text>
                 {x.note ? <Text variant="caption" muted>{x.note}</Text> : null}
                 <StateChip d={x} />
-                {x.state === 'done' ? <Button label={tr('vx.undo')} size="sm" variant="ghost" onPress={() => act.undo.mutate(x.key)} /> : null}
+                {x.state === 'done' ? <Button label={tr('vx.undo')} size="sm" variant="ghost" onPress={() => act.undo.mutate(x.key, { onError: (e) => toast(friendlyError(e), 'error') })} /> : null}
               </View></MotionItem>
             ))}</MotionList>
             <Text variant="caption" muted>{tr('vx.indicative')}</Text>
@@ -288,7 +288,7 @@ export default function Vaccines() {
                 <Button label={tr('vx.markDone')} icon="check" full onPress={() => markVisitDone(visit)} testID="vaccine-mark-done" />
                 <Text variant="caption" muted>{tr('vx.markDoneNote')}</Text>
                 <Text variant="label">{tr('vx.postponeTitle')}</Text>
-                <Field label={tr('vx.postponeTo')} optional value={postTo} onChangeText={setPostTo} placeholder="JJ/MM/AAAA" keyboardType="numbers-and-punctuation" testID="vaccine-postpone-date" />
+                <Field label={tr('vx.postponeTo')} optional value={postTo} onChangeText={setPostTo} placeholder={tr('vx.f.datePh')} keyboardType="numbers-and-punctuation" testID="vaccine-postpone-date" />
                 <Field label={tr('vx.f.note')} optional value={postNote} onChangeText={setPostNote} maxLength={500} />
                 <Button label={tr('vx.postpone')} icon="pause-circle" variant="ghost" full onPress={() => postponeVisit(visit)} testID="vaccine-postpone" />
               </>

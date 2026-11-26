@@ -16,7 +16,7 @@ import { PRIMARY_TEETH, bottleElapsed, formatChrono, resumePatch, type SafetyNot
 import { CHILD_SOURCES, DEHYDRATION_SIGNS, SAFE_SLEEP } from '@/content/childSafety';
 import type { Child } from '@/lib/types';
 import { useReduceMotion, useTheme } from '@/theme/ThemeProvider';
-import { NATIVE_DRIVER, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, NATIVE_DRIVER, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { t as tr, formatTime } from '@/i18n';
 
@@ -130,7 +130,7 @@ export function SafetyNoticeCard({ n }: { n: SafetyNotice }) {
         </View>
       ) : null}
       <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('u3.care.noDiag')}</Text>
-      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+      <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
         <Text variant="caption" color={t.colors.primary}>{tr('u3.care.source', { publisher: src.publisher })}</Text>
       </Tappable>
     </Banner>
@@ -146,7 +146,7 @@ export function SafeSleepCard() {
       {open ? (
         <View style={{ gap: 4, marginTop: 6 }}>
           {SAFE_SLEEP.map((s) => <Text key={s} variant="small">• {s}</Text>)}
-          <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(CHILD_SOURCES.sleep.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+          <Tappable accessibilityRole="link" onPress={() => void Linking.openURL(CHILD_SOURCES.sleep.url)} style={{ minHeight: MIN_TOUCH, justifyContent: 'center' }}>
             <Text variant="caption" color={t.colors.primary}>{tr('u3.care.source', { publisher: CHILD_SOURCES.sleep.publisher })}</Text>
           </Tappable>
         </View>
