@@ -13,7 +13,7 @@ import { groupOfPosition, keyOfPosition, PREP_ITEMS, prepText, templateRows } fr
 import { reminderAt, sessionCounts, splitSessions, validPain, type CareLog } from '@/features/postpartumCare/domain';
 import { alertAt, defaultUseBy, fifo, freshness, SOURCED_KEEP_HOURS, thaw, totals, unstoredPumpings, validateMilk, type MilkItem } from '@/features/feeding/milkStock';
 import { byDay, nearestFeed, suggestedQuestions, type FeedingIssue } from '@/features/feeding/issues';
-import { closePrevious, current, timelineLine, validateFormula, type FormulaChange } from '@/features/feeding/formula';
+import { closePrevious, current, localDay, timelineLine, validateFormula, type FormulaChange } from '@/features/feeding/formula';
 
 beforeAll(() => setLocale('fr'));
 
@@ -175,6 +175,11 @@ describe('79 laits infantiles', () => {
     expect(validateFormula({ brand: 'X', startedOn: '2026-08-01', endedOn: null }, '2026-07-01')).toBe('fml.err.future');
     expect(validateFormula({ brand: 'X', startedOn: '2026-06-01', endedOn: '2026-05-01' }, '2026-07-01')).toBe('fml.err.end');
     expect(timelineLine(f({ ended_on: '2026-05-31', reason: 'age' })).title).toBe('Lait A · 1er âge');
+  });
+
+  it('dates « AAAA-MM-JJ » lues en jour local (pas minuit UTC)', () => {
+    const d = localDay('2026-06-01');
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 5, 1]);
   });
 });
 

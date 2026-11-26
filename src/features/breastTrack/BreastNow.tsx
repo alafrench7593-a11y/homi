@@ -13,7 +13,9 @@ import { AnimatedProgressRing } from '@/components/motion/AnimatedProgressRing';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { StageHero } from '@/components/stage/StageHero';
-import { Glass, GlassButton } from '@/components/glass';
+import { GlassButton } from '@/components/glass';
+import { MatteSurface } from '@/components/surfaces';
+import { Skeleton } from '@/components/States';
 import { Tappable } from '@/components/Tappable';
 import { useToast } from '@/components/Overlays';
 import { Banner, haptic, Text } from '@/components/ui';
@@ -195,7 +197,7 @@ function DayTotals({ child, feeds, now }: { child: Child; feeds: readonly Breast
     </View>
   );
   return (
-    <Glass variant="card" radius={radius.xl} testID="bt-day" contentStyle={{ padding: spacing.md, gap: spacing.sm }}>
+    <MatteSurface radius={radius.lg} testID="bt-day" contentStyle={{ padding: spacing.md, gap: spacing.sm }}>
       <Text variant="label" accessibilityRole="header">{tr('bt.day.title')}</Text>
       {d.count ? (
         <>
@@ -209,7 +211,7 @@ function DayTotals({ child, feeds, now }: { child: Child; feeds: readonly Breast
           {d.noDuration ? <Text variant="caption" muted>{tr('bt.day.noDuration', { count: d.noDuration })}</Text> : null}
         </>
       ) : <Text muted testID="bt-day-none">{tr('bt.day.none')}</Text>}
-    </Glass>
+    </MatteSurface>
   );
 }
 
@@ -232,6 +234,8 @@ export function BreastNow({ child, focusFeed, startSide }: { child: Child; focus
   const day = feedsByDay(feeds as readonly FeedLike[], child.id, now, 1)[0];
   const week = feedsByDay(feeds as readonly FeedLike[], child.id, now, 7);
   const listText = today.map((i) => i.text).join('. ');
+  // Chargement : squelette, pas « aucune tétée » à tort avant l'arrivée des données
+  if (q.isLoading && !q.data) return <Skeleton kind="detail" rows={4} />;
   return (
     <View style={{ gap: spacing.sm }}>
       <BreastHero child={child} feeds={feeds} now={now} onOpen={openFeed} autoStart={q.data ? startSide ?? null : null} />

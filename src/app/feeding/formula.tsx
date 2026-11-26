@@ -6,10 +6,10 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, ListGroup, ListRow, Row, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListGroup, ListRow, Row, Text } from '@/components/ui';
 import { spacing } from '@/theme/tokens';
 import { formatDate, t as tr } from '@/i18n';
 import { frToISO, todayISO } from '@/lib/domain/dates';
@@ -18,7 +18,7 @@ import { friendlyError } from '@/lib/data/hooks-settings';
 import { useDeleteFormula, useFormulaChanges, useSaveFormula } from '@/lib/data/hooks-feeding';
 import { FeedingChildPicker, useFeedingChild } from '@/features/feeding/ui';
 import {
-  closePrevious, current, FORMULA_KINDS, FORMULA_REASONS, kindLabel, reasonLabel, sorted, timelineLine, validateFormula,
+  closePrevious, current, FORMULA_KINDS, localDay, FORMULA_REASONS, kindLabel, reasonLabel, sorted, timelineLine, validateFormula,
   type FormulaChange, type FormulaKind, type FormulaReason,
 } from '@/features/feeding/formula';
 
@@ -52,12 +52,12 @@ function FormulaSheet({ item, visible, onClose, childId, householdId, list }: { 
         if (old) await save.mutateAsync({ ...old, ended_on: prev.ended_on });
       }
       const r = await save.mutateAsync({ ...(item ?? {}), child_id: childId, household_id: householdId, brand: brand.trim(), kind, started_on: startIso!, ended_on: endIso, reason, observations: obs.trim() || null });
-      toast(r === 'queued' ? tr('fml.savedOffline') : tr('fml.saved'), 'success'); onClose();
+      haptic('success'); toast(r === 'queued' ? tr('fml.savedOffline') : tr('fml.saved'), 'success'); onClose();
     } catch (x) { toast(friendlyError(x), 'error'); }
   }
   async function remove() {
     if (!item || !(await confirm(tr('fml.delete'), tr('fml.deleteQ'), tr('fml.delete')))) return;
-    try { await del.mutateAsync(item.id); onClose(); } catch (x) { toast(friendlyError(x), 'error'); }
+    try { await del.mutateAsync(item.id); haptic('success'); onClose(); } catch (x) { toast(friendlyError(x), 'error'); }
   }
   return (
     <GlassSheet visible onClose={onClose} title={item ? tr('fml.edit') : tr('fml.add')}>
@@ -68,7 +68,7 @@ function FormulaSheet({ item, visible, onClose, childId, householdId, list }: { 
         <View style={{ flex: 1 }}><Field label={tr('fml.start')} value={start} onChangeText={setStart} keyboardType="numbers-and-punctuation" placeholder={tr('care.when.datePh')} testID="fml-f-start" /></View>
         <View style={{ flex: 1 }}><Field label={tr('fml.end')} optional value={end} onChangeText={setEnd} keyboardType="numbers-and-punctuation" placeholder={tr('care.when.datePh')} testID="fml-f-end" /></View>
       </View>
-      {prev ? <Banner tone="info" icon="info">{tr('fml.closePrev', { brand: list.find((f) => f.id === prev.id)?.brand ?? '', date: formatDate(prev.ended_on, { day: 'numeric', month: 'long' }) })}</Banner> : null}
+      {prev ? <Banner tone="info" icon="info">{tr('fml.closePrev', { brand: list.find((f) => f.id === prev.id)?.brand ?? '', date: formatDate(localDay(prev.ended_on), { day: 'numeric', month: 'long' }) })}</Banner> : null}
       <Text variant="label">{tr('fml.reason')}</Text>
       <Row wrap>{FORMULA_REASONS.map((r) => <Chip key={r} label={reasonLabel(r)} selected={reason === r} onPress={() => setReason(reason === r ? null : r)} testID={`fml-f-reason-${r}`} />)}</Row>
       <Field label={tr('fml.observations')} optional multiline maxLength={1000} value={obs} onChangeText={setObs} placeholder={tr('fml.obsPh')} testID="fml-f-obs" />
@@ -91,14 +91,15 @@ export default function FormulaHistory() {
     <Screen back title={tr('fml.title')} subtitle={tr('fml.subtitle', { name: child.first_name })} tool={false}
       action={{ label: tr('fml.add'), icon: 'plus', onPress: () => setSheet({ item: null }), testID: 'fml-add' }}>
       <FeedingChildPicker list={children} value={child.id} onChange={setChild} />
+      {q.isError && !q.data ? <ErrorView error={q.error} onRetry={() => void q.refetch()} /> : null}
       {cur ? (
         <Card testID="fml-current">
           <Text variant="caption" muted>{tr('fml.current')}</Text>
           <Text weight="bold">{cur.brand}</Text>
-          <Text variant="small" muted>{[kindLabel(cur.kind), tr('fml.since', { from: formatDate(cur.started_on, { day: 'numeric', month: 'long', year: 'numeric' }) })].join(' · ')}</Text>
+          <Text variant="small" muted>{[kindLabel(cur.kind), tr('fml.since', { from: formatDate(localDay(cur.started_on), { day: 'numeric', month: 'long', year: 'numeric' }) })].join(' · ')}</Text>
         </Card>
       ) : null}
-      {list.length ? (
+      {q.isError && !q.data ? null : list.length ? (
         <ListGroup title={tr('fml.history')} testID="fml-list">
           {list.map((f) => {
             const l = timelineLine(f);
