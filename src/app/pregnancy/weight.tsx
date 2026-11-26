@@ -23,7 +23,7 @@ import { toCurvePoints } from '@/lib/domain/measureCurve';
 import { frToISO, todayISO } from '@/lib/domain/dates';
 import { spacing } from '@/theme/tokens';
 import { toFrDate } from '@/lib/validation';
-import { t as tr, formatDate } from '@/i18n';
+import { t as tr, formatDate, formatNumber } from '@/i18n';
 
 export default function WeightScreen() {
   const toast = useToast();
@@ -144,7 +144,7 @@ export default function WeightScreen() {
         ListHeaderComponent={(
           <View style={{ gap: spacing.md }}>
             <TodaySummary title={tr('u2.weight.tracking')} items={[
-              { icon: 'trending-up', value: last ? `${String(last.weight_kg).replace('.', ',')} kg` : '—', label: tr('u2.weight.last') },
+              { icon: 'trending-up', value: last ? `${formatNumber(Number(last.weight_kg))} kg` : '—', label: tr('u2.weight.last') },
               { icon: 'calendar', value: last ? formatDate(last.measured_on, { day: 'numeric', month: 'long', timeZone: 'UTC' }) : '—', label: tr('u2.weight.noted_on') },
               { icon: 'list', value: String(history.length), label: history.length > 1 ? tr('u2.weight.measurements') : tr('u2.weight.measurement') },
             ]} />
@@ -158,7 +158,7 @@ export default function WeightScreen() {
               {kg ? (
                 <Row wrap style={{ justifyContent: 'center' }} testID="weight-steppers">
                   {[-0.5, -0.1, 0.1, 0.5].map((d) => (
-                    <Button key={d} label={`${d > 0 ? '+' : '−'}${String(Math.abs(d)).replace('.', ',')}`} size="sm" variant="secondary" onPress={() => nudge(d)} accessibilityLabel={tr(d > 0 ? 'u2.weight.add_kg' : 'u2.weight.remove_kg', { value: String(Math.abs(d)).replace('.', ',') })} testID={`weight-nudge-${d}`} />
+                    <Button key={d} label={`${d > 0 ? '+' : '−'}${formatNumber(Math.abs(d))}`} size="sm" variant="secondary" onPress={() => nudge(d)} accessibilityLabel={tr(d > 0 ? 'u2.weight.add_kg' : 'u2.weight.remove_kg', { value: formatNumber(Math.abs(d)) })} testID={`weight-nudge-${d}`} />
                   ))}
                 </Row>
               ) : null}
@@ -192,7 +192,7 @@ export default function WeightScreen() {
         ListEmptyComponent={loading || failed ? null : <EmptyState icon="trending-up" title={tr('u2.weight.none_title')} body={tr('u2.weight.none_body')} />}
         renderItem={({ item: w }) => (
           <Card style={{ paddingVertical: spacing.xs }}>
-            <ListRow onPress={() => openWeight(w.id)} title={`${String(w.weight_kg).replace('.', ',')} kg`} subtitle={[formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }), w.note, w.professional_note ? tr('u2.weight.pro_prefix', { note: w.professional_note }) : null].filter(Boolean).join(' · ')} right={<Button label={tr('u2.weight.delete')} size="sm" variant="ghost" loading={busy === `del-${w.id}`} accessibilityLabel={tr('u2.weight.delete_a11y', { date: formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) })} onPress={() => remove(w.id)} />} />
+            <ListRow onPress={() => openWeight(w.id)} title={`${formatNumber(Number(w.weight_kg))} kg`} subtitle={[formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }), w.note, w.professional_note ? tr('u2.weight.pro_prefix', { note: w.professional_note }) : null].filter(Boolean).join(' · ')} right={<Button label={tr('u2.weight.delete')} size="sm" variant="ghost" loading={busy === `del-${w.id}`} accessibilityLabel={tr('u2.weight.delete_a11y', { date: formatDate(w.measured_on, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) })} onPress={() => remove(w.id)} />} />
           </Card>
         )}
         ListFooterComponent={(

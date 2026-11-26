@@ -34,9 +34,9 @@ export default function CycleCalendarScreen() {
 
   const styleOf = useCallback((k: ConceptionDayKind): CalendarStyle | null => {
     switch (k) {
-      case 'period': return { bg: t.colors.heart, fg: '#fff', label: tr('u3.fertCal.period') };
+      case 'period': return { bg: t.colors.heart, fg: t.colors.primaryText, label: tr('u3.fertCal.period') };
       case 'next_period_estimate': return { bg: t.colors.heart + '44', label: tr('u3.fertCal.nextEst') };
-      case 'ovulation_estimate': return { bg: t.colors.lavender, fg: '#fff', label: tr('u3.fertCal.ovEst') };
+      case 'ovulation_estimate': return { bg: t.colors.lavender, fg: t.colors.primaryText, label: tr('u3.fertCal.ovEst') };
       case 'higher_chance_estimate': return { bg: t.colors.lavender + '88', label: tr('u3.fertCal.higher') };
       case 'fertile_estimate': return { bg: t.colors.lavender + '33', label: tr('u3.fertCal.fertile') };
       default: return null;
