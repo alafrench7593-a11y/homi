@@ -10,9 +10,8 @@ import { Screen } from '@/components/Screen';
 import { BottleRelaysSection } from '@/features/feeding/BottleRelays';
 import { TodaySummary } from '@/components/MiniApp';
 import { EmptyState, ErrorView, Skeleton } from '@/components/States';
-import { StaggerItem } from '@/components/Motion';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Chip, Field, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
+import { Banner, Button, Card, Chip, Field, haptic, ListRow, Row, SectionTitle, Segmented, Text } from '@/components/ui';
 import { RequestSheet } from '@/features/familyLoad';
 import { RelayStrip } from '@/features/motionViz';
 import { useCareShifts, useDeleteShift, usePeople, useSaveShifts, useUpdateShift } from '@/lib/data/hooks-family-load';
@@ -57,7 +56,9 @@ export default function NightRelay() {
   // 80 : relais des biberons (en tête quand on arrive depuis les biberons)
   const bottlesFirst = useLocalSearchParams<{ focus?: string }>().focus === 'bottles';
 
-  const chosen = order.length ? order : people.map((p) => p.id);
+  // Liste stable (clé = identifiants) : sans elle, l'aperçu du planning se recalculait à chaque frappe dans un champ
+  const ids = people.map((p) => p.id).join('|');
+  const chosen = useMemo(() => (order.length ? order : ids ? ids.split('|') : []), [order, ids]);
   const startIso = frToISO(start);
   const n = Math.max(1, Math.min(31, Number(nights) || 0));
   const plan = useMemo(() => (startIso && chosen.length ? planNights({ pattern, people: chosen, startDay: startIso, nights: n, startHour: Number(startHour) || 22, endHour: Number(endHour) || 6, custom: Array.from({ length: n }, (_, i) => custom[i] ?? chosen[i % chosen.length]) }) : []), [pattern, chosen, startIso, n, startHour, endHour, custom]);
@@ -74,11 +75,11 @@ export default function NightRelay() {
     if (!plan.length) return toast(tr('u2.nights.check_start'), 'error');
     const msg = conflicts.length ? tr('u2.nights.conflict_confirm', { count: conflicts.length }) : tr('u2.nights.will_add', { count: plan.length });
     if (!(await confirm(tr('u2.nights.save_title'), msg, tr('u2.nights.save'), false))) return;
-    try { await save.mutateAsync(plan); toast(tr('u2.nights.saved')); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await save.mutateAsync(plan); haptic('success'); toast(tr('u2.nights.saved')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   async function setStatus(s: CareShift, status: CareShift['status'], msg: string) {
-    try { await update.mutateAsync({ id: s.id, patch: { status } }); toast(msg); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await update.mutateAsync({ id: s.id, patch: { status } }); haptic('success'); toast(msg); } catch (e) { toast(friendlyError(e), 'error'); }
   }
   async function remove(s: CareShift) {
     if (!(await confirm(tr('u2.nights.remove_title'), fmtNight(s), tr('u2.nights.remove')))) return;
@@ -104,15 +105,15 @@ export default function NightRelay() {
       {bottlesFirst ? <BottleRelaysSection /> : null}
       {tonight ? (
         // Ce soir, en grand : qui se lève, à quelle heure ; confirmer ou proposer un échange en un geste
-        <GlassSurface fill={t.colors.surface} depth={2} radius={26}>
+        <GlassSurface fill={t.colors.surface} depth={2} radius={radius.lg}>
           <View style={{ padding: spacing.lg, gap: spacing.sm }} testID="nights-tonight">
             <Row style={{ alignItems: 'center' }}>
-              <View style={{ width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.lavender, t.isDark ? 0.25 : 0.15) }}>
+              <View accessible={false} importantForAccessibility="no-hide-descendants" style={{ width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: tint(t.colors.lavender, t.isDark ? 0.25 : 0.15) }}>
                 <Icon name="moon" size={24} color={t.colors.lavender} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text variant="caption" muted style={{ letterSpacing: 1.1, textTransform: 'uppercase' }}>{Date.parse(tonight.starts_at) <= Date.now() ? tr('u2.nights.tonight') : tr('u2.nights.this_evening')}</Text>
-                <Text weight="bold" style={{ fontSize: 28, lineHeight: 33 }} testID="nights-tonight-who">{tonight.user_id === me ? tr('u2.nights.you') : labelOf(tonight.user_id)}</Text>
+                <Text variant="title" accessibilityRole="header" maxFontSizeMultiplier={1.3} testID="nights-tonight-who">{tonight.user_id === me ? tr('u2.nights.you') : labelOf(tonight.user_id)}</Text>
               </View>
             </Row>
             <Text variant="small" muted>
@@ -140,17 +141,19 @@ export default function NightRelay() {
       {shiftsQ.isLoading && !shiftsQ.data ? <Skeleton rows={2} /> : null}
       {shiftsQ.isError && !shiftsQ.data ? <ErrorView error={shiftsQ.error} onRetry={() => void shiftsQ.refetch()} title={tr('u2.nights.load_error')} /> : null}
       {shiftsQ.data && upcoming.length === 0 ? <EmptyState icon="moon" title={tr('u2.nights.none_title')} body={tr('u2.nights.none_body')} /> : null}
-      <MotionList style={{ gap: spacing.md }}>{upcoming.map((s, i) => (
-        <MotionItem key={s.id}><StaggerItem key={s.id} index={i}>
+      {/* Une seule entrée animée par carte (MotionItem) : plus de cascade StaggerItem imbriquée */}
+      <MotionList style={{ gap: spacing.md }}>{upcoming.map((s) => (
+        <MotionItem key={s.id}>
           <Card>
-            <ListRow icon={s.status === 'confirmed' ? 'check-circle' : s.status === 'swapped' ? 'shuffle' : 'moon'} title={labelOf(s.user_id)} subtitle={`${fmtNight(s)}${s.status === 'confirmed' ? ` · ${tr('u2.nights.confirmed')}` : s.status === 'swapped' ? ` · ${tr('u2.nights.swapped')}` : ''}`} />
+            {/* Statut toujours écrit (pas seulement porté par l'icône) : « à confirmer » compris */}
+            <ListRow icon={s.status === 'confirmed' ? 'check-circle' : s.status === 'swapped' ? 'shuffle' : 'moon'} title={labelOf(s.user_id)} subtitle={`${fmtNight(s)} · ${s.status === 'confirmed' ? tr('u2.nights.confirmed') : s.status === 'swapped' ? tr('u2.nights.swapped') : tr('u2.nights.to_confirm_lc')}`} />
             <Row wrap style={{ marginTop: spacing.xs }}>
               {s.user_id === me && s.status === 'planned' ? <Button label={tr('u2.nights.i_confirm')} size="sm" icon="check" onPress={() => setStatus(s, 'confirmed', tr('u2.nights.confirmed_toast'))} /> : null}
               {s.user_id === me ? <Button label={tr('u2.nights.propose_swap')} size="sm" variant="secondary" onPress={() => setSwap(s.id)} /> : null}
               <Button label={tr('u2.nights.remove')} size="sm" variant="ghost" onPress={() => remove(s)} />
             </Row>
           </Card>
-        </StaggerItem></MotionItem>
+        </MotionItem>
       ))}</MotionList>
 
       <SectionTitle title={tr('u2.nights.prepare')} />
@@ -176,7 +179,7 @@ export default function NightRelay() {
           <SectionTitle title={tr('u2.nights.preview')} />
           <Card>
             {plan.map((p, i) => (
-              <View key={p.starts_at} style={{ paddingVertical: 6, gap: 4 }}>
+              <View key={p.starts_at} style={{ paddingVertical: spacing.xs, gap: spacing.xxs }}>
                 <Text variant="small" weight="medium">{fmtNight(p)}</Text>
                 {pattern === 'custom' ? (
                   <Row wrap>{chosen.map((id) => <Chip key={id} label={labelOf(id)} selected={p.user_id === id} onPress={() => setCustom({ ...custom, [i]: id })} />)}</Row>

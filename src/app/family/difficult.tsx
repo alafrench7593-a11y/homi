@@ -9,7 +9,8 @@ import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { TodaySummary } from '@/components/MiniApp';
 import { confirm, useToast } from '@/components/Overlays';
-import { Banner, Button, Card, Icon, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Banner, Button, Card, haptic, ListRow, Row, SectionTitle, Text } from '@/components/ui';
+import { Skeleton } from '@/components/States';
 import { ChildEssentials, TaskRow, TaskSheet } from '@/features/familyLoad';
 import { useAppointments } from '@/lib/data/hooks';
 import { useBatchTasks, useCareRequests, useCreateRequest, useFamilyTasks, usePeople } from '@/lib/data/hooks-family-load';
@@ -17,7 +18,6 @@ import { useTrustedContacts } from '@/lib/data/hooks-postpartum';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { lightenDay, sameLocalDay, type FamilyTask } from '@/lib/domain/familyLoad';
 import { todayISO } from '@/lib/domain/dates';
-import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { t as tr, formatDate, formatTime } from '@/i18n';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -25,10 +25,10 @@ import { MotionItem, MotionList } from '@/motion/ListMotion';
 const hm = (iso: string) => formatTime(iso);
 
 export default function DifficultDay() {
-  const t = useTheme();
   const toast = useToast();
   const day = todayISO();
-  const { data: tasks } = useFamilyTasks();
+  const tasksQ = useFamilyTasks();
+  const tasks = tasksQ.data;
   const { data: appointments } = useAppointments({ upcomingOnly: true });
   const { data: requests } = useCareRequests();
   const { data: contacts } = useTrustedContacts();
@@ -37,6 +37,7 @@ export default function DifficultDay() {
   const batch = useBatchTasks();
   const [editing, setEditing] = useState<FamilyTask | null>(null);
   const [asked, setAsked] = useState(false);
+  const [relayAsked, setRelayAsked] = useState(false);
 
   const { essential, plan } = lightenDay(tasks ?? [], day);
   const todayAppointments = (appointments ?? []).filter((a) => sameLocalDay(a.starts_at, day));
@@ -51,7 +52,20 @@ export default function DifficultDay() {
     try {
       await ask.mutateAsync({ kind: 'help_today', message: tr('u2.difficult.help_message') });
       setAsked(true);
+      haptic('success');
       toast(tr('u2.difficult.help_sent'));
+    } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; }
+  }
+
+  // Relais demandé une seule fois : bouton désactivé pendant l'envoi puis une fois la demande partie (pas de doublon au double tap)
+  async function askRelay() {
+    if (relayAsked || sending.current) return;
+    sending.current = true;
+    try {
+      await ask.mutateAsync({ kind: 'relay' });
+      setRelayAsked(true);
+      haptic('success');
+      toast(tr('u2.difficult.relay_sent'));
     } catch (e) { toast(friendlyError(e), 'error'); } finally { sending.current = false; }
   }
 
@@ -59,27 +73,29 @@ export default function DifficultDay() {
     if (!plan.length) return;
     const lines = plan.map((p) => `• ${p.title} → ${formatDate(p.to, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}`).join('\n');
     if (!(await confirm(tr('u2.difficult.apply_title'), tr('u2.difficult.apply_body', { lines }), tr('u2.difficult.postpone'), false))) return;
-    try { await batch.mutateAsync({ postpone: plan.map((p) => ({ id: p.id, to: p.to })) }); toast(tr('u2.difficult.postponed')); } catch (e) { toast(friendlyError(e), 'error'); }
+    try { await batch.mutateAsync({ postpone: plan.map((p) => ({ id: p.id, to: p.to })) }); haptic('success'); toast(tr('u2.difficult.postponed')); } catch (e) { toast(friendlyError(e), 'error'); }
   }
 
   return (
     <Screen back title={tr('u2.difficult.title')} subtitle={tr('u2.difficult.subtitle')}
       action={{ label: askedToday ? tr('u2.difficult.asked') : tr('u2.difficult.need_help'), icon: askedToday ? 'check' : 'life-buoy', onPress: askHelp, disabled: askedToday || ask.isPending, testID: 'difficult-help' }}>
-      <TodaySummary items={[
+      {tasks ? <TodaySummary items={[
         { icon: 'star', value: String(essential.length), label: tr('u2.difficult.essential') },
         { icon: 'calendar', value: String(todayAppointments.length), label: tr('u2.difficult.appointments') },
         { icon: 'skip-forward', value: String(plan.length), label: tr('u2.difficult.can_wait') },
-      ]} />
+      ]} /> : null}
       <Card tone="soft">
         <Text weight="bold">{tr('u2.difficult.ask_title')}</Text>
         <Text variant="small" muted>{tr('u2.difficult.ask_body')}</Text>
         <Row wrap style={{ marginTop: spacing.sm }}>
-          <Button label={tr('u2.difficult.relay')} variant="secondary" onPress={() => ask.mutateAsync({ kind: 'relay' }).then(() => toast(tr('u2.difficult.relay_sent'))).catch((e) => toast(friendlyError(e), 'error'))} />
+          <Button label={tr('u2.difficult.relay')} icon={relayAsked ? 'check' : undefined} variant="secondary" onPress={askRelay} disabled={relayAsked || ask.isPending} testID="difficult-relay" />
         </Row>
       </Card>
 
       <SectionTitle title={tr('u2.difficult.essential_today')} />
-      {essential.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.no_essential')}</Text> : null}
+      {/* Chargement : squelette, jamais un faux « rien d'essentiel » */}
+      {tasksQ.isLoading && !tasks ? <Skeleton rows={2} /> : null}
+      {tasks && essential.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.no_essential')}</Text> : null}
       <MotionList style={{ gap: spacing.md }}>{essential.map((task) => <MotionItem key={task.id}><TaskRow key={task.id} task={task} onEdit={setEditing} /></MotionItem>)}</MotionList>
 
       {todayAppointments.length ? (
@@ -90,11 +106,11 @@ export default function DifficultDay() {
       ) : null}
 
       <SectionTitle title={tr('u2.difficult.can_wait_title')} />
-      {plan.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.nothing_postpone')}</Text> : (
+      {!tasks ? null : plan.length === 0 ? <Text variant="small" muted>{tr('u2.difficult.nothing_postpone')}</Text> : (
         <Card>
           <MotionList>{plan.map((p) => <MotionItem key={p.id}><ListRow key={p.id} icon="skip-forward" title={p.title} subtitle={tr('u2.difficult.proposed', { when: formatDate(p.to, { weekday: 'long', hour: '2-digit', minute: '2-digit' }) })} /></MotionItem>)}</MotionList>
           <Button label={tr('u2.difficult.validate')} icon="check" size="sm" style={{ alignSelf: 'flex-start', marginTop: spacing.xs }} onPress={applyPlan} loading={batch.isPending} />
-          <Text variant="caption" muted style={{ marginTop: 6 }}>{tr('u2.difficult.no_postpone_without')}</Text>
+          <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u2.difficult.no_postpone_without')}</Text>
         </Card>
       )}
 
@@ -109,12 +125,9 @@ export default function DifficultDay() {
         <ListRow icon="users" title={tr('u2.difficult.my_trusted')} subtitle={tr('u2.difficult.support_plan')} onPress={() => router.push('/postpartum/support')} />
       </Card>
 
-      <Banner tone="info">
-        <Row style={{ alignItems: 'flex-start' }}>
-          <Icon name="info" size={16} color={t.colors.lavender} />
-          <Text variant="small" style={{ flex: 1 }}>{tr('u2.difficult.danger')}</Text>
-        </Row>
-        <Button label={tr('u2.difficult.emergency_numbers')} size="sm" variant="ghost" icon="life-buoy" onPress={() => router.push('/emergency')} style={{ alignSelf: 'flex-start' }} />
+      {/* Le bandeau porte déjà son icône : plus de seconde icône « info » imbriquée */}
+      <Banner tone="info" action={<Button label={tr('u2.difficult.emergency_numbers')} size="sm" variant="ghost" icon="life-buoy" onPress={() => router.push('/emergency')} style={{ alignSelf: 'flex-start' }} />}>
+        <Text variant="small">{tr('u2.difficult.danger')}</Text>
       </Banner>
       <View style={{ height: spacing.md }} />
       <TaskSheet task={editing} open={!!editing} onClose={() => setEditing(null)} />
