@@ -33,3 +33,6 @@ Corrigé pendant la porte de fin : 7 boutons empilés + « » » orphelin sur mo
 Corrections : décors en dégradé ou en verre retirés des contenus (cartes mates), cibles ≥ 44, chiffres tabulaires et plafonds Dynamic Type, animations continues supprimées, dates sans décalage UTC, retours haptiques et erreurs visibles (vaccins, relais), valeur actuelle mise en avant dans le suivi santé.
 Porte de fin : tsc propre ; Jest 4987/4987 ; `e2e/audit_ux.py` = 33 écrans × 5 configurations, 0 bloquant. Seuls signalements restants : des troncatures volontaires (notes repliables) et le faux positif connu « N » à 1,09.
 Non vérifié : rendu natif iOS/Android sur appareil ; contraste de primaryText sur les fonds heart/lavender/gold (lots 4 et 7) non mesuré.
+
+## 26/11/2026 — refonte lots 8-10 (allaitement, garde, économie)
+Porte de fin : tsc propre ; Jest 4988/4988 ; audit_ux 33 écrans × 5 configurations, 0 bloquant (signalements non bloquants inchangés). Non vérifié : rendu natif sur appareil.
