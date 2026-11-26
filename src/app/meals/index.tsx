@@ -119,12 +119,12 @@ export default function Meals() {
       </Row>
 
       <Field label={tr('rc.search')} value={q} onChangeText={setQ} placeholder={tr('rc.searchPh')} autoCorrect={false} testID="recipes-search" />
-      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+      <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xxs }}>
         <Chip label={tr('rc.all')} selected={!meal} onPress={() => setMeal(null)} />
         {MEALS_FOR[aud].map((m) => <Chip key={m} label={mealLabel(m)} selected={meal === m} onPress={() => setMeal(meal === m ? null : m)} />)}
         <Chip label={tr('rc.favorites')} icon="star" selected={onlyFav} onPress={() => setOnlyFav(!onlyFav)} />
       </ScrollView>
-      <View testID="rc-quick-filters"><ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+      <View testID="rc-quick-filters"><ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xxs }}>
         <Chip tone="lavender" label={tr('rc.quick.classic')} selected={classic} onPress={() => setClassic(!classic)} />
         <Chip tone="lavender" label={tr('rc.quick.family')} selected={familyOnly} onPress={() => setFamilyOnly(!familyOnly)} />
         <Chip tone="lavender" label={tr('rc.quick.quick')} selected={quickOnly} onPress={() => setQuickOnly(!quickOnly)} />
@@ -135,15 +135,15 @@ export default function Meals() {
         <Chip tone="lavender" label={excl.length ? `${tr('rc.quick.allergens')} (${excl.length})` : tr('rc.quick.allergens')} selected={excl.length > 0} onPress={() => setMore(true)} />
       </ScrollView></View>
       {groups.length > 1 ? (
-        <View testID="rc-groups" style={{ gap: 4 }}>
+        <View testID="rc-groups" style={{ gap: spacing.xxs }}>
           <Text variant="caption" muted>{tr('rc.groups')}</Text>
-          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+          <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.xxs }}>
             {groups.map((k) => <Chip key={k} label={tr(`rc.group.${k}` as never)} selected={group === k} onPress={() => setGroup(group === k ? null : k)} />)}
           </ScrollView>
         </View>
       ) : null}
       {fish ? <Text variant="caption" muted>{tr('rc.fishNote')}</Text> : null}
-      <Tappable accessibilityRole="button" onPress={() => setMore(!more)} style={{ minHeight: 40, flexDirection: 'row', alignItems: 'center', gap: 6 }} testID="more-filters">
+      <Tappable accessibilityRole="button" accessibilityState={{ expanded: more }} onPress={() => setMore(!more)} style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: spacing.xs }} testID="more-filters">
         <Icon name="sliders" size={16} color={t.colors.primary} /><Text variant="small" weight="bold" color={t.colors.primary}>{more ? tr('rc.filters.less') : tr('rc.filters.more')}</Text>
       </Tappable>
       {more ? (

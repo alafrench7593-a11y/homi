@@ -26,7 +26,7 @@ import type { Unit } from '@/lib/recipes/types';
 import { duplicateGroups, findDuplicate, mergedQty, STOCK_CATEGORIES, STOCK_UNITS, type StockCategory, type StockUnit } from '@/lib/domain/stocks';
 import { formatDate, t as tr, type TKey } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
-import { spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
 import { CheckMark } from '@/motion/CheckMark';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
@@ -124,7 +124,7 @@ export default function Shopping() {
           toggle.mutate({ id: i.id, checked: !i.checked }, { onError: (e) => toast(friendlyError(e), 'error'), onSettled: () => pending.current.delete(i.id) });
         }}
         style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 48 }}>
-        <View style={{ width: 28, height: 28, borderRadius: 9, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: i.checked ? t.colors.gold : t.colors.textMuted, backgroundColor: i.checked ? t.colors.gold : 'transparent' }}><CheckMark checked={!!i.checked} size={18} color="#FFFFFF" /></View>
+        <View style={{ width: 28, height: 28, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: i.checked ? t.colors.gold : t.colors.textMuted, backgroundColor: i.checked ? t.colors.gold : 'transparent' }}><CheckMark checked={!!i.checked} size={18} color={t.colors.primaryText} /></View>
         <View style={{ flex: 1 }}>
           <Text style={{ textDecorationLine: i.checked ? 'line-through' : 'none' }} muted={i.checked}>{i.label.charAt(0).toUpperCase() + i.label.slice(1)}</Text>
           {sub ? <Text variant="caption" muted>{sub}</Text> : null}

@@ -47,15 +47,17 @@ export default function Story() {
           testID="story-scroll"
         >
           {STORY_CHAPTERS.map((c, i) => (
-            <View key={c.key} style={{ minHeight: reduce ? undefined : step, paddingVertical: spacing.md, opacity: reduce ? 1 : i === current ? 1 : 0.42 }} testID={`story-ch-${c.key}`}>
+            <View key={c.key} style={{ minHeight: reduce ? undefined : step, paddingVertical: spacing.md }} testID={`story-ch-${c.key}`}>
               {reduce ? (
                 <View accessible accessibilityRole="image" accessibilityLabel={storyA11y(c.scene)} style={{ height: 220 }}>
                   <Image source={STORY_IMAGES[i]} resizeMode="contain" style={{ width: '100%', height: 220 }} accessibilityIgnoresInvertColors />
                 </View>
               ) : null}
-              <Text variant="caption" muted style={{ letterSpacing: 1.2, textTransform: 'uppercase' }}>{`${i + 1} / ${STORY_CHAPTERS.length}`}</Text>
-              <Text variant="heading" style={{ marginTop: 4 }}>{c.title}</Text>
-              <Text muted style={{ marginTop: 6, maxWidth: 420 }}>{c.text}</Text>
+              {/* Chapitre en cours : numéro en couleur d'accent et titre plein ; les autres restent lisibles (texte atténué, plus d'opacité 0,42 sous 4,5:1) */}
+              <Text variant="caption" muted={reduce || i !== current} weight={!reduce && i === current ? 'bold' : undefined} color={!reduce && i === current ? t.colors.primary : undefined}
+                style={{ letterSpacing: 1.2, fontVariant: ['tabular-nums'] }}>{`${i + 1} / ${STORY_CHAPTERS.length}`}</Text>
+              <Text variant="heading" accessibilityRole="header" muted={!reduce && i !== current} style={{ marginTop: spacing.xxs }}>{c.title}</Text>
+              <Text muted style={{ marginTop: spacing.xs, maxWidth: 420 }}>{c.text}</Text>
             </View>
           ))}
           <View style={{ gap: spacing.sm, paddingTop: spacing.md }}>

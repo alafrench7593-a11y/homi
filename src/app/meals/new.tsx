@@ -18,6 +18,7 @@ import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { MEALS, type Audience, type Meal, type Recipe, type RecipeIngredient, type Unit } from '@/lib/recipes/types';
 import { derivedAllergens, fold, isVegetarian, validateRecipe } from '@/lib/recipes/validate';
 import { t as tr, type TKey } from '@/i18n';
+import { parseQtyInput } from '@/features/recipes/qtyInput';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 import { spacing } from '@/theme/tokens';
 
@@ -96,10 +97,10 @@ export default function NewRecipe() {
         <MotionItem key={x.key}><Card key={x.key}>
           <Row style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <Text weight="bold" style={{ flex: 1 }}>{INGREDIENTS[x.key].name}</Text>
-            <IconButton icon="x" label={tr('rc.new.removeIng')} onPress={() => setIngs(ings.filter((_, n) => n !== k))} />
+            <IconButton icon="x" label={tr('rc.new.removeIng')} onPress={() => { setIngs(ings.filter((_, n) => n !== k)); setQtyText((d) => { const next = { ...d }; delete next[x.key]; return next; }); }} />
           </Row>
           <Row>
-            <View style={{ width: 96 }}><Field label={tr('rc.new.qty')} value={qtyText[x.key] ?? (x.qty == null ? '' : String(x.qty))} onChangeText={(v) => { setQtyText((d) => ({ ...d, [x.key]: v })); setIng(k, { qty: v ? Number(v.replace(',', '.')) || null : null }); }} keyboardType="decimal-pad" maxLength={6} /></View>
+            <View style={{ width: 96 }}><Field label={tr('rc.new.qty')} value={qtyText[x.key] ?? (x.qty == null ? '' : String(x.qty))} onChangeText={(v) => { setQtyText((d) => ({ ...d, [x.key]: v })); setIng(k, { qty: parseQtyInput(v) }); }} keyboardType="decimal-pad" maxLength={6} /></View>
             <Row wrap style={{ flex: 1 }}>{UNITS.map((u) => <Chip key={u} label={tr(`rc.unit.${u}` as TKey)} selected={x.unit === u} onPress={() => setIng(k, { unit: u })} />)}</Row>
           </Row>
         </Card></MotionItem>

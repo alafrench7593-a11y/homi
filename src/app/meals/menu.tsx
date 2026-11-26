@@ -131,7 +131,7 @@ export default function MenuScreen() {
         unit={slots ? tr('hm.menu.unit', { days, servings }) : null}
         caption={saved.plan ? tr('hm.menu.saved', { date: formatDate(saved.plan.created_at, { weekday: 'short', day: 'numeric', month: 'short' }) }) : null} />
       {aud === 'pregnancy' ? (
-        <View style={{ gap: 4 }}>
+        <View style={{ gap: spacing.xxs }}>
           <Text variant="small" muted>{tr('rc.menu.trimesterHint')}</Text>
           <Row wrap>{([1, 2, 3] as const).map((x) => <Chip key={x} label={tr('rc.menu.trimester', { n: x })} selected={trimester === x} onPress={() => setTrimester(x)} />)}</Row>
         </View>
@@ -168,7 +168,7 @@ export default function MenuScreen() {
                 <Text variant="caption" weight="bold" muted>{mealLabel(m).toUpperCase()}</Text>
                 {r ? (
                   <>
-                    <Tappable accessibilityRole="link" onPress={() => router.push(`/meals/${r.slug}`)} style={{ minHeight: 36, justifyContent: 'center' }}>
+                    <Tappable accessibilityRole="link" onPress={() => router.push(`/meals/${r.slug}`)} style={{ minHeight: 44, justifyContent: 'center' }}>
                       <Text weight="bold" testID={`menu-slot-${d}-${m}`}>{r.title}</Text>
                     </Tappable>
                     {s.note ? <Text variant="small" muted>{s.note}</Text> : null}
@@ -207,10 +207,11 @@ export default function MenuScreen() {
       <Sheet visible={moving != null} onClose={() => setMoving(null)} title={tr('rc.menu.moveTo')}>
         {Array.from({ length: days }, (_, d) => (
           <Row key={d} wrap>
-            <Text weight="bold" style={{ width: 64 }}>{tr('rc.menu.day', { n: d + 1 })}</Text>
+            <Text weight="bold" style={{ minWidth: 64 }}>{tr('rc.menu.day', { n: d + 1 })}</Text>
             {meals.map((m) => (
-              <Tappable key={m} accessibilityRole="button" onPress={() => { if (slots && moving != null) setSlots(moveSlot(slots, moving, { day: d, meal: m })); setMoving(null); }}
-                style={{ paddingHorizontal: 10, minHeight: 36, justifyContent: 'center', borderRadius: 10, borderWidth: 1, borderColor: t.colors.border }}>
+              <Tappable key={m} accessibilityRole="button" accessibilityLabel={`${tr('rc.menu.day', { n: d + 1 })} · ${mealLabel(m)}`}
+                onPress={() => { if (slots && moving != null) setSlots(moveSlot(slots, moving, { day: d, meal: m })); setMoving(null); }}
+                style={{ paddingHorizontal: spacing.sm, minHeight: 44, justifyContent: 'center', borderRadius: radius.sm, borderWidth: 1, borderColor: t.colors.border }}>
                 <Text variant="small">{mealLabel(m)}</Text>
               </Tappable>
             ))}
